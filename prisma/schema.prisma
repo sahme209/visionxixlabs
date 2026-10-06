@@ -4043,3 +4043,29 @@ model IncidentRecord {
   @@index([organizationId, status])
   @@index([organizationId, detectedAt])
 }
+
+/// Platform-level singleton: the GitHub App credential produced by the
+/// GitHub App Manifest flow (one-time operator setup, NOT per-tenant).
+/// Distinct from TenantIntegrationConnection (per-workspace Slack/Teams
+/// OAuth) and GitHubInstallation (per-workspace installation records).
+/// `singletonKey` is always "platform_github_app" — the unique constraint
+/// enforces that only one row can ever exist; callers upsert on it.
+/// The three secret fields are context-bound AES-GCM v2 envelopes from
+/// lib/security/credentialVault.ts (same convention as
+/// TenantIntegrationConnection.encryptedCredential) and are never
+/// returned to a browser, logged, or included in audit detail.
+model PlatformGithubAppCredential {
+  id                     String   @id @default(cuid())
+  singletonKey           String   @unique @default("platform_github_app")
+  appId                  Int
+  slug                   String
+  name                   String
+  clientId               String
+  encryptedClientSecret  String
+  encryptedWebhookSecret String
+  encryptedPrivateKey    String
+  htmlUrl                String
+  createdAt              DateTime @default(now())
+  updatedAt              DateTime @updatedAt
+  createdByUserId        String
+}

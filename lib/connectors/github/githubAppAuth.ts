@@ -148,7 +148,7 @@ function normalizeRepositoryScope(repositories: readonly string[] | undefined): 
 export async function resolveGithubInstallationToken(
   input: { installationId?: number; repositories?: readonly string[] } = {},
 ): Promise<InstallationTokenOutcome> {
-  const cfg = getGithubConfig();
+  const cfg = await getGithubConfig();
   if (!cfg.appConfigured || !cfg.appId) {
     return { ok: false, errorCode: "github.app_not_configured", message: "GITHUB_APP_ID + GITHUB_PRIVATE_KEY required for App auth." };
   }
@@ -168,7 +168,7 @@ export async function resolveGithubInstallationToken(
   }
   pruneInstallationTokenCache();
 
-  const privateKey = resolveGithubAppPrivateKey();
+  const privateKey = await resolveGithubAppPrivateKey();
   if (!privateKey) {
     return { ok: false, errorCode: "github.app_no_key", message: "GITHUB_PRIVATE_KEY not present on the host." };
   }

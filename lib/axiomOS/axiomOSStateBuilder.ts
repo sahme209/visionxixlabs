@@ -324,7 +324,7 @@ async function buildProviders(
   };
 
   // GitHub
-  const ghCfg = getGithubConfig();
+  const ghCfg = await getGithubConfig();
   const githubInstallation = await latestGitHubInstallation(String(organizationId));
   const githubValidated = githubInstallation?.status === "active"
     && githubInstallation.lastSeenAt !== null
@@ -353,7 +353,7 @@ async function buildProviders(
           ? "GitHub installation is not available to this workspace"
           : "No validated tenant GitHub installation",
     connectionStatus: ghMode === "live" ? "connected" : ghMode === "blocked" ? "blocked" : "preview",
-    missingRequirements: [...listMissingGithubConfig(), ...githubValidationRequirement],
+    missingRequirements: [...(await listMissingGithubConfig()), ...githubValidationRequirement],
     ...loopExtras("github"),
     safeNextAction: { label: "Open GitHub integration", href: "/account/integrations" },
   };

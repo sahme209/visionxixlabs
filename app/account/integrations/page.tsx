@@ -53,9 +53,9 @@ export default async function AccountIntegrationsPage() {
   const context = await currentContext();
   if (!context.isAuthenticated || !context.email) redirect("/auth/signin?callbackUrl=/account/integrations");
   const canManageConnections = isAdminOrOwner({ email: context.email, roles: context.roles });
-  const githubConfig = getGithubConfig();
+  const githubConfig = await getGithubConfig();
   const setupReady = {
-    github: isGithubAppInstallationReady(githubConfig, process.env.GITHUB_APP_SLUG) && Boolean(trustedIntegrationCallbackUrl("/api/integrations/github/install-callback")),
+    github: isGithubAppInstallationReady(githubConfig, githubConfig.appSlug) && Boolean(trustedIntegrationCallbackUrl("/api/integrations/github/install-callback")),
     slack: Boolean(process.env.SLACK_CLIENT_ID?.trim() && process.env.SLACK_CLIENT_SECRET?.trim() && trustedIntegrationCallbackUrl("/api/integrations/slack/callback")),
     teams: Boolean(process.env.MICROSOFT_CLIENT_ID?.trim() && process.env.MICROSOFT_CLIENT_SECRET?.trim() && process.env.MICROSOFT_TENANT_ID?.trim() && trustedIntegrationCallbackUrl("/api/integrations/teams/callback")),
   };

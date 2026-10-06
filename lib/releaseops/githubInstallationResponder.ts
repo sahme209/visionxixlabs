@@ -281,6 +281,8 @@ export async function buildInstallationCaptureResponse(
 
 export interface StatusContext {
   appSlug: string;
+  /** Lets the UI show the admin-only "Create GitHub App" manifest-flow entry point. */
+  isAdmin?: boolean;
 }
 
 export type StatusBody =
@@ -292,6 +294,7 @@ export type StatusBody =
         active: InstallationView | null;
         history: InstallationView[];
         installReady: boolean;
+        isAdmin: boolean;
       };
     }
   | { ok: false; error: string; hint?: string; correlationId?: string };
@@ -322,6 +325,7 @@ export async function buildInstallationStatusResponse(
           active: active ? projectRow(active) : null,
           history: history.map(projectRow),
           installReady: Boolean(ctx.appSlug),
+          isAdmin: Boolean(ctx.isAdmin),
         },
       },
     };

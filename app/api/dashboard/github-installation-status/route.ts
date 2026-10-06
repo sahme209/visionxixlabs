@@ -8,6 +8,7 @@
 
 import { NextResponse, type NextRequest } from "next/server";
 import { currentContext } from "@/lib/auth/currentContext";
+import { isAdminOrOwner } from "@/lib/auth/platformAdmin";
 import { prisma } from "@/lib/db";
 import {
   buildInstallationStatusResponse,
@@ -22,14 +23,12 @@ export async function GET(_req: NextRequest) {
   if (!ctx.isAuthenticated || !ctx.organizationId) {
     return NextResponse.json({ ok: false, error: "auth_required" }, { status: 401 });
   }
-  const config = getGithubConfig();
-  const appSlug = isGithubAppInstallationReady(config, process.env.GITHUB_APP_SLUG)
-    ? (process.env.GITHUB_APP_SLUG ?? "")
-    : "";
+  const config = await getGithubConfig();
+  const appSlug = isGithubAppInstallationReady(config, config.appSlug) ? (config.appSlug ?? "") : "";
   const r = await buildInstallationStatusResponse(
     prisma as unknown as GitHubInstallationRepo,
     ctx.organizationId,
-    { appSlug },
+    { appSlug, isAdmin: isAdminOrOwner({ email: ctx.email, roles: ctx.roles }) },
   );
   return NextResponse.json(r.body, { status: r.status });
 }

@@ -32,8 +32,9 @@ export async function POST(request: NextRequest): Promise<Response> {
     return NextResponse.json({ ok: false, error: "workspace_owner_required" }, { status: 403 });
   }
 
-  const appSlug = process.env.GITHUB_APP_SLUG?.trim() ?? "";
-  if (!isGithubAppInstallationReady(getGithubConfig(), appSlug)) {
+  const config = await getGithubConfig();
+  const appSlug = config.appSlug ?? "";
+  if (!isGithubAppInstallationReady(config, appSlug)) {
     return NextResponse.json({ ok: false, error: "github_not_configured" }, { status: 503 });
   }
 
