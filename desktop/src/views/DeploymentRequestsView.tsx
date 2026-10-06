@@ -232,6 +232,16 @@ function localToIso(value: string): string {
   return instant.toISOString();
 }
 
+const KNOWN_LOAD_ERRORS: Record<string, string> = {
+  desktop_session_required: "Your sign-in needs to refresh. Try signing out and back in.",
+  network_error: "Could not reach the service. Check your connection and try again.",
+};
+
+/** Never surface a raw API error code (e.g. "desktop_session_required") directly to the user. */
+function friendlyLoadError(code: string): string {
+  return KNOWN_LOAD_ERRORS[code] ?? "Something went wrong loading your requests. Please try again.";
+}
+
 export function DeploymentRequestsView() {
   const [requests, setRequests] = useState<RequestSummary[]>([]);
   const [loading, setLoading] = useState(true);
@@ -438,8 +448,8 @@ export function DeploymentRequestsView() {
       {!loading && loadError && (
         <StateCard tone="error">
           {requests.length > 0
-            ? `Refresh failed: ${loadError}. Showing the last successfully loaded records; they may be stale.`
-            : `Could not load deployment requests: ${loadError}. Nothing has been simulated.`}
+            ? `Refresh failed: ${friendlyLoadError(loadError)} Showing the last successfully loaded records; they may be stale.`
+            : friendlyLoadError(loadError)}
         </StateCard>
       )}
       {!loading && !loadError && requests.length === 0 && (

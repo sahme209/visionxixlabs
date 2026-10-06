@@ -18,6 +18,8 @@ const mocks = vi.hoisted(() => ({
   resolveActiveSession: vi.fn(),
   touchDesktopSession: vi.fn(async () => {}),
   findMembership: vi.fn(),
+  findUser: vi.fn(),
+  ensurePersonalWorkspaceMembership: vi.fn(async () => {}),
   readDesktopCommercialAccess: vi.fn(),
   authenticateApiKey: vi.fn(),
   logError: vi.fn(),
@@ -25,7 +27,10 @@ const mocks = vi.hoisted(() => ({
 }));
 
 vi.mock("@/lib/db", () => ({
-  prisma: { orgMembership: { findUnique: mocks.findMembership } },
+  prisma: { orgMembership: { findUnique: mocks.findMembership }, user: { findUnique: mocks.findUser } },
+}));
+vi.mock("@/lib/auth/ensurePersonalWorkspaceMembership", () => ({
+  ensurePersonalWorkspaceMembership: mocks.ensurePersonalWorkspaceMembership,
 }));
 vi.mock("@/lib/security/authenticateApiKey", () => ({ authenticateApiKey: mocks.authenticateApiKey }));
 vi.mock("@/lib/desktop/desktopToken", () => ({
@@ -118,6 +123,49 @@ describe("resolveRequestDesktopSession — failure observability", () => {
       expect.stringContaining("membership"),
       expect.objectContaining({ route: "/api/desktop/access", organizationId: "org_1", userId: "user_1" }),
     );
+  });
+
+  it("self-heals a missing membership row for the user's own personal workspace, instead of denying forever", async () => {
+    mocks.verifyDesktopToken.mockReturnValue({ sessionId: "sess_1" });
+    mocks.findUser.mockResolvedValue({ email: "person@example.test" });
+    // Self-heal only fires when the session's org actually is this user's
+    // own derived personal workspace id, so compute the real one.
+    const { deriveWorkspaceIdFromEmail } = await import("@/lib/auth/workspaceId");
+    mocks.resolveActiveSession.mockResolvedValue({
+      id: "sess_1",
+      userId: "user_1",
+      organizationId: String(deriveWorkspaceIdFromEmail("person@example.test")),
+    });
+    mocks.findMembership
+      .mockResolvedValueOnce(null) // first check: missing
+      .mockResolvedValueOnce({ acceptedAt: new Date(), role: "owner" }); // recheck after heal: present
+
+    const principal = await resolveRequestDesktopSession(makeRequest("axm.desk.sess_1.sig"), {
+      requiredScope: "release_gate:read",
+      route: "/api/desktop/deployments",
+      requireWorkspaceMembership: true,
+      requireActiveAccess: false,
+    });
+
+    expect(mocks.ensurePersonalWorkspaceMembership).toHaveBeenCalledWith({ userId: "user_1", email: "person@example.test" });
+    expect(principal).toMatchObject({ userId: "user_1", credentialKind: "desktop_session" });
+    expect(mocks.logInfo).toHaveBeenCalledWith(expect.stringContaining("self-healed"), expect.anything());
+  });
+
+  it("does not self-heal into a different (shared/invited) organization than the user's own derived workspace", async () => {
+    mocks.verifyDesktopToken.mockReturnValue({ sessionId: "sess_1" });
+    mocks.resolveActiveSession.mockResolvedValue({ id: "sess_1", userId: "user_1", organizationId: "someone_elses_shared_org" });
+    mocks.findUser.mockResolvedValue({ email: "person@example.test" });
+    mocks.findMembership.mockResolvedValue(null);
+
+    const principal = await resolveRequestDesktopSession(makeRequest("axm.desk.sess_1.sig"), {
+      requiredScope: "release_gate:read",
+      route: "/api/desktop/deployments",
+      requireWorkspaceMembership: true,
+    });
+
+    expect(mocks.ensurePersonalWorkspaceMembership).not.toHaveBeenCalled();
+    expect(principal).toBeUndefined();
   });
 
   it("logs a reason when an API key hits a route that disallows API keys", async () => {

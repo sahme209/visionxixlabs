@@ -195,8 +195,8 @@ export default function GitHubAppPage() {
             </div>
           ) : (
             <div className="mb-6 rounded-2xl border border-amber-500/[0.18] bg-amber-500/[0.04] p-5 text-[12.5px] text-zinc-300">
-              <p className="font-semibold text-amber-200 mb-1">Install URL not yet configured</p>
-              <p>Configure the GitHub App slug, App ID, and private key in the server environment before enabling the one-click install link.</p>
+              <p className="font-semibold text-amber-200 mb-1">GitHub connection isn't set up yet</p>
+              <p>Your Axiom administrator hasn't finished configuring GitHub for this workspace yet. Once they do, you'll be able to connect your repositories here with one click.</p>
             </div>
           )}
 

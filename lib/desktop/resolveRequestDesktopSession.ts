@@ -10,6 +10,8 @@ import {
     touchDesktopSession,
 } from "./desktopSession";
 import { readDesktopCommercialAccess } from "./desktopCommercialAccess";
+import { ensurePersonalWorkspaceMembership } from "@/lib/auth/ensurePersonalWorkspaceMembership";
+import { deriveWorkspaceIdFromEmail } from "@/lib/auth/workspaceId";
 import { createLogger } from "@/lib/observability/logger";
 
 const log = createLogger("desktop.resolveRequestDesktopSession");
@@ -52,6 +54,32 @@ async function hasActiveWorkspaceMembership(userId: string, organizationId: stri
         // A membership-store failure must not extend a long-lived desktop
         // token beyond the workspace's current authority.
         return false;
+    }
+}
+
+/**
+ * Sign-in's own personal-workspace membership bootstrap
+ * (ensurePersonalWorkspaceMembership, called from lib/auth.ts) is
+ * deliberately best-effort and never blocks sign-in — so it can lag
+ * behind, or fail outright on a transient DB blip, leaving a freshly
+ * signed-in user with a structurally valid desktop session but no
+ * accepted membership row yet. That surfaced as every operational route
+ * (deployments, etc.) denying with a bare "desktop_session_required"
+ * forever, with no way for the user to recover short of signing out and
+ * back in. Self-heal it here: only for the user's OWN derived personal
+ * workspace (never a shared/invited org — those must come from a real
+ * invite acceptance), retry the same idempotent upsert sign-in already
+ * performs unconditionally, then recheck membership once.
+ */
+async function selfHealPersonalWorkspaceMembership(userId: string, organizationId: string): Promise<void> {
+    try {
+        const user = await prisma.user.findUnique({ where: { id: userId }, select: { email: true } });
+        if (!user?.email) return;
+        if (String(deriveWorkspaceIdFromEmail(user.email)) !== organizationId) return;
+        await ensurePersonalWorkspaceMembership({ userId, email: user.email });
+    } catch {
+        // best-effort — a failure here just means the caller's membership
+        // recheck below still fails and the request is denied, same as today.
     }
 }
 
@@ -136,8 +164,12 @@ export async function resolveRequestDesktopSession(
         }
         if (options.requireWorkspaceMembership !== false
             && !(await hasActiveWorkspaceMembership(String(session.userId), String(session.organizationId)))) {
-            log.info("workspace membership missing or unaccepted", { route: options.route, organizationId: session.organizationId, userId: session.userId });
-            return undefined;
+            await selfHealPersonalWorkspaceMembership(String(session.userId), String(session.organizationId));
+            if (!(await hasActiveWorkspaceMembership(String(session.userId), String(session.organizationId)))) {
+                log.info("workspace membership missing or unaccepted", { route: options.route, organizationId: session.organizationId, userId: session.userId });
+                return undefined;
+            }
+            log.info("self-healed missing personal workspace membership", { route: options.route, organizationId: session.organizationId, userId: session.userId });
         }
         if (options.requireWorkspaceAdmin && !(await hasWorkspaceAdminRole(String(session.userId), String(session.organizationId)))) {
             log.info("workspace admin role required but absent", { route: options.route, organizationId: session.organizationId, userId: session.userId });
