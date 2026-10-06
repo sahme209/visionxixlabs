@@ -187,17 +187,24 @@ describe("desktop first-run contract", () => {
     expect(config).not.toContain("connect-src 'self' ipc: http://ipc.localhost https:;");
   });
 
-  it("ships only the verified deployment-request journey in customer navigation", () => {
+  it("ships only the verified Agent + deployment-request journey in customer navigation", () => {
     const app = readFileSync(join(root, "desktop/src/App.tsx"), "utf8");
     const sidebar = readFileSync(join(root, "desktop/src/components/Sidebar.tsx"), "utf8");
-    expect(app).toContain('useState<CustomerView>("deployment-requests")');
+    // The Agent (plain English -> risk-checked, approval-gated, auditable
+    // action) is the default landing view as of its own ship — it's a
+    // real, verified surface, not a dormant one, so it's intentionally
+    // added here rather than guarded against like the still-unverified
+    // surfaces below.
+    expect(app).toContain('useState<CustomerView>("agent")');
     expect(sidebar).toContain('import type { CustomerView } from "../App"');
+    expect(app).toContain("<AgentChatView />");
     expect(app).toContain("<DeploymentRequestsView />");
     expect(app).not.toContain('from "./lib/mockData"');
     expect(existsSync(join(root, "desktop/src/lib/mockData.ts"))).toBe(false);
     expect(app).not.toContain("<GitHubAppView");
     expect(app).not.toContain("<AgiCockpitView");
     expect(app).not.toContain("<BillingView");
+    expect(sidebar).toContain("Agent");
     expect(sidebar).toContain("Release workspace");
     for (const hiddenLabel of ["AGI cockpit", "GitHub App", "Billing & usage", "Simulations", "Connector health"]) {
       expect(sidebar).not.toContain(hiddenLabel);
