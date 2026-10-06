@@ -5,7 +5,7 @@ const mocks = vi.hoisted(() => ({
   resolveRequestDesktopSession: vi.fn(),
   resolveTenantScopedToken: vi.fn(),
   commitFile: vi.fn(),
-  recordAudit: vi.fn(async () => {}),
+  recordAudit: vi.fn(async (_input: import("@/lib/audit/secureAudit").RecordInput) => {}),
 }));
 
 vi.mock("@/lib/desktop/resolveRequestDesktopSession", () => ({
@@ -54,7 +54,7 @@ describe("POST /api/desktop/github/commit", () => {
 
     expect(res.status).toBe(200);
     expect(body.ok).toBe(true);
-    const auditCall = mocks.recordAudit.mock.calls[0]?.[0] as { detail?: Record<string, unknown> };
+    const auditCall = mocks.recordAudit.mock.calls[0][0];
     expect(JSON.stringify(auditCall.detail)).not.toContain("secret file contents");
     expect(auditCall.detail).toEqual({ repositoryFullName: "acme/widgets", branch: "feature-x", path: "a.txt" });
   });

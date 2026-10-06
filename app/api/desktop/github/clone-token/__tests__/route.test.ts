@@ -4,7 +4,7 @@ import { NextRequest } from "next/server";
 const mocks = vi.hoisted(() => ({
   resolveRequestDesktopSession: vi.fn(),
   resolveTenantScopedToken: vi.fn(),
-  recordAudit: vi.fn(async () => {}),
+  recordAudit: vi.fn(async (_input: import("@/lib/audit/secureAudit").RecordInput) => {}),
 }));
 
 vi.mock("@/lib/desktop/resolveRequestDesktopSession", () => ({
@@ -50,7 +50,7 @@ describe("POST /api/desktop/github/clone-token", () => {
     expect(res.status).toBe(200);
     expect(body.data.cloneUrl).toBe("https://x-access-token:ghs_SECRET@github.com/acme/widgets.git");
 
-    const auditCall = mocks.recordAudit.mock.calls[0]?.[0] as { detail?: Record<string, unknown> };
+    const auditCall = mocks.recordAudit.mock.calls[0][0];
     expect(JSON.stringify(auditCall.detail)).not.toContain("ghs_SECRET");
     expect(auditCall.action).toBe("github.clone_token_minted");
   });
