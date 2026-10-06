@@ -32,6 +32,13 @@ describe("buildGithubAppManifest", () => {
     expect(manifest.default_events).toEqual(GITHUB_APP_MANIFEST_DEFAULT_EVENTS);
   });
 
+  it("sets setup_url to install-callback (not the one-time app-manifest-callback) so every installer gets redirected back into Axiom", () => {
+    const manifest = buildGithubAppManifest({ origin: "https://app.example.com" });
+    expect(manifest.setup_url).toBe("https://app.example.com/api/integrations/github/install-callback");
+    expect(manifest.setup_url).not.toBe(manifest.redirect_url);
+    expect(manifest.setup_on_update).toBe(true);
+  });
+
   it("defaults the App name and allows an override", () => {
     expect(buildGithubAppManifest({ origin: "https://app.example.com" }).name).toBe("Axiom Agent");
     expect(buildGithubAppManifest({ origin: "https://app.example.com", appName: "Custom Name" }).name).toBe("Custom Name");
