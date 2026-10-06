@@ -50,3 +50,12 @@ next-env.d.ts
 # Stripe sync artifacts (Payment Link URLs are public; the file is per-run record-keeping)
 /stripe-sync.*.json
 .env.vercel
+
+# Real captured output from scripts/capture-homepage-media.mjs. Reviewed
+# against docs/RELEASE_MEDIA_CHECKLIST.md (version match, no secrets/real
+# customer data, captions added) before being committed deliberately —
+# never committed automatically just by running the script.
+/public/media/homepage-desktop.png
+/public/media/homepage-mobile.png
+/public/media/homepage-walkthrough.webm
+/public/media/homepage-walkthrough.vtt

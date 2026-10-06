@@ -67,7 +67,7 @@ export default async function AlertsPage() {
 
       {/* Two-lane preview: rules + recent events */}
       <section className="grid grid-cols-1 lg:grid-cols-2 gap-3 mb-8">
-        <article className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 flex flex-col">
+        <article className="surface-glass rounded-2xl p-5 flex flex-col">
           <header className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-2">
               <CpuChipIcon className="h-4 w-4 text-amber-300" />
@@ -90,7 +90,7 @@ export default async function AlertsPage() {
           </button>
         </article>
 
-        <article className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 flex flex-col">
+        <article className="surface-glass rounded-2xl p-5 flex flex-col">
           <header className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-2">
               <ExclamationTriangleIcon className="h-4 w-4 text-rose-300" />

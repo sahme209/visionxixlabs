@@ -1,11 +1,10 @@
-import { useEffect, useState, type ReactNode } from "react";
+import { useCallback, useEffect, useState, type ReactNode } from "react";
 import { open } from "@tauri-apps/plugin-shell";
 import {
   Bot,
   Check,
   ChevronRight,
   CircleUserRound,
-  Cloud,
   Code2,
   CreditCard,
   GitBranch,
@@ -29,6 +28,23 @@ import {
 } from "../lib/preferences";
 
 const WEB_BASE = "https://visionxixlabs.com";
+
+/**
+ * Desktop-safe integration inventory.
+ *
+ * The installed app must never imply that a provider is connected merely
+ * because a browser setup page exists. These states are intentionally
+ * conservative until the server has completed the tenant-scoped consent,
+ * validation, and audit journey for the provider.
+ */
+const INTEGRATION_CENTER_ITEMS = [
+  { group: "Source control", name: "GitHub", detail: "Repositories, pull requests, workflows, and release evidence. Connection remains read-only until a workspace policy explicitly permits a write action.", state: "Browser setup" },
+  { group: "Source control", name: "GitLab & Azure DevOps", detail: "Adapters and release data foundations exist, but customer activation is not presented as complete until OAuth, permissions, and recovery are verified end to end.", state: "In review" },
+  { group: "Work management", name: "Jira, Linear & ServiceNow", detail: "Change-ticket context belongs on each release. Ticket creation or updates must be approval-gated and recorded in the release audit trail.", state: "In review" },
+  { group: "Communication", name: "Slack & Microsoft Teams", detail: "Approval requests and release notifications are scoped to an approved workspace channel. Notifications never grant deployment authority.", state: "In review" },
+  { group: "Cloud & delivery", name: "AWS, Azure & Google Cloud", detail: "Cloud access is tenant-scoped and least-privilege. A provider is not marked connected until server-side validation succeeds.", state: "Admin setup" },
+  { group: "Observability", name: "Sentry, Datadog & Grafana", detail: "Release-health signals should be inbound and read-only first, with signed delivery and clear source provenance.", state: "Planned" },
+] as const;
 
 type Section =
   | "general"
@@ -88,7 +104,7 @@ export function SettingsView({ identity }: { identity: VerifiedDesktopIdentity }
     <ViewShell>
       <div>
         <h1 className="text-2xl font-semibold tracking-[-0.035em]">Settings</h1>
-        <p className="mt-1 text-sm text-zinc-500">Desktop preferences, verified identity, commercial access, and governed connections.</p>
+        <p className="mt-1 text-sm text-zinc-500">Desktop preferences, verified identity, approved access, and governed connections.</p>
       </div>
 
       <div className="grid min-h-[620px] grid-cols-[220px_minmax(0,1fr)] overflow-hidden rounded-2xl border border-white/[0.07] bg-[#0c0c0e]">
@@ -142,7 +158,7 @@ function GeneralSection({ prefs, onSave }: PreferenceSectionProps) {
     <SectionHeading title="General" detail="Application startup, notifications, and account management." />
     <Group label="Account">
       <ActionRow title="Axiom account" detail="Manage your profile and organization in the secure browser." action={<WebButton href="/dashboard/settings" label="Open" />} />
-      <ActionRow title="Plan & billing" detail="Billing opens through a short-lived bearer-authenticated portal session from Plan & usage." action={<span className="text-xs text-zinc-600">See Plan & usage</span>} />
+      <ActionRow title="Pilot access" detail="Pilot access is no-charge today. The service remains authoritative for approved workspace access." action={<span className="text-xs text-zinc-600">See Access & usage</span>} />
     </Group>
     <Group label="Notifications">
       <ToggleRow title="System notifications" detail="Notify when an approval or deployment needs attention." enabled={prefs?.notifications_enabled ?? false} disabled={!prefs} onToggle={() => prefs && void onSave({ ...prefs, notifications_enabled: !prefs.notifications_enabled })} action={<button type="button" disabled={!prefs?.notifications_enabled} onClick={() => void notifyResult({ title: "Axiom Agent", body: "Desktop notifications are ready." })} className="rounded-md border border-white/10 px-2.5 py-1 text-[11px] text-zinc-400 hover:text-white disabled:opacity-40">Test</button>} />
@@ -199,16 +215,26 @@ function PlanSection({ identity }: { identity: VerifiedDesktopIdentity }) {
     } catch (cause) { setError(cause instanceof Error ? cause.message : "The billing portal could not be opened."); }
     finally { setOpening(false); }
   }
+  const isPilot = access.planTier === "pilot" && access.billingStatus === "active";
   return <div>
-    <SectionHeading title="Plan & usage" detail="Commercial access is verified by the service before production records load." />
+    <SectionHeading title="Access & usage" detail="Approved pilot or commercial access is verified by the service before production records load." />
     <div className="grid gap-4 sm:grid-cols-2">
-      <SummaryCard label="Current plan" value={access.planTier} detail={access.title} />
-      <SummaryCard label="Billing state" value={access.billingStatus.replaceAll("_", " ")} detail={access.currentPeriodEndsAt ? `Period ends ${new Date(access.currentPeriodEndsAt).toLocaleDateString()}` : "Managed by your workspace agreement"} />
+      <SummaryCard label="Access model" value={isPilot ? "No-charge pilot" : access.planTier} detail={access.title} />
+      <SummaryCard label="Access state" value={access.billingStatus.replaceAll("_", " ")} detail={isPilot ? "Provisioned for this pilot workspace" : access.currentPeriodEndsAt ? `Period ends ${new Date(access.currentPeriodEndsAt).toLocaleDateString()}` : "Managed by your workspace agreement"} />
     </div>
     <div className="mt-5 rounded-xl border border-white/[0.07] bg-white/[0.025] p-5">
-      <div className="flex items-start justify-between gap-5"><div><p className="text-sm text-zinc-200">Manage billing securely</p><p className="mt-1 max-w-xl text-xs leading-5 text-zinc-500">A short-lived portal session opens in Stripe. Card data is never collected by this app.</p></div><button type="button" disabled={opening} onClick={() => void openBillingPortal()} className="rounded-lg bg-white px-4 py-2 text-xs font-semibold text-black disabled:opacity-50">{opening ? "Opening…" : "Open billing"}</button></div>
-      {error && <p role="alert" className="mt-4 text-xs text-red-300">{error}</p>}
-      <p className="mt-4 border-t border-white/[0.06] pt-4 text-[11px] leading-5 text-zinc-600">A return from Checkout does not grant access by itself. Verified subscription state remains authoritative.</p>
+      {isPilot ? (
+        <div>
+          <p className="text-sm text-zinc-200">Pilot access is no-charge</p>
+          <p className="mt-1 max-w-xl text-xs leading-5 text-zinc-500">This workspace is in an approved early-access pilot. No card or checkout is needed, and production safeguards remain enforced.</p>
+        </div>
+      ) : (
+        <>
+          <div className="flex items-start justify-between gap-5"><div><p className="text-sm text-zinc-200">Manage billing securely</p><p className="mt-1 max-w-xl text-xs leading-5 text-zinc-500">A short-lived portal session opens in Stripe. Card data is never collected by this app.</p></div><button type="button" disabled={opening} onClick={() => void openBillingPortal()} className="rounded-lg bg-white px-4 py-2 text-xs font-semibold text-black disabled:opacity-50">{opening ? "Opening…" : "Open billing"}</button></div>
+          {error && <p role="alert" className="mt-4 text-xs text-red-300">{error}</p>}
+          <p className="mt-4 border-t border-white/[0.06] pt-4 text-[11px] leading-5 text-zinc-600">A return from Checkout does not grant access by itself. Verified subscription state remains authoritative.</p>
+        </>
+      )}
     </div>
   </div>;
 }
@@ -225,13 +251,49 @@ function AgentsSection({ prefs, onSave }: PreferenceSectionProps) {
   </div>;
 }
 
+const PROVIDER_LABELS: Record<string, string> = {
+  openai: "OpenAI GPT",
+  anthropic: "Anthropic Claude",
+  github_models: "GitHub Models",
+  ollama: "Ollama",
+  lm_studio: "LM Studio",
+  groq: "Groq",
+  hugging_face: "Hugging Face",
+  openrouter: "OpenRouter",
+  gemini: "Google Gemini",
+  cloudflare: "Cloudflare Workers AI",
+};
+
 function ModelsSection() {
+  const [providers, setProviders] = useState<Array<{ provider: string; configured: boolean; defaultModel: string }> | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    void desktopClient.aiProviderStatus().then((result) => {
+      if (!cancelled && result.ok) setProviders(result.data);
+    });
+    return () => { cancelled = true; };
+  }, []);
+
+  const configured = providers?.filter((provider) => provider.configured) ?? [];
   return <div>
-    <SectionHeading title="Models" detail="Model availability is provisioned by the workspace service. Axiom does not imply that an unconfigured provider is active." />
-    <Group label="Current product behavior">
+    <SectionHeading title="AI Provider Center" detail="Choose from models approved by your workspace. Axiom keeps provider credentials, routing rules, spend controls, and safety policy in the service—not on this device." />
+    <Group label="Service-approved providers">
+      {providers === null && <ModelProviderRow name="Provider availability" detail="Checking the service-approved provider set." state="Checking" />}
+      {providers !== null && configured.length === 0 && <ModelProviderRow name="No live provider enabled" detail="This workspace has no non-simulated provider enabled by the service. Add or approve a provider in the service before it can appear available here." state="Not enabled" />}
+      {configured.map((provider) => (
+        <ModelProviderRow
+          key={provider.provider}
+          name={PROVIDER_LABELS[provider.provider] ?? provider.provider}
+          detail={`Default service model: ${provider.defaultModel}. Workspace policy, not this device, determines whether it may be used for a task.`}
+          state="Service enabled"
+        />
+      ))}
+    </Group>
+    <Group label="Provider policy">
       <PolicyRow title="Human-confirmed AI output" detail="Generated playbook content remains proposed until a person reviews it." />
-      <PolicyRow title="No desktop BYOK fields" detail="Provider credentials are not accepted by this build. Organization-managed model routing is configured outside the desktop client." />
-      <PolicyRow title="Availability is explicit" detail="Unsupported models and providers are not rendered as usable choices." />
+      <PolicyRow title="No desktop BYOK fields" detail="Provider credentials are not accepted by this build. Organization-managed routing is configured outside the desktop client." />
+      <PolicyRow title="Availability is explicit" detail="A provider appears as enabled only when the service has configured it. Requested families such as GPT, Claude, Grok, or others are not shown as usable until a supported, approved route exists." />
     </Group>
     <WebButton href="/capabilities" label="Review released capabilities" standalone />
   </div>;
@@ -262,14 +324,162 @@ function WorktreesSection({ prefs }: { prefs: DesktopPreferences | null }) {
 }
 
 function IntegrationsSection() {
+  const [integrationStatus, setIntegrationStatus] = useState<{
+    cloud: Array<{ provider: "aws" | "azure" | "gcp"; status: string; lastTransitionAt: string | null }>;
+    github: { status: string; repositorySelection: string };
+    collaboration: Array<{ provider: "slack" | "teams"; status: string; lastValidatedAt: string | null }>;
+  } | null>(null);
+  const [health, setHealth] = useState<{
+    status: "healthy" | "degraded" | "preview" | "blocked" | "disabled" | "unknown";
+    sourceMode: string;
+    summary: { total: number; healthy: number; degraded: number; preview: number; blocked: number; disabled: number };
+  } | null>(null);
+  const [refreshing, setRefreshing] = useState(false);
+  const [validatingGitHub, setValidatingGitHub] = useState(false);
+  const [githubValidationNote, setGithubValidationNote] = useState<string | null>(null);
+  const [validatingSlack, setValidatingSlack] = useState(false);
+  const [slackValidationNote, setSlackValidationNote] = useState<string | null>(null);
+  const [validatingTeams, setValidatingTeams] = useState(false);
+  const [teamsValidationNote, setTeamsValidationNote] = useState<string | null>(null);
+
+  const loadCloudConnections = useCallback(async () => {
+    setRefreshing(true);
+    const [result, healthResult] = await Promise.all([
+      desktopClient.integrationStatus(),
+      desktopClient.integrationHealth(),
+    ]);
+    if (result.ok) setIntegrationStatus(result.data);
+    if (healthResult.ok) setHealth(healthResult.data);
+    setRefreshing(false);
+  }, []);
+
+  useEffect(() => {
+    void loadCloudConnections();
+    window.addEventListener("focus", loadCloudConnections);
+    return () => window.removeEventListener("focus", loadCloudConnections);
+  }, [loadCloudConnections]);
+
+  const cloudConnections = integrationStatus?.cloud ?? null;
+  const github = integrationStatus?.github ?? null;
+  const collaboration = integrationStatus?.collaboration ?? null;
+  const cloudState = cloudConnections
+    ? cloudConnections.some((connection) => connection.status === "connected")
+      ? `${cloudConnections.filter((connection) => connection.status === "connected").length} verified`
+      : "Not connected"
+    : "Checking status";
+  const cloudDetail = cloudConnections
+    ? cloudConnections.map((connection) => `${connection.provider.toUpperCase()} ${connection.status.replaceAll("_", " ")}`).join(" · ")
+    : "Loading the service-verified state for AWS, Azure, and Google Cloud.";
+  const githubState = github
+    ? github.status === "validated_read_only" ? "Validated read-only" : github.status === "installation_recorded" ? "Consent recorded" : github.status === "validation_overdue" ? "Validation overdue" : github.status.replaceAll("_", " ")
+    : "Checking status";
+  const githubDetail = github
+    ? github.status === "validated_read_only"
+      ? `GitHub App access was verified with a scoped, read-only request. ${github.repositorySelection === "all" ? "All-repository" : "Selected-repository"} scope remains managed by GitHub.`
+      : github.status === "installation_recorded"
+      ? `GitHub App consent and ${github.repositorySelection === "all" ? "all-repository" : "selected-repository"} scope were recorded. Live read-only access is not shown as verified until service validation succeeds.`
+      : github.status === "validation_overdue"
+      ? `GitHub App access was validated previously, but that verification is more than 24 hours old. Run the harmless read-only validation again before relying on it for release evidence.`
+      : "No active GitHub App installation is recorded for this workspace. Connect in the browser to choose repository scope."
+    : "Loading the service-verified GitHub App state.";
+  const collaborationState = collaboration
+    ? collaboration.some((connection) => connection.status === "active")
+      ? `${collaboration.filter((connection) => connection.status === "active").length} verified`
+    : collaboration.some((connection) => connection.status === "awaiting_validation")
+      ? "Consent in progress"
+      : "Not connected"
+    : "Checking status";
+  const collaborationDetail = collaboration
+    ? collaboration.map((connection) => `${connection.provider === "teams" ? "Teams" : "Slack"} ${connection.status.replaceAll("_", " ")}`).join(" · ")
+    : "Loading the service-verified Slack and Teams connection state.";
+
+  async function validateGitHub() {
+    setValidatingGitHub(true);
+    setGithubValidationNote(null);
+    const result = await desktopClient.validateGitHubReadOnly();
+    if (result.ok) {
+      setGithubValidationNote("GitHub read-only access is verified for this workspace.");
+      await loadCloudConnections();
+    } else {
+      setGithubValidationNote("GitHub could not complete a read-only validation. Review the App installation and try again.");
+    }
+    setValidatingGitHub(false);
+  }
+
+  async function validateSlack() {
+    setValidatingSlack(true);
+    setSlackValidationNote(null);
+    const result = await desktopClient.validateSlackConnection();
+    if (result.ok) {
+      setSlackValidationNote("Slack access is verified for this workspace.");
+      await loadCloudConnections();
+    } else {
+      setSlackValidationNote("Slack could not complete a read-only validation. Review the consent record and try again.");
+    }
+    setValidatingSlack(false);
+  }
+
+  async function validateTeams() {
+    setValidatingTeams(true);
+    setTeamsValidationNote(null);
+    const result = await desktopClient.validateTeamsConnection();
+    if (result.ok) {
+      setTeamsValidationNote("Microsoft identity is verified for this workspace. Teams message permissions remain separately controlled.");
+      await loadCloudConnections();
+    } else {
+      setTeamsValidationNote("Microsoft could not complete an identity validation. Review the consent record and try again.");
+    }
+    setValidatingTeams(false);
+  }
+
+  const slackCanValidate = collaboration?.some((connection) => connection.provider === "slack" && (connection.status === "awaiting_validation" || connection.status === "needs_attention")) ?? false;
+  const teamsCanValidate = collaboration?.some((connection) => connection.provider === "teams" && (connection.status === "awaiting_validation" || connection.status === "needs_attention")) ?? false;
+
   return <div>
-    <SectionHeading title="Integrations" detail="Connections are tenant-scoped and administrator configured. A provider is not called connected until the service validates it." />
+    <SectionHeading title="Integration Center" detail="Connect the systems that already run your releases. Every connection is tenant-scoped, least-privilege, and shown as connected only after server-side validation." />
+    <Notice title="No secrets in the desktop app" detail="Connections open in the secure browser. The desktop app never collects an identity-provider password or long-lived provider secret, and no connection can silently gain write access." />
     <div className="space-y-3">
-      <IntegrationRow icon={<GitBranch className="h-4 w-4" />} name="GitHub" detail="Repository discovery, reviews, merges, releases, and workflow dispatch remain separately permissioned." />
-      <IntegrationRow icon={<Cloud className="h-4 w-4" />} name="AWS" detail="Assume-role connectivity requires customer and broker configuration before verification." />
-      <IntegrationRow icon={<Link2 className="h-4 w-4" />} name="Change systems" detail="Change creation and updates depend on the configured adapter and playbook policy." />
+      {INTEGRATION_CENTER_ITEMS.map((item) => (
+        <IntegrationRow
+          key={item.name}
+          name={item.name}
+          group={item.group}
+          detail={item.name === "AWS, Azure & Google Cloud" ? `${item.detail} Current workspace state: ${cloudDetail}` : item.name === "GitHub" ? githubDetail : item.name === "Slack & Microsoft Teams" ? `${item.detail} Current workspace state: ${collaborationDetail}` : item.detail}
+          state={item.name === "AWS, Azure & Google Cloud" ? cloudState : item.name === "GitHub" ? githubState : item.name === "Slack & Microsoft Teams" ? collaborationState : item.state}
+        />
+      ))}
     </div>
-    <WebButton href="/integrations" label="Open integration setup" standalone />
+    <div className="mt-5 rounded-xl border border-white/[0.07] bg-white/[0.025] p-4">
+      <p className="text-sm text-zinc-200">What happens when you connect</p>
+      <p className="mt-1 text-xs leading-5 text-zinc-500">You review the requested access in your browser, approve only the workspace you intend to connect, then return here to see the service-verified status and any required next action.</p>
+    </div>
+    <div className="mt-3 rounded-xl border border-white/[0.07] bg-white/[0.025] p-4">
+      <p className="text-sm text-zinc-200">Connected-system health</p>
+      <p className="mt-1 text-xs leading-5 text-zinc-500">
+        {health
+          ? `${health.status.replaceAll("_", " ")} · ${health.summary.healthy} healthy · ${health.summary.degraded} needs attention · ${health.summary.preview} not yet live.`
+          : "Checking the read-only health of connected-system foundations."}
+      </p>
+      <p className="mt-2 text-[11px] text-zinc-600">This is integration health only. Production release observation remains unavailable until an observability connection is verified.</p>
+    </div>
+    <div className="mt-5 flex items-center gap-3">
+      <WebButton href="/connect/github" label="Connect GitHub" />
+      <button type="button" onClick={() => void validateGitHub()} disabled={validatingGitHub || (github?.status !== "installation_recorded" && github?.status !== "validation_overdue")} className="rounded-lg border border-white/10 px-3 py-2 text-xs text-zinc-300 hover:bg-white/[0.06] disabled:opacity-50">
+        {validatingGitHub ? "Validating GitHub…" : "Validate read-only access"}
+      </button>
+      <button type="button" onClick={() => void validateSlack()} disabled={validatingSlack || !slackCanValidate} className="rounded-lg border border-white/10 px-3 py-2 text-xs text-zinc-300 hover:bg-white/[0.06] disabled:opacity-50">
+        {validatingSlack ? "Validating Slack…" : "Validate Slack"}
+      </button>
+      <button type="button" onClick={() => void validateTeams()} disabled={validatingTeams || !teamsCanValidate} className="rounded-lg border border-white/10 px-3 py-2 text-xs text-zinc-300 hover:bg-white/[0.06] disabled:opacity-50">
+        {validatingTeams ? "Validating Microsoft…" : "Validate Microsoft"}
+      </button>
+      <button type="button" onClick={() => void loadCloudConnections()} disabled={refreshing} className="rounded-lg border border-white/10 px-3 py-2 text-xs text-zinc-300 hover:bg-white/[0.06] disabled:opacity-50">
+        {refreshing ? "Checking…" : "Refresh verified status"}
+      </button>
+    </div>
+    {githubValidationNote && <p className="mt-3 text-xs text-zinc-400">{githubValidationNote}</p>}
+    {slackValidationNote && <p className="mt-3 text-xs text-zinc-400">{slackValidationNote}</p>}
+    {teamsValidationNote && <p className="mt-3 text-xs text-zinc-400">{teamsValidationNote}</p>}
   </div>;
 }
 
@@ -287,5 +497,9 @@ function LockedRow({ title, detail }: { title: string; detail: string }) { retur
 function PolicyRow({ title, detail }: { title: string; detail: string }) { return <div className="flex items-start gap-3 border-b border-white/[0.055] px-5 py-4 last:border-b-0"><ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-zinc-400" /><div><p className="text-sm text-zinc-200">{title}</p><p className="mt-1 text-xs leading-5 text-zinc-500">{detail}</p></div></div>; }
 function Notice({ title, detail }: { title: string; detail: string }) { return <div className="mb-6 rounded-xl border border-amber-400/15 bg-amber-400/[0.05] p-5"><p className="text-sm font-medium text-amber-100">{title}</p><p className="mt-2 text-xs leading-5 text-zinc-400">{detail}</p></div>; }
 function SummaryCard({ label, value, detail }: { label: string; value: string; detail: string }) { return <div className="rounded-xl border border-white/[0.07] bg-white/[0.025] p-5"><p className="text-xs text-zinc-500">{label}</p><p className="mt-2 text-2xl font-semibold capitalize">{value}</p><p className="mt-2 text-sm text-zinc-500">{detail}</p></div>; }
-function IntegrationRow({ icon, name, detail }: { icon: ReactNode; name: string; detail: string }) { return <div className="flex items-center gap-4 rounded-xl border border-white/[0.07] bg-white/[0.025] p-4"><span className="flex h-9 w-9 items-center justify-center rounded-lg border border-white/[0.07] bg-black/25 text-zinc-300">{icon}</span><div className="min-w-0 flex-1"><p className="text-sm text-zinc-200">{name}</p><p className="mt-1 text-xs leading-5 text-zinc-500">{detail}</p></div><span className="rounded-full border border-amber-500/20 bg-amber-500/10 px-2 py-1 text-[10px] text-amber-200">Admin setup</span></div>; }
+function IntegrationRow({ name, group, detail, state }: { name: string; group: string; detail: string; state: string }) {
+  const connected = /verified|connected/i.test(state) && !/not connected/i.test(state);
+  return <div className="flex items-start gap-4 rounded-xl border border-white/[0.07] bg-white/[0.025] p-4"><span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-white/[0.07] bg-black/25 text-zinc-300"><Link2 className="h-4 w-4" /></span><div className="min-w-0 flex-1"><p className="text-[10px] uppercase tracking-[0.14em] text-zinc-600">{group}</p><p className="mt-0.5 text-sm text-zinc-200">{name}</p><p className="mt-1 text-xs leading-5 text-zinc-500">{detail}</p></div><span className={`shrink-0 rounded-full border px-2 py-1 text-[10px] ${connected ? "border-emerald-500/20 bg-emerald-500/10 text-emerald-200" : "border-amber-500/20 bg-amber-500/10 text-amber-200"}`}>{state}</span></div>;
+}
+function ModelProviderRow({ name, detail, state }: { name: string; detail: string; state: string }) { return <div className="flex items-start gap-4 border-b border-white/[0.055] px-5 py-4 last:border-b-0"><span className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border border-violet-500/20 bg-violet-500/10 text-[10px] font-semibold text-violet-200">AI</span><div className="min-w-0 flex-1"><p className="text-sm text-zinc-200">{name}</p><p className="mt-1 text-xs leading-5 text-zinc-500">{detail}</p></div><span className="shrink-0 rounded-full border border-white/[0.08] bg-white/[0.025] px-2 py-1 text-[10px] text-zinc-400">{state}</span></div>; }
 function WebButton({ href, label, standalone = false }: { href: string; label: string; standalone?: boolean }) { return <button type="button" onClick={() => void open(`${WEB_BASE}${href}`)} className={`${standalone ? "mt-1" : ""} inline-flex items-center gap-1.5 rounded-lg border border-white/10 px-3 py-2 text-xs text-zinc-300 hover:bg-white/[0.06]`}>{label}<ChevronRight className="h-3.5 w-3.5" /></button>; }

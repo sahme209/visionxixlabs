@@ -184,7 +184,7 @@ export default async function ScanDetailPage({
       {run.findings.length > 0 && (
         <section className="mb-12">
           <p className="text-[10px] font-mono uppercase tracking-[0.28em] text-zinc-500 mb-3">findings from this run</p>
-          <ul className="rounded-2xl border border-white/[0.06] bg-white/[0.015] divide-y divide-white/[0.04] overflow-hidden">
+          <ul className="surface-glass rounded-2xl divide-y divide-white/[0.04] overflow-hidden">
             {run.findings.map((f) => {
               const sev = f.severity as Severity;
               const resources = Array.isArray(f.affectedResources) ? f.affectedResources : [];
@@ -215,7 +215,7 @@ export default async function ScanDetailPage({
             <p className="text-[10px] font-mono uppercase tracking-[0.28em] text-zinc-500">approval queue</p>
             <Link href="/dashboard/approvals" className="text-[11px] text-zinc-500 hover:text-white transition-colors">Open queue</Link>
           </div>
-          <ul className="rounded-2xl border border-white/[0.06] bg-white/[0.015] divide-y divide-white/[0.04] overflow-hidden">
+          <ul className="surface-glass rounded-2xl divide-y divide-white/[0.04] overflow-hidden">
             {approvalItems.map((a) => (
               <li key={a.id} className="px-6 py-4">
                 <div className="flex items-center gap-2 flex-wrap text-[10px] font-mono uppercase tracking-wider mb-1">
@@ -234,7 +234,7 @@ export default async function ScanDetailPage({
       )}
 
       {run.findings.length === 0 && approvalItems.length === 0 && (
-        <div className="rounded-2xl border border-white/[0.06] bg-white/[0.015] px-7 py-12 text-center">
+        <div className="surface-glass rounded-2xl px-7 py-12 text-center">
           <p className="text-[15px] font-semibold text-white mb-1">Clean scan</p>
           <p className="text-[12px] text-zinc-500 leading-relaxed max-w-md mx-auto">
             No findings, no recommendations. Either the broker has nothing to

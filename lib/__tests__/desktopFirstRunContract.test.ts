@@ -18,18 +18,27 @@ describe("desktop first-run contract", () => {
     expect(app.indexOf('if (authState === "checking")')).toBeLessThan(app.indexOf("<AuthenticatedWorkspace"));
   });
 
-  it("separates verified identity from paid workspace access and enforces the gate server-side", () => {
+  it("separates verified identity from approved workspace access and enforces the gate server-side", () => {
     const accessPolicy = readFileSync(join(root, "lib/desktop/desktopCommercialAccessPolicy.ts"), "utf8");
     const accessRoute = readFileSync(join(root, "app/api/desktop/access/route.ts"), "utf8");
     const resolver = readFileSync(join(root, "lib/desktop/resolveRequestDesktopSession.ts"), "utf8");
     const apiKeyAuth = readFileSync(join(root, "lib/security/authenticateApiKey.ts"), "utf8");
     const stateRoute = readFileSync(join(root, "app/api/desktop/state/route.ts"), "utf8");
-    expect(accessPolicy).toContain('plan.status === "active"');
-    expect(accessPolicy).toContain('plan.tier !== "trial"');
-    expect(accessPolicy).toContain('code: "payment_past_due"');
+    // Pricing/entitlement tiers (pilot/trial/past-due) are not enforced yet
+    // — decideDesktopCommercialAccess always allows a verified identity
+    // (see its own comment for why) — but the *separation itself* (a
+    // dedicated pure decision function, consulted through the same
+    // server-side gate below) must still exist so tiered enforcement can
+    // be turned back on later without re-threading plumbing.
+    expect(accessPolicy).toContain("export function decideDesktopCommercialAccess");
+    expect(accessPolicy).toContain("allowed: true");
     expect(accessRoute).toContain("requireActiveAccess: false");
     expect(resolver).toContain("options.requireActiveAccess !== false");
-    expect(resolver).toContain("if (!access.allowed) return undefined");
+    // Reformatted to a multi-line block when failure-observability logging
+    // was added (see resolveRequestDesktopSessionLogging.test.ts) — same
+    // gate, still denies access and returns undefined, just no longer a
+    // single-line statement.
+    expect(resolver).toMatch(/if \(!access\.allowed\) \{\s*\n\s*log\.info\([^)]*\);\s*\n\s*return undefined;\s*\n\s*\}/);
     expect(apiKeyAuth).toContain('billing.status !== "active"');
     expect(apiKeyAuth).toContain('reason: "commercial_access_required"');
     expect(stateRoute).toContain("{ status: 402 }");
@@ -44,7 +53,7 @@ describe("desktop first-run contract", () => {
     expect(signupRoute).not.toContain('plan: "starter"');
     expect(signupPage).not.toContain("No credit card required");
     expect(signupPage).not.toContain("What you get");
-    expect(signupPage).toContain("paid workspace entitlement");
+    expect(signupPage).toContain("approved pilot or commercial workspace entitlement");
   });
 
   it("fails public distribution closed when the production desktop data plane is unavailable", () => {
@@ -97,6 +106,8 @@ describe("desktop first-run contract", () => {
     const statusRoute = readFileSync(join(root, "app/api/desktop/pair/status/route.ts"), "utf8");
     expect(statusRoute).toContain('requireString(body.deviceFingerprint, "deviceFingerprint"');
     expect(statusRoute).toContain("record.deviceFingerprint !== deviceFingerprint");
+    expect(statusRoute).toContain('code: "desktop_update_required"');
+    expect(statusRoute).toContain("Do not fall back to");
     expect(startRoute).toContain('INTENTS = new Set(["sign_in", "sign_up"])');
     expect(connectPage).toContain('/auth/signup?redirect=');
     expect(connectPage).toContain('/auth/signin?callbackUrl=');
@@ -114,7 +125,8 @@ describe("desktop first-run contract", () => {
   it("does not expose legacy customer credential and scan controls in Settings", () => {
     const settings = readFileSync(join(root, "desktop/src/views/SettingsView.tsx"), "utf8");
     expect(settings).toContain("Account & session");
-    expect(settings).toContain("Plan & billing");
+    expect(settings).toContain("Access & usage");
+    expect(settings).toContain("Pilot access is no-charge");
     expect(settings).toContain("Repositories & triggers");
     expect(settings).toContain("A return from Checkout does not grant access by itself");
     expect(settings).not.toContain("Paste desktop pairing JSON");
@@ -186,7 +198,7 @@ describe("desktop first-run contract", () => {
     expect(app).not.toContain("<GitHubAppView");
     expect(app).not.toContain("<AgiCockpitView");
     expect(app).not.toContain("<BillingView");
-    expect(sidebar).toContain("Requests & playbooks");
+    expect(sidebar).toContain("Release workspace");
     for (const hiddenLabel of ["AGI cockpit", "GitHub App", "Billing & usage", "Simulations", "Connector health"]) {
       expect(sidebar).not.toContain(hiddenLabel);
     }
@@ -200,6 +212,47 @@ describe("desktop first-run contract", () => {
     expect(resolver).toContain('token.startsWith("vxlk_")');
     expect(resolver).toContain('credentialKind: "api_key"');
     expect(resolver).toContain('credentialKind: "desktop_session"');
+  });
+
+  it("requires current workspace authority before validating shared integrations", () => {
+    const resolver = readFileSync(join(root, "lib/desktop/resolveRequestDesktopSession.ts"), "utf8");
+    const github = readFileSync(join(root, "app/api/desktop/integrations/github/validate/route.ts"), "utf8");
+    const slack = readFileSync(join(root, "app/api/desktop/integrations/slack/validate/route.ts"), "utf8");
+    const teams = readFileSync(join(root, "app/api/desktop/integrations/teams/validate/route.ts"), "utf8");
+    expect(resolver).toContain("hasWorkspaceAdminRole");
+    expect(resolver).toContain("options.requireWorkspaceAdmin");
+    expect(resolver).toContain('membership?.role === "owner" || membership?.role === "admin"');
+    for (const route of [github, slack, teams]) {
+      expect(route).toContain("allowApiKey: false");
+      expect(route).toContain("requireWorkspaceAdmin: true");
+    }
+  });
+
+  it("rechecks accepted workspace membership for long-lived desktop sessions", () => {
+    const resolver = readFileSync(join(root, "lib/desktop/resolveRequestDesktopSession.ts"), "utf8");
+    expect(resolver).toContain("hasActiveWorkspaceMembership");
+    expect(resolver).toContain("membership?.acceptedAt !== null");
+    expect(resolver).toContain("options.requireWorkspaceMembership !== false");
+    expect(resolver).toContain("A removed or unaccepted member loses access");
+  });
+
+  it("requires a fresh GitHub read validation before release evidence is collected", () => {
+    const evidence = readFileSync(join(root, "app/api/desktop/deployments/[id]/github-evidence/route.ts"), "utf8");
+    expect(evidence).toContain("GITHUB_VALIDATION_FRESH_FOR_MS");
+    expect(evidence).toContain("github_read_validation_required");
+    expect(evidence).toContain("lastSeenAt: true");
+  });
+
+  it("keeps paired-device management scoped to the current workspace", () => {
+    const route = readFileSync(join(root, "app/api/desktop/session/route.ts"), "utf8");
+    const panel = readFileSync(join(root, "components/auth/DesktopSessionsPanel.tsx"), "utf8");
+    expect(route).toContain("session.organizationId === ctx.organizationId");
+    expect(route).toContain("s.organizationId === ctx.organizationId");
+    expect(panel).toContain("Paired Axiom Agent devices");
+    expect(panel).toContain("Revoke device");
+    expect(panel).not.toContain("deviceFingerprint");
+    expect(panel).not.toContain("accessToken");
+    expect(panel).not.toContain("encryptedCredential");
   });
 
   it("guides intake through validated stages without removing governance controls", () => {

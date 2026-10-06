@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
+import { redirect } from "next/navigation";
 import Link from "next/link";
 import { DocHeader, DocSection, Callout, TrustGrid, DocFooterNav, DocFeedback } from "@/components/docs/DocPrimitives";
 
 export const metadata: Metadata = {
   title: "Audit logs — Axiom Documentation",
-  description: "Every action Axiom takes is logged immutably. Connection events, scans, findings, approvals, executions, Terraform exports, rollbacks, user actions — all queryable, exportable, and SOC 2 / ISO 27001 control-mapped.",
+  description: "Every action Axiom takes is logged immutably. Connection events, scans, findings, approvals, executions, Terraform exports, rollbacks, user actions — all queryable, exportable, and mapped to SOC 2 / ISO 27001 reference controls as audit evidence (Axiom does not hold these certifications).",
 };
 
 const EVENT_TYPES = [
@@ -23,6 +24,11 @@ const EVENT_TYPES = [
 ];
 
 export default function AuditLogsPage() {
+  // The legacy audit catalogue included unverified retention, SIEM, and cloud
+  // mutation guarantees. Preserve the URL while directing visitors to the
+  // current security model, which states supported evidence and its limits.
+  redirect("/docs/security-model");
+
   return (
     <>
       <DocHeader

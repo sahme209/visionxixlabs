@@ -5,52 +5,74 @@
  * install flow. Query params from GitHub:
  *   installation_id  — the new installation
  *   setup_action     — "install" | "update" | "request"
- *   state            — the organizationId we embedded in the install URL
+ *   state            — a short-lived, one-time workspace binding
  *
- * This handler captures the installation_id, then redirects back into
- * the dashboard. The actual GitHub API account-info fetch (to enrich
+ * This handler consumes the browser state, captures the installation_id, then redirects back into
+ * the lightweight web companion. The actual GitHub API account-info fetch (to enrich
  * accountLogin / accountType) lands in a follow-on phase that wires
  * the App's private key for installation-token minting; for now we
  * default to a synthesized login so the rest of the flow can ship.
  */
 
 import { NextResponse, type NextRequest } from "next/server";
-import { currentContext } from "@/lib/auth/currentContext";
 import { prisma } from "@/lib/db";
 import {
   buildInstallationCaptureResponse,
   type GitHubInstallationRepo,
 } from "@/lib/releaseops/githubInstallationResponder";
 import { appendAuditEvent, type AuditEventRepo } from "@/lib/releaseops/auditEventResponder";
+import {
+  consumeTenantIntegrationAuthorization,
+  type TenantConnectionRepo,
+} from "@/lib/integrations/tenantConnectionRepo";
+import { matchesTrustedIntegrationCallbackUrl, trustedAxiomUrl } from "@/lib/integrations/trustedCallbackUrl";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
+
+function returnToCompanion(status: string) {
+  const destination = trustedAxiomUrl(`/auth/success?integration=github&status=${encodeURIComponent(status)}`);
+  return destination
+    ? NextResponse.redirect(destination)
+    : NextResponse.json({ ok: false, error: "trusted_return_url_unavailable" }, { status: 503 });
+}
 
 export async function GET(req: NextRequest): Promise<Response> {
   const url = new URL(req.url);
   const installationId = url.searchParams.get("installation_id");
   const setupAction = url.searchParams.get("setup_action") ?? "install";
   const state = url.searchParams.get("state") ?? "";
+  const authorization = await consumeTenantIntegrationAuthorization(
+    prisma as unknown as TenantConnectionRepo,
+    { state, provider: "github" },
+  );
+
+  if (!authorization.ok) {
+    return returnToCompanion("invalid_state");
+  }
+  if (!matchesTrustedIntegrationCallbackUrl("/api/integrations/github/install-callback", authorization.attempt.redirectUri)) {
+    return returnToCompanion("invalid_state");
+  }
 
   // GitHub sends users here after a "request to install" flow even
   // when they don't have admin access to the org. We acknowledge but
   // do not persist.
   if (setupAction === "request") {
-    return NextResponse.redirect(new URL("/dashboard/connector-setup?install_request=1", req.url));
+    return returnToCompanion("approval_requested");
+  }
+
+  // The install endpoint has a closed callback vocabulary. A consumed state
+  // must not be enough for an unexpected provider action to create or revive
+  // an installation record.
+  if (setupAction !== "install" && setupAction !== "update") {
+    return returnToCompanion("error");
   }
 
   if (!installationId) {
-    return NextResponse.redirect(new URL("/dashboard/connector-setup?install_error=missing_installation_id", req.url));
+    return returnToCompanion("missing_installation");
   }
 
-  const ctx = await currentContext();
-  // Trust the `state` we embedded over the session context — the user
-  // may complete the install in a different browser/session. Fall back
-  // to ctx.organizationId if state was lost.
-  const organizationId = state || ctx.organizationId || "";
-  if (!organizationId) {
-    return NextResponse.redirect(new URL("/dashboard/connector-setup?install_error=no_org_in_state", req.url));
-  }
+  const organizationId = authorization.attempt.organizationId;
 
   const r = await buildInstallationCaptureResponse(
     prisma as unknown as GitHubInstallationRepo,
@@ -61,9 +83,10 @@ export async function GET(req: NextRequest): Promise<Response> {
       accountLogin: `gh-installation-${installationId}`,
       accountType: "Organization",
       repositorySelection: "selected",
-      ...(ctx.userId ? { installedByUserId: ctx.userId } : {}),
+      installedByUserId: authorization.attempt.initiatedByUserId,
       sourceFlow: setupAction,
-      rawCallbackJson: Object.fromEntries(url.searchParams.entries()),
+      // State is a short-lived bearer secret. Never store it in callback metadata.
+      rawCallbackJson: { installation_id: installationId, setup_action: setupAction },
     },
   );
 
@@ -76,11 +99,13 @@ export async function GET(req: NextRequest): Promise<Response> {
       summary: r.body.data.created
         ? `GitHub App installed (installation #${installationId})`
         : `GitHub App reactivated (installation #${installationId})`,
-      actorUserId: ctx.userId ?? null,
+      actorUserId: authorization.attempt.initiatedByUserId,
     });
   }
 
-  const status = r.body.ok ? "ok" : "error";
-  const redirectUrl = new URL(`/dashboard/connector-setup?install=${status}`, req.url);
-  return NextResponse.redirect(redirectUrl);
+  // Capturing an installation is not equivalent to proving a scoped API
+  // read works. The companion only calls it validated after Agent completes
+  // that harmless server-side check.
+  const status = r.body.ok ? "installation_recorded" : "error";
+  return returnToCompanion(status);
 }

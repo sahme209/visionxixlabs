@@ -17,6 +17,8 @@ import { authOptions } from "@/lib/auth";
 import { id } from "@/lib/domain/ids";
 import type { OrganizationId, UserId } from "@/lib/domain/ids";
 import { deriveWorkspaceIdFromEmail } from "@/lib/auth/workspaceId";
+import { ensurePersonalWorkspaceMembership } from "@/lib/auth/ensurePersonalWorkspaceMembership";
+import { prisma } from "@/lib/db";
 
 export interface CurrentContext {
   isAuthenticated: boolean;
@@ -26,8 +28,7 @@ export interface CurrentContext {
   organizationId?: OrganizationId;
   /** Stable workspace label rendered in the UI. */
   workspaceLabel?: string;
-  /** Roles attached to the session. Empty for the default workspace until
-   *  the session shape is extended in a future migration. */
+  /** Roles confirmed for the active workspace. */
   roles: string[];
 }
 
@@ -45,6 +46,11 @@ export async function currentContext(): Promise<CurrentContext> {
   }
   const userId = sessionUserId ? id.user(sessionUserId) : id.user(userEmail);
   const orgId = deriveWorkspaceIdFromEmail(userEmail);
+  const roles = await resolveWorkspaceRoles({
+    userId: String(userId),
+    organizationId: String(orgId),
+    email: userEmail,
+  });
   return {
     isAuthenticated: true,
     userId,
@@ -52,7 +58,7 @@ export async function currentContext(): Promise<CurrentContext> {
     displayName: session.user.name ?? userEmail,
     organizationId: orgId,
     workspaceLabel: deriveWorkspaceLabel(userEmail),
-    roles: deriveRolesFromSession(session.user as { roles?: string[] | null }),
+    roles,
   };
 }
 
@@ -66,12 +72,58 @@ function deriveWorkspaceLabel(email: string): string {
   return domain;
 }
 
-function deriveRolesFromSession(user: { roles?: string[] | null }): string[] {
-  // When the session augmentation lands, real roles come from here. Until
-  // then, the first user in a workspace is owner — which the apiGuard
-  // permission engine can promote conservatively.
-  if (Array.isArray(user.roles) && user.roles.length > 0) return user.roles;
-  return ["owner"];
+async function resolveWorkspaceRoles(input: {
+  userId: string;
+  organizationId: string;
+  email: string;
+}): Promise<string[]> {
+  // Membership is the source of truth for workspace authority. A signed-in
+  // identity without a current membership can read only public browser
+  // surfaces; it cannot gain integration or provider-policy authority by
+  // falling back to a synthetic "owner" role.
+  try {
+    const membership = await prisma.orgMembership.findUnique({
+      where: {
+        userId_organizationId: {
+          userId: input.userId,
+          organizationId: input.organizationId,
+        },
+      },
+      select: { role: true },
+    });
+    if (membership?.role) return [membership.role];
+  } catch {
+    // A missing migration or transient store failure must not expand access.
+    return [];
+  }
+
+  // The bootstrap that grants a new identity ownership of its own derived
+  // workspace runs once, best-effort, at sign-in (see lib/auth.ts) with its
+  // own error swallowed. If that single attempt silently failed (a
+  // transient DB blip at that exact moment), the user would otherwise be
+  // locked out of their own workspace indefinitely, with no self-healing
+  // path. Retry it once, here, scoped only to the user's own derived
+  // workspace — never a shared/invited organization, where a missing
+  // membership legitimately means "not a member," not "bootstrap failed."
+  if (input.organizationId === String(deriveWorkspaceIdFromEmail(input.email))) {
+    try {
+      await ensurePersonalWorkspaceMembership({ userId: input.userId, email: input.email });
+      const membership = await prisma.orgMembership.findUnique({
+        where: { userId_organizationId: { userId: input.userId, organizationId: input.organizationId } },
+        select: { role: true },
+      });
+      if (membership?.role) return [membership.role];
+    } catch {
+      // Still best-effort — a retry failure must not expand access either.
+      return [];
+    }
+  }
+
+  // Login-session claims are not authority. A revoked or deleted membership
+  // must take effect on the next request, rather than lasting until the
+  // session expires. New identities therefore have no privileged workspace
+  // role until the durable membership exists.
+  return [];
 }
 
 /** Require an authenticated context — throws when not signed in. */

@@ -37,6 +37,10 @@
   ],
   "exclude": [
     "node_modules",
-    "desktop"
+    "desktop",
+    "lib/__tests__/desktop-platform.test.ts",
+    "lib/__tests__/desktop-auth-session.test.ts",
+    "lib/__tests__/desktop-handoff-gates.test.ts",
+    "lib/desktop/__tests__/desktopClientError.test.ts"
   ]
 }

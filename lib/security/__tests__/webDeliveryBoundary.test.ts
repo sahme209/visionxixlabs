@@ -19,15 +19,19 @@ describe("website delivery boundary", () => {
         },
     );
 
-    it.each(["/auth/signin", "/auth/signup"])(
-        "does not expose direct public auth page %s",
-        (path) => {
-            const response = proxy(request(path));
+    it("allows direct browser sign-in without exposing web operations", () => {
+        const response = proxy(request("/auth/signin"));
 
-            expect(response.status).toBe(307);
-            expect(new URL(response.headers.get("location") ?? "").pathname).toBe("/download");
-        },
-    );
+        expect(response.status).toBe(200);
+        expect(response.headers.get("location")).toBeNull();
+    });
+
+    it("keeps direct account creation bound to a desktop pairing request", () => {
+        const response = proxy(request("/auth/signup"));
+
+        expect(response.status).toBe(307);
+        expect(new URL(response.headers.get("location") ?? "").pathname).toBe("/download");
+    });
 
     it("allows desktop pairing authentication", () => {
         const callbackUrl = encodeURIComponent("/desktop/connect?challenge=pair-123");

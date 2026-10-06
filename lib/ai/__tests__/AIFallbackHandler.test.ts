@@ -8,7 +8,7 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import { runWithFallback } from "../AIFallbackHandler";
 import { AIProviderError, type AIProvider, type AIProviderName, type AITextResponse } from "../AIProvider";
-import { clearUsage, readUsageTail } from "../AIUsageLogger";
+import { clearUsage, readUsageTail, readUsageTailForOrganization } from "../AIUsageLogger";
 
 class FakeProvider implements AIProvider {
   readonly name: AIProviderName;
@@ -93,5 +93,16 @@ describe("runWithFallback", () => {
     expect(tail.length).toBe(2);
     expect(tail[0]).toMatchObject({ provider: "groq", status: "ok" });
     expect(tail[1]).toMatchObject({ provider: "github_models", status: "error", errorKind: "rate_limited" });
+  });
+
+  it("attributes fallback attempts to the requesting workspace", async () => {
+    const a = new FakeProvider("github_models", "error");
+    const b = new FakeProvider("groq", "ok");
+    await runWithFallback([a, b], (p) => p.generateText("x"), {
+      task: "generate_text",
+      organizationId: "org-a",
+    });
+    expect(readUsageTailForOrganization("org-a")).toHaveLength(2);
+    expect(readUsageTailForOrganization("org-b")).toHaveLength(0);
   });
 });

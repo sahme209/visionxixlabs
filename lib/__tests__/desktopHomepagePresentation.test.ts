@@ -18,15 +18,15 @@ describe("desktop homepage presentation contract", () => {
     const page = source("app/page.tsx");
     const navigation = source("components/Navigation.tsx");
 
-    expect(page).toContain('max-w-[1720px]');
-    expect(navigation).toContain('max-w-[1720px]');
+    expect(page).toContain('max-w-[1400px]');
+    expect(navigation).toContain('max-w-[1400px]');
     expect(navigation).toContain('lg:flex');
     expect(navigation).toContain('lg:hidden');
   });
 
   it("keeps the hero atmosphere calm and removes the split-screen beam", () => {
     const page = source("app/page.tsx");
-    expect(page).toContain('bg-[#0d0d0b]');
+    expect(page).toContain('axiom-canvas');
     expect(page).not.toContain('hero-beam-vertical');
     expect(page).not.toContain('hero-beam-flare');
     expect(page).not.toContain('hero-beam-converge');
@@ -34,11 +34,11 @@ describe("desktop homepage presentation contract", () => {
 
   it("gives the product walkthrough a complete operational frame", () => {
     const page = source("app/page.tsx");
-    expect(page).toContain('Illustrative workflow · no live action');
-    expect(page).toContain('Awaiting approval');
-    expect(page).toContain('Request version');
-    expect(page).toContain('Content digest');
-    expect(page).toContain('Last service response verified moments ago.');
+    expect(page).toContain('Request completeness');
+    expect(page).toContain('Immutable history');
+    expect(page).toContain('SHA-256 digest');
+    expect(page).toContain('Technical validation');
+    expect(page).toContain('Functional validation');
   });
 
   it("uses a quiet support control instead of the oversized glowing pill", () => {

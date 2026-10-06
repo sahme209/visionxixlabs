@@ -23,6 +23,7 @@ import "server-only";
 
 import { generateText as anthropicGenerate } from "./providers/anthropic";
 import { generateText as openaiGenerate } from "./providers/openai";
+import { redact } from "@/lib/security/redaction";
 
 export type PreferredProvider = "anthropic" | "openai";
 
@@ -42,8 +43,12 @@ export async function callProvider(
   prompt: string,
   opts: DirectCallOpts,
 ): Promise<DirectCallResult> {
+  // Same governance boundary as AIProviderManager.generateText — this
+  // function bypasses the manager entirely, so it needs its own
+  // redaction pass before the prompt leaves the service.
+  const safePrompt = redact(prompt);
   if (provider === "openai") {
-    const r = await openaiGenerate({ prompt, maxTokens: opts.maxTokens, temperature: opts.temperature });
+    const r = await openaiGenerate({ prompt: safePrompt, maxTokens: opts.maxTokens, temperature: opts.temperature });
     // The openai provider doesn't return the resolved model string,
     // so we read the same env var it consulted. Stays in sync with
     // the provider source of truth.
@@ -57,7 +62,7 @@ export async function callProvider(
     };
   }
   // Default: anthropic.
-  const r = await anthropicGenerate({ prompt, maxTokens: opts.maxTokens, temperature: opts.temperature });
+  const r = await anthropicGenerate({ prompt: safePrompt, maxTokens: opts.maxTokens, temperature: opts.temperature });
   const model = process.env.ANTHROPIC_MODEL?.trim() || "claude-sonnet-4-20250514";
   return {
     text: r.text ?? "",

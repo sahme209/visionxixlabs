@@ -34,7 +34,7 @@ export default function DesignPage() {
 
       <Navigation />
 
-      <main className="relative max-w-6xl mx-auto px-6 md:px-10 pt-32 pb-32">
+      <main className="relative max-w-[1400px] mx-auto px-6 md:px-10 pt-32 pb-32">
         {/* ── HERO ─────────────────────────────────────────────── */}
         <p className="mono-label inline-flex items-center gap-3 mb-6">
           <span className="text-brand-coral/90 tabular-nums">DS</span>

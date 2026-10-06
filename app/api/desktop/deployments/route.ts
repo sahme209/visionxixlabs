@@ -41,6 +41,115 @@ interface PlaybookSummaryRepo {
     };
 }
 
+interface ReleaseContextSummary {
+    window: {
+        startUtc: string;
+        endUtc: string;
+        displayTimeZone: string;
+    } | null;
+    scope: {
+        applicationCount: number;
+        repositoryCount: number;
+        targetEnvironment: string | null;
+    };
+    approval: {
+        prStatus: string;
+        noPrRequired: boolean;
+    };
+    readiness: {
+        developmentReady: boolean;
+        productionReady: boolean;
+        validationStepCount: number;
+        deferredValidation: boolean;
+        approvalDecision: "ready_for_human_approval" | "needs_attention";
+        blockers: string[];
+    };
+    recovery: {
+        rollbackAvailability: string;
+        backupRequired: boolean;
+        evidenceCount: number;
+    };
+    observation: {
+        status: "not_connected";
+        recordedMonitoringPlan: boolean;
+    };
+}
+
+function record(value: unknown): Record<string, unknown> {
+    return value && typeof value === "object" && !Array.isArray(value)
+        ? value as Record<string, unknown>
+        : {};
+}
+
+function text(value: unknown): string | null {
+    return typeof value === "string" && value.trim() ? value : null;
+}
+
+function count(value: unknown): number {
+    return Array.isArray(value) ? value.length : 0;
+}
+
+/**
+ * Redacts the full intake into the small set of operational signals the
+ * desktop needs to orient a release. Raw URLs, contacts, workflow inputs,
+ * and evidence identifiers remain inside the governed request record.
+ */
+function summarizeReleaseContext(intakeJson: unknown): ReleaseContextSummary {
+    const intake = record(intakeJson);
+    const noPrRequired = intake.noPrRequired === true;
+    const developmentReady = intake.developmentReady === true;
+    const productionReady = intake.productionReady === true;
+    const validationStepCount = count(intake.validationSteps);
+    const rollbackAvailability = text(intake.rollbackAvailability) ?? "unknown";
+    const deferredValidation = record(intake.deferredValidation);
+    const blockers = [
+        !developmentReady ? "Development readiness has not been recorded." : null,
+        !productionReady ? "Production readiness has not been recorded." : null,
+        !noPrRequired && text(intake.prApprovalStatus) !== "approved"
+            ? "Production pull-request approval has not been recorded."
+            : null,
+        validationStepCount === 0 ? "No production validation step has been recorded." : null,
+        rollbackAvailability !== "yes" ? "A verified rollback path has not been recorded." : null,
+    ].filter((value): value is string => Boolean(value));
+    return {
+        window: text(intake.windowStartUtc) && text(intake.windowEndUtc) ? {
+            startUtc: text(intake.windowStartUtc)!,
+            endUtc: text(intake.windowEndUtc)!,
+            displayTimeZone: text(intake.displayTimeZone) ?? "UTC",
+        } : null,
+        scope: {
+            applicationCount: count(intake.applications),
+            repositoryCount: count(intake.repositoryUrls),
+            targetEnvironment: text(intake.targetEnvironment),
+        },
+        approval: {
+            prStatus: text(intake.prApprovalStatus) ?? "unknown",
+            noPrRequired,
+        },
+        readiness: {
+            developmentReady,
+            productionReady,
+            validationStepCount,
+            deferredValidation: Boolean(intake.deferredValidation),
+            approvalDecision: blockers.length === 0 ? "ready_for_human_approval" : "needs_attention",
+            blockers,
+        },
+        recovery: {
+            rollbackAvailability,
+            backupRequired: intake.backupRequired === true,
+            evidenceCount: count(intake.facts) + count(intake.backupEvidenceIds),
+        },
+        // A deployment intake can describe how someone intends to observe a
+        // deferred validation, but that is not evidence that Axiom is
+        // receiving production telemetry. Keep the absence explicit until a
+        // tenant-scoped observability connector proves otherwise.
+        observation: {
+            status: "not_connected",
+            recordedMonitoringPlan: Boolean(text(deferredValidation.monitoringPlan)),
+        },
+    };
+}
+
 function isUniqueConflict(cause: unknown): boolean {
     return Boolean(
         cause
@@ -103,7 +212,9 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
                     version: row.version,
                     correlationId: row.correlationId,
                     submittedAt: row.submittedAt?.toISOString() ?? null,
+                    closedAt: row.closedAt?.toISOString() ?? null,
                     updatedAt: row.updatedAt.toISOString(),
+                    releaseContext: summarizeReleaseContext(row.intakeJson),
                     latestPlaybook: latest ? {
                         id: latest.id,
                         version: latest.version,

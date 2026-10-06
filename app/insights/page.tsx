@@ -29,7 +29,7 @@ export default function InsightsPage() {
       <div className="ambient-drift absolute bottom-32 left-[5%] w-[360px] h-[280px] rounded-full bg-cyan-500/[0.04] blur-[110px] pointer-events-none" style={{ animationDelay: "-14s" }} aria-hidden />
 
       <Navigation />
-      <main className="max-w-6xl mx-auto px-6 md:px-10 pt-32 pb-16 relative">
+      <main className="max-w-[1400px] mx-auto px-6 md:px-10 pt-32 pb-16 relative">
         <Reveal direction="up" blur delay={0.05}>
           <header className="mb-12">
             <p className="text-[10px] font-mono uppercase tracking-[0.28em] text-zinc-500 mb-4 inline-flex items-center gap-3">

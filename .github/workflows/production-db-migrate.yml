@@ -1,0 +1,56 @@
+name: Production database migration
+
+# Schema changes are deliberately separate from application builds. This keeps
+# preview and Vercel deployments read-only with respect to production data and
+# makes a human-approved migration an explicit release step.
+on:
+  workflow_dispatch:
+    inputs:
+      confirm:
+        description: 'Type APPLY to run pending Prisma migrations against production.'
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: production-database-migrations
+  cancel-in-progress: false
+
+jobs:
+  migrate:
+    name: Apply pending production migrations
+    # Migrations must be promoted from main. This prevents a preview or feature
+    # branch from mutating the production schema.
+    if: github.ref == 'refs/heads/main' && inputs.confirm == 'APPLY'
+    runs-on: ubuntu-latest
+    environment: production
+    timeout-minutes: 15
+    steps:
+      - name: Check out the approved source revision
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+
+      - name: Install locked migration tooling
+        run: npm ci --ignore-scripts
+
+      - name: Confirm production database access is configured
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        run: test -n "$DATABASE_URL"
+
+      - name: Apply pending Prisma migrations
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        run: npx prisma migrate deploy --schema prisma/schema.prisma
+
+      - name: Verify migration state
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        run: npx prisma migrate status --schema prisma/schema.prisma

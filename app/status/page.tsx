@@ -49,7 +49,7 @@ export default async function StatusPage() {
   const OverallIcon = ICON[report.overall];
 
   return (
-    <div className="min-h-screen bg-[#09090b] text-zinc-200 relative overflow-hidden">
+    <div className="axiom-canvas axiom-product-canvas min-h-screen text-zinc-200 relative overflow-hidden">
       {/* Restrained aurora */}
       <div aria-hidden className="pointer-events-none absolute inset-0">
         <div className="ambient-drift absolute top-0 left-1/2 -translate-x-1/2 w-[720px] h-[440px] rounded-full bg-brand-violet/[0.06] blur-[140px]" />

@@ -68,6 +68,7 @@ export default function CompliancePacketPage() {
         <div className="mb-5">
           <p className="text-[10px] font-mono uppercase tracking-widest text-zinc-500 mb-2">Auditor note (optional)</p>
           <input
+            aria-label="Auditor note"
             value={note}
             onChange={(e) => setNote(e.target.value)}
             maxLength={500}

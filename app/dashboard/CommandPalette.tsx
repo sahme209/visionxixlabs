@@ -46,11 +46,17 @@ export function CommandPalette() {
   const [cursor, setCursor] = useState(0);
   const [scanning, setScanning] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
+  const dialogRef = useRef<HTMLDivElement>(null);
+  const previouslyFocusedRef = useRef<HTMLElement | null>(null);
 
   const close = useCallback(() => {
     setOpen(false);
     setQuery("");
     setCursor(0);
+    // Return focus to whatever triggered the palette (the header chip,
+    // or wherever Cmd+K was pressed) instead of dropping it to <body> —
+    // same rule Navigation.tsx's mobile menu follows on Escape-close.
+    previouslyFocusedRef.current?.focus();
   }, []);
 
   const triggerScan = useCallback(async () => {
@@ -124,7 +130,10 @@ export function CommandPalette() {
       const isMeta = e.metaKey || e.ctrlKey;
       if (isMeta && e.key.toLowerCase() === "k") {
         e.preventDefault();
-        setOpen((v) => !v);
+        setOpen((v) => {
+          if (!v) previouslyFocusedRef.current = document.activeElement as HTMLElement | null;
+          return !v;
+        });
         return;
       }
       if (!open) return;
@@ -135,9 +144,32 @@ export function CommandPalette() {
         e.preventDefault();
         const target = ordered[cursor];
         if (target) void target.onActivate();
+        return;
+      }
+      // Minimal focus trap — the dialog has exactly one tabbable element
+      // (the search input) plus the command buttons; keep Tab from
+      // escaping to the page behind the backdrop, same rule as
+      // Navigation.tsx's mobile menu.
+      if (e.key === "Tab") {
+        const focusable = dialogRef.current?.querySelectorAll<HTMLElement>(
+          'a[href], button:not([disabled]), input, [tabindex]:not([tabindex="-1"])',
+        );
+        if (!focusable?.length) return;
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+        if (e.shiftKey && document.activeElement === first) {
+          e.preventDefault();
+          last.focus();
+        } else if (!e.shiftKey && document.activeElement === last) {
+          e.preventDefault();
+          first.focus();
+        }
       }
     }
-    function onOpenEvent() { setOpen(true); }
+    function onOpenEvent() {
+      previouslyFocusedRef.current = document.activeElement as HTMLElement | null;
+      setOpen(true);
+    }
     document.addEventListener("keydown", onKey);
     // Allow the header chip + any external surface to open the palette
     // via a CustomEvent. Keeps the imperative DOM coupling tiny — the
@@ -168,8 +200,10 @@ export function CommandPalette() {
     >
       <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" aria-hidden />
       <div
+        ref={dialogRef}
         role="dialog"
         aria-modal
+        aria-label="Command palette"
         className="relative w-full max-w-xl mx-4 rounded-2xl border border-white/[0.08] bg-[#0c0c0e] shadow-2xl overflow-hidden"
       >
         <div className="flex items-center gap-3 px-4 py-3 border-b border-white/[0.04]">
@@ -177,6 +211,11 @@ export function CommandPalette() {
           <input
             ref={inputRef}
             type="text"
+            aria-label="Search commands"
+            role="combobox"
+            aria-expanded={open}
+            aria-controls="command-palette-listbox"
+            aria-activedescendant={ordered[cursor] ? `command-palette-option-${ordered[cursor].id}` : undefined}
             value={query}
             onChange={(e) => { setQuery(e.target.value); setCursor(0); }}
             placeholder="Jump to a surface, run an action, search findings…"
@@ -184,8 +223,11 @@ export function CommandPalette() {
           />
           <kbd className="text-[10px] font-mono text-zinc-600 border border-white/[0.08] rounded px-1.5 py-0.5">ESC</kbd>
         </div>
+        <p className="sr-only" role="status" aria-live="polite">
+          {ordered.length === 0 ? "No matches." : `${ordered.length} result${ordered.length === 1 ? "" : "s"}.`}
+        </p>
 
-        <div className="max-h-[60vh] overflow-y-auto py-1">
+        <div id="command-palette-listbox" role="listbox" aria-label="Commands" className="max-h-[60vh] overflow-y-auto py-1">
           {ordered.length === 0 ? (
             <p className="text-[12px] text-zinc-500 px-4 py-6 text-center">No matches.</p>
           ) : (
@@ -199,7 +241,7 @@ export function CommandPalette() {
                       const active = idx === cursor;
                       const Icon = entry.icon;
                       return (
-                        <li key={entry.id}>
+                        <li key={entry.id} id={`command-palette-option-${entry.id}`} role="option" aria-selected={active}>
                           <button
                             type="button"
                             onMouseEnter={() => setCursor(idx)}
@@ -224,7 +266,7 @@ export function CommandPalette() {
                       const active = idx === cursor;
                       const Icon = entry.icon;
                       return (
-                        <li key={entry.id}>
+                        <li key={entry.id} id={`command-palette-option-${entry.id}`} role="option" aria-selected={active}>
                           <button
                             type="button"
                             onMouseEnter={() => setCursor(idx)}

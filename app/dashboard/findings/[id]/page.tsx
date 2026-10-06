@@ -176,7 +176,7 @@ export default async function FindingDetailPage({
       {resources.length > 0 && (
         <section className="mb-10">
           <p className="text-[10px] font-mono uppercase tracking-[0.28em] text-zinc-500 mb-3">affected resources · {resources.length}</p>
-          <ul className="rounded-2xl border border-white/[0.06] bg-white/[0.015] divide-y divide-white/[0.04] overflow-hidden">
+          <ul className="surface-glass rounded-2xl divide-y divide-white/[0.04] overflow-hidden">
             {resources.map((r, i) => (
               <li key={`${String(r)}_${i}`} className="px-6 py-3">
                 <p className="text-[12px] font-mono text-zinc-300 break-all">{String(r)}</p>
@@ -228,7 +228,7 @@ export default async function FindingDetailPage({
       {finding.recommendations.length > 0 && (
         <section className="mb-10">
           <p className="text-[10px] font-mono uppercase tracking-[0.28em] text-zinc-500 mb-3">recommendations</p>
-          <ul className="rounded-2xl border border-white/[0.06] bg-white/[0.015] divide-y divide-white/[0.04] overflow-hidden">
+          <ul className="surface-glass rounded-2xl divide-y divide-white/[0.04] overflow-hidden">
             {finding.recommendations.map((r) => {
               const approval = approvalsByRec.get(r.id);
               const rationale = rationaleByRec.get(r.id);
@@ -328,7 +328,7 @@ export default async function FindingDetailPage({
       )}
 
       {/* Provenance footer */}
-      <section className="mb-10 rounded-2xl border border-white/[0.06] bg-white/[0.015] px-6 py-5">
+      <section className="surface-glass mb-10 rounded-2xl px-6 py-5">
         <p className="text-[10px] font-mono uppercase tracking-[0.28em] text-zinc-500 mb-2">provenance</p>
         <p className="text-[11px] text-zinc-500 leading-relaxed">
           From scan <Link href={`/dashboard/scans/${finding.run.id}`} className="text-zinc-300 hover:text-white underline">{finding.run.id}</Link> on {finding.run.cloudAccount.provider}/{finding.run.cloudAccount.externalAccountId}.

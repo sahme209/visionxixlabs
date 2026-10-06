@@ -46,7 +46,7 @@ export default function BlogIndex() {
 
       <Navigation />
 
-      <main className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-24">
+      <main className="relative z-10 max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-24">
         {/* Page header — Huly numbered + coral underline */}
         <header className="mb-16">
           <p className="text-[10px] font-mono uppercase tracking-[0.28em] text-zinc-500 mb-4 inline-flex items-center gap-3">

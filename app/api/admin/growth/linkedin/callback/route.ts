@@ -14,6 +14,7 @@ import { requireAdmin } from "@/lib/admin/auth";
 import { prisma } from "@/lib/db";
 import { exchangeCodeForToken, fetchUserInfo, memberUrn, loadLinkedInConfig } from "@/lib/growth/linkedin/oauth";
 import { writeGrowthAudit } from "@/lib/growth/audit";
+import { encryptCredential } from "@/lib/security/credentialVault";
 
 export const dynamic = "force-dynamic";
 
@@ -74,6 +75,8 @@ export async function GET(req: NextRequest) {
     : null;
 
   const expiresAt = new Date(Date.now() + exchange.token.expires_in * 1000);
+  const encryptedAccessToken = encryptCredential(exchange.token.access_token);
+  const encryptedRefreshToken = exchange.token.refresh_token ? encryptCredential(exchange.token.refresh_token) : null;
 
   await prisma.linkedInAccountConnection.upsert({
     where: { ownerEmail: adminEmail },
@@ -81,8 +84,8 @@ export async function GET(req: NextRequest) {
       linkedinUrn:     memberUrn(userInfo.info.sub),
       linkedinName:    userInfo.info.name ?? null,
       organizationUrn: orgUrn,
-      accessToken:     exchange.token.access_token,
-      refreshToken:    exchange.token.refresh_token ?? null,
+      accessToken:     encryptedAccessToken,
+      refreshToken:    encryptedRefreshToken,
       scopes:          exchange.token.scope ?? "",
       expiresAt,
       lastError:       null,
@@ -93,8 +96,8 @@ export async function GET(req: NextRequest) {
       linkedinUrn:     memberUrn(userInfo.info.sub),
       linkedinName:    userInfo.info.name ?? null,
       organizationUrn: orgUrn,
-      accessToken:     exchange.token.access_token,
-      refreshToken:    exchange.token.refresh_token ?? null,
+      accessToken:     encryptedAccessToken,
+      refreshToken:    encryptedRefreshToken,
       scopes:          exchange.token.scope ?? "",
       expiresAt,
       status:          "connected",

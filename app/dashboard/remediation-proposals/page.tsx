@@ -142,10 +142,10 @@ export default function RemediationProposalsPage() {
         <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 mb-6 text-[12px] text-zinc-400">Loading proposals…</div>
       )}
       {!loading && networkError && (
-        <div className="rounded-2xl border border-rose-500/[0.18] bg-rose-500/[0.04] p-5 mb-6 text-[13px] text-zinc-300">{networkError}</div>
+        <div role="alert" aria-live="assertive" className="rounded-2xl border border-rose-500/[0.18] bg-rose-500/[0.04] p-5 mb-6 text-[13px] text-zinc-300">{networkError}</div>
       )}
       {!loading && errorBody?.error === "migration_pending" && (
-        <div className="rounded-2xl border border-amber-500/[0.18] bg-amber-500/[0.04] p-5 mb-6">
+        <div role="alert" aria-live="assertive" className="rounded-2xl border border-amber-500/[0.18] bg-amber-500/[0.04] p-5 mb-6">
           <div className="flex items-center gap-2 mb-1">
             <ExclamationTriangleIcon className="h-4 w-4 text-amber-300" />
             <p className="text-[12px] font-semibold text-amber-200">Schema migration pending</p>
@@ -154,7 +154,7 @@ export default function RemediationProposalsPage() {
         </div>
       )}
       {!loading && errorBody?.error === "auth_required" && (
-        <div className="rounded-2xl border border-amber-500/[0.18] bg-amber-500/[0.04] p-5 mb-6 text-[13px] text-zinc-300">Sign in required.</div>
+        <div role="alert" aria-live="assertive" className="rounded-2xl border border-amber-500/[0.18] bg-amber-500/[0.04] p-5 mb-6 text-[13px] text-zinc-300">Sign in required.</div>
       )}
 
       {data && (
@@ -269,6 +269,7 @@ function ProposalCard({ proposal, onChanged }: { proposal: ProposalView; onChang
         <div className="pt-3 border-t border-white/[0.04] flex items-center gap-2 flex-wrap text-[11px] font-mono">
           <input
             type="text"
+            aria-label="Linked manual-fix ID"
             value={linkedManualFixId}
             onChange={(e) => setLinkedManualFixId(e.target.value)}
             placeholder="optional manual-fix id"
@@ -277,6 +278,7 @@ function ProposalCard({ proposal, onChanged }: { proposal: ProposalView; onChang
           />
           <input
             type="text"
+            aria-label="Optional note"
             value={note}
             onChange={(e) => setNote(e.target.value)}
             placeholder="optional note"

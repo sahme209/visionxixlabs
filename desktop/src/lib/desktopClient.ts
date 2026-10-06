@@ -73,7 +73,7 @@ export function v1ApiError(body: Record<string, unknown>, status: number): strin
     case "unknown_token":
       return "Your workspace sign-in is no longer valid. Sign in again to continue.";
     case "commercial_access_required":
-      return "This workspace does not have active paid production access.";
+      return "This workspace does not have approved pilot or production access yet.";
     case "rate_limited":
       return "The service is temporarily rate-limiting requests. Wait a moment, then try again.";
   }
@@ -596,6 +596,50 @@ export class DesktopClient {
   }
 
   // ── Deployment operations ─────────────────────────────────────────
+  integrationStatus(): Promise<ApiResult<{
+    cloud: Array<{
+      provider: "aws" | "azure" | "gcp";
+      status: string;
+      lastTransitionAt: string | null;
+    }>;
+    github: { status: string; repositorySelection: string };
+    collaboration: Array<{
+      provider: "slack" | "teams";
+      status: string;
+      lastValidatedAt: string | null;
+    }>;
+  }>> {
+    return this.get("/api/desktop/integrations");
+  }
+
+  validateGitHubReadOnly(): Promise<ApiResult<{ status: "validated_read_only" }>> {
+    return this.post("/api/desktop/integrations/github/validate", {});
+  }
+
+  validateSlackConnection(): Promise<ApiResult<{ status: "active" }>> {
+    return this.post("/api/desktop/integrations/slack/validate", {});
+  }
+
+  validateTeamsConnection(): Promise<ApiResult<{ status: "active" }>> {
+    return this.post("/api/desktop/integrations/teams/validate", {});
+  }
+
+  aiProviderStatus(): Promise<ApiResult<Array<{
+    provider: string;
+    configured: boolean;
+    defaultModel: string;
+  }>>> {
+    return this.get("/api/desktop/ai-providers");
+  }
+
+  integrationHealth(): Promise<ApiResult<{
+    status: "healthy" | "degraded" | "preview" | "blocked" | "disabled" | "unknown";
+    sourceMode: string;
+    summary: { total: number; healthy: number; degraded: number; preview: number; blocked: number; disabled: number };
+  }>> {
+    return this.get("/api/desktop/integration-health");
+  }
+
   deploymentRequests(): Promise<ApiResult<Array<{
     id: string;
     title: string;
@@ -603,7 +647,23 @@ export class DesktopClient {
     version: number;
     correlationId: string;
     submittedAt: string | null;
+    closedAt: string | null;
     updatedAt: string;
+    releaseContext: {
+      window: { startUtc: string; endUtc: string; displayTimeZone: string } | null;
+      scope: { applicationCount: number; repositoryCount: number; targetEnvironment: string | null };
+      approval: { prStatus: string; noPrRequired: boolean };
+      readiness: {
+        developmentReady: boolean;
+        productionReady: boolean;
+        validationStepCount: number;
+        deferredValidation: boolean;
+        approvalDecision: "ready_for_human_approval" | "needs_attention";
+        blockers: string[];
+      };
+      recovery: { rollbackAvailability: string; backupRequired: boolean; evidenceCount: number };
+      observation: { status: "not_connected"; recordedMonitoringPlan: boolean };
+    };
     latestPlaybook: {
       id: string;
       version: number;
@@ -634,6 +694,85 @@ export class DesktopClient {
     );
   }
 
+  deploymentRequestForRevision(requestId: string): Promise<ApiResult<{
+    id: string;
+    version: number;
+    intake: Record<string, unknown>;
+  }>> {
+    return this.get(`/api/desktop/deployments/${encodeURIComponent(requestId)}`);
+  }
+
+  reviseDeploymentRequest(
+    requestId: string,
+    expectedVersion: number,
+    intake: Record<string, unknown>,
+  ): Promise<ApiResult<{
+    id: string;
+    title: string;
+    status: string;
+    version: number;
+    changed: boolean;
+  }>> {
+    return this.put(
+      `/api/desktop/deployments/${encodeURIComponent(requestId)}`,
+      { ...intake, expectedVersion },
+    );
+  }
+
+  closeDeploymentRequest(
+    requestId: string,
+    expectedVersion: number,
+    closureEvidenceId: string,
+    closureSummary: string,
+  ): Promise<ApiResult<{ id: string; status: string; closedAt: string | null }>> {
+    return this.post(
+      `/api/desktop/deployments/${encodeURIComponent(requestId)}/close`,
+      { expectedVersion, closureEvidenceId, closureSummary },
+    );
+  }
+
+  deploymentRequestHistory(requestId: string): Promise<ApiResult<Array<{
+    version: number;
+    createdAt: string;
+    author: "You" | "Workspace member";
+    changes: string[];
+  }>>> {
+    return this.get(`/api/desktop/deployments/${encodeURIComponent(requestId)}/history`);
+  }
+
+  deploymentOperations(requestId: string): Promise<ApiResult<Array<{
+    kind: string;
+    status: string;
+    attemptCount: number;
+    createdAt: string;
+    lastAttemptAt: string | null;
+    lastReconciledAt: string | null;
+    externallyReferenced: boolean;
+  }>>> {
+    return this.get(`/api/desktop/deployments/${encodeURIComponent(requestId)}/operations`);
+  }
+
+  collectGitHubReleaseEvidence(requestId: string): Promise<ApiResult<{
+    mode: "read_only_evidence";
+    repositories: Array<{
+      repository: string;
+      state: "observed" | "unavailable";
+      branchProtection: "protected" | "not_protected" | "unavailable";
+      repositoryEnabled: boolean | null;
+      latestWorkflow: "passed" | "failed" | "in_progress" | "not_reported" | "unavailable";
+    }>;
+    pullRequests: Array<{
+      repository: string;
+      number: number;
+      state: "observed" | "unavailable";
+      pullRequestState: "open" | "closed" | "merged" | "draft" | "unknown";
+      targetBranchMatches: boolean | null;
+      checks: "passed" | "failed" | "in_progress" | "not_reported" | "unavailable";
+    }>;
+  }>> {
+    return this.post(`/api/desktop/deployments/${encodeURIComponent(requestId)}/github-evidence`, {});
+  }
+
   generateDeploymentPlaybook(requestId: string): Promise<ApiResult<{
     id: string;
     requestId: string;
@@ -661,6 +800,28 @@ export class DesktopClient {
       `/api/desktop/deployments/${encodeURIComponent(requestId)}/playbooks`,
       {},
     );
+  }
+
+  latestDeploymentPlaybook(requestId: string): Promise<ApiResult<{
+    id: string;
+    requestId: string;
+    version: number;
+    status: string;
+    contentHash: string;
+    generatedAtUtc: string;
+    scope: string;
+    stepCount: number;
+    steps: Array<{
+      id: string;
+      order: number;
+      title: string;
+      requiredRole: string;
+      activation: "always" | "on_success" | "on_failure";
+      evidenceRequired: boolean;
+      validationInstruction?: string;
+    }>;
+  }>> {
+    return this.get(`/api/desktop/deployments/${encodeURIComponent(requestId)}/playbooks`);
   }
 
   // ── Release manifest ──────────────────────────────────────────────
@@ -748,6 +909,22 @@ export class DesktopClient {
           "Content-Type": "application/json",
           ...(extraHeaders ?? {}),
         },
+        credentials: "include",
+        body: JSON.stringify(body),
+      });
+      const json = (await res.json().catch(() => ({}))) as LegacyApiErrorBody & { ok?: boolean; data?: unknown };
+      if (json.ok && json.data !== undefined) return { ok: true, data: json.data as T };
+      return { ok: false, error: legacyApiError(json, res.status) };
+    } catch (err) {
+      return { ok: false, error: err instanceof Error ? err.message : String(err) };
+    }
+  }
+
+  private async put<T>(path: string, body: unknown): Promise<ApiResult<T>> {
+    try {
+      const res = await fetch(`${this.config.apiBase}${path}`, {
+        method: "PUT",
+        headers: { ...this.headers(), "Content-Type": "application/json" },
         credentials: "include",
         body: JSON.stringify(body),
       });

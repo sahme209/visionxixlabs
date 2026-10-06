@@ -1,0 +1,42 @@
+name: Test
+
+# Installs real dependencies and runs the actual TypeScript compiler +
+# Vitest suite on every push and pull request. This repo's Vercel builds
+# only prove `next build` compiles — they never execute `vitest run` — so
+# until this workflow existed, "Vercel green" was the only automated
+# signal available and was never a substitute for "tests pass." Local
+# development sandboxes in use this session also had no route to
+# registry.npmjs.org, so this is the first place dependencies can
+# actually be installed and the suite actually executed.
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: Typecheck + Vitest
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Type check
+        run: npx tsc --noEmit
+
+      - name: Run Vitest suite
+        run: npx vitest run --reporter=dot

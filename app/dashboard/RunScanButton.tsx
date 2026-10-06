@@ -96,7 +96,7 @@ export function RunScanButton({
         </span>
       )}
       {phase === "error" && result && (
-        <span className="text-[12px] text-rose-300">
+        <span role="alert" aria-live="assertive" className="text-[12px] text-rose-300">
           {result.hint ?? result.error ?? "Scan failed."}
         </span>
       )}

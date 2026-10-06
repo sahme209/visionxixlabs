@@ -3,13 +3,14 @@
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 
 const primaryLinks = [
-  { href: "/axiom/releaseops", label: "Product" },
+  { href: "/product", label: "Product" },
   { href: "/capabilities", label: "Capabilities" },
   { href: "/plans", label: "Pricing" },
-  { href: "/docs", label: "Resources" },
+  { href: "/resources", label: "Resources" },
 ];
 
 const mobileLinks = [
@@ -17,12 +18,32 @@ const mobileLinks = [
   { href: "/integrations", label: "Integrations" },
   { href: "/security", label: "Security" },
   { href: "/status", label: "Status" },
+  { href: "/contact", label: "Contact" },
 ];
 
 export function Navigation() {
+  const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const menuButtonRef = useRef<HTMLButtonElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    // Closes the menu on a route change that didn't go through a link's
+    // own onClick (e.g. browser back/forward), not just a click-through.
+    setMobileMenuOpen(false);
+  }, [pathname]);
+
+  useEffect(() => {
+    // Shrinks the bar height and deepens its border/shadow once the page
+    // has scrolled past the hero, so the nav reads as "docked chrome"
+    // rather than a static banner — the same elevation-on-scroll detail
+    // Cursor's and Linear's marketing sites use.
+    const onScroll = () => setScrolled(window.scrollY > 8);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   useEffect(() => {
     if (!mobileMenuOpen) return;
@@ -66,8 +87,19 @@ export function Navigation() {
   const closeMenu = () => setMobileMenuOpen(false);
 
   return (
-    <nav aria-label="Primary navigation" className="fixed inset-x-0 top-0 z-50 border-b border-white/[0.06] bg-[#0c0d0c]/95 backdrop-blur-xl">
-      <div className="mx-auto flex h-16 max-w-[1720px] items-center justify-between px-5 sm:px-8 lg:h-[72px] lg:px-12">
+    <nav
+      aria-label="Primary navigation"
+      className={`fixed inset-x-0 top-0 z-50 backdrop-blur-xl transition-[background-color,border-color,box-shadow] duration-300 ${
+        scrolled
+          ? "border-b border-white/[0.09] bg-[#0c0d0c]/90 shadow-[0_1px_0_rgba(255,255,255,0.03),0_12px_30px_-20px_rgba(0,0,0,0.8)]"
+          : "border-b border-white/[0.06] bg-[#0c0d0c]/95"
+      }`}
+    >
+      <div
+        className={`mx-auto flex max-w-[1400px] items-center justify-between px-5 transition-[height] duration-300 sm:px-8 lg:px-12 ${
+          scrolled ? "h-14 lg:h-16" : "h-16 lg:h-[72px]"
+        }`}
+      >
         <Link href="/" className="flex items-center gap-2.5 text-sm font-semibold tracking-[-0.02em] text-zinc-100" aria-label="Vision XIX Labs home">
           <Image src="/vision-xix-logo.png" alt="" width={28} height={28} className="rounded-md" priority />
           <span>Vision XIX Labs</span>
@@ -103,14 +135,20 @@ export function Navigation() {
       {mobileMenuOpen && (
         <div ref={menuRef} id="mobile-navigation" role="dialog" aria-modal="true" aria-label="Site navigation" className="fixed inset-x-0 bottom-0 top-16 overflow-y-auto border-t border-white/[0.06] bg-[#0c0d0c] px-5 py-6 lg:hidden">
           <div className="mx-auto flex max-w-lg flex-col">
-            {mobileLinks.map((item) => (
-              <Link key={item.href} href={item.href} onClick={closeMenu} className="border-b border-white/[0.06] py-4 text-lg text-zinc-200">
-                {item.label}
-              </Link>
-            ))}
-            <div className="mt-8 grid grid-cols-2 gap-3">
+            <p className="text-[10px] uppercase tracking-[0.18em] text-zinc-500">Explore Axiom</p>
+            <div className="mt-4 grid grid-cols-2 gap-2" aria-label="Primary links">
+              {mobileLinks.map((item) => (
+                <Link key={item.href} href={item.href} onClick={closeMenu} className="rounded-xl border border-white/[0.08] bg-white/[0.025] px-4 py-3.5 text-sm font-medium text-zinc-200 transition hover:border-violet-300/25 hover:bg-white/[0.06]">
+                  {item.label}
+                </Link>
+              ))}
+            </div>
+            <div className="mt-8 border-t border-white/[0.07] pt-5">
+              <p className="text-[10px] uppercase tracking-[0.18em] text-zinc-500">Your workspace</p>
+              <div className="mt-3 grid grid-cols-2 gap-3">
               <Link href="/auth/signin" onClick={closeMenu} className="rounded-full border border-white/[0.14] px-4 py-3 text-center text-sm text-zinc-200">Sign in</Link>
               <Link href="/download" onClick={closeMenu} className="rounded-full bg-white px-4 py-3 text-center text-sm font-medium text-black">Download</Link>
+              </div>
             </div>
           </div>
         </div>

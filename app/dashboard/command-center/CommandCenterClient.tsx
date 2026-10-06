@@ -184,7 +184,7 @@ export default function CommandCenterClient() {
 
           {/* Quick Actions */}
           <Reveal direction="up" delay={0.2}>
-            <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-4">
+            <div className="surface-glass rounded-2xl p-4">
               <h3 className="text-sm font-semibold text-white mb-3">Quick actions</h3>
               <div className="space-y-1.5">
                 {[
@@ -230,7 +230,7 @@ export default function CommandCenterClient() {
 
           {/* Documentation links */}
           <Reveal direction="up" delay={0.3}>
-            <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-4">
+            <div className="surface-glass rounded-2xl p-4">
               <div className="flex items-center gap-2 mb-3">
                 <span className="text-[10px] font-semibold text-zinc-500 uppercase tracking-widest">Learn how this works</span>
               </div>
@@ -523,7 +523,7 @@ function HeroStateRibbon() {
   );
 
   return (
-    <div className="hidden md:flex items-end gap-5 rounded-2xl border border-white/[0.06] bg-white/[0.025] backdrop-blur-sm px-5 py-4">
+    <div className="surface-glass hidden md:flex items-end gap-5 rounded-2xl px-5 py-4">
       <RibbonStat label="Readiness" value={readinessPct !== null ? `${readinessPct}%` : "—"} tone="text-white" />
       <div className="w-px h-9 bg-white/[0.08]" />
       <RibbonStat label="Trust" value={trustPct !== null ? `${trustPct}%` : "—"} tone="text-white" />
@@ -749,7 +749,7 @@ function AxiomOSStrip() {
   }
   if (error || !state) {
     return (
-      <div className="rounded-xl border border-zinc-700/30 bg-white/[0.02] p-5 mb-6">
+      <div role="alert" aria-live="assertive" className="rounded-xl border border-zinc-700/30 bg-white/[0.02] p-5 mb-6">
         <p className="text-[11px] font-mono text-zinc-500 uppercase tracking-[0.18em]">// axiom os · preview</p>
         <p className="text-sm text-zinc-400 mt-2">{error ?? "Sign in to load unified state."}</p>
       </div>
@@ -895,7 +895,7 @@ function ReadinessStrip() {
   }
   if (error || !report) {
     return (
-      <div className="rounded-xl border border-amber-500/[0.18] bg-amber-500/[0.04] p-5 mb-6">
+      <div role="alert" aria-live="assertive" className="rounded-xl border border-amber-500/[0.18] bg-amber-500/[0.04] p-5 mb-6">
         <p className="text-[11px] font-mono text-amber-300/80 uppercase tracking-[0.18em]">// production readiness · preview</p>
         <p className="text-sm text-amber-200/80 mt-2">{error ?? "Readiness report not yet available — sign in to load."}</p>
       </div>
@@ -1333,7 +1333,7 @@ function DesktopRuntimePanel() {
                                     "bg-amber-500/15 text-amber-300";
 
   return (
-    <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] overflow-hidden">
+    <div className="surface-glass rounded-2xl overflow-hidden">
       <div className="px-5 py-3.5 border-b border-white/[0.06] bg-white/[0.01] flex items-center justify-between">
         <div className="flex items-center gap-2">
           <ComputerDesktopIcon className="h-4 w-4 text-violet-300" />
@@ -1349,7 +1349,7 @@ function DesktopRuntimePanel() {
           <p className="text-[11px] text-zinc-500 font-mono uppercase tracking-[0.18em]">// composing desktop state…</p>
         )}
         {!loading && error && (
-          <p className="text-[12px] text-amber-300/90">{error}</p>
+          <p role="alert" aria-live="assertive" className="text-[12px] text-amber-300/90">{error}</p>
         )}
         {!loading && !error && state && (
           <>
@@ -1442,7 +1442,7 @@ function OnboardingPanel() {
   const pct = progressPercent(progress);
   if (loadingState && !state) {
     return (
-      <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-4">
+      <div className="surface-glass rounded-2xl p-4">
         <p className="text-[11px] font-mono text-zinc-500 uppercase tracking-[0.18em]">// composing onboarding state…</p>
       </div>
     );
@@ -1535,7 +1535,7 @@ function LiveProvidersStrip() {
   const providers = state?.providers ?? [];
 
   return (
-    <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] overflow-hidden">
+    <div className="surface-glass rounded-2xl overflow-hidden">
       <div className="px-5 py-3.5 border-b border-white/[0.06] bg-white/[0.01]">
         <div className="flex items-center justify-between">
           <h3 className="text-sm font-semibold text-white">Provider posture</h3>
@@ -1549,7 +1549,7 @@ function LiveProvidersStrip() {
         </div>
       )}
       {!loading && error && (
-        <div className="px-5 py-4">
+        <div role="alert" aria-live="assertive" className="px-5 py-4">
           <p className="text-[11px] font-mono text-amber-300/80 uppercase tracking-[0.18em] mb-1">
             // provider state unavailable
           </p>

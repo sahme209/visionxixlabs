@@ -17,6 +17,12 @@ export type ActionStatus =
   | "verifying"
   | "verified"
   | "verify_failed"
+  /** Handler ran but never called a real cloud SDK — command text was
+   *  prepared and a human was told to check manually. Distinct from
+   *  "applied"/"verified", which mean a real mutation was executed and
+   *  confirmed. Every current AWS/Azure/GCP handler is simulated; no
+   *  handler has live execution wired up yet. */
+  | "simulated"
   | "rolled_back"
   | "skipped"
   | "blocked";
@@ -49,6 +55,11 @@ export type StepResult = {
   message: string;
   durationMs: number;
   error?: string;
+  /** True when this step never called a real cloud SDK — set by every
+   *  current handler's apply()/verify(). Lets the orchestrator report
+   *  "simulated" instead of "applied"/"verified" so a prepared-but-not-
+   *  executed action can never look identical to a completed one. */
+  simulated?: boolean;
 };
 
 export type RollbackPlan = {
@@ -83,6 +94,9 @@ export type ApplyResult = {
 export type ApplySummary = {
   total: number;
   applied: number;
+  /** Ran without error but never called a real cloud SDK — see
+   *  ActionStatus["simulated"]. Never folded into `applied`. */
+  simulated: number;
   failed: number;
   skipped: number;
   blocked: number;
@@ -276,8 +290,9 @@ async function executeAction(
     };
   }
 
-  audit(auditLog, item, "apply", "applied", apply.message);
-  notify(item.id, "applied", apply.message);
+  const applyStatus: ActionStatus = apply.simulated ? "simulated" : "applied";
+  audit(auditLog, item, "apply", applyStatus, apply.message);
+  notify(item.id, applyStatus, apply.message);
 
   // ---- Verify ----
   notify(item.id, "verifying", "Verifying changes...");
@@ -290,7 +305,9 @@ async function executeAction(
     verify = { success: false, message: errorMessage(err), durationMs: 0, error: errorMessage(err) };
   }
 
-  const finalStatus: ActionStatus = verify.success ? "verified" : "verify_failed";
+  const finalStatus: ActionStatus = !verify.success
+    ? "verify_failed"
+    : (apply.simulated || verify.simulated) ? "simulated" : "verified";
   audit(auditLog, item, "verify", finalStatus, verify.message, verify.error);
   notify(item.id, finalStatus, verify.message);
 
@@ -307,6 +324,18 @@ async function executeAction(
 
 // ---------------------------------------------------------------------------
 // Provider-specific action handlers
+//
+// None of these call a real cloud SDK yet — apply() only builds the command
+// strings a human would need to run, and verify() always returns success
+// with an instruction to go check manually, never a real post-change read.
+// Every message below says so explicitly. The ActionStatus values this
+// flow produces ("applied" / "verified") still read as completed-and-
+// confirmed, which overstates what happened — that's a real gap in the
+// status contract itself (every one of its 7 consumers would need
+// updating to add an honest "simulated" status), not fixed here. Do not
+// wire real execution into these handlers without the tenant
+// authorization, role checks, explicit approval, environment safeguards,
+// and rollback evidence required for live cloud mutation.
 // ---------------------------------------------------------------------------
 
 export const AWS_HANDLERS: Record<string, CloudActionHandler> = {
@@ -333,12 +362,12 @@ export const AWS_HANDLERS: Record<string, CloudActionHandler> = {
           `aws ec2 wait instance-running --instance-ids ${id} --region ${item.region}`,
         );
       }
-      return { success: true, message: `Resize commands prepared for ${item.resourceIds.length} instance(s): ${recommended}`, durationMs: Date.now() - start };
+      return { success: true, message: `Resize commands prepared for ${item.resourceIds.length} instance(s): ${recommended}. Not yet executed against a live AWS account.`, simulated: true, durationMs: Date.now() - start };
     },
     async verify(item) {
       const start = Date.now();
       const recommended = item.recommendedState.replace(/^\d+x\s*/, "");
-      return { success: true, message: `Verify: confirm instance type is ${recommended} and status is "running"`, durationMs: Date.now() - start };
+      return { success: true, message: `Not a live check — manually confirm instance type is ${recommended} and status is "running".`, simulated: true, durationMs: Date.now() - start };
     },
   },
   apply_storage_policy: {
@@ -348,11 +377,11 @@ export const AWS_HANDLERS: Record<string, CloudActionHandler> = {
     },
     async apply(item) {
       const start = Date.now();
-      return { success: true, message: `Intelligent-Tiering + lifecycle rules applied to ${item.resourceIds.length} bucket(s)`, durationMs: Date.now() - start };
+      return { success: true, message: `Intelligent-Tiering + lifecycle rule commands prepared for ${item.resourceIds.length} bucket(s). Not yet executed against a live AWS account.`, simulated: true, durationMs: Date.now() - start };
     },
     async verify(item) {
       const start = Date.now();
-      return { success: true, message: `Verify: confirm lifecycle configuration exists on ${item.resourceIds.length} bucket(s)`, durationMs: Date.now() - start };
+      return { success: true, message: `Not a live check — manually confirm lifecycle configuration exists on ${item.resourceIds.length} bucket(s).`, simulated: true, durationMs: Date.now() - start };
     },
   },
 };
@@ -366,12 +395,12 @@ export const AZURE_HANDLERS: Record<string, CloudActionHandler> = {
     async apply(item) {
       const start = Date.now();
       const recommended = item.recommendedState.replace(/^\d+x\s*/, "");
-      return { success: true, message: `Resize commands prepared for ${item.resourceIds.length} VM(s): ${recommended}`, durationMs: Date.now() - start };
+      return { success: true, message: `Resize commands prepared for ${item.resourceIds.length} VM(s): ${recommended}. Not yet executed against a live Azure subscription.`, simulated: true, durationMs: Date.now() - start };
     },
     async verify(item) {
       const start = Date.now();
       const recommended = item.recommendedState.replace(/^\d+x\s*/, "");
-      return { success: true, message: `Verify: confirm VM size is ${recommended} and power state is "running"`, durationMs: Date.now() - start };
+      return { success: true, message: `Not a live check — manually confirm VM size is ${recommended} and power state is "running".`, simulated: true, durationMs: Date.now() - start };
     },
   },
   apply_storage_policy: {
@@ -381,11 +410,11 @@ export const AZURE_HANDLERS: Record<string, CloudActionHandler> = {
     },
     async apply(item) {
       const start = Date.now();
-      return { success: true, message: `Cool/Archive lifecycle policy applied to ${item.resourceIds.length} account(s)`, durationMs: Date.now() - start };
+      return { success: true, message: `Cool/Archive lifecycle policy commands prepared for ${item.resourceIds.length} account(s). Not yet executed against a live Azure subscription.`, simulated: true, durationMs: Date.now() - start };
     },
     async verify(item) {
       const start = Date.now();
-      return { success: true, message: `Verify: confirm management policy exists on ${item.resourceIds.length} account(s)`, durationMs: Date.now() - start };
+      return { success: true, message: `Not a live check — manually confirm management policy exists on ${item.resourceIds.length} account(s).`, simulated: true, durationMs: Date.now() - start };
     },
   },
 };
@@ -399,12 +428,12 @@ export const GCP_HANDLERS: Record<string, CloudActionHandler> = {
     async apply(item) {
       const start = Date.now();
       const recommended = item.recommendedState.replace(/^\d+x\s*/, "");
-      return { success: true, message: `Machine type change prepared for ${item.resourceIds.length} instance(s): ${recommended}`, durationMs: Date.now() - start };
+      return { success: true, message: `Machine type change prepared for ${item.resourceIds.length} instance(s): ${recommended}. Not yet executed against a live GCP project.`, simulated: true, durationMs: Date.now() - start };
     },
     async verify(item) {
       const start = Date.now();
       const recommended = item.recommendedState.replace(/^\d+x\s*/, "");
-      return { success: true, message: `Verify: confirm machine type is ${recommended} and status is "RUNNING"`, durationMs: Date.now() - start };
+      return { success: true, message: `Not a live check — manually confirm machine type is ${recommended} and status is "RUNNING".`, simulated: true, durationMs: Date.now() - start };
     },
   },
   apply_storage_policy: {
@@ -414,11 +443,11 @@ export const GCP_HANDLERS: Record<string, CloudActionHandler> = {
     },
     async apply(item) {
       const start = Date.now();
-      return { success: true, message: `Nearline/Coldline lifecycle rules applied to ${item.resourceIds.length} bucket(s)`, durationMs: Date.now() - start };
+      return { success: true, message: `Nearline/Coldline lifecycle rule commands prepared for ${item.resourceIds.length} bucket(s). Not yet executed against a live GCP project.`, simulated: true, durationMs: Date.now() - start };
     },
     async verify(item) {
       const start = Date.now();
-      return { success: true, message: `Verify: confirm lifecycle rules exist on ${item.resourceIds.length} bucket(s)`, durationMs: Date.now() - start };
+      return { success: true, message: `Not a live check — manually confirm lifecycle rules exist on ${item.resourceIds.length} bucket(s).`, simulated: true, durationMs: Date.now() - start };
     },
   },
 };
@@ -479,6 +508,7 @@ function buildRollbackPlan(item: ExecutionPlanItem): RollbackPlan {
 
 function buildSummary(results: ActionResult[], plan: ExecutionPlan): ApplySummary {
   let applied = 0;
+  let simulated = 0;
   let failed = 0;
   let skipped = 0;
   let blocked = 0;
@@ -490,6 +520,9 @@ function buildSummary(results: ActionResult[], plan: ExecutionPlan): ApplySummar
       case "applied":
       case "verify_failed":
         applied++;
+        break;
+      case "simulated":
+        simulated++;
         break;
       case "apply_failed":
       case "precheck_failed":
@@ -519,6 +552,7 @@ function buildSummary(results: ActionResult[], plan: ExecutionPlan): ApplySummar
   return {
     total: results.length,
     applied,
+    simulated,
     failed,
     skipped,
     blocked,

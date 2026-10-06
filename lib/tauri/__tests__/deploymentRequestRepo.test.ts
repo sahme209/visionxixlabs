@@ -1,7 +1,9 @@
 import { describe, expect, it } from "vitest";
 import {
+    closeDeploymentRequest,
     createDeploymentRequest,
     listDeploymentRequests,
+    reviseDeploymentRequest,
     type DeploymentRequestRepo,
     type DeploymentRequestRow,
 } from "../deploymentRequestRepo";
@@ -11,10 +13,12 @@ import { parseDeploymentIntake } from "../deploymentIntakeSchema";
 class FakeRepo implements DeploymentRequestRepo {
     readonly requests: DeploymentRequestRow[] = [];
     readonly versions: unknown[] = [];
+    readonly playbooks: Array<{ organizationId: string; deploymentRequestId: string; status: string }> = [];
     readonly audits: unknown[] = [];
 
     tauriDeploymentRequest: DeploymentRequestRepo["tauriDeploymentRequest"];
     tauriDeploymentRequestVersion: DeploymentRequestRepo["tauriDeploymentRequestVersion"];
+    tauriPlaybook: DeploymentRequestRepo["tauriPlaybook"];
     tauriAuditEvent: DeploymentRequestRepo["tauriAuditEvent"];
 
     constructor() {
@@ -31,11 +35,37 @@ class FakeRepo implements DeploymentRequestRepo {
                 this.requests.push(row);
                 return row;
             },
-            findFirst: async ({ where }) =>
-                this.requests.find((row) =>
-                    row.organizationId === where.organizationId
-                    && row.correlationId === where.correlationId,
-                ) ?? null,
+            findFirst: async ({ where }) => {
+                // Return a snapshot, not the live stored reference — real
+                // Prisma deserializes a fresh object per query, so a value
+                // captured before a later updateMany must never silently
+                // change underneath the caller the way a shared reference
+                // would. Without this, the revision test's "previous vs
+                // new" comparison can pass or fail by aliasing accident
+                // rather than by actually exercising the audit invariant.
+                const row = this.requests.find((candidate) =>
+                    candidate.organizationId === where.organizationId
+                    && (where.correlationId === undefined || candidate.correlationId === where.correlationId)
+                    && (where.id === undefined || candidate.id === where.id),
+                );
+                return row ? { ...row } : null;
+            },
+            updateMany: async ({ where, data }) => {
+                const row = this.requests.find((candidate) =>
+                    candidate.id === where.id
+                    && candidate.organizationId === where.organizationId
+                    && candidate.version === where.version
+                    && (where.status === undefined || candidate.status === where.status),
+                );
+                if (!row) return { count: 0 };
+                if (data.title !== undefined) row.title = data.title;
+                if (data.intakeJson !== undefined) row.intakeJson = data.intakeJson;
+                if (data.version) row.version += data.version.increment;
+                if (data.status !== undefined) row.status = data.status;
+                if (data.closedAt !== undefined) row.closedAt = data.closedAt;
+                row.updatedAt = new Date("2026-09-25T15:00:00.000Z");
+                return { count: 1 };
+            },
             findMany: async ({ where, take }) =>
                 this.requests
                     .filter((row) => row.organizationId === where.organizationId)
@@ -45,6 +75,17 @@ class FakeRepo implements DeploymentRequestRepo {
             create: async ({ data }) => {
                 this.versions.push(data);
                 return data;
+            },
+        };
+        this.tauriPlaybook = {
+            updateMany: async ({ where, data }) => {
+                const matches = this.playbooks.filter((playbook) =>
+                    playbook.organizationId === where.organizationId
+                    && playbook.deploymentRequestId === where.deploymentRequestId
+                    && playbook.status !== where.status.not,
+                );
+                for (const playbook of matches) playbook.status = data.status;
+                return { count: matches.length };
             },
         };
         this.tauriAuditEvent = {
@@ -246,6 +287,107 @@ describe("deployment request persistence", () => {
 
         const rows = await listDeploymentRequests(repo, "tenant-a", 1_000);
         expect(rows.map((row) => row.organizationId)).toEqual(["tenant-a"]);
+    });
+
+    it("appends an immutable revision and audit event without replacing the original snapshot", async () => {
+        const repo = new FakeRepo();
+        await createDeploymentRequest(repo, input());
+        repo.playbooks.push({ organizationId: "tenant-a", deploymentRequestId: "request-01", status: "submitted" });
+        const revised = intake();
+        revised.id = "dep-02";
+        revised.title = "Production configuration release — revised";
+
+        const result = await reviseDeploymentRequest(repo, {
+            organizationId: "tenant-a",
+            requesterUserId: "user-02",
+            actorRole: "requester",
+            correlationId: "revision-01",
+            requestId: "request-01",
+            expectedVersion: 1,
+            intake: revised,
+        });
+
+        expect(result).toMatchObject({ ok: true, changed: true, request: { version: 2, title: revised.title } });
+        expect(repo.versions).toHaveLength(2);
+        expect(repo.playbooks).toEqual([{ organizationId: "tenant-a", deploymentRequestId: "request-01", status: "superseded" }]);
+        expect(repo.versions[0]).toEqual(expect.objectContaining({ version: 1, intakeJson: expect.objectContaining({ title: "Production configuration release" }) }));
+        expect(repo.versions[1]).toEqual(expect.objectContaining({ version: 2, intakeJson: expect.objectContaining({ title: revised.title }) }));
+        expect(repo.audits.at(-1)).toEqual(expect.objectContaining({
+            action: "deployment_request.revised",
+            previousValueJson: { version: 1, title: "Production configuration release" },
+            newValueJson: { version: 2, title: revised.title },
+        }));
+    });
+
+    it("refuses a stale revision rather than overwriting a newer request", async () => {
+        const repo = new FakeRepo();
+        await createDeploymentRequest(repo, input());
+        const revised = intake();
+        revised.id = "dep-02";
+        revised.title = "First revision";
+        await reviseDeploymentRequest(repo, {
+            organizationId: "tenant-a", requesterUserId: "user-01", actorRole: "requester", correlationId: "revision-01", requestId: "request-01", expectedVersion: 1, intake: revised,
+        });
+
+        const stale = intake();
+        stale.id = "dep-03";
+        stale.title = "Stale revision";
+        const result = await reviseDeploymentRequest(repo, {
+            organizationId: "tenant-a", requesterUserId: "user-03", actorRole: "requester", correlationId: "revision-02", requestId: "request-01", expectedVersion: 1, intake: stale,
+        });
+
+        expect(result).toMatchObject({ ok: false, reason: "version_conflict" });
+        expect(repo.requests[0]).toMatchObject({ version: 2, title: "First revision" });
+        expect(repo.versions).toHaveLength(2);
+    });
+
+    it("records evidence-backed closure without dispatching an external action", async () => {
+        const repo = new FakeRepo();
+        await createDeploymentRequest(repo, input());
+
+        const result = await closeDeploymentRequest(repo, {
+            organizationId: "tenant-a",
+            requesterUserId: "user-01",
+            actorRole: "requester",
+            correlationId: "closure-01",
+            requestId: "request-01",
+            expectedVersion: 1,
+            closureEvidenceId: "release-validation-42",
+            closureSummary: "External validation was completed and recorded by the release owner.",
+            closedAtUtc: "2026-09-25T16:00:00.000Z",
+        });
+
+        expect(result).toMatchObject({ ok: true, request: { status: "closed" } });
+        expect(repo.requests[0].closedAt?.toISOString()).toBe("2026-09-25T16:00:00.000Z");
+        expect(repo.audits.at(-1)).toEqual(expect.objectContaining({
+            action: "deployment_request.closed",
+            evidenceLink: "release-validation-42",
+        }));
+    });
+
+    it("reports an already closed request without returning an absent record", async () => {
+        const repo = new FakeRepo();
+        await createDeploymentRequest(repo, input());
+        const closeInput = {
+            organizationId: "tenant-a", requesterUserId: "user-01", actorRole: "requester", correlationId: "closure-01", requestId: "request-01", expectedVersion: 1,
+            closureEvidenceId: "release-validation-42", closureSummary: "External validation was completed and recorded by the release owner.", closedAtUtc: "2026-09-25T16:00:00.000Z",
+        };
+
+        await closeDeploymentRequest(repo, closeInput);
+        await expect(closeDeploymentRequest(repo, closeInput)).resolves.toEqual({ ok: false, reason: "closed" });
+    });
+
+    it("requires closure evidence and preserves an open request when it is absent", async () => {
+        const repo = new FakeRepo();
+        await createDeploymentRequest(repo, input());
+
+        const result = await closeDeploymentRequest(repo, {
+            organizationId: "tenant-a", requesterUserId: "user-01", actorRole: "requester", correlationId: "closure-01", requestId: "request-01", expectedVersion: 1,
+            closureEvidenceId: "", closureSummary: "", closedAtUtc: "2026-09-25T16:00:00.000Z",
+        });
+
+        expect(result).toEqual({ ok: false, reason: "closure_evidence_required" });
+        expect(repo.requests[0]).toMatchObject({ status: "submitted", closedAt: null });
     });
 });
 

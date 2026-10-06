@@ -9,8 +9,8 @@
  *      readiness, default model, recommended model list
  *   3. Health check + ad-hoc generation tester
  *
- * Free-only by default. Paid providers are NOT listed — flipping that
- * later is a deliberate code change.
+ * Service-managed providers only. Workspace policies decide which configured
+ * routes may be used; credentials and provider billing details never render.
  */
 
 import { useCallback, useEffect, useState } from "react";
@@ -19,8 +19,13 @@ import {
   BoltIcon, PlayIcon,
 } from "@heroicons/react/24/outline";
 
+interface AiPolicyAdminResp {
+  policy: { enabled: boolean; allowedProviders: ProviderName[]; modelSelections: Partial<Record<ProviderName, string>>; fallbackOrder: ProviderName[] };
+  availableProviders: ProviderName[];
+}
+
 type ProviderName =
-  | "github_models" | "ollama" | "lm_studio" | "groq" | "hugging_face"
+  | "openai" | "anthropic" | "github_models" | "ollama" | "lm_studio" | "groq" | "hugging_face"
   | "openrouter" | "gemini" | "cloudflare" | "mock";
 
 interface RegisteredModel { id: string; label: string; tier: string; family: string; freeNote: string }
@@ -28,14 +33,9 @@ interface ProviderRow {
   provider: ProviderName; configured: boolean; defaultModel: string;
   priority: number; models: RegisteredModel[];
 }
-interface AIEnvSnapshot {
-  GITHUB_TOKEN: boolean; GROQ_API_KEY: boolean; HUGGINGFACE_API_KEY: boolean;
-  OPENROUTER_API_KEY: boolean; GEMINI_API_KEY: boolean; CLOUDFLARE_ACCOUNT_ID: boolean;
-  CLOUDFLARE_API_TOKEN: boolean; OLLAMA_BASE_URL: string; LM_STUDIO_BASE_URL: string;
-}
 interface StatusResp {
-  activeProvider: ProviderName; activeModel: string;
-  priority: ProviderName[]; providers: ProviderRow[]; env: AIEnvSnapshot;
+  policyEnabled: boolean; activeProvider: ProviderName | null; activeModel: string | null;
+  providers: ProviderRow[];
 }
 interface HealthRow {
   ok: boolean; provider: ProviderName; model: string; latencyMs: number; reason?: string;
@@ -48,6 +48,7 @@ interface GenerateResp {
 }
 
 const LABEL: Record<ProviderName, string> = {
+  openai: "OpenAI GPT", anthropic: "Anthropic Claude",
   github_models: "GitHub Models", ollama: "Ollama (local)", lm_studio: "LM Studio (local)",
   groq: "Groq", hugging_face: "Hugging Face", openrouter: "OpenRouter",
   gemini: "Gemini", cloudflare: "Cloudflare Workers AI", mock: "Mock (no network)",
@@ -63,6 +64,17 @@ export default function AISettingsPage() {
   const [tryResp, setTryResp] = useState<GenerateResp | null>(null);
   const [tryError, setTryError] = useState<string | null>(null);
   const [tryBusy, setTryBusy] = useState(false);
+  // Master AI toggle — undefined while loading, null when the signed-in
+  // user isn't a workspace owner/admin (the /api/account/ai-policy GET
+  // itself enforces this server-side; absence of adminPolicy here just
+  // hides the control, it is not the authorization boundary).
+  const [adminPolicy, setAdminPolicy] = useState<AiPolicyAdminResp | null | undefined>(undefined);
+  const [toggleBusy, setToggleBusy] = useState(false);
+  const [toggleError, setToggleError] = useState<string | null>(null);
+  // Per-provider toggles — which provider is busy right now (only one
+  // at a time; the PUT replaces the whole policy document).
+  const [providerToggleBusy, setProviderToggleBusy] = useState<ProviderName | null>(null);
+  const [providerToggleError, setProviderToggleError] = useState<string | null>(null);
 
   const loadStatus = useCallback(() => {
     setLoadingStatus(true);
@@ -75,6 +87,87 @@ export default function AISettingsPage() {
       .catch((err) => setError(err instanceof Error ? err.message : "Network error."))
       .finally(() => setLoadingStatus(false));
   }, []);
+
+  const loadAdminPolicy = useCallback(() => {
+    fetch("/api/account/ai-policy", { credentials: "include" })
+      .then((r) => r.json())
+      .then((j: { ok?: boolean; data?: AiPolicyAdminResp }) => {
+        setAdminPolicy(j.ok && j.data ? j.data : null);
+      })
+      .catch(() => setAdminPolicy(null));
+  }, []);
+
+  const toggleAi = useCallback(() => {
+    if (!adminPolicy || toggleBusy) return;
+    const next = !adminPolicy.policy.enabled;
+    setToggleBusy(true);
+    setToggleError(null);
+    fetch("/api/account/ai-policy", {
+      method: "PUT",
+      credentials: "include",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify(
+        next
+          ? { enabled: true, allowedProviders: adminPolicy.availableProviders, modelSelections: {}, fallbackOrder: [] }
+          : { enabled: false, allowedProviders: [], modelSelections: {}, fallbackOrder: [] },
+      ),
+    })
+      .then((r) => r.json())
+      .then((j: { ok?: boolean; error?: string }) => {
+        if (!j.ok) {
+          setToggleError(j.error === "provider_unavailable" ? "No AI provider is currently configured for this service." : "Could not update the AI setting.");
+          return;
+        }
+        loadAdminPolicy();
+        loadStatus();
+      })
+      .catch(() => setToggleError("Network error."))
+      .finally(() => setToggleBusy(false));
+  }, [adminPolicy, toggleBusy, loadAdminPolicy, loadStatus]);
+
+  // Toggle a single provider in/out of allowedProviders. Normalization
+  // on the server (normalizeWorkspaceAIProviderPolicy) rejects
+  // allowedProviders: [] while enabled: true, so unchecking the last
+  // remaining provider is refused client-side with an explanation
+  // instead of firing a request that will 422.
+  const toggleProvider = useCallback((provider: ProviderName) => {
+    if (!adminPolicy || !adminPolicy.policy.enabled || providerToggleBusy) return;
+    const currentlyAllowed = adminPolicy.policy.allowedProviders.includes(provider);
+    if (currentlyAllowed && adminPolicy.policy.allowedProviders.length <= 1) {
+      setProviderToggleError("At least one provider must stay enabled while AI is on. Turn off the master switch instead.");
+      return;
+    }
+    const nextAllowed = currentlyAllowed
+      ? adminPolicy.policy.allowedProviders.filter((p) => p !== provider)
+      : [...adminPolicy.policy.allowedProviders, provider];
+    const nextModelSelections = { ...adminPolicy.policy.modelSelections };
+    if (currentlyAllowed) delete nextModelSelections[provider];
+    const nextFallbackOrder = adminPolicy.policy.fallbackOrder.filter((p) => nextAllowed.includes(p));
+    setProviderToggleBusy(provider);
+    setProviderToggleError(null);
+    fetch("/api/account/ai-policy", {
+      method: "PUT",
+      credentials: "include",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({
+        enabled: true,
+        allowedProviders: nextAllowed,
+        modelSelections: nextModelSelections,
+        fallbackOrder: nextFallbackOrder,
+      }),
+    })
+      .then((r) => r.json())
+      .then((j: { ok?: boolean; error?: string }) => {
+        if (!j.ok) {
+          setProviderToggleError(j.error === "provider_unavailable" ? "That provider is not currently configured for this service." : "Could not update this provider.");
+          return;
+        }
+        loadAdminPolicy();
+        loadStatus();
+      })
+      .catch(() => setProviderToggleError("Network error."))
+      .finally(() => setProviderToggleBusy(null));
+  }, [adminPolicy, providerToggleBusy, loadAdminPolicy, loadStatus]);
 
   const runHealth = useCallback(() => {
     setLoadingHealth(true);
@@ -96,13 +189,14 @@ export default function AISettingsPage() {
       .then((r) => r.json())
       .then((j: { ok?: boolean; data?: GenerateResp; error?: { userMessage?: string } }) => {
         if (j.ok && j.data) setTryResp(j.data);
-        else setTryError(j.error?.userMessage ?? "Generation failed — fell back to Mock.");
+        else setTryError(j.error?.userMessage ?? "Generation failed. No simulated response was returned.");
       })
       .catch((err) => setTryError(err instanceof Error ? err.message : "Network error."))
       .finally(() => setTryBusy(false));
   }, [tryPrompt]);
 
   useEffect(() => { loadStatus(); }, [loadStatus]);
+  useEffect(() => { loadAdminPolicy(); }, [loadAdminPolicy]);
 
   return (
     <div className="relative">
@@ -124,17 +218,17 @@ export default function AISettingsPage() {
           </button>
         </div>
         <h1 className="text-4xl md:text-5xl font-bold text-white tracking-[-0.045em] leading-[1.05] mb-3">
-          AI that doesn&apos;t <span className="text-gradient">cost a dime.</span>
+          AI with <span className="text-gradient">governed routes.</span>
         </h1>
         <p className="text-[15px] text-zinc-400 max-w-2xl leading-relaxed">
-          GitHub Models is the primary free provider. If it&apos;s unavailable, the manager falls back through
-          local (Ollama / LM Studio), Groq, Hugging Face, OpenRouter, Gemini, Cloudflare — and finally a
-          deterministic Mock so the platform never hard-fails on missing keys.
+          The service exposes only configured provider families. Workspace policy controls the approved routes
+          and fallback order; when those routes are unavailable, Axiom returns an honest error instead of a
+          simulated answer. Credentials and provider billing accounts remain server-only.
         </p>
       </div>
 
       {error && (
-        <div className="rounded-2xl border border-amber-500/[0.18] bg-amber-500/[0.04] p-5 mb-6 text-[13px] text-zinc-300">
+        <div role="alert" aria-live="assertive" className="rounded-2xl border border-amber-500/[0.18] bg-amber-500/[0.04] p-5 mb-6 text-[13px] text-zinc-300">
           {error}
         </div>
       )}
@@ -142,33 +236,98 @@ export default function AISettingsPage() {
       {status && (
         <>
           <div className="rounded-2xl border border-indigo-500/[0.18] bg-indigo-500/[0.04] p-5 mb-6">
-            <p className="text-[10px] font-mono uppercase tracking-widest text-indigo-300 mb-1">Active</p>
-            <div className="flex items-center gap-3 flex-wrap">
-              <span className="text-[16px] font-semibold text-white">{LABEL[status.activeProvider]}</span>
-              <span className="text-[11px] font-mono text-zinc-300 bg-white/[0.04] border border-white/[0.06] rounded-full px-2 py-0.5">
-                model: {status.activeModel}
-              </span>
+            <div className="flex items-start justify-between gap-4 flex-wrap mb-1">
+              <p className="text-[10px] font-mono uppercase tracking-widest text-indigo-300">Active</p>
+              {adminPolicy && (
+                <div className="flex items-center gap-2">
+                  <span className="text-[11px] font-mono text-zinc-400">AI features</span>
+                  <button
+                    type="button"
+                    role="switch"
+                    aria-checked={adminPolicy.policy.enabled}
+                    aria-label={adminPolicy.policy.enabled ? "Turn AI off for this workspace" : "Turn AI on for this workspace"}
+                    onClick={toggleAi}
+                    disabled={toggleBusy}
+                    className={`relative inline-flex h-6 w-11 shrink-0 items-center rounded-full transition-colors disabled:opacity-50 ${
+                      adminPolicy.policy.enabled ? "bg-emerald-500/80" : "bg-white/[0.12]"
+                    }`}
+                  >
+                    <span
+                      className={`inline-block h-4.5 w-4.5 transform rounded-full bg-white transition-transform ${
+                        adminPolicy.policy.enabled ? "translate-x-6" : "translate-x-1"
+                      }`}
+                    />
+                  </button>
+                </div>
+              )}
             </div>
+            <div className="flex items-center gap-3 flex-wrap">
+              <span className="text-[16px] font-semibold text-white">{!status.policyEnabled ? "AI is disabled for this workspace" : status.activeProvider ? LABEL[status.activeProvider] : "No approved live provider"}</span>
+              {status.activeModel && <span className="text-[11px] font-mono text-zinc-300 bg-white/[0.04] border border-white/[0.06] rounded-full px-2 py-0.5">
+                model: {status.activeModel}
+              </span>}
+            </div>
+            {toggleError && (
+              <p role="alert" aria-live="assertive" className="mt-2 text-[11px] text-rose-300">{toggleError}</p>
+            )}
+            {adminPolicy === null && (
+              <p className="mt-2 text-[11px] text-zinc-500">Only a workspace owner or admin can change this setting.</p>
+            )}
+            {adminPolicy && adminPolicy.policy.enabled && adminPolicy.availableProviders.length > 0 && (
+              <div className="mt-4 pt-4 border-t border-white/[0.06]">
+                <p className="text-[10px] font-mono uppercase tracking-widest text-zinc-500 mb-2">Per-provider</p>
+                <ul className="space-y-2">
+                  {adminPolicy.availableProviders.map((provider) => {
+                    const allowed = adminPolicy.policy.allowedProviders.includes(provider);
+                    return (
+                      <li key={provider} className="flex items-center gap-2">
+                        <button
+                          type="button"
+                          role="switch"
+                          aria-checked={allowed}
+                          aria-label={allowed ? `Turn off ${LABEL[provider]}` : `Turn on ${LABEL[provider]}`}
+                          onClick={() => toggleProvider(provider)}
+                          disabled={providerToggleBusy !== null}
+                          className={`relative inline-flex h-5 w-9 shrink-0 items-center rounded-full transition-colors disabled:opacity-50 ${
+                            allowed ? "bg-emerald-500/80" : "bg-white/[0.12]"
+                          }`}
+                        >
+                          <span
+                            className={`inline-block h-3.5 w-3.5 transform rounded-full bg-white transition-transform ${
+                              allowed ? "translate-x-5" : "translate-x-1"
+                            }`}
+                          />
+                        </button>
+                        <span className="text-[12px] text-zinc-300">{LABEL[provider]}</span>
+                      </li>
+                    );
+                  })}
+                </ul>
+                {providerToggleError && (
+                  <p role="alert" aria-live="assertive" className="mt-2 text-[11px] text-rose-300">{providerToggleError}</p>
+                )}
+              </div>
+            )}
           </div>
 
           <div className="space-y-3 mb-8">
-            {status.providers.map((p) => (
+            {status.providers.map((p, index) => (
               <div key={p.provider} className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-4">
                 <div className="flex items-center gap-2 flex-wrap mb-2">
-                  <span className="text-[10px] font-mono text-zinc-500 uppercase tracking-wider">#{p.priority + 1}</span>
+                  <span className="text-[10px] font-mono text-zinc-500 uppercase tracking-wider">#{index + 1}</span>
                   <span className="text-[14px] font-semibold text-white">{LABEL[p.provider]}</span>
                   <span className={`text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded border ${
                     p.configured
                       ? "bg-emerald-500/15 text-emerald-300 border-emerald-500/30"
                       : "bg-amber-500/15 text-amber-300 border-amber-500/30"
                   }`}>
-                    {p.configured ? "Ready" : "Setup required"}
+                    {p.configured ? "Approved" : "Unavailable"}
                   </span>
                   <span className="text-[10px] font-mono text-zinc-400 ml-auto">default: {p.defaultModel}</span>
                 </div>
                 <details className="text-[11px]">
                   <summary className="text-[10px] font-mono text-zinc-500 cursor-pointer hover:text-zinc-300 uppercase tracking-wider">
-                    {p.models.length} recommended free model{p.models.length === 1 ? "" : "s"}
+                    {p.models.length} approved model option{p.models.length === 1 ? "" : "s"}
                   </summary>
                   <ul className="mt-2 space-y-0.5">
                     {p.models.map((m) => (
@@ -210,7 +369,7 @@ export default function AISettingsPage() {
                 ))}
               </ul>
             ) : (
-              <p className="text-[12px] text-zinc-500">Click run health check to ping each provider.</p>
+              <p className="text-[12px] text-zinc-500">Click run health check to ping each provider approved for this workspace.</p>
             )}
           </div>
 
@@ -220,6 +379,7 @@ export default function AISettingsPage() {
               <h2 className="text-[10px] font-mono uppercase tracking-widest text-zinc-500">Try it</h2>
             </div>
             <textarea
+              aria-label="Test prompt"
               value={tryPrompt}
               onChange={(e) => setTryPrompt(e.target.value)}
               rows={3}

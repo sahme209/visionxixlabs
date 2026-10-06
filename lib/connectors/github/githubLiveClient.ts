@@ -14,6 +14,27 @@
  *    are honest.
  *
  * Server-only: imports `loadAppEnv`.
+ *
+ * Blast radius (why this stays a single shared operator-level
+ * credential, not per-tenant): this client backs a legacy demonstration
+ * subsystem, not the real per-tenant GitHub integration
+ * (GitHubInstallation / lib/connectors/github/githubAppAuth.ts is that).
+ * Known callers, confirmed by repo-wide grep as of the "GitHub demo
+ * scan" relabeling (see docs/AXIOM_EXECUTION_BACKLOG.md §1):
+ *   - app/api/github/sync/route.ts (now locked to the operator's
+ *     configured default org only — no client-supplied org override)
+ *   - app/api/github/deep-posture/route.ts (requireAdmin-gated)
+ *   - app/api/admin/github-test/route.ts (requireAdmin-gated)
+ *   - lib/connectors/github/githubDeepPostureExtractor.ts
+ *   - lib/product/axiomProductModel.ts, lib/safety/
+ *     automationBoundaryDetector.ts, lib/operatingLoop/
+ *     operatingLoopBuilder.ts, lib/readiness/launchReadinessRunner.ts,
+ *     lib/actions/actionRegistry.ts, lib/validation/
+ *     platformValidationMatrix.ts, lib/releaseops/getReleaseOpsState.ts
+ *     (all read-only demo-status surfaces, not tenant data views)
+ * Adding a new caller here should be rare — a genuine tenant-facing
+ * GitHub feature belongs on githubAppAuth.ts's per-installation path
+ * instead.
  */
 
 import "server-only";

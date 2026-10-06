@@ -23,7 +23,21 @@ export async function POST(request: NextRequest) {
   try {
     const body = asRecord(await request.json().catch(() => ({})));
     challenge = requireString(body.challenge, "challenge", { max: 96 });
-    deviceFingerprint = requireString(body.deviceFingerprint, "deviceFingerprint", { max: 256 });
+    try {
+      deviceFingerprint = requireString(body.deviceFingerprint, "deviceFingerprint", { max: 256 });
+    } catch {
+      // Earlier signed desktop builds created a pairing challenge correctly but
+      // omitted the device binding when polling its status. Do not fall back to
+      // challenge-only completion: anyone who obtains a browser URL could then
+      // claim the approved session. Tell the user to upgrade instead.
+      return NextResponse.json(
+        {
+          code: "desktop_update_required",
+          error: "This Axiom Agent version needs a security update. Download the latest signed installer, then start sign-in again.",
+        },
+        { status: 426 },
+      );
+    }
   } catch (error) {
     return NextResponse.json(
       { error: error instanceof Error ? error.message : "The pairing request is invalid." },

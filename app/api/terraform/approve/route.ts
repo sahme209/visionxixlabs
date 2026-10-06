@@ -7,6 +7,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { verifyStarterToken } from "@/lib/starterToken";
+import { logAudit } from "@/lib/security/auditLog";
 
 export async function POST(req: NextRequest) {
   const token = req.nextUrl.searchParams.get("token");
@@ -56,6 +57,13 @@ export async function POST(req: NextRequest) {
         approvedAt: new Date(),
         approvedBy: result.leadId,
       },
+    });
+
+    await logAudit({
+      leadId: result.leadId,
+      action: "terraform.apply_approved",
+      actor: "user",
+      metadata: { jobId },
     });
 
     return NextResponse.json({

@@ -9,10 +9,9 @@
  *   - TenantBillingPlan → tier (via readBillingPlan)
  *   - UsageEvent _sum on costCents for (organizationId, current month)
  *
- * Fails open: if either read errors, returns an allow decision with
- * threshold "below_70" so a Prisma blip doesn't take down the AI
- * coding loop. This is a soft check; the DB unique constraints and
- * gates downstream still enforce correctness.
+ * A usage-read failure remains fail-open for legacy workflow callers, but
+ * general-purpose generation can opt into fail-closed metering. That keeps
+ * a temporary database fault from silently producing unmetered AI calls.
  */
 
 import "server-only";
@@ -28,6 +27,7 @@ const periodStart = (d: Date) => new Date(Date.UTC(d.getUTCFullYear(), d.getUTCM
 export async function checkWorkspaceAICredits(
   organizationId: string,
   expectedAdditionalCostCents = 0,
+  options?: { failClosedOnUsageReadError?: boolean },
 ): Promise<PreflightDecision> {
   let plan;
   try {
@@ -50,6 +50,9 @@ export async function checkWorkspaceAICredits(
     });
     currentAICostCents = sum._sum.costCents ?? 0;
   } catch {
+    if (options?.failClosedOnUsageReadError) {
+      throw new Error("ai_credit_meter_unavailable");
+    }
     // Aggregate failed — treat as fresh month. Soft check; downstream
     // gates still enforce.
     currentAICostCents = 0;

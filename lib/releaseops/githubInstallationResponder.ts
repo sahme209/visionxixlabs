@@ -4,8 +4,7 @@
  * Pure responders over the GitHubInstallation table:
  *   • buildInstallationCaptureResponse — upsert on (orgId, installationId)
  *     from the post-install callback. Idempotent.
- *   • buildInstallationStatusResponse   — UI reads this to decide
- *     whether to show "+ Install GitHub App" or "Connected as …".
+ *   • buildInstallationStatusResponse   — UI reads installation state.
  *   • buildInstallationTransitionResponse — suspend/revoke/reactivate.
  *
  * The actual minting of installation access tokens (which is required
@@ -282,7 +281,8 @@ export async function buildInstallationCaptureResponse(
 
 export interface StatusContext {
   appSlug: string;
-  callbackBaseUrl: string;
+  /** Lets the UI show the admin-only "Create GitHub App" manifest-flow entry point. */
+  isAdmin?: boolean;
 }
 
 export type StatusBody =
@@ -293,23 +293,13 @@ export type StatusBody =
         installed: boolean;
         active: InstallationView | null;
         history: InstallationView[];
-        installUrl: string;
+        installReady: boolean;
+        isAdmin: boolean;
       };
     }
   | { ok: false; error: string; hint?: string; correlationId?: string };
 
 export interface StatusResult { status: number; body: StatusBody }
-
-/**
- * Build the GitHub App install URL. Embeds organizationId in the
- * `state` param so the post-install callback knows which tenant
- * the install belongs to.
- */
-export function buildInstallUrl(ctx: StatusContext, organizationId: string): string {
-  if (!ctx.appSlug) return "";
-  const state = encodeURIComponent(organizationId);
-  return `https://github.com/apps/${ctx.appSlug}/installations/new?state=${state}`;
-}
 
 export async function buildInstallationStatusResponse(
   repo: GitHubInstallationRepo,
@@ -334,7 +324,8 @@ export async function buildInstallationStatusResponse(
           installed: active !== null,
           active: active ? projectRow(active) : null,
           history: history.map(projectRow),
-          installUrl: buildInstallUrl(ctx, organizationId),
+          installReady: Boolean(ctx.appSlug),
+          isAdmin: Boolean(ctx.isAdmin),
         },
       },
     };
@@ -435,3 +426,4 @@ export async function buildInstallationTransitionResponse(
     };
   }
 }
+import { createHmac, randomBytes, timingSafeEqual } from "node:crypto";

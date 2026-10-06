@@ -163,6 +163,8 @@ export function ContactClient({ intent }: { intent?: "production-access" }) {
           {state.kind === "ok" ? (
             <motion.div
               key="ok"
+              role="status"
+              aria-live="polite"
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0 }}
@@ -334,7 +336,7 @@ export function ContactClient({ intent }: { intent?: "production-access" }) {
               </div>
 
               {state.kind === "error" ? (
-                <div className="rounded-xl border border-red-500/30 bg-red-500/[0.06] px-4 py-3 text-[13px] text-red-300">
+                <div role="alert" aria-live="assertive" className="rounded-xl border border-red-500/30 bg-red-500/[0.06] px-4 py-3 text-[13px] text-red-300">
                   {state.message}
                 </div>
               ) : null}

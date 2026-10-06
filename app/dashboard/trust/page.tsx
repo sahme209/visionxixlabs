@@ -553,7 +553,7 @@ function CanonicalTrustStrip() {
   }
   if (error || !summary) {
     return (
-      <div className="rounded-2xl border border-amber-500/[0.18] bg-amber-500/[0.04] p-5 mb-8">
+      <div role="alert" aria-live="assertive" className="rounded-2xl border border-amber-500/[0.18] bg-amber-500/[0.04] p-5 mb-8">
         <p className="text-[11px] font-mono text-amber-300/80 uppercase tracking-[0.18em] mb-1">// trust summary unavailable</p>
         <p className="text-[13px] text-zinc-300">{error ?? "Sign in to load /api/trust/summary."}</p>
       </div>

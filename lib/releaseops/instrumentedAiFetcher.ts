@@ -20,6 +20,9 @@ import "server-only";
 import { prisma } from "@/lib/db";
 import { getAIProviderManager } from "@/lib/ai/AIProviderManager";
 import { callProvider, type PreferredProvider } from "@/lib/ai/directProviderCall";
+import { loadWorkspaceAIProviderPolicyWithState, resolveWorkspaceAIProviderPolicy } from "@/lib/ai/workspaceProviderPolicy";
+import { checkWorkspaceAICredits } from "@/lib/billing/checkWorkspaceAICredits";
+import { recordAIUsageEvent } from "@/lib/billing/recordAIUsageEvent";
 import type { RationaleAiFetcher } from "./aiRationaleEnricherEngine";
 import {
   lookupCircuitState,
@@ -91,18 +94,74 @@ export function makeInstrumentedFetcher(opts: InstrumentedFetcherOptions): Ratio
     }
 
     // Provider call with timeout race.
-    let raw: { text: string; model: string; usage: { promptTokens?: number; completionTokens?: number; totalTokens?: number } | null };
+    let raw: {
+      text: string;
+      provider: string;
+      model: string;
+      usage: { promptTokens?: number; completionTokens?: number; totalTokens?: number } | null;
+    };
     try {
       const maxTokens = opts.maxTokens ?? 500;
       const temperature = opts.temperature ?? 0.2;
-      // Phase 593: when preferredProvider is set, bypass the manager
-      // fallback chain and call the named provider directly. The
-      // AiCallLog.model column records the resolved model so the
-      // cost attribution path prices it correctly.
+      // The release-workflow path must not be an unmetered escape hatch from
+      // the browser generation route. A meter outage also fails closed so a
+      // governed workspace never produces an unaccounted provider call.
+      if (orgId) {
+        const creditDecision = await checkWorkspaceAICredits(
+          orgId,
+          0,
+          { failClosedOnUsageReadError: true },
+        ).catch(() => {
+          throw new Error("workspace_ai_credit_meter_unavailable");
+        });
+        if (creditDecision.kind === "block") {
+          throw new Error("workspace_ai_credit_pool_exhausted");
+        }
+      }
+      // An unscoped legacy job may still use its explicit provider directly.
+      // A workspace-scoped release must instead pass through the manager so
+      // the persisted allowlist, model selection, and fallback rules apply.
+      const manager = getAIProviderManager();
+      const loadedPolicy = orgId
+        ? await loadWorkspaceAIProviderPolicyWithState(orgId)
+        : null;
+      if (loadedPolicy && loadedPolicy.storageState !== "ready") {
+        throw new Error("workspace_ai_policy_unavailable");
+      }
+      const workspacePolicy = loadedPolicy
+        ? resolveWorkspaceAIProviderPolicy({
+          stored: loadedPolicy.policy,
+          serviceEnabled: manager.status()
+            .filter((provider) => provider.configured && provider.provider !== "mock")
+            .map((provider) => provider.provider),
+        })
+        : null;
+      if (workspacePolicy && !workspacePolicy.enabled) {
+        throw new Error("workspace_ai_disabled");
+      }
+      if (workspacePolicy && workspacePolicy.allowedProviders.length === 0) {
+        throw new Error("workspace_ai_provider_unavailable");
+      }
+      if (workspacePolicy && opts.preferredProvider && !workspacePolicy.allowedProviders.includes(opts.preferredProvider)) {
+        throw new Error("workspace_ai_provider_not_approved");
+      }
+
+      // Organization-scoped release work uses the same server-resolved policy
+      // as the workspace generation route. The direct-provider path is kept
+      // only for unscoped legacy jobs, where no workspace policy exists.
       const generate = opts.generateText
-        ?? (opts.preferredProvider
-            ? (p: string, o: { maxTokens: number; temperature: number }) => callProvider(opts.preferredProvider!, p, o)
-            : (p: string, o: { maxTokens: number; temperature: number }) => getAIProviderManager().generateText(p, o));
+        ?? (workspacePolicy
+            ? (p: string, o: { maxTokens: number; temperature: number }) => manager.generateText(p, {
+              ...o,
+              organizationId: orgId ?? undefined,
+              only: opts.preferredProvider,
+              allowedProviders: workspacePolicy.allowedProviders,
+              modelSelections: workspacePolicy.modelSelections,
+              fallbackOrder: workspacePolicy.fallbackOrder,
+            })
+            : (opts.preferredProvider
+                ? (p: string, o: { maxTokens: number; temperature: number }) => callProvider(opts.preferredProvider!, p, o)
+                : (p: string, o: { maxTokens: number; temperature: number }) => manager.generateText(p, o)));
       const result = await raceWithTimeout(generate(prompt, { maxTokens, temperature }), timeoutMs);
       raw = result as typeof raw;
     } catch (err) {
@@ -123,6 +182,21 @@ export function makeInstrumentedFetcher(opts: InstrumentedFetcherOptions): Ratio
     }
 
     const latencyMs = now().getTime() - startMs;
+    // Keep the budget meter tenant-scoped without retaining prompt text,
+    // system instructions, provider credentials, or provider account data.
+    // Usage persistence is best effort; the preflight above is the safety
+    // boundary and must already have completed before the provider call.
+    if (orgId && typeof raw.provider === "string" && typeof raw.model === "string" && raw.usage) {
+      await recordAIUsageEvent({
+        organizationId: orgId,
+        provider: raw.provider,
+        model: raw.model,
+        inputTokens: raw.usage.promptTokens ?? 0,
+        outputTokens: raw.usage.completionTokens ?? 0,
+        triggeredBy: `system:${engineName}`,
+        metadata: { engineName, source: "releaseops.instrumented_fetcher" },
+      }).catch(() => undefined);
+    }
     await persistAiCallLog(repo, {
       organizationId: orgId,
       engineName,

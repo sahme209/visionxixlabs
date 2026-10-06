@@ -10,6 +10,7 @@ import { ScrollProgress } from "@/components/motion/ScrollProgress";
 import { CommandPalette } from "@/components/CommandPalette";
 import { SITE_URL, defaultOgImage, primaryKeywords, secondaryKeywords } from "@/lib/seo";
 import { PrivacyConsent } from "@/components/PrivacyConsent";
+import { RouteAnnouncer } from "@/components/a11y/RouteAnnouncer";
 
 // Inter with the SF-Pro-leaning OpenType features baked in:
 // - `cv02` rounded 'g'  - `cv11` single-storey 'a'  - `ss03` shorter '8'
@@ -91,6 +92,7 @@ export default function RootLayout({
           <AxiomPanelProvider>
             <OrganizationJsonLd />
             <WebSiteJsonLd />
+            <RouteAnnouncer />
             <ScrollProgress />
             <CommandPalette />
             <div>{children}</div>

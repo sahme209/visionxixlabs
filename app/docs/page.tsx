@@ -16,7 +16,7 @@ import { DocHeader, Callout, DocFeedback } from "@/components/docs/DocPrimitives
 
 export const metadata: Metadata = {
   title: "Documentation — Axiom Agent | Vision XIX Labs",
-  description: "Self-serve guides for connecting your cloud, running scans, generating Terraform, approving plans, rollback, ReleaseOps, and the Axiom desktop application.",
+  description: "Guides for Axiom Agent's governed deployment workflow, desktop installation, security boundaries, and verified integration states.",
 };
 
 const QUICK_PATHS = [
@@ -136,8 +136,8 @@ export default function DocsIndexPage() {
       <DocHeader
         number="01"
         kicker="Axiom documentation"
-        title="Self-serve guides for the entire platform."
-        summary="Every flow Axiom supports — cloud onboarding, scanning, approval, execution, rollback, ReleaseOps, desktop — is documented here. No tickets required to understand how it works."
+        title="Guides for the release you can explain."
+        summary="Start with the installed Axiom Agent workflow, then use reference material for setup, readiness, security, and recovery. Documentation distinguishes recorded plans, preview work, and verified provider state."
       />
 
       <Callout variant="safe" title="What this documentation covers">
@@ -212,7 +212,7 @@ export default function DocsIndexPage() {
 
       {/* Honest demo-state note */}
       <Callout variant="info" title="Where the platform is right now">
-        AWS is the first fully-implemented provider — IAM-role onboarding, scan, reasoning, Terraform export, approval, and rollback are real. <strong>Azure and GCP have working connectors but the reasoning + execution layers are rolling out in Q2 and Q3 2026.</strong> ReleaseOps is in operational preview. The desktop app is in macOS preview. Documentation reflects each surface honestly — what works, what&apos;s coming, and when.
+        GitHub release evidence is the first read-only provider workflow. Cloud-provider setup guides explain the intended permission model, but a provider is not treated as connected until a tenant-scoped live validation succeeds. <strong>Azure and GCP remain preview until their inventory and provider paths are implemented and verified.</strong> Terraform and CLI artifacts can be reviewed; local Terraform apply remains disabled by the desktop safety contract.
       </Callout>
 
       <DocFeedback />

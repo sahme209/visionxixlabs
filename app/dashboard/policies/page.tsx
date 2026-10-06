@@ -144,12 +144,12 @@ export default function PoliciesPage() {
       />
 
       {loading && (
-        <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 mb-6">
+        <div className="surface-glass rounded-2xl p-5 mb-6">
           <p className="text-[11px] font-mono text-zinc-500 uppercase tracking-[0.18em]">// loading policy registry…</p>
         </div>
       )}
       {!loading && error && (
-        <div className="rounded-2xl border border-amber-500/[0.18] bg-amber-500/[0.04] p-5 mb-6">
+        <div role="alert" aria-live="assertive" className="rounded-2xl border border-amber-500/[0.18] bg-amber-500/[0.04] p-5 mb-6">
           <p className="text-[11px] font-mono text-amber-300/80 uppercase tracking-[0.18em] mb-1">// policies unavailable</p>
           <p className="text-[13px] text-zinc-300">{error}</p>
         </div>
@@ -250,7 +250,7 @@ export default function PoliciesPage() {
 
 function SummaryStat({ label, value, tone }: { label: string; value: number; tone: string }) {
   return (
-    <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-4">
+    <div className="surface-glass rounded-xl p-4">
       <p className="text-[10px] font-mono text-zinc-500 uppercase tracking-wider mb-1">{label}</p>
       <p className={`text-2xl font-bold tracking-tight ${tone}`}>{value}</p>
     </div>

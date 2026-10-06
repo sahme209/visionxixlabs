@@ -165,6 +165,7 @@ export default function CopilotPage() {
                 >
                   <input
                     type="text"
+                    aria-label="Ask the copilot about scans, approvals, releases, desktop, or governance"
                     value={input}
                     onChange={(e) => setInput(e.target.value)}
                     placeholder="Ask about scans, approvals, releases, desktop, governance…"

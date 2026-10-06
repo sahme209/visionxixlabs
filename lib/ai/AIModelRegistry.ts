@@ -1,6 +1,6 @@
 /**
- * AIModelRegistry — recommended free / free-to-start model identifiers
- * per provider. Operators (and the manager) consult this to pick a
+ * AIModelRegistry — recommended model identifiers per provider. Operators
+ * (and the manager) consult this to pick a
  * default + offer a switcher.
  *
  * Hard rule: no hard-coded "one model forever". The registry stores an
@@ -18,12 +18,23 @@ export interface RegisteredModel {
   /** Coarse capability ranking — manager prefers higher when no override. */
   tier: "preferred" | "balanced" | "fast" | "fallback";
   /** Family/origin tag for the settings UI. */
-  family: "openai" | "llama" | "qwen" | "mistral" | "gemma" | "phi" | "deepseek" | "anthropic" | "gemini" | "cloudflare" | "other";
-  /** Free tier note. Strictly informational; we never quote SLAs. */
+  family: "openai" | "llama" | "qwen" | "mistral" | "gemma" | "phi" | "deepseek" | "anthropic" | "gemini" | "xai" | "cloudflare" | "other";
+  /** Access note. Strictly informational; we never quote pricing or SLAs. */
   freeNote: string;
 }
 
 const MODELS: Record<AIProviderName, RegisteredModel[]> = {
+  openai: [
+    { id: "gpt-4o", label: "GPT-4o", tier: "preferred", family: "openai", freeNote: "Service-managed OpenAI access" },
+    { id: "gpt-4o-mini", label: "GPT-4o mini", tier: "fast", family: "openai", freeNote: "Service-managed OpenAI access" },
+  ],
+  anthropic: [
+    { id: "claude-sonnet-4-20250514", label: "Claude Sonnet", tier: "preferred", family: "anthropic", freeNote: "Service-managed Anthropic access" },
+    { id: "claude-3-5-haiku-latest", label: "Claude Haiku", tier: "fast", family: "anthropic", freeNote: "Service-managed Anthropic access" },
+  ],
+  xai: [
+    { id: "grok-4.7", label: "Grok 4.7", tier: "preferred", family: "xai", freeNote: "Service-managed xAI access" },
+  ],
   github_models: [
     { id: "openai/gpt-4o-mini",                label: "GPT-4o mini",                 tier: "preferred", family: "openai",   freeNote: "GitHub Models free tier" },
     { id: "openai/gpt-4o",                     label: "GPT-4o",                      tier: "balanced",  family: "openai",   freeNote: "GitHub Models free tier (limits apply)" },
@@ -103,6 +114,6 @@ export function isKnownModel(provider: AIProviderName, modelId: string): boolean
 
 /** Provider declaration order = fallback priority (ties broken by index). */
 export const PROVIDER_PRIORITY: AIProviderName[] = [
-  "github_models", "ollama", "lm_studio", "groq",
+  "openai", "anthropic", "xai", "github_models", "ollama", "lm_studio", "groq",
   "hugging_face", "openrouter", "gemini", "cloudflare", "mock",
 ];

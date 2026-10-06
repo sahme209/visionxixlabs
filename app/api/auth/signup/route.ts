@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { hash } from "bcryptjs";
 import { prisma } from "@/lib/db";
 import { checkRateLimit } from "@/lib/rateLimit";
+import { ensurePersonalWorkspaceMembership } from "@/lib/auth/ensurePersonalWorkspaceMembership";
 
 export async function POST(req: NextRequest) {
   if (!process.env.DATABASE_URL) {
@@ -52,6 +53,16 @@ export async function POST(req: NextRequest) {
         name: normalizedName || undefined,
       },
     });
+    try {
+      await ensurePersonalWorkspaceMembership({ userId: user.id, email: user.email });
+    } catch (err) {
+      // The account row is already committed at this point. Every sign-in
+      // (lib/auth.ts authorize + signIn callbacks) retries this same
+      // best-effort bootstrap, so a transient failure here must not turn a
+      // real account creation into a 500 the operator can't recover from —
+      // their very next sign-in self-heals the missing membership.
+      console.error("[Signup] workspace bootstrap failed (best-effort):", err);
+    }
     return NextResponse.json({ id: user.id, email: user.email, name: user.name });
   } catch (e) {
     const err = e as Error & { code?: string };

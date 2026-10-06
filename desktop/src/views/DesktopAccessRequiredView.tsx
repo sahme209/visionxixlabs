@@ -84,7 +84,7 @@ export function DesktopAccessRequiredView({
           </button>
         ) : (
           <button type="button" onClick={() => void open(`${WEB_BASE}${identity.access.accessRequestPath}`)} className="mt-6 w-full rounded-full bg-white px-5 py-3 text-sm font-semibold text-black hover:bg-zinc-100">
-            Request production access
+            Request pilot access
           </button>
         )}
         <button type="button" onClick={() => void checkAgain()} disabled={checking} className="mt-3 w-full rounded-full bg-violet-600 px-5 py-3 text-sm font-semibold hover:bg-violet-500 disabled:opacity-60">
@@ -95,7 +95,7 @@ export function DesktopAccessRequiredView({
           <span className="text-zinc-700">•</span>
           <button type="button" onClick={() => void signOut()} className="text-zinc-400 hover:text-white">Use another account</button>
         </div>
-        <p className="mt-6 text-center text-xs leading-5 text-zinc-600">Creating an account verifies identity only. Deployment operations require a separately provisioned paid workspace entitlement.</p>
+        <p className="mt-6 text-center text-xs leading-5 text-zinc-600">Creating an account verifies identity only. Deployment operations require a separately provisioned approved pilot or commercial workspace entitlement.</p>
       </div>
     </main>
   );

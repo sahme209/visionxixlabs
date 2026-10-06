@@ -6,7 +6,7 @@
  * bubble. Auto-dismisses 2 seconds after success.
  */
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 import {
   ChatBubbleLeftRightIcon,
@@ -33,6 +33,21 @@ export function FeedbackWidget() {
   const [submitted, setSubmitted] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const triggerRef = useRef<HTMLButtonElement | null>(null);
+
+  useEffect(() => {
+    if (!open) return;
+    function onKeyDown(e: KeyboardEvent) {
+      if (e.key === "Escape") {
+        e.preventDefault();
+        setOpen(false);
+        reset();
+        triggerRef.current?.focus();
+      }
+    }
+    document.addEventListener("keydown", onKeyDown);
+    return () => document.removeEventListener("keydown", onKeyDown);
+  }, [open]);
 
   function reset() {
     setSentiment(null);
@@ -72,16 +87,16 @@ export function FeedbackWidget() {
   return (
     <div className="fixed bottom-5 right-20 z-40">
       {open && (
-        <div className="mb-2 w-[300px] rounded-2xl border border-white/[0.08] bg-zinc-950/95 backdrop-blur shadow-2xl p-4">
+        <div role="dialog" aria-label="Send feedback" className="mb-2 w-[300px] rounded-2xl border border-white/[0.08] bg-zinc-950/95 backdrop-blur shadow-2xl p-4">
           <div className="flex items-start justify-between gap-2 mb-3">
             <p className="text-[10px] font-mono text-fuchsia-300/80 uppercase tracking-wider">// feedback</p>
-            <button onClick={() => { setOpen(false); reset(); }} className="text-zinc-400 hover:text-white">
+            <button onClick={() => { setOpen(false); reset(); triggerRef.current?.focus(); }} className="text-zinc-400 hover:text-white">
               <XMarkIcon className="h-4 w-4" />
             </button>
           </div>
 
           {submitted ? (
-            <div className="text-center py-4">
+            <div role="status" aria-live="polite" className="text-center py-4">
               <CheckCircleIcon className="h-8 w-8 text-emerald-300 mx-auto mb-2" />
               <p className="text-[13px] font-semibold text-white">Thanks — that landed.</p>
               <p className="text-[11px] text-zinc-400 mt-1">It pings the team Slack so we see it within minutes.</p>
@@ -108,6 +123,7 @@ export function FeedbackWidget() {
               </div>
 
               <textarea
+                aria-label="Feedback message"
                 value={message}
                 onChange={(e) => setMessage(e.target.value.slice(0, 2000))}
                 rows={4}
@@ -116,7 +132,7 @@ export function FeedbackWidget() {
                 className="w-full rounded-lg border border-white/[0.08] bg-black/30 px-2.5 py-2 text-[12px] text-white focus:border-fuchsia-400/60 focus:outline-none resize-none"
               />
 
-              {error && <p className="text-[11px] text-rose-300 mt-2">{error}</p>}
+              {error && <p role="alert" aria-live="assertive" className="text-[11px] text-rose-300 mt-2">{error}</p>}
 
               <button
                 onClick={send}
@@ -131,8 +147,10 @@ export function FeedbackWidget() {
       )}
 
       <button
+        ref={triggerRef}
         onClick={() => setOpen((v) => !v)}
         aria-label="Send feedback"
+        aria-expanded={open}
         className="rounded-full bg-fuchsia-500/20 text-fuchsia-200 border border-fuchsia-500/40 hover:bg-fuchsia-500/30 p-2 shadow-lg backdrop-blur transition"
       >
         <ChatBubbleLeftRightIcon className="h-5 w-5" />

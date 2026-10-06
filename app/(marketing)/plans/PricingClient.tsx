@@ -232,7 +232,7 @@ export function PricingClient() {
 
       {/* Hero ────────────────────────────────────────────────────── */}
       <section className="relative z-10 mx-auto max-w-6xl px-6 md:px-10 pt-24 pb-12">
-        <motion.p initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="text-[10px] font-mono uppercase tracking-[0.28em] text-zinc-500 inline-flex items-center gap-3">
+        <motion.p initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="mono-label inline-flex items-center gap-3">
           <span className="text-brand-coral/90 tabular-nums">07</span>
           <span className="h-px w-6 bg-gradient-to-r from-brand-coral/60 to-transparent" />
           Pricing
@@ -261,6 +261,11 @@ export function PricingClient() {
         <h2 className="display-headline text-white mt-4">Two buckets. Nothing hidden.</h2>
         <p className="mt-4 text-[14px] text-zinc-400 leading-relaxed">
           Your monthly cost is the sum of two clean line items. We make it visually obvious so you can audit it line by line.
+        </p>
+        <p className="mt-3 text-[13px] text-zinc-500 leading-relaxed">
+          These charges cover the same governed release workspace described on the{" "}
+          <Link href="/product" className="text-violet-300 hover:text-violet-200 underline underline-offset-2">product page</Link>
+          {" "}— the AI engineers, cloud connectors, and scans below are the readiness and evidence inputs that feed the Playbook, not a separate product.
         </p>
 
         <div className="mt-8 space-y-4">
@@ -298,7 +303,7 @@ export function PricingClient() {
           The VxL operations bill is the sum of these nine categories. You only pay for the ones you actually use; unused categories are zero.
         </p>
 
-        <div className="mt-8 rounded-2xl border border-white/[0.06] bg-white/[0.015] overflow-hidden">
+        <div className="surface-glass mt-8 rounded-2xl overflow-hidden">
           {VXL_CHARGES.map((c, i) => (
             <div
               key={c.label}
@@ -453,7 +458,7 @@ export function PricingClient() {
 
       {/* Soft footer — optional next steps, not gates ────────────── */}
       <section className="relative z-10 mx-auto max-w-6xl px-6 md:px-10 pb-24 pt-8">
-        <div className="rounded-2xl border border-white/[0.06] bg-white/[0.015] p-6 md:p-8">
+        <div className="surface-glass rounded-2xl p-6 md:p-8">
           <p className="kicker-mono">// when you&apos;re ready</p>
           <h3 className="display-headline text-white mt-3">No pressure. Pick whichever fits.</h3>
           <p className="mt-4 text-[13.5px] text-zinc-400 leading-relaxed">

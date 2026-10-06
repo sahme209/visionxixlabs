@@ -34,6 +34,7 @@ import { decideAutopilotAction, loadAutopilotPolicy } from "@/lib/growth/autopil
 import { generateBrandImage } from "@/lib/growth/imageGenerator";
 import { uploadImageToLinkedIn } from "@/lib/growth/linkedin/imageUpload";
 import type { ContentTopicCategory } from "@/lib/growth/growthModels";
+import { decryptCredential } from "@/lib/security/credentialVault";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 300; // image gen + upload can take ~30-60s combined
@@ -128,15 +129,25 @@ async function handle(req: NextRequest): Promise<NextResponse> {
           orderBy: { updatedAt: "desc" },
         });
         if (connection) {
-          const upload = await uploadImageToLinkedIn({
-            accessToken: connection.accessToken,
-            owner: connection.organizationUrn || connection.linkedinUrn,
-            bytes: image.bytes,
-          });
-          if (upload.kind === "ok") {
-            imageUrn = upload.urn;
-          } else {
-            imageError = `linkedin_upload_${upload.kind}`;
+          let decryptedAccessToken: string | null = null;
+          try {
+            decryptedAccessToken = decryptCredential(connection.accessToken);
+          } catch {
+            // Covers real decryption failures and legacy rows written
+            // before this connector's tokens were encrypted at rest.
+            imageError = "linkedin_upload_token_decrypt_failed";
+          }
+          if (decryptedAccessToken) {
+            const upload = await uploadImageToLinkedIn({
+              accessToken: decryptedAccessToken,
+              owner: connection.organizationUrn || connection.linkedinUrn,
+              bytes: image.bytes,
+            });
+            if (upload.kind === "ok") {
+              imageUrn = upload.urn;
+            } else {
+              imageError = `linkedin_upload_${upload.kind}`;
+            }
           }
         } else {
           imageError = "no_connection_for_image_upload";

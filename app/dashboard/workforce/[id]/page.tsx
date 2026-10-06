@@ -779,6 +779,7 @@ export default async function EngineerDetailPage({ params }: { params: Promise<{
         <form action={`/api/workforce/${engineer.id}/notes`} method="POST">
           <textarea
             name="notes"
+            aria-label="Operator notes"
             defaultValue={record?.notes ?? ""}
             rows={3}
             maxLength={4000}

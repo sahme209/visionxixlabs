@@ -35,7 +35,7 @@ const CAPABILITIES: readonly Capability[] = [
   // perception
   { name: "Detector",            role: "perception",   kernel: "lib/agents/detectorSignalEmitter",       proves: "Watches telemetry and emits typed signals to the bus.",                                 evidence: { href: "/download",       label: "agent bus" } },
   { name: "Reasoner",            role: "reasoning",    kernel: "lib/agents/reasonerHypothesisWeaver",    proves: "Weaves 1..N signals into a typed hypothesis with a confidence score.",                  evidence: { href: "/download",       label: "agent bus" } },
-  { name: "Simulator",           role: "reasoning",    kernel: "lib/agents/simulatorSandboxSpec",        proves: "Sandboxes the proposed action end-to-end and returns a verdict before any approval packet is built." },
+  { name: "Simulator",           role: "reasoning",    kernel: "lib/agents/simulatorSandboxSpec",        proves: "Models a proposed change against constrained inputs and records review checks before an approval packet is prepared; it is not an isolated production rehearsal." },
 
   // planning
   { name: "Spec Writer",         role: "planning",     kernel: "lib/agents/specWriter",                  proves: "Drafts a typed engineering spec (goals, non-goals, risks, verification, rollback) from a problem statement." },
@@ -61,17 +61,17 @@ const CAPABILITIES: readonly Capability[] = [
   { name: "Anomaly Detector",      role: "perception", kernel: "lib/agents/anomalyDetector",             proves: "MAD-based z-score on time series. Spike / dip / drift / missing_data with bounded false-positive rate.",                                        isNew: true },
   { name: "Change Risk Assessor",  role: "safety",     kernel: "lib/agents/changeRiskAssessor",          proves: "Scores blast radius of a proposed change against service topology. Critical-tier reach → council_3_of_5 gate.",                                  isNew: true },
   { name: "Secrets Hygiene",       role: "safety",     kernel: "lib/agents/secretsHygieneScanner",       proves: "Scans a file / diff for AWS / Stripe / GitHub / OpenAI / Anthropic / PEM / Slack secrets. Redacts in output; never echoes the raw value.",        isNew: true },
-  { name: "Compliance Mapper",     role: "verification", kernel: "lib/agents/complianceControlMapper",   proves: "Maps audit events → SOC 2 / ISO 27001 / GDPR / HIPAA controls. Per-framework readiness % + blocking-gap list.",                                  isNew: true },
+  { name: "Compliance Mapper",     role: "verification", kernel: "lib/agents/complianceControlMapper",   proves: "Maps available audit events to control-review evidence and highlights gaps. It supports customer assessment; it does not certify compliance or regulated-workload readiness.",                                  isNew: true },
 
   // safety
   { name: "Policy Gate",         role: "safety",       kernel: "lib/agents/policyGateEvaluator",         proves: "Applies the tenant charter to every proposal — refuses anything outside the operator-signed scope.",         evidence: { href: "/dashboard/charter",  label: "autonomy charter" } },
   { name: "Boundary Gate",       role: "safety",       kernel: "lib/agents/boundaryGateCatalog",         proves: "Classifies the blast radius of every proposal into a closed-union severity tier.",                          evidence: { href: "/dashboard/automation-boundaries", label: "boundary catalog" } },
   { name: "Council",             role: "safety",       kernel: "lib/agents/council",                     proves: "Weighted-vote consensus — ⅔ default — across the planning + safety agents.",                                 evidence: { href: "/download",       label: "agent bus" } },
-  { name: "Approver",            role: "safety",       kernel: "lib/agents/approverPacketAssembler",     proves: "Assembles the approval packet the operator sees — the only gate that ever lets autonomy act.",               evidence: { href: "/dashboard/approvals",       label: "approvals" } },
+  { name: "Approver",            role: "safety",       kernel: "lib/agents/approverPacketAssembler",     proves: "Assembles the approval context an operator reviews. A recorded approval does not itself execute a provider action.",               evidence: { href: "/dashboard/approvals",       label: "approvals" } },
 
   // verification
-  { name: "Verifier",            role: "verification", kernel: "lib/agents/verifierPostExecChecker",     proves: "Post-execution check — confirms the action achieved the expected outcome.",                                  evidence: { href: "/dashboard/audit",           label: "audit log" } },
-  { name: "Auditor",             role: "verification", kernel: "lib/agents/auditorRationaleWriter",      proves: "Writes the durable sha-256 rationale row that makes the action replayable and provable.",                    evidence: { href: "/dashboard/audit",           label: "audit log" } },
+  { name: "Verifier",            role: "verification", kernel: "lib/agents/verifierPostExecChecker",     proves: "Records configured validation outcomes for review. It does not claim universal provider verification or production health.",                                  evidence: { href: "/dashboard/audit",           label: "audit log" } },
+  { name: "Auditor",             role: "verification", kernel: "lib/agents/auditorRationaleWriter",      proves: "Records a rationale digest and decision context to support later review of the governed workflow.",                    evidence: { href: "/dashboard/audit",           label: "audit log" } },
   { name: "Improver",            role: "verification", kernel: "lib/agents/improverProposalSynthesizer", proves: "Proposes method improvements from the audit trail — the loop that turns evidence into a better proposal.",     evidence: { href: "/dashboard/agent-proposals", label: "method proposals" } },
   { name: "Confidence Calibrator", role: "verification", kernel: "lib/agents/confidenceCalibrator",      proves: "Wilson-lower-bound calibration of kernel accuracy from approval / reject / rollback outcomes. Recommends trust_more / pause / trust_less.", isNew: true },
 
@@ -81,7 +81,7 @@ const CAPABILITIES: readonly Capability[] = [
 ];
 
 const ROLE_FILTERS: ReadonlyArray<{ id: Capability["role"] | "all"; label: string }> = [
-  { id: "all",          label: "All agent kernels" },
+  { id: "all",          label: "All release controls" },
   { id: "perception",   label: "Perception" },
   { id: "reasoning",    label: "Reasoning" },
   { id: "planning",     label: "Planning" },
@@ -90,53 +90,96 @@ const ROLE_FILTERS: ReadonlyArray<{ id: Capability["role"] | "all"; label: strin
   { id: "memory",       label: "Memory" },
 ];
 
+// This is a deployment-governance product page, not an internal module index.
+// Keep the public inventory limited to the logic that can participate in a
+// governed release journey. Other kernels can remain internal until they have
+// a truthful product surface and an end-to-end customer workflow.
+const RELEASE_KERNELS = new Set<string>([
+  "lib/agents/detectorSignalEmitter",
+  "lib/agents/reasonerHypothesisWeaver",
+  "lib/agents/simulatorSandboxSpec",
+  "lib/agents/specWriter",
+  "lib/agents/testCoverageProposer",
+  "lib/agents/refactorSequencer",
+  "lib/agents/migrationCoordinator",
+  "lib/agents/githubPipelineRepairer",
+  "lib/agents/githubReleaseNotesDrafter",
+  "lib/agents/incidentTimelineWeaver",
+  "lib/agents/postmortemDrafter",
+  "lib/agents/databaseSchemaReviewer",
+  "lib/agents/slowQueryProposer",
+  "lib/agents/alertNoiseReducer",
+  "lib/agents/agentWorkflowOrchestrator",
+  "lib/agents/intentParser",
+  "lib/agents/anomalyDetector",
+  "lib/agents/changeRiskAssessor",
+  "lib/agents/secretsHygieneScanner",
+  "lib/agents/complianceControlMapper",
+  "lib/agents/policyGateEvaluator",
+  "lib/agents/boundaryGateCatalog",
+  "lib/agents/council",
+  "lib/agents/approverPacketAssembler",
+  "lib/agents/verifierPostExecChecker",
+  "lib/agents/auditorRationaleWriter",
+  "lib/agents/improverProposalSynthesizer",
+  "lib/agents/confidenceCalibrator",
+  "lib/agents/agentActivityAggregator",
+  "lib/agents/agentMemoryConsolidator",
+]);
+
+const RELEASE_CAPABILITIES = CAPABILITIES.filter((capability) => RELEASE_KERNELS.has(capability.kernel));
+
 const ROLE_TONE: Record<Capability["role"], string> = {
-  perception:   "text-cyan-300    bg-cyan-500/10    border-cyan-500/30",
-  reasoning:    "text-indigo-300  bg-indigo-500/10  border-indigo-500/30",
-  planning:     "text-fuchsia-300 bg-fuchsia-500/10 border-fuchsia-500/30",
-  safety:       "text-amber-300   bg-amber-500/10   border-amber-500/30",
-  verification: "text-emerald-300 bg-emerald-500/10 border-emerald-500/30",
-  memory:       "text-zinc-300    bg-zinc-500/10    border-zinc-500/30",
+  perception:   "text-zinc-300 bg-white/[0.035] border-white/[0.1]",
+  reasoning:    "text-zinc-300 bg-white/[0.035] border-white/[0.1]",
+  planning:     "text-zinc-300 bg-white/[0.035] border-white/[0.1]",
+  safety:       "text-zinc-300 bg-white/[0.035] border-white/[0.1]",
+  verification: "text-zinc-300 bg-white/[0.035] border-white/[0.1]",
+  memory:        "text-zinc-300 bg-white/[0.035] border-white/[0.1]",
 };
+
+const PLAYBOOK_RESPONSIBILITIES = [
+  ["01", "Understand the change", "Bring typed request, repository, environment, and signal context into a record people can review."],
+  ["02", "Prepare the playbook", "Keep intended steps, checks, recovery context, and evidence requirements close to the decision."],
+  ["03", "Expose risk and authority", "Make policy limits and human approval requirements visible before an action is considered."],
+  ["04", "Guide, do not pretend", "Separate planning and recorded handoff from a verified provider action or production result."],
+  ["05", "Prove what happened", "Preserve validation, recovery context, versions, and attributable evidence for later review."],
+] as const;
 
 export function CapabilitiesClient() {
   const [filter, setFilter] = useState<Capability["role"] | "all">("all");
 
   const visible = useMemo(
-    () => (filter === "all" ? CAPABILITIES : CAPABILITIES.filter((c) => c.role === filter)),
+    () => (filter === "all" ? RELEASE_CAPABILITIES : RELEASE_CAPABILITIES.filter((c) => c.role === filter)),
     [filter],
   );
 
   return (
-    <div className="relative">
-      {/* Huly aurora — coral × violet × cyan */}
-      <div aria-hidden className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
-        <div className="ambient-drift absolute -top-1/4 left-1/4 h-[60vh] w-[50vw] rounded-full bg-brand-violet/[0.08] blur-[140px]" />
-        <div className="ambient-drift absolute top-[20%] right-[5%] h-[50vh] w-[40vw] rounded-full bg-brand-coral/[0.06] blur-[130px]" style={{ animationDelay: "-8s" }} />
-        <div className="ambient-drift absolute bottom-0 right-1/4 h-[45vh] w-[35vw] rounded-full bg-cyan-500/[0.05] blur-[120px]" style={{ animationDelay: "-14s" }} />
-      </div>
+    <div className="relative isolate overflow-hidden">
+      <div aria-hidden className="pointer-events-none fixed inset-0 -z-20 bg-cover bg-center opacity-20" style={{ backgroundImage: "url('/images/axiom-hero-landscape-v1.png')" }} />
+      <div aria-hidden className="pointer-events-none fixed inset-0 -z-10 bg-[linear-gradient(180deg,rgba(11,12,11,0.8),rgba(11,12,11,0.94)_42%,#0c0d0c)]" />
 
       {/* ===== HERO ===== */}
-      <section className="relative z-10 mx-auto max-w-6xl px-6 md:px-10 pt-24 pb-10">
+      <section className="relative z-10 mx-auto max-w-[1400px] px-6 md:px-10 pt-24 pb-10">
         <motion.p
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
           className="mono-label inline-flex items-center gap-3"
         >
-          <span className="text-brand-coral/90 tabular-nums">AK</span>
-          <span className="h-px w-6 bg-gradient-to-r from-brand-coral/60 to-transparent" />
-          AI agent kernels · shipped, not promised
+          <span className="text-violet-200 tabular-nums">AX</span>
+          <span className="h-px w-6 bg-gradient-to-r from-violet-200/60 to-transparent" />
+          Axiom Agent · deployment capabilities
         </motion.p>
         <motion.h1
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
-          className="font-display mt-5 text-4xl md:text-6xl font-bold leading-[1.04]"
+          className="mt-5 max-w-4xl text-4xl font-medium leading-[1.02] tracking-[-0.045em] md:text-5xl"
         >
-          {CAPABILITIES.length} AI agent kernels.{" "}
+          Deployment capabilities, {" "}
           <span className="relative inline-block">
-            One bus.
-            <span aria-hidden className="absolute left-0 -bottom-0.5 h-[2px] w-full rounded-full bg-gradient-to-r from-brand-coral via-fuchsia-400/70 to-transparent" />
+            with human control.
+            <span aria-hidden className="absolute left-0 -bottom-0.5 h-[2px] w-full rounded-full bg-gradient-to-r from-violet-200/80 to-transparent" />
           </span>
         </motion.h1>
         <motion.p
@@ -145,16 +188,29 @@ export function CapabilitiesClient() {
           transition={{ delay: 0.2 }}
           className="mt-5 max-w-2xl text-[15px] text-zinc-400 leading-relaxed"
         >
-          Each engineer is a pure-function kernel in <span className="font-mono text-zinc-300">lib/agents/</span>{" "}
-          with closed-union types. A listed kernel proves that application logic exists;
-          it does not by itself prove a live provider connection or a released execution path.
+          A focused inventory of the release-governance logic behind Axiom: assess a change,
+          prepare evidence, require human approval, and verify the result. A listed capability
+          proves application logic exists; it does not by itself claim a live integration or automated deployment.
         </motion.p>
       </section>
 
-      <section className="relative z-10 mx-auto max-w-6xl px-6 pb-12 md:px-10" aria-labelledby="operational-terms-heading">
-        <div className="rounded-2xl border border-white/[0.07] bg-white/[0.02] p-6 md:p-8">
-          <p className="mono-label">Operational terms</p>
-          <h2 id="operational-terms-heading" className="mt-3 text-2xl font-semibold tracking-tight text-white">What two common claims mean today.</h2>
+      <section className="relative z-10 mx-auto max-w-[1400px] px-6 pb-12 md:px-10" aria-labelledby="playbook-responsibilities-heading">
+        <div className="surface-glass rounded-2xl p-6 sm:p-8">
+          <p className="mono-label">One governed Playbook</p>
+          <div className="mt-3 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+            <h2 id="playbook-responsibilities-heading" className="max-w-xl text-2xl font-medium tracking-[-0.04em] text-white sm:text-3xl">The parts of Axiom are useful only when they support one release decision.</h2>
+            <p className="max-w-sm text-sm leading-6 text-zinc-400">A capability is not a promise of autonomous execution or a live integration. It is a governed part of the workflow.</p>
+          </div>
+          <ol className="mt-8 grid gap-3 md:grid-cols-5">
+            {PLAYBOOK_RESPONSIBILITIES.map(([number, title, copy]) => <li key={number} className="rounded-xl border border-white/[0.07] bg-white/[0.025] p-4"><p className="font-mono text-[10px] tracking-[0.16em] text-violet-200">{number}</p><h3 className="mt-5 text-sm font-medium text-zinc-100">{title}</h3><p className="mt-2 text-xs leading-5 text-zinc-400">{copy}</p></li>)}
+          </ol>
+        </div>
+      </section>
+
+      <section className="relative z-10 mx-auto max-w-[1400px] px-6 pb-12 md:px-10" aria-labelledby="operational-terms-heading">
+        <details className="surface-glass group rounded-2xl p-6 md:p-8">
+          <summary id="operational-terms-heading" className="cursor-pointer list-none text-lg font-medium text-white marker:hidden"><span className="flex items-center justify-between gap-4">Inspect control details <span className="text-sm font-normal text-zinc-500 transition group-open:rotate-45" aria-hidden>+</span></span></summary>
+          <p className="mt-3 max-w-2xl text-sm leading-6 text-zinc-400">These details are available for technical review. They do not claim live cloud mutation, a configured integration, or autonomous deployment.</p>
           <div className="mt-6 grid gap-4 md:grid-cols-2">
             <article className="rounded-xl border border-amber-500/20 bg-amber-500/[0.04] p-5">
               <h3 className="font-semibold text-amber-100">Blast radius limits</h3>
@@ -169,11 +225,14 @@ export function CapabilitiesClient() {
               </p>
             </article>
           </div>
-        </div>
+        </details>
       </section>
 
       {/* ===== FILTERS ===== */}
-      <section className="relative z-10 mx-auto max-w-6xl px-6 md:px-10 pb-6">
+      <details className="group relative z-10 mx-auto max-w-[1400px] px-6 pb-12 md:px-10">
+        <summary className="surface-glass cursor-pointer list-none rounded-2xl px-6 py-5 text-lg font-medium text-zinc-100 marker:hidden"><span className="flex items-center justify-between gap-4">Explore the detailed capability inventory <span className="text-sm font-normal text-zinc-500 transition group-open:rotate-45" aria-hidden>+</span></span></summary>
+        <p className="mt-5 max-w-2xl text-sm leading-6 text-zinc-400">The underlying controls remain available for engineering review, without turning this page into a wall of implementation cards.</p>
+        <div className="mt-5">
         <div className="flex flex-wrap gap-2">
           {ROLE_FILTERS.map((f) => (
             <button
@@ -183,7 +242,7 @@ export function CapabilitiesClient() {
               className={[
                 "rounded-full px-3.5 py-1.5 text-[12px] font-medium transition border",
                 filter === f.id
-                  ? "bg-fuchsia-500/15 border-fuchsia-500/40 text-fuchsia-200"
+                  ? "bg-violet-300/[0.12] border-violet-300/30 text-violet-100"
                   : "bg-white/[0.02] border-white/[0.06] text-zinc-400 hover:text-white hover:bg-white/[0.05]",
               ].join(" ")}
             >
@@ -191,11 +250,10 @@ export function CapabilitiesClient() {
             </button>
           ))}
         </div>
-      </section>
+        </div>
 
       {/* ===== GRID ===== */}
-      <section className="relative z-10 mx-auto max-w-6xl px-6 md:px-10 pb-12">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+        <div className="mt-5 grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3">
           {visible.map((c, i) => (
             <motion.div
               key={c.kernel}
@@ -204,7 +262,7 @@ export function CapabilitiesClient() {
               viewport={{ once: true, amount: 0.2 }}
               transition={{ duration: 0.45, delay: Math.min(i * 0.03, 0.3) }}
               whileHover={{ y: -3, transition: { duration: 0.18 } }}
-              className="surface-glass rounded-2xl p-5 hover:border-brand-coral/25 transition-all"
+              className="rounded-2xl border border-white/[0.08] bg-white/[0.025] p-5 transition-all hover:border-violet-300/25 hover:bg-white/[0.045]"
             >
               <div className="flex items-start justify-between gap-3">
                 <p className="text-[13.5px] font-semibold text-white">{c.name}</p>
@@ -234,7 +292,7 @@ export function CapabilitiesClient() {
             </motion.div>
           ))}
         </div>
-      </section>
+      </details>
 
       {/* ===== CLOSER ===== */}
       <section className="relative z-10 mx-auto max-w-3xl px-6 md:px-10 py-16 text-center">

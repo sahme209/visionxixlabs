@@ -627,8 +627,9 @@ async function applyAndVerify(
     return { itemId: item.id, status: "failed", message: `No handler for ${item.actionType}`, auditEventId };
   }
 
+  let applyResult: Awaited<ReturnType<typeof handler.apply>>;
   try {
-    const applyResult = await handler.apply(item);
+    applyResult = await handler.apply(item);
     if (!applyResult.success) {
       await updateAuditStatus(auditEventId, "failed", applyResult.message);
       return { itemId: item.id, status: "failed", message: applyResult.message, auditEventId };
@@ -637,6 +638,23 @@ async function applyAndVerify(
     const errMsg = e instanceof Error ? e.message : String(e);
     await updateAuditStatus(auditEventId, "failed", errMsg);
     return { itemId: item.id, status: "failed", message: errMsg, auditEventId };
+  }
+
+  // Never call this a completed mutation if the handler never touched a
+  // real cloud SDK — see StepResult["simulated"] in applyEngine.ts. The
+  // verifyAppliedAction() check below is also currently a hardcoded
+  // passed:true stub (lib/axiom/verificationEngine.ts), so it adds no
+  // real confirmation either way — "simulated" takes priority.
+  if (applyResult.simulated) {
+    if (auditEventId) {
+      try {
+        await prisma.axiomAuditEvent.update({
+          where: { id: auditEventId },
+          data: { status: "simulated", afterState: { recommendedState: item.recommendedState }, appliedAt: new Date() },
+        });
+      } catch {}
+    }
+    return { itemId: item.id, status: "simulated", message: applyResult.message, auditEventId };
   }
 
   // Mark applied

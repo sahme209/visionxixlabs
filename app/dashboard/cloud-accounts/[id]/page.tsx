@@ -15,9 +15,11 @@ import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { prisma } from "@/lib/db";
 import { currentContext } from "@/lib/auth/currentContext";
+import { isAdminOrOwner } from "@/lib/auth/platformAdmin";
 import { ArrowLeftIcon, ArrowRightIcon } from "@heroicons/react/24/outline";
 import { AGENT_WORKFORCE_REGISTRY } from "@/lib/workforce/agentWorkforceRegistry";
 import { COMPLIANCE_CONTROLS, scoreControl } from "@/lib/compliance/controls";
+import { CloudAccountToggle } from "../CloudAccountToggle";
 
 export const dynamic = "force-dynamic";
 
@@ -60,6 +62,7 @@ export default async function CloudAccountDetailPage({
   if (!account || account.organizationId !== ctx.organizationId) {
     notFound();
   }
+  const isAdmin = isAdminOrOwner({ email: ctx.email, roles: ctx.roles });
 
   const since30d = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
   const [runs, schedule, findingGroups, engineerActivity] = await Promise.all([
@@ -179,6 +182,7 @@ export default async function CloudAccountDetailPage({
 
       <header className="mb-10">
         <div className="flex items-center gap-2 flex-wrap text-[10px] font-mono uppercase tracking-[0.18em] mb-3">
+          <CloudAccountToggle cloudAccountId={account.id} enabled={account.enabled} isAdmin={isAdmin} />
           <span className={account.enabled ? "text-emerald-300" : "text-zinc-500"}>{account.enabled ? "enabled" : "disabled"}</span>
           <span className="text-zinc-500">·</span>
           <span className="text-zinc-300">{account.provider}</span>

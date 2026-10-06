@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { redirect } from "next/navigation";
 import Link from "next/link";
 import {
   ArrowRightIcon,
@@ -172,12 +173,17 @@ const READINESS_DIMENSIONS = [
 ];
 
 export default function ReleaseOpsPage() {
+  // This legacy surface promises integrations and orchestration that are not
+  // current release capabilities. Preserve inbound links while routing to the
+  // maintained product story and its explicit execution boundaries.
+  redirect("/product");
+
   const compositeScore = Math.round(
     (READINESS_DIMENSIONS.reduce((s, d) => s + d.score, 0) / READINESS_DIMENSIONS.length) * 100
   );
 
   return (
-    <div className="min-h-screen bg-[#09090b] text-white relative overflow-hidden">
+    <div className="axiom-canvas axiom-product-canvas min-h-screen text-white relative overflow-hidden">
       {/* Background layers */}
       <div className="absolute inset-0 bg-grid-mesh opacity-30 pointer-events-none" aria-hidden />
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[900px] h-[600px] spotlight-orb opacity-60 pointer-events-none" aria-hidden />

@@ -117,7 +117,7 @@ export default function EvidencePage() {
             </p>
           </div>
 
-          <div className="hidden md:flex items-end gap-5 rounded-2xl border border-white/[0.06] bg-white/[0.025] backdrop-blur-sm px-5 py-4">
+          <div className="surface-glass hidden md:flex items-end gap-5 rounded-2xl px-5 py-4">
             <Stat label="Total" value={String(data?.summary.total ?? (loading ? 0 : 0))} tone="text-white" />
             <div className="w-px h-9 bg-white/[0.08]" />
             <Stat label="Verified" value={String(data?.summary.verified ?? 0)} tone="text-emerald-300" />
@@ -128,12 +128,12 @@ export default function EvidencePage() {
       </div>
 
       {loading && (
-        <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 mb-6">
+        <div className="surface-glass rounded-2xl p-5 mb-6">
           <p className="text-[11px] font-mono text-zinc-500 uppercase tracking-[0.18em]">// composing evidence…</p>
         </div>
       )}
       {!loading && error && (
-        <div className="rounded-2xl border border-amber-500/[0.18] bg-amber-500/[0.04] p-5 mb-6">
+        <div role="alert" aria-live="assertive" className="rounded-2xl border border-amber-500/[0.18] bg-amber-500/[0.04] p-5 mb-6">
           <p className="text-[11px] font-mono text-amber-300/80 uppercase tracking-[0.18em] mb-1">// evidence unavailable</p>
           <p className="text-[13px] text-zinc-300">{error}</p>
         </div>
@@ -173,7 +173,7 @@ export default function EvidencePage() {
               ))}
             </div>
           </div>
-          <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] overflow-hidden">
+          <div className="surface-glass rounded-2xl overflow-hidden">
             <div className="divide-y divide-white/[0.04]">
               {records.slice(0, 100).map((r) => {
                 const tone = r.verified ? "emerald" : r.manual ? "amber" : r.selfAttested ? "cyan" : "zinc";
@@ -231,7 +231,7 @@ export default function EvidencePage() {
 
       {/* Limitations */}
       {data && data.limitations.length > 0 && (
-        <section className="mb-8 rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5">
+        <section className="surface-glass mb-8 rounded-2xl p-5">
           <p className="text-[11px] font-mono text-zinc-500 uppercase tracking-[0.18em] mb-2">// limitations</p>
           <ul className="space-y-1">
             {data.limitations.map((l, i) => (

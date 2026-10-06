@@ -99,7 +99,7 @@ export default function HelpAnalyticsPage() {
       </div>
 
       {error && (
-        <div className="rounded-2xl border border-amber-500/[0.18] bg-amber-500/[0.04] p-5 mb-6 text-[13px] text-zinc-300">
+        <div role="alert" aria-live="assertive" className="rounded-2xl border border-amber-500/[0.18] bg-amber-500/[0.04] p-5 mb-6 text-[13px] text-zinc-300">
           {error}
         </div>
       )}

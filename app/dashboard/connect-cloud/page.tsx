@@ -332,7 +332,7 @@ function ConnectCloudInner() {
   if (phase === "error") {
     return (
       <div className="max-w-3xl mx-auto px-6 py-16">
-        <div className="rounded-2xl border border-rose-500/20 bg-rose-500/[0.04] p-6">
+        <div role="alert" aria-live="assertive" className="rounded-2xl border border-rose-500/20 bg-rose-500/[0.04] p-6">
           <div className="flex items-start gap-3 mb-3">
             <ExclamationCircleIcon className="h-5 w-5 text-rose-300 shrink-0 mt-0.5" />
             <p className="text-sm text-rose-100 leading-relaxed">{error ?? "Something went wrong."}</p>

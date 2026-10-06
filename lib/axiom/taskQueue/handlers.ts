@@ -509,8 +509,9 @@ async function handleApplyAction(ctx: TaskContext): Promise<TaskHandlerResult> {
       continue;
     }
 
+    let applyResult: Awaited<ReturnType<typeof handler.apply>>;
     try {
-      const applyResult = await handler.apply(execItem);
+      applyResult = await handler.apply(execItem);
       if (!applyResult.success) {
         if (auditEventId) {
           try { await prisma.axiomAuditEvent.update({ where: { id: auditEventId }, data: { status: "failed", errorMessage: applyResult.message } }); } catch {}
@@ -524,19 +525,28 @@ async function handleApplyAction(ctx: TaskContext): Promise<TaskHandlerResult> {
       continue;
     }
 
+    // Never call this a completed mutation if the handler never touched a
+    // real cloud SDK — see StepResult["simulated"] in applyEngine.ts.
+    const resultStatus = applyResult.simulated ? "simulated" : "applied";
+
     if (auditEventId) {
       try {
         await prisma.axiomAuditEvent.update({
           where: { id: auditEventId },
-          data: { status: "applied", afterState: { recommendedState: execItem.recommendedState }, appliedAt: new Date() },
+          data: { status: resultStatus, afterState: { recommendedState: execItem.recommendedState }, appliedAt: new Date() },
         });
       } catch {}
     }
 
-    results.push({ itemId: execItem.id, status: "applied", message: "Applied successfully." });
+    results.push({
+      itemId: execItem.id,
+      status: resultStatus,
+      message: applyResult.simulated ? applyResult.message : "Applied successfully.",
+    });
   }
 
   const applied = results.filter((r) => r.status === "applied").length;
+  const simulated = results.filter((r) => r.status === "simulated").length;
   const failed = results.filter((r) => r.status === "failed").length;
 
   return {

@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState, type FormEvent } from "react";
-import { ViewShell } from "../components/Primitives";
+import { ExternalLink, ViewShell } from "../components/Primitives";
 import { desktopClient } from "../lib/desktopClient";
 
 interface RequestSummary {
@@ -9,7 +9,23 @@ interface RequestSummary {
   version: number;
   correlationId: string;
   submittedAt: string | null;
+  closedAt: string | null;
   updatedAt: string;
+  releaseContext: {
+    window: { startUtc: string; endUtc: string; displayTimeZone: string } | null;
+    scope: { applicationCount: number; repositoryCount: number; targetEnvironment: string | null };
+    approval: { prStatus: string; noPrRequired: boolean };
+    readiness: {
+      developmentReady: boolean;
+      productionReady: boolean;
+      validationStepCount: number;
+      deferredValidation: boolean;
+      approvalDecision: "ready_for_human_approval" | "needs_attention";
+      blockers: string[];
+    };
+    recovery: { rollbackAvailability: string; backupRequired: boolean; evidenceCount: number };
+    observation: { status: "not_connected"; recordedMonitoringPlan: boolean };
+  };
   latestPlaybook: {
     id: string;
     version: number;
@@ -35,6 +51,48 @@ interface GeneratedPlaybook {
     activation: "always" | "on_success" | "on_failure";
     evidenceRequired: boolean;
     validationInstruction?: string;
+  }>;
+}
+
+interface RevisionSeed {
+  id: string;
+  version: number;
+  intake: Record<string, unknown>;
+}
+
+interface RevisionHistoryEntry {
+  version: number;
+  createdAt: string;
+  author: "You" | "Workspace member";
+  changes: string[];
+}
+
+interface OperationLedgerEntry {
+  kind: string;
+  status: string;
+  attemptCount: number;
+  createdAt: string;
+  lastAttemptAt: string | null;
+  lastReconciledAt: string | null;
+  externallyReferenced: boolean;
+}
+
+interface GitHubReleaseEvidence {
+  mode: "read_only_evidence";
+  repositories: Array<{
+    repository: string;
+    state: "observed" | "unavailable";
+    branchProtection: "protected" | "not_protected" | "unavailable";
+    repositoryEnabled: boolean | null;
+    latestWorkflow: "passed" | "failed" | "in_progress" | "not_reported" | "unavailable";
+  }>;
+  pullRequests: Array<{
+    repository: string;
+    number: number;
+    state: "observed" | "unavailable";
+    pullRequestState: "open" | "closed" | "merged" | "draft" | "unknown";
+    targetBranchMatches: boolean | null;
+    checks: "passed" | "failed" | "in_progress" | "not_reported" | "unavailable";
   }>;
 }
 
@@ -96,6 +154,48 @@ const initialDraft = {
 const INTAKE_STEPS = ["Window", "Scope", "Execution", "Validation", "Recovery"] as const;
 type IntakeDraft = typeof initialDraft;
 
+function objectValue(value: unknown): Record<string, unknown> {
+  return value && typeof value === "object" && !Array.isArray(value) ? value as Record<string, unknown> : {};
+}
+
+function stringsValue(value: unknown): string[] {
+  return Array.isArray(value) ? value.filter((item): item is string => typeof item === "string") : [];
+}
+
+function textValue(value: unknown): string {
+  return typeof value === "string" ? value : "";
+}
+
+function dateInputValue(value: unknown): string {
+  const date = new Date(textValue(value));
+  return Number.isFinite(date.getTime()) ? date.toISOString().slice(0, 16) : "";
+}
+
+function draftFromIntake(intake: Record<string, unknown>): IntakeDraft {
+  const manual = objectValue(Array.isArray(intake.manualSteps) ? intake.manualSteps[0] : undefined);
+  const validation = Array.isArray(intake.validationSteps) ? intake.validationSteps.map(objectValue) : [];
+  const technical = validation[0] ?? {};
+  const functional = validation[1] ?? {};
+  const rollback = objectValue(Array.isArray(intake.rollbackSteps) ? intake.rollbackSteps[0] : undefined);
+  const deferred = objectValue(intake.deferredValidation);
+  const fact = objectValue(Array.isArray(intake.facts) ? intake.facts[0] : undefined);
+  return {
+    ...initialDraft,
+    title: textValue(intake.title), requestClass: textValue(intake.requestClass) || initialDraft.requestClass,
+    adHocReason: textValue(intake.adHocReason), adHocPriority: textValue(intake.adHocPriority), businessImpact: textValue(intake.businessImpact), scheduleExceptionReason: textValue(intake.scheduleExceptionReason),
+    windowStart: dateInputValue(intake.windowStartUtc), windowEnd: dateInputValue(intake.windowEndUtc), displayTimeZone: textValue(intake.displayTimeZone) || initialDraft.displayTimeZone,
+    changeType: stringsValue(intake.changeTypes)[0] || initialDraft.changeType,
+    applications: stringsValue(intake.applications).join("\n"), clients: stringsValue(intake.clients).join("\n"), deploymentContact: textValue(intake.deploymentContact), applicationContact: textValue(intake.applicationContact), escalationContact: textValue(intake.escalationContact),
+    repositoryUrls: stringsValue(intake.repositoryUrls).join("\n"), productionPrUrls: stringsValue(intake.productionPrUrls).join("\n"), noPrRequired: intake.noPrRequired === true, prApprovalStatus: textValue(intake.prApprovalStatus) || initialDraft.prApprovalStatus, sourceBranch: textValue(intake.sourceBranch), targetBranch: textValue(intake.targetBranch) || initialDraft.targetBranch,
+    deploymentMethod: textValue(intake.deploymentMethod), workflowName: textValue(intake.workflowName), targetEnvironment: textValue(intake.targetEnvironment) || initialDraft.targetEnvironment, workflowInputs: JSON.stringify(objectValue(intake.workflowInputs), null, 2),
+    manualInstruction: textValue(manual.instruction), manualOwner: textValue(manual.owner), manualValidationInstruction: textValue(manual.validationInstruction),
+    lowerEnvironments: stringsValue(intake.lowerEnvironmentTested).join("\n"), developmentReady: intake.developmentReady === true, productionReady: intake.productionReady === true, validationInstruction: textValue(technical.instruction), validationOwner: textValue(technical.owner) || initialDraft.validationOwner, functionalValidationRequired: validation.length > 1, functionalValidationInstruction: textValue(functional.instruction), functionalValidationOwner: textValue(functional.owner) || initialDraft.functionalValidationOwner, expectedProductionResult: textValue(intake.expectedProductionResult),
+    rollbackAvailability: textValue(intake.rollbackAvailability) || initialDraft.rollbackAvailability, rollbackInstruction: textValue(rollback.instruction), rollbackOwner: textValue(rollback.owner), backupRequired: intake.backupRequired === true, backupEvidenceIds: stringsValue(intake.backupEvidenceIds).join("\n"), changeCreationMethod: textValue(intake.changeCreationMethod) || initialDraft.changeCreationMethod,
+    deferredValidation: Boolean(intake.deferredValidation), deferredReason: textValue(deferred.reason), deferredTrigger: textValue(deferred.trigger), deferredDate: dateInputValue(deferred.expectedDateUtc), deferredOwner: textValue(deferred.owner), monitoringPlan: textValue(deferred.monitoringPlan),
+    confirmedFact: textValue(fact.value), sourceEvidenceId: textValue(fact.sourceEvidenceId), factConfirmedBy: textValue(fact.confirmedBy),
+  };
+}
+
 function validateStep(step: number, draft: IntakeDraft): string | undefined {
   const missing = (pairs: Array<[string, string]>) => pairs.find(([, value]) => !value.trim())?.[0];
   let field: string | undefined;
@@ -132,15 +232,42 @@ function localToIso(value: string): string {
   return instant.toISOString();
 }
 
+const KNOWN_LOAD_ERRORS: Record<string, string> = {
+  desktop_session_required: "Your sign-in needs to refresh. Try signing out and back in.",
+  network_error: "Could not reach the service. Check your connection and try again.",
+};
+
+/** Never surface a raw API error code (e.g. "desktop_session_required") directly to the user. */
+function friendlyLoadError(code: string): string {
+  return KNOWN_LOAD_ERRORS[code] ?? "Something went wrong loading your requests. Please try again.";
+}
+
 export function DeploymentRequestsView() {
   const [requests, setRequests] = useState<RequestSummary[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState<string>();
   const [lastSuccessfulLoadAt, setLastSuccessfulLoadAt] = useState<Date>();
   const [showForm, setShowForm] = useState(false);
+  const [revision, setRevision] = useState<RevisionSeed>();
+  const [loadingRevisionId, setLoadingRevisionId] = useState<string>();
+  const [closingRequestId, setClosingRequestId] = useState<string>();
+  const [closureEvidenceId, setClosureEvidenceId] = useState("");
+  const [closureSummary, setClosureSummary] = useState("");
+  const [closingBusy, setClosingBusy] = useState(false);
+  const [closureError, setClosureError] = useState<string>();
   const [generatingRequestId, setGeneratingRequestId] = useState<string>();
+  const [loadingPlaybookId, setLoadingPlaybookId] = useState<string>();
   const [generatedPlaybooks, setGeneratedPlaybooks] = useState<Record<string, GeneratedPlaybook>>({});
   const [generationErrors, setGenerationErrors] = useState<Record<string, string>>({});
+  const [loadingHistoryId, setLoadingHistoryId] = useState<string>();
+  const [revisionHistory, setRevisionHistory] = useState<Record<string, RevisionHistoryEntry[]>>({});
+  const [historyErrors, setHistoryErrors] = useState<Record<string, string>>({});
+  const [loadingOperationsId, setLoadingOperationsId] = useState<string>();
+  const [operationLedger, setOperationLedger] = useState<Record<string, OperationLedgerEntry[]>>({});
+  const [operationErrors, setOperationErrors] = useState<Record<string, string>>({});
+  const [collectingGitHubEvidenceId, setCollectingGitHubEvidenceId] = useState<string>();
+  const [githubEvidence, setGitHubEvidence] = useState<Record<string, GitHubReleaseEvidence>>({});
+  const [githubEvidenceErrors, setGitHubEvidenceErrors] = useState<Record<string, string>>({});
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -182,20 +309,119 @@ export function DeploymentRequestsView() {
     setGeneratedPlaybooks((current) => ({ ...current, [requestId]: result.data }));
   }
 
+  async function loadLatestPlaybook(requestId: string) {
+    setLoadingPlaybookId(requestId);
+    setGenerationErrors((current) => {
+      const next = { ...current };
+      delete next[requestId];
+      return next;
+    });
+    const result = await desktopClient.latestDeploymentPlaybook(requestId);
+    setLoadingPlaybookId(undefined);
+    if (!result.ok) {
+      setGenerationErrors((current) => ({ ...current, [requestId]: result.error }));
+      return;
+    }
+    setGeneratedPlaybooks((current) => ({ ...current, [requestId]: result.data }));
+  }
+
+  async function startRevision(requestId: string) {
+    setLoadingRevisionId(requestId);
+    const result = await desktopClient.deploymentRequestForRevision(requestId);
+    setLoadingRevisionId(undefined);
+    if (!result.ok) {
+      setLoadError(`Could not load the request for revision: ${result.error}`);
+      return;
+    }
+    setRevision(result.data);
+    setShowForm(true);
+  }
+
+  async function loadRevisionHistory(requestId: string) {
+    setLoadingHistoryId(requestId);
+    setHistoryErrors((current) => {
+      const next = { ...current };
+      delete next[requestId];
+      return next;
+    });
+    const result = await desktopClient.deploymentRequestHistory(requestId);
+    setLoadingHistoryId(undefined);
+    if (!result.ok) {
+      setHistoryErrors((current) => ({ ...current, [requestId]: result.error }));
+      return;
+    }
+    setRevisionHistory((current) => ({ ...current, [requestId]: result.data }));
+  }
+
+  async function loadOperations(requestId: string) {
+    setLoadingOperationsId(requestId);
+    setOperationErrors((current) => {
+      const next = { ...current };
+      delete next[requestId];
+      return next;
+    });
+    const result = await desktopClient.deploymentOperations(requestId);
+    setLoadingOperationsId(undefined);
+    if (!result.ok) {
+      setOperationErrors((current) => ({ ...current, [requestId]: result.error }));
+      return;
+    }
+    setOperationLedger((current) => ({ ...current, [requestId]: result.data }));
+  }
+
+  async function collectGitHubEvidence(requestId: string) {
+    setCollectingGitHubEvidenceId(requestId);
+    setGitHubEvidenceErrors((current) => {
+      const next = { ...current };
+      delete next[requestId];
+      return next;
+    });
+    const result = await desktopClient.collectGitHubReleaseEvidence(requestId);
+    setCollectingGitHubEvidenceId(undefined);
+    if (!result.ok) {
+      const message = result.error === "github_read_validation_required"
+        ? "GitHub validation is older than 24 hours. Open Settings and run the harmless read-only validation before collecting release evidence."
+        : result.error;
+      setGitHubEvidenceErrors((current) => ({ ...current, [requestId]: message }));
+      return;
+    }
+    setGitHubEvidence((current) => ({ ...current, [requestId]: result.data }));
+  }
+
+  async function closeRequest(request: RequestSummary) {
+    setClosingBusy(true);
+    setClosureError(undefined);
+    const result = await desktopClient.closeDeploymentRequest(
+      request.id,
+      request.version,
+      closureEvidenceId,
+      closureSummary,
+    );
+    setClosingBusy(false);
+    if (!result.ok) {
+      setClosureError(result.error);
+      return;
+    }
+    setClosingRequestId(undefined);
+    setClosureEvidenceId("");
+    setClosureSummary("");
+    void load();
+  }
+
   return (
     <ViewShell>
       <div className="flex items-start justify-between gap-4">
         <div>
-          <h1 className="text-xl font-bold tracking-tight">Deployment requests</h1>
+          <h1 className="text-xl font-bold tracking-tight">Release workspace</h1>
           <p className="text-sm text-zinc-500 mt-0.5">
-            Capture the change once, then generate and execute a governed, versioned playbook.
+            One governed record for scope, readiness, approval evidence, recovery, and the next playbook.
           </p>
         </div>
         <div className="flex gap-2">
           <button type="button" onClick={() => void load()} className="btn-secondary">
             Refresh
           </button>
-          <button type="button" onClick={() => setShowForm((value) => !value)} className="btn-primary">
+          <button type="button" onClick={() => { setRevision(undefined); setShowForm((value) => !value); }} className="btn-primary">
             {showForm ? "Cancel intake" : "New request"}
           </button>
         </div>
@@ -203,8 +429,11 @@ export function DeploymentRequestsView() {
 
       {showForm && (
         <DeploymentIntakeForm
+          key={revision?.id ?? "new"}
+          revision={revision}
           onCreated={() => {
             setShowForm(false);
+            setRevision(undefined);
             void load();
           }}
         />
@@ -219,8 +448,8 @@ export function DeploymentRequestsView() {
       {!loading && loadError && (
         <StateCard tone="error">
           {requests.length > 0
-            ? `Refresh failed: ${loadError}. Showing the last successfully loaded records; they may be stale.`
-            : `Could not load deployment requests: ${loadError}. Nothing has been simulated.`}
+            ? `Refresh failed: ${friendlyLoadError(loadError)} Showing the last successfully loaded records; they may be stale.`
+            : friendlyLoadError(loadError)}
         </StateCard>
       )}
       {!loading && !loadError && requests.length === 0 && (
@@ -244,27 +473,158 @@ export function DeploymentRequestsView() {
                   {request.status.replaceAll("_", " ")}
                 </span>
               </div>
-              <div className="flex items-end justify-between gap-3 mt-3">
+              <div className="flex flex-wrap items-end justify-between gap-3 mt-3">
                 <p className="text-xs text-zinc-500">
                   Request updated {new Date(request.updatedAt).toLocaleString()}.
                 </p>
-                <button
-                  type="button"
-                  className="btn-secondary disabled:opacity-50"
-                  disabled={generatingRequestId === request.id}
-                  onClick={() => void generatePlaybook(request.id)}
-                >
-                  {generatingRequestId === request.id ? "Generating…" : "Generate next playbook"}
-                </button>
+                <div className="flex flex-wrap gap-2">
+                  <button
+                    type="button"
+                    className="btn-secondary disabled:opacity-50"
+                    disabled={request.status === "closed" || generatingRequestId === request.id}
+                    onClick={() => void generatePlaybook(request.id)}
+                  >
+                    {generatingRequestId === request.id ? "Generating…" : "Generate next playbook"}
+                  </button>
+                  <button
+                    type="button"
+                    className="btn-secondary disabled:opacity-50"
+                    disabled={request.status === "closed" || loadingRevisionId === request.id}
+                    onClick={() => void startRevision(request.id)}
+                  >
+                    {loadingRevisionId === request.id ? "Opening…" : "Revise"}
+                  </button>
+                  <button
+                    type="button"
+                    className="btn-secondary disabled:opacity-50"
+                    disabled={loadingHistoryId === request.id}
+                    onClick={() => void loadRevisionHistory(request.id)}
+                  >
+                    {loadingHistoryId === request.id ? "Loading history…" : "Review history"}
+                  </button>
+                  <button
+                    type="button"
+                    className="btn-secondary disabled:opacity-50"
+                    disabled={loadingOperationsId === request.id}
+                    onClick={() => void loadOperations(request.id)}
+                  >
+                    {loadingOperationsId === request.id ? "Loading controls…" : "Review execution controls"}
+                  </button>
+                  <button
+                    type="button"
+                    className="btn-secondary disabled:opacity-50"
+                    disabled={collectingGitHubEvidenceId === request.id}
+                    onClick={() => void collectGitHubEvidence(request.id)}
+                  >
+                    {collectingGitHubEvidenceId === request.id ? "Reading GitHub…" : "Collect GitHub evidence"}
+                  </button>
+                </div>
               </div>
+              <ReleaseContext request={request} />
+              {githubEvidenceErrors[request.id] && (
+                <p role="alert" className="mt-3 text-xs text-rose-300">
+                  GitHub evidence could not be collected: {githubEvidenceErrors[request.id]}
+                </p>
+              )}
+              {githubEvidence[request.id] && (
+                <GitHubEvidenceCard evidence={githubEvidence[request.id]} />
+              )}
+              {request.status === "closed" ? (
+                <div className="mt-3 rounded-lg border border-emerald-500/20 bg-emerald-500/5 px-3 py-2 text-xs text-emerald-100">
+                  Closure recorded{request.closedAt ? ` ${new Date(request.closedAt).toLocaleString()}` : ""}. This record documents a reported external outcome; it did not dispatch a deployment.
+                </div>
+              ) : closingRequestId === request.id ? (
+                <div className="mt-3 rounded-lg border border-amber-500/20 bg-amber-500/5 p-3">
+                  <p className="text-xs font-medium text-amber-100">Record external outcome</p>
+                  <p className="mt-1 text-[10px] leading-4 text-zinc-500">Attach the external validation or change reference. This closes only the Axiom record; it cannot deploy, merge, or approve anything.</p>
+                  <div className="mt-3 grid gap-2 sm:grid-cols-2">
+                    <input value={closureEvidenceId} onChange={(event) => setClosureEvidenceId(event.target.value)} placeholder="Validation or change reference" className="rounded-lg border border-white/10 bg-black/20 px-3 py-2 text-xs text-white" />
+                    <input value={closureSummary} onChange={(event) => setClosureSummary(event.target.value)} placeholder="Recorded outcome summary" className="rounded-lg border border-white/10 bg-black/20 px-3 py-2 text-xs text-white" />
+                  </div>
+                  {closureError && <p role="alert" className="mt-2 text-xs text-rose-300">Closure was not recorded: {closureError}</p>}
+                  <div className="mt-3 flex justify-end gap-2">
+                    <button type="button" onClick={() => { setClosingRequestId(undefined); setClosureError(undefined); }} className="btn-secondary">Cancel</button>
+                    <button type="button" disabled={closingBusy} onClick={() => void closeRequest(request)} className="btn-primary disabled:opacity-50">{closingBusy ? "Recording…" : "Record closure"}</button>
+                  </div>
+                </div>
+              ) : (
+                <button type="button" onClick={() => { setClosingRequestId(request.id); setClosureEvidenceId(""); setClosureSummary(""); setClosureError(undefined); }} className="mt-3 text-[11px] font-medium text-zinc-400 transition hover:text-white">
+                  Record external outcome and close request →
+                </button>
+              )}
+              {historyErrors[request.id] && (
+                <p role="alert" className="mt-3 text-xs text-rose-300">
+                  Revision history could not be loaded: {historyErrors[request.id]}
+                </p>
+              )}
+              {revisionHistory[request.id] && (
+                <div className="mt-3 rounded-lg border border-sky-500/15 bg-sky-500/5 px-3 py-2">
+                  <p className="text-xs font-medium text-sky-100">Governed revision history</p>
+                  <p className="mt-1 text-[10px] leading-4 text-zinc-500">
+                    This view lists only safe field categories. Contacts, URLs, workflow inputs, evidence references, and full member identities remain private.
+                  </p>
+                  <ol className="mt-3 space-y-2">
+                    {revisionHistory[request.id].map((entry) => (
+                      <li key={`${request.id}-${entry.version}`} className="rounded-md border border-white/5 bg-black/10 px-2.5 py-2">
+                        <p className="text-[11px] font-medium text-zinc-200">
+                          Version {entry.version} · {entry.author}
+                          <span className="font-normal text-zinc-500"> · {new Date(entry.createdAt).toLocaleString()}</span>
+                        </p>
+                        <p className="mt-1 text-[10px] leading-4 text-zinc-400">{entry.changes.join(" · ")}</p>
+                      </li>
+                    ))}
+                  </ol>
+                </div>
+              )}
+              {operationErrors[request.id] && (
+                <p role="alert" className="mt-3 text-xs text-rose-300">
+                  Execution-control history could not be loaded: {operationErrors[request.id]}
+                </p>
+              )}
+              {operationLedger[request.id] && (
+                <div className="mt-3 rounded-lg border border-cyan-500/15 bg-cyan-500/5 px-3 py-2">
+                  <p className="text-xs font-medium text-cyan-100">Execution controls</p>
+                  <p className="mt-1 text-[10px] leading-4 text-zinc-500">
+                    Read-only durable operation status. This workspace cannot create, retry, approve, or dispatch an operation from this view.
+                  </p>
+                  {operationLedger[request.id].length === 0 ? (
+                    <p className="mt-3 text-[11px] text-zinc-400">No consequential operation has been recorded for this request.</p>
+                  ) : (
+                    <ol className="mt-3 space-y-2">
+                      {operationLedger[request.id].map((operation, index) => (
+                        <li key={`${request.id}-${operation.kind}-${operation.createdAt}-${index}`} className="rounded-md border border-white/5 bg-black/10 px-2.5 py-2">
+                          <p className="text-[11px] font-medium text-zinc-200">
+                            {operation.kind.replaceAll("_", " ")} · {operation.status.replaceAll("_", " ")}
+                          </p>
+                          <p className="mt-1 text-[10px] leading-4 text-zinc-500">
+                            Recorded {new Date(operation.createdAt).toLocaleString()} · {operation.attemptCount} attempt{operation.attemptCount === 1 ? "" : "s"}
+                            {operation.lastReconciledAt ? ` · reconciled ${new Date(operation.lastReconciledAt).toLocaleString()}` : ""}
+                            {operation.externallyReferenced ? " · external outcome reference recorded" : ""}
+                          </p>
+                        </li>
+                      ))}
+                    </ol>
+                  )}
+                </div>
+              )}
               {request.latestPlaybook && !generatedPlaybooks[request.id] && (
-                <div className="mt-3 rounded-lg border border-violet-500/15 bg-violet-500/5 px-3 py-2">
-                  <p className="text-xs text-violet-100">
-                    Latest persisted playbook: v{request.latestPlaybook.version} · {request.latestPlaybook.status.replaceAll("_", " ")}
+                <div className={`mt-3 rounded-lg border px-3 py-2 ${request.latestPlaybook.status === "superseded" ? "border-amber-500/15 bg-amber-500/5" : "border-violet-500/15 bg-violet-500/5"}`}>
+                  <p className={`text-xs ${request.latestPlaybook.status === "superseded" ? "text-amber-100" : "text-violet-100"}`}>
+                    {request.latestPlaybook.status === "superseded"
+                      ? `Previous playbook v${request.latestPlaybook.version} was superseded by a request revision.`
+                      : `Latest persisted playbook: v${request.latestPlaybook.version} · ${request.latestPlaybook.status.replaceAll("_", " ")}`}
                   </p>
                   <p className="text-[10px] font-mono text-zinc-500 mt-1 break-all">
                     SHA-256 {request.latestPlaybook.contentHash} · stored {new Date(request.latestPlaybook.createdAt).toLocaleString()}
                   </p>
+                  <button
+                    type="button"
+                    className="mt-2 text-[11px] font-medium text-violet-200 transition hover:text-white disabled:opacity-50"
+                    disabled={loadingPlaybookId === request.id}
+                    onClick={() => void loadLatestPlaybook(request.id)}
+                  >
+                    {loadingPlaybookId === request.id ? "Opening playbook…" : request.latestPlaybook.status === "superseded" ? "Review historical playbook" : "Review persisted playbook"}
+                  </button>
                 </div>
               )}
               {generationErrors[request.id] && (
@@ -318,8 +678,127 @@ export function DeploymentRequestsView() {
   );
 }
 
-function DeploymentIntakeForm({ onCreated }: { onCreated: () => void }) {
-  const [draft, setDraft] = useState(initialDraft);
+function ReleaseContext({ request }: { request: RequestSummary }) {
+  const context = request.releaseContext;
+  const readiness = context.readiness.approvalDecision === "ready_for_human_approval";
+  const approval = context.approval.noPrRequired
+    ? "PR not required"
+    : context.approval.prStatus.replaceAll("_", " ");
+  const rollback = context.recovery.rollbackAvailability.replaceAll("_", " ");
+
+  return (
+    <div className="mt-3" aria-label="Release context">
+      <div className={`mb-2 rounded-lg border px-3 py-2 ${readiness ? "border-emerald-500/20 bg-emerald-500/5" : "border-amber-500/20 bg-amber-500/5"}`}>
+        <p className={`text-xs font-semibold ${readiness ? "text-emerald-100" : "text-amber-100"}`}>
+          {readiness ? "Ready for human approval" : "Not ready for human approval"}
+        </p>
+        <p className="mt-0.5 text-[10px] text-zinc-500">
+          {readiness
+            ? "Required recorded signals are present. Approval is still required; nothing can deploy from this view."
+            : `${context.readiness.blockers.length} recorded item${context.readiness.blockers.length === 1 ? "" : "s"} needs attention before approval.`}
+        </p>
+        {!readiness && (
+          <ul className="mt-2 space-y-1 text-[10px] text-amber-100/80">
+            {context.readiness.blockers.map((blocker) => <li key={blocker}>• {blocker}</li>)}
+          </ul>
+        )}
+      </div>
+      <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 xl:grid-cols-5">
+      <ContextSignal
+        label="Scope"
+        value={`${context.scope.applicationCount} app${context.scope.applicationCount === 1 ? "" : "s"} · ${context.scope.repositoryCount} repo${context.scope.repositoryCount === 1 ? "" : "s"}`}
+        detail={context.scope.targetEnvironment ?? "Environment not recorded"}
+      />
+      <ContextSignal
+        label="Readiness"
+        value={readiness ? "Ready signals recorded" : "Signals need review"}
+        detail={`${context.readiness.validationStepCount} validation step${context.readiness.validationStepCount === 1 ? "" : "s"}${context.readiness.deferredValidation ? " · deferred" : ""}`}
+        tone={readiness ? "good" : "attention"}
+      />
+      <ContextSignal
+        label="Approval"
+        value={approval}
+        detail={`${context.recovery.evidenceCount} evidence reference${context.recovery.evidenceCount === 1 ? "" : "s"}`}
+        tone={context.approval.prStatus === "approved" || context.approval.noPrRequired ? "good" : "attention"}
+      />
+      <ContextSignal
+        label="Recovery"
+        value={`Rollback ${rollback}`}
+        detail={context.recovery.backupRequired ? "Backup evidence required" : "No backup evidence required"}
+        tone={context.recovery.rollbackAvailability === "yes" ? "good" : "attention"}
+      />
+      <ContextSignal
+        label="Post-release observation"
+        value="Not connected"
+        detail={context.observation.recordedMonitoringPlan ? "Follow-up monitoring plan recorded" : "No verified observability signal"}
+        tone="attention"
+      />
+      </div>
+      <div className="mt-2 flex flex-wrap items-center justify-between gap-3 rounded-lg border border-white/5 bg-white/[0.015] px-3 py-2">
+        <p className="text-[10px] leading-4 text-zinc-500">
+          Human decisions stay in the authenticated browser Approval Center. This record cannot approve or dispatch a deployment, and it does not claim production health until observability is verified.
+        </p>
+        <ExternalLink
+          href="https://visionxixlabs.com/dashboard/approvals"
+          className="shrink-0 text-[11px] font-medium text-zinc-300 transition hover:text-white"
+        >
+          Open Approval Center →
+        </ExternalLink>
+      </div>
+    </div>
+  );
+}
+
+function GitHubEvidenceCard({ evidence }: { evidence: GitHubReleaseEvidence }) {
+  return (
+    <div className="mt-3 rounded-lg border border-sky-500/15 bg-sky-500/5 px-3 py-3">
+      <p className="text-xs font-medium text-sky-100">GitHub release evidence</p>
+      <p className="mt-1 text-[10px] leading-4 text-zinc-500">
+        Read-only signals from the repositories and pull requests already recorded on this request. No workflow, pull request, deployment, or approval was changed.
+      </p>
+      <ul className="mt-3 space-y-2">
+        {evidence.repositories.map((repository) => (
+          <li key={repository.repository} className="rounded-md border border-white/5 bg-black/10 px-2.5 py-2 text-[11px] text-zinc-300">
+            <span className="font-medium text-zinc-100">{repository.repository}</span>
+            <span className="text-zinc-500"> · {repository.state === "observed" ? "read" : "not available"} · branch {repository.branchProtection.replaceAll("_", " ")} · workflow {repository.latestWorkflow.replaceAll("_", " ")}</span>
+          </li>
+        ))}
+        {evidence.pullRequests.map((pullRequest) => (
+          <li key={`${pullRequest.repository}-${pullRequest.number}`} className="rounded-md border border-white/5 bg-black/10 px-2.5 py-2 text-[11px] text-zinc-300">
+            <span className="font-medium text-zinc-100">{pullRequest.repository} · PR #{pullRequest.number}</span>
+            <span className="text-zinc-500"> · {pullRequest.pullRequestState.replaceAll("_", " ")} · checks {pullRequest.checks.replaceAll("_", " ")}</span>
+          </li>
+        ))}
+      </ul>
+      {evidence.pullRequests.length === 0 && (
+        <p className="mt-3 text-[11px] text-zinc-500">No matching production pull request was recorded for this request.</p>
+      )}
+    </div>
+  );
+}
+
+function ContextSignal({ label, value, detail, tone = "neutral" }: {
+  label: string;
+  value: string;
+  detail: string;
+  tone?: "neutral" | "good" | "attention";
+}) {
+  const color = tone === "good"
+    ? "border-emerald-500/20 bg-emerald-500/5"
+    : tone === "attention"
+    ? "border-amber-500/20 bg-amber-500/5"
+    : "border-white/5 bg-white/[0.02]";
+  return (
+    <div className={`rounded-lg border px-3 py-2 ${color}`}>
+      <p className="text-[10px] font-mono uppercase tracking-wider text-zinc-500">{label}</p>
+      <p className="mt-1 text-xs font-medium text-zinc-200">{value}</p>
+      <p className="mt-0.5 text-[10px] text-zinc-500">{detail}</p>
+    </div>
+  );
+}
+
+function DeploymentIntakeForm({ onCreated, revision }: { onCreated: () => void; revision?: RevisionSeed }) {
+  const [draft, setDraft] = useState(() => revision ? draftFromIntake(revision.intake) : initialDraft);
   const [step, setStep] = useState(0);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string>();
@@ -365,7 +844,7 @@ function DeploymentIntakeForm({ onCreated }: { onCreated: () => void }) {
 
     const manualSteps = draft.manualInstruction.trim()
       ? [{
-          id: crypto.randomUUID(),
+          id: textValue(objectValue(Array.isArray(revision?.intake.manualSteps) ? revision?.intake.manualSteps[0] : undefined).id) || crypto.randomUUID(),
           instruction: draft.manualInstruction.trim(),
           owner: draft.manualOwner.trim(),
           evidenceRequired: true,
@@ -408,14 +887,14 @@ function DeploymentIntakeForm({ onCreated }: { onCreated: () => void }) {
       productionReady: draft.productionReady,
       validationSteps: [
         {
-          id: crypto.randomUUID(),
+          id: textValue(objectValue(Array.isArray(revision?.intake.validationSteps) ? revision?.intake.validationSteps[0] : undefined).id) || crypto.randomUUID(),
           instruction: draft.validationInstruction,
           owner: draft.validationOwner,
           evidenceRequired: true,
           completed: false,
         },
         ...(draft.functionalValidationRequired ? [{
-          id: crypto.randomUUID(),
+          id: textValue(objectValue(Array.isArray(revision?.intake.validationSteps) ? revision?.intake.validationSteps[1] : undefined).id) || crypto.randomUUID(),
           instruction: draft.functionalValidationInstruction,
           owner: draft.functionalValidationOwner,
           evidenceRequired: true,
@@ -435,7 +914,7 @@ function DeploymentIntakeForm({ onCreated }: { onCreated: () => void }) {
       } : {}),
       rollbackAvailability: draft.rollbackAvailability,
       rollbackSteps: draft.rollbackAvailability === "yes" ? [{
-        id: crypto.randomUUID(),
+        id: textValue(objectValue(Array.isArray(revision?.intake.rollbackSteps) ? revision?.intake.rollbackSteps[0] : undefined).id) || crypto.randomUUID(),
         instruction: draft.rollbackInstruction,
         owner: draft.rollbackOwner,
         evidenceRequired: true,
@@ -448,7 +927,7 @@ function DeploymentIntakeForm({ onCreated }: { onCreated: () => void }) {
       applicationContact: draft.applicationContact,
       escalationContact: draft.escalationContact,
       facts: [{
-        id: crypto.randomUUID(),
+        id: textValue(objectValue(Array.isArray(revision?.intake.facts) ? revision?.intake.facts[0] : undefined).id) || crypto.randomUUID(),
         classification: "confirmed",
         value: draft.confirmedFact,
         sourceEvidenceId: draft.sourceEvidenceId,
@@ -457,7 +936,9 @@ function DeploymentIntakeForm({ onCreated }: { onCreated: () => void }) {
     };
 
     setSubmitting(true);
-    const result = await desktopClient.createDeploymentRequest(payload, submissionId);
+    const result = revision
+      ? await desktopClient.reviseDeploymentRequest(revision.id, revision.version, payload)
+      : await desktopClient.createDeploymentRequest(payload, submissionId);
     setSubmitting(false);
     if (!result.ok) {
       setError(result.error);
@@ -471,7 +952,7 @@ function DeploymentIntakeForm({ onCreated }: { onCreated: () => void }) {
       <div>
         <div className="flex items-center justify-between gap-3">
           <div>
-            <p className="text-sm font-semibold text-white">New governed deployment request</p>
+            <p className="text-sm font-semibold text-white">{revision ? `Revise governed request · v${revision.version} → v${revision.version + 1}` : "New governed deployment request"}</p>
             <p className="mt-1 text-xs text-zinc-500">Step {step + 1} of {INTAKE_STEPS.length} · {INTAKE_STEPS[step]}</p>
           </div>
           <span className="text-[10px] font-mono uppercase tracking-wider text-zinc-500">Required controls stay visible in sequence</span>
@@ -587,7 +1068,7 @@ function DeploymentIntakeForm({ onCreated }: { onCreated: () => void }) {
       {error && <p role="alert" className="text-sm text-rose-300">{error}</p>}
       <div className="flex items-center justify-between gap-3">
         <button type="button" disabled={step === 0 || submitting} onClick={() => { setStep((current) => Math.max(0, current - 1)); setError(undefined); }} className="btn-secondary disabled:opacity-40">Back</button>
-        <p className="text-xs text-zinc-500">This creates a tenant-scoped record and audit event. It does not deploy.</p>
+        <p className="text-xs text-zinc-500">{revision ? "This appends an immutable revision and audit event. It does not deploy." : "This creates a tenant-scoped record and audit event. It does not deploy."}</p>
         {step < INTAKE_STEPS.length - 1 ? (
           <button type="button" className="btn-primary" onClick={() => {
             const issue = validateStep(step, draft);
@@ -597,7 +1078,7 @@ function DeploymentIntakeForm({ onCreated }: { onCreated: () => void }) {
           }}>Continue</button>
         ) : (
           <button type="submit" disabled={submitting} className="btn-primary disabled:opacity-50">
-            {submitting ? "Submitting…" : "Submit governed request"}
+            {submitting ? (revision ? "Saving revision…" : "Submitting…") : (revision ? "Save immutable revision" : "Submit governed request")}
           </button>
         )}
       </div>

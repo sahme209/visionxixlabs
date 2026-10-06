@@ -67,7 +67,7 @@ const WORKFLOW_TYPES = [
   {
     icon: DocumentCheckIcon,
     title: "Compliance sweeps",
-    desc: "Weekly SOC 2, ISO 27001, HIPAA control validation across all connected providers.",
+    desc: "Weekly configuration checks against SOC 2, ISO 27001, and HIPAA-aligned controls across connected providers — not a certification or compliance audit.",
     color: "text-cyan-400",
     bg: "bg-cyan-500/10 border-cyan-500/20",
   },

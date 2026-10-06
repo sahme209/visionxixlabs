@@ -50,7 +50,7 @@ export default function ApprovalWorkflowPage() {
           <li>Role-based approval gates (only members with the &quot;approver&quot; role)</li>
           <li>Resource-scoped approvers (only specific resource owners)</li>
           <li>Environment-specific approvers (production approvers vs. staging)</li>
-          <li>External approval via ServiceNow Change Request or PagerDuty escalation</li>
+          <li>External approval via ServiceNow Change Request or PagerDuty escalation (planned — not yet available)</li>
         </ul>
       </DocSection>
 

@@ -2,6 +2,34 @@
 
 Last updated: 2026-09-30
 
+## Product-owner priority — governed AI and connected release systems
+
+The next end-to-end product capability is not a larger catalog of screens. It is a
+trustworthy integration and AI layer that turns the desktop Release Workspace into
+the place where a team can understand and govern a real deployment.
+
+1. **AI Provider Control Plane:** service-managed, tenant-scoped provider routes;
+   approved model availability; task-aware routing; budget and usage visibility;
+   redaction; audit events; deterministic fallback; and clear unavailable/error
+   states. Desktop clients never accept or retain organization provider keys.
+2. **Integration Control Plane:** browser-consented, least-privilege connections
+   with a verifiable lifecycle (requested, connected, degraded, revoked). Start
+   with source control and CI/CD, then Slack and Microsoft Teams, work tracking
+   (Linear/Jira), observability (Sentry and supported monitoring), change
+   management, and the cloud providers that inform a release.
+3. **Release context, not a generic chatbot:** connected data may enrich one
+   governed release record with evidence and recommendations. It cannot create
+   authority, silently dispatch a deployment, or turn a notification into an
+   approval.
+4. **Evidence before claims:** each provider needs sandbox/live contract tests,
+   explicit consent and revocation, permission-scope review, retries and failure
+   visibility, redaction, tenant isolation, and a packaged desktop proof before
+   it is described as connected or available.
+
+The visual experience should make this path approachable; it must never imply a
+connection, model route, live health signal, or execution outcome that has not
+been verified.
+
 ## P0 — integrity and authoritative scope
 
 1. Complete packaged verification of the new browser-to-app return: fresh install, Log in, Create account, provider cancel/error, expired challenge, approval, automatic focus, single consumption, restart, logout, and revoked session on macOS, Windows, and Linux.

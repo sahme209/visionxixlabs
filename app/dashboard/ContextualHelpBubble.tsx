@@ -19,6 +19,7 @@ export function ContextualHelpBubble() {
   const [open, setOpen] = useState(false);
   const [enabled, setEnabled] = useState<boolean>(true);
   const wrapperRef = useRef<HTMLDivElement | null>(null);
+  const triggerRef = useRef<HTMLButtonElement | null>(null);
 
   const entry = useMemo(() => resolveHelpForPath(pathname ?? ""), [pathname]);
 
@@ -39,9 +40,13 @@ export function ContextualHelpBubble() {
   }, []);
 
   useEffect(() => {
-    // Close on Escape.
+    // Close on Escape, returning focus to the trigger button rather
+    // than dropping it — same rule as the other floating widgets.
     function onKey(e: KeyboardEvent) {
-      if (e.key === "Escape") setOpen(false);
+      if (e.key === "Escape") {
+        setOpen(false);
+        triggerRef.current?.focus();
+      }
     }
     // Close on outside click.
     function onClick(e: MouseEvent) {
@@ -63,10 +68,10 @@ export function ContextualHelpBubble() {
   return (
     <div ref={wrapperRef} className="fixed bottom-5 right-5 z-40">
       {open && (
-        <div className="mb-2 w-[320px] rounded-2xl border border-white/[0.08] bg-zinc-950/95 backdrop-blur shadow-2xl p-4 text-left">
+        <div role="dialog" aria-label="Help" className="mb-2 w-[320px] rounded-2xl border border-white/[0.08] bg-zinc-950/95 backdrop-blur shadow-2xl p-4 text-left">
           <div className="flex items-start justify-between gap-2 mb-2">
             <p className="text-[10px] font-mono text-cyan-300/80 uppercase tracking-wider">// help</p>
-            <button onClick={() => setOpen(false)} className="text-zinc-400 hover:text-white">
+            <button onClick={() => { setOpen(false); triggerRef.current?.focus(); }} className="text-zinc-400 hover:text-white">
               <XMarkIcon className="h-4 w-4" />
             </button>
           </div>
@@ -108,8 +113,10 @@ export function ContextualHelpBubble() {
       )}
 
       <button
+        ref={triggerRef}
         onClick={() => setOpen((v) => !v)}
         aria-label="Help"
+        aria-expanded={open}
         className="rounded-full bg-cyan-500/20 text-cyan-200 border border-cyan-500/40 hover:bg-cyan-500/30 p-2 shadow-lg backdrop-blur transition"
       >
         <QuestionMarkCircleIcon className="h-5 w-5" />

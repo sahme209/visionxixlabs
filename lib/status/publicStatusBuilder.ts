@@ -201,20 +201,20 @@ function checkAiProvider(): StatusComponent {
     if (realConfigured.length === 0) {
       return {
         id: "ai_provider",
-        label: "AI provider (free tier)",
+        label: "AI provider routing",
         verdict: "degraded",
-        detail: "No real AI provider configured — falling through to the deterministic Mock. Set GITHUB_TOKEN, GEMINI_API_KEY, or another free key.",
+        detail: "No real AI provider is configured. Workspace AI requests remain unavailable until the service enables an approved provider.",
       };
     }
     const active = realConfigured[0];
     return {
       id: "ai_provider",
-      label: "AI provider (free tier)",
+      label: "AI provider routing",
       verdict: "operational",
       detail: `${realConfigured.length} provider(s) configured. Active: ${active.provider} (${active.defaultModel}).`,
     };
   } catch {
-    return { id: "ai_provider", label: "AI provider (free tier)", verdict: "unknown", detail: "AI provider manager threw on init." };
+    return { id: "ai_provider", label: "AI provider routing", verdict: "unknown", detail: "AI provider manager threw on init." };
   }
 }
 

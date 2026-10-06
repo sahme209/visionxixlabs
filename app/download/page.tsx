@@ -171,7 +171,7 @@ export default function DownloadPage() {
   const primaryPlatform = platformsLive[primary];
 
   return (
-    <div className="min-h-screen bg-[#09090b] text-white relative overflow-hidden">
+    <div className="axiom-canvas min-h-screen text-white relative overflow-hidden">
       <div className="absolute inset-0 bg-grid-mesh opacity-[0.08] pointer-events-none" aria-hidden />
       <div className="hidden md:block absolute top-0 left-1/2 -translate-x-1/2 w-[900px] h-[540px] spotlight-orb opacity-25 pointer-events-none" aria-hidden />
 
@@ -350,9 +350,40 @@ export default function DownloadPage() {
         </div>
       </section>
 
+      {/* Your first five minutes ────────────────────────────────── */}
+      <section className="py-20 px-4 sm:px-6 lg:px-8 relative border-y border-white/[0.06] bg-[#0f100f]">
+        <div className="max-w-[1400px] mx-auto">
+          <Reveal direction="up" blur>
+            <p className="text-sm font-semibold text-violet-400 mb-4 tracking-wide uppercase">Your first five minutes</p>
+            <h2 className="text-2xl sm:text-3xl font-medium tracking-[-0.03em] text-white max-w-2xl">What's intended to happen after you install.</h2>
+            <p className="mt-4 max-w-2xl text-xs leading-5 text-amber-200/80">
+              A known issue can currently interrupt pairing after you approve it in the browser. If the desktop app doesn't pick up an approved session, this is that defect — not something wrong on your end. We're actively tracing it before promising it end-to-end.
+            </p>
+            <ol className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-5">
+              {[
+                { step: "1", title: "Install", detail: "Download the signed build for your platform above and open it." },
+                { step: "2", title: "Sign in", detail: "The desktop app opens a browser window to authenticate — credentials never pass through the installed app directly." },
+                { step: "3", title: "Authorize the pairing", detail: "The browser shows \"Authorize Axiom Agent\" with your device's fingerprint and label, asking you to approve it once for that device." },
+                { step: "4", title: "Workspace should scope to you", detail: "Once pairing succeeds, the desktop app is intended to open scoped to your own workspace membership — not an admin view, not another tenant's data." },
+                { step: "5", title: "Next steps, once connected", detail: "From there the app is meant to tell you directly what's connected and what isn't yet — a repository to bind, an integration to approve — never a silent assumption." },
+              ].map((item) => (
+                <li key={item.step} className="rounded-xl border border-white/[0.08] bg-white/[0.02] p-5">
+                  <span className="flex h-7 w-7 items-center justify-center rounded-full border border-violet-300/25 bg-violet-300/10 text-xs font-medium text-violet-100">{item.step}</span>
+                  <p className="mt-4 text-sm font-medium text-zinc-100">{item.title}</p>
+                  <p className="mt-2 text-xs leading-5 text-zinc-400">{item.detail}</p>
+                </li>
+              ))}
+            </ol>
+            <p className="mt-8 text-xs text-zinc-500 max-w-2xl">
+              This describes the intended real pairing flow, not a screenshot sequence — every screen named above exists in the current build. It is not yet a guarantee that pairing completes end-to-end; see the notice above.
+            </p>
+          </Reveal>
+        </div>
+      </section>
+
       {/* What you get on desktop ────────────────────────────────── */}
       <section className="py-24 px-4 sm:px-6 lg:px-8 relative">
-        <div className="max-w-6xl mx-auto">
+        <div className="max-w-[1400px] mx-auto">
           <Reveal direction="up" blur>
             <div className="mb-16">
               <p className="text-sm font-semibold text-violet-400 mb-4 tracking-wide uppercase">
@@ -456,7 +487,7 @@ export default function DownloadPage() {
 
       {/* Built for enterprise ─────────────────────────────────────── */}
       <section className="py-24 px-4 sm:px-6 lg:px-8 relative">
-        <div className="max-w-6xl mx-auto">
+        <div className="max-w-[1400px] mx-auto">
           <Reveal direction="up" blur>
             <div className="mb-12">
               <p className="text-sm font-semibold text-emerald-400 mb-4 tracking-wide uppercase">
@@ -498,7 +529,7 @@ export default function DownloadPage() {
 
       {/* Platform roadmap ─────────────────────────────────────────── */}
       <section className="py-24 px-4 sm:px-6 lg:px-8 relative">
-        <div className="max-w-5xl mx-auto">
+        <div className="max-w-[1400px] mx-auto">
           <Reveal direction="up" blur>
             <div className="mb-12">
               <p className="text-sm font-semibold text-amber-400 mb-4 tracking-wide uppercase">

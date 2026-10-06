@@ -20,11 +20,9 @@ function makeRepo(): Stub {
   return stub;
 }
 
-const installCtx = { appSlug: "axiom-releaseops", callbackBaseUrl: "https://x" };
-
 describe("projectChecklist", () => {
   it("empty state — 0% complete, all blocked except first", () => {
-    const p = projectChecklist({ installationCount: 0, applicationCount: 0, repositoryCount: 0, releaseCount: 0 }, "https://github.com/apps/x/installations/new");
+    const p = projectChecklist({ installationCount: 0, applicationCount: 0, repositoryCount: 0, releaseCount: 0 });
     expect(p.percent).toBe(0);
     expect(p.completed).toBe(0);
     expect(p.items[0].blockedByPredecessor).toBe(false);
@@ -36,7 +34,7 @@ describe("projectChecklist", () => {
   });
 
   it("install done — 25% complete, app step unblocked", () => {
-    const p = projectChecklist({ installationCount: 1, applicationCount: 0, repositoryCount: 0, releaseCount: 0 }, "");
+    const p = projectChecklist({ installationCount: 1, applicationCount: 0, repositoryCount: 0, releaseCount: 0 });
     expect(p.percent).toBe(25);
     expect(p.items[0].done).toBe(true);
     expect(p.items[1].blockedByPredecessor).toBe(false);
@@ -44,32 +42,27 @@ describe("projectChecklist", () => {
   });
 
   it("3 of 4 done — 75% complete", () => {
-    const p = projectChecklist({ installationCount: 1, applicationCount: 2, repositoryCount: 3, releaseCount: 0 }, "");
+    const p = projectChecklist({ installationCount: 1, applicationCount: 2, repositoryCount: 3, releaseCount: 0 });
     expect(p.percent).toBe(75);
     expect(p.nextItem?.key).toBe("create_release");
     expect(p.allDone).toBe(false);
   });
 
   it("all done — 100%, nextItem null, allDone true", () => {
-    const p = projectChecklist({ installationCount: 1, applicationCount: 1, repositoryCount: 1, releaseCount: 1 }, "");
+    const p = projectChecklist({ installationCount: 1, applicationCount: 1, repositoryCount: 1, releaseCount: 1 });
     expect(p.percent).toBe(100);
     expect(p.completed).toBe(4);
     expect(p.allDone).toBe(true);
     expect(p.nextItem).toBeNull();
   });
 
-  it("install CTA prefers external GitHub URL when available", () => {
-    const p = projectChecklist({ installationCount: 0, applicationCount: 0, repositoryCount: 0, releaseCount: 0 }, "https://github.com/apps/axiom/installations/new?state=o");
-    expect(p.items[0].cta.href).toContain("github.com/apps/axiom");
-  });
-
-  it("install CTA falls back to /dashboard/github-app when URL empty", () => {
-    const p = projectChecklist({ installationCount: 0, applicationCount: 0, repositoryCount: 0, releaseCount: 0 }, "");
+  it("install CTA opens the internal handoff page", () => {
+    const p = projectChecklist({ installationCount: 0, applicationCount: 0, repositoryCount: 0, releaseCount: 0 });
     expect(p.items[0].cta.href).toBe("/dashboard/github-app");
   });
 
   it("done items update CTA label to 'Manage'", () => {
-    const p = projectChecklist({ installationCount: 1, applicationCount: 1, repositoryCount: 1, releaseCount: 1 }, "");
+    const p = projectChecklist({ installationCount: 1, applicationCount: 1, repositoryCount: 1, releaseCount: 1 });
     expect(p.items[0].cta.label).toBe("Manage install");
     expect(p.items[1].cta.label).toBe("Manage applications");
     expect(p.items[3].cta.label).toBe("View releases");
@@ -79,7 +72,7 @@ describe("projectChecklist", () => {
 describe("buildOnboardingChecklistResponse", () => {
   it("200 empty when no records", async () => {
     const stub = makeRepo();
-    const r = await buildOnboardingChecklistResponse(stub, "o", installCtx);
+    const r = await buildOnboardingChecklistResponse(stub, "o");
     expect(r.status).toBe(200);
     if (!r.body.ok) throw new Error("expected ok");
     expect(r.body.data.checklist.completed).toBe(0);
@@ -88,7 +81,7 @@ describe("buildOnboardingChecklistResponse", () => {
   it("200 sums counts from all 4 resources", async () => {
     const stub = makeRepo();
     stub._counts = { installationCount: 1, applicationCount: 1, repositoryCount: 2, releaseCount: 0 };
-    const r = await buildOnboardingChecklistResponse(stub, "o", installCtx);
+    const r = await buildOnboardingChecklistResponse(stub, "o");
     if (!r.body.ok) throw new Error("expected ok");
     expect(r.body.data.checklist.completed).toBe(3);
     expect(r.body.data.checklist.nextItem?.key).toBe("create_release");
@@ -101,7 +94,7 @@ describe("buildOnboardingChecklistResponse", () => {
     };
     stub._counts.applicationCount = 1;
     stub._counts.repositoryCount = 1;
-    const r = await buildOnboardingChecklistResponse(stub, "o", installCtx);
+    const r = await buildOnboardingChecklistResponse(stub, "o");
     expect(r.status).toBe(200);
     if (!r.body.ok) throw new Error("expected ok");
     // installationCount degraded to 0, others present

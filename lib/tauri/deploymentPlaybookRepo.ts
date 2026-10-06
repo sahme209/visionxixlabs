@@ -86,6 +86,39 @@ export interface PersistPlaybookInput {
     generatedAtUtc: string;
 }
 
+export type ReadLatestPlaybookResult =
+    | { ok: true; row: PlaybookRow; playbook: DeploymentPlaybook }
+    | { ok: false; reason: "playbook_not_found" | "stored_playbook_invalid" };
+
+/**
+ * Retrieves the latest persisted playbook for the authenticated tenant.
+ * Reading never changes a request, generates a new playbook, or dispatches
+ * an operation.
+ */
+export async function readLatestPlaybook(
+    repo: Pick<PlaybookRepo, "tauriPlaybook">,
+    input: { organizationId: string; deploymentRequestId: string },
+): Promise<ReadLatestPlaybookResult> {
+    const row = await repo.tauriPlaybook.findFirst({
+        where: {
+            organizationId: input.organizationId,
+            deploymentRequestId: input.deploymentRequestId,
+        },
+        orderBy: { version: "desc" },
+    });
+    if (!row) return { ok: false, reason: "playbook_not_found" };
+
+    const value = row.playbookJson;
+    if (!value || typeof value !== "object" || Array.isArray(value)) {
+        return { ok: false, reason: "stored_playbook_invalid" };
+    }
+    const playbook = value as DeploymentPlaybook;
+    if (!Array.isArray(playbook.steps) || typeof playbook.scope !== "string") {
+        return { ok: false, reason: "stored_playbook_invalid" };
+    }
+    return { ok: true, row, playbook };
+}
+
 export async function persistNextPlaybook(
     repo: PlaybookRepo,
     input: PersistPlaybookInput,

@@ -17,6 +17,8 @@ import type { AIProviderName, AITaskKind } from "./AIProvider";
 
 export interface UsageEvent {
   ts: string;
+  /** Workspace attribution is required before an event can leave the service. */
+  organizationId?: string;
   provider: AIProviderName;
   model: string;
   task: AITaskKind;
@@ -47,6 +49,18 @@ export function recordUsage(event: Omit<UsageEvent, "ts"> & { ts?: string }): vo
 
 export function readUsageTail(limit = 100): UsageEvent[] {
   return BUFFER.slice(-Math.max(1, Math.min(MAX, limit))).reverse();
+}
+
+/**
+ * Returns only events explicitly attributed to a workspace. Legacy process
+ * events without attribution deliberately remain service-internal.
+ */
+export function readUsageTailForOrganization(organizationId: string, limit = 100): UsageEvent[] {
+  const bounded = Math.max(1, Math.min(MAX, limit));
+  return BUFFER
+    .filter((event) => event.organizationId === organizationId)
+    .slice(-bounded)
+    .reverse();
 }
 
 export function clearUsage(): number {

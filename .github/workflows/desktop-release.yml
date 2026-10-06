@@ -217,6 +217,40 @@ jobs:
           echo "--- After signing:"
           ls -la flat/
 
+      - name: Verify asset version matches release tag
+        env:
+          RELEASE_TAG: ${{ needs.validate-release.outputs.release_tag }}
+        run: |
+          # Extract version from tag (desktop-v0.1.12 -> 0.1.12)
+          expected_version="${RELEASE_TAG#desktop-v}"
+
+          echo "Checking that all assets contain version: $expected_version"
+
+          # Verify every installer contains the correct version in its filename
+          failed=false
+          for f in flat/*; do
+            # Skip signature files
+            if [[ "$f" == *.asc ]]; then
+              continue
+            fi
+            # Extract just the filename
+            basename_f=$(basename "$f")
+            if ! [[ "$basename_f" =~ ${expected_version} ]]; then
+              echo "ERROR: Asset $basename_f does not contain expected version $expected_version"
+              failed=true
+            else
+              echo "✓ $basename_f contains version $expected_version"
+            fi
+          done
+
+          if [ "$failed" = true ]; then
+            echo "Version mismatch detected. The build produced binaries for a different version than intended."
+            echo "This prevents publishing incorrect binaries under the wrong release tag."
+            exit 1
+          fi
+
+          echo "All assets verified to contain the correct version."
+
       - name: Create release in public repo
         env:
           GH_TOKEN: ${{ secrets.RELEASES_REPO_TOKEN }}

@@ -13,6 +13,9 @@
 
 import "server-only";
 import { getAIProviderManager } from "@/lib/ai/AIProviderManager";
+import { loadWorkspaceAIProviderPolicyWithState, resolveWorkspaceAIProviderPolicy } from "@/lib/ai/workspaceProviderPolicy";
+import { checkWorkspaceAICredits } from "@/lib/billing/checkWorkspaceAICredits";
+import { recordAIUsageEvent } from "@/lib/billing/recordAIUsageEvent";
 
 export interface InsightsSeed {
   tenantId: string;
@@ -56,9 +59,47 @@ function templateFallback(s: InsightsSeed): string {
   ].join(" ");
 }
 
+/**
+ * Loads the workspace's AI provider policy and checks its budget before
+ * any provider call, mirroring the enforcement in /api/ai/generate and
+ * lib/releaseops/instrumentedAiFetcher. This engine previously called
+ * the AI manager directly with no policy or budget check: a workspace
+ * that explicitly disallowed a provider in its own AI settings could
+ * still have this tenant-summary call use whatever provider the service
+ * has configured, unmetered against the workspace's budget, with no
+ * usage record. Returns null (fail closed, caller falls back to the
+ * deterministic template) when the policy can't be loaded, is disabled,
+ * has no allowed providers, or the budget is exhausted.
+ */
+async function resolveGovernedGenerationOptions(organizationId: string): Promise<{
+  allowedProviders: ReturnType<typeof resolveWorkspaceAIProviderPolicy>["allowedProviders"];
+  modelSelections: ReturnType<typeof resolveWorkspaceAIProviderPolicy>["modelSelections"];
+  fallbackOrder: ReturnType<typeof resolveWorkspaceAIProviderPolicy>["fallbackOrder"];
+} | null> {
+  const mgr = getAIProviderManager();
+  const serviceEnabled = mgr.status()
+    .filter((provider) => provider.configured && provider.provider !== "mock")
+    .map((provider) => provider.provider);
+  const loadedPolicy = await loadWorkspaceAIProviderPolicyWithState(organizationId).catch(() => null);
+  if (!loadedPolicy || loadedPolicy.storageState !== "ready") return null;
+  const policy = resolveWorkspaceAIProviderPolicy({ stored: loadedPolicy.policy, serviceEnabled });
+  if (!policy.enabled || policy.allowedProviders.length === 0) return null;
+  const creditDecision = await checkWorkspaceAICredits(
+    organizationId,
+    0,
+    { failClosedOnUsageReadError: true },
+  ).catch(() => null);
+  if (!creditDecision || creditDecision.kind === "block") return null;
+  return { allowedProviders: policy.allowedProviders, modelSelections: policy.modelSelections, fallbackOrder: policy.fallbackOrder };
+}
+
 export async function synthesizeInsights(seed: InsightsSeed): Promise<InsightsNarrative> {
   const fallback = templateFallback(seed);
   try {
+    const governed = await resolveGovernedGenerationOptions(seed.tenantId);
+    if (!governed) {
+      return { paragraph: fallback, aiUsed: false, provider: null, model: null, latencyMs: 0 };
+    }
     const mgr = getAIProviderManager();
     const prompt = [
       `Tenant id: ${seed.tenantId}`,
@@ -78,10 +119,25 @@ export async function synthesizeInsights(seed: InsightsSeed): Promise<InsightsNa
       maxTokens: 4096,
       temperature: 0.3,
       timeoutMs: 15_000,
+      organizationId: seed.tenantId,
+      allowedProviders: governed.allowedProviders,
+      modelSelections: governed.modelSelections,
+      fallbackOrder: governed.fallbackOrder,
     });
     const text = (r.text ?? "").trim();
     if (!text || r.provider === "mock") {
       return { paragraph: fallback, aiUsed: false, provider: null, model: null, latencyMs: r.latencyMs };
+    }
+    if (r.usage) {
+      await recordAIUsageEvent({
+        organizationId: seed.tenantId,
+        provider: r.provider,
+        model: r.model,
+        inputTokens: r.usage.promptTokens ?? 0,
+        outputTokens: r.usage.completionTokens ?? 0,
+        triggeredBy: "system:tenant_insights_synthesizer",
+        metadata: { engineName: "tenant_insights_synthesizer" },
+      }).catch(() => undefined);
     }
     const paragraph = text.length > MAX_OUT ? `${text.slice(0, MAX_OUT - 3)}...` : text;
     return { paragraph, aiUsed: true, provider: r.provider, model: r.model, latencyMs: r.latencyMs };

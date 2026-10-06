@@ -14,7 +14,9 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/db";
 import { currentContext } from "@/lib/auth/currentContext";
+import { isAdminOrOwner } from "@/lib/auth/platformAdmin";
 import { CloudIcon, ArrowRightIcon } from "@heroicons/react/24/outline";
+import { CloudAccountToggle } from "./CloudAccountToggle";
 
 export const dynamic = "force-dynamic";
 
@@ -23,6 +25,7 @@ export default async function CloudAccountsPage() {
   if (!ctx.isAuthenticated || !ctx.organizationId) {
     redirect("/auth/signin?callbackUrl=/dashboard/cloud-accounts");
   }
+  const isAdmin = isAdminOrOwner({ email: ctx.email, roles: ctx.roles });
 
   let accounts: Array<{
     id: string;
@@ -117,6 +120,7 @@ export default async function CloudAccountsPage() {
               >
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-1 flex-wrap text-[10px] font-mono uppercase tracking-wider">
+                    <CloudAccountToggle cloudAccountId={a.id} enabled={a.enabled} isAdmin={isAdmin} />
                     <span className={a.enabled ? "text-emerald-300" : "text-zinc-500"}>{a.enabled ? "enabled" : "disabled"}</span>
                     <span className="text-zinc-500">·</span>
                     <span className="text-zinc-300">{a.provider}</span>

@@ -164,10 +164,10 @@ export default function PolicyProposalsPage() {
         </div>
       )}
       {!loading && networkError && (
-        <div className="rounded-2xl border border-rose-500/[0.18] bg-rose-500/[0.04] p-5 mb-6 text-[13px] text-zinc-300">{networkError}</div>
+        <div role="alert" aria-live="assertive" className="rounded-2xl border border-rose-500/[0.18] bg-rose-500/[0.04] p-5 mb-6 text-[13px] text-zinc-300">{networkError}</div>
       )}
       {!loading && errorBody?.error === "migration_pending" && (
-        <div className="rounded-2xl border border-amber-500/[0.18] bg-amber-500/[0.04] p-5 mb-6">
+        <div role="alert" aria-live="assertive" className="rounded-2xl border border-amber-500/[0.18] bg-amber-500/[0.04] p-5 mb-6">
           <div className="flex items-center gap-2 mb-1">
             <ExclamationTriangleIcon className="h-4 w-4 text-amber-300" />
             <p className="text-[12px] font-semibold text-amber-200">Schema migration pending</p>
@@ -176,7 +176,7 @@ export default function PolicyProposalsPage() {
         </div>
       )}
       {!loading && errorBody?.error === "auth_required" && (
-        <div className="rounded-2xl border border-amber-500/[0.18] bg-amber-500/[0.04] p-5 mb-6 text-[13px] text-zinc-300">
+        <div role="alert" aria-live="assertive" className="rounded-2xl border border-amber-500/[0.18] bg-amber-500/[0.04] p-5 mb-6 text-[13px] text-zinc-300">
           Sign in required.
         </div>
       )}
@@ -281,6 +281,7 @@ function ProposalCard({ proposal, onChanged }: { proposal: ProposalView; onChang
         <div className="pt-3 border-t border-white/[0.04] flex items-center gap-2 flex-wrap text-[11px] font-mono">
           <input
             type="text"
+            aria-label="Override rule key"
             value={override}
             onChange={(e) => setOverride(e.target.value)}
             placeholder="override rule key (optional)"
@@ -293,6 +294,7 @@ function ProposalCard({ proposal, onChanged }: { proposal: ProposalView; onChang
             onChange={(e) => setNote(e.target.value)}
             placeholder="optional decision note"
             disabled={busy !== null}
+            aria-label="Optional decision note"
             className="flex-1 min-w-[160px] rounded-md border border-white/[0.08] bg-black/30 px-2 py-1 text-[11px] text-zinc-100 placeholder:text-zinc-600 focus:border-violet-500/40 focus:outline-none disabled:opacity-50"
           />
           <button type="button" onClick={() => decide("accept")} disabled={busy !== null}

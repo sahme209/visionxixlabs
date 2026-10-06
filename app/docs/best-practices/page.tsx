@@ -59,7 +59,7 @@ const PRACTICES: readonly Practice[] = [
     num: "05",
     category: "ops",
     title: "Wire incident alerts to your on-call tool",
-    body: "Axiom emits alerts via Slack, PagerDuty, Opsgenie, and webhooks. When a finding crosses your severity threshold, you want it in the same surface your team already monitors — not an Axiom inbox they have to remember to check.",
+    body: "Axiom emits alerts via Slack, Microsoft Teams, and webhooks today — PagerDuty and Opsgenie are planned. When a finding crosses your severity threshold, you want it in the same surface your team already monitors — not an Axiom inbox they have to remember to check.",
     recommendation: "Connect at least one alert sink before the first scan in Axiom Agent under Notifications.",
   },
   {

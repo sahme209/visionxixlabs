@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
     persistNextPlaybook,
+    readLatestPlaybook,
     type PlaybookRepo,
     type PlaybookRow,
 } from "../deploymentPlaybookRepo";
@@ -194,6 +195,25 @@ describe("deployment playbook persistence", () => {
         expect(first).toMatchObject({ ok: true, row: { version: 1 } });
         expect(second).toMatchObject({ ok: true, row: { version: 2 } });
         expect(repo.playbooks.map((row) => row.version)).toEqual([1, 2]);
+        expect(repo.audits).toHaveLength(2);
+    });
+
+    it("reopens the latest persisted playbook without generating another version", async () => {
+        const repo = new FakeRepo();
+        await persistNextPlaybook(repo, input());
+        await persistNextPlaybook(repo, {
+            ...input(),
+            correlationId: "correlation-02",
+            generatedAtUtc: "2026-09-25T15:01:00.000Z",
+        });
+
+        const result = await readLatestPlaybook(repo, {
+            organizationId: "tenant-a",
+            deploymentRequestId: "request-01",
+        });
+
+        expect(result).toMatchObject({ ok: true, row: { version: 2 }, playbook: { version: 2 } });
+        expect(repo.playbooks).toHaveLength(2);
         expect(repo.audits).toHaveLength(2);
     });
 });

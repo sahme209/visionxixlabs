@@ -32,7 +32,7 @@ export default async function DesktopConnectPage({ searchParams }: { searchParam
   const access = await readDesktopCommercialAccess(context.organizationId!);
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-[#0d0e0c] px-5 py-20 text-white">
+    <main className="axiom-canvas flex min-h-screen items-center justify-center px-5 py-20 text-white">
       <Link href="/" className="absolute left-6 top-6 flex items-center gap-2.5 text-sm font-semibold text-zinc-200">
         <Image src="/vision-xix-logo.png" alt="" width={27} height={27} className="rounded-md" />
         Vision XIX Labs
@@ -75,7 +75,7 @@ function Row({ label, value }: { label: string; value: string }) {
 
 function Message({ title, detail }: { title: string; detail: string }) {
   return (
-    <main className="flex min-h-screen items-center justify-center bg-[#0d0e0c] px-5 text-white">
+    <main className="axiom-canvas flex min-h-screen items-center justify-center px-5 text-white">
       <div className="max-w-md p-8 text-center">
         <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl border border-white/[0.08] bg-white/[0.035]"><Image src="/vision-xix-logo.png" alt="" width={30} height={30} className="rounded-md" /></div>
         <h1 className="mt-7 text-2xl font-normal">{title}</h1>

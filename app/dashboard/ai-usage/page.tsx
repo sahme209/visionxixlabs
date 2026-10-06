@@ -3,8 +3,8 @@
 /**
  * /dashboard/ai-usage — per-provider + per-task usage analytics.
  *
- * Reads from /api/ai/usage. The underlying logger NEVER stores prompts
- * or secrets, so everything shown here is safe.
+ * Reads only workspace-attributed events from /api/ai/usage. The logger
+ * never stores prompts or secrets, and unscoped process events stay private.
  */
 
 import { useCallback, useEffect, useState } from "react";
@@ -26,6 +26,7 @@ interface UsageEvent {
 interface UsageResp {
   summary: { totalEvents: number; byProvider: ProviderRow[]; byTask: TaskRow[] };
   tail: UsageEvent[];
+  attribution: "workspace_only";
 }
 
 export default function AIUsagePage() {
@@ -70,13 +71,13 @@ export default function AIUsagePage() {
           AI usage. <span className="text-gradient">Safe to share.</span>
         </h1>
         <p className="text-[15px] text-zinc-400 max-w-2xl leading-relaxed">
-          Per-provider + per-task counts, error rates, and latency. The logger never stores prompts, API keys,
-          or response bodies — so this dashboard is safe to send to anyone in the org.
+          Per-provider + per-task counts, error rates, and latency for this workspace only. The logger never stores prompts,
+          API keys, or response bodies.
         </p>
       </div>
 
       {error && (
-        <div className="rounded-2xl border border-amber-500/[0.18] bg-amber-500/[0.04] p-5 mb-6 text-[13px] text-zinc-300">
+        <div role="alert" aria-live="assertive" className="rounded-2xl border border-amber-500/[0.18] bg-amber-500/[0.04] p-5 mb-6 text-[13px] text-zinc-300">
           {error}
         </div>
       )}

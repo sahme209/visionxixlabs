@@ -172,7 +172,7 @@ export default async function RecommendationsPage() {
                     <p className="text-[10px] font-mono text-zinc-500">{rows.length} item{rows.length === 1 ? "" : "s"}</p>
                   </div>
                 </div>
-                <ul className="rounded-2xl border border-white/[0.06] bg-white/[0.015] divide-y divide-white/[0.04] overflow-hidden">
+                <ul className="surface-glass rounded-2xl divide-y divide-white/[0.04] overflow-hidden">
                   {rows.map((r) => (
                     <li key={r.id}>
                       <Link

@@ -28,7 +28,7 @@ export default function PublicSurfacesPage() {
   );
 
   return (
-    <div className="mx-auto max-w-5xl">
+    <div>
       <div className="mb-10">
         <p className="text-[10px] font-mono text-cyan-300/80 uppercase tracking-widest mb-2">
           // surface catalog · {HELP_ENTRIES.length} entries · auto-generated

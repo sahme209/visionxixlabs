@@ -80,6 +80,10 @@ enum AuditEventStatus {
   pending
   precheck_failed
   applied
+  /// Handler ran but never called a real cloud SDK — see
+  /// StepResult["simulated"] in lib/axiom/applyEngine.ts. Distinct from
+  /// "applied", which means a real mutation was executed.
+  simulated
   verified
   failed
   rolled_back
@@ -1933,6 +1937,22 @@ model OrganizationBudgetConfig {
   updatedAt            DateTime @updatedAt
 }
 
+/// Workspace-owned AI routing policy. This stores provider identifiers,
+/// approved model selections, and fallback order only; credentials remain
+/// exclusively in server environment configuration and are never tenant supplied.
+model OrganizationAIProviderPolicy {
+  organizationId     String   @id
+  /// Workspace owner can explicitly stop governed workspace AI generation
+  /// without removing service-managed provider credentials.
+  enabled            Boolean  @default(true)
+  allowedProviders   Json     @default("[]")
+  modelSelections    Json     @default("{}")
+  fallbackOrder      Json     @default("[]")
+  updatedBy          String
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+}
+
 /// Per-tenant override of the autonomy charter. When a row exists,
 /// the scheduler and on-demand cockpit use this charter instead of
 /// the global default. Mode is an AutonomyMode literal validated at
@@ -2460,6 +2480,25 @@ model Release {
   createdByUserId String?
   updatedAt       DateTime @updatedAt
 
+  /// The single Repository this release's GitHub evidence (PRs, checks,
+  /// workflow runs) is sourced from. Deliberately NOT a Prisma relation —
+  /// same soft-reference convention as Component.repositoryId — so a
+  /// cross-tenant Repository row can never be attached even by accident;
+  /// the application layer (releaseRepositoryBinding.ts) is the only
+  /// writer and always re-checks organizationId itself.
+  ///
+  /// Set at most once, at release-creation time, and never changed after
+  /// that (no update path exists) — a release's evidence provenance must
+  /// not silently change after readiness/approval decisions have been
+  /// made against it. Null for releases created before this field
+  /// existed, and for any release created without an evidence repository
+  /// selected; the Playbook renders that as an explicit "not bound" state
+  /// (DataSourceState{available:false}), never a guess at which repo it
+  /// might be.
+  evidenceRepositoryId            String?
+  evidenceRepositoryBoundAt       DateTime?
+  evidenceRepositoryBoundByUserId String?
+
   readinessSnapshots ReleaseReadinessSnapshot[]
   evidencePack       ReleaseEvidencePack?
 
@@ -2468,6 +2507,7 @@ model Release {
   @@index([applicationId])
   @@index([status])
   @@index([targetEnvironmentId])
+  @@index([evidenceRepositoryId])
 }
 
 model ReleaseReadinessSnapshot {
@@ -2721,9 +2761,13 @@ model LinkedInAccountConnection {
   linkedinName       String?
   /// Optional organization URN if posting to a company page.
   organizationUrn    String?
-  /// Encrypted-at-rest access token (today: stored plain — TODO: wrap with platform secret helper).
+  /// Encrypted at rest via lib/security/credentialVault.ts (AES-256-GCM).
+  /// Rows written before this was wired up are still plaintext; posting.ts
+  /// and the daily-drafts cron treat a decrypt failure as an expired
+  /// token (forces reconnect) rather than trusting an unreadable value.
   accessToken        String
-  /// Refresh token if returned (some scope combos return one).
+  /// Refresh token if returned (some scope combos return one). Encrypted
+  /// at rest the same way as accessToken.
   refreshToken       String?
   /// Scopes granted at connect-time, comma-joined.
   scopes             String
@@ -3678,6 +3722,55 @@ model GitHubInstallation {
   @@index([githubInstallationId])
 }
 
+/// Tenant-owned OAuth connection for a deployment integration.
+///
+/// This intentionally does not reuse cloud connector records: the encrypted
+/// OAuth payload and authorization-attempt history have different lifecycle,
+/// revocation, and retention requirements. Provider is a closed union in the
+/// application layer: slack | teams.
+model TenantIntegrationConnection {
+  id                    String   @id @default(cuid())
+  organizationId        String
+  provider              String
+  /// pending | active | needs_attention | suspended | revoked.
+  status                String   @default("pending")
+  /// Context-bound AES-GCM v2 envelope. Never returned to browser or desktop.
+  encryptedCredential   String
+  /// Provider workspace / Entra tenant identifier, when available.
+  externalAccountId     String?
+  /// Granted scopes only; no bearer token or provider payload.
+  scopesJson            Json?
+  consentedByUserId     String?
+  consentedAt           DateTime @default(now())
+  lastValidatedAt       DateTime?
+  revokedAt             DateTime?
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  @@unique([organizationId, provider])
+  @@index([organizationId, status])
+}
+
+/// A one-time browser authorization attempt. State is stored as a digest;
+/// the raw value never reaches the database. PKCE verifier ciphertext is
+/// optional because Slack does not use PKCE while Microsoft authorization
+/// code flow does.
+model TenantIntegrationAuthorizationAttempt {
+  id                    String   @id @default(cuid())
+  organizationId        String
+  provider              String
+  stateDigest           String   @unique
+  redirectUri           String
+  encryptedPkceVerifier String?
+  initiatedByUserId     String
+  expiresAt             DateTime
+  consumedAt            DateTime?
+  createdAt             DateTime @default(now())
+
+  @@index([organizationId, provider, expiresAt])
+  @@index([expiresAt])
+}
+
 /// Phase 501 — Deployment incident linked to a release.
 ///
 /// Captures post-deploy spikes / regressions attributed to a specific
@@ -3915,4 +4008,64 @@ model TauriDeploymentOperation {
   @@unique([organizationId, idempotencyKey])
   @@index([organizationId, deploymentRequestId, createdAt])
   @@index([organizationId, status, updatedAt])
+}
+
+/// Incident-response evidence record — the named gap identified in
+/// docs/COMPLIANCE_CONTROL_MAPPING.md ("there is currently no dedicated
+/// incident-response runbook or recovery evidence model"). status and
+/// severity are closed-union strings validated in
+/// lib/incident/incidentLifecycle.ts, not Postgres enums — matching the
+/// Release.status / TenantIntegrationConnection.status convention used
+/// everywhere else newer in this schema, so extending the union never
+/// requires an ALTER TYPE migration.
+model IncidentRecord {
+  id                 String    @id @default(cuid())
+  organizationId     String
+  /// Closed-union: detected | investigating | mitigated | resolved | postmortem_complete
+  status             String    @default("detected")
+  /// Closed-union: low | medium | high | critical
+  severity           String
+  title              String
+  description        String?
+  detectedAt         DateTime  @default(now())
+  detectedByUserId   String?
+  /// Soft reference, no FK — same convention as Component.repositoryId.
+  /// An incident record is permanent evidence and must survive
+  /// independently of any single affected tenant's own lifecycle.
+  affectedOrganizationIds String[] @default([])
+  mitigatedAt            DateTime?
+  resolvedAt             DateTime?
+  postmortemCompletedAt  DateTime?
+  postmortemUrl          String?
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  @@index([organizationId, status])
+  @@index([organizationId, detectedAt])
+}
+
+/// Platform-level singleton: the GitHub App credential produced by the
+/// GitHub App Manifest flow (one-time operator setup, NOT per-tenant).
+/// Distinct from TenantIntegrationConnection (per-workspace Slack/Teams
+/// OAuth) and GitHubInstallation (per-workspace installation records).
+/// `singletonKey` is always "platform_github_app" — the unique constraint
+/// enforces that only one row can ever exist; callers upsert on it.
+/// The three secret fields are context-bound AES-GCM v2 envelopes from
+/// lib/security/credentialVault.ts (same convention as
+/// TenantIntegrationConnection.encryptedCredential) and are never
+/// returned to a browser, logged, or included in audit detail.
+model PlatformGithubAppCredential {
+  id                     String   @id @default(cuid())
+  singletonKey           String   @unique @default("platform_github_app")
+  appId                  Int
+  slug                   String
+  name                   String
+  clientId               String
+  encryptedClientSecret  String
+  encryptedWebhookSecret String
+  encryptedPrivateKey    String
+  htmlUrl                String
+  createdAt              DateTime @default(now())
+  updatedAt              DateTime @updatedAt
+  createdByUserId        String
 }

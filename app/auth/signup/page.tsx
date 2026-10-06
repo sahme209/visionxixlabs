@@ -15,7 +15,7 @@ export default function SignUpPage() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen flex items-center justify-center bg-[#09090b]">
+        <div className="axiom-canvas min-h-screen flex items-center justify-center">
           <div className="h-6 w-6 animate-spin rounded-full border-2 border-violet-500 border-t-transparent" />
         </div>
       }
@@ -116,7 +116,7 @@ function SignUpForm() {
   };
 
   return (
-    <div className="relative flex min-h-screen overflow-hidden bg-[#0d0e0c]">
+    <div className="axiom-canvas relative flex min-h-screen overflow-hidden">
       <Link href="/" className="absolute left-6 top-6 z-20 flex items-center gap-2.5 text-sm font-semibold text-zinc-200 transition-colors hover:text-white">
         <Image src="/vision-xix-logo.png" alt="" width={27} height={27} className="rounded-md" />
         Vision XIX Labs
@@ -192,7 +192,7 @@ function SignUpForm() {
                 <span>I agree to the <Link href="/terms" target="_blank" className="text-violet-300 underline">Terms</Link> and acknowledge the <Link href="/privacy" target="_blank" className="text-violet-300 underline">Privacy Policy</Link>.</span>
               </label>
               {error && (
-                <div className="rounded-lg border border-red-500/20 bg-red-500/[0.06] px-3.5 py-2.5 text-sm text-red-400">
+                <div role="alert" aria-live="assertive" className="rounded-lg border border-red-500/20 bg-red-500/[0.06] px-3.5 py-2.5 text-sm text-red-400">
                   {error}
                 </div>
               )}
@@ -248,7 +248,7 @@ function SignUpForm() {
             </p>
 
             <p className="mt-4 text-xs text-zinc-600 text-center">
-              A paid workspace entitlement is provisioned separately under approved commercial terms before deployment operations unlock.
+              An approved pilot or commercial workspace entitlement is provisioned separately before deployment operations unlock.
             </p>
             {!desktopChallenge && <p role="alert" className="mt-3 text-xs text-amber-300 text-center">This sign-up link is not attached to a valid desktop pairing request. Return to Axiom Agent and choose Continue securely in browser.</p>}
           </div>

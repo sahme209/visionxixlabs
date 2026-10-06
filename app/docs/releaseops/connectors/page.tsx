@@ -3,52 +3,38 @@ import Link from "next/link";
 import { DocHeader, DocSection, Callout, TrustGrid, DocFooterNav, DocFeedback } from "@/components/docs/DocPrimitives";
 
 export const metadata: Metadata = {
-  title: "CI/CD connectors — ReleaseOps Documentation",
-  description: "Connect GitHub, GitLab, Azure DevOps, Jenkins, ArgoCD, and ServiceNow to ReleaseOps. What each connector reads and what it does not.",
+  title: "Integration boundaries — ReleaseOps Documentation",
+  description: "The integrations Axiom can currently govern, their minimum access boundaries, and the controls required before a connection is treated as active.",
 };
 
 const CONNECTORS = [
   {
     name: "GitHub",
-    auth: "GitHub App installation (org-level)",
-    reads: ["Branch protection rules", "Required reviewers", "Workflow runs + deployment events", "Pull requests + reviews", "Release tags + notes", "Repository configuration"],
-    notReads: ["Source code contents (Axiom never clones repos)", "Issue contents", "GitHub Secrets values", "Private user data"],
-    notes: "Org admin must approve the App installation if your org has restrictions. Webhook delivery is real-time.",
+    auth: "GitHub App installation for selected repositories",
+    reads: ["Selected repository metadata", "Release evidence configured for a deployment request", "A harmless read-only validation after installation"],
+    notReads: ["Repository secrets or Actions secret values", "Credentials or private keys", "Write access to repositories, pull requests, workflows, or deployments"],
+    notes: "An installation is not shown as validated until Axiom completes its scoped, read-only check. A workspace owner can stop Axiom from using the recorded installation; removing the GitHub App remains a GitHub-side action.",
   },
   {
-    name: "GitLab",
-    auth: "Project or Group access token (scoped: api, read_repository)",
-    reads: ["CI/CD pipelines + jobs", "Merge request reviews", "Protected branches", "Deployment history", "Project settings"],
-    notReads: ["File contents in repos", "Issue contents", "CI/CD variables values", "Personal user tokens"],
-    notes: "Self-hosted GitLab is supported via custom base URL. Token rotation supported via Settings → Connections.",
+    name: "Slack",
+    auth: "Browser OAuth, only when an Axiom-managed Slack app is configured",
+    reads: ["The minimum workspace context needed to validate the consent", "Only the scopes shown before consent"],
+    notReads: ["Slack passwords", "Unrelated workspace data", "A connection status inferred only from a browser return"],
+    notes: "Consent is tenant-bound, one-time, encrypted at rest, and starts as awaiting validation. Messaging is not represented as active until a live validation succeeds.",
   },
   {
-    name: "Azure DevOps",
-    auth: "Service Connection (Personal Access Token, scopes: Code-Read, Build-Read, Release-Read)",
-    reads: ["Build pipelines + runs", "Release pipelines + deployments", "Branch policies", "Pull request approvals", "Service connections (metadata)"],
-    notReads: ["Source code", "Pipeline variables (secret-marked)", "Work item details"],
-    notes: "Personal Access Tokens expire — Axiom warns 14 days before expiration and prompts for rotation.",
+    name: "Microsoft identity",
+    auth: "OAuth with PKCE, only when an Axiom-managed Microsoft app is configured",
+    reads: ["Basic identity needed to verify consent", "Only the consented scope shown in the Microsoft authorization flow"],
+    notReads: ["Microsoft or Teams passwords", "Teams messages or files by default", "An active connection without server-side validation"],
+    notes: "The PKCE verifier and returned credential are encrypted and bound to one tenant and one callback. Teams messaging is not yet a live Axiom capability.",
   },
   {
-    name: "Jenkins",
-    auth: "API token + Crumb (per Jenkins user with appropriate read permissions)",
-    reads: ["Job/pipeline metadata", "Build history + statuses", "Pipeline definitions (Jenkinsfile metadata)", "Build artifacts metadata (not contents)"],
-    notReads: ["Build artifact contents", "Credentials store", "Jenkins user passwords"],
-    notes: "Network reachability required — Axiom polls Jenkins APIs. Self-hosted with reverse proxy supported via outbound webhook.",
-  },
-  {
-    name: "ArgoCD",
-    auth: "ArgoCD project token (scope: applications, get)",
-    reads: ["Application sync state", "Deployment history", "Health status", "Project + cluster configuration"],
-    notReads: ["Manifest contents beyond app metadata", "Cluster credentials"],
-    notes: "Each Application sync registers as a release event. Sync failures surface in the activity feed.",
-  },
-  {
-    name: "ServiceNow",
-    auth: "OAuth 2.0 application + service account (scopes: change_request:read, change_request:write)",
-    reads: ["Change Request status + approvals", "CR fields relevant to release"],
-    notReads: ["Other ServiceNow modules (Incident, Problem, CMDB) — opt-in separately"],
-    notes: "Axiom can auto-create CRs with risk justification + rollback strategy attached, and auto-close on verification.",
+    name: "Other delivery systems",
+    auth: "Not connected",
+    reads: ["Nothing until Axiom publishes and validates a dedicated, least-privilege connector"],
+    notReads: ["GitLab, Azure DevOps, Jenkins, Argo CD, ServiceNow, CI/CD, observability, or ticketing credentials"],
+    notes: "These systems may be evaluated where they reduce release handoffs or improve evidence, but are not represented as available integrations today.",
   },
 ];
 
@@ -57,12 +43,12 @@ export default function ReleaseOpsConnectorsPage() {
     <>
       <DocHeader
         kicker="ReleaseOps · Connectors"
-        title="CI/CD connectors."
-        summary="What each ReleaseOps connector reads, what it doesn't, and how to authorize. Every connector is read-only by default; write access (orchestrating approvals, creating Change Requests) is opt-in per system."
+        title="Integration boundaries."
+        summary="What Axiom can currently connect, what each connection is allowed to see, and the checks required before it is treated as active."
       />
 
-      <Callout variant="safe" title="The model">
-        Every connector authenticates with the minimum scopes required to read release telemetry. Write operations are opt-in per connector and per action class. Tokens never leave Axiom; they&apos;re encrypted at rest and never logged.
+      <Callout variant="safe" title="The model: consent is not proof">
+        A browser return or stored credential never makes an integration look healthy by itself. Axiom binds consent to a tenant, expires and consumes it once, encrypts service credentials, and requires a server-side validation before marking a connection active. Browser pages never receive provider credentials.
       </Callout>
 
       {CONNECTORS.map((c) => (
@@ -88,24 +74,24 @@ export default function ReleaseOpsConnectorsPage() {
         </DocSection>
       ))}
 
-      <DocSection id="rotation" title="Token rotation + revocation">
+      <DocSection id="rotation" title="Revocation and revalidation">
         <ul className="list-disc list-inside space-y-1.5 text-zinc-400 ml-1">
-          <li>Rotate any token from <strong>Dashboard → Settings → Connections → [connector] → Rotate</strong></li>
-          <li>Revoke instantly by deleting the token in the source system (GitHub, GitLab, etc.) — Axiom detects the auth failure on next sync and surfaces it</li>
-          <li>Axiom proactively warns 14 days before any token expiration</li>
-          <li>Self-hosted instances: revoke at the network layer by blocking egress to Axiom&apos;s service IPs</li>
+          <li>Workspace owners can revoke Axiom&apos;s recorded use of a connection from the governed connection record.</li>
+          <li>Provider-side removal remains the source of truth: remove the GitHub App or revoke the OAuth grant in the provider when access must end there too.</li>
+          <li>Validation timestamps distinguish a recorded consent from an active, reachable integration.</li>
+          <li>Do not treat a webhook, browser success screen, or cached status as proof of a live connection.</li>
         </ul>
       </DocSection>
 
       <DocSection id="trust" title="Trust questions">
         <TrustGrid
           items={[
-            { question: "What does each connector access?", answer: "Only release telemetry — pipelines, deployments, approvals, branch protection. Never source code or secret values." },
-            { question: "Where are tokens stored?", answer: "Encrypted at rest with per-tenant keys. Never logged. Never transmitted to other tenants." },
-            { question: "Is this safe for regulated environments?", answer: "Yes — read-only by default. Write scope is opt-in per connector. SOC 2 control mapping built in." },
-            { question: "Can I revoke instantly?", answer: "Yes — delete the token in the source system or click Revoke in Axiom. Both work immediately." },
-            { question: "What about self-hosted instances?", answer: "Supported for GitLab, Jenkins, Azure DevOps. ServiceNow self-hosted: contact us." },
-            { question: "What if the connector fails to sync?", answer: "Sync failures surface in the connector panel of the ReleaseOps Command Center with the exact error and a fix link." },
+            { question: "What does Axiom access?", answer: "Only the minimum provider facts named above, after a workspace owner starts a scoped consent flow. The initial GitHub release-evidence path is read-only." },
+            { question: "Where are provider credentials handled?", answer: "On Axiom's service boundary, encrypted at rest. They are not returned to the browser or written into release evidence." },
+            { question: "Is Axiom certified for regulated environments?", answer: "No certification is implied here. Regulated use needs your own risk review, agreements, identity controls, retention policy, and independently verified evidence." },
+            { question: "Can access be revoked?", answer: "Yes. Stop Axiom's recorded use from the workspace and revoke the provider-side grant or App installation when access must end at the provider too." },
+            { question: "Which other tools are supported?", answer: "No other delivery-system connection is claimed here until it has a dedicated consent lifecycle, least-privilege scope, validation, revocation, and audit path." },
+            { question: "What happens when validation fails?", answer: "Axiom must show the connection as needing attention or awaiting validation—not as connected—and avoid treating its data as current release evidence." },
           ]}
         />
       </DocSection>

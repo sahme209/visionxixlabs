@@ -39,6 +39,14 @@ export interface ApplicationRow {
   name: string;
 }
 
+export interface RepositoryRow {
+  id: string;
+  organizationId: string;
+  provider: string;
+  remoteOwner: string;
+  remoteName: string;
+}
+
 export interface ReleaseCreatedRow {
   id: string;
   applicationId: string;
@@ -48,11 +56,15 @@ export interface ReleaseCreatedRow {
   plannedWindowStart: Date | null;
   plannedWindowEnd: Date | null;
   summary: string | null;
+  evidenceRepositoryId: string | null;
 }
 
 export interface ReleaseCreateRepo {
   application: {
     findUnique(args: { where: { id: string } }): Promise<ApplicationRow | null>;
+  };
+  repository: {
+    findUnique(args: { where: { id: string } }): Promise<RepositoryRow | null>;
   };
   release: {
     findUnique(args: {
@@ -69,6 +81,9 @@ export interface ReleaseCreateRepo {
         plannedWindowEnd: Date | null;
         summary: string | null;
         createdByUserId: string;
+        evidenceRepositoryId: string | null;
+        evidenceRepositoryBoundAt: Date | null;
+        evidenceRepositoryBoundByUserId: string | null;
       };
     }): Promise<ReleaseCreatedRow>;
   };
@@ -87,6 +102,16 @@ export interface BuildReleaseCreateInput {
   plannedWindowStartIso?: string;
   plannedWindowEndIso?: string;
   summary?: string;
+  /**
+   * Optional evidence-source repository, captured once at creation time.
+   * The live "is this repo actually covered by our GitHub App
+   * installation" check happens in the route (an IO call this pure-ish
+   * responder doesn't make) — by the time this reaches here, the caller
+   * has already confirmed it via githubInstallationCoverage.ts. This
+   * function only re-checks what it can from the DB: the row exists,
+   * belongs to this org, and is a github-provider repo.
+   */
+  repositoryId?: string;
 }
 
 export type CreateError =
@@ -94,7 +119,10 @@ export type CreateError =
   | "commit_sha_invalid"
   | "planned_window_invalid"
   | "application_not_found"
-  | "cross_org_application";
+  | "cross_org_application"
+  | "repository_not_found"
+  | "cross_org_repository"
+  | "repository_not_github";
 
 export type ReleaseCreateBody =
   | {
@@ -105,6 +133,7 @@ export type ReleaseCreateBody =
         releaseTag: string;
         status: string;
         created: boolean;
+        evidenceRepositoryId: string | null;
       };
     }
   | { ok: false; error: CreateError | "migration_pending" | "internal_error"; hint?: string; correlationId?: string };
@@ -183,9 +212,25 @@ export async function buildReleaseCreateResponse(
             releaseTag: existing.releaseTag,
             status: existing.status,
             created: false,
+            evidenceRepositoryId: existing.evidenceRepositoryId,
           },
         },
       };
+    }
+
+    let evidenceRepositoryId: string | null = null;
+    if (input.repositoryId) {
+      const repository = await repo.repository.findUnique({ where: { id: input.repositoryId } });
+      if (!repository) {
+        return { status: 404, body: { ok: false, error: "repository_not_found" } };
+      }
+      if (repository.organizationId !== input.organizationId) {
+        return { status: 403, body: { ok: false, error: "cross_org_repository" } };
+      }
+      if (repository.provider !== "github") {
+        return { status: 422, body: { ok: false, error: "repository_not_github", hint: "Evidence binding supports GitHub repositories only today." } };
+      }
+      evidenceRepositoryId = repository.id;
     }
 
     const row = await repo.release.create({
@@ -199,6 +244,9 @@ export async function buildReleaseCreateResponse(
         plannedWindowEnd: plannedEnd,
         summary: input.summary?.trim() || null,
         createdByUserId: input.actorUserId,
+        evidenceRepositoryId,
+        evidenceRepositoryBoundAt: evidenceRepositoryId ? new Date() : null,
+        evidenceRepositoryBoundByUserId: evidenceRepositoryId ? input.actorUserId : null,
       },
     });
     return {
@@ -211,6 +259,7 @@ export async function buildReleaseCreateResponse(
           releaseTag: row.releaseTag,
           status: row.status,
           created: true,
+          evidenceRepositoryId: row.evidenceRepositoryId,
         },
       },
     };

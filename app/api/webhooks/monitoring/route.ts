@@ -163,10 +163,19 @@ export async function POST(req: Request) {
   } else if (alert.severity === "info" || alert.severity === "low") {
     analysisSkipReason = "severity_below_threshold";
   } else {
-    const credit = await checkWorkspaceAICredits(organizationId, 30);
-    if (credit.kind === "block") {
+    let credit: Awaited<ReturnType<typeof checkWorkspaceAICredits>> | null = null;
+    try {
+      credit = await checkWorkspaceAICredits(organizationId, 30, { failClosedOnUsageReadError: true });
+    } catch {
+      // Fail closed, not crash: an externally-triggered webhook must
+      // still 200 and degrade gracefully, not throw, on a transient
+      // usage-read failure — skip auto-analysis for this alert instead
+      // of risking a monitoring-provider retry storm on an uncaught 500.
+      analysisSkipReason = "ai_credit_meter_unavailable";
+    }
+    if (credit?.kind === "block") {
       analysisSkipReason = "ai_credits_exhausted";
-    } else if (config.dailyCostCapCents > 0) {
+    } else if (credit && config.dailyCostCapCents > 0) {
       // Check today's auto-analyze spend on the cap.
       const since = new Date(Date.now() - 24 * 60 * 60 * 1000);
       const todaysCount = await prisma.aiRationaleEnrichment.count({
@@ -202,10 +211,15 @@ export async function POST(req: Request) {
     }
   }
 
+  const analysisOutcome: "success" | "failure" | "blocked" =
+    analysisSkipReason === "analysis_error" ? "failure"
+    : (analysisSkipReason === "ai_credits_exhausted" || analysisSkipReason === "daily_cost_cap_reached") ? "blocked"
+    : "success";
+
   void auditRecord({
     organizationId: ids.organization(organizationId),
     action: alert.state === "firing" ? "billing.alert_fired" : "engineer.action_attempted",
-    outcome: "success",
+    outcome: analysisOutcome,
     entityRef: `monitoring-alert:${alertSlug}`,
     correlationId,
     detail: {

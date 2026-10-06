@@ -21,7 +21,7 @@ const FAQ_GROUPS = [
       },
       {
         q: "Does Axiom replace my existing tooling?",
-        a: "No. Axiom runs above CloudWatch, AWS Config, Terraform, GitHub Actions, ServiceNow, etc. It coordinates and analyzes them — it does not replace any of them.",
+        a: "No. Axiom runs above CloudWatch, AWS Config, Terraform, and GitHub Actions. It coordinates and analyzes them — it does not replace any of them.",
       },
     ],
   },
@@ -30,7 +30,7 @@ const FAQ_GROUPS = [
     items: [
       {
         q: "What clouds are supported?",
-        a: "AWS is fully implemented (scan, reason, plan, execute, monitor, learn). Azure and GCP have working connectors with scan + topology mapping; the reasoning and execution layers are rolling out in Q2 and Q3 2026.",
+        a: "AWS connection and read-only scanning are implemented; live validation requires broker configuration and customer IAM setup, and write execution is not released. Azure and GCP have working connectors with scan and topology mapping; live SDK validation and provider-specific execution are not released.",
       },
       {
         q: "What permissions does Axiom need?",
@@ -89,7 +89,7 @@ const FAQ_GROUPS = [
     items: [
       {
         q: "What does Axiom ReleaseOps integrate with?",
-        a: "GitHub Actions, GitLab CI, Azure DevOps, Jenkins, ArgoCD, and ServiceNow on the workflow side. Terraform Cloud / Enterprise on the IaC side. AWS/Azure/GCP on the infrastructure side.",
+        a: "GitHub Actions on the workflow side today — GitLab CI, Azure DevOps, Jenkins, ArgoCD, and ServiceNow are planned. Terraform Cloud / Enterprise on the IaC side. AWS on the infrastructure side; Azure/GCP support is in preview.",
       },
       {
         q: "Does ReleaseOps run deployments itself?",
@@ -106,7 +106,7 @@ const FAQ_GROUPS = [
     items: [
       {
         q: "Is there a desktop app?",
-        a: "macOS preview is available now. Windows is rolling out in Q2 2026, Linux in Q3 2026. The web platform is available on all browsers immediately.",
+        a: "A macOS preview build exists; Windows and Linux builds are not yet released. The web platform is available in all browsers immediately. See /download for the current, release-verified platform state.",
       },
       {
         q: "What does the desktop app do that the web doesn't?",

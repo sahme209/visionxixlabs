@@ -11,7 +11,6 @@
  */
 
 import { isMissingTable } from "./releaseListResponder";
-import { buildInstallUrl, type StatusContext as InstallCtx } from "./githubInstallationResponder";
 
 /* ──────────────────────────────────────────────────────────────────
    Closed-unions.
@@ -55,16 +54,14 @@ export interface ChecklistProjection {
   allDone: boolean;
 }
 
-export function projectChecklist(counts: CountsInput, installUrl: string): ChecklistProjection {
+export function projectChecklist(counts: CountsInput): ChecklistProjection {
   const installDone = counts.installationCount > 0;
   const applicationDone = counts.applicationCount > 0;
   const repositoryDone = counts.repositoryCount > 0;
   const releaseDone = counts.releaseCount > 0;
 
-  // CTA URLs — install_github_app prefers the external GitHub URL when
-  // GITHUB_APP_SLUG is configured; otherwise falls back to the in-app
-  // setup page that explains how to configure it.
-  const installCta = installUrl || "/dashboard/github-app";
+  // The dashboard begins an auditable, one-time installation handoff.
+  const installCta = "/dashboard/github-app";
 
   const items: ChecklistItem[] = [
     {
@@ -140,7 +137,6 @@ export interface ChecklistResult { status: number; body: ChecklistBody }
 export async function buildOnboardingChecklistResponse(
   repo: OnboardingChecklistRepo,
   organizationId: string,
-  installCtx: InstallCtx,
   opts: { now?: Date; correlationId?: string } = {},
 ): Promise<ChecklistResult> {
   try {
@@ -157,11 +153,7 @@ export async function buildOnboardingChecklistResponse(
     const releaseCount = await safeCount(() =>
       repo.release.count({ where: { organizationId } }));
 
-    const installUrl = buildInstallUrl(installCtx, organizationId);
-    const checklist = projectChecklist(
-      { installationCount, applicationCount, repositoryCount, releaseCount },
-      installUrl,
-    );
+    const checklist = projectChecklist({ installationCount, applicationCount, repositoryCount, releaseCount });
 
     return {
       status: 200,

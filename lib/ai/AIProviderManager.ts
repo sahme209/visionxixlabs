@@ -18,6 +18,7 @@ import {
 import { PROVIDER_PRIORITY } from "./AIModelRegistry";
 import { runWithFallback } from "./AIFallbackHandler";
 import { recordUsage } from "./AIUsageLogger";
+import { redact } from "@/lib/security/redaction";
 import { GitHubModelsProvider } from "./providers/GitHubModelsProvider";
 import { OllamaProvider } from "./providers/OllamaProvider";
 import { LMStudioProvider } from "./providers/LMStudioProvider";
@@ -26,11 +27,17 @@ import { HuggingFaceProvider } from "./providers/HuggingFaceProvider";
 import { OpenRouterProvider } from "./providers/OpenRouterProvider";
 import { GeminiProvider } from "./providers/GeminiProvider";
 import { CloudflareAIProvider } from "./providers/CloudflareAIProvider";
+import { AnthropicProvider } from "./providers/AnthropicProvider";
 import { MockAIProvider } from "./providers/MockAIProvider";
+import { OpenAIProvider } from "./providers/OpenAIProvider";
+import { XAIProvider } from "./providers/XAIProvider";
 
 let SINGLETON: AIProviderManager | null = null;
 
 export interface AIEnvSnapshot {
+  OPENAI_API_KEY: boolean;
+  ANTHROPIC_API_KEY: boolean;
+  XAI_API_KEY: boolean;
   GITHUB_TOKEN: boolean;
   GROQ_API_KEY: boolean;
   HUGGINGFACE_API_KEY: boolean;
@@ -56,6 +63,9 @@ export class AIProviderManager {
   constructor() {
     const env = process.env;
     this.providers = new Map<AIProviderName, AIProvider>([
+      ["openai",        new OpenAIProvider({ apiKey: env.OPENAI_API_KEY, modelName: env.OPENAI_MODEL })],
+      ["anthropic",     new AnthropicProvider({ apiKey: env.ANTHROPIC_API_KEY, modelName: env.ANTHROPIC_MODEL })],
+      ["xai",           new XAIProvider({ apiKey: env.XAI_API_KEY, modelName: env.XAI_MODEL })],
       ["github_models", new GitHubModelsProvider({ token: env.GITHUB_TOKEN, modelName: env.GITHUB_MODEL_NAME })],
       ["ollama",        new OllamaProvider({ baseUrl: env.OLLAMA_BASE_URL })],
       ["lm_studio",     new LMStudioProvider({ baseUrl: env.LM_STUDIO_BASE_URL })],
@@ -69,20 +79,36 @@ export class AIProviderManager {
   }
 
   /** Configured providers in declared priority, then Mock last. */
-  private chain(opts?: { only?: AIProviderName }): AIProvider[] {
+  private chain(opts?: { only?: AIProviderName; allowedProviders?: readonly AIProviderName[]; fallbackOrder?: readonly AIProviderName[] }): AIProvider[] {
     if (opts?.only) {
+      if (opts.allowedProviders && !opts.allowedProviders.includes(opts.only)) return [];
       const p = this.providers.get(opts.only);
       return p ? [p] : [this.providers.get("mock")!];
     }
+    const allowed = opts?.allowedProviders ? new Set(opts.allowedProviders) : null;
+    const policyOrder = opts?.fallbackOrder?.length
+      ? opts.fallbackOrder
+      : PROVIDER_PRIORITY;
     const out: AIProvider[] = [];
-    for (const name of PROVIDER_PRIORITY) {
+    for (const name of policyOrder) {
       if (name === "mock") continue;
+      if (allowed && !allowed.has(name)) continue;
       const p = this.providers.get(name);
       if (p && p.isConfigured()) out.push(p);
     }
-    // Mock always last so we never fail entirely.
-    out.push(this.providers.get("mock")!);
+    // Workspace-governed requests must fail honestly if every approved
+    // provider is unavailable. The deterministic mock remains available only
+    // to legacy/internal callers that did not provide a workspace policy.
+    if (!opts?.allowedProviders) out.push(this.providers.get("mock")!);
     return out;
+  }
+
+  private optionsForProvider(provider: AIProvider, options?: AIRequestOptions & { only?: AIProviderName }): AIRequestOptions | undefined {
+    if (!options) return undefined;
+    // A direct request model is already checked by the route. Fallbacks use
+    // their own approved selection so a model identifier never crosses into a
+    // different provider family.
+    return { ...options, model: options.model ?? options.modelSelections?.[provider.name] };
   }
 
   status(): ProviderStatusRow[] {
@@ -92,9 +118,17 @@ export class AIProviderManager {
     });
   }
 
+  /** True only for a real provider configured by the service. */
+  isServiceProviderAvailable(name: AIProviderName): boolean {
+    return name !== "mock" && this.providers.get(name)?.isConfigured() === true;
+  }
+
   envSnapshot(): AIEnvSnapshot {
     const e = process.env;
     return {
+      OPENAI_API_KEY: Boolean(e.OPENAI_API_KEY),
+      ANTHROPIC_API_KEY: Boolean(e.ANTHROPIC_API_KEY),
+      XAI_API_KEY: Boolean(e.XAI_API_KEY),
       GITHUB_TOKEN: Boolean(e.GITHUB_TOKEN),
       GROQ_API_KEY: Boolean(e.GROQ_API_KEY),
       HUGGINGFACE_API_KEY: Boolean(e.HUGGINGFACE_API_KEY),
@@ -108,28 +142,36 @@ export class AIProviderManager {
   }
 
   async generateText(prompt: string, options?: AIRequestOptions & { only?: AIProviderName }): Promise<AITextResponse> {
+    // Governance boundary: this is the one place every production call
+    // path funnels through before a prompt leaves the service for an
+    // external provider (Anthropic, OpenAI, etc.). Scrub known secret/
+    // credential patterns here — not just at the logging layer — so an
+    // accidentally-pasted key or connection string in a user prompt, or
+    // in auto-generated release/incident context, never reaches a
+    // third-party API unredacted.
+    const safePrompt = redact(prompt);
     const out = await runWithFallback<AITextResponse>(
-      this.chain({ only: options?.only }),
-      (p) => p.generateText(prompt, options),
-      { task: "generate_text", correlationId: options?.correlationId },
+      this.chain({ only: options?.only, allowedProviders: options?.allowedProviders, fallbackOrder: options?.fallbackOrder }),
+      (p) => p.generateText(safePrompt, this.optionsForProvider(p, options)),
+      { task: "generate_text", correlationId: options?.correlationId, organizationId: options?.organizationId },
     );
     return out.result;
   }
 
   async summarize(text: string, options?: AIRequestOptions & { only?: AIProviderName }): Promise<AITextResponse> {
     const out = await runWithFallback<AITextResponse>(
-      this.chain({ only: options?.only }),
-      (p) => p.summarize(text, options),
-      { task: "summarize", correlationId: options?.correlationId },
+      this.chain({ only: options?.only, allowedProviders: options?.allowedProviders, fallbackOrder: options?.fallbackOrder }),
+      (p) => p.summarize(text, this.optionsForProvider(p, options)),
+      { task: "summarize", correlationId: options?.correlationId, organizationId: options?.organizationId },
     );
     return out.result;
   }
 
   async classify(text: string, labels: readonly string[], options?: AIRequestOptions & { only?: AIProviderName }): Promise<AIClassifyResponse> {
     const out = await runWithFallback<AIClassifyResponse>(
-      this.chain({ only: options?.only }),
-      (p) => p.classify(text, labels, options),
-      { task: "classify", correlationId: options?.correlationId },
+      this.chain({ only: options?.only, allowedProviders: options?.allowedProviders, fallbackOrder: options?.fallbackOrder }),
+      (p) => p.classify(text, labels, this.optionsForProvider(p, options)),
+      { task: "classify", correlationId: options?.correlationId, organizationId: options?.organizationId },
     );
     return out.result;
   }
@@ -140,9 +182,9 @@ export class AIProviderManager {
     options?: AIRequestOptions & { only?: AIProviderName },
   ): Promise<AIStructuredResponse<T>> {
     const out = await runWithFallback<AIStructuredResponse<T>>(
-      this.chain({ only: options?.only }),
-      (p) => p.extractStructuredData<T>(text, schemaHint, options),
-      { task: "extract_structured_data", correlationId: options?.correlationId },
+      this.chain({ only: options?.only, allowedProviders: options?.allowedProviders, fallbackOrder: options?.fallbackOrder }),
+      (p) => p.extractStructuredData<T>(text, schemaHint, this.optionsForProvider(p, options)),
+      { task: "extract_structured_data", correlationId: options?.correlationId, organizationId: options?.organizationId },
     );
     return out.result;
   }
@@ -151,30 +193,39 @@ export class AIProviderManager {
     // Streaming uses the first configured provider; we don't try to
     // re-stream from a fallback mid-stream. If it fails before yielding,
     // we surface a single error chunk and end.
-    const chain = this.chain({ only: options?.only });
-    const head = chain[0]!;
+    const chain = this.chain({ only: options?.only, allowedProviders: options?.allowedProviders, fallbackOrder: options?.fallbackOrder });
+    const head = chain[0];
+    // A workspace-governed request has no mock fallback. If the policy
+    // resolves to no live provider, end the stream honestly instead of
+    // dereferencing an empty chain or fabricating a response.
+    if (!head) {
+      yield { text: "", done: true, finishReason: "error" };
+      return;
+    }
     const t0 = Date.now();
     try {
-      for await (const chunk of head.streamText(prompt, options)) {
+      for await (const chunk of head.streamText(prompt, this.optionsForProvider(head, options))) {
         yield chunk;
       }
       recordUsage({
         provider: head.name, model: options?.model ?? head.defaultModel,
-        task: "stream_text", latencyMs: Date.now() - t0, status: "ok", correlationId: options?.correlationId,
+        task: "stream_text", latencyMs: Date.now() - t0, status: "ok", correlationId: options?.correlationId, organizationId: options?.organizationId,
       });
     } catch (err) {
       const e = err instanceof AIProviderError ? err : new AIProviderError({ provider: head.name, kind: "unknown", message: "stream failed" });
       recordUsage({
         provider: head.name, model: head.defaultModel, task: "stream_text",
-        latencyMs: e.latencyMs || Date.now() - t0, status: "error", errorKind: e.kind, correlationId: options?.correlationId,
+        latencyMs: e.latencyMs || Date.now() - t0, status: "error", errorKind: e.kind, correlationId: options?.correlationId, organizationId: options?.organizationId,
       });
       yield { text: "", done: true, finishReason: "error" };
     }
   }
 
-  async healthCheckAll(): Promise<AIHealthCheck[]> {
+  async healthCheckAll(allowedProviders?: readonly AIProviderName[]): Promise<AIHealthCheck[]> {
     const rows: AIHealthCheck[] = [];
+    const allowed = allowedProviders ? new Set(allowedProviders) : null;
     for (const name of PROVIDER_PRIORITY) {
+      if (allowed && !allowed.has(name)) continue;
       const p = this.providers.get(name)!;
       try {
         rows.push(await p.healthCheck({ timeoutMs: 8_000 }));

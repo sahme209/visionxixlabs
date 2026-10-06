@@ -5,7 +5,7 @@ const columns = [
   {
     title: "Product",
     links: [
-      ["Deployment operations", "/axiom/releaseops"],
+      ["Deployment operations", "/product"],
       ["Capabilities", "/capabilities"],
       ["Integrations", "/integrations"],
       ["Plans", "/plans"],
@@ -15,7 +15,7 @@ const columns = [
   {
     title: "Resources",
     links: [
-      ["Documentation", "/docs"],
+      ["Documentation", "/resources"],
       ["Getting started", "/docs/getting-started"],
       ["Security model", "/docs/security-model"],
       ["Release readiness", "/docs/releaseops/readiness"],
@@ -44,7 +44,7 @@ const columns = [
 export function Footer() {
   return (
     <footer className="border-t border-white/[0.06] bg-[#11120f] px-5 pb-8 pt-20 sm:px-8 lg:px-12 lg:pt-24">
-      <div className="mx-auto max-w-[1720px]">
+      <div className="mx-auto max-w-[1400px]">
         <section className="border-b border-white/[0.07] pb-20 text-center lg:pb-24" aria-labelledby="footer-cta-heading">
           <h2 id="footer-cta-heading" className="text-4xl font-normal tracking-[-0.045em] text-zinc-100 sm:text-6xl lg:text-7xl">Put the workflow to work.</h2>
           <p className="mx-auto mt-5 max-w-xl text-sm leading-6 text-zinc-500">Use the installed workspace for authenticated intake, approval-gated execution, evidence, and closure.</p>

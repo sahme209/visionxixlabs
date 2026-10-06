@@ -32,8 +32,18 @@ interface DeploymentRequestDelegate {
         };
     }): Promise<DeploymentRequestRow>;
     findFirst(args: {
-        where: { organizationId: string; correlationId: string };
+        where: { organizationId: string; correlationId?: string; id?: string };
     }): Promise<DeploymentRequestRow | null>;
+    updateMany(args: {
+        where: { id: string; organizationId: string; version: number; status?: string };
+        data: {
+            title?: string;
+            intakeJson?: unknown;
+            version?: { increment: number };
+            status?: string;
+            closedAt?: Date;
+        };
+    }): Promise<{ count: number }>;
     findMany(args: {
         where: { organizationId: string };
         orderBy: { updatedAt: "desc" };
@@ -54,6 +64,13 @@ interface DeploymentRequestVersionDelegate {
     }): Promise<unknown>;
 }
 
+interface ExistingPlaybookDelegate {
+    updateMany(args: {
+        where: { organizationId: string; deploymentRequestId: string; status: { not: string } };
+        data: { status: string };
+    }): Promise<{ count: number }>;
+}
+
 interface DeploymentAuditDelegate {
     create(args: {
         data: {
@@ -62,9 +79,11 @@ interface DeploymentAuditDelegate {
             actorUserId: string;
             actorRole: string;
             action: string;
+            previousValueJson?: unknown;
             newValueJson: unknown;
             source: string;
             correlationId: string;
+            evidenceLink?: string;
             timeZone: string;
         };
     }): Promise<unknown>;
@@ -73,6 +92,7 @@ interface DeploymentAuditDelegate {
 export interface DeploymentRequestRepo {
     tauriDeploymentRequest: DeploymentRequestDelegate;
     tauriDeploymentRequestVersion: DeploymentRequestVersionDelegate;
+    tauriPlaybook: ExistingPlaybookDelegate;
     tauriAuditEvent: DeploymentAuditDelegate;
     $transaction<T>(fn: (tx: DeploymentRequestRepo) => Promise<T>): Promise<T>;
 }
@@ -97,6 +117,40 @@ export interface CreateDeploymentRequestInput {
     requestId: string;
     receivedAtUtc: string;
     intake: DeploymentIntake;
+}
+
+export type ReviseDeploymentRequestResult =
+    | { ok: true; request: DeploymentRequestRow; changed: boolean }
+    | {
+        ok: false;
+        reason: "validation_failed" | "tenant_mismatch" | "not_found" | "closed" | "version_conflict";
+        issues: Array<{ code: string; field: string; message: string }>;
+    };
+
+export interface ReviseDeploymentRequestInput {
+    organizationId: string;
+    requesterUserId: string;
+    actorRole: string;
+    correlationId: string;
+    requestId: string;
+    expectedVersion: number;
+    intake: DeploymentIntake;
+}
+
+export type CloseDeploymentRequestResult =
+    | { ok: true; request: DeploymentRequestRow }
+    | { ok: false; reason: "not_found" | "closed" | "version_conflict" | "closure_evidence_required" };
+
+export interface CloseDeploymentRequestInput {
+    organizationId: string;
+    requesterUserId: string;
+    actorRole: string;
+    correlationId: string;
+    requestId: string;
+    expectedVersion: number;
+    closureEvidenceId: string;
+    closureSummary: string;
+    closedAtUtc: string;
 }
 
 export async function createDeploymentRequest(
@@ -200,6 +254,171 @@ export async function createDeploymentRequest(
     };
 }
 
+/**
+ * Appends an immutable request snapshot while atomically advancing the
+ * mutable request pointer. The expected version is mandatory: a stale
+ * desktop can never silently overwrite a newer operator revision.
+ */
+export async function reviseDeploymentRequest(
+    repo: DeploymentRequestRepo,
+    input: ReviseDeploymentRequestInput,
+): Promise<ReviseDeploymentRequestResult> {
+    if (input.intake.tenantId !== input.organizationId) {
+        return {
+            ok: false,
+            reason: "tenant_mismatch",
+            issues: [{ code: "tenant_mismatch", field: "tenantId", message: "The request tenant must match the authenticated desktop workspace." }],
+        };
+    }
+    const issues = validateIntake(input.intake);
+    if (issues.length > 0) return { ok: false, reason: "validation_failed", issues };
+
+    const result = await repo.$transaction(async (tx) => {
+        const existing = await tx.tauriDeploymentRequest.findFirst({
+            where: { organizationId: input.organizationId, id: input.requestId },
+        });
+        if (!existing) return { kind: "not_found" as const };
+        if (existing.closedAt || existing.status === "closed") return { kind: "closed" as const };
+        if (existing.version !== input.expectedVersion) return { kind: "version_conflict" as const };
+
+        const stored = existing.intakeJson as Record<string, unknown>;
+        const { id: _storedId, ...storedContent } = stored;
+        const { id: _incomingId, ...incomingContent } = input.intake;
+        if (sha256ContentHash(storedContent) === sha256ContentHash(incomingContent)) {
+            return { kind: "unchanged" as const, request: existing };
+        }
+
+        const nextVersion = existing.version + 1;
+        const claimed = await tx.tauriDeploymentRequest.updateMany({
+            where: { id: existing.id, organizationId: input.organizationId, version: input.expectedVersion },
+            data: {
+                title: input.intake.title,
+                intakeJson: input.intake,
+                version: { increment: 1 },
+            },
+        });
+        if (claimed.count !== 1) return { kind: "version_conflict" as const };
+
+        const updated = await tx.tauriDeploymentRequest.findFirst({
+            where: { organizationId: input.organizationId, id: existing.id },
+        });
+        if (!updated) return { kind: "not_found" as const };
+
+        // A playbook is derived from a specific request snapshot. Once the
+        // request changes, prior playbooks remain auditable but must never be
+        // presented as current release instructions.
+        await tx.tauriPlaybook.updateMany({
+            where: {
+                organizationId: input.organizationId,
+                deploymentRequestId: updated.id,
+                status: { not: "superseded" },
+            },
+            data: { status: "superseded" },
+        });
+
+        await tx.tauriDeploymentRequestVersion.create({
+            data: {
+                organizationId: input.organizationId,
+                deploymentRequestId: updated.id,
+                version: nextVersion,
+                intakeJson: input.intake,
+                contentHash: sha256ContentHash(input.intake),
+                createdByUserId: input.requesterUserId,
+            },
+        });
+        await tx.tauriAuditEvent.create({
+            data: {
+                organizationId: input.organizationId,
+                deploymentRequestId: updated.id,
+                actorUserId: input.requesterUserId,
+                actorRole: input.actorRole,
+                action: "deployment_request.revised",
+                previousValueJson: { version: existing.version, title: existing.title },
+                newValueJson: { version: updated.version, title: updated.title },
+                source: "desktop",
+                correlationId: input.correlationId,
+                timeZone: input.intake.displayTimeZone,
+            },
+        });
+        return { kind: "updated" as const, request: updated };
+    });
+
+    if (result.kind === "updated") return { ok: true, request: result.request, changed: true };
+    if (result.kind === "unchanged") return { ok: true, request: result.request, changed: false };
+    const messages = {
+        not_found: "The deployment request was not found in this workspace.",
+        closed: "Closed deployment requests cannot be revised.",
+        version_conflict: "This request changed elsewhere. Refresh before revising it.",
+    } as const;
+    return {
+        ok: false,
+        reason: result.kind,
+        issues: [{ code: result.kind, field: "version", message: messages[result.kind] }],
+    };
+}
+
+/**
+ * Records a human-confirmed external outcome and closes the governed record.
+ * This is intentionally evidence-only: it cannot dispatch, merge, approve,
+ * or otherwise mutate an external release system.
+ */
+export async function closeDeploymentRequest(
+    repo: DeploymentRequestRepo,
+    input: CloseDeploymentRequestInput,
+): Promise<CloseDeploymentRequestResult> {
+    const evidenceId = input.closureEvidenceId.trim();
+    const summary = input.closureSummary.trim();
+    if (!evidenceId || !summary || evidenceId.length > 240 || summary.length > 2_000) {
+        return { ok: false, reason: "closure_evidence_required" };
+    }
+
+    type CloseTransactionResult =
+        | { kind: "not_found" }
+        | { kind: "already_closed" }
+        | { kind: "version_conflict" }
+        | { kind: "closed"; request: DeploymentRequestRow };
+
+    const result = await repo.$transaction(async (tx): Promise<CloseTransactionResult> => {
+        const existing = await tx.tauriDeploymentRequest.findFirst({
+            where: { organizationId: input.organizationId, id: input.requestId },
+        });
+        if (!existing) return { kind: "not_found" as const };
+        if (existing.closedAt || existing.status === "closed") return { kind: "already_closed" as const };
+        if (existing.version !== input.expectedVersion) return { kind: "version_conflict" as const };
+
+        const claimed = await tx.tauriDeploymentRequest.updateMany({
+            where: { id: existing.id, organizationId: input.organizationId, version: input.expectedVersion, status: existing.status },
+            data: { status: "closed", closedAt: new Date(input.closedAtUtc) },
+        });
+        if (claimed.count !== 1) return { kind: "version_conflict" as const };
+        const closed = await tx.tauriDeploymentRequest.findFirst({
+            where: { organizationId: input.organizationId, id: existing.id },
+        });
+        if (!closed) return { kind: "not_found" as const };
+
+        await tx.tauriAuditEvent.create({
+            data: {
+                organizationId: input.organizationId,
+                deploymentRequestId: closed.id,
+                actorUserId: input.requesterUserId,
+                actorRole: input.actorRole,
+                action: "deployment_request.closed",
+                previousValueJson: { version: existing.version, status: existing.status },
+                newValueJson: { version: closed.version, status: closed.status, closureSummary: summary },
+                source: "desktop",
+                correlationId: input.correlationId,
+                evidenceLink: evidenceId,
+                timeZone: (existing.intakeJson as { displayTimeZone?: string }).displayTimeZone ?? "UTC",
+            },
+        });
+        return { kind: "closed" as const, request: closed };
+    });
+
+    if (result.kind === "closed") return { ok: true, request: result.request };
+    if (result.kind === "already_closed") return { ok: false, reason: "closed" };
+    return { ok: false, reason: result.kind };
+}
+
 export async function listDeploymentRequests(
     repo: DeploymentRequestRepo,
     organizationId: string,
@@ -213,5 +432,17 @@ export async function listDeploymentRequests(
         where: { organizationId },
         orderBy: { updatedAt: "desc" },
         take: safeLimit,
+    });
+}
+
+/** Read one request only when it belongs to the authenticated workspace. */
+export async function getDeploymentRequest(
+    repo: DeploymentRequestRepo,
+    organizationId: string,
+    requestId: string,
+): Promise<DeploymentRequestRow | null> {
+    if (!organizationId.trim() || !requestId.trim()) return null;
+    return repo.tauriDeploymentRequest.findFirst({
+        where: { organizationId, id: requestId },
     });
 }

@@ -65,9 +65,8 @@ function SignInForm() {
     // Hard-stop when the provider isn't actually registered on the server.
     if (enabledProviders && !enabledProviders[provider]) {
       setError(
-        `${provider === "google" ? "Google" : "GitHub"} sign-in isn't configured on this deployment yet. ` +
-        `Set ${provider === "google" ? "GOOGLE_CLIENT_ID + GOOGLE_CLIENT_SECRET" : "GITHUB_CLIENT_ID + GITHUB_CLIENT_SECRET"} ` +
-        `+ NEXTAUTH_URL on the host to enable it.`
+        `${provider === "google" ? "Google" : "GitHub"} sign-in is not available for this workspace yet. ` +
+        "Use email sign-in or contact the Axiom team for access."
       );
       return;
     }
@@ -78,29 +77,31 @@ function SignInForm() {
       // When redirect: true succeeds, the browser navigates away. If it
       // returns instead (e.g. cancelled / popup blocked), surface a hint.
       if (res?.error) {
-        setError(`${provider} sign-in failed: ${res.error}`);
+        setError(`We couldn't complete ${provider === "google" ? "Google" : "GitHub"} sign-in. Try again or use email sign-in.`);
       }
-    } catch (err) {
-      setError(err instanceof Error ? err.message : `Couldn't start ${provider} sign-in.`);
+    } catch {
+      setError(`We couldn't start ${provider === "google" ? "Google" : "GitHub"} sign-in. Try again or use email sign-in.`);
     } finally {
       setOauthLoading(null);
     }
   };
 
   return (
-    <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-[#0d0e0c] px-5 py-20">
+    <div className="axiom-canvas relative flex min-h-screen items-center justify-center overflow-hidden px-5 py-20">
+      <div aria-hidden className="absolute inset-0 bg-cover bg-center opacity-20" style={{ backgroundImage: "url('/images/axiom-hero-landscape-v1.png')" }} />
+      <div aria-hidden className="absolute inset-0 bg-[linear-gradient(180deg,rgba(11,12,11,0.76),rgba(11,12,11,0.96)_72%,#0c0d0c)]" />
       <Link href="/" className="absolute left-6 top-6 z-20 flex items-center gap-2.5 text-sm font-semibold text-zinc-200 transition-colors hover:text-white">
         <Image src="/vision-xix-logo.png" alt="" width={27} height={27} className="rounded-md" />
         Vision XIX Labs
       </Link>
 
-      <div className="relative z-10 w-full max-w-lg p-2 sm:p-8">
-        <div className="mb-8 flex h-12 w-12 items-center justify-center rounded-xl border border-white/[0.08] bg-white/[0.035]">
+      <div className="relative z-10 w-full max-w-lg rounded-[28px] border border-white/[0.09] bg-black/25 p-6 shadow-[0_28px_100px_rgba(0,0,0,0.26)] backdrop-blur-md sm:p-9">
+        <div className="mb-8 flex h-12 w-12 items-center justify-center rounded-xl border border-white/[0.08] bg-white/[0.045]">
           <Image src="/vision-xix-logo.png" alt="" width={30} height={30} className="rounded-md" />
         </div>
-        <h1 className="mb-2 text-3xl font-normal tracking-[-0.045em]">Welcome back</h1>
-        <p className="text-sm text-zinc-500 mb-8">Authenticate the Axiom Agent pairing request opened by the installed application.</p>
-        <p className="-mt-5 mb-7 text-xs leading-5 text-zinc-600">Signing in verifies identity. Deployment operations remain locked until the workspace has an active paid entitlement.</p>
+        <h1 className="mb-2 text-3xl font-normal tracking-[-0.045em]">Welcome to Axiom</h1>
+        <p className="mb-2 text-sm text-zinc-400">Sign in to your web companion for account settings, connection context, and release guidance.</p>
+        <p className="mb-8 text-xs leading-5 text-zinc-600">The installed Agent remains the secure place for provider configuration and deployment operations.</p>
 
         <form onSubmit={handleSubmit} className="space-y-4" noValidate>
           <div>
@@ -148,7 +149,7 @@ function SignInForm() {
             </div>
           </div>
           {error && (
-            <div className="rounded-lg border border-red-500/20 bg-red-500/[0.08] px-3.5 py-2.5 text-sm text-red-300">
+            <div role="alert" aria-live="assertive" className="rounded-lg border border-red-500/20 bg-red-500/[0.08] px-3.5 py-2.5 text-sm text-red-300">
               {error}
             </div>
           )}
@@ -185,7 +186,7 @@ function SignInForm() {
                   type="button"
                   onClick={() => handleOAuth("google")}
                   disabled={oauthLoading !== null || loading}
-                  className="inline-flex items-center justify-center gap-2 rounded-full border border-white/[0.08] bg-white/[0.02] px-3 py-2.5 text-xs font-medium text-zinc-200 hover:bg-white/[0.06] hover:text-white disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                  className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-white/[0.09] bg-white/[0.025] px-3 py-2.5 text-xs font-medium text-zinc-200 transition hover:bg-white/[0.07] hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   <GoogleMark className="h-4 w-4" />
                   {oauthLoading === "google" ? "Opening…" : "Sign in with Google"}
@@ -196,7 +197,7 @@ function SignInForm() {
                   type="button"
                   onClick={() => handleOAuth("github")}
                   disabled={oauthLoading !== null || loading}
-                  className="inline-flex items-center justify-center gap-2 rounded-full border border-white/[0.08] bg-white/[0.02] px-3 py-2.5 text-xs font-medium text-zinc-200 hover:bg-white/[0.06] hover:text-white disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                  className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-white/[0.09] bg-white/[0.025] px-3 py-2.5 text-xs font-medium text-zinc-200 transition hover:bg-white/[0.07] hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   <GitHubMark className="h-4 w-4" />
                   {oauthLoading === "github" ? "Opening…" : "Sign in with GitHub"}
@@ -208,9 +209,15 @@ function SignInForm() {
 
         <p className="mt-6 text-sm text-zinc-500 text-center">
           Don&apos;t have an account?{" "}
-          <Link href={`/auth/signup?redirect=${encodeURIComponent(callbackUrl)}`} className="font-medium text-zinc-200 hover:text-white">
-            Sign up
-          </Link>
+          {callbackUrl.startsWith("/desktop/") ? (
+            <Link href={`/auth/signup?redirect=${encodeURIComponent(callbackUrl)}`} className="font-medium text-zinc-200 hover:text-white">
+              Create one
+            </Link>
+          ) : (
+            <Link href="/plans" className="font-medium text-zinc-200 hover:text-white">
+              Request pilot access
+            </Link>
+          )}
         </p>
         <p className="mt-2 text-xs text-zinc-500 text-center">
           Need the application?{" "}
@@ -260,7 +267,7 @@ export default function SignInPage() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen flex items-center justify-center bg-[#09090b]">
+        <div className="axiom-canvas min-h-screen flex items-center justify-center">
           <div className="h-6 w-6 animate-spin rounded-full border-2 border-violet-500 border-t-transparent" />
         </div>
       }

@@ -11,7 +11,8 @@ describe("mobile website contract", () => {
 
     expect(page).toContain("Turn the request into the playbook.");
     expect(page).toContain("flex flex-col gap-3 sm:flex-row");
-    expect(page).toContain("grid min-h-[460px] lg:grid-cols");
+    expect(page).toContain("grid overflow-hidden rounded-2xl");
+    expect(page).toContain("lg:grid-cols-[0.72fr_1.28fr]");
   });
 
   it("keeps primary mobile actions large and full width", () => {
@@ -26,6 +27,14 @@ describe("mobile website contract", () => {
     const navigation = source("components/Navigation.tsx");
 
     expect(navigation).toContain("const mobileLinks = [");
+    expect(navigation).toContain('{ href: "/product", label: "Product" }');
+    expect(navigation).toContain('{ href: "/capabilities", label: "Capabilities" }');
+    expect(navigation).toContain('{ href: "/plans", label: "Pricing" }');
+    expect(navigation).toContain('{ href: "/resources", label: "Resources" }');
+    expect(navigation).toContain('{ href: "/integrations", label: "Integrations" }');
+    expect(navigation).toContain('{ href: "/security", label: "Security" }');
+    expect(navigation).toContain('{ href: "/status", label: "Status" }');
+    expect(navigation).toContain('{ href: "/contact", label: "Contact" }');
     expect(navigation).toContain('document.body.style.overflow = "hidden"');
     expect(navigation).toContain('document.documentElement.style.overflow = "hidden"');
     expect(navigation).toContain('h-16');

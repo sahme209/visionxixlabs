@@ -155,7 +155,7 @@ export default function SurfacesPage() {
   }
   if (error || !model) {
     return (
-      <div className="relative p-6">
+      <div role="alert" aria-live="assertive" className="relative p-6">
         <p className="text-[11px] font-mono text-zinc-500 uppercase tracking-[0.18em]">// axiom product surfaces · preview</p>
         <p className="text-sm text-zinc-400 mt-2">{error ?? "Sign in to load surfaces."}</p>
       </div>

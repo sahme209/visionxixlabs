@@ -145,6 +145,9 @@ export type AuditAction =
   | "workforce.idempotency_slot_completed"
   // Cost-aware model routing — Phase 403.
   | "workforce.model_downgraded"
+  // Workspace AI provider policy enforcement on raw-SDK call sites.
+  | "ai.policy_unavailable"
+  | "ai.provider_not_approved"
   // Connector health scan — Phase 410.
   | "workforce.connector_health_polled"
   // AWS broker / CFN flow
@@ -153,6 +156,17 @@ export type AuditAction =
   | "aws.cfn_callback_broker_unavailable"
   | "aws.cfn_callback_validation_failed"
   | "aws.cfn_callback_linked"
+  // Incident response
+  | "incident.created"
+  | "incident.transitioned"
+  | "incident.action_denied"
+  // Connector pause/resume — Phase 405 (non-destructive alternative to disconnect).
+  | "cloud_account.toggle"
+  | "connector.pause"
+  | "connector.resume"
+  // GitHub App Manifest flow — one-time platform-operator setup.
+  | "github_app.manifest_created"
+  | "github_app.manifest_create_failed"
   // Generic
   | "system.error";
 

@@ -3,12 +3,18 @@ import "server-only";
 import type { NextRequest } from "next/server";
 import { authenticateApiKey } from "@/lib/security/authenticateApiKey";
 import type { RequiredScope } from "@/lib/security/apiKeyScope";
+import { prisma } from "@/lib/db";
 import { bearerFromHeader, verifyDesktopToken } from "./desktopToken";
 import {
     resolveActiveSession,
     touchDesktopSession,
 } from "./desktopSession";
 import { readDesktopCommercialAccess } from "./desktopCommercialAccess";
+import { ensurePersonalWorkspaceMembership } from "@/lib/auth/ensurePersonalWorkspaceMembership";
+import { deriveWorkspaceIdFromEmail } from "@/lib/auth/workspaceId";
+import { createLogger } from "@/lib/observability/logger";
+
+const log = createLogger("desktop.resolveRequestDesktopSession");
 
 export interface DesktopRequestPrincipal {
     id: string;
@@ -21,6 +27,75 @@ interface ResolveOptions {
     requiredScope: RequiredScope;
     route: string;
     requireActiveAccess?: boolean;
+    /** Shared provider-state transitions require a paired user session, not
+     * a reusable API key. Existing read routes retain API-key support. */
+    allowApiKey?: boolean;
+    /** Shared integration state can only be changed by a currently confirmed
+     * workspace owner or admin. The desktop token identifies a device; it
+     * does not itself freeze role authority for its 30-day lifetime. */
+    requireWorkspaceAdmin?: boolean;
+    /**
+     * Desktop tokens are long-lived device credentials, not a substitute for
+     * current workspace membership. Recheck the durable membership on every
+     * desktop-session request. A removed or unaccepted member loses access
+     * immediately. Scoped API-key automation remains a separate authority.
+     */
+    requireWorkspaceMembership?: boolean;
+}
+
+async function hasActiveWorkspaceMembership(userId: string, organizationId: string): Promise<boolean> {
+    try {
+        const membership = await prisma.orgMembership.findUnique({
+            where: { userId_organizationId: { userId, organizationId } },
+            select: { acceptedAt: true },
+        });
+        return membership?.acceptedAt !== null && membership?.acceptedAt !== undefined;
+    } catch {
+        // A membership-store failure must not extend a long-lived desktop
+        // token beyond the workspace's current authority.
+        return false;
+    }
+}
+
+/**
+ * Sign-in's own personal-workspace membership bootstrap
+ * (ensurePersonalWorkspaceMembership, called from lib/auth.ts) is
+ * deliberately best-effort and never blocks sign-in — so it can lag
+ * behind, or fail outright on a transient DB blip, leaving a freshly
+ * signed-in user with a structurally valid desktop session but no
+ * accepted membership row yet. That surfaced as every operational route
+ * (deployments, etc.) denying with a bare "desktop_session_required"
+ * forever, with no way for the user to recover short of signing out and
+ * back in. Self-heal it here: only for the user's OWN derived personal
+ * workspace (never a shared/invited org — those must come from a real
+ * invite acceptance), retry the same idempotent upsert sign-in already
+ * performs unconditionally, then recheck membership once.
+ */
+async function selfHealPersonalWorkspaceMembership(userId: string, organizationId: string): Promise<void> {
+    try {
+        const user = await prisma.user.findUnique({ where: { id: userId }, select: { email: true } });
+        if (!user?.email) return;
+        if (String(deriveWorkspaceIdFromEmail(user.email)) !== organizationId) return;
+        await ensurePersonalWorkspaceMembership({ userId, email: user.email });
+    } catch {
+        // best-effort — a failure here just means the caller's membership
+        // recheck below still fails and the request is denied, same as today.
+    }
+}
+
+async function hasWorkspaceAdminRole(userId: string, organizationId: string): Promise<boolean> {
+    try {
+        const membership = await prisma.orgMembership.findUnique({
+            where: { userId_organizationId: { userId, organizationId } },
+            select: { role: true, acceptedAt: true },
+        });
+        return membership?.acceptedAt !== null
+            && membership?.acceptedAt !== undefined
+            && (membership?.role === "owner" || membership?.role === "admin");
+    } catch {
+        // A role-store failure must not permit a shared provider-state change.
+        return false;
+    }
 }
 
 /**
@@ -37,6 +112,14 @@ export async function resolveRequestDesktopSession(
 
     try {
         if (token.startsWith("vxlk_")) {
+            if (options.allowApiKey === false) {
+                log.info("api key not allowed on this route", { route: options.route });
+                return undefined;
+            }
+            if (options.requireWorkspaceAdmin) {
+                log.info("api key cannot satisfy admin-only route", { route: options.route });
+                return undefined;
+            }
             const sourceIp = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim()
                 ?? request.headers.get("x-real-ip")
                 ?? null;
@@ -48,7 +131,10 @@ export async function resolveRequestDesktopSession(
                 route: options.route,
                 requireActiveCommercialAccess: options.requireActiveAccess !== false,
             });
-            if (!auth.ok) return undefined;
+            if (!auth.ok) {
+                log.info("api key auth rejected", { route: options.route });
+                return undefined;
+            }
             const principal: DesktopRequestPrincipal = {
                 id: `api_key:${auth.apiKeyId}`,
                 userId: `api_key:${auth.apiKeyId}`,
@@ -57,14 +143,38 @@ export async function resolveRequestDesktopSession(
             };
             if (options.requireActiveAccess !== false) {
                 const access = await readDesktopCommercialAccess(principal.organizationId);
-                if (!access.allowed) return undefined;
+                if (!access.allowed) {
+                    log.info("api key commercial access not allowed", { route: options.route, organizationId: principal.organizationId });
+                    return undefined;
+                }
             }
             return principal;
         }
 
         const { sessionId } = verifyDesktopToken(token);
         const session = await resolveActiveSession(sessionId);
-        if (!session) return undefined;
+        if (!session) {
+            // Expected and benign on an expired/revoked/unknown session —
+            // but if this fires for every pairing attempt in production,
+            // it's a strong signal the session store itself is the problem
+            // (e.g. an in-memory store that doesn't survive across
+            // serverless invocations), not an individual bad token.
+            log.info("no active session for token", { route: options.route });
+            return undefined;
+        }
+        if (options.requireWorkspaceMembership !== false
+            && !(await hasActiveWorkspaceMembership(String(session.userId), String(session.organizationId)))) {
+            await selfHealPersonalWorkspaceMembership(String(session.userId), String(session.organizationId));
+            if (!(await hasActiveWorkspaceMembership(String(session.userId), String(session.organizationId)))) {
+                log.info("workspace membership missing or unaccepted", { route: options.route, organizationId: session.organizationId, userId: session.userId });
+                return undefined;
+            }
+            log.info("self-healed missing personal workspace membership", { route: options.route, organizationId: session.organizationId, userId: session.userId });
+        }
+        if (options.requireWorkspaceAdmin && !(await hasWorkspaceAdminRole(String(session.userId), String(session.organizationId)))) {
+            log.info("workspace admin role required but absent", { route: options.route, organizationId: session.organizationId, userId: session.userId });
+            return undefined;
+        }
         await touchDesktopSession(session.id);
         const principal: DesktopRequestPrincipal = {
             id: session.id,
@@ -74,10 +184,23 @@ export async function resolveRequestDesktopSession(
         };
         if (options.requireActiveAccess !== false) {
             const access = await readDesktopCommercialAccess(principal.organizationId);
-            if (!access.allowed) return undefined;
+            if (!access.allowed) {
+                log.info("commercial access not allowed", { route: options.route, organizationId: principal.organizationId });
+                return undefined;
+            }
         }
         return principal;
-    } catch {
+    } catch (error) {
+        // Previously this swallowed every exception with zero trace —
+        // including a missing/too-short DESKTOP_SESSION_SIGNING_KEY (and
+        // NEXTAUTH_SECRET fallback), which would silently break 100% of
+        // desktop pairing with nothing in the logs to diagnose from. Log
+        // the real error so a production failure actually leaves a trail.
+        log.error("unexpected exception resolving desktop session", {
+            route: options.route,
+            errorMessage: error instanceof Error ? error.message : String(error),
+            errorCode: error instanceof Error && "code" in error ? (error as { code?: unknown }).code : undefined,
+        });
         return undefined;
     }
 }

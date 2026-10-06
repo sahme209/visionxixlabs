@@ -46,3 +46,38 @@ export function isTenantAdmin(roles: string[] | undefined): boolean {
 export function isAdminOrOwner(opts: { email: string | undefined; roles: string[] | undefined }): boolean {
   return isPlatformAdmin(opts.email) || isTenantAdmin(opts.roles);
 }
+
+/**
+ * Approval-authority role guard for "decide" routes (grant/reject,
+ * approve/snooze, etc. on queued recommendations, proposals, and
+ * findings). Mirrors the `recommendations:approve` grant in
+ * lib/axiom/agent/rbacEngine.ts's ROLE_PERMISSIONS table and the
+ * security_reviewer role description in
+ * lib/workforce/domains/inviteLinks.ts ("Can vote on approvals but
+ * not initiate engineer actions") — owner, admin, operator, and
+ * security_reviewer may decide; finance_viewer and read_only may not.
+ * Fails closed on a missing/empty roles array.
+ */
+export function isApproverRole(roles: string[] | undefined): boolean {
+  if (!Array.isArray(roles) || roles.length === 0) return false;
+  const set = new Set(roles.map((r) => r.toLowerCase()));
+  return set.has("owner") || set.has("admin") || set.has("operator") || set.has("security_reviewer");
+}
+
+/** OR of the two: an in-tenant approver role OR a platform admin gets through. */
+export function canDecideApprovals(opts: { email: string | undefined; roles: string[] | undefined }): boolean {
+  return isPlatformAdmin(opts.email) || isApproverRole(opts.roles);
+}
+
+/**
+ * Incident-response role guard. Same role set as isApproverRole
+ * (owner, admin, operator, security_reviewer) — incident evidence is
+ * exactly the kind of record those roles are already trusted to decide
+ * on, and finance_viewer/read_only have no legitimate reason to create
+ * or transition one. A dedicated name, not a reused call site, so a
+ * future change to approval-decision roles doesn't silently change who
+ * can touch incident records without a deliberate decision.
+ */
+export function canManageIncidents(opts: { email: string | undefined; roles: string[] | undefined }): boolean {
+  return isPlatformAdmin(opts.email) || isApproverRole(opts.roles);
+}

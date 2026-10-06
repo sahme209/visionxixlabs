@@ -144,7 +144,7 @@ export default function BillingPage() {
       />
 
       {error && (
-        <div className="rounded-2xl border border-amber-500/[0.18] bg-amber-500/[0.04] p-5 mb-6 text-[13px] text-amber-100">
+        <div role="alert" aria-live="assertive" className="rounded-2xl border border-amber-500/[0.18] bg-amber-500/[0.04] p-5 mb-6 text-[13px] text-amber-100">
           {error}
         </div>
       )}

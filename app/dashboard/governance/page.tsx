@@ -87,7 +87,7 @@ export default function GovernancePage() {
         ].map((kpi) => {
           const Icon = kpi.icon;
           return (
-            <div key={kpi.label} className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-4">
+            <div key={kpi.label} className="surface-glass rounded-xl p-4">
               <div className={`w-9 h-9 rounded-lg ${kpi.bg} border flex items-center justify-center mb-3`}>
                 <Icon className={`h-4.5 w-4.5 ${kpi.color}`} />
               </div>
@@ -181,7 +181,7 @@ export default function GovernancePage() {
       <div className="space-y-5">
         {Object.entries(policiesByCategory).map(([category, rules]) => (
           <Reveal key={category} direction="up" delay={0.05}>
-            <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] overflow-hidden">
+            <div className="surface-glass rounded-2xl overflow-hidden">
               <div className="px-5 py-3 border-b border-white/[0.06] bg-white/[0.01] flex items-center justify-between flex-wrap gap-2">
                 <div className="flex items-center gap-2">
                   <span className={`text-[9px] font-bold uppercase tracking-wider border rounded-full px-1.5 py-px ${CATEGORY_COLOR[category as PolicyCategory]}`}>

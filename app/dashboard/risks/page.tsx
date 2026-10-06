@@ -181,7 +181,7 @@ export default function RiskQueuePage() {
           </div>
 
           {report && (
-            <div className="hidden md:flex items-end gap-4 rounded-2xl border border-white/[0.06] bg-white/[0.025] backdrop-blur-sm px-5 py-4">
+            <div className="surface-glass hidden md:flex items-end gap-4 rounded-2xl px-5 py-4">
               <Stat label="Open" value={report.summary.open} tone={report.summary.open > 0 ? "text-amber-300" : "text-zinc-500"} />
               <div className="w-px h-9 bg-white/[0.08]" />
               <Stat label="Approval" value={report.summary.approvalRequired} tone={report.summary.approvalRequired > 0 ? "text-amber-300" : "text-zinc-500"} />
@@ -193,12 +193,12 @@ export default function RiskQueuePage() {
       </div>
 
       {loading && (
-        <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 mb-6">
+        <div className="surface-glass rounded-2xl p-5 mb-6">
           <p className="text-[11px] font-mono text-zinc-500 uppercase tracking-[0.18em]">// composing risk queue…</p>
         </div>
       )}
       {!loading && error && (
-        <div className="rounded-2xl border border-amber-500/[0.18] bg-amber-500/[0.04] p-5 mb-6">
+        <div role="alert" aria-live="assertive" className="rounded-2xl border border-amber-500/[0.18] bg-amber-500/[0.04] p-5 mb-6">
           <p className="text-[11px] font-mono text-amber-300/80 uppercase tracking-[0.18em] mb-1">// queue unavailable</p>
           <p className="text-[13px] text-zinc-300">{error}</p>
         </div>
