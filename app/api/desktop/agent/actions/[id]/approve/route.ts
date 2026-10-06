@@ -9,6 +9,7 @@
  */
 
 import { NextResponse, type NextRequest } from "next/server";
+import type { Prisma } from "@prisma/client";
 import { resolveRequestDesktopSession } from "@/lib/desktop/resolveRequestDesktopSession";
 import { prisma } from "@/lib/db";
 import { executeApprovedAction, type ActionExecutionRepo } from "@/lib/axiom/agentRuntime/actionApprovalResponder";
@@ -48,7 +49,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     where: { id },
     data: {
       status: result.ok ? "executed" : "failed",
-      resultJson: result.ok ? (result.result as object) : undefined,
+      resultJson: result.ok ? (result.result as Prisma.InputJsonValue) : undefined,
       errorMessage: result.ok ? null : result.error,
       executedAt: new Date(),
     },

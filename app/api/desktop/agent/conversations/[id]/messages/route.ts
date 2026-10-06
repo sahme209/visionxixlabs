@@ -11,6 +11,7 @@
  */
 
 import { NextResponse, type NextRequest } from "next/server";
+import type { Prisma } from "@prisma/client";
 import { resolveRequestDesktopSession } from "@/lib/desktop/resolveRequestDesktopSession";
 import { prisma } from "@/lib/db";
 import { runDecisionLoop, type ConversationTurnInput } from "@/lib/axiom/agentRuntime/decisionLoop";
@@ -71,9 +72,9 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
       await prisma.agentActionProposal.create({
         data: {
           organizationId, conversationId, proposedByUserId: String(session.userId),
-          toolName, argsJson: args, riskLevel: "low",
+          toolName, argsJson: args as Prisma.InputJsonValue, riskLevel: "low",
           status: result.ok ? "executed" : "failed",
-          resultJson: result.ok ? (result.result as object) : undefined,
+          resultJson: result.ok ? (result.result as Prisma.InputJsonValue) : undefined,
           errorMessage: result.ok ? null : result.error,
           executedAt: new Date(),
         },
@@ -93,7 +94,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     const proposal = await prisma.agentActionProposal.create({
       data: {
         organizationId, conversationId, proposedByUserId: String(session.userId),
-        toolName: outcome.toolName, argsJson: outcome.args, riskLevel: outcome.riskLevel, status: "proposed",
+        toolName: outcome.toolName, argsJson: outcome.args as Prisma.InputJsonValue, riskLevel: outcome.riskLevel, status: "proposed",
       },
     });
     return NextResponse.json({
