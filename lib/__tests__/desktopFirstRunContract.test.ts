@@ -24,9 +24,14 @@ describe("desktop first-run contract", () => {
     const resolver = readFileSync(join(root, "lib/desktop/resolveRequestDesktopSession.ts"), "utf8");
     const apiKeyAuth = readFileSync(join(root, "lib/security/authenticateApiKey.ts"), "utf8");
     const stateRoute = readFileSync(join(root, "app/api/desktop/state/route.ts"), "utf8");
-    expect(accessPolicy).toContain('plan.status === "active"');
-    expect(accessPolicy).toContain('plan.tier !== "trial"');
-    expect(accessPolicy).toContain('code: "payment_past_due"');
+    // Pricing/entitlement tiers (pilot/trial/past-due) are not enforced yet
+    // — decideDesktopCommercialAccess always allows a verified identity
+    // (see its own comment for why) — but the *separation itself* (a
+    // dedicated pure decision function, consulted through the same
+    // server-side gate below) must still exist so tiered enforcement can
+    // be turned back on later without re-threading plumbing.
+    expect(accessPolicy).toContain("export function decideDesktopCommercialAccess");
+    expect(accessPolicy).toContain("allowed: true");
     expect(accessRoute).toContain("requireActiveAccess: false");
     expect(resolver).toContain("options.requireActiveAccess !== false");
     // Reformatted to a multi-line block when failure-observability logging
