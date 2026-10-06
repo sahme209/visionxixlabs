@@ -668,6 +668,30 @@ export class DesktopClient {
     return this.post("/api/desktop/environments/deploy", input);
   }
 
+  listIdentityProviders(): Promise<ApiResult<{
+    providers: Array<{ id: string; protocol: string; status: string; issuerOrEntityId: string; managedDomains: string[]; requireMfaClaim: boolean; revokedAt: string | null }>;
+  }>> {
+    return this.get("/api/desktop/identity-providers");
+  }
+
+  createIdentityProvider(input: {
+    protocol: string; issuerOrEntityId: string; metadataDocument: string; managedDomains: string[];
+    roleMapping: Array<{ claimKey: string; claimValue: string; role: string }>; requireMfaClaim: boolean;
+  }): Promise<ApiResult<{ id: string; protocol: string; status: string }>> {
+    return this.post("/api/desktop/identity-providers", input);
+  }
+
+  revokeIdentityProvider(id: string): Promise<ApiResult<{ id: string; status: string }>> {
+    return this.post(`/api/desktop/identity-providers/${encodeURIComponent(id)}/revoke`, {});
+  }
+
+  previewScimLifecycle(input: { employees: unknown; currentGrants: unknown }): Promise<ApiResult<{
+    actions: Array<{ kind: string; userId: string; role: string; reason: string }>;
+    joinersCount: number; moversCount: number; leaversCount: number;
+  }>> {
+    return this.post("/api/desktop/identity-providers/scim-preview", input);
+  }
+
   aiProviderStatus(): Promise<ApiResult<Array<{
     provider: string;
     configured: boolean;
