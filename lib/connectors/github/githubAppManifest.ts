@@ -9,20 +9,37 @@
  * the App's credentials.
  *
  * Only the permission scopes the platform's GitHub client actually uses
- * today are requested (see lib/connectors/github/githubLiveClient.ts,
- * githubLiveScanner.ts, and lib/releaseops/githubFetcher.ts) — all
- * read-only, since the platform never writes to GitHub on a tenant's
- * behalf.
+ * today are requested. `contents` and `pull_requests` are `write` —
+ * user-directed scope expansion (branch creation, file commits, opening
+ * real pull requests from the desktop app; see
+ * lib/connectors/github/githubWriteClient.ts) on top of the read scopes
+ * every other evidence path still uses (githubLiveClient.ts,
+ * githubLiveScanner.ts, lib/releaseops/githubFetcher.ts).
+ *
+ * Important: changing this manifest only affects GitHub Apps created
+ * *from now on* via the manifest flow — it does not retroactively grant
+ * new permissions to an already-installed App. GitHub requires every
+ * installation owner to explicitly review and approve a permission
+ * upgrade; for an App that already exists, the operator must go to the
+ * App's own settings on github.com (Settings → Developer settings →
+ * GitHub Apps → the App → Permissions & events), add the new scopes
+ * there, and then each installation owner gets a real GitHub-hosted
+ * approval prompt before write calls will actually work. This is not a
+ * bug to route around — it's GitHub's own consent model working as
+ * intended.
  *
  * No I/O. Callers resolve the trusted origin and pass it in.
  */
 
-/** Permissions this App actually exercises — kept read-only and minimal. */
+/** Permissions this App actually exercises. */
 export const GITHUB_APP_MANIFEST_PERMISSIONS = {
-  // Repository listing, releases, contents (githubLiveScanner, githubFetcher).
-  contents: "read",
-  // Pull-request evidence (githubFetcher /pulls, the pull_request webhook event).
-  pull_requests: "read",
+  // Repository listing, releases, contents (githubLiveScanner, githubFetcher)
+  // AND file commits from the desktop app (githubWriteClient.commitFile).
+  contents: "write",
+  // Pull-request evidence (githubFetcher /pulls, the pull_request webhook
+  // event) AND opening real PRs from the desktop app
+  // (githubWriteClient.createPullRequest).
+  pull_requests: "write",
   // Workflow / workflow-run evidence (githubLiveScanner, githubFetcher /actions/runs).
   actions: "read",
   // Deployment environment evidence (githubLiveScanner /environments).

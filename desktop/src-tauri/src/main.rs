@@ -2,6 +2,7 @@
 
 mod cloud;
 mod config;
+mod git;
 mod http;
 mod menu;
 mod secure;
@@ -53,6 +54,8 @@ fn main() {
             cloud::validate_gcp_credentials,
             cloud::get_connector_status,
             cloud::run_cloud_scan,
+            git::clone_repository,
+            git::default_repos_directory,
             config::get_preferences,
             config::set_preferences,
             config::get_api_endpoint,

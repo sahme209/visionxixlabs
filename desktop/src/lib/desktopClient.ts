@@ -624,6 +624,22 @@ export class DesktopClient {
     return this.post("/api/desktop/integrations/teams/validate", {});
   }
 
+  createGithubBranch(input: { repositoryFullName: string; baseBranch: string; newBranchName: string }): Promise<ApiResult<{ ref: string; sha: string }>> {
+    return this.post("/api/desktop/github/branch", input);
+  }
+
+  commitGithubFile(input: { repositoryFullName: string; branch: string; path: string; content: string; message: string }): Promise<ApiResult<{ sha: string; htmlUrl: string }>> {
+    return this.post("/api/desktop/github/commit", input);
+  }
+
+  openGithubPullRequest(input: { repositoryFullName: string; head: string; base: string; title: string; body?: string }): Promise<ApiResult<{ number: number; htmlUrl: string }>> {
+    return this.post("/api/desktop/github/pull-request", input);
+  }
+
+  mintGithubCloneToken(input: { repositoryFullName: string }): Promise<ApiResult<{ cloneUrl: string }>> {
+    return this.post("/api/desktop/github/clone-token", input);
+  }
+
   aiProviderStatus(): Promise<ApiResult<Array<{
     provider: string;
     configured: boolean;

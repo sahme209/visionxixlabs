@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState, type ReactNode } from "react";
 import { open } from "@tauri-apps/plugin-shell";
+import { invoke } from "@tauri-apps/api/core";
 import {
   Bot,
   Check,
@@ -329,7 +330,186 @@ function GitSection({ prefs, onSave }: PreferenceSectionProps) {
       <ToggleRow title="PR attribution" detail="Mark agent-authored pull requests as made with Axiom." enabled={prefs?.pr_attribution ?? false} disabled={!prefs} onToggle={() => prefs && void onSave({ ...prefs, pr_attribution: !prefs.pr_attribution })} />
       <TextRow title="Branch prefix" detail="Stored locally for authorized branch creation." value={prefs?.branch_prefix ?? ""} disabled={!prefs} onCommit={(value) => prefs && void onSave({ ...prefs, branch_prefix: value })} />
     </Group>
+    <CloneRepositoryPanel />
+    <CreatePullRequestPanel />
   </div>;
+}
+
+/**
+ * Clones a tenant-connected repository to a local folder. The server
+ * mints a short-lived, repo-scoped GitHub App installation token
+ * embedded in the clone URL (POST /api/desktop/github/clone-token) —
+ * this process never sees or stores a long-lived credential, and the
+ * Rust side (desktop/src-tauri/src/git.rs) scrubs the token from any
+ * error text before it reaches this view.
+ */
+function CloneRepositoryPanel() {
+  const [repositoryFullName, setRepositoryFullName] = useState("");
+  const [destination, setDestination] = useState("");
+  const [status, setStatus] = useState<"idle" | "cloning" | "done">("idle");
+  const [error, setError] = useState<string | null>(null);
+  const [clonedPath, setClonedPath] = useState<string | null>(null);
+
+  useEffect(() => {
+    invoke<string>("default_repos_directory").then((dir) => {
+      setDestination((current) => current || dir);
+    }).catch(() => undefined);
+  }, []);
+
+  async function cloneRepository() {
+    setStatus("cloning");
+    setError(null);
+    setClonedPath(null);
+    try {
+      const tokenResult = await desktopClient.mintGithubCloneToken({ repositoryFullName });
+      if (!tokenResult.ok) throw new Error(tokenResult.error);
+      const repoName = repositoryFullName.split("/")[1] ?? repositoryFullName;
+      const fullDestination = `${destination.replace(/\/$/, "")}/${repoName}`;
+      await invoke<string>("clone_repository", { cloneUrl: tokenResult.data.cloneUrl, destinationPath: fullDestination });
+      setClonedPath(fullDestination);
+      setStatus("done");
+    } catch (cause) {
+      setError(cause instanceof Error ? cause.message : String(cause));
+      setStatus("idle");
+    }
+  }
+
+  return (
+    <Group label="Clone a repository locally">
+      <div className="px-4 py-3.5 space-y-3">
+        <LabeledInput label="Repository" placeholder="owner/repo" value={repositoryFullName} onChange={setRepositoryFullName} />
+        <LabeledInput label="Destination folder" placeholder="~/AxiomAgent/repos" value={destination} onChange={setDestination} />
+        <div className="flex items-center gap-3">
+          <button
+            type="button"
+            onClick={() => void cloneRepository()}
+            disabled={status === "cloning" || !repositoryFullName.includes("/") || !destination}
+            className="inline-flex items-center gap-2 rounded-lg border border-white/10 bg-white/[0.04] px-3 py-2 text-xs text-zinc-200 hover:bg-white/[0.08] disabled:opacity-50"
+          >
+            {status === "cloning" ? "Cloning…" : "Clone repository"}
+          </button>
+          {status === "done" && clonedPath && <span className="text-[12px] text-emerald-300">Cloned to {clonedPath}</span>}
+        </div>
+        {error && <p role="alert" className="text-[12px] text-rose-300">{error}</p>}
+      </div>
+    </Group>
+  );
+}
+
+/**
+ * Creates a branch, commits a single file to it, and opens a real pull
+ * request — chained in sequence against the tenant's connected GitHub
+ * installation. Each step is admin-gated and audited server-side
+ * (app/api/desktop/github/{branch,commit,pull-request}/route.ts); this
+ * view only orchestrates the sequence and reports exactly which step
+ * succeeded if one fails partway through, rather than leaving the user
+ * guessing whether anything happened.
+ */
+function CreatePullRequestPanel() {
+  const [repositoryFullName, setRepositoryFullName] = useState("");
+  const [baseBranch, setBaseBranch] = useState("main");
+  const [newBranchName, setNewBranchName] = useState("");
+  const [filePath, setFilePath] = useState("");
+  const [fileContent, setFileContent] = useState("");
+  const [commitMessage, setCommitMessage] = useState("");
+  const [prTitle, setPrTitle] = useState("");
+  const [prBody, setPrBody] = useState("");
+  const [step, setStep] = useState<"idle" | "branch" | "commit" | "pull_request" | "done">("idle");
+  const [error, setError] = useState<string | null>(null);
+  const [prUrl, setPrUrl] = useState<string | null>(null);
+
+  const busy = step !== "idle" && step !== "done";
+  const canSubmit = [repositoryFullName, baseBranch, newBranchName, filePath, fileContent, commitMessage, prTitle]
+    .every((value) => value.trim().length > 0) && repositoryFullName.includes("/");
+
+  async function submit() {
+    setError(null);
+    setPrUrl(null);
+
+    setStep("branch");
+    const branchResult = await desktopClient.createGithubBranch({ repositoryFullName, baseBranch, newBranchName });
+    if (!branchResult.ok) {
+      setError(`Branch creation failed: ${branchResult.error}. Nothing else was changed.`);
+      setStep("idle");
+      return;
+    }
+
+    setStep("commit");
+    const commitResult = await desktopClient.commitGithubFile({ repositoryFullName, branch: newBranchName, path: filePath, content: fileContent, message: commitMessage });
+    if (!commitResult.ok) {
+      setError(`Branch "${newBranchName}" was created, but committing the file failed: ${commitResult.error}. The branch still exists on GitHub — you can finish the commit there, or delete the branch and retry.`);
+      setStep("idle");
+      return;
+    }
+
+    setStep("pull_request");
+    const prResult = await desktopClient.openGithubPullRequest({ repositoryFullName, head: newBranchName, base: baseBranch, title: prTitle, body: prBody });
+    if (!prResult.ok) {
+      setError(`Branch "${newBranchName}" and the commit both succeeded, but opening the pull request failed: ${prResult.error}. You can open the PR directly on GitHub from that branch.`);
+      setStep("idle");
+      return;
+    }
+
+    setPrUrl(prResult.data.htmlUrl);
+    setStep("done");
+  }
+
+  return (
+    <Group label="Create a pull request">
+      <div className="px-4 py-3.5 space-y-3">
+        <LabeledInput label="Repository" placeholder="owner/repo" value={repositoryFullName} onChange={setRepositoryFullName} />
+        <div className="grid grid-cols-2 gap-3">
+          <LabeledInput label="Base branch" placeholder="main" value={baseBranch} onChange={setBaseBranch} />
+          <LabeledInput label="New branch name" placeholder="axiom/my-change" value={newBranchName} onChange={setNewBranchName} />
+        </div>
+        <LabeledInput label="File path" placeholder="path/to/file.ts" value={filePath} onChange={setFilePath} />
+        <LabeledTextArea label="File content" value={fileContent} onChange={setFileContent} />
+        <LabeledInput label="Commit message" placeholder="Describe the change" value={commitMessage} onChange={setCommitMessage} />
+        <LabeledInput label="Pull request title" placeholder="Short summary" value={prTitle} onChange={setPrTitle} />
+        <LabeledTextArea label="Pull request description" value={prBody} onChange={setPrBody} />
+        <div className="flex items-center gap-3">
+          <button
+            type="button"
+            onClick={() => void submit()}
+            disabled={!canSubmit || busy}
+            className="inline-flex items-center gap-2 rounded-lg border border-white/10 bg-white/[0.04] px-3 py-2 text-xs text-zinc-200 hover:bg-white/[0.08] disabled:opacity-50"
+          >
+            {step === "branch" ? "Creating branch…" : step === "commit" ? "Committing file…" : step === "pull_request" ? "Opening pull request…" : "Create pull request"}
+          </button>
+          {prUrl && <a href={prUrl} target="_blank" rel="noreferrer" className="text-[12px] text-emerald-300 underline">View pull request on GitHub</a>}
+        </div>
+        {error && <p role="alert" className="text-[12px] text-rose-300 leading-5">{error}</p>}
+      </div>
+    </Group>
+  );
+}
+
+function LabeledInput({ label, placeholder, value, onChange }: { label: string; placeholder?: string; value: string; onChange: (value: string) => void }) {
+  return (
+    <label className="block">
+      <span className="mb-1 block text-[11px] text-zinc-500">{label}</span>
+      <input
+        value={value}
+        placeholder={placeholder}
+        onChange={(event) => onChange(event.target.value)}
+        className="w-full rounded-lg border border-white/10 bg-black/25 px-3 py-2 text-xs text-zinc-200 outline-none focus:border-white/25"
+      />
+    </label>
+  );
+}
+
+function LabeledTextArea({ label, value, onChange }: { label: string; value: string; onChange: (value: string) => void }) {
+  return (
+    <label className="block">
+      <span className="mb-1 block text-[11px] text-zinc-500">{label}</span>
+      <textarea
+        value={value}
+        rows={4}
+        onChange={(event) => onChange(event.target.value)}
+        className="w-full rounded-lg border border-white/10 bg-black/25 px-3 py-2 text-xs text-zinc-200 outline-none focus:border-white/25 font-mono"
+      />
+    </label>
+  );
 }
 
 function WorktreesSection({ prefs }: { prefs: DesktopPreferences | null }) {
