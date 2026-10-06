@@ -9,13 +9,14 @@
 
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { NextRequest } from "next/server";
+import type { RecordInput } from "@/lib/audit/secureAudit";
 
 const mocks = vi.hoisted(() => ({
   currentContext: vi.fn(),
   isAdminOrOwner: vi.fn(),
   trustedAxiomUrl: vi.fn((path: string) => `https://visionxixlabs.com${path}`),
   upsertPlatformGithubAppCredential: vi.fn(),
-  recordAudit: vi.fn(async () => {}),
+  recordAudit: vi.fn(async (_input: RecordInput) => {}),
   fetchMock: vi.fn(),
 }));
 
