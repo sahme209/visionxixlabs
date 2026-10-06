@@ -18,6 +18,12 @@ const GITHUB_API = "https://api.github.com";
 
 export type GithubWriteResult<T> = { ok: true; data: T } | { ok: false; error: string };
 
+export function isSafeRepositoryPath(path: string): boolean {
+  if (!path || path.length > 1024 || path.startsWith("/") || path.includes("\0")) return false;
+  const segments = path.split("/");
+  return segments.every((segment) => segment.length > 0 && segment !== "." && segment !== "..");
+}
+
 async function gh<T>(
   path: string,
   token: string,
@@ -55,6 +61,7 @@ export interface GetFileInput {
 
 /** Reads one UTF-8 text file through the same tenant-scoped installation token. */
 export async function getFile(input: GetFileInput): Promise<GithubWriteResult<{ path: string; sha: string; content: string; htmlUrl: string }>> {
+  if (!isSafeRepositoryPath(input.path)) return { ok: false, error: "invalid_repository_path" };
   const encodedPath = input.path.split("/").map(encodeURIComponent).join("/");
   const result = await gh<{ type: string; path: string; sha: string; content: string; encoding: string; html_url: string }>(
     `/repos/${encodeURIComponent(input.owner)}/${encodeURIComponent(input.repo)}/contents/${encodedPath}?ref=${encodeURIComponent(input.branch)}`,
@@ -110,6 +117,8 @@ export interface CommitFileInput {
 
 /** Creates or updates a single file on `branch` via the Contents API. */
 export async function commitFile(input: CommitFileInput): Promise<GithubWriteResult<{ sha: string; htmlUrl: string }>> {
+  if (!isSafeRepositoryPath(input.path)) return { ok: false, error: "invalid_repository_path" };
+  if (Buffer.byteLength(input.content, "utf8") > 200_000) return { ok: false, error: "github_file_too_large" };
   const encodedPath = input.path.split("/").map(encodeURIComponent).join("/");
   const existing = await gh<{ sha: string }>(
     `/repos/${encodeURIComponent(input.owner)}/${encodeURIComponent(input.repo)}/contents/${encodedPath}?ref=${encodeURIComponent(input.branch)}`,

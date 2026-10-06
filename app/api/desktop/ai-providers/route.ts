@@ -2,6 +2,8 @@ import { NextResponse, type NextRequest } from "next/server";
 import { resolveRequestDesktopSession } from "@/lib/desktop/resolveRequestDesktopSession";
 import { getAIProviderManager } from "@/lib/ai/AIProviderManager";
 import { listModels } from "@/lib/ai/AIModelRegistry";
+import { prisma } from "@/lib/db";
+import { appendAuditEvent, type AuditEventRepo } from "@/lib/releaseops/auditEventResponder";
 import {
   loadWorkspaceAIProviderPolicyWithState,
   normalizeWorkspaceAIProviderPolicy,
@@ -60,6 +62,16 @@ export async function PUT(request: NextRequest): Promise<NextResponse> {
       policy,
       updatedBy: String(session.userId),
     });
+    await appendAuditEvent(prisma as unknown as AuditEventRepo, {
+      organizationId: String(session.organizationId),
+      kind: "agent.model_policy_update",
+      subjectKind: "workspace_ai_policy",
+      subjectId: String(session.organizationId),
+      summary: policy.enabled
+        ? `Enabled Agent models: ${Object.entries(policy.modelSelections).map(([provider, model]) => `${provider}/${model}`).join(", ")}`
+        : "Disabled workspace Agent models",
+      actorUserId: String(session.userId),
+    }).catch(() => undefined);
     return NextResponse.json({ ok: true, data: { policy } });
   } catch (error) {
     const state = workspaceAIProviderPolicyStorageState(error);

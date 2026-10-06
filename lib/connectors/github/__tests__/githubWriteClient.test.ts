@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { createBranch, commitFile, createPullRequest, dispatchWorkflow } from "../githubWriteClient";
+import { createBranch, commitFile, createPullRequest, dispatchWorkflow, getFile, isSafeRepositoryPath } from "../githubWriteClient";
 
 const fetchMock = vi.fn();
 vi.stubGlobal("fetch", fetchMock);
@@ -72,6 +72,46 @@ describe("commitFile", () => {
 
     const [, putCall] = fetchMock.mock.calls[1] as [string, { body: string }];
     expect(JSON.parse(putCall.body).sha).toBe("oldsha");
+  });
+
+  it("rejects traversal paths before contacting GitHub", async () => {
+    const result = await commitFile({
+      owner: "acme", repo: "widgets", branch: "feature-x", path: "../secret", content: "no", message: "bad", installationToken: "tok",
+    });
+    expect(result).toEqual({ ok: false, error: "invalid_repository_path" });
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+});
+
+describe("getFile", () => {
+  beforeEach(() => vi.clearAllMocks());
+
+  it("decodes a UTF-8 repository file", async () => {
+    fetchMock.mockResolvedValueOnce(jsonResponse(200, {
+      type: "file", path: "src/app.ts", sha: "abc", encoding: "base64",
+      content: Buffer.from("export const ready = true;", "utf8").toString("base64"),
+      html_url: "https://github.com/acme/widgets/blob/main/src/app.ts",
+    }));
+    const result = await getFile({ owner: "acme", repo: "widgets", branch: "main", path: "src/app.ts", installationToken: "tok" });
+    expect(result).toEqual({ ok: true, data: expect.objectContaining({ content: "export const ready = true;", sha: "abc" }) });
+  });
+
+  it("rejects non-text bytes", async () => {
+    fetchMock.mockResolvedValueOnce(jsonResponse(200, {
+      type: "file", path: "image.bin", sha: "abc", encoding: "base64",
+      content: Buffer.from([0xff, 0xfe, 0xfd]).toString("base64"), html_url: "https://github.com/acme/widgets/blob/main/image.bin",
+    }));
+    await expect(getFile({ owner: "acme", repo: "widgets", branch: "main", path: "image.bin", installationToken: "tok" }))
+      .resolves.toEqual({ ok: false, error: "github_file_is_not_utf8_text" });
+  });
+});
+
+describe("isSafeRepositoryPath", () => {
+  it("accepts normal nested files and rejects ambiguous paths", () => {
+    expect(isSafeRepositoryPath("src/app.ts")).toBe(true);
+    expect(isSafeRepositoryPath("/src/app.ts")).toBe(false);
+    expect(isSafeRepositoryPath("src/../secret")).toBe(false);
+    expect(isSafeRepositoryPath("src//app.ts")).toBe(false);
   });
 });
 

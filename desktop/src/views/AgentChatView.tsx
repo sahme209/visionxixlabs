@@ -208,6 +208,12 @@ function ChatBubble({ turn }: { turn: ChatTurn }) {
 }
 
 function ProposalCard({ proposal, deciding, onApprove, onReject }: { proposal: Proposal; deciding: boolean; onApprove: () => void; onReject: () => void }) {
+  const [showDetails, setShowDetails] = useState(false);
+  const args = typeof proposal.argsJson === "object" && proposal.argsJson !== null
+    ? proposal.argsJson as Record<string, unknown>
+    : {};
+  const proposedContent = proposal.toolName === "commit_github_file" && typeof args.content === "string" ? args.content : null;
+  const reviewArgs = Object.fromEntries(Object.entries(args).filter(([key]) => key !== "content" && key !== "metadataDocument"));
   return (
     <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-5">
       <div className="flex items-center justify-between gap-3 mb-3">
@@ -215,6 +221,31 @@ function ProposalCard({ proposal, deciding, onApprove, onReject }: { proposal: P
         <Badge tone={riskToneFor(proposal.riskLevel)}>{proposal.riskLevel} risk</Badge>
       </div>
       <p className="text-xs text-zinc-400 font-mono mb-4">{describeArgs(proposal.toolName, proposal.argsJson)}</p>
+      <button type="button" aria-expanded={showDetails} onClick={() => setShowDetails((current) => !current)} className="mb-4 text-xs text-zinc-400 underline decoration-zinc-700 underline-offset-4 hover:text-zinc-200">
+        {showDetails ? "Hide approval details" : "Review approval details"}
+      </button>
+      {showDetails && (
+        <div className="mb-5 space-y-3 rounded-xl border border-white/[0.07] bg-black/20 p-3">
+          {proposedContent !== null && (
+            <div>
+              <div className="mb-2 flex items-center justify-between gap-3 text-[11px] text-zinc-500">
+                <span>Complete proposed file</span>
+                <span>{proposedContent.split("\n").length} lines · {new TextEncoder().encode(proposedContent).byteLength.toLocaleString()} bytes</span>
+              </div>
+              <pre tabIndex={0} className="max-h-72 overflow-auto whitespace-pre text-[11px] leading-5 text-zinc-300">{proposedContent}</pre>
+            </div>
+          )}
+          {Object.keys(reviewArgs).length > 0 && (
+            <div>
+              <p className="mb-2 text-[11px] text-zinc-500">Structured arguments</p>
+              <pre tabIndex={0} className="max-h-48 overflow-auto whitespace-pre-wrap break-words text-[11px] leading-5 text-zinc-400">{JSON.stringify(reviewArgs, null, 2)}</pre>
+            </div>
+          )}
+          {proposal.toolName === "connect_identity_provider" && typeof args.metadataDocument === "string" && (
+            <p className="text-[11px] text-zinc-500">Identity metadata document supplied: {new TextEncoder().encode(args.metadataDocument).byteLength.toLocaleString()} bytes. It is omitted from this compact preview.</p>
+          )}
+        </div>
+      )}
       <div className="flex items-center gap-3">
         <button
           type="button"
