@@ -4,6 +4,7 @@ import { AuthCompanionHeader } from "@/components/auth/AuthCompanionHeader";
 import { AuthCompanionShell } from "@/components/auth/AuthCompanionShell";
 import { GitHubConsentButton } from "@/components/auth/GitHubConsentButton";
 import { GitHubDisconnectButton } from "@/components/auth/GitHubDisconnectButton";
+import { GitHubPauseButton } from "@/components/auth/GitHubPauseButton";
 import { IntegrationDisconnectButton } from "@/components/auth/IntegrationDisconnectButton";
 import { SlackConsentButton } from "@/components/auth/SlackConsentButton";
 import { TeamsConsentButton } from "@/components/auth/TeamsConsentButton";
@@ -59,6 +60,7 @@ export default async function AccountIntegrationsPage() {
   };
   let githubState = "Not connected";
   let githubInstallationRowId: string | null = null;
+  let githubRawStatus: string | null = null;
   let slackState = "Not connected";
   let teamsState = "Not connected";
   try {
@@ -69,6 +71,7 @@ export default async function AccountIntegrationsPage() {
     ]);
     if (installation) {
       githubInstallationRowId = installation.id;
+      githubRawStatus = installation.status;
       githubState = githubConnectionState(installation);
     }
     const stateFor = (provider: "slack" | "teams") => {
@@ -103,6 +106,9 @@ export default async function AccountIntegrationsPage() {
               <p className="mt-3 text-sm leading-6 text-zinc-500">{connection.detail}</p>
               {validationNextStep(connection) && <p className="mt-4 rounded-xl border border-violet-300/15 bg-violet-300/[0.04] px-3 py-2.5 text-xs leading-5 text-zinc-400">{validationNextStep(connection)}</p>}
               {canManageConnections && connection.name === "GitHub" && (githubState === "Not connected" || githubState === "Revoked") && connection.setupAvailable && <GitHubConsentButton />}
+              {canManageConnections && connection.name === "GitHub" && githubInstallationRowId && githubRawStatus !== "revoked" && (
+                <GitHubPauseButton installationRowId={githubInstallationRowId} suspended={githubRawStatus === "suspended"} />
+              )}
               {canManageConnections && connection.name === "GitHub" && githubInstallationRowId && githubState !== "Revoked" && <GitHubDisconnectButton installationRowId={githubInstallationRowId} />}
               {canManageConnections && connection.control === "slack" && slackState !== "Active" && connection.setupAvailable && <SlackConsentButton />}
               {canManageConnections && connection.control === "teams" && teamsState !== "Active" && connection.setupAvailable && <TeamsConsentButton />}

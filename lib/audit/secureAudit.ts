@@ -160,6 +160,10 @@ export type AuditAction =
   | "incident.created"
   | "incident.transitioned"
   | "incident.action_denied"
+  // Connector pause/resume — Phase 405 (non-destructive alternative to disconnect).
+  | "cloud_account.toggle"
+  | "connector.pause"
+  | "connector.resume"
   // Generic
   | "system.error";
 

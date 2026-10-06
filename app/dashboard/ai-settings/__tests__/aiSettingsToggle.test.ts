@@ -47,3 +47,30 @@ describe("/dashboard/ai-settings — master AI toggle", () => {
     expect(src).toContain("Could not update the AI setting.");
   });
 });
+
+describe("/dashboard/ai-settings — per-provider toggles", () => {
+  it("renders one real switch per available provider, not a bare clickable div", () => {
+    expect(src).toContain("adminPolicy.availableProviders.map((provider)");
+    expect(src).toContain('role="switch"');
+    expect(src).toContain("aria-checked={allowed}");
+  });
+
+  it("only shows per-provider toggles once the master switch is on", () => {
+    expect(src).toContain("adminPolicy.policy.enabled && adminPolicy.availableProviders.length > 0");
+  });
+
+  it("reuses the same admin-gated PUT endpoint, not a new route", () => {
+    expect(src).toContain("const toggleProvider = useCallback");
+    expect(src).toMatch(/toggleProvider[\s\S]*fetch\("\/api\/account\/ai-policy", \{\s*method: "PUT"/);
+  });
+
+  it("refuses to disable the last remaining provider client-side instead of letting the PUT 422", () => {
+    expect(src).toContain("adminPolicy.policy.allowedProviders.length <= 1");
+    expect(src).toContain("At least one provider must stay enabled while AI is on.");
+  });
+
+  it("drops the model selection and fallback entry for a provider that gets turned off", () => {
+    expect(src).toContain("delete nextModelSelections[provider]");
+    expect(src).toContain("adminPolicy.policy.fallbackOrder.filter((p) => nextAllowed.includes(p))");
+  });
+});

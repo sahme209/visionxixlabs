@@ -71,6 +71,10 @@ export default function AISettingsPage() {
   const [adminPolicy, setAdminPolicy] = useState<AiPolicyAdminResp | null | undefined>(undefined);
   const [toggleBusy, setToggleBusy] = useState(false);
   const [toggleError, setToggleError] = useState<string | null>(null);
+  // Per-provider toggles — which provider is busy right now (only one
+  // at a time; the PUT replaces the whole policy document).
+  const [providerToggleBusy, setProviderToggleBusy] = useState<ProviderName | null>(null);
+  const [providerToggleError, setProviderToggleError] = useState<string | null>(null);
 
   const loadStatus = useCallback(() => {
     setLoadingStatus(true);
@@ -120,6 +124,50 @@ export default function AISettingsPage() {
       .catch(() => setToggleError("Network error."))
       .finally(() => setToggleBusy(false));
   }, [adminPolicy, toggleBusy, loadAdminPolicy, loadStatus]);
+
+  // Toggle a single provider in/out of allowedProviders. Normalization
+  // on the server (normalizeWorkspaceAIProviderPolicy) rejects
+  // allowedProviders: [] while enabled: true, so unchecking the last
+  // remaining provider is refused client-side with an explanation
+  // instead of firing a request that will 422.
+  const toggleProvider = useCallback((provider: ProviderName) => {
+    if (!adminPolicy || !adminPolicy.policy.enabled || providerToggleBusy) return;
+    const currentlyAllowed = adminPolicy.policy.allowedProviders.includes(provider);
+    if (currentlyAllowed && adminPolicy.policy.allowedProviders.length <= 1) {
+      setProviderToggleError("At least one provider must stay enabled while AI is on. Turn off the master switch instead.");
+      return;
+    }
+    const nextAllowed = currentlyAllowed
+      ? adminPolicy.policy.allowedProviders.filter((p) => p !== provider)
+      : [...adminPolicy.policy.allowedProviders, provider];
+    const nextModelSelections = { ...adminPolicy.policy.modelSelections };
+    if (currentlyAllowed) delete nextModelSelections[provider];
+    const nextFallbackOrder = adminPolicy.policy.fallbackOrder.filter((p) => nextAllowed.includes(p));
+    setProviderToggleBusy(provider);
+    setProviderToggleError(null);
+    fetch("/api/account/ai-policy", {
+      method: "PUT",
+      credentials: "include",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({
+        enabled: true,
+        allowedProviders: nextAllowed,
+        modelSelections: nextModelSelections,
+        fallbackOrder: nextFallbackOrder,
+      }),
+    })
+      .then((r) => r.json())
+      .then((j: { ok?: boolean; error?: string }) => {
+        if (!j.ok) {
+          setProviderToggleError(j.error === "provider_unavailable" ? "That provider is not currently configured for this service." : "Could not update this provider.");
+          return;
+        }
+        loadAdminPolicy();
+        loadStatus();
+      })
+      .catch(() => setProviderToggleError("Network error."))
+      .finally(() => setProviderToggleBusy(null));
+  }, [adminPolicy, providerToggleBusy, loadAdminPolicy, loadStatus]);
 
   const runHealth = useCallback(() => {
     setLoadingHealth(true);
@@ -224,6 +272,41 @@ export default function AISettingsPage() {
             )}
             {adminPolicy === null && (
               <p className="mt-2 text-[11px] text-zinc-500">Only a workspace owner or admin can change this setting.</p>
+            )}
+            {adminPolicy && adminPolicy.policy.enabled && adminPolicy.availableProviders.length > 0 && (
+              <div className="mt-4 pt-4 border-t border-white/[0.06]">
+                <p className="text-[10px] font-mono uppercase tracking-widest text-zinc-500 mb-2">Per-provider</p>
+                <ul className="space-y-2">
+                  {adminPolicy.availableProviders.map((provider) => {
+                    const allowed = adminPolicy.policy.allowedProviders.includes(provider);
+                    return (
+                      <li key={provider} className="flex items-center gap-2">
+                        <button
+                          type="button"
+                          role="switch"
+                          aria-checked={allowed}
+                          aria-label={allowed ? `Turn off ${LABEL[provider]}` : `Turn on ${LABEL[provider]}`}
+                          onClick={() => toggleProvider(provider)}
+                          disabled={providerToggleBusy !== null}
+                          className={`relative inline-flex h-5 w-9 shrink-0 items-center rounded-full transition-colors disabled:opacity-50 ${
+                            allowed ? "bg-emerald-500/80" : "bg-white/[0.12]"
+                          }`}
+                        >
+                          <span
+                            className={`inline-block h-3.5 w-3.5 transform rounded-full bg-white transition-transform ${
+                              allowed ? "translate-x-5" : "translate-x-1"
+                            }`}
+                          />
+                        </button>
+                        <span className="text-[12px] text-zinc-300">{LABEL[provider]}</span>
+                      </li>
+                    );
+                  })}
+                </ul>
+                {providerToggleError && (
+                  <p role="alert" aria-live="assertive" className="mt-2 text-[11px] text-rose-300">{providerToggleError}</p>
+                )}
+              </div>
             )}
           </div>
 
