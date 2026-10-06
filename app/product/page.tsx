@@ -22,6 +22,12 @@ const BOUNDARIES = [
   ["Web companion", "A lighter signed-in space where approved provider consent, profile, help, and connection context begin."],
 ];
 
+const PILLARS = [
+  ["AI", "The Agent turns a plain-English request into a proposed action — it decides what to do, but it never executes a write by itself."],
+  ["Governance", "Every proposed action is risk-classified, requires a workspace admin's explicit approval before it runs, and lands in a permanent audit trail — approved or not."],
+  ["Integrations", "Approved actions are real: branches, commits, and pull requests land on GitHub; an approved AWS deployment runs through your own GitHub Actions workflow over short-lived OIDC credentials, with automatic rollback if it doesn't stabilize."],
+];
+
 export default function ProductPage() {
   return (
     <div className="axiom-canvas min-h-screen text-zinc-100">
@@ -55,6 +61,14 @@ export default function ProductPage() {
         <section className="mx-auto max-w-[1400px] px-5 py-20 sm:px-8 lg:py-28">
           <div className="max-w-xl"><p className="text-[10px] uppercase tracking-[0.22em] text-emerald-300">The release, made legible</p><h2 className="mt-4 text-3xl font-medium tracking-[-0.045em] text-zinc-100 sm:text-5xl">Intent. Playbook. Govern. Execute. Prove.</h2></div>
           <div className="mt-10 grid gap-3 md:grid-cols-2 xl:grid-cols-5">{WORKFLOW.map(([number, title, detail]) => <article key={number} className="rounded-2xl border border-white/[0.08] bg-white/[0.025] p-6 sm:p-7"><p className="text-[10px] tracking-[0.16em] text-violet-300">{number}</p><h3 className="mt-8 text-xl font-medium tracking-[-0.03em] text-zinc-100">{title}</h3><p className="mt-3 max-w-md text-sm leading-6 text-zinc-500">{detail}</p></article>)}</div>
+        </section>
+
+        <section className="border-y border-white/[0.07] bg-[#0e0e0c] px-5 py-20 sm:px-8 lg:px-12 lg:py-28">
+          <div className="mx-auto max-w-[1400px]">
+            <p className="text-[10px] uppercase tracking-[0.22em] text-violet-200">AI · Governance · Integrations</p>
+            <h2 className="mt-4 max-w-2xl text-3xl font-medium tracking-[-0.045em] text-zinc-100 sm:text-5xl">An agent that acts, inside a system that proves it was safe.</h2>
+            <div className="mt-10 grid gap-3 md:grid-cols-3">{PILLARS.map(([title, detail]) => <article key={title} className="rounded-2xl border border-white/[0.08] bg-white/[0.025] p-6 sm:p-7"><h3 className="text-lg font-medium tracking-[-0.02em] text-zinc-100">{title}</h3><p className="mt-3 text-sm leading-6 text-zinc-400">{detail}</p></article>)}</div>
+          </div>
         </section>
 
         <section className="relative isolate overflow-hidden border-y border-white/[0.07] px-5 py-20 sm:px-8 lg:px-12 lg:py-28">

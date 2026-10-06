@@ -3,8 +3,11 @@ import type { ReactNode } from "react";
 import {
   ArrowRightIcon,
   ClockIcon,
+  CpuChipIcon,
   FingerPrintIcon,
+  LinkIcon,
   ScaleIcon,
+  ShieldCheckIcon,
 } from "@heroicons/react/24/outline";
 import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/Footer";
@@ -26,6 +29,27 @@ const playbookQuestions = [
   {
     label: "What changed?",
     copy: "Versions, authors, approvals, and closure evidence make the operational story reviewable after the release.",
+  },
+];
+
+const pillars = [
+  {
+    icon: CpuChipIcon,
+    eyebrow: "AI",
+    title: "Plain English becomes a governed action.",
+    copy: "Tell the Agent what you want — \"open a PR that fixes the config typo\" or \"deploy acme/widgets to prod.\" It reads the request, decides what to do, and proposes the action. It never executes a write by itself.",
+  },
+  {
+    icon: ShieldCheckIcon,
+    eyebrow: "Governance",
+    title: "Every action is risk-checked, approved, and on the record.",
+    copy: "Read-only steps run immediately. Anything that touches GitHub or a live environment is classified by risk — higher for anything aimed at production — and sits pending until a workspace admin explicitly approves it. Every step, approved or not, is in the audit trail.",
+  },
+  {
+    icon: LinkIcon,
+    eyebrow: "Integrations",
+    title: "Real GitHub and AWS, not another status page.",
+    copy: "Branches, commits, and pull requests land on github.com for real. An approved AWS deployment runs through your own GitHub Actions workflow via short-lived OIDC credentials — no stored keys — and automatically rolls back if the new deployment never stabilizes.",
   },
 ];
 
@@ -88,6 +112,23 @@ export default function Home() {
               </div>
             }
           />
+        </section>
+
+        <section className="border-y border-white/[0.06] bg-[#0e0e0c] px-5 py-16 sm:px-8 lg:px-12 lg:py-20">
+          <div className="mx-auto max-w-[1400px]">
+            <p className="text-[11px] uppercase tracking-[0.16em] text-zinc-500">Why Axiom, not another wrapper</p>
+            <h2 className="mt-3 max-w-2xl text-2xl font-medium tracking-[-0.04em] text-zinc-100 sm:text-3xl">AI that acts. Governance that proves it was safe.</h2>
+            <div className="mt-8 grid gap-4 md:grid-cols-3">
+              {pillars.map((pillar) => (
+                <article key={pillar.eyebrow} className="rounded-2xl border border-white/[0.08] bg-white/[0.025] p-6">
+                  <pillar.icon className="h-5 w-5 text-zinc-300" />
+                  <p className="mt-4 text-[10px] uppercase tracking-[0.18em] text-violet-300">{pillar.eyebrow}</p>
+                  <h3 className="mt-2 text-lg font-medium leading-snug tracking-[-0.02em] text-zinc-100">{pillar.title}</h3>
+                  <p className="mt-3 text-sm leading-6 text-zinc-400">{pillar.copy}</p>
+                </article>
+              ))}
+            </div>
+          </div>
         </section>
 
         <section className="mx-auto max-w-[1400px] px-5 pb-18 sm:px-8 lg:px-12 lg:pb-24">
