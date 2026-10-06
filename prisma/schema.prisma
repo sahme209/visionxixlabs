@@ -1381,6 +1381,74 @@ model OrgMembership {
   @@index([userId])
 }
 
+// ---------------------------------------------------------------------------
+// Enterprise identity — docs/ENTERPRISE_IDENTITY_DESIGN.md.
+//
+// Status: schema + config management only. No OIDC/SAML client exists yet,
+// no real identity provider is connected, and no sign-in path reads these
+// tables — see lib/identity/enterpriseIdentityContract.ts and
+// lib/iam/scimLifecycleHelper.ts for the pure decision logic this will
+// eventually sit behind. Connection status starts and stays "pending"
+// until a real metadata exchange + test assertion round-trip ships in a
+// later phase; never fabricate "active" on config save alone.
+// ---------------------------------------------------------------------------
+
+enum IdentityProviderProtocol {
+  oidc
+  saml
+}
+
+model TenantIdentityProvider {
+  id                  String                   @id @default(cuid())
+  organizationId      String
+  protocol            IdentityProviderProtocol
+  /// Closed-union: pending | active | needs_attention | revoked.
+  status              String                   @default("pending")
+  /// OIDC issuer URL or SAML IdP entity ID — binds an incoming
+  /// assertion/token to exactly one tenant.
+  issuerOrEntityId    String
+  /// SAML IdP metadata XML or OIDC discovery document, stored verbatim
+  /// for audit/debugging. Never contains a credential.
+  metadataDocument    String                   @db.Text
+  /// Domain(s) this IdP is authoritative for. A user signing in with a
+  /// matching email domain is routed to this IdP instead of
+  /// password/OAuth — never both paths silently accepted.
+  managedDomains      String[]                 @default([])
+  /// IdP group/claim -> OrgRole, shape: RoleMappingRule[] (see
+  /// lib/identity/enterpriseIdentityContract.ts). No default role.
+  roleMappingJson     Json
+  requireMfaClaim     Boolean                  @default(true)
+  lastTestAssertionAt DateTime?
+  configuredByUserId  String
+  revokedAt           DateTime?
+  createdAt           DateTime                 @default(now())
+  updatedAt           DateTime                 @updatedAt
+
+  @@unique([organizationId, protocol])
+  @@index([organizationId, status])
+  @@index([issuerOrEntityId])
+}
+
+/// SCIM-provisioned identity record — separate from OrgMembership so a
+/// deprovisioned SCIM user is distinguishable in the audit trail from a
+/// manually-removed one, and so sync failures never silently delete a
+/// membership row outright.
+model ScimProvisionedIdentity {
+  id               String    @id @default(cuid())
+  organizationId   String
+  /// IdP-assigned stable user id.
+  externalId       String
+  email            String
+  /// Null until first successful role-mapped login.
+  orgMembershipId  String?
+  scimActive       Boolean   @default(true)
+  lastSyncedAt     DateTime  @default(now())
+  deprovisionedAt  DateTime?
+
+  @@unique([organizationId, externalId])
+  @@index([organizationId, email])
+}
+
 model AxiomApprovalPolicy {
   id             String  @id @default(cuid())
   organizationId String

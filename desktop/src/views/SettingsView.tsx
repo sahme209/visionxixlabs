@@ -9,6 +9,7 @@ import {
   Code2,
   CreditCard,
   GitBranch,
+  KeyRound,
   Link2,
   LockKeyhole,
   LogOut,
@@ -58,7 +59,8 @@ type Section =
   | "git"
   | "worktrees"
   | "integrations"
-  | "environments";
+  | "environments"
+  | "identity";
 
 const sections: Array<{ id: Section; label: string; icon: typeof CircleUserRound }> = [
   { id: "general", label: "General", icon: Settings2 },
@@ -69,6 +71,7 @@ const sections: Array<{ id: Section; label: string; icon: typeof CircleUserRound
   { id: "models", label: "Models", icon: Code2 },
   { id: "git", label: "Git & PRs", icon: GitBranch },
   { id: "environments", label: "Environments", icon: Server },
+  { id: "identity", label: "Identity", icon: KeyRound },
   { id: "worktrees", label: "Worktrees", icon: Trees },
   { id: "integrations", label: "Integrations", icon: Link2 },
 ];
@@ -146,6 +149,7 @@ export function SettingsView({ identity }: { identity: VerifiedDesktopIdentity }
           {active === "models" && <ModelsSection />}
           {active === "git" && <GitSection prefs={prefs} onSave={savePreferences} />}
           {active === "environments" && <EnvironmentsSection />}
+          {active === "identity" && <IdentitySection />}
           {active === "worktrees" && <WorktreesSection prefs={prefs} />}
           {active === "integrations" && <IntegrationsSection />}
         </div>
@@ -753,6 +757,208 @@ function DeploymentTargetPanel({ environmentId }: { environmentId: string }) {
         {deployError && <p role="alert" className="text-[12px] text-rose-300">{deployError}</p>}
       </div>
     </div>
+  );
+}
+
+/**
+ * Enterprise identity — docs/ENTERPRISE_IDENTITY_DESIGN.md. Config
+ * management only: nothing here makes SSO live. A connected provider
+ * starts and stays "pending" until a real metadata exchange + test
+ * assertion ships in a later phase — this view never implies a
+ * provider is active just because it was saved.
+ */
+interface IdentityProviderListItem {
+  id: string; protocol: string; status: string; issuerOrEntityId: string; managedDomains: string[]; requireMfaClaim: boolean; revokedAt: string | null;
+}
+
+function IdentitySection() {
+  const [providers, setProviders] = useState<IdentityProviderListItem[] | null>(null);
+  const [loadError, setLoadError] = useState<string | null>(null);
+
+  const load = useCallback(() => {
+    void desktopClient.listIdentityProviders().then((result) => {
+      if (result.ok) { setProviders(result.data.providers); setLoadError(null); }
+      else setLoadError(result.error);
+    });
+  }, []);
+
+  useEffect(() => { load(); }, [load]);
+
+  return (
+    <div>
+      <SectionHeading title="Identity" detail="Enterprise SSO (OIDC/SAML) and SCIM lifecycle config — design-only until a real metadata exchange ships. No sign-in path reads this yet; connecting a provider here never grants anyone access on its own." />
+      {loadError && <p role="alert" className="mb-4 text-[12px] text-rose-300">{loadError}</p>}
+      <Group label="Configured identity providers">
+        {providers === null && loadError === null && <ActionRow title="Loading…" detail="Checking configured providers." action={null} />}
+        {providers !== null && providers.length === 0 && <ActionRow title="No identity provider configured" detail="Add one below. It stays pending — sign-in is unaffected until a later phase ships the live OIDC/SAML client." action={null} />}
+        {(providers ?? []).map((p) => (
+          <ActionRow
+            key={p.id}
+            title={`${p.protocol.toUpperCase()} — ${p.issuerOrEntityId}`}
+            detail={`${p.status}${p.revokedAt ? " · revoked" : ""} · domains: ${p.managedDomains.join(", ")}${p.requireMfaClaim ? " · MFA required" : ""}`}
+            action={!p.revokedAt ? <RevokeProviderButton id={p.id} onRevoked={load} /> : null}
+          />
+        ))}
+      </Group>
+      <NewIdentityProviderForm onCreated={load} />
+      <ScimPreviewPanel />
+    </div>
+  );
+}
+
+function RevokeProviderButton({ id, onRevoked }: { id: string; onRevoked: () => void }) {
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  async function revoke() {
+    setBusy(true); setError(null);
+    try {
+      const result = await desktopClient.revokeIdentityProvider(id);
+      if (!result.ok) { setError(result.error); return; }
+      onRevoked();
+    } finally {
+      setBusy(false);
+    }
+  }
+  return (
+    <div className="flex items-center gap-2">
+      <button type="button" onClick={() => void revoke()} disabled={busy} className="rounded-md border border-rose-500/30 bg-rose-500/[0.08] px-2.5 py-1 text-[11px] text-rose-200 hover:bg-rose-500/[0.14] disabled:opacity-50">
+        {busy ? "Revoking…" : "Revoke"}
+      </button>
+      {error && <span className="text-[11px] text-rose-300">{error}</span>}
+    </div>
+  );
+}
+
+function NewIdentityProviderForm({ onCreated }: { onCreated: () => void }) {
+  const [protocol, setProtocol] = useState("oidc");
+  const [issuer, setIssuer] = useState("");
+  const [metadataDocument, setMetadataDocument] = useState("");
+  const [domains, setDomains] = useState("");
+  const [claimKey, setClaimKey] = useState("groups");
+  const [claimValue, setClaimValue] = useState("");
+  const [role, setRole] = useState("admin");
+  const [requireMfaClaim, setRequireMfaClaim] = useState(true);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [ok, setOk] = useState(false);
+
+  async function submit() {
+    setBusy(true); setError(null); setOk(false);
+    try {
+      const result = await desktopClient.createIdentityProvider({
+        protocol, issuerOrEntityId: issuer, metadataDocument,
+        managedDomains: domains.split(",").map((d) => d.trim()).filter(Boolean),
+        roleMapping: [{ claimKey, claimValue, role }],
+        requireMfaClaim,
+      });
+      if (!result.ok) { setError(result.error); return; }
+      setOk(true);
+      setIssuer(""); setMetadataDocument(""); setDomains(""); setClaimValue("");
+      onCreated();
+      setTimeout(() => setOk(false), 1500);
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  const canSubmit = issuer && metadataDocument && domains && claimValue;
+
+  return (
+    <Group label="Connect an identity provider">
+      <div className="px-4 py-3.5 space-y-3">
+        <div className="grid grid-cols-2 gap-3">
+          <label className="block">
+            <span className="mb-1 block text-[11px] text-zinc-500">Protocol</span>
+            <select value={protocol} onChange={(event) => setProtocol(event.target.value)} className="w-full rounded-lg border border-white/10 bg-black/25 px-3 py-2 text-xs text-zinc-200 outline-none focus:border-white/25">
+              <option value="oidc">OIDC</option>
+              <option value="saml">SAML</option>
+            </select>
+          </label>
+          <LabeledInput label="Issuer URL / entity ID" placeholder="https://idp.acme.com" value={issuer} onChange={setIssuer} />
+        </div>
+        <LabeledTextArea label="Metadata document (OIDC discovery JSON or SAML metadata XML)" value={metadataDocument} onChange={setMetadataDocument} />
+        <LabeledInput label="Managed domains (comma-separated)" placeholder="acme.com, acme.io" value={domains} onChange={setDomains} />
+        <div className="grid grid-cols-3 gap-3">
+          <LabeledInput label="Claim key" placeholder="groups" value={claimKey} onChange={setClaimKey} />
+          <LabeledInput label="Claim value" placeholder="axiom-admins" value={claimValue} onChange={setClaimValue} />
+          <label className="block">
+            <span className="mb-1 block text-[11px] text-zinc-500">Maps to role</span>
+            <select value={role} onChange={(event) => setRole(event.target.value)} className="w-full rounded-lg border border-white/10 bg-black/25 px-3 py-2 text-xs text-zinc-200 outline-none focus:border-white/25">
+              {["owner", "admin", "operator", "security_reviewer", "finance_viewer", "read_only"].map((r) => <option key={r} value={r}>{r}</option>)}
+            </select>
+          </label>
+        </div>
+        <label className="flex items-center gap-2 text-xs text-zinc-400">
+          <input type="checkbox" checked={requireMfaClaim} onChange={(event) => setRequireMfaClaim(event.target.checked)} />
+          Require MFA claim at sign-in (fails closed if absent, once live)
+        </label>
+        <div className="flex items-center gap-3">
+          <button type="button" onClick={() => void submit()} disabled={busy || !canSubmit} className="inline-flex items-center gap-2 rounded-lg border border-white/10 bg-white/[0.04] px-3 py-2 text-xs text-zinc-200 hover:bg-white/[0.08] disabled:opacity-50">
+            {busy ? "Saving…" : "Save (pending)"}
+          </button>
+          {ok && <span className="text-[12px] text-emerald-300">Saved — pending</span>}
+        </div>
+        {error && <p role="alert" className="text-[12px] text-rose-300">{error}</p>}
+      </div>
+    </Group>
+  );
+}
+
+function ScimPreviewPanel() {
+  const [employeesJson, setEmployeesJson] = useState('[\n  { "id": "e1", "email": "a@acme.com", "status": "active", "desiredRoles": ["admin"] }\n]');
+  const [grantsJson, setGrantsJson] = useState("[]");
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [plan, setPlan] = useState<{ actions: Array<{ kind: string; userId: string; role: string; reason: string }>; joinersCount: number; moversCount: number; leaversCount: number } | null>(null);
+
+  async function preview() {
+    setBusy(true); setError(null); setPlan(null);
+    try {
+      let employees: unknown; let currentGrants: unknown;
+      try {
+        employees = JSON.parse(employeesJson);
+        currentGrants = JSON.parse(grantsJson);
+      } catch {
+        setError("Both fields must be valid JSON.");
+        return;
+      }
+      const result = await desktopClient.previewScimLifecycle({ employees, currentGrants });
+      if (!result.ok) { setError(result.error); return; }
+      setPlan(result.data);
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <Group label="SCIM lifecycle preview (stage only — nothing executes)">
+      <div className="px-4 py-3.5 space-y-3">
+        <LabeledTextArea label="Directory employees (JSON)" value={employeesJson} onChange={setEmployeesJson} />
+        <LabeledTextArea label="Current grants (JSON)" value={grantsJson} onChange={setGrantsJson} />
+        <div className="flex items-center gap-3">
+          <button type="button" onClick={() => void preview()} disabled={busy} className="inline-flex items-center gap-2 rounded-lg border border-white/10 bg-white/[0.04] px-3 py-2 text-xs text-zinc-200 hover:bg-white/[0.08] disabled:opacity-50">
+            {busy ? "Computing…" : "Compute plan"}
+          </button>
+        </div>
+        {error && <p role="alert" className="text-[12px] text-rose-300">{error}</p>}
+        {plan && (
+          <div className="rounded-lg border border-white/10 bg-black/25 p-3">
+            <p className="mb-2 text-[11px] text-zinc-500">{plan.joinersCount} joiner(s) · {plan.moversCount} mover(s) · {plan.leaversCount} leaver(s)</p>
+            {plan.actions.length === 0 ? (
+              <p className="text-[12px] text-zinc-500">No changes staged.</p>
+            ) : (
+              <ul className="space-y-1">
+                {plan.actions.map((a, i) => (
+                  <li key={i} className="text-[12px] text-zinc-300">
+                    <span className="text-zinc-500">{a.kind}</span> — {a.userId}{a.role ? ` (${a.role})` : ""}: <span className="text-zinc-500">{a.reason}</span>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+        )}
+      </div>
+    </Group>
   );
 }
 
