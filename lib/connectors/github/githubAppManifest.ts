@@ -54,6 +54,8 @@ export interface GithubAppManifest {
   public: false;
   default_permissions: typeof GITHUB_APP_MANIFEST_PERMISSIONS;
   default_events: typeof GITHUB_APP_MANIFEST_DEFAULT_EVENTS;
+  setup_url: string;
+  setup_on_update: true;
 }
 
 const DEFAULT_APP_NAME = "Axiom Agent";
@@ -62,6 +64,21 @@ const DEFAULT_APP_NAME = "Axiom Agent";
  * Builds the manifest JSON. `origin` must already be validated as the
  * platform's trusted deployment origin (see lib/integrations/trustedCallbackUrl.ts) —
  * this function does not perform that validation itself.
+ *
+ * `redirect_url` and `setup_url` are two different GitHub concepts that
+ * are easy to conflate: `redirect_url` is used exactly once, for the
+ * manifest-conversion flow itself (app-manifest-callback — where GitHub
+ * hands back the new App's credentials right after creation).
+ * `setup_url` is what GitHub redirects every end user to after THEY
+ * install or update the App on their own org/account (install-callback
+ * — the one that captures `installation_id` + `state` and actually
+ * records the installation against a workspace). Omitting `setup_url`
+ * doesn't break App creation, but leaves GitHub with nowhere configured
+ * to send installers back to — it just shows its own generic
+ * installation-settings page instead, and the installation is never
+ * recorded on the Axiom side. `setup_on_update: true` means the same
+ * redirect also fires when someone changes repository access on an
+ * existing installation, not just on first install.
  */
 export function buildGithubAppManifest(input: GithubAppManifestInput): GithubAppManifest {
   const origin = input.origin.replace(/\/+$/, "");
@@ -73,5 +90,7 @@ export function buildGithubAppManifest(input: GithubAppManifestInput): GithubApp
     public: false,
     default_permissions: GITHUB_APP_MANIFEST_PERMISSIONS,
     default_events: GITHUB_APP_MANIFEST_DEFAULT_EVENTS,
+    setup_url: `${origin}/api/integrations/github/install-callback`,
+    setup_on_update: true,
   };
 }
