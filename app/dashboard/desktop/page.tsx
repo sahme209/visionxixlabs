@@ -68,7 +68,7 @@ const PLATFORM_LABEL: Record<string, string> = {
 const SOURCE_PILL: Record<string, string> = {
   live:         "bg-emerald-500/15 text-emerald-300 border-emerald-500/30",
   partial_live: "bg-cyan-500/15 text-cyan-300 border-cyan-500/30",
-  preview:      "bg-amber-500/15 text-amber-300 border-amber-500/30",
+  preview:      "bg-white/15 text-zinc-300 border-white/30",
   blocked:      "bg-rose-500/15 text-rose-300 border-rose-500/30",
   unknown:      "bg-zinc-700/40 text-zinc-300 border-zinc-700/40",
 };
@@ -136,8 +136,8 @@ export default function DesktopDashboardPage() {
         </div>
       )}
       {!loading && error && (
-        <div role="alert" aria-live="assertive" className="rounded-2xl border border-amber-500/[0.18] bg-amber-500/[0.04] p-5 mb-6">
-          <p className="text-[11px] font-mono text-amber-300/80 uppercase tracking-[0.18em] mb-1">// state unavailable</p>
+        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/[0.18] bg-white/[0.04] p-5 mb-6">
+          <p className="text-[11px] font-mono text-zinc-300/80 uppercase tracking-[0.18em] mb-1">// state unavailable</p>
           <p className="text-[13px] text-zinc-300">{error}</p>
         </div>
       )}
@@ -289,7 +289,7 @@ export default function DesktopDashboardPage() {
 function RollupCard({ label, value, detail, tone }: { label: string; value: string; detail: string; tone: "emerald" | "amber" | "cyan" | "zinc" }) {
   const toneClasses: Record<string, { border: string; bg: string; text: string }> = {
     emerald: { border: "border-emerald-500/[0.22]", bg: "bg-emerald-500/[0.04]", text: "text-emerald-300" },
-    amber:   { border: "border-amber-500/[0.22]",   bg: "bg-amber-500/[0.04]",   text: "text-amber-300"   },
+    amber:   { border: "border-white/[0.22]",   bg: "bg-white/[0.04]",   text: "text-zinc-300"   },
     cyan:    { border: "border-cyan-500/[0.22]",    bg: "bg-cyan-500/[0.04]",    text: "text-cyan-300"    },
     zinc:    { border: "border-zinc-700/30",        bg: "bg-white/[0.02]",       text: "text-zinc-300"    },
   };
@@ -307,7 +307,7 @@ function BadgeFlag({ label, good, amberIfBad }: { label: string; good: boolean; 
   const cls = good
     ? "bg-emerald-500/15 text-emerald-300"
     : amberIfBad
-      ? "bg-amber-500/15 text-amber-300"
+      ? "bg-white/15 text-zinc-300"
       : "bg-zinc-700/40 text-zinc-400";
   const Icon = good ? CheckCircleIcon : XCircleIcon;
   return (

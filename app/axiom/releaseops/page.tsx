@@ -155,7 +155,7 @@ const PHASE_COLORS: Record<typeof PHASES[number]["color"], { text: string; bg: s
   blue: { text: "text-blue-400", bg: "bg-blue-500/10", border: "border-blue-500/20", ring: "ring-blue-500/30" },
   violet: { text: "text-violet-400", bg: "bg-violet-500/10", border: "border-violet-500/20", ring: "ring-violet-500/30" },
   fuchsia: { text: "text-fuchsia-400", bg: "bg-fuchsia-500/10", border: "border-fuchsia-500/20", ring: "ring-fuchsia-500/30" },
-  amber: { text: "text-amber-400", bg: "bg-amber-500/10", border: "border-amber-500/20", ring: "ring-amber-500/30" },
+  amber: { text: "text-zinc-400", bg: "bg-white/10", border: "border-white/20", ring: "ring-white/30" },
   emerald: { text: "text-emerald-400", bg: "bg-emerald-500/10", border: "border-emerald-500/20", ring: "ring-emerald-500/30" },
   cyan: { text: "text-cyan-400", bg: "bg-cyan-500/10", border: "border-cyan-500/20", ring: "ring-cyan-500/30" },
 };
@@ -271,7 +271,7 @@ export default function ReleaseOpsPage() {
         <div className="max-w-6xl mx-auto">
           <Reveal direction="up" blur>
             <div className="mb-12">
-              <p className="text-sm font-semibold text-amber-400 mb-4 tracking-wide uppercase">
+              <p className="text-sm font-semibold text-zinc-400 mb-4 tracking-wide uppercase">
                 The enterprise release problem
               </p>
               <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-[-0.04em] mb-5">
@@ -290,8 +290,8 @@ export default function ReleaseOpsPage() {
               return (
                 <div key={card.title} className="huly-feature-card group">
                   <div className="p-5">
-                    <div className="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center mb-4">
-                      <Icon className="h-5 w-5 text-amber-400" />
+                    <div className="w-10 h-10 rounded-xl bg-white/10 border border-white/20 flex items-center justify-center mb-4">
+                      <Icon className="h-5 w-5 text-zinc-400" />
                     </div>
                     <h3 className="text-base font-bold text-white mb-2">{card.title}</h3>
                     <p className="text-sm text-zinc-500 leading-relaxed">{card.desc}</p>
@@ -423,13 +423,13 @@ export default function ReleaseOpsPage() {
                   const pct = Math.round(d.score * 100);
                   const colorClass =
                     pct >= 85 ? "from-emerald-500 to-emerald-400" :
-                    pct >= 70 ? "from-amber-500 to-amber-400" :
+                    pct >= 70 ? "from-zinc-500 to-zinc-400" :
                     "from-red-500 to-red-400";
                   return (
                     <div key={d.label} className="space-y-1.5">
                       <div className="flex items-center justify-between text-xs">
                         <span className="text-zinc-300 font-medium">{d.label}</span>
-                        <span className={`font-mono font-semibold ${pct >= 85 ? "text-emerald-400" : pct >= 70 ? "text-amber-400" : "text-red-400"}`}>{pct}%</span>
+                        <span className={`font-mono font-semibold ${pct >= 85 ? "text-emerald-400" : pct >= 70 ? "text-zinc-400" : "text-red-400"}`}>{pct}%</span>
                       </div>
                       <div className="h-1.5 bg-white/[0.06] rounded-full overflow-hidden">
                         <div className={`h-full rounded-full bg-gradient-to-r ${colorClass}`} style={{ width: `${pct}%` }} />
@@ -533,8 +533,8 @@ export default function ReleaseOpsPage() {
                   {[
                     { label: "Web platform", value: "Available", color: "text-emerald-400" },
                     { label: "macOS app", value: "Preview", color: "text-emerald-400" },
-                    { label: "Windows app", value: "Q2 2026", color: "text-amber-400" },
-                    { label: "Linux app", value: "Q3 2026", color: "text-amber-400" },
+                    { label: "Windows app", value: "Q2 2026", color: "text-zinc-400" },
+                    { label: "Linux app", value: "Q3 2026", color: "text-zinc-400" },
                   ].map((p) => (
                     <div key={p.label} className="rounded-xl bg-black/30 border border-white/[0.06] p-4">
                       <p className="text-[10px] text-zinc-500 uppercase tracking-wider font-semibold mb-1">{p.label}</p>
@@ -595,7 +595,7 @@ export default function ReleaseOpsPage() {
       {/* ── Premium CTA ───────────────────────────────────────────── */}
       <section id="assessment" className="py-28 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
         <div className="absolute inset-0 diagonal-streak opacity-20 pointer-events-none" aria-hidden />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[400px] rounded-full bg-amber-500/[0.06] blur-[120px] pointer-events-none" aria-hidden />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[400px] rounded-full bg-white/[0.06] blur-[120px] pointer-events-none" aria-hidden />
 
         <div className="max-w-3xl mx-auto text-center relative">
           <Reveal direction="up" blur>

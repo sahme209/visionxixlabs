@@ -212,8 +212,8 @@ export default function DownloadPage() {
                 Released {manifest.tag ? `· ${manifest.tag.replace("desktop-v", "v")}` : ""}
               </span>
             ) : (
-              <span className="badge-shimmer badge-shimmer-border inline-flex max-w-full items-center justify-center gap-2 px-3 sm:px-4 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-200 text-[11px] sm:text-xs leading-5 font-medium mb-5 sm:mb-8 backdrop-blur-sm cursor-default">
-                <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
+              <span className="badge-shimmer badge-shimmer-border inline-flex max-w-full items-center justify-center gap-2 px-3 sm:px-4 py-1.5 rounded-full bg-white/10 border border-white/20 text-zinc-200 text-[11px] sm:text-xs leading-5 font-medium mb-5 sm:mb-8 backdrop-blur-sm cursor-default">
+                <span className="w-1.5 h-1.5 rounded-full bg-zinc-400" />
                 {manifest?.hasAnyAsset && manifest.runtimeReady === false
                   ? "Installer ready · desktop sign-in temporarily unavailable"
                   : "No verified installer is currently available"}
@@ -245,11 +245,11 @@ export default function DownloadPage() {
                   className={`group inline-flex min-h-12 items-center justify-center gap-2 px-5 sm:px-7 py-3.5 sm:py-4 rounded-xl sm:rounded-full text-sm font-semibold border transition-colors ${
                     mounted && primaryPlatform.available
                       ? "bg-white text-zinc-950 border-white hover:bg-zinc-100"
-                      : "border-amber-500/30 bg-amber-500/10 text-amber-100 hover:bg-amber-500/20 hover:border-amber-500/50"
+                      : "border-white/30 bg-white/10 text-zinc-100 hover:bg-white/20 hover:border-white/50"
                   }`}
                   {...(mounted && primaryPlatform.available && primaryPlatform.fileName ? { download: primaryPlatform.fileName } : {})}
                 >
-                  {mounted && primaryPlatform.available ? <ArrowDownTrayIcon className="h-4 w-4" /> : <CloudArrowDownIcon className="h-4 w-4 text-amber-300" />}
+                  {mounted && primaryPlatform.available ? <ArrowDownTrayIcon className="h-4 w-4" /> : <CloudArrowDownIcon className="h-4 w-4 text-zinc-300" />}
                   {mounted && primaryPlatform.available
                     ? `Download for ${primaryPlatform.label}`
                     : `Check current release for ${mounted ? primaryPlatform.label : "desktop"}`}
@@ -258,7 +258,7 @@ export default function DownloadPage() {
                   href="/demo"
                   className="group inline-flex min-h-12 items-center justify-center gap-2 px-5 sm:px-7 py-3.5 rounded-xl sm:rounded-full text-sm font-semibold border border-white/[0.12] bg-white/[0.03] text-zinc-200 hover:bg-white/[0.06] hover:border-white/[0.2] transition-colors"
                 >
-                  <BoltIcon className="h-4 w-4 text-amber-300" />
+                  <BoltIcon className="h-4 w-4 text-zinc-300" />
                   Explore the isolated demo
                   <ArrowRightIcon className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
                 </Link>
@@ -271,7 +271,7 @@ export default function DownloadPage() {
                   : "Web: isolated demo only · Desktop developer builds publish via CI on `desktop-v*` tags — signed binaries when platform certificates are configured"}
               </span>
               {mounted && primaryPlatform.available && primaryPlatform.installFriction && (
-                <span className="text-[11px] text-amber-200/80 font-mono">{primaryPlatform.installFriction}</span>
+                <span className="text-[11px] text-zinc-200/80 font-mono">{primaryPlatform.installFriction}</span>
               )}
             </div>
           </Reveal>
@@ -302,7 +302,7 @@ export default function DownloadPage() {
                     className={`rounded-xl border p-3 text-left transition-colors ${
                       isLive
                         ? "border-emerald-500/15 bg-emerald-500/[0.03] hover:border-emerald-500/30"
-                        : "border-white/[0.06] bg-white/[0.02] hover:border-amber-500/25"
+                        : "border-white/[0.06] bg-white/[0.02] hover:border-white/25"
                     }`}
                   >
                     <div className="flex items-center justify-between mb-1">
@@ -311,7 +311,7 @@ export default function DownloadPage() {
                         className={`text-[9px] font-bold uppercase tracking-wider border rounded-full px-1.5 py-px ${
                           isLive
                             ? "text-emerald-300 bg-emerald-500/10 border-emerald-500/20"
-                            : "text-amber-300 bg-amber-500/10 border-amber-500/20"
+                            : "text-zinc-300 bg-white/10 border-white/20"
                         }`}
                       >
                         {isLive ? "Download" : "Check"}
@@ -319,7 +319,7 @@ export default function DownloadPage() {
                     </div>
                     <p className="text-[10px] text-zinc-500 leading-relaxed">{p.sublabel}</p>
                     {p.installFriction && (
-                      <p className="text-[9.5px] text-amber-200/70 mt-1 font-mono leading-snug">{p.installFriction}</p>
+                      <p className="text-[9.5px] text-zinc-200/70 mt-1 font-mono leading-snug">{p.installFriction}</p>
                     )}
                     {p.sizeBytes ? (
                       <p className="mt-1 text-[9.5px] font-mono text-zinc-500">
@@ -356,7 +356,7 @@ export default function DownloadPage() {
           <Reveal direction="up" blur>
             <p className="text-sm font-semibold text-violet-400 mb-4 tracking-wide uppercase">Your first five minutes</p>
             <h2 className="text-2xl sm:text-3xl font-medium tracking-[-0.03em] text-white max-w-2xl">What's intended to happen after you install.</h2>
-            <p className="mt-4 max-w-2xl text-xs leading-5 text-amber-200/80">
+            <p className="mt-4 max-w-2xl text-xs leading-5 text-zinc-200/80">
               A known issue can currently interrupt pairing after you approve it in the browser. If the desktop app doesn't pick up an approved session, this is that defect — not something wrong on your end. We're actively tracing it before promising it end-to-end.
             </p>
             <ol className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-5">
@@ -409,7 +409,7 @@ export default function DownloadPage() {
                   <div className="mt-5 rounded-lg bg-black/40 border border-white/[0.04] p-3 font-mono text-[10px] text-zinc-500 leading-relaxed">
                     <span className="text-zinc-600">$</span> <span className="text-white">terraform plan</span> <span className="text-violet-400"># sample preview</span><br />
                     <span className="text-emerald-400">✓</span> Artifact ready for human review<br />
-                    <span className="text-amber-400">!</span> Apply disabled by desktop safety contract<br />
+                    <span className="text-zinc-400">!</span> Apply disabled by desktop safety contract<br />
                     <span className="text-zinc-400">→</span> Record approval or return for revision
                   </div>
                 ),
@@ -422,9 +422,9 @@ export default function DownloadPage() {
                   <div className="mt-5 space-y-2">
                     {[
                       { label: "Desktop sign-in", status: "Browser approval", color: "text-emerald-400" },
-                      { label: "Session storage", status: "App data · keychain pending", color: "text-amber-400" },
+                      { label: "Session storage", status: "App data · keychain pending", color: "text-zinc-400" },
                       { label: "Cloud credentials", status: "Connector-dependent", color: "text-zinc-300" },
-                      { label: "Code signing", status: "See release manifest", color: "text-amber-400" },
+                      { label: "Code signing", status: "See release manifest", color: "text-zinc-400" },
                     ].map((row) => (
                       <div key={row.label} className="flex items-center justify-between text-[11px]">
                         <span className="text-zinc-500">{row.label}</span>
@@ -532,7 +532,7 @@ export default function DownloadPage() {
         <div className="max-w-[1400px] mx-auto">
           <Reveal direction="up" blur>
             <div className="mb-12">
-              <p className="text-sm font-semibold text-amber-400 mb-4 tracking-wide uppercase">
+              <p className="text-sm font-semibold text-zinc-400 mb-4 tracking-wide uppercase">
                 Platform Roadmap
               </p>
               <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-[-0.04em] mb-5">
@@ -547,26 +547,26 @@ export default function DownloadPage() {
               {
                 platform: "macOS",
                 status: "Manifest verified",
-                statusColor: "text-amber-400",
-                statusBg: "bg-amber-500/10 border-amber-500/20",
+                statusColor: "text-zinc-400",
+                statusBg: "bg-white/10 border-white/20",
                 detail: "Apple Silicon and Intel targets · installer and signing state shown in the live availability table above",
-                dot: "bg-amber-400",
+                dot: "bg-zinc-400",
               },
               {
                 platform: "Windows",
                 status: "Manifest verified",
-                statusColor: "text-amber-400",
-                statusBg: "bg-amber-500/10 border-amber-500/20",
+                statusColor: "text-zinc-400",
+                statusBg: "bg-white/10 border-white/20",
                 detail: "x64 CI target · .msi/.exe buttons appear only when those assets exist in the current release",
-                dot: "bg-amber-400",
+                dot: "bg-zinc-400",
               },
               {
                 platform: "Linux",
                 status: "Manifest verified",
-                statusColor: "text-amber-400",
-                statusBg: "bg-amber-500/10 border-amber-500/20",
+                statusColor: "text-zinc-400",
+                statusBg: "bg-white/10 border-white/20",
                 detail: "x64 CI target · AppImage, .deb, and .rpm availability comes from the current release manifest",
-                dot: "bg-amber-400",
+                dot: "bg-zinc-400",
               },
               {
                 platform: "Updates",
@@ -600,7 +600,7 @@ export default function DownloadPage() {
       {/* Final CTA ────────────────────────────────────────────────── */}
       <section className="py-20 sm:py-28 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
         <div className="absolute inset-0 diagonal-streak opacity-20 pointer-events-none" aria-hidden />
-        <div className="hidden md:block absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[400px] rounded-full bg-amber-500/[0.06] blur-[120px] pointer-events-none" aria-hidden />
+        <div className="hidden md:block absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[400px] rounded-full bg-white/[0.06] blur-[120px] pointer-events-none" aria-hidden />
 
         <div className="max-w-3xl mx-auto text-center relative">
           <Reveal direction="up" blur>

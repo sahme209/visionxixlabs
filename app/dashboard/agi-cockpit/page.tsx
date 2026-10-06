@@ -84,7 +84,7 @@ type CockpitBody = { ok: true; data: CockpitData } | { ok: false; error: string;
 const SEVERITY_CLASS: Record<string, string> = {
   critical: "bg-rose-500/25 text-rose-200 border-rose-500/40",
   high:     "bg-rose-500/15 text-rose-300 border-rose-500/25",
-  medium:   "bg-amber-500/15 text-amber-300 border-amber-500/25",
+  medium:   "bg-white/15 text-zinc-300 border-white/25",
   low:      "bg-emerald-500/15 text-emerald-300 border-emerald-500/25",
   none:     "bg-emerald-500/15 text-emerald-300 border-emerald-500/25",
   unknown:  "bg-zinc-700/40 text-zinc-400 border-zinc-700/40",
@@ -93,7 +93,7 @@ const SEVERITY_CLASS: Record<string, string> = {
 const HEADLINE_TONE: Record<string, string> = {
   critical: "border-rose-500/40 bg-rose-500/[0.05]",
   high:     "border-rose-500/30 bg-rose-500/[0.04]",
-  medium:   "border-amber-500/30 bg-amber-500/[0.04]",
+  medium:   "border-white/30 bg-white/[0.04]",
   low:      "border-emerald-500/30 bg-emerald-500/[0.04]",
   none:     "border-emerald-500/30 bg-emerald-500/[0.04]",
 };
@@ -198,16 +198,16 @@ export default function AgiCockpitPage() {
         <div role="alert" aria-live="assertive" className="rounded-2xl border border-rose-500/[0.18] bg-rose-500/[0.04] p-5 mb-6 text-[13px] text-zinc-300">{networkError}</div>
       )}
       {!loading && errorBody?.error === "migration_pending" && (
-        <div role="alert" aria-live="assertive" className="rounded-2xl border border-amber-500/[0.18] bg-amber-500/[0.04] p-5 mb-6">
+        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/[0.18] bg-white/[0.04] p-5 mb-6">
           <div className="flex items-center gap-2 mb-1">
-            <ExclamationTriangleIcon className="h-4 w-4 text-amber-300" />
-            <p className="text-[12px] font-semibold text-amber-200">Schema migration pending</p>
+            <ExclamationTriangleIcon className="h-4 w-4 text-zinc-300" />
+            <p className="text-[12px] font-semibold text-zinc-200">Schema migration pending</p>
           </div>
           <p className="text-[12.5px] text-zinc-300">{errorBody.hint}</p>
         </div>
       )}
       {!loading && errorBody?.error === "auth_required" && (
-        <div role="alert" aria-live="assertive" className="rounded-2xl border border-amber-500/[0.18] bg-amber-500/[0.04] p-5 mb-6 text-[13px] text-zinc-300">
+        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/[0.18] bg-white/[0.04] p-5 mb-6 text-[13px] text-zinc-300">
           Sign in required.
         </div>
       )}
@@ -371,7 +371,7 @@ function EngineCard({ engine, icon, href }: { engine: EngineTelemetry; icon: Rea
 function Metric({ label, value, tone }: { label: string; value: number; tone: "emerald" | "amber" | "rose" | "zinc" }) {
   const cls = {
     emerald: "text-emerald-300",
-    amber:   "text-amber-300",
+    amber:   "text-zinc-300",
     rose:    "text-rose-300",
     zinc:    "text-zinc-300",
   }[tone];
@@ -388,7 +388,7 @@ function AvailabilityStrip({ snapshot }: { snapshot: AvailSnapshot }) {
     snapshot.aiAvailabilityPct >= 80
       ? "border-emerald-500/[0.20] bg-emerald-500/[0.04]"
       : snapshot.aiAvailabilityPct >= 50
-      ? "border-amber-500/[0.20] bg-amber-500/[0.04]"
+      ? "border-white/[0.20] bg-white/[0.04]"
       : "border-rose-500/[0.20] bg-rose-500/[0.04]";
   return (
     <Link href="/dashboard/agi-memory" className="block mb-6">
@@ -399,7 +399,7 @@ function AvailabilityStrip({ snapshot }: { snapshot: AvailSnapshot }) {
           <div className="flex items-center gap-2 ml-auto text-[11px] font-mono">
             <span className="text-violet-300">{snapshot.aiGenerated} AI</span>
             <span className="text-zinc-500">·</span>
-            <span className="text-amber-300">{snapshot.fallbackRules} fallback</span>
+            <span className="text-zinc-300">{snapshot.fallbackRules} fallback</span>
             <span className="text-zinc-500">·</span>
             <span className="text-rose-300">{snapshot.errored} err</span>
             <span className="text-zinc-500">·</span>

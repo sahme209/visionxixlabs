@@ -24,7 +24,7 @@ interface Entry {
 const OUTCOME_TONE: Record<string, string> = {
   success: "text-emerald-300",
   failure: "text-rose-300",
-  blocked: "text-amber-300",
+  blocked: "text-zinc-300",
 };
 
 function timeAgo(iso: string): string {

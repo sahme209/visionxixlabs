@@ -108,12 +108,12 @@ export default async function EditEngineerPolicyPage({ params }: { params: Promi
         />
       </section>
 
-      <section className="rounded-2xl border border-amber-500/15 bg-amber-500/[0.04] p-5">
+      <section className="rounded-2xl border border-white/15 bg-white/[0.04] p-5">
         <header className="flex items-center gap-2 mb-2">
-          <ExclamationTriangleIcon className="h-4 w-4 text-amber-300" />
-          <p className="text-[10px] font-semibold uppercase tracking-widest text-amber-300">What happens when you save</p>
+          <ExclamationTriangleIcon className="h-4 w-4 text-zinc-300" />
+          <p className="text-[10px] font-semibold uppercase tracking-widest text-zinc-300">What happens when you save</p>
         </header>
-        <ul className="text-[12px] text-amber-100/85 leading-relaxed list-disc list-inside marker:text-amber-400/70">
+        <ul className="text-[12px] text-zinc-100/85 leading-relaxed list-disc list-inside marker:text-white/70">
           <li>The runtime gate immediately applies the new rule to every future action by this engineer.</li>
           <li>A `engineer.policy_override_updated` audit row is written with your user id + timestamp.</li>
           <li>Already-staged approval requests keep their original required-approver count.</li>

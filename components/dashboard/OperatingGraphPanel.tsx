@@ -71,7 +71,7 @@ interface GraphLite {
 const STATUS_VISUAL: Record<NodeStatus, { pill: string; icon: typeof CheckCircleIcon; label: string }> = {
   healthy:     { pill: "bg-emerald-500/15 text-emerald-300",  icon: CheckCircleIcon,         label: "healthy"     },
   in_progress: { pill: "bg-cyan-500/15 text-cyan-300",        icon: ClockIcon,               label: "in progress" },
-  preview:     { pill: "bg-amber-500/15 text-amber-300",      icon: ExclamationTriangleIcon, label: "preview"     },
+  preview:     { pill: "bg-white/15 text-zinc-300",      icon: ExclamationTriangleIcon, label: "preview"     },
   blocked:     { pill: "bg-rose-500/15 text-rose-300",        icon: XCircleIcon,             label: "blocked"     },
   disabled:    { pill: "bg-zinc-700/40 text-zinc-300",        icon: MinusCircleIcon,         label: "disabled"    },
   unknown:     { pill: "bg-zinc-700/40 text-zinc-300",        icon: MinusCircleIcon,         label: "unknown"     },
@@ -131,7 +131,7 @@ export function OperatingGraphPanel({
         <p className="text-[11px] font-mono text-zinc-500 uppercase tracking-[0.18em]">// composing graph…</p>
       )}
       {!loading && error && (
-        <p className="text-[11.5px] text-amber-200 font-mono">// {error}</p>
+        <p className="text-[11.5px] text-zinc-200 font-mono">// {error}</p>
       )}
       {!loading && !error && graph && (
         <>
@@ -195,7 +195,7 @@ export function OperatingGraphPanel({
 function Stat({ label, value, tone }: { label: string; value: number; tone: "emerald" | "amber" | "rose" | "zinc" }) {
   const cls = {
     emerald: "border-emerald-500/[0.18] bg-emerald-500/[0.03] text-emerald-200",
-    amber:   "border-amber-500/[0.18] bg-amber-500/[0.03] text-amber-200",
+    amber:   "border-white/[0.18] bg-white/[0.03] text-zinc-200",
     rose:    "border-rose-500/[0.18] bg-rose-500/[0.03] text-rose-200",
     zinc:    "border-white/[0.06] bg-white/[0.02] text-zinc-200",
   }[tone];

@@ -77,7 +77,7 @@ export default function SubToolsCenterPage() {
             <span className="rounded-full border border-emerald-500/30 bg-emerald-500/10 text-emerald-300 px-2.5 py-1 text-[11px] font-mono">
               {counts.active} active
             </span>
-            <span className="rounded-full border border-amber-500/30 bg-amber-500/10 text-amber-300 px-2.5 py-1 text-[11px] font-mono">
+            <span className="rounded-full border border-white/30 bg-white/10 text-zinc-300 px-2.5 py-1 text-[11px] font-mono">
               {counts.partial} partial
             </span>
             <span className="rounded-full border border-zinc-500/30 bg-zinc-500/10 text-zinc-400 px-2.5 py-1 text-[11px] font-mono">
@@ -145,7 +145,7 @@ export default function SubToolsCenterPage() {
                         <ArrowRightIcon className="h-3 w-3" />
                       </span>
                       {s.notCoveredYet ? (
-                        <span className="text-[10px] font-mono uppercase tracking-widest text-amber-400/70">scope known</span>
+                        <span className="text-[10px] font-mono uppercase tracking-widest text-white/70">scope known</span>
                       ) : null}
                     </div>
                   </Link>

@@ -54,7 +54,7 @@ export function ExecuteApprovalButton({ approvalId, snapshotStatus, executionSta
   }
   if (executionStatus === "running") {
     return (
-      <span className="inline-flex items-center gap-1 text-[10.5px] font-mono text-amber-300">
+      <span className="inline-flex items-center gap-1 text-[10.5px] font-mono text-zinc-300">
         <ArrowPathIcon className="h-3 w-3 animate-spin" />
         Execution in flight…
       </span>
@@ -86,7 +86,7 @@ export function ExecuteApprovalButton({ approvalId, snapshotStatus, executionSta
       <button
         onClick={execute}
         disabled={state.kind === "running"}
-        className="inline-flex items-center gap-2 text-[12px] font-medium px-3 py-1.5 rounded-lg bg-amber-500/15 text-amber-100 border border-amber-500/40 hover:bg-amber-500/25 transition disabled:opacity-50"
+        className="inline-flex items-center gap-2 text-[12px] font-medium px-3 py-1.5 rounded-lg bg-white/15 text-zinc-100 border border-white/40 hover:bg-white/25 transition disabled:opacity-50"
       >
         {state.kind === "running" ? (
           <>

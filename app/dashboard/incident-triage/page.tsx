@@ -52,7 +52,7 @@ type ListBody = { ok: true; data: ListData } | { ok: false; error: string; hint?
 const PRIORITY_CLASS: Record<Priority, string> = {
   P0:      "bg-rose-500/25 text-rose-200 border-rose-500/40",
   P1:      "bg-rose-500/15 text-rose-300 border-rose-500/25",
-  P2:      "bg-amber-500/15 text-amber-300 border-amber-500/25",
+  P2:      "bg-white/15 text-zinc-300 border-white/25",
   P3:      "bg-emerald-500/15 text-emerald-300 border-emerald-500/25",
   unknown: "bg-zinc-700/40 text-zinc-400 border-zinc-700/40",
 };
@@ -60,7 +60,7 @@ const PRIORITY_CLASS: Record<Priority, string> = {
 const DECISION_CLASS: Record<Decision, string> = {
   pending:    "bg-violet-500/15 text-violet-300 border-white/[0.10]",
   accepted:   "bg-emerald-500/15 text-emerald-300 border-emerald-500/25",
-  overridden: "bg-amber-500/15 text-amber-300 border-amber-500/25",
+  overridden: "bg-white/15 text-zinc-300 border-white/25",
   dismissed:  "bg-zinc-700/40 text-zinc-300 border-zinc-700/40",
   unknown:    "bg-zinc-700/40 text-zinc-400 border-zinc-700/40",
 };
@@ -121,16 +121,16 @@ export default function IncidentTriagePage() {
         <div role="alert" aria-live="assertive" className="rounded-2xl border border-rose-500/[0.18] bg-rose-500/[0.04] p-5 mb-6 text-[13px] text-zinc-300">{networkError}</div>
       )}
       {!loading && errorBody?.error === "migration_pending" && (
-        <div role="alert" aria-live="assertive" className="rounded-2xl border border-amber-500/[0.18] bg-amber-500/[0.04] p-5 mb-6">
+        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/[0.18] bg-white/[0.04] p-5 mb-6">
           <div className="flex items-center gap-2 mb-1">
-            <ExclamationTriangleIcon className="h-4 w-4 text-amber-300" />
-            <p className="text-[12px] font-semibold text-amber-200">Schema migration pending</p>
+            <ExclamationTriangleIcon className="h-4 w-4 text-zinc-300" />
+            <p className="text-[12px] font-semibold text-zinc-200">Schema migration pending</p>
           </div>
           <p className="text-[12.5px] text-zinc-300">{errorBody.hint}</p>
         </div>
       )}
       {!loading && errorBody?.error === "auth_required" && (
-        <div role="alert" aria-live="assertive" className="rounded-2xl border border-amber-500/[0.18] bg-amber-500/[0.04] p-5 mb-6 text-[13px] text-zinc-300">Sign in required.</div>
+        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/[0.18] bg-white/[0.04] p-5 mb-6 text-[13px] text-zinc-300">Sign in required.</div>
       )}
 
       {data && (
@@ -208,7 +208,7 @@ function TriageCard({ triage, onChanged }: { triage: TriageView; onChanged: () =
       </div>
       <AiTriageRationaleCard triageId={triage.id} />
       {triage.overridePriority && (
-        <p className="text-[11.5px] font-mono text-amber-300 mb-2">↳ operator overrode → {triage.overridePriority}</p>
+        <p className="text-[11.5px] font-mono text-zinc-300 mb-2">↳ operator overrode → {triage.overridePriority}</p>
       )}
       {triage.decisionNote && (
         <p className="text-[11.5px] font-mono text-zinc-400 mb-2 italic">↳ note: {triage.decisionNote}</p>
@@ -241,7 +241,7 @@ function TriageCard({ triage, onChanged }: { triage: TriageView; onChanged: () =
             {busy === "accept" ? "…" : "Accept"}
           </button>
           <button type="button" onClick={() => decide("override")} disabled={busy !== null}
-            className="px-2 py-1 rounded border border-amber-500/30 bg-amber-500/[0.08] text-amber-200 hover:bg-amber-500/[0.16] disabled:opacity-50 disabled:cursor-wait">
+            className="px-2 py-1 rounded border border-white/30 bg-white/[0.08] text-zinc-200 hover:bg-white/[0.16] disabled:opacity-50 disabled:cursor-wait">
             {busy === "override" ? "…" : `Override → ${overrideTo}`}
           </button>
           <button type="button" onClick={() => decide("dismiss")} disabled={busy !== null}
@@ -271,7 +271,7 @@ function Info({ label, value, icon, mono }: { label: string; value: string; icon
 function Stat({ icon: Icon, label, value, tone }: { icon: typeof ExclamationTriangleIcon; label: string; value: string; tone: "emerald" | "amber" | "rose" | "zinc" }) {
   const cls = {
     emerald: "border-emerald-500/[0.18] bg-emerald-500/[0.03] text-emerald-200",
-    amber:   "border-amber-500/[0.18] bg-amber-500/[0.03] text-amber-200",
+    amber:   "border-white/[0.18] bg-white/[0.03] text-zinc-200",
     rose:    "border-rose-500/[0.18] bg-rose-500/[0.03] text-rose-200",
     zinc:    "border-white/[0.06] bg-white/[0.02] text-zinc-200",
   }[tone];
@@ -415,7 +415,7 @@ type TriageEnrichBody = { ok: true; data: { enrichment: TriageEnrichmentView | n
 
 const TRIAGE_OUTCOME_BADGE: Record<string, string> = {
   ai_generated:    "bg-violet-500/15 text-violet-300 border-white/[0.10]",
-  fallback_rules:  "bg-amber-500/15 text-amber-300 border-amber-500/25",
+  fallback_rules:  "bg-white/15 text-zinc-300 border-white/25",
   error:           "bg-rose-500/15 text-rose-300 border-rose-500/25",
 };
 
@@ -527,7 +527,7 @@ function AiTriageRationaleCard({ triageId }: { triageId: string }) {
         </div>
       </div>
       {enrichment.outcome !== "ai_generated" && enrichment.errorMessage && (
-        <p className="mt-2 text-[10.5px] font-mono text-amber-300">↳ {enrichment.errorMessage}</p>
+        <p className="mt-2 text-[10.5px] font-mono text-zinc-300">↳ {enrichment.errorMessage}</p>
       )}
       {err && <p className="mt-1.5 text-[10.5px] font-mono text-rose-300">✗ {err}</p>}
     </div>

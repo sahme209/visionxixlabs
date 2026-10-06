@@ -247,14 +247,14 @@ export function GcpDeployConnect({
             autoComplete="off"
           />
           {pasteHint && (
-            <p className="mt-2 text-[12px] text-amber-300/90">{pasteHint}</p>
+            <p className="mt-2 text-[12px] text-zinc-300/90">{pasteHint}</p>
           )}
           {(() => {
             const v = looksParseable(keyJson);
             if (v.ok) return <p className="mt-2 text-[12px] text-emerald-300/90">✓ JSON detected — Finish connection will validate against Google Cloud Resource Manager.</p>;
-            if (v.reason === "command_not_output") return <p className="mt-2 text-[12px] text-amber-300/90">That&apos;s the gcloud command, not its output. Run it in Cloud Shell, then copy the JSON block it prints.</p>;
-            if (v.reason === "braces_but_unparseable") return <p className="mt-2 text-[12px] text-amber-300/90">Found {"{ }"} braces but couldn&apos;t parse the JSON. Make sure the closing <code className="font-mono">{"}"}</code> is included.</p>;
-            if (v.reason === "no_braces" && keyJson.trim()) return <p className="mt-2 text-[12px] text-amber-300/90">No JSON found yet. Paste the Cloud Shell output (the block wrapped in <code className="font-mono">{"{ }"}</code>).</p>;
+            if (v.reason === "command_not_output") return <p className="mt-2 text-[12px] text-zinc-300/90">That&apos;s the gcloud command, not its output. Run it in Cloud Shell, then copy the JSON block it prints.</p>;
+            if (v.reason === "braces_but_unparseable") return <p className="mt-2 text-[12px] text-zinc-300/90">Found {"{ }"} braces but couldn&apos;t parse the JSON. Make sure the closing <code className="font-mono">{"}"}</code> is included.</p>;
+            if (v.reason === "no_braces" && keyJson.trim()) return <p className="mt-2 text-[12px] text-zinc-300/90">No JSON found yet. Paste the Cloud Shell output (the block wrapped in <code className="font-mono">{"{ }"}</code>).</p>;
             return null;
           })()}
 
@@ -269,7 +269,7 @@ export function GcpDeployConnect({
               <span aria-hidden className="opacity-70">→</span>
             </button>
             {!keyJson.trim() && (
-              <span className="text-[12px] text-amber-300/85">
+              <span className="text-[12px] text-zinc-300/85">
                 Paste your JSON above to enable the button.
               </span>
             )}
@@ -286,7 +286,7 @@ export function GcpDeployConnect({
           </div>
 
           {result?.ok === false && (
-            <div className="mt-4 rounded-xl border border-amber-500/25 bg-amber-500/[0.04] p-3 text-[12.5px] text-amber-100/90 leading-relaxed">
+            <div className="mt-4 rounded-xl border border-white/25 bg-white/[0.04] p-3 text-[12.5px] text-zinc-100/90 leading-relaxed">
               {result.hint ?? "Couldn't validate that JSON."}
             </div>
           )}
@@ -364,14 +364,14 @@ export function GcpDeployConnect({
                 autoComplete="off"
               />
               {pasteHint && (
-                <p className="text-[12px] text-amber-300/90">{pasteHint}</p>
+                <p className="text-[12px] text-zinc-300/90">{pasteHint}</p>
               )}
               {(() => {
                 const v = looksParseable(keyJson);
                 if (v.ok) return <p className="text-[12px] text-emerald-300/90">✓ JSON detected — Finish connection will validate against Google Cloud Resource Manager.</p>;
-                if (v.reason === "command_not_output") return <p className="text-[12px] text-amber-300/90">That&apos;s the gcloud command, not its output. Run it in Cloud Shell, then copy the JSON block it prints.</p>;
-                if (v.reason === "braces_but_unparseable") return <p className="text-[12px] text-amber-300/90">Found {"{ }"} braces but couldn&apos;t parse the JSON. Make sure the closing <code className="font-mono">{"}"}</code> is included.</p>;
-                if (v.reason === "no_braces" && keyJson.trim()) return <p className="text-[12px] text-amber-300/90">No JSON found yet. Paste the Cloud Shell output (the block wrapped in <code className="font-mono">{"{ }"}</code>).</p>;
+                if (v.reason === "command_not_output") return <p className="text-[12px] text-zinc-300/90">That&apos;s the gcloud command, not its output. Run it in Cloud Shell, then copy the JSON block it prints.</p>;
+                if (v.reason === "braces_but_unparseable") return <p className="text-[12px] text-zinc-300/90">Found {"{ }"} braces but couldn&apos;t parse the JSON. Make sure the closing <code className="font-mono">{"}"}</code> is included.</p>;
+                if (v.reason === "no_braces" && keyJson.trim()) return <p className="text-[12px] text-zinc-300/90">No JSON found yet. Paste the Cloud Shell output (the block wrapped in <code className="font-mono">{"{ }"}</code>).</p>;
                 return null;
               })()}
               <div className="flex items-center gap-3 flex-wrap">
@@ -385,14 +385,14 @@ export function GcpDeployConnect({
                   <span aria-hidden className="opacity-70">→</span>
                 </button>
                 {!keyJson.trim() && (
-                  <span className="text-[12px] text-amber-300/85">
+                  <span className="text-[12px] text-zinc-300/85">
                     Paste your JSON above to enable the button.
                   </span>
                 )}
               </div>
 
               {result?.ok === false && (
-                <div className="mt-1 rounded-xl border border-amber-500/25 bg-amber-500/[0.04] p-3 text-[12.5px] text-amber-100/90 leading-relaxed">
+                <div className="mt-1 rounded-xl border border-white/25 bg-white/[0.04] p-3 text-[12.5px] text-zinc-100/90 leading-relaxed">
                   {result.hint ?? "Couldn't validate that JSON."}
                 </div>
               )}
@@ -468,7 +468,7 @@ type Tone = "emerald" | "indigo" | "amber" | "neutral";
 const TONES: Record<Tone, { border: string; bg: string; kicker: string }> = {
   emerald: { border: "border-emerald-500/25", bg: "bg-emerald-500/[0.04]", kicker: "text-emerald-300" },
   indigo:  { border: "border-indigo-500/25",  bg: "bg-indigo-500/[0.04]",  kicker: "text-indigo-300" },
-  amber:   { border: "border-amber-500/25",   bg: "bg-amber-500/[0.04]",   kicker: "text-amber-300" },
+  amber:   { border: "border-white/25",   bg: "bg-white/[0.04]",   kicker: "text-zinc-300" },
   neutral: { border: "border-zinc-800",       bg: "bg-zinc-900/40",        kicker: "text-zinc-400" },
 };
 

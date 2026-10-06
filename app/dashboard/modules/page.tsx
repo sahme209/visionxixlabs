@@ -215,7 +215,7 @@ const MODULES: readonly PlatformModule[] = [
 
 const MATURITY_STYLE: Record<ModuleMaturity, { tone: string; label: string }> = {
   active:  { tone: "border-emerald-500/30 bg-emerald-500/10 text-emerald-300", label: "Active" },
-  partial: { tone: "border-amber-500/30   bg-amber-500/10   text-amber-300",  label: "Partial" },
+  partial: { tone: "border-white/30   bg-white/10   text-zinc-300",  label: "Partial" },
   planned: { tone: "border-zinc-500/30    bg-zinc-500/10    text-zinc-400",   label: "Planned" },
 };
 
@@ -260,7 +260,7 @@ export default function ModulesPage() {
           <span className="rounded-full border border-emerald-500/30 bg-emerald-500/10 text-emerald-300 px-2.5 py-1">
             {counts.active} active
           </span>
-          <span className="rounded-full border border-amber-500/30 bg-amber-500/10 text-amber-300 px-2.5 py-1">
+          <span className="rounded-full border border-white/30 bg-white/10 text-zinc-300 px-2.5 py-1">
             {counts.partial} partial
           </span>
           <span className="rounded-full border border-zinc-500/30 bg-zinc-500/10 text-zinc-400 px-2.5 py-1">
@@ -352,8 +352,8 @@ export default function ModulesPage() {
               </div>
 
               {m.notCoveredYet ? (
-                <p className="mt-4 text-[11.5px] text-amber-300/80 leading-relaxed border-l-2 border-amber-500/30 pl-3">
-                  <span className="font-mono uppercase tracking-widest text-[9.5px] text-amber-400/80">
+                <p className="mt-4 text-[11.5px] text-zinc-300/80 leading-relaxed border-l-2 border-white/30 pl-3">
+                  <span className="font-mono uppercase tracking-widest text-[9.5px] text-white/80">
                     not covered yet
                   </span>
                   <br />

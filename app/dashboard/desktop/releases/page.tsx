@@ -75,14 +75,14 @@ interface ReportLite {
 const GATE_VISUAL: Record<GateStatus, { pill: string; icon: typeof CheckCircleIcon; label: string }> = {
   passing: { pill: "bg-emerald-500/15 text-emerald-300",  icon: CheckCircleIcon,         label: "passing" },
   partial: { pill: "bg-cyan-500/15 text-cyan-300",        icon: ClockIcon,               label: "partial" },
-  preview: { pill: "bg-amber-500/15 text-amber-300",      icon: ExclamationTriangleIcon, label: "preview" },
+  preview: { pill: "bg-white/15 text-zinc-300",      icon: ExclamationTriangleIcon, label: "preview" },
   blocked: { pill: "bg-rose-500/15 text-rose-300",        icon: XCircleIcon,             label: "blocked" },
   planned: { pill: "bg-zinc-700/40 text-zinc-300",        icon: MinusCircleIcon,         label: "planned" },
 };
 
 const PLATFORM_STATE_VISUAL: Record<PlatformState, { border: string; bg: string; pill: string }> = {
   live:       { border: "border-emerald-500/[0.22]", bg: "bg-emerald-500/[0.04]", pill: "bg-emerald-500/15 text-emerald-300" },
-  preview:    { border: "border-amber-500/[0.18]",   bg: "bg-amber-500/[0.04]",   pill: "bg-amber-500/15 text-amber-300" },
+  preview:    { border: "border-white/[0.18]",   bg: "bg-white/[0.04]",   pill: "bg-white/15 text-zinc-300" },
   planned:    { border: "border-zinc-700/30",        bg: "bg-white/[0.02]",       pill: "bg-zinc-700/40 text-zinc-300" },
   blocked:    { border: "border-rose-500/[0.22]",    bg: "bg-rose-500/[0.04]",    pill: "bg-rose-500/15 text-rose-300" },
   deprecated: { border: "border-zinc-700/30",        bg: "bg-white/[0.02]",       pill: "bg-zinc-700/40 text-zinc-300" },
@@ -170,8 +170,8 @@ export default function DesktopReleasesPage() {
         </div>
       )}
       {!loading && error && (
-        <div role="alert" aria-live="assertive" className="rounded-2xl border border-amber-500/[0.18] bg-amber-500/[0.04] p-5 mb-6">
-          <p className="text-[11px] font-mono text-amber-300/80 uppercase tracking-[0.18em] mb-1">// release center unavailable</p>
+        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/[0.18] bg-white/[0.04] p-5 mb-6">
+          <p className="text-[11px] font-mono text-zinc-300/80 uppercase tracking-[0.18em] mb-1">// release center unavailable</p>
           <p className="text-[13px] text-zinc-300">{error}</p>
         </div>
       )}
@@ -241,7 +241,7 @@ export default function DesktopReleasesPage() {
                             </div>
                             <p className="text-[11px] text-zinc-400 leading-snug">{g.reason}</p>
                             {g.nextFix && (
-                              <p className="text-[10px] font-mono text-amber-300/80 mt-0.5">next: {g.nextFix}</p>
+                              <p className="text-[10px] font-mono text-zinc-300/80 mt-0.5">next: {g.nextFix}</p>
                             )}
                           </div>
                         </div>
@@ -270,7 +270,7 @@ export default function DesktopReleasesPage() {
                       </div>
                       <p className="text-[11px] text-zinc-400 leading-snug">{g.reason}</p>
                       {g.nextFix && (
-                        <p className="text-[10px] font-mono text-amber-300/80 mt-0.5">next: {g.nextFix}</p>
+                        <p className="text-[10px] font-mono text-zinc-300/80 mt-0.5">next: {g.nextFix}</p>
                       )}
                       <p className="text-[9px] font-mono text-zinc-500 mt-0.5">evidence: {g.evidenceRef}</p>
                     </div>
@@ -302,7 +302,7 @@ export default function DesktopReleasesPage() {
 function Stat({ label, value, tone }: { label: string; value: string; tone: "emerald" | "amber" | "rose" | "zinc" }) {
   const cls = {
     emerald: "border-emerald-500/[0.18] bg-emerald-500/[0.03] text-emerald-200",
-    amber:   "border-amber-500/[0.18] bg-amber-500/[0.03] text-amber-200",
+    amber:   "border-white/[0.18] bg-white/[0.03] text-zinc-200",
     rose:    "border-rose-500/[0.18] bg-rose-500/[0.03] text-rose-200",
     zinc:    "border-white/[0.06] bg-white/[0.02] text-zinc-200",
   }[tone];

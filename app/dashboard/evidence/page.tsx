@@ -47,8 +47,8 @@ const SOURCE_TONE: Record<string, string> = {
   prisma:        "bg-emerald-500/15 text-emerald-300",
   audit:         "bg-emerald-500/15 text-emerald-300",
   validation:    "bg-cyan-500/15 text-cyan-300",
-  self_attested: "bg-amber-500/15 text-amber-300",
-  manual:        "bg-amber-500/15 text-amber-300",
+  self_attested: "bg-white/15 text-zinc-300",
+  manual:        "bg-white/15 text-zinc-300",
 };
 
 export default function EvidencePage() {
@@ -122,7 +122,7 @@ export default function EvidencePage() {
             <div className="w-px h-9 bg-white/[0.08]" />
             <Stat label="Verified" value={String(data?.summary.verified ?? 0)} tone="text-emerald-300" />
             <div className="w-px h-9 bg-white/[0.08]" />
-            <Stat label="Coverage" value={`${coveragePct}%`} tone={coveragePct >= 60 ? "text-emerald-300" : coveragePct >= 30 ? "text-amber-300" : "text-rose-300"} />
+            <Stat label="Coverage" value={`${coveragePct}%`} tone={coveragePct >= 60 ? "text-emerald-300" : coveragePct >= 30 ? "text-zinc-300" : "text-rose-300"} />
           </div>
         </div>
       </div>
@@ -133,8 +133,8 @@ export default function EvidencePage() {
         </div>
       )}
       {!loading && error && (
-        <div role="alert" aria-live="assertive" className="rounded-2xl border border-amber-500/[0.18] bg-amber-500/[0.04] p-5 mb-6">
-          <p className="text-[11px] font-mono text-amber-300/80 uppercase tracking-[0.18em] mb-1">// evidence unavailable</p>
+        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/[0.18] bg-white/[0.04] p-5 mb-6">
+          <p className="text-[11px] font-mono text-zinc-300/80 uppercase tracking-[0.18em] mb-1">// evidence unavailable</p>
           <p className="text-[13px] text-zinc-300">{error}</p>
         </div>
       )}
@@ -179,7 +179,7 @@ export default function EvidencePage() {
                 const tone = r.verified ? "emerald" : r.manual ? "amber" : r.selfAttested ? "cyan" : "zinc";
                 const dot =
                   tone === "emerald" ? "bg-emerald-400" :
-                  tone === "amber"   ? "bg-amber-400"   :
+                  tone === "amber"   ? "bg-zinc-400"   :
                   tone === "cyan"    ? "bg-cyan-400"    :
                                        "bg-zinc-500";
                 const sourceClass = SOURCE_TONE[r.source] ?? "bg-zinc-700/40 text-zinc-300";
@@ -199,7 +199,7 @@ export default function EvidencePage() {
                           {r.kind.replace(/_/g, " ")} · collected {new Date(r.collectedAt).toLocaleString()}
                         </p>
                         {r.limitations && r.limitations.length > 0 && (
-                          <p className="text-[11px] text-amber-300/80 leading-snug mt-1">{r.limitations[0]}</p>
+                          <p className="text-[11px] text-zinc-300/80 leading-snug mt-1">{r.limitations[0]}</p>
                         )}
                       </div>
                     </div>
@@ -217,13 +217,13 @@ export default function EvidencePage() {
       )}
 
       {data && data.records.length === 0 && (
-        <section className="mb-8 rounded-2xl border border-amber-500/[0.18] bg-amber-500/[0.04] p-6">
-          <p className="text-[11px] font-mono text-amber-300/80 uppercase tracking-[0.18em] mb-2">// no evidence collected yet</p>
+        <section className="mb-8 rounded-2xl border border-white/[0.18] bg-white/[0.04] p-6">
+          <p className="text-[11px] font-mono text-zinc-300/80 uppercase tracking-[0.18em] mb-2">// no evidence collected yet</p>
           <p className="text-[14px] text-zinc-200 font-semibold mb-1">No records to inspect.</p>
           <p className="text-[12px] text-zinc-400 leading-relaxed">
             Evidence is collected when scans run, approvals are decided, validation passes, and security reviews complete. Connect at least one source to start populating the audit trail.
           </p>
-          <Link href="/dashboard/sources" className="inline-flex items-center gap-1.5 mt-3 text-[12px] font-medium text-amber-200 hover:text-amber-100 border border-amber-500/30 bg-amber-500/[0.06] rounded-md px-3 py-1.5 transition-colors">
+          <Link href="/dashboard/sources" className="inline-flex items-center gap-1.5 mt-3 text-[12px] font-medium text-zinc-200 hover:text-zinc-100 border border-white/30 bg-white/[0.06] rounded-md px-3 py-1.5 transition-colors">
             Open sources <ArrowRightIcon className="h-3 w-3" />
           </Link>
         </section>
@@ -277,7 +277,7 @@ function SummaryCard({ label, value, tone, detail }: { label: string; value: num
   const toneClasses: Record<string, { border: string; bg: string; text: string }> = {
     emerald: { border: "border-emerald-500/[0.22]", bg: "bg-emerald-500/[0.04]", text: "text-emerald-300" },
     cyan:    { border: "border-cyan-500/[0.22]",    bg: "bg-cyan-500/[0.04]",    text: "text-cyan-300"    },
-    amber:   { border: "border-amber-500/[0.22]",   bg: "bg-amber-500/[0.04]",   text: "text-amber-300"   },
+    amber:   { border: "border-white/[0.22]",   bg: "bg-white/[0.04]",   text: "text-zinc-300"   },
     rose:    { border: "border-rose-500/[0.22]",    bg: "bg-rose-500/[0.04]",    text: "text-rose-300"    },
   };
   const t = toneClasses[tone];

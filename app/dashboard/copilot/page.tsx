@@ -295,12 +295,12 @@ function TurnView({ turn }: { turn: Turn }) {
             {/* Risk + confidence pill row */}
             <div className="flex items-center gap-2 flex-wrap mb-3 text-[10px] font-semibold uppercase tracking-wider">
               <span className="text-zinc-500">confidence</span>
-              <span className={`${res.confidence >= 0.8 ? "text-emerald-400" : res.confidence >= 0.6 ? "text-amber-400" : "text-red-400"}`}>{Math.round(res.confidence * 100)}%</span>
+              <span className={`${res.confidence >= 0.8 ? "text-emerald-400" : res.confidence >= 0.6 ? "text-zinc-400" : "text-red-400"}`}>{Math.round(res.confidence * 100)}%</span>
               {res.risk && (
                 <>
                   <span className="text-zinc-700">·</span>
                   <span className="text-zinc-500">risk</span>
-                  <span className={`${res.risk === "high" ? "text-red-400" : res.risk === "medium" ? "text-amber-400" : "text-emerald-400"}`}>{res.risk}</span>
+                  <span className={`${res.risk === "high" ? "text-red-400" : res.risk === "medium" ? "text-zinc-400" : "text-emerald-400"}`}>{res.risk}</span>
                 </>
               )}
               <span className="text-zinc-700">·</span>
@@ -326,9 +326,9 @@ function TurnView({ turn }: { turn: Turn }) {
 
             {/* Safety caveats */}
             {res.safety && res.safety.length > 0 && (
-              <div className="rounded-lg bg-amber-500/[0.04] border border-amber-500/15 px-3 py-2 mb-2">
+              <div className="rounded-lg bg-white/[0.04] border border-white/15 px-3 py-2 mb-2">
                 {res.safety.map((s) => (
-                  <p key={s} className="text-[11px] text-amber-300 leading-snug">⚠ {s}</p>
+                  <p key={s} className="text-[11px] text-zinc-300 leading-snug">⚠ {s}</p>
                 ))}
               </div>
             )}

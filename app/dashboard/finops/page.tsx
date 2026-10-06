@@ -63,7 +63,7 @@ interface ReportLite {
 
 const STATUS_VISUAL: Record<ConnectorStatus, { border: string; bg: string; text: string; pill: string }> = {
   live:                 { border: "border-emerald-500/[0.22]", bg: "bg-emerald-500/[0.04]", text: "text-emerald-300", pill: "bg-emerald-500/15 text-emerald-300" },
-  ready_pending_config: { border: "border-amber-500/[0.22]",   bg: "bg-amber-500/[0.04]",   text: "text-amber-300",   pill: "bg-amber-500/15 text-amber-300"     },
+  ready_pending_config: { border: "border-white/[0.22]",   bg: "bg-white/[0.04]",   text: "text-zinc-300",   pill: "bg-white/15 text-zinc-300"     },
   foundation:           { border: "border-cyan-500/[0.22]",    bg: "bg-cyan-500/[0.04]",    text: "text-cyan-300",    pill: "bg-cyan-500/15 text-cyan-300"       },
   blocked:              { border: "border-rose-500/[0.22]",    bg: "bg-rose-500/[0.04]",    text: "text-rose-300",    pill: "bg-rose-500/15 text-rose-300"       },
   disabled:             { border: "border-zinc-700/30",        bg: "bg-white/[0.02]",       text: "text-zinc-400",    pill: "bg-zinc-700/40 text-zinc-300"       },
@@ -88,7 +88,7 @@ const SIGNAL_TONE: Record<SignalStatus, { border: string; bg: string; text: stri
   evidence_unavailable:    { border: "border-zinc-700/30",       bg: "bg-white/[0.02]",       text: "text-zinc-400",   pill: "bg-zinc-700/40 text-zinc-300"   },
   review_recommended:      { border: "border-cyan-500/[0.22]",   bg: "bg-cyan-500/[0.04]",   text: "text-cyan-300",   pill: "bg-cyan-500/15 text-cyan-300"    },
   potential_savings:       { border: "border-emerald-500/[0.22]",bg: "bg-emerald-500/[0.04]", text: "text-emerald-300",pill: "bg-emerald-500/15 text-emerald-300" },
-  requires_cost_telemetry: { border: "border-amber-500/[0.22]",  bg: "bg-amber-500/[0.04]",   text: "text-amber-300",  pill: "bg-amber-500/15 text-amber-300"  },
+  requires_cost_telemetry: { border: "border-white/[0.22]",  bg: "bg-white/[0.04]",   text: "text-zinc-300",  pill: "bg-white/15 text-zinc-300"  },
 };
 
 const CONNECTOR_ICON: Record<ConnectorId, typeof CloudIcon> = {
@@ -159,8 +159,8 @@ export default function FinOpsPage() {
         </div>
       )}
       {!loading && error && (
-        <div role="alert" aria-live="assertive" className="rounded-2xl border border-amber-500/[0.18] bg-amber-500/[0.04] p-5 mb-6">
-          <p className="text-[11px] font-mono text-amber-300/80 uppercase tracking-[0.18em] mb-1">// FinOps unavailable</p>
+        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/[0.18] bg-white/[0.04] p-5 mb-6">
+          <p className="text-[11px] font-mono text-zinc-300/80 uppercase tracking-[0.18em] mb-1">// FinOps unavailable</p>
           <p className="text-[13px] text-zinc-300">{error}</p>
         </div>
       )}
@@ -201,8 +201,8 @@ export default function FinOpsPage() {
                     <p className="text-[12px] text-zinc-300 leading-relaxed mb-2">{c.headline}</p>
 
                     {c.missingConfig.length > 0 && (
-                      <div className="rounded-md border border-amber-500/[0.18] bg-amber-500/[0.04] p-2 mb-2">
-                        <p className="text-[9px] font-mono text-amber-300/80 uppercase tracking-wider mb-1">Setup needed</p>
+                      <div className="rounded-md border border-white/[0.18] bg-white/[0.04] p-2 mb-2">
+                        <p className="text-[9px] font-mono text-zinc-300/80 uppercase tracking-wider mb-1">Setup needed</p>
                         <ul className="space-y-0.5">
                           {c.missingConfig.map((m, i) => (
                             <li key={i} className="text-[10px] font-mono text-zinc-300">{m}</li>

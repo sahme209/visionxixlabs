@@ -27,13 +27,13 @@ type ApprovalStatus = "pending" | "approved" | "rejected" | "snoozed" | "applied
 const SEVERITY_TONE: Record<Severity, string> = {
   critical: "text-rose-400",
   high:     "text-rose-300",
-  medium:   "text-amber-300",
+  medium:   "text-zinc-300",
   low:      "text-zinc-400",
   info:     "text-zinc-500",
 };
 
 const APPROVAL_TONE: Record<ApprovalStatus, string> = {
-  pending:  "text-amber-300",
+  pending:  "text-zinc-300",
   snoozed:  "text-zinc-400",
   approved: "text-emerald-300",
   applied:  "text-emerald-400",

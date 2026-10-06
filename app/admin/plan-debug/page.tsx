@@ -153,7 +153,7 @@ export default function AdminPlanDebugPage() {
             ))}
           </dl>
           {missingEnterprise && (
-            <div className="rounded-lg bg-amber-500/10 border border-amber-500/20 p-3 text-sm text-amber-400">
+            <div className="rounded-lg bg-white/10 border border-white/20 p-3 text-sm text-zinc-400">
               Enterprise price IDs not configured. Add STRIPE_PRICES_ENTERPRISE for enterprise plan
               mapping.
             </div>

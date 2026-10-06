@@ -24,10 +24,10 @@ describe("/dashboard/webhook-deliveries — accessibility", () => {
   });
 
   it("announces the migration-pending state", () => {
-    expect(src).toContain('role="alert" aria-live="assertive" className="rounded-2xl border border-amber-500/[0.18] bg-amber-500/[0.04] p-5 mb-6">');
+    expect(src).toContain('role="alert" aria-live="assertive" className="rounded-2xl border border-white/[0.18] bg-white/[0.04] p-5 mb-6">');
   });
 
   it("announces the auth-required state", () => {
-    expect(src).toContain('role="alert" aria-live="assertive" className="rounded-2xl border border-amber-500/[0.18] bg-amber-500/[0.04] p-5 mb-6 text-[13px]');
+    expect(src).toContain('role="alert" aria-live="assertive" className="rounded-2xl border border-white/[0.18] bg-white/[0.04] p-5 mb-6 text-[13px]');
   });
 });

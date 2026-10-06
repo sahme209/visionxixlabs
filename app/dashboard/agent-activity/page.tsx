@@ -49,7 +49,7 @@ interface CalibrationReport { totalConsidered: number; buckets: CalibrationBucke
 const VERDICT_TONE: Record<CalibrationBucket["verdict"], string> = {
   calibrated:      "bg-emerald-500/15 text-emerald-300 border-emerald-500/30",
   over_confident:  "bg-rose-500/15 text-rose-300 border-rose-500/30",
-  under_confident: "bg-amber-500/15 text-amber-300 border-amber-500/30",
+  under_confident: "bg-white/15 text-zinc-300 border-white/30",
 };
 
 export default function AgentActivityPage() {
@@ -120,7 +120,7 @@ export default function AgentActivityPage() {
       </div>
 
       {error && (
-        <div role="alert" aria-live="assertive" className="rounded-2xl border border-amber-500/[0.18] bg-amber-500/[0.04] p-5 mb-6 text-[13px] text-zinc-300">
+        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/[0.18] bg-white/[0.04] p-5 mb-6 text-[13px] text-zinc-300">
           {error}
         </div>
       )}

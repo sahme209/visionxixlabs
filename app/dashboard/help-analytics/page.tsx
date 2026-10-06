@@ -36,7 +36,7 @@ interface Analytics {
 
 const VERDICT_TONE: Record<string, string> = {
   found_primary: "bg-emerald-500/15 text-emerald-300 border-emerald-500/30",
-  ambiguous:     "bg-amber-500/15 text-amber-300 border-amber-500/30",
+  ambiguous:     "bg-white/15 text-zinc-300 border-white/30",
   no_match:      "bg-rose-500/15 text-rose-300 border-rose-500/30",
 };
 
@@ -99,7 +99,7 @@ export default function HelpAnalyticsPage() {
       </div>
 
       {error && (
-        <div role="alert" aria-live="assertive" className="rounded-2xl border border-amber-500/[0.18] bg-amber-500/[0.04] p-5 mb-6 text-[13px] text-zinc-300">
+        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/[0.18] bg-white/[0.04] p-5 mb-6 text-[13px] text-zinc-300">
           {error}
         </div>
       )}
@@ -190,7 +190,7 @@ function Stat({
 }: { label: string; value: string; tone: "emerald" | "amber" | "rose" | "cyan"; icon?: typeof ChartBarIcon }) {
   const cls = {
     emerald: "border-emerald-500/[0.18] bg-emerald-500/[0.03] text-emerald-200",
-    amber:   "border-amber-500/[0.18] bg-amber-500/[0.03] text-amber-200",
+    amber:   "border-white/[0.18] bg-white/[0.03] text-zinc-200",
     rose:    "border-rose-500/[0.18] bg-rose-500/[0.03] text-rose-200",
     cyan:    "border-cyan-500/[0.18] bg-cyan-500/[0.03] text-cyan-200",
   }[tone];

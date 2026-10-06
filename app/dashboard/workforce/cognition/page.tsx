@@ -49,7 +49,7 @@ const VERDICT_TONE: Record<string, string> = {
   accept_first: "text-emerald-300",
   accept_second: "text-emerald-300",
   sequence: "text-sky-300",
-  request_more_data: "text-amber-300",
+  request_more_data: "text-zinc-300",
   defer: "text-zinc-400",
 };
 
@@ -336,7 +336,7 @@ export default async function CognitionPage() {
             {simulatorRows.map((r) => {
               const verdict = extractTag(r.nextActionsJson, "verdict");
               const title = extractTag(r.nextActionsJson, "title") ?? r.targetId;
-              const verdictTone = verdict === "safe" ? "text-emerald-300" : verdict === "unsafe" ? "text-rose-300" : "text-amber-300";
+              const verdictTone = verdict === "safe" ? "text-emerald-300" : verdict === "unsafe" ? "text-rose-300" : "text-zinc-300";
               return (
                 <li key={r.targetId}>
                   <Link href={`/dashboard/agi-memory/${encodeURIComponent(`${SIMULATOR_TARGET_KIND}:${r.targetId}`)}`} className="block px-5 py-3.5 hover:bg-white/[0.015] transition-colors">

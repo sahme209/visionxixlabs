@@ -99,12 +99,12 @@ export default function ReleaseEvidenceDetailPage() {
                 className={`rounded-2xl border p-4 flex items-start gap-3 ${
                   evidence.signedAt
                     ? "border-emerald-500/[0.25] bg-emerald-500/[0.04]"
-                    : "border-amber-500/[0.25] bg-amber-500/[0.04]"
+                    : "border-white/[0.25] bg-white/[0.04]"
                 }`}
               >
                 <LockClosedIcon
                   className={`h-5 w-5 mt-0.5 shrink-0 ${
-                    evidence.signedAt ? "text-emerald-400" : "text-amber-400"
+                    evidence.signedAt ? "text-emerald-400" : "text-zinc-400"
                   }`}
                 />
                 <div>
@@ -116,7 +116,7 @@ export default function ReleaseEvidenceDetailPage() {
                       {new Date(evidence.signedAt).toLocaleString()}
                     </p>
                   ) : (
-                    <p className="text-[11px] text-amber-300 mt-1">
+                    <p className="text-[11px] text-zinc-300 mt-1">
                       Pending authorization to sign
                     </p>
                   )}

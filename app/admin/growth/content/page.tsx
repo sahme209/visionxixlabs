@@ -51,7 +51,7 @@ export default async function ContentPlannerPage() {
           <span className={`text-[9px] font-mono uppercase tracking-wider border rounded-full px-1.5 py-px ${
             llmActive
               ? "text-emerald-300 bg-emerald-500/10 border-emerald-500/30"
-              : "text-amber-300 bg-amber-500/10 border-amber-500/30"
+              : "text-zinc-300 bg-white/10 border-white/30"
           }`}>
             {llmActive ? "Claude active" : "Placeholder · set ANTHROPIC_API_KEY"}
           </span>
@@ -96,7 +96,7 @@ function DraftCard({ draft }: { draft: SocialPostDraft }) {
           </span>
           <span className="text-[10px] font-mono uppercase tracking-wider text-zinc-500">draft · {draft.id.slice(0, 20)}</span>
         </div>
-        <span className="text-[9px] font-mono uppercase tracking-wider text-amber-300 bg-amber-500/10 border border-amber-500/30 rounded-full px-1.5 py-px">
+        <span className="text-[9px] font-mono uppercase tracking-wider text-zinc-300 bg-white/10 border border-white/30 rounded-full px-1.5 py-px">
           {draft.status}
         </span>
       </header>

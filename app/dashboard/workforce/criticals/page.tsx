@@ -38,7 +38,7 @@ const SEVERITY_RANK: Record<Severity, number> = { block: 0, high: 1, escalate: 2
 
 const SEVERITY_TONE: Record<Severity, string> = {
   block: "text-rose-300 border-rose-500/30 bg-rose-500/[0.06]",
-  high: "text-amber-300 border-amber-500/30 bg-amber-500/[0.06]",
+  high: "text-zinc-300 border-white/30 bg-white/[0.06]",
   escalate: "text-sky-300 border-sky-500/30 bg-sky-500/[0.06]",
 };
 
@@ -218,7 +218,7 @@ export default async function CriticalsPage() {
 
       <section className="grid grid-cols-3 gap-3 mb-8">
         <Stat label="Block" value={blockCount} tone="text-rose-300" />
-        <Stat label="High" value={highCount} tone="text-amber-300" />
+        <Stat label="High" value={highCount} tone="text-zinc-300" />
         <Stat label="Escalate" value={escalateCount} tone="text-sky-300" />
       </section>
 

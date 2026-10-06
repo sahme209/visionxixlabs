@@ -149,9 +149,9 @@ export default async function LinkedInAdminPage({ searchParams }: PageProps) {
         </div>
 
         {!configured && (
-          <div className="mt-4 rounded-xl border border-amber-500/20 bg-amber-500/[0.04] p-3">
-            <p className="text-[11px] text-amber-100/90 leading-relaxed">
-              Add to <span className="font-mono text-amber-200">.env.local</span>:
+          <div className="mt-4 rounded-xl border border-white/20 bg-white/[0.04] p-3">
+            <p className="text-[11px] text-zinc-100/90 leading-relaxed">
+              Add to <span className="font-mono text-zinc-200">.env.local</span>:
             </p>
             <pre className="mt-2 text-[10.5px] font-mono text-zinc-300 leading-relaxed whitespace-pre-wrap">
 {`LINKEDIN_CLIENT_ID=...
@@ -307,10 +307,10 @@ LINKEDIN_POSTING_ENABLED=false    # flip to true ONLY when you're ready`}
 
 function StatusPill({ label, ok, hint }: { label: string; ok: boolean; hint: string }) {
   return (
-    <div className={`rounded-xl border p-3 ${ok ? "border-emerald-500/20 bg-emerald-500/[0.04]" : "border-amber-500/20 bg-amber-500/[0.04]"}`}>
+    <div className={`rounded-xl border p-3 ${ok ? "border-emerald-500/20 bg-emerald-500/[0.04]" : "border-white/20 bg-white/[0.04]"}`}>
       <div className="flex items-center gap-2 mb-0.5">
-        {ok ? <CheckCircleIcon className="h-3.5 w-3.5 text-emerald-300" /> : <ExclamationTriangleIcon className="h-3.5 w-3.5 text-amber-300" />}
-        <p className={`text-[11px] font-semibold ${ok ? "text-emerald-200" : "text-amber-200"}`}>{label}</p>
+        {ok ? <CheckCircleIcon className="h-3.5 w-3.5 text-emerald-300" /> : <ExclamationTriangleIcon className="h-3.5 w-3.5 text-zinc-300" />}
+        <p className={`text-[11px] font-semibold ${ok ? "text-emerald-200" : "text-zinc-200"}`}>{label}</p>
       </div>
       <p className="text-[10.5px] text-zinc-400 leading-relaxed">{hint}</p>
     </div>
@@ -340,7 +340,7 @@ function EmptyState({ title, detail }: { title: string; detail: string }) {
 
 function statusChip(s: string): string {
   if (s === "drafted")        return "text-cyan-300 bg-cyan-500/10 border-cyan-500/30";
-  if (s === "in_review")      return "text-amber-300 bg-amber-500/10 border-amber-500/30";
+  if (s === "in_review")      return "text-zinc-300 bg-white/10 border-white/30";
   if (s === "approved")       return "text-emerald-300 bg-emerald-500/10 border-emerald-500/30";
   if (s === "scheduled")      return "text-violet-300 bg-violet-500/10 border-violet-500/30";
   if (s === "published")      return "text-emerald-200 bg-emerald-700/10 border-emerald-500/30";
@@ -351,7 +351,7 @@ function statusChip(s: string): string {
 
 function outcomeChip(s: string): string {
   if (s === "success")              return "text-emerald-300 bg-emerald-500/10 border-emerald-500/30";
-  if (s.startsWith("skipped"))      return "text-amber-300 bg-amber-500/10 border-amber-500/30";
+  if (s.startsWith("skipped"))      return "text-zinc-300 bg-white/10 border-white/30";
   if (s === "failed")               return "text-rose-300 bg-rose-500/10 border-rose-500/30";
   return                                   "text-zinc-300 bg-white/[0.04] border-white/[0.08]";
 }
@@ -361,7 +361,7 @@ function autopilotChip(s: string): string {
   if (s === "queued_for_review")               return "text-cyan-300 bg-cyan-500/10 border-cyan-500/30";
   if (s === "killed")                          return "text-rose-300 bg-rose-500/10 border-rose-500/30";
   if (s === "disabled")                        return "text-zinc-300 bg-white/[0.04] border-white/[0.08]";
-  return                                              "text-amber-300 bg-amber-500/10 border-amber-500/30";
+  return                                              "text-zinc-300 bg-white/10 border-white/30";
 }
 
 function DraftRow({

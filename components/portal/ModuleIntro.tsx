@@ -56,7 +56,7 @@ export interface ModuleIntroProps {
 
 const APPROVAL_LABEL: Record<ApprovalSeverity, { label: string; cls: string }> = {
   read_only:       { label: "Read-only · no approval required", cls: "bg-emerald-500/10 text-emerald-300 border-emerald-500/30" },
-  soft:            { label: "Soft approval · operator can self-approve", cls: "bg-amber-500/10 text-amber-300 border-amber-500/30" },
+  soft:            { label: "Soft approval · operator can self-approve", cls: "bg-white/10 text-zinc-300 border-white/30" },
   human_required:  { label: "Two-person human approval required", cls: "bg-violet-500/10 text-violet-300 border-violet-500/30" },
 };
 

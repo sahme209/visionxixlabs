@@ -54,7 +54,7 @@ export default function ReleaseExecutionDetailPage() {
   const execution = data.execution;
   const statusColor = {
     not_started: "bg-zinc-500/10 text-zinc-300",
-    in_progress: "bg-amber-500/10 text-amber-300",
+    in_progress: "bg-white/10 text-zinc-300",
     completed: "bg-emerald-500/10 text-emerald-300",
     rolled_back: "bg-orange-500/10 text-orange-300",
     failed: "bg-rose-500/10 text-rose-300",

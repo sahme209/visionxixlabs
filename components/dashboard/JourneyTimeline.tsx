@@ -78,8 +78,8 @@ const PROVIDER_LABEL: Record<Provider, string> = {
 const SOURCE_TONE: Record<string, { dot: string; text: string; pill: string }> = {
   live:         { dot: "bg-emerald-400 animate-pulse", text: "text-emerald-300", pill: "bg-emerald-500/15 text-emerald-300" },
   partial_live: { dot: "bg-cyan-400 animate-pulse",    text: "text-cyan-300",    pill: "bg-cyan-500/15 text-cyan-300"       },
-  expanding:    { dot: "bg-amber-400",                 text: "text-amber-300",   pill: "bg-amber-500/15 text-amber-300"     },
-  preview:      { dot: "bg-amber-400",                 text: "text-amber-300",   pill: "bg-amber-500/15 text-amber-300"     },
+  expanding:    { dot: "bg-zinc-400",                 text: "text-zinc-300",   pill: "bg-white/15 text-zinc-300"     },
+  preview:      { dot: "bg-zinc-400",                 text: "text-zinc-300",   pill: "bg-white/15 text-zinc-300"     },
   blocked:      { dot: "bg-rose-400",                  text: "text-rose-300",    pill: "bg-rose-500/15 text-rose-300"       },
   disabled:     { dot: "bg-zinc-600",                  text: "text-zinc-400",    pill: "bg-zinc-700/40 text-zinc-300"       },
   unknown:      { dot: "bg-zinc-600",                  text: "text-zinc-400",    pill: "bg-zinc-700/40 text-zinc-300"       },
@@ -120,8 +120,8 @@ export function JourneyTimeline({ provider }: { provider: Provider }) {
   }
   if (error || !state) {
     return (
-      <div className="rounded-2xl border border-amber-500/[0.18] bg-amber-500/[0.04] p-5 mb-6">
-        <p className="text-[11px] font-mono text-amber-300/80 uppercase tracking-[0.18em] mb-1">// journey unavailable</p>
+      <div className="rounded-2xl border border-white/[0.18] bg-white/[0.04] p-5 mb-6">
+        <p className="text-[11px] font-mono text-zinc-300/80 uppercase tracking-[0.18em] mb-1">// journey unavailable</p>
         <p className="text-[13px] text-zinc-300">{error ?? "Sign in to load canonical state."}</p>
       </div>
     );

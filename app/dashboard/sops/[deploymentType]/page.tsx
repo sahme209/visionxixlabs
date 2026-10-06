@@ -87,16 +87,16 @@ export default function SopDetailPage() {
       )}
 
       {!loading && errorBody?.error === "unknown_deployment_type" && (
-        <div role="alert" aria-live="assertive" className="rounded-2xl border border-amber-500/[0.18] bg-amber-500/[0.04] p-5 mb-6">
+        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/[0.18] bg-white/[0.04] p-5 mb-6">
           <div className="flex items-center gap-2 mb-1">
-            <ExclamationTriangleIcon className="h-4 w-4 text-amber-300" />
+            <ExclamationTriangleIcon className="h-4 w-4 text-zinc-300" />
             <span className="text-[13px] text-zinc-300">Unknown deployment type. <Link href="/dashboard/sops" className="text-white underline underline-offset-4">Back to catalog</Link>.</span>
           </div>
         </div>
       )}
 
       {!loading && errorBody?.error === "auth_required" && (
-        <div role="alert" aria-live="assertive" className="rounded-2xl border border-amber-500/[0.18] bg-amber-500/[0.04] p-5 mb-6 text-[13px] text-zinc-300">
+        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/[0.18] bg-white/[0.04] p-5 mb-6 text-[13px] text-zinc-300">
           Sign in required to view SOPs.
         </div>
       )}

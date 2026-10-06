@@ -135,7 +135,7 @@ function ConnectorStatus({ label, icon: Icon, result }: { label: string; icon: t
         <span className={`ml-auto text-[9px] font-mono uppercase tracking-wider border rounded-full px-1.5 py-px ${
           result.ok
             ? "text-emerald-300 bg-emerald-500/10 border-emerald-500/30"
-            : "text-amber-300 bg-amber-500/10 border-amber-500/30"
+            : "text-zinc-300 bg-white/10 border-white/30"
         }`}>
           {result.ok ? "live" : "skipped"}
         </span>
@@ -148,7 +148,7 @@ function ConnectorStatus({ label, icon: Icon, result }: { label: string; icon: t
 
 function ServiceCard({ service }: { service: ServiceRef }) {
   const sourceTone =
-    service.discoveredFrom.includes("aws")    ? "border-amber-500/30 bg-amber-500/10 text-amber-300" :
+    service.discoveredFrom.includes("aws")    ? "border-white/30 bg-white/10 text-zinc-300" :
     service.discoveredFrom.includes("gcp")    ? "border-blue-500/30 bg-blue-500/10 text-blue-300"   :
     service.discoveredFrom.includes("github") ? "border-white/[0.12] bg-violet-500/10 text-violet-300" :
                                                 "border-zinc-500/30 bg-zinc-500/10 text-zinc-300";

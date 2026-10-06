@@ -10,9 +10,9 @@ export function DemoBadge() {
   return (
     <span
       title="Seeded demo data — not from your tenant"
-      className="inline-flex items-center gap-1 rounded-full border border-amber-500/30 bg-amber-500/10 px-2 py-0.5 text-[9.5px] font-mono uppercase tracking-widest text-amber-300"
+      className="inline-flex items-center gap-1 rounded-full border border-white/30 bg-white/10 px-2 py-0.5 text-[9.5px] font-mono uppercase tracking-widest text-zinc-300"
     >
-      <span className="h-1 w-1 rounded-full bg-amber-400" />
+      <span className="h-1 w-1 rounded-full bg-zinc-400" />
       demo
     </span>
   );

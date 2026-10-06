@@ -358,11 +358,11 @@ export default function UnifiedPlaybookPage() {
                   if (required === null || granted >= required) return null;
                   const remaining = required - granted;
                   return (
-                    <div className="rounded-2xl border border-amber-500/[0.25] bg-amber-500/[0.04] p-5">
+                    <div className="rounded-2xl border border-white/[0.25] bg-white/[0.04] p-5">
                       <div className="flex items-start gap-3">
-                        <div className="text-amber-400 mt-0.5">⏳</div>
+                        <div className="text-zinc-400 mt-0.5">⏳</div>
                         <div className="flex-1">
-                          <h4 className="text-[13px] font-semibold text-amber-300 mb-1">
+                          <h4 className="text-[13px] font-semibold text-zinc-300 mb-1">
                             {remaining} approval{remaining === 1 ? "" : "s"} pending
                           </h4>
                           <p className="text-[12px] text-zinc-400">
@@ -458,7 +458,7 @@ export default function UnifiedPlaybookPage() {
                 {data.lifecycle.readinessScoredAt && (
                   <div className="rounded-2xl border border-white/[0.08] bg-white/[0.025] p-4">
                     <div className="flex items-start gap-3">
-                      <div className="text-amber-400 mt-0.5 text-[14px]">📊</div>
+                      <div className="text-zinc-400 mt-0.5 text-[14px]">📊</div>
                       <div className="flex-1">
                         <p className="text-[12px] font-semibold text-white">Readiness scored</p>
                         <p className="text-[11px] text-zinc-400 mt-0.5">

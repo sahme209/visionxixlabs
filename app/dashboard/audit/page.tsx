@@ -24,7 +24,7 @@ type ActorKind = "user" | "agent" | "system";
 const OUTCOME_TONE: Record<Outcome, string> = {
   success: "text-emerald-300",
   failure: "text-rose-300",
-  blocked: "text-amber-300",
+  blocked: "text-zinc-300",
 };
 
 const ACTOR_TONE: Record<ActorKind, string> = {
@@ -108,8 +108,8 @@ export default async function AuditPage() {
       </header>
 
       {migrationPending && (
-        <div className="mb-8 rounded-2xl border border-amber-500/15 bg-white/[0.015] px-6 py-5">
-          <p className="text-[10px] font-mono uppercase tracking-[0.28em] text-amber-300 mb-1">migration pending</p>
+        <div className="mb-8 rounded-2xl border border-white/15 bg-white/[0.015] px-6 py-5">
+          <p className="text-[10px] font-mono uppercase tracking-[0.28em] text-zinc-300 mb-1">migration pending</p>
           <p className="text-[13px] text-zinc-300">
             The audit table hasn&apos;t been migrated yet. Run <code className="font-mono text-white">prisma migrate deploy</code> to populate the trail.
           </p>
@@ -131,7 +131,7 @@ export default async function AuditPage() {
           <section className="surface-glass mb-10 rounded-2xl divide-x divide-white/[0.04] grid grid-cols-3 overflow-hidden">
             <CountTile label="success"  count={counts.success}  tone={counts.success > 0 ? "text-emerald-300" : "text-zinc-600"} />
             <CountTile label="failure"  count={counts.failure}  tone={counts.failure > 0 ? "text-rose-300" : "text-zinc-600"} />
-            <CountTile label="blocked"  count={counts.blocked}  tone={counts.blocked > 0 ? "text-amber-300" : "text-zinc-600"} />
+            <CountTile label="blocked"  count={counts.blocked}  tone={counts.blocked > 0 ? "text-zinc-300" : "text-zinc-600"} />
           </section>
 
           <section>

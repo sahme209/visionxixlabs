@@ -50,8 +50,8 @@ export default async function DesktopConnectPage({ searchParams }: { searchParam
           <Row label="Request expires" value={pairing.expiresAt.toLocaleString()} />
         </dl>
         {!access.allowed && (
-          <div className="mb-5 rounded-xl border border-amber-400/20 bg-amber-400/[0.07] p-5">
-            <p className="text-sm font-semibold text-amber-100">{access.title}</p>
+          <div className="mb-5 rounded-xl border border-white/20 bg-white/[0.07] p-5">
+            <p className="text-sm font-semibold text-zinc-100">{access.title}</p>
             <p className="mt-2 text-sm leading-6 text-zinc-300">{access.message}</p>
             <div className="mt-5 flex flex-col gap-2 sm:flex-row">
               <Link href={access.accessRequestPath} className="rounded-full bg-white px-4 py-2 text-center text-sm font-semibold text-black">

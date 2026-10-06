@@ -46,7 +46,7 @@ export function TrialCountdownBanner() {
   const urgent = days <= 3;
   const cls = urgent
     ? "border-rose-500/30 bg-rose-500/[0.06] text-rose-100"
-    : "border-amber-500/30 bg-amber-500/[0.05] text-amber-100";
+    : "border-white/30 bg-white/[0.05] text-zinc-100";
 
   return (
     <div className={`rounded-xl border ${cls} px-3 py-2 mb-4 text-[12px] flex items-center gap-2 flex-wrap`}>

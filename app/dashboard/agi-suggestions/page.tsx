@@ -78,9 +78,9 @@ const KIND_LABEL: Record<string, string> = {
 const KIND_TONE: Record<string, string> = {
   review_release:       "border-white/[0.12] bg-white/[0.015]",
   tighten_protection:   "border-rose-500/30 bg-rose-500/[0.04]",
-  reconcile_manual_fix: "border-amber-500/30 bg-amber-500/[0.04]",
+  reconcile_manual_fix: "border-white/30 bg-white/[0.04]",
   investigate_incident: "border-rose-500/30 bg-rose-500/[0.04]",
-  reduce_fallback_rate: "border-amber-500/30 bg-amber-500/[0.04]",
+  reduce_fallback_rate: "border-white/30 bg-white/[0.04]",
   review_pattern:       "border-white/[0.12] bg-white/[0.015]",
   no_action_needed:     "border-emerald-500/30 bg-emerald-500/[0.04]",
   unknown:              "border-white/[0.06] bg-white/[0.02]",
@@ -95,7 +95,7 @@ const DECISION_CLASS: Record<Decision, string> = {
 
 const OUTCOME_CLASS: Record<string, string> = {
   ai_generated:   "bg-violet-500/15 text-violet-300 border-white/[0.10]",
-  fallback_rules: "bg-amber-500/15 text-amber-300 border-amber-500/25",
+  fallback_rules: "bg-white/15 text-zinc-300 border-white/25",
   error:          "bg-rose-500/15 text-rose-300 border-rose-500/25",
   unknown:        "bg-zinc-700/40 text-zinc-400 border-zinc-700/40",
 };
@@ -110,7 +110,7 @@ const KIND_HREF: Record<string, string> = {
 
 function confidenceClass(c: number): string {
   if (c >= 80) return "bg-emerald-500/15 text-emerald-300 border-emerald-500/25";
-  if (c >= 60) return "bg-amber-500/15 text-amber-300 border-amber-500/25";
+  if (c >= 60) return "bg-white/15 text-zinc-300 border-white/25";
   return "bg-rose-500/15 text-rose-300 border-rose-500/25";
 }
 
@@ -226,17 +226,17 @@ export default function AgiSuggestionsPage() {
       )}
 
       {!loading && errorBody?.error === "migration_pending" && (
-        <div role="alert" aria-live="assertive" className="rounded-2xl border border-amber-500/[0.18] bg-amber-500/[0.04] p-5 mb-4">
+        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/[0.18] bg-white/[0.04] p-5 mb-4">
           <div className="flex items-center gap-2 mb-1">
-            <ExclamationTriangleIcon className="h-4 w-4 text-amber-300" />
-            <p className="text-[12px] font-semibold text-amber-200">Schema migration pending</p>
+            <ExclamationTriangleIcon className="h-4 w-4 text-zinc-300" />
+            <p className="text-[12px] font-semibold text-zinc-200">Schema migration pending</p>
           </div>
           <p className="text-[12.5px] text-zinc-300">{errorBody.hint}</p>
         </div>
       )}
 
       {!loading && errorBody?.error === "auth_required" && (
-        <div role="alert" aria-live="assertive" className="rounded-2xl border border-amber-500/[0.18] bg-amber-500/[0.04] p-5 mb-4 text-[12.5px] text-amber-200">Sign in required.</div>
+        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/[0.18] bg-white/[0.04] p-5 mb-4 text-[12.5px] text-zinc-200">Sign in required.</div>
       )}
 
       {data && data.suggestions.length === 0 && (
@@ -373,7 +373,7 @@ function Stat({ icon: Icon, label, value, tone }: { icon: typeof SparklesIcon; l
   const cls = {
     violet:  "border-white/[0.06] bg-white/[0.015] text-white",
     emerald: "border-emerald-500/[0.18] bg-emerald-500/[0.03] text-emerald-200",
-    amber:   "border-amber-500/[0.18] bg-amber-500/[0.03] text-amber-200",
+    amber:   "border-white/[0.18] bg-white/[0.03] text-zinc-200",
     rose:    "border-rose-500/[0.18] bg-rose-500/[0.03] text-rose-200",
     zinc:    "border-white/[0.06] bg-white/[0.02] text-zinc-200",
   }[tone];

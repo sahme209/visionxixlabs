@@ -77,7 +77,7 @@ interface PriorityReportLite {
 
 const SEVERITY_VISUAL: Record<Severity, { border: string; bg: string; text: string; pill: string; dot: string }> = {
   critical: { border: "border-rose-500/[0.28]",   bg: "bg-rose-500/[0.05]",   text: "text-rose-300",    pill: "bg-rose-500/20 text-rose-200",      dot: "bg-rose-400 animate-pulse"   },
-  high:     { border: "border-amber-500/[0.22]",  bg: "bg-amber-500/[0.05]",  text: "text-amber-300",   pill: "bg-amber-500/15 text-amber-300",    dot: "bg-amber-400 animate-pulse"  },
+  high:     { border: "border-white/[0.22]",  bg: "bg-white/[0.05]",  text: "text-zinc-300",   pill: "bg-white/15 text-zinc-300",    dot: "bg-zinc-400 animate-pulse"  },
   medium:   { border: "border-cyan-500/[0.22]",   bg: "bg-cyan-500/[0.04]",   text: "text-cyan-300",    pill: "bg-cyan-500/15 text-cyan-300",      dot: "bg-cyan-400"                 },
   low:      { border: "border-zinc-700/30",       bg: "bg-white/[0.02]",      text: "text-zinc-300",    pill: "bg-zinc-700/40 text-zinc-300",      dot: "bg-zinc-500"                 },
   info:     { border: "border-zinc-700/30",       bg: "bg-white/[0.02]",      text: "text-zinc-400",    pill: "bg-zinc-700/40 text-zinc-300",      dot: "bg-zinc-600"                 },
@@ -166,7 +166,7 @@ export default function PrioritiesPage() {
             <div className="hidden md:flex items-end gap-4 rounded-2xl border border-white/[0.06] bg-white/[0.025] backdrop-blur-sm px-5 py-4">
               <Stat label="Critical" value={report.summary.critical} tone={report.summary.critical > 0 ? "text-rose-300" : "text-zinc-500"} />
               <div className="w-px h-9 bg-white/[0.08]" />
-              <Stat label="High" value={report.summary.high} tone={report.summary.high > 0 ? "text-amber-300" : "text-zinc-500"} />
+              <Stat label="High" value={report.summary.high} tone={report.summary.high > 0 ? "text-zinc-300" : "text-zinc-500"} />
               <div className="w-px h-9 bg-white/[0.08]" />
               <Stat label="Avg conf." value={Math.round(report.averageConfidence * 100) + "%"} tone="text-white" />
             </div>
@@ -180,8 +180,8 @@ export default function PrioritiesPage() {
         </div>
       )}
       {!loading && error && (
-        <div role="alert" aria-live="assertive" className="rounded-2xl border border-amber-500/[0.18] bg-amber-500/[0.04] p-5 mb-6">
-          <p className="text-[11px] font-mono text-amber-300/80 uppercase tracking-[0.18em] mb-1">// priorities unavailable</p>
+        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/[0.18] bg-white/[0.04] p-5 mb-6">
+          <p className="text-[11px] font-mono text-zinc-300/80 uppercase tracking-[0.18em] mb-1">// priorities unavailable</p>
           <p className="text-[13px] text-zinc-300">{error}</p>
         </div>
       )}
@@ -269,8 +269,8 @@ export default function PrioritiesPage() {
                     )}
 
                     {item.limitations.length > 0 && (
-                      <div className="rounded-md border border-amber-500/[0.18] bg-amber-500/[0.04] p-2.5">
-                        <p className="text-[10px] font-mono text-amber-300/80 uppercase tracking-wider mb-1">// limitations</p>
+                      <div className="rounded-md border border-white/[0.18] bg-white/[0.04] p-2.5">
+                        <p className="text-[10px] font-mono text-zinc-300/80 uppercase tracking-wider mb-1">// limitations</p>
                         <ul className="space-y-0.5">
                           {item.limitations.slice(0, 2).map((l, i) => (
                             <li key={i} className="text-[11px] text-zinc-300 leading-snug">{l}</li>

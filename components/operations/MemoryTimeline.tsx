@@ -61,18 +61,18 @@ const KIND_CONFIG: Record<
   "recommendation.ignored": { icon: XCircleIcon, iconClass: "text-zinc-500", bgClass: "bg-white/[0.04]", borderClass: "border-white/[0.08]" },
   "execution.applied": { icon: CommandLineIcon, iconClass: "text-emerald-400", bgClass: "bg-emerald-500/10", borderClass: "border-emerald-500/20" },
   "execution.failed": { icon: XCircleIcon, iconClass: "text-red-400", bgClass: "bg-red-500/10", borderClass: "border-red-500/20" },
-  "drift.detected": { icon: ArrowTrendingUpIcon, iconClass: "text-amber-400", bgClass: "bg-amber-500/10", borderClass: "border-amber-500/20" },
+  "drift.detected": { icon: ArrowTrendingUpIcon, iconClass: "text-zinc-400", bgClass: "bg-white/10", borderClass: "border-white/20" },
   "rollback.executed": { icon: ArrowPathIcon, iconClass: "text-cyan-400", bgClass: "bg-cyan-500/10", borderClass: "border-cyan-500/20" },
   "approval.granted": { icon: ShieldCheckIcon, iconClass: "text-emerald-400", bgClass: "bg-emerald-500/10", borderClass: "border-emerald-500/20" },
-  "approval.denied": { icon: ShieldCheckIcon, iconClass: "text-amber-400", bgClass: "bg-amber-500/10", borderClass: "border-amber-500/20" },
+  "approval.denied": { icon: ShieldCheckIcon, iconClass: "text-zinc-400", bgClass: "bg-white/10", borderClass: "border-white/20" },
   "cost.shift": { icon: CurrencyDollarIcon, iconClass: "text-emerald-400", bgClass: "bg-emerald-500/10", borderClass: "border-emerald-500/20" },
   "confidence.increase": { icon: ArrowTrendingUpIcon, iconClass: "text-violet-400", bgClass: "bg-violet-500/10", borderClass: "border-violet-500/20" },
-  "confidence.decrease": { icon: ArrowTrendingDownIcon, iconClass: "text-amber-400", bgClass: "bg-amber-500/10", borderClass: "border-amber-500/20" },
+  "confidence.decrease": { icon: ArrowTrendingDownIcon, iconClass: "text-zinc-400", bgClass: "bg-white/10", borderClass: "border-white/20" },
   "baseline.snapshot": { icon: CpuChipIcon, iconClass: "text-violet-400", bgClass: "bg-violet-500/10", borderClass: "border-violet-500/20" },
 };
 
 const PROVIDER_COLOR = {
-  aws: "text-amber-400 bg-amber-500/10 border-amber-500/20",
+  aws: "text-zinc-400 bg-white/10 border-white/20",
   azure: "text-blue-400 bg-blue-500/10 border-blue-500/20",
   gcp: "text-red-400 bg-red-500/10 border-red-500/20",
 } as const;
@@ -110,7 +110,7 @@ export function MemoryTimeline({ groups = DEMO_GROUPS, className = "" }: MemoryT
             { label: "Scans", value: totalScans.toString(), color: "text-blue-400" },
             { label: "Plans applied", value: totalPlans.toString(), color: "text-emerald-400" },
             { label: "Savings locked", value: `$${(totalSavings / 1000).toFixed(1)}k`, color: "text-emerald-400" },
-            { label: "Findings tracked", value: totalFindings.toString(), color: "text-amber-400" },
+            { label: "Findings tracked", value: totalFindings.toString(), color: "text-zinc-400" },
           ].map((s) => (
             <div key={s.label} className="rounded-lg bg-white/[0.02] border border-white/[0.04] px-3 py-2">
               <p className="text-[9px] text-zinc-500 uppercase tracking-wider">{s.label}</p>

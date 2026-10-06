@@ -29,9 +29,9 @@ const KIND_CONFIG: Record<
   },
   drift_monitor: {
     icon: ShieldExclamationIcon,
-    iconClass: "text-amber-400",
-    bgClass: "bg-amber-500/10",
-    borderClass: "border-amber-500/20",
+    iconClass: "text-zinc-400",
+    bgClass: "bg-white/10",
+    borderClass: "border-white/20",
     label: "Drift monitor",
   },
   execution_queue: {
@@ -83,7 +83,7 @@ const STATUS_CONFIG: Record<
 };
 
 const PROVIDER_COLOR = {
-  aws: "text-amber-400 bg-amber-500/10 border-amber-500/20",
+  aws: "text-zinc-400 bg-white/10 border-white/20",
   azure: "text-blue-400 bg-blue-500/10 border-blue-500/20",
   gcp: "text-red-400 bg-red-500/10 border-red-500/20",
 } as const;
@@ -229,7 +229,7 @@ export function WorkflowOrchestrator({ workflows = DEMO_WORKFLOWS, className = "
                 <div className="flex items-center gap-3 shrink-0">
                   {/* Success rate ring */}
                   <div className="text-right">
-                    <p className={`text-sm font-bold ${successPct >= 95 ? "text-emerald-400" : successPct >= 80 ? "text-amber-400" : "text-red-400"}`}>
+                    <p className={`text-sm font-bold ${successPct >= 95 ? "text-emerald-400" : successPct >= 80 ? "text-zinc-400" : "text-red-400"}`}>
                       {successPct}%
                     </p>
                     <p className="text-[9px] text-zinc-600 uppercase tracking-wider">success</p>

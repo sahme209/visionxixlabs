@@ -114,7 +114,7 @@ export default function CostOverviewPage() {
       )}
 
       {loading && <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 mb-6 text-[12px] text-zinc-400">Loading your cloud cost data…</div>}
-      {!loading && error && <div role="alert" aria-live="assertive" className="rounded-2xl border border-amber-500/[0.18] bg-amber-500/[0.04] p-5 mb-6 text-[13px] text-zinc-300">{error}</div>}
+      {!loading && error && <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/[0.18] bg-white/[0.04] p-5 mb-6 text-[13px] text-zinc-300">{error}</div>}
 
       {!loading && !error && report && (
         <>
@@ -135,7 +135,7 @@ export default function CostOverviewPage() {
                     <span className={`inline-block text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded mr-2 ${
                       a.severity === "critical" ? "bg-rose-500/20 text-rose-200" :
                       a.severity === "high" ? "bg-rose-500/15 text-rose-300" :
-                      "bg-amber-500/15 text-amber-300"
+                      "bg-white/15 text-zinc-300"
                     }`}>{a.severity}</span>
                     <span className="text-white">{a.headline}</span>
                   </div>
@@ -158,7 +158,7 @@ export default function CostOverviewPage() {
                       p.mode === "live" ? "bg-emerald-500/15 text-emerald-300" :
                       p.mode === "partial_live" ? "bg-cyan-500/15 text-cyan-300" :
                       p.mode === "blocked" ? "bg-rose-500/15 text-rose-300" :
-                      "bg-amber-500/15 text-amber-300"
+                      "bg-white/15 text-zinc-300"
                     }`}>{p.mode}</span>
                   </div>
                   <div className="space-y-2">
@@ -169,7 +169,7 @@ export default function CostOverviewPage() {
                     <div className="flex items-center justify-between text-[11px] font-mono text-zinc-400">
                       <span>Prev: {fmt(p.confirmedDollarsPrev30d)}</span>
                       {pct !== null && (
-                        <span className={pct >= 20 ? "text-rose-300" : pct <= -10 ? "text-emerald-300" : "text-amber-300"}>
+                        <span className={pct >= 20 ? "text-rose-300" : pct <= -10 ? "text-emerald-300" : "text-zinc-300"}>
                           {pct >= 0 ? "+" : ""}{pct.toFixed(1)}%
                         </span>
                       )}
@@ -180,8 +180,8 @@ export default function CostOverviewPage() {
                       </div>
                     )}
                     {p.missingRequirements.length > 0 && (
-                      <div className="rounded-md border border-amber-500/[0.12] bg-amber-500/[0.03] p-2">
-                        <p className="text-[9px] font-mono text-amber-300/80 uppercase tracking-wider mb-0.5">Setup needed</p>
+                      <div className="rounded-md border border-white/[0.12] bg-white/[0.03] p-2">
+                        <p className="text-[9px] font-mono text-zinc-300/80 uppercase tracking-wider mb-0.5">Setup needed</p>
                         {p.missingRequirements.slice(0, 2).map((m, i) => (
                           <p key={i} className="text-[10px] text-zinc-300">{m}</p>
                         ))}
@@ -222,7 +222,7 @@ function Stat({ label, value, tone, icon: Icon }: {
 }) {
   const cls = {
     emerald: "border-emerald-500/[0.18] bg-emerald-500/[0.03] text-emerald-200",
-    amber:   "border-amber-500/[0.18] bg-amber-500/[0.03] text-amber-200",
+    amber:   "border-white/[0.18] bg-white/[0.03] text-zinc-200",
     rose:    "border-rose-500/[0.18] bg-rose-500/[0.03] text-rose-200",
     zinc:    "border-white/[0.06] bg-white/[0.02] text-zinc-200",
   }[tone];

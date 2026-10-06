@@ -47,7 +47,7 @@ interface DetailData {
 type RespBody = { ok: true; data: DetailData } | { ok: false; error: string; hint?: string };
 
 const RISK_TONE: Record<string, string> = {
-  low: "text-emerald-300", medium: "text-amber-300", high: "text-orange-300", critical: "text-rose-300",
+  low: "text-emerald-300", medium: "text-zinc-300", high: "text-orange-300", critical: "text-rose-300",
 };
 
 export default function ReleaseOverviewPage() {
@@ -88,8 +88,8 @@ export default function ReleaseOverviewPage() {
         <div role="alert" aria-live="assertive" className="rounded-2xl border border-rose-500/[0.18] bg-rose-500/[0.04] p-5 text-[13px] text-zinc-300">{networkError}</div>
       )}
       {!loading && errorBody && (
-        <div role="alert" aria-live="assertive" className="rounded-2xl border border-amber-500/[0.18] bg-amber-500/[0.04] p-5">
-          <p className="text-[12px] font-semibold text-amber-200">{errorBody.error}</p>
+        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/[0.18] bg-white/[0.04] p-5">
+          <p className="text-[12px] font-semibold text-zinc-200">{errorBody.error}</p>
           {errorBody.hint && <p className="text-[12.5px] text-zinc-300 mt-1">{errorBody.hint}</p>}
         </div>
       )}
@@ -187,7 +187,7 @@ export default function ReleaseOverviewPage() {
                 <ul className="mt-2 space-y-1">
                   {data.policyViolations.recent.map((v) => (
                     <li key={v.id} className="text-[11px] text-zinc-300">
-                      <span className={`font-mono uppercase tracking-wider mr-1.5 ${v.severity === "blocker" ? "text-rose-300" : v.severity === "warning" ? "text-amber-300" : "text-zinc-400"}`}>{v.severity}</span>
+                      <span className={`font-mono uppercase tracking-wider mr-1.5 ${v.severity === "blocker" ? "text-rose-300" : v.severity === "warning" ? "text-zinc-300" : "text-zinc-400"}`}>{v.severity}</span>
                       {v.ruleLabel} — <span className="text-zinc-500">{v.message}</span>
                     </li>
                   ))}
@@ -305,14 +305,14 @@ type TimelineRespBody = { ok: true; data: TimelineData } | { ok: false; error: s
 const TONE_DOT: Record<TimelineEvent["tone"], string> = {
   info:    "bg-zinc-400",
   success: "bg-emerald-400",
-  warning: "bg-amber-400",
+  warning: "bg-zinc-400",
   danger:  "bg-rose-400",
 };
 
 const TONE_BORDER: Record<TimelineEvent["tone"], string> = {
   info:    "border-zinc-500/40",
   success: "border-emerald-500/40",
-  warning: "border-amber-500/40",
+  warning: "border-white/40",
   danger:  "border-rose-500/40",
 };
 
@@ -422,11 +422,11 @@ function LifecycleControls({ releaseId, currentStatus }: { releaseId: string; cu
   }
   if (currentStatus === "deploying") {
     buttons.push({ action: "complete_deploy",  label: "Complete deploy",  tone: "border-emerald-500/40 bg-emerald-500/[0.12] text-emerald-100" });
-    buttons.push({ action: "mark_rolled_back", label: "Mark rolled back", tone: "border-amber-500/40 bg-amber-500/[0.10] text-amber-200" });
+    buttons.push({ action: "mark_rolled_back", label: "Mark rolled back", tone: "border-white/40 bg-white/[0.10] text-zinc-200" });
     buttons.push({ action: "mark_failed",      label: "Mark failed",      tone: "border-rose-500/40 bg-rose-500/[0.08] text-rose-200" });
   }
   if (currentStatus === "deployed") {
-    buttons.push({ action: "mark_rolled_back", label: "Mark rolled back", tone: "border-amber-500/40 bg-amber-500/[0.10] text-amber-200" });
+    buttons.push({ action: "mark_rolled_back", label: "Mark rolled back", tone: "border-white/40 bg-white/[0.10] text-zinc-200" });
   }
 
   if (buttons.length === 0) {

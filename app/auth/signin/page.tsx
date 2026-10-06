@@ -174,7 +174,7 @@ function SignInForm() {
             </div>
 
             {oauthError && (
-              <div className="mb-3 rounded-lg border border-amber-500/20 bg-amber-500/[0.06] px-3.5 py-2.5 text-xs text-amber-200 flex items-start gap-2">
+              <div className="mb-3 rounded-lg border border-white/20 bg-white/[0.06] px-3.5 py-2.5 text-xs text-zinc-200 flex items-start gap-2">
                 <ExclamationTriangleIcon className="h-3.5 w-3.5 shrink-0 mt-0.5" />
                 <span>OAuth returned <span className="font-mono">{oauthError}</span>.</span>
               </div>

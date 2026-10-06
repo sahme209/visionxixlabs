@@ -45,7 +45,7 @@ type StatusBody =
 
 const STATUS_CLASS: Record<InstallationView["status"], string> = {
   active:    "bg-emerald-500/15 text-emerald-300 border-emerald-500/25",
-  suspended: "bg-amber-500/15 text-amber-300 border-amber-500/25",
+  suspended: "bg-white/15 text-zinc-300 border-white/25",
   revoked:   "bg-rose-500/15 text-rose-300 border-rose-500/25",
   unknown:   "bg-zinc-700/40 text-zinc-400 border-zinc-700/40",
 };
@@ -191,7 +191,7 @@ export default function GitHubAppPage() {
       )}
 
       {requestParam === "1" && (
-        <div className="mb-6 rounded-2xl border border-amber-500/[0.18] bg-amber-500/[0.04] p-5 text-[13px] text-zinc-300">
+        <div className="mb-6 rounded-2xl border border-white/[0.18] bg-white/[0.04] p-5 text-[13px] text-zinc-300">
           Your install request was sent to your GitHub org admin. They need to approve before the platform can connect.
         </div>
       )}
@@ -217,17 +217,17 @@ export default function GitHubAppPage() {
       )}
 
       {!loading && errorBody?.error === "migration_pending" && (
-        <div role="alert" aria-live="assertive" className="rounded-2xl border border-amber-500/[0.18] bg-amber-500/[0.04] p-5 mb-6">
+        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/[0.18] bg-white/[0.04] p-5 mb-6">
           <div className="flex items-center gap-2 mb-1">
-            <ExclamationTriangleIcon className="h-4 w-4 text-amber-300" />
-            <p className="text-[12px] font-semibold text-amber-200">Schema migration pending</p>
+            <ExclamationTriangleIcon className="h-4 w-4 text-zinc-300" />
+            <p className="text-[12px] font-semibold text-zinc-200">Schema migration pending</p>
           </div>
           <p className="text-[12.5px] text-zinc-300">{errorBody.hint}</p>
         </div>
       )}
 
       {!loading && errorBody?.error === "auth_required" && (
-        <div role="alert" aria-live="assertive" className="rounded-2xl border border-amber-500/[0.18] bg-amber-500/[0.04] p-5 mb-6 text-[13px] text-zinc-300">
+        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/[0.18] bg-white/[0.04] p-5 mb-6 text-[13px] text-zinc-300">
           Sign in required.
         </div>
       )}
@@ -249,8 +249,8 @@ export default function GitHubAppPage() {
               </button>
             </div>
           ) : (
-            <div className="mb-6 rounded-2xl border border-amber-500/[0.18] bg-amber-500/[0.04] p-5 text-[12.5px] text-zinc-300">
-              <p className="font-semibold text-amber-200 mb-1">GitHub connection isn't set up yet</p>
+            <div className="mb-6 rounded-2xl border border-white/[0.18] bg-white/[0.04] p-5 text-[12.5px] text-zinc-300">
+              <p className="font-semibold text-zinc-200 mb-1">GitHub connection isn't set up yet</p>
               <p>
                 {data.isAdmin
                   ? "Create the Axiom GitHub App with one click — GitHub pre-fills every field from a manifest, so there's nothing to type. Once it's created, you (or any workspace admin) can connect your repositories here."

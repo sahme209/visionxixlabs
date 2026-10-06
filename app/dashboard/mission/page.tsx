@@ -117,7 +117,7 @@ export default function MissionPage() {
           <p className="text-[10px] font-mono uppercase tracking-[0.28em] text-zinc-500 mb-4">current state</p>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-x-6 gap-y-5">
             <MissionMetric label="findings" value={findings.toString()} spark={summary?.findingsTrend7d} sparkTone="text-zinc-400" />
-            <MissionMetric label="pending"  value={pending.toString()} tone={highRisk > 0 ? "text-amber-300" : "text-white"} />
+            <MissionMetric label="pending"  value={pending.toString()} tone={highRisk > 0 ? "text-zinc-300" : "text-white"} />
             <MissionMetric label="$/mo"     value={savings > 0 ? `$${Math.round(savings).toLocaleString()}` : "—"} />
             <MissionMetric label="last scan" value={tsAgo(lastScan)} spark={summary?.scansTrend7d} sparkTone="text-emerald-400/70" />
           </div>
@@ -162,7 +162,7 @@ export default function MissionPage() {
             {activity.map((e) => {
               const tone = e.outcome === "success" ? "text-emerald-300"
                          : e.outcome === "failure" ? "text-rose-300"
-                         : e.outcome === "blocked" ? "text-amber-300"
+                         : e.outcome === "blocked" ? "text-zinc-300"
                          : "text-zinc-400";
               return (
                 <li key={e.id} className="py-2.5 flex items-center gap-3">

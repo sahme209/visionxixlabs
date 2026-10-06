@@ -30,7 +30,7 @@ const STATUS_TONE: Record<SimulationResult["status"], string> = {
   simulated:      "text-emerald-300 bg-emerald-500/10 border-emerald-500/25",
   preview_only:   "text-violet-300 bg-violet-500/10 border-white/[0.10]",
   blocked:        "text-rose-300 bg-rose-500/10 border-rose-500/25",
-  unsafe:         "text-amber-300 bg-amber-500/10 border-amber-500/25",
+  unsafe:         "text-zinc-300 bg-white/10 border-white/25",
   incomplete:     "text-zinc-300 bg-zinc-500/10 border-zinc-500/25",
 };
 
@@ -38,13 +38,13 @@ const DELTA_TONE = {
   improved:  "text-emerald-300",
   unchanged: "text-zinc-400",
   worsened:  "text-rose-300",
-  mixed:     "text-amber-300",
+  mixed:     "text-zinc-300",
   unknown:   "text-zinc-500",
 };
 
 const IMPACT_TONE = {
   critical: "text-rose-300 bg-rose-500/10 border-rose-500/25",
-  high:     "text-amber-300 bg-amber-500/10 border-amber-500/25",
+  high:     "text-zinc-300 bg-white/10 border-white/25",
   medium:   "text-cyan-300 bg-cyan-500/10 border-cyan-500/25",
   low:      "text-zinc-300 bg-zinc-500/10 border-zinc-500/25",
   none:     "text-zinc-400 bg-zinc-500/10 border-zinc-500/25",
@@ -101,11 +101,11 @@ export default async function SimulationsCenter() {
           <Kpi label="Resources"           value={`${twin.resources.length}`}                tone="text-cyan-300" />
           <Kpi label="Security score"      value={`${twin.securityPosture.score}/100`}       tone="text-emerald-300" detail={`${twin.securityPosture.failing} failing`} />
           <Kpi label="Release grade"       value={twin.releasePosture.grade ?? "—"}          tone="text-violet-300" detail={`${twin.releasePosture.blockerCount} blocker(s)`} />
-          <Kpi label="Cost coverage"       value={`${Math.round(twin.costPosture.coverageRatio * 100)}%`} tone="text-amber-300" />
+          <Kpi label="Cost coverage"       value={`${Math.round(twin.costPosture.coverageRatio * 100)}%`} tone="text-zinc-300" />
         </div>
         {twin.knownLimitations.length > 0 && (
           <details className="mt-4 text-xs text-zinc-400">
-            <summary className="cursor-pointer text-[10px] font-mono text-amber-300 uppercase tracking-[0.18em]">// known limitations ({twin.knownLimitations.length})</summary>
+            <summary className="cursor-pointer text-[10px] font-mono text-zinc-300 uppercase tracking-[0.18em]">// known limitations ({twin.knownLimitations.length})</summary>
             <ul className="mt-2 space-y-1 text-[11px] text-zinc-500">
               {twin.knownLimitations.map((l, i) => <li key={i}>• {l}</li>)}
             </ul>
@@ -119,7 +119,7 @@ export default async function SimulationsCenter() {
         <Kpi label="Simulated"    value={`${totals.simulated}`}    tone="text-emerald-300"  detail="Safe to review." />
         <Kpi label="Preview only" value={`${totals.preview_only}`} tone="text-violet-300"   detail="Provider not connected live." />
         <Kpi label="Blocked"      value={`${totals.blocked}`}      tone="text-rose-300"     detail="Policy / source blocked." />
-        <Kpi label="Unsafe"       value={`${totals.unsafe}`}       tone="text-amber-300"    detail="Destructive without approval." />
+        <Kpi label="Unsafe"       value={`${totals.unsafe}`}       tone="text-zinc-300"    detail="Destructive without approval." />
       </section>
 
       {/* Simulation list */}
@@ -136,8 +136,8 @@ export default async function SimulationsCenter() {
       </section>
 
       {/* Honest footer */}
-      <section className="rounded-xl border border-amber-500/20 bg-amber-500/[0.04] p-5">
-        <p className="text-[10px] font-mono text-amber-300 uppercase tracking-[0.22em] mb-2">Known limitations</p>
+      <section className="rounded-xl border border-white/20 bg-white/[0.04] p-5">
+        <p className="text-[10px] font-mono text-zinc-300 uppercase tracking-[0.22em] mb-2">Known limitations</p>
         <ul className="space-y-1 text-xs text-zinc-300">
           <li>• Nothing on this page applies a change. Apply is gated by approvals + signed audit + governance.</li>
           <li>• Preview-mode twins yield <span className="font-mono">preview_only</span> simulations regardless of how favourable the diff looks.</li>
@@ -191,8 +191,8 @@ function SimulationRow({ result }: { result: SimulationResult }) {
           {result.diff.flatMap((d) => d.fields.slice(0, 4).map((f) => (
             <div key={`${d.actionId}.${f.field}`} className="text-[11px] font-mono text-zinc-400 grid grid-cols-3 gap-3 py-1.5 border-b border-white/[0.04] last:border-0">
               <span className="truncate">{f.field}</span>
-              <span className={`truncate ${f.op === "redacted" ? "text-amber-300" : "text-rose-300"}`}>{String(f.before)}</span>
-              <span className={`truncate ${f.op === "redacted" ? "text-amber-300" : "text-emerald-300"}`}>{String(f.after)}</span>
+              <span className={`truncate ${f.op === "redacted" ? "text-zinc-300" : "text-rose-300"}`}>{String(f.before)}</span>
+              <span className={`truncate ${f.op === "redacted" ? "text-zinc-300" : "text-emerald-300"}`}>{String(f.after)}</span>
             </div>
           )))}
         </div>
@@ -206,7 +206,7 @@ function SimulationRow({ result }: { result: SimulationResult }) {
           <div className="grid grid-cols-3 gap-2 mb-3 text-[10px] font-mono">
             <Stat label="direct"   value={`${result.impact.directlyAffected.length}`}   tone="text-cyan-300" />
             <Stat label="indirect" value={`${result.impact.indirectlyAffected.length}`} tone="text-violet-300" />
-            <Stat label="overall"  value={overall}                                       tone="text-amber-300" />
+            <Stat label="overall"  value={overall}                                       tone="text-zinc-300" />
           </div>
           {result.impact.notes.length > 0 && (
             <ul className="text-[11px] text-zinc-500 space-y-1">
@@ -218,7 +218,7 @@ function SimulationRow({ result }: { result: SimulationResult }) {
         {/* Approvals + blockers */}
         <div className="rounded-xl border border-white/[0.06] bg-black/20 p-4">
           <div className="flex items-center gap-2 mb-3">
-            <ShieldCheckIcon className="h-3.5 w-3.5 text-amber-300" />
+            <ShieldCheckIcon className="h-3.5 w-3.5 text-zinc-300" />
             <h3 className="text-xs font-semibold text-white tracking-tight">Approvals + blockers</h3>
           </div>
           {result.approvalsRequired.length === 0 && result.blockers.length === 0 && (
@@ -226,7 +226,7 @@ function SimulationRow({ result }: { result: SimulationResult }) {
           )}
           {result.approvalsRequired.length > 0 && (
             <div className="mb-3">
-              <p className="text-[10px] font-mono text-amber-300 uppercase tracking-[0.18em] mb-1">approval required</p>
+              <p className="text-[10px] font-mono text-zinc-300 uppercase tracking-[0.18em] mb-1">approval required</p>
               <ul className="text-[11px] text-zinc-400 space-y-1">
                 {result.approvalsRequired.map((a, i) => <li key={i}>• {a.reason}</li>)}
               </ul>

@@ -103,7 +103,7 @@ export default async function MonitoringWebhookPage({
             <div className="flex gap-3"><dt className="text-zinc-500 shrink-0 min-w-[120px]">webhook url</dt><dd className="text-zinc-200 break-all select-all">{webhookUrl}</dd></div>
             <div className="flex gap-3"><dt className="text-zinc-500 shrink-0 min-w-[120px]">provider</dt><dd className="text-zinc-200">{PROVIDER_LABEL[config.provider].label}</dd></div>
             <div className="flex gap-3"><dt className="text-zinc-500 shrink-0 min-w-[120px]">secret</dt><dd className="text-zinc-400">{maskSecret(config.webhookSecret)}</dd></div>
-            <div className="flex gap-3"><dt className="text-zinc-500 shrink-0 min-w-[120px]">enabled</dt><dd className={config.enabled ? "text-emerald-300" : "text-amber-300"}>{config.enabled ? "yes" : "paused"}</dd></div>
+            <div className="flex gap-3"><dt className="text-zinc-500 shrink-0 min-w-[120px]">enabled</dt><dd className={config.enabled ? "text-emerald-300" : "text-zinc-300"}>{config.enabled ? "yes" : "paused"}</dd></div>
             <div className="flex gap-3"><dt className="text-zinc-500 shrink-0 min-w-[120px]">auto-analyze</dt><dd className={config.autoAnalyze ? "text-emerald-300" : "text-zinc-400"}>{config.autoAnalyze ? "yes · auto-fire workload_performance_engineer" : "no · alerts persisted but no AI analysis"}</dd></div>
             <div className="flex gap-3"><dt className="text-zinc-500 shrink-0 min-w-[120px]">daily cost cap</dt><dd className="text-zinc-200">${(config.dailyCostCapCents / 100).toFixed(2)}{config.dailyCostCapCents === 0 ? " (uncapped)" : ""}</dd></div>
           </dl>

@@ -158,7 +158,7 @@ export function RunOperatingLoopPanel() {
           {/* 4-stat summary */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-3">
             <ResultStat label="Advanced" value={String(summary.providersAdvanced)} tone="text-emerald-300" />
-            <ResultStat label="Paused (approval)" value={String(summary.providersPausedForApproval)} tone={summary.providersPausedForApproval > 0 ? "text-amber-300" : "text-zinc-400"} />
+            <ResultStat label="Paused (approval)" value={String(summary.providersPausedForApproval)} tone={summary.providersPausedForApproval > 0 ? "text-zinc-300" : "text-zinc-400"} />
             <ResultStat label="Paused (input)" value={String(summary.providersPausedForInput)} tone={summary.providersPausedForInput > 0 ? "text-cyan-300" : "text-zinc-400"} />
             <ResultStat label="Blocked" value={String(summary.providersBlocked)} tone={summary.providersBlocked > 0 ? "text-rose-300" : "text-zinc-400"} />
           </div>
@@ -176,7 +176,7 @@ export function RunOperatingLoopPanel() {
                       <span className={`mt-1.5 w-1.5 h-1.5 rounded-full shrink-0 ${
                         status === "completed"            ? "bg-emerald-400" :
                         status === "in_progress"          ? "bg-cyan-400 animate-pulse" :
-                        status === "paused_for_approval"  ? "bg-amber-400"   :
+                        status === "paused_for_approval"  ? "bg-zinc-400"   :
                         status === "paused_for_user_input"? "bg-cyan-400"    :
                         status === "blocked"              ? "bg-rose-400"    :
                         status === "failed"               ? "bg-rose-500"    :

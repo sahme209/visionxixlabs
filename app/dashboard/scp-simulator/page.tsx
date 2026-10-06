@@ -197,7 +197,7 @@ export default function ScpSimulatorPage() {
       </div>
 
       {error && (
-        <div role="alert" aria-live="assertive" className="rounded-2xl border border-amber-500/[0.18] bg-amber-500/[0.04] p-5 mb-6 text-[13px] text-zinc-300">
+        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/[0.18] bg-white/[0.04] p-5 mb-6 text-[13px] text-zinc-300">
           {error}
         </div>
       )}
@@ -236,10 +236,10 @@ export default function ScpSimulatorPage() {
           </div>
 
           {result.limitations.length > 0 && (
-            <div className="mt-3 rounded-md border border-amber-500/15 bg-amber-500/[0.04] p-2.5">
-              <p className="text-[10px] font-mono text-amber-300/80 uppercase tracking-wider mb-1">// simulator limitations</p>
+            <div className="mt-3 rounded-md border border-white/15 bg-white/[0.04] p-2.5">
+              <p className="text-[10px] font-mono text-zinc-300/80 uppercase tracking-wider mb-1">// simulator limitations</p>
               {result.limitations.map((l, i) => (
-                <p key={i} className="text-[11px] text-amber-100">· {l}</p>
+                <p key={i} className="text-[11px] text-zinc-100">· {l}</p>
               ))}
             </div>
           )}

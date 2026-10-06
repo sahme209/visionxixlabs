@@ -30,7 +30,7 @@ function fmtDate(iso: string): string {
 }
 
 const CAT_TONE: Record<string, string> = {
-  "Product Updates":    "text-amber-300",
+  "Product Updates":    "text-zinc-300",
   "Engineering":        "text-violet-300",
   "Industry Insights":  "text-cyan-300",
   "Trust & Security":   "text-emerald-300",

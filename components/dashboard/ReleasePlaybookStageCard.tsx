@@ -33,14 +33,14 @@ const STATUS_ICON: Record<string, React.ComponentType<{ className: string }>> = 
 
 const STATUS_COLORS: Record<string, string> = {
   complete: "text-emerald-400 bg-emerald-500/10",
-  pending: "text-amber-400 bg-amber-500/10",
+  pending: "text-zinc-400 bg-white/10",
   warning: "text-orange-400 bg-orange-500/10",
   error: "text-rose-400 bg-rose-500/10",
 };
 
 const STATUS_BORDER: Record<string, string> = {
   complete: "border-emerald-500/25",
-  pending: "border-amber-500/25",
+  pending: "border-white/25",
   warning: "border-orange-500/25",
   error: "border-rose-500/25",
 };

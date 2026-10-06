@@ -11,7 +11,7 @@ export const dynamic = "force-dynamic";
 const DECISION_TONE: Record<string, string> = {
   approve: "text-emerald-300",
   reject: "text-rose-300",
-  revise: "text-amber-300",
+  revise: "text-zinc-300",
   escalate: "text-sky-300",
 };
 
@@ -151,7 +151,7 @@ export default async function SafetyPreflightPage({
         <p className="text-[10px] font-mono uppercase tracking-[0.18em] text-zinc-500 mb-3">composed verdicts</p>
         <ul className="space-y-2 text-[13px] text-zinc-300 leading-relaxed">
           <li><span className="text-emerald-300 font-mono">allow</span> — all three engineers cleared the action. Safe to auto-advance without further human review.</li>
-          <li><span className="text-amber-300 font-mono">review</span> — at least one engineer flagged caution but no hard refusal. Surface the packet to the operator.</li>
+          <li><span className="text-zinc-300 font-mono">review</span> — at least one engineer flagged caution but no hard refusal. Surface the packet to the operator.</li>
           <li><span className="text-rose-300 font-mono">block</span> — policy refuses, boundary tier is platform/catastrophic, or approver rejects. Never auto-advance.</li>
         </ul>
         <p className="text-[11px] text-zinc-500 mt-4 leading-snug">

@@ -99,8 +99,8 @@ export default async function ScheduledScansPage() {
       </header>
 
       {migrationPending && (
-        <div className="mb-8 rounded-2xl border border-amber-500/15 bg-white/[0.015] px-6 py-5">
-          <p className="text-[10px] font-mono uppercase tracking-[0.28em] text-amber-300 mb-1">migration pending</p>
+        <div className="mb-8 rounded-2xl border border-white/15 bg-white/[0.015] px-6 py-5">
+          <p className="text-[10px] font-mono uppercase tracking-[0.28em] text-zinc-300 mb-1">migration pending</p>
           <p className="text-[13px] text-zinc-300">
             AxiomScheduledRun table not migrated yet. Run <code className="font-mono text-white">prisma migrate deploy</code>.
           </p>
@@ -127,7 +127,7 @@ export default async function ScheduledScansPage() {
       {schedules.length > 0 && (
         <ul className="rounded-2xl border border-white/[0.06] bg-white/[0.015] divide-y divide-white/[0.04] overflow-hidden">
           {schedules.map((s) => {
-            const failureTone = s.consecutiveFailures >= 2 ? "text-amber-300" : s.consecutiveFailures > 0 ? "text-zinc-400" : "text-zinc-600";
+            const failureTone = s.consecutiveFailures >= 2 ? "text-zinc-300" : s.consecutiveFailures > 0 ? "text-zinc-400" : "text-zinc-600";
             return (
               <li key={s.id} className="px-6 py-5">
                 <div className="flex items-start justify-between gap-4 flex-wrap">

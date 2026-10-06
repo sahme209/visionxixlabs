@@ -183,7 +183,7 @@ export default function AwsSetupPage() {
             { code: "Empty scan result", fix: "Either the role has no permission to describe resources, or no resources exist in the selected regions. Verify with sts:GetCallerIdentity in CloudShell." },
           ].map((row) => (
             <li key={row.code} className="rounded-lg bg-white/[0.02] border border-white/[0.04] p-3">
-              <p className="text-amber-400 font-mono text-[12px] mb-1">{row.code}</p>
+              <p className="text-zinc-400 font-mono text-[12px] mb-1">{row.code}</p>
               <p className="text-xs text-zinc-400">{row.fix}</p>
             </li>
           ))}

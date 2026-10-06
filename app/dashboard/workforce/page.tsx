@@ -51,14 +51,14 @@ const DEPT_META: Record<WorkforceDepartment, { label: string; tone: string }> = 
   perception:        { label: "Perception",         tone: "border-cyan-500/30 bg-cyan-500/10 text-cyan-300" },
   reasoning:         { label: "Reasoning",          tone: "border-indigo-500/30 bg-indigo-500/10 text-indigo-300" },
   planning:          { label: "Planning",           tone: "border-fuchsia-500/30 bg-fuchsia-500/10 text-fuchsia-300" },
-  safety:            { label: "Safety",             tone: "border-amber-500/30 bg-amber-500/10 text-amber-300" },
+  safety:            { label: "Safety",             tone: "border-white/30 bg-white/10 text-zinc-300" },
   verification:      { label: "Verification",       tone: "border-emerald-500/30 bg-emerald-500/10 text-emerald-300" },
   memory:            { label: "Memory",             tone: "border-zinc-500/30 bg-zinc-500/10 text-zinc-300" },
   workflow:          { label: "Workflow",           tone: "border-white/[0.12] bg-violet-500/10 text-violet-300" },
   devops:            { label: "DevOps",             tone: "border-white/[0.12] bg-violet-500/10 text-violet-300" },
   database:          { label: "Database",           tone: "border-blue-500/30 bg-blue-500/10 text-blue-300" },
   security:          { label: "Security",           tone: "border-emerald-500/30 bg-emerald-500/10 text-emerald-300" },
-  finops:            { label: "FinOps",             tone: "border-amber-500/30 bg-amber-500/10 text-amber-300" },
+  finops:            { label: "FinOps",             tone: "border-white/30 bg-white/10 text-zinc-300" },
   observability:     { label: "Observability",      tone: "border-cyan-500/30 bg-cyan-500/10 text-cyan-300" },
   incident_response: { label: "Incident response",  tone: "border-rose-500/30 bg-rose-500/10 text-rose-300" },
   marketing:         { label: "Marketing",          tone: "border-white/[0.12] bg-violet-500/10 text-violet-300" },
@@ -67,7 +67,7 @@ const DEPT_META: Record<WorkforceDepartment, { label: string; tone: string }> = 
 
 const APPROVAL_TONE: Record<ApprovalRule, { label: string; tone: string }> = {
   no_approval_needed:      { label: "Auto-OK",          tone: "text-emerald-300 bg-emerald-500/10 border-emerald-500/30" },
-  single_approver:         { label: "Single approval",  tone: "text-amber-300 bg-amber-500/10 border-amber-500/30" },
+  single_approver:         { label: "Single approval",  tone: "text-zinc-300 bg-white/10 border-white/30" },
   two_step_approval:       { label: "Two-step",          tone: "text-rose-300 bg-rose-500/10 border-rose-500/30" },
   incident_commander_only: { label: "Incident commander", tone: "text-rose-300 bg-rose-500/15 border-rose-500/40" },
   blocked_always:          { label: "Policy gate",       tone: "text-zinc-300 bg-zinc-500/10 border-zinc-500/30" },
@@ -460,7 +460,7 @@ export default async function WorkforcePage({
           label="Pending approvals"
           value={Array.from(pendingCounts.values()).reduce((a, b) => a + b, 0)}
           sub="waiting on a workspace decision right now"
-          tone="text-amber-300"
+          tone="text-zinc-300"
         />
         <LiveStat
           label="Active engineers · 30d"
@@ -483,7 +483,7 @@ export default async function WorkforcePage({
           tone={
             autonomyPct === null ? "text-zinc-400"
             : autonomyPct >= 75 ? "text-emerald-300"
-            : autonomyPct >= 40 ? "text-amber-300"
+            : autonomyPct >= 40 ? "text-zinc-300"
             : "text-rose-300"
           }
         />
@@ -631,7 +631,7 @@ function EngineerCard({ engineer, attempts30d, pending, disabled, agiStatus }: {
             </span>
           )}
           {agiStatus === "stale" && (
-            <span className="text-[9px] font-mono uppercase tracking-wider border rounded-full px-1.5 py-px whitespace-nowrap text-amber-300 bg-amber-500/10 border-amber-500/30" title="AGI rationale is older than 7 days — re-run to refresh">
+            <span className="text-[9px] font-mono uppercase tracking-wider border rounded-full px-1.5 py-px whitespace-nowrap text-zinc-300 bg-white/10 border-white/30" title="AGI rationale is older than 7 days — re-run to refresh">
               AGI · stale
             </span>
           )}
@@ -654,7 +654,7 @@ function EngineerCard({ engineer, attempts30d, pending, disabled, agiStatus }: {
 
       <div className="mb-3 space-y-2">
         {engineer.requiredConnectors.length > 0 && (
-          <SmallRow label="Connectors" items={engineer.requiredConnectors.map((c) => c.replace(/_/g, " "))} tone="text-amber-300" />
+          <SmallRow label="Connectors" items={engineer.requiredConnectors.map((c) => c.replace(/_/g, " "))} tone="text-zinc-300" />
         )}
         <SmallRow label="Tools" items={engineer.requiredTools.map((t) => t.replace(/_/g, " "))} tone="text-cyan-300" />
         <SmallRow label="Permissions" items={engineer.requiredPermissions} tone="text-violet-300" />
@@ -684,10 +684,10 @@ function EngineerCard({ engineer, attempts30d, pending, disabled, agiStatus }: {
 
       {engineer.missingPieces.length > 0 && (
         <div className="mt-auto pt-2 border-t border-white/[0.04]">
-          <p className="text-[10px] font-semibold text-amber-300 uppercase tracking-wider mb-1 inline-flex items-center gap-1">
+          <p className="text-[10px] font-semibold text-zinc-300 uppercase tracking-wider mb-1 inline-flex items-center gap-1">
             <ExclamationTriangleIcon className="h-3 w-3" /> Missing setup ({engineer.missingPieces.length})
           </p>
-          <ul className="text-[10.5px] text-amber-100/80 leading-snug space-y-0.5 list-disc list-inside marker:text-amber-400/70">
+          <ul className="text-[10.5px] text-zinc-100/80 leading-snug space-y-0.5 list-disc list-inside marker:text-white/70">
             {engineer.missingPieces.map((m) => (
               <li key={m}>{m}</li>
             ))}
@@ -703,7 +703,7 @@ function EngineerCard({ engineer, attempts30d, pending, disabled, agiStatus }: {
               : <span className="text-zinc-600">no attempts · 30d</span>}
           </span>
           {pending > 0 && (
-            <span className="text-[10px] font-mono text-amber-300 inline-flex items-center gap-1">
+            <span className="text-[10px] font-mono text-zinc-300 inline-flex items-center gap-1">
               · <span className="tabular-nums">{pending}</span> pending
             </span>
           )}

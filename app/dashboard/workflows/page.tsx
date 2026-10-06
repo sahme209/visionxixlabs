@@ -40,8 +40,8 @@ const WORKFLOW_TYPES = [
     icon: ShieldExclamationIcon,
     title: "Drift monitoring",
     desc: "Continuous comparison of baseline vs. live state. Auto-triages out-of-band changes with severity scoring.",
-    color: "text-amber-400",
-    bg: "bg-amber-500/10 border-amber-500/20",
+    color: "text-zinc-400",
+    bg: "bg-white/10 border-white/20",
   },
   {
     icon: CommandLineIcon,

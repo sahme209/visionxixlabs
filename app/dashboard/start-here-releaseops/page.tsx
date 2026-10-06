@@ -136,20 +136,20 @@ export default function StartHereReleaseOpsPage() {
       </section>
 
       {/* Honest gaps */}
-      <section className="mb-8 rounded-2xl border border-amber-500/[0.18] bg-amber-500/[0.03] p-5">
-        <h2 className="text-[14px] font-semibold text-amber-200 mb-2">
+      <section className="mb-8 rounded-2xl border border-white/[0.18] bg-white/[0.03] p-5">
+        <h2 className="text-[14px] font-semibold text-zinc-200 mb-2">
           <ShieldCheckIcon className="inline h-4 w-4 mr-1.5 -mt-0.5" />
           What's still manual (honest gaps)
         </h2>
         <ul className="space-y-2 text-[12.5px] text-zinc-300">
           <li>
-            <span className="font-mono text-amber-300">Branch protection auto-sync</span> — the projector + persistence + paste-in panel are live; the automated <code className="font-mono text-zinc-100">gh api</code> fetch ships when the App private key is wired in.
+            <span className="font-mono text-zinc-300">Branch protection auto-sync</span> — the projector + persistence + paste-in panel are live; the automated <code className="font-mono text-zinc-100">gh api</code> fetch ships when the App private key is wired in.
           </li>
           <li>
-            <span className="font-mono text-amber-300">Installation-token repo discovery</span> — after install, we know the installation_id but don't yet call <code className="font-mono text-zinc-100">/installation/repositories</code>; that lands with the private key wiring.
+            <span className="font-mono text-zinc-300">Installation-token repo discovery</span> — after install, we know the installation_id but don't yet call <code className="font-mono text-zinc-100">/installation/repositories</code>; that lands with the private key wiring.
           </li>
           <li>
-            <span className="font-mono text-amber-300">Slack notifications for incidents</span> — model + responder + UI live; the Slack outbound hop is a separate phase.
+            <span className="font-mono text-zinc-300">Slack notifications for incidents</span> — model + responder + UI live; the Slack outbound hop is a separate phase.
           </li>
         </ul>
         <p className="text-[11.5px] text-zinc-400 mt-3">

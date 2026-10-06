@@ -70,7 +70,7 @@ export default function TroubleshootingPage() {
           <div className="space-y-3">
             {section.items.map((item) => (
               <div key={item.code} className="rounded-xl bg-white/[0.02] border border-white/[0.06] p-4">
-                <p className="text-amber-400 font-mono text-[12px] font-semibold mb-2">{item.code}</p>
+                <p className="text-zinc-400 font-mono text-[12px] font-semibold mb-2">{item.code}</p>
                 <div className="space-y-2 text-sm">
                   <div>
                     <p className="text-[10px] font-semibold text-zinc-500 uppercase tracking-widest mb-0.5">Cause</p>

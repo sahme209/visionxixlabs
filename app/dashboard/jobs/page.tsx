@@ -204,7 +204,7 @@ export default function JobsPage() {
       <Stagger delay={0.05} interval={0.05} className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
         {[
           { label: "Active",    value: activeCount,    color: "text-blue-400",    bg: "bg-blue-500/10 border-blue-500/20",       icon: ArrowPathIcon },
-          { label: "Blocked",   value: blockedCount,   color: "text-amber-400",   bg: "bg-amber-500/10 border-amber-500/20",     icon: ShieldExclamationIcon },
+          { label: "Blocked",   value: blockedCount,   color: "text-zinc-400",   bg: "bg-white/10 border-white/20",     icon: ShieldExclamationIcon },
           { label: "Failed",    value: failedCount,    color: "text-red-400",     bg: "bg-red-500/10 border-red-500/20",         icon: XCircleIcon },
           { label: "Completed", value: completedCount, color: "text-emerald-400", bg: "bg-emerald-500/10 border-emerald-500/20", icon: CheckCircleIcon },
         ].map((kpi) => {
@@ -269,7 +269,7 @@ function JobRow({ job }: { job: AgentJob }) {
 
   const semanticBg =
     display.semantic === "error" ? "border-red-500/15 bg-red-500/[0.03]" :
-    display.semantic === "warning" ? "border-amber-500/15 bg-amber-500/[0.03]" :
+    display.semantic === "warning" ? "border-white/15 bg-white/[0.03]" :
     display.semantic === "success" ? "border-emerald-500/15 bg-emerald-500/[0.03]" :
     display.semantic === "running" ? "border-blue-500/15 bg-blue-500/[0.03]" :
     "border-white/[0.06] bg-white/[0.02]";
@@ -283,14 +283,14 @@ function JobRow({ job }: { job: AgentJob }) {
         {/* Status icon */}
         <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 border ${
           display.semantic === "error" ? "bg-red-500/10 border-red-500/20" :
-          display.semantic === "warning" ? "bg-amber-500/10 border-amber-500/20" :
+          display.semantic === "warning" ? "bg-white/10 border-white/20" :
           display.semantic === "success" ? "bg-emerald-500/10 border-emerald-500/20" :
           display.semantic === "running" ? "bg-blue-500/10 border-blue-500/20" :
           "bg-white/[0.04] border-white/[0.08]"
         }`}>
           <Icon className={`h-5 w-5 ${
             display.semantic === "error" ? "text-red-400" :
-            display.semantic === "warning" ? "text-amber-400" :
+            display.semantic === "warning" ? "text-zinc-400" :
             display.semantic === "success" ? "text-emerald-400" :
             display.semantic === "running" ? "text-blue-400 animate-spin" :
             "text-zinc-400"
@@ -305,7 +305,7 @@ function JobRow({ job }: { job: AgentJob }) {
             <p className="text-sm font-bold text-white truncate">{job.title}</p>
             <span className={`text-[9px] font-bold uppercase tracking-wider border rounded-full px-1.5 py-px ${
               display.semantic === "error" ? "text-red-400 bg-red-500/10 border-red-500/20" :
-              display.semantic === "warning" ? "text-amber-400 bg-amber-500/10 border-amber-500/20" :
+              display.semantic === "warning" ? "text-zinc-400 bg-white/10 border-white/20" :
               display.semantic === "success" ? "text-emerald-400 bg-emerald-500/10 border-emerald-500/20" :
               display.semantic === "running" ? "text-blue-400 bg-blue-500/10 border-blue-500/20" :
               "text-zinc-500 bg-white/[0.04] border-white/[0.08]"
@@ -319,7 +319,7 @@ function JobRow({ job }: { job: AgentJob }) {
             )}
             <span className={`text-[9px] font-semibold uppercase tracking-wider ${
               job.priority === "critical" ? "text-red-400" :
-              job.priority === "high" ? "text-amber-400" :
+              job.priority === "high" ? "text-zinc-400" :
               "text-zinc-500"
             }`}>
               {job.priority}
@@ -353,7 +353,7 @@ function JobRow({ job }: { job: AgentJob }) {
             <div
               className={`h-full rounded-full ${
                 display.semantic === "error" ? "bg-red-500/60" :
-                display.semantic === "warning" ? "bg-amber-500/60" :
+                display.semantic === "warning" ? "bg-white/60" :
                 display.semantic === "success" ? "bg-emerald-500" :
                 "bg-gradient-to-r from-violet-500 to-fuchsia-500"
               }`}
@@ -364,7 +364,7 @@ function JobRow({ job }: { job: AgentJob }) {
           {/* Blocked / failure reason */}
           {(job.blockedReason || job.failureReason) && (
             <div className={`mt-2 rounded-lg px-3 py-2 text-[11px] flex items-start gap-2 ${
-              job.failureReason ? "bg-red-500/[0.05] border border-red-500/15 text-red-300" : "bg-amber-500/[0.05] border border-amber-500/15 text-amber-300"
+              job.failureReason ? "bg-red-500/[0.05] border border-red-500/15 text-red-300" : "bg-white/[0.05] border border-white/15 text-zinc-300"
             }`}>
               <ExclamationTriangleIcon className="h-3.5 w-3.5 shrink-0 mt-0.5" />
               <span>{job.failureReason ?? job.blockedReason}</span>
@@ -387,7 +387,7 @@ function JobRow({ job }: { job: AgentJob }) {
             </Link>
           )}
           {job.relatedApprovalId && (
-            <Link href="/dashboard/approvals" className="text-[11px] text-amber-400 hover:text-amber-300 transition-colors font-semibold">
+            <Link href="/dashboard/approvals" className="text-[11px] text-zinc-400 hover:text-zinc-300 transition-colors font-semibold">
               Approve
             </Link>
           )}

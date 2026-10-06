@@ -519,9 +519,9 @@ const TONES: Record<Tone, { border: string; bg: string; kicker: string }> = {
     kicker: "text-indigo-300",
   },
   amber: {
-    border: "border-amber-500/25",
-    bg:     "bg-amber-500/[0.04]",
-    kicker: "text-amber-300",
+    border: "border-white/25",
+    bg:     "bg-white/[0.04]",
+    kicker: "text-zinc-300",
   },
   neutral: {
     border: "border-zinc-800",

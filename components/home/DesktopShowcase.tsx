@@ -91,7 +91,7 @@ export function DesktopShowcase() {
                       <p className="text-sm font-semibold text-white">Production configuration rollout</p>
                       <p className="mt-1 text-[10px] text-zinc-500">Illustrative record · request version 1 · correlation ID retained</p>
                     </div>
-                    <span className="rounded-md border border-amber-400/20 bg-amber-400/[0.07] px-2 py-1 text-[10px] uppercase tracking-wide text-amber-200">Awaiting approval</span>
+                    <span className="rounded-md border border-white/20 bg-white/[0.07] px-2 py-1 text-[10px] uppercase tracking-wide text-zinc-200">Awaiting approval</span>
                   </div>
 
                   <div className="mt-5 grid grid-cols-5 gap-2">

@@ -48,7 +48,7 @@ export const metadata: Metadata = {
 
 const RISK_TONE: Record<RiskTier, string> = {
   low:      "border-emerald-500/30 bg-emerald-500/10 text-emerald-300",
-  medium:   "border-amber-500/30   bg-amber-500/10   text-amber-300",
+  medium:   "border-white/30   bg-white/10   text-zinc-300",
   high:     "border-rose-500/30    bg-rose-500/10    text-rose-300",
   critical: "border-rose-500/40    bg-rose-500/15    text-rose-200",
 };
@@ -125,7 +125,7 @@ export default function MarketingPage() {
             <span className="rounded-full border border-emerald-500/30 bg-emerald-500/10 text-emerald-300 px-2.5 py-1 text-[11px] font-mono">
               {summary.ready} ready
             </span>
-            <span className="rounded-full border border-amber-500/30 bg-amber-500/10 text-amber-300 px-2.5 py-1 text-[11px] font-mono">
+            <span className="rounded-full border border-white/30 bg-white/10 text-zinc-300 px-2.5 py-1 text-[11px] font-mono">
               {summary.needs_approval} awaiting approval
             </span>
             <DemoBadge />
@@ -212,7 +212,7 @@ export default function MarketingPage() {
                       p.verdict === "ready"
                         ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-300"
                         : p.verdict === "needs_approval"
-                          ? "border-amber-500/30 bg-amber-500/10 text-amber-300"
+                          ? "border-white/30 bg-white/10 text-zinc-300"
                           : "border-rose-500/30 bg-rose-500/10 text-rose-300",
                     ].join(" ")}>
                       {p.verdict.replace("_", " ")}

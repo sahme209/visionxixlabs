@@ -51,13 +51,13 @@ const PHASE_STATUS_CONFIG: Record<
 
 const RISK_COLOR: Record<PlanPhase["riskLevel"], string> = {
   low: "text-emerald-400 bg-emerald-500/10 border-emerald-500/20",
-  medium: "text-amber-400 bg-amber-500/10 border-amber-500/20",
+  medium: "text-zinc-400 bg-white/10 border-white/20",
   high: "text-red-400 bg-red-500/10 border-red-500/20",
 };
 
 const ACTION_COLOR: Record<ExecutionPlanData["affectedResources"][number]["action"], string> = {
   create: "text-emerald-400",
-  modify: "text-amber-400",
+  modify: "text-zinc-400",
   destroy: "text-red-400",
 };
 
@@ -95,7 +95,7 @@ export function ExecutionPlanCard({ plan, className = "", onApprove }: Execution
               <DocumentCheckIcon className="h-4 w-4 text-violet-400" />
               <span className="text-[10px] font-semibold text-violet-400 uppercase tracking-wider">Execution Plan</span>
               <span className="text-[10px] text-zinc-600 font-mono">{data.id}</span>
-              <span className="text-[10px] font-semibold uppercase tracking-wider border rounded-full px-2 py-0.5 text-amber-400 bg-amber-500/10 border-amber-500/20">
+              <span className="text-[10px] font-semibold uppercase tracking-wider border rounded-full px-2 py-0.5 text-zinc-400 bg-white/10 border-white/20">
                 {data.provider}
               </span>
             </div>
@@ -199,7 +199,7 @@ export function ExecutionPlanCard({ plan, className = "", onApprove }: Execution
           <div className="space-y-3">
             <div className="flex items-center gap-3 flex-wrap text-[11px] font-mono">
               <span className="text-emerald-400">+ {counts.create} add</span>
-              <span className="text-amber-400">~ {counts.modify} change</span>
+              <span className="text-zinc-400">~ {counts.modify} change</span>
               <span className="text-red-400">- {counts.destroy} destroy</span>
               <span className="text-zinc-600">·</span>
               <span className="text-zinc-400">{data.totalResources} total</span>
@@ -231,10 +231,10 @@ export function ExecutionPlanCard({ plan, className = "", onApprove }: Execution
                 {check.passed ? (
                   <CheckCircleIcon className="h-4 w-4 text-emerald-400 shrink-0" />
                 ) : (
-                  <ExclamationTriangleIcon className="h-4 w-4 text-amber-400 shrink-0" />
+                  <ExclamationTriangleIcon className="h-4 w-4 text-zinc-400 shrink-0" />
                 )}
                 <span className="text-sm text-zinc-300 flex-1">{check.label}</span>
-                <span className={`text-[10px] font-semibold uppercase tracking-wider ${check.passed ? "text-emerald-400" : "text-amber-400"}`}>
+                <span className={`text-[10px] font-semibold uppercase tracking-wider ${check.passed ? "text-emerald-400" : "text-zinc-400"}`}>
                   {check.passed ? "Passed" : "Pending"}
                 </span>
               </div>
@@ -246,8 +246,8 @@ export function ExecutionPlanCard({ plan, className = "", onApprove }: Execution
       {/* Footer / Approval CTA */}
       <div className="px-6 py-4 border-t border-white/[0.06] bg-white/[0.01] flex items-center justify-between flex-wrap gap-3">
         <div className="flex items-center gap-2 text-xs">
-          <ShieldCheckIcon className={`h-4 w-4 ${allSafetyPassed ? "text-emerald-400" : "text-amber-400"}`} />
-          <span className={allSafetyPassed ? "text-emerald-400" : "text-amber-400"}>
+          <ShieldCheckIcon className={`h-4 w-4 ${allSafetyPassed ? "text-emerald-400" : "text-zinc-400"}`} />
+          <span className={allSafetyPassed ? "text-emerald-400" : "text-zinc-400"}>
             {allSafetyPassed ? "All safety checks passed" : "Safety checks in progress"}
           </span>
         </div>

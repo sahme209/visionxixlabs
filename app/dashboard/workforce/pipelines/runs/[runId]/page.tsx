@@ -31,16 +31,16 @@ export const dynamic = "force-dynamic";
 
 const STAGE_TONE: Record<string, { tone: string; icon: typeof CheckCircleIcon; label: string }> = {
   queued:             { tone: "text-zinc-400 bg-white/[0.04] border-white/[0.08]",                     icon: ClockIcon,                label: "queued" },
-  running:            { tone: "text-amber-300 bg-amber-500/10 border-amber-500/30",                    icon: ArrowPathIcon,            label: "running" },
+  running:            { tone: "text-zinc-300 bg-white/10 border-white/30",                    icon: ArrowPathIcon,            label: "running" },
   succeeded:          { tone: "text-emerald-300 bg-emerald-500/10 border-emerald-500/30",              icon: CheckCircleIcon,          label: "succeeded" },
   failed:             { tone: "text-rose-300 bg-rose-500/10 border-rose-500/30",                       icon: ExclamationTriangleIcon,  label: "failed" },
   skipped:            { tone: "text-zinc-400 bg-white/[0.04] border-white/[0.08]",                     icon: CheckCircleIcon,          label: "skipped" },
-  awaiting_approval:  { tone: "text-amber-300 bg-amber-500/15 border-amber-500/40",                    icon: PauseCircleIcon,          label: "awaiting approval" },
+  awaiting_approval:  { tone: "text-zinc-300 bg-white/15 border-white/40",                    icon: PauseCircleIcon,          label: "awaiting approval" },
 };
 
 const RUN_STATUS_TONE: Record<string, string> = {
   queued:    "text-zinc-400 bg-white/[0.04] border-white/[0.08]",
-  running:   "text-amber-300 bg-amber-500/10 border-amber-500/30",
+  running:   "text-zinc-300 bg-white/10 border-white/30",
   succeeded: "text-emerald-300 bg-emerald-500/10 border-emerald-500/30",
   failed:    "text-rose-300 bg-rose-500/10 border-rose-500/30",
   cancelled: "text-zinc-400 bg-white/[0.04] border-white/[0.08]",
@@ -129,7 +129,7 @@ export default async function PipelineRunPage({ params }: { params: Promise<{ ru
                   <Icon className={`h-4 w-4 ${meta.tone.split(" ")[0]} ${s.status === "running" ? "animate-spin" : ""}`} />
                   <p className="text-[12px] font-semibold text-white truncate">{defStage?.name ?? s.stageId}</p>
                   {s.requiresApproval && (
-                    <ShieldCheckIcon className="h-3 w-3 text-amber-400" title="Approval gate" />
+                    <ShieldCheckIcon className="h-3 w-3 text-zinc-400" title="Approval gate" />
                   )}
                 </div>
                 <span className={`text-[9px] font-mono uppercase tracking-wider border rounded-full px-1.5 py-0.5 ${meta.tone}`}>

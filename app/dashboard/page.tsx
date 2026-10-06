@@ -287,7 +287,7 @@ export default function DashboardPage() {
             <Stat label="findings"     value={summary.findingCount.toString()} href="/dashboard/findings"
                   spark={summary.findingsTrend7d} sparkTone="text-zinc-400" />
             <Stat label="pending"      value={summary.pendingApprovals.toString()} href="/dashboard/approvals"
-                  tone={summary.highRiskApprovals > 0 ? "text-amber-300" : undefined} />
+                  tone={summary.highRiskApprovals > 0 ? "text-zinc-300" : undefined} />
             <Stat label="potential/mo" value={summary.monthlyHigh > 0 ? `$${Math.round(summary.monthlyHigh).toLocaleString()}` : "—"} href="/dashboard/approvals" />
             <Stat label="last.scan"    value={timeAgoFromIso(summary.lastScanIso) ?? "—"} href="/dashboard/scans"
                   spark={summary.scansTrend7d} sparkTone="text-emerald-400/70" />
@@ -501,7 +501,7 @@ function ActionSurfaceChip() {
           <span className="text-zinc-500"> · </span>
           <span className="text-emerald-300 font-semibold">{counts.governed} governed</span>
           <span className="text-zinc-500"> · </span>
-          <span className="text-amber-300 font-semibold">{counts.needs_setup} need setup</span>
+          <span className="text-zinc-300 font-semibold">{counts.needs_setup} need setup</span>
           <span className="text-zinc-500"> · </span>
           <span className="text-rose-300 font-semibold">{counts.unsafe} unsafe blocked by design</span>
           <span className="text-zinc-500"> — </span>

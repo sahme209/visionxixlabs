@@ -87,10 +87,10 @@ export default function WorkforceAuditPage() {
       </section>
 
       {/* Open gaps */}
-      <section className="rounded-2xl border border-amber-500/15 bg-amber-500/[0.04] p-5 mb-6">
+      <section className="rounded-2xl border border-white/15 bg-white/[0.04] p-5 mb-6">
         <header className="flex items-center gap-2 mb-3">
-          <ExclamationTriangleIcon className="h-4 w-4 text-amber-300" />
-          <p className="text-[10px] font-semibold uppercase tracking-widest text-amber-300">Implementation gaps ({withMissing.length} engineers · {summary.totalMissingPieces} items)</p>
+          <ExclamationTriangleIcon className="h-4 w-4 text-zinc-300" />
+          <p className="text-[10px] font-semibold uppercase tracking-widest text-zinc-300">Implementation gaps ({withMissing.length} engineers · {summary.totalMissingPieces} items)</p>
         </header>
         <ul className="space-y-2">
           {withMissing.map((e) => (
@@ -99,7 +99,7 @@ export default function WorkforceAuditPage() {
                 <p className="text-[12.5px] font-semibold text-white">{e.displayName}</p>
                 <span className="text-[10px] font-mono text-zinc-500">{e.productLayer === "client" ? "client" : "internal"}</span>
               </div>
-              <ul className="text-[11px] text-amber-100/85 leading-snug list-disc list-inside marker:text-amber-400/70">
+              <ul className="text-[11px] text-zinc-100/85 leading-snug list-disc list-inside marker:text-white/70">
                 {e.missingPieces.map((m) => <li key={m}>{m}</li>)}
               </ul>
             </li>
@@ -145,7 +145,7 @@ function InternalEngineerCard({ engineer }: { engineer: AgentEngineer }) {
       <p className="text-[10.5px] font-mono text-zinc-500 mb-2">{engineer.department}</p>
       <p className="text-[11.5px] text-zinc-400 leading-snug">{engineer.role}</p>
       {engineer.missingPieces.length > 0 && (
-        <ul className="mt-2 text-[10.5px] text-amber-100/85 leading-snug list-disc list-inside marker:text-amber-400/70">
+        <ul className="mt-2 text-[10.5px] text-zinc-100/85 leading-snug list-disc list-inside marker:text-white/70">
           {engineer.missingPieces.map((m) => <li key={m}>{m}</li>)}
         </ul>
       )}

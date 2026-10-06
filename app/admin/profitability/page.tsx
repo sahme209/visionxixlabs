@@ -49,10 +49,10 @@ const WARNING_LABEL: Record<MarginWarningKind, string> = {
 
 const WARNING_TONE: Record<MarginWarningKind, string> = {
   ai_cost_above_plan_price: "text-rose-300 bg-rose-500/10 border-rose-500/30",
-  ai_cost_above_50pct_of_plan_price: "text-amber-300 bg-amber-500/10 border-amber-500/30",
+  ai_cost_above_50pct_of_plan_price: "text-zinc-300 bg-white/10 border-white/30",
   negative_gross_margin: "text-rose-300 bg-rose-500/15 border-rose-500/40",
   ai_credit_pool_exhausted: "text-zinc-300 bg-white/[0.04] border-white/[0.08]",
-  no_overage_revenue_on_overage_plan: "text-amber-300 bg-amber-500/10 border-amber-500/30",
+  no_overage_revenue_on_overage_plan: "text-zinc-300 bg-white/10 border-white/30",
   enterprise_should_have_custom_contract: "text-zinc-400 bg-white/[0.04] border-white/[0.08]",
 };
 
@@ -131,8 +131,8 @@ export default async function AdminProfitabilityPage() {
 
       <div className="mb-8">
         <div className="flex items-center gap-3 mb-3">
-          <ChartBarIcon className="h-4 w-4 text-amber-400" />
-          <p className="text-[10px] font-semibold text-amber-400 uppercase tracking-widest">Profitability · admin only</p>
+          <ChartBarIcon className="h-4 w-4 text-zinc-400" />
+          <p className="text-[10px] font-semibold text-zinc-400 uppercase tracking-widest">Profitability · admin only</p>
         </div>
         <h1 className="text-3xl md:text-4xl font-bold text-white tracking-[-0.04em] mb-2">
           {period} margin · <span className="text-gradient">{rows.length} workspaces</span>
@@ -145,7 +145,7 @@ export default async function AdminProfitabilityPage() {
       <section className="grid grid-cols-1 md:grid-cols-5 gap-3 mb-8">
         <SummaryStat label="Total revenue (MTD)" value={formatCents(totalRevenue)} tone="text-emerald-300" />
         <SummaryStat label="Overage revenue (MTD)" value={formatCents(totalOverageRevenue)} tone="text-violet-300" />
-        <SummaryStat label="Total AI cost (MTD)" value={formatCents(totalAICost)} tone="text-amber-300" />
+        <SummaryStat label="Total AI cost (MTD)" value={formatCents(totalAICost)} tone="text-zinc-300" />
         <SummaryStat label="Total gross margin" value={formatCents(totalGrossMargin)} tone={totalGrossMargin >= 0 ? "text-emerald-300" : "text-rose-300"} />
         <SummaryStat label="Workspaces at risk" value={String(atRiskCount)} tone={atRiskCount > 0 ? "text-rose-300" : "text-zinc-300"} icon={ExclamationTriangleIcon} />
       </section>
@@ -203,7 +203,7 @@ export default async function AdminProfitabilityPage() {
                 <Field
                   label="Margin %"
                   value={margin.grossMarginRatio === null ? "—" : `${Math.round(margin.grossMarginRatio * 100)}%`}
-                  tone={margin.grossMarginRatio === null ? "text-zinc-300" : margin.grossMarginRatio >= 0.5 ? "text-emerald-300" : margin.grossMarginRatio >= 0 ? "text-amber-300" : "text-rose-300"}
+                  tone={margin.grossMarginRatio === null ? "text-zinc-300" : margin.grossMarginRatio >= 0.5 ? "text-emerald-300" : margin.grossMarginRatio >= 0 ? "text-zinc-300" : "text-rose-300"}
                 />
               </div>
 
@@ -221,9 +221,9 @@ export default async function AdminProfitabilityPage() {
         </section>
       )}
 
-      <section className="mt-8 rounded-2xl border border-amber-500/15 bg-amber-500/[0.04] p-5">
-        <p className="text-[10px] font-semibold text-amber-300 uppercase tracking-widest mb-2">// margin allocation notes</p>
-        <ul className="text-[12px] text-zinc-300 leading-relaxed list-disc list-inside marker:text-amber-400/70 space-y-1">
+      <section className="mt-8 rounded-2xl border border-white/15 bg-white/[0.04] p-5">
+        <p className="text-[10px] font-semibold text-zinc-300 uppercase tracking-widest mb-2">// margin allocation notes</p>
+        <ul className="text-[12px] text-zinc-300 leading-relaxed list-disc list-inside marker:text-white/70 space-y-1">
           <li>Infra cost is allocated at $20/workspace/month — adjust in <code className="text-zinc-200">app/admin/profitability/page.tsx</code> when the per-tenant model lands.</li>
           <li>Support cost is allocated by plan tier: Starter $5, Growth $25, Business $100, Enterprise $250.</li>
           <li>Stripe fees estimated at 2.9% + 30¢ on the plan-price charge. Overage revenue is derived from MTD AI cost over the plan's included pool, multiplied by the plan's implicit markup (Growth ~2x, Business ~1.67x). Starter (hard_stop) and Enterprise (custom_contract) do not generate metered overage revenue here.</li>

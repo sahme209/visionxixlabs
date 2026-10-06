@@ -95,7 +95,7 @@ function decodePayload(payload: unknown): {
 
 const STATUS_STYLE: Record<string, { label: string; bg: string; text: string }> = {
   pass: { label: "PASS", bg: "bg-emerald-100", text: "text-emerald-900" },
-  partial: { label: "PARTIAL", bg: "bg-amber-100", text: "text-amber-900" },
+  partial: { label: "PARTIAL", bg: "bg-zinc-100", text: "text-zinc-400" },
   fail: { label: "FAIL", bg: "bg-rose-100", text: "text-rose-900" },
   na: { label: "N/A", bg: "bg-zinc-100", text: "text-zinc-700" },
 };
@@ -206,7 +206,7 @@ export default async function AuditPacketPage({
               <span className="font-mono text-[11px] uppercase tracking-wider text-zinc-500">overall posture</span>
               <span className={`text-[24px] font-bold tabular-nums ${
                 decoded.overallScore >= 75 ? "text-emerald-700" :
-                decoded.overallScore >= 50 ? "text-amber-700" : "text-rose-700"
+                decoded.overallScore >= 50 ? "text-zinc-400" : "text-rose-700"
               }`}>
                 {decoded.overallScore}/100
               </span>

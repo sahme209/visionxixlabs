@@ -65,7 +65,7 @@ export default function GithubIntegrationPage() {
     github?.mode === "live"         ? { border: "border-emerald-500/[0.22]", bg: "bg-emerald-500/[0.04]", text: "text-emerald-300", dot: "bg-emerald-400 animate-pulse" } :
     github?.mode === "partial_live" ? { border: "border-cyan-500/[0.22]",    bg: "bg-cyan-500/[0.04]",    text: "text-cyan-300",    dot: "bg-cyan-400 animate-pulse"    } :
     github?.mode === "blocked"      ? { border: "border-rose-500/[0.22]",    bg: "bg-rose-500/[0.04]",    text: "text-rose-300",    dot: "bg-rose-400"                  } :
-                                       { border: "border-amber-500/[0.18]",  bg: "bg-amber-500/[0.04]",   text: "text-amber-300",   dot: "bg-amber-400"                 };
+                                       { border: "border-white/[0.18]",  bg: "bg-white/[0.04]",   text: "text-zinc-300",   dot: "bg-zinc-400"                 };
 
   return (
     <div className="relative">
@@ -104,8 +104,8 @@ export default function GithubIntegrationPage() {
         </div>
       )}
       {!loading && error && (
-        <div role="alert" aria-live="assertive" className="rounded-2xl border border-amber-500/[0.18] bg-amber-500/[0.04] p-5 mb-6">
-          <p className="text-[11px] font-mono text-amber-300/80 uppercase tracking-[0.18em] mb-1">// github state unavailable</p>
+        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/[0.18] bg-white/[0.04] p-5 mb-6">
+          <p className="text-[11px] font-mono text-zinc-300/80 uppercase tracking-[0.18em] mb-1">// github state unavailable</p>
           <p className="text-[13px] text-zinc-300">{error}</p>
         </div>
       )}
@@ -128,8 +128,8 @@ export default function GithubIntegrationPage() {
           )}
 
           {github.missingRequirements.length > 0 && (
-            <div className="mt-4 rounded-lg border border-amber-500/[0.18] bg-amber-500/[0.04] p-3">
-              <p className="text-[10px] font-mono text-amber-300/80 uppercase tracking-wider mb-2">Setup needed</p>
+            <div className="mt-4 rounded-lg border border-white/[0.18] bg-white/[0.04] p-3">
+              <p className="text-[10px] font-mono text-zinc-300/80 uppercase tracking-wider mb-2">Setup needed</p>
               <ul className="space-y-1">
                 {github.missingRequirements.map((req, i) => (
                   <li key={i} className="text-[12px] text-zinc-300 font-mono">{req}</li>

@@ -14,7 +14,7 @@ export const dynamic = "force-dynamic";
 
 const STATUS_TONE: Record<string, string> = {
   executed: "text-emerald-300",
-  skipped: "text-amber-300",
+  skipped: "text-zinc-300",
   failed: "text-rose-300",
 };
 

@@ -46,7 +46,7 @@ type Phase = "idle" | "running" | "done" | "error";
 const SOURCE_TONE: Record<string, { border: string; bg: string; text: string; dot: string; pill: string }> = {
   live:    { border: "border-emerald-500/[0.22]", bg: "bg-emerald-500/[0.04]", text: "text-emerald-300", dot: "bg-emerald-400 animate-pulse", pill: "bg-emerald-500/15 text-emerald-300" },
   partial: { border: "border-cyan-500/[0.22]",    bg: "bg-cyan-500/[0.04]",    text: "text-cyan-300",    dot: "bg-cyan-400 animate-pulse",    pill: "bg-cyan-500/15 text-cyan-300"       },
-  preview: { border: "border-amber-500/[0.22]",   bg: "bg-amber-500/[0.04]",   text: "text-amber-300",   dot: "bg-amber-400",                 pill: "bg-amber-500/15 text-amber-300"     },
+  preview: { border: "border-white/[0.22]",   bg: "bg-white/[0.04]",   text: "text-zinc-300",   dot: "bg-zinc-400",                 pill: "bg-white/15 text-zinc-300"     },
 };
 
 export function RunGithubSyncPanel() {
@@ -187,7 +187,7 @@ export function RunGithubSyncPanel() {
               <ResultStat
                 label="Failing workflows"
                 value={String(summary.failingWorkflows)}
-                tone={summary.failingWorkflows > 0 ? "text-amber-300" : "text-emerald-300"}
+                tone={summary.failingWorkflows > 0 ? "text-zinc-300" : "text-emerald-300"}
               />
             </div>
           )}

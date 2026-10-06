@@ -191,7 +191,7 @@ export function RunRemediationPlanPanel() {
               {/* Risk + gating breakdown */}
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-3">
                 <ResultStat label="Critical" value={String(byRisk.critical ?? 0)} tone={(byRisk.critical ?? 0) > 0 ? "text-rose-300" : "text-zinc-400"} />
-                <ResultStat label="High" value={String(byRisk.high ?? 0)} tone={(byRisk.high ?? 0) > 0 ? "text-amber-300" : "text-zinc-400"} />
+                <ResultStat label="High" value={String(byRisk.high ?? 0)} tone={(byRisk.high ?? 0) > 0 ? "text-zinc-300" : "text-zinc-400"} />
                 <ResultStat label="Approval-gated" value={String(approvalGated)} tone="text-violet-300" />
                 <ResultStat label="Desktop-eligible" value={String(desktopReviewEligible)} tone="text-cyan-300" />
               </div>
@@ -207,7 +207,7 @@ export function RunRemediationPlanPanel() {
                         <li key={b.id ?? i} className="flex items-start gap-2 text-[11.5px]">
                           <span className={`mt-1.5 w-1.5 h-1.5 rounded-full shrink-0 ${
                             c?.risk === "critical" ? "bg-rose-400" :
-                            c?.risk === "high"     ? "bg-amber-400" :
+                            c?.risk === "high"     ? "bg-zinc-400" :
                                                      "bg-zinc-500"
                           }`} />
                           <div className="min-w-0 flex-1">

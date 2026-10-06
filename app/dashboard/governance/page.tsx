@@ -41,9 +41,9 @@ const CATEGORY_COLOR: Record<PolicyCategory, string> = {
   security: "text-red-400 bg-red-500/10 border-red-500/20",
   cost: "text-emerald-400 bg-emerald-500/10 border-emerald-500/20",
   compliance: "text-cyan-400 bg-cyan-500/10 border-cyan-500/20",
-  reliability: "text-amber-400 bg-amber-500/10 border-amber-500/20",
+  reliability: "text-zinc-400 bg-white/10 border-white/20",
   release_governance: "text-zinc-500 bg-violet-500/10 border-white/[0.08]",
-  execution_safety: "text-amber-400 bg-amber-500/10 border-amber-500/20",
+  execution_safety: "text-zinc-400 bg-white/10 border-white/20",
   desktop_execution: "text-blue-400 bg-blue-500/10 border-blue-500/20",
   access_control: "text-red-400 bg-red-500/10 border-red-500/20",
   auditability: "text-emerald-400 bg-emerald-500/10 border-emerald-500/20",
@@ -83,7 +83,7 @@ export default function GovernancePage() {
           { label: "Current autonomy", value: `Level ${CURRENT_LEVEL}`, sub: AUTONOMY_LEVELS[CURRENT_LEVEL].name, icon: LockClosedIcon, color: "text-zinc-500", bg: "bg-violet-500/10 border-white/[0.08]" },
           { label: "Active policy pack", value: ACTIVE_POLICY_PACK, sub: `${DEFAULT_POLICY_PACK.length} rules · ${DEFAULT_POLICY_PACK.filter((r) => r.enabled).length} active`, icon: DocumentCheckIcon, color: "text-emerald-400", bg: "bg-emerald-500/10 border-emerald-500/20" },
           { label: "Blocked actions", value: "0", sub: "Past 24h · no violations", icon: ShieldExclamationIcon, color: "text-emerald-400", bg: "bg-emerald-500/10 border-emerald-500/20" },
-          { label: "Pending policy approvals", value: "3", sub: "1 production · 2 staging", icon: ShieldCheckIcon, color: "text-amber-400", bg: "bg-amber-500/10 border-amber-500/20" },
+          { label: "Pending policy approvals", value: "3", sub: "1 production · 2 staging", icon: ShieldCheckIcon, color: "text-zinc-400", bg: "bg-white/10 border-white/20" },
         ].map((kpi) => {
           const Icon = kpi.icon;
           return (
@@ -140,7 +140,7 @@ export default function GovernancePage() {
                         )}
                       </div>
                       {spec.requiresExplicitOptIn && !isCurrent && (
-                        <span className="text-[9px] font-semibold text-amber-400 inline-flex items-center gap-0.5">
+                        <span className="text-[9px] font-semibold text-zinc-400 inline-flex items-center gap-0.5">
                           <LockClosedIcon className="h-2.5 w-2.5" />
                           Opt-in
                         </span>
@@ -233,13 +233,13 @@ export default function GovernancePage() {
 function PolicyRuleRow({ rule }: { rule: PolicyRule }) {
   const decisionColor =
     rule.decision === "block" ? "text-red-400 bg-red-500/10 border-red-500/20" :
-    rule.decision === "require_approval" ? "text-amber-400 bg-amber-500/10 border-amber-500/20" :
+    rule.decision === "require_approval" ? "text-zinc-400 bg-white/10 border-white/20" :
     "text-emerald-400 bg-emerald-500/10 border-emerald-500/20";
 
   const severityColor =
     rule.severity === "critical" ? "text-red-400" :
-    rule.severity === "high" ? "text-amber-400" :
-    rule.severity === "medium" ? "text-amber-400/80" :
+    rule.severity === "high" ? "text-zinc-400" :
+    rule.severity === "medium" ? "text-white/80" :
     "text-zinc-500";
 
   return (

@@ -86,7 +86,7 @@ export default function SecurityPage() {
                 </div>
                 <h2 className="mt-5 text-lg font-semibold">{control.title}</h2>
                 <p className="mt-2 text-sm leading-relaxed text-zinc-400">{control.body}</p>
-                <p className="mt-4 text-[10px] font-mono uppercase tracking-[0.16em] text-amber-200">{control.status}</p>
+                <p className="mt-4 text-[10px] font-mono uppercase tracking-[0.16em] text-zinc-200">{control.status}</p>
               </article>
             );
           })}
@@ -104,13 +104,13 @@ export default function SecurityPage() {
           <p className="mt-6 border-t border-white/[0.07] pt-5 text-sm leading-6 text-zinc-400">For healthcare and other regulated environments, Axiom must be deployed with the customer&apos;s required agreements, vendor review, identity controls, retention rules, incident process, and independent compliance evidence. Product controls can support that work; they do not replace it.</p>
         </section>
 
-        <section className="mt-12 rounded-2xl border border-amber-500/20 bg-amber-500/[0.04] p-6 md:p-8">
+        <section className="mt-12 rounded-2xl border border-white/20 bg-white/[0.04] p-6 md:p-8">
           <div className="flex items-center gap-3">
-            <ShieldCheckIcon className="h-5 w-5 text-amber-300" />
+            <ShieldCheckIcon className="h-5 w-5 text-zinc-300" />
             <h2 className="text-xl font-semibold">Current limitations</h2>
           </div>
           <ul className="mt-5 grid gap-3 text-sm leading-relaxed text-zinc-300 md:grid-cols-2">
-            {LIMITATIONS.map((item) => <li key={item} className="flex gap-2"><span className="text-amber-300">—</span><span>{item}</span></li>)}
+            {LIMITATIONS.map((item) => <li key={item} className="flex gap-2"><span className="text-zinc-300">—</span><span>{item}</span></li>)}
           </ul>
         </section>
 

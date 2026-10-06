@@ -92,7 +92,7 @@ const statusTone: Record<string, string> = {
   pending: "border-zinc-700 bg-zinc-900 text-zinc-300",
   completed: "border-emerald-500/30 bg-emerald-500/10 text-emerald-200",
   blocked: "border-rose-500/30 bg-rose-500/10 text-rose-200",
-  skipped: "border-amber-500/30 bg-amber-500/10 text-amber-200",
+  skipped: "border-white/30 bg-white/10 text-zinc-200",
 };
 
 export default function TauriDashboardPage() {

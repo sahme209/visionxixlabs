@@ -188,7 +188,7 @@ export default async function WorkforceHealthPage() {
         <p className="text-[10px] font-mono uppercase tracking-[0.18em] text-zinc-500 mb-3">specialty rationale · {totalEngineers} engineers</p>
         <div className="grid grid-cols-3 rounded-2xl border border-white/[0.06] bg-white/[0.015] divide-x divide-white/[0.04] overflow-hidden">
           <Tile label="fresh · ≤7d" count={fresh}    tone={fresh > 0 ? "text-emerald-300" : "text-zinc-600"} />
-          <Tile label="stale · >7d" count={stale}    tone={stale > 0 ? "text-amber-300" : "text-zinc-600"} />
+          <Tile label="stale · >7d" count={stale}    tone={stale > 0 ? "text-zinc-300" : "text-zinc-600"} />
           <Tile label="missing"     count={missing}  tone={missing > 0 ? "text-rose-300" : "text-zinc-600"} />
         </div>
       </section>
@@ -199,7 +199,7 @@ export default async function WorkforceHealthPage() {
         <div className="grid grid-cols-4 rounded-2xl border border-white/[0.06] bg-white/[0.015] divide-x divide-white/[0.04] overflow-hidden">
           <Tile label="total"             count={totals.total}             tone="text-white" />
           <Tile label="allowed"           count={totals.allowed}           tone={totals.allowed > 0 ? "text-emerald-300" : "text-zinc-600"} />
-          <Tile label="requires approval" count={totals.requires_approval} tone={totals.requires_approval > 0 ? "text-amber-300" : "text-zinc-600"} />
+          <Tile label="requires approval" count={totals.requires_approval} tone={totals.requires_approval > 0 ? "text-zinc-300" : "text-zinc-600"} />
           <Tile label="blocked"           count={totals.blocked}           tone={totals.blocked > 0 ? "text-rose-300" : "text-zinc-600"} />
         </div>
       </section>
@@ -217,7 +217,7 @@ export default async function WorkforceHealthPage() {
         <div className="grid grid-cols-4 rounded-2xl border border-white/[0.06] bg-white/[0.015] divide-x divide-white/[0.04] overflow-hidden">
           <Tile label="ok"            count={aiHealth.ok}            tone={aiHealth.ok > 0 ? "text-emerald-300" : "text-zinc-600"} />
           <Tile label="error"         count={aiHealth.error}         tone={aiHealth.error > 0 ? "text-rose-300" : "text-zinc-600"} />
-          <Tile label="timeout"       count={aiHealth.timeout}       tone={aiHealth.timeout > 0 ? "text-amber-300" : "text-zinc-600"} />
+          <Tile label="timeout"       count={aiHealth.timeout}       tone={aiHealth.timeout > 0 ? "text-zinc-300" : "text-zinc-600"} />
           <Tile label="short circuit" count={aiHealth.short_circuit} tone={aiHealth.short_circuit > 0 ? "text-violet-300" : "text-zinc-600"} />
         </div>
         {/* Cost breakdown — per-model strip. Renders only when there's
@@ -233,7 +233,7 @@ export default async function WorkforceHealthPage() {
           </div>
         )}
         {costRollup.unattributedCallCount > 0 && (
-          <p className="text-[10.5px] text-amber-300/80 mt-2 leading-relaxed">
+          <p className="text-[10.5px] text-zinc-300/80 mt-2 leading-relaxed">
             {costRollup.unattributedCallCount} call{costRollup.unattributedCallCount === 1 ? "" : "s"} not billed — no AIProviderRate row for the model. Seed via <code className="font-mono">lib/billing/providerRateSeeds.ts</code>.
           </p>
         )}

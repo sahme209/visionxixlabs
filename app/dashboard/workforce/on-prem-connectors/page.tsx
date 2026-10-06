@@ -14,7 +14,7 @@ import {
 export const dynamic = "force-dynamic";
 
 const STATUS_TONE: Record<ScannerStatus, string> = {
-  registered_pending_scanner: "text-amber-300",
+  registered_pending_scanner: "text-zinc-300",
   registered_ready: "text-sky-300",
   scanning_active: "text-emerald-300",
   scanning_stale: "text-rose-300",
@@ -69,7 +69,7 @@ export default async function OnPremConnectorsPage({
           credentials only — actual secret retrieval happens at scan time via your secrets
           manager (vault / AWS Secrets Manager / Azure Key Vault / GCP Secret Manager).
         </p>
-        <p className="text-[12px] text-amber-300/80 leading-relaxed max-w-xl mt-3 font-mono">
+        <p className="text-[12px] text-zinc-300/80 leading-relaxed max-w-xl mt-3 font-mono">
           honest scope :: registrations land today; platform-specific scanners ship per phase
         </p>
       </header>

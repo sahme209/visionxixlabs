@@ -37,7 +37,7 @@ const ENGINE_LABEL: Record<string, string> = {
 const OUTCOME_TONE: Record<string, string> = {
   ok:            "text-emerald-300",
   error:         "text-rose-300",
-  timeout:       "text-amber-300",
+  timeout:       "text-zinc-300",
   short_circuit: "text-violet-300",
 };
 
@@ -217,7 +217,7 @@ export default async function AiCallLogEnginePage({
       <section className="mb-8 grid grid-cols-4 rounded-2xl border border-white/[0.06] bg-white/[0.015] divide-x divide-white/[0.04] overflow-hidden">
         <Tile label="ok"            count={counts.ok}            tone={counts.ok > 0 ? "text-emerald-300" : "text-zinc-600"} />
         <Tile label="error"         count={counts.error}         tone={counts.error > 0 ? "text-rose-300" : "text-zinc-600"} />
-        <Tile label="timeout"       count={counts.timeout}       tone={counts.timeout > 0 ? "text-amber-300" : "text-zinc-600"} />
+        <Tile label="timeout"       count={counts.timeout}       tone={counts.timeout > 0 ? "text-zinc-300" : "text-zinc-600"} />
         <Tile label="short circuit" count={counts.short_circuit} tone={counts.short_circuit > 0 ? "text-violet-300" : "text-zinc-600"} />
       </section>
 
@@ -257,7 +257,7 @@ export default async function AiCallLogEnginePage({
           </div>
         )}
         {costRollup.unattributedCallCount > 0 && costRollup.attributedCallCount === 0 && (
-          <p className="text-[11px] text-amber-300/80 mt-2 leading-relaxed">
+          <p className="text-[11px] text-zinc-300/80 mt-2 leading-relaxed">
             No AIProviderRate row covers the models this engine hit. Seed a rate via lib/billing/providerRateSeeds.ts or insert a row in AIProviderRate.
           </p>
         )}

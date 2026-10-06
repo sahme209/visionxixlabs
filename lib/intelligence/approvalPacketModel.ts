@@ -128,6 +128,6 @@ export const READINESS_LABEL: Record<ApprovalReadiness, string> = {
 export const RISK_TONE: Record<ApprovalRisk, string> = {
   low:      "bg-zinc-700/40 text-zinc-300",
   medium:   "bg-cyan-500/15 text-cyan-300",
-  high:     "bg-amber-500/15 text-amber-300",
+  high:     "bg-white/15 text-zinc-300",
   critical: "bg-rose-500/20 text-rose-200",
 };

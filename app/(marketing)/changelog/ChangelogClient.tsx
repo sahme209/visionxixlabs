@@ -257,7 +257,7 @@ const TAG_STYLE: Record<ChangelogEntry["tag"], string> = {
   kernel:    "bg-indigo-500/15 text-indigo-200 border-indigo-500/30",
   agent:     "bg-emerald-500/15 text-emerald-200 border-emerald-500/30",
   platform:  "bg-cyan-500/15 text-cyan-200 border-cyan-500/30",
-  safety:    "bg-amber-500/15 text-amber-200 border-amber-500/30",
+  safety:    "bg-white/15 text-zinc-200 border-white/30",
   ops:       "bg-rose-500/15 text-rose-200 border-rose-500/30",
 };
 

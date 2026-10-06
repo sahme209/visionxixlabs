@@ -24,7 +24,7 @@ const MODE_TONE: Record<string, string> = {
   observer:   "text-zinc-400 bg-white/[0.04] border-white/[0.08]",
   review:     "text-sky-300 bg-sky-500/10 border-sky-500/20",
   assisted:   "text-emerald-300 bg-emerald-500/10 border-emerald-500/20",
-  autonomous: "text-amber-300 bg-amber-500/10 border-amber-500/20",
+  autonomous: "text-zinc-300 bg-white/10 border-white/20",
 };
 
 export default async function AdminChartersPage() {
@@ -120,7 +120,7 @@ export default async function AdminChartersPage() {
                     {r.slackWebhookOverride && (
                       <>
                         <span className="text-zinc-700">·</span>
-                        <span className="text-amber-300">slack override set</span>
+                        <span className="text-zinc-300">slack override set</span>
                       </>
                     )}
                   </div>

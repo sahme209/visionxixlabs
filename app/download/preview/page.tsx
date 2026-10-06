@@ -26,7 +26,7 @@ export default async function DownloadPreviewPage({ searchParams }: DownloadPrev
     <div className="min-h-screen bg-[#09090b] text-white">
       <Navigation />
       <main className="mx-auto max-w-3xl px-4 pb-20 pt-28 sm:px-6 md:pt-36">
-        <p className="text-[10px] font-mono uppercase tracking-[0.24em] text-amber-300">Installer availability</p>
+        <p className="text-[10px] font-mono uppercase tracking-[0.24em] text-zinc-300">Installer availability</p>
         <h1 className="mt-5 text-4xl font-bold tracking-[-0.04em] md:text-5xl">
           {runtimeUnavailable ? "Desktop downloads are temporarily paused." : "No verified installer was selected."}
         </h1>
@@ -35,9 +35,9 @@ export default async function DownloadPreviewPage({ searchParams }: DownloadPrev
             ? "Installers have been built, but new desktop sign-in is unavailable while production storage is being prepared. Downloads will resume only after the complete sign-in and entitlement path is verified."
             : "This page is the honest fallback when the release manifest has no matching platform asset. It does not substitute a browser product, source archive, waitlist, or promised release date."}
         </p>
-        <div className="mt-8 rounded-2xl border border-amber-500/20 bg-amber-500/[0.04] p-6">
+        <div className="mt-8 rounded-2xl border border-white/20 bg-white/[0.04] p-6">
           <div className="flex items-center gap-3">
-            <ShieldCheckIcon className="h-5 w-5 text-amber-300" />
+            <ShieldCheckIcon className="h-5 w-5 text-zinc-300" />
             <h2 className="font-semibold">{runtimeUnavailable ? "Why the download is paused" : "Check the current release first"}</h2>
           </div>
           <p className="mt-3 text-sm leading-relaxed text-zinc-300">

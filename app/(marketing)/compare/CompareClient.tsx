@@ -89,7 +89,7 @@ const TABS: readonly CompareTab[] = [
 
 const VERDICT_STYLE: Record<Verdict, { icon: string; tone: string; label: string }> = {
   full:    { icon: "✓", tone: "text-emerald-300 bg-emerald-500/10 border-emerald-500/30", label: "covered" },
-  partial: { icon: "~", tone: "text-amber-300  bg-amber-500/10  border-amber-500/30",  label: "partial" },
+  partial: { icon: "~", tone: "text-zinc-300  bg-white/10  border-white/30",  label: "partial" },
   none:    { icon: "·", tone: "text-zinc-500   bg-white/[0.02] border-white/10",       label: "missing" },
 };
 

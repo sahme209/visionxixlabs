@@ -59,9 +59,9 @@ const VISUAL: Record<BoundaryClassification, { border: string; bg: string; text:
   preview_allowed:             { border: "border-cyan-500/[0.22]",    bg: "bg-cyan-500/[0.04]",    text: "text-cyan-300",    pill: "bg-cyan-500/15 text-cyan-300",       icon: EyeIcon                  },
   simulation_allowed:          { border: "border-cyan-500/[0.18]",    bg: "bg-cyan-500/[0.04]",    text: "text-cyan-300",    pill: "bg-cyan-500/15 text-cyan-300",       icon: BeakerIcon               },
   desktop_review_allowed:      { border: "border-white/[0.10]",  bg: "bg-white/[0.015]",  text: "text-violet-300",  pill: "bg-violet-500/15 text-violet-300",   icon: ComputerDesktopIcon       },
-  approval_required:           { border: "border-amber-500/[0.22]",   bg: "bg-amber-500/[0.04]",   text: "text-amber-300",   pill: "bg-amber-500/15 text-amber-300",     icon: LockClosedIcon            },
-  disabled_until_policy:       { border: "border-amber-500/[0.18]",   bg: "bg-amber-500/[0.04]",   text: "text-amber-300",   pill: "bg-amber-500/15 text-amber-300",     icon: ExclamationTriangleIcon   },
-  disabled_until_credentials:  { border: "border-amber-500/[0.18]",   bg: "bg-amber-500/[0.04]",   text: "text-amber-300",   pill: "bg-amber-500/15 text-amber-300",     icon: ExclamationTriangleIcon   },
+  approval_required:           { border: "border-white/[0.22]",   bg: "bg-white/[0.04]",   text: "text-zinc-300",   pill: "bg-white/15 text-zinc-300",     icon: LockClosedIcon            },
+  disabled_until_policy:       { border: "border-white/[0.18]",   bg: "bg-white/[0.04]",   text: "text-zinc-300",   pill: "bg-white/15 text-zinc-300",     icon: ExclamationTriangleIcon   },
+  disabled_until_credentials:  { border: "border-white/[0.18]",   bg: "bg-white/[0.04]",   text: "text-zinc-300",   pill: "bg-white/15 text-zinc-300",     icon: ExclamationTriangleIcon   },
   unsafe_never_automate:       { border: "border-rose-500/[0.28]",    bg: "bg-rose-500/[0.05]",    text: "text-rose-300",    pill: "bg-rose-500/20 text-rose-200",       icon: XCircleIcon               },
 };
 
@@ -132,8 +132,8 @@ export default function AutomationBoundariesPage() {
         </div>
       )}
       {!loading && error && (
-        <div role="alert" aria-live="assertive" className="rounded-2xl border border-amber-500/[0.18] bg-amber-500/[0.04] p-5 mb-6">
-          <p className="text-[11px] font-mono text-amber-300/80 uppercase tracking-[0.18em] mb-1">// boundaries unavailable</p>
+        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/[0.18] bg-white/[0.04] p-5 mb-6">
+          <p className="text-[11px] font-mono text-zinc-300/80 uppercase tracking-[0.18em] mb-1">// boundaries unavailable</p>
           <p className="text-[13px] text-zinc-300">{error}</p>
         </div>
       )}
@@ -144,7 +144,7 @@ export default function AutomationBoundariesPage() {
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-6">
             <SummaryStat label="Total" value={report.summary.total} tone="text-white" />
             <SummaryStat label="Read-only" value={report.summary.readonly} tone="text-emerald-300" />
-            <SummaryStat label="Approval req." value={report.summary.approvalRequired} tone="text-amber-300" />
+            <SummaryStat label="Approval req." value={report.summary.approvalRequired} tone="text-zinc-300" />
             <SummaryStat label="Hard-blocked" value={report.summary.unsafeNeverAutomate} tone="text-rose-300" />
           </div>
 

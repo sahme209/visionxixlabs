@@ -79,7 +79,7 @@ export default function TopologyPage() {
       <Stagger delay={0.15} interval={0.08} className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-6">
         <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5">
           <div className="flex items-center gap-2 mb-3">
-            <ShieldExclamationIcon className="h-4 w-4 text-amber-400" />
+            <ShieldExclamationIcon className="h-4 w-4 text-zinc-400" />
             <h3 className="text-sm font-semibold text-white">Risk concentration</h3>
           </div>
           <div className="space-y-2">
@@ -90,7 +90,7 @@ export default function TopologyPage() {
             ].map((r) => (
               <div key={r.label} className="flex items-center justify-between rounded-lg bg-white/[0.02] border border-white/[0.04] px-3 py-2">
                 <span className="text-[11px] text-zinc-300 font-mono">{r.label}</span>
-                <span className={`text-[10px] font-semibold ${r.level === "high" ? "text-red-400" : "text-amber-400"}`}>{r.value}</span>
+                <span className={`text-[10px] font-semibold ${r.level === "high" ? "text-red-400" : "text-zinc-400"}`}>{r.value}</span>
               </div>
             ))}
           </div>
@@ -100,7 +100,7 @@ export default function TopologyPage() {
           <div className="flex items-center gap-2 mb-3">
             <ChartBarSquareIcon className="h-4 w-4 text-emerald-400" />
             <h3 className="text-sm font-semibold text-white">Cost concentration</h3>
-            <span className="text-[9px] font-mono text-amber-300 bg-amber-500/10 border border-amber-500/20 rounded-full px-1.5 py-px uppercase tracking-wider ml-auto">
+            <span className="text-[9px] font-mono text-zinc-300 bg-white/10 border border-white/20 rounded-full px-1.5 py-px uppercase tracking-wider ml-auto">
               Pending
             </span>
           </div>
@@ -125,7 +125,7 @@ export default function TopologyPage() {
               { label: "Drift monitoring", value: "Every 6h", dot: "bg-violet-400" },
               { label: "Cost trend (7d)", value: "↘ 4.2% lower", dot: "bg-emerald-400" },
               { label: "Active scans", value: "1 running", dot: "bg-blue-400 animate-pulse" },
-              { label: "Pending approvals", value: "3", dot: "bg-amber-400 animate-pulse" },
+              { label: "Pending approvals", value: "3", dot: "bg-zinc-400 animate-pulse" },
             ].map((row) => (
               <div key={row.label} className="flex items-center justify-between rounded-lg bg-white/[0.02] border border-white/[0.04] px-3 py-2">
                 <div className="flex items-center gap-2">

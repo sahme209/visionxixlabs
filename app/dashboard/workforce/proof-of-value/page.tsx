@@ -61,7 +61,7 @@ export default async function ProofOfValuePage() {
           <Stat label="Operator-input engineers used" value={String(report.engineers.operatorInputUsed)} tone="text-sky-300" />
           <Stat label="Total reports" value={String(report.engineers.totalReports)} tone="text-white" />
           <Stat label="AI-generated" value={String(report.engineers.aiGenerated)} tone="text-emerald-300" />
-          <Stat label="Fallback rules" value={String(report.engineers.fallbackRules)} tone="text-amber-300" />
+          <Stat label="Fallback rules" value={String(report.engineers.fallbackRules)} tone="text-zinc-300" />
           <Stat label="Errors" value={String(report.engineers.error)} tone={report.engineers.error > 0 ? "text-rose-300" : "text-zinc-400"} />
         </div>
       </section>
@@ -101,7 +101,7 @@ export default async function ProofOfValuePage() {
         <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
           <Stat label="Pre-flights run" value={String(report.safety.preflightsRun)} tone="text-white" />
           <Stat label="Allow" value={String(report.safety.allow)} tone="text-emerald-300" />
-          <Stat label="Review" value={String(report.safety.review)} tone="text-amber-300" />
+          <Stat label="Review" value={String(report.safety.review)} tone="text-zinc-300" />
           <Stat label="Block" value={String(report.safety.block)} tone={report.safety.block > 0 ? "text-rose-300" : "text-zinc-400"} />
           <Stat label="Policy refuse" value={String(report.safety.policyRefuse)} tone={report.safety.policyRefuse > 0 ? "text-rose-300" : "text-zinc-400"} />
           <Stat label="Boundary catastrophic" value={String(report.safety.boundaryCatastrophic)} tone={report.safety.boundaryCatastrophic > 0 ? "text-rose-400" : "text-zinc-400"} />

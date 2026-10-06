@@ -71,7 +71,7 @@ const KIND_HREF: Record<string, string> = {
 
 const OUTCOME_CLASS: Record<string, string> = {
   ai_generated:    "bg-violet-500/15 text-violet-300 border-white/[0.10]",
-  fallback_rules:  "bg-amber-500/15 text-amber-300 border-amber-500/25",
+  fallback_rules:  "bg-white/15 text-zinc-300 border-white/25",
   error:           "bg-rose-500/15 text-rose-300 border-rose-500/25",
 };
 
@@ -169,17 +169,17 @@ export default function AgiMemoryPage() {
       )}
 
       {!loading && errorBody?.error === "migration_pending" && (
-        <div role="alert" aria-live="assertive" className="rounded-2xl border border-amber-500/[0.18] bg-amber-500/[0.04] p-5 mb-4">
+        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/[0.18] bg-white/[0.04] p-5 mb-4">
           <div className="flex items-center gap-2 mb-1">
-            <ExclamationTriangleIcon className="h-4 w-4 text-amber-300" />
-            <p className="text-[12px] font-semibold text-amber-200">Schema migration pending</p>
+            <ExclamationTriangleIcon className="h-4 w-4 text-zinc-300" />
+            <p className="text-[12px] font-semibold text-zinc-200">Schema migration pending</p>
           </div>
           <p className="text-[12.5px] text-zinc-300">{errorBody.hint}</p>
         </div>
       )}
 
       {!loading && errorBody?.error === "auth_required" && (
-        <div role="alert" aria-live="assertive" className="rounded-2xl border border-amber-500/[0.18] bg-amber-500/[0.04] p-5 mb-4 text-[12.5px] text-amber-200">Sign in required.</div>
+        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/[0.18] bg-white/[0.04] p-5 mb-4 text-[12.5px] text-zinc-200">Sign in required.</div>
       )}
 
       {data && data.entries.length === 0 && (
@@ -254,7 +254,7 @@ function MemoryRow({ entry }: { entry: Entry }) {
         </div>
       )}
       {entry.outcome !== "ai_generated" && entry.errorMessage && (
-        <p className="mt-1.5 text-[10.5px] font-mono text-amber-300">↳ {entry.errorMessage}</p>
+        <p className="mt-1.5 text-[10.5px] font-mono text-zinc-300">↳ {entry.errorMessage}</p>
       )}
       <div className="mt-1 flex items-center justify-between gap-2 flex-wrap">
         <p className="text-[10px] font-mono text-zinc-600">{entry.targetKind} · {entry.targetId} · {entry.engineVersion}</p>
@@ -288,7 +288,7 @@ function FilterPill({ label, active, onClick }: { label: string; active: boolean
 function Stat({ icon: Icon, label, value, tone }: { icon: typeof SparklesIcon; label: string; value: string; tone: "violet" | "amber" | "rose" | "zinc" }) {
   const cls = {
     violet:  "border-white/[0.06] bg-white/[0.015] text-white",
-    amber:   "border-amber-500/[0.18] bg-amber-500/[0.03] text-amber-200",
+    amber:   "border-white/[0.18] bg-white/[0.03] text-zinc-200",
     rose:    "border-rose-500/[0.18] bg-rose-500/[0.03] text-rose-200",
     zinc:    "border-white/[0.06] bg-white/[0.02] text-zinc-200",
   }[tone];
@@ -409,7 +409,7 @@ function SummaryPanel({ targetKind }: { targetKind?: string }) {
         </div>
       </div>
       {summary.outcome !== "ai_generated" && summary.errorMessage && (
-        <p className="mt-2 text-[10.5px] font-mono text-amber-300">↳ {summary.errorMessage}</p>
+        <p className="mt-2 text-[10.5px] font-mono text-zinc-300">↳ {summary.errorMessage}</p>
       )}
       {err && <p className="mt-2 text-[10.5px] font-mono text-rose-300">✗ {err}</p>}
     </div>
@@ -465,7 +465,7 @@ function SummaryTimeline({ filterKind }: { filterKind: TargetKind | "all" }) {
   if (loading) return null;
   if (errorBody?.error === "migration_pending") {
     return (
-      <div role="alert" aria-live="assertive" className="mb-4 rounded-2xl border border-amber-500/[0.18] bg-amber-500/[0.04] p-3 text-[12px] text-amber-200">
+      <div role="alert" aria-live="assertive" className="mb-4 rounded-2xl border border-white/[0.18] bg-white/[0.04] p-3 text-[12px] text-zinc-200">
         Timeline schema migration pending — run prisma migrate deploy.
       </div>
     );
@@ -757,7 +757,7 @@ function ChatPanel({ targetKind }: { targetKind?: string }) {
       )}
 
       {migrationPending && (
-        <p className="text-[10.5px] font-mono text-amber-300 mb-2">↳ chat history schema migration pending — turns persist after migrate deploy.</p>
+        <p className="text-[10.5px] font-mono text-zinc-300 mb-2">↳ chat history schema migration pending — turns persist after migrate deploy.</p>
       )}
 
       {err && <p className="text-[11px] font-mono text-rose-300 mb-2">✗ {err}</p>}
@@ -815,7 +815,7 @@ function ChatTurnRow({ turn, onDelete }: { turn: ChatTurn; onDelete?: () => void
         </div>
       )}
       {turn.answer.outcome !== "ai_generated" && turn.answer.errorMessage && (
-        <p className="mt-1.5 text-[10.5px] font-mono text-amber-300">↳ {turn.answer.errorMessage}</p>
+        <p className="mt-1.5 text-[10.5px] font-mono text-zinc-300">↳ {turn.answer.errorMessage}</p>
       )}
     </div>
   );

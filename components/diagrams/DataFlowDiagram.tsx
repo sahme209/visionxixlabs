@@ -8,7 +8,7 @@ const stages = [
   { id: "ingest", label: "Ingest", sub: "Data sources", color: "#0ea5e9" },
   { id: "process", label: "Process", sub: "ETL, validation", color: "#8b5cf6" },
   { id: "model", label: "Model", sub: "LLM, RAG, fine-tune", color: "#10b981" },
-  { id: "deploy", label: "Deploy", sub: "APIs, CI/CD", color: "#f59e0b" },
+  { id: "deploy", label: "Deploy", sub: "APIs, CI/CD", color: "#d946ef" },
   { id: "monitor", label: "Monitor", sub: "Observability, cost", color: "#ef4444" },
 ];
 

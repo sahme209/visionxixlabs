@@ -70,11 +70,11 @@ interface ReportLite {
 const CLASSIFICATION_VISUAL: Record<Classification, { pill: string; icon: typeof CheckCircleIcon; label: string }> = {
   readonly_allowed:            { pill: "bg-emerald-500/15 text-emerald-300", icon: CheckCircleIcon,         label: "read-only" },
   policy_gated:                { pill: "bg-cyan-500/15 text-cyan-300",       icon: ClockIcon,               label: "policy-gated" },
-  approval_required:           { pill: "bg-amber-500/15 text-amber-300",     icon: ExclamationTriangleIcon, label: "approval" },
+  approval_required:           { pill: "bg-white/15 text-zinc-300",     icon: ExclamationTriangleIcon, label: "approval" },
   desktop_review_required:     { pill: "bg-violet-500/15 text-violet-300",   icon: ClockIcon,               label: "desktop review" },
   unsafe_never_automate:       { pill: "bg-rose-500/15 text-rose-300",       icon: LockClosedIcon,          label: "unsafe · never" },
-  disabled_until_policy:       { pill: "bg-amber-500/15 text-amber-300",     icon: ExclamationTriangleIcon, label: "disabled · policy" },
-  disabled_until_credentials:  { pill: "bg-amber-500/15 text-amber-300",     icon: ExclamationTriangleIcon, label: "disabled · creds" },
+  disabled_until_policy:       { pill: "bg-white/15 text-zinc-300",     icon: ExclamationTriangleIcon, label: "disabled · policy" },
+  disabled_until_credentials:  { pill: "bg-white/15 text-zinc-300",     icon: ExclamationTriangleIcon, label: "disabled · creds" },
 };
 
 const PROVIDER_LABEL: Record<Provider, string> = {
@@ -142,8 +142,8 @@ export default function CicdOpsPage() {
         </div>
       )}
       {!loading && error && (
-        <div role="alert" aria-live="assertive" className="rounded-2xl border border-amber-500/[0.18] bg-amber-500/[0.04] p-5 mb-6">
-          <p className="text-[11px] font-mono text-amber-300/80 uppercase tracking-[0.18em] mb-1">// surface unavailable</p>
+        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/[0.18] bg-white/[0.04] p-5 mb-6">
+          <p className="text-[11px] font-mono text-zinc-300/80 uppercase tracking-[0.18em] mb-1">// surface unavailable</p>
           <p className="text-[13px] text-zinc-300">{error}</p>
         </div>
       )}
@@ -160,13 +160,13 @@ export default function CicdOpsPage() {
                   <span className={`text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 rounded ${
                     p.mode === "live" ? "bg-emerald-500/15 text-emerald-300" :
                     p.mode === "partial_live" ? "bg-cyan-500/15 text-cyan-300" :
-                    "bg-amber-500/15 text-amber-300"
+                    "bg-white/15 text-zinc-300"
                   }`}>{p.mode.replace(/_/g, " ")}</span>
                 </div>
                 <p className="text-[11.5px] text-zinc-300 leading-snug">{p.headline}</p>
                 {p.missingRequirements.length > 0 && (
-                  <div className="mt-2 rounded-md border border-amber-500/[0.12] bg-amber-500/[0.03] p-2">
-                    <p className="text-[9px] font-mono text-amber-300/80 uppercase tracking-wider mb-0.5">Setup needed</p>
+                  <div className="mt-2 rounded-md border border-white/[0.12] bg-white/[0.03] p-2">
+                    <p className="text-[9px] font-mono text-zinc-300/80 uppercase tracking-wider mb-0.5">Setup needed</p>
                     {p.missingRequirements.map((m, i) => (
                       <p key={i} className="text-[10.5px] font-mono text-zinc-300">{m}</p>
                     ))}
@@ -223,7 +223,7 @@ export default function CicdOpsPage() {
 function Stat({ label, value, tone }: { label: string; value: string; tone: "emerald" | "amber" | "cyan" | "rose" | "zinc" }) {
   const cls = {
     emerald: "border-emerald-500/[0.18] bg-emerald-500/[0.03] text-emerald-200",
-    amber:   "border-amber-500/[0.18] bg-amber-500/[0.03] text-amber-200",
+    amber:   "border-white/[0.18] bg-white/[0.03] text-zinc-200",
     cyan:    "border-cyan-500/[0.18] bg-cyan-500/[0.03] text-cyan-200",
     rose:    "border-rose-500/[0.18] bg-rose-500/[0.03] text-rose-200",
     zinc:    "border-white/[0.06] bg-white/[0.02] text-zinc-200",

@@ -94,7 +94,7 @@ export default async function ContentCalendarPage() {
               key={day.isoDate}
               className={`rounded-2xl border p-3 ${
                 totalCount === 0
-                  ? "border-amber-500/15 bg-amber-500/[0.03]"
+                  ? "border-white/15 bg-white/[0.03]"
                   : "border-white/[0.06] bg-white/[0.02]"
               }`}
             >
@@ -104,7 +104,7 @@ export default async function ContentCalendarPage() {
               {totalCount === 0 ? (
                 <Link
                   href="/admin/growth/post-drafts"
-                  className="inline-flex items-center gap-1 text-[10.5px] text-amber-200 hover:text-amber-100"
+                  className="inline-flex items-center gap-1 text-[10.5px] text-zinc-200 hover:text-zinc-100"
                 >
                   <PlusCircleIcon className="h-3.5 w-3.5" />
                   Gap — schedule a post

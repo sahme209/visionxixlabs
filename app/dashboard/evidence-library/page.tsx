@@ -94,8 +94,8 @@ const TYPE_LABEL: Record<EvidenceType, string> = {
 const RETENTION_TONE: Record<Retention, { pill: string }> = {
   retained_default:    { pill: "bg-emerald-500/15 text-emerald-300" },
   retained_extended:   { pill: "bg-cyan-500/15 text-cyan-300"       },
-  ephemeral_session:   { pill: "bg-amber-500/15 text-amber-300"     },
-  pending_persistence: { pill: "bg-amber-500/15 text-amber-300"     },
+  ephemeral_session:   { pill: "bg-white/15 text-zinc-300"     },
+  pending_persistence: { pill: "bg-white/15 text-zinc-300"     },
   purged:              { pill: "bg-rose-500/15 text-rose-300"       },
 };
 
@@ -171,8 +171,8 @@ export default function EvidenceLibraryPage() {
         </div>
       )}
       {!loading && error && (
-        <div role="alert" aria-live="assertive" className="rounded-2xl border border-amber-500/[0.18] bg-amber-500/[0.04] p-5 mb-6">
-          <p className="text-[11px] font-mono text-amber-300/80 uppercase tracking-[0.18em] mb-1">// library unavailable</p>
+        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/[0.18] bg-white/[0.04] p-5 mb-6">
+          <p className="text-[11px] font-mono text-zinc-300/80 uppercase tracking-[0.18em] mb-1">// library unavailable</p>
           <p className="text-[13px] text-zinc-300">{error}</p>
         </div>
       )}
@@ -182,7 +182,7 @@ export default function EvidenceLibraryPage() {
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-6">
             <SummaryStat label="Total records" value={report.summary.total} tone="text-white" />
             <SummaryStat label="Retained" value={report.summary.retained} tone="text-emerald-300" />
-            <SummaryStat label="Ephemeral" value={report.summary.ephemeral} tone="text-amber-300" />
+            <SummaryStat label="Ephemeral" value={report.summary.ephemeral} tone="text-zinc-300" />
             <SummaryStat label="Exportable" value={report.summary.exportable} tone="text-cyan-300" />
           </div>
 
@@ -260,8 +260,8 @@ export default function EvidenceLibraryPage() {
                         </div>
 
                         {r.limitations.length > 0 && (
-                          <div className="rounded-md border border-amber-500/[0.18] bg-amber-500/[0.04] p-2 mt-2">
-                            <p className="text-[9px] font-mono text-amber-300/80 uppercase tracking-wider mb-0.5">// limitation</p>
+                          <div className="rounded-md border border-white/[0.18] bg-white/[0.04] p-2 mt-2">
+                            <p className="text-[9px] font-mono text-zinc-300/80 uppercase tracking-wider mb-0.5">// limitation</p>
                             <p className="text-[10px] text-zinc-300 leading-snug">{r.limitations[0]}</p>
                           </div>
                         )}

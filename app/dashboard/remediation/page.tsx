@@ -28,14 +28,14 @@ export const dynamic = "force-dynamic";
 
 const RISK_TONE = {
   critical: "text-rose-300 bg-rose-500/10 border-rose-500/25",
-  high:     "text-amber-300 bg-amber-500/10 border-amber-500/25",
+  high:     "text-zinc-300 bg-white/10 border-white/25",
   medium:   "text-cyan-300 bg-cyan-500/10 border-cyan-500/25",
   low:      "text-zinc-300 bg-zinc-500/10 border-zinc-500/25",
 };
 
 const STATUS_TONE = {
   pass:    "text-emerald-300 bg-emerald-500/10 border-emerald-500/25",
-  warn:    "text-amber-300 bg-amber-500/10 border-amber-500/25",
+  warn:    "text-zinc-300 bg-white/10 border-white/25",
   fail:    "text-rose-300 bg-rose-500/10 border-rose-500/25",
   neutral: "text-zinc-300 bg-zinc-500/10 border-zinc-500/25",
 };
@@ -68,7 +68,7 @@ export default async function RemediationCenter() {
       {/* KPIs */}
       <section className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3">
         <Kpi label="Candidates"        value={`${summary.total}`}            tone="text-violet-300"  detail="From security + releases + gaps." />
-        <Kpi label="Approval-gated"    value={`${summary.approvalGated}`}    tone="text-amber-300"   detail="Approver(s) required to proceed." />
+        <Kpi label="Approval-gated"    value={`${summary.approvalGated}`}    tone="text-zinc-300"   detail="Approver(s) required to proceed." />
         <Kpi label="Desktop-eligible"  value={`${summary.desktopEligible}`}  tone="text-cyan-300"    detail="Can be reviewed locally." />
         <Kpi label="Policy-blocked"    value={`${summary.blocked}`}          tone="text-rose-300"    detail="Blocked by governance / preview mode." />
       </section>
@@ -77,7 +77,7 @@ export default async function RemediationCenter() {
       <section className="rounded-2xl border border-white/[0.06] bg-white/[0.015] p-6">
         <div className="flex items-center justify-between flex-wrap gap-3 mb-4">
           <div className="flex items-center gap-2">
-            <ExclamationTriangleIcon className="h-4 w-4 text-amber-300" />
+            <ExclamationTriangleIcon className="h-4 w-4 text-zinc-300" />
             <h2 className="text-base font-semibold text-white tracking-tight">Risk distribution</h2>
           </div>
           <span className="text-[10px] font-mono text-zinc-500 tracking-wider">live = {outcome.bundles.filter((b) => b.candidate.sourceMode === "live").length} · preview = {outcome.bundles.filter((b) => b.candidate.sourceMode !== "live").length}</span>
@@ -128,7 +128,7 @@ export default async function RemediationCenter() {
                 <Card Icon={CommandLineIcon} title="Terraform preview" tone="text-violet-300">
                   <p className="text-[11px] font-mono text-zinc-600 mb-2">{bundle.terraform.fileName}</p>
                   {bundle.terraform.manualReviewRequired ? (
-                    <p className="text-xs text-amber-300">Manual review required — no canonical HCL template yet.</p>
+                    <p className="text-xs text-zinc-300">Manual review required — no canonical HCL template yet.</p>
                   ) : (
                     <pre className="text-[10.5px] font-mono text-zinc-300 bg-black/40 rounded-lg p-3 overflow-x-auto max-h-48 whitespace-pre">{bundle.terraform.hcl}</pre>
                   )}
@@ -139,7 +139,7 @@ export default async function RemediationCenter() {
                 <Card Icon={CommandLineIcon} title="CLI preview" tone="text-cyan-300">
                   <p className="text-[11px] font-mono text-zinc-600 mb-2">{bundle.cli.cli}</p>
                   {bundle.cli.manualReviewRequired ? (
-                    <p className="text-xs text-amber-300">Manual review required — no canonical CLI template yet.</p>
+                    <p className="text-xs text-zinc-300">Manual review required — no canonical CLI template yet.</p>
                   ) : (
                     <pre className="text-[10.5px] font-mono text-zinc-300 bg-black/40 rounded-lg p-3 overflow-x-auto max-h-48 whitespace-pre-wrap">{bundle.cli.command}</pre>
                   )}
@@ -150,7 +150,7 @@ export default async function RemediationCenter() {
                 </Card>
 
                 {/* Rollback */}
-                <Card Icon={ArrowPathIcon} title="Rollback plan" tone="text-amber-300">
+                <Card Icon={ArrowPathIcon} title="Rollback plan" tone="text-zinc-300">
                   <p className="text-xs text-zinc-300 mb-2">
                     {bundle.rollback.rollbackAvailable
                       ? `Available · complexity ${bundle.rollback.rollbackComplexity}`
@@ -162,7 +162,7 @@ export default async function RemediationCenter() {
                     ))}
                   </ul>
                   {bundle.rollback.notes.length > 0 && (
-                    <p className="text-[10px] font-mono text-amber-300 mt-2">{bundle.rollback.notes[0]}</p>
+                    <p className="text-[10px] font-mono text-zinc-300 mt-2">{bundle.rollback.notes[0]}</p>
                   )}
                 </Card>
 
@@ -190,7 +190,7 @@ export default async function RemediationCenter() {
                     {bundle.readiness.factors.slice(0, 8).map((f) => (
                       <div key={f.id} className="flex items-center gap-1.5">
                         {f.status === "pass" ? <CheckCircleIcon className="h-3 w-3 text-emerald-300" /> :
-                         f.status === "warn" ? <ExclamationTriangleIcon className="h-3 w-3 text-amber-300" /> :
+                         f.status === "warn" ? <ExclamationTriangleIcon className="h-3 w-3 text-zinc-300" /> :
                          f.status === "fail" ? <ClockIcon className="h-3 w-3 text-rose-300" /> :
                          <ClockIcon className="h-3 w-3 text-zinc-500" />}
                         <span className="text-zinc-400 truncate">{f.label}</span>
@@ -212,8 +212,8 @@ export default async function RemediationCenter() {
       </section>
 
       {/* Honest limitations */}
-      <section className="rounded-xl border border-amber-500/20 bg-amber-500/[0.04] p-5">
-        <p className="text-[10px] font-mono text-amber-300 uppercase tracking-[0.22em] mb-2">Known limitations</p>
+      <section className="rounded-xl border border-white/20 bg-white/[0.04] p-5">
+        <p className="text-[10px] font-mono text-zinc-300 uppercase tracking-[0.22em] mb-2">Known limitations</p>
         <ul className="space-y-1 text-xs text-zinc-300">
           <li>• This page renders prepared remediation work. It does not apply changes.</li>
           <li>• Live cloud apply is only enabled when broker credentials + approvals + policy + signed audit are all green.</li>

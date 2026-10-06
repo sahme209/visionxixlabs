@@ -78,13 +78,13 @@ type Body = { ok: true; data: LogData } | { ok: false; error: string; hint?: str
 const STATE_CLASS: Record<CircuitState, string> = {
   closed:    "bg-emerald-500/15 text-emerald-300 border-emerald-500/25",
   open:      "bg-rose-500/20 text-rose-200 border-rose-500/40",
-  half_open: "bg-amber-500/15 text-amber-300 border-amber-500/25",
+  half_open: "bg-white/15 text-zinc-300 border-white/25",
 };
 
 const OUTCOME_CLASS: Record<string, string> = {
   ok:            "bg-emerald-500/15 text-emerald-300 border-emerald-500/25",
   error:         "bg-rose-500/15 text-rose-300 border-rose-500/25",
-  timeout:       "bg-amber-500/15 text-amber-300 border-amber-500/25",
+  timeout:       "bg-white/15 text-zinc-300 border-white/25",
   short_circuit: "bg-violet-500/15 text-violet-300 border-white/[0.10]",
 };
 
@@ -205,8 +205,8 @@ export default function AiCallLogPage() {
         <div role="alert" aria-live="assertive" className="rounded-2xl border border-rose-500/[0.18] bg-rose-500/[0.04] p-5 mb-4 text-[13px] text-zinc-300">{networkError}</div>
       )}
       {!loading && errorBody?.error === "migration_pending" && (
-        <div role="alert" aria-live="assertive" className="rounded-2xl border border-amber-500/[0.18] bg-amber-500/[0.04] p-5 mb-4">
-          <p className="text-[12px] font-semibold text-amber-200 mb-1">Schema migration pending</p>
+        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/[0.18] bg-white/[0.04] p-5 mb-4">
+          <p className="text-[12px] font-semibold text-zinc-200 mb-1">Schema migration pending</p>
           <p className="text-[12.5px] text-zinc-300">{errorBody.hint}</p>
         </div>
       )}
@@ -298,7 +298,7 @@ function EngineBreakdownCard({ engine }: { engine: EngineBreakdown }) {
 function Inline({ label, value, tone = "zinc" }: { label: string; value: string; tone?: "emerald" | "amber" | "rose" | "zinc" }) {
   const cls = {
     emerald: "text-emerald-300",
-    amber:   "text-amber-300",
+    amber:   "text-zinc-300",
     rose:    "text-rose-300",
     zinc:    "text-zinc-200",
   }[tone];
@@ -329,7 +329,7 @@ function FilterPill({ label, active, onClick }: { label: string; active: boolean
 function Stat({ icon: Icon, label, value, tone }: { icon: typeof CpuChipIcon; label: string; value: string; tone: "emerald" | "amber" | "rose" | "violet" | "zinc" }) {
   const cls = {
     emerald: "border-emerald-500/[0.18] bg-emerald-500/[0.03] text-emerald-200",
-    amber:   "border-amber-500/[0.18] bg-amber-500/[0.03] text-amber-200",
+    amber:   "border-white/[0.18] bg-white/[0.03] text-zinc-200",
     rose:    "border-rose-500/[0.18] bg-rose-500/[0.03] text-rose-200",
     violet:  "border-white/[0.06] bg-white/[0.015] text-white",
     zinc:    "border-white/[0.06] bg-white/[0.02] text-zinc-200",

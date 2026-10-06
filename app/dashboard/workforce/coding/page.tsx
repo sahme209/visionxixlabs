@@ -31,7 +31,7 @@ export const dynamic = "force-dynamic";
 
 const TASK_STATUS_TONE: Record<string, string> = {
   queued:    "text-zinc-400 bg-white/[0.04] border-white/[0.08]",
-  running:   "text-amber-300 bg-amber-500/10 border-amber-500/30",
+  running:   "text-zinc-300 bg-white/10 border-white/30",
   succeeded: "text-emerald-300 bg-emerald-500/10 border-emerald-500/30",
   failed:    "text-rose-300 bg-rose-500/10 border-rose-500/30",
   cancelled: "text-zinc-400 bg-white/[0.04] border-white/[0.08]",
@@ -83,7 +83,7 @@ export default async function CodingPage() {
       </div>
 
       <section className="grid grid-cols-1 md:grid-cols-4 gap-3 mb-6">
-        <Stat label="Running"   value={countByStatus.get("running")   ?? 0} icon={ClockIcon}              tone="text-amber-300" />
+        <Stat label="Running"   value={countByStatus.get("running")   ?? 0} icon={ClockIcon}              tone="text-zinc-300" />
         <Stat label="Succeeded" value={countByStatus.get("succeeded") ?? 0} icon={CheckCircleIcon}        tone="text-emerald-300" />
         <Stat label="Failed"    value={countByStatus.get("failed")    ?? 0} icon={ExclamationTriangleIcon} tone="text-rose-300" />
         <Stat label="All"       value={Array.from(countByStatus.values()).reduce((a, b) => a + b, 0)}     icon={CpuChipIcon}             tone="text-violet-300" />

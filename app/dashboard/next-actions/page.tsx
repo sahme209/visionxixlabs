@@ -66,8 +66,8 @@ const SAFETY_VISUAL: Record<SafetyLevel, { border: string; bg: string; text: str
   safe_readonly:     { border: "border-emerald-500/[0.22]", bg: "bg-emerald-500/[0.04]", text: "text-emerald-300", pill: "bg-emerald-500/15 text-emerald-300", icon: ShieldCheckIcon         },
   safe_review:       { border: "border-cyan-500/[0.22]",    bg: "bg-cyan-500/[0.04]",    text: "text-cyan-300",    pill: "bg-cyan-500/15 text-cyan-300",       icon: EyeIcon                  },
   safe_preview:      { border: "border-white/[0.10]",  bg: "bg-white/[0.015]",  text: "text-violet-300",  pill: "bg-violet-500/15 text-violet-300",   icon: BeakerIcon               },
-  approval_required: { border: "border-amber-500/[0.22]",   bg: "bg-amber-500/[0.04]",   text: "text-amber-300",   pill: "bg-amber-500/15 text-amber-300",     icon: LockClosedIcon           },
-  blocked_by_config: { border: "border-amber-500/[0.18]",   bg: "bg-amber-500/[0.04]",   text: "text-amber-300",   pill: "bg-amber-500/15 text-amber-300",     icon: ExclamationTriangleIcon  },
+  approval_required: { border: "border-white/[0.22]",   bg: "bg-white/[0.04]",   text: "text-zinc-300",   pill: "bg-white/15 text-zinc-300",     icon: LockClosedIcon           },
+  blocked_by_config: { border: "border-white/[0.18]",   bg: "bg-white/[0.04]",   text: "text-zinc-300",   pill: "bg-white/15 text-zinc-300",     icon: ExclamationTriangleIcon  },
   blocked_by_policy: { border: "border-rose-500/[0.22]",    bg: "bg-rose-500/[0.04]",    text: "text-rose-300",    pill: "bg-rose-500/15 text-rose-300",       icon: XCircleIcon              },
   disabled:          { border: "border-zinc-700/30",        bg: "bg-white/[0.02]",       text: "text-zinc-400",    pill: "bg-zinc-700/40 text-zinc-300",       icon: XCircleIcon              },
 };
@@ -143,7 +143,7 @@ export default function NextActionsPage() {
             <div className="hidden md:flex items-end gap-4 rounded-2xl border border-white/[0.06] bg-white/[0.025] backdrop-blur-sm px-5 py-4">
               <Stat label="Can run now" value={report.summary.canRunNow} tone="text-emerald-300" />
               <div className="w-px h-9 bg-white/[0.08]" />
-              <Stat label="Approval" value={report.summary.approvalRequired} tone="text-amber-300" />
+              <Stat label="Approval" value={report.summary.approvalRequired} tone="text-zinc-300" />
               <div className="w-px h-9 bg-white/[0.08]" />
               <Stat label="Blocked" value={report.summary.blockedByConfig + report.summary.blockedByPolicy} tone={(report.summary.blockedByConfig + report.summary.blockedByPolicy) > 0 ? "text-rose-300" : "text-zinc-500"} />
             </div>
@@ -157,8 +157,8 @@ export default function NextActionsPage() {
         </div>
       )}
       {!loading && error && (
-        <div role="alert" aria-live="assertive" className="rounded-2xl border border-amber-500/[0.18] bg-amber-500/[0.04] p-5 mb-6">
-          <p className="text-[11px] font-mono text-amber-300/80 uppercase tracking-[0.18em] mb-1">// next-actions unavailable</p>
+        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/[0.18] bg-white/[0.04] p-5 mb-6">
+          <p className="text-[11px] font-mono text-zinc-300/80 uppercase tracking-[0.18em] mb-1">// next-actions unavailable</p>
           <p className="text-[13px] text-zinc-300">{error}</p>
         </div>
       )}
@@ -209,8 +209,8 @@ export default function NextActionsPage() {
                 </div>
 
                 {a.blockedReason && (
-                  <div className="rounded-md border border-amber-500/[0.18] bg-amber-500/[0.04] p-2.5 mt-3">
-                    <p className="text-[10px] font-mono text-amber-300/80 uppercase tracking-wider mb-1">// blocked reason</p>
+                  <div className="rounded-md border border-white/[0.18] bg-white/[0.04] p-2.5 mt-3">
+                    <p className="text-[10px] font-mono text-zinc-300/80 uppercase tracking-wider mb-1">// blocked reason</p>
                     <p className="text-[11px] text-zinc-300 leading-snug">{a.blockedReason}</p>
                   </div>
                 )}

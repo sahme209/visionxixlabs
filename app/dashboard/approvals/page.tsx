@@ -25,7 +25,7 @@ type Status = "pending" | "approved" | "rejected" | "snoozed" | "applied" | "fai
 type Risk = "low" | "medium" | "high";
 
 const STATUS_TONE: Record<Status, string> = {
-  pending:  "text-amber-300",
+  pending:  "text-zinc-300",
   snoozed:  "text-zinc-400",
   approved: "text-emerald-300",
   applied:  "text-emerald-400",
@@ -36,7 +36,7 @@ const STATUS_TONE: Record<Status, string> = {
 
 const RISK_TONE: Record<Risk, string> = {
   high:   "text-rose-300",
-  medium: "text-amber-300",
+  medium: "text-zinc-300",
   low:    "text-zinc-400",
 };
 
@@ -143,8 +143,8 @@ export default async function ApprovalsPage() {
       </header>
 
       {migrationPending && (
-        <div className="mb-8 rounded-2xl border border-amber-500/15 bg-white/[0.015] px-6 py-5">
-          <p className="text-[10px] font-mono uppercase tracking-[0.28em] text-amber-300 mb-1">migration pending</p>
+        <div className="mb-8 rounded-2xl border border-white/15 bg-white/[0.015] px-6 py-5">
+          <p className="text-[10px] font-mono uppercase tracking-[0.28em] text-zinc-300 mb-1">migration pending</p>
           <p className="text-[13px] text-zinc-300">
             The approval items table hasn&apos;t been migrated yet. Run <code className="font-mono text-white">prisma migrate deploy</code> to start populating this queue.
           </p>
@@ -175,7 +175,7 @@ export default async function ApprovalsPage() {
               flips items pending for 7+ days to expired so the queue
               top stays honest. */}
           <section className={`surface-glass mb-10 rounded-2xl divide-x divide-white/[0.04] grid ${counts.expired > 0 ? "grid-cols-5" : "grid-cols-4"} overflow-hidden`}>
-            <CountTile label="pending"  count={counts.pending}  tone={counts.pending > 0 ? "text-amber-300" : "text-zinc-600"} />
+            <CountTile label="pending"  count={counts.pending}  tone={counts.pending > 0 ? "text-zinc-300" : "text-zinc-600"} />
             <CountTile label="snoozed"  count={counts.snoozed}  tone="text-zinc-400" />
             <CountTile label="approved" count={counts.approved} tone={counts.approved > 0 ? "text-emerald-300" : "text-zinc-600"} />
             <CountTile label="rejected" count={counts.rejected} tone="text-zinc-500" />

@@ -37,7 +37,7 @@ const LOOP_STEPS = [
   { key: "reason",   label: "Reason",   Icon: CpuChipIcon,     tone: "text-violet-300"  },
   { key: "plan",     label: "Plan",     Icon: BoltIcon,        tone: "text-fuchsia-300" },
   { key: "validate", label: "Validate", Icon: CheckCircleIcon, tone: "text-emerald-300" },
-  { key: "govern",   label: "Govern",   Icon: ShieldCheckIcon, tone: "text-amber-300"   },
+  { key: "govern",   label: "Govern",   Icon: ShieldCheckIcon, tone: "text-zinc-300"   },
   { key: "approve",  label: "Approve",  Icon: DocumentCheckIcon, tone: "text-rose-300"  },
   { key: "prepare",  label: "Prepare",  Icon: SignalIcon,      tone: "text-sky-300"     },
   { key: "verify",   label: "Verify",   Icon: CheckCircleIcon, tone: "text-emerald-300" },
@@ -49,8 +49,8 @@ function statusTone(status: string): string {
   switch (status) {
     case "ready":     return "text-emerald-300 bg-emerald-500/10 border-emerald-500/25";
     case "running":   return "text-cyan-300 bg-cyan-500/10 border-cyan-500/25";
-    case "pending":   return "text-amber-300 bg-amber-500/10 border-amber-500/25";
-    case "paused":    return "text-amber-300 bg-amber-500/10 border-amber-500/25";
+    case "pending":   return "text-zinc-300 bg-white/10 border-white/25";
+    case "paused":    return "text-zinc-300 bg-white/10 border-white/25";
     case "blocked":   return "text-rose-300 bg-rose-500/10 border-rose-500/25";
     case "completed": return "text-emerald-300 bg-emerald-500/10 border-emerald-500/25";
     case "failed":    return "text-rose-300 bg-rose-500/10 border-rose-500/25";
@@ -63,7 +63,7 @@ function statusTone(status: string): string {
 function riskTone(risk: string): string {
   switch (risk) {
     case "critical": return "text-rose-300";
-    case "high":     return "text-amber-300";
+    case "high":     return "text-zinc-300";
     case "medium":   return "text-cyan-300";
     case "low":      return "text-zinc-400";
     default:         return "text-zinc-500";
@@ -196,7 +196,7 @@ export default async function AutonomousOpsPage() {
 
       {/* ── Top risk graph nodes ──────────────────────────────────── */}
       <section className="rounded-2xl border border-white/[0.06] bg-white/[0.015] p-6">
-        <SectionHeader Icon={ExclamationTriangleIcon} title="Top risk in the execution graph" tone="text-amber-300" />
+        <SectionHeader Icon={ExclamationTriangleIcon} title="Top risk in the execution graph" tone="text-zinc-300" />
         <div className="grid md:grid-cols-2 lg:grid-cols-5 gap-3">
           {topRisk.map((n) => (
             <div key={n.id} className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-4">
@@ -225,7 +225,7 @@ export default async function AutonomousOpsPage() {
                 </div>
                 <span className={`shrink-0 text-[10px] font-mono px-1.5 py-0.5 rounded border ${
                   g.severity === "critical" ? "text-rose-300 border-rose-500/25 bg-rose-500/10" :
-                  g.severity === "high"     ? "text-amber-300 border-amber-500/25 bg-amber-500/10" :
+                  g.severity === "high"     ? "text-zinc-300 border-white/25 bg-white/10" :
                   g.severity === "medium"   ? "text-cyan-300 border-cyan-500/25 bg-cyan-500/10" :
                                               "text-zinc-300 border-zinc-500/25 bg-zinc-500/10"
                 }`}>{g.severity}</span>
@@ -239,13 +239,13 @@ export default async function AutonomousOpsPage() {
           <p className="text-xs text-zinc-500 mb-4">{deep.narrative}</p>
           <div className="grid grid-cols-3 gap-3 text-[10px] font-mono mb-4">
             <Stat label="passing"  value={`${deep.summary.passing}`}  tone="text-emerald-300" />
-            <Stat label="partial"  value={`${deep.summary.partial}`}  tone="text-amber-300" />
+            <Stat label="partial"  value={`${deep.summary.partial}`}  tone="text-zinc-300" />
             <Stat label="failing"  value={`${deep.summary.failing}`}  tone="text-rose-300" />
           </div>
           <ul className="space-y-1.5">
             {deep.results.filter((r) => r.status === "failing" || r.status === "partial").slice(0, 5).map((r) => (
               <li key={r.id} className="text-[11px] text-zinc-400 leading-relaxed">
-                {r.status === "failing" ? <XCircleIcon className="h-3 w-3 inline mr-1 text-rose-300" /> : <ExclamationTriangleIcon className="h-3 w-3 inline mr-1 text-amber-300" />}
+                {r.status === "failing" ? <XCircleIcon className="h-3 w-3 inline mr-1 text-rose-300" /> : <ExclamationTriangleIcon className="h-3 w-3 inline mr-1 text-zinc-300" />}
                 {r.title}
               </li>
             ))}
@@ -260,8 +260,8 @@ export default async function AutonomousOpsPage() {
       </section>
 
       {/* ── Honest limitations ────────────────────────────────────── */}
-      <section className="rounded-xl border border-amber-500/20 bg-amber-500/[0.04] p-5">
-        <p className="text-[10px] font-mono text-amber-300 uppercase tracking-[0.22em] mb-2">Known limitations</p>
+      <section className="rounded-xl border border-white/20 bg-white/[0.04] p-5">
+        <p className="text-[10px] font-mono text-zinc-300 uppercase tracking-[0.22em] mb-2">Known limitations</p>
         <ul className="space-y-1 text-xs text-zinc-300">
           {brain.safeLimitations.map((line, i) => (
             <li key={i}>• {line}</li>
@@ -282,8 +282,8 @@ function Stat({ label, value, tone }: { label: string; value: string; tone: stri
 }
 
 function Card({ title, value, tone, detail }: { title: string; value: string; tone: "violet" | "amber" | "rose" | "cyan"; detail: string }) {
-  const ring = tone === "violet" ? "border-white/[0.08]" : tone === "amber" ? "border-amber-500/20" : tone === "rose" ? "border-rose-500/20" : "border-cyan-500/20";
-  const text = tone === "violet" ? "text-violet-300" : tone === "amber" ? "text-amber-300" : tone === "rose" ? "text-rose-300" : "text-cyan-300";
+  const ring = tone === "violet" ? "border-white/[0.08]" : tone === "amber" ? "border-white/20" : tone === "rose" ? "border-rose-500/20" : "border-cyan-500/20";
+  const text = tone === "violet" ? "text-violet-300" : tone === "amber" ? "text-zinc-300" : tone === "rose" ? "text-rose-300" : "text-cyan-300";
   return (
     <div className={`rounded-xl border ${ring} bg-white/[0.02] p-5`}>
       <p className="text-[10px] font-mono text-zinc-500 uppercase tracking-[0.18em] mb-2">{title}</p>
@@ -308,7 +308,7 @@ function GraphStats({ graph }: { graph: ExecutionGraph }) {
       <Stat label="nodes" value={`${graph.stats.nodeCount}`}     tone="text-violet-300" />
       <Stat label="edges" value={`${graph.stats.edgeCount}`}     tone="text-cyan-300" />
       <Stat label="critical"        value={`${graph.stats.criticalNodes}`}    tone="text-rose-300" />
-      <Stat label="approval gated"  value={`${graph.stats.approvalGated}`}    tone="text-amber-300" />
+      <Stat label="approval gated"  value={`${graph.stats.approvalGated}`}    tone="text-zinc-300" />
     </div>
   );
 }

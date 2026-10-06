@@ -56,7 +56,7 @@ interface WorkspaceStateLite {
 
 const ROLE_PILL: Record<WorkspaceRole, string> = {
   owner:             "bg-rose-500/15 text-rose-300",
-  admin:             "bg-amber-500/15 text-amber-300",
+  admin:             "bg-white/15 text-zinc-300",
   cloud_engineer:    "bg-cyan-500/15 text-cyan-300",
   security_reviewer: "bg-violet-500/15 text-violet-300",
   release_manager:   "bg-emerald-500/15 text-emerald-300",
@@ -66,7 +66,7 @@ const ROLE_PILL: Record<WorkspaceRole, string> = {
 const ENF_PILL: Record<Enforcement, { pill: string; icon: typeof CheckCircleIcon; label: string }> = {
   enforced: { pill: "bg-emerald-500/15 text-emerald-300", icon: CheckCircleIcon,        label: "Enforced"       },
   partial:  { pill: "bg-cyan-500/15 text-cyan-300",       icon: EyeIcon,                 label: "Partial · auth" },
-  preview:  { pill: "bg-amber-500/15 text-amber-300",     icon: ExclamationTriangleIcon, label: "Preview · pending" },
+  preview:  { pill: "bg-white/15 text-zinc-300",     icon: ExclamationTriangleIcon, label: "Preview · pending" },
 };
 
 const PERMISSION_LABEL: Record<string, string> = {
@@ -145,8 +145,8 @@ export default function WorkspaceSettingsPage() {
         </div>
       )}
       {!loading && error && (
-        <div role="alert" aria-live="assertive" className="rounded-2xl border border-amber-500/[0.18] bg-amber-500/[0.04] p-5 mb-6">
-          <p className="text-[11px] font-mono text-amber-300/80 uppercase tracking-[0.18em] mb-1">// workspace unavailable</p>
+        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/[0.18] bg-white/[0.04] p-5 mb-6">
+          <p className="text-[11px] font-mono text-zinc-300/80 uppercase tracking-[0.18em] mb-1">// workspace unavailable</p>
           <p className="text-[13px] text-zinc-300">{error}</p>
         </div>
       )}
@@ -158,7 +158,7 @@ export default function WorkspaceSettingsPage() {
             <Stat label="Members" value={state.summary.memberCount} tone="text-white" />
             <Stat label="Roles defined" value={state.summary.rolesDefined} tone="text-cyan-300" />
             <Stat label="Permissions enforced" value={state.summary.enforcedPermissions} tone="text-emerald-300" />
-            <Stat label="Pending enforcement" value={state.summary.previewPermissions} tone="text-amber-300" />
+            <Stat label="Pending enforcement" value={state.summary.previewPermissions} tone="text-zinc-300" />
           </div>
 
           {/* Members */}

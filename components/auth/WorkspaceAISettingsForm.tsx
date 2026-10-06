@@ -124,7 +124,7 @@ export function WorkspaceAISettingsForm() {
                   <span><span className="font-medium text-zinc-200">Allow governed AI generation in this workspace</span><span className="mt-1 block text-xs leading-5 text-zinc-500">Turning this off blocks requests routed under this workspace policy on the server. It does not expose or remove service-managed credentials.</span></span>
                 </label>
               </fieldset>
-              {!policy.enabled && <p className="mt-4 rounded-xl border border-amber-300/15 bg-amber-300/[0.05] px-3 py-3 text-sm leading-6 text-amber-100/80">Governed AI generation is disabled for this workspace. Save this policy to enforce the block.</p>}
+              {!policy.enabled && <p className="mt-4 rounded-xl border border-zinc-300/15 bg-zinc-300/[0.05] px-3 py-3 text-sm leading-6 text-zinc-100/80">Governed AI generation is disabled for this workspace. Save this policy to enforce the block.</p>}
               {policy.enabled && <>
               <fieldset className="mt-4 rounded-xl border border-white/[0.07] p-3">
                 <legend className="px-1 text-xs font-medium text-zinc-300">Allowed provider families</legend>
@@ -161,7 +161,7 @@ export function WorkspaceAISettingsForm() {
               ))}
             </ol>
               }
-              {allowed.length === 0 && <p className="mt-3 text-xs leading-5 text-amber-200/80">Choose at least one service-enabled provider before saving a workspace policy.</p>}
+              {allowed.length === 0 && <p className="mt-3 text-xs leading-5 text-zinc-200/80">Choose at least one service-enabled provider before saving a workspace policy.</p>}
               </>}
             </>
           )}

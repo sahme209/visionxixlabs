@@ -45,7 +45,7 @@ const APPROVAL_LABEL: Record<ApprovalRule, string> = {
 
 const APPROVAL_TONE: Record<ApprovalRule, string> = {
   no_approval_needed:      "text-emerald-300 bg-emerald-500/10 border-emerald-500/30",
-  single_approver:         "text-amber-300 bg-amber-500/10 border-amber-500/30",
+  single_approver:         "text-zinc-300 bg-white/10 border-white/30",
   two_step_approval:       "text-rose-300 bg-rose-500/10 border-rose-500/30",
   incident_commander_only: "text-rose-300 bg-rose-500/15 border-rose-500/40",
   blocked_always:          "text-zinc-300 bg-zinc-500/10 border-zinc-500/30",
@@ -551,7 +551,7 @@ export default async function EngineerDetailPage({ params }: { params: Promise<{
               <div className="flex items-center gap-2 mb-2 flex-wrap text-[10px] font-mono uppercase tracking-wider">
                 <span className={
                   domainReport.outcome === "ai_generated" ? "text-emerald-300" :
-                  domainReport.outcome === "fallback_rules" ? "text-amber-300" :
+                  domainReport.outcome === "fallback_rules" ? "text-zinc-300" :
                   "text-rose-300"
                 }>{domainReport.outcome.replace(/_/g, " ")}</span>
                 {domainReport.modelHint && (
@@ -639,7 +639,7 @@ export default async function EngineerDetailPage({ params }: { params: Promise<{
                 <div className="flex items-center gap-2 mb-2 flex-wrap text-[10px] font-mono uppercase tracking-wider">
                   <span className={
                     ownRationale.outcome === "ai_generated" ? "text-emerald-300" :
-                    ownRationale.outcome === "fallback_rules" ? "text-amber-300" :
+                    ownRationale.outcome === "fallback_rules" ? "text-zinc-300" :
                     "text-rose-300"
                   }>{ownRationale.outcome.replace(/_/g, " ")}</span>
                   {ownRationale.modelHint && (
@@ -651,7 +651,7 @@ export default async function EngineerDetailPage({ params }: { params: Promise<{
                   {isStale && (
                     <>
                       <span className="text-zinc-500">·</span>
-                      <span className="text-amber-300" title={`${ageDays} days since last refresh — hit re-run AGI to update`}>
+                      <span className="text-zinc-300" title={`${ageDays} days since last refresh — hit re-run AGI to update`}>
                         stale · {ageDays}d
                       </span>
                     </>
@@ -840,7 +840,7 @@ export default async function EngineerDetailPage({ params }: { params: Promise<{
           <ShieldCheckIcon className="h-4 w-4 text-violet-300" />
           <p className="text-[10px] font-semibold uppercase tracking-widest text-violet-300">Approval rule in this workspace</p>
           {overrideActive && (
-            <span className="text-[9px] font-mono uppercase tracking-wider border rounded-full px-1.5 py-0.5 text-amber-300 bg-amber-500/10 border-amber-500/30">
+            <span className="text-[9px] font-mono uppercase tracking-wider border rounded-full px-1.5 py-0.5 text-zinc-300 bg-white/10 border-white/30">
               workspace override
             </span>
           )}
@@ -859,7 +859,7 @@ export default async function EngineerDetailPage({ params }: { params: Promise<{
             {engineer.id === "migration_engineer" && (
               <Link
                 href={`/dashboard/workforce/${engineer.id}/stage`}
-                className="inline-flex items-center gap-1.5 text-[12px] font-medium px-3 py-1.5 rounded-lg bg-amber-500/15 text-amber-100 border border-amber-500/40 hover:bg-amber-500/25 transition"
+                className="inline-flex items-center gap-1.5 text-[12px] font-medium px-3 py-1.5 rounded-lg bg-white/15 text-zinc-100 border border-white/40 hover:bg-white/25 transition"
               >
                 <ShieldCheckIcon className="h-3 w-3" />
                 Stage migration
@@ -886,7 +886,7 @@ export default async function EngineerDetailPage({ params }: { params: Promise<{
         </header>
         <div className="grid grid-cols-3 rounded-2xl border border-white/[0.06] bg-white/[0.015] divide-x divide-white/[0.04] overflow-hidden">
           <RollupTile label="allowed"           count={rollup.allowed}           tone={rollup.allowed > 0 ? "text-emerald-300" : "text-zinc-600"} />
-          <RollupTile label="requires approval" count={rollup.requires_approval} tone={rollup.requires_approval > 0 ? "text-amber-300" : "text-zinc-600"} />
+          <RollupTile label="requires approval" count={rollup.requires_approval} tone={rollup.requires_approval > 0 ? "text-zinc-300" : "text-zinc-600"} />
           <RollupTile label="blocked"           count={rollup.blocked}           tone={rollup.blocked > 0 ? "text-rose-300" : "text-zinc-600"} />
         </div>
         {recentBlock && (
@@ -922,7 +922,7 @@ export default async function EngineerDetailPage({ params }: { params: Promise<{
       <section className="mb-6 grid sm:grid-cols-2 gap-3">
         <div className="rounded-2xl border border-white/[0.06] bg-white/[0.015] px-5 py-4">
           <p className="text-[10px] font-mono uppercase tracking-[0.18em] text-zinc-500 mb-1">pending approvals</p>
-          <p className={`text-[22px] font-semibold tabular-nums ${pendingApprovalCount > 0 ? "text-amber-300" : "text-zinc-600"}`}>
+          <p className={`text-[22px] font-semibold tabular-nums ${pendingApprovalCount > 0 ? "text-zinc-300" : "text-zinc-600"}`}>
             {pendingApprovalCount}
           </p>
           {pendingApprovalCount > 0 ? (
@@ -987,7 +987,7 @@ export default async function EngineerDetailPage({ params }: { params: Promise<{
               return (
                 <li key={c} className="px-5 py-3 flex items-center justify-between gap-3">
                   <div className="flex items-center gap-2 min-w-0">
-                    <span className={`h-1.5 w-1.5 rounded-full shrink-0 ${isConnected ? "bg-emerald-400" : "bg-amber-400"}`} aria-hidden />
+                    <span className={`h-1.5 w-1.5 rounded-full shrink-0 ${isConnected ? "bg-emerald-400" : "bg-zinc-400"}`} aria-hidden />
                     <p className="text-[12px] font-mono uppercase tracking-wider text-white">{c}</p>
                   </div>
                   {isConnected ? (
@@ -995,7 +995,7 @@ export default async function EngineerDetailPage({ params }: { params: Promise<{
                   ) : (
                     <Link
                       href="/dashboard/connect-cloud"
-                      className="text-[10px] font-mono text-amber-300 hover:text-amber-200 transition-colors"
+                      className="text-[10px] font-mono text-zinc-300 hover:text-zinc-200 transition-colors"
                     >
                       connect →
                     </Link>
@@ -1006,7 +1006,7 @@ export default async function EngineerDetailPage({ params }: { params: Promise<{
             {githubRequired && (
               <li className="px-5 py-3 flex items-center justify-between gap-3">
                 <div className="flex items-center gap-2 min-w-0">
-                  <span className={`h-1.5 w-1.5 rounded-full shrink-0 ${githubConnected ? "bg-emerald-400" : "bg-amber-400"}`} aria-hidden />
+                  <span className={`h-1.5 w-1.5 rounded-full shrink-0 ${githubConnected ? "bg-emerald-400" : "bg-zinc-400"}`} aria-hidden />
                   <p className="text-[12px] font-mono uppercase tracking-wider text-white">github</p>
                 </div>
                 {githubConnected ? (
@@ -1016,7 +1016,7 @@ export default async function EngineerDetailPage({ params }: { params: Promise<{
                 ) : (
                   <Link
                     href="/dashboard/integrations/github"
-                    className="text-[10px] font-mono text-amber-300 hover:text-amber-200 transition-colors"
+                    className="text-[10px] font-mono text-zinc-300 hover:text-zinc-200 transition-colors"
                   >
                     connect →
                   </Link>
@@ -1062,7 +1062,7 @@ export default async function EngineerDetailPage({ params }: { params: Promise<{
                     <span className="text-zinc-500">·</span>
                     <span className={
                       r.outcome === "ai_generated" ? "text-emerald-300" :
-                      r.outcome === "fallback_rules" ? "text-amber-300" :
+                      r.outcome === "fallback_rules" ? "text-zinc-300" :
                       "text-rose-300"
                     }>{r.outcome.replace(/_/g, " ")}</span>
                     {r.modelHint && (
@@ -1141,7 +1141,7 @@ export default async function EngineerDetailPage({ params }: { params: Promise<{
                       <span className="bg-emerald-400/70" style={{ width: `${allowedPct}%` }} />
                     )}
                     {a.requires_approval > 0 && (
-                      <span className="bg-amber-400/70" style={{ width: `${approvalPct}%` }} />
+                      <span className="bg-white/70" style={{ width: `${approvalPct}%` }} />
                     )}
                     {a.blocked > 0 && (
                       <span className="bg-rose-400/70" style={{ width: `${blockedPct}%` }} />
@@ -1149,7 +1149,7 @@ export default async function EngineerDetailPage({ params }: { params: Promise<{
                   </div>
                   <div className="flex items-center gap-3 mt-1.5 text-[10px] font-mono text-zinc-500">
                     {a.allowed > 0 &&           <span><span className="text-emerald-300">{a.allowed}</span> allowed</span>}
-                    {a.requires_approval > 0 && <span><span className="text-amber-300">{a.requires_approval}</span> needs approval</span>}
+                    {a.requires_approval > 0 && <span><span className="text-zinc-300">{a.requires_approval}</span> needs approval</span>}
                     {a.blocked > 0 &&           <span><span className="text-rose-300">{a.blocked}</span> blocked</span>}
                   </div>
                 </li>
@@ -1161,7 +1161,7 @@ export default async function EngineerDetailPage({ params }: { params: Promise<{
 
       {/* Dependencies grid */}
       <section className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-6">
-        <DepCard title="Connectors" items={engineer.requiredConnectors.map((c) => c.replace(/_/g, " "))} tone="text-amber-300" />
+        <DepCard title="Connectors" items={engineer.requiredConnectors.map((c) => c.replace(/_/g, " "))} tone="text-zinc-300" />
         <DepCard title="Tools / modules" items={engineer.requiredTools.map((t) => t.replace(/_/g, " "))} tone="text-cyan-300" />
         <DepCard title="Permissions" items={engineer.requiredPermissions} tone="text-violet-300" />
         <DepCard title="Backend services" items={engineer.requiredBackendServices} tone="text-emerald-300" />
@@ -1196,12 +1196,12 @@ export default async function EngineerDetailPage({ params }: { params: Promise<{
 
       {/* Missing pieces */}
       {engineer.missingPieces.length > 0 && (
-        <section className="rounded-2xl border border-amber-500/15 bg-amber-500/[0.04] p-5 mb-6">
+        <section className="rounded-2xl border border-white/15 bg-white/[0.04] p-5 mb-6">
           <header className="flex items-center gap-2 mb-2">
-            <ExclamationTriangleIcon className="h-4 w-4 text-amber-300" />
-            <p className="text-[10px] font-semibold uppercase tracking-widest text-amber-300">Missing setup ({engineer.missingPieces.length})</p>
+            <ExclamationTriangleIcon className="h-4 w-4 text-zinc-300" />
+            <p className="text-[10px] font-semibold uppercase tracking-widest text-zinc-300">Missing setup ({engineer.missingPieces.length})</p>
           </header>
-          <ul className="text-[12px] text-amber-100/85 leading-relaxed list-disc list-inside marker:text-amber-400/70">
+          <ul className="text-[12px] text-zinc-100/85 leading-relaxed list-disc list-inside marker:text-white/70">
             {engineer.missingPieces.map((m) => <li key={m}>{m}</li>)}
           </ul>
         </section>
@@ -1285,7 +1285,7 @@ export default async function EngineerDetailPage({ params }: { params: Promise<{
                   <p className="text-[12px] font-semibold text-white truncate">{a.action}</p>
                   <span className={`text-[9px] font-mono uppercase tracking-wider border rounded-full px-1.5 py-px ${
                     a.runtimeDecision === "allowed"           ? "text-emerald-300 bg-emerald-500/10 border-emerald-500/30" :
-                    a.runtimeDecision === "requires_approval" ? "text-amber-300 bg-amber-500/10 border-amber-500/30"       :
+                    a.runtimeDecision === "requires_approval" ? "text-zinc-300 bg-white/10 border-white/30"       :
                                                                 "text-rose-300 bg-rose-500/10 border-rose-500/30"
                   }`}>
                     {a.runtimeDecision.replace(/_/g, " ")}

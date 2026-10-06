@@ -92,8 +92,8 @@ export default function AgiCockpitPage() {
       )}
 
       {error && (
-        <div role="alert" aria-live="assertive" className="rounded-2xl border border-amber-500/[0.18] bg-amber-500/[0.04] p-5 mb-6">
-          <p className="text-[11px] font-mono text-amber-300/80 uppercase tracking-[0.18em] mb-1">// cockpit partial</p>
+        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/[0.18] bg-white/[0.04] p-5 mb-6">
+          <p className="text-[11px] font-mono text-zinc-300/80 uppercase tracking-[0.18em] mb-1">// cockpit partial</p>
           <p className="text-[13px] text-zinc-300">{error}</p>
         </div>
       )}
@@ -227,7 +227,7 @@ function Lane({
             <span className={`text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded ${
               sourceMode === "live" ? "bg-emerald-500/15 text-emerald-300" :
               sourceMode === "partial_live" ? "bg-cyan-500/15 text-cyan-300" :
-              "bg-amber-500/15 text-amber-300"
+              "bg-white/15 text-zinc-300"
             }`}>{sourceMode.replace(/_/g, " ")}</span>
           </div>
           <p className="text-[11px] text-zinc-400 leading-snug">{subtitle}</p>

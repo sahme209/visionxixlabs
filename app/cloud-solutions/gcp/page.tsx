@@ -93,8 +93,8 @@ export default function GcpCloudSolutionsPage() {
                 identity, and governance so your teams can build and operate
                 confidently on GCP.
               </p>
-              <div className="mt-6 max-w-3xl rounded-xl border border-amber-500/20 bg-amber-500/[0.05] p-4 text-sm leading-relaxed text-zinc-300">
-                <strong className="text-amber-100">Axiom Agent availability:</strong> credential-format validation and preview inventory/security analysis are implemented. Live Google Cloud SDK validation and provider-specific execution are not released. The consulting scope below is separate from downloadable-product availability.
+              <div className="mt-6 max-w-3xl rounded-xl border border-white/20 bg-white/[0.05] p-4 text-sm leading-relaxed text-zinc-300">
+                <strong className="text-zinc-100">Axiom Agent availability:</strong> credential-format validation and preview inventory/security analysis are implemented. Live Google Cloud SDK validation and provider-specific execution are not released. The consulting scope below is separate from downloadable-product availability.
               </div>
             </section>
           </Reveal>

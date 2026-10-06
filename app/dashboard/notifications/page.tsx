@@ -60,7 +60,7 @@ interface ReportLite {
 
 const SEVERITY_VISUAL: Record<Severity, { border: string; bg: string; text: string; pill: string }> = {
   critical: { border: "border-rose-500/[0.28]",   bg: "bg-rose-500/[0.05]",   text: "text-rose-300",    pill: "bg-rose-500/20 text-rose-200"     },
-  warning:  { border: "border-amber-500/[0.22]",  bg: "bg-amber-500/[0.04]",  text: "text-amber-300",   pill: "bg-amber-500/15 text-amber-300"   },
+  warning:  { border: "border-white/[0.22]",  bg: "bg-white/[0.04]",  text: "text-zinc-300",   pill: "bg-white/15 text-zinc-300"   },
   info:     { border: "border-cyan-500/[0.18]",   bg: "bg-cyan-500/[0.04]",   text: "text-cyan-300",    pill: "bg-cyan-500/15 text-cyan-300"     },
 };
 
@@ -132,7 +132,7 @@ export default function NotificationsPage() {
             <div className="flex items-end gap-4">
               <Stat label="Critical" value={report.summary.critical} tone={report.summary.critical > 0 ? "text-rose-300" : "text-zinc-500"} />
               <div className="w-px h-9 bg-white/[0.08]" />
-              <Stat label="Warning" value={report.summary.warning} tone={report.summary.warning > 0 ? "text-amber-300" : "text-zinc-500"} />
+              <Stat label="Warning" value={report.summary.warning} tone={report.summary.warning > 0 ? "text-zinc-300" : "text-zinc-500"} />
               <div className="w-px h-9 bg-white/[0.08]" />
               <Stat label="Info" value={report.summary.info} tone="text-cyan-300" />
             </div>
@@ -166,8 +166,8 @@ export default function NotificationsPage() {
         </div>
       )}
       {!loading && error && (
-        <div role="alert" aria-live="assertive" className="rounded-2xl border border-amber-500/[0.18] bg-amber-500/[0.04] p-5 mb-6">
-          <p className="text-[11px] font-mono text-amber-300/80 uppercase tracking-[0.18em] mb-1">// notifications unavailable</p>
+        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/[0.18] bg-white/[0.04] p-5 mb-6">
+          <p className="text-[11px] font-mono text-zinc-300/80 uppercase tracking-[0.18em] mb-1">// notifications unavailable</p>
           <p className="text-[13px] text-zinc-300">{error}</p>
         </div>
       )}

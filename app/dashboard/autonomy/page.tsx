@@ -78,9 +78,9 @@ interface CycleReport {
 const STAGE_STATUS_VISUAL: Record<StageStatus, { pill: string; icon: typeof CheckCircleIcon; label: string }> = {
   passed:                  { pill: "bg-emerald-500/15 text-emerald-300", icon: CheckCircleIcon,         label: "passed" },
   halted_safe:             { pill: "bg-cyan-500/15 text-cyan-300",       icon: ClockIcon,               label: "halted · safe" },
-  halted_policy:           { pill: "bg-amber-500/15 text-amber-300",     icon: ExclamationTriangleIcon, label: "halted · policy" },
-  halted_boundary:         { pill: "bg-amber-500/15 text-amber-300",     icon: ExclamationTriangleIcon, label: "halted · boundary" },
-  halted_missing_evidence: { pill: "bg-amber-500/15 text-amber-300",     icon: ExclamationTriangleIcon, label: "halted · evidence" },
+  halted_policy:           { pill: "bg-white/15 text-zinc-300",     icon: ExclamationTriangleIcon, label: "halted · policy" },
+  halted_boundary:         { pill: "bg-white/15 text-zinc-300",     icon: ExclamationTriangleIcon, label: "halted · boundary" },
+  halted_missing_evidence: { pill: "bg-white/15 text-zinc-300",     icon: ExclamationTriangleIcon, label: "halted · evidence" },
   halted_unsafe:           { pill: "bg-rose-500/15 text-rose-300",       icon: XCircleIcon,             label: "halted · unsafe" },
   halted_needs_human:      { pill: "bg-violet-500/15 text-violet-300",   icon: ClockIcon,               label: "halted · needs human" },
   not_reached:             { pill: "bg-zinc-700/40 text-zinc-300",       icon: MinusCircleIcon,         label: "not reached" },
@@ -185,8 +185,8 @@ export default function AutonomyCockpitPage() {
       </div>
 
       {error && (
-        <div role="alert" aria-live="assertive" className="rounded-2xl border border-amber-500/[0.18] bg-amber-500/[0.04] p-5 mb-6">
-          <p className="text-[11px] font-mono text-amber-300/80 uppercase tracking-[0.18em] mb-1">// cycle failed</p>
+        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/[0.18] bg-white/[0.04] p-5 mb-6">
+          <p className="text-[11px] font-mono text-zinc-300/80 uppercase tracking-[0.18em] mb-1">// cycle failed</p>
           <p className="text-[13px] text-zinc-300">{error}</p>
         </div>
       )}
@@ -293,7 +293,7 @@ function Stat({ label, value, tone }: { label: string; value: number; tone: "eme
   const cls = {
     emerald: "border-emerald-500/[0.18] bg-emerald-500/[0.03] text-emerald-200",
     cyan:    "border-cyan-500/[0.18] bg-cyan-500/[0.03] text-cyan-200",
-    amber:   "border-amber-500/[0.18] bg-amber-500/[0.03] text-amber-200",
+    amber:   "border-white/[0.18] bg-white/[0.03] text-zinc-200",
     rose:    "border-rose-500/[0.18] bg-rose-500/[0.03] text-rose-200",
     zinc:    "border-white/[0.06] bg-white/[0.02] text-zinc-200",
   }[tone];

@@ -67,7 +67,7 @@ export default function ValidationPage() {
           const { Icon } = kpi;
           const toneClass =
             kpi.tone === "emerald" ? "text-emerald-300 bg-emerald-500/10 border-emerald-500/20" :
-            kpi.tone === "amber"   ? "text-amber-300 bg-amber-500/10 border-amber-500/20"       :
+            kpi.tone === "amber"   ? "text-zinc-300 bg-white/10 border-white/20"       :
                                       "text-zinc-400 bg-white/[0.04] border-white/[0.08]";
           return (
             <div key={kpi.label} className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5">
@@ -170,9 +170,9 @@ function ValidationRowCard({ row }: { row: ValidationRow }) {
                                 ClockIcon;
   const tone =
     row.status === "passing" ? "text-emerald-300" :
-    row.status === "partial" ? "text-amber-300" :
+    row.status === "partial" ? "text-zinc-300" :
     row.status === "failing" ? "text-red-300" :
-    row.status === "preview" ? "text-amber-300" :
+    row.status === "preview" ? "text-zinc-300" :
                                 "text-zinc-500";
   return (
     <div className="px-5 py-3 flex items-start gap-3">
@@ -186,7 +186,7 @@ function ValidationRowCard({ row }: { row: ValidationRow }) {
         </div>
         <p className="text-[10px] text-zinc-500 font-mono truncate">evidence · {row.evidence}</p>
         {row.nextFix && (
-          <p className="text-[11px] text-amber-300/80 mt-1 leading-relaxed">→ {row.nextFix}</p>
+          <p className="text-[11px] text-zinc-300/80 mt-1 leading-relaxed">→ {row.nextFix}</p>
         )}
       </div>
     </div>
@@ -197,7 +197,7 @@ function CapCell({ label, status }: { label?: string; status?: "live" | "preview
   if (!label) return <span className="text-zinc-700">—</span>;
   const badge =
     status === "live"      ? "text-emerald-300 bg-emerald-500/10 border-emerald-500/20" :
-    status === "preview"   ? "text-amber-300 bg-amber-500/10 border-amber-500/20" :
+    status === "preview"   ? "text-zinc-300 bg-white/10 border-white/20" :
     status === "expanding" ? "text-cyan-300 bg-cyan-500/10 border-cyan-500/20" :
                               "text-zinc-400 bg-white/[0.04] border-white/[0.08]";
   return (
@@ -211,9 +211,9 @@ function CapCell({ label, status }: { label?: string; status?: "live" | "preview
 function statusBadgeClass(status: ValidationStatus): string {
   switch (status) {
     case "passing": return "text-emerald-300 bg-emerald-500/10 border-emerald-500/20";
-    case "partial": return "text-amber-300 bg-amber-500/10 border-amber-500/20";
+    case "partial": return "text-zinc-300 bg-white/10 border-white/20";
     case "failing": return "text-red-300 bg-red-500/10 border-red-500/20";
-    case "preview": return "text-amber-300 bg-amber-500/10 border-amber-500/20";
+    case "preview": return "text-zinc-300 bg-white/10 border-white/20";
     case "blocked": return "text-zinc-400 bg-white/[0.04] border-white/[0.08]";
   }
 }

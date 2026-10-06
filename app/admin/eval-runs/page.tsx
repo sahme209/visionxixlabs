@@ -42,7 +42,7 @@ const OUTCOME_TONE: Record<string, string> = {
 
 const STATUS_TONE: Record<string, string> = {
   pending:   "text-zinc-400 bg-white/[0.04] border-white/[0.08]",
-  running:   "text-amber-300 bg-amber-500/10 border-amber-500/30",
+  running:   "text-zinc-300 bg-white/10 border-white/30",
   completed: "text-emerald-300 bg-emerald-500/10 border-emerald-500/30",
   failed:    "text-rose-300 bg-rose-500/10 border-rose-500/30",
 };
@@ -94,7 +94,7 @@ export default async function AdminEvalRunsPage() {
       <section className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-8">
         <Stat label="Runs (last 30)" value={String(totalRuns)} tone="text-violet-300" />
         <Stat label="Completed" value={String(completed)} tone={completed > 0 ? "text-emerald-300" : "text-zinc-300"} />
-        <Stat label="Total eval spend" value={formatCents(totalSpend)} tone="text-amber-300" />
+        <Stat label="Total eval spend" value={formatCents(totalSpend)} tone="text-zinc-300" />
         <Stat
           label="Last run pass rate"
           value={lastRun ? `${Math.round((lastRun.passCount / Math.max(1, lastRun.totalCases - lastRun.skippedCount)) * 100)}%` : "—"}
@@ -177,9 +177,9 @@ export default async function AdminEvalRunsPage() {
         </section>
       )}
 
-      <section className="mt-8 rounded-2xl border border-amber-500/15 bg-amber-500/[0.04] p-5">
-        <p className="text-[10px] font-semibold text-amber-300 uppercase tracking-widest mb-2">// how the eval harness works</p>
-        <ul className="text-[12px] text-zinc-300 leading-relaxed list-disc list-inside marker:text-amber-400/70 space-y-1">
+      <section className="mt-8 rounded-2xl border border-white/15 bg-white/[0.04] p-5">
+        <p className="text-[10px] font-semibold text-zinc-300 uppercase tracking-widest mb-2">// how the eval harness works</p>
+        <ul className="text-[12px] text-zinc-300 leading-relaxed list-disc list-inside marker:text-white/70 space-y-1">
           <li>Corpus lives in <code className="text-zinc-200">lib/workforce/eval/evalTaskCorpus.ts</code> — add tasks here to expand coverage.</li>
           <li>Pure scorer in <code className="text-zinc-200">lib/workforce/eval/scoreEvalCase.ts</code> with 14 unit tests covers expectation matching, partial credit, fatal failures, threshold pass/fail.</li>
           <li>Cron schedule: <code className="text-zinc-200">0 7 * * *</code> (daily 07:00 UTC). Bearer CRON_SECRET guarded.</li>

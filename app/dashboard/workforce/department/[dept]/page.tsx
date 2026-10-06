@@ -209,8 +209,8 @@ export default async function WorkforceDepartmentPage({
       </header>
 
       {migrationPending && (
-        <div className="mb-8 rounded-2xl border border-amber-500/15 bg-white/[0.015] px-6 py-5">
-          <p className="text-[10px] font-mono uppercase tracking-[0.28em] text-amber-300 mb-1">migration pending</p>
+        <div className="mb-8 rounded-2xl border border-white/15 bg-white/[0.015] px-6 py-5">
+          <p className="text-[10px] font-mono uppercase tracking-[0.28em] text-zinc-300 mb-1">migration pending</p>
           <p className="text-[13px] text-zinc-300">
             AgentEngineerActionAttempt table not migrated. Run <code className="font-mono text-white">prisma migrate deploy</code>.
           </p>
@@ -221,7 +221,7 @@ export default async function WorkforceDepartmentPage({
       <section className="mb-4 grid grid-cols-4 rounded-2xl border border-white/[0.06] bg-white/[0.015] divide-x divide-white/[0.04] overflow-hidden">
         <RollupTile label="total"             count={rollup.total}             tone="text-white" />
         <RollupTile label="allowed"           count={rollup.allowed}           tone={rollup.allowed > 0 ? "text-emerald-300" : "text-zinc-600"} />
-        <RollupTile label="requires approval" count={rollup.requires_approval} tone={rollup.requires_approval > 0 ? "text-amber-300" : "text-zinc-600"} />
+        <RollupTile label="requires approval" count={rollup.requires_approval} tone={rollup.requires_approval > 0 ? "text-zinc-300" : "text-zinc-600"} />
         <RollupTile label="blocked"           count={rollup.blocked}           tone={rollup.blocked > 0 ? "text-rose-300" : "text-zinc-600"} />
       </section>
 
@@ -229,11 +229,11 @@ export default async function WorkforceDepartmentPage({
           attempts rollup because pending count is a 'now' signal,
           not a 30-day cumulative one. */}
       {totalPending > 0 && (
-        <div className="mb-10 rounded-2xl border border-amber-500/15 bg-amber-500/[0.03] px-5 py-3 flex items-center justify-between gap-3">
-          <p className="text-[12px] text-amber-100/85">
-            <span className="font-semibold text-amber-200 tabular-nums">{totalPending}</span> approval{totalPending === 1 ? "" : "s"} waiting on a workspace decision across this department.
+        <div className="mb-10 rounded-2xl border border-white/15 bg-white/[0.03] px-5 py-3 flex items-center justify-between gap-3">
+          <p className="text-[12px] text-zinc-100/85">
+            <span className="font-semibold text-zinc-200 tabular-nums">{totalPending}</span> approval{totalPending === 1 ? "" : "s"} waiting on a workspace decision across this department.
           </p>
-          <Link href="/dashboard/workforce/approvals" className="text-[11px] font-mono text-amber-200 hover:text-white whitespace-nowrap">
+          <Link href="/dashboard/workforce/approvals" className="text-[11px] font-mono text-zinc-200 hover:text-white whitespace-nowrap">
             review queue →
           </Link>
         </div>
@@ -257,7 +257,7 @@ export default async function WorkforceDepartmentPage({
           <div className="grid grid-cols-4 rounded-2xl border border-violet-500/15 bg-violet-500/[0.03] divide-x divide-white/[0.04] overflow-hidden">
             <RollupTile label="total"          count={agi.total}          tone="text-white" />
             <RollupTile label="ai generated"   count={agi.ai_generated}   tone={agi.ai_generated > 0 ? "text-emerald-300" : "text-zinc-600"} />
-            <RollupTile label="fallback rules" count={agi.fallback_rules} tone={agi.fallback_rules > 0 ? "text-amber-300" : "text-zinc-600"} />
+            <RollupTile label="fallback rules" count={agi.fallback_rules} tone={agi.fallback_rules > 0 ? "text-zinc-300" : "text-zinc-600"} />
             <RollupTile label="errored"        count={agi.error}          tone={agi.error > 0 ? "text-rose-300" : "text-zinc-600"} />
           </div>
         </section>
@@ -298,12 +298,12 @@ export default async function WorkforceDepartmentPage({
                         <span className="tabular-nums">{c.total}</span> attempt{c.total === 1 ? "" : "s"} · 30d
                       </span>
                       {c.allowed > 0 &&           <span className="text-emerald-300">· {c.allowed} allowed</span>}
-                      {c.requires_approval > 0 && <span className="text-amber-300">· {c.requires_approval} approval</span>}
+                      {c.requires_approval > 0 && <span className="text-zinc-300">· {c.requires_approval} approval</span>}
                       {c.blocked > 0 &&           <span className="text-rose-300">· {c.blocked} blocked</span>}
-                      {pending > 0 &&              <span className="text-amber-300">· {pending} pending</span>}
+                      {pending > 0 &&              <span className="text-zinc-300">· {pending} pending</span>}
                     </div>
                     {e.missingPieces.length > 0 && (
-                      <p className="text-[11px] text-amber-300/80 mt-2 inline-flex items-center gap-1">
+                      <p className="text-[11px] text-zinc-300/80 mt-2 inline-flex items-center gap-1">
                         <ExclamationTriangleIcon className="h-3 w-3" />
                         {e.missingPieces.length} missing piece{e.missingPieces.length === 1 ? "" : "s"}
                       </p>
@@ -335,7 +335,7 @@ export default async function WorkforceDepartmentPage({
               const engineerId = r.entityRef?.startsWith("engineer:") ? r.entityRef.slice("engineer:".length) : null;
               const tone =
                 r.outcome === "success" ? "text-emerald-300" :
-                r.outcome === "blocked" ? "text-amber-300" :
+                r.outcome === "blocked" ? "text-zinc-300" :
                 r.outcome === "failure" ? "text-rose-300" :
                 "text-zinc-400";
               return (

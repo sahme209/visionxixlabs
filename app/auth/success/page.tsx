@@ -47,7 +47,7 @@ export default async function AuthSuccessPage({ searchParams }: { searchParams: 
       <div className="mx-auto max-w-6xl">
         <AuthCompanionHeader email={context.email ?? null} />
 
-        {integrationNotice && <div role="status" className={`mt-5 rounded-2xl border p-4 text-sm leading-6 ${integrationNotice.tone === "emerald" ? "border-emerald-400/20 bg-emerald-400/[0.05] text-emerald-100" : integrationNotice.tone === "amber" ? "border-amber-300/20 bg-amber-300/[0.05] text-amber-100" : "border-rose-300/20 bg-rose-300/[0.05] text-rose-100"}`}><p className="font-medium">{integrationNotice.title}</p><p className="mt-1 text-zinc-400">{integrationNotice.detail}</p></div>}
+        {integrationNotice && <div role="status" className={`mt-5 rounded-2xl border p-4 text-sm leading-6 ${integrationNotice.tone === "emerald" ? "border-emerald-400/20 bg-emerald-400/[0.05] text-emerald-100" : integrationNotice.tone === "amber" ? "border-zinc-300/20 bg-zinc-300/[0.05] text-zinc-100" : "border-rose-300/20 bg-rose-300/[0.05] text-rose-100"}`}><p className="font-medium">{integrationNotice.title}</p><p className="mt-1 text-zinc-400">{integrationNotice.detail}</p></div>}
 
         <section className="grid gap-5 py-10 lg:grid-cols-[minmax(0,1.45fr)_minmax(18rem,0.72fr)] lg:py-14">
           <div className="rounded-3xl border border-white/[0.09] bg-white/[0.035] p-6 shadow-[0_24px_100px_rgba(0,0,0,0.18)] sm:p-9">

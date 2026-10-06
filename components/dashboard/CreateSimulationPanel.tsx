@@ -175,8 +175,8 @@ export function CreateSimulationPanel() {
           </div>
 
           {(summary?.total ?? 0) === 0 ? (
-            <div className="rounded-md border border-amber-500/[0.18] bg-amber-500/[0.04] p-3">
-              <p className="text-[12px] text-amber-200 leading-relaxed">
+            <div className="rounded-md border border-white/[0.18] bg-white/[0.04] p-3">
+              <p className="text-[12px] text-zinc-200 leading-relaxed">
                 No remediation candidates to simulate. Run the Remediation Pipeline first to produce candidates.
               </p>
             </div>
@@ -186,7 +186,7 @@ export function CreateSimulationPanel() {
               <div className="grid grid-cols-2 sm:grid-cols-5 gap-2 mb-3">
                 <ResultStat label="Simulated" value={String(summary?.simulated ?? 0)} tone="text-emerald-300" />
                 <ResultStat label="Preview" value={String(summary?.preview_only ?? 0)} tone="text-cyan-300" />
-                <ResultStat label="Blocked" value={String(summary?.blocked ?? 0)} tone={(summary?.blocked ?? 0) > 0 ? "text-amber-300" : "text-zinc-400"} />
+                <ResultStat label="Blocked" value={String(summary?.blocked ?? 0)} tone={(summary?.blocked ?? 0) > 0 ? "text-zinc-300" : "text-zinc-400"} />
                 <ResultStat label="Unsafe" value={String(summary?.unsafe ?? 0)} tone={(summary?.unsafe ?? 0) > 0 ? "text-rose-300" : "text-zinc-400"} />
                 <ResultStat label="Incomplete" value={String(summary?.incomplete ?? 0)} tone="text-zinc-300" />
               </div>
@@ -205,7 +205,7 @@ export function CreateSimulationPanel() {
                           <span className={`mt-1.5 w-1.5 h-1.5 rounded-full shrink-0 ${
                             r.status === "simulated"    ? "bg-emerald-400" :
                             r.status === "preview_only" ? "bg-cyan-400"    :
-                            r.status === "blocked"      ? "bg-amber-400"   :
+                            r.status === "blocked"      ? "bg-zinc-400"   :
                             r.status === "unsafe"       ? "bg-rose-400"    :
                                                           "bg-zinc-500"
                           }`} />

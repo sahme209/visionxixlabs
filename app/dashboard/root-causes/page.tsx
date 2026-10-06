@@ -51,7 +51,7 @@ interface ReportLite {
 const CONFIDENCE_VISUAL: Record<Confidence, { border: string; bg: string; text: string; pill: string }> = {
   high:   { border: "border-emerald-500/[0.22]", bg: "bg-emerald-500/[0.04]", text: "text-emerald-300", pill: "bg-emerald-500/15 text-emerald-300" },
   medium: { border: "border-cyan-500/[0.22]",    bg: "bg-cyan-500/[0.04]",    text: "text-cyan-300",    pill: "bg-cyan-500/15 text-cyan-300"       },
-  low:    { border: "border-amber-500/[0.18]",   bg: "bg-amber-500/[0.04]",   text: "text-amber-300",   pill: "bg-amber-500/15 text-amber-300"     },
+  low:    { border: "border-white/[0.18]",   bg: "bg-white/[0.04]",   text: "text-zinc-300",   pill: "bg-white/15 text-zinc-300"     },
 };
 
 const PATTERN_ICON: Record<Pattern, typeof PuzzlePieceIcon> = {
@@ -149,8 +149,8 @@ export default function RootCausesPage() {
         </div>
       )}
       {!loading && error && (
-        <div role="alert" aria-live="assertive" className="rounded-2xl border border-amber-500/[0.18] bg-amber-500/[0.04] p-5 mb-6">
-          <p className="text-[11px] font-mono text-amber-300/80 uppercase tracking-[0.18em] mb-1">// groups unavailable</p>
+        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/[0.18] bg-white/[0.04] p-5 mb-6">
+          <p className="text-[11px] font-mono text-zinc-300/80 uppercase tracking-[0.18em] mb-1">// groups unavailable</p>
           <p className="text-[13px] text-zinc-300">{error}</p>
         </div>
       )}
@@ -200,8 +200,8 @@ export default function RootCausesPage() {
                       </div>
 
                       {g.limitations.length > 0 && (
-                        <div className="rounded-md border border-amber-500/[0.18] bg-amber-500/[0.04] p-2 mt-2">
-                          <p className="text-[9px] font-mono text-amber-300/80 uppercase tracking-wider mb-0.5">// limitation</p>
+                        <div className="rounded-md border border-white/[0.18] bg-white/[0.04] p-2 mt-2">
+                          <p className="text-[9px] font-mono text-zinc-300/80 uppercase tracking-wider mb-0.5">// limitation</p>
                           <p className="text-[10px] text-zinc-300 leading-snug">{g.limitations[0]}</p>
                         </div>
                       )}

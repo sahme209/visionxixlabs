@@ -192,7 +192,7 @@ export default async function TeamPage({
                       ) : (
                         <>
                           <span className="text-zinc-700 mx-1.5">::</span>
-                          <span className="text-amber-300">pending acceptance</span>
+                          <span className="text-zinc-300">pending acceptance</span>
                         </>
                       )}
                       {m.providerScopes.length > 0 && (
