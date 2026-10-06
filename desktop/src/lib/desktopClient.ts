@@ -319,6 +319,10 @@ export class DesktopClient {
     return this.post("/api/desktop/billing/portal", {});
   }
 
+  usageSummary(): Promise<ApiResult<{ periodMonth: string; aiInvocationCount: number; aiInputTokens: number; aiOutputTokens: number; aiCostCents: number }>> {
+    return this.get("/api/desktop/usage-summary");
+  }
+
   /**
    * Phase 399 — call GET /api/v1/whoami. Returns the workspace + scopes
    * + quota snapshot, or a precise auth-failure code. Doesn't fall back
