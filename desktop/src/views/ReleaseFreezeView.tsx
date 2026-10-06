@@ -81,14 +81,14 @@ export function ReleaseFreezeView() {
       )}
 
       {!loading && errorBody?.error === "migration_pending" && (
-        <div className="glass-card p-4 border border-amber-500/30">
-          <p className="text-sm font-semibold text-amber-300 mb-1">Schema migration pending</p>
+        <div className="glass-card p-4 border border-white/30">
+          <p className="text-sm font-semibold text-zinc-300 mb-1">Schema migration pending</p>
           <p className="text-xs text-zinc-400">{errorBody.hint}</p>
         </div>
       )}
 
       {!loading && errorBody?.error === "auth_required" && (
-        <div className="glass-card p-4 text-sm text-amber-300 border border-amber-500/20">Sign in required.</div>
+        <div className="glass-card p-4 text-sm text-zinc-300 border border-white/20">Sign in required.</div>
       )}
 
       {data && (

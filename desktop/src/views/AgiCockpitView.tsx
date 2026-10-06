@@ -56,7 +56,7 @@ type CockpitBody = { ok: true; data: CockpitData } | { ok: false; error: string;
 const SEVERITY_CLASS: Record<string, string> = {
   critical: "bg-rose-500/25 text-rose-200 border-rose-500/40",
   high:     "bg-rose-500/15 text-rose-300 border-rose-500/25",
-  medium:   "bg-amber-500/15 text-amber-300 border-amber-500/25",
+  medium:   "bg-white/15 text-zinc-300 border-white/25",
   low:      "bg-emerald-500/15 text-emerald-300 border-emerald-500/25",
   none:     "bg-emerald-500/15 text-emerald-300 border-emerald-500/25",
   unknown:  "bg-zinc-700/40 text-zinc-400 border-zinc-700/40",
@@ -145,13 +145,13 @@ export function AgiCockpitView({ onNavigate }: { onNavigate?: (v: View) => void 
         <div className="glass-card p-4 text-sm text-rose-300 border border-rose-500/20">{networkError}</div>
       )}
       {!loading && errorBody?.error === "migration_pending" && (
-        <div className="glass-card p-4 border border-amber-500/30">
-          <p className="text-sm font-semibold text-amber-300 mb-1">Schema migration pending</p>
+        <div className="glass-card p-4 border border-white/30">
+          <p className="text-sm font-semibold text-zinc-300 mb-1">Schema migration pending</p>
           <p className="text-xs text-zinc-400">{errorBody.hint}</p>
         </div>
       )}
       {!loading && errorBody?.error === "auth_required" && (
-        <div className="glass-card p-4 text-sm text-amber-300 border border-amber-500/20">Sign in required.</div>
+        <div className="glass-card p-4 text-sm text-zinc-300 border border-white/20">Sign in required.</div>
       )}
 
       {data && (
@@ -304,7 +304,7 @@ function EngineCard({ engine, view, onNavigate }: { engine: EngineTelemetry; vie
 function Metric({ label, value, tone }: { label: string; value: number; tone: "emerald" | "amber" | "rose" | "zinc" }) {
   const cls = {
     emerald: "text-emerald-300",
-    amber:   "text-amber-300",
+    amber:   "text-zinc-300",
     rose:    "text-rose-300",
     zinc:    "text-zinc-300",
   }[tone];
@@ -321,7 +321,7 @@ function AvailabilityStrip({ snapshot, onNavigate }: { snapshot: AvailSnapshot; 
     snapshot.aiAvailabilityPct >= 80
       ? "border-emerald-500/30 bg-emerald-500/[0.05]"
       : snapshot.aiAvailabilityPct >= 50
-      ? "border-amber-500/30 bg-amber-500/[0.05]"
+      ? "border-white/30 bg-white/[0.05]"
       : "border-rose-500/30 bg-rose-500/[0.05]";
   return (
     <button
@@ -335,7 +335,7 @@ function AvailabilityStrip({ snapshot, onNavigate }: { snapshot: AvailSnapshot; 
         <div className="flex items-center gap-2 ml-auto text-[11px] font-mono">
           <span className="text-violet-300">{snapshot.aiGenerated} AI</span>
           <span className="text-zinc-500">·</span>
-          <span className="text-amber-300">{snapshot.fallbackRules} fallback</span>
+          <span className="text-zinc-300">{snapshot.fallbackRules} fallback</span>
           <span className="text-zinc-500">·</span>
           <span className="text-rose-300">{snapshot.errored} err</span>
           <span className="text-zinc-500">·</span>

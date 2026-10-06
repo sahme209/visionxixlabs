@@ -126,7 +126,7 @@ export function ScansView() {
                   </div>
                   <div>
                     <span className="text-xs text-zinc-500">Drift</span>
-                    <div className={`text-lg font-bold ${result.drift_detected > 0 ? "text-amber-400" : "text-zinc-400"}`}>
+                    <div className={`text-lg font-bold ${result.drift_detected > 0 ? "text-zinc-400" : "text-zinc-400"}`}>
                       {result.drift_detected}
                     </div>
                   </div>

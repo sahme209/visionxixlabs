@@ -25,7 +25,7 @@ type ListBody =
   | { ok: false; error: string; hint?: string };
 
 const STATUS_CLASS: Record<FixView["status"], string> = {
-  pending:    "bg-amber-500/15 text-amber-300 border-amber-500/25",
+  pending:    "bg-white/15 text-zinc-300 border-white/25",
   reconciled: "bg-emerald-500/15 text-emerald-300 border-emerald-500/25",
   wont_fix:   "bg-zinc-700/40 text-zinc-300 border-zinc-700/40",
   unknown:    "bg-rose-500/15 text-rose-300 border-rose-500/25",
@@ -77,14 +77,14 @@ export function ManualFixesView() {
       )}
 
       {!loading && errorBody?.error === "migration_pending" && (
-        <div className="glass-card p-4 border border-amber-500/30">
-          <p className="text-sm font-semibold text-amber-300 mb-1">Schema migration pending</p>
+        <div className="glass-card p-4 border border-white/30">
+          <p className="text-sm font-semibold text-zinc-300 mb-1">Schema migration pending</p>
           <p className="text-xs text-zinc-400">{errorBody.hint}</p>
         </div>
       )}
 
       {!loading && errorBody?.error === "auth_required" && (
-        <div className="glass-card p-4 text-sm text-amber-300 border border-amber-500/20">Sign in required.</div>
+        <div className="glass-card p-4 text-sm text-zinc-300 border border-white/20">Sign in required.</div>
       )}
 
       {data && (
@@ -201,7 +201,7 @@ function FixRow({ fix, onReconciled }: { fix: FixView; onReconciled: () => void 
 function Stat({ label, value, tone = "zinc" }: { label: string; value: string; tone?: "emerald" | "amber" | "rose" | "zinc" }) {
   const cls = {
     emerald: "border-emerald-500/20 text-emerald-200",
-    amber:   "border-amber-500/20 text-amber-200",
+    amber:   "border-white/20 text-zinc-200",
     rose:    "border-rose-500/20 text-rose-200",
     zinc:    "border-zinc-700/40 text-zinc-200",
   }[tone];
@@ -268,7 +268,7 @@ function LogManualFixPanel({ onLogged }: { onLogged: () => void }) {
         <button
           type="button"
           onClick={() => setState({ kind: "open" })}
-          className="px-3 py-1.5 rounded-lg border border-amber-500/30 bg-amber-500/[0.08] text-[12px] font-semibold text-amber-200 hover:bg-amber-500/[0.16] transition-colors"
+          className="px-3 py-1.5 rounded-lg border border-white/30 bg-white/[0.08] text-[12px] font-semibold text-zinc-200 hover:bg-white/[0.16] transition-colors"
         >
           + Log manual fix
         </button>
@@ -278,9 +278,9 @@ function LogManualFixPanel({ onLogged }: { onLogged: () => void }) {
 
   const busy = state.kind === "submitting";
   return (
-    <div className="glass-card p-4 border border-amber-500/20">
+    <div className="glass-card p-4 border border-white/20">
       <div className="flex items-center justify-between mb-3">
-        <p className="text-sm font-semibold text-amber-100">Log a manual fix</p>
+        <p className="text-sm font-semibold text-zinc-100">Log a manual fix</p>
         <button type="button" onClick={reset} className="text-[11px] font-mono text-zinc-400 hover:text-zinc-200" disabled={busy}>cancel</button>
       </div>
       <label className="block mb-2">
@@ -291,7 +291,7 @@ function LogManualFixPanel({ onLogged }: { onLogged: () => void }) {
           placeholder="e.g. Restarted redis on web-prod-1 + bumped maxmemory"
           disabled={busy}
           rows={2}
-          className="w-full rounded-md border border-zinc-700/40 bg-zinc-900/60 px-2 py-1.5 text-[12px] text-zinc-100 placeholder:text-zinc-600 focus:border-amber-500/40 focus:outline-none disabled:opacity-50"
+          className="w-full rounded-md border border-zinc-700/40 bg-zinc-900/60 px-2 py-1.5 text-[12px] text-zinc-100 placeholder:text-zinc-600 focus:border-white/40 focus:outline-none disabled:opacity-50"
         />
       </label>
       <div className="grid grid-cols-3 gap-2">
@@ -327,7 +327,7 @@ function LogManualFixPanel({ onLogged }: { onLogged: () => void }) {
             onChange={(e) => setReleaseId(e.target.value)}
             disabled={busy}
             placeholder="rel_..."
-            className="w-full rounded-md border border-zinc-700/40 bg-zinc-900/60 px-2 py-1.5 text-[12px] text-zinc-100 placeholder:text-zinc-600 focus:border-amber-500/40 focus:outline-none disabled:opacity-50"
+            className="w-full rounded-md border border-zinc-700/40 bg-zinc-900/60 px-2 py-1.5 text-[12px] text-zinc-100 placeholder:text-zinc-600 focus:border-white/40 focus:outline-none disabled:opacity-50"
           />
         </label>
       </div>
@@ -336,7 +336,7 @@ function LogManualFixPanel({ onLogged }: { onLogged: () => void }) {
           type="button"
           onClick={submit}
           disabled={busy || !summary.trim()}
-          className="px-3 py-1.5 rounded-md border border-amber-500/40 bg-amber-500/[0.14] text-[12px] font-semibold text-amber-100 hover:bg-amber-500/[0.22] disabled:opacity-50 disabled:cursor-wait transition-colors"
+          className="px-3 py-1.5 rounded-md border border-white/40 bg-white/[0.14] text-[12px] font-semibold text-zinc-100 hover:bg-white/[0.22] disabled:opacity-50 disabled:cursor-wait transition-colors"
         >
           {busy ? "Submitting…" : "Log fix"}
         </button>

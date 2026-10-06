@@ -22,7 +22,7 @@ export function Card({
 }: HTMLAttributes<HTMLDivElement> & { glow?: boolean; tint?: "violet" | "cyan" | "amber" | "emerald" | "rose" }) {
   const tintBg = tint === "violet"  ? "before:bg-violet-500/10"
               : tint === "cyan"     ? "before:bg-cyan-500/10"
-              : tint === "amber"    ? "before:bg-amber-500/10"
+              : tint === "amber"    ? "before:bg-white/10"
               : tint === "emerald"  ? "before:bg-emerald-500/10"
               : tint === "rose"     ? "before:bg-rose-500/10"
               : "";
@@ -108,7 +108,7 @@ export function Kpi({
     tone === "violet"  ? "text-violet-200" :
     tone === "cyan"    ? "text-cyan-200" :
     tone === "emerald" ? "text-emerald-200" :
-    tone === "amber"   ? "text-amber-200" :
+    tone === "amber"   ? "text-zinc-200" :
     "text-rose-200";
 
   const deltaCls =
@@ -232,10 +232,10 @@ export function DataSourceBanner({
   }
   if (mode === "authenticated_no_data") {
     return (
-      <div className="rounded-lg border border-amber-500/25 bg-amber-500/[0.06] px-3 py-2.5 text-[11px] font-mono">
+      <div className="rounded-lg border border-white/25 bg-white/[0.06] px-3 py-2.5 text-[11px] font-mono">
         <div className="flex items-center gap-2 mb-1">
-          <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
-          <span className="text-amber-300 uppercase tracking-[0.18em]">no live data yet</span>
+          <span className="w-1.5 h-1.5 rounded-full bg-zinc-400" />
+          <span className="text-zinc-300 uppercase tracking-[0.18em]">no live data yet</span>
         </div>
         <p className="text-zinc-400 leading-relaxed font-sans text-[12px]">
           The authenticated workspace returned no {surfaceName} records, or this service is unavailable.

@@ -100,7 +100,7 @@ html[data-density="compact"] {
     @apply bg-clip-text text-transparent bg-gradient-to-r from-violet-300 via-fuchsia-300 to-cyan-300;
   }
   .text-gradient-warm {
-    @apply bg-clip-text text-transparent bg-gradient-to-r from-amber-300 via-fuchsia-300 to-rose-300;
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-zinc-300 via-fuchsia-300 to-rose-300;
   }
 
   /* ── Sidebar items ────────────────────────────────────────────────── */
@@ -147,7 +147,7 @@ html[data-density="compact"] {
     @apply inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md text-[10px] font-mono font-semibold uppercase tracking-wider border;
   }
   .badge-success { @apply text-emerald-300 bg-emerald-500/10 border-emerald-500/25; }
-  .badge-warning { @apply text-amber-300   bg-amber-500/10   border-amber-500/25;   }
+  .badge-warning { @apply text-zinc-300   bg-white/10   border-white/25;   }
   .badge-danger  { @apply text-rose-300    bg-rose-500/10    border-rose-500/25;    }
   .badge-preview { @apply text-violet-300  bg-violet-500/10  border-violet-500/25;  }
   .badge-neutral { @apply text-zinc-300    bg-zinc-500/10    border-zinc-500/25;    }

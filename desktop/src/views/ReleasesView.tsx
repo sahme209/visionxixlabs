@@ -50,7 +50,7 @@ type RespBody =
 
 const DOT_CLASS: Record<SidebarTone, string> = {
   emerald: "bg-emerald-400",
-  amber:   "bg-amber-400",
+  amber:   "bg-zinc-400",
   rose:    "bg-rose-400",
   blue:    "bg-blue-400",
   zinc:    "bg-zinc-600",
@@ -58,7 +58,7 @@ const DOT_CLASS: Record<SidebarTone, string> = {
 
 const RISK_CLASS: Record<RiskBadge, string> = {
   low:      "bg-emerald-500/15 text-emerald-300 border-emerald-500/25",
-  medium:   "bg-amber-500/15 text-amber-300 border-amber-500/25",
+  medium:   "bg-white/15 text-zinc-300 border-white/25",
   high:     "bg-rose-500/15 text-rose-300 border-rose-500/25",
   critical: "bg-rose-500/25 text-rose-200 border-rose-500/40",
   unscored: "bg-zinc-800/60 text-zinc-300 border-zinc-700/40",
@@ -126,14 +126,14 @@ export function ReleasesView({ onNavigate }: { onNavigate?: (v: View) => void } 
       )}
 
       {!loading && errorBody?.error === "migration_pending" && (
-        <div className="glass-card p-4 border border-amber-500/30">
-          <p className="text-sm font-semibold text-amber-300 mb-1">Schema migration pending</p>
+        <div className="glass-card p-4 border border-white/30">
+          <p className="text-sm font-semibold text-zinc-300 mb-1">Schema migration pending</p>
           <p className="text-xs text-zinc-400">{errorBody.hint}</p>
         </div>
       )}
 
       {!loading && errorBody?.error === "auth_required" && (
-        <div className="glass-card p-4 text-sm text-amber-300 border border-amber-500/20">
+        <div className="glass-card p-4 text-sm text-zinc-300 border border-white/20">
           Sign in required to view releases.
         </div>
       )}
@@ -182,7 +182,7 @@ export function ReleasesView({ onNavigate }: { onNavigate?: (v: View) => void } 
                         </span>
                       )}
                       {r.evidencePack && (
-                        <span className={`text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded border ${r.evidencePack.signed ? "bg-emerald-500/15 text-emerald-300 border-emerald-500/25" : "bg-amber-500/10 text-amber-300 border-amber-500/20"}`}>
+                        <span className={`text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded border ${r.evidencePack.signed ? "bg-emerald-500/15 text-emerald-300 border-emerald-500/25" : "bg-white/10 text-zinc-300 border-white/20"}`}>
                           evidence {r.evidencePack.signed ? "signed" : "draft"}
                         </span>
                       )}
@@ -207,7 +207,7 @@ export function ReleasesView({ onNavigate }: { onNavigate?: (v: View) => void } 
 function Stat({ label, value, tone = "zinc" }: { label: string; value: string; tone?: "emerald" | "amber" | "rose" | "zinc" }) {
   const cls = {
     emerald: "border-emerald-500/20 text-emerald-200",
-    amber:   "border-amber-500/20 text-amber-200",
+    amber:   "border-white/20 text-zinc-200",
     rose:    "border-rose-500/20 text-rose-200",
     zinc:    "border-zinc-700/40 text-zinc-200",
   }[tone];
@@ -252,7 +252,7 @@ function HealthSummaryTile({ onNavigate }: { onNavigate?: (v: View) => void }) {
   const d = resp.data;
   const scoreColor =
     d.platformHealthScore >= 80 ? "text-emerald-300" :
-    d.platformHealthScore >= 60 ? "text-amber-300" :
+    d.platformHealthScore >= 60 ? "text-zinc-300" :
     d.platformHealthScore >= 40 ? "text-orange-300" : "text-rose-300";
 
   return (
@@ -287,7 +287,7 @@ function SummaryStat({
 }) {
   const t = {
     emerald: "text-emerald-300",
-    amber:   "text-amber-300",
+    amber:   "text-zinc-300",
     rose:    "text-rose-300",
     zinc:    "text-zinc-300",
   }[tone];

@@ -52,7 +52,7 @@ type RespBody =
 
 const DOT_CLASS: Record<SidebarTone, string> = {
   red:     "bg-rose-400",
-  amber:   "bg-amber-400",
+  amber:   "bg-zinc-400",
   blue:    "bg-blue-400",
   emerald: "bg-emerald-400",
   zinc:    "bg-zinc-600",
@@ -169,20 +169,20 @@ export function AlertEscalationsView() {
       )}
 
       {!loading && errorBody?.error === "migration_pending" && (
-        <div className="glass-card p-4 border border-amber-500/30">
-          <p className="text-sm font-semibold text-amber-300 mb-1">Schema migration pending</p>
+        <div className="glass-card p-4 border border-white/30">
+          <p className="text-sm font-semibold text-zinc-300 mb-1">Schema migration pending</p>
           <p className="text-xs text-zinc-400">{errorBody.hint}</p>
         </div>
       )}
 
       {!loading && errorBody?.error === "auth_required" && (
-        <div className="glass-card p-4 text-sm text-amber-300 border border-amber-500/20">
+        <div className="glass-card p-4 text-sm text-zinc-300 border border-white/20">
           Sign in required to view alerts.
         </div>
       )}
 
       {actionError && (
-        <div className="glass-card p-3 text-xs text-amber-300 border border-amber-500/20">{actionError}</div>
+        <div className="glass-card p-3 text-xs text-zinc-300 border border-white/20">{actionError}</div>
       )}
 
       {data && (
@@ -244,7 +244,7 @@ function AlertCard({
 
       <p className="text-xs text-zinc-300 leading-relaxed mb-2">{a.suggested.description}</p>
       {a.suggested.hint && (
-        <p className="text-[11px] text-amber-200/90 italic mb-3">{a.suggested.hint}</p>
+        <p className="text-[11px] text-zinc-200/90 italic mb-3">{a.suggested.hint}</p>
       )}
 
       <div className="flex flex-wrap items-center gap-2 mb-3">
@@ -292,7 +292,7 @@ function Stat({ label, value, tone = "zinc" }: { label: string; value: string; t
   const cls = {
     emerald: "border-emerald-500/20 text-emerald-200",
     rose:    "border-rose-500/20 text-rose-200",
-    amber:   "border-amber-500/20 text-amber-200",
+    amber:   "border-white/20 text-zinc-200",
     zinc:    "border-zinc-700/40 text-zinc-200",
   }[tone];
   return (

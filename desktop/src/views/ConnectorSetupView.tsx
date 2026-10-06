@@ -70,7 +70,7 @@ const PROVIDER_LABEL: Record<string, string> = { aws: "AWS", azure: "Azure", gcp
 
 const DOT_CLASS: Record<SidebarDotColor, string> = {
   green: "bg-emerald-400",
-  amber: "bg-amber-400",
+  amber: "bg-zinc-400",
   red:   "bg-rose-400",
   gray:  "bg-zinc-600",
 };
@@ -172,20 +172,20 @@ export function ConnectorSetupView({ onNavigate }: { onNavigate: (view: View) =>
       )}
 
       {!loading && errorBody?.error === "migration_pending" && (
-        <div className="glass-card p-4 border border-amber-500/30">
-          <p className="text-sm font-semibold text-amber-300 mb-1">Schema migration pending</p>
+        <div className="glass-card p-4 border border-white/30">
+          <p className="text-sm font-semibold text-zinc-300 mb-1">Schema migration pending</p>
           <p className="text-xs text-zinc-400">{errorBody.hint}</p>
         </div>
       )}
 
       {!loading && errorBody?.error === "auth_required" && (
-        <div className="glass-card p-4 text-sm text-amber-300 border border-amber-500/20">
+        <div className="glass-card p-4 text-sm text-zinc-300 border border-white/20">
           Sign in required to view connector setup state.
         </div>
       )}
 
       {actionError && (
-        <div className="glass-card p-3 text-xs text-amber-300 border border-amber-500/20">{actionError}</div>
+        <div className="glass-card p-3 text-xs text-zinc-300 border border-white/20">{actionError}</div>
       )}
 
       {data && (
@@ -242,7 +242,7 @@ function ProviderCard({ p, pending, onCta }: { p: ProviderDigest; pending: boole
 
       <p className="text-xs text-zinc-300 leading-relaxed mb-2">{p.suggested.description}</p>
       {p.suggested.hint && (
-        <p className="text-[11px] text-amber-200/90 italic mb-3">{p.suggested.hint}</p>
+        <p className="text-[11px] text-zinc-200/90 italic mb-3">{p.suggested.hint}</p>
       )}
 
       {p.suggested.tone !== "none" && (
@@ -284,14 +284,14 @@ function renderErrorBadge(ec: ErrorClass) {
   }
   if (ec.kind === "chronic_oscillation") {
     return (
-      <span className="text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded bg-amber-500/15 text-amber-200 border border-amber-500/25">
+      <span className="text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded bg-white/15 text-zinc-200 border border-white/25">
         oscillating
       </span>
     );
   }
   if (ec.kind === "transient_failure") {
     return (
-      <span className="text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded bg-amber-500/10 text-amber-300 border border-amber-500/20">
+      <span className="text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded bg-white/10 text-zinc-300 border border-white/20">
         recent failure
       </span>
     );
