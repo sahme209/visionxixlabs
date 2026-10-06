@@ -8,7 +8,7 @@
  * /api/dashboard/release-list. Detail page lands in a future phase.
  */
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, type MouseEvent } from "react";
 import Link from "next/link";
 import {
   RocketLaunchIcon,
@@ -216,6 +216,7 @@ function ReleaseRow({ r, now }: { r: ReleaseListRow; now: Date }) {
               evidence {r.evidencePack.signed ? "signed" : "draft"}
             </span>
           )}
+          {r.status === "ready" && r.targetEnvironmentId && <DeployButton releaseId={r.id} />}
           <span className="text-[10px] font-mono text-violet-300/70">overview →</span>
         </div>
       </div>
@@ -225,6 +226,51 @@ function ReleaseRow({ r, now }: { r: ReleaseListRow; now: Date }) {
         </p>
       )}
     </Link>
+  );
+}
+
+type DeployState = { kind: "idle" } | { kind: "deploying" } | { kind: "ok" } | { kind: "error"; message: string };
+
+function DeployButton({ releaseId }: { releaseId: string }) {
+  const [state, setState] = useState<DeployState>({ kind: "idle" });
+
+  async function deploy(e: MouseEvent<HTMLButtonElement>) {
+    e.preventDefault();
+    e.stopPropagation();
+    setState({ kind: "deploying" });
+    try {
+      const res = await fetch("/api/dashboard/release-deploy", {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ releaseId }),
+      });
+      const j = await res.json();
+      if (j.ok) {
+        setState({ kind: "ok" });
+      } else {
+        setState({ kind: "error", message: j.hint ?? j.error });
+      }
+    } catch (err) {
+      setState({ kind: "error", message: err instanceof Error ? err.message : "network error" });
+    }
+  }
+
+  if (state.kind === "ok") {
+    return <span className="text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded border bg-emerald-500/15 text-emerald-300 border-emerald-500/25">deploying</span>;
+  }
+  return (
+    <span className="inline-flex items-center gap-1.5">
+      <button
+        type="button"
+        onClick={deploy}
+        disabled={state.kind === "deploying"}
+        className="text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded border border-violet-500/40 bg-violet-500/[0.12] text-violet-100 hover:bg-violet-500/[0.20] disabled:opacity-50 disabled:cursor-wait transition-colors"
+      >
+        {state.kind === "deploying" ? "deploying…" : "deploy"}
+      </button>
+      {state.kind === "error" && <span className="text-[9.5px] font-mono text-rose-300">✗ {state.message}</span>}
+    </span>
   );
 }
 

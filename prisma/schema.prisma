@@ -2404,10 +2404,38 @@ model Environment {
   updatedAt       DateTime        @updatedAt
 
   branchEnvironmentPolicies BranchEnvironmentPolicy[]
+  deploymentTarget          DeploymentTarget?
 
   @@unique([organizationId, slug])
   @@index([organizationId])
   @@index([tier])
+}
+
+// ---------------------------------------------------------------------------
+// Real cloud deployment target for one Environment. The actual AWS trust
+// (OIDC identity provider + the role's trust policy) lives entirely on the
+// tenant's AWS account and their own GitHub Actions workflow — this row
+// only remembers which role/region/cluster/service a deploy for this
+// environment should target. roleArn is an ARN, never a credential; no
+// AWS secret of any kind is ever stored here or anywhere in Axiom.
+// ---------------------------------------------------------------------------
+
+model DeploymentTarget {
+  id             String   @id @default(cuid())
+  organizationId String
+  environmentId  String   @unique
+  /// Closed-union in the application layer: "aws" today.
+  provider       String   @default("aws")
+  roleArn        String
+  region         String
+  ecsCluster     String
+  ecsService     String
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  environment Environment @relation(fields: [environmentId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId])
 }
 
 model BranchEnvironmentPolicy {

@@ -14,7 +14,11 @@
  * real pull requests from the desktop app; see
  * lib/connectors/github/githubWriteClient.ts) on top of the read scopes
  * every other evidence path still uses (githubLiveClient.ts,
- * githubLiveScanner.ts, lib/releaseops/githubFetcher.ts).
+ * githubLiveScanner.ts, lib/releaseops/githubFetcher.ts). `actions` is
+ * also `write` — triggering a real deploy means dispatching the
+ * tenant's own `workflow_dispatch`-triggered GitHub Actions workflow
+ * (githubWriteClient.dispatchWorkflow), which the read-only `actions`
+ * scope cannot do.
  *
  * Important: changing this manifest only affects GitHub Apps created
  * *from now on* via the manifest flow — it does not retroactively grant
@@ -40,8 +44,10 @@ export const GITHUB_APP_MANIFEST_PERMISSIONS = {
   // event) AND opening real PRs from the desktop app
   // (githubWriteClient.createPullRequest).
   pull_requests: "write",
-  // Workflow / workflow-run evidence (githubLiveScanner, githubFetcher /actions/runs).
-  actions: "read",
+  // Workflow / workflow-run evidence (githubLiveScanner, githubFetcher /actions/runs)
+  // AND triggering a real deploy workflow_dispatch run from the dashboard
+  // (githubWriteClient.dispatchWorkflow).
+  actions: "write",
   // Deployment environment evidence (githubLiveScanner /environments).
   deployments: "read",
   // Branch protection evidence (githubLiveScanner branch-protection read).

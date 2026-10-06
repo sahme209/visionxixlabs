@@ -126,3 +126,33 @@ export async function createPullRequest(
   if (!result.ok) return { ok: false, error: `pull_request_create_failed: ${result.error}` };
   return { ok: true, data: { number: result.data.number, htmlUrl: result.data.html_url } };
 }
+
+export interface DispatchWorkflowInput {
+  owner: string;
+  repo: string;
+  /** Workflow filename, e.g. "axiom-deploy-aws-ecs.yml" — not a numeric ID. */
+  workflowFile: string;
+  /** Branch or tag to run the workflow on. */
+  ref: string;
+  /** workflow_dispatch inputs — GitHub requires every value to be a string. */
+  inputs: Record<string, string>;
+  installationToken: string;
+}
+
+/**
+ * Triggers a workflow_dispatch run on the tenant's own repo. Requires the
+ * installation token to carry `actions: write` — see
+ * githubAppManifest.ts's GITHUB_APP_MANIFEST_PERMISSIONS. GitHub returns
+ * 204 No Content on success and gives back no run ID synchronously; the
+ * caller has no handle to poll beyond listing recent runs for this
+ * workflow file.
+ */
+export async function dispatchWorkflow(input: DispatchWorkflowInput): Promise<GithubWriteResult<Record<string, never>>> {
+  const result = await gh<Record<string, never>>(
+    `/repos/${encodeURIComponent(input.owner)}/${encodeURIComponent(input.repo)}/actions/workflows/${encodeURIComponent(input.workflowFile)}/dispatches`,
+    input.installationToken,
+    { method: "POST", body: { ref: input.ref, inputs: input.inputs } },
+  );
+  if (!result.ok) return { ok: false, error: `workflow_dispatch_failed: ${result.error}` };
+  return result;
+}

@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { createBranch, commitFile, createPullRequest } from "../githubWriteClient";
+import { createBranch, commitFile, createPullRequest, dispatchWorkflow } from "../githubWriteClient";
 
 const fetchMock = vi.fn();
 vi.stubGlobal("fetch", fetchMock);
@@ -93,5 +93,39 @@ describe("createPullRequest", () => {
     });
     expect(result.ok).toBe(false);
     if (!result.ok) expect(result.error).toContain("pull_request_create_failed");
+  });
+});
+
+describe("dispatchWorkflow", () => {
+  beforeEach(() => vi.clearAllMocks());
+
+  it("dispatches with the given ref and string inputs, and succeeds on GitHub's 204", async () => {
+    fetchMock.mockResolvedValueOnce(jsonResponse(204, {}));
+    const result = await dispatchWorkflow({
+      owner: "acme", repo: "widgets", workflowFile: "axiom-deploy-aws-ecs.yml", ref: "abc1234",
+      inputs: { role_arn: "arn:aws:iam::123456789012:role/deploy", region: "us-east-1", cluster: "prod", service: "web" },
+      installationToken: "tok",
+    });
+    expect(result.ok).toBe(true);
+    expect(fetchMock).toHaveBeenCalledWith(
+      expect.stringContaining("/repos/acme/widgets/actions/workflows/axiom-deploy-aws-ecs.yml/dispatches"),
+      expect.any(Object),
+    );
+    const [, call] = fetchMock.mock.calls[0] as [string, { body: string }];
+    expect(JSON.parse(call.body)).toEqual({
+      ref: "abc1234",
+      inputs: { role_arn: "arn:aws:iam::123456789012:role/deploy", region: "us-east-1", cluster: "prod", service: "web" },
+    });
+  });
+
+  it("surfaces a clear error when GitHub rejects the dispatch (e.g. workflow file not found)", async () => {
+    fetchMock.mockResolvedValueOnce(jsonResponse(404, { message: "Not Found" }));
+    const result = await dispatchWorkflow({
+      owner: "acme", repo: "widgets", workflowFile: "axiom-deploy-aws-ecs.yml", ref: "main",
+      inputs: { role_arn: "arn", region: "us-east-1", cluster: "prod", service: "web" },
+      installationToken: "tok",
+    });
+    expect(result.ok).toBe(false);
+    if (!result.ok) expect(result.error).toContain("workflow_dispatch_failed");
   });
 });
