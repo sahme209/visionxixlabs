@@ -9,6 +9,9 @@ import { checkRateLimit } from "./rateLimit";
 import { record as recordAudit } from "./audit/secureAudit";
 import { id as idFactory, newCorrelationId } from "./domain/ids";
 import { deriveWorkspaceIdFromEmail } from "./auth/workspaceId";
+import { createLogger } from "./observability/logger";
+
+const log = createLogger("auth.membershipBootstrap");
 
 // Helper: only register an OAuth provider when its env credentials are
 // present. Missing OAuth env shouldn't crash the app — the UI just shows
@@ -49,7 +52,12 @@ function buildProviders(): NextAuthOptions["providers"] {
         try {
           await ensurePersonalWorkspaceMembership({ userId: user.id, email: user.email });
         } catch (err) {
-          console.error("[NextAuth authorize] workspace bootstrap failed (best-effort):", err);
+          log.error("workspace bootstrap failed (best-effort)", {
+            path: "authorize",
+            userId: user.id,
+            errorMessage: err instanceof Error ? err.message : String(err),
+            errorCode: err instanceof Error && "code" in err ? (err as { code?: unknown }).code : undefined,
+          });
         }
         return { id: user.id, email: user.email, name: user.name, image: user.image };
       },
@@ -169,7 +177,12 @@ export const authOptions: NextAuthOptions = {
         try {
           await ensurePersonalWorkspaceMembership({ userId: dbUser.id, email: dbUser.email });
         } catch (err) {
-          console.error("[NextAuth signIn] workspace bootstrap failed (best-effort):", err);
+          log.error("workspace bootstrap failed (best-effort)", {
+            path: "signIn",
+            userId: dbUser.id,
+            errorMessage: err instanceof Error ? err.message : String(err),
+            errorCode: err instanceof Error && "code" in err ? (err as { code?: unknown }).code : undefined,
+          });
         }
       }
       return true;
