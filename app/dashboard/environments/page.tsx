@@ -16,6 +16,7 @@ import {
   ServerStackIcon,
 } from "@heroicons/react/24/outline";
 import { PageIntro } from "@/components/dashboard/PageIntro";
+import { AWS_ECS_DEPLOY_WORKFLOW_TEMPLATE } from "@/lib/releaseops/awsEcsDeployWorkflowTemplate";
 
 interface EnvironmentListItem {
   id: string;
@@ -120,28 +121,167 @@ export default function EnvironmentsPage() {
       {data && data.environments.length > 0 && (
         <div className="space-y-3 mb-8">
           {data.environments.map((e) => (
-            <div key={e.id} className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-4 flex items-center justify-between gap-3 flex-wrap">
-              <div className="flex items-center gap-2 min-w-0 flex-1">
-                <ServerStackIcon className="h-4 w-4 text-zinc-400 shrink-0" />
-                <p className="text-[13px] font-semibold text-white truncate">{e.name}</p>
-                <span className="text-[10px] font-mono text-zinc-500">slug: {e.slug}</span>
-              </div>
-              <div className="flex items-center gap-1.5 shrink-0">
-                <span className={`text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded border ${TIER_CLASS[e.tier] ?? TIER_CLASS.dev}`}>
-                  {e.tier}
-                </span>
-                {e.hasApprovalPolicy ? (
-                  <span className="text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded border bg-white/5 text-zinc-300 border-white/[0.08] inline-flex items-center gap-1">
-                    <ShieldCheckIcon className="h-3 w-3" /> approval policy
-                  </span>
-                ) : (
-                  <span className="text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded border bg-white/5 text-zinc-500 border-white/[0.08]">
-                    no approval policy
-                  </span>
-                )}
-              </div>
-            </div>
+            <EnvironmentRow key={e.id} environment={e} />
           ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function EnvironmentRow({ environment: e }: { environment: EnvironmentListItem }) {
+  const [expanded, setExpanded] = useState(false);
+  return (
+    <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-4">
+      <div className="flex items-center justify-between gap-3 flex-wrap">
+        <div className="flex items-center gap-2 min-w-0 flex-1">
+          <ServerStackIcon className="h-4 w-4 text-zinc-400 shrink-0" />
+          <p className="text-[13px] font-semibold text-white truncate">{e.name}</p>
+          <span className="text-[10px] font-mono text-zinc-500">slug: {e.slug}</span>
+        </div>
+        <div className="flex items-center gap-1.5 shrink-0">
+          <span className={`text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded border ${TIER_CLASS[e.tier] ?? TIER_CLASS.dev}`}>
+            {e.tier}
+          </span>
+          {e.hasApprovalPolicy ? (
+            <span className="text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded border bg-white/5 text-zinc-300 border-white/[0.08] inline-flex items-center gap-1">
+              <ShieldCheckIcon className="h-3 w-3" /> approval policy
+            </span>
+          ) : (
+            <span className="text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded border bg-white/5 text-zinc-500 border-white/[0.08]">
+              no approval policy
+            </span>
+          )}
+          <button
+            type="button"
+            onClick={() => setExpanded((v) => !v)}
+            className="text-[10px] font-mono text-zinc-400 hover:text-zinc-200 px-1.5 py-0.5 rounded border border-white/[0.08]"
+          >
+            {expanded ? "hide AWS deploy" : "AWS deploy"}
+          </button>
+        </div>
+      </div>
+      {expanded && <DeploymentTargetPanel environmentId={e.id} />}
+    </div>
+  );
+}
+
+/* ──────────────────────────────────────────────────────────────────
+   AWS deploy target — role ARN / region / ECS cluster+service per
+   environment, plus the workflow template the tenant adds to their
+   own repo once.
+   ────────────────────────────────────────────────────────────── */
+
+interface DeploymentTargetData {
+  roleArn: string;
+  region: string;
+  ecsCluster: string;
+  ecsService: string;
+}
+
+type TargetState =
+  | { kind: "loading" }
+  | { kind: "loaded"; target: DeploymentTargetData | null }
+  | { kind: "error"; message: string };
+
+type SaveState = { kind: "idle" } | { kind: "saving" } | { kind: "ok" } | { kind: "error"; message: string };
+
+function DeploymentTargetPanel({ environmentId }: { environmentId: string }) {
+  const [state, setState] = useState<TargetState>({ kind: "loading" });
+  const [roleArn, setRoleArn] = useState("");
+  const [region, setRegion] = useState("");
+  const [ecsCluster, setEcsCluster] = useState("");
+  const [ecsService, setEcsService] = useState("");
+  const [saveState, setSaveState] = useState<SaveState>({ kind: "idle" });
+  const [showTemplate, setShowTemplate] = useState(false);
+  const [templateCopied, setTemplateCopied] = useState(false);
+
+  useEffect(() => {
+    fetch(`/api/dashboard/deployment-target?environmentId=${encodeURIComponent(environmentId)}`, { credentials: "include" })
+      .then((r) => r.json())
+      .then((j) => {
+        if (j.ok) {
+          const t = j.data.target;
+          setState({ kind: "loaded", target: t });
+          if (t) { setRoleArn(t.roleArn); setRegion(t.region); setEcsCluster(t.ecsCluster); setEcsService(t.ecsService); }
+        } else {
+          setState({ kind: "error", message: j.hint ?? j.error });
+        }
+      })
+      .catch((e) => setState({ kind: "error", message: e instanceof Error ? e.message : "network error" }));
+  }, [environmentId]);
+
+  async function save() {
+    setSaveState({ kind: "saving" });
+    try {
+      const res = await fetch("/api/dashboard/deployment-target", {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ environmentId, roleArn, region, ecsCluster, ecsService }),
+      });
+      const j = await res.json();
+      if (j.ok) {
+        setSaveState({ kind: "ok" });
+        setState({ kind: "loaded", target: { roleArn: j.data.roleArn, region: j.data.region, ecsCluster: j.data.ecsCluster, ecsService: j.data.ecsService } });
+      } else {
+        setSaveState({ kind: "error", message: j.hint ?? j.error });
+      }
+    } catch (e) {
+      setSaveState({ kind: "error", message: e instanceof Error ? e.message : "network error" });
+    }
+  }
+
+  async function copyTemplate() {
+    await navigator.clipboard.writeText(AWS_ECS_DEPLOY_WORKFLOW_TEMPLATE);
+    setTemplateCopied(true);
+    setTimeout(() => setTemplateCopied(false), 1500);
+  }
+
+  if (state.kind === "loading") {
+    return <div className="mt-3 pt-3 border-t border-white/[0.04] text-[11.5px] text-zinc-500">Loading deploy target…</div>;
+  }
+  if (state.kind === "error") {
+    return <div className="mt-3 pt-3 border-t border-white/[0.04] text-[11.5px] text-rose-300">{state.message}</div>;
+  }
+
+  const busy = saveState.kind === "saving";
+  return (
+    <div className="mt-3 pt-3 border-t border-white/[0.04]">
+      <p className="text-[10px] font-mono uppercase tracking-wider text-zinc-500 mb-2">AWS ECS deploy target</p>
+      <div className="grid grid-cols-2 gap-3 mb-3">
+        <Field label="Role ARN" value={roleArn} onChange={setRoleArn} placeholder="arn:aws:iam::123456789012:role/axiom-deploy" disabled={busy} />
+        <Field label="Region" value={region} onChange={setRegion} placeholder="us-east-1" disabled={busy} />
+        <Field label="ECS cluster" value={ecsCluster} onChange={setEcsCluster} placeholder="prod-cluster" disabled={busy} />
+        <Field label="ECS service" value={ecsService} onChange={setEcsService} placeholder="web-service" disabled={busy} />
+      </div>
+      <div className="flex items-center gap-3 mb-3">
+        <button
+          type="button"
+          onClick={save}
+          disabled={busy || !roleArn || !region || !ecsCluster || !ecsService}
+          className="px-3 py-1.5 rounded-lg border border-violet-500/40 bg-violet-500/[0.12] text-[12px] font-semibold text-violet-100 hover:bg-violet-500/[0.20] disabled:opacity-50 disabled:cursor-wait transition-colors"
+        >
+          {busy ? "Saving…" : "Save deploy target"}
+        </button>
+        {saveState.kind === "ok" && <span className="text-[11.5px] font-mono text-emerald-300">✓ saved</span>}
+        {saveState.kind === "error" && <span className="text-[11.5px] font-mono text-rose-300">✗ {saveState.message}</span>}
+      </div>
+      <button type="button" onClick={() => setShowTemplate((v) => !v)} className="text-[11px] font-mono text-zinc-400 hover:text-zinc-200 underline underline-offset-2">
+        {showTemplate ? "hide" : "show"} the GitHub Actions workflow to add to your repo
+      </button>
+      {showTemplate && (
+        <div className="mt-2 rounded-lg border border-white/[0.08] bg-black/40 p-3">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-[10px] font-mono text-zinc-500">.github/workflows/axiom-deploy-aws-ecs.yml</span>
+            <button type="button" onClick={copyTemplate} className="text-[10px] font-mono text-zinc-400 hover:text-zinc-200">
+              {templateCopied ? "✓ copied" : "copy"}
+            </button>
+          </div>
+          <pre className="text-[10.5px] font-mono text-zinc-300 whitespace-pre overflow-x-auto">{AWS_ECS_DEPLOY_WORKFLOW_TEMPLATE}</pre>
+          <p className="mt-2 text-[10.5px] text-zinc-500">
+            Add this file to your repo once. It assumes the role above via OIDC (no AWS keys stored in GitHub) — the role&apos;s own trust policy on your AWS account controls what it&apos;s actually allowed to do.
+          </p>
         </div>
       )}
     </div>

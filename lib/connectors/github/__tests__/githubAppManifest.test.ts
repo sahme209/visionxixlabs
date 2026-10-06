@@ -19,12 +19,12 @@ describe("buildGithubAppManifest", () => {
     expect(manifest.public).toBe(false);
   });
 
-  it("requests only the scopes actually used — write only for contents/pull_requests (branch/commit/PR creation), read everywhere else", () => {
+  it("requests only the scopes actually used — write for contents/pull_requests/actions (branch/commit/PR creation, deploy dispatch), read everywhere else", () => {
     const manifest = buildGithubAppManifest({ origin: "https://app.example.com" });
     expect(manifest.default_permissions).toEqual(GITHUB_APP_MANIFEST_PERMISSIONS);
     expect(manifest.default_permissions.contents).toBe("write");
     expect(manifest.default_permissions.pull_requests).toBe("write");
-    expect(manifest.default_permissions.actions).toBe("read");
+    expect(manifest.default_permissions.actions).toBe("write");
     expect(manifest.default_permissions.deployments).toBe("read");
     expect(manifest.default_permissions.administration).toBe("read");
   });
