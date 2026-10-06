@@ -4,6 +4,7 @@ import {
   TAG_RE,
   type ApplicationRow,
   type RepositoryRow,
+  type EnvironmentRow,
   type ReleaseCreateRepo,
   type ReleaseCreatedRow,
 } from "../releaseCreateResponder";
@@ -11,6 +12,7 @@ import {
 interface Stub extends ReleaseCreateRepo {
   _apps: ApplicationRow[];
   _repos: RepositoryRow[];
+  _environments: EnvironmentRow[];
   _releases: ReleaseCreatedRow[];
   _nextId: number;
 }
@@ -19,6 +21,7 @@ function makeRepo(): Stub {
   const stub: Stub = {
     _apps: [],
     _repos: [],
+    _environments: [],
     _releases: [],
     _nextId: 1,
     application: {
@@ -29,6 +32,11 @@ function makeRepo(): Stub {
     repository: {
       async findUnique({ where }) {
         return stub._repos.find((r) => r.id === where.id) ?? null;
+      },
+    },
+    environment: {
+      async findUnique({ where }) {
+        return stub._environments.find((e) => e.id === where.id) ?? null;
       },
     },
     release: {
@@ -49,6 +57,7 @@ function makeRepo(): Stub {
           plannedWindowEnd: data.plannedWindowEnd,
           summary: data.summary,
           evidenceRepositoryId: data.evidenceRepositoryId,
+          targetEnvironmentId: data.targetEnvironmentId,
         };
         stub._releases.push(row);
         return row;
@@ -258,6 +267,55 @@ describe("buildReleaseCreateResponse", () => {
     });
     if (!r.body.ok) throw new Error("expected ok");
     expect(r.body.data.evidenceRepositoryId).toBeNull();
+  });
+
+  it("404 environment_not_found when environmentId doesn't exist", async () => {
+    const repo = makeRepo();
+    app(repo);
+    const r = await buildReleaseCreateResponse(repo, {
+      organizationId: "o", actorUserId: "u", applicationId: "app_1", releaseTag: "v1.0.0",
+      environmentId: "missing_env",
+    });
+    expect(r.status).toBe(404);
+    if (r.body.ok) throw new Error("expected error");
+    expect(r.body.error).toBe("environment_not_found");
+  });
+
+  it("403 cross_org_environment — an environment belonging to a different org can never be targeted", async () => {
+    const repo = makeRepo();
+    app(repo);
+    repo._environments.push({ id: "env_1", organizationId: "other_org" });
+    const r = await buildReleaseCreateResponse(repo, {
+      organizationId: "o", actorUserId: "u", applicationId: "app_1", releaseTag: "v1.0.0",
+      environmentId: "env_1",
+    });
+    expect(r.status).toBe(403);
+    if (r.body.ok) throw new Error("expected error");
+    expect(r.body.error).toBe("cross_org_environment");
+    expect(repo._releases).toHaveLength(0);
+  });
+
+  it("201 binds the target environment on creation when valid", async () => {
+    const repo = makeRepo();
+    app(repo);
+    repo._environments.push({ id: "env_1", organizationId: "o" });
+    const r = await buildReleaseCreateResponse(repo, {
+      organizationId: "o", actorUserId: "u", applicationId: "app_1", releaseTag: "v1.0.0",
+      environmentId: "env_1",
+    });
+    expect(r.status).toBe(201);
+    if (!r.body.ok) throw new Error("expected ok");
+    expect(r.body.data.targetEnvironmentId).toBe("env_1");
+  });
+
+  it("creates successfully with targetEnvironmentId null when no environmentId is supplied", async () => {
+    const repo = makeRepo();
+    app(repo);
+    const r = await buildReleaseCreateResponse(repo, {
+      organizationId: "o", actorUserId: "u", applicationId: "app_1", releaseTag: "v1.0.0",
+    });
+    if (!r.body.ok) throw new Error("expected ok");
+    expect(r.body.data.targetEnvironmentId).toBeNull();
   });
 
   it("503 migration_pending", async () => {

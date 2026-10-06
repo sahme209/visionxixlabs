@@ -1,6 +1,6 @@
 /**
  * POST /api/dashboard/release-create — Phase 498.
- * Body: { applicationId, releaseTag, commitSha?, plannedWindowStartIso?, plannedWindowEndIso?, summary?, repositoryId? }
+ * Body: { applicationId, releaseTag, commitSha?, plannedWindowStartIso?, plannedWindowEndIso?, summary?, repositoryId?, environmentId? }
  *
  * repositoryId (optional) binds this release's GitHub evidence source
  * once, at creation time — see releaseRepositoryBinding design notes in
@@ -35,6 +35,7 @@ export async function POST(req: NextRequest) {
     plannedWindowEndIso?: unknown;
     summary?: unknown;
     repositoryId?: unknown;
+    environmentId?: unknown;
   } = {};
   try { body = await req.json(); } catch { /* fall through */ }
 
@@ -75,6 +76,8 @@ export async function POST(req: NextRequest) {
     }
   }
 
+  const environmentId = typeof body.environmentId === "string" ? body.environmentId : null;
+
   const r = await buildReleaseCreateResponse(
     prisma as unknown as ReleaseCreateRepo,
     {
@@ -86,6 +89,7 @@ export async function POST(req: NextRequest) {
       ...(typeof body.plannedWindowEndIso === "string" ? { plannedWindowEndIso: body.plannedWindowEndIso } : {}),
       ...(typeof body.summary === "string" ? { summary: body.summary } : {}),
       ...(repositoryId ? { repositoryId } : {}),
+      ...(environmentId ? { environmentId } : {}),
     },
   );
 

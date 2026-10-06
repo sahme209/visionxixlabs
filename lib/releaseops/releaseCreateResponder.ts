@@ -47,6 +47,11 @@ export interface RepositoryRow {
   remoteName: string;
 }
 
+export interface EnvironmentRow {
+  id: string;
+  organizationId: string;
+}
+
 export interface ReleaseCreatedRow {
   id: string;
   applicationId: string;
@@ -57,6 +62,7 @@ export interface ReleaseCreatedRow {
   plannedWindowEnd: Date | null;
   summary: string | null;
   evidenceRepositoryId: string | null;
+  targetEnvironmentId: string | null;
 }
 
 export interface ReleaseCreateRepo {
@@ -65,6 +71,9 @@ export interface ReleaseCreateRepo {
   };
   repository: {
     findUnique(args: { where: { id: string } }): Promise<RepositoryRow | null>;
+  };
+  environment: {
+    findUnique(args: { where: { id: string } }): Promise<EnvironmentRow | null>;
   };
   release: {
     findUnique(args: {
@@ -84,6 +93,7 @@ export interface ReleaseCreateRepo {
         evidenceRepositoryId: string | null;
         evidenceRepositoryBoundAt: Date | null;
         evidenceRepositoryBoundByUserId: string | null;
+        targetEnvironmentId: string | null;
       };
     }): Promise<ReleaseCreatedRow>;
   };
@@ -112,6 +122,12 @@ export interface BuildReleaseCreateInput {
    * belongs to this org, and is a github-provider repo.
    */
   repositoryId?: string;
+  /**
+   * Optional deployment target environment (dev/test/prod, etc.), captured
+   * once at creation time — same immutable-at-creation posture as
+   * repositoryId. Validated to exist and belong to this org.
+   */
+  environmentId?: string;
 }
 
 export type CreateError =
@@ -122,7 +138,9 @@ export type CreateError =
   | "cross_org_application"
   | "repository_not_found"
   | "cross_org_repository"
-  | "repository_not_github";
+  | "repository_not_github"
+  | "environment_not_found"
+  | "cross_org_environment";
 
 export type ReleaseCreateBody =
   | {
@@ -134,6 +152,7 @@ export type ReleaseCreateBody =
         status: string;
         created: boolean;
         evidenceRepositoryId: string | null;
+        targetEnvironmentId: string | null;
       };
     }
   | { ok: false; error: CreateError | "migration_pending" | "internal_error"; hint?: string; correlationId?: string };
@@ -213,6 +232,7 @@ export async function buildReleaseCreateResponse(
             status: existing.status,
             created: false,
             evidenceRepositoryId: existing.evidenceRepositoryId,
+            targetEnvironmentId: existing.targetEnvironmentId,
           },
         },
       };
@@ -233,6 +253,18 @@ export async function buildReleaseCreateResponse(
       evidenceRepositoryId = repository.id;
     }
 
+    let targetEnvironmentId: string | null = null;
+    if (input.environmentId) {
+      const environment = await repo.environment.findUnique({ where: { id: input.environmentId } });
+      if (!environment) {
+        return { status: 404, body: { ok: false, error: "environment_not_found" } };
+      }
+      if (environment.organizationId !== input.organizationId) {
+        return { status: 403, body: { ok: false, error: "cross_org_environment" } };
+      }
+      targetEnvironmentId = environment.id;
+    }
+
     const row = await repo.release.create({
       data: {
         organizationId: input.organizationId,
@@ -247,6 +279,7 @@ export async function buildReleaseCreateResponse(
         evidenceRepositoryId,
         evidenceRepositoryBoundAt: evidenceRepositoryId ? new Date() : null,
         evidenceRepositoryBoundByUserId: evidenceRepositoryId ? input.actorUserId : null,
+        targetEnvironmentId,
       },
     });
     return {
@@ -260,6 +293,7 @@ export async function buildReleaseCreateResponse(
           status: row.status,
           created: true,
           evidenceRepositoryId: row.evidenceRepositoryId,
+          targetEnvironmentId: row.targetEnvironmentId,
         },
       },
     };
