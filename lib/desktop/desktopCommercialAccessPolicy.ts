@@ -23,30 +23,19 @@ export interface DesktopCommercialAccess {
 }
 
 export function decideDesktopCommercialAccess(plan: CommercialPlanSnapshot): DesktopCommercialAccess {
-  const shared = {
+  // Pricing/entitlement enforcement is not active yet — signing in (identity
+  // verification) is the only gate for now. This pure kernel is left in
+  // place, with plan/status still threaded through, so the actual tiered
+  // enforcement (pilot vs. paid vs. past-due) can be turned back on later
+  // by restoring the branches below without touching any call site.
+  return {
     planTier: plan.tier,
     billingStatus: plan.status,
     accessRequestPath: "/contact?topic=axiom-production-access",
     pricingPath: "/plans",
+    allowed: true,
+    code: "active",
+    title: "Access active",
+    message: "This workspace has access.",
   };
-
-  if (plan.status === "active" && plan.tier === "pilot") {
-    return {
-      ...shared,
-      allowed: true,
-      code: "active",
-      title: "Pilot access active",
-      message: "This workspace has an approved no-charge pilot entitlement. Its configured governance controls remain in force.",
-    };
-  }
-  if (plan.status === "active" && plan.tier !== "trial") {
-    return { ...shared, allowed: true, code: "active", title: "Production access active", message: "This workspace has an active commercial entitlement." };
-  }
-  if (plan.status === "past_due") {
-    return { ...shared, allowed: false, code: "payment_past_due", title: "Payment action required", message: "Your identity is verified, but this workspace's production access is paused until its billing issue is resolved." };
-  }
-  if (plan.status === "canceled") {
-    return { ...shared, allowed: false, code: "access_canceled", title: "Production access ended", message: "Your identity is verified, but this workspace no longer has an active commercial entitlement." };
-  }
-  return { ...shared, allowed: false, code: "production_access_required", title: "Workspace access required", message: "Your identity is verified. An approved pilot or commercial workspace entitlement is required before operational data and deployment controls are available." };
 }

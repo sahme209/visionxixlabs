@@ -2,26 +2,16 @@ import { describe, expect, it } from "vitest";
 import { decideDesktopCommercialAccess } from "../desktopCommercialAccessPolicy";
 
 describe("desktop commercial access policy", () => {
-  it("allows an explicitly provisioned no-charge pilot without making access public", () => {
-    expect(decideDesktopCommercialAccess({ tier: "pilot", status: "active" })).toMatchObject({
-      allowed: true,
-      code: "active",
-      title: "Pilot access active",
-    });
-  });
-
-  it.each(["starter", "growth", "enterprise"])("allows an active paid %s workspace", (tier) => {
-    expect(decideDesktopCommercialAccess({ tier, status: "active" })).toMatchObject({ allowed: true, code: "active" });
-  });
-
+  // Pricing/entitlement enforcement is not active yet — any verified
+  // identity gets access, regardless of plan tier or billing status.
   it.each([
-    [{ tier: "trial", status: "active" }, "production_access_required"],
-    [{ tier: "pilot", status: "no_plan" }, "production_access_required"],
-    [{ tier: "trial", status: "trialing" }, "production_access_required"],
-    [{ tier: "starter", status: "no_plan" }, "production_access_required"],
-    [{ tier: "growth", status: "past_due" }, "payment_past_due"],
-    [{ tier: "enterprise", status: "canceled" }, "access_canceled"],
-  ])("blocks an unentitled workspace %#", (plan, expectedCode) => {
-    expect(decideDesktopCommercialAccess(plan)).toMatchObject({ allowed: false, code: expectedCode });
+    { tier: "pilot", status: "active" },
+    { tier: "starter", status: "active" },
+    { tier: "trial", status: "trialing" },
+    { tier: "trial", status: "no_plan" },
+    { tier: "enterprise", status: "past_due" },
+    { tier: "growth", status: "canceled" },
+  ])("allows access for any plan/status %#", (plan) => {
+    expect(decideDesktopCommercialAccess(plan)).toMatchObject({ allowed: true, code: "active" });
   });
 });
