@@ -6,7 +6,7 @@
  * connection visible as active to a workspace.
  */
 
-export type TenantConnectionStoredStatus = "pending" | "active" | "needs_attention" | "revoked";
+export type TenantConnectionStoredStatus = "pending" | "active" | "needs_attention" | "suspended" | "revoked";
 export type TenantConnectionVisibleStatus = TenantConnectionStoredStatus | "not_connected" | "awaiting_validation";
 
 export const CONNECTION_VALIDATION_FRESH_FOR_MS = 24 * 60 * 60 * 1000;
@@ -23,6 +23,7 @@ export function visibleTenantConnectionStatus(input: {
         : "needs_attention";
     case "pending":
     case "needs_attention":
+    case "suspended":
     case "revoked":
       return input.status;
     default:

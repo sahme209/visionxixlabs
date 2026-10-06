@@ -20,6 +20,10 @@ describe("visibleTenantConnectionStatus", () => {
     )).toBe("needs_attention");
   });
 
+  it("passes a paused connection through as suspended, not active or not_connected", () => {
+    expect(visibleTenantConnectionStatus({ status: "suspended", lastValidatedAt: new Date("2026-10-01T00:00:00Z") })).toBe("suspended");
+  });
+
   it("fails safely for a missing or unknown record", () => {
     expect(visibleTenantConnectionStatus({ status: undefined, lastValidatedAt: null })).toBe("not_connected");
     expect(visibleTenantConnectionStatus({ status: "anything_else", lastValidatedAt: null })).toBe("not_connected");

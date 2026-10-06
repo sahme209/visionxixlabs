@@ -3732,7 +3732,7 @@ model TenantIntegrationConnection {
   id                    String   @id @default(cuid())
   organizationId        String
   provider              String
-  /// pending | active | needs_attention | revoked.
+  /// pending | active | needs_attention | suspended | revoked.
   status                String   @default("pending")
   /// Context-bound AES-GCM v2 envelope. Never returned to browser or desktop.
   encryptedCredential   String

@@ -6,6 +6,7 @@ import { GitHubConsentButton } from "@/components/auth/GitHubConsentButton";
 import { GitHubDisconnectButton } from "@/components/auth/GitHubDisconnectButton";
 import { GitHubPauseButton } from "@/components/auth/GitHubPauseButton";
 import { IntegrationDisconnectButton } from "@/components/auth/IntegrationDisconnectButton";
+import { IntegrationPauseButton } from "@/components/auth/IntegrationPauseButton";
 import { SlackConsentButton } from "@/components/auth/SlackConsentButton";
 import { TeamsConsentButton } from "@/components/auth/TeamsConsentButton";
 import { currentContext } from "@/lib/auth/currentContext";
@@ -63,6 +64,8 @@ export default async function AccountIntegrationsPage() {
   let githubRawStatus: string | null = null;
   let slackState = "Not connected";
   let teamsState = "Not connected";
+  let slackRawStatus: string | null = null;
+  let teamsRawStatus: string | null = null;
   try {
     const repo = prisma as unknown as IntegrationStatusRepo;
     const [installation, collaboration] = await Promise.all([
@@ -80,9 +83,12 @@ export default async function AccountIntegrationsPage() {
     };
     slackState = stateFor("slack");
     teamsState = stateFor("teams");
+    slackRawStatus = collaboration.find((item) => item.provider === "slack")?.status ?? null;
+    teamsRawStatus = collaboration.find((item) => item.provider === "teams")?.status ?? null;
   } catch {
     // An unavailable status store must never be interpreted as a live connection.
   }
+  const pausable = (raw: string | null) => raw === "active" || raw === "needs_attention" || raw === "suspended";
   const connections = [
     { name: "GitHub", detail: "Release evidence uses repository-scoped, read-only access. A recorded install is not treated as live until Axiom Agent completes a harmless validation read.", state: githubState, setupAvailable: setupReady.github, setupHint: "GitHub App setup is not available yet. An Axiom administrator must configure the approved App before this workspace can start consent." },
     { name: "Cloud accounts", detail: "AWS, Azure, and Google Cloud stay tenant-scoped and are validated from the installed application.", state: "Managed in Agent", setupAvailable: undefined },
@@ -112,6 +118,8 @@ export default async function AccountIntegrationsPage() {
               {canManageConnections && connection.name === "GitHub" && githubInstallationRowId && githubState !== "Revoked" && <GitHubDisconnectButton installationRowId={githubInstallationRowId} />}
               {canManageConnections && connection.control === "slack" && slackState !== "Active" && connection.setupAvailable && <SlackConsentButton />}
               {canManageConnections && connection.control === "teams" && teamsState !== "Active" && connection.setupAvailable && <TeamsConsentButton />}
+              {canManageConnections && connection.control === "slack" && pausable(slackRawStatus) && <IntegrationPauseButton provider="slack" label="Slack" suspended={slackRawStatus === "suspended"} />}
+              {canManageConnections && connection.control === "teams" && pausable(teamsRawStatus) && <IntegrationPauseButton provider="teams" label="Microsoft" suspended={teamsRawStatus === "suspended"} />}
               {canManageConnections && connection.control === "slack" && slackState !== "Not connected" && slackState !== "Revoked" && <IntegrationDisconnectButton provider="slack" label="Slack" />}
               {canManageConnections && connection.control === "teams" && teamsState !== "Not connected" && teamsState !== "Revoked" && <IntegrationDisconnectButton provider="teams" label="Microsoft" />}
               {canManageConnections && connection.setupAvailable === false && connection.state !== "Active" && <p className="mt-5 text-xs leading-5 text-zinc-500">{connection.setupHint ?? "Connection setup is not available for this pilot workspace yet. No provider consent link is shown."}</p>}
