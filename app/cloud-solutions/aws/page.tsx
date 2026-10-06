@@ -93,8 +93,8 @@ export default function AwsCloudSolutionsPage() {
                 foundations and CI/CD through to FinOps, observability, security,
                 and disaster recovery.
               </p>
-              <div className="mt-6 max-w-3xl rounded-xl border border-amber-500/20 bg-amber-500/[0.05] p-4 text-sm leading-relaxed text-zinc-300">
-                <strong className="text-amber-100">Axiom Agent availability:</strong> the assume-role connection is implemented and requires broker plus customer IAM configuration. Current inventory/security analysis is preview-grade; generated execution artifacts are review-only and local apply is disabled. The consulting scope below is not a claim that every item is automated in the product.
+              <div className="mt-6 max-w-3xl rounded-xl border border-white/20 bg-white/[0.05] p-4 text-sm leading-relaxed text-zinc-300">
+                <strong className="text-zinc-100">Axiom Agent availability:</strong> the assume-role connection is implemented and requires broker plus customer IAM configuration. Current inventory/security analysis is preview-grade; generated execution artifacts are review-only and local apply is disabled. The consulting scope below is not a claim that every item is automated in the product.
               </div>
             </section>
           </Reveal>

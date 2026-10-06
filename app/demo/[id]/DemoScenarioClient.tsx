@@ -34,7 +34,7 @@ import { SandboxNavigation } from "@/components/marketing/SandboxNavigation";
 
 const APPROVAL_TONE: Record<DemoStep["approval"], { label: string; cls: string }> = {
   none:         { label: "No approval needed",        cls: "bg-emerald-500/10 text-emerald-200 border-emerald-500/25" },
-  self_approve: { label: "Operator self-approves",    cls: "bg-amber-500/10 text-amber-200 border-amber-500/25" },
+  self_approve: { label: "Operator self-approves",    cls: "bg-white/10 text-zinc-200 border-white/25" },
   two_person:   { label: "Two-person human approval", cls: "bg-violet-500/10 text-violet-200 border-violet-500/25" },
 };
 

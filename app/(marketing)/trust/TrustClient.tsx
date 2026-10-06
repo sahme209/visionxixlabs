@@ -127,7 +127,7 @@ export function TrustClient() {
               c.status === "implemented"
                 ? "border-emerald-500/30 bg-emerald-500/[0.06] text-emerald-200"
                 : c.status === "unverified"
-                ? "border-amber-500/30 bg-amber-500/[0.06] text-amber-200"
+                ? "border-white/30 bg-white/[0.06] text-zinc-200"
                 : "border-white/[0.06] bg-white/[0.02] text-zinc-400";
             return (
               <div key={c.tag} className={`rounded-2xl border p-4 ${tone}`}>

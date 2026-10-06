@@ -36,7 +36,7 @@ interface Proposal {
 interface Report { proposals: Proposal[] }
 
 const STATUS_TONE: Record<Status, string> = {
-  pending:    "bg-amber-500/15 text-amber-300 border-amber-500/30",
+  pending:    "bg-white/15 text-zinc-300 border-white/30",
   approved:   "bg-emerald-500/15 text-emerald-300 border-emerald-500/30",
   applied:    "bg-emerald-500/20 text-emerald-100 border-emerald-500/40",
   rejected:   "bg-rose-500/15 text-rose-300 border-rose-500/30",
@@ -128,7 +128,7 @@ export default function AgentProposalsPage() {
       </div>
 
       {error && (
-        <div role="alert" aria-live="assertive" className="rounded-2xl border border-amber-500/[0.18] bg-amber-500/[0.04] p-5 mb-6 text-[13px] text-zinc-300">
+        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/[0.18] bg-white/[0.04] p-5 mb-6 text-[13px] text-zinc-300">
           {error}
         </div>
       )}

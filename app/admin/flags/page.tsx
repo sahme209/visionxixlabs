@@ -156,7 +156,7 @@ export default function FlagsPage() {
       </div>
 
       {error && (
-        <div className="rounded-2xl border border-amber-500/[0.18] bg-amber-500/[0.04] p-5 mb-6 text-[13px] text-zinc-300">
+        <div className="rounded-2xl border border-white/[0.18] bg-white/[0.04] p-5 mb-6 text-[13px] text-zinc-300">
           {error}
         </div>
       )}
@@ -176,7 +176,7 @@ export default function FlagsPage() {
                         <p className="text-[13px] font-semibold text-white">{rec.spec.label}</p>
                         <code className="text-[10px] font-mono text-zinc-500">{rec.key}</code>
                         {rec.hasOverride && (
-                          <span className="text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded border bg-amber-500/15 text-amber-300 border-amber-500/30">
+                          <span className="text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded border bg-white/15 text-zinc-300 border-white/30">
                             override
                           </span>
                         )}
@@ -223,7 +223,7 @@ export default function FlagsPage() {
                           <button
                             onClick={() => clearOverride(rec)}
                             disabled={busy === rec.key}
-                            className="inline-flex items-center gap-1 text-[11px] font-medium px-2.5 py-1 rounded-lg bg-amber-500/10 text-amber-300 border border-amber-500/30 hover:bg-amber-500/15 disabled:opacity-50"
+                            className="inline-flex items-center gap-1 text-[11px] font-medium px-2.5 py-1 rounded-lg bg-white/10 text-zinc-300 border border-white/30 hover:bg-white/15 disabled:opacity-50"
                           >
                             Reset
                           </button>
@@ -244,7 +244,7 @@ export default function FlagsPage() {
 function Stat({ label, value, tone }: { label: string; value: string; tone: "emerald" | "amber" | "violet" }) {
   const cls = {
     emerald: "border-emerald-500/[0.18] bg-emerald-500/[0.03] text-emerald-200",
-    amber:   "border-amber-500/[0.18] bg-amber-500/[0.03] text-amber-200",
+    amber:   "border-white/[0.18] bg-white/[0.03] text-zinc-200",
     violet:  "border-violet-500/[0.18] bg-violet-500/[0.03] text-violet-200",
   }[tone];
   return (

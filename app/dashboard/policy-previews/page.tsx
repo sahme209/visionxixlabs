@@ -49,7 +49,7 @@ interface Report {
 
 const CLOUD_LABEL: Record<Cloud, string> = { aws: "AWS SCP", azure: "Azure Policy", gcp: "GCP Org Policy" };
 const CLOUD_TONE: Record<Cloud, string> = {
-  aws: "border-amber-500/30 bg-amber-500/[0.04]",
+  aws: "border-white/30 bg-white/[0.04]",
   azure: "border-sky-500/30 bg-sky-500/[0.04]",
   gcp: "border-emerald-500/30 bg-emerald-500/[0.04]",
 };
@@ -182,7 +182,7 @@ export default function PolicyPreviewsPage() {
         </div>
       )}
       {!loading && error && (
-        <div role="alert" aria-live="assertive" className="rounded-2xl border border-amber-500/[0.18] bg-amber-500/[0.04] p-5 mb-6 text-[13px] text-zinc-300">
+        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/[0.18] bg-white/[0.04] p-5 mb-6 text-[13px] text-zinc-300">
           {error}
         </div>
       )}
@@ -206,9 +206,9 @@ export default function PolicyPreviewsPage() {
                   </div>
 
                   {pkg.previews.length === 0 && pkg.notes.length > 0 && (
-                    <div className="rounded-md border border-amber-500/15 bg-amber-500/[0.04] p-2.5">
+                    <div className="rounded-md border border-white/15 bg-white/[0.04] p-2.5">
                       {pkg.notes.map((n, i) => (
-                        <p key={i} className="text-[11px] text-amber-200">{n}</p>
+                        <p key={i} className="text-[11px] text-zinc-200">{n}</p>
                       ))}
                     </div>
                   )}
@@ -266,8 +266,8 @@ export default function PolicyPreviewsPage() {
           )}
 
           {report.limitations.length > 0 && (
-            <div className="rounded-2xl border border-amber-500/[0.18] bg-amber-500/[0.03] p-4 mb-8">
-              <p className="text-[10px] font-mono text-amber-300/80 uppercase tracking-[0.18em] mb-2">// notes</p>
+            <div className="rounded-2xl border border-white/[0.18] bg-white/[0.03] p-4 mb-8">
+              <p className="text-[10px] font-mono text-zinc-300/80 uppercase tracking-[0.18em] mb-2">// notes</p>
               {report.limitations.map((l, i) => <p key={i} className="text-[12px] text-zinc-300">· {l}</p>)}
             </div>
           )}
@@ -294,9 +294,9 @@ export default function PolicyPreviewsPage() {
                 </pre>
                 <p className="text-[11px] text-zinc-400 mt-2 leading-snug">{tfDraft.applyHint}</p>
                 {tfDraft.warnings.length > 0 && (
-                  <div className="mt-2 rounded border border-amber-500/15 bg-amber-500/[0.04] p-2">
+                  <div className="mt-2 rounded border border-white/15 bg-white/[0.04] p-2">
                     {tfDraft.warnings.map((w, i) => (
-                      <p key={i} className="text-[10px] text-amber-200">· {w}</p>
+                      <p key={i} className="text-[10px] text-zinc-200">· {w}</p>
                     ))}
                   </div>
                 )}

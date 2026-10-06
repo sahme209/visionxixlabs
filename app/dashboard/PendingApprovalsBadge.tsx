@@ -34,12 +34,12 @@ export function PendingApprovalsBadge() {
       href="/dashboard/approvals"
       className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full border text-[11px] font-mono transition-colors ${
         urgent
-          ? "border-amber-500/30 text-amber-200 hover:border-amber-500/50"
+          ? "border-white/30 text-zinc-200 hover:border-white/50"
           : "border-white/[0.10] text-zinc-300 hover:border-white/[0.18]"
       }`}
       title={urgent ? `${highRisk} high-risk` : undefined}
     >
-      <span className={`w-1.5 h-1.5 rounded-full ${urgent ? "bg-amber-400" : "bg-zinc-400"}`} />
+      <span className={`w-1.5 h-1.5 rounded-full ${urgent ? "bg-zinc-400" : "bg-zinc-400"}`} />
       {pending} pending
     </Link>
   );

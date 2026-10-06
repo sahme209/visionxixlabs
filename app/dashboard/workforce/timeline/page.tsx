@@ -23,7 +23,7 @@ export const dynamic = "force-dynamic";
 
 const OUTCOME_TONE: Record<string, string> = {
   ai_generated: "text-emerald-300",
-  fallback_rules: "text-amber-300",
+  fallback_rules: "text-zinc-300",
   error: "text-rose-300",
 };
 
@@ -158,7 +158,7 @@ export default async function WorkforceTimelinePage() {
       <section className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-8">
         <Stat label="Reports · 24h" value={last24Stats.total} tone="text-white" />
         <Stat label="AI-generated · 24h" value={last24Stats.ai_generated} tone="text-emerald-300" />
-        <Stat label="Fallback rules · 24h" value={last24Stats.fallback_rules} tone="text-amber-300" />
+        <Stat label="Fallback rules · 24h" value={last24Stats.fallback_rules} tone="text-zinc-300" />
         <Stat label="Errors · 24h" value={last24Stats.error} tone="text-rose-300" />
       </section>
 
@@ -256,8 +256,8 @@ function SweepHealth({ tick, fallbackUpdatedAt }: { tick: TickReadback | null; f
     label = "degraded";
     note = "No tick recorded in over 3 hours — the hourly cron may be sick. Try the manual sweep button.";
   } else if (ageMs > 2 * 60 * 60 * 1000) {
-    tone = "border-amber-500/30 bg-amber-500/[0.06]";
-    badge = "text-amber-300";
+    tone = "border-white/30 bg-white/[0.06]";
+    badge = "text-zinc-300";
     label = "stale";
     note = "Last tick landed >2 hours ago — usually fine if the workspace is quiet, but worth a manual sweep if you expect activity.";
   }

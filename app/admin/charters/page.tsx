@@ -95,14 +95,14 @@ export default function AdminChartersPage() {
       </div>
 
       {forbidden && (
-        <div className="rounded-2xl border border-amber-500/[0.18] bg-amber-500/[0.04] p-5 mb-6 text-[13px] text-amber-100">
+        <div className="rounded-2xl border border-white/[0.18] bg-white/[0.04] p-5 mb-6 text-[13px] text-zinc-100">
           <p className="font-semibold mb-1">Platform admin required.</p>
           <p>Add your email to the ADMIN_EMAILS env var to view this page.</p>
         </div>
       )}
 
       {error && !forbidden && (
-        <div className="rounded-2xl border border-amber-500/[0.18] bg-amber-500/[0.04] p-5 mb-6 text-[13px] text-zinc-300">
+        <div className="rounded-2xl border border-white/[0.18] bg-white/[0.04] p-5 mb-6 text-[13px] text-zinc-300">
           {error}
         </div>
       )}

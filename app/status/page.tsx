@@ -25,7 +25,7 @@ export const metadata: Metadata = {
 
 const TONE: Record<StatusVerdict, string> = {
   operational: "border-emerald-500/30 bg-emerald-500/[0.05] text-emerald-200",
-  degraded:    "border-amber-500/30 bg-amber-500/[0.05] text-amber-200",
+  degraded:    "border-white/30 bg-white/[0.05] text-zinc-200",
   down:        "border-rose-500/30 bg-rose-500/[0.06] text-rose-200",
   unknown:     "border-zinc-500/30 bg-zinc-500/[0.04] text-zinc-300",
 };

@@ -77,7 +77,7 @@ export function RunSecurityScannerPanel() {
 
   const modePill = isLive
     ? "bg-cyan-500/15 text-cyan-300"
-    : "bg-amber-500/15 text-amber-300";
+    : "bg-white/15 text-zinc-300";
 
   return (
     <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 mb-6">
@@ -172,7 +172,7 @@ export function RunSecurityScannerPanel() {
           {/* 5-stat grid */}
           <div className="grid grid-cols-2 sm:grid-cols-5 gap-2 mb-3">
             <ResultStat label="Pass" value={String(summary.pass)} tone="text-emerald-300" />
-            <ResultStat label="Warn" value={String(summary.warn)} tone={summary.warn > 0 ? "text-amber-300" : "text-zinc-400"} />
+            <ResultStat label="Warn" value={String(summary.warn)} tone={summary.warn > 0 ? "text-zinc-300" : "text-zinc-400"} />
             <ResultStat label="Fail" value={String(summary.fail)} tone={summary.fail > 0 ? "text-rose-300" : "text-zinc-400"} />
             <ResultStat label="Preview" value={String(summary.preview)} tone="text-zinc-300" />
             <ResultStat label="Unknown" value={String(summary.unknown)} tone="text-zinc-400" />
@@ -180,8 +180,8 @@ export function RunSecurityScannerPanel() {
 
           {/* Top risk */}
           {topRisk ? (
-            <div className="rounded-md border border-amber-500/[0.18] bg-amber-500/[0.04] p-3">
-              <p className="text-[10px] font-mono text-amber-300/80 uppercase tracking-wider mb-1">// highest unresolved check</p>
+            <div className="rounded-md border border-white/[0.18] bg-white/[0.04] p-3">
+              <p className="text-[10px] font-mono text-zinc-300/80 uppercase tracking-wider mb-1">// highest unresolved check</p>
               <p className="text-[12.5px] text-zinc-200 font-semibold tracking-tight">{topRisk.title}</p>
               {topRisk.scope && (
                 <p className="text-[10px] font-mono text-zinc-500 mt-0.5">scope: {topRisk.scope}</p>

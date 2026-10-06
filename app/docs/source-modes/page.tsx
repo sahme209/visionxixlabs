@@ -60,7 +60,7 @@ const MODES: { mode: string; tone: string; meaning: string; example: string }[] 
 const TONE_CLASSES: Record<string, { border: string; bg: string; text: string; pill: string }> = {
   emerald: { border: "border-emerald-500/[0.22]", bg: "bg-emerald-500/[0.04]", text: "text-emerald-300", pill: "bg-emerald-500/15 text-emerald-300" },
   cyan:    { border: "border-cyan-500/[0.22]",    bg: "bg-cyan-500/[0.04]",    text: "text-cyan-300",    pill: "bg-cyan-500/15 text-cyan-300"    },
-  amber:   { border: "border-amber-500/[0.22]",   bg: "bg-amber-500/[0.04]",   text: "text-amber-300",   pill: "bg-amber-500/15 text-amber-300"   },
+  amber:   { border: "border-white/[0.22]",   bg: "bg-white/[0.04]",   text: "text-zinc-300",   pill: "bg-white/15 text-zinc-300"   },
   rose:    { border: "border-rose-500/[0.22]",    bg: "bg-rose-500/[0.04]",    text: "text-rose-300",    pill: "bg-rose-500/15 text-rose-300"    },
   zinc:    { border: "border-zinc-700/30",        bg: "bg-white/[0.02]",       text: "text-zinc-300",    pill: "bg-zinc-700/40 text-zinc-300"    },
 };

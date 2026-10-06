@@ -31,7 +31,7 @@ export const metadata: Metadata = {
 export const dynamic = "force-dynamic";
 
 const THRESHOLD_TONE: Record<number, string> = {
-  70:  "text-amber-300 bg-amber-500/10 border-amber-500/30",
+  70:  "text-zinc-300 bg-white/10 border-white/30",
   90:  "text-orange-300 bg-orange-500/10 border-orange-500/30",
   100: "text-rose-300 bg-rose-500/15 border-rose-500/40",
 };
@@ -81,8 +81,8 @@ export default async function AdminBillingAlertsPage() {
 
       <div className="mb-8">
         <div className="flex items-center gap-3 mb-3">
-          <BellAlertIcon className="h-4 w-4 text-amber-400" />
-          <p className="text-[10px] font-semibold text-amber-400 uppercase tracking-widest">Billing alerts · admin only</p>
+          <BellAlertIcon className="h-4 w-4 text-zinc-400" />
+          <p className="text-[10px] font-semibold text-zinc-400 uppercase tracking-widest">Billing alerts · admin only</p>
         </div>
         <h1 className="text-3xl md:text-4xl font-bold text-white tracking-[-0.04em] mb-2">
           {period} threshold crossings · <span className="text-gradient">{alerts.length} alerts</span>
@@ -93,7 +93,7 @@ export default async function AdminBillingAlertsPage() {
       </div>
 
       <section className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-8">
-        <SummaryStat label="70% crossings" value={String(by70)} tone="text-amber-300" />
+        <SummaryStat label="70% crossings" value={String(by70)} tone="text-zinc-300" />
         <SummaryStat label="90% crossings" value={String(by90)} tone="text-orange-300" />
         <SummaryStat label="100% crossings" value={String(by100)} tone="text-rose-300" />
         <SummaryStat label="Workspaces alerting" value={String(uniqueWorkspaces)} tone={uniqueWorkspaces > 0 ? "text-violet-300" : "text-zinc-300"} icon={ChartBarIcon} />
@@ -117,7 +117,7 @@ export default async function AdminBillingAlertsPage() {
               <article key={a.id} className="rounded-xl border border-white/[0.06] bg-white/[0.02] px-4 py-3">
                 <header className="flex items-center justify-between gap-3 flex-wrap mb-2">
                   <div className="flex items-center gap-2 min-w-0">
-                    <ExclamationTriangleIcon className="h-4 w-4 text-amber-400 shrink-0" />
+                    <ExclamationTriangleIcon className="h-4 w-4 text-zinc-400 shrink-0" />
                     <span className={`text-[10px] font-mono uppercase tracking-wider border rounded-full px-1.5 py-0.5 ${tone}`}>
                       {a.threshold}%
                     </span>
@@ -150,9 +150,9 @@ export default async function AdminBillingAlertsPage() {
         </section>
       )}
 
-      <section className="mt-8 rounded-2xl border border-amber-500/15 bg-amber-500/[0.04] p-5">
-        <p className="text-[10px] font-semibold text-amber-300 uppercase tracking-widest mb-2">// alert mechanics</p>
-        <ul className="text-[12px] text-zinc-300 leading-relaxed list-disc list-inside marker:text-amber-400/70 space-y-1">
+      <section className="mt-8 rounded-2xl border border-white/15 bg-white/[0.04] p-5">
+        <p className="text-[10px] font-semibold text-zinc-300 uppercase tracking-widest mb-2">// alert mechanics</p>
+        <ul className="text-[12px] text-zinc-300 leading-relaxed list-disc list-inside marker:text-white/70 space-y-1">
           <li>Cron <code className="text-zinc-200">/api/cron/check-billing-alerts</code> runs every 30 minutes (Bearer CRON_SECRET guarded).</li>
           <li>Unique index on (workspace, dimension, threshold, period) makes re-runs no-ops.</li>
           <li>Delivery channel defaults to <span className="font-mono text-zinc-200">dashboard</span>. Email + Slack delivery wired in a follow-up phase.</li>

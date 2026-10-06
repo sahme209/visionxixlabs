@@ -27,8 +27,8 @@ const SENDER_TONE: Record<string, string> = {
   detector:       "bg-cyan-500/15 text-cyan-300 border-cyan-500/30",
   reasoner:       "bg-violet-500/15 text-violet-300 border-white/[0.12]",
   simulator:      "bg-sky-500/15 text-sky-300 border-sky-500/30",
-  policy_gate:    "bg-amber-500/15 text-amber-300 border-amber-500/30",
-  boundary_gate:  "bg-amber-500/15 text-amber-300 border-amber-500/30",
+  policy_gate:    "bg-white/15 text-zinc-300 border-white/30",
+  boundary_gate:  "bg-white/15 text-zinc-300 border-white/30",
   approver:       "bg-fuchsia-500/15 text-fuchsia-300 border-fuchsia-500/30",
   verifier:       "bg-emerald-500/15 text-emerald-300 border-emerald-500/30",
   auditor:        "bg-zinc-500/15 text-zinc-300 border-zinc-500/30",
@@ -97,7 +97,7 @@ export default function AgentBusPage() {
       </div>
 
       {error && (
-        <div role="alert" aria-live="assertive" className="rounded-2xl border border-amber-500/[0.18] bg-amber-500/[0.04] p-5 mb-6 text-[13px] text-zinc-300">
+        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/[0.18] bg-white/[0.04] p-5 mb-6 text-[13px] text-zinc-300">
           {error}
         </div>
       )}

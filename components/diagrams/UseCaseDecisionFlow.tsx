@@ -9,7 +9,7 @@ export function UseCaseDecisionFlow() {
   const branches = [
     { label: "Support & CX", x: 100, y: 40, color: "#6366f1" },
     { label: "Automation", x: 100, y: 100, color: "#10b981" },
-    { label: "Analytics", x: 100, y: 160, color: "#f59e0b" },
+    { label: "Analytics", x: 100, y: 160, color: "#14b8a6" },
     { label: "Internal AI", x: 620, y: 40, color: "#8b5cf6" },
     { label: "DevOps", x: 620, y: 100, color: "#0ea5e9" },
     { label: "Data Extraction", x: 620, y: 160, color: "#ec4899" },

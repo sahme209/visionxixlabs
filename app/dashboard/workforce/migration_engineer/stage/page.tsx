@@ -61,9 +61,9 @@ export default async function StageMigrationPage() {
         <MigrationStageForm />
       </section>
 
-      <section className="rounded-2xl border border-amber-500/15 bg-amber-500/[0.04] p-5">
-        <p className="text-[10px] font-semibold text-amber-300 uppercase tracking-widest mb-2">// how staging works</p>
-        <ul className="text-[12px] text-zinc-300 leading-relaxed list-disc list-inside marker:text-amber-400/70 space-y-1">
+      <section className="rounded-2xl border border-white/15 bg-white/[0.04] p-5">
+        <p className="text-[10px] font-semibold text-zinc-300 uppercase tracking-widest mb-2">// how staging works</p>
+        <ul className="text-[12px] text-zinc-300 leading-relaxed list-disc list-inside marker:text-white/70 space-y-1">
           <li>Risk floor is <span className="font-mono text-rose-300">critical</span> — every migration apply requires two distinct approvers.</li>
           <li>Runbook is built pure (no DB). If it reports errors, staging is refused before any approval mint.</li>
           <li>On accept, you'll be sent to the approval detail page — share the link with the second approver.</li>

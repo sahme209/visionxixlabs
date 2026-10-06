@@ -44,9 +44,9 @@ interface ProviderNode {
 
 const PROVIDER_COLORS: Record<ProviderId, { stroke: string; fill: string; text: string; glow: string }> = {
   aws: {
-    stroke: "stroke-amber-400/60",
-    fill: "fill-amber-500/10",
-    text: "text-amber-400",
+    stroke: "stroke-white/60",
+    fill: "fill-white/10",
+    text: "text-zinc-400",
     glow: "rgba(245, 158, 11, 0.4)",
   },
   azure: {
@@ -156,7 +156,7 @@ const DEFAULT_TOPOLOGY: ProviderNode[] = [
 const STATUS_DOT: Record<RegionNode["status"], string> = {
   operational: "bg-emerald-400",
   scanning: "bg-blue-400 animate-pulse",
-  issue: "bg-amber-400 animate-pulse",
+  issue: "bg-zinc-400 animate-pulse",
 };
 
 const STATUS_LABEL: Record<RegionNode["status"], string> = {
@@ -289,7 +289,7 @@ export function InfrastructureTopology({ topology = DEFAULT_TOPOLOGY, className 
                   </div>
                   <div className="rounded bg-black/30 border border-white/[0.04] px-2 py-1.5">
                     <p className="text-[8px] text-zinc-500 uppercase tracking-wider">Findings</p>
-                    <p className={`text-xs font-bold ${providerFindings > 5 ? "text-amber-400" : providerFindings > 0 ? "text-amber-400/80" : "text-emerald-400"}`}>
+                    <p className={`text-xs font-bold ${providerFindings > 5 ? "text-zinc-400" : providerFindings > 0 ? "text-white/80" : "text-emerald-400"}`}>
                       {providerFindings}
                     </p>
                   </div>
@@ -326,7 +326,7 @@ export function InfrastructureTopology({ topology = DEFAULT_TOPOLOGY, className 
                               <div className="flex items-center gap-1.5 shrink-0">
                                 <span className="text-[9px] text-zinc-500 font-mono">×{res.count}</span>
                                 {res.findings > 0 && (
-                                  <span className="text-[9px] font-semibold text-amber-400 bg-amber-500/10 border border-amber-500/20 rounded-full px-1.5">
+                                  <span className="text-[9px] font-semibold text-zinc-400 bg-white/10 border border-white/20 rounded-full px-1.5">
                                     {res.findings}
                                   </span>
                                 )}
@@ -366,7 +366,7 @@ export function InfrastructureTopology({ topology = DEFAULT_TOPOLOGY, className 
             <span className="text-zinc-500">Scanning</span>
           </span>
           <span className="flex items-center gap-1.5">
-            <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
+            <span className="w-1.5 h-1.5 rounded-full bg-zinc-400" />
             <span className="text-zinc-500">Findings present</span>
           </span>
           <span className="flex items-center gap-1.5">

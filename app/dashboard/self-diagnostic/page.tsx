@@ -25,7 +25,7 @@ export default async function SelfDiagnosticPage() {
   }
   const report = runAgiSelfDiagnostic();
   const scorePct = Math.round(report.healthScore * 100);
-  const scoreTone = report.healthScore >= 0.9 ? "text-emerald-300" : report.healthScore >= 0.7 ? "text-amber-300" : "text-rose-300";
+  const scoreTone = report.healthScore >= 0.9 ? "text-emerald-300" : report.healthScore >= 0.7 ? "text-zinc-300" : "text-rose-300";
 
   return (
     <div className="max-w-4xl mx-auto px-1 -mt-2">

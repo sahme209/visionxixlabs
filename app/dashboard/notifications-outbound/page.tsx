@@ -175,7 +175,7 @@ export default function OutboundNotificationsPage() {
       </div>
 
       {statusError && (
-        <div className="rounded-2xl border border-amber-500/[0.18] bg-amber-500/[0.04] p-5 mb-6 text-[13px] text-zinc-300">
+        <div className="rounded-2xl border border-white/[0.18] bg-white/[0.04] p-5 mb-6 text-[13px] text-zinc-300">
           {statusError}
         </div>
       )}
@@ -196,7 +196,7 @@ export default function OutboundNotificationsPage() {
                       className={`text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded ${
                         c.configured
                           ? "bg-emerald-500/15 text-emerald-300"
-                          : "bg-amber-500/15 text-amber-300"
+                          : "bg-white/15 text-zinc-300"
                       }`}
                     >
                       {c.configured ? "wired" : "missing"}
@@ -307,9 +307,9 @@ export default function OutboundNotificationsPage() {
                     <p className="text-emerald-300/80 uppercase">ok</p>
                     <p className="text-emerald-200 font-bold">{history.perOutcome.ok ?? 0}</p>
                   </div>
-                  <div className="rounded border border-amber-500/20 bg-amber-500/[0.04] px-2 py-1 text-center">
-                    <p className="text-amber-300/80 uppercase">deduped</p>
-                    <p className="text-amber-200 font-bold">{history.perOutcome.deduped ?? 0}</p>
+                  <div className="rounded border border-white/20 bg-white/[0.04] px-2 py-1 text-center">
+                    <p className="text-zinc-300/80 uppercase">deduped</p>
+                    <p className="text-zinc-200 font-bold">{history.perOutcome.deduped ?? 0}</p>
                   </div>
                   <div className="rounded border border-rose-500/20 bg-rose-500/[0.04] px-2 py-1 text-center">
                     <p className="text-rose-300/80 uppercase">failed</p>
@@ -334,7 +334,7 @@ export default function OutboundNotificationsPage() {
                         row.outcome === "ok"
                           ? "bg-emerald-500/10 text-emerald-300 border-emerald-500/20"
                           : row.outcome === "deduped"
-                            ? "bg-amber-500/10 text-amber-300 border-amber-500/20"
+                            ? "bg-white/10 text-zinc-300 border-white/20"
                             : "bg-rose-500/10 text-rose-300 border-rose-500/20"
                       }`}>{row.outcome}</span>
                       <span className="text-[9px] font-mono text-zinc-500 uppercase">{row.severity}</span>
@@ -377,7 +377,7 @@ export default function OutboundNotificationsPage() {
 function Stat({ label, value, tone }: { label: string; value: string; tone: "emerald" | "amber" | "violet" | "zinc" }) {
   const cls = {
     emerald: "border-emerald-500/[0.18] bg-emerald-500/[0.03] text-emerald-200",
-    amber: "border-amber-500/[0.18] bg-amber-500/[0.03] text-amber-200",
+    amber: "border-white/[0.18] bg-white/[0.03] text-zinc-200",
     violet: "border-white/[0.06] bg-white/[0.015] text-white",
     zinc: "border-white/[0.06] bg-white/[0.02] text-zinc-200",
   }[tone];

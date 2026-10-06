@@ -73,7 +73,7 @@ export default async function IncidentsPage() {
       {/* Lane grid — visible regardless of freshness so engineers see the model */}
       <section className="mb-8 grid grid-cols-1 md:grid-cols-3 gap-3">
         <Lane title="Active" tone="text-rose-300" icon={BellAlertIcon} empty="No active incidents — when one opens, it shows here with severity + owner." />
-        <Lane title="Triage" tone="text-amber-300" icon={WrenchScrewdriverIcon} empty="No incidents awaiting triage. Triage = AI has identified a likely root cause; human reviews." />
+        <Lane title="Triage" tone="text-zinc-300" icon={WrenchScrewdriverIcon} empty="No incidents awaiting triage. Triage = AI has identified a likely root cause; human reviews." />
         <Lane title="Postmortem" tone="text-emerald-300" icon={DocumentTextIcon} empty="No postmortems pending. After resolution, the drafter writes one for your edit." />
       </section>
 

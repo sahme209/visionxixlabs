@@ -99,9 +99,9 @@ function formatCurrency(value: number): string {
 const STATUS_CONFIG: Record<string, { icon: typeof CheckCircleIcon; color: string; label: string }> = {
   completed: { icon: CheckCircleIcon, color: "text-emerald-500", label: "Completed" },
   running: { icon: ArrowPathIcon, color: "text-blue-500", label: "Running" },
-  pending: { icon: ClockIcon, color: "text-amber-500", label: "Pending" },
+  pending: { icon: ClockIcon, color: "text-zinc-500", label: "Pending" },
   failed: { icon: XCircleIcon, color: "text-red-500", label: "Failed" },
-  partially_completed: { icon: ExclamationTriangleIcon, color: "text-amber-500", label: "Partial" },
+  partially_completed: { icon: ExclamationTriangleIcon, color: "text-zinc-500", label: "Partial" },
 };
 
 const PROVIDER_LABELS: Record<string, string> = { aws: "AWS", azure: "Azure", gcp: "GCP" };
@@ -120,7 +120,7 @@ function MetricCard({ label, value, sub, icon: Icon, accent = "violet" }: {
   const accents: Record<string, string> = {
     violet: "bg-violet-500/10 text-violet-400",
     emerald: "bg-emerald-500/10 text-emerald-400",
-    amber: "bg-amber-500/10 text-amber-400",
+    amber: "bg-white/10 text-zinc-400",
     blue: "bg-blue-500/10 text-blue-400",
     red: "bg-red-500/10 text-red-400",
   };
@@ -420,7 +420,7 @@ export default function OperationsPage() {
                                 {PROVIDER_LABELS[sched.provider] ?? sched.provider} — {sched.frequency}
                               </p>
                               {sched.consecutiveFailures > 0 && (
-                                <p className="text-xs text-amber-400">
+                                <p className="text-xs text-zinc-400">
                                   {sched.consecutiveFailures} consecutive failure{sched.consecutiveFailures === 1 ? "" : "s"}
                                 </p>
                               )}
@@ -445,14 +445,14 @@ export default function OperationsPage() {
               {/* Pending Approvals */}
               {data?.pendingApprovals && data.pendingApprovals.length > 0 && (
                 <Reveal direction="right" blur delay={0.2}>
-                  <div className="animated-border card-inner-glow rounded-2xl border border-amber-500/20 bg-amber-500/[0.06] overflow-hidden">
-                    <div className="px-5 py-4 border-b border-amber-500/20">
+                  <div className="animated-border card-inner-glow rounded-2xl border border-white/20 bg-white/[0.06] overflow-hidden">
+                    <div className="px-5 py-4 border-b border-white/20">
                       <div className="flex items-center gap-2">
-                        <ShieldCheckIcon className="h-4 w-4 text-amber-400" />
-                        <h2 className="text-sm font-semibold text-amber-400">
+                        <ShieldCheckIcon className="h-4 w-4 text-zinc-400" />
+                        <h2 className="text-sm font-semibold text-zinc-400">
                           Pending Approvals
                         </h2>
-                        <span className="ml-auto huly-badge text-xs font-bold text-amber-400 bg-amber-500/10 px-2 py-0.5">
+                        <span className="ml-auto huly-badge text-xs font-bold text-zinc-400 bg-white/10 px-2 py-0.5">
                           {data.pendingApprovals.length}
                         </span>
                       </div>

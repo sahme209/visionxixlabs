@@ -70,7 +70,7 @@ type Phase = "idle" | "running" | "done" | "error";
 const SOURCE_TONE: Record<string, { border: string; bg: string; text: string; dot: string; pill: string }> = {
   live:    { border: "border-emerald-500/[0.22]", bg: "bg-emerald-500/[0.04]", text: "text-emerald-300", dot: "bg-emerald-400 animate-pulse", pill: "bg-emerald-500/15 text-emerald-300" },
   partial: { border: "border-cyan-500/[0.22]",    bg: "bg-cyan-500/[0.04]",    text: "text-cyan-300",    dot: "bg-cyan-400 animate-pulse",    pill: "bg-cyan-500/15 text-cyan-300"       },
-  preview: { border: "border-amber-500/[0.22]",   bg: "bg-amber-500/[0.04]",   text: "text-amber-300",   dot: "bg-amber-400",                 pill: "bg-amber-500/15 text-amber-300"     },
+  preview: { border: "border-white/[0.22]",   bg: "bg-white/[0.04]",   text: "text-zinc-300",   dot: "bg-zinc-400",                 pill: "bg-white/15 text-zinc-300"     },
 };
 
 export function RunAwsScanPanel() {
@@ -215,8 +215,8 @@ export function RunAwsScanPanel() {
             <div className="mb-3">
               <p className="text-[12.5px] text-zinc-200 font-semibold mb-1">{result.message ?? "Scan returned preview-only state."}</p>
               {result.missingRequirements && result.missingRequirements.length > 0 && (
-                <div className="rounded-md border border-amber-500/[0.18] bg-amber-500/[0.04] p-2 mt-2">
-                  <p className="text-[10px] font-mono text-amber-300/80 uppercase tracking-wider mb-1">// missing config</p>
+                <div className="rounded-md border border-white/[0.18] bg-white/[0.04] p-2 mt-2">
+                  <p className="text-[10px] font-mono text-zinc-300/80 uppercase tracking-wider mb-1">// missing config</p>
                   <ul className="space-y-0.5">
                     {result.missingRequirements.map((req, i) => (
                       <li key={i} className="text-[11px] text-zinc-300 font-mono">{req}</li>
@@ -232,7 +232,7 @@ export function RunAwsScanPanel() {
             <>
               <div className="grid sm:grid-cols-3 gap-3 mb-3">
                 <ResultStat label="Resources" value={typeof resourceCount === "number" ? String(resourceCount) : "—"} />
-                <ResultStat label="Findings" value={String(findings.length)} tone={findings.length > 0 ? "text-amber-300" : "text-emerald-300"} />
+                <ResultStat label="Findings" value={String(findings.length)} tone={findings.length > 0 ? "text-zinc-300" : "text-emerald-300"} />
                 <ResultStat label="Duration" value={typeof result.preview.durationMs === "number" ? `${result.preview.durationMs}ms` : "—"} />
               </div>
 
@@ -244,8 +244,8 @@ export function RunAwsScanPanel() {
                       <li key={i} className="flex items-start gap-2 text-[11.5px]">
                         <span className={`mt-1.5 w-1.5 h-1.5 rounded-full shrink-0 ${
                           f.risk === "critical" ? "bg-rose-400" :
-                          f.risk === "high"     ? "bg-amber-400" :
-                          f.risk === "medium"   ? "bg-amber-400" :
+                          f.risk === "high"     ? "bg-zinc-400" :
+                          f.risk === "medium"   ? "bg-zinc-400" :
                                                   "bg-zinc-500"
                         }`} />
                         <div className="min-w-0 flex-1">
@@ -255,7 +255,7 @@ export function RunAwsScanPanel() {
                         {f.risk && (
                           <span className={`text-[9px] font-mono uppercase tracking-wider px-1.5 py-px rounded shrink-0 ${
                             f.risk === "critical" ? "bg-rose-500/15 text-rose-300" :
-                            f.risk === "high"     ? "bg-amber-500/15 text-amber-300" :
+                            f.risk === "high"     ? "bg-white/15 text-zinc-300" :
                                                     "bg-zinc-700/40 text-zinc-300"
                           }`}>{f.risk}</span>
                         )}

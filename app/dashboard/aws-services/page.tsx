@@ -64,7 +64,7 @@ interface AwsReport {
 const MODE_VISUAL: Record<Mode, { pill: string; label: string }> = {
   live:         { pill: "bg-emerald-500/15 text-emerald-300", label: "live" },
   partial_live: { pill: "bg-cyan-500/15 text-cyan-300",       label: "partial" },
-  preview:      { pill: "bg-amber-500/15 text-amber-300",     label: "preview" },
+  preview:      { pill: "bg-white/15 text-zinc-300",     label: "preview" },
   blocked:      { pill: "bg-rose-500/15 text-rose-300",       label: "blocked" },
   disabled:     { pill: "bg-zinc-700/40 text-zinc-300",       label: "disabled" },
   unknown:      { pill: "bg-zinc-700/40 text-zinc-300",       label: "unknown" },
@@ -104,8 +104,8 @@ export default function AwsServicesPage() {
 
         <div className="flex items-center gap-2 mb-3 flex-wrap">
           <span className="inline-flex items-center gap-2 rounded-full border border-white/[0.06] bg-white/[0.02] px-2.5 py-1">
-            <CloudIcon className="h-3.5 w-3.5 text-amber-300" />
-            <span className="text-[10px] font-semibold uppercase tracking-widest text-amber-300">
+            <CloudIcon className="h-3.5 w-3.5 text-zinc-300" />
+            <span className="text-[10px] font-semibold uppercase tracking-widest text-zinc-300">
               AWS Service Inventory
             </span>
           </span>
@@ -130,8 +130,8 @@ export default function AwsServicesPage() {
         </div>
       )}
       {!loading && error && (
-        <div role="alert" aria-live="assertive" className="rounded-2xl border border-amber-500/[0.18] bg-amber-500/[0.04] p-5 mb-6">
-          <p className="text-[11px] font-mono text-amber-300/80 uppercase tracking-[0.18em] mb-1">// inventory unavailable</p>
+        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/[0.18] bg-white/[0.04] p-5 mb-6">
+          <p className="text-[11px] font-mono text-zinc-300/80 uppercase tracking-[0.18em] mb-1">// inventory unavailable</p>
           <p className="text-[13px] text-zinc-300">{error}</p>
         </div>
       )}
@@ -274,7 +274,7 @@ function Section({ icon: Icon, title, mode, stats }: {
           const t = (tone ?? "zinc") as StatTone;
           const cls = {
             emerald: "border-emerald-500/[0.18] bg-emerald-500/[0.03] text-emerald-200",
-            amber:   "border-amber-500/[0.18] bg-amber-500/[0.03] text-amber-200",
+            amber:   "border-white/[0.18] bg-white/[0.03] text-zinc-200",
             rose:    "border-rose-500/[0.18] bg-rose-500/[0.03] text-rose-200",
             cyan:    "border-cyan-500/[0.18] bg-cyan-500/[0.03] text-cyan-200",
             zinc:    "border-white/[0.06] bg-white/[0.02] text-zinc-200",

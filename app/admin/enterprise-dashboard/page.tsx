@@ -49,7 +49,7 @@ export default function EnterpriseDashboardPage() {
 
   const urgencyColor = (u: string) => {
     if (u === "critical") return "bg-rose-500/10 text-rose-300 border-rose-500/20";
-    if (u === "high") return "bg-amber-500/10 text-amber-300 border-amber-500/20";
+    if (u === "high") return "bg-white/10 text-zinc-300 border-white/20";
     if (u === "medium") return "bg-sky-500/10 text-sky-300 border-sky-500/20";
     return "bg-zinc-700/50 text-zinc-300 border-zinc-600/20";
   };
@@ -172,7 +172,7 @@ export default function EnterpriseDashboardPage() {
                       </td>
                       <td className="px-4 py-3">
                         {row.driftDetected ? (
-                          <ExclamationTriangleIcon className="h-4 w-4 text-amber-500" />
+                          <ExclamationTriangleIcon className="h-4 w-4 text-zinc-500" />
                         ) : (
                           <span className="text-zinc-600">—</span>
                         )}

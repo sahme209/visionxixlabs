@@ -82,7 +82,7 @@ export function PolicyOverrideForm({ engineerId, canonical, initialRule, initial
           <p className="text-[10px] font-mono text-zinc-500 mt-0.5">canonical default in force</p>
         )}
         {rule !== canonical && (
-          <p className="text-[10px] font-mono text-amber-300 mt-0.5">workspace override active · tighter than canonical</p>
+          <p className="text-[10px] font-mono text-zinc-300 mt-0.5">workspace override active · tighter than canonical</p>
         )}
       </header>
 

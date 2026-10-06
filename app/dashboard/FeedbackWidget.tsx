@@ -21,7 +21,7 @@ type Sentiment = "happy" | "neutral" | "frustrated";
 
 const SENTIMENTS: Array<{ key: Sentiment; label: string; icon: typeof FaceSmileIcon; tone: string }> = [
   { key: "happy",      label: "Happy",      icon: FaceSmileIcon,  tone: "border-emerald-500/30 hover:bg-emerald-500/[0.08] text-emerald-300" },
-  { key: "neutral",    label: "Neutral",    icon: MinusCircleIcon, tone: "border-amber-500/30 hover:bg-amber-500/[0.08] text-amber-300" },
+  { key: "neutral",    label: "Neutral",    icon: MinusCircleIcon, tone: "border-white/30 hover:bg-white/[0.08] text-zinc-300" },
   { key: "frustrated", label: "Frustrated", icon: FaceFrownIcon,  tone: "border-rose-500/30 hover:bg-rose-500/[0.08] text-rose-300" },
 ];
 

@@ -37,8 +37,8 @@ export default async function AlertsPage() {
     <div className="relative">
       <div className="mb-8">
         <div className="flex items-center gap-3 mb-3">
-          <BellAlertIcon className="h-4 w-4 text-amber-400" />
-          <p className="text-[10px] font-semibold text-amber-400 uppercase tracking-widest">Alerts</p>
+          <BellAlertIcon className="h-4 w-4 text-zinc-400" />
+          <p className="text-[10px] font-semibold text-zinc-400 uppercase tracking-widest">Alerts</p>
         </div>
         <h1 className="text-3xl md:text-4xl font-bold text-white tracking-[-0.04em] mb-2">
           Native alert engine — <span className="text-gradient">no false confidence.</span>
@@ -70,7 +70,7 @@ export default async function AlertsPage() {
         <article className="surface-glass rounded-2xl p-5 flex flex-col">
           <header className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-2">
-              <CpuChipIcon className="h-4 w-4 text-amber-300" />
+              <CpuChipIcon className="h-4 w-4 text-zinc-300" />
               <p className="text-[12px] font-semibold text-white">Alert rules</p>
             </div>
             <span className="text-[9px] font-mono uppercase tracking-wider text-zinc-500">0 configured</span>
@@ -81,7 +81,7 @@ export default async function AlertsPage() {
             </p>
           </div>
           <button
-            className="mt-3 inline-flex items-center justify-center gap-1.5 text-[12px] font-medium px-3 py-1.5 rounded-lg bg-amber-500/15 text-amber-100 border border-amber-500/30 hover:bg-amber-500/25 transition disabled:opacity-50"
+            className="mt-3 inline-flex items-center justify-center gap-1.5 text-[12px] font-medium px-3 py-1.5 rounded-lg bg-white/15 text-zinc-100 border border-white/30 hover:bg-white/25 transition disabled:opacity-50"
             disabled
             title="Rule editor lands in the next phase."
           >
@@ -107,8 +107,8 @@ export default async function AlertsPage() {
       </section>
 
       {/* Capability strip — what the alert engine does */}
-      <section className="rounded-2xl border border-amber-500/15 bg-amber-500/[0.04] p-5 mb-8">
-        <p className="text-[10px] font-semibold text-amber-300 uppercase tracking-widest mb-3">// alert engine capabilities</p>
+      <section className="rounded-2xl border border-white/15 bg-white/[0.04] p-5 mb-8">
+        <p className="text-[10px] font-semibold text-zinc-300 uppercase tracking-widest mb-3">// alert engine capabilities</p>
         <ul className="grid sm:grid-cols-2 gap-2 text-[12px] text-zinc-300">
           {[
             ["Metric threshold rules",       "Composed against any metric series — native or connector."],
@@ -123,7 +123,7 @@ export default async function AlertsPage() {
             ["AI noise reducer",             "Learns which alerts your team consistently ack — proposes muting."],
           ].map(([q, a]) => (
             <li key={q} className="flex items-start gap-2">
-              <CheckCircleIcon className="h-3.5 w-3.5 text-amber-400 shrink-0 mt-0.5" />
+              <CheckCircleIcon className="h-3.5 w-3.5 text-zinc-400 shrink-0 mt-0.5" />
               <span><span className="font-semibold text-zinc-100">{q}</span> <span className="text-zinc-400">— {a}</span></span>
             </li>
           ))}
@@ -131,18 +131,18 @@ export default async function AlertsPage() {
       </section>
 
       <section className="grid sm:grid-cols-3 gap-3">
-        <Link href="/dashboard/observability" className="block rounded-xl border border-white/[0.06] bg-white/[0.02] p-4 hover:border-amber-500/25 transition-colors">
-          <SignalIcon className="h-4 w-4 text-amber-400 mb-2" />
+        <Link href="/dashboard/observability" className="block rounded-xl border border-white/[0.06] bg-white/[0.02] p-4 hover:border-white/25 transition-colors">
+          <SignalIcon className="h-4 w-4 text-zinc-400 mb-2" />
           <p className="text-sm font-semibold text-white">Observability</p>
           <p className="text-[11px] text-zinc-500 mt-1">Telemetry sources + service health.</p>
         </Link>
-        <Link href="/dashboard/incidents" className="block rounded-xl border border-white/[0.06] bg-white/[0.02] p-4 hover:border-amber-500/25 transition-colors">
-          <ExclamationTriangleIcon className="h-4 w-4 text-amber-400 mb-2" />
+        <Link href="/dashboard/incidents" className="block rounded-xl border border-white/[0.06] bg-white/[0.02] p-4 hover:border-white/25 transition-colors">
+          <ExclamationTriangleIcon className="h-4 w-4 text-zinc-400 mb-2" />
           <p className="text-sm font-semibold text-white">Incidents</p>
           <p className="text-[11px] text-zinc-500 mt-1">Where critical alerts get promoted.</p>
         </Link>
-        <Link href="/dashboard/audit" className="block rounded-xl border border-white/[0.06] bg-white/[0.02] p-4 hover:border-amber-500/25 transition-colors">
-          <DocumentTextIcon className="h-4 w-4 text-amber-400 mb-2" />
+        <Link href="/dashboard/audit" className="block rounded-xl border border-white/[0.06] bg-white/[0.02] p-4 hover:border-white/25 transition-colors">
+          <DocumentTextIcon className="h-4 w-4 text-zinc-400 mb-2" />
           <p className="text-sm font-semibold text-white">Audit log</p>
           <p className="text-[11px] text-zinc-500 mt-1">Every alert action recorded.</p>
         </Link>

@@ -51,7 +51,7 @@ const CATEGORY_ORDER: readonly ConnectorCategory[] = [
 ];
 
 const CATEGORY_META: Record<ConnectorCategory, { label: string; description: string; icon: typeof CloudIcon; tone: string }> = {
-  cloud:            { label: "Cloud",                 description: "AWS, Azure, GCP — inventory, security posture, cost.",         icon: CloudIcon,             tone: "text-amber-300" },
+  cloud:            { label: "Cloud",                 description: "AWS, Azure, GCP — inventory, security posture, cost.",         icon: CloudIcon,             tone: "text-zinc-300" },
   observability:    { label: "Observability",         description: "Dynatrace, Grafana, Prometheus, Datadog, New Relic.",            icon: SignalIcon,            tone: "text-cyan-300" },
   logging:          { label: "Logging",               description: "Splunk + cloud-native log streams.",                              icon: DocumentTextIcon,      tone: "text-cyan-300" },
   security_posture: { label: "Security posture",      description: "Wiz, Snyk, Prisma Cloud, CrowdStrike.",                           icon: ShieldCheckIcon,       tone: "text-emerald-300" },

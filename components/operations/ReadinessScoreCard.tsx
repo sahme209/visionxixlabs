@@ -18,13 +18,13 @@ const TREND_CONFIG = {
 
 const ENV_COLOR = {
   production: "text-red-400 bg-red-500/10 border-red-500/20",
-  staging: "text-amber-400 bg-amber-500/10 border-amber-500/20",
+  staging: "text-zinc-400 bg-white/10 border-white/20",
   development: "text-blue-400 bg-blue-500/10 border-blue-500/20",
 } as const;
 
 function scoreColor(pct: number): { text: string; bg: string } {
   if (pct >= 85) return { text: "text-emerald-400", bg: "from-emerald-500 to-emerald-400" };
-  if (pct >= 70) return { text: "text-amber-400", bg: "from-amber-500 to-amber-400" };
+  if (pct >= 70) return { text: "text-zinc-400", bg: "from-zinc-500 to-zinc-400" };
   return { text: "text-red-400", bg: "from-red-500 to-red-400" };
 }
 
@@ -85,7 +85,7 @@ export function ReadinessScoreCard({
                         Rollback verified
                       </span>
                     ) : (
-                      <span className="text-[9px] font-semibold text-amber-400 inline-flex items-center gap-1">
+                      <span className="text-[9px] font-semibold text-zinc-400 inline-flex items-center gap-1">
                         <XCircleIcon className="h-3 w-3" />
                         Rollback unverified
                       </span>

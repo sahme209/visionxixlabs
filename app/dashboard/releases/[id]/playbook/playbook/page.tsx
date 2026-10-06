@@ -94,7 +94,7 @@ export default function ReleasePlaybookStageDetailPage() {
             <p className="text-[10px] font-mono uppercase tracking-wider text-zinc-400 mb-2">
               Cherry-Picks
             </p>
-            <p className="text-[28px] font-bold text-amber-300">{playbook.cherryPickCount}</p>
+            <p className="text-[28px] font-bold text-zinc-300">{playbook.cherryPickCount}</p>
           </div>
           <div
             className={`rounded-xl border p-4 ${
@@ -118,8 +118,8 @@ export default function ReleasePlaybookStageDetailPage() {
 
         <div className="space-y-4">
           {playbook.cherryPickCount > 0 && (
-            <div className="rounded-2xl border border-amber-500/[0.15] bg-amber-500/[0.04] p-4">
-              <p className="text-[12px] text-amber-200">
+            <div className="rounded-2xl border border-white/[0.15] bg-white/[0.04] p-4">
+              <p className="text-[12px] text-zinc-200">
                 ⚠️ This release includes {playbook.cherryPickCount} cherry-pick{playbook.cherryPickCount !== 1 ? "s" : ""}.
                 Verify each change is approved before proceeding.
               </p>

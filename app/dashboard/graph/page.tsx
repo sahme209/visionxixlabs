@@ -89,7 +89,7 @@ const NODE_ICON: Record<NodeType, typeof CloudIcon> = {
 const STATUS_TONE: Record<NodeStatus, { border: string; bg: string; text: string; pill: string; dot: string }> = {
   healthy:     { border: "border-emerald-500/[0.22]", bg: "bg-emerald-500/[0.04]", text: "text-emerald-300", pill: "bg-emerald-500/15 text-emerald-300", dot: "bg-emerald-400 animate-pulse" },
   in_progress: { border: "border-cyan-500/[0.22]",    bg: "bg-cyan-500/[0.04]",    text: "text-cyan-300",    pill: "bg-cyan-500/15 text-cyan-300",       dot: "bg-cyan-400 animate-pulse"    },
-  preview:     { border: "border-amber-500/[0.18]",   bg: "bg-amber-500/[0.04]",   text: "text-amber-300",   pill: "bg-amber-500/15 text-amber-300",     dot: "bg-amber-400"                 },
+  preview:     { border: "border-white/[0.18]",   bg: "bg-white/[0.04]",   text: "text-zinc-300",   pill: "bg-white/15 text-zinc-300",     dot: "bg-zinc-400"                 },
   blocked:     { border: "border-rose-500/[0.22]",    bg: "bg-rose-500/[0.04]",    text: "text-rose-300",    pill: "bg-rose-500/15 text-rose-300",       dot: "bg-rose-400"                  },
   disabled:    { border: "border-zinc-700/30",        bg: "bg-white/[0.02]",       text: "text-zinc-400",    pill: "bg-zinc-700/40 text-zinc-300",       dot: "bg-zinc-600"                  },
   unknown:     { border: "border-zinc-700/30",        bg: "bg-white/[0.02]",       text: "text-zinc-400",    pill: "bg-zinc-700/40 text-zinc-300",       dot: "bg-zinc-600"                  },
@@ -189,8 +189,8 @@ export default function OperatingGraphPage() {
         </div>
       )}
       {!loading && error && (
-        <div role="alert" aria-live="assertive" className="rounded-2xl border border-amber-500/[0.18] bg-amber-500/[0.04] p-5 mb-6">
-          <p className="text-[11px] font-mono text-amber-300/80 uppercase tracking-[0.18em] mb-1">// graph unavailable</p>
+        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/[0.18] bg-white/[0.04] p-5 mb-6">
+          <p className="text-[11px] font-mono text-zinc-300/80 uppercase tracking-[0.18em] mb-1">// graph unavailable</p>
           <p className="text-[13px] text-zinc-300">{error}</p>
         </div>
       )}
@@ -285,8 +285,8 @@ function SpineRow({ type, nodes, edges }: { type: NodeType; nodes: GraphNodeLite
               {n.severity && (
                 <span className={`inline-block text-[9px] font-mono uppercase tracking-wider rounded px-1.5 py-px mt-0.5 mb-1.5 ${
                   n.severity === "critical" ? "bg-rose-500/15 text-rose-300" :
-                  n.severity === "high"     ? "bg-amber-500/15 text-amber-300" :
-                  n.severity === "medium"   ? "bg-amber-500/10 text-amber-300" :
+                  n.severity === "high"     ? "bg-white/15 text-zinc-300" :
+                  n.severity === "medium"   ? "bg-white/10 text-zinc-300" :
                                               "bg-zinc-700/40 text-zinc-300"
                 }`}>
                   {n.severity}

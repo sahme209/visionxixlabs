@@ -43,7 +43,7 @@ interface Checklist {
 
 const STATUS_TONE: Record<Status, string> = {
   complete: "bg-emerald-500/15 text-emerald-300 border-emerald-500/30",
-  partial:  "bg-amber-500/15 text-amber-300 border-amber-500/30",
+  partial:  "bg-white/15 text-zinc-300 border-white/30",
   pending:  "bg-rose-500/15 text-rose-300 border-rose-500/30",
 };
 
@@ -128,7 +128,7 @@ export default function OnboardingPage() {
       </div>
 
       {error && (
-        <div role="alert" aria-live="assertive" className="rounded-2xl border border-amber-500/[0.18] bg-amber-500/[0.04] p-5 mb-6 text-[13px] text-zinc-300">
+        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/[0.18] bg-white/[0.04] p-5 mb-6 text-[13px] text-zinc-300">
           {error}
         </div>
       )}
@@ -140,7 +140,7 @@ export default function OnboardingPage() {
             return (
               <div key={s.id} className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-4 flex items-start gap-3">
                 <Icon className={`h-5 w-5 shrink-0 mt-0.5 ${
-                  s.status === "complete" ? "text-emerald-300" : s.status === "partial" ? "text-amber-300" : "text-rose-300"
+                  s.status === "complete" ? "text-emerald-300" : s.status === "partial" ? "text-zinc-300" : "text-rose-300"
                 }`} />
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-2 flex-wrap mb-1">
@@ -152,9 +152,9 @@ export default function OnboardingPage() {
                   </div>
                   <p className="text-[11px] text-zinc-400 leading-relaxed">{s.description}</p>
                   {s.missingHint && (
-                    <div className="mt-2 rounded-md border border-amber-500/15 bg-amber-500/[0.04] p-2">
-                      <p className="text-[10px] font-mono text-amber-300/80 uppercase tracking-wider mb-0.5">Setup needed</p>
-                      <p className="text-[11px] text-amber-100">{s.missingHint}</p>
+                    <div className="mt-2 rounded-md border border-white/15 bg-white/[0.04] p-2">
+                      <p className="text-[10px] font-mono text-zinc-300/80 uppercase tracking-wider mb-0.5">Setup needed</p>
+                      <p className="text-[11px] text-zinc-100">{s.missingHint}</p>
                     </div>
                   )}
                   {s.helpEntryId && (

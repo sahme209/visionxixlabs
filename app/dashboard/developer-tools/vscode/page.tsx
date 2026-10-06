@@ -50,7 +50,7 @@ export default function VsCodePage() {
         <div className="flex items-center gap-3 mb-3">
           <CodeBracketIcon className="h-4 w-4 text-zinc-500" />
           <p className="text-[10px] font-semibold text-zinc-500 uppercase tracking-widest">VS Code extension</p>
-          <span className="text-[9px] font-semibold text-amber-300 bg-amber-500/10 border border-amber-500/30 rounded-full px-2 py-0.5 uppercase tracking-wider">Coming soon</span>
+          <span className="text-[9px] font-semibold text-zinc-300 bg-white/10 border border-white/30 rounded-full px-2 py-0.5 uppercase tracking-wider">Coming soon</span>
         </div>
         <h1 className="text-3xl md:text-4xl font-bold text-white tracking-[-0.04em] mb-2">
           Bring AGI into the editor — <span className="text-gradient">safely.</span>

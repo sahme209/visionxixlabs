@@ -69,7 +69,7 @@ export default async function BillingUsagePage() {
   const thresholdTone =
     usedRatio >= 1    ? "text-rose-300"    :
     usedRatio >= 0.9  ? "text-rose-300"    :
-    usedRatio >= 0.7  ? "text-amber-300"   :
+    usedRatio >= 0.7  ? "text-zinc-300"   :
                         "text-emerald-300";
 
   return (
@@ -116,7 +116,7 @@ export default async function BillingUsagePage() {
             className={`h-full rounded-full ${
               usedRatio >= 1    ? "bg-rose-500"    :
               usedRatio >= 0.9  ? "bg-rose-500"    :
-              usedRatio >= 0.7  ? "bg-amber-500"   :
+              usedRatio >= 0.7  ? "bg-zinc-500"   :
                                   "bg-emerald-500"
             }`}
             style={{ width: `${Math.max(0, Math.min(100, usedPct))}%` }}
@@ -137,7 +137,7 @@ export default async function BillingUsagePage() {
           </p>
         )}
         {usedRatio >= 0.7 && usedRatio < 1 && (
-          <p className="mt-4 pt-4 border-t border-white/[0.06] text-[12px] text-amber-200 leading-relaxed">
+          <p className="mt-4 pt-4 border-t border-white/[0.06] text-[12px] text-zinc-200 leading-relaxed">
             <ExclamationTriangleIcon className="h-4 w-4 inline mr-1.5 -mt-0.5" />
             Heads up — you've used {usedPct}% of your monthly AI credits. {plan.entitlements.overagePolicy === "hard_stop" ? "Starter plans hard-stop at 100% — upgrade to enable overage." : "Overage will bill automatically at retail markup."}
           </p>
@@ -258,7 +258,7 @@ function UsageCard({ label, used, limit, textOverride }: { label: string; used: 
   const tone =
     !limit                     ? "text-zinc-300"    :
     ratio >= 0.9               ? "text-rose-300"    :
-    ratio >= 0.7               ? "text-amber-300"   :
+    ratio >= 0.7               ? "text-zinc-300"   :
                                  "text-emerald-300";
   return (
     <article className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-4">
@@ -268,7 +268,7 @@ function UsageCard({ label, used, limit, textOverride }: { label: string; used: 
         <div className="w-full h-1 bg-white/[0.04] rounded-full overflow-hidden mt-2">
           <div
             className={`h-full rounded-full ${
-              ratio >= 0.9 ? "bg-rose-500" : ratio >= 0.7 ? "bg-amber-500" : "bg-emerald-500"
+              ratio >= 0.9 ? "bg-rose-500" : ratio >= 0.7 ? "bg-zinc-500" : "bg-emerald-500"
             }`}
             style={{ width: `${Math.max(0, Math.min(100, Math.round(ratio * 100)))}%` }}
           />

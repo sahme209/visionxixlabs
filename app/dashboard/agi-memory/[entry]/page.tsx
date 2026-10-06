@@ -76,7 +76,7 @@ const KIND_LABEL: Record<string, string> = {
 
 const OUTCOME_TONE: Record<string, string> = {
   ai_generated:   "text-emerald-300",
-  fallback_rules: "text-amber-300",
+  fallback_rules: "text-zinc-300",
   error:          "text-rose-300",
 };
 
@@ -366,10 +366,10 @@ export default async function AgiMemoryEntryPage({
             <p className="text-[12.5px] text-emerald-200 font-mono mb-3">dispatched · check /dashboard/workforce/integrations for the result</p>
           )}
           {notice === "dispatched_with_errors" && (
-            <p className="text-[12.5px] text-amber-200 font-mono mb-3">dispatched with errors · open integrations page for details</p>
+            <p className="text-[12.5px] text-zinc-200 font-mono mb-3">dispatched with errors · open integrations page for details</p>
           )}
           {notice === "dispatched_partial" && (
-            <p className="text-[12.5px] text-amber-200 font-mono mb-3">partial dispatch · some legs skipped</p>
+            <p className="text-[12.5px] text-zinc-200 font-mono mb-3">partial dispatch · some legs skipped</p>
           )}
           {dispatchError && (
             <p className="text-[12.5px] text-rose-200 font-mono mb-3">error: {dispatchError}</p>

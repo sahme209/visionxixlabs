@@ -90,7 +90,7 @@ export const dynamic = "force-dynamic";
 const STATUS_TONE: Record<WireStatus, { text: string; bg: string; border: string }> = {
   live:        { text: "text-emerald-300", bg: "bg-emerald-500/[0.08]", border: "border-emerald-500/30" },
   preview:     { text: "text-sky-300",     bg: "bg-sky-500/[0.08]",     border: "border-sky-500/30" },
-  needs_setup: { text: "text-amber-300",   bg: "bg-amber-500/[0.08]",   border: "border-amber-500/30" },
+  needs_setup: { text: "text-zinc-300",   bg: "bg-white/[0.08]",   border: "border-white/30" },
   blocked:     { text: "text-rose-300",    bg: "bg-rose-500/[0.08]",    border: "border-rose-500/30" },
   planned:     { text: "text-zinc-400",    bg: "bg-white/[0.03]",       border: "border-white/[0.08]" },
 };
@@ -265,7 +265,7 @@ export default async function CapabilitiesPage() {
             {recentDispatches.map((d) => {
               const t = dispatchTags(d);
               const Icon = t.status === "executed" ? CheckCircleIcon : t.status === "failed" ? XCircleIcon : ClockIcon;
-              const toneText = t.status === "executed" ? "text-emerald-300" : t.status === "failed" ? "text-rose-300" : "text-amber-300";
+              const toneText = t.status === "executed" ? "text-emerald-300" : t.status === "failed" ? "text-rose-300" : "text-zinc-300";
               return (
                 <li key={d.targetId} className="px-5 py-3.5">
                   <div className="flex items-start gap-3">
@@ -352,7 +352,7 @@ export default async function CapabilitiesPage() {
                         <>
                           <span className="text-zinc-700">·</span>
                           <span className="text-zinc-600">matrix:</span>
-                          <span className={matrixSummary.blocked > 0 ? "text-amber-300" : "text-emerald-300"}>
+                          <span className={matrixSummary.blocked > 0 ? "text-zinc-300" : "text-emerald-300"}>
                             {matrixSummary.passing}/{matrixSummary.total} passing
                             {matrixSummary.blocked > 0 && ` · ${matrixSummary.blocked} blocked`}
                           </span>

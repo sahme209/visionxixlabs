@@ -388,8 +388,8 @@ export default function AxiomPage() {
           <Stagger delay={0.1} interval={0.06} className="grid sm:grid-cols-3 gap-6">
             <div className="animated-border card-inner-glow card-hover card-shine-sweep card-reactive rounded-xl border border-white/[0.06] bg-white/[0.02] p-6 hover:border-white/[0.12] transition-all">
               <div className="flex items-center gap-2 mb-4">
-                <div className="w-8 h-8 rounded-lg bg-amber-500/10 border border-amber-500/20 flex items-center justify-center">
-                  <span className="text-xs font-bold text-amber-400">AWS</span>
+                <div className="w-8 h-8 rounded-lg bg-white/10 border border-white/20 flex items-center justify-center">
+                  <span className="text-xs font-bold text-zinc-400">AWS</span>
                 </div>
                 <div className="flex items-center gap-1.5">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
@@ -486,7 +486,7 @@ export default function AxiomPage() {
                   <div className="text-zinc-500 pl-4">Scanning 12 services across 2 regions...</div>
                   <div className="text-zinc-500 pl-4">
                     Discovered <span className="text-white font-semibold">847</span> resources |{" "}
-                    <span className="text-amber-400">23 findings</span> |{" "}
+                    <span className="text-zinc-400">23 findings</span> |{" "}
                     <span className="text-red-400">4 critical</span> |{" "}
                     <span className="text-emerald-400">$12,400/mo savings identified</span>
                   </div>

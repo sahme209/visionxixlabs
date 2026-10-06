@@ -92,9 +92,9 @@ export default function SopsCatalogPage() {
       )}
 
       {!loading && errorBody?.error === "auth_required" && (
-        <div role="alert" aria-live="assertive" className="rounded-2xl border border-amber-500/[0.18] bg-amber-500/[0.04] p-5 mb-6 text-[13px] text-zinc-300">
+        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/[0.18] bg-white/[0.04] p-5 mb-6 text-[13px] text-zinc-300">
           <div className="flex items-center gap-2 mb-1">
-            <ExclamationTriangleIcon className="h-4 w-4 text-amber-300" />
+            <ExclamationTriangleIcon className="h-4 w-4 text-zinc-300" />
             <span>Sign in required to view SOPs.</span>
           </div>
         </div>

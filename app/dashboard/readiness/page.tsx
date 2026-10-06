@@ -65,7 +65,7 @@ interface ReadinessReportLite {
 const STATUS_TONE: Record<string, { pill: string; border: string; bg: string; text: string }> = {
   launch_ready:   { pill: "bg-emerald-500/15 text-emerald-300", border: "border-emerald-500/[0.22]", bg: "bg-emerald-500/[0.05]", text: "text-emerald-300" },
   acceptable:     { pill: "bg-cyan-500/15 text-cyan-300",       border: "border-cyan-500/[0.22]",    bg: "bg-cyan-500/[0.05]",    text: "text-cyan-300"    },
-  partial:        { pill: "bg-amber-500/15 text-amber-300",     border: "border-amber-500/[0.22]",   bg: "bg-amber-500/[0.05]",   text: "text-amber-300"   },
+  partial:        { pill: "bg-white/15 text-zinc-300",     border: "border-white/[0.22]",   bg: "bg-white/[0.05]",   text: "text-zinc-300"   },
   blocked:        { pill: "bg-rose-500/15 text-rose-300",       border: "border-rose-500/[0.22]",    bg: "bg-rose-500/[0.05]",    text: "text-rose-300"    },
   failing:        { pill: "bg-rose-500/20 text-rose-200",       border: "border-rose-500/[0.30]",    bg: "bg-rose-500/[0.07]",    text: "text-rose-200"    },
 };
@@ -168,8 +168,8 @@ export default function ReadinessPage() {
         </div>
       )}
       {!loading && error && (
-        <div role="alert" aria-live="assertive" className="rounded-2xl border border-amber-500/[0.18] bg-amber-500/[0.04] p-5 mb-6">
-          <p className="text-[11px] font-mono text-amber-300/80 uppercase tracking-[0.18em] mb-1">// readiness unavailable</p>
+        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/[0.18] bg-white/[0.04] p-5 mb-6">
+          <p className="text-[11px] font-mono text-zinc-300/80 uppercase tracking-[0.18em] mb-1">// readiness unavailable</p>
           <p className="text-[13px] text-zinc-300">{error}</p>
         </div>
       )}
@@ -257,7 +257,7 @@ export default function ReadinessPage() {
               <span className="text-emerald-400">{totalsRollup.passing} pass</span>
               <span className="text-cyan-400">{totalsRollup.partial} partial</span>
               <span className="text-zinc-400">{totalsRollup.preview} preview</span>
-              <span className="text-amber-400">{totalsRollup.blocked} blocked</span>
+              <span className="text-zinc-400">{totalsRollup.blocked} blocked</span>
               <span className="text-rose-400">{totalsRollup.failing} failing</span>
             </div>
           </div>
@@ -288,12 +288,12 @@ export default function ReadinessPage() {
             </div>
           )}
           {launch.mustFixBeforePaidCustomer.length > 0 && (
-            <div className="rounded-2xl border border-amber-500/[0.22] bg-amber-500/[0.04] p-5">
-              <p className="text-[10px] font-mono text-amber-300/80 uppercase tracking-[0.18em] mb-2">// must fix before paid pilot</p>
+            <div className="rounded-2xl border border-white/[0.22] bg-white/[0.04] p-5">
+              <p className="text-[10px] font-mono text-zinc-300/80 uppercase tracking-[0.18em] mb-2">// must fix before paid pilot</p>
               <ul className="space-y-1">
                 {launch.mustFixBeforePaidCustomer.map((fix, i) => (
-                  <li key={i} className="text-[12px] text-amber-200/90 font-mono leading-snug">
-                    <span className="text-amber-300/70">{fix.category}:</span> {fix.reason}
+                  <li key={i} className="text-[12px] text-zinc-200/90 font-mono leading-snug">
+                    <span className="text-zinc-300/70">{fix.category}:</span> {fix.reason}
                   </li>
                 ))}
               </ul>

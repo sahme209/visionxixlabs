@@ -34,7 +34,7 @@ import { computeHonestyCounts, ACTION_REGISTRY } from "@/lib/actions/actionRegis
 
 const RISK_TONE: Record<NextBestAction["riskLevel"], string> = {
   low:      "text-emerald-300",
-  medium:   "text-amber-300",
+  medium:   "text-zinc-300",
   high:     "text-rose-300",
   critical: "text-rose-300",
 };
@@ -122,7 +122,7 @@ export function IntelligenceBand({
           <span className="text-emerald-300 font-semibold">{counts.live} live</span>,{" "}
           <span className="text-sky-300 font-semibold">{counts.preview} preview</span>,{" "}
           <span className="text-emerald-300 font-semibold">{counts.governed} governed</span>,{" "}
-          <span className="text-amber-300 font-semibold">{counts.needs_setup} need setup</span>,{" "}
+          <span className="text-zinc-300 font-semibold">{counts.needs_setup} need setup</span>,{" "}
           <span className="text-rose-300 font-semibold">{counts.unsafe} unsafe blocked by design</span>.
           {" "}<Link href="/dashboard/capabilities" className="text-emerald-300 hover:text-white transition-colors underline underline-offset-2">audit every action →</Link>
         </p>
@@ -200,20 +200,20 @@ export function IntelligenceBand({
         <div className="mb-6">
           <p className="font-mono text-[10px] uppercase tracking-[0.24em] text-zinc-500 mb-3 inline-flex items-center gap-2">
             <span className="text-zinc-700">//</span>
-            <span className="text-amber-300">top-blockers</span>
+            <span className="text-zinc-300">top-blockers</span>
             <span className="text-zinc-700">::</span>
             <span className="text-zinc-400 tabular-nums">{blockerCount}</span>
             <span className="text-zinc-700">·</span>
             <span className="text-zinc-500">what is stopping axiom from doing more</span>
           </p>
-          <ul className="rounded-md border border-amber-500/20 bg-amber-500/[0.03] divide-y divide-white/[0.04] overflow-hidden">
+          <ul className="rounded-md border border-white/20 bg-white/[0.03] divide-y divide-white/[0.04] overflow-hidden">
             {top3Blockers.map((b, i) => {
               const inner = (
                 <div className="flex items-start gap-3 px-4 py-3">
-                  <ExclamationTriangleIcon className="h-4 w-4 text-amber-300 shrink-0 mt-0.5" />
+                  <ExclamationTriangleIcon className="h-4 w-4 text-zinc-300 shrink-0 mt-0.5" />
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between gap-3 flex-wrap mb-0.5">
-                      <p className="text-[10px] font-mono uppercase tracking-wider text-amber-300">{b.code}</p>
+                      <p className="text-[10px] font-mono uppercase tracking-wider text-zinc-300">{b.code}</p>
                       {b.route && (
                         <span className="text-[10px] font-mono text-emerald-300 inline-flex items-center gap-1">resolve <ArrowRightIcon className="h-3 w-3" /></span>
                       )}
@@ -323,14 +323,14 @@ export function IntelligenceBand({
 const TONE_BORDER: Record<string, string> = {
   emerald: "border-emerald-500/25 bg-emerald-500/[0.05]",
   sky:     "border-sky-500/25 bg-sky-500/[0.05]",
-  amber:   "border-amber-500/25 bg-amber-500/[0.05]",
+  amber:   "border-white/25 bg-white/[0.05]",
   rose:    "border-rose-500/25 bg-rose-500/[0.05]",
   zinc:    "border-white/[0.06] bg-white/[0.012]",
 };
 const TONE_TEXT: Record<string, string> = {
   emerald: "text-emerald-300",
   sky:     "text-sky-300",
-  amber:   "text-amber-300",
+  amber:   "text-zinc-300",
   rose:    "text-rose-300",
   zinc:    "text-zinc-300",
 };
@@ -404,7 +404,7 @@ export function IntelligenceBandFallback({ reason }: { reason?: string }) {
         <span className="text-zinc-700">//</span>
         <span>operating-state</span>
         <span className="text-zinc-700">::</span>
-        <span className="text-amber-300">partial — control plane unavailable</span>
+        <span className="text-zinc-300">partial — control plane unavailable</span>
       </p>
       <p className="text-[14px] text-zinc-300 leading-relaxed max-w-3xl mb-4">
         Axiom catalogs <span className="text-white font-semibold">{ACTION_REGISTRY.length}</span> typed operator actions

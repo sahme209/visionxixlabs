@@ -289,7 +289,7 @@ export default function AdminLeadsPage() {
                         <span className="font-medium text-zinc-500">Agent:</span>
                         <span className={`font-semibold ${
                           lead.agentStatus === "RESOLVED" ? "text-emerald-400" :
-                          lead.agentStatus === "NEEDS_INFO" ? "text-amber-400" :
+                          lead.agentStatus === "NEEDS_INFO" ? "text-zinc-400" :
                           lead.agentStatus === "ESCALATED" ? "text-rose-400" :
                           "text-zinc-400"
                         }`}>

@@ -32,16 +32,16 @@ export const dynamic = "force-dynamic";
 
 const STAGE_TONE: Record<string, { tone: string; icon: typeof CheckCircleIcon; border: string }> = {
   queued:            { tone: "text-zinc-400",    icon: ClockIcon,               border: "border-white/[0.06]" },
-  running:           { tone: "text-amber-300",   icon: ArrowPathIcon,           border: "border-amber-500/30" },
+  running:           { tone: "text-zinc-300",   icon: ArrowPathIcon,           border: "border-white/30" },
   succeeded:         { tone: "text-emerald-300", icon: CheckCircleIcon,         border: "border-emerald-500/20" },
   failed:            { tone: "text-rose-300",    icon: ExclamationTriangleIcon, border: "border-rose-500/30" },
   skipped:           { tone: "text-zinc-400",    icon: CheckCircleIcon,         border: "border-white/[0.06]" },
-  awaiting_approval: { tone: "text-amber-300",   icon: PauseCircleIcon,         border: "border-amber-500/40" },
+  awaiting_approval: { tone: "text-zinc-300",   icon: PauseCircleIcon,         border: "border-white/40" },
 };
 
 const RUN_STATUS_TONE: Record<string, string> = {
   queued:    "text-zinc-400 bg-white/[0.04] border-white/[0.08]",
-  running:   "text-amber-300 bg-amber-500/10 border-amber-500/30",
+  running:   "text-zinc-300 bg-white/10 border-white/30",
   succeeded: "text-emerald-300 bg-emerald-500/10 border-emerald-500/30",
   failed:    "text-rose-300 bg-rose-500/10 border-rose-500/30",
   cancelled: "text-zinc-400 bg-white/[0.04] border-white/[0.08]",
@@ -129,7 +129,7 @@ export default async function CodingTaskDetailPage({ params }: { params: Promise
                   <Icon className={`h-4 w-4 ${meta.tone} ${s.status === "running" ? "animate-spin" : ""}`} />
                   <p className="text-[12px] font-semibold text-white truncate">{defStage?.name ?? s.stageId}</p>
                   {s.requiresApproval && (
-                    <ShieldCheckIcon className="h-3 w-3 text-amber-400" />
+                    <ShieldCheckIcon className="h-3 w-3 text-zinc-400" />
                   )}
                 </div>
                 <span className={`text-[9px] font-mono uppercase tracking-wider ${meta.tone}`}>
@@ -161,9 +161,9 @@ export default async function CodingTaskDetailPage({ params }: { params: Promise
         })}
       </ol>
 
-      <section className="rounded-2xl border border-amber-500/15 bg-amber-500/[0.04] p-5">
-        <p className="text-[10px] font-semibold text-amber-300 uppercase tracking-widest mb-2">// safety rails</p>
-        <ul className="text-[12px] text-zinc-300 leading-relaxed list-disc list-inside marker:text-amber-400/70 space-y-1">
+      <section className="rounded-2xl border border-white/15 bg-white/[0.04] p-5">
+        <p className="text-[10px] font-semibold text-zinc-300 uppercase tracking-widest mb-2">// safety rails</p>
+        <ul className="text-[12px] text-zinc-300 leading-relaxed list-disc list-inside marker:text-white/70 space-y-1">
           <li>The PR-open stage is gated by two-step approval — no code leaves until both approvers vote.</li>
           <li>Every stage transition is durable in Postgres + audited in the secure audit fabric.</li>
           <li>Executors are dry-run by default. Real Anthropic SDK integration is pluggable without touching the runner.</li>

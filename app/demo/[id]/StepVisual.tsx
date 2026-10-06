@@ -247,14 +247,14 @@ function MockDesktopFrame({ route: _route, children }: { route?: string; childre
       <div className="relative flex items-center gap-2 px-3 py-2 border-b border-white/[0.06] bg-black/40">
         <div className="flex items-center gap-1.5">
           <span className="w-2.5 h-2.5 rounded-full bg-red-500/70" />
-          <span className="w-2.5 h-2.5 rounded-full bg-amber-500/70" />
+          <span className="w-2.5 h-2.5 rounded-full bg-white/70" />
           <span className="w-2.5 h-2.5 rounded-full bg-emerald-500/70" />
         </div>
         <div className="flex-1 text-center text-[11px] font-mono text-zinc-400 truncate">
           Axiom Agent
         </div>
         {/* Tray-badge hint at the right edge */}
-        <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-amber-500/15 text-amber-300 border border-amber-500/30">⌘ 3 awaiting</span>
+        <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-white/15 text-zinc-300 border border-white/30">⌘ 3 awaiting</span>
       </div>
       <div className="flex">
         {/* Desktop sidebar */}
@@ -339,7 +339,7 @@ function ScanMock({ step: _step }: { step: DemoStep }) {
     { id: "iam-001",   svc: "IAM",  title: "Role 'ci-deploy' has AdministratorAccess",      sev: "critical", cls: "text-rose-200 bg-rose-500/20" },
     { id: "sg-022",    svc: "EC2",  title: "Security group sg-022 allows 0.0.0.0/0 on :22", sev: "critical", cls: "text-rose-200 bg-rose-500/20" },
     { id: "s3-public", svc: "S3",   title: "Bucket 'acme-logs-prod' grants public-read",    sev: "high",     cls: "text-red-200 bg-red-500/15" },
-    { id: "kms-rot",   svc: "KMS",  title: "Customer key 'data-at-rest' has rotation off",  sev: "medium",   cls: "text-amber-200 bg-amber-500/15" },
+    { id: "kms-rot",   svc: "KMS",  title: "Customer key 'data-at-rest' has rotation off",  sev: "medium",   cls: "text-zinc-200 bg-white/15" },
     { id: "rds-noenc", svc: "RDS",  title: "Instance prod-orders-db missing at-rest encryption", sev: "high", cls: "text-red-200 bg-red-500/15" },
     { id: "ec2-untag", svc: "EC2",  title: "12 instances missing CostCenter tag",           sev: "low",      cls: "text-zinc-400 bg-white/5" },
   ];
@@ -386,9 +386,9 @@ function RiskMock({ step, ord }: { step: DemoStep; ord: number }) {
   return (
     <div className="space-y-4">
       <SectionLabel>risk #{ord}</SectionLabel>
-      <div className={`rounded-lg border p-4 ${sev === "critical" ? "border-rose-500/25 bg-rose-500/[0.04]" : "border-amber-500/25 bg-amber-500/[0.04]"}`}>
+      <div className={`rounded-lg border p-4 ${sev === "critical" ? "border-rose-500/25 bg-rose-500/[0.04]" : "border-white/25 bg-white/[0.04]"}`}>
         <div className="flex items-center gap-2 mb-2">
-          <span className={`text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded ${sev === "critical" ? "bg-rose-500/25 text-rose-100" : "bg-amber-500/25 text-amber-100"}`}>{sev}</span>
+          <span className={`text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded ${sev === "critical" ? "bg-rose-500/25 text-rose-100" : "bg-white/25 text-zinc-100"}`}>{sev}</span>
           <span className="text-[10px] font-mono text-zinc-500">CVSS-style score · {score} / 10</span>
           <span className="text-[10px] font-mono text-zinc-500">·</span>
           <span className="text-[10px] font-mono text-zinc-500">rule · iam-admin-access</span>
@@ -453,7 +453,7 @@ function ApprovalMock({ step: _step }: { step: DemoStep }) {
       <div className="rounded-lg border border-violet-500/25 bg-violet-500/[0.04] p-4 space-y-3">
         <div className="flex items-center justify-between flex-wrap gap-2">
           <span className="text-[11px] font-mono text-violet-200/90 uppercase tracking-wider">apr_pipe_ck98zxm…</span>
-          <span className="text-[9px] font-mono text-amber-200 px-1.5 py-0.5 rounded bg-amber-500/15 uppercase tracking-wider">awaiting</span>
+          <span className="text-[9px] font-mono text-zinc-200 px-1.5 py-0.5 rounded bg-white/15 uppercase tracking-wider">awaiting</span>
         </div>
         <div className="grid grid-cols-2 gap-2 text-[11px]">
           <ApproverRow name="alice@acme.com" role="security-lead"     state="approved" />
@@ -481,7 +481,7 @@ function ApproverRow({ name, role, state }: { name: string; role: string; state:
     <div className="rounded-md border border-white/[0.06] bg-black/30 px-2.5 py-2">
       <div className="text-[10px] font-mono text-zinc-300 truncate">{name}</div>
       <div className="text-[9px] font-mono text-zinc-500 truncate">{role}</div>
-      <span className={`text-[9px] font-mono uppercase tracking-wider mt-1 inline-block px-1.5 py-0.5 rounded ${state === "approved" ? "bg-emerald-500/15 text-emerald-300" : "bg-amber-500/15 text-amber-300"}`}>{state}</span>
+      <span className={`text-[9px] font-mono uppercase tracking-wider mt-1 inline-block px-1.5 py-0.5 rounded ${state === "approved" ? "bg-emerald-500/15 text-emerald-300" : "bg-white/15 text-zinc-300"}`}>{state}</span>
     </div>
   );
 }
@@ -610,12 +610,12 @@ function AuditMock({ step: _step }: { step: DemoStep }) {
 function IncidentMock({ step: _step }: { step: DemoStep }) {
   const rows: Array<{ t: string; label: string; src: string; dot: string }> = [
     { t: "T-0",    label: "Alert fired · cpu_p95 > 92% for 5m",                src: "cloudwatch",   dot: "bg-red-400"    },
-    { t: "T+12s",  label: "Promoted to incident · severity=high",              src: "platform",     dot: "bg-amber-400"  },
+    { t: "T+12s",  label: "Promoted to incident · severity=high",              src: "platform",     dot: "bg-zinc-400"  },
     { t: "T+22s",  label: "Recent deploys queried · 3 in last 30m",            src: "github",       dot: "bg-zinc-400"   },
     { t: "T+34s",  label: "Deploy correlation hit · sha 4a2b8c (12m ago)",     src: "incident eng", dot: "bg-violet-400" },
     { t: "T+58s",  label: "Trace surge identified · /orders @ 4.1s p95",       src: "incident eng", dot: "bg-violet-400" },
     { t: "T+1m",   label: "Root-cause hypothesis · missing index on user_id",  src: "incident eng", dot: "bg-violet-400" },
-    { t: "T+2m",   label: "Mitigation proposed · awaiting approval",           src: "platform",     dot: "bg-amber-400"  },
+    { t: "T+2m",   label: "Mitigation proposed · awaiting approval",           src: "platform",     dot: "bg-zinc-400"  },
   ];
   return (
     <div className="space-y-4">
@@ -653,14 +653,14 @@ function QuotaMock({ step: _step }: { step: DemoStep }) {
       <div className="rounded-lg border border-white/[0.06] bg-white/[0.015] p-4 space-y-3">
         {dims.map((d) => {
           const barCls =
-            d.tone === "amber"   ? "bg-gradient-to-r from-violet-500/70 to-amber-500/70" :
+            d.tone === "amber"   ? "bg-gradient-to-r from-violet-500/70 to-white/70" :
             d.tone === "emerald" ? "bg-gradient-to-r from-violet-500/70 to-emerald-500/70" :
                                    "bg-violet-500/70";
           return (
             <div key={d.label} className="space-y-1">
               <div className="flex items-center justify-between text-[11px] font-mono">
                 <span className="text-zinc-300">{d.label}</span>
-                <span className="text-zinc-500">{d.used} / {d.cap} <span className={d.tone === "amber" ? "text-amber-300" : "text-emerald-300"}>· {d.pct}%</span></span>
+                <span className="text-zinc-500">{d.used} / {d.cap} <span className={d.tone === "amber" ? "text-zinc-300" : "text-emerald-300"}>· {d.pct}%</span></span>
               </div>
               <div className="w-full h-1.5 rounded-full bg-zinc-800/80 overflow-hidden">
                 <div className={`h-full ${barCls}`} style={{ width: `${d.pct}%` }} />
@@ -681,7 +681,7 @@ function QuotaMock({ step: _step }: { step: DemoStep }) {
 function PipelineMock({ step: _step }: { step: DemoStep }) {
   const rows: Array<{ id: string; pid: string; st: string; dot: string; pill: string; stages: string; trig: string; t: string }> = [
     { id: "ck98zxa", pid: "ai_coding",       st: "succeeded",         dot: "bg-emerald-400", pill: "bg-emerald-500/15 text-emerald-300", stages: "6/6", trig: "alice@acme.com", t: "2m" },
-    { id: "ck98zwb", pid: "deploy_pipeline", st: "awaiting_approval", dot: "bg-amber-400",   pill: "bg-amber-500/15 text-amber-300",     stages: "4/7", trig: "bob@acme.com",   t: "5m" },
+    { id: "ck98zwb", pid: "deploy_pipeline", st: "awaiting_approval", dot: "bg-zinc-400",   pill: "bg-white/15 text-zinc-300",     stages: "4/7", trig: "bob@acme.com",   t: "5m" },
     { id: "ck98zvc", pid: "infra_update",    st: "running",           dot: "bg-cyan-400",    pill: "bg-cyan-500/15 text-cyan-300",       stages: "2/5", trig: "api_key:vxlk…", t: "8m" },
     { id: "ck98zud", pid: "deploy_pipeline", st: "failed",            dot: "bg-red-400",     pill: "bg-red-500/15 text-red-300",         stages: "3/7", trig: "alice@acme.com", t: "27m"},
     { id: "ck98zte", pid: "ai_coding",       st: "succeeded",         dot: "bg-emerald-400", pill: "bg-emerald-500/15 text-emerald-300", stages: "6/6", trig: "api_key:vxlk…", t: "41m"},
@@ -867,7 +867,7 @@ function ConnectorHealthMock() {
   const rows = [
     { name: "AWS",        cat: "cloud",      status: "healthy",      stage: "ok",         reason: "Connector is syncing successfully.",                                              ratio: "94.7%", age: "78s ago", dot: "bg-emerald-400", pill: "bg-emerald-500/15 text-emerald-200" },
     { name: "GitHub",     cat: "vcs",        status: "healthy",      stage: "ok",         reason: "Connector is syncing successfully.",                                              ratio: "100%",  age: "5m ago",  dot: "bg-emerald-400", pill: "bg-emerald-500/15 text-emerald-200" },
-    { name: "Postgres",   cat: "db",         status: "stale",        stage: "staleness",  reason: "Last successful sync was 10m ago (window for db: 5m).",                            ratio: "85.7%", age: "10m ago", dot: "bg-amber-400",   pill: "bg-amber-500/15 text-amber-200"     },
+    { name: "Postgres",   cat: "db",         status: "stale",        stage: "staleness",  reason: "Last successful sync was 10m ago (window for db: 5m).",                            ratio: "85.7%", age: "10m ago", dot: "bg-zinc-400",   pill: "bg-white/15 text-zinc-200"     },
     { name: "CloudWatch", cat: "monitoring", status: "healthy",      stage: "ok",         reason: "Connector is syncing successfully.",                                              ratio: "88.2%", age: "1m ago",  dot: "bg-emerald-400", pill: "bg-emerald-500/15 text-emerald-200" },
   ];
   return (
@@ -938,7 +938,7 @@ function Stat({
   label, value, tone = "neutral",
 }: { label: string; value: string; tone?: "neutral" | "amber" | "red" | "emerald" }) {
   const cls =
-    tone === "amber"   ? "border-amber-500/30 bg-amber-500/[0.06] text-amber-100" :
+    tone === "amber"   ? "border-white/30 bg-white/[0.06] text-zinc-100" :
     tone === "red"     ? "border-red-500/30 bg-red-500/[0.06] text-red-100" :
     tone === "emerald" ? "border-emerald-500/30 bg-emerald-500/[0.06] text-emerald-100" :
                          "border-white/[0.06] bg-white/[0.02] text-zinc-300";

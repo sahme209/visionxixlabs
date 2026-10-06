@@ -42,7 +42,7 @@ const DISPOSITION_HINT: Record<Disposition, string> = {
 
 const RISK_TONE: Record<Risk, string> = {
   high:   "text-rose-300",
-  medium: "text-amber-300",
+  medium: "text-zinc-300",
   low:    "text-zinc-400",
 };
 
@@ -128,8 +128,8 @@ export default async function RecommendationsPage() {
       </header>
 
       {migrationPending && (
-        <div className="mb-8 rounded-2xl border border-amber-500/15 bg-white/[0.015] px-6 py-5">
-          <p className="text-[10px] font-mono uppercase tracking-[0.28em] text-amber-300 mb-1">migration pending</p>
+        <div className="mb-8 rounded-2xl border border-white/15 bg-white/[0.015] px-6 py-5">
+          <p className="text-[10px] font-mono uppercase tracking-[0.28em] text-zinc-300 mb-1">migration pending</p>
           <p className="text-[13px] text-zinc-300">
             The recommendations table hasn&apos;t been migrated yet. Run <code className="font-mono text-white">prisma migrate deploy</code> to populate this view.
           </p>

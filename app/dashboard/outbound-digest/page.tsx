@@ -93,7 +93,7 @@ export default function OutboundDigestPage() {
       </div>
 
       {error && (
-        <div role="alert" aria-live="assertive" className="rounded-2xl border border-amber-500/[0.18] bg-amber-500/[0.04] p-5 mb-6 text-[13px] text-zinc-300">
+        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/[0.18] bg-white/[0.04] p-5 mb-6 text-[13px] text-zinc-300">
           {error}
         </div>
       )}
@@ -170,7 +170,7 @@ function Stat({ title, value, tone }: { title: string; value: number; tone: "eme
   const tones: Record<typeof tone, string> = {
     emerald: "text-emerald-300 border-emerald-500/30 bg-emerald-500/[0.06]",
     rose:    "text-rose-300 border-rose-500/30 bg-rose-500/[0.06]",
-    amber:   "text-amber-300 border-amber-500/30 bg-amber-500/[0.06]",
+    amber:   "text-zinc-300 border-white/30 bg-white/[0.06]",
   };
   return (
     <div className={`rounded-2xl border p-4 ${tones[tone]}`}>

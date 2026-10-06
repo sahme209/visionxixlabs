@@ -92,7 +92,7 @@ export function AIAdoptionFlowDiagram() {
           strokeDasharray="6 4"
           markerEnd="url(#arrowhead)"
         />
-        <rect x="325" y="75" width="80" height="50" rx="6" fill="rgb(254 249 195)" className="fill-amber-900/40" stroke="rgb(245 158 11)" strokeWidth="1" />
+        <rect x="325" y="75" width="80" height="50" rx="6" fill="rgb(254 249 195)" className="fill-zinc-400/40" stroke="rgb(245 158 11)" strokeWidth="1" />
         <text x="365" y="102" textAnchor="middle" className="text-xs font-semibold" fill="rgb(146 64 14)">
           GAP
         </text>

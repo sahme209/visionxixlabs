@@ -75,8 +75,8 @@ const PROVIDER_META: Record<string, { label: string; tagline: string; docs: stri
 const MODE_TONE: Record<string, { border: string; bg: string; text: string; pill: string; dot: string }> = {
   live:         { border: "border-emerald-500/[0.22]", bg: "bg-emerald-500/[0.04]", text: "text-emerald-300", pill: "bg-emerald-500/15 text-emerald-300", dot: "bg-emerald-400 animate-pulse" },
   partial_live: { border: "border-cyan-500/[0.22]",    bg: "bg-cyan-500/[0.04]",    text: "text-cyan-300",    pill: "bg-cyan-500/15 text-cyan-300",       dot: "bg-cyan-400 animate-pulse"    },
-  expanding:    { border: "border-amber-500/[0.18]",   bg: "bg-amber-500/[0.04]",   text: "text-amber-300",   pill: "bg-amber-500/15 text-amber-300",     dot: "bg-amber-400"                 },
-  preview:      { border: "border-amber-500/[0.18]",   bg: "bg-amber-500/[0.04]",   text: "text-amber-300",   pill: "bg-amber-500/15 text-amber-300",     dot: "bg-amber-400"                 },
+  expanding:    { border: "border-white/[0.18]",   bg: "bg-white/[0.04]",   text: "text-zinc-300",   pill: "bg-white/15 text-zinc-300",     dot: "bg-zinc-400"                 },
+  preview:      { border: "border-white/[0.18]",   bg: "bg-white/[0.04]",   text: "text-zinc-300",   pill: "bg-white/15 text-zinc-300",     dot: "bg-zinc-400"                 },
   blocked:      { border: "border-rose-500/[0.22]",    bg: "bg-rose-500/[0.04]",    text: "text-rose-300",    pill: "bg-rose-500/15 text-rose-300",       dot: "bg-rose-400"                  },
   disabled:     { border: "border-zinc-700/30",        bg: "bg-white/[0.02]",       text: "text-zinc-400",    pill: "bg-zinc-700/40 text-zinc-300",       dot: "bg-zinc-600"                  },
   unknown:      { border: "border-zinc-700/30",        bg: "bg-white/[0.02]",       text: "text-zinc-400",    pill: "bg-zinc-700/40 text-zinc-300",       dot: "bg-zinc-600"                  },
@@ -137,8 +137,8 @@ export function ProviderDrilldown({ providerId }: { providerId: "aws" | "azure" 
         </div>
       )}
       {!loading && error && (
-        <div className="rounded-2xl border border-amber-500/[0.18] bg-amber-500/[0.04] p-5 mb-6">
-          <p className="text-[11px] font-mono text-amber-300/80 uppercase tracking-[0.18em] mb-1">// state unavailable</p>
+        <div className="rounded-2xl border border-white/[0.18] bg-white/[0.04] p-5 mb-6">
+          <p className="text-[11px] font-mono text-zinc-300/80 uppercase tracking-[0.18em] mb-1">// state unavailable</p>
           <p className="text-[13px] text-zinc-300">{error}</p>
         </div>
       )}
@@ -156,7 +156,7 @@ export function ProviderDrilldown({ providerId }: { providerId: "aws" | "azure" 
             <div className="flex items-center gap-4 text-[12px] text-zinc-400">
               {typeof provider.resourceCount === "number" && <span>{provider.resourceCount} resources</span>}
               {typeof provider.findingCount === "number" && (
-                <span className={provider.findingCount > 0 ? "text-amber-300" : "text-emerald-300"}>
+                <span className={provider.findingCount > 0 ? "text-zinc-300" : "text-emerald-300"}>
                   {provider.findingCount} attention-required
                 </span>
               )}
@@ -197,7 +197,7 @@ export function ProviderDrilldown({ providerId }: { providerId: "aws" | "azure" 
                 </div>
                 <div>
                   <p className="text-[10px] font-mono text-zinc-500 uppercase tracking-wider">Attention</p>
-                  <p className={`text-sm font-semibold tracking-tight ${loop.attentionRequiredCount > 0 ? "text-amber-300" : "text-emerald-300"}`}>
+                  <p className={`text-sm font-semibold tracking-tight ${loop.attentionRequiredCount > 0 ? "text-zinc-300" : "text-emerald-300"}`}>
                     {loop.attentionRequiredCount} required
                   </p>
                 </div>
@@ -262,14 +262,14 @@ function ProviderSetupGuide({ rawRequirements }: { rawRequirements: readonly str
   const groupOrder = Object.keys(byGroup) as Array<ConnectorSetupStep["group"]>;
 
   return (
-    <div className="mt-4 rounded-xl border border-amber-500/[0.18] bg-amber-500/[0.04] p-4">
+    <div className="mt-4 rounded-xl border border-white/[0.18] bg-white/[0.04] p-4">
       <div className="flex items-start gap-2 mb-3">
-        <KeyIcon className="h-4 w-4 text-amber-300 mt-0.5 shrink-0" />
+        <KeyIcon className="h-4 w-4 text-zinc-300 mt-0.5 shrink-0" />
         <div>
-          <p className="text-[11px] font-mono text-amber-300/80 uppercase tracking-[0.18em]">
+          <p className="text-[11px] font-mono text-zinc-300/80 uppercase tracking-[0.18em]">
             connection required · {steps.length} step{steps.length === 1 ? "" : "s"}
           </p>
-          <p className="text-[12.5px] text-amber-100 mt-1 leading-snug">
+          <p className="text-[12.5px] text-zinc-100 mt-1 leading-snug">
             Provide the items below to switch this connector from preview to live.
             Secrets are stored encrypted; nothing is written without an approval packet.
           </p>
@@ -293,7 +293,7 @@ function ProviderSetupGuide({ rawRequirements }: { rawRequirements: readonly str
               <ul className="space-y-2">
                 {items.map((step) => (
                   <li key={step.envVar} className="flex items-start gap-2.5">
-                    <span className="mt-1 h-1.5 w-1.5 rounded-full bg-amber-400/80 shrink-0" />
+                    <span className="mt-1 h-1.5 w-1.5 rounded-full bg-white/80 shrink-0" />
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center gap-2 flex-wrap">
                         <p className="text-[12.5px] font-semibold text-white">{step.label}</p>

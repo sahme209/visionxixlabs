@@ -57,7 +57,7 @@ export default function CliPage() {
         <div className="flex items-center gap-3 mb-3">
           <CommandLineIcon className="h-4 w-4 text-cyan-400" />
           <p className="text-[10px] font-semibold text-cyan-400 uppercase tracking-widest">Axiom CLI</p>
-          <span className="text-[9px] font-semibold text-amber-300 bg-amber-500/10 border border-amber-500/30 rounded-full px-2 py-0.5 uppercase tracking-wider">Coming soon</span>
+          <span className="text-[9px] font-semibold text-zinc-300 bg-white/10 border border-white/30 rounded-full px-2 py-0.5 uppercase tracking-wider">Coming soon</span>
         </div>
         <h1 className="text-3xl md:text-4xl font-bold text-white tracking-[-0.04em] mb-2">
           The terminal interface for <span className="text-gradient">your AI engineering team.</span>

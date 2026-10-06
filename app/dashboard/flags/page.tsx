@@ -82,7 +82,7 @@ export default async function FlagsPage() {
                       {f.hasOverride && (
                         <>
                           <span className="text-zinc-700">·</span>
-                          <span className="text-amber-300">override</span>
+                          <span className="text-zinc-300">override</span>
                         </>
                       )}
                       <span className="text-zinc-700">·</span>

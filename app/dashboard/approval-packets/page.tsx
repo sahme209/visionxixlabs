@@ -76,9 +76,9 @@ const READINESS_VISUAL: Record<ApprovalReadiness, { border: string; bg: string; 
   ready_for_review:           { border: "border-emerald-500/[0.22]", bg: "bg-emerald-500/[0.04]", text: "text-emerald-300", pill: "bg-emerald-500/15 text-emerald-300", icon: CheckCircleIcon       },
   desktop_review_recommended: { border: "border-white/[0.10]",  bg: "bg-white/[0.015]",  text: "text-violet-300",  pill: "bg-violet-500/15 text-violet-300",   icon: ComputerDesktopIcon   },
   simulation_required:        { border: "border-cyan-500/[0.22]",    bg: "bg-cyan-500/[0.04]",    text: "text-cyan-300",    pill: "bg-cyan-500/15 text-cyan-300",       icon: BeakerIcon            },
-  missing_evidence:           { border: "border-amber-500/[0.22]",   bg: "bg-amber-500/[0.04]",   text: "text-amber-300",   pill: "bg-amber-500/15 text-amber-300",     icon: ExclamationTriangleIcon },
+  missing_evidence:           { border: "border-white/[0.22]",   bg: "bg-white/[0.04]",   text: "text-zinc-300",   pill: "bg-white/15 text-zinc-300",     icon: ExclamationTriangleIcon },
   policy_blocked:             { border: "border-rose-500/[0.22]",    bg: "bg-rose-500/[0.04]",    text: "text-rose-300",    pill: "bg-rose-500/15 text-rose-300",       icon: LockClosedIcon         },
-  blocked_by_config:          { border: "border-amber-500/[0.18]",   bg: "bg-amber-500/[0.04]",   text: "text-amber-300",   pill: "bg-amber-500/15 text-amber-300",     icon: ExclamationTriangleIcon },
+  blocked_by_config:          { border: "border-white/[0.18]",   bg: "bg-white/[0.04]",   text: "text-zinc-300",   pill: "bg-white/15 text-zinc-300",     icon: ExclamationTriangleIcon },
   disabled_execution:         { border: "border-zinc-700/30",        bg: "bg-white/[0.02]",       text: "text-zinc-400",    pill: "bg-zinc-700/40 text-zinc-300",       icon: XCircleIcon             },
 };
 
@@ -94,7 +94,7 @@ const READINESS_LABEL: Record<ApprovalReadiness, string> = {
 
 const RISK_PILL: Record<ApprovalRisk, string> = {
   critical: "bg-rose-500/20 text-rose-200",
-  high:     "bg-amber-500/15 text-amber-300",
+  high:     "bg-white/15 text-zinc-300",
   medium:   "bg-cyan-500/15 text-cyan-300",
   low:      "bg-zinc-700/40 text-zinc-300",
 };
@@ -146,8 +146,8 @@ export default function ApprovalPacketsPage() {
           <div className="min-w-0">
             <div className="flex items-center gap-2 flex-wrap">
               <span className="inline-flex items-center gap-2 rounded-full border border-white/[0.06] bg-white/[0.02] px-2.5 py-1">
-                <LockClosedIcon className="h-3.5 w-3.5 text-amber-300" />
-                <span className="text-[10px] font-semibold uppercase tracking-widest text-amber-300">
+                <LockClosedIcon className="h-3.5 w-3.5 text-zinc-300" />
+                <span className="text-[10px] font-semibold uppercase tracking-widest text-zinc-300">
                   Approval packets · approval_only_no_execution
                 </span>
               </span>
@@ -169,7 +169,7 @@ export default function ApprovalPacketsPage() {
               <div className="w-px h-9 bg-white/[0.08]" />
               <Stat label="Sim needed" value={report.summary.simulationRequired} tone="text-cyan-300" />
               <div className="w-px h-9 bg-white/[0.08]" />
-              <Stat label="Blocked" value={report.summary.policyBlocked + report.summary.blockedByConfig + report.summary.missingEvidence} tone={(report.summary.policyBlocked + report.summary.blockedByConfig + report.summary.missingEvidence) > 0 ? "text-amber-300" : "text-zinc-500"} />
+              <Stat label="Blocked" value={report.summary.policyBlocked + report.summary.blockedByConfig + report.summary.missingEvidence} tone={(report.summary.policyBlocked + report.summary.blockedByConfig + report.summary.missingEvidence) > 0 ? "text-zinc-300" : "text-zinc-500"} />
             </div>
           )}
         </div>
@@ -181,8 +181,8 @@ export default function ApprovalPacketsPage() {
         </div>
       )}
       {!loading && error && (
-        <div role="alert" aria-live="assertive" className="rounded-2xl border border-amber-500/[0.18] bg-amber-500/[0.04] p-5 mb-6">
-          <p className="text-[11px] font-mono text-amber-300/80 uppercase tracking-[0.18em] mb-1">// packets unavailable</p>
+        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/[0.18] bg-white/[0.04] p-5 mb-6">
+          <p className="text-[11px] font-mono text-zinc-300/80 uppercase tracking-[0.18em] mb-1">// packets unavailable</p>
           <p className="text-[13px] text-zinc-300">{error}</p>
         </div>
       )}
@@ -262,7 +262,7 @@ export default function ApprovalPacketsPage() {
                       <div className="rounded-md border border-white/[0.06] bg-white/[0.02] p-3">
                         <p className="text-[10px] font-mono text-zinc-500 uppercase tracking-wider mb-1">// rollback plan</p>
                         <p className="text-[11px] text-zinc-300 leading-snug">
-                          <span className={pkt.rollbackPlan.available ? "text-emerald-300" : "text-amber-300"}>
+                          <span className={pkt.rollbackPlan.available ? "text-emerald-300" : "text-zinc-300"}>
                             {pkt.rollbackPlan.available ? "Available" : "Not yet generated"}
                           </span>{" "}· {pkt.rollbackPlan.summary}
                         </p>
@@ -270,7 +270,7 @@ export default function ApprovalPacketsPage() {
                       <div className="rounded-md border border-white/[0.06] bg-white/[0.02] p-3">
                         <p className="text-[10px] font-mono text-zinc-500 uppercase tracking-wider mb-1">// verification checklist</p>
                         <p className="text-[11px] text-zinc-300 leading-snug">
-                          <span className={pkt.verificationChecklist.available ? "text-emerald-300" : "text-amber-300"}>
+                          <span className={pkt.verificationChecklist.available ? "text-emerald-300" : "text-zinc-300"}>
                             {pkt.verificationChecklist.available ? "Available" : "Not yet generated"}
                           </span>{" "}· {pkt.verificationChecklist.summary}
                         </p>
@@ -307,8 +307,8 @@ export default function ApprovalPacketsPage() {
                     )}
 
                     {pkt.limitations.length > 0 && (
-                      <div className="rounded-md border border-amber-500/[0.18] bg-amber-500/[0.04] p-2.5">
-                        <p className="text-[10px] font-mono text-amber-300/80 uppercase tracking-wider mb-1">// limitations</p>
+                      <div className="rounded-md border border-white/[0.18] bg-white/[0.04] p-2.5">
+                        <p className="text-[10px] font-mono text-zinc-300/80 uppercase tracking-wider mb-1">// limitations</p>
                         <ul className="space-y-0.5">
                           {pkt.limitations.slice(0, 2).map((l, i) => (
                             <li key={i} className="text-[11px] text-zinc-300 leading-snug">{l}</li>

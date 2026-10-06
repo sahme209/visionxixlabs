@@ -25,13 +25,13 @@ const SYSTEM_COLOR: Record<ReleaseSystemId, string> = {
   github: "text-zinc-300 bg-zinc-500/10 border-zinc-500/20",
   gitlab: "text-orange-400 bg-orange-500/10 border-orange-500/20",
   azure_devops: "text-blue-400 bg-blue-500/10 border-blue-500/20",
-  jenkins: "text-amber-400 bg-amber-500/10 border-amber-500/20",
+  jenkins: "text-zinc-400 bg-white/10 border-white/20",
   argocd: "text-fuchsia-400 bg-fuchsia-500/10 border-fuchsia-500/20",
 };
 
 const ENV_COLOR = {
   production: "text-red-400 bg-red-500/10 border-red-500/20",
-  staging: "text-amber-400 bg-amber-500/10 border-amber-500/20",
+  staging: "text-zinc-400 bg-white/10 border-white/20",
   development: "text-blue-400 bg-blue-500/10 border-blue-500/20",
   qa: "text-fuchsia-400 bg-fuchsia-500/10 border-fuchsia-500/20",
 } as const;
@@ -44,8 +44,8 @@ const STATUS_CONFIG: Record<
   queued: { icon: ClockIcon, iconClass: "text-zinc-400", label: "Queued", bgClass: "bg-white/[0.04]", borderClass: "border-white/[0.08]", dotClass: "bg-zinc-500" },
   succeeded: { icon: CheckCircleIcon, iconClass: "text-emerald-400", label: "Succeeded", bgClass: "bg-emerald-500/10", borderClass: "border-emerald-500/20", dotClass: "bg-emerald-400" },
   failed: { icon: XCircleIcon, iconClass: "text-red-400", label: "Failed", bgClass: "bg-red-500/10", borderClass: "border-red-500/20", dotClass: "bg-red-400 animate-pulse" },
-  blocked: { icon: PauseCircleIcon, iconClass: "text-amber-400", label: "Blocked", bgClass: "bg-amber-500/10", borderClass: "border-amber-500/20", dotClass: "bg-amber-400" },
-  awaiting_approval: { icon: LockClosedIcon, iconClass: "text-amber-400", label: "Awaiting approval", bgClass: "bg-amber-500/10", borderClass: "border-amber-500/20", dotClass: "bg-amber-400 animate-pulse" },
+  blocked: { icon: PauseCircleIcon, iconClass: "text-zinc-400", label: "Blocked", bgClass: "bg-white/10", borderClass: "border-white/20", dotClass: "bg-zinc-400" },
+  awaiting_approval: { icon: LockClosedIcon, iconClass: "text-zinc-400", label: "Awaiting approval", bgClass: "bg-white/10", borderClass: "border-white/20", dotClass: "bg-zinc-400 animate-pulse" },
 };
 
 function timeAgo(iso: string): string {
@@ -108,7 +108,7 @@ export function ReleasePipelineGrid({ pipelines = DEMO_PIPELINES, className = ""
           const StatusIcon = status.icon;
           const readinessColor =
             (p.readinessScore ?? 0) >= 85 ? "text-emerald-400" :
-            (p.readinessScore ?? 0) >= 70 ? "text-amber-400" :
+            (p.readinessScore ?? 0) >= 70 ? "text-zinc-400" :
             "text-red-400";
 
           return (
@@ -176,7 +176,7 @@ export function ReleasePipelineGrid({ pipelines = DEMO_PIPELINES, className = ""
                   {/* Awaiting approvals */}
                   {p.awaitingApprovals != null && p.awaitingApprovals > 0 && (
                     <div className="text-right">
-                      <p className="text-base font-bold text-amber-400">{p.awaitingApprovals}</p>
+                      <p className="text-base font-bold text-zinc-400">{p.awaitingApprovals}</p>
                       <p className="text-[9px] text-zinc-600 uppercase tracking-wider">approvals</p>
                     </div>
                   )}
@@ -190,13 +190,13 @@ export function ReleasePipelineGrid({ pipelines = DEMO_PIPELINES, className = ""
 
               {/* Blocked detail row */}
               {p.status === "blocked" && (
-                <div className="mt-3 rounded-lg bg-amber-500/[0.05] border border-amber-500/15 px-3 py-2 flex items-center gap-2 text-[11px] text-amber-300">
+                <div className="mt-3 rounded-lg bg-white/[0.05] border border-white/15 px-3 py-2 flex items-center gap-2 text-[11px] text-zinc-300">
                   <PauseCircleIcon className="h-3.5 w-3.5" />
                   Release readiness below threshold · rollback path not verified · open for governance review
                 </div>
               )}
               {p.status === "awaiting_approval" && (
-                <div className="mt-3 rounded-lg bg-amber-500/[0.05] border border-amber-500/15 px-3 py-2 flex items-center gap-2 text-[11px] text-amber-300">
+                <div className="mt-3 rounded-lg bg-white/[0.05] border border-white/15 px-3 py-2 flex items-center gap-2 text-[11px] text-zinc-300">
                   <LockClosedIcon className="h-3.5 w-3.5" />
                   {p.awaitingApprovals ?? 1} approver{(p.awaitingApprovals ?? 1) !== 1 ? "s" : ""} required · ServiceNow CR open · escalation path armed
                 </div>

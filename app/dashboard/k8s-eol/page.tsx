@@ -52,7 +52,7 @@ const PROVIDER_LABEL: Record<string, string> = {
 };
 
 const PROVIDER_TONE: Record<string, string> = {
-  aws_eks:  "border-amber-500/30 bg-amber-500/[0.04]",
+  aws_eks:  "border-white/30 bg-white/[0.04]",
   azure_aks: "border-sky-500/30 bg-sky-500/[0.04]",
   gcp_gke:  "border-emerald-500/30 bg-emerald-500/[0.04]",
 };
@@ -148,7 +148,7 @@ export default function K8sEolPage() {
         </div>
       )}
       {!loading && error && (
-        <div role="alert" aria-live="assertive" className="rounded-2xl border border-amber-500/[0.18] bg-amber-500/[0.04] p-5 mb-6 text-[13px] text-zinc-300">
+        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/[0.18] bg-white/[0.04] p-5 mb-6 text-[13px] text-zinc-300">
           {error}
         </div>
       )}
@@ -209,14 +209,14 @@ export default function K8sEolPage() {
                       </div>
                       {c.workloads && c.workloads.filter((w) => w.riskFlags.length > 0).length > 0 && (
                         <details className="mt-2">
-                          <summary className="text-[10px] font-mono text-amber-300/80 cursor-pointer hover:text-amber-200 uppercase tracking-wider">
+                          <summary className="text-[10px] font-mono text-zinc-300/80 cursor-pointer hover:text-zinc-200 uppercase tracking-wider">
                             {c.workloads.filter((w) => w.riskFlags.length > 0).length} workload{c.workloads.filter((w) => w.riskFlags.length > 0).length === 1 ? "" : "s"} with upgrade-risk flags
                           </summary>
                           <div className="mt-1.5 space-y-1">
                             {c.workloads.filter((w) => w.riskFlags.length > 0).slice(0, 5).map((w, i) => (
-                              <div key={i} className="rounded border border-amber-500/15 bg-amber-500/[0.04] p-1.5">
+                              <div key={i} className="rounded border border-white/15 bg-white/[0.04] p-1.5">
                                 <p className="text-[11px] text-white">{w.namespace ? `${w.namespace}/` : ""}{w.name}</p>
-                                <p className="text-[10px] font-mono text-amber-200">{w.riskFlags.join(" · ")}</p>
+                                <p className="text-[10px] font-mono text-zinc-200">{w.riskFlags.join(" · ")}</p>
                               </div>
                             ))}
                           </div>
@@ -239,7 +239,7 @@ function Stat({
 }: { label: string; value: string; tone: "emerald" | "amber" | "rose" | "zinc"; icon?: typeof ExclamationTriangleIcon }) {
   const cls = {
     emerald: "border-emerald-500/[0.18] bg-emerald-500/[0.03] text-emerald-200",
-    amber:   "border-amber-500/[0.18] bg-amber-500/[0.03] text-amber-200",
+    amber:   "border-white/[0.18] bg-white/[0.03] text-zinc-200",
     rose:    "border-rose-500/[0.18] bg-rose-500/[0.03] text-rose-200",
     zinc:    "border-white/[0.06] bg-white/[0.02] text-zinc-200",
   }[tone];

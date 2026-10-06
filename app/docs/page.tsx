@@ -59,7 +59,7 @@ const QUICK_PATHS = [
 
 const COLOR_MAP = {
   violet: "bg-violet-500/10 border-violet-500/20 text-violet-400",
-  amber: "bg-amber-500/10 border-amber-500/20 text-amber-400",
+  amber: "bg-white/10 border-white/20 text-zinc-400",
   emerald: "bg-emerald-500/10 border-emerald-500/20 text-emerald-400",
   blue: "bg-blue-500/10 border-blue-500/20 text-blue-400",
 } as const;
@@ -197,7 +197,7 @@ export default function DocsIndexPage() {
                     ) : (
                       <span className="flex items-center justify-between px-5 py-3.5 cursor-not-allowed">
                         <span className="text-sm text-zinc-600">{item.label}</span>
-                        <span className="text-[9px] font-semibold uppercase tracking-wider text-amber-400/70 bg-amber-500/10 border border-amber-500/20 rounded-full px-1.5 py-px">
+                        <span className="text-[9px] font-semibold uppercase tracking-wider text-white/70 bg-white/10 border border-white/20 rounded-full px-1.5 py-px">
                           Doc coming
                         </span>
                       </span>

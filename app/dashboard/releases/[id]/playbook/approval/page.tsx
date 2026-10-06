@@ -106,7 +106,7 @@ export default function ReleaseApprovalDetailPage() {
                     isApproved
                       ? "text-emerald-400"
                       : isPending
-                        ? "text-amber-400"
+                        ? "text-zinc-400"
                         : "text-zinc-400"
                   }`}
                 >
@@ -121,7 +121,7 @@ export default function ReleaseApprovalDetailPage() {
                     isApproved
                       ? "bg-emerald-500"
                       : isPending
-                        ? "bg-amber-500"
+                        ? "bg-zinc-500"
                         : "bg-zinc-700"
                   }`}
                   style={{ width: `${progress}%` }}
@@ -148,8 +148,8 @@ export default function ReleaseApprovalDetailPage() {
                 </span>
               </div>
             ) : isPending ? (
-              <div className="rounded-xl border border-amber-500/[0.25] bg-amber-500/[0.04] px-4 py-3 inline-block">
-                <span className="text-[13px] font-semibold text-amber-300 uppercase tracking-wider">
+              <div className="rounded-xl border border-white/[0.25] bg-white/[0.04] px-4 py-3 inline-block">
+                <span className="text-[13px] font-semibold text-zinc-300 uppercase tracking-wider">
                   ⏳ Pending
                 </span>
               </div>

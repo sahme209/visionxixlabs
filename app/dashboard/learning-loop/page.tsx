@@ -58,7 +58,7 @@ const ENGINE_LABEL: Record<Signal["engine"], string> = {
 
 function strengthClass(s: number): string {
   if (s >= 80) return "bg-rose-500/15 text-rose-300 border-rose-500/25";
-  if (s >= 60) return "bg-amber-500/15 text-amber-300 border-amber-500/25";
+  if (s >= 60) return "bg-white/15 text-zinc-300 border-white/25";
   if (s >= 40) return "bg-violet-500/15 text-violet-300 border-white/[0.10]";
   return "bg-zinc-700/40 text-zinc-300 border-zinc-700/40";
 }
@@ -127,7 +127,7 @@ export default function LearningLoopPage() {
         <div role="alert" aria-live="assertive" className="rounded-2xl border border-rose-500/[0.18] bg-rose-500/[0.04] p-5 mb-6 text-[13px] text-zinc-300">{networkError}</div>
       )}
       {!loading && errorBody?.error === "auth_required" && (
-        <div role="alert" aria-live="assertive" className="rounded-2xl border border-amber-500/[0.18] bg-amber-500/[0.04] p-5 mb-6 text-[13px] text-zinc-300">Sign in required.</div>
+        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/[0.18] bg-white/[0.04] p-5 mb-6 text-[13px] text-zinc-300">Sign in required.</div>
       )}
 
       {data && data.signals.length === 0 && (
@@ -182,7 +182,7 @@ export default function LearningLoopPage() {
 function Stat({ icon: Icon, label, value, tone }: { icon: typeof CpuChipIcon; label: string; value: string; tone: "emerald" | "amber" | "rose" | "zinc" }) {
   const cls = {
     emerald: "border-emerald-500/[0.18] bg-emerald-500/[0.03] text-emerald-200",
-    amber:   "border-amber-500/[0.18] bg-amber-500/[0.03] text-amber-200",
+    amber:   "border-white/[0.18] bg-white/[0.03] text-zinc-200",
     rose:    "border-rose-500/[0.18] bg-rose-500/[0.03] text-rose-200",
     zinc:    "border-white/[0.06] bg-white/[0.02] text-zinc-200",
   }[tone];

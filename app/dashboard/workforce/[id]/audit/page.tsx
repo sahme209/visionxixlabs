@@ -25,7 +25,7 @@ type ActorKind = "user" | "agent" | "system";
 const OUTCOME_TONE: Record<Outcome, string> = {
   success: "text-emerald-300",
   failure: "text-rose-300",
-  blocked: "text-amber-300",
+  blocked: "text-zinc-300",
 };
 
 const ACTOR_TONE: Record<ActorKind, string> = {
@@ -187,8 +187,8 @@ export default async function EngineerAuditPage({
       </header>
 
       {migrationPending && (
-        <div className="mb-8 rounded-2xl border border-amber-500/15 bg-white/[0.015] px-6 py-5">
-          <p className="text-[10px] font-mono uppercase tracking-[0.28em] text-amber-300 mb-1">migration pending</p>
+        <div className="mb-8 rounded-2xl border border-white/15 bg-white/[0.015] px-6 py-5">
+          <p className="text-[10px] font-mono uppercase tracking-[0.28em] text-zinc-300 mb-1">migration pending</p>
           <p className="text-[13px] text-zinc-300">
             SecureAuditRecord table not migrated. Run <code className="font-mono text-white">prisma migrate deploy</code>.
           </p>
@@ -219,7 +219,7 @@ export default async function EngineerAuditPage({
                       <span className="text-zinc-500">·</span>
                       <span className={
                         e.outcome === "ai_generated" ? "text-emerald-300" :
-                        e.outcome === "fallback_rules" ? "text-amber-300" :
+                        e.outcome === "fallback_rules" ? "text-zinc-300" :
                         "text-rose-300"
                       }>{e.outcome.replace(/_/g, " ")}</span>
                     </div>

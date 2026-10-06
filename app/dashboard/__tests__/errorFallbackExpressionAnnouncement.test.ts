@@ -51,14 +51,14 @@ describe("CommandCenterClient — remaining error-fallback states", () => {
   });
 
   it("announces the production-readiness error", () => {
-    expect(src).toContain('role="alert" aria-live="assertive" className="rounded-xl border border-amber-500/[0.18] bg-amber-500/[0.04] p-5 mb-6"');
+    expect(src).toContain('role="alert" aria-live="assertive" className="rounded-xl border border-white/[0.18] bg-white/[0.04] p-5 mb-6"');
   });
 });
 
 describe("/dashboard/trust and /dashboard/surfaces — error announcement", () => {
   it("trust page announces its error", () => {
     const src = source("app/dashboard/trust/page.tsx");
-    expect(src).toContain('role="alert" aria-live="assertive" className="rounded-2xl border border-amber-500/[0.18] bg-amber-500/[0.04] p-5 mb-8"');
+    expect(src).toContain('role="alert" aria-live="assertive" className="rounded-2xl border border-white/[0.18] bg-white/[0.04] p-5 mb-8"');
   });
 
   it("surfaces page announces its error", () => {

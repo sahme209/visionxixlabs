@@ -76,8 +76,8 @@ export default async function SlackConfigPage({
         </div>
       )}
       {testResult === "no_config" && (
-        <div className="mb-6 rounded-2xl border border-amber-500/30 bg-amber-500/[0.06] p-4">
-          <p className="text-[12.5px] text-amber-200">No configuration to test — save a webhook URL first.</p>
+        <div className="mb-6 rounded-2xl border border-white/30 bg-white/[0.06] p-4">
+          <p className="text-[12.5px] text-zinc-200">No configuration to test — save a webhook URL first.</p>
         </div>
       )}
       {error === "invalid_webhook_url" && (
@@ -96,7 +96,7 @@ export default async function SlackConfigPage({
             </div>
             <div className="flex items-baseline gap-3">
               <dt className="w-32 font-mono text-zinc-500 text-[11px] uppercase tracking-wider shrink-0">enabled</dt>
-              <dd className={config.enabled ? "text-emerald-300" : "text-amber-300"}>{config.enabled ? "yes" : "paused"}</dd>
+              <dd className={config.enabled ? "text-emerald-300" : "text-zinc-300"}>{config.enabled ? "yes" : "paused"}</dd>
             </div>
             <div className="flex items-baseline gap-3">
               <dt className="w-32 font-mono text-zinc-500 text-[11px] uppercase tracking-wider shrink-0">threshold</dt>

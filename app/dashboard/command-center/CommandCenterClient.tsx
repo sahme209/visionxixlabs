@@ -31,7 +31,7 @@ import { PageIntro } from "@/components/dashboard/PageIntro";
 import { OnboardingChecklist } from "@/components/dashboard/OnboardingChecklist";
 
 const PROVIDER_COLOR = {
-  AWS: "text-amber-400 bg-amber-500/10 border-amber-500/20",
+  AWS: "text-zinc-400 bg-white/10 border-white/20",
   Azure: "text-blue-400 bg-blue-500/10 border-blue-500/20",
   GCP: "text-red-400 bg-red-500/10 border-red-500/20",
   GitHub: "text-zinc-500 bg-violet-500/10 border-white/[0.08]",
@@ -39,7 +39,7 @@ const PROVIDER_COLOR = {
 
 const APPROVAL_RISK: Record<"low" | "medium" | "high" | "critical", string> = {
   low:      "text-emerald-400 bg-emerald-500/10 border-emerald-500/20",
-  medium:   "text-amber-400 bg-amber-500/10 border-amber-500/20",
+  medium:   "text-zinc-400 bg-white/10 border-white/20",
   high:     "text-rose-400 bg-rose-500/10 border-rose-500/20",
   critical: "text-rose-400 bg-rose-500/15 border-rose-500/30",
 };
@@ -403,7 +403,7 @@ function DemoJourneyCard() {
     awsMode === "live"         ? { text: "text-emerald-300", dot: "bg-emerald-400 animate-pulse" } :
     awsMode === "partial_live" ? { text: "text-cyan-300",    dot: "bg-cyan-400 animate-pulse"    } :
     awsMode === "blocked"      ? { text: "text-rose-300",    dot: "bg-rose-400"                  } :
-                                  { text: "text-amber-300",  dot: "bg-amber-400"                 };
+                                  { text: "text-zinc-300",  dot: "bg-zinc-400"                 };
 
   return (
     <Link
@@ -470,10 +470,10 @@ function HeroEyebrow({ currentTime }: { currentTime: string }) {
   const tone =
     sourceMode === "live"           ? { dot: "bg-emerald-400 animate-pulse shadow-[0_0_12px_rgba(52,211,153,0.5)]", text: "text-emerald-300", pill: "border-emerald-500/[0.25]" } :
     sourceMode === "partial_live"   ? { dot: "bg-cyan-400 animate-pulse",     text: "text-cyan-300",    pill: "border-cyan-500/[0.25]"    } :
-    sourceMode === "expanding"      ? { dot: "bg-amber-400 animate-pulse",    text: "text-amber-300",   pill: "border-amber-500/[0.25]"   } :
+    sourceMode === "expanding"      ? { dot: "bg-zinc-400 animate-pulse",    text: "text-zinc-300",   pill: "border-white/[0.25]"   } :
     sourceMode === "blocked"        ? { dot: "bg-rose-400",                   text: "text-rose-300",    pill: "border-rose-500/[0.25]"    } :
     sourceMode === "disabled"       ? { dot: "bg-zinc-600",                   text: "text-zinc-400",    pill: "border-zinc-700/40"        } :
-                                      { dot: "bg-amber-400",                  text: "text-amber-300",   pill: "border-amber-500/[0.18]"   };
+                                      { dot: "bg-zinc-400",                  text: "text-zinc-300",   pill: "border-white/[0.18]"   };
 
   return (
     <div className="flex items-center gap-3 flex-wrap">
@@ -766,7 +766,7 @@ function AxiomOSStrip() {
   const toneClasses: Record<string, { border: string; bg: string; text: string; pill: string }> = {
     emerald: { border: "border-emerald-500/[0.22]", bg: "bg-emerald-500/[0.05]", text: "text-emerald-300", pill: "bg-emerald-500/15 text-emerald-300" },
     cyan:    { border: "border-cyan-500/[0.22]",    bg: "bg-cyan-500/[0.05]",    text: "text-cyan-300",    pill: "bg-cyan-500/15 text-cyan-300"    },
-    amber:   { border: "border-amber-500/[0.22]",   bg: "bg-amber-500/[0.05]",   text: "text-amber-300",   pill: "bg-amber-500/15 text-amber-300"   },
+    amber:   { border: "border-white/[0.22]",   bg: "bg-white/[0.05]",   text: "text-zinc-300",   pill: "bg-white/15 text-zinc-300"   },
     rose:    { border: "border-rose-500/[0.22]",    bg: "bg-rose-500/[0.05]",    text: "text-rose-300",    pill: "bg-rose-500/15 text-rose-300"    },
     zinc:    { border: "border-zinc-700/30",        bg: "bg-white/[0.02]",       text: "text-zinc-300",    pill: "bg-zinc-700/40 text-zinc-300"     },
   };
@@ -776,7 +776,7 @@ function AxiomOSStrip() {
   const providerToneOf = (mode: string): string =>
     mode === "live" ? "bg-emerald-500/15 text-emerald-300 border-emerald-500/20" :
     mode === "partial_live" ? "bg-cyan-500/15 text-cyan-300 border-cyan-500/20" :
-    mode === "preview" || mode === "expanding" ? "bg-amber-500/15 text-amber-300 border-amber-500/20" :
+    mode === "preview" || mode === "expanding" ? "bg-white/15 text-zinc-300 border-white/20" :
     "bg-zinc-700/40 text-zinc-400 border-zinc-700/30";
 
   return (
@@ -895,9 +895,9 @@ function ReadinessStrip() {
   }
   if (error || !report) {
     return (
-      <div role="alert" aria-live="assertive" className="rounded-xl border border-amber-500/[0.18] bg-amber-500/[0.04] p-5 mb-6">
-        <p className="text-[11px] font-mono text-amber-300/80 uppercase tracking-[0.18em]">// production readiness · preview</p>
-        <p className="text-sm text-amber-200/80 mt-2">{error ?? "Readiness report not yet available — sign in to load."}</p>
+      <div role="alert" aria-live="assertive" className="rounded-xl border border-white/[0.18] bg-white/[0.04] p-5 mb-6">
+        <p className="text-[11px] font-mono text-zinc-300/80 uppercase tracking-[0.18em]">// production readiness · preview</p>
+        <p className="text-sm text-zinc-200/80 mt-2">{error ?? "Readiness report not yet available — sign in to load."}</p>
       </div>
     );
   }
@@ -907,7 +907,7 @@ function ReadinessStrip() {
   const toneClasses: Record<string, { border: string; bg: string; text: string }> = {
     emerald: { border: "border-emerald-500/[0.22]", bg: "bg-emerald-500/[0.06]", text: "text-emerald-300" },
     cyan:    { border: "border-cyan-500/[0.22]",    bg: "bg-cyan-500/[0.06]",    text: "text-cyan-300"    },
-    amber:   { border: "border-amber-500/[0.22]",   bg: "bg-amber-500/[0.06]",   text: "text-amber-300"   },
+    amber:   { border: "border-white/[0.22]",   bg: "bg-white/[0.06]",   text: "text-zinc-300"   },
     rose:    { border: "border-rose-500/[0.22]",    bg: "bg-rose-500/[0.06]",    text: "text-rose-300"    },
   };
   const t = toneClasses[tone];
@@ -939,7 +939,7 @@ function ReadinessStrip() {
           <span className="text-emerald-400">{totalsRollup.passing} pass</span>
           <span className="text-cyan-400">{totalsRollup.partial} partial</span>
           <span className="text-zinc-400">{totalsRollup.preview} preview</span>
-          <span className="text-amber-400">{totalsRollup.blocked} blocked</span>
+          <span className="text-zinc-400">{totalsRollup.blocked} blocked</span>
           <span className="text-rose-400">{totalsRollup.failing} failing</span>
         </div>
       </div>
@@ -1006,7 +1006,7 @@ function SecurityPostureStrip() {
 
   const tone =
     semantic === "success" ? "border-emerald-500/15 bg-emerald-500/[0.03]" :
-    semantic === "warning" ? "border-amber-500/15 bg-amber-500/[0.03]"   :
+    semantic === "warning" ? "border-white/15 bg-white/[0.03]"   :
                              "border-rose-500/15 bg-rose-500/[0.03]";
 
   const headline =
@@ -1019,7 +1019,7 @@ function SecurityPostureStrip() {
   const labelTone =
     sourceMode === "live" ? "bg-emerald-500/15 text-emerald-300 border-emerald-500/30" :
     sourceMode === "partial_live" ? "bg-cyan-500/15 text-cyan-300 border-cyan-500/30" :
-    "bg-amber-500/15 text-amber-300 border-amber-500/30";
+    "bg-white/15 text-zinc-300 border-white/30";
 
   return (
     <Link href="/dashboard/security" className={`block rounded-2xl border ${tone} p-5 hover:border-emerald-500/30 transition-colors group`}>
@@ -1105,7 +1105,7 @@ function ReliabilityPostureStrip() {
 
   const tone =
     semantic === "success" ? "border-cyan-500/15 bg-cyan-500/[0.03]" :
-    semantic === "warning" ? "border-amber-500/15 bg-amber-500/[0.03]" :
+    semantic === "warning" ? "border-white/15 bg-white/[0.03]" :
                              "border-rose-500/15 bg-rose-500/[0.03]";
 
   const headline =
@@ -1121,7 +1121,7 @@ function ReliabilityPostureStrip() {
     sourceMode === "live"         ? "bg-emerald-500/15 text-emerald-300 border-emerald-500/30" :
     sourceMode === "partial_live" ? "bg-cyan-500/15 text-cyan-300 border-cyan-500/30" :
     sourceMode === "blocked"      ? "bg-rose-500/15 text-rose-300 border-rose-500/30" :
-    "bg-amber-500/15 text-amber-300 border-amber-500/30";
+    "bg-white/15 text-zinc-300 border-white/30";
 
   return (
     <Link href="/dashboard/multi-cloud" className={`block rounded-2xl border ${tone} p-5 hover:border-cyan-500/30 transition-colors group`}>
@@ -1192,7 +1192,7 @@ function ObservabilityPostureStrip() {
   const warnings = posture.checks.filter((c) => c.semantic === "warning").length;
   const tone =
     errors > 0   ? "border-rose-500/15"   :
-    warnings > 0 ? "border-amber-500/15"  :
+    warnings > 0 ? "border-white/15"  :
                    "border-white/[0.06]";
   const headlineCheck =
     posture.checks.find((c) => c.semantic === "error") ??
@@ -1201,7 +1201,7 @@ function ObservabilityPostureStrip() {
   const headline = state
     ? (persistent ? "Audit + memory persistent · every event traceable" : "Audit + memory in-memory · enable persistence for durability")
     : (headlineCheck?.label ?? "Composing observability state…");
-  const labelTone = persistent ? "text-emerald-400" : "text-amber-400";
+  const labelTone = persistent ? "text-emerald-400" : "text-zinc-400";
   return (
     <Link href="/dashboard/traces" className={`block rounded-2xl border ${tone} bg-white/[0.015] p-5 hover:border-white/[0.12] transition-colors group`}>
       <div className="flex items-center justify-between gap-4 flex-wrap">
@@ -1330,7 +1330,7 @@ function DesktopRuntimePanel() {
     sourceMode === "live"         ? "bg-emerald-500/15 text-emerald-300" :
     sourceMode === "partial_live" ? "bg-cyan-500/15 text-cyan-300"       :
     sourceMode === "blocked"      ? "bg-rose-500/15 text-rose-300"       :
-                                    "bg-amber-500/15 text-amber-300";
+                                    "bg-white/15 text-zinc-300";
 
   return (
     <div className="surface-glass rounded-2xl overflow-hidden">
@@ -1349,7 +1349,7 @@ function DesktopRuntimePanel() {
           <p className="text-[11px] text-zinc-500 font-mono uppercase tracking-[0.18em]">// composing desktop state…</p>
         )}
         {!loading && error && (
-          <p role="alert" aria-live="assertive" className="text-[12px] text-amber-300/90">{error}</p>
+          <p role="alert" aria-live="assertive" className="text-[12px] text-zinc-300/90">{error}</p>
         )}
         {!loading && !error && state && (
           <>
@@ -1371,7 +1371,7 @@ function DesktopRuntimePanel() {
           <div key={c.id} className="flex items-start gap-2.5">
             <span className={`mt-1.5 w-1.5 h-1.5 rounded-full shrink-0 ${
               c.semantic === "success" ? "bg-emerald-400" :
-              c.semantic === "warning" ? "bg-amber-400" :
+              c.semantic === "warning" ? "bg-zinc-400" :
               c.semantic === "error"   ? "bg-rose-400"   :
                                           "bg-zinc-500"
             }`} />
@@ -1550,7 +1550,7 @@ function LiveProvidersStrip() {
       )}
       {!loading && error && (
         <div role="alert" aria-live="assertive" className="px-5 py-4">
-          <p className="text-[11px] font-mono text-amber-300/80 uppercase tracking-[0.18em] mb-1">
+          <p className="text-[11px] font-mono text-zinc-300/80 uppercase tracking-[0.18em] mb-1">
             // provider state unavailable
           </p>
           <p className="text-[12px] text-zinc-400">{error}</p>
@@ -1569,8 +1569,8 @@ function LiveProvidersStrip() {
             const modeTone =
               p.mode === "live"          ? { dot: "bg-emerald-400 animate-pulse",       text: "text-emerald-300",  label: "Live" } :
               p.mode === "partial_live"  ? { dot: "bg-cyan-400 animate-pulse",          text: "text-cyan-300",     label: "Partial · live" } :
-              p.mode === "preview"       ? { dot: "bg-amber-400",                       text: "text-amber-300",    label: "Preview" } :
-              p.mode === "expanding"     ? { dot: "bg-amber-400 animate-pulse",         text: "text-amber-300",    label: "Expanding" } :
+              p.mode === "preview"       ? { dot: "bg-zinc-400",                       text: "text-zinc-300",    label: "Preview" } :
+              p.mode === "expanding"     ? { dot: "bg-zinc-400 animate-pulse",         text: "text-zinc-300",    label: "Expanding" } :
               p.mode === "blocked"       ? { dot: "bg-rose-400",                        text: "text-rose-300",     label: "Blocked" } :
               p.mode === "disabled"      ? { dot: "bg-zinc-600",                        text: "text-zinc-500",     label: "Disabled" } :
                                            { dot: "bg-zinc-600",                        text: "text-zinc-500",     label: "Unknown" };
@@ -1605,7 +1605,7 @@ function LiveProvidersStrip() {
                     <span className="text-[10px] text-zinc-500">
                       {resources !== null ? `${resources} resources` : "resources —"}
                     </span>
-                    <span className={`text-[10px] font-semibold ${findings !== null && findings > 0 ? "text-amber-400" : "text-emerald-400"}`}>
+                    <span className={`text-[10px] font-semibold ${findings !== null && findings > 0 ? "text-zinc-400" : "text-emerald-400"}`}>
                       {findings !== null ? `${findings} findings` : "findings —"}
                     </span>
                   </div>
@@ -1687,17 +1687,17 @@ function LivePendingApprovals() {
   const pending = (approvals ?? []).filter((a) => a.status === "pending");
 
   return (
-    <div className="rounded-2xl border border-amber-500/15 bg-amber-500/[0.02] overflow-hidden">
-      <div className="px-5 py-3.5 border-b border-amber-500/15 bg-amber-500/[0.04]">
+    <div className="rounded-2xl border border-white/15 bg-white/[0.02] overflow-hidden">
+      <div className="px-5 py-3.5 border-b border-white/15 bg-white/[0.04]">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <LockClosedIcon className="h-3.5 w-3.5 text-amber-400" />
+            <LockClosedIcon className="h-3.5 w-3.5 text-zinc-400" />
             <h3 className="text-sm font-semibold text-white">Pending approvals</h3>
             <span className="text-[9px] font-mono text-zinc-500 uppercase tracking-wider bg-white/[0.04] border border-white/[0.06] rounded px-1.5 py-px">
               {sourceMode.replace(/_/g, " ")}
             </span>
           </div>
-          <span className="text-[10px] font-bold text-amber-400 bg-amber-500/15 border border-amber-500/30 rounded-full px-1.5 py-px">
+          <span className="text-[10px] font-bold text-zinc-400 bg-white/15 border border-white/30 rounded-full px-1.5 py-px">
             {loading ? "…" : pending.length}
           </span>
         </div>
@@ -1710,7 +1710,7 @@ function LivePendingApprovals() {
       )}
       {!loading && error && (
         <div className="px-5 py-4">
-          <p className="text-[11px] font-mono text-amber-300/80 uppercase tracking-[0.18em] mb-1">// queue unavailable</p>
+          <p className="text-[11px] font-mono text-zinc-300/80 uppercase tracking-[0.18em] mb-1">// queue unavailable</p>
           <p className="text-[12px] text-zinc-400">{error}</p>
         </div>
       )}
@@ -1737,7 +1737,7 @@ function LivePendingApprovals() {
               <Link
                 key={a.id}
                 href={`/dashboard/approvals?id=${encodeURIComponent(a.id)}`}
-                className="block rounded-xl bg-white/[0.02] border border-white/[0.04] p-3 hover:border-amber-500/20 hover:bg-amber-500/[0.04] transition-all group"
+                className="block rounded-xl bg-white/[0.02] border border-white/[0.04] p-3 hover:border-white/20 hover:bg-white/[0.04] transition-all group"
               >
                 <div className="flex items-center gap-2 mb-1.5">
                   <span className={`text-[9px] font-bold uppercase tracking-wider border rounded-full px-1.5 py-px ${chipClass}`}>
@@ -1837,12 +1837,12 @@ function LiveAgentStatusPanel() {
 
   const toneDot = (t: "live" | "preview" | "blocked" | "info"): string =>
     t === "live"    ? "bg-emerald-400" :
-    t === "preview" ? "bg-amber-400"   :
+    t === "preview" ? "bg-zinc-400"   :
     t === "blocked" ? "bg-rose-400"    :
                       "bg-violet-400";
   const toneText = (t: "live" | "preview" | "blocked" | "info"): string =>
     t === "live"    ? "text-emerald-300" :
-    t === "preview" ? "text-amber-300"   :
+    t === "preview" ? "text-zinc-300"   :
     t === "blocked" ? "text-rose-300"    :
                       "text-zinc-200";
 

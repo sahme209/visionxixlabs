@@ -37,11 +37,11 @@ export const dynamic = "force-dynamic";
 const CATEGORY_META: Record<AddOnCategory, { label: string; icon: typeof BoltIcon; tone: string }> = {
   ai_credits: { label: "AI credits",  icon: BoltIcon,         tone: "text-violet-300" },
   seats:      { label: "Seats",       icon: UserGroupIcon,    tone: "text-emerald-300" },
-  connectors: { label: "Connectors",  icon: CircleStackIcon,  tone: "text-amber-300" },
+  connectors: { label: "Connectors",  icon: CircleStackIcon,  tone: "text-zinc-300" },
 };
 
 const STATUS_TONE: Record<string, string> = {
-  pending:  "text-amber-300 bg-amber-500/10 border-amber-500/30",
+  pending:  "text-zinc-300 bg-white/10 border-white/30",
   paid:     "text-emerald-300 bg-emerald-500/10 border-emerald-500/30",
   refunded: "text-zinc-400 bg-white/[0.04] border-white/[0.08]",
   failed:   "text-rose-300 bg-rose-500/10 border-rose-500/30",
@@ -102,7 +102,7 @@ export default async function AddOnsPage() {
         <Stat label="Applied connectors"
           value={String(eff.appliedConnectors)}
           sub={eff.appliedConnectors > 0 ? "Permanent until cancelled" : "—"}
-          tone="text-amber-300" />
+          tone="text-zinc-300" />
       </section>
 
       <p className="text-[10px] font-semibold text-zinc-400 uppercase tracking-widest mb-3">// available add-ons</p>
@@ -177,13 +177,13 @@ export default async function AddOnsPage() {
         </ul>
       )}
 
-      <section className="rounded-2xl border border-amber-500/15 bg-amber-500/[0.04] p-5">
-        <p className="text-[10px] font-semibold text-amber-300 uppercase tracking-widest mb-2">// how add-ons work</p>
-        <ul className="text-[12px] text-zinc-300 leading-relaxed list-disc list-inside marker:text-amber-400/70 space-y-1">
+      <section className="rounded-2xl border border-white/15 bg-white/[0.04] p-5">
+        <p className="text-[10px] font-semibold text-zinc-300 uppercase tracking-widest mb-2">// how add-ons work</p>
+        <ul className="text-[12px] text-zinc-300 leading-relaxed list-disc list-inside marker:text-white/70 space-y-1">
           <li>AI credit packs apply to the current month — they roll off at the next billing cycle.</li>
           <li>Seat + connector add-ons are recurring monthly until cancelled.</li>
           <li><CheckCircleIcon className="h-3 w-3 inline mr-1 -mt-0.5 text-emerald-300" />Operator pays at a discount vs the underlying retail rate; we still preserve margin.</li>
-          <li><ExclamationTriangleIcon className="h-3 w-3 inline mr-1 -mt-0.5 text-amber-300" />Stripe Checkout for add-ons is wired in stub mode today; rows land as <span className="font-mono text-zinc-200">pending</span> until the operator completes payment.</li>
+          <li><ExclamationTriangleIcon className="h-3 w-3 inline mr-1 -mt-0.5 text-zinc-300" />Stripe Checkout for add-ons is wired in stub mode today; rows land as <span className="font-mono text-zinc-200">pending</span> until the operator completes payment.</li>
         </ul>
       </section>
     </div>

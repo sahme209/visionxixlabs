@@ -58,7 +58,7 @@ interface ReportLite {
 const ENF_VISUAL: Record<Enforcement, { border: string; bg: string; text: string; pill: string; icon: typeof ShieldCheckIcon }> = {
   enforced_always:     { border: "border-emerald-500/[0.22]", bg: "bg-emerald-500/[0.04]", text: "text-emerald-300", pill: "bg-emerald-500/15 text-emerald-300", icon: ShieldCheckIcon  },
   enforced_with_audit: { border: "border-cyan-500/[0.22]",    bg: "bg-cyan-500/[0.04]",    text: "text-cyan-300",    pill: "bg-cyan-500/15 text-cyan-300",       icon: DocumentCheckIcon },
-  advisory:            { border: "border-amber-500/[0.22]",   bg: "bg-amber-500/[0.04]",   text: "text-amber-300",   pill: "bg-amber-500/15 text-amber-300",     icon: EyeIcon          },
+  advisory:            { border: "border-white/[0.22]",   bg: "bg-white/[0.04]",   text: "text-zinc-300",   pill: "bg-white/15 text-zinc-300",     icon: EyeIcon          },
   disabled:            { border: "border-zinc-700/30",        bg: "bg-white/[0.02]",       text: "text-zinc-400",    pill: "bg-zinc-700/40 text-zinc-300",       icon: XCircleIcon       },
 };
 
@@ -71,7 +71,7 @@ const ENF_LABEL: Record<Enforcement, string> = {
 
 const SEV_PILL: Record<Severity, string> = {
   critical: "bg-rose-500/20 text-rose-200",
-  high:     "bg-amber-500/15 text-amber-300",
+  high:     "bg-white/15 text-zinc-300",
   medium:   "bg-cyan-500/15 text-cyan-300",
   low:      "bg-zinc-700/40 text-zinc-300",
 };
@@ -149,8 +149,8 @@ export default function PoliciesPage() {
         </div>
       )}
       {!loading && error && (
-        <div role="alert" aria-live="assertive" className="rounded-2xl border border-amber-500/[0.18] bg-amber-500/[0.04] p-5 mb-6">
-          <p className="text-[11px] font-mono text-amber-300/80 uppercase tracking-[0.18em] mb-1">// policies unavailable</p>
+        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/[0.18] bg-white/[0.04] p-5 mb-6">
+          <p className="text-[11px] font-mono text-zinc-300/80 uppercase tracking-[0.18em] mb-1">// policies unavailable</p>
           <p className="text-[13px] text-zinc-300">{error}</p>
         </div>
       )}
@@ -162,7 +162,7 @@ export default function PoliciesPage() {
             <SummaryStat label="Total" value={report.summary.total} tone="text-white" />
             <SummaryStat label="Enforced always" value={report.summary.enforcedAlways} tone="text-emerald-300" />
             <SummaryStat label="Enforced + audit" value={report.summary.enforcedWithAudit} tone="text-cyan-300" />
-            <SummaryStat label="Advisory" value={report.summary.advisory} tone="text-amber-300" />
+            <SummaryStat label="Advisory" value={report.summary.advisory} tone="text-zinc-300" />
           </div>
 
           {/* Grouped by category */}

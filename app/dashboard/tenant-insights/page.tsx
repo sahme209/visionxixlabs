@@ -100,7 +100,7 @@ export default function TenantInsightsPage() {
       </div>
 
       {error && (
-        <div role="alert" aria-live="assertive" className="rounded-2xl border border-amber-500/[0.18] bg-amber-500/[0.04] p-5 mb-6 text-[13px] text-zinc-300">
+        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/[0.18] bg-white/[0.04] p-5 mb-6 text-[13px] text-zinc-300">
           {error}
         </div>
       )}
@@ -114,7 +114,7 @@ export default function TenantInsightsPage() {
               provider: <span className="text-indigo-300">{data.narrative.provider ?? "(fallback)"}</span>
               {data.narrative.model && <>  ·  model: <span className="text-zinc-300">{data.narrative.model}</span></>}
               {" "}·{" "}
-              aiUsed: <span className={data.narrative.aiUsed ? "text-emerald-300" : "text-amber-300"}>{String(data.narrative.aiUsed)}</span>
+              aiUsed: <span className={data.narrative.aiUsed ? "text-emerald-300" : "text-zinc-300"}>{String(data.narrative.aiUsed)}</span>
             </p>
           </div>
 

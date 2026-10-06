@@ -99,7 +99,7 @@ export default function CronHealthPage() {
       </div>
 
       {error && (
-        <div className="rounded-2xl border border-amber-500/[0.18] bg-amber-500/[0.04] p-5 mb-6 text-[13px] text-zinc-300">
+        <div className="rounded-2xl border border-white/[0.18] bg-white/[0.04] p-5 mb-6 text-[13px] text-zinc-300">
           {error}
         </div>
       )}
@@ -124,7 +124,7 @@ export default function CronHealthPage() {
                     tone === "emerald"
                       ? "bg-emerald-500/15 text-emerald-300 border-emerald-500/30"
                       : tone === "amber"
-                        ? "bg-amber-500/15 text-amber-300 border-amber-500/30"
+                        ? "bg-white/15 text-zinc-300 border-white/30"
                         : "bg-rose-500/15 text-rose-300 border-rose-500/30"
                   }`}>
                     {sr}% ok

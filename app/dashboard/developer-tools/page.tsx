@@ -179,8 +179,8 @@ const STATUS_DISPLAY: Record<ToolStatus, { label: string; tone: string }> = {
   not_connected:             { label: "Not connected",     tone: "text-zinc-300 bg-white/[0.04] border-white/[0.10]" },
   coming_soon:               { label: "Coming soon",       tone: "text-zinc-300 bg-white/[0.04] border-white/[0.10]" },
   requires_desktop_app:      { label: "Requires desktop",  tone: "text-fuchsia-300 bg-fuchsia-500/10 border-fuchsia-500/30" },
-  requires_admin_approval:   { label: "Admin approval",    tone: "text-amber-300 bg-amber-500/10 border-amber-500/30" },
-  setup_incomplete:          { label: "Setup incomplete",  tone: "text-amber-300 bg-amber-500/10 border-amber-500/30" },
+  requires_admin_approval:   { label: "Admin approval",    tone: "text-zinc-300 bg-white/10 border-white/30" },
+  setup_incomplete:          { label: "Setup incomplete",  tone: "text-zinc-300 bg-white/10 border-white/30" },
 };
 
 export default function DeveloperToolsPage() {

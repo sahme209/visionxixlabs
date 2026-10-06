@@ -53,15 +53,15 @@ interface ExecutiveSummaryLite {
 
 const STATUS_VISUAL: Record<OverallStatus, { border: string; bg: string; text: string; pill: string; icon: typeof CheckCircleIcon; dot: string }> = {
   operating_normally: { border: "border-emerald-500/[0.22]", bg: "bg-emerald-500/[0.04]", text: "text-emerald-300", pill: "bg-emerald-500/15 text-emerald-300", icon: CheckCircleIcon,        dot: "bg-emerald-400 animate-pulse" },
-  needs_attention:    { border: "border-amber-500/[0.22]",   bg: "bg-amber-500/[0.04]",   text: "text-amber-300",   pill: "bg-amber-500/15 text-amber-300",     icon: ExclamationTriangleIcon, dot: "bg-amber-400 animate-pulse"   },
+  needs_attention:    { border: "border-white/[0.22]",   bg: "bg-white/[0.04]",   text: "text-zinc-300",   pill: "bg-white/15 text-zinc-300",     icon: ExclamationTriangleIcon, dot: "bg-zinc-400 animate-pulse"   },
   blocked:            { border: "border-rose-500/[0.22]",    bg: "bg-rose-500/[0.04]",    text: "text-rose-300",    pill: "bg-rose-500/15 text-rose-300",       icon: ExclamationTriangleIcon, dot: "bg-rose-400"                  },
-  preview_mode:       { border: "border-amber-500/[0.18]",   bg: "bg-amber-500/[0.04]",   text: "text-amber-300",   pill: "bg-amber-500/15 text-amber-300",     icon: EyeIcon,                  dot: "bg-amber-400"                 },
+  preview_mode:       { border: "border-white/[0.18]",   bg: "bg-white/[0.04]",   text: "text-zinc-300",   pill: "bg-white/15 text-zinc-300",     icon: EyeIcon,                  dot: "bg-zinc-400"                 },
   expanding:          { border: "border-cyan-500/[0.22]",    bg: "bg-cyan-500/[0.04]",    text: "text-cyan-300",    pill: "bg-cyan-500/15 text-cyan-300",       icon: RocketLaunchIcon,         dot: "bg-cyan-400 animate-pulse"    },
 };
 
 const SEVERITY_PILL: Record<Severity, string> = {
   critical: "bg-rose-500/20 text-rose-200",
-  high:     "bg-amber-500/15 text-amber-300",
+  high:     "bg-white/15 text-zinc-300",
   medium:   "bg-cyan-500/15 text-cyan-300",
   low:      "bg-zinc-700/40 text-zinc-300",
   info:     "bg-zinc-700/40 text-zinc-300",
@@ -128,8 +128,8 @@ export default function ExecutiveSummaryPage() {
         </div>
       )}
       {!loading && error && (
-        <div role="alert" aria-live="assertive" className="rounded-2xl border border-amber-500/[0.18] bg-amber-500/[0.04] p-5 mb-6">
-          <p className="text-[11px] font-mono text-amber-300/80 uppercase tracking-[0.18em] mb-1">// summary unavailable</p>
+        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/[0.18] bg-white/[0.04] p-5 mb-6">
+          <p className="text-[11px] font-mono text-zinc-300/80 uppercase tracking-[0.18em] mb-1">// summary unavailable</p>
           <p className="text-[13px] text-zinc-300">{error}</p>
         </div>
       )}
@@ -209,7 +209,7 @@ export default function ExecutiveSummaryPage() {
                 <ul className="space-y-1">
                   {report.readiness.topBlockers.map((b, i) => (
                     <li key={i} className="text-[11px] text-zinc-400 leading-snug flex items-start gap-1.5">
-                      <span className="mt-1.5 w-1 h-1 rounded-full bg-amber-400 shrink-0" />
+                      <span className="mt-1.5 w-1 h-1 rounded-full bg-zinc-400 shrink-0" />
                       <span>{b}</span>
                     </li>
                   ))}
@@ -227,7 +227,7 @@ export default function ExecutiveSummaryPage() {
               </div>
               <div className="grid grid-cols-3 gap-2 mb-3">
                 <MiniStat label="Healthy" value={report.integrationHealth.healthy} tone="text-emerald-300" />
-                <MiniStat label="Preview" value={report.integrationHealth.preview} tone="text-amber-300" />
+                <MiniStat label="Preview" value={report.integrationHealth.preview} tone="text-zinc-300" />
                 <MiniStat label="Blocked" value={report.integrationHealth.blocked} tone={report.integrationHealth.blocked > 0 ? "text-rose-300" : "text-zinc-500"} />
               </div>
               {report.integrationHealth.weakestIntegration && (
@@ -262,12 +262,12 @@ export default function ExecutiveSummaryPage() {
 
           {/* Honest limitations */}
           {report.honestLimitations.length > 0 && (
-            <div className="rounded-2xl border border-amber-500/[0.18] bg-amber-500/[0.04] p-5 mb-8">
-              <p className="text-[10px] font-mono text-amber-300/80 uppercase tracking-[0.18em] mb-2">Known limitations</p>
+            <div className="rounded-2xl border border-white/[0.18] bg-white/[0.04] p-5 mb-8">
+              <p className="text-[10px] font-mono text-zinc-300/80 uppercase tracking-[0.18em] mb-2">Known limitations</p>
               <ul className="space-y-1">
                 {report.honestLimitations.map((l, i) => (
                   <li key={i} className="text-[12px] text-zinc-300 leading-relaxed flex items-start gap-2">
-                    <span className="mt-1.5 w-1 h-1 rounded-full bg-amber-400 shrink-0" />
+                    <span className="mt-1.5 w-1 h-1 rounded-full bg-zinc-400 shrink-0" />
                     <span>{l}</span>
                   </li>
                 ))}

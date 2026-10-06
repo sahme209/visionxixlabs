@@ -126,7 +126,7 @@ export default async function WorkforceActivityPage({
 
       <section className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-6">
         <Stat label="Allowed" value={allowedCount} icon={CheckCircleIcon} tone="text-emerald-300" />
-        <Stat label="Requires approval" value={requiresCount} icon={ShieldCheckIcon} tone="text-amber-300" />
+        <Stat label="Requires approval" value={requiresCount} icon={ShieldCheckIcon} tone="text-zinc-300" />
         <Stat label="Blocked" value={blockedCount} icon={ExclamationTriangleIcon} tone="text-rose-300" />
       </section>
 
@@ -208,7 +208,7 @@ function FilterPill({
 }: { href: string; active: boolean; label: string; tone?: "zinc" | "amber" | "emerald" | "rose" | "violet" }) {
   const toneClass = {
     zinc:    active ? "bg-white/[0.08] text-white border-white/[0.12]"           : "bg-white/[0.02] text-zinc-400 border-white/[0.06] hover:text-zinc-200",
-    amber:   active ? "bg-amber-500/15 text-amber-200 border-amber-500/40"       : "bg-white/[0.02] text-zinc-400 border-white/[0.06] hover:text-amber-200",
+    amber:   active ? "bg-white/15 text-zinc-200 border-white/40"       : "bg-white/[0.02] text-zinc-400 border-white/[0.06] hover:text-zinc-200",
     emerald: active ? "bg-emerald-500/15 text-emerald-200 border-emerald-500/40" : "bg-white/[0.02] text-zinc-400 border-white/[0.06] hover:text-emerald-200",
     rose:    active ? "bg-rose-500/15 text-rose-200 border-rose-500/40"          : "bg-white/[0.02] text-zinc-400 border-white/[0.06] hover:text-rose-200",
     violet:  active ? "bg-violet-500/15 text-white border-violet-500/40"    : "bg-white/[0.02] text-zinc-400 border-white/[0.06] hover:text-white",
@@ -235,14 +235,14 @@ function ActivityRow(props: {
 }) {
   const decisionTone =
     props.runtimeDecision === "allowed"           ? "text-emerald-300 bg-emerald-500/10 border-emerald-500/30" :
-    props.runtimeDecision === "requires_approval" ? "text-amber-300 bg-amber-500/10 border-amber-500/30"       :
+    props.runtimeDecision === "requires_approval" ? "text-zinc-300 bg-white/10 border-white/30"       :
                                                     "text-rose-300 bg-rose-500/10 border-rose-500/30";
 
   const snapTone =
     props.snapshotStatus === "approved" ? "text-emerald-300" :
     props.snapshotStatus === "rejected" ? "text-rose-300"    :
     props.snapshotStatus === "expired"  ? "text-zinc-400"    :
-    props.snapshotStatus === "pending"  ? "text-amber-300"   :
+    props.snapshotStatus === "pending"  ? "text-zinc-300"   :
                                           "text-zinc-500";
 
   return (

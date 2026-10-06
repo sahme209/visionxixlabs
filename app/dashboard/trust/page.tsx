@@ -81,7 +81,7 @@ export default function TrustCenterPage() {
             kpi.tone === "emerald" ? "text-emerald-300 bg-emerald-500/10 border-emerald-500/20" :
             kpi.tone === "violet"  ? "text-violet-300 bg-violet-500/10 border-white/[0.08]" :
             kpi.tone === "cyan"    ? "text-cyan-300 bg-cyan-500/10 border-cyan-500/20" :
-                                     "text-amber-300 bg-amber-500/10 border-amber-500/20";
+                                     "text-zinc-300 bg-white/10 border-white/20";
           return (
             <div key={kpi.label} className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5">
               <div className={`w-9 h-9 rounded-lg border flex items-center justify-center mb-3 ${toneClass}`}>
@@ -184,7 +184,7 @@ export default function TrustCenterPage() {
                     <span className={`px-2 py-0.5 rounded-full border ${
                       ready ? "text-emerald-300 bg-emerald-500/10 border-emerald-500/20" :
                       row.status === "blocked" ? "text-red-300 bg-red-500/10 border-red-500/20" :
-                      "text-amber-300 bg-amber-500/10 border-amber-500/20"
+                      "text-zinc-300 bg-white/10 border-white/20"
                     }`}>
                       {RELEASE_STATUS_LABEL[row.status]}
                     </span>
@@ -213,8 +213,8 @@ export default function TrustCenterPage() {
                   <p className="text-sm font-semibold text-white">{c.label}</p>
                   <span className={`text-[9px] font-bold uppercase tracking-wider border rounded-full px-1.5 py-px ${
                     c.status === "live"      ? "text-emerald-300 bg-emerald-500/10 border-emerald-500/20" :
-                    c.status === "expanding" ? "text-amber-300 bg-amber-500/10 border-amber-500/20" :
-                    c.status === "preview"   ? "text-amber-300 bg-amber-500/10 border-amber-500/20" :
+                    c.status === "expanding" ? "text-zinc-300 bg-white/10 border-white/20" :
+                    c.status === "preview"   ? "text-zinc-300 bg-white/10 border-white/20" :
                                                "text-zinc-400 bg-white/[0.04] border-white/[0.08]"
                   }`}>{c.status}</span>
                   <span className="text-[10px] text-zinc-500 font-mono">{c.authModel}</span>
@@ -225,7 +225,7 @@ export default function TrustCenterPage() {
                 </p>
                 {c.writePermissions.length > 0 ? (
                   <p className="text-[11px] text-zinc-500 mt-1">
-                    <span className="text-amber-300">Writes:</span> {c.writePermissions.join(" · ")}
+                    <span className="text-zinc-300">Writes:</span> {c.writePermissions.join(" · ")}
                   </p>
                 ) : (
                   <p className="text-[11px] text-emerald-300/80 mt-1">No writes by default · read-only.</p>
@@ -257,7 +257,7 @@ export default function TrustCenterPage() {
                   <div key={c.id} className="flex items-start gap-2">
                     <span className={`mt-1.5 w-1.5 h-1.5 rounded-full shrink-0 ${
                       c.state === "implemented" ? "bg-emerald-400" :
-                      c.state === "partial"     ? "bg-amber-400" :
+                      c.state === "partial"     ? "bg-zinc-400" :
                                                   "bg-zinc-600"
                     }`} />
                     <div className="flex-1 min-w-0">
@@ -288,7 +288,7 @@ export default function TrustCenterPage() {
         <div className="mb-10 rounded-2xl border border-white/[0.06] bg-white/[0.02] overflow-hidden">
           <div className="px-5 py-3 border-b border-white/[0.04] flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <KeyIcon className="h-4 w-4 text-amber-300" />
+              <KeyIcon className="h-4 w-4 text-zinc-300" />
               <p className="text-[11px] font-semibold text-zinc-300 uppercase tracking-[0.15em]">Data handling</p>
             </div>
             <span className="text-[11px] text-zinc-500">{dataPosture.enforced} enforced · {dataPosture.attested} attested · {dataPosture.aspirational} aspirational</span>
@@ -402,7 +402,7 @@ function ValidationSummaryStrip() {
           {actionable.map((r) => (
             <div key={r.id} className="rounded-lg border border-white/[0.05] bg-white/[0.02] px-3 py-2">
               <p className="text-[11px] text-zinc-300 font-semibold truncate">{r.capability}</p>
-              <p className="text-[10px] text-amber-300/80 mt-0.5">{r.nextFix ?? "Action needed"}</p>
+              <p className="text-[10px] text-zinc-300/80 mt-0.5">{r.nextFix ?? "Action needed"}</p>
             </div>
           ))}
         </div>
@@ -419,7 +419,7 @@ function ControlRow({ control }: { control: ComplianceControl }) {
                                        CheckCircleIcon;
   const tone =
     control.status === "implemented" ? "text-emerald-300" :
-    control.status === "partial"     ? "text-amber-300" :
+    control.status === "partial"     ? "text-zinc-300" :
     control.status === "planned"     ? "text-zinc-500" :
                                        "text-zinc-400";
   return (
@@ -431,7 +431,7 @@ function ControlRow({ control }: { control: ComplianceControl }) {
             <p className="text-sm font-semibold text-white">{control.title}</p>
             <span className={`text-[9px] font-bold uppercase tracking-wider border rounded-full px-1.5 py-px ${
               control.status === "implemented" ? "text-emerald-300 bg-emerald-500/10 border-emerald-500/20" :
-              control.status === "partial"     ? "text-amber-300 bg-amber-500/10 border-amber-500/20" :
+              control.status === "partial"     ? "text-zinc-300 bg-white/10 border-white/20" :
               control.status === "planned"     ? "text-zinc-400 bg-white/[0.04] border-white/[0.08]" :
                                                   "text-zinc-400 bg-white/[0.04] border-white/[0.08]"
             }`}>{STATUS_LABEL[control.status]}</span>
@@ -464,7 +464,7 @@ function DataAssertionGroup({
     accent === "emerald" ? "text-emerald-300" :
     accent === "violet"  ? "text-violet-300" :
     accent === "cyan"    ? "text-cyan-300" :
-    accent === "amber"   ? "text-amber-300" :
+    accent === "amber"   ? "text-zinc-300" :
     accent === "red"     ? "text-red-300" :
                             "text-zinc-300";
   return (
@@ -475,7 +475,7 @@ function DataAssertionGroup({
           <li key={a.id} className="flex items-start gap-2 text-[11px] text-zinc-400 leading-relaxed">
             <span className={`mt-1.5 w-1.5 h-1.5 rounded-full shrink-0 ${
               a.confidence === "enforced"  ? "bg-emerald-400" :
-              a.confidence === "attested"  ? "bg-amber-400" :
+              a.confidence === "attested"  ? "bg-zinc-400" :
                                               "bg-zinc-600"
             }`} />
             <span>
@@ -542,7 +542,7 @@ function CanonicalTrustStrip() {
   const sourceTone =
     sourceMode === "live"    ? "bg-emerald-500/15 text-emerald-300 border-emerald-500/30" :
     sourceMode === "partial" ? "bg-cyan-500/15 text-cyan-300 border-cyan-500/30"        :
-                                "bg-amber-500/15 text-amber-300 border-amber-500/30";
+                                "bg-white/15 text-zinc-300 border-white/30";
 
   if (loading) {
     return (
@@ -553,8 +553,8 @@ function CanonicalTrustStrip() {
   }
   if (error || !summary) {
     return (
-      <div role="alert" aria-live="assertive" className="rounded-2xl border border-amber-500/[0.18] bg-amber-500/[0.04] p-5 mb-8">
-        <p className="text-[11px] font-mono text-amber-300/80 uppercase tracking-[0.18em] mb-1">// trust summary unavailable</p>
+      <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/[0.18] bg-white/[0.04] p-5 mb-8">
+        <p className="text-[11px] font-mono text-zinc-300/80 uppercase tracking-[0.18em] mb-1">// trust summary unavailable</p>
         <p className="text-[13px] text-zinc-300">{error ?? "Sign in to load /api/trust/summary."}</p>
       </div>
     );
@@ -585,7 +585,7 @@ function CanonicalTrustStrip() {
         </div>
         <div>
           <p className="text-[10px] font-mono text-zinc-500 uppercase tracking-wider mb-1">Evidence coverage</p>
-          <p className={`text-3xl font-bold tracking-tight ${coveragePct >= 60 ? "text-emerald-300" : coveragePct >= 30 ? "text-amber-300" : "text-rose-300"}`}>{coveragePct}%</p>
+          <p className={`text-3xl font-bold tracking-tight ${coveragePct >= 60 ? "text-emerald-300" : coveragePct >= 30 ? "text-zinc-300" : "text-rose-300"}`}>{coveragePct}%</p>
           <p className="text-[11px] text-zinc-500 mt-1">Verified / total ratio</p>
         </div>
         <div className="flex flex-col justify-between">

@@ -204,9 +204,9 @@ export function MigrationStageForm() {
       )}
 
       {state.kind === "blocked" && (
-        <div className="rounded-lg border border-amber-500/30 bg-amber-500/[0.06] px-3 py-2 text-[12px] text-amber-100">
+        <div className="rounded-lg border border-white/30 bg-white/[0.06] px-3 py-2 text-[12px] text-zinc-100">
           <p className="font-semibold mb-1">Runbook is blocked — fix these before staging:</p>
-          <ul className="list-disc list-inside marker:text-amber-400/70 space-y-0.5">
+          <ul className="list-disc list-inside marker:text-white/70 space-y-0.5">
             {state.runbookErrors.map((e, i) => <li key={i}>{e}</li>)}
           </ul>
         </div>

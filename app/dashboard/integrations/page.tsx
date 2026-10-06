@@ -25,9 +25,9 @@ const PROVIDER_LABEL: Record<string, string> = {
 const STATUS_TONE: Record<string, string> = {
   connected:           "text-emerald-300",
   setup_started:       "text-zinc-400",
-  waiting_for_provider:"text-amber-300",
-  validating:          "text-amber-300",
-  needs_attention:     "text-amber-300",
+  waiting_for_provider:"text-zinc-300",
+  validating:          "text-zinc-300",
+  needs_attention:     "text-zinc-300",
   failed:              "text-rose-300",
   disconnected:        "text-zinc-500",
   revoked:             "text-rose-300",
@@ -96,8 +96,8 @@ export default async function IntegrationsPage() {
       </header>
 
       {migrationPending && (
-        <div className="mb-8 rounded-2xl border border-amber-500/15 bg-white/[0.015] px-6 py-5">
-          <p className="text-[10px] font-mono uppercase tracking-[0.28em] text-amber-300 mb-1">migration pending</p>
+        <div className="mb-8 rounded-2xl border border-white/15 bg-white/[0.015] px-6 py-5">
+          <p className="text-[10px] font-mono uppercase tracking-[0.28em] text-zinc-300 mb-1">migration pending</p>
           <p className="text-[13px] text-zinc-300">
             ConnectorSetupSession table not migrated yet. Run <code className="font-mono text-white">prisma migrate deploy</code>.
           </p>

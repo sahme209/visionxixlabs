@@ -474,6 +474,6 @@ export const SUB_TOOL_MATURITY_META: Record<
   { label: string; tone: string }
 > = {
   active:  { label: "Active",  tone: "border-emerald-500/30 bg-emerald-500/10 text-emerald-300" },
-  partial: { label: "Partial", tone: "border-amber-500/30   bg-amber-500/10   text-amber-300"  },
+  partial: { label: "Partial", tone: "border-white/30   bg-white/10   text-zinc-300"  },
   planned: { label: "Planned", tone: "border-zinc-500/30    bg-zinc-500/10    text-zinc-400"   },
 };

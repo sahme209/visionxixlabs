@@ -90,8 +90,8 @@ export default async function AutonomousTicksPage() {
       </header>
 
       {migrationPending && (
-        <div className="mb-8 rounded-2xl border border-amber-500/15 bg-white/[0.015] px-6 py-5">
-          <p className="text-[10px] font-mono uppercase tracking-[0.28em] text-amber-300 mb-1">migration pending</p>
+        <div className="mb-8 rounded-2xl border border-white/15 bg-white/[0.015] px-6 py-5">
+          <p className="text-[10px] font-mono uppercase tracking-[0.28em] text-zinc-300 mb-1">migration pending</p>
           <p className="text-[13px] text-zinc-300">
             AutonomousTickLog table not migrated yet. Run <code className="font-mono text-white">prisma migrate deploy</code>.
           </p>
@@ -104,7 +104,7 @@ export default async function AutonomousTicksPage() {
           <Tile label="runs"    count={totals.runs}    tone="text-white" />
           <Tile label="ok"      count={totals.ok}      tone={totals.ok > 0 ? "text-emerald-300" : "text-zinc-600"} />
           <Tile label="errors"  count={totals.errors}  tone={totals.errors > 0 ? "text-rose-300" : "text-zinc-600"} />
-          <Tile label="skipped" count={totals.skipped} tone={totals.skipped > 0 ? "text-amber-300" : "text-zinc-600"} />
+          <Tile label="skipped" count={totals.skipped} tone={totals.skipped > 0 ? "text-zinc-300" : "text-zinc-600"} />
         </section>
       )}
 
@@ -142,7 +142,7 @@ export default async function AutonomousTicksPage() {
                     <span className="text-zinc-300">{t.totalRuns} run{t.totalRuns === 1 ? "" : "s"}</span>
                     {t.okRuns > 0 &&     <><span className="text-zinc-500">·</span><span className="text-emerald-300">{t.okRuns} ok</span></>}
                     {t.errorRuns > 0 &&  <><span className="text-zinc-500">·</span><span className="text-rose-300">{t.errorRuns} error</span></>}
-                    {t.skippedRuns > 0 && <><span className="text-zinc-500">·</span><span className="text-amber-300">{t.skippedRuns} skipped</span></>}
+                    {t.skippedRuns > 0 && <><span className="text-zinc-500">·</span><span className="text-zinc-300">{t.skippedRuns} skipped</span></>}
                   </div>
                   <p className="text-[11px] font-mono text-zinc-500 mt-1">tick · {t.id}</p>
                 </div>

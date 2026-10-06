@@ -93,7 +93,7 @@ export default async function EngineerWorkspacePage() {
         />
         <Lane
           icon={ExclamationTriangleIcon}
-          tone="text-amber-300"
+          tone="text-zinc-300"
           title="Incident triage"
           description="Open incidents + postmortems awaiting your input."
           ctaHref="/dashboard/incidents"

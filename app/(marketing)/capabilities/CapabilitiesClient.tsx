@@ -212,8 +212,8 @@ export function CapabilitiesClient() {
           <summary id="operational-terms-heading" className="cursor-pointer list-none text-lg font-medium text-white marker:hidden"><span className="flex items-center justify-between gap-4">Inspect control details <span className="text-sm font-normal text-zinc-500 transition group-open:rotate-45" aria-hidden>+</span></span></summary>
           <p className="mt-3 max-w-2xl text-sm leading-6 text-zinc-400">These details are available for technical review. They do not claim live cloud mutation, a configured integration, or autonomous deployment.</p>
           <div className="mt-6 grid gap-4 md:grid-cols-2">
-            <article className="rounded-xl border border-amber-500/20 bg-amber-500/[0.04] p-5">
-              <h3 className="font-semibold text-amber-100">Blast radius limits</h3>
+            <article className="rounded-xl border border-white/20 bg-white/[0.04] p-5">
+              <h3 className="font-semibold text-zinc-100">Blast radius limits</h3>
               <p className="mt-2 text-sm leading-relaxed text-zinc-300">
                 The operation-planning kernel batches resources to the configured maximum, rejects an invalid oversized step, and records a boundary event. Example: a 12-resource plan with a five-resource limit becomes 5 + 5 + 2 planning batches. This is kernel enforcement; live cloud mutation enforcement is not release-verified.
               </p>

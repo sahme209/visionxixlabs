@@ -26,7 +26,7 @@ type Trigger = "manual" | "scheduled" | "drift" | "onboarding" | "webhook";
 
 const STATUS_TONE: Record<Status, string> = {
   completed:           "text-emerald-300",
-  partially_completed: "text-amber-300",
+  partially_completed: "text-zinc-300",
   running:             "text-zinc-300",
   pending:             "text-zinc-400",
   failed:              "text-rose-300",
@@ -35,7 +35,7 @@ const STATUS_TONE: Record<Status, string> = {
 const TRIGGER_TONE: Record<Trigger, string> = {
   manual:     "text-zinc-200",
   scheduled:  "text-zinc-400",
-  drift:      "text-amber-300",
+  drift:      "text-zinc-300",
   onboarding: "text-zinc-400",
   webhook:    "text-zinc-400",
 };
@@ -123,8 +123,8 @@ export default async function ScansPage() {
       </header>
 
       {migrationPending && (
-        <div className="mb-8 rounded-2xl border border-amber-500/15 bg-white/[0.015] px-6 py-5">
-          <p className="text-[10px] font-mono uppercase tracking-[0.28em] text-amber-300 mb-1">migration pending</p>
+        <div className="mb-8 rounded-2xl border border-white/15 bg-white/[0.015] px-6 py-5">
+          <p className="text-[10px] font-mono uppercase tracking-[0.28em] text-zinc-300 mb-1">migration pending</p>
           <p className="text-[13px] text-zinc-300">
             The agent run table hasn&apos;t been migrated yet. Run <code className="font-mono text-white">prisma migrate deploy</code> to populate this history.
           </p>

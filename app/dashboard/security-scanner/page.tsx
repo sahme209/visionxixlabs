@@ -72,14 +72,14 @@ export default function SecurityScannerPage() {
       <Reveal direction="up" blur>
         <div className="mb-8">
           <div className="flex items-center gap-3 mb-3">
-            <ShieldExclamationIcon className="h-4 w-4 text-amber-300" />
-            <p className="text-[10px] font-semibold text-amber-300 uppercase tracking-[0.18em]">Security Scanner</p>
-            <span className="text-[9px] font-semibold text-amber-300 bg-amber-500/15 border border-amber-500/30 rounded-full px-2 py-0.5 uppercase tracking-wider">
+            <ShieldExclamationIcon className="h-4 w-4 text-zinc-300" />
+            <p className="text-[10px] font-semibold text-zinc-300 uppercase tracking-[0.18em]">Security Scanner</p>
+            <span className="text-[9px] font-semibold text-zinc-300 bg-white/15 border border-white/30 rounded-full px-2 py-0.5 uppercase tracking-wider">
               {outcome?.mode === "live_signals_partial" ? "Live signals · partial" : "Preview"}
             </span>
           </div>
           <h1 className="text-3xl md:text-4xl font-bold text-white tracking-[-0.04em] mb-2">
-            Vulnerability + posture <span className="bg-gradient-to-r from-amber-300 to-rose-300 bg-clip-text text-transparent">scanner.</span>
+            Vulnerability + posture <span className="bg-gradient-to-r from-zinc-300 to-rose-300 bg-clip-text text-transparent">scanner.</span>
           </h1>
           <p className="text-sm text-zinc-400 max-w-2xl leading-relaxed">
             Continuous checks across cloud, app/platform, supply-chain, and desktop. Every result is typed and honest — preview-source findings are labelled.
@@ -99,7 +99,7 @@ export default function SecurityScannerPage() {
           const toneClass =
             kpi.tone === "emerald" ? "text-emerald-300 bg-emerald-500/10 border-emerald-500/20" :
             kpi.tone === "red"     ? "text-red-300 bg-red-500/10 border-red-500/20"             :
-            kpi.tone === "amber"   ? "text-amber-300 bg-amber-500/10 border-amber-500/20"       :
+            kpi.tone === "amber"   ? "text-zinc-300 bg-white/10 border-white/20"       :
                                       "text-zinc-400 bg-white/[0.04] border-white/[0.08]";
           return (
             <div key={kpi.label} className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5">
@@ -175,13 +175,13 @@ function CheckRow({ result }: { result: CheckResult }) {
   const tone =
     result.status === "pass"    ? "text-emerald-300" :
     result.status === "fail"    ? "text-red-300" :
-    result.status === "warn"    ? "text-amber-300" :
-    result.status === "preview" ? "text-amber-300" :
+    result.status === "warn"    ? "text-zinc-300" :
+    result.status === "preview" ? "text-zinc-300" :
                                   "text-zinc-500";
   const sev =
     result.severity === "critical" ? "text-red-300 bg-red-500/10 border-red-500/20" :
-    result.severity === "high"     ? "text-amber-300 bg-amber-500/10 border-amber-500/20" :
-    result.severity === "medium"   ? "text-amber-300 bg-amber-500/10 border-amber-500/20" :
+    result.severity === "high"     ? "text-zinc-300 bg-white/10 border-white/20" :
+    result.severity === "medium"   ? "text-zinc-300 bg-white/10 border-white/20" :
                                       "text-zinc-400 bg-white/[0.04] border-white/[0.08]";
   return (
     <div className={`rounded-xl border ${result.status === "fail" ? "border-red-500/20 bg-red-500/[0.03]" : "border-white/[0.06] bg-white/[0.02]"} p-4`}>
@@ -196,7 +196,7 @@ function CheckRow({ result }: { result: CheckResult }) {
               <span className="text-[9px] font-bold uppercase tracking-wider border border-white/[0.08] bg-violet-500/10 text-violet-300 rounded-full px-1.5 py-px">{result.provider}</span>
             )}
             {result.source === "preview" && (
-              <span className="text-[9px] font-bold uppercase tracking-wider border border-amber-500/25 bg-amber-500/10 text-amber-300 rounded-full px-1.5 py-px">preview</span>
+              <span className="text-[9px] font-bold uppercase tracking-wider border border-white/25 bg-white/10 text-zinc-300 rounded-full px-1.5 py-px">preview</span>
             )}
           </div>
           <p className="text-[11px] text-zinc-400 leading-relaxed">{result.description}</p>

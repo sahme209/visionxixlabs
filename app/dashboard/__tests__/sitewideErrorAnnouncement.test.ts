@@ -76,13 +76,13 @@ describe("Sitewide dashboard error announcement", () => {
   it.each(SITEWIDE_AMBER_PANEL_FILES)("%s announces its error panel", (path) => {
     const src = source(path);
     expect(src).toContain(
-      'role="alert" aria-live="assertive" className="rounded-2xl border border-amber-500/[0.18] bg-amber-500/[0.04] p-5 mb-6',
+      'role="alert" aria-live="assertive" className="rounded-2xl border border-white/[0.18] bg-white/[0.04] p-5 mb-6',
     );
   });
 
   it("CommandCenterClient announces both of its error states", () => {
     const src = source("app/dashboard/command-center/CommandCenterClient.tsx");
-    expect(src).toContain('role="alert" aria-live="assertive" className="text-[12px] text-amber-300/90"');
+    expect(src).toContain('role="alert" aria-live="assertive" className="text-[12px] text-zinc-300/90"');
     expect(src).toContain('role="alert" aria-live="assertive" className="px-5 py-4"');
   });
 

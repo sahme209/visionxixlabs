@@ -185,7 +185,7 @@ export default function ReferencePage() {
                 <h3 className="text-[14px] font-semibold text-white">{eng.name}</h3>
                 <span className={`text-[10px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded ${
                   eng.defaultApproval === "two_person" ? "bg-violet-500/15 text-violet-200" :
-                  eng.defaultApproval === "self_approve" ? "bg-amber-500/15 text-amber-200" :
+                  eng.defaultApproval === "self_approve" ? "bg-white/15 text-zinc-200" :
                   "bg-emerald-500/15 text-emerald-200"
                 }`}>default · {eng.defaultApproval}</span>
               </div>

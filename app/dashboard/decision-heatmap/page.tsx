@@ -40,7 +40,7 @@ function heat(count: number, max: number): string {
   const ratio = max > 0 ? count / max : 0;
   if (ratio >= 0.75) return "bg-rose-500/30 text-rose-100 border-rose-400/40";
   if (ratio >= 0.5)  return "bg-rose-500/20 text-rose-200 border-rose-500/30";
-  if (ratio >= 0.25) return "bg-amber-500/20 text-amber-200 border-amber-500/30";
+  if (ratio >= 0.25) return "bg-white/20 text-zinc-200 border-white/30";
   return "bg-emerald-500/15 text-emerald-200 border-emerald-500/25";
 }
 
@@ -132,7 +132,7 @@ export default function DecisionHeatmapPage() {
       </div>
 
       {error && (
-        <div role="alert" aria-live="assertive" className="rounded-2xl border border-amber-500/[0.18] bg-amber-500/[0.04] p-5 mb-6 text-[13px] text-zinc-300">
+        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/[0.18] bg-white/[0.04] p-5 mb-6 text-[13px] text-zinc-300">
           {error}
         </div>
       )}

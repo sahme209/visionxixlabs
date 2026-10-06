@@ -62,7 +62,7 @@ type RespBody =
 
 const DOT_CLASS: Record<SidebarTone, string> = {
   emerald: "bg-emerald-400",
-  amber:   "bg-amber-400",
+  amber:   "bg-zinc-400",
   rose:    "bg-rose-400",
   blue:    "bg-blue-400",
   zinc:    "bg-zinc-600",
@@ -70,7 +70,7 @@ const DOT_CLASS: Record<SidebarTone, string> = {
 
 const RISK_CLASS: Record<RiskBadge, string> = {
   low:      "bg-emerald-500/15 text-emerald-300 border-emerald-500/25",
-  medium:   "bg-amber-500/15 text-amber-300 border-amber-500/25",
+  medium:   "bg-white/15 text-zinc-300 border-white/25",
   high:     "bg-rose-500/15 text-rose-300 border-rose-500/25",
   critical: "bg-rose-500/25 text-rose-200 border-rose-500/40",
   unscored: "bg-zinc-700/40 text-zinc-300 border-zinc-700/40",
@@ -142,17 +142,17 @@ export default function ReleasesPage() {
       )}
 
       {!loading && errorBody?.error === "migration_pending" && (
-        <div role="alert" aria-live="assertive" className="rounded-2xl border border-amber-500/[0.18] bg-amber-500/[0.04] p-5 mb-6">
+        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/[0.18] bg-white/[0.04] p-5 mb-6">
           <div className="flex items-center gap-2 mb-1">
-            <ExclamationTriangleIcon className="h-4 w-4 text-amber-300" />
-            <p className="text-[12px] font-semibold text-amber-200">Schema migration pending</p>
+            <ExclamationTriangleIcon className="h-4 w-4 text-zinc-300" />
+            <p className="text-[12px] font-semibold text-zinc-200">Schema migration pending</p>
           </div>
           <p className="text-[12.5px] text-zinc-300 leading-relaxed">{errorBody.hint}</p>
         </div>
       )}
 
       {!loading && errorBody?.error === "auth_required" && (
-        <div role="alert" aria-live="assertive" className="rounded-2xl border border-amber-500/[0.18] bg-amber-500/[0.04] p-5 mb-6 text-[13px] text-zinc-300">
+        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/[0.18] bg-white/[0.04] p-5 mb-6 text-[13px] text-zinc-300">
           Sign in required to view releases.
         </div>
       )}
@@ -211,7 +211,7 @@ function ReleaseRow({ r, now }: { r: ReleaseListRow; now: Date }) {
             </span>
           )}
           {r.evidencePack && (
-            <span className={`text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded border ${r.evidencePack.signed ? "bg-emerald-500/15 text-emerald-300 border-emerald-500/25" : "bg-amber-500/10 text-amber-300 border-amber-500/20"}`}>
+            <span className={`text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded border ${r.evidencePack.signed ? "bg-emerald-500/15 text-emerald-300 border-emerald-500/25" : "bg-white/10 text-zinc-300 border-white/20"}`}>
               evidence {r.evidencePack.signed ? "signed" : "draft"}
             </span>
           )}
@@ -230,7 +230,7 @@ function ReleaseRow({ r, now }: { r: ReleaseListRow; now: Date }) {
 function Stat({ icon: Icon, label, value, tone }: { icon: typeof RocketLaunchIcon; label: string; value: string; tone: "emerald" | "amber" | "rose" | "zinc" }) {
   const cls = {
     emerald: "border-emerald-500/[0.18] bg-emerald-500/[0.03] text-emerald-200",
-    amber:   "border-amber-500/[0.18] bg-amber-500/[0.03] text-amber-200",
+    amber:   "border-white/[0.18] bg-white/[0.03] text-zinc-200",
     rose:    "border-rose-500/[0.18] bg-rose-500/[0.03] text-rose-200",
     zinc:    "border-white/[0.06] bg-white/[0.02] text-zinc-200",
   }[tone];
@@ -259,7 +259,7 @@ const SUBSYSTEMS: Array<{ label: string; href: string; tone: string }> = [
   { label: "Release freeze",       href: "/dashboard/release-freeze",   tone: "border-cyan-500/30 text-cyan-200" },
   { label: "Release readiness",    href: "/dashboard/release-readiness", tone: "border-emerald-500/30 text-emerald-200" },
   { label: "Policy violations",    href: "/dashboard/policy-violations", tone: "border-rose-500/30 text-rose-200" },
-  { label: "Drift",                href: "/dashboard/drift",            tone: "border-amber-500/30 text-amber-200" },
+  { label: "Drift",                href: "/dashboard/drift",            tone: "border-white/30 text-zinc-200" },
   { label: "SOPs",                 href: "/dashboard/sops",             tone: "border-zinc-500/30 text-zinc-200" },
 ];
 
@@ -323,7 +323,7 @@ function HealthSummaryTile() {
   const d = resp.data;
   const scoreColor =
     d.platformHealthScore >= 80 ? "text-emerald-300" :
-    d.platformHealthScore >= 60 ? "text-amber-300" :
+    d.platformHealthScore >= 60 ? "text-zinc-300" :
     d.platformHealthScore >= 40 ? "text-orange-300" : "text-rose-300";
 
   return (
@@ -358,7 +358,7 @@ function SummaryStat({
 }) {
   const tone = {
     emerald: "text-emerald-300",
-    amber:   "text-amber-300",
+    amber:   "text-zinc-300",
     rose:    "text-rose-300",
     zinc:    "text-zinc-300",
   }[highlight];

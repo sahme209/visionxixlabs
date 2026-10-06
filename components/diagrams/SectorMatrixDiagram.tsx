@@ -8,7 +8,7 @@
 const sectors = [
   { sector: "Digital services", x: 35, y: 45, color: "#4f46e5", needs: ["Customer support", "Sales enablement", "Internal AI"] },
   { sector: "Agriculture", x: 345, y: 45, color: "#059669", needs: ["Precision farming", "Pest detection", "Smart irrigation"] },
-  { sector: "Trade & logistics", x: 35, y: 180, color: "#d97706", needs: ["Language/regulatory", "Demand forecasting", "Inventory"] },
+  { sector: "Trade & logistics", x: 35, y: 180, color: "#0891b2", needs: ["Language/regulatory", "Demand forecasting", "Inventory"] },
   { sector: "Manufacturing", x: 345, y: 180, color: "#db2777", needs: ["Process automation", "Quality control", "Supply chain"] },
 ];
 

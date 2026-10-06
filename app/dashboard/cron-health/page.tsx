@@ -62,7 +62,7 @@ export default async function CronHealthPage() {
         {snapshots.map((s) => {
           const failing = s.health.consecutiveFailures >= 3;
           const rate = Math.round(s.health.successRate * 100);
-          const rateTone = failing ? "text-rose-300" : rate >= 95 ? "text-emerald-300" : rate >= 80 ? "text-amber-300" : "text-rose-300";
+          const rateTone = failing ? "text-rose-300" : rate >= 95 ? "text-emerald-300" : rate >= 80 ? "text-zinc-300" : "text-rose-300";
           return (
             <li key={s.id} className={`rounded-md border ${failing ? "border-rose-500/30 bg-rose-500/[0.04]" : "border-white/[0.06] bg-white/[0.012]"} p-4`}>
               <div className="flex items-center justify-between gap-2 mb-2">

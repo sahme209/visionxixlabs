@@ -259,19 +259,19 @@ export default async function CompareEngineersPage({
 
             <MetricRow label="attempts · 30d"   value={String(c.attempts30d.total)} />
             <MetricRow label="· allowed"        value={String(c.attempts30d.allowed)}            tone={c.attempts30d.allowed > 0 ? "text-emerald-300" : "text-zinc-600"} />
-            <MetricRow label="· needs approval" value={String(c.attempts30d.requires_approval)} tone={c.attempts30d.requires_approval > 0 ? "text-amber-300" : "text-zinc-600"} />
+            <MetricRow label="· needs approval" value={String(c.attempts30d.requires_approval)} tone={c.attempts30d.requires_approval > 0 ? "text-zinc-300" : "text-zinc-600"} />
             <MetricRow label="· blocked"        value={String(c.attempts30d.blocked)}            tone={c.attempts30d.blocked > 0 ? "text-rose-300" : "text-zinc-600"} />
 
             <Divider />
 
-            <MetricRow label="pending"        value={String(c.pending)}                                   tone={c.pending > 0 ? "text-amber-300" : "text-zinc-600"} />
+            <MetricRow label="pending"        value={String(c.pending)}                                   tone={c.pending > 0 ? "text-zinc-300" : "text-zinc-600"} />
             <MetricRow label="median latency" value={c.medianLatencyMs !== null ? formatMs(c.medianLatencyMs) : "—"} tone={c.medianLatencyMs !== null ? "text-white" : "text-zinc-600"} />
             <MetricRow label="executed"       value={String(c.executed)}                                  tone={c.executed > 0 ? "text-emerald-300" : "text-zinc-600"} />
             <MetricRow label="failed"         value={String(c.failed)}                                    tone={c.failed > 0 ? "text-rose-300" : "text-zinc-600"} />
 
             <Divider />
 
-            <MetricRow label="missing setup" value={String(c.engineer.missingPieces.length)} tone={c.engineer.missingPieces.length > 0 ? "text-amber-300" : "text-emerald-300"} />
+            <MetricRow label="missing setup" value={String(c.engineer.missingPieces.length)} tone={c.engineer.missingPieces.length > 0 ? "text-zinc-300" : "text-emerald-300"} />
             <MetricRow label="approval rule" value={c.engineer.approvalRule.replace(/_/g, " ")} mono />
             <MetricRow label="highest risk"  value={c.engineer.highestRiskAction}                                                              mono />
 
@@ -284,7 +284,7 @@ export default async function CompareEngineersPage({
               value={c.specialty.hasRow ? (c.specialty.outcome ?? "—").replace(/_/g, " ") : "not yet"}
               tone={
                 c.specialty.outcome === "ai_generated" ? "text-emerald-300" :
-                c.specialty.outcome === "fallback_rules" ? "text-amber-300" :
+                c.specialty.outcome === "fallback_rules" ? "text-zinc-300" :
                 c.specialty.outcome === "error" ? "text-rose-300" :
                 "text-zinc-600"
               }

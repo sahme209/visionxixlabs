@@ -106,16 +106,16 @@ export default function ReleaseOpsAutonomyPage() {
         <div role="alert" aria-live="assertive" className="rounded-2xl border border-rose-500/[0.18] bg-rose-500/[0.04] p-5 mb-6 text-[13px] text-zinc-300">{networkError}</div>
       )}
       {!loading && errorBody?.error === "migration_pending" && (
-        <div role="alert" aria-live="assertive" className="rounded-2xl border border-amber-500/[0.18] bg-amber-500/[0.04] p-5 mb-6">
+        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/[0.18] bg-white/[0.04] p-5 mb-6">
           <div className="flex items-center gap-2 mb-1">
-            <ExclamationTriangleIcon className="h-4 w-4 text-amber-300" />
-            <p className="text-[12px] font-semibold text-amber-200">Schema migration pending</p>
+            <ExclamationTriangleIcon className="h-4 w-4 text-zinc-300" />
+            <p className="text-[12px] font-semibold text-zinc-200">Schema migration pending</p>
           </div>
           <p className="text-[12.5px] text-zinc-300">{errorBody.hint}</p>
         </div>
       )}
       {!loading && errorBody?.error === "auth_required" && (
-        <div role="alert" aria-live="assertive" className="rounded-2xl border border-amber-500/[0.18] bg-amber-500/[0.04] p-5 mb-6 text-[13px] text-zinc-300">Sign in required.</div>
+        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/[0.18] bg-white/[0.04] p-5 mb-6 text-[13px] text-zinc-300">Sign in required.</div>
       )}
 
       {data && data.org.length === 0 && (
@@ -145,7 +145,7 @@ export default function ReleaseOpsAutonomyPage() {
                       <th className="text-left px-3 py-2 text-zinc-500 uppercase tracking-[0.18em] text-[10px]">When</th>
                       <th className="text-right px-3 py-2 text-zinc-500 uppercase tracking-[0.18em] text-[10px]">Total</th>
                       <th className="text-right px-3 py-2 text-emerald-400 uppercase tracking-[0.18em] text-[10px]">OK</th>
-                      <th className="text-right px-3 py-2 text-amber-400 uppercase tracking-[0.18em] text-[10px]">Skip</th>
+                      <th className="text-right px-3 py-2 text-zinc-400 uppercase tracking-[0.18em] text-[10px]">Skip</th>
                       <th className="text-right px-3 py-2 text-rose-400 uppercase tracking-[0.18em] text-[10px]">Err</th>
                     </tr>
                   </thead>
@@ -155,7 +155,7 @@ export default function ReleaseOpsAutonomyPage() {
                         <td className="px-3 py-1.5 text-zinc-300">{new Date(g.generatedAtIso).toLocaleString()}</td>
                         <td className="px-3 py-1.5 text-right text-zinc-200">{g.totalRuns}</td>
                         <td className="px-3 py-1.5 text-right text-emerald-300">{g.okRuns}</td>
-                        <td className="px-3 py-1.5 text-right text-amber-300">{g.skippedRuns}</td>
+                        <td className="px-3 py-1.5 text-right text-zinc-300">{g.skippedRuns}</td>
                         <td className="px-3 py-1.5 text-right text-rose-300">{g.errorRuns}</td>
                       </tr>
                     ))}
@@ -177,7 +177,7 @@ function TickCard({ tick }: { tick: OrgTick }) {
         <span className="text-[11px] font-mono text-zinc-300">{new Date(tick.generatedAtIso).toLocaleString()}</span>
         <span className="text-[10px] font-mono text-zinc-500">total {tick.totalRuns}</span>
         <span className="text-[10px] font-mono text-emerald-300">ok {tick.okRuns}</span>
-        <span className="text-[10px] font-mono text-amber-300">skip {tick.skippedRuns}</span>
+        <span className="text-[10px] font-mono text-zinc-300">skip {tick.skippedRuns}</span>
         <span className="text-[10px] font-mono text-rose-300">err {tick.errorRuns}</span>
       </div>
       <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
@@ -200,7 +200,7 @@ function EngineBreakdown({ label, runs }: { label: string; runs: { outcome: stri
       <p className="text-[11px] font-mono">
         <span className="text-emerald-300">{ok}</span>
         <span className="text-zinc-500"> · </span>
-        <span className="text-amber-300">{skip}</span>
+        <span className="text-zinc-300">{skip}</span>
         <span className="text-zinc-500"> · </span>
         <span className="text-rose-300">{err}</span>
       </p>
@@ -211,7 +211,7 @@ function EngineBreakdown({ label, runs }: { label: string; runs: { outcome: stri
 function Stat({ icon: Icon, label, value, tone }: { icon: typeof ClockIcon; label: string; value: string; tone: "emerald" | "amber" | "rose" | "zinc" }) {
   const cls = {
     emerald: "border-emerald-500/[0.18] bg-emerald-500/[0.03] text-emerald-200",
-    amber:   "border-amber-500/[0.18] bg-amber-500/[0.03] text-amber-200",
+    amber:   "border-white/[0.18] bg-white/[0.03] text-zinc-200",
     rose:    "border-rose-500/[0.18] bg-rose-500/[0.03] text-rose-200",
     zinc:    "border-white/[0.06] bg-white/[0.02] text-zinc-200",
   }[tone];

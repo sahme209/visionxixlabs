@@ -95,7 +95,7 @@ export default function WorkflowTranslatorPage() {
             <span>provider: <span className="text-indigo-300">{resp.provider ?? "(none)"}</span></span>
             <span>model: <span className="text-zinc-300">{resp.model ?? "(none)"}</span></span>
             <span>{resp.latencyMs}ms</span>
-            <span>aiUsed: <span className={resp.aiUsed ? "text-emerald-300" : "text-amber-300"}>{String(resp.aiUsed)}</span></span>
+            <span>aiUsed: <span className={resp.aiUsed ? "text-emerald-300" : "text-zinc-300"}>{String(resp.aiUsed)}</span></span>
           </div>
           {resp.draft ? (
             <div className="space-y-3 text-[12px]">

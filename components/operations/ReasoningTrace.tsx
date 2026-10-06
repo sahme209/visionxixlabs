@@ -45,7 +45,7 @@ const PHASE_CONFIG: Record<
   interpret: { icon: DocumentMagnifyingGlassIcon, iconClass: "text-cyan-400", bgClass: "bg-cyan-500/10 border-cyan-500/20", label: "Interpret" },
   reason: { icon: CpuChipIcon, iconClass: "text-violet-400", bgClass: "bg-violet-500/10 border-violet-500/20", label: "Reason" },
   plan: { icon: ChartBarIcon, iconClass: "text-fuchsia-400", bgClass: "bg-fuchsia-500/10 border-fuchsia-500/20", label: "Plan" },
-  verify: { icon: ShieldCheckIcon, iconClass: "text-amber-400", bgClass: "bg-amber-500/10 border-amber-500/20", label: "Verify" },
+  verify: { icon: ShieldCheckIcon, iconClass: "text-zinc-400", bgClass: "bg-white/10 border-white/20", label: "Verify" },
   execute: { icon: CommandLineIcon, iconClass: "text-emerald-400", bgClass: "bg-emerald-500/10 border-emerald-500/20", label: "Execute" },
 };
 
@@ -53,7 +53,7 @@ function ConfidenceBar({ value }: { value: number }) {
   const pct = Math.round(value * 100);
   const color =
     pct >= 80 ? "from-emerald-500 to-emerald-400" :
-    pct >= 60 ? "from-amber-500 to-amber-400" :
+    pct >= 60 ? "from-zinc-500 to-zinc-400" :
     "from-red-500 to-red-400";
   return (
     <div className="flex items-center gap-2.5">
@@ -74,7 +74,7 @@ export function ReasoningTrace({ data, className = "" }: ReasoningTraceProps) {
   const trace = data ?? DEMO_TRACE;
   const riskColor =
     trace.recommendation?.risk === "low" ? "text-emerald-400 bg-emerald-500/10 border-emerald-500/20" :
-    trace.recommendation?.risk === "medium" ? "text-amber-400 bg-amber-500/10 border-amber-500/20" :
+    trace.recommendation?.risk === "medium" ? "text-zinc-400 bg-white/10 border-white/20" :
     "text-red-400 bg-red-500/10 border-red-500/20";
 
   return (
@@ -166,7 +166,7 @@ export function ReasoningTrace({ data, className = "" }: ReasoningTraceProps) {
         <div className="px-6 py-5 border-t border-white/[0.06] bg-white/[0.01]">
           <div className="flex items-start justify-between gap-4 flex-wrap">
             <div className="flex-1 min-w-0">
-              <p className="text-[10px] font-semibold text-amber-400 uppercase tracking-wider mb-2">Recommended action</p>
+              <p className="text-[10px] font-semibold text-zinc-400 uppercase tracking-wider mb-2">Recommended action</p>
               <p className="text-base font-bold text-white mb-1">{trace.recommendation.action}</p>
               <p className="text-sm text-zinc-400 leading-relaxed">{trace.recommendation.impact}</p>
             </div>

@@ -106,7 +106,7 @@ const ROLE_META: Record<
   perception:   { label: "Perception",   tone: "border-cyan-500/30    bg-cyan-500/10    text-cyan-300",    description: "Watch the world and emit typed signals." },
   reasoning:    { label: "Reasoning",    tone: "border-indigo-500/30  bg-indigo-500/10  text-indigo-300",  description: "Form hypotheses, simulate them, run the council vote." },
   planning:     { label: "Planning",     tone: "border-fuchsia-500/30 bg-fuchsia-500/10 text-fuchsia-300", description: "Turn a hypothesis or operator problem into a typed plan." },
-  safety:       { label: "Safety",       tone: "border-amber-500/30   bg-amber-500/10   text-amber-300",   description: "Apply the charter, classify the blast radius, build the packet." },
+  safety:       { label: "Safety",       tone: "border-white/30   bg-white/10   text-zinc-300",   description: "Apply the charter, classify the blast radius, build the packet." },
   verification: { label: "Verification", tone: "border-emerald-500/30 bg-emerald-500/10 text-emerald-300", description: "Check that the action did what it claimed, and write the audit row." },
   memory:       { label: "Memory",       tone: "border-zinc-500/30    bg-zinc-500/10    text-zinc-300",    description: "Persist proposals + calibration so improvements compound over time." },
   workflow:     { label: "Workflow",     tone: "border-white/[0.12]  bg-violet-500/10  text-violet-300",  description: "Orchestrate the agents end-to-end on the bus." },
@@ -230,7 +230,7 @@ export default async function AgentsPage() {
                       </div>
                       <div className="flex flex-col items-end gap-1">
                         {a.canMutate ? (
-                          <span className="text-[10px] font-mono uppercase tracking-widest px-2 py-0.5 rounded-full border border-amber-500/30 bg-amber-500/10 text-amber-300 whitespace-nowrap">
+                          <span className="text-[10px] font-mono uppercase tracking-widest px-2 py-0.5 rounded-full border border-white/30 bg-white/10 text-zinc-300 whitespace-nowrap">
                             can mutate
                           </span>
                         ) : (

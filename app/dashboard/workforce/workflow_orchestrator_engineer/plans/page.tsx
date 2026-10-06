@@ -11,7 +11,7 @@ export const dynamic = "force-dynamic";
 
 const OUTCOME_TONE: Record<string, string> = {
   ai_generated: "text-emerald-300",
-  fallback_rules: "text-amber-300",
+  fallback_rules: "text-zinc-300",
   error: "text-rose-300",
 };
 

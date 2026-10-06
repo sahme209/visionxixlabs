@@ -68,7 +68,7 @@ interface Report {
 const SEVERITY_VISUAL: Record<Severity, { pill: string; label: string }> = {
   critical:      { pill: "bg-rose-500/20 text-rose-200 border-rose-500/40",       label: "CRITICAL" },
   high:          { pill: "bg-rose-500/15 text-rose-300 border-rose-500/30",       label: "HIGH" },
-  medium:        { pill: "bg-amber-500/15 text-amber-300 border-amber-500/30",    label: "MEDIUM" },
+  medium:        { pill: "bg-white/15 text-zinc-300 border-white/30",    label: "MEDIUM" },
   low:           { pill: "bg-cyan-500/15 text-cyan-300 border-cyan-500/30",       label: "LOW" },
   informational: { pill: "bg-zinc-700/40 text-zinc-300 border-zinc-700/40",       label: "INFO" },
   unknown:       { pill: "bg-zinc-700/40 text-zinc-300 border-zinc-700/40",       label: "?" },
@@ -142,7 +142,7 @@ export default function CloudSecurityPage() {
       </div>
 
       {loading && <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 mb-6 text-[11px] font-mono text-zinc-500 uppercase tracking-[0.18em]">Loading findings from your clouds…</div>}
-      {!loading && error && <div role="alert" aria-live="assertive" className="rounded-2xl border border-amber-500/[0.18] bg-amber-500/[0.04] p-5 mb-6 text-[13px] text-zinc-300">{error}</div>}
+      {!loading && error && <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/[0.18] bg-white/[0.04] p-5 mb-6 text-[13px] text-zinc-300">{error}</div>}
 
       {!loading && !error && report && (
         <>
@@ -162,7 +162,7 @@ export default function CloudSecurityPage() {
                       <span className={`text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded ${
                         s.mode === "live" ? "bg-emerald-500/15 text-emerald-300" :
                         s.mode === "blocked" ? "bg-rose-500/15 text-rose-300" :
-                        "bg-amber-500/15 text-amber-300"
+                        "bg-white/15 text-zinc-300"
                       }`}>{s.mode}</span>
                       <span className={`text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded ${
                         s.serviceEnabled ? "bg-emerald-500/15 text-emerald-300" : "bg-zinc-700/40 text-zinc-300"
@@ -178,8 +178,8 @@ export default function CloudSecurityPage() {
                   </div>
 
                   {s.limitations.length > 0 && (
-                    <div className="rounded-md border border-amber-500/[0.12] bg-amber-500/[0.03] p-2">
-                      <p className="text-[9px] font-mono text-amber-300/80 uppercase tracking-wider mb-0.5">// notes</p>
+                    <div className="rounded-md border border-white/[0.12] bg-white/[0.03] p-2">
+                      <p className="text-[9px] font-mono text-zinc-300/80 uppercase tracking-wider mb-0.5">// notes</p>
                       {s.limitations.map((l, i) => (
                         <p key={i} className="text-[10.5px] text-zinc-300 leading-snug">{l}</p>
                       ))}
@@ -245,7 +245,7 @@ function severityRank(s: Severity): number {
 function Stat({ label, value, tone }: { label: string; value: string; tone: "emerald" | "amber" | "rose" | "zinc" }) {
   const cls = {
     emerald: "border-emerald-500/[0.18] bg-emerald-500/[0.03] text-emerald-200",
-    amber:   "border-amber-500/[0.18] bg-amber-500/[0.03] text-amber-200",
+    amber:   "border-white/[0.18] bg-white/[0.03] text-zinc-200",
     rose:    "border-rose-500/[0.18] bg-rose-500/[0.03] text-rose-200",
     zinc:    "border-white/[0.06] bg-white/[0.02] text-zinc-200",
   }[tone];
@@ -260,7 +260,7 @@ function Stat({ label, value, tone }: { label: string; value: string; tone: "eme
 function Mini({ label, value, tone }: { label: string; value: number; tone: "emerald" | "amber" | "rose" | "zinc" }) {
   const cls = {
     emerald: "border-emerald-500/[0.18] bg-emerald-500/[0.03] text-emerald-200",
-    amber:   "border-amber-500/[0.18] bg-amber-500/[0.03] text-amber-200",
+    amber:   "border-white/[0.18] bg-white/[0.03] text-zinc-200",
     rose:    "border-rose-500/[0.18] bg-rose-500/[0.03] text-rose-200",
     zinc:    "border-white/[0.06] bg-white/[0.02] text-zinc-200",
   }[tone];

@@ -18,7 +18,7 @@ interface PlaybookData {
 
 const RISK_COLORS: Record<string, string> = {
   low: "text-emerald-300",
-  medium: "text-amber-300",
+  medium: "text-zinc-300",
   high: "text-orange-300",
   critical: "text-rose-300",
   unscored: "text-zinc-400",
@@ -26,7 +26,7 @@ const RISK_COLORS: Record<string, string> = {
 
 const RISK_BG: Record<string, string> = {
   low: "bg-emerald-500/10",
-  medium: "bg-amber-500/10",
+  medium: "bg-white/10",
   high: "bg-orange-500/10",
   critical: "bg-rose-500/10",
   unscored: "bg-zinc-500/10",

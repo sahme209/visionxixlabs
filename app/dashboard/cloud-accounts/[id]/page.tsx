@@ -28,7 +28,7 @@ type Severity = "info" | "low" | "medium" | "high" | "critical";
 const SEVERITY_TONE: Record<Severity, string> = {
   critical: "text-rose-400",
   high:     "text-rose-300",
-  medium:   "text-amber-300",
+  medium:   "text-zinc-300",
   low:      "text-zinc-400",
   info:     "text-zinc-500",
 };
@@ -254,7 +254,7 @@ export default async function CloudAccountDetailPage({
           <p className="text-[10px] font-mono uppercase tracking-[0.28em] text-zinc-500 mb-2">pending approvals</p>
           <p className="text-[24px] font-semibold text-white tabular-nums">{pendingApprovalCount}</p>
           {pendingApprovalCount > 0 ? (
-            <Link href="/dashboard/approvals" className="inline-flex items-center gap-1 text-[11px] font-mono text-amber-300 hover:text-amber-200 mt-2">
+            <Link href="/dashboard/approvals" className="inline-flex items-center gap-1 text-[11px] font-mono text-zinc-300 hover:text-zinc-200 mt-2">
               review queue <ArrowRightIcon className="h-3 w-3" />
             </Link>
           ) : (

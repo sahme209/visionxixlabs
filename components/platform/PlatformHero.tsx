@@ -25,7 +25,7 @@ const EYEBROW_TONES = {
   cyan:     "text-cyan-300/80",
   fuchsia:  "text-fuchsia-300/80",
   emerald:  "text-emerald-300/80",
-  amber:    "text-amber-300/80",
+  amber:    "text-zinc-300/80",
 } as const;
 
 export function PlatformHero({

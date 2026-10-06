@@ -35,7 +35,7 @@ export async function PlatformHealthStrip() {
     violet:  "border-violet-500/30 bg-violet-500/[0.06] hover:bg-violet-500/[0.10]",
     cyan:    "border-cyan-500/30   bg-cyan-500/[0.06]   hover:bg-cyan-500/[0.10]",
     emerald: "border-emerald-500/30 bg-emerald-500/[0.06] hover:bg-emerald-500/[0.10]",
-    amber:   "border-amber-500/30  bg-amber-500/[0.06]  hover:bg-amber-500/[0.10]",
+    amber:   "border-white/30  bg-white/[0.06]  hover:bg-white/[0.10]",
   } as const;
 
   return (

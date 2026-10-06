@@ -64,7 +64,7 @@ interface ProductModel {
 const STATUS_TONE: Record<string, { border: string; bg: string; text: string; pillBg: string; pillText: string; hoverBorder: string }> = {
   launch_ready:             { border: "border-emerald-500/[0.22]", bg: "bg-emerald-500/[0.04]", text: "text-emerald-300", pillBg: "bg-emerald-500/15", pillText: "text-emerald-300", hoverBorder: "hover:border-emerald-500/40" },
   pilot_ready:              { border: "border-cyan-500/[0.22]",    bg: "bg-cyan-500/[0.04]",    text: "text-cyan-300",    pillBg: "bg-cyan-500/15",    pillText: "text-cyan-300",    hoverBorder: "hover:border-cyan-500/40"    },
-  usable_with_limitations:  { border: "border-amber-500/[0.22]",   bg: "bg-amber-500/[0.04]",   text: "text-amber-300",   pillBg: "bg-amber-500/15",   pillText: "text-amber-300",   hoverBorder: "hover:border-amber-500/40"   },
+  usable_with_limitations:  { border: "border-white/[0.22]",   bg: "bg-white/[0.04]",   text: "text-zinc-300",   pillBg: "bg-white/15",   pillText: "text-zinc-300",   hoverBorder: "hover:border-white/40"   },
   preview:                  { border: "border-zinc-700/30",        bg: "bg-white/[0.02]",       text: "text-zinc-300",    pillBg: "bg-zinc-700/40",    pillText: "text-zinc-300",    hoverBorder: "hover:border-white/20"       },
   foundation:               { border: "border-zinc-700/30",        bg: "bg-white/[0.02]",       text: "text-zinc-400",    pillBg: "bg-zinc-700/40",    pillText: "text-zinc-400",    hoverBorder: "hover:border-white/20"       },
   blocked:                  { border: "border-rose-500/[0.22]",    bg: "bg-rose-500/[0.04]",    text: "text-rose-300",    pillBg: "bg-rose-500/15",    pillText: "text-rose-300",    hoverBorder: "hover:border-rose-500/40"    },
@@ -191,7 +191,7 @@ export default function SurfacesPage() {
                   model.overallSourceMode === "live" ? "bg-emerald-400 animate-pulse" :
                   model.overallSourceMode === "partial_live" ? "bg-cyan-400 animate-pulse" :
                   model.overallSourceMode === "blocked" ? "bg-rose-400" :
-                  "bg-amber-400"
+                  "bg-zinc-400"
                 }`} />
                 <span className={`text-[10px] font-semibold uppercase tracking-widest ${overallTone.pillText}`}>
                   {model.overallStatus.replace(/_/g, " ")} · {model.overallSourceMode.replace(/_/g, " ")}
@@ -215,7 +215,7 @@ export default function SurfacesPage() {
             <div className="w-px h-9 bg-white/[0.08]" />
             <RibbonStat label="Pilot-ready" value={counts.pilotReady} tone="text-cyan-300" />
             <div className="w-px h-9 bg-white/[0.08]" />
-            <RibbonStat label="Preview" value={counts.preview} tone="text-amber-300" />
+            <RibbonStat label="Preview" value={counts.preview} tone="text-zinc-300" />
             <div className="w-px h-9 bg-white/[0.08]" />
             <RibbonStat label="Blocked" value={counts.blocked} tone={counts.blocked > 0 ? "text-rose-300" : "text-zinc-500"} />
           </div>
@@ -268,7 +268,7 @@ export default function SurfacesPage() {
                       {p.notarized ? "notarized" : "not-notarized"}
                     </span>
                   )}
-                  <span className={`text-[10px] font-mono px-1.5 py-0.5 rounded ${p.publiclyDownloadable ? "bg-emerald-500/15 text-emerald-300" : "bg-amber-500/15 text-amber-300"}`}>
+                  <span className={`text-[10px] font-mono px-1.5 py-0.5 rounded ${p.publiclyDownloadable ? "bg-emerald-500/15 text-emerald-300" : "bg-white/15 text-zinc-300"}`}>
                     {p.publiclyDownloadable ? "public download" : "local build only"}
                   </span>
                 </div>
@@ -395,8 +395,8 @@ function SurfaceCard({ surface }: { surface: Surface }) {
       <p className="text-[11px] text-zinc-500 font-mono mb-3 leading-snug line-clamp-2">{surface.evidence}</p>
 
       {surface.limitations.length > 0 && (
-        <div className="mb-2 rounded-lg border border-amber-500/[0.12] bg-amber-500/[0.03] px-2.5 py-2">
-          <p className="text-[10px] font-mono text-amber-300/80 uppercase tracking-wider mb-1">// limitations</p>
+        <div className="mb-2 rounded-lg border border-white/[0.12] bg-white/[0.03] px-2.5 py-2">
+          <p className="text-[10px] font-mono text-zinc-300/80 uppercase tracking-wider mb-1">// limitations</p>
           <ul className="space-y-0.5">
             {surface.limitations.slice(0, 2).map((l, i) => (
               <li key={i} className="text-[11px] text-zinc-400 leading-snug">{l}</li>

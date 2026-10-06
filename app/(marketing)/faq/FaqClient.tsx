@@ -112,7 +112,7 @@ const CATEGORY_TONE: Record<FaqEntry["category"], string> = {
   safety:  "text-emerald-300 bg-emerald-500/10 border-emerald-500/30",
   control: "text-indigo-300  bg-indigo-500/10  border-indigo-500/30",
   data:    "text-cyan-300    bg-cyan-500/10    border-cyan-500/30",
-  cost:    "text-amber-300   bg-amber-500/10   border-amber-500/30",
+  cost:    "text-zinc-300   bg-white/10   border-white/30",
   fit:     "text-fuchsia-300 bg-fuchsia-500/10 border-fuchsia-500/30",
 };
 

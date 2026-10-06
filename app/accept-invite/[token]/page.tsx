@@ -61,15 +61,15 @@ export default async function AcceptInvitePage({
   if (ctx.email.toLowerCase() !== email.toLowerCase()) {
     return (
       <div className="max-w-xl mx-auto px-4 py-16">
-        <div className="rounded-md border border-amber-500/20 bg-amber-500/[0.04] p-6 text-center">
-          <ExclamationTriangleIcon className="h-8 w-8 text-amber-300 mx-auto mb-3" />
+        <div className="rounded-md border border-white/20 bg-white/[0.04] p-6 text-center">
+          <ExclamationTriangleIcon className="h-8 w-8 text-zinc-300 mx-auto mb-3" />
           <p className="text-[14px] text-zinc-100 font-mono mb-2">
             this invite is for <span className="text-emerald-300">{email}</span>
           </p>
           <p className="text-[12px] text-zinc-400 mb-4">
             You&apos;re signed in as <span className="font-mono text-zinc-300">{ctx.email}</span>. Sign out and back in with the invited email to accept.
           </p>
-          <Link href="/api/auth/signout" className="text-[11px] font-mono uppercase tracking-wider px-3 py-1.5 rounded-full border border-amber-500/30 text-amber-200 hover:text-white hover:border-amber-500/60 hover:bg-amber-500/10 transition-colors">
+          <Link href="/api/auth/signout" className="text-[11px] font-mono uppercase tracking-wider px-3 py-1.5 rounded-full border border-white/30 text-zinc-200 hover:text-white hover:border-white/60 hover:bg-white/10 transition-colors">
             sign out →
           </Link>
         </div>

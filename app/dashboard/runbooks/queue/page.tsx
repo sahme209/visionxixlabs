@@ -52,7 +52,7 @@ interface QueueReport {
 }
 
 const STATUS_TONE: Record<Status, string> = {
-  staged:   "bg-amber-500/15 text-amber-300 border-amber-500/30",
+  staged:   "bg-white/15 text-zinc-300 border-white/30",
   approved: "bg-emerald-500/15 text-emerald-300 border-emerald-500/30",
   rejected: "bg-rose-500/15 text-rose-300 border-rose-500/30",
   expired:  "bg-zinc-500/15 text-zinc-400 border-zinc-500/30",
@@ -112,8 +112,8 @@ export default function RunbookQueuePage() {
 
         <div className="flex items-center gap-2 mb-3 flex-wrap">
           <span className="inline-flex items-center gap-2 rounded-full border border-white/[0.06] bg-white/[0.02] px-2.5 py-1">
-            <WrenchScrewdriverIcon className="h-3.5 w-3.5 text-amber-300" />
-            <span className="text-[10px] font-semibold uppercase tracking-widest text-amber-300">
+            <WrenchScrewdriverIcon className="h-3.5 w-3.5 text-zinc-300" />
+            <span className="text-[10px] font-semibold uppercase tracking-widest text-zinc-300">
               Runbook Queue · approval_only_no_execution
             </span>
           </span>
@@ -145,7 +145,7 @@ export default function RunbookQueuePage() {
       </div>
 
       {error && (
-        <div role="alert" aria-live="assertive" className="rounded-2xl border border-amber-500/[0.18] bg-amber-500/[0.04] p-5 mb-6 text-[13px] text-zinc-300">
+        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/[0.18] bg-white/[0.04] p-5 mb-6 text-[13px] text-zinc-300">
           {error}
         </div>
       )}
@@ -258,7 +258,7 @@ function Stat({
 }: { label: string; value: string; tone: "emerald" | "amber" | "rose" | "zinc"; icon?: typeof ClockIcon }) {
   const cls = {
     emerald: "border-emerald-500/[0.18] bg-emerald-500/[0.03] text-emerald-200",
-    amber:   "border-amber-500/[0.18] bg-amber-500/[0.03] text-amber-200",
+    amber:   "border-white/[0.18] bg-white/[0.03] text-zinc-200",
     rose:    "border-rose-500/[0.18] bg-rose-500/[0.03] text-rose-200",
     zinc:    "border-white/[0.06] bg-white/[0.02] text-zinc-200",
   }[tone];

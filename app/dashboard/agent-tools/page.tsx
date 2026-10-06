@@ -134,7 +134,7 @@ const ACCESS_CATALOG: ReadonlyArray<Omit<AgentToolAccess, "organizationId" | "la
 
 const TONE: Record<AgentToolPermission, string> = {
   allowed:           "text-emerald-300 bg-emerald-500/10 border-emerald-500/30",
-  approval_required: "text-amber-300 bg-amber-500/10 border-amber-500/30",
+  approval_required: "text-zinc-300 bg-white/10 border-white/30",
   blocked:           "text-rose-300 bg-rose-500/10 border-rose-500/30",
 };
 
@@ -204,7 +204,7 @@ export default function AgentToolsPage() {
                             <td className="py-2 pr-3 align-top">
                               <span className={`text-[10px] font-mono uppercase tracking-wider ${
                                 cap.risk === "critical" ? "text-rose-300"  :
-                                cap.risk === "high"     ? "text-amber-300" :
+                                cap.risk === "high"     ? "text-zinc-300" :
                                 cap.risk === "medium"   ? "text-cyan-300"  :
                                                           "text-emerald-300"
                               }`}>{cap.risk}</span>

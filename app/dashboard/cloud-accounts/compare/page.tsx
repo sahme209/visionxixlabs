@@ -28,7 +28,7 @@ type Severity = "info" | "low" | "medium" | "high" | "critical";
 const SEVERITY_TONE: Record<Severity, string> = {
   critical: "text-rose-400",
   high:     "text-rose-300",
-  medium:   "text-amber-300",
+  medium:   "text-zinc-300",
   low:      "text-zinc-400",
   info:     "text-zinc-500",
 };
@@ -241,11 +241,11 @@ export default async function CloudAccountCompare({
               <MetricRow label="recent runs · 5"   value={String(c.recentRuns.total)} />
               <MetricRow label="· ok"               value={String(c.recentRuns.ok)}     tone={c.recentRuns.ok > 0     ? "text-emerald-300" : "text-zinc-600"} />
               <MetricRow label="· failed"           value={String(c.recentRuns.failed)} tone={c.recentRuns.failed > 0 ? "text-rose-300"    : "text-zinc-600"} />
-              <MetricRow label="· in flight"        value={String(c.recentRuns.pending)} tone={c.recentRuns.pending > 0 ? "text-amber-300"  : "text-zinc-600"} />
+              <MetricRow label="· in flight"        value={String(c.recentRuns.pending)} tone={c.recentRuns.pending > 0 ? "text-zinc-300"  : "text-zinc-600"} />
 
               <Divider />
 
-              <MetricRow label="pending approvals" value={String(c.pendingApprovals)} tone={c.pendingApprovals > 0 ? "text-amber-300" : "text-zinc-600"} />
+              <MetricRow label="pending approvals" value={String(c.pendingApprovals)} tone={c.pendingApprovals > 0 ? "text-zinc-300" : "text-zinc-600"} />
               <MetricRow label="autopilot"         value={c.autopilotMode.replace(/_/g, " ")} mono />
               <MetricRow label="last scan"         value={c.lastScannedAt ? c.lastScannedAt.toISOString().slice(0, 10) : "—"} mono tone={c.lastScannedAt ? "text-zinc-200" : "text-zinc-600"} />
 

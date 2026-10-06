@@ -37,14 +37,14 @@ export const dynamic = "force-dynamic";
 const CATEGORY_META: Record<PipelineCategory, { label: string; icon: typeof BoltIcon; tone: string }> = {
   ci_cd:         { label: "CI/CD",         icon: ServerStackIcon, tone: "text-violet-300" },
   database:      { label: "Database",      icon: CircleStackIcon, tone: "text-blue-300" },
-  security:      { label: "Security",      icon: ShieldCheckIcon, tone: "text-amber-300" },
+  security:      { label: "Security",      icon: ShieldCheckIcon, tone: "text-zinc-300" },
   observability: { label: "Observability", icon: EyeIcon,         tone: "text-cyan-300"  },
   coding:        { label: "AI coding",     icon: CodeBracketIcon, tone: "text-violet-300" },
 };
 
 const RUN_STATUS_TONE: Record<string, string> = {
   queued:    "text-zinc-400 bg-white/[0.04] border-white/[0.08]",
-  running:   "text-amber-300 bg-amber-500/10 border-amber-500/30",
+  running:   "text-zinc-300 bg-white/10 border-white/30",
   succeeded: "text-emerald-300 bg-emerald-500/10 border-emerald-500/30",
   failed:    "text-rose-300 bg-rose-500/10 border-rose-500/30",
   cancelled: "text-zinc-400 bg-white/[0.04] border-white/[0.08]",
@@ -94,7 +94,7 @@ export default async function PipelinesPage() {
       </div>
 
       <section className="grid grid-cols-1 md:grid-cols-4 gap-3 mb-8">
-        <Stat label="Running"    value={countByStatus.get("running")   ?? 0} icon={ClockIcon}              tone="text-amber-300" />
+        <Stat label="Running"    value={countByStatus.get("running")   ?? 0} icon={ClockIcon}              tone="text-zinc-300" />
         <Stat label="Succeeded"  value={countByStatus.get("succeeded") ?? 0} icon={CheckCircleIcon}        tone="text-emerald-300" />
         <Stat label="Failed"     value={countByStatus.get("failed")    ?? 0} icon={ExclamationTriangleIcon} tone="text-rose-300" />
         <Stat label="Catalog"    value={PIPELINE_REGISTRY.length}            icon={CpuChipIcon}             tone="text-violet-300" />
@@ -121,7 +121,7 @@ export default async function PipelinesPage() {
                     key={s.id}
                     className={`text-[10px] font-mono uppercase tracking-wider border rounded-full px-1.5 py-0.5 ${
                       s.requiresApproval
-                        ? "text-amber-300 bg-amber-500/10 border-amber-500/30"
+                        ? "text-zinc-300 bg-white/10 border-white/30"
                         : "text-zinc-300 bg-white/[0.02] border-white/[0.08]"
                     }`}
                     title={s.description}

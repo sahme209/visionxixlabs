@@ -93,9 +93,9 @@ const EVENT_CONFIG: Record<
   },
   "finding.detected": {
     icon: ShieldExclamationIcon,
-    iconClass: "text-amber-400",
-    bgClass: "bg-amber-500/10",
-    borderClass: "border-amber-500/20",
+    iconClass: "text-zinc-400",
+    bgClass: "bg-white/10",
+    borderClass: "border-white/20",
   },
   "finding.critical": {
     icon: ShieldExclamationIcon,
@@ -123,9 +123,9 @@ const EVENT_CONFIG: Record<
   },
   "drift.detected": {
     icon: ExclamationTriangleIcon,
-    iconClass: "text-amber-400",
-    bgClass: "bg-amber-500/10",
-    borderClass: "border-amber-500/20",
+    iconClass: "text-zinc-400",
+    bgClass: "bg-white/10",
+    borderClass: "border-white/20",
   },
   "rollback.prepared": {
     icon: ArrowPathIcon,
@@ -147,15 +147,15 @@ const EVENT_CONFIG: Record<
   },
   "approval.required": {
     icon: LockClosedIcon,
-    iconClass: "text-amber-400",
-    bgClass: "bg-amber-500/10",
-    borderClass: "border-amber-500/20",
+    iconClass: "text-zinc-400",
+    bgClass: "bg-white/10",
+    borderClass: "border-white/20",
   },
   "monitoring.alert": {
     icon: CloudArrowDownIcon,
-    iconClass: "text-amber-400",
-    bgClass: "bg-amber-500/10",
-    borderClass: "border-amber-500/20",
+    iconClass: "text-zinc-400",
+    bgClass: "bg-white/10",
+    borderClass: "border-white/20",
   },
   "audit.event": {
     icon: DocumentCheckIcon,
@@ -196,27 +196,27 @@ const EVENT_CONFIG: Record<
   },
   "release.drift_detected": {
     icon: ExclamationTriangleIcon,
-    iconClass: "text-amber-400",
-    bgClass: "bg-amber-500/10",
-    borderClass: "border-amber-500/20",
+    iconClass: "text-zinc-400",
+    bgClass: "bg-white/10",
+    borderClass: "border-white/20",
   },
   "release.readiness_dropped": {
     icon: ShieldExclamationIcon,
-    iconClass: "text-amber-400",
-    bgClass: "bg-amber-500/10",
-    borderClass: "border-amber-500/20",
+    iconClass: "text-zinc-400",
+    bgClass: "bg-white/10",
+    borderClass: "border-white/20",
   },
   "release.config_mismatch": {
     icon: ExclamationTriangleIcon,
-    iconClass: "text-amber-400",
-    bgClass: "bg-amber-500/10",
-    borderClass: "border-amber-500/20",
+    iconClass: "text-zinc-400",
+    bgClass: "bg-white/10",
+    borderClass: "border-white/20",
   },
   "release.dependency_conflict": {
     icon: ShieldExclamationIcon,
-    iconClass: "text-amber-400",
-    bgClass: "bg-amber-500/10",
-    borderClass: "border-amber-500/20",
+    iconClass: "text-zinc-400",
+    bgClass: "bg-white/10",
+    borderClass: "border-white/20",
   },
   "release.verification_passed": {
     icon: CheckCircleIcon,
@@ -226,9 +226,9 @@ const EVENT_CONFIG: Record<
   },
   "release.approval_pending": {
     icon: LockClosedIcon,
-    iconClass: "text-amber-400",
-    bgClass: "bg-amber-500/10",
-    borderClass: "border-amber-500/20",
+    iconClass: "text-zinc-400",
+    bgClass: "bg-white/10",
+    borderClass: "border-white/20",
   },
   "release.servicenow_synced": {
     icon: DocumentCheckIcon,
@@ -250,9 +250,9 @@ const EVENT_CONFIG: Record<
   },
   "integration.skipped": {
     icon: ClockIcon,
-    iconClass: "text-amber-400",
-    bgClass: "bg-amber-500/10",
-    borderClass: "border-amber-500/20",
+    iconClass: "text-zinc-400",
+    bgClass: "bg-white/10",
+    borderClass: "border-white/20",
   },
   "integration.failed": {
     icon: XCircleIcon,
@@ -288,7 +288,7 @@ const PROVIDER_LABEL: Record<NonNullable<ActivityEvent["provider"]>, string> = {
 };
 
 const PROVIDER_COLOR: Record<NonNullable<ActivityEvent["provider"]>, string> = {
-  aws: "text-amber-400 bg-amber-500/10 border-amber-500/20",
+  aws: "text-zinc-400 bg-white/10 border-white/20",
   azure: "text-blue-400 bg-blue-500/10 border-blue-500/20",
   gcp: "text-red-400 bg-red-500/10 border-red-500/20",
   system: "text-zinc-400 bg-white/[0.04] border-white/[0.08]",

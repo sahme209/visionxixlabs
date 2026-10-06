@@ -131,7 +131,7 @@ export default function ReleaseValidationDetailPage() {
                 </div>
                 <div className="w-full h-2 bg-zinc-800 rounded-full overflow-hidden">
                   <div
-                    className="h-full bg-gradient-to-r from-amber-500 to-emerald-500 transition-all"
+                    className="h-full bg-gradient-to-r from-zinc-500 to-emerald-500 transition-all"
                     style={{ width: `${progress}%` }}
                   />
                 </div>
@@ -162,8 +162,8 @@ export default function ReleaseValidationDetailPage() {
                 </p>
               </div>
             ) : (
-              <div className="rounded-2xl border border-amber-500/[0.15] bg-amber-500/[0.04] p-4">
-                <p className="text-[12px] text-amber-200">
+              <div className="rounded-2xl border border-white/[0.15] bg-white/[0.04] p-4">
+                <p className="text-[12px] text-zinc-200">
                   ⏳ Validation in progress. {planCountNum - resultsCountNum} checks remaining.
                 </p>
               </div>

@@ -71,8 +71,8 @@ const PROVIDER_DETAIL: Record<string, { icon: typeof CloudIcon; label: string; d
 const MODE_TONE: Record<string, { border: string; bg: string; text: string; pillBg: string; dot: string }> = {
   live:         { border: "border-emerald-500/[0.22]", bg: "bg-emerald-500/[0.04]", text: "text-emerald-300", pillBg: "bg-emerald-500/15", dot: "bg-emerald-400 animate-pulse" },
   partial_live: { border: "border-cyan-500/[0.22]",    bg: "bg-cyan-500/[0.04]",    text: "text-cyan-300",    pillBg: "bg-cyan-500/15",    dot: "bg-cyan-400 animate-pulse"    },
-  expanding:    { border: "border-amber-500/[0.18]",   bg: "bg-amber-500/[0.04]",   text: "text-amber-300",   pillBg: "bg-amber-500/15",   dot: "bg-amber-400"                 },
-  preview:      { border: "border-amber-500/[0.18]",   bg: "bg-amber-500/[0.04]",   text: "text-amber-300",   pillBg: "bg-amber-500/15",   dot: "bg-amber-400"                 },
+  expanding:    { border: "border-white/[0.18]",   bg: "bg-white/[0.04]",   text: "text-zinc-300",   pillBg: "bg-white/15",   dot: "bg-zinc-400"                 },
+  preview:      { border: "border-white/[0.18]",   bg: "bg-white/[0.04]",   text: "text-zinc-300",   pillBg: "bg-white/15",   dot: "bg-zinc-400"                 },
   blocked:      { border: "border-rose-500/[0.22]",    bg: "bg-rose-500/[0.04]",    text: "text-rose-300",    pillBg: "bg-rose-500/15",    dot: "bg-rose-400"                  },
   disabled:     { border: "border-zinc-700/30",        bg: "bg-white/[0.02]",       text: "text-zinc-400",    pillBg: "bg-zinc-700/40",    dot: "bg-zinc-600"                  },
   unknown:      { border: "border-zinc-700/30",        bg: "bg-white/[0.02]",       text: "text-zinc-400",    pillBg: "bg-zinc-700/40",    dot: "bg-zinc-600"                  },
@@ -159,7 +159,7 @@ export default function SourcesPage() {
             <div className="w-px h-9 bg-white/[0.08]" />
             <Stat label="Partial" value={partialCount} tone="text-cyan-300" />
             <div className="w-px h-9 bg-white/[0.08]" />
-            <Stat label="Preview" value={previewCount} tone="text-amber-300" />
+            <Stat label="Preview" value={previewCount} tone="text-zinc-300" />
             <div className="w-px h-9 bg-white/[0.08]" />
             <Stat label="Blocked" value={blockedCount} tone={blockedCount > 0 ? "text-rose-300" : "text-zinc-500"} />
           </div>
@@ -172,8 +172,8 @@ export default function SourcesPage() {
         </div>
       )}
       {!loading && error && (
-        <div role="alert" aria-live="assertive" className="rounded-2xl border border-amber-500/[0.18] bg-amber-500/[0.04] p-5 mb-6">
-          <p className="text-[11px] font-mono text-amber-300/80 uppercase tracking-[0.18em] mb-1">// state unavailable</p>
+        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/[0.18] bg-white/[0.04] p-5 mb-6">
+          <p className="text-[11px] font-mono text-zinc-300/80 uppercase tracking-[0.18em] mb-1">// state unavailable</p>
           <p className="text-[13px] text-zinc-300">{error}</p>
         </div>
       )}
@@ -220,7 +220,7 @@ export default function SourcesPage() {
                         <span className="text-zinc-400">{p.resourceCount} resources</span>
                       )}
                       {typeof p.findingCount === "number" && (
-                        <span className={p.findingCount > 0 ? "text-amber-300" : "text-emerald-300"}>
+                        <span className={p.findingCount > 0 ? "text-zinc-300" : "text-emerald-300"}>
                           {p.findingCount} attention-required
                         </span>
                       )}
@@ -228,8 +228,8 @@ export default function SourcesPage() {
                   )}
 
                   {p.missingRequirements.length > 0 && (
-                    <div className="rounded-lg border border-amber-500/[0.12] bg-amber-500/[0.03] px-2.5 py-2 mb-3">
-                      <p className="text-[10px] font-mono text-amber-300/80 uppercase tracking-wider mb-1">Setup needed</p>
+                    <div className="rounded-lg border border-white/[0.12] bg-white/[0.03] px-2.5 py-2 mb-3">
+                      <p className="text-[10px] font-mono text-zinc-300/80 uppercase tracking-wider mb-1">Setup needed</p>
                       <ul className="space-y-0.5">
                         {p.missingRequirements.slice(0, 3).map((r, i) => (
                           <li key={i} className="text-[11px] text-zinc-300 font-mono leading-snug">{r}</li>
@@ -258,13 +258,13 @@ export default function SourcesPage() {
       )}
 
       {!loading && !error && providers.length === 0 && (
-        <section className="mb-8 rounded-2xl border border-amber-500/[0.18] bg-amber-500/[0.04] p-6">
-          <p className="text-[11px] font-mono text-amber-300/80 uppercase tracking-[0.18em] mb-2">// no sources connected</p>
+        <section className="mb-8 rounded-2xl border border-white/[0.18] bg-white/[0.04] p-6">
+          <p className="text-[11px] font-mono text-zinc-300/80 uppercase tracking-[0.18em] mb-2">// no sources connected</p>
           <p className="text-[14px] text-zinc-200 font-semibold mb-1">No providers wired yet.</p>
           <p className="text-[12px] text-zinc-400 leading-relaxed mb-3">
             Connect at least one cloud provider or GitHub to unlock the scan → finding → remediation → simulation → approval → desktop review → evidence flow.
           </p>
-          <Link href="/dashboard/connect-cloud" className="inline-flex items-center gap-1.5 text-[12px] font-medium text-amber-200 hover:text-amber-100 border border-amber-500/30 bg-amber-500/[0.06] rounded-md px-3 py-1.5 transition-colors">
+          <Link href="/dashboard/connect-cloud" className="inline-flex items-center gap-1.5 text-[12px] font-medium text-zinc-200 hover:text-zinc-100 border border-white/30 bg-white/[0.06] rounded-md px-3 py-1.5 transition-colors">
             Start onboarding <ArrowRightIcon className="h-3 w-3" />
           </Link>
         </section>
@@ -317,7 +317,7 @@ export default function SourcesPage() {
                         {p.notarized ? "notarized" : "not-notarized"}
                       </span>
                     )}
-                    <span className={`text-[10px] font-mono px-1.5 py-0.5 rounded ${p.publiclyDownloadable ? "bg-emerald-500/15 text-emerald-300" : "bg-amber-500/15 text-amber-300"}`}>
+                    <span className={`text-[10px] font-mono px-1.5 py-0.5 rounded ${p.publiclyDownloadable ? "bg-emerald-500/15 text-emerald-300" : "bg-white/15 text-zinc-300"}`}>
                       {p.publiclyDownloadable ? "public download" : "local build only"}
                     </span>
                   </div>

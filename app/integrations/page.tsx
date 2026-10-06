@@ -81,7 +81,7 @@ export default function IntegrationsCatalog() {
           <li>· <strong className="text-zinc-200">Planned</strong> means it is not available to customers today.</li>
         </ul>
         <div className="flex flex-wrap gap-2 text-[11px] font-mono pt-2">
-          <span className="px-2 py-0.5 rounded-full border border-amber-500/25 bg-amber-500/[0.06] text-amber-200">{totals.configured} configuration required</span>
+          <span className="px-2 py-0.5 rounded-full border border-white/25 bg-white/[0.06] text-zinc-200">{totals.configured} configuration required</span>
           <span className="px-2 py-0.5 rounded-full border border-cyan-500/25 bg-cyan-500/[0.06] text-cyan-200">{totals.preview} preview / review</span>
           <span className="px-2 py-0.5 rounded-full border border-white/[0.08] bg-white/[0.02] text-zinc-400">{totals.planned} planned</span>
         </div>
@@ -127,7 +127,7 @@ export default function IntegrationsCatalog() {
 function IntegrationCard({ integration: i }: { integration: Integration }) {
   const availability = PUBLIC_AVAILABILITY[i.id] ?? { label: "planned", detail: "No verified customer path is published.", href: "/docs", enabled: false };
   const statusTone = availability.enabled
-    ? "border-amber-500/25 bg-amber-500/[0.05] text-amber-200"
+    ? "border-white/25 bg-white/[0.05] text-zinc-200"
     : "border-white/[0.06] bg-white/[0.02] text-zinc-400";
   const writeTone = "border-white/[0.08] bg-white/[0.02] text-zinc-400";
   const writeLabel = i.writeAccess === "none" ? "no write path" : "write not release-verified";

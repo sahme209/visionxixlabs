@@ -52,7 +52,7 @@ const CLOUD_LABEL: Record<Section["cloud"], string> = {
 };
 
 const CLOUD_GRADIENT: Record<Section["cloud"], string> = {
-  aws: "from-amber-500/[0.08] to-transparent",
+  aws: "from-white/[0.08] to-transparent",
   azure: "from-sky-500/[0.08] to-transparent",
   gcp: "from-emerald-500/[0.08] to-transparent",
 };
@@ -126,7 +126,7 @@ export default function CloudInventoryPage() {
         </div>
       )}
       {!loading && error && (
-        <div role="alert" aria-live="assertive" className="rounded-2xl border border-amber-500/[0.18] bg-amber-500/[0.04] p-5 mb-6 text-[13px] text-zinc-300">
+        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/[0.18] bg-white/[0.04] p-5 mb-6 text-[13px] text-zinc-300">
           {error}
         </div>
       )}
@@ -157,7 +157,7 @@ export default function CloudInventoryPage() {
                         : s.mode === "partial"
                           ? "bg-cyan-500/15 text-cyan-300"
                           : s.mode === "preview"
-                            ? "bg-amber-500/15 text-amber-300"
+                            ? "bg-white/15 text-zinc-300"
                             : "bg-rose-500/15 text-rose-300"
                     }`}
                   >
@@ -206,8 +206,8 @@ export default function CloudInventoryPage() {
           </div>
 
           {report.limitations.length > 0 && (
-            <div className="rounded-2xl border border-amber-500/[0.18] bg-amber-500/[0.03] p-4 mb-8">
-              <p className="text-[10px] font-mono text-amber-300/80 uppercase tracking-[0.18em] mb-2">
+            <div className="rounded-2xl border border-white/[0.18] bg-white/[0.03] p-4 mb-8">
+              <p className="text-[10px] font-mono text-zinc-300/80 uppercase tracking-[0.18em] mb-2">
                 // overall limitations
               </p>
               {report.limitations.map((l, i) => (
@@ -234,7 +234,7 @@ function Stat({
 }) {
   const cls = {
     emerald: "border-emerald-500/[0.18] bg-emerald-500/[0.03] text-emerald-200",
-    amber: "border-amber-500/[0.18] bg-amber-500/[0.03] text-amber-200",
+    amber: "border-white/[0.18] bg-white/[0.03] text-zinc-200",
     rose: "border-rose-500/[0.18] bg-rose-500/[0.03] text-rose-200",
     violet: "border-white/[0.06] bg-white/[0.015] text-white",
   }[tone];
@@ -266,7 +266,7 @@ function FamilyTile({ label, value, icon: Icon }: { label: string; value: number
 function Chip({ label, tone }: { label: string; tone: "emerald" | "amber" | "rose" }) {
   const cls = {
     emerald: "bg-emerald-500/10 text-emerald-300 border-emerald-500/20",
-    amber: "bg-amber-500/10 text-amber-300 border-amber-500/20",
+    amber: "bg-white/10 text-zinc-300 border-white/20",
     rose: "bg-rose-500/10 text-rose-300 border-rose-500/20",
   }[tone];
   return (

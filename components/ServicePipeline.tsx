@@ -67,12 +67,12 @@ const ACCENT_COLORS: Record<string, { dot: string; border: string; bg: string; t
     dotColor: "text-emerald-500",
   },
   amber: {
-    dot: "bg-amber-500",
-    border: "border-amber-500/20",
-    bg: "bg-amber-500/[0.06]",
-    text: "text-amber-400",
-    num: "bg-amber-500/10 text-amber-400 border-amber-500/20",
-    dotColor: "text-amber-500",
+    dot: "bg-zinc-500",
+    border: "border-white/20",
+    bg: "bg-white/[0.06]",
+    text: "text-zinc-400",
+    num: "bg-white/10 text-zinc-400 border-white/20",
+    dotColor: "text-zinc-500",
   },
 };
 

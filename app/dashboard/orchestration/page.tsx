@@ -47,14 +47,14 @@ function stageFromBundleStatus(status: string): OrchestrationStage {
 
 const STATUS_TONE = {
   pass:    "text-emerald-300 bg-emerald-500/10 border-emerald-500/25",
-  warn:    "text-amber-300 bg-amber-500/10 border-amber-500/25",
+  warn:    "text-zinc-300 bg-white/10 border-white/25",
   fail:    "text-rose-300 bg-rose-500/10 border-rose-500/25",
   neutral: "text-zinc-300 bg-zinc-500/10 border-zinc-500/25",
 };
 
 const RISK_TONE = {
   critical: "text-rose-300 bg-rose-500/10 border-rose-500/25",
-  high:     "text-amber-300 bg-amber-500/10 border-amber-500/25",
+  high:     "text-zinc-300 bg-white/10 border-white/25",
   medium:   "text-cyan-300 bg-cyan-500/10 border-cyan-500/25",
   low:      "text-zinc-300 bg-zinc-500/10 border-zinc-500/25",
 };
@@ -116,7 +116,7 @@ export default async function OrchestrationCenter() {
       {/* Totals */}
       <section className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3">
         <Kpi label="Active orchestrations" value={`${totals.total}`}           tone="text-violet-300" detail="One per remediation candidate." />
-        <Kpi label="Waiting approval"      value={`${totals.waitingApproval}`} tone="text-amber-300"  detail="Operator + approver decision." />
+        <Kpi label="Waiting approval"      value={`${totals.waitingApproval}`} tone="text-zinc-300"  detail="Operator + approver decision." />
         <Kpi label="Blocked"               value={`${totals.blocked}`}         tone="text-rose-300"   detail="Policy / source / missing prereqs." />
         <Kpi label="Desktop review ready"  value={`${totals.desktopReady}`}    tone="text-cyan-300"   detail="Can be reviewed locally." />
       </section>
@@ -134,7 +134,7 @@ export default async function OrchestrationCenter() {
               <div className="space-y-1 text-[11px] font-mono">
                 <p className={b.previewAvailable ? "text-emerald-300" : "text-rose-300"}>preview · {b.previewAvailable ? "yes" : "no"}</p>
                 <p className={b.planAvailable    ? "text-emerald-300" : "text-rose-300"}>plan · {b.planAvailable ? "yes" : "no"}</p>
-                <p className={b.applyAvailable   ? "text-emerald-300" : "text-amber-300"}>apply · {b.applyAvailable ? "yes" : "disabled"}</p>
+                <p className={b.applyAvailable   ? "text-emerald-300" : "text-zinc-300"}>apply · {b.applyAvailable ? "yes" : "disabled"}</p>
               </div>
               {!b.applyAvailable && (
                 <p className="text-[10px] text-zinc-500 mt-2 line-clamp-3">{b.whyApplyBlocked}</p>
@@ -203,7 +203,7 @@ export default async function OrchestrationCenter() {
 
         <div className="rounded-2xl border border-white/[0.06] bg-white/[0.015] p-6">
           <div className="flex items-center gap-2 mb-4">
-            <LockClosedIcon className="h-4 w-4 text-amber-300" />
+            <LockClosedIcon className="h-4 w-4 text-zinc-300" />
             <h2 className="text-base font-semibold text-white tracking-tight">Active execution locks</h2>
           </div>
           {locks.length === 0 ? (
@@ -222,10 +222,10 @@ export default async function OrchestrationCenter() {
       </section>
 
       {/* Honest footer */}
-      <section className="rounded-xl border border-amber-500/20 bg-amber-500/[0.04] p-5">
+      <section className="rounded-xl border border-white/20 bg-white/[0.04] p-5">
         <div className="flex items-center gap-2 mb-2">
-          <ExclamationTriangleIcon className="h-4 w-4 text-amber-300" />
-          <p className="text-[10px] font-mono text-amber-300 uppercase tracking-[0.22em]">Known limitations</p>
+          <ExclamationTriangleIcon className="h-4 w-4 text-zinc-300" />
+          <p className="text-[10px] font-mono text-zinc-300 uppercase tracking-[0.22em]">Known limitations</p>
         </div>
         <ul className="space-y-1 text-xs text-zinc-300">
           <li>• Live Terraform apply is disabled by default. The boundary refuses apply across every provider until governance + signed audit + signed binaries are wired.</li>

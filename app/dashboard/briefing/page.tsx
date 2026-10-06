@@ -20,7 +20,7 @@ export const dynamic = "force-dynamic";
 
 const CHIP_TONE: Record<NonNullable<BriefingParagraph["chip"]>["tone"], string> = {
   emerald: "text-emerald-300 border-emerald-500/30",
-  amber:   "text-amber-300 border-amber-500/30",
+  amber:   "text-zinc-300 border-white/30",
   rose:    "text-rose-300 border-rose-500/30",
   neutral: "text-zinc-400 border-white/[0.10]",
 };
@@ -84,8 +84,8 @@ export default async function BriefingPage() {
       </header>
 
       {briefing.partial && (
-        <div className="mb-8 rounded-2xl border border-amber-500/15 bg-white/[0.015] px-6 py-5">
-          <p className="text-[10px] font-mono uppercase tracking-[0.28em] text-amber-300 mb-1">partial data</p>
+        <div className="mb-8 rounded-2xl border border-white/15 bg-white/[0.015] px-6 py-5">
+          <p className="text-[10px] font-mono uppercase tracking-[0.28em] text-zinc-300 mb-1">partial data</p>
           <p className="text-[13px] text-zinc-300">
             One or more canonical tables couldn&apos;t be read for this window.
             The paragraphs below reflect the data we could load.

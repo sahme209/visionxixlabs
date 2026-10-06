@@ -21,7 +21,7 @@ export const dynamic = "force-dynamic";
 // the only differentiator.
 const STATUS_TONE = {
   healthy:  "text-emerald-300",
-  warning:  "text-amber-300",
+  warning:  "text-zinc-300",
   degraded: "text-rose-300",
   preview:  "text-zinc-400",
   blocked:  "text-rose-300",

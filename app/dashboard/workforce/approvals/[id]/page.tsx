@@ -98,7 +98,7 @@ export default async function ApprovalDetailPage({ params }: { params: Promise<{
     | null;
 
   const statusTone =
-    snapshot.status === "pending"  ? "text-amber-300 bg-amber-500/10 border-amber-500/30"   :
+    snapshot.status === "pending"  ? "text-zinc-300 bg-white/10 border-white/30"   :
     snapshot.status === "approved" ? "text-emerald-300 bg-emerald-500/10 border-emerald-500/30" :
     snapshot.status === "rejected" ? "text-rose-300 bg-rose-500/10 border-rose-500/30"      :
     snapshot.status === "expired"  ? "text-zinc-400 bg-white/[0.04] border-white/[0.08]"    :
@@ -115,8 +115,8 @@ export default async function ApprovalDetailPage({ params }: { params: Promise<{
 
       <div className="mb-6">
         <div className="flex items-center gap-3 mb-3">
-          <ShieldCheckIcon className="h-4 w-4 text-amber-400" />
-          <p className="text-[10px] font-semibold text-amber-400 uppercase tracking-widest">
+          <ShieldCheckIcon className="h-4 w-4 text-zinc-400" />
+          <p className="text-[10px] font-semibold text-zinc-400 uppercase tracking-widest">
             {isPipelineSourced ? "Pipeline approval gate" : "Approval snapshot"}
           </p>
         </div>
@@ -227,8 +227,8 @@ export default async function ApprovalDetailPage({ params }: { params: Promise<{
 
       {/* Execution section — only renders for terminal-approved snapshots. */}
       {snapshot.status === "approved" && (
-        <section className="rounded-2xl border border-amber-500/20 bg-amber-500/[0.03] p-5 mb-6">
-          <p className="text-[10px] font-semibold text-amber-300 uppercase tracking-widest mb-3">// execution</p>
+        <section className="rounded-2xl border border-white/20 bg-white/[0.03] p-5 mb-6">
+          <p className="text-[10px] font-semibold text-zinc-300 uppercase tracking-widest mb-3">// execution</p>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-[11px] mb-4">
             <Meta label="Status" value={snapshot.executionStatus} mono />
             {snapshot.executedAt && <Meta label="Executed" value={snapshot.executedAt.toISOString()} mono />}
@@ -288,9 +288,9 @@ export default async function ApprovalDetailPage({ params }: { params: Promise<{
         )}
       </section>
 
-      <section className="rounded-2xl border border-amber-500/15 bg-amber-500/[0.04] p-5">
-        <p className="text-[10px] font-semibold text-amber-300 uppercase tracking-widest mb-2">// quorum rules</p>
-        <ul className="text-[12px] text-zinc-300 leading-relaxed list-disc list-inside marker:text-amber-400/70 space-y-1">
+      <section className="rounded-2xl border border-white/15 bg-white/[0.04] p-5">
+        <p className="text-[10px] font-semibold text-zinc-300 uppercase tracking-widest mb-2">// quorum rules</p>
+        <ul className="text-[12px] text-zinc-300 leading-relaxed list-disc list-inside marker:text-white/70 space-y-1">
           <li>Critical actions require {snapshot.requiredApprovers} distinct approvers. Same user cannot vote twice.</li>
           <li>A single rejection short-circuits the quorum and marks the snapshot rejected.</li>
           <li>Each vote writes an audit row tying back to the engineer source and correlation id.</li>

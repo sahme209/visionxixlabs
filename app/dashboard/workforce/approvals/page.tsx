@@ -135,8 +135,8 @@ export default async function EngineerApprovalsPage({
 
       <div className="mb-8">
         <div className="flex items-center gap-3 mb-3">
-          <ShieldCheckIcon className="h-4 w-4 text-amber-400" />
-          <p className="text-[10px] font-semibold text-amber-400 uppercase tracking-widest">Engineer-sourced approvals</p>
+          <ShieldCheckIcon className="h-4 w-4 text-zinc-400" />
+          <p className="text-[10px] font-semibold text-zinc-400 uppercase tracking-widest">Engineer-sourced approvals</p>
         </div>
         <h1 className="text-3xl md:text-4xl font-bold text-white tracking-[-0.04em] mb-2">
           What AGI staged · <span className="text-gradient">waiting for you.</span>
@@ -147,7 +147,7 @@ export default async function EngineerApprovalsPage({
       </div>
 
       <section className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-6">
-        <Stat label="Pending" value={pendingCount} icon={ClockIcon} tone="text-amber-300" />
+        <Stat label="Pending" value={pendingCount} icon={ClockIcon} tone="text-zinc-300" />
         <Stat label="Approved · all-time" value={approvedCount} icon={CheckCircleIcon} tone="text-emerald-300" />
         <Stat label="Rejected · all-time" value={rejectedCount} icon={ExclamationTriangleIcon} tone="text-rose-300" />
       </section>
@@ -209,9 +209,9 @@ export default async function EngineerApprovalsPage({
         </section>
       )}
 
-      <section className="mt-8 rounded-2xl border border-amber-500/15 bg-amber-500/[0.04] p-5">
-        <p className="text-[10px] font-semibold text-amber-300 uppercase tracking-widest mb-2">// approval rules</p>
-        <ul className="text-[12px] text-zinc-300 leading-relaxed list-disc list-inside marker:text-amber-400/70 space-y-1">
+      <section className="mt-8 rounded-2xl border border-white/15 bg-white/[0.04] p-5">
+        <p className="text-[10px] font-semibold text-zinc-300 uppercase tracking-widest mb-2">// approval rules</p>
+        <ul className="text-[12px] text-zinc-300 leading-relaxed list-disc list-inside marker:text-white/70 space-y-1">
           <li>The runtime gate is the only path that produces these rows — engineers cannot bypass it.</li>
           <li>Required-approver count is fixed at staging time. Tightening the engineer policy later doesn't loosen already-staged approvals.</li>
           <li>Decided approvals (approved or rejected) write to the audit fabric with the deciding user + reason.</li>
@@ -246,7 +246,7 @@ function FilterPill({
 }: { href: string; active: boolean; label: string; tone?: "zinc" | "amber" | "emerald" | "rose" | "violet" }) {
   const toneClass = {
     zinc:    active ? "bg-white/[0.08] text-white border-white/[0.12]"               : "bg-white/[0.02] text-zinc-400 border-white/[0.06] hover:text-zinc-200",
-    amber:   active ? "bg-amber-500/15 text-amber-200 border-amber-500/40"           : "bg-white/[0.02] text-zinc-400 border-white/[0.06] hover:text-amber-200",
+    amber:   active ? "bg-white/15 text-zinc-200 border-white/40"           : "bg-white/[0.02] text-zinc-400 border-white/[0.06] hover:text-zinc-200",
     emerald: active ? "bg-emerald-500/15 text-emerald-200 border-emerald-500/40"     : "bg-white/[0.02] text-zinc-400 border-white/[0.06] hover:text-emerald-200",
     rose:    active ? "bg-rose-500/15 text-rose-200 border-rose-500/40"              : "bg-white/[0.02] text-zinc-400 border-white/[0.06] hover:text-rose-200",
     violet:  active ? "bg-violet-500/15 text-white border-violet-500/40"        : "bg-white/[0.02] text-zinc-400 border-white/[0.06] hover:text-white",
@@ -281,7 +281,7 @@ function ApprovalRow(props: {
   decisionReason?: string | null;
 }) {
   const statusTone =
-    props.approvalStatus === "pending"   ? "text-amber-300 bg-amber-500/10 border-amber-500/30" :
+    props.approvalStatus === "pending"   ? "text-zinc-300 bg-white/10 border-white/30" :
     props.approvalStatus === "approved"  ? "text-emerald-300 bg-emerald-500/10 border-emerald-500/30" :
     props.approvalStatus === "rejected"  ? "text-rose-300 bg-rose-500/10 border-rose-500/30"     :
                                            "text-zinc-400 bg-white/[0.04] border-white/[0.08]";
