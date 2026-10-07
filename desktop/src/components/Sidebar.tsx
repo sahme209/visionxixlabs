@@ -31,6 +31,7 @@ const IconRequest = icon(<><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 
 const IconDocs = icon(<><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" /><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" /></>);
 const IconSettings = icon(<><circle cx="12" cy="12" r="3" /><path d="M19 12a7 7 0 1 1-14 0 7 7 0 0 1 14 0z" /></>);
 const IconPlugins = icon(<><path d="M8 3H5a2 2 0 0 0-2 2v3" /><path d="M16 3h3a2 2 0 0 1 2 2v3" /><path d="M8 21H5a2 2 0 0 1-2-2v-3" /><path d="M16 21h3a2 2 0 0 0 2-2v-3" /><rect x="8" y="8" width="8" height="8" rx="2" /></>);
+const IconRepository = icon(<><circle cx="12" cy="12" r="9" /><path d="M9 18c-4 1.2-4-2-5-2.5M15 18v-3.1c0-.9.3-1.5.7-1.9 2.3-.3 4.8-1.1 4.8-5A3.9 3.9 0 0 0 19.4 5 3.7 3.7 0 0 0 19.3 2S18.4 1.7 16 3.1a10.5 10.5 0 0 0-5 0C8.6 1.7 7.7 2 7.7 2a3.7 3.7 0 0 0-.1 3A3.9 3.9 0 0 0 6.5 8c0 3.9 2.5 4.7 4.8 5 .4.4.7 1.1.7 2v3" /></>);
 
 /**
  * Customer navigation follows the deployment lifecycle. Experimental cloud,
@@ -53,6 +54,7 @@ export const CUSTOMER_NAV_GROUPS: NavGroup[] = [
     kind: "workspace",
     label: "Workspace",
     items: [
+      { id: "repository-workspace", label: "GitHub repositories", Icon: IconRepository },
       { id: "plugins-skills", label: "Plugins & Skills", Icon: IconPlugins },
       { id: "docs", label: "Documentation", Icon: IconDocs },
       { id: "settings", label: "Settings", Icon: IconSettings },
