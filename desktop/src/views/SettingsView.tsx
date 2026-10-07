@@ -406,7 +406,7 @@ function ModelsSection() {
         return <div key={key} className="flex items-center justify-between gap-4 border-b border-white/[0.055] px-4 py-3.5 last:border-b-0">
           <div className="min-w-0"><p className="text-sm text-zinc-200">{model.label}</p><p className="mt-0.5 text-[11px] text-zinc-600">{PROVIDER_LABELS[model.provider] ?? model.provider} · {model.tier}</p></div>
           <button type="button" role="switch" aria-checked={enabled} aria-label={`${enabled ? "Disable" : "Enable"} ${model.label}`} disabled={!policy || Boolean(savingModel)} onClick={() => void toggleModel(model.provider, model.id)} className={`relative h-6 w-11 shrink-0 rounded-full transition-colors disabled:opacity-45 ${enabled ? "bg-emerald-500" : "bg-zinc-700"}`}>
-            <span aria-hidden className={`absolute top-0.5 h-5 w-5 rounded-full bg-white shadow transition-transform ${enabled ? "translate-x-5" : "translate-x-0.5"}`} />
+            <span aria-hidden className={`absolute left-0 top-0.5 h-5 w-5 rounded-full bg-white shadow transition-transform ${enabled ? "translate-x-5" : "translate-x-0.5"}`} />
           </button>
         </div>;
       })}

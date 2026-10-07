@@ -4,8 +4,10 @@
  * Endpoint: `${OLLAMA_BASE_URL}/v1` (OpenAI-compatible chat endpoint).
  * Default base URL: http://localhost:11434
  *
- * No auth required. We mark `allowEmptyKey: true` so isConfigured()
- * returns true even without a key.
+ * No auth is required, but a server deployment must explicitly set
+ * OLLAMA_BASE_URL. Falling back to localhost inside Vercel would advertise a
+ * model that can only resolve inside the remote function container, not on
+ * the customer's Mac.
  */
 
 import "server-only";
@@ -20,7 +22,7 @@ export class OllamaProvider extends OpenAICompatProvider {
       defaultModel: env.modelName ?? defaultModelFor("ollama"),
       baseUrl: `${base}/v1`,
       apiKey: "",
-      allowEmptyKey: true,
+      allowEmptyKey: Boolean(env.baseUrl?.trim()),
     });
   }
 }
