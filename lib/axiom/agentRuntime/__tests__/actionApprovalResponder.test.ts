@@ -25,6 +25,8 @@ import { executeApprovedAction, type ActionExecutionRepo } from "../actionApprov
 const repo: ActionExecutionRepo = {
   environment: { findUnique: vi.fn(async () => ({ id: "env_1", organizationId: "org-1" })) },
   deploymentTarget: { findUnique: vi.fn(async () => ({ organizationId: "org-1", roleArn: "arn:aws:iam::123:role/x", region: "us-east-2", ecsCluster: "c", ecsService: "s" })) },
+  repository: { findMany: vi.fn(async () => []) },
+  branchEnvironmentPolicy: { findMany: vi.fn(async () => []) },
 };
 
 beforeEach(() => {
@@ -70,6 +72,8 @@ describe("executeApprovedAction", () => {
     const otherOrgRepo: ActionExecutionRepo = {
       environment: { findUnique: vi.fn(async () => ({ id: "env_1", organizationId: "other_org" })) },
       deploymentTarget: { findUnique: vi.fn() },
+      repository: { findMany: vi.fn(async () => []) },
+      branchEnvironmentPolicy: { findMany: vi.fn(async () => []) },
     };
     const result = await executeApprovedAction(otherOrgRepo, "org-1", "trigger_aws_deploy", { repositoryFullName: "acme/widgets", environmentId: "env_1" });
     expect(result).toEqual({ ok: false, error: "environment_not_found" });
@@ -79,6 +83,8 @@ describe("executeApprovedAction", () => {
     const noTargetRepo: ActionExecutionRepo = {
       environment: { findUnique: vi.fn(async () => ({ id: "env_1", organizationId: "org-1" })) },
       deploymentTarget: { findUnique: vi.fn(async () => null) },
+      repository: { findMany: vi.fn(async () => []) },
+      branchEnvironmentPolicy: { findMany: vi.fn(async () => []) },
     };
     const result = await executeApprovedAction(noTargetRepo, "org-1", "trigger_aws_deploy", { repositoryFullName: "acme/widgets", environmentId: "env_1" });
     expect(result).toEqual({ ok: false, error: "deployment_target_not_configured" });
@@ -87,7 +93,7 @@ describe("executeApprovedAction", () => {
   it("trigger_aws_deploy dispatches the workflow with the target's own config", async () => {
     mocks.dispatchWorkflow.mockResolvedValue({ ok: true, data: { workflowRunId: "123", runUrl: "https://api.github.test/runs/123", htmlUrl: "https://github.test/runs/123" } });
     const result = await executeApprovedAction(repo, "org-1", "trigger_aws_deploy", { repositoryFullName: "acme/widgets", environmentId: "env_1" });
-    expect(result).toEqual({ ok: true, result: { dispatched: true, execution: null, trackingAvailable: false } });
+    expect(result).toEqual({ ok: true, result: { dispatched: true, execution: null, trackingAvailable: false, policyId: null, sourceRef: "main", sourceKind: "branch" } });
     expect(mocks.dispatchWorkflow).toHaveBeenCalledWith(expect.objectContaining({
       inputs: { role_arn: "arn:aws:iam::123:role/x", region: "us-east-2", cluster: "c", service: "s" },
     }));

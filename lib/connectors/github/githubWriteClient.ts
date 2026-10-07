@@ -174,6 +174,124 @@ export async function createPullRequest(
   return { ok: true, data: { number: result.data.number, htmlUrl: result.data.html_url } };
 }
 
+export type GitReferenceKind = "branch" | "tag";
+
+/** Resolves the exact commit behind a branch or tag using the repo-scoped token. */
+export async function resolveGitReference(input: {
+  owner: string;
+  repo: string;
+  ref: string;
+  kind: GitReferenceKind;
+  installationToken: string;
+}): Promise<GithubWriteResult<{ kind: GitReferenceKind; ref: string; commitSha: string }>> {
+  const namespace = input.kind === "tag" ? "tags" : "heads";
+  const result = await gh<{ object: { type: string; sha: string } }>(
+    `/repos/${encodeURIComponent(input.owner)}/${encodeURIComponent(input.repo)}/git/ref/${namespace}/${encodeURIComponent(input.ref)}`,
+    input.installationToken,
+  );
+  if (!result.ok) return { ok: false, error: `${input.kind}_ref_not_found: ${result.error}` };
+
+  let commitSha = result.data.object.sha;
+  if (input.kind === "tag" && result.data.object.type === "tag") {
+    const annotated = await gh<{ object: { type: string; sha: string } }>(
+      `/repos/${encodeURIComponent(input.owner)}/${encodeURIComponent(input.repo)}/git/tags/${encodeURIComponent(commitSha)}`,
+      input.installationToken,
+    );
+    if (!annotated.ok || annotated.data.object.type !== "commit") {
+      return { ok: false, error: `tag_commit_unavailable: ${annotated.ok ? annotated.data.object.type : annotated.error}` };
+    }
+    commitSha = annotated.data.object.sha;
+  }
+  return { ok: true, data: { kind: input.kind, ref: input.ref, commitSha } };
+}
+
+export interface PullRequestGovernanceEvidence {
+  number: number;
+  state: string;
+  mergedAt: string | null;
+  headRef: string;
+  baseRef: string;
+  headSha: string;
+  mergeCommitSha: string | null;
+  approvedReviewCount: number;
+  codeOwnerReviewsRequired: boolean;
+  linkedChangeTickets: string[];
+  htmlUrl: string;
+}
+
+/** Fetches live, deployment-critical PR evidence; no cached governance claims. */
+export async function getPullRequestGovernanceEvidence(input: {
+  owner: string;
+  repo: string;
+  pullRequestNumber: number;
+  requireCodeowners: boolean;
+  installationToken: string;
+}): Promise<GithubWriteResult<PullRequestGovernanceEvidence>> {
+  const path = `/repos/${encodeURIComponent(input.owner)}/${encodeURIComponent(input.repo)}`;
+  const pull = await gh<{
+    number: number;
+    state: string;
+    merged_at: string | null;
+    head: { ref: string; sha: string };
+    base: { ref: string };
+    merge_commit_sha: string | null;
+    body: string | null;
+    labels?: Array<{ name: string }>;
+    html_url: string;
+  }>(`${path}/pulls/${input.pullRequestNumber}`, input.installationToken);
+  if (!pull.ok) return { ok: false, error: `pull_request_evidence_unavailable: ${pull.error}` };
+
+  let approvedReviewCount = 0;
+  let codeOwnerReviewsRequired = false;
+  if (input.requireCodeowners) {
+    const [reviews, protection] = await Promise.all([
+      gh<Array<{ state: string; user?: { login?: string } }>>(
+        `${path}/pulls/${input.pullRequestNumber}/reviews?per_page=100`,
+        input.installationToken,
+      ),
+      gh<{ require_code_owner_reviews?: boolean }>(
+        `${path}/branches/${encodeURIComponent(pull.data.base.ref)}/protection/required_pull_request_reviews`,
+        input.installationToken,
+      ),
+    ]);
+    if (!reviews.ok) return { ok: false, error: `pull_request_reviews_unavailable: ${reviews.error}` };
+    if (!protection.ok && !protection.error.startsWith("github_404:")) {
+      return { ok: false, error: `branch_protection_unavailable: ${protection.error}` };
+    }
+    approvedReviewCount = new Set(
+      reviews.data
+        .filter((review) => review.state.toUpperCase() === "APPROVED")
+        .map((review) => review.user?.login)
+        .filter((login): login is string => Boolean(login)),
+    ).size;
+    codeOwnerReviewsRequired = protection.ok && protection.data.require_code_owner_reviews === true;
+  }
+
+  const changeTicketPattern = /\b(?:CHG|INC|REQ)\d{4,}\b/g;
+  const linkedChangeTickets = new Set<string>();
+  for (const match of (pull.data.body ?? "").matchAll(changeTicketPattern)) linkedChangeTickets.add(match[0]);
+  for (const label of pull.data.labels ?? []) {
+    if (/^(?:CHG|INC|REQ)\d{4,}$/.test(label.name)) linkedChangeTickets.add(label.name);
+  }
+
+  return {
+    ok: true,
+    data: {
+      number: pull.data.number,
+      state: pull.data.state,
+      mergedAt: pull.data.merged_at,
+      headRef: pull.data.head.ref,
+      baseRef: pull.data.base.ref,
+      headSha: pull.data.head.sha,
+      mergeCommitSha: pull.data.merge_commit_sha,
+      approvedReviewCount,
+      codeOwnerReviewsRequired,
+      linkedChangeTickets: Array.from(linkedChangeTickets),
+      htmlUrl: pull.data.html_url,
+    },
+  };
+}
+
 export interface DispatchWorkflowInput {
   owner: string;
   repo: string;

@@ -95,8 +95,8 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = [
   },
   {
     name: "trigger_aws_deploy",
-    description: "Trigger a real AWS ECS deployment for a repository's configured environment. This changes what's running in production or another live environment — always treated as the highest-risk action available.",
-    argsSchemaHint: '{ "repositoryFullName": "owner/repo", "environmentId": "the environment\'s id, from list_environments" }',
+    description: "Trigger a real AWS ECS deployment for a repository's configured environment from an explicit branch or tag. Configured branch policies are checked against live GitHub evidence before dispatch. This changes what's running in production or another live environment — always treated as the highest-risk action available.",
+    argsSchemaHint: '{ "repositoryFullName": "owner/repo", "environmentId": "the environment\'s id, from list_environments", "sourceRef": "main or v1.2.3", "sourceKind": "branch|tag", "pullRequestNumber": 123 }',
     riskLevel: "high",
   },
 ] as const;

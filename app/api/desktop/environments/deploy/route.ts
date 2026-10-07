@@ -1,6 +1,6 @@
 /**
  * POST /api/desktop/environments/deploy
- * Body: { repositoryFullName, environmentId }
+ * Body: { repositoryFullName, environmentId, sourceRef?, sourceKind?, pullRequestNumber? }
  *
  * The real deploy trigger, desktop-native: dispatches the tenant's own
  * axiom-deploy-aws-ecs.yml GitHub Actions workflow (see
@@ -20,6 +20,7 @@ import { dispatchWorkflow } from "@/lib/connectors/github/githubWriteClient";
 import { AWS_ECS_DEPLOY_WORKFLOW_FILENAME } from "@/lib/releaseops/awsEcsDeployWorkflowTemplate";
 import { appendAuditEvent, type AuditEventRepo } from "@/lib/releaseops/auditEventResponder";
 import { serializeDeploymentExecution, type DeploymentExecutionRepo } from "@/lib/releaseops/deploymentExecutionResponder";
+import { evaluateDeploymentPolicy, type DeploymentPolicyRepo } from "@/lib/releaseops/deploymentPolicyGuard";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -35,10 +36,22 @@ export async function POST(request: NextRequest): Promise<Response> {
     return NextResponse.json({ ok: false, error: "desktop_session_required" }, { status: 401 });
   }
 
-  const body = (await request.json().catch(() => null)) as { repositoryFullName?: unknown; environmentId?: unknown } | null;
+  const body = (await request.json().catch(() => null)) as {
+    repositoryFullName?: unknown;
+    environmentId?: unknown;
+    sourceRef?: unknown;
+    sourceKind?: unknown;
+    pullRequestNumber?: unknown;
+  } | null;
   const repositoryFullName = typeof body?.repositoryFullName === "string" ? body.repositoryFullName.trim() : "";
   const environmentId = typeof body?.environmentId === "string" ? body.environmentId : "";
-  if (!repositoryFullName || !environmentId) {
+  const sourceRef = typeof body?.sourceRef === "string" ? body.sourceRef.trim() : "main";
+  const sourceKind = body?.sourceKind === undefined || body.sourceKind === "branch"
+    ? "branch"
+    : body.sourceKind === "tag" ? "tag" : null;
+  const pullRequestNumber = typeof body?.pullRequestNumber === "number" ? body.pullRequestNumber : undefined;
+  if (!repositoryFullName || !environmentId || !sourceKind
+    || (body?.pullRequestNumber !== undefined && (!Number.isInteger(pullRequestNumber) || (pullRequestNumber ?? 0) <= 0))) {
     return NextResponse.json({ ok: false, error: "invalid_payload" }, { status: 400 });
   }
   const repo = parseRepositoryFullName(repositoryFullName);
@@ -61,11 +74,25 @@ export async function POST(request: NextRequest): Promise<Response> {
     return NextResponse.json({ ok: false, error: tokenResult.error }, { status: 409 });
   }
 
+  const policy = await evaluateDeploymentPolicy(prisma as unknown as DeploymentPolicyRepo, {
+    organizationId,
+    environmentId,
+    owner: repo.owner,
+    repo: repo.repo,
+    sourceRef,
+    sourceKind,
+    ...(pullRequestNumber !== undefined ? { pullRequestNumber } : {}),
+    installationToken: tokenResult.token,
+  });
+  if (!policy.ok) {
+    return NextResponse.json({ ok: false, error: policy.error, policyId: policy.policyId ?? null }, { status: 409 });
+  }
+
   const dispatchResult = await dispatchWorkflow({
     owner: repo.owner,
     repo: repo.repo,
     workflowFile: AWS_ECS_DEPLOY_WORKFLOW_FILENAME,
-    ref: "main",
+    ref: sourceRef,
     inputs: {
       role_arn: target.roleArn,
       region: target.region,
@@ -102,7 +129,7 @@ export async function POST(request: NextRequest): Promise<Response> {
       kind: "release.deploy_triggered",
       subjectKind: "environment",
       subjectId: environmentId,
-      summary: `Dispatched AWS ECS deploy from desktop for ${repositoryFullName} → ${target.ecsCluster}/${target.ecsService} (${target.region})${execution ? " with live observation" : " without durable observation"}`,
+      summary: `Dispatched AWS ECS deploy from desktop for ${repositoryFullName}@${sourceRef} → ${target.ecsCluster}/${target.ecsService} (${target.region})${policy.policyId ? ` under branch policy ${policy.policyId}` : ""}${execution ? " with live observation" : " without durable observation"}`,
       actorUserId: String(session.userId),
     });
   } catch { /* best-effort */ }
@@ -113,6 +140,9 @@ export async function POST(request: NextRequest): Promise<Response> {
       dispatched: true,
       execution,
       trackingAvailable: Boolean(execution && dispatchResult.data.workflowRunId),
+      policyId: policy.policyId,
+      sourceRef,
+      sourceKind,
     },
   });
 }

@@ -76,4 +76,9 @@ describe("v1ApiError", () => {
     expect(v1ApiError({ error: "token_revoked" }, 401))
       .toBe("Your workspace sign-in is no longer valid. Sign in again to continue.");
   });
+
+  it("turns deployment-policy denials into actionable guidance", () => {
+    expect(v1ApiError({ error: "branch_policy_change_ticket_required" }, 409))
+      .toBe("Add a CHG, INC, or REQ ticket reference to the linked pull request before deployment.");
+  });
 });

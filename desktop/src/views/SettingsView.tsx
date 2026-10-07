@@ -740,6 +740,10 @@ function DeploymentTargetPanel({ environmentId }: { environmentId: string }) {
   const [saveOk, setSaveOk] = useState(false);
 
   const [deployRepo, setDeployRepo] = useState("");
+  const [deployRepositories, setDeployRepositories] = useState<Array<{ id: string; displayName: string; provider: string }>>([]);
+  const [sourceRef, setSourceRef] = useState("main");
+  const [sourceKind, setSourceKind] = useState<"branch" | "tag">("branch");
+  const [pullRequestNumber, setPullRequestNumber] = useState("");
   const [deploying, setDeploying] = useState(false);
   const [deployError, setDeployError] = useState<string | null>(null);
   const [deployOk, setDeployOk] = useState(false);
@@ -751,7 +755,8 @@ function DeploymentTargetPanel({ environmentId }: { environmentId: string }) {
     void Promise.all([
       desktopClient.getDeploymentTarget(environmentId),
       desktopClient.listDeploymentExecutions(environmentId),
-    ]).then(([result, executions]) => {
+      desktopClient.listRepositories(),
+    ]).then(([result, executions, repositories]) => {
       if (result.ok) {
         if (result.data.target) {
           setRoleArn(result.data.target.roleArn);
@@ -763,6 +768,11 @@ function DeploymentTargetPanel({ environmentId }: { environmentId: string }) {
         setLoadError(result.error);
       }
       if (executions.ok) setExecution(executions.data.executions[0] ?? null);
+      if (repositories.ok) {
+        const githubRepositories = repositories.data.repositories.filter((repository) => repository.provider === "github");
+        setDeployRepositories(githubRepositories);
+        setDeployRepo((current) => current || githubRepositories[0]?.displayName || "");
+      }
       setLoaded(true);
     });
   }, [environmentId]);
@@ -794,7 +804,18 @@ function DeploymentTargetPanel({ environmentId }: { environmentId: string }) {
   async function triggerDeploy() {
     setDeploying(true); setDeployError(null); setDeployOk(false);
     try {
-      const result = await desktopClient.triggerAwsDeploy({ repositoryFullName: deployRepo, environmentId });
+      const parsedPullRequestNumber = pullRequestNumber.trim() ? Number(pullRequestNumber) : undefined;
+      if (parsedPullRequestNumber !== undefined && (!Number.isInteger(parsedPullRequestNumber) || parsedPullRequestNumber <= 0)) {
+        setDeployError("Pull request number must be a positive whole number.");
+        return;
+      }
+      const result = await desktopClient.triggerAwsDeploy({
+        repositoryFullName: deployRepo,
+        environmentId,
+        sourceRef,
+        sourceKind,
+        ...(parsedPullRequestNumber !== undefined ? { pullRequestNumber: parsedPullRequestNumber } : {}),
+      });
       if (!result.ok) { setDeployError(result.error); return; }
       setDeployOk(true);
       setExecution(result.data.execution);
@@ -826,9 +847,24 @@ function DeploymentTargetPanel({ environmentId }: { environmentId: string }) {
         <p className="mb-2 text-[11px] text-zinc-500">
           Add .github/workflows/axiom-deploy-aws-ecs.yml to the target repo once (see the Git &amp; PRs section to commit it via a pull request), then trigger a deploy here:
         </p>
-        <div className="flex items-center gap-3">
-          <LabeledInput label="Repository" placeholder="owner/repo" value={deployRepo} onChange={setDeployRepo} />
-          <button type="button" onClick={() => void triggerDeploy()} disabled={deploying || !deployRepo.includes("/")} className="mt-5 inline-flex items-center gap-2 rounded-lg border border-emerald-500/30 bg-emerald-500/[0.08] px-3 py-2 text-xs text-emerald-200 hover:bg-emerald-500/[0.14] disabled:opacity-50 shrink-0">
+        <div className="grid grid-cols-2 items-end gap-3 xl:grid-cols-[1.4fr_1fr_0.65fr_0.65fr_auto]">
+          <label className="block">
+            <span className="mb-1 block text-[11px] text-zinc-500">Repository</span>
+            <select value={deployRepo} onChange={(event) => setDeployRepo(event.target.value)} className="w-full rounded-lg border border-white/10 bg-black/25 px-3 py-2 text-xs text-zinc-200 outline-none focus:border-white/25">
+              {deployRepositories.length === 0 && <option value="">Register a GitHub repository first</option>}
+              {deployRepositories.map((repository) => <option key={repository.id} value={repository.displayName}>{repository.displayName}</option>)}
+            </select>
+          </label>
+          <LabeledInput label="Source branch or tag" placeholder="main or v1.2.3" value={sourceRef} onChange={setSourceRef} />
+          <label className="block">
+            <span className="mb-1 block text-[11px] text-zinc-500">Source type</span>
+            <select value={sourceKind} onChange={(event) => setSourceKind(event.target.value as "branch" | "tag")} className="w-full rounded-lg border border-white/10 bg-black/25 px-3 py-2 text-xs text-zinc-200 outline-none focus:border-white/25">
+              <option value="branch">Branch</option>
+              <option value="tag">Tag</option>
+            </select>
+          </label>
+          <LabeledInput label="PR number" placeholder="optional" value={pullRequestNumber} onChange={setPullRequestNumber} />
+          <button type="button" onClick={() => void triggerDeploy()} disabled={deploying || !deployRepo.includes("/") || !sourceRef.trim()} className="inline-flex items-center justify-center gap-2 rounded-lg border border-emerald-500/30 bg-emerald-500/[0.08] px-3 py-2 text-xs text-emerald-200 hover:bg-emerald-500/[0.14] disabled:opacity-50 shrink-0">
             {deploying ? "Deploying…" : "Deploy"}
           </button>
         </div>
@@ -1137,15 +1173,34 @@ function RepositoriesPanel() {
 
 function BranchPoliciesPanel() {
   const [policies, setPolicies] = useState<Array<{ id: string; repositoryId: string; environmentId: string; branchPattern: string; requirePrLink: boolean; requireReleaseTag: boolean; requireCodeowners: boolean; requireChangeTicket: boolean }> | null>(null);
+  const [repositories, setRepositories] = useState<Array<{ id: string; displayName: string }>>([]);
+  const [environments, setEnvironments] = useState<Array<{ id: string; name: string; tier: string }>>([]);
   const [repositoryId, setRepositoryId] = useState("");
   const [environmentId, setEnvironmentId] = useState("");
   const [branchPattern, setBranchPattern] = useState("");
   const [requirePrLink, setRequirePrLink] = useState(true);
+  const [requireReleaseTag, setRequireReleaseTag] = useState(false);
+  const [requireCodeowners, setRequireCodeowners] = useState(false);
+  const [requireChangeTicket, setRequireChangeTicket] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const load = useCallback(() => {
-    void desktopClient.listBranchPolicies().then((result) => { if (result.ok) setPolicies(result.data.policies); });
+    void Promise.all([
+      desktopClient.listBranchPolicies(),
+      desktopClient.listRepositories(),
+      desktopClient.listEnvironments(),
+    ]).then(([policyResult, repositoryResult, environmentResult]) => {
+      if (policyResult.ok) setPolicies(policyResult.data.policies);
+      if (repositoryResult.ok) {
+        setRepositories(repositoryResult.data.repositories);
+        setRepositoryId((current) => current || repositoryResult.data.repositories[0]?.id || "");
+      }
+      if (environmentResult.ok) {
+        setEnvironments(environmentResult.data.environments);
+        setEnvironmentId((current) => current || environmentResult.data.environments[0]?.id || "");
+      }
+    });
   }, []);
 
   useEffect(() => { load(); }, [load]);
@@ -1153,7 +1208,15 @@ function BranchPoliciesPanel() {
   async function create() {
     setBusy(true); setError(null);
     try {
-      const result = await desktopClient.createBranchPolicy({ repositoryId, environmentId, branchPattern, requirePrLink });
+      const result = await desktopClient.createBranchPolicy({
+        repositoryId,
+        environmentId,
+        branchPattern,
+        requirePrLink,
+        requireReleaseTag,
+        requireCodeowners,
+        requireChangeTicket,
+      });
       if (!result.ok) { setError(result.error); return; }
       setBranchPattern("");
       load();
@@ -1163,21 +1226,42 @@ function BranchPoliciesPanel() {
   }
 
   return (
-    <Group label="Branch policies (config only — not yet enforced on deploy)">
+    <Group label="Branch policies (enforced before deploy)">
       {policies !== null && policies.length === 0 && <ActionRow title="No branch policies configured" detail="Define which branch patterns need a PR link, release tag, etc. before deploying to an environment." action={null} />}
       {(policies ?? []).map((p) => (
         <ActionRow key={p.id} title={p.branchPattern} detail={[p.requirePrLink && "PR link", p.requireReleaseTag && "release tag", p.requireCodeowners && "codeowners", p.requireChangeTicket && "change ticket"].filter(Boolean).join(", ") || "no requirements set"} action={null} />
       ))}
       <div className="px-4 py-3.5 space-y-3 border-t border-white/[0.04]">
         <div className="grid grid-cols-3 gap-3">
-          <LabeledInput label="Repository ID" placeholder="from the list above" value={repositoryId} onChange={setRepositoryId} />
-          <LabeledInput label="Environment ID" placeholder="from the Environments tab" value={environmentId} onChange={setEnvironmentId} />
+          <label className="block">
+            <span className="mb-1 block text-[11px] text-zinc-500">Repository</span>
+            <select value={repositoryId} onChange={(event) => setRepositoryId(event.target.value)} className="w-full rounded-lg border border-white/10 bg-black/25 px-3 py-2 text-xs text-zinc-200 outline-none focus:border-white/25">
+              {repositories.length === 0 && <option value="">Register a repository first</option>}
+              {repositories.map((repository) => <option key={repository.id} value={repository.id}>{repository.displayName}</option>)}
+            </select>
+          </label>
+          <label className="block">
+            <span className="mb-1 block text-[11px] text-zinc-500">Environment</span>
+            <select value={environmentId} onChange={(event) => setEnvironmentId(event.target.value)} className="w-full rounded-lg border border-white/10 bg-black/25 px-3 py-2 text-xs text-zinc-200 outline-none focus:border-white/25">
+              {environments.length === 0 && <option value="">Create an environment first</option>}
+              {environments.map((environment) => <option key={environment.id} value={environment.id}>{environment.name} · {environment.tier}</option>)}
+            </select>
+          </label>
           <LabeledInput label="Branch pattern" placeholder="release/*" value={branchPattern} onChange={setBranchPattern} />
         </div>
-        <label className="flex items-center gap-2 text-xs text-zinc-400">
-          <input type="checkbox" checked={requirePrLink} onChange={(event) => setRequirePrLink(event.target.checked)} />
-          Require a linked pull request
-        </label>
+        <div className="grid grid-cols-2 gap-2">
+          {[
+            { label: "Require a linked, merged pull request", checked: requirePrLink, set: setRequirePrLink },
+            { label: "Require a release tag", checked: requireReleaseTag, set: setRequireReleaseTag },
+            { label: "Require CODEOWNERS enforcement and approval", checked: requireCodeowners, set: setRequireCodeowners },
+            { label: "Require a CHG, INC, or REQ ticket in the PR", checked: requireChangeTicket, set: setRequireChangeTicket },
+          ].map((item) => (
+            <label key={item.label} className="flex items-center gap-2 text-xs text-zinc-400">
+              <input type="checkbox" checked={item.checked} onChange={(event) => item.set(event.target.checked)} />
+              {item.label}
+            </label>
+          ))}
+        </div>
         <div className="flex items-center gap-3">
           <button type="button" onClick={() => void create()} disabled={busy || !repositoryId || !environmentId || !branchPattern} className="inline-flex items-center gap-2 rounded-lg border border-white/10 bg-white/[0.04] px-3 py-2 text-xs text-zinc-200 hover:bg-white/[0.08] disabled:opacity-50">
             {busy ? "Saving…" : "Add policy"}

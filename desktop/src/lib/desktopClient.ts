@@ -103,6 +103,22 @@ export function v1ApiError(body: Record<string, unknown>, status: number): strin
       return "This workspace does not have approved pilot or production access yet.";
     case "rate_limited":
       return "The service is temporarily rate-limiting requests. Wait a moment, then try again.";
+    case "branch_policy_no_matching_ref":
+      return "This branch or tag is not allowed for the selected environment.";
+    case "branch_policy_release_tag_required":
+      return "This environment requires a release tag. Select Tag and enter an existing GitHub tag.";
+    case "branch_policy_pull_request_required":
+      return "This environment requires a linked pull request number.";
+    case "branch_policy_pull_request_not_merged":
+      return "The linked pull request must be merged before deployment.";
+    case "branch_policy_pull_request_ref_mismatch":
+      return "The selected branch or tag does not point to the linked pull request commit.";
+    case "branch_policy_codeowners_approval_required":
+      return "GitHub CODEOWNERS enforcement and an approved review are required before deployment.";
+    case "branch_policy_change_ticket_required":
+      return "Add a CHG, INC, or REQ ticket reference to the linked pull request before deployment.";
+    case "branch_policy_lookup_failed":
+      return "Deployment policy could not be verified. Nothing was deployed; try again shortly.";
   }
   if (typeof body.message === "string" && body.message.trim()) return body.message;
   if (code) return code.replaceAll("_", " ");
@@ -722,7 +738,7 @@ export class DesktopClient {
     return this.post("/api/desktop/environments/deployment-target", input);
   }
 
-  triggerAwsDeploy(input: { repositoryFullName: string; environmentId: string }): Promise<ApiResult<{ dispatched: boolean; execution: DeploymentExecution | null; trackingAvailable: boolean }>> {
+  triggerAwsDeploy(input: { repositoryFullName: string; environmentId: string; sourceRef: string; sourceKind: "branch" | "tag"; pullRequestNumber?: number }): Promise<ApiResult<{ dispatched: boolean; execution: DeploymentExecution | null; trackingAvailable: boolean; policyId: string | null; sourceRef: string; sourceKind: "branch" | "tag" }>> {
     return this.post("/api/desktop/environments/deploy", input);
   }
 

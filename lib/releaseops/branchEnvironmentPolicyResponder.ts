@@ -1,15 +1,10 @@
 /**
  * BranchEnvironmentPolicy config management.
  *
- * Config only, same posture as TenantIdentityProvider's phase 1: the
- * (repository, environment, branch pattern) rule and its requirements
+ * The (repository, environment, branch pattern) rule and its requirements
  * (requireReleaseTag/requireCodeowners/requirePrLink/requireChangeTicket)
- * are real and persisted, but nothing in the deploy-trigger path reads
- * or enforces them yet — the AWS deploy dispatch
- * (lib/axiom/agentRuntime/actionApprovalResponder.ts) has no concept of
- * "which branch" today, it always deploys whatever `main` currently is.
- * Wiring real enforcement needs that restructured first — a bigger,
- * separate decision, not something to half-build here.
+ * are enforced by deploymentPolicyGuard before either a desktop or approved
+ * Agent AWS deployment can dispatch the tenant's workflow.
  */
 
 import { isMissingTable } from "./releaseListResponder";

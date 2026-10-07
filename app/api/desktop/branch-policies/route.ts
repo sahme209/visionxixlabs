@@ -3,9 +3,8 @@
  * POST /api/desktop/branch-policies
  * Body (POST): { repositoryId, environmentId, branchPattern, requireReleaseTag?, requireCodeowners?, requirePrLink?, requireChangeTicket?, priority? }
  *
- * Config management only — see lib/releaseops/branchEnvironmentPolicyResponder.ts's
- * header comment. Nothing in the deploy-trigger path enforces these yet.
- * Admin-gated — tenant-wide configuration.
+ * Admin-gated tenant-wide configuration. Both deployment entry points
+ * enforce these rows through lib/releaseops/deploymentPolicyGuard.ts.
  */
 
 import { NextResponse, type NextRequest } from "next/server";
