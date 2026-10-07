@@ -159,7 +159,11 @@ fn emit<R: Runtime>(app: &AppHandle<R>, payload: &str) {
 }
 
 fn open_url<R: Runtime>(app: &AppHandle<R>, url: &str) {
-    // tauri_plugin_shell is already loaded; use its OS-open helper.
+    // The shell plugin remains the project's audited URL opener. Its v2 open
+    // helper is deprecated in favour of a separate plugin, but changing that
+    // permission surface deserves its own reviewed migration.
+    #[allow(deprecated)]
     use tauri_plugin_shell::ShellExt;
+    #[allow(deprecated)]
     let _ = app.shell().open(url, None);
 }

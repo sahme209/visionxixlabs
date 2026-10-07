@@ -130,14 +130,14 @@ fn main() {
     // menubar. On macOS, clicking the Dock icon must make that hidden window
     // visible again; otherwise the application can look as though it did not
     // launch even though its background process is still running.
-    app.run(|app_handle, event| {
+    app.run(|_app_handle, _event| {
         #[cfg(target_os = "macos")]
         if let tauri::RunEvent::Reopen {
             has_visible_windows: false,
             ..
-        } = event
+        } = _event
         {
-            if let Some(window) = app_handle.get_webview_window("main") {
+            if let Some(window) = _app_handle.get_webview_window("main") {
                 let _ = window.show();
                 let _ = window.unminimize();
                 let _ = window.set_focus();
