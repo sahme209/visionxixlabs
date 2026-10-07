@@ -49,7 +49,7 @@ export interface DeploymentPolicyInput {
 }
 
 export type DeploymentPolicyDecision =
-  | { ok: true; policyId: string | null; sourceCommitSha: string | null; pullRequestUrl: string | null }
+  | { ok: true; policyId: string | null; sourceCommitSha: string; pullRequestUrl: string | null }
   | { ok: false; error: string; policyId?: string };
 
 function validSourceRef(value: string): boolean {
@@ -84,7 +84,7 @@ export async function evaluateDeploymentPolicy(
     row.remoteOwner.toLowerCase() === input.owner.toLowerCase()
     && row.remoteName.toLowerCase() === input.repo.toLowerCase(),
   );
-  if (!registered) return { ok: true, policyId: null, sourceCommitSha: null, pullRequestUrl: null };
+  if (!registered) return resolveUnconfiguredReference(input);
 
   let policies: PolicyRow[];
   try {
@@ -100,7 +100,7 @@ export async function evaluateDeploymentPolicy(
   } catch {
     return { ok: false, error: "branch_policy_lookup_failed" };
   }
-  if (policies.length === 0) return { ok: true, policyId: null, sourceCommitSha: null, pullRequestUrl: null };
+  if (policies.length === 0) return resolveUnconfiguredReference(input);
 
   const policy = policies.find((candidate) => matchesPattern(input.sourceRef, candidate.branchPattern));
   if (!policy) return { ok: false, error: "branch_policy_no_matching_ref" };
@@ -151,4 +151,16 @@ export async function evaluateDeploymentPolicy(
     sourceCommitSha: reference.data.commitSha,
     pullRequestUrl: evidence.data.htmlUrl,
   };
+}
+
+async function resolveUnconfiguredReference(input: DeploymentPolicyInput): Promise<DeploymentPolicyDecision> {
+  const reference = await resolveGitReference({
+    owner: input.owner,
+    repo: input.repo,
+    ref: input.sourceRef,
+    kind: input.sourceKind,
+    installationToken: input.installationToken,
+  });
+  if (!reference.ok) return { ok: false, error: reference.error };
+  return { ok: true, policyId: null, sourceCommitSha: reference.data.commitSha, pullRequestUrl: null };
 }

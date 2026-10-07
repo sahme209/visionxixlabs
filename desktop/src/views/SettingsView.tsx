@@ -744,6 +744,9 @@ function DeploymentTargetPanel({ environmentId }: { environmentId: string }) {
   const [sourceRef, setSourceRef] = useState("main");
   const [sourceKind, setSourceKind] = useState<"branch" | "tag">("branch");
   const [pullRequestNumber, setPullRequestNumber] = useState("");
+  const [checkingReadiness, setCheckingReadiness] = useState(false);
+  const [readinessError, setReadinessError] = useState<string | null>(null);
+  const [readiness, setReadiness] = useState<{ policyId: string | null; sourceCommitSha: string; pullRequestUrl: string | null } | null>(null);
   const [deploying, setDeploying] = useState(false);
   const [deployError, setDeployError] = useState<string | null>(null);
   const [deployOk, setDeployOk] = useState(false);
@@ -824,6 +827,28 @@ function DeploymentTargetPanel({ environmentId }: { environmentId: string }) {
     }
   }
 
+  async function checkReadiness() {
+    setCheckingReadiness(true); setReadinessError(null); setReadiness(null);
+    try {
+      const parsedPullRequestNumber = pullRequestNumber.trim() ? Number(pullRequestNumber) : undefined;
+      if (parsedPullRequestNumber !== undefined && (!Number.isInteger(parsedPullRequestNumber) || parsedPullRequestNumber <= 0)) {
+        setReadinessError("Pull request number must be a positive whole number.");
+        return;
+      }
+      const result = await desktopClient.preflightAwsDeploy({
+        repositoryFullName: deployRepo,
+        environmentId,
+        sourceRef,
+        sourceKind,
+        ...(parsedPullRequestNumber !== undefined ? { pullRequestNumber: parsedPullRequestNumber } : {}),
+      });
+      if (!result.ok) { setReadinessError(result.error); return; }
+      setReadiness(result.data);
+    } finally {
+      setCheckingReadiness(false);
+    }
+  }
+
   if (!loaded) return <div className="px-4 py-3 text-[12px] text-zinc-500">Loading deploy target…</div>;
   if (loadError) return <div className="px-4 py-3 text-[12px] text-rose-300">{loadError}</div>;
 
@@ -847,27 +872,38 @@ function DeploymentTargetPanel({ environmentId }: { environmentId: string }) {
         <p className="mb-2 text-[11px] text-zinc-500">
           Add .github/workflows/axiom-deploy-aws-ecs.yml to the target repo once (see the Git &amp; PRs section to commit it via a pull request), then trigger a deploy here:
         </p>
-        <div className="grid grid-cols-2 items-end gap-3 xl:grid-cols-[1.4fr_1fr_0.65fr_0.65fr_auto]">
+        <div className="grid grid-cols-2 items-end gap-3 xl:grid-cols-[1.4fr_1fr_0.65fr_0.65fr_auto_auto]">
           <label className="block">
             <span className="mb-1 block text-[11px] text-zinc-500">Repository</span>
-            <select value={deployRepo} onChange={(event) => setDeployRepo(event.target.value)} className="w-full rounded-lg border border-white/10 bg-black/25 px-3 py-2 text-xs text-zinc-200 outline-none focus:border-white/25">
+            <select value={deployRepo} onChange={(event) => { setDeployRepo(event.target.value); setReadiness(null); }} className="w-full rounded-lg border border-white/10 bg-black/25 px-3 py-2 text-xs text-zinc-200 outline-none focus:border-white/25">
               {deployRepositories.length === 0 && <option value="">Register a GitHub repository first</option>}
               {deployRepositories.map((repository) => <option key={repository.id} value={repository.displayName}>{repository.displayName}</option>)}
             </select>
           </label>
-          <LabeledInput label="Source branch or tag" placeholder="main or v1.2.3" value={sourceRef} onChange={setSourceRef} />
+          <LabeledInput label="Source branch or tag" placeholder="main or v1.2.3" value={sourceRef} onChange={(value) => { setSourceRef(value); setReadiness(null); }} />
           <label className="block">
             <span className="mb-1 block text-[11px] text-zinc-500">Source type</span>
-            <select value={sourceKind} onChange={(event) => setSourceKind(event.target.value as "branch" | "tag")} className="w-full rounded-lg border border-white/10 bg-black/25 px-3 py-2 text-xs text-zinc-200 outline-none focus:border-white/25">
+            <select value={sourceKind} onChange={(event) => { setSourceKind(event.target.value as "branch" | "tag"); setReadiness(null); }} className="w-full rounded-lg border border-white/10 bg-black/25 px-3 py-2 text-xs text-zinc-200 outline-none focus:border-white/25">
               <option value="branch">Branch</option>
               <option value="tag">Tag</option>
             </select>
           </label>
-          <LabeledInput label="PR number" placeholder="optional" value={pullRequestNumber} onChange={setPullRequestNumber} />
+          <LabeledInput label="PR number" placeholder="optional" value={pullRequestNumber} onChange={(value) => { setPullRequestNumber(value); setReadiness(null); }} />
+          <button type="button" onClick={() => void checkReadiness()} disabled={checkingReadiness || deploying || !deployRepo || !sourceRef.trim()} className="inline-flex items-center justify-center gap-2 rounded-lg border border-white/10 bg-white/[0.04] px-3 py-2 text-xs text-zinc-200 hover:bg-white/[0.08] disabled:opacity-50 shrink-0">
+            {checkingReadiness ? "Checking…" : "Check readiness"}
+          </button>
           <button type="button" onClick={() => void triggerDeploy()} disabled={deploying || !deployRepo.includes("/") || !sourceRef.trim()} className="inline-flex items-center justify-center gap-2 rounded-lg border border-emerald-500/30 bg-emerald-500/[0.08] px-3 py-2 text-xs text-emerald-200 hover:bg-emerald-500/[0.14] disabled:opacity-50 shrink-0">
             {deploying ? "Deploying…" : "Deploy"}
           </button>
         </div>
+        {readinessError && <p role="alert" className="mt-2 text-[12px] text-rose-300">{readinessError}</p>}
+        {readiness && (
+          <div className="mt-2 rounded-lg border border-emerald-500/20 bg-emerald-500/[0.06] px-3 py-2 text-[12px] text-emerald-200">
+            Ready to deploy commit <span className="font-mono">{readiness.sourceCommitSha.slice(0, 12)}</span>
+            {readiness.policyId ? " · configured branch policy satisfied" : " · no branch policy configured"}
+            {readiness.pullRequestUrl && <> · <button type="button" onClick={() => void open(readiness.pullRequestUrl!)} className="underline underline-offset-2">verified pull request</button></>}
+          </div>
+        )}
         {deployOk && !execution && <p className="text-[12px] text-amber-300">Deploy dispatched, but live tracking could not be saved. Open GitHub Actions to verify the outcome.</p>}
         {deployError && <p role="alert" className="text-[12px] text-rose-300">{deployError}</p>}
         {execution && (

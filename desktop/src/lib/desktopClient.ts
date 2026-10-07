@@ -742,6 +742,10 @@ export class DesktopClient {
     return this.post("/api/desktop/environments/deploy", input);
   }
 
+  preflightAwsDeploy(input: { repositoryFullName: string; environmentId: string; sourceRef: string; sourceKind: "branch" | "tag"; pullRequestNumber?: number }): Promise<ApiResult<{ ready: true; policyId: string | null; sourceCommitSha: string; pullRequestUrl: string | null }>> {
+    return this.post("/api/desktop/environments/deploy/preflight", input);
+  }
+
   listDeploymentExecutions(environmentId?: string): Promise<ApiResult<{ executions: DeploymentExecution[] }>> {
     const query = environmentId ? `?environmentId=${encodeURIComponent(environmentId)}` : "";
     return this.get(`/api/desktop/environments/deployments${query}`);

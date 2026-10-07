@@ -62,10 +62,10 @@ beforeEach(() => {
 });
 
 describe("evaluateDeploymentPolicy", () => {
-  it("preserves existing behavior when the repository has no configured policy record", async () => {
+  it("verifies the live ref but applies no policy when the repository has no policy record", async () => {
     const result = await evaluateDeploymentPolicy(makeRepo([], []), input);
-    expect(result).toEqual({ ok: true, policyId: null, sourceCommitSha: null, pullRequestUrl: null });
-    expect(mocks.resolveGitReference).not.toHaveBeenCalled();
+    expect(result).toEqual({ ok: true, policyId: null, sourceCommitSha: "sha-1", pullRequestUrl: null });
+    expect(mocks.resolveGitReference).toHaveBeenCalledOnce();
   });
 
   it("denies when configured policies do not match the requested ref", async () => {

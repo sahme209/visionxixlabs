@@ -6,6 +6,7 @@ const mocks = vi.hoisted(() => ({
   commitFile: vi.fn(),
   createPullRequest: vi.fn(),
   dispatchWorkflow: vi.fn(),
+  resolveGitReference: vi.fn(),
   getFile: vi.fn(),
 }));
 
@@ -18,6 +19,7 @@ vi.mock("@/lib/connectors/github/resolveTenantScopedToken", () => ({
 }));
 vi.mock("@/lib/connectors/github/githubWriteClient", () => ({
   createBranch: mocks.createBranch, commitFile: mocks.commitFile, createPullRequest: mocks.createPullRequest, dispatchWorkflow: mocks.dispatchWorkflow, getFile: mocks.getFile,
+  resolveGitReference: mocks.resolveGitReference,
 }));
 
 import { executeApprovedAction, type ActionExecutionRepo } from "../actionApprovalResponder";
@@ -32,6 +34,7 @@ const repo: ActionExecutionRepo = {
 beforeEach(() => {
   vi.clearAllMocks();
   mocks.resolveTenantScopedToken.mockResolvedValue({ ok: true, token: "installation-token" });
+  mocks.resolveGitReference.mockResolvedValue({ ok: true, data: { kind: "branch", ref: "main", commitSha: "sha-main" } });
 });
 
 describe("executeApprovedAction", () => {

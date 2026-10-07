@@ -7,6 +7,7 @@ const mocks = vi.hoisted(() => ({
   findTarget: vi.fn(),
   resolveTenantScopedToken: vi.fn(),
   dispatchWorkflow: vi.fn(),
+  resolveGitReference: vi.fn(),
   findRepositories: vi.fn(),
   findBranchPolicies: vi.fn(),
   recordAudit: vi.fn(async (
@@ -32,7 +33,10 @@ vi.mock("@/lib/connectors/github/resolveTenantScopedToken", async () => {
   );
   return { ...actual, resolveTenantScopedToken: mocks.resolveTenantScopedToken };
 });
-vi.mock("@/lib/connectors/github/githubWriteClient", () => ({ dispatchWorkflow: mocks.dispatchWorkflow }));
+vi.mock("@/lib/connectors/github/githubWriteClient", () => ({
+  dispatchWorkflow: mocks.dispatchWorkflow,
+  resolveGitReference: mocks.resolveGitReference,
+}));
 vi.mock("@/lib/releaseops/auditEventResponder", async () => {
   const actual = await vi.importActual<typeof import("@/lib/releaseops/auditEventResponder")>(
     "@/lib/releaseops/auditEventResponder",
@@ -57,6 +61,7 @@ describe("POST /api/desktop/environments/deploy", () => {
     mocks.resolveRequestDesktopSession.mockResolvedValue(session);
     mocks.findRepositories.mockResolvedValue([]);
     mocks.findBranchPolicies.mockResolvedValue([]);
+    mocks.resolveGitReference.mockResolvedValue({ ok: true, data: { kind: "branch", ref: "main", commitSha: "sha-main" } });
   });
 
   it("requires a desktop session", async () => {
