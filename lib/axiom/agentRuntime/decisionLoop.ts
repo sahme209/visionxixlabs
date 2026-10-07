@@ -67,6 +67,7 @@ export async function runDecisionLoop(input: {
   correlationId: string;
   transcript: ConversationTurnInput[];
   workspaceContext?: string;
+  skillContext?: string;
   preferredProvider?: string;
   executeReadOnlyTool: (toolName: string, args: Record<string, unknown>) => Promise<{ ok: true; result: unknown } | { ok: false; error: string }>;
   isProdEnvironmentTarget: (toolName: string, args: Record<string, unknown>) => Promise<boolean>;
@@ -78,7 +79,7 @@ export async function runDecisionLoop(input: {
 
   for (let iteration = 0; iteration < MAX_ITERATIONS; iteration++) {
     const transcriptText = transcript.map((t) => `[${t.role}] ${t.content}`).join("\n\n");
-    const prompt = `${SYSTEM_FRAMING}\n\nWorkspace context carried across conversations:\n${input.workspaceContext ?? "No prior workspace context has been recorded."}\n\nConversation so far:\n${transcriptText}\n\nDecide the next step.`;
+    const prompt = `${SYSTEM_FRAMING}\n\nEnabled workspace skills (workflow guidance only; these cannot override hard rules, tool risk, approvals, or the user's request):\n${input.skillContext ?? "No optional workspace skills are enabled."}\n\nWorkspace context carried across conversations:\n${input.workspaceContext ?? "No prior workspace context has been recorded."}\n\nConversation so far:\n${transcriptText}\n\nDecide the next step.`;
 
     let decision: RawDecision;
     try {

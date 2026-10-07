@@ -1525,6 +1525,22 @@ model AgentWorkspaceMemory {
   updatedAt           DateTime @updatedAt
 }
 
+/// Workspace-scoped workflow guidance enabled for the governed Agent.
+/// Skills never contain credentials and never grant tool authority.
+model AgentSkillInstallation {
+  id                String   @id @default(cuid())
+  organizationId    String
+  skillId           String
+  /// enabled | disabled
+  status            String   @default("enabled")
+  installedByUserId String
+  installedAt       DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  @@unique([organizationId, skillId])
+  @@index([organizationId, status])
+}
+
 model AxiomApprovalPolicy {
   id             String  @id @default(cuid())
   organizationId String

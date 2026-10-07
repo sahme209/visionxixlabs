@@ -42,6 +42,17 @@ export interface VerifiedDesktopIdentity {
   access: DesktopCommercialAccess;
 }
 
+export interface AgentSkillCatalogItem {
+  id: string;
+  name: string;
+  description: string;
+  category: "GitHub" | "Deployments" | "Governance" | "Identity";
+  toolNames: string[];
+  status: "enabled" | "disabled" | "not_installed";
+  installedAt: string | null;
+  updatedAt: string | null;
+}
+
 interface LegacyApiErrorBody {
   error?: string | { userMessage?: string };
   message?: string;
@@ -618,6 +629,14 @@ export class DesktopClient {
 
   startIntegrationConnection(provider: "github" | "slack" | "teams" | "linear"): Promise<ApiResult<{ consentUrl: string }>> {
     return this.post(`/api/desktop/integrations/${encodeURIComponent(provider)}/connect`, {});
+  }
+
+  listAgentSkills(): Promise<ApiResult<{ skills: AgentSkillCatalogItem[] }>> {
+    return this.get("/api/desktop/agent/skills");
+  }
+
+  updateAgentSkill(skillId: string, action: "install" | "enable" | "disable" | "remove"): Promise<ApiResult<{ skillId: string; status: string }>> {
+    return this.post("/api/desktop/agent/skills", { skillId, action });
   }
 
   validateGitHubReadOnly(): Promise<ApiResult<{ status: "validated_read_only" }>> {

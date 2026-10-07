@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Badge, riskToneFor } from "../components/Primitives";
-import { desktopClient } from "../lib/desktopClient";
+import { desktopClient, type AgentSkillCatalogItem } from "../lib/desktopClient";
 import { normalizeAiProviderStatus } from "../lib/aiProviderStatus";
 import { createLineDiff, type DiffLine } from "../lib/lineDiff";
 
@@ -89,6 +89,7 @@ export function AgentChatView() {
   const [filePath, setFilePath] = useState("");
   const [selectedProvider, setSelectedProvider] = useState("");
   const [modelOptions, setModelOptions] = useState<Array<{ provider: string; label: string }>>([]);
+  const [enabledSkills, setEnabledSkills] = useState<AgentSkillCatalogItem[]>([]);
   const [startupAttempt, setStartupAttempt] = useState(0);
   const [loadingConversation, setLoadingConversation] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -96,8 +97,8 @@ export function AgentChatView() {
   useEffect(() => {
     let cancelled = false;
     setError(null);
-    void Promise.all([desktopClient.listAgentConversations(), desktopClient.aiProviderStatus()])
-      .then(async ([conversationList, models]) => {
+    void Promise.all([desktopClient.listAgentConversations(), desktopClient.aiProviderStatus(), desktopClient.listAgentSkills()])
+      .then(async ([conversationList, models, skills]) => {
         if (cancelled) return;
         if (!conversationList.ok) {
           setError("The Agent service could not load conversation history. Retry in a moment.");
@@ -139,6 +140,7 @@ export function AgentChatView() {
           setModelOptions(options);
           setSelectedProvider(status.policy.fallbackOrder[0] ?? options[0]?.provider ?? "");
         }
+        if (skills.ok) setEnabledSkills(skills.data.skills.filter((skill) => skill.status === "enabled"));
       })
       .catch(() => {
         if (!cancelled) setError("The Agent could not start. Check your connection and try again.");
@@ -298,6 +300,7 @@ export function AgentChatView() {
       </div>
       <div className="border-t border-white/[0.06] px-8 py-5">
         <div className="max-w-3xl mx-auto">
+          {enabledSkills.length > 0 && <div className="mb-3 flex items-center gap-2 overflow-x-auto pb-1"><span className="shrink-0 text-[10px] uppercase tracking-[0.12em] text-zinc-600">Skills</span>{enabledSkills.map((skill) => <button key={skill.id} type="button" disabled={sending || Boolean(pendingProposal)} onClick={() => setInput((current) => current || `/${skill.id} `)} className="shrink-0 rounded-full border border-violet-300/[0.12] bg-violet-300/[0.04] px-2.5 py-1 text-[10px] text-violet-200 hover:bg-violet-300/[0.08] disabled:opacity-40">/{skill.id}</button>)}</div>}
           <div className="mb-3 flex items-center gap-1" role="tablist" aria-label="Agent composer mode">
             <button type="button" role="tab" aria-selected={composerMode === "chat"} onClick={() => setComposerMode("chat")} className={`rounded-md px-3 py-1.5 text-xs ${composerMode === "chat" ? "bg-white/[0.09] text-white" : "text-zinc-500 hover:text-zinc-300"}`}>Chat</button>
             <button type="button" role="tab" aria-selected={composerMode === "code"} onClick={() => setComposerMode("code")} className={`rounded-md px-3 py-1.5 text-xs ${composerMode === "code" ? "bg-white/[0.09] text-white" : "text-zinc-500 hover:text-zinc-300"}`}>Edit repository file</button>

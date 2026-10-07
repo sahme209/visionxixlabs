@@ -19,6 +19,7 @@ import { executeReadOnlyTool, isProdEnvironmentTarget, type ToolExecutionRepo, t
 import { id as idFactory } from "@/lib/domain/ids";
 import { loadWorkspaceMemory, rememberToolContext, workspaceMemoryPrompt, type WorkspaceMemoryRepo } from "@/lib/axiom/agentRuntime/workspaceMemory";
 import { prepareProposalArgsForReview } from "@/lib/axiom/agentRuntime/proposalReview";
+import { installedSkillPrompt, type AgentSkillRepo } from "@/lib/axiom/agentRuntime/skillCatalog";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -77,11 +78,13 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
   const correlationId = idFactory.correlation(`agent_msg_${Date.now().toString(36)}`);
   const memoryRepo = prisma as unknown as WorkspaceMemoryRepo;
   const workspaceContext = workspaceMemoryPrompt(await loadWorkspaceMemory(memoryRepo, organizationId));
+  const skillContext = await installedSkillPrompt(prisma as unknown as AgentSkillRepo, organizationId).catch(() => "Skills are temporarily unavailable; continue using the fixed governed tool registry only.");
   const outcome = await runDecisionLoop({
     organizationId,
     correlationId: String(correlationId),
     transcript,
     workspaceContext,
+    skillContext,
     preferredProvider,
     executeReadOnlyTool: async (toolName, args) => {
       const result = await executeReadOnlyTool(prisma as unknown as ToolExecutionRepo, organizationId, toolName, args);
