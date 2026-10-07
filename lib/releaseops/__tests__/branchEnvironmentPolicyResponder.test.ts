@@ -21,7 +21,7 @@ function makeRepo(): Stub {
         return stub._rows.filter((r) => r.organizationId === where.organizationId).sort((a, b) => a.priority - b.priority);
       },
       async create({ data }) {
-        const row: BranchEnvironmentPolicyRow = { id: `bep_${stub._nextId++}`, createdAt: new Date(), ...data };
+        const row: BranchEnvironmentPolicyRow = { id: `bep_${stub._nextId++}`, createdAt: new Date(), enabled: true, ...data };
         stub._rows.push(row);
         return row;
       },
