@@ -25,6 +25,7 @@ export const runtime = "nodejs";
 const AI_ERROR_MESSAGES: Record<string, string> = {
   workspace_ai_disabled: "AI isn't enabled for this workspace yet. A workspace admin can turn it on under AI provider settings.",
   workspace_ai_provider_unavailable: "No AI provider is approved for this workspace. A workspace admin needs to approve one first.",
+  workspace_ai_model_not_allowed: "That model is not enabled for this workspace. Choose an enabled model or ask a workspace admin to update Models.",
   workspace_ai_policy_unavailable: "Couldn't load this workspace's AI provider policy right now. Try again shortly.",
   workspace_ai_credit_meter_unavailable: "Couldn't verify remaining AI usage for this workspace right now. Try again shortly.",
   workspace_ai_credit_pool_exhausted: "This workspace has used its available AI credits for this period.",
@@ -49,8 +50,9 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     return NextResponse.json({ ok: false, error: "not_found" }, { status: 404 });
   }
 
-  const body = (await request.json().catch(() => null)) as { message?: unknown } | null;
+  const body = (await request.json().catch(() => null)) as { message?: unknown; preferredProvider?: unknown } | null;
   const message = typeof body?.message === "string" ? body.message.trim() : "";
+  const preferredProvider = typeof body?.preferredProvider === "string" ? body.preferredProvider : undefined;
   if (!message) {
     return NextResponse.json({ ok: false, error: "invalid_payload" }, { status: 400 });
   }
@@ -68,6 +70,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     correlationId: String(correlationId),
     transcript,
     workspaceContext,
+    preferredProvider,
     executeReadOnlyTool: async (toolName, args) => {
       const result = await executeReadOnlyTool(prisma as unknown as ToolExecutionRepo, organizationId, toolName, args);
       if (result.ok) await rememberToolContext(memoryRepo, organizationId, args).catch(() => undefined);

@@ -67,10 +67,11 @@ export async function runDecisionLoop(input: {
   correlationId: string;
   transcript: ConversationTurnInput[];
   workspaceContext?: string;
+  preferredProvider?: string;
   executeReadOnlyTool: (toolName: string, args: Record<string, unknown>) => Promise<{ ok: true; result: unknown } | { ok: false; error: string }>;
   isProdEnvironmentTarget: (toolName: string, args: Record<string, unknown>) => Promise<boolean>;
 }): Promise<DecisionLoopOutcome> {
-  const governed = await resolveGovernedAiCall(input.organizationId);
+  const governed = await resolveGovernedAiCall(input.organizationId, input.preferredProvider);
   if (!governed.ok) return { kind: "error", error: governed.error };
 
   const transcript = [...input.transcript];

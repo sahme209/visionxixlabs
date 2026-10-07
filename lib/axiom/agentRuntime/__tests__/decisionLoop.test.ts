@@ -38,6 +38,16 @@ describe("runDecisionLoop", () => {
     expect(result).toEqual({ kind: "final", message: "Which repository do you mean?" });
   });
 
+  it("passes the user's enabled provider selection into the governed AI boundary", async () => {
+    mocks.resolveGovernedAiCall.mockResolvedValue(governed(async () => ({ action: "respond", message: "Ready." })));
+    await runDecisionLoop({
+      organizationId: "o", correlationId: "c", transcript: [{ role: "user", content: "hello" }],
+      preferredProvider: "anthropic",
+      executeReadOnlyTool: noopReadOnly, isProdEnvironmentTarget: noopProdCheck,
+    });
+    expect(mocks.resolveGovernedAiCall).toHaveBeenCalledWith("o", "anthropic");
+  });
+
   it("never executes a medium/high risk tool — always stops at a proposal instead", async () => {
     mocks.resolveGovernedAiCall.mockResolvedValue(governed(async () => ({
       action: "call_tool", message: "I'll open a PR for this.", toolName: "open_github_pull_request",

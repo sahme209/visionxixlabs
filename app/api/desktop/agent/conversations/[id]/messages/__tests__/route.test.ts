@@ -69,6 +69,17 @@ describe("POST /api/desktop/agent/conversations/[id]/messages", () => {
     expect(body.data.proposal).toBeNull();
   });
 
+  it("forwards the selected provider to the governed decision loop", async () => {
+    mocks.runDecisionLoop.mockResolvedValue({ kind: "final", message: "Ready." });
+    const { POST } = await import("../route");
+    const res = await POST(request({ message: "hello", preferredProvider: "anthropic" }), params);
+    expect(res.status).toBe(200);
+    expect(mocks.runDecisionLoop).toHaveBeenCalledWith(expect.objectContaining({
+      organizationId: "org-1",
+      preferredProvider: "anthropic",
+    }));
+  });
+
   it("never auto-executes — a proposal outcome always comes back pending, never pre-approved", async () => {
     mocks.runDecisionLoop.mockResolvedValue({
       kind: "proposal", message: "I'll open this PR.", toolName: "open_github_pull_request",

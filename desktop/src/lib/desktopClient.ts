@@ -680,11 +680,11 @@ export class DesktopClient {
     return this.get(`/api/desktop/agent/conversations/${encodeURIComponent(conversationId)}`);
   }
 
-  sendAgentMessage(conversationId: string, message: string): Promise<ApiResult<{
+  sendAgentMessage(conversationId: string, message: string, preferredProvider?: string): Promise<ApiResult<{
     reply: string;
     proposal: { id: string; toolName: string; argsJson: unknown; riskLevel: string; status: string } | null;
   }>> {
-    return this.post(`/api/desktop/agent/conversations/${encodeURIComponent(conversationId)}/messages`, { message });
+    return this.post(`/api/desktop/agent/conversations/${encodeURIComponent(conversationId)}/messages`, { message, preferredProvider });
   }
 
   approveAgentAction(actionId: string): Promise<ApiResult<{ id: string; status: string; resultJson: unknown; errorMessage: string | null }>> {

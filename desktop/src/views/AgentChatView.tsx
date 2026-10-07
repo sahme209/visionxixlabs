@@ -75,13 +75,27 @@ export function AgentChatView() {
   const [repositoryFullName, setRepositoryFullName] = useState("");
   const [branch, setBranch] = useState("main");
   const [filePath, setFilePath] = useState("");
+  const [selectedProvider, setSelectedProvider] = useState("");
+  const [modelOptions, setModelOptions] = useState<Array<{ provider: string; label: string }>>([]);
   const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    void desktopClient.createAgentConversation().then((result) => {
-      if (result.ok) setConversationId(result.data.id);
-      else setError(result.error);
+    let cancelled = false;
+    void Promise.all([desktopClient.createAgentConversation(), desktopClient.aiProviderStatus()]).then(([conversation, models]) => {
+      if (cancelled) return;
+      if (conversation.ok) setConversationId(conversation.data.id);
+      else setError(conversation.error);
+      if (models.ok) {
+        const options = models.data.policy.allowedProviders.flatMap((provider) => {
+          const selectedModel = models.data.policy.modelSelections[provider];
+          const model = models.data.providers.find((item) => item.provider === provider)?.models.find((item) => item.id === selectedModel);
+          return selectedModel ? [{ provider, label: model?.label ?? selectedModel }] : [];
+        });
+        setModelOptions(options);
+        setSelectedProvider(models.data.policy.fallbackOrder[0] ?? options[0]?.provider ?? "");
+      }
     });
+    return () => { cancelled = true; };
   }, []);
 
   useEffect(() => {
@@ -99,7 +113,7 @@ export function AgentChatView() {
     setTurns((prev) => [...prev, { id: `local_${Date.now()}`, role: "user", content: message }]);
     setSending(true);
     try {
-      const result = await desktopClient.sendAgentMessage(conversationId, message);
+      const result = await desktopClient.sendAgentMessage(conversationId, message, selectedProvider || undefined);
       if (!result.ok) {
         setError(result.error);
         return;
@@ -162,6 +176,13 @@ export function AgentChatView() {
           <div className="mb-3 flex items-center gap-1" role="tablist" aria-label="Agent composer mode">
             <button type="button" role="tab" aria-selected={composerMode === "chat"} onClick={() => setComposerMode("chat")} className={`rounded-md px-3 py-1.5 text-xs ${composerMode === "chat" ? "bg-white/[0.09] text-white" : "text-zinc-500 hover:text-zinc-300"}`}>Chat</button>
             <button type="button" role="tab" aria-selected={composerMode === "code"} onClick={() => setComposerMode("code")} className={`rounded-md px-3 py-1.5 text-xs ${composerMode === "code" ? "bg-white/[0.09] text-white" : "text-zinc-500 hover:text-zinc-300"}`}>Edit repository file</button>
+            <label className="ml-auto flex items-center gap-2 text-[11px] text-zinc-500">
+              <span>Model</span>
+              <select aria-label="Agent model" value={selectedProvider} onChange={(event) => setSelectedProvider(event.target.value)} disabled={sending || modelOptions.length === 0} className="max-w-52 rounded-md border border-white/10 bg-[#151719] px-2 py-1.5 text-xs text-zinc-300 outline-none focus:border-white/25 disabled:opacity-50">
+                {modelOptions.length === 0 && <option value="">No model enabled</option>}
+                {modelOptions.map((model) => <option key={model.provider} value={model.provider}>{model.label}</option>)}
+              </select>
+            </label>
           </div>
           {composerMode === "code" && <div className="mb-3 grid grid-cols-[1.3fr_0.8fr_1.5fr] gap-2">
             <input aria-label="GitHub repository" value={repositoryFullName} onChange={(event) => setRepositoryFullName(event.target.value)} placeholder="owner/repository" className="rounded-lg border border-white/10 bg-white/[0.03] px-3 py-2 text-xs text-zinc-200 outline-none placeholder:text-zinc-600 focus:border-white/25" />
