@@ -425,6 +425,8 @@ function GitSection({ prefs, onSave }: PreferenceSectionProps) {
     </Group>
     <CloneRepositoryPanel />
     <CreatePullRequestPanel />
+    <RepositoriesPanel />
+    <BranchPoliciesPanel />
   </div>;
 }
 
@@ -1056,6 +1058,132 @@ function ScimPreviewPanel() {
             )}
           </div>
         )}
+      </div>
+    </Group>
+  );
+}
+
+/**
+ * Repository registration + branch policy config — the (repository,
+ * environment, branch pattern) rule and its requirement flags are real
+ * and persisted here, but nothing in the AWS deploy-trigger path
+ * enforces them yet (it has no concept of "which branch" today). This
+ * is config-only, same posture as the Identity tab's provider
+ * connections before a real sign-in path exists.
+ */
+interface RepositoryListItem { id: string; displayName: string; provider: string; defaultBranch: string }
+
+function RepositoriesPanel() {
+  const [repositories, setRepositories] = useState<RepositoryListItem[] | null>(null);
+  const [loadError, setLoadError] = useState<string | null>(null);
+  const [provider, setProvider] = useState("github");
+  const [remoteOwner, setRemoteOwner] = useState("");
+  const [remoteName, setRemoteName] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const load = useCallback(() => {
+    void desktopClient.listRepositories().then((result) => {
+      if (result.ok) { setRepositories(result.data.repositories); setLoadError(null); }
+      else setLoadError(result.error);
+    });
+  }, []);
+
+  useEffect(() => { load(); }, [load]);
+
+  async function register() {
+    setBusy(true); setError(null);
+    try {
+      const result = await desktopClient.registerRepository({ provider, remoteOwner, remoteName });
+      if (!result.ok) { setError(result.error); return; }
+      setRemoteOwner(""); setRemoteName("");
+      load();
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <Group label="Repositories">
+      {loadError && <div className="px-4 py-2 text-[12px] text-rose-300">{loadError}</div>}
+      {repositories !== null && repositories.length === 0 && <ActionRow title="No repositories registered" detail="Register one below to configure branch policies for it." action={null} />}
+      {(repositories ?? []).map((r) => (
+        <ActionRow key={r.id} title={r.displayName} detail={`${r.provider} · default branch: ${r.defaultBranch}`} action={null} />
+      ))}
+      <div className="px-4 py-3.5 space-y-3 border-t border-white/[0.04]">
+        <div className="grid grid-cols-3 gap-3">
+          <label className="block">
+            <span className="mb-1 block text-[11px] text-zinc-500">Provider</span>
+            <select value={provider} onChange={(event) => setProvider(event.target.value)} className="w-full rounded-lg border border-white/10 bg-black/25 px-3 py-2 text-xs text-zinc-200 outline-none focus:border-white/25">
+              <option value="github">GitHub</option>
+              <option value="gitlab">GitLab</option>
+              <option value="azuredevops">Azure DevOps</option>
+              <option value="other">Other</option>
+            </select>
+          </label>
+          <LabeledInput label="Owner / org" placeholder="acme" value={remoteOwner} onChange={setRemoteOwner} />
+          <LabeledInput label="Repo name" placeholder="widgets" value={remoteName} onChange={setRemoteName} />
+        </div>
+        <div className="flex items-center gap-3">
+          <button type="button" onClick={() => void register()} disabled={busy || !remoteOwner || !remoteName} className="inline-flex items-center gap-2 rounded-lg border border-white/10 bg-white/[0.04] px-3 py-2 text-xs text-zinc-200 hover:bg-white/[0.08] disabled:opacity-50">
+            {busy ? "Registering…" : "Register repository"}
+          </button>
+        </div>
+        {error && <p role="alert" className="text-[12px] text-rose-300">{error}</p>}
+      </div>
+    </Group>
+  );
+}
+
+function BranchPoliciesPanel() {
+  const [policies, setPolicies] = useState<Array<{ id: string; repositoryId: string; environmentId: string; branchPattern: string; requirePrLink: boolean; requireReleaseTag: boolean; requireCodeowners: boolean; requireChangeTicket: boolean }> | null>(null);
+  const [repositoryId, setRepositoryId] = useState("");
+  const [environmentId, setEnvironmentId] = useState("");
+  const [branchPattern, setBranchPattern] = useState("");
+  const [requirePrLink, setRequirePrLink] = useState(true);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const load = useCallback(() => {
+    void desktopClient.listBranchPolicies().then((result) => { if (result.ok) setPolicies(result.data.policies); });
+  }, []);
+
+  useEffect(() => { load(); }, [load]);
+
+  async function create() {
+    setBusy(true); setError(null);
+    try {
+      const result = await desktopClient.createBranchPolicy({ repositoryId, environmentId, branchPattern, requirePrLink });
+      if (!result.ok) { setError(result.error); return; }
+      setBranchPattern("");
+      load();
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <Group label="Branch policies (config only — not yet enforced on deploy)">
+      {policies !== null && policies.length === 0 && <ActionRow title="No branch policies configured" detail="Define which branch patterns need a PR link, release tag, etc. before deploying to an environment." action={null} />}
+      {(policies ?? []).map((p) => (
+        <ActionRow key={p.id} title={p.branchPattern} detail={[p.requirePrLink && "PR link", p.requireReleaseTag && "release tag", p.requireCodeowners && "codeowners", p.requireChangeTicket && "change ticket"].filter(Boolean).join(", ") || "no requirements set"} action={null} />
+      ))}
+      <div className="px-4 py-3.5 space-y-3 border-t border-white/[0.04]">
+        <div className="grid grid-cols-3 gap-3">
+          <LabeledInput label="Repository ID" placeholder="from the list above" value={repositoryId} onChange={setRepositoryId} />
+          <LabeledInput label="Environment ID" placeholder="from the Environments tab" value={environmentId} onChange={setEnvironmentId} />
+          <LabeledInput label="Branch pattern" placeholder="release/*" value={branchPattern} onChange={setBranchPattern} />
+        </div>
+        <label className="flex items-center gap-2 text-xs text-zinc-400">
+          <input type="checkbox" checked={requirePrLink} onChange={(event) => setRequirePrLink(event.target.checked)} />
+          Require a linked pull request
+        </label>
+        <div className="flex items-center gap-3">
+          <button type="button" onClick={() => void create()} disabled={busy || !repositoryId || !environmentId || !branchPattern} className="inline-flex items-center gap-2 rounded-lg border border-white/10 bg-white/[0.04] px-3 py-2 text-xs text-zinc-200 hover:bg-white/[0.08] disabled:opacity-50">
+            {busy ? "Saving…" : "Add policy"}
+          </button>
+        </div>
+        {error && <p role="alert" className="text-[12px] text-rose-300">{error}</p>}
       </div>
     </Group>
   );

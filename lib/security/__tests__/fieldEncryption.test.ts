@@ -68,7 +68,13 @@ describe("field encryption helper", () => {
     process.env.FIELD_ENCRYPTION_KEY = TEST_KEY;
     _resetEncryptionKeyCache();
     const ciphertext = encryptField("secret");
-    const tampered = ciphertext.slice(0, -2) + "ff"; // flip the last byte
+    // Flip the last hex digit to its complement in the 0-f range rather
+    // than overwriting with a fixed "ff" — the fixed value was flaky
+    // (~1/256 chance the original byte already ended in "ff", making the
+    // "tamper" a no-op and the decrypt succeed instead of throwing).
+    const lastDigit = ciphertext.at(-1)!;
+    const flipped = lastDigit === "0" ? "1" : "0";
+    const tampered = ciphertext.slice(0, -1) + flipped;
     expect(() => decryptField(tampered)).toThrow();
   });
 
