@@ -46,7 +46,9 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
 
   const { id: conversationId } = await params;
   const organizationId = String(session.organizationId);
-  const conversation = await prisma.agentConversation.findFirst({ where: { id: conversationId, organizationId } });
+  const conversation = await prisma.agentConversation.findFirst({
+    where: { id: conversationId, organizationId, userId: String(session.userId) },
+  });
   if (!conversation) {
     return NextResponse.json({ ok: false, error: "not_found" }, { status: 404 });
   }
@@ -58,7 +60,16 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     return NextResponse.json({ ok: false, error: "invalid_payload" }, { status: 400 });
   }
 
-  await prisma.agentConversationTurn.create({ data: { conversationId, role: "user", content: message } });
+  await prisma.$transaction([
+    prisma.agentConversationTurn.create({ data: { conversationId, role: "user", content: message } }),
+    prisma.agentConversation.update({
+      where: { id: conversationId },
+      data: {
+        title: conversation.title ?? message.replace(/\s+/g, " ").slice(0, 80),
+        updatedAt: new Date(),
+      },
+    }),
+  ]);
 
   const priorTurns = await prisma.agentConversationTurn.findMany({ where: { conversationId }, orderBy: { createdAt: "asc" } });
   const transcript: ConversationTurnInput[] = priorTurns.map((t) => ({ role: t.role as ConversationTurnInput["role"], content: t.content }));

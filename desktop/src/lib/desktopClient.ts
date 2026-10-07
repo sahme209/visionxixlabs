@@ -672,6 +672,12 @@ export class DesktopClient {
     return this.post("/api/desktop/agent/conversations", {});
   }
 
+  listAgentConversations(): Promise<ApiResult<{
+    conversations: Array<{ id: string; title: string | null; turnCount: number; createdAt: string; updatedAt: string }>;
+  }>> {
+    return this.get("/api/desktop/agent/conversations");
+  }
+
   getAgentConversation(conversationId: string): Promise<ApiResult<{
     id: string; title: string | null;
     turns: Array<{ id: string; role: string; content: string; actionProposalId: string | null; createdAt: string }>;

@@ -5,10 +5,13 @@ const mocks = vi.hoisted(() => ({
   getFile: vi.fn(),
 }));
 
-vi.mock("@/lib/connectors/github/resolveTenantScopedToken", async () => {
-  const actual = await vi.importActual<typeof import("@/lib/connectors/github/resolveTenantScopedToken")>("@/lib/connectors/github/resolveTenantScopedToken");
-  return { ...actual, resolveTenantScopedToken: mocks.resolveTenantScopedToken };
-});
+vi.mock("@/lib/connectors/github/resolveTenantScopedToken", () => ({
+  resolveTenantScopedToken: mocks.resolveTenantScopedToken,
+  parseRepositoryFullName: (value: string) => {
+    const match = /^([A-Za-z0-9_.-]+)\/([A-Za-z0-9_.-]+)$/.exec(value);
+    return match ? { owner: match[1], repo: match[2] } : null;
+  },
+}));
 vi.mock("@/lib/connectors/github/githubWriteClient", () => ({ getFile: mocks.getFile }));
 
 import { prepareProposalArgsForReview } from "../proposalReview";
