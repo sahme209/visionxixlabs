@@ -1,10 +1,14 @@
 # Enterprise Identity Design — OIDC/SAML, MFA, SCIM
 
-Status: **design only. Nothing in this document is implemented or configured.**
-No real identity provider is connected. No code in this repo currently reads
-or writes any of the models/flows described below. Do not describe any part
-of this as live, available, or enabled until it has shipped, been reviewed,
-and has CI-verified tests exercising it.
+Status: **partially real as of the first OIDC connection.** A fixed Cognito
+user pool is now a real, working NextAuth provider (`lib/auth.ts`) — a
+genuine OIDC round-trip against a real IdP, proving the protocol integration
+works. Everything else below remains **design only**: there is no
+`TenantIdentityProvider` row driving this (it's one hardcoded pool via env
+vars, not per-tenant), no domain-based routing, no role mapping from claims,
+no MFA-claim enforcement, no SAML, and no SCIM. Do not describe any of those
+specific capabilities as live, available, or enabled until each has shipped,
+been reviewed, and has CI-verified tests exercising it.
 
 ## Why this exists now
 

@@ -13,8 +13,8 @@ function SignInForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const [oauthLoading, setOauthLoading] = useState<null | "google" | "github">(null);
-  const [enabledProviders, setEnabledProviders] = useState<{ google: boolean; github: boolean } | null>(null);
+  const [oauthLoading, setOauthLoading] = useState<null | "google" | "github" | "cognito">(null);
+  const [enabledProviders, setEnabledProviders] = useState<{ google: boolean; github: boolean; cognito: boolean } | null>(null);
   const router = useRouter();
   const searchParams = useSearchParams();
   const callbackUrl = safeInternalPath(searchParams.get("callbackUrl"), "/auth/success");
@@ -31,9 +31,10 @@ function SignInForm() {
       setEnabledProviders({
         google: Boolean(p && "google" in p),
         github: Boolean(p && "github" in p),
+        cognito: Boolean(p && "cognito" in p),
       });
     }).catch(() => {
-      if (!cancelled) setEnabledProviders({ google: false, github: false });
+      if (!cancelled) setEnabledProviders({ google: false, github: false, cognito: false });
     });
     return () => { cancelled = true; };
   }, []);
@@ -61,11 +62,14 @@ function SignInForm() {
     }
   };
 
-  const handleOAuth = async (provider: "google" | "github") => {
+  const providerLabel = (provider: "google" | "github" | "cognito") =>
+    provider === "google" ? "Google" : provider === "github" ? "GitHub" : "Cognito";
+
+  const handleOAuth = async (provider: "google" | "github" | "cognito") => {
     // Hard-stop when the provider isn't actually registered on the server.
     if (enabledProviders && !enabledProviders[provider]) {
       setError(
-        `${provider === "google" ? "Google" : "GitHub"} sign-in is not available for this workspace yet. ` +
+        `${providerLabel(provider)} sign-in is not available for this workspace yet. ` +
         "Use email sign-in or contact the Axiom team for access."
       );
       return;
@@ -77,10 +81,10 @@ function SignInForm() {
       // When redirect: true succeeds, the browser navigates away. If it
       // returns instead (e.g. cancelled / popup blocked), surface a hint.
       if (res?.error) {
-        setError(`We couldn't complete ${provider === "google" ? "Google" : "GitHub"} sign-in. Try again or use email sign-in.`);
+        setError(`We couldn't complete ${providerLabel(provider)} sign-in. Try again or use email sign-in.`);
       }
     } catch {
-      setError(`We couldn't start ${provider === "google" ? "Google" : "GitHub"} sign-in. Try again or use email sign-in.`);
+      setError(`We couldn't start ${providerLabel(provider)} sign-in. Try again or use email sign-in.`);
     } finally {
       setOauthLoading(null);
     }
@@ -165,7 +169,7 @@ function SignInForm() {
 
         {/* OAuth buttons — only render when actually configured. Cleaner than
             showing greyed-out "NOT SET" buttons (the previous approach). */}
-        {(enabledProviders === null || enabledProviders.google || enabledProviders.github) && (
+        {(enabledProviders === null || enabledProviders.google || enabledProviders.github || enabledProviders.cognito) && (
           <>
             <div className="flex items-center gap-3 my-6">
               <div className="flex-1 h-px bg-white/[0.06]" />
@@ -180,7 +184,7 @@ function SignInForm() {
               </div>
             )}
 
-            <div className={`grid gap-3 ${enabledProviders === null ? "grid-cols-2" : enabledProviders.google && enabledProviders.github ? "grid-cols-2" : "grid-cols-1"}`}>
+            <div className={`grid gap-3 ${enabledProviders === null ? "grid-cols-2" : [enabledProviders.google, enabledProviders.github, enabledProviders.cognito].filter(Boolean).length >= 2 ? "grid-cols-2" : "grid-cols-1"}`}>
               {(enabledProviders === null || enabledProviders.google) && (
                 <button
                   type="button"
@@ -201,6 +205,17 @@ function SignInForm() {
                 >
                   <GitHubMark className="h-4 w-4" />
                   {oauthLoading === "github" ? "Opening…" : "Sign in with GitHub"}
+                </button>
+              )}
+              {enabledProviders?.cognito && (
+                <button
+                  type="button"
+                  onClick={() => handleOAuth("cognito")}
+                  disabled={oauthLoading !== null || loading}
+                  className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-white/[0.09] bg-white/[0.025] px-3 py-2.5 text-xs font-medium text-zinc-200 transition hover:bg-white/[0.07] hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  <SsoMark className="h-4 w-4" />
+                  {oauthLoading === "cognito" ? "Opening…" : "Sign in with Cognito"}
                 </button>
               )}
             </div>
@@ -259,6 +274,16 @@ function GitHubMark({ className }: { className?: string }) {
         clipRule="evenodd"
         d="M12 .5C5.7.5.7 5.6.7 11.8c0 5 3.3 9.2 7.8 10.7.6.1.8-.2.8-.6v-2c-3.2.7-3.9-1.5-3.9-1.5-.5-1.3-1.3-1.7-1.3-1.7-1.1-.8.1-.8.1-.8 1.2.1 1.8 1.2 1.8 1.2 1.1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.8-1.6-2.6-.3-5.3-1.3-5.3-5.8 0-1.3.5-2.3 1.2-3.2-.1-.3-.5-1.5.1-3.1 0 0 1-.3 3.2 1.2a11 11 0 0 1 5.8 0c2.2-1.5 3.2-1.2 3.2-1.2.6 1.6.2 2.8.1 3.1.7.9 1.2 2 1.2 3.2 0 4.6-2.8 5.5-5.4 5.8.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6 4.5-1.5 7.8-5.8 7.8-10.7C23.3 5.6 18.3.5 12 .5z"
       />
+    </svg>
+  );
+}
+
+/** Generic lock mark — enterprise SSO (Cognito today) isn't one fixed brand. */
+function SsoMark({ className }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+      <rect x="4.5" y="10.5" width="15" height="9.5" rx="1.5" />
+      <path d="M8 10.5V7a4 4 0 0 1 8 0v3.5" />
     </svg>
   );
 }
