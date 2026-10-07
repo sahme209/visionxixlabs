@@ -683,8 +683,23 @@ export class DesktopClient {
     return this.post("/api/desktop/github/pull-request", input);
   }
 
-  mintGithubCloneToken(input: { repositoryFullName: string }): Promise<ApiResult<{ cloneUrl: string }>> {
+  mintGithubCloneToken(input: { repositoryFullName: string; purpose?: "clone" | "pull" | "push" }): Promise<ApiResult<{ cloneUrl: string }>> {
     return this.post("/api/desktop/github/clone-token", input);
+  }
+
+  listGithubRepositories(): Promise<ApiResult<{
+    repositories: Array<{
+      id: string;
+      name: string;
+      fullName: string;
+      owner: string;
+      defaultBranch: string;
+      visibility: "private" | "public";
+    }>;
+    totalCount: number;
+    truncated: boolean;
+  }>> {
+    return this.get("/api/desktop/github/repositories");
   }
 
   listEnvironments(): Promise<ApiResult<{

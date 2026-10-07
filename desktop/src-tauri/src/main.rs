@@ -56,6 +56,15 @@ fn main() {
             cloud::run_cloud_scan,
             git::clone_repository,
             git::default_repos_directory,
+            git::list_local_repositories,
+            git::repository_status,
+            git::list_repository_files,
+            git::read_repository_file,
+            git::write_repository_file,
+            git::commit_repository_file,
+            git::create_repository_branch,
+            git::pull_repository,
+            git::push_repository,
             config::get_preferences,
             config::set_preferences,
             config::get_api_endpoint,
@@ -121,14 +130,14 @@ fn main() {
     // menubar. On macOS, clicking the Dock icon must make that hidden window
     // visible again; otherwise the application can look as though it did not
     // launch even though its background process is still running.
-    app.run(|app_handle, event| {
+    app.run(|_app_handle, _event| {
         #[cfg(target_os = "macos")]
         if let tauri::RunEvent::Reopen {
             has_visible_windows: false,
             ..
-        } = event
+        } = _event
         {
-            if let Some(window) = app_handle.get_webview_window("main") {
+            if let Some(window) = _app_handle.get_webview_window("main") {
                 let _ = window.show();
                 let _ = window.unminimize();
                 let _ = window.set_focus();

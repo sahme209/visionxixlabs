@@ -4,18 +4,19 @@ import { NextRequest } from "next/server";
 const mocks = vi.hoisted(() => ({
   resolveRequestDesktopSession: vi.fn(),
   resolveTenantScopedToken: vi.fn(),
-  recordAudit: vi.fn(async (_input: import("@/lib/audit/secureAudit").RecordInput) => {}),
+  recordAudit: vi.fn(async (input: import("@/lib/audit/secureAudit").RecordInput) => { void input; }),
 }));
 
 vi.mock("@/lib/desktop/resolveRequestDesktopSession", () => ({
   resolveRequestDesktopSession: mocks.resolveRequestDesktopSession,
 }));
-vi.mock("@/lib/connectors/github/resolveTenantScopedToken", async () => {
-  const actual = await vi.importActual<typeof import("@/lib/connectors/github/resolveTenantScopedToken")>(
-    "@/lib/connectors/github/resolveTenantScopedToken",
-  );
-  return { ...actual, resolveTenantScopedToken: mocks.resolveTenantScopedToken };
-});
+vi.mock("@/lib/connectors/github/resolveTenantScopedToken", () => ({
+  resolveTenantScopedToken: mocks.resolveTenantScopedToken,
+  parseRepositoryFullName: (value: string) => {
+    const [owner, repo, extra] = value.split("/");
+    return owner && repo && !extra ? { owner, repo } : null;
+  },
+}));
 vi.mock("@/lib/audit/secureAudit", () => ({ record: mocks.recordAudit }));
 
 function request(body: object) {
@@ -53,6 +54,17 @@ describe("POST /api/desktop/github/clone-token", () => {
     const auditCall = mocks.recordAudit.mock.calls[0][0];
     expect(JSON.stringify(auditCall.detail)).not.toContain("ghs_SECRET");
     expect(auditCall.action).toBe("github.clone_token_minted");
+  });
+
+  it("records the explicit remote operation purpose without auditing the credential", async () => {
+    mocks.resolveTenantScopedToken.mockResolvedValue({ ok: true, token: "ghs_PUSH_SECRET" });
+    const { POST } = await import("../route");
+    const res = await POST(request({ repositoryFullName: "acme/widgets", purpose: "push" }));
+    expect(res.status).toBe(200);
+    const auditCall = mocks.recordAudit.mock.calls[0][0];
+    expect(auditCall.action).toBe("github.push_token_minted");
+    expect(auditCall.detail).toEqual({ repositoryFullName: "acme/widgets", purpose: "push" });
+    expect(JSON.stringify(auditCall)).not.toContain("ghs_PUSH_SECRET");
   });
 
   it("returns 409 when the tenant has no connected installation", async () => {

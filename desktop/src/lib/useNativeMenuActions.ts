@@ -14,12 +14,14 @@ type MenuAction =
   | "open_settings"
   | "view:agent"
   | "view:deployment-requests"
+  | "view:repository-workspace"
   | "view:docs";
 
 const VIEW_ROUTES: ReadonlyArray<{ action: MenuAction; view: CustomerView }> = [
   { action: "open_settings", view: "settings" },
   { action: "view:agent", view: "agent" },
   { action: "view:deployment-requests", view: "deployment-requests" },
+  { action: "view:repository-workspace", view: "repository-workspace" },
   { action: "view:docs", view: "docs" },
 ];
 

@@ -178,6 +178,8 @@ export type AuditAction =
   | "github.file_committed"
   | "github.pull_request_opened"
   | "github.clone_token_minted"
+  | "github.pull_token_minted"
+  | "github.push_token_minted"
   // Generic
   | "system.error";
 

@@ -7,6 +7,7 @@ import { DeploymentRequestsView } from "./views/DeploymentRequestsView";
 import { DocsView } from "./views/DocsView";
 import { SettingsView } from "./views/SettingsView";
 import { PluginsSkillsView } from "./views/PluginsSkillsView";
+import { RepositoryWorkspaceView } from "./views/RepositoryWorkspaceView";
 import { DesktopSignInView } from "./views/DesktopSignInView";
 import { DesktopAccessRequiredView } from "./views/DesktopAccessRequiredView";
 import { desktopClient, type VerifiedDesktopIdentity } from "./lib/desktopClient";
@@ -16,7 +17,7 @@ import { readDesktopPreferences } from "./lib/preferences";
 import { useNativeMenuActions } from "./lib/useNativeMenuActions";
 
 /** Only verified, customer-reachable desktop destinations belong here. */
-export type CustomerView = "agent" | "deployment-requests" | "plugins-skills" | "docs" | "settings";
+export type CustomerView = "agent" | "deployment-requests" | "repository-workspace" | "plugins-skills" | "docs" | "settings";
 
 /**
  * Dormant source modules remain type-checked for requirements recovery, but
@@ -126,6 +127,7 @@ function AuthenticatedWorkspace({ identity }: { identity: VerifiedDesktopIdentit
         <WorkspaceViewBoundary key={activeView} onReturnToAgent={() => setActiveView("agent")}>
           {activeView === "agent" && <AgentChatView />}
           {activeView === "deployment-requests" && <DeploymentRequestsView />}
+          {activeView === "repository-workspace" && <RepositoryWorkspaceView />}
           {activeView === "plugins-skills" && <PluginsSkillsView onOpenSettings={() => setActiveView("settings")} />}
           {activeView === "docs" && <DocsView />}
           {activeView === "settings" && <SettingsView identity={identity} />}

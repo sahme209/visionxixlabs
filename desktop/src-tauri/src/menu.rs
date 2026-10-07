@@ -91,11 +91,12 @@ pub fn build<R: Runtime>(app: &AppHandle<R>) -> tauri::Result<Menu<R>> {
         )?)
         .item(&MenuItem::with_id(
             app,
-            "menu_view_docs",
-            "Documentation",
+            "menu_view_repositories",
+            "GitHub repositories",
             true,
             Some("CmdOrCtrl+3"),
         )?)
+        .item(&MenuItem::with_id(app, "menu_view_docs", "Documentation", true, Some("CmdOrCtrl+4"))?)
         .separator()
         .item(&PredefinedMenuItem::fullscreen(app, None)?)
         .build()?;
@@ -141,6 +142,7 @@ pub fn handle_menu_event<R: Runtime>(app: &AppHandle<R>, id: &str) {
         "menu_open_settings" => emit(app, "open_settings"),
         "menu_view_agent" => emit(app, "view:agent"),
         "menu_view_deployment_requests" => emit(app, "view:deployment-requests"),
+        "menu_view_repositories" => emit(app, "view:repository-workspace"),
         "menu_view_docs" => emit(app, "view:docs"),
         "menu_help_docs" => open_url(app, "https://visionxixlabs.com/docs"),
         "menu_help_homepage" => open_url(app, "https://visionxixlabs.com"),
@@ -157,7 +159,11 @@ fn emit<R: Runtime>(app: &AppHandle<R>, payload: &str) {
 }
 
 fn open_url<R: Runtime>(app: &AppHandle<R>, url: &str) {
-    // tauri_plugin_shell is already loaded; use its OS-open helper.
+    // The shell plugin remains the project's audited URL opener. Its v2 open
+    // helper is deprecated in favour of a separate plugin, but changing that
+    // permission surface deserves its own reviewed migration.
+    #[allow(deprecated)]
     use tauri_plugin_shell::ShellExt;
+    #[allow(deprecated)]
     let _ = app.shell().open(url, None);
 }

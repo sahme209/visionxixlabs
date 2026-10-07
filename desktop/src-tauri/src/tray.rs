@@ -19,6 +19,7 @@
  *   - macOS: `set_title` renders text alongside the menubar icon.
  *   - Windows: title is ignored; the tooltip carries the count instead.
  *   - Linux: same as Windows — tooltip-only.
+ *
  * We set BOTH on every update so every OS shows the right thing.
  */
 

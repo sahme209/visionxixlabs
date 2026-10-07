@@ -28,13 +28,20 @@ fn validated_url(path: &str) -> Result<String, String> {
     Ok(format!("{API_ORIGIN}{path}"))
 }
 
+fn allowed_method(method: &reqwest::Method) -> bool {
+    method == reqwest::Method::GET
+        || method == reqwest::Method::POST
+        || method == reqwest::Method::PUT
+        || method == reqwest::Method::DELETE
+}
+
 #[tauri::command]
 pub async fn desktop_http_request(request: DesktopHttpRequest) -> Result<DesktopHttpResponse, String> {
     let url = validated_url(&request.path)?;
     let method = reqwest::Method::from_bytes(request.method.as_bytes())
         .map_err(|_| "Unsupported HTTP method.".to_string())?;
-    if method != reqwest::Method::GET && method != reqwest::Method::POST && method != reqwest::Method::DELETE {
-        return Err("Only GET, POST, and DELETE requests are allowed.".to_string());
+    if !allowed_method(&method) {
+        return Err("Only GET, POST, PUT, and DELETE requests are allowed.".to_string());
     }
 
     let client = reqwest::Client::builder()
@@ -78,7 +85,7 @@ pub async fn desktop_http_request(request: DesktopHttpRequest) -> Result<Desktop
 
 #[cfg(test)]
 mod tests {
-    use super::validated_url;
+    use super::{allowed_method, validated_url};
 
     #[test]
     fn restricts_requests_to_api_paths() {
@@ -86,5 +93,11 @@ mod tests {
         assert!(validated_url("https://attacker.example/api/v1/whoami").is_err());
         assert!(validated_url("/marketing").is_err());
         assert!(validated_url("/api/test\nInjected: true").is_err());
+    }
+
+    #[test]
+    fn permits_put_for_desktop_policy_and_revision_updates() {
+        assert!(allowed_method(&reqwest::Method::PUT));
+        assert!(!allowed_method(&reqwest::Method::PATCH));
     }
 }

@@ -37,8 +37,7 @@ export interface SsoSignInRepo {
 }
 
 export type SsoGateResult =
-  | { kind: "no_match" }
-  | { kind: "denied"; reason: "sso.no_role_mapping" | "sso.mfa_required_not_present" }
+  | { kind: "denied"; reason: "sso.no_provider_for_domain" | "sso.issuer_mismatch" | "sso.no_role_mapping" | "sso.mfa_required_not_present" }
   | { kind: "matched"; organizationId: string; role: string };
 
 function isRoleMappingRuleArray(value: unknown): value is RoleMappingRule[] {
@@ -63,7 +62,19 @@ export async function evaluateSsoSignIn(
     }));
 
   const match = resolveIdentityProviderForEmail(input.email, providers);
-  if (!match) return { kind: "no_match" };
+  if (!match) return { kind: "denied", reason: "sso.no_provider_for_domain" };
+
+  // The OAuth client has already verified the token signature. Binding its
+  // trusted issuer claim to the tenant's configured OIDC issuer prevents a
+  // user from one shared Cognito pool being mapped into a different tenant
+  // merely because their email domain and group claim happen to match.
+  if (match.protocol === "oidc") {
+    const tokenIssuer = typeof input.claims.iss === "string" ? input.claims.iss.replace(/\/$/, "") : "";
+    const configuredIssuer = match.issuerOrEntityId.replace(/\/$/, "");
+    if (!tokenIssuer || tokenIssuer !== configuredIssuer) {
+      return { kind: "denied", reason: "sso.issuer_mismatch" };
+    }
+  }
 
   const mfaResult = evaluateMfaClaim(
     { amr: Array.isArray(input.claims.amr) ? (input.claims.amr as string[]) : undefined, acr: typeof input.claims.acr === "string" ? input.claims.acr : undefined },
