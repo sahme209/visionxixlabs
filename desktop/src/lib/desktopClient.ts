@@ -680,11 +680,11 @@ export class DesktopClient {
     return this.get(`/api/desktop/agent/conversations/${encodeURIComponent(conversationId)}`);
   }
 
-  sendAgentMessage(conversationId: string, message: string): Promise<ApiResult<{
+  sendAgentMessage(conversationId: string, message: string, preferredProvider?: string): Promise<ApiResult<{
     reply: string;
     proposal: { id: string; toolName: string; argsJson: unknown; riskLevel: string; status: string } | null;
   }>> {
-    return this.post(`/api/desktop/agent/conversations/${encodeURIComponent(conversationId)}/messages`, { message });
+    return this.post(`/api/desktop/agent/conversations/${encodeURIComponent(conversationId)}/messages`, { message, preferredProvider });
   }
 
   approveAgentAction(actionId: string): Promise<ApiResult<{ id: string; status: string; resultJson: unknown; errorMessage: string | null }>> {
@@ -719,12 +719,15 @@ export class DesktopClient {
     return this.post("/api/desktop/identity-providers/scim-preview", input);
   }
 
-  aiProviderStatus(): Promise<ApiResult<Array<{
-    provider: string;
-    configured: boolean;
-    defaultModel: string;
-  }>>> {
+  aiProviderStatus(): Promise<ApiResult<{
+    policy: { enabled: boolean; allowedProviders: string[]; modelSelections: Record<string, string>; fallbackOrder: string[] };
+    providers: Array<{ provider: string; models: Array<{ id: string; label: string; tier: string }> }>;
+  }>> {
     return this.get("/api/desktop/ai-providers");
+  }
+
+  updateAiProviderPolicy(policy: { enabled: boolean; allowedProviders: string[]; modelSelections: Record<string, string>; fallbackOrder: string[] }): Promise<ApiResult<{ policy: typeof policy }>> {
+    return this.put("/api/desktop/ai-providers", policy);
   }
 
   integrationHealth(): Promise<ApiResult<{

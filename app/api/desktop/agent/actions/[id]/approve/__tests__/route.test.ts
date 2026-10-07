@@ -62,7 +62,7 @@ describe("POST /api/desktop/agent/actions/[id]/approve", () => {
     const body = await res.json();
     expect(res.status).toBe(200);
     expect(body.data.status).toBe("executed");
-    expect(mocks.executeApprovedAction).toHaveBeenCalledWith(expect.anything(), "org-1", "open_github_pull_request", {});
+    expect(mocks.executeApprovedAction).toHaveBeenCalledWith(expect.anything(), "org-1", "open_github_pull_request", {}, "user-1");
   });
 
   it("marks the proposal failed, not silently swallowed, when GitHub rejects the action", async () => {

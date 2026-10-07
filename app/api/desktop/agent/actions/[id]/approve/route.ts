@@ -43,7 +43,13 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     data: { status: "approved", decidedByUserId: String(session.userId), decidedAt: new Date() },
   });
 
-  const result = await executeApprovedAction(prisma as unknown as ActionExecutionRepo, organizationId, proposal.toolName, proposal.argsJson as Record<string, unknown>);
+  const result = await executeApprovedAction(
+    prisma as unknown as ActionExecutionRepo,
+    organizationId,
+    proposal.toolName,
+    proposal.argsJson as Record<string, unknown>,
+    String(session.userId),
+  );
 
   const final = await prisma.agentActionProposal.update({
     where: { id },

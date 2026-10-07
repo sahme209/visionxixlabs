@@ -2,17 +2,21 @@ import { describe, expect, it } from "vitest";
 import { TOOL_REGISTRY, findTool, classifyRisk, toolCatalogPrompt } from "../tools";
 
 describe("TOOL_REGISTRY", () => {
-  it("has exactly the six tools the agent runtime wires up", () => {
+  it("has exactly the governed tools the agent runtime wires up", () => {
     const names = TOOL_REGISTRY.map((t) => t.name).sort();
     expect(names).toEqual([
-      "check_deploy_status", "commit_github_file", "create_github_branch",
-      "list_environments", "open_github_pull_request", "trigger_aws_deploy",
+      "check_deploy_status", "commit_github_file", "configure_deployment_target",
+      "connect_identity_provider", "create_environment", "create_github_branch",
+      "list_environments", "open_github_pull_request", "preview_scim_lifecycle",
+      "read_github_file", "trigger_aws_deploy",
     ]);
   });
 
-  it("classifies the two read-only tools as low risk", () => {
+  it("classifies every read-only tool as low risk", () => {
     expect(findTool("list_environments")?.riskLevel).toBe("low");
     expect(findTool("check_deploy_status")?.riskLevel).toBe("low");
+    expect(findTool("read_github_file")?.riskLevel).toBe("low");
+    expect(findTool("preview_scim_lifecycle")?.riskLevel).toBe("low");
   });
 
   it("classifies every GitHub write tool as medium risk by default", () => {
@@ -23,6 +27,12 @@ describe("TOOL_REGISTRY", () => {
 
   it("classifies trigger_aws_deploy as high risk unconditionally", () => {
     expect(findTool("trigger_aws_deploy")?.riskLevel).toBe("high");
+  });
+
+  it("keeps sensitive tenant configuration approval-gated", () => {
+    expect(findTool("create_environment")?.riskLevel).toBe("medium");
+    expect(findTool("configure_deployment_target")?.riskLevel).toBe("high");
+    expect(findTool("connect_identity_provider")?.riskLevel).toBe("high");
   });
 });
 

@@ -17,6 +17,7 @@ import { prisma } from "@/lib/db";
 import { runDecisionLoop, type ConversationTurnInput } from "@/lib/axiom/agentRuntime/decisionLoop";
 import { executeReadOnlyTool, isProdEnvironmentTarget, type ToolExecutionRepo, type ProdEnvironmentCheckRepo } from "@/lib/axiom/agentRuntime/toolExecution";
 import { id as idFactory } from "@/lib/domain/ids";
+import { loadWorkspaceMemory, rememberToolContext, workspaceMemoryPrompt, type WorkspaceMemoryRepo } from "@/lib/axiom/agentRuntime/workspaceMemory";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -24,6 +25,7 @@ export const runtime = "nodejs";
 const AI_ERROR_MESSAGES: Record<string, string> = {
   workspace_ai_disabled: "AI isn't enabled for this workspace yet. A workspace admin can turn it on under AI provider settings.",
   workspace_ai_provider_unavailable: "No AI provider is approved for this workspace. A workspace admin needs to approve one first.",
+  workspace_ai_model_not_allowed: "That model is not enabled for this workspace. Choose an enabled model or ask a workspace admin to update Models.",
   workspace_ai_policy_unavailable: "Couldn't load this workspace's AI provider policy right now. Try again shortly.",
   workspace_ai_credit_meter_unavailable: "Couldn't verify remaining AI usage for this workspace right now. Try again shortly.",
   workspace_ai_credit_pool_exhausted: "This workspace has used its available AI credits for this period.",
@@ -48,8 +50,9 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     return NextResponse.json({ ok: false, error: "not_found" }, { status: 404 });
   }
 
-  const body = (await request.json().catch(() => null)) as { message?: unknown } | null;
+  const body = (await request.json().catch(() => null)) as { message?: unknown; preferredProvider?: unknown } | null;
   const message = typeof body?.message === "string" ? body.message.trim() : "";
+  const preferredProvider = typeof body?.preferredProvider === "string" ? body.preferredProvider : undefined;
   if (!message) {
     return NextResponse.json({ ok: false, error: "invalid_payload" }, { status: 400 });
   }
@@ -60,12 +63,17 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
   const transcript: ConversationTurnInput[] = priorTurns.map((t) => ({ role: t.role as ConversationTurnInput["role"], content: t.content }));
 
   const correlationId = idFactory.correlation(`agent_msg_${Date.now().toString(36)}`);
+  const memoryRepo = prisma as unknown as WorkspaceMemoryRepo;
+  const workspaceContext = workspaceMemoryPrompt(await loadWorkspaceMemory(memoryRepo, organizationId));
   const outcome = await runDecisionLoop({
     organizationId,
     correlationId: String(correlationId),
     transcript,
+    workspaceContext,
+    preferredProvider,
     executeReadOnlyTool: async (toolName, args) => {
       const result = await executeReadOnlyTool(prisma as unknown as ToolExecutionRepo, organizationId, toolName, args);
+      if (result.ok) await rememberToolContext(memoryRepo, organizationId, args).catch(() => undefined);
       // Every tool call — including read-only ones — gets its own audit
       // row, immediately marked executed, so "what did the agent look
       // at" is as visible in the trail as "what did it change."
@@ -90,6 +98,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
   }
 
   if (outcome.kind === "proposal") {
+    await rememberToolContext(memoryRepo, organizationId, outcome.args).catch(() => undefined);
     await prisma.agentConversationTurn.create({ data: { conversationId, role: "assistant", content: outcome.message } });
     const proposal = await prisma.agentActionProposal.create({
       data: {

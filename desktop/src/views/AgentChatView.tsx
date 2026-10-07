@@ -33,6 +33,11 @@ const TOOL_LABELS: Record<string, string> = {
   commit_github_file: "Commit a file",
   open_github_pull_request: "Open a pull request",
   trigger_aws_deploy: "Deploy to AWS",
+  read_github_file: "Read a repository file",
+  create_environment: "Create an environment",
+  configure_deployment_target: "Configure a deployment target",
+  connect_identity_provider: "Connect an identity provider",
+  preview_scim_lifecycle: "Preview SCIM lifecycle",
 };
 
 function describeArgs(toolName: string, args: unknown): string {
@@ -47,6 +52,12 @@ function describeArgs(toolName: string, args: unknown): string {
       return `${a.repositoryFullName}: PR "${a.title}" — ${a.head} → ${a.base}`;
     case "trigger_aws_deploy":
       return `${a.repositoryFullName} → environment ${a.environmentId}`;
+    case "create_environment":
+      return `${a.name} (${a.slug}) · ${a.tier}`;
+    case "configure_deployment_target":
+      return `${a.environmentId}: ${a.ecsCluster}/${a.ecsService} in ${a.region}`;
+    case "connect_identity_provider":
+      return `${a.protocol}: ${a.issuerOrEntityId}`;
     default:
       return JSON.stringify(a);
   }
@@ -60,13 +71,31 @@ export function AgentChatView() {
   const [sending, setSending] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [decidingId, setDecidingId] = useState<string | null>(null);
+  const [composerMode, setComposerMode] = useState<"chat" | "code">("chat");
+  const [repositoryFullName, setRepositoryFullName] = useState("");
+  const [branch, setBranch] = useState("main");
+  const [filePath, setFilePath] = useState("");
+  const [selectedProvider, setSelectedProvider] = useState("");
+  const [modelOptions, setModelOptions] = useState<Array<{ provider: string; label: string }>>([]);
   const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    void desktopClient.createAgentConversation().then((result) => {
-      if (result.ok) setConversationId(result.data.id);
-      else setError(result.error);
+    let cancelled = false;
+    void Promise.all([desktopClient.createAgentConversation(), desktopClient.aiProviderStatus()]).then(([conversation, models]) => {
+      if (cancelled) return;
+      if (conversation.ok) setConversationId(conversation.data.id);
+      else setError(conversation.error);
+      if (models.ok) {
+        const options = models.data.policy.allowedProviders.flatMap((provider) => {
+          const selectedModel = models.data.policy.modelSelections[provider];
+          const model = models.data.providers.find((item) => item.provider === provider)?.models.find((item) => item.id === selectedModel);
+          return selectedModel ? [{ provider, label: model?.label ?? selectedModel }] : [];
+        });
+        setModelOptions(options);
+        setSelectedProvider(models.data.policy.fallbackOrder[0] ?? options[0]?.provider ?? "");
+      }
     });
+    return () => { cancelled = true; };
   }, []);
 
   useEffect(() => {
@@ -74,14 +103,17 @@ export function AgentChatView() {
   }, [turns, pendingProposal]);
 
   async function send() {
-    const message = input.trim();
-    if (!message || !conversationId || sending) return;
+    const instruction = input.trim();
+    const message = composerMode === "code"
+      ? `Work on ${repositoryFullName.trim()} at branch ${branch.trim()}, file ${filePath.trim()}. First read the file with read_github_file. Then ${instruction}. If a change is needed, propose commit_github_file with the complete updated file content and a clear commit message. Do not claim the change is complete until I approve it.`
+      : instruction;
+    if (!instruction || !conversationId || sending || (composerMode === "code" && (!repositoryFullName.includes("/") || !branch.trim() || !filePath.trim()))) return;
     setInput("");
     setError(null);
     setTurns((prev) => [...prev, { id: `local_${Date.now()}`, role: "user", content: message }]);
     setSending(true);
     try {
-      const result = await desktopClient.sendAgentMessage(conversationId, message);
+      const result = await desktopClient.sendAgentMessage(conversationId, message, selectedProvider || undefined);
       if (!result.ok) {
         setError(result.error);
         return;
@@ -127,7 +159,7 @@ export function AgentChatView() {
             <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-6 text-center">
               <p className="text-sm text-zinc-300">Tell me what you want to happen.</p>
               <p className="mt-2 text-xs text-zinc-500 leading-5">
-                "Open a PR on acme/widgets that fixes the README typo" or "deploy acme/widgets to prod" — I'll check what's safe to do automatically,
+                &ldquo;Open a PR on acme/widgets that fixes the README typo&rdquo; or &ldquo;deploy acme/widgets to prod&rdquo; — I&apos;ll check what&apos;s safe to do automatically,
                 and ask you to approve anything that changes GitHub or AWS before it happens.
               </p>
             </div>
@@ -140,23 +172,42 @@ export function AgentChatView() {
         </div>
       </div>
       <div className="border-t border-white/[0.06] px-8 py-5">
-        <div className="max-w-3xl mx-auto flex items-center gap-3">
-          <input
+        <div className="max-w-3xl mx-auto">
+          <div className="mb-3 flex items-center gap-1" role="tablist" aria-label="Agent composer mode">
+            <button type="button" role="tab" aria-selected={composerMode === "chat"} onClick={() => setComposerMode("chat")} className={`rounded-md px-3 py-1.5 text-xs ${composerMode === "chat" ? "bg-white/[0.09] text-white" : "text-zinc-500 hover:text-zinc-300"}`}>Chat</button>
+            <button type="button" role="tab" aria-selected={composerMode === "code"} onClick={() => setComposerMode("code")} className={`rounded-md px-3 py-1.5 text-xs ${composerMode === "code" ? "bg-white/[0.09] text-white" : "text-zinc-500 hover:text-zinc-300"}`}>Edit repository file</button>
+            <label className="ml-auto flex items-center gap-2 text-[11px] text-zinc-500">
+              <span>Model</span>
+              <select aria-label="Agent model" value={selectedProvider} onChange={(event) => setSelectedProvider(event.target.value)} disabled={sending || modelOptions.length === 0} className="max-w-52 rounded-md border border-white/10 bg-[#151719] px-2 py-1.5 text-xs text-zinc-300 outline-none focus:border-white/25 disabled:opacity-50">
+                {modelOptions.length === 0 && <option value="">No model enabled</option>}
+                {modelOptions.map((model) => <option key={model.provider} value={model.provider}>{model.label}</option>)}
+              </select>
+            </label>
+          </div>
+          {composerMode === "code" && <div className="mb-3 grid grid-cols-[1.3fr_0.8fr_1.5fr] gap-2">
+            <input aria-label="GitHub repository" value={repositoryFullName} onChange={(event) => setRepositoryFullName(event.target.value)} placeholder="owner/repository" className="rounded-lg border border-white/10 bg-white/[0.03] px-3 py-2 text-xs text-zinc-200 outline-none placeholder:text-zinc-600 focus:border-white/25" />
+            <input aria-label="Git branch" value={branch} onChange={(event) => setBranch(event.target.value)} placeholder="branch" className="rounded-lg border border-white/10 bg-white/[0.03] px-3 py-2 text-xs text-zinc-200 outline-none placeholder:text-zinc-600 focus:border-white/25" />
+            <input aria-label="Repository file path" value={filePath} onChange={(event) => setFilePath(event.target.value)} placeholder="src/path/to/file.ts" className="rounded-lg border border-white/10 bg-white/[0.03] px-3 py-2 text-xs text-zinc-200 outline-none placeholder:text-zinc-600 focus:border-white/25" />
+          </div>}
+          <div className="flex items-end gap-3">
+          <textarea
             value={input}
             onChange={(event) => setInput(event.target.value)}
             onKeyDown={(event) => { if (event.key === "Enter" && !event.shiftKey) { event.preventDefault(); void send(); } }}
-            placeholder={pendingProposal ? "Approve or reject the proposed action above to continue…" : "What do you want to happen?"}
+            placeholder={pendingProposal ? "Approve or reject the proposed action above to continue…" : composerMode === "code" ? "Describe the change you want in this file…" : "What do you want to happen?"}
             disabled={sending || !conversationId || Boolean(pendingProposal)}
-            className="flex-1 rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm text-zinc-100 placeholder:text-zinc-600 outline-none focus:border-white/25 disabled:opacity-50"
+            rows={2}
+            className="min-h-[48px] flex-1 resize-none rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm text-zinc-100 placeholder:text-zinc-600 outline-none focus:border-white/25 disabled:opacity-50"
           />
           <button
             type="button"
             onClick={() => void send()}
-            disabled={sending || !input.trim() || !conversationId || Boolean(pendingProposal)}
+            disabled={sending || !input.trim() || !conversationId || Boolean(pendingProposal) || (composerMode === "code" && (!repositoryFullName.includes("/") || !branch.trim() || !filePath.trim()))}
             className="rounded-xl bg-white px-5 py-3 text-sm font-semibold text-black disabled:opacity-40"
           >
             {sending ? "Thinking…" : "Send"}
           </button>
+          </div>
         </div>
       </div>
     </div>
@@ -178,6 +229,12 @@ function ChatBubble({ turn }: { turn: ChatTurn }) {
 }
 
 function ProposalCard({ proposal, deciding, onApprove, onReject }: { proposal: Proposal; deciding: boolean; onApprove: () => void; onReject: () => void }) {
+  const [showDetails, setShowDetails] = useState(false);
+  const args = typeof proposal.argsJson === "object" && proposal.argsJson !== null
+    ? proposal.argsJson as Record<string, unknown>
+    : {};
+  const proposedContent = proposal.toolName === "commit_github_file" && typeof args.content === "string" ? args.content : null;
+  const reviewArgs = Object.fromEntries(Object.entries(args).filter(([key]) => key !== "content" && key !== "metadataDocument"));
   return (
     <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-5">
       <div className="flex items-center justify-between gap-3 mb-3">
@@ -185,6 +242,31 @@ function ProposalCard({ proposal, deciding, onApprove, onReject }: { proposal: P
         <Badge tone={riskToneFor(proposal.riskLevel)}>{proposal.riskLevel} risk</Badge>
       </div>
       <p className="text-xs text-zinc-400 font-mono mb-4">{describeArgs(proposal.toolName, proposal.argsJson)}</p>
+      <button type="button" aria-expanded={showDetails} onClick={() => setShowDetails((current) => !current)} className="mb-4 text-xs text-zinc-400 underline decoration-zinc-700 underline-offset-4 hover:text-zinc-200">
+        {showDetails ? "Hide approval details" : "Review approval details"}
+      </button>
+      {showDetails && (
+        <div className="mb-5 space-y-3 rounded-xl border border-white/[0.07] bg-black/20 p-3">
+          {proposedContent !== null && (
+            <div>
+              <div className="mb-2 flex items-center justify-between gap-3 text-[11px] text-zinc-500">
+                <span>Complete proposed file</span>
+                <span>{proposedContent.split("\n").length} lines · {new TextEncoder().encode(proposedContent).byteLength.toLocaleString()} bytes</span>
+              </div>
+              <pre tabIndex={0} className="max-h-72 overflow-auto whitespace-pre text-[11px] leading-5 text-zinc-300">{proposedContent}</pre>
+            </div>
+          )}
+          {Object.keys(reviewArgs).length > 0 && (
+            <div>
+              <p className="mb-2 text-[11px] text-zinc-500">Structured arguments</p>
+              <pre tabIndex={0} className="max-h-48 overflow-auto whitespace-pre-wrap break-words text-[11px] leading-5 text-zinc-400">{JSON.stringify(reviewArgs, null, 2)}</pre>
+            </div>
+          )}
+          {proposal.toolName === "connect_identity_provider" && typeof args.metadataDocument === "string" && (
+            <p className="text-[11px] text-zinc-500">Identity metadata document supplied: {new TextEncoder().encode(args.metadataDocument).byteLength.toLocaleString()} bytes. It is omitted from this compact preview.</p>
+          )}
+        </div>
+      )}
       <div className="flex items-center gap-3">
         <button
           type="button"

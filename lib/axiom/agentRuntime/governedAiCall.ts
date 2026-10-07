@@ -12,10 +12,12 @@ import "server-only";
 import { getAIProviderManager } from "@/lib/ai/AIProviderManager";
 import { loadWorkspaceAIProviderPolicyWithState, resolveWorkspaceAIProviderPolicy } from "@/lib/ai/workspaceProviderPolicy";
 import { checkWorkspaceAICredits } from "@/lib/billing/checkWorkspaceAICredits";
+import { isAIProviderName, type AIProviderName } from "@/lib/ai/AIProvider";
 
 export type GovernedAiCallError =
   | "workspace_ai_disabled"
   | "workspace_ai_provider_unavailable"
+  | "workspace_ai_model_not_allowed"
   | "workspace_ai_policy_unavailable"
   | "workspace_ai_credit_meter_unavailable"
   | "workspace_ai_credit_pool_exhausted";
@@ -24,7 +26,7 @@ export type GovernedAiCallResult =
   | { ok: true; extract: <T>(text: string, schemaHint: string, correlationId: string) => Promise<T> }
   | { ok: false; error: GovernedAiCallError };
 
-export async function resolveGovernedAiCall(organizationId: string): Promise<GovernedAiCallResult> {
+export async function resolveGovernedAiCall(organizationId: string, preferredProvider?: string): Promise<GovernedAiCallResult> {
   const creditDecision = await checkWorkspaceAICredits(organizationId, 0, { failClosedOnUsageReadError: true }).catch(() => null);
   if (!creditDecision) return { ok: false, error: "workspace_ai_credit_meter_unavailable" };
   if (creditDecision.kind === "block") return { ok: false, error: "workspace_ai_credit_pool_exhausted" };
@@ -39,6 +41,10 @@ export async function resolveGovernedAiCall(organizationId: string): Promise<Gov
   });
   if (!policy.enabled) return { ok: false, error: "workspace_ai_disabled" };
   if (policy.allowedProviders.length === 0) return { ok: false, error: "workspace_ai_provider_unavailable" };
+  if (preferredProvider && (!isAIProviderName(preferredProvider) || !policy.allowedProviders.includes(preferredProvider))) {
+    return { ok: false, error: "workspace_ai_model_not_allowed" };
+  }
+  const only: AIProviderName | undefined = preferredProvider && isAIProviderName(preferredProvider) ? preferredProvider : undefined;
 
   return {
     ok: true,
@@ -50,6 +56,7 @@ export async function resolveGovernedAiCall(organizationId: string): Promise<Gov
         fallbackOrder: policy.fallbackOrder,
         correlationId,
         temperature: 0.1,
+        only,
       });
       return result.data;
     },

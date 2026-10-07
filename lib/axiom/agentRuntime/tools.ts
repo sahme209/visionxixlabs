@@ -40,6 +40,36 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = [
     riskLevel: "low",
   },
   {
+    name: "read_github_file",
+    description: "Read one UTF-8 text file from a tenant-connected GitHub repository so you can inspect it before proposing an edit.",
+    argsSchemaHint: '{ "repositoryFullName": "owner/repo", "branch": "main", "path": "path/to/file.ts" }',
+    riskLevel: "low",
+  },
+  {
+    name: "preview_scim_lifecycle",
+    description: "Preview joiner, mover, and leaver access changes from a directory snapshot. This is a pure preview and never changes access.",
+    argsSchemaHint: '{ "employees": [{ "id": "u1", "email": "person@example.com", "status": "active|on_leave|terminated", "desiredRoles": ["operator"] }], "currentGrants": [{ "userId": "u1", "role": "operator", "grantedAtIso": "2026-01-01T00:00:00Z" }] }',
+    riskLevel: "low",
+  },
+  {
+    name: "create_environment",
+    description: "Create a governed workspace deployment environment such as dev, stage, or prod. Existing matching slugs are returned idempotently.",
+    argsSchemaHint: '{ "slug": "stage", "name": "Staging", "tier": "dev|test|qa|uat|stage|preprod|prod" }',
+    riskLevel: "medium",
+  },
+  {
+    name: "configure_deployment_target",
+    description: "Configure the AWS OIDC role, region, ECS cluster, and ECS service used for real deployments to an environment.",
+    argsSchemaHint: '{ "environmentId": "env id", "roleArn": "arn:aws:iam::123456789012:role/name", "region": "us-east-1", "ecsCluster": "cluster", "ecsService": "service" }',
+    riskLevel: "high",
+  },
+  {
+    name: "connect_identity_provider",
+    description: "Store a pending OIDC or SAML identity-provider configuration. This does not activate enterprise sign-in; a real metadata exchange and test assertion are still required.",
+    argsSchemaHint: '{ "protocol": "oidc|saml", "issuerOrEntityId": "issuer", "metadataDocument": "metadata", "managedDomains": ["example.com"], "roleMapping": [{ "claimKey": "groups", "claimValue": "platform", "role": "operator" }], "requireMfaClaim": true }',
+    riskLevel: "high",
+  },
+  {
     name: "create_github_branch",
     description: "Create a new branch in a tenant-connected GitHub repository, pointing at the tip of an existing base branch. Does not change any file content.",
     argsSchemaHint: '{ "repositoryFullName": "owner/repo", "baseBranch": "main", "newBranchName": "axiom/short-description" }',
