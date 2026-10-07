@@ -21,7 +21,7 @@ import { prisma } from "@/lib/db";
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
-const PROVIDERS = new Set(["slack", "teams"]);
+const PROVIDERS = new Set(["slack", "teams", "linear"]);
 type PauseAction = "suspend" | "resume";
 
 interface ConnectionRepo {

@@ -608,12 +608,16 @@ export class DesktopClient {
     }>;
     github: { status: string; repositorySelection: string };
     collaboration: Array<{
-      provider: "slack" | "teams";
+      provider: "slack" | "teams" | "linear";
       status: string;
       lastValidatedAt: string | null;
     }>;
   }>> {
     return this.get("/api/desktop/integrations");
+  }
+
+  startIntegrationConnection(provider: "github" | "slack" | "teams" | "linear"): Promise<ApiResult<{ consentUrl: string }>> {
+    return this.post(`/api/desktop/integrations/${encodeURIComponent(provider)}/connect`, {});
   }
 
   validateGitHubReadOnly(): Promise<ApiResult<{ status: "validated_read_only" }>> {
@@ -626,6 +630,10 @@ export class DesktopClient {
 
   validateTeamsConnection(): Promise<ApiResult<{ status: "active" }>> {
     return this.post("/api/desktop/integrations/teams/validate", {});
+  }
+
+  validateLinearConnection(): Promise<ApiResult<{ status: "active" }>> {
+    return this.post("/api/desktop/integrations/linear/validate", {});
   }
 
   createGithubBranch(input: { repositoryFullName: string; baseBranch: string; newBranchName: string }): Promise<ApiResult<{ ref: string; sha: string }>> {
@@ -670,6 +678,12 @@ export class DesktopClient {
 
   createAgentConversation(): Promise<ApiResult<{ id: string; title: string | null; createdAt: string }>> {
     return this.post("/api/desktop/agent/conversations", {});
+  }
+
+  listAgentConversations(): Promise<ApiResult<{
+    conversations: Array<{ id: string; title: string | null; turnCount: number; createdAt: string; updatedAt: string }>;
+  }>> {
+    return this.get("/api/desktop/agent/conversations");
   }
 
   getAgentConversation(conversationId: string): Promise<ApiResult<{

@@ -52,5 +52,8 @@ describe("GET /api/desktop/agent/conversations/[id]", () => {
     const body = await res.json();
     expect(res.status).toBe(200);
     expect(body.data.turns).toHaveLength(1);
+    expect(mocks.findFirst).toHaveBeenCalledWith(expect.objectContaining({
+      where: expect.objectContaining({ organizationId: "org-1", userId: "user-1" }),
+    }));
   });
 });

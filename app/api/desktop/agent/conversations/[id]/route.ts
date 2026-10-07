@@ -23,7 +23,13 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
   }
 
   const { id } = await params;
-  const conversation = await prisma.agentConversation.findFirst({ where: { id, organizationId: String(session.organizationId) } });
+  const conversation = await prisma.agentConversation.findFirst({
+    where: {
+      id,
+      organizationId: String(session.organizationId),
+      userId: String(session.userId),
+    },
+  });
   if (!conversation) {
     return NextResponse.json({ ok: false, error: "not_found" }, { status: 404 });
   }

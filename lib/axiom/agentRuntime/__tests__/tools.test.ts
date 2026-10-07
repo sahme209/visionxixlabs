@@ -7,13 +7,14 @@ describe("TOOL_REGISTRY", () => {
     expect(names).toEqual([
       "check_deploy_status", "commit_github_file", "configure_deployment_target",
       "connect_identity_provider", "create_environment", "create_github_branch",
-      "list_environments", "open_github_pull_request", "preview_scim_lifecycle",
+      "list_environments", "list_integrations", "open_github_pull_request", "preview_scim_lifecycle",
       "read_github_file", "trigger_aws_deploy",
     ]);
   });
 
   it("classifies every read-only tool as low risk", () => {
     expect(findTool("list_environments")?.riskLevel).toBe("low");
+    expect(findTool("list_integrations")?.riskLevel).toBe("low");
     expect(findTool("check_deploy_status")?.riskLevel).toBe("low");
     expect(findTool("read_github_file")?.riskLevel).toBe("low");
     expect(findTool("preview_scim_lifecycle")?.riskLevel).toBe("low");

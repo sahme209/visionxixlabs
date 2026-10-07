@@ -4,6 +4,8 @@ import { NextRequest } from "next/server";
 const mocks = vi.hoisted(() => ({
   resolveRequestDesktopSession: vi.fn(),
   findFirstConversation: vi.fn(),
+  updateConversation: vi.fn(async () => ({})),
+  transaction: vi.fn(async (operations: Array<Promise<unknown>>) => Promise.all(operations)),
   createTurn: vi.fn(async () => ({})),
   findManyTurns: vi.fn(async () => []),
   createProposal: vi.fn(async () => ({ id: "ap_1", toolName: "open_github_pull_request", argsJson: {}, riskLevel: "medium", status: "proposed" })),
@@ -14,9 +16,10 @@ const mocks = vi.hoisted(() => ({
 vi.mock("@/lib/desktop/resolveRequestDesktopSession", () => ({ resolveRequestDesktopSession: mocks.resolveRequestDesktopSession }));
 vi.mock("@/lib/db", () => ({
   prisma: {
-    agentConversation: { findFirst: mocks.findFirstConversation },
+    agentConversation: { findFirst: mocks.findFirstConversation, update: mocks.updateConversation },
     agentConversationTurn: { create: mocks.createTurn, findMany: mocks.findManyTurns },
     agentActionProposal: { create: mocks.createProposal },
+    $transaction: mocks.transaction,
   },
 }));
 vi.mock("@/lib/axiom/agentRuntime/decisionLoop", () => ({ runDecisionLoop: mocks.runDecisionLoop }));
@@ -38,7 +41,7 @@ describe("POST /api/desktop/agent/conversations/[id]/messages", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mocks.resolveRequestDesktopSession.mockResolvedValue(session);
-    mocks.findFirstConversation.mockResolvedValue({ id: "conv_1", organizationId: "org-1" });
+    mocks.findFirstConversation.mockResolvedValue({ id: "conv_1", organizationId: "org-1", userId: "user-1", title: null });
     mocks.prepareProposalArgsForReview.mockImplementation(async (_organizationId: string, _toolName: string, args: Record<string, unknown>) => ({ ok: true, args }));
   });
 
@@ -70,6 +73,10 @@ describe("POST /api/desktop/agent/conversations/[id]/messages", () => {
     expect(res.status).toBe(200);
     expect(body.data.reply).toBe("You have 3 environments configured.");
     expect(body.data.proposal).toBeNull();
+    expect(mocks.updateConversation).toHaveBeenCalledWith(expect.objectContaining({
+      where: { id: "conv_1" },
+      data: expect.objectContaining({ title: "what environments do I have?" }),
+    }));
   });
 
   it("forwards the selected provider to the governed decision loop", async () => {

@@ -13,6 +13,46 @@ import { prisma } from "@/lib/db";
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
+export async function GET(request: NextRequest): Promise<Response> {
+  const session = await resolveRequestDesktopSession(request, {
+    requiredScope: "pipeline:read",
+    route: "GET /api/desktop/agent/conversations",
+    allowApiKey: false,
+  });
+  if (!session) {
+    return NextResponse.json({ ok: false, error: "desktop_session_required" }, { status: 401 });
+  }
+
+  const conversations = await prisma.agentConversation.findMany({
+    where: {
+      organizationId: String(session.organizationId),
+      userId: String(session.userId),
+    },
+    orderBy: { updatedAt: "desc" },
+    take: 50,
+    select: {
+      id: true,
+      title: true,
+      createdAt: true,
+      updatedAt: true,
+      _count: { select: { turns: true } },
+    },
+  });
+
+  return NextResponse.json({
+    ok: true,
+    data: {
+      conversations: conversations.map((conversation) => ({
+        id: conversation.id,
+        title: conversation.title,
+        turnCount: conversation._count.turns,
+        createdAt: conversation.createdAt.toISOString(),
+        updatedAt: conversation.updatedAt.toISOString(),
+      })),
+    },
+  });
+}
+
 export async function POST(request: NextRequest): Promise<Response> {
   const session = await resolveRequestDesktopSession(request, {
     requiredScope: "pipeline:read",

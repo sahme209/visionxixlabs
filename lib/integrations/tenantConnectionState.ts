@@ -22,6 +22,10 @@ export function visibleTenantConnectionStatus(input: {
         ? "active"
         : "needs_attention";
     case "pending":
+      // OAuth consent has been recorded, but the provider has not completed
+      // Axiom's harmless server-side validation yet. Never expose the storage
+      // implementation term to clients; this state is actionable in desktop.
+      return "awaiting_validation";
     case "needs_attention":
     case "suspended":
     case "revoked":

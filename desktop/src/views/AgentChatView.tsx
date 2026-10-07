@@ -28,6 +28,14 @@ interface Proposal {
   errorMessage?: string | null;
 }
 
+interface ConversationSummary {
+  id: string;
+  title: string | null;
+  turnCount: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
 const TOOL_LABELS: Record<string, string> = {
   list_environments: "List environments",
   check_deploy_status: "Check deploy status",
@@ -40,6 +48,7 @@ const TOOL_LABELS: Record<string, string> = {
   configure_deployment_target: "Configure a deployment target",
   connect_identity_provider: "Connect an identity provider",
   preview_scim_lifecycle: "Preview SCIM lifecycle",
+  list_integrations: "List integrations",
 };
 
 function describeArgs(toolName: string, args: unknown): string {
@@ -67,6 +76,7 @@ function describeArgs(toolName: string, args: unknown): string {
 
 export function AgentChatView() {
   const [conversationId, setConversationId] = useState<string | null>(null);
+  const [conversations, setConversations] = useState<ConversationSummary[]>([]);
   const [turns, setTurns] = useState<ChatTurn[]>([]);
   const [pendingProposal, setPendingProposal] = useState<Proposal | null>(null);
   const [input, setInput] = useState("");
@@ -80,16 +90,41 @@ export function AgentChatView() {
   const [selectedProvider, setSelectedProvider] = useState("");
   const [modelOptions, setModelOptions] = useState<Array<{ provider: string; label: string }>>([]);
   const [startupAttempt, setStartupAttempt] = useState(0);
+  const [loadingConversation, setLoadingConversation] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     let cancelled = false;
     setError(null);
-    void Promise.all([desktopClient.createAgentConversation(), desktopClient.aiProviderStatus()])
-      .then(([conversation, models]) => {
+    void Promise.all([desktopClient.listAgentConversations(), desktopClient.aiProviderStatus()])
+      .then(async ([conversationList, models]) => {
         if (cancelled) return;
-        if (conversation.ok) setConversationId(conversation.data.id);
-        else setError("The Agent service could not start a conversation. Retry in a moment.");
+        if (!conversationList.ok) {
+          setError("The Agent service could not load conversation history. Retry in a moment.");
+        } else {
+          setConversations(conversationList.data.conversations);
+          const mostRecent = conversationList.data.conversations[0];
+          if (mostRecent) {
+            const conversation = await desktopClient.getAgentConversation(mostRecent.id);
+            if (cancelled) return;
+            if (conversation.ok) {
+              setConversationId(conversation.data.id);
+              setTurns(conversation.data.turns.filter((turn): turn is typeof turn & { role: ChatTurn["role"] } => turn.role === "user" || turn.role === "assistant" || turn.role === "tool_result"));
+              setPendingProposal([...conversation.data.actions].reverse().find((action) => action.status === "proposed") ?? null);
+            } else {
+              setError("The most recent Agent conversation could not be reopened.");
+            }
+          } else {
+            const created = await desktopClient.createAgentConversation();
+            if (cancelled) return;
+            if (created.ok) {
+              setConversationId(created.data.id);
+              setConversations([{ ...created.data, turnCount: 0, updatedAt: created.data.createdAt }]);
+            } else {
+              setError("The Agent service could not start a conversation. Retry in a moment.");
+            }
+          }
+        }
         if (models.ok) {
           const status = normalizeAiProviderStatus(models.data);
           if (!status) {
@@ -110,6 +145,45 @@ export function AgentChatView() {
       });
     return () => { cancelled = true; };
   }, [startupAttempt]);
+
+  async function openConversation(id: string) {
+    if (id === conversationId || sending || decidingId) return;
+    setLoadingConversation(true);
+    setError(null);
+    try {
+      const result = await desktopClient.getAgentConversation(id);
+      if (!result.ok) {
+        setError(result.error);
+        return;
+      }
+      setConversationId(result.data.id);
+      setTurns(result.data.turns.filter((turn): turn is typeof turn & { role: ChatTurn["role"] } => turn.role === "user" || turn.role === "assistant" || turn.role === "tool_result"));
+      setPendingProposal([...result.data.actions].reverse().find((action) => action.status === "proposed") ?? null);
+    } finally {
+      setLoadingConversation(false);
+    }
+  }
+
+  async function newConversation() {
+    if (sending || decidingId) return;
+    setLoadingConversation(true);
+    setError(null);
+    try {
+      const result = await desktopClient.createAgentConversation();
+      if (!result.ok) {
+        setError(result.error);
+        return;
+      }
+      const summary: ConversationSummary = { ...result.data, turnCount: 0, updatedAt: result.data.createdAt };
+      setConversations((current) => [summary, ...current]);
+      setConversationId(result.data.id);
+      setTurns([]);
+      setPendingProposal(null);
+      setInput("");
+    } finally {
+      setLoadingConversation(false);
+    }
+  }
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
@@ -133,6 +207,17 @@ export function AgentChatView() {
       }
       setTurns((prev) => [...prev, { id: `local_${Date.now()}_r`, role: "assistant", content: result.data.reply }]);
       setPendingProposal(result.data.proposal && result.data.proposal.status === "proposed" ? result.data.proposal : null);
+      setConversations((current) => {
+        const selected = current.find((conversation) => conversation.id === conversationId);
+        if (!selected) return current;
+        const updated = {
+          ...selected,
+          title: selected.title ?? message.replace(/\s+/g, " ").slice(0, 80),
+          turnCount: selected.turnCount + 2,
+          updatedAt: new Date().toISOString(),
+        };
+        return [updated, ...current.filter((conversation) => conversation.id !== conversationId)];
+      });
     } finally {
       setSending(false);
     }
@@ -166,6 +251,28 @@ export function AgentChatView() {
 
   return (
     <div className="flex-1 flex flex-col min-h-0 bg-axiom-bg">
+      <div className="flex items-center gap-3 border-b border-white/[0.06] px-8 py-3">
+        <label className="flex min-w-0 flex-1 items-center gap-2 text-[11px] text-zinc-500">
+          <span className="shrink-0">Conversation</span>
+          <select
+            aria-label="Agent conversation"
+            value={conversationId ?? ""}
+            onChange={(event) => void openConversation(event.target.value)}
+            disabled={loadingConversation || sending || Boolean(decidingId) || conversations.length === 0}
+            className="min-w-0 max-w-md flex-1 truncate rounded-md border border-white/10 bg-[#151719] px-2.5 py-1.5 text-xs text-zinc-300 outline-none focus:border-white/25 disabled:opacity-50"
+          >
+            {conversations.length === 0 && <option value="">No conversations yet</option>}
+            {conversations.map((conversation) => (
+              <option key={conversation.id} value={conversation.id}>
+                {conversation.title || "New conversation"}
+              </option>
+            ))}
+          </select>
+        </label>
+        <button type="button" onClick={() => void newConversation()} disabled={loadingConversation || sending || Boolean(decidingId)} className="shrink-0 rounded-lg border border-white/10 px-3 py-2 text-xs text-zinc-200 hover:bg-white/[0.06] disabled:opacity-50">
+          {loadingConversation ? "Loading…" : "New chat"}
+        </button>
+      </div>
       <div ref={scrollRef} className="flex-1 overflow-y-auto px-8 py-8">
         <div className="max-w-3xl mx-auto space-y-5">
           {turns.length === 0 && (
