@@ -38,10 +38,17 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     return NextResponse.json({ ok: false, error: "already_decided", hint: `This proposal is already ${proposal.status}.` }, { status: 409 });
   }
 
-  await prisma.agentActionProposal.update({
-    where: { id },
+  // Claim the proposal with a compare-and-set transition. The earlier read is
+  // only for the payload and friendly error; this conditional update is the
+  // authority boundary that prevents concurrent approve/reject requests from
+  // executing the same external action twice.
+  const claim = await prisma.agentActionProposal.updateMany({
+    where: { id, organizationId, status: "proposed" },
     data: { status: "approved", decidedByUserId: String(session.userId), decidedAt: new Date() },
   });
+  if (claim.count !== 1) {
+    return NextResponse.json({ ok: false, error: "already_decided", hint: "Another decision already claimed this proposal." }, { status: 409 });
+  }
 
   const result = await executeApprovedAction(
     prisma as unknown as ActionExecutionRepo,

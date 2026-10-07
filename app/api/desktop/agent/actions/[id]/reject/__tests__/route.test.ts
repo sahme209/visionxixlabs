@@ -4,14 +4,14 @@ import { NextRequest } from "next/server";
 const mocks = vi.hoisted(() => ({
   resolveRequestDesktopSession: vi.fn(),
   findFirstProposal: vi.fn(),
-  updateProposal: vi.fn(),
+  updateManyProposals: vi.fn(),
   createTurn: vi.fn(async () => ({})),
 }));
 
 vi.mock("@/lib/desktop/resolveRequestDesktopSession", () => ({ resolveRequestDesktopSession: mocks.resolveRequestDesktopSession }));
 vi.mock("@/lib/db", () => ({
   prisma: {
-    agentActionProposal: { findFirst: mocks.findFirstProposal, update: mocks.updateProposal },
+    agentActionProposal: { findFirst: mocks.findFirstProposal, updateMany: mocks.updateManyProposals },
     agentConversationTurn: { create: mocks.createTurn },
   },
 }));
@@ -28,7 +28,7 @@ describe("POST /api/desktop/agent/actions/[id]/reject", () => {
     vi.clearAllMocks();
     mocks.resolveRequestDesktopSession.mockResolvedValue(session);
     mocks.findFirstProposal.mockResolvedValue(proposal);
-    mocks.updateProposal.mockImplementation(async ({ data }) => ({ ...proposal, ...data }));
+    mocks.updateManyProposals.mockResolvedValue({ count: 1 });
   });
 
   it("requires a desktop session", async () => {
@@ -61,5 +61,16 @@ describe("POST /api/desktop/agent/actions/[id]/reject", () => {
     expect(mocks.createTurn).toHaveBeenCalledWith(expect.objectContaining({
       data: expect.objectContaining({ role: "tool_result", content: expect.stringContaining("rejected") }),
     }));
+  });
+
+  it("does not overwrite approval when another request wins the atomic decision claim", async () => {
+    mocks.updateManyProposals.mockResolvedValue({ count: 0 });
+    const { POST } = await import("../route");
+    const res = await POST(request(), params);
+    expect(res.status).toBe(409);
+    expect(mocks.updateManyProposals).toHaveBeenCalledWith(expect.objectContaining({
+      where: { id: "ap_1", organizationId: "org-1", status: "proposed" },
+    }));
+    expect(mocks.createTurn).not.toHaveBeenCalled();
   });
 });
