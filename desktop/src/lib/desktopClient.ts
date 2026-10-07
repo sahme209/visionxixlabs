@@ -768,6 +768,24 @@ export class DesktopClient {
     return this.post(`/api/desktop/agent/actions/${encodeURIComponent(actionId)}/reject`, {});
   }
 
+  listRepositories(): Promise<ApiResult<{ repositories: Array<{ id: string; displayName: string; provider: string; defaultBranch: string }> }>> {
+    return this.get("/api/desktop/repositories");
+  }
+
+  registerRepository(input: { provider: string; remoteOwner: string; remoteName: string }): Promise<ApiResult<{ id: string; displayName: string; created: boolean }>> {
+    return this.post("/api/desktop/repositories", input);
+  }
+
+  listBranchPolicies(): Promise<ApiResult<{
+    policies: Array<{ id: string; repositoryId: string; environmentId: string; branchPattern: string; requirePrLink: boolean; requireReleaseTag: boolean; requireCodeowners: boolean; requireChangeTicket: boolean }>;
+  }>> {
+    return this.get("/api/desktop/branch-policies");
+  }
+
+  createBranchPolicy(input: { repositoryId: string; environmentId: string; branchPattern: string; requirePrLink?: boolean; requireReleaseTag?: boolean; requireCodeowners?: boolean; requireChangeTicket?: boolean }): Promise<ApiResult<{ id: string }>> {
+    return this.post("/api/desktop/branch-policies", input);
+  }
+
   listIdentityProviders(): Promise<ApiResult<{
     providers: Array<{ id: string; protocol: string; status: string; issuerOrEntityId: string; managedDomains: string[]; requireMfaClaim: boolean; revokedAt: string | null }>;
   }>> {

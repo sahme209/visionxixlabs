@@ -1229,6 +1229,30 @@ model AddOnPurchase {
 }
 
 // ---------------------------------------------------------------------------
+// Scheduled compliance control checks — lib/compliance/scheduledControlChecks.ts.
+//
+// Platform-level, not tenant-scoped: these verify runtime facts about the
+// service itself (is a required secret actually set, at the right
+// strength) that CONTROL_REGISTRY's "config_value" evidence kind claims
+// but that only a running check — not a code review — can confirm stays
+// true over time. Deliberately scoped to checks that only ever read
+// config/environment state; nothing here probes a live security boundary
+// (e.g. attempting a cross-tenant read to "test" isolation), which would
+// be a materially different, riskier kind of automation.
+// ---------------------------------------------------------------------------
+model ComplianceControlCheckRun {
+  id         String   @id @default(cuid())
+  /// Matches a ComplianceControl.id in lib/compliance/controlRegistry.ts.
+  controlId  String
+  /// pass | fail | error (the check itself couldn't run).
+  status     String
+  detail     String
+  checkedAt  DateTime @default(now())
+
+  @@index([controlId, checkedAt])
+}
+
+// ---------------------------------------------------------------------------
 // AI coding loop eval harness — Phase 389.
 // EvalRun is one batch; EvalCase is one synthetic task within the batch.
 // Without this, every model update / dependency bump / prompt tweak breaks

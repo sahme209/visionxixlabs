@@ -2,6 +2,7 @@ import { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
 import GitHubProvider from "next-auth/providers/github";
+import CognitoProvider from "next-auth/providers/cognito";
 import { compare } from "bcryptjs";
 import { prisma } from "./db";
 import { ensurePersonalWorkspaceMembership } from "./auth/ensurePersonalWorkspaceMembership";
@@ -10,6 +11,9 @@ import { record as recordAudit } from "./audit/secureAudit";
 import { id as idFactory, newCorrelationId } from "./domain/ids";
 import { deriveWorkspaceIdFromEmail } from "./auth/workspaceId";
 import { createLogger } from "./observability/logger";
+import { decodeIdTokenClaims } from "./identity/decodeIdTokenClaims";
+import { evaluateSsoSignIn, type SsoSignInRepo } from "./identity/ssoSignInGate";
+import { ALL_ORG_ROLES } from "./identity/identityProviderResponder";
 
 const log = createLogger("auth.membershipBootstrap");
 
@@ -80,6 +84,24 @@ function buildProviders(): NextAuthOptions["providers"] {
       })
     );
   }
+  // Enterprise identity, phase 2's first real IdP — see
+  // docs/ENTERPRISE_IDENTITY_DESIGN.md. This is a single, fixed Cognito
+  // user pool today (one "Sign in with Cognito" button), not yet the
+  // design doc's per-tenant domain-routed TenantIdentityProvider lookup
+  // or fail-closed role mapping — those still require building the
+  // TenantIdentityProvider-driven routing on top of this real, working
+  // OIDC round-trip. Issuer is the pool's own discovery URL
+  // (https://cognito-idp.<region>.amazonaws.com/<poolId>); NextAuth
+  // fetches /.well-known/openid-configuration from it automatically.
+  if (process.env.COGNITO_CLIENT_ID && process.env.COGNITO_CLIENT_SECRET && process.env.COGNITO_ISSUER) {
+    providers.push(
+      CognitoProvider({
+        clientId: process.env.COGNITO_CLIENT_ID,
+        clientSecret: process.env.COGNITO_CLIENT_SECRET,
+        issuer: process.env.COGNITO_ISSUER,
+      })
+    );
+  }
   return providers;
 }
 
@@ -88,6 +110,7 @@ function buildProviders(): NextAuthOptions["providers"] {
 export const enabledOAuthProviders = {
   google: Boolean(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET),
   github: Boolean(process.env.GITHUB_CLIENT_ID && process.env.GITHUB_CLIENT_SECRET),
+  cognito: Boolean(process.env.COGNITO_CLIENT_ID && process.env.COGNITO_CLIENT_SECRET && process.env.COGNITO_ISSUER),
 };
 
 /**
@@ -126,9 +149,9 @@ export const authOptions: NextAuthOptions = {
   pages: { signIn: "/auth/signin" },
   callbacks: {
     async signIn({ user, account }) {
-      // For OAuth sign-ins (Google/GitHub), ensure a User row exists.
-      // Credentials provider handled inside its own authorize().
-      if (account?.provider === "google" || account?.provider === "github") {
+      // For OAuth/OIDC sign-ins (Google/GitHub/Cognito), ensure a User row
+      // exists. Credentials provider handled inside its own authorize().
+      if (account?.provider === "google" || account?.provider === "github" || account?.provider === "cognito") {
         if (!user.email) {
           // No email, no derivable tenant — nothing to scope an audit
           // record to, and nothing about an account/tenant to leak either
@@ -161,6 +184,62 @@ export const authOptions: NextAuthOptions = {
           console.error("[NextAuth signIn] identity upsert failed:", err);
           await recordSignInDenied({ email: normalizedEmail, provider: account.provider, reasonCode: "identity_store_unavailable" });
           return false;
+        }
+
+        // Enterprise identity, phase 2's domain-routing + role-mapping +
+        // MFA-claim steps (docs/ENTERPRISE_IDENTITY_DESIGN.md) — only
+        // reachable today via the one real IdP connection (Cognito), since
+        // Google/GitHub are personal-login providers, not an enterprise
+        // tenant's own IdP. A matching TenantIdentityProvider is a hard
+        // gate (fail closed on no role mapping / missing required MFA) —
+        // everything else below is the existing, unmodified fallback.
+        if (account.provider === "cognito" && account.id_token) {
+          const claims = decodeIdTokenClaims(account.id_token);
+          if (claims) {
+            let gate;
+            try {
+              gate = await evaluateSsoSignIn(prisma as unknown as SsoSignInRepo, { email: normalizedEmail, claims });
+            } catch (err) {
+              console.error("[NextAuth signIn] SSO provider lookup failed:", err);
+              await recordSignInDenied({ email: normalizedEmail, provider: account.provider, reasonCode: "sso.provider_lookup_unavailable" });
+              return false;
+            }
+            if (gate.kind === "denied") {
+              await recordSignInDenied({ email: normalizedEmail, provider: account.provider, reasonCode: gate.reason });
+              return false;
+            }
+            if (gate.kind === "matched") {
+              // Defense in depth: buildIdentityProviderCreateResponse already
+              // validates every rule's role at config time, but this guards
+              // against the config table being edited some other way —
+              // fail closed rather than hand Prisma a value its OrgRole
+              // enum would reject.
+              if (!(ALL_ORG_ROLES as readonly string[]).includes(gate.role)) {
+                console.error(`[NextAuth signIn] matched SSO role "${gate.role}" is not a valid OrgRole — denying.`);
+                await recordSignInDenied({ email: normalizedEmail, provider: account.provider, reasonCode: "sso.role_mapping_invalid" });
+                return false;
+              }
+              const mappedRole = gate.role as (typeof ALL_ORG_ROLES)[number];
+              try {
+                await prisma.orgMembership.upsert({
+                  where: { userId_organizationId: { userId: dbUser.id, organizationId: gate.organizationId } },
+                  create: { userId: dbUser.id, organizationId: gate.organizationId, role: mappedRole, acceptedAt: new Date() },
+                  update: { role: mappedRole },
+                });
+              } catch (err) {
+                log.error("SSO membership upsert failed", {
+                  path: "signIn", userId: dbUser.id, organizationId: gate.organizationId,
+                  errorMessage: err instanceof Error ? err.message : String(err),
+                });
+                await recordSignInDenied({ email: normalizedEmail, provider: account.provider, reasonCode: "sso.membership_store_unavailable" });
+                return false;
+              }
+              return true;
+            }
+            // gate.kind === "no_match" — this email's domain isn't bound to
+            // any tenant's IdP. Falls through to the personal-workspace
+            // bootstrap below, same as any other sign-in.
+          }
         }
 
         // Workspace membership bootstrap is a best-effort side effect, NOT
