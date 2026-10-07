@@ -85,9 +85,9 @@ describe("executeApprovedAction", () => {
   });
 
   it("trigger_aws_deploy dispatches the workflow with the target's own config", async () => {
-    mocks.dispatchWorkflow.mockResolvedValue({ ok: true, data: {} });
+    mocks.dispatchWorkflow.mockResolvedValue({ ok: true, data: { workflowRunId: "123", runUrl: "https://api.github.test/runs/123", htmlUrl: "https://github.test/runs/123" } });
     const result = await executeApprovedAction(repo, "org-1", "trigger_aws_deploy", { repositoryFullName: "acme/widgets", environmentId: "env_1" });
-    expect(result).toEqual({ ok: true, result: { dispatched: true } });
+    expect(result).toEqual({ ok: true, result: { dispatched: true, execution: null, trackingAvailable: false } });
     expect(mocks.dispatchWorkflow).toHaveBeenCalledWith(expect.objectContaining({
       inputs: { role_arn: "arn:aws:iam::123:role/x", region: "us-east-2", cluster: "c", service: "s" },
     }));

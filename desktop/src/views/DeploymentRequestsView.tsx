@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState, type FormEvent } from "react";
 import { ExternalLink, ViewShell } from "../components/Primitives";
-import { desktopClient } from "../lib/desktopClient";
+import { desktopClient, type DeploymentExecution } from "../lib/desktopClient";
 
 interface RequestSummary {
   id: string;
@@ -268,6 +268,12 @@ export function DeploymentRequestsView() {
   const [collectingGitHubEvidenceId, setCollectingGitHubEvidenceId] = useState<string>();
   const [githubEvidence, setGitHubEvidence] = useState<Record<string, GitHubReleaseEvidence>>({});
   const [githubEvidenceErrors, setGitHubEvidenceErrors] = useState<Record<string, string>>({});
+  const [executions, setExecutions] = useState<DeploymentExecution[]>([]);
+
+  const loadExecutions = useCallback(async () => {
+    const result = await desktopClient.listDeploymentExecutions();
+    if (result.ok) setExecutions(result.data.executions);
+  }, []);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -278,7 +284,8 @@ export function DeploymentRequestsView() {
       setLastSuccessfulLoadAt(new Date());
     } else setLoadError(result.error);
     setLoading(false);
-  }, []);
+    void loadExecutions();
+  }, [loadExecutions]);
 
   useEffect(() => {
     let cancelled = false;
@@ -292,6 +299,30 @@ export function DeploymentRequestsView() {
     });
     return () => { cancelled = true; };
   }, []);
+
+  useEffect(() => { void loadExecutions(); }, [loadExecutions]);
+
+  const activeExecutionKey = executions
+    .filter((execution) => execution.status !== "completed" && execution.status !== "tracking_unavailable")
+    .map((execution) => `${execution.id}:${execution.status}`)
+    .join("|");
+
+  useEffect(() => {
+    const pending = executions.filter((execution) => execution.status !== "completed" && execution.status !== "tracking_unavailable");
+    if (!pending.length) return;
+    let cancelled = false;
+    const observe = async () => {
+      const results = await Promise.all(pending.map((execution) => desktopClient.observeDeploymentExecution(execution.id)));
+      if (cancelled) return;
+      const updates = new Map(results.filter((result) => result.ok).map((result) => [result.data.id, result.data]));
+      if (updates.size) setExecutions((current) => current.map((execution) => updates.get(execution.id) ?? execution));
+    };
+    void observe();
+    const timer = window.setInterval(() => void observe(), 5000);
+    return () => { cancelled = true; window.clearInterval(timer); };
+    // The key changes only when the set of active runs or their status changes.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeExecutionKey]);
 
   async function generatePlaybook(requestId: string) {
     setGeneratingRequestId(requestId);
@@ -437,6 +468,37 @@ export function DeploymentRequestsView() {
             void load();
           }}
         />
+      )}
+
+      {executions.length > 0 && (
+        <section className="glass-card p-4" aria-label="Live deployments">
+          <div className="flex items-center justify-between gap-3">
+            <div>
+              <p className="text-sm font-semibold text-white">Live deployment evidence</p>
+              <p className="mt-0.5 text-[11px] text-zinc-500">Exact GitHub workflow runs, validation outcomes, and automatic rollback evidence.</p>
+            </div>
+            <span className="text-[10px] font-mono uppercase tracking-wider text-zinc-500">Latest {Math.min(executions.length, 5)}</span>
+          </div>
+          <div className="mt-3 space-y-2">
+            {executions.slice(0, 5).map((execution) => (
+              <div key={execution.id} className="flex items-center justify-between gap-3 rounded-lg border border-white/[0.06] bg-black/15 px-3 py-2.5">
+                <div className="min-w-0">
+                  <p className="truncate text-xs font-medium text-zinc-200">{execution.repositoryFullName}</p>
+                  <p className="mt-1 text-[10px] text-zinc-500">
+                    {execution.status === "completed" ? `Completed · ${execution.conclusion ?? "unknown"}` : execution.status.replaceAll("_", " ")}
+                    {execution.rollbackStatus !== "not_started" ? ` · rollback ${execution.rollbackStatus.replaceAll("_", " ")}` : ""}
+                    {` · ${new Date(execution.createdAt).toLocaleString()}`}
+                  </p>
+                </div>
+                {execution.workflowUrl && (
+                  <ExternalLink href={execution.workflowUrl} className="shrink-0 text-[11px] font-medium text-zinc-300 hover:text-white">
+                    Evidence ↗
+                  </ExternalLink>
+                )}
+              </div>
+            ))}
+          </div>
+        </section>
       )}
 
       {lastSuccessfulLoadAt && (

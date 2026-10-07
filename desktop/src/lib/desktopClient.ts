@@ -53,6 +53,22 @@ export interface AgentSkillCatalogItem {
   updatedAt: string | null;
 }
 
+export interface DeploymentExecution {
+  id: string;
+  environmentId: string;
+  repositoryFullName: string;
+  workflowRunId: string | null;
+  workflowUrl: string | null;
+  source: string;
+  status: string;
+  conclusion: string | null;
+  rollbackStatus: string;
+  lastObservedAt: string | null;
+  completedAt: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
 interface LegacyApiErrorBody {
   error?: string | { userMessage?: string };
   message?: string;
@@ -691,8 +707,17 @@ export class DesktopClient {
     return this.post("/api/desktop/environments/deployment-target", input);
   }
 
-  triggerAwsDeploy(input: { repositoryFullName: string; environmentId: string }): Promise<ApiResult<{ dispatched: boolean }>> {
+  triggerAwsDeploy(input: { repositoryFullName: string; environmentId: string }): Promise<ApiResult<{ dispatched: boolean; execution: DeploymentExecution | null; trackingAvailable: boolean }>> {
     return this.post("/api/desktop/environments/deploy", input);
+  }
+
+  listDeploymentExecutions(environmentId?: string): Promise<ApiResult<{ executions: DeploymentExecution[] }>> {
+    const query = environmentId ? `?environmentId=${encodeURIComponent(environmentId)}` : "";
+    return this.get(`/api/desktop/environments/deployments${query}`);
+  }
+
+  observeDeploymentExecution(id: string): Promise<ApiResult<DeploymentExecution>> {
+    return this.get(`/api/desktop/environments/deployments/${encodeURIComponent(id)}`);
   }
 
   createAgentConversation(): Promise<ApiResult<{ id: string; title: string | null; createdAt: string }>> {

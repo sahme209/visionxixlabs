@@ -27,7 +27,7 @@ export function isSafeRepositoryPath(path: string): boolean {
 async function gh<T>(
   path: string,
   token: string,
-  init: { method?: string; body?: unknown } = {},
+  init: { method?: string; body?: unknown; apiVersion?: string } = {},
 ): Promise<GithubWriteResult<T>> {
   try {
     const response = await fetch(`${GITHUB_API}${path}`, {
@@ -35,7 +35,7 @@ async function gh<T>(
       headers: {
         Accept: "application/vnd.github+json",
         Authorization: `Bearer ${token}`,
-        "X-GitHub-Api-Version": "2022-11-28",
+        "X-GitHub-Api-Version": init.apiVersion ?? "2022-11-28",
         ...(init.body ? { "Content-Type": "application/json" } : {}),
       },
       body: init.body ? JSON.stringify(init.body) : undefined,
@@ -189,19 +189,83 @@ export interface DispatchWorkflowInput {
 /**
  * Triggers a workflow_dispatch run on the tenant's own repo. Requires the
  * installation token to carry `actions: write` — see
- * githubAppManifest.ts's GITHUB_APP_MANIFEST_PERMISSIONS. GitHub returns
- * 204 No Content on success and gives back no run ID synchronously; the
- * caller has no handle to poll beyond listing recent runs for this
- * workflow file.
+ * githubAppManifest.ts's GITHUB_APP_MANIFEST_PERMISSIONS. GitHub's
+ * 2026-03-10 API returns the exact run identity. `null` fields preserve
+ * compatibility with GitHub Enterprise instances that still return 204.
  */
-export async function dispatchWorkflow(input: DispatchWorkflowInput): Promise<GithubWriteResult<Record<string, never>>> {
-  const result = await gh<Record<string, never>>(
+export interface DispatchedWorkflowRun {
+  workflowRunId: string | null;
+  runUrl: string | null;
+  htmlUrl: string | null;
+}
+
+export async function dispatchWorkflow(input: DispatchWorkflowInput): Promise<GithubWriteResult<DispatchedWorkflowRun>> {
+  const result = await gh<{ workflow_run_id?: number | string; run_url?: string; html_url?: string }>(
     `/repos/${encodeURIComponent(input.owner)}/${encodeURIComponent(input.repo)}/actions/workflows/${encodeURIComponent(input.workflowFile)}/dispatches`,
     input.installationToken,
-    { method: "POST", body: { ref: input.ref, inputs: input.inputs } },
+    { method: "POST", body: { ref: input.ref, inputs: input.inputs }, apiVersion: "2026-03-10" },
   );
   if (!result.ok) return { ok: false, error: `workflow_dispatch_failed: ${result.error}` };
-  return result;
+  return {
+    ok: true,
+    data: {
+      workflowRunId: result.data.workflow_run_id === undefined ? null : String(result.data.workflow_run_id),
+      runUrl: result.data.run_url ?? null,
+      htmlUrl: result.data.html_url ?? null,
+    },
+  };
+}
+
+export interface WorkflowRunObservation {
+  workflowRunId: string;
+  status: string;
+  conclusion: string | null;
+  htmlUrl: string;
+  createdAt: string;
+  startedAt: string | null;
+  updatedAt: string;
+  rollback: "not_started" | "in_progress" | "succeeded" | "failed" | "unknown";
+}
+
+/** Reads one exact run plus its step outcomes so rollback evidence is explicit. */
+export async function getWorkflowRun(input: {
+  owner: string;
+  repo: string;
+  workflowRunId: string;
+  installationToken: string;
+}): Promise<GithubWriteResult<WorkflowRunObservation>> {
+  if (!/^\d+$/.test(input.workflowRunId)) return { ok: false, error: "invalid_workflow_run_id" };
+  const path = `/repos/${encodeURIComponent(input.owner)}/${encodeURIComponent(input.repo)}/actions/runs/${input.workflowRunId}`;
+  const [run, jobs] = await Promise.all([
+    gh<{ id: number | string; status: string; conclusion: string | null; html_url: string; created_at: string; run_started_at?: string | null; updated_at: string }>(path, input.installationToken),
+    gh<{ jobs?: Array<{ steps?: Array<{ name?: string; status?: string; conclusion?: string | null }> }> }>(`${path}/jobs?per_page=100`, input.installationToken),
+  ]);
+  if (!run.ok) return run;
+  const rollbackStep = jobs.ok
+    ? jobs.data.jobs?.flatMap((job) => job.steps ?? []).find((step) => step.name?.startsWith("Roll back"))
+    : undefined;
+  const rollback: WorkflowRunObservation["rollback"] = !jobs.ok
+    ? "unknown"
+    : !rollbackStep || rollbackStep.conclusion === "skipped"
+      ? "not_started"
+      : rollbackStep.status !== "completed"
+        ? "in_progress"
+        : rollbackStep.conclusion === "success"
+          ? "succeeded"
+          : "failed";
+  return {
+    ok: true,
+    data: {
+      workflowRunId: String(run.data.id),
+      status: run.data.status,
+      conclusion: run.data.conclusion,
+      htmlUrl: run.data.html_url,
+      createdAt: run.data.created_at,
+      startedAt: run.data.run_started_at ?? null,
+      updatedAt: run.data.updated_at,
+      rollback,
+    },
+  };
 }
 
 export interface LatestWorkflowRunInput {
