@@ -5,6 +5,7 @@ const mocks = vi.hoisted(() => ({
   resolveRequestDesktopSession: vi.fn(),
   findFirstProposal: vi.fn(),
   updateProposal: vi.fn(),
+  updateManyProposals: vi.fn(),
   createTurn: vi.fn(async () => ({})),
   executeApprovedAction: vi.fn(),
 }));
@@ -12,7 +13,7 @@ const mocks = vi.hoisted(() => ({
 vi.mock("@/lib/desktop/resolveRequestDesktopSession", () => ({ resolveRequestDesktopSession: mocks.resolveRequestDesktopSession }));
 vi.mock("@/lib/db", () => ({
   prisma: {
-    agentActionProposal: { findFirst: mocks.findFirstProposal, update: mocks.updateProposal },
+    agentActionProposal: { findFirst: mocks.findFirstProposal, update: mocks.updateProposal, updateMany: mocks.updateManyProposals },
     agentConversationTurn: { create: mocks.createTurn },
   },
 }));
@@ -30,6 +31,7 @@ describe("POST /api/desktop/agent/actions/[id]/approve", () => {
     vi.clearAllMocks();
     mocks.resolveRequestDesktopSession.mockResolvedValue(session);
     mocks.findFirstProposal.mockResolvedValue(proposal);
+    mocks.updateManyProposals.mockResolvedValue({ count: 1 });
     mocks.updateProposal.mockImplementation(async ({ data }) => ({ ...proposal, ...data }));
   });
 
@@ -63,6 +65,18 @@ describe("POST /api/desktop/agent/actions/[id]/approve", () => {
     expect(res.status).toBe(200);
     expect(body.data.status).toBe("executed");
     expect(mocks.executeApprovedAction).toHaveBeenCalledWith(expect.anything(), "org-1", "open_github_pull_request", {}, "user-1");
+  });
+
+  it("does not execute when another request wins the atomic approval claim", async () => {
+    mocks.updateManyProposals.mockResolvedValue({ count: 0 });
+    const { POST } = await import("../route");
+    const res = await POST(request(), params);
+    expect(res.status).toBe(409);
+    expect(mocks.updateManyProposals).toHaveBeenCalledWith(expect.objectContaining({
+      where: { id: "ap_1", organizationId: "org-1", status: "proposed" },
+    }));
+    expect(mocks.executeApprovedAction).not.toHaveBeenCalled();
+    expect(mocks.createTurn).not.toHaveBeenCalled();
   });
 
   it("marks the proposal failed, not silently swallowed, when GitHub rejects the action", async () => {

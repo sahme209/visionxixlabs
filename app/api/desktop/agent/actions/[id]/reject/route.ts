@@ -34,14 +34,17 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     return NextResponse.json({ ok: false, error: "already_decided", hint: `This proposal is already ${proposal.status}.` }, { status: 409 });
   }
 
-  const final = await prisma.agentActionProposal.update({
-    where: { id },
+  const claim = await prisma.agentActionProposal.updateMany({
+    where: { id, organizationId, status: "proposed" },
     data: { status: "rejected", decidedByUserId: String(session.userId), decidedAt: new Date() },
   });
+  if (claim.count !== 1) {
+    return NextResponse.json({ ok: false, error: "already_decided", hint: "Another decision already claimed this proposal." }, { status: 409 });
+  }
 
   await prisma.agentConversationTurn.create({
     data: { conversationId: proposal.conversationId, role: "tool_result", actionProposalId: proposal.id, content: `${proposal.toolName} was rejected.` },
   });
 
-  return NextResponse.json({ ok: true, data: { id: final.id, status: final.status } });
+  return NextResponse.json({ ok: true, data: { id: proposal.id, status: "rejected" } });
 }

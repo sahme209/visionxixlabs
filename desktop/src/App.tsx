@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Sidebar } from "./components/Sidebar";
 import { TopBar } from "./components/TopBar";
+import { WorkspaceViewBoundary } from "./components/WorkspaceViewBoundary";
 import { AgentChatView } from "./views/AgentChatView";
 import { DeploymentRequestsView } from "./views/DeploymentRequestsView";
 import { DocsView } from "./views/DocsView";
@@ -11,6 +12,7 @@ import { desktopClient, type VerifiedDesktopIdentity } from "./lib/desktopClient
 import { clearApiKey } from "./lib/apiKeyStore";
 import { clearAuthSession } from "./lib/authSession";
 import { readDesktopPreferences } from "./lib/preferences";
+import { useNativeMenuActions } from "./lib/useNativeMenuActions";
 
 /** Only verified, customer-reachable desktop destinations belong here. */
 export type CustomerView = "agent" | "deployment-requests" | "docs" | "settings";
@@ -106,6 +108,7 @@ export default function App() {
 function AuthenticatedWorkspace({ identity }: { identity: VerifiedDesktopIdentity }) {
   const [activeView, setActiveView] = useState<CustomerView>("agent");
   const [booted, setBooted] = useState(false);
+  useNativeMenuActions(setActiveView);
 
   useEffect(() => {
     const timer = setTimeout(() => setBooted(true), 250);
@@ -119,12 +122,12 @@ function AuthenticatedWorkspace({ identity }: { identity: VerifiedDesktopIdentit
       <Sidebar activeView={activeView} onNavigate={setActiveView} />
       <main className="flex-1 flex flex-col min-w-0 min-h-0">
         <TopBar activeView={activeView} identity={identity} />
-        <div className="flex-1 min-h-0 flex flex-col">
+        <WorkspaceViewBoundary key={activeView} onReturnToAgent={() => setActiveView("agent")}>
           {activeView === "agent" && <AgentChatView />}
           {activeView === "deployment-requests" && <DeploymentRequestsView />}
           {activeView === "docs" && <DocsView />}
           {activeView === "settings" && <SettingsView identity={identity} />}
-        </div>
+        </WorkspaceViewBoundary>
       </main>
     </div>
   );

@@ -77,38 +77,24 @@ pub fn build<R: Runtime>(app: &AppHandle<R>) -> tauri::Result<Menu<R>> {
     let view_submenu = SubmenuBuilder::new(app, "View")
         .item(&MenuItem::with_id(
             app,
-            "menu_view_start_here",
-            "Start Here",
-            true,
-            Some("CmdOrCtrl+0"),
-        )?)
-        .item(&MenuItem::with_id(
-            app,
-            "menu_view_dashboard",
-            "Dashboard",
+            "menu_view_agent",
+            "Agent",
             true,
             Some("CmdOrCtrl+1"),
         )?)
         .item(&MenuItem::with_id(
             app,
-            "menu_view_approvals",
-            "Approvals",
+            "menu_view_deployment_requests",
+            "Release workspace",
             true,
             Some("CmdOrCtrl+2"),
         )?)
         .item(&MenuItem::with_id(
             app,
-            "menu_view_workflows",
-            "Workflows",
+            "menu_view_docs",
+            "Documentation",
             true,
             Some("CmdOrCtrl+3"),
-        )?)
-        .item(&MenuItem::with_id(
-            app,
-            "menu_view_audit",
-            "Audit log",
-            true,
-            Some("CmdOrCtrl+4"),
         )?)
         .separator()
         .item(&PredefinedMenuItem::fullscreen(app, None)?)
@@ -153,11 +139,9 @@ const MENU_EVENT: &str = "menu://action";
 pub fn handle_menu_event<R: Runtime>(app: &AppHandle<R>, id: &str) {
     match id {
         "menu_open_settings" => emit(app, "open_settings"),
-        "menu_view_start_here" => emit(app, "view:start-here"),
-        "menu_view_dashboard" => emit(app, "view:dashboard"),
-        "menu_view_approvals" => emit(app, "view:approvals"),
-        "menu_view_workflows" => emit(app, "view:workflows"),
-        "menu_view_audit" => emit(app, "view:audit"),
+        "menu_view_agent" => emit(app, "view:agent"),
+        "menu_view_deployment_requests" => emit(app, "view:deployment-requests"),
+        "menu_view_docs" => emit(app, "view:docs"),
         "menu_help_docs" => open_url(app, "https://visionxixlabs.com/docs"),
         "menu_help_homepage" => open_url(app, "https://visionxixlabs.com"),
         _ => {}

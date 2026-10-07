@@ -22,6 +22,7 @@ import { ViewShell } from "../components/Primitives";
 import { desktopClient, type VerifiedDesktopIdentity } from "../lib/desktopClient";
 import { clearApiKey } from "../lib/apiKeyStore";
 import { clearAuthSession } from "../lib/authSession";
+import { normalizeAiProviderStatus, type ModelPolicy, type ProviderModels } from "../lib/aiProviderStatus";
 import { markNotificationPrefDirty, notifyResult } from "../lib/notifications";
 import {
   readDesktopPreferences,
@@ -311,8 +312,6 @@ const PROVIDER_LABELS: Record<string, string> = {
 };
 
 function ModelsSection() {
-  type ModelPolicy = { enabled: boolean; allowedProviders: string[]; modelSelections: Record<string, string>; fallbackOrder: string[] };
-  type ProviderModels = { provider: string; models: Array<{ id: string; label: string; tier: string }> };
   const [providers, setProviders] = useState<ProviderModels[] | null>(null);
   const [policy, setPolicy] = useState<ModelPolicy | null>(null);
   const [query, setQuery] = useState("");
@@ -321,19 +320,30 @@ function ModelsSection() {
 
   useEffect(() => {
     let cancelled = false;
-    void desktopClient.aiProviderStatus().then((result) => {
-      if (cancelled) return;
-      if (result.ok) {
-        setProviders(result.data.providers);
-        setPolicy(result.data.policy);
-      } else {
-        setLoadError(
-          result.error === "desktop_session_required"
-            ? "Your sign-in needs to refresh. Try signing out and back in."
-            : "Could not load provider availability. Try again later.",
-        );
-      }
-    });
+    void desktopClient.aiProviderStatus()
+      .then((result) => {
+        if (cancelled) return;
+        if (result.ok) {
+          const status = normalizeAiProviderStatus(result.data);
+          if (!status) {
+            setProviders([]);
+            setLoadError("The service returned an unsupported model configuration. Update the app or try again later.");
+            return;
+          }
+          setProviders(status.providers);
+          setPolicy(status.policy);
+          setLoadError(null);
+        } else {
+          setLoadError(
+            result.error === "desktop_session_required"
+              ? "Your sign-in needs to refresh. Try signing out and back in."
+              : "Could not load provider availability. Try again later.",
+          );
+        }
+      })
+      .catch(() => {
+        if (!cancelled) setLoadError("Could not load provider availability. Try again later.");
+      });
     return () => { cancelled = true; };
   }, []);
 
@@ -363,10 +373,20 @@ function ModelsSection() {
         };
     setSavingModel(`${provider}:${modelId}`);
     setLoadError(null);
-    const result = await desktopClient.updateAiProviderPolicy(nextPolicy);
-    if (result.ok) setPolicy(result.data.policy);
-    else setLoadError(result.error === "workspace_admin_required" ? "Only a workspace administrator can change model availability." : result.error);
-    setSavingModel(null);
+    try {
+      const result = await desktopClient.updateAiProviderPolicy(nextPolicy);
+      if (result.ok) {
+        const status = normalizeAiProviderStatus({ providers: providers ?? [], policy: result.data.policy });
+        if (status) setPolicy(status.policy);
+        else setLoadError("The service returned an unsupported model configuration. Your previous selection is unchanged.");
+      } else {
+        setLoadError(result.error === "workspace_admin_required" ? "Only a workspace administrator can change model availability." : result.error);
+      }
+    } catch {
+      setLoadError("Could not save model availability. Try again later.");
+    } finally {
+      setSavingModel(null);
+    }
   }
 
   return <div>
