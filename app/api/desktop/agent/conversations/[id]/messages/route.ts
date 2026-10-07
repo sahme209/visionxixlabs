@@ -18,6 +18,7 @@ import { runDecisionLoop, type ConversationTurnInput } from "@/lib/axiom/agentRu
 import { executeReadOnlyTool, isProdEnvironmentTarget, type ToolExecutionRepo, type ProdEnvironmentCheckRepo } from "@/lib/axiom/agentRuntime/toolExecution";
 import { id as idFactory } from "@/lib/domain/ids";
 import { loadWorkspaceMemory, rememberToolContext, workspaceMemoryPrompt, type WorkspaceMemoryRepo } from "@/lib/axiom/agentRuntime/workspaceMemory";
+import { prepareProposalArgsForReview } from "@/lib/axiom/agentRuntime/proposalReview";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -98,12 +99,18 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
   }
 
   if (outcome.kind === "proposal") {
-    await rememberToolContext(memoryRepo, organizationId, outcome.args).catch(() => undefined);
+    const reviewed = await prepareProposalArgsForReview(organizationId, outcome.toolName, outcome.args);
+    if (!reviewed.ok) {
+      const reply = `I couldn't prepare a trustworthy approval preview, so no action was proposed. ${reviewed.error}`;
+      await prisma.agentConversationTurn.create({ data: { conversationId, role: "assistant", content: reply } });
+      return NextResponse.json({ ok: true, data: { reply, proposal: null } });
+    }
+    await rememberToolContext(memoryRepo, organizationId, reviewed.args).catch(() => undefined);
     await prisma.agentConversationTurn.create({ data: { conversationId, role: "assistant", content: outcome.message } });
     const proposal = await prisma.agentActionProposal.create({
       data: {
         organizationId, conversationId, proposedByUserId: String(session.userId),
-        toolName: outcome.toolName, argsJson: outcome.args as Prisma.InputJsonValue, riskLevel: outcome.riskLevel, status: "proposed",
+        toolName: outcome.toolName, argsJson: reviewed.args as Prisma.InputJsonValue, riskLevel: outcome.riskLevel, status: "proposed",
       },
     });
     return NextResponse.json({

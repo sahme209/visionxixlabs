@@ -8,6 +8,7 @@ const mocks = vi.hoisted(() => ({
   findManyTurns: vi.fn(async () => []),
   createProposal: vi.fn(async () => ({ id: "ap_1", toolName: "open_github_pull_request", argsJson: {}, riskLevel: "medium", status: "proposed" })),
   runDecisionLoop: vi.fn(),
+  prepareProposalArgsForReview: vi.fn(),
 }));
 
 vi.mock("@/lib/desktop/resolveRequestDesktopSession", () => ({ resolveRequestDesktopSession: mocks.resolveRequestDesktopSession }));
@@ -20,6 +21,7 @@ vi.mock("@/lib/db", () => ({
 }));
 vi.mock("@/lib/axiom/agentRuntime/decisionLoop", () => ({ runDecisionLoop: mocks.runDecisionLoop }));
 vi.mock("@/lib/axiom/agentRuntime/toolExecution", () => ({ executeReadOnlyTool: vi.fn(), isProdEnvironmentTarget: vi.fn() }));
+vi.mock("@/lib/axiom/agentRuntime/proposalReview", () => ({ prepareProposalArgsForReview: mocks.prepareProposalArgsForReview }));
 
 function request(body: object) {
   return new NextRequest("https://visionxixlabs.com/api/desktop/agent/conversations/conv_1/messages", {
@@ -37,6 +39,7 @@ describe("POST /api/desktop/agent/conversations/[id]/messages", () => {
     vi.clearAllMocks();
     mocks.resolveRequestDesktopSession.mockResolvedValue(session);
     mocks.findFirstConversation.mockResolvedValue({ id: "conv_1", organizationId: "org-1" });
+    mocks.prepareProposalArgsForReview.mockImplementation(async (_organizationId: string, _toolName: string, args: Record<string, unknown>) => ({ ok: true, args }));
   });
 
   it("requires a desktop session", async () => {
@@ -93,6 +96,21 @@ describe("POST /api/desktop/agent/conversations/[id]/messages", () => {
     expect(mocks.createProposal).toHaveBeenCalledWith(expect.objectContaining({
       data: expect.objectContaining({ status: "proposed", riskLevel: "medium" }),
     }));
+  });
+
+  it("does not persist a file action when a trustworthy review snapshot cannot be prepared", async () => {
+    mocks.runDecisionLoop.mockResolvedValue({
+      kind: "proposal", message: "I'll edit this file.", toolName: "commit_github_file",
+      args: { repositoryFullName: "acme/widgets", branch: "fix", path: "src/app.ts", content: "new" }, riskLevel: "medium",
+    });
+    mocks.prepareProposalArgsForReview.mockResolvedValue({ ok: false, error: "file_review_unavailable" });
+    const { POST } = await import("../route");
+    const res = await POST(request({ message: "edit it" }), params);
+    const body = await res.json();
+    expect(res.status).toBe(200);
+    expect(body.data.proposal).toBeNull();
+    expect(body.data.reply).toMatch(/trustworthy approval preview/i);
+    expect(mocks.createProposal).not.toHaveBeenCalled();
   });
 
   it("surfaces a governance error (AI disabled) as a plain-English reply instead of a 500", async () => {
