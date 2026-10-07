@@ -1202,8 +1202,8 @@ function IntegrationsSection() {
       </p>
       <p className="mt-2 text-[11px] text-zinc-600">This is integration health only. Production release observation remains unavailable until an observability connection is verified.</p>
     </div>
-    <div className="mt-5 flex items-center gap-3">
-      <WebButton href="/connect/github" label="Connect GitHub" />
+    <div className="mt-5 flex flex-wrap items-center gap-3">
+      <WebButton href="/account/integrations" label="Manage connections" />
       <button type="button" onClick={() => void validateGitHub()} disabled={validatingGitHub || (github?.status !== "installation_recorded" && github?.status !== "validation_overdue")} className="rounded-lg border border-white/10 px-3 py-2 text-xs text-zinc-300 hover:bg-white/[0.06] disabled:opacity-50">
         {validatingGitHub ? "Validating GitHub…" : "Validate read-only access"}
       </button>

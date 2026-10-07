@@ -6,6 +6,10 @@ describe("visibleTenantConnectionStatus", () => {
     expect(visibleTenantConnectionStatus({ status: "active", lastValidatedAt: null })).toBe("awaiting_validation");
   });
 
+  it("presents recorded OAuth consent as awaiting validation", () => {
+    expect(visibleTenantConnectionStatus({ status: "pending", lastValidatedAt: null })).toBe("awaiting_validation");
+  });
+
   it("presents active only after a server-side validation timestamp exists", () => {
     expect(visibleTenantConnectionStatus(
       { status: "active", lastValidatedAt: new Date("2026-10-01T00:00:00Z") },

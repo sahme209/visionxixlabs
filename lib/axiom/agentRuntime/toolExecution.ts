@@ -1,8 +1,7 @@
 /**
- * Executes the two "low" risk, read-only tools. Never touches a write
- * path — list_environments reads Environment rows, check_deploy_status
- * reads GitHub's own workflow-run history. Both are safe to run without
- * human approval, which is exactly why they're classified "low".
+ * Executes the "low" risk, read-only tools. It never touches a write path.
+ * These tools are safe to run without human approval, which is exactly why
+ * they're classified "low"; every call is still persisted in the audit trail.
  */
 
 import "server-only";
@@ -11,10 +10,50 @@ import { resolveTenantScopedToken, parseRepositoryFullName } from "@/lib/connect
 import { getFile, getLatestWorkflowRun } from "@/lib/connectors/github/githubWriteClient";
 import { AWS_ECS_DEPLOY_WORKFLOW_FILENAME } from "@/lib/releaseops/awsEcsDeployWorkflowTemplate";
 import { buildScimLifecyclePreviewResponse } from "@/lib/iam/scimLifecyclePreviewResponder";
+import { visibleTenantConnectionStatus } from "@/lib/integrations/tenantConnectionState";
+
+const GITHUB_VALIDATION_FRESH_FOR_MS = 24 * 60 * 60 * 1000;
+
+interface ConnectorSessionRow {
+  provider: string;
+  status: string;
+  lastTransitionAt: Date;
+}
+
+interface GitHubInstallationRow {
+  status: string;
+  repositorySelection: string;
+  lastSeenAt: Date | null;
+}
+
+interface TenantIntegrationConnectionRow {
+  provider: string;
+  status: string;
+  lastValidatedAt: Date | null;
+}
 
 export interface ToolExecutionRepo {
   environment: {
     findMany(args: { where: { organizationId: string } }): Promise<Array<{ id: string; slug: string; name: string; tier: string }>>;
+  };
+  connectorSetupSession: {
+    findMany(args: {
+      where: { organizationId: string; provider: { in: string[] } };
+      select: { provider: true; status: true; lastTransitionAt: true };
+    }): Promise<ConnectorSessionRow[]>;
+  };
+  gitHubInstallation: {
+    findFirst(args: {
+      where: { organizationId: string; status: { in: string[] } };
+      orderBy: { installedAt: "desc" };
+      select: { status: true; repositorySelection: true; lastSeenAt: true };
+    }): Promise<GitHubInstallationRow | null>;
+  };
+  tenantIntegrationConnection: {
+    findMany(args: {
+      where: { organizationId: string; provider: { in: string[] } };
+      select: { provider: true; status: true; lastValidatedAt: true };
+    }): Promise<TenantIntegrationConnectionRow[]>;
   };
 }
 
@@ -29,6 +68,72 @@ export async function executeReadOnlyTool(
   if (toolName === "list_environments") {
     const environments = await repo.environment.findMany({ where: { organizationId } });
     return { ok: true, result: environments.map((e) => ({ id: e.id, slug: e.slug, name: e.name, tier: e.tier })) };
+  }
+
+  if (toolName === "list_integrations") {
+    let cloudRows: ConnectorSessionRow[];
+    let githubInstallation: GitHubInstallationRow | null;
+    let collaborationRows: TenantIntegrationConnectionRow[];
+    try {
+      [cloudRows, githubInstallation, collaborationRows] = await Promise.all([
+        repo.connectorSetupSession.findMany({
+          where: { organizationId, provider: { in: ["aws", "azure", "gcp"] } },
+          select: { provider: true, status: true, lastTransitionAt: true },
+        }),
+        repo.gitHubInstallation.findFirst({
+          where: { organizationId, status: { in: ["active", "suspended", "revoked"] } },
+          orderBy: { installedAt: "desc" },
+          select: { status: true, repositorySelection: true, lastSeenAt: true },
+        }),
+        repo.tenantIntegrationConnection.findMany({
+          where: { organizationId, provider: { in: ["slack", "teams"] } },
+          select: { provider: true, status: true, lastValidatedAt: true },
+        }),
+      ]);
+    } catch {
+      return { ok: false, error: "integration_status_unavailable" };
+    }
+
+    const cloudByProvider = new Map(cloudRows.map((row) => [row.provider, row]));
+    const collaborationByProvider = new Map(collaborationRows.map((row) => [row.provider, row]));
+    const githubStatus = !githubInstallation
+      ? "not_connected"
+      : githubInstallation.status !== "active"
+        ? githubInstallation.status
+        : !githubInstallation.lastSeenAt
+          ? "installation_recorded"
+          : Date.now() - githubInstallation.lastSeenAt.getTime() <= GITHUB_VALIDATION_FRESH_FOR_MS
+            ? "validated_read_only"
+            : "validation_overdue";
+
+    return {
+      ok: true,
+      result: {
+        github: {
+          status: githubStatus,
+          repositorySelection: githubInstallation?.repositorySelection ?? "unknown",
+        },
+        cloud: (["aws", "azure", "gcp"] as const).map((provider) => {
+          const row = cloudByProvider.get(provider);
+          return {
+            provider,
+            status: row?.status ?? "not_connected",
+            lastTransitionAt: row?.lastTransitionAt.toISOString() ?? null,
+          };
+        }),
+        collaboration: (["slack", "teams"] as const).map((provider) => {
+          const row = collaborationByProvider.get(provider);
+          return {
+            provider,
+            status: visibleTenantConnectionStatus({
+              status: row?.status,
+              lastValidatedAt: row?.lastValidatedAt,
+            }),
+            lastValidatedAt: row?.lastValidatedAt?.toISOString() ?? null,
+          };
+        }),
+      },
+    };
   }
 
   if (toolName === "check_deploy_status") {

@@ -29,7 +29,13 @@ export interface ToolDefinition {
 export const TOOL_REGISTRY: readonly ToolDefinition[] = [
   {
     name: "list_environments",
-    description: "List the workspace's configured deployment environments (dev/test/prod, etc.) and whether each has an AWS deploy target configured.",
+    description: "List the workspace's configured deployment environments (dev/test/prod, etc.).",
+    argsSchemaHint: "{} — no arguments.",
+    riskLevel: "low",
+  },
+  {
+    name: "list_integrations",
+    description: "List the workspace's service-verified GitHub, AWS, Azure, Google Cloud, Slack, and Microsoft Teams connection states. This never returns credentials or provider account identifiers.",
     argsSchemaHint: "{} — no arguments.",
     riskLevel: "low",
   },
