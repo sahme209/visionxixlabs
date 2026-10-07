@@ -86,7 +86,7 @@ export async function executeReadOnlyTool(
           select: { status: true, repositorySelection: true, lastSeenAt: true },
         }),
         repo.tenantIntegrationConnection.findMany({
-          where: { organizationId, provider: { in: ["slack", "teams"] } },
+        where: { organizationId, provider: { in: ["slack", "teams", "linear"] } },
           select: { provider: true, status: true, lastValidatedAt: true },
         }),
       ]);
@@ -121,7 +121,7 @@ export async function executeReadOnlyTool(
             lastTransitionAt: row?.lastTransitionAt.toISOString() ?? null,
           };
         }),
-        collaboration: (["slack", "teams"] as const).map((provider) => {
+        collaboration: (["slack", "teams", "linear"] as const).map((provider) => {
           const row = collaborationByProvider.get(provider);
           return {
             provider,

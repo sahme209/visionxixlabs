@@ -35,7 +35,7 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = [
   },
   {
     name: "list_integrations",
-    description: "List the workspace's service-verified GitHub, AWS, Azure, Google Cloud, Slack, and Microsoft Teams connection states. This never returns credentials or provider account identifiers.",
+    description: "List the workspace's service-verified GitHub, AWS, Azure, Google Cloud, Slack, Microsoft Teams, and Linear connection states. This never returns credentials or provider account identifiers.",
     argsSchemaHint: "{} — no arguments.",
     riskLevel: "low",
   },

@@ -92,6 +92,7 @@ describe("executeReadOnlyTool", () => {
         collaboration: [
           { provider: "slack", status: "awaiting_validation", lastValidatedAt: null },
           { provider: "teams", status: "not_connected", lastValidatedAt: null },
+          { provider: "linear", status: "not_connected", lastValidatedAt: null },
         ],
       },
     });

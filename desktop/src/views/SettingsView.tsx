@@ -41,10 +41,8 @@ const WEB_BASE = "https://visionxixlabs.com";
  * validation, and audit journey for the provider.
  */
 const INTEGRATION_CENTER_ITEMS = [
-  { group: "Source control", name: "GitHub", detail: "Repositories, pull requests, workflows, and release evidence. Connection remains read-only until a workspace policy explicitly permits a write action.", state: "Browser setup" },
   { group: "Source control", name: "GitLab & Azure DevOps", detail: "Adapters and release data foundations exist, but customer activation is not presented as complete until OAuth, permissions, and recovery are verified end to end.", state: "In review" },
-  { group: "Work management", name: "Jira, Linear & ServiceNow", detail: "Change-ticket context belongs on each release. Ticket creation or updates must be approval-gated and recorded in the release audit trail.", state: "In review" },
-  { group: "Communication", name: "Slack & Microsoft Teams", detail: "Approval requests and release notifications are scoped to an approved workspace channel. Notifications never grant deployment authority.", state: "In review" },
+  { group: "Work management", name: "Jira & ServiceNow", detail: "Change-ticket context belongs on each release. Ticket creation or updates must be approval-gated and recorded in the release audit trail.", state: "In review" },
   { group: "Cloud & delivery", name: "AWS, Azure & Google Cloud", detail: "Cloud access is tenant-scoped and least-privilege. A provider is not marked connected until server-side validation succeeds.", state: "Admin setup" },
   { group: "Observability", name: "Sentry, Datadog & Grafana", detail: "Release-health signals should be inbound and read-only first, with signed delivery and clear source provenance.", state: "Planned" },
 ] as const;
@@ -1064,7 +1062,7 @@ function IntegrationsSection() {
   const [integrationStatus, setIntegrationStatus] = useState<{
     cloud: Array<{ provider: "aws" | "azure" | "gcp"; status: string; lastTransitionAt: string | null }>;
     github: { status: string; repositorySelection: string };
-    collaboration: Array<{ provider: "slack" | "teams"; status: string; lastValidatedAt: string | null }>;
+    collaboration: Array<{ provider: "slack" | "teams" | "linear"; status: string; lastValidatedAt: string | null }>;
   } | null>(null);
   const [health, setHealth] = useState<{
     status: "healthy" | "degraded" | "preview" | "blocked" | "disabled" | "unknown";
@@ -1078,6 +1076,10 @@ function IntegrationsSection() {
   const [slackValidationNote, setSlackValidationNote] = useState<string | null>(null);
   const [validatingTeams, setValidatingTeams] = useState(false);
   const [teamsValidationNote, setTeamsValidationNote] = useState<string | null>(null);
+  const [validatingLinear, setValidatingLinear] = useState(false);
+  const [linearValidationNote, setLinearValidationNote] = useState<string | null>(null);
+  const [connectingProvider, setConnectingProvider] = useState<"github" | "slack" | "teams" | "linear" | null>(null);
+  const [connectionNote, setConnectionNote] = useState<string | null>(null);
 
   const loadCloudConnections = useCallback(async () => {
     setRefreshing(true);
@@ -1122,17 +1124,6 @@ function IntegrationsSection() {
       ? `GitHub App access was validated previously, but that verification is more than 24 hours old. Run the harmless read-only validation again before relying on it for release evidence.`
       : "No active GitHub App installation is recorded for this workspace. Connect in the browser to choose repository scope."
     : "Loading the service-verified GitHub App state.";
-  const collaborationState = collaboration
-    ? collaboration.some((connection) => connection.status === "active")
-      ? `${collaboration.filter((connection) => connection.status === "active").length} verified`
-    : collaboration.some((connection) => connection.status === "awaiting_validation")
-      ? "Consent in progress"
-      : "Not connected"
-    : "Checking status";
-  const collaborationDetail = collaboration
-    ? collaboration.map((connection) => `${connection.provider === "teams" ? "Teams" : "Slack"} ${connection.status.replaceAll("_", " ")}`).join(" · ")
-    : "Loading the service-verified Slack and Teams connection state.";
-
   async function validateGitHub() {
     setValidatingGitHub(true);
     setGithubValidationNote(null);
@@ -1172,23 +1163,69 @@ function IntegrationsSection() {
     setValidatingTeams(false);
   }
 
+  async function validateLinear() {
+    setValidatingLinear(true);
+    setLinearValidationNote(null);
+    const result = await desktopClient.validateLinearConnection();
+    if (result.ok) {
+      setLinearValidationNote("Linear app identity is verified for this workspace.");
+      await loadCloudConnections();
+    } else {
+      setLinearValidationNote("Linear could not complete a read-only identity validation. Review consent and try again.");
+    }
+    setValidatingLinear(false);
+  }
+
   const slackCanValidate = collaboration?.some((connection) => connection.provider === "slack" && (connection.status === "awaiting_validation" || connection.status === "needs_attention")) ?? false;
   const teamsCanValidate = collaboration?.some((connection) => connection.provider === "teams" && (connection.status === "awaiting_validation" || connection.status === "needs_attention")) ?? false;
+  const linearCanValidate = collaboration?.some((connection) => connection.provider === "linear" && (connection.status === "awaiting_validation" || connection.status === "needs_attention")) ?? false;
+
+  async function connectProvider(provider: "github" | "slack" | "teams" | "linear") {
+    setConnectingProvider(provider);
+    setConnectionNote(null);
+    try {
+      const result = await desktopClient.startIntegrationConnection(provider);
+      if (!result.ok) throw new Error(result.error);
+      const destination = new URL(result.data.consentUrl);
+      const allowedHosts: Record<typeof provider, readonly string[]> = {
+        github: ["github.com"], slack: ["slack.com"], teams: ["login.microsoftonline.com"], linear: ["linear.app"],
+      };
+      if (destination.protocol !== "https:" || !allowedHosts[provider].includes(destination.hostname)) throw new Error("untrusted_consent_destination");
+      await open(destination.toString());
+      setConnectionNote("Secure consent opened in your browser. Return here after approval; status refreshes when this window regains focus.");
+    } catch {
+      setConnectionNote("The secure connection could not be started. Confirm this provider is configured for the workspace and try again.");
+    } finally {
+      setConnectingProvider(null);
+    }
+  }
+
+  const providerStatus = (provider: "slack" | "teams" | "linear") => collaboration?.find((item) => item.provider === provider)?.status ?? "not_connected";
+  const providerAction = (provider: "github" | "slack" | "teams" | "linear", status: string, canValidate: boolean, validating: boolean, validate: () => Promise<void>) => {
+    if (canValidate) return <button type="button" disabled={validating} onClick={() => void validate()} className="rounded-lg bg-white px-3 py-2 text-xs font-semibold text-black hover:bg-zinc-100 disabled:opacity-50">{validating ? "Validating…" : "Validate"}</button>;
+    if (status === "active" || status === "validated_read_only") return <WebButton href="/account/integrations" label="Manage" />;
+    return <button type="button" disabled={connectingProvider !== null} onClick={() => void connectProvider(provider)} className="rounded-lg bg-white px-3 py-2 text-xs font-semibold text-black hover:bg-zinc-100 disabled:opacity-50">{connectingProvider === provider ? "Opening…" : "Connect ↗"}</button>;
+  };
 
   return <div>
     <SectionHeading title="Integration Center" detail="Connect the systems that already run your releases. Every connection is tenant-scoped, least-privilege, and shown as connected only after server-side validation." />
     <Notice title="No secrets in the desktop app" detail="Connections open in the secure browser. The desktop app never collects an identity-provider password or long-lived provider secret, and no connection can silently gain write access." />
     <div className="space-y-3">
+      <IntegrationRow name="GitHub" group="Source control" detail={githubDetail} state={githubState} action={providerAction("github", github?.status ?? "not_connected", github?.status === "installation_recorded" || github?.status === "validation_overdue", validatingGitHub, validateGitHub)} />
+      <IntegrationRow name="Slack" group="Collaboration" detail="Release notifications with channels:read and chat:write. Consent is not active access until Axiom validates the token server-side." state={formatConnectorState(providerStatus("slack"))} action={providerAction("slack", providerStatus("slack"), slackCanValidate, validatingSlack, validateSlack)} />
+      <IntegrationRow name="Microsoft Teams" group="Collaboration" detail="Verifies Microsoft workspace identity with PKCE. Message permissions remain separately gated." state={formatConnectorState(providerStatus("teams"))} action={providerAction("teams", providerStatus("teams"), teamsCanValidate, validatingTeams, validateTeams)} />
+      <IntegrationRow name="Linear" group="Work management" detail="Governed issue delegation with read and issues:create scopes, short-lived tokens, and automatic refresh rotation." state={formatConnectorState(providerStatus("linear"))} action={providerAction("linear", providerStatus("linear"), linearCanValidate, validatingLinear, validateLinear)} />
       {INTEGRATION_CENTER_ITEMS.map((item) => (
         <IntegrationRow
           key={item.name}
           name={item.name}
           group={item.group}
-          detail={item.name === "AWS, Azure & Google Cloud" ? `${item.detail} Current workspace state: ${cloudDetail}` : item.name === "GitHub" ? githubDetail : item.name === "Slack & Microsoft Teams" ? `${item.detail} Current workspace state: ${collaborationDetail}` : item.detail}
-          state={item.name === "AWS, Azure & Google Cloud" ? cloudState : item.name === "GitHub" ? githubState : item.name === "Slack & Microsoft Teams" ? collaborationState : item.state}
+          detail={item.name === "AWS, Azure & Google Cloud" ? `${item.detail} Current workspace state: ${cloudDetail}` : item.detail}
+          state={item.name === "AWS, Azure & Google Cloud" ? cloudState : item.state}
         />
       ))}
     </div>
+    {connectionNote && <p role="status" className="mt-3 text-xs text-zinc-400">{connectionNote}</p>}
     <div className="mt-5 rounded-xl border border-white/[0.07] bg-white/[0.025] p-4">
       <p className="text-sm text-zinc-200">What happens when you connect</p>
       <p className="mt-1 text-xs leading-5 text-zinc-500">You review the requested access in your browser, approve only the workspace you intend to connect, then return here to see the service-verified status and any required next action.</p>
@@ -1204,15 +1241,6 @@ function IntegrationsSection() {
     </div>
     <div className="mt-5 flex flex-wrap items-center gap-3">
       <WebButton href="/account/integrations" label="Manage connections" />
-      <button type="button" onClick={() => void validateGitHub()} disabled={validatingGitHub || (github?.status !== "installation_recorded" && github?.status !== "validation_overdue")} className="rounded-lg border border-white/10 px-3 py-2 text-xs text-zinc-300 hover:bg-white/[0.06] disabled:opacity-50">
-        {validatingGitHub ? "Validating GitHub…" : "Validate read-only access"}
-      </button>
-      <button type="button" onClick={() => void validateSlack()} disabled={validatingSlack || !slackCanValidate} className="rounded-lg border border-white/10 px-3 py-2 text-xs text-zinc-300 hover:bg-white/[0.06] disabled:opacity-50">
-        {validatingSlack ? "Validating Slack…" : "Validate Slack"}
-      </button>
-      <button type="button" onClick={() => void validateTeams()} disabled={validatingTeams || !teamsCanValidate} className="rounded-lg border border-white/10 px-3 py-2 text-xs text-zinc-300 hover:bg-white/[0.06] disabled:opacity-50">
-        {validatingTeams ? "Validating Microsoft…" : "Validate Microsoft"}
-      </button>
       <button type="button" onClick={() => void loadCloudConnections()} disabled={refreshing} className="rounded-lg border border-white/10 px-3 py-2 text-xs text-zinc-300 hover:bg-white/[0.06] disabled:opacity-50">
         {refreshing ? "Checking…" : "Refresh verified status"}
       </button>
@@ -1220,6 +1248,7 @@ function IntegrationsSection() {
     {githubValidationNote && <p className="mt-3 text-xs text-zinc-400">{githubValidationNote}</p>}
     {slackValidationNote && <p className="mt-3 text-xs text-zinc-400">{slackValidationNote}</p>}
     {teamsValidationNote && <p className="mt-3 text-xs text-zinc-400">{teamsValidationNote}</p>}
+    {linearValidationNote && <p className="mt-3 text-xs text-zinc-400">{linearValidationNote}</p>}
   </div>;
 }
 
@@ -1236,8 +1265,9 @@ function TextRow({ title, detail, value, disabled, onCommit }: { title: string; 
 function LockedRow({ title, detail }: { title: string; detail: string }) { return <ActionRow title={title} detail={detail} action={<span className="inline-flex items-center gap-1 rounded-full border border-emerald-500/20 bg-emerald-500/10 px-2 py-1 text-[10px] text-emerald-300"><LockKeyhole className="h-3 w-3" />Always on</span>} />; }
 function Notice({ title, detail }: { title: string; detail: string }) { return <div className="mb-6 rounded-lg border border-white/15 bg-white/[0.04] p-4"><p className="text-sm font-medium text-zinc-100">{title}</p><p className="mt-2 text-xs leading-5 text-zinc-400">{detail}</p></div>; }
 function SummaryCard({ label, value, detail }: { label: string; value: string; detail: string }) { return <div className="rounded-lg border border-white/[0.05] bg-white/[0.015] p-4"><p className="text-xs text-zinc-500">{label}</p><p className="mt-2 text-2xl font-semibold capitalize">{value}</p><p className="mt-2 text-sm text-zinc-500">{detail}</p></div>; }
-function IntegrationRow({ name, group, detail, state }: { name: string; group: string; detail: string; state: string }) {
+function formatConnectorState(state: string) { return state.replaceAll("_", " ").replace(/\b\w/g, (letter) => letter.toUpperCase()); }
+function IntegrationRow({ name, group, detail, state, action }: { name: string; group: string; detail: string; state: string; action?: ReactNode }) {
   const connected = /verified|connected/i.test(state) && !/not connected/i.test(state);
-  return <div className="flex items-start gap-4 rounded-lg border border-white/[0.05] bg-white/[0.015] p-4"><span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-white/[0.05] bg-black/20 text-zinc-300"><Link2 className="h-4 w-4" /></span><div className="min-w-0 flex-1"><p className="text-[10px] uppercase tracking-[0.14em] text-zinc-600">{group}</p><p className="mt-0.5 text-sm text-zinc-200">{name}</p><p className="mt-1 text-xs leading-5 text-zinc-500">{detail}</p></div><span className={`shrink-0 rounded-full border px-2 py-1 text-[10px] ${connected ? "border-emerald-500/20 bg-emerald-500/10 text-emerald-200" : "border-white/20 bg-white/10 text-zinc-200"}`}>{state}</span></div>;
+  return <div className="flex items-center gap-4 rounded-lg border border-white/[0.05] bg-white/[0.015] p-4"><span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-white/[0.05] bg-black/20 text-zinc-300"><Link2 className="h-4 w-4" /></span><div className="min-w-0 flex-1"><p className="text-[10px] uppercase tracking-[0.14em] text-zinc-600">{group}</p><p className="mt-0.5 text-sm text-zinc-200">{name}</p><p className="mt-1 text-xs leading-5 text-zinc-500">{detail}</p></div><div className="flex shrink-0 items-center gap-2"><span className={`rounded-full border px-2 py-1 text-[10px] ${connected ? "border-emerald-500/20 bg-emerald-500/10 text-emerald-200" : "border-white/20 bg-white/10 text-zinc-200"}`}>{state}</span>{action}</div></div>;
 }
 function WebButton({ href, label, standalone = false }: { href: string; label: string; standalone?: boolean }) { return <button type="button" onClick={() => void open(`${WEB_BASE}${href}`)} className={`${standalone ? "mt-1" : ""} inline-flex items-center gap-1.5 rounded-lg border border-white/10 px-3 py-2 text-xs text-zinc-300 hover:bg-white/[0.06]`}>{label}<ChevronRight className="h-3.5 w-3.5" /></button>; }

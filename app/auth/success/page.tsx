@@ -34,6 +34,16 @@ const TEAMS_NOTICES: Record<string, { tone: "emerald" | "amber" | "rose"; title:
   record_failed: { tone: "rose", title: "Teams consent could not be recorded", detail: "No connection was recorded. You can try again from Integrations." },
 };
 
+const LINEAR_NOTICES: Record<string, { tone: "emerald" | "amber" | "rose"; title: string; detail: string }> = {
+  consent_recorded: { tone: "emerald", title: "Linear consent recorded", detail: "Axiom will not show Linear as active until it completes a live server-side identity validation." },
+  declined: { tone: "amber", title: "Linear setup was cancelled", detail: "No connection or provider access was recorded." },
+  invalid_state: { tone: "rose", title: "Linear setup link is no longer valid", detail: "No connection was recorded. Start a new setup from Integrations." },
+  unavailable: { tone: "rose", title: "Linear setup is unavailable", detail: "The approved Linear OAuth application is not configured for this workspace yet." },
+  exchange_failed: { tone: "rose", title: "Linear setup could not be completed", detail: "No connection was recorded. Try again from Integrations." },
+  scope_insufficient: { tone: "rose", title: "Linear did not grant the requested access", detail: "No connection was recorded because the required read and issue-creation scopes were not granted." },
+  record_failed: { tone: "rose", title: "Linear consent could not be recorded", detail: "No connection was recorded. Try again from Integrations." },
+};
+
 export default async function AuthSuccessPage({ searchParams }: { searchParams: Promise<{ integration?: string; status?: string }> }) {
   const context = await currentContext();
   if (!context.isAuthenticated) redirect("/auth/signin?callbackUrl=/auth/success");
@@ -41,7 +51,8 @@ export default async function AuthSuccessPage({ searchParams }: { searchParams: 
   const integrationNotice = params.integration === "github"
     ? GITHUB_NOTICES[params.status ?? ""] ?? null
     : params.integration === "slack" ? SLACK_NOTICES[params.status ?? ""] ?? null
-    : params.integration === "teams" ? TEAMS_NOTICES[params.status ?? ""] ?? null : null;
+    : params.integration === "teams" ? TEAMS_NOTICES[params.status ?? ""] ?? null
+    : params.integration === "linear" ? LINEAR_NOTICES[params.status ?? ""] ?? null : null;
   return (
     <AuthCompanionShell>
       <div className="mx-auto max-w-6xl">

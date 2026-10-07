@@ -3899,7 +3899,7 @@ model GitHubInstallation {
 /// This intentionally does not reuse cloud connector records: the encrypted
 /// OAuth payload and authorization-attempt history have different lifecycle,
 /// revocation, and retention requirements. Provider is a closed union in the
-/// application layer: slack | teams.
+/// application layer: github | slack | teams | linear.
 model TenantIntegrationConnection {
   id                    String   @id @default(cuid())
   organizationId        String
@@ -3908,7 +3908,7 @@ model TenantIntegrationConnection {
   status                String   @default("pending")
   /// Context-bound AES-GCM v2 envelope. Never returned to browser or desktop.
   encryptedCredential   String
-  /// Provider workspace / Entra tenant identifier, when available.
+  /// Provider workspace, tenant, installation, or app-user identifier, when available.
   externalAccountId     String?
   /// Granted scopes only; no bearer token or provider payload.
   scopesJson            Json?
@@ -3925,8 +3925,8 @@ model TenantIntegrationConnection {
 
 /// A one-time browser authorization attempt. State is stored as a digest;
 /// the raw value never reaches the database. PKCE verifier ciphertext is
-/// optional because Slack does not use PKCE while Microsoft authorization
-/// code flow does.
+/// optional because Slack does not use PKCE while Microsoft and Linear
+/// authorization code flows do.
 model TenantIntegrationAuthorizationAttempt {
   id                    String   @id @default(cuid())
   organizationId        String

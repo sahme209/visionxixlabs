@@ -6,6 +6,7 @@ const CALLBACK_PATHS = new Set([
   "/api/integrations/github/install-callback",
   "/api/integrations/slack/callback",
   "/api/integrations/teams/callback",
+  "/api/integrations/linear/callback",
 ]);
 
 function configuredAxiomOrigin(appUrl: string): URL | null {

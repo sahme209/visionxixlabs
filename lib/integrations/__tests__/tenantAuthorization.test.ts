@@ -30,5 +30,6 @@ describe("tenant integration authorization state", () => {
     expect(isTenantIntegrationProvider("slack")).toBe(true);
     expect(isTenantIntegrationProvider("teams")).toBe(true);
     expect(isTenantIntegrationProvider("github")).toBe(true);
+    expect(isTenantIntegrationProvider("linear")).toBe(true);
   });
 });

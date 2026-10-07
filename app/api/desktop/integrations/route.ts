@@ -6,7 +6,7 @@ import { visibleTenantConnectionStatus } from "@/lib/integrations/tenantConnecti
 export const dynamic = "force-dynamic";
 
 const CLOUD_PROVIDERS = ["aws", "azure", "gcp"] as const;
-const COLLABORATION_PROVIDERS = ["slack", "teams"] as const;
+const COLLABORATION_PROVIDERS = ["slack", "teams", "linear"] as const;
 const GITHUB_VALIDATION_FRESH_FOR_MS = 24 * 60 * 60 * 1000;
 
 interface ConnectorSessionRow {
@@ -79,7 +79,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
             select: { provider: true, status: true, lastTransitionAt: true },
         });
         const byProvider = new Map(rows.map((row) => [row.provider, row]));
-        let collaboration: Array<{ provider: "slack" | "teams"; status: string; lastValidatedAt: string | null }> =
+        let collaboration: Array<{ provider: "slack" | "teams" | "linear"; status: string; lastValidatedAt: string | null }> =
             COLLABORATION_PROVIDERS.map((provider) => ({ provider, status: "not_connected", lastValidatedAt: null }));
         try {
             const connections = await (prisma as unknown as TenantIntegrationConnectionRepo).tenantIntegrationConnection.findMany({

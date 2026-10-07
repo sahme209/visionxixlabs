@@ -3,12 +3,12 @@
  *
  * Browser authorization state is a high-entropy bearer secret. Only its
  * SHA-256 digest is persisted, so a database reader cannot finish a pending
- * Slack or Microsoft consent flow. Callers must consume each digest once.
+ * provider consent flow. Callers must consume each digest once.
  */
 
 import { createHash, randomBytes } from "node:crypto";
 
-export const TENANT_INTEGRATION_PROVIDERS = ["github", "slack", "teams"] as const;
+export const TENANT_INTEGRATION_PROVIDERS = ["github", "slack", "teams", "linear"] as const;
 export type TenantIntegrationProvider = (typeof TENANT_INTEGRATION_PROVIDERS)[number];
 
 export function isTenantIntegrationProvider(value: string): value is TenantIntegrationProvider {
