@@ -2,6 +2,7 @@ import { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
 import GitHubProvider from "next-auth/providers/github";
+import CognitoProvider from "next-auth/providers/cognito";
 import { compare } from "bcryptjs";
 import { prisma } from "./db";
 import { ensurePersonalWorkspaceMembership } from "./auth/ensurePersonalWorkspaceMembership";
@@ -80,6 +81,24 @@ function buildProviders(): NextAuthOptions["providers"] {
       })
     );
   }
+  // Enterprise identity, phase 2's first real IdP — see
+  // docs/ENTERPRISE_IDENTITY_DESIGN.md. This is a single, fixed Cognito
+  // user pool today (one "Sign in with Cognito" button), not yet the
+  // design doc's per-tenant domain-routed TenantIdentityProvider lookup
+  // or fail-closed role mapping — those still require building the
+  // TenantIdentityProvider-driven routing on top of this real, working
+  // OIDC round-trip. Issuer is the pool's own discovery URL
+  // (https://cognito-idp.<region>.amazonaws.com/<poolId>); NextAuth
+  // fetches /.well-known/openid-configuration from it automatically.
+  if (process.env.COGNITO_CLIENT_ID && process.env.COGNITO_CLIENT_SECRET && process.env.COGNITO_ISSUER) {
+    providers.push(
+      CognitoProvider({
+        clientId: process.env.COGNITO_CLIENT_ID,
+        clientSecret: process.env.COGNITO_CLIENT_SECRET,
+        issuer: process.env.COGNITO_ISSUER,
+      })
+    );
+  }
   return providers;
 }
 
@@ -88,6 +107,7 @@ function buildProviders(): NextAuthOptions["providers"] {
 export const enabledOAuthProviders = {
   google: Boolean(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET),
   github: Boolean(process.env.GITHUB_CLIENT_ID && process.env.GITHUB_CLIENT_SECRET),
+  cognito: Boolean(process.env.COGNITO_CLIENT_ID && process.env.COGNITO_CLIENT_SECRET && process.env.COGNITO_ISSUER),
 };
 
 /**
@@ -126,9 +146,9 @@ export const authOptions: NextAuthOptions = {
   pages: { signIn: "/auth/signin" },
   callbacks: {
     async signIn({ user, account }) {
-      // For OAuth sign-ins (Google/GitHub), ensure a User row exists.
-      // Credentials provider handled inside its own authorize().
-      if (account?.provider === "google" || account?.provider === "github") {
+      // For OAuth/OIDC sign-ins (Google/GitHub/Cognito), ensure a User row
+      // exists. Credentials provider handled inside its own authorize().
+      if (account?.provider === "google" || account?.provider === "github" || account?.provider === "cognito") {
         if (!user.email) {
           // No email, no derivable tenant — nothing to scope an audit
           // record to, and nothing about an account/tenant to leak either
