@@ -8,23 +8,19 @@
 
 import { useEffect } from "react";
 import { listen } from "@tauri-apps/api/event";
-import type { View } from "../App";
+import type { CustomerView } from "../App";
 
 type MenuAction =
   | "open_settings"
-  | "view:start-here"
-  | "view:dashboard"
-  | "view:approvals"
-  | "view:workflows"
-  | "view:audit";
+  | "view:agent"
+  | "view:deployment-requests"
+  | "view:docs";
 
-const VIEW_ROUTES: ReadonlyArray<{ action: MenuAction; view: View }> = [
-  { action: "open_settings",    view: "settings"   },
-  { action: "view:start-here",  view: "start-here" },
-  { action: "view:dashboard",   view: "dashboard"  },
-  { action: "view:approvals",   view: "approvals"  },
-  { action: "view:workflows",   view: "workflows"  },
-  { action: "view:audit",       view: "audit"      },
+const VIEW_ROUTES: ReadonlyArray<{ action: MenuAction; view: CustomerView }> = [
+  { action: "open_settings", view: "settings" },
+  { action: "view:agent", view: "agent" },
+  { action: "view:deployment-requests", view: "deployment-requests" },
+  { action: "view:docs", view: "docs" },
 ];
 
 function isMenuAction(s: unknown): s is MenuAction {
@@ -35,7 +31,12 @@ function isTauri(): boolean {
   return typeof window !== "undefined" && "__TAURI_INTERNALS__" in window;
 }
 
-export function useNativeMenuActions(setActiveView: (v: View) => void): void {
+export function customerViewForMenuAction(value: unknown): CustomerView | null {
+  if (!isMenuAction(value)) return null;
+  return VIEW_ROUTES.find((route) => route.action === value)?.view ?? null;
+}
+
+export function useNativeMenuActions(setActiveView: (v: CustomerView) => void): void {
   useEffect(() => {
     if (!isTauri()) return;
     let unlisten: (() => void) | null = null;
@@ -45,9 +46,8 @@ export function useNativeMenuActions(setActiveView: (v: View) => void): void {
       try {
         const fn = await listen<string>("menu://action", (event) => {
           const payload = event.payload;
-          if (!isMenuAction(payload)) return;
-          const route = VIEW_ROUTES.find((r) => r.action === payload);
-          if (route) setActiveView(route.view);
+          const view = customerViewForMenuAction(payload);
+          if (view) setActiveView(view);
         });
         if (cancelled) {
           fn();

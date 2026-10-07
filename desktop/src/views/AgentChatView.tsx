@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Badge, riskToneFor } from "../components/Primitives";
 import { desktopClient } from "../lib/desktopClient";
+import { normalizeAiProviderStatus } from "../lib/aiProviderStatus";
 import { createLineDiff, type DiffLine } from "../lib/lineDiff";
 
 /**
@@ -82,20 +83,29 @@ export function AgentChatView() {
 
   useEffect(() => {
     let cancelled = false;
-    void Promise.all([desktopClient.createAgentConversation(), desktopClient.aiProviderStatus()]).then(([conversation, models]) => {
-      if (cancelled) return;
-      if (conversation.ok) setConversationId(conversation.data.id);
-      else setError(conversation.error);
-      if (models.ok) {
-        const options = models.data.policy.allowedProviders.flatMap((provider) => {
-          const selectedModel = models.data.policy.modelSelections[provider];
-          const model = models.data.providers.find((item) => item.provider === provider)?.models.find((item) => item.id === selectedModel);
-          return selectedModel ? [{ provider, label: model?.label ?? selectedModel }] : [];
-        });
-        setModelOptions(options);
-        setSelectedProvider(models.data.policy.fallbackOrder[0] ?? options[0]?.provider ?? "");
-      }
-    });
+    void Promise.all([desktopClient.createAgentConversation(), desktopClient.aiProviderStatus()])
+      .then(([conversation, models]) => {
+        if (cancelled) return;
+        if (conversation.ok) setConversationId(conversation.data.id);
+        else setError(conversation.error);
+        if (models.ok) {
+          const status = normalizeAiProviderStatus(models.data);
+          if (!status) {
+            setError("The service returned an unsupported model configuration. Update the app or try again later.");
+            return;
+          }
+          const options = status.policy.allowedProviders.flatMap((provider) => {
+            const selectedModel = status.policy.modelSelections[provider];
+            const model = status.providers.find((item) => item.provider === provider)?.models.find((item) => item.id === selectedModel);
+            return selectedModel ? [{ provider, label: model?.label ?? selectedModel }] : [];
+          });
+          setModelOptions(options);
+          setSelectedProvider(status.policy.fallbackOrder[0] ?? options[0]?.provider ?? "");
+        }
+      })
+      .catch(() => {
+        if (!cancelled) setError("The Agent could not start. Check your connection and try again.");
+      });
     return () => { cancelled = true; };
   }, []);
 
