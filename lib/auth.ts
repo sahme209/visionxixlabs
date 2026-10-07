@@ -11,6 +11,9 @@ import { record as recordAudit } from "./audit/secureAudit";
 import { id as idFactory, newCorrelationId } from "./domain/ids";
 import { deriveWorkspaceIdFromEmail } from "./auth/workspaceId";
 import { createLogger } from "./observability/logger";
+import { decodeIdTokenClaims } from "./identity/decodeIdTokenClaims";
+import { evaluateSsoSignIn, type SsoSignInRepo } from "./identity/ssoSignInGate";
+import { ALL_ORG_ROLES } from "./identity/identityProviderResponder";
 
 const log = createLogger("auth.membershipBootstrap");
 
@@ -181,6 +184,62 @@ export const authOptions: NextAuthOptions = {
           console.error("[NextAuth signIn] identity upsert failed:", err);
           await recordSignInDenied({ email: normalizedEmail, provider: account.provider, reasonCode: "identity_store_unavailable" });
           return false;
+        }
+
+        // Enterprise identity, phase 2's domain-routing + role-mapping +
+        // MFA-claim steps (docs/ENTERPRISE_IDENTITY_DESIGN.md) — only
+        // reachable today via the one real IdP connection (Cognito), since
+        // Google/GitHub are personal-login providers, not an enterprise
+        // tenant's own IdP. A matching TenantIdentityProvider is a hard
+        // gate (fail closed on no role mapping / missing required MFA) —
+        // everything else below is the existing, unmodified fallback.
+        if (account.provider === "cognito" && account.id_token) {
+          const claims = decodeIdTokenClaims(account.id_token);
+          if (claims) {
+            let gate;
+            try {
+              gate = await evaluateSsoSignIn(prisma as unknown as SsoSignInRepo, { email: normalizedEmail, claims });
+            } catch (err) {
+              console.error("[NextAuth signIn] SSO provider lookup failed:", err);
+              await recordSignInDenied({ email: normalizedEmail, provider: account.provider, reasonCode: "sso.provider_lookup_unavailable" });
+              return false;
+            }
+            if (gate.kind === "denied") {
+              await recordSignInDenied({ email: normalizedEmail, provider: account.provider, reasonCode: gate.reason });
+              return false;
+            }
+            if (gate.kind === "matched") {
+              // Defense in depth: buildIdentityProviderCreateResponse already
+              // validates every rule's role at config time, but this guards
+              // against the config table being edited some other way —
+              // fail closed rather than hand Prisma a value its OrgRole
+              // enum would reject.
+              if (!(ALL_ORG_ROLES as readonly string[]).includes(gate.role)) {
+                console.error(`[NextAuth signIn] matched SSO role "${gate.role}" is not a valid OrgRole — denying.`);
+                await recordSignInDenied({ email: normalizedEmail, provider: account.provider, reasonCode: "sso.role_mapping_invalid" });
+                return false;
+              }
+              const mappedRole = gate.role as (typeof ALL_ORG_ROLES)[number];
+              try {
+                await prisma.orgMembership.upsert({
+                  where: { userId_organizationId: { userId: dbUser.id, organizationId: gate.organizationId } },
+                  create: { userId: dbUser.id, organizationId: gate.organizationId, role: mappedRole, acceptedAt: new Date() },
+                  update: { role: mappedRole },
+                });
+              } catch (err) {
+                log.error("SSO membership upsert failed", {
+                  path: "signIn", userId: dbUser.id, organizationId: gate.organizationId,
+                  errorMessage: err instanceof Error ? err.message : String(err),
+                });
+                await recordSignInDenied({ email: normalizedEmail, provider: account.provider, reasonCode: "sso.membership_store_unavailable" });
+                return false;
+              }
+              return true;
+            }
+            // gate.kind === "no_match" — this email's domain isn't bound to
+            // any tenant's IdP. Falls through to the personal-workspace
+            // bootstrap below, same as any other sign-in.
+          }
         }
 
         // Workspace membership bootstrap is a best-effort side effect, NOT
