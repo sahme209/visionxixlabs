@@ -51,6 +51,16 @@ describe("AIProviderManager", () => {
     expect(xai.configured).toBe(false);
   });
 
+  it("does not advertise local providers unless their server URL is explicitly configured", () => {
+    delete process.env.OLLAMA_BASE_URL;
+    delete process.env.LM_STUDIO_BASE_URL;
+    _resetAIProviderManagerForTests();
+
+    const rows = getAIProviderManager().status();
+    expect(rows.find((row) => row.provider === "ollama")?.configured).toBe(false);
+    expect(rows.find((row) => row.provider === "lm_studio")?.configured).toBe(false);
+  });
+
   it("Mock is always configured", () => {
     const mgr = getAIProviderManager();
     expect(mgr.status().find((r) => r.provider === "mock")!.configured).toBe(true);

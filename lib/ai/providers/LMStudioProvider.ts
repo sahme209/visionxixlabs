@@ -4,7 +4,8 @@
  * Endpoint: `${LM_STUDIO_BASE_URL}/v1` (OpenAI-compatible).
  * Default base URL: http://localhost:1234
  *
- * No auth required.
+ * No auth is required, but LM_STUDIO_BASE_URL must be explicitly configured.
+ * A hosted API cannot reach a model server on the desktop's localhost.
  */
 
 import "server-only";
@@ -19,7 +20,7 @@ export class LMStudioProvider extends OpenAICompatProvider {
       defaultModel: env.modelName ?? defaultModelFor("lm_studio"),
       baseUrl: `${base}/v1`,
       apiKey: "",
-      allowEmptyKey: true,
+      allowEmptyKey: Boolean(env.baseUrl?.trim()),
     });
   }
 }

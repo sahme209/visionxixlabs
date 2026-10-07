@@ -79,15 +79,17 @@ export function AgentChatView() {
   const [filePath, setFilePath] = useState("");
   const [selectedProvider, setSelectedProvider] = useState("");
   const [modelOptions, setModelOptions] = useState<Array<{ provider: string; label: string }>>([]);
+  const [startupAttempt, setStartupAttempt] = useState(0);
   const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     let cancelled = false;
+    setError(null);
     void Promise.all([desktopClient.createAgentConversation(), desktopClient.aiProviderStatus()])
       .then(([conversation, models]) => {
         if (cancelled) return;
         if (conversation.ok) setConversationId(conversation.data.id);
-        else setError(conversation.error);
+        else setError("The Agent service could not start a conversation. Retry in a moment.");
         if (models.ok) {
           const status = normalizeAiProviderStatus(models.data);
           if (!status) {
@@ -107,7 +109,7 @@ export function AgentChatView() {
         if (!cancelled) setError("The Agent could not start. Check your connection and try again.");
       });
     return () => { cancelled = true; };
-  }, []);
+  }, [startupAttempt]);
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
@@ -179,7 +181,12 @@ export function AgentChatView() {
           {pendingProposal && (
             <ProposalCard proposal={pendingProposal} deciding={decidingId === pendingProposal.id} onApprove={() => void decide(true)} onReject={() => void decide(false)} />
           )}
-          {error && <p role="alert" className="text-xs text-rose-300">{error}</p>}
+          {error && (
+            <div role="alert" className="flex items-center justify-between gap-4 rounded-xl border border-rose-400/20 bg-rose-400/[0.05] px-4 py-3">
+              <p className="text-xs text-rose-300">{error}</p>
+              {!conversationId && <button type="button" onClick={() => setStartupAttempt((attempt) => attempt + 1)} className="shrink-0 rounded-lg border border-white/10 px-3 py-1.5 text-xs text-zinc-200 hover:bg-white/[0.06]">Retry</button>}
+            </div>
+          )}
         </div>
       </div>
       <div className="border-t border-white/[0.06] px-8 py-5">
