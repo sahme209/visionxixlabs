@@ -6,6 +6,7 @@ const mocks = vi.hoisted(() => ({
   commitFile: vi.fn(),
   createPullRequest: vi.fn(),
   dispatchWorkflow: vi.fn(),
+  getFile: vi.fn(),
 }));
 
 vi.mock("@/lib/connectors/github/resolveTenantScopedToken", async () => {
@@ -15,7 +16,7 @@ vi.mock("@/lib/connectors/github/resolveTenantScopedToken", async () => {
   return { ...actual, resolveTenantScopedToken: mocks.resolveTenantScopedToken };
 });
 vi.mock("@/lib/connectors/github/githubWriteClient", () => ({
-  createBranch: mocks.createBranch, commitFile: mocks.commitFile, createPullRequest: mocks.createPullRequest, dispatchWorkflow: mocks.dispatchWorkflow,
+  createBranch: mocks.createBranch, commitFile: mocks.commitFile, createPullRequest: mocks.createPullRequest, dispatchWorkflow: mocks.dispatchWorkflow, getFile: mocks.getFile,
 }));
 
 import { executeApprovedAction, type ActionExecutionRepo } from "../actionApprovalResponder";
@@ -47,6 +48,15 @@ describe("executeApprovedAction", () => {
     const result = await executeApprovedAction(repo, "org-1", "commit_github_file", { repositoryFullName: "acme/widgets" });
     expect(result).toEqual({ ok: false, error: "invalid_payload" });
     expect(mocks.commitFile).not.toHaveBeenCalled();
+  });
+
+  it("passes the server-reviewed base SHA into the GitHub commit", async () => {
+    mocks.commitFile.mockResolvedValue({ ok: true, data: { sha: "new", htmlUrl: "https://github.test/file" } });
+    await executeApprovedAction(repo, "org-1", "commit_github_file", {
+      repositoryFullName: "acme/widgets", branch: "fix", path: "src/app.ts", content: "new", message: "Update app",
+      _review: { kind: "github_file", baseSha: "reviewed-sha", baseContent: "old", htmlUrl: "https://github.test/old" },
+    });
+    expect(mocks.commitFile).toHaveBeenCalledWith(expect.objectContaining({ expectedSha: "reviewed-sha" }));
   });
 
   it("open_github_pull_request surfaces a GitHub failure as an error, not a thrown exception", async () => {

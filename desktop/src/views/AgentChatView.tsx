@@ -1,6 +1,7 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Badge, riskToneFor } from "../components/Primitives";
 import { desktopClient } from "../lib/desktopClient";
+import { createLineDiff, type DiffLine } from "../lib/lineDiff";
 
 /**
  * The flagship surface: a plain-English request becomes a risk-checked,
@@ -234,7 +235,9 @@ function ProposalCard({ proposal, deciding, onApprove, onReject }: { proposal: P
     ? proposal.argsJson as Record<string, unknown>
     : {};
   const proposedContent = proposal.toolName === "commit_github_file" && typeof args.content === "string" ? args.content : null;
-  const reviewArgs = Object.fromEntries(Object.entries(args).filter(([key]) => key !== "content" && key !== "metadataDocument"));
+  const review = typeof args._review === "object" && args._review !== null ? args._review as Record<string, unknown> : null;
+  const baseContent = review?.kind === "github_file" && typeof review.baseContent === "string" ? review.baseContent : null;
+  const reviewArgs = Object.fromEntries(Object.entries(args).filter(([key]) => key !== "content" && key !== "metadataDocument" && key !== "_review"));
   return (
     <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-5">
       <div className="flex items-center justify-between gap-3 mb-3">
@@ -250,10 +253,12 @@ function ProposalCard({ proposal, deciding, onApprove, onReject }: { proposal: P
           {proposedContent !== null && (
             <div>
               <div className="mb-2 flex items-center justify-between gap-3 text-[11px] text-zinc-500">
-                <span>Complete proposed file</span>
+                <span>{baseContent === null ? "Complete proposed file" : "Proposed changes"}</span>
                 <span>{proposedContent.split("\n").length} lines · {new TextEncoder().encode(proposedContent).byteLength.toLocaleString()} bytes</span>
               </div>
-              <pre tabIndex={0} className="max-h-72 overflow-auto whitespace-pre text-[11px] leading-5 text-zinc-300">{proposedContent}</pre>
+              {baseContent === null
+                ? <pre tabIndex={0} className="max-h-72 overflow-auto whitespace-pre text-[11px] leading-5 text-zinc-300">{proposedContent}</pre>
+                : <FileDiff before={baseContent} after={proposedContent} />}
             </div>
           )}
           {Object.keys(reviewArgs).length > 0 && (
@@ -285,6 +290,41 @@ function ProposalCard({ proposal, deciding, onApprove, onReject }: { proposal: P
           {deciding ? "Working…" : "Approve & run"}
         </button>
       </div>
+    </div>
+  );
+}
+
+function FileDiff({ before, after }: { before: string; after: string }) {
+  const lines = useMemo(() => createLineDiff(before, after), [before, after]);
+  const additions = lines.filter((line) => line.kind === "add").length;
+  const removals = lines.filter((line) => line.kind === "remove").length;
+  if (additions === 0 && removals === 0) {
+    return <p className="rounded-lg border border-amber-400/20 bg-amber-400/[0.06] px-3 py-2 text-xs text-amber-200">No content changes detected. Reject this proposal unless an unchanged commit is intentional.</p>;
+  }
+  return (
+    <div>
+      <p className="mb-2 text-[11px]"><span className="text-emerald-400">+{additions}</span><span className="ml-2 text-rose-400">−{removals}</span></p>
+      <div tabIndex={0} aria-label="Proposed file diff" className="max-h-80 overflow-auto rounded-lg border border-white/[0.06] bg-black/30 font-mono text-[11px] leading-5">
+        {lines.map((line, index) => <DiffRow key={`${index}:${line.kind}:${line.oldLine ?? ""}:${line.newLine ?? ""}`} line={line} />)}
+      </div>
+    </div>
+  );
+}
+
+function DiffRow({ line }: { line: DiffLine }) {
+  if (line.kind === "omitted") return <div className="px-3 py-1 text-center text-zinc-600">{line.text}</div>;
+  const marker = line.kind === "add" ? "+" : line.kind === "remove" ? "−" : " ";
+  const tone = line.kind === "add"
+    ? "bg-emerald-400/[0.08] text-emerald-100"
+    : line.kind === "remove"
+      ? "bg-rose-400/[0.08] text-rose-100"
+      : "text-zinc-400";
+  return (
+    <div className={`grid min-w-max grid-cols-[2.5rem_2.5rem_1.25rem_minmax(0,1fr)] ${tone}`}>
+      <span className="select-none border-r border-white/[0.04] px-2 text-right text-zinc-600">{line.oldLine ?? ""}</span>
+      <span className="select-none border-r border-white/[0.04] px-2 text-right text-zinc-600">{line.newLine ?? ""}</span>
+      <span className="select-none text-center">{marker}</span>
+      <span className="whitespace-pre pr-3">{line.text || " "}</span>
     </div>
   );
 }

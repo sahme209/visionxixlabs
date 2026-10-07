@@ -16,6 +16,7 @@ import { AWS_ECS_DEPLOY_WORKFLOW_FILENAME } from "@/lib/releaseops/awsEcsDeployW
 import { buildEnvironmentCreateResponse, type EnvironmentCreateRepo } from "@/lib/releaseops/environmentCreateResponder";
 import { buildDeploymentTargetUpsertResponse, type DeploymentTargetRepo } from "@/lib/releaseops/deploymentTargetResponder";
 import { buildIdentityProviderCreateResponse, type IdentityProviderRepo } from "@/lib/identity/identityProviderResponder";
+import { githubFileReviewFromArgs } from "@/lib/axiom/agentRuntime/proposalReview";
 
 export interface ActionExecutionRepo {
   environment: {
@@ -55,10 +56,15 @@ export async function executeApprovedAction(
     const path = typeof args.path === "string" ? args.path : "";
     const content = typeof args.content === "string" ? args.content : "";
     const message = typeof args.message === "string" ? args.message : "";
+    const review = githubFileReviewFromArgs(args);
     if (!branch || !path || !content || !message) return { ok: false, error: "invalid_payload" };
     const token = await resolveTenantScopedToken(organizationId, parsed);
     if (!token.ok) return { ok: false, error: token.error };
-    const result = await commitFile({ owner: parsed.owner, repo: parsed.repo, branch, path, content, message, installationToken: token.token });
+    const result = await commitFile({
+      owner: parsed.owner, repo: parsed.repo, branch, path, content, message,
+      installationToken: token.token,
+      expectedSha: review?.baseSha,
+    });
     return result.ok ? { ok: true, result: result.data } : { ok: false, error: result.error };
   }
 

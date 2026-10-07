@@ -113,6 +113,8 @@ export interface CommitFileInput {
   content: string;
   message: string;
   installationToken: string;
+  /** Undefined keeps backwards compatibility; null means the file must not exist. */
+  expectedSha?: string | null;
 }
 
 /** Creates or updates a single file on `branch` via the Contents API. */
@@ -124,6 +126,14 @@ export async function commitFile(input: CommitFileInput): Promise<GithubWriteRes
     `/repos/${encodeURIComponent(input.owner)}/${encodeURIComponent(input.repo)}/contents/${encodedPath}?ref=${encodeURIComponent(input.branch)}`,
     input.installationToken,
   );
+  if (input.expectedSha !== undefined) {
+    if (input.expectedSha === null) {
+      if (existing.ok) return { ok: false, error: "github_file_changed_since_proposal" };
+      if (!existing.error.startsWith("github_404:")) return { ok: false, error: `github_file_state_unavailable: ${existing.error}` };
+    } else if (!existing.ok || existing.data.sha !== input.expectedSha) {
+      return { ok: false, error: "github_file_changed_since_proposal" };
+    }
+  }
   const body: { message: string; content: string; branch: string; sha?: string } = {
     message: input.message,
     content: Buffer.from(input.content, "utf8").toString("base64"),

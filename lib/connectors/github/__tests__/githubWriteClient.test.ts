@@ -74,6 +74,26 @@ describe("commitFile", () => {
     expect(JSON.parse(putCall.body).sha).toBe("oldsha");
   });
 
+  it("refuses an update when the file changed after approval was proposed", async () => {
+    fetchMock.mockResolvedValueOnce(jsonResponse(200, { sha: "newer-sha" }));
+    const result = await commitFile({
+      owner: "acme", repo: "widgets", branch: "feature-x", path: "a.txt", content: "updated", message: "update a.txt",
+      installationToken: "tok", expectedSha: "reviewed-sha",
+    });
+    expect(result).toEqual({ ok: false, error: "github_file_changed_since_proposal" });
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+  });
+
+  it("refuses a create when the proposed path now exists", async () => {
+    fetchMock.mockResolvedValueOnce(jsonResponse(200, { sha: "someone-created-it" }));
+    const result = await commitFile({
+      owner: "acme", repo: "widgets", branch: "feature-x", path: "a.txt", content: "updated", message: "add a.txt",
+      installationToken: "tok", expectedSha: null,
+    });
+    expect(result).toEqual({ ok: false, error: "github_file_changed_since_proposal" });
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+  });
+
   it("rejects traversal paths before contacting GitHub", async () => {
     const result = await commitFile({
       owner: "acme", repo: "widgets", branch: "feature-x", path: "../secret", content: "no", message: "bad", installationToken: "tok",
