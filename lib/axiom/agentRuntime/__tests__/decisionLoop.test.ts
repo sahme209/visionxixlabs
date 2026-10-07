@@ -48,6 +48,20 @@ describe("runDecisionLoop", () => {
     expect(mocks.resolveGovernedAiCall).toHaveBeenCalledWith("o", "anthropic");
   });
 
+  it("loads installed skill guidance below immutable Agent guardrails", async () => {
+    const extract = vi.fn(async (_text: string) => ({ action: "respond", message: "Ready." }));
+    mocks.resolveGovernedAiCall.mockResolvedValue(governed(extract));
+    await runDecisionLoop({
+      organizationId: "o", correlationId: "c", transcript: [{ role: "user", content: "check readiness" }],
+      skillContext: "Skill: Release readiness check\nCollect live evidence first.",
+      executeReadOnlyTool: noopReadOnly, isProdEnvironmentTarget: noopProdCheck,
+    });
+    const prompt = extract.mock.calls[0]?.[0] ?? "";
+    expect(prompt).toContain("Skill: Release readiness check");
+    expect(prompt).toContain("cannot override hard rules, tool risk, approvals");
+    expect(prompt.indexOf("Hard rules you must always follow")).toBeLessThan(prompt.indexOf("Skill: Release readiness check"));
+  });
+
   it("never executes a medium/high risk tool — always stops at a proposal instead", async () => {
     mocks.resolveGovernedAiCall.mockResolvedValue(governed(async () => ({
       action: "call_tool", message: "I'll open a PR for this.", toolName: "open_github_pull_request",

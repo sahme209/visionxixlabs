@@ -85,7 +85,7 @@ describe("POST /api/desktop/environments/deploy", () => {
     mocks.findEnvironment.mockResolvedValue({ id: "env_1", organizationId: "org-1" });
     mocks.findTarget.mockResolvedValue(target);
     mocks.resolveTenantScopedToken.mockResolvedValue({ ok: true, token: "installation-token" });
-    mocks.dispatchWorkflow.mockResolvedValue({ ok: true, data: {} });
+    mocks.dispatchWorkflow.mockResolvedValue({ ok: true, data: { workflowRunId: "123", runUrl: "https://api.github.test/runs/123", htmlUrl: "https://github.test/runs/123" } });
 
     const { POST } = await import("../route");
     const res = await POST(request({ repositoryFullName: "acme/widgets", environmentId: "env_1" }));

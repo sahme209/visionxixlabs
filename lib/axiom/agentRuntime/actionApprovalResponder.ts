@@ -17,8 +17,10 @@ import { buildEnvironmentCreateResponse, type EnvironmentCreateRepo } from "@/li
 import { buildDeploymentTargetUpsertResponse, type DeploymentTargetRepo } from "@/lib/releaseops/deploymentTargetResponder";
 import { buildIdentityProviderCreateResponse, type IdentityProviderRepo } from "@/lib/identity/identityProviderResponder";
 import { githubFileReviewFromArgs } from "@/lib/axiom/agentRuntime/proposalReview";
+import { serializeDeploymentExecution, type DeploymentExecutionRepo } from "@/lib/releaseops/deploymentExecutionResponder";
 
 export interface ActionExecutionRepo {
+  deploymentExecution?: DeploymentExecutionRepo["deploymentExecution"];
   environment: {
     findUnique(args: { where: { id: string } }): Promise<{ id: string; organizationId: string } | null>;
   };
@@ -96,7 +98,32 @@ export async function executeApprovedAction(
       inputs: { role_arn: target.roleArn, region: target.region, cluster: target.ecsCluster, service: target.ecsService },
       installationToken: token.token,
     });
-    return result.ok ? { ok: true, result: { dispatched: true } } : { ok: false, error: result.error };
+    if (!result.ok) return { ok: false, error: result.error };
+    let execution = null;
+    try {
+      if (!repo.deploymentExecution) throw new Error("deployment_execution_storage_unavailable");
+      const created = await repo.deploymentExecution.create({
+        data: {
+          organizationId,
+          environmentId,
+          repositoryFullName,
+          workflowRunId: result.data.workflowRunId,
+          workflowUrl: result.data.htmlUrl,
+          source: "agent",
+          triggeredByUserId: actorUserId,
+          status: result.data.workflowRunId ? "queued" : "tracking_unavailable",
+        },
+      });
+      execution = serializeDeploymentExecution(created);
+    } catch { /* dispatch already happened; preserve the truthful outcome */ }
+    return {
+      ok: true,
+      result: {
+        dispatched: true,
+        execution,
+        trackingAvailable: Boolean(execution && result.data.workflowRunId),
+      },
+    };
   }
 
   if (toolName === "create_environment") {

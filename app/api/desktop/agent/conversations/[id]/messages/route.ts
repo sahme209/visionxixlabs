@@ -19,6 +19,7 @@ import { executeReadOnlyTool, isProdEnvironmentTarget, type ToolExecutionRepo, t
 import { id as idFactory } from "@/lib/domain/ids";
 import { loadWorkspaceMemory, rememberToolContext, workspaceMemoryPrompt, type WorkspaceMemoryRepo } from "@/lib/axiom/agentRuntime/workspaceMemory";
 import { prepareProposalArgsForReview } from "@/lib/axiom/agentRuntime/proposalReview";
+import { parseSkillInvocation, resolveInstalledSkillContext, type AgentSkillRepo } from "@/lib/axiom/agentRuntime/skillCatalog";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -71,6 +72,27 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     }),
   ]);
 
+  const invokedSkillId = parseSkillInvocation(message);
+  let skillContext: string;
+  try {
+    const resolvedSkills = await resolveInstalledSkillContext(prisma as unknown as AgentSkillRepo, organizationId, invokedSkillId);
+    if (!resolvedSkills.ok) {
+      const reply = resolvedSkills.error === "unknown_skill"
+        ? `/${resolvedSkills.skillId} is not a reviewed Axiom skill.`
+        : `/${resolvedSkills.skillId} is not enabled for this workspace. Add or enable it under Plugins & Skills first.`;
+      await prisma.agentConversationTurn.create({ data: { conversationId, role: "assistant", content: reply } });
+      return NextResponse.json({ ok: true, data: { reply, proposal: null } });
+    }
+    skillContext = resolvedSkills.prompt;
+  } catch {
+    if (invokedSkillId) {
+      const reply = "I couldn't verify that skill's workspace installation, so I did not send this request to an AI provider. Try again shortly.";
+      await prisma.agentConversationTurn.create({ data: { conversationId, role: "assistant", content: reply } });
+      return NextResponse.json({ ok: true, data: { reply, proposal: null } });
+    }
+    skillContext = "Skills are temporarily unavailable; continue using the fixed governed tool registry only.";
+  }
+
   const priorTurns = await prisma.agentConversationTurn.findMany({ where: { conversationId }, orderBy: { createdAt: "asc" } });
   const transcript: ConversationTurnInput[] = priorTurns.map((t) => ({ role: t.role as ConversationTurnInput["role"], content: t.content }));
 
@@ -82,6 +104,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     correlationId: String(correlationId),
     transcript,
     workspaceContext,
+    skillContext,
     preferredProvider,
     executeReadOnlyTool: async (toolName, args) => {
       const result = await executeReadOnlyTool(prisma as unknown as ToolExecutionRepo, organizationId, toolName, args);

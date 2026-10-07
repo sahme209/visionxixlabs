@@ -1525,6 +1525,22 @@ model AgentWorkspaceMemory {
   updatedAt           DateTime @updatedAt
 }
 
+/// Workspace-scoped workflow guidance enabled for the governed Agent.
+/// Skills never contain credentials and never grant tool authority.
+model AgentSkillInstallation {
+  id                String   @id @default(cuid())
+  organizationId    String
+  skillId           String
+  /// enabled | disabled
+  status            String   @default("enabled")
+  installedByUserId String
+  installedAt       DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  @@unique([organizationId, skillId])
+  @@index([organizationId, status])
+}
+
 model AxiomApprovalPolicy {
   id             String  @id @default(cuid())
   organizationId String
@@ -2580,6 +2596,34 @@ model DeploymentTarget {
   environment Environment @relation(fields: [environmentId], references: [id], onDelete: Cascade)
 
   @@index([organizationId])
+}
+
+/// Credential-free observation record for a real deployment dispatched
+/// through the tenant's GitHub Actions workflow. The exact run ID prevents
+/// one repository's concurrent workflow runs from being confused.
+model DeploymentExecution {
+  id                 String    @id @default(cuid())
+  organizationId     String
+  environmentId      String
+  repositoryFullName String
+  workflowRunId      String?
+  workflowUrl        String?
+  /// desktop | agent
+  source             String
+  triggeredByUserId  String
+  /// queued | in_progress | completed | tracking_unavailable
+  status             String    @default("queued")
+  conclusion         String?
+  /// not_started | in_progress | succeeded | failed | unknown
+  rollbackStatus     String    @default("not_started")
+  lastObservedAt     DateTime?
+  completedAt        DateTime?
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+
+  @@index([organizationId, createdAt])
+  @@index([organizationId, environmentId, createdAt])
+  @@unique([organizationId, workflowRunId])
 }
 
 model BranchEnvironmentPolicy {

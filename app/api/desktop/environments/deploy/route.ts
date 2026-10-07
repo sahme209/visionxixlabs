@@ -19,6 +19,7 @@ import { resolveTenantScopedToken, parseRepositoryFullName } from "@/lib/connect
 import { dispatchWorkflow } from "@/lib/connectors/github/githubWriteClient";
 import { AWS_ECS_DEPLOY_WORKFLOW_FILENAME } from "@/lib/releaseops/awsEcsDeployWorkflowTemplate";
 import { appendAuditEvent, type AuditEventRepo } from "@/lib/releaseops/auditEventResponder";
+import { serializeDeploymentExecution, type DeploymentExecutionRepo } from "@/lib/releaseops/deploymentExecutionResponder";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -77,16 +78,41 @@ export async function POST(request: NextRequest): Promise<Response> {
     return NextResponse.json({ ok: false, error: "dispatch_failed", hint: dispatchResult.error }, { status: 502 });
   }
 
+  let execution = null;
+  try {
+    const executionRepo = prisma as unknown as DeploymentExecutionRepo;
+    const created = await executionRepo.deploymentExecution.create({
+      data: {
+        organizationId,
+        environmentId,
+        repositoryFullName,
+        workflowRunId: dispatchResult.data.workflowRunId,
+        workflowUrl: dispatchResult.data.htmlUrl,
+        source: "desktop",
+        triggeredByUserId: String(session.userId),
+        status: dispatchResult.data.workflowRunId ? "queued" : "tracking_unavailable",
+      },
+    });
+    execution = serializeDeploymentExecution(created);
+  } catch { /* the external dispatch happened; report tracking loss honestly */ }
+
   try {
     await appendAuditEvent(prisma as unknown as AuditEventRepo, {
       organizationId,
       kind: "release.deploy_triggered",
       subjectKind: "environment",
       subjectId: environmentId,
-      summary: `Dispatched AWS ECS deploy from desktop for ${repositoryFullName} → ${target.ecsCluster}/${target.ecsService} (${target.region})`,
+      summary: `Dispatched AWS ECS deploy from desktop for ${repositoryFullName} → ${target.ecsCluster}/${target.ecsService} (${target.region})${execution ? " with live observation" : " without durable observation"}`,
       actorUserId: String(session.userId),
     });
   } catch { /* best-effort */ }
 
-  return NextResponse.json({ ok: true, data: { dispatched: true } });
+  return NextResponse.json({
+    ok: true,
+    data: {
+      dispatched: true,
+      execution,
+      trackingAvailable: Boolean(execution && dispatchResult.data.workflowRunId),
+    },
+  });
 }

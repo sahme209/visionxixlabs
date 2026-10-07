@@ -4,6 +4,7 @@ import type { VerifiedDesktopIdentity } from "../lib/desktopClient";
 const VIEW_TITLES: Partial<Record<View, { title: string; subtitle: string }>> = {
   agent: { title: "Agent", subtitle: "Plain-English requests become risk-checked, approval-gated, auditable actions" },
   "deployment-requests": { title: "Release workspace", subtitle: "Bring governed intake, readiness, approval evidence, recovery, and playbooks into one place" },
+  "plugins-skills": { title: "Plugins & Skills", subtitle: "Verified systems and reusable workflows for the governed Agent" },
   docs: { title: "Documentation", subtitle: "Product guidance and operating references" },
   settings: { title: "Settings", subtitle: "Authentication and workstation configuration" },
 };

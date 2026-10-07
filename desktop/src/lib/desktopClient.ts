@@ -42,6 +42,33 @@ export interface VerifiedDesktopIdentity {
   access: DesktopCommercialAccess;
 }
 
+export interface AgentSkillCatalogItem {
+  id: string;
+  name: string;
+  description: string;
+  category: "GitHub" | "Deployments" | "Governance" | "Identity";
+  toolNames: string[];
+  status: "enabled" | "disabled" | "not_installed";
+  installedAt: string | null;
+  updatedAt: string | null;
+}
+
+export interface DeploymentExecution {
+  id: string;
+  environmentId: string;
+  repositoryFullName: string;
+  workflowRunId: string | null;
+  workflowUrl: string | null;
+  source: string;
+  status: string;
+  conclusion: string | null;
+  rollbackStatus: string;
+  lastObservedAt: string | null;
+  completedAt: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
 interface LegacyApiErrorBody {
   error?: string | { userMessage?: string };
   message?: string;
@@ -620,6 +647,14 @@ export class DesktopClient {
     return this.post(`/api/desktop/integrations/${encodeURIComponent(provider)}/connect`, {});
   }
 
+  listAgentSkills(): Promise<ApiResult<{ skills: AgentSkillCatalogItem[] }>> {
+    return this.get("/api/desktop/agent/skills");
+  }
+
+  updateAgentSkill(skillId: string, action: "install" | "enable" | "disable" | "remove"): Promise<ApiResult<{ skillId: string; status: string }>> {
+    return this.post("/api/desktop/agent/skills", { skillId, action });
+  }
+
   validateGitHubReadOnly(): Promise<ApiResult<{ status: "validated_read_only" }>> {
     return this.post("/api/desktop/integrations/github/validate", {});
   }
@@ -672,8 +707,17 @@ export class DesktopClient {
     return this.post("/api/desktop/environments/deployment-target", input);
   }
 
-  triggerAwsDeploy(input: { repositoryFullName: string; environmentId: string }): Promise<ApiResult<{ dispatched: boolean }>> {
+  triggerAwsDeploy(input: { repositoryFullName: string; environmentId: string }): Promise<ApiResult<{ dispatched: boolean; execution: DeploymentExecution | null; trackingAvailable: boolean }>> {
     return this.post("/api/desktop/environments/deploy", input);
+  }
+
+  listDeploymentExecutions(environmentId?: string): Promise<ApiResult<{ executions: DeploymentExecution[] }>> {
+    const query = environmentId ? `?environmentId=${encodeURIComponent(environmentId)}` : "";
+    return this.get(`/api/desktop/environments/deployments${query}`);
+  }
+
+  observeDeploymentExecution(id: string): Promise<ApiResult<DeploymentExecution>> {
+    return this.get(`/api/desktop/environments/deployments/${encodeURIComponent(id)}`);
   }
 
   createAgentConversation(): Promise<ApiResult<{ id: string; title: string | null; createdAt: string }>> {

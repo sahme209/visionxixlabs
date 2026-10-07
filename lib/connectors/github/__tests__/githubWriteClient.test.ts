@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { createBranch, commitFile, createPullRequest, dispatchWorkflow, getFile, isSafeRepositoryPath } from "../githubWriteClient";
+import { createBranch, commitFile, createPullRequest, dispatchWorkflow, getFile, getWorkflowRun, isSafeRepositoryPath } from "../githubWriteClient";
 
 const fetchMock = vi.fn();
 vi.stubGlobal("fetch", fetchMock);
@@ -167,6 +167,7 @@ describe("dispatchWorkflow", () => {
       installationToken: "tok",
     });
     expect(result.ok).toBe(true);
+    expect(result).toEqual({ ok: true, data: { workflowRunId: null, runUrl: null, htmlUrl: null } });
     expect(fetchMock).toHaveBeenCalledWith(
       expect.stringContaining("/repos/acme/widgets/actions/workflows/axiom-deploy-aws-ecs.yml/dispatches"),
       expect.any(Object),
@@ -178,6 +179,25 @@ describe("dispatchWorkflow", () => {
     });
   });
 
+  it("captures the exact run identity from GitHub's current dispatch response", async () => {
+    fetchMock.mockResolvedValueOnce(jsonResponse(200, {
+      workflow_run_id: 123456789,
+      run_url: "https://api.github.com/repos/acme/widgets/actions/runs/123456789",
+      html_url: "https://github.com/acme/widgets/actions/runs/123456789",
+    }));
+    const result = await dispatchWorkflow({
+      owner: "acme", repo: "widgets", workflowFile: "axiom-deploy-aws-ecs.yml", ref: "main",
+      inputs: { role_arn: "arn", region: "us-east-1", cluster: "prod", service: "web" }, installationToken: "tok",
+    });
+    expect(result).toEqual({ ok: true, data: {
+      workflowRunId: "123456789",
+      runUrl: "https://api.github.com/repos/acme/widgets/actions/runs/123456789",
+      htmlUrl: "https://github.com/acme/widgets/actions/runs/123456789",
+    } });
+    const [, call] = fetchMock.mock.calls[0] as [string, { headers: Record<string, string> }];
+    expect(call.headers["X-GitHub-Api-Version"]).toBe("2026-03-10");
+  });
+
   it("surfaces a clear error when GitHub rejects the dispatch (e.g. workflow file not found)", async () => {
     fetchMock.mockResolvedValueOnce(jsonResponse(404, { message: "Not Found" }));
     const result = await dispatchWorkflow({
@@ -187,5 +207,30 @@ describe("dispatchWorkflow", () => {
     });
     expect(result.ok).toBe(false);
     if (!result.ok) expect(result.error).toContain("workflow_dispatch_failed");
+  });
+});
+
+describe("getWorkflowRun", () => {
+  beforeEach(() => vi.clearAllMocks());
+
+  it("reports successful rollback evidence from the exact run's steps", async () => {
+    fetchMock
+      .mockResolvedValueOnce(jsonResponse(200, {
+        id: 123, status: "completed", conclusion: "failure",
+        html_url: "https://github.com/acme/widgets/actions/runs/123",
+        created_at: "2026-10-07T10:00:00Z", run_started_at: "2026-10-07T10:00:02Z", updated_at: "2026-10-07T10:08:00Z",
+      }))
+      .mockResolvedValueOnce(jsonResponse(200, { jobs: [{ steps: [
+        { name: "Wait for the new deployment to stabilize", status: "completed", conclusion: "failure" },
+        { name: "Roll back — deployment did not stabilize", status: "completed", conclusion: "success" },
+      ] }] }));
+    const result = await getWorkflowRun({ owner: "acme", repo: "widgets", workflowRunId: "123", installationToken: "tok" });
+    expect(result).toEqual({ ok: true, data: expect.objectContaining({ status: "completed", conclusion: "failure", rollback: "succeeded" }) });
+  });
+
+  it("rejects an invalid run id before contacting GitHub", async () => {
+    await expect(getWorkflowRun({ owner: "acme", repo: "widgets", workflowRunId: "../secrets", installationToken: "tok" }))
+      .resolves.toEqual({ ok: false, error: "invalid_workflow_run_id" });
+    expect(fetchMock).not.toHaveBeenCalled();
   });
 });

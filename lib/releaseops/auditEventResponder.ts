@@ -32,6 +32,7 @@ export const AUDIT_SUBJECT_KINDS = [
   "release_freeze",
   "branch_validation",
   "environment",
+  "deployment_execution",
   "identity_provider",
 ] as const;
 export type AuditSubjectKind = (typeof AUDIT_SUBJECT_KINDS)[number];

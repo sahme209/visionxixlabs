@@ -19,7 +19,7 @@ import {
   Trees,
 } from "lucide-react";
 import { ViewShell } from "../components/Primitives";
-import { desktopClient, type VerifiedDesktopIdentity } from "../lib/desktopClient";
+import { desktopClient, type DeploymentExecution, type VerifiedDesktopIdentity } from "../lib/desktopClient";
 import { clearApiKey } from "../lib/apiKeyStore";
 import { clearAuthSession } from "../lib/authSession";
 import { normalizeAiProviderStatus, type ModelPolicy, type ProviderModels } from "../lib/aiProviderStatus";
@@ -741,9 +741,15 @@ function DeploymentTargetPanel({ environmentId }: { environmentId: string }) {
   const [deploying, setDeploying] = useState(false);
   const [deployError, setDeployError] = useState<string | null>(null);
   const [deployOk, setDeployOk] = useState(false);
+  const [execution, setExecution] = useState<DeploymentExecution | null>(null);
+  const executionId = execution?.id;
+  const executionStatus = execution?.status;
 
   useEffect(() => {
-    void desktopClient.getDeploymentTarget(environmentId).then((result) => {
+    void Promise.all([
+      desktopClient.getDeploymentTarget(environmentId),
+      desktopClient.listDeploymentExecutions(environmentId),
+    ]).then(([result, executions]) => {
       if (result.ok) {
         if (result.data.target) {
           setRoleArn(result.data.target.roleArn);
@@ -754,9 +760,22 @@ function DeploymentTargetPanel({ environmentId }: { environmentId: string }) {
       } else {
         setLoadError(result.error);
       }
+      if (executions.ok) setExecution(executions.data.executions[0] ?? null);
       setLoaded(true);
     });
   }, [environmentId]);
+
+  useEffect(() => {
+    if (!executionId || executionStatus === "completed" || executionStatus === "tracking_unavailable") return;
+    let cancelled = false;
+    const observe = async () => {
+      const result = await desktopClient.observeDeploymentExecution(executionId);
+      if (!cancelled && result.ok) setExecution(result.data);
+    };
+    void observe();
+    const timer = window.setInterval(() => void observe(), 5000);
+    return () => { cancelled = true; window.clearInterval(timer); };
+  }, [executionId, executionStatus]);
 
   async function save() {
     setSaving(true); setSaveError(null); setSaveOk(false);
@@ -776,6 +795,7 @@ function DeploymentTargetPanel({ environmentId }: { environmentId: string }) {
       const result = await desktopClient.triggerAwsDeploy({ repositoryFullName: deployRepo, environmentId });
       if (!result.ok) { setDeployError(result.error); return; }
       setDeployOk(true);
+      setExecution(result.data.execution);
     } finally {
       setDeploying(false);
     }
@@ -810,8 +830,30 @@ function DeploymentTargetPanel({ environmentId }: { environmentId: string }) {
             {deploying ? "Deploying…" : "Deploy"}
           </button>
         </div>
-        {deployOk && <p className="text-[12px] text-emerald-300">Deploy dispatched — check the repository&apos;s Actions tab for progress.</p>}
+        {deployOk && !execution && <p className="text-[12px] text-amber-300">Deploy dispatched, but live tracking could not be saved. Open GitHub Actions to verify the outcome.</p>}
         {deployError && <p role="alert" className="text-[12px] text-rose-300">{deployError}</p>}
+        {execution && (
+          <div className="mt-3 rounded-lg border border-white/[0.07] bg-white/[0.025] p-3 text-[12px]">
+            <div className="flex items-center justify-between gap-3">
+              <div>
+                <p className="font-medium text-zinc-200">{execution.repositoryFullName}</p>
+                <p className="mt-1 text-zinc-500">
+                  {execution.status === "completed"
+                    ? execution.conclusion === "success" ? "Deployment stabilized" : "Deployment failed"
+                    : execution.status === "tracking_unavailable" ? "Live tracking unavailable" : "Deployment in progress"}
+                  {execution.rollbackStatus === "succeeded" ? " · rollback succeeded" : ""}
+                  {execution.rollbackStatus === "failed" ? " · rollback failed" : ""}
+                  {execution.rollbackStatus === "in_progress" ? " · rollback in progress" : ""}
+                </p>
+              </div>
+              {execution.workflowUrl && (
+                <button type="button" onClick={() => void open(execution.workflowUrl!)} className="rounded-md border border-white/10 px-2.5 py-1.5 text-zinc-300 hover:bg-white/[0.06]">
+                  View evidence ↗
+                </button>
+              )}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

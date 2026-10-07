@@ -164,6 +164,10 @@ export type AuditAction =
   | "cloud_account.toggle"
   | "connector.pause"
   | "connector.resume"
+  | "skill.install"
+  | "skill.enable"
+  | "skill.disable"
+  | "skill.remove"
   // GitHub App Manifest flow — one-time platform-operator setup.
   | "github_app.manifest_created"
   | "github_app.manifest_create_failed"
