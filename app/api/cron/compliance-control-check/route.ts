@@ -16,6 +16,14 @@ import { runScheduledControlChecks } from "@/lib/compliance/scheduledControlChec
 export const dynamic = "force-dynamic";
 export const maxDuration = 30;
 
+interface ComplianceControlCheckRunRepo {
+  complianceControlCheckRun: {
+    createMany(args: {
+      data: Array<{ controlId: string; status: "pass" | "fail" | "error"; detail: string }>;
+    }): Promise<{ count: number }>;
+  };
+}
+
 export async function GET(req: NextRequest) {
   return handle(req);
 }
@@ -36,7 +44,8 @@ async function handle(req: NextRequest) {
 
   const results = runScheduledControlChecks();
   try {
-    await prisma.complianceControlCheckRun.createMany({
+    const repository = prisma as unknown as ComplianceControlCheckRunRepo;
+    await repository.complianceControlCheckRun.createMany({
       data: results.map((r) => ({ controlId: r.controlId, status: r.status, detail: r.detail })),
     });
   } catch (err) {
