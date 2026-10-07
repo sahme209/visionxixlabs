@@ -75,12 +75,35 @@ export interface AgentSkillRepo {
   };
 }
 
-export async function installedSkillPrompt(repo: AgentSkillRepo, organizationId: string): Promise<string> {
+export function parseSkillInvocation(message: string): string | null {
+  const match = message.trim().match(/^\/([a-z0-9]+(?:-[a-z0-9]+)*)(?:\s|$)/i);
+  return match?.[1]?.toLowerCase() ?? null;
+}
+
+export type InstalledSkillContext =
+  | { ok: true; prompt: string; invokedSkill: AgentSkillDefinition | null }
+  | { ok: false; error: "skill_not_installed" | "unknown_skill"; skillId: string };
+
+export async function resolveInstalledSkillContext(repo: AgentSkillRepo, organizationId: string, invokedSkillId?: string | null): Promise<InstalledSkillContext> {
   const rows = await repo.agentSkillInstallation.findMany({ where: { organizationId, status: "enabled" } });
   const installed = rows
     .filter((row) => row.status === "enabled")
     .map((row) => findAgentSkill(row.skillId))
     .filter((skill): skill is AgentSkillDefinition => Boolean(skill));
-  if (installed.length === 0) return "No optional workspace skills are enabled.";
-  return installed.map((skill) => `Skill: ${skill.name} (${skill.id})\n${skill.instructions}\nPermitted workflow tools: ${skill.toolNames.join(", ")}`).join("\n\n");
+  if (invokedSkillId) {
+    const definition = findAgentSkill(invokedSkillId);
+    if (!definition) return { ok: false, error: "unknown_skill", skillId: invokedSkillId };
+    if (!installed.some((skill) => skill.id === invokedSkillId)) return { ok: false, error: "skill_not_installed", skillId: invokedSkillId };
+  }
+  if (installed.length === 0) return { ok: true, prompt: "No optional workspace skills are enabled.", invokedSkill: null };
+  const ordered = invokedSkillId
+    ? [...installed.filter((skill) => skill.id === invokedSkillId), ...installed.filter((skill) => skill.id !== invokedSkillId)]
+    : installed;
+  const prompt = ordered.map((skill) => `${skill.id === invokedSkillId ? "Explicitly invoked skill" : "Available skill"}: ${skill.name} (${skill.id})\n${skill.instructions}\nRelevant governed tools: ${skill.toolNames.join(", ")}`).join("\n\n");
+  return { ok: true, prompt, invokedSkill: invokedSkillId ? ordered[0] ?? null : null };
+}
+
+export async function installedSkillPrompt(repo: AgentSkillRepo, organizationId: string): Promise<string> {
+  const result = await resolveInstalledSkillContext(repo, organizationId);
+  return result.ok ? result.prompt : "No optional workspace skills are enabled.";
 }

@@ -11,6 +11,7 @@ const mocks = vi.hoisted(() => ({
   createProposal: vi.fn(async () => ({ id: "ap_1", toolName: "open_github_pull_request", argsJson: {}, riskLevel: "medium", status: "proposed" })),
   runDecisionLoop: vi.fn(),
   prepareProposalArgsForReview: vi.fn(),
+  findManySkills: vi.fn(async (): Promise<Array<{ skillId: string; status: string }>> => []),
 }));
 
 vi.mock("@/lib/desktop/resolveRequestDesktopSession", () => ({ resolveRequestDesktopSession: mocks.resolveRequestDesktopSession }));
@@ -19,6 +20,7 @@ vi.mock("@/lib/db", () => ({
     agentConversation: { findFirst: mocks.findFirstConversation, update: mocks.updateConversation },
     agentConversationTurn: { create: mocks.createTurn, findMany: mocks.findManyTurns },
     agentActionProposal: { create: mocks.createProposal },
+    agentSkillInstallation: { findMany: mocks.findManySkills },
     $transaction: mocks.transaction,
   },
 }));
@@ -87,6 +89,27 @@ describe("POST /api/desktop/agent/conversations/[id]/messages", () => {
     expect(mocks.runDecisionLoop).toHaveBeenCalledWith(expect.objectContaining({
       organizationId: "org-1",
       preferredProvider: "anthropic",
+    }));
+  });
+
+  it("rejects a disabled slash skill before calling an AI provider", async () => {
+    mocks.findManySkills.mockResolvedValue([{ skillId: "release-readiness", status: "disabled" }]);
+    const { POST } = await import("../route");
+    const res = await POST(request({ message: "/release-readiness check this release" }), params);
+    const body = await res.json();
+    expect(res.status).toBe(200);
+    expect(body.data.reply).toMatch(/not enabled/i);
+    expect(mocks.runDecisionLoop).not.toHaveBeenCalled();
+  });
+
+  it("prioritizes an explicitly invoked enabled skill in Agent context", async () => {
+    mocks.findManySkills.mockResolvedValue([{ skillId: "release-readiness", status: "enabled" }]);
+    mocks.runDecisionLoop.mockResolvedValue({ kind: "final", message: "Checking readiness." });
+    const { POST } = await import("../route");
+    const res = await POST(request({ message: "/release-readiness check this release" }), params);
+    expect(res.status).toBe(200);
+    expect(mocks.runDecisionLoop).toHaveBeenCalledWith(expect.objectContaining({
+      skillContext: expect.stringContaining("Explicitly invoked skill: Release readiness check"),
     }));
   });
 
