@@ -12,6 +12,23 @@ interface RepositoryStatus {
   changedFiles: Array<{ path: string; status: string }>;
 }
 
+interface GitHubRepository {
+  id: string;
+  name: string;
+  fullName: string;
+  owner: string;
+  defaultBranch: string;
+  visibility: "private" | "public";
+}
+
+interface Confirmation {
+  title: string;
+  description: string;
+  confirmLabel: string;
+  destructive?: boolean;
+  onConfirm: () => void | Promise<void>;
+}
+
 export function RepositoryWorkspaceView() {
   const [parentPath, setParentPath] = useState("");
   const [repositories, setRepositories] = useState<string[]>([]);
@@ -26,11 +43,16 @@ export function RepositoryWorkspaceView() {
   const [error, setError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
   const [cloneRepository, setCloneRepository] = useState("");
+  const [remoteRepositories, setRemoteRepositories] = useState<GitHubRepository[]>([]);
+  const [repositoryCatalogError, setRepositoryCatalogError] = useState<string | null>(null);
+  const [repositoryCatalogTruncated, setRepositoryCatalogTruncated] = useState(false);
+  const [showRepositoryPicker, setShowRepositoryPicker] = useState(false);
   const [branchName, setBranchName] = useState("");
   const [commitMessage, setCommitMessage] = useState("");
   const [prTitle, setPrTitle] = useState("");
   const [prBase, setPrBase] = useState("main");
   const [prUrl, setPrUrl] = useState<string | null>(null);
+  const [confirmation, setConfirmation] = useState<Confirmation | null>(null);
 
   const refreshRepository = useCallback(async (repositoryPath: string) => {
     const [nextStatus, nextFiles] = await Promise.all([
@@ -55,11 +77,24 @@ export function RepositoryWorkspaceView() {
   }, [refreshList]);
 
   useEffect(() => {
+    void desktopClient.listGithubRepositories().then((result) => {
+      if (!result.ok) {
+        setRepositoryCatalogError(result.error);
+        return;
+      }
+      setRemoteRepositories(result.data.repositories);
+      setRepositoryCatalogTruncated(result.data.truncated);
+      setRepositoryCatalogError(null);
+    });
+  }, []);
+
+  useEffect(() => {
     if (!selectedRepository) return;
     setError(null);
     setSelectedFile(null);
     setContent("");
     setSavedContent("");
+    setPrUrl(null);
     void refreshRepository(selectedRepository).catch((cause) => setError(String(cause)));
   }, [refreshRepository, selectedRepository]);
 
@@ -68,24 +103,68 @@ export function RepositoryWorkspaceView() {
     return query ? files.filter((file) => file.toLowerCase().includes(query)) : files;
   }, [files, filter]);
 
+  const matchingRemoteRepositories = useMemo(() => {
+    const query = cloneRepository.trim().toLowerCase();
+    return remoteRepositories
+      .filter((repository) => !query || repository.fullName.toLowerCase().includes(query))
+      .slice(0, 8);
+  }, [cloneRepository, remoteRepositories]);
+
+  useEffect(() => {
+    if (!status?.repositoryFullName) return;
+    const connectedRepository = remoteRepositories.find((repository) => repository.fullName === status.repositoryFullName);
+    if (connectedRepository) setPrBase(connectedRepository.defaultBranch);
+  }, [remoteRepositories, status?.repositoryFullName]);
+
+  useEffect(() => {
+    if (!confirmation) return;
+    const dismiss = (event: globalThis.KeyboardEvent) => {
+      if (event.key === "Escape") setConfirmation(null);
+    };
+    window.addEventListener("keydown", dismiss);
+    return () => window.removeEventListener("keydown", dismiss);
+  }, [confirmation]);
+
   async function run(label: string, operation: () => Promise<void>) {
     setBusy(label); setError(null); setNotice(null);
     try { await operation(); } catch (cause) { setError(cause instanceof Error ? cause.message : String(cause)); }
     finally { setBusy(null); }
   }
 
-  async function selectFile(path: string) {
+  async function openFile(path: string) {
     if (!selectedRepository) return;
-    if (content !== savedContent && !window.confirm("Discard the unsaved editor changes?")) return;
     await run("open", async () => {
       const next = await invoke<string>("read_repository_file", { repositoryPath: selectedRepository, relativePath: path });
       setSelectedFile(path); setContent(next); setSavedContent(next); setCommitMessage("");
     });
   }
 
+  function selectFile(path: string) {
+    if (content !== savedContent) {
+      setConfirmation({
+        title: "Discard unsaved changes?",
+        description: `Your edits to ${selectedFile ?? "the current file"} have not been saved.`,
+        confirmLabel: "Discard and open",
+        destructive: true,
+        onConfirm: () => openFile(path),
+      });
+      return;
+    }
+    void openFile(path);
+  }
+
   function chooseRepository(repository: string) {
     if (repository === selectedRepository) return;
-    if (content !== savedContent && !window.confirm("Discard the unsaved editor changes and switch repositories?")) return;
+    if (content !== savedContent) {
+      setConfirmation({
+        title: "Switch repositories?",
+        description: `Your edits to ${selectedFile ?? "the current file"} will be discarded.`,
+        confirmLabel: "Discard and switch",
+        destructive: true,
+        onConfirm: () => setSelectedRepository(repository),
+      });
+      return;
+    }
     setSelectedRepository(repository);
   }
 
@@ -99,32 +178,44 @@ export function RepositoryWorkspaceView() {
   }
 
   async function clone() {
-    if (!cloneRepository.includes("/") || !parentPath) return;
+    const repositoryFullName = cloneRepository.trim();
+    if (!repositoryFullName.includes("/") || !parentPath) return;
     await run("clone", async () => {
-      const credential = await desktopClient.mintGithubCloneToken({ repositoryFullName: cloneRepository, purpose: "clone" });
+      const credential = await desktopClient.mintGithubCloneToken({ repositoryFullName, purpose: "clone" });
       if (!credential.ok) throw new Error(credential.error);
-      const repositoryName = cloneRepository.split("/")[1];
+      const repositoryName = repositoryFullName.split("/")[1];
       const destinationPath = `${parentPath.replace(/\/$/, "")}/${repositoryName}`;
       await invoke("clone_repository", { cloneUrl: credential.data.cloneUrl, destinationPath });
       await refreshList(parentPath);
       setSelectedRepository(destinationPath);
       setCloneRepository("");
-      setNotice(`Cloned ${cloneRepository} without storing its access token.`);
+      setShowRepositoryPicker(false);
+      setNotice(`Cloned ${repositoryFullName} without storing its access token.`);
     });
   }
 
-  async function sync(direction: "pull" | "push") {
+  async function performSync(direction: "pull" | "push") {
     if (!selectedRepository || !status?.repositoryFullName) return;
-    const warning = direction === "push"
-      ? `Push branch ${status.branch} to ${status.repositoryFullName}? This changes GitHub.`
-      : `Pull ${status.repositoryFullName}/${status.branch} with fast-forward only?`;
-    if (!window.confirm(warning)) return;
     await run(direction, async () => {
-      const credential = await desktopClient.mintGithubCloneToken({ repositoryFullName: status.repositoryFullName!, purpose: direction });
+      const repositoryFullName = status.repositoryFullName;
+      if (!repositoryFullName) return;
+      const credential = await desktopClient.mintGithubCloneToken({ repositoryFullName, purpose: direction });
       if (!credential.ok) throw new Error(credential.error);
       await invoke(`${direction}_repository`, { repositoryPath: selectedRepository, authenticatedUrl: credential.data.cloneUrl });
       await refreshRepository(selectedRepository);
       setNotice(direction === "push" ? "Branch pushed to GitHub." : "Repository synchronized with a fast-forward pull.");
+    });
+  }
+
+  function sync(direction: "pull" | "push") {
+    if (!status?.repositoryFullName) return;
+    setConfirmation({
+      title: direction === "push" ? "Push branch to GitHub?" : "Pull remote changes?",
+      description: direction === "push"
+        ? `${status.branch} will be published to ${status.repositoryFullName}. No force push is used.`
+        : `${status.repositoryFullName}/${status.branch} will be fetched and merged only if it can fast-forward safely.`,
+      confirmLabel: direction === "push" ? "Push branch" : "Pull changes",
+      onConfirm: () => performSync(direction),
     });
   }
 
@@ -152,17 +243,39 @@ export function RepositoryWorkspaceView() {
     });
   }
 
-  async function openPullRequest() {
-    if (!status?.repositoryFullName || !prTitle.trim() || !status.branch || status.branch === prBase) return;
+  async function publishAndOpenPullRequest() {
+    if (!status?.repositoryFullName || !prTitle.trim() || !prBase.trim() || !status.branch || status.branch === prBase.trim()) return;
     await run("pr", async () => {
+      const repositoryFullName = status.repositoryFullName;
+      if (!repositoryFullName || !selectedRepository) return;
+      const credential = await desktopClient.mintGithubCloneToken({ repositoryFullName, purpose: "push" });
+      if (!credential.ok) throw new Error(credential.error);
+      await invoke("push_repository", { repositoryPath: selectedRepository, authenticatedUrl: credential.data.cloneUrl });
       const result = await desktopClient.openGithubPullRequest({
-        repositoryFullName: status.repositoryFullName!, head: status.branch, base: prBase.trim(), title: prTitle.trim(),
+        repositoryFullName, head: status.branch, base: prBase.trim(), title: prTitle.trim(),
         body: "Opened from the governed Axiom Agent desktop repository workspace.",
       });
       if (!result.ok) throw new Error(result.error);
       setPrUrl(result.data.htmlUrl); setPrTitle("");
       setNotice(`Pull request #${result.data.number} opened.`);
+      await refreshRepository(selectedRepository);
     });
+  }
+
+  function reviewPullRequest() {
+    if (!status?.repositoryFullName) return;
+    setConfirmation({
+      title: "Publish branch and open pull request?",
+      description: `${status.branch} will be pushed to ${status.repositoryFullName}, then a pull request into ${prBase.trim()} will be opened.`,
+      confirmLabel: "Publish and open PR",
+      onConfirm: publishAndOpenPullRequest,
+    });
+  }
+
+  async function confirmAction() {
+    const action = confirmation;
+    setConfirmation(null);
+    await action?.onConfirm();
   }
 
   function editorKeyDown(event: KeyboardEvent<HTMLTextAreaElement>) {
@@ -179,11 +292,21 @@ export function RepositoryWorkspaceView() {
 
   return <div className="flex min-h-0 flex-1 flex-col bg-[#0b0c0e]">
     <div className="flex items-center gap-2 border-b border-white/[0.07] px-4 py-3">
-      <input value={cloneRepository} onChange={(event) => setCloneRepository(event.target.value)} placeholder="owner/repository" className="w-56 rounded-md border border-white/10 bg-black/25 px-3 py-2 text-xs text-zinc-200 outline-none focus:border-violet-400/50" />
+      <div className="relative w-64">
+        <input value={cloneRepository} onFocus={() => setShowRepositoryPicker(true)} onBlur={() => setShowRepositoryPicker(false)} onChange={(event) => { setCloneRepository(event.target.value); setShowRepositoryPicker(true); }} placeholder="Search connected repositories" aria-label="Connected GitHub repository" className="w-full rounded-md border border-white/10 bg-black/25 px-3 py-2 text-xs text-zinc-200 outline-none focus:border-violet-400/50" />
+        {showRepositoryPicker && matchingRemoteRepositories.length > 0 && <div className="absolute left-0 top-[calc(100%+6px)] z-30 max-h-72 w-80 overflow-y-auto rounded-lg border border-white/10 bg-[#181a1d] p-1 shadow-2xl">
+          {matchingRemoteRepositories.map((repository) => <button key={repository.id} type="button" onMouseDown={(event) => event.preventDefault()} onClick={() => { setCloneRepository(repository.fullName); setShowRepositoryPicker(false); }} className="flex w-full items-center justify-between rounded-md px-3 py-2 text-left hover:bg-white/[0.06]">
+            <span className="truncate text-xs text-zinc-200">{repository.fullName}</span>
+            <span className="ml-3 text-[10px] text-zinc-600">{repository.visibility} · {repository.defaultBranch}</span>
+          </button>)}
+        </div>}
+      </div>
       <input value={parentPath} onChange={(event) => setParentPath(event.target.value)} aria-label="Local repositories folder" className="min-w-0 flex-1 rounded-md border border-white/10 bg-black/25 px-3 py-2 text-xs text-zinc-400 outline-none focus:border-violet-400/50" />
-      <button type="button" disabled={Boolean(busy) || !cloneRepository.includes("/")} onClick={() => void clone()} className="btn-primary disabled:opacity-40">{busy === "clone" ? "Cloning…" : "Clone"}</button>
+      <button type="button" disabled={Boolean(busy) || !cloneRepository.trim().includes("/")} onClick={() => void clone()} className="btn-primary disabled:opacity-40">{busy === "clone" ? "Cloning…" : "Clone"}</button>
       <button type="button" disabled={Boolean(busy) || !parentPath} onClick={() => void refreshList(parentPath)} className="btn-secondary disabled:opacity-40">Refresh</button>
     </div>
+    {repositoryCatalogError && <div className="border-b border-amber-500/20 bg-amber-500/5 px-4 py-2 text-xs text-amber-200">Connected repository list unavailable: {repositoryCatalogError}. Connect or validate GitHub under Settings → Integrations, or enter an authorized owner/repository.</div>}
+    {repositoryCatalogTruncated && !repositoryCatalogError && <div className="border-b border-white/[0.06] bg-white/[0.02] px-4 py-2 text-xs text-zinc-500">Showing the first 100 repositories authorized for the GitHub App. You can still enter another authorized owner/repository directly.</div>}
     {(error || notice) && <div role={error ? "alert" : "status"} className={`border-b px-4 py-2 text-xs ${error ? "border-rose-500/20 bg-rose-500/5 text-rose-300" : "border-emerald-500/20 bg-emerald-500/5 text-emerald-300"}`}>{error ?? notice}</div>}
     <div className="flex min-h-0 flex-1">
       <aside className="flex w-64 shrink-0 flex-col border-r border-white/[0.07] bg-[#111315]">
@@ -194,7 +317,7 @@ export function RepositoryWorkspaceView() {
         </div>
         <input value={filter} onChange={(event) => setFilter(event.target.value)} placeholder="Filter files" className="m-2 rounded-md border border-white/10 bg-black/20 px-2.5 py-2 text-xs outline-none focus:border-violet-400/50" />
         <div className="min-h-0 flex-1 overflow-y-auto px-2 pb-2">
-          {visibleFiles.map((file) => <button key={file} type="button" onClick={() => void selectFile(file)} className={`block w-full truncate rounded px-2 py-1.5 text-left font-mono text-[11px] ${selectedFile === file ? "bg-violet-500/15 text-violet-100" : "text-zinc-500 hover:bg-white/[0.04] hover:text-zinc-300"}`} title={file}>{file}</button>)}
+          {visibleFiles.map((file) => <button key={file} type="button" onClick={() => selectFile(file)} className={`block w-full truncate rounded px-2 py-1.5 text-left font-mono text-[11px] ${selectedFile === file ? "bg-violet-500/15 text-violet-100" : "text-zinc-500 hover:bg-white/[0.04] hover:text-zinc-300"}`} title={file}>{file}</button>)}
         </div>
       </aside>
       <section className="flex min-w-0 flex-1 flex-col">
@@ -203,8 +326,8 @@ export function RepositoryWorkspaceView() {
           {status && <span className="text-[10px] text-zinc-600">↑{status.ahead} ↓{status.behind} · {status.changedFiles.length} changed</span>}
           <input value={branchName} onChange={(event) => setBranchName(event.target.value)} placeholder="new branch" className="w-36 rounded border border-white/10 bg-black/20 px-2 py-1.5 text-xs outline-none" />
           <button type="button" disabled={Boolean(busy) || !selectedRepository || !branchName.trim()} onClick={() => void createBranch()} className="btn-secondary disabled:opacity-40">Branch</button>
-          <button type="button" disabled={Boolean(busy) || !status?.repositoryFullName} onClick={() => void sync("pull")} className="btn-secondary disabled:opacity-40">{busy === "pull" ? "Pulling…" : "Pull"}</button>
-          <button type="button" disabled={Boolean(busy) || !status?.repositoryFullName} onClick={() => void sync("push")} className="btn-secondary disabled:opacity-40">{busy === "push" ? "Pushing…" : "Push"}</button>
+          <button type="button" disabled={Boolean(busy) || !status?.repositoryFullName} onClick={() => sync("pull")} className="btn-secondary disabled:opacity-40">{busy === "pull" ? "Pulling…" : "Pull"}</button>
+          <button type="button" disabled={Boolean(busy) || !status?.repositoryFullName} onClick={() => sync("push")} className="btn-secondary disabled:opacity-40">{busy === "push" ? "Pushing…" : "Push"}</button>
         </div>
         {selectedFile ? <>
           <div className="flex items-center gap-2 border-b border-white/[0.06] px-3 py-2">
@@ -217,10 +340,20 @@ export function RepositoryWorkspaceView() {
             <button type="button" disabled={Boolean(busy) || !commitMessage.trim()} onClick={() => void commit()} className="btn-primary disabled:opacity-40">{busy === "commit" ? "Committing…" : "Commit file"}</button>
             <input value={prTitle} onChange={(event) => setPrTitle(event.target.value)} placeholder="Pull request title" className="rounded-md border border-white/10 bg-black/25 px-3 py-2 text-xs outline-none" />
             <input value={prBase} onChange={(event) => setPrBase(event.target.value)} placeholder="base" className="rounded-md border border-white/10 bg-black/25 px-3 py-2 text-xs outline-none" />
-            {prUrl ? <ExternalLink href={prUrl} className="text-xs text-emerald-300 hover:text-white">Open PR ↗</ExternalLink> : <button type="button" disabled={Boolean(busy) || !prTitle.trim() || !status || status.branch === prBase} onClick={() => void openPullRequest()} className="btn-secondary disabled:opacity-40">{busy === "pr" ? "Opening…" : "Open PR"}</button>}
+            {prUrl ? <ExternalLink href={prUrl} className="text-xs text-emerald-300 hover:text-white">Open PR ↗</ExternalLink> : <button type="button" disabled={Boolean(busy) || !prTitle.trim() || !prBase.trim() || !status || status.branch === prBase.trim() || status.changedFiles.length > 0 || content !== savedContent} onClick={reviewPullRequest} className="btn-secondary disabled:opacity-40" title={status && status.changedFiles.length > 0 ? "Commit all working-tree changes before publishing a pull request." : undefined}>{busy === "pr" ? "Publishing…" : "Publish & open PR"}</button>}
           </div>
         </> : <div className="flex flex-1 items-center justify-center text-sm text-zinc-600">Choose a UTF-8 text file to edit.</div>}
       </section>
     </div>
+    {confirmation && <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/65 p-6 backdrop-blur-sm" role="presentation" onMouseDown={() => setConfirmation(null)}>
+      <div role="alertdialog" aria-modal="true" aria-labelledby="repository-confirmation-title" onMouseDown={(event) => event.stopPropagation()} className="w-full max-w-md rounded-xl border border-white/10 bg-[#181a1d] p-5 shadow-2xl">
+        <h2 id="repository-confirmation-title" className="text-base font-semibold text-white">{confirmation.title}</h2>
+        <p className="mt-2 text-sm leading-6 text-zinc-400">{confirmation.description}</p>
+        <div className="mt-5 flex justify-end gap-2">
+          <button type="button" autoFocus className="btn-secondary" onClick={() => setConfirmation(null)}>Cancel</button>
+          <button type="button" className={confirmation.destructive ? "rounded-md bg-rose-500/90 px-3 py-2 text-xs font-medium text-white hover:bg-rose-400" : "btn-primary"} onClick={() => void confirmAction()}>{confirmation.confirmLabel}</button>
+        </div>
+      </div>
+    </div>}
   </div>;
 }

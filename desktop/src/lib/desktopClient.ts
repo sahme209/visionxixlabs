@@ -687,6 +687,21 @@ export class DesktopClient {
     return this.post("/api/desktop/github/clone-token", input);
   }
 
+  listGithubRepositories(): Promise<ApiResult<{
+    repositories: Array<{
+      id: string;
+      name: string;
+      fullName: string;
+      owner: string;
+      defaultBranch: string;
+      visibility: "private" | "public";
+    }>;
+    totalCount: number;
+    truncated: boolean;
+  }>> {
+    return this.get("/api/desktop/github/repositories");
+  }
+
   listEnvironments(): Promise<ApiResult<{
     environments: Array<{ id: string; slug: string; name: string; tier: string; displayOrder: number; hasApprovalPolicy: boolean; createdAtIso: string }>;
   }>> {
