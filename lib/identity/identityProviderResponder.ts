@@ -1,11 +1,14 @@
 /**
  * TenantIdentityProvider config management — docs/ENTERPRISE_IDENTITY_DESIGN.md.
  *
- * This is configuration storage only. No OIDC/SAML client exists yet, no
- * sign-in path reads this table. A connection is created in "pending"
- * status and stays there — activating it requires a real metadata
- * exchange + test assertion round-trip that doesn't exist yet in this
- * codebase; this responder never fabricates "active" on save alone.
+ * This is configuration storage. lib/identity/ssoSignInGate.ts now reads
+ * this table at sign-in time for role-mapping + MFA-claim enforcement —
+ * but only for the one real IdP connection that exists (a fixed Cognito
+ * pool, lib/auth.ts), not yet the full per-tenant domain-routed flow this
+ * design doc describes. A connection is created in "pending" status and
+ * stays there — activating it still requires a real metadata exchange +
+ * test assertion round-trip that doesn't exist yet; this responder never
+ * fabricates "active" on save alone.
  *
  * Admin-gated at the route layer — this is tenant-wide security
  * configuration, not per-user state.
