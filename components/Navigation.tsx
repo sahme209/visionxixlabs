@@ -133,7 +133,18 @@ export function Navigation() {
       </div>
 
       {mobileMenuOpen && (
-        <div ref={menuRef} id="mobile-navigation" role="dialog" aria-modal="true" aria-label="Site navigation" className="fixed inset-x-0 bottom-0 top-16 overflow-y-auto border-t border-white/[0.06] bg-[#0c0d0c] px-5 py-6 lg:hidden">
+        <div
+          ref={menuRef}
+          id="mobile-navigation"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Site navigation"
+          // The bar's own height shrinks (h-16 -> h-14) once scrolled, for
+          // the "docked chrome" effect above — this must track that exactly,
+          // or the overlay starts a few pixels below the bar's real bottom
+          // edge and leaves a sliver of page content visible at the top.
+          className={`fixed inset-x-0 bottom-0 overflow-y-auto border-t border-white/[0.06] bg-[#0c0d0c] px-5 py-6 lg:hidden ${scrolled ? "top-14" : "top-16"}`}
+        >
           <div className="mx-auto flex max-w-lg flex-col">
             <p className="text-[10px] uppercase tracking-[0.18em] text-zinc-500">Explore Axiom</p>
             <div className="mt-4 grid grid-cols-2 gap-2" aria-label="Primary links">

@@ -26,4 +26,12 @@ describe("Navigation — scroll elevation", () => {
     expect(src).toContain("useState(false)");
     expect(src).toContain('h-16 lg:h-[72px]');
   });
+
+  it("tracks the mobile menu overlay's top offset to the bar's real current height", () => {
+    // The bar shrinks from h-16 to h-14 once scrolled; the overlay's top
+    // offset must follow or a sliver of page content peeks through at the
+    // top of the menu. This was a real bug — the offset used to be a
+    // hardcoded "top-16" regardless of scroll state.
+    expect(src).toMatch(/scrolled\s*\?\s*"top-14"\s*:\s*"top-16"/);
+  });
 });
