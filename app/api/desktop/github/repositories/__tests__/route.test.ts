@@ -77,4 +77,28 @@ describe("GET /api/desktop/github/repositories", () => {
     const response = await GET(request());
     expect(response.status).toBe(503);
   });
+
+  it("loads additional repository pages so normal workspaces are click-selectable", async () => {
+    const firstPage = Array.from({ length: 100 }, (_, index) => ({
+      id: index + 1,
+      name: `repo-${index + 1}`,
+      full_name: `acme/repo-${index + 1}`,
+      private: true,
+      default_branch: "main",
+      owner: { login: "acme" },
+    }));
+    vi.stubGlobal("fetch", vi.fn()
+      .mockResolvedValueOnce(new Response(JSON.stringify({ total_count: 101, repositories: firstPage }), { status: 200 }))
+      .mockResolvedValueOnce(new Response(JSON.stringify({ total_count: 101, repositories: [{
+        id: 101, name: "last-repo", full_name: "acme/last-repo", private: false, default_branch: "trunk", owner: { login: "acme" },
+      }] }), { status: 200 })));
+
+    const { GET } = await import("../route");
+    const response = await GET(request());
+    const body = await response.json();
+    expect(response.status).toBe(200);
+    expect(body.data.repositories).toHaveLength(101);
+    expect(body.data.repositories).toContainEqual(expect.objectContaining({ fullName: "acme/last-repo" }));
+    expect(body.data.truncated).toBe(false);
+  });
 });

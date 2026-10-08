@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { createBranch, commitFile, createPullRequest, dispatchWorkflow, getFile, getPullRequestGovernanceEvidence, getWorkflowRun, isSafeRepositoryPath, resolveGitReference } from "../githubWriteClient";
+import { createBranch, commitFile, createPullRequest, dispatchWorkflow, getFile, getPullRequestGovernanceEvidence, getWorkflowRun, isSafeRepositoryPath, listBranches, resolveGitReference } from "../githubWriteClient";
 
 const fetchMock = vi.fn();
 vi.stubGlobal("fetch", fetchMock);
@@ -39,6 +39,28 @@ describe("createBranch", () => {
     expect(result.ok).toBe(false);
     if (!result.ok) expect(result.error).toContain("base_branch_not_found");
     expect(fetchMock).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe("listBranches", () => {
+  beforeEach(() => vi.clearAllMocks());
+
+  it("returns only normalized read-only branch metadata", async () => {
+    fetchMock.mockResolvedValueOnce(jsonResponse(200, [
+      { name: "main", protected: true, commit: { sha: "abc123" } },
+      { name: "feature/demo", protected: false, commit: { sha: "def456" } },
+      { name: 42, protected: false, commit: {} },
+    ]));
+
+    const result = await listBranches({ owner: "acme", repo: "widgets", installationToken: "tok" });
+
+    expect(result).toEqual({ ok: true, data: [
+      { name: "main", protected: true, commitSha: "abc123" },
+      { name: "feature/demo", protected: false, commitSha: "def456" },
+    ] });
+    expect(fetchMock).toHaveBeenCalledWith(expect.stringContaining("/repos/acme/widgets/branches?per_page=100&page=1"), expect.objectContaining({
+      headers: expect.objectContaining({ Authorization: "Bearer tok" }),
+    }));
   });
 });
 

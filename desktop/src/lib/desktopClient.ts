@@ -726,6 +726,13 @@ export class DesktopClient {
     return this.get("/api/desktop/github/repositories");
   }
 
+  listGithubBranches(repositoryFullName: string): Promise<ApiResult<{
+    branches: Array<{ name: string; commitSha: string; protected: boolean }>;
+    truncated: boolean;
+  }>> {
+    return this.get(`/api/desktop/github/branches?repositoryFullName=${encodeURIComponent(repositoryFullName)}`);
+  }
+
   listEnvironments(): Promise<ApiResult<{
     environments: Array<{ id: string; slug: string; name: string; tier: string; displayOrder: number; hasApprovalPolicy: boolean; createdAtIso: string }>;
   }>> {
@@ -781,11 +788,17 @@ export class DesktopClient {
     return this.get(`/api/desktop/agent/conversations/${encodeURIComponent(conversationId)}`);
   }
 
-  sendAgentMessage(conversationId: string, message: string, preferredProvider?: string): Promise<ApiResult<{
+  sendAgentMessage(conversationId: string, message: string, preferredProvider?: string, workspaceContext?: {
+    repositoryFullName?: string;
+    branch?: string;
+    environmentId?: string;
+    filePath?: string;
+    mode?: "chat" | "code";
+  }): Promise<ApiResult<{
     reply: string;
     proposal: { id: string; toolName: string; argsJson: unknown; riskLevel: string; status: string } | null;
   }>> {
-    return this.post(`/api/desktop/agent/conversations/${encodeURIComponent(conversationId)}/messages`, { message, preferredProvider });
+    return this.post(`/api/desktop/agent/conversations/${encodeURIComponent(conversationId)}/messages`, { message, preferredProvider, workspaceContext });
   }
 
   approveAgentAction(actionId: string): Promise<ApiResult<{ id: string; status: string; resultJson: unknown; errorMessage: string | null }>> {

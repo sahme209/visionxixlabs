@@ -20,6 +20,8 @@ import { id as idFactory } from "@/lib/domain/ids";
 import { loadWorkspaceMemory, rememberToolContext, workspaceMemoryPrompt, type WorkspaceMemoryRepo } from "@/lib/axiom/agentRuntime/workspaceMemory";
 import { prepareProposalArgsForReview } from "@/lib/axiom/agentRuntime/proposalReview";
 import { parseSkillInvocation, resolveInstalledSkillContext, type AgentSkillRepo } from "@/lib/axiom/agentRuntime/skillCatalog";
+import { parseRepositoryFullName } from "@/lib/connectors/github/resolveTenantScopedToken";
+import { isSafeRepositoryPath } from "@/lib/connectors/github/githubWriteClient";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -54,11 +56,40 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     return NextResponse.json({ ok: false, error: "not_found" }, { status: 404 });
   }
 
-  const body = (await request.json().catch(() => null)) as { message?: unknown; preferredProvider?: unknown } | null;
+  const body = (await request.json().catch(() => null)) as {
+    message?: unknown;
+    preferredProvider?: unknown;
+    workspaceContext?: {
+      repositoryFullName?: unknown;
+      branch?: unknown;
+      environmentId?: unknown;
+      filePath?: unknown;
+      mode?: unknown;
+    };
+  } | null;
   const message = typeof body?.message === "string" ? body.message.trim() : "";
   const preferredProvider = typeof body?.preferredProvider === "string" ? body.preferredProvider : undefined;
   if (!message) {
     return NextResponse.json({ ok: false, error: "invalid_payload" }, { status: 400 });
+  }
+
+  const rawContext = body?.workspaceContext;
+  const repositoryFullName = typeof rawContext?.repositoryFullName === "string" ? rawContext.repositoryFullName.trim() : "";
+  const branch = typeof rawContext?.branch === "string" ? rawContext.branch.trim() : "";
+  const environmentId = typeof rawContext?.environmentId === "string" ? rawContext.environmentId.trim() : "";
+  const filePath = typeof rawContext?.filePath === "string" ? rawContext.filePath.trim() : "";
+  const mode = rawContext?.mode === "code" ? "code" : "chat";
+  if ((repositoryFullName && !parseRepositoryFullName(repositoryFullName)) || branch.length > 240 || /[\0\r\n]/.test(branch)) {
+    return NextResponse.json({ ok: false, error: "invalid_workspace_context" }, { status: 400 });
+  }
+  if (filePath && (!isSafeRepositoryPath(filePath) || /[\r\n]/.test(filePath))) {
+    return NextResponse.json({ ok: false, error: "invalid_workspace_context" }, { status: 400 });
+  }
+  const selectedEnvironment = environmentId
+    ? await prisma.environment.findFirst({ where: { id: environmentId, organizationId }, select: { id: true, name: true, tier: true } })
+    : null;
+  if (environmentId && !selectedEnvironment) {
+    return NextResponse.json({ ok: false, error: "invalid_workspace_context" }, { status: 400 });
   }
 
   await prisma.$transaction([
@@ -95,6 +126,21 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
 
   const priorTurns = await prisma.agentConversationTurn.findMany({ where: { conversationId }, orderBy: { createdAt: "asc" } });
   const transcript: ConversationTurnInput[] = priorTurns.map((t) => ({ role: t.role as ConversationTurnInput["role"], content: t.content }));
+  const selectedContext = [
+    repositoryFullName ? `Repository: ${repositoryFullName}` : null,
+    branch ? `Branch: ${branch}` : null,
+    selectedEnvironment ? `Environment: ${selectedEnvironment.name} (${selectedEnvironment.tier}, ID ${selectedEnvironment.id})` : null,
+    filePath ? `File: ${filePath}` : null,
+  ].filter((value): value is string => Boolean(value));
+  if (selectedContext.length > 0 && transcript.length > 0) {
+    const instruction = mode === "code"
+      ? "The user selected Edit repository file mode. Read the selected file first. If a change is needed, propose commit_github_file with the complete updated content and a clear commit message. Never claim the write completed before approval."
+      : "Use this UI-selected workspace context when it is relevant. Do not ask the user to repeat identifiers already selected.";
+    transcript[transcript.length - 1] = {
+      role: "user",
+      content: `${message}\n\n<ui_selected_context>\n${selectedContext.join("\n")}\n${instruction}\n</ui_selected_context>`,
+    };
+  }
 
   const correlationId = idFactory.correlation(`agent_msg_${Date.now().toString(36)}`);
   const memoryRepo = prisma as unknown as WorkspaceMemoryRepo;

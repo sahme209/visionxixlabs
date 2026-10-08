@@ -62,5 +62,7 @@ export async function resolveTenantScopedToken(organizationId: string, repo: Rep
 export function parseRepositoryFullName(fullName: string): RepoRef | null {
   const parts = fullName.split("/");
   if (parts.length !== 2 || !parts[0] || !parts[1]) return null;
+  const safeName = /^[A-Za-z0-9][A-Za-z0-9_.-]{0,99}$/;
+  if (!safeName.test(parts[0]) || !safeName.test(parts[1])) return null;
   return { owner: parts[0], repo: parts[1] };
 }
