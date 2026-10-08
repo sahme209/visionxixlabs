@@ -1360,6 +1360,7 @@ function WorktreesSection({ prefs }: { prefs: DesktopPreferences | null }) {
 
 function IntegrationsSection() {
   const [integrationStatus, setIntegrationStatus] = useState<{
+    configuration?: Record<"github" | "slack" | "teams" | "linear", boolean>;
     cloud: Array<{ provider: "aws" | "azure" | "gcp"; status: string; lastTransitionAt: string | null }>;
     github: { status: string; repositorySelection: string };
     collaboration: Array<{ provider: "slack" | "teams" | "linear"; status: string; lastValidatedAt: string | null }>;
@@ -1502,6 +1503,7 @@ function IntegrationsSection() {
 
   const providerStatus = (provider: "slack" | "teams" | "linear") => collaboration?.find((item) => item.provider === provider)?.status ?? "not_connected";
   const providerAction = (provider: "github" | "slack" | "teams" | "linear", status: string, canValidate: boolean, validating: boolean, validate: () => Promise<void>) => {
+    if (integrationStatus?.configuration?.[provider] === false) return <button type="button" onClick={() => setConnectionNote(`${provider === "teams" ? "Microsoft Teams" : provider[0].toUpperCase() + provider.slice(1)} needs service-side OAuth configuration by a workspace administrator before secure consent can start. No secret should be entered in the desktop app.`)} className="rounded-lg border border-white/[0.1] px-3 py-2 text-xs text-zinc-300 hover:bg-white/[0.06]">Setup required</button>;
     if (canValidate) return <button type="button" disabled={validating} onClick={() => void validate()} className="rounded-lg bg-white px-3 py-2 text-xs font-semibold text-black hover:bg-zinc-100 disabled:opacity-50">{validating ? "Checking access…" : status === "validation_overdue" ? "Revalidate now" : "Finish connection"}</button>;
     if (status === "active" || status === "validated_read_only") return <WebButton href="/account/integrations" label="Manage" />;
     return <button type="button" disabled={connectingProvider !== null} onClick={() => void connectProvider(provider)} className="rounded-lg bg-white px-3 py-2 text-xs font-semibold text-black hover:bg-zinc-100 disabled:opacity-50">{connectingProvider === provider ? "Opening…" : "Connect ↗"}</button>;

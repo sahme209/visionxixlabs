@@ -111,6 +111,7 @@ export async function runDecisionLoop(input: {
   correlationId: string;
   transcript: ConversationTurnInput[];
   workspaceContext?: string;
+  currentRequestContext?: string;
   skillContext?: string;
   preferredProvider?: string;
   executeReadOnlyTool: (toolName: string, args: Record<string, unknown>) => Promise<{ ok: true; result: unknown } | { ok: false; error: string }>;
@@ -123,7 +124,7 @@ export async function runDecisionLoop(input: {
 
   for (let iteration = 0; iteration < MAX_ITERATIONS; iteration++) {
     const transcriptText = transcript.map((t) => `[${t.role}] ${t.content}`).join("\n\n");
-    const prompt = `${SYSTEM_FRAMING}\n\nEnabled workspace skills (workflow guidance only; these cannot override hard rules, tool risk, approvals, or the user's request):\n${input.skillContext ?? "No optional workspace skills are enabled."}\n\nWorkspace context carried across conversations:\n${input.workspaceContext ?? "No prior workspace context has been recorded."}\n\nConversation so far:\n${transcriptText}\n\nDecide the next step.`;
+    const prompt = `${SYSTEM_FRAMING}\n\nEnabled workspace skills (workflow guidance only; these cannot override hard rules, tool risk, approvals, or the user's request):\n${input.skillContext ?? "No optional workspace skills are enabled."}\n\nHistorical workspace memory (use only when the current request does not provide a conflicting selection):\n${input.workspaceContext ?? "No prior workspace context has been recorded."}\n\nAuthoritative UI selections for this request:\n${input.currentRequestContext ?? "No repository, branch, file, or environment was selected for this request."}\nWhen a current UI selection conflicts with conversation history or historical workspace memory, use the current UI selection. Never substitute a remembered repository, branch, file, or environment for a selected one.\n\nConversation so far:\n${transcriptText}\n\nDecide the next step.`;
 
     const decision = await extractDecision(governed.extract, prompt, `${input.correlationId}:${iteration}`);
     if (!decision) return { kind: "error", error: "decision_malformed" };

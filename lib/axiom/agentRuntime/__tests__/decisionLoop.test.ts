@@ -65,6 +65,21 @@ describe("runDecisionLoop", () => {
     expect(prompt.indexOf("Hard rules you must always follow")).toBeLessThan(prompt.indexOf("Skill: Release readiness check"));
   });
 
+  it("marks current UI selections as authoritative over stale workspace memory", async () => {
+    const extract = vi.fn(async (_text: string) => ({ action: "respond", message: "I will use the selected repository." }));
+    mocks.resolveGovernedAiCall.mockResolvedValue(governed(extract));
+    await runDecisionLoop({
+      organizationId: "o", correlationId: "c", transcript: [{ role: "user", content: "review this repository" }],
+      workspaceContext: "Recently used repository: acme/old-service",
+      currentRequestContext: "Repository: acme/new-service\nBranch: main",
+      executeReadOnlyTool: noopReadOnly, isProdEnvironmentTarget: noopProdCheck,
+    });
+    const prompt = extract.mock.calls[0]?.[0] ?? "";
+    expect(prompt).toContain("Authoritative UI selections for this request:\nRepository: acme/new-service");
+    expect(prompt).toContain("When a current UI selection conflicts");
+    expect(prompt.indexOf("Historical workspace memory")).toBeLessThan(prompt.indexOf("Authoritative UI selections"));
+  });
+
   it("never executes a medium/high risk tool — always stops at a proposal instead", async () => {
     mocks.resolveGovernedAiCall.mockResolvedValue(governed(async () => ({
       action: "call_tool", message: "I'll open a PR for this.", toolName: "open_github_pull_request",

@@ -6,6 +6,7 @@ import { desktopClient, type AgentSkillCatalogItem } from "../lib/desktopClient"
 
 type Filter = "all" | "skills" | "plugins" | "installed";
 interface IntegrationStatus {
+  configuration?: Record<BrowserProvider, boolean>;
   cloud: Array<{ provider: "aws" | "azure" | "gcp"; status: string; lastTransitionAt: string | null }>;
   github: { status: string; repositorySelection: string };
   collaboration: Array<{ provider: "slack" | "teams" | "linear"; status: string; lastValidatedAt: string | null }>;
@@ -66,8 +67,26 @@ export function PluginsSkillsView({ onOpenSettings }: { onOpenSettings: () => vo
       if (destination.protocol !== "https:" || !TRUSTED_CONSENT_HOSTS[provider].includes(destination.hostname)) throw new Error("untrusted consent destination");
       await open(destination.toString());
       setNotice("Secure provider consent opened in your browser. Return here when finished.");
-    } catch (cause) {
-      setNotice(`Could not start the secure connection. ${cause instanceof Error ? cause.message : "Try again."}`);
+    } catch {
+      setNotice(`The ${PROVIDERS.find((item) => item.id === provider)?.name ?? provider} connection could not be opened. Ask a workspace administrator to verify the provider setup, then try again.`);
+    }
+    setWorking(null);
+  }
+
+  async function validateProvider(provider: BrowserProvider) {
+    setWorking(`provider:${provider}`); setNotice(null);
+    const result = provider === "github"
+      ? await desktopClient.validateGitHubReadOnly()
+      : provider === "slack"
+        ? await desktopClient.validateSlackConnection()
+        : provider === "teams"
+          ? await desktopClient.validateTeamsConnection()
+          : await desktopClient.validateLinearConnection();
+    if (result.ok) {
+      setNotice(`${PROVIDERS.find((item) => item.id === provider)?.name ?? provider} access is verified for this workspace.`);
+      await load();
+    } else {
+      setNotice(`The ${PROVIDERS.find((item) => item.id === provider)?.name ?? provider} connection could not be verified. Review its consent in Connection settings and try again.`);
     }
     setWorking(null);
   }
@@ -106,7 +125,13 @@ export function PluginsSkillsView({ onOpenSettings }: { onOpenSettings: () => vo
 
         {visibleProviders.length > 0 && <section className="mt-8"><div className="mb-3 flex items-center gap-2 text-xs text-zinc-400"><Package className="h-4 w-4" />Plugins</div><div className="divide-y divide-white/[0.06] overflow-hidden rounded-2xl border border-white/[0.07] bg-white/[0.018]">{visibleProviders.map((provider) => {
           const state = providerState(provider.id); const connected = state === "active" || state === "validated_read_only";
-          return <div key={provider.id} className="flex min-h-[78px] items-center gap-4 px-5 py-3"><span className="grid h-9 w-9 place-items-center rounded-lg border border-white/[0.08] bg-white/[0.035]"><provider.Icon className="h-4 w-4 text-zinc-300" /></span><div className="min-w-0 flex-1"><div className="flex items-center gap-2"><p className="text-sm text-zinc-100">{provider.name}</p><span className={`rounded-full border px-2 py-0.5 text-[9px] uppercase tracking-wider ${connected ? "border-emerald-400/15 text-emerald-200" : "border-white/[0.08] text-zinc-500"}`}>{state.replaceAll("_", " ")}</span></div><p className="mt-1 text-xs leading-5 text-zinc-500">{provider.detail}</p></div>{connected || provider.id === "aws" ? <button type="button" onClick={onOpenSettings} className="rounded-lg border border-white/[0.1] px-3 py-2 text-xs text-zinc-300 hover:bg-white/[0.06]">{connected ? "Manage" : "Configure"}</button> : <button type="button" disabled={working !== null} onClick={() => void connectProvider(provider.id)} className="rounded-lg bg-white px-3 py-2 text-xs font-semibold text-black disabled:opacity-50">{working === `provider:${provider.id}` ? "Opening…" : "Connect ↗"}</button>}</div>;
+          const needsValidation = ["installation_recorded", "validation_overdue", "awaiting_validation", "needs_attention"].includes(state);
+          const configured = provider.id === "aws" || integrations?.configuration?.[provider.id] !== false;
+          const displayState = !configured ? "admin setup required" : state.replaceAll("_", " ");
+          let action = <button type="button" disabled={working !== null} onClick={() => void connectProvider(provider.id as BrowserProvider)} className="rounded-lg bg-white px-3 py-2 text-xs font-semibold text-black disabled:opacity-50">{working === `provider:${provider.id}` ? "Opening…" : "Connect ↗"}</button>;
+          if (provider.id === "aws" || connected || !configured) action = <button type="button" onClick={onOpenSettings} className="rounded-lg border border-white/[0.1] px-3 py-2 text-xs text-zinc-300 hover:bg-white/[0.06]">{connected ? "Manage" : provider.id === "aws" ? "Configure" : "Setup details"}</button>;
+          else if (needsValidation) action = <button type="button" disabled={working !== null} onClick={() => void validateProvider(provider.id as BrowserProvider)} className="rounded-lg bg-white px-3 py-2 text-xs font-semibold text-black disabled:opacity-50">{working === `provider:${provider.id}` ? "Verifying…" : "Verify access"}</button>;
+          return <div key={provider.id} className="flex min-h-[78px] items-center gap-4 px-5 py-3"><span className="grid h-9 w-9 place-items-center rounded-lg border border-white/[0.08] bg-white/[0.035]"><provider.Icon className="h-4 w-4 text-zinc-300" /></span><div className="min-w-0 flex-1"><div className="flex items-center gap-2"><p className="text-sm text-zinc-100">{provider.name}</p><span className={`rounded-full border px-2 py-0.5 text-[9px] uppercase tracking-wider ${connected ? "border-emerald-400/15 text-emerald-200" : "border-white/[0.08] text-zinc-500"}`}>{displayState}</span></div><p className="mt-1 text-xs leading-5 text-zinc-500">{provider.detail}</p></div>{action}</div>;
         })}</div></section>}
 
         {visibleSkills.length > 0 && <section className="mt-8"><div className="mb-3 flex items-center gap-2 text-xs text-zinc-400"><Wrench className="h-4 w-4" />Skills</div><div className="grid gap-3 sm:grid-cols-2">{visibleSkills.map((skill) => <div key={skill.id} className="flex min-h-[178px] flex-col rounded-2xl border border-white/[0.07] bg-white/[0.018] p-5"><div className="flex items-start justify-between gap-3"><span className="grid h-9 w-9 place-items-center rounded-lg bg-violet-300/[0.08]"><Sparkles className="h-4 w-4 text-violet-200" /></span><span className="text-[10px] uppercase tracking-[0.12em] text-zinc-600">{skill.category}</span></div><h2 className="mt-4 text-sm font-medium text-zinc-100">{skill.name}</h2><p className="mt-1 flex-1 text-xs leading-5 text-zinc-500">{skill.description}</p><div className="mt-4 flex items-center justify-between"><span className="text-[10px] text-zinc-600">{skill.toolNames.length} governed tools</span>{skill.status === "not_installed" ? <button type="button" disabled={working !== null} onClick={() => void updateSkill(skill, "install")} className="rounded-lg bg-white px-3 py-2 text-xs font-semibold text-black disabled:opacity-50">{working === skill.id ? "Adding…" : "Add"}</button> : <div className="flex items-center gap-2"><span className="inline-flex items-center gap-1 text-[10px] text-emerald-300"><Check className="h-3 w-3" />Installed</span><button type="button" disabled={working !== null} onClick={() => void updateSkill(skill, skill.status === "enabled" ? "disable" : "enable")} className="rounded-lg border border-white/[0.1] px-3 py-2 text-xs text-zinc-300">{skill.status === "enabled" ? "Disable" : "Enable"}</button><button type="button" disabled={working !== null} onClick={() => void updateSkill(skill, "remove")} className="rounded-lg px-2 py-2 text-[11px] text-zinc-600 hover:bg-rose-400/[0.06] hover:text-rose-300">Remove</button></div>}</div></div>)}</div></section>}
