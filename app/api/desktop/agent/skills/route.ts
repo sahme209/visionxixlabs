@@ -30,20 +30,25 @@ async function resolveSession(request: NextRequest, admin: boolean) {
 export async function GET(request: NextRequest): Promise<Response> {
   const session = await resolveSession(request, false);
   if (!session) return NextResponse.json({ ok: false, error: "desktop_session_required" }, { status: 401 });
+  let rows: InstallationRow[] = [];
+  let storageAvailable = true;
   try {
-    const rows = await (prisma as unknown as SkillRepo).agentSkillInstallation.findMany({ where: { organizationId: session.organizationId }, orderBy: { installedAt: "asc" } });
-    const byId = new Map(rows.map((row) => [row.skillId, row]));
-    return NextResponse.json({ ok: true, data: { skills: AGENT_SKILL_CATALOG.map((skill) => {
-      const installation = byId.get(skill.id);
-      return {
-        id: skill.id, name: skill.name, description: skill.description, category: skill.category,
-        toolNames: [...skill.toolNames], status: installation?.status ?? "not_installed",
-        installedAt: installation?.installedAt.toISOString() ?? null, updatedAt: installation?.updatedAt.toISOString() ?? null,
-      };
-    }) } });
+    rows = await (prisma as unknown as SkillRepo).agentSkillInstallation.findMany({ where: { organizationId: session.organizationId }, orderBy: { installedAt: "asc" } });
   } catch {
-    return NextResponse.json({ ok: false, error: "skill_catalog_unavailable" }, { status: 503 });
+    // The curated catalog is static and safe to show even while installation
+    // storage is unavailable (for example during a migration rollout). Never
+    // fabricate installed state: every item remains explicitly not installed.
+    storageAvailable = false;
   }
+  const byId = new Map(rows.map((row) => [row.skillId, row]));
+  return NextResponse.json({ ok: true, data: { storageAvailable, skills: AGENT_SKILL_CATALOG.map((skill) => {
+    const installation = byId.get(skill.id);
+    return {
+      id: skill.id, name: skill.name, description: skill.description, category: skill.category,
+      toolNames: [...skill.toolNames], status: installation?.status ?? "not_installed",
+      installedAt: installation?.installedAt.toISOString() ?? null, updatedAt: installation?.updatedAt.toISOString() ?? null,
+    };
+  }) } });
 }
 
 export async function POST(request: NextRequest): Promise<Response> {

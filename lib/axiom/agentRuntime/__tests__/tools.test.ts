@@ -7,8 +7,8 @@ describe("TOOL_REGISTRY", () => {
     expect(names).toEqual([
       "check_deploy_status", "commit_github_file", "configure_deployment_target",
       "connect_identity_provider", "create_environment", "create_github_branch",
-      "list_deployment_executions", "list_environments", "list_integrations", "open_github_pull_request", "preview_scim_lifecycle",
-      "read_github_file", "trigger_aws_deploy",
+      "list_deployment_executions", "list_environments", "list_github_files", "list_integrations", "open_github_pull_request",
+      "preview_scim_lifecycle", "read_github_file", "trigger_aws_deploy",
     ]);
   });
 
@@ -18,6 +18,7 @@ describe("TOOL_REGISTRY", () => {
     expect(findTool("check_deploy_status")?.riskLevel).toBe("low");
     expect(findTool("list_deployment_executions")?.riskLevel).toBe("low");
     expect(findTool("read_github_file")?.riskLevel).toBe("low");
+    expect(findTool("list_github_files")?.riskLevel).toBe("low");
     expect(findTool("preview_scim_lifecycle")?.riskLevel).toBe("low");
   });
 

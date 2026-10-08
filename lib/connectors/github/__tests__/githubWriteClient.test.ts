@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { createBranch, commitFile, createPullRequest, dispatchWorkflow, getCommitCiStatus, getFile, getPullRequestGovernanceEvidence, getWorkflowRun, isSafeRepositoryPath, listBranches, resolveGitReference } from "../githubWriteClient";
+import { createBranch, commitFile, createPullRequest, dispatchWorkflow, getCommitCiStatus, getFile, getPullRequestGovernanceEvidence, getWorkflowRun, isSafeRepositoryPath, listBranches, listRepositoryFiles, resolveGitReference } from "../githubWriteClient";
 
 const fetchMock = vi.fn();
 vi.stubGlobal("fetch", fetchMock);
@@ -145,6 +145,47 @@ describe("getFile", () => {
     }));
     await expect(getFile({ owner: "acme", repo: "widgets", branch: "main", path: "image.bin", installationToken: "tok" }))
       .resolves.toEqual({ ok: false, error: "github_file_is_not_utf8_text" });
+  });
+});
+
+describe("listRepositoryFiles", () => {
+  beforeEach(() => vi.clearAllMocks());
+
+  it("resolves a branch to its recursive tree and returns only repository files", async () => {
+    fetchMock
+      .mockResolvedValueOnce(jsonResponse(200, { object: { type: "commit", sha: "commit-sha" } }))
+      .mockResolvedValueOnce(jsonResponse(200, { tree: { sha: "tree-sha" } }))
+      .mockResolvedValueOnce(jsonResponse(200, {
+        truncated: false,
+        tree: [
+          { path: "src", type: "tree", size: 0 },
+          { path: "src/index.ts", type: "blob", size: 42 },
+          { path: "README.md", type: "blob" },
+          { path: "", type: "blob", size: 1 },
+        ],
+      }));
+
+    const result = await listRepositoryFiles({
+      owner: "acme", repo: "widgets", branch: "main", installationToken: "tok",
+    });
+
+    expect(result).toEqual({
+      ok: true,
+      data: {
+        files: [{ path: "README.md", size: 0 }, { path: "src/index.ts", size: 42 }],
+        truncated: false,
+      },
+    });
+    expect(fetchMock).toHaveBeenNthCalledWith(1, expect.stringContaining("/git/ref/heads/main"), expect.any(Object));
+    expect(fetchMock).toHaveBeenNthCalledWith(2, expect.stringContaining("/git/commits/commit-sha"), expect.any(Object));
+    expect(fetchMock).toHaveBeenNthCalledWith(3, expect.stringContaining("/git/trees/tree-sha?recursive=1"), expect.any(Object));
+  });
+
+  it("rejects malformed branch names before contacting GitHub", async () => {
+    await expect(listRepositoryFiles({
+      owner: "acme", repo: "widgets", branch: "main\nother", installationToken: "tok",
+    })).resolves.toEqual({ ok: false, error: "invalid_branch_name" });
+    expect(fetchMock).not.toHaveBeenCalled();
   });
 });
 

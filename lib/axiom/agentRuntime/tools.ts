@@ -52,6 +52,12 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = [
     riskLevel: "low",
   },
   {
+    name: "list_github_files",
+    description: "List repository file paths on a selected branch. Use this before asking the user for a path when they request a broad repository review or do not know the exact file name.",
+    argsSchemaHint: '{ "repositoryFullName": "owner/repo", "branch": "main", "pathPrefix": "optional directory prefix such as src/" }',
+    riskLevel: "low",
+  },
+  {
     name: "read_github_file",
     description: "Read one UTF-8 text file from a tenant-connected GitHub repository so you can inspect it before proposing an edit.",
     argsSchemaHint: '{ "repositoryFullName": "owner/repo", "branch": "main", "path": "path/to/file.ts" }',

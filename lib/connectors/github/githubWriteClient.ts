@@ -24,6 +24,11 @@ export interface GitHubBranchSummary {
   protected: boolean;
 }
 
+export interface GitHubRepositoryFileSummary {
+  path: string;
+  size: number;
+}
+
 export function isSafeRepositoryPath(path: string): boolean {
   if (!path || path.length > 1024 || path.startsWith("/") || path.includes("\0")) return false;
   const segments = path.split("/");
@@ -77,6 +82,49 @@ export async function listBranches(input: {
     if (result.data.length < 100) break;
   }
   return { ok: true, data: branches };
+}
+
+/**
+ * Lists files for one branch without cloning the repository. GitHub can mark a
+ * recursive tree response as truncated; callers must surface that state rather
+ * than implying the returned list is complete.
+ */
+export async function listRepositoryFiles(input: {
+  owner: string;
+  repo: string;
+  branch: string;
+  installationToken: string;
+}): Promise<GithubWriteResult<{ files: GitHubRepositoryFileSummary[]; truncated: boolean }>> {
+  if (!input.branch || input.branch.length > 240 || /[\0\r\n]/.test(input.branch)) {
+    return { ok: false, error: "invalid_branch_name" };
+  }
+  const basePath = `/repos/${encodeURIComponent(input.owner)}/${encodeURIComponent(input.repo)}`;
+  const reference = await gh<{ object?: { type?: unknown; sha?: unknown } }>(
+    `${basePath}/git/ref/heads/${encodeURIComponent(input.branch)}`,
+    input.installationToken,
+  );
+  if (!reference.ok || reference.data.object?.type !== "commit" || typeof reference.data.object.sha !== "string") {
+    return { ok: false, error: reference.ok ? "github_branch_commit_unavailable" : reference.error };
+  }
+  const commit = await gh<{ tree?: { sha?: unknown } }>(
+    `${basePath}/git/commits/${encodeURIComponent(reference.data.object.sha)}`,
+    input.installationToken,
+  );
+  if (!commit.ok || typeof commit.data.tree?.sha !== "string") {
+    return { ok: false, error: commit.ok ? "github_tree_unavailable" : commit.error };
+  }
+  const tree = await gh<{ truncated?: unknown; tree?: unknown }>(
+    `${basePath}/git/trees/${encodeURIComponent(commit.data.tree.sha)}?recursive=1`,
+    input.installationToken,
+  );
+  if (!tree.ok) return tree;
+  const entries = Array.isArray(tree.data.tree) ? tree.data.tree as Array<Record<string, unknown>> : [];
+  const files = entries.flatMap((entry) => {
+    if (entry.type !== "blob" || typeof entry.path !== "string" || !isSafeRepositoryPath(entry.path)) return [];
+    const size = typeof entry.size === "number" && Number.isSafeInteger(entry.size) && entry.size >= 0 ? entry.size : 0;
+    return [{ path: entry.path, size }];
+  }).sort((left, right) => left.path.localeCompare(right.path));
+  return { ok: true, data: { files, truncated: tree.data.truncated === true } };
 }
 
 export interface GetFileInput {

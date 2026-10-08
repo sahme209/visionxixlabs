@@ -48,8 +48,20 @@ interface GitHubBranchOption {
   protected: boolean;
 }
 
+interface GitHubFileOption {
+  path: string;
+  size: number;
+}
+
+interface EnvironmentOption {
+  id: string;
+  name: string;
+  tier: string;
+}
+
 const TOOL_LABELS: Record<string, string> = {
   list_environments: "List environments",
+  list_github_files: "List repository files",
   check_deploy_status: "Check deploy status",
   list_deployment_executions: "List deploy executions",
   create_github_branch: "Create a branch",
@@ -65,6 +77,7 @@ const TOOL_LABELS: Record<string, string> = {
 };
 
 const ACTIVE_REPOSITORY_KEY = "axiom.workspace.repository.v1";
+const ACTIVE_ENVIRONMENT_KEY = "axiom.workspace.environment.v1";
 
 function describeArgs(toolName: string, args: unknown): string {
   if (typeof args !== "object" || args === null) return "";
@@ -108,6 +121,13 @@ export function AgentChatView() {
   const [contextLoading, setContextLoading] = useState(true);
   const [contextError, setContextError] = useState<string | null>(null);
   const [filePath, setFilePath] = useState("");
+  const [manualFilePath, setManualFilePath] = useState(false);
+  const [fileOptions, setFileOptions] = useState<GitHubFileOption[]>([]);
+  const [fileCatalogLoading, setFileCatalogLoading] = useState(false);
+  const [fileCatalogTruncated, setFileCatalogTruncated] = useState(false);
+  const [fileCatalogError, setFileCatalogError] = useState<string | null>(null);
+  const [environmentId, setEnvironmentId] = useState(() => window.localStorage.getItem(ACTIVE_ENVIRONMENT_KEY) ?? "");
+  const [environmentOptions, setEnvironmentOptions] = useState<EnvironmentOption[]>([]);
   const [selectedProvider, setSelectedProvider] = useState("");
   const [modelOptions, setModelOptions] = useState<Array<{ provider: string; label: string }>>([]);
   const [enabledSkills, setEnabledSkills] = useState<AgentSkillCatalogItem[]>([]);
@@ -123,8 +143,9 @@ export function AgentChatView() {
       desktopClient.aiProviderStatus(),
       desktopClient.listAgentSkills(),
       desktopClient.listGithubRepositories(),
+      desktopClient.listEnvironments(),
     ])
-      .then(async ([conversationList, models, skills, repositories]) => {
+      .then(async ([conversationList, models, skills, repositories, environments]) => {
         if (cancelled) return;
         if (!conversationList.ok) {
           setError("The Agent service could not load conversation history. Retry in a moment.");
@@ -175,8 +196,14 @@ export function AgentChatView() {
           setRepositoryFullName(selected?.fullName ?? "");
           setBranch(selected?.defaultBranch ?? "main");
         }
+        if (environments.ok) {
+          setEnvironmentOptions(environments.data.environments);
+          const preferredEnvironment = window.localStorage.getItem(ACTIVE_ENVIRONMENT_KEY) ?? "";
+          setEnvironmentId(environments.data.environments.some((environment) => environment.id === preferredEnvironment) ? preferredEnvironment : "");
+        }
         const contextFailures = [
           repositories.ok ? null : "GitHub repositories could not be loaded",
+          environments.ok ? null : "deployment environments could not be loaded",
         ].filter((message): message is string => Boolean(message));
         setContextError(contextFailures.length > 0 ? contextFailures.join(" and ") : null);
         setContextLoading(false);
@@ -193,6 +220,45 @@ export function AgentChatView() {
   useEffect(() => {
     if (repositoryFullName && !manualRepository) window.localStorage.setItem(ACTIVE_REPOSITORY_KEY, repositoryFullName);
   }, [manualRepository, repositoryFullName]);
+
+  useEffect(() => {
+    if (environmentId) window.localStorage.setItem(ACTIVE_ENVIRONMENT_KEY, environmentId);
+    else window.localStorage.removeItem(ACTIVE_ENVIRONMENT_KEY);
+  }, [environmentId]);
+
+  useEffect(() => {
+    let cancelled = false;
+    if (!repositoryFullName.includes("/") || !branch.trim()) {
+      setFileOptions([]);
+      setFileCatalogError(null);
+      setFileCatalogTruncated(false);
+      return () => { cancelled = true; };
+    }
+    setFileCatalogLoading(true);
+    setFileCatalogError(null);
+    void desktopClient.listGithubFiles(repositoryFullName, branch.trim()).then((result) => {
+      if (cancelled) return;
+      setFileCatalogLoading(false);
+      if (!result.ok) {
+        setFileOptions([]);
+        setFileCatalogError("Repository files could not be loaded. You can still enter a path manually.");
+        return;
+      }
+      const editableFiles = result.data.files.filter((file) => file.size <= 100_000);
+      setFileOptions(editableFiles);
+      setFileCatalogTruncated(result.data.truncated || editableFiles.length < result.data.files.length);
+      if (!manualFilePath) {
+        setFilePath((current) => editableFiles.some((file) => file.path === current) ? current : (editableFiles[0]?.path ?? ""));
+      }
+    }).catch(() => {
+      if (!cancelled) {
+        setFileCatalogLoading(false);
+        setFileOptions([]);
+        setFileCatalogError("Repository files could not be loaded. You can still enter a path manually.");
+      }
+    });
+    return () => { cancelled = true; };
+  }, [branch, manualFilePath, repositoryFullName]);
 
   useEffect(() => {
     let cancelled = false;
@@ -268,6 +334,7 @@ export function AgentChatView() {
       const result = await desktopClient.sendAgentMessage(conversationId, instruction, selectedProvider || undefined, {
         ...(repositoryFullName.trim() ? { repositoryFullName: repositoryFullName.trim() } : {}),
         ...(branch.trim() ? { branch: branch.trim() } : {}),
+        ...(environmentId ? { environmentId } : {}),
         ...(composerMode === "code" && filePath.trim() ? { filePath: filePath.trim() } : {}),
         mode: composerMode,
       });
@@ -360,6 +427,8 @@ export function AgentChatView() {
                 const repository = repositoryOptions.find((item) => item.fullName === event.target.value);
                 setManualRepository(false);
                 setManualBranch(false);
+                setManualFilePath(false);
+                setFilePath("");
                 setRepositoryFullName(event.target.value);
                 setBranch(repository?.defaultBranch ?? "main");
               }}
@@ -394,6 +463,19 @@ export function AgentChatView() {
               <option value="__manual__">Enter another branch…</option>
             </select>
             {manualBranch && <input autoFocus aria-label="Git branch name" value={branch} onChange={(event) => setBranch(event.target.value)} placeholder="branch name" className="mt-2 w-full rounded-lg border border-white/10 bg-[#151719] px-3 py-2 text-xs normal-case tracking-normal text-zinc-200 outline-none placeholder:text-zinc-600 focus:border-white/25" />}
+          </label>
+          <label className="min-w-0 text-[10px] uppercase tracking-[0.12em] text-zinc-600">
+            Deployment environment
+            <select
+              aria-label="Active deployment environment"
+              value={environmentId}
+              onChange={(event) => setEnvironmentId(event.target.value)}
+              disabled={contextLoading}
+              className="mt-1 w-full truncate rounded-lg border border-white/10 bg-[#151719] px-3 py-2 text-xs normal-case tracking-normal text-zinc-200 outline-none focus:border-white/25 disabled:opacity-50"
+            >
+              <option value="">No deployment environment</option>
+              {environmentOptions.map((environment) => <option key={environment.id} value={environment.id}>{environment.name} · {environment.tier}</option>)}
+            </select>
           </label>
         </div>
         {contextError && <p role="status" className="mx-auto mt-2 max-w-5xl text-[11px] text-amber-300">{contextError}. Manual entry remains available.</p>}
@@ -435,8 +517,33 @@ export function AgentChatView() {
               </select>
             </label>
           </div>
-          {composerMode === "code" && <div className="mb-3 grid grid-cols-1 gap-2">
-            <input aria-label="Repository file path" value={filePath} onChange={(event) => setFilePath(event.target.value)} placeholder="src/path/to/file.ts" className="rounded-lg border border-white/10 bg-white/[0.03] px-3 py-2 text-xs text-zinc-200 outline-none placeholder:text-zinc-600 focus:border-white/25" />
+          {composerMode === "code" && <div className="mb-3 space-y-2">
+            <label className="block text-[10px] uppercase tracking-[0.12em] text-zinc-600">
+              File
+              <select
+                aria-label="Repository file"
+                value={manualFilePath ? "__manual__" : filePath}
+                onChange={(event) => {
+                  if (event.target.value === "__manual__") {
+                    setManualFilePath(true);
+                    setFilePath("");
+                  } else {
+                    setManualFilePath(false);
+                    setFilePath(event.target.value);
+                  }
+                }}
+                disabled={fileCatalogLoading || !repositoryFullName || !branch.trim()}
+                className="mt-1 w-full truncate rounded-lg border border-white/10 bg-[#151719] px-3 py-2 text-xs normal-case tracking-normal text-zinc-200 outline-none focus:border-white/25 disabled:opacity-50"
+              >
+                {fileCatalogLoading && <option value="">Loading repository files…</option>}
+                {!fileCatalogLoading && fileOptions.length === 0 && <option value="">No editable files found</option>}
+                {fileOptions.map((file) => <option key={file.path} value={file.path}>{file.path}</option>)}
+                <option value="__manual__">Enter another file path…</option>
+              </select>
+            </label>
+            {manualFilePath && <input autoFocus aria-label="Repository file path" value={filePath} onChange={(event) => setFilePath(event.target.value)} placeholder="src/path/to/file.ts" className="w-full rounded-lg border border-white/10 bg-white/[0.03] px-3 py-2 text-xs text-zinc-200 outline-none placeholder:text-zinc-600 focus:border-white/25" />}
+            {fileCatalogError && <p role="status" className="text-[11px] text-zinc-400">{fileCatalogError}</p>}
+            {!fileCatalogError && fileCatalogTruncated && <p role="status" className="text-[11px] text-zinc-500">Showing editable files returned by GitHub. Use “Enter another file path” for a file outside this list.</p>}
           </div>}
           <div className="flex items-end gap-3">
           <textarea
