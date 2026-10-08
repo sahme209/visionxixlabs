@@ -19,6 +19,7 @@ import { executeReadOnlyTool, isProdEnvironmentTarget, type ToolExecutionRepo } 
 function toolRepo(overrides: Partial<ToolExecutionRepo> = {}): ToolExecutionRepo {
   return {
     environment: { findMany: vi.fn(async () => []) },
+    deploymentExecution: { findMany: vi.fn(async () => []) },
     connectorSetupSession: { findMany: vi.fn(async () => []) },
     gitHubInstallation: { findFirst: vi.fn(async () => null) },
     tenantIntegrationConnection: { findMany: vi.fn(async () => []) },
@@ -34,6 +35,25 @@ describe("executeReadOnlyTool", () => {
     const result = await executeReadOnlyTool(repo, "org-1", "list_environments", {});
     expect(result).toEqual({ ok: true, result: [{ id: "e1", slug: "dev", name: "Dev", tier: "dev" }] });
     expect(repo.environment.findMany).toHaveBeenCalledWith({ where: { organizationId: "org-1" } });
+  });
+
+  it("list_deployment_executions scopes to the org and optional environment", async () => {
+    const createdAt = new Date("2026-01-01T00:00:00.000Z");
+    const findMany = vi.fn(async () => [{
+      id: "exec_1", environmentId: "env_dev", repositoryFullName: "acme/widgets",
+      sourceRef: "main", sourceCommitSha: "sha1", status: "completed", conclusion: "success", createdAt,
+    }]);
+    const repo = toolRepo({ deploymentExecution: { findMany } });
+    const result = await executeReadOnlyTool(repo, "org-1", "list_deployment_executions", { environmentId: "env_dev" });
+    expect(findMany).toHaveBeenCalledWith({ where: { organizationId: "org-1", environmentId: "env_dev" }, orderBy: { createdAt: "desc" }, take: 20 });
+    expect(result).toEqual({
+      ok: true,
+      result: [{
+        id: "exec_1", environmentId: "env_dev", repositoryFullName: "acme/widgets",
+        sourceRef: "main", sourceCommitSha: "sha1", status: "completed", conclusion: "success",
+        createdAt: createdAt.toISOString(),
+      }],
+    });
   });
 
   it("check_deploy_status rejects a malformed repository name", async () => {

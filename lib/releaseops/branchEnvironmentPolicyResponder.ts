@@ -2,9 +2,10 @@
  * BranchEnvironmentPolicy config management.
  *
  * The (repository, environment, branch pattern) rule and its requirements
- * (requireReleaseTag/requireCodeowners/requirePrLink/requireChangeTicket)
- * are enforced by deploymentPolicyGuard before either a desktop or approved
- * Agent AWS deployment can dispatch the tenant's workflow.
+ * (requireReleaseTag/requireCodeowners/requirePrLink/requireChangeTicket/
+ * requirePromotionFromEnvironmentId/requireTestsPassing) are enforced by
+ * deploymentPolicyGuard before either a desktop or approved Agent AWS
+ * deployment can dispatch the tenant's workflow.
  */
 
 import { isMissingTable } from "./releaseListResponder";
@@ -19,6 +20,8 @@ export interface BranchEnvironmentPolicyRow {
   requireCodeowners: boolean;
   requirePrLink: boolean;
   requireChangeTicket: boolean;
+  requirePromotionFromEnvironmentId: string | null;
+  requireTestsPassing: boolean;
   priority: number;
   enabled: boolean;
   createdAt: Date;
@@ -37,6 +40,8 @@ export interface BranchEnvironmentPolicyRepo {
         requireCodeowners: boolean;
         requirePrLink: boolean;
         requireChangeTicket: boolean;
+        requirePromotionFromEnvironmentId: string | null;
+        requireTestsPassing: boolean;
         priority: number;
       };
     }): Promise<BranchEnvironmentPolicyRow>;
@@ -71,10 +76,12 @@ export interface CreateInput {
   requireCodeowners: boolean;
   requirePrLink: boolean;
   requireChangeTicket: boolean;
+  requirePromotionFromEnvironmentId?: string | null;
+  requireTestsPassing?: boolean;
   priority?: number;
 }
 
-export type CreateError = "repository_not_found" | "cross_org_repository" | "environment_not_found" | "cross_org_environment" | "branch_pattern_required";
+export type CreateError = "repository_not_found" | "cross_org_repository" | "environment_not_found" | "cross_org_environment" | "branch_pattern_required" | "promotion_environment_not_found" | "cross_org_promotion_environment" | "promotion_environment_same_as_target";
 export type CreateBody =
   | { ok: true; data: BranchEnvironmentPolicyRow }
   | { ok: false; error: CreateError | "migration_pending" | "internal_error" };
@@ -94,6 +101,18 @@ export async function buildBranchEnvironmentPolicyCreateResponse(
     if (!environment) return { status: 404, body: { ok: false, error: "environment_not_found" } };
     if (environment.organizationId !== input.organizationId) return { status: 403, body: { ok: false, error: "cross_org_environment" } };
 
+    const requirePromotionFromEnvironmentId = input.requirePromotionFromEnvironmentId?.trim() || null;
+    if (requirePromotionFromEnvironmentId) {
+      if (requirePromotionFromEnvironmentId === input.environmentId) {
+        return { status: 422, body: { ok: false, error: "promotion_environment_same_as_target" } };
+      }
+      const promotionEnvironment = await repo.environment.findUnique({ where: { id: requirePromotionFromEnvironmentId } });
+      if (!promotionEnvironment) return { status: 404, body: { ok: false, error: "promotion_environment_not_found" } };
+      if (promotionEnvironment.organizationId !== input.organizationId) {
+        return { status: 403, body: { ok: false, error: "cross_org_promotion_environment" } };
+      }
+    }
+
     const row = await repo.branchEnvironmentPolicy.create({
       data: {
         organizationId: input.organizationId,
@@ -104,6 +123,8 @@ export async function buildBranchEnvironmentPolicyCreateResponse(
         requireCodeowners: input.requireCodeowners,
         requirePrLink: input.requirePrLink,
         requireChangeTicket: input.requireChangeTicket,
+        requirePromotionFromEnvironmentId,
+        requireTestsPassing: input.requireTestsPassing === true,
         priority: input.priority ?? 100,
       },
     });

@@ -439,3 +439,56 @@ export async function getLatestWorkflowRun(input: LatestWorkflowRunInput): Promi
   if (!run) return { ok: true, data: null };
   return { ok: true, data: { status: run.status, conclusion: run.conclusion, htmlUrl: run.html_url, createdAt: run.created_at } };
 }
+
+export type CommitCiState = "success" | "failure" | "pending" | "no_checks";
+
+export interface CommitCiStatus {
+  state: CommitCiState;
+  detailsUrl: string | null;
+}
+
+/**
+ * Live CI evidence for one commit — combines the legacy combined-status API
+ * (third-party CI) with GitHub Actions check-runs (the common case for repos
+ * using workflow-based tests), since a repo can use either or both. Used to
+ * gate deploys/promotions on the repo's own tests actually having passed,
+ * not just existing.
+ */
+export async function getCommitCiStatus(input: {
+  owner: string;
+  repo: string;
+  commitSha: string;
+  installationToken: string;
+}): Promise<GithubWriteResult<CommitCiStatus>> {
+  const path = `/repos/${encodeURIComponent(input.owner)}/${encodeURIComponent(input.repo)}/commits/${encodeURIComponent(input.commitSha)}`;
+  const [status, checkRuns] = await Promise.all([
+    gh<{ state: "success" | "pending" | "failure"; total_count: number; statuses: Array<{ state: string; target_url: string | null }> }>(
+      `${path}/status`,
+      input.installationToken,
+    ),
+    gh<{ check_runs: Array<{ status: string; conclusion: string | null; html_url: string | null }> }>(
+      `${path}/check-runs?per_page=100`,
+      input.installationToken,
+    ),
+  ]);
+  if (!status.ok) return { ok: false, error: `commit_status_unavailable: ${status.error}` };
+  if (!checkRuns.ok) return { ok: false, error: `commit_check_runs_unavailable: ${checkRuns.error}` };
+
+  const hasStatuses = status.data.total_count > 0;
+  const hasCheckRuns = checkRuns.data.check_runs.length > 0;
+  if (!hasStatuses && !hasCheckRuns) return { ok: true, data: { state: "no_checks", detailsUrl: null } };
+
+  const statusFailed = hasStatuses && status.data.state === "failure";
+  const statusPending = hasStatuses && status.data.state === "pending";
+  const incompleteCheckRun = checkRuns.data.check_runs.find((run) => run.status !== "completed");
+  const failedCheckRun = checkRuns.data.check_runs.find((run) =>
+    run.status === "completed" && !["success", "neutral", "skipped"].includes(run.conclusion ?? ""),
+  );
+  const firstUrl = checkRuns.data.check_runs[0]?.html_url
+    ?? status.data.statuses[0]?.target_url
+    ?? null;
+
+  if (statusFailed || failedCheckRun) return { ok: true, data: { state: "failure", detailsUrl: firstUrl } };
+  if (statusPending || incompleteCheckRun) return { ok: true, data: { state: "pending", detailsUrl: firstUrl } };
+  return { ok: true, data: { state: "success", detailsUrl: firstUrl } };
+}

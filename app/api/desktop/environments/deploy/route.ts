@@ -1,6 +1,11 @@
 /**
  * POST /api/desktop/environments/deploy
- * Body: { repositoryFullName, environmentId, sourceRef?, sourceKind?, pullRequestNumber? }
+ * Body: { repositoryFullName, environmentId, sourceRef?, sourceKind?, pullRequestNumber?, promotedFromExecutionId? }
+ *
+ * promotedFromExecutionId links this deploy to the prior-environment
+ * DeploymentExecution it promotes. Required whenever the matched
+ * BranchEnvironmentPolicy sets requirePromotionFromEnvironmentId — see
+ * lib/releaseops/deploymentPolicyGuard.ts.
  *
  * The real deploy trigger, desktop-native: dispatches the tenant's own
  * axiom-deploy-aws-ecs.yml GitHub Actions workflow (see
@@ -42,6 +47,7 @@ export async function POST(request: NextRequest): Promise<Response> {
     sourceRef?: unknown;
     sourceKind?: unknown;
     pullRequestNumber?: unknown;
+    promotedFromExecutionId?: unknown;
   } | null;
   const repositoryFullName = typeof body?.repositoryFullName === "string" ? body.repositoryFullName.trim() : "";
   const environmentId = typeof body?.environmentId === "string" ? body.environmentId : "";
@@ -50,6 +56,7 @@ export async function POST(request: NextRequest): Promise<Response> {
     ? "branch"
     : body.sourceKind === "tag" ? "tag" : null;
   const pullRequestNumber = typeof body?.pullRequestNumber === "number" ? body.pullRequestNumber : undefined;
+  const promotedFromExecutionId = typeof body?.promotedFromExecutionId === "string" ? body.promotedFromExecutionId.trim() || undefined : undefined;
   if (!repositoryFullName || !environmentId || !sourceKind
     || (body?.pullRequestNumber !== undefined && (!Number.isInteger(pullRequestNumber) || (pullRequestNumber ?? 0) <= 0))) {
     return NextResponse.json({ ok: false, error: "invalid_payload" }, { status: 400 });
@@ -82,6 +89,7 @@ export async function POST(request: NextRequest): Promise<Response> {
     sourceRef,
     sourceKind,
     ...(pullRequestNumber !== undefined ? { pullRequestNumber } : {}),
+    ...(promotedFromExecutionId ? { promotedFromExecutionId } : {}),
     installationToken: tokenResult.token,
   });
   if (!policy.ok) {
@@ -117,6 +125,7 @@ export async function POST(request: NextRequest): Promise<Response> {
         sourceKind,
         sourceCommitSha: policy.sourceCommitSha,
         branchPolicyId: policy.policyId,
+        promotedFromExecutionId: promotedFromExecutionId ?? null,
         pullRequestUrl: policy.pullRequestUrl,
         workflowRunId: dispatchResult.data.workflowRunId,
         workflowUrl: dispatchResult.data.htmlUrl,

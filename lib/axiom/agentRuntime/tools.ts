@@ -46,6 +46,12 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = [
     riskLevel: "low",
   },
   {
+    name: "list_deployment_executions",
+    description: "List recent recorded deploy executions for this workspace, optionally filtered to one environment. Use this to find the id of a prior successful deploy before proposing trigger_aws_deploy as a promotion (e.g. promoting a build that already succeeded in dev to test).",
+    argsSchemaHint: '{ "environmentId": "optional, from list_environments" }',
+    riskLevel: "low",
+  },
+  {
     name: "read_github_file",
     description: "Read one UTF-8 text file from a tenant-connected GitHub repository so you can inspect it before proposing an edit.",
     argsSchemaHint: '{ "repositoryFullName": "owner/repo", "branch": "main", "path": "path/to/file.ts" }',
@@ -95,8 +101,8 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = [
   },
   {
     name: "trigger_aws_deploy",
-    description: "Trigger a real AWS ECS deployment for a repository's configured environment from an explicit branch or tag. Configured branch policies are checked against live GitHub evidence before dispatch. This changes what's running in production or another live environment — always treated as the highest-risk action available.",
-    argsSchemaHint: '{ "repositoryFullName": "owner/repo", "environmentId": "the environment\'s id, from list_environments", "sourceRef": "main or v1.2.3", "sourceKind": "branch|tag", "pullRequestNumber": 123 }',
+    description: "Trigger a real AWS ECS deployment for a repository's configured environment from an explicit branch or tag. Configured branch policies are checked against live GitHub evidence before dispatch. Some environments require promotion: their policy only allows a deploy that carries promotedFromExecutionId pointing at a completed, successful deploy execution against the specific prior environment (e.g. test requires promoting from a dev execution), with the exact same resolved commit — use list_deployment_executions to find that id. This changes what's running in production or another live environment — always treated as the highest-risk action available.",
+    argsSchemaHint: '{ "repositoryFullName": "owner/repo", "environmentId": "the environment\'s id, from list_environments", "sourceRef": "main or v1.2.3", "sourceKind": "branch|tag", "pullRequestNumber": 123, "promotedFromExecutionId": "optional, required by some environments\' policy, from list_deployment_executions" }',
     riskLevel: "high",
   },
 ] as const;

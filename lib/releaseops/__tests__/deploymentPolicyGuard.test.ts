@@ -3,30 +3,51 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 const mocks = vi.hoisted(() => ({
   resolveGitReference: vi.fn(),
   getPullRequestGovernanceEvidence: vi.fn(),
+  getCommitCiStatus: vi.fn(),
 }));
 
 vi.mock("@/lib/connectors/github/githubWriteClient", () => ({
   resolveGitReference: mocks.resolveGitReference,
   getPullRequestGovernanceEvidence: mocks.getPullRequestGovernanceEvidence,
+  getCommitCiStatus: mocks.getCommitCiStatus,
 }));
 
 import { evaluateDeploymentPolicy, type DeploymentPolicyRepo } from "../deploymentPolicyGuard";
 
 const registered = { id: "repo_1", organizationId: "org-1", provider: "github", remoteOwner: "acme", remoteName: "widgets" };
-const basePolicy = {
+const basePolicy: {
+  id: string;
+  branchPattern: string;
+  requireReleaseTag: boolean;
+  requireCodeowners: boolean;
+  requirePrLink: boolean;
+  requireChangeTicket: boolean;
+  requirePromotionFromEnvironmentId: string | null;
+  requireTestsPassing: boolean;
+  priority: number;
+} = {
   id: "policy_1",
   branchPattern: "release/*",
   requireReleaseTag: false,
   requireCodeowners: false,
   requirePrLink: false,
   requireChangeTicket: false,
+  requirePromotionFromEnvironmentId: null,
+  requireTestsPassing: false,
   priority: 100,
 };
 
-function makeRepo(policies = [basePolicy], repositories = [registered]): DeploymentPolicyRepo {
+function makeRepo(
+  policies: (typeof basePolicy)[] = [basePolicy],
+  repositories = [registered],
+  priorExecutions: Array<{ id: string; environmentId: string; sourceCommitSha: string | null; status: string; conclusion: string | null }> = [],
+): DeploymentPolicyRepo {
   return {
     repository: { findMany: vi.fn(async () => repositories) },
     branchEnvironmentPolicy: { findMany: vi.fn(async () => policies) },
+    deploymentExecution: {
+      findFirst: vi.fn(async ({ where }) => priorExecutions.find((row) => row.id === where.id) ?? null),
+    },
   };
 }
 
@@ -43,6 +64,7 @@ const input = {
 beforeEach(() => {
   vi.clearAllMocks();
   mocks.resolveGitReference.mockResolvedValue({ ok: true, data: { kind: "branch", ref: input.sourceRef, commitSha: "sha-1" } });
+  mocks.getCommitCiStatus.mockResolvedValue({ ok: true, data: { state: "success", detailsUrl: "https://github.test/checks/1" } });
   mocks.getPullRequestGovernanceEvidence.mockResolvedValue({
     ok: true,
     data: {
@@ -114,5 +136,90 @@ describe("evaluateDeploymentPolicy", () => {
       pullRequestUrl: "https://github.test/acme/widgets/pull/42",
     });
     expect(mocks.getPullRequestGovernanceEvidence).toHaveBeenCalledWith(expect.objectContaining({ requireCodeowners: true }));
+  });
+
+  describe("pre-deploy test gate", () => {
+    const testsPolicy = { ...basePolicy, requireTestsPassing: true };
+
+    it("allows a deploy whose commit has a successful CI result", async () => {
+      const result = await evaluateDeploymentPolicy(makeRepo([testsPolicy]), input);
+      expect(result).toEqual({ ok: true, policyId: "policy_1", sourceCommitSha: "sha-1", pullRequestUrl: null });
+      expect(mocks.getCommitCiStatus).toHaveBeenCalledWith(expect.objectContaining({ commitSha: "sha-1", installationToken: "scoped-token" }));
+    });
+
+    it("denies when the commit has no CI checks at all", async () => {
+      mocks.getCommitCiStatus.mockResolvedValue({ ok: true, data: { state: "no_checks", detailsUrl: null } });
+      const result = await evaluateDeploymentPolicy(makeRepo([testsPolicy]), input);
+      expect(result).toEqual({ ok: false, error: "branch_policy_tests_required_no_checks", policyId: "policy_1" });
+    });
+
+    it("denies when CI is still running", async () => {
+      mocks.getCommitCiStatus.mockResolvedValue({ ok: true, data: { state: "pending", detailsUrl: "https://github.test/checks/1" } });
+      const result = await evaluateDeploymentPolicy(makeRepo([testsPolicy]), input);
+      expect(result).toEqual({ ok: false, error: "branch_policy_tests_pending", policyId: "policy_1" });
+    });
+
+    it("denies when CI failed", async () => {
+      mocks.getCommitCiStatus.mockResolvedValue({ ok: true, data: { state: "failure", detailsUrl: "https://github.test/checks/1" } });
+      const result = await evaluateDeploymentPolicy(makeRepo([testsPolicy]), input);
+      expect(result).toEqual({ ok: false, error: "branch_policy_tests_failed", policyId: "policy_1" });
+    });
+
+    it("denies closed when the CI status lookup itself fails", async () => {
+      mocks.getCommitCiStatus.mockResolvedValue({ ok: false, error: "commit_status_unavailable: github_500" });
+      const result = await evaluateDeploymentPolicy(makeRepo([testsPolicy]), input);
+      expect(result).toEqual({ ok: false, error: "commit_status_unavailable: github_500", policyId: "policy_1" });
+    });
+
+    it("never calls the CI lookup when the policy doesn't require it", async () => {
+      await evaluateDeploymentPolicy(makeRepo([basePolicy]), input);
+      expect(mocks.getCommitCiStatus).not.toHaveBeenCalled();
+    });
+  });
+
+  describe("promotion chain", () => {
+    const promotionPolicy = { ...basePolicy, requirePromotionFromEnvironmentId: "env-dev" };
+
+    it("denies when a promotion-required policy gets no promotedFromExecutionId", async () => {
+      const result = await evaluateDeploymentPolicy(makeRepo([promotionPolicy]), input);
+      expect(result).toEqual({ ok: false, error: "branch_policy_promotion_required", policyId: "policy_1" });
+    });
+
+    it("denies when the referenced prior execution does not exist", async () => {
+      const result = await evaluateDeploymentPolicy(makeRepo([promotionPolicy]), { ...input, promotedFromExecutionId: "missing" });
+      expect(result).toEqual({ ok: false, error: "branch_policy_promotion_execution_not_found", policyId: "policy_1" });
+    });
+
+    it("denies when the prior execution targeted a different environment", async () => {
+      const repo = makeRepo([promotionPolicy], [registered], [
+        { id: "exec_1", environmentId: "env-other", sourceCommitSha: "sha-1", status: "completed", conclusion: "success" },
+      ]);
+      const result = await evaluateDeploymentPolicy(repo, { ...input, promotedFromExecutionId: "exec_1" });
+      expect(result).toEqual({ ok: false, error: "branch_policy_promotion_wrong_environment", policyId: "policy_1" });
+    });
+
+    it("denies when the prior execution did not succeed", async () => {
+      const repo = makeRepo([promotionPolicy], [registered], [
+        { id: "exec_1", environmentId: "env-dev", sourceCommitSha: "sha-1", status: "completed", conclusion: "failure" },
+      ]);
+      const result = await evaluateDeploymentPolicy(repo, { ...input, promotedFromExecutionId: "exec_1" });
+      expect(result).toEqual({ ok: false, error: "branch_policy_promotion_not_successful", policyId: "policy_1" });
+    });
+
+    it("denies when the prior execution's commit does not match the deploy's resolved commit", async () => {
+      const repo = makeRepo([promotionPolicy], [registered], [
+        { id: "exec_1", environmentId: "env-dev", sourceCommitSha: "different-sha", status: "completed", conclusion: "success" },
+      ]);
+      const result = await evaluateDeploymentPolicy(repo, { ...input, promotedFromExecutionId: "exec_1" });
+      expect(result).toEqual({ ok: false, error: "branch_policy_promotion_commit_mismatch", policyId: "policy_1" });
+    });
+
+    it("allows promotion when the prior execution succeeded against the right environment with the same commit", async () => {
+      const repo = makeRepo([promotionPolicy], [registered], [
+        { id: "exec_1", environmentId: "env-dev", sourceCommitSha: "sha-1", status: "completed", conclusion: "success" },
+      ]);
+      const result = await evaluateDeploymentPolicy(repo, { ...input, promotedFromExecutionId: "exec_1" });
+      expect(result).toEqual({ ok: true, policyId: "policy_1", sourceCommitSha: "sha-1", pullRequestUrl: null });
+    });
   });
 });

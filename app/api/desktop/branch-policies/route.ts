@@ -1,7 +1,7 @@
 /**
  * GET  /api/desktop/branch-policies
  * POST /api/desktop/branch-policies
- * Body (POST): { repositoryId, environmentId, branchPattern, requireReleaseTag?, requireCodeowners?, requirePrLink?, requireChangeTicket?, priority? }
+ * Body (POST): { repositoryId, environmentId, branchPattern, requireReleaseTag?, requireCodeowners?, requirePrLink?, requireChangeTicket?, requirePromotionFromEnvironmentId?, requireTestsPassing?, priority? }
  *
  * Admin-gated tenant-wide configuration. Both deployment entry points
  * enforce these rows through lib/releaseops/deploymentPolicyGuard.ts.
@@ -46,7 +46,8 @@ export async function POST(request: NextRequest): Promise<Response> {
 
   const body = (await request.json().catch(() => null)) as {
     repositoryId?: unknown; environmentId?: unknown; branchPattern?: unknown;
-    requireReleaseTag?: unknown; requireCodeowners?: unknown; requirePrLink?: unknown; requireChangeTicket?: unknown; priority?: unknown;
+    requireReleaseTag?: unknown; requireCodeowners?: unknown; requirePrLink?: unknown; requireChangeTicket?: unknown;
+    requirePromotionFromEnvironmentId?: unknown; requireTestsPassing?: unknown; priority?: unknown;
   } | null;
   const repositoryId = typeof body?.repositoryId === "string" ? body.repositoryId : null;
   const environmentId = typeof body?.environmentId === "string" ? body.environmentId : null;
@@ -62,6 +63,8 @@ export async function POST(request: NextRequest): Promise<Response> {
     requireCodeowners: body?.requireCodeowners === true,
     requirePrLink: body?.requirePrLink === true,
     requireChangeTicket: body?.requireChangeTicket === true,
+    requireTestsPassing: body?.requireTestsPassing === true,
+    ...(typeof body?.requirePromotionFromEnvironmentId === "string" ? { requirePromotionFromEnvironmentId: body.requirePromotionFromEnvironmentId } : {}),
     ...(typeof body?.priority === "number" ? { priority: body.priority } : {}),
   });
 

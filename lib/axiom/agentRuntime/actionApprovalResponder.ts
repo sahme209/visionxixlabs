@@ -94,6 +94,7 @@ export async function executeApprovedAction(
       ? "branch"
       : args.sourceKind === "tag" ? "tag" : null;
     const pullRequestNumber = typeof args.pullRequestNumber === "number" ? args.pullRequestNumber : undefined;
+    const promotedFromExecutionId = typeof args.promotedFromExecutionId === "string" ? args.promotedFromExecutionId.trim() || undefined : undefined;
     if (!environmentId || !sourceKind
       || (args.pullRequestNumber !== undefined && (!Number.isInteger(pullRequestNumber) || (pullRequestNumber ?? 0) <= 0))) {
       return { ok: false, error: "invalid_payload" };
@@ -104,7 +105,15 @@ export async function executeApprovedAction(
     if (!target || target.organizationId !== organizationId) return { ok: false, error: "deployment_target_not_configured" };
     const token = await resolveTenantScopedToken(organizationId, parsed);
     if (!token.ok) return { ok: false, error: token.error };
-    const policy = await evaluateDeploymentPolicy(repo, {
+    const policyRepo: DeploymentPolicyRepo = {
+      repository: repo.repository,
+      branchEnvironmentPolicy: repo.branchEnvironmentPolicy,
+      // Promotion is fail-closed: if execution storage isn't wired in for
+      // this call site, any promotion-required policy denies rather than
+      // silently skipping the check.
+      deploymentExecution: { findFirst: repo.deploymentExecution?.findFirst ?? (async () => null) },
+    };
+    const policy = await evaluateDeploymentPolicy(policyRepo, {
       organizationId,
       environmentId,
       owner: parsed.owner,
@@ -112,6 +121,7 @@ export async function executeApprovedAction(
       sourceRef,
       sourceKind,
       ...(pullRequestNumber !== undefined ? { pullRequestNumber } : {}),
+      ...(promotedFromExecutionId ? { promotedFromExecutionId } : {}),
       installationToken: token.token,
     });
     if (!policy.ok) return { ok: false, error: policy.error };
@@ -133,6 +143,7 @@ export async function executeApprovedAction(
           sourceKind,
           sourceCommitSha: policy.sourceCommitSha,
           branchPolicyId: policy.policyId,
+          promotedFromExecutionId: promotedFromExecutionId ?? null,
           pullRequestUrl: policy.pullRequestUrl,
           workflowRunId: result.data.workflowRunId,
           workflowUrl: result.data.htmlUrl,

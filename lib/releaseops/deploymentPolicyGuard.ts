@@ -2,6 +2,7 @@ import "server-only";
 
 import { matchesPattern } from "./branchValidationEvaluator";
 import {
+  getCommitCiStatus,
   getPullRequestGovernanceEvidence,
   resolveGitReference,
   type GitReferenceKind,
@@ -22,7 +23,23 @@ interface PolicyRow {
   requireCodeowners: boolean;
   requirePrLink: boolean;
   requireChangeTicket: boolean;
+  /// Soft reference to another Environment. When set, a deploy matching
+  /// this policy must promote forward from a completed, successful
+  /// DeploymentExecution against exactly that prior environment, carrying
+  /// the identical resolved commit — see the promotion check below.
+  requirePromotionFromEnvironmentId: string | null;
+  /// When set, the resolved commit must have a successful GitHub combined
+  /// status or check-run result (the repo's own CI/tests) before deploy.
+  requireTestsPassing: boolean;
   priority: number;
+}
+
+interface PriorExecutionRow {
+  id: string;
+  environmentId: string;
+  sourceCommitSha: string | null;
+  status: string;
+  conclusion: string | null;
 }
 
 export interface DeploymentPolicyRepo {
@@ -35,6 +52,9 @@ export interface DeploymentPolicyRepo {
       orderBy: [{ priority: "asc" }];
     }): Promise<PolicyRow[]>;
   };
+  deploymentExecution: {
+    findFirst(args: { where: { id: string; organizationId: string } }): Promise<PriorExecutionRow | null>;
+  };
 }
 
 export interface DeploymentPolicyInput {
@@ -45,6 +65,9 @@ export interface DeploymentPolicyInput {
   sourceRef: string;
   sourceKind: GitReferenceKind;
   pullRequestNumber?: number;
+  /// Prior DeploymentExecution this deploy promotes, required whenever the
+  /// matched policy sets requirePromotionFromEnvironmentId.
+  promotedFromExecutionId?: string;
   installationToken: string;
 }
 
@@ -116,6 +139,38 @@ export async function evaluateDeploymentPolicy(
     installationToken: input.installationToken,
   });
   if (!reference.ok) return { ok: false, error: reference.error, policyId: policy.id };
+
+  if (policy.requireTestsPassing) {
+    const ci = await getCommitCiStatus({
+      owner: input.owner,
+      repo: input.repo,
+      commitSha: reference.data.commitSha,
+      installationToken: input.installationToken,
+    });
+    if (!ci.ok) return { ok: false, error: ci.error, policyId: policy.id };
+    if (ci.data.state === "no_checks") return { ok: false, error: "branch_policy_tests_required_no_checks", policyId: policy.id };
+    if (ci.data.state === "pending") return { ok: false, error: "branch_policy_tests_pending", policyId: policy.id };
+    if (ci.data.state === "failure") return { ok: false, error: "branch_policy_tests_failed", policyId: policy.id };
+  }
+
+  if (policy.requirePromotionFromEnvironmentId) {
+    if (!input.promotedFromExecutionId) {
+      return { ok: false, error: "branch_policy_promotion_required", policyId: policy.id };
+    }
+    const priorExecution = await policyRepo.deploymentExecution.findFirst({
+      where: { id: input.promotedFromExecutionId, organizationId: input.organizationId },
+    });
+    if (!priorExecution) return { ok: false, error: "branch_policy_promotion_execution_not_found", policyId: policy.id };
+    if (priorExecution.environmentId !== policy.requirePromotionFromEnvironmentId) {
+      return { ok: false, error: "branch_policy_promotion_wrong_environment", policyId: policy.id };
+    }
+    if (priorExecution.status !== "completed" || priorExecution.conclusion !== "success") {
+      return { ok: false, error: "branch_policy_promotion_not_successful", policyId: policy.id };
+    }
+    if (!priorExecution.sourceCommitSha || priorExecution.sourceCommitSha !== reference.data.commitSha) {
+      return { ok: false, error: "branch_policy_promotion_commit_mismatch", policyId: policy.id };
+    }
+  }
 
   const needsPullRequest = policy.requirePrLink || policy.requireCodeowners || policy.requireChangeTicket;
   if (!needsPullRequest) {

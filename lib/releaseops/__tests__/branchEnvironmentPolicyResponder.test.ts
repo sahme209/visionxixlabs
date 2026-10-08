@@ -15,7 +15,7 @@ interface Stub extends BranchEnvironmentPolicyRepo {
 
 function makeRepo(): Stub {
   const stub: Stub = {
-    _rows: [], _repos: [{ id: "repo_1", organizationId: "o" }], _environments: [{ id: "env_1", organizationId: "o" }], _nextId: 1,
+    _rows: [], _repos: [{ id: "repo_1", organizationId: "o" }], _environments: [{ id: "env_1", organizationId: "o" }, { id: "env_0", organizationId: "o" }, { id: "env_other_org", organizationId: "other_org" }], _nextId: 1,
     branchEnvironmentPolicy: {
       async findMany({ where }) {
         return stub._rows.filter((r) => r.organizationId === where.organizationId).sort((a, b) => a.priority - b.priority);
@@ -71,6 +71,43 @@ describe("buildBranchEnvironmentPolicyCreateResponse", () => {
     expect(r.body.data.requireReleaseTag).toBe(true);
     expect(r.body.data.requirePrLink).toBe(true);
     expect(r.body.data.priority).toBe(100);
+    expect(r.body.data.requirePromotionFromEnvironmentId).toBeNull();
+    expect(r.body.data.requireTestsPassing).toBe(false);
+  });
+
+  it("stores requireTestsPassing when set", async () => {
+    const r = await buildBranchEnvironmentPolicyCreateResponse(makeRepo(), { organizationId: "o", ...VALID, requireTestsPassing: true });
+    expect(r.status).toBe(201);
+    if (!r.body.ok) throw new Error("expected ok");
+    expect(r.body.data.requireTestsPassing).toBe(true);
+  });
+
+  it("rejects a promotion-from environment identical to the target environment", async () => {
+    const r = await buildBranchEnvironmentPolicyCreateResponse(makeRepo(), { organizationId: "o", ...VALID, requirePromotionFromEnvironmentId: "env_1" });
+    expect(r.status).toBe(422);
+    if (r.body.ok) throw new Error("expected error");
+    expect(r.body.error).toBe("promotion_environment_same_as_target");
+  });
+
+  it("404s when the promotion-from environment doesn't exist", async () => {
+    const r = await buildBranchEnvironmentPolicyCreateResponse(makeRepo(), { organizationId: "o", ...VALID, requirePromotionFromEnvironmentId: "missing" });
+    expect(r.status).toBe(404);
+    if (r.body.ok) throw new Error("expected error");
+    expect(r.body.error).toBe("promotion_environment_not_found");
+  });
+
+  it("403s when the promotion-from environment belongs to a different org", async () => {
+    const r = await buildBranchEnvironmentPolicyCreateResponse(makeRepo(), { organizationId: "o", ...VALID, requirePromotionFromEnvironmentId: "env_other_org" });
+    expect(r.status).toBe(403);
+    if (r.body.ok) throw new Error("expected error");
+    expect(r.body.error).toBe("cross_org_promotion_environment");
+  });
+
+  it("stores a valid promotion-from environment", async () => {
+    const r = await buildBranchEnvironmentPolicyCreateResponse(makeRepo(), { organizationId: "o", ...VALID, requirePromotionFromEnvironmentId: "env_0" });
+    expect(r.status).toBe(201);
+    if (!r.body.ok) throw new Error("expected ok");
+    expect(r.body.data.requirePromotionFromEnvironmentId).toBe("env_0");
   });
 });
 
