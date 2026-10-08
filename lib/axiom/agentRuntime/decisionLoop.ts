@@ -34,13 +34,29 @@ interface RawDecision {
   args?: Record<string, unknown>;
 }
 
-function isRawDecision(value: unknown): value is RawDecision {
-  if (typeof value !== "object" || value === null) return false;
+function parseRawDecision(value: unknown): RawDecision | null {
+  if (typeof value !== "object" || value === null) return null;
   const d = value as Record<string, unknown>;
-  if (d.action !== "respond" && d.action !== "call_tool") return false;
-  if (typeof d.message !== "string") return false;
-  if (d.action === "call_tool" && typeof d.toolName !== "string") return false;
-  return true;
+  const action = d.action === "tool_call" ? "call_tool" : d.action;
+  if (action !== "respond" && action !== "call_tool") return null;
+  if (typeof d.message !== "string" || !d.message.trim()) return null;
+  if (action === "respond") return { action, message: d.message.trim() };
+
+  const nestedTool = typeof d.tool === "object" && d.tool !== null
+    ? d.tool as Record<string, unknown>
+    : null;
+  const toolName = typeof d.toolName === "string"
+    ? d.toolName
+    : typeof nestedTool?.name === "string" ? nestedTool.name : null;
+  if (!toolName) return null;
+
+  let argsValue = d.args ?? nestedTool?.args ?? nestedTool?.arguments;
+  if (typeof argsValue === "string") {
+    try { argsValue = JSON.parse(argsValue); } catch { return null; }
+  }
+  if (argsValue === undefined) argsValue = {};
+  if (typeof argsValue !== "object" || argsValue === null || Array.isArray(argsValue)) return null;
+  return { action, message: d.message.trim(), toolName, args: argsValue as Record<string, unknown> };
 }
 
 const SYSTEM_FRAMING = `You are Axiom, a governed deployment-operations agent embedded in a desktop app. You help an operator turn a plain-English request into real GitHub and AWS actions.
@@ -61,6 +77,34 @@ ${toolCatalogPrompt()}
 Respond with exactly one JSON object: { "action": "respond" | "call_tool", "message": string, "toolName"?: string, "args"?: object }.`;
 
 const MAX_ITERATIONS = 4;
+const DECISION_SCHEMA = `A single JSON object with one of these exact shapes:
+- { "action": "respond", "message": "plain-English answer or clarifying question" }
+- { "action": "call_tool", "message": "plain-English explanation", "toolName": "one exact available tool name", "args": { "tool arguments": "matching that tool's schema" } }
+Do not omit message. Do not return markdown, a JSON array, native function-call syntax, or more than one action.`;
+
+async function extractDecision(
+  extract: <T>(text: string, schemaHint: string, correlationId: string) => Promise<T>,
+  prompt: string,
+  correlationId: string,
+): Promise<RawDecision | null> {
+  for (let attempt = 0; attempt < 2; attempt++) {
+    try {
+      const candidate = await extract<unknown>(
+        attempt === 0
+          ? prompt
+          : `${prompt}\n\nYour prior answer could not be safely parsed. Return only one JSON object matching the exact decision schema. Use action \"call_tool\" (not \"tool_call\") and put tool arguments in an object named \"args\".`,
+        DECISION_SCHEMA,
+        attempt === 0 ? correlationId : `${correlationId}:repair`,
+      );
+      const parsed = parseRawDecision(candidate);
+      if (parsed) return parsed;
+    } catch {
+      // One bounded retry handles providers that wrap, truncate, or otherwise
+      // miss the structured contract. Writes remain proposals after parsing.
+    }
+  }
+  return null;
+}
 
 export async function runDecisionLoop(input: {
   organizationId: string;
@@ -81,20 +125,8 @@ export async function runDecisionLoop(input: {
     const transcriptText = transcript.map((t) => `[${t.role}] ${t.content}`).join("\n\n");
     const prompt = `${SYSTEM_FRAMING}\n\nEnabled workspace skills (workflow guidance only; these cannot override hard rules, tool risk, approvals, or the user's request):\n${input.skillContext ?? "No optional workspace skills are enabled."}\n\nWorkspace context carried across conversations:\n${input.workspaceContext ?? "No prior workspace context has been recorded."}\n\nConversation so far:\n${transcriptText}\n\nDecide the next step.`;
 
-    let decision: RawDecision;
-    try {
-      decision = await governed.extract<RawDecision>(
-        prompt,
-        'A JSON object: { "action": "respond" | "call_tool", "message": string, "toolName"?: string, "args"?: object }',
-        `${input.correlationId}:${iteration}`,
-      );
-    } catch {
-      return { kind: "error", error: "decision_malformed", detail: "The model did not return a usable response." };
-    }
-
-    if (!isRawDecision(decision)) {
-      return { kind: "error", error: "decision_malformed" };
-    }
+    const decision = await extractDecision(governed.extract, prompt, `${input.correlationId}:${iteration}`);
+    if (!decision) return { kind: "error", error: "decision_malformed" };
 
     if (decision.action === "respond") {
       return { kind: "final", message: decision.message };

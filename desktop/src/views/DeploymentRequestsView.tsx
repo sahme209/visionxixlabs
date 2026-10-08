@@ -483,7 +483,15 @@ export function DeploymentRequestsView() {
             {executions.slice(0, 5).map((execution) => (
               <div key={execution.id} className="flex items-center justify-between gap-3 rounded-lg border border-white/[0.06] bg-black/15 px-3 py-2.5">
                 <div className="min-w-0">
-                  <p className="truncate text-xs font-medium text-zinc-200">{execution.repositoryFullName}</p>
+                  <p className="truncate text-xs font-medium text-zinc-200">
+                    {execution.repositoryFullName}{execution.sourceRef ? `@${execution.sourceRef}` : ""}
+                  </p>
+                  {execution.sourceCommitSha && (
+                    <p className="mt-1 font-mono text-[10px] text-zinc-600">
+                      {execution.sourceKind ?? "ref"} · {execution.sourceCommitSha.slice(0, 12)}
+                      {execution.branchPolicyId ? " · policy enforced" : ""}
+                    </p>
+                  )}
                   <p className="mt-1 text-[10px] text-zinc-500">
                     {execution.status === "completed" ? `Completed · ${execution.conclusion ?? "unknown"}` : execution.status.replaceAll("_", " ")}
                     {execution.rollbackStatus !== "not_started" ? ` · rollback ${execution.rollbackStatus.replaceAll("_", " ")}` : ""}

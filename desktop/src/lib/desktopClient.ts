@@ -57,6 +57,11 @@ export interface DeploymentExecution {
   id: string;
   environmentId: string;
   repositoryFullName: string;
+  sourceRef: string | null;
+  sourceKind: string | null;
+  sourceCommitSha: string | null;
+  branchPolicyId: string | null;
+  pullRequestUrl: string | null;
   workflowRunId: string | null;
   workflowUrl: string | null;
   source: string;
@@ -81,9 +86,12 @@ export function legacyApiError(body: LegacyApiErrorBody, status: number): string
     .map((issue) => issue.field ? `${issue.field}: ${issue.message}` : issue.message)
     .filter((message): message is string => Boolean(message));
   if (issues?.length) return issues.join(" · ");
+  if (body.error === "billing_customer_missing") {
+    return "Billing is not set up for this workspace. Approved trial access does not require a card.";
+  }
+  if (typeof body.error === "object" && body.error?.userMessage) return body.error.userMessage;
+  if (typeof body.message === "string" && body.message.trim()) return body.message;
   if (typeof body.error === "string") return body.error;
-  if (body.error?.userMessage) return body.error.userMessage;
-  if (typeof body.message === "string") return body.message;
   return `HTTP ${status}`;
 }
 

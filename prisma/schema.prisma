@@ -2630,6 +2630,16 @@ model DeploymentExecution {
   organizationId     String
   environmentId      String
   repositoryFullName String
+  /// Exact GitHub branch or tag selected for this dispatch.
+  sourceRef          String?
+  /// Closed union in application code: branch | tag.
+  sourceKind         String?
+  /// Commit resolved from sourceRef immediately before dispatch.
+  sourceCommitSha    String?
+  /// Soft reference to the enforced BranchEnvironmentPolicy, when present.
+  branchPolicyId     String?
+  /// Verified GitHub PR evidence used by the policy guard, when required.
+  pullRequestUrl     String?
   workflowRunId      String?
   workflowUrl        String?
   /// desktop | agent

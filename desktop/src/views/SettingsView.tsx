@@ -231,18 +231,21 @@ function PlanSection({ identity }: { identity: VerifiedDesktopIdentity }) {
     } catch (cause) { setError(cause instanceof Error ? cause.message : "The billing portal could not be opened."); }
     finally { setOpening(false); }
   }
-  const isPilot = access.planTier === "pilot" && access.billingStatus === "active";
+  const isNoChargeAccess = access.allowed && (access.planTier === "pilot" || access.planTier === "trial");
+  const accessModel = isNoChargeAccess
+    ? access.planTier === "trial" ? "No-charge trial" : "No-charge pilot"
+    : access.planTier;
   return <div>
     <SectionHeading title="Access & usage" detail="Approved pilot or commercial access is verified by the service before production records load." />
     <div className="grid gap-4 sm:grid-cols-2">
-      <SummaryCard label="Access model" value={isPilot ? "No-charge pilot" : access.planTier} detail={access.title} />
-      <SummaryCard label="Access state" value={access.billingStatus.replaceAll("_", " ")} detail={isPilot ? "Provisioned for this pilot workspace" : access.currentPeriodEndsAt ? `Period ends ${new Date(access.currentPeriodEndsAt).toLocaleDateString()}` : "Managed by your workspace agreement"} />
+      <SummaryCard label="Access model" value={accessModel} detail={access.title} />
+      <SummaryCard label="Access state" value={isNoChargeAccess ? "Active" : access.billingStatus.replaceAll("_", " ")} detail={isNoChargeAccess ? "Provisioned for this workspace; no billing setup is required" : access.currentPeriodEndsAt ? `Period ends ${new Date(access.currentPeriodEndsAt).toLocaleDateString()}` : "Managed by your workspace agreement"} />
     </div>
     <div className="mt-5 rounded-xl border border-white/[0.07] bg-white/[0.025] p-5">
-      {isPilot ? (
+      {isNoChargeAccess ? (
         <div>
-          <p className="text-sm text-zinc-200">Pilot access is no-charge</p>
-          <p className="mt-1 max-w-xl text-xs leading-5 text-zinc-500">This workspace is in an approved early-access pilot. No card or checkout is needed, and production safeguards remain enforced.</p>
+          <p className="text-sm text-zinc-200">{access.planTier === "trial" ? "Trial access is active" : "Pilot access is active"}</p>
+          <p className="mt-1 max-w-xl text-xs leading-5 text-zinc-500">This workspace has approved no-charge access. No card, Stripe customer, or checkout is needed, and production safeguards remain enforced.</p>
         </div>
       ) : (
         <>
@@ -911,6 +914,13 @@ function DeploymentTargetPanel({ environmentId }: { environmentId: string }) {
             <div className="flex items-center justify-between gap-3">
               <div>
                 <p className="font-medium text-zinc-200">{execution.repositoryFullName}</p>
+                {execution.sourceRef && (
+                  <p className="mt-1 font-mono text-[10px] text-zinc-500">
+                    {execution.sourceKind ?? "ref"} {execution.sourceRef}
+                    {execution.sourceCommitSha ? ` · ${execution.sourceCommitSha.slice(0, 12)}` : ""}
+                    {execution.branchPolicyId ? " · policy enforced" : ""}
+                  </p>
+                )}
                 <p className="mt-1 text-zinc-500">
                   {execution.status === "completed"
                     ? execution.conclusion === "success" ? "Deployment stabilized" : "Deployment failed"
@@ -1492,7 +1502,7 @@ function IntegrationsSection() {
 
   const providerStatus = (provider: "slack" | "teams" | "linear") => collaboration?.find((item) => item.provider === provider)?.status ?? "not_connected";
   const providerAction = (provider: "github" | "slack" | "teams" | "linear", status: string, canValidate: boolean, validating: boolean, validate: () => Promise<void>) => {
-    if (canValidate) return <button type="button" disabled={validating} onClick={() => void validate()} className="rounded-lg bg-white px-3 py-2 text-xs font-semibold text-black hover:bg-zinc-100 disabled:opacity-50">{validating ? "Validating…" : "Validate"}</button>;
+    if (canValidate) return <button type="button" disabled={validating} onClick={() => void validate()} className="rounded-lg bg-white px-3 py-2 text-xs font-semibold text-black hover:bg-zinc-100 disabled:opacity-50">{validating ? "Checking access…" : status === "validation_overdue" ? "Revalidate now" : "Finish connection"}</button>;
     if (status === "active" || status === "validated_read_only") return <WebButton href="/account/integrations" label="Manage" />;
     return <button type="button" disabled={connectingProvider !== null} onClick={() => void connectProvider(provider)} className="rounded-lg bg-white px-3 py-2 text-xs font-semibold text-black hover:bg-zinc-100 disabled:opacity-50">{connectingProvider === provider ? "Opening…" : "Connect ↗"}</button>;
   };
@@ -1501,7 +1511,7 @@ function IntegrationsSection() {
     <SectionHeading title="Integration Center" detail="Connect the systems that already run your releases. Every connection is tenant-scoped, least-privilege, and shown as connected only after server-side validation." />
     <Notice title="No secrets in the desktop app" detail="Connections open in the secure browser. The desktop app never collects an identity-provider password or long-lived provider secret, and no connection can silently gain write access." />
     <div className="space-y-3">
-      <IntegrationRow name="GitHub" group="Source control" detail={githubDetail} state={githubState} action={providerAction("github", github?.status ?? "not_connected", github?.status === "installation_recorded" || github?.status === "validation_overdue", validatingGitHub, validateGitHub)} />
+      <IntegrationRow name="GitHub" group="Source control" detail={githubDetail} state={githubState} tone={github?.status === "validation_overdue" ? "attention" : undefined} action={providerAction("github", github?.status ?? "not_connected", github?.status === "installation_recorded" || github?.status === "validation_overdue", validatingGitHub, validateGitHub)} />
       <IntegrationRow name="Slack" group="Collaboration" detail="Release notifications with channels:read and chat:write. Consent is not active access until Axiom validates the token server-side." state={formatConnectorState(providerStatus("slack"))} action={providerAction("slack", providerStatus("slack"), slackCanValidate, validatingSlack, validateSlack)} />
       <IntegrationRow name="Microsoft Teams" group="Collaboration" detail="Verifies Microsoft workspace identity with PKCE. Message permissions remain separately gated." state={formatConnectorState(providerStatus("teams"))} action={providerAction("teams", providerStatus("teams"), teamsCanValidate, validatingTeams, validateTeams)} />
       <IntegrationRow name="Linear" group="Work management" detail="Governed issue delegation with read and issues:create scopes, short-lived tokens, and automatic refresh rotation." state={formatConnectorState(providerStatus("linear"))} action={providerAction("linear", providerStatus("linear"), linearCanValidate, validatingLinear, validateLinear)} />
@@ -1556,8 +1566,11 @@ function LockedRow({ title, detail }: { title: string; detail: string }) { retur
 function Notice({ title, detail }: { title: string; detail: string }) { return <div className="mb-6 rounded-lg border border-white/15 bg-white/[0.04] p-4"><p className="text-sm font-medium text-zinc-100">{title}</p><p className="mt-2 text-xs leading-5 text-zinc-400">{detail}</p></div>; }
 function SummaryCard({ label, value, detail }: { label: string; value: string; detail: string }) { return <div className="rounded-lg border border-white/[0.05] bg-white/[0.015] p-4"><p className="text-xs text-zinc-500">{label}</p><p className="mt-2 text-2xl font-semibold capitalize">{value}</p><p className="mt-2 text-sm text-zinc-500">{detail}</p></div>; }
 function formatConnectorState(state: string) { return state.replaceAll("_", " ").replace(/\b\w/g, (letter) => letter.toUpperCase()); }
-function IntegrationRow({ name, group, detail, state, action }: { name: string; group: string; detail: string; state: string; action?: ReactNode }) {
+function IntegrationRow({ name, group, detail, state, action, tone }: { name: string; group: string; detail: string; state: string; action?: ReactNode; tone?: "attention" }) {
   const connected = /verified|connected/i.test(state) && !/not connected/i.test(state);
-  return <div className="flex items-center gap-4 rounded-lg border border-white/[0.05] bg-white/[0.015] p-4"><span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-white/[0.05] bg-black/20 text-zinc-300"><Link2 className="h-4 w-4" /></span><div className="min-w-0 flex-1"><p className="text-[10px] uppercase tracking-[0.14em] text-zinc-600">{group}</p><p className="mt-0.5 text-sm text-zinc-200">{name}</p><p className="mt-1 text-xs leading-5 text-zinc-500">{detail}</p></div><div className="flex shrink-0 items-center gap-2"><span className={`rounded-full border px-2 py-1 text-[10px] ${connected ? "border-emerald-500/20 bg-emerald-500/10 text-emerald-200" : "border-white/20 bg-white/10 text-zinc-200"}`}>{state}</span>{action}</div></div>;
+  const stateClass = tone === "attention"
+    ? "border-amber-500/25 bg-amber-500/10 text-amber-200"
+    : connected ? "border-emerald-500/20 bg-emerald-500/10 text-emerald-200" : "border-white/20 bg-white/10 text-zinc-200";
+  return <div className="flex items-center gap-4 rounded-lg border border-white/[0.05] bg-white/[0.015] p-4"><span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-white/[0.05] bg-black/20 text-zinc-300"><Link2 className="h-4 w-4" /></span><div className="min-w-0 flex-1"><p className="text-[10px] uppercase tracking-[0.14em] text-zinc-600">{group}</p><p className="mt-0.5 text-sm text-zinc-200">{name}</p><p className="mt-1 text-xs leading-5 text-zinc-500">{detail}</p></div><div className="flex shrink-0 items-center gap-2"><span className={`rounded-full border px-2 py-1 text-[10px] ${stateClass}`}>{state}</span>{action}</div></div>;
 }
 function WebButton({ href, label, standalone = false }: { href: string; label: string; standalone?: boolean }) { return <button type="button" onClick={() => void open(`${WEB_BASE}${href}`)} className={`${standalone ? "mt-1" : ""} inline-flex items-center gap-1.5 rounded-lg border border-white/10 px-3 py-2 text-xs text-zinc-300 hover:bg-white/[0.06]`}>{label}<ChevronRight className="h-3.5 w-3.5" /></button>; }
