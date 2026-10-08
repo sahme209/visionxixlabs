@@ -3,6 +3,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 const mocks = vi.hoisted(() => ({
   resolveTenantScopedToken: vi.fn(),
   getLatestWorkflowRun: vi.fn(),
+  listRepositoryFiles: vi.fn(),
 }));
 
 vi.mock("@/lib/connectors/github/resolveTenantScopedToken", () => ({
@@ -12,7 +13,10 @@ vi.mock("@/lib/connectors/github/resolveTenantScopedToken", () => ({
     return match ? { owner: match[1], repo: match[2] } : null;
   },
 }));
-vi.mock("@/lib/connectors/github/githubWriteClient", () => ({ getLatestWorkflowRun: mocks.getLatestWorkflowRun }));
+vi.mock("@/lib/connectors/github/githubWriteClient", () => ({
+  getLatestWorkflowRun: mocks.getLatestWorkflowRun,
+  listRepositoryFiles: mocks.listRepositoryFiles,
+}));
 
 import { executeReadOnlyTool, isProdEnvironmentTarget, type ToolExecutionRepo } from "../toolExecution";
 
@@ -77,6 +81,33 @@ describe("executeReadOnlyTool", () => {
     const repo = toolRepo();
     const result = await executeReadOnlyTool(repo, "org-1", "check_deploy_status", { repositoryFullName: "acme/widgets" });
     expect(result).toEqual({ ok: false, error: "github_not_connected" });
+  });
+
+  it("list_github_files uses a repository-scoped token and returns a bounded file catalog", async () => {
+    mocks.resolveTenantScopedToken.mockResolvedValue({ ok: true, token: "installation-token" });
+    mocks.listRepositoryFiles.mockResolvedValue({
+      ok: true,
+      data: {
+        files: Array.from({ length: 205 }, (_, index) => ({ path: `src/file-${index}.ts`, size: index })),
+        truncated: false,
+      },
+    });
+
+    const result = await executeReadOnlyTool(toolRepo(), "org-1", "list_github_files", {
+      repositoryFullName: "acme/widgets",
+      branch: "main",
+      pathPrefix: "src/file-",
+    });
+
+    expect(mocks.resolveTenantScopedToken).toHaveBeenCalledWith("org-1", { owner: "acme", repo: "widgets" });
+    expect(mocks.listRepositoryFiles).toHaveBeenCalledWith({
+      owner: "acme", repo: "widgets", branch: "main", installationToken: "installation-token",
+    });
+    expect(result).toEqual({
+      ok: true,
+      result: expect.objectContaining({ files: expect.any(Array), truncated: true }),
+    });
+    if (result.ok) expect((result.result as { files: unknown[] }).files).toHaveLength(200);
   });
 
   it("rejects any tool name outside the low-risk set", async () => {

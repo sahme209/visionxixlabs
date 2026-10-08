@@ -672,7 +672,7 @@ export class DesktopClient {
     return this.post(`/api/desktop/integrations/${encodeURIComponent(provider)}/connect`, {});
   }
 
-  listAgentSkills(): Promise<ApiResult<{ skills: AgentSkillCatalogItem[] }>> {
+  listAgentSkills(): Promise<ApiResult<{ skills: AgentSkillCatalogItem[]; storageAvailable?: boolean }>> {
     return this.get("/api/desktop/agent/skills");
   }
 
@@ -732,6 +732,13 @@ export class DesktopClient {
     truncated: boolean;
   }>> {
     return this.get(`/api/desktop/github/branches?repositoryFullName=${encodeURIComponent(repositoryFullName)}`);
+  }
+
+  listGithubFiles(repositoryFullName: string, branch: string): Promise<ApiResult<{
+    files: Array<{ path: string; size: number }>;
+    truncated: boolean;
+  }>> {
+    return this.get(`/api/desktop/github/files?repositoryFullName=${encodeURIComponent(repositoryFullName)}&branch=${encodeURIComponent(branch)}`);
   }
 
   listEnvironments(): Promise<ApiResult<{

@@ -30,6 +30,18 @@ describe("desktop Agent skills route", () => {
     const response = await GET(new NextRequest("https://visionxixlabs.com/api/desktop/agent/skills"));
     const body = await response.json();
     expect(response.status).toBe(200);
+    expect(body.data.storageAvailable).toBe(true);
+    expect(body.data.skills.length).toBeGreaterThan(4);
+    expect(body.data.skills.every((skill: { status: string }) => skill.status === "not_installed")).toBe(true);
+  });
+
+  it("still returns the curated catalog when installation storage is unavailable", async () => {
+    mocks.findMany.mockRejectedValue(new Error("relation does not exist"));
+    const { GET } = await import("../route");
+    const response = await GET(new NextRequest("https://visionxixlabs.com/api/desktop/agent/skills"));
+    const body = await response.json();
+    expect(response.status).toBe(200);
+    expect(body.data.storageAvailable).toBe(false);
     expect(body.data.skills.length).toBeGreaterThan(4);
     expect(body.data.skills.every((skill: { status: string }) => skill.status === "not_installed")).toBe(true);
   });

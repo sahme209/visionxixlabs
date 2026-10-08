@@ -7,7 +7,7 @@
 import "server-only";
 
 import { resolveTenantScopedToken, parseRepositoryFullName } from "@/lib/connectors/github/resolveTenantScopedToken";
-import { getFile, getLatestWorkflowRun } from "@/lib/connectors/github/githubWriteClient";
+import { getFile, getLatestWorkflowRun, listRepositoryFiles } from "@/lib/connectors/github/githubWriteClient";
 import { AWS_ECS_DEPLOY_WORKFLOW_FILENAME } from "@/lib/releaseops/awsEcsDeployWorkflowTemplate";
 import { buildScimLifecyclePreviewResponse } from "@/lib/iam/scimLifecyclePreviewResponder";
 import { visibleTenantConnectionStatus } from "@/lib/integrations/tenantConnectionState";
@@ -198,6 +198,35 @@ export async function executeReadOnlyTool(
     if (!tokenResult.ok) return { ok: false, error: tokenResult.error };
     const fileResult = await getFile({ owner: parsed.owner, repo: parsed.repo, branch, path, installationToken: tokenResult.token });
     return fileResult.ok ? { ok: true, result: fileResult.data } : { ok: false, error: fileResult.error };
+  }
+
+  if (toolName === "list_github_files") {
+    const repositoryFullName = typeof args.repositoryFullName === "string" ? args.repositoryFullName : "";
+    const branch = typeof args.branch === "string" ? args.branch : "";
+    const pathPrefix = typeof args.pathPrefix === "string" ? args.pathPrefix.trim().replace(/^\/+/, "") : "";
+    const parsed = parseRepositoryFullName(repositoryFullName);
+    if (!parsed) return { ok: false, error: "invalid_repository_full_name" };
+    if (!branch || (pathPrefix && !pathPrefix.split("/").every((segment) => segment && segment !== "." && segment !== ".."))) {
+      return { ok: false, error: "invalid_payload" };
+    }
+    const tokenResult = await resolveTenantScopedToken(organizationId, parsed);
+    if (!tokenResult.ok) return { ok: false, error: tokenResult.error };
+    const fileResult = await listRepositoryFiles({
+      owner: parsed.owner, repo: parsed.repo, branch, installationToken: tokenResult.token,
+    });
+    if (!fileResult.ok) return { ok: false, error: fileResult.error };
+    const matching = pathPrefix
+      ? fileResult.data.files.filter((file) => file.path.startsWith(pathPrefix))
+      : fileResult.data.files;
+    const limited = matching.slice(0, 200);
+    return {
+      ok: true,
+      result: {
+        files: limited,
+        totalMatching: matching.length,
+        truncated: fileResult.data.truncated || matching.length > limited.length,
+      },
+    };
   }
 
   if (toolName === "preview_scim_lifecycle") {
