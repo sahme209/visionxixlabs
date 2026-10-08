@@ -2,6 +2,7 @@ import "server-only";
 
 import { matchesPattern } from "./branchValidationEvaluator";
 import {
+  getCommitCiStatus,
   getPullRequestGovernanceEvidence,
   resolveGitReference,
   type GitReferenceKind,
@@ -27,6 +28,9 @@ interface PolicyRow {
   /// DeploymentExecution against exactly that prior environment, carrying
   /// the identical resolved commit — see the promotion check below.
   requirePromotionFromEnvironmentId: string | null;
+  /// When set, the resolved commit must have a successful GitHub combined
+  /// status or check-run result (the repo's own CI/tests) before deploy.
+  requireTestsPassing: boolean;
   priority: number;
 }
 
@@ -135,6 +139,19 @@ export async function evaluateDeploymentPolicy(
     installationToken: input.installationToken,
   });
   if (!reference.ok) return { ok: false, error: reference.error, policyId: policy.id };
+
+  if (policy.requireTestsPassing) {
+    const ci = await getCommitCiStatus({
+      owner: input.owner,
+      repo: input.repo,
+      commitSha: reference.data.commitSha,
+      installationToken: input.installationToken,
+    });
+    if (!ci.ok) return { ok: false, error: ci.error, policyId: policy.id };
+    if (ci.data.state === "no_checks") return { ok: false, error: "branch_policy_tests_required_no_checks", policyId: policy.id };
+    if (ci.data.state === "pending") return { ok: false, error: "branch_policy_tests_pending", policyId: policy.id };
+    if (ci.data.state === "failure") return { ok: false, error: "branch_policy_tests_failed", policyId: policy.id };
+  }
 
   if (policy.requirePromotionFromEnvironmentId) {
     if (!input.promotedFromExecutionId) {

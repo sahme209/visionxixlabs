@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { createBranch, commitFile, createPullRequest, dispatchWorkflow, getFile, getPullRequestGovernanceEvidence, getWorkflowRun, isSafeRepositoryPath, listBranches, resolveGitReference } from "../githubWriteClient";
+import { createBranch, commitFile, createPullRequest, dispatchWorkflow, getCommitCiStatus, getFile, getPullRequestGovernanceEvidence, getWorkflowRun, isSafeRepositoryPath, listBranches, resolveGitReference } from "../githubWriteClient";
 
 const fetchMock = vi.fn();
 vi.stubGlobal("fetch", fetchMock);
@@ -285,5 +285,66 @@ describe("getWorkflowRun", () => {
     await expect(getWorkflowRun({ owner: "acme", repo: "widgets", workflowRunId: "../secrets", installationToken: "tok" }))
       .resolves.toEqual({ ok: false, error: "invalid_workflow_run_id" });
     expect(fetchMock).not.toHaveBeenCalled();
+  });
+});
+
+describe("getCommitCiStatus", () => {
+  beforeEach(() => vi.clearAllMocks());
+
+  it("reports no_checks when neither combined status nor check-runs exist", async () => {
+    fetchMock
+      .mockResolvedValueOnce(jsonResponse(200, { state: "pending", total_count: 0, statuses: [] }))
+      .mockResolvedValueOnce(jsonResponse(200, { check_runs: [] }));
+    const result = await getCommitCiStatus({ owner: "acme", repo: "widgets", commitSha: "sha1", installationToken: "tok" });
+    expect(result).toEqual({ ok: true, data: { state: "no_checks", detailsUrl: null } });
+  });
+
+  it("reports success when all check-runs completed successfully", async () => {
+    fetchMock
+      .mockResolvedValueOnce(jsonResponse(200, { state: "success", total_count: 0, statuses: [] }))
+      .mockResolvedValueOnce(jsonResponse(200, { check_runs: [
+        { status: "completed", conclusion: "success", html_url: "https://github.test/checks/1" },
+        { status: "completed", conclusion: "neutral", html_url: "https://github.test/checks/2" },
+      ] }));
+    const result = await getCommitCiStatus({ owner: "acme", repo: "widgets", commitSha: "sha1", installationToken: "tok" });
+    expect(result).toEqual({ ok: true, data: { state: "success", detailsUrl: "https://github.test/checks/1" } });
+  });
+
+  it("reports failure when any check-run failed", async () => {
+    fetchMock
+      .mockResolvedValueOnce(jsonResponse(200, { state: "success", total_count: 0, statuses: [] }))
+      .mockResolvedValueOnce(jsonResponse(200, { check_runs: [
+        { status: "completed", conclusion: "success", html_url: "https://github.test/checks/1" },
+        { status: "completed", conclusion: "failure", html_url: "https://github.test/checks/2" },
+      ] }));
+    const result = await getCommitCiStatus({ owner: "acme", repo: "widgets", commitSha: "sha1", installationToken: "tok" });
+    expect(result).toEqual({ ok: true, data: { state: "failure", detailsUrl: "https://github.test/checks/1" } });
+  });
+
+  it("reports failure when the legacy combined status reports failure, even if check-runs are clean", async () => {
+    fetchMock
+      .mockResolvedValueOnce(jsonResponse(200, { state: "failure", total_count: 1, statuses: [{ state: "failure", target_url: "https://ci.test/1" }] }))
+      .mockResolvedValueOnce(jsonResponse(200, { check_runs: [] }));
+    const result = await getCommitCiStatus({ owner: "acme", repo: "widgets", commitSha: "sha1", installationToken: "tok" });
+    expect(result).toEqual({ ok: true, data: { state: "failure", detailsUrl: "https://ci.test/1" } });
+  });
+
+  it("reports pending when a check-run is still in progress", async () => {
+    fetchMock
+      .mockResolvedValueOnce(jsonResponse(200, { state: "success", total_count: 0, statuses: [] }))
+      .mockResolvedValueOnce(jsonResponse(200, { check_runs: [
+        { status: "in_progress", conclusion: null, html_url: "https://github.test/checks/1" },
+      ] }));
+    const result = await getCommitCiStatus({ owner: "acme", repo: "widgets", commitSha: "sha1", installationToken: "tok" });
+    expect(result).toEqual({ ok: true, data: { state: "pending", detailsUrl: "https://github.test/checks/1" } });
+  });
+
+  it("surfaces a clear error when the combined-status call fails", async () => {
+    fetchMock
+      .mockResolvedValueOnce(jsonResponse(500, { message: "server error" }))
+      .mockResolvedValueOnce(jsonResponse(200, { check_runs: [] }));
+    const result = await getCommitCiStatus({ owner: "acme", repo: "widgets", commitSha: "sha1", installationToken: "tok" });
+    expect(result.ok).toBe(false);
+    if (!result.ok) expect(result.error).toContain("commit_status_unavailable");
   });
 });

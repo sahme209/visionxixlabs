@@ -72,6 +72,14 @@ describe("buildBranchEnvironmentPolicyCreateResponse", () => {
     expect(r.body.data.requirePrLink).toBe(true);
     expect(r.body.data.priority).toBe(100);
     expect(r.body.data.requirePromotionFromEnvironmentId).toBeNull();
+    expect(r.body.data.requireTestsPassing).toBe(false);
+  });
+
+  it("stores requireTestsPassing when set", async () => {
+    const r = await buildBranchEnvironmentPolicyCreateResponse(makeRepo(), { organizationId: "o", ...VALID, requireTestsPassing: true });
+    expect(r.status).toBe(201);
+    if (!r.body.ok) throw new Error("expected ok");
+    expect(r.body.data.requireTestsPassing).toBe(true);
   });
 
   it("rejects a promotion-from environment identical to the target environment", async () => {

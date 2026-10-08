@@ -101,7 +101,8 @@ describe("executeApprovedAction", () => {
       branchEnvironmentPolicy: {
         findMany: vi.fn(async () => [{
           id: "policy_1", branchPattern: "main", requireReleaseTag: false, requireCodeowners: false,
-          requirePrLink: false, requireChangeTicket: false, requirePromotionFromEnvironmentId: "env_dev", priority: 100,
+          requirePrLink: false, requireChangeTicket: false, requirePromotionFromEnvironmentId: "env_dev",
+          requireTestsPassing: false, priority: 100,
         }]),
       },
     };

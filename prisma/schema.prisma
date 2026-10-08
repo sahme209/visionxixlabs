@@ -2682,6 +2682,9 @@ model BranchEnvironmentPolicy {
   /// the identical resolved commit — a real dev -> test -> prod chain
   /// instead of independent, unrelated deploys per environment.
   requirePromotionFromEnvironmentId String?
+  /// When true, the resolved commit must have a successful GitHub combined
+  /// status or check-run result (the repo's own CI/tests) before deploy.
+  requireTestsPassing Boolean @default(false)
   /// Priority — lowest wins when multiple rules match. Default 100.
   priority        Int         @default(100)
   enabled         Boolean     @default(true)

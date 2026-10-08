@@ -3,11 +3,13 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 const mocks = vi.hoisted(() => ({
   resolveGitReference: vi.fn(),
   getPullRequestGovernanceEvidence: vi.fn(),
+  getCommitCiStatus: vi.fn(),
 }));
 
 vi.mock("@/lib/connectors/github/githubWriteClient", () => ({
   resolveGitReference: mocks.resolveGitReference,
   getPullRequestGovernanceEvidence: mocks.getPullRequestGovernanceEvidence,
+  getCommitCiStatus: mocks.getCommitCiStatus,
 }));
 
 import { evaluateDeploymentPolicy, type DeploymentPolicyRepo } from "../deploymentPolicyGuard";
@@ -21,6 +23,7 @@ const basePolicy = {
   requirePrLink: false,
   requireChangeTicket: false,
   requirePromotionFromEnvironmentId: null,
+  requireTestsPassing: false,
   priority: 100,
 };
 
@@ -51,6 +54,7 @@ const input = {
 beforeEach(() => {
   vi.clearAllMocks();
   mocks.resolveGitReference.mockResolvedValue({ ok: true, data: { kind: "branch", ref: input.sourceRef, commitSha: "sha-1" } });
+  mocks.getCommitCiStatus.mockResolvedValue({ ok: true, data: { state: "success", detailsUrl: "https://github.test/checks/1" } });
   mocks.getPullRequestGovernanceEvidence.mockResolvedValue({
     ok: true,
     data: {
@@ -122,6 +126,45 @@ describe("evaluateDeploymentPolicy", () => {
       pullRequestUrl: "https://github.test/acme/widgets/pull/42",
     });
     expect(mocks.getPullRequestGovernanceEvidence).toHaveBeenCalledWith(expect.objectContaining({ requireCodeowners: true }));
+  });
+
+  describe("pre-deploy test gate", () => {
+    const testsPolicy = { ...basePolicy, requireTestsPassing: true };
+
+    it("allows a deploy whose commit has a successful CI result", async () => {
+      const result = await evaluateDeploymentPolicy(makeRepo([testsPolicy]), input);
+      expect(result).toEqual({ ok: true, policyId: "policy_1", sourceCommitSha: "sha-1", pullRequestUrl: null });
+      expect(mocks.getCommitCiStatus).toHaveBeenCalledWith(expect.objectContaining({ commitSha: "sha-1", installationToken: "scoped-token" }));
+    });
+
+    it("denies when the commit has no CI checks at all", async () => {
+      mocks.getCommitCiStatus.mockResolvedValue({ ok: true, data: { state: "no_checks", detailsUrl: null } });
+      const result = await evaluateDeploymentPolicy(makeRepo([testsPolicy]), input);
+      expect(result).toEqual({ ok: false, error: "branch_policy_tests_required_no_checks", policyId: "policy_1" });
+    });
+
+    it("denies when CI is still running", async () => {
+      mocks.getCommitCiStatus.mockResolvedValue({ ok: true, data: { state: "pending", detailsUrl: "https://github.test/checks/1" } });
+      const result = await evaluateDeploymentPolicy(makeRepo([testsPolicy]), input);
+      expect(result).toEqual({ ok: false, error: "branch_policy_tests_pending", policyId: "policy_1" });
+    });
+
+    it("denies when CI failed", async () => {
+      mocks.getCommitCiStatus.mockResolvedValue({ ok: true, data: { state: "failure", detailsUrl: "https://github.test/checks/1" } });
+      const result = await evaluateDeploymentPolicy(makeRepo([testsPolicy]), input);
+      expect(result).toEqual({ ok: false, error: "branch_policy_tests_failed", policyId: "policy_1" });
+    });
+
+    it("denies closed when the CI status lookup itself fails", async () => {
+      mocks.getCommitCiStatus.mockResolvedValue({ ok: false, error: "commit_status_unavailable: github_500" });
+      const result = await evaluateDeploymentPolicy(makeRepo([testsPolicy]), input);
+      expect(result).toEqual({ ok: false, error: "commit_status_unavailable: github_500", policyId: "policy_1" });
+    });
+
+    it("never calls the CI lookup when the policy doesn't require it", async () => {
+      await evaluateDeploymentPolicy(makeRepo([basePolicy]), input);
+      expect(mocks.getCommitCiStatus).not.toHaveBeenCalled();
+    });
   });
 
   describe("promotion chain", () => {

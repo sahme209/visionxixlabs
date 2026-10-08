@@ -2,9 +2,10 @@
  * BranchEnvironmentPolicy config management.
  *
  * The (repository, environment, branch pattern) rule and its requirements
- * (requireReleaseTag/requireCodeowners/requirePrLink/requireChangeTicket)
- * are enforced by deploymentPolicyGuard before either a desktop or approved
- * Agent AWS deployment can dispatch the tenant's workflow.
+ * (requireReleaseTag/requireCodeowners/requirePrLink/requireChangeTicket/
+ * requirePromotionFromEnvironmentId/requireTestsPassing) are enforced by
+ * deploymentPolicyGuard before either a desktop or approved Agent AWS
+ * deployment can dispatch the tenant's workflow.
  */
 
 import { isMissingTable } from "./releaseListResponder";
@@ -20,6 +21,7 @@ export interface BranchEnvironmentPolicyRow {
   requirePrLink: boolean;
   requireChangeTicket: boolean;
   requirePromotionFromEnvironmentId: string | null;
+  requireTestsPassing: boolean;
   priority: number;
   enabled: boolean;
   createdAt: Date;
@@ -39,6 +41,7 @@ export interface BranchEnvironmentPolicyRepo {
         requirePrLink: boolean;
         requireChangeTicket: boolean;
         requirePromotionFromEnvironmentId: string | null;
+        requireTestsPassing: boolean;
         priority: number;
       };
     }): Promise<BranchEnvironmentPolicyRow>;
@@ -74,6 +77,7 @@ export interface CreateInput {
   requirePrLink: boolean;
   requireChangeTicket: boolean;
   requirePromotionFromEnvironmentId?: string | null;
+  requireTestsPassing?: boolean;
   priority?: number;
 }
 
@@ -120,6 +124,7 @@ export async function buildBranchEnvironmentPolicyCreateResponse(
         requirePrLink: input.requirePrLink,
         requireChangeTicket: input.requireChangeTicket,
         requirePromotionFromEnvironmentId,
+        requireTestsPassing: input.requireTestsPassing === true,
         priority: input.priority ?? 100,
       },
     });
