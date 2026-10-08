@@ -43,13 +43,6 @@ interface GitHubRepositoryOption {
   visibility: "private" | "public";
 }
 
-interface EnvironmentOption {
-  id: string;
-  slug: string;
-  name: string;
-  tier: string;
-}
-
 interface GitHubBranchOption {
   name: string;
   protected: boolean;
@@ -71,7 +64,6 @@ const TOOL_LABELS: Record<string, string> = {
 };
 
 const ACTIVE_REPOSITORY_KEY = "axiom.workspace.repository.v1";
-const ACTIVE_ENVIRONMENT_KEY = "axiom.workspace.environment.v1";
 
 function describeArgs(toolName: string, args: unknown): string {
   if (typeof args !== "object" || args === null) return "";
@@ -112,8 +104,6 @@ export function AgentChatView() {
   const [branch, setBranch] = useState("main");
   const [manualBranch, setManualBranch] = useState(false);
   const [branchOptions, setBranchOptions] = useState<GitHubBranchOption[]>([]);
-  const [environmentId, setEnvironmentId] = useState(() => window.localStorage.getItem(ACTIVE_ENVIRONMENT_KEY) ?? "");
-  const [environmentOptions, setEnvironmentOptions] = useState<EnvironmentOption[]>([]);
   const [contextLoading, setContextLoading] = useState(true);
   const [contextError, setContextError] = useState<string | null>(null);
   const [filePath, setFilePath] = useState("");
@@ -132,9 +122,8 @@ export function AgentChatView() {
       desktopClient.aiProviderStatus(),
       desktopClient.listAgentSkills(),
       desktopClient.listGithubRepositories(),
-      desktopClient.listEnvironments(),
     ])
-      .then(async ([conversationList, models, skills, repositories, environments]) => {
+      .then(async ([conversationList, models, skills, repositories]) => {
         if (cancelled) return;
         if (!conversationList.ok) {
           setError("The Agent service could not load conversation history. Retry in a moment.");
@@ -185,15 +174,8 @@ export function AgentChatView() {
           setRepositoryFullName(selected?.fullName ?? "");
           setBranch(selected?.defaultBranch ?? "main");
         }
-        if (environments.ok) {
-          setEnvironmentOptions(environments.data.environments);
-          const preferredEnvironment = window.localStorage.getItem(ACTIVE_ENVIRONMENT_KEY);
-          const preferred = environments.data.environments.find((environment) => environment.id === preferredEnvironment);
-          setEnvironmentId(preferred?.id ?? environments.data.environments[0]?.id ?? "");
-        }
         const contextFailures = [
           repositories.ok ? null : "GitHub repositories could not be loaded",
-          environments.ok ? null : "environments could not be loaded",
         ].filter((message): message is string => Boolean(message));
         setContextError(contextFailures.length > 0 ? contextFailures.join(" and ") : null);
         setContextLoading(false);
@@ -210,10 +192,6 @@ export function AgentChatView() {
   useEffect(() => {
     if (repositoryFullName && !manualRepository) window.localStorage.setItem(ACTIVE_REPOSITORY_KEY, repositoryFullName);
   }, [manualRepository, repositoryFullName]);
-
-  useEffect(() => {
-    if (environmentId) window.localStorage.setItem(ACTIVE_ENVIRONMENT_KEY, environmentId);
-  }, [environmentId]);
 
   useEffect(() => {
     let cancelled = false;
@@ -289,7 +267,6 @@ export function AgentChatView() {
       const result = await desktopClient.sendAgentMessage(conversationId, instruction, selectedProvider || undefined, {
         ...(repositoryFullName.trim() ? { repositoryFullName: repositoryFullName.trim() } : {}),
         ...(branch.trim() ? { branch: branch.trim() } : {}),
-        ...(environmentId ? { environmentId } : {}),
         ...(composerMode === "code" && filePath.trim() ? { filePath: filePath.trim() } : {}),
         mode: composerMode,
       });
@@ -416,14 +393,6 @@ export function AgentChatView() {
               <option value="__manual__">Enter another branch…</option>
             </select>
             {manualBranch && <input autoFocus aria-label="Git branch name" value={branch} onChange={(event) => setBranch(event.target.value)} placeholder="branch name" className="mt-2 w-full rounded-lg border border-white/10 bg-[#151719] px-3 py-2 text-xs normal-case tracking-normal text-zinc-200 outline-none placeholder:text-zinc-600 focus:border-white/25" />}
-          </label>
-          <label className="min-w-0 text-[10px] uppercase tracking-[0.12em] text-zinc-600">
-            Deploy target
-            <select aria-label="Deploy target for this conversation" value={environmentId} onChange={(event) => setEnvironmentId(event.target.value)} disabled={contextLoading || environmentOptions.length === 0} className="mt-1 w-full truncate rounded-lg border border-white/10 bg-[#151719] px-3 py-2 text-xs normal-case tracking-normal text-zinc-200 outline-none focus:border-white/25 disabled:opacity-50">
-              {environmentOptions.length === 0 && <option value="">No deploy target selected</option>}
-              {environmentOptions.map((environment) => <option key={environment.id} value={environment.id}>{environment.name} · {environment.tier}</option>)}
-            </select>
-            <span className="mt-1 block normal-case tracking-normal text-zinc-600">Used when you ask the agent to deploy or check deployment settings.</span>
           </label>
         </div>
         {contextError && <p role="status" className="mx-auto mt-2 max-w-5xl text-[11px] text-amber-300">{contextError}. Manual entry remains available.</p>}
