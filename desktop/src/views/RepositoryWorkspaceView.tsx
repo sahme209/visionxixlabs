@@ -21,12 +21,6 @@ interface GitHubRepository {
   visibility: "private" | "public";
 }
 
-interface EnvironmentOption {
-  id: string;
-  name: string;
-  tier: string;
-}
-
 interface Confirmation {
   title: string;
   description: string;
@@ -53,8 +47,6 @@ export function RepositoryWorkspaceView() {
   const [remoteRepositories, setRemoteRepositories] = useState<GitHubRepository[]>([]);
   const [repositoryCatalogError, setRepositoryCatalogError] = useState<string | null>(null);
   const [repositoryCatalogTruncated, setRepositoryCatalogTruncated] = useState(false);
-  const [environmentOptions, setEnvironmentOptions] = useState<EnvironmentOption[]>([]);
-  const [environmentId, setEnvironmentId] = useState("");
   const [branchName, setBranchName] = useState("");
   const [commitMessage, setCommitMessage] = useState("");
   const [prTitle, setPrTitle] = useState("");
@@ -85,7 +77,7 @@ export function RepositoryWorkspaceView() {
   }, [refreshList]);
 
   useEffect(() => {
-    void Promise.all([desktopClient.listGithubRepositories(), desktopClient.listEnvironments()]).then(([repositoriesResult, environmentsResult]) => {
+    void desktopClient.listGithubRepositories().then((repositoriesResult) => {
       if (!repositoriesResult.ok) {
         setRepositoryCatalogError(repositoriesResult.error);
       } else {
@@ -95,12 +87,6 @@ export function RepositoryWorkspaceView() {
         setCloneRepository((current) => current || selected?.fullName || "");
         setRepositoryCatalogTruncated(repositoriesResult.data.truncated);
         setRepositoryCatalogError(null);
-      }
-      if (environmentsResult.ok) {
-        setEnvironmentOptions(environmentsResult.data.environments);
-        const preferredEnvironment = window.localStorage.getItem("axiom.workspace.environment.v1");
-        const selected = environmentsResult.data.environments.find((environment) => environment.id === preferredEnvironment) ?? environmentsResult.data.environments[0];
-        setEnvironmentId(selected?.id ?? "");
       }
     });
   }, []);
@@ -317,13 +303,6 @@ export function RepositoryWorkspaceView() {
         </select>
         {manualCloneRepository && <input autoFocus value={cloneRepository} onChange={(event) => setCloneRepository(event.target.value)} placeholder="owner/repository" aria-label="Repository owner and name" className="mt-2 w-full rounded-md border border-white/10 bg-black/25 px-3 py-2 text-xs text-zinc-200 outline-none placeholder:text-zinc-600 focus:border-violet-400/50" />}
       </div>
-      <select value={environmentId} onChange={(event) => {
-        setEnvironmentId(event.target.value);
-        window.localStorage.setItem("axiom.workspace.environment.v1", event.target.value);
-      }} aria-label="Active deployment environment" disabled={environmentOptions.length === 0} className="w-48 rounded-md border border-white/10 bg-black/25 px-3 py-2 text-xs text-zinc-200 outline-none focus:border-violet-400/50 disabled:opacity-50">
-        {environmentOptions.length === 0 && <option value="">No environment</option>}
-        {environmentOptions.map((environment) => <option key={environment.id} value={environment.id}>{environment.name} · {environment.tier}</option>)}
-      </select>
       <input value={parentPath} onChange={(event) => setParentPath(event.target.value)} aria-label="Local repositories folder" className="min-w-0 flex-1 rounded-md border border-white/10 bg-black/25 px-3 py-2 text-xs text-zinc-400 outline-none focus:border-violet-400/50" />
       <button type="button" disabled={Boolean(busy) || !cloneRepository.trim().includes("/")} onClick={() => void clone()} className="btn-primary disabled:opacity-40">{busy === "clone" ? "Cloning…" : "Clone"}</button>
       <button type="button" disabled={Boolean(busy) || !parentPath} onClick={() => void refreshList(parentPath)} className="btn-secondary disabled:opacity-40">Refresh</button>
