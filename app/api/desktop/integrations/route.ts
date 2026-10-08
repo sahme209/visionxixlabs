@@ -2,6 +2,8 @@ import { NextResponse, type NextRequest } from "next/server";
 import { prisma } from "@/lib/db";
 import { resolveRequestDesktopSession } from "@/lib/desktop/resolveRequestDesktopSession";
 import { visibleTenantConnectionStatus } from "@/lib/integrations/tenantConnectionState";
+import { getGithubConfig, isGithubAppInstallationReady } from "@/lib/connectors/github/githubConfig";
+import { trustedIntegrationCallbackUrl } from "@/lib/integrations/trustedCallbackUrl";
 
 export const dynamic = "force-dynamic";
 
@@ -141,9 +143,23 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
             // Cloud connection state remains available when it is absent.
         }
 
+        const githubConfig = await getGithubConfig();
+        const githubSlug = githubConfig.appSlug ?? "";
+        const callbackConfigured = {
+            github: Boolean(trustedIntegrationCallbackUrl("/api/integrations/github/install-callback")),
+            slack: Boolean(trustedIntegrationCallbackUrl("/api/integrations/slack/callback")),
+            teams: Boolean(trustedIntegrationCallbackUrl("/api/integrations/teams/callback")),
+            linear: Boolean(trustedIntegrationCallbackUrl("/api/integrations/linear/callback")),
+        };
         return NextResponse.json({
             ok: true,
             data: {
+                configuration: {
+                    github: callbackConfigured.github && isGithubAppInstallationReady(githubConfig, githubSlug),
+                    slack: callbackConfigured.slack && Boolean(process.env.SLACK_CLIENT_ID?.trim() && process.env.SLACK_CLIENT_SECRET?.trim()),
+                    teams: callbackConfigured.teams && Boolean(process.env.MICROSOFT_CLIENT_ID?.trim() && process.env.MICROSOFT_TENANT_ID?.trim() && process.env.MICROSOFT_CLIENT_SECRET?.trim()),
+                    linear: callbackConfigured.linear && Boolean(process.env.LINEAR_CLIENT_ID?.trim() && process.env.LINEAR_CLIENT_SECRET?.trim()),
+                },
                 cloud: CLOUD_PROVIDERS.map((provider) => {
                     const row = byProvider.get(provider);
                     return {

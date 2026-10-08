@@ -132,14 +132,12 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     selectedEnvironment ? `Environment: ${selectedEnvironment.name} (${selectedEnvironment.tier}, ID ${selectedEnvironment.id})` : null,
     filePath ? `File: ${filePath}` : null,
   ].filter((value): value is string => Boolean(value));
+  let currentRequestContext: string | undefined;
   if (selectedContext.length > 0 && transcript.length > 0) {
     const instruction = mode === "code"
       ? "The user selected Edit repository file mode. Read the selected file first. If a change is needed, propose commit_github_file with the complete updated content and a clear commit message. Never claim the write completed before approval."
-      : "Use this UI-selected workspace context when it is relevant. Do not ask the user to repeat identifiers already selected.";
-    transcript[transcript.length - 1] = {
-      role: "user",
-      content: `${message}\n\n<ui_selected_context>\n${selectedContext.join("\n")}\n${instruction}\n</ui_selected_context>`,
-    };
+      : "Use these selections for this request. Do not ask the user to repeat identifiers already selected.";
+    currentRequestContext = `${selectedContext.join("\n")}\n${instruction}`;
   }
 
   const correlationId = idFactory.correlation(`agent_msg_${Date.now().toString(36)}`);
@@ -150,6 +148,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     correlationId: String(correlationId),
     transcript,
     workspaceContext,
+    currentRequestContext,
     skillContext,
     preferredProvider,
     executeReadOnlyTool: async (toolName, args) => {

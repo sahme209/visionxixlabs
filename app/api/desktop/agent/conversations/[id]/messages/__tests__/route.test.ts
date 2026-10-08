@@ -114,9 +114,8 @@ describe("POST /api/desktop/agent/conversations/[id]/messages", () => {
       data: expect.objectContaining({ role: "user", content: "deploy this" }),
     }));
     expect(mocks.runDecisionLoop).toHaveBeenCalledWith(expect.objectContaining({
-      transcript: [expect.objectContaining({
-        content: expect.stringContaining("Repository: acme/widgets\nBranch: release/1.2\nEnvironment: Production (prod, ID env_prod)"),
-      })],
+      transcript: [{ role: "user", content: "deploy this" }],
+      currentRequestContext: expect.stringContaining("Repository: acme/widgets\nBranch: release/1.2\nEnvironment: Production (prod, ID env_prod)"),
     }));
   });
 

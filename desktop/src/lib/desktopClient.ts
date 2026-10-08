@@ -652,6 +652,7 @@ export class DesktopClient {
 
   // ── Deployment operations ─────────────────────────────────────────
   integrationStatus(): Promise<ApiResult<{
+    configuration?: Record<"github" | "slack" | "teams" | "linear", boolean>;
     cloud: Array<{
       provider: "aws" | "azure" | "gcp";
       status: string;
