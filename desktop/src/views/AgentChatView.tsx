@@ -418,11 +418,12 @@ export function AgentChatView() {
             {manualBranch && <input autoFocus aria-label="Git branch name" value={branch} onChange={(event) => setBranch(event.target.value)} placeholder="branch name" className="mt-2 w-full rounded-lg border border-white/10 bg-[#151719] px-3 py-2 text-xs normal-case tracking-normal text-zinc-200 outline-none placeholder:text-zinc-600 focus:border-white/25" />}
           </label>
           <label className="min-w-0 text-[10px] uppercase tracking-[0.12em] text-zinc-600">
-            Environment
-            <select aria-label="Active deployment environment" value={environmentId} onChange={(event) => setEnvironmentId(event.target.value)} disabled={contextLoading || environmentOptions.length === 0} className="mt-1 w-full truncate rounded-lg border border-white/10 bg-[#151719] px-3 py-2 text-xs normal-case tracking-normal text-zinc-200 outline-none focus:border-white/25 disabled:opacity-50">
-              {environmentOptions.length === 0 && <option value="">No environments configured</option>}
+            Deploy target
+            <select aria-label="Deploy target for this conversation" value={environmentId} onChange={(event) => setEnvironmentId(event.target.value)} disabled={contextLoading || environmentOptions.length === 0} className="mt-1 w-full truncate rounded-lg border border-white/10 bg-[#151719] px-3 py-2 text-xs normal-case tracking-normal text-zinc-200 outline-none focus:border-white/25 disabled:opacity-50">
+              {environmentOptions.length === 0 && <option value="">No deploy target selected</option>}
               {environmentOptions.map((environment) => <option key={environment.id} value={environment.id}>{environment.name} · {environment.tier}</option>)}
             </select>
+            <span className="mt-1 block normal-case tracking-normal text-zinc-600">Used when you ask the agent to deploy or check deployment settings.</span>
           </label>
         </div>
         {contextError && <p role="status" className="mx-auto mt-2 max-w-5xl text-[11px] text-amber-300">{contextError}. Manual entry remains available.</p>}
