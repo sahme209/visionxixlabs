@@ -20,13 +20,21 @@ const basePolicy = {
   requireCodeowners: false,
   requirePrLink: false,
   requireChangeTicket: false,
+  requirePromotionFromEnvironmentId: null,
   priority: 100,
 };
 
-function makeRepo(policies = [basePolicy], repositories = [registered]): DeploymentPolicyRepo {
+function makeRepo(
+  policies = [basePolicy],
+  repositories = [registered],
+  priorExecutions: Array<{ id: string; environmentId: string; sourceCommitSha: string | null; status: string; conclusion: string | null }> = [],
+): DeploymentPolicyRepo {
   return {
     repository: { findMany: vi.fn(async () => repositories) },
     branchEnvironmentPolicy: { findMany: vi.fn(async () => policies) },
+    deploymentExecution: {
+      findFirst: vi.fn(async ({ where }) => priorExecutions.find((row) => row.id === where.id) ?? null),
+    },
   };
 }
 
@@ -114,5 +122,51 @@ describe("evaluateDeploymentPolicy", () => {
       pullRequestUrl: "https://github.test/acme/widgets/pull/42",
     });
     expect(mocks.getPullRequestGovernanceEvidence).toHaveBeenCalledWith(expect.objectContaining({ requireCodeowners: true }));
+  });
+
+  describe("promotion chain", () => {
+    const promotionPolicy = { ...basePolicy, requirePromotionFromEnvironmentId: "env-dev" };
+
+    it("denies when a promotion-required policy gets no promotedFromExecutionId", async () => {
+      const result = await evaluateDeploymentPolicy(makeRepo([promotionPolicy]), input);
+      expect(result).toEqual({ ok: false, error: "branch_policy_promotion_required", policyId: "policy_1" });
+    });
+
+    it("denies when the referenced prior execution does not exist", async () => {
+      const result = await evaluateDeploymentPolicy(makeRepo([promotionPolicy]), { ...input, promotedFromExecutionId: "missing" });
+      expect(result).toEqual({ ok: false, error: "branch_policy_promotion_execution_not_found", policyId: "policy_1" });
+    });
+
+    it("denies when the prior execution targeted a different environment", async () => {
+      const repo = makeRepo([promotionPolicy], [registered], [
+        { id: "exec_1", environmentId: "env-other", sourceCommitSha: "sha-1", status: "completed", conclusion: "success" },
+      ]);
+      const result = await evaluateDeploymentPolicy(repo, { ...input, promotedFromExecutionId: "exec_1" });
+      expect(result).toEqual({ ok: false, error: "branch_policy_promotion_wrong_environment", policyId: "policy_1" });
+    });
+
+    it("denies when the prior execution did not succeed", async () => {
+      const repo = makeRepo([promotionPolicy], [registered], [
+        { id: "exec_1", environmentId: "env-dev", sourceCommitSha: "sha-1", status: "completed", conclusion: "failure" },
+      ]);
+      const result = await evaluateDeploymentPolicy(repo, { ...input, promotedFromExecutionId: "exec_1" });
+      expect(result).toEqual({ ok: false, error: "branch_policy_promotion_not_successful", policyId: "policy_1" });
+    });
+
+    it("denies when the prior execution's commit does not match the deploy's resolved commit", async () => {
+      const repo = makeRepo([promotionPolicy], [registered], [
+        { id: "exec_1", environmentId: "env-dev", sourceCommitSha: "different-sha", status: "completed", conclusion: "success" },
+      ]);
+      const result = await evaluateDeploymentPolicy(repo, { ...input, promotedFromExecutionId: "exec_1" });
+      expect(result).toEqual({ ok: false, error: "branch_policy_promotion_commit_mismatch", policyId: "policy_1" });
+    });
+
+    it("allows promotion when the prior execution succeeded against the right environment with the same commit", async () => {
+      const repo = makeRepo([promotionPolicy], [registered], [
+        { id: "exec_1", environmentId: "env-dev", sourceCommitSha: "sha-1", status: "completed", conclusion: "success" },
+      ]);
+      const result = await evaluateDeploymentPolicy(repo, { ...input, promotedFromExecutionId: "exec_1" });
+      expect(result).toEqual({ ok: true, policyId: "policy_1", sourceCommitSha: "sha-1", pullRequestUrl: null });
+    });
   });
 });

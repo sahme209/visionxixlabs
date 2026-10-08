@@ -28,12 +28,14 @@ export async function POST(request: NextRequest): Promise<Response> {
     sourceRef?: unknown;
     sourceKind?: unknown;
     pullRequestNumber?: unknown;
+    promotedFromExecutionId?: unknown;
   } | null;
   const repositoryFullName = typeof body?.repositoryFullName === "string" ? body.repositoryFullName.trim() : "";
   const environmentId = typeof body?.environmentId === "string" ? body.environmentId : "";
   const sourceRef = typeof body?.sourceRef === "string" ? body.sourceRef.trim() : "";
   const sourceKind = body?.sourceKind === "branch" || body?.sourceKind === "tag" ? body.sourceKind : null;
   const pullRequestNumber = typeof body?.pullRequestNumber === "number" ? body.pullRequestNumber : undefined;
+  const promotedFromExecutionId = typeof body?.promotedFromExecutionId === "string" ? body.promotedFromExecutionId.trim() || undefined : undefined;
   if (!repositoryFullName || !environmentId || !sourceRef || !sourceKind
     || (body?.pullRequestNumber !== undefined && (!Number.isInteger(pullRequestNumber) || (pullRequestNumber ?? 0) <= 0))) {
     return NextResponse.json({ ok: false, error: "invalid_payload" }, { status: 400 });
@@ -63,6 +65,7 @@ export async function POST(request: NextRequest): Promise<Response> {
     sourceRef,
     sourceKind,
     ...(pullRequestNumber !== undefined ? { pullRequestNumber } : {}),
+    ...(promotedFromExecutionId ? { promotedFromExecutionId } : {}),
     installationToken: token.token,
   });
   if (!decision.ok) {

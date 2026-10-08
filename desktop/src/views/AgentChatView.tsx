@@ -51,6 +51,7 @@ interface GitHubBranchOption {
 const TOOL_LABELS: Record<string, string> = {
   list_environments: "List environments",
   check_deploy_status: "Check deploy status",
+  list_deployment_executions: "List deploy executions",
   create_github_branch: "Create a branch",
   commit_github_file: "Commit a file",
   open_github_pull_request: "Open a pull request",
@@ -76,7 +77,7 @@ function describeArgs(toolName: string, args: unknown): string {
     case "open_github_pull_request":
       return `${a.repositoryFullName}: PR "${a.title}" — ${a.head} → ${a.base}`;
     case "trigger_aws_deploy":
-      return `${a.repositoryFullName} → environment ${a.environmentId}`;
+      return `${a.repositoryFullName} → environment ${a.environmentId}${a.promotedFromExecutionId ? ` (promoting ${a.promotedFromExecutionId})` : ""}`;
     case "create_environment":
       return `${a.name} (${a.slug}) · ${a.tier}`;
     case "configure_deployment_target":

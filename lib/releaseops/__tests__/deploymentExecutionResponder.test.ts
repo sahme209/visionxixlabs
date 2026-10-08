@@ -12,6 +12,7 @@ describe("serializeDeploymentExecution", () => {
       sourceKind: "branch",
       sourceCommitSha: "0123456789abcdef",
       branchPolicyId: "policy_1",
+      promotedFromExecutionId: null,
       pullRequestUrl: "https://github.com/acme/widgets/pull/42",
       workflowRunId: "run_1",
       workflowUrl: "https://github.com/acme/widgets/actions/runs/1",

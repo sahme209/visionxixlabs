@@ -9,6 +9,7 @@ export interface DeploymentExecutionRow {
   sourceKind: string | null;
   sourceCommitSha: string | null;
   branchPolicyId: string | null;
+  promotedFromExecutionId: string | null;
   pullRequestUrl: string | null;
   workflowRunId: string | null;
   workflowUrl: string | null;
@@ -33,6 +34,7 @@ export interface DeploymentExecutionRepo {
       sourceKind: "branch" | "tag";
       sourceCommitSha: string;
       branchPolicyId: string | null;
+      promotedFromExecutionId: string | null;
       pullRequestUrl: string | null;
       workflowRunId: string | null;
       workflowUrl: string | null;
@@ -69,6 +71,7 @@ export function serializeDeploymentExecution(row: DeploymentExecutionRow) {
     sourceKind: row.sourceKind,
     sourceCommitSha: row.sourceCommitSha,
     branchPolicyId: row.branchPolicyId,
+    promotedFromExecutionId: row.promotedFromExecutionId,
     pullRequestUrl: row.pullRequestUrl,
     workflowRunId: row.workflowRunId,
     workflowUrl: row.workflowUrl,

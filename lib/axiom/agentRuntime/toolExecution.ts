@@ -36,6 +36,22 @@ export interface ToolExecutionRepo {
   environment: {
     findMany(args: { where: { organizationId: string } }): Promise<Array<{ id: string; slug: string; name: string; tier: string }>>;
   };
+  deploymentExecution: {
+    findMany(args: {
+      where: { organizationId: string; environmentId?: string };
+      orderBy: { createdAt: "desc" };
+      take: number;
+    }): Promise<Array<{
+      id: string;
+      environmentId: string;
+      repositoryFullName: string;
+      sourceRef: string | null;
+      sourceCommitSha: string | null;
+      status: string;
+      conclusion: string | null;
+      createdAt: Date;
+    }>>;
+  };
   connectorSetupSession: {
     findMany(args: {
       where: { organizationId: string; provider: { in: string[] } };
@@ -68,6 +84,28 @@ export async function executeReadOnlyTool(
   if (toolName === "list_environments") {
     const environments = await repo.environment.findMany({ where: { organizationId } });
     return { ok: true, result: environments.map((e) => ({ id: e.id, slug: e.slug, name: e.name, tier: e.tier })) };
+  }
+
+  if (toolName === "list_deployment_executions") {
+    const environmentId = typeof args.environmentId === "string" ? args.environmentId : undefined;
+    const executions = await repo.deploymentExecution.findMany({
+      where: { organizationId, ...(environmentId ? { environmentId } : {}) },
+      orderBy: { createdAt: "desc" },
+      take: 20,
+    });
+    return {
+      ok: true,
+      result: executions.map((e) => ({
+        id: e.id,
+        environmentId: e.environmentId,
+        repositoryFullName: e.repositoryFullName,
+        sourceRef: e.sourceRef,
+        sourceCommitSha: e.sourceCommitSha,
+        status: e.status,
+        conclusion: e.conclusion,
+        createdAt: e.createdAt.toISOString(),
+      })),
+    };
   }
 
   if (toolName === "list_integrations") {

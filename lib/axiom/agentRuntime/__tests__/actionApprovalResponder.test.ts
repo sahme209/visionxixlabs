@@ -93,6 +93,23 @@ describe("executeApprovedAction", () => {
     expect(result).toEqual({ ok: false, error: "deployment_target_not_configured" });
   });
 
+  it("trigger_aws_deploy denies a promotion-required policy with no promotedFromExecutionId, even without deploymentExecution storage wired in", async () => {
+    const promotionRepo: ActionExecutionRepo = {
+      environment: { findUnique: vi.fn(async () => ({ id: "env_1", organizationId: "org-1" })) },
+      deploymentTarget: { findUnique: vi.fn(async () => ({ organizationId: "org-1", roleArn: "arn:aws:iam::123:role/x", region: "us-east-2", ecsCluster: "c", ecsService: "s" })) },
+      repository: { findMany: vi.fn(async () => [{ id: "repo_1", organizationId: "org-1", provider: "github", remoteOwner: "acme", remoteName: "widgets" }]) },
+      branchEnvironmentPolicy: {
+        findMany: vi.fn(async () => [{
+          id: "policy_1", branchPattern: "main", requireReleaseTag: false, requireCodeowners: false,
+          requirePrLink: false, requireChangeTicket: false, requirePromotionFromEnvironmentId: "env_dev", priority: 100,
+        }]),
+      },
+    };
+    const result = await executeApprovedAction(promotionRepo, "org-1", "trigger_aws_deploy", { repositoryFullName: "acme/widgets", environmentId: "env_1" });
+    expect(result).toEqual({ ok: false, error: "branch_policy_promotion_required" });
+    expect(mocks.dispatchWorkflow).not.toHaveBeenCalled();
+  });
+
   it("trigger_aws_deploy dispatches the workflow with the target's own config", async () => {
     mocks.dispatchWorkflow.mockResolvedValue({ ok: true, data: { workflowRunId: "123", runUrl: "https://api.github.test/runs/123", htmlUrl: "https://github.test/runs/123" } });
     const result = await executeApprovedAction(repo, "org-1", "trigger_aws_deploy", { repositoryFullName: "acme/widgets", environmentId: "env_1" });
