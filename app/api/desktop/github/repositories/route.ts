@@ -39,6 +39,8 @@ interface GitHubRepositoryResponse {
 }
 
 const GITHUB_NAME = /^[A-Za-z0-9][A-Za-z0-9_.-]{0,99}$/;
+const PAGE_SIZE = 100;
+const MAX_PAGES = 10;
 
 function isSafeBranchName(value: string): boolean {
   return value.length > 0 && value.length <= 240 && !value.startsWith("-") && !/[\0\r\n]/.test(value);
@@ -64,24 +66,42 @@ export async function GET(request: NextRequest): Promise<Response> {
   const token = await resolveGithubInstallationToken({ installationId: Number(installation.githubInstallationId) });
   if (!token.ok) return NextResponse.json({ ok: false, error: "github_token_unavailable" }, { status: 503 });
 
-  let response: Response;
+  const fetchPage = (page: number) => fetch(`https://api.github.com/installation/repositories?per_page=${PAGE_SIZE}&page=${page}`, {
+    headers: {
+      Authorization: `Bearer ${token.token}`,
+      Accept: "application/vnd.github+json",
+      "X-GitHub-Api-Version": "2022-11-28",
+      "User-Agent": "axiom-agent/1.0",
+    },
+    cache: "no-store",
+  });
+
+  let firstResponse: Response;
   try {
-    response = await fetch("https://api.github.com/installation/repositories?per_page=100&page=1", {
-      headers: {
-        Authorization: `Bearer ${token.token}`,
-        Accept: "application/vnd.github+json",
-        "X-GitHub-Api-Version": "2022-11-28",
-        "User-Agent": "axiom-agent/1.0",
-      },
-      cache: "no-store",
-    });
+    firstResponse = await fetchPage(1);
   } catch {
     return NextResponse.json({ ok: false, error: "github_repositories_unavailable" }, { status: 503 });
   }
-  if (!response.ok) return NextResponse.json({ ok: false, error: "github_repositories_unavailable" }, { status: 502 });
+  if (!firstResponse.ok) return NextResponse.json({ ok: false, error: "github_repositories_unavailable" }, { status: 502 });
 
-  const body = await response.json().catch(() => null) as GitHubRepositoryResponse | null;
-  const rawRepositories = Array.isArray(body?.repositories) ? body.repositories as GitHubRepository[] : [];
+  const firstBody = await firstResponse.json().catch(() => null) as GitHubRepositoryResponse | null;
+  const reportedTotal = typeof firstBody?.total_count === "number" && Number.isSafeInteger(firstBody.total_count)
+    ? Math.max(0, firstBody.total_count)
+    : Array.isArray(firstBody?.repositories) ? firstBody.repositories.length : 0;
+  const pageCount = Math.min(MAX_PAGES, Math.max(1, Math.ceil(reportedTotal / PAGE_SIZE)));
+  let remainingBodies: GitHubRepositoryResponse[] = [];
+  if (pageCount > 1) {
+    try {
+      const responses = await Promise.all(Array.from({ length: pageCount - 1 }, (_, index) => fetchPage(index + 2)));
+      if (responses.some((response) => !response.ok)) {
+        return NextResponse.json({ ok: false, error: "github_repositories_unavailable" }, { status: 502 });
+      }
+      remainingBodies = await Promise.all(responses.map(async (response) => await response.json() as GitHubRepositoryResponse));
+    } catch {
+      return NextResponse.json({ ok: false, error: "github_repositories_unavailable" }, { status: 503 });
+    }
+  }
+  const rawRepositories = [firstBody, ...remainingBodies].flatMap((body) => Array.isArray(body?.repositories) ? body.repositories as GitHubRepository[] : []);
   const repositories = rawRepositories.flatMap((item) => {
     if (typeof item.id !== "number" || typeof item.name !== "string" || typeof item.full_name !== "string") return [];
     if (typeof item.default_branch !== "string" || typeof item.private !== "boolean" || typeof item.owner?.login !== "string") return [];
@@ -97,9 +117,7 @@ export async function GET(request: NextRequest): Promise<Response> {
       visibility: item.private ? "private" as const : "public" as const,
     }];
   }).sort((left, right) => left.fullName.localeCompare(right.fullName));
-  const totalCount = typeof body?.total_count === "number" && Number.isSafeInteger(body.total_count)
-    ? Math.max(body.total_count, repositories.length)
-    : repositories.length;
+  const totalCount = Math.max(reportedTotal, repositories.length);
 
   return NextResponse.json({
     ok: true,

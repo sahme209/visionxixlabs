@@ -36,6 +36,25 @@ interface ConversationSummary {
   updatedAt: string;
 }
 
+interface GitHubRepositoryOption {
+  id: string;
+  fullName: string;
+  defaultBranch: string;
+  visibility: "private" | "public";
+}
+
+interface EnvironmentOption {
+  id: string;
+  slug: string;
+  name: string;
+  tier: string;
+}
+
+interface GitHubBranchOption {
+  name: string;
+  protected: boolean;
+}
+
 const TOOL_LABELS: Record<string, string> = {
   list_environments: "List environments",
   check_deploy_status: "Check deploy status",
@@ -50,6 +69,9 @@ const TOOL_LABELS: Record<string, string> = {
   preview_scim_lifecycle: "Preview SCIM lifecycle",
   list_integrations: "List integrations",
 };
+
+const ACTIVE_REPOSITORY_KEY = "axiom.workspace.repository.v1";
+const ACTIVE_ENVIRONMENT_KEY = "axiom.workspace.environment.v1";
 
 function describeArgs(toolName: string, args: unknown): string {
   if (typeof args !== "object" || args === null) return "";
@@ -84,8 +106,16 @@ export function AgentChatView() {
   const [error, setError] = useState<string | null>(null);
   const [decidingId, setDecidingId] = useState<string | null>(null);
   const [composerMode, setComposerMode] = useState<"chat" | "code">("chat");
-  const [repositoryFullName, setRepositoryFullName] = useState("");
+  const [repositoryFullName, setRepositoryFullName] = useState(() => window.localStorage.getItem(ACTIVE_REPOSITORY_KEY) ?? "");
+  const [manualRepository, setManualRepository] = useState(false);
+  const [repositoryOptions, setRepositoryOptions] = useState<GitHubRepositoryOption[]>([]);
   const [branch, setBranch] = useState("main");
+  const [manualBranch, setManualBranch] = useState(false);
+  const [branchOptions, setBranchOptions] = useState<GitHubBranchOption[]>([]);
+  const [environmentId, setEnvironmentId] = useState(() => window.localStorage.getItem(ACTIVE_ENVIRONMENT_KEY) ?? "");
+  const [environmentOptions, setEnvironmentOptions] = useState<EnvironmentOption[]>([]);
+  const [contextLoading, setContextLoading] = useState(true);
+  const [contextError, setContextError] = useState<string | null>(null);
   const [filePath, setFilePath] = useState("");
   const [selectedProvider, setSelectedProvider] = useState("");
   const [modelOptions, setModelOptions] = useState<Array<{ provider: string; label: string }>>([]);
@@ -97,8 +127,14 @@ export function AgentChatView() {
   useEffect(() => {
     let cancelled = false;
     setError(null);
-    void Promise.all([desktopClient.listAgentConversations(), desktopClient.aiProviderStatus(), desktopClient.listAgentSkills()])
-      .then(async ([conversationList, models, skills]) => {
+    void Promise.all([
+      desktopClient.listAgentConversations(),
+      desktopClient.aiProviderStatus(),
+      desktopClient.listAgentSkills(),
+      desktopClient.listGithubRepositories(),
+      desktopClient.listEnvironments(),
+    ])
+      .then(async ([conversationList, models, skills, repositories, environments]) => {
         if (cancelled) return;
         if (!conversationList.ok) {
           setError("The Agent service could not load conversation history. Retry in a moment.");
@@ -141,12 +177,63 @@ export function AgentChatView() {
           setSelectedProvider(status.policy.fallbackOrder[0] ?? options[0]?.provider ?? "");
         }
         if (skills.ok) setEnabledSkills(skills.data.skills.filter((skill) => skill.status === "enabled"));
+        if (repositories.ok) {
+          setRepositoryOptions(repositories.data.repositories);
+          const preferredRepository = window.localStorage.getItem(ACTIVE_REPOSITORY_KEY);
+          const preferred = repositories.data.repositories.find((repository) => repository.fullName === preferredRepository);
+          const selected = preferred ?? repositories.data.repositories[0];
+          setRepositoryFullName(selected?.fullName ?? "");
+          setBranch(selected?.defaultBranch ?? "main");
+        }
+        if (environments.ok) {
+          setEnvironmentOptions(environments.data.environments);
+          const preferredEnvironment = window.localStorage.getItem(ACTIVE_ENVIRONMENT_KEY);
+          const preferred = environments.data.environments.find((environment) => environment.id === preferredEnvironment);
+          setEnvironmentId(preferred?.id ?? environments.data.environments[0]?.id ?? "");
+        }
+        const contextFailures = [
+          repositories.ok ? null : "GitHub repositories could not be loaded",
+          environments.ok ? null : "environments could not be loaded",
+        ].filter((message): message is string => Boolean(message));
+        setContextError(contextFailures.length > 0 ? contextFailures.join(" and ") : null);
+        setContextLoading(false);
       })
       .catch(() => {
-        if (!cancelled) setError("The Agent could not start. Check your connection and try again.");
+        if (!cancelled) {
+          setError("The Agent could not start. Check your connection and try again.");
+          setContextLoading(false);
+        }
       });
     return () => { cancelled = true; };
   }, [startupAttempt]);
+
+  useEffect(() => {
+    if (repositoryFullName && !manualRepository) window.localStorage.setItem(ACTIVE_REPOSITORY_KEY, repositoryFullName);
+  }, [manualRepository, repositoryFullName]);
+
+  useEffect(() => {
+    if (environmentId) window.localStorage.setItem(ACTIVE_ENVIRONMENT_KEY, environmentId);
+  }, [environmentId]);
+
+  useEffect(() => {
+    let cancelled = false;
+    if (!repositoryFullName.includes("/") || manualRepository) {
+      setBranchOptions([]);
+      return () => { cancelled = true; };
+    }
+    void desktopClient.listGithubBranches(repositoryFullName).then((result) => {
+      if (cancelled) return;
+      if (!result.ok) {
+        setBranchOptions([]);
+        setContextError("Branches could not be loaded. You can enter a branch manually.");
+        return;
+      }
+      setBranchOptions(result.data.branches);
+      setContextError(null);
+      setBranch((current) => current || result.data.branches[0]?.name || "main");
+    });
+    return () => { cancelled = true; };
+  }, [manualRepository, repositoryFullName]);
 
   async function openConversation(id: string) {
     if (id === conversationId || sending || decidingId) return;
@@ -193,16 +280,19 @@ export function AgentChatView() {
 
   async function send() {
     const instruction = input.trim();
-    const message = composerMode === "code"
-      ? `Work on ${repositoryFullName.trim()} at branch ${branch.trim()}, file ${filePath.trim()}. First read the file with read_github_file. Then ${instruction}. If a change is needed, propose commit_github_file with the complete updated file content and a clear commit message. Do not claim the change is complete until I approve it.`
-      : instruction;
     if (!instruction || !conversationId || sending || (composerMode === "code" && (!repositoryFullName.includes("/") || !branch.trim() || !filePath.trim()))) return;
     setInput("");
     setError(null);
-    setTurns((prev) => [...prev, { id: `local_${Date.now()}`, role: "user", content: message }]);
+    setTurns((prev) => [...prev, { id: `local_${Date.now()}`, role: "user", content: instruction }]);
     setSending(true);
     try {
-      const result = await desktopClient.sendAgentMessage(conversationId, message, selectedProvider || undefined);
+      const result = await desktopClient.sendAgentMessage(conversationId, instruction, selectedProvider || undefined, {
+        ...(repositoryFullName.trim() ? { repositoryFullName: repositoryFullName.trim() } : {}),
+        ...(branch.trim() ? { branch: branch.trim() } : {}),
+        ...(environmentId ? { environmentId } : {}),
+        ...(composerMode === "code" && filePath.trim() ? { filePath: filePath.trim() } : {}),
+        mode: composerMode,
+      });
       if (!result.ok) {
         setError(result.error);
         return;
@@ -214,7 +304,7 @@ export function AgentChatView() {
         if (!selected) return current;
         const updated = {
           ...selected,
-          title: selected.title ?? message.replace(/\s+/g, " ").slice(0, 80),
+          title: selected.title ?? instruction.replace(/\s+/g, " ").slice(0, 80),
           turnCount: selected.turnCount + 2,
           updatedAt: new Date().toISOString(),
         };
@@ -275,6 +365,68 @@ export function AgentChatView() {
           {loadingConversation ? "Loading…" : "New chat"}
         </button>
       </div>
+      <div className="border-b border-white/[0.06] bg-white/[0.015] px-8 py-3">
+        <div className="mx-auto grid max-w-5xl grid-cols-1 gap-2 md:grid-cols-3">
+          <label className="min-w-0 text-[10px] uppercase tracking-[0.12em] text-zinc-600">
+            Repository
+            <select
+              aria-label="Active GitHub repository"
+              value={manualRepository ? "__manual__" : repositoryFullName}
+              onChange={(event) => {
+                if (event.target.value === "__manual__") {
+                  setManualRepository(true);
+                  setRepositoryFullName("");
+                  setManualBranch(true);
+                  return;
+                }
+                const repository = repositoryOptions.find((item) => item.fullName === event.target.value);
+                setManualRepository(false);
+                setManualBranch(false);
+                setRepositoryFullName(event.target.value);
+                setBranch(repository?.defaultBranch ?? "main");
+              }}
+              disabled={contextLoading}
+              className="mt-1 w-full truncate rounded-lg border border-white/10 bg-[#151719] px-3 py-2 text-xs normal-case tracking-normal text-zinc-200 outline-none focus:border-white/25 disabled:opacity-50"
+            >
+              {repositoryOptions.length === 0 && <option value="">No connected repositories</option>}
+              {repositoryOptions.map((repository) => <option key={repository.id} value={repository.fullName}>{repository.fullName} · {repository.visibility}</option>)}
+              <option value="__manual__">Enter another repository…</option>
+            </select>
+            {manualRepository && <input autoFocus aria-label="Repository owner and name" value={repositoryFullName} onChange={(event) => setRepositoryFullName(event.target.value)} placeholder="owner/repository" className="mt-2 w-full rounded-lg border border-white/10 bg-[#151719] px-3 py-2 text-xs normal-case tracking-normal text-zinc-200 outline-none placeholder:text-zinc-600 focus:border-white/25" />}
+          </label>
+          <label className="min-w-0 text-[10px] uppercase tracking-[0.12em] text-zinc-600">
+            Branch
+            <select
+              aria-label="Active GitHub branch"
+              value={manualBranch ? "__manual__" : branch}
+              onChange={(event) => {
+                if (event.target.value === "__manual__") {
+                  setManualBranch(true);
+                  setBranch("");
+                } else {
+                  setManualBranch(false);
+                  setBranch(event.target.value);
+                }
+              }}
+              disabled={!repositoryFullName}
+              className="mt-1 w-full truncate rounded-lg border border-white/10 bg-[#151719] px-3 py-2 text-xs normal-case tracking-normal text-zinc-200 outline-none focus:border-white/25 disabled:opacity-50"
+            >
+              {branchOptions.length === 0 && <option value={branch}>{branch || "No branches available"}</option>}
+              {branchOptions.map((option) => <option key={option.name} value={option.name}>{option.name}{option.protected ? " · protected" : ""}</option>)}
+              <option value="__manual__">Enter another branch…</option>
+            </select>
+            {manualBranch && <input autoFocus aria-label="Git branch name" value={branch} onChange={(event) => setBranch(event.target.value)} placeholder="branch name" className="mt-2 w-full rounded-lg border border-white/10 bg-[#151719] px-3 py-2 text-xs normal-case tracking-normal text-zinc-200 outline-none placeholder:text-zinc-600 focus:border-white/25" />}
+          </label>
+          <label className="min-w-0 text-[10px] uppercase tracking-[0.12em] text-zinc-600">
+            Environment
+            <select aria-label="Active deployment environment" value={environmentId} onChange={(event) => setEnvironmentId(event.target.value)} disabled={contextLoading || environmentOptions.length === 0} className="mt-1 w-full truncate rounded-lg border border-white/10 bg-[#151719] px-3 py-2 text-xs normal-case tracking-normal text-zinc-200 outline-none focus:border-white/25 disabled:opacity-50">
+              {environmentOptions.length === 0 && <option value="">No environments configured</option>}
+              {environmentOptions.map((environment) => <option key={environment.id} value={environment.id}>{environment.name} · {environment.tier}</option>)}
+            </select>
+          </label>
+        </div>
+        {contextError && <p role="status" className="mx-auto mt-2 max-w-5xl text-[11px] text-amber-300">{contextError}. Manual entry remains available.</p>}
+      </div>
       <div ref={scrollRef} className="flex-1 overflow-y-auto px-8 py-8">
         <div className="max-w-3xl mx-auto space-y-5">
           {turns.length === 0 && (
@@ -312,9 +464,7 @@ export function AgentChatView() {
               </select>
             </label>
           </div>
-          {composerMode === "code" && <div className="mb-3 grid grid-cols-[1.3fr_0.8fr_1.5fr] gap-2">
-            <input aria-label="GitHub repository" value={repositoryFullName} onChange={(event) => setRepositoryFullName(event.target.value)} placeholder="owner/repository" className="rounded-lg border border-white/10 bg-white/[0.03] px-3 py-2 text-xs text-zinc-200 outline-none placeholder:text-zinc-600 focus:border-white/25" />
-            <input aria-label="Git branch" value={branch} onChange={(event) => setBranch(event.target.value)} placeholder="branch" className="rounded-lg border border-white/10 bg-white/[0.03] px-3 py-2 text-xs text-zinc-200 outline-none placeholder:text-zinc-600 focus:border-white/25" />
+          {composerMode === "code" && <div className="mb-3 grid grid-cols-1 gap-2">
             <input aria-label="Repository file path" value={filePath} onChange={(event) => setFilePath(event.target.value)} placeholder="src/path/to/file.ts" className="rounded-lg border border-white/10 bg-white/[0.03] px-3 py-2 text-xs text-zinc-200 outline-none placeholder:text-zinc-600 focus:border-white/25" />
           </div>}
           <div className="flex items-end gap-3">

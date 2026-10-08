@@ -18,6 +18,12 @@ const GITHUB_API = "https://api.github.com";
 
 export type GithubWriteResult<T> = { ok: true; data: T } | { ok: false; error: string };
 
+export interface GitHubBranchSummary {
+  name: string;
+  commitSha: string;
+  protected: boolean;
+}
+
 export function isSafeRepositoryPath(path: string): boolean {
   if (!path || path.length > 1024 || path.startsWith("/") || path.includes("\0")) return false;
   const segments = path.split("/");
@@ -49,6 +55,28 @@ async function gh<T>(
   } catch (error) {
     return { ok: false, error: error instanceof Error ? error.message : "network_error" };
   }
+}
+
+/** Lists branches visible through an already repository-scoped installation token. */
+export async function listBranches(input: {
+  owner: string;
+  repo: string;
+  installationToken: string;
+}): Promise<GithubWriteResult<GitHubBranchSummary[]>> {
+  const branches: GitHubBranchSummary[] = [];
+  for (let page = 1; page <= 10; page += 1) {
+    const result = await gh<Array<{ name?: unknown; protected?: unknown; commit?: { sha?: unknown } }>>(
+      `/repos/${encodeURIComponent(input.owner)}/${encodeURIComponent(input.repo)}/branches?per_page=100&page=${page}`,
+      input.installationToken,
+    );
+    if (!result.ok) return result;
+    branches.push(...result.data.flatMap((branch) => {
+      if (typeof branch.name !== "string" || typeof branch.commit?.sha !== "string" || typeof branch.protected !== "boolean") return [];
+      return [{ name: branch.name, commitSha: branch.commit.sha, protected: branch.protected }];
+    }));
+    if (result.data.length < 100) break;
+  }
+  return { ok: true, data: branches };
 }
 
 export interface GetFileInput {
