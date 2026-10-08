@@ -15,7 +15,17 @@ vi.mock("@/lib/connectors/github/githubWriteClient", () => ({
 import { evaluateDeploymentPolicy, type DeploymentPolicyRepo } from "../deploymentPolicyGuard";
 
 const registered = { id: "repo_1", organizationId: "org-1", provider: "github", remoteOwner: "acme", remoteName: "widgets" };
-const basePolicy = {
+const basePolicy: {
+  id: string;
+  branchPattern: string;
+  requireReleaseTag: boolean;
+  requireCodeowners: boolean;
+  requirePrLink: boolean;
+  requireChangeTicket: boolean;
+  requirePromotionFromEnvironmentId: string | null;
+  requireTestsPassing: boolean;
+  priority: number;
+} = {
   id: "policy_1",
   branchPattern: "release/*",
   requireReleaseTag: false,
@@ -28,7 +38,7 @@ const basePolicy = {
 };
 
 function makeRepo(
-  policies = [basePolicy],
+  policies: (typeof basePolicy)[] = [basePolicy],
   repositories = [registered],
   priorExecutions: Array<{ id: string; environmentId: string; sourceCommitSha: string | null; status: string; conclusion: string | null }> = [],
 ): DeploymentPolicyRepo {
