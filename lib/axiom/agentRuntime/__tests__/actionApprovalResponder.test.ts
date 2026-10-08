@@ -8,6 +8,7 @@ const mocks = vi.hoisted(() => ({
   dispatchWorkflow: vi.fn(),
   resolveGitReference: vi.fn(),
   getFile: vi.fn(),
+  getRepositoryDefaultBranch: vi.fn(),
 }));
 
 vi.mock("@/lib/connectors/github/resolveTenantScopedToken", () => ({
@@ -19,13 +20,14 @@ vi.mock("@/lib/connectors/github/resolveTenantScopedToken", () => ({
 }));
 vi.mock("@/lib/connectors/github/githubWriteClient", () => ({
   createBranch: mocks.createBranch, commitFile: mocks.commitFile, createPullRequest: mocks.createPullRequest, dispatchWorkflow: mocks.dispatchWorkflow, getFile: mocks.getFile,
+  getRepositoryDefaultBranch: mocks.getRepositoryDefaultBranch,
   resolveGitReference: mocks.resolveGitReference,
 }));
 
 import { executeApprovedAction, type ActionExecutionRepo } from "../actionApprovalResponder";
 
 const repo: ActionExecutionRepo = {
-  environment: { findUnique: vi.fn(async () => ({ id: "env_1", organizationId: "org-1" })) },
+  environment: { findUnique: vi.fn(async () => ({ id: "env_1", organizationId: "org-1", tier: "dev" })) },
   deploymentTarget: { findUnique: vi.fn(async () => ({ organizationId: "org-1", roleArn: "arn:aws:iam::123:role/x", region: "us-east-2", ecsCluster: "c", ecsService: "s" })) },
   repository: { findMany: vi.fn(async () => []) },
   branchEnvironmentPolicy: { findMany: vi.fn(async () => []) },
@@ -35,6 +37,7 @@ beforeEach(() => {
   vi.clearAllMocks();
   mocks.resolveTenantScopedToken.mockResolvedValue({ ok: true, token: "installation-token" });
   mocks.resolveGitReference.mockResolvedValue({ ok: true, data: { kind: "branch", ref: "main", commitSha: "sha-main" } });
+  mocks.getRepositoryDefaultBranch.mockResolvedValue({ ok: true, data: "main" });
 });
 
 describe("executeApprovedAction", () => {
@@ -73,7 +76,7 @@ describe("executeApprovedAction", () => {
 
   it("trigger_aws_deploy 404s when the environment doesn't belong to this org", async () => {
     const otherOrgRepo: ActionExecutionRepo = {
-      environment: { findUnique: vi.fn(async () => ({ id: "env_1", organizationId: "other_org" })) },
+      environment: { findUnique: vi.fn(async () => ({ id: "env_1", organizationId: "other_org", tier: "dev" })) },
       deploymentTarget: { findUnique: vi.fn() },
       repository: { findMany: vi.fn(async () => []) },
       branchEnvironmentPolicy: { findMany: vi.fn(async () => []) },
@@ -84,7 +87,7 @@ describe("executeApprovedAction", () => {
 
   it("trigger_aws_deploy fails closed when no deploy target is configured", async () => {
     const noTargetRepo: ActionExecutionRepo = {
-      environment: { findUnique: vi.fn(async () => ({ id: "env_1", organizationId: "org-1" })) },
+      environment: { findUnique: vi.fn(async () => ({ id: "env_1", organizationId: "org-1", tier: "dev" })) },
       deploymentTarget: { findUnique: vi.fn(async () => null) },
       repository: { findMany: vi.fn(async () => []) },
       branchEnvironmentPolicy: { findMany: vi.fn(async () => []) },
@@ -95,7 +98,7 @@ describe("executeApprovedAction", () => {
 
   it("trigger_aws_deploy denies a promotion-required policy with no promotedFromExecutionId, even without deploymentExecution storage wired in", async () => {
     const promotionRepo: ActionExecutionRepo = {
-      environment: { findUnique: vi.fn(async () => ({ id: "env_1", organizationId: "org-1" })) },
+      environment: { findUnique: vi.fn(async () => ({ id: "env_1", organizationId: "org-1", tier: "dev" })) },
       deploymentTarget: { findUnique: vi.fn(async () => ({ organizationId: "org-1", roleArn: "arn:aws:iam::123:role/x", region: "us-east-2", ecsCluster: "c", ecsService: "s" })) },
       repository: { findMany: vi.fn(async () => [{ id: "repo_1", organizationId: "org-1", provider: "github", remoteOwner: "acme", remoteName: "widgets" }]) },
       branchEnvironmentPolicy: {

@@ -52,7 +52,8 @@ function request(body: object) {
   });
 }
 
-const session = { id: "sess-1", userId: "user-1", organizationId: "org-1", credentialKind: "desktop_session" as const };
+const session = { id: "sess-1", userId: "user-1", organizationId: "org-1", credentialKind: "desktop_session" as const, capabilities: ["deploy:execute"] };
+const adminSession = { ...session, capabilities: ["deploy:execute", "deploy:production_bypass"] };
 const target = { id: "dt_1", organizationId: "org-1", environmentId: "env_1", provider: "aws", roleArn: "arn:aws:iam::123456789012:role/axiom-deploy", region: "us-east-2", ecsCluster: "axiom-prod-cluster", ecsService: "axiom-web-service" };
 
 describe("POST /api/desktop/environments/deploy", () => {
@@ -139,5 +140,38 @@ describe("POST /api/desktop/environments/deploy", () => {
     const res = await POST(request({ repositoryFullName: "acme/widgets", environmentId: "env_1" }));
     expect(res.status).toBe(502);
     expect(mocks.recordAudit).not.toHaveBeenCalled();
+  });
+
+  it("allows only an authorized admin to request a production bypass", async () => {
+    mocks.findEnvironment.mockResolvedValue({ id: "env_1", organizationId: "org-1", tier: "prod" });
+    const { POST } = await import("../route");
+    const res = await POST(request({
+      repositoryFullName: "acme/widgets",
+      environmentId: "env_1",
+      emergencyBypass: true,
+      bypassReason: "Customer incident requires an immediate recovery deployment.",
+    }));
+    expect(res.status).toBe(403);
+    await expect(res.json()).resolves.toMatchObject({ error: "production_bypass_forbidden" });
+    expect(mocks.dispatchWorkflow).not.toHaveBeenCalled();
+  });
+
+  it("fails closed when a production bypass cannot be durably audited", async () => {
+    mocks.resolveRequestDesktopSession.mockResolvedValue(adminSession);
+    mocks.findEnvironment.mockResolvedValue({ id: "env_1", organizationId: "org-1", tier: "prod" });
+    mocks.findTarget.mockResolvedValue(target);
+    mocks.resolveTenantScopedToken.mockResolvedValue({ ok: true, token: "installation-token" });
+    mocks.recordAudit.mockResolvedValueOnce(false);
+
+    const { POST } = await import("../route");
+    const res = await POST(request({
+      repositoryFullName: "acme/widgets",
+      environmentId: "env_1",
+      emergencyBypass: true,
+      bypassReason: "Customer incident requires an immediate recovery deployment.",
+    }));
+    expect(res.status).toBe(503);
+    await expect(res.json()).resolves.toMatchObject({ error: "production_bypass_audit_unavailable" });
+    expect(mocks.dispatchWorkflow).not.toHaveBeenCalled();
   });
 });

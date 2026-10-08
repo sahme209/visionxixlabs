@@ -11,7 +11,7 @@
 import "server-only";
 
 import { resolveTenantScopedToken, parseRepositoryFullName } from "@/lib/connectors/github/resolveTenantScopedToken";
-import { createBranch, commitFile, createPullRequest, dispatchWorkflow } from "@/lib/connectors/github/githubWriteClient";
+import { createBranch, commitFile, createPullRequest, dispatchWorkflow, getRepositoryDefaultBranch } from "@/lib/connectors/github/githubWriteClient";
 import { AWS_ECS_DEPLOY_WORKFLOW_FILENAME } from "@/lib/releaseops/awsEcsDeployWorkflowTemplate";
 import { buildEnvironmentCreateResponse, type EnvironmentCreateRepo } from "@/lib/releaseops/environmentCreateResponder";
 import { buildDeploymentTargetUpsertResponse, type DeploymentTargetRepo } from "@/lib/releaseops/deploymentTargetResponder";
@@ -23,7 +23,7 @@ import { evaluateDeploymentPolicy, type DeploymentPolicyRepo } from "@/lib/relea
 export interface ActionExecutionRepo {
   deploymentExecution?: DeploymentExecutionRepo["deploymentExecution"];
   environment: {
-    findUnique(args: { where: { id: string } }): Promise<{ id: string; organizationId: string } | null>;
+    findUnique(args: { where: { id: string } }): Promise<{ id: string; organizationId: string; tier: string } | null>;
   };
   deploymentTarget: {
     findUnique(args: { where: { environmentId: string } }): Promise<{ organizationId: string; roleArn: string; region: string; ecsCluster: string; ecsService: string } | null>;
@@ -65,6 +65,9 @@ export async function executeApprovedAction(
     if (!branch || !path || !content || !message) return { ok: false, error: "invalid_payload" };
     const token = await resolveTenantScopedToken(organizationId, parsed);
     if (!token.ok) return { ok: false, error: token.error };
+    const defaultBranch = await getRepositoryDefaultBranch({ owner: parsed.owner, repo: parsed.repo, installationToken: token.token });
+    if (!defaultBranch.ok) return { ok: false, error: defaultBranch.error };
+    if (branch === defaultBranch.data) return { ok: false, error: "github_pull_request_cycle_required" };
     const result = await commitFile({
       owner: parsed.owner, repo: parsed.repo, branch, path, content, message,
       installationToken: token.token,
@@ -122,6 +125,7 @@ export async function executeApprovedAction(
       sourceKind,
       ...(pullRequestNumber !== undefined ? { pullRequestNumber } : {}),
       ...(promotedFromExecutionId ? { promotedFromExecutionId } : {}),
+      ...(environment.tier === "prod" ? { requiredControlSet: "production" as const } : {}),
       installationToken: token.token,
     });
     if (!policy.ok) return { ok: false, error: policy.error };

@@ -16,10 +16,11 @@ import {
   Palette,
   Server,
   Settings2,
+  ShieldCheck,
   Trees,
 } from "lucide-react";
 import { ViewShell } from "../components/Primitives";
-import { desktopClient, type DeploymentExecution, type VerifiedDesktopIdentity } from "../lib/desktopClient";
+import { desktopClient, type DeploymentExecution, type VerifiedDesktopIdentity, type WorkspaceMember } from "../lib/desktopClient";
 import { clearApiKey } from "../lib/apiKeyStore";
 import { clearAuthSession } from "../lib/authSession";
 import { normalizeAiProviderStatus, type ModelPolicy, type ProviderModels } from "../lib/aiProviderStatus";
@@ -54,6 +55,7 @@ type Section =
   | "plan"
   | "agents"
   | "models"
+  | "permissions"
   | "git"
   | "worktrees"
   | "integrations"
@@ -67,6 +69,7 @@ const sections: Array<{ id: Section; label: string; icon: typeof CircleUserRound
   { id: "plan", label: "Plan & usage", icon: CreditCard },
   { id: "agents", label: "Agents", icon: Bot },
   { id: "models", label: "Models", icon: Code2 },
+  { id: "permissions", label: "Permissions", icon: ShieldCheck },
   { id: "git", label: "Git & PRs", icon: GitBranch },
   { id: "environments", label: "Environments", icon: Server },
   { id: "identity", label: "Identity", icon: KeyRound },
@@ -145,8 +148,9 @@ export function SettingsView({ identity }: { identity: VerifiedDesktopIdentity }
           {active === "plan" && <PlanSection identity={identity} />}
           {active === "agents" && <AgentsSection prefs={prefs} onSave={savePreferences} />}
           {active === "models" && <ModelsSection />}
+          {active === "permissions" && <PermissionsSection identity={identity} />}
           {active === "git" && <GitSection prefs={prefs} onSave={savePreferences} />}
-          {active === "environments" && <EnvironmentsSection />}
+          {active === "environments" && <EnvironmentsSection identity={identity} />}
           {active === "identity" && <IdentitySection />}
           {active === "worktrees" && <WorktreesSection prefs={prefs} />}
           {active === "integrations" && <IntegrationsSection />}
@@ -295,6 +299,82 @@ function AgentsSection({ prefs, onSave }: PreferenceSectionProps) {
       <LockedRow title="External-file protection" detail="The customer workspace cannot write outside its approved application scope." />
     </Group>
     <Notice title="Execution controls are organization policy" detail="Run mode, allowlists, connector permissions, and approval thresholds are managed by the service. The desktop app does not offer local switches that could weaken them." />
+  </div>;
+}
+
+const ROLE_OPTIONS: Array<{ value: Exclude<WorkspaceMember["role"], "owner">; label: string }> = [
+  { value: "admin", label: "Admin" },
+  { value: "operator", label: "Operator" },
+  { value: "security_reviewer", label: "Security reviewer" },
+  { value: "finance_viewer", label: "Finance viewer" },
+  { value: "read_only", label: "Read only" },
+];
+
+const ROLE_SUMMARIES: Record<WorkspaceMember["role"], string> = {
+  owner: "All controls, including admins and emergency production bypass.",
+  admin: "Manage policy, integrations, members, GitHub changes, and deployments.",
+  operator: "Create branches, commit through governed flows, open PRs, and run approved deployments.",
+  security_reviewer: "Read evidence and approve or reject Agent actions; cannot deploy or change code.",
+  finance_viewer: "Read workspace access and usage only.",
+  read_only: "Read workspace and repository context; no changes or execution.",
+};
+
+function PermissionsSection({ identity }: { identity: VerifiedDesktopIdentity }) {
+  const [members, setMembers] = useState<WorkspaceMember[] | null>(null);
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [savingUserId, setSavingUserId] = useState<string | null>(null);
+  const canManage = identity.capabilities?.includes("members:manage") ?? false;
+
+  const load = useCallback(() => {
+    void desktopClient.listWorkspaceMembers().then((result) => {
+      if (result.ok) { setMembers(result.data.members); setCurrentUserId(result.data.currentUserId); setError(null); }
+      else setError(result.error);
+    });
+  }, []);
+  useEffect(() => { load(); }, [load]);
+
+  async function changeRole(userId: string, role: Exclude<WorkspaceMember["role"], "owner">) {
+    setSavingUserId(userId); setError(null);
+    const result = await desktopClient.updateWorkspaceMemberRole(userId, role);
+    setSavingUserId(null);
+    if (!result.ok) { setError(result.error); return; }
+    load();
+  }
+
+  return <div>
+    <SectionHeading title="Permissions" detail="Give people only the authority they need. Every write, approval, deployment, and emergency bypass is checked by the service." />
+    <Notice title={`Your role: ${(identity.role ?? "unassigned").replaceAll("_", " ")}`} detail="Permissions are evaluated from current workspace membership on every request. Removing or changing a role takes effect immediately." />
+    {error && <p role="alert" className="mb-4 text-[12px] text-rose-300">{error}</p>}
+    <Group label="Workspace members">
+      {members === null && !error && <ActionRow title="Loading members…" detail="Reading current workspace authority." action={null} />}
+      {(members ?? []).map((member) => {
+        const isCurrentUser = member.userId === currentUserId;
+        const locked = !canManage || member.role === "owner" || isCurrentUser || savingUserId === member.userId;
+        return <ActionRow
+          key={member.userId}
+          title={member.displayName || member.email}
+          detail={`${member.email}${isCurrentUser ? " · You" : ""} · ${ROLE_SUMMARIES[member.role]}`}
+          action={member.role === "owner"
+            ? <span className="rounded-full border border-white/10 px-2.5 py-1 text-[10px] uppercase tracking-wider text-zinc-400">Owner</span>
+            : <select
+                aria-label={`Role for ${member.email}`}
+                value={member.role}
+                disabled={locked}
+                onChange={(event) => void changeRole(member.userId, event.target.value as Exclude<WorkspaceMember["role"], "owner">)}
+                className="rounded-lg border border-white/10 bg-black/30 px-3 py-2 text-xs text-zinc-200 disabled:opacity-50"
+              >
+                {ROLE_OPTIONS.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
+              </select>}
+        />;
+      })}
+    </Group>
+    <Group label="Authority model">
+      <ActionRow title="Read" detail="Workspace and repository context without changes." action={<span className="text-xs text-zinc-500">All accepted roles</span>} />
+      <ActionRow title="Write" detail="Branch, commit, and pull-request actions. Protected by repository scope and approvals." action={<span className="text-xs text-zinc-500">Operator, Admin, Owner</span>} />
+      <ActionRow title="Execute" detail="Deploy an already governed commit to its selected environment target." action={<span className="text-xs text-zinc-500">Operator, Admin, Owner</span>} />
+      <ActionRow title="Production bypass" detail="Emergency-only direct production execution with a mandatory reason and permanent audit record." action={<span className="text-xs text-amber-300">Admin, Owner</span>} />
+    </Group>
   </div>;
 }
 
@@ -601,7 +681,7 @@ interface EnvironmentListItem {
   id: string; slug: string; name: string; tier: string; displayOrder: number; hasApprovalPolicy: boolean;
 }
 
-function EnvironmentsSection() {
+function EnvironmentsSection({ identity }: { identity: VerifiedDesktopIdentity }) {
   const [environments, setEnvironments] = useState<EnvironmentListItem[] | null>(null);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [expandedId, setExpandedId] = useState<string | null>(null);
@@ -637,7 +717,8 @@ function EnvironmentsSection() {
 
   return (
     <div>
-      <SectionHeading title="Environments" detail="Dev/test/prod separation for real deploys. Configure an AWS ECS deploy target per environment, then trigger a deploy by dispatching your repo's own GitHub Actions workflow." />
+      <SectionHeading title="Environments" detail="Choose where a verified commit runs. Development, testing, and production each map to their own cloud target; production additionally requires PR evidence, passing tests, and promotion of the exact commit." />
+      <Notice title="A safe path by default" detail="Code moves through branch → pull request → verified development deploy → test → production. Selecting an environment never changes another environment's target." />
       {loadError && <p role="alert" className="mb-4 text-[12px] text-rose-300">{loadError}</p>}
       <Group label="Workspace environments">
         {environments === null && loadError === null && <ActionRow title="Loading…" detail="Checking your workspace's configured environments." action={null} />}
@@ -675,7 +756,7 @@ function EnvironmentsSection() {
                 </button>
               }
             />
-            {expandedId === env.id && <DeploymentTargetPanel environmentId={env.id} />}
+            {expandedId === env.id && <DeploymentTargetPanel environment={env} environments={environments ?? []} identity={identity} />}
           </div>
         ))}
       </Group>
@@ -731,7 +812,8 @@ function NewEnvironmentForm({ onCreated }: { onCreated: () => void }) {
   );
 }
 
-function DeploymentTargetPanel({ environmentId }: { environmentId: string }) {
+function DeploymentTargetPanel({ environment, environments, identity }: { environment: EnvironmentListItem; environments: EnvironmentListItem[]; identity: VerifiedDesktopIdentity }) {
+  const environmentId = environment.id;
   const [roleArn, setRoleArn] = useState("");
   const [region, setRegion] = useState("");
   const [ecsCluster, setEcsCluster] = useState("");
@@ -747,9 +829,13 @@ function DeploymentTargetPanel({ environmentId }: { environmentId: string }) {
   const [sourceRef, setSourceRef] = useState("main");
   const [sourceKind, setSourceKind] = useState<"branch" | "tag">("branch");
   const [pullRequestNumber, setPullRequestNumber] = useState("");
+  const [promotedFromExecutionId, setPromotedFromExecutionId] = useState("");
+  const [successfulExecutions, setSuccessfulExecutions] = useState<DeploymentExecution[]>([]);
+  const [emergencyBypass, setEmergencyBypass] = useState(false);
+  const [bypassReason, setBypassReason] = useState("");
   const [checkingReadiness, setCheckingReadiness] = useState(false);
   const [readinessError, setReadinessError] = useState<string | null>(null);
-  const [readiness, setReadiness] = useState<{ policyId: string | null; sourceCommitSha: string; pullRequestUrl: string | null } | null>(null);
+  const [readiness, setReadiness] = useState<{ policyId: string | null; sourceCommitSha: string; pullRequestUrl: string | null; governanceMode: "policy_enforced" | "emergency_bypass" } | null>(null);
   const [deploying, setDeploying] = useState(false);
   const [deployError, setDeployError] = useState<string | null>(null);
   const [deployOk, setDeployOk] = useState(false);
@@ -760,7 +846,7 @@ function DeploymentTargetPanel({ environmentId }: { environmentId: string }) {
   useEffect(() => {
     void Promise.all([
       desktopClient.getDeploymentTarget(environmentId),
-      desktopClient.listDeploymentExecutions(environmentId),
+      desktopClient.listDeploymentExecutions(),
       desktopClient.listRepositories(),
     ]).then(([result, executions, repositories]) => {
       if (result.ok) {
@@ -773,7 +859,10 @@ function DeploymentTargetPanel({ environmentId }: { environmentId: string }) {
       } else {
         setLoadError(result.error);
       }
-      if (executions.ok) setExecution(executions.data.executions[0] ?? null);
+      if (executions.ok) {
+        setExecution(executions.data.executions.find((item) => item.environmentId === environmentId) ?? null);
+        setSuccessfulExecutions(executions.data.executions.filter((item) => item.environmentId !== environmentId && item.status === "completed" && item.conclusion === "success" && Boolean(item.sourceCommitSha)));
+      }
       if (repositories.ok) {
         const githubRepositories = repositories.data.repositories.filter((repository) => repository.provider === "github");
         setDeployRepositories(githubRepositories);
@@ -800,6 +889,8 @@ function DeploymentTargetPanel({ environmentId }: { environmentId: string }) {
     try {
       const result = await desktopClient.saveDeploymentTarget({ environmentId, roleArn, region, ecsCluster, ecsService });
       if (!result.ok) { setSaveError(result.error); return; }
+      // A readiness result is only valid for the deployment target that was checked.
+      setReadiness(null);
       setSaveOk(true);
       setTimeout(() => setSaveOk(false), 1500);
     } finally {
@@ -821,6 +912,8 @@ function DeploymentTargetPanel({ environmentId }: { environmentId: string }) {
         sourceRef,
         sourceKind,
         ...(parsedPullRequestNumber !== undefined ? { pullRequestNumber: parsedPullRequestNumber } : {}),
+        ...(promotedFromExecutionId ? { promotedFromExecutionId } : {}),
+        ...(emergencyBypass ? { emergencyBypass: true, bypassReason } : {}),
       });
       if (!result.ok) { setDeployError(result.error); return; }
       setDeployOk(true);
@@ -844,6 +937,8 @@ function DeploymentTargetPanel({ environmentId }: { environmentId: string }) {
         sourceRef,
         sourceKind,
         ...(parsedPullRequestNumber !== undefined ? { pullRequestNumber: parsedPullRequestNumber } : {}),
+        ...(promotedFromExecutionId ? { promotedFromExecutionId } : {}),
+        ...(emergencyBypass ? { emergencyBypass: true, bypassReason } : {}),
       });
       if (!result.ok) { setReadinessError(result.error); return; }
       setReadiness(result.data);
@@ -857,6 +952,10 @@ function DeploymentTargetPanel({ environmentId }: { environmentId: string }) {
 
   return (
     <div className="border-t border-white/[0.04] bg-black/20 px-4 py-3.5 space-y-3">
+      <div className="rounded-lg border border-white/[0.07] bg-white/[0.025] px-3 py-2.5 text-[12px] text-zinc-400">
+        <span className="font-medium text-zinc-200">{environment.name}</span> deploys only to <span className="font-mono text-zinc-300">{region || "region"} / {ecsCluster || "cluster"} / {ecsService || "service"}</span>.
+        {environment.tier === "prod" ? " Production is fail-closed until the full promotion evidence is valid." : " Changes remain isolated from production."}
+      </div>
       <div className="grid grid-cols-2 gap-3">
         <LabeledInput label="Role ARN" placeholder="arn:aws:iam::123456789012:role/axiom-deploy" value={roleArn} onChange={setRoleArn} />
         <LabeledInput label="Region" placeholder="us-east-2" value={region} onChange={setRegion} />
@@ -895,15 +994,36 @@ function DeploymentTargetPanel({ environmentId }: { environmentId: string }) {
           <button type="button" onClick={() => void checkReadiness()} disabled={checkingReadiness || deploying || !deployRepo || !sourceRef.trim()} className="inline-flex items-center justify-center gap-2 rounded-lg border border-white/10 bg-white/[0.04] px-3 py-2 text-xs text-zinc-200 hover:bg-white/[0.08] disabled:opacity-50 shrink-0">
             {checkingReadiness ? "Checking…" : "Check readiness"}
           </button>
-          <button type="button" onClick={() => void triggerDeploy()} disabled={deploying || !deployRepo.includes("/") || !sourceRef.trim()} className="inline-flex items-center justify-center gap-2 rounded-lg border border-emerald-500/30 bg-emerald-500/[0.08] px-3 py-2 text-xs text-emerald-200 hover:bg-emerald-500/[0.14] disabled:opacity-50 shrink-0">
+          <button type="button" onClick={() => void triggerDeploy()} disabled={deploying || !deployRepo.includes("/") || !sourceRef.trim() || !readiness || (emergencyBypass && bypassReason.trim().length < 20)} title={readiness ? "Deploy the verified commit to this environment" : "Check readiness before deploying"} className="inline-flex items-center justify-center gap-2 rounded-lg border border-emerald-500/30 bg-emerald-500/[0.08] px-3 py-2 text-xs text-emerald-200 hover:bg-emerald-500/[0.14] disabled:opacity-50 shrink-0">
             {deploying ? "Deploying…" : "Deploy"}
           </button>
         </div>
+        {environment.tier !== "dev" && (
+          <label className="mt-3 block">
+            <span className="mb-1 block text-[11px] text-zinc-500">Promote a successful deployment</span>
+            <select value={promotedFromExecutionId} onChange={(event) => { setPromotedFromExecutionId(event.target.value); setReadiness(null); }} className="w-full rounded-lg border border-white/10 bg-black/25 px-3 py-2 text-xs text-zinc-200 outline-none focus:border-white/25">
+              <option value="">Select the verified prior-environment deployment…</option>
+              {successfulExecutions.map((item) => {
+                const sourceEnvironment = environments.find((candidate) => candidate.id === item.environmentId);
+                return <option key={item.id} value={item.id}>{sourceEnvironment?.name ?? "Prior environment"} · {item.repositoryFullName} · {item.sourceCommitSha?.slice(0, 12)}</option>;
+              })}
+            </select>
+          </label>
+        )}
+        {environment.tier === "prod" && identity.capabilities?.includes("deploy:production_bypass") && (
+          <div className="mt-3 rounded-lg border border-amber-500/20 bg-amber-500/[0.04] p-3">
+            <label className="flex items-start gap-2 text-xs text-amber-200">
+              <input type="checkbox" checked={emergencyBypass} onChange={(event) => { setEmergencyBypass(event.target.checked); setReadiness(null); }} className="mt-0.5" />
+              <span><strong>Emergency production bypass</strong><br /><span className="text-amber-200/70">Skips normal promotion evidence. Admin-only, reason required, and permanently audited.</span></span>
+            </label>
+            {emergencyBypass && <textarea aria-label="Emergency bypass reason" value={bypassReason} onChange={(event) => { setBypassReason(event.target.value); setReadiness(null); }} placeholder="Explain the incident and why the normal release path cannot be used (minimum 20 characters)." className="mt-3 min-h-20 w-full rounded-lg border border-amber-500/20 bg-black/30 px-3 py-2 text-xs text-zinc-200 outline-none" />}
+          </div>
+        )}
         {readinessError && <p role="alert" className="mt-2 text-[12px] text-rose-300">{readinessError}</p>}
         {readiness && (
           <div className="mt-2 rounded-lg border border-emerald-500/20 bg-emerald-500/[0.06] px-3 py-2 text-[12px] text-emerald-200">
             Ready to deploy commit <span className="font-mono">{readiness.sourceCommitSha.slice(0, 12)}</span>
-            {readiness.policyId ? " · configured branch policy satisfied" : " · no branch policy configured"}
+            {readiness.governanceMode === "emergency_bypass" ? " · emergency admin bypass will be audited" : readiness.policyId ? " · configured branch policy satisfied" : " · development target verified"}
             {readiness.pullRequestUrl && <> · <button type="button" onClick={() => void open(readiness.pullRequestUrl!)} className="underline underline-offset-2">verified pull request</button></>}
           </div>
         )}
@@ -1218,7 +1338,7 @@ function RepositoriesPanel() {
 }
 
 function BranchPoliciesPanel() {
-  const [policies, setPolicies] = useState<Array<{ id: string; repositoryId: string; environmentId: string; branchPattern: string; requirePrLink: boolean; requireReleaseTag: boolean; requireCodeowners: boolean; requireChangeTicket: boolean }> | null>(null);
+  const [policies, setPolicies] = useState<Array<{ id: string; repositoryId: string; environmentId: string; branchPattern: string; requirePrLink: boolean; requireReleaseTag: boolean; requireCodeowners: boolean; requireChangeTicket: boolean; requireTestsPassing: boolean; requirePromotionFromEnvironmentId: string | null }> | null>(null);
   const [repositories, setRepositories] = useState<Array<{ id: string; displayName: string }>>([]);
   const [environments, setEnvironments] = useState<Array<{ id: string; name: string; tier: string }>>([]);
   const [repositoryId, setRepositoryId] = useState("");
@@ -1228,6 +1348,8 @@ function BranchPoliciesPanel() {
   const [requireReleaseTag, setRequireReleaseTag] = useState(false);
   const [requireCodeowners, setRequireCodeowners] = useState(false);
   const [requireChangeTicket, setRequireChangeTicket] = useState(false);
+  const [requireTestsPassing, setRequireTestsPassing] = useState(true);
+  const [requirePromotionFromEnvironmentId, setRequirePromotionFromEnvironmentId] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -1251,6 +1373,15 @@ function BranchPoliciesPanel() {
 
   useEffect(() => { load(); }, [load]);
 
+  const selectedEnvironment = environments.find((environment) => environment.id === environmentId);
+  const isProductionPolicy = selectedEnvironment?.tier === "prod";
+  useEffect(() => {
+    if (isProductionPolicy) {
+      setRequirePrLink(true);
+      setRequireTestsPassing(true);
+    }
+  }, [isProductionPolicy]);
+
   async function create() {
     setBusy(true); setError(null);
     try {
@@ -1262,6 +1393,8 @@ function BranchPoliciesPanel() {
         requireReleaseTag,
         requireCodeowners,
         requireChangeTicket,
+        requireTestsPassing,
+        ...(requirePromotionFromEnvironmentId ? { requirePromotionFromEnvironmentId } : {}),
       });
       if (!result.ok) { setError(result.error); return; }
       setBranchPattern("");
@@ -1275,7 +1408,7 @@ function BranchPoliciesPanel() {
     <Group label="Branch policies (enforced before deploy)">
       {policies !== null && policies.length === 0 && <ActionRow title="No branch policies configured" detail="Define which branch patterns need a PR link, release tag, etc. before deploying to an environment." action={null} />}
       {(policies ?? []).map((p) => (
-        <ActionRow key={p.id} title={p.branchPattern} detail={[p.requirePrLink && "PR link", p.requireReleaseTag && "release tag", p.requireCodeowners && "codeowners", p.requireChangeTicket && "change ticket"].filter(Boolean).join(", ") || "no requirements set"} action={null} />
+        <ActionRow key={p.id} title={p.branchPattern} detail={[p.requirePrLink && "merged PR", p.requireTestsPassing && "tests passing", p.requireReleaseTag && "release tag", p.requireCodeowners && "codeowners", p.requireChangeTicket && "change ticket", p.requirePromotionFromEnvironmentId && "prior-environment promotion"].filter(Boolean).join(", ") || "no requirements set"} action={null} />
       ))}
       <div className="px-4 py-3.5 space-y-3 border-t border-white/[0.04]">
         <div className="grid grid-cols-3 gap-3">
@@ -1288,7 +1421,7 @@ function BranchPoliciesPanel() {
           </label>
           <label className="block">
             <span className="mb-1 block text-[11px] text-zinc-500">Environment</span>
-            <select value={environmentId} onChange={(event) => setEnvironmentId(event.target.value)} className="w-full rounded-lg border border-white/10 bg-black/25 px-3 py-2 text-xs text-zinc-200 outline-none focus:border-white/25">
+            <select value={environmentId} onChange={(event) => { setEnvironmentId(event.target.value); setRequirePromotionFromEnvironmentId(""); }} className="w-full rounded-lg border border-white/10 bg-black/25 px-3 py-2 text-xs text-zinc-200 outline-none focus:border-white/25">
               {environments.length === 0 && <option value="">Create an environment first</option>}
               {environments.map((environment) => <option key={environment.id} value={environment.id}>{environment.name} · {environment.tier}</option>)}
             </select>
@@ -1297,19 +1430,28 @@ function BranchPoliciesPanel() {
         </div>
         <div className="grid grid-cols-2 gap-2">
           {[
-            { label: "Require a linked, merged pull request", checked: requirePrLink, set: setRequirePrLink },
+            { label: "Require a linked, merged pull request", checked: requirePrLink, set: setRequirePrLink, locked: isProductionPolicy },
+            { label: "Require repository tests to pass", checked: requireTestsPassing, set: setRequireTestsPassing, locked: isProductionPolicy },
             { label: "Require a release tag", checked: requireReleaseTag, set: setRequireReleaseTag },
             { label: "Require CODEOWNERS enforcement and approval", checked: requireCodeowners, set: setRequireCodeowners },
             { label: "Require a CHG, INC, or REQ ticket in the PR", checked: requireChangeTicket, set: setRequireChangeTicket },
           ].map((item) => (
             <label key={item.label} className="flex items-center gap-2 text-xs text-zinc-400">
-              <input type="checkbox" checked={item.checked} onChange={(event) => item.set(event.target.checked)} />
+              <input type="checkbox" checked={item.checked} disabled={item.locked} onChange={(event) => item.set(event.target.checked)} />
               {item.label}
             </label>
           ))}
         </div>
+        <label className="block">
+          <span className="mb-1 block text-[11px] text-zinc-500">Promote only after a successful deploy in</span>
+          <select value={requirePromotionFromEnvironmentId} onChange={(event) => setRequirePromotionFromEnvironmentId(event.target.value)} className="w-full rounded-lg border border-white/10 bg-black/25 px-3 py-2 text-xs text-zinc-200 outline-none focus:border-white/25">
+            <option value="">No prior environment required</option>
+            {environments.filter((candidate) => candidate.id !== environmentId).map((candidate) => <option key={candidate.id} value={candidate.id}>{candidate.name} · {candidate.tier}</option>)}
+          </select>
+          {isProductionPolicy && <span className="mt-1 block text-[11px] text-amber-300">Production requires a prior environment, a merged PR, and passing tests.</span>}
+        </label>
         <div className="flex items-center gap-3">
-          <button type="button" onClick={() => void create()} disabled={busy || !repositoryId || !environmentId || !branchPattern} className="inline-flex items-center gap-2 rounded-lg border border-white/10 bg-white/[0.04] px-3 py-2 text-xs text-zinc-200 hover:bg-white/[0.08] disabled:opacity-50">
+          <button type="button" onClick={() => void create()} disabled={busy || !repositoryId || !environmentId || !branchPattern || (isProductionPolicy && !requirePromotionFromEnvironmentId)} className="inline-flex items-center gap-2 rounded-lg border border-white/10 bg-white/[0.04] px-3 py-2 text-xs text-zinc-200 hover:bg-white/[0.08] disabled:opacity-50">
             {busy ? "Saving…" : "Add policy"}
           </button>
         </div>

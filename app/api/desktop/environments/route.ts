@@ -39,7 +39,7 @@ export async function POST(request: NextRequest): Promise<Response> {
     requiredScope: "pipeline:read",
     route: "POST /api/desktop/environments",
     allowApiKey: false,
-    requireWorkspaceAdmin: true,
+    requiredCapability: "policy:manage",
   });
   if (!session) {
     return NextResponse.json({ ok: false, error: "desktop_session_required" }, { status: 401 });

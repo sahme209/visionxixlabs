@@ -13,6 +13,13 @@ import { readDesktopCommercialAccess } from "./desktopCommercialAccess";
 import { ensurePersonalWorkspaceMembership } from "@/lib/auth/ensurePersonalWorkspaceMembership";
 import { deriveWorkspaceIdFromEmail } from "@/lib/auth/workspaceId";
 import { createLogger } from "@/lib/observability/logger";
+import {
+    capabilitiesForRole,
+    hasDesktopCapability,
+    isWorkspaceAdminRole,
+    type DesktopCapability,
+    type DesktopWorkspaceRole,
+} from "./desktopAuthorization";
 
 const log = createLogger("desktop.resolveRequestDesktopSession");
 
@@ -21,6 +28,8 @@ export interface DesktopRequestPrincipal {
     userId: string;
     organizationId: string;
     credentialKind: "desktop_session" | "api_key";
+    role: DesktopWorkspaceRole | null;
+    capabilities: DesktopCapability[];
 }
 
 interface ResolveOptions {
@@ -34,6 +43,9 @@ interface ResolveOptions {
      * workspace owner or admin. The desktop token identifies a device; it
      * does not itself freeze role authority for its 30-day lifetime. */
     requireWorkspaceAdmin?: boolean;
+    /** Capability checks are evaluated from the current accepted membership
+     * on every request, so role changes revoke authority immediately. */
+    requiredCapability?: DesktopCapability;
     /**
      * Desktop tokens are long-lived device credentials, not a substitute for
      * current workspace membership. Recheck the durable membership on every
@@ -43,17 +55,19 @@ interface ResolveOptions {
     requireWorkspaceMembership?: boolean;
 }
 
-async function hasActiveWorkspaceMembership(userId: string, organizationId: string): Promise<boolean> {
+async function readActiveWorkspaceRole(userId: string, organizationId: string): Promise<DesktopWorkspaceRole | null> {
     try {
         const membership = await prisma.orgMembership.findUnique({
             where: { userId_organizationId: { userId, organizationId } },
-            select: { acceptedAt: true },
+            select: { acceptedAt: true, role: true },
         });
-        return membership?.acceptedAt !== null && membership?.acceptedAt !== undefined;
+        return membership?.acceptedAt !== null && membership?.acceptedAt !== undefined
+            ? membership.role as DesktopWorkspaceRole
+            : null;
     } catch {
         // A membership-store failure must not extend a long-lived desktop
         // token beyond the workspace's current authority.
-        return false;
+        return null;
     }
 }
 
@@ -100,21 +114,6 @@ async function selfHealPersonalWorkspaceMembership(userId: string, organizationI
     }
 }
 
-async function hasWorkspaceAdminRole(userId: string, organizationId: string): Promise<boolean> {
-    try {
-        const membership = await prisma.orgMembership.findUnique({
-            where: { userId_organizationId: { userId, organizationId } },
-            select: { role: true, acceptedAt: true },
-        });
-        return membership?.acceptedAt !== null
-            && membership?.acceptedAt !== undefined
-            && (membership?.role === "owner" || membership?.role === "admin");
-    } catch {
-        // A role-store failure must not permit a shared provider-state change.
-        return false;
-    }
-}
-
 /**
  * Resolves an authenticated native-app session without leaking token parse
  * failures into a 500 response. Expired, revoked, malformed, and unknown
@@ -133,8 +132,8 @@ export async function resolveRequestDesktopSession(
                 log.info("api key not allowed on this route", { route: options.route });
                 return undefined;
             }
-            if (options.requireWorkspaceAdmin) {
-                log.info("api key cannot satisfy admin-only route", { route: options.route });
+            if (options.requireWorkspaceAdmin || options.requiredCapability) {
+                log.info("api key cannot satisfy admin-only or role-authorized route", { route: options.route });
                 return undefined;
             }
             const sourceIp = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim()
@@ -157,6 +156,8 @@ export async function resolveRequestDesktopSession(
                 userId: `api_key:${auth.apiKeyId}`,
                 organizationId: auth.organizationId,
                 credentialKind: "api_key",
+                role: null,
+                capabilities: [],
             };
             if (options.requireActiveAccess !== false) {
                 const access = await readDesktopCommercialAccess(principal.organizationId);
@@ -179,17 +180,28 @@ export async function resolveRequestDesktopSession(
             log.info("no active session for token", { route: options.route });
             return undefined;
         }
-        if (options.requireWorkspaceMembership !== false
-            && !(await hasActiveWorkspaceMembership(String(session.userId), String(session.organizationId)))) {
+        let role = await readActiveWorkspaceRole(String(session.userId), String(session.organizationId));
+        if (options.requireWorkspaceMembership !== false && !role) {
             await selfHealPersonalWorkspaceMembership(String(session.userId), String(session.organizationId));
-            if (!(await hasActiveWorkspaceMembership(String(session.userId), String(session.organizationId)))) {
+            role = await readActiveWorkspaceRole(String(session.userId), String(session.organizationId));
+            if (!role) {
                 log.info("workspace membership missing or unaccepted", { route: options.route, organizationId: session.organizationId, userId: session.userId });
                 return undefined;
             }
             log.info("self-healed missing personal workspace membership", { route: options.route, organizationId: session.organizationId, userId: session.userId });
         }
-        if (options.requireWorkspaceAdmin && !(await hasWorkspaceAdminRole(String(session.userId), String(session.organizationId)))) {
+        if (options.requireWorkspaceAdmin && !isWorkspaceAdminRole(role)) {
             log.info("workspace admin role required but absent", { route: options.route, organizationId: session.organizationId, userId: session.userId });
+            return undefined;
+        }
+        if (options.requiredCapability && !hasDesktopCapability(role, options.requiredCapability)) {
+            log.info("required workspace capability absent", {
+                route: options.route,
+                organizationId: session.organizationId,
+                userId: session.userId,
+                role,
+                requiredCapability: options.requiredCapability,
+            });
             return undefined;
         }
         await touchDesktopSession(session.id);
@@ -198,6 +210,8 @@ export async function resolveRequestDesktopSession(
             userId: session.userId,
             organizationId: session.organizationId,
             credentialKind: "desktop_session",
+            role,
+            capabilities: role ? capabilitiesForRole(role) : [],
         };
         if (options.requireActiveAccess !== false) {
             const access = await readDesktopCommercialAccess(principal.organizationId);

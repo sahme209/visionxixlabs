@@ -226,9 +226,11 @@ describe("desktop first-run contract", () => {
     const github = readFileSync(join(root, "app/api/desktop/integrations/github/validate/route.ts"), "utf8");
     const slack = readFileSync(join(root, "app/api/desktop/integrations/slack/validate/route.ts"), "utf8");
     const teams = readFileSync(join(root, "app/api/desktop/integrations/teams/validate/route.ts"), "utf8");
-    expect(resolver).toContain("hasWorkspaceAdminRole");
+    expect(resolver).toContain("isWorkspaceAdminRole");
+    expect(resolver).toContain("hasDesktopCapability");
     expect(resolver).toContain("options.requireWorkspaceAdmin");
-    expect(resolver).toContain('membership?.role === "owner" || membership?.role === "admin"');
+    const authorization = readFileSync(join(root, "lib/desktop/desktopAuthorization.ts"), "utf8");
+    expect(authorization).toContain('role === "owner" || role === "admin"');
     for (const route of [github, slack, teams]) {
       expect(route).toContain("allowApiKey: false");
       expect(route).toContain("requireWorkspaceAdmin: true");
@@ -237,7 +239,7 @@ describe("desktop first-run contract", () => {
 
   it("rechecks accepted workspace membership for long-lived desktop sessions", () => {
     const resolver = readFileSync(join(root, "lib/desktop/resolveRequestDesktopSession.ts"), "utf8");
-    expect(resolver).toContain("hasActiveWorkspaceMembership");
+    expect(resolver).toContain("readActiveWorkspaceRole");
     expect(resolver).toContain("membership?.acceptedAt !== null");
     expect(resolver).toContain("options.requireWorkspaceMembership !== false");
     expect(resolver).toContain("A removed or unaccepted member loses access");
