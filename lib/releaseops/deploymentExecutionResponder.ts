@@ -5,6 +5,11 @@ export interface DeploymentExecutionRow {
   organizationId: string;
   environmentId: string;
   repositoryFullName: string;
+  sourceRef: string | null;
+  sourceKind: string | null;
+  sourceCommitSha: string | null;
+  branchPolicyId: string | null;
+  pullRequestUrl: string | null;
   workflowRunId: string | null;
   workflowUrl: string | null;
   source: string;
@@ -24,6 +29,11 @@ export interface DeploymentExecutionRepo {
       organizationId: string;
       environmentId: string;
       repositoryFullName: string;
+      sourceRef: string;
+      sourceKind: "branch" | "tag";
+      sourceCommitSha: string;
+      branchPolicyId: string | null;
+      pullRequestUrl: string | null;
       workflowRunId: string | null;
       workflowUrl: string | null;
       source: string;
@@ -55,6 +65,11 @@ export function serializeDeploymentExecution(row: DeploymentExecutionRow) {
     id: row.id,
     environmentId: row.environmentId,
     repositoryFullName: row.repositoryFullName,
+    sourceRef: row.sourceRef,
+    sourceKind: row.sourceKind,
+    sourceCommitSha: row.sourceCommitSha,
+    branchPolicyId: row.branchPolicyId,
+    pullRequestUrl: row.pullRequestUrl,
     workflowRunId: row.workflowRunId,
     workflowUrl: row.workflowUrl,
     source: row.source,

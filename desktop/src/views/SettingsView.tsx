@@ -231,18 +231,21 @@ function PlanSection({ identity }: { identity: VerifiedDesktopIdentity }) {
     } catch (cause) { setError(cause instanceof Error ? cause.message : "The billing portal could not be opened."); }
     finally { setOpening(false); }
   }
-  const isPilot = access.planTier === "pilot" && access.billingStatus === "active";
+  const isNoChargeAccess = access.allowed && (access.planTier === "pilot" || access.planTier === "trial");
+  const accessModel = isNoChargeAccess
+    ? access.planTier === "trial" ? "No-charge trial" : "No-charge pilot"
+    : access.planTier;
   return <div>
     <SectionHeading title="Access & usage" detail="Approved pilot or commercial access is verified by the service before production records load." />
     <div className="grid gap-4 sm:grid-cols-2">
-      <SummaryCard label="Access model" value={isPilot ? "No-charge pilot" : access.planTier} detail={access.title} />
-      <SummaryCard label="Access state" value={access.billingStatus.replaceAll("_", " ")} detail={isPilot ? "Provisioned for this pilot workspace" : access.currentPeriodEndsAt ? `Period ends ${new Date(access.currentPeriodEndsAt).toLocaleDateString()}` : "Managed by your workspace agreement"} />
+      <SummaryCard label="Access model" value={accessModel} detail={access.title} />
+      <SummaryCard label="Access state" value={isNoChargeAccess ? "Active" : access.billingStatus.replaceAll("_", " ")} detail={isNoChargeAccess ? "Provisioned for this workspace; no billing setup is required" : access.currentPeriodEndsAt ? `Period ends ${new Date(access.currentPeriodEndsAt).toLocaleDateString()}` : "Managed by your workspace agreement"} />
     </div>
     <div className="mt-5 rounded-xl border border-white/[0.07] bg-white/[0.025] p-5">
-      {isPilot ? (
+      {isNoChargeAccess ? (
         <div>
-          <p className="text-sm text-zinc-200">Pilot access is no-charge</p>
-          <p className="mt-1 max-w-xl text-xs leading-5 text-zinc-500">This workspace is in an approved early-access pilot. No card or checkout is needed, and production safeguards remain enforced.</p>
+          <p className="text-sm text-zinc-200">{access.planTier === "trial" ? "Trial access is active" : "Pilot access is active"}</p>
+          <p className="mt-1 max-w-xl text-xs leading-5 text-zinc-500">This workspace has approved no-charge access. No card, Stripe customer, or checkout is needed, and production safeguards remain enforced.</p>
         </div>
       ) : (
         <>
@@ -740,6 +743,13 @@ function DeploymentTargetPanel({ environmentId }: { environmentId: string }) {
   const [saveOk, setSaveOk] = useState(false);
 
   const [deployRepo, setDeployRepo] = useState("");
+  const [deployRepositories, setDeployRepositories] = useState<Array<{ id: string; displayName: string; provider: string }>>([]);
+  const [sourceRef, setSourceRef] = useState("main");
+  const [sourceKind, setSourceKind] = useState<"branch" | "tag">("branch");
+  const [pullRequestNumber, setPullRequestNumber] = useState("");
+  const [checkingReadiness, setCheckingReadiness] = useState(false);
+  const [readinessError, setReadinessError] = useState<string | null>(null);
+  const [readiness, setReadiness] = useState<{ policyId: string | null; sourceCommitSha: string; pullRequestUrl: string | null } | null>(null);
   const [deploying, setDeploying] = useState(false);
   const [deployError, setDeployError] = useState<string | null>(null);
   const [deployOk, setDeployOk] = useState(false);
@@ -751,7 +761,8 @@ function DeploymentTargetPanel({ environmentId }: { environmentId: string }) {
     void Promise.all([
       desktopClient.getDeploymentTarget(environmentId),
       desktopClient.listDeploymentExecutions(environmentId),
-    ]).then(([result, executions]) => {
+      desktopClient.listRepositories(),
+    ]).then(([result, executions, repositories]) => {
       if (result.ok) {
         if (result.data.target) {
           setRoleArn(result.data.target.roleArn);
@@ -763,6 +774,11 @@ function DeploymentTargetPanel({ environmentId }: { environmentId: string }) {
         setLoadError(result.error);
       }
       if (executions.ok) setExecution(executions.data.executions[0] ?? null);
+      if (repositories.ok) {
+        const githubRepositories = repositories.data.repositories.filter((repository) => repository.provider === "github");
+        setDeployRepositories(githubRepositories);
+        setDeployRepo((current) => current || githubRepositories[0]?.displayName || "");
+      }
       setLoaded(true);
     });
   }, [environmentId]);
@@ -794,12 +810,45 @@ function DeploymentTargetPanel({ environmentId }: { environmentId: string }) {
   async function triggerDeploy() {
     setDeploying(true); setDeployError(null); setDeployOk(false);
     try {
-      const result = await desktopClient.triggerAwsDeploy({ repositoryFullName: deployRepo, environmentId });
+      const parsedPullRequestNumber = pullRequestNumber.trim() ? Number(pullRequestNumber) : undefined;
+      if (parsedPullRequestNumber !== undefined && (!Number.isInteger(parsedPullRequestNumber) || parsedPullRequestNumber <= 0)) {
+        setDeployError("Pull request number must be a positive whole number.");
+        return;
+      }
+      const result = await desktopClient.triggerAwsDeploy({
+        repositoryFullName: deployRepo,
+        environmentId,
+        sourceRef,
+        sourceKind,
+        ...(parsedPullRequestNumber !== undefined ? { pullRequestNumber: parsedPullRequestNumber } : {}),
+      });
       if (!result.ok) { setDeployError(result.error); return; }
       setDeployOk(true);
       setExecution(result.data.execution);
     } finally {
       setDeploying(false);
+    }
+  }
+
+  async function checkReadiness() {
+    setCheckingReadiness(true); setReadinessError(null); setReadiness(null);
+    try {
+      const parsedPullRequestNumber = pullRequestNumber.trim() ? Number(pullRequestNumber) : undefined;
+      if (parsedPullRequestNumber !== undefined && (!Number.isInteger(parsedPullRequestNumber) || parsedPullRequestNumber <= 0)) {
+        setReadinessError("Pull request number must be a positive whole number.");
+        return;
+      }
+      const result = await desktopClient.preflightAwsDeploy({
+        repositoryFullName: deployRepo,
+        environmentId,
+        sourceRef,
+        sourceKind,
+        ...(parsedPullRequestNumber !== undefined ? { pullRequestNumber: parsedPullRequestNumber } : {}),
+      });
+      if (!result.ok) { setReadinessError(result.error); return; }
+      setReadiness(result.data);
+    } finally {
+      setCheckingReadiness(false);
     }
   }
 
@@ -826,12 +875,38 @@ function DeploymentTargetPanel({ environmentId }: { environmentId: string }) {
         <p className="mb-2 text-[11px] text-zinc-500">
           Add .github/workflows/axiom-deploy-aws-ecs.yml to the target repo once (see the Git &amp; PRs section to commit it via a pull request), then trigger a deploy here:
         </p>
-        <div className="flex items-center gap-3">
-          <LabeledInput label="Repository" placeholder="owner/repo" value={deployRepo} onChange={setDeployRepo} />
-          <button type="button" onClick={() => void triggerDeploy()} disabled={deploying || !deployRepo.includes("/")} className="mt-5 inline-flex items-center gap-2 rounded-lg border border-emerald-500/30 bg-emerald-500/[0.08] px-3 py-2 text-xs text-emerald-200 hover:bg-emerald-500/[0.14] disabled:opacity-50 shrink-0">
+        <div className="grid grid-cols-2 items-end gap-3 xl:grid-cols-[1.4fr_1fr_0.65fr_0.65fr_auto_auto]">
+          <label className="block">
+            <span className="mb-1 block text-[11px] text-zinc-500">Repository</span>
+            <select value={deployRepo} onChange={(event) => { setDeployRepo(event.target.value); setReadiness(null); }} className="w-full rounded-lg border border-white/10 bg-black/25 px-3 py-2 text-xs text-zinc-200 outline-none focus:border-white/25">
+              {deployRepositories.length === 0 && <option value="">Register a GitHub repository first</option>}
+              {deployRepositories.map((repository) => <option key={repository.id} value={repository.displayName}>{repository.displayName}</option>)}
+            </select>
+          </label>
+          <LabeledInput label="Source branch or tag" placeholder="main or v1.2.3" value={sourceRef} onChange={(value) => { setSourceRef(value); setReadiness(null); }} />
+          <label className="block">
+            <span className="mb-1 block text-[11px] text-zinc-500">Source type</span>
+            <select value={sourceKind} onChange={(event) => { setSourceKind(event.target.value as "branch" | "tag"); setReadiness(null); }} className="w-full rounded-lg border border-white/10 bg-black/25 px-3 py-2 text-xs text-zinc-200 outline-none focus:border-white/25">
+              <option value="branch">Branch</option>
+              <option value="tag">Tag</option>
+            </select>
+          </label>
+          <LabeledInput label="PR number" placeholder="optional" value={pullRequestNumber} onChange={(value) => { setPullRequestNumber(value); setReadiness(null); }} />
+          <button type="button" onClick={() => void checkReadiness()} disabled={checkingReadiness || deploying || !deployRepo || !sourceRef.trim()} className="inline-flex items-center justify-center gap-2 rounded-lg border border-white/10 bg-white/[0.04] px-3 py-2 text-xs text-zinc-200 hover:bg-white/[0.08] disabled:opacity-50 shrink-0">
+            {checkingReadiness ? "Checking…" : "Check readiness"}
+          </button>
+          <button type="button" onClick={() => void triggerDeploy()} disabled={deploying || !deployRepo.includes("/") || !sourceRef.trim()} className="inline-flex items-center justify-center gap-2 rounded-lg border border-emerald-500/30 bg-emerald-500/[0.08] px-3 py-2 text-xs text-emerald-200 hover:bg-emerald-500/[0.14] disabled:opacity-50 shrink-0">
             {deploying ? "Deploying…" : "Deploy"}
           </button>
         </div>
+        {readinessError && <p role="alert" className="mt-2 text-[12px] text-rose-300">{readinessError}</p>}
+        {readiness && (
+          <div className="mt-2 rounded-lg border border-emerald-500/20 bg-emerald-500/[0.06] px-3 py-2 text-[12px] text-emerald-200">
+            Ready to deploy commit <span className="font-mono">{readiness.sourceCommitSha.slice(0, 12)}</span>
+            {readiness.policyId ? " · configured branch policy satisfied" : " · no branch policy configured"}
+            {readiness.pullRequestUrl && <> · <button type="button" onClick={() => void open(readiness.pullRequestUrl!)} className="underline underline-offset-2">verified pull request</button></>}
+          </div>
+        )}
         {deployOk && !execution && <p className="text-[12px] text-amber-300">Deploy dispatched, but live tracking could not be saved. Open GitHub Actions to verify the outcome.</p>}
         {deployError && <p role="alert" className="text-[12px] text-rose-300">{deployError}</p>}
         {execution && (
@@ -839,6 +914,13 @@ function DeploymentTargetPanel({ environmentId }: { environmentId: string }) {
             <div className="flex items-center justify-between gap-3">
               <div>
                 <p className="font-medium text-zinc-200">{execution.repositoryFullName}</p>
+                {execution.sourceRef && (
+                  <p className="mt-1 font-mono text-[10px] text-zinc-500">
+                    {execution.sourceKind ?? "ref"} {execution.sourceRef}
+                    {execution.sourceCommitSha ? ` · ${execution.sourceCommitSha.slice(0, 12)}` : ""}
+                    {execution.branchPolicyId ? " · policy enforced" : ""}
+                  </p>
+                )}
                 <p className="mt-1 text-zinc-500">
                   {execution.status === "completed"
                     ? execution.conclusion === "success" ? "Deployment stabilized" : "Deployment failed"
@@ -1137,15 +1219,34 @@ function RepositoriesPanel() {
 
 function BranchPoliciesPanel() {
   const [policies, setPolicies] = useState<Array<{ id: string; repositoryId: string; environmentId: string; branchPattern: string; requirePrLink: boolean; requireReleaseTag: boolean; requireCodeowners: boolean; requireChangeTicket: boolean }> | null>(null);
+  const [repositories, setRepositories] = useState<Array<{ id: string; displayName: string }>>([]);
+  const [environments, setEnvironments] = useState<Array<{ id: string; name: string; tier: string }>>([]);
   const [repositoryId, setRepositoryId] = useState("");
   const [environmentId, setEnvironmentId] = useState("");
   const [branchPattern, setBranchPattern] = useState("");
   const [requirePrLink, setRequirePrLink] = useState(true);
+  const [requireReleaseTag, setRequireReleaseTag] = useState(false);
+  const [requireCodeowners, setRequireCodeowners] = useState(false);
+  const [requireChangeTicket, setRequireChangeTicket] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const load = useCallback(() => {
-    void desktopClient.listBranchPolicies().then((result) => { if (result.ok) setPolicies(result.data.policies); });
+    void Promise.all([
+      desktopClient.listBranchPolicies(),
+      desktopClient.listRepositories(),
+      desktopClient.listEnvironments(),
+    ]).then(([policyResult, repositoryResult, environmentResult]) => {
+      if (policyResult.ok) setPolicies(policyResult.data.policies);
+      if (repositoryResult.ok) {
+        setRepositories(repositoryResult.data.repositories);
+        setRepositoryId((current) => current || repositoryResult.data.repositories[0]?.id || "");
+      }
+      if (environmentResult.ok) {
+        setEnvironments(environmentResult.data.environments);
+        setEnvironmentId((current) => current || environmentResult.data.environments[0]?.id || "");
+      }
+    });
   }, []);
 
   useEffect(() => { load(); }, [load]);
@@ -1153,7 +1254,15 @@ function BranchPoliciesPanel() {
   async function create() {
     setBusy(true); setError(null);
     try {
-      const result = await desktopClient.createBranchPolicy({ repositoryId, environmentId, branchPattern, requirePrLink });
+      const result = await desktopClient.createBranchPolicy({
+        repositoryId,
+        environmentId,
+        branchPattern,
+        requirePrLink,
+        requireReleaseTag,
+        requireCodeowners,
+        requireChangeTicket,
+      });
       if (!result.ok) { setError(result.error); return; }
       setBranchPattern("");
       load();
@@ -1163,21 +1272,42 @@ function BranchPoliciesPanel() {
   }
 
   return (
-    <Group label="Branch policies (config only — not yet enforced on deploy)">
+    <Group label="Branch policies (enforced before deploy)">
       {policies !== null && policies.length === 0 && <ActionRow title="No branch policies configured" detail="Define which branch patterns need a PR link, release tag, etc. before deploying to an environment." action={null} />}
       {(policies ?? []).map((p) => (
         <ActionRow key={p.id} title={p.branchPattern} detail={[p.requirePrLink && "PR link", p.requireReleaseTag && "release tag", p.requireCodeowners && "codeowners", p.requireChangeTicket && "change ticket"].filter(Boolean).join(", ") || "no requirements set"} action={null} />
       ))}
       <div className="px-4 py-3.5 space-y-3 border-t border-white/[0.04]">
         <div className="grid grid-cols-3 gap-3">
-          <LabeledInput label="Repository ID" placeholder="from the list above" value={repositoryId} onChange={setRepositoryId} />
-          <LabeledInput label="Environment ID" placeholder="from the Environments tab" value={environmentId} onChange={setEnvironmentId} />
+          <label className="block">
+            <span className="mb-1 block text-[11px] text-zinc-500">Repository</span>
+            <select value={repositoryId} onChange={(event) => setRepositoryId(event.target.value)} className="w-full rounded-lg border border-white/10 bg-black/25 px-3 py-2 text-xs text-zinc-200 outline-none focus:border-white/25">
+              {repositories.length === 0 && <option value="">Register a repository first</option>}
+              {repositories.map((repository) => <option key={repository.id} value={repository.id}>{repository.displayName}</option>)}
+            </select>
+          </label>
+          <label className="block">
+            <span className="mb-1 block text-[11px] text-zinc-500">Environment</span>
+            <select value={environmentId} onChange={(event) => setEnvironmentId(event.target.value)} className="w-full rounded-lg border border-white/10 bg-black/25 px-3 py-2 text-xs text-zinc-200 outline-none focus:border-white/25">
+              {environments.length === 0 && <option value="">Create an environment first</option>}
+              {environments.map((environment) => <option key={environment.id} value={environment.id}>{environment.name} · {environment.tier}</option>)}
+            </select>
+          </label>
           <LabeledInput label="Branch pattern" placeholder="release/*" value={branchPattern} onChange={setBranchPattern} />
         </div>
-        <label className="flex items-center gap-2 text-xs text-zinc-400">
-          <input type="checkbox" checked={requirePrLink} onChange={(event) => setRequirePrLink(event.target.checked)} />
-          Require a linked pull request
-        </label>
+        <div className="grid grid-cols-2 gap-2">
+          {[
+            { label: "Require a linked, merged pull request", checked: requirePrLink, set: setRequirePrLink },
+            { label: "Require a release tag", checked: requireReleaseTag, set: setRequireReleaseTag },
+            { label: "Require CODEOWNERS enforcement and approval", checked: requireCodeowners, set: setRequireCodeowners },
+            { label: "Require a CHG, INC, or REQ ticket in the PR", checked: requireChangeTicket, set: setRequireChangeTicket },
+          ].map((item) => (
+            <label key={item.label} className="flex items-center gap-2 text-xs text-zinc-400">
+              <input type="checkbox" checked={item.checked} onChange={(event) => item.set(event.target.checked)} />
+              {item.label}
+            </label>
+          ))}
+        </div>
         <div className="flex items-center gap-3">
           <button type="button" onClick={() => void create()} disabled={busy || !repositoryId || !environmentId || !branchPattern} className="inline-flex items-center gap-2 rounded-lg border border-white/10 bg-white/[0.04] px-3 py-2 text-xs text-zinc-200 hover:bg-white/[0.08] disabled:opacity-50">
             {busy ? "Saving…" : "Add policy"}
@@ -1372,7 +1502,7 @@ function IntegrationsSection() {
 
   const providerStatus = (provider: "slack" | "teams" | "linear") => collaboration?.find((item) => item.provider === provider)?.status ?? "not_connected";
   const providerAction = (provider: "github" | "slack" | "teams" | "linear", status: string, canValidate: boolean, validating: boolean, validate: () => Promise<void>) => {
-    if (canValidate) return <button type="button" disabled={validating} onClick={() => void validate()} className="rounded-lg bg-white px-3 py-2 text-xs font-semibold text-black hover:bg-zinc-100 disabled:opacity-50">{validating ? "Validating…" : "Validate"}</button>;
+    if (canValidate) return <button type="button" disabled={validating} onClick={() => void validate()} className="rounded-lg bg-white px-3 py-2 text-xs font-semibold text-black hover:bg-zinc-100 disabled:opacity-50">{validating ? "Checking access…" : status === "validation_overdue" ? "Revalidate now" : "Finish connection"}</button>;
     if (status === "active" || status === "validated_read_only") return <WebButton href="/account/integrations" label="Manage" />;
     return <button type="button" disabled={connectingProvider !== null} onClick={() => void connectProvider(provider)} className="rounded-lg bg-white px-3 py-2 text-xs font-semibold text-black hover:bg-zinc-100 disabled:opacity-50">{connectingProvider === provider ? "Opening…" : "Connect ↗"}</button>;
   };
@@ -1381,7 +1511,7 @@ function IntegrationsSection() {
     <SectionHeading title="Integration Center" detail="Connect the systems that already run your releases. Every connection is tenant-scoped, least-privilege, and shown as connected only after server-side validation." />
     <Notice title="No secrets in the desktop app" detail="Connections open in the secure browser. The desktop app never collects an identity-provider password or long-lived provider secret, and no connection can silently gain write access." />
     <div className="space-y-3">
-      <IntegrationRow name="GitHub" group="Source control" detail={githubDetail} state={githubState} action={providerAction("github", github?.status ?? "not_connected", github?.status === "installation_recorded" || github?.status === "validation_overdue", validatingGitHub, validateGitHub)} />
+      <IntegrationRow name="GitHub" group="Source control" detail={githubDetail} state={githubState} tone={github?.status === "validation_overdue" ? "attention" : undefined} action={providerAction("github", github?.status ?? "not_connected", github?.status === "installation_recorded" || github?.status === "validation_overdue", validatingGitHub, validateGitHub)} />
       <IntegrationRow name="Slack" group="Collaboration" detail="Release notifications with channels:read and chat:write. Consent is not active access until Axiom validates the token server-side." state={formatConnectorState(providerStatus("slack"))} action={providerAction("slack", providerStatus("slack"), slackCanValidate, validatingSlack, validateSlack)} />
       <IntegrationRow name="Microsoft Teams" group="Collaboration" detail="Verifies Microsoft workspace identity with PKCE. Message permissions remain separately gated." state={formatConnectorState(providerStatus("teams"))} action={providerAction("teams", providerStatus("teams"), teamsCanValidate, validatingTeams, validateTeams)} />
       <IntegrationRow name="Linear" group="Work management" detail="Governed issue delegation with read and issues:create scopes, short-lived tokens, and automatic refresh rotation." state={formatConnectorState(providerStatus("linear"))} action={providerAction("linear", providerStatus("linear"), linearCanValidate, validatingLinear, validateLinear)} />
@@ -1436,8 +1566,11 @@ function LockedRow({ title, detail }: { title: string; detail: string }) { retur
 function Notice({ title, detail }: { title: string; detail: string }) { return <div className="mb-6 rounded-lg border border-white/15 bg-white/[0.04] p-4"><p className="text-sm font-medium text-zinc-100">{title}</p><p className="mt-2 text-xs leading-5 text-zinc-400">{detail}</p></div>; }
 function SummaryCard({ label, value, detail }: { label: string; value: string; detail: string }) { return <div className="rounded-lg border border-white/[0.05] bg-white/[0.015] p-4"><p className="text-xs text-zinc-500">{label}</p><p className="mt-2 text-2xl font-semibold capitalize">{value}</p><p className="mt-2 text-sm text-zinc-500">{detail}</p></div>; }
 function formatConnectorState(state: string) { return state.replaceAll("_", " ").replace(/\b\w/g, (letter) => letter.toUpperCase()); }
-function IntegrationRow({ name, group, detail, state, action }: { name: string; group: string; detail: string; state: string; action?: ReactNode }) {
+function IntegrationRow({ name, group, detail, state, action, tone }: { name: string; group: string; detail: string; state: string; action?: ReactNode; tone?: "attention" }) {
   const connected = /verified|connected/i.test(state) && !/not connected/i.test(state);
-  return <div className="flex items-center gap-4 rounded-lg border border-white/[0.05] bg-white/[0.015] p-4"><span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-white/[0.05] bg-black/20 text-zinc-300"><Link2 className="h-4 w-4" /></span><div className="min-w-0 flex-1"><p className="text-[10px] uppercase tracking-[0.14em] text-zinc-600">{group}</p><p className="mt-0.5 text-sm text-zinc-200">{name}</p><p className="mt-1 text-xs leading-5 text-zinc-500">{detail}</p></div><div className="flex shrink-0 items-center gap-2"><span className={`rounded-full border px-2 py-1 text-[10px] ${connected ? "border-emerald-500/20 bg-emerald-500/10 text-emerald-200" : "border-white/20 bg-white/10 text-zinc-200"}`}>{state}</span>{action}</div></div>;
+  const stateClass = tone === "attention"
+    ? "border-amber-500/25 bg-amber-500/10 text-amber-200"
+    : connected ? "border-emerald-500/20 bg-emerald-500/10 text-emerald-200" : "border-white/20 bg-white/10 text-zinc-200";
+  return <div className="flex items-center gap-4 rounded-lg border border-white/[0.05] bg-white/[0.015] p-4"><span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-white/[0.05] bg-black/20 text-zinc-300"><Link2 className="h-4 w-4" /></span><div className="min-w-0 flex-1"><p className="text-[10px] uppercase tracking-[0.14em] text-zinc-600">{group}</p><p className="mt-0.5 text-sm text-zinc-200">{name}</p><p className="mt-1 text-xs leading-5 text-zinc-500">{detail}</p></div><div className="flex shrink-0 items-center gap-2"><span className={`rounded-full border px-2 py-1 text-[10px] ${stateClass}`}>{state}</span>{action}</div></div>;
 }
 function WebButton({ href, label, standalone = false }: { href: string; label: string; standalone?: boolean }) { return <button type="button" onClick={() => void open(`${WEB_BASE}${href}`)} className={`${standalone ? "mt-1" : ""} inline-flex items-center gap-1.5 rounded-lg border border-white/10 px-3 py-2 text-xs text-zinc-300 hover:bg-white/[0.06]`}>{label}<ChevronRight className="h-3.5 w-3.5" /></button>; }

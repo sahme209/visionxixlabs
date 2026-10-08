@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { createBranch, commitFile, createPullRequest, dispatchWorkflow, getFile, getWorkflowRun, isSafeRepositoryPath } from "../githubWriteClient";
+import { createBranch, commitFile, createPullRequest, dispatchWorkflow, getFile, getPullRequestGovernanceEvidence, getWorkflowRun, isSafeRepositoryPath, resolveGitReference } from "../githubWriteClient";
 
 const fetchMock = vi.fn();
 vi.stubGlobal("fetch", fetchMock);
@@ -153,6 +153,37 @@ describe("createPullRequest", () => {
     });
     expect(result.ok).toBe(false);
     if (!result.ok) expect(result.error).toContain("pull_request_create_failed");
+  });
+});
+
+describe("deployment governance evidence", () => {
+  beforeEach(() => vi.clearAllMocks());
+
+  it("dereferences an annotated release tag to its commit", async () => {
+    fetchMock
+      .mockResolvedValueOnce(jsonResponse(200, { object: { type: "tag", sha: "tag-object" } }))
+      .mockResolvedValueOnce(jsonResponse(200, { object: { type: "commit", sha: "release-commit" } }));
+    const result = await resolveGitReference({ owner: "acme", repo: "widgets", ref: "v1.2.3", kind: "tag", installationToken: "tok" });
+    expect(result).toEqual({ ok: true, data: { kind: "tag", ref: "v1.2.3", commitSha: "release-commit" } });
+    expect(fetchMock).toHaveBeenNthCalledWith(2, expect.stringContaining("/git/tags/tag-object"), expect.any(Object));
+  });
+
+  it("collects merged PR, CODEOWNERS enforcement, approval, and ticket evidence", async () => {
+    fetchMock
+      .mockResolvedValueOnce(jsonResponse(200, {
+        number: 42, state: "closed", merged_at: "2026-10-07T12:00:00Z",
+        head: { ref: "release/2026-10", sha: "sha-1" }, base: { ref: "main" }, merge_commit_sha: "merge-sha",
+        body: "Release approved under CHG12345", labels: [{ name: "production" }], html_url: "https://github.test/pull/42",
+      }))
+      .mockResolvedValueOnce(jsonResponse(200, [{ state: "APPROVED", user: { login: "reviewer" } }]))
+      .mockResolvedValueOnce(jsonResponse(200, { require_code_owner_reviews: true }));
+    const result = await getPullRequestGovernanceEvidence({
+      owner: "acme", repo: "widgets", pullRequestNumber: 42, requireCodeowners: true, installationToken: "tok",
+    });
+    expect(result).toEqual({ ok: true, data: expect.objectContaining({
+      mergedAt: "2026-10-07T12:00:00Z", approvedReviewCount: 1,
+      codeOwnerReviewsRequired: true, linkedChangeTickets: ["CHG12345"],
+    }) });
   });
 });
 

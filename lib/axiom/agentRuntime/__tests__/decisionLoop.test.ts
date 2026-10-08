@@ -49,7 +49,10 @@ describe("runDecisionLoop", () => {
   });
 
   it("loads installed skill guidance below immutable Agent guardrails", async () => {
-    const extract = vi.fn(async (_text: string) => ({ action: "respond", message: "Ready." }));
+    const extract = vi.fn(async (text: string) => {
+      expect(text).toBeTruthy();
+      return { action: "respond", message: "Ready." };
+    });
     mocks.resolveGovernedAiCall.mockResolvedValue(governed(extract));
     await runDecisionLoop({
       organizationId: "o", correlationId: "c", transcript: [{ role: "user", content: "check readiness" }],
@@ -139,5 +142,38 @@ describe("runDecisionLoop", () => {
       executeReadOnlyTool: noopReadOnly, isProdEnvironmentTarget: noopProdCheck,
     });
     expect(result).toEqual({ kind: "error", error: "decision_malformed" });
+  });
+
+  it("repairs one malformed provider response before giving up", async () => {
+    const extract = vi.fn()
+      .mockResolvedValueOnce({ not: "a decision" })
+      .mockResolvedValueOnce({ action: "respond", message: "What should the file say?" });
+    mocks.resolveGovernedAiCall.mockResolvedValue(governed(extract));
+    const result = await runDecisionLoop({
+      organizationId: "o", correlationId: "c", transcript: [{ role: "user", content: "edit it" }],
+      executeReadOnlyTool: noopReadOnly, isProdEnvironmentTarget: noopProdCheck,
+    });
+    expect(result).toEqual({ kind: "final", message: "What should the file say?" });
+    expect(extract).toHaveBeenCalledTimes(2);
+    expect(extract.mock.calls[1]?.[2]).toBe("c:0:repair");
+  });
+
+  it("normalizes common structured-tool variants without weakening the registry", async () => {
+    mocks.resolveGovernedAiCall.mockResolvedValue(governed(async () => ({
+      action: "tool_call",
+      message: "I prepared the exact file update for approval.",
+      tool: {
+        name: "commit_github_file",
+        arguments: JSON.stringify({ repositoryFullName: "acme/widgets", branch: "main", path: "hello", content: "hi\nhow are you", message: "Update greeting" }),
+      },
+    })));
+    const result = await runDecisionLoop({
+      organizationId: "o", correlationId: "c", transcript: [{ role: "user", content: "add how are you" }],
+      executeReadOnlyTool: noopReadOnly, isProdEnvironmentTarget: noopProdCheck,
+    });
+    expect(result.kind).toBe("proposal");
+    if (result.kind !== "proposal") throw new Error("expected proposal");
+    expect(result.toolName).toBe("commit_github_file");
+    expect(result.args.content).toBe("hi\nhow are you");
   });
 });

@@ -18,6 +18,7 @@ import { buildDeploymentTargetUpsertResponse, type DeploymentTargetRepo } from "
 import { buildIdentityProviderCreateResponse, type IdentityProviderRepo } from "@/lib/identity/identityProviderResponder";
 import { githubFileReviewFromArgs } from "@/lib/axiom/agentRuntime/proposalReview";
 import { serializeDeploymentExecution, type DeploymentExecutionRepo } from "@/lib/releaseops/deploymentExecutionResponder";
+import { evaluateDeploymentPolicy, type DeploymentPolicyRepo } from "@/lib/releaseops/deploymentPolicyGuard";
 
 export interface ActionExecutionRepo {
   deploymentExecution?: DeploymentExecutionRepo["deploymentExecution"];
@@ -27,6 +28,8 @@ export interface ActionExecutionRepo {
   deploymentTarget: {
     findUnique(args: { where: { environmentId: string } }): Promise<{ organizationId: string; roleArn: string; region: string; ecsCluster: string; ecsService: string } | null>;
   };
+  repository: DeploymentPolicyRepo["repository"];
+  branchEnvironmentPolicy: DeploymentPolicyRepo["branchEnvironmentPolicy"];
 }
 
 export type ActionExecutionResult = { ok: true; result: unknown } | { ok: false; error: string };
@@ -86,15 +89,34 @@ export async function executeApprovedAction(
   if (toolName === "trigger_aws_deploy") {
     if (!parsed) return { ok: false, error: "invalid_repository_full_name" };
     const environmentId = typeof args.environmentId === "string" ? args.environmentId : "";
-    if (!environmentId) return { ok: false, error: "invalid_payload" };
+    const sourceRef = typeof args.sourceRef === "string" ? args.sourceRef.trim() : "main";
+    const sourceKind = args.sourceKind === undefined || args.sourceKind === "branch"
+      ? "branch"
+      : args.sourceKind === "tag" ? "tag" : null;
+    const pullRequestNumber = typeof args.pullRequestNumber === "number" ? args.pullRequestNumber : undefined;
+    if (!environmentId || !sourceKind
+      || (args.pullRequestNumber !== undefined && (!Number.isInteger(pullRequestNumber) || (pullRequestNumber ?? 0) <= 0))) {
+      return { ok: false, error: "invalid_payload" };
+    }
     const environment = await repo.environment.findUnique({ where: { id: environmentId } });
     if (!environment || environment.organizationId !== organizationId) return { ok: false, error: "environment_not_found" };
     const target = await repo.deploymentTarget.findUnique({ where: { environmentId } });
     if (!target || target.organizationId !== organizationId) return { ok: false, error: "deployment_target_not_configured" };
     const token = await resolveTenantScopedToken(organizationId, parsed);
     if (!token.ok) return { ok: false, error: token.error };
+    const policy = await evaluateDeploymentPolicy(repo, {
+      organizationId,
+      environmentId,
+      owner: parsed.owner,
+      repo: parsed.repo,
+      sourceRef,
+      sourceKind,
+      ...(pullRequestNumber !== undefined ? { pullRequestNumber } : {}),
+      installationToken: token.token,
+    });
+    if (!policy.ok) return { ok: false, error: policy.error };
     const result = await dispatchWorkflow({
-      owner: parsed.owner, repo: parsed.repo, workflowFile: AWS_ECS_DEPLOY_WORKFLOW_FILENAME, ref: "main",
+      owner: parsed.owner, repo: parsed.repo, workflowFile: AWS_ECS_DEPLOY_WORKFLOW_FILENAME, ref: sourceRef,
       inputs: { role_arn: target.roleArn, region: target.region, cluster: target.ecsCluster, service: target.ecsService },
       installationToken: token.token,
     });
@@ -107,6 +129,11 @@ export async function executeApprovedAction(
           organizationId,
           environmentId,
           repositoryFullName,
+          sourceRef,
+          sourceKind,
+          sourceCommitSha: policy.sourceCommitSha,
+          branchPolicyId: policy.policyId,
+          pullRequestUrl: policy.pullRequestUrl,
           workflowRunId: result.data.workflowRunId,
           workflowUrl: result.data.htmlUrl,
           source: "agent",
@@ -122,6 +149,9 @@ export async function executeApprovedAction(
         dispatched: true,
         execution,
         trackingAvailable: Boolean(execution && result.data.workflowRunId),
+        policyId: policy.policyId,
+        sourceRef,
+        sourceKind,
       },
     };
   }
