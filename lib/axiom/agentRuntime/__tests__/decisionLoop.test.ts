@@ -126,6 +126,45 @@ describe("runDecisionLoop", () => {
     expect(result).toEqual({ kind: "final", message: "You have dev, test, and prod configured." });
   });
 
+  it("grounds the first model decision with an audited read-only result", async () => {
+    const extract = vi.fn(async (_text: string, _schemaHint: string, _correlationId: string) => ({
+      action: "respond", message: "The selected file exports the app configuration.",
+    }));
+    mocks.resolveGovernedAiCall.mockResolvedValue(governed(extract));
+    const executeReadOnlyTool = vi.fn(async () => ({ ok: true as const, result: { content: "export const config = {};" } }));
+    const result = await runDecisionLoop({
+      organizationId: "o", correlationId: "c", transcript: [{ role: "user", content: "explain this file" }],
+      initialToolCall: {
+        toolName: "read_github_file",
+        args: { repositoryFullName: "acme/widgets", branch: "main", path: "src/config.ts" },
+        message: "Inspecting the selected file before answering.",
+      },
+      executeReadOnlyTool, isProdEnvironmentTarget: noopProdCheck,
+    });
+    expect(executeReadOnlyTool).toHaveBeenCalledWith("read_github_file", {
+      repositoryFullName: "acme/widgets", branch: "main", path: "src/config.ts",
+    });
+    expect(extract.mock.calls[0]?.[0]).toContain("read_github_file result");
+    expect(extract.mock.calls[0]?.[0]).toContain("export const config");
+    expect(result.kind).toBe("final");
+  });
+
+  it("rejects a write tool supplied as automatic grounding", async () => {
+    mocks.resolveGovernedAiCall.mockResolvedValue(governed(async () => ({ action: "respond", message: "Done." })));
+    const executeReadOnlyTool = vi.fn();
+    const result = await runDecisionLoop({
+      organizationId: "o", correlationId: "c", transcript: [{ role: "user", content: "change it" }],
+      initialToolCall: {
+        toolName: "commit_github_file",
+        args: { repositoryFullName: "acme/widgets", branch: "main", path: "README.md", content: "changed", message: "Change" },
+        message: "Changing the file.",
+      },
+      executeReadOnlyTool, isProdEnvironmentTarget: noopProdCheck,
+    });
+    expect(result).toEqual(expect.objectContaining({ kind: "error", error: "decision_malformed" }));
+    expect(executeReadOnlyTool).not.toHaveBeenCalled();
+  });
+
   it("errors out after too many iterations rather than looping forever", async () => {
     mocks.resolveGovernedAiCall.mockResolvedValue(governed(async () => ({
       action: "call_tool", message: "Checking again.", toolName: "list_environments", args: {},

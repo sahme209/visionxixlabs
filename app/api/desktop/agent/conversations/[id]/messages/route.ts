@@ -22,6 +22,7 @@ import { prepareProposalArgsForReview } from "@/lib/axiom/agentRuntime/proposalR
 import { parseSkillInvocation, resolveInstalledSkillContext, type AgentSkillRepo } from "@/lib/axiom/agentRuntime/skillCatalog";
 import { parseRepositoryFullName } from "@/lib/connectors/github/resolveTenantScopedToken";
 import { isSafeRepositoryPath } from "@/lib/connectors/github/githubWriteClient";
+import type { InitialReadOnlyToolCall } from "@/lib/axiom/agentRuntime/decisionLoop";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -36,6 +37,31 @@ const AI_ERROR_MESSAGES: Record<string, string> = {
   decision_malformed: "I couldn't form a safe action from the model response after retrying. No change was made. Try once more or choose a different enabled model.",
   max_iterations_exceeded: "This request needed too many steps to resolve — try breaking it into a smaller request.",
 };
+
+function initialRepositoryGrounding(input: {
+  message: string;
+  mode: "chat" | "code";
+  repositoryFullName: string;
+  branch: string;
+  filePath: string;
+}): InitialReadOnlyToolCall | undefined {
+  if (!input.repositoryFullName || !input.branch) return undefined;
+  if (input.mode === "code" && input.filePath) {
+    return {
+      toolName: "read_github_file",
+      args: { repositoryFullName: input.repositoryFullName, branch: input.branch, path: input.filePath },
+      message: `Inspecting ${input.filePath} on ${input.repositoryFullName}@${input.branch} before answering.`,
+    };
+  }
+
+  const broadRepositoryIntent = /\b(review|analy[sz]e|audit|inspect|improve|issues?|problems?|changes?|help)\b|what should i|what can i/i.test(input.message);
+  if (!broadRepositoryIntent) return undefined;
+  return {
+    toolName: "list_github_files",
+    args: { repositoryFullName: input.repositoryFullName, branch: input.branch },
+    message: `Inspecting the file structure of ${input.repositoryFullName}@${input.branch} before answering.`,
+  };
+}
 
 export async function POST(request: NextRequest, { params }: { params: Promise<{ id: string }> }): Promise<Response> {
   const session = await resolveRequestDesktopSession(request, {
@@ -151,6 +177,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     currentRequestContext,
     skillContext,
     preferredProvider,
+    initialToolCall: initialRepositoryGrounding({ message, mode, repositoryFullName, branch, filePath }),
     executeReadOnlyTool: async (toolName, args) => {
       const result = await executeReadOnlyTool(prisma as unknown as ToolExecutionRepo, organizationId, toolName, args);
       if (result.ok) await rememberToolContext(memoryRepo, organizationId, args).catch(() => undefined);

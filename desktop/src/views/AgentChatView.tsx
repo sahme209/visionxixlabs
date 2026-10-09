@@ -493,9 +493,13 @@ export function AgentChatView() {
             <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-6 text-center">
               <p className="text-sm text-zinc-300">Tell me what you want to happen.</p>
               <p className="mt-2 text-xs text-zinc-500 leading-5">
-                &ldquo;Open a PR on acme/widgets that fixes the README typo&rdquo; or &ldquo;deploy acme/widgets to prod&rdquo; — I&apos;ll check what&apos;s safe to do automatically,
-                and ask you to approve anything that changes GitHub or AWS before it happens.
+                Use the selected repository and environment above. I&apos;ll inspect live read-only evidence first and ask for approval before anything changes GitHub or cloud infrastructure.
               </p>
+              <div className="mt-5 flex flex-wrap justify-center gap-2" aria-label="Suggested Agent requests">
+                <button type="button" disabled={!repositoryFullName || sending} onClick={() => { setComposerMode("chat"); setInput("Review this repository and tell me the highest-impact improvements."); }} className="rounded-full border border-white/10 bg-white/[0.035] px-3 py-2 text-xs text-zinc-300 hover:bg-white/[0.07] disabled:cursor-not-allowed disabled:opacity-35">Review repository</button>
+                <button type="button" disabled={!environmentId || sending} onClick={() => { setComposerMode("chat"); setInput("Check whether the selected repository is ready to deploy to the selected environment."); }} className="rounded-full border border-white/10 bg-white/[0.035] px-3 py-2 text-xs text-zinc-300 hover:bg-white/[0.07] disabled:cursor-not-allowed disabled:opacity-35">Check deploy readiness</button>
+                <button type="button" disabled={sending} onClick={() => { setComposerMode("chat"); setInput("Show me which systems are connected and what needs attention."); }} className="rounded-full border border-white/10 bg-white/[0.035] px-3 py-2 text-xs text-zinc-300 hover:bg-white/[0.07] disabled:cursor-not-allowed disabled:opacity-35">Check connections</button>
+              </div>
             </div>
           )}
           {turns.map((turn) => <ChatBubble key={turn.id} turn={turn} />)}
