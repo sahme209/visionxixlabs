@@ -21,6 +21,21 @@ interface GitHubRepository {
   visibility: "private" | "public";
 }
 
+interface RepositoryCheck {
+  id: string;
+  label: string;
+  command: string;
+  description: string;
+}
+
+interface RepositoryCheckResult {
+  checkId: string;
+  success: boolean;
+  exitCode: number | null;
+  output: string;
+  durationMs: number;
+}
+
 interface Confirmation {
   title: string;
   description: string;
@@ -67,6 +82,9 @@ export function RepositoryWorkspaceView() {
   const [prBase, setPrBase] = useState("main");
   const [prUrl, setPrUrl] = useState<string | null>(null);
   const [confirmation, setConfirmation] = useState<Confirmation | null>(null);
+  const [checks, setChecks] = useState<RepositoryCheck[]>([]);
+  const [verificationResult, setVerificationResult] = useState<RepositoryCheckResult | null>(null);
+  const [showVerification, setShowVerification] = useState(false);
 
   const refreshRepository = useCallback(async (repositoryPath: string) => {
     const [nextStatus, nextFiles] = await Promise.all([
@@ -112,7 +130,11 @@ export function RepositoryWorkspaceView() {
     setContent("");
     setSavedContent("");
     setPrUrl(null);
-    void refreshRepository(selectedRepository).catch((cause) => setError(String(cause)));
+    setVerificationResult(null);
+    void Promise.all([
+      refreshRepository(selectedRepository),
+      invoke<RepositoryCheck[]>("detect_repository_checks", { repositoryPath: selectedRepository }).then(setChecks),
+    ]).catch((cause) => setError(String(cause)));
   }, [refreshRepository, selectedRepository]);
 
   const visibleFiles = useMemo(() => {
@@ -293,6 +315,24 @@ export function RepositoryWorkspaceView() {
     await action?.onConfirm();
   }
 
+  function verify(check: RepositoryCheck) {
+    if (!selectedRepository) return;
+    setConfirmation({
+      title: `Run ${check.label}?`,
+      description: `${check.command} will run inside this repository with credentials removed, a 5 minute timeout, and a 1 MB output limit. Repository scripts are code; run only repositories you trust.`,
+      confirmLabel: "Run check",
+      onConfirm: async () => {
+        await run(`verify:${check.id}`, async () => {
+          const result = await invoke<RepositoryCheckResult>("run_repository_check", { repositoryPath: selectedRepository, checkId: check.id });
+          setVerificationResult(result);
+          setShowVerification(true);
+          await refreshRepository(selectedRepository);
+          setNotice(result.success ? `${check.label} passed.` : `${check.label} failed with exit code ${result.exitCode ?? "unknown"}.`);
+        });
+      },
+    });
+  }
+
   function editorKeyDown(event: KeyboardEvent<HTMLTextAreaElement>) {
     if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "s") { event.preventDefault(); void saveFile(); return; }
     if (event.key === "Tab") {
@@ -331,6 +371,15 @@ export function RepositoryWorkspaceView() {
     {repositoryCatalogError && <div role="status" className="border-b border-white/[0.08] bg-white/[0.03] px-4 py-2 text-xs text-zinc-300">Connected repositories are temporarily unavailable. Validate GitHub under Settings → Integrations, then retry. Manual entry remains available for an authorized repository.</div>}
     {repositoryCatalogTruncated && !repositoryCatalogError && <div className="border-b border-white/[0.06] bg-white/[0.02] px-4 py-2 text-xs text-zinc-500">Showing the first 100 repositories authorized for the GitHub App. You can still enter another authorized owner/repository directly.</div>}
     {(error || notice) && <div role={error ? "alert" : "status"} className={`border-b px-4 py-2 text-xs ${error ? "border-rose-500/20 bg-rose-500/5 text-rose-300" : "border-emerald-500/20 bg-emerald-500/5 text-emerald-300"}`}>{error ?? notice}</div>}
+    {selectedRepository && <div className="flex flex-wrap items-center gap-2 border-b border-white/[0.06] bg-white/[0.015] px-4 py-2">
+      <span className="mr-1 text-[10px] font-mono uppercase tracking-wider text-zinc-600">Verify changes</span>
+      {checks.length === 0 ? <span className="text-xs text-zinc-600">No supported checks detected.</span> : checks.map((check) => <button key={check.id} type="button" disabled={Boolean(busy)} onClick={() => verify(check)} title={`${check.description} Runs: ${check.command}`} className="rounded-md border border-white/[0.08] bg-white/[0.03] px-2.5 py-1.5 text-xs text-zinc-300 hover:bg-white/[0.07] disabled:opacity-40">{busy === `verify:${check.id}` ? `Running ${check.label}…` : check.label}</button>)}
+      {verificationResult && <button type="button" onClick={() => setShowVerification((current) => !current)} className={`ml-auto rounded-md px-2.5 py-1.5 text-xs ${verificationResult.success ? "bg-emerald-500/10 text-emerald-300" : "bg-rose-500/10 text-rose-300"}`}>{verificationResult.success ? "Last check passed" : "Last check failed"} · {showVerification ? "hide output" : "show output"}</button>}
+    </div>}
+    {showVerification && verificationResult && <div className="max-h-56 overflow-auto border-b border-white/[0.07] bg-black/30 p-3">
+      <div className="mb-2 flex items-center justify-between text-[10px] text-zinc-500"><span>{verificationResult.checkId}</span><span>{(verificationResult.durationMs / 1000).toFixed(1)}s · exit {verificationResult.exitCode ?? "none"}</span></div>
+      <pre tabIndex={0} className="whitespace-pre-wrap break-words font-mono text-[11px] leading-5 text-zinc-300">{verificationResult.output || "The check completed without output."}</pre>
+    </div>}
     <div className="flex min-h-0 flex-1">
       <aside className="flex w-64 shrink-0 flex-col border-r border-white/[0.07] bg-[#111315]">
         <div className="border-b border-white/[0.06] px-3 py-2 text-[10px] font-mono uppercase tracking-wider text-zinc-500">Local repositories</div>
