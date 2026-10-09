@@ -22,7 +22,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     requiredScope: "pipeline:read",
     route: "POST /api/desktop/agent/actions/[id]/approve",
     allowApiKey: false,
-    requireWorkspaceAdmin: true,
+    requiredCapability: "agent:approve",
   });
   if (!session) {
     return NextResponse.json({ ok: false, error: "desktop_session_required" }, { status: 401 });

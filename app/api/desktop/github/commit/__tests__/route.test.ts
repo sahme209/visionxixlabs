@@ -5,6 +5,7 @@ const mocks = vi.hoisted(() => ({
   resolveRequestDesktopSession: vi.fn(),
   resolveTenantScopedToken: vi.fn(),
   commitFile: vi.fn(),
+  getRepositoryDefaultBranch: vi.fn(),
   recordAudit: vi.fn(async (_input: import("@/lib/audit/secureAudit").RecordInput) => {}),
 }));
 
@@ -17,7 +18,7 @@ vi.mock("@/lib/connectors/github/resolveTenantScopedToken", async () => {
   );
   return { ...actual, resolveTenantScopedToken: mocks.resolveTenantScopedToken };
 });
-vi.mock("@/lib/connectors/github/githubWriteClient", () => ({ commitFile: mocks.commitFile }));
+vi.mock("@/lib/connectors/github/githubWriteClient", () => ({ commitFile: mocks.commitFile, getRepositoryDefaultBranch: mocks.getRepositoryDefaultBranch }));
 vi.mock("@/lib/audit/secureAudit", () => ({ record: mocks.recordAudit }));
 
 function request(body: object) {
@@ -35,6 +36,7 @@ describe("POST /api/desktop/github/commit", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mocks.resolveRequestDesktopSession.mockResolvedValue(session);
+    mocks.getRepositoryDefaultBranch.mockResolvedValue({ ok: true, data: "main" });
   });
 
   it("requires a desktop session", async () => {
@@ -66,5 +68,14 @@ describe("POST /api/desktop/github/commit", () => {
     const res = await POST(request(payload));
     expect(res.status).toBe(502);
     expect(mocks.recordAudit).not.toHaveBeenCalled();
+  });
+
+  it("rejects a direct commit to the repository default branch", async () => {
+    mocks.resolveTenantScopedToken.mockResolvedValue({ ok: true, token: "installation-token" });
+    const { POST } = await import("../route");
+    const res = await POST(request({ ...payload, branch: "main" }));
+    expect(res.status).toBe(409);
+    await expect(res.json()).resolves.toMatchObject({ error: "github_pull_request_cycle_required" });
+    expect(mocks.commitFile).not.toHaveBeenCalled();
   });
 });

@@ -47,6 +47,8 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       organizationId: principal.organizationId,
       email: user?.email ?? undefined,
       displayName: user?.name ?? user?.email ?? undefined,
+      role: principal.role ?? undefined,
+      capabilities: principal.capabilities,
     },
     access,
   }));

@@ -38,7 +38,7 @@ export async function POST(request: NextRequest): Promise<Response> {
     requiredScope: "pipeline:read",
     route: "POST /api/desktop/branch-policies",
     allowApiKey: false,
-    requireWorkspaceAdmin: true,
+    requiredCapability: "policy:manage",
   });
   if (!session) {
     return NextResponse.json({ ok: false, error: "desktop_session_required" }, { status: 401 });
@@ -54,6 +54,21 @@ export async function POST(request: NextRequest): Promise<Response> {
   const branchPattern = typeof body?.branchPattern === "string" ? body.branchPattern : null;
   if (!repositoryId || !environmentId || !branchPattern) {
     return NextResponse.json({ ok: false, error: "invalid_payload" }, { status: 400 });
+  }
+  const environment = await prisma.environment.findUnique({
+    where: { id: environmentId },
+    select: { tier: true, organizationId: true },
+  });
+  if (!environment || environment.organizationId !== String(session.organizationId)) {
+    return NextResponse.json({ ok: false, error: "environment_not_found" }, { status: 404 });
+  }
+  if (environment.tier === "prod" && (
+    body?.requirePrLink !== true
+    || body?.requireTestsPassing !== true
+    || typeof body?.requirePromotionFromEnvironmentId !== "string"
+    || !body.requirePromotionFromEnvironmentId
+  )) {
+    return NextResponse.json({ ok: false, error: "production_policy_controls_required" }, { status: 409 });
   }
 
   const r = await buildBranchEnvironmentPolicyCreateResponse(prisma as unknown as BranchEnvironmentPolicyRepo, {

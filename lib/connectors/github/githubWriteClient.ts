@@ -29,6 +29,21 @@ export interface GitHubRepositoryFileSummary {
   size: number;
 }
 
+export async function getRepositoryDefaultBranch(input: {
+  owner: string;
+  repo: string;
+  installationToken: string;
+}): Promise<GithubWriteResult<string>> {
+  const result = await gh<{ default_branch?: unknown }>(
+    `/repos/${encodeURIComponent(input.owner)}/${encodeURIComponent(input.repo)}`,
+    input.installationToken,
+  );
+  if (!result.ok) return result;
+  return typeof result.data.default_branch === "string" && result.data.default_branch.length > 0
+    ? { ok: true, data: result.data.default_branch }
+    : { ok: false, error: "github_default_branch_unavailable" };
+}
+
 export function isSafeRepositoryPath(path: string): boolean {
   if (!path || path.length > 1024 || path.startsWith("/") || path.includes("\0")) return false;
   const segments = path.split("/");

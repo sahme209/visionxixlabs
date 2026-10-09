@@ -59,7 +59,7 @@ describe("POST /api/desktop/branch-policies", () => {
     vi.clearAllMocks();
     mocks.resolveRequestDesktopSession.mockResolvedValue(session);
     mocks.findUniqueRepository.mockResolvedValue({ id: "repo_1", organizationId: "org-1" });
-    mocks.findUniqueEnvironment.mockResolvedValue({ id: "env_1", organizationId: "org-1" });
+    mocks.findUniqueEnvironment.mockResolvedValue({ id: "env_1", organizationId: "org-1", tier: "dev" });
   });
 
   it("requires a desktop session", async () => {
@@ -84,5 +84,18 @@ describe("POST /api/desktop/branch-policies", () => {
     expect(body.data.requirePrLink).toBe(true);
     const auditCall = mocks.recordAudit.mock.calls[0][1];
     expect(auditCall.kind).toBe("branch_validation.policy_created");
+  });
+
+  it("requires the complete governed cycle for production policies", async () => {
+    mocks.findUniqueEnvironment.mockResolvedValue({ id: "env_prod", organizationId: "org-1", tier: "prod" });
+    const { POST } = await import("../route");
+    const res = await POST(postRequest({
+      repositoryId: "repo_1",
+      environmentId: "env_prod",
+      branchPattern: "main",
+      requirePrLink: true,
+    }));
+    expect(res.status).toBe(409);
+    await expect(res.json()).resolves.toMatchObject({ error: "production_policy_controls_required" });
   });
 });

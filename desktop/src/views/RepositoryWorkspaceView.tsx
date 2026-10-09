@@ -120,6 +120,10 @@ export function RepositoryWorkspaceView() {
     const relevantFiles = showAllFiles ? files : files.filter((file) => !isWorkspaceNoise(file));
     return query ? relevantFiles.filter((file) => file.toLowerCase().includes(query)) : relevantFiles;
   }, [files, filter, showAllFiles]);
+  const connectedRepository = status?.repositoryFullName
+    ? remoteRepositories.find((repository) => repository.fullName.toLowerCase() === status.repositoryFullName?.toLowerCase())
+    : undefined;
+  const onDefaultBranch = Boolean(status?.branch && connectedRepository?.defaultBranch === status.branch);
 
   useEffect(() => {
     if (!status?.repositoryFullName) return;
@@ -208,7 +212,8 @@ export function RepositoryWorkspaceView() {
     await run(direction, async () => {
       const repositoryFullName = status.repositoryFullName;
       if (!repositoryFullName) return;
-      const credential = await desktopClient.mintGithubCloneToken({ repositoryFullName, purpose: direction });
+      if (direction === "push" && onDefaultBranch) throw new Error("Create a branch and open a pull request; direct pushes to the default branch are not allowed.");
+      const credential = await desktopClient.mintGithubCloneToken({ repositoryFullName, purpose: direction, ...(direction === "push" ? { branch: status.branch } : {}) });
       if (!credential.ok) throw new Error(credential.error);
       await invoke(`${direction}_repository`, { repositoryPath: selectedRepository, authenticatedUrl: credential.data.cloneUrl });
       await refreshRepository(selectedRepository);
@@ -241,6 +246,7 @@ export function RepositoryWorkspaceView() {
   async function commit() {
     if (!selectedRepository || !selectedFile || !commitMessage.trim()) return;
     await run("commit", async () => {
+      if (onDefaultBranch) throw new Error("Create a branch before committing. Changes must reach the default branch through a pull request.");
       if (content !== savedContent) {
         await invoke("write_repository_file", { repositoryPath: selectedRepository, relativePath: selectedFile, content });
         setSavedContent(content);
@@ -257,7 +263,7 @@ export function RepositoryWorkspaceView() {
     await run("pr", async () => {
       const repositoryFullName = status.repositoryFullName;
       if (!repositoryFullName || !selectedRepository) return;
-      const credential = await desktopClient.mintGithubCloneToken({ repositoryFullName, purpose: "push" });
+      const credential = await desktopClient.mintGithubCloneToken({ repositoryFullName, purpose: "push", branch: status.branch });
       if (!credential.ok) throw new Error(credential.error);
       await invoke("push_repository", { repositoryPath: selectedRepository, authenticatedUrl: credential.data.cloneUrl });
       const result = await desktopClient.openGithubPullRequest({
@@ -350,7 +356,7 @@ export function RepositoryWorkspaceView() {
           <input value={branchName} onChange={(event) => setBranchName(event.target.value)} placeholder="new branch" className="w-36 rounded border border-white/10 bg-black/20 px-2 py-1.5 text-xs outline-none" />
           <button type="button" disabled={Boolean(busy) || !selectedRepository || !branchName.trim()} onClick={() => void createBranch()} className="btn-secondary disabled:opacity-40">Branch</button>
           <button type="button" disabled={Boolean(busy) || !status?.repositoryFullName} onClick={() => sync("pull")} className="btn-secondary disabled:opacity-40">{busy === "pull" ? "Pulling…" : "Pull"}</button>
-          <button type="button" disabled={Boolean(busy) || !status?.repositoryFullName} onClick={() => sync("push")} className="btn-secondary disabled:opacity-40">{busy === "push" ? "Pushing…" : "Push"}</button>
+          <button type="button" disabled={Boolean(busy) || !status?.repositoryFullName || onDefaultBranch} title={onDefaultBranch ? "Create a branch; direct pushes to the default branch are blocked." : undefined} onClick={() => sync("push")} className="btn-secondary disabled:opacity-40">{busy === "push" ? "Pushing…" : "Push"}</button>
         </div>
         {selectedFile ? <>
           <div className="flex items-center gap-2 border-b border-white/[0.06] px-3 py-2">
@@ -361,7 +367,7 @@ export function RepositoryWorkspaceView() {
           <textarea value={content} onChange={(event) => setContent(event.target.value)} onKeyDown={editorKeyDown} spellCheck={false} aria-label={`Editing ${selectedFile}`} className="min-h-0 flex-1 resize-none bg-[#0b0c0e] p-4 font-mono text-[13px] leading-6 text-zinc-200 outline-none selection:bg-violet-500/30" />
           <div className="grid grid-cols-[minmax(220px,1fr)_auto_minmax(180px,0.7fr)_120px_auto] items-center gap-2 border-t border-white/[0.07] bg-[#111315] p-3">
             <input value={commitMessage} onChange={(event) => setCommitMessage(event.target.value)} placeholder="Commit message for this file" className="rounded-md border border-white/10 bg-black/25 px-3 py-2 text-xs outline-none" />
-            <button type="button" disabled={Boolean(busy) || !commitMessage.trim()} onClick={() => void commit()} className="btn-primary disabled:opacity-40">{busy === "commit" ? "Committing…" : "Commit file"}</button>
+            <button type="button" disabled={Boolean(busy) || !commitMessage.trim() || onDefaultBranch} title={onDefaultBranch ? "Create a branch before committing." : undefined} onClick={() => void commit()} className="btn-primary disabled:opacity-40">{busy === "commit" ? "Committing…" : "Commit file"}</button>
             <input value={prTitle} onChange={(event) => setPrTitle(event.target.value)} placeholder="Pull request title" className="rounded-md border border-white/10 bg-black/25 px-3 py-2 text-xs outline-none" />
             <input value={prBase} onChange={(event) => setPrBase(event.target.value)} placeholder="base" className="rounded-md border border-white/10 bg-black/25 px-3 py-2 text-xs outline-none" />
             {prUrl ? <ExternalLink href={prUrl} className="text-xs text-emerald-300 hover:text-white">Open PR ↗</ExternalLink> : <button type="button" disabled={Boolean(busy) || !prTitle.trim() || !prBase.trim() || !status || status.branch === prBase.trim() || status.changedFiles.length > 0 || content !== savedContent} onClick={reviewPullRequest} className="btn-secondary disabled:opacity-40" title={status && status.changedFiles.length > 0 ? "Commit all working-tree changes before publishing a pull request." : undefined}>{busy === "pr" ? "Publishing…" : "Publish & open PR"}</button>}

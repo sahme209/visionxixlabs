@@ -12,16 +12,16 @@
  * lib/releaseops/awsEcsDeployWorkflowTemplate.ts) via workflow_dispatch,
  * using a token scoped to exactly the given repository. Unlike the
  * dashboard's /api/dashboard/release-deploy, this does not depend on the
- * web-only ReleaseOps Release lifecycle — the desktop app has no concept
- * of that model, so this triggers directly off a repo + environment
- * pair. Admin-only.
+ * web-only ReleaseOps Release lifecycle. The selected environment resolves
+ * the exact tenant-owned target, and production remains policy-gated unless
+ * an owner/admin records an explicit emergency bypass.
  */
 
 import { NextResponse, type NextRequest } from "next/server";
 import { resolveRequestDesktopSession } from "@/lib/desktop/resolveRequestDesktopSession";
 import { prisma } from "@/lib/db";
 import { resolveTenantScopedToken, parseRepositoryFullName } from "@/lib/connectors/github/resolveTenantScopedToken";
-import { dispatchWorkflow } from "@/lib/connectors/github/githubWriteClient";
+import { dispatchWorkflow, resolveGitReference } from "@/lib/connectors/github/githubWriteClient";
 import { AWS_ECS_DEPLOY_WORKFLOW_FILENAME } from "@/lib/releaseops/awsEcsDeployWorkflowTemplate";
 import { appendAuditEvent, type AuditEventRepo } from "@/lib/releaseops/auditEventResponder";
 import { serializeDeploymentExecution, type DeploymentExecutionRepo } from "@/lib/releaseops/deploymentExecutionResponder";
@@ -35,7 +35,7 @@ export async function POST(request: NextRequest): Promise<Response> {
     requiredScope: "pipeline:read",
     route: "POST /api/desktop/environments/deploy",
     allowApiKey: false,
-    requireWorkspaceAdmin: true,
+    requiredCapability: "deploy:execute",
   });
   if (!session) {
     return NextResponse.json({ ok: false, error: "desktop_session_required" }, { status: 401 });
@@ -48,6 +48,8 @@ export async function POST(request: NextRequest): Promise<Response> {
     sourceKind?: unknown;
     pullRequestNumber?: unknown;
     promotedFromExecutionId?: unknown;
+    emergencyBypass?: unknown;
+    bypassReason?: unknown;
   } | null;
   const repositoryFullName = typeof body?.repositoryFullName === "string" ? body.repositoryFullName.trim() : "";
   const environmentId = typeof body?.environmentId === "string" ? body.environmentId : "";
@@ -57,6 +59,8 @@ export async function POST(request: NextRequest): Promise<Response> {
     : body.sourceKind === "tag" ? "tag" : null;
   const pullRequestNumber = typeof body?.pullRequestNumber === "number" ? body.pullRequestNumber : undefined;
   const promotedFromExecutionId = typeof body?.promotedFromExecutionId === "string" ? body.promotedFromExecutionId.trim() || undefined : undefined;
+  const emergencyBypass = body?.emergencyBypass === true;
+  const bypassReason = typeof body?.bypassReason === "string" ? body.bypassReason.trim() : "";
   if (!repositoryFullName || !environmentId || !sourceKind
     || (body?.pullRequestNumber !== undefined && (!Number.isInteger(pullRequestNumber) || (pullRequestNumber ?? 0) <= 0))) {
     return NextResponse.json({ ok: false, error: "invalid_payload" }, { status: 400 });
@@ -70,6 +74,17 @@ export async function POST(request: NextRequest): Promise<Response> {
   if (!environment || environment.organizationId !== organizationId) {
     return NextResponse.json({ ok: false, error: "environment_not_found" }, { status: 404 });
   }
+  if (emergencyBypass) {
+    if (environment.tier !== "prod") {
+      return NextResponse.json({ ok: false, error: "production_bypass_only" }, { status: 400 });
+    }
+    if (!session.capabilities.includes("deploy:production_bypass")) {
+      return NextResponse.json({ ok: false, error: "production_bypass_forbidden" }, { status: 403 });
+    }
+    if (bypassReason.length < 20) {
+      return NextResponse.json({ ok: false, error: "production_bypass_reason_required" }, { status: 400 });
+    }
+  }
 
   const target = await prisma.deploymentTarget.findUnique({ where: { environmentId } });
   if (!target || target.organizationId !== organizationId) {
@@ -81,19 +96,44 @@ export async function POST(request: NextRequest): Promise<Response> {
     return NextResponse.json({ ok: false, error: tokenResult.error }, { status: 409 });
   }
 
-  const policy = await evaluateDeploymentPolicy(prisma as unknown as DeploymentPolicyRepo, {
-    organizationId,
-    environmentId,
-    owner: repo.owner,
-    repo: repo.repo,
-    sourceRef,
-    sourceKind,
-    ...(pullRequestNumber !== undefined ? { pullRequestNumber } : {}),
-    ...(promotedFromExecutionId ? { promotedFromExecutionId } : {}),
-    installationToken: tokenResult.token,
-  });
+  const policy = emergencyBypass
+    ? await resolveGitReference({
+        owner: repo.owner,
+        repo: repo.repo,
+        ref: sourceRef,
+        kind: sourceKind,
+        installationToken: tokenResult.token,
+      }).then((reference) => reference.ok
+        ? { ok: true as const, policyId: null, sourceCommitSha: reference.data.commitSha, pullRequestUrl: null }
+        : { ok: false as const, error: reference.error })
+    : await evaluateDeploymentPolicy(prisma as unknown as DeploymentPolicyRepo, {
+        organizationId,
+        environmentId,
+        owner: repo.owner,
+        repo: repo.repo,
+        sourceRef,
+        sourceKind,
+        ...(pullRequestNumber !== undefined ? { pullRequestNumber } : {}),
+        ...(promotedFromExecutionId ? { promotedFromExecutionId } : {}),
+        ...(environment.tier === "prod" ? { requiredControlSet: "production" as const } : {}),
+        installationToken: tokenResult.token,
+      });
   if (!policy.ok) {
     return NextResponse.json({ ok: false, error: policy.error, policyId: policy.policyId ?? null }, { status: 409 });
+  }
+
+  if (emergencyBypass) {
+    const bypassRecorded = await appendAuditEvent(prisma as unknown as AuditEventRepo, {
+      organizationId,
+      kind: "release.production_bypass_authorized",
+      subjectKind: "environment",
+      subjectId: environmentId,
+      summary: `Authorized emergency production bypass for ${repositoryFullName}@${sourceRef} (${policy.sourceCommitSha}). Reason: ${bypassReason}`,
+      actorUserId: String(session.userId),
+    });
+    if (!bypassRecorded) {
+      return NextResponse.json({ ok: false, error: "production_bypass_audit_unavailable" }, { status: 503 });
+    }
   }
 
   const dispatchResult = await dispatchWorkflow({
@@ -148,6 +188,19 @@ export async function POST(request: NextRequest): Promise<Response> {
     });
   } catch { /* best-effort */ }
 
+  if (emergencyBypass) {
+    try {
+      await appendAuditEvent(prisma as unknown as AuditEventRepo, {
+        organizationId,
+        kind: "release.production_bypass_used",
+        subjectKind: "environment",
+        subjectId: environmentId,
+        summary: `Emergency production bypass for ${repositoryFullName}@${sourceRef} (${policy.sourceCommitSha}). Reason: ${bypassReason}`,
+        actorUserId: String(session.userId),
+      });
+    } catch { /* the dispatch remains authoritative; audit persistence is separately monitored */ }
+  }
+
   return NextResponse.json({
     ok: true,
     data: {
@@ -157,6 +210,7 @@ export async function POST(request: NextRequest): Promise<Response> {
       policyId: policy.policyId,
       sourceRef,
       sourceKind,
+      governanceMode: emergencyBypass ? "emergency_bypass" : "policy_enforced",
     },
   });
 }

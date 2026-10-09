@@ -51,7 +51,7 @@ export async function GET(request: NextRequest): Promise<Response> {
     requiredScope: "pipeline:read",
     route: "GET /api/desktop/github/repositories",
     allowApiKey: false,
-    requireWorkspaceAdmin: true,
+    requiredCapability: "github:read",
   });
   if (!session) return NextResponse.json({ ok: false, error: "desktop_session_required" }, { status: 401 });
 

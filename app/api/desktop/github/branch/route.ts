@@ -23,7 +23,7 @@ export async function POST(request: NextRequest): Promise<Response> {
     requiredScope: "pipeline:read",
     route: "POST /api/desktop/github/branch",
     allowApiKey: false,
-    requireWorkspaceAdmin: true,
+    requiredCapability: "github:write",
   });
   if (!session) {
     return NextResponse.json({ ok: false, error: "desktop_session_required" }, { status: 401 });

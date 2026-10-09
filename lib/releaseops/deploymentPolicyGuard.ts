@@ -68,6 +68,10 @@ export interface DeploymentPolicyInput {
   /// Prior DeploymentExecution this deploy promotes, required whenever the
   /// matched policy sets requirePromotionFromEnvironmentId.
   promotedFromExecutionId?: string;
+  /** Production is intentionally fail-closed. A production deploy must match
+   * a policy that proves PR review, passing tests, and promotion of the exact
+   * commit from a prior environment. */
+  requiredControlSet?: "production";
   installationToken: string;
 }
 
@@ -107,7 +111,11 @@ export async function evaluateDeploymentPolicy(
     row.remoteOwner.toLowerCase() === input.owner.toLowerCase()
     && row.remoteName.toLowerCase() === input.repo.toLowerCase(),
   );
-  if (!registered) return resolveUnconfiguredReference(input);
+  if (!registered) {
+    return input.requiredControlSet === "production"
+      ? { ok: false, error: "branch_policy_production_policy_required" }
+      : resolveUnconfiguredReference(input);
+  }
 
   let policies: PolicyRow[];
   try {
@@ -123,10 +131,18 @@ export async function evaluateDeploymentPolicy(
   } catch {
     return { ok: false, error: "branch_policy_lookup_failed" };
   }
-  if (policies.length === 0) return resolveUnconfiguredReference(input);
+  if (policies.length === 0) {
+    return input.requiredControlSet === "production"
+      ? { ok: false, error: "branch_policy_production_policy_required" }
+      : resolveUnconfiguredReference(input);
+  }
 
   const policy = policies.find((candidate) => matchesPattern(input.sourceRef, candidate.branchPattern));
   if (!policy) return { ok: false, error: "branch_policy_no_matching_ref" };
+  if (input.requiredControlSet === "production"
+    && (!policy.requirePrLink || !policy.requireTestsPassing || !policy.requirePromotionFromEnvironmentId)) {
+    return { ok: false, error: "branch_policy_production_controls_required", policyId: policy.id };
+  }
   if (policy.requireReleaseTag && input.sourceKind !== "tag") {
     return { ok: false, error: "branch_policy_release_tag_required", policyId: policy.id };
   }

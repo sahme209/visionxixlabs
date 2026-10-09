@@ -68,7 +68,7 @@ describe("POST /api/desktop/environments/deploy/preflight", () => {
     expect(response.status).toBe(200);
     expect(await response.json()).toEqual({
       ok: true,
-      data: { ready: true, policyId: null, sourceCommitSha: "abc123", pullRequestUrl: null },
+      data: { ready: true, policyId: null, sourceCommitSha: "abc123", pullRequestUrl: null, governanceMode: "policy_enforced" },
     });
     expect(mocks.resolveRef).toHaveBeenCalledWith(expect.objectContaining({ installationToken: "scoped-token" }));
   });

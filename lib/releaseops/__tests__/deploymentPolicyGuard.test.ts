@@ -84,6 +84,41 @@ beforeEach(() => {
 });
 
 describe("evaluateDeploymentPolicy", () => {
+  describe("production controls", () => {
+    it("fails closed when a production repository has no configured policy", async () => {
+      const result = await evaluateDeploymentPolicy(makeRepo([], []), { ...input, requiredControlSet: "production" });
+      expect(result).toEqual({ ok: false, error: "branch_policy_production_policy_required" });
+      expect(mocks.resolveGitReference).not.toHaveBeenCalled();
+    });
+
+    it("rejects a weak production policy before resolving the ref", async () => {
+      const result = await evaluateDeploymentPolicy(makeRepo([basePolicy]), { ...input, requiredControlSet: "production" });
+      expect(result).toEqual({ ok: false, error: "branch_policy_production_controls_required", policyId: "policy_1" });
+      expect(mocks.resolveGitReference).not.toHaveBeenCalled();
+    });
+
+    it("accepts only complete production evidence for the same promoted commit", async () => {
+      const productionPolicy = {
+        ...basePolicy,
+        requirePrLink: true,
+        requireTestsPassing: true,
+        requirePromotionFromEnvironmentId: "env-dev",
+      };
+      const result = await evaluateDeploymentPolicy(
+        makeRepo([productionPolicy], [registered], [
+          { id: "exec-dev", environmentId: "env-dev", sourceCommitSha: "sha-1", status: "completed", conclusion: "success" },
+        ]),
+        { ...input, requiredControlSet: "production", promotedFromExecutionId: "exec-dev", pullRequestNumber: 42 },
+      );
+      expect(result).toEqual({
+        ok: true,
+        policyId: "policy_1",
+        sourceCommitSha: "sha-1",
+        pullRequestUrl: "https://github.test/acme/widgets/pull/42",
+      });
+    });
+  });
+
   it("verifies the live ref but applies no policy when the repository has no policy record", async () => {
     const result = await evaluateDeploymentPolicy(makeRepo([], []), input);
     expect(result).toEqual({ ok: true, policyId: null, sourceCommitSha: "sha-1", pullRequestUrl: null });

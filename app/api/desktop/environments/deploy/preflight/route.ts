@@ -9,6 +9,7 @@ import { resolveRequestDesktopSession } from "@/lib/desktop/resolveRequestDeskto
 import { prisma } from "@/lib/db";
 import { parseRepositoryFullName, resolveTenantScopedToken } from "@/lib/connectors/github/resolveTenantScopedToken";
 import { evaluateDeploymentPolicy, type DeploymentPolicyRepo } from "@/lib/releaseops/deploymentPolicyGuard";
+import { resolveGitReference } from "@/lib/connectors/github/githubWriteClient";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -18,7 +19,7 @@ export async function POST(request: NextRequest): Promise<Response> {
     requiredScope: "pipeline:read",
     route: "POST /api/desktop/environments/deploy/preflight",
     allowApiKey: false,
-    requireWorkspaceAdmin: true,
+    requiredCapability: "deploy:execute",
   });
   if (!session) return NextResponse.json({ ok: false, error: "desktop_session_required" }, { status: 401 });
 
@@ -29,6 +30,8 @@ export async function POST(request: NextRequest): Promise<Response> {
     sourceKind?: unknown;
     pullRequestNumber?: unknown;
     promotedFromExecutionId?: unknown;
+    emergencyBypass?: unknown;
+    bypassReason?: unknown;
   } | null;
   const repositoryFullName = typeof body?.repositoryFullName === "string" ? body.repositoryFullName.trim() : "";
   const environmentId = typeof body?.environmentId === "string" ? body.environmentId : "";
@@ -36,6 +39,8 @@ export async function POST(request: NextRequest): Promise<Response> {
   const sourceKind = body?.sourceKind === "branch" || body?.sourceKind === "tag" ? body.sourceKind : null;
   const pullRequestNumber = typeof body?.pullRequestNumber === "number" ? body.pullRequestNumber : undefined;
   const promotedFromExecutionId = typeof body?.promotedFromExecutionId === "string" ? body.promotedFromExecutionId.trim() || undefined : undefined;
+  const emergencyBypass = body?.emergencyBypass === true;
+  const bypassReason = typeof body?.bypassReason === "string" ? body.bypassReason.trim() : "";
   if (!repositoryFullName || !environmentId || !sourceRef || !sourceKind
     || (body?.pullRequestNumber !== undefined && (!Number.isInteger(pullRequestNumber) || (pullRequestNumber ?? 0) <= 0))) {
     return NextResponse.json({ ok: false, error: "invalid_payload" }, { status: 400 });
@@ -54,20 +59,42 @@ export async function POST(request: NextRequest): Promise<Response> {
   if (!target || target.organizationId !== organizationId) {
     return NextResponse.json({ ok: false, error: "deployment_target_not_configured" }, { status: 409 });
   }
+  if (emergencyBypass) {
+    if (environment.tier !== "prod") {
+      return NextResponse.json({ ok: false, error: "production_bypass_only" }, { status: 400 });
+    }
+    if (!session.capabilities.includes("deploy:production_bypass")) {
+      return NextResponse.json({ ok: false, error: "production_bypass_forbidden" }, { status: 403 });
+    }
+    if (bypassReason.length < 20) {
+      return NextResponse.json({ ok: false, error: "production_bypass_reason_required" }, { status: 400 });
+    }
+  }
 
   const token = await resolveTenantScopedToken(organizationId, parsed);
   if (!token.ok) return NextResponse.json({ ok: false, error: token.error }, { status: 409 });
-  const decision = await evaluateDeploymentPolicy(prisma as unknown as DeploymentPolicyRepo, {
-    organizationId,
-    environmentId,
-    owner: parsed.owner,
-    repo: parsed.repo,
-    sourceRef,
-    sourceKind,
-    ...(pullRequestNumber !== undefined ? { pullRequestNumber } : {}),
-    ...(promotedFromExecutionId ? { promotedFromExecutionId } : {}),
-    installationToken: token.token,
-  });
+  const decision = emergencyBypass
+    ? await resolveGitReference({
+        owner: parsed.owner,
+        repo: parsed.repo,
+        ref: sourceRef,
+        kind: sourceKind,
+        installationToken: token.token,
+      }).then((reference) => reference.ok
+        ? { ok: true as const, policyId: null, sourceCommitSha: reference.data.commitSha, pullRequestUrl: null }
+        : { ok: false as const, error: reference.error })
+    : await evaluateDeploymentPolicy(prisma as unknown as DeploymentPolicyRepo, {
+        organizationId,
+        environmentId,
+        owner: parsed.owner,
+        repo: parsed.repo,
+        sourceRef,
+        sourceKind,
+        ...(pullRequestNumber !== undefined ? { pullRequestNumber } : {}),
+        ...(promotedFromExecutionId ? { promotedFromExecutionId } : {}),
+        ...(environment.tier === "prod" ? { requiredControlSet: "production" as const } : {}),
+        installationToken: token.token,
+      });
   if (!decision.ok) {
     return NextResponse.json({ ok: false, error: decision.error, policyId: decision.policyId ?? null }, { status: 409 });
   }
@@ -79,6 +106,7 @@ export async function POST(request: NextRequest): Promise<Response> {
       policyId: decision.policyId,
       sourceCommitSha: decision.sourceCommitSha,
       pullRequestUrl: decision.pullRequestUrl,
+      governanceMode: emergencyBypass ? "emergency_bypass" : "policy_enforced",
     },
   });
 }

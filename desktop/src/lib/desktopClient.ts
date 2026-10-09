@@ -39,7 +39,18 @@ export interface VerifiedDesktopIdentity {
   organizationId: string;
   email?: string;
   displayName?: string;
+  role?: "owner" | "admin" | "operator" | "security_reviewer" | "finance_viewer" | "read_only";
+  capabilities: string[];
   access: DesktopCommercialAccess;
+}
+
+export interface WorkspaceMember {
+  userId: string;
+  role: "owner" | "admin" | "operator" | "security_reviewer" | "finance_viewer" | "read_only";
+  email: string;
+  displayName?: string;
+  acceptedAt: string | null;
+  updatedAt: string;
 }
 
 export interface AgentSkillCatalogItem {
@@ -359,11 +370,11 @@ export class DesktopClient {
     }
 
     const result = await this.get<{
-      identity: { kind: "api_key" | "desktop_session"; organizationId: string; email?: string; displayName?: string };
+      identity: { kind: "api_key" | "desktop_session"; organizationId: string; email?: string; displayName?: string; role?: VerifiedDesktopIdentity["role"]; capabilities?: string[] };
       access: DesktopCommercialAccess;
     }>("/api/desktop/access");
     if (!result.ok) return result;
-    return { ok: true, data: { ...result.data.identity, access: result.data.access } };
+    return { ok: true, data: { ...result.data.identity, capabilities: result.data.identity.capabilities ?? [], access: result.data.access } };
   }
 
   desktopBillingPortal(): Promise<ApiResult<{ url: string }>> {
@@ -708,7 +719,7 @@ export class DesktopClient {
     return this.post("/api/desktop/github/pull-request", input);
   }
 
-  mintGithubCloneToken(input: { repositoryFullName: string; purpose?: "clone" | "pull" | "push" }): Promise<ApiResult<{ cloneUrl: string }>> {
+  mintGithubCloneToken(input: { repositoryFullName: string; purpose?: "clone" | "pull" | "push"; branch?: string }): Promise<ApiResult<{ cloneUrl: string }>> {
     return this.post("/api/desktop/github/clone-token", input);
   }
 
@@ -761,11 +772,11 @@ export class DesktopClient {
     return this.post("/api/desktop/environments/deployment-target", input);
   }
 
-  triggerAwsDeploy(input: { repositoryFullName: string; environmentId: string; sourceRef: string; sourceKind: "branch" | "tag"; pullRequestNumber?: number }): Promise<ApiResult<{ dispatched: boolean; execution: DeploymentExecution | null; trackingAvailable: boolean; policyId: string | null; sourceRef: string; sourceKind: "branch" | "tag" }>> {
+  triggerAwsDeploy(input: { repositoryFullName: string; environmentId: string; sourceRef: string; sourceKind: "branch" | "tag"; pullRequestNumber?: number; promotedFromExecutionId?: string; emergencyBypass?: boolean; bypassReason?: string }): Promise<ApiResult<{ dispatched: boolean; execution: DeploymentExecution | null; trackingAvailable: boolean; policyId: string | null; sourceRef: string; sourceKind: "branch" | "tag"; governanceMode: "policy_enforced" | "emergency_bypass" }>> {
     return this.post("/api/desktop/environments/deploy", input);
   }
 
-  preflightAwsDeploy(input: { repositoryFullName: string; environmentId: string; sourceRef: string; sourceKind: "branch" | "tag"; pullRequestNumber?: number }): Promise<ApiResult<{ ready: true; policyId: string | null; sourceCommitSha: string; pullRequestUrl: string | null }>> {
+  preflightAwsDeploy(input: { repositoryFullName: string; environmentId: string; sourceRef: string; sourceKind: "branch" | "tag"; pullRequestNumber?: number; promotedFromExecutionId?: string; emergencyBypass?: boolean; bypassReason?: string }): Promise<ApiResult<{ ready: true; policyId: string | null; sourceCommitSha: string; pullRequestUrl: string | null; governanceMode: "policy_enforced" | "emergency_bypass" }>> {
     return this.post("/api/desktop/environments/deploy/preflight", input);
   }
 
@@ -826,13 +837,21 @@ export class DesktopClient {
   }
 
   listBranchPolicies(): Promise<ApiResult<{
-    policies: Array<{ id: string; repositoryId: string; environmentId: string; branchPattern: string; requirePrLink: boolean; requireReleaseTag: boolean; requireCodeowners: boolean; requireChangeTicket: boolean }>;
+    policies: Array<{ id: string; repositoryId: string; environmentId: string; branchPattern: string; requirePrLink: boolean; requireReleaseTag: boolean; requireCodeowners: boolean; requireChangeTicket: boolean; requireTestsPassing: boolean; requirePromotionFromEnvironmentId: string | null }>;
   }>> {
     return this.get("/api/desktop/branch-policies");
   }
 
-  createBranchPolicy(input: { repositoryId: string; environmentId: string; branchPattern: string; requirePrLink?: boolean; requireReleaseTag?: boolean; requireCodeowners?: boolean; requireChangeTicket?: boolean }): Promise<ApiResult<{ id: string }>> {
+  createBranchPolicy(input: { repositoryId: string; environmentId: string; branchPattern: string; requirePrLink?: boolean; requireReleaseTag?: boolean; requireCodeowners?: boolean; requireChangeTicket?: boolean; requireTestsPassing?: boolean; requirePromotionFromEnvironmentId?: string }): Promise<ApiResult<{ id: string }>> {
     return this.post("/api/desktop/branch-policies", input);
+  }
+
+  listWorkspaceMembers(): Promise<ApiResult<{ currentUserId: string; currentRole: string | null; capabilities: string[]; members: WorkspaceMember[] }>> {
+    return this.get("/api/desktop/workspace-members");
+  }
+
+  updateWorkspaceMemberRole(userId: string, role: Exclude<WorkspaceMember["role"], "owner">): Promise<ApiResult<{ userId: string; role: string; updatedAt: string }>> {
+    return this.patch("/api/desktop/workspace-members", { userId, role });
   }
 
   listIdentityProviders(): Promise<ApiResult<{
@@ -1162,6 +1181,22 @@ export class DesktopClient {
     try {
       const res = await fetch(`${this.config.apiBase}${path}`, {
         method: "PUT",
+        headers: { ...this.headers(), "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify(body),
+      });
+      const json = (await res.json().catch(() => ({}))) as LegacyApiErrorBody & { ok?: boolean; data?: unknown };
+      if (json.ok && json.data !== undefined) return { ok: true, data: json.data as T };
+      return { ok: false, error: legacyApiError(json, res.status) };
+    } catch (err) {
+      return { ok: false, error: err instanceof Error ? err.message : String(err) };
+    }
+  }
+
+  private async patch<T>(path: string, body: unknown): Promise<ApiResult<T>> {
+    try {
+      const res = await fetch(`${this.config.apiBase}${path}`, {
+        method: "PATCH",
         headers: { ...this.headers(), "Content-Type": "application/json" },
         credentials: "include",
         body: JSON.stringify(body),

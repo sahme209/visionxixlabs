@@ -478,6 +478,13 @@ export function AgentChatView() {
             </select>
           </label>
         </div>
+        {environmentId && (() => {
+          const selected = environmentOptions.find((environment) => environment.id === environmentId);
+          if (!selected) return null;
+          return <p className="mx-auto mt-2 max-w-5xl text-[11px] text-zinc-500">
+            <span className="text-zinc-300">{selected.name}</span> is the active deployment destination. The Agent will use only that environment&apos;s configured cloud target; GitHub writes still require approval and production still requires verified promotion evidence.
+          </p>;
+        })()}
         {contextError && <p role="status" className="mx-auto mt-2 max-w-5xl text-[11px] text-amber-300">{contextError}. Manual entry remains available.</p>}
       </div>
       <div ref={scrollRef} className="flex-1 overflow-y-auto px-8 py-8">

@@ -2,14 +2,15 @@
  * POST /api/desktop/github/commit
  *
  * Creates or updates a single file on a branch of a tenant-connected
- * GitHub repository. Same gate as the branch-create route: a real
- * paired desktop session held by a workspace owner/admin.
+ * GitHub repository. Requires a current workspace role with GitHub write
+ * authority. Commits to the repository's default branch are rejected so
+ * changes must proceed through a branch and pull request.
  */
 
 import { NextResponse, type NextRequest } from "next/server";
 import { resolveRequestDesktopSession } from "@/lib/desktop/resolveRequestDesktopSession";
 import { resolveTenantScopedToken, parseRepositoryFullName } from "@/lib/connectors/github/resolveTenantScopedToken";
-import { commitFile } from "@/lib/connectors/github/githubWriteClient";
+import { commitFile, getRepositoryDefaultBranch } from "@/lib/connectors/github/githubWriteClient";
 import { record as recordAudit } from "@/lib/audit/secureAudit";
 import { id as idFactory } from "@/lib/domain/ids";
 
@@ -21,7 +22,7 @@ export async function POST(request: NextRequest): Promise<Response> {
     requiredScope: "pipeline:read",
     route: "POST /api/desktop/github/commit",
     allowApiKey: false,
-    requireWorkspaceAdmin: true,
+    requiredCapability: "github:write",
   });
   if (!session) {
     return NextResponse.json({ ok: false, error: "desktop_session_required" }, { status: 401 });
@@ -47,6 +48,12 @@ export async function POST(request: NextRequest): Promise<Response> {
 
   const tokenResult = await resolveTenantScopedToken(String(session.organizationId), repo);
   if (!tokenResult.ok) return NextResponse.json({ ok: false, error: tokenResult.error }, { status: 409 });
+
+  const defaultBranch = await getRepositoryDefaultBranch({ owner: repo.owner, repo: repo.repo, installationToken: tokenResult.token });
+  if (!defaultBranch.ok) return NextResponse.json({ ok: false, error: defaultBranch.error }, { status: 502 });
+  if (branch === defaultBranch.data) {
+    return NextResponse.json({ ok: false, error: "github_pull_request_cycle_required" }, { status: 409 });
+  }
 
   const result = await commitFile({
     owner: repo.owner,
