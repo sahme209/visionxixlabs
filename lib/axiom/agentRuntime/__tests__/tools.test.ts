@@ -8,7 +8,7 @@ describe("TOOL_REGISTRY", () => {
       "check_deploy_status", "commit_github_file", "commit_github_files", "configure_deployment_target",
       "connect_identity_provider", "create_environment", "create_github_branch",
       "inspect_github_repository", "list_deployment_executions", "list_environments", "list_github_files", "list_integrations", "open_github_pull_request",
-      "preview_scim_lifecycle", "read_github_file", "trigger_aws_deploy",
+      "preview_scim_lifecycle", "read_github_file", "search_github_code", "trigger_aws_deploy",
     ]);
   });
 
@@ -20,6 +20,7 @@ describe("TOOL_REGISTRY", () => {
     expect(findTool("read_github_file")?.riskLevel).toBe("low");
     expect(findTool("list_github_files")?.riskLevel).toBe("low");
     expect(findTool("inspect_github_repository")?.riskLevel).toBe("low");
+    expect(findTool("search_github_code")?.riskLevel).toBe("low");
     expect(findTool("preview_scim_lifecycle")?.riskLevel).toBe("low");
   });
 

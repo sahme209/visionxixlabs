@@ -15,6 +15,8 @@ import { visibleTenantConnectionStatus } from "@/lib/integrations/tenantConnecti
 const GITHUB_VALIDATION_FRESH_FOR_MS = 24 * 60 * 60 * 1000;
 const REPOSITORY_EVIDENCE_FILE_LIMIT = 5;
 const REPOSITORY_EVIDENCE_TOTAL_CHARS = 32_000;
+const REPOSITORY_SEARCH_FILE_LIMIT = 20;
+const REPOSITORY_SEARCH_MATCH_LIMIT = 30;
 
 interface RepositoryFileSummary {
   path: string;
@@ -23,7 +25,14 @@ interface RepositoryFileSummary {
 
 function repositoryEvidenceScore(path: string): number {
   const normalized = path.toLowerCase();
-  if (normalized.startsWith(".env") || normalized.includes("/.env") || normalized.includes("node_modules/") || normalized.includes("vendor/")) return -1;
+  const fileName = normalized.split("/").at(-1) ?? normalized;
+  if (
+    normalized.includes("node_modules/") || normalized.includes("vendor/") || normalized.includes("/.git/")
+    || fileName.startsWith(".env") || [".npmrc", ".pypirc", ".netrc"].includes(fileName)
+    || /(^|[._-])(secret|secrets|credential|credentials)([._-]|$)/.test(fileName)
+    || /(^|\/)(id_rsa|id_ed25519)(\.|$)/.test(normalized)
+    || /\.(pem|key|p12|pfx|jks|keystore)$/.test(fileName)
+  ) return -1;
   if (/^(readme|architecture)(\.[a-z0-9]+)?$/.test(normalized)) return 1_000;
   if (/^(package\.json|pyproject\.toml|requirements\.txt|go\.mod|cargo\.toml|pom\.xml|build\.gradle|gemfile)$/.test(normalized)) return 950;
   if (/^(dockerfile|compose\.ya?ml|docker-compose\.ya?ml)$/.test(normalized)) return 900;
@@ -230,7 +239,7 @@ export async function executeReadOnlyTool(
   if (toolName === "list_github_files") {
     const repositoryFullName = typeof args.repositoryFullName === "string" ? args.repositoryFullName : "";
     const branch = typeof args.branch === "string" ? args.branch : "";
-    const pathPrefix = typeof args.pathPrefix === "string" ? args.pathPrefix.trim().replace(/^\/+/, "") : "";
+    const pathPrefix = typeof args.pathPrefix === "string" ? args.pathPrefix.trim().replace(/^\/+|\/+$/g, "") : "";
     const parsed = parseRepositoryFullName(repositoryFullName);
     if (!parsed) return { ok: false, error: "invalid_repository_full_name" };
     if (!branch || (pathPrefix && !pathPrefix.split("/").every((segment) => segment && segment !== "." && segment !== ".."))) {
@@ -302,6 +311,68 @@ export async function executeReadOnlyTool(
         totalFiles: catalog.data.files.length,
         catalogTruncated: catalog.data.truncated,
         inspectedFiles,
+        readErrors,
+      },
+    };
+  }
+
+  if (toolName === "search_github_code") {
+    const repositoryFullName = typeof args.repositoryFullName === "string" ? args.repositoryFullName : "";
+    const branch = typeof args.branch === "string" ? args.branch : "";
+    const query = typeof args.query === "string" ? args.query.trim() : "";
+    const pathPrefix = typeof args.pathPrefix === "string" ? args.pathPrefix.trim().replace(/^\/+|\/+$/g, "") : "";
+    const parsed = parseRepositoryFullName(repositoryFullName);
+    if (!parsed) return { ok: false, error: "invalid_repository_full_name" };
+    if (
+      !branch || query.length < 2 || query.length > 100 || /[\0\r\n]/.test(query)
+      || (pathPrefix && !pathPrefix.split("/").every((segment) => segment && segment !== "." && segment !== ".."))
+    ) return { ok: false, error: "invalid_payload" };
+
+    const tokenResult = await resolveTenantScopedToken(organizationId, parsed);
+    if (!tokenResult.ok) return { ok: false, error: tokenResult.error };
+    const catalog = await listRepositoryFiles({
+      owner: parsed.owner, repo: parsed.repo, branch, installationToken: tokenResult.token,
+    });
+    if (!catalog.ok) return { ok: false, error: catalog.error };
+
+    const normalizedQuery = query.toLowerCase();
+    const candidates = catalog.data.files
+      .filter((file) => file.size <= 100_000 && repositoryEvidenceScore(file.path) >= 0 && (!pathPrefix || file.path === pathPrefix || file.path.startsWith(`${pathPrefix}/`)))
+      .sort((left, right) => {
+        const leftPathMatch = left.path.toLowerCase().includes(normalizedQuery) ? 1 : 0;
+        const rightPathMatch = right.path.toLowerCase().includes(normalizedQuery) ? 1 : 0;
+        return rightPathMatch - leftPathMatch || repositoryEvidenceScore(right.path) - repositoryEvidenceScore(left.path) || left.path.localeCompare(right.path);
+      });
+    const selected = candidates.slice(0, REPOSITORY_SEARCH_FILE_LIMIT);
+    const reads = await Promise.all(selected.map(async (file) => ({
+      file,
+      result: await getFile({ owner: parsed.owner, repo: parsed.repo, branch, path: file.path, installationToken: tokenResult.token }),
+    })));
+    const matches: Array<{ path: string; line: number; text: string }> = [];
+    const readErrors: Array<{ path: string; error: string }> = [];
+    for (const read of reads) {
+      if (!read.result.ok) {
+        readErrors.push({ path: read.file.path, error: read.result.error });
+        continue;
+      }
+      for (const [index, line] of read.result.data.content.split("\n").entries()) {
+        if (!line.toLowerCase().includes(normalizedQuery)) continue;
+        matches.push({ path: read.file.path, line: index + 1, text: line.trim().slice(0, 500) });
+        if (matches.length >= REPOSITORY_SEARCH_MATCH_LIMIT) break;
+      }
+      if (matches.length >= REPOSITORY_SEARCH_MATCH_LIMIT) break;
+    }
+    return {
+      ok: true,
+      result: {
+        repositoryFullName,
+        branch,
+        query,
+        pathPrefix: pathPrefix || null,
+        matches,
+        scannedFiles: selected.length,
+        candidateFiles: candidates.length,
+        truncated: catalog.data.truncated || candidates.length > selected.length || matches.length >= REPOSITORY_SEARCH_MATCH_LIMIT,
         readErrors,
       },
     };

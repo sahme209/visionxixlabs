@@ -144,6 +144,52 @@ describe("executeReadOnlyTool", () => {
     expect(mocks.getFile).not.toHaveBeenCalledWith(expect.objectContaining({ path: ".env" }));
   });
 
+  it("search_github_code returns bounded literal matches and skips sensitive files", async () => {
+    mocks.resolveTenantScopedToken.mockResolvedValue({ ok: true, token: "installation-token" });
+    mocks.listRepositoryFiles.mockResolvedValue({
+      ok: true,
+      data: {
+        files: [
+          { path: "src/deploy.ts", size: 200 },
+          { path: "src/other.ts", size: 100 },
+          { path: "config/secrets.json", size: 50 },
+          { path: ".env.production", size: 50 },
+        ],
+        truncated: false,
+      },
+    });
+    mocks.getFile.mockImplementation(async ({ path }: { path: string }) => ({
+      ok: true,
+      data: { path, sha: `sha-${path}`, content: path === "src/deploy.ts" ? "const deployTarget = 'dev';\nrunDeploy(deployTarget);" : "export const unrelated = true;", htmlUrl: `https://github.test/${path}` },
+    }));
+
+    const result = await executeReadOnlyTool(toolRepo(), "org-1", "search_github_code", {
+      repositoryFullName: "acme/widgets", branch: "main", query: "deployTarget", pathPrefix: "src/",
+    });
+
+    expect(result).toEqual({
+      ok: true,
+      result: expect.objectContaining({
+        matches: [
+          { path: "src/deploy.ts", line: 1, text: "const deployTarget = 'dev';" },
+          { path: "src/deploy.ts", line: 2, text: "runDeploy(deployTarget);" },
+        ],
+        scannedFiles: 2,
+        candidateFiles: 2,
+        truncated: false,
+      }),
+    });
+    expect(mocks.getFile).not.toHaveBeenCalledWith(expect.objectContaining({ path: "config/secrets.json" }));
+    expect(mocks.getFile).not.toHaveBeenCalledWith(expect.objectContaining({ path: ".env.production" }));
+  });
+
+  it("search_github_code rejects unbounded or multiline queries", async () => {
+    await expect(executeReadOnlyTool(toolRepo(), "org-1", "search_github_code", {
+      repositoryFullName: "acme/widgets", branch: "main", query: "a\nb",
+    })).resolves.toEqual({ ok: false, error: "invalid_payload" });
+    expect(mocks.resolveTenantScopedToken).not.toHaveBeenCalled();
+  });
+
   it("rejects any tool name outside the low-risk set", async () => {
     const repo = toolRepo();
     const result = await executeReadOnlyTool(repo, "org-1", "trigger_aws_deploy", {});
