@@ -55,10 +55,6 @@
       "schedule": "35 0 * * *"
     },
     {
-      "path": "/api/cron/airflow-automation-tick",
-      "schedule": "37 0 * * *"
-    },
-    {
       "path": "/api/cron/alert-escalation-tick",
       "schedule": "40 0 * * *"
     },
