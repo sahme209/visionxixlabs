@@ -28,9 +28,7 @@ Optionally set `AIRFLOW_ALLOWED_HOSTS` to a comma-separated exact hostname allow
 ## Axiom deployment requirements
 
 - Apply the Prisma migration `20261008170000_add_airflow_governed_automation`.
-- Set `CRON_SECRET` to a strong random value so `/api/cron/airflow-automation-tick` can run only from an authenticated scheduler.
-- Configure a trusted production scheduler to call the endpoint at the required cadence with `Authorization: Bearer <CRON_SECRET>`. A five-minute cadence is recommended for the desktop presets. The repository deliberately does not register another provider-owned cron resource in `vercel.json`, so deployment is not coupled to a hosting plan's cron interval or resource-count limits. The tick is idempotent, so retries and overlapping invocations cannot duplicate a rule/run execution.
-- The coordinator uses a 60-second function budget and persists progress per rule. Larger installations should invoke it frequently rather than increasing the request lifetime; a subsequent tick safely resumes remaining work.
+- Set `CRON_SECRET` to a strong random value so `/api/cron/airflow-automation-tick` can run from the five-minute Vercel schedule.
 - Set `CREDENTIAL_ENCRYPTION_KEY` (or the existing `STARTER_TOKEN_SECRET`) to at least 32 characters.
 - Keep the existing GitHub App, environment deployment targets, AWS OIDC workflow, workspace roles, and webhook subscriptions configured for any downstream actions selected by users.
 
