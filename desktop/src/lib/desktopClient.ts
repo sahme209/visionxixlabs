@@ -64,6 +64,16 @@ export interface AgentSkillCatalogItem {
   updatedAt: string | null;
 }
 
+export interface AirflowDag { dagId: string; displayName: string; description: string | null; paused: boolean; owners: string[]; tags: string[] }
+export interface AirflowDagRun { dagId: string; dagRunId: string; state: string; logicalDate: string | null; startedAt: string | null; endedAt: string | null }
+export interface AirflowAutomation {
+  id: string; name: string; dagId: string; enabled: boolean; triggerMode: string; scheduleCron: string | null;
+  requiredDagState: string; dependencyDagIds: string[]; actionType: string; repositoryFullName: string | null;
+  sourceRef: string | null; pullRequestBase: string | null; pullRequestTitle: string | null; environmentId: string | null;
+  approvalRequired: boolean; maxRetries: number; retryDelaySeconds: number; lastEvaluatedAt: string | null; nextScheduledAt: string | null;
+}
+export interface AirflowAutomationExecution { id: string; automationId: string; sourceDagId: string; sourceDagRunId: string; sourceDagState: string; status: string; attempt: number; errorCode: string | null; resultJson: unknown; createdAt: string }
+
 export interface DeploymentExecution {
   id: string;
   environmentId: string;
@@ -707,6 +717,24 @@ export class DesktopClient {
     return this.post("/api/desktop/integrations/linear/validate", {});
   }
 
+  airflowConnection(): Promise<ApiResult<{ connected: boolean; status: string; baseUrl?: string; version?: string | null; dagCount?: number | null; authMode?: string; lastValidatedAt?: string }>> {
+    return this.get("/api/desktop/airflow/connection");
+  }
+
+  saveAirflowConnection(input: { baseUrl: string; authMode: "username_password" | "token"; username?: string; password?: string; token?: string }): Promise<ApiResult<{ status: string; baseUrl: string; version: string | null; dagCount: number }>> {
+    return this.put("/api/desktop/airflow/connection", input);
+  }
+
+  disconnectAirflow(): Promise<ApiResult<{ disconnected: boolean }>> { return this.delete("/api/desktop/airflow/connection"); }
+  listAirflowDags(): Promise<ApiResult<{ dags: AirflowDag[] }>> { return this.get("/api/desktop/airflow/dags"); }
+  listAirflowDagRuns(dagId: string): Promise<ApiResult<{ runs: AirflowDagRun[] }>> { return this.get(`/api/desktop/airflow/dags/${encodeURIComponent(dagId)}/runs`); }
+  triggerAirflowDag(dagId: string): Promise<ApiResult<{ run: AirflowDagRun }>> { return this.post(`/api/desktop/airflow/dags/${encodeURIComponent(dagId)}/runs`, {}); }
+  listAirflowAutomations(): Promise<ApiResult<{ automations: AirflowAutomation[]; executions: AirflowAutomationExecution[] }>> { return this.get("/api/desktop/airflow/automations"); }
+  createAirflowAutomation(input: Record<string, unknown>): Promise<ApiResult<{ automation: AirflowAutomation }>> { return this.post("/api/desktop/airflow/automations", input); }
+  setAirflowAutomationEnabled(id: string, enabled: boolean): Promise<ApiResult<{ automation: AirflowAutomation }>> { return this.patch(`/api/desktop/airflow/automations/${encodeURIComponent(id)}`, { enabled }); }
+  approveAirflowExecution(id: string): Promise<ApiResult<Record<string, unknown>>> { return this.post(`/api/desktop/airflow/executions/${encodeURIComponent(id)}/approve`, {}); }
+  rejectAirflowExecution(id: string): Promise<ApiResult<{ rejected: boolean }>> { return this.post(`/api/desktop/airflow/executions/${encodeURIComponent(id)}/reject`, {}); }
+
   createGithubBranch(input: { repositoryFullName: string; baseBranch: string; newBranchName: string }): Promise<ApiResult<{ ref: string; sha: string }>> {
     return this.post("/api/desktop/github/branch", input);
   }
@@ -1207,6 +1235,15 @@ export class DesktopClient {
     } catch (err) {
       return { ok: false, error: err instanceof Error ? err.message : String(err) };
     }
+  }
+
+  private async delete<T>(path: string): Promise<ApiResult<T>> {
+    try {
+      const res = await fetch(`${this.config.apiBase}${path}`, { method: "DELETE", headers: this.headers(), credentials: "include" });
+      const json = (await res.json().catch(() => ({}))) as LegacyApiErrorBody & { ok?: boolean; data?: unknown };
+      if (json.ok && json.data !== undefined) return { ok: true, data: json.data as T };
+      return { ok: false, error: legacyApiError(json, res.status) };
+    } catch (err) { return { ok: false, error: err instanceof Error ? err.message : String(err) }; }
   }
 
   private headers(): Record<string, string> {

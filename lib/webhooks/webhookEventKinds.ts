@@ -32,6 +32,9 @@ export type WebhookEventKind =
   | "coding.pr_opened"
   | "coding.lint_failed"
   | "coding.test_failed"
+  | "airflow.action_proposed"
+  | "airflow.automation_succeeded"
+  | "airflow.automation_failed"
   // API key lifecycle
   | "api_key.created"
   | "api_key.revoked"
@@ -53,6 +56,9 @@ const ALL_KINDS: ReadonlySet<string> = new Set<WebhookEventKind>([
   "coding.pr_opened",
   "coding.lint_failed",
   "coding.test_failed",
+  "airflow.action_proposed",
+  "airflow.automation_succeeded",
+  "airflow.automation_failed",
   "api_key.created",
   "api_key.revoked",
   "billing.threshold_crossed",
