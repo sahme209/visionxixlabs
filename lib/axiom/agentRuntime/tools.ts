@@ -64,6 +64,12 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = [
     riskLevel: "low",
   },
   {
+    name: "search_github_code",
+    description: "Search a bounded set of UTF-8 source and configuration files on a selected repository branch for literal text or a symbol. Use this to locate relevant implementation before answering, planning, or editing instead of guessing from filenames.",
+    argsSchemaHint: '{ "repositoryFullName": "owner/repo", "branch": "main", "query": "literal text or symbol", "pathPrefix": "optional directory prefix such as src/" }',
+    riskLevel: "low",
+  },
+  {
     name: "read_github_file",
     description: "Read one UTF-8 text file from a tenant-connected GitHub repository so you can inspect it before proposing an edit.",
     argsSchemaHint: '{ "repositoryFullName": "owner/repo", "branch": "main", "path": "path/to/file.ts" }',
