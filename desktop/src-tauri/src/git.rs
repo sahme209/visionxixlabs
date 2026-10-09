@@ -79,7 +79,7 @@ fn output_text(output: Output, credential: Option<&str>) -> Result<String, Strin
     })
 }
 
-fn repository_root(path: &str) -> Result<PathBuf, String> {
+pub(crate) fn repository_root(path: &str) -> Result<PathBuf, String> {
     let requested = fs::canonicalize(path).map_err(|_| "Repository folder does not exist.".to_string())?;
     let output = git(Some(&requested), ["rev-parse", "--show-toplevel"])?;
     let root = output_text(output, None)?;

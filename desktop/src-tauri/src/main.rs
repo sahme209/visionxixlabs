@@ -7,6 +7,7 @@ mod http;
 mod menu;
 mod secure;
 mod tray;
+mod verification;
 mod window_state;
 
 use tauri::{Manager, WindowEvent};
@@ -65,6 +66,8 @@ fn main() {
             git::create_repository_branch,
             git::pull_repository,
             git::push_repository,
+            verification::detect_repository_checks,
+            verification::run_repository_check,
             config::get_preferences,
             config::set_preferences,
             config::get_api_endpoint,
