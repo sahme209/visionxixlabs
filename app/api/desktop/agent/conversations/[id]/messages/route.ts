@@ -91,6 +91,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
       environmentId?: unknown;
       filePath?: unknown;
       mode?: unknown;
+      operationMode?: unknown;
     };
   } | null;
   const message = typeof body?.message === "string" ? body.message.trim() : "";
@@ -105,6 +106,9 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
   const environmentId = typeof rawContext?.environmentId === "string" ? rawContext.environmentId.trim() : "";
   const filePath = typeof rawContext?.filePath === "string" ? rawContext.filePath.trim() : "";
   const mode = rawContext?.mode === "code" ? "code" : "chat";
+  const operationMode = rawContext?.operationMode === "ask" || rawContext?.operationMode === "plan"
+    ? rawContext.operationMode
+    : "agent";
   if ((repositoryFullName && !parseRepositoryFullName(repositoryFullName)) || branch.length > 240 || /[\0\r\n]/.test(branch)) {
     return NextResponse.json({ ok: false, error: "invalid_workspace_context" }, { status: 400 });
   }
@@ -157,6 +161,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     branch ? `Branch: ${branch}` : null,
     selectedEnvironment ? `Environment: ${selectedEnvironment.name} (${selectedEnvironment.tier}, ID ${selectedEnvironment.id})` : null,
     filePath ? `File: ${filePath}` : null,
+    `Operation mode: ${operationMode}`,
   ].filter((value): value is string => Boolean(value));
   let currentRequestContext: string | undefined;
   if (selectedContext.length > 0 && transcript.length > 0) {
@@ -177,6 +182,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     currentRequestContext,
     skillContext,
     preferredProvider,
+    operationMode,
     initialToolCall: initialRepositoryGrounding({ message, mode, repositoryFullName, branch, filePath }),
     executeReadOnlyTool: async (toolName, args) => {
       const result = await executeReadOnlyTool(prisma as unknown as ToolExecutionRepo, organizationId, toolName, args);

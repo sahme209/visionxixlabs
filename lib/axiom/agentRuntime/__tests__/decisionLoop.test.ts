@@ -230,4 +230,21 @@ describe("runDecisionLoop", () => {
     expect(result.toolName).toBe("commit_github_file");
     expect(result.args.content).toBe("hi\nhow are you");
   });
+
+  it("enforces ask mode as read-only when a provider attempts a write", async () => {
+    mocks.resolveGovernedAiCall.mockResolvedValue(governed(async () => ({
+      action: "call_tool",
+      message: "Commit README.md to acme/widgets on feature/docs.",
+      toolName: "commit_github_file",
+      args: { repositoryFullName: "acme/widgets", branch: "feature/docs", path: "README.md", content: "updated", message: "Update docs" },
+    })));
+    const result = await runDecisionLoop({
+      organizationId: "o", correlationId: "c", transcript: [{ role: "user", content: "change it" }],
+      operationMode: "ask", executeReadOnlyTool: noopReadOnly, isProdEnvironmentTarget: noopProdCheck,
+    });
+    expect(result).toEqual({
+      kind: "final",
+      message: "Ask mode is read-only, so no change was proposed. Commit README.md to acme/widgets on feature/docs.",
+    });
+  });
 });
