@@ -101,7 +101,7 @@ pub async fn run_repository_check(repository_path: String, check_id: String) -> 
     let stdout = child.stdout.take().ok_or_else(|| "Could not capture verification output.".to_string())?;
     let stderr = child.stderr.take().ok_or_else(|| "Could not capture verification errors.".to_string())?;
     let (overflow_tx, mut overflow_rx) = mpsc::channel::<()>(2);
-    let read_stream = |mut stream: tokio::process::ChildStdout, signal: mpsc::Sender<()>| tokio::spawn(async move {
+    let read_stream = |stream: tokio::process::ChildStdout, signal: mpsc::Sender<()>| tokio::spawn(async move {
         let mut output = Vec::new();
         let read = stream.take(MAX_OUTPUT_BYTES + 1).read_to_end(&mut output).await;
         if output.len() as u64 > MAX_OUTPUT_BYTES { let _ = signal.send(()).await; output.truncate(MAX_OUTPUT_BYTES as usize); }
@@ -109,7 +109,7 @@ pub async fn run_repository_check(repository_path: String, check_id: String) -> 
     });
     let stdout_task = read_stream(stdout, overflow_tx.clone());
     let stderr_task = tokio::spawn(async move {
-        let mut stream = stderr;
+        let stream = stderr;
         let mut output = Vec::new();
         let read = stream.take(MAX_OUTPUT_BYTES + 1).read_to_end(&mut output).await;
         if output.len() as u64 > MAX_OUTPUT_BYTES { let _ = overflow_tx.send(()).await; output.truncate(MAX_OUTPUT_BYTES as usize); }
