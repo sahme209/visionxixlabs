@@ -34,6 +34,9 @@ export const AUDIT_SUBJECT_KINDS = [
   "environment",
   "deployment_execution",
   "identity_provider",
+  "integration",
+  "automation",
+  "airflow_dag_run",
 ] as const;
 export type AuditSubjectKind = (typeof AUDIT_SUBJECT_KINDS)[number];
 
