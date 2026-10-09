@@ -5,7 +5,7 @@ describe("TOOL_REGISTRY", () => {
   it("has exactly the governed tools the agent runtime wires up", () => {
     const names = TOOL_REGISTRY.map((t) => t.name).sort();
     expect(names).toEqual([
-      "check_deploy_status", "commit_github_file", "configure_deployment_target",
+      "check_deploy_status", "commit_github_file", "commit_github_files", "configure_deployment_target",
       "connect_identity_provider", "create_environment", "create_github_branch",
       "inspect_github_repository", "list_deployment_executions", "list_environments", "list_github_files", "list_integrations", "open_github_pull_request",
       "preview_scim_lifecycle", "read_github_file", "trigger_aws_deploy",
@@ -26,6 +26,7 @@ describe("TOOL_REGISTRY", () => {
   it("classifies every GitHub write tool as medium risk by default", () => {
     expect(findTool("create_github_branch")?.riskLevel).toBe("medium");
     expect(findTool("commit_github_file")?.riskLevel).toBe("medium");
+    expect(findTool("commit_github_files")?.riskLevel).toBe("medium");
     expect(findTool("open_github_pull_request")?.riskLevel).toBe("medium");
   });
 

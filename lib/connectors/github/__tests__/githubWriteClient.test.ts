@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { createBranch, commitFile, createPullRequest, dispatchWorkflow, getCommitCiStatus, getFile, getPullRequestGovernanceEvidence, getWorkflowRun, isSafeRepositoryPath, listBranches, listRepositoryFiles, resolveGitReference } from "../githubWriteClient";
+import { createBranch, commitFile, commitFiles, createPullRequest, dispatchWorkflow, getCommitCiStatus, getFile, getPullRequestGovernanceEvidence, getWorkflowRun, isSafeRepositoryPath, listBranches, listRepositoryFiles, resolveGitReference } from "../githubWriteClient";
 
 const fetchMock = vi.fn();
 vi.stubGlobal("fetch", fetchMock);
@@ -122,6 +122,49 @@ describe("commitFile", () => {
     });
     expect(result).toEqual({ ok: false, error: "invalid_repository_path" });
     expect(fetchMock).not.toHaveBeenCalled();
+  });
+});
+
+describe("commitFiles", () => {
+  beforeEach(() => vi.clearAllMocks());
+
+  it("creates blobs and advances the branch once for an atomic multi-file commit", async () => {
+    fetchMock
+      .mockResolvedValueOnce(jsonResponse(200, { object: { type: "commit", sha: "parent" } }))
+      .mockResolvedValueOnce(jsonResponse(200, { tree: { sha: "base-tree" } }))
+      .mockResolvedValueOnce(jsonResponse(200, { type: "file", path: "src/a.ts", sha: "a-old", encoding: "base64", content: Buffer.from("old").toString("base64"), html_url: "https://github.test/a" }))
+      .mockResolvedValueOnce(jsonResponse(404, { message: "Not Found" }))
+      .mockResolvedValueOnce(jsonResponse(201, { sha: "blob-a" }))
+      .mockResolvedValueOnce(jsonResponse(201, { sha: "blob-b" }))
+      .mockResolvedValueOnce(jsonResponse(201, { sha: "new-tree" }))
+      .mockResolvedValueOnce(jsonResponse(201, { sha: "new-commit", html_url: "https://github.test/commit" }))
+      .mockResolvedValueOnce(jsonResponse(200, { ref: "refs/heads/axiom/change" }));
+
+    const result = await commitFiles({
+      owner: "acme", repo: "widgets", branch: "axiom/change", message: "Update feature", installationToken: "tok",
+      files: [
+        { path: "src/a.ts", content: "new a", expectedSha: "a-old" },
+        { path: "src/b.ts", content: "new b", expectedSha: null },
+      ],
+    });
+
+    expect(result).toEqual({ ok: true, data: { sha: "new-commit", htmlUrl: "https://github.test/commit", fileCount: 2 } });
+    const [, refUpdate] = fetchMock.mock.calls[8] as [string, { method: string; body: string }];
+    expect(refUpdate.method).toBe("PATCH");
+    expect(JSON.parse(refUpdate.body)).toEqual({ sha: "new-commit", force: false });
+  });
+
+  it("refuses the whole commit if any reviewed file changed", async () => {
+    fetchMock
+      .mockResolvedValueOnce(jsonResponse(200, { object: { type: "commit", sha: "parent" } }))
+      .mockResolvedValueOnce(jsonResponse(200, { tree: { sha: "base-tree" } }))
+      .mockResolvedValueOnce(jsonResponse(200, { type: "file", path: "src/a.ts", sha: "newer", encoding: "base64", content: Buffer.from("changed").toString("base64"), html_url: "https://github.test/a" }));
+    const result = await commitFiles({
+      owner: "acme", repo: "widgets", branch: "axiom/change", message: "Update feature", installationToken: "tok",
+      files: [{ path: "src/a.ts", content: "new a", expectedSha: "reviewed" }, { path: "src/b.ts", content: "new b", expectedSha: null }],
+    });
+    expect(result).toEqual({ ok: false, error: "github_file_changed_since_proposal" });
+    expect(fetchMock).toHaveBeenCalledTimes(3);
   });
 });
 

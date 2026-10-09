@@ -4,6 +4,7 @@ const mocks = vi.hoisted(() => ({
   resolveTenantScopedToken: vi.fn(),
   createBranch: vi.fn(),
   commitFile: vi.fn(),
+  commitFiles: vi.fn(),
   createPullRequest: vi.fn(),
   dispatchWorkflow: vi.fn(),
   resolveGitReference: vi.fn(),
@@ -19,7 +20,7 @@ vi.mock("@/lib/connectors/github/resolveTenantScopedToken", () => ({
   },
 }));
 vi.mock("@/lib/connectors/github/githubWriteClient", () => ({
-  createBranch: mocks.createBranch, commitFile: mocks.commitFile, createPullRequest: mocks.createPullRequest, dispatchWorkflow: mocks.dispatchWorkflow, getFile: mocks.getFile,
+  createBranch: mocks.createBranch, commitFile: mocks.commitFile, commitFiles: mocks.commitFiles, createPullRequest: mocks.createPullRequest, dispatchWorkflow: mocks.dispatchWorkflow, getFile: mocks.getFile,
   getRepositoryDefaultBranch: mocks.getRepositoryDefaultBranch,
   resolveGitReference: mocks.resolveGitReference,
 }));
@@ -66,6 +67,22 @@ describe("executeApprovedAction", () => {
       _review: { kind: "github_file", baseSha: "reviewed-sha", baseContent: "old", htmlUrl: "https://github.test/old" },
     });
     expect(mocks.commitFile).toHaveBeenCalledWith(expect.objectContaining({ expectedSha: "reviewed-sha" }));
+  });
+
+  it("commits multiple reviewed files atomically on a non-default branch", async () => {
+    mocks.commitFiles.mockResolvedValue({ ok: true, data: { sha: "commit", htmlUrl: "https://github.test/commit", fileCount: 2 } });
+    const result = await executeApprovedAction(repo, "org-1", "commit_github_files", {
+      repositoryFullName: "acme/widgets", branch: "axiom/change", message: "Update feature",
+      files: [{ path: "src/a.ts", content: "new a" }, { path: "src/b.ts", content: "new b" }],
+      _review: { kind: "github_files", files: [
+        { path: "src/a.ts", baseSha: "a-sha", baseContent: "old a", htmlUrl: null },
+        { path: "src/b.ts", baseSha: null, baseContent: "", htmlUrl: null },
+      ] },
+    });
+    expect(result.ok).toBe(true);
+    expect(mocks.commitFiles).toHaveBeenCalledWith(expect.objectContaining({
+      files: [{ path: "src/a.ts", content: "new a", expectedSha: "a-sha" }, { path: "src/b.ts", content: "new b", expectedSha: null }],
+    }));
   });
 
   it("open_github_pull_request surfaces a GitHub failure as an error, not a thrown exception", async () => {

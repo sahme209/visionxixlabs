@@ -19,7 +19,7 @@ export const AGENT_SKILL_CATALOG: readonly AgentSkillDefinition[] = [
     name: "Safe repository change",
     description: "Inspect a GitHub file, preserve unrelated content, commit on a dedicated branch, and open a reviewable pull request.",
     category: "GitHub",
-    toolNames: ["list_integrations", "list_github_files", "read_github_file", "create_github_branch", "commit_github_file", "open_github_pull_request"],
+    toolNames: ["list_integrations", "list_github_files", "read_github_file", "create_github_branch", "commit_github_file", "commit_github_files", "open_github_pull_request"],
     instructions: "For repository edits, verify GitHub first, list files when the path is not already known, read the target file before changing it, use a dedicated axiom/* branch, keep the change narrowly scoped, and finish with a pull request. Never commit directly to the base branch.",
   },
   {

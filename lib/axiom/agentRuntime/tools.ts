@@ -106,6 +106,12 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = [
     riskLevel: "medium",
   },
   {
+    name: "commit_github_files",
+    description: "Create one atomic Git commit that creates or updates 2 to 20 files on an existing branch. Use this when a coherent change spans multiple files.",
+    argsSchemaHint: '{ "repositoryFullName": "owner/repo", "branch": "axiom/short-description", "files": [{ "path": "path/to/file.ts", "content": "complete file contents" }], "message": "commit message" }',
+    riskLevel: "medium",
+  },
+  {
     name: "open_github_pull_request",
     description: "Open a real pull request from an existing branch into a base branch.",
     argsSchemaHint: '{ "repositoryFullName": "owner/repo", "head": "axiom/short-description", "base": "main", "title": "PR title", "body": "optional PR description" }',

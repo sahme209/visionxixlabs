@@ -243,6 +243,83 @@ export async function commitFile(input: CommitFileInput): Promise<GithubWriteRes
   return { ok: true, data: { sha: result.data.content.sha, htmlUrl: result.data.content.html_url } };
 }
 
+export interface CommitFilesInput {
+  owner: string;
+  repo: string;
+  branch: string;
+  files: Array<{ path: string; content: string; expectedSha: string | null }>;
+  message: string;
+  installationToken: string;
+}
+
+/** Creates one atomic Git commit containing multiple reviewed UTF-8 files. */
+export async function commitFiles(input: CommitFilesInput): Promise<GithubWriteResult<{ sha: string; htmlUrl: string; fileCount: number }>> {
+  if (!input.branch || input.branch.length > 240 || /[\0\r\n]/.test(input.branch)) return { ok: false, error: "invalid_branch_name" };
+  if (!input.message.trim() || input.files.length < 2 || input.files.length > 20) return { ok: false, error: "invalid_multi_file_commit" };
+  const paths = new Set<string>();
+  let totalBytes = 0;
+  for (const file of input.files) {
+    if (!isSafeRepositoryPath(file.path) || paths.has(file.path)) return { ok: false, error: "invalid_repository_path" };
+    paths.add(file.path);
+    totalBytes += Buffer.byteLength(file.content, "utf8");
+  }
+  if (totalBytes > 1_000_000) return { ok: false, error: "github_commit_too_large" };
+
+  const basePath = `/repos/${encodeURIComponent(input.owner)}/${encodeURIComponent(input.repo)}`;
+  const reference = await gh<{ object?: { type?: unknown; sha?: unknown } }>(
+    `${basePath}/git/ref/heads/${encodeURIComponent(input.branch)}`,
+    input.installationToken,
+  );
+  if (!reference.ok || reference.data.object?.type !== "commit" || typeof reference.data.object.sha !== "string") {
+    return { ok: false, error: reference.ok ? "github_branch_commit_unavailable" : reference.error };
+  }
+  const parentSha = reference.data.object.sha;
+  const parent = await gh<{ tree?: { sha?: unknown } }>(`${basePath}/git/commits/${encodeURIComponent(parentSha)}`, input.installationToken);
+  if (!parent.ok || typeof parent.data.tree?.sha !== "string") return { ok: false, error: parent.ok ? "github_tree_unavailable" : parent.error };
+
+  for (const file of input.files) {
+    const current = await getFile({ owner: input.owner, repo: input.repo, branch: input.branch, path: file.path, installationToken: input.installationToken });
+    if (file.expectedSha === null) {
+      if (current.ok || !current.error.startsWith("github_404:")) return { ok: false, error: "github_file_changed_since_proposal" };
+    } else if (!current.ok || current.data.sha !== file.expectedSha) {
+      return { ok: false, error: "github_file_changed_since_proposal" };
+    }
+  }
+
+  const treeEntries: Array<{ path: string; mode: "100644"; type: "blob"; sha: string }> = [];
+  for (const file of input.files) {
+    const blob = await gh<{ sha?: unknown }>(`${basePath}/git/blobs`, input.installationToken, {
+      method: "POST",
+      body: { content: Buffer.from(file.content, "utf8").toString("base64"), encoding: "base64" },
+    });
+    if (!blob.ok || typeof blob.data.sha !== "string") return { ok: false, error: blob.ok ? "github_blob_unavailable" : blob.error };
+    treeEntries.push({ path: file.path, mode: "100644", type: "blob", sha: blob.data.sha });
+  }
+  const tree = await gh<{ sha?: unknown }>(`${basePath}/git/trees`, input.installationToken, {
+    method: "POST",
+    body: { base_tree: parent.data.tree.sha, tree: treeEntries },
+  });
+  if (!tree.ok || typeof tree.data.sha !== "string") return { ok: false, error: tree.ok ? "github_tree_create_failed" : tree.error };
+  const commit = await gh<{ sha?: unknown; html_url?: unknown }>(`${basePath}/git/commits`, input.installationToken, {
+    method: "POST",
+    body: { message: input.message, tree: tree.data.sha, parents: [parentSha] },
+  });
+  if (!commit.ok || typeof commit.data.sha !== "string") return { ok: false, error: commit.ok ? "github_commit_create_failed" : commit.error };
+  const updated = await gh<unknown>(`${basePath}/git/refs/heads/${encodeURIComponent(input.branch)}`, input.installationToken, {
+    method: "PATCH",
+    body: { sha: commit.data.sha, force: false },
+  });
+  if (!updated.ok) return { ok: false, error: updated.error };
+  return {
+    ok: true,
+    data: {
+      sha: commit.data.sha,
+      htmlUrl: typeof commit.data.html_url === "string" ? commit.data.html_url : `https://github.com/${input.owner}/${input.repo}/commit/${commit.data.sha}`,
+      fileCount: input.files.length,
+    },
+  };
+}
+
 export interface CreatePullRequestInput {
   owner: string;
   repo: string;

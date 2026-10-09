@@ -51,4 +51,20 @@ describe("prepareProposalArgsForReview", () => {
       repositoryFullName: "acme/widgets", branch: "fix", path: "src/app.ts", content: "new",
     })).resolves.toEqual({ ok: false, error: "file_review_unavailable: github_500: unavailable" });
   });
+
+  it("captures trusted snapshots for every file in a multi-file proposal", async () => {
+    mocks.getFile
+      .mockResolvedValueOnce({ ok: true, data: { path: "src/a.ts", sha: "a", content: "old a", htmlUrl: "https://github.test/a" } })
+      .mockResolvedValueOnce({ ok: false, error: "github_404: not found" });
+    const result = await prepareProposalArgsForReview("org-1", "commit_github_files", {
+      repositoryFullName: "acme/widgets", branch: "axiom/change", message: "Update",
+      files: [{ path: "src/a.ts", content: "new a" }, { path: "src/b.ts", content: "new b" }],
+    });
+    expect(result).toEqual({ ok: true, args: expect.objectContaining({
+      _review: { kind: "github_files", files: [
+        expect.objectContaining({ path: "src/a.ts", baseSha: "a", baseContent: "old a" }),
+        expect.objectContaining({ path: "src/b.ts", baseSha: null, baseContent: "" }),
+      ] },
+    }) });
+  });
 });
