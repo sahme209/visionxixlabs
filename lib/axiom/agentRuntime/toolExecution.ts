@@ -13,6 +13,33 @@ import { buildScimLifecyclePreviewResponse } from "@/lib/iam/scimLifecyclePrevie
 import { visibleTenantConnectionStatus } from "@/lib/integrations/tenantConnectionState";
 
 const GITHUB_VALIDATION_FRESH_FOR_MS = 24 * 60 * 60 * 1000;
+const REPOSITORY_EVIDENCE_FILE_LIMIT = 5;
+const REPOSITORY_EVIDENCE_TOTAL_CHARS = 32_000;
+
+interface RepositoryFileSummary {
+  path: string;
+  size: number;
+}
+
+function repositoryEvidenceScore(path: string): number {
+  const normalized = path.toLowerCase();
+  if (normalized.startsWith(".env") || normalized.includes("/.env") || normalized.includes("node_modules/") || normalized.includes("vendor/")) return -1;
+  if (/^(readme|architecture)(\.[a-z0-9]+)?$/.test(normalized)) return 1_000;
+  if (/^(package\.json|pyproject\.toml|requirements\.txt|go\.mod|cargo\.toml|pom\.xml|build\.gradle|gemfile)$/.test(normalized)) return 950;
+  if (/^(dockerfile|compose\.ya?ml|docker-compose\.ya?ml)$/.test(normalized)) return 900;
+  if (normalized.startsWith(".github/workflows/") && /\.ya?ml$/.test(normalized)) return 850;
+  if (/(^|\/)(index|main|app|server|page)\.(ts|tsx|js|jsx|py|go|rs|java|kt|swift)$/.test(normalized)) return 800;
+  if (/^(next\.config|vite\.config|tsconfig|vercel)\./.test(normalized)) return 650;
+  if (/\.(ts|tsx|js|jsx|py|go|rs|java|kt|swift|md|ya?ml|json|toml)$/.test(normalized)) return 200;
+  return -1;
+}
+
+export function selectRepositoryEvidenceFiles(files: RepositoryFileSummary[]): RepositoryFileSummary[] {
+  return files
+    .filter((file) => file.size <= 100_000 && repositoryEvidenceScore(file.path) >= 0)
+    .sort((left, right) => repositoryEvidenceScore(right.path) - repositoryEvidenceScore(left.path) || left.path.localeCompare(right.path))
+    .slice(0, REPOSITORY_EVIDENCE_FILE_LIMIT);
+}
 
 interface ConnectorSessionRow {
   provider: string;
@@ -225,6 +252,57 @@ export async function executeReadOnlyTool(
         files: limited,
         totalMatching: matching.length,
         truncated: fileResult.data.truncated || matching.length > limited.length,
+      },
+    };
+  }
+
+  if (toolName === "inspect_github_repository") {
+    const repositoryFullName = typeof args.repositoryFullName === "string" ? args.repositoryFullName : "";
+    const branch = typeof args.branch === "string" ? args.branch : "";
+    const parsed = parseRepositoryFullName(repositoryFullName);
+    if (!parsed) return { ok: false, error: "invalid_repository_full_name" };
+    if (!branch) return { ok: false, error: "invalid_payload" };
+    const tokenResult = await resolveTenantScopedToken(organizationId, parsed);
+    if (!tokenResult.ok) return { ok: false, error: tokenResult.error };
+    const catalog = await listRepositoryFiles({
+      owner: parsed.owner, repo: parsed.repo, branch, installationToken: tokenResult.token,
+    });
+    if (!catalog.ok) return { ok: false, error: catalog.error };
+
+    const selected = selectRepositoryEvidenceFiles(catalog.data.files);
+    const reads = await Promise.all(selected.map(async (file) => ({
+      file,
+      result: await getFile({
+        owner: parsed.owner, repo: parsed.repo, branch, path: file.path, installationToken: tokenResult.token,
+      }),
+    })));
+    let remainingChars = REPOSITORY_EVIDENCE_TOTAL_CHARS;
+    const inspectedFiles: Array<{ path: string; sha: string; content: string; truncated: boolean }> = [];
+    const readErrors: Array<{ path: string; error: string }> = [];
+    for (const read of reads) {
+      if (!read.result.ok) {
+        readErrors.push({ path: read.file.path, error: read.result.error });
+        continue;
+      }
+      const content = read.result.data.content.slice(0, Math.max(0, remainingChars));
+      inspectedFiles.push({
+        path: read.result.data.path,
+        sha: read.result.data.sha,
+        content,
+        truncated: content.length < read.result.data.content.length,
+      });
+      remainingChars -= content.length;
+      if (remainingChars <= 0) break;
+    }
+    return {
+      ok: true,
+      result: {
+        repositoryFullName,
+        branch,
+        totalFiles: catalog.data.files.length,
+        catalogTruncated: catalog.data.truncated,
+        inspectedFiles,
+        readErrors,
       },
     };
   }

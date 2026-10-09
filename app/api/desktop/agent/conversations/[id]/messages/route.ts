@@ -57,9 +57,9 @@ function initialRepositoryGrounding(input: {
   const broadRepositoryIntent = /\b(review|analy[sz]e|audit|inspect|improve|issues?|problems?|changes?|help)\b|what should i|what can i/i.test(input.message);
   if (!broadRepositoryIntent) return undefined;
   return {
-    toolName: "list_github_files",
+    toolName: "inspect_github_repository",
     args: { repositoryFullName: input.repositoryFullName, branch: input.branch },
-    message: `Inspecting the file structure of ${input.repositoryFullName}@${input.branch} before answering.`,
+    message: `Reading high-signal files from ${input.repositoryFullName}@${input.branch} before answering.`,
   };
 }
 

@@ -62,6 +62,7 @@ interface EnvironmentOption {
 const TOOL_LABELS: Record<string, string> = {
   list_environments: "List environments",
   list_github_files: "List repository files",
+  inspect_github_repository: "Inspect repository evidence",
   check_deploy_status: "Check deploy status",
   list_deployment_executions: "List deploy executions",
   create_github_branch: "Create a branch",

@@ -148,9 +148,9 @@ describe("POST /api/desktop/agent/conversations/[id]/messages", () => {
     expect(res.status).toBe(200);
     expect(mocks.runDecisionLoop).toHaveBeenCalledWith(expect.objectContaining({
       initialToolCall: {
-        toolName: "list_github_files",
+        toolName: "inspect_github_repository",
         args: { repositoryFullName: "acme/widgets", branch: "main" },
-        message: "Inspecting the file structure of acme/widgets@main before answering.",
+        message: "Reading high-signal files from acme/widgets@main before answering.",
       },
     }));
   });
