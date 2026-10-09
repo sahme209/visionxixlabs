@@ -62,10 +62,12 @@ interface EnvironmentOption {
 const TOOL_LABELS: Record<string, string> = {
   list_environments: "List environments",
   list_github_files: "List repository files",
+  inspect_github_repository: "Inspect repository evidence",
   check_deploy_status: "Check deploy status",
   list_deployment_executions: "List deploy executions",
   create_github_branch: "Create a branch",
   commit_github_file: "Commit a file",
+  commit_github_files: "Commit multiple files",
   open_github_pull_request: "Open a pull request",
   trigger_aws_deploy: "Deploy to AWS",
   read_github_file: "Read a repository file",
@@ -87,6 +89,8 @@ function describeArgs(toolName: string, args: unknown): string {
       return `${a.repositoryFullName}: branch "${a.newBranchName}" from "${a.baseBranch}"`;
     case "commit_github_file":
       return `${a.repositoryFullName}: commit "${a.path}" on branch "${a.branch}"`;
+    case "commit_github_files":
+      return `${a.repositoryFullName}: commit ${Array.isArray(a.files) ? a.files.length : 0} files on branch "${a.branch}"`;
     case "open_github_pull_request":
       return `${a.repositoryFullName}: PR "${a.title}" — ${a.head} → ${a.base}`;
     case "trigger_aws_deploy":
@@ -603,6 +607,12 @@ function ProposalCard({ proposal, deciding, onApprove, onReject }: { proposal: P
   const proposedContent = proposal.toolName === "commit_github_file" && typeof args.content === "string" ? args.content : null;
   const review = typeof args._review === "object" && args._review !== null ? args._review as Record<string, unknown> : null;
   const baseContent = review?.kind === "github_file" && typeof review.baseContent === "string" ? review.baseContent : null;
+  const proposedFiles = proposal.toolName === "commit_github_files" && Array.isArray(args.files)
+    ? args.files.flatMap((value) => typeof value === "object" && value !== null && typeof (value as Record<string, unknown>).path === "string" && typeof (value as Record<string, unknown>).content === "string"
+      ? [{ path: (value as Record<string, unknown>).path as string, content: (value as Record<string, unknown>).content as string }]
+      : [])
+    : [];
+  const reviewedFiles = review?.kind === "github_files" && Array.isArray(review.files) ? review.files as Array<Record<string, unknown>> : [];
   const reviewArgs = Object.fromEntries(Object.entries(args).filter(([key]) => key !== "content" && key !== "metadataDocument" && key !== "_review"));
   return (
     <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-5">
@@ -627,6 +637,19 @@ function ProposalCard({ proposal, deciding, onApprove, onReject }: { proposal: P
                 : <FileDiff before={baseContent} after={proposedContent} />}
             </div>
           )}
+          {proposedFiles.map((file, index) => {
+            const reviewed = reviewedFiles[index];
+            const before = reviewed?.path === file.path && typeof reviewed.baseContent === "string" ? reviewed.baseContent : null;
+            return (
+              <div key={file.path}>
+                <div className="mb-2 flex items-center justify-between gap-3 text-[11px] text-zinc-500">
+                  <span className="font-mono text-zinc-300">{file.path}</span>
+                  <span>{file.content.split("\n").length} lines · {new TextEncoder().encode(file.content).byteLength.toLocaleString()} bytes</span>
+                </div>
+                {before === null ? <pre tabIndex={0} className="max-h-72 overflow-auto whitespace-pre text-[11px] leading-5 text-zinc-300">{file.content}</pre> : <FileDiff before={before} after={file.content} />}
+              </div>
+            );
+          })}
           {Object.keys(reviewArgs).length > 0 && (
             <div>
               <p className="mb-2 text-[11px] text-zinc-500">Structured arguments</p>

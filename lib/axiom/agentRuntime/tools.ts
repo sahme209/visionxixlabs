@@ -58,6 +58,12 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = [
     riskLevel: "low",
   },
   {
+    name: "inspect_github_repository",
+    description: "Inspect a bounded set of high-signal files from a selected repository branch (README, manifest, deployment workflow, and primary source entry point). Use this for broad repository reviews so recommendations are based on real code rather than filenames or assumptions.",
+    argsSchemaHint: '{ "repositoryFullName": "owner/repo", "branch": "main" }',
+    riskLevel: "low",
+  },
+  {
     name: "read_github_file",
     description: "Read one UTF-8 text file from a tenant-connected GitHub repository so you can inspect it before proposing an edit.",
     argsSchemaHint: '{ "repositoryFullName": "owner/repo", "branch": "main", "path": "path/to/file.ts" }',
@@ -97,6 +103,12 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = [
     name: "commit_github_file",
     description: "Create or update a single file on an existing branch via a real commit.",
     argsSchemaHint: '{ "repositoryFullName": "owner/repo", "branch": "axiom/short-description", "path": "path/to/file.ts", "content": "full file contents", "message": "commit message" }',
+    riskLevel: "medium",
+  },
+  {
+    name: "commit_github_files",
+    description: "Create one atomic Git commit that creates or updates 2 to 20 files on an existing branch. Use this when a coherent change spans multiple files.",
+    argsSchemaHint: '{ "repositoryFullName": "owner/repo", "branch": "axiom/short-description", "files": [{ "path": "path/to/file.ts", "content": "complete file contents" }], "message": "commit message" }',
     riskLevel: "medium",
   },
   {

@@ -4,6 +4,7 @@ const mocks = vi.hoisted(() => ({
   resolveTenantScopedToken: vi.fn(),
   getLatestWorkflowRun: vi.fn(),
   listRepositoryFiles: vi.fn(),
+  getFile: vi.fn(),
 }));
 
 vi.mock("@/lib/connectors/github/resolveTenantScopedToken", () => ({
@@ -16,6 +17,7 @@ vi.mock("@/lib/connectors/github/resolveTenantScopedToken", () => ({
 vi.mock("@/lib/connectors/github/githubWriteClient", () => ({
   getLatestWorkflowRun: mocks.getLatestWorkflowRun,
   listRepositoryFiles: mocks.listRepositoryFiles,
+  getFile: mocks.getFile,
 }));
 
 import { executeReadOnlyTool, isProdEnvironmentTarget, type ToolExecutionRepo } from "../toolExecution";
@@ -108,6 +110,38 @@ describe("executeReadOnlyTool", () => {
       result: expect.objectContaining({ files: expect.any(Array), truncated: true }),
     });
     if (result.ok) expect((result.result as { files: unknown[] }).files).toHaveLength(200);
+  });
+
+  it("inspect_github_repository reads bounded high-signal files instead of returning filenames alone", async () => {
+    mocks.resolveTenantScopedToken.mockResolvedValue({ ok: true, token: "installation-token" });
+    mocks.listRepositoryFiles.mockResolvedValue({
+      ok: true,
+      data: {
+        files: [
+          { path: "src/unused.ts", size: 100 },
+          { path: "README.md", size: 100 },
+          { path: "package.json", size: 100 },
+          { path: ".env", size: 100 },
+          { path: "src/main.ts", size: 100 },
+        ],
+        truncated: false,
+      },
+    });
+    mocks.getFile.mockImplementation(async ({ path }: { path: string }) => ({
+      ok: true,
+      data: { path, sha: `sha-${path}`, content: `real content from ${path}`, htmlUrl: `https://github.test/${path}` },
+    }));
+
+    const result = await executeReadOnlyTool(toolRepo(), "org-1", "inspect_github_repository", {
+      repositoryFullName: "acme/widgets", branch: "main",
+    });
+
+    expect(result.ok).toBe(true);
+    if (!result.ok) throw new Error("expected ok");
+    const inspected = (result.result as { inspectedFiles: Array<{ path: string; content: string }> }).inspectedFiles;
+    expect(inspected.map((file) => file.path)).toEqual(["README.md", "package.json", "src/main.ts", "src/unused.ts"]);
+    expect(inspected[0]?.content).toContain("real content");
+    expect(mocks.getFile).not.toHaveBeenCalledWith(expect.objectContaining({ path: ".env" }));
   });
 
   it("rejects any tool name outside the low-risk set", async () => {

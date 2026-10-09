@@ -11,12 +11,12 @@
 import "server-only";
 
 import { resolveTenantScopedToken, parseRepositoryFullName } from "@/lib/connectors/github/resolveTenantScopedToken";
-import { createBranch, commitFile, createPullRequest, dispatchWorkflow, getRepositoryDefaultBranch } from "@/lib/connectors/github/githubWriteClient";
+import { createBranch, commitFile, commitFiles, createPullRequest, dispatchWorkflow, getRepositoryDefaultBranch } from "@/lib/connectors/github/githubWriteClient";
 import { AWS_ECS_DEPLOY_WORKFLOW_FILENAME } from "@/lib/releaseops/awsEcsDeployWorkflowTemplate";
 import { buildEnvironmentCreateResponse, type EnvironmentCreateRepo } from "@/lib/releaseops/environmentCreateResponder";
 import { buildDeploymentTargetUpsertResponse, type DeploymentTargetRepo } from "@/lib/releaseops/deploymentTargetResponder";
 import { buildIdentityProviderCreateResponse, type IdentityProviderRepo } from "@/lib/identity/identityProviderResponder";
-import { githubFileReviewFromArgs } from "@/lib/axiom/agentRuntime/proposalReview";
+import { githubFileReviewFromArgs, githubFilesReviewFromArgs } from "@/lib/axiom/agentRuntime/proposalReview";
 import { serializeDeploymentExecution, type DeploymentExecutionRepo } from "@/lib/releaseops/deploymentExecutionResponder";
 import { evaluateDeploymentPolicy, type DeploymentPolicyRepo } from "@/lib/releaseops/deploymentPolicyGuard";
 
@@ -73,6 +73,30 @@ export async function executeApprovedAction(
       installationToken: token.token,
       expectedSha: review?.baseSha,
     });
+    return result.ok ? { ok: true, result: result.data } : { ok: false, error: result.error };
+  }
+
+  if (toolName === "commit_github_files") {
+    if (!parsed) return { ok: false, error: "invalid_repository_full_name" };
+    const branch = typeof args.branch === "string" ? args.branch : "";
+    const message = typeof args.message === "string" ? args.message : "";
+    const proposed = Array.isArray(args.files) ? args.files : [];
+    const review = githubFilesReviewFromArgs(args);
+    if (!branch || !message || proposed.length < 2 || !review || review.files.length !== proposed.length) return { ok: false, error: "invalid_payload" };
+    const files = proposed.flatMap((value, index) => {
+      if (typeof value !== "object" || value === null) return [];
+      const file = value as Record<string, unknown>;
+      const reviewed = review.files[index];
+      if (!reviewed || typeof file.path !== "string" || file.path !== reviewed.path || typeof file.content !== "string") return [];
+      return [{ path: file.path, content: file.content, expectedSha: reviewed.baseSha }];
+    });
+    if (files.length !== proposed.length) return { ok: false, error: "invalid_payload" };
+    const token = await resolveTenantScopedToken(organizationId, parsed);
+    if (!token.ok) return { ok: false, error: token.error };
+    const defaultBranch = await getRepositoryDefaultBranch({ owner: parsed.owner, repo: parsed.repo, installationToken: token.token });
+    if (!defaultBranch.ok) return { ok: false, error: defaultBranch.error };
+    if (branch === defaultBranch.data) return { ok: false, error: "github_pull_request_cycle_required" };
+    const result = await commitFiles({ owner: parsed.owner, repo: parsed.repo, branch, files, message, installationToken: token.token });
     return result.ok ? { ok: true, result: result.data } : { ok: false, error: result.error };
   }
 
