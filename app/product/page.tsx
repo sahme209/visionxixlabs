@@ -23,7 +23,7 @@ const BOUNDARIES = [
 ];
 
 const PILLARS = [
-  ["AI", "The Agent turns a plain-English request into a proposed action — it decides what to do, but it never executes a write by itself."],
+  ["AI", "The Agent grounds repository questions in the selected branch or file through audited read-only GitHub tools, then turns plain English into an answer or proposed action. It never executes a write by itself."],
   ["Governance", "Every proposed action is risk-classified, requires a workspace admin's explicit approval before it runs, and lands in a permanent audit trail — approved or not."],
   ["Integrations", "Approved actions are real: branches, commits, and pull requests land on GitHub; an approved AWS deployment runs through your own GitHub Actions workflow over short-lived OIDC credentials, with automatic rollback if it doesn't stabilize."],
 ];

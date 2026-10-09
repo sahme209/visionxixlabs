@@ -119,6 +119,53 @@ describe("POST /api/desktop/agent/conversations/[id]/messages", () => {
     }));
   });
 
+  it("automatically reads the selected file before the model answers in code mode", async () => {
+    mocks.findManyTurns.mockResolvedValue([{ role: "user", content: "explain and improve this" }]);
+    mocks.runDecisionLoop.mockResolvedValue({ kind: "final", message: "I inspected the file." });
+    const { POST } = await import("../route");
+    const res = await POST(request({
+      message: "explain and improve this",
+      workspaceContext: { repositoryFullName: "acme/widgets", branch: "main", filePath: "src/app.ts", mode: "code" },
+    }), params);
+    expect(res.status).toBe(200);
+    expect(mocks.runDecisionLoop).toHaveBeenCalledWith(expect.objectContaining({
+      initialToolCall: {
+        toolName: "read_github_file",
+        args: { repositoryFullName: "acme/widgets", branch: "main", path: "src/app.ts" },
+        message: "Inspecting src/app.ts on acme/widgets@main before answering.",
+      },
+    }));
+  });
+
+  it("automatically lists files for a broad selected-repository review", async () => {
+    mocks.findManyTurns.mockResolvedValue([{ role: "user", content: "what should I improve in this repo?" }]);
+    mocks.runDecisionLoop.mockResolvedValue({ kind: "final", message: "I inspected the repository structure." });
+    const { POST } = await import("../route");
+    const res = await POST(request({
+      message: "what should I improve in this repo?",
+      workspaceContext: { repositoryFullName: "acme/widgets", branch: "main", mode: "chat" },
+    }), params);
+    expect(res.status).toBe(200);
+    expect(mocks.runDecisionLoop).toHaveBeenCalledWith(expect.objectContaining({
+      initialToolCall: {
+        toolName: "list_github_files",
+        args: { repositoryFullName: "acme/widgets", branch: "main" },
+        message: "Inspecting the file structure of acme/widgets@main before answering.",
+      },
+    }));
+  });
+
+  it("does not inspect a repository for unrelated small talk", async () => {
+    mocks.findManyTurns.mockResolvedValue([{ role: "user", content: "hello" }]);
+    mocks.runDecisionLoop.mockResolvedValue({ kind: "final", message: "Hello." });
+    const { POST } = await import("../route");
+    await POST(request({
+      message: "hello",
+      workspaceContext: { repositoryFullName: "acme/widgets", branch: "main", mode: "chat" },
+    }), params);
+    expect(mocks.runDecisionLoop).toHaveBeenCalledWith(expect.objectContaining({ initialToolCall: undefined }));
+  });
+
   it("rejects an environment outside the caller's workspace", async () => {
     mocks.findFirstEnvironment.mockResolvedValue(null);
     const { POST } = await import("../route");

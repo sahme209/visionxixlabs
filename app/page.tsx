@@ -36,8 +36,8 @@ const pillars = [
   {
     icon: CpuChipIcon,
     eyebrow: "AI",
-    title: "Plain English becomes a governed action.",
-    copy: "Tell the Agent what you want — \"open a PR that fixes the config typo\" or \"deploy acme/widgets to prod.\" It reads the request, decides what to do, and proposes the action. It never executes a write by itself.",
+    title: "Plain English, grounded in live repository evidence.",
+    copy: "Select a repository, branch, file, and environment, then ask in everyday language. The Agent inspects the selected GitHub context through audited read-only tools before it answers. It never executes a write by itself.",
   },
   {
     icon: ShieldCheckIcon,
