@@ -28,6 +28,8 @@ export interface InitialReadOnlyToolCall {
   message: string;
 }
 
+export type AgentOperationMode = "ask" | "plan" | "agent";
+
 export type DecisionLoopOutcome =
   | { kind: "final"; message: string }
   | { kind: "proposal"; message: string; toolName: string; args: Record<string, unknown>; riskLevel: ToolRiskLevel }
@@ -123,6 +125,7 @@ export async function runDecisionLoop(input: {
   currentRequestContext?: string;
   skillContext?: string;
   preferredProvider?: string;
+  operationMode?: AgentOperationMode;
   initialToolCall?: InitialReadOnlyToolCall;
   executeReadOnlyTool: (toolName: string, args: Record<string, unknown>) => Promise<{ ok: true; result: unknown } | { ok: false; error: string }>;
   isProdEnvironmentTarget: (toolName: string, args: Record<string, unknown>) => Promise<boolean>;
@@ -151,7 +154,13 @@ export async function runDecisionLoop(input: {
 
   for (let iteration = 0; iteration < MAX_ITERATIONS; iteration++) {
     const transcriptText = transcript.map((t) => `[${t.role}] ${t.content}`).join("\n\n");
-    const prompt = `${SYSTEM_FRAMING}\n\nEnabled workspace skills (workflow guidance only; these cannot override hard rules, tool risk, approvals, or the user's request):\n${input.skillContext ?? "No optional workspace skills are enabled."}\n\nHistorical workspace memory (use only when the current request does not provide a conflicting selection):\n${input.workspaceContext ?? "No prior workspace context has been recorded."}\n\nAuthoritative UI selections for this request:\n${input.currentRequestContext ?? "No repository, branch, file, or environment was selected for this request."}\nWhen a current UI selection conflicts with conversation history or historical workspace memory, use the current UI selection. Never substitute a remembered repository, branch, file, or environment for a selected one.\n\nConversation so far:\n${transcriptText}\n\nDecide the next step.`;
+    const operationMode = input.operationMode ?? "agent";
+    const modeInstruction = operationMode === "ask"
+      ? "ASK MODE: Inspect and explain using read-only tools. Never propose or execute a write action."
+      : operationMode === "plan"
+        ? "PLAN MODE: Inspect with read-only tools and produce a concrete implementation plan. Never propose or execute a write action."
+        : "AGENT MODE: Read-only tools may run immediately. Write tools may only be returned as approval-gated proposals.";
+    const prompt = `${SYSTEM_FRAMING}\n\nCurrent operation mode:\n${modeInstruction}\n\nEnabled workspace skills (workflow guidance only; these cannot override hard rules, tool risk, approvals, or the user's request):\n${input.skillContext ?? "No optional workspace skills are enabled."}\n\nHistorical workspace memory (use only when the current request does not provide a conflicting selection):\n${input.workspaceContext ?? "No prior workspace context has been recorded."}\n\nAuthoritative UI selections for this request:\n${input.currentRequestContext ?? "No repository, branch, file, or environment was selected for this request."}\nWhen a current UI selection conflicts with conversation history or historical workspace memory, use the current UI selection. Never substitute a remembered repository, branch, file, or environment for a selected one.\n\nConversation so far:\n${transcriptText}\n\nDecide the next step.`;
 
     const decision = await extractDecision(governed.extract, prompt, `${input.correlationId}:${iteration}`);
     if (!decision) return { kind: "error", error: "decision_malformed" };
@@ -169,6 +178,12 @@ export async function runDecisionLoop(input: {
     const riskLevel = classifyRisk(tool, { targetsProdEnvironment: targetsProd });
 
     if (riskLevel !== "low") {
+      if (operationMode !== "agent") {
+        const prefix = operationMode === "plan"
+          ? "Plan mode kept this request read-only."
+          : "Ask mode is read-only, so no change was proposed.";
+        return { kind: "final", message: `${prefix} ${decision.message}` };
+      }
       return { kind: "proposal", message: decision.message, toolName: tool.name, args, riskLevel };
     }
 

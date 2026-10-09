@@ -841,6 +841,7 @@ export class DesktopClient {
     environmentId?: string;
     filePath?: string;
     mode?: "chat" | "code";
+    operationMode?: "ask" | "plan" | "agent";
   }): Promise<ApiResult<{
     reply: string;
     proposal: { id: string; toolName: string; argsJson: unknown; riskLevel: string; status: string } | null;
