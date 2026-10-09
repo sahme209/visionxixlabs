@@ -4,7 +4,9 @@ import { runAirflowAutomationTick } from "@/lib/integrations/airflow/automationT
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
-export const maxDuration = 300;
+// Keep the coordinator within the lowest supported Vercel function limit.
+// Work is persisted and idempotent, so a later tick safely resumes remaining rules.
+export const maxDuration = 60;
 
 export async function GET(request: NextRequest): Promise<Response> { return handle(request); }
 export async function POST(request: NextRequest): Promise<Response> { return handle(request); }
