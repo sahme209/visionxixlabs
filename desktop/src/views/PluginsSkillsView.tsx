@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { open } from "@tauri-apps/plugin-shell";
-import { Bot, Check, Cloud, Github, Package, Search, ShieldCheck, Sparkles, Wrench } from "lucide-react";
+import { Bot, Check, Cloud, Github, Package, Search, ShieldCheck, Sparkles, Workflow, Wrench } from "lucide-react";
 import { ViewShell } from "../components/Primitives";
 import { desktopClient, type AgentSkillCatalogItem } from "../lib/desktopClient";
 
@@ -18,6 +18,7 @@ const PROVIDERS = [
   { id: "teams", name: "Microsoft Teams", category: "Collaboration", detail: "Verified Microsoft workspace identity; message authority remains separately gated.", Icon: Bot },
   { id: "linear", name: "Linear", category: "Work management", detail: "Issue context and governed follow-up using read and issues:create scopes.", Icon: Package },
   { id: "aws", name: "AWS ECS", category: "Cloud delivery", detail: "OIDC-backed ECS deployments using the tenant's workflow, role, cluster, and service configuration.", Icon: Cloud },
+  { id: "airflow", name: "Apache Airflow", category: "Batch automation", detail: "Live DAG monitoring, scheduled runs, dependencies, approvals, retries, audit evidence, and governed follow-up actions.", Icon: Workflow },
 ] as const;
 
 type BrowserProvider = "github" | "slack" | "teams" | "linear";
@@ -25,9 +26,10 @@ const TRUSTED_CONSENT_HOSTS: Record<BrowserProvider, readonly string[]> = {
   github: ["github.com"], slack: ["slack.com"], teams: ["login.microsoftonline.com"], linear: ["linear.app"],
 };
 
-export function PluginsSkillsView({ onOpenSettings }: { onOpenSettings: () => void }) {
+export function PluginsSkillsView({ onOpenSettings, onOpenAirflow }: { onOpenSettings: () => void; onOpenAirflow: () => void }) {
   const [skills, setSkills] = useState<AgentSkillCatalogItem[] | null>(null);
   const [integrations, setIntegrations] = useState<IntegrationStatus | null>(null);
+  const [airflowStatus, setAirflowStatus] = useState<string | null>(null);
   const [query, setQuery] = useState("");
   const [filter, setFilter] = useState<Filter>("all");
   const [working, setWorking] = useState<string | null>(null);
@@ -36,7 +38,7 @@ export function PluginsSkillsView({ onOpenSettings }: { onOpenSettings: () => vo
   const [skillChangesAvailable, setSkillChangesAvailable] = useState(true);
 
   const load = useCallback(async () => {
-    const [skillResult, integrationResult] = await Promise.all([desktopClient.listAgentSkills(), desktopClient.integrationStatus()]);
+    const [skillResult, integrationResult, airflowResult] = await Promise.all([desktopClient.listAgentSkills(), desktopClient.integrationStatus(), desktopClient.airflowConnection()]);
     if (skillResult.ok) {
       setSkills(skillResult.data.skills);
       setSkillChangesAvailable(skillResult.data.storageAvailable !== false);
@@ -49,6 +51,7 @@ export function PluginsSkillsView({ onOpenSettings }: { onOpenSettings: () => vo
       setCatalogIssue("Skills could not be loaded right now. Your existing Agent permissions and integrations are unchanged.");
     }
     if (integrationResult.ok) setIntegrations(integrationResult.data);
+    setAirflowStatus(airflowResult.ok ? airflowResult.data.status : "unavailable");
   }, []);
 
   useEffect(() => {
@@ -106,6 +109,7 @@ export function PluginsSkillsView({ onOpenSettings }: { onOpenSettings: () => vo
     if (!integrations) return "checking";
     if (provider === "github") return integrations.github.status;
     if (provider === "aws") return integrations.cloud.find((item) => item.provider === "aws")?.status ?? "not_connected";
+    if (provider === "airflow") return airflowStatus ?? "checking";
     return integrations.collaboration.find((item) => item.provider === provider)?.status ?? "not_connected";
   };
   const normalizedQuery = query.trim().toLowerCase();
@@ -138,10 +142,11 @@ export function PluginsSkillsView({ onOpenSettings }: { onOpenSettings: () => vo
         {visibleProviders.length > 0 && <section className="mt-8"><div className="mb-3 flex items-center gap-2 text-xs text-zinc-400"><Package className="h-4 w-4" />Plugins</div><div className="divide-y divide-white/[0.06] overflow-hidden rounded-2xl border border-white/[0.07] bg-white/[0.018]">{visibleProviders.map((provider) => {
           const state = providerState(provider.id); const connected = state === "active" || state === "validated_read_only";
           const needsValidation = ["installation_recorded", "validation_overdue", "awaiting_validation", "needs_attention"].includes(state);
-          const configured = provider.id === "aws" || integrations?.configuration?.[provider.id] !== false;
+          const configured = provider.id === "aws" || provider.id === "airflow" || integrations?.configuration?.[provider.id] !== false;
           const displayState = !configured ? "admin setup required" : state.replaceAll("_", " ");
           let action = <button type="button" disabled={working !== null} onClick={() => void connectProvider(provider.id as BrowserProvider)} className="rounded-lg bg-white px-3 py-2 text-xs font-semibold text-black disabled:opacity-50">{working === `provider:${provider.id}` ? "Opening…" : "Connect ↗"}</button>;
-          if (provider.id === "aws" || connected || !configured) action = <button type="button" onClick={onOpenSettings} className="rounded-lg border border-white/[0.1] px-3 py-2 text-xs text-zinc-300 hover:bg-white/[0.06]">{connected ? "Manage" : provider.id === "aws" ? "Configure" : "Setup details"}</button>;
+          if (provider.id === "airflow") action = <button type="button" onClick={onOpenAirflow} className="rounded-lg bg-white px-3 py-2 text-xs font-semibold text-black">Open</button>;
+          else if (provider.id === "aws" || connected || !configured) action = <button type="button" onClick={onOpenSettings} className="rounded-lg border border-white/[0.1] px-3 py-2 text-xs text-zinc-300 hover:bg-white/[0.06]">{connected ? "Manage" : provider.id === "aws" ? "Configure" : "Setup details"}</button>;
           else if (needsValidation) action = <button type="button" disabled={working !== null} onClick={() => void validateProvider(provider.id as BrowserProvider)} className="rounded-lg bg-white px-3 py-2 text-xs font-semibold text-black disabled:opacity-50">{working === `provider:${provider.id}` ? "Verifying…" : "Verify access"}</button>;
           return <div key={provider.id} className="flex min-h-[78px] items-center gap-4 px-5 py-3"><span className="grid h-9 w-9 place-items-center rounded-lg border border-white/[0.08] bg-white/[0.035]"><provider.Icon className="h-4 w-4 text-zinc-300" /></span><div className="min-w-0 flex-1"><div className="flex items-center gap-2"><p className="text-sm text-zinc-100">{provider.name}</p><span className={`rounded-full border px-2 py-0.5 text-[9px] uppercase tracking-wider ${connected ? "border-emerald-400/15 text-emerald-200" : "border-white/[0.08] text-zinc-500"}`}>{displayState}</span></div><p className="mt-1 text-xs leading-5 text-zinc-500">{provider.detail}</p></div>{action}</div>;
         })}</div></section>}

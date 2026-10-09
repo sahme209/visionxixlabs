@@ -4014,6 +4014,102 @@ model TenantIntegrationConnection {
   @@index([organizationId, status])
 }
 
+/// A click-configured Airflow rule. Credentials remain in the encrypted
+/// TenantIntegrationConnection; this row contains only identifiers and the
+/// governed action that may be proposed after a matching DAG completion.
+model AirflowAutomation {
+  id                    String   @id @default(cuid())
+  organizationId        String
+  connectionId          String
+  name                  String
+  dagId                 String
+  enabled               Boolean  @default(true)
+  /// dag_completion | schedule
+  triggerMode           String
+  /// Optional five-field UTC cron expression for scheduled rules.
+  scheduleCron           String?
+  /// success | failed | any
+  requiredDagState      String   @default("success")
+  /// Other DAGs whose latest run must be successful before this rule may act.
+  dependencyDagIds      String[] @default([])
+  /// none | open_pull_request | deploy
+  actionType            String
+  repositoryFullName    String?
+  sourceRef             String?
+  sourceKind            String?  @default("branch")
+  pullRequestBase       String?
+  pullRequestTitle      String?
+  environmentId         String?
+  promotedFromExecutionId String?
+  approvalRequired      Boolean  @default(true)
+  maxRetries            Int      @default(3)
+  retryDelaySeconds     Int      @default(60)
+  notifyOnSuccess       Boolean  @default(true)
+  notifyOnFailure       Boolean  @default(true)
+  lastEvaluatedAt       DateTime?
+  nextScheduledAt       DateTime?
+  createdByUserId       String
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  executions AirflowAutomationExecution[]
+
+  @@unique([organizationId, name])
+  @@index([organizationId, enabled])
+  @@index([connectionId, dagId])
+  @@index([nextScheduledAt])
+}
+
+/// Durable, idempotent evidence for every Airflow rule evaluation and action.
+model AirflowAutomationExecution {
+  id                    String   @id @default(cuid())
+  organizationId        String
+  automationId          String
+  sourceDagId           String
+  sourceDagRunId        String
+  sourceDagState        String
+  /// pending_approval | queued | running | succeeded | failed | rejected | rolled_back
+  status                String   @default("pending_approval")
+  attempt               Int      @default(0)
+  nextRetryAt           DateTime?
+  errorCode             String?
+  resultJson            Json?
+  deploymentExecutionId String?
+  decidedByUserId       String?
+  decidedAt             DateTime?
+  completedAt           DateTime?
+  rollbackStatus        String   @default("not_required")
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  automation AirflowAutomation @relation(fields: [automationId], references: [id], onDelete: Cascade)
+
+  @@unique([automationId, sourceDagRunId])
+  @@index([organizationId, status, createdAt])
+  @@index([status, nextRetryAt])
+}
+
+/// Secret-free mirror of Airflow run state used for completion monitoring and
+/// desktop history. DAG conf and task logs are deliberately not persisted.
+model AirflowDagRunSnapshot {
+  id             String   @id @default(cuid())
+  organizationId String
+  connectionId   String
+  dagId          String
+  dagRunId       String
+  state          String
+  logicalDate    DateTime?
+  startedAt      DateTime?
+  endedAt        DateTime?
+  lastSeenAt     DateTime @default(now())
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@unique([connectionId, dagId, dagRunId])
+  @@index([organizationId, dagId, lastSeenAt])
+  @@index([state, lastSeenAt])
+}
+
 /// A one-time browser authorization attempt. State is stored as a digest;
 /// the raw value never reaches the database. PKCE verifier ciphertext is
 /// optional because Slack does not use PKCE while Microsoft and Linear

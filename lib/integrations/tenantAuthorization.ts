@@ -8,7 +8,7 @@
 
 import { createHash, randomBytes } from "node:crypto";
 
-export const TENANT_INTEGRATION_PROVIDERS = ["github", "slack", "teams", "linear"] as const;
+export const TENANT_INTEGRATION_PROVIDERS = ["github", "slack", "teams", "linear", "airflow"] as const;
 export type TenantIntegrationProvider = (typeof TENANT_INTEGRATION_PROVIDERS)[number];
 
 export function isTenantIntegrationProvider(value: string): value is TenantIntegrationProvider {
