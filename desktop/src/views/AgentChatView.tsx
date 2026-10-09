@@ -26,6 +26,7 @@ interface Proposal {
   status: string;
   resultJson?: unknown;
   errorMessage?: string | null;
+  createdAt?: string;
 }
 
 interface ConversationSummary {
@@ -62,6 +63,7 @@ interface EnvironmentOption {
 const TOOL_LABELS: Record<string, string> = {
   list_environments: "List environments",
   list_github_files: "List repository files",
+  search_github_code: "Search repository code",
   inspect_github_repository: "Inspect repository evidence",
   check_deploy_status: "Check deploy status",
   list_deployment_executions: "List deploy executions",
@@ -101,9 +103,46 @@ function describeArgs(toolName: string, args: unknown): string {
       return `${a.environmentId}: ${a.ecsCluster}/${a.ecsService} in ${a.region}`;
     case "connect_identity_provider":
       return `${a.protocol}: ${a.issuerOrEntityId}`;
+    case "read_github_file":
+      return `${a.repositoryFullName ?? "repository"} · ${a.branch ?? "branch"} · ${a.path ?? "file"}`;
+    case "list_github_files":
+      return `${a.repositoryFullName ?? "repository"} · ${a.branch ?? "branch"}${a.path ? ` · ${a.path}` : ""}`;
+    case "search_github_code":
+      return `${a.repositoryFullName ?? "repository"} · ${a.branch ?? "branch"} · “${a.query ?? "search"}”${a.path ? ` in ${a.path}` : ""}`;
+    case "inspect_github_repository":
+      return `${a.repositoryFullName ?? "repository"} · ${a.branch ?? "branch"}`;
+    case "check_deploy_status":
+    case "list_deployment_executions":
+      return typeof a.environmentId === "string" ? `Environment ${a.environmentId}` : "Selected environment";
+    case "list_environments":
+    case "list_integrations":
+      return "Workspace configuration";
     default:
-      return JSON.stringify(a);
+      return "Governed workspace evidence";
   }
+}
+
+function describeEvidenceResult(action: Proposal): string {
+  if (action.status === "failed") return action.errorMessage || "The evidence check failed.";
+  if (typeof action.resultJson !== "object" || action.resultJson === null) return "Verified by the service.";
+  const result = action.resultJson as Record<string, unknown>;
+  if (action.toolName === "search_github_code") {
+    const matches = Array.isArray(result.matches) ? result.matches : [];
+    const paths = [...new Set(matches.flatMap((match) => typeof match === "object" && match !== null && typeof (match as Record<string, unknown>).path === "string" ? [(match as Record<string, unknown>).path as string] : []))];
+    return `${matches.length} match${matches.length === 1 ? "" : "es"}${paths.length > 0 ? ` across ${paths.slice(0, 3).join(", ")}${paths.length > 3 ? ` and ${paths.length - 3} more` : ""}` : ""}.`;
+  }
+  if (action.toolName === "list_github_files") {
+    const files = Array.isArray(result.files) ? result.files : [];
+    return `${files.length} repository file${files.length === 1 ? "" : "s"} inspected${result.truncated ? " (bounded result)" : ""}.`;
+  }
+  if (action.toolName === "read_github_file") {
+    const size = typeof result.size === "number" ? result.size : typeof result.content === "string" ? new TextEncoder().encode(result.content).byteLength : null;
+    return size === null ? "File content inspected." : `File content inspected · ${size.toLocaleString()} bytes.`;
+  }
+  if (Array.isArray(result.environments)) return `${result.environments.length} environment${result.environments.length === 1 ? "" : "s"} checked.`;
+  if (Array.isArray(result.integrations)) return `${result.integrations.length} integration${result.integrations.length === 1 ? "" : "s"} checked.`;
+  if (Array.isArray(result.executions)) return `${result.executions.length} deployment execution${result.executions.length === 1 ? "" : "s"} checked.`;
+  return "Verified by the service.";
 }
 
 export function AgentChatView() {
@@ -111,6 +150,7 @@ export function AgentChatView() {
   const [conversations, setConversations] = useState<ConversationSummary[]>([]);
   const [turns, setTurns] = useState<ChatTurn[]>([]);
   const [pendingProposal, setPendingProposal] = useState<Proposal | null>(null);
+  const [evidenceActions, setEvidenceActions] = useState<Proposal[]>([]);
   const [input, setInput] = useState("");
   const [sending, setSending] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -164,6 +204,7 @@ export function AgentChatView() {
               setConversationId(conversation.data.id);
               setTurns(conversation.data.turns.filter((turn): turn is typeof turn & { role: ChatTurn["role"] } => turn.role === "user" || turn.role === "assistant" || turn.role === "tool_result"));
               setPendingProposal([...conversation.data.actions].reverse().find((action) => action.status === "proposed") ?? null);
+              setEvidenceActions(conversation.data.actions.filter((action) => action.riskLevel === "low"));
             } else {
               setError("The most recent Agent conversation could not be reopened.");
             }
@@ -298,6 +339,7 @@ export function AgentChatView() {
       setConversationId(result.data.id);
       setTurns(result.data.turns.filter((turn): turn is typeof turn & { role: ChatTurn["role"] } => turn.role === "user" || turn.role === "assistant" || turn.role === "tool_result"));
       setPendingProposal([...result.data.actions].reverse().find((action) => action.status === "proposed") ?? null);
+      setEvidenceActions(result.data.actions.filter((action) => action.riskLevel === "low"));
     } finally {
       setLoadingConversation(false);
     }
@@ -318,6 +360,7 @@ export function AgentChatView() {
       setConversationId(result.data.id);
       setTurns([]);
       setPendingProposal(null);
+      setEvidenceActions([]);
       setInput("");
     } finally {
       setLoadingConversation(false);
@@ -350,6 +393,10 @@ export function AgentChatView() {
       }
       setTurns((prev) => [...prev, { id: `local_${Date.now()}_r`, role: "assistant", content: result.data.reply }]);
       setPendingProposal(result.data.proposal && result.data.proposal.status === "proposed" ? result.data.proposal : null);
+      const refreshed = await desktopClient.getAgentConversation(conversationId);
+      if (refreshed.ok) {
+        setEvidenceActions(refreshed.data.actions.filter((action) => action.riskLevel === "low"));
+      }
       setConversations((current) => {
         const selected = current.find((conversation) => conversation.id === conversationId);
         if (!selected) return current;
@@ -509,6 +556,7 @@ export function AgentChatView() {
             </div>
           )}
           {turns.map((turn) => <ChatBubble key={turn.id} turn={turn} />)}
+          {evidenceActions.length > 0 && <EvidencePanel actions={evidenceActions.slice(-8)} />}
           {pendingProposal && (
             <ProposalCard proposal={pendingProposal} deciding={decidingId === pendingProposal.id} onApprove={() => void decide(true)} onReject={() => void decide(false)} />
           )}
@@ -602,6 +650,41 @@ function ChatBubble({ turn }: { turn: ChatTurn }) {
         {turn.content}
       </div>
     </div>
+  );
+}
+
+function EvidencePanel({ actions }: { actions: Proposal[] }) {
+  const [expanded, setExpanded] = useState(true);
+  const failures = actions.filter((action) => action.status === "failed").length;
+  return (
+    <section className="rounded-xl border border-sky-300/[0.12] bg-sky-300/[0.025]" aria-label="Evidence used by the Agent">
+      <button
+        type="button"
+        aria-expanded={expanded}
+        onClick={() => setExpanded((current) => !current)}
+        className="flex w-full items-center justify-between gap-3 px-4 py-3 text-left"
+      >
+        <span>
+          <span className="block text-xs font-medium text-zinc-200">Evidence used</span>
+          <span className="mt-0.5 block text-[11px] text-zinc-500">{actions.length} governed read-only check{actions.length === 1 ? "" : "s"}{failures > 0 ? ` · ${failures} failed` : ""}</span>
+        </span>
+        <span aria-hidden="true" className="text-xs text-zinc-500">{expanded ? "Hide" : "Show"}</span>
+      </button>
+      {expanded && (
+        <div className="border-t border-white/[0.06] px-4 py-1">
+          {actions.map((action) => (
+            <div key={action.id} className="flex gap-3 border-b border-white/[0.045] py-3 last:border-b-0">
+              <span aria-hidden="true" className={`mt-1 h-1.5 w-1.5 shrink-0 rounded-full ${action.status === "failed" ? "bg-rose-400" : "bg-emerald-400"}`} />
+              <div className="min-w-0">
+                <p className="text-xs text-zinc-300">{TOOL_LABELS[action.toolName] ?? action.toolName}</p>
+                <p className="mt-1 break-words text-[11px] leading-4 text-zinc-500">{describeArgs(action.toolName, action.argsJson)}</p>
+                <p className={`mt-1 text-[11px] leading-4 ${action.status === "failed" ? "text-rose-300" : "text-zinc-400"}`}>{describeEvidenceResult(action)}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </section>
   );
 }
 
