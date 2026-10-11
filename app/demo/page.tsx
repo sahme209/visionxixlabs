@@ -29,7 +29,7 @@ export default function DemoLanding() {
               Start the tour <ArrowRightIcon className="h-4 w-4" />
             </a>
             <Link href="/download" className="inline-flex min-h-12 items-center justify-center rounded-full border border-white/10 px-6 text-sm font-medium text-zinc-300 transition hover:bg-white/[0.04] hover:text-white">
-              Download and create a workspace
+              Download the desktop app
             </Link>
           </div>
         </section>

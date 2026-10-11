@@ -9,7 +9,8 @@ describe("mobile website contract", () => {
   it("uses one responsive homepage with phone-first spacing and actions", () => {
     const page = source("app/page.tsx");
 
-    expect(page).toContain("Turn the request into the playbook.");
+    expect(page).toContain("Ship the change.");
+    expect(page).toContain("Prove it was safe.");
     expect(page).toContain("flex flex-col gap-3 sm:flex-row");
     expect(page).toContain("grid overflow-hidden rounded-2xl");
     expect(page).toContain("lg:grid-cols-[0.72fr_1.28fr]");
@@ -20,7 +21,7 @@ describe("mobile website contract", () => {
 
     expect(page).toContain("min-h-12 items-center justify-center");
     expect(page).toContain("Download Axiom Agent");
-    expect(page).toContain("Explore the isolated demo");
+    expect(page).toContain("Watch how it works");
   });
 
   it("uses a concise mobile menu and locks both root scroll containers", () => {
@@ -28,6 +29,7 @@ describe("mobile website contract", () => {
 
     expect(navigation).toContain("const mobileLinks = [");
     expect(navigation).toContain('{ href: "/product", label: "Product" }');
+    expect(navigation).toContain('{ href: "/demo", label: "Demo" }');
     expect(navigation).toContain('{ href: "/capabilities", label: "Capabilities" }');
     expect(navigation).toContain('{ href: "/plans", label: "Pricing" }');
     expect(navigation).toContain('{ href: "/resources", label: "Resources" }');
