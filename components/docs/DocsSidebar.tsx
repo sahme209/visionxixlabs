@@ -71,6 +71,7 @@ export const DOC_SECTIONS: DocSection[] = [
     items: [
       { href: "/docs/desktop-install", label: "Install the desktop app", icon: CommandLineIcon },
       { href: "/docs/desktop-architecture", label: "Desktop architecture", icon: MapIcon },
+      { href: "/docs/integration-setup", label: "Integration setup", icon: PuzzlePieceIcon },
     ],
   },
   {
