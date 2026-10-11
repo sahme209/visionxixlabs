@@ -4,12 +4,12 @@ Status: in progress on `codex/product-led-website`. This document is an audit le
 
 ## Route inventory
 
-The repository currently contains 335 App Router `page.tsx` entries. The production build generates 287 route entries after dynamic and generated paths are resolved; these are different measurements and explain the earlier 287 figure.
+The repository currently contains 336 App Router `page.tsx` entries. The production build generates 288 route entries after dynamic and generated paths are resolved; these are different measurements. The latest guided integration setup from `main` is included in both counts.
 
 | Route family | Pages | Browser role | Transformation treatment |
 |---|---:|---|---|
 | Marketing route group | 11 | Public acquisition | Shared neutral/orange system; individual composition review in progress |
-| Documentation | 27 | Public self-service | Shared calm documentation shell applied; individual content review in progress |
+| Documentation | 28 | Public self-service | Shared calm documentation shell applied; guided integration setup merged; individual content review in progress |
 | Authentication | 3 | Desktop pairing identity flow | Palette migrated; pairing and fail-closed behavior preserved |
 | Account and help | 4 | Authenticated web companion | Palette migrated; usability review in progress |
 | Administration | 20 | Restricted browser operations | Palette migrated; functionality preserved |
@@ -17,7 +17,7 @@ The repository currently contains 335 App Router `page.tsx` entries. The product
 | Operator | 2 | Redirected legacy browser surfaces | Same redirect boundary as dashboard |
 | Demonstrations | 3 | Public isolated simulation | Landing rebuilt around the five-chapter cinematic tour; scenario pages under review |
 | Other public/companion routes | 38 | Public, legal, support, download, and pairing | Palette migrated; page-by-page composition review in progress |
-| **Total** | **335** |  |  |
+| **Total** | **336** |  |  |
 
 ## Public journey review
 
@@ -57,7 +57,7 @@ The supplied archive contains 25 Axiom product screenshots. Representative Agent
 | Public plan catalog tests | 4 passing |
 | Source purple-name scan | Passing |
 | Known legacy purple RGB/hex scan | Passing across `app`, `components`, `styles`, and Tailwind configuration |
-| Production build | Passing with `next build --webpack` (287 generated route entries); the wrapper's Prisma generate step cannot update the sandboxed user cache |
+| Production build | Passing after merging current `main`, with `next build --webpack` (288 generated route entries); the wrapper's Prisma generate step cannot update the sandboxed user cache |
 | Representative public route smoke test | `/`, `/product`, `/demo`, `/integrations`, `/plans`, `/download`, `/docs`, `/docs/getting-started`, `/security`, `/privacy`, `/terms`, and `/auth/signin` returned 200 from the local production server |
 | Authenticated companion route smoke test | `/account/help` requires a production `NEXTAUTH_SECRET`; the local server returned 500 because that secret is intentionally unavailable in this sandbox |
 | Representative product-reference review | Complete for supplied Agent, integration, and Airflow screens |
