@@ -14,12 +14,19 @@ import { createCheckoutSession } from "@/lib/billing/stripeHelper";
 import { isBillingTier } from "@/lib/billing/tierCatalog";
 import { apiOk, apiErr, asApiSourceMode, resolveCorrelationId } from "@/lib/api";
 import { AxiomErrors } from "@/lib/errors/axiomErrors";
+import { isSelfServiceBillingEnabled } from "@/lib/billing/publicPlanCatalog";
 
 export const dynamic = "force-dynamic";
 
 export async function POST(req: NextRequest) {
   const correlationId = resolveCorrelationId(req.headers);
   try {
+    if (!isSelfServiceBillingEnabled()) {
+      throw AxiomErrors.validation(
+        "billing.checkout.disabled",
+        "Self-service billing is not active yet.",
+      );
+    }
     const ctx = await currentContext();
     if (!ctx.isAuthenticated || !ctx.organizationId || !ctx.email) {
       throw AxiomErrors.validation("auth.required", "Sign in required.");

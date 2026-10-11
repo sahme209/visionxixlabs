@@ -170,12 +170,12 @@ const DASHBOARD_NAV: ReadonlyArray<SidebarGroup> = [
 
 function MockDashboardFrame({ route, children }: { route?: string; children: React.ReactNode }) {
   return (
-    <div className="rounded-2xl border border-white/[0.08] bg-gradient-to-br from-zinc-900/60 to-zinc-950/70 backdrop-blur-sm overflow-hidden shadow-[0_20px_60px_-30px_rgba(139,92,246,0.25)]">
+    <div className="rounded-2xl border border-white/[0.08] bg-gradient-to-br from-zinc-900/60 to-zinc-950/70 backdrop-blur-sm overflow-hidden shadow-[0_20px_60px_-30px_rgba(255, 120, 61,0.25)]">
       <MockBrowserChrome route={route} />
       {/* Dashboard top header */}
       <div className="flex items-center justify-between border-b border-white/[0.05] px-4 py-2 bg-white/[0.015]">
         <div className="flex items-center gap-2">
-          <span className="w-5 h-5 rounded bg-gradient-to-br from-violet-500 to-fuchsia-500 flex items-center justify-center text-[10px] font-bold text-white">A</span>
+          <span className="w-5 h-5 rounded bg-gradient-to-br from-orange-500 to-amber-500 flex items-center justify-center text-[10px] font-bold text-white">A</span>
           <span className="text-[12px] font-semibold text-white tracking-tight">Axiom</span>
           <span className="text-[10px] font-mono text-zinc-500 hidden sm:inline">· ws_acme_prod</span>
         </div>
@@ -195,7 +195,7 @@ function MockDashboardFrame({ route, children }: { route?: string; children: Rea
                   const active = it.route === route;
                   return (
                     <li key={it.route}>
-                      <div className={`text-[10.5px] px-2 py-0.5 rounded ${active ? "bg-violet-500/15 text-violet-200 font-medium" : "text-zinc-400"}`}>
+                      <div className={`text-[10.5px] px-2 py-0.5 rounded ${active ? "bg-orange-500/15 text-orange-200 font-medium" : "text-zinc-400"}`}>
                         {it.label}
                       </div>
                     </li>
@@ -242,7 +242,7 @@ const DESKTOP_NAV: ReadonlyArray<{ kind: string; label: string; items: ReadonlyA
 
 function MockDesktopFrame({ route: _route, children }: { route?: string; children: React.ReactNode }) {
   return (
-    <div className="rounded-2xl border border-white/[0.10] bg-gradient-to-br from-zinc-900/70 to-zinc-950/80 overflow-hidden shadow-[0_25px_70px_-30px_rgba(139,92,246,0.30)]">
+    <div className="rounded-2xl border border-white/[0.10] bg-gradient-to-br from-zinc-900/70 to-zinc-950/80 overflow-hidden shadow-[0_25px_70px_-30px_rgba(255, 120, 61,0.30)]">
       {/* Tauri window title bar */}
       <div className="relative flex items-center gap-2 px-3 py-2 border-b border-white/[0.06] bg-black/40">
         <div className="flex items-center gap-1.5">
@@ -265,7 +265,7 @@ function MockDesktopFrame({ route: _route, children }: { route?: string; childre
               <ul className="space-y-0.5">
                 {g.items.map((it) => (
                   <li key={it.label}>
-                    <div className={`text-[10.5px] px-2 py-0.5 rounded ${it.active ? "bg-violet-500/15 text-violet-200 font-medium" : "text-zinc-400"}`}>
+                    <div className={`text-[10.5px] px-2 py-0.5 rounded ${it.active ? "bg-orange-500/15 text-orange-200 font-medium" : "text-zinc-400"}`}>
                       {it.label}
                     </div>
                   </li>
@@ -450,9 +450,9 @@ function ApprovalMock({ step: _step }: { step: DemoStep }) {
   return (
     <div className="space-y-4">
       <SectionLabel>two-person approval packet · awaiting review</SectionLabel>
-      <div className="rounded-lg border border-violet-500/25 bg-violet-500/[0.04] p-4 space-y-3">
+      <div className="rounded-lg border border-orange-500/25 bg-orange-500/[0.04] p-4 space-y-3">
         <div className="flex items-center justify-between flex-wrap gap-2">
-          <span className="text-[11px] font-mono text-violet-200/90 uppercase tracking-wider">apr_pipe_ck98zxm…</span>
+          <span className="text-[11px] font-mono text-orange-200/90 uppercase tracking-wider">apr_pipe_ck98zxm…</span>
           <span className="text-[9px] font-mono text-zinc-200 px-1.5 py-0.5 rounded bg-white/15 uppercase tracking-wider">awaiting</span>
         </div>
         <div className="grid grid-cols-2 gap-2 text-[11px]">
@@ -503,7 +503,7 @@ function EngineerMock({ step }: { step: DemoStep }) {
         {engineers.map((e) => {
           const hot = focused !== "all" && e.name.toLowerCase().includes(focused.replace(" engineer", ""));
           return (
-            <div key={e.name} className={`rounded-lg border ${hot ? "border-violet-500/35 bg-violet-500/[0.05]" : "border-white/[0.06] bg-white/[0.015]"} p-3`}>
+            <div key={e.name} className={`rounded-lg border ${hot ? "border-orange-500/35 bg-orange-500/[0.05]" : "border-white/[0.06] bg-white/[0.015]"} p-3`}>
               <div className="flex items-center justify-between mb-1">
                 <span className="text-[12px] font-semibold text-white">{e.name}</span>
                 <span className={`text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded ${e.state === "active" ? "bg-emerald-500/15 text-emerald-300" : "bg-zinc-700/40 text-zinc-400"}`}>{e.state}</span>
@@ -594,7 +594,7 @@ function AuditMock({ step: _step }: { step: DemoStep }) {
             {rows.map((r, i) => (
               <tr key={i} className="text-zinc-300">
                 <td className="px-3 py-2 truncate text-zinc-300">{r.actor}</td>
-                <td className="px-3 py-2 text-violet-300/90">{r.action}</td>
+                <td className="px-3 py-2 text-orange-300/90">{r.action}</td>
                 <td className="px-3 py-2 text-zinc-500 hidden sm:table-cell truncate">{r.corr}</td>
                 <td className="px-3 py-2 text-zinc-500 text-right whitespace-nowrap">{r.t}</td>
               </tr>
@@ -612,9 +612,9 @@ function IncidentMock({ step: _step }: { step: DemoStep }) {
     { t: "T-0",    label: "Alert fired · cpu_p95 > 92% for 5m",                src: "cloudwatch",   dot: "bg-red-400"    },
     { t: "T+12s",  label: "Promoted to incident · severity=high",              src: "platform",     dot: "bg-zinc-400"  },
     { t: "T+22s",  label: "Recent deploys queried · 3 in last 30m",            src: "github",       dot: "bg-zinc-400"   },
-    { t: "T+34s",  label: "Deploy correlation hit · sha 4a2b8c (12m ago)",     src: "incident eng", dot: "bg-violet-400" },
-    { t: "T+58s",  label: "Trace surge identified · /orders @ 4.1s p95",       src: "incident eng", dot: "bg-violet-400" },
-    { t: "T+1m",   label: "Root-cause hypothesis · missing index on user_id",  src: "incident eng", dot: "bg-violet-400" },
+    { t: "T+34s",  label: "Deploy correlation hit · sha 4a2b8c (12m ago)",     src: "incident eng", dot: "bg-orange-400" },
+    { t: "T+58s",  label: "Trace surge identified · /orders @ 4.1s p95",       src: "incident eng", dot: "bg-orange-400" },
+    { t: "T+1m",   label: "Root-cause hypothesis · missing index on user_id",  src: "incident eng", dot: "bg-orange-400" },
     { t: "T+2m",   label: "Mitigation proposed · awaiting approval",           src: "platform",     dot: "bg-zinc-400"  },
   ];
   return (
@@ -653,9 +653,9 @@ function QuotaMock({ step: _step }: { step: DemoStep }) {
       <div className="rounded-lg border border-white/[0.06] bg-white/[0.015] p-4 space-y-3">
         {dims.map((d) => {
           const barCls =
-            d.tone === "amber"   ? "bg-gradient-to-r from-violet-500/70 to-white/70" :
-            d.tone === "emerald" ? "bg-gradient-to-r from-violet-500/70 to-emerald-500/70" :
-                                   "bg-violet-500/70";
+            d.tone === "amber"   ? "bg-gradient-to-r from-orange-500/70 to-white/70" :
+            d.tone === "emerald" ? "bg-gradient-to-r from-orange-500/70 to-emerald-500/70" :
+                                   "bg-orange-500/70";
           return (
             <div key={d.label} className="space-y-1">
               <div className="flex items-center justify-between text-[11px] font-mono">
@@ -927,8 +927,8 @@ function SectionLabel({ children }: { children: React.ReactNode }) {
 
 function CalloutLine({ label, body }: { label: string; body: string }) {
   return (
-    <div className="rounded-md border border-violet-500/20 bg-violet-500/[0.04] px-3 py-2">
-      <span className="text-[10px] font-mono text-violet-300 uppercase tracking-wider mr-2">{label}</span>
+    <div className="rounded-md border border-orange-500/20 bg-orange-500/[0.04] px-3 py-2">
+      <span className="text-[10px] font-mono text-orange-300 uppercase tracking-wider mr-2">{label}</span>
       <span className="text-[11px] text-zinc-300">{body}</span>
     </div>
   );

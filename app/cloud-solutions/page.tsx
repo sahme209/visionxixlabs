@@ -102,7 +102,7 @@ export default function CloudSolutionsPage() {
               <li>
                 <Link
                   href="/"
-                  className="hover:text-violet-400"
+                  className="hover:text-orange-400"
                 >
                   Home
                 </Link>
@@ -126,7 +126,7 @@ export default function CloudSolutionsPage() {
                 <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-4 tracking-[-0.04em] leading-[1.04] text-white">
                   <span className="relative inline-block">
                     {cloudSolutionsHero.title}
-                    <span aria-hidden className="absolute left-0 -bottom-1 h-[3px] w-full rounded-full bg-gradient-to-r from-brand-coral via-fuchsia-400 to-transparent opacity-85" />
+                    <span aria-hidden className="absolute left-0 -bottom-1 h-[3px] w-full rounded-full bg-gradient-to-r from-brand-coral via-amber-400 to-transparent opacity-85" />
                   </span>
                 </h1>
                 <p className="text-lg md:text-xl text-zinc-400 max-w-3xl">
@@ -171,21 +171,21 @@ export default function CloudSolutionsPage() {
                     Need AWS, Azure, or GCP specifics? Visit{" "}
                     <Link
                       href="/cloud-solutions/aws"
-                      className="text-violet-400 hover:underline"
+                      className="text-orange-400 hover:underline"
                     >
                       AWS Cloud Solutions
                     </Link>
                     ,{" "}
                     <Link
                       href="/cloud-solutions/azure"
-                      className="text-violet-400 hover:underline"
+                      className="text-orange-400 hover:underline"
                     >
                       Azure Cloud Solutions
                     </Link>
                     , or{" "}
                     <Link
                       href="/cloud-solutions/gcp"
-                      className="text-violet-400 hover:underline"
+                      className="text-orange-400 hover:underline"
                     >
                       GCP Cloud Solutions
                     </Link>
@@ -241,19 +241,19 @@ export default function CloudSolutionsPage() {
               <div className="mt-4 flex flex-wrap justify-center gap-4 text-xs text-zinc-400">
                 <Link
                   href="/cloud-solutions/aws"
-                  className="underline underline-offset-4 hover:text-violet-400"
+                  className="underline underline-offset-4 hover:text-orange-400"
                 >
                   View AWS Cloud Solutions
                 </Link>
                 <Link
                   href="/cloud-solutions/azure"
-                  className="underline underline-offset-4 hover:text-violet-400"
+                  className="underline underline-offset-4 hover:text-orange-400"
                 >
                   View Azure Cloud Solutions
                 </Link>
                 <Link
                   href="/cloud-solutions/gcp"
-                  className="underline underline-offset-4 hover:text-violet-400"
+                  className="underline underline-offset-4 hover:text-orange-400"
                 >
                   View GCP Cloud Solutions
                 </Link>
@@ -336,7 +336,7 @@ export default function CloudSolutionsPage() {
               <ul className="space-y-2 text-zinc-300">
                 {idealClientsCloud.map((item) => (
                   <li key={item} className="flex items-start">
-                    <span className="text-violet-500 mr-2 mt-0.5">•</span>
+                    <span className="text-orange-500 mr-2 mt-0.5">•</span>
                     {item}
                   </li>
                 ))}
@@ -448,7 +448,7 @@ export default function CloudSolutionsPage() {
       <Footer />
 
       {/* Floating blur orbs */}
-      <div className="ambient-drift absolute bottom-1/4 left-10 w-[380px] h-[340px] bg-brand-violet/[0.08] rounded-full blur-[120px] pointer-events-none" />
+      <div className="ambient-drift absolute bottom-1/4 left-10 w-[380px] h-[340px] bg-brand-orange/[0.08] rounded-full blur-[120px] pointer-events-none" />
       <div className="ambient-drift absolute top-1/3 right-0 w-[460px] h-[400px] bg-brand-coral/[0.06] rounded-full blur-[130px] pointer-events-none" style={{ animationDelay: "-8s" }} />
       <div className="ambient-drift absolute top-1/4 left-1/3 w-[340px] h-[260px] bg-cyan-500/[0.04] rounded-full blur-[110px] pointer-events-none" style={{ animationDelay: "-14s" }} />
     </div>

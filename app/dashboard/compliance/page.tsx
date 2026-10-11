@@ -144,15 +144,15 @@ export default async function CompliancePage() {
           executive summary appears above the counts; per-control
           evidence summaries appear inside each row in the framework
           lists below. */}
-      <section className="mb-8 rounded-2xl border border-violet-500/15 bg-violet-500/[0.04] p-5">
+      <section className="mb-8 rounded-2xl border border-orange-500/15 bg-orange-500/[0.04] p-5">
         <div className="flex items-center justify-between gap-3 mb-3 flex-wrap">
-          <p className="text-[10px] font-mono uppercase tracking-[0.18em] text-violet-300 inline-flex items-center gap-2">
+          <p className="text-[10px] font-mono uppercase tracking-[0.18em] text-orange-300 inline-flex items-center gap-2">
             <SparklesIcon className="h-3.5 w-3.5" /> compliance engineer · executive summary
           </p>
           <form action="/api/workforce/compliance_engineer/run-domain" method="POST">
             <button
               type="submit"
-              className="text-[11px] font-mono uppercase tracking-wider px-3 py-1.5 rounded-full border border-violet-500/30 text-violet-100 hover:text-white hover:border-violet-500/60 hover:bg-violet-500/15 transition-colors"
+              className="text-[11px] font-mono uppercase tracking-wider px-3 py-1.5 rounded-full border border-orange-500/30 text-orange-100 hover:text-white hover:border-orange-500/60 hover:bg-orange-500/15 transition-colors"
               title="Run the Compliance Engineer over your current findings"
             >
               {complianceReportRow ? "re-run report" : "generate report"}
@@ -223,7 +223,7 @@ export default async function CompliancePage() {
                         <p className="text-[14px] font-medium text-white">{control.title}</p>
                         <p className="text-[12px] text-zinc-500 leading-relaxed mt-1">{control.description}</p>
                         {evidenceByControlId.has(control.id) && (
-                          <p className="text-[11.5px] text-violet-200/90 leading-relaxed mt-1.5 italic">
+                          <p className="text-[11.5px] text-orange-200/90 leading-relaxed mt-1.5 italic">
                             ↳ {evidenceByControlId.get(control.id)}
                           </p>
                         )}

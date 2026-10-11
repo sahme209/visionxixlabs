@@ -144,7 +144,7 @@ export default async function ApprovalDetailPage({ params }: { params: Promise<{
       <section className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 mb-6">
         <div className="flex items-center justify-between gap-3 flex-wrap mb-3">
           <div className="flex items-center gap-2 min-w-0">
-            <CpuChipIcon className="h-4 w-4 text-violet-300 shrink-0" />
+            <CpuChipIcon className="h-4 w-4 text-orange-300 shrink-0" />
             {isPipelineSourced && snapshot.pipelineStageRun?.runId ? (
               <Link
                 href={`/dashboard/workforce/pipelines/runs/${snapshot.pipelineStageRun.runId}`}

@@ -7,21 +7,20 @@ type ChartType = "line" | "bars" | "area";
 
 type MiniChartProps = {
   type?: ChartType;
-  color?: "violet" | "fuchsia" | "emerald" | "indigo" | "orange";
+  color?: "orange" | "amber" | "emerald" | "zinc";
   className?: string;
 };
 
 const colorMap = {
-  violet: { stroke: "#8b5cf6", fill: "rgba(139,92,246,0.15)" },
-  fuchsia: { stroke: "#d946ef", fill: "rgba(217,70,239,0.15)" },
+  orange: { stroke: "#ff783d", fill: "rgba(255, 120, 61,0.15)" },
+  amber: { stroke: "#f54e00", fill: "rgba(245, 78, 0,0.15)" },
   emerald: { stroke: "#10b981", fill: "rgba(16,185,129,0.15)" },
-  indigo: { stroke: "#6366f1", fill: "rgba(99,102,241,0.15)" },
-  orange: { stroke: "#f97316", fill: "rgba(249,115,22,0.15)" },
+  zinc: { stroke: "#a1a1aa", fill: "rgba(161,161,170,0.15)" },
 };
 
 export function MiniChart({
   type = "line",
-  color = "violet",
+  color = "orange",
   className = "",
 }: MiniChartProps) {
   const [reduceMotion, setReduceMotion] = useState(false);

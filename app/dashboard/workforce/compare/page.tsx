@@ -277,7 +277,7 @@ export default async function CompareEngineersPage({
 
             <Divider />
 
-            <MetricRow label="AGI rationale"   value={String(c.agi.total)}        tone={c.agi.total > 0        ? "text-violet-300"  : "text-zinc-600"} />
+            <MetricRow label="AGI rationale"   value={String(c.agi.total)}        tone={c.agi.total > 0        ? "text-orange-300"  : "text-zinc-600"} />
             <MetricRow label="· ai generated"  value={String(c.agi.ai_generated)} tone={c.agi.ai_generated > 0 ? "text-emerald-300" : "text-zinc-600"} />
             <MetricRow
               label="own AGI"
@@ -293,7 +293,7 @@ export default async function CompareEngineersPage({
             {c.specialty.updatedAt && (
               <MetricRow label="· updated" value={c.specialty.updatedAt.toISOString().slice(0, 10)} mono tone="text-zinc-300" />
             )}
-            <MetricRow label="Q&A asked" value={String(c.qaCount)} tone={c.qaCount > 0 ? "text-violet-300" : "text-zinc-600"} />
+            <MetricRow label="Q&A asked" value={String(c.qaCount)} tone={c.qaCount > 0 ? "text-orange-300" : "text-zinc-600"} />
           </article>
         ))}
       </section>

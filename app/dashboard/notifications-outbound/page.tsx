@@ -151,7 +151,7 @@ export default function OutboundNotificationsPage() {
           className="absolute inset-0 -z-10 opacity-90 pointer-events-none"
           style={{
             background:
-              "radial-gradient(900px 320px at 12% 0%, rgba(34,211,238,0.10), transparent 60%), radial-gradient(700px 260px at 88% 110%, rgba(124,58,237,0.06), transparent 60%)",
+              "radial-gradient(900px 320px at 12% 0%, rgba(34,211,238,0.10), transparent 60%), radial-gradient(700px 260px at 88% 110%, rgba(245, 78, 0,0.06), transparent 60%)",
           }}
           aria-hidden
         />
@@ -266,7 +266,7 @@ export default function OutboundNotificationsPage() {
           <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 mb-8">
             <div className="flex items-start justify-between gap-3 flex-wrap">
               <div className="min-w-0 flex-1">
-                <p className="text-[11px] font-mono text-violet-300/80 uppercase tracking-wider mb-1">// step 2 · close the loop</p>
+                <p className="text-[11px] font-mono text-orange-300/80 uppercase tracking-wider mb-1">// step 2 · close the loop</p>
                 <h2 className="text-[16px] font-semibold text-white mb-1">Dispatch critical telemetry now</h2>
                 <p className="text-[12px] text-zinc-400">
                   Runs the telemetry builder, then fires Slack/Teams pings for every signal at severity ≥ high.
@@ -276,7 +276,7 @@ export default function OutboundNotificationsPage() {
               <button
                 onClick={dispatchTelemetry}
                 disabled={busy || status.configuredCount === 0}
-                className="inline-flex items-center gap-1.5 text-[12px] font-medium px-3 py-1.5 rounded-lg bg-violet-500/15 text-white border border-white/[0.12] hover:bg-violet-500/20 disabled:opacity-50"
+                className="inline-flex items-center gap-1.5 text-[12px] font-medium px-3 py-1.5 rounded-lg bg-orange-500/15 text-white border border-white/[0.12] hover:bg-orange-500/20 disabled:opacity-50"
               >
                 <PaperAirplaneIcon className="h-3.5 w-3.5" />
                 {busy ? "Dispatching…" : "Dispatch high+ signals"}
@@ -285,7 +285,7 @@ export default function OutboundNotificationsPage() {
             {telemetryOutcome && (
               <div className="mt-3 grid grid-cols-3 gap-2">
                 <Stat label="Signals inspected" value={String(telemetryOutcome.totalSignalsInspected)} tone="zinc" />
-                <Stat label="Dispatched" value={String(telemetryOutcome.totalDispatchAttempted)} tone="violet" />
+                <Stat label="Dispatched" value={String(telemetryOutcome.totalDispatchAttempted)} tone="orange" />
                 <Stat label="Succeeded" value={String(telemetryOutcome.totalDispatchSucceeded)} tone={telemetryOutcome.totalDispatchSucceeded > 0 ? "emerald" : "amber"} />
               </div>
             )}
@@ -374,11 +374,11 @@ export default function OutboundNotificationsPage() {
   );
 }
 
-function Stat({ label, value, tone }: { label: string; value: string; tone: "emerald" | "amber" | "violet" | "zinc" }) {
+function Stat({ label, value, tone }: { label: string; value: string; tone: "emerald" | "amber" | "orange" | "zinc" }) {
   const cls = {
     emerald: "border-emerald-500/[0.18] bg-emerald-500/[0.03] text-emerald-200",
     amber: "border-white/[0.18] bg-white/[0.03] text-zinc-200",
-    violet: "border-white/[0.06] bg-white/[0.015] text-white",
+    orange: "border-white/[0.06] bg-white/[0.015] text-white",
     zinc: "border-white/[0.06] bg-white/[0.02] text-zinc-200",
   }[tone];
   return (

@@ -257,7 +257,7 @@ export default async function FindingDetailPage({
                     {rationale && (
                       <>
                         <span className="text-zinc-500">·</span>
-                        <span className="text-violet-300">AGI {rationale.outcome.replace(/_/g, " ")}</span>
+                        <span className="text-orange-300">AGI {rationale.outcome.replace(/_/g, " ")}</span>
                       </>
                     )}
                   </div>
@@ -268,9 +268,9 @@ export default async function FindingDetailPage({
                   )}
 
                   {rationale && (
-                    <div className="mt-3 rounded-lg border border-violet-500/15 bg-violet-500/[0.04] p-3">
+                    <div className="mt-3 rounded-lg border border-orange-500/15 bg-orange-500/[0.04] p-3">
                       <div className="flex items-center gap-2 mb-1.5">
-                        <p className="text-[10px] font-mono uppercase tracking-[0.18em] text-violet-300">AGI rationale</p>
+                        <p className="text-[10px] font-mono uppercase tracking-[0.18em] text-orange-300">AGI rationale</p>
                         {rationale.modelHint && (
                           <span className="text-[10px] font-mono text-zinc-500">· {rationale.modelHint}</span>
                         )}

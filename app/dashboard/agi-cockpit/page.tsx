@@ -225,7 +225,7 @@ export default function AgiCockpitPage() {
                 type="button"
                 onClick={runNow}
                 disabled={runBusy}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md border border-violet-500/40 bg-violet-500/[0.14] text-[12px] font-semibold text-violet-100 hover:bg-violet-500/[0.22] disabled:opacity-50 disabled:cursor-wait transition-colors"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md border border-orange-500/40 bg-orange-500/[0.14] text-[12px] font-semibold text-orange-100 hover:bg-orange-500/[0.22] disabled:opacity-50 disabled:cursor-wait transition-colors"
               >
                 <SparklesIcon className={`h-3.5 w-3.5 ${runBusy ? "animate-spin" : ""}`} />
                 {runBusy ? "Running…" : "Run AGI now"}
@@ -349,7 +349,7 @@ function EngineCard({ engine, icon, href }: { engine: EngineTelemetry; icon: Rea
   return (
     <div className="rounded-xl border border-white/[0.06] bg-white/[0.015] p-4">
       <div className="flex items-center gap-2 mb-2">
-        <span className="text-violet-300">{icon}</span>
+        <span className="text-orange-300">{icon}</span>
         <p className="text-[13px] font-semibold text-white">{engine.name}</p>
         <span className="text-[10px] font-mono text-zinc-500 ml-auto">{engine.version}</span>
       </div>
@@ -394,10 +394,10 @@ function AvailabilityStrip({ snapshot }: { snapshot: AvailSnapshot }) {
     <Link href="/dashboard/agi-memory" className="block mb-6">
       <div className={`rounded-xl border p-3 ${tone} hover:brightness-110 transition`}>
         <div className="flex items-center gap-3 flex-wrap">
-          <p className="text-[11px] font-semibold text-violet-100">AI provider availability</p>
+          <p className="text-[11px] font-semibold text-orange-100">AI provider availability</p>
           <span className="text-[10px] font-mono text-zinc-300">window: last {snapshot.windowSize}</span>
           <div className="flex items-center gap-2 ml-auto text-[11px] font-mono">
-            <span className="text-violet-300">{snapshot.aiGenerated} AI</span>
+            <span className="text-orange-300">{snapshot.aiGenerated} AI</span>
             <span className="text-zinc-500">·</span>
             <span className="text-zinc-300">{snapshot.fallbackRules} fallback</span>
             <span className="text-zinc-500">·</span>
@@ -407,7 +407,7 @@ function AvailabilityStrip({ snapshot }: { snapshot: AvailSnapshot }) {
           </div>
         </div>
         <div className="mt-2 h-1.5 rounded-full bg-black/40 overflow-hidden">
-          <div className="h-full bg-gradient-to-r from-violet-500 via-fuchsia-500 to-cyan-400" style={{ width: `${snapshot.aiAvailabilityPct}%` }} />
+          <div className="h-full bg-gradient-to-r from-orange-500 via-amber-500 to-cyan-400" style={{ width: `${snapshot.aiAvailabilityPct}%` }} />
         </div>
       </div>
     </Link>

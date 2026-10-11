@@ -11,7 +11,7 @@ import type { ReactNode } from "react";
 
 interface PlatformHeroProps {
   eyebrow: string;
-  eyebrowTone?: "violet" | "cyan" | "fuchsia" | "emerald" | "amber";
+  eyebrowTone?: "orange" | "cyan" | "amber" | "emerald" | "zinc";
   title: string;
   description: string;
   /** Optional right-side chips / actions. */
@@ -21,16 +21,16 @@ interface PlatformHeroProps {
 }
 
 const EYEBROW_TONES = {
-  violet:   "text-violet-300/80",
+  orange:   "text-orange-300/80",
   cyan:     "text-cyan-300/80",
-  fuchsia:  "text-fuchsia-300/80",
+  amber:    "text-amber-300/80",
   emerald:  "text-emerald-300/80",
-  amber:    "text-zinc-300/80",
+  zinc:     "text-zinc-300/80",
 } as const;
 
 export function PlatformHero({
   eyebrow,
-  eyebrowTone = "violet",
+  eyebrowTone = "orange",
   title,
   description,
   right,
@@ -38,7 +38,7 @@ export function PlatformHero({
 }: PlatformHeroProps) {
   const gradient =
     gradientFromColor ??
-    "radial-gradient(900px 320px at 14% 0%, rgba(124,58,237,0.12), transparent 60%), radial-gradient(700px 260px at 86% 110%, rgba(45,212,191,0.06), transparent 60%)";
+    "radial-gradient(900px 320px at 14% 0%, rgba(245, 78, 0,0.12), transparent 60%), radial-gradient(700px 260px at 86% 110%, rgba(45,212,191,0.06), transparent 60%)";
 
   return (
     <div className="mb-8 rounded-3xl border border-white/[0.05] bg-gradient-to-br from-white/[0.03] via-white/[0.015] to-transparent p-6 md:p-8 relative overflow-hidden">

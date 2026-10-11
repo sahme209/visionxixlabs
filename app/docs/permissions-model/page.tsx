@@ -48,7 +48,7 @@ export default function PermissionsModelPage() {
           <li>Read Lambda function source code or environment variable values</li>
           <li>Modify IAM policies, users, roles, or permission boundaries</li>
         </ul>
-        <p>Full policy + per-line explanation at <Link href="/docs/aws-setup#permissions-explained" className="text-violet-300 hover:text-violet-200">/docs/aws-setup</Link>.</p>
+        <p>Full policy + per-line explanation at <Link href="/docs/aws-setup#permissions-explained" className="text-orange-300 hover:text-orange-200">/docs/aws-setup</Link>.</p>
       </DocSection>
 
       <DocSection id="aws-execution-role" title="AWS execution role (opt-in, separate)" kicker="03 · AWS · Execute">
@@ -89,7 +89,7 @@ export default function PermissionsModelPage() {
           <li><strong>Medium risk</strong> (moderate blast, reversible) — single approver. Pre-verified rollback required. Never auto-applied.</li>
           <li><strong>High risk</strong> (broad blast or hard-to-reverse) — multi-party approval. Cannot be auto-applied regardless of Trust Ladder state.</li>
         </ul>
-        <p>See <Link href="/docs/approval-workflow" className="text-violet-300 hover:text-violet-200">approval workflow</Link>.</p>
+        <p>See <Link href="/docs/approval-workflow" className="text-orange-300 hover:text-orange-200">approval workflow</Link>.</p>
       </DocSection>
 
       <DocSection id="revoke" title="Revoking access" kicker="07 · Revoke">

@@ -66,9 +66,9 @@ const KIND_CONFIG: Record<
   "approval.granted": { icon: ShieldCheckIcon, iconClass: "text-emerald-400", bgClass: "bg-emerald-500/10", borderClass: "border-emerald-500/20" },
   "approval.denied": { icon: ShieldCheckIcon, iconClass: "text-zinc-400", bgClass: "bg-white/10", borderClass: "border-white/20" },
   "cost.shift": { icon: CurrencyDollarIcon, iconClass: "text-emerald-400", bgClass: "bg-emerald-500/10", borderClass: "border-emerald-500/20" },
-  "confidence.increase": { icon: ArrowTrendingUpIcon, iconClass: "text-violet-400", bgClass: "bg-violet-500/10", borderClass: "border-violet-500/20" },
+  "confidence.increase": { icon: ArrowTrendingUpIcon, iconClass: "text-orange-400", bgClass: "bg-orange-500/10", borderClass: "border-orange-500/20" },
   "confidence.decrease": { icon: ArrowTrendingDownIcon, iconClass: "text-zinc-400", bgClass: "bg-white/10", borderClass: "border-white/20" },
-  "baseline.snapshot": { icon: CpuChipIcon, iconClass: "text-violet-400", bgClass: "bg-violet-500/10", borderClass: "border-violet-500/20" },
+  "baseline.snapshot": { icon: CpuChipIcon, iconClass: "text-orange-400", bgClass: "bg-orange-500/10", borderClass: "border-orange-500/20" },
 };
 
 const PROVIDER_COLOR = {
@@ -98,7 +98,7 @@ export function MemoryTimeline({ groups = DEMO_GROUPS, className = "" }: MemoryT
       <div className="px-6 py-4 border-b border-white/[0.06] bg-white/[0.01]">
         <div className="flex items-center justify-between flex-wrap gap-3 mb-3">
           <div className="flex items-center gap-3">
-            <CpuChipIcon className="h-4 w-4 text-violet-400" />
+            <CpuChipIcon className="h-4 w-4 text-orange-400" />
             <h3 className="text-sm font-semibold text-white">Operational Memory</h3>
             <span className="text-[10px] text-zinc-500 font-mono">{groups.length} days · {groups.reduce((s, g) => s + g.events.length, 0)} events</span>
           </div>
@@ -124,14 +124,14 @@ export function MemoryTimeline({ groups = DEMO_GROUPS, className = "" }: MemoryT
       <div className="px-6 py-6 max-h-[640px] overflow-y-auto">
         <div className="relative">
           {/* Continuous timeline rail */}
-          <span aria-hidden className="absolute left-3 top-2 bottom-2 w-px bg-gradient-to-b from-violet-500/30 via-white/[0.08] to-transparent" />
+          <span aria-hidden className="absolute left-3 top-2 bottom-2 w-px bg-gradient-to-b from-orange-500/30 via-white/[0.08] to-transparent" />
 
           {groups.map((group, gIdx) => (
             <div key={group.date} className={`relative ${gIdx === groups.length - 1 ? "" : "mb-8"}`}>
               {/* Day header */}
               <div className="relative flex items-center gap-3 mb-3 pl-10">
-                <span className="absolute left-0 w-7 h-7 rounded-full bg-violet-500/15 border-2 border-violet-500/30 flex items-center justify-center">
-                  <ClockIcon className="h-3 w-3 text-violet-400" />
+                <span className="absolute left-0 w-7 h-7 rounded-full bg-orange-500/15 border-2 border-orange-500/30 flex items-center justify-center">
+                  <ClockIcon className="h-3 w-3 text-orange-400" />
                 </span>
                 <div className="flex items-center gap-3 flex-wrap">
                   <h4 className="text-sm font-bold text-white">{group.label}</h4>
@@ -158,7 +158,7 @@ export function MemoryTimeline({ groups = DEMO_GROUPS, className = "" }: MemoryT
                   return (
                     <li key={event.id} className="relative rounded-xl bg-white/[0.02] border border-white/[0.04] p-3 hover:border-white/[0.08] transition-colors group">
                       {/* Connector dot */}
-                      <span aria-hidden className="absolute left-[-2.05rem] top-3.5 w-2.5 h-2.5 rounded-full border-2 border-[#09090b] bg-white/[0.1] group-hover:bg-violet-400 transition-colors" />
+                      <span aria-hidden className="absolute left-[-2.05rem] top-3.5 w-2.5 h-2.5 rounded-full border-2 border-[#09090b] bg-white/[0.1] group-hover:bg-orange-400 transition-colors" />
 
                       <div className="flex items-start gap-3">
                         <div className={`w-7 h-7 rounded-lg ${config.bgClass} border ${config.borderClass} flex items-center justify-center shrink-0`}>

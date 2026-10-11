@@ -59,7 +59,7 @@ const ENGINE_LABEL: Record<Signal["engine"], string> = {
 function strengthClass(s: number): string {
   if (s >= 80) return "bg-rose-500/15 text-rose-300 border-rose-500/25";
   if (s >= 60) return "bg-white/15 text-zinc-300 border-white/25";
-  if (s >= 40) return "bg-violet-500/15 text-violet-300 border-white/[0.10]";
+  if (s >= 40) return "bg-orange-500/15 text-orange-300 border-white/[0.10]";
   return "bg-zinc-700/40 text-zinc-300 border-zinc-700/40";
 }
 
@@ -105,7 +105,7 @@ export default function LearningLoopPage() {
           type="button"
           onClick={load}
           disabled={loading}
-          className="px-3 py-1.5 rounded-lg border border-white/[0.12] bg-white/[0.025] text-[12px] font-semibold text-white hover:bg-violet-500/[0.12] disabled:opacity-50 disabled:cursor-wait transition-colors inline-flex items-center gap-1.5"
+          className="px-3 py-1.5 rounded-lg border border-white/[0.12] bg-white/[0.025] text-[12px] font-semibold text-white hover:bg-orange-500/[0.12] disabled:opacity-50 disabled:cursor-wait transition-colors inline-flex items-center gap-1.5"
         >
           <ArrowPathIcon className={`h-3.5 w-3.5 ${loading ? "animate-spin" : ""}`} />
           {loading ? "Refreshing…" : "Refresh signals"}
@@ -144,7 +144,7 @@ export default function LearningLoopPage() {
       {data && data.signals.length > 0 && (
         <div className="space-y-3 mb-8">
           {data.signals.map((s, i) => (
-            <div key={i} className="rounded-2xl border border-white/[0.06] bg-violet-500/[0.025] p-4">
+            <div key={i} className="rounded-2xl border border-white/[0.06] bg-orange-500/[0.025] p-4">
               <div className="flex items-center gap-2 mb-2 flex-wrap">
                 <span className={`text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 rounded border ${strengthClass(s.strength)}`}>
                   strength {s.strength}
@@ -157,7 +157,7 @@ export default function LearningLoopPage() {
                 </span>
                 <span className="text-[10px] font-mono text-zinc-500">target: {s.targetKind}</span>
                 {s.keyword && (
-                  <span className="text-[10px] font-mono text-violet-300">keyword: "{s.keyword}"</span>
+                  <span className="text-[10px] font-mono text-orange-300">keyword: "{s.keyword}"</span>
                 )}
                 <span className="text-[10px] font-mono text-zinc-500 ml-auto">occurrences: {s.occurrences}</span>
               </div>

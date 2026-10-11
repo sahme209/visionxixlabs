@@ -32,7 +32,7 @@ export default function CaseStudiesPage() {
     <div className="min-h-screen bg-[#09090b] relative overflow-hidden">
       {/* Huly aurora */}
       <div className="absolute inset-0 bg-grid-mesh opacity-10 pointer-events-none" aria-hidden />
-      <div className="ambient-drift absolute -top-40 left-1/4 w-[540px] h-[500px] rounded-full bg-brand-violet/[0.08] blur-[140px] pointer-events-none" aria-hidden />
+      <div className="ambient-drift absolute -top-40 left-1/4 w-[540px] h-[500px] rounded-full bg-brand-orange/[0.08] blur-[140px] pointer-events-none" aria-hidden />
       <div className="ambient-drift absolute top-1/4 right-[5%] w-[420px] h-[340px] rounded-full bg-brand-coral/[0.06] blur-[120px] pointer-events-none" style={{ animationDelay: "-8s" }} aria-hidden />
       <div className="ambient-drift absolute bottom-32 left-[5%] w-[360px] h-[280px] rounded-full bg-cyan-500/[0.04] blur-[110px] pointer-events-none" style={{ animationDelay: "-14s" }} aria-hidden />
 
@@ -48,7 +48,7 @@ export default function CaseStudiesPage() {
               <li>
                 <Link
                   href="/"
-                  className="hover:text-violet-400"
+                  className="hover:text-orange-400"
                 >
                   Home
                 </Link>
@@ -71,7 +71,7 @@ export default function CaseStudiesPage() {
               <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white tracking-[-0.04em] leading-[1.04] mb-4">
                 <span className="relative inline-block">
                   {caseStudiesHero.title}
-                  <span aria-hidden className="absolute left-0 -bottom-1 h-[3px] w-full rounded-full bg-gradient-to-r from-brand-coral via-fuchsia-400 to-transparent opacity-85" />
+                  <span aria-hidden className="absolute left-0 -bottom-1 h-[3px] w-full rounded-full bg-gradient-to-r from-brand-coral via-amber-400 to-transparent opacity-85" />
                 </span>
               </h1>
               <p className="text-lg md:text-xl text-zinc-400 max-w-2xl">

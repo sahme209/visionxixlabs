@@ -67,7 +67,7 @@ const SEV_TONE: Record<Severity, string> = {
 
 const RISK_TONE: Record<ActionRisk, string> = {
   safe_revert: "bg-emerald-500/15 text-emerald-300 border-emerald-500/30",
-  policy_change: "bg-violet-500/15 text-violet-300 border-white/[0.12]",
+  policy_change: "bg-orange-500/15 text-orange-300 border-white/[0.12]",
   needs_human_triage: "bg-rose-500/15 text-rose-300 border-rose-500/30",
 };
 
@@ -157,7 +157,7 @@ export default function RunbooksPage() {
               onClick={() => setLookback(o.value)}
               className={`text-[11px] font-mono px-2.5 py-1 rounded-full border transition ${
                 lookback === o.value
-                  ? "bg-violet-500/15 text-white border-white/[0.12]"
+                  ? "bg-orange-500/15 text-white border-white/[0.12]"
                   : "bg-white/[0.02] text-zinc-400 border-white/[0.06] hover:text-white"
               }`}
             >
@@ -177,7 +177,7 @@ export default function RunbooksPage() {
       {report && (
         <div className="mb-6 grid grid-cols-2 md:grid-cols-4 gap-3">
           <Stat label="Events inspected" value={report.totalEventsInspected.toLocaleString()} tone="zinc" />
-          <Stat label="Runbooks drafted" value={report.totalRunbooks.toLocaleString()} tone="violet" icon={WrenchScrewdriverIcon} />
+          <Stat label="Runbooks drafted" value={report.totalRunbooks.toLocaleString()} tone="orange" icon={WrenchScrewdriverIcon} />
           <Stat
             label="High / critical"
             value={report.highOrCriticalCount.toLocaleString()}
@@ -209,7 +209,7 @@ export default function RunbooksPage() {
                 onClick={() => setSeverityFilter(s)}
                 className={`text-[10px] font-mono px-2 py-0.5 rounded-full border transition ${
                   severityFilter === s
-                    ? "bg-violet-500/15 text-white border-white/[0.12]"
+                    ? "bg-orange-500/15 text-white border-white/[0.12]"
                     : "bg-white/[0.02] text-zinc-400 border-white/[0.06] hover:text-white"
                 }`}
               >
@@ -266,8 +266,8 @@ export default function RunbooksPage() {
                     {/* Hardening */}
                     <div className="rounded-lg border border-white/[0.06] bg-black/20 p-3">
                       <div className="flex items-center gap-2 mb-1.5">
-                        <ShieldCheckIcon className="h-3.5 w-3.5 text-violet-300" />
-                        <p className="text-[10px] font-mono text-violet-300/80 uppercase tracking-wider">Hardening</p>
+                        <ShieldCheckIcon className="h-3.5 w-3.5 text-orange-300" />
+                        <p className="text-[10px] font-mono text-orange-300/80 uppercase tracking-wider">Hardening</p>
                         <span className={`text-[8.5px] font-mono uppercase tracking-wider px-1 py-px rounded border ${RISK_TONE[rb.hardening.risk]} ml-auto`}>
                           {RISK_LABEL[rb.hardening.risk]}
                         </span>
@@ -317,12 +317,12 @@ export default function RunbooksPage() {
 
 function Stat({
   label, value, tone, icon: Icon,
-}: { label: string; value: string; tone: "emerald" | "amber" | "rose" | "violet" | "zinc"; icon?: typeof WrenchScrewdriverIcon }) {
+}: { label: string; value: string; tone: "emerald" | "amber" | "rose" | "orange" | "zinc"; icon?: typeof WrenchScrewdriverIcon }) {
   const cls = {
     emerald: "border-emerald-500/[0.18] bg-emerald-500/[0.03] text-emerald-200",
     amber:   "border-white/[0.18] bg-white/[0.03] text-zinc-200",
     rose:    "border-rose-500/[0.18] bg-rose-500/[0.03] text-rose-200",
-    violet:  "border-white/[0.06] bg-white/[0.015] text-white",
+    orange:  "border-white/[0.06] bg-white/[0.015] text-white",
     zinc:    "border-white/[0.06] bg-white/[0.02] text-zinc-200",
   }[tone];
   return (

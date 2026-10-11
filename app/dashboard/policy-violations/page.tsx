@@ -51,7 +51,7 @@ type RespBody =
 const STATUS_CLASS: Record<Status, string> = {
   open:               "bg-rose-500/15 text-rose-300 border-rose-500/25",
   exception_pending:  "bg-white/15 text-zinc-300 border-white/25",
-  exception_granted:  "bg-violet-500/15 text-violet-300 border-white/[0.10]",
+  exception_granted:  "bg-orange-500/15 text-orange-300 border-white/[0.10]",
   resolved:           "bg-emerald-500/15 text-emerald-300 border-emerald-500/25",
   unknown:            "bg-zinc-700/40 text-zinc-300 border-zinc-700/40",
 };
@@ -135,7 +135,7 @@ export default function PolicyViolationsPage() {
           <div className="mb-6 grid grid-cols-2 md:grid-cols-4 gap-3">
             <Stat icon={ShieldExclamationIcon} label="Blocking · open" value={String(data.summary.blockingOpen)} tone={data.summary.blockingOpen > 0 ? "rose" : "zinc"} />
             <Stat icon={ClockIcon}             label="Exception pending" value={String(data.summary.byStatus.exception_pending)} tone={data.summary.byStatus.exception_pending > 0 ? "amber" : "zinc"} />
-            <Stat icon={CheckCircleIcon}       label="Exception granted" value={String(data.summary.byStatus.exception_granted)} tone={data.summary.byStatus.exception_granted > 0 ? "violet" : "zinc"} />
+            <Stat icon={CheckCircleIcon}       label="Exception granted" value={String(data.summary.byStatus.exception_granted)} tone={data.summary.byStatus.exception_granted > 0 ? "orange" : "zinc"} />
             <Stat icon={CheckCircleIcon}       label="Resolved"        value={String(data.summary.byStatus.resolved)}          tone={data.summary.byStatus.resolved > 0 ? "emerald" : "zinc"} />
           </div>
 
@@ -166,7 +166,7 @@ export default function PolicyViolationsPage() {
                   </div>
                   <p className="text-[12px] text-zinc-300 mb-1.5 whitespace-pre-wrap">{v.message}</p>
                   {v.remediation && (
-                    <p className="text-[11.5px] text-violet-300 italic mb-1.5">→ {v.remediation}</p>
+                    <p className="text-[11.5px] text-orange-300 italic mb-1.5">→ {v.remediation}</p>
                   )}
                   <div className="flex items-center gap-3 text-[10px] font-mono text-zinc-500 flex-wrap">
                     <span>release {v.releaseId.slice(0, 12)}</span>
@@ -188,9 +188,9 @@ export default function PolicyViolationsPage() {
   );
 }
 
-function Stat({ icon: Icon, label, value, tone }: { icon: typeof ShieldExclamationIcon; label: string; value: string; tone: "violet" | "emerald" | "amber" | "rose" | "zinc" }) {
+function Stat({ icon: Icon, label, value, tone }: { icon: typeof ShieldExclamationIcon; label: string; value: string; tone: "orange" | "emerald" | "amber" | "rose" | "zinc" }) {
   const cls = {
-    violet:  "border-white/[0.06] bg-white/[0.015] text-white",
+    orange:  "border-white/[0.06] bg-white/[0.015] text-white",
     emerald: "border-emerald-500/[0.18] bg-emerald-500/[0.03] text-emerald-200",
     amber:   "border-white/[0.18] bg-white/[0.03] text-zinc-200",
     rose:    "border-rose-500/[0.18] bg-rose-500/[0.03] text-rose-200",
@@ -263,14 +263,14 @@ function DecideControls({
           onChange={(e) => setReason(e.target.value)}
           placeholder="Why is this exception justified? Include approval reference + risk acceptance."
           rows={2}
-          className="w-full rounded-lg border border-white/[0.08] bg-black/30 px-3 py-2 text-[12.5px] text-zinc-100 placeholder:text-zinc-600 focus:border-violet-500/40 focus:outline-none"
+          className="w-full rounded-lg border border-white/[0.08] bg-black/30 px-3 py-2 text-[12.5px] text-zinc-100 placeholder:text-zinc-600 focus:border-orange-500/40 focus:outline-none"
         />
         <div className="mt-2 flex items-center gap-2">
           <button
             type="button"
             disabled={!valid}
             onClick={() => decide("grant_exception", reason.trim())}
-            className="px-3 py-1 rounded border border-violet-500/40 bg-violet-500/[0.12] text-[11.5px] font-semibold text-violet-100 hover:bg-violet-500/[0.20] disabled:opacity-50 transition-colors"
+            className="px-3 py-1 rounded border border-orange-500/40 bg-orange-500/[0.12] text-[11.5px] font-semibold text-orange-100 hover:bg-orange-500/[0.20] disabled:opacity-50 transition-colors"
           >
             Confirm exception
           </button>
@@ -294,7 +294,7 @@ function DecideControls({
           type="button"
           disabled={busy}
           onClick={() => setState({ kind: "granting" })}
-          className="px-3 py-1 rounded border border-white/[0.12] bg-white/[0.025] text-white hover:bg-violet-500/[0.12] disabled:opacity-50 transition-colors"
+          className="px-3 py-1 rounded border border-white/[0.12] bg-white/[0.025] text-white hover:bg-orange-500/[0.12] disabled:opacity-50 transition-colors"
         >
           Grant exception…
         </button>

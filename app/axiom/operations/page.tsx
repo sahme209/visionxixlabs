@@ -110,15 +110,15 @@ const PROVIDER_LABELS: Record<string, string> = { aws: "AWS", azure: "Azure", gc
 // Components
 // ---------------------------------------------------------------------------
 
-function MetricCard({ label, value, sub, icon: Icon, accent = "violet" }: {
+function MetricCard({ label, value, sub, icon: Icon, accent = "orange" }: {
   label: string;
   value: string | number;
   sub?: string;
   icon: typeof CpuChipIcon;
-  accent?: "violet" | "emerald" | "amber" | "blue" | "red";
+  accent?: "orange" | "emerald" | "amber" | "blue" | "red";
 }) {
   const accents: Record<string, string> = {
-    violet: "bg-violet-500/10 text-violet-400",
+    orange: "bg-orange-500/10 text-orange-400",
     emerald: "bg-emerald-500/10 text-emerald-400",
     amber: "bg-white/10 text-zinc-400",
     blue: "bg-blue-500/10 text-blue-400",
@@ -183,7 +183,7 @@ function EmptyState({ title, desc, action }: { title: string; desc: string; acti
       <p className="text-sm font-medium text-zinc-300 mb-1">{title}</p>
       <p className="text-xs text-zinc-500 mb-4 max-w-xs mx-auto">{desc}</p>
       {action && (
-        <Link href={action.href} className="inline-flex items-center gap-1.5 text-sm font-medium text-violet-400 hover:text-white transition-colors">
+        <Link href={action.href} className="inline-flex items-center gap-1.5 text-sm font-medium text-orange-400 hover:text-white transition-colors">
           {action.label}
           <ChevronRightIcon className="h-3.5 w-3.5" />
         </Link>
@@ -254,8 +254,8 @@ export default function OperationsPage() {
       <div className="absolute inset-0 bg-grid-mesh opacity-20 pointer-events-none" aria-hidden />
       <div className="absolute inset-0 noise-grain pointer-events-none" aria-hidden />
       {/* Floating blur orbs */}
-      <div className="absolute -top-40 -left-40 w-[500px] h-[500px] rounded-full bg-violet-500/[0.05] blur-[120px] pointer-events-none" aria-hidden />
-      <div className="absolute top-1/2 -right-60 w-[400px] h-[400px] rounded-full bg-fuchsia-500/[0.04] blur-[100px] pointer-events-none" aria-hidden />
+      <div className="absolute -top-40 -left-40 w-[500px] h-[500px] rounded-full bg-orange-500/[0.05] blur-[120px] pointer-events-none" aria-hidden />
+      <div className="absolute top-1/2 -right-60 w-[400px] h-[400px] rounded-full bg-amber-500/[0.04] blur-[100px] pointer-events-none" aria-hidden />
 
       <div className="relative z-10">
         {/* Header */}
@@ -263,7 +263,7 @@ export default function OperationsPage() {
           <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 h-14 flex items-center justify-between">
             <div className="flex items-center gap-3">
               <Link href="/axiom" className="flex items-center gap-2 text-white">
-                <CpuChipIcon className="h-5 w-5 text-violet-400" />
+                <CpuChipIcon className="h-5 w-5 text-orange-400" />
                 <span className="font-bold text-sm">Axiom</span>
               </Link>
               <span className="text-zinc-600">/</span>
@@ -272,7 +272,7 @@ export default function OperationsPage() {
             <div className="flex items-center gap-3">
               <Link
                 href="/download"
-                className="btn-huly cta-glow inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white text-xs font-semibold transition-all shadow-sm shadow-violet-500/20"
+                className="btn-huly cta-glow inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-gradient-to-r from-orange-600 to-amber-600 text-white text-xs font-semibold transition-all shadow-sm shadow-orange-500/20"
               >
                 <BoltIcon className="h-3.5 w-3.5" />
                 Run scan
@@ -296,7 +296,7 @@ export default function OperationsPage() {
                 value={s?.totalScans ?? 0}
                 sub={s?.activeSchedules ? `${s.activeSchedules} scheduled` : undefined}
                 icon={EyeIcon}
-                accent="violet"
+                accent="orange"
               />
               <MetricCard
                 label="Findings"
@@ -331,7 +331,7 @@ export default function OperationsPage() {
                 <div className="glow-border-card animated-border card-inner-glow rounded-2xl border border-white/[0.06] bg-white/[0.02] overflow-hidden">
                   <div className="px-5 py-4 border-b border-white/[0.06] flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <SignalIcon className="h-4 w-4 text-violet-400 icon-bounce" />
+                      <SignalIcon className="h-4 w-4 text-orange-400 icon-bounce" />
                       <h2 className="text-sm font-semibold text-white">Agent Activity</h2>
                     </div>
                     <span className="text-xs text-zinc-500">
@@ -362,7 +362,7 @@ export default function OperationsPage() {
                 <div className="animated-border card-inner-glow rounded-2xl border border-white/[0.06] bg-white/[0.02] overflow-hidden">
                   <div className="px-5 py-4 border-b border-white/[0.06]">
                     <div className="flex items-center gap-2">
-                      <CloudIcon className="h-4 w-4 text-violet-400" />
+                      <CloudIcon className="h-4 w-4 text-orange-400" />
                       <h2 className="text-sm font-semibold text-white">Cloud Accounts</h2>
                     </div>
                   </div>
@@ -391,7 +391,7 @@ export default function OperationsPage() {
                     ) : (
                       <div className="text-center py-4">
                         <p className="text-xs text-zinc-500 mb-2">No accounts connected</p>
-                        <Link href="/download" className="text-xs font-medium text-violet-400 hover:text-violet-300 transition-colors">
+                        <Link href="/download" className="text-xs font-medium text-orange-400 hover:text-orange-300 transition-colors">
                           Connect AWS
                         </Link>
                       </div>
@@ -405,7 +405,7 @@ export default function OperationsPage() {
                 <div className="animated-border card-inner-glow rounded-2xl border border-white/[0.06] bg-white/[0.02] overflow-hidden">
                   <div className="px-5 py-4 border-b border-white/[0.06]">
                     <div className="flex items-center gap-2">
-                      <ClockIcon className="h-4 w-4 text-violet-400" />
+                      <ClockIcon className="h-4 w-4 text-orange-400" />
                       <h2 className="text-sm font-semibold text-white">Scheduled Scans</h2>
                     </div>
                   </div>
@@ -470,7 +470,7 @@ export default function OperationsPage() {
                           </div>
                           <Link
                             href="/download"
-                            className="text-xs font-medium text-violet-400 hover:text-violet-300 transition-colors"
+                            className="text-xs font-medium text-orange-400 hover:text-orange-300 transition-colors"
                           >
                             Review
                           </Link>
@@ -489,7 +489,7 @@ export default function OperationsPage() {
           <Reveal direction="up" blur>
             <section className="glow-border-card animated-border card-inner-glow rounded-2xl border border-white/[0.06] bg-white/[0.02] p-6">
               <div className="flex items-center gap-3 mb-4">
-                <CpuChipIcon className="h-5 w-5 text-violet-400 icon-bounce" />
+                <CpuChipIcon className="h-5 w-5 text-orange-400 icon-bounce" />
                 <h2 className="text-sm font-semibold text-white">Autonomous Loop Status</h2>
               </div>
               <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-4">

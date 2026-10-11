@@ -65,13 +65,13 @@ export default function AgiCockpitPage() {
   return (
     <div className="relative">
       <div className="relative mb-8 rounded-3xl border border-white/[0.05] bg-gradient-to-br from-white/[0.025] via-white/[0.015] to-transparent p-6 md:p-8 overflow-hidden">
-        <div className="absolute inset-0 -z-10 opacity-90 pointer-events-none" style={{ background: "radial-gradient(900px 320px at 12% 0%, rgba(139,92,246,0.10), transparent 60%), radial-gradient(700px 260px at 88% 110%, rgba(45,212,191,0.08), transparent 60%), radial-gradient(600px 240px at 50% 100%, rgba(99,102,241,0.06), transparent 60%)" }} aria-hidden />
+        <div className="absolute inset-0 -z-10 opacity-90 pointer-events-none" style={{ background: "radial-gradient(900px 320px at 12% 0%, rgba(255, 120, 61,0.10), transparent 60%), radial-gradient(700px 260px at 88% 110%, rgba(45,212,191,0.08), transparent 60%), radial-gradient(600px 240px at 50% 100%, rgba(245,78,0,0.06), transparent 60%)" }} aria-hidden />
         <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/[0.08] to-transparent" aria-hidden />
 
         <div className="flex items-center gap-2 mb-3 flex-wrap">
           <span className="inline-flex items-center gap-2 rounded-full border border-white/[0.06] bg-white/[0.02] px-2.5 py-1">
-            <CpuChipIcon className="h-3.5 w-3.5 text-violet-300" />
-            <span className="text-[10px] font-semibold uppercase tracking-widest text-violet-300">
+            <CpuChipIcon className="h-3.5 w-3.5 text-orange-300" />
+            <span className="text-[10px] font-semibold uppercase tracking-widest text-orange-300">
               AGI Cockpit · every signal · every gate · every loop
             </span>
           </span>
@@ -86,7 +86,7 @@ export default function AgiCockpitPage() {
 
       {loading && (
         <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 mb-6 flex items-center gap-3">
-          <ArrowPathIcon className="h-4 w-4 text-violet-300 animate-spin" />
+          <ArrowPathIcon className="h-4 w-4 text-orange-300 animate-spin" />
           <p className="text-[11px] font-mono text-zinc-500 uppercase tracking-[0.18em]">// composing AGI cockpit…</p>
         </div>
       )}
@@ -162,11 +162,11 @@ export default function AgiCockpitPage() {
 
           {/* Autonomy cycle summary */}
           {autonomy && (
-            <div className="rounded-2xl border border-violet-500/15 bg-white/[0.015] p-5 mb-6">
+            <div className="rounded-2xl border border-orange-500/15 bg-white/[0.015] p-5 mb-6">
               <div className="flex items-start gap-3">
-                <BoltIcon className="h-5 w-5 text-violet-300 mt-0.5 shrink-0" />
+                <BoltIcon className="h-5 w-5 text-orange-300 mt-0.5 shrink-0" />
                 <div className="min-w-0 flex-1">
-                  <p className="text-[10px] font-mono text-violet-300/80 uppercase tracking-[0.18em] mb-1">// last autonomy cycle ({autonomy.charter?.mode ?? "observer"})</p>
+                  <p className="text-[10px] font-mono text-orange-300/80 uppercase tracking-[0.18em] mb-1">// last autonomy cycle ({autonomy.charter?.mode ?? "observer"})</p>
                   <p className="text-[13px] text-white font-semibold leading-snug mb-2">{autonomy.cycleStatus?.replace(/_/g, " ") ?? "—"}</p>
                   <div className="grid grid-cols-3 md:grid-cols-7 gap-2">
                     <Mini label="Considered" value={autonomy.summary?.candidatesConsidered ?? 0} />
@@ -177,7 +177,7 @@ export default function AgiCockpitPage() {
                     <Mini label="Halted"     value={autonomy.summary?.haltedAtGate ?? 0} />
                     <Mini label="Errored"    value={autonomy.summary?.erroredCount ?? 0} />
                   </div>
-                  <Link href="/dashboard/autonomy" className="mt-3 inline-flex items-center gap-1 text-[12px] text-white hover:text-violet-100">
+                  <Link href="/dashboard/autonomy" className="mt-3 inline-flex items-center gap-1 text-[12px] text-white hover:text-orange-100">
                     Open Autonomy Cockpit <ArrowRightIcon className="h-3 w-3" />
                   </Link>
                 </div>

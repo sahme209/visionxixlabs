@@ -203,8 +203,8 @@ export default function AISettingsPage() {
       <div className="relative mb-8 rounded-3xl border border-white/[0.05] bg-gradient-to-br from-white/[0.025] via-white/[0.015] to-transparent p-6 md:p-8 overflow-hidden">
         <div className="flex items-center gap-2 mb-3 flex-wrap">
           <span className="inline-flex items-center gap-2 rounded-full border border-white/[0.06] bg-white/[0.02] px-2.5 py-1">
-            <SparklesIcon className="h-3.5 w-3.5 text-indigo-300" />
-            <span className="text-[10px] font-semibold uppercase tracking-widest text-indigo-300">
+            <SparklesIcon className="h-3.5 w-3.5 text-zinc-300" />
+            <span className="text-[10px] font-semibold uppercase tracking-widest text-zinc-300">
               AI providers
             </span>
           </span>
@@ -235,9 +235,9 @@ export default function AISettingsPage() {
 
       {status && (
         <>
-          <div className="rounded-2xl border border-indigo-500/[0.18] bg-indigo-500/[0.04] p-5 mb-6">
+          <div className="rounded-2xl border border-zinc-500/[0.18] bg-zinc-500/[0.04] p-5 mb-6">
             <div className="flex items-start justify-between gap-4 flex-wrap mb-1">
-              <p className="text-[10px] font-mono uppercase tracking-widest text-indigo-300">Active</p>
+              <p className="text-[10px] font-mono uppercase tracking-widest text-zinc-300">Active</p>
               {adminPolicy && (
                 <div className="flex items-center gap-2">
                   <span className="text-[11px] font-mono text-zinc-400">AI features</span>
@@ -333,7 +333,7 @@ export default function AISettingsPage() {
                     {p.models.map((m) => (
                       <li key={m.id} className="flex items-center gap-2 text-zinc-300">
                         <span className="font-mono text-[10px] text-zinc-500 w-16 truncate">{m.tier}</span>
-                        <span className="font-mono text-indigo-300 truncate">{m.id}</span>
+                        <span className="font-mono text-zinc-300 truncate">{m.id}</span>
                         <span className="text-zinc-500 truncate">— {m.label}</span>
                       </li>
                     ))}
@@ -345,7 +345,7 @@ export default function AISettingsPage() {
 
           <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 mb-6">
             <div className="flex items-center gap-2 mb-3">
-              <BoltIcon className="h-3.5 w-3.5 text-indigo-300" />
+              <BoltIcon className="h-3.5 w-3.5 text-zinc-300" />
               <h2 className="text-[10px] font-mono uppercase tracking-widest text-zinc-500">Provider health</h2>
               <button
                 onClick={runHealth}
@@ -361,7 +361,7 @@ export default function AISettingsPage() {
                 {health.rows.map((r) => (
                   <li key={r.provider} className="flex items-center gap-2">
                     {r.ok ? <CheckCircleIcon className="h-3.5 w-3.5 text-emerald-300" /> : <XCircleIcon className="h-3.5 w-3.5 text-rose-300" />}
-                    <span className="font-mono text-indigo-300 w-40 truncate">{r.provider}</span>
+                    <span className="font-mono text-zinc-300 w-40 truncate">{r.provider}</span>
                     <span className="font-mono text-zinc-400 truncate">{r.model}</span>
                     <span className="font-mono text-zinc-500 ml-auto">{r.latencyMs}ms</span>
                     {!r.ok && <span className="text-[10px] font-mono text-rose-300">{r.reason ?? "fail"}</span>}
@@ -375,7 +375,7 @@ export default function AISettingsPage() {
 
           <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 mb-12">
             <div className="flex items-center gap-2 mb-3">
-              <PlayIcon className="h-3.5 w-3.5 text-indigo-300" />
+              <PlayIcon className="h-3.5 w-3.5 text-zinc-300" />
               <h2 className="text-[10px] font-mono uppercase tracking-widest text-zinc-500">Try it</h2>
             </div>
             <textarea
@@ -383,7 +383,7 @@ export default function AISettingsPage() {
               value={tryPrompt}
               onChange={(e) => setTryPrompt(e.target.value)}
               rows={3}
-              className="w-full rounded-md border border-white/[0.08] bg-black/30 px-3 py-2 text-[12px] font-mono text-zinc-200 focus:border-indigo-400/60 focus:outline-none mb-3"
+              className="w-full rounded-md border border-white/[0.08] bg-black/30 px-3 py-2 text-[12px] font-mono text-zinc-200 focus:border-zinc-400/60 focus:outline-none mb-3"
             />
             <button
               onClick={runTry}
@@ -399,7 +399,7 @@ export default function AISettingsPage() {
             {tryResp && (
               <div className="mt-3 rounded-lg border border-white/[0.06] bg-black/30 p-3">
                 <div className="flex items-center gap-2 mb-2 text-[10px] font-mono text-zinc-500">
-                  <span>provider: <span className="text-indigo-300">{tryResp.provider}</span></span>
+                  <span>provider: <span className="text-zinc-300">{tryResp.provider}</span></span>
                   <span>model: <span className="text-zinc-300">{tryResp.model}</span></span>
                   <span>{tryResp.latencyMs}ms</span>
                   <span>finish: {tryResp.finishReason}</span>

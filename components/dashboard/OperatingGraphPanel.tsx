@@ -116,13 +116,13 @@ export function OperatingGraphPanel({
     <div className={`rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 ${className ?? ""}`}>
       <div className="flex items-center justify-between flex-wrap gap-3 mb-4">
         <div className="flex items-center gap-2 min-w-0">
-          <ArrowsRightLeftIcon className="h-4 w-4 text-violet-300 shrink-0" />
+          <ArrowsRightLeftIcon className="h-4 w-4 text-orange-300 shrink-0" />
           <div className="min-w-0">
             <p className="text-[13px] font-semibold text-white tracking-tight">{title}</p>
             <p className="text-[11.5px] text-zinc-400 leading-snug">{subtitle}</p>
           </div>
         </div>
-        <Link href="/dashboard/graph" className="inline-flex items-center gap-1.5 text-[11px] font-mono text-violet-300 hover:text-violet-200 border border-violet-500/30 hover:border-violet-500/50 bg-violet-500/[0.05] rounded-md px-2 py-1 transition-colors">
+        <Link href="/dashboard/graph" className="inline-flex items-center gap-1.5 text-[11px] font-mono text-orange-300 hover:text-orange-200 border border-orange-500/30 hover:border-orange-500/50 bg-orange-500/[0.05] rounded-md px-2 py-1 transition-colors">
           open full graph <ArrowRightIcon className="h-3 w-3" />
         </Link>
       </div>
@@ -168,7 +168,7 @@ export function OperatingGraphPanel({
                     )}
                   </div>
                   {n.safeNextAction && (
-                    <Link href={n.safeNextAction.href} className="text-[10px] font-mono text-violet-300 hover:text-violet-200 shrink-0">
+                    <Link href={n.safeNextAction.href} className="text-[10px] font-mono text-orange-300 hover:text-orange-200 shrink-0">
                       open →
                     </Link>
                   )}

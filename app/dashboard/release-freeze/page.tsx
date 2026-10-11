@@ -43,7 +43,7 @@ type RespBody =
 
 const STATUS_CLASS: Record<Status, string> = {
   not_yet_finalized:    "bg-zinc-700/40 text-zinc-300 border-zinc-600/40",
-  frozen:               "bg-violet-500/15 text-violet-300 border-white/[0.10]",
+  frozen:               "bg-orange-500/15 text-orange-300 border-white/[0.10]",
   deploy_window_started: "bg-emerald-500/15 text-emerald-300 border-emerald-500/25",
 };
 
@@ -120,7 +120,7 @@ export default function ReleaseFreezePage() {
         <>
           <div className="mb-6 grid grid-cols-2 md:grid-cols-3 gap-3">
             <Stat icon={PencilSquareIcon} label="Draft (scope mutable)" value={String(data.summary.byStatus.not_yet_finalized)} tone="zinc" />
-            <Stat icon={LockClosedIcon}   label="Frozen"                value={String(data.summary.byStatus.frozen)}             tone={data.summary.byStatus.frozen > 0 ? "violet" : "zinc"} />
+            <Stat icon={LockClosedIcon}   label="Frozen"                value={String(data.summary.byStatus.frozen)}             tone={data.summary.byStatus.frozen > 0 ? "orange" : "zinc"} />
             <Stat icon={PlayCircleIcon}   label="Deploying"             value={String(data.summary.byStatus.deploy_window_started)} tone={data.summary.byStatus.deploy_window_started > 0 ? "emerald" : "zinc"} />
           </div>
 
@@ -170,9 +170,9 @@ export default function ReleaseFreezePage() {
   );
 }
 
-function Stat({ icon: Icon, label, value, tone }: { icon: typeof LockClosedIcon; label: string; value: string; tone: "violet" | "emerald" | "rose" | "zinc" }) {
+function Stat({ icon: Icon, label, value, tone }: { icon: typeof LockClosedIcon; label: string; value: string; tone: "orange" | "emerald" | "rose" | "zinc" }) {
   const cls = {
-    violet:  "border-white/[0.06] bg-white/[0.015] text-white",
+    orange:  "border-white/[0.06] bg-white/[0.015] text-white",
     emerald: "border-emerald-500/[0.18] bg-emerald-500/[0.03] text-emerald-200",
     rose:    "border-rose-500/[0.18] bg-rose-500/[0.03] text-rose-200",
     zinc:    "border-white/[0.06] bg-white/[0.02] text-zinc-200",

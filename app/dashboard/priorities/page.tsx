@@ -135,7 +135,7 @@ export default function PrioritiesPage() {
           className="absolute inset-0 -z-10 opacity-90 pointer-events-none"
           style={{
             background:
-              "radial-gradient(900px 320px at 12% 0%, rgba(99,102,241,0.10), transparent 60%), radial-gradient(700px 260px at 88% 110%, rgba(45,212,191,0.06), transparent 60%)",
+              "radial-gradient(900px 320px at 12% 0%, rgba(245,78,0,0.10), transparent 60%), radial-gradient(700px 260px at 88% 110%, rgba(45,212,191,0.06), transparent 60%)",
           }}
           aria-hidden
         />
@@ -218,7 +218,7 @@ export default function PrioritiesPage() {
                         <span className={`text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 rounded ${sev.pill}`}>
                           {item.severity}
                         </span>
-                        <span className="text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded bg-violet-500/15 text-violet-300">
+                        <span className="text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded bg-orange-500/15 text-orange-300">
                           {item.urgency.replace(/_/g, " ")}
                         </span>
                         <span className="text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded bg-zinc-700/40 text-zinc-300">

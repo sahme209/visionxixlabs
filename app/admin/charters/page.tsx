@@ -31,7 +31,7 @@ interface Report {
 const MODE_TONE: Record<string, string> = {
   observer:   "bg-zinc-500/15 text-zinc-300 border-zinc-500/30",
   review:     "bg-sky-500/15 text-sky-300 border-sky-500/30",
-  assisted:   "bg-violet-500/15 text-violet-300 border-violet-500/30",
+  assisted:   "bg-orange-500/15 text-orange-300 border-orange-500/30",
   autonomous: "bg-emerald-500/15 text-emerald-300 border-emerald-500/30",
 };
 
@@ -62,7 +62,7 @@ export default function AdminChartersPage() {
           className="absolute inset-0 -z-10 opacity-90 pointer-events-none"
           style={{
             background:
-              "radial-gradient(900px 320px at 12% 0%, rgba(99,102,241,0.10), transparent 60%), radial-gradient(700px 260px at 88% 110%, rgba(244,114,182,0.06), transparent 60%)",
+              "radial-gradient(900px 320px at 12% 0%, rgba(245,78,0,0.10), transparent 60%), radial-gradient(700px 260px at 88% 110%, rgba(255,120,61,0.06), transparent 60%)",
           }}
           aria-hidden
         />
@@ -70,8 +70,8 @@ export default function AdminChartersPage() {
 
         <div className="flex items-center gap-2 mb-3 flex-wrap">
           <span className="inline-flex items-center gap-2 rounded-full border border-white/[0.06] bg-white/[0.02] px-2.5 py-1">
-            <ShieldCheckIcon className="h-3.5 w-3.5 text-indigo-300" />
-            <span className="text-[10px] font-semibold uppercase tracking-widest text-indigo-300">
+            <ShieldCheckIcon className="h-3.5 w-3.5 text-zinc-300" />
+            <span className="text-[10px] font-semibold uppercase tracking-widest text-zinc-300">
               Admin
             </span>
           </span>
@@ -85,10 +85,10 @@ export default function AdminChartersPage() {
 
         {report && (
           <div className="mt-5 grid grid-cols-2 md:grid-cols-5 gap-2">
-            <Stat label="Tenants" value={String(report.total)} tone="indigo" icon={CpuChipIcon} />
+            <Stat label="Tenants" value={String(report.total)} tone="zinc" icon={CpuChipIcon} />
             <Stat label="Observer" value={String(report.perMode.observer ?? 0)} tone="zinc" />
             <Stat label="Review"   value={String(report.perMode.review ?? 0)}   tone="sky" />
-            <Stat label="Assisted" value={String(report.perMode.assisted ?? 0)} tone="violet" />
+            <Stat label="Assisted" value={String(report.perMode.assisted ?? 0)} tone="orange" />
             <Stat label="Autonomous" value={String(report.perMode.autonomous ?? 0)} tone="emerald" />
           </div>
         )}
@@ -147,12 +147,11 @@ export default function AdminChartersPage() {
 
 function Stat({
   label, value, tone, icon: Icon,
-}: { label: string; value: string; tone: "indigo" | "zinc" | "sky" | "violet" | "emerald"; icon?: typeof CpuChipIcon }) {
+}: { label: string; value: string; tone: "zinc" | "sky" | "orange" | "emerald"; icon?: typeof CpuChipIcon }) {
   const cls = {
-    indigo:  "border-indigo-500/[0.18] bg-indigo-500/[0.03] text-indigo-200",
     zinc:    "border-white/[0.06] bg-white/[0.02] text-zinc-200",
     sky:     "border-sky-500/[0.18] bg-sky-500/[0.03] text-sky-200",
-    violet:  "border-violet-500/[0.18] bg-violet-500/[0.03] text-violet-200",
+    orange:  "border-orange-500/[0.18] bg-orange-500/[0.03] text-orange-200",
     emerald: "border-emerald-500/[0.18] bg-emerald-500/[0.03] text-emerald-200",
   }[tone];
   return (

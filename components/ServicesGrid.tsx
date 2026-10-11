@@ -19,7 +19,7 @@ export function ServicesGrid({ services }: { services: Service[] }) {
           <Reveal key={service.id} direction="up" delay={idx * 0.06}>
             <HoverCard className="p-8 flex flex-col h-full bg-white/[0.02] border-white/[0.06] shadow-xl">
               <div className="flex items-start gap-4 mb-4">
-                <div className="inline-flex h-12 w-12 items-center justify-center rounded-xl bg-violet-500/10 text-violet-400">
+                <div className="inline-flex h-12 w-12 items-center justify-center rounded-xl bg-orange-500/10 text-orange-400">
                   <Icon className="h-6 w-6" />
                 </div>
                 <div>
@@ -39,7 +39,7 @@ export function ServicesGrid({ services }: { services: Service[] }) {
                   <ul className="space-y-1">
                     {service.items.map((item) => (
                       <li key={item} className="flex gap-2">
-                        <span className="mt-1 h-1.5 w-1.5 rounded-full bg-indigo-500 shrink-0" />
+                        <span className="mt-1 h-1.5 w-1.5 rounded-full bg-zinc-500 shrink-0" />
                         <span>{item}</span>
                       </li>
                     ))}

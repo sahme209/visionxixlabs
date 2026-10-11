@@ -19,7 +19,7 @@ const CALLOUT_CONFIG: Record<
   info: { icon: InformationCircleIcon, iconClass: "text-blue-400", bgClass: "bg-blue-500/[0.04]", borderClass: "border-blue-500/15", labelClass: "text-blue-400", label: "Info" },
   safe: { icon: ShieldCheckIcon, iconClass: "text-emerald-400", bgClass: "bg-emerald-500/[0.04]", borderClass: "border-emerald-500/15", labelClass: "text-emerald-400", label: "Safe by default" },
   warning: { icon: ExclamationTriangleIcon, iconClass: "text-zinc-400", bgClass: "bg-white/[0.04]", borderClass: "border-white/15", labelClass: "text-zinc-400", label: "Heads up" },
-  tip: { icon: LightBulbIcon, iconClass: "text-violet-400", bgClass: "bg-violet-500/[0.04]", borderClass: "border-violet-500/15", labelClass: "text-violet-400", label: "Tip" },
+  tip: { icon: LightBulbIcon, iconClass: "text-orange-400", bgClass: "bg-orange-500/[0.04]", borderClass: "border-orange-500/15", labelClass: "text-orange-400", label: "Tip" },
 };
 
 /** Inline trust/info/warning/tip callout used throughout docs. */
@@ -42,7 +42,7 @@ export function Callout({
           <p className={`text-[10px] font-semibold ${c.labelClass} uppercase tracking-wider mb-1`}>
             {title ?? c.label}
           </p>
-          <div className="text-sm text-zinc-300 leading-relaxed [&_a]:text-white [&_a]:underline [&_a:hover]:text-violet-300 [&_code]:font-mono [&_code]:text-[12px] [&_code]:bg-black/40 [&_code]:border [&_code]:border-white/[0.06] [&_code]:rounded [&_code]:px-1.5 [&_code]:py-0.5">
+          <div className="text-sm text-zinc-300 leading-relaxed [&_a]:text-white [&_a]:underline [&_a:hover]:text-orange-300 [&_code]:font-mono [&_code]:text-[12px] [&_code]:bg-black/40 [&_code]:border [&_code]:border-white/[0.06] [&_code]:rounded [&_code]:px-1.5 [&_code]:py-0.5">
             {children}
           </div>
         </div>
@@ -56,7 +56,7 @@ export function DocSection({ id, title, kicker, children }: { id?: string; title
   return (
     <section id={id} className="mb-12 scroll-mt-24">
       {kicker && (
-        <p className="text-[10px] font-semibold text-violet-400 uppercase tracking-widest mb-2">{kicker}</p>
+        <p className="text-[10px] font-semibold text-orange-400 uppercase tracking-widest mb-2">{kicker}</p>
       )}
       <h2 className="text-2xl md:text-3xl font-bold text-white tracking-[-0.04em] mb-5">
         {title}
@@ -70,7 +70,7 @@ export function DocSection({ id, title, kicker, children }: { id?: string; title
 export function Step({ number, title, children }: { number: number; title: string; children: ReactNode }) {
   return (
     <div className="relative pl-12 mb-6">
-      <div className="absolute left-0 top-0 w-9 h-9 rounded-xl bg-violet-500/10 border border-violet-500/20 flex items-center justify-center font-mono font-bold text-sm text-violet-400">
+      <div className="absolute left-0 top-0 w-9 h-9 rounded-xl bg-orange-500/10 border border-orange-500/20 flex items-center justify-center font-mono font-bold text-sm text-orange-400">
         {number}
       </div>
       <h3 className="text-base font-bold text-white mb-2 mt-0.5">{title}</h3>
@@ -119,7 +119,7 @@ export function DocHeader({
       {/* Subtle coral aurora behind the header */}
       <div aria-hidden className="pointer-events-none absolute -inset-x-8 -top-12 h-[260px] -z-10 overflow-hidden">
         <div className="absolute top-0 left-[10%] w-[420px] h-[260px] rounded-full bg-brand-coral/[0.05] blur-[120px] ambient-drift" />
-        <div className="absolute top-4 right-[10%] w-[360px] h-[220px] rounded-full bg-brand-violet/[0.06] blur-[110px] ambient-drift" style={{ animationDelay: "-8s" }} />
+        <div className="absolute top-4 right-[10%] w-[360px] h-[220px] rounded-full bg-brand-orange/[0.06] blur-[110px] ambient-drift" style={{ animationDelay: "-8s" }} />
       </div>
 
       {kicker && (
@@ -134,7 +134,7 @@ export function DocHeader({
         <span className="relative inline-block">
           {lastWord}
           {/* Restrained 2px coral hairline — Apple-grade */}
-          <span aria-hidden className="absolute left-0 -bottom-0.5 h-[2px] w-full rounded-full bg-gradient-to-r from-brand-coral via-fuchsia-400/70 to-transparent" />
+          <span aria-hidden className="absolute left-0 -bottom-0.5 h-[2px] w-full rounded-full bg-gradient-to-r from-brand-coral via-amber-400/70 to-transparent" />
         </span>
       </h1>
       <p className="text-[16px] text-zinc-400 leading-relaxed max-w-3xl">{summary}</p>
@@ -181,7 +181,7 @@ export function DocFooterNav({
           <p className="text-[10px] font-semibold text-zinc-500 uppercase tracking-widest mb-1 inline-flex items-center gap-1.5">
             <ArrowLeftIcon className="h-3 w-3" /> Previous
           </p>
-          <p className="text-sm font-semibold text-white group-hover:text-violet-300 transition-colors">
+          <p className="text-sm font-semibold text-white group-hover:text-orange-300 transition-colors">
             {prev.label}
           </p>
         </Link>
@@ -194,7 +194,7 @@ export function DocFooterNav({
           <p className="text-[10px] font-semibold text-zinc-500 uppercase tracking-widest mb-1 inline-flex items-center gap-1.5 justify-end w-full">
             Next <ArrowRightIcon className="h-3 w-3" />
           </p>
-          <p className="text-sm font-semibold text-white group-hover:text-violet-300 transition-colors">
+          <p className="text-sm font-semibold text-white group-hover:text-orange-300 transition-colors">
             {next.label}
           </p>
         </Link>

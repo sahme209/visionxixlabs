@@ -44,11 +44,11 @@ function validationNextStep(connection: { name: string; state: string; control?:
 
 const PROVIDER_MARKS: Record<string, { text: string; tone: string }> = {
   GitHub: { text: "GH", tone: "bg-zinc-100 text-zinc-950" },
-  Slack: { text: "SL", tone: "bg-fuchsia-400/15 text-fuchsia-200" },
+  Slack: { text: "SL", tone: "bg-amber-400/15 text-amber-200" },
   Microsoft: { text: "MS", tone: "bg-blue-400/15 text-blue-200" },
-  Linear: { text: "LI", tone: "bg-indigo-400/15 text-indigo-200" },
+  Linear: { text: "LI", tone: "bg-zinc-400/15 text-zinc-200" },
   Jira: { text: "JI", tone: "bg-sky-400/15 text-sky-200" },
-  Sentry: { text: "SE", tone: "bg-violet-400/15 text-violet-200" },
+  Sentry: { text: "SE", tone: "bg-orange-400/15 text-orange-200" },
 };
 
 function IntegrationRow({ name, detail, state, action }: { name: string; detail: string; state?: string; action: ReactNode }) {
@@ -130,7 +130,7 @@ export default async function AccountIntegrationsPage() {
       <div className="mx-auto max-w-[1280px]">
         <AuthCompanionHeader email={context.email ?? null} />
         <section className="mx-auto max-w-5xl pb-7 pt-12 sm:pt-16">
-          <p className="text-[10px] uppercase tracking-[0.2em] text-violet-300">Workspace connections</p>
+          <p className="text-[10px] uppercase tracking-[0.2em] text-orange-300">Workspace connections</p>
           <h1 className="mt-3 text-3xl font-semibold tracking-[-0.04em] sm:text-4xl">Integrations</h1>
           <p className="mt-3 max-w-2xl text-sm leading-6 text-zinc-500">Connect the systems Axiom may inspect or act through. Consent happens on the provider’s own secure page; credentials never enter the desktop app.</p>
         </section>
@@ -165,7 +165,7 @@ export default async function AccountIntegrationsPage() {
             </div>
           </section>
 
-          <div className="flex flex-col gap-3 rounded-2xl border border-violet-300/12 bg-violet-300/[0.035] p-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex flex-col gap-3 rounded-2xl border border-orange-300/12 bg-orange-300/[0.035] p-4 sm:flex-row sm:items-center sm:justify-between">
             <div><p className="text-sm font-medium text-zinc-200">Validation finishes in Axiom Agent</p><p className="mt-1 text-xs leading-5 text-zinc-500">Browser consent records permission; the desktop performs a harmless server-side check before showing a connection as active.</p></div>
             <Link href="/download" className="inline-flex shrink-0 justify-center rounded-lg border border-white/[0.1] px-3 py-2 text-xs font-medium text-zinc-200 transition hover:bg-white/[0.06]">Open Agent</Link>
           </div>

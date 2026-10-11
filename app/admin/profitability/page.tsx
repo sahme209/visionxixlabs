@@ -123,7 +123,7 @@ export default async function AdminProfitabilityPage() {
   return (
     <div className="relative max-w-6xl">
       <div className="mb-6">
-        <Link href="/admin" className="text-[11px] text-violet-300 hover:text-violet-200 inline-flex items-center gap-1">
+        <Link href="/admin" className="text-[11px] text-orange-300 hover:text-orange-200 inline-flex items-center gap-1">
           <ArrowRightIcon className="h-3 w-3 rotate-180" />
           Back to admin
         </Link>
@@ -144,7 +144,7 @@ export default async function AdminProfitabilityPage() {
 
       <section className="grid grid-cols-1 md:grid-cols-5 gap-3 mb-8">
         <SummaryStat label="Total revenue (MTD)" value={formatCents(totalRevenue)} tone="text-emerald-300" />
-        <SummaryStat label="Overage revenue (MTD)" value={formatCents(totalOverageRevenue)} tone="text-violet-300" />
+        <SummaryStat label="Overage revenue (MTD)" value={formatCents(totalOverageRevenue)} tone="text-orange-300" />
         <SummaryStat label="Total AI cost (MTD)" value={formatCents(totalAICost)} tone="text-zinc-300" />
         <SummaryStat label="Total gross margin" value={formatCents(totalGrossMargin)} tone={totalGrossMargin >= 0 ? "text-emerald-300" : "text-rose-300"} />
         <SummaryStat label="Workspaces at risk" value={String(atRiskCount)} tone={atRiskCount > 0 ? "text-rose-300" : "text-zinc-300"} icon={ExclamationTriangleIcon} />
@@ -166,11 +166,11 @@ export default async function AdminProfitabilityPage() {
               <header className="flex items-center justify-between gap-3 flex-wrap mb-2">
                 <div className="flex items-center gap-2 min-w-0">
                   <span className="text-[11px] font-mono text-zinc-200 truncate">{summary.organizationId}</span>
-                  <span className="text-[9px] font-mono uppercase tracking-wider border rounded-full px-1.5 py-0.5 text-violet-300 bg-violet-500/10 border-violet-500/30">
+                  <span className="text-[9px] font-mono uppercase tracking-wider border rounded-full px-1.5 py-0.5 text-orange-300 bg-orange-500/10 border-orange-500/30">
                     {plan.displayName}
                   </span>
                   {overage.overageRevenueCents > 0 && (
-                    <span className="text-[9px] font-mono uppercase tracking-wider border rounded-full px-1.5 py-0.5 text-violet-200 bg-violet-500/15 border-violet-500/40">
+                    <span className="text-[9px] font-mono uppercase tracking-wider border rounded-full px-1.5 py-0.5 text-orange-200 bg-orange-500/15 border-orange-500/40">
                       overage · {formatCents(overage.overageRevenueCents)}
                     </span>
                   )}
@@ -192,7 +192,7 @@ export default async function AdminProfitabilityPage() {
 
               <div className="grid grid-cols-2 md:grid-cols-6 gap-3 text-[10.5px] mb-2">
                 <Field label="Revenue" value={margin.monthlyRevenueCents === null ? "Custom" : formatCents(margin.monthlyRevenueCents)} />
-                <Field label="Overage rev" value={formatCents(overage.overageRevenueCents)} tone={overage.overageRevenueCents > 0 ? "text-violet-300" : "text-zinc-300"} />
+                <Field label="Overage rev" value={formatCents(overage.overageRevenueCents)} tone={overage.overageRevenueCents > 0 ? "text-orange-300" : "text-zinc-300"} />
                 <Field label="AI cost" value={formatCents(summary.aiCostCents)} />
                 <Field label="Infra+support" value={formatCents(ALLOCATED_INFRA_CENTS + (ALLOCATED_SUPPORT_CENTS_BY_TIER[plan.tier] ?? 0))} />
                 <Field

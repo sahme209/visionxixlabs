@@ -42,7 +42,7 @@ export default function AdminPlanDebugPage() {
   if (loading) {
     return (
       <div className="flex justify-center py-20">
-        <div className="h-8 w-8 animate-spin rounded-full border-2 border-violet-600 border-t-transparent" />
+        <div className="h-8 w-8 animate-spin rounded-full border-2 border-orange-600 border-t-transparent" />
       </div>
     );
   }
@@ -62,7 +62,7 @@ export default function AdminPlanDebugPage() {
         <div className="flex items-center gap-4">
           <Link
             href="/admin/leads"
-            className="inline-flex items-center gap-2 text-sm text-zinc-400 hover:text-violet-400 transition-colors"
+            className="inline-flex items-center gap-2 text-sm text-zinc-400 hover:text-orange-400 transition-colors"
           >
             <ArrowLeftIcon className="h-4 w-4" />
             Back to Admin
@@ -72,7 +72,7 @@ export default function AdminPlanDebugPage() {
 
       <Reveal direction="up" blur delay={0.1}>
         <div className="flex items-center gap-2">
-          <ShieldCheckIcon className="h-6 w-6 text-violet-400" />
+          <ShieldCheckIcon className="h-6 w-6 text-orange-400" />
           <h1 className="text-xl font-bold text-white tracking-[-0.04em]">
             Plan & Stripe <span className="text-gradient">Lifecycle Debug</span>
           </h1>
@@ -87,7 +87,7 @@ export default function AdminPlanDebugPage() {
           <dl className="grid gap-2 text-sm">
             <div className="flex justify-between">
               <dt className="text-zinc-500">Plan</dt>
-              <dd className="font-mono font-medium text-violet-400">
+              <dd className="font-mono font-medium text-orange-400">
                 {data.plan ?? "—"}
               </dd>
             </div>

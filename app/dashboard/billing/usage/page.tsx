@@ -98,7 +98,7 @@ export default async function BillingUsagePage() {
       <section className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-6 mb-6">
         <div className="flex items-center justify-between gap-3 flex-wrap mb-4">
           <div className="flex items-center gap-2">
-            <BoltIcon className="h-4 w-4 text-violet-300" />
+            <BoltIcon className="h-4 w-4 text-orange-300" />
             <p className="text-[11px] font-semibold text-white">AI credit pool</p>
           </div>
           <span className={`text-[10px] font-mono uppercase tracking-wider ${thresholdTone}`}>
@@ -180,7 +180,7 @@ export default async function BillingUsagePage() {
             {recent.map((e) => (
               <li key={e.id} className="rounded-lg border border-white/[0.04] bg-white/[0.015] px-3 py-2 flex items-center justify-between gap-3 flex-wrap">
                 <div className="flex items-center gap-2 min-w-0">
-                  <CpuChipIcon className="h-3 w-3 text-violet-300 shrink-0" />
+                  <CpuChipIcon className="h-3 w-3 text-orange-300 shrink-0" />
                   <span className="text-[11px] font-mono text-zinc-200 truncate">{e.eventKind.replace(/_/g, " ")}</span>
                   {e.model && <span className="text-[10px] font-mono text-zinc-500 truncate">· {e.model}</span>}
                 </div>
@@ -209,7 +209,7 @@ export default async function BillingUsagePage() {
             </div>
             <Link
               href="/dashboard/billing/add-ons"
-              className="inline-flex items-center gap-1.5 text-[12px] font-medium px-3 py-1.5 rounded-lg bg-violet-500/20 text-violet-100 border border-violet-500/40 hover:bg-violet-500/30 transition"
+              className="inline-flex items-center gap-1.5 text-[12px] font-medium px-3 py-1.5 rounded-lg bg-orange-500/20 text-orange-100 border border-orange-500/40 hover:bg-orange-500/30 transition"
             >
               Browse add-ons
               <ArrowRightIcon className="h-3 w-3" />
@@ -230,7 +230,7 @@ export default async function BillingUsagePage() {
             </div>
             <Link
               href="/pricing"
-              className="inline-flex items-center gap-1.5 text-[12px] font-medium px-3 py-1.5 rounded-lg bg-violet-500/20 text-violet-100 border border-violet-500/40 hover:bg-violet-500/30 transition"
+              className="inline-flex items-center gap-1.5 text-[12px] font-medium px-3 py-1.5 rounded-lg bg-orange-500/20 text-orange-100 border border-orange-500/40 hover:bg-orange-500/30 transition"
             >
               See all plans
               <ArrowRightIcon className="h-3 w-3" />

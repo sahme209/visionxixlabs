@@ -21,10 +21,10 @@ export async function PlatformHealthStrip() {
     href: string;
     label: string;
     value: number;
-    tone: "violet" | "cyan" | "emerald" | "amber";
+    tone: "orange" | "cyan" | "emerald" | "amber";
     sub?: string;
   }> = [
-    { href: "/dashboard/connectors", label: "Cloud accounts", value: live.cloudAccounts, tone: "violet" },
+    { href: "/dashboard/connectors", label: "Cloud accounts", value: live.cloudAccounts, tone: "orange" },
     { href: "/dashboard/agents",     label: "Agent runs · 24h", value: live.agentRuns24h, tone: "cyan",
       sub: live.busMessages24h > 0 ? `${live.busMessages24h.toLocaleString()} bus msgs` : undefined },
     { href: "/dashboard/automation", label: "Bus messages · 24h", value: live.busMessages24h, tone: "emerald" },
@@ -32,7 +32,7 @@ export async function PlatformHealthStrip() {
   ];
 
   const toneMap = {
-    violet:  "border-violet-500/30 bg-violet-500/[0.06] hover:bg-violet-500/[0.10]",
+    orange:  "border-orange-500/30 bg-orange-500/[0.06] hover:bg-orange-500/[0.10]",
     cyan:    "border-cyan-500/30   bg-cyan-500/[0.06]   hover:bg-cyan-500/[0.10]",
     emerald: "border-emerald-500/30 bg-emerald-500/[0.06] hover:bg-emerald-500/[0.10]",
     amber:   "border-white/30  bg-white/[0.06]  hover:bg-white/[0.10]",

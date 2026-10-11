@@ -88,10 +88,10 @@ export default function QuickstartChecklistPage() {
             </Callout>
 
             <ol className="relative space-y-3 mb-12">
-                <span aria-hidden className="absolute left-[26px] top-3 bottom-3 w-px bg-gradient-to-b from-brand-coral/40 via-brand-violet/30 to-transparent" />
+                <span aria-hidden className="absolute left-[26px] top-3 bottom-3 w-px bg-gradient-to-b from-brand-coral/40 via-brand-orange/30 to-transparent" />
                 {STEPS.map((step) => (
                     <li key={step.num} className="relative rounded-2xl border border-white/[0.06] bg-white/[0.015] p-5 pl-16 hover:border-brand-coral/25 hover:bg-brand-coral/[0.02] transition-all">
-                        <span className="absolute left-4 top-5 w-9 h-9 rounded-full bg-gradient-to-br from-brand-coral/15 to-brand-violet/15 border border-brand-coral/30 flex items-center justify-center text-[11px] font-mono font-semibold text-brand-coral tabular-nums">
+                        <span className="absolute left-4 top-5 w-9 h-9 rounded-full bg-gradient-to-br from-brand-coral/15 to-brand-orange/15 border border-brand-coral/30 flex items-center justify-center text-[11px] font-mono font-semibold text-brand-coral tabular-nums">
                             {step.num}
                         </span>
                         <div className="flex items-start justify-between gap-3 mb-2">

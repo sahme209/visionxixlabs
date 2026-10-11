@@ -203,7 +203,7 @@ export default async function AskAllPage({
       <header className="mb-10">
         <p className="text-[10px] font-mono uppercase tracking-[0.28em] text-zinc-500 mb-3">ask · all engineers</p>
         <h1 className="text-[28px] sm:text-[34px] leading-[1.1] font-semibold text-white tracking-[-0.02em] mb-3 inline-flex items-baseline gap-3">
-          <SparklesIcon className="h-6 w-6 text-violet-300 shrink-0 self-center" />
+          <SparklesIcon className="h-6 w-6 text-orange-300 shrink-0 self-center" />
           Ask the whole workforce
         </h1>
         <p className="text-[14px] text-zinc-400 leading-relaxed max-w-xl">
@@ -214,9 +214,9 @@ export default async function AskAllPage({
       </header>
 
       {/* Ask form */}
-      <section className="mb-10 rounded-2xl border border-violet-500/15 bg-violet-500/[0.04] p-5">
+      <section className="mb-10 rounded-2xl border border-orange-500/15 bg-orange-500/[0.04] p-5">
         <form action="/api/workforce/ask-all" method="POST">
-          <label htmlFor="question" className="text-[10px] font-mono uppercase tracking-[0.18em] text-violet-300 mb-2 block">
+          <label htmlFor="question" className="text-[10px] font-mono uppercase tracking-[0.18em] text-orange-300 mb-2 block">
             your question to the workforce
           </label>
           <textarea
@@ -226,13 +226,13 @@ export default async function AskAllPage({
             rows={3}
             maxLength={1500}
             placeholder="e.g. What's the single most important thing you'd improve about this workspace this week?"
-            className="w-full rounded-lg border border-white/[0.06] bg-white/[0.02] px-3 py-2 text-[13px] text-zinc-200 placeholder:text-zinc-600 focus:outline-none focus:border-violet-500/40 transition-colors resize-none"
+            className="w-full rounded-lg border border-white/[0.06] bg-white/[0.02] px-3 py-2 text-[13px] text-zinc-200 placeholder:text-zinc-600 focus:outline-none focus:border-orange-500/40 transition-colors resize-none"
           />
           <div className="mt-2 flex items-center justify-between gap-2">
             <p className="text-[10px] font-mono text-zinc-500">sequential sweep · ~30s per engineer · bounded 270s</p>
             <button
               type="submit"
-              className="text-[11px] font-mono uppercase tracking-wider px-3 py-1.5 rounded-full border border-violet-500/30 text-violet-100 hover:text-white hover:border-violet-500/60 hover:bg-violet-500/15 transition-colors"
+              className="text-[11px] font-mono uppercase tracking-wider px-3 py-1.5 rounded-full border border-orange-500/30 text-orange-100 hover:text-white hover:border-orange-500/60 hover:bg-orange-500/15 transition-colors"
             >
               ask all
             </button>
@@ -251,7 +251,7 @@ export default async function AskAllPage({
               <form action="/api/workforce/ask-all/synthesize-all" method="POST">
                 <button
                   type="submit"
-                  className="text-[10px] font-mono uppercase tracking-wider px-2.5 py-1 rounded-full border border-violet-500/30 text-violet-200 hover:text-white hover:border-violet-500/60 hover:bg-violet-500/15 transition-colors"
+                  className="text-[10px] font-mono uppercase tracking-wider px-2.5 py-1 rounded-full border border-orange-500/30 text-orange-200 hover:text-white hover:border-orange-500/60 hover:bg-orange-500/15 transition-colors"
                   title="Backfill workforce synthesis for every past sweep that doesn't have one yet"
                 >
                   synthesize all missing
@@ -264,7 +264,7 @@ export default async function AskAllPage({
               const isCurrent = s.sweepId === sweepId;
               const hasSynth = synthesizedSet.has(s.sweepId);
               return (
-                <li key={s.sweepId} className={isCurrent ? "bg-violet-500/[0.05]" : ""}>
+                <li key={s.sweepId} className={isCurrent ? "bg-orange-500/[0.05]" : ""}>
                   <div className="flex items-start justify-between gap-3 px-5 py-3 hover:bg-white/[0.015] transition-colors">
                     <Link
                       href={`/dashboard/workforce/ask-all?sweep=${encodeURIComponent(s.sweepId)}`}
@@ -277,14 +277,14 @@ export default async function AskAllPage({
                     </Link>
                     <div className="flex items-center gap-2 shrink-0">
                       {hasSynth ? (
-                        <span className="text-[10px] font-mono text-violet-300/80" title="Workforce synthesis present">
+                        <span className="text-[10px] font-mono text-orange-300/80" title="Workforce synthesis present">
                           ✓ synth
                         </span>
                       ) : (
                         <form action={`/api/workforce/ask-all/${encodeURIComponent(s.sweepId)}/synthesize`} method="POST">
                           <button
                             type="submit"
-                            className="text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 rounded-full border border-violet-500/30 text-violet-200 hover:text-white hover:border-violet-500/60 hover:bg-violet-500/15 transition-colors"
+                            className="text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 rounded-full border border-orange-500/30 text-orange-200 hover:text-white hover:border-orange-500/60 hover:bg-orange-500/15 transition-colors"
                             title="Generate the workforce synthesis for this sweep"
                           >
                             synthesize
@@ -292,7 +292,7 @@ export default async function AskAllPage({
                         </form>
                       )}
                       {isCurrent && (
-                        <span className="text-[10px] font-mono text-violet-300">current</span>
+                        <span className="text-[10px] font-mono text-orange-300">current</span>
                       )}
                     </div>
                   </div>
@@ -327,11 +327,11 @@ export default async function AskAllPage({
               engineer responses because that's how operators consume
               this: TL;DR first, drilldown second. */}
           {synthesisRow && (
-            <div className="mb-6 rounded-2xl border border-violet-500/25 bg-violet-500/[0.06] p-5">
+            <div className="mb-6 rounded-2xl border border-orange-500/25 bg-orange-500/[0.06] p-5">
               <div className="flex items-center justify-between gap-3 mb-2 flex-wrap text-[10px] font-mono uppercase tracking-[0.18em]">
                 <div className="flex items-center gap-2">
-                  <SparklesIcon className="h-3.5 w-3.5 text-violet-300" />
-                  <span className="text-violet-300">workforce synthesis</span>
+                  <SparklesIcon className="h-3.5 w-3.5 text-orange-300" />
+                  <span className="text-orange-300">workforce synthesis</span>
                   {synthesisRow.modelHint && (
                     <>
                       <span className="text-zinc-500">·</span>
@@ -356,7 +356,7 @@ export default async function AskAllPage({
                 <div className="flex items-center justify-between gap-3 mb-2 flex-wrap text-[10px] font-mono uppercase tracking-wider">
                   <div className="flex items-center gap-2 min-w-0">
                     {r.engineer ? (
-                      <Link href={`/dashboard/workforce/${r.engineer.id}`} className="text-violet-300 hover:text-white transition-colors">
+                      <Link href={`/dashboard/workforce/${r.engineer.id}`} className="text-orange-300 hover:text-white transition-colors">
                         {r.engineer.displayName}
                       </Link>
                     ) : (

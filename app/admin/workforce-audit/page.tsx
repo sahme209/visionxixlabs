@@ -41,8 +41,8 @@ export default function WorkforceAuditPage() {
     <div className="relative">
       <div className="mb-8">
         <div className="flex items-center gap-3 mb-3">
-          <UserGroupIcon className="h-4 w-4 text-violet-400" />
-          <p className="text-[10px] font-semibold text-violet-400 uppercase tracking-widest">Workforce audit · internal</p>
+          <UserGroupIcon className="h-4 w-4 text-orange-400" />
+          <p className="text-[10px] font-semibold text-orange-400 uppercase tracking-widest">Workforce audit · internal</p>
           <span className="text-[9px] font-mono uppercase tracking-wider text-rose-300 bg-rose-500/10 border border-rose-500/30 rounded-full px-2 py-0.5">
             NOT visible to clients
           </span>
@@ -108,10 +108,10 @@ export default function WorkforceAuditPage() {
       </section>
 
       {/* Internal-only engineers */}
-      <section className="rounded-2xl border border-violet-500/15 bg-violet-500/[0.03] p-5 mb-6">
+      <section className="rounded-2xl border border-orange-500/15 bg-orange-500/[0.03] p-5 mb-6">
         <header className="flex items-center gap-2 mb-3">
-          <ShieldCheckIcon className="h-4 w-4 text-violet-300" />
-          <p className="text-[10px] font-semibold uppercase tracking-widest text-violet-300">Internal-layer engineers ({internal.length})</p>
+          <ShieldCheckIcon className="h-4 w-4 text-orange-300" />
+          <p className="text-[10px] font-semibold uppercase tracking-widest text-orange-300">Internal-layer engineers ({internal.length})</p>
         </header>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           {internal.map((e) => <InternalEngineerCard key={e.id} engineer={e} />)}
@@ -120,7 +120,7 @@ export default function WorkforceAuditPage() {
 
       <p className="text-[10.5px] font-mono text-zinc-500 inline-flex items-center gap-1.5">
         <ArrowRightIcon className="h-3 w-3" />
-        Client-facing engineers live at <Link href="/dashboard/workforce" className="text-violet-300 hover:text-violet-200 underline">/dashboard/workforce</Link>.
+        Client-facing engineers live at <Link href="/dashboard/workforce" className="text-orange-300 hover:text-orange-200 underline">/dashboard/workforce</Link>.
       </p>
     </div>
   );

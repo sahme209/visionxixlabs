@@ -30,8 +30,8 @@ export default function CompliancePacketPage() {
       <div className="relative mb-8 rounded-3xl border border-white/[0.05] bg-gradient-to-br from-white/[0.025] via-white/[0.015] to-transparent p-6 md:p-8 overflow-hidden">
         <div className="flex items-center gap-2 mb-3 flex-wrap">
           <span className="inline-flex items-center gap-2 rounded-full border border-white/[0.06] bg-white/[0.02] px-2.5 py-1">
-            <DocumentTextIcon className="h-3.5 w-3.5 text-indigo-300" />
-            <span className="text-[10px] font-semibold uppercase tracking-widest text-indigo-300">
+            <DocumentTextIcon className="h-3.5 w-3.5 text-zinc-300" />
+            <span className="text-[10px] font-semibold uppercase tracking-widest text-zinc-300">
               Compliance packet · approval_only_no_execution
             </span>
           </span>
@@ -55,7 +55,7 @@ export default function CompliancePacketPage() {
                 onClick={() => setWindowHours(o.hours)}
                 className={`text-[11px] font-mono px-2.5 py-1 rounded-full border transition ${
                   windowHours === o.hours
-                    ? "bg-indigo-500/15 text-indigo-200 border-indigo-500/30"
+                    ? "bg-zinc-500/15 text-zinc-200 border-zinc-500/30"
                     : "bg-white/[0.02] text-zinc-400 border-white/[0.06] hover:text-white"
                 }`}
               >
@@ -73,7 +73,7 @@ export default function CompliancePacketPage() {
             onChange={(e) => setNote(e.target.value)}
             maxLength={500}
             placeholder='e.g. "SOC2 Q2 control AC-2 evidence"'
-            className="w-full rounded-md border border-white/[0.08] bg-black/30 px-3 py-2 text-[12px] font-mono text-zinc-200 focus:border-indigo-400/60 focus:outline-none"
+            className="w-full rounded-md border border-white/[0.08] bg-black/30 px-3 py-2 text-[12px] font-mono text-zinc-200 focus:border-zinc-400/60 focus:outline-none"
           />
         </div>
 

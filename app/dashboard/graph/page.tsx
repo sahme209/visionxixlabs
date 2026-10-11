@@ -141,7 +141,7 @@ export default function OperatingGraphPage() {
           className="absolute inset-0 -z-10 opacity-90 pointer-events-none"
           style={{
             background:
-              "radial-gradient(900px 320px at 12% 0%, rgba(99,102,241,0.10), transparent 60%), radial-gradient(700px 260px at 88% 110%, rgba(45,212,191,0.06), transparent 60%)",
+              "radial-gradient(900px 320px at 12% 0%, rgba(245,78,0,0.10), transparent 60%), radial-gradient(700px 260px at 88% 110%, rgba(45,212,191,0.06), transparent 60%)",
           }}
           aria-hidden
         />
@@ -218,7 +218,7 @@ export default function OperatingGraphPage() {
               {graph.edges.slice(0, 12).map((e, i) => (
                 <li key={i} className="flex items-start gap-2 text-[12px]">
                   <span className="text-zinc-500 font-mono shrink-0">{e.from}</span>
-                  <span className="text-violet-300 font-mono shrink-0">{e.relation.replace(/_/g, " ")} →</span>
+                  <span className="text-orange-300 font-mono shrink-0">{e.relation.replace(/_/g, " ")} →</span>
                   <span className="text-zinc-500 font-mono shrink-0">{e.to}</span>
                   <span className="text-zinc-400 leading-snug">· {e.explanation}</span>
                 </li>

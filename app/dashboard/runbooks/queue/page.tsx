@@ -160,7 +160,7 @@ export default function RunbookQueuePage() {
                 onClick={() => setFilter(s)}
                 className={`text-[10px] font-mono px-2 py-0.5 rounded-full border transition ${
                   filter === s
-                    ? "bg-violet-500/15 text-white border-white/[0.12]"
+                    ? "bg-orange-500/15 text-white border-white/[0.12]"
                     : "bg-white/[0.02] text-zinc-400 border-white/[0.06] hover:text-white"
                 }`}
               >
@@ -203,7 +203,7 @@ export default function RunbookQueuePage() {
                       )}
                     </div>
                     <div className="rounded-lg border border-white/[0.06] bg-black/20 p-2.5">
-                      <p className="text-[10px] font-mono text-violet-300/80 uppercase tracking-wider mb-0.5">Hardening</p>
+                      <p className="text-[10px] font-mono text-orange-300/80 uppercase tracking-wider mb-0.5">Hardening</p>
                       <p className="text-[12px] text-white">{r.hardeningLabel}</p>
                       {r.hardeningApi && (
                         <code className="inline-block text-[10px] font-mono text-cyan-300 bg-black/40 border border-white/[0.06] rounded px-1.5 py-0.5 mt-1">

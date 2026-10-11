@@ -58,7 +58,7 @@ export default function TopologyPage() {
                 onClick={() => setOverlay(o.id)}
                 className={`inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-medium transition-all border ${
                   isActive
-                    ? "bg-violet-500/15 border-white/[0.12] text-violet-300 shadow-[0_0_20px_rgba(139,92,246,0.15)]"
+                    ? "bg-orange-500/15 border-white/[0.12] text-orange-300 shadow-[0_0_20px_rgba(255, 120, 61,0.15)]"
                     : "bg-white/[0.02] border-white/[0.06] text-zinc-400 hover:text-white hover:border-white/[0.12]"
                 }`}
               >
@@ -122,7 +122,7 @@ export default function TopologyPage() {
           <div className="space-y-2 text-[11px]">
             {[
               { label: "Cross-region replication", value: "Active", dot: "bg-emerald-400" },
-              { label: "Drift monitoring", value: "Every 6h", dot: "bg-violet-400" },
+              { label: "Drift monitoring", value: "Every 6h", dot: "bg-orange-400" },
               { label: "Cost trend (7d)", value: "↘ 4.2% lower", dot: "bg-emerald-400" },
               { label: "Active scans", value: "1 running", dot: "bg-blue-400 animate-pulse" },
               { label: "Pending approvals", value: "3", dot: "bg-zinc-400 animate-pulse" },

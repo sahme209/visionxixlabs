@@ -67,7 +67,7 @@ const TOOLS: readonly ToolCard[] = [
     connectedAgents: ["Spec Writer", "Test Coverage Proposer", "Security Agent", "DevOps Agent"],
     setupRoute: "/dashboard/developer-tools/vscode",
     icon: CodeBracketIcon,
-    tone: "text-violet-300",
+    tone: "text-orange-300",
     riskNote: "Never uploads full repos without explicit per-folder approval.",
   },
   {
@@ -80,7 +80,7 @@ const TOOLS: readonly ToolCard[] = [
     connectedAgents: ["Spec Writer", "Security Agent", "DevOps Agent"],
     docsRoute: "/docs/jetbrains",
     icon: CodeBracketIcon,
-    tone: "text-violet-300",
+    tone: "text-orange-300",
     riskNote: "Same boundaries as the VS Code extension.",
   },
   {
@@ -106,7 +106,7 @@ const TOOLS: readonly ToolCard[] = [
     connectedAgents: ["DevOps Agent", "Cloud Agent", "Database Agent", "Security Agent"],
     installRoute: "/download",
     icon: ComputerDesktopIcon,
-    tone: "text-fuchsia-300",
+    tone: "text-amber-300",
     riskNote: "Every local execution is staged, scoped, time-boxed, and audit-logged.",
   },
   {
@@ -144,7 +144,7 @@ const TOOLS: readonly ToolCard[] = [
     connectedAgents: ["Cloud Agent"],
     docsRoute: "/docs/terraform",
     icon: CubeTransparentIcon,
-    tone: "text-violet-300",
+    tone: "text-orange-300",
     riskNote: "Apply is high-risk approval-gated. Destroys are blocked by default.",
   },
   {
@@ -178,7 +178,7 @@ const STATUS_DISPLAY: Record<ToolStatus, { label: string; tone: string }> = {
   connected:                 { label: "Connected",         tone: "text-emerald-300 bg-emerald-500/15 border-emerald-500/40" },
   not_connected:             { label: "Not connected",     tone: "text-zinc-300 bg-white/[0.04] border-white/[0.10]" },
   coming_soon:               { label: "Coming soon",       tone: "text-zinc-300 bg-white/[0.04] border-white/[0.10]" },
-  requires_desktop_app:      { label: "Requires desktop",  tone: "text-fuchsia-300 bg-fuchsia-500/10 border-fuchsia-500/30" },
+  requires_desktop_app:      { label: "Requires desktop",  tone: "text-amber-300 bg-amber-500/10 border-amber-500/30" },
   requires_admin_approval:   { label: "Admin approval",    tone: "text-zinc-300 bg-white/10 border-white/30" },
   setup_incomplete:          { label: "Setup incomplete",  tone: "text-zinc-300 bg-white/10 border-white/30" },
 };
@@ -239,7 +239,7 @@ export default function DeveloperToolsPage() {
                 {primaryRoute && (
                   <Link
                     href={primaryRoute}
-                    className="inline-flex items-center gap-1.5 text-[12px] font-medium px-3 py-1.5 rounded-lg bg-violet-500/15 text-violet-100 border border-white/[0.12] hover:bg-violet-500/25 transition"
+                    className="inline-flex items-center gap-1.5 text-[12px] font-medium px-3 py-1.5 rounded-lg bg-orange-500/15 text-orange-100 border border-white/[0.12] hover:bg-orange-500/25 transition"
                   >
                     {t.status === "available" ? "Set up" : t.status === "coming_soon" ? "Notify me" : "Configure"}
                     <ArrowRightIcon className="h-3 w-3" />
@@ -255,10 +255,10 @@ export default function DeveloperToolsPage() {
       </section>
 
       {/* Workflow explainer */}
-      <section className="rounded-2xl border border-violet-500/15 bg-white/[0.015] p-5 mb-8">
+      <section className="rounded-2xl border border-orange-500/15 bg-white/[0.015] p-5 mb-8">
         <header className="flex items-center gap-2 mb-3">
-          <SparklesIcon className="h-4 w-4 text-violet-300" />
-          <p className="text-[10px] font-semibold uppercase tracking-widest text-violet-300">How web + desktop + IDE talk to each other</p>
+          <SparklesIcon className="h-4 w-4 text-orange-300" />
+          <p className="text-[10px] font-semibold uppercase tracking-widest text-orange-300">How web + desktop + IDE talk to each other</p>
         </header>
         <ol className="grid sm:grid-cols-2 gap-2 text-[12px] text-zinc-300">
           {[
@@ -270,7 +270,7 @@ export default function DeveloperToolsPage() {
             "Risky actions stage in /dashboard/approvals — never auto-applied.",
           ].map((step, i) => (
             <li key={step} className="flex items-start gap-2">
-              <span className="inline-flex items-center justify-center h-5 w-5 rounded-full border border-violet-400/40 bg-violet-500/10 text-[10px] font-mono text-white shrink-0 mt-0.5">{i + 1}</span>
+              <span className="inline-flex items-center justify-center h-5 w-5 rounded-full border border-orange-400/40 bg-orange-500/10 text-[10px] font-mono text-white shrink-0 mt-0.5">{i + 1}</span>
               <span className="leading-snug">{step}</span>
             </li>
           ))}

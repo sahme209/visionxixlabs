@@ -104,7 +104,7 @@ export default function RootCausesPage() {
           className="absolute inset-0 -z-10 opacity-90 pointer-events-none"
           style={{
             background:
-              "radial-gradient(900px 320px at 12% 0%, rgba(99,102,241,0.10), transparent 60%), radial-gradient(700px 260px at 88% 110%, rgba(45,212,191,0.06), transparent 60%)",
+              "radial-gradient(900px 320px at 12% 0%, rgba(245,78,0,0.10), transparent 60%), radial-gradient(700px 260px at 88% 110%, rgba(45,212,191,0.06), transparent 60%)",
           }}
           aria-hidden
         />
@@ -114,8 +114,8 @@ export default function RootCausesPage() {
           <div className="min-w-0">
             <div className="flex items-center gap-2 flex-wrap">
               <span className="inline-flex items-center gap-2 rounded-full border border-white/[0.06] bg-white/[0.02] px-2.5 py-1">
-                <PuzzlePieceIcon className="h-3.5 w-3.5 text-violet-300" />
-                <span className="text-[10px] font-semibold uppercase tracking-widest text-violet-300">
+                <PuzzlePieceIcon className="h-3.5 w-3.5 text-orange-300" />
+                <span className="text-[10px] font-semibold uppercase tracking-widest text-orange-300">
                   Root causes · grouping_only_no_resolution
                 </span>
               </span>
@@ -183,7 +183,7 @@ export default function RootCausesPage() {
                           {g.confidence} confidence
                         </span>
                         <span className="text-[10px] font-mono text-zinc-500">{PATTERN_LABEL[g.pattern]}</span>
-                        <span className="text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded bg-violet-500/15 text-violet-300">
+                        <span className="text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded bg-orange-500/15 text-orange-300">
                           {g.relatedCount} signal{g.relatedCount === 1 ? "" : "s"}
                         </span>
                         <span className="text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded bg-zinc-700/40 text-zinc-300">

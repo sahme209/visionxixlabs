@@ -242,11 +242,11 @@ export default function ModulesPage() {
           className="absolute inset-0 -z-10 opacity-90 pointer-events-none"
           style={{
             background:
-              "radial-gradient(900px 320px at 14% 0%, rgba(124,58,237,0.12), transparent 60%), radial-gradient(700px 260px at 86% 110%, rgba(45,212,191,0.06), transparent 60%)",
+              "radial-gradient(900px 320px at 14% 0%, rgba(245, 78, 0,0.12), transparent 60%), radial-gradient(700px 260px at 86% 110%, rgba(45,212,191,0.06), transparent 60%)",
           }}
           aria-hidden
         />
-        <p className="text-[10px] font-mono uppercase tracking-[0.22em] text-violet-300/80">
+        <p className="text-[10px] font-mono uppercase tracking-[0.22em] text-orange-300/80">
           Platform · operating system
         </p>
         <h1 className="mt-3 text-3xl md:text-4xl font-bold tracking-[-0.03em]">Platform modules</h1>
@@ -284,7 +284,7 @@ export default function ModulesPage() {
               <header className="flex items-start justify-between gap-3">
                 <div className="flex items-center gap-3">
                   <span className="rounded-xl border border-white/[0.06] bg-white/[0.03] p-2.5">
-                    <Icon className="h-5 w-5 text-violet-300" />
+                    <Icon className="h-5 w-5 text-orange-300" />
                   </span>
                   <div>
                     <h2 className="text-[15px] font-semibold text-white">{m.name}</h2>

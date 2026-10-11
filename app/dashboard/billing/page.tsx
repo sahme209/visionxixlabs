@@ -152,7 +152,7 @@ export default function BillingPage() {
       {plan && plan.status !== "no_plan" && (
         <div className="rounded-2xl border border-white/[0.06] bg-white/[0.015] p-5 mb-6">
           <div className="flex items-center gap-2 flex-wrap mb-2">
-            <span className="text-[10px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded border bg-violet-500/15 text-white border-white/[0.12]">
+            <span className="text-[10px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded border bg-orange-500/15 text-white border-white/[0.12]">
               current plan
             </span>
             <p className="text-[15px] font-semibold text-white">{plan.spec.label}</p>
@@ -171,8 +171,8 @@ export default function BillingPage() {
       )}
 
       {plan && plan.status === "no_plan" && (
-        <div className="rounded-2xl border border-white/[0.06] bg-gradient-to-br from-violet-500/[0.05] via-transparent to-fuchsia-500/[0.03] p-6 mb-6">
-          <p className="text-[10px] font-mono uppercase tracking-wider text-violet-300 mb-2">
+        <div className="rounded-2xl border border-white/[0.06] bg-gradient-to-br from-orange-500/[0.05] via-transparent to-amber-500/[0.03] p-6 mb-6">
+          <p className="text-[10px] font-mono uppercase tracking-wider text-orange-300 mb-2">
             no plan selected
           </p>
           <p className="text-[15px] font-semibold text-white mb-1">
@@ -205,7 +205,7 @@ export default function BillingPage() {
                   isCurrent
                     ? "bg-emerald-500/15 text-emerald-200 border-emerald-500/30 cursor-default"
                     : stripeReady
-                      ? "bg-violet-500/15 text-white border-white/[0.12] hover:bg-violet-500/20"
+                      ? "bg-orange-500/15 text-white border-white/[0.12] hover:bg-orange-500/20"
                       : "bg-zinc-500/10 text-zinc-400 border-zinc-500/20 cursor-not-allowed"
                 } disabled:opacity-70`}
               >

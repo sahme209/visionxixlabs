@@ -211,7 +211,7 @@ export default function AgentToolsPage() {
                             </td>
                             <td className="py-2 align-top">
                               {cap.requiresDesktopApp ? (
-                                <span className="text-[10px] font-mono text-fuchsia-300">required</span>
+                                <span className="text-[10px] font-mono text-amber-300">required</span>
                               ) : (
                                 <span className="text-[10px] font-mono text-zinc-500">—</span>
                               )}

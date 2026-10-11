@@ -71,7 +71,7 @@ const CLASSIFICATION_VISUAL: Record<Classification, { pill: string; icon: typeof
   readonly_allowed:            { pill: "bg-emerald-500/15 text-emerald-300", icon: CheckCircleIcon,         label: "read-only" },
   policy_gated:                { pill: "bg-cyan-500/15 text-cyan-300",       icon: ClockIcon,               label: "policy-gated" },
   approval_required:           { pill: "bg-white/15 text-zinc-300",     icon: ExclamationTriangleIcon, label: "approval" },
-  desktop_review_required:     { pill: "bg-violet-500/15 text-violet-300",   icon: ClockIcon,               label: "desktop review" },
+  desktop_review_required:     { pill: "bg-orange-500/15 text-orange-300",   icon: ClockIcon,               label: "desktop review" },
   unsafe_never_automate:       { pill: "bg-rose-500/15 text-rose-300",       icon: LockClosedIcon,          label: "unsafe · never" },
   disabled_until_policy:       { pill: "bg-white/15 text-zinc-300",     icon: ExclamationTriangleIcon, label: "disabled · policy" },
   disabled_until_credentials:  { pill: "bg-white/15 text-zinc-300",     icon: ExclamationTriangleIcon, label: "disabled · creds" },

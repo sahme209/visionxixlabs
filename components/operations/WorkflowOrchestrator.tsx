@@ -36,9 +36,9 @@ const KIND_CONFIG: Record<
   },
   execution_queue: {
     icon: CommandLineIcon,
-    iconClass: "text-violet-400",
-    bgClass: "bg-violet-500/10",
-    borderClass: "border-violet-500/20",
+    iconClass: "text-orange-400",
+    bgClass: "bg-orange-500/10",
+    borderClass: "border-orange-500/20",
     label: "Execution queue",
   },
   post_execution_verify: {
@@ -64,9 +64,9 @@ const KIND_CONFIG: Record<
   },
   rollback_orchestration: {
     icon: ArrowPathIcon,
-    iconClass: "text-fuchsia-400",
-    bgClass: "bg-fuchsia-500/10",
-    borderClass: "border-fuchsia-500/20",
+    iconClass: "text-amber-400",
+    bgClass: "bg-amber-500/10",
+    borderClass: "border-amber-500/20",
     label: "Rollback orchestration",
   },
 };
@@ -151,7 +151,7 @@ export function WorkflowOrchestrator({ workflows = DEMO_WORKFLOWS, className = "
             { label: "Running now", value: running.toString(), color: "text-blue-400", dot: "bg-blue-400 animate-pulse" },
             { label: "Scheduled", value: scheduled.toString(), color: "text-emerald-400", dot: "bg-emerald-400" },
             { label: "Paused", value: paused.toString(), color: "text-zinc-400", dot: "bg-zinc-500" },
-            { label: "Total this month", value: totalRuns.toString(), color: "text-violet-400", dot: "bg-violet-400" },
+            { label: "Total this month", value: totalRuns.toString(), color: "text-orange-400", dot: "bg-orange-400" },
           ].map((m) => (
             <div key={m.label} className="rounded-lg bg-white/[0.02] border border-white/[0.04] px-3 py-2">
               <div className="flex items-center gap-1.5 mb-1">

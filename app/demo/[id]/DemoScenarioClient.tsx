@@ -35,7 +35,7 @@ import { SandboxNavigation } from "@/components/marketing/SandboxNavigation";
 const APPROVAL_TONE: Record<DemoStep["approval"], { label: string; cls: string }> = {
   none:         { label: "No approval needed",        cls: "bg-emerald-500/10 text-emerald-200 border-emerald-500/25" },
   self_approve: { label: "Operator self-approves",    cls: "bg-white/10 text-zinc-200 border-white/25" },
-  two_person:   { label: "Two-person human approval", cls: "bg-violet-500/10 text-violet-200 border-violet-500/25" },
+  two_person:   { label: "Two-person human approval", cls: "bg-orange-500/10 text-orange-200 border-orange-500/25" },
 };
 
 export function DemoScenarioClient({ scenario }: { scenario: DemoScenario }) {
@@ -92,9 +92,9 @@ export function DemoScenarioClient({ scenario }: { scenario: DemoScenario }) {
       <SandboxNavigation />
       <main className="max-w-6xl mx-auto px-4 sm:px-6 py-10 space-y-8">
       {/* Sandbox marker — pinned, calm. */}
-      <div className="rounded-lg border border-violet-500/20 bg-violet-500/[0.04] px-3 py-2 flex items-center gap-2">
-        <span className="w-1.5 h-1.5 rounded-full bg-violet-400" />
-        <span className="text-[10px] font-mono text-violet-200/90 uppercase tracking-[0.22em]">
+      <div className="rounded-lg border border-orange-500/20 bg-orange-500/[0.04] px-3 py-2 flex items-center gap-2">
+        <span className="w-1.5 h-1.5 rounded-full bg-orange-400" />
+        <span className="text-[10px] font-mono text-orange-200/90 uppercase tracking-[0.22em]">
           sandbox · example data only · not your workspace
         </span>
       </div>
@@ -122,7 +122,7 @@ export function DemoScenarioClient({ scenario }: { scenario: DemoScenario }) {
         {(engineers.length > 0 || connectors.length > 0) && (
           <div className="flex flex-wrap gap-1.5">
             {engineers.map((e) => (
-              <span key={e} className="text-[10px] font-mono px-2 py-1 rounded-full border border-violet-500/25 bg-violet-500/[0.04] text-violet-200/90">
+              <span key={e} className="text-[10px] font-mono px-2 py-1 rounded-full border border-orange-500/25 bg-orange-500/[0.04] text-orange-200/90">
                 engineer · {e}
               </span>
             ))}
@@ -139,7 +139,7 @@ export function DemoScenarioClient({ scenario }: { scenario: DemoScenario }) {
           <p className="text-[10px] font-mono text-zinc-500 uppercase tracking-[0.22em]">read first</p>
           <Link
             href={primaryDoc.href}
-            className="inline-flex items-baseline gap-2 text-[14px] font-semibold text-white hover:text-violet-200 transition-colors"
+            className="inline-flex items-baseline gap-2 text-[14px] font-semibold text-white hover:text-orange-200 transition-colors"
           >
             {primaryDoc.title}
             <span className="text-zinc-500 text-[12px] font-normal">— {primaryDoc.blurb}</span>
@@ -178,7 +178,7 @@ export function DemoScenarioClient({ scenario }: { scenario: DemoScenario }) {
           {/* Active step number + nav */}
           <div className="flex items-center justify-between gap-3 flex-wrap">
             <div className="flex items-center gap-2 text-[11px] font-mono text-zinc-500">
-              <span className="text-violet-300 font-semibold">step {activeOrd + 1}</span>
+              <span className="text-orange-300 font-semibold">step {activeOrd + 1}</span>
               <span className="text-zinc-700">/</span>
               <span>{scenario.steps.length}</span>
               <span className="text-zinc-700 mx-1">·</span>
@@ -207,7 +207,7 @@ export function DemoScenarioClient({ scenario }: { scenario: DemoScenario }) {
                 <span className={`text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded border ${
                   endpoint.method === "GET"
                     ? "bg-cyan-500/15 text-cyan-200 border-cyan-500/25"
-                    : "bg-violet-500/15 text-violet-200 border-violet-500/25"
+                    : "bg-orange-500/15 text-orange-200 border-orange-500/25"
                 }`}>{endpoint.method}</span>
                 <code className="text-[12px] font-mono text-zinc-100">{endpoint.path}</code>
                 <span className="text-[10px] font-mono text-zinc-500">scope · {endpoint.scope}</span>
@@ -240,8 +240,8 @@ export function DemoScenarioClient({ scenario }: { scenario: DemoScenario }) {
           )}
 
           {/* Knowledge card — "behind the scenes" educational copy */}
-          <div className="rounded-xl border border-violet-500/15 bg-violet-500/[0.03] p-4 space-y-1.5">
-            <p className="text-[10px] font-mono text-violet-300/90 uppercase tracking-[0.22em]">{knowledge.title}</p>
+          <div className="rounded-xl border border-orange-500/15 bg-orange-500/[0.03] p-4 space-y-1.5">
+            <p className="text-[10px] font-mono text-orange-300/90 uppercase tracking-[0.22em]">{knowledge.title}</p>
             <p className="text-[13px] text-zinc-300 leading-relaxed max-w-3xl">{knowledge.body}</p>
           </div>
 
@@ -274,10 +274,10 @@ export function DemoScenarioClient({ scenario }: { scenario: DemoScenario }) {
             {step.route && (
               <Link
                 href={step.route}
-                className="block rounded-xl border border-white/[0.06] bg-white/[0.015] hover:border-violet-500/25 hover:bg-violet-500/[0.04] p-3 transition-colors group"
+                className="block rounded-xl border border-white/[0.06] bg-white/[0.015] hover:border-orange-500/25 hover:bg-orange-500/[0.04] p-3 transition-colors group"
               >
                 <p className="text-[10px] font-mono text-zinc-500 uppercase tracking-[0.18em] mb-1">platform route</p>
-                <p className="text-[12px] font-mono text-violet-200/90 group-hover:text-violet-100 transition-colors break-all">{step.route} →</p>
+                <p className="text-[12px] font-mono text-orange-200/90 group-hover:text-orange-100 transition-colors break-all">{step.route} →</p>
               </Link>
             )}
             {stepDocs.length > 0 && (
@@ -306,7 +306,7 @@ export function DemoScenarioClient({ scenario }: { scenario: DemoScenario }) {
             {activeOrd === scenario.steps.length - 1 ? (
               <Link
                 href="/download"
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-violet-600/90 hover:bg-violet-500 text-white text-[12px] font-semibold transition-colors"
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-orange-600/90 hover:bg-orange-500 text-white text-[12px] font-semibold transition-colors"
               >
                 Download the application →
               </Link>
@@ -329,13 +329,13 @@ export function DemoScenarioClient({ scenario }: { scenario: DemoScenario }) {
                     type="button"
                     onClick={() => setActiveOrd(i)}
                     className={`w-full text-left flex items-start gap-2.5 px-2.5 py-2 rounded-lg transition-colors ${
-                      isActive ? "bg-violet-500/[0.08] border border-violet-500/25" :
+                      isActive ? "bg-orange-500/[0.08] border border-orange-500/25" :
                       isDone   ? "bg-white/[0.015] border border-emerald-500/15 hover:bg-white/[0.03]" :
                                  "bg-white/[0.01] border border-white/[0.04] hover:bg-white/[0.03]"
                     }`}
                   >
                     <span className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-mono shrink-0 ${
-                      isActive ? "bg-violet-500/25 text-violet-100 border border-violet-500/35" :
+                      isActive ? "bg-orange-500/25 text-orange-100 border border-orange-500/35" :
                       isDone   ? "bg-emerald-500/20 text-emerald-100" :
                                  "bg-zinc-800 text-zinc-500"
                     }`}>{isDone ? "✓" : i + 1}</span>
@@ -363,10 +363,10 @@ export function DemoScenarioClient({ scenario }: { scenario: DemoScenario }) {
         <p className="text-[10px] font-mono text-zinc-500 uppercase tracking-[0.22em]">engineering principle</p>
         <p className="text-[14px] text-zinc-200 leading-relaxed max-w-3xl">{closer}</p>
         <div className="flex flex-wrap gap-3 pt-2">
-          <Link href="/demo/reference" className="text-[12px] text-violet-300/90 hover:text-violet-200 underline-offset-2 hover:underline">
+          <Link href="/demo/reference" className="text-[12px] text-orange-300/90 hover:text-orange-200 underline-offset-2 hover:underline">
             Platform reference →
           </Link>
-          <Link href="/docs/architecture" className="text-[12px] text-violet-300/90 hover:text-violet-200 underline-offset-2 hover:underline">
+          <Link href="/docs/architecture" className="text-[12px] text-orange-300/90 hover:text-orange-200 underline-offset-2 hover:underline">
             Architecture overview →
           </Link>
           <Link href="/demo" className="text-[12px] text-zinc-400 hover:text-zinc-200 underline-offset-2 hover:underline">

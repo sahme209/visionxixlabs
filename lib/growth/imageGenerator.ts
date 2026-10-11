@@ -31,7 +31,7 @@ interface GenerateImageInput {
 // stay visually consistent in a LinkedIn feed.
 // ---------------------------------------------------------------------------
 
-const BRAND_PALETTE = "Deep navy / charcoal background. Electric violet (#8B5CF6) and coral pink (#F472B6) as accent colors. Pixel-precise. Premium SaaS aesthetic.";
+const BRAND_PALETTE = "Deep navy / charcoal background. Electric violet (#8B5CF6) and coral pink (#FF783D) as accent colors. Pixel-precise. Premium SaaS aesthetic.";
 
 const PROMPT_SCAFFOLD: Readonly<Record<ContentTopicCategory, string>> = {
   product_education:

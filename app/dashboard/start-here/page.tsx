@@ -50,7 +50,7 @@ export default function StartHerePage() {
         {steps.map((step, index) => (
           <li key={step.title} className="rounded-2xl border border-white/[0.07] bg-white/[0.02] p-5">
             <div className="flex gap-4">
-              <span className="font-mono text-xs text-violet-300">{String(index + 1).padStart(2, "0")}</span>
+              <span className="font-mono text-xs text-orange-300">{String(index + 1).padStart(2, "0")}</span>
               <div className="space-y-3">
                 <div>
                   <h2 className="font-semibold text-white">{step.title}</h2>

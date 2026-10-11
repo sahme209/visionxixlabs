@@ -29,7 +29,7 @@ export function SecurityServiceCard({
         <ul className="space-y-1 text-sm text-zinc-400">
           {includes.map((item) => (
             <li key={item} className="flex items-start">
-              <span className="text-indigo-500 mr-2 mt-0.5 shrink-0">•</span>
+              <span className="text-zinc-500 mr-2 mt-0.5 shrink-0">•</span>
               {item}
             </li>
           ))}
@@ -44,7 +44,7 @@ export function SecurityServiceCard({
       <div className="mt-4">
         <Link
           href={ctaHref}
-          className="inline-flex items-center text-sm font-semibold text-violet-400 hover:underline"
+          className="inline-flex items-center text-sm font-semibold text-orange-400 hover:underline"
         >
           {ctaLabel}
         </Link>

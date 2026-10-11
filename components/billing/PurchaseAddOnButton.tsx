@@ -52,7 +52,7 @@ export function PurchaseAddOnButton({ sku, label = "Buy" }: Props) {
       <button
         onClick={buy}
         disabled={state.kind === "initiating"}
-        className="inline-flex items-center gap-1.5 text-[12px] font-medium px-3 py-1.5 rounded-lg bg-violet-500/20 text-violet-100 border border-violet-500/40 hover:bg-violet-500/30 transition disabled:opacity-50"
+        className="inline-flex items-center gap-1.5 text-[12px] font-medium px-3 py-1.5 rounded-lg bg-orange-500/20 text-orange-100 border border-orange-500/40 hover:bg-orange-500/30 transition disabled:opacity-50"
       >
         {state.kind === "initiating" ? (
           <>

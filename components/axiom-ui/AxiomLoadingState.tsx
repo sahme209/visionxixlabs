@@ -91,7 +91,7 @@ export function AxiomLoadingState({
                   ease: "easeInOut",
                 }}
               >
-                <CloudIcon className="h-5 w-5 text-violet-400" />
+                <CloudIcon className="h-5 w-5 text-orange-400" />
                 <span className="text-sm font-medium text-zinc-300">{label}</span>
               </motion.div>
             </motion.div>
@@ -107,7 +107,7 @@ export function AxiomLoadingState({
           {[0, 1, 2].map((i) => (
             <motion.span
               key={i}
-              className="h-1.5 w-1.5 rounded-full bg-violet-400/70"
+              className="h-1.5 w-1.5 rounded-full bg-orange-400/70"
               animate={
                 reduceMotion
                   ? {}
@@ -135,7 +135,7 @@ export function AxiomLoadingState({
           transition={{ duration: duration || motionDurations.short }}
         >
           <motion.div
-            className="h-full rounded-full bg-gradient-to-r from-indigo-500 to-violet-500"
+            className="h-full rounded-full bg-gradient-to-r from-zinc-500 to-orange-500"
             animate={
               reduceMotion
                 ? { width: "60%" }

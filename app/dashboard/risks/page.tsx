@@ -84,8 +84,8 @@ interface RiskQueueLite {
 const STATUS_VISUAL: Record<RiskStatus, { border: string; bg: string; text: string; pill: string; icon: typeof CheckCircleIcon }> = {
   open:                 { border: "border-white/[0.22]",   bg: "bg-white/[0.04]",   text: "text-zinc-300",   pill: "bg-white/15 text-zinc-300",     icon: ExclamationTriangleIcon },
   investigating:        { border: "border-cyan-500/[0.22]",    bg: "bg-cyan-500/[0.04]",    text: "text-cyan-300",    pill: "bg-cyan-500/15 text-cyan-300",       icon: EyeIcon                  },
-  remediation_prepared: { border: "border-white/[0.10]",  bg: "bg-white/[0.015]",  text: "text-violet-300",  pill: "bg-violet-500/15 text-violet-300",   icon: CheckCircleIcon          },
-  simulation_ready:     { border: "border-white/[0.06]",  bg: "bg-white/[0.015]",  text: "text-violet-300",  pill: "bg-violet-500/15 text-violet-300",   icon: CheckCircleIcon          },
+  remediation_prepared: { border: "border-white/[0.10]",  bg: "bg-white/[0.015]",  text: "text-orange-300",  pill: "bg-orange-500/15 text-orange-300",   icon: CheckCircleIcon          },
+  simulation_ready:     { border: "border-white/[0.06]",  bg: "bg-white/[0.015]",  text: "text-orange-300",  pill: "bg-orange-500/15 text-orange-300",   icon: CheckCircleIcon          },
   approval_required:    { border: "border-white/[0.28]",   bg: "bg-white/[0.05]",   text: "text-zinc-300",   pill: "bg-white/20 text-zinc-200",     icon: LockClosedIcon           },
   accepted_risk:        { border: "border-zinc-700/30",        bg: "bg-white/[0.02]",       text: "text-zinc-300",    pill: "bg-zinc-700/40 text-zinc-300",       icon: CheckCircleIcon          },
   blocked:              { border: "border-rose-500/[0.22]",    bg: "bg-rose-500/[0.04]",    text: "text-rose-300",    pill: "bg-rose-500/15 text-rose-300",       icon: XCircleIcon              },
@@ -153,7 +153,7 @@ export default function RiskQueuePage() {
           className="absolute inset-0 -z-10 opacity-90 pointer-events-none"
           style={{
             background:
-              "radial-gradient(900px 320px at 12% 0%, rgba(99,102,241,0.10), transparent 60%), radial-gradient(700px 260px at 88% 110%, rgba(45,212,191,0.06), transparent 60%)",
+              "radial-gradient(900px 320px at 12% 0%, rgba(245,78,0,0.10), transparent 60%), radial-gradient(700px 260px at 88% 110%, rgba(45,212,191,0.06), transparent 60%)",
           }}
           aria-hidden
         />
@@ -237,7 +237,7 @@ export default function RiskQueuePage() {
                         <span className="text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded bg-zinc-700/40 text-zinc-300">
                           {r.sourceMode.replace(/_/g, " ")}
                         </span>
-                        <span className="text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded bg-violet-500/15 text-violet-300">
+                        <span className="text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded bg-orange-500/15 text-orange-300">
                           owner: {r.ownerRole.replace(/_/g, " ")}
                         </span>
                       </div>

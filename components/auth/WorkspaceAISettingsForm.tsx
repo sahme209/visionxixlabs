@@ -106,7 +106,7 @@ export function WorkspaceAISettingsForm() {
 
   return (
     <section className="rounded-2xl border border-white/[0.08] bg-white/[0.025] p-5 sm:p-7" aria-labelledby="ai-policy-title">
-      <p className="text-[10px] uppercase tracking-[0.18em] text-violet-300">Workspace control</p>
+      <p className="text-[10px] uppercase tracking-[0.18em] text-orange-300">Workspace control</p>
       <h2 id="ai-policy-title" className="mt-3 text-lg font-medium text-zinc-100">AI provider policy</h2>
       <p className="mt-2 max-w-xl text-sm leading-6 text-zinc-500">Review the provider families approved by the service, select their approved models, and set fallback order. Credentials, prompts, and provider billing accounts never appear here.</p>
 
@@ -120,7 +120,7 @@ export function WorkspaceAISettingsForm() {
               <fieldset className="rounded-xl border border-white/[0.07] p-3">
                 <legend className="px-1 text-xs font-medium text-zinc-300">Workspace AI access</legend>
                 <label className="flex cursor-pointer items-start gap-3 rounded-lg px-2 py-2 text-sm text-zinc-300 transition hover:bg-white/[0.04]">
-                  <input type="checkbox" checked={policy.enabled} onChange={(event) => toggleWorkspaceAI(event.target.checked)} className="mt-0.5 h-4 w-4 accent-violet-300" />
+                  <input type="checkbox" checked={policy.enabled} onChange={(event) => toggleWorkspaceAI(event.target.checked)} className="mt-0.5 h-4 w-4 accent-orange-300" />
                   <span><span className="font-medium text-zinc-200">Allow governed AI generation in this workspace</span><span className="mt-1 block text-xs leading-5 text-zinc-500">Turning this off blocks requests routed under this workspace policy on the server. It does not expose or remove service-managed credentials.</span></span>
                 </label>
               </fieldset>
@@ -132,7 +132,7 @@ export function WorkspaceAISettingsForm() {
                   {availableProviders.map((provider) => {
                     const selected = allowed.includes(provider);
                     return <label key={provider} className="flex cursor-pointer items-center gap-2 rounded-lg px-2 py-2 text-sm text-zinc-300 transition hover:bg-white/[0.04]">
-                      <input type="checkbox" checked={selected} onChange={() => toggleProvider(provider)} className="h-4 w-4 accent-violet-300" />
+                      <input type="checkbox" checked={selected} onChange={() => toggleProvider(provider)} className="h-4 w-4 accent-orange-300" />
                       {PROVIDER_LABELS[provider] ?? provider}
                     </label>;
                   })}

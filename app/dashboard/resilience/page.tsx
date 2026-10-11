@@ -375,7 +375,7 @@ export default function ResilienceDashboard() {
                 className={`btn-huly cta-glow px-7 py-3 text-[15px] font-semibold text-white rounded-xl transition-all ${
                   analyzing
                     ? "bg-zinc-700 cursor-wait"
-                    : "bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-500 hover:to-fuchsia-500"
+                    : "bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-500 hover:to-amber-500"
                 } ${linkedProviders.length === 0 ? "opacity-50 cursor-not-allowed" : ""}`}
               >
                 {analyzing ? "Scanning your infrastructure..." : "Run Resilience Analysis"}
@@ -490,7 +490,7 @@ export default function ResilienceDashboard() {
                 <div key={i} className={`flex gap-3 py-2.5 ${i < report.nextSteps.length - 1 ? "border-b border-white/[0.06]" : ""}`}>
                   <span className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-semibold shrink-0 ${
                     i === 0
-                      ? "bg-violet-500/15 border border-white/[0.12] text-zinc-500"
+                      ? "bg-orange-500/15 border border-white/[0.12] text-zinc-500"
                       : "bg-white/[0.04] text-zinc-500"
                   }`}>{i + 1}</span>
                   <span className="text-sm text-zinc-300">{step}</span>
@@ -519,7 +519,7 @@ export default function ResilienceDashboard() {
 
               {!tfJob && (
                 <button onClick={generateTerraform} disabled={tfLoading} className={`btn-huly cta-glow px-6 py-2.5 text-sm font-semibold text-white rounded-lg transition-all ${
-                  tfLoading ? "bg-zinc-700 cursor-wait" : "bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-500 hover:to-fuchsia-500"
+                  tfLoading ? "bg-zinc-700 cursor-wait" : "bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-500 hover:to-amber-500"
                 }`}>
                   {tfLoading ? "Generating infrastructure plan..." : "Generate Deployment Plan"}
                 </button>
@@ -585,7 +585,7 @@ export default function ResilienceDashboard() {
                       value={confirmInput}
                       onChange={(e) => setConfirmInput(e.target.value)}
                       placeholder="Type CONFIRM APPLY"
-                      className="flex-1 px-3.5 py-2.5 text-sm bg-white/[0.02] text-white border border-white/[0.08] rounded-lg font-mono focus:outline-none focus:ring-2 focus:ring-violet-500"
+                      className="flex-1 px-3.5 py-2.5 text-sm bg-white/[0.02] text-white border border-white/[0.08] rounded-lg font-mono focus:outline-none focus:ring-2 focus:ring-orange-500"
                     />
                     <button
                       onClick={approvePlan}

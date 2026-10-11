@@ -43,14 +43,14 @@ const columns = [
 
 export function Footer() {
   return (
-    <footer className="border-t border-white/[0.06] bg-[#11120f] px-5 pb-8 pt-20 sm:px-8 lg:px-12 lg:pt-24">
+    <footer className="border-t border-white/[0.07] bg-[#141414] px-5 pb-8 pt-20 sm:px-8 lg:px-12 lg:pt-24">
       <div className="mx-auto max-w-[1400px]">
         <section className="border-b border-white/[0.07] pb-20 text-center lg:pb-24" aria-labelledby="footer-cta-heading">
-          <h2 id="footer-cta-heading" className="text-4xl font-normal tracking-[-0.045em] text-zinc-100 sm:text-6xl lg:text-7xl">Put the workflow to work.</h2>
-          <p className="mx-auto mt-5 max-w-xl text-sm leading-6 text-zinc-500">Use the installed workspace for authenticated intake, approval-gated execution, evidence, and closure.</p>
+          <h2 id="footer-cta-heading" className="text-4xl font-medium tracking-[-0.05em] text-zinc-100 sm:text-6xl lg:text-7xl">Your first governed release starts here.</h2>
+          <p className="mx-auto mt-5 max-w-xl text-sm leading-6 text-zinc-400">Create a workspace, connect a repository, and let Axiom guide the first safe workflow from request to evidence.</p>
           <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
-            <Link href="/download" className="rounded-full bg-zinc-100 px-6 py-3 text-sm font-medium text-zinc-950 hover:bg-white">Download desktop</Link>
-            <Link href="/contact" className="rounded-full border border-white/[0.14] px-6 py-3 text-sm text-zinc-200 hover:bg-white/[0.05]">Contact the team</Link>
+            <Link href="/download" className="rounded-full bg-zinc-100 px-6 py-3 text-sm font-medium text-zinc-950 hover:bg-white">Download and get started</Link>
+            <Link href="/demo" className="rounded-full border border-white/[0.14] px-6 py-3 text-sm text-zinc-200 hover:bg-white/[0.05]">Explore the product</Link>
           </div>
         </section>
 

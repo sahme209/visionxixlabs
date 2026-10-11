@@ -107,7 +107,7 @@ export default function AdminLeadsPage() {
   if (loading) {
     return (
       <div className="flex justify-center py-20">
-        <div className="h-8 w-8 animate-spin rounded-full border-2 border-violet-600 border-t-transparent" />
+        <div className="h-8 w-8 animate-spin rounded-full border-2 border-orange-600 border-t-transparent" />
       </div>
     );
   }
@@ -127,7 +127,7 @@ export default function AdminLeadsPage() {
                 onClick={() => setSourceFilter(s)}
                 className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
                   sourceFilter === s
-                    ? "bg-violet-500/10 text-violet-400"
+                    ? "bg-orange-500/10 text-orange-400"
                     : "text-zinc-400 hover:bg-white/[0.04]"
                 }`}
               >
@@ -152,7 +152,7 @@ export default function AdminLeadsPage() {
               type="button"
               onClick={runAgentWorker}
               disabled={runningAgent}
-              className="btn-huly cta-glow inline-flex items-center gap-2 rounded-lg bg-violet-600 px-4 py-2 text-sm font-medium text-white hover:bg-violet-700 disabled:opacity-50"
+              className="btn-huly cta-glow inline-flex items-center gap-2 rounded-lg bg-orange-600 px-4 py-2 text-sm font-medium text-white hover:bg-orange-700 disabled:opacity-50"
             >
               {runningAgent ? "Running..." : "Run agent worker"}
             </button>
@@ -203,7 +203,7 @@ export default function AdminLeadsPage() {
                           href={previewUrl}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="inline-block mt-2 text-sm text-violet-400 hover:underline"
+                          className="inline-block mt-2 text-sm text-orange-400 hover:underline"
                         >
                           Preview: {previewUrl}
                         </a>
@@ -232,7 +232,7 @@ export default function AdminLeadsPage() {
                       <button
                         onClick={() => runAction(lead.id, "deploy")}
                         disabled={isActioning}
-                        className="btn-huly inline-flex items-center gap-1.5 rounded-lg bg-violet-500/10 px-3 py-2 text-sm font-medium text-violet-400 hover:bg-violet-500/20 disabled:opacity-50 transition-colors"
+                        className="btn-huly inline-flex items-center gap-1.5 rounded-lg bg-orange-500/10 px-3 py-2 text-sm font-medium text-orange-400 hover:bg-orange-500/20 disabled:opacity-50 transition-colors"
                       >
                         <CloudArrowUpIcon className="h-4 w-4" />
                         Regenerate preview

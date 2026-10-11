@@ -19,13 +19,13 @@ type LinkProps = BaseProps & {
 type AxiomButtonProps = ButtonProps | LinkProps;
 
 const baseClasses =
-  "inline-flex items-center justify-center gap-2 rounded-2xl text-sm font-semibold transition-all duration-200 ease-in-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-indigo-400 disabled:opacity-60";
+  "inline-flex items-center justify-center gap-2 rounded-2xl text-sm font-semibold transition-all duration-200 ease-in-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-zinc-400 disabled:opacity-60";
 
 const primaryClasses =
-  "bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 text-white px-5 py-2.5 shadow-sm hover:from-slate-800 hover:via-slate-800 hover:to-slate-900 hover:shadow-lg hover:shadow-indigo-300/40 hover:ring-1 hover:ring-violet-500";
+  "bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 text-white px-5 py-2.5 shadow-sm hover:from-slate-800 hover:via-slate-800 hover:to-slate-900 hover:shadow-lg hover:shadow-zinc-300/40 hover:ring-1 hover:ring-orange-500";
 
 const secondaryClasses =
-  "border border-white/[0.06] bg-transparent text-white px-4 py-2 hover:bg-white/[0.04] hover:shadow-md hover:shadow-indigo-200/30";
+  "border border-white/[0.06] bg-transparent text-white px-4 py-2 hover:bg-white/[0.04] hover:shadow-md hover:shadow-zinc-200/30";
 
 export function AxiomButton(props: AxiomButtonProps) {
   const { children, variant = "primary", className = "" } = props;

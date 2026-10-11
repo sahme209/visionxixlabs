@@ -77,7 +77,7 @@ const SEVERITY_VISUAL: Record<Severity, { pill: string; label: string }> = {
 const CLOUD_LABEL = {
   aws:   { name: "AWS GuardDuty",                color: "amber"  },
   azure: { name: "Azure Defender for Cloud",     color: "cyan"   },
-  gcp:   { name: "GCP Security Command Center",  color: "violet" },
+  gcp:   { name: "GCP Security Command Center",  color: "orange" },
 } as const;
 
 export default function CloudSecurityPage() {
@@ -106,7 +106,7 @@ export default function CloudSecurityPage() {
           className="absolute inset-0 -z-10 opacity-90 pointer-events-none"
           style={{
             background:
-              "radial-gradient(900px 320px at 12% 0%, rgba(244,63,94,0.10), transparent 60%), radial-gradient(700px 260px at 88% 110%, rgba(139,92,246,0.06), transparent 60%)",
+              "radial-gradient(900px 320px at 12% 0%, rgba(244,63,94,0.10), transparent 60%), radial-gradient(700px 260px at 88% 110%, rgba(255, 120, 61,0.06), transparent 60%)",
           }}
           aria-hidden
         />

@@ -82,7 +82,7 @@ const STAGE_STATUS_VISUAL: Record<StageStatus, { pill: string; icon: typeof Chec
   halted_boundary:         { pill: "bg-white/15 text-zinc-300",     icon: ExclamationTriangleIcon, label: "halted · boundary" },
   halted_missing_evidence: { pill: "bg-white/15 text-zinc-300",     icon: ExclamationTriangleIcon, label: "halted · evidence" },
   halted_unsafe:           { pill: "bg-rose-500/15 text-rose-300",       icon: XCircleIcon,             label: "halted · unsafe" },
-  halted_needs_human:      { pill: "bg-violet-500/15 text-violet-300",   icon: ClockIcon,               label: "halted · needs human" },
+  halted_needs_human:      { pill: "bg-orange-500/15 text-orange-300",   icon: ClockIcon,               label: "halted · needs human" },
   not_reached:             { pill: "bg-zinc-700/40 text-zinc-300",       icon: MinusCircleIcon,         label: "not reached" },
   errored:                 { pill: "bg-rose-500/15 text-rose-300",       icon: XCircleIcon,             label: "errored" },
 };
@@ -127,7 +127,7 @@ export default function AutonomyCockpitPage() {
           className="absolute inset-0 -z-10 opacity-90 pointer-events-none"
           style={{
             background:
-              "radial-gradient(900px 320px at 12% 0%, rgba(139,92,246,0.10), transparent 60%), radial-gradient(700px 260px at 88% 110%, rgba(45,212,191,0.08), transparent 60%)",
+              "radial-gradient(900px 320px at 12% 0%, rgba(255, 120, 61,0.10), transparent 60%), radial-gradient(700px 260px at 88% 110%, rgba(45,212,191,0.08), transparent 60%)",
           }}
           aria-hidden
         />
@@ -135,8 +135,8 @@ export default function AutonomyCockpitPage() {
 
         <div className="flex items-center gap-2 mb-3 flex-wrap">
           <span className="inline-flex items-center gap-2 rounded-full border border-white/[0.06] bg-white/[0.02] px-2.5 py-1">
-            <CpuChipIcon className="h-3.5 w-3.5 text-violet-300" />
-            <span className="text-[10px] font-semibold uppercase tracking-widest text-violet-300">
+            <CpuChipIcon className="h-3.5 w-3.5 text-orange-300" />
+            <span className="text-[10px] font-semibold uppercase tracking-widest text-orange-300">
               Closed Autonomy Loop
             </span>
           </span>
@@ -158,7 +158,7 @@ export default function AutonomyCockpitPage() {
                 onClick={() => setMode(m)}
                 className={`rounded-xl border p-3 text-left transition-all ${
                   active
-                    ? "border-violet-500/40 bg-white/[0.025]"
+                    ? "border-orange-500/40 bg-white/[0.025]"
                     : "border-white/[0.06] bg-white/[0.02] hover:border-white/[0.12]"
                 }`}
               >
@@ -205,13 +205,13 @@ export default function AutonomyCockpitPage() {
           </div>
 
           {/* Charter summary */}
-          <div className="rounded-2xl border border-violet-500/15 bg-white/[0.015] p-4 mb-6">
-            <p className="text-[10px] font-mono text-violet-300/80 uppercase tracking-[0.18em] mb-1">// active charter</p>
+          <div className="rounded-2xl border border-orange-500/15 bg-white/[0.015] p-4 mb-6">
+            <p className="text-[10px] font-mono text-orange-300/80 uppercase tracking-[0.18em] mb-1">// active charter</p>
             <p className="text-[13px] text-white font-semibold">{report.charter.mode}</p>
             <p className="text-[12px] text-zinc-300 leading-relaxed mt-1">{report.charter.rationale}</p>
             <div className="flex flex-wrap gap-1 mt-2">
               {report.charter.allowedClasses.map((c) => (
-                <span key={c} className="text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded bg-violet-500/15 text-white">
+                <span key={c} className="text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded bg-orange-500/15 text-white">
                   {c.replace(/_/g, " ")}
                 </span>
               ))}
@@ -236,7 +236,7 @@ export default function AutonomyCockpitPage() {
                       <div className="flex items-center gap-2 mb-1 flex-wrap">
                         <span className="text-[10px] font-mono text-zinc-500">#{c.rank}</span>
                         <span className="text-[10px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded bg-zinc-700/40 text-zinc-300">{c.boundaryClass.replace(/_/g, " ")}</span>
-                        <span className="text-[10px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded bg-violet-500/15 text-violet-300">{c.outcome.replace(/_/g, " ")}</span>
+                        <span className="text-[10px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded bg-orange-500/15 text-orange-300">{c.outcome.replace(/_/g, " ")}</span>
                       </div>
                       <p className="text-[14px] font-semibold text-white tracking-tight">{c.title}</p>
                       <p className="text-[12.5px] text-zinc-300 leading-relaxed mt-0.5">{c.proposedIntent}</p>
@@ -281,7 +281,7 @@ export default function AutonomyCockpitPage() {
 
       {!report && !error && !running && (
         <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-6 text-center">
-          <CpuChipIcon className="h-6 w-6 text-violet-300 mx-auto mb-2" />
+          <CpuChipIcon className="h-6 w-6 text-orange-300 mx-auto mb-2" />
           <p className="text-[13px] text-zinc-300">Pick a charter mode and run a cycle. Nothing executes — the loop only declares intent.</p>
         </div>
       )}

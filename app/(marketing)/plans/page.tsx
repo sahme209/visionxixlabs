@@ -1,79 +1,132 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { CheckIcon } from "@heroicons/react/24/outline";
+import {
+  COUNTED_DEPLOYMENT_DEFINITION,
+  PUBLIC_PLAN_CATALOG,
+} from "@/lib/billing/publicPlanCatalog";
 
 export const metadata: Metadata = {
-  title: "Axiom Agent Pilot Access",
-  description: "Axiom Agent design-partner access is currently no-charge and invite-only while the governed deployment workflow is validated with real teams.",
+  title: "Axiom pricing",
+  description:
+    "Proposed Free, Pro, and Business plans for governed deployments. Checkout remains disabled while billing authority and quota enforcement are validated.",
 };
 
-const PILOT_INCLUDES = [
-  "A guided deployment workspace for request, readiness, approval, validation, recovery, and closure.",
-  "A browser companion for account settings, help, and connection context.",
-  "Read-only GitHub evidence collection scoped to the repositories your team selects.",
-  "A documented security and governance review before any production-connected workflow.",
-];
-
-const PILOT_BOUNDARIES = [
-  "No credit card or self-serve checkout.",
-  "No promise that every catalog integration is live.",
-  "No autonomous production deployment or bypass of your existing controls.",
-  "No use of a sandbox result as proof of a production connection.",
-];
+function priceLabel(price: number | null) {
+  if (price === null) return "Custom";
+  if (price === 0) return "$0";
+  return `$${(price / 100).toFixed(0)}`;
+}
 
 export default function PlansPage() {
   return (
-    <div className="relative isolate overflow-hidden">
-      <div aria-hidden className="pointer-events-none absolute inset-0 -z-20 bg-cover bg-center opacity-25" style={{ backgroundImage: "url('/images/axiom-hero-landscape-v1.png')" }} />
-      <div aria-hidden className="pointer-events-none absolute inset-0 -z-10 bg-[linear-gradient(180deg,rgba(12,13,12,0.66),rgba(12,13,12,0.94)_38%,#0c0d0c)]" />
-      <main className="relative mx-auto max-w-[1400px] px-5 pb-24 pt-16 sm:px-8 sm:pt-24">
-      <section className="grid gap-10 lg:grid-cols-[1.15fr_0.85fr] lg:items-end">
-        <div>
-          <p className="text-[10px] uppercase tracking-[0.22em] text-violet-300">Axiom Agent · design-partner access</p>
-          <h1 className="mt-5 max-w-3xl text-4xl font-medium leading-[1.02] tracking-[-0.05em] text-zinc-100 sm:text-5xl lg:text-6xl">Start with a no-charge pilot.</h1>
-          <p className="mt-6 max-w-2xl text-base leading-7 text-zinc-400 sm:text-lg">We are proving Axiom&apos;s governed deployment workflow with real teams before publishing paid plans. Pilot workspaces are invite-only, no-charge, and deliberately scoped around one release journey at a time.</p>
-          <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-            <Link href="/contact?topic=axiom-pilot" className="inline-flex min-h-12 items-center justify-center rounded-full bg-zinc-100 px-6 text-sm font-semibold text-zinc-950 transition hover:bg-white">Request pilot access</Link>
-            <Link href="/product" className="inline-flex min-h-12 items-center justify-center rounded-full border border-white/[0.12] bg-white/[0.04] px-6 text-sm font-medium text-zinc-200 transition hover:bg-white/[0.08]">See the release workflow</Link>
+    <main className="relative isolate overflow-hidden">
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[620px] bg-[radial-gradient(circle_at_50%_0%,rgba(245,78,0,0.10),transparent_62%)]"
+      />
+
+      <section className="mx-auto max-w-[1400px] px-5 pb-16 pt-20 text-center sm:px-8 sm:pt-28 lg:px-12 lg:pb-20">
+        <p className="text-[11px] font-medium uppercase tracking-[0.2em] text-[#ff783d]">
+          Simple, organization-first pricing
+        </p>
+        <h1 className="mx-auto mt-5 max-w-4xl text-4xl font-medium leading-[0.98] tracking-[-0.055em] text-zinc-100 sm:text-6xl lg:text-7xl">
+          Start useful. Upgrade when the workflow earns it.
+        </h1>
+        <p className="mx-auto mt-6 max-w-2xl text-base leading-7 text-zinc-400 sm:text-lg">
+          Security, approval gates, and audit protection stay in every plan. Paid checkout is intentionally off while organization billing, quotas, and webhook authority complete review.
+        </p>
+        <div className="mx-auto mt-8 inline-flex rounded-full border border-[#f54e00]/25 bg-[#f54e00]/[0.07] px-4 py-2 text-xs text-[#ff9a72]">
+          Pricing preview · no charges can be started from this page
+        </div>
+      </section>
+
+      <section className="mx-auto grid max-w-[1400px] gap-4 px-5 pb-20 sm:px-8 lg:grid-cols-3 lg:px-12 lg:pb-28">
+        {PUBLIC_PLAN_CATALOG.map((plan) => {
+          const featured = plan.id === "pro";
+          return (
+            <article
+              key={plan.id}
+              className={`flex min-h-[520px] flex-col rounded-3xl border p-7 sm:p-8 ${
+                featured
+                  ? "border-[#f54e00]/40 bg-[#1a1a1a] shadow-[0_24px_80px_-42px_rgba(245,78,0,0.55)]"
+                  : "border-white/[0.09] bg-[#181818]"
+              }`}
+            >
+              <div className="flex items-center justify-between gap-4">
+                <h2 className="text-xl font-medium tracking-[-0.03em] text-zinc-100">{plan.name}</h2>
+                {featured ? (
+                  <span className="rounded-full bg-[#f54e00] px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-white">
+                    Recommended
+                  </span>
+                ) : null}
+              </div>
+              <p className="mt-3 min-h-12 text-sm leading-6 text-zinc-400">{plan.description}</p>
+
+              <div className="mt-8 border-y border-white/[0.08] py-6">
+                <span className="text-4xl font-medium tracking-[-0.05em] text-zinc-100">
+                  {priceLabel(plan.monthlyPricePerUserCents)}
+                </span>
+                {plan.monthlyPricePerUserCents !== null && plan.monthlyPricePerUserCents > 0 ? (
+                  <span className="ml-2 text-sm text-zinc-500">per user / month</span>
+                ) : null}
+                {plan.id === "pro" ? (
+                  <p className="mt-2 text-xs text-zinc-500">$23.20 per user/month equivalent, billed annually</p>
+                ) : null}
+              </div>
+
+              <ul className="mt-7 space-y-4">
+                {plan.highlights.map((highlight) => (
+                  <li key={highlight} className="flex gap-3 text-sm leading-6 text-zinc-300">
+                    <CheckIcon className="mt-1 h-4 w-4 shrink-0 text-[#ff783d]" aria-hidden />
+                    <span>{highlight}</span>
+                  </li>
+                ))}
+              </ul>
+
+              <div className="mt-auto pt-9">
+                <Link
+                  href={plan.id === "business" ? "/contact?topic=business" : "/download"}
+                  className={`flex min-h-12 items-center justify-center rounded-full px-5 text-sm font-semibold transition ${
+                    featured
+                      ? "bg-[#f54e00] text-white hover:bg-[#ff641f]"
+                      : "border border-white/[0.14] bg-white/[0.04] text-zinc-100 hover:bg-white/[0.08]"
+                  }`}
+                >
+                  {plan.id === "business" ? "Discuss Business" : "Create a free workspace"}
+                </Link>
+              </div>
+            </article>
+          );
+        })}
+      </section>
+
+      <section className="border-y border-white/[0.07] bg-[#171717] px-5 py-16 sm:px-8 lg:px-12">
+        <div className="mx-auto grid max-w-[1400px] gap-8 lg:grid-cols-[0.75fr_1.25fr] lg:items-start">
+          <div>
+            <p className="text-[11px] uppercase tracking-[0.18em] text-[#ff783d]">Clear usage accounting</p>
+            <h2 className="mt-4 text-3xl font-medium tracking-[-0.045em] text-zinc-100">What counts as a deployment?</h2>
+          </div>
+          <div className="rounded-2xl border border-white/[0.09] bg-[#1a1a1a] p-6 sm:p-8">
+            <p className="text-base leading-7 text-zinc-200">{COUNTED_DEPLOYMENT_DEFINITION}</p>
+            <p className="mt-4 text-sm leading-6 text-zinc-500">
+              Validation retries, polling, and automatic rollback for the same dispatch do not count again. Rejected, canceled, or failed-to-dispatch proposals do not count at all.
+            </p>
           </div>
         </div>
-        <aside className="relative isolate overflow-hidden rounded-2xl border border-violet-300/20 bg-[#10120f]/80 p-6 shadow-[0_24px_80px_rgba(0,0,0,0.22)] sm:p-7">
-          <div aria-hidden className="pointer-events-none absolute inset-0 -z-20 bg-cover bg-center opacity-35" style={{ backgroundImage: "url('/images/axiom-intake-landscape-v1.png')" }} />
-          <div aria-hidden className="pointer-events-none absolute inset-0 -z-10 bg-[linear-gradient(135deg,rgba(14,16,13,0.92),rgba(14,16,13,0.54),rgba(14,16,13,0.88))]" />
-          <p className="text-[10px] uppercase tracking-[0.18em] text-violet-100">Current access</p>
-          <p className="mt-4 text-2xl font-medium tracking-[-0.035em] text-zinc-100">No charge. No credit card.</p>
-          <p className="mt-3 text-sm leading-6 text-zinc-300">We scope each pilot around the release workflow you actually need, then validate what is working before it becomes a production dependency.</p>
-          <dl className="mt-6 grid grid-cols-3 gap-2 border-t border-white/[0.12] pt-4 text-[10px] uppercase tracking-[0.12em] text-zinc-300">
-            <div><dt className="text-zinc-500">Scope</dt><dd className="mt-1 text-zinc-100">Agreed</dd></div>
-            <div><dt className="text-zinc-500">Authority</dt><dd className="mt-1 text-zinc-100">Human</dd></div>
-            <div><dt className="text-zinc-500">Evidence</dt><dd className="mt-1 text-zinc-100">Read-only</dd></div>
-          </dl>
-        </aside>
       </section>
 
-      <section className="mt-20 grid gap-4 lg:grid-cols-2">
-        <article className="rounded-2xl border border-white/[0.08] bg-white/[0.025] p-6 sm:p-8">
-          <p className="text-[10px] uppercase tracking-[0.18em] text-emerald-300">What a pilot includes</p>
-          <ul className="mt-6 space-y-4">
-            {PILOT_INCLUDES.map((item) => <li key={item} className="flex gap-3 text-sm leading-6 text-zinc-300"><span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-300" />{item}</li>)}
-          </ul>
-        </article>
-        <article className="rounded-2xl border border-white/[0.08] bg-white/[0.025] p-6 sm:p-8">
-          <p className="text-[10px] uppercase tracking-[0.18em] text-zinc-500">What we do not claim yet</p>
-          <ul className="mt-6 space-y-4">
-            {PILOT_BOUNDARIES.map((item) => <li key={item} className="flex gap-3 text-sm leading-6 text-zinc-400"><span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-zinc-600" />{item}</li>)}
-          </ul>
-        </article>
-      </section>
-
-      <section className="relative isolate mt-16 overflow-hidden rounded-2xl border border-white/[0.08] bg-[#151613] p-6 sm:p-8">
-        <div aria-hidden className="pointer-events-none absolute inset-0 -z-20 bg-cover bg-center opacity-20" style={{ backgroundImage: "url('/images/axiom-history-landscape-v1.png')" }} />
-        <div aria-hidden className="pointer-events-none absolute inset-0 -z-10 bg-[linear-gradient(110deg,rgba(18,19,16,0.94),rgba(18,19,16,0.72),rgba(18,19,16,0.94))]" />
-        <p className="text-[10px] uppercase tracking-[0.18em] text-orange-200">The path to a paid workspace</p>
-        <div className="mt-6 grid gap-5 md:grid-cols-3">
-          {["Validate the workflow", "Prove repeat value", "Agree the production scope"].map((title, index) => <div key={title}><p className="text-xs text-zinc-600">0{index + 1}</p><h2 className="mt-2 text-lg font-medium text-zinc-100">{title}</h2><p className="mt-2 text-sm leading-6 text-zinc-500">{index === 0 ? "Use the system with real release evidence and explicit guardrails." : index === 1 ? "Confirm it improves clarity, speed, and safety for your operators." : "Only then define support, access, and commercial terms in writing."}</p></div>)}
+      <section className="mx-auto max-w-[1400px] px-5 py-20 sm:px-8 lg:px-12 lg:py-28">
+        <div className="rounded-3xl border border-white/[0.09] bg-[#1a1a1a] p-7 sm:p-10 lg:flex lg:items-end lg:justify-between lg:gap-12">
+          <div>
+            <p className="text-[11px] uppercase tracking-[0.18em] text-zinc-500">No billing decision required</p>
+            <h2 className="mt-4 max-w-2xl text-3xl font-medium tracking-[-0.045em] text-zinc-100 sm:text-5xl">See the workflow before choosing a plan.</h2>
+          </div>
+          <Link href="/demo" className="mt-8 inline-flex min-h-12 shrink-0 items-center justify-center rounded-full bg-zinc-100 px-6 text-sm font-semibold text-zinc-950 hover:bg-white lg:mt-0">
+            Explore the interactive demo
+          </Link>
         </div>
       </section>
-      </main>
-    </div>
+    </main>
   );
 }

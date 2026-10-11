@@ -33,9 +33,9 @@ const chapters = [
   },
   {
     id: "deploy",
-    kicker: "04 · Execute safely",
-    title: "Send the approved release to the selected environment.",
-    copy: "The environment resolves to its configured deployment target. Production remains separately gated; GitHub Actions uses short-lived OIDC credentials to reach AWS.",
+    kicker: "04 · Coordinate and execute",
+    title: "Wait for the data dependency, then deploy safely.",
+    copy: "Axiom verifies the selected Airflow DAG run before dispatching the approved release. The environment resolves to its configured target, while production remains separately gated.",
   },
   {
     id: "prove",
@@ -186,7 +186,7 @@ function DemoScene({ chapter, repository, environment }: { chapter: typeof chapt
   if (chapter === "ask") return <SceneShell icon={<CodeBracketIcon className="h-5 w-5" />} label="You" title="Fix the timeout handling and prepare it for development."><p>Axiom has attached <strong>{repository}</strong>, branch <strong>main</strong>, and <strong>{environment}</strong>. No identifiers to retype.</p></SceneShell>;
   if (chapter === "ground") return <SceneShell icon={<CodeBracketIcon className="h-5 w-5" />} label="Repository evidence" title="The timeout is handled in two places."><div className="space-y-2 font-mono text-xs"><EvidenceLine path="src/client/retry.ts" detail="lines 42–68 · retry policy" /><EvidenceLine path="src/config/runtime.ts" detail="lines 14–22 · timeout default" /></div><p className="mt-4">Proposed change: make the timeout configurable and preserve the existing retry ceiling.</p></SceneShell>;
   if (chapter === "approve") return <div className="w-full max-w-xl rounded-2xl border border-orange-300/20 bg-[#171815] p-5 shadow-2xl"><div className="flex items-start gap-3"><ShieldCheckIcon className="mt-0.5 h-6 w-6 text-orange-300" /><div><p className="text-xs uppercase tracking-[0.14em] text-orange-300">Approval required · medium risk</p><h3 className="mt-2 text-lg font-medium text-zinc-100">Commit two reviewed file changes</h3></div></div><dl className="mt-5 grid gap-3 text-sm sm:grid-cols-2"><Fact label="Target" value={`${repository} · main`} /><Fact label="Environment" value={environment} /><Fact label="Rollback" value="Revert commit" /><Fact label="Authority" value="Workspace admin" /></dl><div className="mt-5 flex justify-end gap-2"><span className="rounded-lg border border-white/10 px-4 py-2 text-xs text-zinc-400">Reject</span><span className="rounded-lg bg-orange-400 px-4 py-2 text-xs font-semibold text-[#211006]">Approve action</span></div></div>;
-  if (chapter === "deploy") return <div className="w-full max-w-xl space-y-3"><StatusRow label="Approval" value="Recorded" complete /><StatusRow label="GitHub workflow" value="Dispatched" complete /><StatusRow label="AWS ECS" value="Waiting for steady state" /><StatusRow label="Automatic rollback" value="Armed" /></div>;
+  if (chapter === "deploy") return <div className="w-full max-w-xl space-y-3"><StatusRow label="Airflow · daily_customer_snapshot" value="Batch complete · dependencies satisfied" complete /><StatusRow label="Approval" value="Recorded for this environment" complete /><StatusRow label="GitHub workflow" value="Dispatched with short-lived OIDC" complete /><StatusRow label="AWS ECS" value="Waiting for steady state" /><StatusRow label="Automatic rollback" value="Armed" /></div>;
   return <div className="grid w-full max-w-xl gap-3 sm:grid-cols-2"><Metric label="Technical validation" value="Passed" tone="green" /><Metric label="Functional validation" value="Awaiting owner" tone="orange" /><Metric label="Rollback readiness" value="Verified" tone="green" /><Metric label="Audit events" value="12 recorded" tone="neutral" /></div>;
 }
 

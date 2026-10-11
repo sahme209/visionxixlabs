@@ -16,8 +16,8 @@ import { useEffect, useRef, useState } from "react";
 interface MotherboardBackdropProps {
   /** Radius of the spotlight that reveals the pattern. Default 360px. */
   radius?: number;
-  /** Tint of the spotlight glow. Default violet. */
-  tint?: "violet" | "emerald" | "amber" | "cyan" | "rose" | "neutral";
+  /** Tint of the spotlight glow. Default orange. */
+  tint?: "orange" | "emerald" | "amber" | "cyan" | "rose" | "neutral";
   /** Base opacity of the pattern when cursor is outside. Default 0.04. */
   baseOpacity?: number;
   /** Peak opacity at the spotlight centre. Default 0.20. */
@@ -27,7 +27,7 @@ interface MotherboardBackdropProps {
 }
 
 const TINT_RGB: Record<NonNullable<MotherboardBackdropProps["tint"]>, string> = {
-  violet:  "139, 92, 246",
+  orange:  "255, 120, 61",
   emerald: "52, 211, 153",
   amber:   "245, 158, 11",
   cyan:    "34, 211, 238",
@@ -37,7 +37,7 @@ const TINT_RGB: Record<NonNullable<MotherboardBackdropProps["tint"]>, string> = 
 
 export function MotherboardBackdrop({
   radius = 360,
-  tint = "violet",
+  tint = "orange",
   baseOpacity = 0.04,
   peakOpacity = 0.2,
   className = "",

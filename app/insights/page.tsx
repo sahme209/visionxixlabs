@@ -24,7 +24,7 @@ export default function InsightsPage() {
     <div className="min-h-screen bg-[#09090b] relative overflow-hidden">
       {/* Huly aurora */}
       <div className="absolute inset-0 bg-grid-mesh opacity-10 pointer-events-none" aria-hidden />
-      <div className="ambient-drift absolute -top-40 left-1/3 w-[520px] h-[480px] rounded-full bg-brand-violet/[0.08] blur-[140px] pointer-events-none" aria-hidden />
+      <div className="ambient-drift absolute -top-40 left-1/3 w-[520px] h-[480px] rounded-full bg-brand-orange/[0.08] blur-[140px] pointer-events-none" aria-hidden />
       <div className="ambient-drift absolute top-1/4 right-[5%] w-[420px] h-[340px] rounded-full bg-brand-coral/[0.06] blur-[120px] pointer-events-none" style={{ animationDelay: "-8s" }} aria-hidden />
       <div className="ambient-drift absolute bottom-32 left-[5%] w-[360px] h-[280px] rounded-full bg-cyan-500/[0.04] blur-[110px] pointer-events-none" style={{ animationDelay: "-14s" }} aria-hidden />
 
@@ -41,7 +41,7 @@ export default function InsightsPage() {
               Field notes from{" "}
               <span className="relative inline-block">
                 production.
-                <span aria-hidden className="absolute left-0 -bottom-1 h-[3px] w-full rounded-full bg-gradient-to-r from-brand-coral via-fuchsia-400 to-transparent opacity-85" />
+                <span aria-hidden className="absolute left-0 -bottom-1 h-[3px] w-full rounded-full bg-gradient-to-r from-brand-coral via-amber-400 to-transparent opacity-85" />
               </span>
             </h1>
             <p className="text-zinc-400 max-w-2xl">
@@ -59,11 +59,11 @@ export default function InsightsPage() {
                   className="block animated-border card-inner-glow card-hover rounded-xl border border-white/[0.06] bg-white/[0.02] p-6 shadow-sm hover:border-white/[0.12] transition-all group"
                 >
                   <div className="flex items-start gap-4">
-                    <div className="flex-shrink-0 rounded-lg bg-violet-500/10 p-3">
-                      <DocumentTextIcon className="h-6 w-6 text-violet-400" />
+                    <div className="flex-shrink-0 rounded-lg bg-orange-500/10 p-3">
+                      <DocumentTextIcon className="h-6 w-6 text-orange-400" />
                     </div>
                     <div className="min-w-0 flex-1">
-                      <h2 className="text-lg font-semibold text-white group-hover:text-violet-400 transition-colors">
+                      <h2 className="text-lg font-semibold text-white group-hover:text-orange-400 transition-colors">
                         {article.title}
                       </h2>
                       <p className="mt-1 text-sm text-zinc-400 line-clamp-2">
@@ -80,7 +80,7 @@ export default function InsightsPage() {
                         <span>{article.readTime} read</span>
                       </div>
                     </div>
-                    <ArrowRightIcon className="h-5 w-5 flex-shrink-0 text-zinc-500 group-hover:text-violet-400 group-hover:translate-x-0.5 transition-all" />
+                    <ArrowRightIcon className="h-5 w-5 flex-shrink-0 text-zinc-500 group-hover:text-orange-400 group-hover:translate-x-0.5 transition-all" />
                   </div>
                 </Link>
               </li>
@@ -91,7 +91,7 @@ export default function InsightsPage() {
         <div className="section-divider my-12" />
 
         <Reveal direction="up" blur delay={0.15}>
-          <section className="glass-card rounded-2xl border border-violet-500/20 bg-violet-500/10 p-8 text-center">
+          <section className="glass-card rounded-2xl border border-orange-500/20 bg-orange-500/10 p-8 text-center">
             <h2 className="text-xl font-bold text-white mb-2 tracking-[-0.04em]">
               Try <span className="text-gradient">Axiom Agent</span>
             </h2>

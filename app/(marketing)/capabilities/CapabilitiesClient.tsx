@@ -166,8 +166,8 @@ export function CapabilitiesClient() {
           animate={{ opacity: 1, y: 0 }}
           className="mono-label inline-flex items-center gap-3"
         >
-          <span className="text-violet-200 tabular-nums">AX</span>
-          <span className="h-px w-6 bg-gradient-to-r from-violet-200/60 to-transparent" />
+          <span className="text-orange-200 tabular-nums">AX</span>
+          <span className="h-px w-6 bg-gradient-to-r from-orange-200/60 to-transparent" />
           Axiom Agent · deployment capabilities
         </motion.p>
         <motion.h1
@@ -179,7 +179,7 @@ export function CapabilitiesClient() {
           Deployment capabilities, {" "}
           <span className="relative inline-block">
             with human control.
-            <span aria-hidden className="absolute left-0 -bottom-0.5 h-[2px] w-full rounded-full bg-gradient-to-r from-violet-200/80 to-transparent" />
+            <span aria-hidden className="absolute left-0 -bottom-0.5 h-[2px] w-full rounded-full bg-gradient-to-r from-orange-200/80 to-transparent" />
           </span>
         </motion.h1>
         <motion.p
@@ -202,7 +202,7 @@ export function CapabilitiesClient() {
             <p className="max-w-sm text-sm leading-6 text-zinc-400">A capability is not a promise of autonomous execution or a live integration. It is a governed part of the workflow.</p>
           </div>
           <ol className="mt-8 grid gap-3 md:grid-cols-5">
-            {PLAYBOOK_RESPONSIBILITIES.map(([number, title, copy]) => <li key={number} className="rounded-xl border border-white/[0.07] bg-white/[0.025] p-4"><p className="font-mono text-[10px] tracking-[0.16em] text-violet-200">{number}</p><h3 className="mt-5 text-sm font-medium text-zinc-100">{title}</h3><p className="mt-2 text-xs leading-5 text-zinc-400">{copy}</p></li>)}
+            {PLAYBOOK_RESPONSIBILITIES.map(([number, title, copy]) => <li key={number} className="rounded-xl border border-white/[0.07] bg-white/[0.025] p-4"><p className="font-mono text-[10px] tracking-[0.16em] text-orange-200">{number}</p><h3 className="mt-5 text-sm font-medium text-zinc-100">{title}</h3><p className="mt-2 text-xs leading-5 text-zinc-400">{copy}</p></li>)}
           </ol>
         </div>
       </section>
@@ -242,7 +242,7 @@ export function CapabilitiesClient() {
               className={[
                 "rounded-full px-3.5 py-1.5 text-[12px] font-medium transition border",
                 filter === f.id
-                  ? "bg-violet-300/[0.12] border-violet-300/30 text-violet-100"
+                  ? "bg-orange-300/[0.12] border-orange-300/30 text-orange-100"
                   : "bg-white/[0.02] border-white/[0.06] text-zinc-400 hover:text-white hover:bg-white/[0.05]",
               ].join(" ")}
             >
@@ -262,7 +262,7 @@ export function CapabilitiesClient() {
               viewport={{ once: true, amount: 0.2 }}
               transition={{ duration: 0.45, delay: Math.min(i * 0.03, 0.3) }}
               whileHover={{ y: -3, transition: { duration: 0.18 } }}
-              className="rounded-2xl border border-white/[0.08] bg-white/[0.025] p-5 transition-all hover:border-violet-300/25 hover:bg-white/[0.045]"
+              className="rounded-2xl border border-white/[0.08] bg-white/[0.025] p-5 transition-all hover:border-orange-300/25 hover:bg-white/[0.045]"
             >
               <div className="flex items-start justify-between gap-3">
                 <p className="text-[13.5px] font-semibold text-white">{c.name}</p>
@@ -284,7 +284,7 @@ export function CapabilitiesClient() {
               {c.evidence ? (
                 <Link
                   href={c.evidence.href.startsWith("/dashboard") ? "/docs" : c.evidence.href}
-                  className="mt-3 inline-flex items-center gap-1 text-[11px] font-mono text-indigo-300 hover:text-indigo-200 transition"
+                  className="mt-3 inline-flex items-center gap-1 text-[11px] font-mono text-zinc-300 hover:text-zinc-200 transition"
                 >
                   → {c.evidence.label}
                 </Link>
@@ -305,7 +305,7 @@ export function CapabilitiesClient() {
         <div className="mt-6 flex items-center justify-center gap-2">
           <Link
             href="/changelog"
-            className="inline-flex items-center gap-2 rounded-full bg-indigo-500 px-4 py-2 text-[12.5px] font-medium text-white shadow-[0_0_20px_rgba(99,102,241,0.45)] hover:bg-indigo-400 transition"
+            className="inline-flex items-center gap-2 rounded-full bg-zinc-500 px-4 py-2 text-[12.5px] font-medium text-white shadow-[0_0_20px_rgba(245,78,0,0.45)] hover:bg-zinc-400 transition"
           >
             See the changelog
           </Link>

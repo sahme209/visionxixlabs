@@ -36,7 +36,7 @@ export function AccessModelSection({
           <ul className="space-y-1.5 text-sm text-zinc-400">
             {weOperateUsing.map((item) => (
               <li key={item} className="flex items-start">
-                <span className="text-indigo-500 mr-2 mt-0.5 shrink-0">•</span>
+                <span className="text-zinc-500 mr-2 mt-0.5 shrink-0">•</span>
                 {item}
               </li>
             ))}
@@ -60,7 +60,7 @@ export function AccessModelSection({
           <ul className="space-y-1.5 text-sm text-zinc-400">
             {whatWeFocusOn.map((item) => (
               <li key={item} className="flex items-start">
-                <span className="text-indigo-500 mr-2 mt-0.5 shrink-0">•</span>
+                <span className="text-zinc-500 mr-2 mt-0.5 shrink-0">•</span>
                 {item}
               </li>
             ))}

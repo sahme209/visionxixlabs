@@ -53,8 +53,8 @@ export default function AIUsagePage() {
       <div className="relative mb-8 rounded-3xl border border-white/[0.05] bg-gradient-to-br from-white/[0.025] via-white/[0.015] to-transparent p-6 md:p-8 overflow-hidden">
         <div className="flex items-center gap-2 mb-3 flex-wrap">
           <span className="inline-flex items-center gap-2 rounded-full border border-white/[0.06] bg-white/[0.02] px-2.5 py-1">
-            <ChartBarIcon className="h-3.5 w-3.5 text-indigo-300" />
-            <span className="text-[10px] font-semibold uppercase tracking-widest text-indigo-300">
+            <ChartBarIcon className="h-3.5 w-3.5 text-zinc-300" />
+            <span className="text-[10px] font-semibold uppercase tracking-widest text-zinc-300">
               AI Usage · no_prompts_no_keys_logged
             </span>
           </span>
@@ -102,7 +102,7 @@ export default function AIUsagePage() {
                   <tbody>
                     {data.summary.byProvider.map((p) => (
                       <tr key={p.provider} className="border-t border-white/[0.04]">
-                        <td className="py-1.5 font-mono text-indigo-300">{p.provider}</td>
+                        <td className="py-1.5 font-mono text-zinc-300">{p.provider}</td>
                         <td className="py-1.5 text-right tabular-nums text-zinc-300">{p.count}</td>
                         <td className="py-1.5 text-right tabular-nums text-zinc-300">{p.errors}</td>
                         <td className="py-1.5 text-right tabular-nums text-zinc-300">{p.avgLatencyMs}ms</td>
@@ -151,7 +151,7 @@ export default function AIUsagePage() {
                 {data.tail.map((e, i) => (
                   <div key={`${e.ts}-${i}`} className="flex items-center gap-2">
                     <span className="text-zinc-500 w-40 truncate">{new Date(e.ts).toLocaleTimeString()}</span>
-                    <span className="text-indigo-300 w-28 truncate">{e.provider}</span>
+                    <span className="text-zinc-300 w-28 truncate">{e.provider}</span>
                     <span className="text-zinc-400 w-40 truncate">{e.model}</span>
                     <span className="text-zinc-400 w-32 truncate">{e.task}</span>
                     <span className="text-zinc-500 w-16 tabular-nums">{e.latencyMs}ms</span>

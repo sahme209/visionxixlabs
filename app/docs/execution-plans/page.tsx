@@ -77,7 +77,7 @@ export default function ExecutionPlansPage() {
           <li>If any of these fail, the plan item is blocked at the governance gate until resolved</li>
         </ul>
         <p>
-          See <Link href="/docs/rollback" className="text-violet-300 hover:text-violet-200">rollback strategy</Link> for the full rollback lifecycle.
+          See <Link href="/docs/rollback" className="text-orange-300 hover:text-orange-200">rollback strategy</Link> for the full rollback lifecycle.
         </p>
       </DocSection>
 

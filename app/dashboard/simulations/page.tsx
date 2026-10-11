@@ -28,7 +28,7 @@ export const dynamic = "force-dynamic";
 
 const STATUS_TONE: Record<SimulationResult["status"], string> = {
   simulated:      "text-emerald-300 bg-emerald-500/10 border-emerald-500/25",
-  preview_only:   "text-violet-300 bg-violet-500/10 border-white/[0.10]",
+  preview_only:   "text-orange-300 bg-orange-500/10 border-white/[0.10]",
   blocked:        "text-rose-300 bg-rose-500/10 border-rose-500/25",
   unsafe:         "text-zinc-300 bg-white/10 border-white/25",
   incomplete:     "text-zinc-300 bg-zinc-500/10 border-zinc-500/25",
@@ -77,7 +77,7 @@ export default async function SimulationsCenter() {
           <span className="text-[10px] font-mono font-semibold text-cyan-300 uppercase tracking-[0.22em]">Simulation Center</span>
         </div>
         <h1 className="text-3xl md:text-4xl font-bold tracking-[-0.04em] mb-2">
-          Preflight your <span className="bg-gradient-to-r from-cyan-300 via-violet-300 to-fuchsia-300 bg-clip-text text-transparent">infrastructure</span> changes.
+          Preflight your <span className="bg-gradient-to-r from-cyan-300 via-orange-300 to-amber-300 bg-clip-text text-transparent">infrastructure</span> changes.
         </h1>
         <p className="text-sm text-zinc-400 max-w-3xl leading-relaxed">
           Every candidate is simulated against the digital twin before approval. We compute before/after diff, blast radius, risk delta, rollback feasibility, and verification readiness. Nothing on this page mutates cloud state.
@@ -91,7 +91,7 @@ export default async function SimulationsCenter() {
       <section className="rounded-2xl border border-white/[0.07] bg-gradient-to-br from-[#0d0d12] via-[#0a0a0f] to-[#08080c] p-6">
         <div className="flex items-center justify-between mb-4 flex-wrap gap-3">
           <div className="flex items-center gap-2">
-            <CpuChipIcon className="h-4 w-4 text-violet-300" />
+            <CpuChipIcon className="h-4 w-4 text-orange-300" />
             <h2 className="text-base font-semibold text-white tracking-tight">Digital Twin · {twin.provider}</h2>
             <span className="text-[10px] font-mono text-zinc-500">source · {twin.sourceMode}</span>
           </div>
@@ -100,7 +100,7 @@ export default async function SimulationsCenter() {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
           <Kpi label="Resources"           value={`${twin.resources.length}`}                tone="text-cyan-300" />
           <Kpi label="Security score"      value={`${twin.securityPosture.score}/100`}       tone="text-emerald-300" detail={`${twin.securityPosture.failing} failing`} />
-          <Kpi label="Release grade"       value={twin.releasePosture.grade ?? "—"}          tone="text-violet-300" detail={`${twin.releasePosture.blockerCount} blocker(s)`} />
+          <Kpi label="Release grade"       value={twin.releasePosture.grade ?? "—"}          tone="text-orange-300" detail={`${twin.releasePosture.blockerCount} blocker(s)`} />
           <Kpi label="Cost coverage"       value={`${Math.round(twin.costPosture.coverageRatio * 100)}%`} tone="text-zinc-300" />
         </div>
         {twin.knownLimitations.length > 0 && (
@@ -117,7 +117,7 @@ export default async function SimulationsCenter() {
       <section className="grid sm:grid-cols-2 lg:grid-cols-5 gap-3">
         <Kpi label="Simulations"  value={`${totals.total}`}        tone="text-cyan-300"     detail="One per candidate." />
         <Kpi label="Simulated"    value={`${totals.simulated}`}    tone="text-emerald-300"  detail="Safe to review." />
-        <Kpi label="Preview only" value={`${totals.preview_only}`} tone="text-violet-300"   detail="Provider not connected live." />
+        <Kpi label="Preview only" value={`${totals.preview_only}`} tone="text-orange-300"   detail="Provider not connected live." />
         <Kpi label="Blocked"      value={`${totals.blocked}`}      tone="text-rose-300"     detail="Policy / source blocked." />
         <Kpi label="Unsafe"       value={`${totals.unsafe}`}       tone="text-zinc-300"    detail="Destructive without approval." />
       </section>
@@ -200,12 +200,12 @@ function SimulationRow({ result }: { result: SimulationResult }) {
         {/* Impact */}
         <div className="rounded-xl border border-white/[0.06] bg-black/20 p-4">
           <div className="flex items-center gap-2 mb-3">
-            <EyeIcon className="h-3.5 w-3.5 text-violet-300" />
+            <EyeIcon className="h-3.5 w-3.5 text-orange-300" />
             <h3 className="text-xs font-semibold text-white tracking-tight">Blast radius</h3>
           </div>
           <div className="grid grid-cols-3 gap-2 mb-3 text-[10px] font-mono">
             <Stat label="direct"   value={`${result.impact.directlyAffected.length}`}   tone="text-cyan-300" />
-            <Stat label="indirect" value={`${result.impact.indirectlyAffected.length}`} tone="text-violet-300" />
+            <Stat label="indirect" value={`${result.impact.indirectlyAffected.length}`} tone="text-orange-300" />
             <Stat label="overall"  value={overall}                                       tone="text-zinc-300" />
           </div>
           {result.impact.notes.length > 0 && (

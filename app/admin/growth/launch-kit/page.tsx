@@ -145,7 +145,7 @@ const FIRST_TWEETS: ReadonlyArray<{ idx: string; category: string; body: string 
     body:
       "Shipped this week:\n\n" +
       "· LinkedIn marketing automation (internal — drafts auto-generated daily, approval-gated publish)\n" +
-      "· Apple-grade design system (coral × violet, tactile press buttons, frosted-glass materials)\n" +
+      "· Apple-grade design system (coral × orange, tactile press buttons, frosted-glass materials)\n" +
       "· /manifesto, /principles, /handbook — values surfaces\n\n" +
       "Phase 492 on the changelog. visionxixlabs.com/changelog",
   },
@@ -251,7 +251,7 @@ export default function LaunchKitPage() {
       <div className="mb-6">
         <Link
           href="/admin/growth"
-          className="text-[11px] text-violet-300 hover:text-violet-200 inline-flex items-center gap-1"
+          className="text-[11px] text-orange-300 hover:text-orange-200 inline-flex items-center gap-1"
         >
           <ArrowLeftIcon className="h-3 w-3" />
           Back to Growth

@@ -64,7 +64,7 @@ export default async function ContentCalendarPage() {
   return (
     <div className="relative">
       <div className="mb-6">
-        <Link href="/admin/growth" className="text-[11px] text-violet-300 hover:text-violet-200 inline-flex items-center gap-1">
+        <Link href="/admin/growth" className="text-[11px] text-orange-300 hover:text-orange-200 inline-flex items-center gap-1">
           <ArrowRightIcon className="h-3 w-3 rotate-180" />
           Back to Growth
         </Link>
@@ -121,8 +121,8 @@ export default async function ContentCalendarPage() {
                   ))}
                   {bucket?.scheduled.map((s) => (
                     <li key={s.id} className="text-[10.5px]">
-                      <span className="text-violet-300/90 font-mono mr-1">{s.scheduledFor.toISOString().slice(11, 16)}</span>
-                      <Link href={`/admin/growth/post-drafts#${s.id}`} className="text-violet-100 hover:underline">
+                      <span className="text-orange-300/90 font-mono mr-1">{s.scheduledFor.toISOString().slice(11, 16)}</span>
+                      <Link href={`/admin/growth/post-drafts#${s.id}`} className="text-orange-100 hover:underline">
                         {s.hook.slice(0, 60)}
                       </Link>
                     </li>

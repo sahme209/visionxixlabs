@@ -74,7 +74,7 @@ export default async function SolutionDetailPage({
             </p>
             <Link
               href="/cloud-solutions"
-              className="text-sm font-semibold text-violet-400 hover:text-violet-300 underline underline-offset-4"
+              className="text-sm font-semibold text-orange-400 hover:text-orange-300 underline underline-offset-4"
             >
               Back to Cloud Solutions
             </Link>
@@ -128,7 +128,7 @@ export default async function SolutionDetailPage({
                 <li>
                   <Link
                     href="/"
-                    className="hover:text-violet-400 transition-colors"
+                    className="hover:text-orange-400 transition-colors"
                   >
                     Home
                   </Link>
@@ -137,7 +137,7 @@ export default async function SolutionDetailPage({
                 <li>
                   <Link
                     href="/cloud-solutions"
-                    className="hover:text-violet-400 transition-colors"
+                    className="hover:text-orange-400 transition-colors"
                   >
                     Cloud Solutions
                   </Link>
@@ -161,7 +161,7 @@ export default async function SolutionDetailPage({
               <h1 className="font-display text-4xl md:text-5xl font-bold mb-3 leading-[1.04]">
                 <span className="relative inline-block">
                   {detail.title}
-                  <span aria-hidden className="absolute left-0 -bottom-0.5 h-[2px] w-full rounded-full bg-gradient-to-r from-brand-coral via-fuchsia-400/70 to-transparent" />
+                  <span aria-hidden className="absolute left-0 -bottom-0.5 h-[2px] w-full rounded-full bg-gradient-to-r from-brand-coral via-amber-400/70 to-transparent" />
                 </span>
               </h1>
               <p className="text-sm md:text-base text-zinc-400 max-w-3xl mb-3">
@@ -226,7 +226,7 @@ export default async function SolutionDetailPage({
                   <Link
                     key={link.href}
                     href={link.href}
-                    className="huly-badge hover:text-violet-400 transition-colors"
+                    className="huly-badge hover:text-orange-400 transition-colors"
                   >
                     {link.label}
                   </Link>

@@ -25,14 +25,14 @@ const QUICK_PATHS = [
     icon: RocketLaunchIcon,
     title: "Quickstart checklist",
     desc: "Seven steps from verified installer to a first non-production workflow.",
-    color: "violet",
+    color: "orange",
   },
   {
     href: "/docs/getting-started",
     icon: RocketLaunchIcon,
     title: "Getting started",
     desc: "Download, authenticate the desktop, configure integrations, and complete a workflow.",
-    color: "violet",
+    color: "orange",
   },
   {
     href: "/docs/aws-setup",
@@ -58,7 +58,7 @@ const QUICK_PATHS = [
 ];
 
 const COLOR_MAP = {
-  violet: "bg-violet-500/10 border-violet-500/20 text-violet-400",
+  orange: "bg-orange-500/10 border-orange-500/20 text-orange-400",
   amber: "bg-white/10 border-white/20 text-zinc-400",
   emerald: "bg-emerald-500/10 border-emerald-500/20 text-emerald-400",
   blue: "bg-blue-500/10 border-blue-500/20 text-blue-400",
@@ -185,7 +185,7 @@ export default function DocsIndexPage() {
                     {item.available ? (
                       <Link href={item.href} className="relative flex items-center justify-between px-5 py-3.5 hover:bg-brand-coral/[0.04] transition-colors group overflow-hidden">
                         {/* Coral hairline that appears on the left edge on hover */}
-                        <span aria-hidden className="absolute left-0 top-0 bottom-0 w-0.5 bg-gradient-to-b from-brand-coral via-fuchsia-400 to-brand-violet opacity-0 group-hover:opacity-100 transition-opacity" />
+                        <span aria-hidden className="absolute left-0 top-0 bottom-0 w-0.5 bg-gradient-to-b from-brand-coral via-amber-400 to-brand-orange opacity-0 group-hover:opacity-100 transition-opacity" />
                         <div className="flex items-center gap-3 min-w-0">
                           <span className="text-[10px] font-mono tabular-nums text-zinc-600 group-hover:text-brand-coral/80 transition-colors">
                             {String(ii + 1).padStart(2, "0")}

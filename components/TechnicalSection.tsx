@@ -29,7 +29,7 @@ export function TechnicalSection({
             <ul className="space-y-1.5 text-sm text-zinc-400">
               {sub.items.map((item) => (
                 <li key={item} className="flex items-start">
-                  <span className="text-indigo-500 mr-2 mt-0.5">•</span>
+                  <span className="text-zinc-500 mr-2 mt-0.5">•</span>
                   <span>{item}</span>
                 </li>
               ))}

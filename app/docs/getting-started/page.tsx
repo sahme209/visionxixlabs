@@ -117,13 +117,13 @@ export default function GettingStartedPage() {
             <DocSection id="next" title="Next steps">
                 <ul className="space-y-2">
                     <li>
-                        <Link href="/docs/desktop-install" className="text-violet-300 hover:text-violet-200 font-medium">→ Desktop installation details</Link>
+                        <Link href="/docs/desktop-install" className="text-orange-300 hover:text-orange-200 font-medium">→ Desktop installation details</Link>
                     </li>
                     <li>
-                        <Link href="/docs/aws-setup" className="text-violet-300 hover:text-violet-200 font-medium">→ AWS setup and permissions</Link>
+                        <Link href="/docs/aws-setup" className="text-orange-300 hover:text-orange-200 font-medium">→ AWS setup and permissions</Link>
                     </li>
                     <li>
-                        <Link href="/demo" className="text-violet-300 hover:text-violet-200 font-medium">→ Explore the isolated product sandbox</Link>
+                        <Link href="/demo" className="text-orange-300 hover:text-orange-200 font-medium">→ Explore the isolated product sandbox</Link>
                     </li>
                 </ul>
             </DocSection>

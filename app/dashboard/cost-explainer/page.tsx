@@ -104,7 +104,7 @@ export default function CostExplainerPage() {
           className="absolute inset-0 -z-10 opacity-90 pointer-events-none"
           style={{
             background:
-              "radial-gradient(900px 320px at 12% 0%, rgba(16,185,129,0.10), transparent 60%), radial-gradient(700px 260px at 88% 110%, rgba(244,114,182,0.06), transparent 60%)",
+              "radial-gradient(900px 320px at 12% 0%, rgba(16,185,129,0.10), transparent 60%), radial-gradient(700px 260px at 88% 110%, rgba(255,120,61,0.06), transparent 60%)",
           }}
           aria-hidden
         />
@@ -273,12 +273,12 @@ export default function CostExplainerPage() {
 
 function Stat({
   label, value, tone, icon: Icon,
-}: { label: string; value: string; tone: "emerald" | "amber" | "rose" | "violet" | "zinc"; icon?: typeof CurrencyDollarIcon }) {
+}: { label: string; value: string; tone: "emerald" | "amber" | "rose" | "orange" | "zinc"; icon?: typeof CurrencyDollarIcon }) {
   const cls = {
     emerald: "border-emerald-500/[0.18] bg-emerald-500/[0.03] text-emerald-200",
     amber:   "border-white/[0.18] bg-white/[0.03] text-zinc-200",
     rose:    "border-rose-500/[0.18] bg-rose-500/[0.03] text-rose-200",
-    violet:  "border-white/[0.06] bg-white/[0.015] text-white",
+    orange:  "border-white/[0.06] bg-white/[0.015] text-white",
     zinc:    "border-white/[0.06] bg-white/[0.02] text-zinc-200",
   }[tone];
   return (

@@ -90,7 +90,7 @@ const STATUS_VISUAL: Record<Status, { border: string; bg: string; pill: string; 
   awaiting_simulation:      { border: "border-cyan-500/[0.22]",    bg: "bg-cyan-500/[0.04]",    pill: "bg-cyan-500/15 text-cyan-300",         icon: ClockIcon,               label: "Awaiting simulation" },
   policy_blocked:           { border: "border-white/[0.18]",   bg: "bg-white/[0.04]",   pill: "bg-white/15 text-zinc-300",       icon: ExclamationTriangleIcon, label: "Policy blocked" },
   missing_evidence:         { border: "border-white/[0.18]",   bg: "bg-white/[0.04]",   pill: "bg-white/15 text-zinc-300",       icon: ExclamationTriangleIcon, label: "Missing evidence" },
-  blocked_by_pairing:       { border: "border-white/[0.10]",  bg: "bg-white/[0.015]",  pill: "bg-violet-500/15 text-violet-300",     icon: ComputerDesktopIcon,     label: "Blocked — not paired" },
+  blocked_by_pairing:       { border: "border-white/[0.10]",  bg: "bg-white/[0.015]",  pill: "bg-orange-500/15 text-orange-300",     icon: ComputerDesktopIcon,     label: "Blocked — not paired" },
   blocked_by_config:        { border: "border-rose-500/[0.22]",    bg: "bg-rose-500/[0.04]",    pill: "bg-rose-500/15 text-rose-300",         icon: XCircleIcon,             label: "Blocked by config" },
   disabled_local_execution: { border: "border-rose-500/[0.22]",    bg: "bg-rose-500/[0.04]",    pill: "bg-rose-500/15 text-rose-300",         icon: LockClosedIcon,          label: "Disabled — local exec off" },
 };
@@ -132,7 +132,7 @@ export default function DesktopIntelligencePage() {
           className="absolute inset-0 -z-10 opacity-90 pointer-events-none"
           style={{
             background:
-              "radial-gradient(900px 320px at 12% 0%, rgba(139,92,246,0.10), transparent 60%), radial-gradient(700px 260px at 88% 110%, rgba(45,212,191,0.06), transparent 60%)",
+              "radial-gradient(900px 320px at 12% 0%, rgba(255, 120, 61,0.10), transparent 60%), radial-gradient(700px 260px at 88% 110%, rgba(45,212,191,0.06), transparent 60%)",
           }}
           aria-hidden
         />
@@ -140,8 +140,8 @@ export default function DesktopIntelligencePage() {
 
         <div className="flex items-center gap-2 mb-3 flex-wrap">
           <span className="inline-flex items-center gap-2 rounded-full border border-white/[0.06] bg-white/[0.02] px-2.5 py-1">
-            <ComputerDesktopIcon className="h-3.5 w-3.5 text-violet-300" />
-            <span className="text-[10px] font-semibold uppercase tracking-widest text-violet-300">
+            <ComputerDesktopIcon className="h-3.5 w-3.5 text-orange-300" />
+            <span className="text-[10px] font-semibold uppercase tracking-widest text-orange-300">
               Desktop Intelligence · desktop_review_only_no_local_execution
             </span>
           </span>
@@ -158,7 +158,7 @@ export default function DesktopIntelligencePage() {
 
         {report && (
           <div className="mt-5 grid grid-cols-2 md:grid-cols-4 gap-3">
-            <PairingStat label="Paired session" value={report.pairing.paired ? "Connected" : "Not paired"} tone={report.pairing.paired ? "emerald" : "violet"} />
+            <PairingStat label="Paired session" value={report.pairing.paired ? "Connected" : "Not paired"} tone={report.pairing.paired ? "emerald" : "orange"} />
             <PairingStat label="Binary" value={report.pairing.binaryAvailable ? "Available" : "Preview"} tone={report.pairing.binaryAvailable ? "emerald" : "amber"} />
             <PairingStat label="Signing" value={report.pairing.signingStatus.replace(/_/g, " ")} tone={report.pairing.signingStatus === "signed_notarized" ? "emerald" : "amber"} />
             <PairingStat label="Ready for handoff" value={String(report.summary.readyForHandoff)} tone={report.summary.readyForHandoff > 0 ? "emerald" : "zinc"} />
@@ -181,12 +181,12 @@ export default function DesktopIntelligencePage() {
       {!loading && !error && report && (
         <>
           {/* Recommended next action callout */}
-          <div className="rounded-2xl border border-violet-500/15 bg-white/[0.015] p-5 mb-6 flex items-center justify-between gap-3 flex-wrap">
+          <div className="rounded-2xl border border-orange-500/15 bg-white/[0.015] p-5 mb-6 flex items-center justify-between gap-3 flex-wrap">
             <div className="min-w-0">
-              <p className="text-[10px] font-mono text-violet-300/80 uppercase tracking-[0.18em] mb-1">// recommended next step</p>
+              <p className="text-[10px] font-mono text-orange-300/80 uppercase tracking-[0.18em] mb-1">// recommended next step</p>
               <p className="text-[14px] text-white font-semibold leading-snug">{report.safeNextAction.label}</p>
             </div>
-            <Link href={report.safeNextAction.href} className="inline-flex items-center gap-1.5 text-[12px] font-medium text-white hover:text-violet-100 border border-white/[0.12] hover:border-violet-500/50 bg-white/[0.025] rounded-md px-3 py-1.5 transition-colors">
+            <Link href={report.safeNextAction.href} className="inline-flex items-center gap-1.5 text-[12px] font-medium text-white hover:text-orange-100 border border-white/[0.12] hover:border-orange-500/50 bg-white/[0.025] rounded-md px-3 py-1.5 transition-colors">
               {report.safeNextAction.label}
               <ArrowRightIcon className="h-3 w-3" />
             </Link>
@@ -198,7 +198,7 @@ export default function DesktopIntelligencePage() {
             <StatusCard label="Awaiting sim" value={report.summary.awaitingSimulation} tone="cyan" />
             <StatusCard label="Policy" value={report.summary.policyBlocked} tone="amber" />
             <StatusCard label="Evidence" value={report.summary.missingEvidence} tone="amber" />
-            <StatusCard label="Pairing" value={report.summary.blockedByPairing} tone="violet" />
+            <StatusCard label="Pairing" value={report.summary.blockedByPairing} tone="orange" />
             <StatusCard label="Config" value={report.summary.blockedByConfig} tone="rose" />
             <StatusCard label="Local exec off" value={report.summary.disabledLocalExecution} tone="rose" />
           </div>
@@ -256,7 +256,7 @@ export default function DesktopIntelligencePage() {
                           <ArrowRightIcon className="h-3 w-3" />
                         </Link>
                         {it.status === "ready_for_handoff" && (
-                          <Link href={it.handoffRoute.href} className="inline-flex items-center gap-1.5 text-[12px] font-medium text-white hover:text-violet-100 border border-white/[0.12] hover:border-violet-500/50 bg-white/[0.025] rounded-md px-2.5 py-1.5 transition-colors">
+                          <Link href={it.handoffRoute.href} className="inline-flex items-center gap-1.5 text-[12px] font-medium text-white hover:text-orange-100 border border-white/[0.12] hover:border-orange-500/50 bg-white/[0.025] rounded-md px-2.5 py-1.5 transition-colors">
                             {it.handoffRoute.label}
                             <ArrowRightIcon className="h-3 w-3" />
                           </Link>
@@ -287,12 +287,12 @@ export default function DesktopIntelligencePage() {
   );
 }
 
-function StatusCard({ label, value, tone }: { label: string; value: number; tone: "emerald" | "cyan" | "amber" | "violet" | "rose" | "zinc" }) {
+function StatusCard({ label, value, tone }: { label: string; value: number; tone: "emerald" | "cyan" | "amber" | "orange" | "rose" | "zinc" }) {
   const toneClass = {
     emerald: "border-emerald-500/[0.18] bg-emerald-500/[0.03] text-emerald-300",
     cyan:    "border-cyan-500/[0.18] bg-cyan-500/[0.03] text-cyan-300",
     amber:   "border-white/[0.18] bg-white/[0.03] text-zinc-300",
-    violet:  "border-white/[0.06] bg-white/[0.015] text-violet-300",
+    orange:  "border-white/[0.06] bg-white/[0.015] text-orange-300",
     rose:    "border-rose-500/[0.18] bg-rose-500/[0.03] text-rose-300",
     zinc:    "border-white/[0.06] bg-white/[0.02] text-zinc-300",
   }[tone];
@@ -304,11 +304,11 @@ function StatusCard({ label, value, tone }: { label: string; value: number; tone
   );
 }
 
-function PairingStat({ label, value, tone }: { label: string; value: string; tone: "emerald" | "amber" | "violet" | "zinc" }) {
+function PairingStat({ label, value, tone }: { label: string; value: string; tone: "emerald" | "amber" | "orange" | "zinc" }) {
   const toneClass = {
     emerald: "border-emerald-500/[0.18] bg-emerald-500/[0.03] text-emerald-200",
     amber:   "border-white/[0.18] bg-white/[0.03] text-zinc-200",
-    violet:  "border-white/[0.06] bg-white/[0.015] text-white",
+    orange:  "border-white/[0.06] bg-white/[0.015] text-white",
     zinc:    "border-white/[0.06] bg-white/[0.02] text-zinc-200",
   }[tone];
   return (

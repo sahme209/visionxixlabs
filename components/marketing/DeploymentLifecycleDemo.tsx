@@ -112,7 +112,7 @@ export function DeploymentLifecycleDemo() {
 
   return (
     <div className="relative overflow-hidden rounded-xl border border-white/[0.09] bg-[#0f100f] shadow-2xl shadow-black/40">
-      <div aria-hidden className="pointer-events-none absolute -inset-12 opacity-70 blur-3xl" style={{ background: "radial-gradient(50% 58% at 66% 18%, rgba(124,58,237,.24), transparent 72%), radial-gradient(40% 42% at 18% 88%, rgba(6,182,212,.12), transparent 72%)" }} />
+      <div aria-hidden className="pointer-events-none absolute -inset-12 opacity-70 blur-3xl" style={{ background: "radial-gradient(50% 58% at 66% 18%, rgba(245, 78, 0,.24), transparent 72%), radial-gradient(40% 42% at 18% 88%, rgba(6,182,212,.12), transparent 72%)" }} />
       <div className="relative flex h-10 items-center justify-between border-b border-white/[0.06] px-4 text-[11px] text-zinc-500">
         <span>Axiom Agent · release workspace</span>
         <span>Illustrative flow · no live action</span>
@@ -130,9 +130,9 @@ export function DeploymentLifecycleDemo() {
                   role="tab"
                   aria-selected={selected}
                   onClick={() => setActiveIndex(index)}
-                  className={`flex w-full items-center gap-3 rounded-lg border px-3 py-2.5 text-left transition ${selected ? "border-violet-400/25 bg-violet-400/[0.1] text-white" : "border-transparent text-zinc-500 hover:border-white/[0.07] hover:bg-white/[0.035] hover:text-zinc-200"}`}
+                  className={`flex w-full items-center gap-3 rounded-lg border px-3 py-2.5 text-left transition ${selected ? "border-orange-400/25 bg-orange-400/[0.1] text-white" : "border-transparent text-zinc-500 hover:border-white/[0.07] hover:bg-white/[0.035] hover:text-zinc-200"}`}
                 >
-                  <span className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full border text-[10px] ${selected ? "border-violet-300/40 bg-violet-300/15 text-violet-100" : "border-white/[0.1] text-zinc-600"}`}>{index + 1}</span>
+                  <span className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full border text-[10px] ${selected ? "border-orange-300/40 bg-orange-300/15 text-orange-100" : "border-white/[0.1] text-zinc-600"}`}>{index + 1}</span>
                   <span className="text-xs font-medium">{stage.label}</span>
                   {index < activeIndex ? <span className="ml-auto h-1.5 w-1.5 rounded-full bg-emerald-300" aria-label="Completed illustrative stage" /> : null}
                 </button>
@@ -148,12 +148,12 @@ export function DeploymentLifecycleDemo() {
                 <p className="text-xs text-zinc-500">Production change · illustrative record</p>
                 <h3 className="mt-2 text-2xl font-medium tracking-tight text-white">Checkout release</h3>
               </div>
-              <span className="rounded-full border border-violet-300/20 bg-violet-300/[0.08] px-3 py-1 text-xs text-violet-100">{active.status}</span>
+              <span className="rounded-full border border-orange-300/20 bg-orange-300/[0.08] px-3 py-1 text-xs text-orange-100">{active.status}</span>
             </div>
 
             <div className="mt-10 max-w-xl">
               <div className="flex h-11 w-11 items-center justify-center rounded-xl border border-white/[0.09] bg-white/[0.05]">
-                <Icon className="h-5 w-5 text-violet-200" />
+                <Icon className="h-5 w-5 text-orange-200" />
               </div>
               <h4 className="mt-5 text-xl font-medium leading-7 text-zinc-100">{active.title}</h4>
               <p className="mt-3 text-sm leading-6 text-zinc-400">{active.detail}</p>

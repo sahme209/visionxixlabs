@@ -48,7 +48,7 @@ export default function AwsCloudSolutionsPage() {
               <li>
                 <Link
                   href="/"
-                  className="hover:text-violet-400"
+                  className="hover:text-orange-400"
                 >
                   Home
                 </Link>
@@ -57,7 +57,7 @@ export default function AwsCloudSolutionsPage() {
               <li>
                 <Link
                   href="/cloud-solutions"
-                  className="hover:text-violet-400"
+                  className="hover:text-orange-400"
                 >
                   Cloud Solutions
                 </Link>
@@ -80,7 +80,7 @@ export default function AwsCloudSolutionsPage() {
               <h1 id="overview-heading" className="font-display text-4xl md:text-5xl font-bold mb-3 leading-[1.04]">
                 <span className="relative inline-block">
                   AWS Cloud Solutions
-                  <span aria-hidden className="absolute left-0 -bottom-0.5 h-[2px] w-full rounded-full bg-gradient-to-r from-brand-coral via-fuchsia-400/70 to-transparent" />
+                  <span aria-hidden className="absolute left-0 -bottom-0.5 h-[2px] w-full rounded-full bg-gradient-to-r from-brand-coral via-amber-400/70 to-transparent" />
                 </span>
               </h1>
               <p className="text-lg md:text-xl text-zinc-400 max-w-3xl mb-4">
@@ -348,7 +348,7 @@ export default function AwsCloudSolutionsPage() {
                 <ul className="space-y-2 text-sm text-zinc-300">
                   {idealClientsCloud.map((item) => (
                     <li key={item} className="flex items-start">
-                      <span className="text-violet-400 mr-2 mt-0.5">•</span>
+                      <span className="text-orange-400 mr-2 mt-0.5">•</span>
                       {item}
                     </li>
                   ))}
@@ -387,19 +387,19 @@ export default function AwsCloudSolutionsPage() {
               <div className="mt-8 text-xs text-zinc-400 flex flex-wrap gap-4">
                 <Link
                   href="/cloud-solutions"
-                  className="underline underline-offset-4 hover:text-violet-400"
+                  className="underline underline-offset-4 hover:text-orange-400"
                 >
                   Back to Cloud Solutions overview
                 </Link>
                 <Link
                   href="/cloud-solutions/azure"
-                  className="underline underline-offset-4 hover:text-violet-400"
+                  className="underline underline-offset-4 hover:text-orange-400"
                 >
                   View Azure Cloud Solutions
                 </Link>
                 <Link
                   href="/contact"
-                  className="underline underline-offset-4 hover:text-violet-400"
+                  className="underline underline-offset-4 hover:text-orange-400"
                 >
                   Talk to us about AWS
                 </Link>
@@ -410,7 +410,7 @@ export default function AwsCloudSolutionsPage() {
       </main>
 
       {/* Floating blur orbs */}
-      <div className="ambient-drift absolute bottom-1/4 left-10 w-[380px] h-[340px] bg-brand-violet/[0.08] rounded-full blur-[120px] pointer-events-none" />
+      <div className="ambient-drift absolute bottom-1/4 left-10 w-[380px] h-[340px] bg-brand-orange/[0.08] rounded-full blur-[120px] pointer-events-none" />
       <div className="ambient-drift absolute top-1/2 right-0 w-[420px] h-[360px] bg-brand-coral/[0.06] rounded-full blur-[130px] pointer-events-none" style={{ animationDelay: "-8s" }} />
       <div className="ambient-drift absolute top-1/4 right-1/3 w-[340px] h-[260px] bg-cyan-500/[0.04] rounded-full blur-[110px] pointer-events-none" style={{ animationDelay: "-14s" }} />
     </div>

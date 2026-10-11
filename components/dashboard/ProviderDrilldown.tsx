@@ -311,7 +311,7 @@ function ProviderSetupGuide({ rawRequirements }: { rawRequirements: readonly str
                         {step.helpHref && (
                           <Link
                             href={step.helpHref}
-                            className="text-[10.5px] font-medium text-violet-300 hover:text-violet-200 transition inline-flex items-center gap-0.5"
+                            className="text-[10.5px] font-medium text-orange-300 hover:text-orange-200 transition inline-flex items-center gap-0.5"
                           >
                             where do I find this? <ArrowRightIcon className="h-2.5 w-2.5" />
                           </Link>

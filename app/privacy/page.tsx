@@ -7,14 +7,14 @@ export default function PrivacyPolicyPage() {
   return (
     <div className="min-h-screen bg-[#09090b] text-white relative overflow-hidden">
       <div className="absolute inset-0 bg-dots opacity-10 pointer-events-none" aria-hidden />
-      <div className="absolute -top-40 right-0 w-96 h-96 rounded-full bg-violet-600/5 blur-[120px] pointer-events-none" aria-hidden />
+      <div className="absolute -top-40 right-0 w-96 h-96 rounded-full bg-orange-600/5 blur-[120px] pointer-events-none" aria-hidden />
       <Navigation />
 
       <div className="max-w-6xl mx-auto px-6 md:px-10 pt-32 pb-16">
         <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] backdrop-blur-sm p-8 md:p-12">
           {/* Header */}
           <div className="text-center mb-12">
-            <ShieldCheckIcon className="h-14 w-14 text-violet-400 mx-auto mb-4" />
+            <ShieldCheckIcon className="h-14 w-14 text-orange-400 mx-auto mb-4" />
             <h1 className="text-4xl md:text-5xl font-bold mb-4">
               Privacy Policy
             </h1>
@@ -130,7 +130,7 @@ export default function PrivacyPolicyPage() {
                 <li><strong>Scan History:</strong> Up to 5 previous scan snapshots are retained for trend comparison. Older snapshots are automatically dropped.</li>
               </ul>
               <p className="text-zinc-500 text-sm mt-3 italic bg-white/[0.02] border border-white/[0.06] p-3 rounded-lg">
-                <strong>Revocation:</strong> You can revoke our access at any time by deleting the IAM role from your AWS console. For full technical details, see our <a href="/security" className="text-violet-400 hover:text-violet-300">Security page</a>.
+                <strong>Revocation:</strong> You can revoke our access at any time by deleting the IAM role from your AWS console. For full technical details, see our <a href="/security" className="text-orange-400 hover:text-orange-300">Security page</a>.
               </p>
             </div>
 
@@ -338,7 +338,7 @@ export default function PrivacyPolicyPage() {
               <li><strong>Opt-Out:</strong> Opt out of marketing communications and certain data uses (CCPA)</li>
             </ul>
             <p className="text-zinc-300 leading-relaxed mt-3">
-              To exercise these rights, please contact us at <a href="mailto:support@visionxixlabs.com" className="text-violet-400 hover:text-violet-300">support@visionxixlabs.com</a>. We will respond to your request within 30 days (or as required by applicable law). We may need to verify your identity before processing your request.
+              To exercise these rights, please contact us at <a href="mailto:support@visionxixlabs.com" className="text-orange-400 hover:text-orange-300">support@visionxixlabs.com</a>. We will respond to your request within 30 days (or as required by applicable law). We may need to verify your identity before processing your request.
             </p>
             <p className="text-zinc-500 text-sm mt-3">
               <strong>Note:</strong> Some rights may be limited for enterprise clients where data processing is necessary for contract performance or where we act as a data processor under your instructions.
@@ -405,7 +405,7 @@ export default function PrivacyPolicyPage() {
               <li>Provide for audit rights and compliance assistance</li>
             </ul>
             <p className="text-zinc-300 leading-relaxed mt-3">
-              If you require a DPA, please contact us at <a href="mailto:support@visionxixlabs.com" className="text-violet-400 hover:text-violet-300">support@visionxixlabs.com</a>. We will work with you to execute a DPA that meets your compliance requirements.
+              If you require a DPA, please contact us at <a href="mailto:support@visionxixlabs.com" className="text-orange-400 hover:text-orange-300">support@visionxixlabs.com</a>. We will work with you to execute a DPA that meets your compliance requirements.
             </p>
           </section>
 
@@ -425,7 +425,7 @@ export default function PrivacyPolicyPage() {
                 Email:{" "}
                 <a
                   href="mailto:support@visionxixlabs.com"
-                  className="text-violet-400 hover:text-violet-300"
+                  className="text-orange-400 hover:text-orange-300"
                 >
                   support@visionxixlabs.com
                 </a>

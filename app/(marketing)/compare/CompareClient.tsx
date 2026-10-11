@@ -99,9 +99,9 @@ export function CompareClient() {
 
   return (
     <div className="relative">
-      {/* Huly aurora — coral × violet × cyan */}
+      {/* Huly aurora — coral × orange × cyan */}
       <div aria-hidden className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
-        <div className="ambient-drift absolute -top-1/4 left-1/3 h-[60vh] w-[50vw] rounded-full bg-brand-violet/[0.08] blur-[140px]" />
+        <div className="ambient-drift absolute -top-1/4 left-1/3 h-[60vh] w-[50vw] rounded-full bg-brand-orange/[0.08] blur-[140px]" />
         <div className="ambient-drift absolute top-[15%] right-[5%] h-[50vh] w-[40vw] rounded-full bg-brand-coral/[0.06] blur-[130px]" style={{ animationDelay: "-8s" }} />
         <div className="ambient-drift absolute bottom-0 right-1/4 h-[45vh] w-[35vw] rounded-full bg-cyan-500/[0.05] blur-[120px]" style={{ animationDelay: "-14s" }} />
       </div>
@@ -126,7 +126,7 @@ export function CompareClient() {
           Compare —{" "}
           <span className="relative inline-block">
             three alternatives, side by side.
-            <span aria-hidden className="absolute left-0 -bottom-0.5 h-[2px] w-[88%] rounded-full bg-gradient-to-r from-brand-coral via-fuchsia-400/70 to-transparent" />
+            <span aria-hidden className="absolute left-0 -bottom-0.5 h-[2px] w-[88%] rounded-full bg-gradient-to-r from-brand-coral via-amber-400/70 to-transparent" />
           </span>
         </motion.h1>
         <motion.p
@@ -175,7 +175,7 @@ export function CompareClient() {
           {/* header */}
           <div className="grid grid-cols-[1fr_110px_110px] md:grid-cols-[1fr_140px_140px] border-b border-white/[0.06] bg-white/[0.02] px-4 py-3 text-[11px] font-mono uppercase tracking-widest text-zinc-400">
             <span>Capability</span>
-            <span className="text-center text-indigo-300">Axiom</span>
+            <span className="text-center text-zinc-300">Axiom</span>
             <span className="text-center text-zinc-300">{active.rivalLabel}</span>
           </div>
           {/* rows */}
@@ -224,7 +224,7 @@ export function CompareClient() {
         <div className="mt-6 flex items-center justify-center gap-2">
           <Link
             href="/plans"
-            className="inline-flex items-center gap-2 rounded-full bg-indigo-500 px-4 py-2 text-[12.5px] font-medium text-white shadow-[0_0_20px_rgba(99,102,241,0.45)] hover:bg-indigo-400 transition"
+            className="inline-flex items-center gap-2 rounded-full bg-zinc-500 px-4 py-2 text-[12.5px] font-medium text-white shadow-[0_0_20px_rgba(245,78,0,0.45)] hover:bg-zinc-400 transition"
           >
             See plans
           </Link>

@@ -22,7 +22,7 @@ export function GitHubConsentButton() {
 
   return (
     <div className="mt-5">
-      <button type="button" onClick={() => void startConsent()} disabled={state === "opening"} className="inline-flex min-h-10 items-center rounded-xl border border-violet-300/25 bg-violet-300/[0.08] px-4 text-sm font-medium text-violet-100 transition hover:bg-violet-300/[0.14] disabled:opacity-60">
+      <button type="button" onClick={() => void startConsent()} disabled={state === "opening"} className="inline-flex min-h-10 items-center rounded-xl border border-orange-300/25 bg-orange-300/[0.08] px-4 text-sm font-medium text-orange-100 transition hover:bg-orange-300/[0.14] disabled:opacity-60">
         {state === "opening" ? "Opening GitHub…" : "Connect GitHub"}
       </button>
       {state === "unavailable" && <p role="status" className="mt-3 text-xs leading-5 text-zinc-500">GitHub connection is not available for this workspace yet. No provider access was granted.</p>}

@@ -16,7 +16,7 @@ export default function SignUpPage() {
     <Suspense
       fallback={
         <div className="axiom-canvas min-h-screen flex items-center justify-center">
-          <div className="h-6 w-6 animate-spin rounded-full border-2 border-violet-500 border-t-transparent" />
+          <div className="h-6 w-6 animate-spin rounded-full border-2 border-orange-500 border-t-transparent" />
         </div>
       }
     >
@@ -188,8 +188,8 @@ function SignUpForm() {
                 </div>
               </div>
               <label className="flex items-start gap-3 rounded-xl border border-white/[0.06] bg-white/[0.02] p-3 text-xs leading-5 text-zinc-400">
-                <input type="checkbox" checked={acceptedTerms} onChange={(event) => setAcceptedTerms(event.target.checked)} required className="mt-0.5 h-4 w-4 rounded border-white/20 bg-black/30 accent-violet-500" />
-                <span>I agree to the <Link href="/terms" target="_blank" className="text-violet-300 underline">Terms</Link> and acknowledge the <Link href="/privacy" target="_blank" className="text-violet-300 underline">Privacy Policy</Link>.</span>
+                <input type="checkbox" checked={acceptedTerms} onChange={(event) => setAcceptedTerms(event.target.checked)} required className="mt-0.5 h-4 w-4 rounded border-white/20 bg-black/30 accent-orange-500" />
+                <span>I agree to the <Link href="/terms" target="_blank" className="text-orange-300 underline">Terms</Link> and acknowledge the <Link href="/privacy" target="_blank" className="text-orange-300 underline">Privacy Policy</Link>.</span>
               </label>
               {error && (
                 <div role="alert" aria-live="assertive" className="rounded-lg border border-red-500/20 bg-red-500/[0.06] px-3.5 py-2.5 text-sm text-red-400">

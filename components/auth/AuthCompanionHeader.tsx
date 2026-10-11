@@ -88,7 +88,7 @@ export function AuthCompanionHeader({ email }: { email: string | null }) {
     <header className="rounded-2xl border border-white/[0.08] bg-black/20 p-3 shadow-[0_20px_80px_rgba(0,0,0,0.16)] backdrop-blur-md sm:grid sm:grid-cols-[1fr_auto_1fr] sm:items-center sm:gap-4">
       <div className="flex items-center justify-between gap-3 sm:justify-start">
         <Link href="/auth/success" className="group inline-flex items-center gap-2.5 px-2 py-1.5 text-zinc-100">
-          <span className="grid h-6 w-6 place-items-center rounded-md border border-violet-300/25 bg-violet-300/[0.08] text-[10px] font-semibold text-violet-200">A</span>
+          <span className="grid h-6 w-6 place-items-center rounded-md border border-orange-300/25 bg-orange-300/[0.08] text-[10px] font-semibold text-orange-200">A</span>
           <span>
             <span className="block text-sm font-semibold tracking-[-0.025em]">Axiom</span>
             <span className="block text-[9px] uppercase tracking-[0.16em] text-zinc-500">Web companion</span>
@@ -151,7 +151,7 @@ export function AuthCompanionHeader({ email }: { email: string | null }) {
                   href={item.href}
                   aria-current={active ? "page" : undefined}
                   onClick={closeMobileMenu}
-                  className={`rounded-xl border px-3 py-3 text-sm transition ${active ? "border-violet-300/25 bg-violet-300/[0.09] text-white" : "border-white/[0.07] bg-white/[0.025] text-zinc-400 hover:bg-white/[0.06] hover:text-zinc-200"}`}
+                  className={`rounded-xl border px-3 py-3 text-sm transition ${active ? "border-orange-300/25 bg-orange-300/[0.09] text-white" : "border-white/[0.07] bg-white/[0.025] text-zinc-400 hover:bg-white/[0.06] hover:text-zinc-200"}`}
                 >
                   {item.label}
                 </Link>
@@ -173,7 +173,7 @@ export function AuthCompanionHeader({ email }: { email: string | null }) {
             {activeDesktopSessionCount ? (
               <p className="mt-2 text-[11px] leading-snug text-zinc-500">
                 Sign out only ends this browser session — {activeDesktopSessionCount} paired desktop session{activeDesktopSessionCount === 1 ? "" : "s"} stay signed in. Revoke from{" "}
-                <Link href="/account" className="text-violet-300 hover:text-violet-200">Settings</Link> if needed.
+                <Link href="/account" className="text-orange-300 hover:text-orange-200">Settings</Link> if needed.
               </p>
             ) : null}
           </div>

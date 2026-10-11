@@ -349,7 +349,7 @@ export function DashboardSidebar() {
                       return (
                         <li key={item.href} className="relative">
                           {active && (
-                            <span aria-hidden className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-5 rounded-full bg-gradient-to-b from-violet-400 to-violet-500" />
+                            <span aria-hidden className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-5 rounded-full bg-gradient-to-b from-orange-400 to-orange-500" />
                           )}
                           <Link
                             href={item.href}
@@ -359,7 +359,7 @@ export function DashboardSidebar() {
                                 : "text-zinc-400 hover:text-white hover:bg-white/[0.02]"
                             }`}
                           >
-                            <Icon className={`h-3.5 w-3.5 shrink-0 ${active ? "text-violet-300" : "text-zinc-500"}`} />
+                            <Icon className={`h-3.5 w-3.5 shrink-0 ${active ? "text-orange-300" : "text-zinc-500"}`} />
                             <span className="truncate">{item.label}</span>
                           </Link>
                         </li>

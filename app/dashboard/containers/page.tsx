@@ -77,7 +77,7 @@ const STATUS_VISUAL: Record<Status, { pill: string; icon: typeof CheckCircleIcon
   version_eol:  { pill: "bg-rose-500/15 text-rose-300",       icon: XCircleIcon,             label: "version EOL" },
   config_drift: { pill: "bg-white/15 text-zinc-300",     icon: ExclamationTriangleIcon, label: "drift" },
   unreachable:  { pill: "bg-rose-500/15 text-rose-300",       icon: XCircleIcon,             label: "unreachable" },
-  preview:      { pill: "bg-violet-500/15 text-violet-300",   icon: ClockIcon,               label: "preview" },
+  preview:      { pill: "bg-orange-500/15 text-orange-300",   icon: ClockIcon,               label: "preview" },
   unknown:      { pill: "bg-zinc-700/40 text-zinc-300",       icon: MinusCircleIcon,         label: "unknown" },
 };
 

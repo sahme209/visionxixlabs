@@ -116,7 +116,7 @@ export default function PolicyPreviewsPage() {
           className="absolute inset-0 -z-10 opacity-90 pointer-events-none"
           style={{
             background:
-              "radial-gradient(900px 320px at 12% 0%, rgba(34,197,94,0.10), transparent 60%), radial-gradient(700px 260px at 88% 110%, rgba(124,58,237,0.06), transparent 60%)",
+              "radial-gradient(900px 320px at 12% 0%, rgba(34,197,94,0.10), transparent 60%), radial-gradient(700px 260px at 88% 110%, rgba(245, 78, 0,0.06), transparent 60%)",
           }}
           aria-hidden
         />
@@ -169,7 +169,7 @@ export default function PolicyPreviewsPage() {
         {report && (
           <div className="mt-5 grid grid-cols-2 md:grid-cols-4 gap-3">
             <Stat label="Runbooks scanned" value={String(report.totalRunbooks)} tone="zinc" />
-            <Stat label="Policy packages" value={String(report.totalPackages)} tone="violet" icon={LockClosedIcon} />
+            <Stat label="Policy packages" value={String(report.totalPackages)} tone="orange" icon={LockClosedIcon} />
             <Stat label="Total previews" value={String(report.totalPreviews)} tone="emerald" />
             <Stat label="Lookback" value={`${report.lookbackMinutes}m`} tone="zinc" />
           </div>
@@ -198,7 +198,7 @@ export default function PolicyPreviewsPage() {
               {report.packages.map((pkg) => (
                 <div key={pkg.runbookId} className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-4">
                   <div className="flex items-center gap-2 flex-wrap mb-2">
-                    <span className="text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded border bg-violet-500/15 text-violet-300 border-white/[0.12]">
+                    <span className="text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded border bg-orange-500/15 text-orange-300 border-white/[0.12]">
                       {pkg.severity}
                     </span>
                     <p className="text-[14px] font-semibold text-white">{pkg.eventName}</p>
@@ -276,7 +276,7 @@ export default function PolicyPreviewsPage() {
             <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4" onClick={() => setTfDraft(null)}>
               <div onClick={(e) => e.stopPropagation()} className="max-w-3xl w-full rounded-2xl border border-white/[0.1] bg-zinc-950 p-5">
                 <div className="flex items-center justify-between mb-2">
-                  <p className="text-[12px] font-mono text-violet-300 uppercase tracking-wider">// terraform draft · {tfDraft.key}</p>
+                  <p className="text-[12px] font-mono text-orange-300 uppercase tracking-wider">// terraform draft · {tfDraft.key}</p>
                   <div className="flex items-center gap-2">
                     <button
                       onClick={() => navigator.clipboard.writeText(tfDraft.hcl)}
@@ -311,10 +311,10 @@ export default function PolicyPreviewsPage() {
 
 function Stat({
   label, value, tone, icon: Icon,
-}: { label: string; value: string; tone: "emerald" | "violet" | "zinc"; icon?: typeof LockClosedIcon }) {
+}: { label: string; value: string; tone: "emerald" | "orange" | "zinc"; icon?: typeof LockClosedIcon }) {
   const cls = {
     emerald: "border-emerald-500/[0.18] bg-emerald-500/[0.03] text-emerald-200",
-    violet:  "border-white/[0.06] bg-white/[0.015] text-white",
+    orange:  "border-white/[0.06] bg-white/[0.015] text-white",
     zinc:    "border-white/[0.06] bg-white/[0.02] text-zinc-200",
   }[tone];
   return (

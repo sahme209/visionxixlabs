@@ -28,9 +28,9 @@ export default function ReferencePage() {
       <SandboxNavigation />
       <main className="max-w-6xl mx-auto px-4 sm:px-6 py-10 space-y-10">
       {/* Sandbox marker for symmetry with /demo/[id] */}
-      <div className="rounded-lg border border-violet-500/20 bg-violet-500/[0.04] px-3 py-2 flex items-center gap-2">
-        <span className="w-1.5 h-1.5 rounded-full bg-violet-400" />
-        <span className="text-[10px] font-mono text-violet-200/90 uppercase tracking-[0.22em]">
+      <div className="rounded-lg border border-orange-500/20 bg-orange-500/[0.04] px-3 py-2 flex items-center gap-2">
+        <span className="w-1.5 h-1.5 rounded-full bg-orange-400" />
+        <span className="text-[10px] font-mono text-orange-200/90 uppercase tracking-[0.22em]">
           platform reference · everything in one page
         </span>
       </div>
@@ -114,7 +114,7 @@ export default function ReferencePage() {
           {WEBHOOK_EVENTS.map((w) => (
             <div key={w.kind} className="rounded-xl border border-white/[0.06] bg-white/[0.015] p-4 space-y-2">
               <div className="flex items-center justify-between gap-2 flex-wrap">
-                <code className="text-[12px] font-mono text-violet-200">{w.kind}</code>
+                <code className="text-[12px] font-mono text-orange-200">{w.kind}</code>
               </div>
               <p className="text-[12px] text-zinc-300 leading-relaxed">{w.oneLine}</p>
               <p className="text-[10px] font-mono text-zinc-500 truncate" title={w.emittedFrom}>emitted from · {w.emittedFrom}</p>
@@ -140,7 +140,7 @@ export default function ReferencePage() {
               <ul className="space-y-1">
                 {u.members.map((m) => (
                   <li key={m.value} className="grid grid-cols-[max-content_1fr] gap-2 items-baseline">
-                    <code className="text-[11px] font-mono px-1.5 py-0.5 rounded bg-violet-500/10 text-violet-200 border border-violet-500/20 whitespace-nowrap">{m.value}</code>
+                    <code className="text-[11px] font-mono px-1.5 py-0.5 rounded bg-orange-500/10 text-orange-200 border border-orange-500/20 whitespace-nowrap">{m.value}</code>
                     <span className="text-[12px] text-zinc-400 leading-relaxed">{m.meaning}</span>
                   </li>
                 ))}
@@ -184,7 +184,7 @@ export default function ReferencePage() {
               <div className="flex items-baseline justify-between gap-2 flex-wrap">
                 <h3 className="text-[14px] font-semibold text-white">{eng.name}</h3>
                 <span className={`text-[10px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded ${
-                  eng.defaultApproval === "two_person" ? "bg-violet-500/15 text-violet-200" :
+                  eng.defaultApproval === "two_person" ? "bg-orange-500/15 text-orange-200" :
                   eng.defaultApproval === "self_approve" ? "bg-white/15 text-zinc-200" :
                   "bg-emerald-500/15 text-emerald-200"
                 }`}>default · {eng.defaultApproval}</span>
@@ -248,7 +248,7 @@ export default function ReferencePage() {
       <footer className="rounded-2xl border border-white/[0.06] bg-gradient-to-br from-white/[0.02] to-transparent p-5 sm:p-6 space-y-3">
         <p className="text-[10px] font-mono text-zinc-500 uppercase tracking-[0.22em]">where to go next</p>
         <div className="flex flex-wrap gap-3">
-          <Link href="/demo" className="text-[12px] text-violet-300/90 hover:text-violet-200 underline-offset-2 hover:underline">← Back to all scenarios</Link>
+          <Link href="/demo" className="text-[12px] text-orange-300/90 hover:text-orange-200 underline-offset-2 hover:underline">← Back to all scenarios</Link>
           <Link href="/docs/architecture" className="text-[12px] text-zinc-300 hover:text-white underline-offset-2 hover:underline">Architecture overview →</Link>
           <Link href="/docs/approval-workflow" className="text-[12px] text-zinc-300 hover:text-white underline-offset-2 hover:underline">Approval workflow →</Link>
           <Link href="/docs/audit-logs" className="text-[12px] text-zinc-300 hover:text-white underline-offset-2 hover:underline">Audit logs →</Link>
@@ -272,6 +272,6 @@ function SectionHeader({ title, subtitle }: { title: string; subtitle: string })
 function MethodPill({ method }: { method: "GET" | "POST" }) {
   const cls = method === "GET"
     ? "bg-cyan-500/15 text-cyan-200 border-cyan-500/30"
-    : "bg-violet-500/15 text-violet-200 border-violet-500/30";
+    : "bg-orange-500/15 text-orange-200 border-orange-500/30";
   return <span className={`text-[10px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded border ${cls}`}>{method}</span>;
 }

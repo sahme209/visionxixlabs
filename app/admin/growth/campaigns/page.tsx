@@ -27,7 +27,7 @@ export default async function CampaignsPage() {
   return (
     <div className="relative">
       <div className="mb-6">
-        <Link href="/admin/growth" className="text-[11px] text-violet-300 hover:text-violet-200 inline-flex items-center gap-1">
+        <Link href="/admin/growth" className="text-[11px] text-orange-300 hover:text-orange-200 inline-flex items-center gap-1">
           <ArrowRightIcon className="h-3 w-3 rotate-180" />
           Back to Growth
         </Link>
@@ -36,8 +36,8 @@ export default async function CampaignsPage() {
       <div className="mb-8 flex items-start justify-between gap-4 flex-wrap">
         <div>
           <div className="flex items-center gap-3 mb-3">
-            <MegaphoneIcon className="h-4 w-4 text-violet-400" />
-            <p className="text-[10px] font-semibold text-violet-400 uppercase tracking-widest">Growth campaigns</p>
+            <MegaphoneIcon className="h-4 w-4 text-orange-400" />
+            <p className="text-[10px] font-semibold text-orange-400 uppercase tracking-widest">Growth campaigns</p>
           </div>
           <h1 className="text-3xl md:text-4xl font-bold text-white tracking-[-0.04em] mb-2">
             Weekly themes, grouped posts.
@@ -51,7 +51,7 @@ export default async function CampaignsPage() {
           <input name="theme" placeholder="theme (e.g. product_education)" defaultValue="product_education" className="text-[11px] bg-transparent border border-white/[0.10] rounded px-2 py-1 text-zinc-200 w-56" />
           <input type="date" name="startsAt" required className="text-[11px] bg-transparent border border-white/[0.10] rounded px-2 py-1 text-zinc-200" />
           <input type="date" name="endsAt" required className="text-[11px] bg-transparent border border-white/[0.10] rounded px-2 py-1 text-zinc-200" />
-          <button className="inline-flex items-center gap-1 text-[11px] font-medium px-2 py-1 rounded-lg bg-violet-500/15 text-violet-100 border border-violet-500/30 hover:bg-violet-500/25">
+          <button className="inline-flex items-center gap-1 text-[11px] font-medium px-2 py-1 rounded-lg bg-orange-500/15 text-orange-100 border border-orange-500/30 hover:bg-orange-500/25">
             Create campaign
           </button>
         </form>
@@ -68,7 +68,7 @@ export default async function CampaignsPage() {
             <li key={c.id} className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-4">
               <header className="flex items-center justify-between gap-2 mb-2">
                 <p className="text-[13px] font-semibold text-white truncate">{c.name}</p>
-                <span className="text-[9.5px] font-mono uppercase tracking-wider text-violet-300 bg-violet-500/10 border border-violet-500/30 rounded-full px-1.5 py-px">
+                <span className="text-[9.5px] font-mono uppercase tracking-wider text-orange-300 bg-orange-500/10 border border-orange-500/30 rounded-full px-1.5 py-px">
                   {c.status}
                 </span>
               </header>

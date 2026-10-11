@@ -106,7 +106,7 @@ export default function CloudTrailPage() {
           className="absolute inset-0 -z-10 opacity-90 pointer-events-none"
           style={{
             background:
-              "radial-gradient(900px 320px at 12% 0%, rgba(244,114,182,0.10), transparent 60%), radial-gradient(700px 260px at 88% 110%, rgba(124,58,237,0.06), transparent 60%)",
+              "radial-gradient(900px 320px at 12% 0%, rgba(255,120,61,0.10), transparent 60%), radial-gradient(700px 260px at 88% 110%, rgba(245, 78, 0,0.06), transparent 60%)",
           }}
           aria-hidden
         />
@@ -161,7 +161,7 @@ export default function CloudTrailPage() {
 
         {result && (
           <div className="mt-5 grid grid-cols-2 md:grid-cols-4 gap-3">
-            <Stat label="Events" value={result.total.toLocaleString()} tone="violet" />
+            <Stat label="Events" value={result.total.toLocaleString()} tone="orange" />
             <Stat label="Failures" value={result.failureCount.toLocaleString()} tone={result.failureCount > 0 ? "amber" : "emerald"} icon={ExclamationTriangleIcon} />
             <Stat label="High / critical" value={result.highOrCriticalCount.toLocaleString()} tone={result.highOrCriticalCount > 0 ? "rose" : "emerald"} icon={ShieldExclamationIcon} />
             <Stat label="Root-user" value={result.rootUserCount.toLocaleString()} tone={result.rootUserCount > 0 ? "rose" : "emerald"} />
@@ -190,7 +190,7 @@ export default function CloudTrailPage() {
                 onClick={() => setSeverityFilter(s)}
                 className={`text-[10px] font-mono px-2 py-0.5 rounded-full border transition ${
                   severityFilter === s
-                    ? "bg-violet-500/15 text-white border-white/[0.12]"
+                    ? "bg-orange-500/15 text-white border-white/[0.12]"
                     : "bg-white/[0.02] text-zinc-400 border-white/[0.06] hover:text-white"
                 }`}
               >
@@ -263,14 +263,14 @@ function Stat({
 }: {
   label: string;
   value: string;
-  tone: "emerald" | "amber" | "rose" | "violet";
+  tone: "emerald" | "amber" | "rose" | "orange";
   icon?: typeof ExclamationTriangleIcon;
 }) {
   const cls = {
     emerald: "border-emerald-500/[0.18] bg-emerald-500/[0.03] text-emerald-200",
     amber: "border-white/[0.18] bg-white/[0.03] text-zinc-200",
     rose: "border-rose-500/[0.18] bg-rose-500/[0.03] text-rose-200",
-    violet: "border-white/[0.06] bg-white/[0.015] text-white",
+    orange: "border-white/[0.06] bg-white/[0.015] text-white",
   }[tone];
   return (
     <div className={`rounded-xl border ${cls} p-3`}>

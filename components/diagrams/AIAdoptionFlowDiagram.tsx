@@ -24,7 +24,7 @@ export function AIAdoptionFlowDiagram() {
           </linearGradient>
           <linearGradient id="flow-end" x1="0%" y1="0%" x2="100%" y2="0%">
             <stop offset="0%" stopColor="#4f46e5" />
-            <stop offset="100%" stopColor="#7c3aed" />
+            <stop offset="100%" stopColor="#f54e00" />
           </linearGradient>
           <marker
             id="arrowhead"

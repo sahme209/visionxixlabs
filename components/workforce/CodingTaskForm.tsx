@@ -113,7 +113,7 @@ export function CodingTaskForm() {
         <button
           type="submit"
           disabled={submitting}
-          className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-violet-500/20 text-violet-100 border border-violet-500/40 hover:bg-violet-500/30 transition disabled:opacity-50 text-[13px] font-medium"
+          className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-orange-500/20 text-orange-100 border border-orange-500/40 hover:bg-orange-500/30 transition disabled:opacity-50 text-[13px] font-medium"
         >
           {submitting ? (
             <>
@@ -147,7 +147,7 @@ export function CodingTaskForm() {
         }
         :global(.form-input:focus),
         :global(.form-textarea:focus) {
-          border-color: rgba(139, 92, 246, 0.5);
+          border-color: rgba(255, 120, 61, 0.5);
         }
         :global(.form-input:disabled),
         :global(.form-textarea:disabled) {

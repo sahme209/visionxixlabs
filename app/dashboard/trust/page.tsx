@@ -72,14 +72,14 @@ export default function TrustCenterPage() {
       <Stagger delay={0.05} interval={0.05} className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-8">
         {[
           { label: "Control coverage",     value: `${Math.round(controlSummary.score * 100)}%`, sub: `${controlSummary.implemented} implemented · ${controlSummary.partial} partial · ${controlSummary.planned} planned`, icon: ShieldCheckIcon, tone: "emerald" },
-          { label: "Connectors evidenced", value: `${connectorSummary.total}`,                  sub: `${connectorSummary.live} live · ${connectorSummary.expanding} expanding · ${connectorSummary.preview} preview`, icon: ServerStackIcon, tone: "violet" },
+          { label: "Connectors evidenced", value: `${connectorSummary.total}`,                  sub: `${connectorSummary.live} live · ${connectorSummary.expanding} expanding · ${connectorSummary.preview} preview`, icon: ServerStackIcon, tone: "orange" },
           { label: "AI safety controls",   value: `${aiSummary.implemented}/${aiSummary.total}`, sub: `${aiSummary.partial} partial · ${aiSummary.planned} planned`, icon: CpuChipIcon, tone: "cyan" },
           { label: "Data assertions",      value: `${dataPosture.totalAssertions}`,              sub: `${dataPosture.enforced} enforced · ${dataPosture.attested} attested · ${dataPosture.aspirational} aspirational`, icon: KeyIcon, tone: "amber" },
         ].map((kpi) => {
           const Icon = kpi.icon;
           const toneClass =
             kpi.tone === "emerald" ? "text-emerald-300 bg-emerald-500/10 border-emerald-500/20" :
-            kpi.tone === "violet"  ? "text-violet-300 bg-violet-500/10 border-white/[0.08]" :
+            kpi.tone === "orange"  ? "text-orange-300 bg-orange-500/10 border-white/[0.08]" :
             kpi.tone === "cyan"    ? "text-cyan-300 bg-cyan-500/10 border-cyan-500/20" :
                                      "text-zinc-300 bg-white/10 border-white/20";
           return (
@@ -164,7 +164,7 @@ export default function TrustCenterPage() {
         <div className="mb-10 rounded-2xl border border-white/[0.06] bg-white/[0.02] overflow-hidden">
           <div className="px-5 py-3 border-b border-white/[0.04] flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <ComputerDesktopIcon className="h-4 w-4 text-violet-300" />
+              <ComputerDesktopIcon className="h-4 w-4 text-orange-300" />
               <p className="text-[11px] font-semibold text-zinc-300 uppercase tracking-[0.15em]">Release distribution</p>
             </div>
             <Link href="/download" className="text-[11px] text-zinc-400 hover:text-white">Open download →</Link>
@@ -201,7 +201,7 @@ export default function TrustCenterPage() {
         <div className="mb-10 rounded-2xl border border-white/[0.06] bg-white/[0.02] overflow-hidden">
           <div className="px-5 py-3 border-b border-white/[0.04] flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <ServerStackIcon className="h-4 w-4 text-violet-300" />
+              <ServerStackIcon className="h-4 w-4 text-orange-300" />
               <p className="text-[11px] font-semibold text-zinc-300 uppercase tracking-[0.15em]">Connector permissions</p>
             </div>
             <Link href="/dashboard/integrations" className="text-[11px] text-zinc-400 hover:text-white">Open integrations →</Link>
@@ -296,7 +296,7 @@ export default function TrustCenterPage() {
           <div className="grid md:grid-cols-2 gap-px bg-white/[0.04]">
             <DataAssertionGroup title="What we collect"     items={dataHandling.whatWeCollect}     accent="emerald" />
             <DataAssertionGroup title="What we don't collect" items={dataHandling.whatWeDoNotCollect} accent="zinc"    />
-            <DataAssertionGroup title="What we store"        items={dataHandling.whatWeStore}        accent="violet"  />
+            <DataAssertionGroup title="What we store"        items={dataHandling.whatWeStore}        accent="orange"  />
             <DataAssertionGroup title="What is transient"    items={dataHandling.whatIsTransient}    accent="cyan"    />
             <DataAssertionGroup title="What can go to AI"    items={dataHandling.whatCanGoToAI}      accent="emerald" />
             <DataAssertionGroup title="What never goes to AI" items={dataHandling.whatNeverGoesToAI} accent="red"     />
@@ -458,11 +458,11 @@ function DataAssertionGroup({
 }: {
   title: string;
   items: { id: string; statement: string; confidence: "enforced" | "attested" | "aspirational" }[];
-  accent: "emerald" | "violet" | "cyan" | "amber" | "red" | "zinc";
+  accent: "emerald" | "orange" | "cyan" | "amber" | "red" | "zinc";
 }) {
   const tone =
     accent === "emerald" ? "text-emerald-300" :
-    accent === "violet"  ? "text-violet-300" :
+    accent === "orange"  ? "text-orange-300" :
     accent === "cyan"    ? "text-cyan-300" :
     accent === "amber"   ? "text-zinc-300" :
     accent === "red"     ? "text-red-300" :

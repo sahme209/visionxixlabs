@@ -33,7 +33,7 @@ export default function ApprovalQueuePage() {
   return (
     <div className="relative">
       <div className="mb-6">
-        <Link href="/admin/growth" className="text-[11px] text-violet-300 hover:text-violet-200 inline-flex items-center gap-1">
+        <Link href="/admin/growth" className="text-[11px] text-orange-300 hover:text-orange-200 inline-flex items-center gap-1">
           <ArrowRightIcon className="h-3 w-3 rotate-180" />
           Back to Growth
         </Link>

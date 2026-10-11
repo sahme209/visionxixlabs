@@ -24,7 +24,7 @@ export function ClientCollaborationSection({
       <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-6 md:p-8">
         <div className="flex items-start gap-4">
           <span
-            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-violet-500/10 text-violet-400"
+            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-orange-500/10 text-orange-400"
             aria-hidden
           >
             <UserGroupIcon className="h-5 w-5" />
@@ -32,7 +32,7 @@ export function ClientCollaborationSection({
           <ul className="grid gap-3 sm:grid-cols-2 text-zinc-300">
             {items.map((item) => (
               <li key={item} className="flex items-start gap-2">
-                <span className="text-indigo-500 mt-0.5 shrink-0">•</span>
+                <span className="text-zinc-500 mt-0.5 shrink-0">•</span>
                 <span>{item}</span>
               </li>
             ))}

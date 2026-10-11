@@ -77,7 +77,7 @@ export default function TeamPage() {
   return (
     <div className="min-h-screen bg-[#09090b] text-white relative overflow-hidden">
       <div aria-hidden className="pointer-events-none absolute inset-0">
-        <div className="ambient-drift absolute top-0 left-1/2 -translate-x-1/2 w-[820px] h-[480px] rounded-full bg-brand-violet/[0.07] blur-[150px]" />
+        <div className="ambient-drift absolute top-0 left-1/2 -translate-x-1/2 w-[820px] h-[480px] rounded-full bg-brand-orange/[0.07] blur-[150px]" />
         <div className="ambient-drift absolute top-[40%] right-[5%] w-[460px] h-[400px] rounded-full bg-brand-coral/[0.06] blur-[140px]" style={{ animationDelay: "-9s" }} />
         <div className="ambient-drift absolute bottom-0 left-[5%] w-[380px] h-[300px] rounded-full bg-cyan-500/[0.04] blur-[120px]" style={{ animationDelay: "-15s" }} />
       </div>
@@ -97,7 +97,7 @@ export default function TeamPage() {
           A small team{" "}
           <span className="relative inline-block">
             shipping carefully.
-            <span aria-hidden className="absolute left-0 -bottom-1 h-[2px] w-full rounded-full bg-gradient-to-r from-brand-coral via-fuchsia-400/70 to-transparent" />
+            <span aria-hidden className="absolute left-0 -bottom-1 h-[2px] w-full rounded-full bg-gradient-to-r from-brand-coral via-amber-400/70 to-transparent" />
           </span>
         </h1>
 
@@ -113,7 +113,7 @@ export default function TeamPage() {
             return (
               <article key={p.num} id={`team-${p.num}`} className="surface-glass rounded-2xl p-7 sm:p-9 hover:border-brand-coral/20 transition-all scroll-mt-24">
                 <header className="flex items-center gap-4 mb-5">
-                  <div className="shrink-0 w-10 h-10 rounded-lg border border-brand-coral/25 bg-gradient-to-br from-brand-coral/10 to-brand-violet/10 flex items-center justify-center">
+                  <div className="shrink-0 w-10 h-10 rounded-lg border border-brand-coral/25 bg-gradient-to-br from-brand-coral/10 to-brand-orange/10 flex items-center justify-center">
                     <Icon className="h-4.5 w-4.5 text-brand-coral" style={{ height: "1.125rem", width: "1.125rem" }} />
                   </div>
                   <div>

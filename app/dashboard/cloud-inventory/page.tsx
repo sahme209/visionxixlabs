@@ -83,7 +83,7 @@ export default function CloudInventoryPage() {
           className="absolute inset-0 -z-10 opacity-90 pointer-events-none"
           style={{
             background:
-              "radial-gradient(900px 320px at 12% 0%, rgba(124,58,237,0.10), transparent 60%), radial-gradient(700px 260px at 88% 110%, rgba(16,185,129,0.06), transparent 60%)",
+              "radial-gradient(900px 320px at 12% 0%, rgba(245, 78, 0,0.10), transparent 60%), radial-gradient(700px 260px at 88% 110%, rgba(16,185,129,0.06), transparent 60%)",
           }}
           aria-hidden
         />
@@ -91,8 +91,8 @@ export default function CloudInventoryPage() {
 
         <div className="flex items-center gap-2 mb-3 flex-wrap">
           <span className="inline-flex items-center gap-2 rounded-full border border-white/[0.06] bg-white/[0.02] px-2.5 py-1">
-            <ServerStackIcon className="h-3.5 w-3.5 text-violet-300" />
-            <span className="text-[10px] font-semibold uppercase tracking-widest text-violet-300">
+            <ServerStackIcon className="h-3.5 w-3.5 text-orange-300" />
+            <span className="text-[10px] font-semibold uppercase tracking-widest text-orange-300">
               Cloud Inventory
             </span>
           </span>
@@ -112,7 +112,7 @@ export default function CloudInventoryPage() {
 
         {report && (
           <div className="mt-5 grid grid-cols-2 md:grid-cols-4 gap-3">
-            <Stat label="Total resources" value={report.totalResources.toLocaleString()} tone="violet" icon={ServerStackIcon} />
+            <Stat label="Total resources" value={report.totalResources.toLocaleString()} tone="orange" icon={ServerStackIcon} />
             <Stat label="Public exposure" value={report.totalPublicExposure.toLocaleString()} tone={report.totalPublicExposure > 0 ? "rose" : "emerald"} icon={ShieldExclamationIcon} />
             <Stat label="Unencrypted" value={report.totalUnencrypted.toLocaleString()} tone={report.totalUnencrypted > 0 ? "amber" : "emerald"} icon={LockOpenIcon} />
             <Stat label="Identity weakness" value={report.totalIdentityWeakness.toLocaleString()} tone={report.totalIdentityWeakness > 0 ? "amber" : "emerald"} icon={KeyIcon} />
@@ -229,14 +229,14 @@ function Stat({
 }: {
   label: string;
   value: string;
-  tone: "emerald" | "amber" | "rose" | "violet";
+  tone: "emerald" | "amber" | "rose" | "orange";
   icon?: typeof ServerStackIcon;
 }) {
   const cls = {
     emerald: "border-emerald-500/[0.18] bg-emerald-500/[0.03] text-emerald-200",
     amber: "border-white/[0.18] bg-white/[0.03] text-zinc-200",
     rose: "border-rose-500/[0.18] bg-rose-500/[0.03] text-rose-200",
-    violet: "border-white/[0.06] bg-white/[0.015] text-white",
+    orange: "border-white/[0.06] bg-white/[0.015] text-white",
   }[tone];
   return (
     <div className={`rounded-xl border ${cls} p-3`}>
@@ -253,7 +253,7 @@ function FamilyTile({ label, value, icon: Icon }: { label: string; value: number
   return (
     <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-4 flex items-center gap-3">
       <div className="rounded-lg bg-white/[0.04] p-2">
-        <Icon className="h-5 w-5 text-violet-300" />
+        <Icon className="h-5 w-5 text-orange-300" />
       </div>
       <div>
         <p className="text-[10px] font-mono text-zinc-500 uppercase tracking-wider">{label}</p>

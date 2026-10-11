@@ -41,7 +41,7 @@ export function MobileHome() {
           aria-hidden
           style={{
             background:
-              "radial-gradient(circle at 50% 0%, rgba(139,92,246,0.20), transparent 68%)",
+              "radial-gradient(circle at 50% 0%, rgba(255, 120, 61,0.20), transparent 68%)",
           }}
         />
         <div className="relative mx-auto max-w-md">
@@ -160,7 +160,7 @@ export function MobileHome() {
       </section>
 
       <section className="px-4 pb-14">
-        <div className="mx-auto max-w-md rounded-2xl border border-brand-coral/20 bg-gradient-to-br from-brand-coral/[0.09] to-brand-violet/[0.08] p-6">
+        <div className="mx-auto max-w-md rounded-2xl border border-brand-coral/20 bg-gradient-to-br from-brand-coral/[0.09] to-brand-orange/[0.08] p-6">
           <p className="text-[11px] font-mono uppercase tracking-[0.18em] text-rose-200">
             Explore safely
           </p>

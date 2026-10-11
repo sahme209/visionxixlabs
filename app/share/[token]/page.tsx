@@ -94,7 +94,7 @@ export default async function SharedEngineerReportPage({
           <span className="text-zinc-500">v{entry.engineVersion}</span>
         </div>
         <h1 className="text-[26px] sm:text-[30px] font-semibold text-white tracking-[-0.02em] mb-2 inline-flex items-baseline gap-3">
-          <SparklesIcon className="h-5 w-5 text-violet-300 shrink-0 self-center" />
+          <SparklesIcon className="h-5 w-5 text-orange-300 shrink-0 self-center" />
           AGI rationale
         </h1>
         <p className="text-[12px] font-mono text-zinc-500">target · {targetKind}:{targetId}</p>

@@ -216,7 +216,7 @@ export function MigrationStageForm() {
         <button
           type="submit"
           disabled={submitting}
-          className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-violet-500/20 text-violet-100 border border-violet-500/40 hover:bg-violet-500/30 transition disabled:opacity-50 text-[13px] font-medium"
+          className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-orange-500/20 text-orange-100 border border-orange-500/40 hover:bg-orange-500/30 transition disabled:opacity-50 text-[13px] font-medium"
         >
           {submitting ? (
             <>
@@ -251,7 +251,7 @@ export function MigrationStageForm() {
         :global(.form-input:focus),
         :global(.form-select:focus),
         :global(.form-textarea:focus) {
-          border-color: rgba(139, 92, 246, 0.5);
+          border-color: rgba(255, 120, 61, 0.5);
         }
         :global(.form-input:disabled),
         :global(.form-select:disabled),
@@ -289,7 +289,7 @@ function ToggleRow({
         checked={checked}
         onChange={(e) => onChange(e.target.checked)}
         disabled={disabled}
-        className="mt-0.5 h-3.5 w-3.5 rounded border-white/[0.12] bg-white/[0.04] text-violet-500 focus:ring-violet-500/30"
+        className="mt-0.5 h-3.5 w-3.5 rounded border-white/[0.12] bg-white/[0.04] text-orange-500 focus:ring-orange-500/30"
       />
       <span className="text-[12px] text-zinc-300 leading-snug">{label}</span>
     </label>

@@ -127,7 +127,7 @@ export default function CharterPage() {
           className="absolute inset-0 -z-10 opacity-90 pointer-events-none"
           style={{
             background:
-              "radial-gradient(900px 320px at 12% 0%, rgba(168,85,247,0.10), transparent 60%), radial-gradient(700px 260px at 88% 110%, rgba(16,185,129,0.06), transparent 60%)",
+              "radial-gradient(900px 320px at 12% 0%, rgba(251, 106, 43,0.10), transparent 60%), radial-gradient(700px 260px at 88% 110%, rgba(16,185,129,0.06), transparent 60%)",
           }}
           aria-hidden
         />
@@ -135,8 +135,8 @@ export default function CharterPage() {
 
         <div className="flex items-center gap-2 mb-3 flex-wrap">
           <span className="inline-flex items-center gap-2 rounded-full border border-white/[0.06] bg-white/[0.02] px-2.5 py-1">
-            <CpuChipIcon className="h-3.5 w-3.5 text-violet-300" />
-            <span className="text-[10px] font-semibold uppercase tracking-widest text-violet-300">
+            <CpuChipIcon className="h-3.5 w-3.5 text-orange-300" />
+            <span className="text-[10px] font-semibold uppercase tracking-widest text-orange-300">
               Autonomy charter
             </span>
           </span>
@@ -160,7 +160,7 @@ export default function CharterPage() {
       {!loading && (
         <>
           <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 mb-6">
-            <p className="text-[11px] font-mono text-violet-300/80 uppercase tracking-wider mb-3">Autonomy mode</p>
+            <p className="text-[11px] font-mono text-orange-300/80 uppercase tracking-wider mb-3">Autonomy mode</p>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               {MODES.map((m) => (
                 <button
@@ -168,13 +168,13 @@ export default function CharterPage() {
                   onClick={() => setMode(m.mode)}
                   className={`text-left rounded-lg border p-3 transition ${
                     mode === m.mode
-                      ? `${m.tone} ring-2 ring-violet-400/40`
+                      ? `${m.tone} ring-2 ring-orange-400/40`
                       : "border-white/[0.06] bg-black/20 hover:border-white/[0.18]"
                   }`}
                 >
                   <div className="flex items-center justify-between gap-2 mb-1">
                     <p className="text-[13px] font-semibold text-white capitalize">{m.mode}</p>
-                    {mode === m.mode && <CheckIcon className="h-4 w-4 text-violet-300" />}
+                    {mode === m.mode && <CheckIcon className="h-4 w-4 text-orange-300" />}
                   </div>
                   <p className="text-[11px] text-zinc-400 leading-snug">{m.tagline}</p>
                 </button>
@@ -195,7 +195,7 @@ export default function CharterPage() {
                 value={perCycle}
                 onChange={(e) => setPerCycle(e.target.value)}
                 placeholder="defaults to mode preset"
-                className="w-full rounded-lg border border-white/[0.08] bg-black/30 px-3 py-2 text-[13px] text-white focus:border-violet-400/60 focus:outline-none"
+                className="w-full rounded-lg border border-white/[0.08] bg-black/30 px-3 py-2 text-[13px] text-white focus:border-orange-400/60 focus:outline-none"
               />
             </div>
             <div>
@@ -208,7 +208,7 @@ export default function CharterPage() {
                 value={slackWebhook}
                 onChange={(e) => setSlackWebhook(e.target.value)}
                 placeholder="https://hooks.slack.com/..."
-                className="w-full rounded-lg border border-white/[0.08] bg-black/30 px-3 py-2 text-[13px] font-mono text-white focus:border-violet-400/60 focus:outline-none"
+                className="w-full rounded-lg border border-white/[0.08] bg-black/30 px-3 py-2 text-[13px] font-mono text-white focus:border-orange-400/60 focus:outline-none"
               />
             </div>
             <div className="md:col-span-2">
@@ -221,7 +221,7 @@ export default function CharterPage() {
                 onChange={(e) => setRationale(e.target.value)}
                 rows={3}
                 placeholder="Why are you setting this mode? (1000 chars max)"
-                className="w-full rounded-lg border border-white/[0.08] bg-black/30 px-3 py-2 text-[13px] text-white focus:border-violet-400/60 focus:outline-none"
+                className="w-full rounded-lg border border-white/[0.08] bg-black/30 px-3 py-2 text-[13px] text-white focus:border-orange-400/60 focus:outline-none"
               />
             </div>
           </div>
@@ -230,7 +230,7 @@ export default function CharterPage() {
             <button
               onClick={save}
               disabled={busy}
-              className="inline-flex items-center gap-1.5 text-[12px] font-medium px-3 py-1.5 rounded-lg bg-violet-500/15 text-white border border-white/[0.12] hover:bg-violet-500/20 disabled:opacity-50"
+              className="inline-flex items-center gap-1.5 text-[12px] font-medium px-3 py-1.5 rounded-lg bg-orange-500/15 text-white border border-white/[0.12] hover:bg-orange-500/20 disabled:opacity-50"
             >
               <CheckIcon className="h-3.5 w-3.5" />
               {busy ? "Saving…" : hasOverride ? "Update charter" : "Save charter"}

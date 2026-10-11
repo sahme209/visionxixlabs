@@ -87,8 +87,8 @@ export default function AgentProposalsPage() {
       <div className="relative mb-8 rounded-3xl border border-white/[0.05] bg-gradient-to-br from-white/[0.025] via-white/[0.015] to-transparent p-6 md:p-8 overflow-hidden">
         <div className="flex items-center gap-2 mb-3 flex-wrap">
           <span className="inline-flex items-center gap-2 rounded-full border border-white/[0.06] bg-white/[0.02] px-2.5 py-1">
-            <SparklesIcon className="h-3.5 w-3.5 text-indigo-300" />
-            <span className="text-[10px] font-semibold uppercase tracking-widest text-indigo-300">
+            <SparklesIcon className="h-3.5 w-3.5 text-zinc-300" />
+            <span className="text-[10px] font-semibold uppercase tracking-widest text-zinc-300">
               Method Proposals · approval_only_no_execution
             </span>
           </span>
@@ -117,7 +117,7 @@ export default function AgentProposalsPage() {
               onClick={() => setFilter(s)}
               className={`text-[10px] font-mono px-2 py-0.5 rounded-full border transition ${
                 filter === s
-                  ? "bg-indigo-500/15 text-indigo-200 border-indigo-500/30"
+                  ? "bg-zinc-500/15 text-zinc-200 border-zinc-500/30"
                   : "bg-white/[0.02] text-zinc-400 border-white/[0.06] hover:text-white"
               }`}
             >
@@ -147,7 +147,7 @@ export default function AgentProposalsPage() {
                     {p.status}
                   </span>
                   <span className="text-[10px] font-mono text-zinc-500 uppercase tracking-wider">{p.target}</span>
-                  <span className="text-[10px] font-mono text-indigo-300">{p.authorAgent}</span>
+                  <span className="text-[10px] font-mono text-zinc-300">{p.authorAgent}</span>
                   <span className="text-[10px] font-mono text-zinc-400">confidence {Math.round(p.confidence * 100)}%</span>
                   <span className="text-[10px] font-mono text-zinc-500 ml-auto">{new Date(p.createdAt).toLocaleString()}</span>
                 </div>
@@ -170,7 +170,7 @@ export default function AgentProposalsPage() {
                       value={reason[p.id] ?? ""}
                       onChange={(e) => setReason((m) => ({ ...m, [p.id]: e.target.value }))}
                       placeholder="optional decision reason"
-                      className="flex-1 min-w-[200px] rounded-md border border-white/[0.08] bg-black/30 px-2 py-1 text-[11px] font-mono text-zinc-200 focus:border-indigo-400/60 focus:outline-none"
+                      className="flex-1 min-w-[200px] rounded-md border border-white/[0.08] bg-black/30 px-2 py-1 text-[11px] font-mono text-zinc-200 focus:border-zinc-400/60 focus:outline-none"
                     />
                     <button
                       onClick={() => decide(p.id, "rejected")}

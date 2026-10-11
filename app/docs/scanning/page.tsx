@@ -42,7 +42,7 @@ export default function ScanningPage() {
           <li>Customer data of any kind</li>
         </ul>
         <p>
-          See <Link href="/docs/security-model" className="text-violet-300 hover:text-violet-200">security model</Link> for the full data-storage table.
+          See <Link href="/docs/security-model" className="text-orange-300 hover:text-orange-200">security model</Link> for the full data-storage table.
         </p>
       </DocSection>
 
@@ -99,7 +99,7 @@ export default function ScanningPage() {
 
       <DocSection id="troubleshooting" title="Common scan errors">
         <p>
-          See the dedicated <Link href="/docs/troubleshooting#scanning" className="text-violet-300 hover:text-violet-200">scanning troubleshooting section</Link> for: scan returns 0 resources, partial scan, stuck at queued, scan takes &gt; 5 minutes.
+          See the dedicated <Link href="/docs/troubleshooting#scanning" className="text-orange-300 hover:text-orange-200">scanning troubleshooting section</Link> for: scan returns 0 resources, partial scan, stuck at queued, scan takes &gt; 5 minutes.
         </p>
       </DocSection>
 

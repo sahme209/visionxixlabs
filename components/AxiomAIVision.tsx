@@ -42,9 +42,9 @@ export function AxiomAIVision() {
   ];
 
   return (
-    <div className="rounded-2xl border-2 border-violet-500/20 bg-gradient-to-br from-violet-950/20 to-fuchsia-950/10 p-6">
+    <div className="rounded-2xl border-2 border-orange-500/20 bg-gradient-to-br from-orange-950/20 to-amber-950/10 p-6">
       <div className="flex items-center gap-2 mb-4">
-        <BoltIcon className="h-5 w-5 text-violet-400" />
+        <BoltIcon className="h-5 w-5 text-orange-400" />
         <h3 className="text-base font-bold text-white">
           AI beyond basic — where we&apos;re headed
         </h3>
@@ -58,13 +58,13 @@ export function AxiomAIVision() {
             key={item.title}
             className="flex gap-3 p-3 rounded-xl bg-white/[0.02] border border-white/[0.06]"
           >
-            <item.icon className="h-5 w-5 text-violet-400 shrink-0 mt-0.5" />
+            <item.icon className="h-5 w-5 text-orange-400 shrink-0 mt-0.5" />
             <div>
               <div className="flex items-center gap-2 flex-wrap">
                 <h4 className="text-sm font-semibold text-white">
                   {item.title}
                 </h4>
-                <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-violet-500/10 text-violet-300">
+                <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-orange-500/10 text-orange-300">
                   {item.status}
                 </span>
               </div>
@@ -77,7 +77,7 @@ export function AxiomAIVision() {
       </div>
       <Link
         href="/contact?subject=Axiom+AI+Autopilot+%26+API+Access"
-        className="inline-flex items-center gap-2 rounded-xl bg-violet-600 hover:bg-violet-700 text-white px-4 py-2 text-sm font-semibold transition-colors"
+        className="inline-flex items-center gap-2 rounded-xl bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 text-sm font-semibold transition-colors"
       >
         <SparklesIcon className="h-4 w-4" />
         Get early access to advanced AI features

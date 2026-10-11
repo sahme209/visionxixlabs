@@ -87,14 +87,14 @@ const KIND_TONE: Record<string, string> = {
 };
 
 const DECISION_CLASS: Record<Decision, string> = {
-  pending:    "bg-violet-500/15 text-violet-300 border-white/[0.10]",
+  pending:    "bg-orange-500/15 text-orange-300 border-white/[0.10]",
   acted:      "bg-emerald-500/15 text-emerald-300 border-emerald-500/25",
   dismissed:  "bg-zinc-700/40 text-zinc-300 border-zinc-700/40",
   unknown:    "bg-zinc-700/40 text-zinc-400 border-zinc-700/40",
 };
 
 const OUTCOME_CLASS: Record<string, string> = {
-  ai_generated:   "bg-violet-500/15 text-violet-300 border-white/[0.10]",
+  ai_generated:   "bg-orange-500/15 text-orange-300 border-white/[0.10]",
   fallback_rules: "bg-white/15 text-zinc-300 border-white/25",
   error:          "bg-rose-500/15 text-rose-300 border-rose-500/25",
   unknown:        "bg-zinc-700/40 text-zinc-400 border-zinc-700/40",
@@ -182,7 +182,7 @@ export default function AgiSuggestionsPage() {
           type="button"
           onClick={generate}
           disabled={genBusy}
-          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md border border-violet-500/40 bg-violet-500/[0.14] text-[12px] font-semibold text-violet-100 hover:bg-violet-500/[0.22] disabled:opacity-50 disabled:cursor-wait transition-colors"
+          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md border border-orange-500/40 bg-orange-500/[0.14] text-[12px] font-semibold text-orange-100 hover:bg-orange-500/[0.22] disabled:opacity-50 disabled:cursor-wait transition-colors"
         >
           <SparklesIcon className={`h-4 w-4 ${genBusy ? "animate-spin" : ""}`} />
           {genBusy ? "Generating…" : "Generate suggestions"}
@@ -197,10 +197,10 @@ export default function AgiSuggestionsPage() {
 
       {data && (
         <div className="mb-5 grid grid-cols-2 md:grid-cols-4 gap-3">
-          <Stat icon={SparklesIcon} label="Pending" value={String(data.summary.pending)} tone={data.summary.pending > 0 ? "violet" : "zinc"} />
+          <Stat icon={SparklesIcon} label="Pending" value={String(data.summary.pending)} tone={data.summary.pending > 0 ? "orange" : "zinc"} />
           <Stat icon={CheckCircleIcon} label="Acted" value={String(data.summary.acted)} tone={data.summary.acted > 0 ? "emerald" : "zinc"} />
           <Stat icon={XCircleIcon} label="Dismissed" value={String(data.summary.dismissed)} tone={data.summary.dismissed > 0 ? "zinc" : "zinc"} />
-          <Stat icon={SparklesIcon} label="AI generated" value={`${data.summary.aiGenerated}/${data.summary.total}`} tone={data.summary.aiGenerated > 0 ? "violet" : "zinc"} />
+          <Stat icon={SparklesIcon} label="AI generated" value={`${data.summary.aiGenerated}/${data.summary.total}`} tone={data.summary.aiGenerated > 0 ? "orange" : "zinc"} />
         </div>
       )}
 
@@ -336,7 +336,7 @@ function SuggestionCard({ suggestion, onChanged }: { suggestion: Suggestion; onC
             onChange={(e) => setNote(e.target.value)}
             placeholder="optional note"
             disabled={busy !== null}
-            className="flex-1 min-w-[180px] rounded-md border border-white/[0.08] bg-black/30 px-2 py-1 text-[11px] text-zinc-100 placeholder:text-zinc-600 focus:border-violet-500/40 focus:outline-none disabled:opacity-50"
+            className="flex-1 min-w-[180px] rounded-md border border-white/[0.08] bg-black/30 px-2 py-1 text-[11px] text-zinc-100 placeholder:text-zinc-600 focus:border-orange-500/40 focus:outline-none disabled:opacity-50"
           />
           <button type="button" onClick={() => decide("act")} disabled={busy !== null}
             className="px-2 py-1 rounded border border-emerald-500/30 bg-emerald-500/[0.08] text-emerald-200 hover:bg-emerald-500/[0.16] disabled:opacity-50 disabled:cursor-wait">
@@ -360,7 +360,7 @@ function FilterPill({ label, active, onClick }: { label: string; active: boolean
       onClick={onClick}
       className={`px-2.5 py-1 rounded-md border text-[11.5px] font-mono transition-colors ${
         active
-          ? "border-violet-500/40 bg-violet-500/[0.14] text-violet-100"
+          ? "border-orange-500/40 bg-orange-500/[0.14] text-orange-100"
           : "border-white/[0.08] bg-white/[0.02] text-zinc-300 hover:bg-white/[0.06]"
       }`}
     >
@@ -369,9 +369,9 @@ function FilterPill({ label, active, onClick }: { label: string; active: boolean
   );
 }
 
-function Stat({ icon: Icon, label, value, tone }: { icon: typeof SparklesIcon; label: string; value: string; tone: "violet" | "emerald" | "amber" | "rose" | "zinc" }) {
+function Stat({ icon: Icon, label, value, tone }: { icon: typeof SparklesIcon; label: string; value: string; tone: "orange" | "emerald" | "amber" | "rose" | "zinc" }) {
   const cls = {
-    violet:  "border-white/[0.06] bg-white/[0.015] text-white",
+    orange:  "border-white/[0.06] bg-white/[0.015] text-white",
     emerald: "border-emerald-500/[0.18] bg-emerald-500/[0.03] text-emerald-200",
     amber:   "border-white/[0.18] bg-white/[0.03] text-zinc-200",
     rose:    "border-rose-500/[0.18] bg-rose-500/[0.03] text-rose-200",

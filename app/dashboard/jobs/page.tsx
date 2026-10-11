@@ -233,7 +233,7 @@ export default function JobsPage() {
                 onClick={() => setFilter(f.id)}
                 className={`inline-flex items-center px-3.5 py-1.5 rounded-full text-xs font-medium transition-all border ${
                   isActive
-                    ? "bg-violet-500/15 border-white/[0.12] text-violet-300 shadow-[0_0_20px_rgba(139,92,246,0.15)]"
+                    ? "bg-orange-500/15 border-white/[0.12] text-orange-300 shadow-[0_0_20px_rgba(255, 120, 61,0.15)]"
                     : "bg-white/[0.02] border-white/[0.06] text-zinc-400 hover:text-white hover:border-white/[0.12]"
                 }`}
               >
@@ -355,7 +355,7 @@ function JobRow({ job }: { job: AgentJob }) {
                 display.semantic === "error" ? "bg-red-500/60" :
                 display.semantic === "warning" ? "bg-white/60" :
                 display.semantic === "success" ? "bg-emerald-500" :
-                "bg-gradient-to-r from-violet-500 to-fuchsia-500"
+                "bg-gradient-to-r from-orange-500 to-amber-500"
               }`}
               style={{ width: `${Math.round(job.progress * 100)}%` }}
             />
@@ -382,7 +382,7 @@ function JobRow({ job }: { job: AgentJob }) {
         {/* Quick actions */}
         <div className="flex items-center gap-2 shrink-0">
           {job.relatedWorkflowId && (
-            <Link href="/dashboard/workflows" className="text-[11px] text-zinc-500 hover:text-violet-300 transition-colors font-semibold">
+            <Link href="/dashboard/workflows" className="text-[11px] text-zinc-500 hover:text-orange-300 transition-colors font-semibold">
               Workflow
             </Link>
           )}

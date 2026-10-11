@@ -105,9 +105,9 @@ const EVENT_CONFIG: Record<
   },
   "plan.generated": {
     icon: DocumentCheckIcon,
-    iconClass: "text-violet-400",
-    bgClass: "bg-violet-500/10",
-    borderClass: "border-violet-500/20",
+    iconClass: "text-orange-400",
+    bgClass: "bg-orange-500/10",
+    borderClass: "border-orange-500/20",
   },
   "plan.approved": {
     icon: CheckCircleIcon,
@@ -141,9 +141,9 @@ const EVENT_CONFIG: Record<
   },
   "agent.reasoning": {
     icon: CpuChipIcon,
-    iconClass: "text-violet-400",
-    bgClass: "bg-violet-500/10",
-    borderClass: "border-violet-500/20",
+    iconClass: "text-orange-400",
+    bgClass: "bg-orange-500/10",
+    borderClass: "border-orange-500/20",
   },
   "approval.required": {
     icon: LockClosedIcon,
@@ -166,9 +166,9 @@ const EVENT_CONFIG: Record<
   // ReleaseOps event configs
   "release.assessed": {
     icon: DocumentCheckIcon,
-    iconClass: "text-violet-400",
-    bgClass: "bg-violet-500/10",
-    borderClass: "border-violet-500/20",
+    iconClass: "text-orange-400",
+    bgClass: "bg-orange-500/10",
+    borderClass: "border-orange-500/20",
   },
   "release.approved": {
     icon: CheckCircleIcon,
@@ -238,9 +238,9 @@ const EVENT_CONFIG: Record<
   },
   "release.terraform_plan": {
     icon: CodeBracketIcon,
-    iconClass: "text-violet-400",
-    bgClass: "bg-violet-500/10",
-    borderClass: "border-violet-500/20",
+    iconClass: "text-orange-400",
+    bgClass: "bg-orange-500/10",
+    borderClass: "border-orange-500/20",
   },
   "integration.executed": {
     icon: CheckCircleIcon,

@@ -3,12 +3,24 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import Stripe from "stripe";
+import { isSelfServiceBillingEnabled } from "@/lib/billing/publicPlanCatalog";
 
 /**
  * Phase 6: Stripe checkout session (optional).
  * If STRIPE_SECRET_KEY missing, return friendly error + "Contact Sales" CTA.
  */
 export async function POST(req: NextRequest) {
+  if (!isSelfServiceBillingEnabled()) {
+    return NextResponse.json(
+      {
+        error: "Checkout unavailable",
+        message: "Self-service billing has not been activated.",
+        cta: "plans",
+      },
+      { status: 503 },
+    );
+  }
+
   const secret = process.env.STRIPE_SECRET_KEY;
   if (!secret) {
     return NextResponse.json(

@@ -46,7 +46,7 @@ export default function StartHereReleaseOpsPage() {
         <ol className="space-y-4">
           <Step
             num={1}
-            icon={<BoltIcon className="h-5 w-5 text-violet-300" />}
+            icon={<BoltIcon className="h-5 w-5 text-orange-300" />}
             title="Install the Axiom GitHub App"
             body="One click. The App's org-wide webhook delivery means you don't paste a URL anywhere — Axiom starts receiving push/PR/release/workflow events for every repo in scope the moment install completes."
             href="/dashboard/github-app"
@@ -54,7 +54,7 @@ export default function StartHereReleaseOpsPage() {
           />
           <Step
             num={2}
-            icon={<CpuChipIcon className="h-5 w-5 text-violet-300" />}
+            icon={<CpuChipIcon className="h-5 w-5 text-orange-300" />}
             title="Register your first application"
             body="Applications are the governance unit — releases attach to an application, not a repo. Slug + name + owning team is all you need. Idempotent on (org, slug) so re-runs are safe."
             href="/dashboard/applications"
@@ -62,7 +62,7 @@ export default function StartHereReleaseOpsPage() {
           />
           <Step
             num={3}
-            icon={<RocketLaunchIcon className="h-5 w-5 text-violet-300" />}
+            icon={<RocketLaunchIcon className="h-5 w-5 text-orange-300" />}
             title="Push to any tracked repo (auto-onboard)"
             body="After install, the first push/PR/release webhook for a repo auto-creates the Repository row in your tenant. No manual + Register repository click needed. You can also pre-register explicitly via the Repositories page if you prefer."
             href="/dashboard/repositories"
@@ -70,7 +70,7 @@ export default function StartHereReleaseOpsPage() {
           />
           <Step
             num={4}
-            icon={<CheckCircleIcon className="h-5 w-5 text-violet-300" />}
+            icon={<CheckCircleIcon className="h-5 w-5 text-orange-300" />}
             title="Cut your first release"
             body="Pin a tag + commit + planned-window to an application. The release starts in draft; you advance the lifecycle (ready → deploying → deployed) via the lifecycle transitions API. Readiness scoring, evidence packs, and the audit log all hang off the release."
             href="/dashboard/releases"
@@ -80,8 +80,8 @@ export default function StartHereReleaseOpsPage() {
       </section>
 
       {/* The cause → effect loop */}
-      <section className="mb-8 rounded-2xl border border-white/[0.06] bg-violet-500/[0.025] p-5">
-        <h2 className="text-[14px] font-semibold text-violet-100 mb-2">The cause → effect loop</h2>
+      <section className="mb-8 rounded-2xl border border-white/[0.06] bg-orange-500/[0.025] p-5">
+        <h2 className="text-[14px] font-semibold text-orange-100 mb-2">The cause → effect loop</h2>
         <p className="text-[12.5px] text-zinc-300 mb-4">
           Two surfaces close the post-deploy reconciliation loop:
         </p>
@@ -170,7 +170,7 @@ function Step({ num, icon, title, body, href, cta }: {
 }) {
   return (
     <li className="flex items-start gap-3">
-      <div className="flex-shrink-0 w-7 h-7 rounded-full bg-violet-500/[0.12] border border-white/[0.12] flex items-center justify-center mt-0.5">
+      <div className="flex-shrink-0 w-7 h-7 rounded-full bg-orange-500/[0.12] border border-white/[0.12] flex items-center justify-center mt-0.5">
         <span className="text-[11px] font-mono font-semibold text-white">{num}</span>
       </div>
       <div className="flex-1 min-w-0">

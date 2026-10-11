@@ -109,7 +109,7 @@ export function SectionRail({ items }: { items: readonly SectionRailItem[] }) {
             <span
               className={`shrink-0 rounded-full transition-all duration-300 ${
                 active
-                  ? "w-2.5 h-2.5 bg-brand-coral shadow-[0_0_12px_rgba(244,114,182,0.55)]"
+                  ? "w-2.5 h-2.5 bg-brand-coral shadow-[0_0_12px_rgba(255,120,61,0.55)]"
                   : "w-1.5 h-1.5 bg-zinc-600 group-hover:bg-brand-coral/75"
               }`}
             />

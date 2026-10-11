@@ -48,8 +48,8 @@ const pillars = [
   {
     icon: LinkIcon,
     eyebrow: "Integrations",
-    title: "Real GitHub and AWS, not another status page.",
-    copy: "Branches, commits, and pull requests land on github.com for real. An approved AWS deployment runs through your own GitHub Actions workflow via short-lived OIDC credentials — no stored keys — and automatically rolls back if the new deployment never stabilizes.",
+    title: "GitHub, Airflow, and AWS in one governed path.",
+    copy: "Branches, commits, and pull requests land on GitHub for real. Airflow can gate delivery on verified DAG completion, and approved AWS deployments run through your workflow with short-lived OIDC credentials and rollback protection.",
   },
 ];
 
@@ -122,7 +122,7 @@ export default function Home() {
               {pillars.map((pillar) => (
                 <article key={pillar.eyebrow} className="rounded-2xl border border-white/[0.08] bg-white/[0.025] p-6">
                   <pillar.icon className="h-5 w-5 text-zinc-300" />
-                  <p className="mt-4 text-[10px] uppercase tracking-[0.18em] text-violet-300">{pillar.eyebrow}</p>
+                  <p className="mt-4 text-[10px] uppercase tracking-[0.18em] text-orange-300">{pillar.eyebrow}</p>
                   <h3 className="mt-2 text-lg font-medium leading-snug tracking-[-0.02em] text-zinc-100">{pillar.title}</h3>
                   <p className="mt-3 text-sm leading-6 text-zinc-400">{pillar.copy}</p>
                 </article>

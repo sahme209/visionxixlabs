@@ -72,7 +72,7 @@ export default async function LinkedInAdminPage({ searchParams }: PageProps) {
   return (
     <div className="relative">
       <div className="mb-6">
-        <Link href="/admin/growth" className="text-[11px] text-violet-300 hover:text-violet-200 inline-flex items-center gap-1">
+        <Link href="/admin/growth" className="text-[11px] text-orange-300 hover:text-orange-200 inline-flex items-center gap-1">
           <ArrowRightIcon className="h-3 w-3 rotate-180" />
           Back to Growth
         </Link>
@@ -80,8 +80,8 @@ export default async function LinkedInAdminPage({ searchParams }: PageProps) {
 
       <div className="mb-8">
         <div className="flex items-center gap-3 mb-3">
-          <CloudIcon className="h-4 w-4 text-violet-400" />
-          <p className="text-[10px] font-semibold text-violet-400 uppercase tracking-widest">LinkedIn integration</p>
+          <CloudIcon className="h-4 w-4 text-orange-400" />
+          <p className="text-[10px] font-semibold text-orange-400 uppercase tracking-widest">LinkedIn integration</p>
           <span className="text-[9px] font-mono uppercase tracking-wider text-rose-300 bg-rose-500/10 border border-rose-500/30 rounded-full px-2 py-0.5">
             internal-only
           </span>
@@ -105,8 +105,8 @@ export default async function LinkedInAdminPage({ searchParams }: PageProps) {
       {/* 1 · Configuration & connection */}
       <section className="surface-glass rounded-2xl p-5 mb-4">
         <header className="flex items-center gap-2 mb-3">
-          <LinkIcon className="h-4 w-4 text-violet-300" />
-          <p className="text-[10px] font-semibold uppercase tracking-widest text-violet-300">Connection</p>
+          <LinkIcon className="h-4 w-4 text-orange-300" />
+          <p className="text-[10px] font-semibold uppercase tracking-widest text-orange-300">Connection</p>
         </header>
 
         <div className="grid sm:grid-cols-2 gap-3 mb-4">
@@ -128,7 +128,7 @@ export default async function LinkedInAdminPage({ searchParams }: PageProps) {
           {configured ? (
             <a
               href="/api/admin/growth/linkedin/connect"
-              className="inline-flex items-center gap-1.5 text-[12px] font-medium px-3 py-1.5 rounded-lg bg-violet-500/15 text-violet-100 border border-violet-500/30 hover:bg-violet-500/25"
+              className="inline-flex items-center gap-1.5 text-[12px] font-medium px-3 py-1.5 rounded-lg bg-orange-500/15 text-orange-100 border border-orange-500/30 hover:bg-orange-500/25"
             >
               <LinkIcon className="h-3.5 w-3.5" />
               {isConnected ? "Reconnect LinkedIn" : "Connect LinkedIn"}
@@ -236,7 +236,7 @@ LINKEDIN_POSTING_ENABLED=false    # flip to true ONLY when you're ready`}
                     )}
                     {d.scheduledFor && (
                       <>
-                        → posts <span className="text-violet-300 font-mono">{d.scheduledFor.toISOString().slice(0, 16).replace("T", " ")}</span>
+                        → posts <span className="text-orange-300 font-mono">{d.scheduledFor.toISOString().slice(0, 16).replace("T", " ")}</span>
                       </>
                     )}
                   </p>
@@ -342,7 +342,7 @@ function statusChip(s: string): string {
   if (s === "drafted")        return "text-cyan-300 bg-cyan-500/10 border-cyan-500/30";
   if (s === "in_review")      return "text-zinc-300 bg-white/10 border-white/30";
   if (s === "approved")       return "text-emerald-300 bg-emerald-500/10 border-emerald-500/30";
-  if (s === "scheduled")      return "text-violet-300 bg-violet-500/10 border-violet-500/30";
+  if (s === "scheduled")      return "text-orange-300 bg-orange-500/10 border-orange-500/30";
   if (s === "published")      return "text-emerald-200 bg-emerald-700/10 border-emerald-500/30";
   if (s === "rejected")       return "text-rose-300 bg-rose-500/10 border-rose-500/30";
   if (s === "failed")         return "text-rose-200 bg-rose-700/10 border-rose-500/40";

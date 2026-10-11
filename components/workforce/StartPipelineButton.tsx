@@ -41,7 +41,7 @@ export function StartPipelineButton({ pipelineId, label = "Run pipeline" }: Prop
       <button
         onClick={start}
         disabled={state.kind === "starting"}
-        className="inline-flex items-center gap-1.5 text-[12px] font-medium px-3 py-1.5 rounded-lg bg-violet-500/15 text-violet-100 border border-violet-500/40 hover:bg-violet-500/25 transition disabled:opacity-50"
+        className="inline-flex items-center gap-1.5 text-[12px] font-medium px-3 py-1.5 rounded-lg bg-orange-500/15 text-orange-100 border border-orange-500/40 hover:bg-orange-500/25 transition disabled:opacity-50"
       >
         {state.kind === "starting" ? (
           <>

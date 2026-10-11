@@ -34,15 +34,15 @@ export const dynamic = "force-dynamic";
 
 const LOOP_STEPS = [
   { key: "observe",  label: "Observe",  Icon: EyeIcon,        tone: "text-cyan-300"    },
-  { key: "reason",   label: "Reason",   Icon: CpuChipIcon,     tone: "text-violet-300"  },
-  { key: "plan",     label: "Plan",     Icon: BoltIcon,        tone: "text-fuchsia-300" },
+  { key: "reason",   label: "Reason",   Icon: CpuChipIcon,     tone: "text-orange-300"  },
+  { key: "plan",     label: "Plan",     Icon: BoltIcon,        tone: "text-amber-300" },
   { key: "validate", label: "Validate", Icon: CheckCircleIcon, tone: "text-emerald-300" },
   { key: "govern",   label: "Govern",   Icon: ShieldCheckIcon, tone: "text-zinc-300"   },
   { key: "approve",  label: "Approve",  Icon: DocumentCheckIcon, tone: "text-rose-300"  },
   { key: "prepare",  label: "Prepare",  Icon: SignalIcon,      tone: "text-sky-300"     },
   { key: "verify",   label: "Verify",   Icon: CheckCircleIcon, tone: "text-emerald-300" },
   { key: "audit",    label: "Audit",    Icon: ClockIcon,       tone: "text-zinc-300"    },
-  { key: "remember", label: "Remember", Icon: ArrowPathIcon,   tone: "text-violet-300"  },
+  { key: "remember", label: "Remember", Icon: ArrowPathIcon,   tone: "text-orange-300"  },
 ];
 
 function statusTone(status: string): string {
@@ -54,7 +54,7 @@ function statusTone(status: string): string {
     case "blocked":   return "text-rose-300 bg-rose-500/10 border-rose-500/25";
     case "completed": return "text-emerald-300 bg-emerald-500/10 border-emerald-500/25";
     case "failed":    return "text-rose-300 bg-rose-500/10 border-rose-500/25";
-    case "preview":   return "text-violet-300 bg-violet-500/10 border-white/[0.10]";
+    case "preview":   return "text-orange-300 bg-orange-500/10 border-white/[0.10]";
     case "planned":   return "text-zinc-300 bg-zinc-500/10 border-zinc-500/25";
     default:          return "text-zinc-300 bg-zinc-500/10 border-zinc-500/25";
   }
@@ -89,13 +89,13 @@ export default async function AutonomousOpsPage() {
       {/* ── Header ────────────────────────────────────────────────── */}
       <header>
         <div className="flex items-center gap-3 mb-3">
-          <CpuChipIcon className="h-4 w-4 text-violet-300" />
-          <span className="text-[10px] font-mono font-semibold text-violet-300 uppercase tracking-[0.22em]">AGI Operations</span>
+          <CpuChipIcon className="h-4 w-4 text-orange-300" />
+          <span className="text-[10px] font-mono font-semibold text-orange-300 uppercase tracking-[0.22em]">AGI Operations</span>
           <span className="text-[10px] font-mono text-zinc-600">·</span>
           <span className="text-[10px] font-mono text-zinc-500">observe → reason → plan → validate → govern → approve → prepare → verify → audit → remember</span>
         </div>
         <h1 className="text-3xl md:text-4xl font-bold tracking-[-0.04em] mb-2">
-          The <span className="bg-gradient-to-r from-violet-300 via-fuchsia-300 to-cyan-300 bg-clip-text text-transparent">autonomous</span> operations loop.
+          The <span className="bg-gradient-to-r from-orange-300 via-amber-300 to-cyan-300 bg-clip-text text-transparent">autonomous</span> operations loop.
         </h1>
         <p className="text-sm text-zinc-400 max-w-3xl leading-relaxed">
           Axiom moves toward A-to-Z cloud operations through one coordinated loop. Every action is approval-gated and reversible. Preview / planned / blocked surfaces are labelled honestly.
@@ -109,12 +109,12 @@ export default async function AutonomousOpsPage() {
       <section className="rounded-2xl border border-white/[0.07] bg-gradient-to-br from-[#0d0d12] via-[#0a0a0f] to-[#08080c] p-6">
         <div className="flex flex-wrap items-start justify-between gap-6 mb-5">
           <div>
-            <p className="text-[10px] font-mono text-violet-300 uppercase tracking-[0.22em] mb-2">// brain</p>
+            <p className="text-[10px] font-mono text-orange-300 uppercase tracking-[0.22em] mb-2">// brain</p>
             <p className="text-xl font-semibold text-white tracking-tight">{brain.summary.headline}</p>
             <p className="text-xs text-zinc-500 mt-2 max-w-2xl">{brain.reasoning.narrative.split("\n")[0]}</p>
           </div>
           <div className="grid grid-cols-3 gap-6 text-[10px] font-mono">
-            <Stat label="confidence"        value={brain.confidence}                tone="text-violet-300" />
+            <Stat label="confidence"        value={brain.confidence}                tone="text-orange-300" />
             <Stat label="validation score"  value={`${brain.summary.validationScore}/100`} tone="text-emerald-300" />
             <Stat label="coverage score"    value={`${brain.summary.coverageScore}/100`}   tone="text-cyan-300" />
           </div>
@@ -133,7 +133,7 @@ export default async function AutonomousOpsPage() {
 
       {/* ── Stats row ─────────────────────────────────────────────── */}
       <section className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3">
-        <Card title="Active autonomous tasks"   value={`${recommendations.length}`} tone="violet"  detail="Candidate actions ready for review." />
+        <Card title="Active autonomous tasks"   value={`${recommendations.length}`} tone="orange"  detail="Candidate actions ready for review." />
         <Card title="Approval-gated"             value={`${brain.nextActions.approvalRequiredFor.length}`} tone="amber"   detail="Operator + approver required." />
         <Card title="Blocked"                    value={`${blocked.length}`}        tone="rose"    detail="Capability / config / policy blocked." />
         <Card title="Coverage gaps"              value={`${gaps.summary.total}`}    tone="cyan"    detail={`${gaps.summary.high + gaps.summary.critical} high+ severity.`} />
@@ -143,7 +143,7 @@ export default async function AutonomousOpsPage() {
       <section className="grid lg:grid-cols-3 gap-5">
         {/* Next actions */}
         <div className="lg:col-span-2 rounded-2xl border border-white/[0.06] bg-white/[0.015] p-6">
-          <SectionHeader Icon={BoltIcon} title="What Axiom can do next" tone="text-violet-300" />
+          <SectionHeader Icon={BoltIcon} title="What Axiom can do next" tone="text-orange-300" />
           {nextActions.length === 0 && (
             <p className="text-sm text-zinc-500">No high-leverage next action right now — connect a provider to start the loop.</p>
           )}
@@ -255,7 +255,7 @@ export default async function AutonomousOpsPage() {
 
       {/* ── Execution graph stats ─────────────────────────────────── */}
       <section className="rounded-2xl border border-white/[0.06] bg-white/[0.015] p-6">
-        <SectionHeader Icon={CpuChipIcon} title="Execution graph" tone="text-fuchsia-300" />
+        <SectionHeader Icon={CpuChipIcon} title="Execution graph" tone="text-amber-300" />
         <GraphStats graph={graph} />
       </section>
 
@@ -281,9 +281,9 @@ function Stat({ label, value, tone }: { label: string; value: string; tone: stri
   );
 }
 
-function Card({ title, value, tone, detail }: { title: string; value: string; tone: "violet" | "amber" | "rose" | "cyan"; detail: string }) {
-  const ring = tone === "violet" ? "border-white/[0.08]" : tone === "amber" ? "border-white/20" : tone === "rose" ? "border-rose-500/20" : "border-cyan-500/20";
-  const text = tone === "violet" ? "text-violet-300" : tone === "amber" ? "text-zinc-300" : tone === "rose" ? "text-rose-300" : "text-cyan-300";
+function Card({ title, value, tone, detail }: { title: string; value: string; tone: "orange" | "amber" | "rose" | "cyan"; detail: string }) {
+  const ring = tone === "orange" ? "border-white/[0.08]" : tone === "amber" ? "border-white/20" : tone === "rose" ? "border-rose-500/20" : "border-cyan-500/20";
+  const text = tone === "orange" ? "text-orange-300" : tone === "amber" ? "text-zinc-300" : tone === "rose" ? "text-rose-300" : "text-cyan-300";
   return (
     <div className={`rounded-xl border ${ring} bg-white/[0.02] p-5`}>
       <p className="text-[10px] font-mono text-zinc-500 uppercase tracking-[0.18em] mb-2">{title}</p>
@@ -305,7 +305,7 @@ function SectionHeader({ Icon, title, tone }: { Icon: React.ComponentType<{ clas
 function GraphStats({ graph }: { graph: ExecutionGraph }) {
   return (
     <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3">
-      <Stat label="nodes" value={`${graph.stats.nodeCount}`}     tone="text-violet-300" />
+      <Stat label="nodes" value={`${graph.stats.nodeCount}`}     tone="text-orange-300" />
       <Stat label="edges" value={`${graph.stats.edgeCount}`}     tone="text-cyan-300" />
       <Stat label="critical"        value={`${graph.stats.criticalNodes}`}    tone="text-rose-300" />
       <Stat label="approval gated"  value={`${graph.stats.approvalGated}`}    tone="text-zinc-300" />

@@ -92,8 +92,8 @@ export function ExecutionPlanCard({ plan, className = "", onApprove }: Execution
         <div className="flex items-start justify-between gap-4 flex-wrap mb-4">
           <div>
             <div className="flex items-center gap-2 mb-2">
-              <DocumentCheckIcon className="h-4 w-4 text-violet-400" />
-              <span className="text-[10px] font-semibold text-violet-400 uppercase tracking-wider">Execution Plan</span>
+              <DocumentCheckIcon className="h-4 w-4 text-orange-400" />
+              <span className="text-[10px] font-semibold text-orange-400 uppercase tracking-wider">Execution Plan</span>
               <span className="text-[10px] text-zinc-600 font-mono">{data.id}</span>
               <span className="text-[10px] font-semibold uppercase tracking-wider border rounded-full px-2 py-0.5 text-zinc-400 bg-white/10 border-white/20">
                 {data.provider}
@@ -142,13 +142,13 @@ export function ExecutionPlanCard({ plan, className = "", onApprove }: Execution
             onClick={() => setActiveTab(t.id)}
             className={`px-5 py-3 text-xs font-semibold uppercase tracking-wider transition-colors border-b-2 -mb-px ${
               activeTab === t.id
-                ? "text-white border-violet-500"
+                ? "text-white border-orange-500"
                 : "text-zinc-500 border-transparent hover:text-zinc-300"
             }`}
           >
             {t.label}
             {t.count != null && (
-              <span className={`ml-1.5 ${activeTab === t.id ? "text-violet-400" : "text-zinc-600"}`}>{t.count}</span>
+              <span className={`ml-1.5 ${activeTab === t.id ? "text-orange-400" : "text-zinc-600"}`}>{t.count}</span>
             )}
           </button>
         ))}

@@ -53,8 +53,8 @@ export default function WorkflowTranslatorPage() {
       <div className="relative mb-8 rounded-3xl border border-white/[0.05] bg-gradient-to-br from-white/[0.025] via-white/[0.015] to-transparent p-6 md:p-8 overflow-hidden">
         <div className="flex items-center gap-2 mb-3 flex-wrap">
           <span className="inline-flex items-center gap-2 rounded-full border border-white/[0.06] bg-white/[0.02] px-2.5 py-1">
-            <SparklesIcon className="h-3.5 w-3.5 text-indigo-300" />
-            <span className="text-[10px] font-semibold uppercase tracking-widest text-indigo-300">
+            <SparklesIcon className="h-3.5 w-3.5 text-zinc-300" />
+            <span className="text-[10px] font-semibold uppercase tracking-widest text-zinc-300">
               Workflow translator · approval_only_no_execution
             </span>
           </span>
@@ -76,7 +76,7 @@ export default function WorkflowTranslatorPage() {
           rows={4}
           placeholder="e.g. when an S3 bucket gets public ACL, page security and stage a remediation runbook"
           maxLength={2000}
-          className="w-full rounded-md border border-white/[0.08] bg-black/30 px-3 py-2 text-[12px] font-mono text-zinc-200 focus:border-indigo-400/60 focus:outline-none mb-3"
+          className="w-full rounded-md border border-white/[0.08] bg-black/30 px-3 py-2 text-[12px] font-mono text-zinc-200 focus:border-zinc-400/60 focus:outline-none mb-3"
         />
         <button
           onClick={run}
@@ -92,7 +92,7 @@ export default function WorkflowTranslatorPage() {
       {resp && (
         <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 max-w-3xl">
           <div className="flex items-center gap-2 mb-3 text-[10px] font-mono text-zinc-500">
-            <span>provider: <span className="text-indigo-300">{resp.provider ?? "(none)"}</span></span>
+            <span>provider: <span className="text-zinc-300">{resp.provider ?? "(none)"}</span></span>
             <span>model: <span className="text-zinc-300">{resp.model ?? "(none)"}</span></span>
             <span>{resp.latencyMs}ms</span>
             <span>aiUsed: <span className={resp.aiUsed ? "text-emerald-300" : "text-zinc-300"}>{String(resp.aiUsed)}</span></span>
@@ -109,14 +109,14 @@ export default function WorkflowTranslatorPage() {
               </div>
               <div>
                 <p className="text-[10px] font-mono uppercase tracking-widest text-zinc-500 mb-1">Trigger</p>
-                <p className="font-mono text-indigo-300">{resp.draft.trigger.kind} · {resp.draft.trigger.selector}</p>
+                <p className="font-mono text-zinc-300">{resp.draft.trigger.kind} · {resp.draft.trigger.selector}</p>
               </div>
               <div>
                 <p className="text-[10px] font-mono uppercase tracking-widest text-zinc-500 mb-1">Actions</p>
                 <ul className="space-y-1">
                   {resp.draft.actions.map((a, i) => (
                     <li key={i} className="flex items-center gap-2 font-mono text-zinc-300">
-                      <span className="text-indigo-300 w-44 truncate">{a.kind}</span>
+                      <span className="text-zinc-300 w-44 truncate">{a.kind}</span>
                       <span>{a.label}</span>
                       {a.reason && <span className="text-zinc-500">— {a.reason}</span>}
                     </li>

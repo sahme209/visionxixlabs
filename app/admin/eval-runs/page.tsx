@@ -72,7 +72,7 @@ export default async function AdminEvalRunsPage() {
   return (
     <div className="relative max-w-6xl">
       <div className="mb-6">
-        <Link href="/admin" className="text-[11px] text-violet-300 hover:text-violet-200 inline-flex items-center gap-1">
+        <Link href="/admin" className="text-[11px] text-orange-300 hover:text-orange-200 inline-flex items-center gap-1">
           <ArrowRightIcon className="h-3 w-3 rotate-180" />
           Back to admin
         </Link>
@@ -80,8 +80,8 @@ export default async function AdminEvalRunsPage() {
 
       <div className="mb-8">
         <div className="flex items-center gap-3 mb-3">
-          <ChartBarIcon className="h-4 w-4 text-violet-400" />
-          <p className="text-[10px] font-semibold text-violet-400 uppercase tracking-widest">AI coding eval · admin only</p>
+          <ChartBarIcon className="h-4 w-4 text-orange-400" />
+          <p className="text-[10px] font-semibold text-orange-400 uppercase tracking-widest">AI coding eval · admin only</p>
         </div>
         <h1 className="text-3xl md:text-4xl font-bold text-white tracking-[-0.04em] mb-2">
           Quality gate · <span className="text-gradient">{EVAL_TASK_CORPUS.length} synthetic tasks</span>
@@ -92,7 +92,7 @@ export default async function AdminEvalRunsPage() {
       </div>
 
       <section className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-8">
-        <Stat label="Runs (last 30)" value={String(totalRuns)} tone="text-violet-300" />
+        <Stat label="Runs (last 30)" value={String(totalRuns)} tone="text-orange-300" />
         <Stat label="Completed" value={String(completed)} tone={completed > 0 ? "text-emerald-300" : "text-zinc-300"} />
         <Stat label="Total eval spend" value={formatCents(totalSpend)} tone="text-zinc-300" />
         <Stat
@@ -102,7 +102,7 @@ export default async function AdminEvalRunsPage() {
         />
       </section>
 
-      <section className="rounded-2xl border border-violet-500/20 bg-violet-500/[0.04] p-5 mb-8">
+      <section className="rounded-2xl border border-orange-500/20 bg-orange-500/[0.04] p-5 mb-8">
         <div className="flex items-center justify-between gap-3 flex-wrap">
           <div>
             <p className="text-[12px] font-semibold text-white mb-1">Trigger an eval run</p>
@@ -136,7 +136,7 @@ export default async function AdminEvalRunsPage() {
               <article key={r.id} className="rounded-xl border border-white/[0.06] bg-white/[0.02] px-4 py-3">
                 <header className="flex items-center justify-between gap-3 flex-wrap mb-2">
                   <div className="flex items-center gap-2 min-w-0">
-                    <span className="text-[10px] font-mono uppercase tracking-wider text-violet-300">{r.runKind}</span>
+                    <span className="text-[10px] font-mono uppercase tracking-wider text-orange-300">{r.runKind}</span>
                     <span className="text-[11px] font-mono text-zinc-300 truncate">by {r.triggeredBy}</span>
                   </div>
                   <span className={`text-[9px] font-mono uppercase tracking-wider border rounded-full px-1.5 py-0.5 ${statusTone}`}>

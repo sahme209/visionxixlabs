@@ -20,7 +20,7 @@ interface MagneticCardProps {
   /** Spotlight radius in px. Default 220. */
   radius?: number;
   /** Tint of the spotlight. */
-  tint?: "violet" | "emerald" | "amber" | "cyan" | "rose";
+  tint?: "orange" | "emerald" | "amber" | "cyan" | "rose";
   /** Override className on the wrapper. */
   className?: string;
   /** Optional element to render as (default div). */
@@ -30,7 +30,7 @@ interface MagneticCardProps {
 }
 
 const RGB: Record<NonNullable<MagneticCardProps["tint"]>, string> = {
-  violet:  "139, 92, 246",
+  orange:  "255, 120, 61",
   emerald: "52, 211, 153",
   amber:   "245, 158, 11",
   cyan:    "34, 211, 238",
@@ -41,7 +41,7 @@ export function MagneticCard({
   children,
   maxTilt = 4,
   radius = 220,
-  tint = "violet",
+  tint = "orange",
   className = "",
   as = "div",
   href,

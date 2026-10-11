@@ -104,12 +104,12 @@ const ROLE_META: Record<
   { label: string; tone: string; description: string }
 > = {
   perception:   { label: "Perception",   tone: "border-cyan-500/30    bg-cyan-500/10    text-cyan-300",    description: "Watch the world and emit typed signals." },
-  reasoning:    { label: "Reasoning",    tone: "border-indigo-500/30  bg-indigo-500/10  text-indigo-300",  description: "Form hypotheses, simulate them, run the council vote." },
-  planning:     { label: "Planning",     tone: "border-fuchsia-500/30 bg-fuchsia-500/10 text-fuchsia-300", description: "Turn a hypothesis or operator problem into a typed plan." },
+  reasoning:    { label: "Reasoning",    tone: "border-zinc-500/30  bg-zinc-500/10  text-zinc-300",  description: "Form hypotheses, simulate them, run the council vote." },
+  planning:     { label: "Planning",     tone: "border-amber-500/30 bg-amber-500/10 text-amber-300", description: "Turn a hypothesis or operator problem into a typed plan." },
   safety:       { label: "Safety",       tone: "border-white/30   bg-white/10   text-zinc-300",   description: "Apply the charter, classify the blast radius, build the packet." },
   verification: { label: "Verification", tone: "border-emerald-500/30 bg-emerald-500/10 text-emerald-300", description: "Check that the action did what it claimed, and write the audit row." },
   memory:       { label: "Memory",       tone: "border-zinc-500/30    bg-zinc-500/10    text-zinc-300",    description: "Persist proposals + calibration so improvements compound over time." },
-  workflow:     { label: "Workflow",     tone: "border-white/[0.12]  bg-violet-500/10  text-violet-300",  description: "Orchestrate the agents end-to-end on the bus." },
+  workflow:     { label: "Workflow",     tone: "border-white/[0.12]  bg-orange-500/10  text-orange-300",  description: "Orchestrate the agents end-to-end on the bus." },
 };
 
 const ROLES_ORDER: readonly AgentRole[] = [
@@ -296,7 +296,7 @@ export default async function AgentsPage() {
         </div>
         <Link
           href="/dashboard/agent-proposals"
-          className="inline-flex items-center gap-1.5 rounded-full border border-white/[0.12] bg-violet-500/10 px-3.5 py-1.5 text-[12px] font-medium text-white hover:bg-white/[0.06] transition"
+          className="inline-flex items-center gap-1.5 rounded-full border border-white/[0.12] bg-orange-500/10 px-3.5 py-1.5 text-[12px] font-medium text-white hover:bg-white/[0.06] transition"
         >
           Method proposals
           <ArrowRightIcon className="h-3 w-3" />

@@ -115,9 +115,9 @@ export function ContactClient({ intent }: { intent?: "production-access" }) {
 
   return (
     <div className="relative">
-      {/* Huly aurora — coral × violet × cyan */}
+      {/* Huly aurora — coral × orange × cyan */}
       <div aria-hidden className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
-        <div className="ambient-drift absolute -top-1/4 left-1/4 h-[60vh] w-[50vw] rounded-full bg-brand-violet/[0.08] blur-[140px]" />
+        <div className="ambient-drift absolute -top-1/4 left-1/4 h-[60vh] w-[50vw] rounded-full bg-brand-orange/[0.08] blur-[140px]" />
         <div className="ambient-drift absolute top-[15%] right-[5%] h-[50vh] w-[40vw] rounded-full bg-brand-coral/[0.06] blur-[130px]" style={{ animationDelay: "-8s" }} />
         <div className="ambient-drift absolute bottom-[10%] left-[5%] h-[40vh] w-[35vw] rounded-full bg-cyan-500/[0.04] blur-[120px]" style={{ animationDelay: "-14s" }} />
       </div>
@@ -142,7 +142,7 @@ export function ContactClient({ intent }: { intent?: "production-access" }) {
           Contact{" "}
           <span className="relative inline-block">
             Vision XIX Labs.
-            <span aria-hidden className="absolute left-0 -bottom-0.5 h-[2px] w-full rounded-full bg-gradient-to-r from-brand-coral via-fuchsia-400/70 to-transparent" />
+            <span aria-hidden className="absolute left-0 -bottom-0.5 h-[2px] w-full rounded-full bg-gradient-to-r from-brand-coral via-amber-400/70 to-transparent" />
           </span>
         </motion.h1>
         <motion.p
@@ -153,7 +153,7 @@ export function ContactClient({ intent }: { intent?: "production-access" }) {
         >
           Ask about the installed application, a verified download, connector setup,
           security controls, or an existing installation. You can also email{" "}
-          <a href="mailto:support@visionxixlabs.com" className="text-violet-300 hover:text-violet-200 underline underline-offset-4">support@visionxixlabs.com</a>.
+          <a href="mailto:support@visionxixlabs.com" className="text-orange-300 hover:text-orange-200 underline underline-offset-4">support@visionxixlabs.com</a>.
         </motion.p>
       </section>
 
@@ -183,7 +183,7 @@ export function ContactClient({ intent }: { intent?: "production-access" }) {
               <div className="mt-5 flex flex-wrap items-center gap-2">
                 <Link
                   href="/#capabilities"
-                  className="inline-flex items-center gap-2 rounded-full bg-indigo-500 px-4 py-2 text-[12.5px] font-medium text-white shadow-[0_0_20px_rgba(99,102,241,0.45)] hover:bg-indigo-400 transition"
+                  className="inline-flex items-center gap-2 rounded-full bg-zinc-500 px-4 py-2 text-[12.5px] font-medium text-white shadow-[0_0_20px_rgba(245,78,0,0.45)] hover:bg-zinc-400 transition"
                 >
                   Review capabilities
                 </Link>
@@ -256,7 +256,7 @@ export function ContactClient({ intent }: { intent?: "production-access" }) {
                       className={[
                         "rounded-full px-3.5 py-1.5 text-[12px] font-medium transition border",
                         form.topic === t.id
-                          ? "bg-indigo-500/15 border-indigo-500/40 text-indigo-200"
+                          ? "bg-zinc-500/15 border-zinc-500/40 text-zinc-200"
                           : "bg-white/[0.02] border-white/[0.06] text-zinc-400 hover:text-white hover:bg-white/[0.05]",
                       ].join(" ")}
                     >
@@ -306,7 +306,7 @@ export function ContactClient({ intent }: { intent?: "production-access" }) {
                         className={[
                           "rounded-full px-3 py-1 text-[11.5px] font-medium transition border",
                           form.companySize === o.id
-                            ? "bg-fuchsia-500/15 border-fuchsia-500/40 text-fuchsia-200"
+                            ? "bg-amber-500/15 border-amber-500/40 text-amber-200"
                             : "bg-white/[0.02] border-white/[0.06] text-zinc-400 hover:text-white",
                         ].join(" ")}
                       >
@@ -345,7 +345,7 @@ export function ContactClient({ intent }: { intent?: "production-access" }) {
                 <button
                   type="submit"
                   disabled={state.kind === "submitting"}
-                  className="inline-flex items-center gap-2 rounded-full bg-indigo-500 px-5 py-2.5 text-[13px] font-medium text-white shadow-[0_0_20px_rgba(99,102,241,0.45)] hover:bg-indigo-400 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="inline-flex items-center gap-2 rounded-full bg-zinc-500 px-5 py-2.5 text-[13px] font-medium text-white shadow-[0_0_20px_rgba(245,78,0,0.45)] hover:bg-zinc-400 transition disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {state.kind === "submitting" ? "Sending…" : "Send →"}
                 </button>
@@ -372,7 +372,7 @@ export function ContactClient({ intent }: { intent?: "production-access" }) {
         }
         .form-input::placeholder { color: rgba(161,161,170,0.6); }
         .form-input:focus {
-          border-color: rgba(99,102,241,0.6);
+          border-color: rgba(245,78,0,0.6);
           background: rgba(255,255,255,0.04);
         }
       `}</style>

@@ -35,7 +35,7 @@ export const metadata: Metadata = {
 export const dynamic = "force-dynamic";
 
 const CATEGORY_META: Record<AddOnCategory, { label: string; icon: typeof BoltIcon; tone: string }> = {
-  ai_credits: { label: "AI credits",  icon: BoltIcon,         tone: "text-violet-300" },
+  ai_credits: { label: "AI credits",  icon: BoltIcon,         tone: "text-orange-300" },
   seats:      { label: "Seats",       icon: UserGroupIcon,    tone: "text-emerald-300" },
   connectors: { label: "Connectors",  icon: CircleStackIcon,  tone: "text-zinc-300" },
 };
@@ -94,7 +94,7 @@ export default async function AddOnsPage() {
         <Stat label="Applied AI credits"
           value={formatCents(eff.appliedAICreditsCents)}
           sub={`Period ${period}`}
-          tone="text-violet-300" />
+          tone="text-orange-300" />
         <Stat label="Applied seats"
           value={String(eff.appliedSeats)}
           sub={eff.appliedSeats > 0 ? "Permanent until cancelled" : "—"}

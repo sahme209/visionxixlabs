@@ -23,7 +23,7 @@ export function DeliverableList({
             key={item}
             className="flex items-start text-zinc-300"
           >
-            <span className="text-indigo-500 mr-3 mt-0.5 flex-shrink-0" aria-hidden>✓</span>
+            <span className="text-zinc-500 mr-3 mt-0.5 flex-shrink-0" aria-hidden>✓</span>
             <span>{item}</span>
           </li>
         ))}

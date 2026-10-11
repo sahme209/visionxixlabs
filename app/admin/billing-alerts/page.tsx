@@ -73,7 +73,7 @@ export default async function AdminBillingAlertsPage() {
   return (
     <div className="relative max-w-6xl">
       <div className="mb-6">
-        <Link href="/admin" className="text-[11px] text-violet-300 hover:text-violet-200 inline-flex items-center gap-1">
+        <Link href="/admin" className="text-[11px] text-orange-300 hover:text-orange-200 inline-flex items-center gap-1">
           <ArrowRightIcon className="h-3 w-3 rotate-180" />
           Back to admin
         </Link>
@@ -96,7 +96,7 @@ export default async function AdminBillingAlertsPage() {
         <SummaryStat label="70% crossings" value={String(by70)} tone="text-zinc-300" />
         <SummaryStat label="90% crossings" value={String(by90)} tone="text-orange-300" />
         <SummaryStat label="100% crossings" value={String(by100)} tone="text-rose-300" />
-        <SummaryStat label="Workspaces alerting" value={String(uniqueWorkspaces)} tone={uniqueWorkspaces > 0 ? "text-violet-300" : "text-zinc-300"} icon={ChartBarIcon} />
+        <SummaryStat label="Workspaces alerting" value={String(uniqueWorkspaces)} tone={uniqueWorkspaces > 0 ? "text-orange-300" : "text-zinc-300"} icon={ChartBarIcon} />
       </section>
 
       {alerts.length === 0 ? (
@@ -125,7 +125,7 @@ export default async function AdminBillingAlertsPage() {
                     <span className="text-[10px] font-mono text-zinc-500">·</span>
                     <span className="text-[11px] font-mono text-zinc-300 truncate">{a.organizationId}</span>
                   </div>
-                  <span className="text-[10px] font-mono uppercase tracking-wider text-violet-300">
+                  <span className="text-[10px] font-mono uppercase tracking-wider text-orange-300">
                     {a.planTier}
                   </span>
                 </header>

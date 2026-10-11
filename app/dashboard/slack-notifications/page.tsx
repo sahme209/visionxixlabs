@@ -239,7 +239,7 @@ function ConfigPanel({ current, onSaved }: { current: ConfigView | null; onSaved
   return (
     <div className="mb-6 rounded-2xl border border-white/[0.06] bg-white/[0.015] p-5">
       <div className="flex items-center justify-between mb-3">
-        <p className="text-[13px] font-semibold text-violet-100">Slack incoming webhook</p>
+        <p className="text-[13px] font-semibold text-orange-100">Slack incoming webhook</p>
         {currentlyConfigured && (
           <span className="text-[10px] font-mono text-emerald-300">
             current: {current!.webhookUrl} {current!.enabled ? "(enabled)" : "(disabled)"}
@@ -256,7 +256,7 @@ function ConfigPanel({ current, onSaved }: { current: ConfigView | null; onSaved
           onChange={(e) => setWebhookUrl(e.target.value)}
           placeholder="https://hooks.slack.com/services/T.../B.../..."
           disabled={busy}
-          className="w-full rounded-lg border border-white/[0.08] bg-black/30 px-3 py-2 text-[12.5px] font-mono text-zinc-100 placeholder:text-zinc-600 focus:border-violet-500/40 focus:outline-none disabled:opacity-50"
+          className="w-full rounded-lg border border-white/[0.08] bg-black/30 px-3 py-2 text-[12.5px] font-mono text-zinc-100 placeholder:text-zinc-600 focus:border-orange-500/40 focus:outline-none disabled:opacity-50"
         />
       </label>
       <div className="grid grid-cols-2 gap-3 mb-3">
@@ -268,7 +268,7 @@ function ConfigPanel({ current, onSaved }: { current: ConfigView | null; onSaved
             onChange={(e) => setDefaultChannel(e.target.value)}
             placeholder="#deploys"
             disabled={busy}
-            className="w-full rounded-lg border border-white/[0.08] bg-black/30 px-3 py-2 text-[12.5px] text-zinc-100 placeholder:text-zinc-600 focus:border-violet-500/40 focus:outline-none disabled:opacity-50"
+            className="w-full rounded-lg border border-white/[0.08] bg-black/30 px-3 py-2 text-[12.5px] text-zinc-100 placeholder:text-zinc-600 focus:border-orange-500/40 focus:outline-none disabled:opacity-50"
           />
         </label>
         <label className="flex items-center gap-2 text-[12px] text-zinc-300 cursor-pointer pt-5">
@@ -277,7 +277,7 @@ function ConfigPanel({ current, onSaved }: { current: ConfigView | null; onSaved
             checked={enabled}
             onChange={(e) => setEnabled(e.target.checked)}
             disabled={busy}
-            className="accent-violet-500 disabled:opacity-50"
+            className="accent-orange-500 disabled:opacity-50"
           />
           <span>Enabled (uncheck to pause outbound)</span>
         </label>
@@ -292,7 +292,7 @@ function ConfigPanel({ current, onSaved }: { current: ConfigView | null; onSaved
                 checked={kindsState[k]}
                 onChange={(e) => setKindsState((s) => ({ ...s, [k]: e.target.checked }))}
                 disabled={busy}
-                className="accent-violet-500"
+                className="accent-orange-500"
               />
               <span>{KIND_LABEL[k]}</span>
             </label>
@@ -304,7 +304,7 @@ function ConfigPanel({ current, onSaved }: { current: ConfigView | null; onSaved
           type="button"
           onClick={save}
           disabled={busy || (!webhookUrl && !currentlyConfigured)}
-          className="px-3 py-1.5 rounded-lg border border-violet-500/40 bg-violet-500/[0.12] text-[12px] font-semibold text-violet-100 hover:bg-violet-500/[0.20] disabled:opacity-50 disabled:cursor-wait transition-colors inline-flex items-center gap-1.5"
+          className="px-3 py-1.5 rounded-lg border border-orange-500/40 bg-orange-500/[0.12] text-[12px] font-semibold text-orange-100 hover:bg-orange-500/[0.20] disabled:opacity-50 disabled:cursor-wait transition-colors inline-flex items-center gap-1.5"
         >
           <ArrowPathIcon className={`h-3.5 w-3.5 ${busy ? "animate-spin" : ""}`} />
           {busy ? "Saving…" : "Save config"}

@@ -189,7 +189,7 @@ export default function AwsSetupPage() {
           ))}
         </ul>
         <p>
-          See the full <Link href="/docs/troubleshooting" className="text-violet-300 hover:text-violet-200">troubleshooting guide</Link> for additional scenarios.
+          See the full <Link href="/docs/troubleshooting" className="text-orange-300 hover:text-orange-200">troubleshooting guide</Link> for additional scenarios.
         </p>
       </DocSection>
 

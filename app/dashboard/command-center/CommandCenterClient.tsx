@@ -34,7 +34,7 @@ const PROVIDER_COLOR = {
   AWS: "text-zinc-400 bg-white/10 border-white/20",
   Azure: "text-blue-400 bg-blue-500/10 border-blue-500/20",
   GCP: "text-red-400 bg-red-500/10 border-red-500/20",
-  GitHub: "text-zinc-500 bg-violet-500/10 border-white/[0.08]",
+  GitHub: "text-zinc-500 bg-orange-500/10 border-white/[0.08]",
 } as const;
 
 const APPROVAL_RISK: Record<"low" | "medium" | "high" | "critical", string> = {
@@ -86,7 +86,7 @@ export default function CommandCenterClient() {
           <div className="mb-8">
             <TenantEmptyState
               icon={<SparklesIcon className="h-5 w-5" />}
-              tone="violet"
+              tone="orange"
               eyebrow={`Welcome — let's get you to value`}
               title="Connect a cloud and AGI takes the first action for you."
               description="Pick AWS, Azure, or GCP. Axiom validates the credential, runs the first inventory, surfaces the highest-confidence wins, and assembles your audit story — all before you finish your coffee."
@@ -577,7 +577,7 @@ function LiveKpiRow() {
       trend: nextActions > 0 ? "ready for operator" : undefined,
       icon: BoltIcon,
       iconClass: "text-zinc-500",
-      bgClass: "bg-violet-500/10 border-white/[0.08]",
+      bgClass: "bg-orange-500/10 border-white/[0.08]",
     },
     {
       label: "Critical blockers",
@@ -1226,7 +1226,7 @@ function ObservabilityPostureStrip() {
             <Stat label="Memory" value={typeof memoryCount === "number" ? String(memoryCount) : "—"} />
             <Stat label="Persistence" value={state ? (persistent ? "on" : "off") : "—"} />
           </div>
-          <ArrowRightIcon className="h-4 w-4 text-zinc-500 group-hover:text-violet-300 group-hover:translate-x-0.5 transition-all" />
+          <ArrowRightIcon className="h-4 w-4 text-zinc-500 group-hover:text-orange-300 group-hover:translate-x-0.5 transition-all" />
         </div>
       </div>
     </Link>
@@ -1336,7 +1336,7 @@ function DesktopRuntimePanel() {
     <div className="surface-glass rounded-2xl overflow-hidden">
       <div className="px-5 py-3.5 border-b border-white/[0.06] bg-white/[0.01] flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <ComputerDesktopIcon className="h-4 w-4 text-violet-300" />
+          <ComputerDesktopIcon className="h-4 w-4 text-orange-300" />
           <h3 className="text-sm font-semibold text-white">Desktop runtime</h3>
           <span className={`text-[9px] font-mono uppercase tracking-wider rounded px-1.5 py-px ${sourceTone}`}>
             {sourceMode.replace(/_/g, " ")}
@@ -1839,7 +1839,7 @@ function LiveAgentStatusPanel() {
     t === "live"    ? "bg-emerald-400" :
     t === "preview" ? "bg-zinc-400"   :
     t === "blocked" ? "bg-rose-400"    :
-                      "bg-violet-400";
+                      "bg-orange-400";
   const toneText = (t: "live" | "preview" | "blocked" | "info"): string =>
     t === "live"    ? "text-emerald-300" :
     t === "preview" ? "text-zinc-300"   :
