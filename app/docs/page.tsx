@@ -10,7 +10,6 @@ import {
   QuestionMarkCircleIcon,
   WrenchScrewdriverIcon,
   ArrowRightIcon,
-  BookOpenIcon,
 } from "@heroicons/react/24/outline";
 import { DocHeader, Callout, DocFeedback } from "@/components/docs/DocPrimitives";
 
@@ -100,6 +99,7 @@ const TOPIC_GROUPS = [
     items: [
       { href: "/docs/desktop-install", label: "Install the desktop app", available: true },
       { href: "/docs/desktop-architecture", label: "Desktop architecture", available: true },
+      { href: "/docs/integration-setup", label: "GitHub, Slack, Teams & Linear setup", available: true },
     ],
   },
   {
