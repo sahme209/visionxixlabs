@@ -9,11 +9,11 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        // Brand tokens — coral is the warm accent against violet/cool background.
+        // Brand tokens — orange is Axiom's warm accent against the dark product canvas.
         // Use these instead of hard-coded hex/rgb so palette changes cascade.
         brand: {
-          coral:     '#F472B6',  // rose-400 — warm accent (Huly-style)
-          'coral-deep': '#EC4899', // rose-500 — used for emphasis
+          coral:     '#FB923C',  // orange-400 — primary warm accent
+          'coral-deep': '#F97316', // orange-500 — used for emphasis
           violet:    '#8B5CF6',  // violet-500 — primary
           'violet-deep': '#7C3AED', // violet-600
           ink:       '#0A0A0D',  // page background
@@ -24,17 +24,17 @@ const config: Config = {
       },
       backgroundImage: {
         // Huly-style gradient utility — use as `bg-huly-warm`
-        'huly-warm':  'linear-gradient(135deg, rgba(244,114,182,0.18) 0%, rgba(139,92,246,0.18) 100%)',
+        'huly-warm':  'linear-gradient(135deg, rgba(251,146,60,0.18) 0%, rgba(139,92,246,0.14) 100%)',
         'huly-cool':  'linear-gradient(135deg, rgba(139,92,246,0.18) 0%, rgba(56,189,248,0.14) 100%)',
         'huly-aurora':
           'radial-gradient(40% 50% at 20% 30%, rgba(139,92,246,0.32), transparent 60%),' +
-          'radial-gradient(35% 40% at 80% 60%, rgba(244,114,182,0.26), transparent 60%),' +
+          'radial-gradient(35% 40% at 80% 60%, rgba(251,146,60,0.22), transparent 60%),' +
           'radial-gradient(30% 30% at 50% 90%, rgba(56,189,248,0.18), transparent 60%)',
-        'huly-coral-fade': 'linear-gradient(90deg, #F472B6 0%, #8B5CF6 60%, transparent 100%)',
+        'huly-coral-fade': 'linear-gradient(90deg, #FB923C 0%, #8B5CF6 60%, transparent 100%)',
       },
       boxShadow: {
         'huly-card':       '0 12px 40px -16px rgba(0,0,0,0.45), 0 0 0 1px rgba(255,255,255,0.05) inset',
-        'huly-coral-glow': '0 20px 60px -20px rgba(244,114,182,0.35)',
+        'huly-coral-glow': '0 20px 60px -20px rgba(251,146,60,0.35)',
         'huly-violet-glow':'0 20px 60px -20px rgba(139,92,246,0.40)',
       },
       animation: {

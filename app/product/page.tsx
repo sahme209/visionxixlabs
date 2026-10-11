@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Footer } from "@/components/Footer";
 import { Navigation } from "@/components/Navigation";
+import { CinematicAxiomDemo } from "@/components/marketing/CinematicAxiomDemo";
 
 export const metadata: Metadata = {
   title: "Axiom Agent product",
@@ -57,6 +58,8 @@ export default function ProductPage() {
             </div>
           </div>
         </section>
+
+        <CinematicAxiomDemo />
 
         <section className="mx-auto max-w-[1400px] px-5 py-20 sm:px-8 lg:py-28">
           <div className="max-w-xl"><p className="text-[10px] uppercase tracking-[0.22em] text-emerald-300">The release, made legible</p><h2 className="mt-4 text-3xl font-medium tracking-[-0.045em] text-zinc-100 sm:text-5xl">Intent. Playbook. Govern. Execute. Prove.</h2></div>

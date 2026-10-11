@@ -13,7 +13,7 @@ import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/Footer";
 import { DeploymentLifecycleDemo } from "@/components/marketing/DeploymentLifecycleDemo";
 import { HomepageMediaShowcase } from "@/components/marketing/HomepageMediaShowcase";
-import { HomepageInteractiveDemo } from "@/components/marketing/HomepageInteractiveDemo";
+import { CinematicAxiomDemo } from "@/components/marketing/CinematicAxiomDemo";
 
 const phases = ["Window", "Scope", "Execution", "Validation", "Recovery"];
 
@@ -76,18 +76,18 @@ export default function Home() {
               <span className="text-zinc-600">·</span>
               deployment operations
             </span>
-            <h1 className="mt-5 text-[clamp(2.7rem,4.65vw,5rem)] font-medium leading-[0.98] tracking-[-0.05em] text-[#f1f1ed]">
-              Turn the request into the playbook.
+            <h1 className="mt-5 text-[clamp(2.9rem,5.35vw,5.8rem)] font-medium leading-[0.96] tracking-[-0.058em] text-[#f1f1ed]">
+              Ship the change.<br /><span className="text-zinc-500">Prove it was safe.</span>
             </h1>
             <p className="mt-7 max-w-[620px] text-base leading-7 text-zinc-400 sm:text-lg">
-              A governed desktop workspace for deployment intake, review, execution guidance, production validation, and audit-ready closure.
+              Axiom turns a plain-English request into a grounded, approval-gated deployment—with validation, rollback, and evidence built in.
             </p>
             <div className="mt-9 flex flex-col gap-3 sm:flex-row">
               <Link href="/download" className="btn-huly inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-[#efefec] px-7 py-3 text-sm font-semibold text-[#151513] shadow-[0_8px_24px_-8px_rgba(255,255,255,0.25)] hover:bg-white">
                 Download Axiom Agent <ArrowRightIcon className="h-4 w-4" />
               </Link>
               <Link href="/demo" className="btn-huly inline-flex min-h-12 items-center justify-center gap-2 rounded-full border border-white/10 bg-white/[0.05] px-7 py-3 text-sm font-medium text-zinc-200 hover:bg-white/[0.08]">
-                Explore the isolated demo <ArrowRightIcon className="h-4 w-4" />
+                Watch how it works <ArrowRightIcon className="h-4 w-4" />
               </Link>
             </div>
           </div>
@@ -131,16 +131,7 @@ export default function Home() {
           </div>
         </section>
 
-        <section className="mx-auto max-w-[1400px] px-5 pb-18 sm:px-8 lg:px-12 lg:pb-24">
-          <p className="text-[11px] uppercase tracking-[0.16em] text-zinc-500">Try it yourself</p>
-          <h2 className="mt-3 max-w-2xl text-2xl font-medium tracking-[-0.04em] text-zinc-100 sm:text-3xl">
-            Click through a real workspace setup, right here.
-          </h2>
-          <p className="mt-2 max-w-xl text-sm leading-6 text-zinc-400">
-            No account needed. This steps through the actual scenario content from Axiom&apos;s sandbox, using scripted example data — never a real cloud account or real AI spend.
-          </p>
-          <HomepageInteractiveDemo />
-        </section>
+        <CinematicAxiomDemo />
 
         <section className="border-y border-white/[0.06] bg-[#11110f] px-5 py-12 sm:px-8 lg:px-12">
           <div className="mx-auto max-w-[1400px]">

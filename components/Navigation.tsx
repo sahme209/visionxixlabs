@@ -3,14 +3,13 @@
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 
 const primaryLinks = [
   { href: "/product", label: "Product" },
-  { href: "/capabilities", label: "Capabilities" },
+  { href: "/demo", label: "Demo" },
+  { href: "/integrations", label: "Integrations" },
   { href: "/plans", label: "Pricing" },
-  { href: "/resources", label: "Resources" },
 ];
 
 const mobileLinks = [
@@ -22,17 +21,10 @@ const mobileLinks = [
 ];
 
 export function Navigation() {
-  const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const menuButtonRef = useRef<HTMLButtonElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    // Closes the menu on a route change that didn't go through a link's
-    // own onClick (e.g. browser back/forward), not just a click-through.
-    setMobileMenuOpen(false);
-  }, [pathname]);
 
   useEffect(() => {
     // Shrinks the bar height and deepens its border/shadow once the page
@@ -115,7 +107,7 @@ export function Navigation() {
 
         <div className="hidden items-center gap-3 lg:flex">
           <Link href="/auth/signin" className="px-2 py-2 text-sm text-zinc-300 transition-colors hover:text-white">Sign in</Link>
-          <Link href="/contact" className="rounded-full border border-white/[0.14] px-4 py-2 text-sm text-zinc-200 transition-colors hover:bg-white/[0.06]">Contact</Link>
+          <Link href="/docs" className="rounded-full border border-white/[0.14] px-4 py-2 text-sm text-zinc-200 transition-colors hover:bg-white/[0.06]">Docs</Link>
           <Link href="/download" className="rounded-full bg-zinc-100 px-4 py-2 text-sm font-medium text-zinc-950 transition-colors hover:bg-white">Download</Link>
         </div>
 
