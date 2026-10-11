@@ -139,7 +139,7 @@ export default async function WorkforceActivityPage({
           <FilterPill
             href={buildHref(decisionFilter === "all" ? null : decisionFilter, null)}
             active
-            tone="violet"
+            tone="orange"
             label={`engineer · ${ENGINEER_LOOKUP.get(engineerFilter)?.displayName ?? engineerFilter} ✕`}
           />
         )}
@@ -205,13 +205,13 @@ function Stat({ label, value, icon: Icon, tone }: { label: string; value: number
 
 function FilterPill({
   href, active, label, tone = "zinc",
-}: { href: string; active: boolean; label: string; tone?: "zinc" | "amber" | "emerald" | "rose" | "violet" }) {
+}: { href: string; active: boolean; label: string; tone?: "zinc" | "amber" | "emerald" | "rose" | "orange" }) {
   const toneClass = {
     zinc:    active ? "bg-white/[0.08] text-white border-white/[0.12]"           : "bg-white/[0.02] text-zinc-400 border-white/[0.06] hover:text-zinc-200",
     amber:   active ? "bg-white/15 text-zinc-200 border-white/40"       : "bg-white/[0.02] text-zinc-400 border-white/[0.06] hover:text-zinc-200",
     emerald: active ? "bg-emerald-500/15 text-emerald-200 border-emerald-500/40" : "bg-white/[0.02] text-zinc-400 border-white/[0.06] hover:text-emerald-200",
     rose:    active ? "bg-rose-500/15 text-rose-200 border-rose-500/40"          : "bg-white/[0.02] text-zinc-400 border-white/[0.06] hover:text-rose-200",
-    violet:  active ? "bg-violet-500/15 text-white border-violet-500/40"    : "bg-white/[0.02] text-zinc-400 border-white/[0.06] hover:text-white",
+    orange:  active ? "bg-orange-500/15 text-white border-orange-500/40"    : "bg-white/[0.02] text-zinc-400 border-white/[0.06] hover:text-white",
   }[tone];
   return (
     <Link href={href} className={`text-[10px] font-mono uppercase tracking-wider border rounded-full px-2.5 py-1 transition ${toneClass}`}>
@@ -249,7 +249,7 @@ function ActivityRow(props: {
     <article className="rounded-xl border border-white/[0.06] bg-white/[0.02] px-4 py-3">
       <header className="flex items-center justify-between gap-3 flex-wrap mb-1">
         <div className="flex items-center gap-2 min-w-0">
-          <CpuChipIcon className="h-4 w-4 text-violet-300 shrink-0" />
+          <CpuChipIcon className="h-4 w-4 text-orange-300 shrink-0" />
           <Link href={`/dashboard/workforce/${props.engineerId}`} className="text-[12px] font-semibold text-white hover:text-white truncate">
             {props.engineerName}
           </Link>

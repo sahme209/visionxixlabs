@@ -236,14 +236,14 @@ export default function GitHubAppPage() {
         <>
           {data.installReady ? (
             <div className="mb-6 rounded-2xl border border-white/[0.06] bg-white/[0.015] p-5">
-              <p className="text-[13px] font-semibold text-violet-100 mb-2">
+              <p className="text-[13px] font-semibold text-orange-100 mb-2">
                 {data.installed ? "Re-install or extend repository selection" : "Install Axiom on your GitHub org"}
               </p>
               <button
                 type="button"
                 onClick={() => { void beginInstall(); }}
                 disabled={openingInstall}
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-violet-500/40 bg-violet-500/[0.12] text-[13px] font-semibold text-violet-100 hover:bg-violet-500/[0.20] transition-colors"
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-orange-500/40 bg-orange-500/[0.12] text-[13px] font-semibold text-orange-100 hover:bg-orange-500/[0.20] transition-colors"
               >
                 <span>{openingInstall ? "Opening GitHub…" : "Continue to GitHub"}</span>
               </button>
@@ -261,7 +261,7 @@ export default function GitHubAppPage() {
                   type="button"
                   onClick={() => { void createGithubApp(); }}
                   disabled={creatingApp}
-                  className="mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-violet-500/40 bg-violet-500/[0.12] text-[13px] font-semibold text-violet-100 hover:bg-violet-500/[0.20] transition-colors"
+                  className="mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-orange-500/40 bg-orange-500/[0.12] text-[13px] font-semibold text-orange-100 hover:bg-orange-500/[0.20] transition-colors"
                 >
                   <span>{creatingApp ? "Opening GitHub…" : "Create GitHub App"}</span>
                 </button>

@@ -77,7 +77,7 @@ const SEVERITY_CLASS: Record<ProposalView["severity"], string> = {
 };
 
 const DECISION_CLASS: Record<ProposalDecision, string> = {
-  pending:    "bg-violet-500/15 text-violet-300 border-white/[0.10]",
+  pending:    "bg-orange-500/15 text-orange-300 border-white/[0.10]",
   accepted:   "bg-emerald-500/15 text-emerald-300 border-emerald-500/25",
   rejected:   "bg-rose-500/15 text-rose-300 border-rose-500/25",
   dismissed:  "bg-zinc-700/40 text-zinc-300 border-zinc-700/40",
@@ -141,7 +141,7 @@ export default function PolicyProposalsPage() {
           type="button"
           onClick={generateProposals}
           disabled={loading}
-          className="px-3 py-1.5 rounded-lg border border-violet-500/40 bg-white/[0.04] text-[12px] font-semibold text-violet-100 hover:bg-violet-500/[0.18] disabled:opacity-50 disabled:cursor-wait transition-colors inline-flex items-center gap-1.5"
+          className="px-3 py-1.5 rounded-lg border border-orange-500/40 bg-white/[0.04] text-[12px] font-semibold text-orange-100 hover:bg-orange-500/[0.18] disabled:opacity-50 disabled:cursor-wait transition-colors inline-flex items-center gap-1.5"
         >
           <SparklesIcon className="h-3.5 w-3.5" />
           {loading ? "Working…" : "Generate proposals"}
@@ -228,7 +228,7 @@ function ProposalCard({ proposal, onChanged }: { proposal: ProposalView; onChang
   const body = proposal.suggestedRuleBody as { description?: string; defaultBlocking?: boolean; scope?: string } | null;
 
   return (
-    <div className="rounded-2xl border border-white/[0.06] bg-violet-500/[0.025] p-4">
+    <div className="rounded-2xl border border-white/[0.06] bg-orange-500/[0.025] p-4">
       <div className="flex items-center gap-2 mb-2 flex-wrap">
         <span className={`text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded border ${SEVERITY_CLASS[proposal.severity]}`}>
           {proposal.severity}
@@ -253,7 +253,7 @@ function ProposalCard({ proposal, onChanged }: { proposal: ProposalView; onChang
           <ul className="space-y-0.5 text-[11px] font-mono text-zinc-300">
             {proposal.evidence.map((e, i) => (
               <li key={i}>
-                {e.metric}: <span className="text-violet-300">{e.value}</span> (threshold {e.threshold}{e.windowReleases ? `, over ${e.windowReleases} releases` : ""})
+                {e.metric}: <span className="text-orange-300">{e.value}</span> (threshold {e.threshold}{e.windowReleases ? `, over ${e.windowReleases} releases` : ""})
               </li>
             ))}
           </ul>
@@ -286,7 +286,7 @@ function ProposalCard({ proposal, onChanged }: { proposal: ProposalView; onChang
             onChange={(e) => setOverride(e.target.value)}
             placeholder="override rule key (optional)"
             disabled={busy !== null}
-            className="rounded-md border border-white/[0.08] bg-black/30 px-2 py-1 text-[11px] text-zinc-100 placeholder:text-zinc-600 focus:border-violet-500/40 focus:outline-none disabled:opacity-50 w-[180px]"
+            className="rounded-md border border-white/[0.08] bg-black/30 px-2 py-1 text-[11px] text-zinc-100 placeholder:text-zinc-600 focus:border-orange-500/40 focus:outline-none disabled:opacity-50 w-[180px]"
           />
           <input
             type="text"
@@ -295,7 +295,7 @@ function ProposalCard({ proposal, onChanged }: { proposal: ProposalView; onChang
             placeholder="optional decision note"
             disabled={busy !== null}
             aria-label="Optional decision note"
-            className="flex-1 min-w-[160px] rounded-md border border-white/[0.08] bg-black/30 px-2 py-1 text-[11px] text-zinc-100 placeholder:text-zinc-600 focus:border-violet-500/40 focus:outline-none disabled:opacity-50"
+            className="flex-1 min-w-[160px] rounded-md border border-white/[0.08] bg-black/30 px-2 py-1 text-[11px] text-zinc-100 placeholder:text-zinc-600 focus:border-orange-500/40 focus:outline-none disabled:opacity-50"
           />
           <button type="button" onClick={() => decide("accept")} disabled={busy !== null}
             className="px-2 py-1 rounded border border-emerald-500/30 bg-emerald-500/[0.08] text-emerald-200 hover:bg-emerald-500/[0.16] disabled:opacity-50 disabled:cursor-wait">

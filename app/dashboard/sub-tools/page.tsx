@@ -69,7 +69,7 @@ export default function SubToolsCenterPage() {
     <div className="relative">
       <PlatformHero
         eyebrow="Platform · operating system"
-        eyebrowTone="violet"
+        eyebrowTone="orange"
         title="Sub-tools center"
         description="Each sub-tool is a department in the AI-powered company OS — with assigned agents, connected tools, owned workflows, and explicit scope. Adding a new sub-tool is a one-line config change to lib/platform/subToolCatalog.ts."
         right={
@@ -140,7 +140,7 @@ export default function SubToolsCenterPage() {
                     </div>
 
                     <div className="mt-auto pt-4 flex items-center justify-between">
-                      <span className="inline-flex items-center gap-1 text-[12px] font-medium text-violet-300 group-hover:text-white transition">
+                      <span className="inline-flex items-center gap-1 text-[12px] font-medium text-orange-300 group-hover:text-white transition">
                         Open
                         <ArrowRightIcon className="h-3 w-3" />
                       </span>

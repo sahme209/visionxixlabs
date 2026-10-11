@@ -96,7 +96,7 @@ const CATEGORY_TONE: Record<Practice["category"], { label: string; cls: string; 
   trust:    { label: "Trust",    cls: "text-brand-coral bg-brand-coral/10 border-brand-coral/30",  icon: KeyIcon },
   security: { label: "Security", cls: "text-emerald-300 bg-emerald-500/10 border-emerald-500/30", icon: ShieldCheckIcon },
   ops:      { label: "Ops",      cls: "text-cyan-300 bg-cyan-500/10 border-cyan-500/30",          icon: BellAlertIcon },
-  team:     { label: "Team",     cls: "text-violet-300 bg-violet-500/10 border-violet-500/30",    icon: UserGroupIcon },
+  team:     { label: "Team",     cls: "text-orange-300 bg-orange-500/10 border-orange-500/30",    icon: UserGroupIcon },
 };
 
 export default function BestPracticesPage() {
@@ -125,7 +125,7 @@ export default function BestPracticesPage() {
             >
               <header className="flex items-start justify-between gap-3 mb-3 flex-wrap">
                 <div className="flex items-start gap-3 min-w-0">
-                  <span className="shrink-0 w-9 h-9 rounded-full bg-gradient-to-br from-brand-coral/15 to-brand-violet/15 border border-brand-coral/30 flex items-center justify-center text-[11px] font-mono font-semibold text-brand-coral tabular-nums mt-0.5">
+                  <span className="shrink-0 w-9 h-9 rounded-full bg-gradient-to-br from-brand-coral/15 to-brand-orange/15 border border-brand-coral/30 flex items-center justify-center text-[11px] font-mono font-semibold text-brand-coral tabular-nums mt-0.5">
                     {p.num}
                   </span>
                   <div className="min-w-0">

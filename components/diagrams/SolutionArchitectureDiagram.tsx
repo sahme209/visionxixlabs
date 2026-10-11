@@ -16,7 +16,7 @@ export function SolutionArchitectureDiagram() {
       id: "ai",
       label: "AI & Models",
       items: ["LLMs & embeddings", "RAG, fine-tuning", "Automation logic"],
-      color: "#8b5cf6",
+      color: "#ff783d",
     },
     {
       id: "integration",

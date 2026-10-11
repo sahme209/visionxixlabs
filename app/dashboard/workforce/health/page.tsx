@@ -174,7 +174,7 @@ export default async function WorkforceHealthPage() {
       <header className="mb-10">
         <p className="text-[10px] font-mono uppercase tracking-[0.28em] text-zinc-500 mb-3">workforce · health</p>
         <h1 className="text-[34px] sm:text-[40px] leading-[1.05] font-semibold text-white tracking-[-0.03em] mb-3 inline-flex items-baseline gap-3">
-          <SparklesIcon className="h-7 w-7 text-violet-300 self-center" />
+          <SparklesIcon className="h-7 w-7 text-orange-300 self-center" />
           Is my AGI workforce healthy?
         </h1>
         <p className="text-[15px] text-zinc-400 leading-relaxed max-w-2xl">
@@ -218,7 +218,7 @@ export default async function WorkforceHealthPage() {
           <Tile label="ok"            count={aiHealth.ok}            tone={aiHealth.ok > 0 ? "text-emerald-300" : "text-zinc-600"} />
           <Tile label="error"         count={aiHealth.error}         tone={aiHealth.error > 0 ? "text-rose-300" : "text-zinc-600"} />
           <Tile label="timeout"       count={aiHealth.timeout}       tone={aiHealth.timeout > 0 ? "text-zinc-300" : "text-zinc-600"} />
-          <Tile label="short circuit" count={aiHealth.short_circuit} tone={aiHealth.short_circuit > 0 ? "text-violet-300" : "text-zinc-600"} />
+          <Tile label="short circuit" count={aiHealth.short_circuit} tone={aiHealth.short_circuit > 0 ? "text-orange-300" : "text-zinc-600"} />
         </div>
         {/* Cost breakdown — per-model strip. Renders only when there's
             attributed cost so empty workspaces stay tight. */}

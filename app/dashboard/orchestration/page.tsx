@@ -106,7 +106,7 @@ export default async function OrchestrationCenter() {
           <span className="text-[10px] font-mono font-semibold text-emerald-300 uppercase tracking-[0.22em]">Orchestration Center</span>
         </div>
         <h1 className="text-3xl md:text-4xl font-bold tracking-[-0.04em] mb-2">
-          The <span className="bg-gradient-to-r from-emerald-300 via-cyan-300 to-violet-300 bg-clip-text text-transparent">operations control tower</span>.
+          The <span className="bg-gradient-to-r from-emerald-300 via-cyan-300 to-orange-300 bg-clip-text text-transparent">operations control tower</span>.
         </h1>
         <p className="text-sm text-zinc-400 max-w-3xl leading-relaxed">
           Every remediation passes through the same governed flow: simulated → policy → approval → preflight → desktop review → execution-ready → verification → rollback readiness → audit. Nothing on this page applies a change.
@@ -115,7 +115,7 @@ export default async function OrchestrationCenter() {
 
       {/* Totals */}
       <section className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3">
-        <Kpi label="Active orchestrations" value={`${totals.total}`}           tone="text-violet-300" detail="One per remediation candidate." />
+        <Kpi label="Active orchestrations" value={`${totals.total}`}           tone="text-orange-300" detail="One per remediation candidate." />
         <Kpi label="Waiting approval"      value={`${totals.waitingApproval}`} tone="text-zinc-300"  detail="Operator + approver decision." />
         <Kpi label="Blocked"               value={`${totals.blocked}`}         tone="text-rose-300"   detail="Policy / source / missing prereqs." />
         <Kpi label="Desktop review ready"  value={`${totals.desktopReady}`}    tone="text-cyan-300"   detail="Can be reviewed locally." />

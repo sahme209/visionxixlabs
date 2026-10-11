@@ -228,7 +228,7 @@ export function JourneyTimeline({ provider }: { provider: Provider }) {
         className="absolute inset-0 -z-10 opacity-90 pointer-events-none"
         style={{
           background:
-            "radial-gradient(700px 280px at 90% 0%, rgba(99,102,241,0.06), transparent 60%)",
+            "radial-gradient(700px 280px at 90% 0%, rgba(245,78,0,0.06), transparent 60%)",
         }}
         aria-hidden
       />

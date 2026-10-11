@@ -74,7 +74,7 @@ aws elbv2 describe-target-health \\
         <ul className="list-disc list-inside space-y-1.5 text-zinc-400 ml-1">
           <li><strong>Local export</strong> — best for one-off review or pipelines you already own. Available today via the dashboard download button.</li>
           <li><strong>Cloud execution</strong> — Axiom applies on your behalf through the execution role. Available today for AWS.</li>
-          <li><strong>Desktop execution</strong> — planned and blocked. There is no verified current customer installer. Use the <Link href="/download" className="text-violet-300 hover:text-violet-200">web access path</Link>.</li>
+          <li><strong>Desktop execution</strong> — planned and blocked. There is no verified current customer installer. Use the <Link href="/download" className="text-orange-300 hover:text-orange-200">web access path</Link>.</li>
         </ul>
       </DocSection>
 

@@ -150,7 +150,7 @@ function ServiceCard({ service }: { service: ServiceRef }) {
   const sourceTone =
     service.discoveredFrom.includes("aws")    ? "border-white/30 bg-white/10 text-zinc-300" :
     service.discoveredFrom.includes("gcp")    ? "border-blue-500/30 bg-blue-500/10 text-blue-300"   :
-    service.discoveredFrom.includes("github") ? "border-white/[0.12] bg-violet-500/10 text-violet-300" :
+    service.discoveredFrom.includes("github") ? "border-white/[0.12] bg-orange-500/10 text-orange-300" :
                                                 "border-zinc-500/30 bg-zinc-500/10 text-zinc-300";
   return (
     <article className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-4 hover:border-emerald-500/30 transition flex flex-col">

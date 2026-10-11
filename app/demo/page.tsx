@@ -1,161 +1,81 @@
-/**
- * /demo — Phase 405 sandbox landing.
- *
- * The shared explore workspace. Every demo flow listed here uses ONLY
- * the seed scenarios in lib/demo/demoScenarios.ts — no real workspace
- * data, no real billing. Huly-style coral aurora makes the sandbox
- * feel premium without changing the "this is scripted" safety messaging.
- *
- * Demo data is gated behind `isSandboxWorkspace()` at every data-access
- * boundary (lib/workspace/workspaceKind.ts). Even if a real-workspace
- * id leaks into a demo-data path, assertNotDemoLeak() throws.
- */
-
 import Link from "next/link";
-import { ArrowRightIcon, PlayCircleIcon, BookOpenIcon, ShieldCheckIcon } from "@heroicons/react/24/outline";
+import { ArrowRightIcon, PlayCircleIcon, ShieldCheckIcon } from "@heroicons/react/24/outline";
+import { CinematicAxiomDemo } from "@/components/marketing/CinematicAxiomDemo";
+import { Footer } from "@/components/Footer";
+import { Navigation } from "@/components/Navigation";
 import { listScenarios, type DemoScenario } from "@/lib/demo/demoScenarios";
-import { SandboxNavigation } from "@/components/marketing/SandboxNavigation";
 
 export const dynamic = "force-dynamic";
 
 export default function DemoLanding() {
-  // Sandbox = client-tier visibility (matches what a paid customer can see).
   const scenarios = listScenarios("client");
 
   return (
-    <>
-      <SandboxNavigation />
-      <main className="relative max-w-6xl mx-auto overflow-x-clip px-4 sm:px-6 md:px-10 py-8 sm:py-16 space-y-10">
-      {/* Coral × violet aurora — Huly-style warm wash behind the hero */}
-      <div aria-hidden className="pointer-events-none absolute inset-x-0 -top-8 h-[520px] -z-10 overflow-hidden hidden sm:block">
-        <div className="ambient-drift absolute -top-24 left-1/2 -translate-x-1/2 w-[860px] h-[440px] rounded-full bg-brand-violet/[0.08] blur-[140px]" />
-        <div className="ambient-drift absolute top-12 right-[5%] w-[460px] h-[340px] rounded-full bg-brand-coral/[0.07] blur-[130px]" style={{ animationDelay: "-8s" }} />
-        <div className="ambient-drift absolute top-20 left-[5%] w-[380px] h-[280px] rounded-full bg-cyan-500/[0.04] blur-[120px]" style={{ animationDelay: "-14s" }} />
-      </div>
+    <div className="min-h-screen bg-[#141414] text-zinc-100">
+      <Navigation />
+      <main>
+        <section className="mx-auto max-w-[1400px] px-5 pb-10 pt-36 sm:px-8 lg:px-12 lg:pt-44">
+          <div className="max-w-4xl">
+            <p className="text-[11px] font-medium uppercase tracking-[0.18em] text-orange-400">Safe product tour · scripted data</p>
+            <h1 className="mt-5 text-5xl font-medium leading-[0.98] tracking-[-0.055em] text-zinc-50 sm:text-7xl">
+              Watch one request become a governed release.
+            </h1>
+            <p className="mt-7 max-w-2xl text-lg leading-8 text-zinc-400">
+              Choose the context, inspect evidence, coordinate dependencies, approve the exact action, and preserve proof. The tour is interactive; no account or cloud access is required.
+            </p>
+          </div>
+          <div className="mt-9 flex flex-col gap-3 sm:flex-row">
+            <a href="#product-tour" className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-zinc-100 px-6 text-sm font-semibold text-zinc-950 transition hover:bg-white">
+              Start the tour <ArrowRightIcon className="h-4 w-4" />
+            </a>
+            <Link href="/download" className="inline-flex min-h-12 items-center justify-center rounded-full border border-white/10 px-6 text-sm font-medium text-zinc-300 transition hover:bg-white/[0.04] hover:text-white">
+              Download the desktop app
+            </Link>
+          </div>
+        </section>
 
-      {/* Hero */}
-      <section className="relative">
-        <div className="flex items-center gap-2 mb-5">
-          <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-brand-coral/30 bg-gradient-to-r from-brand-coral/[0.10] via-fuchsia-500/[0.06] to-brand-violet/[0.10] text-[11.5px] font-medium text-zinc-200 backdrop-blur-sm">
-            <span className="relative flex h-1.5 w-1.5">
-              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-brand-coral opacity-70" />
-              <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-brand-coral" />
-            </span>
-            <span className="font-mono text-[10px] tracking-[0.18em] uppercase text-brand-coral/90">SANDBOX</span>
-            <span className="text-zinc-500">·</span>
-            example only
-          </span>
-        </div>
+        <CinematicAxiomDemo />
 
-        <h1 className="text-[2.35rem] sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white tracking-[-0.045em] leading-[1.02] mb-5">
-          See VisionXIXLabs{" "}
-          <span className="relative inline-block">
-            in motion.
-            <span aria-hidden className="absolute left-0 -bottom-1 h-[3px] w-[88%] rounded-full bg-gradient-to-r from-brand-coral via-fuchsia-400 to-transparent opacity-90" />
-          </span>
-        </h1>
+        <section className="mx-auto max-w-[1400px] px-5 py-20 sm:px-8 lg:px-12 lg:py-28">
+          <div className="grid gap-8 border-t border-white/[0.08] pt-12 lg:grid-cols-[0.7fr_1.3fr]">
+            <div>
+              <p className="text-[11px] font-medium uppercase tracking-[0.18em] text-orange-400">Explore by outcome</p>
+              <h2 className="mt-4 text-3xl font-medium tracking-[-0.04em] text-zinc-100 sm:text-4xl">Go deeper without a sales call.</h2>
+              <p className="mt-4 max-w-md text-sm leading-6 text-zinc-500">Each walkthrough uses isolated sample data and explains the authority boundary before showing an action.</p>
+            </div>
+            <div className="divide-y divide-white/[0.08] border-y border-white/[0.08]">
+              {scenarios.map((scenario, index) => <ScenarioRow key={scenario.id} scenario={scenario} index={index} />)}
+            </div>
+          </div>
+        </section>
 
-        <p className="text-[15.5px] text-zinc-400 max-w-2xl leading-relaxed mb-8">
-          Every screen below uses scripted example data. Nothing here touches a real cloud account
-          or burns AI credits. Visitors can step through fictional intake, approval, execution,
-          validation, and evidence states. Pick a scenario to walk through one of the {scenarios.length} core product flows.
-        </p>
-
-        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-x-4">
-          <Link
-            href="/download"
-            className="btn-press inline-flex min-h-12 items-center justify-center gap-2 px-5 sm:px-7 py-3.5 rounded-xl sm:rounded-full text-[14px] font-semibold tracking-tight"
-          >
-            Download the desktop app
-            <ArrowRightIcon className="h-4 w-4 opacity-60" />
-          </Link>
-          <Link
-            href="/demo/reference"
-            className="btn-ghost-press inline-flex min-h-12 items-center justify-center gap-2 px-5 sm:px-6 py-3.5 rounded-xl sm:rounded-full text-[13.5px] font-medium tracking-tight"
-          >
-            <BookOpenIcon className="h-4 w-4 text-brand-coral/80" />
-            Platform reference
-          </Link>
-          <Link
-            href="/docs"
-            className="inline-flex items-center justify-center text-[13.5px] text-zinc-400 hover:text-brand-coral transition-colors"
-          >
-            Read documentation
-          </Link>
-        </div>
-      </section>
-
-      {/* Coral divider */}
-      <div className="hairline-divider-coral" />
-
-      {/* Scenarios */}
-      <section>
-        <p className="text-[10px] font-mono uppercase tracking-[0.28em] text-zinc-500 mb-4 inline-flex items-center gap-3">
-          <span className="text-brand-coral/90 tabular-nums">02</span>
-          <span className="h-px w-6 bg-gradient-to-r from-brand-coral/60 to-transparent" />
-          Demo scenarios · {scenarios.length}
-        </p>
-        <h2 className="text-2xl md:text-3xl font-bold text-white tracking-[-0.03em] mb-7 leading-tight">
-          Pick a story. Walk through it.
-        </h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-          {scenarios.map((s, i) => <ScenarioCard key={s.id} scenario={s} index={i} />)}
-        </div>
-      </section>
-
-      {/* Safety */}
-      <section className="rounded-2xl border border-brand-coral/15 bg-gradient-to-br from-brand-coral/[0.04] via-brand-violet/[0.025] to-transparent p-6 space-y-3">
-        <header className="flex items-center gap-2">
-          <ShieldCheckIcon className="h-4 w-4 text-brand-coral/80" />
-          <p className="text-[10px] font-mono uppercase tracking-[0.28em] text-brand-coral/90">
-            How the sandbox stays isolated
-          </p>
-        </header>
-        <ul className="space-y-1.5 text-[13px] text-zinc-300 leading-relaxed">
-          <li>· Every demo data path is gated by <code className="font-mono text-brand-coral/80">isSandboxWorkspace()</code> — a closed-union check on the workspace id prefix.</li>
-          <li>· <code className="font-mono text-brand-coral/80">assertNotDemoLeak()</code> throws at the boundary if a real workspace ever asks for demo content.</li>
-          <li>· Scenarios live in source control (<code className="font-mono text-zinc-300">lib/demo/demoScenarios.ts</code>), not the workspace database. They can&apos;t bleed across tenants.</li>
-          <li>· No connector credentials are stored. No webhooks fire. No AI tokens are spent.</li>
-          <li>· Step position lives only in the current browser page. Refreshing or reopening a scenario resets it; there is no account, saved workspace, or production state.</li>
-          <li>· The sandbox illustrates the installed application&apos;s workflow model. It is not the downloadable app and cannot execute a deployment.</li>
-        </ul>
-      </section>
+        <section className="mx-auto max-w-[1400px] px-5 pb-24 sm:px-8 lg:px-12">
+          <div className="flex flex-col gap-6 rounded-2xl border border-white/[0.08] bg-[#1A1A1A] p-6 sm:flex-row sm:items-center sm:justify-between sm:p-8">
+            <div className="flex max-w-2xl gap-4">
+              <ShieldCheckIcon className="mt-0.5 h-6 w-6 shrink-0 text-orange-400" />
+              <div>
+                <h2 className="text-lg font-medium text-zinc-100">A safe demonstration, not a hidden control plane.</h2>
+                <p className="mt-2 text-sm leading-6 text-zinc-500">No connector credentials are stored, no webhooks fire, no AI credits are spent, and no production action can run from this website.</p>
+              </div>
+            </div>
+            <Link href="/docs/getting-started" className="inline-flex min-h-11 shrink-0 items-center justify-center rounded-full border border-white/10 px-5 text-sm text-zinc-300 transition hover:bg-white/[0.04]">Read the quickstart</Link>
+          </div>
+        </section>
       </main>
-    </>
+      <Footer />
+    </div>
   );
 }
 
-function ScenarioCard({ scenario, index }: { scenario: DemoScenario; index: number }) {
+function ScenarioRow({ scenario, index }: { scenario: DemoScenario; index: number }) {
   return (
-    <Link
-      href={`/demo/${scenario.id}`}
-      className="group relative rounded-xl border border-white/[0.06] bg-white/[0.01] p-4 sm:p-5 hover:border-brand-coral/30 hover:bg-brand-coral/[0.04] transition-all overflow-hidden"
-    >
-      {/* Subtle coral halo on hover */}
-      <span
-        aria-hidden
-        className="absolute -inset-px rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-        style={{ background: "radial-gradient(60% 80% at 0% 0%, rgba(244,114,182,0.10), transparent 60%)" }}
-      />
-      <div className="relative flex items-start justify-between gap-3 mb-2">
-        <div className="flex items-start gap-2 min-w-0">
-          <span className="text-[10px] font-mono tabular-nums text-brand-coral/70 group-hover:text-brand-coral transition-colors">
-            {String(index + 1).padStart(2, "0")}
-          </span>
-          <h3 className="text-[14.5px] font-semibold leading-5 text-white group-hover:text-white transition-colors">
-            {scenario.title}
-          </h3>
-        </div>
-        <span className="text-[10px] font-mono text-zinc-600 whitespace-nowrap">~{scenario.estimatedMinutes} min</span>
+    <Link href={`/demo/${scenario.id}`} className="group grid gap-3 py-6 transition sm:grid-cols-[48px_1fr_auto] sm:items-center">
+      <span className="font-mono text-xs text-zinc-600">{String(index + 1).padStart(2, "0")}</span>
+      <div>
+        <h3 className="text-base font-medium text-zinc-200 transition group-hover:text-white">{scenario.title}</h3>
+        <p className="mt-1 max-w-2xl text-sm leading-6 text-zinc-500">{scenario.pitch}</p>
       </div>
-      <p className="relative text-[12.5px] text-zinc-400 leading-relaxed mb-3">{scenario.pitch}</p>
-      <div className="relative flex flex-wrap items-center justify-between gap-x-3 gap-y-1.5">
-        <span className="inline-flex items-center gap-1.5 text-[10.5px] font-mono text-zinc-500 group-hover:text-brand-coral/90 transition-colors">
-          <PlayCircleIcon className="h-3 w-3" />
-          {scenario.steps.length} steps
-        </span>
-        <span className="text-[10px] font-mono text-zinc-600">reviewed · {scenario.lastReviewed}</span>
-      </div>
+      <span className="inline-flex items-center gap-2 text-xs text-zinc-500 transition group-hover:text-orange-300"><PlayCircleIcon className="h-4 w-4" /> {scenario.steps.length} steps</span>
     </Link>
   );
 }

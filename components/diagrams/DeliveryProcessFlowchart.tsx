@@ -27,7 +27,7 @@ export function DeliveryProcessFlowchart() {
           </marker>
           <linearGradient id="dp-grad" x1="0%" y1="0%" x2="100%" y2="0%">
             <stop offset="0%" stopColor="#6366f1" />
-            <stop offset="100%" stopColor="#8b5cf6" />
+            <stop offset="100%" stopColor="#ff783d" />
           </linearGradient>
         </defs>
         {steps.map((s, i) => (
@@ -52,7 +52,7 @@ export function DeliveryProcessFlowchart() {
               fill="white"
               stroke="#6366f1"
               strokeWidth="2"
-              className="fill-zinc-800 stroke-violet-500"
+              className="fill-zinc-800 stroke-orange-500"
             />
             <rect x={s.x - 60} y="20" width="120" height="28" rx="6" fill="url(#dp-grad)" />
             <text x={s.x} y="38" textAnchor="middle" className="fill-white font-bold text-sm" fill="white">{s.label}</text>

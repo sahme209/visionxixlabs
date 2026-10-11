@@ -303,7 +303,7 @@ export default async function AgiMemoryEntryPage({
           )}
         </div>
         <h1 className="text-[28px] sm:text-[34px] leading-[1.1] font-semibold text-white tracking-[-0.02em] mb-3 inline-flex items-baseline gap-3">
-          <SparklesIcon className="h-6 w-6 text-violet-300 shrink-0 self-center" />
+          <SparklesIcon className="h-6 w-6 text-orange-300 shrink-0 self-center" />
           AGI rationale
         </h1>
         <p className="text-[12px] font-mono text-zinc-500">target · {entry.targetKind}:{entry.targetId}</p>

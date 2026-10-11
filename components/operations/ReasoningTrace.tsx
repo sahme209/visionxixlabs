@@ -43,8 +43,8 @@ const PHASE_CONFIG: Record<
 > = {
   observe: { icon: EyeIcon, iconClass: "text-blue-400", bgClass: "bg-blue-500/10 border-blue-500/20", label: "Observe" },
   interpret: { icon: DocumentMagnifyingGlassIcon, iconClass: "text-cyan-400", bgClass: "bg-cyan-500/10 border-cyan-500/20", label: "Interpret" },
-  reason: { icon: CpuChipIcon, iconClass: "text-violet-400", bgClass: "bg-violet-500/10 border-violet-500/20", label: "Reason" },
-  plan: { icon: ChartBarIcon, iconClass: "text-fuchsia-400", bgClass: "bg-fuchsia-500/10 border-fuchsia-500/20", label: "Plan" },
+  reason: { icon: CpuChipIcon, iconClass: "text-orange-400", bgClass: "bg-orange-500/10 border-orange-500/20", label: "Reason" },
+  plan: { icon: ChartBarIcon, iconClass: "text-amber-400", bgClass: "bg-amber-500/10 border-amber-500/20", label: "Plan" },
   verify: { icon: ShieldCheckIcon, iconClass: "text-zinc-400", bgClass: "bg-white/10 border-white/20", label: "Verify" },
   execute: { icon: CommandLineIcon, iconClass: "text-emerald-400", bgClass: "bg-emerald-500/10 border-emerald-500/20", label: "Execute" },
 };
@@ -83,8 +83,8 @@ export function ReasoningTrace({ data, className = "" }: ReasoningTraceProps) {
       <div className="px-6 py-5 border-b border-white/[0.06] bg-white/[0.01]">
         <div className="flex items-center justify-between gap-3 mb-3">
           <div className="flex items-center gap-2">
-            <CpuChipIcon className="h-4 w-4 text-violet-400" />
-            <span className="text-[10px] font-semibold text-violet-400 uppercase tracking-wider">Agent Reasoning Trace</span>
+            <CpuChipIcon className="h-4 w-4 text-orange-400" />
+            <span className="text-[10px] font-semibold text-orange-400 uppercase tracking-wider">Agent Reasoning Trace</span>
             <span className="text-[10px] text-zinc-600 font-mono">{trace.runId}</span>
           </div>
           <span className="text-[10px] text-zinc-500 font-mono uppercase">Confidence verified</span>
@@ -95,11 +95,11 @@ export function ReasoningTrace({ data, className = "" }: ReasoningTraceProps) {
       </div>
 
       {/* Why it matters */}
-      <div className="px-6 py-4 border-b border-white/[0.06] bg-violet-500/[0.03]">
+      <div className="px-6 py-4 border-b border-white/[0.06] bg-orange-500/[0.03]">
         <div className="flex items-start gap-3">
-          <ScaleIcon className="h-4 w-4 text-violet-400 mt-0.5 shrink-0" />
+          <ScaleIcon className="h-4 w-4 text-orange-400 mt-0.5 shrink-0" />
           <div>
-            <p className="text-[10px] font-semibold text-violet-400 uppercase tracking-wider mb-1">Why this matters</p>
+            <p className="text-[10px] font-semibold text-orange-400 uppercase tracking-wider mb-1">Why this matters</p>
             <p className="text-sm text-zinc-300 leading-relaxed">{trace.whyItMatters}</p>
           </div>
         </div>
@@ -121,7 +121,7 @@ export function ReasoningTrace({ data, className = "" }: ReasoningTraceProps) {
                   className={`absolute left-[1.05rem] top-9 bottom-0 w-px ${isComplete ? "bg-emerald-500/30" : "bg-white/[0.08]"}`}
                 />
               )}
-              <div className={`absolute left-0 top-0 w-9 h-9 rounded-xl ${phase.bgClass} border flex items-center justify-center ${isActive ? "ring-2 ring-violet-500/50 animate-pulse" : ""}`}>
+              <div className={`absolute left-0 top-0 w-9 h-9 rounded-xl ${phase.bgClass} border flex items-center justify-center ${isActive ? "ring-2 ring-orange-500/50 animate-pulse" : ""}`}>
                 {isComplete ? (
                   <CheckCircleIcon className="h-4 w-4 text-emerald-400" />
                 ) : (

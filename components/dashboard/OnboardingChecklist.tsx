@@ -66,14 +66,14 @@ export function OnboardingChecklist({ compact = false, alwaysShow = false }: Pro
   if (c.allDone && !alwaysShow) return null;
 
   return (
-    <div className="mb-6 rounded-2xl border border-violet-500/[0.18] bg-violet-500/[0.03] p-5">
+    <div className="mb-6 rounded-2xl border border-orange-500/[0.18] bg-orange-500/[0.03] p-5">
       <div className="flex items-center justify-between mb-3 gap-2 flex-wrap">
-        <p className="text-[13px] font-semibold text-violet-100">
+        <p className="text-[13px] font-semibold text-orange-100">
           {c.allDone ? "You're all set — zero-touch onboarding complete." : "Get started"}
         </p>
         <div className="flex items-center gap-2">
           <div className="w-32 h-1.5 rounded-full bg-zinc-800/80 overflow-hidden">
-            <div className="h-full bg-gradient-to-r from-violet-500 to-fuchsia-500 transition-all" style={{ width: `${c.percent}%` }} />
+            <div className="h-full bg-gradient-to-r from-orange-500 to-amber-500 transition-all" style={{ width: `${c.percent}%` }} />
           </div>
           <p className="text-[11px] font-mono text-zinc-300">{c.completed}/{c.total} · {c.percent}%</p>
         </div>
@@ -86,7 +86,7 @@ export function OnboardingChecklist({ compact = false, alwaysShow = false }: Pro
             ? "text-emerald-300"
             : item.blockedByPredecessor
               ? "text-zinc-600"
-              : "text-violet-300";
+              : "text-orange-300";
           return (
             <li key={item.key} className="flex items-start gap-3">
               <Icon className={`h-5 w-5 ${iconCls} shrink-0 mt-0.5`} />
@@ -108,14 +108,14 @@ export function OnboardingChecklist({ compact = false, alwaysShow = false }: Pro
                       href={item.cta.href}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-block mt-1.5 text-[11px] font-mono text-violet-300 hover:text-violet-200 underline-offset-2 hover:underline"
+                      className="inline-block mt-1.5 text-[11px] font-mono text-orange-300 hover:text-orange-200 underline-offset-2 hover:underline"
                     >
                       {item.cta.label} →
                     </a>
                   ) : (
                     <Link
                       href={item.cta.href}
-                      className="inline-block mt-1.5 text-[11px] font-mono text-violet-300 hover:text-violet-200 underline-offset-2 hover:underline"
+                      className="inline-block mt-1.5 text-[11px] font-mono text-orange-300 hover:text-orange-200 underline-offset-2 hover:underline"
                     >
                       {item.cta.label} →
                     </Link>

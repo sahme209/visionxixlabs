@@ -54,7 +54,7 @@ interface Report {
 
 const OUTCOME_TONE: Record<string, string> = {
   deferred_to_human:        "bg-white/15 text-zinc-300 border-white/30",
-  approval_packet_prepared: "bg-violet-500/15 text-violet-300 border-white/[0.12]",
+  approval_packet_prepared: "bg-orange-500/15 text-orange-300 border-white/[0.12]",
   execution_handed_off:     "bg-cyan-500/15 text-cyan-300 border-cyan-500/30",
   verified_complete:        "bg-emerald-500/15 text-emerald-300 border-emerald-500/30",
   halted_at_gate:           "bg-rose-500/15 text-rose-300 border-rose-500/30",
@@ -92,7 +92,7 @@ export default function RationalePage() {
           className="absolute inset-0 -z-10 opacity-90 pointer-events-none"
           style={{
             background:
-              "radial-gradient(900px 320px at 12% 0%, rgba(124,58,237,0.10), transparent 60%), radial-gradient(700px 260px at 88% 110%, rgba(244,114,182,0.06), transparent 60%)",
+              "radial-gradient(900px 320px at 12% 0%, rgba(245, 78, 0,0.10), transparent 60%), radial-gradient(700px 260px at 88% 110%, rgba(255,120,61,0.06), transparent 60%)",
           }}
           aria-hidden
         />
@@ -100,8 +100,8 @@ export default function RationalePage() {
 
         <div className="flex items-center gap-2 mb-3 flex-wrap">
           <span className="inline-flex items-center gap-2 rounded-full border border-white/[0.06] bg-white/[0.02] px-2.5 py-1">
-            <DocumentMagnifyingGlassIcon className="h-3.5 w-3.5 text-violet-300" />
-            <span className="text-[10px] font-semibold uppercase tracking-widest text-violet-300">
+            <DocumentMagnifyingGlassIcon className="h-3.5 w-3.5 text-orange-300" />
+            <span className="text-[10px] font-semibold uppercase tracking-widest text-orange-300">
               Decision Rationale
             </span>
           </span>
@@ -130,8 +130,8 @@ export default function RationalePage() {
 
         {report && (
           <div className="mt-5 grid grid-cols-2 md:grid-cols-5 gap-2">
-            <Stat label="Total rows" value={String(report.total)} tone="violet" />
-            <Stat label="Approval packets" value={String(report.perOutcome.approval_packet_prepared ?? 0)} tone="violet" />
+            <Stat label="Total rows" value={String(report.total)} tone="orange" />
+            <Stat label="Approval packets" value={String(report.perOutcome.approval_packet_prepared ?? 0)} tone="orange" />
             <Stat label="Verified" value={String(report.perOutcome.verified_complete ?? 0)} tone="emerald" icon={CheckCircleIcon} />
             <Stat label="Halted" value={String(report.perOutcome.halted_at_gate ?? 0)} tone="rose" icon={XCircleIcon} />
             <Stat label="Errored" value={String(report.perOutcome.errored ?? 0)} tone="rose" />
@@ -147,7 +147,7 @@ export default function RationalePage() {
             onClick={() => setFilter(o)}
             className={`text-[10px] font-mono px-2 py-0.5 rounded-full border transition ${
               filter === o
-                ? "bg-violet-500/15 text-white border-white/[0.12]"
+                ? "bg-orange-500/15 text-white border-white/[0.12]"
                 : "bg-white/[0.02] text-zinc-400 border-white/[0.06] hover:text-white"
             }`}
           >
@@ -239,12 +239,12 @@ export default function RationalePage() {
 
 function Stat({
   label, value, tone, icon: Icon,
-}: { label: string; value: string; tone: "emerald" | "amber" | "rose" | "violet" | "zinc"; icon?: typeof ClockIcon }) {
+}: { label: string; value: string; tone: "emerald" | "amber" | "rose" | "orange" | "zinc"; icon?: typeof ClockIcon }) {
   const cls = {
     emerald: "border-emerald-500/[0.18] bg-emerald-500/[0.03] text-emerald-200",
     amber:   "border-white/[0.18] bg-white/[0.03] text-zinc-200",
     rose:    "border-rose-500/[0.18] bg-rose-500/[0.03] text-rose-200",
-    violet:  "border-white/[0.06] bg-white/[0.015] text-white",
+    orange:  "border-white/[0.06] bg-white/[0.015] text-white",
     zinc:    "border-white/[0.06] bg-white/[0.02] text-zinc-200",
   }[tone];
   return (

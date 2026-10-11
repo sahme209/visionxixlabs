@@ -41,11 +41,11 @@ export default async function AccountHelpTopicPage({ params }: { params: Promise
       <div className="mx-auto max-w-[1400px]">
         <AuthCompanionHeader email={context.email} />
         <article className="max-w-3xl py-14 sm:py-20">
-          <Link href="/account/help" className="text-sm text-violet-300 transition hover:text-violet-200">← Help</Link>
-          <p className="mt-10 text-[10px] uppercase tracking-[0.22em] text-violet-300">Axiom web companion · guide</p>
+          <Link href="/account/help" className="text-sm text-orange-300 transition hover:text-orange-200">← Help</Link>
+          <p className="mt-10 text-[10px] uppercase tracking-[0.22em] text-orange-300">Axiom web companion · guide</p>
           <h1 className="mt-4 text-4xl font-semibold tracking-[-0.045em] sm:text-5xl">{content.title}</h1>
           <p className="mt-5 max-w-2xl text-base leading-7 text-zinc-400">{content.intro}</p>
-          <ol className="mt-10 space-y-3">{content.points.map((point, index) => <li key={point} className="flex gap-4 rounded-xl border border-white/[0.08] bg-white/[0.025] p-5"><span className="text-xs text-violet-300">0{index + 1}</span><p className="text-sm leading-6 text-zinc-300">{point}</p></li>)}</ol>
+          <ol className="mt-10 space-y-3">{content.points.map((point, index) => <li key={point} className="flex gap-4 rounded-xl border border-white/[0.08] bg-white/[0.025] p-5"><span className="text-xs text-orange-300">0{index + 1}</span><p className="text-sm leading-6 text-zinc-300">{point}</p></li>)}</ol>
         </article>
       </div>
     </AuthCompanionShell>

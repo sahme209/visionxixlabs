@@ -93,8 +93,8 @@ export default function TroubleshootingPage() {
         </p>
         <ul className="list-disc list-inside space-y-1 text-zinc-400 ml-1">
           <li>Open the relevant scan in the dashboard and inspect the audit log — every action is logged with the exact failure reason</li>
-          <li>Check the <Link href="/docs/faq" className="text-violet-300 hover:text-violet-200">FAQ</Link> for known edge cases</li>
-          <li>Reach out via <Link href="/contact" className="text-violet-300 hover:text-violet-200">/contact</Link> — include the run ID, scan ID, or error code shown in the dashboard</li>
+          <li>Check the <Link href="/docs/faq" className="text-orange-300 hover:text-orange-200">FAQ</Link> for known edge cases</li>
+          <li>Reach out via <Link href="/contact" className="text-orange-300 hover:text-orange-200">/contact</Link> — include the run ID, scan ID, or error code shown in the dashboard</li>
         </ul>
       </DocSection>
 

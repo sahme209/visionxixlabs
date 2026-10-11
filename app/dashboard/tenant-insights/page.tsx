@@ -60,8 +60,8 @@ export default function TenantInsightsPage() {
       <div className="relative mb-8 rounded-3xl border border-white/[0.05] bg-gradient-to-br from-white/[0.025] via-white/[0.015] to-transparent p-6 md:p-8 overflow-hidden">
         <div className="flex items-center gap-2 mb-3 flex-wrap">
           <span className="inline-flex items-center gap-2 rounded-full border border-white/[0.06] bg-white/[0.02] px-2.5 py-1">
-            <SparklesIcon className="h-3.5 w-3.5 text-indigo-300" />
-            <span className="text-[10px] font-semibold uppercase tracking-widest text-indigo-300">
+            <SparklesIcon className="h-3.5 w-3.5 text-zinc-300" />
+            <span className="text-[10px] font-semibold uppercase tracking-widest text-zinc-300">
               Tenant insights · aggregate_input_only
             </span>
           </span>
@@ -89,7 +89,7 @@ export default function TenantInsightsPage() {
               onClick={() => setDays(d)}
               className={`text-[10px] font-mono px-2 py-0.5 rounded-full border transition ${
                 days === d
-                  ? "bg-indigo-500/15 text-indigo-200 border-indigo-500/30"
+                  ? "bg-zinc-500/15 text-zinc-200 border-zinc-500/30"
                   : "bg-white/[0.02] text-zinc-400 border-white/[0.06] hover:text-white"
               }`}
             >
@@ -107,11 +107,11 @@ export default function TenantInsightsPage() {
 
       {data && (
         <>
-          <div className="rounded-2xl border border-indigo-500/[0.18] bg-indigo-500/[0.04] p-5 mb-6 max-w-3xl">
-            <p className="text-[10px] font-mono uppercase tracking-widest text-indigo-300 mb-2">Summary</p>
+          <div className="rounded-2xl border border-zinc-500/[0.18] bg-zinc-500/[0.04] p-5 mb-6 max-w-3xl">
+            <p className="text-[10px] font-mono uppercase tracking-widest text-zinc-300 mb-2">Summary</p>
             <p className="text-[14px] text-zinc-100 leading-relaxed">{data.narrative.paragraph}</p>
             <p className="mt-3 text-[10px] font-mono text-zinc-500">
-              provider: <span className="text-indigo-300">{data.narrative.provider ?? "(fallback)"}</span>
+              provider: <span className="text-zinc-300">{data.narrative.provider ?? "(fallback)"}</span>
               {data.narrative.model && <>  ·  model: <span className="text-zinc-300">{data.narrative.model}</span></>}
               {" "}·{" "}
               aiUsed: <span className={data.narrative.aiUsed ? "text-emerald-300" : "text-zinc-300"}>{String(data.narrative.aiUsed)}</span>

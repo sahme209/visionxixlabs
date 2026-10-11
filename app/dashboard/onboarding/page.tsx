@@ -81,7 +81,7 @@ export default function OnboardingPage() {
           className="absolute inset-0 -z-10 opacity-90 pointer-events-none"
           style={{
             background:
-              "radial-gradient(900px 320px at 12% 0%, rgba(99,102,241,0.10), transparent 60%), radial-gradient(700px 260px at 88% 110%, rgba(34,211,238,0.06), transparent 60%)",
+              "radial-gradient(900px 320px at 12% 0%, rgba(245,78,0,0.10), transparent 60%), radial-gradient(700px 260px at 88% 110%, rgba(34,211,238,0.06), transparent 60%)",
           }}
           aria-hidden
         />
@@ -89,8 +89,8 @@ export default function OnboardingPage() {
 
         <div className="flex items-center gap-2 mb-3 flex-wrap">
           <span className="inline-flex items-center gap-2 rounded-full border border-white/[0.06] bg-white/[0.02] px-2.5 py-1">
-            <RocketLaunchIcon className="h-3.5 w-3.5 text-indigo-300" />
-            <span className="text-[10px] font-semibold uppercase tracking-widest text-indigo-300">
+            <RocketLaunchIcon className="h-3.5 w-3.5 text-zinc-300" />
+            <span className="text-[10px] font-semibold uppercase tracking-widest text-zinc-300">
               First-Run Wizard · setup_review_only_no_execution
             </span>
           </span>
@@ -119,7 +119,7 @@ export default function OnboardingPage() {
             </div>
             <div className="h-2 rounded-full border border-white/[0.08] bg-black/40 overflow-hidden">
               <div
-                className="h-full bg-gradient-to-r from-indigo-500 via-cyan-400 to-emerald-400 transition-all"
+                className="h-full bg-gradient-to-r from-zinc-500 via-cyan-400 to-emerald-400 transition-all"
                 style={{ width: `${pct}%` }}
               />
             </div>

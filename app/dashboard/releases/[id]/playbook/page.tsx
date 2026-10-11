@@ -131,7 +131,7 @@ export default function UnifiedPlaybookPage() {
           onClick={() => setTab("what")}
           className={`px-3 py-2 text-[12px] font-semibold border-b-2 transition ${
             tab === "what"
-              ? "border-violet-400 text-white"
+              ? "border-orange-400 text-white"
               : "border-transparent text-zinc-400 hover:text-white"
           }`}
         >
@@ -141,7 +141,7 @@ export default function UnifiedPlaybookPage() {
           onClick={() => setTab("attention")}
           className={`px-3 py-2 text-[12px] font-semibold border-b-2 transition ${
             tab === "attention"
-              ? "border-violet-400 text-white"
+              ? "border-orange-400 text-white"
               : "border-transparent text-zinc-400 hover:text-white"
           }`}
         >
@@ -151,7 +151,7 @@ export default function UnifiedPlaybookPage() {
           onClick={() => setTab("changed")}
           className={`px-3 py-2 text-[12px] font-semibold border-b-2 transition ${
             tab === "changed"
-              ? "border-violet-400 text-white"
+              ? "border-orange-400 text-white"
               : "border-transparent text-zinc-400 hover:text-white"
           }`}
         >

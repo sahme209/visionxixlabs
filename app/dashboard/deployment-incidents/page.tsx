@@ -189,7 +189,7 @@ function IncidentCard({ incident, onChanged }: { incident: IncidentView; onChang
       {incident.summary && <p className="text-[12.5px] text-zinc-300 mt-1">{incident.summary}</p>}
       {incident.externalUrl && (
         <p className="text-[10.5px] font-mono text-zinc-500 mt-1">
-          ↳ <a href={incident.externalUrl} target="_blank" rel="noopener noreferrer" className="text-violet-300 hover:underline">{incident.externalUrl}</a>
+          ↳ <a href={incident.externalUrl} target="_blank" rel="noopener noreferrer" className="text-orange-300 hover:underline">{incident.externalUrl}</a>
         </p>
       )}
       <div className="mt-3 pt-3 border-t border-white/[0.04] flex items-center gap-2 flex-wrap text-[11px] font-mono">

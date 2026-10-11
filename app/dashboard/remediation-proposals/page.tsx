@@ -80,7 +80,7 @@ const SEVERITY_CLASS: Record<ProposalView["severity"], string> = {
 };
 
 const DECISION_CLASS: Record<Decision, string> = {
-  pending:     "bg-violet-500/15 text-violet-300 border-white/[0.10]",
+  pending:     "bg-orange-500/15 text-orange-300 border-white/[0.10]",
   accepted:    "bg-emerald-500/15 text-emerald-300 border-emerald-500/25",
   rejected:    "bg-rose-500/15 text-rose-300 border-rose-500/25",
   implemented: "bg-cyan-500/15 text-cyan-300 border-cyan-500/25",
@@ -204,7 +204,7 @@ function ProposalCard({ proposal, onChanged }: { proposal: ProposalView; onChang
   const isNoAction = proposal.kind === "no_action_recommended";
 
   return (
-    <div className={`rounded-2xl border p-4 ${isNoAction ? "border-zinc-700/40 bg-zinc-900/40" : "border-white/[0.06] bg-violet-500/[0.025]"}`}>
+    <div className={`rounded-2xl border p-4 ${isNoAction ? "border-zinc-700/40 bg-zinc-900/40" : "border-white/[0.06] bg-orange-500/[0.025]"}`}>
       <div className="flex items-center gap-2 mb-2 flex-wrap">
         <span className={`text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded border ${SEVERITY_CLASS[proposal.severity]}`}>
           {proposal.severity}
@@ -274,7 +274,7 @@ function ProposalCard({ proposal, onChanged }: { proposal: ProposalView; onChang
             onChange={(e) => setLinkedManualFixId(e.target.value)}
             placeholder="optional manual-fix id"
             disabled={busy !== null}
-            className="rounded-md border border-white/[0.08] bg-black/30 px-2 py-1 text-[11px] text-zinc-100 placeholder:text-zinc-600 focus:border-violet-500/40 focus:outline-none disabled:opacity-50 w-[160px]"
+            className="rounded-md border border-white/[0.08] bg-black/30 px-2 py-1 text-[11px] text-zinc-100 placeholder:text-zinc-600 focus:border-orange-500/40 focus:outline-none disabled:opacity-50 w-[160px]"
           />
           <input
             type="text"
@@ -283,7 +283,7 @@ function ProposalCard({ proposal, onChanged }: { proposal: ProposalView; onChang
             onChange={(e) => setNote(e.target.value)}
             placeholder="optional note"
             disabled={busy !== null}
-            className="flex-1 min-w-[160px] rounded-md border border-white/[0.08] bg-black/30 px-2 py-1 text-[11px] text-zinc-100 placeholder:text-zinc-600 focus:border-violet-500/40 focus:outline-none disabled:opacity-50"
+            className="flex-1 min-w-[160px] rounded-md border border-white/[0.08] bg-black/30 px-2 py-1 text-[11px] text-zinc-100 placeholder:text-zinc-600 focus:border-orange-500/40 focus:outline-none disabled:opacity-50"
           />
           <button type="button" onClick={() => decide("accept")} disabled={busy !== null}
             className="px-2 py-1 rounded border border-emerald-500/30 bg-emerald-500/[0.08] text-emerald-200 hover:bg-emerald-500/[0.16] disabled:opacity-50 disabled:cursor-wait">
@@ -366,7 +366,7 @@ function GeneratePanel({ onGenerated }: { onGenerated: () => void }) {
         <button
           type="button"
           onClick={() => setState({ kind: "open" })}
-          className="px-3 py-1.5 rounded-lg border border-white/[0.12] bg-white/[0.025] text-[12px] font-semibold text-white hover:bg-violet-500/[0.12] transition-colors inline-flex items-center gap-1.5"
+          className="px-3 py-1.5 rounded-lg border border-white/[0.12] bg-white/[0.025] text-[12px] font-semibold text-white hover:bg-orange-500/[0.12] transition-colors inline-flex items-center gap-1.5"
         >
           <WrenchScrewdriverIcon className="h-3.5 w-3.5" />
           Generate remediations
@@ -379,7 +379,7 @@ function GeneratePanel({ onGenerated }: { onGenerated: () => void }) {
   return (
     <div className="mb-6 rounded-2xl border border-white/[0.06] bg-white/[0.015] p-5">
       <div className="flex items-center justify-between mb-3">
-        <p className="text-[13px] font-semibold text-violet-100">Generate remediation proposals</p>
+        <p className="text-[13px] font-semibold text-orange-100">Generate remediation proposals</p>
         <button type="button" onClick={() => { setIncidentId(""); setState({ kind: "closed" }); }} className="text-[11px] font-mono text-zinc-400 hover:text-zinc-200" disabled={busy}>cancel</button>
       </div>
       <label className="block mb-3">
@@ -390,7 +390,7 @@ function GeneratePanel({ onGenerated }: { onGenerated: () => void }) {
           onChange={(e) => setIncidentId(e.target.value)}
           placeholder="inc_..."
           disabled={busy}
-          className="w-full rounded-lg border border-white/[0.08] bg-black/30 px-3 py-2 text-[12.5px] text-zinc-100 placeholder:text-zinc-600 focus:border-violet-500/40 focus:outline-none disabled:opacity-50"
+          className="w-full rounded-lg border border-white/[0.08] bg-black/30 px-3 py-2 text-[12.5px] text-zinc-100 placeholder:text-zinc-600 focus:border-orange-500/40 focus:outline-none disabled:opacity-50"
         />
       </label>
       <div className="flex items-center gap-3">
@@ -398,7 +398,7 @@ function GeneratePanel({ onGenerated }: { onGenerated: () => void }) {
           type="button"
           onClick={submit}
           disabled={busy || !incidentId}
-          className="px-3 py-1.5 rounded-lg border border-violet-500/40 bg-violet-500/[0.12] text-[12px] font-semibold text-violet-100 hover:bg-violet-500/[0.20] disabled:opacity-50 disabled:cursor-wait transition-colors inline-flex items-center gap-1.5"
+          className="px-3 py-1.5 rounded-lg border border-orange-500/40 bg-orange-500/[0.12] text-[12px] font-semibold text-orange-100 hover:bg-orange-500/[0.20] disabled:opacity-50 disabled:cursor-wait transition-colors inline-flex items-center gap-1.5"
         >
           <WrenchScrewdriverIcon className="h-3.5 w-3.5" />
           {busy ? "Generating…" : "Generate"}
@@ -436,7 +436,7 @@ interface RemediationEnrichmentView {
 type RemediationEnrichBody = { ok: true; data: { enrichment: RemediationEnrichmentView | null } } | { ok: false; error: string; hint?: string };
 
 const REMEDIATION_OUTCOME_BADGE: Record<string, string> = {
-  ai_generated:    "bg-violet-500/15 text-violet-300 border-white/[0.10]",
+  ai_generated:    "bg-orange-500/15 text-orange-300 border-white/[0.10]",
   fallback_rules:  "bg-white/15 text-zinc-300 border-white/25",
   error:           "bg-rose-500/15 text-rose-300 border-rose-500/25",
 };
@@ -497,7 +497,7 @@ function AiRemediationRationaleCard({ proposalId }: { proposalId: string }) {
             type="button"
             onClick={generate}
             disabled={generating}
-            className="px-2 py-1 rounded border border-violet-500/40 bg-violet-500/[0.12] text-[10.5px] font-semibold text-violet-100 hover:bg-violet-500/[0.20] disabled:opacity-50 disabled:cursor-wait transition-colors"
+            className="px-2 py-1 rounded border border-orange-500/40 bg-orange-500/[0.12] text-[10.5px] font-semibold text-orange-100 hover:bg-orange-500/[0.20] disabled:opacity-50 disabled:cursor-wait transition-colors"
           >
             {generating ? "Generating…" : "Generate why-this"}
           </button>

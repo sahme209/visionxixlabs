@@ -9,7 +9,8 @@ describe("desktop homepage presentation contract", () => {
   it("uses a direct, stable headline without character-level animation", () => {
     const page = source("app/page.tsx");
 
-    expect(page).toContain("Turn the request into the playbook.");
+    expect(page).toContain("Ship the change.");
+    expect(page).toContain("Prove it was safe.");
     expect(page).not.toContain("SplitText");
     expect(page).not.toContain('splitBy="char"');
   });

@@ -26,14 +26,14 @@ const SYSTEM_COLOR: Record<ReleaseSystemId, string> = {
   gitlab: "text-orange-400 bg-orange-500/10 border-orange-500/20",
   azure_devops: "text-blue-400 bg-blue-500/10 border-blue-500/20",
   jenkins: "text-zinc-400 bg-white/10 border-white/20",
-  argocd: "text-fuchsia-400 bg-fuchsia-500/10 border-fuchsia-500/20",
+  argocd: "text-amber-400 bg-amber-500/10 border-amber-500/20",
 };
 
 const ENV_COLOR = {
   production: "text-red-400 bg-red-500/10 border-red-500/20",
   staging: "text-zinc-400 bg-white/10 border-white/20",
   development: "text-blue-400 bg-blue-500/10 border-blue-500/20",
-  qa: "text-fuchsia-400 bg-fuchsia-500/10 border-fuchsia-500/20",
+  qa: "text-amber-400 bg-amber-500/10 border-amber-500/20",
 } as const;
 
 const STATUS_CONFIG: Record<

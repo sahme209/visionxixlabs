@@ -58,7 +58,7 @@ const ROLE_PILL: Record<WorkspaceRole, string> = {
   owner:             "bg-rose-500/15 text-rose-300",
   admin:             "bg-white/15 text-zinc-300",
   cloud_engineer:    "bg-cyan-500/15 text-cyan-300",
-  security_reviewer: "bg-violet-500/15 text-violet-300",
+  security_reviewer: "bg-orange-500/15 text-orange-300",
   release_manager:   "bg-emerald-500/15 text-emerald-300",
   viewer:            "bg-zinc-700/40 text-zinc-300",
 };
@@ -114,7 +114,7 @@ export default function WorkspaceSettingsPage() {
           className="absolute inset-0 -z-10 opacity-90 pointer-events-none"
           style={{
             background:
-              "radial-gradient(900px 320px at 12% 0%, rgba(99,102,241,0.10), transparent 60%), radial-gradient(700px 260px at 88% 110%, rgba(45,212,191,0.06), transparent 60%)",
+              "radial-gradient(900px 320px at 12% 0%, rgba(245,78,0,0.10), transparent 60%), radial-gradient(700px 260px at 88% 110%, rgba(45,212,191,0.06), transparent 60%)",
           }}
           aria-hidden
         />
@@ -178,7 +178,7 @@ export default function WorkspaceSettingsPage() {
                   </div>
                   <div className="flex items-center gap-2 shrink-0">
                     {m.isCurrentSession && (
-                      <span className="text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded bg-violet-500/15 text-violet-300">current session</span>
+                      <span className="text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded bg-orange-500/15 text-orange-300">current session</span>
                     )}
                     <span className={`text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 rounded ${ROLE_PILL[m.role]}`}>
                       {m.role.replace(/_/g, " ")}

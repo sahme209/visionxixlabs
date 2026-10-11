@@ -412,8 +412,8 @@ export function AwsKeyConnect({
     <div className="relative">
       {/* Soft ambient glow — quiet huly.io style */}
       <div aria-hidden className="pointer-events-none absolute inset-0 -z-10 overflow-hidden rounded-[28px]">
-        <div className="absolute -top-32 left-1/2 -translate-x-1/2 w-[680px] h-[420px] rounded-full bg-indigo-500/[0.08] blur-[120px]" />
-        <div className="absolute bottom-0 left-1/3 w-[420px] h-[260px] rounded-full bg-violet-500/[0.05] blur-[100px]" />
+        <div className="absolute -top-32 left-1/2 -translate-x-1/2 w-[680px] h-[420px] rounded-full bg-zinc-500/[0.08] blur-[120px]" />
+        <div className="absolute bottom-0 left-1/3 w-[420px] h-[260px] rounded-full bg-orange-500/[0.05] blur-[100px]" />
       </div>
 
       <div className="rounded-[28px] border border-white/[0.06] bg-[#0a0a0c]/70 backdrop-blur-sm px-8 sm:px-12 py-12 sm:py-16">
@@ -505,7 +505,7 @@ function TrustFact({ label, children }: { label: string; children: React.ReactNo
    every card uses the same rhythm of spacing, kicker, and tone.
    ──────────────────────────────────────────────────────────────────── */
 
-type Tone = "emerald" | "indigo" | "amber" | "neutral";
+type Tone = "emerald" | "zinc" | "amber" | "neutral";
 
 const TONES: Record<Tone, { border: string; bg: string; kicker: string }> = {
   emerald: {
@@ -513,10 +513,10 @@ const TONES: Record<Tone, { border: string; bg: string; kicker: string }> = {
     bg:     "bg-emerald-500/[0.04]",
     kicker: "text-emerald-300",
   },
-  indigo: {
-    border: "border-indigo-500/25",
-    bg:     "bg-indigo-500/[0.04]",
-    kicker: "text-indigo-300",
+  zinc: {
+    border: "border-zinc-500/25",
+    bg:     "bg-zinc-500/[0.04]",
+    kicker: "text-zinc-300",
   },
   amber: {
     border: "border-white/25",
@@ -628,7 +628,7 @@ function PermissionsFixCard({
   return (
     <div className="relative">
       <div aria-hidden className="pointer-events-none absolute inset-0 -z-10 overflow-hidden rounded-[28px]">
-        <div className="absolute -top-32 left-1/2 -translate-x-1/2 w-[680px] h-[420px] rounded-full bg-indigo-500/[0.06] blur-[120px]" />
+        <div className="absolute -top-32 left-1/2 -translate-x-1/2 w-[680px] h-[420px] rounded-full bg-zinc-500/[0.06] blur-[120px]" />
       </div>
 
       {/* Lead — calm hero. Demo is now the PRIMARY action because the
@@ -722,7 +722,7 @@ function PermissionsFixCard({
         <KickerLine tone="neutral">step 2 — attach it to the broker user</KickerLine>
         <ol className="mt-3 space-y-3">
           <TimelineStep n={1} title="Open IAM Console">
-            <a href={iamConsoleUrl} target="_blank" rel="noreferrer" className="text-indigo-300 hover:text-indigo-200 transition-colors underline-offset-2 hover:underline">
+            <a href={iamConsoleUrl} target="_blank" rel="noreferrer" className="text-zinc-300 hover:text-zinc-200 transition-colors underline-offset-2 hover:underline">
               Open the broker user&apos;s Permissions tab →
             </a>
           </TimelineStep>
@@ -737,7 +737,7 @@ function PermissionsFixCard({
           <button
             type="button"
             onClick={onRetry}
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-indigo-600 hover:bg-indigo-500 text-white text-[14px] font-medium shadow-sm transition-colors"
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-zinc-600 hover:bg-zinc-500 text-white text-[14px] font-medium shadow-sm transition-colors"
           >
             Try again
             <span aria-hidden className="opacity-70">→</span>
@@ -764,7 +764,7 @@ function PermissionsFixCard({
 }
 
 /* Phase 534 — PRIMARY demo CTA. Replaces SkipToDemoStrip when AWS
-   keeps rejecting. Big violet button, the obvious next action. The
+   keeps rejecting. Big orange button, the obvious next action. The
    operator has been trying real AWS for too long; this lands them
    in the working portal immediately so they can see what they're
    paying for. */
@@ -802,7 +802,7 @@ function PrimaryDemoCta() {
         type="button"
         onClick={startDemo}
         disabled={busy}
-        className="group inline-flex items-center gap-2.5 px-7 py-3.5 rounded-full bg-violet-500 hover:bg-violet-400 text-white text-[14.5px] font-medium transition-colors shadow-[0_0_30px_-8px_rgba(139,92,246,0.6)] disabled:opacity-60 disabled:cursor-wait"
+        className="group inline-flex items-center gap-2.5 px-7 py-3.5 rounded-full bg-orange-500 hover:bg-orange-400 text-white text-[14.5px] font-medium transition-colors shadow-[0_0_30px_-8px_rgba(255, 120, 61,0.6)] disabled:opacity-60 disabled:cursor-wait"
       >
         {busy ? (
           <>
@@ -861,8 +861,8 @@ function SkipToDemoStrip() {
   return (
     <div className="mt-8 pt-6 border-t border-white/[0.04]">
       <div className="flex items-start gap-4">
-        <div className="w-9 h-9 rounded-lg bg-violet-500/10 border border-violet-500/25 flex items-center justify-center flex-shrink-0">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden className="h-4 w-4 text-violet-300">
+        <div className="w-9 h-9 rounded-lg bg-orange-500/10 border border-orange-500/25 flex items-center justify-center flex-shrink-0">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden className="h-4 w-4 text-orange-300">
             <polygon points="6 4 20 12 6 20 6 4" />
           </svg>
         </div>
@@ -877,11 +877,11 @@ function SkipToDemoStrip() {
             type="button"
             onClick={startDemo}
             disabled={busy}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-violet-500/[0.18] hover:bg-violet-500/[0.28] border border-violet-500/30 text-[12.5px] font-medium text-violet-50 transition-colors disabled:opacity-50 disabled:cursor-wait"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-orange-500/[0.18] hover:bg-orange-500/[0.28] border border-orange-500/30 text-[12.5px] font-medium text-orange-50 transition-colors disabled:opacity-50 disabled:cursor-wait"
           >
             {busy ? (
               <>
-                <span className="w-3 h-3 border-2 border-violet-200/40 border-t-violet-100 rounded-full animate-spin" />
+                <span className="w-3 h-3 border-2 border-orange-200/40 border-t-orange-100 rounded-full animate-spin" />
                 Setting up the demo…
               </>
             ) : (

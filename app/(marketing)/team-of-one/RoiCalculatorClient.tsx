@@ -62,7 +62,7 @@ export function RoiCalculatorClient() {
       transition={{ duration: 0.7 }}
       className="rounded-3xl border border-white/[0.08] bg-white/[0.02] p-6 md:p-10"
     >
-      <p className="text-[10px] font-mono uppercase tracking-widest text-indigo-300">
+      <p className="text-[10px] font-mono uppercase tracking-widest text-zinc-300">
         ROI calculator · pick the roles you would hire
       </p>
       <h3 className="mt-3 text-2xl md:text-3xl font-bold tracking-[-0.025em]">
@@ -81,7 +81,7 @@ export function RoiCalculatorClient() {
               className={[
                 "text-left rounded-lg border px-3 py-2 transition flex items-center justify-between",
                 on
-                  ? "border-indigo-500/40 bg-indigo-500/[0.08] text-white"
+                  ? "border-zinc-500/40 bg-zinc-500/[0.08] text-white"
                   : "border-white/[0.06] bg-white/[0.02] text-zinc-400 hover:bg-white/[0.04]",
               ].join(" ")}
             >

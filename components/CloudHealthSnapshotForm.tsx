@@ -99,7 +99,7 @@ export function CloudHealthSnapshotForm() {
       <button
         type="submit"
         disabled={loading}
-        className="w-full inline-flex justify-center items-center px-6 py-3 bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white rounded-xl font-semibold text-sm hover:opacity-90 disabled:opacity-50"
+        className="w-full inline-flex justify-center items-center px-6 py-3 bg-gradient-to-r from-orange-600 to-amber-600 text-white rounded-xl font-semibold text-sm hover:opacity-90 disabled:opacity-50"
       >
         {loading ? "Sending..." : "Get my snapshot"}
       </button>

@@ -105,15 +105,15 @@ export default function DesktopDashboardPage() {
           className="absolute inset-0 -z-10 opacity-90 pointer-events-none"
           style={{
             background:
-              "radial-gradient(900px 320px at 12% 0%, rgba(139,92,246,0.10), transparent 60%), radial-gradient(700px 260px at 88% 110%, rgba(45,212,191,0.06), transparent 60%)",
+              "radial-gradient(900px 320px at 12% 0%, rgba(255, 120, 61,0.10), transparent 60%), radial-gradient(700px 260px at 88% 110%, rgba(45,212,191,0.06), transparent 60%)",
           }}
           aria-hidden
         />
         <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/[0.08] to-transparent" aria-hidden />
         <div className="flex items-center gap-3 mb-3 flex-wrap">
           <span className="inline-flex items-center gap-2 rounded-full border border-white/[0.06] bg-white/[0.02] px-2.5 py-1">
-            <ComputerDesktopIcon className="h-3.5 w-3.5 text-violet-300" />
-            <span className="text-[10px] font-semibold uppercase tracking-widest text-violet-300">
+            <ComputerDesktopIcon className="h-3.5 w-3.5 text-orange-300" />
+            <span className="text-[10px] font-semibold uppercase tracking-widest text-orange-300">
               Desktop runtime · {sourceMode.replace(/_/g, " ")}
             </span>
           </span>
@@ -267,14 +267,14 @@ export default function DesktopDashboardPage() {
 
           {/* Safe next action */}
           {state.safeNextAction && (
-            <section className="mb-8 flex items-center justify-between rounded-2xl border border-violet-500/15 bg-white/[0.015] p-5 gap-3">
+            <section className="mb-8 flex items-center justify-between rounded-2xl border border-orange-500/15 bg-white/[0.015] p-5 gap-3">
               <div>
-                <p className="text-[11px] font-mono text-violet-300/80 uppercase tracking-[0.18em] mb-1">// next safe step</p>
+                <p className="text-[11px] font-mono text-orange-300/80 uppercase tracking-[0.18em] mb-1">// next safe step</p>
                 <p className="text-[13px] text-white font-semibold">{state.safeNextAction.label}</p>
               </div>
               <Link
                 href={state.safeNextAction.href}
-                className="inline-flex items-center gap-1.5 text-[12px] font-medium text-white hover:text-white border border-white/[0.12] hover:border-violet-500/50 bg-white/[0.025] rounded-md px-3 py-1.5 transition-colors"
+                className="inline-flex items-center gap-1.5 text-[12px] font-medium text-white hover:text-white border border-white/[0.12] hover:border-orange-500/50 bg-white/[0.025] rounded-md px-3 py-1.5 transition-colors"
               >
                 Open <ArrowRightIcon className="h-3 w-3" />
               </Link>

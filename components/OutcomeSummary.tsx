@@ -15,7 +15,7 @@ export function OutcomeSummary({
       <ul className="space-y-1.5 text-sm text-zinc-300">
         {items.map((item) => (
           <li key={item} className="flex items-start gap-2">
-            <span className="text-indigo-500 mt-0.5 shrink-0">✓</span>
+            <span className="text-zinc-500 mt-0.5 shrink-0">✓</span>
             <span>{item}</span>
           </li>
         ))}

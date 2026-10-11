@@ -72,7 +72,7 @@ export default async function ProofOfValuePage() {
         <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
           <Stat label="Gross" value={fmtUsd(report.spend.grossCents)} tone="text-white" />
           <Stat label="Billed (at margin)" value={fmtUsd(report.spend.billedCents)} tone="text-emerald-300" />
-          <Stat label="Margin multiplier" value={`${report.spend.marginMultiplier}×`} tone="text-violet-300" />
+          <Stat label="Margin multiplier" value={`${report.spend.marginMultiplier}×`} tone="text-orange-300" />
         </div>
         {report.spend.topEngineerByCost && (
           <p className="text-[12px] text-zinc-400 leading-snug mt-3">
@@ -109,13 +109,13 @@ export default async function ProofOfValuePage() {
       </section>
 
       {/* Autonomy KPI */}
-      <section className="mb-8 rounded-2xl border border-violet-500/15 bg-violet-500/[0.03] p-5">
-        <p className="text-[10px] font-mono uppercase tracking-[0.18em] text-violet-300 mb-2">autonomy · last 7d</p>
+      <section className="mb-8 rounded-2xl border border-orange-500/15 bg-orange-500/[0.03] p-5">
+        <p className="text-[10px] font-mono uppercase tracking-[0.18em] text-orange-300 mb-2">autonomy · last 7d</p>
         {report.autonomy.last7dPct === null ? (
           <p className="text-[14px] text-zinc-100 leading-relaxed">No engineer output in the last 7 days — workforce idle or workspace fully suppressed.</p>
         ) : (
           <>
-            <p className="text-[40px] font-bold text-violet-200 tabular-nums leading-none mb-2">{report.autonomy.last7dPct}%</p>
+            <p className="text-[40px] font-bold text-orange-200 tabular-nums leading-none mb-2">{report.autonomy.last7dPct}%</p>
             <p className="text-[13px] text-zinc-300 leading-relaxed">
               {report.autonomy.last7dAiGenerated} of {report.autonomy.last7dTotal} engineer outputs in the last 7 days were produced by AI (vs fallback rules / error). The closer to 100%, the more your workforce is operating in real-AI mode.
             </p>

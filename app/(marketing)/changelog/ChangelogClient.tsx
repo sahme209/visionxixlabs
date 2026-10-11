@@ -253,8 +253,8 @@ const ENTRIES: readonly ChangelogEntry[] = [
 ];
 
 const TAG_STYLE: Record<ChangelogEntry["tag"], string> = {
-  marketing: "bg-fuchsia-500/15 text-fuchsia-200 border-fuchsia-500/30",
-  kernel:    "bg-indigo-500/15 text-indigo-200 border-indigo-500/30",
+  marketing: "bg-amber-500/15 text-amber-200 border-amber-500/30",
+  kernel:    "bg-zinc-500/15 text-zinc-200 border-zinc-500/30",
   agent:     "bg-emerald-500/15 text-emerald-200 border-emerald-500/30",
   platform:  "bg-cyan-500/15 text-cyan-200 border-cyan-500/30",
   safety:    "bg-white/15 text-zinc-200 border-white/30",
@@ -271,9 +271,9 @@ const SURFACE_LABEL: Record<ChangelogEntry["surface"], string> = {
 export function ChangelogClient() {
   return (
     <div className="relative">
-      {/* Huly aurora — coral × violet × cyan */}
+      {/* Huly aurora — coral × orange × cyan */}
       <div aria-hidden className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
-        <div className="ambient-drift absolute -top-1/4 left-1/4 h-[60vh] w-[50vw] rounded-full bg-brand-violet/[0.08] blur-[140px]" />
+        <div className="ambient-drift absolute -top-1/4 left-1/4 h-[60vh] w-[50vw] rounded-full bg-brand-orange/[0.08] blur-[140px]" />
         <div className="ambient-drift absolute top-[15%] right-[5%] h-[50vh] w-[40vw] rounded-full bg-brand-coral/[0.06] blur-[130px]" style={{ animationDelay: "-8s" }} />
         <div className="ambient-drift absolute bottom-[5%] left-[10%] h-[40vh] w-[35vw] rounded-full bg-cyan-500/[0.04] blur-[120px]" style={{ animationDelay: "-14s" }} />
       </div>
@@ -298,7 +298,7 @@ export function ChangelogClient() {
           Changelog —{" "}
           <span className="relative inline-block">
             release by release.
-            <span aria-hidden className="absolute left-0 -bottom-0.5 h-[2px] w-full rounded-full bg-gradient-to-r from-brand-coral via-fuchsia-400/70 to-transparent" />
+            <span aria-hidden className="absolute left-0 -bottom-0.5 h-[2px] w-full rounded-full bg-gradient-to-r from-brand-coral via-amber-400/70 to-transparent" />
           </span>
         </motion.h1>
         <motion.p
@@ -355,7 +355,7 @@ export function ChangelogClient() {
         <div className="mt-6 flex items-center justify-center gap-2">
           <Link
             href="/docs/audit-logs"
-            className="inline-flex items-center gap-2 rounded-full bg-indigo-500 px-4 py-2 text-[12.5px] font-medium text-white shadow-[0_0_20px_rgba(99,102,241,0.45)] hover:bg-indigo-400 transition"
+            className="inline-flex items-center gap-2 rounded-full bg-zinc-500 px-4 py-2 text-[12.5px] font-medium text-white shadow-[0_0_20px_rgba(245,78,0,0.45)] hover:bg-zinc-400 transition"
           >
             Open audit log
           </Link>

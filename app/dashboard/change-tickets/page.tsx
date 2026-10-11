@@ -54,7 +54,7 @@ type RespBody =
 const STATUS_CLASS: Record<Status, string> = {
   pending:     "bg-zinc-700/40 text-zinc-300 border-zinc-600/40",
   in_progress: "bg-white/15 text-zinc-300 border-white/25",
-  approved:    "bg-violet-500/15 text-violet-300 border-white/[0.10]",
+  approved:    "bg-orange-500/15 text-orange-300 border-white/[0.10]",
   implemented: "bg-emerald-500/15 text-emerald-300 border-emerald-500/25",
   rejected:    "bg-rose-500/15 text-rose-300 border-rose-500/25",
   cancelled:   "bg-zinc-700/40 text-zinc-400 border-zinc-700/40",
@@ -148,7 +148,7 @@ export default function ChangeTicketsPage() {
           <div className="mb-6 grid grid-cols-2 md:grid-cols-4 gap-3">
             <Stat icon={ClockIcon}        label="Pending"     value={String(data.summary.byStatus.pending)}     tone="zinc" />
             <Stat icon={ArrowPathIcon}    label="In progress" value={String(data.summary.byStatus.in_progress)} tone={data.summary.byStatus.in_progress > 0 ? "amber" : "zinc"} />
-            <Stat icon={CheckBadgeIcon}   label="Approved"    value={String(data.summary.byStatus.approved)}    tone={data.summary.byStatus.approved > 0 ? "violet" : "zinc"} />
+            <Stat icon={CheckBadgeIcon}   label="Approved"    value={String(data.summary.byStatus.approved)}    tone={data.summary.byStatus.approved > 0 ? "orange" : "zinc"} />
             <Stat icon={TicketIcon}       label="Implemented" value={String(data.summary.byStatus.implemented)} tone={data.summary.byStatus.implemented > 0 ? "emerald" : "zinc"} />
           </div>
 
@@ -169,7 +169,7 @@ export default function ChangeTicketsPage() {
                         href={t.webUrl ?? "#"}
                         target={t.webUrl ? "_blank" : undefined}
                         rel={t.webUrl ? "noreferrer" : undefined}
-                        className={`text-[10px] font-mono shrink-0 ${t.webUrl ? "text-zinc-400 hover:text-violet-300" : "text-zinc-500"}`}
+                        className={`text-[10px] font-mono shrink-0 ${t.webUrl ? "text-zinc-400 hover:text-orange-300" : "text-zinc-500"}`}
                       >
                         {t.externalKey}
                       </a>
@@ -245,7 +245,7 @@ function PrTicketEnrichButton({ onEnriched }: { onEnriched: () => void }) {
         type="button"
         disabled={busy}
         onClick={trigger}
-        className="px-2 py-1 rounded border border-white/[0.12] bg-white/[0.025] text-white hover:bg-violet-500/[0.12] disabled:opacity-50 disabled:cursor-wait transition-colors"
+        className="px-2 py-1 rounded border border-white/[0.12] bg-white/[0.025] text-white hover:bg-orange-500/[0.12] disabled:opacity-50 disabled:cursor-wait transition-colors"
       >
         {busy ? "scanning…" : "Refresh PR ↔ ticket links"}
       </button>
@@ -331,9 +331,9 @@ function ProviderSyncControls({ onSynced }: { onSynced: () => void }) {
   );
 }
 
-function Stat({ icon: Icon, label, value, tone }: { icon: typeof TicketIcon; label: string; value: string; tone: "violet" | "emerald" | "amber" | "rose" | "zinc" }) {
+function Stat({ icon: Icon, label, value, tone }: { icon: typeof TicketIcon; label: string; value: string; tone: "orange" | "emerald" | "amber" | "rose" | "zinc" }) {
   const cls = {
-    violet:  "border-white/[0.06] bg-white/[0.015] text-white",
+    orange:  "border-white/[0.06] bg-white/[0.015] text-white",
     emerald: "border-emerald-500/[0.18] bg-emerald-500/[0.03] text-emerald-200",
     amber:   "border-white/[0.18] bg-white/[0.03] text-zinc-200",
     rose:    "border-rose-500/[0.18] bg-rose-500/[0.03] text-rose-200",

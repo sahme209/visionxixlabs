@@ -3,36 +3,29 @@
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 
 const primaryLinks = [
   { href: "/product", label: "Product" },
-  { href: "/capabilities", label: "Capabilities" },
+  { href: "/demo", label: "Demo" },
+  { href: "/integrations", label: "Integrations" },
   { href: "/plans", label: "Pricing" },
-  { href: "/resources", label: "Resources" },
 ];
 
 const mobileLinks = [
   ...primaryLinks,
-  { href: "/integrations", label: "Integrations" },
+  { href: "/capabilities", label: "Capabilities" },
+  { href: "/resources", label: "Resources" },
   { href: "/security", label: "Security" },
   { href: "/status", label: "Status" },
   { href: "/contact", label: "Contact" },
 ];
 
 export function Navigation() {
-  const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const menuButtonRef = useRef<HTMLButtonElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    // Closes the menu on a route change that didn't go through a link's
-    // own onClick (e.g. browser back/forward), not just a click-through.
-    setMobileMenuOpen(false);
-  }, [pathname]);
 
   useEffect(() => {
     // Shrinks the bar height and deepens its border/shadow once the page
@@ -91,8 +84,8 @@ export function Navigation() {
       aria-label="Primary navigation"
       className={`fixed inset-x-0 top-0 z-50 backdrop-blur-xl transition-[background-color,border-color,box-shadow] duration-300 ${
         scrolled
-          ? "border-b border-white/[0.09] bg-[#0c0d0c]/90 shadow-[0_1px_0_rgba(255,255,255,0.03),0_12px_30px_-20px_rgba(0,0,0,0.8)]"
-          : "border-b border-white/[0.06] bg-[#0c0d0c]/95"
+          ? "border-b border-white/[0.09] bg-[#141414]/92 shadow-[0_1px_0_rgba(255,255,255,0.03),0_12px_30px_-20px_rgba(0,0,0,0.8)]"
+          : "border-b border-white/[0.06] bg-[#141414]/94"
       }`}
     >
       <div
@@ -115,7 +108,7 @@ export function Navigation() {
 
         <div className="hidden items-center gap-3 lg:flex">
           <Link href="/auth/signin" className="px-2 py-2 text-sm text-zinc-300 transition-colors hover:text-white">Sign in</Link>
-          <Link href="/contact" className="rounded-full border border-white/[0.14] px-4 py-2 text-sm text-zinc-200 transition-colors hover:bg-white/[0.06]">Contact</Link>
+          <Link href="/docs" className="rounded-full border border-white/[0.14] px-4 py-2 text-sm text-zinc-200 transition-colors hover:bg-white/[0.06]">Docs</Link>
           <Link href="/download" className="rounded-full bg-zinc-100 px-4 py-2 text-sm font-medium text-zinc-950 transition-colors hover:bg-white">Download</Link>
         </div>
 
@@ -143,13 +136,13 @@ export function Navigation() {
           // the "docked chrome" effect above — this must track that exactly,
           // or the overlay starts a few pixels below the bar's real bottom
           // edge and leaves a sliver of page content visible at the top.
-          className={`fixed inset-x-0 bottom-0 overflow-y-auto border-t border-white/[0.06] bg-[#0c0d0c] px-5 py-6 lg:hidden ${scrolled ? "top-14" : "top-16"}`}
+          className={`fixed inset-x-0 bottom-0 overflow-y-auto border-t border-white/[0.06] bg-[#141414] px-5 py-6 lg:hidden ${scrolled ? "top-14" : "top-16"}`}
         >
           <div className="mx-auto flex max-w-lg flex-col">
             <p className="text-[10px] uppercase tracking-[0.18em] text-zinc-500">Explore Axiom</p>
             <div className="mt-4 grid grid-cols-2 gap-2" aria-label="Primary links">
               {mobileLinks.map((item) => (
-                <Link key={item.href} href={item.href} onClick={closeMenu} className="rounded-xl border border-white/[0.08] bg-white/[0.025] px-4 py-3.5 text-sm font-medium text-zinc-200 transition hover:border-violet-300/25 hover:bg-white/[0.06]">
+                <Link key={item.href} href={item.href} onClick={closeMenu} className="rounded-xl border border-white/[0.08] bg-white/[0.025] px-4 py-3.5 text-sm font-medium text-zinc-200 transition hover:border-orange-300/25 hover:bg-white/[0.06]">
                   {item.label}
                 </Link>
               ))}

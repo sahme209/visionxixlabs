@@ -9,33 +9,31 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        // Brand tokens — coral is the warm accent against violet/cool background.
+        // Brand tokens — orange is Axiom's warm accent against the dark product canvas.
         // Use these instead of hard-coded hex/rgb so palette changes cascade.
         brand: {
-          coral:     '#F472B6',  // rose-400 — warm accent (Huly-style)
-          'coral-deep': '#EC4899', // rose-500 — used for emphasis
-          violet:    '#8B5CF6',  // violet-500 — primary
-          'violet-deep': '#7C3AED', // violet-600
-          ink:       '#0A0A0D',  // page background
-          'ink-card': '#0F0F12', // card surface
+          coral:     '#FF783D',
+          'coral-deep': '#F54E00',
+          orange:    '#FF783D',
+          'orange-deep': '#F54E00',
+          ink:       '#141414',
+          'ink-card': '#1A1A1A',
           hairline:  'rgba(255,255,255,0.06)',
           'hairline-strong': 'rgba(255,255,255,0.10)',
         },
       },
       backgroundImage: {
-        // Huly-style gradient utility — use as `bg-huly-warm`
-        'huly-warm':  'linear-gradient(135deg, rgba(244,114,182,0.18) 0%, rgba(139,92,246,0.18) 100%)',
-        'huly-cool':  'linear-gradient(135deg, rgba(139,92,246,0.18) 0%, rgba(56,189,248,0.14) 100%)',
+        'huly-warm':  'linear-gradient(135deg, rgba(245,78,0,0.18) 0%, rgba(255,120,61,0.10) 100%)',
+        'huly-cool':  'linear-gradient(135deg, rgba(255,255,255,0.06) 0%, rgba(245,78,0,0.08) 100%)',
         'huly-aurora':
-          'radial-gradient(40% 50% at 20% 30%, rgba(139,92,246,0.32), transparent 60%),' +
-          'radial-gradient(35% 40% at 80% 60%, rgba(244,114,182,0.26), transparent 60%),' +
-          'radial-gradient(30% 30% at 50% 90%, rgba(56,189,248,0.18), transparent 60%)',
-        'huly-coral-fade': 'linear-gradient(90deg, #F472B6 0%, #8B5CF6 60%, transparent 100%)',
+          'radial-gradient(40% 50% at 20% 30%, rgba(245,78,0,0.22), transparent 60%),' +
+          'radial-gradient(35% 40% at 80% 60%, rgba(255,120,61,0.12), transparent 60%)',
+        'huly-coral-fade': 'linear-gradient(90deg, #F54E00 0%, #FF783D 60%, transparent 100%)',
       },
       boxShadow: {
         'huly-card':       '0 12px 40px -16px rgba(0,0,0,0.45), 0 0 0 1px rgba(255,255,255,0.05) inset',
-        'huly-coral-glow': '0 20px 60px -20px rgba(244,114,182,0.35)',
-        'huly-violet-glow':'0 20px 60px -20px rgba(139,92,246,0.40)',
+        'huly-coral-glow': '0 20px 60px -20px rgba(251,146,60,0.35)',
+        'huly-orange-glow':'0 20px 60px -20px rgba(255, 120, 61,0.40)',
       },
       animation: {
         'fade-in': 'fadeIn 0.6s ease-out forwards',
@@ -65,8 +63,8 @@ const config: Config = {
           '100%': { transform: 'translateX(200%) rotate(-45deg)' },
         },
         'pulse-glow': {
-          '0%, 100%': { boxShadow: '0 0 16px rgba(124,58,237,0.15)' },
-          '50%': { boxShadow: '0 0 28px rgba(124,58,237,0.35)' },
+          '0%, 100%': { boxShadow: '0 0 16px rgba(245, 78, 0,0.15)' },
+          '50%': { boxShadow: '0 0 28px rgba(245, 78, 0,0.35)' },
         },
         'border-flow': {
           '0%': { backgroundPosition: '0% 50%' },

@@ -82,7 +82,7 @@ export function ReleasePlaybookStageCard({
 
       <Link
         href={detailLink}
-        className="inline-flex text-[11px] font-semibold text-violet-300 hover:text-violet-200 transition"
+        className="inline-flex text-[11px] font-semibold text-orange-300 hover:text-orange-200 transition"
       >
         View {title.toLowerCase()} →
       </Link>

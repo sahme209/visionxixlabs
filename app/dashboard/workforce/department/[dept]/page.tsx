@@ -200,7 +200,7 @@ export default async function WorkforceDepartmentPage({
         <form action={`/api/workforce/department/${dept}/run-agi`} method="POST">
           <button
             type="submit"
-            className="text-[11px] font-mono uppercase tracking-wider px-3 py-1.5 rounded-full border border-violet-500/30 text-violet-200 hover:text-white hover:border-violet-500/60 hover:bg-violet-500/10 transition-colors"
+            className="text-[11px] font-mono uppercase tracking-wider px-3 py-1.5 rounded-full border border-orange-500/30 text-orange-200 hover:text-white hover:border-orange-500/60 hover:bg-orange-500/10 transition-colors"
             title={`Run the AGI flow for every engineer in the ${dept.replace(/_/g, " ")} department`}
           >
             run AGI for this department
@@ -249,12 +249,12 @@ export default async function WorkforceDepartmentPage({
       {agi.total > 0 && (
         <section className="mb-10">
           <div className="flex items-baseline justify-between mb-3">
-            <p className="text-[10px] font-mono uppercase tracking-[0.28em] text-violet-300">AGI activity · {agiKinds.join(" + ")}</p>
+            <p className="text-[10px] font-mono uppercase tracking-[0.28em] text-orange-300">AGI activity · {agiKinds.join(" + ")}</p>
             <Link href="/dashboard/agi-memory" className="text-[11px] font-mono text-zinc-500 hover:text-white transition-colors">
               memory feed →
             </Link>
           </div>
-          <div className="grid grid-cols-4 rounded-2xl border border-violet-500/15 bg-violet-500/[0.03] divide-x divide-white/[0.04] overflow-hidden">
+          <div className="grid grid-cols-4 rounded-2xl border border-orange-500/15 bg-orange-500/[0.03] divide-x divide-white/[0.04] overflow-hidden">
             <RollupTile label="total"          count={agi.total}          tone="text-white" />
             <RollupTile label="ai generated"   count={agi.ai_generated}   tone={agi.ai_generated > 0 ? "text-emerald-300" : "text-zinc-600"} />
             <RollupTile label="fallback rules" count={agi.fallback_rules} tone={agi.fallback_rules > 0 ? "text-zinc-300" : "text-zinc-600"} />

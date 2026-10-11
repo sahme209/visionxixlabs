@@ -176,14 +176,14 @@ export function GcpDeployConnect({
   // ─── Validating ───────────────────────────────────────────────────
   if (phase === "validating") {
     return (
-      <CalmCard tone="indigo">
-        <KickerLine tone="indigo">gcp · finalizing</KickerLine>
+      <CalmCard tone="zinc">
+        <KickerLine tone="zinc">gcp · finalizing</KickerLine>
         <h3 className="text-xl font-semibold text-white tracking-tight mt-1.5">Validating GCP access…</h3>
         <p className="text-[13px] text-zinc-400 leading-relaxed mt-2">
           Authenticating the service account and confirming Viewer access on the project. Usually takes a few seconds.
         </p>
         <div className="mt-4 flex items-center gap-2.5">
-          <span className="w-4 h-4 rounded-full border-2 border-indigo-300/70 border-t-transparent animate-spin" />
+          <span className="w-4 h-4 rounded-full border-2 border-zinc-300/70 border-t-transparent animate-spin" />
           <span className="text-[13px] text-zinc-300">Calling Google Cloud Resource Manager…</span>
         </div>
       </CalmCard>
@@ -214,8 +214,8 @@ export function GcpDeployConnect({
   if (phase === "paste_key") {
     return (
       <div className="space-y-4">
-        <CalmCard tone="indigo">
-          <KickerLine tone="indigo">gcp · finish connecting</KickerLine>
+        <CalmCard tone="zinc">
+          <KickerLine tone="zinc">gcp · finish connecting</KickerLine>
           <h3 className="text-xl font-semibold text-white tracking-tight mt-1.5">
             Paste the JSON key from Cloud Shell.
           </h3>
@@ -242,7 +242,7 @@ export function GcpDeployConnect({
             onChange={(e) => { setKeyJson(e.target.value); setPasteHint(null); }}
             placeholder={`Click here, then press ⌘V (Mac) or Ctrl+V (Windows) to paste the JSON\n\n{\n  "type": "service_account",\n  "project_id": "...",\n  ...\n}`}
             rows={8}
-            className="mt-2 w-full px-3 py-2.5 rounded-lg bg-zinc-900 border border-zinc-800 text-zinc-100 text-[12.5px] font-mono placeholder:text-zinc-600 focus:border-indigo-500/50 focus:outline-none transition-colors resize-y"
+            className="mt-2 w-full px-3 py-2.5 rounded-lg bg-zinc-900 border border-zinc-800 text-zinc-100 text-[12.5px] font-mono placeholder:text-zinc-600 focus:border-zinc-500/50 focus:outline-none transition-colors resize-y"
             spellCheck={false}
             autoComplete="off"
           />
@@ -263,7 +263,7 @@ export function GcpDeployConnect({
               type="button"
               onClick={handleValidate}
               disabled={!keyJson.trim() || !looksParseable(keyJson).ok}
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-indigo-600 hover:bg-indigo-500 disabled:bg-indigo-600/40 disabled:cursor-not-allowed text-white text-[14px] font-medium shadow-sm transition-colors"
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-zinc-600 hover:bg-zinc-500 disabled:bg-zinc-600/40 disabled:cursor-not-allowed text-white text-[14px] font-medium shadow-sm transition-colors"
             >
               Finish connection
               <span aria-hidden className="opacity-70">→</span>
@@ -298,8 +298,8 @@ export function GcpDeployConnect({
   // ─── Ready / loading_url / deploying ──────────────────────────────
   return (
     <div className="space-y-4">
-      <CalmCard tone="indigo">
-        <KickerLine tone="indigo">gcp · one click connect</KickerLine>
+      <CalmCard tone="zinc">
+        <KickerLine tone="zinc">gcp · one click connect</KickerLine>
         <h3 className="text-xl font-semibold text-white tracking-tight mt-1.5">
           Connect GCP through Cloud Shell.
         </h3>
@@ -318,7 +318,7 @@ export function GcpDeployConnect({
               target="_blank"
               rel="noreferrer"
               onClick={() => setPhase("deploying")}
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-indigo-600 hover:bg-indigo-500 text-white text-[14px] font-medium shadow-sm transition-colors"
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-zinc-600 hover:bg-zinc-500 text-white text-[14px] font-medium shadow-sm transition-colors"
             >
               Open Cloud Shell
               <span aria-hidden className="opacity-70">→</span>
@@ -335,7 +335,7 @@ export function GcpDeployConnect({
                   Re-open Cloud Shell
                 </a>
                 <span className="inline-flex items-center gap-2 text-[12.5px] text-zinc-400">
-                  <span className="w-2 h-2 rounded-full bg-indigo-400 animate-pulse" />
+                  <span className="w-2 h-2 rounded-full bg-zinc-400 animate-pulse" />
                   Cloud Shell open — paste the JSON when ready
                 </span>
               </div>
@@ -359,7 +359,7 @@ export function GcpDeployConnect({
                 onChange={(e) => { setKeyJson(e.target.value); setPasteHint(null); }}
                 placeholder={`Click here, then press ⌘V (Mac) or Ctrl+V (Windows) to paste the JSON\n\n{\n  "type": "service_account",\n  "project_id": "...",\n  ...\n}`}
                 rows={8}
-                className="mt-1 w-full px-3 py-2.5 rounded-lg bg-zinc-900 border border-zinc-800 text-zinc-100 text-[12.5px] font-mono placeholder:text-zinc-600 focus:border-indigo-500/50 focus:outline-none transition-colors resize-y"
+                className="mt-1 w-full px-3 py-2.5 rounded-lg bg-zinc-900 border border-zinc-800 text-zinc-100 text-[12.5px] font-mono placeholder:text-zinc-600 focus:border-zinc-500/50 focus:outline-none transition-colors resize-y"
                 spellCheck={false}
                 autoComplete="off"
               />
@@ -379,7 +379,7 @@ export function GcpDeployConnect({
                   type="button"
                   onClick={handleValidate}
                   disabled={!keyJson.trim() || !looksParseable(keyJson).ok}
-                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-indigo-600 hover:bg-indigo-500 disabled:bg-indigo-600/40 disabled:cursor-not-allowed text-white text-[14px] font-medium shadow-sm transition-colors"
+                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-zinc-600 hover:bg-zinc-500 disabled:bg-zinc-600/40 disabled:cursor-not-allowed text-white text-[14px] font-medium shadow-sm transition-colors"
                 >
                   Finish connection
                   <span aria-hidden className="opacity-70">→</span>
@@ -463,11 +463,11 @@ export function GcpDeployConnect({
    Local calm primitives.
    ──────────────────────────────────────────────────────────────────── */
 
-type Tone = "emerald" | "indigo" | "amber" | "neutral";
+type Tone = "emerald" | "zinc" | "amber" | "neutral";
 
 const TONES: Record<Tone, { border: string; bg: string; kicker: string }> = {
   emerald: { border: "border-emerald-500/25", bg: "bg-emerald-500/[0.04]", kicker: "text-emerald-300" },
-  indigo:  { border: "border-indigo-500/25",  bg: "bg-indigo-500/[0.04]",  kicker: "text-indigo-300" },
+  zinc:  { border: "border-zinc-500/25",  bg: "bg-zinc-500/[0.04]",  kicker: "text-zinc-300" },
   amber:   { border: "border-white/25",   bg: "bg-white/[0.04]",   kicker: "text-zinc-300" },
   neutral: { border: "border-zinc-800",       bg: "bg-zinc-900/40",        kicker: "text-zinc-400" },
 };

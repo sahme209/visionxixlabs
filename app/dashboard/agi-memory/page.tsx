@@ -70,7 +70,7 @@ const KIND_HREF: Record<string, string> = {
 };
 
 const OUTCOME_CLASS: Record<string, string> = {
-  ai_generated:    "bg-violet-500/15 text-violet-300 border-white/[0.10]",
+  ai_generated:    "bg-orange-500/15 text-orange-300 border-white/[0.10]",
   fallback_rules:  "bg-white/15 text-zinc-300 border-white/25",
   error:           "bg-rose-500/15 text-rose-300 border-rose-500/25",
 };
@@ -124,7 +124,7 @@ export default function AgiMemoryPage() {
       {data && (
         <div className="mb-5 grid grid-cols-2 md:grid-cols-4 gap-3">
           <Stat icon={CpuChipIcon} label="Total entries" value={String(data.summary.total)} tone="zinc" />
-          <Stat icon={SparklesIcon} label="AI generated" value={String(data.summary.aiGenerated)} tone={data.summary.aiGenerated > 0 ? "violet" : "zinc"} />
+          <Stat icon={SparklesIcon} label="AI generated" value={String(data.summary.aiGenerated)} tone={data.summary.aiGenerated > 0 ? "orange" : "zinc"} />
           <Stat icon={ExclamationTriangleIcon} label="Fallback (rules)" value={String(data.summary.fallbackRules)} tone={data.summary.fallbackRules > 0 ? "amber" : "zinc"} />
           <Stat icon={XCircleIcon} label="Errored" value={String(data.summary.errored)} tone={data.summary.errored > 0 ? "rose" : "zinc"} />
         </div>
@@ -276,7 +276,7 @@ function FilterPill({ label, active, onClick }: { label: string; active: boolean
       onClick={onClick}
       className={`px-2.5 py-1 rounded-md border text-[11.5px] font-mono transition-colors ${
         active
-          ? "border-violet-500/40 bg-violet-500/[0.14] text-violet-100"
+          ? "border-orange-500/40 bg-orange-500/[0.14] text-orange-100"
           : "border-white/[0.08] bg-white/[0.02] text-zinc-300 hover:bg-white/[0.06]"
       }`}
     >
@@ -285,9 +285,9 @@ function FilterPill({ label, active, onClick }: { label: string; active: boolean
   );
 }
 
-function Stat({ icon: Icon, label, value, tone }: { icon: typeof SparklesIcon; label: string; value: string; tone: "violet" | "amber" | "rose" | "zinc" }) {
+function Stat({ icon: Icon, label, value, tone }: { icon: typeof SparklesIcon; label: string; value: string; tone: "orange" | "amber" | "rose" | "zinc" }) {
   const cls = {
-    violet:  "border-white/[0.06] bg-white/[0.015] text-white",
+    orange:  "border-white/[0.06] bg-white/[0.015] text-white",
     amber:   "border-white/[0.18] bg-white/[0.03] text-zinc-200",
     rose:    "border-rose-500/[0.18] bg-rose-500/[0.03] text-rose-200",
     zinc:    "border-white/[0.06] bg-white/[0.02] text-zinc-200",
@@ -350,8 +350,8 @@ function SummaryPanel({ targetKind }: { targetKind?: string }) {
     return (
       <div className="mb-4 rounded-2xl border border-white/[0.08] bg-white/[0.015] p-4 flex items-center justify-between gap-3">
         <div className="flex items-center gap-2">
-          <SparklesIcon className="h-4 w-4 text-violet-300" />
-          <p className="text-[12.5px] text-violet-100">
+          <SparklesIcon className="h-4 w-4 text-orange-300" />
+          <p className="text-[12.5px] text-orange-100">
             <span className="font-semibold">Ask the AGI to summarize itself</span>
             <span className="text-zinc-400"> — Claude reads the most recent 50 entries and reports patterns + recommendations.</span>
           </p>
@@ -360,7 +360,7 @@ function SummaryPanel({ targetKind }: { targetKind?: string }) {
           type="button"
           onClick={generate}
           disabled={busy}
-          className="px-3 py-1.5 rounded-md border border-violet-500/40 bg-violet-500/[0.14] text-[12px] font-semibold text-violet-100 hover:bg-violet-500/[0.22] disabled:opacity-50 disabled:cursor-wait transition-colors"
+          className="px-3 py-1.5 rounded-md border border-orange-500/40 bg-orange-500/[0.14] text-[12px] font-semibold text-orange-100 hover:bg-orange-500/[0.22] disabled:opacity-50 disabled:cursor-wait transition-colors"
         >
           {busy ? "Summarizing…" : "Summarize recent thinking"}
         </button>
@@ -697,21 +697,21 @@ function ChatPanel({ targetKind }: { targetKind?: string }) {
   return (
     <div className="mb-4 rounded-2xl border border-white/[0.08] bg-white/[0.015] p-4">
       <div className="flex items-center gap-2 mb-3 flex-wrap">
-        <SparklesIcon className="h-4 w-4 text-violet-300" />
-        <p className="text-[12.5px] font-semibold text-violet-100">Ask the AGI</p>
+        <SparklesIcon className="h-4 w-4 text-orange-300" />
+        <p className="text-[12.5px] font-semibold text-orange-100">Ask the AGI</p>
         <span className="text-[11px] text-zinc-400">— Claude reads the last 100 entries + 20 summaries and answers, with citations.</span>
         <div className="ml-auto flex items-center gap-1.5 text-[10.5px] font-mono">
           <button
             type="button"
             onClick={() => setScope("user")}
-            className={`px-1.5 py-0.5 rounded border ${scope === "user" ? "border-violet-500/40 bg-violet-500/[0.14] text-violet-100" : "border-white/[0.08] bg-white/[0.02] text-zinc-300 hover:bg-white/[0.06]"}`}
+            className={`px-1.5 py-0.5 rounded border ${scope === "user" ? "border-orange-500/40 bg-orange-500/[0.14] text-orange-100" : "border-white/[0.08] bg-white/[0.02] text-zinc-300 hover:bg-white/[0.06]"}`}
           >
             mine
           </button>
           <button
             type="button"
             onClick={() => setScope("org")}
-            className={`px-1.5 py-0.5 rounded border ${scope === "org" ? "border-violet-500/40 bg-violet-500/[0.14] text-violet-100" : "border-white/[0.08] bg-white/[0.02] text-zinc-300 hover:bg-white/[0.06]"}`}
+            className={`px-1.5 py-0.5 rounded border ${scope === "org" ? "border-orange-500/40 bg-orange-500/[0.14] text-orange-100" : "border-white/[0.08] bg-white/[0.02] text-zinc-300 hover:bg-white/[0.06]"}`}
           >
             org
           </button>
@@ -728,13 +728,13 @@ function ChatPanel({ targetKind }: { targetKind?: string }) {
           placeholder="Ask anything about the AGI's recent reasoning…"
           disabled={busy}
           maxLength={500}
-          className="flex-1 rounded-lg border border-white/[0.08] bg-black/30 px-3 py-2 text-[12.5px] text-zinc-100 placeholder:text-zinc-600 focus:border-violet-500/40 focus:outline-none disabled:opacity-50"
+          className="flex-1 rounded-lg border border-white/[0.08] bg-black/30 px-3 py-2 text-[12.5px] text-zinc-100 placeholder:text-zinc-600 focus:border-orange-500/40 focus:outline-none disabled:opacity-50"
         />
         <button
           type="button"
           onClick={() => ask(question)}
           disabled={busy || question.trim().length < 4}
-          className="px-3 py-2 rounded-lg border border-violet-500/40 bg-violet-500/[0.14] text-[12px] font-semibold text-violet-100 hover:bg-violet-500/[0.22] disabled:opacity-50 disabled:cursor-wait transition-colors"
+          className="px-3 py-2 rounded-lg border border-orange-500/40 bg-orange-500/[0.14] text-[12px] font-semibold text-orange-100 hover:bg-orange-500/[0.22] disabled:opacity-50 disabled:cursor-wait transition-colors"
         >
           {busy ? "Asking…" : "Ask"}
         </button>
@@ -804,7 +804,7 @@ function ChatTurnRow({ turn, onDelete }: { turn: ChatTurn; onDelete?: () => void
               const href = c.targetKind && KIND_HREF[c.targetKind] ? KIND_HREF[c.targetKind] : null;
               return (
                 <div key={c.citationId} className="flex items-baseline gap-2 text-[11px] font-mono">
-                  <span className="text-violet-300 shrink-0">[{c.citationId}]</span>
+                  <span className="text-orange-300 shrink-0">[{c.citationId}]</span>
                   <span className="text-zinc-400 shrink-0">{c.kind === "entry" ? (c.targetKind ?? "?") : `${c.targetKind ?? "all"}-summary`}</span>
                   <span className="text-zinc-300 line-clamp-1 flex-1">{c.narrative}</span>
                   {href && <a href={href} className="text-zinc-300 hover:text-white shrink-0">open →</a>}

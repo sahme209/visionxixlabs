@@ -57,7 +57,7 @@ export default async function IncidentsPage() {
         <div className="mb-8">
           <TenantEmptyState
             icon={<ExclamationTriangleIcon className="h-5 w-5" />}
-            tone="fuchsia"
+            tone="amber"
             eyebrow="No incidents"
             title="Quiet so far — that's the goal."
             description="Incidents open automatically when an alert rule with autoCreateIncident=true fires, when a critical security finding lands, or when an external incident system (PagerDuty / Opsgenie / ServiceNow) mirrors one in. You'll see active + triage + postmortem-pending lanes here."

@@ -60,7 +60,7 @@ export default function MemoryPage() {
                 onClick={() => setFilter(f.id)}
                 className={`inline-flex items-center px-3.5 py-1.5 rounded-full text-xs font-medium transition-all border ${
                   isActive
-                    ? "bg-violet-500/15 border-white/[0.12] text-violet-300 shadow-[0_0_20px_rgba(139,92,246,0.15)]"
+                    ? "bg-orange-500/15 border-white/[0.12] text-orange-300 shadow-[0_0_20px_rgba(255, 120, 61,0.15)]"
                     : "bg-white/[0.02] border-white/[0.06] text-zinc-400 hover:text-white hover:border-white/[0.12]"
                 }`}
               >
@@ -125,16 +125,16 @@ function MemoryHealthRow() {
       value: state ? String(audit?.data.recentEventCount ?? 0) : (loading ? "…" : "—"),
       sub: state ? (audit?.data.persistent ? "Persistent · DATABASE_URL set" : "In-memory · enable persistence") : undefined,
       icon: ClockIcon,
-      color: "text-violet-300",
-      bg: "bg-violet-500/10 border-white/[0.08]",
+      color: "text-orange-300",
+      bg: "bg-orange-500/10 border-white/[0.08]",
     },
     {
       label: "Memory records",
       value: state ? String(memory?.data.recordCount ?? 0) : (loading ? "…" : "—"),
       sub: state ? (memory?.data.persistent ? "Persistent" : "In-memory") : undefined,
       icon: CpuChipIcon,
-      color: "text-violet-300",
-      bg: "bg-violet-500/10 border-white/[0.08]",
+      color: "text-orange-300",
+      bg: "bg-orange-500/10 border-white/[0.08]",
     },
     {
       label: "Evidence records",

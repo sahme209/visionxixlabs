@@ -85,7 +85,7 @@ const OUTCOME_CLASS: Record<string, string> = {
   ok:            "bg-emerald-500/15 text-emerald-300 border-emerald-500/25",
   error:         "bg-rose-500/15 text-rose-300 border-rose-500/25",
   timeout:       "bg-white/15 text-zinc-300 border-white/25",
-  short_circuit: "bg-violet-500/15 text-violet-300 border-white/[0.10]",
+  short_circuit: "bg-orange-500/15 text-orange-300 border-white/[0.10]",
 };
 
 const ENGINE_LABEL: Record<string, string> = {
@@ -178,7 +178,7 @@ export default function AiCallLogPage() {
           <Stat icon={CheckCircleIcon} label="Ok" value={String(data.summary.ok)} tone={data.summary.ok > 0 ? "emerald" : "zinc"} />
           <Stat icon={XCircleIcon} label="Error" value={String(data.summary.error)} tone={data.summary.error > 0 ? "rose" : "zinc"} />
           <Stat icon={ExclamationTriangleIcon} label="Timeout" value={String(data.summary.timeout)} tone={data.summary.timeout > 0 ? "amber" : "zinc"} />
-          <Stat icon={BoltIcon} label="Short-circuit" value={String(data.summary.shortCircuit)} tone={data.summary.shortCircuit > 0 ? "violet" : "zinc"} />
+          <Stat icon={BoltIcon} label="Short-circuit" value={String(data.summary.shortCircuit)} tone={data.summary.shortCircuit > 0 ? "orange" : "zinc"} />
         </div>
       )}
 
@@ -317,7 +317,7 @@ function FilterPill({ label, active, onClick }: { label: string; active: boolean
       onClick={onClick}
       className={`px-2.5 py-1 rounded-md border text-[11.5px] font-mono transition-colors ${
         active
-          ? "border-violet-500/40 bg-violet-500/[0.14] text-violet-100"
+          ? "border-orange-500/40 bg-orange-500/[0.14] text-orange-100"
           : "border-white/[0.08] bg-white/[0.02] text-zinc-300 hover:bg-white/[0.06]"
       }`}
     >
@@ -326,12 +326,12 @@ function FilterPill({ label, active, onClick }: { label: string; active: boolean
   );
 }
 
-function Stat({ icon: Icon, label, value, tone }: { icon: typeof CpuChipIcon; label: string; value: string; tone: "emerald" | "amber" | "rose" | "violet" | "zinc" }) {
+function Stat({ icon: Icon, label, value, tone }: { icon: typeof CpuChipIcon; label: string; value: string; tone: "emerald" | "amber" | "rose" | "orange" | "zinc" }) {
   const cls = {
     emerald: "border-emerald-500/[0.18] bg-emerald-500/[0.03] text-emerald-200",
     amber:   "border-white/[0.18] bg-white/[0.03] text-zinc-200",
     rose:    "border-rose-500/[0.18] bg-rose-500/[0.03] text-rose-200",
-    violet:  "border-white/[0.06] bg-white/[0.015] text-white",
+    orange:  "border-white/[0.06] bg-white/[0.015] text-white",
     zinc:    "border-white/[0.06] bg-white/[0.02] text-zinc-200",
   }[tone];
   return (

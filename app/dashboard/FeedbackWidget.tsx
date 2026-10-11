@@ -89,7 +89,7 @@ export function FeedbackWidget() {
       {open && (
         <div role="dialog" aria-label="Send feedback" className="mb-2 w-[300px] rounded-2xl border border-white/[0.08] bg-zinc-950/95 backdrop-blur shadow-2xl p-4">
           <div className="flex items-start justify-between gap-2 mb-3">
-            <p className="text-[10px] font-mono text-fuchsia-300/80 uppercase tracking-wider">// feedback</p>
+            <p className="text-[10px] font-mono text-amber-300/80 uppercase tracking-wider">// feedback</p>
             <button onClick={() => { setOpen(false); reset(); triggerRef.current?.focus(); }} className="text-zinc-400 hover:text-white">
               <XMarkIcon className="h-4 w-4" />
             </button>
@@ -129,7 +129,7 @@ export function FeedbackWidget() {
                 rows={4}
                 maxLength={2000}
                 placeholder="What's working? What's not?"
-                className="w-full rounded-lg border border-white/[0.08] bg-black/30 px-2.5 py-2 text-[12px] text-white focus:border-fuchsia-400/60 focus:outline-none resize-none"
+                className="w-full rounded-lg border border-white/[0.08] bg-black/30 px-2.5 py-2 text-[12px] text-white focus:border-amber-400/60 focus:outline-none resize-none"
               />
 
               {error && <p role="alert" aria-live="assertive" className="text-[11px] text-rose-300 mt-2">{error}</p>}
@@ -137,7 +137,7 @@ export function FeedbackWidget() {
               <button
                 onClick={send}
                 disabled={busy || !sentiment || !message.trim()}
-                className="mt-2 w-full inline-flex items-center justify-center gap-1.5 text-[12px] font-medium px-3 py-1.5 rounded-lg bg-fuchsia-500/15 text-fuchsia-200 border border-fuchsia-500/30 hover:bg-fuchsia-500/20 disabled:opacity-50"
+                className="mt-2 w-full inline-flex items-center justify-center gap-1.5 text-[12px] font-medium px-3 py-1.5 rounded-lg bg-amber-500/15 text-amber-200 border border-amber-500/30 hover:bg-amber-500/20 disabled:opacity-50"
               >
                 {busy ? "Sending…" : "Send"}
               </button>
@@ -151,7 +151,7 @@ export function FeedbackWidget() {
         onClick={() => setOpen((v) => !v)}
         aria-label="Send feedback"
         aria-expanded={open}
-        className="rounded-full bg-fuchsia-500/20 text-fuchsia-200 border border-fuchsia-500/40 hover:bg-fuchsia-500/30 p-2 shadow-lg backdrop-blur transition"
+        className="rounded-full bg-amber-500/20 text-amber-200 border border-amber-500/40 hover:bg-amber-500/30 p-2 shadow-lg backdrop-blur transition"
       >
         <ChatBubbleLeftRightIcon className="h-5 w-5" />
       </button>

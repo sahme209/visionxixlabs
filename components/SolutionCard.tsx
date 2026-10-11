@@ -34,7 +34,7 @@ export function SolutionCard({
       <div className="mt-4">
         <Link
           href={href}
-          className="inline-flex items-center text-sm font-semibold text-violet-400 hover:text-violet-300"
+          className="inline-flex items-center text-sm font-semibold text-orange-400 hover:text-orange-300"
         >
           View details
           <span aria-hidden="true" className="ml-1">

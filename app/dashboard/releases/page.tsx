@@ -217,7 +217,7 @@ function ReleaseRow({ r, now }: { r: ReleaseListRow; now: Date }) {
             </span>
           )}
           {r.status === "ready" && r.targetEnvironmentId && <DeployButton releaseId={r.id} />}
-          <span className="text-[10px] font-mono text-violet-300/70">overview →</span>
+          <span className="text-[10px] font-mono text-orange-300/70">overview →</span>
         </div>
       </div>
       {r.commitSha && (
@@ -265,7 +265,7 @@ function DeployButton({ releaseId }: { releaseId: string }) {
         type="button"
         onClick={deploy}
         disabled={state.kind === "deploying"}
-        className="text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded border border-violet-500/40 bg-violet-500/[0.12] text-violet-100 hover:bg-violet-500/[0.20] disabled:opacity-50 disabled:cursor-wait transition-colors"
+        className="text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded border border-orange-500/40 bg-orange-500/[0.12] text-orange-100 hover:bg-orange-500/[0.20] disabled:opacity-50 disabled:cursor-wait transition-colors"
       >
         {state.kind === "deploying" ? "deploying…" : "deploy"}
       </button>
@@ -374,7 +374,7 @@ function HealthSummaryTile() {
     d.platformHealthScore >= 40 ? "text-orange-300" : "text-rose-300";
 
   return (
-    <div className="mb-6 rounded-2xl border border-white/[0.06] bg-gradient-to-br from-violet-500/[0.04] via-white/[0.02] to-cyan-500/[0.04] p-5">
+    <div className="mb-6 rounded-2xl border border-white/[0.06] bg-gradient-to-br from-orange-500/[0.04] via-white/[0.02] to-cyan-500/[0.04] p-5">
       <div className="flex items-baseline justify-between mb-3">
         <div>
           <p className="text-[10px] font-mono uppercase tracking-wider text-zinc-500">Platform health</p>
@@ -524,7 +524,7 @@ function NewReleasePanel({ onCreated }: { onCreated: () => void }) {
         <button
           type="button"
           onClick={() => setState({ kind: "open" })}
-          className="px-3 py-1.5 rounded-lg border border-white/[0.12] bg-white/[0.025] text-[12px] font-semibold text-white hover:bg-violet-500/[0.12] transition-colors"
+          className="px-3 py-1.5 rounded-lg border border-white/[0.12] bg-white/[0.025] text-[12px] font-semibold text-white hover:bg-orange-500/[0.12] transition-colors"
         >
           + New release
         </button>
@@ -536,7 +536,7 @@ function NewReleasePanel({ onCreated }: { onCreated: () => void }) {
   return (
     <div className="mb-6 rounded-2xl border border-white/[0.06] bg-white/[0.015] p-5">
       <div className="flex items-center justify-between mb-3">
-        <p className="text-[13px] font-semibold text-violet-100">New release</p>
+        <p className="text-[13px] font-semibold text-orange-100">New release</p>
         <button type="button" onClick={reset} className="text-[11px] font-mono text-zinc-400 hover:text-zinc-200" disabled={busy}>cancel</button>
       </div>
       <div className="grid grid-cols-3 gap-3 mb-3">
@@ -604,7 +604,7 @@ function NewReleasePanel({ onCreated }: { onCreated: () => void }) {
           type="button"
           onClick={submit}
           disabled={busy || !applicationId || !releaseTag}
-          className="px-3 py-1.5 rounded-lg border border-violet-500/40 bg-violet-500/[0.12] text-[12px] font-semibold text-violet-100 hover:bg-violet-500/[0.20] disabled:opacity-50 disabled:cursor-wait transition-colors"
+          className="px-3 py-1.5 rounded-lg border border-orange-500/40 bg-orange-500/[0.12] text-[12px] font-semibold text-orange-100 hover:bg-orange-500/[0.20] disabled:opacity-50 disabled:cursor-wait transition-colors"
         >
           {busy ? "Submitting…" : "Create draft"}
         </button>
@@ -634,7 +634,7 @@ function ReleaseField({ label, value, onChange, placeholder, disabled }: {
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
         disabled={disabled}
-        className="w-full rounded-lg border border-white/[0.08] bg-black/30 px-3 py-2 text-[12.5px] text-zinc-100 placeholder:text-zinc-600 focus:border-violet-500/40 focus:outline-none disabled:opacity-50"
+        className="w-full rounded-lg border border-white/[0.08] bg-black/30 px-3 py-2 text-[12.5px] text-zinc-100 placeholder:text-zinc-600 focus:border-orange-500/40 focus:outline-none disabled:opacity-50"
       />
     </label>
   );

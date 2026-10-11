@@ -21,7 +21,7 @@ export interface DrippingBeamProps {
   /** Total beam width — pixels. */
   width?: number;
   /** Tint colour. */
-  tint?: "violet" | "fuchsia" | "cyan" | "emerald" | "amber" | "aurora";
+  tint?: "orange" | "amber" | "cyan" | "emerald" | "aurora";
   /** Average droplet travel duration in seconds. Each drop randomises +/-30%. */
   durationSec?: number;
   /** Optional class on the outer wrapper for positioning. */
@@ -29,19 +29,18 @@ export interface DrippingBeamProps {
 }
 
 const TINTS: Record<NonNullable<DrippingBeamProps["tint"]>, { core: string; halo: string; trail: string }> = {
-  violet:  { core: "rgba(196, 181, 253, 1)",  halo: "rgba(139, 92, 246, 0.55)",  trail: "rgba(139, 92, 246, 0)" },
-  fuchsia: { core: "rgba(245, 208, 254, 1)",  halo: "rgba(232, 121, 249, 0.55)", trail: "rgba(232, 121, 249, 0)" },
+  orange:  { core: "rgba(255, 196, 166, 1)",  halo: "rgba(255, 120, 61, 0.55)",  trail: "rgba(255, 120, 61, 0)" },
   cyan:    { core: "rgba(165, 243, 252, 1)",  halo: "rgba(34, 211, 238, 0.55)",  trail: "rgba(34, 211, 238, 0)" },
   emerald: { core: "rgba(167, 243, 208, 1)",  halo: "rgba(52, 211, 153, 0.55)",  trail: "rgba(52, 211, 153, 0)" },
   amber:   { core: "rgba(254, 230, 138, 1)",  halo: "rgba(251, 191, 36, 0.55)",  trail: "rgba(251, 191, 36, 0)" },
-  aurora:  { core: "rgba(255, 255, 255, 1)",  halo: "rgba(139, 92, 246, 0.55)",  trail: "rgba(34, 211, 238, 0)" },
+  aurora:  { core: "rgba(255, 255, 255, 1)",  halo: "rgba(255, 120, 61, 0.55)",  trail: "rgba(34, 211, 238, 0)" },
 };
 
 export function DrippingBeam({
   dropCount = 6,
   heightClass = "h-[500px]",
   width = 6,
-  tint = "violet",
+  tint = "orange",
   durationSec = 3.6,
   className = "",
 }: DrippingBeamProps) {

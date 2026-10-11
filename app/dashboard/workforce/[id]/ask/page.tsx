@@ -98,7 +98,7 @@ export default async function EngineerAskPage({
       <header className="mb-10">
         <p className="text-[10px] font-mono uppercase tracking-[0.28em] text-zinc-500 mb-3">ask · {engineer.id}</p>
         <h1 className="text-[28px] sm:text-[34px] leading-[1.1] font-semibold text-white tracking-[-0.02em] mb-3 inline-flex items-baseline gap-3">
-          <SparklesIcon className="h-6 w-6 text-violet-300 shrink-0 self-center" />
+          <SparklesIcon className="h-6 w-6 text-orange-300 shrink-0 self-center" />
           Ask {engineer.displayName}
         </h1>
         <p className="text-[14px] text-zinc-400 leading-relaxed max-w-xl">
@@ -109,9 +109,9 @@ export default async function EngineerAskPage({
       </header>
 
       {/* Ask form */}
-      <section className="mb-10 rounded-2xl border border-violet-500/15 bg-violet-500/[0.04] p-5">
+      <section className="mb-10 rounded-2xl border border-orange-500/15 bg-orange-500/[0.04] p-5">
         <form action={`/api/workforce/${engineer.id}/ask`} method="POST">
-          <label htmlFor="question" className="text-[10px] font-mono uppercase tracking-[0.18em] text-violet-300 mb-2 block">
+          <label htmlFor="question" className="text-[10px] font-mono uppercase tracking-[0.18em] text-orange-300 mb-2 block">
             your question
           </label>
           <textarea
@@ -121,13 +121,13 @@ export default async function EngineerAskPage({
             rows={3}
             maxLength={1500}
             placeholder="e.g. What would you do about the consecutive blocks on apply_terraform today?"
-            className="w-full rounded-lg border border-white/[0.06] bg-white/[0.02] px-3 py-2 text-[13px] text-zinc-200 placeholder:text-zinc-600 focus:outline-none focus:border-violet-500/40 transition-colors resize-none"
+            className="w-full rounded-lg border border-white/[0.06] bg-white/[0.02] px-3 py-2 text-[13px] text-zinc-200 placeholder:text-zinc-600 focus:outline-none focus:border-orange-500/40 transition-colors resize-none"
           />
           <div className="mt-2 flex items-center justify-between gap-2">
             <p className="text-[10px] font-mono text-zinc-500">1500 char max · plain prose answer</p>
             <button
               type="submit"
-              className="text-[11px] font-mono uppercase tracking-wider px-3 py-1.5 rounded-full border border-violet-500/30 text-violet-100 hover:text-white hover:border-violet-500/60 hover:bg-violet-500/15 transition-colors"
+              className="text-[11px] font-mono uppercase tracking-wider px-3 py-1.5 rounded-full border border-orange-500/30 text-orange-100 hover:text-white hover:border-orange-500/60 hover:bg-orange-500/15 transition-colors"
             >
               ask
             </button>
@@ -176,7 +176,7 @@ export default async function EngineerAskPage({
                   </div>
                 )}
                 <div>
-                  <p className="text-[9.5px] font-mono uppercase tracking-wider text-violet-300 mb-1">{engineer.displayName}</p>
+                  <p className="text-[9.5px] font-mono uppercase tracking-wider text-orange-300 mb-1">{engineer.displayName}</p>
                   <p className="text-[13.5px] text-zinc-100 leading-relaxed whitespace-pre-line">{t.answer}</p>
                 </div>
                 {t.errorMessage && (

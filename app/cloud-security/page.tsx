@@ -45,7 +45,7 @@ export default function CloudSecurityPage() {
           >
             <ol className="flex items-center space-x-2">
               <li>
-                <Link href="/" className="hover:text-violet-400">
+                <Link href="/" className="hover:text-orange-400">
                   Home
                 </Link>
               </li>
@@ -67,7 +67,7 @@ export default function CloudSecurityPage() {
               <h1 className="text-4xl md:text-5xl font-bold text-white mb-4 tracking-[-0.04em] leading-[1.04]">
                 <span className="relative inline-block">
                   {cloudSecurityHero.title}
-                  <span aria-hidden className="absolute left-0 -bottom-1 h-[3px] w-full rounded-full bg-gradient-to-r from-brand-coral via-fuchsia-400 to-transparent opacity-85" />
+                  <span aria-hidden className="absolute left-0 -bottom-1 h-[3px] w-full rounded-full bg-gradient-to-r from-brand-coral via-amber-400 to-transparent opacity-85" />
                 </span>
               </h1>
               <p className="text-lg text-zinc-400 max-w-2xl">
@@ -157,7 +157,7 @@ export default function CloudSecurityPage() {
       </main>
 
       {/* Floating blur orbs */}
-      <div className="ambient-drift absolute bottom-1/3 left-10 w-[380px] h-[340px] bg-brand-violet/[0.08] rounded-full blur-[120px] pointer-events-none" />
+      <div className="ambient-drift absolute bottom-1/3 left-10 w-[380px] h-[340px] bg-brand-orange/[0.08] rounded-full blur-[120px] pointer-events-none" />
       <div className="ambient-drift absolute top-1/2 right-0 w-[420px] h-[360px] bg-brand-coral/[0.06] rounded-full blur-[130px] pointer-events-none" style={{ animationDelay: "-8s" }} />
       <div className="ambient-drift absolute top-1/4 right-1/4 w-[340px] h-[260px] bg-cyan-500/[0.04] rounded-full blur-[110px] pointer-events-none" style={{ animationDelay: "-14s" }} />
     </div>

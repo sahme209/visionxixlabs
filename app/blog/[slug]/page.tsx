@@ -31,7 +31,7 @@ function fmtDate(iso: string): string {
 
 const CAT_TONE: Record<string, string> = {
   "Product Updates":    "text-zinc-300",
-  "Engineering":        "text-violet-300",
+  "Engineering":        "text-orange-300",
   "Industry Insights":  "text-cyan-300",
   "Trust & Security":   "text-emerald-300",
 };
@@ -46,7 +46,7 @@ export default async function BlogPostPage({ params }: Params) {
   return (
     <div className="min-h-screen bg-[#09090b] text-white relative overflow-hidden">
       <div className="absolute inset-0 pointer-events-none" aria-hidden>
-        <div className="ambient-drift absolute top-0 left-1/2 -translate-x-1/2 w-[760px] h-[500px] rounded-full bg-brand-violet/[0.07] blur-[140px]" />
+        <div className="ambient-drift absolute top-0 left-1/2 -translate-x-1/2 w-[760px] h-[500px] rounded-full bg-brand-orange/[0.07] blur-[140px]" />
         <div className="ambient-drift absolute top-1/4 right-[5%] w-[420px] h-[320px] rounded-full bg-brand-coral/[0.05] blur-[120px]" style={{ animationDelay: "-8s" }} />
         <div className="ambient-drift absolute top-1/2 left-[5%] w-[340px] h-[260px] rounded-full bg-cyan-500/[0.04] blur-[100px]" style={{ animationDelay: "-14s" }} />
       </div>
@@ -69,14 +69,14 @@ export default async function BlogPostPage({ params }: Params) {
             <span className="text-zinc-500">{post.readMinutes} min read</span>
           </div>
           <h1 className="relative text-4xl md:text-5xl font-bold tracking-[-0.04em] leading-[1.05] mb-6 pl-5">
-            <span aria-hidden className="absolute left-0 top-0 bottom-0 w-[3px] rounded-full bg-gradient-to-b from-brand-coral via-fuchsia-400 to-brand-violet opacity-85" />
+            <span aria-hidden className="absolute left-0 top-0 bottom-0 w-[3px] rounded-full bg-gradient-to-b from-brand-coral via-amber-400 to-brand-orange opacity-85" />
             {post.title}
           </h1>
           <p className="text-lg text-zinc-400 leading-relaxed mb-8">
             {post.excerpt}
           </p>
           <div className="flex items-center gap-3 pb-8 border-b border-white/[0.06]">
-            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-violet-500 to-fuchsia-500 flex items-center justify-center text-sm font-bold">
+            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-orange-500 to-amber-500 flex items-center justify-center text-sm font-bold">
               {post.author.name.split(" ").map((s) => s[0]).join("").slice(0, 2)}
             </div>
             <div>
@@ -110,7 +110,7 @@ export default async function BlogPostPage({ params }: Params) {
                     return <strong key={j} className="text-white font-semibold">{seg.slice(2, -2)}</strong>;
                   }
                   if (seg.startsWith("`") && seg.endsWith("`")) {
-                    return <code key={j} className="px-1.5 py-0.5 rounded bg-white/[0.06] text-violet-300 text-[13px] font-mono">{seg.slice(1, -1)}</code>;
+                    return <code key={j} className="px-1.5 py-0.5 rounded bg-white/[0.06] text-orange-300 text-[13px] font-mono">{seg.slice(1, -1)}</code>;
                   }
                   return <span key={j}>{seg}</span>;
                 })}
@@ -129,7 +129,7 @@ export default async function BlogPostPage({ params }: Params) {
           <h3 className="font-display text-2xl md:text-3xl font-bold mb-3 leading-[1.04]">
             <span className="relative inline-block">
               Run the autonomous cloud operating system.
-              <span aria-hidden className="absolute left-0 -bottom-0.5 h-[2px] w-full rounded-full bg-gradient-to-r from-brand-coral via-fuchsia-400/70 to-transparent" />
+              <span aria-hidden className="absolute left-0 -bottom-0.5 h-[2px] w-full rounded-full bg-gradient-to-r from-brand-coral via-amber-400/70 to-transparent" />
             </span>
           </h3>
           <p className="text-sm text-zinc-400 max-w-xl mx-auto mb-6">
@@ -165,7 +165,7 @@ export default async function BlogPostPage({ params }: Params) {
                     <span className="text-zinc-700">·</span>
                     <span className="text-zinc-500">{p.readMinutes} min</span>
                   </div>
-                  <p className="text-sm font-semibold text-white leading-snug group-hover:text-violet-100 transition-colors">
+                  <p className="text-sm font-semibold text-white leading-snug group-hover:text-orange-100 transition-colors">
                     {p.title}
                   </p>
                 </Link>

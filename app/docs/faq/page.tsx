@@ -151,7 +151,7 @@ export default function FaqPage() {
           <div className="space-y-3">
             {group.items.map((item) => (
               <details key={item.q} className="rounded-xl bg-white/[0.02] border border-white/[0.06] p-4 group">
-                <summary className="cursor-pointer flex items-center justify-between gap-3 text-sm font-semibold text-white hover:text-violet-300 transition-colors list-none">
+                <summary className="cursor-pointer flex items-center justify-between gap-3 text-sm font-semibold text-white hover:text-orange-300 transition-colors list-none">
                   <span>{item.q}</span>
                   <svg className="h-4 w-4 text-zinc-500 transition-transform group-open:rotate-180 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                     <polyline points="6 9 12 15 18 9" />
@@ -166,8 +166,8 @@ export default function FaqPage() {
 
       <DocSection id="more" title="More questions?">
         <p className="text-zinc-400">
-          See <Link href="/docs/troubleshooting" className="text-violet-300 hover:text-violet-200">troubleshooting</Link> for specific errors,
-          or <Link href="/contact" className="text-violet-300 hover:text-violet-200">contact us</Link> for anything else.
+          See <Link href="/docs/troubleshooting" className="text-orange-300 hover:text-orange-200">troubleshooting</Link> for specific errors,
+          or <Link href="/contact" className="text-orange-300 hover:text-orange-200">contact us</Link> for anything else.
         </p>
       </DocSection>
 

@@ -247,7 +247,7 @@ function RefreshPanel({ onRefreshed }: { onRefreshed: () => void }) {
         <button
           type="button"
           onClick={() => setState({ kind: "open" })}
-          className="px-3 py-1.5 rounded-lg border border-white/[0.12] bg-white/[0.025] text-[12px] font-semibold text-white hover:bg-violet-500/[0.12] transition-colors"
+          className="px-3 py-1.5 rounded-lg border border-white/[0.12] bg-white/[0.025] text-[12px] font-semibold text-white hover:bg-orange-500/[0.12] transition-colors"
         >
           + Refresh snapshot
         </button>
@@ -259,7 +259,7 @@ function RefreshPanel({ onRefreshed }: { onRefreshed: () => void }) {
   return (
     <div className="mb-6 rounded-2xl border border-white/[0.06] bg-white/[0.015] p-5">
       <div className="flex items-center justify-between mb-3">
-        <p className="text-[13px] font-semibold text-violet-100">Refresh branch protection</p>
+        <p className="text-[13px] font-semibold text-orange-100">Refresh branch protection</p>
         <button type="button" onClick={reset} className="text-[11px] font-mono text-zinc-400 hover:text-zinc-200" disabled={busy}>cancel</button>
       </div>
       <div className="grid grid-cols-2 gap-3 mb-3">
@@ -274,7 +274,7 @@ function RefreshPanel({ onRefreshed }: { onRefreshed: () => void }) {
           rows={6}
           placeholder={`{"required_pull_request_reviews": {"required_approving_review_count": 2}, "required_status_checks": {"contexts": ["ci/build"]}, ...}`}
           disabled={busy}
-          className="w-full rounded-lg border border-white/[0.08] bg-black/30 px-3 py-2 text-[12px] font-mono text-zinc-100 placeholder:text-zinc-600 focus:border-violet-500/40 focus:outline-none disabled:opacity-50"
+          className="w-full rounded-lg border border-white/[0.08] bg-black/30 px-3 py-2 text-[12px] font-mono text-zinc-100 placeholder:text-zinc-600 focus:border-orange-500/40 focus:outline-none disabled:opacity-50"
         />
       </label>
       <div className="mt-4 flex items-center gap-3">
@@ -282,7 +282,7 @@ function RefreshPanel({ onRefreshed }: { onRefreshed: () => void }) {
           type="button"
           onClick={submit}
           disabled={busy || !repositoryId || !branchName}
-          className="px-3 py-1.5 rounded-lg border border-violet-500/40 bg-violet-500/[0.12] text-[12px] font-semibold text-violet-100 hover:bg-violet-500/[0.20] disabled:opacity-50 disabled:cursor-wait transition-colors"
+          className="px-3 py-1.5 rounded-lg border border-orange-500/40 bg-orange-500/[0.12] text-[12px] font-semibold text-orange-100 hover:bg-orange-500/[0.20] disabled:opacity-50 disabled:cursor-wait transition-colors"
         >
           {busy ? "Submitting…" : "Refresh"}
         </button>
@@ -312,7 +312,7 @@ function Field({ label, value, onChange, placeholder, disabled }: {
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
         disabled={disabled}
-        className="w-full rounded-lg border border-white/[0.08] bg-black/30 px-3 py-2 text-[12.5px] text-zinc-100 placeholder:text-zinc-600 focus:border-violet-500/40 focus:outline-none disabled:opacity-50"
+        className="w-full rounded-lg border border-white/[0.08] bg-black/30 px-3 py-2 text-[12.5px] text-zinc-100 placeholder:text-zinc-600 focus:border-orange-500/40 focus:outline-none disabled:opacity-50"
       />
     </label>
   );

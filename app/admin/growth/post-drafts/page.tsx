@@ -45,7 +45,7 @@ export default async function PostDraftsPage() {
   return (
     <div className="relative">
       <div className="mb-6">
-        <Link href="/admin/growth" className="text-[11px] text-violet-300 hover:text-violet-200 inline-flex items-center gap-1">
+        <Link href="/admin/growth" className="text-[11px] text-orange-300 hover:text-orange-200 inline-flex items-center gap-1">
           <ArrowRightIcon className="h-3 w-3 rotate-180" />
           Back to Growth
         </Link>
@@ -54,8 +54,8 @@ export default async function PostDraftsPage() {
       <div className="mb-8 flex items-start justify-between gap-4 flex-wrap">
         <div>
           <div className="flex items-center gap-3 mb-3">
-            <PencilSquareIcon className="h-4 w-4 text-violet-400" />
-            <p className="text-[10px] font-semibold text-violet-400 uppercase tracking-widest">All LinkedIn drafts</p>
+            <PencilSquareIcon className="h-4 w-4 text-orange-400" />
+            <p className="text-[10px] font-semibold text-orange-400 uppercase tracking-widest">All LinkedIn drafts</p>
           </div>
           <h1 className="text-3xl md:text-4xl font-bold text-white tracking-[-0.04em] mb-2">
             Review, approve, schedule, publish.
@@ -68,7 +68,7 @@ export default async function PostDraftsPage() {
           <input type="hidden" name="category" value="product_education" />
           <button
             type="submit"
-            className="inline-flex items-center gap-1.5 text-[12px] font-medium px-3 py-1.5 rounded-lg bg-violet-500/15 text-violet-100 border border-violet-500/30 hover:bg-violet-500/25"
+            className="inline-flex items-center gap-1.5 text-[12px] font-medium px-3 py-1.5 rounded-lg bg-orange-500/15 text-orange-100 border border-orange-500/30 hover:bg-orange-500/25"
           >
             Generate 3 new drafts
           </button>
@@ -123,7 +123,7 @@ function DraftCard({ draft, canPublishNow }: {
       <header className="px-5 py-3 border-b border-white/[0.05] flex items-center justify-between gap-3 flex-wrap">
         <div className="flex items-center gap-2 min-w-0">
           <span className="text-[9px] font-mono uppercase tracking-wider text-zinc-500">{draft.id.slice(0, 12)}</span>
-          <span className="text-[9.5px] font-mono uppercase tracking-wider text-violet-300/90 bg-violet-500/10 border border-violet-500/20 rounded-full px-1.5 py-px">
+          <span className="text-[9.5px] font-mono uppercase tracking-wider text-orange-300/90 bg-orange-500/10 border border-orange-500/20 rounded-full px-1.5 py-px">
             {draft.category}
           </span>
           {draft.scheduledFor && (
@@ -153,7 +153,7 @@ function DraftCard({ draft, canPublishNow }: {
             )}
             {(draft.status === "approved" || draft.status === "scheduled" || draft.status === "failed") && canPublishNow && (
               <form action={`/api/admin/growth/drafts/${draft.id}/publish`} method="post" className="inline">
-                <button className="inline-flex items-center gap-1 text-[10.5px] font-medium px-2 py-1 rounded-lg bg-violet-500/15 text-violet-100 border border-violet-500/30 hover:bg-violet-500/25">
+                <button className="inline-flex items-center gap-1 text-[10.5px] font-medium px-2 py-1 rounded-lg bg-orange-500/15 text-orange-100 border border-orange-500/30 hover:bg-orange-500/25">
                   <CloudIcon className="h-3.5 w-3.5" />
                   Publish now
                 </button>
@@ -189,13 +189,13 @@ function TransitionForm({
   draftId, to, label, icon, tone, needsReason,
 }: {
   draftId: string; to: string; label: string; icon: React.ReactNode;
-  tone: "emerald" | "rose" | "violet"; needsReason?: boolean;
+  tone: "emerald" | "rose" | "orange"; needsReason?: boolean;
 }) {
   const palette = tone === "emerald"
     ? "bg-emerald-500/15 text-emerald-100 border-emerald-500/30 hover:bg-emerald-500/25"
     : tone === "rose"
       ? "bg-rose-500/10 text-rose-200 border-rose-500/30 hover:bg-rose-500/20"
-      : "bg-violet-500/15 text-violet-100 border-violet-500/30 hover:bg-violet-500/25";
+      : "bg-orange-500/15 text-orange-100 border-orange-500/30 hover:bg-orange-500/25";
   return (
     <form action={`/api/admin/growth/drafts/${draftId}/transition`} method="post" className="inline-flex items-center gap-1">
       <input type="hidden" name="to" value={to} />

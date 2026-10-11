@@ -124,7 +124,7 @@ export default function NetworkTopologyPage() {
           className="absolute inset-0 -z-10 opacity-90 pointer-events-none"
           style={{
             background:
-              "radial-gradient(900px 320px at 12% 0%, rgba(99,102,241,0.10), transparent 60%), radial-gradient(700px 260px at 88% 110%, rgba(244,114,182,0.06), transparent 60%)",
+              "radial-gradient(900px 320px at 12% 0%, rgba(245,78,0,0.10), transparent 60%), radial-gradient(700px 260px at 88% 110%, rgba(255,120,61,0.06), transparent 60%)",
           }}
           aria-hidden
         />
@@ -132,8 +132,8 @@ export default function NetworkTopologyPage() {
 
         <div className="flex items-center gap-2 mb-3 flex-wrap">
           <span className="inline-flex items-center gap-2 rounded-full border border-white/[0.06] bg-white/[0.02] px-2.5 py-1">
-            <GlobeAltIcon className="h-3.5 w-3.5 text-indigo-300" />
-            <span className="text-[10px] font-semibold uppercase tracking-widest text-indigo-300">
+            <GlobeAltIcon className="h-3.5 w-3.5 text-zinc-300" />
+            <span className="text-[10px] font-semibold uppercase tracking-widest text-zinc-300">
               Network Topology
             </span>
           </span>
@@ -153,9 +153,9 @@ export default function NetworkTopologyPage() {
 
         {report && (
           <div className="mt-5 grid grid-cols-2 md:grid-cols-4 gap-3">
-            <Stat label="VPCs / VNets" value={report.totals.vpcs.toLocaleString()} tone="indigo" icon={ServerStackIcon} />
+            <Stat label="VPCs / VNets" value={report.totals.vpcs.toLocaleString()} tone="zinc" icon={ServerStackIcon} />
             <Stat label="Subnets" value={report.totals.subnets.toLocaleString()} tone="zinc" />
-            <Stat label="Peerings" value={report.totals.peerings.toLocaleString()} tone="violet" icon={ArrowsRightLeftIcon} />
+            <Stat label="Peerings" value={report.totals.peerings.toLocaleString()} tone="orange" icon={ArrowsRightLeftIcon} />
             <Stat
               label="Internet-facing"
               value={report.totals.internetFacingVpcs.toLocaleString()}
@@ -218,7 +218,7 @@ export default function NetworkTopologyPage() {
 
           {/* Topology canvas */}
           <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 mb-8 overflow-x-auto">
-            <p className="text-[11px] font-mono text-indigo-300/80 uppercase tracking-wider mb-3">
+            <p className="text-[11px] font-mono text-zinc-300/80 uppercase tracking-wider mb-3">
               // unified topology · grouped by cloud · hover a VPC for highlight
             </p>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 min-w-[640px]">
@@ -248,7 +248,7 @@ export default function NetworkTopologyPage() {
                               onMouseLeave={() => setHoverVpc(null)}
                               className={`rounded-lg border p-2.5 transition cursor-default ${
                                 isHovered
-                                  ? "border-violet-400/60 bg-white/[0.025]"
+                                  ? "border-orange-400/60 bg-white/[0.025]"
                                   : v.internetFacing
                                     ? "border-rose-500/30 bg-rose-500/[0.04]"
                                     : "border-white/[0.08] bg-black/20"
@@ -263,7 +263,7 @@ export default function NetworkTopologyPage() {
                                     </span>
                                   )}
                                   {peerCount > 0 && (
-                                    <span className="text-[8.5px] font-mono uppercase tracking-wider px-1 py-px rounded bg-violet-500/15 text-violet-300 border border-white/[0.12]">
+                                    <span className="text-[8.5px] font-mono uppercase tracking-wider px-1 py-px rounded bg-orange-500/15 text-orange-300 border border-white/[0.12]">
                                       ⇄ {peerCount}
                                     </span>
                                   )}
@@ -316,15 +316,14 @@ function Stat({
   label, value, tone, icon: Icon,
 }: {
   label: string; value: string;
-  tone: "emerald" | "amber" | "rose" | "violet" | "indigo" | "zinc";
+  tone: "emerald" | "amber" | "rose" | "orange" | "zinc";
   icon?: typeof ServerStackIcon;
 }) {
   const cls = {
     emerald: "border-emerald-500/[0.18] bg-emerald-500/[0.03] text-emerald-200",
     amber:   "border-white/[0.18] bg-white/[0.03] text-zinc-200",
     rose:    "border-rose-500/[0.18] bg-rose-500/[0.03] text-rose-200",
-    violet:  "border-white/[0.06] bg-white/[0.015] text-white",
-    indigo:  "border-indigo-500/[0.18] bg-indigo-500/[0.03] text-indigo-200",
+    orange:  "border-white/[0.06] bg-white/[0.015] text-white",
     zinc:    "border-white/[0.06] bg-white/[0.02] text-zinc-200",
   }[tone];
   return (

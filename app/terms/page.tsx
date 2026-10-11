@@ -8,14 +8,14 @@ export default function TermsOfServicePage() {
   return (
     <div className="min-h-screen bg-[#09090b] text-white relative overflow-hidden">
       <div className="absolute inset-0 bg-dots opacity-10 pointer-events-none" aria-hidden />
-      <div className="absolute -top-40 left-0 w-96 h-96 rounded-full bg-fuchsia-600/5 blur-[120px] pointer-events-none" aria-hidden />
+      <div className="absolute -top-40 left-0 w-96 h-96 rounded-full bg-amber-600/5 blur-[120px] pointer-events-none" aria-hidden />
       <Navigation />
 
       <div className="max-w-6xl mx-auto px-6 md:px-10 pt-32 pb-16">
         <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] backdrop-blur-sm p-8 md:p-12">
           {/* Header */}
           <div className="text-center mb-12">
-            <DocumentTextIcon className="h-14 w-14 text-violet-400 mx-auto mb-4" />
+            <DocumentTextIcon className="h-14 w-14 text-orange-400 mx-auto mb-4" />
             <h1 className="text-4xl md:text-5xl font-bold mb-4">
               Terms of Service
             </h1>
@@ -333,7 +333,7 @@ export default function TermsOfServicePage() {
               <p className="text-white font-semibold mb-2">Vision XIX Labs LLC</p>
               <p className="text-zinc-300 mb-1">
                 Email:{" "}
-                <a href="mailto:support@visionxixlabs.com" className="text-violet-400 hover:text-violet-300">
+                <a href="mailto:support@visionxixlabs.com" className="text-orange-400 hover:text-orange-300">
                   support@visionxixlabs.com
                 </a>
               </p>

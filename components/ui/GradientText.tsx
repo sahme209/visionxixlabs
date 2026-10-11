@@ -10,8 +10,8 @@ type GradientTextProps = {
 export function GradientText({
   children,
   className = "",
-  from = "#7c3aed",
-  to = "#d946ef",
+  from = "#f54e00",
+  to = "#f54e00",
 }: GradientTextProps) {
   return (
     <span

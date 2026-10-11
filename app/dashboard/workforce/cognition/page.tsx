@@ -192,7 +192,7 @@ export default async function CognitionPage() {
       <header className="mb-10">
         <p className="text-[10px] font-mono uppercase tracking-[0.28em] text-zinc-500 mb-3">cognition · what the AGI is thinking</p>
         <h1 className="text-[28px] sm:text-[34px] leading-[1.1] font-semibold text-white tracking-[-0.02em] mb-3 inline-flex items-baseline gap-3">
-          <SparklesIcon className="h-6 w-6 text-violet-300 shrink-0 self-center" />
+          <SparklesIcon className="h-6 w-6 text-orange-300 shrink-0 self-center" />
           Composed cognition
         </h1>
         <p className="text-[14px] text-zinc-400 leading-relaxed max-w-xl">
@@ -216,8 +216,8 @@ export default async function CognitionPage() {
           </div>
         ) : (
           <>
-            <div className="rounded-2xl border border-violet-500/20 bg-violet-500/[0.04] p-5 mb-3">
-              <p className="text-[10px] font-mono uppercase tracking-wider text-violet-300 mb-2">meta-reasoner summary</p>
+            <div className="rounded-2xl border border-orange-500/20 bg-orange-500/[0.04] p-5 mb-3">
+              <p className="text-[10px] font-mono uppercase tracking-wider text-orange-300 mb-2">meta-reasoner summary</p>
               <p className="text-[13.5px] text-zinc-100 leading-relaxed">{metaRow.narrative}</p>
               <p className="text-[10px] font-mono text-zinc-500 mt-2">
                 {metaRow.outcome.replace(/_/g, " ")}
@@ -309,7 +309,7 @@ export default async function CognitionPage() {
                   <Link href={`/dashboard/agi-memory/${encodeURIComponent(`${REASONER_TARGET_KIND}:${r.targetId}`)}`} className="block px-5 py-3.5 hover:bg-white/[0.015] transition-colors">
                     <div className="flex items-center justify-between gap-3 mb-1 flex-wrap text-[10px] font-mono uppercase tracking-wider">
                       <span className="text-zinc-400">{r.outcome.replace(/_/g, " ")}</span>
-                      {confidence !== null && (<><span className="text-zinc-500">·</span><span className="text-violet-300">{confidence}% confidence</span></>)}
+                      {confidence !== null && (<><span className="text-zinc-500">·</span><span className="text-orange-300">{confidence}% confidence</span></>)}
                       <span className="text-zinc-500 ml-auto">{r.updatedAt.toISOString().slice(0, 19).replace("T", " ")}</span>
                     </div>
                     <p className="text-[13.5px] font-medium text-white">{title}</p>
@@ -366,8 +366,8 @@ export default async function CognitionPage() {
             <p className="text-[12px] text-zinc-400">No improvement proposals yet. The hourly cron sweeps this engineer.</p>
           </div>
         ) : (
-          <div className="rounded-2xl border border-violet-500/15 bg-violet-500/[0.03] p-5">
-            <p className="text-[10px] font-mono uppercase tracking-wider text-violet-300 mb-2">summary</p>
+          <div className="rounded-2xl border border-orange-500/15 bg-orange-500/[0.03] p-5">
+            <p className="text-[10px] font-mono uppercase tracking-wider text-orange-300 mb-2">summary</p>
             <p className="text-[13.5px] text-zinc-100 leading-relaxed">{improvementRow.narrative}</p>
             <p className="text-[10px] font-mono text-zinc-500 mt-2">
               {improvementRow.outcome.replace(/_/g, " ")}

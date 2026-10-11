@@ -25,29 +25,29 @@ export function CTASection({
 }: CTASectionProps) {
   return (
     <section className="py-16">
-      <div className="max-w-4xl mx-auto bg-gradient-to-r from-indigo-600 to-purple-600 rounded-3xl px-8 py-12 text-center text-white shadow-2xl">
+      <div className="max-w-4xl mx-auto bg-gradient-to-r from-zinc-600 to-orange-600 rounded-3xl px-8 py-12 text-center text-white shadow-2xl">
         <h2 className="text-3xl md:text-4xl font-bold mb-4">{title}</h2>
-        <p className="text-base md:text-lg text-indigo-100 mb-8">{subtitle}</p>
+        <p className="text-base md:text-lg text-zinc-100 mb-8">{subtitle}</p>
         <div className="flex flex-wrap justify-center gap-4">
           <AnimatedButton
             href={primaryHref}
             variant="secondary"
-            className="bg-white text-indigo-700 hover:bg-indigo-50 px-8 py-3 rounded-xl shadow-lg"
+            className="bg-white text-zinc-700 hover:bg-zinc-50 px-8 py-3 rounded-xl shadow-lg"
           >
             {primaryLabel}
           </AnimatedButton>
           <AnimatedButton
             href={secondaryHref}
             variant="ghost"
-            className="border border-indigo-200/70 bg-indigo-700/40 text-white hover:bg-indigo-700/70 px-8 py-3 rounded-xl"
+            className="border border-zinc-200/70 bg-zinc-700/40 text-white hover:bg-zinc-700/70 px-8 py-3 rounded-xl"
           >
             {secondaryLabel}
           </AnimatedButton>
         </div>
         {plansHref && (
-          <p className="mt-6 text-sm text-indigo-200">
+          <p className="mt-6 text-sm text-zinc-200">
             One membership, full stack —{" "}
-            <Link href={plansHref} className="font-semibold text-white underline underline-offset-2 hover:text-indigo-100">
+            <Link href={plansHref} className="font-semibold text-white underline underline-offset-2 hover:text-zinc-100">
               View plans &amp; membership
             </Link>
           </p>

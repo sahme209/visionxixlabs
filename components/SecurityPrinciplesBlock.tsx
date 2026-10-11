@@ -21,7 +21,7 @@ export function SecurityPrinciplesBlock({
       <ul className="space-y-2 text-sm text-zinc-400">
         {items.map((item) => (
           <li key={item} className="flex items-start">
-            <span className="text-indigo-500 mr-2 mt-0.5 shrink-0">•</span>
+            <span className="text-zinc-500 mr-2 mt-0.5 shrink-0">•</span>
             {item}
           </li>
         ))}

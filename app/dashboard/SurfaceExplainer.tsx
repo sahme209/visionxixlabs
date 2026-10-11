@@ -163,10 +163,10 @@ export function SurfaceExplainer({ surface }: { surface: ExplainerSurface }) {
     <div className="mb-5 rounded-2xl border border-white/[0.10] bg-white/[0.015] p-4">
       <div className="flex items-start gap-3">
         <div className="w-8 h-8 rounded-lg bg-white/[0.04] border border-white/[0.12] flex items-center justify-center flex-shrink-0">
-          <LightBulbIcon className="h-4 w-4 text-violet-300" />
+          <LightBulbIcon className="h-4 w-4 text-orange-300" />
         </div>
         <div className="flex-1 min-w-0">
-          <p className="text-[10.5px] font-mono uppercase tracking-[0.18em] text-violet-300/90 mb-1">what you&apos;re looking at</p>
+          <p className="text-[10.5px] font-mono uppercase tracking-[0.18em] text-orange-300/90 mb-1">what you&apos;re looking at</p>
           <p className="text-[14px] font-medium text-white tracking-[-0.01em] mb-1.5">{ex.headline}</p>
           <p className="text-[12.5px] text-zinc-300 leading-relaxed mb-3 font-light max-w-3xl">{ex.body}</p>
           {ex.tour.length > 0 && (

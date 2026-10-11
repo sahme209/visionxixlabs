@@ -74,7 +74,7 @@ interface ReportLite {
 
 const READINESS_VISUAL: Record<ApprovalReadiness, { border: string; bg: string; text: string; pill: string; icon: typeof ShieldCheckIcon }> = {
   ready_for_review:           { border: "border-emerald-500/[0.22]", bg: "bg-emerald-500/[0.04]", text: "text-emerald-300", pill: "bg-emerald-500/15 text-emerald-300", icon: CheckCircleIcon       },
-  desktop_review_recommended: { border: "border-white/[0.10]",  bg: "bg-white/[0.015]",  text: "text-violet-300",  pill: "bg-violet-500/15 text-violet-300",   icon: ComputerDesktopIcon   },
+  desktop_review_recommended: { border: "border-white/[0.10]",  bg: "bg-white/[0.015]",  text: "text-orange-300",  pill: "bg-orange-500/15 text-orange-300",   icon: ComputerDesktopIcon   },
   simulation_required:        { border: "border-cyan-500/[0.22]",    bg: "bg-cyan-500/[0.04]",    text: "text-cyan-300",    pill: "bg-cyan-500/15 text-cyan-300",       icon: BeakerIcon            },
   missing_evidence:           { border: "border-white/[0.22]",   bg: "bg-white/[0.04]",   text: "text-zinc-300",   pill: "bg-white/15 text-zinc-300",     icon: ExclamationTriangleIcon },
   policy_blocked:             { border: "border-rose-500/[0.22]",    bg: "bg-rose-500/[0.04]",    text: "text-rose-300",    pill: "bg-rose-500/15 text-rose-300",       icon: LockClosedIcon         },
@@ -136,7 +136,7 @@ export default function ApprovalPacketsPage() {
           className="absolute inset-0 -z-10 opacity-90 pointer-events-none"
           style={{
             background:
-              "radial-gradient(900px 320px at 12% 0%, rgba(99,102,241,0.10), transparent 60%), radial-gradient(700px 260px at 88% 110%, rgba(45,212,191,0.06), transparent 60%)",
+              "radial-gradient(900px 320px at 12% 0%, rgba(245,78,0,0.10), transparent 60%), radial-gradient(700px 260px at 88% 110%, rgba(45,212,191,0.06), transparent 60%)",
           }}
           aria-hidden
         />
@@ -225,7 +225,7 @@ export default function ApprovalPacketsPage() {
                           {pkt.sourceMode.replace(/_/g, " ")}
                         </span>
                         {pkt.desktopReviewEligible && (
-                          <span className="text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded bg-violet-500/15 text-violet-300 inline-flex items-center gap-1">
+                          <span className="text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded bg-orange-500/15 text-orange-300 inline-flex items-center gap-1">
                             <ComputerDesktopIcon className="h-3 w-3" />
                             desktop-eligible
                           </span>
@@ -289,7 +289,7 @@ export default function ApprovalPacketsPage() {
                     )}
 
                     <div className="rounded-md border border-white/[0.06] bg-white/[0.015] p-3">
-                      <p className="text-[10px] font-mono text-violet-300/80 uppercase tracking-wider mb-1">// expected impact</p>
+                      <p className="text-[10px] font-mono text-orange-300/80 uppercase tracking-wider mb-1">// expected impact</p>
                       <p className="text-[12px] text-zinc-200 leading-relaxed">{pkt.expectedImpact}</p>
                     </div>
 

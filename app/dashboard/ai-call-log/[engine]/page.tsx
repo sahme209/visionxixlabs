@@ -38,7 +38,7 @@ const OUTCOME_TONE: Record<string, string> = {
   ok:            "text-emerald-300",
   error:         "text-rose-300",
   timeout:       "text-zinc-300",
-  short_circuit: "text-violet-300",
+  short_circuit: "text-orange-300",
 };
 
 const TWENTY_FOUR_HOURS_MS = 24 * 60 * 60 * 1000;
@@ -218,7 +218,7 @@ export default async function AiCallLogEnginePage({
         <Tile label="ok"            count={counts.ok}            tone={counts.ok > 0 ? "text-emerald-300" : "text-zinc-600"} />
         <Tile label="error"         count={counts.error}         tone={counts.error > 0 ? "text-rose-300" : "text-zinc-600"} />
         <Tile label="timeout"       count={counts.timeout}       tone={counts.timeout > 0 ? "text-zinc-300" : "text-zinc-600"} />
-        <Tile label="short circuit" count={counts.short_circuit} tone={counts.short_circuit > 0 ? "text-violet-300" : "text-zinc-600"} />
+        <Tile label="short circuit" count={counts.short_circuit} tone={counts.short_circuit > 0 ? "text-orange-300" : "text-zinc-600"} />
       </section>
 
       {/* Latency + tokens tiles */}

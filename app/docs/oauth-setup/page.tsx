@@ -36,7 +36,7 @@ NEXTAUTH_URL=https://your-domain.example.com
 NEXTAUTH_SECRET=<openssl rand -base64 32>
 `}</CodeBlock>
         <p className="text-sm text-zinc-400">
-          <code className="text-violet-300">NEXTAUTH_URL</code> must exactly match the public origin (no trailing
+          <code className="text-orange-300">NEXTAUTH_URL</code> must exactly match the public origin (no trailing
           slash). On Vercel set it under Project → Settings → Environment Variables for Production +
           Preview environments.
         </p>
@@ -46,7 +46,7 @@ NEXTAUTH_SECRET=<openssl rand -base64 32>
         <Step number={1} title="Create an OAuth client">
           <p>
             Open the{" "}
-            <a className="text-violet-300 underline underline-offset-2" href="https://console.cloud.google.com/apis/credentials" target="_blank" rel="noopener noreferrer">
+            <a className="text-orange-300 underline underline-offset-2" href="https://console.cloud.google.com/apis/credentials" target="_blank" rel="noopener noreferrer">
               Google Cloud Console → APIs & Services → Credentials
             </a>
             . Click <strong>Create Credentials → OAuth client ID → Web application</strong>.
@@ -56,7 +56,7 @@ NEXTAUTH_SECRET=<openssl rand -base64 32>
           <p>Under <strong>Authorized redirect URIs</strong>, add:</p>
           <CodeBlock language="text">{`https://your-domain.example.com/api/auth/callback/google`}</CodeBlock>
           <p className="text-sm text-zinc-500">
-            For local development add <code className="text-violet-300">http://localhost:3000/api/auth/callback/google</code> as well.
+            For local development add <code className="text-orange-300">http://localhost:3000/api/auth/callback/google</code> as well.
           </p>
         </Step>
         <Step number={3} title="Copy the credentials">
@@ -77,7 +77,7 @@ GOOGLE_CLIENT_SECRET=GOCSPX-xxxxxxxxxxxxxxxxx`}</CodeBlock>
         <Step number={1} title="Create an OAuth app">
           <p>
             Open{" "}
-            <a className="text-violet-300 underline underline-offset-2" href="https://github.com/settings/developers" target="_blank" rel="noopener noreferrer">
+            <a className="text-orange-300 underline underline-offset-2" href="https://github.com/settings/developers" target="_blank" rel="noopener noreferrer">
               GitHub → Settings → Developer settings → OAuth Apps
             </a>{" "}
             and click <strong>New OAuth App</strong>.
@@ -136,7 +136,7 @@ GITHUB_CLIENT_SECRET=ghp_xxxxxxxxxxxxxxxxxxxxxxxx`}</CodeBlock>
           <div>
             <p className="font-semibold text-white">Works locally but not in production</p>
             <p className="text-zinc-400">
-              <code className="text-violet-300">NEXTAUTH_URL</code> not set or doesn&apos;t match the production
+              <code className="text-orange-300">NEXTAUTH_URL</code> not set or doesn&apos;t match the production
               origin. NextAuth uses this to construct callback URLs.
             </p>
           </div>
@@ -149,7 +149,7 @@ GITHUB_CLIENT_SECRET=ghp_xxxxxxxxxxxxxxxxxxxxxxxx`}</CodeBlock>
       />
       <DocFeedback />
       <p className="mt-6 text-[11px] text-zinc-600">
-        Need help? <Link href="/contact?topic=security" className="text-violet-300 hover:text-violet-200">Open a security review request</Link>.
+        Need help? <Link href="/contact?topic=security" className="text-orange-300 hover:text-orange-200">Open a security review request</Link>.
       </p>
     </article>
   );

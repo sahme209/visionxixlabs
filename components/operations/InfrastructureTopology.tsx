@@ -211,20 +211,20 @@ export function InfrastructureTopology({ topology = DEFAULT_TOPOLOGY, className 
       </div>
 
       {/* Topology Canvas */}
-      <div className="relative p-8 bg-gradient-to-br from-transparent via-violet-500/[0.02] to-transparent">
+      <div className="relative p-8 bg-gradient-to-br from-transparent via-orange-500/[0.02] to-transparent">
         {/* Background grid */}
         <div className="absolute inset-0 bg-grid-mesh opacity-20 pointer-events-none" aria-hidden />
 
         {/* Spotlight orb */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 rounded-full bg-violet-500/[0.06] blur-[80px] pointer-events-none" aria-hidden />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 rounded-full bg-orange-500/[0.06] blur-[80px] pointer-events-none" aria-hidden />
 
         {/* SVG layer for connection lines */}
         <svg className="absolute inset-0 w-full h-full pointer-events-none" aria-hidden>
           <defs>
             <linearGradient id="line-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stopColor="rgba(139, 92, 246, 0)" />
-              <stop offset="50%" stopColor="rgba(139, 92, 246, 0.4)" />
-              <stop offset="100%" stopColor="rgba(139, 92, 246, 0)" />
+              <stop offset="0%" stopColor="rgba(255, 120, 61, 0)" />
+              <stop offset="50%" stopColor="rgba(255, 120, 61, 0.4)" />
+              <stop offset="100%" stopColor="rgba(255, 120, 61, 0)" />
             </linearGradient>
           </defs>
         </svg>
@@ -233,13 +233,13 @@ export function InfrastructureTopology({ topology = DEFAULT_TOPOLOGY, className 
         <div className="relative flex justify-center mb-12">
           <div className="relative">
             {/* Pulsing rings */}
-            <div className="absolute -inset-8 rounded-full border border-violet-500/20 animate-ping" style={{ animationDuration: "3s" }} />
-            <div className="absolute -inset-6 rounded-full border border-violet-500/30 animate-ping" style={{ animationDuration: "2.5s", animationDelay: "0.4s" }} />
-            <div className="absolute -inset-4 rounded-full bg-gradient-to-br from-violet-500/30 via-fuchsia-500/20 to-blue-500/30 blur-[20px]" />
+            <div className="absolute -inset-8 rounded-full border border-orange-500/20 animate-ping" style={{ animationDuration: "3s" }} />
+            <div className="absolute -inset-6 rounded-full border border-orange-500/30 animate-ping" style={{ animationDuration: "2.5s", animationDelay: "0.4s" }} />
+            <div className="absolute -inset-4 rounded-full bg-gradient-to-br from-orange-500/30 via-amber-500/20 to-blue-500/30 blur-[20px]" />
             {/* Core */}
-            <div className="relative w-24 h-24 rounded-3xl bg-gradient-to-br from-[#1a1a20] via-[#0f0f12] to-[#0a0a0c] border border-violet-500/30 flex items-center justify-center shadow-2xl shadow-violet-900/40">
+            <div className="relative w-24 h-24 rounded-3xl bg-gradient-to-br from-[#1a1a20] via-[#0f0f12] to-[#0a0a0c] border border-orange-500/30 flex items-center justify-center shadow-2xl shadow-orange-900/40">
               <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-white/[0.06] via-transparent to-transparent" />
-              <CpuChipIcon className="h-10 w-10 text-violet-400 relative z-10" />
+              <CpuChipIcon className="h-10 w-10 text-orange-400 relative z-10" />
               <span className="absolute -bottom-1.5 right-1 w-3 h-3 rounded-full bg-emerald-400 border-2 border-[#09090b] shadow-[0_0_8px_rgba(52,211,153,0.8)]" />
             </div>
             <p className="text-[10px] font-bold text-center text-white mt-2 tracking-widest uppercase">Axiom Operator</p>
@@ -343,7 +343,7 @@ export function InfrastructureTopology({ topology = DEFAULT_TOPOLOGY, className 
                 {provider.status !== "degraded" && (
                   <div className="absolute -top-px left-1/2 -translate-x-1/2 h-1 w-12 overflow-hidden rounded-b-full">
                     <div
-                      className={`h-full w-full bg-gradient-to-r from-transparent via-violet-400 to-transparent`}
+                      className={`h-full w-full bg-gradient-to-r from-transparent via-orange-400 to-transparent`}
                       style={{ transform: `translateX(${scanPulse - 50}%)`, opacity: 0.6 }}
                     />
                   </div>
@@ -370,7 +370,7 @@ export function InfrastructureTopology({ topology = DEFAULT_TOPOLOGY, className 
             <span className="text-zinc-500">Findings present</span>
           </span>
           <span className="flex items-center gap-1.5">
-            <BoltIcon className="h-3 w-3 text-violet-400" />
+            <BoltIcon className="h-3 w-3 text-orange-400" />
             <span className="text-zinc-500">Live data flow</span>
           </span>
         </div>

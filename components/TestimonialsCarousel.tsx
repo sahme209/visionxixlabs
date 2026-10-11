@@ -12,21 +12,21 @@ const TESTIMONIALS = [
       "Axiom found cost savings we'd been missing for months and generated the Terraform to fix it. The approval workflow gave us confidence to actually apply it.",
     author: "Head of Infrastructure",
     company: "SaaS",
-    color: "violet" as const,
+    color: "orange" as const,
   },
   {
     quote:
       "The cognitive reasoning is what sets it apart — it doesn't just list findings, it prioritizes them and explains why. Like having a senior cloud engineer on call 24/7.",
     author: "VP Engineering",
     company: "Scale-up",
-    color: "fuchsia" as const,
+    color: "amber" as const,
   },
   {
     quote:
       "Read-only by default, approval gates on every change, full audit trail. It's the only AI tool our security team approved without a fight.",
     author: "CTO",
     company: "Enterprise",
-    color: "indigo" as const,
+    color: "zinc" as const,
   },
   {
     quote:
@@ -103,7 +103,7 @@ export function TestimonialsCarousel() {
     <section className="py-20 px-4 sm:px-6 lg:px-8 overflow-hidden">
       <div className="max-w-5xl mx-auto">
         <div className="flex items-center justify-center gap-2 mb-4">
-          <AccentMarker color="violet" size="md" />
+          <AccentMarker color="orange" size="md" />
           <h2 className="text-2xl md:text-3xl font-bold text-white">
             Trusted by teams running production infrastructure
           </h2>
@@ -121,19 +121,19 @@ export function TestimonialsCarousel() {
             {/* Left: accent panel */}
             <div
               className={`p-8 flex flex-col justify-center ${
-                t.color === "violet"
-                  ? "bg-violet-500/[0.06]"
-                  : t.color === "fuchsia"
-                    ? "bg-fuchsia-500/[0.06]"
-                    : t.color === "indigo"
-                      ? "bg-indigo-500/[0.06]"
+                t.color === "orange"
+                  ? "bg-orange-500/[0.06]"
+                  : t.color === "amber"
+                    ? "bg-amber-500/[0.06]"
+                    : t.color === "zinc"
+                      ? "bg-zinc-500/[0.06]"
                       : "bg-emerald-500/[0.06]"
               }`}
             >
               <AccentMarker color={t.color} size="md" className="mb-4" />
               {/* Author avatar placeholder with ring */}
               <div className="flex items-center gap-3 mb-3">
-                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-violet-500/20 to-fuchsia-500/20 ring-2 ring-white/[0.06] flex items-center justify-center">
+                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-orange-500/20 to-amber-500/20 ring-2 ring-white/[0.06] flex items-center justify-center">
                   <span className="text-sm font-bold text-white/60">
                     {t.author.charAt(0)}
                   </span>
@@ -194,7 +194,7 @@ export function TestimonialsCarousel() {
                   onClick={() => goTo(i)}
                   className={`rounded-full transition-all duration-300 ${
                     i === index
-                      ? "w-7 h-2 bg-gradient-to-r from-brand-coral via-fuchsia-400 to-brand-violet"
+                      ? "w-7 h-2 bg-gradient-to-r from-brand-coral via-amber-400 to-brand-orange"
                       : "w-2 h-2 bg-zinc-700 hover:bg-zinc-600"
                   }`}
                   aria-label={`Go to testimonial ${i + 1}`}

@@ -55,7 +55,7 @@ export default async function RemediationCenter() {
           <span className="text-[10px] font-mono font-semibold text-emerald-300 uppercase tracking-[0.22em]">Remediation Center</span>
         </div>
         <h1 className="text-3xl md:text-4xl font-bold tracking-[-0.04em] mb-2">
-          Closed-loop <span className="bg-gradient-to-r from-emerald-300 via-cyan-300 to-violet-300 bg-clip-text text-transparent">remediation</span>.
+          Closed-loop <span className="bg-gradient-to-r from-emerald-300 via-cyan-300 to-orange-300 bg-clip-text text-transparent">remediation</span>.
         </h1>
         <p className="text-sm text-zinc-400 max-w-3xl leading-relaxed">
           Every candidate carries a Terraform preview, CLI preview, rollback plan, verification checklist, and execution-readiness decision. Apply is approval-gated and reversible. Nothing on this page mutates cloud state.
@@ -67,7 +67,7 @@ export default async function RemediationCenter() {
 
       {/* KPIs */}
       <section className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3">
-        <Kpi label="Candidates"        value={`${summary.total}`}            tone="text-violet-300"  detail="From security + releases + gaps." />
+        <Kpi label="Candidates"        value={`${summary.total}`}            tone="text-orange-300"  detail="From security + releases + gaps." />
         <Kpi label="Approval-gated"    value={`${summary.approvalGated}`}    tone="text-zinc-300"   detail="Approver(s) required to proceed." />
         <Kpi label="Desktop-eligible"  value={`${summary.desktopEligible}`}  tone="text-cyan-300"    detail="Can be reviewed locally." />
         <Kpi label="Policy-blocked"    value={`${summary.blocked}`}          tone="text-rose-300"    detail="Blocked by governance / preview mode." />
@@ -125,7 +125,7 @@ export default async function RemediationCenter() {
 
               <div className="px-6 pb-6 grid lg:grid-cols-2 gap-5 border-t border-white/[0.05]">
                 {/* Terraform preview */}
-                <Card Icon={CommandLineIcon} title="Terraform preview" tone="text-violet-300">
+                <Card Icon={CommandLineIcon} title="Terraform preview" tone="text-orange-300">
                   <p className="text-[11px] font-mono text-zinc-600 mb-2">{bundle.terraform.fileName}</p>
                   {bundle.terraform.manualReviewRequired ? (
                     <p className="text-xs text-zinc-300">Manual review required — no canonical HCL template yet.</p>
@@ -180,8 +180,8 @@ export default async function RemediationCenter() {
                 <div className="lg:col-span-2 rounded-xl border border-white/[0.06] bg-white/[0.015] p-4">
                   <div className="flex items-center justify-between flex-wrap gap-3 mb-3">
                     <div className="flex items-center gap-2">
-                      <ShieldCheckIcon className="h-3.5 w-3.5 text-violet-300" />
-                      <p className="text-[10px] font-mono text-violet-300 uppercase tracking-[0.18em]">// readiness</p>
+                      <ShieldCheckIcon className="h-3.5 w-3.5 text-orange-300" />
+                      <p className="text-[10px] font-mono text-orange-300 uppercase tracking-[0.18em]">// readiness</p>
                     </div>
                     <span className="text-[10px] font-mono text-zinc-500">policy · {c.policyDecision} · approval · {c.approvalRequirement}</span>
                   </div>

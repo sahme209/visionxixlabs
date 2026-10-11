@@ -38,7 +38,7 @@ export default async function ContentPlannerPage() {
   return (
     <div className="relative">
       <div className="mb-6">
-        <Link href="/admin/growth" className="text-[11px] text-violet-300 hover:text-violet-200 inline-flex items-center gap-1">
+        <Link href="/admin/growth" className="text-[11px] text-orange-300 hover:text-orange-200 inline-flex items-center gap-1">
           <ArrowRightIcon className="h-3 w-3 rotate-180" />
           Back to Growth
         </Link>
@@ -46,8 +46,8 @@ export default async function ContentPlannerPage() {
 
       <div className="mb-8">
         <div className="flex items-center gap-3 mb-3">
-          <PencilSquareIcon className="h-4 w-4 text-violet-400" />
-          <p className="text-[10px] font-semibold text-violet-400 uppercase tracking-widest">Daily content planner</p>
+          <PencilSquareIcon className="h-4 w-4 text-orange-400" />
+          <p className="text-[10px] font-semibold text-orange-400 uppercase tracking-widest">Daily content planner</p>
           <span className={`text-[9px] font-mono uppercase tracking-wider border rounded-full px-1.5 py-px ${
             llmActive
               ? "text-emerald-300 bg-emerald-500/10 border-emerald-500/30"
@@ -91,7 +91,7 @@ function DraftCard({ draft }: { draft: SocialPostDraft }) {
     <article className="rounded-2xl border border-white/[0.06] bg-white/[0.02] overflow-hidden">
       <header className="px-5 py-3 border-b border-white/[0.05] flex items-center justify-between gap-3 flex-wrap">
         <div className="flex items-center gap-2">
-          <span className="text-[9px] font-mono uppercase tracking-wider border rounded-full px-1.5 py-px text-violet-300 bg-violet-500/10 border-violet-500/30">
+          <span className="text-[9px] font-mono uppercase tracking-wider border rounded-full px-1.5 py-px text-orange-300 bg-orange-500/10 border-orange-500/30">
             {channelLabel}
           </span>
           <span className="text-[10px] font-mono uppercase tracking-wider text-zinc-500">draft · {draft.id.slice(0, 20)}</span>
@@ -106,7 +106,7 @@ function DraftCard({ draft }: { draft: SocialPostDraft }) {
         {draft.hashtags.length > 0 && (
           <div className="mt-3 flex flex-wrap gap-1.5">
             {draft.hashtags.map((tag) => (
-              <span key={tag} className="text-[10.5px] font-mono text-violet-300/90 bg-violet-500/10 border border-violet-500/20 rounded-full px-1.5 py-0.5">
+              <span key={tag} className="text-[10.5px] font-mono text-orange-300/90 bg-orange-500/10 border border-orange-500/20 rounded-full px-1.5 py-0.5">
                 {tag}
               </span>
             ))}

@@ -320,7 +320,7 @@ function ConnectCloudInner() {
   if (phase === "starting" || phase === "linking") {
     return (
       <div className="max-w-3xl mx-auto px-6 py-20 text-center">
-        <div className="h-6 w-6 mx-auto mb-4 animate-spin rounded-full border-2 border-violet-500 border-t-transparent" />
+        <div className="h-6 w-6 mx-auto mb-4 animate-spin rounded-full border-2 border-orange-500 border-t-transparent" />
         <p className="text-sm text-zinc-400">
           {phase === "starting" ? "Preparing your connect session…" : "Registering the connector…"}
         </p>
@@ -428,7 +428,7 @@ export default function ConnectCloudPage() {
   return (
     <Suspense fallback={
       <div className="max-w-3xl mx-auto px-6 py-20 text-center">
-        <div className="h-6 w-6 mx-auto animate-spin rounded-full border-2 border-violet-500 border-t-transparent" />
+        <div className="h-6 w-6 mx-auto animate-spin rounded-full border-2 border-orange-500 border-t-transparent" />
       </div>
     }>
       <ConnectCloudInner />

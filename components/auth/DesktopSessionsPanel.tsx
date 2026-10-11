@@ -64,7 +64,7 @@ export function DesktopSessionsPanel() {
 
   return (
     <section className="rounded-2xl border border-white/[0.08] bg-white/[0.025] p-5 sm:p-7" aria-labelledby="paired-devices-title">
-      <p className="text-[10px] uppercase tracking-[0.18em] text-violet-300">Session security</p>
+      <p className="text-[10px] uppercase tracking-[0.18em] text-orange-300">Session security</p>
       <h2 id="paired-devices-title" className="mt-3 text-lg font-medium text-zinc-100">Paired Axiom Agent devices</h2>
       <p className="mt-2 max-w-2xl text-sm leading-6 text-zinc-500">Review active desktop pairings for this workspace. Revoking a device immediately prevents its paired session from reaching Axiom&apos;s protected APIs.</p>
 

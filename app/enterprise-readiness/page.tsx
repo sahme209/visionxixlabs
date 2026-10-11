@@ -37,7 +37,7 @@ export default function EnterpriseReadinessPage() {
               <li>
                 <Link
                   href="/"
-                  className="hover:text-violet-400"
+                  className="hover:text-orange-400"
                 >
                   Home
                 </Link>
@@ -61,7 +61,7 @@ export default function EnterpriseReadinessPage() {
                 Powerful, but{" "}
                 <span className="relative inline-block">
                   controlled.
-                  <span aria-hidden className="absolute left-0 -bottom-1 h-[3px] w-full rounded-full bg-gradient-to-r from-brand-coral via-fuchsia-400 to-transparent opacity-85" />
+                  <span aria-hidden className="absolute left-0 -bottom-1 h-[3px] w-full rounded-full bg-gradient-to-r from-brand-coral via-amber-400 to-transparent opacity-85" />
                 </span>
               </h1>
               <p className="text-base text-zinc-400 max-w-2xl">
@@ -76,7 +76,7 @@ export default function EnterpriseReadinessPage() {
           <Reveal direction="up" delay={0.1}>
             <section className="mb-12">
               <div className="flex items-center gap-3 mb-4">
-                <ShieldCheckIcon className="h-6 w-6 text-violet-400" />
+                <ShieldCheckIcon className="h-6 w-6 text-orange-400" />
                 <h2 className="text-3xl md:text-4xl font-extrabold text-white tracking-[-0.04em]">
                   Security &amp; access model
                 </h2>
@@ -120,7 +120,7 @@ export default function EnterpriseReadinessPage() {
           <Reveal direction="up" delay={0.1}>
             <section className="mb-12">
               <div className="flex items-center gap-3 mb-4">
-                <ClipboardDocumentCheckIcon className="h-6 w-6 text-violet-400" />
+                <ClipboardDocumentCheckIcon className="h-6 w-6 text-orange-400" />
                 <h2 className="text-3xl md:text-4xl font-extrabold text-white tracking-[-0.04em]">
                   AI governance &amp; risk management
                 </h2>
@@ -306,7 +306,7 @@ export default function EnterpriseReadinessPage() {
       <Footer />
 
       {/* Floating blur orbs */}
-      <div className="ambient-drift absolute bottom-1/4 left-10 w-[380px] h-[340px] bg-brand-violet/[0.08] rounded-full blur-[120px] pointer-events-none" />
+      <div className="ambient-drift absolute bottom-1/4 left-10 w-[380px] h-[340px] bg-brand-orange/[0.08] rounded-full blur-[120px] pointer-events-none" />
       <div className="ambient-drift absolute top-1/2 right-0 w-[420px] h-[360px] bg-brand-coral/[0.06] rounded-full blur-[130px] pointer-events-none" style={{ animationDelay: "-8s" }} />
       <div className="ambient-drift absolute top-1/4 left-1/3 w-[360px] h-[280px] bg-cyan-500/[0.04] rounded-full blur-[110px] pointer-events-none" style={{ animationDelay: "-14s" }} />
     </div>

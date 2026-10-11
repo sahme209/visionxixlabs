@@ -14,7 +14,7 @@ const EVIDENCE = [
     body: "Installer filenames, platform targets, publication dates, checksums, and detached signatures are visible on the release record.",
     href: "https://github.com/sahme209/axiom-releases/releases",
     label: "Inspect releases",
-    tone: "from-indigo-500/20 to-transparent border-indigo-500/30",
+    tone: "from-zinc-500/20 to-transparent border-zinc-500/30",
     external: true,
   },
   {
@@ -22,7 +22,7 @@ const EVIDENCE = [
     body: "Explore fictional deployment records without cloud credentials, production connections, or private tenant data.",
     href: "/demo",
     label: "Explore the sandbox",
-    tone: "from-fuchsia-500/20 to-transparent border-fuchsia-500/30",
+    tone: "from-amber-500/20 to-transparent border-amber-500/30",
     external: false,
   },
   {
@@ -67,11 +67,11 @@ export function SocialProofRail() {
             <h3 className="text-sm font-semibold text-white">{item.title}</h3>
             <p className="mt-2 text-[13px] leading-relaxed text-zinc-300">{item.body}</p>
             {item.external ? (
-              <a href={item.href} target="_blank" rel="noopener noreferrer" className="mt-5 inline-flex text-xs font-medium text-violet-200 hover:text-white">
+              <a href={item.href} target="_blank" rel="noopener noreferrer" className="mt-5 inline-flex text-xs font-medium text-orange-200 hover:text-white">
                 {item.label} →
               </a>
             ) : (
-              <Link href={item.href} className="mt-5 inline-flex text-xs font-medium text-violet-200 hover:text-white">
+              <Link href={item.href} className="mt-5 inline-flex text-xs font-medium text-orange-200 hover:text-white">
                 {item.label} →
               </Link>
             )}

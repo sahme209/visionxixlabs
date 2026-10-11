@@ -10,7 +10,7 @@ const PHASES = [
       { num: 2, name: "Snapshot", desc: "Full state capture — resources, cost tags, IAM policies, security groups" },
       { num: 3, name: "Drift", desc: "Flag untracked changes — manual edits, out-of-band deployments" },
     ],
-    accent: "violet",
+    accent: "orange",
   },
   {
     phase: "Reason",
@@ -19,7 +19,7 @@ const PHASES = [
       { num: 5, name: "Prioritize", desc: "Rank by blast radius, cost impact, and compliance urgency" },
       { num: 6, name: "Plan", desc: "Auto-detect resource dependencies, stage rollout with approval gates" },
     ],
-    accent: "fuchsia",
+    accent: "zinc",
   },
   {
     phase: "Act",
@@ -42,21 +42,21 @@ const PHASES = [
 ];
 
 const ACCENT_COLORS: Record<string, { dot: string; border: string; bg: string; text: string; num: string; dotColor: string }> = {
-  violet: {
-    dot: "bg-violet-500",
-    border: "border-violet-500/20",
-    bg: "bg-violet-500/[0.06]",
-    text: "text-violet-400",
-    num: "bg-violet-500/10 text-violet-400 border-violet-500/20",
-    dotColor: "text-violet-500",
+  orange: {
+    dot: "bg-orange-500",
+    border: "border-orange-500/20",
+    bg: "bg-orange-500/[0.06]",
+    text: "text-orange-400",
+    num: "bg-orange-500/10 text-orange-400 border-orange-500/20",
+    dotColor: "text-orange-500",
   },
-  fuchsia: {
-    dot: "bg-fuchsia-500",
-    border: "border-fuchsia-500/20",
-    bg: "bg-fuchsia-500/[0.06]",
-    text: "text-fuchsia-400",
-    num: "bg-fuchsia-500/10 text-fuchsia-400 border-fuchsia-500/20",
-    dotColor: "text-fuchsia-500",
+  zinc: {
+    dot: "bg-amber-500",
+    border: "border-amber-500/20",
+    bg: "bg-amber-500/[0.06]",
+    text: "text-amber-400",
+    num: "bg-amber-500/10 text-amber-400 border-amber-500/20",
+    dotColor: "text-amber-500",
   },
   emerald: {
     dot: "bg-emerald-500",
@@ -105,8 +105,8 @@ export function ServicePipeline() {
         })}
         {/* Progress flow indicator — animated arrow */}
         <div className="absolute top-1/2 -translate-y-1/2 right-4 flex items-center gap-1">
-          <span className="block w-8 h-[2px] bg-gradient-to-r from-violet-500/40 to-transparent rounded-full" />
-          <span className="block w-0 h-0 border-l-[6px] border-l-violet-500/40 border-y-[4px] border-y-transparent" />
+          <span className="block w-8 h-[2px] bg-gradient-to-r from-orange-500/40 to-transparent rounded-full" />
+          <span className="block w-0 h-0 border-l-[6px] border-l-orange-500/40 border-y-[4px] border-y-transparent" />
         </div>
       </div>
 

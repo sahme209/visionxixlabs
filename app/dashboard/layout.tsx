@@ -29,7 +29,7 @@ export default async function DashboardLayout({
         <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex items-center justify-between">
           <div className="flex items-center gap-4">
             <Link href="/dashboard/command-center" className="flex items-center gap-2 nav-link-underline">
-              <CpuChipIcon className="h-7 w-7 text-violet-500" />
+              <CpuChipIcon className="h-7 w-7 text-orange-500" />
               <span className="font-bold text-white tracking-[-0.04em]">Axiom</span>
             </Link>
             <OpenPaletteChip />

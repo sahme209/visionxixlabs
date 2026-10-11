@@ -75,7 +75,7 @@ export default async function EngineerCostPage() {
       <section className="grid grid-cols-3 gap-3 mb-8">
         <Stat label="Total · 30d" value={fmtUsd(rollup.totalCents)} tone="text-white" />
         <Stat label="Engineers · 30d" value={String(rollup.rows.length)} tone="text-emerald-300" />
-        <Stat label="Calls · 30d" value={String(rollup.totalCalls)} tone="text-violet-300" />
+        <Stat label="Calls · 30d" value={String(rollup.totalCalls)} tone="text-orange-300" />
       </section>
 
       {rollup.rows.length === 0 ? (

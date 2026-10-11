@@ -113,13 +113,13 @@ export default function MarketingPage() {
     <div className="relative">
       <PlatformHero
         eyebrow="visionxixlabs admin · internal marketing"
-        eyebrowTone="fuchsia"
+        eyebrowTone="amber"
         title="VisionXIXLabs marketing"
         description="Internal cockpit for the VisionXIXLabs operator team. Agent kernels draft posts for OUR LinkedIn / X channels, classify risk, and stage for approval. Not visible to client tenants. Nothing goes out without an operator signature."
-        gradientFromColor="radial-gradient(900px 320px at 14% 0%, rgba(217,70,239,0.10), transparent 60%), radial-gradient(700px 260px at 86% 110%, rgba(99,102,241,0.08), transparent 60%)"
+        gradientFromColor="radial-gradient(900px 320px at 14% 0%, rgba(245, 78, 0,0.10), transparent 60%), radial-gradient(700px 260px at 86% 110%, rgba(245,78,0,0.08), transparent 60%)"
         right={
           <>
-            <span className="rounded-full border border-fuchsia-500/30 bg-fuchsia-500/10 text-fuchsia-300 px-2.5 py-1 text-[11px] font-mono">
+            <span className="rounded-full border border-amber-500/30 bg-amber-500/10 text-amber-300 px-2.5 py-1 text-[11px] font-mono">
               {allDrafts.length} drafts
             </span>
             <span className="rounded-full border border-emerald-500/30 bg-emerald-500/10 text-emerald-300 px-2.5 py-1 text-[11px] font-mono">
@@ -169,7 +169,7 @@ export default function MarketingPage() {
                       <span className={["rounded-full px-2 py-0.5 border whitespace-nowrap", RISK_TONE[d.riskTier]].join(" ")}>
                         risk · {d.riskTier}
                       </span>
-                      <span className="rounded-full border border-violet-500/30 bg-violet-500/10 px-2 py-0.5 text-violet-300 whitespace-nowrap">
+                      <span className="rounded-full border border-orange-500/30 bg-orange-500/10 px-2 py-0.5 text-orange-300 whitespace-nowrap">
                         gate · {d.recommendedGate.replace("_", " ")}
                       </span>
                       <span className="rounded-full border border-white/[0.06] bg-white/[0.02] px-2 py-0.5 text-zinc-400">
@@ -180,7 +180,7 @@ export default function MarketingPage() {
                       {d.body}
                     </p>
                     {d.hashtags.length > 0 ? (
-                      <p className="mt-2 text-[11px] font-mono text-fuchsia-300/80">
+                      <p className="mt-2 text-[11px] font-mono text-amber-300/80">
                         {d.hashtags.map((h) => (h.startsWith("#") ? h : `#${h}`)).join(" ")}
                       </p>
                     ) : null}

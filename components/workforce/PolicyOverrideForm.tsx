@@ -95,7 +95,7 @@ export function PolicyOverrideForm({ engineerId, canonical, initialRule, initial
               key={option}
               className={`flex items-center justify-between gap-3 rounded-lg border px-4 py-3 ${
                 isSelected
-                  ? "border-violet-500/40 bg-violet-500/[0.05] cursor-pointer"
+                  ? "border-orange-500/40 bg-orange-500/[0.05] cursor-pointer"
                   : allowed
                     ? "border-white/[0.06] bg-white/[0.01] cursor-pointer hover:border-white/[0.12]"
                     : "border-rose-500/15 bg-rose-500/[0.03] opacity-70 cursor-not-allowed"
@@ -118,7 +118,7 @@ export function PolicyOverrideForm({ engineerId, canonical, initialRule, initial
                 checked={isSelected}
                 disabled={!allowed}
                 onChange={() => setRule(option)}
-                className="accent-violet-500"
+                className="accent-orange-500"
               />
             </label>
           );
@@ -131,14 +131,14 @@ export function PolicyOverrideForm({ engineerId, canonical, initialRule, initial
             type="checkbox"
             checked={isEnabled}
             onChange={(e) => setIsEnabled(e.target.checked)}
-            className="accent-violet-500"
+            className="accent-orange-500"
           />
           <span className="text-[12px] text-zinc-300">Engineer enabled in this workspace</span>
         </label>
         <button
           onClick={save}
           disabled={state.kind === "saving"}
-          className="inline-flex items-center gap-1.5 text-[12px] font-medium px-3 py-1.5 rounded-lg bg-violet-500/15 text-violet-100 border border-violet-500/30 hover:bg-violet-500/25 transition disabled:opacity-60"
+          className="inline-flex items-center gap-1.5 text-[12px] font-medium px-3 py-1.5 rounded-lg bg-orange-500/15 text-orange-100 border border-orange-500/30 hover:bg-orange-500/25 transition disabled:opacity-60"
         >
           {state.kind === "saving" ? (
             <>

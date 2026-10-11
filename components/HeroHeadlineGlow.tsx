@@ -4,11 +4,11 @@
  * Hero headline with per-word hover glow — futuristic multi-color animation
  */
 const HEADLINE_WORDS = [
-  { text: "Axiom:", color: "#818cf8" },     // indigo
+  { text: "Axiom:", color: "#818cf8" },     // zinc
   { text: " ", color: "transparent" },
   { text: "Your", color: "#64748b" },
   { text: " ", color: "transparent" },
-  { text: "Autonomous", color: "#a78bfa" }, // violet
+  { text: "Autonomous", color: "#a78bfa" }, // orange
   { text: " ", color: "transparent" },
   { text: "Cloud", color: "#22d3ee" },      // cyan
   { text: " ", color: "transparent" },

@@ -25,7 +25,7 @@ export interface GradientBorderProps {
   /** Rotation duration in seconds — lower = faster. */
   durationSec?: number;
   /** Gradient palette. */
-  palette?: "violet" | "cyan" | "emerald" | "sunset" | "aurora";
+  palette?: "orange" | "cyan" | "emerald" | "sunset" | "aurora";
   /** Apply the rotation only on hover (cheaper, calmer). */
   hoverOnly?: boolean;
   /** Optional class on the outer wrapper. */
@@ -33,11 +33,11 @@ export interface GradientBorderProps {
 }
 
 const PALETTES: Record<NonNullable<GradientBorderProps["palette"]>, string> = {
-  violet:   "conic-gradient(from 0deg, rgba(139,92,246,0.55), rgba(232,121,249,0.45), rgba(139,92,246,0.0), rgba(139,92,246,0.55))",
+  orange:   "conic-gradient(from 0deg, rgba(255, 120, 61,0.55), rgba(255,120,61,0.45), rgba(255, 120, 61,0.0), rgba(255, 120, 61,0.55))",
   cyan:     "conic-gradient(from 0deg, rgba(34,211,238,0.55), rgba(52,211,153,0.45), rgba(34,211,238,0.0), rgba(34,211,238,0.55))",
   emerald:  "conic-gradient(from 0deg, rgba(52,211,153,0.55), rgba(34,211,238,0.4), rgba(52,211,153,0.0), rgba(52,211,153,0.55))",
-  sunset:   "conic-gradient(from 0deg, rgba(251,191,36,0.55), rgba(232,121,249,0.45), rgba(251,191,36,0.0), rgba(251,191,36,0.55))",
-  aurora:   "conic-gradient(from 0deg, rgba(139,92,246,0.5), rgba(232,121,249,0.5), rgba(34,211,238,0.5), rgba(52,211,153,0.5), rgba(139,92,246,0.5))",
+  sunset:   "conic-gradient(from 0deg, rgba(251,191,36,0.55), rgba(255,120,61,0.45), rgba(251,191,36,0.0), rgba(251,191,36,0.55))",
+  aurora:   "conic-gradient(from 0deg, rgba(255, 120, 61,0.5), rgba(255,120,61,0.5), rgba(34,211,238,0.5), rgba(52,211,153,0.5), rgba(255, 120, 61,0.5))",
 };
 
 export function GradientBorder({
@@ -46,7 +46,7 @@ export function GradientBorder({
   innerBg = "rgb(8 8 12)",
   radius = 16,
   durationSec = 8,
-  palette = "violet",
+  palette = "orange",
   hoverOnly = false,
   className = "",
 }: GradientBorderProps) {

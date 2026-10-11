@@ -223,9 +223,9 @@ const FAQ: ReadonlyArray<FaqEntry> = [
 export function PricingClient() {
   return (
     <div className="relative">
-      {/* Coral × violet aurora — Huly-style warm/cool mix behind the hero */}
+      {/* Coral × orange aurora — Huly-style warm/cool mix behind the hero */}
       <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 h-[700px] z-0 overflow-hidden">
-        <div className="ambient-drift absolute -top-32 left-1/2 -translate-x-1/2 w-[900px] h-[480px] rounded-full bg-brand-violet/[0.07] blur-[140px]" />
+        <div className="ambient-drift absolute -top-32 left-1/2 -translate-x-1/2 w-[900px] h-[480px] rounded-full bg-brand-orange/[0.07] blur-[140px]" />
         <div className="ambient-drift absolute top-12 right-[5%] w-[480px] h-[360px] rounded-full bg-brand-coral/[0.06] blur-[130px]" style={{ animationDelay: "-8s" }} />
         <div className="ambient-drift absolute top-32 left-[5%] w-[380px] h-[300px] rounded-full bg-cyan-500/[0.035] blur-[120px]" style={{ animationDelay: "-14s" }} />
       </div>
@@ -244,7 +244,7 @@ export function PricingClient() {
           Custom pricing,<br />
           <span className="relative inline-block">
             based on your cloud.
-            <span aria-hidden className="absolute left-0 -bottom-1 h-[3px] w-[64%] rounded-full bg-gradient-to-r from-brand-coral via-fuchsia-400 to-transparent opacity-90" />
+            <span aria-hidden className="absolute left-0 -bottom-1 h-[3px] w-[64%] rounded-full bg-gradient-to-r from-brand-coral via-amber-400 to-transparent opacity-90" />
           </span>
         </motion.h1>
         <motion.p
@@ -264,7 +264,7 @@ export function PricingClient() {
         </p>
         <p className="mt-3 text-[13px] text-zinc-500 leading-relaxed">
           These charges cover the same governed release workspace described on the{" "}
-          <Link href="/product" className="text-violet-300 hover:text-violet-200 underline underline-offset-2">product page</Link>
+          <Link href="/product" className="text-orange-300 hover:text-orange-200 underline underline-offset-2">product page</Link>
           {" "}— the AI engineers, cloud connectors, and scans below are the readiness and evidence inputs that feed the Playbook, not a separate product.
         </p>
 

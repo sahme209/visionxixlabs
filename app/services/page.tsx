@@ -181,10 +181,10 @@ const services = [
 export default function ServicesPage() {
   return (
     <div className="min-h-screen bg-[#09090b] relative overflow-hidden">
-      {/* Huly aurora — coral × violet × cyan */}
+      {/* Huly aurora — coral × orange × cyan */}
       <div className="spotlight-orb absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[600px] pointer-events-none" />
       <div className="bg-dots absolute inset-0 pointer-events-none" />
-      <div className="ambient-drift absolute -top-40 left-1/4 w-[520px] h-[460px] rounded-full bg-brand-violet/[0.08] blur-[140px] pointer-events-none" aria-hidden />
+      <div className="ambient-drift absolute -top-40 left-1/4 w-[520px] h-[460px] rounded-full bg-brand-orange/[0.08] blur-[140px] pointer-events-none" aria-hidden />
       <div className="ambient-drift absolute top-1/4 right-[5%] w-[420px] h-[340px] rounded-full bg-brand-coral/[0.06] blur-[120px] pointer-events-none" style={{ animationDelay: "-8s" }} aria-hidden />
       <div className="ambient-drift absolute bottom-32 left-[5%] w-[360px] h-[280px] rounded-full bg-cyan-500/[0.04] blur-[110px] pointer-events-none" style={{ animationDelay: "-14s" }} aria-hidden />
       <Navigation />
@@ -203,7 +203,7 @@ export default function ServicesPage() {
                 Cloud &amp; AI Engineering.<br className="hidden sm:block" />
                 <span className="relative inline-block">
                   Measurable outcomes.
-                  <span aria-hidden className="absolute left-0 -bottom-0.5 h-[2px] w-full rounded-full bg-gradient-to-r from-brand-coral via-fuchsia-400/70 to-transparent" />
+                  <span aria-hidden className="absolute left-0 -bottom-0.5 h-[2px] w-full rounded-full bg-gradient-to-r from-brand-coral via-amber-400/70 to-transparent" />
                 </span>
               </h1>
               <p className="text-lg text-zinc-400 max-w-3xl">
@@ -225,7 +225,7 @@ export default function ServicesPage() {
               </p>
               <Link
                 href="/cloud-solutions"
-                className="text-sm font-semibold text-violet-400 hover:underline"
+                className="text-sm font-semibold text-orange-400 hover:underline"
               >
                 View cloud solutions →
               </Link>
@@ -348,7 +348,7 @@ export default function ServicesPage() {
               <ul className="space-y-2 text-zinc-400">
                 {idealClientsCloud.map((item) => (
                   <li key={item} className="flex items-start">
-                    <span className="text-violet-400 mr-2 mt-0.5">•</span>
+                    <span className="text-orange-400 mr-2 mt-0.5">•</span>
                     {item}
                   </li>
                 ))}
@@ -376,7 +376,7 @@ export default function ServicesPage() {
       <Footer />
 
       {/* Floating blur orbs */}
-      <div className="absolute bottom-1/4 left-10 w-72 h-72 bg-indigo-600/10 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute bottom-1/4 left-10 w-72 h-72 bg-zinc-600/10 rounded-full blur-3xl pointer-events-none" />
       <div className="absolute top-1/2 right-0 w-96 h-96 bg-blue-600/8 rounded-full blur-3xl pointer-events-none" />
     </div>
   );

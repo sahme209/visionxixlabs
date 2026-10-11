@@ -92,7 +92,7 @@ export default function EvidencePage() {
           className="absolute inset-0 -z-10 opacity-90 pointer-events-none"
           style={{
             background:
-              "radial-gradient(900px 320px at 12% 0%, rgba(16,185,129,0.08), transparent 60%), radial-gradient(700px 260px at 88% 110%, rgba(99,102,241,0.06), transparent 60%)",
+              "radial-gradient(900px 320px at 12% 0%, rgba(16,185,129,0.08), transparent 60%), radial-gradient(700px 260px at 88% 110%, rgba(245,78,0,0.06), transparent 60%)",
           }}
           aria-hidden
         />
@@ -192,7 +192,7 @@ export default function EvidencePage() {
                           <p className="text-[13px] font-semibold text-white tracking-tight truncate">{r.title}</p>
                           <span className={`text-[9px] font-mono uppercase tracking-wider px-1.5 py-px rounded ${sourceClass}`}>{r.source.replace(/_/g, " ")}</span>
                           {r.controlId && (
-                            <span className="text-[9px] font-mono uppercase tracking-wider px-1.5 py-px rounded bg-violet-500/15 text-violet-300">{r.controlId}</span>
+                            <span className="text-[9px] font-mono uppercase tracking-wider px-1.5 py-px rounded bg-orange-500/15 text-orange-300">{r.controlId}</span>
                           )}
                         </div>
                         <p className="text-[11px] text-zinc-500 font-mono">

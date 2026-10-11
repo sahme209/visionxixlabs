@@ -39,16 +39,16 @@ const WORKFLOWS: ReadonlyArray<{
   tone: string;
   status: "live" | "scaffold" | "planned";
 }> = [
-  { slug: "linkedin",       name: "LinkedIn integration",        cadence: "On-demand + daily cron",  description: "Connect LinkedIn, review drafts, schedule + publish via the official OAuth + Posts API. Draft-only until you flip LINKEDIN_POSTING_ENABLED.", icon: CloudIcon,        tone: "text-violet-300",  status: "live" },
+  { slug: "linkedin",       name: "LinkedIn integration",        cadence: "On-demand + daily cron",  description: "Connect LinkedIn, review drafts, schedule + publish via the official OAuth + Posts API. Draft-only until you flip LINKEDIN_POSTING_ENABLED.", icon: CloudIcon,        tone: "text-orange-300",  status: "live" },
   { slug: "launch-kit",     name: "Launch kit",                  cadence: "Reference",               description: "Copy-paste brand kit — X.com bio + pinned tweet + first 12 daily posts + LICENSE/README content for the Axiom repo. Everything ready to paste.", icon: SparklesIcon,     tone: "text-rose-300",    status: "live" },
-  { slug: "post-drafts",    name: "Post drafts",                 cadence: "Daily generation",        description: "Every persisted LinkedIn draft, grouped by status. Approve, schedule, or publish each one inline.", icon: PencilSquareIcon, tone: "text-violet-300", status: "live" },
+  { slug: "post-drafts",    name: "Post drafts",                 cadence: "Daily generation",        description: "Every persisted LinkedIn draft, grouped by status. Approve, schedule, or publish each one inline.", icon: PencilSquareIcon, tone: "text-orange-300", status: "live" },
   { slug: "content-calendar", name: "Content calendar",          cadence: "Rolling 7 days",          description: "Week view of scheduled + published posts. Highlights gaps where the week needs another post.",      icon: CalendarDaysIcon, tone: "text-cyan-300",   status: "live" },
   { slug: "campaigns",      name: "Campaigns",                   cadence: "Weekly themes",           description: "Group drafts under a named campaign + date window — used by analytics roll-ups.",                    icon: MegaphoneIcon,    tone: "text-cyan-300",   status: "live" },
-  { slug: "content",        name: "Daily content planner",       cadence: "Every weekday 09:00 UTC", description: "Generates 3–5 post ideas + drafts a LinkedIn + X post per cycle. Always goes to approval queue.", icon: PencilSquareIcon,   tone: "text-violet-300",  status: "live" },
+  { slug: "content",        name: "Daily content planner",       cadence: "Every weekday 09:00 UTC", description: "Generates 3–5 post ideas + drafts a LinkedIn + X post per cycle. Always goes to approval queue.", icon: PencilSquareIcon,   tone: "text-orange-300",  status: "live" },
   { slug: "approval-queue", name: "Publishing approval queue",   cadence: "On-demand",               description: "Human review surface — approve / edit / reject every external publish before it goes live.",         icon: ShieldCheckIcon,     tone: "text-emerald-300", status: "live" },
-  { slug: "outreach",       name: "Outreach drafter",            cadence: "Ad-hoc",                  description: "Drafts personalized email / LinkedIn DM outreach. Approval-gated; never auto-sent.",                  icon: UserGroupIcon,       tone: "text-fuchsia-300", status: "planned" },
+  { slug: "outreach",       name: "Outreach drafter",            cadence: "Ad-hoc",                  description: "Drafts personalized email / LinkedIn DM outreach. Approval-gated; never auto-sent.",                  icon: UserGroupIcon,       tone: "text-amber-300", status: "planned" },
   { slug: "leads",          name: "Lead research",               cadence: "Weekly",                  description: "Identifies target verticals + buyer personas, captures pain points + outreach angles.",                icon: UserGroupIcon,       tone: "text-zinc-300",   status: "planned" },
-  { slug: "website-demo",   name: "Homepage demo sequence",      cadence: "Manual",                  description: "Authors the animated walkthrough on the public homepage. Edit the step-list, ship after review.",      icon: GlobeAltIcon,        tone: "text-violet-300",  status: "scaffold" },
+  { slug: "website-demo",   name: "Homepage demo sequence",      cadence: "Manual",                  description: "Authors the animated walkthrough on the public homepage. Edit the step-list, ship after review.",      icon: GlobeAltIcon,        tone: "text-orange-300",  status: "scaffold" },
   { slug: "analytics",      name: "Campaign performance",        cadence: "Daily",                   description: "Summarises post + campaign engagement. Recommends the next content strategy step.",                     icon: ChartBarSquareIcon,  tone: "text-cyan-300",    status: "planned" },
   { slug: "scripts",        name: "Python automation scripts",   cadence: "Cron",                    description: "Backend Python workers — content generation, LinkedIn API, X.com API, analytics ingest.",              icon: CommandLineIcon,     tone: "text-zinc-300",    status: "planned" },
 ];
@@ -64,8 +64,8 @@ export default function GrowthIndexPage() {
     <div className="relative">
       <div className="mb-8">
         <div className="flex items-center gap-3 mb-3">
-          <MegaphoneIcon className="h-4 w-4 text-violet-400" />
-          <p className="text-[10px] font-semibold text-violet-400 uppercase tracking-widest">Growth automation · internal</p>
+          <MegaphoneIcon className="h-4 w-4 text-orange-400" />
+          <p className="text-[10px] font-semibold text-orange-400 uppercase tracking-widest">Growth automation · internal</p>
           <span className="text-[9px] font-mono uppercase tracking-wider text-rose-300 bg-rose-500/10 border border-rose-500/30 rounded-full px-2 py-0.5">
             NOT visible to clients
           </span>
@@ -110,7 +110,7 @@ export default function GrowthIndexPage() {
               <p className="text-[11.5px] text-zinc-400 leading-snug mb-3 flex-1">{w.description}</p>
               <Link
                 href={`/admin/growth/${w.slug}`}
-                className="inline-flex items-center gap-1.5 text-[12px] font-medium text-violet-300 hover:text-violet-200 self-start"
+                className="inline-flex items-center gap-1.5 text-[12px] font-medium text-orange-300 hover:text-orange-200 self-start"
               >
                 Open
                 <ArrowRightIcon className="h-3 w-3" />
@@ -120,10 +120,10 @@ export default function GrowthIndexPage() {
         })}
       </section>
 
-      <section className="rounded-2xl border border-violet-500/15 bg-violet-500/[0.03] p-5">
+      <section className="rounded-2xl border border-orange-500/15 bg-orange-500/[0.03] p-5">
         <header className="flex items-center gap-2 mb-3">
-          <SparklesIcon className="h-4 w-4 text-violet-300" />
-          <p className="text-[10px] font-semibold uppercase tracking-widest text-violet-300">Where this is going</p>
+          <SparklesIcon className="h-4 w-4 text-orange-300" />
+          <p className="text-[10px] font-semibold uppercase tracking-widest text-orange-300">Where this is going</p>
         </header>
         <ul className="grid sm:grid-cols-2 gap-2 text-[12px] text-zinc-300">
           {[
@@ -133,7 +133,7 @@ export default function GrowthIndexPage() {
             ["Auto-changelog social posts.",        "GitHub releases → LinkedIn + X drafts within minutes of a tag."],
           ].map(([q, a]) => (
             <li key={q} className="flex items-start gap-2">
-              <ArrowRightIcon className="h-3 w-3 text-violet-400 shrink-0 mt-1" />
+              <ArrowRightIcon className="h-3 w-3 text-orange-400 shrink-0 mt-1" />
               <span><span className="font-semibold text-zinc-100">{q}</span> <span className="text-zinc-400">— {a}</span></span>
             </li>
           ))}

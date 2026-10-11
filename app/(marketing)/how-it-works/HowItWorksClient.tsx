@@ -87,9 +87,9 @@ export function HowItWorksClient() {
 
   return (
     <div className="relative">
-      {/* Huly aurora — coral × violet × cyan */}
+      {/* Huly aurora — coral × orange × cyan */}
       <div aria-hidden className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
-        <div className="ambient-drift absolute -top-1/4 left-1/3 h-[60vh] w-[50vw] rounded-full bg-brand-violet/[0.08] blur-[140px]" />
+        <div className="ambient-drift absolute -top-1/4 left-1/3 h-[60vh] w-[50vw] rounded-full bg-brand-orange/[0.08] blur-[140px]" />
         <div className="ambient-drift absolute top-[20%] right-[5%] h-[50vh] w-[40vw] rounded-full bg-brand-coral/[0.06] blur-[130px]" style={{ animationDelay: "-8s" }} />
         <div className="ambient-drift absolute bottom-[10%] left-[5%] h-[40vh] w-[35vw] rounded-full bg-cyan-500/[0.04] blur-[120px]" style={{ animationDelay: "-14s" }} />
       </div>
@@ -114,7 +114,7 @@ export function HowItWorksClient() {
           Ten agents.{" "}
           <span className="relative inline-block">
             One human gate.
-            <span aria-hidden className="absolute left-0 -bottom-0.5 h-[2px] w-full rounded-full bg-gradient-to-r from-brand-coral via-fuchsia-400/70 to-transparent" />
+            <span aria-hidden className="absolute left-0 -bottom-0.5 h-[2px] w-full rounded-full bg-gradient-to-r from-brand-coral via-amber-400/70 to-transparent" />
           </span>
         </motion.h1>
         <motion.p
@@ -167,7 +167,7 @@ export function HowItWorksClient() {
                   cx={nodeById(liveAgentId)!.x}
                   cy={nodeById(liveAgentId)!.y}
                   r={3}
-                  fill="rgba(99,102,241,0.35)"
+                  fill="rgba(245,78,0,0.35)"
                   initial={false}
                   animate={{ r: [3, 6, 3], opacity: [0.6, 0, 0.6] }}
                   transition={{ duration: 1.4, repeat: Infinity, ease: "easeOut" }}
@@ -192,7 +192,7 @@ export function HowItWorksClient() {
                   className="absolute -translate-x-1/2 -translate-y-1/2 px-3 py-1.5 rounded-full border bg-[#0f0f1f] border-white/[0.08] shadow-[0_0_20px_rgba(0,0,0,0.4)]"
                 >
                   <p className="text-[11px] font-semibold text-white whitespace-nowrap">{n.label}</p>
-                  <p className="text-[9px] font-mono text-indigo-300 whitespace-nowrap">{n.emits}</p>
+                  <p className="text-[9px] font-mono text-zinc-300 whitespace-nowrap">{n.emits}</p>
                 </motion.div>
               );
             })}
@@ -219,7 +219,7 @@ export function HowItWorksClient() {
                   className={[
                     "flex items-center gap-3 px-3 py-2 rounded-lg transition",
                     n.id === liveAgentId
-                      ? "bg-indigo-500/10 border border-indigo-500/30"
+                      ? "bg-zinc-500/10 border border-zinc-500/30"
                       : lit
                       ? "bg-white/[0.03] border border-white/[0.06]"
                       : "bg-white/[0.01] border border-white/[0.04] opacity-50",
@@ -227,7 +227,7 @@ export function HowItWorksClient() {
                 >
                   <span className="text-[12px] font-semibold w-32 truncate">{n.label}</span>
                   <span className="text-[11px] text-zinc-400 flex-1">{n.role}</span>
-                  <span className="text-[10px] font-mono text-indigo-300 hidden sm:inline">{n.emits}</span>
+                  <span className="text-[10px] font-mono text-zinc-300 hidden sm:inline">{n.emits}</span>
                 </div>
               );
             })}

@@ -5,9 +5,8 @@
  * directly in tests).
  *
  * This locks in the honesty contract for the homepage's embedded
- * interactive demo preview: it must use real scenario data and the
- * real StepVisual renderer that /demo uses — never fabricated content —
- * and must carry the same "SANDBOX · example only" labeling as /demo.
+ * cinematic demo. The reconstruction may use scripted sample data, but
+ * must disclose that boundary and describe only implemented workflows.
  */
 
 import { readFileSync } from "node:fs";
@@ -17,26 +16,30 @@ function source(path: string): string {
   return readFileSync(new URL(`../../../${path}`, import.meta.url), "utf8");
 }
 
-describe("HomepageInteractiveDemo — honesty contract", () => {
-  const src = source("components/marketing/HomepageInteractiveDemo.tsx");
+describe("CinematicAxiomDemo — honesty contract", () => {
+  const src = source("components/marketing/CinematicAxiomDemo.tsx");
 
-  it("renders real scenario data via the same StepVisual /demo uses, not a bespoke mock", () => {
-    expect(src).toContain('import { StepVisual } from "@/app/demo/[id]/StepVisual"');
-    expect(src).toContain("DEMO_SCENARIOS.first_time_workspace_setup");
+  it("shows the governed workflow with implemented system boundaries", () => {
+    expect(src).toContain("Airflow");
+    expect(src).toContain("GitHub workflow");
+    expect(src).toContain("AWS ECS");
+    expect(src).toContain("Automatic rollback");
   });
 
-  it("carries the same SANDBOX · example only labeling as /demo", () => {
-    expect(src).toContain("SANDBOX");
-    expect(src).toContain("example only");
+  it("clearly discloses that the interactive experience is simulated", () => {
+    expect(src).toContain("Interactive simulation");
+    expect(src).toContain("Scripted sample data");
+    expect(src).toContain("No cloud account, repository, AI credits, or deployment is touched.");
   });
 
-  it("links out to the full /demo scenario instead of faking the remaining steps", () => {
-    expect(src).toContain("href={`/demo/${SCENARIO.id}`}");
+  it("links to the complete safe demo collection", () => {
+    expect(src).toContain('href="/demo"');
+    expect(src).toContain("Explore every safe demo");
   });
 
   it("is actually wired into the homepage, not dead code", () => {
     const page = source("app/page.tsx");
-    expect(page).toContain('import { HomepageInteractiveDemo } from "@/components/marketing/HomepageInteractiveDemo";');
-    expect(page).toContain("<HomepageInteractiveDemo />");
+    expect(page).toContain('import { CinematicAxiomDemo } from "@/components/marketing/CinematicAxiomDemo";');
+    expect(page).toContain("<CinematicAxiomDemo />");
   });
 });

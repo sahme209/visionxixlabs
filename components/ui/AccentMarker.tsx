@@ -1,22 +1,21 @@
 "use client";
 
 type AccentMarkerProps = {
-  color?: "violet" | "fuchsia" | "indigo" | "emerald" | "orange" | "red";
+  color?: "orange" | "amber" | "zinc" | "emerald" | "red";
   size?: "sm" | "md";
   className?: string;
 };
 
 const colorClasses = {
-  violet: "bg-violet-500",
-  fuchsia: "bg-fuchsia-500",
-  indigo: "bg-indigo-500",
-  emerald: "bg-emerald-500",
   orange: "bg-orange-500",
+  amber: "bg-amber-500",
+  zinc: "bg-zinc-500",
+  emerald: "bg-emerald-500",
   red: "bg-red-500",
 };
 
 export function AccentMarker({
-  color = "violet",
+  color = "orange",
   size = "sm",
   className = "",
 }: AccentMarkerProps) {

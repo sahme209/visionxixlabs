@@ -169,7 +169,7 @@ export default function CopilotPage() {
                     value={input}
                     onChange={(e) => setInput(e.target.value)}
                     placeholder="Ask about scans, approvals, releases, desktop, governance…"
-                    className="flex-1 rounded-full bg-white/[0.04] border border-white/[0.08] px-4 py-2.5 text-sm text-white placeholder:text-zinc-600 focus:outline-none focus:border-violet-500/40 focus:ring-2 focus:ring-violet-500/20"
+                    className="flex-1 rounded-full bg-white/[0.04] border border-white/[0.08] px-4 py-2.5 text-sm text-white placeholder:text-zinc-600 focus:outline-none focus:border-orange-500/40 focus:ring-2 focus:ring-orange-500/20"
                   />
                   <button
                     type="submit"
@@ -267,7 +267,7 @@ function TurnView({ turn }: { turn: Turn }) {
   if (turn.role === "user") {
     return (
       <div className="flex justify-end">
-        <div className="rounded-2xl bg-violet-500/10 border border-white/[0.08] px-4 py-2.5 text-sm text-white max-w-[80%]">
+        <div className="rounded-2xl bg-orange-500/10 border border-white/[0.08] px-4 py-2.5 text-sm text-white max-w-[80%]">
           {turn.text}
         </div>
       </div>
@@ -315,7 +315,7 @@ function TurnView({ turn }: { turn: Turn }) {
                   <Link
                     key={a.href}
                     href={a.href}
-                    className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-semibold text-violet-300 bg-violet-500/10 border border-white/[0.08] hover:bg-violet-500/20 hover:border-white/[0.12] transition-colors"
+                    className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-semibold text-orange-300 bg-orange-500/10 border border-white/[0.08] hover:bg-orange-500/20 hover:border-white/[0.12] transition-colors"
                   >
                     {a.label}
                     <ArrowRightIcon className="h-3 w-3" />

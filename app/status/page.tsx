@@ -52,7 +52,7 @@ export default async function StatusPage() {
     <div className="axiom-canvas axiom-product-canvas min-h-screen text-zinc-200 relative overflow-hidden">
       {/* Restrained aurora */}
       <div aria-hidden className="pointer-events-none absolute inset-0">
-        <div className="ambient-drift absolute top-0 left-1/2 -translate-x-1/2 w-[720px] h-[440px] rounded-full bg-brand-violet/[0.06] blur-[140px]" />
+        <div className="ambient-drift absolute top-0 left-1/2 -translate-x-1/2 w-[720px] h-[440px] rounded-full bg-brand-orange/[0.06] blur-[140px]" />
         <div className="ambient-drift absolute top-[30%] right-[5%] w-[420px] h-[340px] rounded-full bg-brand-coral/[0.05] blur-[130px]" style={{ animationDelay: "-9s" }} />
         <div className="ambient-drift absolute bottom-0 left-[5%] w-[360px] h-[280px] rounded-full bg-cyan-500/[0.04] blur-[120px]" style={{ animationDelay: "-15s" }} />
       </div>

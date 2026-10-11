@@ -49,20 +49,20 @@ export const dynamic = "force-dynamic";
 
 const DEPT_META: Record<WorkforceDepartment, { label: string; tone: string }> = {
   perception:        { label: "Perception",         tone: "border-cyan-500/30 bg-cyan-500/10 text-cyan-300" },
-  reasoning:         { label: "Reasoning",          tone: "border-indigo-500/30 bg-indigo-500/10 text-indigo-300" },
-  planning:          { label: "Planning",           tone: "border-fuchsia-500/30 bg-fuchsia-500/10 text-fuchsia-300" },
+  reasoning:         { label: "Reasoning",          tone: "border-zinc-500/30 bg-zinc-500/10 text-zinc-300" },
+  planning:          { label: "Planning",           tone: "border-amber-500/30 bg-amber-500/10 text-amber-300" },
   safety:            { label: "Safety",             tone: "border-white/30 bg-white/10 text-zinc-300" },
   verification:      { label: "Verification",       tone: "border-emerald-500/30 bg-emerald-500/10 text-emerald-300" },
   memory:            { label: "Memory",             tone: "border-zinc-500/30 bg-zinc-500/10 text-zinc-300" },
-  workflow:          { label: "Workflow",           tone: "border-white/[0.12] bg-violet-500/10 text-violet-300" },
-  devops:            { label: "DevOps",             tone: "border-white/[0.12] bg-violet-500/10 text-violet-300" },
+  workflow:          { label: "Workflow",           tone: "border-white/[0.12] bg-orange-500/10 text-orange-300" },
+  devops:            { label: "DevOps",             tone: "border-white/[0.12] bg-orange-500/10 text-orange-300" },
   database:          { label: "Database",           tone: "border-blue-500/30 bg-blue-500/10 text-blue-300" },
   security:          { label: "Security",           tone: "border-emerald-500/30 bg-emerald-500/10 text-emerald-300" },
   finops:            { label: "FinOps",             tone: "border-white/30 bg-white/10 text-zinc-300" },
   observability:     { label: "Observability",      tone: "border-cyan-500/30 bg-cyan-500/10 text-cyan-300" },
   incident_response: { label: "Incident response",  tone: "border-rose-500/30 bg-rose-500/10 text-rose-300" },
-  marketing:         { label: "Marketing",          tone: "border-white/[0.12] bg-violet-500/10 text-violet-300" },
-  sales:             { label: "Sales",              tone: "border-fuchsia-500/30 bg-fuchsia-500/10 text-fuchsia-300" },
+  marketing:         { label: "Marketing",          tone: "border-white/[0.12] bg-orange-500/10 text-orange-300" },
+  sales:             { label: "Sales",              tone: "border-amber-500/30 bg-amber-500/10 text-amber-300" },
 };
 
 const APPROVAL_TONE: Record<ApprovalRule, { label: string; tone: string }> = {
@@ -388,7 +388,7 @@ export default async function WorkforcePage({
           <form action="/api/workforce/run-agi-all" method="POST">
             <button
               type="submit"
-              className="text-[11px] font-mono uppercase tracking-wider px-3 py-1 rounded-full border border-violet-500/30 text-violet-200 hover:text-white hover:border-violet-500/60 hover:bg-violet-500/10 transition-colors"
+              className="text-[11px] font-mono uppercase tracking-wider px-3 py-1 rounded-full border border-orange-500/30 text-orange-200 hover:text-white hover:border-orange-500/60 hover:bg-orange-500/10 transition-colors"
               title="Run the AGI flow for every client engineer sequentially"
             >
               run AGI for all
@@ -411,7 +411,7 @@ export default async function WorkforcePage({
           >
             download .csv
           </a>
-          <Link href="/dashboard/workforce/cognition" className="text-[11px] font-mono text-violet-300 hover:text-white transition-colors">
+          <Link href="/dashboard/workforce/cognition" className="text-[11px] font-mono text-orange-300 hover:text-white transition-colors">
             cognition →
           </Link>
           <Link href="/dashboard/workforce/cost" className="text-[11px] font-mono text-emerald-300 hover:text-white transition-colors">
@@ -472,7 +472,7 @@ export default async function WorkforcePage({
           label="AGI rationale · 30d"
           value={agiTotal30d}
           sub="AGI thinking adjacent to your engineers"
-          tone="text-violet-300"
+          tone="text-orange-300"
         />
         <LiveStat
           label="Autonomy · 7d"
@@ -529,10 +529,10 @@ export default async function WorkforcePage({
       </div>
 
       {/* Approval legend */}
-      <section className="mt-10 rounded-2xl border border-violet-500/15 bg-white/[0.015] p-5">
+      <section className="mt-10 rounded-2xl border border-orange-500/15 bg-white/[0.015] p-5">
         <header className="flex items-center gap-2 mb-3">
-          <ShieldCheckIcon className="h-4 w-4 text-violet-300" />
-          <p className="text-[10px] font-semibold uppercase tracking-widest text-violet-300">Approval rules</p>
+          <ShieldCheckIcon className="h-4 w-4 text-orange-300" />
+          <p className="text-[10px] font-semibold uppercase tracking-widest text-orange-300">Approval rules</p>
         </header>
         <div className="grid sm:grid-cols-2 gap-2 text-[12px] text-zinc-300">
           {(Object.entries(APPROVAL_TONE) as [ApprovalRule, { label: string; tone: string }][]).map(([rule, meta]) => (
@@ -546,12 +546,12 @@ export default async function WorkforcePage({
 
       <section className="mt-6 grid sm:grid-cols-2 lg:grid-cols-6 gap-3">
         <Link href="/dashboard/workforce/coding" className="block rounded-xl border border-white/[0.12] bg-white/[0.015] p-4 hover:border-white/[0.15] transition-colors">
-          <CodeBracketSquareIcon className="h-4 w-4 text-violet-300 mb-2" />
+          <CodeBracketSquareIcon className="h-4 w-4 text-orange-300 mb-2" />
           <p className="text-sm font-semibold text-white">AI coding</p>
           <p className="text-[11px] text-zinc-400 mt-1">Describe a change · we propose, gate, and ship the PR.</p>
         </Link>
         <Link href="/dashboard/workforce/pipelines" className="block rounded-xl border border-white/[0.12] bg-white/[0.015] p-4 hover:border-white/[0.15] transition-colors">
-          <PuzzlePieceIcon className="h-4 w-4 text-violet-300 mb-2" />
+          <PuzzlePieceIcon className="h-4 w-4 text-orange-300 mb-2" />
           <p className="text-sm font-semibold text-white">Pipelines</p>
           <p className="text-[11px] text-zinc-400 mt-1">Multi-stage CI/CD, DB-migrate, security sweeps — one click.</p>
         </Link>
@@ -591,7 +591,7 @@ const APPROVAL_DESC: Record<ApprovalRule, string> = {
 function Stat({ label, value, icon: Icon, sub }: { label: string; value: number; icon: typeof UserGroupIcon; sub?: string }) {
   return (
     <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-4">
-      <Icon className="h-4 w-4 text-violet-300 mb-2" />
+      <Icon className="h-4 w-4 text-orange-300 mb-2" />
       <p className="text-2xl font-bold text-white tabular-nums">{value}</p>
       <p className="text-[11px] text-zinc-400 mt-0.5">{label}</p>
       {sub && <p className="text-[10px] text-zinc-500 mt-1 leading-snug">{sub}</p>}
@@ -626,7 +626,7 @@ function EngineerCard({ engineer, attempts30d, pending, disabled, agiStatus }: {
             </span>
           )}
           {agiStatus === "fresh" && (
-            <span className="text-[9px] font-mono uppercase tracking-wider border rounded-full px-1.5 py-px whitespace-nowrap text-violet-200 bg-violet-500/10 border-violet-500/30" title="This engineer has a current AGI rationale (<7d old)">
+            <span className="text-[9px] font-mono uppercase tracking-wider border rounded-full px-1.5 py-px whitespace-nowrap text-orange-200 bg-orange-500/10 border-orange-500/30" title="This engineer has a current AGI rationale (<7d old)">
               AGI ✓
             </span>
           )}
@@ -657,12 +657,12 @@ function EngineerCard({ engineer, attempts30d, pending, disabled, agiStatus }: {
           <SmallRow label="Connectors" items={engineer.requiredConnectors.map((c) => c.replace(/_/g, " "))} tone="text-zinc-300" />
         )}
         <SmallRow label="Tools" items={engineer.requiredTools.map((t) => t.replace(/_/g, " "))} tone="text-cyan-300" />
-        <SmallRow label="Permissions" items={engineer.requiredPermissions} tone="text-violet-300" />
+        <SmallRow label="Permissions" items={engineer.requiredPermissions} tone="text-orange-300" />
       </div>
 
       <div className="mb-3 flex flex-wrap gap-1.5 text-[10px] font-mono uppercase tracking-wider">
         {engineer.requiresDesktopApp && (
-          <span className="inline-flex items-center gap-1 rounded-full border border-fuchsia-500/30 bg-fuchsia-500/10 text-fuchsia-300 px-1.5 py-0.5">
+          <span className="inline-flex items-center gap-1 rounded-full border border-amber-500/30 bg-amber-500/10 text-amber-300 px-1.5 py-0.5">
             <ComputerDesktopIcon className="h-3 w-3" /> desktop
           </span>
         )}
@@ -672,7 +672,7 @@ function EngineerCard({ engineer, attempts30d, pending, disabled, agiStatus }: {
           </span>
         )}
         {engineer.ideExposed && (
-          <span className="inline-flex items-center gap-1 rounded-full border border-white/[0.12] bg-violet-500/10 text-violet-300 px-1.5 py-0.5">
+          <span className="inline-flex items-center gap-1 rounded-full border border-white/[0.12] bg-orange-500/10 text-orange-300 px-1.5 py-0.5">
             <CodeBracketIcon className="h-3 w-3" /> ide
           </span>
         )}
@@ -712,7 +712,7 @@ function EngineerCard({ engineer, attempts30d, pending, disabled, agiStatus }: {
           <form action={`/api/workforce/${engineer.id}/run-agi`} method="POST">
             <button
               type="submit"
-              className="text-[10.5px] font-mono uppercase tracking-wider px-2 py-0.5 rounded-full border border-violet-500/25 text-violet-200 hover:text-white hover:border-violet-500/55 hover:bg-violet-500/10 transition-colors"
+              className="text-[10.5px] font-mono uppercase tracking-wider px-2 py-0.5 rounded-full border border-orange-500/25 text-orange-200 hover:text-white hover:border-orange-500/55 hover:bg-orange-500/10 transition-colors"
               title={agiStatus === "stale" ? "Re-run AGI to refresh the stale rationale" : agiStatus === null ? "Run the AGI flow to mint this engineer's specialty rationale" : "Re-run AGI for this engineer"}
             >
               {agiStatus === null ? "run AGI" : "↻"}

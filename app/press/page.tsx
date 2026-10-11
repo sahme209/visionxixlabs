@@ -24,7 +24,7 @@ export default function PressPage() {
     <div className="min-h-screen bg-[#09090b] relative overflow-hidden">
       {/* Huly aurora */}
       <div className="absolute inset-0 bg-dots opacity-10 pointer-events-none" aria-hidden />
-      <div className="ambient-drift absolute -top-40 left-1/3 w-[480px] h-[420px] rounded-full bg-brand-violet/[0.07] blur-[130px] pointer-events-none" aria-hidden />
+      <div className="ambient-drift absolute -top-40 left-1/3 w-[480px] h-[420px] rounded-full bg-brand-orange/[0.07] blur-[130px] pointer-events-none" aria-hidden />
       <div className="ambient-drift absolute top-1/4 right-[5%] w-[360px] h-[300px] rounded-full bg-brand-coral/[0.06] blur-[120px] pointer-events-none" style={{ animationDelay: "-8s" }} aria-hidden />
       <div className="ambient-drift absolute bottom-20 right-0 w-[300px] h-[280px] rounded-full bg-cyan-500/[0.04] blur-[100px] pointer-events-none" style={{ animationDelay: "-14s" }} aria-hidden />
 
@@ -42,7 +42,7 @@ export default function PressPage() {
               Link to{" "}
               <span className="relative inline-block">
                 VisionXIXLabs.
-                <span aria-hidden className="absolute left-0 -bottom-1 h-[3px] w-full rounded-full bg-gradient-to-r from-brand-coral via-fuchsia-400 to-transparent opacity-85" />
+                <span aria-hidden className="absolute left-0 -bottom-1 h-[3px] w-full rounded-full bg-gradient-to-r from-brand-coral via-amber-400 to-transparent opacity-85" />
               </span>
             </h1>
             <p className="text-lg text-zinc-400 mb-8 max-w-2xl">
@@ -60,7 +60,7 @@ export default function PressPage() {
                 <p className="text-sm text-zinc-400 mb-3">
                   For best SEO and consistency, please link to our main site:
                 </p>
-                <code className="block p-4 rounded-lg bg-white/[0.04] text-violet-400 font-mono text-sm break-all">
+                <code className="block p-4 rounded-lg bg-white/[0.04] text-orange-400 font-mono text-sm break-all">
                   {SITE_URL}
                 </code>
               </section>
@@ -118,7 +118,7 @@ export default function PressPage() {
                 <p className="text-sm text-zinc-400 mb-3">
                   For directories, partner pages, or author bios:
                 </p>
-                <blockquote className="pl-4 border-l-4 border-violet-500 text-zinc-300 italic">
+                <blockquote className="pl-4 border-l-4 border-orange-500 text-zinc-300 italic">
                   Vision XIX Labs builds cloud and AI solutions for modern infrastructure—AWS, Azure, and GCP—and creates apps like VisaNova (USCIS case tracker) and RecallEase (health and reminders).
                 </blockquote>
               </section>
@@ -131,13 +131,13 @@ export default function PressPage() {
                   Explore our site
                 </h2>
                 <ul className="flex flex-wrap gap-3 text-sm">
-                  <li><Link href="/" className="text-violet-400 hover:underline">Home</Link></li>
-                  <li><Link href="/cloud-solutions" className="text-violet-400 hover:underline">Cloud Solutions</Link></li>
-                  <li><Link href="/axiom" className="text-violet-400 hover:underline">Axiom Agent</Link></li>
-                  <li><Link href="/services" className="text-violet-400 hover:underline">Services</Link></li>
-                  <li><Link href="/contact" className="text-violet-400 hover:underline">Contact</Link></li>
-                  <li><Link href="/case-studies" className="text-violet-400 hover:underline">Case Studies</Link></li>
-                  <li><Link href="/insights" className="text-violet-400 hover:underline">Insights</Link></li>
+                  <li><Link href="/" className="text-orange-400 hover:underline">Home</Link></li>
+                  <li><Link href="/cloud-solutions" className="text-orange-400 hover:underline">Cloud Solutions</Link></li>
+                  <li><Link href="/axiom" className="text-orange-400 hover:underline">Axiom Agent</Link></li>
+                  <li><Link href="/services" className="text-orange-400 hover:underline">Services</Link></li>
+                  <li><Link href="/contact" className="text-orange-400 hover:underline">Contact</Link></li>
+                  <li><Link href="/case-studies" className="text-orange-400 hover:underline">Case Studies</Link></li>
+                  <li><Link href="/insights" className="text-orange-400 hover:underline">Insights</Link></li>
                 </ul>
               </section>
             </Reveal>
@@ -145,7 +145,7 @@ export default function PressPage() {
 
           <Reveal direction="up" blur delay={0.35}>
             <p className="mt-8 text-sm text-zinc-500">
-              Questions? <Link href="/contact" className="text-violet-400 hover:underline">Contact us</Link>.
+              Questions? <Link href="/contact" className="text-orange-400 hover:underline">Contact us</Link>.
             </p>
           </Reveal>
         </div>

@@ -144,18 +144,18 @@ const CAPABILITIES = [
 
 const PHASES = [
   { id: "discover", label: "Discover", desc: "Map repositories, pipelines, deployment environments, approval flows, Terraform workflows, ownership graphs.", color: "blue" },
-  { id: "assess", label: "Assess", desc: "Score each service on 9 release-readiness dimensions. Surface risks. Quantify maturity gaps.", color: "violet" },
-  { id: "standardize", label: "Standardize", desc: "Establish policy: branch protection, approval gates, rollback requirements, deployment cadence, observability minimums.", color: "fuchsia" },
-  { id: "orchestrate", label: "Orchestrate", desc: "Route approvals through Axiom. Coordinate releases across systems. Auto-create ServiceNow CRs. Sequence deployments.", color: "amber" },
+  { id: "assess", label: "Assess", desc: "Score each service on 9 release-readiness dimensions. Surface risks. Quantify maturity gaps.", color: "orange" },
+  { id: "standardize", label: "Standardize", desc: "Establish policy: branch protection, approval gates, rollback requirements, deployment cadence, observability minimums.", color: "amber" },
+  { id: "orchestrate", label: "Orchestrate", desc: "Route approvals through Axiom. Coordinate releases across systems. Auto-create ServiceNow CRs. Sequence deployments.", color: "zinc" },
   { id: "govern", label: "Govern", desc: "Enforce policy at the orchestration layer. Audit every change. Block releases below readiness threshold automatically.", color: "emerald" },
   { id: "improve", label: "Continuously improve", desc: "Agent learns from outcome. Confidence recalibrates. Readiness scores trend up. Operational memory deepens.", color: "cyan" },
 ] as const;
 
 const PHASE_COLORS: Record<typeof PHASES[number]["color"], { text: string; bg: string; border: string; ring: string }> = {
   blue: { text: "text-blue-400", bg: "bg-blue-500/10", border: "border-blue-500/20", ring: "ring-blue-500/30" },
-  violet: { text: "text-violet-400", bg: "bg-violet-500/10", border: "border-violet-500/20", ring: "ring-violet-500/30" },
-  fuchsia: { text: "text-fuchsia-400", bg: "bg-fuchsia-500/10", border: "border-fuchsia-500/20", ring: "ring-fuchsia-500/30" },
-  amber: { text: "text-zinc-400", bg: "bg-white/10", border: "border-white/20", ring: "ring-white/30" },
+  orange: { text: "text-orange-400", bg: "bg-orange-500/10", border: "border-orange-500/20", ring: "ring-orange-500/30" },
+  amber: { text: "text-amber-400", bg: "bg-amber-500/10", border: "border-amber-500/20", ring: "ring-amber-500/30" },
+  zinc: { text: "text-zinc-400", bg: "bg-white/10", border: "border-white/20", ring: "ring-white/30" },
   emerald: { text: "text-emerald-400", bg: "bg-emerald-500/10", border: "border-emerald-500/20", ring: "ring-emerald-500/30" },
   cyan: { text: "text-cyan-400", bg: "bg-cyan-500/10", border: "border-cyan-500/20", ring: "ring-cyan-500/30" },
 };
@@ -187,7 +187,7 @@ export default function ReleaseOpsPage() {
       {/* Background layers */}
       <div className="absolute inset-0 bg-grid-mesh opacity-30 pointer-events-none" aria-hidden />
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[900px] h-[600px] spotlight-orb opacity-60 pointer-events-none" aria-hidden />
-      <div className="ambient-drift absolute top-[20%] -right-40 w-[520px] h-[480px] rounded-full bg-brand-violet/[0.07] blur-[140px] pointer-events-none" aria-hidden />
+      <div className="ambient-drift absolute top-[20%] -right-40 w-[520px] h-[480px] rounded-full bg-brand-orange/[0.07] blur-[140px] pointer-events-none" aria-hidden />
       <div className="ambient-drift absolute top-[40%] -left-40 w-[480px] h-[440px] rounded-full bg-brand-coral/[0.06] blur-[140px] pointer-events-none" style={{ animationDelay: "-8s" }} aria-hidden />
       <div className="ambient-drift absolute bottom-[10%] left-1/2 -translate-x-1/2 w-[600px] h-[300px] rounded-full bg-cyan-500/[0.05] blur-[120px] pointer-events-none" style={{ animationDelay: "-14s" }} aria-hidden />
 
@@ -217,7 +217,7 @@ export default function ReleaseOpsPage() {
               Deployment governance.<br />
               <span className="relative inline-block">
                 Operational intelligence.
-                <span aria-hidden className="absolute left-0 -bottom-0.5 h-[2px] w-full rounded-full bg-gradient-to-r from-brand-coral via-fuchsia-400/70 to-transparent" />
+                <span aria-hidden className="absolute left-0 -bottom-0.5 h-[2px] w-full rounded-full bg-gradient-to-r from-brand-coral via-amber-400/70 to-transparent" />
               </span>
             </h1>
           </Reveal>
@@ -308,7 +308,7 @@ export default function ReleaseOpsPage() {
         <div className="max-w-6xl mx-auto">
           <Reveal direction="up" blur>
             <div className="mb-12">
-              <p className="text-sm font-semibold text-violet-400 mb-4 tracking-wide uppercase">
+              <p className="text-sm font-semibold text-orange-400 mb-4 tracking-wide uppercase">
                 What ReleaseOps does
               </p>
               <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-[-0.04em] mb-5">
@@ -327,8 +327,8 @@ export default function ReleaseOpsPage() {
               return (
                 <div key={cap.title} className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-5 hover:border-white/[0.12] hover:bg-white/[0.03] transition-all group">
                   <div className="flex items-start gap-3 mb-2">
-                    <div className="w-9 h-9 rounded-lg bg-violet-500/10 border border-violet-500/20 flex items-center justify-center shrink-0 group-hover:bg-violet-500/15 transition-colors">
-                      <Icon className="h-4.5 w-4.5 text-violet-400" />
+                    <div className="w-9 h-9 rounded-lg bg-orange-500/10 border border-orange-500/20 flex items-center justify-center shrink-0 group-hover:bg-orange-500/15 transition-colors">
+                      <Icon className="h-4.5 w-4.5 text-orange-400" />
                     </div>
                     <p className="text-sm font-bold text-white pt-1.5">{cap.title}</p>
                   </div>
@@ -345,7 +345,7 @@ export default function ReleaseOpsPage() {
         <div className="max-w-6xl mx-auto">
           <Reveal direction="up" blur>
             <div className="mb-12">
-              <p className="text-sm font-semibold text-fuchsia-400 mb-4 tracking-wide uppercase">
+              <p className="text-sm font-semibold text-amber-400 mb-4 tracking-wide uppercase">
                 Operational workflow
               </p>
               <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-[-0.04em] mb-5">
@@ -402,7 +402,7 @@ export default function ReleaseOpsPage() {
           </Reveal>
 
           <Reveal direction="up" delay={0.1}>
-            <div className="rounded-2xl border border-emerald-500/15 bg-gradient-to-br from-emerald-500/[0.04] via-transparent to-violet-500/[0.03] overflow-hidden relative">
+            <div className="rounded-2xl border border-emerald-500/15 bg-gradient-to-br from-emerald-500/[0.04] via-transparent to-orange-500/[0.03] overflow-hidden relative">
               <div className="absolute -top-20 -right-20 w-64 h-64 rounded-full bg-emerald-500/[0.06] blur-[80px] pointer-events-none" aria-hidden />
 
               {/* Composite score header */}
@@ -495,13 +495,13 @@ export default function ReleaseOpsPage() {
       <section className="py-24 px-4 sm:px-6 lg:px-8 relative">
         <div className="max-w-6xl mx-auto">
           <Reveal direction="up" blur>
-            <div className="rounded-2xl border border-violet-500/15 bg-gradient-to-br from-violet-500/[0.05] via-transparent to-fuchsia-500/[0.03] p-8 sm:p-10 relative overflow-hidden">
-              <div className="absolute -top-20 -right-20 w-64 h-64 rounded-full bg-violet-500/[0.08] blur-[80px] pointer-events-none" aria-hidden />
-              <div className="absolute -bottom-20 -left-20 w-64 h-64 rounded-full bg-fuchsia-500/[0.06] blur-[80px] pointer-events-none" aria-hidden />
+            <div className="rounded-2xl border border-orange-500/15 bg-gradient-to-br from-orange-500/[0.05] via-transparent to-amber-500/[0.03] p-8 sm:p-10 relative overflow-hidden">
+              <div className="absolute -top-20 -right-20 w-64 h-64 rounded-full bg-orange-500/[0.08] blur-[80px] pointer-events-none" aria-hidden />
+              <div className="absolute -bottom-20 -left-20 w-64 h-64 rounded-full bg-amber-500/[0.06] blur-[80px] pointer-events-none" aria-hidden />
 
               <div className="relative grid lg:grid-cols-2 gap-10 items-center">
                 <div>
-                  <p className="text-[10px] font-semibold text-violet-400 uppercase tracking-widest mb-3">
+                  <p className="text-[10px] font-semibold text-orange-400 uppercase tracking-widest mb-3">
                     Web · macOS · Windows · Linux
                   </p>
                   <h2 className="text-3xl md:text-4xl font-bold tracking-[-0.04em] mb-4">

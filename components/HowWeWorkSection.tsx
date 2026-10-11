@@ -50,7 +50,7 @@ export function HowWeWorkSection({
             >
               <div className="flex items-start gap-3 mb-3">
                 <span
-                  className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-violet-500/10 text-violet-400"
+                  className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-orange-500/10 text-orange-400"
                   aria-hidden
                 >
                   <Icon className="h-5 w-5" />
@@ -67,7 +67,7 @@ export function HowWeWorkSection({
               <ul className="space-y-1.5 text-sm text-zinc-400">
                 {p.items.map((item) => (
                   <li key={item} className="flex items-start gap-2">
-                    <span className="text-indigo-500 mt-0.5 shrink-0">•</span>
+                    <span className="text-zinc-500 mt-0.5 shrink-0">•</span>
                     <span>{item}</span>
                   </li>
                 ))}

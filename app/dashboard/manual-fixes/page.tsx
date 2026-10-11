@@ -50,7 +50,7 @@ const STATUS_CLASS: Record<FixView["status"], string> = {
 
 const TIER_CLASS: Record<FixView["environmentTier"], string> = {
   prod:    "bg-rose-500/15 text-rose-300 border-rose-500/25",
-  staging: "bg-violet-500/15 text-violet-300 border-white/[0.10]",
+  staging: "bg-orange-500/15 text-orange-300 border-white/[0.10]",
   dev:     "bg-cyan-500/15 text-cyan-300 border-cyan-500/25",
   other:   "bg-zinc-700/40 text-zinc-300 border-zinc-700/40",
   unknown: "bg-zinc-700/40 text-zinc-400 border-zinc-700/40",
@@ -214,7 +214,7 @@ function FixRow({ fix, onReconciled }: { fix: FixView; onReconciled: () => void 
             onChange={(e) => setRef(e.target.value)}
             placeholder="reconciliation ref (PR #, commit) — optional"
             disabled={busy !== null}
-            className="flex-1 min-w-[180px] rounded-md border border-white/[0.08] bg-black/30 px-2 py-1 text-[11px] text-zinc-100 placeholder:text-zinc-600 focus:border-violet-500/40 focus:outline-none disabled:opacity-50"
+            className="flex-1 min-w-[180px] rounded-md border border-white/[0.08] bg-black/30 px-2 py-1 text-[11px] text-zinc-100 placeholder:text-zinc-600 focus:border-orange-500/40 focus:outline-none disabled:opacity-50"
           />
           <button
             type="button"

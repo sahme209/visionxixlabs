@@ -60,7 +60,7 @@ export default async function EngineerWorkspacePage() {
         <div className="mb-8">
           <TenantEmptyState
             icon={<CpuChipIcon className="h-5 w-5" />}
-            tone="violet"
+            tone="orange"
             eyebrow="Workspace empty"
             title="Connect tools and pair your desktop to light this surface up."
             description="The Engineer Workspace shows your unified queue across GitHub (PRs needing review), connected observability tools (alerts firing), incidents (active and pending postmortem), CI/CD (deploys ready or stuck), and the desktop app (local actions awaiting approval)."
@@ -77,7 +77,7 @@ export default async function EngineerWorkspacePage() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         <Lane
           icon={CodeBracketIcon}
-          tone="text-violet-300"
+          tone="text-orange-300"
           title="Pull requests"
           description="PRs needing review across every connected repo."
           ctaHref="/dashboard/connector-store#repository"
@@ -109,7 +109,7 @@ export default async function EngineerWorkspacePage() {
         />
         <Lane
           icon={ComputerDesktopIcon}
-          tone="text-fuchsia-300"
+          tone="text-amber-300"
           title="Desktop queue"
           description="Local actions handed off from the platform — pending your approval on-device."
           ctaHref="/download"
@@ -126,10 +126,10 @@ export default async function EngineerWorkspacePage() {
       </div>
 
       {/* Vision strip — what this surface becomes */}
-      <section className="mt-10 rounded-2xl border border-violet-500/15 bg-white/[0.015] p-5">
+      <section className="mt-10 rounded-2xl border border-orange-500/15 bg-white/[0.015] p-5">
         <header className="flex items-center gap-2 mb-3">
           <SparklesPlaceholder />
-          <p className="text-[10px] font-semibold uppercase tracking-widest text-violet-300">Where this surface is going</p>
+          <p className="text-[10px] font-semibold uppercase tracking-widest text-orange-300">Where this surface is going</p>
         </header>
         <ul className="grid sm:grid-cols-2 gap-2 text-[12px] text-zinc-300">
           <li className="flex items-start gap-2">
@@ -223,6 +223,6 @@ function Lane({
 
 function SparklesPlaceholder() {
   return (
-    <span className="inline-block w-4 h-4 rounded-full bg-violet-400/40" aria-hidden />
+    <span className="inline-block w-4 h-4 rounded-full bg-orange-400/40" aria-hidden />
   );
 }

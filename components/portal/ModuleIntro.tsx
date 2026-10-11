@@ -57,7 +57,7 @@ export interface ModuleIntroProps {
 const APPROVAL_LABEL: Record<ApprovalSeverity, { label: string; cls: string }> = {
   read_only:       { label: "Read-only · no approval required", cls: "bg-emerald-500/10 text-emerald-300 border-emerald-500/30" },
   soft:            { label: "Soft approval · operator can self-approve", cls: "bg-white/10 text-zinc-300 border-white/30" },
-  human_required:  { label: "Two-person human approval required", cls: "bg-violet-500/10 text-violet-300 border-violet-500/30" },
+  human_required:  { label: "Two-person human approval required", cls: "bg-orange-500/10 text-orange-300 border-orange-500/30" },
 };
 
 export function ModuleIntro(props: ModuleIntroProps) {
@@ -144,7 +144,7 @@ export function ModuleIntro(props: ModuleIntroProps) {
           {props.demoHref && (
             <Link
               href={props.demoHref}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-violet-500/[0.10] text-violet-200 text-[11px] font-medium hover:bg-violet-500/[0.18] border border-violet-500/20 transition-colors"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-orange-500/[0.10] text-orange-200 text-[11px] font-medium hover:bg-orange-500/[0.18] border border-orange-500/20 transition-colors"
             >
               <SparkleIcon className="h-3 w-3" />
               View demo

@@ -22,14 +22,14 @@ export function WhatWeDoNotDo({
         Clear scope builds credibility. We are explicit about what we do and what we do not do.
       </p>
       <div className="grid gap-8 md:grid-cols-2">
-        <div className="card-hover bg-white/[0.02] rounded-xl p-6 shadow-lg border border-white/[0.06] border-l-4 border-l-violet-500">
+        <div className="card-hover bg-white/[0.02] rounded-xl p-6 shadow-lg border border-white/[0.06] border-l-4 border-l-orange-500">
           <h3 className="text-lg font-semibold text-white mb-3">
             {focusTitle}
           </h3>
           <ul className="space-y-2 text-sm text-zinc-300">
             {focusItems.map((item) => (
               <li key={item} className="flex items-start">
-                <span className="text-indigo-500 mr-2 mt-0.5">✓</span>
+                <span className="text-zinc-500 mr-2 mt-0.5">✓</span>
                 {item}
               </li>
             ))}

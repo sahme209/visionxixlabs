@@ -28,7 +28,7 @@ export function PackageCard({
           {name}
         </h3>
         {duration ? (
-          <span className="px-3 py-1 rounded-full text-xs font-semibold bg-violet-500/10 text-violet-400 shrink-0 ml-2">
+          <span className="px-3 py-1 rounded-full text-xs font-semibold bg-orange-500/10 text-orange-400 shrink-0 ml-2">
             {duration}
           </span>
         ) : null}

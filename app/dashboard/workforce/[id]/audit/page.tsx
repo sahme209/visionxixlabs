@@ -201,12 +201,12 @@ export default async function EngineerAuditPage({
       {agiEntries.length > 0 && (
         <section className="mb-10">
           <div className="flex items-baseline justify-between mb-3">
-            <p className="text-[10px] font-mono uppercase tracking-[0.28em] text-violet-300">AGI rationale stream · {agiKinds.join(" + ")} + own specialty + Q&amp;A</p>
+            <p className="text-[10px] font-mono uppercase tracking-[0.28em] text-orange-300">AGI rationale stream · {agiKinds.join(" + ")} + own specialty + Q&amp;A</p>
             <Link href="/dashboard/agi-memory" className="text-[11px] font-mono text-zinc-500 hover:text-white transition-colors">
               memory feed →
             </Link>
           </div>
-          <ul className="rounded-2xl border border-violet-500/15 bg-violet-500/[0.03] divide-y divide-white/[0.04] overflow-hidden">
+          <ul className="rounded-2xl border border-orange-500/15 bg-orange-500/[0.03] divide-y divide-white/[0.04] overflow-hidden">
             {agiEntries.map((e) => (
               <li key={`${e.targetKind}:${e.targetId}`}>
                 <Link
@@ -215,7 +215,7 @@ export default async function EngineerAuditPage({
                 >
                   <div className="flex items-center justify-between gap-3 mb-1 flex-wrap text-[10px] font-mono uppercase tracking-wider">
                     <div className="flex items-center gap-2">
-                      <span className="text-violet-300">{e.targetKind}</span>
+                      <span className="text-orange-300">{e.targetKind}</span>
                       <span className="text-zinc-500">·</span>
                       <span className={
                         e.outcome === "ai_generated" ? "text-emerald-300" :

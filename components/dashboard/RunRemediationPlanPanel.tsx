@@ -192,7 +192,7 @@ export function RunRemediationPlanPanel() {
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-3">
                 <ResultStat label="Critical" value={String(byRisk.critical ?? 0)} tone={(byRisk.critical ?? 0) > 0 ? "text-rose-300" : "text-zinc-400"} />
                 <ResultStat label="High" value={String(byRisk.high ?? 0)} tone={(byRisk.high ?? 0) > 0 ? "text-zinc-300" : "text-zinc-400"} />
-                <ResultStat label="Approval-gated" value={String(approvalGated)} tone="text-violet-300" />
+                <ResultStat label="Approval-gated" value={String(approvalGated)} tone="text-orange-300" />
                 <ResultStat label="Desktop-eligible" value={String(desktopReviewEligible)} tone="text-cyan-300" />
               </div>
 
@@ -217,7 +217,7 @@ export function RunRemediationPlanPanel() {
                             </p>
                           </div>
                           <div className="flex items-center gap-1 shrink-0">
-                            {b.terraformPreview?.available && <span className="text-[9px] font-mono px-1 py-px rounded bg-violet-500/15 text-violet-300">TF</span>}
+                            {b.terraformPreview?.available && <span className="text-[9px] font-mono px-1 py-px rounded bg-orange-500/15 text-orange-300">TF</span>}
                             {b.cliPreview?.available && <span className="text-[9px] font-mono px-1 py-px rounded bg-cyan-500/15 text-cyan-300">CLI</span>}
                             {b.rollbackPlan?.available && <span className="text-[9px] font-mono px-1 py-px rounded bg-emerald-500/15 text-emerald-300">RB</span>}
                           </div>

@@ -50,7 +50,7 @@ export default async function InsightArticlePage({ params }: Props) {
       {/* Huly aurora */}
       <div className="spotlight-orb absolute top-0 left-1/2 -translate-x-1/2 w-[700px] h-[400px] opacity-20 pointer-events-none" />
       <div className="bg-dots absolute inset-0 pointer-events-none" />
-      <div className="ambient-drift absolute top-0 left-1/4 w-[480px] h-[400px] rounded-full bg-brand-violet/[0.07] blur-[130px] pointer-events-none" aria-hidden />
+      <div className="ambient-drift absolute top-0 left-1/4 w-[480px] h-[400px] rounded-full bg-brand-orange/[0.07] blur-[130px] pointer-events-none" aria-hidden />
       <div className="ambient-drift absolute top-1/4 right-[5%] w-[360px] h-[280px] rounded-full bg-brand-coral/[0.05] blur-[120px] pointer-events-none" style={{ animationDelay: "-8s" }} aria-hidden />
       <div className="ambient-drift absolute bottom-1/4 left-[5%] w-[320px] h-[240px] rounded-full bg-cyan-500/[0.04] blur-[110px] pointer-events-none" style={{ animationDelay: "-14s" }} aria-hidden />
 
@@ -60,7 +60,7 @@ export default async function InsightArticlePage({ params }: Props) {
           <nav className="mb-8" aria-label="Breadcrumb">
             <Link
               href="/insights"
-              className="inline-flex items-center text-sm text-zinc-400 hover:text-violet-400 transition-colors"
+              className="inline-flex items-center text-sm text-zinc-400 hover:text-orange-400 transition-colors"
             >
               <ArrowLeftIcon className="h-4 w-4 mr-1" />
               Insights
@@ -71,7 +71,7 @@ export default async function InsightArticlePage({ params }: Props) {
         <Reveal direction="up" blur delay={0.1}>
           <header className="mb-8">
             <h1 className="relative text-3xl md:text-4xl font-bold text-white mb-3 tracking-[-0.04em] leading-[1.06] pl-5">
-              <span aria-hidden className="absolute left-0 top-0 bottom-0 w-[3px] rounded-full bg-gradient-to-b from-brand-coral via-fuchsia-400 to-brand-violet opacity-85" />
+              <span aria-hidden className="absolute left-0 top-0 bottom-0 w-[3px] rounded-full bg-gradient-to-b from-brand-coral via-amber-400 to-brand-orange opacity-85" />
               {article.title}
             </h1>
             <p className="text-zinc-500 text-[12px] font-mono uppercase tracking-[0.16em]">
@@ -122,7 +122,7 @@ export default async function InsightArticlePage({ params }: Props) {
           {prevArticle ? (
             <Link
               href={`/insights/${prevArticle.slug}`}
-              className="text-sm font-medium text-violet-400 hover:underline hover-lift transition-all inline-block"
+              className="text-sm font-medium text-orange-400 hover:underline hover-lift transition-all inline-block"
             >
               &larr; {prevArticle.title}
             </Link>
@@ -132,7 +132,7 @@ export default async function InsightArticlePage({ params }: Props) {
           {nextArticle ? (
             <Link
               href={`/insights/${nextArticle.slug}`}
-              className="text-sm font-medium text-violet-400 hover:underline sm:text-right hover-lift transition-all inline-block"
+              className="text-sm font-medium text-orange-400 hover:underline sm:text-right hover-lift transition-all inline-block"
             >
               {nextArticle.title} &rarr;
             </Link>

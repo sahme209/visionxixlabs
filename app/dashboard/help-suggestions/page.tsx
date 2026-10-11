@@ -67,8 +67,8 @@ export default function HelpSuggestionsPage() {
         <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/[0.08] to-transparent" aria-hidden />
         <div className="flex items-center gap-2 mb-3 flex-wrap">
           <span className="inline-flex items-center gap-2 rounded-full border border-white/[0.06] bg-white/[0.02] px-2.5 py-1">
-            <SparklesIcon className="h-3.5 w-3.5 text-fuchsia-300" />
-            <span className="text-[10px] font-semibold uppercase tracking-widest text-fuchsia-300">
+            <SparklesIcon className="h-3.5 w-3.5 text-amber-300" />
+            <span className="text-[10px] font-semibold uppercase tracking-widest text-amber-300">
               Doc gaps · auto-suggested
             </span>
           </span>
@@ -102,7 +102,7 @@ export default function HelpSuggestionsPage() {
               return (
                 <div key={key} className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-4">
                   <div className="flex items-center gap-2 flex-wrap mb-2">
-                    <span className="text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded border bg-fuchsia-500/15 text-fuchsia-300 border-fuchsia-500/30">
+                    <span className="text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded border bg-amber-500/15 text-amber-300 border-amber-500/30">
                       {s.suggestedCategory}
                     </span>
                     <p className="text-[14px] font-semibold text-white">{s.sampleQuery}</p>

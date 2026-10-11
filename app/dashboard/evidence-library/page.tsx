@@ -140,7 +140,7 @@ export default function EvidenceLibraryPage() {
           className="absolute inset-0 -z-10 opacity-90 pointer-events-none"
           style={{
             background:
-              "radial-gradient(900px 320px at 12% 0%, rgba(99,102,241,0.10), transparent 60%), radial-gradient(700px 260px at 88% 110%, rgba(45,212,191,0.06), transparent 60%)",
+              "radial-gradient(900px 320px at 12% 0%, rgba(245,78,0,0.10), transparent 60%), radial-gradient(700px 260px at 88% 110%, rgba(45,212,191,0.06), transparent 60%)",
           }}
           aria-hidden
         />
@@ -193,7 +193,7 @@ export default function EvidenceLibraryPage() {
               onClick={() => setFilter("all")}
               className={`inline-flex items-center px-3 py-1.5 rounded-full text-[11px] font-medium border transition-all ${
                 filter === "all"
-                  ? "bg-violet-500/15 border-white/[0.12] text-violet-300"
+                  ? "bg-orange-500/15 border-white/[0.12] text-orange-300"
                   : "bg-white/[0.02] border-white/[0.06] text-zinc-400 hover:text-white hover:border-white/[0.12]"
               }`}
             >
@@ -206,7 +206,7 @@ export default function EvidenceLibraryPage() {
                 onClick={() => setFilter(t)}
                 className={`inline-flex items-center px-3 py-1.5 rounded-full text-[11px] font-medium border transition-all ${
                   filter === t
-                    ? "bg-violet-500/15 border-white/[0.12] text-violet-300"
+                    ? "bg-orange-500/15 border-white/[0.12] text-orange-300"
                     : "bg-white/[0.02] border-white/[0.06] text-zinc-400 hover:text-white hover:border-white/[0.12]"
                 }`}
               >

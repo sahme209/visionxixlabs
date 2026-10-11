@@ -166,7 +166,7 @@ export function AxiomUpgradeModal({
         <div className="flex items-start justify-between mb-4">
           <div>
             {insightTitle && (
-              <p className="text-[10px] font-medium uppercase tracking-wide text-violet-400 mb-1">
+              <p className="text-[10px] font-medium uppercase tracking-wide text-orange-400 mb-1">
                 {insightTitle}
               </p>
             )}
@@ -189,8 +189,8 @@ export function AxiomUpgradeModal({
         <div className="space-y-3 mb-5">
           {content.features.map((feat) => (
             <div key={feat.label} className="flex items-center gap-3">
-              <div className="flex-shrink-0 h-8 w-8 rounded-lg bg-violet-500/10 flex items-center justify-center">
-                <feat.icon className="h-4 w-4 text-violet-400" />
+              <div className="flex-shrink-0 h-8 w-8 rounded-lg bg-orange-500/10 flex items-center justify-center">
+                <feat.icon className="h-4 w-4 text-orange-400" />
               </div>
               <span className="text-sm text-zinc-300">
                 {feat.label}
@@ -199,8 +199,8 @@ export function AxiomUpgradeModal({
           ))}
         </div>
 
-        <div className="mb-5 rounded-lg border border-violet-500/20 bg-violet-500/[0.06] p-3">
-          <p className="text-[10px] font-bold text-violet-400 uppercase tracking-wide mb-1.5">
+        <div className="mb-5 rounded-lg border border-orange-500/20 bg-orange-500/[0.06] p-3">
+          <p className="text-[10px] font-bold text-orange-400 uppercase tracking-wide mb-1.5">
             {content.example.heading}
           </p>
           <pre className="text-[11px] text-zinc-300 font-mono leading-relaxed whitespace-pre-wrap">

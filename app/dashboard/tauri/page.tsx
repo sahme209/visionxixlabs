@@ -100,7 +100,7 @@ export default function TauriDashboardPage() {
   const [playbook, setPlaybook] = useState<DeploymentPlaybook | null>(null);
   const [currentStep, setCurrentStep] = useState(0);
   const issues = useMemo(() => validateIntake(intake), [intake]);
-  const inputClass = "mt-1 w-full rounded-lg border border-white/10 bg-black/30 px-3 py-2 text-sm text-white outline-none focus:border-violet-400";
+  const inputClass = "mt-1 w-full rounded-lg border border-white/10 bg-black/30 px-3 py-2 text-sm text-white outline-none focus:border-orange-400";
   const labelClass = "text-[11px] font-mono uppercase tracking-wider text-zinc-400";
 
   function createPlaybook() {
@@ -120,8 +120,8 @@ export default function TauriDashboardPage() {
 
   return (
     <div className="space-y-6">
-      <header className="rounded-2xl border border-violet-500/20 bg-gradient-to-br from-violet-500/10 via-white/[0.025] to-cyan-500/5 p-6">
-        <p className="text-[10px] font-mono uppercase tracking-[0.24em] text-violet-300">Axiom Agent · Deployment Operations</p>
+      <header className="rounded-2xl border border-orange-500/20 bg-gradient-to-br from-orange-500/10 via-white/[0.025] to-cyan-500/5 p-6">
+        <p className="text-[10px] font-mono uppercase tracking-[0.24em] text-orange-300">Axiom Agent · Deployment Operations</p>
         <div className="mt-2 flex flex-wrap items-end justify-between gap-4">
           <div>
             <h1 className="text-3xl font-bold tracking-tight text-white">The request becomes the playbook.</h1>
@@ -166,7 +166,7 @@ export default function TauriDashboardPage() {
                   type="button"
                   aria-pressed={intake.serviceImpactingNow === value}
                   onClick={() => setIntake({ ...intake, serviceImpactingNow: value })}
-                  className={`rounded-lg border px-3 py-2 text-sm ${intake.serviceImpactingNow === value ? "border-violet-400 bg-violet-500/15 text-white" : "border-white/10 text-zinc-400"}`}
+                  className={`rounded-lg border px-3 py-2 text-sm ${intake.serviceImpactingNow === value ? "border-orange-400 bg-orange-500/15 text-white" : "border-white/10 text-zinc-400"}`}
                 >
                   {value ? "Yes — incident/support" : "No — planned request"}
                 </button>
@@ -223,7 +223,7 @@ export default function TauriDashboardPage() {
             </div>
           )}
 
-          <button type="button" disabled={issues.length > 0} onClick={createPlaybook} className="mt-5 w-full rounded-xl bg-violet-500 px-4 py-3 text-sm font-semibold text-white hover:bg-violet-400 disabled:cursor-not-allowed disabled:opacity-40">
+          <button type="button" disabled={issues.length > 0} onClick={createPlaybook} className="mt-5 w-full rounded-xl bg-orange-500 px-4 py-3 text-sm font-semibold text-white hover:bg-orange-400 disabled:cursor-not-allowed disabled:opacity-40">
             Validate and generate versioned playbook
           </button>
         </section>
@@ -243,8 +243,8 @@ export default function TauriDashboardPage() {
                 <Metric label="Steps" value={String(playbook.steps.length)} />
                 <Metric label="Completed" value={String(playbook.steps.filter((step) => step.status === "completed").length)} />
               </div>
-              <div className="mt-4 rounded-xl border border-violet-500/25 bg-violet-500/10 p-4">
-                <p className="text-[10px] font-mono uppercase tracking-wider text-violet-300">Current step · {currentStep + 1} of {playbook.steps.length}</p>
+              <div className="mt-4 rounded-xl border border-orange-500/25 bg-orange-500/10 p-4">
+                <p className="text-[10px] font-mono uppercase tracking-wider text-orange-300">Current step · {currentStep + 1} of {playbook.steps.length}</p>
                 <h3 className="mt-2 text-lg font-semibold text-white">{playbook.steps[currentStep].title}</h3>
                 <p className="mt-2 text-sm text-zinc-300">{playbook.steps[currentStep].instructions}</p>
                 <dl className="mt-4 grid grid-cols-2 gap-3 text-xs">
@@ -259,7 +259,7 @@ export default function TauriDashboardPage() {
               <ol className="mt-4 max-h-[340px] space-y-2 overflow-auto pr-1">
                 {playbook.steps.map((step, index) => (
                   <li key={step.id}>
-                    <button type="button" onClick={() => setCurrentStep(index)} className={`flex w-full items-center gap-3 rounded-lg border p-3 text-left ${statusTone[step.status]} ${index === currentStep ? "ring-1 ring-violet-400" : ""}`}>
+                    <button type="button" onClick={() => setCurrentStep(index)} className={`flex w-full items-center gap-3 rounded-lg border p-3 text-left ${statusTone[step.status]} ${index === currentStep ? "ring-1 ring-orange-400" : ""}`}>
                       <span className="font-mono text-xs">{String(step.order).padStart(2, "0")}</span>
                       <span className="flex-1 text-xs font-medium">{step.title}</span>
                       <span className="text-[9px] font-mono uppercase">{step.status}</span>

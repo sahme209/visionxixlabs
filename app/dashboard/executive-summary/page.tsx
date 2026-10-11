@@ -99,7 +99,7 @@ export default function ExecutiveSummaryPage() {
           className="absolute inset-0 -z-10 opacity-90 pointer-events-none"
           style={{
             background:
-              "radial-gradient(900px 320px at 12% 0%, rgba(99,102,241,0.10), transparent 60%), radial-gradient(700px 260px at 88% 110%, rgba(45,212,191,0.06), transparent 60%)",
+              "radial-gradient(900px 320px at 12% 0%, rgba(245,78,0,0.10), transparent 60%), radial-gradient(700px 260px at 88% 110%, rgba(45,212,191,0.06), transparent 60%)",
           }}
           aria-hidden
         />
@@ -198,7 +198,7 @@ export default function ExecutiveSummaryPage() {
             {/* Readiness */}
             <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5">
               <div className="flex items-center gap-2 mb-3">
-                <RocketLaunchIcon className="h-4 w-4 text-violet-300" />
+                <RocketLaunchIcon className="h-4 w-4 text-orange-300" />
                 <p className="text-[11px] font-mono text-zinc-500 uppercase tracking-[0.18em]">// readiness</p>
               </div>
               <p className="text-3xl font-bold text-white tracking-tight mb-1">{report.readiness.launchScore}%</p>

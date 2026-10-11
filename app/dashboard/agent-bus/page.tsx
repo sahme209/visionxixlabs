@@ -25,15 +25,15 @@ interface Report { messages: BusMessage[]; total: number }
 
 const SENDER_TONE: Record<string, string> = {
   detector:       "bg-cyan-500/15 text-cyan-300 border-cyan-500/30",
-  reasoner:       "bg-violet-500/15 text-violet-300 border-white/[0.12]",
+  reasoner:       "bg-orange-500/15 text-orange-300 border-white/[0.12]",
   simulator:      "bg-sky-500/15 text-sky-300 border-sky-500/30",
   policy_gate:    "bg-white/15 text-zinc-300 border-white/30",
   boundary_gate:  "bg-white/15 text-zinc-300 border-white/30",
-  approver:       "bg-fuchsia-500/15 text-fuchsia-300 border-fuchsia-500/30",
+  approver:       "bg-amber-500/15 text-amber-300 border-amber-500/30",
   verifier:       "bg-emerald-500/15 text-emerald-300 border-emerald-500/30",
   auditor:        "bg-zinc-500/15 text-zinc-300 border-zinc-500/30",
   council:        "bg-rose-500/15 text-rose-300 border-rose-500/30",
-  improver:       "bg-indigo-500/15 text-indigo-300 border-indigo-500/30",
+  improver:       "bg-zinc-500/15 text-zinc-300 border-zinc-500/30",
 };
 
 export default function AgentBusPage() {
@@ -63,8 +63,8 @@ export default function AgentBusPage() {
       <div className="relative mb-8 rounded-3xl border border-white/[0.05] bg-gradient-to-br from-white/[0.025] via-white/[0.015] to-transparent p-6 md:p-8 overflow-hidden">
         <div className="flex items-center gap-2 mb-3 flex-wrap">
           <span className="inline-flex items-center gap-2 rounded-full border border-white/[0.06] bg-white/[0.02] px-2.5 py-1">
-            <ChatBubbleLeftRightIcon className="h-3.5 w-3.5 text-violet-300" />
-            <span className="text-[10px] font-semibold uppercase tracking-widest text-violet-300">
+            <ChatBubbleLeftRightIcon className="h-3.5 w-3.5 text-orange-300" />
+            <span className="text-[10px] font-semibold uppercase tracking-widest text-orange-300">
               Agent Bus
             </span>
           </span>
@@ -91,7 +91,7 @@ export default function AgentBusPage() {
             value={thread}
             onChange={(e) => setThread(e.target.value)}
             placeholder="Filter by threadId…"
-            className="flex-1 min-w-[260px] rounded-lg border border-white/[0.08] bg-black/30 px-3 py-2 text-[12px] font-mono text-white focus:border-violet-400/60 focus:outline-none"
+            className="flex-1 min-w-[260px] rounded-lg border border-white/[0.08] bg-black/30 px-3 py-2 text-[12px] font-mono text-white focus:border-orange-400/60 focus:outline-none"
           />
         </div>
       </div>

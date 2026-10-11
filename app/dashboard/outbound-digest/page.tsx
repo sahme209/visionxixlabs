@@ -53,8 +53,8 @@ export default function OutboundDigestPage() {
       <div className="relative mb-8 rounded-3xl border border-white/[0.05] bg-gradient-to-br from-white/[0.025] via-white/[0.015] to-transparent p-6 md:p-8 overflow-hidden">
         <div className="flex items-center gap-2 mb-3 flex-wrap">
           <span className="inline-flex items-center gap-2 rounded-full border border-white/[0.06] bg-white/[0.02] px-2.5 py-1">
-            <BellAlertIcon className="h-3.5 w-3.5 text-indigo-300" />
-            <span className="text-[10px] font-semibold uppercase tracking-widest text-indigo-300">
+            <BellAlertIcon className="h-3.5 w-3.5 text-zinc-300" />
+            <span className="text-[10px] font-semibold uppercase tracking-widest text-zinc-300">
               Outbound digest
             </span>
           </span>
@@ -82,7 +82,7 @@ export default function OutboundDigestPage() {
               onClick={() => setWindowHours(o.hours)}
               className={`text-[10px] font-mono px-2 py-0.5 rounded-full border transition ${
                 windowHours === o.hours
-                  ? "bg-indigo-500/15 text-indigo-200 border-indigo-500/30"
+                  ? "bg-zinc-500/15 text-zinc-200 border-zinc-500/30"
                   : "bg-white/[0.02] text-zinc-400 border-white/[0.06] hover:text-white"
               }`}
             >
@@ -152,7 +152,7 @@ export default function OutboundDigestPage() {
                 <ul className="space-y-1 text-[12px]">
                   {data.topCorrelationIds.map((c) => (
                     <li key={c.correlationId} className="flex items-center gap-2">
-                      <span className="font-mono text-indigo-300 truncate flex-1">{c.correlationId}</span>
+                      <span className="font-mono text-zinc-300 truncate flex-1">{c.correlationId}</span>
                       <span className="font-mono text-zinc-300 tabular-nums">{c.count}</span>
                     </li>
                   ))}

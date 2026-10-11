@@ -33,6 +33,7 @@ export type IntegrationCategory =
   | "monitoring"
   | "incidents"
   | "communications"
+  | "orchestration"
   | "ide"
   | "db";
 
@@ -175,6 +176,17 @@ export const INTEGRATIONS: ReadonlyArray<Integration> = [
     writeAccess: "approval_gated",
   },
   {
+    id: "airflow",
+    name: "Apache Airflow",
+    blurb: "Validated DAG discovery, run monitoring, schedules, and governed automation.",
+    category: "orchestration",
+    activation: "manual_paste",
+    status: "live",
+    cta: "Configure Airflow",
+    permissionsSummary: "DAG and run read · trigger requires explicit deploy:execute authority",
+    writeAccess: "approval_gated",
+  },
+  {
     id: "pagerduty",
     name: "PagerDuty",
     blurb: "OAuth app · pages on-call when an incident is auto-promoted.",
@@ -234,6 +246,7 @@ export function listAllCategories(): ReadonlyArray<{ id: IntegrationCategory; la
     { id: "monitoring",     label: "Monitoring + observability" },
     { id: "incidents",      label: "Incidents + paging"       },
     { id: "communications", label: "Communications"           },
+    { id: "orchestration",  label: "Workflow orchestration"   },
     { id: "ide",            label: "IDE + editor"             },
     { id: "db",             label: "Databases"                },
   ];

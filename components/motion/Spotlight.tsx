@@ -13,8 +13,8 @@
 import { useEffect, useRef, useState } from "react";
 
 export interface SpotlightProps {
-  /** Tailwind color name used in the radial gradient (e.g. "violet-500"). */
-  tint?: "violet" | "fuchsia" | "cyan" | "emerald" | "amber";
+  /** Tailwind color name used in the radial gradient (e.g. "orange-500"). */
+  tint?: "orange" | "amber" | "cyan" | "emerald";
   /** Size of the glow in pixels — diameter of the soft circle. */
   size?: number;
   /** Strength of the glow (0..1). */
@@ -24,15 +24,14 @@ export interface SpotlightProps {
 }
 
 const TINT_COLORS: Record<NonNullable<SpotlightProps["tint"]>, string> = {
-  violet:   "rgba(139, 92, 246, 0.18)",
-  fuchsia:  "rgba(232, 121, 249, 0.18)",
+  orange:   "rgba(255, 120, 61, 0.18)",
   cyan:     "rgba(34, 211, 238, 0.18)",
   emerald:  "rgba(52, 211, 153, 0.18)",
   amber:    "rgba(251, 191, 36, 0.18)",
 };
 
 export function Spotlight({
-  tint = "violet",
+  tint = "orange",
   size = 600,
   intensity = 1,
   className = "",

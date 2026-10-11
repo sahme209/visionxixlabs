@@ -86,11 +86,11 @@ export default async function CodingPage() {
         <Stat label="Running"   value={countByStatus.get("running")   ?? 0} icon={ClockIcon}              tone="text-zinc-300" />
         <Stat label="Succeeded" value={countByStatus.get("succeeded") ?? 0} icon={CheckCircleIcon}        tone="text-emerald-300" />
         <Stat label="Failed"    value={countByStatus.get("failed")    ?? 0} icon={ExclamationTriangleIcon} tone="text-rose-300" />
-        <Stat label="All"       value={Array.from(countByStatus.values()).reduce((a, b) => a + b, 0)}     icon={CpuChipIcon}             tone="text-violet-300" />
+        <Stat label="All"       value={Array.from(countByStatus.values()).reduce((a, b) => a + b, 0)}     icon={CpuChipIcon}             tone="text-orange-300" />
       </section>
 
       <section className="rounded-2xl border border-white/[0.08] bg-white/[0.015] p-5 mb-8">
-        <p className="text-[10px] font-semibold text-violet-300 uppercase tracking-widest mb-3">// new coding task</p>
+        <p className="text-[10px] font-semibold text-orange-300 uppercase tracking-widest mb-3">// new coding task</p>
         <CodingTaskForm />
       </section>
 

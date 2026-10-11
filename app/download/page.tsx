@@ -171,27 +171,22 @@ export default function DownloadPage() {
   const primaryPlatform = platformsLive[primary];
 
   return (
-    <div className="axiom-canvas min-h-screen text-white relative overflow-hidden">
-      <div className="absolute inset-0 bg-grid-mesh opacity-[0.08] pointer-events-none" aria-hidden />
-      <div className="hidden md:block absolute top-0 left-1/2 -translate-x-1/2 w-[900px] h-[540px] spotlight-orb opacity-25 pointer-events-none" aria-hidden />
+    <div className="min-h-screen overflow-hidden bg-[#141414] text-white">
 
       <Navigation />
 
       {/* Hero ───────────────────────────────────────────────────── */}
-      <section className="relative pt-24 pb-12 px-4 sm:px-6 sm:pt-32 sm:pb-20 lg:px-8 overflow-hidden">
+      <section className="relative overflow-hidden px-4 pb-12 pt-28 sm:px-6 sm:pb-20 sm:pt-36 lg:px-8">
         <div className="max-w-4xl mx-auto text-center relative z-10">
-          {/* Floating app icon with glow */}
           <Reveal direction="up" blur>
             <div className="relative inline-flex items-center justify-center mb-6 sm:mb-10">
-              <div className="hidden sm:block absolute inset-0 rounded-3xl bg-violet-500/15 blur-[36px] scale-125" aria-hidden />
-              <div className="relative w-20 h-20 sm:w-28 sm:h-28 rounded-2xl sm:rounded-3xl bg-gradient-to-br from-[#1e1e24] via-[#1a1a20] to-[#0f0f12] border border-white/[0.08] flex items-center justify-center shadow-2xl shadow-violet-900/40">
-                <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-white/[0.04] via-transparent to-transparent" aria-hidden />
+              <div className="relative flex h-20 w-20 items-center justify-center rounded-2xl border border-white/[0.1] bg-[#1A1A1A] sm:h-24 sm:w-24">
                 <Image
                   src="/vision-xix-logo.png"
                   alt="Axiom Agent"
                   width={52}
                   height={52}
-                  className="w-12 h-12 sm:w-16 sm:h-16 rounded-xl drop-shadow-2xl relative z-10"
+                  className="relative z-10 h-12 w-12 rounded-xl sm:h-14 sm:w-14"
                   priority
                 />
               </div>
@@ -223,7 +218,7 @@ export default function DownloadPage() {
 
           {/* Headline */}
           <Reveal direction="up" blur delay={0.08}>
-            <h1 className="text-[2.35rem] sm:text-5xl md:text-6xl lg:text-7xl font-semibold mb-5 sm:mb-6 leading-[1.02] tracking-[-0.045em]">
+            <h1 className="mb-5 text-[2.35rem] font-medium leading-[1.02] tracking-[-0.055em] sm:mb-6 sm:text-5xl md:text-6xl lg:text-7xl">
               Govern every deployment.<br />
               <span className="text-zinc-200">From request to closure.</span>
             </h1>
@@ -280,9 +275,9 @@ export default function DownloadPage() {
           <Reveal direction="up" delay={0.18}>
             <p className="text-center text-xs text-zinc-500 mb-6">
               First time? Read the{" "}
-              <Link href="/docs/desktop-install" className="text-violet-300 hover:text-violet-200 underline underline-offset-4">install guide</Link>
+              <Link href="/docs/desktop-install" className="text-orange-300 hover:text-orange-200 underline underline-offset-4">install guide</Link>
               {" "}or the{" "}
-              <Link href="/docs/desktop-architecture" className="text-violet-300 hover:text-violet-200 underline underline-offset-4">architecture overview</Link>.
+              <Link href="/docs/desktop-architecture" className="text-orange-300 hover:text-orange-200 underline underline-offset-4">architecture overview</Link>.
             </p>
           </Reveal>
 
@@ -332,7 +327,7 @@ export default function DownloadPage() {
                       </p>
                     ) : null}
                     {p.signatureUrl ? (
-                      <p className="mt-1 text-[9.5px] font-mono text-violet-300">Detached signature published</p>
+                      <p className="mt-1 text-[9.5px] font-mono text-orange-300">Detached signature published</p>
                     ) : null}
                   </Link>
                 );
@@ -341,7 +336,7 @@ export default function DownloadPage() {
             {manifest?.htmlUrl ? (
               <p className="mt-4 text-center text-[11px] text-zinc-500">
                 Verify full SHA-256 digests and download detached signatures on the{" "}
-                <a href={manifest.htmlUrl} target="_blank" rel="noopener noreferrer" className="text-violet-300 hover:text-violet-200 underline underline-offset-4">
+                <a href={manifest.htmlUrl} target="_blank" rel="noopener noreferrer" className="text-orange-300 hover:text-orange-200 underline underline-offset-4">
                   public release record
                 </a>.
               </p>
@@ -354,7 +349,7 @@ export default function DownloadPage() {
       <section className="py-20 px-4 sm:px-6 lg:px-8 relative border-y border-white/[0.06] bg-[#0f100f]">
         <div className="max-w-[1400px] mx-auto">
           <Reveal direction="up" blur>
-            <p className="text-sm font-semibold text-violet-400 mb-4 tracking-wide uppercase">Your first five minutes</p>
+            <p className="text-sm font-semibold text-orange-400 mb-4 tracking-wide uppercase">Your first five minutes</p>
             <h2 className="text-2xl sm:text-3xl font-medium tracking-[-0.03em] text-white max-w-2xl">What's intended to happen after you install.</h2>
             <p className="mt-4 max-w-2xl text-xs leading-5 text-zinc-200/80">
               A known issue can currently interrupt pairing after you approve it in the browser. If the desktop app doesn't pick up an approved session, this is that defect — not something wrong on your end. We're actively tracing it before promising it end-to-end.
@@ -368,7 +363,7 @@ export default function DownloadPage() {
                 { step: "5", title: "Next steps, once connected", detail: "From there the app is meant to tell you directly what's connected and what isn't yet — a repository to bind, an integration to approve — never a silent assumption." },
               ].map((item) => (
                 <li key={item.step} className="rounded-xl border border-white/[0.08] bg-white/[0.02] p-5">
-                  <span className="flex h-7 w-7 items-center justify-center rounded-full border border-violet-300/25 bg-violet-300/10 text-xs font-medium text-violet-100">{item.step}</span>
+                  <span className="flex h-7 w-7 items-center justify-center rounded-full border border-orange-300/25 bg-orange-300/10 text-xs font-medium text-orange-100">{item.step}</span>
                   <p className="mt-4 text-sm font-medium text-zinc-100">{item.title}</p>
                   <p className="mt-2 text-xs leading-5 text-zinc-400">{item.detail}</p>
                 </li>
@@ -386,7 +381,7 @@ export default function DownloadPage() {
         <div className="max-w-[1400px] mx-auto">
           <Reveal direction="up" blur>
             <div className="mb-16">
-              <p className="text-sm font-semibold text-violet-400 mb-4 tracking-wide uppercase">
+              <p className="text-sm font-semibold text-orange-400 mb-4 tracking-wide uppercase">
                 Desktop Capabilities
               </p>
               <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-[-0.04em] mb-5">
@@ -407,7 +402,7 @@ export default function DownloadPage() {
                 desc: "Inspect generated Terraform and CLI artifacts on your workstation. Local apply remains disabled until the approval and credential-custody architecture is fully verified.",
                 visual: (
                   <div className="mt-5 rounded-lg bg-black/40 border border-white/[0.04] p-3 font-mono text-[10px] text-zinc-500 leading-relaxed">
-                    <span className="text-zinc-600">$</span> <span className="text-white">terraform plan</span> <span className="text-violet-400"># sample preview</span><br />
+                    <span className="text-zinc-600">$</span> <span className="text-white">terraform plan</span> <span className="text-orange-400"># sample preview</span><br />
                     <span className="text-emerald-400">✓</span> Artifact ready for human review<br />
                     <span className="text-zinc-400">!</span> Apply disabled by desktop safety contract<br />
                     <span className="text-zinc-400">→</span> Record approval or return for revision
@@ -455,8 +450,8 @@ export default function DownloadPage() {
                 visual: (
                   <div className="mt-5 rounded-xl bg-gradient-to-br from-white/[0.04] to-white/[0.01] border border-white/[0.08] p-3 backdrop-blur-sm">
                     <div className="flex items-start gap-2.5">
-                      <div className="w-7 h-7 rounded-lg bg-violet-500/15 border border-violet-500/20 flex items-center justify-center shrink-0">
-                        <BoltIcon className="h-3.5 w-3.5 text-violet-400" />
+                      <div className="w-7 h-7 rounded-lg bg-orange-500/15 border border-orange-500/20 flex items-center justify-center shrink-0">
+                        <BoltIcon className="h-3.5 w-3.5 text-orange-400" />
                       </div>
                       <div className="flex-1 min-w-0">
                         <p className="text-[11px] font-semibold text-white mb-0.5">Axiom Agent</p>

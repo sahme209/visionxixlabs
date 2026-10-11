@@ -153,7 +153,7 @@ export default function AIChatWidget() {
           role="dialog"
           aria-label="Vision XIX Labs AI chat"
         >
-          <div className="flex items-center justify-between border-b border-white/[0.06] bg-indigo-600 px-4 py-3">
+          <div className="flex items-center justify-between border-b border-white/[0.06] bg-zinc-600 px-4 py-3">
             <div className="flex items-center gap-2">
               <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-white/20">
                 <SparklesIcon className="h-5 w-5 text-white" />
@@ -179,7 +179,7 @@ export default function AIChatWidget() {
             {messages.length === 0 ? (
               <div className="flex flex-1 flex-col items-center justify-center text-center">
                 <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-white/[0.02] border border-white/[0.06]">
-                  <ChatBubbleLeftRightIcon className="h-6 w-6 text-indigo-600" />
+                  <ChatBubbleLeftRightIcon className="h-6 w-6 text-zinc-600" />
                 </div>
                 <p className="text-sm font-medium text-white">Hi, I&apos;m Vision XIX Labs AI</p>
                 <p className="mt-1 text-xs text-zinc-400">Ask about cloud, AI, or our services.</p>
@@ -188,7 +188,7 @@ export default function AIChatWidget() {
                     <button
                       key={s}
                       onClick={() => setInput(s)}
-                      className="rounded-lg border border-white/[0.06] bg-white/[0.02] px-3 py-1.5 text-left text-xs text-zinc-400 hover:border-indigo-400 hover:text-indigo-600"
+                      className="rounded-lg border border-white/[0.06] bg-white/[0.02] px-3 py-1.5 text-left text-xs text-zinc-400 hover:border-zinc-400 hover:text-zinc-600"
                     >
                       {s}
                     </button>
@@ -205,7 +205,7 @@ export default function AIChatWidget() {
                     <div
                       className={`max-w-[85%] rounded-2xl px-3 py-2 text-sm ${
                         m.role === "user"
-                          ? "bg-indigo-600 text-white rounded-br-xl"
+                          ? "bg-zinc-600 text-white rounded-br-xl"
                           : "bg-white/[0.02] border border-white/[0.06] text-white rounded-bl-xl"
                       }`}
                     >
@@ -228,9 +228,9 @@ export default function AIChatWidget() {
                 {loading && (
                   <div className="flex justify-start">
                     <div className="flex gap-1 rounded-2xl rounded-bl-xl border border-white/[0.06] bg-white/[0.02] px-3 py-2">
-                      <span className="h-2 w-2 animate-pulse rounded-full bg-indigo-600" />
-                      <span className="h-2 w-2 animate-pulse rounded-full bg-indigo-600 [animation-delay:0.2s]" />
-                      <span className="h-2 w-2 animate-pulse rounded-full bg-indigo-600 [animation-delay:0.4s]" />
+                      <span className="h-2 w-2 animate-pulse rounded-full bg-zinc-600" />
+                      <span className="h-2 w-2 animate-pulse rounded-full bg-zinc-600 [animation-delay:0.2s]" />
+                      <span className="h-2 w-2 animate-pulse rounded-full bg-zinc-600 [animation-delay:0.4s]" />
                     </div>
                   </div>
                 )}
@@ -241,7 +241,7 @@ export default function AIChatWidget() {
           <div className="border-t border-white/[0.06] px-4 py-2">
             <a
               href={`mailto:${SUPPORT_EMAIL}`}
-              className="flex items-center gap-2 text-xs text-zinc-400 hover:text-indigo-600"
+              className="flex items-center gap-2 text-xs text-zinc-400 hover:text-zinc-600"
             >
               <ChatBubbleBottomCenterTextIcon className="h-4 w-4" />
               Talk to support
@@ -258,12 +258,12 @@ export default function AIChatWidget() {
                 onKeyDown={handleKeyDown}
                 placeholder="Ask about cloud, AI..."
                 disabled={loading}
-                className="flex-1 rounded-xl border border-white/[0.06] bg-white/[0.03] px-3 py-2.5 text-sm text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-violet-500/40 focus:border-violet-500/50 transition-all duration-300 disabled:opacity-60"
+                className="flex-1 rounded-xl border border-white/[0.06] bg-white/[0.03] px-3 py-2.5 text-sm text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-500/40 focus:border-orange-500/50 transition-all duration-300 disabled:opacity-60"
               />
               <button
                 onClick={sendMessage}
                 disabled={!input.trim() || loading}
-                className="rounded-xl bg-violet-600 px-3 py-2.5 text-white hover:bg-violet-700 disabled:cursor-not-allowed disabled:opacity-50 transition-colors"
+                className="rounded-xl bg-orange-600 px-3 py-2.5 text-white hover:bg-orange-700 disabled:cursor-not-allowed disabled:opacity-50 transition-colors"
                 aria-label="Send"
               >
                 <PaperAirplaneIcon className="h-5 w-5" />
@@ -271,7 +271,7 @@ export default function AIChatWidget() {
             </div>
             <Link
               href="/axiom"
-              className="mt-2 block text-center text-[10px] text-slate-500 hover:text-indigo-600"
+              className="mt-2 block text-center text-[10px] text-slate-500 hover:text-zinc-600"
             >
               Learn about Axiom Agent
             </Link>

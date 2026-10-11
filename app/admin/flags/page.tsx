@@ -117,7 +117,7 @@ export default function FlagsPage() {
           className="absolute inset-0 -z-10 opacity-90 pointer-events-none"
           style={{
             background:
-              "radial-gradient(900px 320px at 12% 0%, rgba(168,85,247,0.10), transparent 60%), radial-gradient(700px 260px at 88% 110%, rgba(34,211,238,0.06), transparent 60%)",
+              "radial-gradient(900px 320px at 12% 0%, rgba(251, 106, 43,0.10), transparent 60%), radial-gradient(700px 260px at 88% 110%, rgba(34,211,238,0.06), transparent 60%)",
           }}
           aria-hidden
         />
@@ -125,8 +125,8 @@ export default function FlagsPage() {
 
         <div className="flex items-center gap-2 mb-3 flex-wrap">
           <span className="inline-flex items-center gap-2 rounded-full border border-white/[0.06] bg-white/[0.02] px-2.5 py-1">
-            <PuzzlePieceIcon className="h-3.5 w-3.5 text-violet-300" />
-            <span className="text-[10px] font-semibold uppercase tracking-widest text-violet-300">
+            <PuzzlePieceIcon className="h-3.5 w-3.5 text-orange-300" />
+            <span className="text-[10px] font-semibold uppercase tracking-widest text-orange-300">
               Feature Flags
             </span>
           </span>
@@ -148,7 +148,7 @@ export default function FlagsPage() {
 
         {report && (
           <div className="mt-5 grid grid-cols-2 md:grid-cols-3 gap-3">
-            <Stat label="Total flags" value={String(report.total)} tone="violet" />
+            <Stat label="Total flags" value={String(report.total)} tone="orange" />
             <Stat label="Overrides set" value={String(report.overrideCount)} tone={report.overrideCount > 0 ? "amber" : "emerald"} />
             <Stat label="Defaults active" value={String(report.total - report.overrideCount)} tone="emerald" />
           </div>
@@ -164,7 +164,7 @@ export default function FlagsPage() {
       {report && (Object.keys(grouped) as Group[]).map((g) => (
         grouped[g].length > 0 && (
           <div key={g} className="mb-6">
-            <p className="text-[11px] font-mono text-violet-300/80 uppercase tracking-[0.18em] mb-2">
+            <p className="text-[11px] font-mono text-orange-300/80 uppercase tracking-[0.18em] mb-2">
               // {GROUP_LABEL[g]} · {grouped[g].length}
             </p>
             <div className="space-y-2">
@@ -204,7 +204,7 @@ export default function FlagsPage() {
                         value={rationales[rec.key] ?? ""}
                         onChange={(e) => setRationales((m) => ({ ...m, [rec.key]: e.target.value }))}
                         placeholder="optional rationale"
-                        className="w-48 rounded-md border border-white/[0.08] bg-black/30 px-2 py-1 text-[10px] font-mono text-zinc-200 focus:border-violet-400/60 focus:outline-none"
+                        className="w-48 rounded-md border border-white/[0.08] bg-black/30 px-2 py-1 text-[10px] font-mono text-zinc-200 focus:border-orange-400/60 focus:outline-none"
                       />
                       <div className="flex items-center gap-1.5">
                         <button
@@ -241,11 +241,11 @@ export default function FlagsPage() {
   );
 }
 
-function Stat({ label, value, tone }: { label: string; value: string; tone: "emerald" | "amber" | "violet" }) {
+function Stat({ label, value, tone }: { label: string; value: string; tone: "emerald" | "amber" | "orange" }) {
   const cls = {
     emerald: "border-emerald-500/[0.18] bg-emerald-500/[0.03] text-emerald-200",
     amber:   "border-white/[0.18] bg-white/[0.03] text-zinc-200",
-    violet:  "border-violet-500/[0.18] bg-violet-500/[0.03] text-violet-200",
+    orange:  "border-orange-500/[0.18] bg-orange-500/[0.03] text-orange-200",
   }[tone];
   return (
     <div className={`rounded-xl border ${cls} p-3`}>

@@ -68,7 +68,7 @@ export default function EnterpriseDashboardPage() {
           </div>
           <Link
             href="/admin/leads"
-            className="btn-huly text-sm text-violet-400 hover:underline"
+            className="btn-huly text-sm text-orange-400 hover:underline"
           >
             Website Leads &rarr;
           </Link>
@@ -121,7 +121,7 @@ export default function EnterpriseDashboardPage() {
 
       {loading ? (
         <div className="flex justify-center py-20">
-          <div className="h-8 w-8 animate-spin rounded-full border-2 border-violet-600 border-t-transparent" />
+          <div className="h-8 w-8 animate-spin rounded-full border-2 border-orange-600 border-t-transparent" />
         </div>
       ) : (
         <Reveal direction="up" blur delay={0.15}>
@@ -153,7 +153,7 @@ export default function EnterpriseDashboardPage() {
                       <td className="px-4 py-3">
                         <a
                           href={`mailto:${row.email}`}
-                          className="font-medium text-violet-400 hover:underline"
+                          className="font-medium text-orange-400 hover:underline"
                         >
                           {row.email}
                         </a>

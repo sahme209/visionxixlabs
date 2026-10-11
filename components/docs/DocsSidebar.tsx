@@ -127,11 +127,11 @@ export function DocsSidebar() {
                       href={item.href}
                       className={`flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors ${
                         isActive
-                          ? "bg-violet-500/10 text-violet-300 border border-violet-500/20"
+                          ? "bg-orange-500/10 text-orange-300 border border-orange-500/20"
                           : "text-zinc-400 hover:text-white hover:bg-white/[0.04] border border-transparent"
                       }`}
                     >
-                      <Icon className={`h-3.5 w-3.5 shrink-0 ${isActive ? "text-violet-400" : ""}`} />
+                      <Icon className={`h-3.5 w-3.5 shrink-0 ${isActive ? "text-orange-400" : ""}`} />
                       <span className="truncate">{item.label}</span>
                     </Link>
                   )}

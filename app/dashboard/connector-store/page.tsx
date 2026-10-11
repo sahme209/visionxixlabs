@@ -55,16 +55,16 @@ const CATEGORY_META: Record<ConnectorCategory, { label: string; description: str
   observability:    { label: "Observability",         description: "Dynatrace, Grafana, Prometheus, Datadog, New Relic.",            icon: SignalIcon,            tone: "text-cyan-300" },
   logging:          { label: "Logging",               description: "Splunk + cloud-native log streams.",                              icon: DocumentTextIcon,      tone: "text-cyan-300" },
   security_posture: { label: "Security posture",      description: "Wiz, Snyk, Prisma Cloud, CrowdStrike.",                           icon: ShieldCheckIcon,       tone: "text-emerald-300" },
-  repository:       { label: "Source control",        description: "GitHub, GitLab.",                                                  icon: CodeBracketIcon,       tone: "text-violet-300" },
-  ci_cd:            { label: "CI/CD",                 description: "Azure DevOps, Jenkins.",                                          icon: PuzzlePieceIcon,       tone: "text-violet-300" },
-  iac:              { label: "Infrastructure-as-code", description: "Terraform.",                                                      icon: ServerStackIcon,       tone: "text-violet-300" },
+  repository:       { label: "Source control",        description: "GitHub, GitLab.",                                                  icon: CodeBracketIcon,       tone: "text-orange-300" },
+  ci_cd:            { label: "CI/CD",                 description: "Azure DevOps, Jenkins.",                                          icon: PuzzlePieceIcon,       tone: "text-orange-300" },
+  iac:              { label: "Infrastructure-as-code", description: "Terraform.",                                                      icon: ServerStackIcon,       tone: "text-orange-300" },
   incident:         { label: "Incident response",     description: "PagerDuty, Opsgenie.",                                            icon: BellAlertIcon,         tone: "text-rose-300" },
-  ticketing:        { label: "Ticketing / ITSM",      description: "Jira, Linear, ServiceNow.",                                       icon: PuzzlePieceIcon,       tone: "text-fuchsia-300" },
-  messaging:        { label: "Messaging",             description: "Slack, Microsoft Teams.",                                         icon: ChatBubbleLeftRightIcon, tone: "text-fuchsia-300" },
+  ticketing:        { label: "Ticketing / ITSM",      description: "Jira, Linear, ServiceNow.",                                       icon: PuzzlePieceIcon,       tone: "text-amber-300" },
+  messaging:        { label: "Messaging",             description: "Slack, Microsoft Teams.",                                         icon: ChatBubbleLeftRightIcon, tone: "text-amber-300" },
   database:         { label: "Databases",             description: "Postgres, MySQL, Mongo, Redis — schema + slow-query analysis.",   icon: CircleStackIcon,        tone: "text-blue-300" },
   container:        { label: "Containers",            description: "Kubernetes, Docker.",                                              icon: ServerStackIcon,        tone: "text-blue-300" },
   edge:             { label: "Edge / DNS",            description: "Cloudflare-style edge + DNS connectors.",                          icon: SignalIcon,             tone: "text-cyan-300" },
-  desktop:          { label: "Desktop runtime",        description: "Pair our macOS / Win / Linux app for local execution.",          icon: ComputerDesktopIcon,    tone: "text-violet-300" },
+  desktop:          { label: "Desktop runtime",        description: "Pair our macOS / Win / Linux app for local execution.",          icon: ComputerDesktopIcon,    tone: "text-orange-300" },
   audit:            { label: "Audit + export",        description: "SIEM webhook + JSON/CSV/NDJSON exports of the audit trail.",      icon: DocumentTextIcon,       tone: "text-zinc-300" },
   identity:         { label: "Identity",              description: "SSO + SCIM — Okta, Auth0, Microsoft Entra (planned).",            icon: KeyIcon,                tone: "text-emerald-300" },
 };
@@ -128,10 +128,10 @@ export default function ConnectorStorePage() {
         })}
       </div>
 
-      <section className="mt-12 rounded-2xl border border-violet-500/15 bg-white/[0.015] p-5 flex items-start gap-3">
-        <SparklesIcon className="h-5 w-5 text-violet-300 mt-0.5 shrink-0" />
+      <section className="mt-12 rounded-2xl border border-orange-500/15 bg-white/[0.015] p-5 flex items-start gap-3">
+        <SparklesIcon className="h-5 w-5 text-orange-300 mt-0.5 shrink-0" />
         <div>
-          <p className="text-[13px] font-semibold text-violet-100 leading-snug">Don't see what you need?</p>
+          <p className="text-[13px] font-semibold text-orange-100 leading-snug">Don't see what you need?</p>
           <p className="text-[12px] text-zinc-300 mt-1 leading-relaxed">
             Tell us which connector to ship next.
             We prioritize the registry based on customer demand — every request joins the public roadmap with an ETA. The native ingestion path (HTTP pinger, webhook ingest, desktop agent) also lets you wire anything that speaks HTTP without waiting on a dedicated connector.
@@ -177,7 +177,7 @@ function ConnectorCard({ record }: { record: ConnectorRecord }) {
         {one.ready ? (
           <Link
             href={record.setupRoute ?? "/dashboard/connectors"}
-            className="inline-flex items-center gap-1.5 text-[12px] font-medium px-3 py-1.5 rounded-lg bg-violet-500/15 text-violet-100 border border-white/[0.12] hover:bg-violet-500/25 transition"
+            className="inline-flex items-center gap-1.5 text-[12px] font-medium px-3 py-1.5 rounded-lg bg-orange-500/15 text-orange-100 border border-white/[0.12] hover:bg-orange-500/25 transition"
           >
             <CheckCircleIcon className="h-3.5 w-3.5" />
             {one.buttonLabel}

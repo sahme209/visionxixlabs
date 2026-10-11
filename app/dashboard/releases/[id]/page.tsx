@@ -414,7 +414,7 @@ function LifecycleControls({ releaseId, currentStatus }: { releaseId: string; cu
   const busy = state.kind === "submitting";
   const buttons: Array<{ action: LifecycleAction; label: string; tone: string }> = [];
   if (currentStatus === "draft") {
-    buttons.push({ action: "finalize_scope", label: "Finalize scope", tone: "border-violet-500/40 bg-violet-500/[0.12] text-violet-100" });
+    buttons.push({ action: "finalize_scope", label: "Finalize scope", tone: "border-orange-500/40 bg-orange-500/[0.12] text-orange-100" });
   }
   if (currentStatus === "ready") {
     buttons.push({ action: "start_deploy", label: "Start deploy", tone: "border-emerald-500/40 bg-emerald-500/[0.12] text-emerald-100" });

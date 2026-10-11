@@ -50,7 +50,7 @@ export function SecurityAccessSection({
         </div>
         <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-5">
           <div className="flex items-center gap-2 mb-3">
-            <ShieldCheckIcon className="h-5 w-5 text-violet-400" aria-hidden />
+            <ShieldCheckIcon className="h-5 w-5 text-orange-400" aria-hidden />
             <h3 className="text-sm font-semibold text-zinc-300 uppercase tracking-wide">
               We operate using
             </h3>
@@ -58,7 +58,7 @@ export function SecurityAccessSection({
           <ul className="space-y-1.5 text-sm text-zinc-400">
             {weOperateUsing.map((line) => (
               <li key={line} className="flex items-start gap-2">
-                <span className="text-indigo-500 mt-0.5 shrink-0">•</span>
+                <span className="text-zinc-500 mt-0.5 shrink-0">•</span>
                 <span>{line}</span>
               </li>
             ))}
@@ -86,7 +86,7 @@ export function SecurityAccessSection({
               <ul className="space-y-1.5 text-sm text-zinc-400">
                 {block.items.map((item) => (
                   <li key={item} className="flex items-start gap-2">
-                    <span className="text-indigo-500 mt-0.5 shrink-0">•</span>
+                    <span className="text-zinc-500 mt-0.5 shrink-0">•</span>
                     <span>{item}</span>
                   </li>
                 ))}
