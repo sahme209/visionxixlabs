@@ -26,7 +26,10 @@ export type DeploymentQuotaDecision =
 
 export function billingTierToPublicPlan(tier: string | undefined, status: string | undefined): PublicPlanId {
   if (status !== "active") return "free";
-  if (tier === "growth") return "pro";
+  // Both legacy paid self-service tiers become Pro. This compatibility
+  // mapping preserves paid access while Stripe subscriptions are reconciled;
+  // it does not mutate or activate any subscription.
+  if (tier === "starter" || tier === "growth") return "pro";
   if (tier === "enterprise") return "enterprise";
   return "free";
 }
