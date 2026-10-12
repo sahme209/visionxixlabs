@@ -16,7 +16,7 @@ The repository currently contains 336 App Router `page.tsx` entries. The product
 | Dashboard | 227 | Redirected legacy browser surfaces | Excluded from visual redesign: `proxy.ts` redirects every browser request to `/download`, so these files are not a customer-facing product surface |
 | Operator | 2 | Redirected legacy browser surfaces | Same redirect boundary as dashboard |
 | Demonstrations | 3 | Public isolated simulation | Landing rebuilt around the five-chapter cinematic tour; scenario pages under review |
-| Other public/companion routes | 38 | Public, legal, support, download, and pairing | Palette migrated; inaccurate cloud-consulting and autonomous-operation claims removed from reviewed routes |
+| Other public/companion routes | 38 | Public, legal, support, download, and pairing | Palette migrated; legacy consulting funnels now resolve to the canonical product, integration, security, and demonstration journeys |
 | **Total** | **336** |  |  |
 
 ## Public journey review
@@ -53,6 +53,10 @@ The repository currently contains 336 App Router `page.tsx` entries. The product
 | `/docs/execution-plans`, `/docs/audit-logs` | `/docs/approval-workflow`, `/docs/security-model` | Consolidated on the real proposal, approval, execution, and audit model |
 | `/docs/best-practices`, `/docs/troubleshooting` | `/docs/quickstart-checklist`, `/docs/integration-setup` | Replaced generic guidance with supported click-first setup and recovery |
 | `/docs/source-modes` | `/docs/security-model` | Removed legacy product vocabulary that did not map to the desktop app |
+| `/services` | `/product` | Retired the legacy consulting engagement catalog in favor of the self-service product |
+| `/cloud-security` | `/security` | Replaced a sales-led audit offer with the verified product security boundary |
+| `/cloud-solutions/**` | `/integrations` | Removed unverified multi-cloud service packages; the integration page now states each provider's real availability |
+| `/case-studies` | `/demo` | Replaced representative consulting claims with clearly labeled, interactive product simulations |
 
 ## Billing reconciliation boundary
 

@@ -9,6 +9,7 @@ import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import { createHmac } from "node:crypto";
 import {
   describeStripeStatus,
+  createBillingPortalSession,
   createCheckoutSession,
   isStripeConfigured,
   isStripeWebhookConfigured,
@@ -89,6 +90,16 @@ describe("Stripe env detection", () => {
       seatCount: 2,
       successUrl: "https://example.com/account?billing=success",
       cancelUrl: "https://example.com/plans?checkout=canceled",
+    });
+    expect(result).toEqual({ ok: false, reason: "Live billing has not been explicitly approved." });
+  });
+
+  it("keeps the billing portal behind the same live-mode approval lock", async () => {
+    process.env.STRIPE_SECRET_KEY = "sk_live_xxx";
+    process.env.AXIOM_STRIPE_MODE = "live";
+    const result = await createBillingPortalSession({
+      customerId: "cus_1",
+      returnUrl: "https://example.com/account?billing=return",
     });
     expect(result).toEqual({ ok: false, reason: "Live billing has not been explicitly approved." });
   });

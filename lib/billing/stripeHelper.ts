@@ -207,8 +207,10 @@ export async function createBillingPortalSession(input: PortalSessionInput): Pro
   if (!isStripeConfigured()) {
     return { ok: false, reason: "STRIPE_SECRET_KEY is not set." };
   }
+  const modeFailure = checkoutModeFailure();
+  if (modeFailure) return { ok: false, reason: modeFailure };
   if (!input.customerId) {
-    return { ok: false, reason: "Stripe customer id missing — operator must complete checkout first." };
+    return { ok: false, reason: "Stripe customer id missing — complete checkout first." };
   }
 
   type StripePortalCtor = new (key: string, opts?: unknown) => {

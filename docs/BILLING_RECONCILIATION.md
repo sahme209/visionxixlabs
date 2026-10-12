@@ -13,6 +13,7 @@ Status: review-only. Self-service checkout must remain disabled until every acti
 | Legacy feature catalog | `lib/billing/tierCatalog.ts` | Used by existing platform limits | Replace with organization entitlements through an explicit migration |
 | Legacy pricing registry | `lib/billing/planRegistry.ts` | Internal historical pricing and AI limits | Do not expose as the new public pricing model |
 | Checkout | `POST /api/billing/checkout-session`; old URL is a code alias | Disabled by default | Organization owner/admin only; accepted seats are counted server-side; requires explicit activation |
+| Billing portal | `POST /api/billing/portal-session`; old URL is a code alias | Disabled by default | Organization owner/admin only; resolves the customer from `TenantBillingPlan` and returns to `/account` |
 
 ## Proposed public contract
 
