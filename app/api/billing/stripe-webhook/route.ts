@@ -83,21 +83,6 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  // Idempotency guard — bail when we've already processed this event id.
-  if (event.id) {
-    try {
-      const existing = await prisma.tenantBillingPlan.findFirst({
-        where: { lastStripeEventId: event.id },
-        select: { organizationId: true },
-      });
-      if (existing) {
-        return NextResponse.json({ ok: true, replay: true }, { status: 200 });
-      }
-    } catch {
-      // Fall through — duplicate detection is best-effort.
-    }
-  }
-
   const obj = event.data?.object;
   const organizationId = obj?.metadata?.organizationId;
   const planId = obj?.metadata?.planId;
@@ -111,6 +96,70 @@ export async function POST(req: NextRequest) {
     // Checkout completion is not entitlement authority. Stripe's signed
     // subscription lifecycle event carries the authoritative status.
     return NextResponse.json({ ok: true, ignored: "awaiting_subscription_event" }, { status: 200 });
+  }
+
+  if (!event.id || !obj?.id || !obj.customer) {
+    return NextResponse.json(
+      {
+        ok: false,
+        error: {
+          code: "stripe.event_incomplete",
+          userMessage: "The signed subscription event is missing its event, subscription, or customer identifier.",
+        },
+        meta: { correlationId, generatedAt: new Date().toISOString() },
+      },
+      { status: 400 },
+    );
+  }
+
+  try {
+    const existing = await prisma.tenantBillingPlan.findFirst({
+      where: { lastStripeEventId: event.id },
+      select: { organizationId: true },
+    });
+    if (existing) {
+      return NextResponse.json({ ok: true, replay: true }, { status: 200 });
+    }
+
+    // A Stripe customer or subscription is authority for exactly one Axiom
+    // workspace. Never let copied metadata move that authority silently.
+    const ownershipConflict = await prisma.tenantBillingPlan.findFirst({
+      where: {
+        organizationId: { not: organizationId },
+        OR: [
+          { stripeCustomerId: obj.customer },
+          { stripeSubscriptionId: obj.id },
+        ],
+      },
+      select: { organizationId: true },
+    });
+    if (ownershipConflict) {
+      return NextResponse.json(
+        {
+          ok: false,
+          error: {
+            code: "stripe.ownership_conflict",
+            userMessage: "This Stripe customer or subscription is already assigned to another workspace.",
+          },
+          meta: { correlationId, generatedAt: new Date().toISOString() },
+        },
+        { status: 409 },
+      );
+    }
+  } catch {
+    // Entitlements must not change when replay or ownership checks are
+    // unavailable. Stripe will retry the signed event later.
+    return NextResponse.json(
+      {
+        ok: false,
+        error: {
+          code: "billing.verification_unavailable",
+          userMessage: "Billing ownership could not be verified. The event was not applied.",
+        },
+        meta: { correlationId, generatedAt: new Date().toISOString() },
+      },
+      { status: 503 },
+    );
   }
 
   const tier = legacyEntitlementTierForPublicPlan(planId);
@@ -128,10 +177,10 @@ export async function POST(req: NextRequest) {
       status,
       trialEndsAt: null,
       currentPeriodEndsAt,
-      stripeCustomerId: obj?.customer ?? null,
-      stripeSubscriptionId: obj?.id ?? null,
-      cancelAtPeriodEnd: obj?.cancel_at_period_end ?? false,
-      lastStripeEventId: event.id ?? null,
+      stripeCustomerId: obj.customer,
+      stripeSubscriptionId: obj.id,
+      cancelAtPeriodEnd: obj.cancel_at_period_end ?? false,
+      lastStripeEventId: event.id,
     });
     return NextResponse.json({ ok: true }, { status: 200 });
   } catch (err) {

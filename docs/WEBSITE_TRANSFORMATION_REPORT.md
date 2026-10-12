@@ -80,7 +80,7 @@ The supplied archive contains 25 Axiom product screenshots. Representative Agent
 | Authenticated companion route smoke test | `/account/help` requires a production `NEXTAUTH_SECRET`; the local server returned 500 because that secret is intentionally unavailable in this sandbox |
 | Representative product-reference review | Complete for supplied Agent, integration, and Airflow screens |
 | New website desktop/mobile captures | Pending; local Chromium cannot create Mach ports in the current sandbox |
-| Vercel deployment health | Preview deployment `dpl_7rKaTYXcMbGWVRcfANEHrKKaZUtx` fails before build with `BUILD_FAILED: Resource provisioning failed` and emits no build events. The same pattern affects recent feature-branch previews while their merged `main` commits deploy successfully, so this is isolated to Vercel preview provisioning rather than the application build. No redeploy or production action was taken. |
+| Vercel deployment health | Latest preview `dpl_9sSJf28Bs2jeR5btwCc21cAjtxgi` received commit `6e6af4e2` but fails before build with `BUILD_FAILED: Resource provisioning failed` and emits zero build events. All nine recent deployments for this branch show the same platform-level error, while GitHub typecheck/tests pass. No retry, redeploy, configuration mutation, or production action was taken. |
 
 ## Completion rule
 

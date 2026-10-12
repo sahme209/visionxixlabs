@@ -8,7 +8,7 @@ Status: review-only. Self-service checkout must remain disabled until every acti
 |---|---|---|---|
 | Customer-facing proposal | `lib/billing/publicPlanCatalog.ts` | Display only | Free, Pro, and Enterprise remain a proposal until activation |
 | Organization subscription | `TenantBillingPlan` through `lib/billing/tenantBillingStore.ts` | Preferred commercial authority | Keep as the single organization-level source of truth |
-| Organization webhook | `POST /api/billing/stripe-webhook` | Signature-verified, metadata-scoped, replay guarded | Canonical Free/Pro/Enterprise webhook; only subscription lifecycle events grant or remove entitlements |
+| Organization webhook | `POST /api/billing/stripe-webhook` | Signature-verified, metadata-scoped, replay guarded, and fail-closed when ownership cannot be checked | Canonical Free/Pro/Enterprise webhook; only complete subscription lifecycle events grant or remove entitlements, and Stripe customer/subscription ownership cannot move between workspaces |
 | Legacy user subscription | `User.plan` through `POST /api/webhooks/stripe` | Legacy compatibility path while self-service billing is off | Returns `410` once the new billing flag is enabled so both authorities cannot write concurrently |
 | Legacy feature catalog | `lib/billing/tierCatalog.ts` | Used by existing platform limits | Replace with organization entitlements through an explicit migration |
 | Legacy pricing registry | `lib/billing/planRegistry.ts` | Internal historical pricing and AI limits | Do not expose as the new public pricing model |
@@ -70,5 +70,7 @@ and server-counted seats. A successful redirect never grants access. The signed
 - A marketing page never grants an entitlement.
 - A checkout redirect never grants an entitlement.
 - Unknown plan, price, organization, or webhook metadata is ignored or rejected rather than guessed.
+- A subscription event cannot mutate access without event, customer, and subscription identifiers or when replay/ownership storage is unavailable.
+- A Stripe customer or subscription already assigned to one workspace cannot be reassigned through webhook metadata.
 - Fundamental approval, audit, and production-safety controls are never removed because of plan state.
 - Existing subscriptions are preserved until their migration is individually reconciled.
