@@ -208,14 +208,14 @@ export function DocFeedback() {
   return (
     <div className="mt-8 rounded-xl border border-white/[0.06] bg-white/[0.02] p-4 flex items-center justify-between flex-wrap gap-3">
       <div>
-        <p className="text-sm font-semibold text-white mb-0.5">Need a human?</p>
-        <p className="text-xs text-zinc-500">Most flows are documented — but we&apos;ll help if anything is unclear.</p>
+        <p className="text-sm font-semibold text-white mb-0.5">Still blocked?</p>
+        <p className="text-xs text-zinc-500">Include the failed step and error. Never send a password, token, or cloud secret.</p>
       </div>
       <Link
         href="/contact"
         className="inline-flex items-center gap-2 px-4 py-2 border border-white/[0.1] text-zinc-300 rounded-full text-xs font-semibold hover:bg-white/5 hover:border-white/20 transition-colors"
       >
-        Talk to Vision XIX Labs
+        Open support request
         <ArrowRightIcon className="h-3.5 w-3.5" />
       </Link>
     </div>

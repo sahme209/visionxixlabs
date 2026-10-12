@@ -28,7 +28,7 @@ const columns = [
       ["About", "/axiom"],
       ["Principles", "/principles"],
       ["Case studies", "/case-studies"],
-      ["Contact", "/contact"],
+      ["Support", "/contact"],
     ],
   },
   {

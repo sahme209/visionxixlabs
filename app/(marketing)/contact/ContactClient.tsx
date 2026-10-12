@@ -1,12 +1,11 @@
 "use client";
 
 /**
- * /contact — Axiom-flavored lead capture.
+ * /contact — support and account escalation.
  *
  * Submits to /api/contact (existing handler). The form mirrors the
- * questions a serious buyer answers in the first call: company,
- * cloud surface, primary concern, ideal start. Closed-union selects
- * keep the payload predictable for downstream tagging.
+ * The supported journey stays self-service. This form is the recovery path
+ * for a real product, account, download, security, or press issue.
  */
 
 import { motion, AnimatePresence } from "framer-motion";
@@ -14,8 +13,6 @@ import Link from "next/link";
 import { useState, type FormEvent } from "react";
 
 type Topic = "product" | "download" | "security" | "support" | "press";
-type CloudProvider = "aws" | "azure" | "gcp" | "multi" | "none";
-type CompanySize = "1-10" | "11-50" | "51-200" | "201-1k" | "1k+";
 
 const TOPICS: ReadonlyArray<{ id: Topic; label: string; hint: string }> = [
   { id: "product",    label: "Product question",   hint: "Ask how the installed application supports your deployment workflow." },
@@ -25,29 +22,10 @@ const TOPICS: ReadonlyArray<{ id: Topic; label: string; hint: string }> = [
   { id: "press",      label: "Press / partners",   hint: "Coverage, integration, or partnership." },
 ];
 
-const CLOUD_OPTIONS: ReadonlyArray<{ id: CloudProvider; label: string }> = [
-  { id: "aws",   label: "AWS" },
-  { id: "azure", label: "Azure" },
-  { id: "gcp",   label: "GCP" },
-  { id: "multi", label: "Multi-cloud" },
-  { id: "none",  label: "Not yet on a cloud" },
-];
-
-const COMPANY_SIZE_OPTIONS: ReadonlyArray<{ id: CompanySize; label: string }> = [
-  { id: "1-10",    label: "1–10" },
-  { id: "11-50",   label: "11–50" },
-  { id: "51-200",  label: "51–200" },
-  { id: "201-1k",  label: "201–1 000" },
-  { id: "1k+",     label: "1 000+" },
-];
-
 interface FormState {
   name: string;
   email: string;
-  company: string;
   topic: Topic;
-  cloudProvider: CloudProvider;
-  companySize: CompanySize;
   message: string;
   website: string;
 }
@@ -56,12 +34,9 @@ function initialForm(intent?: "production-access"): FormState {
   return {
     name: "",
     email: "",
-    company: "",
     topic: "product",
-    cloudProvider: "aws",
-    companySize: "11-50",
     message: intent === "production-access"
-      ? "I would like to scope paid production access for our Axiom Agent workspace."
+      ? "I need help with production access for our Axiom Agent workspace."
       : "",
     website: "",
   };
@@ -115,12 +90,6 @@ export function ContactClient({ intent }: { intent?: "production-access" }) {
 
   return (
     <div className="relative">
-      {/* Restrained Axiom atmosphere */}
-      <div aria-hidden className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
-        <div className="ambient-drift absolute -top-1/4 left-1/4 h-[60vh] w-[50vw] rounded-full bg-brand-orange/[0.08] blur-[140px]" />
-        <div className="ambient-drift absolute top-[15%] right-[5%] h-[50vh] w-[40vw] rounded-full bg-brand-coral/[0.06] blur-[130px]" style={{ animationDelay: "-8s" }} />
-      </div>
-
       {/* ===== HERO ===== */}
       <section className="relative z-10 mx-auto max-w-3xl px-6 md:px-10 pt-24 pb-8">
         <motion.p
@@ -128,9 +97,9 @@ export function ContactClient({ intent }: { intent?: "production-access" }) {
           animate={{ opacity: 1, y: 0 }}
           className="mono-label inline-flex items-center gap-3"
         >
-          <span className="text-brand-coral/90 tabular-nums">CT</span>
-          <span className="h-px w-6 bg-gradient-to-r from-brand-coral/60 to-transparent" />
-          One operator · one form
+          <span className="text-[#ff783d] tabular-nums">Support</span>
+          <span className="h-px w-6 bg-[#f54e00]/60" />
+          A recovery path when you need it
         </motion.p>
         <motion.h1
           initial={{ opacity: 0, y: 16 }}
@@ -138,11 +107,7 @@ export function ContactClient({ intent }: { intent?: "production-access" }) {
           transition={{ delay: 0.1 }}
           className="font-display mt-5 text-4xl md:text-5xl font-bold leading-[1.04]"
         >
-          Contact{" "}
-          <span className="relative inline-block">
-            Vision XIX Labs.
-            <span aria-hidden className="absolute left-0 -bottom-0.5 h-[2px] w-full rounded-full bg-gradient-to-r from-brand-coral via-amber-400/70 to-transparent" />
-          </span>
+          Help when self-service isn&apos;t enough.
         </motion.h1>
         <motion.p
           initial={{ opacity: 0, y: 12 }}
@@ -150,8 +115,7 @@ export function ContactClient({ intent }: { intent?: "production-access" }) {
           transition={{ delay: 0.2 }}
           className="mt-5 max-w-2xl text-[15px] text-zinc-400 leading-relaxed"
         >
-          Ask about the installed application, a verified download, connector setup,
-          security controls, or an existing installation. You can also email{" "}
+          Documentation and in-product recovery should solve supported workflows first. For a genuine product, account, download, or security issue, send it here or email{" "}
           <a href="mailto:support@visionxixlabs.com" className="text-orange-300 hover:text-orange-200 underline underline-offset-4">support@visionxixlabs.com</a>.
         </motion.p>
       </section>
@@ -182,7 +146,7 @@ export function ContactClient({ intent }: { intent?: "production-access" }) {
               <div className="mt-5 flex flex-wrap items-center gap-2">
                 <Link
                   href="/#capabilities"
-                  className="inline-flex items-center gap-2 rounded-full bg-zinc-500 px-4 py-2 text-[12.5px] font-medium text-white shadow-[0_0_20px_rgba(245,78,0,0.45)] hover:bg-zinc-400 transition"
+                  className="inline-flex items-center gap-2 rounded-full bg-[#f54e00] px-4 py-2 text-[12.5px] font-medium text-white hover:bg-[#ff641f] transition"
                 >
                   Review capabilities
                 </Link>
@@ -230,18 +194,6 @@ export function ContactClient({ intent }: { intent?: "production-access" }) {
                 </Field>
               </div>
 
-              <Field label="Company" htmlFor="company">
-                <input
-                  id="company"
-                  type="text"
-                  autoComplete="organization"
-                  value={form.company}
-                  maxLength={240}
-                  onChange={(e) => update("company", e.target.value)}
-                  className="form-input"
-                />
-              </Field>
-
               <div>
                 <p className="text-[11px] font-mono uppercase tracking-widest text-zinc-500 mb-2">
                   What&apos;s the reason?
@@ -268,55 +220,7 @@ export function ContactClient({ intent }: { intent?: "production-access" }) {
                 </p>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <p className="text-[11px] font-mono uppercase tracking-widest text-zinc-500 mb-2">
-                    Cloud surface
-                  </p>
-                  <div className="flex flex-wrap gap-1.5">
-                    {CLOUD_OPTIONS.map((o) => (
-                      <button
-                        key={o.id}
-                        type="button"
-                        onClick={() => update("cloudProvider", o.id)}
-                        className={[
-                          "rounded-full px-3 py-1 text-[11.5px] font-medium transition border",
-                          form.cloudProvider === o.id
-                            ? "bg-orange-500/15 border-orange-500/40 text-orange-200"
-                            : "bg-white/[0.02] border-white/[0.06] text-zinc-400 hover:text-white",
-                        ].join(" ")}
-                      >
-                        {o.label}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                <div>
-                  <p className="text-[11px] font-mono uppercase tracking-widest text-zinc-500 mb-2">
-                    Company size
-                  </p>
-                  <div className="flex flex-wrap gap-1.5">
-                    {COMPANY_SIZE_OPTIONS.map((o) => (
-                      <button
-                        key={o.id}
-                        type="button"
-                        onClick={() => update("companySize", o.id)}
-                        className={[
-                          "rounded-full px-3 py-1 text-[11.5px] font-medium transition border",
-                          form.companySize === o.id
-                            ? "bg-amber-500/15 border-amber-500/40 text-amber-200"
-                            : "bg-white/[0.02] border-white/[0.06] text-zinc-400 hover:text-white",
-                        ].join(" ")}
-                      >
-                        {o.label}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              </div>
-
-              <Field label="Anything else?" htmlFor="message">
+              <Field label="What went wrong?" htmlFor="message">
                 <textarea
                   id="message"
                   rows={4}
@@ -325,7 +229,7 @@ export function ContactClient({ intent }: { intent?: "production-access" }) {
                   maxLength={8000}
                   onChange={(e) => update("message", e.target.value)}
                   className="form-input resize-none"
-                  placeholder="What's the operator surface you're trying to run? What proposals would you want staged first?"
+                  placeholder="Tell us the step you were on, what you expected, and the error or behavior you saw. Never include a password, token, or cloud secret."
                 />
               </Field>
 
@@ -344,7 +248,7 @@ export function ContactClient({ intent }: { intent?: "production-access" }) {
                 <button
                   type="submit"
                   disabled={state.kind === "submitting"}
-                  className="inline-flex items-center gap-2 rounded-full bg-zinc-500 px-5 py-2.5 text-[13px] font-medium text-white shadow-[0_0_20px_rgba(245,78,0,0.45)] hover:bg-zinc-400 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="inline-flex items-center gap-2 rounded-full bg-[#f54e00] px-5 py-2.5 text-[13px] font-medium text-white hover:bg-[#ff641f] transition disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {state.kind === "submitting" ? "Sending…" : "Send →"}
                 </button>

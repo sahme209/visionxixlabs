@@ -260,10 +260,10 @@ export function FaqClient() {
         </p>
         <div className="mt-6 flex items-center justify-center gap-2">
           <Link
-            href="/contact"
-            className="inline-flex items-center gap-2 rounded-full bg-zinc-500 px-4 py-2 text-[12.5px] font-medium text-white shadow-[0_0_20px_rgba(245,78,0,0.45)] hover:bg-zinc-400 transition"
+            href="/docs/integration-setup"
+            className="inline-flex items-center gap-2 rounded-full bg-[#f54e00] px-4 py-2 text-[12.5px] font-medium text-white hover:bg-[#ff641f] transition"
           >
-            Book a call
+            Open setup guide
           </Link>
           <Link
             href="/compare"

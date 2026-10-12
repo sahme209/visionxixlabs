@@ -29,7 +29,7 @@ The repository currently contains 336 App Router `page.tsx` entries. The product
 | Start | `/download`, `/docs/desktop-install`, `/desktop/connect` | Desktop-first pairing preserved; public CTAs now lead to download instead of an invalid unpaired signup |
 | Buy | `/plans`, `/pricing`, `/operator/pricing` | Public Free/Pro/Enterprise proposal added; checkout remains disabled until legacy registries, organization authority, and Stripe test-mode mappings are reconciled |
 | Operate | Desktop app + `/api/desktop/**` | Intentionally not moved into the browser |
-| Support | `/account/help/**`, `/docs/integration-setup`, `/status`, `/contact` | Available; obsolete troubleshooting page redirects to the supported integration guide |
+| Support | `/account/help/**`, `/docs/integration-setup`, `/status`, `/contact` | Self-service first; obsolete troubleshooting redirects to the setup guide, while `/contact` is a minimal escalation path for genuine unresolved issues rather than a sales funnel |
 | Trust | `/security`, `/privacy`, `/terms`, `/trust`, `/docs/permissions-model` | Available; legal and security behavior preserved |
 
 ## Design-system controls
