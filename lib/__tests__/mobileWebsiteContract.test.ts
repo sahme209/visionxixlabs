@@ -36,7 +36,7 @@ describe("mobile website contract", () => {
     expect(navigation).toContain('{ href: "/integrations", label: "Integrations" }');
     expect(navigation).toContain('{ href: "/security", label: "Security" }');
     expect(navigation).toContain('{ href: "/status", label: "Status" }');
-    expect(navigation).toContain('{ href: "/contact", label: "Contact" }');
+    expect(navigation).toContain('{ href: "/contact", label: "Support" }');
     expect(navigation).toContain('document.body.style.overflow = "hidden"');
     expect(navigation).toContain('document.documentElement.style.overflow = "hidden"');
     expect(navigation).toContain('h-16');
