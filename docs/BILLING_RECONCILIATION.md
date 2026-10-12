@@ -15,6 +15,7 @@ Status: review-only. Self-service checkout must remain disabled until every acti
 | Checkout | `POST /api/billing/checkout-session`; old URL is a code alias | Disabled by default | Organization owner/admin only; accepted seats are counted server-side; requires explicit activation |
 | Billing portal | `POST /api/billing/portal-session`; old URL is a code alias | Disabled by default | Organization owner/admin only; resolves the customer from `TenantBillingPlan` and returns to `/account` |
 | Public plan selection | `/plans` | Preview while billing is disabled | Monthly/annual selection is click-driven; Free goes directly to download, while approved paid checkout uses the canonical organization endpoint only after the activation flag is enabled |
+| Account plan management | `/account` | Reads fail-closed organization plan state | Shows the authoritative plan/status to members; an owner/admin can open the customer-scoped Stripe portal only after billing is enabled and a verified customer exists |
 
 ## Proposed public contract
 
