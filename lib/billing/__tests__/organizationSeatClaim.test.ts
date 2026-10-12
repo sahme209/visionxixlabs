@@ -29,6 +29,11 @@ describe("claimOrganizationSeat", () => {
     await expect(claimOrganizationSeat(repo, { organizationId: "org-1", userId: "user-5", role: "operator" })).resolves.toMatchObject({ ok: true, used: 5, limit: 5 });
   });
 
+  it("preserves paid legacy Starter subscriptions as Pro seats", async () => {
+    const { repo } = repository({ used: 2, tier: "starter", seats: 3 });
+    await expect(claimOrganizationSeat(repo, { organizationId: "org-1", userId: "user-3", role: "operator" })).resolves.toMatchObject({ ok: true, used: 3, limit: 3 });
+  });
+
   it("fails closed when a paid subscription has no seat quantity", async () => {
     const { repo } = repository({ used: 1, tier: "growth", seats: null });
     await expect(claimOrganizationSeat(repo, { organizationId: "org-1", userId: "user-2", role: "operator" })).resolves.toEqual({ ok: false, error: "seat_entitlement_unavailable" });

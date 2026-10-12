@@ -77,6 +77,9 @@ export async function readBillingPlan(organizationId: string): Promise<BillingPl
         stripeCustomerId: row.stripeCustomerId,
         stripeSubscriptionId: row.stripeSubscriptionId,
         cancelAtPeriodEnd: row.cancelAtPeriodEnd,
+        seatQuantity: typeof (row as unknown as { seatQuantity?: unknown }).seatQuantity === "number"
+          ? (row as unknown as { seatQuantity: number }).seatQuantity
+          : null,
       });
     }
   } catch {
