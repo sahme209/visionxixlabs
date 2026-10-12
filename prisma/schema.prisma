@@ -2043,6 +2043,8 @@ model TenantBillingPlan {
   currentPeriodEndsAt  DateTime?
   stripeCustomerId     String?
   stripeSubscriptionId String?
+  /// Authoritative recurring subscription quantity for paid per-seat plans.
+  seatQuantity          Int?
   cancelAtPeriodEnd    Boolean   @default(false)
   /// Last raw Stripe event id consumed by the webhook handler.
   /// Used for idempotency: re-receiving the same id is a no-op.
