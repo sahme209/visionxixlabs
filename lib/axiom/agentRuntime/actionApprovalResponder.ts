@@ -19,6 +19,7 @@ import { buildIdentityProviderCreateResponse, type IdentityProviderRepo } from "
 import { githubFileReviewFromArgs, githubFilesReviewFromArgs } from "@/lib/axiom/agentRuntime/proposalReview";
 import { serializeDeploymentExecution, type DeploymentExecutionRepo } from "@/lib/releaseops/deploymentExecutionResponder";
 import { evaluateDeploymentPolicy, type DeploymentPolicyRepo } from "@/lib/releaseops/deploymentPolicyGuard";
+import { checkDeploymentQuota, type DeploymentQuotaRepo } from "@/lib/billing/deploymentQuota";
 
 export interface ActionExecutionRepo {
   deploymentExecution?: DeploymentExecutionRepo["deploymentExecution"];
@@ -153,6 +154,8 @@ export async function executeApprovedAction(
       installationToken: token.token,
     });
     if (!policy.ok) return { ok: false, error: policy.error };
+    const quota = await checkDeploymentQuota(repo as unknown as DeploymentQuotaRepo, organizationId);
+    if (!quota.allowed) return { ok: false, error: quota.reason };
     const result = await dispatchWorkflow({
       owner: parsed.owner, repo: parsed.repo, workflowFile: AWS_ECS_DEPLOY_WORKFLOW_FILENAME, ref: sourceRef,
       inputs: { role_arn: target.roleArn, region: target.region, cluster: target.ecsCluster, service: target.ecsService },

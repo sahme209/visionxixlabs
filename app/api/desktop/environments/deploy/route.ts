@@ -26,6 +26,7 @@ import { AWS_ECS_DEPLOY_WORKFLOW_FILENAME } from "@/lib/releaseops/awsEcsDeployW
 import { appendAuditEvent, type AuditEventRepo } from "@/lib/releaseops/auditEventResponder";
 import { serializeDeploymentExecution, type DeploymentExecutionRepo } from "@/lib/releaseops/deploymentExecutionResponder";
 import { evaluateDeploymentPolicy, type DeploymentPolicyRepo } from "@/lib/releaseops/deploymentPolicyGuard";
+import { checkDeploymentQuota, type DeploymentQuotaRepo } from "@/lib/billing/deploymentQuota";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -89,6 +90,11 @@ export async function POST(request: NextRequest): Promise<Response> {
   const target = await prisma.deploymentTarget.findUnique({ where: { environmentId } });
   if (!target || target.organizationId !== organizationId) {
     return NextResponse.json({ ok: false, error: "deployment_target_not_configured" }, { status: 409 });
+  }
+
+  const quota = await checkDeploymentQuota(prisma as unknown as DeploymentQuotaRepo, organizationId);
+  if (!quota.allowed) {
+    return NextResponse.json({ ok: false, error: quota.reason, quota }, { status: quota.reason === "deployment_quota_exhausted" ? 429 : 503 });
   }
 
   const tokenResult = await resolveTenantScopedToken(organizationId, repo);
