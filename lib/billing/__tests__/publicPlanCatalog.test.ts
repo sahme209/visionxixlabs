@@ -2,7 +2,11 @@ import { afterEach, describe, expect, it } from "vitest";
 import {
   COUNTED_DEPLOYMENT_DEFINITION,
   PUBLIC_PLAN_CATALOG,
+  isBillingInterval,
+  isPaidPublicPlanId,
   isSelfServiceBillingEnabled,
+  legacyEntitlementTierForPublicPlan,
+  stripePriceEnvKey,
 } from "@/lib/billing/publicPlanCatalog";
 
 describe("publicPlanCatalog", () => {
@@ -44,5 +48,20 @@ describe("publicPlanCatalog", () => {
 
   it("defines a counted deployment without counting retries", () => {
     expect(COUNTED_DEPLOYMENT_DEFINITION).toContain("successfully dispatched");
+  });
+
+  it("keeps paid checkout on the public Pro and Enterprise vocabulary", () => {
+    expect(isPaidPublicPlanId("pro")).toBe(true);
+    expect(isPaidPublicPlanId("enterprise")).toBe(true);
+    expect(isPaidPublicPlanId("growth")).toBe(false);
+    expect(isPaidPublicPlanId("free")).toBe(false);
+    expect(isBillingInterval("monthly")).toBe(true);
+    expect(isBillingInterval("annual")).toBe(true);
+    expect(stripePriceEnvKey("pro", "annual")).toBe("STRIPE_PRICE_PRO_ANNUAL");
+  });
+
+  it("isolates the temporary legacy entitlement mapping", () => {
+    expect(legacyEntitlementTierForPublicPlan("pro")).toBe("growth");
+    expect(legacyEntitlementTierForPublicPlan("enterprise")).toBe("enterprise");
   });
 });

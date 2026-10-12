@@ -24,7 +24,11 @@
 import "server-only";
 
 import { createHmac, timingSafeEqual } from "node:crypto";
-import type { BillingTier } from "./tierCatalog";
+import {
+  stripePriceEnvKey,
+  type BillingInterval,
+  type PaidPublicPlanId,
+} from "./publicPlanCatalog";
 
 export function isStripeConfigured(): boolean {
   return Boolean(process.env.STRIPE_SECRET_KEY?.trim());
@@ -37,26 +41,51 @@ export function isStripeWebhookConfigured(): boolean {
 export interface StripeStatus {
   configured: boolean;
   webhookConfigured: boolean;
-  /** Stripe Price ID for each tier when STRIPE_PRICE_<TIER> is set. */
-  pricedTiers: Partial<Record<BillingTier, string>>;
+  mode: "test" | "live" | "invalid";
+  liveBillingApproved: boolean;
+  pricedPlans: Partial<Record<PaidPublicPlanId, Partial<Record<BillingInterval, string>>>>;
   hint: string;
 }
 
 export function describeStripeStatus(): StripeStatus {
   const configured = isStripeConfigured();
   const webhookConfigured = isStripeWebhookConfigured();
-  const pricedTiers: Partial<Record<BillingTier, string>> = {};
-  for (const tier of ["starter", "growth", "enterprise"] as BillingTier[]) {
-    const envKey = `STRIPE_PRICE_${tier.toUpperCase()}`;
-    const v = process.env[envKey]?.trim();
-    if (v) pricedTiers[tier] = v;
+  const mode = resolveStripeMode();
+  const liveBillingApproved = process.env.AXIOM_LIVE_BILLING_APPROVED === "true";
+  const pricedPlans: StripeStatus["pricedPlans"] = {};
+  for (const planId of ["pro", "enterprise"] as PaidPublicPlanId[]) {
+    for (const interval of ["monthly", "annual"] as BillingInterval[]) {
+      const value = process.env[stripePriceEnvKey(planId, interval)]?.trim();
+      if (value) {
+        pricedPlans[planId] = { ...pricedPlans[planId], [interval]: value };
+      }
+    }
   }
   let hint = "";
   if (!configured) hint = "Set STRIPE_SECRET_KEY to enable checkout.";
   else if (!webhookConfigured) hint = "Set STRIPE_WEBHOOK_SECRET so webhook delivery can be signature-verified.";
-  else if (Object.keys(pricedTiers).length === 0) hint = "Configure STRIPE_PRICE_STARTER / STRIPE_PRICE_GROWTH / STRIPE_PRICE_ENTERPRISE.";
+  else if (mode === "invalid") hint = "Set AXIOM_STRIPE_MODE=test with an sk_test_ key before validating checkout.";
+  else if (mode === "live" && !liveBillingApproved) hint = "Live billing is locked until AXIOM_LIVE_BILLING_APPROVED=true is explicitly set.";
+  else if (Object.keys(pricedPlans).length === 0) hint = "Configure STRIPE_PRICE_PRO_MONTHLY and the other approved plan interval price ids.";
   else hint = "Stripe fully configured.";
-  return { configured, webhookConfigured, pricedTiers, hint };
+  return { configured, webhookConfigured, mode, liveBillingApproved, pricedPlans, hint };
+}
+
+function resolveStripeMode(): StripeStatus["mode"] {
+  const configuredMode = process.env.AXIOM_STRIPE_MODE?.trim().toLowerCase();
+  const key = process.env.STRIPE_SECRET_KEY?.trim() ?? "";
+  if (configuredMode === "test" && key.startsWith("sk_test_")) return "test";
+  if (configuredMode === "live" && key.startsWith("sk_live_")) return "live";
+  return "invalid";
+}
+
+function checkoutModeFailure(): string | null {
+  const mode = resolveStripeMode();
+  if (mode === "invalid") return "Stripe mode and secret key do not match a declared test or live configuration.";
+  if (mode === "live" && process.env.AXIOM_LIVE_BILLING_APPROVED !== "true") {
+    return "Live billing has not been explicitly approved.";
+  }
+  return null;
 }
 
 // ---------------------------------------------------------------------------
@@ -74,7 +103,9 @@ export interface CheckoutSessionResult {
 export interface CreateCheckoutInput {
   organizationId: string;
   email: string;
-  tier: BillingTier;
+  planId: PaidPublicPlanId;
+  billingInterval: BillingInterval;
+  seatCount: number;
   /** Where to send the customer after success. */
   successUrl: string;
   /** Where to send the customer after cancel. */
@@ -90,9 +121,15 @@ export async function createCheckoutSession(input: CreateCheckoutInput): Promise
   if (!isStripeConfigured()) {
     return { ok: false, reason: "STRIPE_SECRET_KEY is not set." };
   }
-  const priceId = process.env[`STRIPE_PRICE_${input.tier.toUpperCase()}`]?.trim();
+  const modeFailure = checkoutModeFailure();
+  if (modeFailure) return { ok: false, reason: modeFailure };
+  if (!Number.isSafeInteger(input.seatCount) || input.seatCount < 1) {
+    return { ok: false, reason: "seatCount must be a positive integer." };
+  }
+  const priceEnvKey = stripePriceEnvKey(input.planId, input.billingInterval);
+  const priceId = process.env[priceEnvKey]?.trim();
   if (!priceId) {
-    return { ok: false, reason: `STRIPE_PRICE_${input.tier.toUpperCase()} is not set.` };
+    return { ok: false, reason: `${priceEnvKey} is not set.` };
   }
 
   type StripeCheckoutCtor = new (key: string, opts?: unknown) => {
@@ -113,19 +150,23 @@ export async function createCheckoutSession(input: CreateCheckoutInput): Promise
     const stripe = new StripeCtor(process.env.STRIPE_SECRET_KEY!.trim(), { apiVersion: "2024-06-20" });
     const session = await stripe.checkout.sessions.create({
       mode: "subscription",
-      line_items: [{ price: priceId, quantity: 1 }],
+      line_items: [{ price: priceId, quantity: input.seatCount }],
       customer_email: input.email,
       client_reference_id: input.organizationId,
       success_url: input.successUrl,
       cancel_url: input.cancelUrl,
       metadata: {
         organizationId: input.organizationId,
-        tier: input.tier,
+        planId: input.planId,
+        billingInterval: input.billingInterval,
+        seatCount: String(input.seatCount),
       },
       subscription_data: {
         metadata: {
           organizationId: input.organizationId,
-          tier: input.tier,
+          planId: input.planId,
+          billingInterval: input.billingInterval,
+          seatCount: String(input.seatCount),
         },
       },
     });

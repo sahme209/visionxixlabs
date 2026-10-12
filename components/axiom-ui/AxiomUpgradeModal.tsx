@@ -100,7 +100,6 @@ export function AxiomUpgradeModal({
   open,
   onClose,
   trigger,
-  leadId,
   insightTitle,
 }: AxiomUpgradeModalProps) {
   const dialogRef = useRef<HTMLDialogElement>(null);
@@ -129,31 +128,29 @@ export function AxiomUpgradeModal({
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch("/api/billing/create-checkout-session", {
+      const res = await fetch("/api/billing/checkout-session", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          leadId: leadId ?? undefined,
-          tier: "pro",
-          sourcePage: `cloud-operator:${trigger}`,
+          planId: "pro",
+          billingInterval: "monthly",
         }),
       });
-      const data = await res.json();
-      if (data.url) {
-        window.location.href = data.url;
+      const payload = await res.json() as {
+        data?: { ok?: boolean; url?: string; reason?: string };
+        error?: { userMessage?: string };
+      };
+      if (payload.data?.ok && payload.data.url) {
+        window.location.href = payload.data.url;
         return;
       }
-      if (data.cta === "contact") {
-        window.location.href = `/contact?intent=upgrade&trigger=${trigger}`;
-        return;
-      }
-      setError(data.message || "Something went wrong. Try again.");
+      setError(payload.data?.reason || payload.error?.userMessage || "Checkout is not available yet.");
     } catch {
       setError("Connection error. Please try again.");
     } finally {
       setLoading(false);
     }
-  }, [leadId, trigger]);
+  }, []);
 
   const content = TRIGGER_CONTENT[trigger];
 

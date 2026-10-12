@@ -56,7 +56,7 @@ The repository currently contains 336 App Router `page.tsx` entries. The product
 
 ## Billing reconciliation boundary
 
-The proposed public catalog is centralized in `lib/billing/publicPlanCatalog.ts`. Both existing checkout entry points are fail-closed unless `AXIOM_SELF_SERVICE_BILLING_ENABLED=true`. Real charges remain disabled while the legacy plan registry, tier catalog, entitlement mapping, organization billing authority, and Stripe webhook model are reconciled and tested. `docs/BILLING_RECONCILIATION.md` records the current authorities, proposed contract, migration boundary, and approval-gated activation sequence.
+The proposed public catalog is centralized in `lib/billing/publicPlanCatalog.ts`. Both checkout URLs now execute one organization-scoped implementation and are fail-closed unless `AXIOM_SELF_SERVICE_BILLING_ENABLED=true`. Owner/admin authority, server-counted accepted seats, explicit monthly/annual price mappings, test/live key matching, and a separate live-billing approval lock are implemented. Real charges remain disabled while legacy entitlements, existing subscriptions, transactional quotas, and Stripe test-mode journeys are reconciled. `docs/BILLING_RECONCILIATION.md` records the exact boundary and activation sequence.
 
 ## Reference assets reviewed
 

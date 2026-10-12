@@ -1,4 +1,6 @@
 export type PublicPlanId = "free" | "pro" | "enterprise";
+export type PaidPublicPlanId = Exclude<PublicPlanId, "free">;
+export type BillingInterval = "monthly" | "annual";
 
 export interface PublicPlan {
   id: PublicPlanId;
@@ -82,6 +84,34 @@ export const PUBLIC_PLAN_CATALOG: readonly PublicPlan[] = [
  */
 export const COUNTED_DEPLOYMENT_DEFINITION =
   "One successfully dispatched approved deployment workflow for one environment.";
+
+const PUBLIC_PLAN_IDS = new Set<string>(PUBLIC_PLAN_CATALOG.map((plan) => plan.id));
+
+export function isPublicPlanId(value: string): value is PublicPlanId {
+  return PUBLIC_PLAN_IDS.has(value);
+}
+
+export function isPaidPublicPlanId(value: string): value is PaidPublicPlanId {
+  return value === "pro" || value === "enterprise";
+}
+
+export function isBillingInterval(value: string): value is BillingInterval {
+  return value === "monthly" || value === "annual";
+}
+
+export function stripePriceEnvKey(planId: PaidPublicPlanId, interval: BillingInterval): string {
+  return `STRIPE_PRICE_${planId.toUpperCase()}_${interval.toUpperCase()}`;
+}
+
+/**
+ * Temporary compatibility mapping for the existing TenantBillingPlan store.
+ * Public checkout and Stripe metadata use only Free/Pro/Enterprise. The
+ * legacy entitlement engine still calls its Pro-equivalent tier `growth`;
+ * this explicit boundary can be removed with the later database migration.
+ */
+export function legacyEntitlementTierForPublicPlan(planId: PaidPublicPlanId): "growth" | "enterprise" {
+  return planId === "pro" ? "growth" : "enterprise";
+}
 
 export function isSelfServiceBillingEnabled(): boolean {
   return process.env.AXIOM_SELF_SERVICE_BILLING_ENABLED === "true";

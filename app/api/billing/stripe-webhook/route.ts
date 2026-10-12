@@ -19,7 +19,12 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { verifyWebhookSignature, isStripeWebhookConfigured } from "@/lib/billing/stripeHelper";
 import { upsertBillingPlan } from "@/lib/billing/tenantBillingStore";
-import { isBillingTier, type BillingStatus, type BillingTier } from "@/lib/billing/tierCatalog";
+import type { BillingStatus } from "@/lib/billing/tierCatalog";
+import {
+  isPaidPublicPlanId,
+  isSelfServiceBillingEnabled,
+  legacyEntitlementTierForPublicPlan,
+} from "@/lib/billing/publicPlanCatalog";
 import { prisma } from "@/lib/db";
 import { resolveCorrelationId } from "@/lib/api";
 
@@ -33,7 +38,7 @@ interface StripeWebhookEvent {
     object?: {
       id?: string;
       customer?: string;
-      metadata?: { organizationId?: string; tier?: string };
+      metadata?: { organizationId?: string; planId?: string };
       status?: string;
       cancel_at_period_end?: boolean;
       current_period_end?: number;
@@ -43,6 +48,13 @@ interface StripeWebhookEvent {
 
 export async function POST(req: NextRequest) {
   const correlationId = resolveCorrelationId(req.headers);
+
+  if (!isSelfServiceBillingEnabled()) {
+    return NextResponse.json(
+      { ok: false, error: { code: "billing.disabled", userMessage: "Self-service billing is not active." }, meta: { correlationId, generatedAt: new Date().toISOString() } },
+      { status: 503 },
+    );
+  }
 
   if (!isStripeWebhookConfigured()) {
     return NextResponse.json(
@@ -88,15 +100,23 @@ export async function POST(req: NextRequest) {
 
   const obj = event.data?.object;
   const organizationId = obj?.metadata?.organizationId;
-  const tierRaw = obj?.metadata?.tier;
+  const planId = obj?.metadata?.planId;
 
-  if (!organizationId || !tierRaw || !isBillingTier(tierRaw)) {
+  if (!organizationId || !planId || !isPaidPublicPlanId(planId)) {
     // We accept the event but can't act on it without metadata.
     return NextResponse.json({ ok: true, ignored: "missing_metadata" }, { status: 200 });
   }
 
-  const tier: BillingTier = tierRaw;
-  const status: BillingStatus = mapStripeStatus(obj?.status);
+  if (!isSubscriptionEvent(event.type)) {
+    // Checkout completion is not entitlement authority. Stripe's signed
+    // subscription lifecycle event carries the authoritative status.
+    return NextResponse.json({ ok: true, ignored: "awaiting_subscription_event" }, { status: 200 });
+  }
+
+  const tier = legacyEntitlementTierForPublicPlan(planId);
+  const status: BillingStatus = event.type === "customer.subscription.deleted"
+    ? "canceled"
+    : mapStripeStatus(obj?.status);
   const currentPeriodEndsAt = obj?.current_period_end
     ? new Date(obj.current_period_end * 1000)
     : null;
@@ -127,6 +147,12 @@ export async function POST(req: NextRequest) {
       { status: 500 },
     );
   }
+}
+
+function isSubscriptionEvent(type: string | undefined): boolean {
+  return type === "customer.subscription.created"
+    || type === "customer.subscription.updated"
+    || type === "customer.subscription.deleted";
 }
 
 function mapStripeStatus(s: string | undefined): BillingStatus {
