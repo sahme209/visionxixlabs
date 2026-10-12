@@ -54,7 +54,7 @@ export const PUBLIC_PLAN_CATALOG: readonly PublicPlan[] = [
       "$10 of governed AI usage per paid seat",
       "Advanced workflows and scheduling",
       "Higher automation allowances",
-      "20% annual discount when annual billing launches",
+      "Save 20% with annual billing",
     ],
   },
   {
@@ -71,7 +71,7 @@ export const PUBLIC_PLAN_CATALOG: readonly PublicPlan[] = [
       "500 counted deployments each month",
       "$30 of governed AI usage per paid seat",
       "Advanced workspace policy and administration",
-      "20% annual discount when annual billing launches",
+      "Save 20% with annual billing",
     ],
   },
 ] as const;
