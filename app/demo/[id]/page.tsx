@@ -4,8 +4,7 @@
  * rendering workflows that are not available in the shipped product.
  */
 
-import { notFound, redirect } from "next/navigation";
-import { isDemoScenarioId } from "@/lib/demo/demoScenarios";
+import { redirect } from "next/navigation";
 
 export const dynamic = "force-dynamic";
 
@@ -14,9 +13,6 @@ export default async function DemoScenarioPage({
 }: {
   params: Promise<{ id: string }>;
 }) {
-  const { id } = await params;
-  if (!isDemoScenarioId(id)) {
-    notFound();
-  }
+  await params;
   redirect("/demo");
 }

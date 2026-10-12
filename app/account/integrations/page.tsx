@@ -1,6 +1,14 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import type { ReactNode } from "react";
+import {
+  BugAntIcon,
+  ChatBubbleLeftRightIcon,
+  ClipboardDocumentCheckIcon,
+  CodeBracketSquareIcon,
+  CubeIcon,
+  RectangleGroupIcon,
+} from "@heroicons/react/24/outline";
 import { AuthCompanionHeader } from "@/components/auth/AuthCompanionHeader";
 import { AuthCompanionShell } from "@/components/auth/AuthCompanionShell";
 import { IntegrationConnectionAction } from "@/components/auth/IntegrationConnectionAction";
@@ -42,21 +50,21 @@ function validationNextStep(connection: { name: string; state: string; control?:
   return null;
 }
 
-const PROVIDER_MARKS: Record<string, { text: string; tone: string }> = {
-  GitHub: { text: "GH", tone: "bg-zinc-100 text-zinc-950" },
-  Slack: { text: "SL", tone: "bg-amber-400/15 text-amber-200" },
-  Microsoft: { text: "MS", tone: "bg-blue-400/15 text-blue-200" },
-  Linear: { text: "LI", tone: "bg-zinc-400/15 text-zinc-200" },
-  Jira: { text: "JI", tone: "bg-sky-400/15 text-sky-200" },
-  Sentry: { text: "SE", tone: "bg-orange-400/15 text-orange-200" },
+const PROVIDER_MARKS: Record<string, { icon: ReactNode; tone: string }> = {
+  GitHub: { icon: <CodeBracketSquareIcon className="h-4 w-4" />, tone: "bg-zinc-100 text-zinc-950" },
+  Slack: { icon: <ChatBubbleLeftRightIcon className="h-4 w-4" />, tone: "bg-orange-400/12 text-orange-200" },
+  "Microsoft Teams": { icon: <RectangleGroupIcon className="h-4 w-4" />, tone: "bg-white/[0.07] text-zinc-300" },
+  Linear: { icon: <CubeIcon className="h-4 w-4" />, tone: "bg-orange-400/12 text-orange-200" },
+  Jira: { icon: <ClipboardDocumentCheckIcon className="h-4 w-4" />, tone: "bg-white/[0.07] text-zinc-300" },
+  Sentry: { icon: <BugAntIcon className="h-4 w-4" />, tone: "bg-orange-400/12 text-orange-200" },
 };
 
 function IntegrationRow({ name, detail, state, action }: { name: string; detail: string; state?: string; action: ReactNode }) {
-  const mark = PROVIDER_MARKS[name] ?? { text: name.slice(0, 2).toUpperCase(), tone: "bg-white/[0.08] text-zinc-300" };
+  const mark = PROVIDER_MARKS[name] ?? { icon: <CubeIcon className="h-4 w-4" />, tone: "bg-white/[0.08] text-zinc-300" };
   const healthy = state === "Active" || state === "Read-only validated";
   return (
     <div className="flex min-h-[74px] items-center gap-4 px-4 py-3 sm:px-5">
-      <span aria-hidden className={`grid h-9 w-9 shrink-0 place-items-center rounded-lg text-[10px] font-bold tracking-[-0.02em] ${mark.tone}`}>{mark.text}</span>
+      <span aria-hidden className={`grid h-9 w-9 shrink-0 place-items-center rounded-lg ${mark.tone}`}>{mark.icon}</span>
       <div className="min-w-0 flex-1">
         <div className="flex flex-wrap items-center gap-2">
           <h2 className="text-sm font-medium text-zinc-100">{name}</h2>
@@ -158,7 +166,7 @@ export default async function AccountIntegrationsPage() {
             </div>
             <div className="divide-y divide-white/[0.06] overflow-visible rounded-2xl border border-white/[0.07] bg-white/[0.022]">
               <IntegrationRow name="Slack" state={slackState} detail="Authorize release notifications with channels:read and chat:write; live validation is required before activation." action={canManageConnections ? <IntegrationConnectionAction provider="slack" label="Slack" connected={slackConnected} suspended={slackRawStatus === "suspended"} setupAvailable={setupReady.slack} /> : <span className="text-[11px] text-zinc-600">Admin only</span>} />
-              <IntegrationRow name="Microsoft" state={teamsState} detail="Verify a Microsoft tenant identity first. Teams message permissions remain separately gated." action={canManageConnections ? <IntegrationConnectionAction provider="teams" label="Microsoft" connected={teamsConnected} suspended={teamsRawStatus === "suspended"} setupAvailable={setupReady.teams} /> : <span className="text-[11px] text-zinc-600">Admin only</span>} />
+              <IntegrationRow name="Microsoft Teams" state={teamsState} detail="Verify a Microsoft tenant identity first. Teams message permissions remain separately gated." action={canManageConnections ? <IntegrationConnectionAction provider="teams" label="Microsoft Teams" connected={teamsConnected} suspended={teamsRawStatus === "suspended"} setupAvailable={setupReady.teams} /> : <span className="text-[11px] text-zinc-600">Admin only</span>} />
               <IntegrationRow name="Linear" state={linearState} detail="Delegate governed issue creation and release follow-up with read + issues:create scope." action={canManageConnections ? <IntegrationConnectionAction provider="linear" label="Linear" connected={linearConnected} suspended={linearRawStatus === "suspended"} setupAvailable={setupReady.linear} /> : <span className="text-[11px] text-zinc-600">Admin only</span>} />
               <IntegrationRow name="Jira" detail="Link approved change tickets and deployment evidence." action={<PlannedAction />} />
               <IntegrationRow name="Sentry" detail="Use read-only release and issue signals for post-deploy validation." action={<PlannedAction />} />

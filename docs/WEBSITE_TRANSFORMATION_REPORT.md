@@ -24,7 +24,7 @@ The repository currently contains 336 App Router `page.tsx` entries. The product
 | Journey stage | Primary routes | Current state |
 |---|---|---|
 | Discover | `/`, `/product`, `/capabilities`, `/how-it-works` | Shared system applied; homepage/product demo already present |
-| Understand | `/demo`, `/demo/[id]`, `/integrations`, `/security`, `/enterprise-readiness` | Cinematic workflow and precise availability language applied; scenario detail review remains |
+| Understand | `/demo`, `/demo/[id]`, `/demo/reference`, `/integrations`, `/security`, `/enterprise-readiness` | Cinematic verified workflow and precise availability language applied; legacy scenario/reference URLs now redirect to the single reviewed tour instead of exposing stale internal claims |
 | Learn | `/docs/**`, `/faq`, `/resources`, `/insights/**` | Unified docs shell applied; canonical docs now cover GitHub, approvals, AWS ECS OIDC, rollback, permissions, and released-product boundaries |
 | Start | `/download`, `/docs/desktop-install`, `/desktop/connect` | Desktop-first pairing preserved; public CTAs now lead to download instead of an invalid unpaired signup |
 | Buy | `/plans`, `/pricing`, `/operator/pricing` | Public Free/Pro/Enterprise proposal added; checkout remains disabled until legacy registries, organization authority, and Stripe test-mode mappings are reconciled |
