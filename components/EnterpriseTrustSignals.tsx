@@ -11,9 +11,9 @@ const GOVERNANCE = [
       </svg>
     ),
     items: [
-      "Assume-role model — zero stored credentials, zero shared passwords",
-      "Read-only by default — write access scoped, temporary, and approval-gated",
-      "Revoke instantly — active sessions self-terminate within 60 seconds",
+      "Repository-scoped GitHub App tokens are minted for the selected repository",
+      "AWS ECS uses GitHub Actions OIDC instead of stored AWS access keys",
+      "Desktop actions remain scoped to the signed-in workspace and role",
     ],
   },
   {
@@ -24,10 +24,10 @@ const GOVERNANCE = [
       </svg>
     ),
     items: [
-      "Human approval required for cost, network, IAM, and past-failure changes",
-      "Blast radius limits — instance changes capped, network changes staged to non-prod first",
-      "Pre-verified rollback — rollback plan validated before execution, not after failure",
-      "Outcome memory — prior failures on resource X require manual approval on retry",
+      "Medium- and high-risk agent writes stop at an explicit proposal",
+      "Production-targeted writes are escalated to high risk",
+      "An administrator must approve or reject the proposed action",
+      "ECS waits for steady state and restores the prior task definition on failure",
     ],
   },
   {
@@ -38,10 +38,10 @@ const GOVERNANCE = [
       </svg>
     ),
     items: [
-      "Immutable audit trail — what changed, who approved, cost impact, rollback status",
-      "Full reasoning chain — every decision logged with rationale and confidence score",
-      "Hard trust boundaries — the agent can never self-escalate its own autonomy level",
-      "Governance policies per team — cost budgets, approval thresholds, change windows",
+      "Every tool call receives a persisted action record",
+      "Read-only observations and writes are both visible in the audit history",
+      "The agent cannot approve its own proposed write",
+      "Connection status is shown as verified only after server-side validation",
     ],
   },
 ];
@@ -68,14 +68,14 @@ export function EnterpriseTrustSignals() {
               id="trust-signals-heading"
               className="font-display text-3xl md:text-4xl font-bold mb-4 leading-[1.04]"
             >
-              Autonomous operations.<br className="hidden sm:block" />
+              Powerful automation.<br className="hidden sm:block" />
               <span className="relative inline-block">
-                Zero autonomous risk.
+                Explicit human authority.
                 <span aria-hidden className="absolute left-0 -bottom-0.5 h-[2px] w-full rounded-full bg-gradient-to-r from-brand-coral via-amber-400/70 to-transparent" />
               </span>
             </h2>
             <p className="text-zinc-400 max-w-lg mx-auto leading-relaxed">
-              The agent enforces governance at every step — approval gates for blast-radius changes, cost visibility per decision, and immutable audit trails that prove compliance.
+              Axiom separates observation, proposal, approval, and execution so teams can move quickly without hiding who authorized a change.
             </p>
           </div>
         </AnimateOnScroll>

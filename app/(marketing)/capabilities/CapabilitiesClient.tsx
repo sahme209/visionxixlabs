@@ -218,8 +218,8 @@ export function CapabilitiesClient() {
                 The operation-planning kernel batches resources to the configured maximum, rejects an invalid oversized step, and records a boundary event. Example: a 12-resource plan with a five-resource limit becomes 5 + 5 + 2 planning batches. This is kernel enforcement; live cloud mutation enforcement is not release-verified.
               </p>
             </article>
-            <article className="rounded-xl border border-cyan-500/20 bg-cyan-500/[0.04] p-5">
-              <h3 className="font-semibold text-cyan-100">Outcome memory</h3>
+            <article className="rounded-xl border border-orange-500/20 bg-orange-500/[0.04] p-5">
+              <h3 className="font-semibold text-orange-100">Outcome memory</h3>
               <p className="mt-2 text-sm leading-relaxed text-zinc-300">
                 The application-side module stores action outcome metadata in the audit store under an organization and cloud-account context. A previous failure can downgrade guidance for that resource to human review. Example: a failed resize recommendation makes the next resize proposal more cautious. Consistent retention/deletion controls and the released desktop journey remain unverified.
               </p>

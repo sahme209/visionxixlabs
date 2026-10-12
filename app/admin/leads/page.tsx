@@ -152,7 +152,7 @@ export default function AdminLeadsPage() {
               type="button"
               onClick={runAgentWorker}
               disabled={runningAgent}
-              className="btn-huly cta-glow inline-flex items-center gap-2 rounded-lg bg-orange-600 px-4 py-2 text-sm font-medium text-white hover:bg-orange-700 disabled:opacity-50"
+              className="btn-axiom cta-glow inline-flex items-center gap-2 rounded-lg bg-orange-600 px-4 py-2 text-sm font-medium text-white hover:bg-orange-700 disabled:opacity-50"
             >
               {runningAgent ? "Running..." : "Run agent worker"}
             </button>
@@ -224,7 +224,7 @@ export default function AdminLeadsPage() {
                       <button
                         onClick={() => runAction(lead.id, "generate")}
                         disabled={isActioning}
-                        className="btn-huly inline-flex items-center gap-1.5 rounded-lg bg-white/[0.06] px-3 py-2 text-sm font-medium text-zinc-300 hover:bg-white/[0.1] disabled:opacity-50 transition-colors"
+                        className="btn-axiom inline-flex items-center gap-1.5 rounded-lg bg-white/[0.06] px-3 py-2 text-sm font-medium text-zinc-300 hover:bg-white/[0.1] disabled:opacity-50 transition-colors"
                       >
                         <DocumentTextIcon className="h-4 w-4" />
                         Regenerate package
@@ -232,7 +232,7 @@ export default function AdminLeadsPage() {
                       <button
                         onClick={() => runAction(lead.id, "deploy")}
                         disabled={isActioning}
-                        className="btn-huly inline-flex items-center gap-1.5 rounded-lg bg-orange-500/10 px-3 py-2 text-sm font-medium text-orange-400 hover:bg-orange-500/20 disabled:opacity-50 transition-colors"
+                        className="btn-axiom inline-flex items-center gap-1.5 rounded-lg bg-orange-500/10 px-3 py-2 text-sm font-medium text-orange-400 hover:bg-orange-500/20 disabled:opacity-50 transition-colors"
                       >
                         <CloudArrowUpIcon className="h-4 w-4" />
                         Regenerate preview
@@ -240,7 +240,7 @@ export default function AdminLeadsPage() {
                       <button
                         onClick={() => runAction(lead.id, "publish")}
                         disabled={isActioning}
-                        className="btn-huly inline-flex items-center gap-1.5 rounded-lg bg-emerald-500/10 px-3 py-2 text-sm font-medium text-emerald-300 hover:bg-emerald-500/20 disabled:opacity-50 transition-colors"
+                        className="btn-axiom inline-flex items-center gap-1.5 rounded-lg bg-emerald-500/10 px-3 py-2 text-sm font-medium text-emerald-300 hover:bg-emerald-500/20 disabled:opacity-50 transition-colors"
                       >
                         <RocketLaunchIcon className="h-4 w-4" />
                         Publish
@@ -252,7 +252,7 @@ export default function AdminLeadsPage() {
                   <div className="mt-4 pt-4 border-t border-white/[0.06] flex flex-wrap gap-2">
                     <button
                       onClick={() => setExpandedAi(showAiOutput ? null : lead.id)}
-                      className="btn-huly inline-flex items-center gap-1.5 rounded-lg bg-white/[0.06] px-3 py-2 text-sm font-medium text-zinc-300 hover:bg-white/[0.1] transition-colors"
+                      className="btn-axiom inline-flex items-center gap-1.5 rounded-lg bg-white/[0.06] px-3 py-2 text-sm font-medium text-zinc-300 hover:bg-white/[0.1] transition-colors"
                     >
                       {showAiOutput ? <ChevronUpIcon className="h-4 w-4" /> : <ChevronDownIcon className="h-4 w-4" />}
                       View AI output

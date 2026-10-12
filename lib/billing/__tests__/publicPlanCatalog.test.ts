@@ -2,7 +2,11 @@ import { afterEach, describe, expect, it } from "vitest";
 import {
   COUNTED_DEPLOYMENT_DEFINITION,
   PUBLIC_PLAN_CATALOG,
+  isBillingInterval,
+  isPaidPublicPlanId,
   isSelfServiceBillingEnabled,
+  legacyEntitlementTierForPublicPlan,
+  stripePriceEnvKey,
 } from "@/lib/billing/publicPlanCatalog";
 
 describe("publicPlanCatalog", () => {
@@ -27,6 +31,14 @@ describe("publicPlanCatalog", () => {
     expect(pro?.monthlyDeployments).toBe(100);
   });
 
+  it("offers Enterprise online with fixed limits instead of a sales quote", () => {
+    const enterprise = PUBLIC_PLAN_CATALOG.find((plan) => plan.id === "enterprise");
+    expect(enterprise?.monthlyPricePerUserCents).toBe(7_900);
+    expect(enterprise?.annualPricePerUserCents).toBe(6_320);
+    expect(enterprise?.monthlyDeployments).toBe(500);
+    expect(enterprise?.monthlyAiCreditCents).toBe(3_000);
+  });
+
   it("keeps checkout disabled unless explicitly activated", () => {
     delete process.env.AXIOM_SELF_SERVICE_BILLING_ENABLED;
     expect(isSelfServiceBillingEnabled()).toBe(false);
@@ -37,5 +49,19 @@ describe("publicPlanCatalog", () => {
   it("defines a counted deployment without counting retries", () => {
     expect(COUNTED_DEPLOYMENT_DEFINITION).toContain("successfully dispatched");
   });
-});
 
+  it("keeps paid checkout on the public Pro and Enterprise vocabulary", () => {
+    expect(isPaidPublicPlanId("pro")).toBe(true);
+    expect(isPaidPublicPlanId("enterprise")).toBe(true);
+    expect(isPaidPublicPlanId("growth")).toBe(false);
+    expect(isPaidPublicPlanId("free")).toBe(false);
+    expect(isBillingInterval("monthly")).toBe(true);
+    expect(isBillingInterval("annual")).toBe(true);
+    expect(stripePriceEnvKey("pro", "annual")).toBe("STRIPE_PRICE_PRO_ANNUAL");
+  });
+
+  it("isolates the temporary legacy entitlement mapping", () => {
+    expect(legacyEntitlementTierForPublicPlan("pro")).toBe("growth");
+    expect(legacyEntitlementTierForPublicPlan("enterprise")).toBe("enterprise");
+  });
+});

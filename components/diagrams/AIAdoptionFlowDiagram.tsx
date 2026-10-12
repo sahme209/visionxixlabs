@@ -15,15 +15,15 @@ export function AIAdoptionFlowDiagram() {
       >
         <defs>
           <linearGradient id="flow-start" x1="0%" y1="0%" x2="100%" y2="0%">
-            <stop offset="0%" stopColor="#6366f1" />
-            <stop offset="100%" stopColor="#818cf8" />
+            <stop offset="0%" stopColor="#f54e00" />
+            <stop offset="100%" stopColor="#ff783d" />
           </linearGradient>
           <linearGradient id="flow-gap" x1="0%" y1="0%" x2="100%" y2="0%">
             <stop offset="0%" stopColor="#94a3b8" />
             <stop offset="100%" stopColor="#64748b" />
           </linearGradient>
           <linearGradient id="flow-end" x1="0%" y1="0%" x2="100%" y2="0%">
-            <stop offset="0%" stopColor="#4f46e5" />
+            <stop offset="0%" stopColor="#ff783d" />
             <stop offset="100%" stopColor="#f54e00" />
           </linearGradient>
           <marker

@@ -6,40 +6,73 @@ Status: review-only. Self-service checkout must remain disabled until every acti
 
 | Concern | Current implementation | Authority today | Decision for the new model |
 |---|---|---|---|
-| Customer-facing proposal | `lib/billing/publicPlanCatalog.ts` | Display only | Free, Pro, and Business remain a proposal until activation |
+| Customer-facing proposal | `lib/billing/publicPlanCatalog.ts` | Display only | Free, Pro, and Enterprise remain a proposal until activation |
 | Organization subscription | `TenantBillingPlan` through `lib/billing/tenantBillingStore.ts` | Preferred commercial authority | Keep as the single organization-level source of truth |
-| Organization webhook | `POST /api/billing/stripe-webhook` | Signature-verified, metadata-scoped, idempotent | Retain and extend only after public-plan mapping is approved |
-| Legacy user subscription | `User.plan` through `POST /api/webhooks/stripe` | Legacy compatibility path | Migrate existing customers before retiring; never silently remap |
+| Organization webhook | `POST /api/billing/stripe-webhook` | Signature-verified, metadata-scoped, replay guarded, and fail-closed when ownership cannot be checked | Canonical Free/Pro/Enterprise webhook; only complete subscription lifecycle events grant or remove entitlements, and Stripe customer/subscription ownership cannot move between workspaces |
+| Legacy user subscription | `User.plan` through `POST /api/webhooks/stripe` | Legacy compatibility path while self-service billing is off | Returns `410` once the new billing flag is enabled so both authorities cannot write concurrently |
 | Legacy feature catalog | `lib/billing/tierCatalog.ts` | Used by existing platform limits | Replace with organization entitlements through an explicit migration |
 | Legacy pricing registry | `lib/billing/planRegistry.ts` | Internal historical pricing and AI limits | Do not expose as the new public pricing model |
-| Checkout | Two existing checkout routes | Disabled by default | Requires `AXIOM_SELF_SERVICE_BILLING_ENABLED=true`; keep false until approval |
+| Checkout | `POST /api/billing/checkout-session`; old URL is a code alias | Disabled by default | Organization owner/admin only; accepted seats are counted server-side; requires explicit activation |
+| Billing portal | `POST /api/billing/portal-session`; old URL is a code alias | Disabled by default | Organization owner/admin only; resolves the customer from `TenantBillingPlan` and returns to `/account` |
+| Public plan selection | `/plans` | Preview while billing is disabled | Monthly/annual selection is click-driven; Free goes directly to download, while approved paid checkout uses the canonical organization endpoint only after the activation flag is enabled |
+| Account plan management | `/account` | Reads fail-closed organization plan state | Shows the authoritative plan/status to members; an owner/admin can open the customer-scoped Stripe portal only after billing is enabled and a verified customer exists |
 
 ## Proposed public contract
 
-| Plan | Price | Seats | Counted deployments | Security boundary |
-|---|---:|---:|---:|---|
-| Free | $0 | 2 | 10/month | Approval gates, risk checks, and audit history included |
-| Pro | $29/user/month | Organization seats | 100/month proposed | Same security boundary; adds capacity, schedules, and automation |
-| Business | Contracted | Contracted | Contracted | Same security boundary; adds administration and negotiated capacity |
+| Plan | Monthly price | Annual equivalent | Seats | Counted deployments | Governed AI allowance |
+|---|---:|---:|---:|---:|---:|
+| Free | $0 | $0 | 2 included | 10/month | $2/organization/month |
+| Pro | $29/user | $23.20/user | Paid seats | 100/month | $10/paid seat/month |
+| Enterprise | $79/user | $63.20/user | Paid seats | 500/month | $30/paid seat/month |
+
+The AI amounts are proposed service credits, not tokens and not provider-cost
+pass-through. Before activation, metering must use the recorded provider cost,
+apply the approved retail rate once, and expose both consumed and remaining
+credit without revealing provider credentials. Security controls remain
+identical across all plans.
 
 A counted deployment is one successfully dispatched, approved deployment workflow for one environment. Polling, validation retries, and automatic rollback for that dispatch do not count again. Rejected, canceled, and failed-to-dispatch proposals do not count.
 
+## Stripe configuration contract
+
+Test-mode validation requires all of the following. Values are environment
+references only; no secret or price identifier belongs in source control.
+
+| Variable | Required behavior |
+|---|---|
+| `AXIOM_SELF_SERVICE_BILLING_ENABLED` | Remains unset/false until the test journey and entitlement migration are approved |
+| `AXIOM_STRIPE_MODE` | Must be `test` while validating; must match the secret-key prefix |
+| `STRIPE_SECRET_KEY` | Must begin with `sk_test_` in test mode |
+| `STRIPE_WEBHOOK_SECRET` | Signature secret for the canonical organization webhook |
+| `STRIPE_PRICE_PRO_MONTHLY` | Approved recurring per-seat Pro monthly price |
+| `STRIPE_PRICE_PRO_ANNUAL` | Approved recurring per-seat Pro annual price |
+| `STRIPE_PRICE_ENTERPRISE_MONTHLY` | Approved recurring per-seat Enterprise monthly price |
+| `STRIPE_PRICE_ENTERPRISE_ANNUAL` | Approved recurring per-seat Enterprise annual price |
+| `AXIOM_LIVE_BILLING_APPROVED` | Must remain false/unset; a live key cannot create checkout without this second explicit lock |
+
+Checkout metadata records only `organizationId`, public `planId`, interval,
+and server-counted seats. A successful redirect never grants access. The signed
+`customer.subscription.created|updated|deleted` lifecycle is authoritative.
+
 ## Required activation sequence
 
-1. Approve the public prices, annual discount, deployment allowance, and Business packaging.
-2. Add immutable public plan identifiers and versioned Stripe price mappings to the organization billing path.
+1. Approve the public prices, 20% annual discount, deployment allowances, and AI-credit economics.
+2. Review the implemented immutable public plan identifiers and monthly/annual Stripe price mappings on the organization billing path.
 3. Define a migration from legacy `User.plan` rows and existing Stripe subscriptions to `TenantBillingPlan`; produce a dry-run report before writing data.
 4. Make seat and deployment counters organization-scoped, transactional, and idempotent under concurrent dispatches.
 5. Count only after provider dispatch succeeds and bind the count to the dispatch idempotency key.
 6. Cover upgrades, downgrades, renewals, cancellation, past-due state, refunds, and webhook re-delivery in integration tests.
 7. Verify the same entitlement response is consumed by the website, desktop app, and every mutating API boundary.
-8. Run Stripe test-mode customer journeys and reconcile invoices, usage, and webhook state.
-9. Obtain explicit approval before setting `AXIOM_SELF_SERVICE_BILLING_ENABLED=true` or creating live prices.
+8. Create or reconcile versioned Pro and Enterprise recurring per-seat prices in Stripe test mode only; Free has no Stripe price.
+9. Run Stripe test-mode customer journeys and reconcile invoices, seats, usage, and webhook state.
+10. Obtain explicit approval before setting `AXIOM_SELF_SERVICE_BILLING_ENABLED=true` or creating live prices.
 
 ## Fail-closed rules
 
 - A marketing page never grants an entitlement.
 - A checkout redirect never grants an entitlement.
 - Unknown plan, price, organization, or webhook metadata is ignored or rejected rather than guessed.
+- A subscription event cannot mutate access without event, customer, and subscription identifiers or when replay/ownership storage is unavailable.
+- A Stripe customer or subscription already assigned to one workspace cannot be reassigned through webhook metadata.
 - Fundamental approval, audit, and production-safety controls are never removed because of plan state.
 - Existing subscriptions are preserved until their migration is individually reconciled.

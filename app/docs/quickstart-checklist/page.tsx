@@ -53,7 +53,7 @@ const STEPS: readonly ChecklistItem[] = [
     {
         num: "05",
         title: "Configure one safe integration",
-        body: "Use a dedicated non-production account and least-privilege credentials. AWS has a read-only inventory path; Azure, GCP, GitHub, communication, and identity paths depend on configuration and verified availability.",
+        body: "Install the GitHub App on a dedicated test repository first. For AWS ECS, configure a non-production environment target and a narrowly trusted GitHub Actions OIDC role.",
         status: "connector-dependent",
         link: { href: "/docs/aws-setup", label: "AWS setup guide" },
     },
@@ -67,9 +67,9 @@ const STEPS: readonly ChecklistItem[] = [
     {
         num: "07",
         title: "Validate, collect evidence, and close",
-        body: "Use only a safe execution path, record observed validation, preserve evidence, and close when exit criteria pass. Local Terraform apply is disabled in the current desktop safety contract.",
+        body: "Use only the configured tenant workflow, record the observed ECS validation result, preserve the action evidence, and confirm the rollback path before enabling production.",
         status: "human-confirmed",
-        link: { href: "/docs/execution-plans", label: "Execution plans" },
+        link: { href: "/docs/rollback", label: "AWS ECS rollback" },
     },
 ];
 
@@ -134,7 +134,7 @@ export default function QuickstartChecklistPage() {
                     {[
                         { href: "/docs/security-model", icon: ShieldCheckIcon, title: "Security model", desc: "Access, storage, tenant boundaries, and revocation." },
                         { href: "/docs/best-practices", icon: CpuChipIcon, title: "Best practices", desc: "Readiness, approval, validation, and operational safeguards." },
-                        { href: "/docs/scanning", icon: CloudIcon, title: "Scanning", desc: "Available provider paths, evidence sources, and failure states." },
+                        { href: "/docs/aws-setup", icon: CloudIcon, title: "AWS ECS setup", desc: "Configure the tenant workflow, OIDC role, and deployment target." },
                         { href: "/docs/desktop-install", icon: CommandLineIcon, title: "Desktop installation", desc: "Platform requirements, signing status, first launch, and updates." },
                     ].map((card) => {
                         const Icon = card.icon;

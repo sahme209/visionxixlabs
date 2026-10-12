@@ -30,7 +30,7 @@ const EVIDENCE = [
     body: "Review installation, permissions, workflow boundaries, and known limitations before connecting an environment.",
     href: "/docs",
     label: "Read documentation",
-    tone: "from-cyan-500/20 to-transparent border-cyan-500/30",
+    tone: "from-orange-500/20 to-transparent border-orange-500/30",
     external: false,
   },
 ] as const;

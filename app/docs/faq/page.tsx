@@ -16,54 +16,54 @@ const FAQ_GROUPS = [
         a: "A downloadable deployment-operations workspace for intake, readiness, approvals, plan review, guided execution, validation, evidence, and closure. Connector and execution availability is shown in the installed release.",
       },
       {
-        q: "How is this different from a regular cloud cost tool?",
-        a: "Cost tools alert. Axiom operates. It doesn't just list findings — it generates phased execution plans with Terraform code, runs the change behind your approval, verifies the outcome, and learns from the result. The same engine handles security, drift, and resilience.",
+        q: "What is the main workflow?",
+        a: "A user selects a repository, branch, and environment, then asks the Agent for an outcome. Read-only tools can run inline. Any GitHub write or deployment stops at an explicit proposal, risk check, and admin approval before the real action runs.",
       },
       {
         q: "Does Axiom replace my existing tooling?",
-        a: "No. Axiom runs above CloudWatch, AWS Config, Terraform, and GitHub Actions. It coordinates and analyzes them — it does not replace any of them.",
+        a: "No. The released path uses your GitHub repository, GitHub Actions workflow, AWS role, ECS target, and optional Airflow installation. Axiom adds selection, governance, approval, and evidence around those systems.",
       },
     ],
   },
   {
-    title: "Cloud connections",
+    title: "Connections",
     items: [
       {
-        q: "What clouds are supported?",
-        a: "AWS connection and read-only scanning are implemented; live validation requires broker configuration and customer IAM setup, and write execution is not released. Azure and GCP have working connectors with scan and topology mapping; live SDK validation and provider-specific execution are not released.",
+        q: "Which production deployment path is released?",
+        a: "AWS ECS deployment is released through the tenant's own GitHub Actions workflow. GitHub Actions uses OIDC to assume the configured AWS role, waits for ECS steady state, and rolls back to the previous task definition if stabilization fails.",
       },
       {
         q: "What permissions does Axiom need?",
-        a: "Read-only by default — Describe, Get, List actions only. Execution requires a separate, more-scoped role you opt into per action class. Full details at /docs/aws-setup.",
+        a: "GitHub access is minted for one selected repository through the installed GitHub App. AWS credentials are not stored by Axiom; the deployment workflow uses GitHub OIDC and the role configured for the selected environment.",
       },
       {
         q: "Are credentials stored?",
-        a: "Never. Axiom uses assume-role with External ID. Temporary credentials live in memory for the scan and are discarded immediately after. We don't see access keys.",
+        a: "The released AWS deployment path stores no long-lived AWS access key in Axiom. GitHub Actions obtains short-lived AWS credentials through OIDC. Provider tokens and desktop sessions remain tenant-scoped and are handled by the service, not entered into chat.",
       },
       {
         q: "How do I revoke access?",
-        a: "Delete the IAM role in your AWS console. Axiom immediately loses all access. Optionally also disconnect from the Axiom dashboard.",
+        a: "Remove the GitHub App installation or repository grant, and remove or disable the configured AWS role trust relationship. The desktop Integration Center shows the server-verified connection state.",
       },
     ],
   },
   {
-    title: "Scanning & operations",
+    title: "Agent and approvals",
     items: [
       {
-        q: "How long does a scan take?",
-        a: "First scan on a typical mid-size account: 60–180 seconds. Initial scans on accounts with 1000+ resources can take 10–15 minutes. Subsequent scans are incremental and usually complete in under 2 minutes.",
+        q: "Can the Agent change a repository by itself?",
+        a: "No. Repository reads can execute inline, but branch creation, file commits, and pull-request creation become persisted action proposals. An authorized workspace admin must approve the proposal before the write function runs.",
       },
       {
-        q: "Can scans run on a schedule?",
-        a: "Yes — daily, hourly, or custom. Recurring scans live in Axiom Agent under Workflows. Each scan feeds the operational memory.",
+        q: "What is recorded?",
+        a: "Every Agent tool call receives an audit record, including low-risk reads. Proposed writes record their inputs, risk, status, approval or rejection, execution result, and timestamps.",
       },
       {
-        q: "What does the agent learn over time?",
-        a: "Outcome of every action — which action types succeed on which resources. After repeated failures on a class of action, the agent auto-downgrades that class from auto-fix to human-review. Confidence calibrates per service, per change type, per team.",
+        q: "Why might the Agent refuse to run?",
+        a: "AI is opt-in per workspace. The runtime checks AI credit and provider policy before calling a model, and fails closed if either check is not satisfied. A model also has to be enabled in workspace settings.",
       },
       {
-        q: "Can I see why a recommendation was made?",
-        a: "Yes. Every recommendation includes a reasoning trace — observe → interpret → reason → plan → verify — with per-step evidence and confidence. See it in the Command Center or directly on the run page.",
+        q: "Does the Agent remember repository context?",
+        a: "The desktop app keeps repository, branch, environment, and conversation context visible and click-selectable. Treat persistent cross-conversation memory as release-dependent; the installed app is the authority for what is available.",
       },
     ],
   },
@@ -72,32 +72,32 @@ const FAQ_GROUPS = [
     items: [
       {
         q: "Does Axiom apply changes automatically?",
-        a: "Never by default. Every execution requires explicit approval. Multi-party approval kicks in for broad blast-radius changes. The agent cannot grant itself more autonomy.",
+        a: "Read-only checks may execute inline. Medium- and high-risk changes require explicit approval, and production context can only increase risk. The Agent cannot approve its own proposal.",
       },
       {
         q: "What if an execution fails?",
         a: "Rollback availability depends on the active adapter, prerequisites, and verified recovery evidence. When automatic rollback is unavailable, the app must keep the failure visible and require an explicit manual recovery path.",
       },
       {
-        q: "Can I export the Terraform plan instead of applying?",
-        a: "Yes. Every execution plan generates Terraform you can download, review locally, and apply through your own pipeline. Axiom doesn't have to execute — it can be the intelligence layer above your existing IaC flow.",
+        q: "Can an admin bypass production controls?",
+        a: "The product is designed around explicit authority and evidence. Any emergency or direct-production path must be separately permissioned, visibly labeled, and audited; availability depends on the installed release and workspace policy.",
       },
     ],
   },
   {
-    title: "ReleaseOps",
+    title: "Deployment and Airflow",
     items: [
       {
-        q: "What does Axiom ReleaseOps integrate with?",
-        a: "GitHub Actions on the workflow side today — GitLab CI, Azure DevOps, Jenkins, ArgoCD, and ServiceNow are planned. Terraform Cloud / Enterprise on the IaC side. AWS on the infrastructure side; Azure/GCP support is in preview.",
+        q: "How does environment selection work?",
+        a: "Each environment can map to an AWS region, role ARN, ECS cluster, and ECS service. Selecting an environment gives the Agent and deployment workflow that governed target instead of asking the user to type cloud coordinates into chat.",
       },
       {
-        q: "Does ReleaseOps run deployments itself?",
-        a: "By default no — it observes and scores. Once governance is configured, ReleaseOps can orchestrate approval-gated deployments through your existing pipelines without bypassing them.",
+        q: "How does Airflow participate?",
+        a: "A configured Airflow connection can expose DAGs for click-based selection and dependency checks. Scheduling or triggering a governed action must still pass the configured approval, retry, notification, and audit boundaries.",
       },
       {
-        q: "What is a Release Readiness score?",
-        a: "A composite 0–100 score across 9 operational dimensions: branch governance, rollback readiness, observability, deployment maturity, operational coordination, audit completeness, Terraform governance, drift detection, release communication. Trackable per service over time.",
+        q: "What happens after an ECS dispatch?",
+        a: "The tenant workflow captures the previous task definition, performs the deployment, waits on ECS steady-state validation, and automatically restores the previous task definition if the new service does not stabilize.",
       },
     ],
   },
@@ -106,11 +106,11 @@ const FAQ_GROUPS = [
     items: [
       {
         q: "Is there a desktop app?",
-        a: "A macOS preview build exists; Windows and Linux builds are not yet released. The web platform is available in all browsers immediately. See /download for the current, release-verified platform state.",
+        a: "Yes. The downloadable Tauri desktop app is the product interface. The download page is the authority for currently published, signed platform builds.",
       },
       {
         q: "What does the desktop app do that the web doesn't?",
-        a: "Local Terraform execution, OS keychain credential storage, secure workstation mode, background scanning with native notifications, and offline audit log export. The same dashboards as web — but the data never leaves your machine.",
+        a: "The public website explains and demonstrates the product. Authenticated /dashboard and /operator browser routes redirect to download; operational work happens in the desktop app using desktop-session authentication.",
       },
       {
         q: "Where do I download?",
@@ -123,15 +123,15 @@ const FAQ_GROUPS = [
     items: [
       {
         q: "How is Axiom priced?",
-        a: "Pricing is quote-based and tied to the installed application, verified capabilities, connector scope, usage limits, and support terms. The public site does not promise an unverified free tier.",
+        a: "The proposed self-service catalog is Free at $0, Pro at $29 per user each month, and Enterprise at $79 per user each month, with 20% annual pricing. Checkout remains disabled until Stripe test-mode products, webhooks, organization seats, and server-side quotas pass review.",
       },
       {
-        q: "Can I review the product before requesting a quote?",
-        a: "Yes. Use the labeled sample-data sandbox, read the documentation, and download the current release. Connecting real systems requires appropriate accounts and permissions.",
+        q: "Can I review the product before paying?",
+        a: "Yes. The interactive demonstration is labeled as scripted sample data, documentation is public, and the Free proposal includes 2 organization members and 10 counted deployments per month once billing entitlements are activated.",
       },
       {
         q: "Which identity options are available?",
-        a: "Desktop sign-in uses the identity providers configured on the deployment. Confirm SAML, OIDC, SCIM, and provider availability in the written implementation scope rather than inferring it from a logo.",
+        a: "Enterprise identity configuration exists, but a configured provider remains pending until a real OIDC or SAML client and sign-in path are verified. A logo or saved provider record does not mean enterprise sign-in is active.",
       },
     ],
   },
@@ -164,10 +164,10 @@ export default function FaqPage() {
         </DocSection>
       ))}
 
-      <DocSection id="more" title="More questions?">
+      <DocSection id="more" title="Need a specific answer?">
         <p className="text-zinc-400">
-          See <Link href="/docs/troubleshooting" className="text-orange-300 hover:text-orange-200">troubleshooting</Link> for specific errors,
-          or <Link href="/contact" className="text-orange-300 hover:text-orange-200">contact us</Link> for anything else.
+          See <Link href="/docs/troubleshooting" className="text-orange-300 hover:text-orange-200">troubleshooting</Link> for connection errors,
+          review the <Link href="/plans" className="text-orange-300 hover:text-orange-200">plan proposal</Link>, or open the in-product documentation from the desktop app.
         </p>
       </DocSection>
 

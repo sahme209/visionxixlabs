@@ -1,7 +1,7 @@
 "use client";
 
 /**
- * Huly-style magnetic card: a wrapper that adds a cursor-following soft
+ * Axiom-style magnetic card: a wrapper that adds a cursor-following soft
  * spotlight + subtle 3D tilt on hover. The cursor "magnetises" the card —
  * a faint bright spot tracks the mouse and the surface tilts a few
  * degrees toward it.

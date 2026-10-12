@@ -1,5 +1,5 @@
 /**
- * Shared UI primitives — Huly-style cards, badges, KPIs, section headers.
+ * Shared UI primitives — Axiom-style cards, badges, KPIs, section headers.
  *
  * Every view in the desktop app composes from these so the look stays
  * coherent. No view should hand-roll a card; if a new variant is needed,

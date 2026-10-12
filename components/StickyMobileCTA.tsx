@@ -21,7 +21,7 @@ export function StickyMobileCTA() {
           <div className="relative flex items-center gap-2">
             <Link
               href="/download"
-              className="cta-shimmer-btn btn-huly flex min-h-11 flex-1 items-center justify-center text-center py-3 px-4 text-zinc-900 rounded-xl font-semibold text-sm transition-colors shadow-sm"
+              className="cta-shimmer-btn btn-axiom flex min-h-11 flex-1 items-center justify-center text-center py-3 px-4 text-zinc-900 rounded-xl font-semibold text-sm transition-colors shadow-sm"
             >
               Download Axiom Agent
             </Link>

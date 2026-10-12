@@ -1,297 +1,121 @@
-/**
- * /design — the design system, presented as a feature.
- *
- * Tokens, materials, typography, motion, and primitives — shown
- * not described. Stripe + Linear + Huly all have one of these.
- * Acts as both portfolio and changelog for the visual system.
- */
-
 import type { Metadata } from "next";
 import Link from "next/link";
-import {
-  ArrowRightIcon,
-  ArrowLeftIcon,
-  CheckIcon,
-  ClipboardDocumentIcon,
-} from "@heroicons/react/24/outline";
-import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/Footer";
+import { Navigation } from "@/components/Navigation";
 
 export const metadata: Metadata = {
-  title: "Design System — VisionXIXLabs",
+  title: "Axiom design system — Vision XIX Labs",
   description:
-    "The tokens, materials, typography, motion, and primitives behind every page on visionxixlabs.com. Show, don't describe.",
+    "The restrained visual and interaction rules behind the Axiom website and desktop experience.",
 };
+
+const colors = [
+  ["Canvas", "#141414"],
+  ["Surface", "#1A1A1A"],
+  ["Text", "#EFEFEC"],
+  ["Axiom orange", "#F54E00"],
+] as const;
+
+const principles = [
+  ["Show the work", "Product behavior is the proof. Decoration never substitutes for capability."],
+  ["Reveal complexity progressively", "Start with the next safe action; expose advanced configuration when it becomes relevant."],
+  ["State boundaries plainly", "Released, configured, preview, and simulated states must look and read differently."],
+  ["Preserve control", "Writes, deployment, and production authority stay visible, scoped, and approval-gated."],
+] as const;
 
 export default function DesignPage() {
   return (
-    <div className="min-h-screen bg-[#09090b] text-white relative overflow-hidden">
-      <div aria-hidden className="pointer-events-none absolute inset-0">
-        <div className="ambient-drift absolute top-0 left-1/2 -translate-x-1/2 w-[820px] h-[480px] rounded-full bg-brand-orange/[0.07] blur-[150px]" />
-        <div className="ambient-drift absolute top-[40%] right-[5%] w-[460px] h-[400px] rounded-full bg-brand-coral/[0.06] blur-[140px]" style={{ animationDelay: "-9s" }} />
-        <div className="ambient-drift absolute bottom-0 left-[5%] w-[380px] h-[300px] rounded-full bg-cyan-500/[0.04] blur-[120px]" style={{ animationDelay: "-15s" }} />
-      </div>
-
+    <div className="min-h-screen bg-[#141414] text-[#efefec]">
       <Navigation />
-
-      <main className="relative max-w-[1400px] mx-auto px-6 md:px-10 pt-32 pb-32">
-        {/* ── HERO ─────────────────────────────────────────────── */}
-        <p className="mono-label inline-flex items-center gap-3 mb-6">
-          <span className="text-brand-coral/90 tabular-nums">DS</span>
-          <span className="h-px w-6 bg-gradient-to-r from-brand-coral/60 to-transparent" />
-          Design system
-        </p>
-
-        <h1 className="font-display text-5xl sm:text-6xl md:text-7xl font-bold leading-[1.02] mb-8 tracking-[-0.045em]">
-          The visual system.{" "}
-          <span className="relative inline-block">
-            Shown, not described.
-            <span aria-hidden className="absolute left-0 -bottom-1 h-[2px] w-full rounded-full bg-gradient-to-r from-brand-coral via-amber-400/70 to-transparent" />
-          </span>
-        </h1>
-
-        <p className="text-[17px] text-zinc-400 max-w-2xl leading-relaxed mb-16">
-          Every page on this site is built from a small set of primitives. Tokens,
-          materials, typography, motion, and a handful of named components.{" "}
-          <Link href="/principles" className="text-brand-coral hover:underline">/principles</Link>{" "}
-          explains the rules. This page shows the result.
-        </p>
-
-        {/* ── COLOR ─────────────────────────────────────────────── */}
-        <Section number="01" title="Color">
-          <p className="text-zinc-300 leading-relaxed mb-8 max-w-2xl">
-            One accent. Coral. Used sparingly — for active states, hover affordances,
-            and the single underline under the punch word of every headline. Orange
-            is the cool base. Cyan appears only in ambient washes.
+      <main>
+        <section className="mx-auto max-w-[1200px] px-5 pb-20 pt-28 sm:px-8 lg:pb-28 lg:pt-36">
+          <p className="text-xs font-medium uppercase tracking-[0.18em] text-[#ff783d]">Design system</p>
+          <h1 className="mt-6 max-w-5xl text-5xl font-medium leading-[0.98] tracking-[-0.055em] sm:text-7xl">
+            Complexity belongs in the capability.
+            <span className="block text-zinc-500">Not in the interface.</span>
+          </h1>
+          <p className="mt-7 max-w-2xl text-base leading-7 text-zinc-400">
+            Axiom uses a quiet neutral system, one intentional accent, direct
+            language, and motion only when it explains a state change.
           </p>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-            <Swatch name="brand-coral" hex="#FF783D" cls="bg-brand-coral" />
-            <Swatch name="brand-orange" hex="#ff783d" cls="bg-brand-orange" />
-            <Swatch name="cyan-500" hex="#06B6D4" cls="bg-cyan-500" />
-            <Swatch name="emerald-400" hex="#34D399" cls="bg-emerald-400" semantic />
-          </div>
-        </Section>
+        </section>
 
-        {/* ── TYPOGRAPHY ────────────────────────────────────────── */}
-        <Section number="02" title="Typography">
-          <p className="text-zinc-300 leading-relaxed mb-8 max-w-2xl">
-            Inter with SF-Pro-leaning OpenType features (cv02 rounded g, cv11
-            single-storey a, ss03 shorter 8). JetBrains Mono for tabular numerals
-            + mono labels. Three sizes per screen. No more.
-          </p>
-          <div className="space-y-6">
-            <TypeRow rule="font-display 5xl-7xl" sample="Display headline.">
-              <span className="font-display text-5xl sm:text-6xl md:text-7xl font-bold leading-[1.02] tracking-[-0.045em]">Display headline.</span>
-            </TypeRow>
-            <TypeRow rule="text-base zinc-400" sample="Body paragraph at 16px.">
-              <span className="text-[16px] text-zinc-400 leading-[1.78]">
-                Body paragraph at 16px with 1.78 line height. Apple-grade reading rhythm.
-                The body is meant to be read, not skimmed.
-              </span>
-            </TypeRow>
-            <TypeRow rule=".mono-label" sample="01 ⎯ Mono label">
-              <span className="mono-label inline-flex items-center gap-3">
-                <span className="text-brand-coral/90 tabular-nums">01</span>
-                <span className="h-px w-6 bg-gradient-to-r from-brand-coral/60 to-transparent" />
-                Mono label
-              </span>
-            </TypeRow>
-            <TypeRow rule=".spec-stat-value" sample="35% spec stat">
-              <span className="spec-stat-value text-5xl text-white font-display">
-                35<span className="spec-stat-unit">%</span>
-              </span>
-            </TypeRow>
-          </div>
-        </Section>
-
-        {/* ── MATERIALS ────────────────────────────────────────── */}
-        <Section number="03" title="Materials">
-          <p className="text-zinc-300 leading-relaxed mb-8 max-w-2xl">
-            Two materials. Both real frosted glass — backdrop-saturate(140%) plus
-            a top-edge inner highlight so the eye reads thickness, not flatness.
-          </p>
-          <div className="grid sm:grid-cols-2 gap-4">
-            <div className="surface-glass rounded-2xl p-6">
-              <p className="mono-label text-brand-coral/85 mb-2">.surface-glass</p>
-              <p className="text-[13.5px] text-zinc-300 leading-relaxed mb-4">
-                The default card material. Used everywhere a card needs to feel
-                like a surface, not a tint.
-              </p>
-              <code className="font-mono text-[11px] text-brand-coral/85 bg-white/[0.04] px-2 py-1 rounded">backdrop-blur(20px) saturate(140%)</code>
-            </div>
-            <div className="surface-frost rounded-2xl p-6">
-              <p className="mono-label text-brand-coral/85 mb-2">.surface-frost</p>
-              <p className="text-[13.5px] text-zinc-300 leading-relaxed mb-4">
-                The premium variant. Stronger blur + saturate, soft coral wash
-                from the top-left corner. Used for hero accessories.
-              </p>
-              <code className="font-mono text-[11px] text-brand-coral/85 bg-white/[0.04] px-2 py-1 rounded">backdrop-blur(28px) saturate(160%)</code>
+        <section className="border-y border-white/[0.08] bg-[#181818]">
+          <div className="mx-auto max-w-[1200px] px-5 py-20 sm:px-8 lg:py-24">
+            <div className="grid gap-12 lg:grid-cols-[0.65fr_1.35fr]">
+              <div>
+                <p className="font-mono text-xs text-zinc-600">01</p>
+                <h2 className="mt-4 text-3xl font-medium tracking-[-0.04em]">Color</h2>
+                <p className="mt-3 text-sm leading-6 text-zinc-500">
+                  Near-black structure, near-white type, and orange for the one
+                  thing that needs attention.
+                </p>
+              </div>
+              <div className="grid gap-px overflow-hidden rounded-2xl border border-white/[0.08] bg-white/[0.08] sm:grid-cols-2">
+                {colors.map(([name, hex]) => (
+                  <div key={name} className="bg-[#141414] p-5">
+                    <div className="h-24 rounded-xl border border-white/[0.1]" style={{ backgroundColor: hex }} />
+                    <div className="mt-4 flex items-center justify-between gap-4 text-sm">
+                      <span>{name}</span>
+                      <code className="text-xs text-zinc-600">{hex}</code>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
-        </Section>
+        </section>
 
-        {/* ── BUTTONS ─────────────────────────────────────────── */}
-        <Section number="04" title="Buttons">
-          <p className="text-zinc-300 leading-relaxed mb-8 max-w-2xl">
-            Two button physics. Both use Apple&apos;s slow-out cubic-bezier so they
-            feel weighted instead of springy. Hover lifts 1px + adds a 5px coral
-            aura. Active snaps down in 50ms.
-          </p>
-          <div className="flex flex-wrap items-center gap-4">
-            <button className="btn-press inline-flex items-center gap-2 px-6 py-3 rounded-full text-[14px] font-semibold tracking-tight">
-              .btn-press
-              <ArrowRightIcon className="h-4 w-4 opacity-60" />
-            </button>
-            <button className="btn-ghost-press inline-flex items-center gap-2 px-6 py-3 rounded-full text-[14px] font-medium tracking-tight">
-              .btn-ghost-press
-            </button>
-            <span className="text-[11.5px] font-mono text-zinc-500">try hover + click</span>
+        <section className="mx-auto max-w-[1200px] px-5 py-20 sm:px-8 lg:py-24">
+          <div className="grid gap-12 lg:grid-cols-[0.65fr_1.35fr]">
+            <div>
+              <p className="font-mono text-xs text-zinc-600">02</p>
+              <h2 className="mt-4 text-3xl font-medium tracking-[-0.04em]">Type and rhythm</h2>
+            </div>
+            <div className="space-y-10 border-y border-white/[0.08] py-8">
+              <p className="text-5xl font-medium leading-none tracking-[-0.055em] sm:text-6xl">
+                Clear at a glance.
+              </p>
+              <p className="max-w-2xl text-base leading-7 text-zinc-400">
+                Headlines make one point. Body copy explains the decision or
+                next action. Technical detail stays available without occupying
+                the first reading path.
+              </p>
+              <p className="font-mono text-xs uppercase tracking-[0.16em] text-zinc-600">
+                Status · repository scoped · approval required
+              </p>
+            </div>
           </div>
-        </Section>
+        </section>
 
-        {/* ── ANATOMY ─────────────────────────────────────────── */}
-        <Section number="05" title="Page anatomy">
-          <p className="text-zinc-300 leading-relaxed mb-8 max-w-2xl">
-            Every marketing hero follows the same five-line rhythm. Same numbered eyebrow,
-            same display headline with one underlined punch word, same 3-pool aurora behind.
-          </p>
-          <div className="surface-glass rounded-2xl p-8">
-            <p className="mono-label inline-flex items-center gap-3 mb-5">
-              <span className="text-brand-coral/90 tabular-nums">EX</span>
-              <span className="h-px w-6 bg-gradient-to-r from-brand-coral/60 to-transparent" />
-              <span>Sample hero</span>
-            </p>
-            <h3 className="font-display text-3xl sm:text-4xl font-bold text-white leading-[1.04] tracking-[-0.035em] mb-3">
-              A familiar{" "}
-              <span className="relative inline-block">
-                pattern.
-                <span aria-hidden className="absolute left-0 -bottom-0.5 h-[2px] w-full rounded-full bg-gradient-to-r from-brand-coral via-amber-400/70 to-transparent" />
-              </span>
-            </h3>
-            <p className="text-[14.5px] text-zinc-400 max-w-xl leading-relaxed mb-4">
-              Mono-label, font-display headline with restrained coral hairline on
-              the punch word, max-w-2xl lede. Then content. Same shape every time.
-            </p>
-            <div className="hairline-soft" />
-            <p className="text-[11px] font-mono text-zinc-500 mt-3 tracking-[0.18em] uppercase">5-line rhythm</p>
-          </div>
-        </Section>
-
-        {/* ── MOTION ──────────────────────────────────────────── */}
-        <Section number="06" title="Motion">
-          <p className="text-zinc-300 leading-relaxed mb-8 max-w-2xl">
-            One ease curve everywhere: <code className="font-mono text-brand-coral/85 bg-white/[0.04] px-1.5 py-0.5 rounded text-[12.5px]">cubic-bezier(0.16, 1, 0.30, 1)</code>.
-            Slow out, deliberate arrival. Apple&apos;s product-video curve.
-          </p>
-          <ul className="space-y-2 text-[14px] text-zinc-300">
-            <li>· Hero cursor: 1.2s slow-out arrival</li>
-            <li>· Button hover: 420ms slow-out lift + coral aura</li>
-            <li>· Button active: 50ms snap-down</li>
-            <li>· Aurora pools: 9-15s ambient drift, randomized phases</li>
-            <li>· Section dot rail: 300ms smooth-step transitions</li>
-          </ul>
-        </Section>
-
-        {/* ── PRIMITIVES ──────────────────────────────────────── */}
-        <Section number="07" title="Primitives">
-          <p className="text-zinc-300 leading-relaxed mb-8 max-w-2xl">
-            Eleven shared React components. Refactoring any one of them
-            propagates to every page that uses it — which is most pages.
-          </p>
-          <div className="surface-glass rounded-2xl p-6">
-            <ul className="grid sm:grid-cols-2 gap-2 text-[12.5px] font-mono text-zinc-300">
-              {[
-                "<Navigation>", "<Footer>", "<DocHeader>",
-                "<FeatureRow>", "<TestimonialsCarousel>", "<DesktopShowcase>",
-                "<EnterpriseTrustSignals>", "<ServicePipeline>", "<CaseStudyBlock>",
-                "<ArchitectureReferenceCard>", "<FAQAccordion>", "<AnimatedButton>",
-                "<SectionRail>", "<CommandPalette>", "<ScrollProgress>",
-              ].map((c) => (
-                <li key={c} className="flex items-center gap-2">
-                  <CheckIcon className="h-3 w-3 text-brand-coral/85 shrink-0" />
-                  <span>{c}</span>
-                </li>
+        <section className="border-y border-white/[0.08] bg-[#181818]">
+          <div className="mx-auto max-w-[1200px] px-5 py-20 sm:px-8 lg:py-24">
+            <p className="font-mono text-xs text-zinc-600">03</p>
+            <h2 className="mt-4 text-3xl font-medium tracking-[-0.04em]">Interaction rules</h2>
+            <div className="mt-10 divide-y divide-white/[0.08] border-y border-white/[0.08]">
+              {principles.map(([title, detail]) => (
+                <div key={title} className="grid gap-3 py-6 md:grid-cols-[260px_1fr]">
+                  <h3 className="font-medium">{title}</h3>
+                  <p className="max-w-2xl text-sm leading-6 text-zinc-500">{detail}</p>
+                </div>
               ))}
-            </ul>
+            </div>
           </div>
-        </Section>
+        </section>
 
-        {/* ── CMD K ──────────────────────────────────────────── */}
-        <Section number="08" title="⌘K">
-          <p className="text-zinc-300 leading-relaxed mb-6 max-w-2xl">
-            Global keyboard navigator. ⌘K (Mac) / Ctrl+K (everywhere else)
-            opens a frosted-glass command palette with fuzzy search across
-            every page on the site. Linear / Vercel / Cron-grade.
-          </p>
-          <div className="flex flex-wrap items-center gap-3">
-            <kbd className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md border border-brand-coral/30 bg-brand-coral/[0.06] text-brand-coral font-mono text-[12px] tracking-tight">
-              ⌘ K
-            </kbd>
-            <span className="text-[12px] font-mono text-zinc-500">try it now</span>
-          </div>
-        </Section>
-
-        {/* Closing block */}
-        <div className="mt-24 pt-12 border-t border-white/[0.06] grid sm:grid-cols-2 gap-6">
+        <section className="mx-auto flex max-w-[1200px] flex-col gap-7 px-5 py-20 sm:px-8 lg:flex-row lg:items-end lg:justify-between lg:py-28">
           <div>
-            <p className="mono-label mb-2">See also</p>
-            <ul className="space-y-1.5 text-[13.5px] text-zinc-300">
-              <li><Link href="/principles" className="hover:text-brand-coral transition-colors">/principles &mdash; why these decisions →</Link></li>
-              <li><Link href="/handbook" className="hover:text-brand-coral transition-colors">/handbook &mdash; how we build it →</Link></li>
-              <li><Link href="/manifesto" className="hover:text-brand-coral transition-colors">/manifesto &mdash; what we believe →</Link></li>
-            </ul>
+            <p className="text-xs font-medium uppercase tracking-[0.18em] text-[#ff783d]">See it applied</p>
+            <h2 className="mt-4 max-w-2xl text-4xl font-medium tracking-[-0.045em] sm:text-5xl">
+              Watch the workflow explain itself.
+            </h2>
           </div>
-          <div className="flex justify-start sm:justify-end">
-            <Link
-              href="/"
-              className="btn-ghost-press inline-flex items-center gap-2 px-5 py-3 rounded-full text-[13.5px] font-medium tracking-tight"
-            >
-              <ArrowLeftIcon className="h-3.5 w-3.5" />
-              Back to home
-            </Link>
-          </div>
-        </div>
+          <Link href="/demo" className="inline-flex min-h-12 shrink-0 items-center justify-center rounded-full bg-[#efefec] px-6 text-sm font-semibold text-[#141414] hover:bg-white">
+            Explore the interactive demo
+          </Link>
+        </section>
       </main>
-
       <Footer />
-    </div>
-  );
-}
-
-// ─── helpers ─────────────────────────────────────────────────
-
-function Section({ number, title, children }: { number: string; title: string; children: React.ReactNode }) {
-  return (
-    <section className="mb-24">
-      <p className="mono-label mb-6 inline-flex items-center gap-3">
-        <span className="text-brand-coral/90 tabular-nums">{number}</span>
-        <span className="h-px w-6 bg-gradient-to-r from-brand-coral/60 to-transparent" />
-        <span className="text-zinc-500">{title}</span>
-      </p>
-      {children}
-    </section>
-  );
-}
-
-function Swatch({ name, hex, cls, semantic }: { name: string; hex: string; cls: string; semantic?: boolean }) {
-  return (
-    <div className="surface-glass rounded-xl overflow-hidden">
-      <div className={`h-20 ${cls}`} />
-      <div className="p-3">
-        <p className="font-mono text-[11.5px] text-white">{name}</p>
-        <p className="font-mono text-[10px] text-zinc-500 mt-0.5">{hex}</p>
-        {semantic && <p className="text-[9.5px] font-mono text-emerald-400/85 uppercase tracking-wider mt-1">semantic only</p>}
-      </div>
-    </div>
-  );
-}
-
-function TypeRow({ rule, sample, children }: { rule: string; sample: string; children: React.ReactNode }) {
-  void sample;
-  return (
-    <div className="flex flex-col sm:flex-row sm:items-baseline gap-2 sm:gap-6 pb-5 border-b border-white/[0.04]">
-      <p className="font-mono text-[10.5px] text-brand-coral/75 uppercase tracking-wider w-40 shrink-0 whitespace-nowrap">{rule}</p>
-      <div className="flex-1 min-w-0">{children}</div>
     </div>
   );
 }

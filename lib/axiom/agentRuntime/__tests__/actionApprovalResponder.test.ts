@@ -10,6 +10,7 @@ const mocks = vi.hoisted(() => ({
   resolveGitReference: vi.fn(),
   getFile: vi.fn(),
   getRepositoryDefaultBranch: vi.fn(),
+  checkDeploymentQuota: vi.fn(),
 }));
 
 vi.mock("@/lib/connectors/github/resolveTenantScopedToken", () => ({
@@ -24,6 +25,7 @@ vi.mock("@/lib/connectors/github/githubWriteClient", () => ({
   getRepositoryDefaultBranch: mocks.getRepositoryDefaultBranch,
   resolveGitReference: mocks.resolveGitReference,
 }));
+vi.mock("@/lib/billing/deploymentQuota", () => ({ checkDeploymentQuota: mocks.checkDeploymentQuota }));
 
 import { executeApprovedAction, type ActionExecutionRepo } from "../actionApprovalResponder";
 
@@ -39,6 +41,7 @@ beforeEach(() => {
   mocks.resolveTenantScopedToken.mockResolvedValue({ ok: true, token: "installation-token" });
   mocks.resolveGitReference.mockResolvedValue({ ok: true, data: { kind: "branch", ref: "main", commitSha: "sha-main" } });
   mocks.getRepositoryDefaultBranch.mockResolvedValue({ ok: true, data: "main" });
+  mocks.checkDeploymentQuota.mockResolvedValue({ allowed: true, planId: "free", used: 0, limit: 10, remaining: 10 });
 });
 
 describe("executeApprovedAction", () => {
@@ -138,5 +141,14 @@ describe("executeApprovedAction", () => {
     expect(mocks.dispatchWorkflow).toHaveBeenCalledWith(expect.objectContaining({
       inputs: { role_arn: "arn:aws:iam::123:role/x", region: "us-east-2", cluster: "c", service: "s" },
     }));
+  });
+
+  it("trigger_aws_deploy stops after policy evaluation when quota is exhausted", async () => {
+    mocks.checkDeploymentQuota.mockResolvedValue({
+      allowed: false, planId: "free", used: 10, limit: 10, remaining: 0, reason: "deployment_quota_exhausted",
+    });
+    const result = await executeApprovedAction(repo, "org-1", "trigger_aws_deploy", { repositoryFullName: "acme/widgets", environmentId: "env_1" });
+    expect(result).toEqual({ ok: false, error: "deployment_quota_exhausted" });
+    expect(mocks.dispatchWorkflow).not.toHaveBeenCalled();
   });
 });

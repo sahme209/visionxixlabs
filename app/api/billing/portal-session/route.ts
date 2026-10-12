@@ -11,16 +11,28 @@ import { currentContext } from "@/lib/auth/currentContext";
 import { readBillingPlan } from "@/lib/billing/tenantBillingStore";
 import { createBillingPortalSession } from "@/lib/billing/stripeHelper";
 import { apiOk, apiErr, asApiSourceMode, resolveCorrelationId } from "@/lib/api";
-import { AxiomErrors } from "@/lib/errors/axiomErrors";
+import { AxiomError } from "@/lib/errors/axiomErrors";
+import { isSelfServiceBillingEnabled } from "@/lib/billing/publicPlanCatalog";
+import { isAdminOrOwner } from "@/lib/auth/platformAdmin";
+import { isSameOriginRequest } from "@/lib/auth/requestOrigin";
 
 export const dynamic = "force-dynamic";
 
 export async function POST(req: NextRequest) {
   const correlationId = resolveCorrelationId(req.headers);
   try {
+    if (!isSelfServiceBillingEnabled()) {
+      throw new AxiomError({ code: "billing.portal.disabled", category: "precondition", userMessage: "Self-service billing is not active yet." });
+    }
+    if (!isSameOriginRequest(req)) {
+      throw new AxiomError({ code: "billing.origin.invalid", category: "authorization", userMessage: "This billing request did not come from the Axiom application." });
+    }
     const ctx = await currentContext();
-    if (!ctx.isAuthenticated || !ctx.organizationId) {
-      throw AxiomErrors.validation("auth.required", "Sign in required.");
+    if (!ctx.isAuthenticated || !ctx.organizationId || !ctx.email) {
+      throw new AxiomError({ code: "auth.required", category: "authentication", userMessage: "Sign in required." });
+    }
+    if (!isAdminOrOwner({ email: ctx.email, roles: ctx.roles })) {
+      throw new AxiomError({ code: "billing.admin_required", category: "authorization", userMessage: "A workspace owner or admin must manage billing." });
     }
     const plan = await readBillingPlan(String(ctx.organizationId));
     if (!plan.stripeCustomerId) {
@@ -30,10 +42,10 @@ export async function POST(req: NextRequest) {
         sourceMode: asApiSourceMode("preview"),
       });
     }
-    const origin = req.headers.get("origin") ?? req.nextUrl.origin;
+    const origin = process.env.NEXTAUTH_URL?.trim() || req.nextUrl.origin;
     const result = await createBillingPortalSession({
       customerId: plan.stripeCustomerId,
-      returnUrl: `${origin}/dashboard/billing`,
+      returnUrl: `${origin}/account?billing=return`,
     });
     return apiOk(result, {
       correlationId,

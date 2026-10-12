@@ -21,12 +21,8 @@ export const metadata: Metadata = {
 
 export default function InsightsPage() {
   return (
-    <div className="min-h-screen bg-[#09090b] relative overflow-hidden">
-      {/* Huly aurora */}
-      <div className="absolute inset-0 bg-grid-mesh opacity-10 pointer-events-none" aria-hidden />
-      <div className="ambient-drift absolute -top-40 left-1/3 w-[520px] h-[480px] rounded-full bg-brand-orange/[0.08] blur-[140px] pointer-events-none" aria-hidden />
-      <div className="ambient-drift absolute top-1/4 right-[5%] w-[420px] h-[340px] rounded-full bg-brand-coral/[0.06] blur-[120px] pointer-events-none" style={{ animationDelay: "-8s" }} aria-hidden />
-      <div className="ambient-drift absolute bottom-32 left-[5%] w-[360px] h-[280px] rounded-full bg-cyan-500/[0.04] blur-[110px] pointer-events-none" style={{ animationDelay: "-14s" }} aria-hidden />
+    <div className="min-h-screen bg-[#141414] relative overflow-hidden">
+      <div className="absolute -top-40 left-1/3 h-[480px] w-[520px] rounded-full bg-orange-500/[0.06] blur-[150px] pointer-events-none" aria-hidden />
 
       <Navigation />
       <main className="max-w-[1400px] mx-auto px-6 md:px-10 pt-32 pb-16 relative">
@@ -93,10 +89,11 @@ export default function InsightsPage() {
         <Reveal direction="up" blur delay={0.15}>
           <section className="glass-card rounded-2xl border border-orange-500/20 bg-orange-500/10 p-8 text-center">
             <h2 className="text-xl font-bold text-white mb-2 tracking-[-0.04em]">
-              Try <span className="text-gradient">Axiom Agent</span>
+              See Axiom Agent in context
             </h2>
             <p className="text-zinc-400 text-sm mb-4 max-w-xl mx-auto">
-              Autonomous cloud operations for AWS, Azure, and GCP. Connect your cloud and let Axiom handle the rest.
+              Watch a scripted repository-to-deployment workflow, then download
+              the desktop app to connect a supported system.
             </p>
             <AnimatedButton variant="primary" href="/download">
               Download Axiom Agent

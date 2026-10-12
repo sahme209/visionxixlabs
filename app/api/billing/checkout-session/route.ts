@@ -1,7 +1,7 @@
 /**
  * POST /api/billing/checkout-session
  *
- * Body: { tier: "starter" | "growth" | "enterprise" }
+ * Body: { planId: "pro" | "enterprise", billingInterval: "monthly" | "annual" }
  *
  * Returns a Stripe Checkout URL when Stripe is configured. Returns
  * an honest `{ ok: false, reason }` when it isn't — callers render
@@ -11,10 +11,16 @@
 import type { NextRequest } from "next/server";
 import { currentContext } from "@/lib/auth/currentContext";
 import { createCheckoutSession } from "@/lib/billing/stripeHelper";
-import { isBillingTier } from "@/lib/billing/tierCatalog";
 import { apiOk, apiErr, asApiSourceMode, resolveCorrelationId } from "@/lib/api";
-import { AxiomErrors } from "@/lib/errors/axiomErrors";
-import { isSelfServiceBillingEnabled } from "@/lib/billing/publicPlanCatalog";
+import { AxiomError, AxiomErrors } from "@/lib/errors/axiomErrors";
+import {
+  isBillingInterval,
+  isPaidPublicPlanId,
+  isSelfServiceBillingEnabled,
+} from "@/lib/billing/publicPlanCatalog";
+import { isAdminOrOwner } from "@/lib/auth/platformAdmin";
+import { isSameOriginRequest } from "@/lib/auth/requestOrigin";
+import { prisma } from "@/lib/db";
 
 export const dynamic = "force-dynamic";
 
@@ -22,27 +28,40 @@ export async function POST(req: NextRequest) {
   const correlationId = resolveCorrelationId(req.headers);
   try {
     if (!isSelfServiceBillingEnabled()) {
-      throw AxiomErrors.validation(
-        "billing.checkout.disabled",
-        "Self-service billing is not active yet.",
-      );
+      throw new AxiomError({ code: "billing.checkout.disabled", category: "precondition", userMessage: "Self-service billing is not active yet." });
+    }
+    if (!isSameOriginRequest(req)) {
+      throw new AxiomError({ code: "billing.origin.invalid", category: "authorization", userMessage: "This billing request did not come from the Axiom application." });
     }
     const ctx = await currentContext();
     if (!ctx.isAuthenticated || !ctx.organizationId || !ctx.email) {
-      throw AxiomErrors.validation("auth.required", "Sign in required.");
+      throw new AxiomError({ code: "auth.required", category: "authentication", userMessage: "Sign in required." });
     }
-    const body = (await req.json()) as { tier?: string } | null;
-    if (!body?.tier || !isBillingTier(body.tier) || body.tier === "trial") {
-      throw AxiomErrors.validation("billing.tier.invalid", "tier must be starter | growth | enterprise.");
+    if (!isAdminOrOwner({ email: ctx.email, roles: ctx.roles })) {
+      throw new AxiomError({ code: "billing.admin_required", category: "authorization", userMessage: "A workspace owner or admin must manage billing." });
+    }
+    const body = (await req.json()) as { planId?: string; billingInterval?: string } | null;
+    if (!body?.planId || !isPaidPublicPlanId(body.planId)) {
+      throw AxiomErrors.validation("billing.plan.invalid", "planId must be pro or enterprise.");
+    }
+    const billingInterval = body.billingInterval ?? "monthly";
+    if (!isBillingInterval(billingInterval)) {
+      throw AxiomErrors.validation("billing.interval.invalid", "billingInterval must be monthly or annual.");
     }
 
-    const origin = req.headers.get("origin") ?? req.nextUrl.origin;
+    const seatCount = Math.max(1, await prisma.orgMembership.count({
+      where: { organizationId: String(ctx.organizationId), acceptedAt: { not: null } },
+    }));
+
+    const origin = process.env.NEXTAUTH_URL?.trim() || req.nextUrl.origin;
     const result = await createCheckoutSession({
       organizationId: String(ctx.organizationId),
       email: ctx.email,
-      tier: body.tier,
-      successUrl: `${origin}/dashboard/billing?upgraded=1`,
-      cancelUrl: `${origin}/dashboard/billing?canceled=1`,
+      planId: body.planId,
+      billingInterval,
+      seatCount,
+      successUrl: `${origin}/account?billing=success`,
+      cancelUrl: `${origin}/plans?checkout=canceled`,
     });
 
     return apiOk(result, {

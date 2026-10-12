@@ -35,64 +35,64 @@ const TRIGGER_CONTENT: Record<
   }
 > = {
   "fix-automatically": {
-    headline: "Get step-by-step guidance to fix this",
+    headline: "Turn this into a governed change",
     description:
-      "See exactly what to change, with detailed Terraform configs and implementation steps tailored to your infrastructure.",
+      "Ask the Agent to prepare a repository change. Axiom pauses before every write so an authorized reviewer can inspect and approve it.",
     features: [
-      { icon: BoltIcon, label: "Ready-to-use Terraform configurations" },
-      { icon: ShieldCheckIcon, label: "Step-by-step implementation guide" },
-      { icon: ArrowPathIcon, label: "Weekly re-scan to confirm the fix held" },
+      { icon: BoltIcon, label: "Repository-scoped GitHub changes" },
+      { icon: ShieldCheckIcon, label: "Explicit approval before every write" },
+      { icon: ArrowPathIcon, label: "Proposal and execution audit history" },
     ],
     example: {
-      heading: "Example: Single-region fix",
-      content: 'resource "aws_instance" "app_west" {\n  ami           = data.aws_ami.app.id\n  instance_type = "t3.micro"\n  availability_zone = "us-west-2a"\n  # Mirror of your us-east-1 setup\n}',
+      heading: "Example · simulated proposal",
+      content: "Repository: acme/widgets\nBranch: axiom/readme-fix\nAction: Commit one reviewed file\nRisk: Medium · approval required",
     },
-    cta: "Unlock detailed fix guide",
+    cta: "Choose Pro",
   },
   "continuous-monitoring": {
-    headline: "Want us to watch this for you?",
+    headline: "Automate the release checkpoint",
     description:
-      "We'll re-scan your infrastructure weekly and alert you if anything gets worse or new risks appear.",
+      "Schedule governed deployment automation around verified Airflow DAG completion and configured release conditions.",
     features: [
-      { icon: ArrowPathIcon, label: "Automated weekly scans" },
-      { icon: ChartBarIcon, label: "Trend tracking over time" },
-      { icon: ShieldCheckIcon, label: "Alerts on new high-severity risks" },
+      { icon: ArrowPathIcon, label: "Scheduled Airflow condition checks" },
+      { icon: ChartBarIcon, label: "Batch and dependency status" },
+      { icon: ShieldCheckIcon, label: "Approval-gated PR and deploy actions" },
     ],
     example: {
-      heading: "Example: Weekly trend report",
-      content: "Week 1: Score 42 → Week 2: Score 48 (+6)\nRisk: High → Medium (after IAM fix)\nNew finding: S3 bucket public since Tuesday",
+      heading: "Example · simulated condition",
+      content: "When: daily_transform succeeds\nCheck: upstream dependencies complete\nThen: propose deployment to Development\nFailure: retry, notify, and preserve evidence",
     },
-    cta: "Enable continuous monitoring",
+    cta: "Choose Pro",
   },
   "deeper-analysis": {
-    headline: "Go deeper on this infrastructure",
+    headline: "Keep the full decision context",
     description:
-      "Get a full security audit, cost optimization report, and architecture review across all your regions.",
+      "Give the Agent repository, branch, environment, and connected-system context while keeping every consequential action governed.",
     features: [
-      { icon: ChartBarIcon, label: "Multi-region deep scan" },
-      { icon: ShieldCheckIcon, label: "IAM & network security audit" },
-      { icon: BoltIcon, label: "Cost optimization recommendations" },
+      { icon: ChartBarIcon, label: "Workspace-aware release context" },
+      { icon: ShieldCheckIcon, label: "Risk classification that only escalates" },
+      { icon: BoltIcon, label: "GitHub, AWS ECS, and Airflow tools" },
     ],
     example: {
-      heading: "Example: IAM audit finding",
-      content: "3 roles with AdministratorAccess attached.\nRecommendation: Scope to least-privilege\nusing IAM Access Analyzer + boundary policies.\nEst. risk reduction: 40%.",
+      heading: "Example · simulated context",
+      content: "Repository: acme/widgets · main\nEnvironment: Development\nDeployment target: AWS ECS\nAgent result: plan ready for review",
     },
-    cta: "Unlock full analysis",
+    cta: "Choose Pro",
   },
   "deploy-fix": {
-    headline: "See detailed infrastructure recommendations",
+    headline: "Move from approval to verified deployment",
     description:
-      "Get Terraform configurations, architecture diagrams, and a prioritized implementation roadmap for your environment.",
+      "Dispatch the tenant-owned AWS ECS workflow after approval, wait for steady state, and retain the rollback result with the release record.",
     features: [
-      { icon: BoltIcon, label: "Ready-to-use Terraform configurations" },
-      { icon: ShieldCheckIcon, label: "Architecture review and diagrams" },
-      { icon: ArrowPathIcon, label: "Prioritized implementation roadmap" },
+      { icon: BoltIcon, label: "GitHub Actions OIDC · no stored AWS key" },
+      { icon: ShieldCheckIcon, label: "Environment and role-scoped target" },
+      { icon: ArrowPathIcon, label: "ECS steady-state check and rollback" },
     ],
     example: {
-      heading: "Example: 30-day roadmap excerpt",
-      content: "Days 1-3: Lock down public exposure, enforce\nleast-privilege IAM (critical)\nDays 4-10: Right-size instances, enable\nreserved capacity (saves ~$4k/yr)",
+      heading: "Example · simulated release",
+      content: "Target: Development · api-service\nGate: Admin approval recorded\nValidation: ECS steady state\nRecovery: previous task definition",
     },
-    cta: "Unlock full recommendations",
+    cta: "Choose Pro",
   },
 };
 
@@ -100,7 +100,6 @@ export function AxiomUpgradeModal({
   open,
   onClose,
   trigger,
-  leadId,
   insightTitle,
 }: AxiomUpgradeModalProps) {
   const dialogRef = useRef<HTMLDialogElement>(null);
@@ -129,31 +128,29 @@ export function AxiomUpgradeModal({
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch("/api/billing/create-checkout-session", {
+      const res = await fetch("/api/billing/checkout-session", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          leadId: leadId ?? undefined,
-          tier: "pro",
-          sourcePage: `cloud-operator:${trigger}`,
+          planId: "pro",
+          billingInterval: "monthly",
         }),
       });
-      const data = await res.json();
-      if (data.url) {
-        window.location.href = data.url;
+      const payload = await res.json() as {
+        data?: { ok?: boolean; url?: string; reason?: string };
+        error?: { userMessage?: string };
+      };
+      if (payload.data?.ok && payload.data.url) {
+        window.location.href = payload.data.url;
         return;
       }
-      if (data.cta === "contact") {
-        window.location.href = `/contact?intent=upgrade&trigger=${trigger}`;
-        return;
-      }
-      setError(data.message || "Something went wrong. Try again.");
+      setError(payload.data?.reason || payload.error?.userMessage || "Checkout is not available yet.");
     } catch {
       setError("Connection error. Please try again.");
     } finally {
       setLoading(false);
     }
-  }, [leadId, trigger]);
+  }, []);
 
   const content = TRIGGER_CONTENT[trigger];
 
@@ -206,9 +203,7 @@ export function AxiomUpgradeModal({
           <pre className="text-[11px] text-zinc-300 font-mono leading-relaxed whitespace-pre-wrap">
             {content.example.content}
           </pre>
-          <p className="mt-1.5 text-[10px] text-zinc-500">
-            Your output will be generated from your actual scan data.
-          </p>
+          <p className="mt-1.5 text-[10px] text-zinc-500">Illustrative data. The desktop app shows verified workspace context and never executes a write without the required approval.</p>
         </div>
 
         {error && (

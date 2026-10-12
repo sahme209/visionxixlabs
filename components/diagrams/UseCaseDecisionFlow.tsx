@@ -7,12 +7,12 @@
 export function UseCaseDecisionFlow() {
   const center = { x: 360, y: 100 };
   const branches = [
-    { label: "Support & CX", x: 100, y: 40, color: "#6366f1" },
+    { label: "Support & CX", x: 100, y: 40, color: "#f54e00" },
     { label: "Automation", x: 100, y: 100, color: "#10b981" },
-    { label: "Analytics", x: 100, y: 160, color: "#14b8a6" },
+    { label: "Analytics", x: 100, y: 160, color: "#d97706" },
     { label: "Internal AI", x: 620, y: 40, color: "#ff783d" },
-    { label: "DevOps", x: 620, y: 100, color: "#0ea5e9" },
-    { label: "Data Extraction", x: 620, y: 160, color: "#ec4899" },
+    { label: "DevOps", x: 620, y: 100, color: "#a8a29e" },
+    { label: "Data Extraction", x: 620, y: 160, color: "#78716c" },
   ];
 
   return (
@@ -51,8 +51,8 @@ export function UseCaseDecisionFlow() {
         <g filter="url(#uc-shadow)">
           <path
             d={`M ${center.x} ${center.y - 35} L ${center.x + 50} ${center.y} L ${center.x} ${center.y + 35} L ${center.x - 50} ${center.y} Z`}
-            fill="#6366f1"
-            stroke="#4f46e5"
+            fill="#f54e00"
+            stroke="#ff783d"
             strokeWidth="2"
           />
           <text x={center.x} y={center.y - 5} textAnchor="middle" className="fill-white font-bold text-xs" fill="white">Where to</text>

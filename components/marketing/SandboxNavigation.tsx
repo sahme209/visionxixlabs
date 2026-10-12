@@ -9,7 +9,7 @@ export function SandboxNavigation() {
     return (
         <nav
             aria-label="Sandbox navigation"
-            className="sticky top-0 z-50 border-b border-white/[0.06] bg-[#09090b]/95 backdrop-blur-xl"
+            className="sticky top-0 z-50 border-b border-white/[0.06] bg-[#141414]/95 backdrop-blur-xl"
         >
             <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 px-4 py-3 sm:px-6">
                 <Link

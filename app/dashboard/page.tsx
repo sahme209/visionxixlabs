@@ -8,7 +8,7 @@
  * capability rail in three columns, connected accounts, empty state,
  * desktop pitch. That made the page hard to read.
  *
- * Huly.io / Jony Ive pass: subtract until each section earns its place.
+ * Axiom.io / Jony Ive pass: subtract until each section earns its place.
  *   1. Header — workspace label, welcome, two quiet CTAs. No mode badges,
  *      no gradient text.
  *   2. Next best action — single calm card, no orbs, no glow. The most

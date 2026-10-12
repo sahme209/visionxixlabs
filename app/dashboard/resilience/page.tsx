@@ -372,7 +372,7 @@ export default function ResilienceDashboard() {
               <button
                 onClick={runAnalysis}
                 disabled={analyzing || linkedProviders.length === 0}
-                className={`btn-huly cta-glow px-7 py-3 text-[15px] font-semibold text-white rounded-xl transition-all ${
+                className={`btn-axiom cta-glow px-7 py-3 text-[15px] font-semibold text-white rounded-xl transition-all ${
                   analyzing
                     ? "bg-zinc-700 cursor-wait"
                     : "bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-500 hover:to-amber-500"
@@ -406,7 +406,7 @@ export default function ResilienceDashboard() {
                 <ScoreRing score={report.resilienceScore.total} grade={report.resilienceScore.grade} />
                 <div className="flex-1 min-w-[260px]">
                   <div className="flex items-center gap-2 mb-1.5">
-                    <span className="huly-badge text-[11px] font-semibold uppercase" style={{
+                    <span className="axiom-badge text-[11px] font-semibold uppercase" style={{
                       color: gradeColor(report.resilienceScore.grade),
                       background: `${gradeColor(report.resilienceScore.grade)}15`,
                     }}>
@@ -458,7 +458,7 @@ export default function ResilienceDashboard() {
                 </div>
                 <div className="mt-3.5 flex flex-wrap gap-1.5">
                   {report.recommendedArchitecture.components.map((c, i) => (
-                    <span key={i} className="huly-badge text-zinc-500">{c}</span>
+                    <span key={i} className="axiom-badge text-zinc-500">{c}</span>
                   ))}
                 </div>
               </div>
@@ -518,7 +518,7 @@ export default function ResilienceDashboard() {
               )}
 
               {!tfJob && (
-                <button onClick={generateTerraform} disabled={tfLoading} className={`btn-huly cta-glow px-6 py-2.5 text-sm font-semibold text-white rounded-lg transition-all ${
+                <button onClick={generateTerraform} disabled={tfLoading} className={`btn-axiom cta-glow px-6 py-2.5 text-sm font-semibold text-white rounded-lg transition-all ${
                   tfLoading ? "bg-zinc-700 cursor-wait" : "bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-500 hover:to-amber-500"
                 }`}>
                   {tfLoading ? "Generating infrastructure plan..." : "Generate Deployment Plan"}
@@ -531,7 +531,7 @@ export default function ResilienceDashboard() {
                     <span className="w-2 h-2 rounded-full bg-emerald-500" />
                     <span className="text-sm text-emerald-400">Infrastructure plan generated</span>
                   </div>
-                  <button onClick={runPlan} disabled={tfLoading} className={`btn-huly px-6 py-2.5 text-sm font-semibold text-white rounded-lg transition-all ${
+                  <button onClick={runPlan} disabled={tfLoading} className={`btn-axiom px-6 py-2.5 text-sm font-semibold text-white rounded-lg transition-all ${
                     tfLoading ? "bg-zinc-700 cursor-wait" : "bg-blue-600 hover:bg-blue-500"
                   }`}>
                     {tfLoading ? "Validating plan..." : "Preview Changes"}
@@ -590,7 +590,7 @@ export default function ResilienceDashboard() {
                     <button
                       onClick={approvePlan}
                       disabled={tfLoading || confirmInput !== "CONFIRM APPLY"}
-                      className={`btn-huly px-5 py-2.5 text-sm font-semibold text-white rounded-lg border transition-all ${
+                      className={`btn-axiom px-5 py-2.5 text-sm font-semibold text-white rounded-lg border transition-all ${
                         confirmInput === "CONFIRM APPLY"
                           ? "bg-orange-600 border-orange-600 hover:bg-orange-500 cursor-pointer"
                           : "bg-white/[0.02] border-white/[0.06] opacity-40 cursor-not-allowed"
@@ -608,7 +608,7 @@ export default function ResilienceDashboard() {
                     <span className="w-2 h-2 rounded-full bg-emerald-500" />
                     <span className="text-sm text-emerald-400">Plan approved. Ready to deploy.</span>
                   </div>
-                  <button onClick={runApply} disabled={tfLoading} className={`btn-huly cta-glow px-6 py-2.5 text-sm font-semibold text-white rounded-lg transition-all ${
+                  <button onClick={runApply} disabled={tfLoading} className={`btn-axiom cta-glow px-6 py-2.5 text-sm font-semibold text-white rounded-lg transition-all ${
                     tfLoading ? "bg-zinc-700 cursor-wait" : "bg-emerald-600 hover:bg-emerald-500"
                   }`}>
                     {tfLoading ? "Deploying infrastructure..." : "Deploy Standby Infrastructure"}
@@ -655,7 +655,7 @@ export default function ResilienceDashboard() {
             <button
               onClick={() => { setReport(null); setTfJob(null); setTfError(null); setPlanOutput(null); setConfirmInput(""); runAnalysis(); }}
               disabled={analyzing}
-              className="btn-huly px-5 py-2 text-sm font-medium text-zinc-500 bg-transparent border border-white/[0.06] rounded-lg hover:text-zinc-500 hover:border-white/[0.08] transition-colors"
+              className="btn-axiom px-5 py-2 text-sm font-medium text-zinc-500 bg-transparent border border-white/[0.06] rounded-lg hover:text-zinc-500 hover:border-white/[0.08] transition-colors"
             >
               {analyzing ? "Analyzing..." : "Re-run analysis"}
             </button>

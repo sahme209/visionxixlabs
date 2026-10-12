@@ -1,7 +1,7 @@
 "use client";
 
 /**
- * Huly-style cursor-reactive motherboard backdrop.
+ * Axiom-style cursor-reactive motherboard backdrop.
  *
  * A faint SVG circuit pattern fills the parent container; a soft radial
  * spotlight tracks the cursor + reveals the pattern brighter where the
@@ -129,7 +129,7 @@ export function MotherboardBackdrop({
 // ---------------------------------------------------------------------------
 // Pattern — an SVG circuit board, base64-encoded so it works in any browser
 // without an external request. 180×180 px tile that includes traces, vias,
-// and labelled pads — same density Huly's hero uses.
+// and labelled pads — same density Axiom's hero uses.
 // ---------------------------------------------------------------------------
 
 function PATTERN_DATA_URI(rgb: string): string {

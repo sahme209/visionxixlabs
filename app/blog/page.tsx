@@ -1,5 +1,5 @@
 /**
- * /blog — the public blog index, Huly-style.
+ * /blog — the public product and engineering journal.
  *
  * Featured post pinned at the top with a hero card, then a category tab
  * row, then a list of remaining posts. Server-rendered from
@@ -25,8 +25,8 @@ function fmtDate(iso: string): string {
 const CAT_TONE: Record<string, string> = {
   "Product Updates":    "text-zinc-300",
   "Engineering":        "text-orange-300",
-  "Industry Insights":  "text-cyan-300",
-  "Trust & Security":   "text-emerald-300",
+  "Industry Insights":  "text-zinc-400",
+  "Trust & Security":   "text-orange-200",
 };
 
 export default function BlogIndex() {
@@ -36,18 +36,16 @@ export default function BlogIndex() {
   const categories = listCategories();
 
   return (
-    <div className="min-h-screen bg-[#09090b] text-white relative overflow-hidden">
-      {/* Coral × orange × cyan aurora — Huly atmosphere */}
+    <div className="min-h-screen bg-[#141414] text-white relative overflow-hidden">
+      {/* One restrained brand accent keeps the editorial surface calm. */}
       <div className="absolute inset-0 pointer-events-none" aria-hidden>
-        <div className="ambient-drift absolute top-0 left-1/2 -translate-x-1/2 w-[900px] h-[600px] rounded-full bg-brand-orange/[0.07] blur-[160px]" />
-        <div className="ambient-drift absolute top-[20%] -right-40 w-[520px] h-[460px] rounded-full bg-brand-coral/[0.06] blur-[140px]" style={{ animationDelay: "-9s" }} />
-        <div className="ambient-drift absolute top-[60%] -left-40 w-[420px] h-[340px] rounded-full bg-cyan-500/[0.04] blur-[120px]" style={{ animationDelay: "-15s" }} />
+        <div className="absolute top-0 left-1/2 h-[520px] w-[820px] -translate-x-1/2 rounded-full bg-orange-500/[0.06] blur-[160px]" />
       </div>
 
       <Navigation />
 
       <main className="relative z-10 max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-24">
-        {/* Page header — Huly numbered + coral underline */}
+        {/* Editorial header */}
         <header className="mb-16">
           <p className="text-[10px] font-mono uppercase tracking-[0.28em] text-zinc-500 mb-4 inline-flex items-center gap-3">
             <span className="text-brand-coral/90 tabular-nums">B1</span>
@@ -55,14 +53,9 @@ export default function BlogIndex() {
             Blog
           </p>
           <h1 className="text-5xl md:text-6xl font-bold tracking-[-0.045em] leading-[1.05] mb-4">
-            Building the autonomous
+            Product and engineering
             <br />
-            <span className="relative inline-block">
-              <span className="bg-gradient-to-r from-brand-coral via-amber-400 to-brand-orange bg-clip-text text-transparent">
-                cloud operating system.
-              </span>
-              <span aria-hidden className="absolute left-0 -bottom-1 h-[3px] w-[92%] rounded-full bg-gradient-to-r from-brand-coral via-amber-400 to-transparent opacity-80" />
-            </span>
+            <span className="text-zinc-400">notes from Axiom.</span>
           </h1>
           <p className="text-base md:text-lg text-zinc-400 max-w-2xl leading-relaxed">
             Product updates, engineering essays, and trust + security notes from the team building Axiom Agent.
@@ -73,7 +66,7 @@ export default function BlogIndex() {
         <section className="mb-20">
           <Link
             href={`/blog/${featured.slug}`}
-            className="group block relative rounded-3xl border border-white/[0.07] bg-gradient-to-br from-[#0d0d12] via-[#0a0a0f] to-[#08080c] p-8 md:p-12 overflow-hidden hover:border-orange-500/30 transition-all"
+            className="group block relative rounded-3xl border border-white/[0.07] bg-gradient-to-br from-[#1a1a1a] via-[#171717] to-[#141414] p-8 md:p-12 overflow-hidden hover:border-orange-500/30 transition-all"
           >
             <div className="absolute -top-24 -right-24 w-72 h-72 rounded-full bg-orange-500/15 blur-[100px] pointer-events-none" />
             <div className="absolute -bottom-32 -left-32 w-72 h-72 rounded-full bg-amber-500/10 blur-[120px] pointer-events-none" />

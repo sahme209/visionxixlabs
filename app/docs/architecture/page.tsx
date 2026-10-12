@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 
 export const metadata: Metadata = {
   title: "Architecture overview — Axiom Documentation",
-  description: "How Axiom Agent is built: web platform, desktop ecosystem, provider adapters, reasoning engine, execution orchestration, governance, audit, operational memory, and ReleaseOps.",
+  description: "The current Axiom desktop, governance, integration, and deployment architecture.",
 };
 
 export default function ArchitecturePage() {

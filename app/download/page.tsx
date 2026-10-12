@@ -464,7 +464,7 @@ export default function DownloadPage() {
             ].map((feature) => {
               const Icon = feature.icon;
               return (
-                <div key={feature.title} className="huly-feature-card group">
+                <div key={feature.title} className="axiom-feature-card group">
                   <div className="p-7">
                     <div className="w-11 h-11 rounded-xl bg-white/[0.04] border border-white/[0.06] flex items-center justify-center mb-5 group-hover:bg-white/[0.06] transition-colors">
                       <Icon className="h-5 w-5 text-zinc-400 group-hover:text-white transition-colors" />

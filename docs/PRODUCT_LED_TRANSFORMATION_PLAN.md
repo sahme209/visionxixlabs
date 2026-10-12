@@ -10,7 +10,7 @@ This plan records the gap between the current product and the self-service Axiom
 
 ## Blocking gaps found in the audit
 
-1. **Pricing is not yet one source of truth.** The public pricing page describes bespoke engagement pricing, the plan registry defines Starter/Growth/Business/Enterprise, and Stripe webhook mapping still uses Starter/Growth/Scale/Enterprise.
+1. **Pricing is not yet one source of truth.** The public site now presents a proposed Free/Pro/Enterprise catalog, while internal registries and Stripe webhook mapping still use legacy Starter/Growth/Scale/Enterprise names.
 2. **Billing ownership is inconsistent.** Some paths update user-level subscription fields while the requested model is organization-based billing and entitlement enforcement.
 3. **Self-service signup is desktop-bound.** The signup route expects a desktop pairing challenge, so the website cannot honestly promise browser-only organization creation yet.
 4. **The product story is fragmented.** Existing pages mix several visual accents, dense explanations, legacy cloud-consulting language, and product claims with different levels of readiness.
@@ -40,7 +40,7 @@ This plan records the gap between the current product and the self-service Axiom
 
 ### Phase 4 — Billing and entitlements
 
-- Approve a single Free/Pro/Business catalog and define exactly what counts as a billable deployment.
+- Approve a single Free/Pro/Enterprise catalog and define exactly what counts as a billable deployment.
 - Move subscription authority to the organization and reconcile every Stripe price mapping.
 - Make webhook handling idempotent at the database boundary and cover renewals, failed payments, cancellations, refunds, seat changes, and concurrent quota consumption.
 - Enforce seats, deployments, automation, and AI usage on the server. Security controls, production approval gates, and audit protections remain available on every tier.
@@ -55,7 +55,7 @@ This plan records the gap between the current product and the self-service Axiom
 
 ## Decisions requiring explicit approval
 
-- Final Free/Pro/Business prices, annual discount, included deployments, and AI markup.
+- Final Free/Pro/Enterprise prices, annual discount, included deployments, and AI markup.
 - Migration of existing subscriptions or Stripe products/prices.
 - Production database migrations affecting subscription authority or counters.
 - Enabling live checkout or deploying the redesigned site to production.

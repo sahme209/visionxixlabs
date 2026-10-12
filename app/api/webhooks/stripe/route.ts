@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
 import { prisma } from "@/lib/db";
 import { logAudit } from "@/lib/security/auditLog";
+import { isSelfServiceBillingEnabled } from "@/lib/billing/publicPlanCatalog";
 
 export const runtime = "nodejs";
 
@@ -34,6 +35,12 @@ async function recordStripeWebhookEvent(eventId: string, eventType: string): Pro
 }
 
 export async function POST(req: NextRequest): Promise<Response> {
+  if (isSelfServiceBillingEnabled()) {
+    return NextResponse.json(
+      { error: "Legacy webhook retired", canonicalEndpoint: "/api/billing/stripe-webhook" },
+      { status: 410 },
+    );
+  }
   const secret = process.env.STRIPE_WEBHOOK_SECRET;
   if (!secret) {
     console.error("[Stripe Webhook] STRIPE_WEBHOOK_SECRET not set");
@@ -55,7 +62,7 @@ export async function POST(req: NextRequest): Promise<Response> {
   let event: Stripe.Event;
   try {
     event = getStripe().webhooks.constructEvent(body, sig, secret);
-  } catch (err) {
+  } catch {
     console.error("[Stripe Webhook] Signature verification failed");
     return NextResponse.json({ error: "Invalid signature" }, { status: 400 });
   }

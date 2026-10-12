@@ -83,10 +83,10 @@ export default function Home() {
               Axiom turns a plain-English request into a grounded, approval-gated deployment—with validation, rollback, and evidence built in.
             </p>
             <div className="mt-9 flex flex-col gap-3 sm:flex-row">
-              <Link href="/download" className="btn-huly inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-[#efefec] px-7 py-3 text-sm font-semibold text-[#151513] shadow-[0_8px_24px_-8px_rgba(255,255,255,0.25)] hover:bg-white">
+              <Link href="/download" className="btn-axiom inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-[#efefec] px-7 py-3 text-sm font-semibold text-[#151513] shadow-[0_8px_24px_-8px_rgba(255,255,255,0.25)] hover:bg-white">
                 Download Axiom Agent <ArrowRightIcon className="h-4 w-4" />
               </Link>
-              <Link href="/demo" className="btn-huly inline-flex min-h-12 items-center justify-center gap-2 rounded-full border border-white/10 bg-white/[0.05] px-7 py-3 text-sm font-medium text-zinc-200 hover:bg-white/[0.08]">
+              <Link href="/demo" className="btn-axiom inline-flex min-h-12 items-center justify-center gap-2 rounded-full border border-white/10 bg-white/[0.05] px-7 py-3 text-sm font-medium text-zinc-200 hover:bg-white/[0.08]">
                 Watch how it works <ArrowRightIcon className="h-4 w-4" />
               </Link>
             </div>

@@ -3,12 +3,12 @@ import { SITE_URL } from "@/lib/seo";
 import { ContactClient } from "./ContactClient";
 
 export const metadata: Metadata = {
-  title: "Contact Axiom Agent",
-  description: "Ask about Axiom Agent downloads, supported integrations, deployment workflows, or production requirements.",
+  title: "Axiom Agent support",
+  description: "Get help with Axiom Agent downloads, accounts, supported integrations, security, or an existing installation.",
   alternates: { canonical: `${SITE_URL}/contact` },
   openGraph: {
-    title: "Contact Axiom Agent",
-    description: "Ask about Axiom Agent deployment or production requirements.",
+    title: "Axiom Agent support",
+    description: "Get help after the self-service documentation or in-product recovery path leaves you blocked.",
     url: `${SITE_URL}/contact`,
   },
 };

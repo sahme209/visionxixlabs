@@ -51,7 +51,7 @@ const QUICK_PATHS = [
     href: "/docs/troubleshooting",
     icon: WrenchScrewdriverIcon,
     title: "Troubleshooting",
-    desc: "Common errors and how to fix them — IAM, network, scan, approval, rollback.",
+    desc: "Recover from installation, connection, approval, and deployment errors.",
     color: "blue",
   },
 ];
@@ -65,23 +65,20 @@ const COLOR_MAP = {
 
 const TOPIC_GROUPS = [
   {
-    title: "Connect a cloud",
+    title: "Configure delivery",
     icon: CloudIcon,
     items: [
-      { href: "/docs/aws-setup", label: "AWS · IAM role + External ID", available: true },
-      { href: "/docs/azure-setup", label: "Azure · Service Principal", available: true },
-      { href: "/docs/gcp-setup", label: "GCP · Service Account", available: true },
+      { href: "/docs/aws-setup", label: "AWS ECS · GitHub Actions OIDC", available: true },
+      { href: "/docs/azure-setup", label: "Azure · Preview boundary", available: true },
+      { href: "/docs/gcp-setup", label: "GCP · Preview boundary", available: true },
     ],
   },
   {
     title: "Operate",
     icon: CpuChipIcon,
     items: [
-      { href: "/docs/scanning", label: "Infrastructure scanning", available: true },
       { href: "/docs/approval-workflow", label: "Approval workflow", available: true },
-      { href: "/docs/execution-plans", label: "Execution plans", available: true },
-      { href: "/docs/terraform-export", label: "Terraform & CLI export", available: true },
-      { href: "/docs/rollback", label: "Rollback strategy", available: true },
+      { href: "/docs/rollback", label: "AWS ECS rollback", available: true },
     ],
   },
   {
@@ -98,7 +95,6 @@ const TOPIC_GROUPS = [
     icon: CommandLineIcon,
     items: [
       { href: "/docs/desktop-install", label: "Install the desktop app", available: true },
-      { href: "/docs/desktop-architecture", label: "Desktop architecture", available: true },
       { href: "/docs/integration-setup", label: "GitHub, Slack, Teams & Linear setup", available: true },
     ],
   },
@@ -108,7 +104,6 @@ const TOPIC_GROUPS = [
     items: [
       { href: "/docs/security-model", label: "Security model", available: true },
       { href: "/docs/permissions-model", label: "Permissions model", available: true },
-      { href: "/docs/audit-logs", label: "Audit logs", available: true },
     ],
   },
   {
@@ -116,7 +111,6 @@ const TOPIC_GROUPS = [
     icon: ShieldCheckIcon,
     items: [
       { href: "/docs/quickstart-checklist", label: "Quickstart checklist · installed application", available: true },
-      { href: "/docs/best-practices", label: "Best practices · production-readiness", available: true },
     ],
   },
   {
@@ -167,7 +161,7 @@ export default function DocsIndexPage() {
         })}
       </div>
 
-      {/* Topic groups — Huly-style numbered chapters */}
+      {/* Topic groups — Axiom-style numbered chapters */}
       <div className="space-y-10">
         {TOPIC_GROUPS.map((group, gi) => {
           const Icon = group.icon;

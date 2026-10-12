@@ -14,6 +14,7 @@ const mocks = vi.hoisted(() => ({
     _repo: import("@/lib/releaseops/auditEventResponder").AuditEventRepo,
     _input: import("@/lib/releaseops/auditEventResponder").AppendAuditEventInput,
   ) => true),
+  checkDeploymentQuota: vi.fn(),
 }));
 
 vi.mock("@/lib/desktop/resolveRequestDesktopSession", () => ({
@@ -43,6 +44,9 @@ vi.mock("@/lib/releaseops/auditEventResponder", async () => {
   );
   return { ...actual, appendAuditEvent: mocks.recordAudit };
 });
+vi.mock("@/lib/billing/deploymentQuota", () => ({
+  checkDeploymentQuota: mocks.checkDeploymentQuota,
+}));
 
 function request(body: object) {
   return new NextRequest("https://visionxixlabs.com/api/desktop/environments/deploy", {
@@ -63,6 +67,7 @@ describe("POST /api/desktop/environments/deploy", () => {
     mocks.findRepositories.mockResolvedValue([]);
     mocks.findBranchPolicies.mockResolvedValue([]);
     mocks.resolveGitReference.mockResolvedValue({ ok: true, data: { kind: "branch", ref: "main", commitSha: "sha-main" } });
+    mocks.checkDeploymentQuota.mockResolvedValue({ allowed: true, planId: "free", used: 0, limit: 10, remaining: 10 });
   });
 
   it("requires a desktop session", async () => {
@@ -140,6 +145,21 @@ describe("POST /api/desktop/environments/deploy", () => {
     const res = await POST(request({ repositoryFullName: "acme/widgets", environmentId: "env_1" }));
     expect(res.status).toBe(502);
     expect(mocks.recordAudit).not.toHaveBeenCalled();
+  });
+
+  it("blocks before GitHub access when the deployment allowance is exhausted", async () => {
+    mocks.findEnvironment.mockResolvedValue({ id: "env_1", organizationId: "org-1" });
+    mocks.findTarget.mockResolvedValue(target);
+    mocks.checkDeploymentQuota.mockResolvedValue({
+      allowed: false, planId: "free", used: 10, limit: 10, remaining: 0, reason: "deployment_quota_exhausted",
+    });
+
+    const { POST } = await import("../route");
+    const res = await POST(request({ repositoryFullName: "acme/widgets", environmentId: "env_1" }));
+    expect(res.status).toBe(429);
+    await expect(res.json()).resolves.toMatchObject({ error: "deployment_quota_exhausted" });
+    expect(mocks.resolveTenantScopedToken).not.toHaveBeenCalled();
+    expect(mocks.dispatchWorkflow).not.toHaveBeenCalled();
   });
 
   it("allows only an authorized admin to request a production bypass", async () => {

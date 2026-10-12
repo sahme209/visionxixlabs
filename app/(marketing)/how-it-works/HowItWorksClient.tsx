@@ -87,11 +87,10 @@ export function HowItWorksClient() {
 
   return (
     <div className="relative">
-      {/* Huly aurora — coral × orange × cyan */}
+      {/* Restrained Axiom atmosphere */}
       <div aria-hidden className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
         <div className="ambient-drift absolute -top-1/4 left-1/3 h-[60vh] w-[50vw] rounded-full bg-brand-orange/[0.08] blur-[140px]" />
         <div className="ambient-drift absolute top-[20%] right-[5%] h-[50vh] w-[40vw] rounded-full bg-brand-coral/[0.06] blur-[130px]" style={{ animationDelay: "-8s" }} />
-        <div className="ambient-drift absolute bottom-[10%] left-[5%] h-[40vh] w-[35vw] rounded-full bg-cyan-500/[0.04] blur-[120px]" style={{ animationDelay: "-14s" }} />
       </div>
 
       {/* ===== HERO ===== */}
@@ -189,7 +188,7 @@ export function HowItWorksClient() {
                   }}
                   transition={{ duration: 0.35 }}
                   style={{ left: `${n.x}%`, top: `${n.y}%` }}
-                  className="absolute -translate-x-1/2 -translate-y-1/2 px-3 py-1.5 rounded-full border bg-[#0f0f1f] border-white/[0.08] shadow-[0_0_20px_rgba(0,0,0,0.4)]"
+                  className="absolute -translate-x-1/2 -translate-y-1/2 rounded-full border border-white/[0.08] bg-[#1a1a1a] px-3 py-1.5 shadow-[0_0_20px_rgba(0,0,0,0.4)]"
                 >
                   <p className="text-[11px] font-semibold text-white whitespace-nowrap">{n.label}</p>
                   <p className="text-[9px] font-mono text-zinc-300 whitespace-nowrap">{n.emits}</p>

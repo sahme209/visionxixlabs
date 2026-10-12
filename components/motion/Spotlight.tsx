@@ -1,7 +1,7 @@
 "use client";
 
 /**
- * Cursor-following spotlight overlay — the signature Huly "light follows
+ * Cursor-following spotlight overlay — the signature Axiom "light follows
  * you" effect. Renders a soft radial-gradient glow that tracks the mouse
  * across the wrapped region.
  *

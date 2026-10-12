@@ -1,7 +1,7 @@
 "use client";
 
 /**
- * Huly-style animated marketing hero + discipline showcase + ROI.
+ * Axiom marketing hero + discipline showcase + ROI.
  *
  * All client-side — pulls Framer Motion's variants + scroll-revealed
  * sections + a pointer-tracking aurora glow.
@@ -131,14 +131,13 @@ export function TeamOfOneClient() {
 
   return (
     <div className="relative min-h-screen text-zinc-100 overflow-x-hidden">
-      {/* Cursor-tracking aurora — pointer is hidden when prefers-reduced-motion */}
+      {/* Pointer emphasis is hidden when reduced motion is requested */}
       {!reduce && <div className="pointer-events-none fixed inset-0 z-0" style={cursorStyle} />}
 
-      {/* Huly aurora — coral × orange × cyan */}
+      {/* Restrained Axiom atmosphere */}
       <div aria-hidden className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
         <div className="ambient-drift absolute -top-1/4 left-1/4 h-[70vh] w-[55vw] rounded-full bg-brand-orange/[0.10] blur-[150px]" />
         <div className="ambient-drift absolute top-[15%] right-[5%] h-[55vh] w-[45vw] rounded-full bg-brand-coral/[0.07] blur-[140px]" style={{ animationDelay: "-8s" }} />
-        <div className="ambient-drift absolute -bottom-1/4 right-1/4 h-[60vh] w-[45vw] rounded-full bg-cyan-500/[0.06] blur-[130px]" style={{ animationDelay: "-14s" }} />
       </div>
 
       <style jsx>{`
@@ -279,16 +278,15 @@ export function TeamOfOneClient() {
           </p>
           <h2 className="text-3xl md:text-5xl font-bold tracking-[-0.025em] leading-[1.05]">
             A US-market specialist roster costs{" "}
-            <span className="bg-gradient-to-r from-emerald-300 to-zinc-300 bg-clip-text text-transparent">
+            <span className="text-[#ff783d]">
               <AnimatedNumber value={TEAM_TOTAL} durationMs={2200} />
             </span>{" "}
             / year.
           </h2>
           <p className="mt-4 max-w-2xl text-[15px] text-zinc-400 leading-relaxed">
-            That's just 14 senior roles, loaded salary + benefits + tooling. Hiring all of them
-            takes 12-18 months and they still need an on-call rotation. Axiom covers the same
-            disciplines on day one — and every action lands on a human's review queue, not in
-            production.
+            That&apos;s 14 senior roles, loaded salary, benefits, and tooling. Axiom does not replace
+            them. It gives the team a governed path for supported repository and deployment work,
+            and every write lands in a human&apos;s review queue before production.
           </p>
 
           <div className="mt-10 overflow-x-auto">

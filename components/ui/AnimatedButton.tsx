@@ -20,7 +20,7 @@ type BaseProps = {
 /* Apple-grade base: tactile press physics provided by .btn-press /
    .btn-ghost-press in globals.css. We layer in focus-ring-animated for
    keyboard navigation, and switch from uppercase + tracking-wide to
-   tracking-tight (Huly/Apple feel — uppercase reads as software,
+   tracking-tight (Axiom/Apple feel — uppercase reads as software,
    sentence case reads as product). */
 const baseClasses =
   "focus-ring-animated inline-flex items-center justify-center gap-2 rounded-full text-sm font-semibold tracking-tight";

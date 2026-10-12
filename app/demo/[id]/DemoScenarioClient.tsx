@@ -127,7 +127,7 @@ export function DemoScenarioClient({ scenario }: { scenario: DemoScenario }) {
               </span>
             ))}
             {connectors.map((c) => (
-              <span key={c} className="text-[10px] font-mono px-2 py-1 rounded-full border border-cyan-500/25 bg-cyan-500/[0.04] text-cyan-200/90">
+              <span key={c} className="text-[10px] font-mono px-2 py-1 rounded-full border border-orange-500/25 bg-orange-500/[0.04] text-orange-200/90">
                 connector · {c}
               </span>
             ))}
@@ -201,12 +201,12 @@ export function DemoScenarioClient({ scenario }: { scenario: DemoScenario }) {
 
           {/* API endpoint exercised — pulled from the technical reference */}
           {endpoint && (
-            <div className="rounded-xl border border-cyan-500/15 bg-cyan-500/[0.03] p-4 space-y-2">
+            <div className="rounded-xl border border-orange-500/15 bg-orange-500/[0.03] p-4 space-y-2">
               <div className="flex items-baseline gap-2 flex-wrap">
-                <p className="text-[10px] font-mono text-cyan-300/90 uppercase tracking-[0.22em]">api exercised</p>
+                <p className="text-[10px] font-mono text-orange-300/90 uppercase tracking-[0.22em]">api exercised</p>
                 <span className={`text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded border ${
                   endpoint.method === "GET"
-                    ? "bg-cyan-500/15 text-cyan-200 border-cyan-500/25"
+                    ? "bg-orange-500/15 text-orange-200 border-orange-500/25"
                     : "bg-orange-500/15 text-orange-200 border-orange-500/25"
                 }`}>{endpoint.method}</span>
                 <code className="text-[12px] font-mono text-zinc-100">{endpoint.path}</code>
@@ -234,7 +234,7 @@ export function DemoScenarioClient({ scenario }: { scenario: DemoScenario }) {
                 </div>
               )}
               <p className="text-[10px] font-mono text-zinc-600 pt-1">
-                Full schema · <Link href="/demo/reference#endpoints" className="text-cyan-300/80 hover:text-cyan-200 underline-offset-2 hover:underline">platform reference →</Link>
+                Full schema · <Link href="/demo/reference#endpoints" className="text-orange-300/80 hover:text-orange-200 underline-offset-2 hover:underline">platform reference →</Link>
               </p>
             </div>
           )}

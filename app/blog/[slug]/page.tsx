@@ -32,8 +32,8 @@ function fmtDate(iso: string): string {
 const CAT_TONE: Record<string, string> = {
   "Product Updates":    "text-zinc-300",
   "Engineering":        "text-orange-300",
-  "Industry Insights":  "text-cyan-300",
-  "Trust & Security":   "text-emerald-300",
+  "Industry Insights":  "text-zinc-400",
+  "Trust & Security":   "text-orange-200",
 };
 
 export default async function BlogPostPage({ params }: Params) {
@@ -44,11 +44,9 @@ export default async function BlogPostPage({ params }: Params) {
   const others = getAllPosts().filter((p) => p.slug !== post.slug).slice(0, 3);
 
   return (
-    <div className="min-h-screen bg-[#09090b] text-white relative overflow-hidden">
+    <div className="min-h-screen bg-[#141414] text-white relative overflow-hidden">
       <div className="absolute inset-0 pointer-events-none" aria-hidden>
-        <div className="ambient-drift absolute top-0 left-1/2 -translate-x-1/2 w-[760px] h-[500px] rounded-full bg-brand-orange/[0.07] blur-[140px]" />
-        <div className="ambient-drift absolute top-1/4 right-[5%] w-[420px] h-[320px] rounded-full bg-brand-coral/[0.05] blur-[120px]" style={{ animationDelay: "-8s" }} />
-        <div className="ambient-drift absolute top-1/2 left-[5%] w-[340px] h-[260px] rounded-full bg-cyan-500/[0.04] blur-[100px]" style={{ animationDelay: "-14s" }} />
+        <div className="absolute top-0 left-1/2 h-[460px] w-[760px] -translate-x-1/2 rounded-full bg-orange-500/[0.06] blur-[150px]" />
       </div>
 
       <Navigation />
@@ -59,7 +57,7 @@ export default async function BlogPostPage({ params }: Params) {
           ← Back to blog
         </Link>
 
-        {/* Header — Huly numbered eyebrow + coral underline */}
+        {/* Header — Axiom numbered eyebrow + coral underline */}
         <header className="mb-12">
           <div className="flex items-center gap-3 mb-5 text-[11px] font-mono uppercase tracking-[0.18em]">
             <span className={CAT_TONE[post.category] ?? "text-zinc-400"}>{post.category}</span>
@@ -119,7 +117,7 @@ export default async function BlogPostPage({ params }: Params) {
           })}
         </article>
 
-        {/* CTA — Huly-grade with coral accent + tactile buttons */}
+        {/* Product CTA */}
         <section className="surface-frost mt-16 rounded-2xl p-8 text-center">
           <p className="mono-label inline-flex items-center gap-3 mb-4">
             <span className="text-brand-coral/90 tabular-nums">AX</span>
@@ -128,12 +126,13 @@ export default async function BlogPostPage({ params }: Params) {
           </p>
           <h3 className="font-display text-2xl md:text-3xl font-bold mb-3 leading-[1.04]">
             <span className="relative inline-block">
-              Run the autonomous cloud operating system.
+              See the governed desktop workflow.
               <span aria-hidden className="absolute left-0 -bottom-0.5 h-[2px] w-full rounded-full bg-gradient-to-r from-brand-coral via-amber-400/70 to-transparent" />
             </span>
           </h3>
           <p className="text-sm text-zinc-400 max-w-xl mx-auto mb-6">
-            Explore the isolated web demo or download the desktop product for macOS, Windows, and Linux. No sales call required.
+            Explore a scripted, clearly labeled workflow or download the current
+            desktop release. Live actions remain approval-gated.
           </p>
           <div className="inline-flex gap-3 flex-wrap justify-center">
             <Link href="/demo" className="btn-press inline-flex items-center gap-2 px-5 py-3 rounded-full text-sm font-semibold tracking-tight">

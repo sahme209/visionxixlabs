@@ -1,7 +1,7 @@
 "use client";
 
 /**
- * Infinite-scroll marquee — Huly / Vercel / Linear "logo strip that loops
+ * Infinite-scroll marquee — Axiom / Vercel / Linear "logo strip that loops
  * forever". Duplicates the children once and animates the wrapper via a
  * CSS keyframe so the seam is invisible.
  *

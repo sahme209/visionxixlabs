@@ -16,7 +16,7 @@ export default function SecurityModelPage() {
       />
 
       <Callout variant="warning" title="Current release boundary">
-        AWS uses an assume-role design when configured. Azure and GCP live SDK validation are not released, OS-keychain-backed desktop persistence is pending, and local infrastructure apply is disabled. Current desktop-v0.1.7 installers are not attested as signed or notarized.
+        The released AWS ECS path dispatches a tenant-owned GitHub Actions workflow and uses OIDC to assume the configured role. Azure and GCP deployment paths are not released, enterprise identity is configuration-only, and local infrastructure apply is disabled. Verify the signing and notarization status shown on the download page for the exact installer you use.
       </Callout>
 
       <DocSection id="authentication" title="Desktop authentication" kicker="01 · Identity">
@@ -24,7 +24,7 @@ export default function SecurityModelPage() {
       </DocSection>
 
       <DocSection id="connectors" title="Connector permissions" kicker="02 · Providers">
-        <p>A connector&apos;s code status is not its live availability status. AWS connection logic requires service and customer configuration. Azure and GCP currently provide format validation and preview analysis. Generated Terraform and CLI artifacts remain review-only.</p>
+        <p>A connector&apos;s code status is not its live availability status. GitHub access is installation- and repository-scoped. AWS ECS deployment requires a configured environment target, tenant workflow, and OIDC role. Azure and GCP production deployment paths are not released.</p>
         <p>Repository visibility, pull-request approval, merge authority, workflow dispatch, environment approval, release publication, and change management are distinct permissions. Each server-side action must enforce its own authorization.</p>
       </DocSection>
 

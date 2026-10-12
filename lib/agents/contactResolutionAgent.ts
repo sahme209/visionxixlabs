@@ -17,6 +17,7 @@ import {
   findCloudOperatorLeadByEmail,
 } from "./contactResolutionTools";
 import { logAudit } from "@/lib/security/auditLog";
+import { isSelfServiceBillingEnabled } from "@/lib/billing/publicPlanCatalog";
 
 export type ResolutionStatus = "RESOLVED" | "NEEDS_INFO" | "ESCALATED";
 
@@ -63,7 +64,7 @@ export async function runContactResolutionAgent(input: ContactResolutionInput): 
   const payload = (lead.fullPayload as Record<string, unknown>) || {};
   const connectorStatus = (payload.connectors as Record<string, { status?: string }>) || {};
   const awsLinked = connectorStatus.aws?.status === "linked";
-  const isCloudOperator = lead.source === "cloud-operator";
+  const selfServiceBillingEnabled = isSelfServiceBillingEnabled();
 
   const systemPrompt = `You are the Contact Resolution Agent for Vision XIX Labs. Your job is to autonomously resolve contact form submissions.
 
@@ -74,13 +75,15 @@ First, classify the request:
 
 Flow by classification:
 - AXIOM: 1) If missing fields (Role ARN, External ID, account details) → askFollowupQuestions. 2) If AWS connector possible (they have cloud-operator) → runExecutionPlugin(pluginId: "aws:iam-exposure-scan"). 3) If cloud-operator output ready → generateReportAndSend. 4) Email results with userReplyEmail.
-- BILLING_SUPPORT: Generate helpful answer (pricing tiers, upgrade paths, contact sales) and send via userReplyEmail. Use sendResolutionEmail implicitly through userReplyEmail.
-- GENERAL_SUPPORT: Answer or escalate as needed.
+- BILLING_SUPPORT: Explain the published Free, Pro, or Enterprise plan and give one concrete next step. ${selfServiceBillingEnabled ? "Direct an organization owner/admin to /account for checkout or subscription management." : "State clearly that paid checkout is not active yet; direct them to /plans for the reviewed proposal and do not imply that a charge or subscription can be started."} Never offer a sales call, quote, custom pricing, or manual plan activation.
+- GENERAL_SUPPORT: Answer from the supported self-service paths: /docs for setup, /download for the desktop app, /account/integrations for browser consent, and /account/help for recovery. If the message lacks a concrete failure, ask for the exact screen, action, and visible error instead of sending a generic answer.
 
 Rules:
 - RESOLVED: you took real actions and can send a complete reply.
 - NEEDS_INFO: you need specific info. Ask concise questions (max 3).
-- ESCALATE only when: missing permissions after 2 follow-ups, enterprise custom pricing, repeated failure, or truly ambiguous.
+- ESCALATE only when: missing permissions after 2 focused follow-ups, a security/account incident requires privileged intervention, repeated supported-path failure, or the request remains genuinely ambiguous.
+- Never claim a connector, checkout, scan, deployment, or subscription succeeded unless a tool result in this run proves it.
+- Never request passwords, API keys, tokens, cloud secrets, or full credential values by email.
 
 Available tools (output in toolCalls; we execute them):
 - createLeadTicket(leadId, summary, category, priority): log internal ticket
@@ -108,7 +111,7 @@ ${message}
 
 Decide status, toolCalls to execute, and userReplyEmail. Be truthful: do not claim actions you did not perform.`;
 
-  let output: ContactResolutionOutput = {
+  const output: ContactResolutionOutput = {
     status: "ESCALATED",
     actionsTaken: [],
   };

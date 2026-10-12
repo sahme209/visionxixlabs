@@ -99,11 +99,10 @@ export function CompareClient() {
 
   return (
     <div className="relative">
-      {/* Huly aurora — coral × orange × cyan */}
+      {/* Restrained Axiom atmosphere */}
       <div aria-hidden className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
         <div className="ambient-drift absolute -top-1/4 left-1/3 h-[60vh] w-[50vw] rounded-full bg-brand-orange/[0.08] blur-[140px]" />
         <div className="ambient-drift absolute top-[15%] right-[5%] h-[50vh] w-[40vw] rounded-full bg-brand-coral/[0.06] blur-[130px]" style={{ animationDelay: "-8s" }} />
-        <div className="ambient-drift absolute bottom-0 right-1/4 h-[45vh] w-[35vw] rounded-full bg-cyan-500/[0.05] blur-[120px]" style={{ animationDelay: "-14s" }} />
       </div>
 
       {/* ===== HERO ===== */}
@@ -152,7 +151,7 @@ export function CompareClient() {
               className={[
                 "rounded-full px-3.5 py-1.5 text-[12px] font-medium transition border",
                 tab === t.id
-                  ? "bg-cyan-500/15 border-cyan-500/40 text-cyan-200"
+                  ? "bg-orange-500/15 border-orange-500/40 text-orange-200"
                   : "bg-white/[0.02] border-white/[0.06] text-zinc-400 hover:text-white hover:bg-white/[0.05]",
               ].join(" ")}
             >
