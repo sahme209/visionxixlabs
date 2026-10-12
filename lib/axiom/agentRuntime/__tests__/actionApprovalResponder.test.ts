@@ -10,7 +10,9 @@ const mocks = vi.hoisted(() => ({
   resolveGitReference: vi.fn(),
   getFile: vi.fn(),
   getRepositoryDefaultBranch: vi.fn(),
-  checkDeploymentQuota: vi.fn(),
+  reserveDeploymentDispatch: vi.fn(),
+  releaseDeploymentDispatch: vi.fn(),
+  settleDeploymentDispatch: vi.fn(),
 }));
 
 vi.mock("@/lib/connectors/github/resolveTenantScopedToken", () => ({
@@ -25,7 +27,11 @@ vi.mock("@/lib/connectors/github/githubWriteClient", () => ({
   getRepositoryDefaultBranch: mocks.getRepositoryDefaultBranch,
   resolveGitReference: mocks.resolveGitReference,
 }));
-vi.mock("@/lib/billing/deploymentQuota", () => ({ checkDeploymentQuota: mocks.checkDeploymentQuota }));
+vi.mock("@/lib/billing/deploymentDispatchReservation", () => ({
+  reserveDeploymentDispatch: mocks.reserveDeploymentDispatch,
+  releaseDeploymentDispatch: mocks.releaseDeploymentDispatch,
+  settleDeploymentDispatch: mocks.settleDeploymentDispatch,
+}));
 
 import { executeApprovedAction, type ActionExecutionRepo } from "../actionApprovalResponder";
 
@@ -41,7 +47,9 @@ beforeEach(() => {
   mocks.resolveTenantScopedToken.mockResolvedValue({ ok: true, token: "installation-token" });
   mocks.resolveGitReference.mockResolvedValue({ ok: true, data: { kind: "branch", ref: "main", commitSha: "sha-main" } });
   mocks.getRepositoryDefaultBranch.mockResolvedValue({ ok: true, data: "main" });
-  mocks.checkDeploymentQuota.mockResolvedValue({ allowed: true, planId: "free", used: 0, limit: 10, remaining: 10 });
+  mocks.reserveDeploymentDispatch.mockResolvedValue({ ok: true, reused: false, reservation: { id: "exec-1" }, planId: "free", used: 0, limit: 10 });
+  mocks.releaseDeploymentDispatch.mockResolvedValue(true);
+  mocks.settleDeploymentDispatch.mockResolvedValue(false);
 });
 
 describe("executeApprovedAction", () => {
@@ -101,7 +109,7 @@ describe("executeApprovedAction", () => {
       repository: { findMany: vi.fn(async () => []) },
       branchEnvironmentPolicy: { findMany: vi.fn(async () => []) },
     };
-    const result = await executeApprovedAction(otherOrgRepo, "org-1", "trigger_aws_deploy", { repositoryFullName: "acme/widgets", environmentId: "env_1" });
+    const result = await executeApprovedAction(otherOrgRepo, "org-1", "trigger_aws_deploy", { repositoryFullName: "acme/widgets", environmentId: "env_1" }, "user-1", "test-action");
     expect(result).toEqual({ ok: false, error: "environment_not_found" });
   });
 
@@ -112,7 +120,7 @@ describe("executeApprovedAction", () => {
       repository: { findMany: vi.fn(async () => []) },
       branchEnvironmentPolicy: { findMany: vi.fn(async () => []) },
     };
-    const result = await executeApprovedAction(noTargetRepo, "org-1", "trigger_aws_deploy", { repositoryFullName: "acme/widgets", environmentId: "env_1" });
+    const result = await executeApprovedAction(noTargetRepo, "org-1", "trigger_aws_deploy", { repositoryFullName: "acme/widgets", environmentId: "env_1" }, "user-1", "test-action");
     expect(result).toEqual({ ok: false, error: "deployment_target_not_configured" });
   });
 
@@ -129,14 +137,14 @@ describe("executeApprovedAction", () => {
         }]),
       },
     };
-    const result = await executeApprovedAction(promotionRepo, "org-1", "trigger_aws_deploy", { repositoryFullName: "acme/widgets", environmentId: "env_1" });
+    const result = await executeApprovedAction(promotionRepo, "org-1", "trigger_aws_deploy", { repositoryFullName: "acme/widgets", environmentId: "env_1" }, "user-1", "test-action");
     expect(result).toEqual({ ok: false, error: "branch_policy_promotion_required" });
     expect(mocks.dispatchWorkflow).not.toHaveBeenCalled();
   });
 
   it("trigger_aws_deploy dispatches the workflow with the target's own config", async () => {
     mocks.dispatchWorkflow.mockResolvedValue({ ok: true, data: { workflowRunId: "123", runUrl: "https://api.github.test/runs/123", htmlUrl: "https://github.test/runs/123" } });
-    const result = await executeApprovedAction(repo, "org-1", "trigger_aws_deploy", { repositoryFullName: "acme/widgets", environmentId: "env_1" });
+    const result = await executeApprovedAction(repo, "org-1", "trigger_aws_deploy", { repositoryFullName: "acme/widgets", environmentId: "env_1" }, "user-1", "test-action");
     expect(result).toEqual({ ok: true, result: { dispatched: true, execution: null, trackingAvailable: false, policyId: null, sourceRef: "main", sourceKind: "branch" } });
     expect(mocks.dispatchWorkflow).toHaveBeenCalledWith(expect.objectContaining({
       inputs: { role_arn: "arn:aws:iam::123:role/x", region: "us-east-2", cluster: "c", service: "s" },
@@ -144,10 +152,8 @@ describe("executeApprovedAction", () => {
   });
 
   it("trigger_aws_deploy stops after policy evaluation when quota is exhausted", async () => {
-    mocks.checkDeploymentQuota.mockResolvedValue({
-      allowed: false, planId: "free", used: 10, limit: 10, remaining: 0, reason: "deployment_quota_exhausted",
-    });
-    const result = await executeApprovedAction(repo, "org-1", "trigger_aws_deploy", { repositoryFullName: "acme/widgets", environmentId: "env_1" });
+    mocks.reserveDeploymentDispatch.mockResolvedValue({ ok: false, error: "deployment_quota_exhausted", used: 10, limit: 10 });
+    const result = await executeApprovedAction(repo, "org-1", "trigger_aws_deploy", { repositoryFullName: "acme/widgets", environmentId: "env_1" }, "user-1", "test-action");
     expect(result).toEqual({ ok: false, error: "deployment_quota_exhausted" });
     expect(mocks.dispatchWorkflow).not.toHaveBeenCalled();
   });
