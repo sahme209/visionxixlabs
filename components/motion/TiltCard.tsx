@@ -1,7 +1,7 @@
 "use client";
 
 /**
- * 3D tilt card — the Huly / Linear "card subtly leans toward the cursor"
+ * 3D tilt card — the Axiom / Linear "card subtly leans toward the cursor"
  * effect. Wrap any card-like child; the wrapper applies a perspective
  * rotation based on the pointer's relative position inside the card.
  *
@@ -15,7 +15,7 @@ import { useEffect, useRef, useState, type ReactNode } from "react";
 
 export interface TiltCardProps {
   children: ReactNode;
-  /** Max tilt in degrees on each axis. Default 8 — looks Huly-subtle. */
+  /** Max tilt in degrees on each axis. Default 8 — looks Axiom-subtle. */
   maxTilt?: number;
   /** Subtle scale on hover (1 = no scale). Default 1.015. */
   scale?: number;

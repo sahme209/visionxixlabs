@@ -54,10 +54,10 @@ export default async function StatusPage() {
       <div aria-hidden className="pointer-events-none absolute inset-0">
         <div className="ambient-drift absolute top-0 left-1/2 -translate-x-1/2 w-[720px] h-[440px] rounded-full bg-brand-orange/[0.06] blur-[140px]" />
         <div className="ambient-drift absolute top-[30%] right-[5%] w-[420px] h-[340px] rounded-full bg-brand-coral/[0.05] blur-[130px]" style={{ animationDelay: "-9s" }} />
-        <div className="ambient-drift absolute bottom-0 left-[5%] w-[360px] h-[280px] rounded-full bg-cyan-500/[0.04] blur-[120px]" style={{ animationDelay: "-15s" }} />
+        <div className="ambient-drift absolute bottom-0 left-[5%] w-[360px] h-[280px] rounded-full bg-orange-500/[0.04] blur-[120px]" style={{ animationDelay: "-15s" }} />
       </div>
 
-      <header className="relative z-20 border-b border-white/[0.06] sticky top-0 bg-[#09090b]/80 backdrop-blur-xl">
+      <header className="relative z-20 border-b border-white/[0.06] sticky top-0 bg-[#141414]/80 backdrop-blur-xl">
         <div className="max-w-6xl mx-auto px-6 md:px-10 py-3.5 flex items-center justify-between">
           <Link href="/" className="font-bold text-white tracking-[-0.04em]">Axiom</Link>
           <Link href="/download" className="text-[12px] text-zinc-300 hover:text-brand-coral transition-colors">Get desktop app →</Link>

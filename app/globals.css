@@ -20,15 +20,15 @@
   --accent: #f54e00;
   --accent-hover: #ff783d;
   --accent-amber: #ff783d;
-  --accent-cyan: #06b6d4;
-  --accent-blue: #3b82f6;
+  --accent-cyan: #ff783d;
+  --accent-blue: #f54e00;
   --border-color: rgba(255, 255, 255, 0.06);
   --border-hover: rgba(255, 255, 255, 0.12);
   --border-accent: rgba(245, 78, 0, 0.34);
   --glow-orange: rgba(245, 78, 0, 0.15);
   --glow-amber: rgba(245, 78, 0, 0.1);
-  --huly-radius: 0.875rem;
-  --huly-radius-lg: 1.25rem;
+  --axiom-radius: 0.875rem;
+  --axiom-radius-lg: 1.25rem;
   --section-pad: 6rem;
   --section-pad-lg: 8rem;
 }
@@ -145,7 +145,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .gradient-accent {
-  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+  background: linear-gradient(135deg, #ff783d 0%, #f54e00 100%);
 }
 
 /* Neutral display sheen: quiet motion without a second brand color. */
@@ -228,17 +228,17 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 /* ── Button Interactions ───────────────────────────────────────── */
-.btn-huly {
+.btn-axiom {
   transition: transform 0.2s cubic-bezier(0.22, 1, 0.36, 1),
     box-shadow 0.3s ease,
     background-color 0.2s ease;
 }
 
-.btn-huly:hover {
+.btn-axiom:hover {
   transform: translateY(-1px);
 }
 
-.btn-huly:active {
+.btn-axiom:active {
   transform: translateY(0);
 }
 
@@ -558,7 +558,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 /* ── Focus ─────────────────────────────────────────────────────── */
-.focus-huly:focus-visible {
+.focus-axiom:focus-visible {
   outline: none;
   box-shadow: 0 0 0 2px var(--bg-primary), 0 0 0 4px rgba(255, 255, 255, 0.35);
 }
@@ -623,7 +623,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 /* ══════════════════════════════════════════════════════════════════
-   Huly.io Deep Effects — mouse spotlight, animated borders,
+   Axiom.io Deep Effects — mouse spotlight, animated borders,
    text reveal, beam sweep, inner glow, status pulse, badges
    ══════════════════════════════════════════════════════════════════ */
 
@@ -658,7 +658,7 @@ h1, h2, h3, h4, h5, h6 {
 .animated-border {
   position: relative;
   background: var(--bg-surface);
-  border-radius: var(--huly-radius-lg);
+  border-radius: var(--axiom-radius-lg);
 }
 .animated-border::before {
   content: "";
@@ -793,8 +793,8 @@ h1, h2, h3, h4, h5, h6 {
   opacity: 0.4;
 }
 
-/* ── J) Huly number badge ─────────────────────────────────────── */
-.huly-badge {
+/* ── J) Axiom number badge ─────────────────────────────────────── */
+.axiom-badge {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -827,7 +827,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 /* ══════════════════════════════════════════════════════════════════
-   Pricing Page — Huly.io Deep Treatment
+   Pricing Page — Axiom.io Deep Treatment
    ══════════════════════════════════════════════════════════════════ */
 
 /* ── Feature list staggered fade-in on card hover ─────────────── */
@@ -937,7 +937,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 /* ══════════════════════════════════════════════════════════════════
-   Huly Deep Transform — component upgrade effects
+   Axiom Deep Transform — component upgrade effects
    ══════════════════════════════════════════════════════════════════ */
 
 /* ── Button shimmer sweep ─────────────────────────────────────── */
@@ -1112,7 +1112,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 /* ══════════════════════════════════════════════════════════════════
-   Huly.io Homepage Deep Effects — particles, hero grid, badges,
+   Axiom.io Homepage Deep Effects — particles, hero grid, badges,
    CTA glow, card accent overlays
    ══════════════════════════════════════════════════════════════════ */
 
@@ -1237,7 +1237,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 /* ══════════════════════════════════════════════════════════════════
-   Huly.io DEEP POLISH — Pass 2
+   Axiom.io DEEP POLISH — Pass 2
    Hero word stagger, noise hero overlay, shimmer border badge,
    counter animation, floating labels, message entrance,
    chat widget glow, auth gradient border, show/hide toggle
@@ -1495,7 +1495,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 /* ══════════════════════════════════════════════════════════════════
-   Huly.io Electric Glow Pricing Cards
+   Axiom.io Electric Glow Pricing Cards
    Intense plasma/lightning border glow effect
    ══════════════════════════════════════════════════════════════════ */
 
@@ -1593,7 +1593,7 @@ h1, h2, h3, h4, h5, h6 {
   transform: translateY(-4px);
 }
 
-/* Featured — intense orange/orange plasma glow (Huly-style) */
+/* Featured — intense orange/orange plasma glow (Axiom-style) */
 .electric-card-featured {
   position: relative;
   background: rgba(255, 120, 61, 0.05);
@@ -1744,11 +1744,11 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 /* ══════════════════════════════════════════════════════════════════
-   Huly.io Deep Reactive Effects — vertical beam, amber shimmer
+   Axiom.io Deep Reactive Effects — vertical beam, amber shimmer
    button, concentric rings, card tilt hover, warm glow, live pulse
    ══════════════════════════════════════════════════════════════════ */
 
-/* ── Vertical Hero Light Beam (Huly-style dramatic energy pillar) ── */
+/* ── Vertical Hero Light Beam (Axiom-style dramatic energy pillar) ── */
 @keyframes beam-vertical-pulse {
   0%, 100% { opacity: 0.8; }
   50% { opacity: 1; }
@@ -1849,7 +1849,7 @@ h1, h2, h3, h4, h5, h6 {
   pointer-events: none;
 }
 
-/* Horizontal flare at beam bottom (Huly-style V-shape spread) */
+/* Horizontal flare at beam bottom (Axiom-style V-shape spread) */
 .hero-beam-flare {
   position: absolute;
   left: 50%;
@@ -1873,7 +1873,7 @@ h1, h2, h3, h4, h5, h6 {
   opacity: 0.8;
 }
 
-/* ── Amber Gradient Button (Huly-style warm CTA) ─────────────── */
+/* ── Amber Gradient Button (Axiom-style warm CTA) ─────────────── */
 @keyframes white-shimmer-sweep {
   0% { background-position: -200% center; }
   100% { background-position: 200% center; }
@@ -1886,7 +1886,7 @@ h1, h2, h3, h4, h5, h6 {
 
 /* Calm pass: was a loud amber shimmer with glow-pulse + drop-shadow
    stack. Now a clean white pill that gains a soft white halo + a
-   tiny scale on hover — refined huly.io vocabulary, not flat dead.
+   tiny scale on hover — refined axiom.io vocabulary, not flat dead.
    The ::after pseudo runs a slow sheen sweep across the pill so it
    still feels alive even at rest. */
 .btn-white-shimmer {
@@ -1941,7 +1941,7 @@ h1, h2, h3, h4, h5, h6 {
   animation: white-shimmer-sweep 3s ease-in-out infinite;
 }
 
-/* ── Progressive Text Dimming (Huly pricing-style) ────────────── */
+/* ── Progressive Text Dimming (Axiom pricing-style) ────────────── */
 .text-progressive-dim > *:nth-child(1) { color: #fafafa; }
 /* Calm pass: progressive dim, but with a much closer range so the
    paragraph reads as one voice that gently fades rather than
@@ -1959,7 +1959,7 @@ h1, h2, h3, h4, h5, h6 {
 .text-dim-paragraph .dim-2 { color: rgba(244, 244, 245, 0.55); }
 .text-dim-paragraph .dim-3 { color: rgba(244, 244, 245, 0.42); }
 
-/* ── Auth Glassmorphism (Huly sign-in/sign-up style) ──────────── */
+/* ── Auth Glassmorphism (Axiom sign-in/sign-up style) ──────────── */
 .auth-glass-card {
   background: rgba(255, 255, 255, 0.03);
   backdrop-filter: blur(40px) saturate(150%);
@@ -2016,7 +2016,7 @@ h1, h2, h3, h4, h5, h6 {
   filter: blur(80px);
 }
 
-/* ── Product Frame with Energy Border (Huly app screenshot) ───── */
+/* ── Product Frame with Energy Border (Axiom app screenshot) ───── */
 @keyframes frame-energy-flow {
   0% { background-position: 0% 0%; }
   50% { background-position: 100% 100%; }
@@ -2068,8 +2068,8 @@ h1, h2, h3, h4, h5, h6 {
   z-index: -1;
 }
 
-/* ── 2x2 Huly Feature Grid Card ──────────────────────────────── */
-.huly-feature-card {
+/* ── 2x2 Axiom Feature Grid Card ──────────────────────────────── */
+.axiom-feature-card {
   background: rgba(255, 255, 255, 0.02);
   border: 1px solid rgba(255, 255, 255, 0.06);
   border-radius: 1.25rem;
@@ -2077,20 +2077,20 @@ h1, h2, h3, h4, h5, h6 {
   transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-.huly-feature-card:hover {
+.axiom-feature-card:hover {
   border-color: rgba(255, 255, 255, 0.12);
   transform: translateY(-4px);
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
 }
 
-.huly-feature-card-image {
+.axiom-feature-card-image {
   height: 280px;
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.03) 0%, rgba(0, 0, 0, 0.2) 100%);
   position: relative;
   overflow: hidden;
 }
 
-.huly-feature-card-content {
+.axiom-feature-card-content {
   padding: 1.5rem;
 }
 
@@ -2240,12 +2240,12 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 /* ── Auth Card Orange/Blue Gradient Corner ─────────────────────── */
-.auth-card-huly {
+.auth-card-axiom {
   position: relative;
   overflow: hidden;
 }
 
-.auth-card-huly .auth-gradient-corner {
+.auth-card-axiom .auth-gradient-corner {
   position: absolute;
   top: 0;
   right: 0;
@@ -2432,14 +2432,14 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 /* ──────────────────────────────────────────────────────────────────
-   Calm pass — site-wide motion overrides (huly.io vocabulary).
+   Calm pass — site-wide motion overrides (axiom.io vocabulary).
 
    Earlier sections of this stylesheet build a library of decorative
    utilities (animated borders, shine sweeps, warm bottom glows,
    colour-tinted card overlays). The old defaults were too loud —
    neon gradients, rainbow shimmer, multi-color drop-shadows. The
    overrides below repaint those same utilities with restrained,
-   monochrome huly.io-style motion: white-on-dark, slow ease-out,
+   monochrome axiom.io-style motion: white-on-dark, slow ease-out,
    low opacity. Hover effects remain — they just whisper now.
    ────────────────────────────────────────────────────────────── */
 
@@ -2475,7 +2475,7 @@ h1, h2, h3, h4, h5, h6 {
 /* Repaint the loud decorative pseudo-elements with monochrome
    versions. The motion still happens — slow sweep, slow glow,
    gentle warm-bottom — just in white-on-dark instead of
-   orange/amber/cyan. The original utilities defined earlier
+   competing accent colors. The original utilities defined earlier
    in this file still apply their keyframes and timings; we only
    override the colour, opacity, and final intensity. */
 
@@ -2509,7 +2509,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 /* ──────────────────────────────────────────────────────────────────
-   Huly.io motion vocabulary — extra utilities for ambient life.
+   Axiom.io motion vocabulary — extra utilities for ambient life.
 
    The CSS above already covers gradient sheen, hover halos, dim
    paragraphs. This block adds the *subliminal* motion you only
@@ -2522,7 +2522,7 @@ h1, h2, h3, h4, h5, h6 {
 
 /* Slow ambient atmosphere — a faint white gradient that drifts
    across whatever you apply it to. Stack behind hero canvases or
-   section backgrounds for the 'living dark' feeling huly.io has. */
+   section backgrounds for the 'living dark' feeling axiom.io has. */
 @keyframes ambient-drift {
   0%   { transform: translate3d(0,  0,  0) scale(1); }
   50%  { transform: translate3d(2%, -1%, 0) scale(1.04); }
@@ -2668,7 +2668,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 /* ──────────────────────────────────────────────────────────────────
-   Huly.io vocabulary — extra textures + structural utilities.
+   Axiom.io vocabulary — extra textures + structural utilities.
 
    Quiet patterns the eye registers as 'polish'. Each is white-on-
    dark, low opacity, no animation unless explicitly stated.
@@ -2708,7 +2708,7 @@ h1, h2, h3, h4, h5, h6 {
     transparent 100%);
 }
 
-/* Huly-style coral-tinted hairline with a center diamond — used between
+/* Axiom-style coral-tinted hairline with a center diamond — used between
    sections to add a touch of warmth without shouting. */
 .hairline-divider-coral {
   position: relative;
@@ -3039,7 +3039,7 @@ h1, h2, h3, h4, h5, h6 {
   color: rgba(161, 161, 170, 1);
 }
 
-/* Coral-glow primary button — the Huly warm CTA variant.
+/* Coral-glow primary button — the Axiom warm CTA variant.
    White pill base with a coral halo on the outside.
    Use on hero / closing-CTA primary actions. */
 .btn-coral-glow {
@@ -3200,7 +3200,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 /* ──────────────────────────────────────────────────────────────────
-   Featured pricing card — huly.io's signature electric-orange glow
+   Featured pricing card — axiom.io's signature electric-orange glow
    around the recommended tier. Two layers:
 
      ::before — outer blurred halo (the soft orange glow that bleeds
@@ -3225,11 +3225,10 @@ h1, h2, h3, h4, h5, h6 {
   inset: -10px;
   border-radius: calc(var(--card-radius, 16px) + 10px);
   background: linear-gradient(135deg,
-    #6366f1 0%,
-    #ff783d 25%,
-    #fb6a2b 50%,
-    #f54e00 75%,
-    #6366f1 100%);
+    #f54e00 0%,
+    #ff783d 35%,
+    #fb6a2b 65%,
+    #f54e00 100%);
   background-size: 400% 400%;
   filter: blur(22px);
   opacity: 0.55;
@@ -3244,11 +3243,10 @@ h1, h2, h3, h4, h5, h6 {
   border-radius: inherit;
   padding: 1.5px;
   background: linear-gradient(135deg,
-    #6366f1 0%,
-    #ff783d 25%,
-    #fb6a2b 50%,
-    #f54e00 75%,
-    #6366f1 100%);
+    #f54e00 0%,
+    #ff783d 35%,
+    #fb6a2b 65%,
+    #f54e00 100%);
   background-size: 400% 400%;
   -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);

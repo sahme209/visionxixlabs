@@ -76,7 +76,7 @@ export default function GettingStartedPage() {
                 </Step>
                 <Step number={2} title="Grant least-privilege access">
                     <p>
-                        AWS inventory paths require a read-only role and External ID. Azure, GCP, GitHub, communication, and identity features require their own configured credentials and feature availability. The app must show disconnected or unavailable states when those dependencies are absent.
+                        Begin with the GitHub App and select only the repositories required for your workflow. AWS ECS delivery additionally requires a configured environment target and OIDC role. Other integrations remain unavailable until their server registration and live validation succeed.
                     </p>
                 </Step>
                 <Step number={3} title="Test each connector">
@@ -97,7 +97,7 @@ export default function GettingStartedPage() {
                     <li>Collect evidence, review audit history, and close only when exit criteria pass.</li>
                 </ol>
                 <p>
-                    Local Terraform apply is disabled in the current desktop safety contract. Review generated plans and commands, then use an approved execution path for any real change.
+                    For the released AWS ECS path, approval dispatches the tenant-owned GitHub Actions workflow. Treat any unavailable adapter as a blocker rather than a synthetic success.
                 </p>
             </DocSection>
 

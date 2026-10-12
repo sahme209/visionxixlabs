@@ -1,7 +1,7 @@
 "use client";
 
 /**
- * Huly-inspired vertical light beam / pillar in hero — creates dramatic depth
+ * Axiom-inspired vertical light beam / pillar in hero — creates dramatic depth
  */
 export function HeroLightBeam() {
   return (

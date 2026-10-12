@@ -220,7 +220,7 @@ html[data-density="compact"] {
 .no-drag { -webkit-app-region: no-drag; }
 .drag    { -webkit-app-region: drag; }
 
-/* Subtle inner border for cards, gives a Huly "edge-lit" feel. */
+/* Subtle inner border for cards, gives a Axiom "edge-lit" feel. */
 .edge-light {
   position: relative;
 }

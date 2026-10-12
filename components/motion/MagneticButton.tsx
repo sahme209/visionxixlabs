@@ -1,7 +1,7 @@
 "use client";
 
 /**
- * Magnetic button wrapper — the signature Huly "buttons that pull toward
+ * Magnetic button wrapper — the signature Axiom "buttons that pull toward
  * the cursor" effect. Wraps any child element (button, link, AnimatedButton)
  * and gently translates it toward the pointer when the cursor is within
  * the hover radius.
@@ -17,7 +17,7 @@ import { useEffect, useRef, useState, type ReactNode } from "react";
 
 export interface MagneticButtonProps {
   children: ReactNode;
-  /** Maximum pixel pull. Default 8 — feels Huly-subtle. */
+  /** Maximum pixel pull. Default 8 — feels Axiom-subtle. */
   strength?: number;
   /** Hover-radius in pixels — the cursor must be within this distance to attract. */
   radius?: number;

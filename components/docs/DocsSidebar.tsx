@@ -6,8 +6,6 @@ import {
   BookOpenIcon,
   CloudIcon,
   CommandLineIcon,
-  CpuChipIcon,
-  DocumentTextIcon,
   LockClosedIcon,
   PuzzlePieceIcon,
   QuestionMarkCircleIcon,
@@ -37,11 +35,10 @@ export const DOC_SECTIONS: DocSection[] = [
       { href: "/docs/quickstart-checklist", label: "Quickstart checklist", icon: RocketLaunchIcon },
       { href: "/docs/getting-started", label: "Getting started", icon: RocketLaunchIcon },
       { href: "/docs/architecture", label: "Architecture overview", icon: MapIcon },
-      { href: "/docs/best-practices", label: "Best practices", icon: ShieldCheckIcon },
     ],
   },
   {
-    title: "Connect a cloud",
+    title: "Configure delivery",
     items: [
       { href: "/docs/aws-setup", label: "AWS setup", icon: CloudIcon },
       { href: "/docs/azure-setup", label: "Azure setup", icon: CloudIcon },
@@ -51,11 +48,8 @@ export const DOC_SECTIONS: DocSection[] = [
   {
     title: "Operate",
     items: [
-      { href: "/docs/scanning", label: "Infrastructure scanning", icon: CpuChipIcon },
       { href: "/docs/approval-workflow", label: "Approval workflow", icon: LockClosedIcon },
-      { href: "/docs/execution-plans", label: "Execution plans", icon: PuzzlePieceIcon },
-      { href: "/docs/terraform-export", label: "Terraform & CLI export", icon: CommandLineIcon },
-      { href: "/docs/rollback", label: "Rollback strategy", icon: WrenchScrewdriverIcon },
+      { href: "/docs/rollback", label: "AWS ECS rollback", icon: WrenchScrewdriverIcon },
     ],
   },
   {
@@ -70,7 +64,6 @@ export const DOC_SECTIONS: DocSection[] = [
     title: "Desktop",
     items: [
       { href: "/docs/desktop-install", label: "Install the desktop app", icon: CommandLineIcon },
-      { href: "/docs/desktop-architecture", label: "Desktop architecture", icon: MapIcon },
       { href: "/docs/integration-setup", label: "Integration setup", icon: PuzzlePieceIcon },
     ],
   },
@@ -79,7 +72,6 @@ export const DOC_SECTIONS: DocSection[] = [
     items: [
       { href: "/docs/security-model", label: "Security model", icon: ShieldCheckIcon },
       { href: "/docs/permissions-model", label: "Permissions model", icon: LockClosedIcon },
-      { href: "/docs/audit-logs", label: "Audit logs", icon: DocumentTextIcon },
     ],
   },
   {

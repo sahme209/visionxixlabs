@@ -326,7 +326,7 @@ export const VALIDATION_MATRIX: ValidationRow[] = [
   { id: "product.surfaces_ui",   area: "command_center",   capability: "/dashboard/surfaces page consumes /api/product/surfaces — 14 typed surfaces with platform chips, status pills, real evidence + limitations + blockers + safeNextAction",         status: "passing", evidence: "app/dashboard/surfaces/page.tsx" },
 
   // ---------------------------------------------------------------------------
-  // Real Advancement + Huly-quality design upgrade phase
+  // Real Advancement + Axiom-quality design upgrade phase
   // ---------------------------------------------------------------------------
   { id: "axiomos.providers_enriched", area: "operating_loop", capability: "buildProviders() in axiomOSStateBuilder enriches ProviderPosture with findingCount (from OperatingLoopSummary.attentionRequiredCount) + lastScannedAt (from loop status timestamps) — no SDK calls, pure read-only thread-through", status: "passing", evidence: "lib/axiomOS/axiomOSStateBuilder.ts:buildProviders" },
   { id: "cc.approvals_live",          area: "command_center",   capability: "Command Center LivePendingApprovals fetches /api/orchestration/approvals — filters to status=pending, renders real changeSummary / riskLevel / blastRadius / expiresAt, honest empty state, no fabricated dollar savings", status: "passing", evidence: "app/dashboard/command-center/page.tsx:LivePendingApprovals" },

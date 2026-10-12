@@ -23,7 +23,7 @@ export default async function DownloadPreviewPage({ searchParams }: DownloadPrev
   }
 
   return (
-    <div className="min-h-screen bg-[#09090b] text-white">
+    <div className="min-h-screen bg-[#141414] text-white">
       <Navigation />
       <main className="mx-auto max-w-3xl px-4 pb-20 pt-28 sm:px-6 md:pt-36">
         <p className="text-[10px] font-mono uppercase tracking-[0.24em] text-zinc-300">Installer availability</p>

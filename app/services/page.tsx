@@ -164,7 +164,7 @@ const services = [
     icon: SparklesIcon,
     title: "AI Engineering & LLM Systems",
     description:
-      "AI systems that ship: secure isolation, cost tracking per model, audit trails for regulatory compliance, and autonomous cost guardrails.",
+      "AI systems that ship with secure isolation, observable model usage, reviewable audit trails, and explicit operating guardrails.",
     items: [
       "Architecture and strategy for LLM systems and AI-assisted workflows",
       "Integration of models with your data, APIs, and internal applications",
@@ -180,18 +180,16 @@ const services = [
 
 export default function ServicesPage() {
   return (
-    <div className="min-h-screen bg-[#09090b] relative overflow-hidden">
-      {/* Huly aurora — coral × orange × cyan */}
+    <div className="min-h-screen bg-[#141414] relative overflow-hidden">
+      {/* Restrained Axiom accent field */}
       <div className="spotlight-orb absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[600px] pointer-events-none" />
       <div className="bg-dots absolute inset-0 pointer-events-none" />
       <div className="ambient-drift absolute -top-40 left-1/4 w-[520px] h-[460px] rounded-full bg-brand-orange/[0.08] blur-[140px] pointer-events-none" aria-hidden />
-      <div className="ambient-drift absolute top-1/4 right-[5%] w-[420px] h-[340px] rounded-full bg-brand-coral/[0.06] blur-[120px] pointer-events-none" style={{ animationDelay: "-8s" }} aria-hidden />
-      <div className="ambient-drift absolute bottom-32 left-[5%] w-[360px] h-[280px] rounded-full bg-cyan-500/[0.04] blur-[110px] pointer-events-none" style={{ animationDelay: "-14s" }} aria-hidden />
       <Navigation />
 
       <main className="pt-28 pb-24 px-4 sm:px-6 lg:px-8 relative">
         <div className="max-w-[1400px] mx-auto px-6 md:px-10">
-          {/* 1. Overview — Huly numbered + coral underline */}
+          {/* 1. Overview — Axiom numbered + coral underline */}
           <Reveal direction="up" blur>
             <section className="mb-12" aria-labelledby="overview-heading">
               <p className="mono-label mb-4 inline-flex items-center gap-3">

@@ -85,7 +85,7 @@ export const metadata: Metadata = {
 
 export default function CloudSolutionsPage() {
   return (
-    <div className="min-h-screen bg-[#09090b] relative overflow-hidden">
+    <div className="min-h-screen bg-[#141414] relative overflow-hidden">
       {/* Background effects */}
       <div className="spotlight-orb absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[600px] pointer-events-none" />
       <div className="bg-dots absolute inset-0 pointer-events-none" />
@@ -114,7 +114,7 @@ export default function CloudSolutionsPage() {
             </ol>
           </nav>
 
-          {/* Hero — Huly numbered + coral underline */}
+          {/* Hero — Axiom numbered + coral underline */}
           <Reveal direction="up" blur>
             <section className="mb-16">
               <div className="text-left">
@@ -137,7 +137,7 @@ export default function CloudSolutionsPage() {
                   {cloudSolutionsHero.capabilities.map((capability) => (
                     <span
                       key={capability}
-                      className="huly-badge inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold text-zinc-300"
+                      className="axiom-badge inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold text-zinc-300"
                     >
                       {capability}
                     </span>
@@ -450,7 +450,7 @@ export default function CloudSolutionsPage() {
       {/* Floating blur orbs */}
       <div className="ambient-drift absolute bottom-1/4 left-10 w-[380px] h-[340px] bg-brand-orange/[0.08] rounded-full blur-[120px] pointer-events-none" />
       <div className="ambient-drift absolute top-1/3 right-0 w-[460px] h-[400px] bg-brand-coral/[0.06] rounded-full blur-[130px] pointer-events-none" style={{ animationDelay: "-8s" }} />
-      <div className="ambient-drift absolute top-1/4 left-1/3 w-[340px] h-[260px] bg-cyan-500/[0.04] rounded-full blur-[110px] pointer-events-none" style={{ animationDelay: "-14s" }} />
+      <div className="ambient-drift absolute top-1/4 left-1/3 w-[340px] h-[260px] bg-orange-500/[0.04] rounded-full blur-[110px] pointer-events-none" style={{ animationDelay: "-14s" }} />
     </div>
   );
 }

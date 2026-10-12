@@ -135,7 +135,7 @@ export function DashboardView({ onNavigate }: { onNavigate?: (v: View) => void }
 }
 
 // ---------------------------------------------------------------------------
-// Preview-mode banner — Huly-grade cinematic call-to-connect
+// Preview-mode banner — Axiom-grade cinematic call-to-connect
 // ---------------------------------------------------------------------------
 
 // ---------------------------------------------------------------------------

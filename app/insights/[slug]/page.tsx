@@ -46,13 +46,8 @@ export default async function InsightArticlePage({ params }: Props) {
   const nextArticle = nextSlug ? getInsightBySlug(nextSlug) : null;
 
   return (
-    <div className="min-h-screen bg-[#09090b] relative overflow-hidden">
-      {/* Huly aurora */}
-      <div className="spotlight-orb absolute top-0 left-1/2 -translate-x-1/2 w-[700px] h-[400px] opacity-20 pointer-events-none" />
-      <div className="bg-dots absolute inset-0 pointer-events-none" />
-      <div className="ambient-drift absolute top-0 left-1/4 w-[480px] h-[400px] rounded-full bg-brand-orange/[0.07] blur-[130px] pointer-events-none" aria-hidden />
-      <div className="ambient-drift absolute top-1/4 right-[5%] w-[360px] h-[280px] rounded-full bg-brand-coral/[0.05] blur-[120px] pointer-events-none" style={{ animationDelay: "-8s" }} aria-hidden />
-      <div className="ambient-drift absolute bottom-1/4 left-[5%] w-[320px] h-[240px] rounded-full bg-cyan-500/[0.04] blur-[110px] pointer-events-none" style={{ animationDelay: "-14s" }} aria-hidden />
+    <div className="min-h-screen bg-[#141414] relative overflow-hidden">
+      <div className="absolute top-0 left-1/2 h-[420px] w-[700px] -translate-x-1/2 rounded-full bg-orange-500/[0.06] blur-[150px] pointer-events-none" aria-hidden />
 
       <Navigation />
       <article className="relative z-10 max-w-6xl mx-auto px-6 md:px-10 pt-24 pb-16">
@@ -103,14 +98,15 @@ export default async function InsightArticlePage({ params }: Props) {
         <Reveal direction="up" blur delay={0.2}>
           <section className="glass-card glow-border-card rounded-2xl p-6 text-center">
             <h2 className="text-lg font-bold text-white mb-2 tracking-[-0.04em]">
-              Try <span className="text-gradient">Axiom Agent</span>
+              See Axiom Agent in context
             </h2>
             <p className="text-zinc-400 text-sm mb-4">
-              Autonomous cloud operations for AWS, Azure, and GCP. Connect your cloud in minutes.
+              Explore the scripted governed workflow, then download the current
+              desktop release to connect a supported system.
             </p>
             <Link
               href="/download"
-              className="btn-huly cta-glow inline-flex items-center px-5 py-2.5 rounded-full bg-white text-zinc-900 text-sm font-semibold hover:bg-zinc-100 transition-colors"
+              className="btn-axiom cta-glow inline-flex items-center px-5 py-2.5 rounded-full bg-white text-zinc-900 text-sm font-semibold hover:bg-zinc-100 transition-colors"
             >
               Download Axiom Agent
               <ArrowRightIcon className="ml-2 h-4 w-4" />

@@ -94,7 +94,7 @@ export default async function AdminLayout({
             </nav>
           </div>
           <div className="flex items-center gap-4">
-            <span className="huly-badge flex items-center gap-2">
+            <span className="axiom-badge flex items-center gap-2">
               <UserCircleIcon className="h-4 w-4" />
               {session.user.email}
             </span>

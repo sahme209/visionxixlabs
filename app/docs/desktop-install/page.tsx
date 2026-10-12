@@ -24,7 +24,7 @@ export default function DesktopInstallPage() {
         <ul className="list-disc list-inside space-y-1.5 text-zinc-400 ml-1">
           <li><strong>Installed workspace</strong> — desktop navigation for releases, approvals, connectors, validation, audit evidence, and related operational views</li>
           <li><strong>Desktop authentication</strong> — browser-approved pairing returns control to the installed application</li>
-          <li><strong>Plan review</strong> — review Terraform and CLI artifacts locally; local Terraform apply remains disabled by the current safety contract</li>
+          <li><strong>Repository workspace</strong> — select, clone, inspect, edit, branch, commit, push, and open pull requests with repository-scoped access</li>
           <li><strong>Native shell</strong> — tray and notification integrations are available for supported application events</li>
           <li><strong>Explicit connection state</strong> — unavailable APIs, missing credentials, and connector failures remain visible</li>
           <li><strong>Persisted app state</strong> — the current build uses Tauri&apos;s file-backed app store; OS-keychain-backed secret persistence is not yet shipped</li>
@@ -103,7 +103,7 @@ sudo rpm -i Axiom.Agent-*-1.x86_64.rpm`}</pre>
             { question: "Is this a browser product?", answer: "No. The website provides product information, documentation, verified downloads, and an isolated sample-data sandbox. Operational workflows are delivered by the installed app." },
             { question: "Are current builds signed and notarized?", answer: "Only when the live release manifest has explicit signing attestations. Detached GPG signatures verify release origin but do not replace Apple notarization or Windows Authenticode." },
             { question: "Where is the desktop session stored?", answer: "The current implementation uses Tauri's file-backed app store. OS-keychain-backed persistence is pending, so use the app only on a trusted workstation and sign out or clear app data on shared machines." },
-            { question: "Can the desktop app run Terraform apply?", answer: "Not in the current safety contract. Generated artifacts can be reviewed; local apply remains disabled until approval and credential custody are fully verified." },
+            { question: "Can the desktop app deploy?", answer: "The released path can dispatch the tenant-owned AWS ECS workflow after administrator approval and configured repository, environment, and deployment target checks." },
             { question: "Does it update automatically?", answer: "Not currently. Install newer verified releases manually." },
             { question: "What was verified here?", answer: "Release presence, asset names, GitHub SHA-256 digest, detached GPG signature, desktop TypeScript, sandbox tests, and the broader automated suite. Platform installation still requires testing on each target OS." },
           ]}

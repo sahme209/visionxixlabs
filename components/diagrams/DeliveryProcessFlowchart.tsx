@@ -26,7 +26,7 @@ export function DeliveryProcessFlowchart() {
             <polygon points="0 0, 7 2.5, 0 5" fill="#64748b" />
           </marker>
           <linearGradient id="dp-grad" x1="0%" y1="0%" x2="100%" y2="0%">
-            <stop offset="0%" stopColor="#6366f1" />
+            <stop offset="0%" stopColor="#f54e00" />
             <stop offset="100%" stopColor="#ff783d" />
           </linearGradient>
         </defs>
@@ -50,7 +50,7 @@ export function DeliveryProcessFlowchart() {
               height="80"
               rx="8"
               fill="white"
-              stroke="#6366f1"
+              stroke="#f54e00"
               strokeWidth="2"
               className="fill-zinc-800 stroke-orange-500"
             />

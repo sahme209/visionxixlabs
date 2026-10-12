@@ -2,7 +2,7 @@
 
 /**
  * ScrollRevealText — words fade in one at a time as the paragraph
- * scrolls into view (huly.io 'Our Custom Plan…' effect).
+ * scrolls into view (axiom.io 'Our Custom Plan…' effect).
  *
  * Behavior: each word gets an opacity tied to how far the paragraph
  * has scrolled past a reveal anchor (default 70% of viewport

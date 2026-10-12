@@ -1,7 +1,7 @@
 "use client";
 
 /**
- * Split-text reveal — the Huly "letters fly in from below" hero effect.
+ * Split-text reveal — the Axiom "letters fly in from below" hero effect.
  *
  * Renders the provided text split into characters or words, each one
  * fading + sliding from below with a small per-element delay. Triggered
@@ -15,7 +15,7 @@ import { useEffect, useRef, useState } from "react";
 export interface TextRevealProps {
   /** Plain text to reveal — JSX children are not supported (use multiple TextReveal blocks). */
   text: string;
-  /** Split unit. `char` = per character (Huly hero feel); `word` = per word (cleaner for long copy). */
+  /** Split unit. `char` = per character (Axiom hero feel); `word` = per word (cleaner for long copy). */
   splitBy?: "char" | "word";
   /** Per-element stagger in ms. */
   stagger?: number;

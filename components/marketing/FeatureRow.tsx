@@ -1,7 +1,7 @@
 "use client";
 
 /**
- * FeatureRow — the huly.io section pattern.
+ * FeatureRow — the axiom.io section pattern.
  *
  * Each row is one big horizontal slab:
  *   - Two columns on lg, single column stacked on mobile.
@@ -10,7 +10,7 @@
  *   - The other side is a media slot — typically a screenshot or
  *     illustration framed in a SpotlightCard with .glow-edge.
  *   - `mediaSide` swaps left/right so rows can alternate down the
- *     page like huly does ("Work together. Like in the office."
+ *     page like axiom does ("Work together. Like in the office."
  *     followed by "Sync with GitHub.").
  *
  * No bordered cards on the text side. Clean type, generous space.
@@ -37,7 +37,7 @@ export function FeatureRow({
   mediaSide = "right",
   className,
 }: {
-  /** Tiny mono uppercase label above the headline. ReactNode so callers can prefix a numbered Huly-style marker. */
+  /** Tiny mono uppercase label above the headline. ReactNode so callers can prefix a numbered Axiom-style marker. */
   kicker: ReactNode;
   /** The big section headline. */
   headline: ReactNode;

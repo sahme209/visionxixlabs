@@ -63,7 +63,7 @@ export default async function SolutionDetailPage({
 
   if (!detail || !cardMeta) {
     return (
-      <div className="min-h-screen bg-[#09090b]">
+      <div className="min-h-screen bg-[#141414]">
         <main className="pt-24 pb-24 px-4 sm:px-6 lg:px-8">
           <div className="max-w-3xl mx-auto text-center">
             <h1 className="text-2xl font-bold text-white mb-4 tracking-[-0.04em]">
@@ -110,7 +110,7 @@ export default async function SolutionDetailPage({
   });
 
   return (
-    <div className="min-h-screen bg-[#09090b] relative overflow-hidden">
+    <div className="min-h-screen bg-[#141414] relative overflow-hidden">
       {/* Background effects */}
       <div className="spotlight-orb absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[500px] opacity-30 pointer-events-none" />
       <div className="bg-dots absolute inset-0 pointer-events-none" />
@@ -175,7 +175,7 @@ export default async function SolutionDetailPage({
                   {detail.idealFor.map((item) => (
                     <span
                       key={item}
-                      className="huly-badge"
+                      className="axiom-badge"
                     >
                       {item}
                     </span>
@@ -226,7 +226,7 @@ export default async function SolutionDetailPage({
                   <Link
                     key={link.href}
                     href={link.href}
-                    className="huly-badge hover:text-orange-400 transition-colors"
+                    className="axiom-badge hover:text-orange-400 transition-colors"
                   >
                     {link.label}
                   </Link>

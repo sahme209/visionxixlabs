@@ -68,7 +68,7 @@ export default function EnterpriseDashboardPage() {
           </div>
           <Link
             href="/admin/leads"
-            className="btn-huly text-sm text-orange-400 hover:underline"
+            className="btn-axiom text-sm text-orange-400 hover:underline"
           >
             Website Leads &rarr;
           </Link>
@@ -185,7 +185,7 @@ export default function EnterpriseDashboardPage() {
                       <td className="px-4 py-3">
                         <div className="flex flex-wrap gap-1">
                           {row.tags.slice(0, 4).map((t) => (
-                            <span key={t} className="huly-badge text-[10px]">
+                            <span key={t} className="axiom-badge text-[10px]">
                               {t}
                             </span>
                           ))}

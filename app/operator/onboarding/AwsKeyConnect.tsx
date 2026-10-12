@@ -410,7 +410,7 @@ export function AwsKeyConnect({
 
   return (
     <div className="relative">
-      {/* Soft ambient glow — quiet huly.io style */}
+      {/* Soft ambient glow — quiet axiom.io style */}
       <div aria-hidden className="pointer-events-none absolute inset-0 -z-10 overflow-hidden rounded-[28px]">
         <div className="absolute -top-32 left-1/2 -translate-x-1/2 w-[680px] h-[420px] rounded-full bg-zinc-500/[0.08] blur-[120px]" />
         <div className="absolute bottom-0 left-1/3 w-[420px] h-[260px] rounded-full bg-orange-500/[0.05] blur-[100px]" />

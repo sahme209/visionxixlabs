@@ -15,7 +15,7 @@
  * /dashboard/security, /dashboard/billing, etc. Replaces the ad-hoc
  * <h1>+<p> openers that varied page-to-page.
  *
- * Uses the calm huly.io vocabulary already defined in globals.css:
+ * Uses the calm axiom.io vocabulary already defined in globals.css:
  *   .kicker-mono       small mono uppercase eyebrow
  *   .display-headline  responsive section/page heading
  *   .body-lede         zinc-400 lede paragraph

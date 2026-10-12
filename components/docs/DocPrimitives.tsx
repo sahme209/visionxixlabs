@@ -93,7 +93,7 @@ export function CodeBlock({ language, children }: { language?: string; children:
   );
 }
 
-/** Standard top of every doc page — Huly-style: numbered eyebrow + coral
+/** Standard top of every doc page — Axiom-style: numbered eyebrow + coral
  *  underline on the title's last word + soft coral aurora behind the
  *  header. Cascades to every /docs/* page.
  */
@@ -106,7 +106,7 @@ export function DocHeader({
   kicker?: string;
   title: string;
   summary: string;
-  /** Optional Huly-style index marker — "01", "02", etc. Falls back to "—". */
+  /** Optional Axiom-style index marker — "01", "02", etc. Falls back to "—". */
   number?: string;
 }) {
   // Split the title so the last word can get the coral underline.

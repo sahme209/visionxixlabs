@@ -31,7 +31,7 @@ export const metadata: Metadata = {
 
 export default function CloudSecurityPage() {
   return (
-    <div className="min-h-screen bg-[#09090b] relative overflow-hidden">
+    <div className="min-h-screen bg-[#141414] relative overflow-hidden">
       {/* Background effects */}
       <div className="spotlight-orb absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[600px] pointer-events-none" />
       <div className="bg-dots absolute inset-0 pointer-events-none" />
@@ -56,7 +56,7 @@ export default function CloudSecurityPage() {
             </ol>
           </nav>
 
-          {/* Hero — Huly numbered + coral underline */}
+          {/* Hero — Axiom numbered + coral underline */}
           <Reveal direction="up" blur>
             <header className="mb-16">
               <p className="text-[10px] font-mono uppercase tracking-[0.28em] text-zinc-500 mb-4 inline-flex items-center gap-3">
@@ -147,7 +147,7 @@ export default function CloudSecurityPage() {
               </p>
               <Link
                 href="/contact"
-                className="btn-huly cta-glow inline-flex items-center px-6 py-3 bg-white text-zinc-900 rounded-xl font-semibold hover:opacity-90 transition-opacity"
+                className="btn-axiom cta-glow inline-flex items-center px-6 py-3 bg-white text-zinc-900 rounded-xl font-semibold hover:opacity-90 transition-opacity"
               >
                 Book a Security Audit
               </Link>
@@ -159,7 +159,7 @@ export default function CloudSecurityPage() {
       {/* Floating blur orbs */}
       <div className="ambient-drift absolute bottom-1/3 left-10 w-[380px] h-[340px] bg-brand-orange/[0.08] rounded-full blur-[120px] pointer-events-none" />
       <div className="ambient-drift absolute top-1/2 right-0 w-[420px] h-[360px] bg-brand-coral/[0.06] rounded-full blur-[130px] pointer-events-none" style={{ animationDelay: "-8s" }} />
-      <div className="ambient-drift absolute top-1/4 right-1/4 w-[340px] h-[260px] bg-cyan-500/[0.04] rounded-full blur-[110px] pointer-events-none" style={{ animationDelay: "-14s" }} />
+      <div className="ambient-drift absolute top-1/4 right-1/4 w-[340px] h-[260px] bg-orange-500/[0.04] rounded-full blur-[110px] pointer-events-none" style={{ animationDelay: "-14s" }} />
     </div>
   );
 }

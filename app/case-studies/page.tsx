@@ -29,12 +29,12 @@ export const metadata: Metadata = {
 
 export default function CaseStudiesPage() {
   return (
-    <div className="min-h-screen bg-[#09090b] relative overflow-hidden">
-      {/* Huly aurora */}
+    <div className="min-h-screen bg-[#141414] relative overflow-hidden">
+      {/* Axiom aurora */}
       <div className="absolute inset-0 bg-grid-mesh opacity-10 pointer-events-none" aria-hidden />
       <div className="ambient-drift absolute -top-40 left-1/4 w-[540px] h-[500px] rounded-full bg-brand-orange/[0.08] blur-[140px] pointer-events-none" aria-hidden />
       <div className="ambient-drift absolute top-1/4 right-[5%] w-[420px] h-[340px] rounded-full bg-brand-coral/[0.06] blur-[120px] pointer-events-none" style={{ animationDelay: "-8s" }} aria-hidden />
-      <div className="ambient-drift absolute bottom-32 left-[5%] w-[360px] h-[280px] rounded-full bg-cyan-500/[0.04] blur-[110px] pointer-events-none" style={{ animationDelay: "-14s" }} aria-hidden />
+      <div className="ambient-drift absolute bottom-32 left-[5%] w-[360px] h-[280px] rounded-full bg-orange-500/[0.04] blur-[110px] pointer-events-none" style={{ animationDelay: "-14s" }} aria-hidden />
 
       <Navigation />
       <main className="pt-32 pb-24 px-4 sm:px-6 lg:px-8 relative">
@@ -60,7 +60,7 @@ export default function CaseStudiesPage() {
             </ol>
           </nav>
 
-          {/* Hero — Huly numbered + coral underline */}
+          {/* Hero — Axiom numbered + coral underline */}
           <Reveal direction="up" blur delay={0.05}>
             <header className="mb-16">
               <p className="text-[10px] font-mono uppercase tracking-[0.28em] text-zinc-500 mb-4 inline-flex items-center gap-3">

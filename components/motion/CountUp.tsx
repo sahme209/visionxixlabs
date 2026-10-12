@@ -1,7 +1,7 @@
 "use client";
 
 /**
- * Animated counter — the Huly "numbers roll up when they appear" effect.
+ * Animated counter — the Axiom "numbers roll up when they appear" effect.
  * Uses IntersectionObserver to start counting only when the number enters
  * the viewport. Eases with a cubic-out curve so it feels organic, not
  * mechanical.

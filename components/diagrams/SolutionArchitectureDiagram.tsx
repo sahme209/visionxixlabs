@@ -10,7 +10,7 @@ export function SolutionArchitectureDiagram() {
       id: "data",
       label: "Data & Infrastructure",
       items: ["Cloud (AWS/Azure/GCP)", "Data pipelines", "Security & governance"],
-      color: "#0ea5e9",
+      color: "#f54e00",
     },
     {
       id: "ai",
@@ -22,13 +22,13 @@ export function SolutionArchitectureDiagram() {
       id: "integration",
       label: "Integration",
       items: ["APIs & webhooks", "Existing systems", "DevOps & CI/CD"],
-      color: "#10b981",
+      color: "#d97706",
     },
     {
       id: "production",
       label: "Production",
       items: ["Monitoring", "Cost controls", "Clear deliverables"],
-      color: "#6366f1",
+      color: "#78716c",
     },
   ];
 
@@ -39,7 +39,7 @@ export function SolutionArchitectureDiagram() {
         role="img"
         aria-label="Solution architecture: data to production"
       >
-        {layers.map((layer, i) => (
+        {layers.map((layer) => (
           <div
             key={layer.id}
             className="relative flex flex-col min-h-[140px] rounded-xl border-2 overflow-hidden bg-white/[0.02] shadow-sm"

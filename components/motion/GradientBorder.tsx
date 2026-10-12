@@ -1,7 +1,7 @@
 "use client";
 
 /**
- * Animated gradient border — Huly / Linear "premium card with a rotating
+ * Animated gradient border — Axiom / Linear "premium card with a rotating
  * conic-gradient ring". Pure CSS, no JS animation loop.
  *
  * Uses a conic-gradient inside an absolutely-positioned ring + a mask

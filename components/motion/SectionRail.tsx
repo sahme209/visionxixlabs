@@ -8,7 +8,7 @@
  * dot for the currently-visible section grows + turns coral. Click
  * any dot to scroll to that section.
  *
- * Huly.io signature element — gives the reader a visual sense of
+ * Axiom.io signature element — gives the reader a visual sense of
  * progress through a long-form page without taking up content width.
  *
  * Hidden under lg (mobile) where there isn't room.

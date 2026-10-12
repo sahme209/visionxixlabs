@@ -32,7 +32,7 @@ export const metadata: Metadata = {
 
 export default function AzureCloudSolutionsPage() {
   return (
-    <div className="min-h-screen bg-[#09090b] relative overflow-hidden">
+    <div className="min-h-screen bg-[#141414] relative overflow-hidden">
       {/* Background effects */}
       <div className="spotlight-orb absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[600px] pointer-events-none" />
       <div className="bg-grid-mesh absolute inset-0 pointer-events-none" />
@@ -69,7 +69,7 @@ export default function AzureCloudSolutionsPage() {
             </ol>
           </nav>
 
-          {/* 1. Overview — Huly numbered + coral underline */}
+          {/* 1. Overview — Axiom numbered + coral underline */}
           <Reveal direction="up" blur>
             <section id="overview" className="mb-12" aria-labelledby="overview-heading">
               <p className="mono-label inline-flex items-center gap-3 mb-4">
@@ -441,7 +441,7 @@ export default function AzureCloudSolutionsPage() {
       {/* Floating blur orbs */}
       <div className="ambient-drift absolute bottom-1/4 left-10 w-[380px] h-[340px] bg-brand-orange/[0.08] rounded-full blur-[120px] pointer-events-none" />
       <div className="ambient-drift absolute top-1/2 right-0 w-[420px] h-[360px] bg-brand-coral/[0.06] rounded-full blur-[130px] pointer-events-none" style={{ animationDelay: "-8s" }} />
-      <div className="ambient-drift absolute top-1/4 right-1/3 w-[340px] h-[260px] bg-cyan-500/[0.04] rounded-full blur-[110px] pointer-events-none" style={{ animationDelay: "-14s" }} />
+      <div className="ambient-drift absolute top-1/4 right-1/3 w-[340px] h-[260px] bg-orange-500/[0.04] rounded-full blur-[110px] pointer-events-none" style={{ animationDelay: "-14s" }} />
     </div>
   );
 }

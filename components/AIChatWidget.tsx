@@ -43,10 +43,10 @@ function saveMessages(msgs: Message[]) {
 }
 
 const SUGGESTIONS = [
-  "How does Axiom Agent scan my AWS infrastructure?",
-  "What security controls does Axiom use?",
-  "How does the autonomous execution loop work?",
-  "What cloud providers does Axiom support?",
+  "How does a GitHub change become an approved deployment?",
+  "What happens before Axiom can deploy to production?",
+  "How does the AWS ECS rollback path work?",
+  "Which integrations are released today?",
 ];
 
 export default function AIChatWidget() {
@@ -138,11 +138,11 @@ export default function AIChatWidget() {
       <button
         onClick={() => setOpen(true)}
         aria-label="Open Axiom Assistant"
-        className="fixed bottom-6 right-6 z-[9998] hidden min-h-11 items-center gap-2.5 rounded-full border border-white/[0.08] bg-[#111115]/90 px-3.5 py-2 text-zinc-200 shadow-[0_14px_40px_-20px_rgba(0,0,0,0.9)] backdrop-blur-xl transition-all hover:border-white/[0.16] hover:bg-[#15151a] hover:text-white focus:outline-none focus:ring-2 focus:ring-brand-coral/50 md:flex"
+        className="fixed bottom-6 right-6 z-[9998] hidden min-h-11 items-center gap-2.5 rounded-full border border-white/[0.08] bg-[#171717]/90 px-3.5 py-2 text-zinc-200 shadow-[0_14px_40px_-20px_rgba(0,0,0,0.9)] backdrop-blur-xl transition-all hover:border-white/[0.16] hover:bg-[#1a1a1a] hover:text-white focus:outline-none focus:ring-2 focus:ring-brand-coral/50 md:flex"
       >
         <div className="relative flex h-7 w-7 items-center justify-center rounded-full border border-white/[0.07] bg-white/[0.035]">
           <ChatBubbleLeftRightIcon className="h-3.5 w-3.5 text-zinc-300" />
-          <span className="absolute -right-0.5 -top-0.5 h-1.5 w-1.5 rounded-full bg-emerald-300 ring-2 ring-[#111115]" />
+          <span className="absolute -right-0.5 -top-0.5 h-1.5 w-1.5 rounded-full bg-emerald-300 ring-2 ring-[#171717]" />
         </div>
         <span className="pr-1 text-[12px] font-medium tracking-[-0.01em]">Ask Axiom</span>
       </button>
@@ -182,7 +182,7 @@ export default function AIChatWidget() {
                   <ChatBubbleLeftRightIcon className="h-6 w-6 text-zinc-600" />
                 </div>
                 <p className="text-sm font-medium text-white">Hi, I&apos;m Vision XIX Labs AI</p>
-                <p className="mt-1 text-xs text-zinc-400">Ask about cloud, AI, or our services.</p>
+                <p className="mt-1 text-xs text-zinc-400">Ask about the released product and workflows.</p>
                 <div className="mt-4 flex flex-wrap justify-center gap-2">
                   {SUGGESTIONS.slice(0, 4).map((s) => (
                     <button

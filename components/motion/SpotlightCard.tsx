@@ -6,7 +6,7 @@
  * `.spotlight-card` utility in globals.css to render a soft radial
  * wash that follows the pointer.
  *
- * Used for "living dark" card surfaces (huly.io vocabulary). The
+ * Used for "living dark" card surfaces (axiom.io vocabulary). The
  * radial wash is white at ~6% opacity so it never overwhelms the
  * underlying content — it just gives the card a sense of warmth
  * as the user moves over it.

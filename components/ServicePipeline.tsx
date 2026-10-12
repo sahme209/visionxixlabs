@@ -134,7 +134,7 @@ export function ServicePipeline() {
               onClick={() => setExpandedPhase(isExpanded ? null : pi)}
               className={`text-left rounded-xl p-5 transition-all duration-300 ${
                 isExpanded
-                  ? "surface-frost shadow-huly-coral-glow"
+                  ? "surface-frost shadow-axiom-coral-glow"
                   : "surface-glass hover:border-brand-coral/20"
               }`}
             >
@@ -148,7 +148,7 @@ export function ServicePipeline() {
                 {phase.steps.map((step) => (
                   <div key={step.num} className="flex items-start gap-2.5">
                     <span
-                      className={`huly-badge shrink-0 w-5 h-5 rounded-md flex items-center justify-center text-[10px] font-bold border ${colors.num} shadow-[inset_0_1px_0_rgba(255,255,255,0.06)]`}
+                      className={`axiom-badge shrink-0 w-5 h-5 rounded-md flex items-center justify-center text-[10px] font-bold border ${colors.num} shadow-[inset_0_1px_0_rgba(255,255,255,0.06)]`}
                     >
                       {step.num}
                     </span>

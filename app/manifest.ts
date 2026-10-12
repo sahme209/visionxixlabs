@@ -1,15 +1,14 @@
 import { MetadataRoute } from "next";
-import { SITE_URL } from "@/lib/seo";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
     name: "Vision XIX Labs",
     short_name: "Vision XIX Labs",
-    description: "Cloud & AI engineering for modern infrastructure. AWS, Azure, GCP — design, automate, optimize, secure.",
+    description: "Governed AI-assisted GitHub changes and AWS ECS deployments from request to auditable outcome.",
     start_url: "/",
     display: "standalone",
-    background_color: "#0f172a",
-    theme_color: "#4f46e5",
+    background_color: "#141414",
+    theme_color: "#f54e00",
     icons: [
       {
         src: "/favicon-32x32.png",

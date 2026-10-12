@@ -23,17 +23,17 @@ const config: Config = {
         },
       },
       backgroundImage: {
-        'huly-warm':  'linear-gradient(135deg, rgba(245,78,0,0.18) 0%, rgba(255,120,61,0.10) 100%)',
-        'huly-cool':  'linear-gradient(135deg, rgba(255,255,255,0.06) 0%, rgba(245,78,0,0.08) 100%)',
-        'huly-aurora':
+        'axiom-warm':  'linear-gradient(135deg, rgba(245,78,0,0.18) 0%, rgba(255,120,61,0.10) 100%)',
+        'axiom-cool':  'linear-gradient(135deg, rgba(255,255,255,0.06) 0%, rgba(245,78,0,0.08) 100%)',
+        'axiom-aurora':
           'radial-gradient(40% 50% at 20% 30%, rgba(245,78,0,0.22), transparent 60%),' +
           'radial-gradient(35% 40% at 80% 60%, rgba(255,120,61,0.12), transparent 60%)',
-        'huly-coral-fade': 'linear-gradient(90deg, #F54E00 0%, #FF783D 60%, transparent 100%)',
+        'axiom-coral-fade': 'linear-gradient(90deg, #F54E00 0%, #FF783D 60%, transparent 100%)',
       },
       boxShadow: {
-        'huly-card':       '0 12px 40px -16px rgba(0,0,0,0.45), 0 0 0 1px rgba(255,255,255,0.05) inset',
-        'huly-coral-glow': '0 20px 60px -20px rgba(251,146,60,0.35)',
-        'huly-orange-glow':'0 20px 60px -20px rgba(255, 120, 61,0.40)',
+        'axiom-card':       '0 12px 40px -16px rgba(0,0,0,0.45), 0 0 0 1px rgba(255,255,255,0.05) inset',
+        'axiom-coral-glow': '0 20px 60px -20px rgba(251,146,60,0.35)',
+        'axiom-orange-glow':'0 20px 60px -20px rgba(255, 120, 61,0.40)',
       },
       animation: {
         'fade-in': 'fadeIn 0.6s ease-out forwards',
@@ -81,12 +81,12 @@ const config: Config = {
         },
       },
       borderRadius: {
-        'huly': '0.875rem',
-        'huly-lg': '1.25rem',
+        'axiom': '0.875rem',
+        'axiom-lg': '1.25rem',
       },
       backdropBlur: {
         'xs': '2px',
-        'huly': '24px',
+        'axiom': '24px',
       },
     },
   },
