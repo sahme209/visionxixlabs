@@ -59,7 +59,7 @@ and server-counted seats. A successful redirect never grants access. The signed
 1. Approve the public prices, 20% annual discount, deployment allowances, and AI-credit economics.
 2. Review the implemented immutable public plan identifiers and monthly/annual Stripe price mappings on the organization billing path.
 3. Define a migration from legacy `User.plan` rows and existing Stripe subscriptions to `TenantBillingPlan`; produce a dry-run report before writing data.
-4. **Deployment side complete; seats pending.** Deployment dispatch now reserves an organization allowance slot in a serializable transaction and binds it to a unique organization/idempotency key. Seat enforcement still requires the legacy-plan migration below.
+4. **Deployment and seat concurrency complete.** Deployment dispatch reserves an organization allowance slot in a serializable transaction and binds it to a unique organization/idempotency key. Invite acceptance and enterprise SSO now claim accepted seats transactionally; paid plans fail closed unless the signed Stripe subscription supplies a positive seat quantity. Legacy-plan migration and Stripe test-mode reconciliation remain below.
 5. **Implemented for AWS ECS desktop and Agent dispatch.** Active reservations temporarily consume a slot; failed provider dispatches release it, accepted dispatches settle the same durable execution row, stale reservations expire, and exact retries replay the prior execution without dispatching twice.
 6. Cover upgrades, downgrades, renewals, cancellation, past-due state, refunds, and webhook re-delivery in integration tests.
 7. Verify the same entitlement response is consumed by the website, desktop app, and every mutating API boundary.

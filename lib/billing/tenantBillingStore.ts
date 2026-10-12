@@ -40,6 +40,7 @@ export interface BillingPlanRecord {
   currentPeriodEndsAt?: string;
   stripeCustomerId?: string;
   stripeSubscriptionId?: string;
+  seatQuantity?: number;
   cancelAtPeriodEnd: boolean;
   /** Days remaining in trial (when status === 'trialing'), else 0. */
   trialDaysRemaining: number;
@@ -138,10 +139,14 @@ export interface UpsertBillingPlanInput {
   stripeSubscriptionId?: string | null;
   cancelAtPeriodEnd?: boolean;
   lastStripeEventId?: string | null;
+  seatQuantity?: number | null;
 }
 
 export async function upsertBillingPlan(input: UpsertBillingPlanInput): Promise<BillingPlanRecord> {
-  const row = await prisma.tenantBillingPlan.upsert({
+  const store = prisma.tenantBillingPlan as unknown as {
+    upsert(args: { where: { organizationId: string }; update: Record<string, unknown>; create: Record<string, unknown> }): Promise<Record<string, unknown>>;
+  };
+  const row = await store.upsert({
     where: { organizationId: input.organizationId },
     update: {
       tier: input.tier,
@@ -152,6 +157,7 @@ export async function upsertBillingPlan(input: UpsertBillingPlanInput): Promise<
       stripeSubscriptionId: input.stripeSubscriptionId ?? null,
       cancelAtPeriodEnd: input.cancelAtPeriodEnd ?? false,
       lastStripeEventId: input.lastStripeEventId ?? null,
+      seatQuantity: input.seatQuantity ?? null,
     },
     create: {
       organizationId: input.organizationId,
@@ -163,16 +169,18 @@ export async function upsertBillingPlan(input: UpsertBillingPlanInput): Promise<
       stripeSubscriptionId: input.stripeSubscriptionId ?? null,
       cancelAtPeriodEnd: input.cancelAtPeriodEnd ?? false,
       lastStripeEventId: input.lastStripeEventId ?? null,
+      seatQuantity: input.seatQuantity ?? null,
     },
   });
-  return shape(row.organizationId, {
+  return shape(String(row.organizationId), {
     tier: input.tier,
     status: input.status,
-    trialEndsAt: row.trialEndsAt,
-    currentPeriodEndsAt: row.currentPeriodEndsAt,
-    stripeCustomerId: row.stripeCustomerId,
-    stripeSubscriptionId: row.stripeSubscriptionId,
-    cancelAtPeriodEnd: row.cancelAtPeriodEnd,
+    trialEndsAt: row.trialEndsAt instanceof Date ? row.trialEndsAt : null,
+    currentPeriodEndsAt: row.currentPeriodEndsAt instanceof Date ? row.currentPeriodEndsAt : null,
+    stripeCustomerId: typeof row.stripeCustomerId === "string" ? row.stripeCustomerId : null,
+    stripeSubscriptionId: typeof row.stripeSubscriptionId === "string" ? row.stripeSubscriptionId : null,
+    cancelAtPeriodEnd: row.cancelAtPeriodEnd === true,
+    seatQuantity: typeof row.seatQuantity === "number" ? row.seatQuantity : null,
   });
 }
 
@@ -184,6 +192,7 @@ function shape(organizationId: string, p: {
   stripeCustomerId: string | null;
   stripeSubscriptionId: string | null;
   cancelAtPeriodEnd: boolean;
+  seatQuantity?: number | null;
 }): BillingPlanRecord {
   const trialDaysRemaining = computeTrialDaysRemaining(p.status, p.trialEndsAt);
   return {
@@ -195,6 +204,7 @@ function shape(organizationId: string, p: {
     stripeCustomerId: p.stripeCustomerId ?? undefined,
     stripeSubscriptionId: p.stripeSubscriptionId ?? undefined,
     cancelAtPeriodEnd: p.cancelAtPeriodEnd,
+    seatQuantity: p.seatQuantity ?? undefined,
     trialDaysRemaining,
     spec: tierSpec(p.tier),
   };

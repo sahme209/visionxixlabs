@@ -42,6 +42,7 @@ interface StripeWebhookEvent {
       status?: string;
       cancel_at_period_end?: boolean;
       current_period_end?: number;
+      items?: { data?: Array<{ quantity?: number }> };
     };
   };
 }
@@ -169,6 +170,16 @@ export async function POST(req: NextRequest) {
   const currentPeriodEndsAt = obj?.current_period_end
     ? new Date(obj.current_period_end * 1000)
     : null;
+  const seatQuantity = obj?.items?.data?.reduce(
+    (sum, item) => sum + (Number.isSafeInteger(item.quantity) && (item.quantity ?? 0) > 0 ? item.quantity! : 0),
+    0,
+  ) ?? 0;
+  if (event.type !== "customer.subscription.deleted" && seatQuantity < 1) {
+    return NextResponse.json(
+      { ok: false, error: { code: "stripe.seat_quantity_invalid", userMessage: "The subscription has no valid paid seat quantity." }, meta: { correlationId, generatedAt: new Date().toISOString() } },
+      { status: 400 },
+    );
+  }
 
   try {
     await upsertBillingPlan({
@@ -181,6 +192,7 @@ export async function POST(req: NextRequest) {
       stripeSubscriptionId: obj.id,
       cancelAtPeriodEnd: obj.cancel_at_period_end ?? false,
       lastStripeEventId: event.id,
+      seatQuantity: seatQuantity > 0 ? seatQuantity : null,
     });
     return NextResponse.json({ ok: true }, { status: 200 });
   } catch (err) {

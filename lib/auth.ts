@@ -14,6 +14,7 @@ import { createLogger } from "./observability/logger";
 import { decodeIdTokenClaims } from "./identity/decodeIdTokenClaims";
 import { evaluateSsoSignIn, type SsoSignInRepo } from "./identity/ssoSignInGate";
 import { ALL_ORG_ROLES } from "./identity/identityProviderResponder";
+import { claimOrganizationSeat, type OrganizationSeatClaimRepo } from "./billing/organizationSeatClaim";
 
 const log = createLogger("auth.membershipBootstrap");
 
@@ -228,11 +229,19 @@ export const authOptions: NextAuthOptions = {
             }
             const mappedRole = gate.role as (typeof ALL_ORG_ROLES)[number];
             try {
-              await prisma.orgMembership.upsert({
-                where: { userId_organizationId: { userId: dbUser.id, organizationId: gate.organizationId } },
-                create: { userId: dbUser.id, organizationId: gate.organizationId, role: mappedRole, acceptedAt: new Date() },
-                update: { role: mappedRole },
+              const seatClaim = await claimOrganizationSeat(prisma as unknown as OrganizationSeatClaimRepo, {
+                userId: dbUser.id,
+                organizationId: gate.organizationId,
+                role: mappedRole,
               });
+              if (!seatClaim.ok) {
+                await recordSignInDenied({
+                  email: normalizedEmail,
+                  provider: account.provider,
+                  reasonCode: `sso.${seatClaim.error}`,
+                });
+                return false;
+              }
             } catch (err) {
               log.error("SSO membership upsert failed", {
                 path: "signIn", userId: dbUser.id, organizationId: gate.organizationId,
