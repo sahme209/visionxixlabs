@@ -6,6 +6,7 @@ describe("serializeDeploymentExecution", () => {
     const row: DeploymentExecutionRow = {
       id: "exec_1",
       organizationId: "org_1",
+      idempotencyKey: "deploy_1",
       environmentId: "env_prod",
       repositoryFullName: "acme/widgets",
       sourceRef: "release/2026-10-07",

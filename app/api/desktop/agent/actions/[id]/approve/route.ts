@@ -56,6 +56,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     proposal.toolName,
     proposal.argsJson as Record<string, unknown>,
     String(session.userId),
+    `agent-action:${proposal.id}`,
   );
 
   const final = await prisma.agentActionProposal.update({

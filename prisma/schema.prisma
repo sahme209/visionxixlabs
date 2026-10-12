@@ -2628,6 +2628,9 @@ model DeploymentTarget {
 model DeploymentExecution {
   id                 String    @id @default(cuid())
   organizationId     String
+  /// Stable caller-supplied key. It is reserved transactionally before an
+  /// external dispatch so retries cannot launch the same deployment twice.
+  idempotencyKey     String?
   environmentId      String
   repositoryFullName String
   /// Exact GitHub branch or tag selected for this dispatch.
@@ -2648,7 +2651,7 @@ model DeploymentExecution {
   /// desktop | agent
   source             String
   triggeredByUserId  String
-  /// queued | in_progress | completed | tracking_unavailable
+  /// reserved | queued | in_progress | completed | tracking_unavailable
   status             String    @default("queued")
   conclusion         String?
   /// not_started | in_progress | succeeded | failed | unknown
@@ -2660,6 +2663,7 @@ model DeploymentExecution {
 
   @@index([organizationId, createdAt])
   @@index([organizationId, environmentId, createdAt])
+  @@unique([organizationId, idempotencyKey])
   @@unique([organizationId, workflowRunId])
 }
 

@@ -64,7 +64,7 @@ describe("POST /api/desktop/agent/actions/[id]/approve", () => {
     const body = await res.json();
     expect(res.status).toBe(200);
     expect(body.data.status).toBe("executed");
-    expect(mocks.executeApprovedAction).toHaveBeenCalledWith(expect.anything(), "org-1", "open_github_pull_request", {}, "user-1");
+    expect(mocks.executeApprovedAction).toHaveBeenCalledWith(expect.anything(), "org-1", "open_github_pull_request", {}, "user-1", "agent-action:ap_1");
   });
 
   it("does not execute when another request wins the atomic approval claim", async () => {

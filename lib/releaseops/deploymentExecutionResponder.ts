@@ -3,6 +3,7 @@ import "server-only";
 export interface DeploymentExecutionRow {
   id: string;
   organizationId: string;
+  idempotencyKey: string | null;
   environmentId: string;
   repositoryFullName: string;
   sourceRef: string | null;
@@ -28,6 +29,7 @@ export interface DeploymentExecutionRepo {
   deploymentExecution: {
     create(args: { data: {
       organizationId: string;
+      idempotencyKey?: string | null;
       environmentId: string;
       repositoryFullName: string;
       sourceRef: string;

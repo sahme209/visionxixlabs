@@ -800,8 +800,9 @@ export class DesktopClient {
     return this.post("/api/desktop/environments/deployment-target", input);
   }
 
-  triggerAwsDeploy(input: { repositoryFullName: string; environmentId: string; sourceRef: string; sourceKind: "branch" | "tag"; pullRequestNumber?: number; promotedFromExecutionId?: string; emergencyBypass?: boolean; bypassReason?: string }): Promise<ApiResult<{ dispatched: boolean; execution: DeploymentExecution | null; trackingAvailable: boolean; policyId: string | null; sourceRef: string; sourceKind: "branch" | "tag"; governanceMode: "policy_enforced" | "emergency_bypass" }>> {
-    return this.post("/api/desktop/environments/deploy", input);
+  triggerAwsDeploy(input: { repositoryFullName: string; environmentId: string; sourceRef: string; sourceKind: "branch" | "tag"; pullRequestNumber?: number; promotedFromExecutionId?: string; emergencyBypass?: boolean; bypassReason?: string; idempotencyKey: string }): Promise<ApiResult<{ dispatched: boolean; execution: DeploymentExecution | null; trackingAvailable: boolean; policyId: string | null; sourceRef: string; sourceKind: "branch" | "tag"; governanceMode: "policy_enforced" | "emergency_bypass" }>> {
+    const { idempotencyKey, ...body } = input;
+    return this.post("/api/desktop/environments/deploy", body, { "Idempotency-Key": idempotencyKey });
   }
 
   preflightAwsDeploy(input: { repositoryFullName: string; environmentId: string; sourceRef: string; sourceKind: "branch" | "tag"; pullRequestNumber?: number; promotedFromExecutionId?: string; emergencyBypass?: boolean; bypassReason?: string }): Promise<ApiResult<{ ready: true; policyId: string | null; sourceCommitSha: string; pullRequestUrl: string | null; governanceMode: "policy_enforced" | "emergency_bypass" }>> {

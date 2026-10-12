@@ -19,10 +19,17 @@ import { buildIdentityProviderCreateResponse, type IdentityProviderRepo } from "
 import { githubFileReviewFromArgs, githubFilesReviewFromArgs } from "@/lib/axiom/agentRuntime/proposalReview";
 import { serializeDeploymentExecution, type DeploymentExecutionRepo } from "@/lib/releaseops/deploymentExecutionResponder";
 import { evaluateDeploymentPolicy, type DeploymentPolicyRepo } from "@/lib/releaseops/deploymentPolicyGuard";
-import { checkDeploymentQuota, type DeploymentQuotaRepo } from "@/lib/billing/deploymentQuota";
+import {
+  releaseDeploymentDispatch,
+  reserveDeploymentDispatch,
+  settleDeploymentDispatch,
+  type DeploymentReservationRepo,
+} from "@/lib/billing/deploymentDispatchReservation";
 
 export interface ActionExecutionRepo {
-  deploymentExecution?: DeploymentExecutionRepo["deploymentExecution"];
+  $transaction?: DeploymentReservationRepo["$transaction"];
+  tenantBillingPlan?: DeploymentReservationRepo["tenantBillingPlan"];
+  deploymentExecution?: DeploymentExecutionRepo["deploymentExecution"] & DeploymentReservationRepo["deploymentExecution"];
   environment: {
     findUnique(args: { where: { id: string } }): Promise<{ id: string; organizationId: string; tier: string } | null>;
   };
@@ -41,6 +48,7 @@ export async function executeApprovedAction(
   toolName: string,
   args: Record<string, unknown>,
   actorUserId = "agent-approver",
+  operationId?: string,
 ): Promise<ActionExecutionResult> {
   const repositoryFullName = typeof args.repositoryFullName === "string" ? args.repositoryFullName : "";
   const parsed = parseRepositoryFullName(repositoryFullName);
@@ -154,36 +162,61 @@ export async function executeApprovedAction(
       installationToken: token.token,
     });
     if (!policy.ok) return { ok: false, error: policy.error };
-    const quota = await checkDeploymentQuota(repo as unknown as DeploymentQuotaRepo, organizationId);
-    if (!quota.allowed) return { ok: false, error: quota.reason };
+    if (!operationId) return { ok: false, error: "deployment_idempotency_key_required" };
+    const reservationRepo = repo as unknown as DeploymentReservationRepo;
+    const reservation = await reserveDeploymentDispatch(reservationRepo, {
+      organizationId,
+      idempotencyKey: operationId,
+      environmentId,
+      repositoryFullName,
+      sourceRef,
+      sourceKind,
+      sourceCommitSha: policy.sourceCommitSha,
+      branchPolicyId: policy.policyId,
+      promotedFromExecutionId: promotedFromExecutionId ?? null,
+      pullRequestUrl: policy.pullRequestUrl,
+      source: "agent",
+      triggeredByUserId: actorUserId,
+    });
+    if (!reservation.ok) return { ok: false, error: reservation.error };
+    if (reservation.reused) {
+      return {
+        ok: true,
+        result: {
+          dispatched: true,
+          execution: serializeDeploymentExecution(reservation.reservation),
+          trackingAvailable: Boolean(reservation.reservation.workflowRunId),
+          policyId: reservation.reservation.branchPolicyId,
+          sourceRef: reservation.reservation.sourceRef,
+          sourceKind: reservation.reservation.sourceKind,
+          replayed: true,
+        },
+      };
+    }
     const result = await dispatchWorkflow({
       owner: parsed.owner, repo: parsed.repo, workflowFile: AWS_ECS_DEPLOY_WORKFLOW_FILENAME, ref: sourceRef,
       inputs: { role_arn: target.roleArn, region: target.region, cluster: target.ecsCluster, service: target.ecsService },
       installationToken: token.token,
     });
-    if (!result.ok) return { ok: false, error: result.error };
+    if (!result.ok) {
+      await releaseDeploymentDispatch(reservationRepo, organizationId, reservation.reservation.id);
+      return { ok: false, error: result.error };
+    }
     let execution = null;
     try {
-      if (!repo.deploymentExecution) throw new Error("deployment_execution_storage_unavailable");
-      const created = await repo.deploymentExecution.create({
-        data: {
-          organizationId,
-          environmentId,
-          repositoryFullName,
-          sourceRef,
-          sourceKind,
-          sourceCommitSha: policy.sourceCommitSha,
-          branchPolicyId: policy.policyId,
-          promotedFromExecutionId: promotedFromExecutionId ?? null,
-          pullRequestUrl: policy.pullRequestUrl,
+      const settled = await settleDeploymentDispatch(reservationRepo, organizationId, reservation.reservation.id, {
+        workflowRunId: result.data.workflowRunId,
+        workflowUrl: result.data.htmlUrl,
+      });
+      if (settled) {
+        execution = serializeDeploymentExecution({
+          ...reservation.reservation,
           workflowRunId: result.data.workflowRunId,
           workflowUrl: result.data.htmlUrl,
-          source: "agent",
-          triggeredByUserId: actorUserId,
           status: result.data.workflowRunId ? "queued" : "tracking_unavailable",
-        },
-      });
-      execution = serializeDeploymentExecution(created);
+          updatedAt: new Date(),
+        });
+      }
     } catch { /* dispatch already happened; preserve the truthful outcome */ }
     return {
       ok: true,
