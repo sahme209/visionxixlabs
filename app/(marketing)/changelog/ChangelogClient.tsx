@@ -115,9 +115,9 @@ export const HISTORICAL_ENGINEERING_NOTES = [
   },
   {
     phases: "272-276",
-    title: "/team-of-one Huly-flavored landing + ROI calculator",
+    title: "/team-of-one product-led landing + ROI calculator",
     summary:
-      "Cursor-tracking aurora, scroll-revealed sections, IntersectionObserver count-ups, interactive ROI calculator. Headline number: the team you'd hire would cost ≈ $2.96M/year.",
+      "Pointer-responsive emphasis, scroll-revealed sections, IntersectionObserver count-ups, interactive ROI calculator. Headline number: the team you'd hire would cost ≈ $2.96M/year.",
     tag: "marketing",
     surface: "web",
   },
@@ -256,7 +256,7 @@ const TAG_STYLE: Record<ChangelogEntry["tag"], string> = {
   marketing: "bg-amber-500/15 text-amber-200 border-amber-500/30",
   kernel:    "bg-zinc-500/15 text-zinc-200 border-zinc-500/30",
   agent:     "bg-emerald-500/15 text-emerald-200 border-emerald-500/30",
-  platform:  "bg-cyan-500/15 text-cyan-200 border-cyan-500/30",
+  platform:  "bg-orange-500/15 text-orange-200 border-orange-500/30",
   safety:    "bg-white/15 text-zinc-200 border-white/30",
   ops:       "bg-rose-500/15 text-rose-200 border-rose-500/30",
 };
@@ -271,11 +271,10 @@ const SURFACE_LABEL: Record<ChangelogEntry["surface"], string> = {
 export function ChangelogClient() {
   return (
     <div className="relative">
-      {/* Huly aurora — coral × orange × cyan */}
+      {/* Restrained Axiom atmosphere */}
       <div aria-hidden className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
         <div className="ambient-drift absolute -top-1/4 left-1/4 h-[60vh] w-[50vw] rounded-full bg-brand-orange/[0.08] blur-[140px]" />
         <div className="ambient-drift absolute top-[15%] right-[5%] h-[50vh] w-[40vw] rounded-full bg-brand-coral/[0.06] blur-[130px]" style={{ animationDelay: "-8s" }} />
-        <div className="ambient-drift absolute bottom-[5%] left-[10%] h-[40vh] w-[35vw] rounded-full bg-cyan-500/[0.04] blur-[120px]" style={{ animationDelay: "-14s" }} />
       </div>
 
       {/* ===== HERO ===== */}
@@ -349,7 +348,7 @@ export function ChangelogClient() {
           Want to see what shipped this week?
         </h3>
         <p className="mt-3 text-zinc-400 text-[14px]">
-          The cockpit's audit log shows every approval packet — including the one
+          The cockpit&apos;s audit log shows every approval packet — including the one
           that staged this page.
         </p>
         <div className="mt-6 flex items-center justify-center gap-2">

@@ -1,15 +1,33 @@
 import Link from "next/link";
-import { ArrowRightIcon, PlayCircleIcon, ShieldCheckIcon } from "@heroicons/react/24/outline";
+import { ArrowRightIcon, ShieldCheckIcon } from "@heroicons/react/24/outline";
 import { CinematicAxiomDemo } from "@/components/marketing/CinematicAxiomDemo";
 import { Footer } from "@/components/Footer";
 import { Navigation } from "@/components/Navigation";
-import { listScenarios, type DemoScenario } from "@/lib/demo/demoScenarios";
 
 export const dynamic = "force-dynamic";
 
-export default function DemoLanding() {
-  const scenarios = listScenarios("client");
+const verifiedOutcomes = [
+  {
+    title: "Prepare a repository change",
+    detail: "Select a GitHub repository, branch, file, and environment. Axiom reads through repository-scoped access, then pauses the proposed write for approval.",
+    href: "/docs/approval-workflow",
+    meta: "GitHub · approval gated",
+  },
+  {
+    title: "Gate delivery on an Airflow DAG",
+    detail: "Choose a validated DAG, monitor its run, evaluate dependencies, and create an auditable deployment proposal when the configured condition is satisfied.",
+    href: "/integrations",
+    meta: "Airflow 3 · automated condition",
+  },
+  {
+    title: "Deploy to AWS ECS with recovery armed",
+    detail: "Dispatch the tenant workflow with short-lived GitHub OIDC credentials, wait for ECS steady state, and roll back inside the authenticated job if stability fails.",
+    href: "/docs/aws-setup",
+    meta: "AWS ECS · GitHub OIDC",
+  },
+] as const;
 
+export default function DemoLanding() {
   return (
     <div className="min-h-screen bg-[#141414] text-zinc-100">
       <Navigation />
@@ -39,12 +57,22 @@ export default function DemoLanding() {
         <section className="mx-auto max-w-[1400px] px-5 py-20 sm:px-8 lg:px-12 lg:py-28">
           <div className="grid gap-8 border-t border-white/[0.08] pt-12 lg:grid-cols-[0.7fr_1.3fr]">
             <div>
-              <p className="text-[11px] font-medium uppercase tracking-[0.18em] text-orange-400">Explore by outcome</p>
-              <h2 className="mt-4 text-3xl font-medium tracking-[-0.04em] text-zinc-100 sm:text-4xl">Go deeper without a sales call.</h2>
-              <p className="mt-4 max-w-md text-sm leading-6 text-zinc-500">Each walkthrough uses isolated sample data and explains the authority boundary before showing an action.</p>
+              <p className="text-[11px] font-medium uppercase tracking-[0.18em] text-orange-400">Implemented workflows</p>
+              <h2 className="mt-4 text-3xl font-medium tracking-[-0.04em] text-zinc-100 sm:text-4xl">See exactly where Axiom acts—and where it waits.</h2>
+              <p className="mt-4 max-w-md text-sm leading-6 text-zinc-500">These paths map to released desktop and service behavior. The visuals use scripted data and never touch a live customer system.</p>
             </div>
             <div className="divide-y divide-white/[0.08] border-y border-white/[0.08]">
-              {scenarios.map((scenario, index) => <ScenarioRow key={scenario.id} scenario={scenario} index={index} />)}
+              {verifiedOutcomes.map((outcome, index) => (
+                <Link key={outcome.title} href={outcome.href} className="group grid gap-3 py-6 transition sm:grid-cols-[48px_1fr_auto] sm:items-center">
+                  <span className="font-mono text-xs text-zinc-600">{String(index + 1).padStart(2, "0")}</span>
+                  <div>
+                    <h3 className="text-base font-medium text-zinc-200 transition group-hover:text-white">{outcome.title}</h3>
+                    <p className="mt-1 max-w-2xl text-sm leading-6 text-zinc-500">{outcome.detail}</p>
+                    <p className="mt-2 text-[10px] font-medium uppercase tracking-[0.15em] text-zinc-600">{outcome.meta}</p>
+                  </div>
+                  <ArrowRightIcon className="h-4 w-4 text-zinc-600 transition group-hover:translate-x-0.5 group-hover:text-orange-300" />
+                </Link>
+              ))}
             </div>
           </div>
         </section>
@@ -64,18 +92,5 @@ export default function DemoLanding() {
       </main>
       <Footer />
     </div>
-  );
-}
-
-function ScenarioRow({ scenario, index }: { scenario: DemoScenario; index: number }) {
-  return (
-    <Link href={`/demo/${scenario.id}`} className="group grid gap-3 py-6 transition sm:grid-cols-[48px_1fr_auto] sm:items-center">
-      <span className="font-mono text-xs text-zinc-600">{String(index + 1).padStart(2, "0")}</span>
-      <div>
-        <h3 className="text-base font-medium text-zinc-200 transition group-hover:text-white">{scenario.title}</h3>
-        <p className="mt-1 max-w-2xl text-sm leading-6 text-zinc-500">{scenario.pitch}</p>
-      </div>
-      <span className="inline-flex items-center gap-2 text-xs text-zinc-500 transition group-hover:text-orange-300"><PlayCircleIcon className="h-4 w-4" /> {scenario.steps.length} steps</span>
-    </Link>
   );
 }

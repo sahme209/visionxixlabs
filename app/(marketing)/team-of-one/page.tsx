@@ -1,7 +1,7 @@
 /**
  * /team-of-one — public marketing landing page.
  *
- * Huly.io-flavored visual treatment: animated aurora, cursor-tracking
+ * Original Axiom visual treatment: animated aurora, cursor-tracking
  * glow, scroll-revealed sections. Positioning: an AI-assisted
  * operations platform that amplifies the operator across cloud,
  * DevOps, security, observability, and business operations — with

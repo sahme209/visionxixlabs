@@ -27,6 +27,14 @@ describe("publicPlanCatalog", () => {
     expect(pro?.monthlyDeployments).toBe(100);
   });
 
+  it("offers Enterprise online with fixed limits instead of a sales quote", () => {
+    const enterprise = PUBLIC_PLAN_CATALOG.find((plan) => plan.id === "enterprise");
+    expect(enterprise?.monthlyPricePerUserCents).toBe(7_900);
+    expect(enterprise?.annualPricePerUserCents).toBe(6_320);
+    expect(enterprise?.monthlyDeployments).toBe(500);
+    expect(enterprise?.monthlyAiCreditCents).toBe(3_000);
+  });
+
   it("keeps checkout disabled unless explicitly activated", () => {
     delete process.env.AXIOM_SELF_SERVICE_BILLING_ENABLED;
     expect(isSelfServiceBillingEnabled()).toBe(false);
@@ -38,4 +46,3 @@ describe("publicPlanCatalog", () => {
     expect(COUNTED_DEPLOYMENT_DEFINITION).toContain("successfully dispatched");
   });
 });
-

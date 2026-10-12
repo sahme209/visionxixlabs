@@ -682,7 +682,7 @@ function PipelineMock({ step: _step }: { step: DemoStep }) {
   const rows: Array<{ id: string; pid: string; st: string; dot: string; pill: string; stages: string; trig: string; t: string }> = [
     { id: "ck98zxa", pid: "ai_coding",       st: "succeeded",         dot: "bg-emerald-400", pill: "bg-emerald-500/15 text-emerald-300", stages: "6/6", trig: "alice@acme.com", t: "2m" },
     { id: "ck98zwb", pid: "deploy_pipeline", st: "awaiting_approval", dot: "bg-zinc-400",   pill: "bg-white/15 text-zinc-300",     stages: "4/7", trig: "bob@acme.com",   t: "5m" },
-    { id: "ck98zvc", pid: "infra_update",    st: "running",           dot: "bg-cyan-400",    pill: "bg-cyan-500/15 text-cyan-300",       stages: "2/5", trig: "api_key:vxlk…", t: "8m" },
+    { id: "ck98zvc", pid: "infra_update",    st: "running",           dot: "bg-orange-400",    pill: "bg-orange-500/15 text-orange-300",       stages: "2/5", trig: "api_key:vxlk…", t: "8m" },
     { id: "ck98zud", pid: "deploy_pipeline", st: "failed",            dot: "bg-red-400",     pill: "bg-red-500/15 text-red-300",         stages: "3/7", trig: "alice@acme.com", t: "27m"},
     { id: "ck98zte", pid: "ai_coding",       st: "succeeded",         dot: "bg-emerald-400", pill: "bg-emerald-500/15 text-emerald-300", stages: "6/6", trig: "api_key:vxlk…", t: "41m"},
   ];

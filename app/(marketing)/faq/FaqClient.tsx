@@ -111,7 +111,7 @@ const CATEGORIES: ReadonlyArray<{ id: FaqEntry["category"] | "all"; label: strin
 const CATEGORY_TONE: Record<FaqEntry["category"], string> = {
   safety:  "text-emerald-300 bg-emerald-500/10 border-emerald-500/30",
   control: "text-zinc-300  bg-zinc-500/10  border-zinc-500/30",
-  data:    "text-cyan-300    bg-cyan-500/10    border-cyan-500/30",
+  data:    "text-orange-300    bg-orange-500/10    border-orange-500/30",
   cost:    "text-zinc-300   bg-white/10   border-white/30",
   fit:     "text-amber-300 bg-amber-500/10 border-amber-500/30",
 };
@@ -127,11 +127,10 @@ export function FaqClient() {
 
   return (
     <div className="relative">
-      {/* Huly aurora — coral × orange × cyan */}
+      {/* Restrained Axiom atmosphere */}
       <div aria-hidden className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
         <div className="ambient-drift absolute -top-1/4 right-1/4 h-[60vh] w-[50vw] rounded-full bg-brand-orange/[0.08] blur-[140px]" />
         <div className="ambient-drift absolute top-[15%] left-[5%] h-[50vh] w-[40vw] rounded-full bg-brand-coral/[0.06] blur-[130px]" style={{ animationDelay: "-8s" }} />
-        <div className="ambient-drift absolute bottom-[5%] right-[10%] h-[40vh] w-[35vw] rounded-full bg-cyan-500/[0.04] blur-[120px]" style={{ animationDelay: "-14s" }} />
       </div>
 
       {/* ===== HERO ===== */}
@@ -252,12 +251,12 @@ export function FaqClient() {
       {/* ===== CLOSER ===== */}
       <section className="relative z-10 mx-auto max-w-3xl px-6 md:px-10 py-12 text-center">
         <h3 className="text-xl md:text-2xl font-semibold tracking-tight">
-          Question we didn't answer?
+          Need a specific answer?
         </h3>
         <p className="mt-3 text-zinc-400 text-[14px]">
-          The fastest path to a real answer is a 30-minute call. We&apos;ll explain
-          the supported workflow, the evidence behind it, and any limits that
-          still need to be verified.
+          Search the documentation, open troubleshooting, or use the labeled
+          interactive demo. Supported paths explain their requirements and
+          recovery steps without requiring a call.
         </p>
         <div className="mt-6 flex items-center justify-center gap-2">
           <Link

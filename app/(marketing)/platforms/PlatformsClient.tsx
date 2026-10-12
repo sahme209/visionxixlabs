@@ -42,7 +42,6 @@ export function PlatformsClient() {
       <div aria-hidden className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
         <div className="ambient-drift absolute top-0 right-0 h-[60vh] w-[50vw] rounded-full bg-brand-orange/[0.08] blur-[140px]" />
         <div className="ambient-drift absolute top-[15%] left-[5%] h-[50vh] w-[40vw] rounded-full bg-brand-coral/[0.06] blur-[130px]" style={{ animationDelay: "-8s" }} />
-        <div className="ambient-drift absolute bottom-[5%] right-[10%] h-[45vh] w-[35vw] rounded-full bg-cyan-500/[0.05] blur-[120px]" style={{ animationDelay: "-14s" }} />
       </div>
 
       <section className="relative z-10 mx-auto max-w-6xl px-6 md:px-10 pt-24 pb-12">
@@ -91,12 +90,12 @@ export function PlatformsClient() {
               whileHover={{ y: -4, transition: { duration: 0.2 } }}
               className="surface-glass rounded-2xl p-6 hover:border-brand-coral/25 transition-all"
             >
-              <p className="text-[12px] font-mono uppercase tracking-widest text-cyan-300">{s.name}</p>
+              <p className="text-[12px] font-mono uppercase tracking-widest text-orange-300">{s.name}</p>
               <p className="mt-2 text-[12.5px] text-zinc-500">{s.tag}</p>
               <ul className="mt-4 space-y-2">
                 {s.modules.map((m) => (
                   <li key={m} className="text-[13px] text-zinc-300 leading-snug flex items-start gap-2">
-                    <span className="text-cyan-300 mt-[2px]">·</span>
+                    <span className="text-orange-300 mt-[2px]">·</span>
                     <span>{m}</span>
                   </li>
                 ))}
@@ -112,7 +111,7 @@ export function PlatformsClient() {
         </h3>
         <p className="mt-3 text-zinc-400 text-[14px]">
           approval-only-no-execution. closed-union types. sha-256 rationale rows. The
-          rules don't bend per surface.
+          rules don&apos;t bend per surface.
         </p>
       </section>
     </div>

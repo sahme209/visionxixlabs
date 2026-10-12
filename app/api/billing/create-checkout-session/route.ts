@@ -7,7 +7,7 @@ import { isSelfServiceBillingEnabled } from "@/lib/billing/publicPlanCatalog";
 
 /**
  * Phase 6: Stripe checkout session (optional).
- * If STRIPE_SECRET_KEY missing, return friendly error + "Contact Sales" CTA.
+ * Fail closed when Stripe test-mode configuration is incomplete.
  */
 export async function POST(req: NextRequest) {
   if (!isSelfServiceBillingEnabled()) {
@@ -26,8 +26,8 @@ export async function POST(req: NextRequest) {
     return NextResponse.json(
       {
         error: "Checkout unavailable",
-        message: "Contact Sales to upgrade.",
-        cta: "contact",
+        message: "Self-service billing is not configured. No charge was created.",
+        cta: "plans",
       },
       { status: 503 }
     );
@@ -87,8 +87,8 @@ export async function POST(req: NextRequest) {
     return NextResponse.json(
       {
         error: "Checkout configuration incomplete",
-        message: "Contact Sales to upgrade.",
-        cta: "contact",
+        message: "This plan is not configured for self-service checkout. No charge was created.",
+        cta: "plans",
       },
       { status: 503 }
     );
@@ -107,7 +107,7 @@ export async function POST(req: NextRequest) {
   } catch (e) {
     console.error("[billing checkout]", e);
     return NextResponse.json(
-      { error: "Failed to create checkout session", cta: "contact" },
+      { error: "Failed to create checkout session", cta: "plans" },
       { status: 500 }
     );
   }

@@ -9,11 +9,10 @@ import {
 export const metadata: Metadata = {
   title: "Axiom pricing",
   description:
-    "Proposed Free, Pro, and Business plans for governed deployments. Checkout remains disabled while billing authority and quota enforcement are validated.",
+    "Proposed Free, Pro, and Enterprise plans for governed deployments. Checkout remains disabled while billing authority and quota enforcement are validated.",
 };
 
-function priceLabel(price: number | null) {
-  if (price === null) return "Custom";
+function priceLabel(price: number) {
   if (price === 0) return "$0";
   return `$${(price / 100).toFixed(0)}`;
 }
@@ -67,11 +66,13 @@ export default function PlansPage() {
                 <span className="text-4xl font-medium tracking-[-0.05em] text-zinc-100">
                   {priceLabel(plan.monthlyPricePerUserCents)}
                 </span>
-                {plan.monthlyPricePerUserCents !== null && plan.monthlyPricePerUserCents > 0 ? (
+                {plan.monthlyPricePerUserCents > 0 ? (
                   <span className="ml-2 text-sm text-zinc-500">per user / month</span>
                 ) : null}
-                {plan.id === "pro" ? (
-                  <p className="mt-2 text-xs text-zinc-500">$23.20 per user/month equivalent, billed annually</p>
+                {plan.monthlyPricePerUserCents > 0 ? (
+                  <p className="mt-2 text-xs text-zinc-500">
+                    ${(plan.annualPricePerUserCents / 100).toFixed(2)} per user/month equivalent, billed annually
+                  </p>
                 ) : null}
               </div>
 
@@ -86,14 +87,14 @@ export default function PlansPage() {
 
               <div className="mt-auto pt-9">
                 <Link
-                  href={plan.id === "business" ? "/contact?topic=business" : "/download"}
+                  href="/download"
                   className={`flex min-h-12 items-center justify-center rounded-full px-5 text-sm font-semibold transition ${
                     featured
                       ? "bg-[#f54e00] text-white hover:bg-[#ff641f]"
                       : "border border-white/[0.14] bg-white/[0.04] text-zinc-100 hover:bg-white/[0.08]"
                   }`}
                 >
-                  {plan.id === "business" ? "Discuss Business" : "Create a free workspace"}
+                  Start with Axiom
                 </Link>
               </div>
             </article>

@@ -8,6 +8,7 @@
  * surface in detail without grepping the codebase.
  */
 
+import { redirect } from "next/navigation";
 import Link from "next/link";
 import {
   API_ENDPOINTS,
@@ -23,6 +24,10 @@ import { SandboxNavigation } from "@/components/marketing/SandboxNavigation";
 export const dynamic = "force-dynamic";
 
 export default function ReferencePage() {
+  redirect("/demo");
+
+  // Retained temporarily for source-history review; unreachable publicly
+  // until every reference claim is verified against the shipped desktop app.
   return (
     <>
       <SandboxNavigation />
@@ -194,7 +199,7 @@ export default function ReferencePage() {
                 <p className="text-[10px] font-mono text-zinc-500 uppercase tracking-[0.18em] mb-1">tools · {eng.tools.length}</p>
                 <div className="flex flex-wrap gap-1">
                   {eng.tools.map((t) => (
-                    <code key={t} className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-cyan-500/10 text-cyan-200 border border-cyan-500/20">{t}</code>
+                    <code key={t} className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-orange-500/10 text-orange-200 border border-orange-500/20">{t}</code>
                   ))}
                 </div>
               </div>
@@ -271,7 +276,7 @@ function SectionHeader({ title, subtitle }: { title: string; subtitle: string })
 
 function MethodPill({ method }: { method: "GET" | "POST" }) {
   const cls = method === "GET"
-    ? "bg-cyan-500/15 text-cyan-200 border-cyan-500/30"
+    ? "bg-orange-500/15 text-orange-200 border-orange-500/30"
     : "bg-orange-500/15 text-orange-200 border-orange-500/30";
   return <span className={`text-[10px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded border ${cls}`}>{method}</span>;
 }

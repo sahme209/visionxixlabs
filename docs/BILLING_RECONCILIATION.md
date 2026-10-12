@@ -6,7 +6,7 @@ Status: review-only. Self-service checkout must remain disabled until every acti
 
 | Concern | Current implementation | Authority today | Decision for the new model |
 |---|---|---|---|
-| Customer-facing proposal | `lib/billing/publicPlanCatalog.ts` | Display only | Free, Pro, and Business remain a proposal until activation |
+| Customer-facing proposal | `lib/billing/publicPlanCatalog.ts` | Display only | Free, Pro, and Enterprise remain a proposal until activation |
 | Organization subscription | `TenantBillingPlan` through `lib/billing/tenantBillingStore.ts` | Preferred commercial authority | Keep as the single organization-level source of truth |
 | Organization webhook | `POST /api/billing/stripe-webhook` | Signature-verified, metadata-scoped, idempotent | Retain and extend only after public-plan mapping is approved |
 | Legacy user subscription | `User.plan` through `POST /api/webhooks/stripe` | Legacy compatibility path | Migrate existing customers before retiring; never silently remap |
@@ -16,25 +16,32 @@ Status: review-only. Self-service checkout must remain disabled until every acti
 
 ## Proposed public contract
 
-| Plan | Price | Seats | Counted deployments | Security boundary |
-|---|---:|---:|---:|---|
-| Free | $0 | 2 | 10/month | Approval gates, risk checks, and audit history included |
-| Pro | $29/user/month | Organization seats | 100/month proposed | Same security boundary; adds capacity, schedules, and automation |
-| Business | Contracted | Contracted | Contracted | Same security boundary; adds administration and negotiated capacity |
+| Plan | Monthly price | Annual equivalent | Seats | Counted deployments | Governed AI allowance |
+|---|---:|---:|---:|---:|---:|
+| Free | $0 | $0 | 2 included | 10/month | $2/organization/month |
+| Pro | $29/user | $23.20/user | Paid seats | 100/month | $10/paid seat/month |
+| Enterprise | $79/user | $63.20/user | Paid seats | 500/month | $30/paid seat/month |
+
+The AI amounts are proposed service credits, not tokens and not provider-cost
+pass-through. Before activation, metering must use the recorded provider cost,
+apply the approved retail rate once, and expose both consumed and remaining
+credit without revealing provider credentials. Security controls remain
+identical across all plans.
 
 A counted deployment is one successfully dispatched, approved deployment workflow for one environment. Polling, validation retries, and automatic rollback for that dispatch do not count again. Rejected, canceled, and failed-to-dispatch proposals do not count.
 
 ## Required activation sequence
 
-1. Approve the public prices, annual discount, deployment allowance, and Business packaging.
+1. Approve the public prices, 20% annual discount, deployment allowances, and AI-credit economics.
 2. Add immutable public plan identifiers and versioned Stripe price mappings to the organization billing path.
 3. Define a migration from legacy `User.plan` rows and existing Stripe subscriptions to `TenantBillingPlan`; produce a dry-run report before writing data.
 4. Make seat and deployment counters organization-scoped, transactional, and idempotent under concurrent dispatches.
 5. Count only after provider dispatch succeeds and bind the count to the dispatch idempotency key.
 6. Cover upgrades, downgrades, renewals, cancellation, past-due state, refunds, and webhook re-delivery in integration tests.
 7. Verify the same entitlement response is consumed by the website, desktop app, and every mutating API boundary.
-8. Run Stripe test-mode customer journeys and reconcile invoices, usage, and webhook state.
-9. Obtain explicit approval before setting `AXIOM_SELF_SERVICE_BILLING_ENABLED=true` or creating live prices.
+8. Create or reconcile versioned Free, Pro, and Enterprise products and prices in Stripe test mode only.
+9. Run Stripe test-mode customer journeys and reconcile invoices, seats, usage, and webhook state.
+10. Obtain explicit approval before setting `AXIOM_SELF_SERVICE_BILLING_ENABLED=true` or creating live prices.
 
 ## Fail-closed rules
 

@@ -104,11 +104,10 @@ export function DisciplinesClient() {
 
   return (
     <div className="relative">
-      {/* Huly aurora — coral × orange × cyan */}
+      {/* Restrained Axiom atmosphere */}
       <div aria-hidden className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
         <div className="ambient-drift absolute -top-1/4 right-1/4 h-[60vh] w-[50vw] rounded-full bg-brand-orange/[0.08] blur-[140px]" />
         <div className="ambient-drift absolute top-[15%] left-[5%] h-[50vh] w-[40vw] rounded-full bg-brand-coral/[0.06] blur-[130px]" style={{ animationDelay: "-8s" }} />
-        <div className="ambient-drift absolute bottom-0 left-1/4 h-[45vh] w-[35vw] rounded-full bg-cyan-500/[0.05] blur-[120px]" style={{ animationDelay: "-14s" }} />
       </div>
 
       {/* ===== HERO ===== */}
@@ -144,9 +143,9 @@ export function DisciplinesClient() {
           <span className="font-semibold text-white">
             ${(totalAnnual / 1_000_000).toFixed(1)}M
           </span>{" "}
-          per year, fully loaded. Axiom doesn't replace that team — it gives the
-          team you already have AI-assisted coverage across every discipline,
-          with human approval required before any action runs.
+          per year, fully loaded. Axiom doesn&apos;t replace that team. It coordinates
+          the supported repository and deployment work in one governed queue,
+          with human approval required before writes run.
         </motion.p>
       </section>
 

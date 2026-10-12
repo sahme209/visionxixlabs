@@ -17,8 +17,8 @@ export async function POST(req: NextRequest) {
     return NextResponse.json(
       {
         error: "Billing portal unavailable",
-        message: "Contact Sales for subscription changes.",
-        cta: "contact",
+        message: "Self-service billing management is not configured.",
+        cta: "plans",
       },
       { status: 503 }
     );
@@ -39,8 +39,8 @@ export async function POST(req: NextRequest) {
     return NextResponse.json(
       {
         error: "No subscription found",
-        message: "Contact Sales to upgrade or manage your plan.",
-        cta: "contact",
+        message: "No self-service subscription is attached to this account.",
+        cta: "plans",
       },
       { status: 400 }
     );
@@ -55,7 +55,7 @@ export async function POST(req: NextRequest) {
   } catch (e) {
     console.error("[billing portal]", e);
     return NextResponse.json(
-      { error: "Failed to create portal session", cta: "contact" },
+      { error: "Failed to create portal session", cta: "plans" },
       { status: 500 }
     );
   }
