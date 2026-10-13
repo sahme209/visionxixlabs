@@ -66,6 +66,19 @@ export class VercelGatewayProvider implements AIProvider {
       const finishReason = result.finishReason === "stop" || result.finishReason === "length" || result.finishReason === "content-filter"
         ? (result.finishReason === "content-filter" ? "filter" : result.finishReason)
         : "unknown";
+      const gatewayMetadata = result.providerMetadata?.gateway as { generationId?: unknown } | undefined;
+      const gatewayGenerationId = typeof gatewayMetadata?.generationId === "string"
+        ? gatewayMetadata.generationId
+        : undefined;
+      if (!gatewayGenerationId) {
+        throw new AIProviderError({
+          provider: this.name,
+          kind: "bad_response",
+          message: "AI Gateway response is missing its metering identifier",
+          retryable: true,
+          latencyMs: Date.now() - startedAt,
+        });
+      }
       return {
         text: result.text,
         provider: this.name,
@@ -77,6 +90,7 @@ export class VercelGatewayProvider implements AIProvider {
           completionTokens: result.usage.outputTokens,
           totalTokens: result.usage.totalTokens,
         },
+        gatewayGenerationId,
       };
     } catch (error) {
       if (error instanceof AIProviderError) throw error;
@@ -119,7 +133,15 @@ export class VercelGatewayProvider implements AIProvider {
       temperature: options?.temperature ?? 0,
       system: `Return valid JSON only. The required shape is: ${schemaHint}`,
     });
-    return { data: JSON.parse(jsonText(response.text)) as T, raw: response.text, provider: this.name, model: response.model, latencyMs: response.latencyMs };
+    return {
+      data: JSON.parse(jsonText(response.text)) as T,
+      raw: response.text,
+      provider: this.name,
+      model: response.model,
+      latencyMs: response.latencyMs,
+      usage: response.usage,
+      gatewayGenerationId: response.gatewayGenerationId,
+    };
   }
 
   async healthCheck(options?: AIRequestOptions): Promise<AIHealthCheck> {

@@ -33,6 +33,8 @@ export interface RecordAIUsageInput {
   aiInvocationId?: string;
   /** Extra context — engineer id, stage id, pipeline run id, etc. */
   metadata?: Record<string, unknown>;
+  /** Gateway generation id. Required for authoritative Gateway cost settlement. */
+  externalUsageId?: string;
 }
 
 export interface RecordAIUsageResult {
@@ -40,11 +42,44 @@ export interface RecordAIUsageResult {
   recorded: boolean;
   usageEventId: string | null;
   cost: CostBreakdown | null;
+  pendingSettlement?: boolean;
   /** Reason when recorded === false. */
-  reason?: "no_rate_row" | "persist_failed";
+  reason?: "no_rate_row" | "missing_external_usage_id" | "persist_failed";
 }
 
 export async function recordAIUsageEvent(input: RecordAIUsageInput): Promise<RecordAIUsageResult> {
+  if (input.provider === "vercel_gateway") {
+    if (!input.externalUsageId) {
+      return { recorded: false, usageEventId: null, cost: null, reason: "missing_external_usage_id" };
+    }
+    try {
+      const event = await prisma.usageEvent.upsert({
+        where: { externalUsageId: input.externalUsageId },
+        update: {},
+        create: {
+          organizationId: input.organizationId,
+          externalUsageId: input.externalUsageId,
+          eventKind: "ai_invocation",
+          provider: input.provider,
+          model: input.model,
+          inputTokens: Math.max(0, Math.floor(input.inputTokens)),
+          outputTokens: Math.max(0, Math.floor(input.outputTokens)),
+          cachedReadTokens: Math.max(0, Math.floor(input.cachedReadTokens ?? 0)),
+          costCents: 0,
+          billedCents: 0,
+          billingStatus: "pending",
+          triggeredBy: input.triggeredBy ?? null,
+          correlationId: input.correlationId ?? null,
+          aiInvocationId: input.aiInvocationId ?? null,
+          metadata: { ...(input.metadata ?? {}), costSource: "gateway_generation_lookup" } as object,
+        },
+      });
+      return { recorded: true, usageEventId: event.id, cost: null, pendingSettlement: event.billingStatus === "pending" };
+    } catch {
+      return { recorded: false, usageEventId: null, cost: null, reason: "persist_failed" };
+    }
+  }
+
   const rate = await ensureProviderRate(input.provider, input.model);
   if (!rate) {
     return { recorded: false, usageEventId: null, cost: null, reason: "no_rate_row" };
@@ -70,6 +105,8 @@ export async function recordAIUsageEvent(input: RecordAIUsageInput): Promise<Rec
         outputTokens: Math.max(0, Math.floor(input.outputTokens)),
         cachedReadTokens: Math.max(0, Math.floor(input.cachedReadTokens ?? 0)),
         costCents: cost.totalCents,
+        billedCents: cost.totalCents,
+        billingStatus: "settled",
         triggeredBy: input.triggeredBy ?? null,
         correlationId: input.correlationId ?? null,
         aiInvocationId: input.aiInvocationId ?? null,

@@ -94,6 +94,7 @@ export function makeInstrumentedFetcher(opts: InstrumentedFetcherOptions): Ratio
       provider: string;
       model: string;
       usage: { promptTokens?: number; completionTokens?: number; totalTokens?: number } | null;
+      gatewayGenerationId?: string;
     };
     try {
       const maxTokens = opts.maxTokens ?? 500;
@@ -172,15 +173,17 @@ export function makeInstrumentedFetcher(opts: InstrumentedFetcherOptions): Ratio
     // Usage persistence is best effort; the preflight above is the safety
     // boundary and must already have completed before the provider call.
     if (orgId && typeof raw.provider === "string" && typeof raw.model === "string" && raw.usage) {
-      await recordAIUsageEvent({
+      const usageWrite = await recordAIUsageEvent({
         organizationId: orgId,
         provider: raw.provider,
         model: raw.model,
         inputTokens: raw.usage.promptTokens ?? 0,
         outputTokens: raw.usage.completionTokens ?? 0,
+        externalUsageId: raw.gatewayGenerationId,
         triggeredBy: `system:${engineName}`,
         metadata: { engineName, source: "releaseops.instrumented_fetcher" },
-      }).catch(() => undefined);
+      });
+      if (!usageWrite.recorded) throw new Error("ai_usage_meter_unavailable");
     }
     await persistAiCallLog(repo, {
       organizationId: orgId,

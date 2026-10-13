@@ -78,6 +78,8 @@ export interface AITextResponse {
   finishReason: "stop" | "length" | "filter" | "error" | "unknown";
   /** Provider-reported usage when available; otherwise null. */
   usage: { promptTokens?: number; completionTokens?: number; totalTokens?: number } | null;
+  /** Authoritative Gateway generation id for asynchronous cost settlement. */
+  gatewayGenerationId?: string;
 }
 
 export interface AIClassifyResponse {
@@ -97,6 +99,8 @@ export interface AIStructuredResponse<T = unknown> {
   provider: AIProviderName;
   model: string;
   latencyMs: number;
+  usage?: AITextResponse["usage"];
+  gatewayGenerationId?: string;
 }
 
 export interface AIHealthCheck {

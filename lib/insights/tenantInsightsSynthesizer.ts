@@ -129,15 +129,17 @@ export async function synthesizeInsights(seed: InsightsSeed): Promise<InsightsNa
       return { paragraph: fallback, aiUsed: false, provider: null, model: null, latencyMs: r.latencyMs };
     }
     if (r.usage) {
-      await recordAIUsageEvent({
+      const usageWrite = await recordAIUsageEvent({
         organizationId: seed.tenantId,
         provider: r.provider,
         model: r.model,
         inputTokens: r.usage.promptTokens ?? 0,
         outputTokens: r.usage.completionTokens ?? 0,
+        externalUsageId: r.gatewayGenerationId,
         triggeredBy: "system:tenant_insights_synthesizer",
         metadata: { engineName: "tenant_insights_synthesizer" },
-      }).catch(() => undefined);
+      });
+      if (!usageWrite.recorded) throw new Error("ai_usage_meter_unavailable");
     }
     const paragraph = text.length > MAX_OUT ? `${text.slice(0, MAX_OUT - 3)}...` : text;
     return { paragraph, aiUsed: true, provider: r.provider, model: r.model, latencyMs: r.latencyMs };
