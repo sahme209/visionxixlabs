@@ -18,6 +18,8 @@
 
 import type { NextRequest } from "next/server";
 import { currentContext } from "@/lib/auth/currentContext";
+import { isAdminOrOwner } from "@/lib/auth/platformAdmin";
+import { isSameOriginRequest } from "@/lib/auth/requestOrigin";
 import {
   deleteTenantCharter,
   readTenantCharter,
@@ -31,6 +33,12 @@ export const dynamic = "force-dynamic";
 
 const ALLOWED: AutonomyMode[] = ["observer", "review", "assisted", "autonomous"];
 
+function publicRecord<T extends { slackWebhookOverride?: string }>(record: T | null) {
+  if (!record) return null;
+  const { slackWebhookOverride: _secret, ...safe } = record;
+  return { ...safe, hasSlackWebhookOverride: Boolean(_secret) };
+}
+
 export async function GET(req: NextRequest) {
   const correlationId = resolveCorrelationId(req.headers);
   try {
@@ -39,7 +47,7 @@ export async function GET(req: NextRequest) {
       throw AxiomErrors.validation("auth.required", "Sign in required.");
     }
     const record = await readTenantCharter(String(ctx.organizationId));
-    return apiOk({ record, hasOverride: record !== null }, {
+    return apiOk({ record: publicRecord(record), hasOverride: record !== null }, {
       correlationId,
       safetyContract: "policy_governance_read_only",
       sourceMode: asApiSourceMode("live"),
@@ -52,9 +60,10 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   const correlationId = resolveCorrelationId(req.headers);
   try {
+    if (!isSameOriginRequest(req)) throw AxiomErrors.validation("request.origin.invalid", "Invalid request origin.");
     const ctx = await currentContext();
-    if (!ctx.isAuthenticated || !ctx.organizationId) {
-      throw AxiomErrors.validation("auth.required", "Sign in required.");
+    if (!ctx.isAuthenticated || !ctx.organizationId || !isAdminOrOwner({ email: ctx.email, roles: ctx.roles })) {
+      throw AxiomErrors.validation("auth.owner_required", "Workspace owner or admin required.");
     }
     const body = (await req.json()) as {
       mode?: string;
@@ -76,7 +85,7 @@ export async function POST(req: NextRequest) {
       slackWebhookOverride: body.slackWebhookOverride,
       updatedBy: ctx.userId ? String(ctx.userId) : undefined,
     });
-    return apiOk({ record }, {
+    return apiOk({ record: publicRecord(record) }, {
       correlationId,
       safetyContract: "policy_governance_read_only",
       sourceMode: asApiSourceMode("live"),
@@ -89,9 +98,10 @@ export async function POST(req: NextRequest) {
 export async function DELETE(req: NextRequest) {
   const correlationId = resolveCorrelationId(req.headers);
   try {
+    if (!isSameOriginRequest(req)) throw AxiomErrors.validation("request.origin.invalid", "Invalid request origin.");
     const ctx = await currentContext();
-    if (!ctx.isAuthenticated || !ctx.organizationId) {
-      throw AxiomErrors.validation("auth.required", "Sign in required.");
+    if (!ctx.isAuthenticated || !ctx.organizationId || !isAdminOrOwner({ email: ctx.email, roles: ctx.roles })) {
+      throw AxiomErrors.validation("auth.owner_required", "Workspace owner or admin required.");
     }
     const deleted = await deleteTenantCharter(String(ctx.organizationId));
     return apiOk({ deleted }, {

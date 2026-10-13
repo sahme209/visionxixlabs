@@ -29,12 +29,24 @@
 
 Verification: Prisma generation, TypeScript, and 32 focused approval/security/routing tests pass.
 
+### AI and Agent policy
+
+- `/control/ai-agents` reads real organization policy; it contains no simulated model, spend, or agent state.
+- Model authorization is restricted to service-configured Vercel AI Gateway routing and live Gateway catalog IDs.
+- A persisted workspace Agent identity controls its enabled state and exact backend tool allowlist.
+- Disallowed tools are removed from the model prompt and independently blocked before any tool execution.
+- Existing organizations are migration-backfilled to preserve their enabled Agent; new organizations fail closed until an owner enables one.
+- Autonomy and per-cycle action limits reuse the existing tenant charter; run cost reuses the existing organization budget record.
+- Browser mutations require same-origin owner/admin authority and derive the organization from the authenticated session.
+- Autonomy reads no longer disclose a stored Slack webhook override.
+
+Verification: Prisma generation, TypeScript, and 32 focused policy, Agent-runtime, origin, RBAC, tenant-isolation, and tool-enforcement tests pass.
+
 ## Next phases
 
-1. Organization AI/model/agent policy administration.
-2. Central integration consent, health, scopes, and revocation.
-3. Usage, billing, seats, deployment allowance, and AI wallet views.
-4. Verified audit/security search and session controls.
-5. Durable autonomous workflow persistence, leasing, pause/resume, retry, cancellation, and recovery.
+1. Central integration consent, health, scopes, and revocation.
+2. Usage, billing, seats, deployment allowance, and AI wallet views.
+3. Verified audit/security search and session controls.
+4. Durable autonomous workflow persistence, leasing, pause/resume, retry, cancellation, and recovery.
 
 No live billing activation, production deployment, desktop release, or merge is authorized by this record.

@@ -2152,6 +2152,19 @@ model OrganizationAIProviderPolicy {
   updatedAt          DateTime @updatedAt
 }
 
+/// The organization-owned identity used by the governed desktop Agent.
+/// This is policy, not a credential: tools remain implemented and enforced
+/// by the backend registry, and an empty allowlist fails closed.
+model WorkspaceAgentIdentity {
+  organizationId String   @id
+  displayName    String   @default("Axiom Agent")
+  enabled        Boolean  @default(false)
+  allowedTools   Json     @default("[]")
+  updatedBy      String
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
 /// Per-tenant override of the autonomy charter. When a row exists,
 /// the scheduler and on-demand cockpit use this charter instead of
 /// the global default. Mode is an AutonomyMode literal validated at
