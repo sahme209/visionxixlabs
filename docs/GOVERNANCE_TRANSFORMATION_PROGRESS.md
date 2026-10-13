@@ -2,10 +2,10 @@
 
 ## Active review
 
-- Branch: `codex/governance-control-plane`
-- Pull request: #65
+- Branch: `codex/ai-agent-governance`
+- Pull request: #66
 - Base: `main`
-- Production status: not merged or deployed
+- Production status: #65 is merged; the changes documented below remain unmerged and undeployed in #66
 
 ## Verified phases
 
@@ -42,11 +42,22 @@ Verification: Prisma generation, TypeScript, and 32 focused approval/security/ro
 
 Verification: Prisma generation, TypeScript, and 32 focused policy, Agent-runtime, origin, RBAC, tenant-isolation, and tool-enforcement tests pass.
 
+### Integration authority
+
+- `/control/integrations` is now the single website-owned integration administration surface; the legacy account route redirects to it.
+- GitHub, Slack, Teams, Linear, Airflow, AWS, Azure, and Google Cloud status comes from tenant-scoped backend records, never display fixtures.
+- GitHub validation freshness and repository-selection policy are visible without exposing installation credentials.
+- Collaboration connections show their granted scopes and last successful validation; OAuth, pause/resume, and revocation continue through the existing same-origin, owner/admin-protected endpoints.
+- Airflow exposes only secret-free validation metadata. Its desktop credential-entry flow remains in place until a web migration has security and revocation parity.
+- Desktop integration state remains read-only and uses the same authoritative connection records.
+
+Verification: TypeScript and 16 focused OAuth, origin, RBAC, desktop-handoff, validation, and tenant-status tests pass.
+
 ## Next phases
 
-1. Central integration consent, health, scopes, and revocation.
-2. Usage, billing, seats, deployment allowance, and AI wallet views.
-3. Verified audit/security search and session controls.
-4. Durable autonomous workflow persistence, leasing, pause/resume, retry, cancellation, and recovery.
+1. Usage, billing, seats, deployment allowance, and AI wallet views.
+2. Verified audit/security search and session controls.
+3. Durable autonomous workflow persistence, leasing, pause/resume, retry, cancellation, and recovery.
+4. Migrate Airflow credential administration to web only after parity tests; retain desktop operational DAG controls.
 
 No live billing activation, production deployment, desktop release, or merge is authorized by this record.
