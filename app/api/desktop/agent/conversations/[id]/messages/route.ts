@@ -14,6 +14,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import type { Prisma } from "@prisma/client";
 import { resolveRequestDesktopSession } from "@/lib/desktop/resolveRequestDesktopSession";
 import { prisma } from "@/lib/db";
+import { agentActionDigest, approvalExpiry } from "@/lib/axiom/agentRuntime/proposalIntegrity";
 import { runDecisionLoop, type ConversationTurnInput } from "@/lib/axiom/agentRuntime/decisionLoop";
 import { executeReadOnlyTool, isProdEnvironmentTarget, type ToolExecutionRepo, type ProdEnvironmentCheckRepo } from "@/lib/axiom/agentRuntime/toolExecution";
 import { id as idFactory } from "@/lib/domain/ids";
@@ -223,6 +224,8 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
       data: {
         organizationId, conversationId, proposedByUserId: String(session.userId),
         toolName: outcome.toolName, argsJson: reviewed.args as Prisma.InputJsonValue, riskLevel: outcome.riskLevel, status: "proposed",
+        approvalExpiresAt: approvalExpiry(),
+        actionDigest: agentActionDigest({ organizationId, conversationId, proposedByUserId: String(session.userId), toolName: outcome.toolName, args: reviewed.args }),
       },
     });
     return NextResponse.json({

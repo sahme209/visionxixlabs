@@ -1,7 +1,9 @@
 import { redirect } from "next/navigation";
 
 import { currentContext } from "@/lib/auth/currentContext";
+import { canDecideApprovals } from "@/lib/auth/platformAdmin";
 import { prisma } from "@/lib/db";
+import { ApprovalDecisionButtons } from "./ApprovalDecisionButtons";
 
 export default async function GovernancePage() {
   const context = await currentContext();
@@ -10,8 +12,9 @@ export default async function GovernancePage() {
   const [members, environments, proposals] = await Promise.all([
     prisma.orgMembership.groupBy({ by: ["role"], where: { organizationId, acceptedAt: { not: null } }, _count: { _all: true } }),
     prisma.environment.findMany({ where: { organizationId }, select: { id: true, name: true, slug: true, tier: true, approvalPolicyId: true }, orderBy: [{ displayOrder: "asc" }, { name: "asc" }] }),
-    prisma.agentActionProposal.findMany({ where: { organizationId, status: "proposed" }, select: { id: true, toolName: true, riskLevel: true, createdAt: true }, orderBy: { createdAt: "asc" }, take: 20 }),
+    prisma.agentActionProposal.findMany({ where: { organizationId, status: "proposed" }, select: { id: true, toolName: true, riskLevel: true, createdAt: true, approvalExpiresAt: true, actionDigest: true, proposedByUserId: true }, orderBy: { createdAt: "asc" }, take: 20 }),
   ]);
+  const canDecide = canDecideApprovals({ email: context.email, roles: context.roles });
 
   return (
     <div className="max-w-5xl">
@@ -26,14 +29,15 @@ export default async function GovernancePage() {
         ) : (
           <div className="mt-4 divide-y divide-white/[0.07] border-y border-white/[0.07]">
             {proposals.map((proposal) => (
-              <div key={proposal.id} className="flex flex-col justify-between gap-2 py-4 sm:flex-row sm:items-center">
+              <div key={proposal.id} className="grid gap-4 py-4 md:grid-cols-[minmax(0,1fr)_auto_auto] md:items-center">
                 <div><p className="text-sm text-zinc-200">{proposal.toolName.replaceAll("_", " ")}</p><p className="mt-1 font-mono text-[11px] text-zinc-600">{proposal.id}</p></div>
                 <div className="text-left sm:text-right"><p className="text-xs uppercase tracking-[0.12em] text-[#ff783d]">{proposal.riskLevel} risk</p><time className="mt-1 block text-xs text-zinc-600">{proposal.createdAt.toLocaleString()}</time></div>
+                <ApprovalDecisionButtons proposalId={proposal.id} disabledReason={!canDecide ? "An authorized approver role is required." : proposal.proposedByUserId === String(context.userId) ? "A different authorized user must decide this proposal." : !proposal.actionDigest ? "This legacy proposal has no integrity binding and cannot be decided in the browser." : proposal.approvalExpiresAt && proposal.approvalExpiresAt <= new Date() ? "This proposal has expired." : undefined} />
               </div>
             ))}
           </div>
         )}
-        <p className="mt-4 text-xs leading-5 text-zinc-600">Browser approve/reject controls stay disabled until the shared responder has browser-session authorization, concurrency, replay, and audit tests.</p>
+        <p className="mt-4 text-xs leading-5 text-zinc-600">Approvals are bound to the exact action, expire after 24 hours, require a separate authorized reviewer, and are claimed once before backend execution.</p>
       </section>
 
       <section className="border-t border-white/[0.08] py-7">

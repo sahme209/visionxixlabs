@@ -1540,10 +1540,15 @@ model AgentActionProposal {
   decidedAt        DateTime?
   executedAt       DateTime?
   createdAt        DateTime  @default(now())
+  /// Browser and desktop decisions fail closed after this instant.
+  approvalExpiresAt DateTime?
+  /// SHA-256 binding the organization, conversation, proposer, tool and args.
+  actionDigest      String?
 
   conversation AgentConversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
 
   @@index([organizationId, status])
+  @@index([organizationId, status, approvalExpiresAt])
   @@index([conversationId])
 }
 

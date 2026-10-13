@@ -9,10 +9,8 @@
  */
 
 import { NextResponse, type NextRequest } from "next/server";
-import type { Prisma } from "@prisma/client";
 import { resolveRequestDesktopSession } from "@/lib/desktop/resolveRequestDesktopSession";
-import { prisma } from "@/lib/db";
-import { executeApprovedAction, type ActionExecutionRepo } from "@/lib/axiom/agentRuntime/actionApprovalResponder";
+import { decideAgentAction } from "@/lib/axiom/agentRuntime/browserApprovalDecision";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -29,56 +27,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
   }
 
   const { id } = await params;
-  const organizationId = String(session.organizationId);
-  const proposal = await prisma.agentActionProposal.findFirst({ where: { id, organizationId } });
-  if (!proposal) {
-    return NextResponse.json({ ok: false, error: "not_found" }, { status: 404 });
-  }
-  if (proposal.status !== "proposed") {
-    return NextResponse.json({ ok: false, error: "already_decided", hint: `This proposal is already ${proposal.status}.` }, { status: 409 });
-  }
-
-  // Claim the proposal with a compare-and-set transition. The earlier read is
-  // only for the payload and friendly error; this conditional update is the
-  // authority boundary that prevents concurrent approve/reject requests from
-  // executing the same external action twice.
-  const claim = await prisma.agentActionProposal.updateMany({
-    where: { id, organizationId, status: "proposed" },
-    data: { status: "approved", decidedByUserId: String(session.userId), decidedAt: new Date() },
-  });
-  if (claim.count !== 1) {
-    return NextResponse.json({ ok: false, error: "already_decided", hint: "Another decision already claimed this proposal." }, { status: 409 });
-  }
-
-  const result = await executeApprovedAction(
-    prisma as unknown as ActionExecutionRepo,
-    organizationId,
-    proposal.toolName,
-    proposal.argsJson as Record<string, unknown>,
-    String(session.userId),
-    `agent-action:${proposal.id}`,
-  );
-
-  const final = await prisma.agentActionProposal.update({
-    where: { id },
-    data: {
-      status: result.ok ? "executed" : "failed",
-      resultJson: result.ok ? (result.result as Prisma.InputJsonValue) : undefined,
-      errorMessage: result.ok ? null : result.error,
-      executedAt: new Date(),
-    },
-  });
-
-  await prisma.agentConversationTurn.create({
-    data: {
-      conversationId: proposal.conversationId,
-      role: "tool_result",
-      actionProposalId: proposal.id,
-      content: result.ok
-        ? `${proposal.toolName} approved and executed: ${JSON.stringify(result.result)}`
-        : `${proposal.toolName} approved but failed: ${result.error}`,
-    },
-  });
-
-  return NextResponse.json({ ok: true, data: { id: final.id, status: final.status, resultJson: final.resultJson, errorMessage: final.errorMessage } });
+  const result = await decideAgentAction({ organizationId: String(session.organizationId), proposalId: id, actorUserId: String(session.userId), actorRole: session.role ?? "unknown", decision: "approve", correlationId: request.headers.get("x-correlation-id") ?? undefined });
+  if (!result.ok) return NextResponse.json(result, { status: result.error === "not_found" ? 404 : result.error === "self_approval_forbidden" ? 403 : result.error === "approval_expired" ? 410 : 409 });
+  return NextResponse.json({ ok: true, data: { id, status: result.status, errorMessage: result.errorMessage ?? null } });
 }
