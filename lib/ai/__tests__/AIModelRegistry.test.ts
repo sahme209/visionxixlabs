@@ -36,8 +36,7 @@ describe("AIModelRegistry", () => {
 
   it("PROVIDER_PRIORITY lists every supported provider in the documented order", () => {
     expect(PROVIDER_PRIORITY).toEqual([
-      "openai", "anthropic", "xai", "github_models", "ollama", "lm_studio", "groq",
-      "hugging_face", "openrouter", "gemini", "cloudflare", "mock",
+      "vercel_gateway",
     ]);
   });
 

@@ -19,7 +19,7 @@
 import "server-only";
 import { prisma } from "@/lib/db";
 import { getAIProviderManager } from "@/lib/ai/AIProviderManager";
-import { callProvider, type PreferredProvider } from "@/lib/ai/directProviderCall";
+import type { PreferredProvider } from "@/lib/ai/directProviderCall";
 import { loadWorkspaceAIProviderPolicyWithState, resolveWorkspaceAIProviderPolicy } from "@/lib/ai/workspaceProviderPolicy";
 import { checkWorkspaceAICredits } from "@/lib/billing/checkWorkspaceAICredits";
 import { recordAIUsageEvent } from "@/lib/billing/recordAIUsageEvent";
@@ -44,13 +44,8 @@ export interface InstrumentedFetcherOptions {
   generateText?: (prompt: string, opts: { maxTokens: number; temperature: number }) => Promise<unknown>;
   /** Wall-clock provider for tests. */
   now?: () => Date;
-  /** Phase 593: per-engineer provider routing. When set, calls go
-   *  directly to the named provider (anthropic | openai) via
-   *  lib/ai/directProviderCall, bypassing the AIProviderManager
-   *  fallback chain. Lets cheap-volume engineers route to
-   *  gpt-4o-mini for cost control without surprise fail-over to a
-   *  more expensive provider. The recorded AiCallLog.model reflects
-   *  the actually-resolved model so Phase 580 attribution prices it. */
+  /** Legacy routing hint retained for compatibility. All inference is
+   *  executed through Vercel AI Gateway; direct-provider routing is denied. */
   preferredProvider?: PreferredProvider;
   /** Override sampling max_tokens. Defaults to 500 to match the
    *  legacy path; domain engineers that need longer structured
@@ -118,9 +113,7 @@ export function makeInstrumentedFetcher(opts: InstrumentedFetcherOptions): Ratio
           throw new Error("workspace_ai_credit_pool_exhausted");
         }
       }
-      // An unscoped legacy job may still use its explicit provider directly.
-      // A workspace-scoped release must instead pass through the manager so
-      // the persisted allowlist, model selection, and fallback rules apply.
+      // Every scoped and unscoped job uses the same Gateway-only manager.
       const manager = getAIProviderManager();
       const loadedPolicy = orgId
         ? await loadWorkspaceAIProviderPolicyWithState(orgId)
@@ -142,26 +135,18 @@ export function makeInstrumentedFetcher(opts: InstrumentedFetcherOptions): Ratio
       if (workspacePolicy && workspacePolicy.allowedProviders.length === 0) {
         throw new Error("workspace_ai_provider_unavailable");
       }
-      if (workspacePolicy && opts.preferredProvider && !workspacePolicy.allowedProviders.includes(opts.preferredProvider)) {
-        throw new Error("workspace_ai_provider_not_approved");
-      }
-
       // Organization-scoped release work uses the same server-resolved policy
-      // as the workspace generation route. The direct-provider path is kept
-      // only for unscoped legacy jobs, where no workspace policy exists.
+      // as the workspace generation route. Legacy direct-provider hints are
+      // ignored because Gateway is the sole outbound inference boundary.
       const generate = opts.generateText
-        ?? (workspacePolicy
-            ? (p: string, o: { maxTokens: number; temperature: number }) => manager.generateText(p, {
-              ...o,
-              organizationId: orgId ?? undefined,
-              only: opts.preferredProvider,
-              allowedProviders: workspacePolicy.allowedProviders,
-              modelSelections: workspacePolicy.modelSelections,
-              fallbackOrder: workspacePolicy.fallbackOrder,
-            })
-            : (opts.preferredProvider
-                ? (p: string, o: { maxTokens: number; temperature: number }) => callProvider(opts.preferredProvider!, p, o)
-                : (p: string, o: { maxTokens: number; temperature: number }) => manager.generateText(p, o)));
+        ?? ((p: string, o: { maxTokens: number; temperature: number }) => manager.generateText(p, {
+          ...o,
+          organizationId: orgId ?? undefined,
+          only: "vercel_gateway",
+          allowedProviders: workspacePolicy?.allowedProviders,
+          modelSelections: workspacePolicy?.modelSelections,
+          fallbackOrder: workspacePolicy?.fallbackOrder,
+        }));
       const result = await raceWithTimeout(generate(prompt, { maxTokens, temperature }), timeoutMs);
       raw = result as typeof raw;
     } catch (err) {

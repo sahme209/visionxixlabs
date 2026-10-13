@@ -22,6 +22,9 @@ describe("AIProviderManager", () => {
     delete process.env.GEMINI_API_KEY;
     delete process.env.CLOUDFLARE_ACCOUNT_ID;
     delete process.env.CLOUDFLARE_API_TOKEN;
+    delete process.env.AI_GATEWAY_API_KEY;
+    delete process.env.VERCEL_OIDC_TOKEN;
+    delete process.env.AI_GATEWAY_MODEL;
     // Force local providers to a unreachable URL so they remain configured
     // (they don't require keys) but fail when called — Mock catches that.
     process.env.OLLAMA_BASE_URL = "http://localhost:11434";
@@ -36,34 +39,24 @@ describe("AIProviderManager", () => {
     expect(rows.map((r) => r.provider)).toEqual(PROVIDER_PRIORITY);
   });
 
-  it("status() reports configured=false for providers missing their key", () => {
+  it("status() reports Gateway unavailable when auth and model are missing", () => {
     const mgr = getAIProviderManager();
     const rows = mgr.status();
-    const github = rows.find((r) => r.provider === "github_models")!;
-    const openai = rows.find((r) => r.provider === "openai")!;
-    const anthropic = rows.find((r) => r.provider === "anthropic")!;
-    const groq = rows.find((r) => r.provider === "groq")!;
-    const xai = rows.find((r) => r.provider === "xai")!;
-    expect(openai.configured).toBe(false);
-    expect(anthropic.configured).toBe(false);
-    expect(github.configured).toBe(false);
-    expect(groq.configured).toBe(false);
-    expect(xai.configured).toBe(false);
+    expect(rows).toEqual([{ provider: "vercel_gateway", configured: false, defaultModel: "service-default", priority: 0 }]);
   });
 
-  it("does not advertise local providers unless their server URL is explicitly configured", () => {
+  it("does not advertise direct or local providers", () => {
     delete process.env.OLLAMA_BASE_URL;
     delete process.env.LM_STUDIO_BASE_URL;
     _resetAIProviderManagerForTests();
 
     const rows = getAIProviderManager().status();
-    expect(rows.find((row) => row.provider === "ollama")?.configured).toBe(false);
-    expect(rows.find((row) => row.provider === "lm_studio")?.configured).toBe(false);
+    expect(rows.some((row) => row.provider === "ollama" || row.provider === "lm_studio" || row.provider === "openai")).toBe(false);
   });
 
-  it("Mock is always configured", () => {
+  it("does not advertise a mock provider", () => {
     const mgr = getAIProviderManager();
-    expect(mgr.status().find((r) => r.provider === "mock")!.configured).toBe(true);
+    expect(mgr.status().some((r) => r.provider === "mock")).toBe(false);
   });
 
   it("envSnapshot returns booleans, never the secret value", () => {
@@ -84,51 +77,37 @@ describe("AIProviderManager", () => {
     expect(JSON.stringify(snap)).not.toContain("xai_super_secret_value");
   });
 
-  it("generateText falls back to Mock when nothing real is configured", async () => {
+  it("fails closed when Gateway is not configured", async () => {
     const mgr = getAIProviderManager();
-    const r = await mgr.generateText("hello");
-    // With no real providers configured AND local Ollama/LMStudio unreachable,
-    // we land on the Mock — which always answers.
-    expect(["mock"]).toContain(r.provider);
-    expect(r.text).toContain("[MOCK");
-  }, 60_000);
+    await expect(mgr.generateText("hello")).rejects.toMatchObject({ kind: "not_configured" });
+  });
 
-  it("redacts a secret-shaped prompt before it ever reaches a provider", async () => {
-    // Mock's own generateText echoes a slice of the prompt it actually
-    // received, so this proves the redaction happened upstream of
-    // every provider dispatch, not just at the logging layer.
-    const mgr = getAIProviderManager();
-    const r = await mgr.generateText("my key is AKIAABCDEFGHIJKLMNOP please use it");
-    expect(r.text).not.toContain("AKIAABCDEFGHIJKLMNOP");
-    expect(r.text).toContain("[REDACTED-AWS-ACCESS-KEY]");
-  }, 60_000);
-
-  it("priority list places governed cloud providers first and mock last", () => {
+  it("advertises only the governed Gateway runtime", () => {
     const mgr = getAIProviderManager();
     const rows = mgr.status();
-    expect(rows[0].provider).toBe("openai");
-    expect(rows[rows.length - 1].provider).toBe("mock");
+    expect(rows.map((row) => row.provider)).toEqual(["vercel_gateway"]);
   });
 
   it("carries the workspace allowlist and fallback order into the runtime chain", () => {
-    process.env.GITHUB_TOKEN = "test-github-token";
-    process.env.GROQ_API_KEY = "test-groq-key";
+    process.env.AI_GATEWAY_API_KEY = "test-gateway-key";
+    process.env.AI_GATEWAY_MODEL = "test/model";
     _resetAIProviderManagerForTests();
     const mgr = getAIProviderManager();
     const runtimeChain = (mgr as unknown as {
       chain: (opts: { allowedProviders: readonly string[]; fallbackOrder: readonly string[] }) => Array<{ name: string }>;
-    }).chain({ allowedProviders: ["groq"], fallbackOrder: ["groq"] });
+    }).chain({ allowedProviders: ["vercel_gateway"], fallbackOrder: ["vercel_gateway"] });
 
-    expect(runtimeChain.map((provider) => provider.name)).toEqual(["groq"]);
+    expect(runtimeChain.map((provider) => provider.name)).toEqual(["vercel_gateway"]);
   });
 
   it("does not honor a direct provider request outside the workspace allowlist", () => {
-    process.env.GITHUB_TOKEN = "test-github-token";
+    process.env.AI_GATEWAY_API_KEY = "test-gateway-key";
+    process.env.AI_GATEWAY_MODEL = "test/model";
     _resetAIProviderManagerForTests();
     const mgr = getAIProviderManager();
     const runtimeChain = (mgr as unknown as {
       chain: (opts: { only: string; allowedProviders: readonly string[] }) => Array<{ name: string }>;
-    }).chain({ only: "github_models", allowedProviders: ["groq"] });
+    }).chain({ only: "openai", allowedProviders: ["openai"] });
 
     expect(runtimeChain.map((provider) => provider.name)).toEqual([]);
   });

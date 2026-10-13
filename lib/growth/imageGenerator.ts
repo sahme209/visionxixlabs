@@ -1,22 +1,23 @@
 /**
- * Brand image generator — gpt-image-1 (OpenAI).
+ * Brand image generator through Vercel AI Gateway.
  *
  * Generates a 1024x1024 image tuned to the VisionXIXLabs brand palette
- * (dark navy + violet + coral). Per-category prompt scaffold makes the
+ * (near-black surfaces with restrained Axiom orange). Per-category prompt scaffold makes the
  * outputs visually consistent across the feed.
  *
  * Returns the image bytes + the prompt used (for audit / reproducibility).
  * Caller is responsible for storing the binary + uploading to LinkedIn.
  *
- * Skips silently when OPENAI_API_KEY isn't set — returns `kind: "disabled"`.
+ * Returns an explicit disabled result when Gateway configuration is absent.
  */
 
 import "server-only";
+import { generateImage } from "ai";
 
 import type { ContentTopicCategory } from "./growthModels";
 
 export type ImageGenResult =
-  | { kind: "ok"; bytes: Buffer; mimeType: "image/png"; prompt: string }
+  | { kind: "ok"; bytes: Buffer; mimeType: string; prompt: string }
   | { kind: "disabled"; reason: string }
   | { kind: "error"; message: string };
 
@@ -27,11 +28,11 @@ interface GenerateImageInput {
 }
 
 // ---------------------------------------------------------------------------
-// Per-category scaffolds — all share dark base + violet/coral accents to
+// Per-category scaffolds — all share a neutral dark base and orange accents to
 // stay visually consistent in a LinkedIn feed.
 // ---------------------------------------------------------------------------
 
-const BRAND_PALETTE = "Deep navy / charcoal background. Electric violet (#8B5CF6) and coral pink (#FF783D) as accent colors. Pixel-precise. Premium SaaS aesthetic.";
+const BRAND_PALETTE = "Near-black and charcoal background. Warm Axiom orange (#F54E00 / #FF783D) used sparingly as the only accent. Pixel-precise, restrained editorial aesthetic.";
 
 const PROMPT_SCAFFOLD: Readonly<Record<ContentTopicCategory, string>> = {
   product_education:
@@ -70,59 +71,25 @@ export function buildImagePrompt(input: GenerateImageInput): string {
 // ---------------------------------------------------------------------------
 
 export async function generateBrandImage(input: GenerateImageInput): Promise<ImageGenResult> {
-  const apiKey = process.env.OPENAI_API_KEY?.trim();
-  if (!apiKey) {
-    return { kind: "disabled", reason: "OPENAI_API_KEY not set" };
+  const hasGatewayAuth = Boolean(process.env.AI_GATEWAY_API_KEY?.trim() || process.env.VERCEL_OIDC_TOKEN?.trim());
+  const model = process.env.AI_GATEWAY_IMAGE_MODEL?.trim();
+  if (!hasGatewayAuth || !model) {
+    return { kind: "disabled", reason: "AI_GATEWAY_IMAGE_MODEL or Gateway authentication is not configured" };
   }
   if ((process.env.IMAGE_GENERATION_ENABLED ?? "true").toLowerCase() === "false") {
     return { kind: "disabled", reason: "IMAGE_GENERATION_ENABLED=false" };
   }
 
   const prompt = buildImagePrompt(input);
-  const model = process.env.IMAGE_GENERATION_MODEL ?? "gpt-image-1";
-
   try {
-    const res = await fetch("https://api.openai.com/v1/images/generations", {
-      method:  "POST",
-      headers: {
-        "Authorization": `Bearer ${apiKey}`,
-        "Content-Type":  "application/json",
-      },
-      body: JSON.stringify({
-        model,
-        prompt,
-        size: "1024x1024",
-        n: 1,
-        // gpt-image-1 returns base64 by default; dall-e-3 returns URL unless response_format set
-        response_format: model === "dall-e-3" ? "b64_json" : undefined,
-      }),
+    const result = await generateImage({
+      model,
+      prompt,
+      size: "1024x1024",
+      n: 1,
+      providerOptions: { gateway: { tags: ["product:axiom-agent", "task:growth-image"] } },
     });
-
-    if (!res.ok) {
-      const text = await res.text().catch(() => "");
-      return { kind: "error", message: `OpenAI HTTP ${res.status}: ${text.slice(0, 400)}` };
-    }
-
-    const json = (await res.json()) as { data?: Array<{ b64_json?: string; url?: string }> };
-    const first = json.data?.[0];
-    if (!first) {
-      return { kind: "error", message: "OpenAI returned no image data" };
-    }
-
-    let bytes: Buffer;
-    if (first.b64_json) {
-      bytes = Buffer.from(first.b64_json, "base64");
-    } else if (first.url) {
-      const imgRes = await fetch(first.url);
-      if (!imgRes.ok) {
-        return { kind: "error", message: `Image URL fetch failed: ${imgRes.status}` };
-      }
-      bytes = Buffer.from(await imgRes.arrayBuffer());
-    } else {
-      return { kind: "error", message: "OpenAI returned neither b64_json nor url" };
-    }
-
-    return { kind: "ok", bytes, mimeType: "image/png", prompt };
+    return { kind: "ok", bytes: Buffer.from(result.image.uint8Array), mimeType: result.image.mediaType, prompt };
   } catch (err) {
     return { kind: "error", message: err instanceof Error ? err.message : String(err) };
   }

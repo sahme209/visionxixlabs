@@ -3,15 +3,11 @@
  *
  * Sits next to Phase 383's routeAITask. Where routeAITask DECIDES
  * which (provider, model) is right for a task kind, this module
- * EXECUTES the call directly against the chosen provider, bypassing
- * the AIProviderManager fallback chain.
- *
- * Why bypass? Per-engineer routing wants explicit cost control —
- * an engineer that picked openai/gpt-4o-mini for high-volume
- * classification doesn't want the manager to silently fail-over to
- * a more expensive provider. If the chosen provider is down, the
- * instrumented fetcher's circuit breaker handles graceful
- * degradation honestly.
+ * Compatibility adapter for older per-engineer routing call sites.
+ * Production inference is always executed through AIProviderManager,
+ * whose only runtime provider is Vercel AI Gateway. The legacy provider
+ * argument is retained so older callers do not require an unsafe flag-day
+ * migration; it never selects or contacts a direct provider.
  *
  * Returns the same { text, model, usage } shape the instrumented
  * fetcher's persistAiCallLog expects.
@@ -21,9 +17,7 @@
 
 import "server-only";
 
-import { generateText as anthropicGenerate } from "./providers/anthropic";
-import { generateText as openaiGenerate } from "./providers/openai";
-import { redact } from "@/lib/security/redaction";
+import { getAIProviderManager } from "./AIProviderManager";
 
 export type PreferredProvider = "anthropic" | "openai";
 
@@ -39,36 +33,18 @@ export interface DirectCallOpts {
 }
 
 export async function callProvider(
-  provider: PreferredProvider,
+  _provider: PreferredProvider,
   prompt: string,
   opts: DirectCallOpts,
 ): Promise<DirectCallResult> {
-  // Same governance boundary as AIProviderManager.generateText — this
-  // function bypasses the manager entirely, so it needs its own
-  // redaction pass before the prompt leaves the service.
-  const safePrompt = redact(prompt);
-  if (provider === "openai") {
-    const r = await openaiGenerate({ prompt: safePrompt, maxTokens: opts.maxTokens, temperature: opts.temperature });
-    // The openai provider doesn't return the resolved model string,
-    // so we read the same env var it consulted. Stays in sync with
-    // the provider source of truth.
-    const model = process.env.OPENAI_MODEL?.trim() || process.env.MODEL_NAME?.trim() || "gpt-4o";
-    return {
-      text: r.text ?? "",
-      model,
-      usage: r.usage
-        ? { promptTokens: r.usage.inputTokens, completionTokens: r.usage.outputTokens }
-        : null,
-    };
-  }
-  // Default: anthropic.
-  const r = await anthropicGenerate({ prompt: safePrompt, maxTokens: opts.maxTokens, temperature: opts.temperature });
-  const model = process.env.ANTHROPIC_MODEL?.trim() || "claude-sonnet-4-20250514";
+  const r = await getAIProviderManager().generateText(prompt, {
+    maxTokens: opts.maxTokens,
+    temperature: opts.temperature,
+    only: "vercel_gateway",
+  });
   return {
     text: r.text ?? "",
-    model,
-    usage: r.usage
-      ? { promptTokens: r.usage.inputTokens, completionTokens: r.usage.outputTokens }
-      : null,
+    model: r.model,
+    usage: r.usage,
   };
 }

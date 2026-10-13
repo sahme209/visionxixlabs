@@ -43,10 +43,10 @@ export async function POST(req: NextRequest): Promise<Response> {
     );
   }
   try {
-    if (!process.env.OPENAI_API_KEY?.trim() && !process.env.GEMINI_API_KEY?.trim()) {
-      console.error("[VisionXIX AI Chat] Missing OPENAI_API_KEY and GEMINI_API_KEY.");
+    if ((!process.env.AI_GATEWAY_API_KEY?.trim() && !process.env.VERCEL_OIDC_TOKEN?.trim()) || !process.env.AI_GATEWAY_MODEL?.trim()) {
+      console.error("[VisionXIX AI Chat] Vercel AI Gateway is not configured.");
       return NextResponse.json(
-        { error: "AI assistant is not configured. Please add OPENAI_API_KEY or GEMINI_API_KEY." },
+        { error: "AI assistant is not configured." },
         { status: 503 }
       );
     }
@@ -88,8 +88,8 @@ export async function POST(req: NextRequest): Promise<Response> {
     let errorMessage = "AI service temporarily unavailable. Please try again later.";
     let statusCode = 500;
 
-    if (err?.message?.includes("401") || err?.message?.includes("Incorrect API key") || err?.message?.includes("API key")) {
-      errorMessage = "AI provider API key invalid or expired. Please check your configuration.";
+    if (err?.message?.includes("401") || err?.message?.includes("403") || err?.message?.includes("Gateway")) {
+      errorMessage = "AI Gateway authentication or configuration is unavailable.";
       statusCode = 503;
     } else if (err?.message?.includes("429") || err?.message?.includes("rate limit")) {
       errorMessage = "Too many requests. Please try again in a moment.";

@@ -2,6 +2,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { resolveRequestDesktopSession } from "@/lib/desktop/resolveRequestDesktopSession";
 import { getAIProviderManager } from "@/lib/ai/AIProviderManager";
 import { listModels } from "@/lib/ai/AIModelRegistry";
+import { loadGatewayModelCatalog } from "@/lib/ai/gatewayModelCatalog";
 import { prisma } from "@/lib/db";
 import { appendAuditEvent, type AuditEventRepo } from "@/lib/releaseops/auditEventResponder";
 import {
@@ -39,10 +40,17 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     return NextResponse.json({ ok: false, error: loaded.storageState === "migration_pending" ? "provider_policy_migration_pending" : "provider_policy_unavailable" }, { status: 503 });
   }
   const policy = resolveWorkspaceAIProviderPolicy({ stored: loaded.policy, serviceEnabled: availableProviders });
-  const providers = availableProviders.map((provider) => ({
-    provider,
-    models: listModels(provider).map((model) => ({ id: model.id, label: model.label, tier: model.tier })),
-  }));
+  let providers;
+  try {
+    providers = await Promise.all(availableProviders.map(async (provider) => ({
+      provider,
+      models: provider === "vercel_gateway"
+        ? await loadGatewayModelCatalog()
+        : listModels(provider).map((model) => ({ id: model.id, label: model.label, tier: model.tier })),
+    })));
+  } catch {
+    return NextResponse.json({ ok: false, error: "gateway_model_catalog_unavailable" }, { status: 503 });
+  }
   return NextResponse.json({ ok: true, data: { policy, providers } });
 }
 
@@ -55,6 +63,17 @@ export async function PUT(request: NextRequest): Promise<NextResponse> {
   const availableProviders = serviceEnabledProviders();
   if (policy.allowedProviders.some((provider) => !availableProviders.includes(provider))) {
     return NextResponse.json({ ok: false, error: "provider_unavailable" }, { status: 422 });
+  }
+  if (policy.enabled && policy.allowedProviders.includes("vercel_gateway")) {
+    try {
+      const availableModels = new Set((await loadGatewayModelCatalog()).map((model) => model.id));
+      const selected = policy.modelSelections.vercel_gateway;
+      if (selected && selected !== "service-default" && !availableModels.has(selected)) {
+        return NextResponse.json({ ok: false, error: "gateway_model_unavailable" }, { status: 422 });
+      }
+    } catch {
+      return NextResponse.json({ ok: false, error: "gateway_model_catalog_unavailable" }, { status: 503 });
+    }
   }
   try {
     await saveWorkspaceAIProviderPolicy({
