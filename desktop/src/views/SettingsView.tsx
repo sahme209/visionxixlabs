@@ -177,7 +177,8 @@ function GeneralSection({ prefs, onSave }: PreferenceSectionProps) {
   return <div>
     <SectionHeading title="General" detail="Application startup, notifications, and account management." />
     <Group label="Account">
-      <ActionRow title="Axiom account" detail="Manage your profile and organization in the secure browser." action={<WebButton href="/dashboard/settings" label="Open" />} />
+      <ActionRow title="Axiom account" detail="Manage your personal profile in the secure browser." action={<WebButton href="/account" label="Open" />} />
+      <ActionRow title="Organization governance" detail="Manage roles, policies, approved integrations, AI authority, and billing in Axiom Control." action={<WebButton href="/control" label="Open control plane" />} />
       <ActionRow title="Pilot access" detail="Pilot access is no-charge today. The service remains authoritative for approved workspace access." action={<span className="text-xs text-zinc-600">See Access & usage</span>} />
     </Group>
     <Group label="Notifications">

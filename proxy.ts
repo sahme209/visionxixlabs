@@ -25,6 +25,12 @@ export function proxy(request: NextRequest) {
   const origin = request.headers.get("origin");
   const desktopOrigin = origin && ALLOWED_DESKTOP_ORIGINS.has(origin) ? origin : null;
 
+  const governanceRouteMigrations: Record<string, string> = {
+    "/dashboard/approvals": "/control/governance",
+    "/dashboard/governance": "/control/governance",
+    "/dashboard/settings": "/account",
+  };
+
   if (request.method === "OPTIONS" && pathname.startsWith("/api/")) {
     const preflight = new NextResponse(null, { status: 204 });
     if (desktopOrigin) {
@@ -35,6 +41,14 @@ export function proxy(request: NextRequest) {
       preflight.headers.set("Vary", "Origin");
     }
     return applySecurityHeaders(preflight);
+  }
+
+  const migratedGovernanceRoute = governanceRouteMigrations[pathname];
+  if (migratedGovernanceRoute) {
+    const destination = request.nextUrl.clone();
+    destination.pathname = migratedGovernanceRoute;
+    destination.search = "";
+    return applySecurityHeaders(NextResponse.redirect(destination, 307));
   }
 
   // The downloadable app is the canonical operational product. Keep the
