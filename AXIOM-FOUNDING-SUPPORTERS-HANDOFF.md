@@ -4,6 +4,8 @@
 
 Implemented on review branch `codex/axiom-founding-supporters`. Nothing was merged, deployed, published, or enabled for live payments. No outreach email was sent.
 
+Stripe Support confirmation supplied by the founder on October 13, 2026: Vision XIX Labs account `acct_1SpEdeFet66ERY29` is fully verified and activated, with no payment-processing restrictions. Stripe account activation is therefore **complete** and is no longer a launch blocker. This confirmation does not itself approve the supporter page for production or replace legal, tax, staging, and founder release approval.
+
 ## Experience delivered
 
 - Premium responsive `/support` page in the existing Vision XIX Labs dark design system.
@@ -31,6 +33,7 @@ Implemented on review branch `codex/axiom-founding-supporters`. Nothing was merg
 - Paid supporters receive a confirmation and a personalized HMAC-signed SVG badge. A fully refunded purchase can no longer download the badge.
 - Update and recognition consent are separate. Recognition defaults to private.
 - Partial and full Stripe refunds reconcile back to the supporter ledger.
+- Confirmation delivery is retry-safe: a provider failure returns a retryable webhook error, while a duplicate event retries only the unsent email and never repeats the financial mutation.
 
 ## Required environment configuration
 
@@ -39,11 +42,25 @@ AXIOM_SUPPORTER_CHECKOUT_ENABLED=false
 AXIOM_SUPPORTER_LIVE_APPROVED=false
 STRIPE_SUPPORTER_WEBHOOK_SECRET=whsec_...
 SUPPORTER_BADGE_SIGNING_SECRET=<long-random-server-only-secret>
+DATABASE_URL=<preview-database-url>
+RESEND_API_KEY=<preview-resend-key>
 STRIPE_SUPPORTER_AUTOMATIC_TAX=false
 NEXT_PUBLIC_APP_URL=https://visionxixlabs.com
 ```
 
-The implementation fails closed. Test-mode review requires the checkout-enabled flag plus a Stripe test key, the supporter webhook secret, and the badge secret. A live Stripe key additionally requires `AXIOM_SUPPORTER_LIVE_APPROVED=true`.
+The implementation fails closed. Test-mode review requires the checkout-enabled flag plus a Stripe test key, the supporter webhook secret, badge secret, database, and email provider. A live Stripe key additionally requires `AXIOM_SUPPORTER_LIVE_APPROVED=true`.
+
+## Staging configuration status
+
+The connected Vercel project is `visionxixlabs`. The review branch now has these branch-scoped Preview values:
+
+```dotenv
+AXIOM_SUPPORTER_CHECKOUT_ENABLED=false
+AXIOM_SUPPORTER_LIVE_APPROVED=false
+STRIPE_SUPPORTER_AUTOMATIC_TAX=false
+```
+
+They intentionally keep collection disabled. Vercel Preview currently has no Stripe, database, or Resend variables available for this flow. No secret value was created, copied, logged, or exposed.
 
 ## Database change
 
@@ -56,22 +73,29 @@ It creates only the supporter purchase and supporter Stripe-event tables. Apply 
 - Prisma Client generation: passed.
 - TypeScript (`tsc --noEmit`): passed.
 - Focused ESLint on every new supporter file: passed.
-- Focused security and billing regression suite: 30 tests passed.
+- Original focused security and billing regression suite: 30 tests passed.
+- Supporter route-level end-to-end suite: 19 tests passed. It covers the $1 Checkout payload, duplicate checkout keys, fail-closed readiness, signed paid-event processing, duplicate event replay, failed/retried confirmation delivery, full refund state, signature rejection, signed badge access, forged-token denial, and badge revocation after refund.
 - Production Next.js build: passed with an 8 GB Node heap; the default 4 GB heap exhausted memory in this unusually large application.
 - Production-mode local preview: `/support` returned HTTP 200 and rendered the expected mission headline.
 - Prisma schema validation could not run without `DATABASE_URL`; Prisma Client generation and the production build both validated schema compilation.
 
-## Approval gates before live use
+## Provider-side test status
 
-1. Stripe must complete account activation/final review for this digital supporter product.
-2. Counsel/accountant must approve supporter terms, refunds, sales-tax/VAT/GST treatment, receipt wording, and the countries/currencies to enable.
-3. The founder must approve the final copy, suggested amounts, benefit commitments, and live activation.
-4. Add and verify the founder's approved name, biography, and profile links. The repository contains no verified founder profile, so the page does not invent one.
-5. Configure and test the separate Stripe webhook endpoint in Stripe test mode.
-6. Confirm the production sending domain and support mailbox before enabling confirmation email.
-7. Decide whether Stripe Tax should be enabled and which international payment methods the account should expose.
-8. Run a real test-mode purchase, replay, partial refund, full refund, receipt, and badge-revocation acceptance test against the review deployment.
-9. Obtain explicit founder approval before setting either live flag, deploying the page, or linking it from outreach.
+The route-level scenarios are complete and passing. A genuine Stripe test-mode transaction was **not** represented as complete because no Stripe test secret, Preview database, Preview webhook secret, or Resend test credential is available locally or in the connected Vercel Preview environment. There is also no Stripe CLI authenticated in this workspace. The first external boundary—creating a real test Checkout Session—is therefore blocked by missing test infrastructure, not by application code.
+
+## Remaining gates before live use
+
+1. Supply branch-scoped **test-only** `STRIPE_SECRET_KEY`, `STRIPE_SUPPORTER_WEBHOOK_SECRET`, `DATABASE_URL`, `RESEND_API_KEY`, `SUPPORTER_BADGE_SIGNING_SECRET`, and the final Preview URL. Do not reuse production secrets or the production database.
+2. Apply `20261013220000_add_founding_supporters` to the isolated Preview database.
+3. Create the Stripe test-mode webhook destination for `/api/support/stripe-webhook` and select `checkout.session.completed`, `checkout.session.async_payment_succeeded`, `checkout.session.async_payment_failed`, `checkout.session.expired`, and `charge.refunded`.
+4. Deploy an access-controlled Preview, temporarily set only `AXIOM_SUPPORTER_CHECKOUT_ENABLED=true`, and run the real provider-side $1, replay, partial-refund, full-refund, email, and badge tests. Reset the flag to false after acceptance.
+5. Counsel/accountant must approve supporter terms, refunds, sales-tax/VAT/GST treatment, receipt wording, and the countries/currencies to enable.
+6. The founder must approve the final copy, suggested amounts, benefit commitments, verified founder profile, and live activation.
+7. Confirm the production sending domain, support mailbox, unsubscribe handling, and suppression workflow before enabling supporter updates.
+8. Decide whether Stripe Tax should be enabled and which international payment methods the account should expose.
+9. Replace or augment the current in-memory request limiter with a distributed production limiter; Stripe Radar and idempotency remain additional controls, not substitutes.
+10. Move benefit email delivery to a durable outbox/worker if strict fast-ack webhook latency is required. The present implementation is financially idempotent and retry-safe but waits for Resend before returning 2xx.
+11. Obtain explicit founder approval before setting either live flag, deploying to production, or linking the page from outreach.
 
 ## Known operational notes
 
@@ -85,7 +109,7 @@ It creates only the supporter purchase and supporter Stripe-event tables. Apply 
 1. Review this branch and deploy only to an access-controlled preview.
 2. Add verified founder content and approved legal/tax copy.
 3. Apply the migration in staging and configure Stripe test-mode secrets/webhook.
-4. Complete the end-to-end acceptance tests listed above.
-5. Obtain written Stripe, legal/tax, and founder approval.
+4. Complete the provider-side end-to-end acceptance tests listed above.
+5. Obtain written legal/tax and founder approval. Stripe account activation is already confirmed.
 6. Deploy with checkout still disabled; review the public page.
 7. Enable checkout in a separate, auditable production change.
