@@ -53,9 +53,19 @@ Verification: Prisma generation, TypeScript, and 32 focused policy, Agent-runtim
 
 Verification: TypeScript and 16 focused OAuth, origin, RBAC, desktop-handoff, validation, and tenant-status tests pass.
 
+### Usage and billing visibility
+
+- `/control/usage-billing` shows the signed organization subscription, accepted-member/paid-seat state, transactionally counted deployment allowance, settled Gateway debit, pending settlement count, token usage, and paid credit ledger records.
+- The personal account page no longer duplicates organization AI or billing administration; it links authorized administrators into Axiom Control.
+- Subscription checkout returns to the authoritative control-plane billing route, while signed Stripe subscription events remain the only entitlement authority.
+- The former AI add-on endpoint no longer fabricates a Checkout session or writes a fake pending purchase. It fails closed until one-time Stripe fulfillment, refunds, and replay handling are verified.
+- The UI labels unsettled Gateway generations explicitly and never reports them as free usage.
+
+Verification: TypeScript and 34 focused checkout, webhook, replay, seat, deployment-quota, Gateway-settlement, origin, RBAC, and no-placeholder-credit tests pass.
+
 ## Next phases
 
-1. Usage, billing, seats, deployment allowance, and AI wallet views.
+1. Implement real Stripe test-mode credit checkout, signed fulfillment/refund reversal, and atomic AI credit reservation/settlement.
 2. Verified audit/security search and session controls.
 3. Durable autonomous workflow persistence, leasing, pause/resume, retry, cancellation, and recovery.
 4. Migrate Airflow credential administration to web only after parity tests; retain desktop operational DAG controls.

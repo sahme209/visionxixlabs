@@ -103,7 +103,7 @@ describe("POST /api/billing/checkout-session", () => {
       planId: "enterprise",
       billingInterval: "annual",
       seatCount: 3,
-      successUrl: "https://visionxixlabs.com/account?billing=success",
+      successUrl: "https://visionxixlabs.com/control/usage-billing?billing=success",
       cancelUrl: "https://visionxixlabs.com/plans?checkout=canceled",
     });
   });

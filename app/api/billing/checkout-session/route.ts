@@ -60,7 +60,7 @@ export async function POST(req: NextRequest) {
       planId: body.planId,
       billingInterval,
       seatCount,
-      successUrl: `${origin}/account?billing=success`,
+      successUrl: `${origin}/control/usage-billing?billing=success`,
       cancelUrl: `${origin}/plans?checkout=canceled`,
     });
 
