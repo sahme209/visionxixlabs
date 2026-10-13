@@ -109,7 +109,7 @@ export function evaluatePermission(
       permission: request.permission,
       policyRefs: ["tenant.blockedPermissions"],
       requiresAudit: true,
-      safeNextAction: { label: "Open governance", href: "/dashboard/governance" },
+      safeNextAction: { label: "Open governance", href: "/control/governance" },
     };
   }
 
@@ -152,7 +152,7 @@ export function evaluatePermission(
         permission: request.permission,
         policyRefs: ["tenant.productionFreezeWindow"],
         requiresAudit: true,
-        safeNextAction: { label: "Open governance", href: "/dashboard/governance" },
+        safeNextAction: { label: "Open governance", href: "/control/governance" },
       };
     }
   }
@@ -166,7 +166,7 @@ export function evaluatePermission(
       permission: request.permission,
       policyRefs: ["tenant.desktopApplyAllowed"],
       requiresAudit: true,
-      safeNextAction: { label: "Open governance", href: "/dashboard/governance" },
+      safeNextAction: { label: "Open governance", href: "/control/governance" },
     };
   }
 
@@ -196,7 +196,7 @@ export function evaluatePermission(
         ...(wantsApprovalByAutonomy ? [`autonomy.level.${settings.autonomyLevel}`] : []),
       ]),
       requiresAudit: true,
-      safeNextAction: { label: "Open approvals", href: "/dashboard/approvals" },
+      safeNextAction: { label: "Open approvals", href: "/control/governance" },
     };
   }
 
