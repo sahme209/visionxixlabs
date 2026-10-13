@@ -17,6 +17,7 @@
  */
 
 export type AIProviderName =
+  | "vercel_gateway"
   | "openai"
   | "anthropic"
   | "xai"
@@ -31,7 +32,7 @@ export type AIProviderName =
   | "mock";
 
 export const AI_PROVIDER_NAMES = [
-  "openai", "anthropic", "xai", "github_models", "ollama", "lm_studio", "groq", "hugging_face",
+  "vercel_gateway", "openai", "anthropic", "xai", "github_models", "ollama", "lm_studio", "groq", "hugging_face",
   "openrouter", "gemini", "cloudflare", "mock",
 ] as const satisfies readonly AIProviderName[];
 
@@ -77,6 +78,8 @@ export interface AITextResponse {
   finishReason: "stop" | "length" | "filter" | "error" | "unknown";
   /** Provider-reported usage when available; otherwise null. */
   usage: { promptTokens?: number; completionTokens?: number; totalTokens?: number } | null;
+  /** Authoritative Gateway generation id for asynchronous cost settlement. */
+  gatewayGenerationId?: string;
 }
 
 export interface AIClassifyResponse {
@@ -96,6 +99,8 @@ export interface AIStructuredResponse<T = unknown> {
   provider: AIProviderName;
   model: string;
   latencyMs: number;
+  usage?: AITextResponse["usage"];
+  gatewayGenerationId?: string;
 }
 
 export interface AIHealthCheck {

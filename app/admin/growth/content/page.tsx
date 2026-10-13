@@ -3,8 +3,8 @@
  *
  * Internal-only. Renders sample LinkedIn + X drafts for review and
  * routing to the approval queue. Drafts come from
- * lib/growth/contentPlanner.ts which uses Claude when the API key is
- * set and falls back to deterministic placeholders otherwise.
+ * lib/growth/contentPlanner.ts through Vercel AI Gateway. Missing Gateway
+ * configuration is shown as an error; the page never presents mock drafts.
  */
 
 import type { Metadata } from "next";

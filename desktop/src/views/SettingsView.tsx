@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState, type ReactNode } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { open } from "@tauri-apps/plugin-shell";
 import { invoke } from "@tauri-apps/api/core";
 import {
@@ -177,7 +177,8 @@ function GeneralSection({ prefs, onSave }: PreferenceSectionProps) {
   return <div>
     <SectionHeading title="General" detail="Application startup, notifications, and account management." />
     <Group label="Account">
-      <ActionRow title="Axiom account" detail="Manage your profile and organization in the secure browser." action={<WebButton href="/dashboard/settings" label="Open" />} />
+      <ActionRow title="Axiom account" detail="Manage your personal profile in the secure browser." action={<WebButton href="/account" label="Open" />} />
+      <ActionRow title="Organization governance" detail="Manage roles, policies, approved integrations, AI authority, and billing in Axiom Control." action={<WebButton href="/control" label="Open control plane" />} />
       <ActionRow title="Pilot access" detail="Pilot access is no-charge today. The service remains authoritative for approved workspace access." action={<span className="text-xs text-zinc-600">See Access & usage</span>} />
     </Group>
     <Group label="Notifications">
@@ -825,6 +826,7 @@ function DeploymentTargetPanel({ environment, environments, identity }: { enviro
   const [saveOk, setSaveOk] = useState(false);
 
   const [deployRepo, setDeployRepo] = useState("");
+  const deployOperationRef = useRef<{ fingerprint: string; key: string } | null>(null);
   const [deployRepositories, setDeployRepositories] = useState<Array<{ id: string; displayName: string; provider: string }>>([]);
   const [sourceRef, setSourceRef] = useState("main");
   const [sourceKind, setSourceKind] = useState<"branch" | "tag">("branch");
@@ -906,6 +908,10 @@ function DeploymentTargetPanel({ environment, environments, identity }: { enviro
         setDeployError("Pull request number must be a positive whole number.");
         return;
       }
+      const fingerprint = JSON.stringify({ repositoryFullName: deployRepo, environmentId, sourceRef, sourceKind, parsedPullRequestNumber, promotedFromExecutionId, emergencyBypass, bypassReason });
+      if (deployOperationRef.current?.fingerprint !== fingerprint) {
+        deployOperationRef.current = { fingerprint, key: crypto.randomUUID() };
+      }
       const result = await desktopClient.triggerAwsDeploy({
         repositoryFullName: deployRepo,
         environmentId,
@@ -914,8 +920,10 @@ function DeploymentTargetPanel({ environment, environments, identity }: { enviro
         ...(parsedPullRequestNumber !== undefined ? { pullRequestNumber: parsedPullRequestNumber } : {}),
         ...(promotedFromExecutionId ? { promotedFromExecutionId } : {}),
         ...(emergencyBypass ? { emergencyBypass: true, bypassReason } : {}),
+        idempotencyKey: deployOperationRef.current.key,
       });
       if (!result.ok) { setDeployError(result.error); return; }
+      deployOperationRef.current = null;
       setDeployOk(true);
       setExecution(result.data.execution);
     } finally {

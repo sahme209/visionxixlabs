@@ -1,91 +1,34 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { NextRequest } from "next/server";
 
-const mocks = vi.hoisted(() => ({
-  resolveRequestDesktopSession: vi.fn(),
-  findFirstProposal: vi.fn(),
-  updateProposal: vi.fn(),
-  updateManyProposals: vi.fn(),
-  createTurn: vi.fn(async () => ({})),
-  executeApprovedAction: vi.fn(),
-}));
+const mocks = vi.hoisted(() => ({ resolve: vi.fn(), decide: vi.fn() }));
+vi.mock("@/lib/desktop/resolveRequestDesktopSession", () => ({ resolveRequestDesktopSession: mocks.resolve }));
+vi.mock("@/lib/axiom/agentRuntime/browserApprovalDecision", () => ({ decideAgentAction: mocks.decide }));
 
-vi.mock("@/lib/desktop/resolveRequestDesktopSession", () => ({ resolveRequestDesktopSession: mocks.resolveRequestDesktopSession }));
-vi.mock("@/lib/db", () => ({
-  prisma: {
-    agentActionProposal: { findFirst: mocks.findFirstProposal, update: mocks.updateProposal, updateMany: mocks.updateManyProposals },
-    agentConversationTurn: { create: mocks.createTurn },
-  },
-}));
-vi.mock("@/lib/axiom/agentRuntime/actionApprovalResponder", () => ({ executeApprovedAction: mocks.executeApprovedAction }));
+const session = { id: "sess-1", userId: "reviewer-1", organizationId: "org-1", credentialKind: "desktop_session", role: "admin" };
+const params = { params: Promise.resolve({ id: "ap-1" }) };
+const request = () => new NextRequest("https://visionxixlabs.com/api/desktop/agent/actions/ap-1/approve", { method: "POST" });
 
-function request() {
-  return new NextRequest("https://visionxixlabs.com/api/desktop/agent/actions/ap_1/approve", { method: "POST" });
-}
-const params = { params: Promise.resolve({ id: "ap_1" }) };
-const session = { id: "sess-1", userId: "user-1", organizationId: "org-1", credentialKind: "desktop_session" as const };
-const proposal = { id: "ap_1", organizationId: "org-1", conversationId: "conv_1", toolName: "open_github_pull_request", argsJson: {}, status: "proposed" };
+describe("desktop agent approval route", () => {
+  beforeEach(() => { vi.clearAllMocks(); mocks.resolve.mockResolvedValue(session); mocks.decide.mockResolvedValue({ ok: true, status: "executed" }); });
 
-describe("POST /api/desktop/agent/actions/[id]/approve", () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
-    mocks.resolveRequestDesktopSession.mockResolvedValue(session);
-    mocks.findFirstProposal.mockResolvedValue(proposal);
-    mocks.updateManyProposals.mockResolvedValue({ count: 1 });
-    mocks.updateProposal.mockImplementation(async ({ data }) => ({ ...proposal, ...data }));
+  it("requires a capability-authorized desktop session", async () => {
+    mocks.resolve.mockResolvedValue(undefined);
+    const { POST } = await import("../route");
+    expect((await POST(request(), params)).status).toBe(401);
+    expect(mocks.decide).not.toHaveBeenCalled();
   });
 
-  it("requires a desktop session", async () => {
-    mocks.resolveRequestDesktopSession.mockResolvedValue(undefined);
+  it("uses the same protected decision service as browser governance", async () => {
     const { POST } = await import("../route");
-    const res = await POST(request(), params);
-    expect(res.status).toBe(401);
+    const response = await POST(request(), params);
+    expect(response.status).toBe(200);
+    expect(mocks.decide).toHaveBeenCalledWith(expect.objectContaining({ organizationId: "org-1", proposalId: "ap-1", actorUserId: "reviewer-1", actorRole: "admin", decision: "approve" }));
   });
 
-  it("404s for a proposal outside the caller's org", async () => {
-    mocks.findFirstProposal.mockResolvedValue(null);
+  it("preserves one-shot conflict responses", async () => {
+    mocks.decide.mockResolvedValue({ ok: false, error: "already_decided" });
     const { POST } = await import("../route");
-    const res = await POST(request(), params);
-    expect(res.status).toBe(404);
-  });
-
-  it("409s on a proposal that was already decided — approval is one-shot", async () => {
-    mocks.findFirstProposal.mockResolvedValue({ ...proposal, status: "rejected" });
-    const { POST } = await import("../route");
-    const res = await POST(request(), params);
-    expect(res.status).toBe(409);
-    expect(mocks.executeApprovedAction).not.toHaveBeenCalled();
-  });
-
-  it("executes the real action and marks it executed on success", async () => {
-    mocks.executeApprovedAction.mockResolvedValue({ ok: true, result: { number: 42, htmlUrl: "https://github.com/acme/widgets/pull/42" } });
-    const { POST } = await import("../route");
-    const res = await POST(request(), params);
-    const body = await res.json();
-    expect(res.status).toBe(200);
-    expect(body.data.status).toBe("executed");
-    expect(mocks.executeApprovedAction).toHaveBeenCalledWith(expect.anything(), "org-1", "open_github_pull_request", {}, "user-1");
-  });
-
-  it("does not execute when another request wins the atomic approval claim", async () => {
-    mocks.updateManyProposals.mockResolvedValue({ count: 0 });
-    const { POST } = await import("../route");
-    const res = await POST(request(), params);
-    expect(res.status).toBe(409);
-    expect(mocks.updateManyProposals).toHaveBeenCalledWith(expect.objectContaining({
-      where: { id: "ap_1", organizationId: "org-1", status: "proposed" },
-    }));
-    expect(mocks.executeApprovedAction).not.toHaveBeenCalled();
-    expect(mocks.createTurn).not.toHaveBeenCalled();
-  });
-
-  it("marks the proposal failed, not silently swallowed, when GitHub rejects the action", async () => {
-    mocks.executeApprovedAction.mockResolvedValue({ ok: false, error: "pull_request_create_failed: github_422" });
-    const { POST } = await import("../route");
-    const res = await POST(request(), params);
-    const body = await res.json();
-    expect(res.status).toBe(200);
-    expect(body.data.status).toBe("failed");
-    expect(body.data.errorMessage).toBe("pull_request_create_failed: github_422");
+    expect((await POST(request(), params)).status).toBe(409);
   });
 });

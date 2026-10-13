@@ -1173,6 +1173,8 @@ model AIProviderRate {
 model UsageEvent {
   id              String   @id @default(cuid())
   organizationId  String
+  /// Provider request id used for idempotent cost reconciliation.
+  externalUsageId String?  @unique
   /// "ai_invocation" | "agent_run" | "automation_run" | "connector_sync"
   /// | "cloud_scan" | "report_generated" | "monitoring_event" | "desktop_task"
   eventKind       String
@@ -1183,6 +1185,11 @@ model UsageEvent {
   cachedReadTokens Int     @default(0)
   /// Cost attributed to VisionXIXLabs in cents (USD).
   costCents       Int      @default(0)
+  /// Customer debit after the configured platform margin.
+  billedCents     Int      @default(0)
+  /// pending | settled | failed. Gateway events remain pending until
+  /// the provider's authoritative generation-cost record is available.
+  billingStatus   String   @default("settled")
   triggeredBy     String?
   aiInvocationId  String?
   correlationId   String?
@@ -1192,6 +1199,7 @@ model UsageEvent {
   @@index([organizationId, createdAt])
   @@index([organizationId, eventKind, createdAt])
   @@index([correlationId])
+  @@index([billingStatus, createdAt])
 }
 
 // ---------------------------------------------------------------------------
@@ -1532,10 +1540,15 @@ model AgentActionProposal {
   decidedAt        DateTime?
   executedAt       DateTime?
   createdAt        DateTime  @default(now())
+  /// Browser and desktop decisions fail closed after this instant.
+  approvalExpiresAt DateTime?
+  /// SHA-256 binding the organization, conversation, proposer, tool and args.
+  actionDigest      String?
 
   conversation AgentConversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
 
   @@index([organizationId, status])
+  @@index([organizationId, status, approvalExpiresAt])
   @@index([conversationId])
 }
 
@@ -2043,6 +2056,8 @@ model TenantBillingPlan {
   currentPeriodEndsAt  DateTime?
   stripeCustomerId     String?
   stripeSubscriptionId String?
+  /// Authoritative recurring subscription quantity for paid per-seat plans.
+  seatQuantity          Int?
   cancelAtPeriodEnd    Boolean   @default(false)
   /// Last raw Stripe event id consumed by the webhook handler.
   /// Used for idempotency: re-receiving the same id is a no-op.
@@ -2628,6 +2643,9 @@ model DeploymentTarget {
 model DeploymentExecution {
   id                 String    @id @default(cuid())
   organizationId     String
+  /// Stable caller-supplied key. It is reserved transactionally before an
+  /// external dispatch so retries cannot launch the same deployment twice.
+  idempotencyKey     String?
   environmentId      String
   repositoryFullName String
   /// Exact GitHub branch or tag selected for this dispatch.
@@ -2648,7 +2666,7 @@ model DeploymentExecution {
   /// desktop | agent
   source             String
   triggeredByUserId  String
-  /// queued | in_progress | completed | tracking_unavailable
+  /// reserved | queued | in_progress | completed | tracking_unavailable
   status             String    @default("queued")
   conclusion         String?
   /// not_started | in_progress | succeeded | failed | unknown
@@ -2660,6 +2678,7 @@ model DeploymentExecution {
 
   @@index([organizationId, createdAt])
   @@index([organizationId, environmentId, createdAt])
+  @@unique([organizationId, idempotencyKey])
   @@unique([organizationId, workflowRunId])
 }
 

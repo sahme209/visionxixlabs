@@ -19,22 +19,14 @@ import { PROVIDER_PRIORITY } from "./AIModelRegistry";
 import { runWithFallback } from "./AIFallbackHandler";
 import { recordUsage } from "./AIUsageLogger";
 import { redact } from "@/lib/security/redaction";
-import { GitHubModelsProvider } from "./providers/GitHubModelsProvider";
-import { OllamaProvider } from "./providers/OllamaProvider";
-import { LMStudioProvider } from "./providers/LMStudioProvider";
-import { GroqProvider } from "./providers/GroqProvider";
-import { HuggingFaceProvider } from "./providers/HuggingFaceProvider";
-import { OpenRouterProvider } from "./providers/OpenRouterProvider";
-import { GeminiProvider } from "./providers/GeminiProvider";
-import { CloudflareAIProvider } from "./providers/CloudflareAIProvider";
-import { AnthropicProvider } from "./providers/AnthropicProvider";
-import { MockAIProvider } from "./providers/MockAIProvider";
-import { OpenAIProvider } from "./providers/OpenAIProvider";
-import { XAIProvider } from "./providers/XAIProvider";
+import { recordAIUsageEvent } from "@/lib/billing/recordAIUsageEvent";
+import { VercelGatewayProvider } from "./providers/VercelGatewayProvider";
 
 let SINGLETON: AIProviderManager | null = null;
 
 export interface AIEnvSnapshot {
+  AI_GATEWAY_AUTH: boolean;
+  AI_GATEWAY_MODEL: boolean;
   OPENAI_API_KEY: boolean;
   ANTHROPIC_API_KEY: boolean;
   XAI_API_KEY: boolean;
@@ -63,44 +55,17 @@ export class AIProviderManager {
   constructor() {
     const env = process.env;
     this.providers = new Map<AIProviderName, AIProvider>([
-      ["openai",        new OpenAIProvider({ apiKey: env.OPENAI_API_KEY, modelName: env.OPENAI_MODEL })],
-      ["anthropic",     new AnthropicProvider({ apiKey: env.ANTHROPIC_API_KEY, modelName: env.ANTHROPIC_MODEL })],
-      ["xai",           new XAIProvider({ apiKey: env.XAI_API_KEY, modelName: env.XAI_MODEL })],
-      ["github_models", new GitHubModelsProvider({ token: env.GITHUB_TOKEN, modelName: env.GITHUB_MODEL_NAME })],
-      ["ollama",        new OllamaProvider({ baseUrl: env.OLLAMA_BASE_URL })],
-      ["lm_studio",     new LMStudioProvider({ baseUrl: env.LM_STUDIO_BASE_URL })],
-      ["groq",          new GroqProvider({ apiKey: env.GROQ_API_KEY })],
-      ["hugging_face",  new HuggingFaceProvider({ apiKey: env.HUGGINGFACE_API_KEY })],
-      ["openrouter",    new OpenRouterProvider({ apiKey: env.OPENROUTER_API_KEY })],
-      ["gemini",        new GeminiProvider({ apiKey: env.GEMINI_API_KEY })],
-      ["cloudflare",    new CloudflareAIProvider({ accountId: env.CLOUDFLARE_ACCOUNT_ID, apiToken: env.CLOUDFLARE_API_TOKEN })],
-      ["mock",          new MockAIProvider()],
+      ["vercel_gateway", new VercelGatewayProvider(env.AI_GATEWAY_MODEL)],
     ]);
   }
 
-  /** Configured providers in declared priority, then Mock last. */
+  /** Production inference is Gateway-only. Missing configuration fails closed. */
   private chain(opts?: { only?: AIProviderName; allowedProviders?: readonly AIProviderName[]; fallbackOrder?: readonly AIProviderName[] }): AIProvider[] {
-    if (opts?.only) {
-      if (opts.allowedProviders && !opts.allowedProviders.includes(opts.only)) return [];
-      const p = this.providers.get(opts.only);
-      return p ? [p] : [this.providers.get("mock")!];
-    }
-    const allowed = opts?.allowedProviders ? new Set(opts.allowedProviders) : null;
-    const policyOrder = opts?.fallbackOrder?.length
-      ? opts.fallbackOrder
-      : PROVIDER_PRIORITY;
-    const out: AIProvider[] = [];
-    for (const name of policyOrder) {
-      if (name === "mock") continue;
-      if (allowed && !allowed.has(name)) continue;
-      const p = this.providers.get(name);
-      if (p && p.isConfigured()) out.push(p);
-    }
-    // Workspace-governed requests must fail honestly if every approved
-    // provider is unavailable. The deterministic mock remains available only
-    // to legacy/internal callers that did not provide a workspace policy.
-    if (!opts?.allowedProviders) out.push(this.providers.get("mock")!);
-    return out;
+    const gateway = this.providers.get("vercel_gateway");
+    if (!gateway?.isConfigured()) return [];
+    if (opts?.only && opts.only !== "vercel_gateway") return [];
+    if (opts?.allowedProviders && !opts.allowedProviders.includes("vercel_gateway")) return [];
+    return [gateway];
   }
 
   private optionsForProvider(provider: AIProvider, options?: AIRequestOptions & { only?: AIProviderName }): AIRequestOptions | undefined {
@@ -118,14 +83,16 @@ export class AIProviderManager {
     });
   }
 
-  /** True only for a real provider configured by the service. */
+  /** True only for the configured service Gateway. */
   isServiceProviderAvailable(name: AIProviderName): boolean {
-    return name !== "mock" && this.providers.get(name)?.isConfigured() === true;
+    return name === "vercel_gateway" && this.providers.get(name)?.isConfigured() === true;
   }
 
   envSnapshot(): AIEnvSnapshot {
     const e = process.env;
     return {
+      AI_GATEWAY_AUTH: Boolean(e.AI_GATEWAY_API_KEY || e.VERCEL_OIDC_TOKEN),
+      AI_GATEWAY_MODEL: Boolean(e.AI_GATEWAY_MODEL),
       OPENAI_API_KEY: Boolean(e.OPENAI_API_KEY),
       ANTHROPIC_API_KEY: Boolean(e.ANTHROPIC_API_KEY),
       XAI_API_KEY: Boolean(e.XAI_API_KEY),
@@ -159,18 +126,20 @@ export class AIProviderManager {
   }
 
   async summarize(text: string, options?: AIRequestOptions & { only?: AIProviderName }): Promise<AITextResponse> {
+    const safeText = redact(text);
     const out = await runWithFallback<AITextResponse>(
       this.chain({ only: options?.only, allowedProviders: options?.allowedProviders, fallbackOrder: options?.fallbackOrder }),
-      (p) => p.summarize(text, this.optionsForProvider(p, options)),
+      (p) => p.summarize(safeText, this.optionsForProvider(p, options)),
       { task: "summarize", correlationId: options?.correlationId, organizationId: options?.organizationId },
     );
     return out.result;
   }
 
   async classify(text: string, labels: readonly string[], options?: AIRequestOptions & { only?: AIProviderName }): Promise<AIClassifyResponse> {
+    const safeText = redact(text);
     const out = await runWithFallback<AIClassifyResponse>(
       this.chain({ only: options?.only, allowedProviders: options?.allowedProviders, fallbackOrder: options?.fallbackOrder }),
-      (p) => p.classify(text, labels, this.optionsForProvider(p, options)),
+      (p) => p.classify(safeText, labels, this.optionsForProvider(p, options)),
       { task: "classify", correlationId: options?.correlationId, organizationId: options?.organizationId },
     );
     return out.result;
@@ -181,11 +150,33 @@ export class AIProviderManager {
     schemaHint: string,
     options?: AIRequestOptions & { only?: AIProviderName },
   ): Promise<AIStructuredResponse<T>> {
+    const safeText = redact(text);
     const out = await runWithFallback<AIStructuredResponse<T>>(
       this.chain({ only: options?.only, allowedProviders: options?.allowedProviders, fallbackOrder: options?.fallbackOrder }),
-      (p) => p.extractStructuredData<T>(text, schemaHint, this.optionsForProvider(p, options)),
+      (p) => p.extractStructuredData<T>(safeText, schemaHint, this.optionsForProvider(p, options)),
       { task: "extract_structured_data", correlationId: options?.correlationId, organizationId: options?.organizationId },
     );
+    if (options?.organizationId && out.result.provider === "vercel_gateway") {
+      const usage = out.result.usage;
+      const recorded = await recordAIUsageEvent({
+        organizationId: options.organizationId,
+        provider: out.result.provider,
+        model: out.result.model,
+        inputTokens: usage?.promptTokens ?? 0,
+        outputTokens: usage?.completionTokens ?? 0,
+        externalUsageId: out.result.gatewayGenerationId,
+        correlationId: options.correlationId,
+        metadata: { task: "extract_structured_data" },
+      });
+      if (!recorded.recorded) {
+        throw new AIProviderError({
+          provider: "vercel_gateway",
+          kind: "bad_response",
+          message: "AI Gateway usage could not be reserved for settlement",
+          retryable: true,
+        });
+      }
+    }
     return out.result;
   }
 
@@ -204,7 +195,7 @@ export class AIProviderManager {
     }
     const t0 = Date.now();
     try {
-      for await (const chunk of head.streamText(prompt, this.optionsForProvider(head, options))) {
+      for await (const chunk of head.streamText(redact(prompt), this.optionsForProvider(head, options))) {
         yield chunk;
       }
       recordUsage({

@@ -40,6 +40,7 @@ function subscriptionEvent(overrides: Record<string, unknown> = {}) {
         status: "active",
         current_period_end: 1_800_000_000,
         cancel_at_period_end: false,
+        items: { data: [{ quantity: 3 }] },
         metadata: { organizationId: "org-1", planId: "pro" },
       },
     },
@@ -137,6 +138,17 @@ describe("POST /api/billing/stripe-webhook", () => {
       stripeSubscriptionId: "sub_1",
       cancelAtPeriodEnd: false,
       lastStripeEventId: "evt_1",
+      seatQuantity: 3,
     });
+  });
+
+  it("fails closed when an active subscription has no valid seat quantity", async () => {
+    const event = subscriptionEvent();
+    event.data.object.items = { data: [] };
+    const { POST } = await import("../route");
+    const response = await POST(request(event));
+    expect(response.status).toBe(400);
+    expect(await response.json()).toMatchObject({ error: { code: "stripe.seat_quantity_invalid" } });
+    expect(mocks.upsertBillingPlan).not.toHaveBeenCalled();
   });
 });

@@ -1,12 +1,11 @@
 /**
- * AI Orchestrator — multi-provider routing by task type.
- * Routes by task type, user plan, and cost caps. Fallback chain with timeout/retry.
+ * AI Orchestrator — task-aware Vercel AI Gateway routing.
+ * Direct provider credentials and mock fallbacks are intentionally unsupported.
  * Server-side only. Use in app/api routes or server actions.
  */
 
-import { openaiGenerate, anthropicGenerate, geminiGenerate } from "@/lib/ai/providers";
-import type { ProviderName } from "@/lib/ai/providers";
 import { logAIInvocation } from "@/lib/ai/instrumentation";
+import { getAIProviderManager } from "@/lib/ai/AIProviderManager";
 
 export type TaskType =
   | "CHAT_FAST"
@@ -42,111 +41,23 @@ export interface RouteModelOptions {
 }
 
 export interface RouteModelResult {
-  provider: ProviderName;
+  provider: "vercel_gateway";
   model: string;
-  fallbackOrder: ProviderName[];
-}
-
-const DEFAULT_MODELS: Record<ProviderName, string> = {
-  openai: process.env.OPENAI_MODEL || process.env.MODEL_NAME || "gpt-4o",
-  anthropic: process.env.ANTHROPIC_MODEL || "claude-sonnet-4-20250514",
-  gemini: process.env.GEMINI_MODEL || "gemini-2.0-flash",
-};
-
-/** Per-task-type config: preferred provider, fallback order, model env overrides */
-const TASK_CONFIG: Record<
-  TaskType,
-  { preferred: ProviderName; fallback: ProviderName[]; modelEnv?: Partial<Record<ProviderName, string>> }
-> = {
-  CHAT_FAST: {
-    preferred: "openai",
-    fallback: ["openai", "anthropic", "gemini"],
-    modelEnv: {
-      openai: process.env.AI_MODEL_CHAT || process.env.OPENAI_MODEL,
-      anthropic: process.env.AI_MODEL_CHAT_ANTHROPIC || process.env.ANTHROPIC_MODEL,
-      gemini: process.env.AI_MODEL_CHAT_GEMINI || process.env.GEMINI_MODEL,
-    },
-  },
-  PLAN_STRONG: {
-    preferred: "anthropic",
-    fallback: ["anthropic", "openai", "gemini"],
-    modelEnv: {
-      openai: process.env.AI_MODEL_CONTENT || process.env.OPENAI_MODEL,
-      anthropic: process.env.AI_MODEL_CONTENT_ANTHROPIC || process.env.ANTHROPIC_MODEL,
-      gemini: process.env.AI_MODEL_CONTENT_GEMINI || process.env.GEMINI_MODEL,
-    },
-  },
-  CODE_STRONG: {
-    preferred: "anthropic",
-    fallback: ["anthropic", "openai", "gemini"],
-    modelEnv: {
-      openai: process.env.AI_MODEL_CODE || process.env.OPENAI_MODEL,
-      anthropic: process.env.AI_MODEL_CODE_ANTHROPIC || process.env.ANTHROPIC_MODEL,
-      gemini: process.env.AI_MODEL_CODE_GEMINI || process.env.GEMINI_MODEL,
-    },
-  },
-  DESIGN_STRONG: {
-    preferred: "anthropic",
-    fallback: ["anthropic", "openai", "gemini"],
-  },
-  RAG_ANSWER: {
-    preferred: "openai",
-    fallback: ["openai", "anthropic", "gemini"],
-  },
-  TOOL_CALLING: {
-    preferred: "openai",
-    fallback: ["openai", "anthropic", "gemini"],
-  },
-  SUMMARIZE: {
-    preferred: "openai",
-    fallback: ["openai", "gemini", "anthropic"],
-  },
-};
-
-function hasProvider(p: ProviderName): boolean {
-  switch (p) {
-    case "openai":
-      return !!process.env.OPENAI_API_KEY?.trim();
-    case "anthropic":
-      return !!process.env.ANTHROPIC_API_KEY?.trim();
-    case "gemini":
-      return !!process.env.GEMINI_API_KEY?.trim();
-    default:
-      return false;
-  }
-}
-
-function getModel(provider: ProviderName, taskType: TaskType): string {
-  const cfg = TASK_CONFIG[taskType];
-  const envModel = cfg?.modelEnv?.[provider] || process.env[`${provider.toUpperCase()}_MODEL` as const];
-  return envModel?.trim() || DEFAULT_MODELS[provider];
+  fallbackOrder: ["vercel_gateway"] | [];
 }
 
 /**
  * Select provider + model for a task. Considers task type, user plan, and available keys.
  */
 export function routeModel(opts: RouteModelOptions): RouteModelResult {
-  const task = (LEGACY_TO_NEW[opts.taskType as LegacyTaskType] ?? opts.taskType) as TaskType;
-  const cfg = TASK_CONFIG[task] ?? TASK_CONFIG.CHAT_FAST;
-  const envPreferred = process.env.AI_PROVIDER?.toLowerCase() as ProviderName | undefined;
-
-  let order = [...cfg.fallback];
-  if (envPreferred && ["openai", "anthropic", "gemini"].includes(envPreferred)) {
-    order = [envPreferred, ...order.filter((p) => p !== envPreferred)];
-  }
-
-  const available = order.filter(hasProvider);
-  const provider = available[0] ?? "openai";
-  const model = getModel(provider, task);
-
-  return { provider, model, fallbackOrder: available };
+  void opts;
+  const status = getAIProviderManager().status().find((row) => row.provider === "vercel_gateway");
+  return {
+    provider: "vercel_gateway",
+    model: status?.defaultModel ?? "service-default",
+    fallbackOrder: status?.configured ? ["vercel_gateway"] : [],
+  };
 }
-
-const PROVIDER_FNS = {
-  openai: openaiGenerate,
-  anthropic: anthropicGenerate,
-  gemini: geminiGenerate,
-} as const;
 
 const TIMEOUT_MS = Number(process.env.AI_ORCHESTRATOR_TIMEOUT_MS) || 90_000;
 const RETRY_DELAY_MS = 500;
@@ -176,7 +87,7 @@ export interface GenerateResponse {
   text: string;
   toolCalls?: Array<{ name: string; arguments: string }>;
   usage?: { inputTokens: number; outputTokens: number };
-  provider: ProviderName;
+  provider: "vercel_gateway";
   model: string;
   latencyMs: number;
   requestId: string;
@@ -187,85 +98,53 @@ export interface GenerateResponse {
  */
 export async function generate(opts: GenerateOptions): Promise<GenerateResponse> {
   const task = (LEGACY_TO_NEW[opts.taskType as LegacyTaskType] ?? opts.taskType) as TaskType;
-  const { provider, fallbackOrder } = routeModel({
+  const { provider, model, fallbackOrder } = routeModel({
     taskType: task,
     userPlan: opts.userPlan,
     userId: opts.userId,
   });
 
-  const system = opts.systemPrompt ?? opts.messages?.filter((m) => m.role === "system").map((m) => m.content).join("\n") ?? "";
+  const baseSystem = opts.systemPrompt ?? opts.messages?.filter((m) => m.role === "system").map((m) => m.content).join("\n") ?? "";
+  const system = opts.responseFormat === "json"
+    ? `${baseSystem}\nReturn valid JSON only, with no Markdown fence or commentary.`
+    : baseSystem;
   const prompt = opts.userPrompt ?? opts.messages?.filter((m) => m.role === "user").pop()?.content ?? "";
   const promptPreview = prompt || system ? `${system.slice(0, 100)}...${prompt.slice(0, 80)}` : undefined;
 
   const requestId = `ai_${Date.now()}_${Math.random().toString(36).slice(2, 10)}`;
   const start = Date.now();
-  let lastError: Error | null = null;
-
-  for (const p of fallbackOrder) {
-    if (!hasProvider(p)) continue;
-    try {
-      const fn = PROVIDER_FNS[p];
-      const result = await withTimeout(
-        fn({
-          system,
-          prompt,
-          messages: opts.messages,
-          maxTokens: opts.maxTokens,
-          temperature: opts.temperature,
-          jsonSchema: opts.responseFormat === "json",
-        }),
-        TIMEOUT_MS
-      );
-      const latencyMs = Date.now() - start;
-
-      await logAIInvocation({
-        userId: opts.userId,
-        taskType: task,
-        provider: p,
-        model: getModel(p, task),
-        latencyMs,
-        success: true,
-        tokensIn: result.usage?.inputTokens,
-        tokensOut: result.usage?.outputTokens,
-        promptPreview,
-        requestId,
-      });
-
-      return {
-        text: result.text,
-        toolCalls: result.toolCalls,
-        usage: result.usage,
-        provider: p,
-        model: getModel(p, task),
-        latencyMs,
-        requestId,
-      };
-    } catch (e) {
-      lastError = e instanceof Error ? e : new Error(String(e));
-      await logAIInvocation({
-        userId: opts.userId,
-        taskType: task,
-        provider: p,
-        model: getModel(p, task),
-        latencyMs: Date.now() - start,
-        success: false,
-        errorMessage: lastError.message,
-        promptPreview,
-        requestId,
-      });
-      await new Promise((r) => setTimeout(r, RETRY_DELAY_MS));
-    }
+  if (fallbackOrder.length === 0) throw new Error("Vercel AI Gateway is not configured.");
+  try {
+    const combinedPrompt = opts.messages?.length
+      ? opts.messages.filter((message) => message.role !== "system").map((message) => `${message.role.toUpperCase()}: ${message.content}`).join("\n\n")
+      : prompt;
+    const result = await withTimeout(
+      getAIProviderManager().generateText(combinedPrompt, {
+        only: "vercel_gateway",
+        system,
+        maxTokens: opts.maxTokens,
+        temperature: opts.temperature,
+        correlationId: requestId,
+      }),
+      TIMEOUT_MS,
+    );
+    const latencyMs = Date.now() - start;
+    await logAIInvocation({ userId: opts.userId, taskType: task, provider, model: result.model, latencyMs, success: true,
+      tokensIn: result.usage?.promptTokens, tokensOut: result.usage?.completionTokens, promptPreview, requestId });
+    return { text: result.text, usage: result.usage ? { inputTokens: result.usage.promptTokens ?? 0, outputTokens: result.usage.completionTokens ?? 0 } : undefined,
+      provider, model: result.model, latencyMs, requestId };
+  } catch (error) {
+    const failure = error instanceof Error ? error : new Error(String(error));
+    await logAIInvocation({ userId: opts.userId, taskType: task, provider, model, latencyMs: Date.now() - start,
+      success: false, errorMessage: failure.message, promptPreview, requestId });
+    await new Promise((resolve) => setTimeout(resolve, RETRY_DELAY_MS));
+    throw failure;
   }
-
-  throw (
-    lastError ??
-    new Error("No AI provider configured. Set OPENAI_API_KEY, ANTHROPIC_API_KEY, or GEMINI_API_KEY.")
-  );
 }
 
 // --- Backward compatibility ---
 
-export type AIProvider = "openai" | "anthropic" | "gemini";
+export type AIProvider = "vercel_gateway";
 
 export interface OrchestrateGenerateOptions {
   taskType: LegacyTaskType;

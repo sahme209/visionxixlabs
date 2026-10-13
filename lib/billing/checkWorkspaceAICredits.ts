@@ -2,12 +2,12 @@
  * Live AI credit pre-flight — Phase 382.
  *
  * DB-backed wrapper around preflightAICreditCheck(). Sums MTD
- * UsageEvent.costCents directly (NOT from WorkspaceUsageSummary —
+ * UsageEvent.billedCents directly (NOT from WorkspaceUsageSummary —
  * the summary is rebuilt nightly and could be up to 24h stale).
  *
  * Reads:
  *   - TenantBillingPlan → tier (via readBillingPlan)
- *   - UsageEvent _sum on costCents for (organizationId, current month)
+ *   - UsageEvent _sum on billedCents for (organizationId, current month)
  *
  * A usage-read failure remains fail-open for legacy workflow callers, but
  * general-purpose generation can opt into fail-closed metering. That keeps
@@ -46,9 +46,9 @@ export async function checkWorkspaceAICredits(
         eventKind: "ai_invocation",
         createdAt: { gte: periodStart(new Date()) },
       },
-      _sum: { costCents: true },
+      _sum: { billedCents: true },
     });
-    currentAICostCents = sum._sum.costCents ?? 0;
+    currentAICostCents = sum._sum.billedCents ?? 0;
   } catch {
     if (options?.failClosedOnUsageReadError) {
       throw new Error("ai_credit_meter_unavailable");

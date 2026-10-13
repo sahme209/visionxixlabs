@@ -24,9 +24,14 @@ import { resolveTenantScopedToken, parseRepositoryFullName } from "@/lib/connect
 import { dispatchWorkflow, resolveGitReference } from "@/lib/connectors/github/githubWriteClient";
 import { AWS_ECS_DEPLOY_WORKFLOW_FILENAME } from "@/lib/releaseops/awsEcsDeployWorkflowTemplate";
 import { appendAuditEvent, type AuditEventRepo } from "@/lib/releaseops/auditEventResponder";
-import { serializeDeploymentExecution, type DeploymentExecutionRepo } from "@/lib/releaseops/deploymentExecutionResponder";
+import { serializeDeploymentExecution } from "@/lib/releaseops/deploymentExecutionResponder";
 import { evaluateDeploymentPolicy, type DeploymentPolicyRepo } from "@/lib/releaseops/deploymentPolicyGuard";
-import { checkDeploymentQuota, type DeploymentQuotaRepo } from "@/lib/billing/deploymentQuota";
+import {
+  releaseDeploymentDispatch,
+  reserveDeploymentDispatch,
+  settleDeploymentDispatch,
+  type DeploymentReservationRepo,
+} from "@/lib/billing/deploymentDispatchReservation";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -70,6 +75,10 @@ export async function POST(request: NextRequest): Promise<Response> {
   if (!repo) return NextResponse.json({ ok: false, error: "invalid_repository_full_name" }, { status: 400 });
 
   const organizationId = String(session.organizationId);
+  const idempotencyKey = request.headers.get("idempotency-key")?.trim() ?? "";
+  if (idempotencyKey.length < 8 || idempotencyKey.length > 200) {
+    return NextResponse.json({ ok: false, error: "idempotency_key_required" }, { status: 400 });
+  }
 
   const environment = await prisma.environment.findUnique({ where: { id: environmentId } });
   if (!environment || environment.organizationId !== organizationId) {
@@ -90,11 +99,6 @@ export async function POST(request: NextRequest): Promise<Response> {
   const target = await prisma.deploymentTarget.findUnique({ where: { environmentId } });
   if (!target || target.organizationId !== organizationId) {
     return NextResponse.json({ ok: false, error: "deployment_target_not_configured" }, { status: 409 });
-  }
-
-  const quota = await checkDeploymentQuota(prisma as unknown as DeploymentQuotaRepo, organizationId);
-  if (!quota.allowed) {
-    return NextResponse.json({ ok: false, error: quota.reason, quota }, { status: quota.reason === "deployment_quota_exhausted" ? 429 : 503 });
   }
 
   const tokenResult = await resolveTenantScopedToken(organizationId, repo);
@@ -142,6 +146,42 @@ export async function POST(request: NextRequest): Promise<Response> {
     }
   }
 
+  const reservationRepo = prisma as unknown as DeploymentReservationRepo;
+  const reservation = await reserveDeploymentDispatch(reservationRepo, {
+    organizationId,
+    idempotencyKey,
+    environmentId,
+    repositoryFullName,
+    sourceRef,
+    sourceKind,
+    sourceCommitSha: policy.sourceCommitSha,
+    branchPolicyId: policy.policyId,
+    promotedFromExecutionId: promotedFromExecutionId ?? null,
+    pullRequestUrl: policy.pullRequestUrl,
+    source: "desktop",
+    triggeredByUserId: String(session.userId),
+  });
+  if (!reservation.ok) {
+    const status = reservation.error === "deployment_quota_exhausted" ? 429
+      : reservation.error === "deployment_already_in_progress" || reservation.error === "idempotency_key_conflict" ? 409 : 503;
+    return NextResponse.json({ ok: false, error: reservation.error, quota: reservation }, { status });
+  }
+  if (reservation.reused) {
+    return NextResponse.json({
+      ok: true,
+      data: {
+        dispatched: true,
+        execution: serializeDeploymentExecution(reservation.reservation),
+        trackingAvailable: Boolean(reservation.reservation.workflowRunId),
+        policyId: reservation.reservation.branchPolicyId,
+        sourceRef: reservation.reservation.sourceRef,
+        sourceKind: reservation.reservation.sourceKind,
+        governanceMode: emergencyBypass ? "emergency_bypass" : "policy_enforced",
+        replayed: true,
+      },
+    });
+  }
+
   const dispatchResult = await dispatchWorkflow({
     owner: repo.owner,
     repo: repo.repo,
@@ -156,31 +196,25 @@ export async function POST(request: NextRequest): Promise<Response> {
     installationToken: tokenResult.token,
   });
   if (!dispatchResult.ok) {
+    await releaseDeploymentDispatch(reservationRepo, organizationId, reservation.reservation.id);
     return NextResponse.json({ ok: false, error: "dispatch_failed", hint: dispatchResult.error }, { status: 502 });
   }
 
   let execution = null;
   try {
-    const executionRepo = prisma as unknown as DeploymentExecutionRepo;
-    const created = await executionRepo.deploymentExecution.create({
-      data: {
-        organizationId,
-        environmentId,
-        repositoryFullName,
-        sourceRef,
-        sourceKind,
-        sourceCommitSha: policy.sourceCommitSha,
-        branchPolicyId: policy.policyId,
-        promotedFromExecutionId: promotedFromExecutionId ?? null,
-        pullRequestUrl: policy.pullRequestUrl,
+    const settled = await settleDeploymentDispatch(reservationRepo, organizationId, reservation.reservation.id, {
+      workflowRunId: dispatchResult.data.workflowRunId,
+      workflowUrl: dispatchResult.data.htmlUrl,
+    });
+    if (settled) {
+      execution = serializeDeploymentExecution({
+        ...reservation.reservation,
         workflowRunId: dispatchResult.data.workflowRunId,
         workflowUrl: dispatchResult.data.htmlUrl,
-        source: "desktop",
-        triggeredByUserId: String(session.userId),
         status: dispatchResult.data.workflowRunId ? "queued" : "tracking_unavailable",
-      },
-    });
-    execution = serializeDeploymentExecution(created);
+        updatedAt: new Date(),
+      });
+    }
   } catch { /* the external dispatch happened; report tracking loss honestly */ }
 
   try {

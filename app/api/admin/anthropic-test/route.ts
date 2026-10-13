@@ -1,14 +1,10 @@
 /**
- * GET /api/admin/anthropic-test — admin only.
- *
- * Proves the Anthropic API key works by making a tiny one-prompt
- * completion call. Uses claude-haiku-4-5 (cheap, fast) to minimise
- * cost. Returns the model's response text + token usage. Never
- * echoes the API key.
+ * Legacy route name retained for compatibility. The check is Gateway-only.
  */
 
 import { NextRequest, NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/admin/auth";
+import { getAIProviderManager } from "@/lib/ai/AIProviderManager";
 
 export const dynamic = "force-dynamic";
 
@@ -16,56 +12,36 @@ export async function GET(req: NextRequest) {
   const auth = await requireAdmin(req);
   if ("error" in auth) return auth.error;
 
-  const apiKey = process.env.ANTHROPIC_API_KEY?.trim();
-  const envDebug = {
-    keySet: !!apiKey,
-    keyLength: apiKey?.length ?? 0,
-    keyPrefix: apiKey?.slice(0, 7) ?? "",      // expect "sk-ant-"
-    keyHasWhitespace: apiKey ? /\s/.test(apiKey) : false,
-    keyHasQuotes: apiKey ? (apiKey.includes('"') || apiKey.includes("'")) : false,
-  };
-
-  if (!apiKey) {
+  const manager = getAIProviderManager();
+  if (!manager.isServiceProviderAvailable("vercel_gateway")) {
     return NextResponse.json({
       ok: false,
       stage: "env_check",
-      reason: "ANTHROPIC_API_KEY not set in environment.",
-      envDebug,
+      reason: "Vercel AI Gateway is not configured.",
     });
   }
 
   try {
-    const Anthropic = (await import("@anthropic-ai/sdk")).default;
-    const client = new Anthropic({ apiKey });
-    const response = await client.messages.create({
-      model: "claude-haiku-4-5-20251001",
-      max_tokens: 50,
-      messages: [
-        { role: "user", content: "Reply with exactly: AGI online." },
-      ],
+    const response = await manager.generateText("Reply with exactly: Axiom online.", {
+      only: "vercel_gateway", maxTokens: 50, temperature: 0, correlationId: "admin-gateway-health",
     });
-
-    const block = response.content.find((b) => b.type === "text");
-    const text = block && "text" in block ? block.text : "";
 
     return NextResponse.json({
       ok: true,
-      stage: "anthropic_messages_create",
+      stage: "vercel_ai_gateway",
       model: response.model,
-      reply: text,
+      reply: response.text,
       usage: {
-        inputTokens: response.usage.input_tokens,
-        outputTokens: response.usage.output_tokens,
+        inputTokens: response.usage?.promptTokens ?? 0,
+        outputTokens: response.usage?.completionTokens ?? 0,
       },
-      envDebug,
     });
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
     return NextResponse.json({
       ok: false,
-      stage: "anthropic_messages_create",
+      stage: "vercel_ai_gateway",
       reason: msg,
-      envDebug,
     });
   }
 }

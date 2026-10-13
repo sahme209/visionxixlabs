@@ -59,8 +59,8 @@ and server-counted seats. A successful redirect never grants access. The signed
 1. Approve the public prices, 20% annual discount, deployment allowances, and AI-credit economics.
 2. Review the implemented immutable public plan identifiers and monthly/annual Stripe price mappings on the organization billing path.
 3. Define a migration from legacy `User.plan` rows and existing Stripe subscriptions to `TenantBillingPlan`; produce a dry-run report before writing data.
-4. Make seat and deployment counters organization-scoped, transactional, and idempotent under concurrent dispatches.
-5. Count only after provider dispatch succeeds and bind the count to the dispatch idempotency key.
+4. **Deployment and seat concurrency complete.** Deployment dispatch reserves an organization allowance slot in a serializable transaction and binds it to a unique organization/idempotency key. Invite acceptance and enterprise SSO now claim accepted seats transactionally; paid plans fail closed unless the signed Stripe subscription supplies a positive seat quantity. Legacy-plan migration and Stripe test-mode reconciliation remain below.
+5. **Implemented for AWS ECS desktop and Agent dispatch.** Active reservations temporarily consume a slot; failed provider dispatches release it, accepted dispatches settle the same durable execution row, stale reservations expire, and exact retries replay the prior execution without dispatching twice.
 6. Cover upgrades, downgrades, renewals, cancellation, past-due state, refunds, and webhook re-delivery in integration tests.
 7. Verify the same entitlement response is consumed by the website, desktop app, and every mutating API boundary.
 8. Create or reconcile versioned Pro and Enterprise recurring per-seat prices in Stripe test mode only; Free has no Stripe price.
@@ -76,3 +76,11 @@ and server-counted seats. A successful redirect never grants access. The signed
 - A Stripe customer or subscription already assigned to one workspace cannot be reassigned through webhook metadata.
 - Fundamental approval, audit, and production-safety controls are never removed because of plan state.
 - Existing subscriptions are preserved until their migration is individually reconciled.
+
+## Verification evidence — 2026-10-12
+
+- Website/server TypeScript: pass (`npx tsc --noEmit`).
+- Desktop TypeScript: pass (`npx tsc -p desktop/tsconfig.json --noEmit`).
+- Full Vitest suite: 501 files / 5,008 tests pass.
+- Reservation coverage includes quota exhaustion, exact replay, payload-conflict rejection, failure release, and accepted-dispatch settlement.
+- No billing flag, live Stripe setting, subscription, deployment, or production release was changed.

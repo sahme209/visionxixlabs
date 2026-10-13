@@ -20,6 +20,7 @@ import { validateInviteToken, ROLE_LABEL, type InviteRole } from "@/lib/workforc
 import { record as auditRecord } from "@/lib/audit/secureAudit";
 import { id as ids } from "@/lib/domain/ids";
 import type { CorrelationId } from "@/lib/domain/ids";
+import { claimOrganizationSeat, type OrganizationSeatClaimRepo } from "@/lib/billing/organizationSeatClaim";
 
 export const dynamic = "force-dynamic";
 
@@ -79,36 +80,12 @@ export default async function AcceptInvitePage({
 
   // Permission check passed. Create or update the membership.
   const correlationId = `team_accept_${Date.now().toString(36)}` as CorrelationId;
-  let result: "created" | "already_member" | "error" = "error";
+  let result: "created" | "already_member" | "seat_limit" | "error" = "error";
   try {
-    const existing = await prisma.orgMembership.findUnique({
-      where: {
-        userId_organizationId: {
-          userId: String(ctx.userId),
-          organizationId,
-        },
-      },
-      select: { id: true },
+    const claim = await claimOrganizationSeat(prisma as unknown as OrganizationSeatClaimRepo, {
+      userId: String(ctx.userId), organizationId, role: role as InviteRole, invitedBy: invitedByUserId,
     });
-    if (existing) {
-      // Already a member — accept the invite as a role refresh.
-      await prisma.orgMembership.update({
-        where: { id: existing.id },
-        data: { role: role as InviteRole, acceptedAt: new Date() },
-      });
-      result = "already_member";
-    } else {
-      await prisma.orgMembership.create({
-        data: {
-          userId: String(ctx.userId),
-          organizationId,
-          role: role as InviteRole,
-          invitedBy: invitedByUserId,
-          acceptedAt: new Date(),
-        },
-      });
-      result = "created";
-    }
+    result = claim.ok ? (claim.created ? "created" : "already_member") : claim.error === "seat_limit_exhausted" ? "seat_limit" : "error";
   } catch (err) {
     console.warn("[accept-invite] failed:", err instanceof Error ? err.message : err);
     result = "error";
@@ -118,19 +95,19 @@ export default async function AcceptInvitePage({
     organizationId: ids.organization(organizationId),
     actorUserId: ctx.userId ? ids.user(String(ctx.userId)) : undefined,
     action: "members.invite",
-    outcome: result === "error" ? "failure" : "success",
+    outcome: result === "error" || result === "seat_limit" ? "failure" : "success",
     entityRef: `membership:${email}:${role}`,
     correlationId,
     detail: { action: "team_invite_accepted", email, role, result },
   });
 
-  if (result === "error") {
+  if (result === "error" || result === "seat_limit") {
     return (
       <div className="max-w-xl mx-auto px-4 py-16">
         <div className="rounded-md border border-rose-500/20 bg-rose-500/[0.04] p-6 text-center">
           <ExclamationTriangleIcon className="h-8 w-8 text-rose-300 mx-auto mb-3" />
-          <p className="text-[14px] text-zinc-100 font-mono mb-2">membership creation failed</p>
-          <p className="text-[12px] text-zinc-400">Contact the workspace admin.</p>
+          <p className="text-[14px] text-zinc-100 font-mono mb-2">{result === "seat_limit" ? "workspace seat limit reached" : "membership creation failed"}</p>
+          <p className="text-[12px] text-zinc-400">{result === "seat_limit" ? "A workspace owner can add a seat from Plan & Usage, then you can retry this link." : "Retry shortly or ask a workspace owner to review access."}</p>
         </div>
       </div>
     );

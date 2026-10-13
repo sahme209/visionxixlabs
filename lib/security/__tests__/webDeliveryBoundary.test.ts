@@ -19,8 +19,26 @@ describe("website delivery boundary", () => {
         },
     );
 
+    it.each([
+        ["/dashboard/approvals", "/control/governance"],
+        ["/dashboard/governance", "/control/governance"],
+        ["/dashboard/settings", "/account"],
+    ])("migrates legacy governance route %s to %s", (from, to) => {
+        const response = proxy(request(from));
+
+        expect(response.status).toBe(307);
+        expect(new URL(response.headers.get("location") ?? "").pathname).toBe(to);
+    });
+
     it("allows direct browser sign-in without exposing web operations", () => {
         const response = proxy(request("/auth/signin"));
+
+        expect(response.status).toBe(200);
+        expect(response.headers.get("location")).toBeNull();
+    });
+
+    it("allows the authenticated governance namespace to reach its own server-side auth gate", () => {
+        const response = proxy(request("/control"));
 
         expect(response.status).toBe(200);
         expect(response.headers.get("location")).toBeNull();
