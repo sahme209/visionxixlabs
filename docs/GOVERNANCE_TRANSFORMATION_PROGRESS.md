@@ -63,10 +63,20 @@ Verification: TypeScript and 16 focused OAuth, origin, RBAC, desktop-handoff, va
 
 Verification: TypeScript and 34 focused checkout, webhook, replay, seat, deployment-quota, Gateway-settlement, origin, RBAC, and no-placeholder-credit tests pass.
 
+### Audit and session security
+
+- `/control/audit-security` reads the latest 100 tenant-scoped `SecureAuditRecord` rows and derives its 24-hour blocked/failure counts from those records; it contains no posture score or simulated event.
+- The page is restricted to current organization owners/administrators and omits structured event detail that could contain operational context.
+- Active organization desktop sessions are listed without bearer tokens or device fingerprints.
+- Administrative revocation is same-origin and role protected, organization scoped, concurrency safe, and commits the revocation together with its append-only audit record in one database transaction.
+- Personal account session controls remain scoped to the signed-in user; organization-wide authority exists only in Axiom Control.
+
+Verification: TypeScript and 12 focused control-plane approval, AI-policy, session RBAC, origin, tenant-scope, concurrency, and audit tests pass.
+
 ## Next phases
 
 1. Implement real Stripe test-mode credit checkout, signed fulfillment/refund reversal, and atomic AI credit reservation/settlement.
-2. Verified audit/security search and session controls.
+2. Add paginated audit search/export controls backed by the existing tenant-scoped export pipeline.
 3. Durable autonomous workflow persistence, leasing, pause/resume, retry, cancellation, and recovery.
 4. Migrate Airflow credential administration to web only after parity tests; retain desktop operational DAG controls.
 
