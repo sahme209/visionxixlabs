@@ -4517,3 +4517,40 @@ model PlatformGithubAppCredential {
   updatedAt              DateTime @updatedAt
   createdByUserId        String
 }
+
+// ---------------------------------------------------------------------------
+// Founding Supporters — isolated from subscriptions and AI-credit purchases.
+// ---------------------------------------------------------------------------
+model FoundingSupporterPurchase {
+  id                       String   @id @default(cuid())
+  correlationId            String   @unique
+  stripeCheckoutSessionId  String?  @unique
+  stripePaymentIntentId    String?  @unique
+  email                    String
+  displayName              String?
+  publicName               String?
+  recognitionConsent       Boolean  @default(false)
+  updatesOptIn             Boolean  @default(false)
+  amountCents              Int
+  refundedAmountCents      Int      @default(0)
+  currency                 String   @default("usd")
+  /// pending | paid | failed | expired | partially_refunded | refunded
+  status                   String   @default("pending")
+  badgeIssuedAt            DateTime?
+  paidAt                   DateTime?
+  refundedAt               DateTime?
+  confirmationEmailSentAt  DateTime?
+  createdAt                DateTime @default(now())
+  updatedAt                DateTime @updatedAt
+
+  @@index([status, createdAt])
+  @@index([email, createdAt])
+}
+
+model SupporterStripeEvent {
+  id          String   @id
+  type        String
+  processedAt DateTime @default(now())
+
+  @@index([processedAt])
+}
