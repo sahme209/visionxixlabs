@@ -63,11 +63,33 @@ Verification: TypeScript and 16 focused OAuth, origin, RBAC, desktop-handoff, va
 
 Verification: TypeScript and 34 focused checkout, webhook, replay, seat, deployment-quota, Gateway-settlement, origin, RBAC, and no-placeholder-credit tests pass.
 
+### Audit and session security
+
+- `/control/audit-security` reads the latest 100 tenant-scoped `SecureAuditRecord` rows and derives its 24-hour blocked/failure counts from those records; it contains no posture score or simulated event.
+- The page is restricted to current organization owners/administrators and omits structured event detail that could contain operational context.
+- Active organization desktop sessions are listed without bearer tokens or device fingerprints.
+- Administrative revocation is same-origin and role protected, organization scoped, concurrency safe, and commits the revocation together with its append-only audit record in one database transaction.
+- Personal account session controls remain scoped to the signed-in user; organization-wide authority exists only in Axiom Control.
+
+Verification: TypeScript and 12 focused control-plane approval, AI-policy, session RBAC, origin, tenant-scope, concurrency, and audit tests pass.
+
+### Durable autonomous workflow foundation
+
+- Backend-owned workflow runs now persist objective, scoped organization, autonomy level, checkpoint state, attempt budget, pause reason, approval binding, cancellation, and terminal state.
+- A short worker lease plus monotonically increasing compare-and-set version prevents concurrent workers or replayed checkpoints from advancing the same state.
+- Every accepted transition writes a uniquely sequenced append-only workflow event in the same database transaction.
+- Approval resume fails closed unless the referenced `AgentActionProposal` belongs to the same organization, is explicitly approved, remains unexpired, and has an integrity digest.
+- Cancellation immediately invalidates an in-flight worker version. Expired leases are recovered into a bounded retry or an honest terminal failure; recovery never executes the underlying operation itself.
+- The pre-existing workflow executors remain disconnected because they are coordination scaffolding, not verified production adapters. This foundation does not claim autonomous cloud or repository execution yet.
+
+Verification: Prisma generation, TypeScript, and 5 focused lease, replay, approval, cancellation, and conflict tests pass.
+
 ## Next phases
 
 1. Implement real Stripe test-mode credit checkout, signed fulfillment/refund reversal, and atomic AI credit reservation/settlement.
-2. Verified audit/security search and session controls.
-3. Durable autonomous workflow persistence, leasing, pause/resume, retry, cancellation, and recovery.
-4. Migrate Airflow credential administration to web only after parity tests; retain desktop operational DAG controls.
+2. Add paginated audit search/export controls backed by the existing tenant-scoped export pipeline.
+3. Connect durable workflow state only to verified repository/cloud adapters, then expose tenant-scoped monitoring and cancellation controls.
+4. Add a trusted scheduler/worker wake-up path and operational recovery runbook.
+5. Migrate Airflow credential administration to web only after parity tests; retain desktop operational DAG controls.
 
 No live billing activation, production deployment, desktop release, or merge is authorized by this record.
