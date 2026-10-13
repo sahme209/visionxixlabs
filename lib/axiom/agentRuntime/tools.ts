@@ -135,8 +135,10 @@ export function findTool(name: string): ToolDefinition | undefined {
   return TOOL_REGISTRY.find((t) => t.name === name);
 }
 
-export function toolCatalogPrompt(): string {
+export function toolCatalogPrompt(allowedTools?: readonly string[]): string {
+  const allowed = allowedTools ? new Set(allowedTools) : null;
   return TOOL_REGISTRY
+    .filter((tool) => !allowed || allowed.has(tool.name))
     .map((t) => `- ${t.name} (risk: ${t.riskLevel}): ${t.description}\n  args: ${t.argsSchemaHint}`)
     .join("\n");
 }

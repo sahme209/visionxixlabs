@@ -2,9 +2,11 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const mocks = vi.hoisted(() => ({
   resolveGovernedAiCall: vi.fn(),
+  readWorkspaceAgentIdentity: vi.fn(),
 }));
 
 vi.mock("../governedAiCall", () => ({ resolveGovernedAiCall: mocks.resolveGovernedAiCall }));
+vi.mock("../agentIdentityPolicy", () => ({ readWorkspaceAgentIdentity: mocks.readWorkspaceAgentIdentity }));
 
 import { runDecisionLoop } from "../decisionLoop";
 
@@ -18,6 +20,33 @@ const noopProdCheck = async () => false;
 describe("runDecisionLoop", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    mocks.readWorkspaceAgentIdentity.mockResolvedValue({
+      organizationId: "o", displayName: "Axiom Agent", enabled: true,
+      allowedTools: ["list_environments", "read_github_file", "commit_github_file", "open_github_pull_request", "trigger_aws_deploy"],
+      updatedAt: "2026-10-13T00:00:00.000Z", updatedBy: "admin",
+    });
+  });
+
+  it("fails closed before inference when the workspace Agent is disabled", async () => {
+    mocks.readWorkspaceAgentIdentity.mockResolvedValue({ enabled: false, allowedTools: [] });
+    const result = await runDecisionLoop({
+      organizationId: "o", correlationId: "c", transcript: [{ role: "user", content: "deploy it" }],
+      executeReadOnlyTool: noopReadOnly, isProdEnvironmentTarget: noopProdCheck,
+    });
+    expect(result).toEqual({ kind: "error", error: "workspace_agent_disabled" });
+    expect(mocks.resolveGovernedAiCall).not.toHaveBeenCalled();
+  });
+
+  it("blocks a registered tool omitted from the Agent identity allowlist", async () => {
+    mocks.readWorkspaceAgentIdentity.mockResolvedValue({ enabled: true, allowedTools: ["list_environments"] });
+    mocks.resolveGovernedAiCall.mockResolvedValue(governed(async () => ({
+      action: "call_tool", message: "Commit it.", toolName: "commit_github_file", args: {},
+    })));
+    const result = await runDecisionLoop({
+      organizationId: "o", correlationId: "c", transcript: [{ role: "user", content: "commit it" }],
+      executeReadOnlyTool: noopReadOnly, isProdEnvironmentTarget: noopProdCheck,
+    });
+    expect(result).toEqual(expect.objectContaining({ kind: "error", error: "agent_tool_not_allowed" }));
   });
 
   it("returns the governed-AI error directly when the workspace hasn't enabled AI", async () => {

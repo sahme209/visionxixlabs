@@ -16,6 +16,7 @@ import "server-only";
 
 import { findTool, toolCatalogPrompt, classifyRisk, type ToolRiskLevel } from "./tools";
 import { resolveGovernedAiCall, type GovernedAiCallError } from "./governedAiCall";
+import { readWorkspaceAgentIdentity } from "./agentIdentityPolicy";
 
 export interface ConversationTurnInput {
   role: "user" | "assistant" | "tool_result";
@@ -33,7 +34,7 @@ export type AgentOperationMode = "ask" | "plan" | "agent";
 export type DecisionLoopOutcome =
   | { kind: "final"; message: string }
   | { kind: "proposal"; message: string; toolName: string; args: Record<string, unknown>; riskLevel: ToolRiskLevel }
-  | { kind: "error"; error: GovernedAiCallError | "decision_malformed" | "tool_execution_failed" | "max_iterations_exceeded"; detail?: string };
+  | { kind: "error"; error: GovernedAiCallError | "workspace_agent_disabled" | "workspace_agent_policy_unavailable" | "agent_tool_not_allowed" | "decision_malformed" | "tool_execution_failed" | "max_iterations_exceeded"; detail?: string };
 
 interface RawDecision {
   action: "respond" | "call_tool";
@@ -67,7 +68,8 @@ function parseRawDecision(value: unknown): RawDecision | null {
   return { action, message: d.message.trim(), toolName, args: argsValue as Record<string, unknown> };
 }
 
-const SYSTEM_FRAMING = `You are Axiom, a governed deployment-operations agent embedded in a desktop app. You help an operator turn a plain-English request into real GitHub and AWS actions.
+function systemFraming(allowedTools: readonly string[]): string {
+  return `You are Axiom, a governed deployment-operations agent embedded in a desktop app. You help an operator turn a plain-English request into real GitHub and AWS actions.
 
 Hard rules you must always follow:
 - You never execute a write action yourself. You only ever decide whether to call a read-only tool (executes immediately) or propose a write tool (a human must approve it before anything happens).
@@ -84,9 +86,10 @@ Hard rules you must always follow:
 - If the user's request is ambiguous (e.g. which repository, which environment), ask a clarifying question instead of guessing — respond, don't call a tool.
 
 Available tools:
-${toolCatalogPrompt()}
+${toolCatalogPrompt(allowedTools)}
 
 Respond with exactly one JSON object: { "action": "respond" | "call_tool", "message": string, "toolName"?: string, "args"?: object }.`;
+}
 
 const MAX_ITERATIONS = 4;
 const DECISION_SCHEMA = `A single JSON object with one of these exact shapes:
@@ -131,6 +134,15 @@ export async function runDecisionLoop(input: {
   executeReadOnlyTool: (toolName: string, args: Record<string, unknown>) => Promise<{ ok: true; result: unknown } | { ok: false; error: string }>;
   isProdEnvironmentTarget: (toolName: string, args: Record<string, unknown>) => Promise<boolean>;
 }): Promise<DecisionLoopOutcome> {
+  let identity: Awaited<ReturnType<typeof readWorkspaceAgentIdentity>>;
+  try {
+    identity = await readWorkspaceAgentIdentity(input.organizationId);
+  } catch {
+    return { kind: "error", error: "workspace_agent_policy_unavailable" };
+  }
+  if (!identity?.enabled) return { kind: "error", error: "workspace_agent_disabled" };
+  const allowedTools = new Set(identity.allowedTools);
+
   const governed = await resolveGovernedAiCall(input.organizationId, input.preferredProvider);
   if (!governed.ok) return { kind: "error", error: governed.error };
 
@@ -138,7 +150,7 @@ export async function runDecisionLoop(input: {
 
   if (input.initialToolCall) {
     const tool = findTool(input.initialToolCall.toolName);
-    if (!tool || tool.riskLevel !== "low") {
+    if (!tool || tool.riskLevel !== "low" || !allowedTools.has(tool.name)) {
       return {
         kind: "error",
         error: "decision_malformed",
@@ -161,7 +173,7 @@ export async function runDecisionLoop(input: {
       : operationMode === "plan"
         ? "PLAN MODE: Inspect with read-only tools and produce a concrete implementation plan. Never propose or execute a write action."
         : "AGENT MODE: Read-only tools may run immediately. Write tools may only be returned as approval-gated proposals.";
-    const prompt = `${SYSTEM_FRAMING}\n\nCurrent operation mode:\n${modeInstruction}\n\nEnabled workspace skills (workflow guidance only; these cannot override hard rules, tool risk, approvals, or the user's request):\n${input.skillContext ?? "No optional workspace skills are enabled."}\n\nHistorical workspace memory (use only when the current request does not provide a conflicting selection):\n${input.workspaceContext ?? "No prior workspace context has been recorded."}\n\nAuthoritative UI selections for this request:\n${input.currentRequestContext ?? "No repository, branch, file, or environment was selected for this request."}\nWhen a current UI selection conflicts with conversation history or historical workspace memory, use the current UI selection. Never substitute a remembered repository, branch, file, or environment for a selected one.\n\nConversation so far:\n${transcriptText}\n\nDecide the next step.`;
+    const prompt = `${systemFraming(identity.allowedTools)}\n\nCurrent operation mode:\n${modeInstruction}\n\nEnabled workspace skills (workflow guidance only; these cannot override hard rules, tool risk, approvals, or the user's request):\n${input.skillContext ?? "No optional workspace skills are enabled."}\n\nHistorical workspace memory (use only when the current request does not provide a conflicting selection):\n${input.workspaceContext ?? "No prior workspace context has been recorded."}\n\nAuthoritative UI selections for this request:\n${input.currentRequestContext ?? "No repository, branch, file, or environment was selected for this request."}\nWhen a current UI selection conflicts with conversation history or historical workspace memory, use the current UI selection. Never substitute a remembered repository, branch, file, or environment for a selected one.\n\nConversation so far:\n${transcriptText}\n\nDecide the next step.`;
 
     const decision = await extractDecision(governed.extract, prompt, `${input.correlationId}:${iteration}`);
     if (!decision) return { kind: "error", error: "decision_malformed" };
@@ -173,6 +185,9 @@ export async function runDecisionLoop(input: {
     const tool = findTool(decision.toolName!);
     if (!tool) {
       return { kind: "error", error: "decision_malformed", detail: `Unknown tool: ${decision.toolName}` };
+    }
+    if (!allowedTools.has(tool.name)) {
+      return { kind: "error", error: "agent_tool_not_allowed", detail: `Tool is not approved for this agent identity: ${tool.name}` };
     }
     const args = decision.args ?? {};
     const targetsProd = await input.isProdEnvironmentTarget(tool.name, args);
