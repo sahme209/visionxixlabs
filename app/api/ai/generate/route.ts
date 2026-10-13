@@ -130,16 +130,18 @@ export async function POST(req: NextRequest) {
     // Persist only provider-reported usage. Prompts, system instructions,
     // credentials, and provider account data never enter the usage event.
     if (result.usage) {
-      await recordAIUsageEvent({
+      const usageWrite = await recordAIUsageEvent({
         organizationId: ctx.organizationId,
         provider: result.provider,
         model: result.model,
         inputTokens: result.usage.promptTokens ?? 0,
         outputTokens: result.usage.completionTokens ?? 0,
+        externalUsageId: result.gatewayGenerationId,
         triggeredBy: ctx.userId,
         correlationId,
         metadata: { route: "api/ai/generate" },
       });
+      if (!usageWrite.recorded) throw new Error("ai_usage_meter_unavailable");
     }
     return apiOk(result, {
       correlationId,

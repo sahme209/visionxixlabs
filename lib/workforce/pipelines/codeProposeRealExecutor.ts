@@ -188,6 +188,7 @@ export const codeProposeRealExecutor: StageExecutorFn = async (ctx) => {
       correlationId: ctx.correlationId,
     });
     const text = response.text;
+    const gatewayResponses = [response];
 
     if (text.length === 0) {
       return {
@@ -248,6 +249,7 @@ export const codeProposeRealExecutor: StageExecutorFn = async (ctx) => {
           temperature: 0.2,
           correlationId: ctx.correlationId,
         });
+        gatewayResponses.push(refFinal);
         const refText = refFinal.text;
 
         // Add the refinement usage on top so the cost is honest.
@@ -309,13 +311,16 @@ export const codeProposeRealExecutor: StageExecutorFn = async (ctx) => {
     // 6. Cost attribution — Phase 382. Write a UsageEvent so the meter
     //    dashboards reflect this invocation (now includes refinement
     //    tokens when the second call fired).
-    const usageWrite = await recordAIUsageEvent({
+    // Each Gateway generation is recorded separately because its authoritative
+    // cost is reconciled by generation id. Combining refinement calls would
+    // make provider spend impossible to settle idempotently.
+    const usageWrites = await Promise.all(gatewayResponses.map((generation, generationIndex) => recordAIUsageEvent({
       organizationId: ctx.organizationId,
       provider: "vercel_gateway",
-      model: resolvedModel,
-      inputTokens: finalUsageInput,
-      outputTokens: finalUsageOutput,
-      cachedReadTokens: finalCacheRead,
+      model: generation.model,
+      inputTokens: generation.usage?.promptTokens ?? 0,
+      outputTokens: generation.usage?.completionTokens ?? 0,
+      externalUsageId: generation.gatewayGenerationId,
       triggeredBy: ctx.triggeredBy,
       correlationId: ctx.correlationId,
       metadata: {
@@ -323,25 +328,38 @@ export const codeProposeRealExecutor: StageExecutorFn = async (ctx) => {
         stageRunId: ctx.stageRunId,
         runId: ctx.runId,
         pipelineId: ctx.pipelineId,
+        generationIndex,
         refinementAttempts,
         refinementDecision,
       },
-    });
+    })));
+    const usageRecorded = usageWrites.every((write) => write.recorded);
+    const usageEventIds = usageWrites.flatMap((write) => write.usageEventId ? [write.usageEventId] : []);
+    const usageReason = usageWrites.find((write) => !write.recorded)?.reason ?? null;
 
-    if (usageWrite.recorded) {
+    if (!usageRecorded) {
+      return {
+        ok: false,
+        error: "AI Gateway usage could not be reserved for settlement.",
+        detail: { stageId: ctx.stageId, reason: usageReason },
+      };
+    }
+
+    if (usageEventIds.length > 0) {
       try {
         await recordAudit({
           organizationId: idFactory.organization(ctx.organizationId),
           actorKind: "system",
           action: "billing.usage_recorded",
           outcome: "success",
-          entityRef: `usage_event:${usageWrite.usageEventId}`,
+          entityRef: `usage_event:${usageEventIds[0]}`,
           correlationId: idFactory.correlation(ctx.correlationId),
           source: "live",
           detail: {
             provider: "vercel_gateway",
             model: resolvedModel,
-            costCents: usageWrite.cost?.totalCents ?? 0,
+            usageEventIds,
+            billingStatus: "pending_gateway_settlement",
             inputTokens: finalUsageInput,
             outputTokens: finalUsageOutput,
           },
@@ -366,9 +384,10 @@ export const codeProposeRealExecutor: StageExecutorFn = async (ctx) => {
           cache_creation_input_tokens: finalCacheCreate,
         },
         cost: {
-          totalCents: usageWrite.cost?.totalCents ?? null,
-          recorded: usageWrite.recorded,
-          reason: usageWrite.reason ?? null,
+          totalCents: null,
+          recorded: usageRecorded,
+          reason: usageReason,
+          pendingSettlement: usageWrites.some((write) => write.pendingSettlement),
         },
         creditPoolThreshold: preflight.threshold,
         stopReason: finalStopReason,

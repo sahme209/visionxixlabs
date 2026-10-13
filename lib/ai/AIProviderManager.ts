@@ -19,6 +19,7 @@ import { PROVIDER_PRIORITY } from "./AIModelRegistry";
 import { runWithFallback } from "./AIFallbackHandler";
 import { recordUsage } from "./AIUsageLogger";
 import { redact } from "@/lib/security/redaction";
+import { recordAIUsageEvent } from "@/lib/billing/recordAIUsageEvent";
 import { VercelGatewayProvider } from "./providers/VercelGatewayProvider";
 
 let SINGLETON: AIProviderManager | null = null;
@@ -155,6 +156,27 @@ export class AIProviderManager {
       (p) => p.extractStructuredData<T>(safeText, schemaHint, this.optionsForProvider(p, options)),
       { task: "extract_structured_data", correlationId: options?.correlationId, organizationId: options?.organizationId },
     );
+    if (options?.organizationId && out.result.provider === "vercel_gateway") {
+      const usage = out.result.usage;
+      const recorded = await recordAIUsageEvent({
+        organizationId: options.organizationId,
+        provider: out.result.provider,
+        model: out.result.model,
+        inputTokens: usage?.promptTokens ?? 0,
+        outputTokens: usage?.completionTokens ?? 0,
+        externalUsageId: out.result.gatewayGenerationId,
+        correlationId: options.correlationId,
+        metadata: { task: "extract_structured_data" },
+      });
+      if (!recorded.recorded) {
+        throw new AIProviderError({
+          provider: "vercel_gateway",
+          kind: "bad_response",
+          message: "AI Gateway usage could not be reserved for settlement",
+          retryable: true,
+        });
+      }
+    }
     return out.result;
   }
 

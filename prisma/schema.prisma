@@ -1173,6 +1173,8 @@ model AIProviderRate {
 model UsageEvent {
   id              String   @id @default(cuid())
   organizationId  String
+  /// Provider request id used for idempotent cost reconciliation.
+  externalUsageId String?  @unique
   /// "ai_invocation" | "agent_run" | "automation_run" | "connector_sync"
   /// | "cloud_scan" | "report_generated" | "monitoring_event" | "desktop_task"
   eventKind       String
@@ -1183,6 +1185,11 @@ model UsageEvent {
   cachedReadTokens Int     @default(0)
   /// Cost attributed to VisionXIXLabs in cents (USD).
   costCents       Int      @default(0)
+  /// Customer debit after the configured platform margin.
+  billedCents     Int      @default(0)
+  /// pending | settled | failed. Gateway events remain pending until
+  /// the provider's authoritative generation-cost record is available.
+  billingStatus   String   @default("settled")
   triggeredBy     String?
   aiInvocationId  String?
   correlationId   String?
@@ -1192,6 +1199,7 @@ model UsageEvent {
   @@index([organizationId, createdAt])
   @@index([organizationId, eventKind, createdAt])
   @@index([correlationId])
+  @@index([billingStatus, createdAt])
 }
 
 // ---------------------------------------------------------------------------

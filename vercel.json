@@ -39,6 +39,10 @@
       "schedule": "20 0 * * *"
     },
     {
+      "path": "/api/cron/reconcile-ai-gateway-usage",
+      "schedule": "*/5 * * * *"
+    },
+    {
       "path": "/api/cron/check-billing-alerts",
       "schedule": "25 0 * * *"
     },
