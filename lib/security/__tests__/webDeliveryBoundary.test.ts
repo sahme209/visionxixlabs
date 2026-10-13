@@ -26,6 +26,13 @@ describe("website delivery boundary", () => {
         expect(response.headers.get("location")).toBeNull();
     });
 
+    it("allows the authenticated governance namespace to reach its own server-side auth gate", () => {
+        const response = proxy(request("/control"));
+
+        expect(response.status).toBe(200);
+        expect(response.headers.get("location")).toBeNull();
+    });
+
     it("keeps direct account creation bound to a desktop pairing request", () => {
         const response = proxy(request("/auth/signup"));
 
