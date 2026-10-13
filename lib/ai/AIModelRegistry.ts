@@ -24,6 +24,9 @@ export interface RegisteredModel {
 }
 
 const MODELS: Record<AIProviderName, RegisteredModel[]> = {
+  vercel_gateway: [
+    { id: "service-default", label: "AI Gateway · service default", tier: "preferred", family: "other", freeNote: "Secure service-managed routing" },
+  ],
   openai: [
     { id: "gpt-4o", label: "GPT-4o", tier: "preferred", family: "openai", freeNote: "Service-managed OpenAI access" },
     { id: "gpt-4o-mini", label: "GPT-4o mini", tier: "fast", family: "openai", freeNote: "Service-managed OpenAI access" },
@@ -114,6 +117,5 @@ export function isKnownModel(provider: AIProviderName, modelId: string): boolean
 
 /** Provider declaration order = fallback priority (ties broken by index). */
 export const PROVIDER_PRIORITY: AIProviderName[] = [
-  "openai", "anthropic", "xai", "github_models", "ollama", "lm_studio", "groq",
-  "hugging_face", "openrouter", "gemini", "cloudflare", "mock",
+  "vercel_gateway",
 ];

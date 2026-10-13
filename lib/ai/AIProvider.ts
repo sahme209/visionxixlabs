@@ -17,6 +17,7 @@
  */
 
 export type AIProviderName =
+  | "vercel_gateway"
   | "openai"
   | "anthropic"
   | "xai"
@@ -31,7 +32,7 @@ export type AIProviderName =
   | "mock";
 
 export const AI_PROVIDER_NAMES = [
-  "openai", "anthropic", "xai", "github_models", "ollama", "lm_studio", "groq", "hugging_face",
+  "vercel_gateway", "openai", "anthropic", "xai", "github_models", "ollama", "lm_studio", "groq", "hugging_face",
   "openrouter", "gemini", "cloudflare", "mock",
 ] as const satisfies readonly AIProviderName[];
 

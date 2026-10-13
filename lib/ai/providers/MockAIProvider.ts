@@ -1,9 +1,8 @@
 /**
- * MockAIProvider — deterministic last-resort fallback.
+ * MockAIProvider — deterministic test fixture.
  *
- * No network. No keys. Always succeeds. Used when every real provider
- * is unconfigured / unavailable, so callers never see a hard failure
- * just because the operator hasn't wired GITHUB_TOKEN yet.
+ * No network. No keys. Always succeeds. Production runtime code does not
+ * construct or advertise this provider; it exists only for isolated tests.
  *
  * The text it produces is intentionally honest ("MOCK") so an operator
  * never confuses mock output with a real model's response.

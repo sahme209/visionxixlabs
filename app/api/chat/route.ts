@@ -25,7 +25,7 @@ export async function POST(req: NextRequest): Promise<Response> {
     );
   }
   try {
-    if (!process.env.OPENAI_API_KEY?.trim() && !process.env.GEMINI_API_KEY?.trim()) {
+    if ((!process.env.AI_GATEWAY_API_KEY?.trim() && !process.env.VERCEL_OIDC_TOKEN?.trim()) || !process.env.AI_GATEWAY_MODEL?.trim()) {
       return NextResponse.json({ error: "AI service unavailable." }, { status: 503 });
     }
 

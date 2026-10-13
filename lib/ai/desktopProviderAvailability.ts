@@ -29,22 +29,5 @@ export function listDesktopAIProviderAvailability(): DesktopAIProviderAvailabili
       defaultModel: provider.defaultModel,
     }));
 
-  const orchestrated: DesktopAIProviderAvailability[] = [
-    {
-      provider: "openai",
-      configured: Boolean(process.env.OPENAI_API_KEY?.trim()),
-      defaultModel: process.env.OPENAI_MODEL?.trim() || process.env.MODEL_NAME?.trim() || "gpt-4o",
-    },
-    {
-      provider: "anthropic",
-      configured: Boolean(process.env.ANTHROPIC_API_KEY?.trim()),
-      defaultModel: process.env.ANTHROPIC_MODEL?.trim() || "claude-sonnet-4-20250514",
-    },
-  ];
-
-  const byProvider = new Map<string, DesktopAIProviderAvailability>();
-  for (const provider of [...orchestrated, ...managed]) {
-    byProvider.set(provider.provider, provider);
-  }
-  return [...byProvider.values()];
+  return managed;
 }

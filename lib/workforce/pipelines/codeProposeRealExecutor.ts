@@ -1,70 +1,28 @@
 /**
- * Real Anthropic-backed code_propose executor — Phase 380.
+ * Real Vercel AI Gateway-backed code_propose executor.
  *
- * Replaces the dry-run patch proposer with a real call to Claude. The
- * SDK is mandatory; no provider-neutral shims. Architecture:
- *
- *   - Model: claude-sonnet-4-6 (operator's choice for coding workloads —
- *     strong on code, fast turnaround, 64K max output tokens).
- *   - Thinking: adaptive (Claude decides when and how much to think;
- *     interleaved thinking is automatic, no beta header needed).
- *   - Effort: high (intelligence-sensitive coding work; Sonnet 4.6 does
- *     not support "max").
- *   - Streaming: required at this max_tokens — non-streaming hits the
- *     SDK's HTTP-timeout guard. We use stream.finalMessage() to collect
- *     the complete response without hand-rolling event handlers.
- *   - Prompt caching: cache_control: ephemeral on the system block.
- *     System prompt is frozen and identical across every coding task
- *     in the workspace; cache reads should fire on every request after
- *     the first.
- *
- * Graceful fallback: when ANTHROPIC_API_KEY is not set, the executor
- * returns the dry-run summary instead of failing. This keeps local
- * development and CI usable without a key. Operator can flip the live
- * path on by exporting the key — no code change.
- *
- * Typed exceptions: Anthropic.RateLimitError, Anthropic.APIError, etc.
- * No string matching on error messages.
+ * Repository proposals use the workspace-selected Gateway model and fail
+ * closed when Gateway, policy, metadata, or credits are unavailable.
+ * No direct model-provider credential is accepted by this workflow.
  */
 
 import "server-only";
 
-import Anthropic from "@anthropic-ai/sdk";
-import {
-  buildCodeProposeMessages,
-  CODE_PROPOSE_SYSTEM_PROMPT,
-} from "./buildCodeProposeMessages";
+import { buildCodeProposeMessages } from "./buildCodeProposeMessages";
 import type { StageExecutorFn, StageExecutorResult } from "./stageExecutorRegistry";
 import { checkWorkspaceAICredits } from "@/lib/billing/checkWorkspaceAICredits";
 import { recordAIUsageEvent } from "@/lib/billing/recordAIUsageEvent";
 import { record as recordAudit } from "@/lib/audit/secureAudit";
 import { id as idFactory } from "@/lib/domain/ids";
-import { routeAITask } from "@/lib/ai/providerRouter";
 import { getAIProviderManager } from "@/lib/ai/AIProviderManager";
 import { loadWorkspaceAIProviderPolicyWithState, resolveWorkspaceAIProviderPolicy } from "@/lib/ai/workspaceProviderPolicy";
 import { prisma } from "@/lib/db";
 import { validateProposal } from "./validateProposal";
 import { planRefinementAction } from "./planRefinementAction";
 import { buildRefinementMessages } from "./buildRefinementMessages";
-import { pickCostAwareModel } from "@/lib/ai/pickCostAwareModel";
-import { resolveRunBudgetCap } from "./resolveRunBudgetCap";
-import { loadBudgetConfig } from "./budgetConfigStore";
 
-/** Route via the provider router (Phase 383) — single source of truth for which model the code-propose stage uses. */
-const PROPOSE_ROUTE = routeAITask("code_propose");
-const CODE_PROPOSE_DEFAULT_MODEL = PROPOSE_ROUTE.model;
-const CODE_PROPOSE_EFFORT = PROPOSE_ROUTE.effort;
-
-/** Cap on output tokens. Sonnet 4.6 maxes at 64K with streaming. */
+/** Keep responses bounded even when the selected Gateway model supports more. */
 const CODE_PROPOSE_MAX_TOKENS = 32_000;
-
-/**
- * Anticipated cost of a single code_propose call at the default model
- * (claude-sonnet-4-6). Based on observed averages: ~10K input + ~3K
- * output → ~30¢ input + ~45¢ output ≈ 75¢. We round up to 100¢ to give
- * the cost-aware kernel (Phase 403) a conservative-but-honest estimate.
- */
-const CODE_PROPOSE_ANTICIPATED_CENTS = 100;
 
 interface CodeProposeRunMetadata {
   instruction?: unknown;
@@ -90,32 +48,20 @@ function readMetadata(raw: Record<string, unknown>): {
   };
 }
 
-function dryRunFallback(reason: string, ctx: { stageId: string }): StageExecutorResult {
-  return {
-    ok: true,
-    summary: `[dry-run · ${reason}] would propose a minimal patch.`,
-    detail: {
-      stageId: ctx.stageId,
-      dryRun: true,
-      fallbackReason: reason,
-      systemPromptBytes: CODE_PROPOSE_SYSTEM_PROMPT.length,
-    },
-  };
-}
-
 export const codeProposeRealExecutor: StageExecutorFn = async (ctx) => {
-  // 1. ANTHROPIC_API_KEY guard — graceful dry-run fallback.
-  if (!process.env.ANTHROPIC_API_KEY) {
-    return dryRunFallback("no_api_key", ctx);
+  // Missing Gateway configuration is an explicit failure. Never fabricate a
+  // dry-run AI response for a customer workflow.
+  if (!getAIProviderManager().isServiceProviderAvailable("vercel_gateway")) {
+    return { ok: false, error: "Vercel AI Gateway is not configured.", detail: { stageId: ctx.stageId, gatewayUnavailable: true } };
   }
 
   // 2. Validate run metadata. Coding tasks created via /api/workforce/coding-tasks
   //    populate { instruction, repoRef, branchHint } — see lib/workforce/pipelines/
   //    parseCodingTaskBody.ts. If a different caller starts the ai_coding pipeline
-  //    without those fields, fall back to dry-run.
+  //    without those fields, fail instead of inventing a proposal.
   const meta = readMetadata(ctx.runMetadata);
   if (!meta) {
-    return dryRunFallback("missing_metadata", ctx);
+    return { ok: false, error: "Repository proposal metadata is incomplete.", detail: { stageId: ctx.stageId, missingMetadata: true } };
   }
 
   // 3. Pre-flight AI credit gate — Phase 382. Block hard_stop plans whose
@@ -180,66 +126,7 @@ export const codeProposeRealExecutor: StageExecutorFn = async (ctx) => {
     repoContext: priorRepoContext,
   });
 
-  // Phase 403: cost-aware model picker. Looks at cumulative spend on
-  // this run + resolved per-org cap to decide whether to downgrade the
-  // default Sonnet model to Haiku before firing what would otherwise
-  // push us over budget. Best-effort wrapped — any lookup failure
-  // falls back to the default model.
-  let modelToUse: string = CODE_PROPOSE_DEFAULT_MODEL;
-  let modelDecisionForAudit: ReturnType<typeof pickCostAwareModel> | null = null;
-  try {
-    const spentAgg = await prisma.pipelineStageRun.aggregate({
-      where: { runId: ctx.runId },
-      _sum: { costCents: true },
-    });
-    const orgConfig = await loadBudgetConfig(ctx.organizationId);
-    const cap = resolveRunBudgetCap({
-      pipelineId: ctx.pipelineId,
-      runMetadata: ctx.runMetadata,
-      orgConfig,
-    });
-    modelDecisionForAudit = pickCostAwareModel({
-      defaultModel: CODE_PROPOSE_DEFAULT_MODEL,
-      spentCents: spentAgg._sum.costCents ?? 0,
-      capCents: cap.maxCents,
-      anticipatedCostCentsAtDefault: CODE_PROPOSE_ANTICIPATED_CENTS,
-    });
-    modelToUse = modelDecisionForAudit.model;
-    if (modelDecisionForAudit.kind === "downgrade_to_cheaper") {
-      try {
-        await recordAudit({
-          organizationId: idFactory.organization(ctx.organizationId),
-          actorKind: "system",
-          action: "workforce.model_downgraded",
-          outcome: "success",
-          entityRef: `pipeline_stage_run:${ctx.stageRunId}`,
-          correlationId: idFactory.correlation(ctx.correlationId),
-          source: "live",
-          detail: {
-            stageId: ctx.stageId,
-            defaultModel: CODE_PROPOSE_DEFAULT_MODEL,
-            chosenModel: modelToUse,
-            spentCents: spentAgg._sum.costCents ?? 0,
-            capCents: cap.maxCents,
-            anticipatedCostCentsAtDefault: CODE_PROPOSE_ANTICIPATED_CENTS,
-            estimatedCostCentsAtChosen: modelDecisionForAudit.estimatedCostCents,
-            savedCents: modelDecisionForAudit.savedCents,
-            rationale: modelDecisionForAudit.rationale,
-            capSource: cap.source,
-          },
-        });
-      } catch { /* best-effort */ }
-    }
-  } catch { /* fail-open with default model */ }
-
-  // 3.7. Workspace AI provider policy gate. This executor calls Anthropic
-  // directly with the mandatory SDK (see file header — no provider-neutral
-  // shim), so unlike call sites routed through the AIProviderManager, no
-  // upstream layer enforces the workspace's own enabled/allowed-provider
-  // policy for it. A workspace that disables AI, or disallows Anthropic
-  // specifically, must be able to stop this stage before it writes code
-  // changes against the tenant's repo. A policy read failure fails closed
-  // — an unreadable policy is never treated as "no restriction."
+  // Workspace policy is resolved before a prompt leaves the service.
   const policyState = await loadWorkspaceAIProviderPolicyWithState(ctx.organizationId);
   if (policyState.storageState !== "ready") {
     try {
@@ -266,7 +153,7 @@ export const codeProposeRealExecutor: StageExecutorFn = async (ctx) => {
       .filter((provider) => provider.configured && provider.provider !== "mock")
       .map((provider) => provider.provider),
   });
-  if (!workspacePolicy.enabled || !workspacePolicy.allowedProviders.includes("anthropic")) {
+  if (!workspacePolicy.enabled || !workspacePolicy.allowedProviders.includes("vercel_gateway")) {
     try {
       await recordAudit({
         organizationId: idFactory.organization(ctx.organizationId),
@@ -276,7 +163,7 @@ export const codeProposeRealExecutor: StageExecutorFn = async (ctx) => {
         entityRef: `coding_task:${ctx.runId}`,
         correlationId: idFactory.correlation(ctx.correlationId),
         source: "live",
-        detail: { stageId: ctx.stageId, provider: "anthropic", workspaceAiEnabled: workspacePolicy.enabled },
+        detail: { stageId: ctx.stageId, provider: "vercel_gateway", workspaceAiEnabled: workspacePolicy.enabled },
       });
     } catch { /* best-effort */ }
     return {
@@ -286,29 +173,21 @@ export const codeProposeRealExecutor: StageExecutorFn = async (ctx) => {
     };
   }
 
-  const client = new Anthropic();
-
   try {
-    // 4. Stream — required at this max_tokens to dodge the SDK timeout guard.
-    //    finalMessage() resolves with the complete Message; no manual event wiring.
-    const stream = client.messages.stream({
-      model: modelToUse,
-      max_tokens: CODE_PROPOSE_MAX_TOKENS,
-      system: built.system as unknown as Anthropic.TextBlockParam[],
-      messages: built.messages as unknown as Anthropic.MessageParam[],
-      thinking: { type: "adaptive" },
-      // CODE_PROPOSE_EFFORT comes from the AI router (Phase 383). The router's
-      // AIEffort union includes "xhigh" (Opus 4.7 only) which the SDK doesn't
-      // accept on Sonnet — cast narrowly since this route is always "high".
-      output_config: { effort: CODE_PROPOSE_EFFORT as "low" | "medium" | "high" | "max" },
+    const manager = getAIProviderManager();
+    const selectedGatewayModel = workspacePolicy.modelSelections.vercel_gateway;
+    const response = await manager.generateText(built.messages.map((message) => message.content).join("\n\n"), {
+      organizationId: ctx.organizationId,
+      only: "vercel_gateway",
+      allowedProviders: workspacePolicy.allowedProviders,
+      modelSelections: workspacePolicy.modelSelections,
+      model: selectedGatewayModel === "service-default" ? undefined : selectedGatewayModel,
+      system: built.system.map((block) => block.text).join("\n"),
+      maxTokens: CODE_PROPOSE_MAX_TOKENS,
+      temperature: 0.2,
+      correlationId: ctx.correlationId,
     });
-    const final = await stream.finalMessage();
-
-    // 5. Pluck the first text block. Thinking blocks may precede it; ignore them.
-    const text = final.content
-      .filter((b): b is Anthropic.TextBlock => b.type === "text")
-      .map((b) => b.text)
-      .join("\n");
+    const text = response.text;
 
     if (text.length === 0) {
       return {
@@ -316,25 +195,26 @@ export const codeProposeRealExecutor: StageExecutorFn = async (ctx) => {
         error: "Empty text response from Claude (only thinking blocks). Try increasing max_tokens or check stop_reason.",
         detail: {
           stageId: ctx.stageId,
-          stopReason: final.stop_reason ?? "unknown",
-          usage: final.usage,
+          stopReason: response.finishReason,
+          usage: response.usage,
         },
       };
     }
 
     // 5.5. Phase 390 — multi-turn refinement. Validate the diff locally;
     //      if it doesn't parse, give the AI ONE more shot with the parser
-    //      error as feedback. Bounded by Vercel's 60s ceiling (≤2 Anthropic
+    //      error as feedback. Bounded to at most two Gateway calls
     //      calls per stage). Apply-mismatch retries only happen when bases
     //      are pre-sampled (future phase wires this); for now we validate
     //      parse only — the PR-open stage (Phase 388) catches apply errors
     //      with its own retry path.
     let finalText = text;
-    let finalUsageInput = final.usage.input_tokens;
-    let finalUsageOutput = final.usage.output_tokens;
-    let finalCacheRead = final.usage.cache_read_input_tokens ?? 0;
-    let finalCacheCreate = final.usage.cache_creation_input_tokens ?? 0;
-    let finalStopReason = final.stop_reason ?? "unknown";
+    let finalUsageInput = response.usage?.promptTokens ?? 0;
+    let finalUsageOutput = response.usage?.completionTokens ?? 0;
+    const finalCacheRead = 0;
+    const finalCacheCreate = 0;
+    let finalStopReason = response.finishReason;
+    let resolvedModel = response.model;
     let refinementAttempts = 0;
     let refinementDecision: string | null = null;
 
@@ -357,26 +237,24 @@ export const codeProposeRealExecutor: StageExecutorFn = async (ctx) => {
           brokenPatchText: text,
           validation: initialValidation,
         });
-        const refStream = client.messages.stream({
-          model: modelToUse,
-          max_tokens: CODE_PROPOSE_MAX_TOKENS,
-          system: refinementBuilt.system as unknown as Anthropic.TextBlockParam[],
-          messages: refinementBuilt.messages as unknown as Anthropic.MessageParam[],
-          thinking: { type: "adaptive" },
-          output_config: { effort: CODE_PROPOSE_EFFORT as "low" | "medium" | "high" | "max" },
+        const refFinal = await manager.generateText(refinementBuilt.messages.map((message) => message.content).join("\n\n"), {
+          organizationId: ctx.organizationId,
+          only: "vercel_gateway",
+          allowedProviders: workspacePolicy.allowedProviders,
+          modelSelections: workspacePolicy.modelSelections,
+          model: selectedGatewayModel === "service-default" ? undefined : selectedGatewayModel,
+          system: refinementBuilt.system.map((block) => block.text).join("\n"),
+          maxTokens: CODE_PROPOSE_MAX_TOKENS,
+          temperature: 0.2,
+          correlationId: ctx.correlationId,
         });
-        const refFinal = await refStream.finalMessage();
-        const refText = refFinal.content
-          .filter((b): b is Anthropic.TextBlock => b.type === "text")
-          .map((b) => b.text)
-          .join("\n");
+        const refText = refFinal.text;
 
         // Add the refinement usage on top so the cost is honest.
-        finalUsageInput += refFinal.usage.input_tokens;
-        finalUsageOutput += refFinal.usage.output_tokens;
-        finalCacheRead += refFinal.usage.cache_read_input_tokens ?? 0;
-        finalCacheCreate += refFinal.usage.cache_creation_input_tokens ?? 0;
-        finalStopReason = refFinal.stop_reason ?? "unknown";
+        finalUsageInput += refFinal.usage?.promptTokens ?? 0;
+        finalUsageOutput += refFinal.usage?.completionTokens ?? 0;
+        finalStopReason = refFinal.finishReason;
+        resolvedModel = refFinal.model;
 
         // Validate the refined output too — only swap if it's actually better.
         const refinedValidation = validateProposal({ proposedPatchText: refText, sampledBases: [] });
@@ -400,8 +278,8 @@ export const codeProposeRealExecutor: StageExecutorFn = async (ctx) => {
               initialReason: initialDecision.kind,
               refinedParseOk: refinedValidation.parseOk,
               finalDecision: refinementDecision,
-              refinedInputTokens: refFinal.usage.input_tokens,
-              refinedOutputTokens: refFinal.usage.output_tokens,
+              refinedInputTokens: refFinal.usage?.promptTokens ?? 0,
+              refinedOutputTokens: refFinal.usage?.completionTokens ?? 0,
             },
           });
         } catch { /* best-effort */ }
@@ -433,8 +311,8 @@ export const codeProposeRealExecutor: StageExecutorFn = async (ctx) => {
     //    tokens when the second call fired).
     const usageWrite = await recordAIUsageEvent({
       organizationId: ctx.organizationId,
-      provider: "anthropic",
-      model: modelToUse,
+      provider: "vercel_gateway",
+      model: resolvedModel,
       inputTokens: finalUsageInput,
       outputTokens: finalUsageOutput,
       cachedReadTokens: finalCacheRead,
@@ -461,11 +339,11 @@ export const codeProposeRealExecutor: StageExecutorFn = async (ctx) => {
           correlationId: idFactory.correlation(ctx.correlationId),
           source: "live",
           detail: {
-            provider: "anthropic",
-            model: modelToUse,
+            provider: "vercel_gateway",
+            model: resolvedModel,
             costCents: usageWrite.cost?.totalCents ?? 0,
-            inputTokens: final.usage.input_tokens,
-            outputTokens: final.usage.output_tokens,
+            inputTokens: finalUsageInput,
+            outputTokens: finalUsageOutput,
           },
         });
       } catch { /* best-effort */ }
@@ -477,11 +355,7 @@ export const codeProposeRealExecutor: StageExecutorFn = async (ctx) => {
       detail: {
         stageId: ctx.stageId,
         dryRun: false,
-        model: modelToUse,
-        defaultModel: CODE_PROPOSE_DEFAULT_MODEL,
-        modelDecisionKind: modelDecisionForAudit?.kind ?? "use_default",
-        modelDecisionRationale: modelDecisionForAudit?.rationale,
-        effort: CODE_PROPOSE_EFFORT,
+        model: resolvedModel,
         proposedPatchText: finalText,
         refinementAttempts,
         refinementDecision,
@@ -501,29 +375,9 @@ export const codeProposeRealExecutor: StageExecutorFn = async (ctx) => {
       },
     };
   } catch (err) {
-    // 6. Typed exception classes — never string-match the message.
-    if (err instanceof Anthropic.AuthenticationError) {
-      // Invalid key isn't a transient failure — fall back to dry-run so the
-      // pipeline run still completes, with a clear reason recorded.
-      return dryRunFallback("invalid_api_key", ctx);
-    }
-    if (err instanceof Anthropic.RateLimitError) {
-      return {
-        ok: false,
-        error: `Anthropic rate-limited the request. Retry-After: ${err.headers?.get("retry-after") ?? "unknown"}.`,
-        detail: { stageId: ctx.stageId, status: err.status ?? 429 },
-      };
-    }
-    if (err instanceof Anthropic.APIError) {
-      return {
-        ok: false,
-        error: `Anthropic API error ${err.status ?? "unknown"}: ${err.message}`,
-        detail: { stageId: ctx.stageId, status: err.status ?? null },
-      };
-    }
     return {
       ok: false,
-      error: err instanceof Error ? err.message : "Unknown propose error.",
+      error: err instanceof Error ? err.message : "AI Gateway code proposal failed.",
       detail: { stageId: ctx.stageId },
     };
   }

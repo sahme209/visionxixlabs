@@ -1,7 +1,7 @@
 /**
  * Hallucination + brand-safety pass.
  *
- * Secondary Claude call that scores a draft 0..1 on "would a careful
+ * Independent Vercel AI Gateway call that scores a draft 0..1 on "would a careful
  * brand manager approve this?" — independent of the generator. Catches:
  *   - feature claims for things we haven't shipped
  *   - overpromises like "fully replaces engineers"
@@ -12,11 +12,12 @@
  * Returns a structured score + notes so the autopilot can decide whether
  * to auto-publish or queue for review.
  *
- * Falls back to a deterministic neutral 0.5 when ANTHROPIC_API_KEY is
- * missing — so the autopilot can still run in dev but won't auto-publish.
+ * Returns an explicit disabled result when Gateway configuration is missing,
+ * so unavailable AI can never be confused with a completed review.
  */
 
 import "server-only";
+import { getAIProviderManager } from "@/lib/ai/AIProviderManager";
 
 import type { ContentTopicCategory } from "./growthModels";
 
@@ -50,11 +51,11 @@ Flags are short tags like: "fabricated-customer", "overpromise", "weak-hook", "o
 `;
 
 export async function checkHallucination(input: HallucinationCheckInput): Promise<HallucinationCheckResult> {
-  const apiKey = process.env.ANTHROPIC_API_KEY?.trim();
-  if (!apiKey) {
+  const manager = getAIProviderManager();
+  if (!manager.isServiceProviderAvailable("vercel_gateway")) {
     return {
       kind: "disabled",
-      reason: "ANTHROPIC_API_KEY not set",
+      reason: "Vercel AI Gateway is not configured",
       score: 0.5,
       notes: "Hallucination check disabled — neutral score returned. Autopilot will NOT auto-publish without a real score.",
       flags: [],
@@ -62,22 +63,11 @@ export async function checkHallucination(input: HallucinationCheckInput): Promis
   }
 
   try {
-    const Anthropic = (await import("@anthropic-ai/sdk")).default;
-    const client = new Anthropic({ apiKey });
-
-    const response = await client.messages.create({
-      model: "claude-haiku-4-5-20251001",
-      max_tokens: 300,
-      system: SYSTEM_PROMPT,
-      messages: [{
-        role: "user",
-        content: `Category: ${input.category}\n\nDraft body:\n---\n${input.body}\n---\n\nReturn the JSON only.`,
-      }],
-    });
-
-    const block = response.content.find((b) => b.type === "text");
-    const text = block && "text" in block ? block.text : "";
-    const parsed = parseScore(text);
+    const response = await manager.generateText(
+      `Category: ${input.category}\n\nDraft body:\n---\n${input.body}\n---\n\nReturn the JSON only.`,
+      { only: "vercel_gateway", system: SYSTEM_PROMPT, maxTokens: 300, temperature: 0, correlationId: "growth-brand-check" },
+    );
+    const parsed = parseScore(response.text);
     return { kind: "ok", ...parsed };
   } catch (err) {
     return {

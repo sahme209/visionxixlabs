@@ -122,11 +122,10 @@ async function githubLeg(): Promise<LegResult> {
 }
 
 async function aiSitrep(awsR: LegResult, gcpR: LegResult, azR: LegResult, ghR: LegResult): Promise<{ ok: boolean; report: string; usage?: unknown; reason?: string }> {
-  const apiKey = process.env.ANTHROPIC_API_KEY?.trim();
-  if (!apiKey) return { ok: false, report: "", reason: "ANTHROPIC_API_KEY not set." };
+  const { getAIProviderManager } = await import("@/lib/ai/AIProviderManager");
+  const manager = getAIProviderManager();
+  if (!manager.isServiceProviderAvailable("vercel_gateway")) return { ok: false, report: "", reason: "Vercel AI Gateway is not configured." };
   try {
-    const Anthropic = (await import("@anthropic-ai/sdk")).default;
-    const client = new Anthropic({ apiKey });
     const context = [
       `AWS: ${awsR.summary}`,
       `GCP: ${gcpR.summary}`,
@@ -134,17 +133,13 @@ async function aiSitrep(awsR: LegResult, gcpR: LegResult, azR: LegResult, ghR: L
       `GitHub: ${ghR.summary}`,
     ].join("\n");
     const prompt = `You are an AI ops engineer. Below are real read-only observations of an operator's connected accounts. Write a 4-line situation report (one line per surface) that calls out anything worth investigating, and end with one concrete next step. Be terse, no hedging, no greetings.\n\n${context}`;
-    const response = await client.messages.create({
-      model: "claude-haiku-4-5-20251001",
-      max_tokens: 300,
-      messages: [{ role: "user", content: prompt }],
+    const response = await manager.generateText(prompt, {
+      only: "vercel_gateway", maxTokens: 300, temperature: 0.2, correlationId: "admin-agi-smoke-test",
     });
-    const block = response.content.find((b) => b.type === "text");
-    const text = block && "text" in block ? block.text : "";
     return {
       ok: true,
-      report: text,
-      usage: { inputTokens: response.usage.input_tokens, outputTokens: response.usage.output_tokens },
+      report: response.text,
+      usage: { inputTokens: response.usage?.promptTokens ?? 0, outputTokens: response.usage?.completionTokens ?? 0 },
     };
   } catch (err) {
     return { ok: false, report: "", reason: err instanceof Error ? err.message : String(err) };

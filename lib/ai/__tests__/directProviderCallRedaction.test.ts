@@ -1,44 +1,32 @@
-/**
- * callProvider() bypasses AIProviderManager entirely (per-engineer
- * direct routing — see the module's own docstring), so it needs its
- * own redaction pass before a prompt leaves the service. Locks in that
- * a secret-shaped prompt never reaches either the anthropic or openai
- * provider call unredacted.
- */
-
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import type { GenerateTextOptions } from "../providers/types";
 
 const mocks = vi.hoisted(() => ({
-  anthropicGenerate: vi.fn(async (_args: GenerateTextOptions) => ({ text: "ok", usage: null })),
-  openaiGenerate: vi.fn(async (_args: GenerateTextOptions) => ({ text: "ok", usage: null })),
+  generateText: vi.fn(async () => ({
+    text: "ok",
+    provider: "vercel_gateway",
+    model: "anthropic/claude-sonnet-4",
+    latencyMs: 1,
+    finishReason: "stop",
+    usage: { promptTokens: 4, completionTokens: 2, totalTokens: 6 },
+  })),
 }));
 
-vi.mock("../providers/anthropic", () => ({ generateText: mocks.anthropicGenerate }));
-vi.mock("../providers/openai", () => ({ generateText: mocks.openaiGenerate }));
+vi.mock("../AIProviderManager", () => ({
+  getAIProviderManager: () => ({ generateText: mocks.generateText }),
+}));
 
 import { callProvider } from "../directProviderCall";
 
-describe("callProvider — redaction before dispatch", () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
-  });
+describe("callProvider — Gateway-only compatibility", () => {
+  beforeEach(() => vi.clearAllMocks());
 
-  const SECRET_PROMPT = "my key is AKIAABCDEFGHIJKLMNOP please use it";
-
-  it("redacts before calling the anthropic provider", async () => {
-    await callProvider("anthropic", SECRET_PROMPT, { maxTokens: 100, temperature: 0.2 });
-    expect(mocks.anthropicGenerate).toHaveBeenCalledTimes(1);
-    const sentPrompt = mocks.anthropicGenerate.mock.calls[0][0].prompt;
-    expect(sentPrompt).not.toContain("AKIAABCDEFGHIJKLMNOP");
-    expect(sentPrompt).toContain("[REDACTED-AWS-ACCESS-KEY]");
-  });
-
-  it("redacts before calling the openai provider", async () => {
-    await callProvider("openai", SECRET_PROMPT, { maxTokens: 100, temperature: 0.2 });
-    expect(mocks.openaiGenerate).toHaveBeenCalledTimes(1);
-    const sentPrompt = mocks.openaiGenerate.mock.calls[0][0].prompt;
-    expect(sentPrompt).not.toContain("AKIAABCDEFGHIJKLMNOP");
-    expect(sentPrompt).toContain("[REDACTED-AWS-ACCESS-KEY]");
+  it.each(["anthropic", "openai"] as const)("routes legacy %s hints through Vercel Gateway", async (legacyProvider) => {
+    const result = await callProvider(legacyProvider, "analyze this repository", { maxTokens: 100, temperature: 0.2 });
+    expect(mocks.generateText).toHaveBeenCalledWith("analyze this repository", {
+      maxTokens: 100,
+      temperature: 0.2,
+      only: "vercel_gateway",
+    });
+    expect(result.model).toBe("anthropic/claude-sonnet-4");
   });
 });

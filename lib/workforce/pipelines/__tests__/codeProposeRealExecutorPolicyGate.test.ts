@@ -1,13 +1,7 @@
 /**
- * codeProposeRealExecutor.ts calls Anthropic directly with the mandatory
- * SDK (no provider-neutral shim), so unlike call sites routed through
- * AIProviderManager, nothing upstream enforced the workspace's own AI
- * provider policy for it before this session's fix — a workspace that
- * disabled AI or disallowed Anthropic could not stop this stage, which
- * writes real code changes to the tenant's repo. Locks in both new gate
- * branches: a policy read failure fails closed, and policy explicitly
- * disallowing Anthropic blocks before any Anthropic SDK call is ever
- * constructed.
+ * The real code-proposal stage must verify workspace policy before invoking
+ * Vercel AI Gateway. Missing policy, disabled AI, and denied Gateway access
+ * all fail closed without an outbound inference call.
  */
 
 import { beforeEach, describe, expect, it, vi } from "vitest";
@@ -17,12 +11,12 @@ const mocks = vi.hoisted(() => ({
   loadWorkspaceAIProviderPolicyWithState: vi.fn(),
   resolveWorkspaceAIProviderPolicy: vi.fn(),
   getAIProviderManager: vi.fn(),
+  gatewayGenerate: vi.fn(),
   recordAudit: vi.fn(),
-  anthropicCtor: vi.fn(),
 }));
 
 vi.mock("@/lib/billing/checkWorkspaceAICredits", () => ({ checkWorkspaceAICredits: mocks.checkWorkspaceAICredits }));
-vi.mock("@/lib/billing/recordAIUsageEvent", () => ({ recordAIUsageEvent: vi.fn() }));
+vi.mock("@/lib/billing/recordAIUsageEvent", () => ({ recordAIUsageEvent: vi.fn().mockResolvedValue({ recorded: false, reason: "test" }) }));
 vi.mock("@/lib/audit/secureAudit", () => ({ record: mocks.recordAudit }));
 vi.mock("@/lib/ai/AIProviderManager", () => ({ getAIProviderManager: mocks.getAIProviderManager }));
 vi.mock("@/lib/ai/workspaceProviderPolicy", () => ({
@@ -35,12 +29,6 @@ vi.mock("@/lib/db", () => ({
   },
 }));
 vi.mock("../budgetConfigStore", () => ({ loadBudgetConfig: vi.fn().mockResolvedValue({}) }));
-vi.mock("@anthropic-ai/sdk", () => ({
-  default: vi.fn().mockImplementation(function AnthropicMock() {
-    mocks.anthropicCtor();
-    return {};
-  }),
-}));
 
 function ctx(overrides: Record<string, unknown> = {}) {
   return {
@@ -60,9 +48,18 @@ function ctx(overrides: Record<string, unknown> = {}) {
 describe("codeProposeRealExecutor — workspace AI provider policy gate", () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    vi.stubEnv("ANTHROPIC_API_KEY", "test-key");
     mocks.checkWorkspaceAICredits.mockResolvedValue({ kind: "allow" });
-    mocks.getAIProviderManager.mockReturnValue({ status: () => [{ provider: "anthropic", configured: true }] });
+    mocks.gatewayGenerate.mockResolvedValue({
+      text: "Plan.\n--- a/file\n+++ b/file\n@@ -1 +1 @@\n-old\n+new\nPR title",
+      model: "anthropic/claude-sonnet-4",
+      finishReason: "stop",
+      usage: { promptTokens: 10, completionTokens: 5, totalTokens: 15 },
+    });
+    mocks.getAIProviderManager.mockReturnValue({
+      isServiceProviderAvailable: () => true,
+      status: () => [{ provider: "vercel_gateway", configured: true }],
+      generateText: mocks.gatewayGenerate,
+    });
   });
 
   it("fails closed and never constructs the Anthropic client when the policy read errors", async () => {
@@ -72,11 +69,11 @@ describe("codeProposeRealExecutor — workspace AI provider policy gate", () => 
     const result = await codeProposeRealExecutor(ctx());
 
     expect(result.ok).toBe(false);
-    expect(mocks.anthropicCtor).not.toHaveBeenCalled();
+    expect(mocks.gatewayGenerate).not.toHaveBeenCalled();
     expect(mocks.recordAudit).toHaveBeenCalledWith(expect.objectContaining({ action: "ai.policy_unavailable" }));
   });
 
-  it("blocks and never constructs the Anthropic client when the workspace disallows Anthropic", async () => {
+  it("blocks without inference when the workspace disallows Gateway", async () => {
     mocks.loadWorkspaceAIProviderPolicyWithState.mockResolvedValue({ policy: { enabled: true, allowedProviders: ["openai"] }, storageState: "ready" });
     mocks.resolveWorkspaceAIProviderPolicy.mockReturnValue({ enabled: true, allowedProviders: ["openai"], modelSelections: {}, fallbackOrder: [] });
 
@@ -84,11 +81,11 @@ describe("codeProposeRealExecutor — workspace AI provider policy gate", () => 
     const result = await codeProposeRealExecutor(ctx());
 
     expect(result.ok).toBe(false);
-    expect(mocks.anthropicCtor).not.toHaveBeenCalled();
+    expect(mocks.gatewayGenerate).not.toHaveBeenCalled();
     expect(mocks.recordAudit).toHaveBeenCalledWith(expect.objectContaining({ action: "ai.provider_not_approved" }));
   });
 
-  it("blocks when the workspace has AI disabled outright, even if Anthropic would otherwise be allowed", async () => {
+  it("blocks when the workspace has AI disabled outright", async () => {
     mocks.loadWorkspaceAIProviderPolicyWithState.mockResolvedValue({ policy: { enabled: false, allowedProviders: [] }, storageState: "ready" });
     mocks.resolveWorkspaceAIProviderPolicy.mockReturnValue({ enabled: false, allowedProviders: [], modelSelections: {}, fallbackOrder: [] });
 
@@ -96,22 +93,16 @@ describe("codeProposeRealExecutor — workspace AI provider policy gate", () => 
     const result = await codeProposeRealExecutor(ctx());
 
     expect(result.ok).toBe(false);
-    expect(mocks.anthropicCtor).not.toHaveBeenCalled();
+    expect(mocks.gatewayGenerate).not.toHaveBeenCalled();
   });
 
-  it("proceeds past the policy gate (reaches the Anthropic client) once policy allows Anthropic", async () => {
-    mocks.loadWorkspaceAIProviderPolicyWithState.mockResolvedValue({ policy: { enabled: true, allowedProviders: ["anthropic"] }, storageState: "ready" });
-    mocks.resolveWorkspaceAIProviderPolicy.mockReturnValue({ enabled: true, allowedProviders: ["anthropic"], modelSelections: {}, fallbackOrder: [] });
+  it("invokes Gateway once policy allows it", async () => {
+    mocks.loadWorkspaceAIProviderPolicyWithState.mockResolvedValue({ policy: { enabled: true, allowedProviders: ["vercel_gateway"] }, storageState: "ready" });
+    mocks.resolveWorkspaceAIProviderPolicy.mockReturnValue({ enabled: true, allowedProviders: ["vercel_gateway"], modelSelections: { vercel_gateway: "service-default" }, fallbackOrder: ["vercel_gateway"] });
 
     const { codeProposeRealExecutor } = await import("../codeProposeRealExecutor");
-    // The Anthropic mock returns {} with no .messages.stream(), so this
-    // throws past the gate — proving the gate let it through, which is
-    // exactly the boundary this test suite is responsible for, not the
-    // full streaming call (a separate concern already covered by this
-    // file's own existing, unmodified streaming logic).
-    await codeProposeRealExecutor(ctx()).catch(() => undefined);
-
-    expect(mocks.anthropicCtor).toHaveBeenCalledTimes(1);
+    await codeProposeRealExecutor(ctx());
+    expect(mocks.gatewayGenerate).toHaveBeenCalled();
   });
 
   it("fails closed on a fail-open budget read error (failClosedOnUsageReadError)", async () => {
@@ -119,8 +110,8 @@ describe("codeProposeRealExecutor — workspace AI provider policy gate", () => 
       expect(opts?.failClosedOnUsageReadError).toBe(true);
       return Promise.resolve({ kind: "allow" });
     });
-    mocks.loadWorkspaceAIProviderPolicyWithState.mockResolvedValue({ policy: { enabled: true, allowedProviders: ["anthropic"] }, storageState: "ready" });
-    mocks.resolveWorkspaceAIProviderPolicy.mockReturnValue({ enabled: true, allowedProviders: ["anthropic"], modelSelections: {}, fallbackOrder: [] });
+    mocks.loadWorkspaceAIProviderPolicyWithState.mockResolvedValue({ policy: { enabled: true, allowedProviders: ["vercel_gateway"] }, storageState: "ready" });
+    mocks.resolveWorkspaceAIProviderPolicy.mockReturnValue({ enabled: true, allowedProviders: ["vercel_gateway"], modelSelections: { vercel_gateway: "service-default" }, fallbackOrder: ["vercel_gateway"] });
 
     const { codeProposeRealExecutor } = await import("../codeProposeRealExecutor");
     await codeProposeRealExecutor(ctx()).catch(() => undefined);

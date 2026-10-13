@@ -2,16 +2,15 @@
  * Internal content planner.
  *
  * Pure module: given a target date + channel, produces typed
- * ContentIdea + SocialPostDraft objects (in-memory). Uses the
- * Anthropic API when ANTHROPIC_API_KEY is set; otherwise returns
- * deterministic typed placeholders so unit tests + dev builds work
- * without an LLM key.
+ * ContentIdea + SocialPostDraft objects (in-memory). All inference is routed
+ * through Vercel AI Gateway. Missing configuration fails explicitly.
  *
  * Internal only. Drafts NEVER leave this process without an explicit
  * PublishingApproval downstream.
  */
 
 import "server-only";
+import { getAIProviderManager } from "@/lib/ai/AIProviderManager";
 
 import type {
   ContentIdea,
@@ -32,7 +31,7 @@ interface PlannerInput {
 export interface PlannerOutput {
   ideas: readonly ContentIdea[];
   drafts: readonly SocialPostDraft[];
-  /** True when the planner used the LLM; false when it returned deterministic placeholders. */
+  /** Always true for successful results; retained for UI compatibility. */
   usedLlm: boolean;
 }
 
@@ -54,62 +53,26 @@ const SAFE_CTAS: Readonly<Record<SocialChannel, string>> = {
   youtube_short: "Subscribe for more →",
 };
 
-const DETERMINISTIC_PROMPTS: Readonly<Record<ContentTopicCategory, string[]>> = {
-  product_education: [
-    "How VisionXIXLabs agents detect IAM drift across AWS + Azure + GCP in one pass.",
-    "Tier-1 service health: from telemetry → alert → incident → postmortem, in one calm view.",
-    "Connector setup that takes seconds, not days — paste creds, get green ticks.",
-  ],
-  thought_leadership: [
-    "Why approval-only-no-execution is a more honest default than autopilot.",
-    "Distributed traces are only useful if you can read them under stress — here's how we redesigned ours.",
-    "The case for closed-union safety in AI-ops platforms.",
-  ],
-  launch_announcement: [
-    "Shipped: native service catalog auto-discovery across AWS + GCP + GitHub.",
-    "Shipped: per-tenant calm UX — no fake counts for fresh workspaces.",
-    "Shipped: agent tool access matrix — read / write / approval per agent per tool.",
-  ],
-  case_study: [
-    "Case study: an engineering team replaced 5 dashboards with one approval queue.",
-    "Case study: from 12 alerts/hour to 2/day after the noise reducer landed.",
-  ],
-  founder_voice: [
-    "Building VisionXIXLabs — week N notes on tradeoffs between autonomy and approvals.",
-    "Why we said no to a freemium trial and what we shipped instead.",
-  ],
-  technical_deep_dive: [
-    "How we make Claude reason over your real cloud inventory without leaking PII.",
-    "Closed-union types as a runtime safety mechanism — patterns we use every day.",
-  ],
-  marketing_campaign: [
-    "Week 1: connectors. Week 2: agents. Week 3: approvals. The 3-week tour of VisionXIXLabs.",
-  ],
-};
-
 export async function planContent(input: PlannerInput): Promise<PlannerOutput> {
   const max = Math.max(1, Math.min(input.maxDrafts ?? 3, 10));
-  const apiKey = process.env.ANTHROPIC_API_KEY?.trim();
   const hashtags = DEFAULT_HASHTAGS[input.channel];
+  const manager = getAIProviderManager();
 
-  // LLM path — generate a fresh idea + post for each requested draft.
-  if (apiKey) {
-    try {
-      const Anthropic = (await import("@anthropic-ai/sdk")).default;
-      const client = new Anthropic({ apiKey });
+  if (!manager.isServiceProviderAvailable("vercel_gateway")) {
+    throw new Error("Vercel AI Gateway is not configured.");
+  }
+
+  // Generate a fresh idea + post for each requested draft.
+  try {
       const ideas: ContentIdea[] = [];
       const drafts: SocialPostDraft[] = [];
 
       for (let i = 0; i < max; i++) {
         const prompt = buildPrompt(input.channel, input.category, input.topicHint, i);
-        const response = await client.messages.create({
-          model: "claude-haiku-4-5-20251001",
-          max_tokens: 600,
-          messages: [{ role: "user", content: prompt }],
+        const response = await manager.generateText(prompt, {
+          only: "vercel_gateway", maxTokens: 600, temperature: 0.4, correlationId: `growth-content-${i}`,
         });
-        const block = response.content.find((b) => b.type === "text");
-        const text = block && "text" in block ? block.text : "";
-        const parsed = parseDraft(text);
+        const parsed = parseDraft(response.text);
 
         const idea: ContentIdea = {
           id: `idea_${Date.now()}_${i}`,
@@ -138,44 +101,9 @@ export async function planContent(input: PlannerInput): Promise<PlannerOutput> {
         drafts.push(draft);
       }
       return { ideas, drafts, usedLlm: true };
-    } catch {
-      // Fall through to deterministic placeholders.
-    }
+  } catch (error) {
+    throw new Error("Gateway content generation failed.", { cause: error });
   }
-
-  // Deterministic placeholder path — used in dev / when LLM key missing.
-  const prompts = DETERMINISTIC_PROMPTS[input.category] ?? [];
-  const ideas: ContentIdea[] = [];
-  const drafts: SocialPostDraft[] = [];
-  for (let i = 0; i < max && i < prompts.length; i++) {
-    const title = prompts[i];
-    const idea: ContentIdea = {
-      id: `idea_det_${Date.now()}_${i}`,
-      title,
-      category: input.category,
-      channels: [input.channel],
-      angle: title,
-      rationale: "Deterministic placeholder — LLM key not configured.",
-      priority: prompts.length - i,
-      generatedAt: new Date().toISOString(),
-      generatedBy: "daily_content_workflow",
-    };
-    const draft: SocialPostDraft = {
-      id: `draft_det_${Date.now()}_${i}`,
-      ideaId: idea.id,
-      channel: input.channel,
-      body: title,
-      hashtags,
-      cta: SAFE_CTAS[input.channel],
-      status: "drafted",
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-      draftedByAgent: "marketingContentDrafter",
-    };
-    ideas.push(idea);
-    drafts.push(draft);
-  }
-  return { ideas, drafts, usedLlm: false };
 }
 
 function buildPrompt(channel: SocialChannel, category: ContentTopicCategory, topicHint: string | undefined, seed: number): string {
