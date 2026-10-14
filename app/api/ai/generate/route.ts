@@ -55,6 +55,7 @@ export async function POST(req: NextRequest) {
     if (!ctx.isAuthenticated || !ctx.organizationId) {
       throw AxiomErrors.validation("auth.required", "Sign in required.");
     }
+    const organizationId = ctx.organizationId;
     const body = (await req.json().catch(() => null)) as PostBody | null;
     if (!body || typeof body.prompt !== "string" || body.prompt.length === 0) {
       throw AxiomErrors.validation("ai.prompt_required", "Provide a non-empty 'prompt'.");
@@ -183,7 +184,7 @@ export async function POST(req: NextRequest) {
           usageWrite = await prisma.$transaction(async (tx) => {
             const pendingUsage = await recordAIUsageEvent(usageInput, tx);
             if (!pendingUsage.recorded || pendingUsage.cost) return pendingUsage;
-            if (!pendingUsage.usageEventId || !await attachAICreditReservationUsage(tx, ctx.organizationId, reservation.reservation.id, pendingUsage.usageEventId)) {
+            if (!pendingUsage.usageEventId || !await attachAICreditReservationUsage(tx, organizationId, reservation.reservation.id, pendingUsage.usageEventId)) {
               // Throwing rolls back the just-created pending UsageEvent as
               // well as any attachment, leaving the original hold releasable.
               throw new Error("ai_usage_reservation_attach_failed");
