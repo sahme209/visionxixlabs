@@ -21,6 +21,7 @@ const base = {
   toolName: "open_github_pull_request", argsJson: { repositoryFullName: "acme/app" }, riskLevel: "medium", status: "proposed",
   createdAt: new Date("2026-10-13T10:00:00Z"), approvalExpiresAt: new Date("2026-10-14T10:00:00Z"),
 };
+const reviewNow = new Date("2026-10-13T12:00:00Z");
 const actionDigest = agentActionDigest({ organizationId: base.organizationId, conversationId: base.conversationId, proposedByUserId: base.proposedByUserId, toolName: base.toolName, args: base.argsJson });
 
 describe("browser agent approval decision", () => {
@@ -44,7 +45,7 @@ describe("browser agent approval decision", () => {
   it("fails closed when the action changed after proposal", async () => {
     mocks.findFirst.mockResolvedValue({ ...base, actionDigest: "tampered" });
     const { decideAgentAction } = await import("../browserApprovalDecision");
-    expect(await decideAgentAction({ organizationId: "org-1", proposalId: base.id, actorUserId: "reviewer-1", actorRole: "admin", decision: "approve" }))
+    expect(await decideAgentAction({ organizationId: "org-1", proposalId: base.id, actorUserId: "reviewer-1", actorRole: "admin", decision: "approve", now: reviewNow }))
       .toEqual({ ok: false, error: "proposal_integrity_failed" });
     expect(mocks.execute).not.toHaveBeenCalled();
   });
@@ -59,7 +60,7 @@ describe("browser agent approval decision", () => {
   it("prevents replay when another decision wins the compare-and-set", async () => {
     mocks.updateMany.mockResolvedValue({ count: 0 });
     const { decideAgentAction } = await import("../browserApprovalDecision");
-    expect(await decideAgentAction({ organizationId: "org-1", proposalId: base.id, actorUserId: "reviewer-1", actorRole: "admin", decision: "approve" }))
+    expect(await decideAgentAction({ organizationId: "org-1", proposalId: base.id, actorUserId: "reviewer-1", actorRole: "admin", decision: "approve", now: reviewNow }))
       .toEqual({ ok: false, error: "already_decided" });
     expect(mocks.createAudit).not.toHaveBeenCalled();
     expect(mocks.execute).not.toHaveBeenCalled();
@@ -67,7 +68,7 @@ describe("browser agent approval decision", () => {
 
   it("atomically records rejection evidence", async () => {
     const { decideAgentAction } = await import("../browserApprovalDecision");
-    expect(await decideAgentAction({ organizationId: "org-1", proposalId: base.id, actorUserId: "reviewer-1", actorRole: "security_reviewer", decision: "reject" }))
+    expect(await decideAgentAction({ organizationId: "org-1", proposalId: base.id, actorUserId: "reviewer-1", actorRole: "security_reviewer", decision: "reject", now: reviewNow }))
       .toEqual({ ok: true, status: "rejected" });
     expect(mocks.createAudit).toHaveBeenCalledWith(expect.objectContaining({ data: expect.objectContaining({ action: "approval.deny", entityRef: `agent_action:${base.id}` }) }));
     expect(mocks.execute).not.toHaveBeenCalled();

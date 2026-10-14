@@ -9,8 +9,14 @@ import { supporterCheckoutReadiness } from "@/lib/supporters/core";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Axiom Founding Supporters | Vision XIX Labs",
+  title: "Axiom Founding Supporters",
   description: "Support the careful development of Axiom Agent—autonomous engineering with human control, security, and governance at its core.",
+  alternates: { canonical: "/support" },
+  openGraph: {
+    title: "Axiom Founding Supporters | Vision XIX Labs",
+    description: "Support the careful development of Axiom Agent—autonomous engineering with human control, security, and governance at its core.",
+    url: "/support",
+  },
 };
 
 const fundingAreas = [
@@ -40,8 +46,7 @@ export default function SupportPage() {
   return (
     <div className="overflow-hidden bg-[#141414]">
       <section className="relative isolate min-h-[82vh] border-b border-white/[0.07]">
-        <div aria-hidden="true" className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_78%_15%,rgba(249,115,22,0.13),transparent_30%),radial-gradient(circle_at_15%_80%,rgba(255,255,255,0.04),transparent_32%)]" />
-        <div aria-hidden="true" className="absolute inset-0 -z-10 opacity-[0.14] [background-image:linear-gradient(rgba(255,255,255,.09)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,.09)_1px,transparent_1px)] [background-size:64px_64px] [mask-image:linear-gradient(to_bottom,black,transparent_85%)]" />
+        <div aria-hidden="true" className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_78%_15%,rgba(249,115,22,0.09),transparent_34%)]" />
         <div className="mx-auto flex min-h-[82vh] max-w-[1400px] flex-col justify-between px-5 pb-10 pt-24 sm:px-8 lg:px-12 lg:pb-14 lg:pt-32">
           <div className="grid items-end gap-12 lg:grid-cols-[1fr_360px]">
             <div className="max-w-5xl">
@@ -86,8 +91,8 @@ export default function SupportPage() {
       <section className="border-y border-white/[0.07] bg-[#10100f]">
         <div className="mx-auto max-w-[1400px] px-5 py-20 sm:px-8 lg:px-12 lg:py-28">
           <div className="max-w-3xl"><p className="text-[11px] uppercase tracking-[0.2em] text-orange-300">Why support matters</p><h2 className="mt-5 text-4xl font-medium tracking-[-0.05em] text-zinc-100 sm:text-6xl">Fund the difficult work behind trustworthy autonomy.</h2><p className="mt-6 text-lg leading-8 text-zinc-400">Supporter purchases help Vision XIX Labs invest in the engineering foundations required to make Axiom useful, governed, and durable.</p></div>
-          <div className="mt-14 grid border-l border-t border-white/[0.08] sm:grid-cols-2 lg:grid-cols-5">
-            {fundingAreas.map(({ icon: Icon, title, copy }) => <article key={title} className="min-h-64 border-b border-r border-white/[0.08] p-6"><Icon className="h-6 w-6 text-orange-300" /><h3 className="mt-12 text-lg font-medium text-zinc-100">{title}</h3><p className="mt-3 text-sm leading-6 text-zinc-500">{copy}</p></article>)}
+          <div className="mt-14 divide-y divide-white/[0.08] border-y border-white/[0.08]">
+            {fundingAreas.map(({ icon: Icon, title, copy }) => <article key={title} className="grid gap-4 py-6 sm:grid-cols-[40px_220px_1fr] sm:items-center"><Icon className="h-5 w-5 text-orange-300" /><h3 className="text-lg font-medium text-zinc-100">{title}</h3><p className="max-w-2xl text-sm leading-6 text-zinc-500">{copy}</p></article>)}
           </div>
         </div>
       </section>
@@ -118,7 +123,7 @@ export default function SupportPage() {
       <section className="mx-auto max-w-[1400px] px-5 py-20 sm:px-8 lg:px-12 lg:py-28">
         <div className="grid gap-10 lg:grid-cols-[0.7fr_1.3fr]">
           <div><p className="text-[11px] uppercase tracking-[0.2em] text-orange-300">Trust & transparency</p><h2 className="mt-5 text-4xl font-medium tracking-[-0.05em] text-zinc-100">Know what participation means.</h2></div>
-          <div className="grid gap-px overflow-hidden rounded-2xl border border-white/[0.08] bg-white/[0.08] sm:grid-cols-2">
+          <div className="grid border-y border-white/[0.08] sm:grid-cols-2 sm:divide-x sm:divide-white/[0.08]">
             <TrustCard icon={CircleStackIcon} title="The company" copy="Vision XIX Labs LLC is a for-profit technology company developing Axiom Agent." />
             <TrustCard icon={ShieldCheckIcon} title="The payment boundary" copy="Stripe-hosted checkout handles card data. Vision XIX Labs does not store card numbers." />
             <TrustCard icon={ScaleIcon} title="The legal character" copy="Supporter purchases are not charitable donations, tax-deductible charitable gifts, investments, equity, or promises of returns." />
@@ -132,7 +137,7 @@ export default function SupportPage() {
 }
 
 function CapabilityList({ eyebrow, title, items, tone }: { eyebrow: string; title: string; items: readonly string[]; tone: "implemented" | "planned" }) {
-  return <article className="rounded-2xl border border-white/[0.08] bg-white/[0.02] p-6 sm:p-8"><p className={`text-[11px] uppercase tracking-[0.18em] ${tone === "implemented" ? "text-emerald-300" : "text-orange-300"}`}>{eyebrow}</p><h3 className="mt-3 text-2xl font-medium tracking-[-0.035em] text-zinc-100">{title}</h3><ul className="mt-7 space-y-4">{items.map((item) => <li key={item} className="flex gap-3 text-sm leading-6 text-zinc-400"><span className={`mt-1 flex h-5 w-5 shrink-0 items-center justify-center rounded-full ${tone === "implemented" ? "bg-emerald-400/10 text-emerald-300" : "bg-orange-400/10 text-orange-300"}`}><CheckIcon className="h-3 w-3" /></span>{item}</li>)}</ul></article>;
+  return <article className="border-t border-white/[0.1] pt-7"><p className={`text-[11px] uppercase tracking-[0.18em] ${tone === "implemented" ? "text-emerald-300" : "text-orange-300"}`}>{eyebrow}</p><h3 className="mt-3 text-2xl font-medium tracking-[-0.035em] text-zinc-100">{title}</h3><ul className="mt-7 space-y-4">{items.map((item) => <li key={item} className="flex gap-3 text-sm leading-6 text-zinc-400"><span className={`mt-1 flex h-5 w-5 shrink-0 items-center justify-center ${tone === "implemented" ? "text-emerald-300" : "text-orange-300"}`}><CheckIcon className="h-3 w-3" /></span>{item}</li>)}</ul></article>;
 }
 
 function Benefit({ title, copy }: { title: string; copy: string }) {
@@ -140,5 +145,5 @@ function Benefit({ title, copy }: { title: string; copy: string }) {
 }
 
 function TrustCard({ icon: Icon, title, copy }: { icon: typeof ShieldCheckIcon; title: string; copy: string }) {
-  return <article className="bg-[#171715] p-6 sm:p-8"><Icon className="h-6 w-6 text-orange-300" /><h3 className="mt-8 text-lg font-medium text-zinc-100">{title}</h3><p className="mt-3 text-sm leading-6 text-zinc-500">{copy}</p></article>;
+  return <article className="border-b border-white/[0.08] py-7 sm:px-8 sm:first:pl-0"><Icon className="h-5 w-5 text-orange-300" /><h3 className="mt-6 text-lg font-medium text-zinc-100">{title}</h3><p className="mt-3 text-sm leading-6 text-zinc-500">{copy}</p></article>;
 }
