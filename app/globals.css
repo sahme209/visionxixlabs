@@ -7,18 +7,18 @@
 /* ── Design Tokens ─────────────────────────────────────────────── */
 :root {
   /* Axiom's public surfaces use neutral depth and a single warm accent. */
-  --black: #101010;
-  --bg-primary: #141414;
-  --bg-canvas: #141414;
-  --bg-secondary: #171717;
-  --bg-surface: #1a1a1a;
-  --bg-surface-alt: #202020;
-  --bg-elevated: #292929;
-  --text-primary: #fafafa;
-  --text-secondary: #a1a1aa;
-  --text-tertiary: #71717a;
-  --accent: #f54e00;
-  --accent-hover: #ff783d;
+  --black: #070806;
+  --bg-primary: #090a08;
+  --bg-canvas: #090a08;
+  --bg-secondary: #0d0e0c;
+  --bg-surface: #121310;
+  --bg-surface-alt: #181916;
+  --bg-elevated: #20211d;
+  --text-primary: #f2f2ed;
+  --text-secondary: #a2a39c;
+  --text-tertiary: #70716b;
+  --accent: #f05a24;
+  --accent-hover: #ff7540;
   --accent-amber: #ff783d;
   --accent-cyan: #ff783d;
   --accent-blue: #f54e00;
@@ -71,8 +71,9 @@ body {
 .axiom-canvas {
   background-color: var(--bg-canvas);
   background-image:
-    radial-gradient(820px 420px at 78% -14%, rgba(245, 78, 0, 0.065), transparent 68%),
-    linear-gradient(180deg, #161616 0%, var(--bg-canvas) 46%, #111111 100%);
+    radial-gradient(900px 500px at 82% -12%, rgba(240, 90, 36, 0.10), transparent 68%),
+    radial-gradient(720px 520px at -8% 34%, rgba(255, 255, 255, 0.025), transparent 70%),
+    linear-gradient(180deg, #0c0d0b 0%, var(--bg-canvas) 50%, #080907 100%);
 }
 
 /* Public Axiom surfaces use the same quiet product canvas as the homepage.
@@ -133,6 +134,7 @@ p, li, dd, dt, label, input, textarea, select, button {
 h1, h2, h3, h4, h5, h6 {
   letter-spacing: -0.025em;
   line-height: 1.15;
+  text-wrap: balance;
 }
 
 /* ── Gradients ─────────────────────────────────────────────────── */
@@ -3269,4 +3271,61 @@ h1, h2, h3, h4, h5, h6 {
 .scroll-reveal-text > span {
   transition: opacity 260ms cubic-bezier(0.22, 1, 0.36, 1);
   display: inline;
+}
+
+/* ── Vision XIX Labs public-site system ───────────────────────────
+   The marketing site historically accumulated several canvas colors and
+   surface treatments. Navigation is the stable public-shell marker, so these
+   rules unify every marketing route without reaching into the authenticated
+   product, billing, or administration surfaces. */
+body:has(.site-navigation) {
+  background:
+    radial-gradient(70rem 34rem at 75% -12%, rgba(240, 90, 36, 0.085), transparent 66%),
+    #090a08;
+  color: #f2f2ed;
+}
+
+body:has(.site-navigation) :is(.bg-\[\#141414\], .bg-\[\#09090b\]) {
+  background-color: #090a08 !important;
+}
+
+body:has(.site-navigation) :is(.bg-\[\#181818\], .bg-\[\#171717\], .bg-\[\#1A1A1A\]) {
+  background-color: #11120f !important;
+}
+
+body:has(.site-navigation) main {
+  isolation: isolate;
+}
+
+body:has(.site-navigation) main > section {
+  scroll-margin-top: 5rem;
+}
+
+body:has(.site-navigation) :is(a, button, input, textarea, select):focus-visible {
+  outline: 2px solid rgba(255, 117, 64, 0.9);
+  outline-offset: 3px;
+}
+
+body:has(.site-navigation) h1 {
+  font-kerning: normal;
+  font-feature-settings: 'cv02', 'cv11', 'ss03', 'kern';
+}
+
+.site-navigation a,
+.site-footer a {
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.25em;
+}
+
+@media (min-width: 1024px) {
+  .site-navigation > div {
+    max-width: 1440px;
+  }
+}
+
+@supports not selector(body:has(.site-navigation)) {
+  .axiom-canvas,
+  .axiom-product-canvas {
+    background-color: #090a08;
+  }
 }

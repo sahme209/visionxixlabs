@@ -6,6 +6,7 @@ import {
   getAllInsightSlugs,
 } from "@/lib/insightsContent";
 import { Navigation } from "@/components/Navigation";
+import { Footer } from "@/components/Footer";
 import { ArrowLeftIcon, ArrowRightIcon } from "@heroicons/react/24/outline";
 import { Reveal } from "@/components/motion/Reveal";
 
@@ -50,7 +51,7 @@ export default async function InsightArticlePage({ params }: Props) {
       <div className="absolute top-0 left-1/2 h-[420px] w-[700px] -translate-x-1/2 rounded-full bg-orange-500/[0.06] blur-[150px] pointer-events-none" aria-hidden />
 
       <Navigation />
-      <article className="relative z-10 max-w-6xl mx-auto px-6 md:px-10 pt-24 pb-16">
+      <main className="relative z-10 max-w-6xl mx-auto px-6 md:px-10 pt-24 pb-16">
         <Reveal direction="up" blur delay={0.05}>
           <nav className="mb-8" aria-label="Breadcrumb">
             <Link
@@ -134,7 +135,8 @@ export default async function InsightArticlePage({ params }: Props) {
             </Link>
           ) : null}
         </nav>
-      </article>
+      </main>
+      <Footer />
     </div>
   );
 }

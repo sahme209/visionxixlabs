@@ -46,6 +46,8 @@ describe("supporter safety gates", () => {
     process.env.STRIPE_SECRET_KEY = "sk_test_example";
     process.env.STRIPE_SUPPORTER_WEBHOOK_SECRET = "whsec_supporter";
     process.env.SUPPORTER_BADGE_SIGNING_SECRET = "long-secret";
+    process.env.DATABASE_URL = "postgresql://test.invalid/test";
+    process.env.RESEND_API_KEY = "re_test";
     process.env.AXIOM_SUPPORTER_CHECKOUT_ENABLED = "true";
     expect(supporterCheckoutReadiness().ready).toBe(true);
   });

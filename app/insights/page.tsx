@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { insightsArticles } from "@/lib/insightsContent";
 import { Navigation } from "@/components/Navigation";
+import { Footer } from "@/components/Footer";
 import { ArrowRightIcon, DocumentTextIcon } from "@heroicons/react/24/outline";
 import { Reveal } from "@/components/motion/Reveal";
 import { Stagger } from "@/components/motion/Stagger";
@@ -101,6 +102,7 @@ export default function InsightsPage() {
           </section>
         </Reveal>
       </main>
+      <Footer />
     </div>
   );
 }

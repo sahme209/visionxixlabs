@@ -72,7 +72,40 @@ async function recordNonPaymentEvent(event: Stripe.Event) {
 }
 
 function isReplay(error: unknown): boolean {
-  return error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2002";
+  return (
+    error instanceof Prisma.PrismaClientKnownRequestError
+    || (typeof error === "object" && error !== null && "code" in error)
+  ) && (error as { code?: string }).code === "P2002";
+}
+
+async function deliverConfirmation(
+  purchase: {
+    id: string;
+    email: string;
+    displayName: string | null;
+    amountCents: number;
+    confirmationEmailSentAt: Date | null;
+  },
+  origin: string,
+) {
+  if (purchase.confirmationEmailSentAt) return;
+  const badgeSecret = process.env.SUPPORTER_BADGE_SIGNING_SECRET;
+  if (!badgeSecret) throw new Error("Badge signing is not configured.");
+  const token = createBadgeToken(purchase.id, badgeSecret);
+  const sent = await sendSupporterConfirmation({
+    email: purchase.email,
+    displayName: purchase.displayName,
+    amountCents: purchase.amountCents,
+    referenceId: purchase.id,
+    badgeUrl: `${origin}/api/support/badge/${purchase.id}?token=${encodeURIComponent(token)}`,
+  });
+  // A non-2xx response must cause Stripe to retry. The event ledger keeps the
+  // financial mutation idempotent; the replay path retries only this delivery.
+  if (!sent) throw new Error("Supporter confirmation email was not accepted for delivery.");
+  await prisma.foundingSupporterPurchase.update({
+    where: { id: purchase.id },
+    data: { confirmationEmailSentAt: new Date() },
+  });
 }
 
 export async function POST(request: NextRequest) {
@@ -98,23 +131,27 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ received: true, ignored: true });
     }
 
-    if (paidPurchase && !paidPurchase.confirmationEmailSentAt) {
-      const badgeSecret = process.env.SUPPORTER_BADGE_SIGNING_SECRET;
-      if (!badgeSecret) throw new Error("Badge signing is not configured.");
-      const origin = process.env.NEXT_PUBLIC_APP_URL || request.nextUrl.origin;
-      const token = createBadgeToken(paidPurchase.id, badgeSecret);
-      const sent = await sendSupporterConfirmation({
-        email: paidPurchase.email,
-        displayName: paidPurchase.displayName,
-        amountCents: paidPurchase.amountCents,
-        referenceId: paidPurchase.id,
-        badgeUrl: `${origin}/api/support/badge/${paidPurchase.id}?token=${encodeURIComponent(token)}`,
-      });
-      if (sent) await prisma.foundingSupporterPurchase.update({ where: { id: paidPurchase.id }, data: { confirmationEmailSentAt: new Date() } });
-    }
+    if (paidPurchase) await deliverConfirmation(paidPurchase, process.env.NEXT_PUBLIC_APP_URL || request.nextUrl.origin);
     return NextResponse.json({ received: true });
   } catch (error) {
-    if (isReplay(error)) return NextResponse.json({ received: true, replay: true });
+    if (isReplay(error)) {
+      if (event.type === "checkout.session.completed" || event.type === "checkout.session.async_payment_succeeded") {
+        const session = event.data.object as Stripe.Checkout.Session;
+        const purchaseId = session.metadata?.supporterPurchaseId;
+        if (purchaseId) {
+          const purchase = await prisma.foundingSupporterPurchase.findUnique({ where: { id: purchaseId } });
+          if (purchase) {
+            try {
+              await deliverConfirmation(purchase, process.env.NEXT_PUBLIC_APP_URL || request.nextUrl.origin);
+            } catch (deliveryError) {
+              console.error("[Supporter webhook] Confirmation retry failed:", deliveryError);
+              return NextResponse.json({ error: "Confirmation delivery failed." }, { status: 500 });
+            }
+          }
+        }
+      }
+      return NextResponse.json({ received: true, replay: true });
+    }
     console.error("[Supporter webhook] Processing failed:", error);
     return NextResponse.json({ error: "Webhook processing failed." }, { status: 500 });
   }

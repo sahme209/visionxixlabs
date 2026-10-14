@@ -2,6 +2,7 @@
 
 import { ShieldCheckIcon } from "@heroicons/react/24/outline";
 import { Navigation } from "../../components/Navigation";
+import { Footer } from "../../components/Footer";
 
 export default function PrivacyPolicyPage() {
   return (
@@ -10,7 +11,7 @@ export default function PrivacyPolicyPage() {
       <div className="absolute -top-40 right-0 w-96 h-96 rounded-full bg-orange-600/5 blur-[120px] pointer-events-none" aria-hidden />
       <Navigation />
 
-      <div className="max-w-6xl mx-auto px-6 md:px-10 pt-32 pb-16">
+      <main className="max-w-6xl mx-auto px-6 md:px-10 pt-32 pb-16">
         <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] backdrop-blur-sm p-8 md:p-12">
           {/* Header */}
           <div className="text-center mb-12">
@@ -446,7 +447,8 @@ export default function PrivacyPolicyPage() {
             </p>
           </div>
         </div>
-      </div>
+      </main>
+      <Footer />
     </div>
   );
 }

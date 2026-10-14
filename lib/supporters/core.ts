@@ -57,7 +57,13 @@ export function supporterCheckoutReadiness() {
   const isLive = key.startsWith("sk_live_");
   const enabled = process.env.AXIOM_SUPPORTER_CHECKOUT_ENABLED === "true";
   const liveApproved = process.env.AXIOM_SUPPORTER_LIVE_APPROVED === "true";
-  const dependenciesReady = Boolean(key && process.env.STRIPE_SUPPORTER_WEBHOOK_SECRET && process.env.SUPPORTER_BADGE_SIGNING_SECRET);
+  const dependenciesReady = Boolean(
+    key
+    && process.env.STRIPE_SUPPORTER_WEBHOOK_SECRET
+    && process.env.SUPPORTER_BADGE_SIGNING_SECRET
+    && process.env.DATABASE_URL
+    && process.env.RESEND_API_KEY,
+  );
   return {
     isLive,
     ready: enabled && dependenciesReady && (!isLive || liveApproved),
