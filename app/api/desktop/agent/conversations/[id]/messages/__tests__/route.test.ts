@@ -77,10 +77,23 @@ describe("POST /api/desktop/agent/conversations/[id]/messages", () => {
     expect(res.status).toBe(200);
     expect(body.data.reply).toBe("You have 3 environments configured.");
     expect(body.data.proposal).toBeNull();
+    expect(body.data.usage).toBeNull();
     expect(mocks.updateConversation).toHaveBeenCalledWith(expect.objectContaining({
       where: { id: "conv_1" },
       data: expect.objectContaining({ title: "what environments do I have?" }),
     }));
+  });
+
+  it("forwards a governed usage receipt without presenting it as a billed price", async () => {
+    mocks.runDecisionLoop.mockResolvedValue({
+      kind: "final",
+      message: "Ready.",
+      usage: { decisionSteps: 1, inputTokens: 12, outputTokens: 8, totalTokens: 20 },
+    });
+    const { POST } = await import("../route");
+    const res = await POST(request({ message: "hello" }), params);
+    const body = await res.json();
+    expect(body.data.usage).toEqual({ decisionSteps: 1, inputTokens: 12, outputTokens: 8, totalTokens: 20 });
   });
 
   it("forwards the selected provider to the governed decision loop", async () => {

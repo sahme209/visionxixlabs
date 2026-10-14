@@ -11,7 +11,12 @@ vi.mock("../agentIdentityPolicy", () => ({ readWorkspaceAgentIdentity: mocks.rea
 import { resolveAgentEffortProfile, runDecisionLoop } from "../decisionLoop";
 
 function governed(extractImpl: (text: string, schemaHint: string, correlationId: string) => Promise<unknown>) {
-  return { ok: true as const, extract: extractImpl };
+  return {
+    ok: true as const,
+    extract: async <T>(text: string, schemaHint: string, correlationId: string) => ({
+      data: await extractImpl(text, schemaHint, correlationId) as T,
+    }),
+  };
 }
 
 const noopReadOnly = async () => ({ ok: true as const, result: {} });
@@ -229,6 +234,24 @@ describe("runDecisionLoop", () => {
     expect(resolveAgentEffortProfile("ask")).toEqual({ label: "Inspect", maxDecisionIterations: 2 });
     expect(resolveAgentEffortProfile("agent")).toEqual({ label: "Engineer", maxDecisionIterations: 4 });
     expect(resolveAgentEffortProfile("deepops")).toEqual({ label: "DeepOps", maxDecisionIterations: 6 });
+  });
+
+  it("returns provider-reported token evidence without treating it as a customer price", async () => {
+    mocks.resolveGovernedAiCall.mockResolvedValue({
+      ok: true,
+      extract: async () => ({
+        data: { action: "respond", message: "Ready." },
+        usage: { promptTokens: 12, completionTokens: 8, totalTokens: 20 },
+      }),
+    });
+    const result = await runDecisionLoop({
+      organizationId: "o", correlationId: "usage", transcript: [{ role: "user", content: "hello" }],
+      executeReadOnlyTool: noopReadOnly, isProdEnvironmentTarget: noopProdCheck,
+    });
+    expect(result).toEqual({
+      kind: "final", message: "Ready.",
+      usage: { decisionSteps: 1, inputTokens: 12, outputTokens: 8, totalTokens: 20 },
+    });
   });
 
   it("treats an unknown tool name as a malformed decision, never as a silent no-op", async () => {

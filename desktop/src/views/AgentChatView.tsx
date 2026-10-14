@@ -182,6 +182,7 @@ export function AgentChatView() {
   const [selectedProvider, setSelectedProvider] = useState("");
   const [modelOptions, setModelOptions] = useState<Array<{ provider: string; label: string }>>([]);
   const [enabledSkills, setEnabledSkills] = useState<AgentSkillCatalogItem[]>([]);
+  const [latestUsage, setLatestUsage] = useState<{ decisionSteps: number; inputTokens: number | null; outputTokens: number | null; totalTokens: number | null } | null>(null);
   const [startupAttempt, setStartupAttempt] = useState(0);
   const [loadingConversation, setLoadingConversation] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -367,6 +368,7 @@ export function AgentChatView() {
       setTurns([]);
       setPendingProposal(null);
       setEvidenceActions([]);
+      setLatestUsage(null);
       setInput("");
     } finally {
       setLoadingConversation(false);
@@ -399,6 +401,7 @@ export function AgentChatView() {
       }
       setTurns((prev) => [...prev, { id: `local_${Date.now()}_r`, role: "assistant", content: result.data.reply }]);
       setPendingProposal(result.data.proposal && result.data.proposal.status === "proposed" ? result.data.proposal : null);
+      setLatestUsage(result.data.usage);
       const refreshed = await desktopClient.getAgentConversation(conversationId);
       if (refreshed.ok) {
         setEvidenceActions(refreshed.data.actions.filter((action) => action.riskLevel === "low"));
@@ -563,6 +566,7 @@ export function AgentChatView() {
           )}
           {turns.map((turn) => <ChatBubble key={turn.id} turn={turn} />)}
           {evidenceActions.length > 0 && <EvidencePanel actions={evidenceActions.slice(-8)} />}
+          {latestUsage && <UsageReceipt usage={latestUsage} />}
           {pendingProposal && (
             <ProposalCard proposal={pendingProposal} deciding={decidingId === pendingProposal.id} onApprove={() => void decide(true)} onReject={() => void decide(false)} />
           )}
@@ -657,6 +661,19 @@ function ChatBubble({ turn }: { turn: ChatTurn }) {
         {turn.content}
       </div>
     </div>
+  );
+}
+
+function UsageReceipt({ usage }: { usage: { decisionSteps: number; inputTokens: number | null; outputTokens: number | null; totalTokens: number | null } }) {
+  const tokenText = usage.inputTokens === null && usage.outputTokens === null
+    ? "Token totals were not reported by the provider."
+    : `${usage.inputTokens ?? "—"} input · ${usage.outputTokens ?? "—"} output tokens`;
+  return (
+    <section className="rounded-xl border border-violet-300/[0.12] bg-violet-300/[0.025] px-4 py-3" aria-label="Latest governed AI usage">
+      <p className="text-xs font-medium text-zinc-200">Latest governed AI usage</p>
+      <p className="mt-0.5 text-[11px] text-zinc-400">{usage.decisionSteps} decision step{usage.decisionSteps === 1 ? "" : "s"} · {tokenText}</p>
+      <p className="mt-1 text-[10px] leading-4 text-zinc-500">Provider-reported usage evidence only. Customer credit charges, when applicable, settle separately under workspace policy.</p>
+    </section>
   );
 }
 

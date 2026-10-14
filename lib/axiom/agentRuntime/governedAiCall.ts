@@ -12,7 +12,7 @@ import "server-only";
 import { getAIProviderManager } from "@/lib/ai/AIProviderManager";
 import { loadWorkspaceAIProviderPolicyWithState, resolveWorkspaceAIProviderPolicy } from "@/lib/ai/workspaceProviderPolicy";
 import { checkWorkspaceAICredits } from "@/lib/billing/checkWorkspaceAICredits";
-import { isAIProviderName, type AIProviderName } from "@/lib/ai/AIProvider";
+import { isAIProviderName, type AIProviderName, type AITextResponse } from "@/lib/ai/AIProvider";
 
 export type GovernedAiCallError =
   | "workspace_ai_disabled"
@@ -23,7 +23,18 @@ export type GovernedAiCallError =
   | "workspace_ai_credit_pool_exhausted";
 
 export type GovernedAiCallResult =
-  | { ok: true; extract: <T>(text: string, schemaHint: string, correlationId: string) => Promise<T> }
+  | {
+    ok: true;
+    /**
+     * Keep provider-reported token data attached to the governed response.
+     * Callers must not derive a customer price from it: gateway settlement and
+     * workspace credit policy are authoritative for that separately.
+     */
+    extract: <T>(text: string, schemaHint: string, correlationId: string) => Promise<{
+      data: T;
+      usage?: AITextResponse["usage"];
+    }>;
+  }
   | { ok: false; error: GovernedAiCallError };
 
 export async function resolveGovernedAiCall(organizationId: string, preferredProvider?: string): Promise<GovernedAiCallResult> {
@@ -58,7 +69,7 @@ export async function resolveGovernedAiCall(organizationId: string, preferredPro
         temperature: 0.1,
         only,
       });
-      return result.data;
+      return { data: result.data, usage: result.usage };
     },
   };
 }
