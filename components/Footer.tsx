@@ -52,6 +52,7 @@ export function Footer() {
               Vision XIX Labs
             </Link>
             <p className="mt-5 max-w-sm text-sm leading-6 text-zinc-500">Axiom Agent brings AI assistance, human authorization, execution, and evidence into one governed engineering workflow.</p>
+            <p className="mt-2 max-w-sm text-sm leading-6 text-zinc-500">We also build iOS applications.</p>
           </div>
 
           {columns.map((column) => (
