@@ -9,10 +9,10 @@ describe("mobile website contract", () => {
   it("uses one responsive homepage with phone-first spacing and actions", () => {
     const page = source("app/page.tsx");
 
-    expect(page).toContain("Ship the change.");
-    expect(page).toContain("Prove it was safe.");
-    expect(page).toContain("flex flex-col gap-3 sm:flex-row");
-    expect(page).toContain("grid overflow-hidden rounded-2xl");
+    expect(page).toContain("Engineering intent,");
+    expect(page).toContain("under control.");
+    expect(page).toContain("flex flex-col justify-center gap-3 sm:flex-row");
+    expect(page).toContain("relative grid overflow-hidden rounded-2xl");
     expect(page).toContain("lg:grid-cols-[0.72fr_1.28fr]");
   });
 
@@ -21,22 +21,23 @@ describe("mobile website contract", () => {
 
     expect(page).toContain("min-h-12 items-center justify-center");
     expect(page).toContain("Download Axiom Agent");
-    expect(page).toContain("Watch how it works");
+    expect(page).toContain("Try the interactive tour");
   });
 
   it("uses a concise mobile menu and locks both root scroll containers", () => {
     const navigation = source("components/Navigation.tsx");
 
     expect(navigation).toContain("const mobileLinks = [");
-    expect(navigation).toContain('{ href: "/product", label: "Product" }');
-    expect(navigation).toContain('{ href: "/demo", label: "Demo" }');
-    expect(navigation).toContain('{ href: "/capabilities", label: "Capabilities" }');
-    expect(navigation).toContain('{ href: "/plans", label: "Pricing" }');
-    expect(navigation).toContain('{ href: "/resources", label: "Resources" }');
+    expect(navigation).toContain('{ href: "/product", label: "Axiom" }');
+    expect(navigation).toContain('{ href: "/demo", label: "Product tour" }');
     expect(navigation).toContain('{ href: "/integrations", label: "Integrations" }');
     expect(navigation).toContain('{ href: "/security", label: "Security" }');
+    expect(navigation).toContain('{ href: "/capabilities", label: "Capabilities" }');
+    expect(navigation).toContain('{ href: "/resources", label: "Resources" }');
     expect(navigation).toContain('{ href: "/status", label: "Status" }');
-    expect(navigation).toContain('{ href: "/contact", label: "Support" }');
+    expect(navigation).toContain('{ href: "/plans", label: "Plans" }');
+    expect(navigation).toContain('{ href: "/support", label: "Founding Supporters" }');
+    expect(navigation).toContain('{ href: "/contact", label: "Contact" }');
     expect(navigation).toContain('document.body.style.overflow = "hidden"');
     expect(navigation).toContain('document.documentElement.style.overflow = "hidden"');
     expect(navigation).toContain('h-16');

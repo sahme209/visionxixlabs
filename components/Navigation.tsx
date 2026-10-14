@@ -16,7 +16,6 @@ const mobileLinks = [
   ...primaryLinks,
   { href: "/capabilities", label: "Capabilities" },
   { href: "/resources", label: "Resources" },
-  { href: "/security", label: "Security" },
   { href: "/status", label: "Status" },
   { href: "/plans", label: "Plans" },
   { href: "/support", label: "Founding Supporters" },
