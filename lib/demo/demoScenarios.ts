@@ -213,7 +213,7 @@ export const DEMO_SCENARIOS: Readonly<Record<DemoScenarioId, DemoScenario>> = {
     description: "Internal-only record retained for product planning. It documents the secure browser handoff and the Integration Center without representing an unsupported customer workflow as available.",
     estimatedMinutes: 6,
     audience: "internal_only",
-    lastReviewed: "2026-10-01",
+    lastReviewed: "2026-10-14",
     steps: [
       { id: "1", title: "Verify desktop distribution", description: "Confirm that every enabled platform points to a verified release asset and unavailable platforms remain disabled.", route: "/download", approval: "none", expectedResult: "Customer receives the verified desktop build or an accurate unavailable state." },
       { id: "2", title: "Pair workspace",             description: "Paste a vxlk_live_* API key minted in /admin/api-keys.", approval: "none", expectedResult: "Test connection shows ✓ + workspace + plan tier." },
@@ -235,6 +235,7 @@ export const DEMO_SCENARIOS: Readonly<Record<DemoScenarioId, DemoScenario>> = {
       { id: "18", title: "Record external outcome", description: "After an external release or validation finishes, the operator records its evidence reference and summary before closing the governed request.", approval: "self_approve", expectedResult: "Closure is append-only and tenant-scoped. It records the reported external outcome but cannot merge, dispatch, approve, or mutate any external system." },
       { id: "19", title: "Review governed revision history", description: "The operator reviews the request's immutable snapshots and the safe categories that changed between them.", approval: "none", expectedResult: "The desktop shows version, time, privacy-safe author label, and controlled field categories only. Contacts, URLs, workflow inputs, evidence references, and full identifiers are never returned." },
       { id: "20", title: "Review execution controls", description: "The operator reads the durable status of any recorded consequential operation without gaining an execution control.", approval: "none", expectedResult: "The desktop can display a privacy-safe operation status and reconciliation time. It cannot create, retry, approve, or dispatch an operation, and it never exposes provider URLs, error payloads, idempotency keys, or internal identifiers." },
+      { id: "21", title: "Select governed Agent effort", description: "The operator chooses Inspect, Engineer, or DeepOps. Each mode has a bounded number of governed decision steps; provider selection and customer-credit checks remain service controlled.", approval: "none", expectedResult: "Inspect remains read-only with the smallest budget; Engineer proposes only GitHub engineering changes; DeepOps can only return registered operational actions for separate human approval." },
     ],
   },
   developer_tools: {

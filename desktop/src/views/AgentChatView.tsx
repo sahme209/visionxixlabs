@@ -61,9 +61,9 @@ interface EnvironmentOption {
 }
 
 const OPERATION_MODES = [
-  { id: "inspect", label: "Inspect", description: "Read-only evidence and explanations" },
-  { id: "engineer", label: "Engineer", description: "GitHub change proposals require approval" },
-  { id: "deepops", label: "DeepOps", description: "Complex operational proposals require approval" },
+  { id: "inspect", label: "Inspect", description: "Read-only evidence · up to 2 decision steps" },
+  { id: "engineer", label: "Engineer", description: "GitHub change proposals require approval · up to 4 decision steps" },
+  { id: "deepops", label: "DeepOps", description: "Complex operational proposals require approval · up to 6 decision steps" },
 ] as const;
 
 const TOOL_LABELS: Record<string, string> = {
@@ -592,6 +592,7 @@ export function AgentChatView() {
               </select>
             </label>
           </div>
+          <p className="mb-3 text-[11px] text-zinc-500">{OPERATION_MODES.find((mode) => mode.id === operationMode)?.description}. Provider selection and customer credit checks remain governed by your workspace policy.</p>
           {composerMode === "code" && <div className="mb-3 space-y-2">
             <label className="block text-[10px] uppercase tracking-[0.12em] text-zinc-600">
               File
