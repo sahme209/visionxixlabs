@@ -312,6 +312,13 @@ function buildDefensibilitySignals(state: AxiomOSState): DefensibilitySignals {
   };
 }
 
+export function providerDepthEvidence(providers: AxiomOSState["providers"]): string {
+  const live = providers.filter((provider) => provider.mode === "live").map((provider) => provider.provider);
+  const configured = providers.filter((provider) => provider.mode !== "live").map((provider) => provider.provider);
+  const liveText = live.length > 0 ? `Live-validated: ${live.join(", ")}` : "No provider is live-validated";
+  return `${liveText}. Other configured or preview providers: ${configured.length > 0 ? configured.join(", ") : "none"}.`;
+}
+
 function buildEnterpriseReadinessV2(state: AxiomOSState, readinessOverall: number): EnterpriseReadinessV2 {
   // Derive each category from real signals.
   const providerLiveCount = state.providers.filter((p) => p.mode === "live").length;
@@ -325,7 +332,7 @@ function buildEnterpriseReadinessV2(state: AxiomOSState, readinessOverall: numbe
   const rows: EnterpriseReadinessRow[] = [
     { category: "product_coherence",            score: matrixScore,                       status: matrixScore > 0.7 ? "passing" : "partial", evidence: "lib/validation/platformValidationMatrix.ts" },
     { category: "live_data_coverage",           score: providerScore,                     status: providerScore > 0.4 ? "partial" : "preview", evidence: "lib/axiomOS state providers[]" },
-    { category: "provider_depth",               score: providerScore,                     status: providerScore > 0.4 ? "partial" : "preview", evidence: "AWS multi-region + GitHub live + Azure/GCP foundations" },
+    { category: "provider_depth",               score: providerScore,                     status: providerScore > 0.4 ? "partial" : "preview", evidence: providerDepthEvidence(state.providers) },
     { category: "security_posture",             score: 0.7,                               status: "partial", evidence: "lib/securityScanner — exhaustiveness tests + compounded reasoner" },
     { category: "remediation_readiness",        score: 0.6,                               status: "preview", evidence: "lib/remediation/* — pipeline + planner + rollback generator" },
     { category: "simulation_readiness",         score: 0.6,                               status: "preview", evidence: "lib/simulation/executionSimulator.ts" },
