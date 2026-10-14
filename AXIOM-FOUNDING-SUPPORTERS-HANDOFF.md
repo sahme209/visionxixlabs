@@ -2,7 +2,7 @@
 
 ## Status
 
-Implemented on the established review line `codex/ai-agent-governance`, with `codex/axiom-founding-supporters` retained as a matching implementation branch. Nothing was merged, promoted to production, or enabled for live payments. No outreach email was sent.
+Implemented and pushed on the established review branch `codex/ai-agent-governance`. The temporary duplicate branch was removed after its commits were safely fast-forwarded into this canonical branch. Nothing was merged, promoted to production, or enabled for live payments. No outreach email was sent.
 
 Stripe Support confirmation supplied by the founder on October 13, 2026: Vision XIX Labs account `acct_1SpEdeFet66ERY29` is fully verified and activated, with no payment-processing restrictions. Stripe account activation is therefore **complete** and is no longer a launch blocker. This confirmation does not itself approve the supporter page for production or replace legal, tax, staging, and founder release approval.
 
@@ -11,11 +11,11 @@ Stripe Support confirmation supplied by the founder on October 13, 2026: Vision 
 - Verified on October 13, 2026: `visionxixlabs.com` points to ready production deployment `dpl_AoFAj2SSkBcdZLANn9XXX1A9MWSj`, built from `main` commit `d921d836adfb469d367fda40e570d035bb4c0503`.
 - During review, a pushed review-branch commit was incorrectly classified by the Vercel Git integration as a production-target deployment and briefly received the production alias. It was immediately rolled back to the deployment above. The live alias was rechecked after the rollback.
 - Vercel project setting `autoAssignCustomDomains` is now `false`. A future deployment cannot automatically seize the custom production domain; production alias assignment must be explicit.
-- `vercel.json` disables automatic Git deployments specifically for `codex/axiom-founding-supporters` and `codex/ai-agent-governance`. Pushing either review line therefore updates GitHub without creating another automatic Vercel deployment; Preview creation remains an explicit reviewed action.
+- `vercel.json` disables automatic Git deployments specifically for `codex/ai-agent-governance`. Pushing the review line therefore updates GitHub without creating another automatic Vercel deployment; Preview creation remains an explicit reviewed action.
 - GitHub's remote default branch is `main`. The active review branch is `codex/axiom-founding-supporters`.
 - GitHub reports that neither `main` nor `codex/axiom-founding-supporters` currently has branch protection enabled. Recommended production governance is to require reviewed pull requests and passing status checks on `main`; this was reported but not changed because repository-wide enforcement is outside this implementation.
 - The Vercel connector does not expose the Git production-branch field. Because the review branch was observed being classified as production, that production-branch rule still requires confirmation/correction in Vercel before this branch is pushed again.
-- Explicit deployments were attempted from the exact pushed SHA using both the standard Preview target (`target: null`) and Vercel's staging target. Vercel stopped each before build with `Resource provisioning failed`; none affected the production custom domain. Repeating the request with the verified numeric GitHub repository ID produced the same result, ruling out the original Git-source addressing as the cause.
+- Explicit deployments were attempted from the exact pushed SHA using both the standard Preview target (`target: null`) and Vercel's staging target. Vercel stopped each before build with `Resource provisioning failed`; none affected the production custom domain. Repeating the request with the verified numeric GitHub repository ID and the established governance branch produced the same result. Historical Vercel deployment records show the same Preview provisioning failure on earlier governance commits, confirming this is a pre-existing project-level Preview problem rather than a failure in the supporter or redesign code.
 
 ## Experience delivered
 

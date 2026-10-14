@@ -3,7 +3,6 @@
   "buildCommand": "NODE_OPTIONS=--max-old-space-size=6144 npm run build",
   "git": {
     "deploymentEnabled": {
-      "codex/axiom-founding-supporters": false,
       "codex/ai-agent-governance": false
     }
   },
