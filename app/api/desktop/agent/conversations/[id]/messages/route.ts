@@ -110,9 +110,13 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
   const environmentId = typeof rawContext?.environmentId === "string" ? rawContext.environmentId.trim() : "";
   const filePath = typeof rawContext?.filePath === "string" ? rawContext.filePath.trim() : "";
   const mode = rawContext?.mode === "code" ? "code" : "chat";
-  const operationMode = rawContext?.operationMode === "ask" || rawContext?.operationMode === "plan"
+  // Keep accepting the former internal labels from already-installed desktop
+  // clients, but give the product-facing modes explicit, enforceable meaning.
+  const operationMode = rawContext?.operationMode === "inspect" || rawContext?.operationMode === "engineer" || rawContext?.operationMode === "deepops"
     ? rawContext.operationMode
-    : "agent";
+    : rawContext?.operationMode === "ask" || rawContext?.operationMode === "plan"
+      ? "inspect"
+      : "deepops";
   if ((repositoryFullName && !parseRepositoryFullName(repositoryFullName)) || branch.length > 240 || /[\0\r\n]/.test(branch)) {
     return NextResponse.json({ ok: false, error: "invalid_workspace_context" }, { status: 400 });
   }

@@ -60,6 +60,12 @@ interface EnvironmentOption {
   tier: string;
 }
 
+const OPERATION_MODES = [
+  { id: "inspect", label: "Inspect", description: "Read-only evidence and explanations" },
+  { id: "engineer", label: "Engineer", description: "GitHub change proposals require approval" },
+  { id: "deepops", label: "DeepOps", description: "Complex operational proposals require approval" },
+] as const;
+
 const TOOL_LABELS: Record<string, string> = {
   list_environments: "List environments",
   list_github_files: "List repository files",
@@ -156,7 +162,7 @@ export function AgentChatView() {
   const [error, setError] = useState<string | null>(null);
   const [decidingId, setDecidingId] = useState<string | null>(null);
   const [composerMode, setComposerMode] = useState<"chat" | "code">("chat");
-  const [operationMode, setOperationMode] = useState<"ask" | "plan" | "agent">("agent");
+  const [operationMode, setOperationMode] = useState<"inspect" | "engineer" | "deepops">("engineer");
   const [repositoryFullName, setRepositoryFullName] = useState(() => window.localStorage.getItem(ACTIVE_REPOSITORY_KEY) ?? "");
   const [manualRepository, setManualRepository] = useState(false);
   const [repositoryOptions, setRepositoryOptions] = useState<GitHubRepositoryOption[]>([]);
@@ -572,8 +578,8 @@ export function AgentChatView() {
         <div className="max-w-3xl mx-auto">
           {enabledSkills.length > 0 && <div className="mb-3 flex items-center gap-2 overflow-x-auto pb-1"><span className="shrink-0 text-[10px] uppercase tracking-[0.12em] text-zinc-600">Skills</span>{enabledSkills.map((skill) => <button key={skill.id} type="button" disabled={sending || Boolean(pendingProposal)} onClick={() => setInput((current) => current || `/${skill.id} `)} className="shrink-0 rounded-full border border-violet-300/[0.12] bg-violet-300/[0.04] px-2.5 py-1 text-[10px] text-violet-200 hover:bg-violet-300/[0.08] disabled:opacity-40">/{skill.id}</button>)}</div>}
           <div className="mb-3 flex items-center gap-1" role="group" aria-label="Agent controls">
-            {(["ask", "plan", "agent"] as const).map((mode) => (
-              <button key={mode} type="button" aria-pressed={operationMode === mode} onClick={() => setOperationMode(mode)} className={`rounded-md px-3 py-1.5 text-xs capitalize ${operationMode === mode ? "bg-violet-400/15 text-violet-100 ring-1 ring-violet-300/20" : "text-zinc-500 hover:text-zinc-300"}`}>{mode}</button>
+            {OPERATION_MODES.map((mode) => (
+              <button key={mode.id} type="button" title={mode.description} aria-pressed={operationMode === mode.id} onClick={() => setOperationMode(mode.id)} className={`rounded-md px-3 py-1.5 text-xs ${operationMode === mode.id ? "bg-violet-400/15 text-violet-100 ring-1 ring-violet-300/20" : "text-zinc-500 hover:text-zinc-300"}`}>{mode.label}</button>
             ))}
             <span aria-hidden="true" className="mx-1 h-4 w-px bg-white/10" />
             <button type="button" aria-pressed={composerMode === "chat"} onClick={() => setComposerMode("chat")} className={`rounded-md px-3 py-1.5 text-xs ${composerMode === "chat" ? "bg-white/[0.09] text-white" : "text-zinc-500 hover:text-zinc-300"}`}>Chat</button>
@@ -619,7 +625,7 @@ export function AgentChatView() {
             value={input}
             onChange={(event) => setInput(event.target.value)}
             onKeyDown={(event) => { if (event.key === "Enter" && !event.shiftKey) { event.preventDefault(); void send(); } }}
-            placeholder={pendingProposal ? "Approve or reject the proposed action above to continue…" : operationMode === "ask" ? "Ask about the selected repository or environment…" : operationMode === "plan" ? "Describe what you want planned…" : composerMode === "code" ? "Describe the change you want in this file…" : "What do you want to happen?"}
+            placeholder={pendingProposal ? "Approve or reject the proposed action above to continue…" : operationMode === "inspect" ? "Ask about the selected repository or environment…" : operationMode === "engineer" && composerMode === "code" ? "Describe the change you want in this file…" : operationMode === "engineer" ? "Describe the engineering change you want proposed…" : "Describe the operational outcome you want proposed…"}
             disabled={sending || !conversationId || Boolean(pendingProposal)}
             rows={2}
             className="min-h-[48px] flex-1 resize-none rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm text-zinc-100 placeholder:text-zinc-600 outline-none focus:border-white/25 disabled:opacity-50"

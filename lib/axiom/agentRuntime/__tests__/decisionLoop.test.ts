@@ -273,7 +273,57 @@ describe("runDecisionLoop", () => {
     });
     expect(result).toEqual({
       kind: "final",
-      message: "Ask mode is read-only, so no change was proposed. Commit README.md to acme/widgets on feature/docs.",
+      message: "Inspect mode is read-only, so no change was proposed. Commit README.md to acme/widgets on feature/docs.",
     });
+  });
+
+  it("keeps Inspect mode read-only when a provider attempts a write", async () => {
+    mocks.resolveGovernedAiCall.mockResolvedValue(governed(async () => ({
+      action: "call_tool",
+      message: "Commit README.md to acme/widgets on feature/docs.",
+      toolName: "commit_github_file",
+      args: { repositoryFullName: "acme/widgets", branch: "feature/docs", path: "README.md", content: "updated", message: "Update docs" },
+    })));
+    const result = await runDecisionLoop({
+      organizationId: "o", correlationId: "c", transcript: [{ role: "user", content: "change it" }],
+      operationMode: "inspect", executeReadOnlyTool: noopReadOnly, isProdEnvironmentTarget: noopProdCheck,
+    });
+    expect(result).toEqual({
+      kind: "final",
+      message: "Inspect mode is read-only, so no change was proposed. Commit README.md to acme/widgets on feature/docs.",
+    });
+  });
+
+  it("blocks operational proposals in Engineer mode", async () => {
+    mocks.resolveGovernedAiCall.mockResolvedValue(governed(async () => ({
+      action: "call_tool",
+      message: "Deploy acme/widgets to production.",
+      toolName: "trigger_aws_deploy",
+      args: { repositoryFullName: "acme/widgets", environmentId: "env_prod" },
+    })));
+    const result = await runDecisionLoop({
+      organizationId: "o", correlationId: "c", transcript: [{ role: "user", content: "deploy it" }],
+      operationMode: "engineer", executeReadOnlyTool: noopReadOnly, isProdEnvironmentTarget: noopProdCheck,
+    });
+    expect(result).toEqual({
+      kind: "final",
+      message: "Engineer mode only proposes GitHub branch, commit, and pull-request changes. No operational action was proposed. Deploy acme/widgets to production.",
+    });
+  });
+
+  it("keeps DeepOps operational writes approval-gated", async () => {
+    mocks.resolveGovernedAiCall.mockResolvedValue(governed(async () => ({
+      action: "call_tool",
+      message: "Deploy acme/widgets to staging.",
+      toolName: "trigger_aws_deploy",
+      args: { repositoryFullName: "acme/widgets", environmentId: "env_staging" },
+    })));
+    const result = await runDecisionLoop({
+      organizationId: "o", correlationId: "c", transcript: [{ role: "user", content: "deploy it" }],
+      operationMode: "deepops", executeReadOnlyTool: noopReadOnly, isProdEnvironmentTarget: noopProdCheck,
+    });
+    expect(result).toEqual(expect.objectContaining({
+      kind: "proposal", toolName: "trigger_aws_deploy", riskLevel: "high",
+    }));
   });
 });

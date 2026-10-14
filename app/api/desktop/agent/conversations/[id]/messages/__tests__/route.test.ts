@@ -94,6 +94,30 @@ describe("POST /api/desktop/agent/conversations/[id]/messages", () => {
     }));
   });
 
+  it("maps Inspect mode to the governed read-only operation mode", async () => {
+    mocks.runDecisionLoop.mockResolvedValue({ kind: "final", message: "Ready." });
+    const { POST } = await import("../route");
+    const res = await POST(request({ message: "inspect this", workspaceContext: { operationMode: "inspect" } }), params);
+    expect(res.status).toBe(200);
+    expect(mocks.runDecisionLoop).toHaveBeenCalledWith(expect.objectContaining({ operationMode: "inspect" }));
+  });
+
+  it("forwards DeepOps mode without weakening the governed decision loop", async () => {
+    mocks.runDecisionLoop.mockResolvedValue({ kind: "final", message: "Ready." });
+    const { POST } = await import("../route");
+    const res = await POST(request({ message: "review the release path", workspaceContext: { operationMode: "deepops" } }), params);
+    expect(res.status).toBe(200);
+    expect(mocks.runDecisionLoop).toHaveBeenCalledWith(expect.objectContaining({ operationMode: "deepops" }));
+  });
+
+  it("keeps legacy Ask mode read-only for older desktop clients", async () => {
+    mocks.runDecisionLoop.mockResolvedValue({ kind: "final", message: "Ready." });
+    const { POST } = await import("../route");
+    const res = await POST(request({ message: "inspect this", workspaceContext: { operationMode: "ask" } }), params);
+    expect(res.status).toBe(200);
+    expect(mocks.runDecisionLoop).toHaveBeenCalledWith(expect.objectContaining({ operationMode: "inspect" }));
+  });
+
   it("injects validated click-selected context without changing the persisted user message", async () => {
     mocks.findFirstEnvironment.mockResolvedValue({ id: "env_prod", name: "Production", tier: "prod" });
     mocks.findManyTurns.mockResolvedValue([{ role: "user", content: "deploy this" }]);
