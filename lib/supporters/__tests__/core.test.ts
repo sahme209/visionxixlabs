@@ -42,6 +42,17 @@ describe("supporter safety gates", () => {
     expect(supporterCheckoutReadiness().ready).toBe(false);
   });
 
+  it.each(["rk_live_example", "unknown_secret_format"])('fails closed for non-test key format %s', (key) => {
+    process.env.STRIPE_SECRET_KEY = key;
+    process.env.STRIPE_SUPPORTER_WEBHOOK_SECRET = "whsec_supporter";
+    process.env.SUPPORTER_BADGE_SIGNING_SECRET = "long-secret";
+    process.env.DATABASE_URL = "postgresql://test.invalid/test";
+    process.env.RESEND_API_KEY = "re_test";
+    process.env.AXIOM_SUPPORTER_CHECKOUT_ENABLED = "true";
+    delete process.env.AXIOM_SUPPORTER_LIVE_APPROVED;
+    expect(supporterCheckoutReadiness().ready).toBe(false);
+  });
+
   it("allows a fully configured test-mode review flow", () => {
     process.env.STRIPE_SECRET_KEY = "sk_test_example";
     process.env.STRIPE_SUPPORTER_WEBHOOK_SECRET = "whsec_supporter";

@@ -54,7 +54,11 @@ export function assertCorrelationId(value: string | null): string {
 
 export function supporterCheckoutReadiness() {
   const key = process.env.STRIPE_SECRET_KEY?.trim() ?? "";
-  const isLive = key.startsWith("sk_live_");
+  // Only Stripe test credentials may bypass the live-approval gate. Treat
+  // restricted live keys and any future/unknown key format as live so a key
+  // format change can never fail open in production.
+  const isTest = key.startsWith("sk_test_") || key.startsWith("rk_test_");
+  const isLive = Boolean(key) && !isTest;
   const enabled = process.env.AXIOM_SUPPORTER_CHECKOUT_ENABLED === "true";
   const liveApproved = process.env.AXIOM_SUPPORTER_LIVE_APPROVED === "true";
   const dependenciesReady = Boolean(

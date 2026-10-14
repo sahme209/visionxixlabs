@@ -74,6 +74,14 @@ export async function POST(request: NextRequest) {
     if (!session.url) throw new Error("Stripe did not return a hosted checkout URL.");
     return NextResponse.json({ url: session.url });
   } catch (error) {
+    const diagnostic = typeof error === "object" && error !== null
+      ? {
+          name: error instanceof Error ? error.name : "UnknownError",
+          code: "code" in error ? String(error.code).slice(0, 80) : undefined,
+          type: "type" in error ? String(error.type).slice(0, 80) : undefined,
+        }
+      : { name: typeof error };
+    console.error("[Supporter checkout] Failed", diagnostic);
     const message = error instanceof Error ? error.message : "Unable to start checkout.";
     const safe = /amount|email|terms|recognition|idempotency|different details|no longer open/i.test(message) ? message : "Unable to start secure checkout.";
     return NextResponse.json({ error: safe }, { status: 400 });
