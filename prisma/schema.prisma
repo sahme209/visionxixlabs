@@ -1202,6 +1202,31 @@ model UsageEvent {
   @@index([billingStatus, createdAt])
 }
 
+/// A short-lived, tenant-scoped hold placed before a billable AI request
+/// leaves Axiom.  It prevents concurrent requests from spending the same
+/// remaining pool.  Only settled usage is charged; expired/cancelled holds
+/// release their full amount.
+model AIUsageReservation {
+  id               String   @id @default(cuid())
+  organizationId   String
+  idempotencyKey   String
+  reservedCents    Int
+  settledCents     Int?
+  /// reserved | pending_settlement | settled | released | expired | cancelled
+  status           String   @default("reserved")
+  correlationId    String?
+  usageEventId     String?  @unique
+  expiresAt        DateTime
+  settledAt        DateTime?
+  releasedAt       DateTime?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  @@unique([organizationId, idempotencyKey])
+  @@index([organizationId, status, expiresAt])
+  @@index([correlationId])
+}
+
 // ---------------------------------------------------------------------------
 // Add-on purchase ledger — Phase 386.
 // Catalog (ADD_ON_CATALOG) lives in code; this table tracks workspace purchases.

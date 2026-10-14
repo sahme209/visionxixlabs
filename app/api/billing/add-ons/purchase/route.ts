@@ -89,7 +89,10 @@ export async function POST(request: NextRequest) {
       where: { id: purchase.id, status: "pending", stripeCheckoutSessionId: null },
       data: { status: "failed" },
     }).catch(() => undefined);
-    return NextResponse.json({ ok: false, error: "stripe_checkout_unavailable", message: checkout.reason }, { status: 503 });
+    return NextResponse.json(
+      { ok: false, error: "stripe_checkout_unavailable", message: "Secure checkout is temporarily unavailable. Please try again later." },
+      { status: 503 },
+    );
   }
   try {
     await prisma.addOnPurchase.update({

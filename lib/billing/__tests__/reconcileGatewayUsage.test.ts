@@ -8,6 +8,7 @@ import {
   reconcilePendingGatewayUsage,
   type GatewayGenerationUsage,
   type GatewayUsageRepository,
+  type GatewayUsageTransaction,
 } from "../reconcileGatewayUsage";
 
 const generation: GatewayGenerationUsage = {
@@ -20,17 +21,24 @@ const generation: GatewayGenerationUsage = {
   cachedTokens: 10,
 };
 
+function transactionalRepository(repository: GatewayUsageTransaction): GatewayUsageRepository {
+  return {
+    ...repository,
+    $transaction: vi.fn(async (operation) => operation(repository)),
+  };
+}
+
 describe("reconcilePendingGatewayUsage", () => {
   beforeEach(() => vi.restoreAllMocks());
 
   it("settles authoritative Gateway cost once with platform margin", async () => {
     const updateMany = vi.fn().mockResolvedValue({ count: 1 });
-    const repository: GatewayUsageRepository = {
+    const repository = transactionalRepository({
       usageEvent: {
         findMany: vi.fn().mockResolvedValue([{ id: "usage_1", externalUsageId: "gen_1" }]),
         updateMany,
       },
-    };
+    });
 
     const result = await reconcilePendingGatewayUsage(repository, vi.fn().mockResolvedValue(generation));
 
@@ -42,12 +50,12 @@ describe("reconcilePendingGatewayUsage", () => {
   });
 
   it("leaves a generation pending while Gateway ingestion catches up", async () => {
-    const repository: GatewayUsageRepository = {
+    const repository = transactionalRepository({
       usageEvent: {
         findMany: vi.fn().mockResolvedValue([{ id: "usage_1", externalUsageId: "gen_1" }]),
         updateMany: vi.fn(),
       },
-    };
+    });
     const unavailable = Object.assign(new Error("not found"), { statusCode: 404 });
 
     const result = await reconcilePendingGatewayUsage(repository, vi.fn().mockRejectedValue(unavailable));
@@ -57,15 +65,60 @@ describe("reconcilePendingGatewayUsage", () => {
   });
 
   it("does not count a concurrent or repeated settlement twice", async () => {
-    const repository: GatewayUsageRepository = {
+    const repository = transactionalRepository({
       usageEvent: {
         findMany: vi.fn().mockResolvedValue([{ id: "usage_1", externalUsageId: "gen_1" }]),
         updateMany: vi.fn().mockResolvedValue({ count: 0 }),
       },
-    };
+    });
 
     const result = await reconcilePendingGatewayUsage(repository, vi.fn().mockResolvedValue(generation));
 
     expect(result).toEqual({ inspected: 1, settled: 0, deferred: 0, failed: 0 });
+  });
+
+  it("caps the customer debit and settles the matching reservation", async () => {
+    const usageUpdate = vi.fn().mockResolvedValue({ count: 1 });
+    const reservationUpdate = vi.fn().mockResolvedValue({ count: 1 });
+    const repository = transactionalRepository({
+      usageEvent: { findMany: vi.fn().mockResolvedValue([{ id: "usage_1", externalUsageId: "gen_1" }]), updateMany: usageUpdate },
+      aIUsageReservation: {
+        findUnique: vi.fn().mockResolvedValue({ id: "hold-1", organizationId: "org-1", reservedCents: 1 }),
+        updateMany: reservationUpdate,
+      },
+    });
+    await reconcilePendingGatewayUsage(repository, vi.fn().mockResolvedValue(generation));
+    expect(usageUpdate).toHaveBeenCalledWith(expect.objectContaining({ data: expect.objectContaining({ billedCents: 1 }) }));
+    expect(reservationUpdate).toHaveBeenCalledWith(expect.objectContaining({
+      where: expect.objectContaining({ status: { in: ["pending_settlement", "reserved"] }, usageEventId: "usage_1" }),
+      data: expect.objectContaining({ status: "settled", settledCents: 1 }),
+    }));
+  });
+
+  it("keeps usage pending when its linked reservation cannot settle", async () => {
+    const usageUpdate = vi.fn().mockResolvedValue({ count: 1 });
+    const reservationUpdate = vi.fn().mockResolvedValue({ count: 0 });
+    const transaction = vi.fn(async (operation) => operation({
+      usageEvent: { findMany: vi.fn(), updateMany: usageUpdate },
+      aIUsageReservation: {
+        findUnique: vi.fn().mockResolvedValue({ id: "hold-1", organizationId: "org-1", reservedCents: 100 }),
+        updateMany: reservationUpdate,
+      },
+    }));
+    const repository: GatewayUsageRepository = {
+      usageEvent: {
+        findMany: vi.fn().mockResolvedValue([{ id: "usage_1", externalUsageId: "gen_1" }]),
+        updateMany: usageUpdate,
+      },
+      aIUsageReservation: {
+        findUnique: vi.fn().mockResolvedValue({ id: "hold-1", organizationId: "org-1", reservedCents: 100 }),
+        updateMany: reservationUpdate,
+      },
+      $transaction: transaction,
+    };
+
+    await expect(reconcilePendingGatewayUsage(repository, vi.fn().mockResolvedValue(generation))).resolves.toEqual({ inspected: 1, settled: 0, deferred: 0, failed: 1 });
+    expect(transaction).toHaveBeenCalledTimes(1);
+    expect(usageUpdate).not.toHaveBeenCalled();
   });
 });
