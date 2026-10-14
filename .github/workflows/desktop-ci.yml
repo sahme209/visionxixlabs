@@ -6,7 +6,10 @@ on:
       - 'desktop/**'
       - 'app/api/desktop/**'
       - 'lib/desktop/**'
+      - 'components/Footer.tsx'
+      - 'app/demo/page.tsx'
       - 'scripts/check-desktop-release.mjs'
+      - '.github/workflows/desktop-release.yml'
       - '.github/workflows/desktop-ci.yml'
   push:
     branches:
@@ -16,7 +19,10 @@ on:
       - 'desktop/**'
       - 'app/api/desktop/**'
       - 'lib/desktop/**'
+      - 'components/Footer.tsx'
+      - 'app/demo/page.tsx'
       - 'scripts/check-desktop-release.mjs'
+      - '.github/workflows/desktop-release.yml'
       - '.github/workflows/desktop-ci.yml'
 
 concurrency:
