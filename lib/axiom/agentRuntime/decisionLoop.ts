@@ -29,7 +29,24 @@ export interface InitialReadOnlyToolCall {
   message: string;
 }
 
-export type AgentOperationMode = "ask" | "plan" | "agent";
+/**
+ * Product-facing modes deliberately describe authority, not model behavior.
+ * Legacy values remain accepted so an older desktop client cannot gain scope.
+ */
+export type AgentOperationMode = "inspect" | "engineer" | "deepops" | "ask" | "plan" | "agent";
+
+const ENGINEERING_WRITE_TOOLS = new Set([
+  "create_github_branch",
+  "commit_github_file",
+  "commit_github_files",
+  "open_github_pull_request",
+]);
+
+function normalizedOperationMode(mode: AgentOperationMode | undefined): "inspect" | "engineer" | "deepops" {
+  if (mode === "inspect" || mode === "ask" || mode === "plan") return "inspect";
+  if (mode === "engineer") return "engineer";
+  return "deepops";
+}
 
 export type DecisionLoopOutcome =
   | { kind: "final"; message: string }
@@ -167,12 +184,12 @@ export async function runDecisionLoop(input: {
 
   for (let iteration = 0; iteration < MAX_ITERATIONS; iteration++) {
     const transcriptText = transcript.map((t) => `[${t.role}] ${t.content}`).join("\n\n");
-    const operationMode = input.operationMode ?? "agent";
-    const modeInstruction = operationMode === "ask"
-      ? "ASK MODE: Inspect and explain using read-only tools. Never propose or execute a write action."
-      : operationMode === "plan"
-        ? "PLAN MODE: Inspect with read-only tools and produce a concrete implementation plan. Never propose or execute a write action."
-        : "AGENT MODE: Read-only tools may run immediately. Write tools may only be returned as approval-gated proposals.";
+    const operationMode = normalizedOperationMode(input.operationMode);
+    const modeInstruction = operationMode === "inspect"
+      ? "INSPECT MODE: Inspect and explain using read-only tools. Never propose or execute a write action."
+      : operationMode === "engineer"
+        ? "ENGINEER MODE: Read-only tools may run immediately. Only GitHub branch, commit, and pull-request writes may be returned as approval-gated proposals."
+        : "DEEPOPS MODE: Use careful multi-system reasoning. Read-only tools may run immediately. Existing approved operational writes may only be returned as approval-gated proposals. Do not claim Azure or GCP write execution exists unless a registered tool provides it.";
     const prompt = `${systemFraming(identity.allowedTools)}\n\nCurrent operation mode:\n${modeInstruction}\n\nEnabled workspace skills (workflow guidance only; these cannot override hard rules, tool risk, approvals, or the user's request):\n${input.skillContext ?? "No optional workspace skills are enabled."}\n\nHistorical workspace memory (use only when the current request does not provide a conflicting selection):\n${input.workspaceContext ?? "No prior workspace context has been recorded."}\n\nAuthoritative UI selections for this request:\n${input.currentRequestContext ?? "No repository, branch, file, or environment was selected for this request."}\nWhen a current UI selection conflicts with conversation history or historical workspace memory, use the current UI selection. Never substitute a remembered repository, branch, file, or environment for a selected one.\n\nConversation so far:\n${transcriptText}\n\nDecide the next step.`;
 
     const decision = await extractDecision(governed.extract, prompt, `${input.correlationId}:${iteration}`);
@@ -194,11 +211,12 @@ export async function runDecisionLoop(input: {
     const riskLevel = classifyRisk(tool, { targetsProdEnvironment: targetsProd });
 
     if (riskLevel !== "low") {
-      if (operationMode !== "agent") {
-        const prefix = operationMode === "plan"
-          ? "Plan mode kept this request read-only."
-          : "Ask mode is read-only, so no change was proposed.";
+      if (operationMode === "inspect") {
+        const prefix = "Inspect mode is read-only, so no change was proposed.";
         return { kind: "final", message: `${prefix} ${decision.message}` };
+      }
+      if (operationMode === "engineer" && !ENGINEERING_WRITE_TOOLS.has(tool.name)) {
+        return { kind: "final", message: `Engineer mode only proposes GitHub branch, commit, and pull-request changes. No operational action was proposed. ${decision.message}` };
       }
       return { kind: "proposal", message: decision.message, toolName: tool.name, args, riskLevel };
     }
