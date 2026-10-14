@@ -1,48 +1,25 @@
 "use client";
 
-import { useEffect, useState, useSyncExternalStore } from "react";
+import { useEffect, useMemo, useState, useSyncExternalStore } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import {
-  ArrowRightIcon,
   ArrowDownTrayIcon,
-  CommandLineIcon,
-  LockClosedIcon,
-  CpuChipIcon,
-  BellAlertIcon,
-  BoltIcon,
-  ShieldCheckIcon,
-  CloudArrowDownIcon,
-  DocumentCheckIcon,
+  ArrowRightIcon,
   CheckCircleIcon,
+  CommandLineIcon,
+  ComputerDesktopIcon,
   GlobeAltIcon,
-  CubeTransparentIcon,
+  ShieldCheckIcon,
 } from "@heroicons/react/24/outline";
 import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/Footer";
-import { Reveal } from "@/components/motion/Reveal";
-import { Stagger } from "@/components/motion/Stagger";
-import { useDesktopRuntime } from "@/lib/desktop/useDesktopRuntime";
 
-type DetectedPlatform = "mac-arm" | "mac-intel" | "windows" | "linux";
-
-interface PlatformInfo {
-  id: DetectedPlatform;
-  label: string;
-  sublabel: string;
-  href: string;
-  available: boolean;
-  /** Set when a real signed/unsigned download exists in the GitHub release. */
-  fileName?: string;
-  /** Honest one-line friction note (rendered when available === true). */
-  installFriction?: string;
-  digest?: string | null;
-  signatureUrl?: string | null;
-  sizeBytes?: number;
-}
+type PlatformId = "mac-arm" | "mac-intel" | "windows" | "linux";
+type ManifestPlatform = "macos-arm" | "macos-intel" | "windows-x64" | "linux-x64";
 
 interface ManifestAsset {
-  platform: "macos-arm" | "macos-intel" | "windows-x64" | "linux-x64";
+  platform: ManifestPlatform;
   fileName: string;
   downloadUrl: string;
   sizeBytes: number;
@@ -54,589 +31,219 @@ interface ManifestAsset {
 }
 
 interface ReleaseManifest {
-  source: "github_release" | "none";
   tag?: string;
-  publishedAt?: string;
   htmlUrl?: string;
-  assets: Record<"macos-arm" | "macos-intel" | "windows-x64" | "linux-x64", ManifestAsset | null>;
+  assets: Record<ManifestPlatform, ManifestAsset | null>;
   hasAnyAsset: boolean;
-  allSignedAndNotarized: boolean;
   runtimeReady: boolean;
   runtimeMessage?: string;
-  note?: string;
 }
 
-const PLATFORM_TO_MANIFEST: Record<DetectedPlatform, keyof ReleaseManifest["assets"]> = {
-  "mac-arm":   "macos-arm",
+const platformKey: Record<PlatformId, ManifestPlatform> = {
+  "mac-arm": "macos-arm",
   "mac-intel": "macos-intel",
-  windows:     "windows-x64",
-  linux:       "linux-x64",
+  windows: "windows-x64",
+  linux: "linux-x64",
 };
 
-// Honest platform availability — desktop binaries are in active development
-// but distribution requires signing/notarization (planned for 1.0). Every
-// desktop button routes to /download/preview, which explains the state and
-// captures interest. Live operations are desktop-only; the website provides
-// an isolated, synthetic demo instead of a browser control plane.
-const PLATFORMS: Record<DetectedPlatform, PlatformInfo> = {
-  "mac-arm": {
-    id: "mac-arm",
-    label: "macOS · Apple Silicon",
-    sublabel: "Resolve the current release manifest",
-    href: "/api/desktop/download?platform=mac-arm",
-    available: false,
-  },
-  "mac-intel": {
-    id: "mac-intel",
-    label: "macOS · Intel",
-    sublabel: "Resolve the current release manifest",
-    href: "/api/desktop/download?platform=mac-intel",
-    available: false,
-  },
-  windows: {
-    id: "windows",
-    label: "Windows",
-    sublabel: "Resolve the current release manifest",
-    href: "/api/desktop/download?platform=windows",
-    available: false,
-  },
-  linux: {
-    id: "linux",
-    label: "Linux",
-    sublabel: "Resolve the current release manifest",
-    href: "/api/desktop/download?platform=linux",
-    available: false,
-  },
+const platformLabel: Record<PlatformId, string> = {
+  "mac-arm": "macOS for Apple Silicon",
+  "mac-intel": "macOS for Intel",
+  windows: "Windows",
+  linux: "Linux",
 };
 
-const subscribeToClientEnvironment = () => () => {};
+const subscribe = () => () => undefined;
 
-function detectPlatform(): DetectedPlatform {
-  const ua = navigator.userAgent.toLowerCase();
-  if (ua.includes("win")) return "windows";
-  if (ua.includes("linux")) return "linux";
-  return "mac-arm";
+function detectPlatform(): PlatformId {
+  const userAgent = navigator.userAgent.toLowerCase();
+  if (userAgent.includes("win")) return "windows";
+  if (userAgent.includes("linux")) return "linux";
+  const platform = navigator.platform?.toLowerCase() ?? "";
+  return platform.includes("intel") ? "mac-intel" : "mac-arm";
+}
+
+function formatSize(bytes: number) {
+  return `${(bytes / 1_048_576).toFixed(1)} MB`;
 }
 
 export default function DownloadPage() {
-  const primary = useSyncExternalStore<DetectedPlatform>(
-    subscribeToClientEnvironment,
-    detectPlatform,
-    () => "mac-arm",
-  );
-  const mounted = useSyncExternalStore(subscribeToClientEnvironment, () => true, () => false);
+  const detectedPlatform = useSyncExternalStore<PlatformId>(subscribe, detectPlatform, () => "mac-arm");
   const [manifest, setManifest] = useState<ReleaseManifest | null>(null);
-  const { isDesktop, status: desktopStatus } = useDesktopRuntime();
+  const [manifestError, setManifestError] = useState(false);
 
-  // Fetch the live release manifest so download buttons resolve to real
-  // GitHub-hosted binaries when a release exists. Falls back to preview
-  // routes when no release / network failure.
   useEffect(() => {
     let cancelled = false;
     fetch("/api/desktop/release-manifest")
-      .then((r) => r.json())
-      .then((body) => {
-        if (cancelled) return;
-        if (body && body.ok && body.data) setManifest(body.data as ReleaseManifest);
+      .then(async (response) => {
+        if (!response.ok) throw new Error("Release manifest unavailable");
+        return response.json();
       })
-      .catch(() => { /* preview state stays */ });
+      .then((body) => {
+        if (!cancelled && body?.ok && body.data) setManifest(body.data as ReleaseManifest);
+      })
+      .catch(() => {
+        if (!cancelled) setManifestError(true);
+      });
     return () => { cancelled = true; };
   }, []);
 
-  // Compose the per-platform info — live download when manifest has an
-  // asset, preview route otherwise.
-  const platformsLive: Record<DetectedPlatform, PlatformInfo> = {
-    ...PLATFORMS,
-    ...Object.fromEntries(
-      (["mac-arm", "mac-intel", "windows", "linux"] as const).map((id) => {
-        const base = PLATFORMS[id];
-        const key = PLATFORM_TO_MANIFEST[id];
-        const asset = manifest?.assets[key] ?? null;
-        if (!asset || manifest?.runtimeReady !== true) return [id, base];
-        return [id, {
-          ...base,
-          href: asset.downloadUrl,
-          sublabel: asset.signed && asset.notarized ? "Signed + notarized" : asset.signed ? "Signed · not notarized" : "Developer build · unsigned",
-          available: true,
-          fileName: asset.fileName,
-          installFriction: asset.installFriction,
-          digest: asset.digest,
-          signatureUrl: asset.signatureUrl,
-          sizeBytes: asset.sizeBytes,
-        }] as const;
-      }),
-    ),
-  } as Record<DetectedPlatform, PlatformInfo>;
+  const detectedAsset = manifest?.assets[platformKey[detectedPlatform]] ?? null;
+  const downloadReady = Boolean(manifest?.runtimeReady && detectedAsset);
+  const primaryHref = downloadReady && detectedAsset
+    ? detectedAsset.downloadUrl
+    : `/api/desktop/download?platform=${detectedPlatform}`;
 
-  const primaryPlatform = platformsLive[primary];
+  const releaseStatus = useMemo(() => {
+    if (manifestError) return "Release status unavailable";
+    if (!manifest) return "Checking the latest release…";
+    if (!manifest.runtimeReady) return manifest.runtimeMessage ?? "Desktop sign-in is temporarily unavailable.";
+    return manifest.tag ? `Latest release · ${manifest.tag.replace("desktop-v", "v")}` : "Latest release";
+  }, [manifest, manifestError]);
 
   return (
-    <div className="min-h-screen overflow-hidden bg-[#141414] text-white">
-
+    <div className="min-h-screen bg-[#0d0e0c] text-zinc-100">
       <Navigation />
 
-      {/* Hero ───────────────────────────────────────────────────── */}
-      <section className="relative overflow-hidden px-4 pb-12 pt-28 sm:px-6 sm:pb-20 sm:pt-36 lg:px-8">
-        <div className="max-w-4xl mx-auto text-center relative z-10">
-          <Reveal direction="up" blur>
-            <div className="relative inline-flex items-center justify-center mb-6 sm:mb-10">
-              <div className="relative flex h-20 w-20 items-center justify-center rounded-2xl border border-white/[0.1] bg-[#1A1A1A] sm:h-24 sm:w-24">
-                <Image
-                  src="/vision-xix-logo.png"
-                  alt="Axiom Agent"
-                  width={52}
-                  height={52}
-                  className="relative z-10 h-12 w-12 rounded-xl sm:h-14 sm:w-14"
-                  priority
-                />
-              </div>
-            </div>
-          </Reveal>
-
-          {/* Build badge — derived from the live release manifest. */}
-          <Reveal direction="up" delay={0.05}>
-            {isDesktop && desktopStatus.available ? (
-              <span className="badge-shimmer badge-shimmer-border inline-flex max-w-full items-center justify-center gap-2 px-3 sm:px-4 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-300 text-[11px] sm:text-xs leading-5 font-medium mb-5 sm:mb-8 backdrop-blur-sm cursor-default">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                Desktop runtime detected {desktopStatus.version ? `· v${desktopStatus.version}` : ""}
-                {desktopStatus.platform ? ` · ${desktopStatus.platform}` : ""}
-              </span>
-            ) : manifest?.hasAnyAsset && manifest.runtimeReady ? (
-              <span className="badge-shimmer badge-shimmer-border inline-flex max-w-full items-center justify-center gap-2 px-3 sm:px-4 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-300 text-[11px] sm:text-xs leading-5 font-medium mb-5 sm:mb-8 backdrop-blur-sm cursor-default">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-                Released {manifest.tag ? `· ${manifest.tag.replace("desktop-v", "v")}` : ""}
-              </span>
-            ) : (
-              <span className="badge-shimmer badge-shimmer-border inline-flex max-w-full items-center justify-center gap-2 px-3 sm:px-4 py-1.5 rounded-full bg-white/10 border border-white/20 text-zinc-200 text-[11px] sm:text-xs leading-5 font-medium mb-5 sm:mb-8 backdrop-blur-sm cursor-default">
-                <span className="w-1.5 h-1.5 rounded-full bg-zinc-400" />
-                {manifest?.hasAnyAsset && manifest.runtimeReady === false
-                  ? "Installer ready · desktop sign-in temporarily unavailable"
-                  : "No verified installer is currently available"}
-              </span>
-            )}
-          </Reveal>
-
-          {/* Headline */}
-          <Reveal direction="up" blur delay={0.08}>
-            <h1 className="mb-5 text-[2.35rem] font-medium leading-[1.02] tracking-[-0.055em] sm:mb-6 sm:text-5xl md:text-6xl lg:text-7xl">
-              Govern every deployment.<br />
-              <span className="text-zinc-200">From request to closure.</span>
+      <main>
+        <section className="mx-auto max-w-[1400px] px-5 pb-14 pt-32 sm:px-8 sm:pb-20 sm:pt-40 lg:px-12">
+          <div className="max-w-3xl">
+            <p className="text-[11px] font-medium uppercase tracking-[0.2em] text-orange-300">Axiom Agent for desktop</p>
+            <h1 className="mt-6 text-[clamp(3.4rem,7vw,7.4rem)] font-medium leading-[0.9] tracking-[-0.065em] text-white">
+              Work where<br />engineering happens.
             </h1>
-          </Reveal>
-
-          {/* Subhead with progressive dimming */}
-          <Reveal direction="up" delay={0.12}>
-            <p className="text-dim-paragraph text-base sm:text-lg md:text-xl max-w-2xl mx-auto mb-8 sm:mb-12 leading-7 sm:leading-relaxed">
-              Run the complete Axiom workspace on macOS, Windows, or Linux. <span className="dim-1">The website is an isolated product demo;</span> <span className="dim-2">live cloud operations stay in the downloadable app.</span>
+            <p className="mt-7 max-w-2xl text-lg leading-8 text-zinc-400 sm:text-xl">
+              A focused desktop workspace for governed engineering operations, approvals, execution, and evidence.
             </p>
-          </Reveal>
-
-          {/* Primary CTAs — desktop is the product; web is the safe demo. */}
-          <Reveal direction="up" delay={0.16}>
-            <div className="flex flex-col items-center gap-4 mb-10">
-              <div className="flex w-full flex-col sm:flex-row items-stretch sm:items-center justify-center gap-3">
-                <Link
-                  href={mounted ? primaryPlatform.href : "/download/preview"}
-                  className={`group inline-flex min-h-12 items-center justify-center gap-2 px-5 sm:px-7 py-3.5 sm:py-4 rounded-xl sm:rounded-full text-sm font-semibold border transition-colors ${
-                    mounted && primaryPlatform.available
-                      ? "bg-white text-zinc-950 border-white hover:bg-zinc-100"
-                      : "border-white/30 bg-white/10 text-zinc-100 hover:bg-white/20 hover:border-white/50"
-                  }`}
-                  {...(mounted && primaryPlatform.available && primaryPlatform.fileName ? { download: primaryPlatform.fileName } : {})}
-                >
-                  {mounted && primaryPlatform.available ? <ArrowDownTrayIcon className="h-4 w-4" /> : <CloudArrowDownIcon className="h-4 w-4 text-zinc-300" />}
-                  {mounted && primaryPlatform.available
-                    ? `Download for ${primaryPlatform.label}`
-                    : `Check current release for ${mounted ? primaryPlatform.label : "desktop"}`}
-                </Link>
-                <Link
-                  href="/demo"
-                  className="group inline-flex min-h-12 items-center justify-center gap-2 px-5 sm:px-7 py-3.5 rounded-xl sm:rounded-full text-sm font-semibold border border-white/[0.12] bg-white/[0.03] text-zinc-200 hover:bg-white/[0.06] hover:border-white/[0.2] transition-colors"
-                >
-                  <BoltIcon className="h-4 w-4 text-zinc-300" />
-                  Explore the isolated demo
-                  <ArrowRightIcon className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
-                </Link>
-              </div>
-              <span className="max-w-full break-words text-xs text-zinc-500 font-mono">
-                {manifest?.hasAnyAsset && manifest.runtimeReady
-                  ? `Latest desktop release: ${manifest.tag ?? "—"} · signing status is reported per platform below`
-                  : manifest?.hasAnyAsset && manifest.runtimeReady === false
-                    ? manifest.runtimeMessage ?? "Desktop sign-in is temporarily unavailable. Downloads are paused until service is restored."
-                  : "Web: isolated demo only · Desktop developer builds publish via CI on `desktop-v*` tags — signed binaries when platform certificates are configured"}
-              </span>
-              {mounted && primaryPlatform.available && primaryPlatform.installFriction && (
-                <span className="text-[11px] text-zinc-200/80 font-mono">{primaryPlatform.installFriction}</span>
-              )}
-            </div>
-          </Reveal>
-
-          {/* Doc link */}
-          <Reveal direction="up" delay={0.18}>
-            <p className="text-center text-xs text-zinc-500 mb-6">
-              First time? Read the{" "}
-              <Link href="/docs/desktop-install" className="text-orange-300 hover:text-orange-200 underline underline-offset-4">install guide</Link>
-              {" "}or the{" "}
-              <Link href="/docs/desktop-architecture" className="text-orange-300 hover:text-orange-200 underline underline-offset-4">architecture overview</Link>.
-            </p>
-          </Reveal>
-
-          {/* Platform availability table — live download when manifest has an
-              asset, preview route + honest label otherwise. */}
-          <Reveal direction="up" delay={0.2}>
-            <div className="mt-2 grid sm:grid-cols-2 md:grid-cols-4 gap-2 max-w-3xl mx-auto">
-              {(["mac-arm", "mac-intel", "windows", "linux"] as DetectedPlatform[]).map((id) => {
-                const p = platformsLive[id];
-                const isLive = p.available;
-                const downloadAttrs = isLive && p.fileName ? { download: p.fileName } : {};
-                return (
-                  <Link
-                    key={id}
-                    href={p.href}
-                    {...downloadAttrs}
-                    className={`rounded-xl border p-3 text-left transition-colors ${
-                      isLive
-                        ? "border-emerald-500/15 bg-emerald-500/[0.03] hover:border-emerald-500/30"
-                        : "border-white/[0.06] bg-white/[0.02] hover:border-white/25"
-                    }`}
-                  >
-                    <div className="flex items-center justify-between mb-1">
-                      <p className="text-[12px] font-semibold text-white">{p.label}</p>
-                      <span
-                        className={`text-[9px] font-bold uppercase tracking-wider border rounded-full px-1.5 py-px ${
-                          isLive
-                            ? "text-emerald-300 bg-emerald-500/10 border-emerald-500/20"
-                            : "text-zinc-300 bg-white/10 border-white/20"
-                        }`}
-                      >
-                        {isLive ? "Download" : "Check"}
-                      </span>
-                    </div>
-                    <p className="text-[10px] text-zinc-500 leading-relaxed">{p.sublabel}</p>
-                    {p.installFriction && (
-                      <p className="text-[9.5px] text-zinc-200/70 mt-1 font-mono leading-snug">{p.installFriction}</p>
-                    )}
-                    {p.sizeBytes ? (
-                      <p className="mt-1 text-[9.5px] font-mono text-zinc-500">
-                        {(p.sizeBytes / 1_048_576).toFixed(1)} MB
-                      </p>
-                    ) : null}
-                    {p.digest ? (
-                      <p className="mt-1 break-all text-[9px] font-mono text-zinc-600" title={p.digest}>
-                        SHA-256 {p.digest.replace(/^sha256:/, "").slice(0, 12)}…
-                      </p>
-                    ) : null}
-                    {p.signatureUrl ? (
-                      <p className="mt-1 text-[9.5px] font-mono text-orange-300">Detached signature published</p>
-                    ) : null}
-                  </Link>
-                );
-              })}
-            </div>
-            {manifest?.htmlUrl ? (
-              <p className="mt-4 text-center text-[11px] text-zinc-500">
-                Verify full SHA-256 digests and download detached signatures on the{" "}
-                <a href={manifest.htmlUrl} target="_blank" rel="noopener noreferrer" className="text-orange-300 hover:text-orange-200 underline underline-offset-4">
-                  public release record
-                </a>.
-              </p>
-            ) : null}
-          </Reveal>
-        </div>
-      </section>
-
-      {/* Your first five minutes ────────────────────────────────── */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8 relative border-y border-white/[0.06] bg-[#0f100f]">
-        <div className="max-w-[1400px] mx-auto">
-          <Reveal direction="up" blur>
-            <p className="text-sm font-semibold text-orange-400 mb-4 tracking-wide uppercase">Your first five minutes</p>
-            <h2 className="text-2xl sm:text-3xl font-medium tracking-[-0.03em] text-white max-w-2xl">What's intended to happen after you install.</h2>
-            <p className="mt-4 max-w-2xl text-xs leading-5 text-zinc-200/80">
-              A known issue can currently interrupt pairing after you approve it in the browser. If the desktop app doesn't pick up an approved session, this is that defect — not something wrong on your end. We're actively tracing it before promising it end-to-end.
-            </p>
-            <ol className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-5">
-              {[
-                { step: "1", title: "Install", detail: "Download the signed build for your platform above and open it." },
-                { step: "2", title: "Sign in", detail: "The desktop app opens a browser window to authenticate — credentials never pass through the installed app directly." },
-                { step: "3", title: "Authorize the pairing", detail: "The browser shows \"Authorize Axiom Agent\" with your device's fingerprint and label, asking you to approve it once for that device." },
-                { step: "4", title: "Workspace should scope to you", detail: "Once pairing succeeds, the desktop app is intended to open scoped to your own workspace membership — not an admin view, not another tenant's data." },
-                { step: "5", title: "Next steps, once connected", detail: "From there the app is meant to tell you directly what's connected and what isn't yet — a repository to bind, an integration to approve — never a silent assumption." },
-              ].map((item) => (
-                <li key={item.step} className="rounded-xl border border-white/[0.08] bg-white/[0.02] p-5">
-                  <span className="flex h-7 w-7 items-center justify-center rounded-full border border-orange-300/25 bg-orange-300/10 text-xs font-medium text-orange-100">{item.step}</span>
-                  <p className="mt-4 text-sm font-medium text-zinc-100">{item.title}</p>
-                  <p className="mt-2 text-xs leading-5 text-zinc-400">{item.detail}</p>
-                </li>
-              ))}
-            </ol>
-            <p className="mt-8 text-xs text-zinc-500 max-w-2xl">
-              This describes the intended real pairing flow, not a screenshot sequence — every screen named above exists in the current build. It is not yet a guarantee that pairing completes end-to-end; see the notice above.
-            </p>
-          </Reveal>
-        </div>
-      </section>
-
-      {/* What you get on desktop ────────────────────────────────── */}
-      <section className="py-24 px-4 sm:px-6 lg:px-8 relative">
-        <div className="max-w-[1400px] mx-auto">
-          <Reveal direction="up" blur>
-            <div className="mb-16">
-              <p className="text-sm font-semibold text-orange-400 mb-4 tracking-wide uppercase">
-                Desktop Capabilities
-              </p>
-              <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-[-0.04em] mb-5">
-                A command center{" "}
-                <span className="text-zinc-500">that lives on your machine.</span>
-              </h2>
-              <p className="text-dim-paragraph text-lg max-w-2xl leading-relaxed">
-                The desktop application provides the installed review and operations workspace: intake, approvals, plans, supported adapters, validation, and evidence <span className="dim-1">— while the website remains documentation, distribution, and an isolated demo.</span>
-              </p>
-            </div>
-          </Reveal>
-
-          <Stagger delay={0.1} interval={0.08} className="grid md:grid-cols-2 gap-4">
-            {[
-              {
-                icon: CommandLineIcon,
-                title: "Local Terraform Review.",
-                desc: "Inspect generated Terraform and CLI artifacts on your workstation. Local apply remains disabled until the approval and credential-custody architecture is fully verified.",
-                visual: (
-                  <div className="mt-5 rounded-lg bg-black/40 border border-white/[0.04] p-3 font-mono text-[10px] text-zinc-500 leading-relaxed">
-                    <span className="text-zinc-600">$</span> <span className="text-white">terraform plan</span> <span className="text-orange-400"># sample preview</span><br />
-                    <span className="text-emerald-400">✓</span> Artifact ready for human review<br />
-                    <span className="text-zinc-400">!</span> Apply disabled by desktop safety contract<br />
-                    <span className="text-zinc-400">→</span> Record approval or return for revision
-                  </div>
-                ),
-              },
-              {
-                icon: LockClosedIcon,
-                title: "Workstation Session Controls.",
-                desc: "Desktop authentication uses a browser approval handoff and scoped bearer session. OS-keychain-backed persistence is not yet shipped; re-authenticate or clear local app data on shared machines.",
-                visual: (
-                  <div className="mt-5 space-y-2">
-                    {[
-                      { label: "Desktop sign-in", status: "Browser approval", color: "text-emerald-400" },
-                      { label: "Session storage", status: "App data · keychain pending", color: "text-zinc-400" },
-                      { label: "Cloud credentials", status: "Connector-dependent", color: "text-zinc-300" },
-                      { label: "Code signing", status: "See release manifest", color: "text-zinc-400" },
-                    ].map((row) => (
-                      <div key={row.label} className="flex items-center justify-between text-[11px]">
-                        <span className="text-zinc-500">{row.label}</span>
-                        <span className={`${row.color} font-medium`}>{row.status}</span>
-                      </div>
-                    ))}
-                  </div>
-                ),
-              },
-              {
-                icon: CpuChipIcon,
-                title: "Native Desktop Shell.",
-                desc: "Use the tray, workspace navigation, and server-sent event views to monitor supported operations while the app is running. Connector failures remain visible.",
-                visual: (
-                  <div className="mt-5 flex items-center justify-between rounded-lg bg-black/40 border border-white/[0.04] px-3 py-2.5">
-                    <div className="flex items-center gap-2.5">
-                      <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                      <span className="text-[11px] text-zinc-400 font-medium">Axiom · Sample workspace</span>
-                    </div>
-                    <span className="text-[10px] text-zinc-600 font-mono">Example status</span>
-                  </div>
-                ),
-              },
-              {
-                icon: BellAlertIcon,
-                title: "Native Notifications.",
-                desc: "Native macOS, Windows, and Linux notifications for scan completions, approval requests, drift alerts, and execution outcomes. No browser tabs needed.",
-                visual: (
-                  <div className="mt-5 rounded-xl bg-gradient-to-br from-white/[0.04] to-white/[0.01] border border-white/[0.08] p-3 backdrop-blur-sm">
-                    <div className="flex items-start gap-2.5">
-                      <div className="w-7 h-7 rounded-lg bg-orange-500/15 border border-orange-500/20 flex items-center justify-center shrink-0">
-                        <BoltIcon className="h-3.5 w-3.5 text-orange-400" />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-[11px] font-semibold text-white mb-0.5">Axiom Agent</p>
-                        <p className="text-[10px] text-zinc-400 leading-snug">Sample approval is ready for review · no notification sent</p>
-                      </div>
-                    </div>
-                  </div>
-                ),
-              },
-            ].map((feature) => {
-              const Icon = feature.icon;
-              return (
-                <div key={feature.title} className="axiom-feature-card group">
-                  <div className="p-7">
-                    <div className="w-11 h-11 rounded-xl bg-white/[0.04] border border-white/[0.06] flex items-center justify-center mb-5 group-hover:bg-white/[0.06] transition-colors">
-                      <Icon className="h-5 w-5 text-zinc-400 group-hover:text-white transition-colors" />
-                    </div>
-                    <h3 className="text-lg font-bold text-white mb-2">{feature.title}</h3>
-                    <p className="text-sm text-zinc-500 leading-relaxed">{feature.desc}</p>
-                    {feature.visual}
-                  </div>
-                </div>
-              );
-            })}
-          </Stagger>
-        </div>
-      </section>
-
-      {/* Built for enterprise ─────────────────────────────────────── */}
-      <section className="py-24 px-4 sm:px-6 lg:px-8 relative">
-        <div className="max-w-[1400px] mx-auto">
-          <Reveal direction="up" blur>
-            <div className="mb-12">
-              <p className="text-sm font-semibold text-emerald-400 mb-4 tracking-wide uppercase">
-                Built for enterprise
-              </p>
-              <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-[-0.04em] mb-5">
-                Security status.{" "}
-                <span className="text-zinc-500">Clearly stated.</span>
-              </h2>
-              <p className="text-dim-paragraph text-lg max-w-2xl leading-relaxed">
-                The Axiom desktop agent is designed for security-first organizations. <span className="dim-1">Installer signing and notarization status comes from verification performed for each published release.</span>
-              </p>
-            </div>
-          </Reveal>
-
-          <Stagger delay={0.1} interval={0.06} className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            {[
-              { icon: ShieldCheckIcon, label: "Signing and notarization reported from release attestations—not inferred from filenames" },
-              { icon: LockClosedIcon, label: "Browser-approved desktop sessions · OS keychain persistence remains pending" },
-              { icon: CubeTransparentIcon, label: "Review workstation · local apply disabled by the current safety contract" },
-              { icon: DocumentCheckIcon, label: "Persisted audit evidence and exports where the selected workflow supports them" },
-            ].map((item) => {
-              const Icon = item.icon;
-              return (
-                <div
-                  key={item.label}
-                  className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-5 hover:border-white/[0.12] transition-colors"
-                >
-                  <div className="w-9 h-9 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center mb-3">
-                    <Icon className="h-4.5 w-4.5 text-emerald-400" />
-                  </div>
-                  <p className="text-sm text-zinc-300 leading-relaxed">{item.label}</p>
-                </div>
-              );
-            })}
-          </Stagger>
-        </div>
-      </section>
-
-      {/* Platform roadmap ─────────────────────────────────────────── */}
-      <section className="py-24 px-4 sm:px-6 lg:px-8 relative">
-        <div className="max-w-[1400px] mx-auto">
-          <Reveal direction="up" blur>
-            <div className="mb-12">
-              <p className="text-sm font-semibold text-zinc-400 mb-4 tracking-wide uppercase">
-                Platform Roadmap
-              </p>
-              <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-[-0.04em] mb-5">
-                Every platform.{" "}
-                <span className="text-zinc-500">Every workstation.</span>
-              </h2>
-            </div>
-          </Reveal>
-
-          <Stagger delay={0.1} interval={0.06} className="space-y-3">
-            {[
-              {
-                platform: "macOS",
-                status: "Manifest verified",
-                statusColor: "text-zinc-400",
-                statusBg: "bg-white/10 border-white/20",
-                detail: "Apple Silicon and Intel targets · installer and signing state shown in the live availability table above",
-                dot: "bg-zinc-400",
-              },
-              {
-                platform: "Windows",
-                status: "Manifest verified",
-                statusColor: "text-zinc-400",
-                statusBg: "bg-white/10 border-white/20",
-                detail: "x64 CI target · .msi/.exe buttons appear only when those assets exist in the current release",
-                dot: "bg-zinc-400",
-              },
-              {
-                platform: "Linux",
-                status: "Manifest verified",
-                statusColor: "text-zinc-400",
-                statusBg: "bg-white/10 border-white/20",
-                detail: "x64 CI target · AppImage, .deb, and .rpm availability comes from the current release manifest",
-                dot: "bg-zinc-400",
-              },
-              {
-                platform: "Updates",
-                status: "Manual today",
-                statusColor: "text-zinc-300",
-                statusBg: "bg-white/[0.04] border-white/[0.10]",
-                detail: "Automatic update delivery is not configured in the current desktop bundle; install a newer verified release manually",
-                dot: "bg-zinc-400",
-              },
-            ].map((row) => (
-              <div
-                key={row.platform}
-                className="group flex items-center justify-between rounded-xl border border-white/[0.06] bg-white/[0.02] px-6 py-5 hover:border-white/[0.12] hover:bg-white/[0.03] transition-all"
-              >
-                <div className="flex items-center gap-4">
-                  <span className={`w-2 h-2 rounded-full ${row.dot}`} />
-                  <div>
-                    <p className="text-base font-semibold text-white">{row.platform}</p>
-                    <p className="text-xs text-zinc-500 mt-0.5">{row.detail}</p>
-                  </div>
-                </div>
-                <span className={`text-xs font-semibold uppercase tracking-wider ${row.statusColor} ${row.statusBg} border rounded-full px-3 py-1`}>
-                  {row.status}
-                </span>
-              </div>
-            ))}
-          </Stagger>
-        </div>
-      </section>
-
-      {/* Final CTA ────────────────────────────────────────────────── */}
-      <section className="py-20 sm:py-28 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
-        <div className="absolute inset-0 diagonal-streak opacity-20 pointer-events-none" aria-hidden />
-        <div className="hidden md:block absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[400px] rounded-full bg-white/[0.06] blur-[120px] pointer-events-none" aria-hidden />
-
-        <div className="max-w-3xl mx-auto text-center relative">
-          <Reveal direction="up" blur>
-            <h2 className="text-4xl md:text-5xl font-bold mb-5 tracking-[-0.04em]">
-              Your operations workspace.<br />
-              <span className="text-gradient">Installed.</span>
-            </h2>
-            <p className="text-dim-paragraph text-lg max-w-xl mx-auto mb-10 leading-relaxed">
-              Install the platform-specific release shown above. <span className="dim-1">Desktop authentication may open your browser for secure approval.</span> <span className="dim-2">Connector accounts and permissions are configured after first launch.</span>
-            </p>
-            <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-4">
+            <div className="mt-9 flex flex-col gap-3 sm:flex-row sm:items-center">
               <a
-                href={mounted ? primaryPlatform.href : "/download/preview"}
-                {...(mounted && primaryPlatform.available && primaryPlatform.fileName ? { download: primaryPlatform.fileName } : {})}
-                className="btn-white-shimmer group inline-flex items-center justify-center gap-2.5 px-7 py-3.5 rounded-full text-sm font-semibold uppercase tracking-wide"
+                href={primaryHref}
+                download={downloadReady && detectedAsset ? detectedAsset.fileName : undefined}
+                className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-[#f2f2ed] px-6 text-sm font-semibold text-[#11120f] transition hover:bg-white"
               >
                 <ArrowDownTrayIcon className="h-4 w-4" />
-                {mounted && primaryPlatform.available ? `Download for ${primaryPlatform.label}` : "Check current platform release"}
-                <ArrowRightIcon className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+                Download for {platformLabel[detectedPlatform]}
               </a>
-              <Link
-                href="/demo"
-                className="inline-flex items-center justify-center gap-2 px-7 py-3.5 border border-white/[0.12] text-zinc-300 rounded-full text-sm font-semibold hover:bg-white/5 hover:border-white/20 transition-colors"
-              >
-                <GlobeAltIcon className="h-4 w-4" />
-                Explore sample-data sandbox
+              <Link href="/demo" className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full border border-white/12 px-6 text-sm font-medium text-zinc-200 transition hover:border-white/25 hover:bg-white/[0.04]">
+                Explore the web demo <ArrowRightIcon className="h-4 w-4" />
               </Link>
             </div>
-            <div className="mt-8 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-xs text-zinc-500">
-              {["Manifest-backed downloads", "Signing state shown", "Manual updates documented"].map((item) => (
-                <span key={item} className="flex items-center gap-1.5">
-                  <CheckCircleIcon className="h-3.5 w-3.5 text-emerald-500" />
-                  {item}
-                </span>
-              ))}
+            <p className="mt-4 text-xs text-zinc-600">{releaseStatus}{detectedAsset ? ` · ${formatSize(detectedAsset.sizeBytes)}` : ""}</p>
+          </div>
+        </section>
+
+        <section id="downloads" className="mx-auto max-w-[1400px] px-5 pb-24 sm:px-8 lg:px-12">
+          <div className="mb-8 border-t border-white/[0.08] pt-10">
+            <h2 className="text-3xl font-medium tracking-[-0.04em] text-zinc-100 sm:text-4xl">Use Axiom on your workstation.</h2>
+            <p className="mt-2 text-lg text-zinc-500">One governed workspace across macOS, Windows, and Linux.</p>
+          </div>
+
+          <div className="grid gap-3 lg:grid-cols-3">
+            <DownloadCard
+              title="macOS"
+              copy="Signed and notarized builds for Apple Silicon and Intel Macs."
+              icon={ComputerDesktopIcon}
+              image="/images/axiom-intake-landscape-v1.png"
+              assets={[
+                { id: "mac-arm", asset: manifest?.assets["macos-arm"] ?? null },
+                { id: "mac-intel", asset: manifest?.assets["macos-intel"] ?? null },
+              ]}
+              runtimeReady={manifest?.runtimeReady === true}
+            />
+            <DownloadCard
+              title="Windows"
+              copy="The Axiom desktop workspace for Windows engineering teams."
+              icon={CommandLineIcon}
+              image="/images/axiom-validation-landscape-v1.png"
+              assets={[{ id: "windows", asset: manifest?.assets["windows-x64"] ?? null }]}
+              runtimeReady={manifest?.runtimeReady === true}
+            />
+            <DownloadCard
+              title="Linux"
+              copy="A portable AppImage for Linux workstations and engineering environments."
+              icon={GlobeAltIcon}
+              image="/images/axiom-history-landscape-v1.png"
+              assets={[{ id: "linux", asset: manifest?.assets["linux-x64"] ?? null }]}
+              runtimeReady={manifest?.runtimeReady === true}
+            />
+          </div>
+        </section>
+
+        <section className="border-y border-white/[0.07] bg-[#10110f]">
+          <div className="mx-auto grid max-w-[1400px] gap-10 px-5 py-16 sm:px-8 md:grid-cols-[1fr_auto] md:items-center lg:px-12">
+            <div>
+              <p className="text-[11px] uppercase tracking-[0.2em] text-orange-300">Release integrity</p>
+              <h2 className="mt-4 text-3xl font-medium tracking-[-0.04em] text-white sm:text-4xl">Every download resolves from the live release manifest.</h2>
+              <p className="mt-4 max-w-2xl leading-7 text-zinc-500">Checksums and detached signatures are published with each available installer. Platform signing status is stated directly—never inferred.</p>
             </div>
-          </Reveal>
-        </div>
-      </section>
+            <div className="space-y-3 text-sm text-zinc-400">
+              <p className="flex items-center gap-3"><CheckCircleIcon className="h-5 w-5 text-emerald-400" /> macOS signed and notarized</p>
+              <p className="flex items-center gap-3"><ShieldCheckIcon className="h-5 w-5 text-orange-300" /> SHA-256 digest per artifact</p>
+              {manifest?.htmlUrl ? <a href={manifest.htmlUrl} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 text-zinc-200 hover:text-white">View release record <ArrowRightIcon className="h-4 w-4" /></a> : null}
+            </div>
+          </div>
+        </section>
+      </main>
 
       <Footer />
     </div>
+  );
+}
+
+function DownloadCard({
+  title,
+  copy,
+  icon: Icon,
+  image,
+  assets,
+  runtimeReady,
+}: {
+  title: string;
+  copy: string;
+  icon: typeof ComputerDesktopIcon;
+  image: string;
+  assets: Array<{ id: PlatformId; asset: ManifestAsset | null }>;
+  runtimeReady: boolean;
+}) {
+  return (
+    <article className="overflow-hidden rounded-2xl border border-white/[0.08] bg-[#171814]">
+      <div className="relative aspect-[1.24/1] overflow-hidden border-b border-white/[0.07] bg-[#20211d] p-5">
+        <Image src={image} alt="" fill sizes="(min-width: 1024px) 33vw, 100vw" className="object-cover opacity-55" />
+        <div className="absolute inset-5 overflow-hidden rounded-xl border border-white/10 bg-[#0d0e0c]/90 shadow-2xl shadow-black/50 backdrop-blur-sm">
+          <div className="flex h-10 items-center gap-2 border-b border-white/[0.08] px-4">
+            <span className="h-2 w-2 rounded-full bg-zinc-600" /><span className="h-2 w-2 rounded-full bg-zinc-700" /><span className="h-2 w-2 rounded-full bg-zinc-800" />
+            <span className="ml-auto text-[10px] tracking-wide text-zinc-600">AXIOM AGENT</span>
+          </div>
+          <div className="p-5 font-mono text-[11px] leading-6 text-zinc-500">
+            <p className="text-zinc-300">Governed execution workspace</p>
+            <p className="mt-3"><span className="text-emerald-400">●</span> Context verified</p>
+            <p><span className="text-orange-300">◆</span> Approval required</p>
+            <p><span className="text-zinc-300">✓</span> Evidence retained</p>
+          </div>
+        </div>
+      </div>
+      <div className="p-6">
+        <Icon className="h-5 w-5 text-zinc-400" />
+        <h3 className="mt-5 text-xl font-medium text-white">{title}</h3>
+        <p className="mt-2 min-h-12 text-sm leading-6 text-zinc-500">{copy}</p>
+        <div className="mt-6 flex flex-col gap-2">
+          {assets.map(({ id, asset }) => {
+            const available = runtimeReady && Boolean(asset);
+            return (
+              <a
+                key={id}
+                href={available && asset ? asset.downloadUrl : `/api/desktop/download?platform=${id}`}
+                download={available && asset ? asset.fileName : undefined}
+                className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full bg-[#efefea] px-4 text-sm font-medium text-[#11120f] transition hover:bg-white"
+              >
+                <ArrowDownTrayIcon className="h-4 w-4" />
+                Download for {platformLabel[id]}
+              </a>
+            );
+          })}
+        </div>
+        {assets[0]?.asset ? <p className="mt-4 text-[11px] leading-5 text-zinc-600">{assets[0].asset.installFriction}</p> : null}
+      </div>
+    </article>
   );
 }
