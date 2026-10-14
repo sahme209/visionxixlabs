@@ -65,29 +65,27 @@ export default function Home() {
     <div className="axiom-canvas min-h-screen text-[#ecece8]">
       <Navigation />
       <main>
-        <section className="mx-auto max-w-[1400px] px-5 pb-18 pt-28 sm:px-8 lg:px-12 lg:pb-24 lg:pt-36">
-          <div className="max-w-[700px]">
-            <span className="inline-flex items-center gap-2 rounded-full border border-white/[0.09] bg-white/[0.03] px-3 py-1.5 text-[11px] font-medium text-zinc-400">
+        <section className="mx-auto max-w-[1400px] px-5 pb-20 pt-32 sm:px-8 lg:px-12 lg:pb-28 lg:pt-44">
+          <div className="mx-auto max-w-[1080px] text-center">
+            <span className="inline-flex items-center gap-2 text-[10px] font-medium uppercase tracking-[0.2em] text-zinc-500">
               <span className="relative flex h-1.5 w-1.5">
                 <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-60" />
                 <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-emerald-400" />
               </span>
-              <span className="uppercase tracking-[0.16em] text-zinc-500">Axiom Agent</span>
-              <span className="text-zinc-600">·</span>
-              deployment operations
+              Axiom Agent · governed engineering operations
             </span>
-            <h1 className="mt-5 text-[clamp(2.9rem,5.35vw,5.8rem)] font-medium leading-[0.96] tracking-[-0.058em] text-[#f1f1ed]">
-              Ship the change.<br /><span className="text-zinc-500">Prove it was safe.</span>
+            <h1 className="mt-7 text-[clamp(3.6rem,8.2vw,8.4rem)] font-medium leading-[0.88] tracking-[-0.072em] text-[#f1f1ed]">
+              Engineering intent,<br /><span className="text-zinc-500">under control.</span>
             </h1>
-            <p className="mt-7 max-w-[620px] text-base leading-7 text-zinc-400 sm:text-lg">
-              Axiom turns a plain-English request into a grounded, approval-gated deployment—with validation, rollback, and evidence built in.
+            <p className="mx-auto mt-8 max-w-[700px] text-base leading-7 text-zinc-400 sm:text-xl sm:leading-8">
+              Axiom connects AI assistance, repository evidence, human approval, execution, and validation—so complex engineering work can move faster without making authority invisible.
             </p>
-            <div className="mt-9 flex flex-col gap-3 sm:flex-row">
-              <Link href="/download" className="btn-axiom inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-[#efefec] px-7 py-3 text-sm font-semibold text-[#151513] shadow-[0_8px_24px_-8px_rgba(255,255,255,0.25)] hover:bg-white">
-                Download Axiom Agent <ArrowRightIcon className="h-4 w-4" />
+            <div className="mt-10 flex flex-col justify-center gap-3 sm:flex-row">
+              <Link href="/product" className="btn-axiom inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-[#efefec] px-7 py-3 text-sm font-semibold text-[#151513] shadow-[0_8px_24px_-8px_rgba(255,255,255,0.25)] hover:bg-white">
+                Explore Axiom <ArrowRightIcon className="h-4 w-4" />
               </Link>
               <Link href="/demo" className="btn-axiom inline-flex min-h-12 items-center justify-center gap-2 rounded-full border border-white/10 bg-white/[0.05] px-7 py-3 text-sm font-medium text-zinc-200 hover:bg-white/[0.08]">
-                Watch how it works <ArrowRightIcon className="h-4 w-4" />
+                Try the interactive tour <ArrowRightIcon className="h-4 w-4" />
               </Link>
             </div>
           </div>
@@ -117,10 +115,10 @@ export default function Home() {
         <section className="border-y border-white/[0.06] bg-[#0e0e0c] px-5 py-16 sm:px-8 lg:px-12 lg:py-20">
           <div className="mx-auto max-w-[1400px]">
             <p className="text-[11px] uppercase tracking-[0.16em] text-zinc-500">Why Axiom, not another wrapper</p>
-            <h2 className="mt-3 max-w-2xl text-2xl font-medium tracking-[-0.04em] text-zinc-100 sm:text-3xl">AI that acts. Governance that proves it was safe.</h2>
-            <div className="mt-8 grid gap-4 md:grid-cols-3">
+            <h2 className="mt-3 max-w-3xl text-3xl font-medium tracking-[-0.045em] text-zinc-100 sm:text-5xl">An agent that can help act. A system that keeps authority explicit.</h2>
+            <div className="mt-12 grid border-y border-white/[0.08] md:grid-cols-3 md:divide-x md:divide-white/[0.08]">
               {pillars.map((pillar) => (
-                <article key={pillar.eyebrow} className="rounded-2xl border border-white/[0.08] bg-white/[0.025] p-6">
+                <article key={pillar.eyebrow} className="border-b border-white/[0.08] py-8 last:border-b-0 md:border-b-0 md:px-8 md:first:pl-0 md:last:pr-0">
                   <pillar.icon className="h-5 w-5 text-zinc-300" />
                   <p className="mt-4 text-[10px] uppercase tracking-[0.18em] text-orange-300">{pillar.eyebrow}</p>
                   <h3 className="mt-2 text-lg font-medium leading-snug tracking-[-0.02em] text-zinc-100">{pillar.title}</h3>
@@ -137,8 +135,8 @@ export default function Home() {
           <div className="mx-auto max-w-[1400px]">
             <p className="text-[11px] uppercase tracking-[0.16em] text-zinc-500">One governed record, not another dashboard</p>
             <h2 className="mt-3 max-w-2xl text-2xl font-medium tracking-[-0.04em] text-zinc-100 sm:text-3xl">The Playbook keeps the operator oriented.</h2>
-            <div className="mt-7 grid gap-3 md:grid-cols-3">
-              {playbookQuestions.map((item) => <article key={item.label} className="rounded-xl border border-white/[0.06] bg-white/[0.025] p-5"><h3 className="text-sm font-medium text-zinc-100">{item.label}</h3><p className="mt-2 text-sm leading-6 text-zinc-400">{item.copy}</p></article>)}
+            <div className="mt-8 grid border-y border-white/[0.08] md:grid-cols-3 md:divide-x md:divide-white/[0.08]">
+              {playbookQuestions.map((item) => <article key={item.label} className="border-b border-white/[0.08] py-6 last:border-b-0 md:border-b-0 md:px-7 md:first:pl-0 md:last:pr-0"><h3 className="text-sm font-medium text-zinc-100">{item.label}</h3><p className="mt-2 text-sm leading-6 text-zinc-400">{item.copy}</p></article>)}
             </div>
           </div>
         </section>
@@ -188,6 +186,16 @@ export default function Home() {
             ))}
           </div>
           <Link href="/changelog" className="mt-6 inline-flex items-center gap-2 text-sm text-orange-500 hover:text-orange-400">View all product changes <ArrowRightIcon className="h-4 w-4" /></Link>
+        </section>
+
+        <section className="border-y border-white/[0.07] px-5 py-16 sm:px-8 lg:px-12 lg:py-20">
+          <div className="mx-auto flex max-w-[1400px] flex-col gap-8 md:flex-row md:items-end md:justify-between">
+            <div className="max-w-3xl">
+              <p className="text-[10px] font-medium uppercase tracking-[0.2em] text-orange-300">Founding Supporters</p>
+              <h2 className="mt-4 text-3xl font-medium tracking-[-0.045em] text-zinc-100 sm:text-5xl">Help advance autonomous engineering with human control at its core.</h2>
+            </div>
+            <Link href="/support" className="inline-flex min-h-12 shrink-0 items-center gap-2 self-start rounded-full border border-white/[0.14] px-6 text-sm font-medium text-zinc-200 transition hover:border-orange-300/35 hover:bg-white/[0.04]">Meet the Founding Supporters program <ArrowRightIcon className="h-4 w-4" /></Link>
+          </div>
         </section>
 
         <section className="px-5 py-28 text-center sm:px-8 lg:py-40">

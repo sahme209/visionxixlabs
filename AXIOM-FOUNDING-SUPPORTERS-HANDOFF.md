@@ -2,9 +2,18 @@
 
 ## Status
 
-Implemented on review branch `codex/axiom-founding-supporters`. Nothing was merged, deployed, published, or enabled for live payments. No outreach email was sent.
+Implemented on review branch `codex/axiom-founding-supporters`. No redesign change in the current working tree was merged, pushed, promoted, or enabled for live payments. No outreach email was sent.
 
 Stripe Support confirmation supplied by the founder on October 13, 2026: Vision XIX Labs account `acct_1SpEdeFet66ERY29` is fully verified and activated, with no payment-processing restrictions. Stripe account activation is therefore **complete** and is no longer a launch blocker. This confirmation does not itself approve the supporter page for production or replace legal, tax, staging, and founder release approval.
+
+## Production rollback and Vercel safety status
+
+- Verified on October 13, 2026: `visionxixlabs.com` points to ready production deployment `dpl_AoFAj2SSkBcdZLANn9XXX1A9MWSj`, built from `main` commit `d921d836adfb469d367fda40e570d035bb4c0503`.
+- During review, a pushed review-branch commit was incorrectly classified by the Vercel Git integration as a production-target deployment and briefly received the production alias. It was immediately rolled back to the deployment above. The live alias was rechecked after the rollback.
+- Vercel project setting `autoAssignCustomDomains` is now `false`. A future deployment cannot automatically seize the custom production domain; production alias assignment must be explicit.
+- GitHub's remote default branch is `main`. The active review branch is `codex/axiom-founding-supporters`.
+- The Vercel connector does not expose the Git production-branch field. Because the review branch was observed being classified as production, that production-branch rule still requires confirmation/correction in Vercel before this branch is pushed again.
+- An explicitly non-production deployment (`target: null`) was created through the Vercel API and received only its branch Preview alias. Vercel stopped it before build with `Resource provisioning failed`; it did not affect the production alias.
 
 ## Experience delivered
 
@@ -17,6 +26,16 @@ Stripe Support confirmation supplied by the founder on October 13, 2026: Vision 
 - Strategic sponsorship inquiry for individuals, foundations, and organizations. It records a lead and never collects a payment.
 - For-profit, non-charitable, non-investment, no-equity, and no-return disclosures near the transaction controls.
 - Privacy, terms, security, refund-contact, and company-contact links.
+
+## Full marketing-site redesign
+
+- Axiom is now the centerpiece of the homepage, with a new editorial hero, direct product and interactive-tour paths, and the existing factual product demonstration retained as the proof surface.
+- The shared navigation is simpler and consistent: Axiom, Product tour, Integrations, and Security form the primary path. Founding Supporters is discoverable as a restrained secondary link rather than a donation-style homepage demand.
+- The homepage removes repeated card treatments in its core story and uses quieter divided editorial sections, stronger typography, larger whitespace, and one restrained warm accent.
+- All public pages that use the shared marketing navigation now inherit the same canvas, typography, focus treatment, surface colors, responsive chrome, and footer without changing authenticated product, billing, dashboard, control, or admin surfaces.
+- Insights and legal pages now use the shared footer, removing the last major public-shell discontinuities.
+- Existing canonical routes and redirects remain intact, including `/axiom`, `/axiom/operations`, `/axiom/releaseops`, `/axiom/pricing`, `/pricing`, `/case-studies`, `/cloud-security`, and `/cloud-solutions`.
+- The support page remains a dedicated destination. Its real scripted product tour, implemented-versus-planned distinction, supporter checkout, sponsorship inquiry, and legal disclosures were preserved.
 
 ## Payment and benefit architecture
 
@@ -62,6 +81,8 @@ STRIPE_SUPPORTER_AUTOMATIC_TAX=false
 
 They intentionally keep collection disabled. Vercel Preview currently has no Stripe, database, or Resend variables available for this flow. No secret value was created, copied, logged, or exposed.
 
+The connected project has no custom Vercel environment configured. The explicitly created Preview deployment failed during Vercel resource provisioning before build logs were emitted. Local production-mode Preview is therefore the current review surface until the Vercel Preview resource binding is repaired.
+
 ## Database change
 
 Migration: `20261013220000_add_founding_supporters`
@@ -72,12 +93,16 @@ It creates only the supporter purchase and supporter Stripe-event tables. Apply 
 
 - Prisma Client generation: passed.
 - TypeScript (`tsc --noEmit`): passed.
-- Focused ESLint on every new supporter file: passed.
+- Focused ESLint on supporter files and all redesigned marketing files: passed.
 - Original focused security and billing regression suite: 30 tests passed.
-- Supporter route-level end-to-end suite: 19 tests passed. It covers the $1 Checkout payload, duplicate checkout keys, fail-closed readiness, signed paid-event processing, duplicate event replay, failed/retried confirmation delivery, full refund state, signature rejection, signed badge access, forged-token denial, and badge revocation after refund.
+- Combined supporter and homepage interaction suite: 29 tests passed across 6 files. It covers the $1 Checkout payload, duplicate checkout keys, fail-closed readiness, signed paid-event processing, duplicate event replay, failed/retried confirmation delivery, full refund state, signature rejection, signed badge access, forged-token denial, badge revocation after refund, and homepage media/demo interaction behavior.
 - Production Next.js build: passed with an 8 GB Node heap; the default 4 GB heap exhausted memory in this unusually large application.
-- Production-mode local preview: `/support` returned HTTP 200 and rendered the expected mission headline.
+- Production-mode local preview started successfully with the supporter system failing closed because staging credentials were intentionally absent.
 - Prisma schema validation could not run without `DATABASE_URL`; Prisma Client generation and the production build both validated schema compilation.
+
+## Screenshot status
+
+Screenshot destinations were prepared for desktop (homepage, product, support), tablet (product), and mobile (homepage, support). The local application served correctly, but the only installed browser aborted inside the managed Xcode filesystem sandbox before it could open a page, and the environment exposes no user-facing browser/preview tool. No fabricated mockup was substituted for an actual render. Capture these six screenshots after opening the local Preview or a repaired Vercel Preview in an authorized browser.
 
 ## Provider-side test status
 
@@ -85,24 +110,25 @@ The route-level scenarios are complete and passing. A genuine Stripe test-mode t
 
 ## Remaining gates before live use
 
-1. Supply branch-scoped **test-only** `STRIPE_SECRET_KEY`, `STRIPE_SUPPORTER_WEBHOOK_SECRET`, `DATABASE_URL`, `RESEND_API_KEY`, `SUPPORTER_BADGE_SIGNING_SECRET`, and the final Preview URL. Do not reuse production secrets or the production database.
-2. Apply `20261013220000_add_founding_supporters` to the isolated Preview database.
-3. Create the Stripe test-mode webhook destination for `/api/support/stripe-webhook` and select `checkout.session.completed`, `checkout.session.async_payment_succeeded`, `checkout.session.async_payment_failed`, `checkout.session.expired`, and `charge.refunded`.
-4. Deploy an access-controlled Preview, temporarily set only `AXIOM_SUPPORTER_CHECKOUT_ENABLED=true`, and run the real provider-side $1, replay, partial-refund, full-refund, email, and badge tests. Reset the flag to false after acceptance.
-5. Counsel/accountant must approve supporter terms, refunds, sales-tax/VAT/GST treatment, receipt wording, and the countries/currencies to enable.
-6. The founder must approve the final copy, suggested amounts, benefit commitments, verified founder profile, and live activation.
-7. Confirm the production sending domain, support mailbox, unsubscribe handling, and suppression workflow before enabling supporter updates.
-8. Decide whether Stripe Tax should be enabled and which international payment methods the account should expose.
-9. Replace or augment the current in-memory request limiter with a distributed production limiter; Stripe Radar and idempotency remain additional controls, not substitutes.
-10. Move benefit email delivery to a durable outbox/worker if strict fast-ack webhook latency is required. The present implementation is financially idempotent and retry-safe but waits for Resend before returning 2xx.
-11. Obtain explicit founder approval before setting either live flag, deploying to production, or linking the page from outreach.
+1. Confirm Vercel's Git production branch is `main`, then repair the Preview resource-provisioning failure. Keep automatic custom-domain assignment disabled.
+2. Supply branch-scoped **test-only** `STRIPE_SECRET_KEY`, `STRIPE_SUPPORTER_WEBHOOK_SECRET`, `DATABASE_URL`, `RESEND_API_KEY`, `SUPPORTER_BADGE_SIGNING_SECRET`, and the final Preview URL. Do not reuse production secrets or the production database.
+3. Apply `20261013220000_add_founding_supporters` to the isolated Preview database.
+4. Create the Stripe test-mode webhook destination for `/api/support/stripe-webhook` and select `checkout.session.completed`, `checkout.session.async_payment_succeeded`, `checkout.session.async_payment_failed`, `checkout.session.expired`, and `charge.refunded`.
+5. Deploy an access-controlled Preview, temporarily set only `AXIOM_SUPPORTER_CHECKOUT_ENABLED=true`, and run the real provider-side $1, replay, partial-refund, full-refund, email, and badge tests. Reset the flag to false after acceptance.
+6. Counsel/accountant must approve supporter terms, refunds, sales-tax/VAT/GST treatment, receipt wording, and the countries/currencies to enable.
+7. The founder must approve the final copy, suggested amounts, benefit commitments, verified founder profile, and live activation.
+8. Confirm the production sending domain, support mailbox, unsubscribe handling, and suppression workflow before enabling supporter updates.
+9. Decide whether Stripe Tax should be enabled and which international payment methods the account should expose.
+10. Replace or augment the current in-memory request limiter with a distributed production limiter; Stripe Radar and idempotency remain additional controls, not substitutes.
+11. Move benefit email delivery to a durable outbox/worker if strict fast-ack webhook latency is required. The present implementation is financially idempotent and retry-safe but waits for Resend before returning 2xx.
+12. Obtain explicit founder approval before setting either live flag, deploying to production, or linking the page from outreach.
 
 ## Known operational notes
 
 - Large sponsorships should remain inquiry-led. After identity, sanctions, source-of-funds, contract, tax, and bank verification, Vision XIX Labs may provide business bank-transfer instructions through a secure authenticated channel. Never place banking details on the public page or in this repository.
 - Development updates are a genuine opt-in recorded with the purchase. Any future campaign email must honor unsubscribe, suppression, privacy, and applicable regional marketing rules.
 - The public founder section intentionally says verification is pending rather than publishing an unverified identity.
-- No homepage “Donate Now” treatment was added. The enterprise homepage remains focused on the product.
+- No homepage “Donate Now” treatment was added. A single restrained Founding Supporters editorial link appears after the product story; the homepage remains centered on Axiom and enterprise credibility.
 
 ## Recommended release sequence
 

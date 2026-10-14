@@ -29,6 +29,7 @@ const columns = [
       ["Principles", "/principles"],
       ["Case studies", "/case-studies"],
       ["Support", "/contact"],
+      ["Founding Supporters", "/support"],
     ],
   },
   {
@@ -43,13 +44,14 @@ const columns = [
 
 export function Footer() {
   return (
-    <footer className="border-t border-white/[0.07] bg-[#141414] px-5 pb-8 pt-20 sm:px-8 lg:px-12 lg:pt-24">
+    <footer className="site-footer border-t border-white/[0.07] bg-[#090a08] px-5 pb-8 pt-20 sm:px-8 lg:px-12 lg:pt-24">
       <div className="mx-auto max-w-[1400px]">
         <section className="border-b border-white/[0.07] pb-20 text-center lg:pb-24" aria-labelledby="footer-cta-heading">
-          <h2 id="footer-cta-heading" className="text-4xl font-medium tracking-[-0.05em] text-zinc-100 sm:text-6xl lg:text-7xl">Your first governed release starts here.</h2>
-          <p className="mx-auto mt-5 max-w-xl text-sm leading-6 text-zinc-400">Create a workspace, connect a repository, and let Axiom guide the first safe workflow from request to evidence.</p>
+          <p className="text-[10px] font-medium uppercase tracking-[0.22em] text-orange-300">Axiom Agent</p>
+          <h2 id="footer-cta-heading" className="mx-auto mt-5 max-w-5xl text-4xl font-medium leading-[0.98] tracking-[-0.055em] text-zinc-100 sm:text-6xl lg:text-7xl">Turn engineering intent into governed action.</h2>
+          <p className="mx-auto mt-6 max-w-xl text-sm leading-6 text-zinc-400">Start with the product tour, then bring Axiom into the engineering workspace when you are ready.</p>
           <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
-            <Link href="/download" className="rounded-full bg-zinc-100 px-6 py-3 text-sm font-medium text-zinc-950 hover:bg-white">Download and get started</Link>
+            <Link href="/download" className="rounded-full bg-zinc-100 px-6 py-3 text-sm font-semibold text-zinc-950 hover:bg-white">Download Axiom</Link>
             <Link href="/demo" className="rounded-full border border-white/[0.14] px-6 py-3 text-sm text-zinc-200 hover:bg-white/[0.05]">Explore the product</Link>
           </div>
         </section>
@@ -60,7 +62,7 @@ export function Footer() {
               <Image src="/vision-xix-logo.png" alt="" width={28} height={28} className="rounded-md" />
               Vision XIX Labs
             </Link>
-            <p className="mt-5 max-w-sm text-sm leading-6 text-zinc-500">Governed deployment operations with explicit authorization, verifiable evidence, and honest service state. We also build iOS applications.</p>
+            <p className="mt-5 max-w-sm text-sm leading-6 text-zinc-500">Axiom Agent brings AI assistance, human authorization, execution, and evidence into one governed engineering workflow.</p>
           </div>
 
           {columns.map((column) => (
