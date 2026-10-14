@@ -31,6 +31,15 @@ if (!workflow.includes("desktop-v*")) {
 if (!workflow.includes("if-no-files-found: error")) {
   errors.push("desktop release workflow must fail when an expected platform produces no installer");
 }
+if (!workflow.includes("anchore/sbom-action@v0") || !workflow.includes("format: cyclonedx-json")) {
+  errors.push("desktop release workflow must generate a CycloneDX SBOM from the release source");
+}
+if (!workflow.includes("actions: read")) {
+  errors.push("desktop release workflow must grant the SBOM publisher read access to workflow artifacts");
+}
+if (!workflow.includes("Axiom-Agent-${RELEASE_TAG}-sbom.cdx.json") || !workflow.includes(".bomFormat == \"CycloneDX\"")) {
+  errors.push("desktop release workflow must publish and validate the versioned CycloneDX SBOM");
+}
 if (!releaseManifest.includes('"sahme209"') || !releaseManifest.includes('"axiom-releases"')) {
   errors.push("website release manifest no longer defaults to the public Axiom Agent release repository");
 }

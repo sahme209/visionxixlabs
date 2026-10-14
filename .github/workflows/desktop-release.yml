@@ -33,6 +33,7 @@ on:
         type: string
 
 permissions:
+  actions: read
   contents: write
 
 jobs:
@@ -59,6 +60,24 @@ jobs:
             exit 1
           fi
           echo "release_tag=$REQUESTED_TAG" >> "$GITHUB_OUTPUT"
+
+  sbom:
+    name: Generate release SBOM
+    needs: validate-release
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # Keep the bill of materials tied to the same immutable source revision
+      # as the release artefacts. It is published with the installers below;
+      # it is not a substitute for a clean-host acceptance test.
+      - name: Generate CycloneDX software bill of materials
+        uses: anchore/sbom-action@v0
+        with:
+          path: .
+          format: cyclonedx-json
+          output-file: axiom-agent.sbom.cdx.json
+          artifact-name: axiom-sbom
 
   build:
     name: Build (${{ matrix.label }})
@@ -171,7 +190,7 @@ jobs:
 
   publish:
     name: Publish to public releases repo
-    needs: [validate-release, build]
+    needs: [validate-release, build, sbom]
     runs-on: ubuntu-latest
     steps:
       - name: Download every build's artefacts
@@ -180,12 +199,17 @@ jobs:
           path: ./artifacts
 
       - name: Flatten artefacts
+        env:
+          RELEASE_TAG: ${{ needs.validate-release.outputs.release_tag }}
         run: |
           mkdir -p flat
           find ./artifacts -type f \
             \( -name "*.dmg" -o -name "*.msi" -o -name "*.exe" \
                -o -name "*.AppImage" -o -name "*.deb" -o -name "*.rpm" \) \
             -exec cp {} flat/ \;
+          sbom=$(find ./artifacts -name 'axiom-agent.sbom.cdx.json' -print -quit)
+          test -n "$sbom"
+          cp "$sbom" "flat/Axiom-Agent-${RELEASE_TAG}-sbom.cdx.json"
           echo "--- Flat directory:"
           ls -la flat/
 
@@ -270,6 +294,10 @@ jobs:
           require_attestation windows-x64 false false
           require_attestation linux-x64 false false
 
+          sbom="flat/Axiom-Agent-${{ needs.validate-release.outputs.release_tag }}-sbom.cdx.json"
+          test -s "$sbom"
+          jq -e '.bomFormat == "CycloneDX" and (.components | type == "array")' "$sbom" >/dev/null
+
           cat > release-notes.md <<'NOTES'
           # Axiom Agent ${{ needs.validate-release.outputs.release_tag }}
 
@@ -284,6 +312,7 @@ jobs:
               gpg --verify <file>.asc <file>
               ```
           Every build carries the same HMAC-signed handoff contract and refuses local apply by default.
+          A CycloneDX software bill of materials (`*-sbom.cdx.json`) is published with the installers and is signed with the same detached GPG process.
 
           <!-- Machine-readable release attestations. These are emitted only after the checks above pass. -->
           source-commit: ${{ github.sha }}
