@@ -27,6 +27,11 @@ import {
 } from "@/lib/billing/publicPlanCatalog";
 import { prisma } from "@/lib/db";
 import { resolveCorrelationId } from "@/lib/api";
+import {
+  fulfillAICreditCheckout,
+  recordAICreditCheckoutFailure,
+  reverseAICreditRefund,
+} from "@/lib/billing/aiCreditFulfillment";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -38,7 +43,18 @@ interface StripeWebhookEvent {
     object?: {
       id?: string;
       customer?: string;
-      metadata?: { organizationId?: string; planId?: string };
+      metadata?: {
+        organizationId?: string;
+        planId?: string;
+        purpose?: string;
+        addOnPurchaseId?: string;
+        sku?: string;
+      };
+      payment_status?: string;
+      payment_intent?: string | { id?: string } | null;
+      amount_total?: number | null;
+      amount_refunded?: number | null;
+      currency?: string | null;
       status?: string;
       cancel_at_period_end?: boolean;
       current_period_end?: number;
@@ -85,6 +101,36 @@ export async function POST(req: NextRequest) {
   }
 
   const obj = event.data?.object;
+
+  if (event.id && obj && isAICreditCheckoutEvent(event.type, obj.metadata?.purpose)) {
+    try {
+      if (event.type === "checkout.session.completed" || event.type === "checkout.session.async_payment_succeeded") {
+        await fulfillAICreditCheckout({ id: event.id, type: event.type! }, obj);
+      } else {
+        await recordAICreditCheckoutFailure({ id: event.id, type: event.type! }, obj);
+      }
+      return NextResponse.json({ ok: true }, { status: 200 });
+    } catch (error) {
+      if (isReplay(error)) return NextResponse.json({ ok: true, replay: true }, { status: 200 });
+      const invalid = error instanceof Error && error.message.startsWith("ai_credit_");
+      return NextResponse.json(
+        { ok: false, error: { code: invalid ? error.message : "billing.write_failed", userMessage: invalid ? "The signed credit event did not match its purchase." : "Credit fulfillment failed." } },
+        { status: invalid ? 400 : 500 },
+      );
+    }
+  }
+
+  if (event.id && event.type === "charge.refunded" && obj) {
+    try {
+      await reverseAICreditRefund({ id: event.id, type: event.type! }, obj);
+      return NextResponse.json({ ok: true }, { status: 200 });
+    } catch (error) {
+      if (isReplay(error)) return NextResponse.json({ ok: true, replay: true }, { status: 200 });
+      const invalid = error instanceof Error && error.message === "ai_credit_refund_invalid";
+      return NextResponse.json({ ok: false, error: { code: invalid ? "ai_credit_refund_invalid" : "billing.write_failed" } }, { status: invalid ? 400 : 500 });
+    }
+  }
+
   const organizationId = obj?.metadata?.organizationId;
   const planId = obj?.metadata?.planId;
 
@@ -214,6 +260,22 @@ function isSubscriptionEvent(type: string | undefined): boolean {
   return type === "customer.subscription.created"
     || type === "customer.subscription.updated"
     || type === "customer.subscription.deleted";
+}
+
+function isAICreditCheckoutEvent(type: string | undefined, purpose: string | undefined): boolean {
+  return purpose === "axiom_ai_credit_add_on" && (
+    type === "checkout.session.completed"
+    || type === "checkout.session.async_payment_succeeded"
+    || type === "checkout.session.expired"
+    || type === "checkout.session.async_payment_failed"
+  );
+}
+
+function isReplay(error: unknown): boolean {
+  return typeof error === "object"
+    && error !== null
+    && "code" in error
+    && (error as { code?: string }).code === "P2002";
 }
 
 function mapStripeStatus(s: string | undefined): BillingStatus {

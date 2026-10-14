@@ -1219,10 +1219,13 @@ model AddOnPurchase {
   validFor                  String
   /// YYYY-MM
   periodMonth               String
-  /// pending | paid | refunded | failed
+  /// pending | paid | partially_refunded | refunded | expired | failed
   status                    String   @default("pending")
-  stripeCheckoutSessionId   String?
-  stripePaymentIntentId     String?
+  stripeCheckoutSessionId   String?  @unique
+  stripePaymentIntentId     String?  @unique
+  idempotencyKey            String
+  refundedAmountCents       Int      @default(0)
+  reversedAICreditsCents    Int      @default(0)
   purchasedBy               String
   correlationId             String
   appliedAt                 DateTime?
@@ -1232,8 +1235,18 @@ model AddOnPurchase {
 
   @@index([organizationId, periodMonth, status])
   @@index([organizationId, createdAt])
-  @@index([stripeCheckoutSessionId])
+  @@unique([organizationId, idempotencyKey])
   @@index([correlationId])
+}
+
+/// Signed Stripe events consumed by the workspace billing webhook. A primary
+/// key on the provider event id makes financial mutations replay-safe.
+model StripeBillingEvent {
+  id          String   @id
+  type        String
+  processedAt DateTime @default(now())
+
+  @@index([processedAt])
 }
 
 // ---------------------------------------------------------------------------

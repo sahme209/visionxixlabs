@@ -10,11 +10,9 @@
  * seats + connectors persist (validFor="permanent") so a one-time
  * purchase keeps applying month after month.
  *
- * Pricing intent: each AI credit pack is priced at roughly 40% of
- * the retail value of the included credits — operator pays $10 for
- * $25 worth of AI credits. That is intentional: add-ons should feel
- * like a discount vs upgrading to the next tier, while still
- * preserving margin (we sell AI credits at ~2x vendor cost).
+ * Pricing intent: customer price is twice the provider-cost budget
+ * credited to the workspace. Keeping the sale price and delivered
+ * budget separate makes the 2x gross-margin invariant explicit.
  */
 
 import type { PricingPlan, PlanTier } from "./planRegistry";
@@ -44,9 +42,9 @@ const AI_CREDITS_SMALL: AddOnPackageDef = {
   sku: "ai_credits_small",
   displayName: "AI credits · small",
   category: "ai_credits",
-  tagline: "Top up by $25 — covers ~8M Haiku input tokens or 1.5M Sonnet output.",
+  tagline: "Add $5 of provider-cost budget for the current month.",
   priceCents: 1000,                  // $10
-  deliveredAICreditsCents: 2500,     // $25 of credits
+  deliveredAICreditsCents: 500,      // $5 provider-cost budget
   deliveredSeats: 0,
   deliveredConnectors: 0,
   validFor: "current_month",
@@ -57,9 +55,9 @@ const AI_CREDITS_MEDIUM: AddOnPackageDef = {
   sku: "ai_credits_medium",
   displayName: "AI credits · medium",
   category: "ai_credits",
-  tagline: "Top up by $100 — for a heavy week of coding-loop runs.",
+  tagline: "Add $20 of provider-cost budget for the current month.",
   priceCents: 4000,                  // $40
-  deliveredAICreditsCents: 10000,    // $100
+  deliveredAICreditsCents: 2000,     // $20 provider-cost budget
   deliveredSeats: 0,
   deliveredConnectors: 0,
   validFor: "current_month",
@@ -70,9 +68,9 @@ const AI_CREDITS_LARGE: AddOnPackageDef = {
   sku: "ai_credits_large",
   displayName: "AI credits · large",
   category: "ai_credits",
-  tagline: "Top up by $400 — sustained agentic workloads through end of month.",
+  tagline: "Add $75 of provider-cost budget for the current month.",
   priceCents: 15000,                 // $150
-  deliveredAICreditsCents: 40000,    // $400
+  deliveredAICreditsCents: 7500,     // $75 provider-cost budget
   deliveredSeats: 0,
   deliveredConnectors: 0,
   validFor: "current_month",

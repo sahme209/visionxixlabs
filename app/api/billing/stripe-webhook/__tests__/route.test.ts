@@ -6,6 +6,9 @@ const mocks = vi.hoisted(() => ({
   verifyWebhookSignature: vi.fn(),
   findFirst: vi.fn(),
   upsertBillingPlan: vi.fn(),
+  fulfillCredit: vi.fn(),
+  failCredit: vi.fn(),
+  refundCredit: vi.fn(),
 }));
 
 vi.mock("@/lib/billing/stripeHelper", () => ({
@@ -17,6 +20,11 @@ vi.mock("@/lib/db", () => ({
 }));
 vi.mock("@/lib/billing/tenantBillingStore", () => ({
   upsertBillingPlan: mocks.upsertBillingPlan,
+}));
+vi.mock("@/lib/billing/aiCreditFulfillment", () => ({
+  fulfillAICreditCheckout: mocks.fulfillCredit,
+  recordAICreditCheckoutFailure: mocks.failCredit,
+  reverseAICreditRefund: mocks.refundCredit,
 }));
 
 const originalBillingFlag = process.env.AXIOM_SELF_SERVICE_BILLING_ENABLED;
@@ -56,6 +64,9 @@ describe("POST /api/billing/stripe-webhook", () => {
     mocks.verifyWebhookSignature.mockReturnValue({ ok: true });
     mocks.findFirst.mockResolvedValue(null);
     mocks.upsertBillingPlan.mockResolvedValue({ organizationId: "org-1" });
+    mocks.fulfillCredit.mockResolvedValue({});
+    mocks.failCredit.mockResolvedValue({});
+    mocks.refundCredit.mockResolvedValue({});
   });
 
   afterEach(() => {
@@ -87,6 +98,25 @@ describe("POST /api/billing/stripe-webhook", () => {
     expect(await response.json()).toMatchObject({ ignored: "awaiting_subscription_event" });
     expect(mocks.findFirst).not.toHaveBeenCalled();
     expect(mocks.upsertBillingPlan).not.toHaveBeenCalled();
+  });
+
+  it("fulfills a signed paid AI-credit checkout", async () => {
+    const event = {
+      id: "evt_credit_1",
+      type: "checkout.session.completed",
+      data: { object: { id: "cs_test_1", payment_status: "paid", amount_total: 1000, currency: "usd", payment_intent: "pi_test_1", metadata: { purpose: "axiom_ai_credit_add_on", organizationId: "org-1", addOnPurchaseId: "purchase-1", sku: "ai_credits_small" } } },
+    };
+    const { POST } = await import("../route");
+    expect((await POST(request(event))).status).toBe(200);
+    expect(mocks.fulfillCredit).toHaveBeenCalledWith({ id: "evt_credit_1", type: "checkout.session.completed" }, event.data.object);
+    expect(mocks.upsertBillingPlan).not.toHaveBeenCalled();
+  });
+
+  it("routes cumulative refunds through the credit reversal ledger", async () => {
+    const event = { id: "evt_refund_1", type: "charge.refunded", data: { object: { payment_intent: "pi_test_1", amount_refunded: 500, currency: "usd" } } };
+    const { POST } = await import("../route");
+    expect((await POST(request(event))).status).toBe(200);
+    expect(mocks.refundCredit).toHaveBeenCalledWith({ id: "evt_refund_1", type: "charge.refunded" }, event.data.object);
   });
 
   it("fails closed when a subscription event lacks authoritative identifiers", async () => {

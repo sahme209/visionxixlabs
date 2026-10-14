@@ -18,10 +18,10 @@ describe("ADD_ON_CATALOG — invariants", () => {
     expect(new Set(skus).size).toBe(skus.length);
   });
 
-  it("every ai_credits row has deliveredAICreditsCents > priceCents (operator gets discount vs retail)", () => {
+  it("every ai_credits row sells provider-cost budget at exactly 2x", () => {
     for (const a of ADD_ON_CATALOG) {
       if (a.category === "ai_credits") {
-        expect(a.deliveredAICreditsCents).toBeGreaterThan(a.priceCents);
+        expect(a.priceCents).toBe(a.deliveredAICreditsCents * 2);
       }
     }
   });
@@ -67,6 +67,7 @@ describe("applyAddOnsToEntitlements", () => {
     sku: "ai_credits_small",
     status: "paid",
     deliveredAICreditsCents: 0,
+    reversedAICreditsCents: 0,
     deliveredSeats: 0,
     deliveredConnectors: 0,
     validFor: "current_month",
@@ -109,6 +110,17 @@ describe("applyAddOnsToEntitlements", () => {
       purchase({ status: "refunded", deliveredAICreditsCents: 2500 }),
     ]);
     expect(r.appliedAICreditsCents).toBe(0);
+  });
+
+  it("partially refunded purchases apply only their unreversed credits", () => {
+    const r = applyAddOnsToEntitlements(STARTER, [
+      purchase({
+        status: "partially_refunded",
+        deliveredAICreditsCents: 2000,
+        reversedAICreditsCents: 500,
+      }),
+    ]);
+    expect(r.appliedAICreditsCents).toBe(1500);
   });
 
   it("paid seat addon increases the cap", () => {

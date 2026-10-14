@@ -112,6 +112,18 @@ export interface CreateCheckoutInput {
   cancelUrl: string;
 }
 
+export interface CreateAddOnCheckoutInput {
+  purchaseId: string;
+  organizationId: string;
+  email: string;
+  sku: string;
+  displayName: string;
+  priceCents: number;
+  idempotencyKey: string;
+  successUrl: string;
+  cancelUrl: string;
+}
+
 /**
  * Create a Stripe Checkout Session. Returns `{ ok: false, reason }`
  * when Stripe isn't configured or the SDK can't load — callers
@@ -179,6 +191,69 @@ export async function createCheckoutSession(input: CreateCheckoutInput): Promise
       ok: false,
       reason: `Stripe create failed: ${err instanceof Error ? err.message : String(err)}`,
     };
+  }
+}
+
+/**
+ * Create a one-time AI-credit Checkout session. This path intentionally accepts
+ * test credentials only; enabling recurring live billing must never silently
+ * activate prepaid-credit sales.
+ */
+export async function createAddOnCheckoutSession(input: CreateAddOnCheckoutInput): Promise<CheckoutSessionResult & { sessionId?: string }> {
+  if (resolveStripeMode() !== "test") {
+    return { ok: false, reason: "AI credit checkout requires AXIOM_STRIPE_MODE=test with an sk_test_ key." };
+  }
+  if (!Number.isSafeInteger(input.priceCents) || input.priceCents < 50) {
+    return { ok: false, reason: "The add-on price is invalid." };
+  }
+
+  type StripeCheckoutCtor = new (key: string, opts?: unknown) => {
+    checkout: {
+      sessions: {
+        create: (
+          params: unknown,
+          options?: { idempotencyKey?: string },
+        ) => Promise<{ id: string; url?: string | null }>;
+      };
+    };
+  };
+  let StripeCtor: StripeCheckoutCtor;
+  try {
+    const mod = (await import("stripe")) as unknown as { default: StripeCheckoutCtor };
+    StripeCtor = mod.default;
+  } catch (err) {
+    return { ok: false, reason: `Stripe SDK unavailable: ${err instanceof Error ? err.message : String(err)}` };
+  }
+
+  try {
+    const stripe = new StripeCtor(process.env.STRIPE_SECRET_KEY!.trim(), { apiVersion: "2024-06-20" });
+    const metadata = {
+      purpose: "axiom_ai_credit_add_on",
+      addOnPurchaseId: input.purchaseId,
+      organizationId: input.organizationId,
+      sku: input.sku,
+    };
+    const session = await stripe.checkout.sessions.create({
+      mode: "payment",
+      line_items: [{
+        quantity: 1,
+        price_data: {
+          currency: "usd",
+          unit_amount: input.priceCents,
+          product_data: { name: input.displayName, metadata: { sku: input.sku } },
+        },
+      }],
+      customer_email: input.email,
+      client_reference_id: input.organizationId,
+      success_url: input.successUrl,
+      cancel_url: input.cancelUrl,
+      metadata,
+      payment_intent_data: { metadata },
+    }, { idempotencyKey: input.idempotencyKey });
+    if (!session.url) return { ok: false, reason: "Stripe did not return a checkout URL." };
+    return { ok: true, url: session.url, sessionId: session.id };
+  } catch (err) {
+    return { ok: false, reason: `Stripe create failed: ${err instanceof Error ? err.message : String(err)}` };
   }
 }
 
