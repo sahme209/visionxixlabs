@@ -20,7 +20,7 @@ import { isKnownModel } from "@/lib/ai/AIModelRegistry";
 import { loadWorkspaceAIProviderPolicyWithState, resolveWorkspaceAIProviderPolicy } from "@/lib/ai/workspaceProviderPolicy";
 import { checkWorkspaceAICredits } from "@/lib/billing/checkWorkspaceAICredits";
 import { recordAIUsageEvent } from "@/lib/billing/recordAIUsageEvent";
-import { releaseAICreditReservation, reserveAICredits, settleAICreditReservation } from "@/lib/billing/aiCreditReservation";
+import { attachAICreditReservationUsage, releaseAICreditReservation, reserveAICredits, settleAICreditReservation } from "@/lib/billing/aiCreditReservation";
 import { prisma } from "@/lib/db";
 import { apiOk, apiErr, asApiSourceMode, resolveCorrelationId } from "@/lib/api";
 import { AxiomErrors } from "@/lib/errors/axiomErrors";
@@ -184,6 +184,10 @@ export async function POST(req: NextRequest) {
       // active until that reconciler supplies a real cost; direct-provider
       // calls settle immediately against their measured amount.
       if (usageWrite.cost && !await settleAICreditReservation(prisma, ctx.organizationId, reservation.reservation.id, usageWrite.cost.totalCents, usageWrite.usageEventId)) {
+        await releaseAICreditReservation(prisma, ctx.organizationId, reservation.reservation.id);
+        throw new Error("ai_usage_meter_unavailable");
+      }
+      if (!usageWrite.cost && !await attachAICreditReservationUsage(prisma, ctx.organizationId, reservation.reservation.id, usageWrite.usageEventId!)) {
         await releaseAICreditReservation(prisma, ctx.organizationId, reservation.reservation.id);
         throw new Error("ai_usage_meter_unavailable");
       }

@@ -24,6 +24,10 @@ export interface GatewayUsageRepository {
     findMany(args: unknown): Promise<PendingGatewayUsage[]>;
     updateMany(args: unknown): Promise<{ count: number }>;
   };
+  aIUsageReservation?: {
+    findUnique(args: unknown): Promise<{ id: string; organizationId: string; reservedCents: number } | null>;
+    updateMany(args: unknown): Promise<{ count: number }>;
+  };
 }
 
 export interface GatewayUsageReconciliationResult {
@@ -76,7 +80,14 @@ export async function reconcilePendingGatewayUsage(
     try {
       const generation = await lookup(event.externalUsageId);
       const providerCostCents = centsFromUsd(generation.totalCost);
-      const billedCents = Math.max(providerCostCents, applyMargin(providerCostCents));
+      const computedBilledCents = Math.max(providerCostCents, applyMargin(providerCostCents));
+      const reservation = repository.aIUsageReservation
+        ? await repository.aIUsageReservation.findUnique({ where: { usageEventId: event.id }, select: { id: true, organizationId: true, reservedCents: true } })
+        : null;
+      // A customer debit is never allowed to exceed the budget explicitly
+      // reserved before this generation. Any provider overrun is platform
+      // cost to investigate, not an unapproved customer charge.
+      const billedCents = reservation ? Math.min(computedBilledCents, reservation.reservedCents) : computedBilledCents;
       const update = await repository.usageEvent.updateMany({
         where: { id: event.id, billingStatus: "pending" },
         data: {
@@ -89,7 +100,15 @@ export async function reconcilePendingGatewayUsage(
           billingStatus: "settled",
         },
       });
-      if (update.count === 1) settled++;
+      if (update.count === 1) {
+        if (reservation && repository.aIUsageReservation) {
+          await repository.aIUsageReservation.updateMany({
+            where: { id: reservation.id, organizationId: reservation.organizationId, status: "reserved", usageEventId: event.id },
+            data: { status: "settled", settledCents: billedCents, settledAt: new Date() },
+          });
+        }
+        settled++;
+      }
     } catch (error) {
       if (isNotYetAvailable(error)) deferred++;
       else failed++;

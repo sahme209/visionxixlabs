@@ -81,5 +81,15 @@ export async function settleAICreditReservation(
   } catch { return false; }
 }
 
+export async function attachAICreditReservationUsage(repo: any, organizationId: string, reservationId: string, usageEventId: string): Promise<boolean> {
+  try {
+    const result = await repo.aIUsageReservation.updateMany({
+      where: { id: reservationId, organizationId, status: "reserved", usageEventId: null },
+      data: { usageEventId },
+    });
+    return result.count === 1;
+  } catch { return false; }
+}
+
 function monthStart(now: Date) { return new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1)); }
 function monthKey(now: Date) { return `${now.getUTCFullYear()}-${String(now.getUTCMonth() + 1).padStart(2, "0")}`; }

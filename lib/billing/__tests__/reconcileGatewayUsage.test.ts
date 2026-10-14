@@ -68,4 +68,19 @@ describe("reconcilePendingGatewayUsage", () => {
 
     expect(result).toEqual({ inspected: 1, settled: 0, deferred: 0, failed: 0 });
   });
+
+  it("caps the customer debit and settles the matching reservation", async () => {
+    const usageUpdate = vi.fn().mockResolvedValue({ count: 1 });
+    const reservationUpdate = vi.fn().mockResolvedValue({ count: 1 });
+    const repository: GatewayUsageRepository = {
+      usageEvent: { findMany: vi.fn().mockResolvedValue([{ id: "usage_1", externalUsageId: "gen_1" }]), updateMany: usageUpdate },
+      aIUsageReservation: {
+        findUnique: vi.fn().mockResolvedValue({ id: "hold-1", organizationId: "org-1", reservedCents: 1 }),
+        updateMany: reservationUpdate,
+      },
+    };
+    await reconcilePendingGatewayUsage(repository, vi.fn().mockResolvedValue(generation));
+    expect(usageUpdate).toHaveBeenCalledWith(expect.objectContaining({ data: expect.objectContaining({ billedCents: 1 }) }));
+    expect(reservationUpdate).toHaveBeenCalledWith(expect.objectContaining({ data: expect.objectContaining({ status: "settled", settledCents: 1 }) }));
+  });
 });

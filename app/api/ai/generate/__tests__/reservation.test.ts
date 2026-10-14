@@ -3,13 +3,13 @@ import { NextRequest } from "next/server";
 
 const mocks = vi.hoisted(() => ({
   currentContext: vi.fn(), status: vi.fn(), generateText: vi.fn(), loadPolicy: vi.fn(), resolvePolicy: vi.fn(), checkCredits: vi.fn(),
-  reserve: vi.fn(), release: vi.fn(), settle: vi.fn(), recordUsage: vi.fn(),
+  reserve: vi.fn(), release: vi.fn(), settle: vi.fn(), attach: vi.fn(), recordUsage: vi.fn(),
 }));
 vi.mock("@/lib/auth/currentContext", () => ({ currentContext: mocks.currentContext }));
 vi.mock("@/lib/ai/AIProviderManager", () => ({ getAIProviderManager: () => ({ status: mocks.status, generateText: mocks.generateText }) }));
 vi.mock("@/lib/ai/workspaceProviderPolicy", () => ({ loadWorkspaceAIProviderPolicyWithState: mocks.loadPolicy, resolveWorkspaceAIProviderPolicy: mocks.resolvePolicy }));
 vi.mock("@/lib/billing/checkWorkspaceAICredits", () => ({ checkWorkspaceAICredits: mocks.checkCredits }));
-vi.mock("@/lib/billing/aiCreditReservation", () => ({ reserveAICredits: mocks.reserve, releaseAICreditReservation: mocks.release, settleAICreditReservation: mocks.settle }));
+vi.mock("@/lib/billing/aiCreditReservation", () => ({ reserveAICredits: mocks.reserve, releaseAICreditReservation: mocks.release, settleAICreditReservation: mocks.settle, attachAICreditReservationUsage: mocks.attach }));
 vi.mock("@/lib/billing/recordAIUsageEvent", () => ({ recordAIUsageEvent: mocks.recordUsage }));
 vi.mock("@/lib/db", () => ({ prisma: {} }));
 
@@ -29,6 +29,7 @@ describe("POST /api/ai/generate reservation boundary", () => {
     mocks.generateText.mockResolvedValue({ text: "ok", provider: "other", model: "model", usage: { promptTokens: 1, completionTokens: 1 } });
     mocks.recordUsage.mockResolvedValue({ recorded: true, usageEventId: "usage-1", cost: { totalCents: 10 } });
     mocks.settle.mockResolvedValue(true);
+    mocks.attach.mockResolvedValue(true);
   });
 
   it("reserves before generation and settles measured usage", async () => {
@@ -44,6 +45,7 @@ describe("POST /api/ai/generate reservation boundary", () => {
     expect((await POST(request())).status).toBe(200);
     expect(mocks.settle).not.toHaveBeenCalled();
     expect(mocks.release).not.toHaveBeenCalled();
+    expect(mocks.attach).toHaveBeenCalledWith(expect.anything(), "org-1", "hold-1", "usage-1");
   });
 
   it("does not call a provider when the pool cannot reserve the request", async () => {
