@@ -79,7 +79,8 @@ jobs:
           aws ecs update-service \\
             --cluster "\${{ inputs.cluster }}" \\
             --service "\${{ inputs.service }}" \\
-            --force-new-deployment
+            --force-new-deployment \\
+            --output text >/dev/null
 
       - name: Wait for the new deployment to stabilize
         id: wait
@@ -92,11 +93,12 @@ jobs:
       - name: Roll back — deployment did not stabilize
         if: steps.wait.outcome == 'failure'
         run: |
-          echo "::error::Deployment did not stabilize. Rolling back to \${{ steps.capture.outputs.previous_task_def }}"
+          echo "::error::Deployment did not stabilize. Starting rollback."
           aws ecs update-service \\
             --cluster "\${{ inputs.cluster }}" \\
             --service "\${{ inputs.service }}" \\
-            --task-definition "\${{ steps.capture.outputs.previous_task_def }}"
+            --task-definition "\${{ steps.capture.outputs.previous_task_def }}" \\
+            --output text >/dev/null
           aws ecs wait services-stable \\
             --cluster "\${{ inputs.cluster }}" \\
             --services "\${{ inputs.service }}"
