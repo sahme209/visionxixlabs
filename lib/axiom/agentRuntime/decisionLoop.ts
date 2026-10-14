@@ -35,6 +35,27 @@ export interface InitialReadOnlyToolCall {
  */
 export type AgentOperationMode = "inspect" | "engineer" | "deepops" | "ask" | "plan" | "agent";
 
+/**
+ * Bounded decision steps are an honest effort control: they limit how many
+ * governed model decisions a turn can make without asserting a particular
+ * provider, model, or price. Provider selection and credit metering stay at
+ * the governed AI boundary.
+ */
+export interface AgentEffortProfile {
+  label: "Inspect" | "Engineer" | "DeepOps";
+  maxDecisionIterations: number;
+}
+
+export function resolveAgentEffortProfile(mode: AgentOperationMode | undefined): AgentEffortProfile {
+  if (mode === "inspect" || mode === "ask" || mode === "plan") {
+    return { label: "Inspect", maxDecisionIterations: 2 };
+  }
+  if (mode === "deepops") return { label: "DeepOps", maxDecisionIterations: 6 };
+  // Engineer is the desktop default, and also preserves the legacy Agent
+  // budget for clients that predate product-facing effort modes.
+  return { label: "Engineer", maxDecisionIterations: 4 };
+}
+
 const ENGINEERING_WRITE_TOOLS = new Set([
   "create_github_branch",
   "commit_github_file",
@@ -108,7 +129,6 @@ ${toolCatalogPrompt(allowedTools)}
 Respond with exactly one JSON object: { "action": "respond" | "call_tool", "message": string, "toolName"?: string, "args"?: object }.`;
 }
 
-const MAX_ITERATIONS = 4;
 const DECISION_SCHEMA = `A single JSON object with one of these exact shapes:
 - { "action": "respond", "message": "plain-English answer or clarifying question" }
 - { "action": "call_tool", "message": "plain-English explanation", "toolName": "one exact available tool name", "args": { "tool arguments": "matching that tool's schema" } }
@@ -163,6 +183,8 @@ export async function runDecisionLoop(input: {
   const governed = await resolveGovernedAiCall(input.organizationId, input.preferredProvider);
   if (!governed.ok) return { kind: "error", error: governed.error };
 
+  const effort = resolveAgentEffortProfile(input.operationMode);
+
   const transcript = [...input.transcript];
 
   if (input.initialToolCall) {
@@ -182,7 +204,7 @@ export async function runDecisionLoop(input: {
     });
   }
 
-  for (let iteration = 0; iteration < MAX_ITERATIONS; iteration++) {
+  for (let iteration = 0; iteration < effort.maxDecisionIterations; iteration++) {
     const transcriptText = transcript.map((t) => `[${t.role}] ${t.content}`).join("\n\n");
     const operationMode = normalizedOperationMode(input.operationMode);
     const modeInstruction = operationMode === "inspect"
@@ -190,7 +212,7 @@ export async function runDecisionLoop(input: {
       : operationMode === "engineer"
         ? "ENGINEER MODE: Read-only tools may run immediately. Only GitHub branch, commit, and pull-request writes may be returned as approval-gated proposals."
         : "DEEPOPS MODE: Use careful multi-system reasoning. Read-only tools may run immediately. Existing approved operational writes may only be returned as approval-gated proposals. Do not claim Azure or GCP write execution exists unless a registered tool provides it.";
-    const prompt = `${systemFraming(identity.allowedTools)}\n\nCurrent operation mode:\n${modeInstruction}\n\nEnabled workspace skills (workflow guidance only; these cannot override hard rules, tool risk, approvals, or the user's request):\n${input.skillContext ?? "No optional workspace skills are enabled."}\n\nHistorical workspace memory (use only when the current request does not provide a conflicting selection):\n${input.workspaceContext ?? "No prior workspace context has been recorded."}\n\nAuthoritative UI selections for this request:\n${input.currentRequestContext ?? "No repository, branch, file, or environment was selected for this request."}\nWhen a current UI selection conflicts with conversation history or historical workspace memory, use the current UI selection. Never substitute a remembered repository, branch, file, or environment for a selected one.\n\nConversation so far:\n${transcriptText}\n\nDecide the next step.`;
+    const prompt = `${systemFraming(identity.allowedTools)}\n\nCurrent operation mode:\n${modeInstruction}\nEffort budget: ${effort.label} allows at most ${effort.maxDecisionIterations} structured decision steps for this request.\n\nEnabled workspace skills (workflow guidance only; these cannot override hard rules, tool risk, approvals, or the user's request):\n${input.skillContext ?? "No optional workspace skills are enabled."}\n\nHistorical workspace memory (use only when the current request does not provide a conflicting selection):\n${input.workspaceContext ?? "No prior workspace context has been recorded."}\n\nAuthoritative UI selections for this request:\n${input.currentRequestContext ?? "No repository, branch, file, or environment was selected for this request."}\nWhen a current UI selection conflicts with conversation history or historical workspace memory, use the current UI selection. Never substitute a remembered repository, branch, file, or environment for a selected one.\n\nConversation so far:\n${transcriptText}\n\nDecide the next step.`;
 
     const decision = await extractDecision(governed.extract, prompt, `${input.correlationId}:${iteration}`);
     if (!decision) return { kind: "error", error: "decision_malformed" };

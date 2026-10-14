@@ -8,7 +8,7 @@ const mocks = vi.hoisted(() => ({
 vi.mock("../governedAiCall", () => ({ resolveGovernedAiCall: mocks.resolveGovernedAiCall }));
 vi.mock("../agentIdentityPolicy", () => ({ readWorkspaceAgentIdentity: mocks.readWorkspaceAgentIdentity }));
 
-import { runDecisionLoop } from "../decisionLoop";
+import { resolveAgentEffortProfile, runDecisionLoop } from "../decisionLoop";
 
 function governed(extractImpl: (text: string, schemaHint: string, correlationId: string) => Promise<unknown>) {
   return { ok: true as const, extract: extractImpl };
@@ -203,6 +203,32 @@ describe("runDecisionLoop", () => {
       executeReadOnlyTool: noopReadOnly, isProdEnvironmentTarget: noopProdCheck,
     });
     expect(result).toEqual({ kind: "error", error: "max_iterations_exceeded" });
+  });
+
+  it("uses bounded effort budgets without bypassing the governed AI boundary", async () => {
+    const extract = vi.fn(async () => ({ action: "call_tool", message: "Checking again.", toolName: "list_environments", args: {} }));
+    mocks.resolveGovernedAiCall.mockResolvedValue(governed(extract));
+    const inspect = await runDecisionLoop({
+      organizationId: "o", correlationId: "inspect", transcript: [{ role: "user", content: "inspect" }], operationMode: "inspect",
+      executeReadOnlyTool: noopReadOnly, isProdEnvironmentTarget: noopProdCheck,
+    });
+    expect(inspect).toEqual({ kind: "error", error: "max_iterations_exceeded" });
+    expect(extract).toHaveBeenCalledTimes(2);
+
+    extract.mockClear();
+    const deepops = await runDecisionLoop({
+      organizationId: "o", correlationId: "deepops", transcript: [{ role: "user", content: "investigate" }], operationMode: "deepops",
+      executeReadOnlyTool: noopReadOnly, isProdEnvironmentTarget: noopProdCheck,
+    });
+    expect(deepops).toEqual({ kind: "error", error: "max_iterations_exceeded" });
+    expect(extract).toHaveBeenCalledTimes(6);
+    expect(mocks.resolveGovernedAiCall).toHaveBeenCalledWith("o", undefined);
+  });
+
+  it("maps legacy modes to conservative effort budgets", () => {
+    expect(resolveAgentEffortProfile("ask")).toEqual({ label: "Inspect", maxDecisionIterations: 2 });
+    expect(resolveAgentEffortProfile("agent")).toEqual({ label: "Engineer", maxDecisionIterations: 4 });
+    expect(resolveAgentEffortProfile("deepops")).toEqual({ label: "DeepOps", maxDecisionIterations: 6 });
   });
 
   it("treats an unknown tool name as a malformed decision, never as a silent no-op", async () => {
