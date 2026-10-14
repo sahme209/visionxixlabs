@@ -3,7 +3,7 @@ import { NextRequest } from "next/server";
 
 const mocks = vi.hoisted(() => ({
   currentContext: vi.fn(), status: vi.fn(), generateText: vi.fn(), loadPolicy: vi.fn(), resolvePolicy: vi.fn(), checkCredits: vi.fn(),
-  reserve: vi.fn(), release: vi.fn(), settle: vi.fn(), attach: vi.fn(), recordUsage: vi.fn(),
+  reserve: vi.fn(), release: vi.fn(), settle: vi.fn(), attach: vi.fn(), recordUsage: vi.fn(), transaction: vi.fn(),
 }));
 vi.mock("@/lib/auth/currentContext", () => ({ currentContext: mocks.currentContext }));
 vi.mock("@/lib/ai/AIProviderManager", () => ({ getAIProviderManager: () => ({ status: mocks.status, generateText: mocks.generateText }) }));
@@ -11,10 +11,10 @@ vi.mock("@/lib/ai/workspaceProviderPolicy", () => ({ loadWorkspaceAIProviderPoli
 vi.mock("@/lib/billing/checkWorkspaceAICredits", () => ({ checkWorkspaceAICredits: mocks.checkCredits }));
 vi.mock("@/lib/billing/aiCreditReservation", () => ({ reserveAICredits: mocks.reserve, releaseAICreditReservation: mocks.release, settleAICreditReservation: mocks.settle, attachAICreditReservationUsage: mocks.attach }));
 vi.mock("@/lib/billing/recordAIUsageEvent", () => ({ recordAIUsageEvent: mocks.recordUsage }));
-vi.mock("@/lib/db", () => ({ prisma: {} }));
+vi.mock("@/lib/db", () => ({ prisma: { $transaction: mocks.transaction } }));
 
-function request(key = "request_abcdefghijkl") {
-  return new NextRequest("https://visionxixlabs.com/api/ai/generate", { method: "POST", headers: { "content-type": "application/json", "idempotency-key": key }, body: JSON.stringify({ prompt: "Summarize this", maxTokens: 20 }) });
+function request(key = "request_abcdefghijkl", body: Record<string, unknown> = { prompt: "Summarize this", maxTokens: 20 }) {
+  return new NextRequest("https://visionxixlabs.com/api/ai/generate", { method: "POST", headers: { "content-type": "application/json", "idempotency-key": key }, body: JSON.stringify(body) });
 }
 
 describe("POST /api/ai/generate reservation boundary", () => {
@@ -30,6 +30,7 @@ describe("POST /api/ai/generate reservation boundary", () => {
     mocks.recordUsage.mockResolvedValue({ recorded: true, usageEventId: "usage-1", cost: { totalCents: 10 } });
     mocks.settle.mockResolvedValue(true);
     mocks.attach.mockResolvedValue(true);
+    mocks.transaction.mockImplementation(async (callback) => callback({}));
   });
 
   it("reserves before generation and settles measured usage", async () => {
@@ -40,18 +41,43 @@ describe("POST /api/ai/generate reservation boundary", () => {
   });
 
   it("keeps the hold when Gateway settlement is still pending", async () => {
+    mocks.generateText.mockResolvedValue({ text: "ok", provider: "vercel_gateway", model: "model", usage: { promptTokens: 1, completionTokens: 1 }, gatewayGenerationId: "gen-1" });
     mocks.recordUsage.mockResolvedValue({ recorded: true, usageEventId: "usage-1", cost: null, pendingSettlement: true });
     const { POST } = await import("../route");
     expect((await POST(request())).status).toBe(200);
+    expect(mocks.transaction).toHaveBeenCalledTimes(1);
     expect(mocks.settle).not.toHaveBeenCalled();
     expect(mocks.release).not.toHaveBeenCalled();
     expect(mocks.attach).toHaveBeenCalledWith(expect.anything(), "org-1", "hold-1", "usage-1");
   });
 
+  it("releases the hold when Gateway usage cannot be atomically attached", async () => {
+    mocks.generateText.mockResolvedValue({ text: "ok", provider: "vercel_gateway", model: "model", usage: { promptTokens: 1, completionTokens: 1 }, gatewayGenerationId: "gen-1" });
+    mocks.recordUsage.mockResolvedValue({ recorded: true, usageEventId: "usage-1", cost: null, pendingSettlement: true });
+    mocks.attach.mockResolvedValue(false);
+    const { POST } = await import("../route");
+    expect((await POST(request())).status).toBeGreaterThanOrEqual(400);
+    expect(mocks.release).toHaveBeenCalledWith(expect.anything(), "org-1", "hold-1");
+  });
+
   it("does not call a provider when the pool cannot reserve the request", async () => {
     mocks.reserve.mockResolvedValue({ ok: false, error: "ai_credit_pool_exhausted" });
     const { POST } = await import("../route");
-    expect((await POST(request())).status).toBe(403);
+    expect((await POST(request())).status).toBe(422);
+    expect(mocks.generateText).not.toHaveBeenCalled();
+  });
+
+  it("validates an unavailable provider before reserving credits", async () => {
+    const { POST } = await import("../route");
+    expect((await POST(request("request_abcdefghijkl", { prompt: "Summarize this", only: "unavailable_provider" }))).status).toBe(400);
+    expect(mocks.reserve).not.toHaveBeenCalled();
+    expect(mocks.generateText).not.toHaveBeenCalled();
+  });
+
+  it("validates an unsupported model before reserving credits", async () => {
+    const { POST } = await import("../route");
+    expect((await POST(request("request_abcdefghijkl", { prompt: "Summarize this", only: "vercel_gateway", model: "unsupported-model" }))).status).toBe(400);
+    expect(mocks.reserve).not.toHaveBeenCalled();
     expect(mocks.generateText).not.toHaveBeenCalled();
   });
 

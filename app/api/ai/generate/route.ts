@@ -120,6 +120,15 @@ export async function POST(req: NextRequest) {
     if (!/^[A-Za-z0-9_-]{16,200}$/.test(idempotencyKey)) {
       throw AxiomErrors.validation("ai.idempotency_key_required", "Provide a stable request key before generation can begin.");
     }
+    if (body.only !== undefined && (!isAIProviderName(body.only) || !policy.allowedProviders.includes(body.only))) {
+      throw AxiomErrors.validation("ai.provider_unavailable", "That AI provider is not enabled for this workspace.");
+    }
+    if (body.model !== undefined && (typeof body.model !== "string" || !body.only || !isKnownModel(body.only, body.model))) {
+      throw AxiomErrors.validation("ai.model_unavailable", "Choose a supported model from an enabled provider.");
+    }
+    if (body.model !== undefined && body.only && policy.modelSelections[body.only] !== body.model) {
+      throw AxiomErrors.validation("ai.model_not_approved", "That model is not approved for this workspace provider.");
+    }
     const reservation = await reserveAICredits(prisma, {
       organizationId: ctx.organizationId,
       idempotencyKey,
@@ -134,15 +143,6 @@ export async function POST(req: NextRequest) {
     }
     if (reservation.reused) {
       throw AxiomErrors.policy("ai.request_already_in_progress", "This request key is already reserved. Wait for the existing request to finish before retrying.");
-    }
-    if (body.only !== undefined && (!isAIProviderName(body.only) || !policy.allowedProviders.includes(body.only))) {
-      throw AxiomErrors.validation("ai.provider_unavailable", "That AI provider is not enabled for this workspace.");
-    }
-    if (body.model !== undefined && (typeof body.model !== "string" || !body.only || !isKnownModel(body.only, body.model))) {
-      throw AxiomErrors.validation("ai.model_unavailable", "Choose a supported model from an enabled provider.");
-    }
-    if (body.model !== undefined && body.only && policy.modelSelections[body.only] !== body.model) {
-      throw AxiomErrors.validation("ai.model_not_approved", "That model is not approved for this workspace provider.");
     }
     let result;
     try {
@@ -165,7 +165,7 @@ export async function POST(req: NextRequest) {
     // Persist only provider-reported usage. Prompts, system instructions,
     // credentials, and provider account data never enter the usage event.
     if (result.usage) {
-      const usageWrite = await recordAIUsageEvent({
+      const usageInput = {
         organizationId: ctx.organizationId,
         provider: result.provider,
         model: result.model,
@@ -175,7 +175,29 @@ export async function POST(req: NextRequest) {
         triggeredBy: ctx.userId,
         correlationId,
         metadata: { route: "api/ai/generate" },
-      });
+      };
+      let usageWrite;
+      let gatewayUsageAttached = false;
+      if (result.provider === "vercel_gateway") {
+        try {
+          usageWrite = await prisma.$transaction(async (tx) => {
+            const pendingUsage = await recordAIUsageEvent(usageInput, tx);
+            if (!pendingUsage.recorded || pendingUsage.cost) return pendingUsage;
+            if (!pendingUsage.usageEventId || !await attachAICreditReservationUsage(tx, ctx.organizationId, reservation.reservation.id, pendingUsage.usageEventId)) {
+              // Throwing rolls back the just-created pending UsageEvent as
+              // well as any attachment, leaving the original hold releasable.
+              throw new Error("ai_usage_reservation_attach_failed");
+            }
+            return pendingUsage;
+          });
+          gatewayUsageAttached = usageWrite.recorded && !usageWrite.cost;
+        } catch (error) {
+          await releaseAICreditReservation(prisma, ctx.organizationId, reservation.reservation.id);
+          throw error;
+        }
+      } else {
+        usageWrite = await recordAIUsageEvent(usageInput);
+      }
       if (!usageWrite.recorded) {
         await releaseAICreditReservation(prisma, ctx.organizationId, reservation.reservation.id);
         throw new Error("ai_usage_meter_unavailable");
@@ -187,7 +209,7 @@ export async function POST(req: NextRequest) {
         await releaseAICreditReservation(prisma, ctx.organizationId, reservation.reservation.id);
         throw new Error("ai_usage_meter_unavailable");
       }
-      if (!usageWrite.cost && !await attachAICreditReservationUsage(prisma, ctx.organizationId, reservation.reservation.id, usageWrite.usageEventId!)) {
+      if (!usageWrite.cost && !gatewayUsageAttached && !await attachAICreditReservationUsage(prisma, ctx.organizationId, reservation.reservation.id, usageWrite.usageEventId!)) {
         await releaseAICreditReservation(prisma, ctx.organizationId, reservation.reservation.id);
         throw new Error("ai_usage_meter_unavailable");
       }

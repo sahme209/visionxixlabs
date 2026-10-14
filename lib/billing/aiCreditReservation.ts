@@ -16,7 +16,9 @@ export type AICreditReservationResult =
 
 /**
  * Transactional hold for a bounded AI request. The caller must settle or
- * release it; stale holds are expired before each new admission decision.
+ * release it. Unattached stale holds are expired before each new admission
+ * decision; Gateway-backed holds move to pending_settlement once usage is
+ * durably linked, so they remain reserved until reconciliation.
  */
 export async function reserveAICredits(
   repo: any,
@@ -33,18 +35,35 @@ export async function reserveAICredits(
         if (existing.reservedCents !== input.reservedCents) return { ok: false as const, error: "idempotency_key_conflict" as const };
         return { ok: true as const, reservation: existing, reused: true };
       }
-      await tx.aIUsageReservation.updateMany({ where: { organizationId: input.organizationId, status: "reserved", expiresAt: { lte: now } }, data: { status: "expired", releasedAt: now } });
+      await tx.aIUsageReservation.updateMany({
+        where: { organizationId: input.organizationId, status: "reserved", usageEventId: null, expiresAt: { lte: now } },
+        data: { status: "expired", releasedAt: now },
+      });
       const [billing, purchases, usage, active] = await Promise.all([
         tx.tenantBillingPlan.findUnique({ where: { organizationId: input.organizationId } }),
         tx.addOnPurchase.findMany({ where: { organizationId: input.organizationId, status: { in: ["paid", "partially_refunded"] }, OR: [{ validFor: "current_month", periodMonth: monthKey(now) }, { validFor: "permanent", refundedAt: null }] } }),
         tx.usageEvent.aggregate({ where: { organizationId: input.organizationId, eventKind: "ai_invocation", createdAt: { gte: monthStart(now) } }, _sum: { billedCents: true } }),
-        tx.aIUsageReservation.aggregate({ where: { organizationId: input.organizationId, status: "reserved", expiresAt: { gt: now } }, _sum: { reservedCents: true } }),
+        tx.aIUsageReservation.aggregate({
+          where: {
+            organizationId: input.organizationId,
+            OR: [
+              { status: "reserved", usageEventId: null, expiresAt: { gt: now } },
+              // Older linked Gateway holds predate pending_settlement and must
+              // continue consuming capacity until their usage is reconciled.
+              { status: "reserved", usageEventId: { not: null } },
+              { status: "pending_settlement" },
+            ],
+          },
+          _sum: { reservedCents: true },
+        }),
       ]);
       const plan = planForStripeTier(billing?.tier);
       const pool = applyAddOnsToEntitlements(plan, purchases).includedAICreditsCents;
       const used = usage._sum.billedCents ?? 0;
       const held = active._sum.reservedCents ?? 0;
-      if (pool - used - held < input.reservedCents) return { ok: false as const, error: "ai_credit_pool_exhausted" as const };
+      if (plan.entitlements.overagePolicy === "hard_stop" && pool - used - held < input.reservedCents) {
+        return { ok: false as const, error: "ai_credit_pool_exhausted" as const };
+      }
       const reservation = await tx.aIUsageReservation.create({ data: { ...input, status: "reserved", expiresAt: new Date(now.getTime() + RESERVATION_TTL_MS) } });
       return { ok: true as const, reservation, reused: false };
     }, { isolationLevel: "Serializable" });
@@ -85,7 +104,7 @@ export async function attachAICreditReservationUsage(repo: any, organizationId: 
   try {
     const result = await repo.aIUsageReservation.updateMany({
       where: { id: reservationId, organizationId, status: "reserved", usageEventId: null },
-      data: { usageEventId },
+      data: { status: "pending_settlement", usageEventId },
     });
     return result.count === 1;
   } catch { return false; }

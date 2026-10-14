@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
-import { reserveAICredits, settleAICreditReservation } from "../aiCreditReservation";
+import { attachAICreditReservationUsage, reserveAICredits, settleAICreditReservation } from "../aiCreditReservation";
 
-function reservationRepo(overrides: { used?: number; held?: number; existing?: any } = {}) {
+function reservationRepo(overrides: { used?: number; held?: number; existing?: any; tier?: string } = {}) {
   const reservations: any[] = [];
   const aIUsageReservation = {
     findUnique: vi.fn(async () => overrides.existing ?? null),
@@ -11,7 +11,7 @@ function reservationRepo(overrides: { used?: number; held?: number; existing?: a
   };
   const tx = {
     aIUsageReservation,
-    tenantBillingPlan: { findUnique: vi.fn(async () => ({ tier: "starter", status: "active" })) },
+    tenantBillingPlan: { findUnique: vi.fn(async () => ({ tier: overrides.tier ?? "starter", status: "active" })) },
     addOnPurchase: { findMany: vi.fn(async () => []) },
     usageEvent: { aggregate: vi.fn(async () => ({ _sum: { billedCents: overrides.used ?? 0 } })) },
   };
@@ -40,8 +40,21 @@ describe("AI credit reservations", () => {
     const now = new Date("2026-10-14T12:00:00Z");
     await reserveAICredits(repo, input, now);
     expect(aIUsageReservation.updateMany).toHaveBeenCalledWith(expect.objectContaining({
-      where: expect.objectContaining({ status: "reserved", expiresAt: { lte: now } }),
+      where: expect.objectContaining({ status: "reserved", usageEventId: null, expiresAt: { lte: now } }),
       data: { status: "expired", releasedAt: now },
+    }));
+  });
+
+  it("keeps pending Gateway holds in the availability calculation", async () => {
+    const { repo, aIUsageReservation } = reservationRepo({ held: 100 });
+    await reserveAICredits(repo, input, new Date("2026-10-14T12:00:00Z"));
+    expect(aIUsageReservation.aggregate).toHaveBeenCalledWith(expect.objectContaining({
+      where: expect.objectContaining({
+        OR: expect.arrayContaining([
+          { status: "pending_settlement" },
+          { status: "reserved", usageEventId: { not: null } },
+        ]),
+      }),
     }));
   });
 
@@ -58,6 +71,12 @@ describe("AI credit reservations", () => {
     await expect(reserveAICredits(repo, { ...input, reservedCents: 101 })).resolves.toEqual({ ok: false, error: "idempotency_key_conflict" });
   });
 
+  it("allows an overage-plan request after included credits are consumed", async () => {
+    const { repo, aIUsageReservation } = reservationRepo({ tier: "growth", used: 20_000 });
+    await expect(reserveAICredits(repo, input)).resolves.toMatchObject({ ok: true, reused: false });
+    expect(aIUsageReservation.create).toHaveBeenCalled();
+  });
+
   it("settles only an amount within the pre-authorized hold", async () => {
     const updateMany = vi.fn(async () => ({ count: 1 }));
     const repo = { aIUsageReservation: { updateMany } };
@@ -72,5 +91,15 @@ describe("AI credit reservations", () => {
     const updateMany = vi.fn(async () => ({ count: 0 }));
     const repo = { aIUsageReservation: { updateMany } };
     await expect(settleAICreditReservation(repo, "org-1", "hold-1", 101)).resolves.toBe(false);
+  });
+
+  it("moves a linked Gateway hold into pending settlement", async () => {
+    const updateMany = vi.fn(async () => ({ count: 1 }));
+    const repo = { aIUsageReservation: { updateMany } };
+    await expect(attachAICreditReservationUsage(repo, "org-1", "hold-1", "usage-1")).resolves.toBe(true);
+    expect(updateMany).toHaveBeenCalledWith(expect.objectContaining({
+      where: expect.objectContaining({ status: "reserved", usageEventId: null }),
+      data: { status: "pending_settlement", usageEventId: "usage-1" },
+    }));
   });
 });

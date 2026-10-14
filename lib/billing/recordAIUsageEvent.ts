@@ -47,13 +47,18 @@ export interface RecordAIUsageResult {
   reason?: "no_rate_row" | "missing_external_usage_id" | "persist_failed";
 }
 
-export async function recordAIUsageEvent(input: RecordAIUsageInput): Promise<RecordAIUsageResult> {
+type UsageEventWriter = Pick<typeof prisma, "usageEvent">;
+
+export async function recordAIUsageEvent(
+  input: RecordAIUsageInput,
+  repository: UsageEventWriter = prisma,
+): Promise<RecordAIUsageResult> {
   if (input.provider === "vercel_gateway") {
     if (!input.externalUsageId) {
       return { recorded: false, usageEventId: null, cost: null, reason: "missing_external_usage_id" };
     }
     try {
-      const event = await prisma.usageEvent.upsert({
+      const event = await repository.usageEvent.upsert({
         where: { externalUsageId: input.externalUsageId },
         update: {},
         create: {
@@ -95,7 +100,7 @@ export async function recordAIUsageEvent(input: RecordAIUsageInput): Promise<Rec
   );
 
   try {
-    const event = await prisma.usageEvent.create({
+    const event = await repository.usageEvent.create({
       data: {
         organizationId: input.organizationId,
         eventKind: "ai_invocation",

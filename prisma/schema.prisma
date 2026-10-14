@@ -1212,7 +1212,7 @@ model AIUsageReservation {
   idempotencyKey   String
   reservedCents    Int
   settledCents     Int?
-  /// reserved | settled | released | expired | cancelled
+  /// reserved | pending_settlement | settled | released | expired | cancelled
   status           String   @default("reserved")
   correlationId    String?
   usageEventId     String?  @unique

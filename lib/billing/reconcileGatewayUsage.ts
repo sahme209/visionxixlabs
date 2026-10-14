@@ -19,7 +19,7 @@ export interface GatewayGenerationUsage {
   cachedTokens: number;
 }
 
-export interface GatewayUsageRepository {
+export interface GatewayUsageTransaction {
   usageEvent: {
     findMany(args: unknown): Promise<PendingGatewayUsage[]>;
     updateMany(args: unknown): Promise<{ count: number }>;
@@ -30,6 +30,10 @@ export interface GatewayUsageRepository {
   };
 }
 
+export interface GatewayUsageRepository extends GatewayUsageTransaction {
+  $transaction: <T>(operation: (transaction: GatewayUsageTransaction) => Promise<T>) => Promise<T>;
+}
+
 export interface GatewayUsageReconciliationResult {
   inspected: number;
   settled: number;
@@ -38,6 +42,9 @@ export interface GatewayUsageReconciliationResult {
 }
 
 type GenerationLookup = (id: string) => Promise<GatewayGenerationUsage>;
+
+const reservationTransitionFailed = new Error("gateway_reservation_transition_failed");
+const usageAlreadySettled = new Error("gateway_usage_already_settled");
 
 function centsFromUsd(usd: number): number {
   if (!Number.isFinite(usd) || usd < 0) throw new Error("invalid_gateway_cost");
@@ -81,35 +88,44 @@ export async function reconcilePendingGatewayUsage(
       const generation = await lookup(event.externalUsageId);
       const providerCostCents = centsFromUsd(generation.totalCost);
       const computedBilledCents = Math.max(providerCostCents, applyMargin(providerCostCents));
-      const reservation = repository.aIUsageReservation
-        ? await repository.aIUsageReservation.findUnique({ where: { usageEventId: event.id }, select: { id: true, organizationId: true, reservedCents: true } })
-        : null;
-      // A customer debit is never allowed to exceed the budget explicitly
-      // reserved before this generation. Any provider overrun is platform
-      // cost to investigate, not an unapproved customer charge.
-      const billedCents = reservation ? Math.min(computedBilledCents, reservation.reservedCents) : computedBilledCents;
-      const update = await repository.usageEvent.updateMany({
-        where: { id: event.id, billingStatus: "pending" },
-        data: {
-          model: generation.model,
-          inputTokens: Math.max(0, Math.floor(generation.promptTokens)),
-          outputTokens: Math.max(0, Math.floor(generation.completionTokens)),
-          cachedReadTokens: Math.max(0, Math.floor(generation.cachedTokens)),
-          costCents: providerCostCents,
-          billedCents,
-          billingStatus: "settled",
-        },
-      });
-      if (update.count === 1) {
-        if (reservation && repository.aIUsageReservation) {
-          await repository.aIUsageReservation.updateMany({
-            where: { id: reservation.id, organizationId: reservation.organizationId, status: "reserved", usageEventId: event.id },
+      const settle = async (transaction: GatewayUsageTransaction) => {
+        const reservation = transaction.aIUsageReservation
+          ? await transaction.aIUsageReservation.findUnique({ where: { usageEventId: event.id }, select: { id: true, organizationId: true, reservedCents: true } })
+          : null;
+        // A customer debit is never allowed to exceed the budget explicitly
+        // reserved before this generation. Any provider overrun is platform
+        // cost to investigate, not an unapproved customer charge.
+        const billedCents = reservation ? Math.min(computedBilledCents, reservation.reservedCents) : computedBilledCents;
+        if (reservation && transaction.aIUsageReservation) {
+          const reservationUpdate = await transaction.aIUsageReservation.updateMany({
+            where: {
+              id: reservation.id,
+              organizationId: reservation.organizationId,
+              status: { in: ["pending_settlement", "reserved"] },
+              usageEventId: event.id,
+            },
             data: { status: "settled", settledCents: billedCents, settledAt: new Date() },
           });
+          if (reservationUpdate.count !== 1) throw reservationTransitionFailed;
         }
-        settled++;
-      }
+        const usageUpdate = await transaction.usageEvent.updateMany({
+          where: { id: event.id, billingStatus: "pending" },
+          data: {
+            model: generation.model,
+            inputTokens: Math.max(0, Math.floor(generation.promptTokens)),
+            outputTokens: Math.max(0, Math.floor(generation.completionTokens)),
+            cachedReadTokens: Math.max(0, Math.floor(generation.cachedTokens)),
+            costCents: providerCostCents,
+            billedCents,
+            billingStatus: "settled",
+          },
+        });
+        if (usageUpdate.count !== 1) throw usageAlreadySettled;
+      };
+      await repository.$transaction(settle);
+      settled++;
     } catch (error) {
+      if (error === usageAlreadySettled) continue;
       if (isNotYetAvailable(error)) deferred++;
       else failed++;
     }
