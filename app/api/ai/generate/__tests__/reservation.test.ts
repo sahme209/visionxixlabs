@@ -38,6 +38,14 @@ describe("POST /api/ai/generate reservation boundary", () => {
     expect(mocks.settle).toHaveBeenCalledWith(expect.anything(), "org-1", "hold-1", 10, "usage-1");
   });
 
+  it("keeps the hold when Gateway settlement is still pending", async () => {
+    mocks.recordUsage.mockResolvedValue({ recorded: true, usageEventId: "usage-1", cost: null, pendingSettlement: true });
+    const { POST } = await import("../route");
+    expect((await POST(request())).status).toBe(200);
+    expect(mocks.settle).not.toHaveBeenCalled();
+    expect(mocks.release).not.toHaveBeenCalled();
+  });
+
   it("does not call a provider when the pool cannot reserve the request", async () => {
     mocks.reserve.mockResolvedValue({ ok: false, error: "ai_credit_pool_exhausted" });
     const { POST } = await import("../route");

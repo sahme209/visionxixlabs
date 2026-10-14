@@ -176,7 +176,14 @@ export async function POST(req: NextRequest) {
         correlationId,
         metadata: { route: "api/ai/generate" },
       });
-      if (!usageWrite.recorded || !usageWrite.cost || !await settleAICreditReservation(prisma, ctx.organizationId, reservation.reservation.id, usageWrite.cost.totalCents, usageWrite.usageEventId)) {
+      if (!usageWrite.recorded) {
+        await releaseAICreditReservation(prisma, ctx.organizationId, reservation.reservation.id);
+        throw new Error("ai_usage_meter_unavailable");
+      }
+      // Gateway settlement is authoritative but asynchronous. Keep the hold
+      // active until that reconciler supplies a real cost; direct-provider
+      // calls settle immediately against their measured amount.
+      if (usageWrite.cost && !await settleAICreditReservation(prisma, ctx.organizationId, reservation.reservation.id, usageWrite.cost.totalCents, usageWrite.usageEventId)) {
         await releaseAICreditReservation(prisma, ctx.organizationId, reservation.reservation.id);
         throw new Error("ai_usage_meter_unavailable");
       }
