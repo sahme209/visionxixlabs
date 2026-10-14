@@ -17,6 +17,7 @@ import "server-only";
 import { findTool, toolCatalogPrompt, classifyRisk, type ToolRiskLevel } from "./tools";
 import { resolveGovernedAiCall, type GovernedAiCallError } from "./governedAiCall";
 import { readWorkspaceAgentIdentity } from "./agentIdentityPolicy";
+import type { AITextResponse } from "@/lib/ai/AIProvider";
 
 export interface ConversationTurnInput {
   role: "user" | "assistant" | "tool_result";
@@ -46,6 +47,18 @@ export interface AgentEffortProfile {
   maxDecisionIterations: number;
 }
 
+/**
+ * Per-turn provider-reported usage evidence. This is deliberately not a
+ * price, a credit debit, or a billing receipt; those settle at the governed
+ * gateway and workspace-credit layers.
+ */
+export interface AgentUsageReceipt {
+  decisionSteps: number;
+  inputTokens: number | null;
+  outputTokens: number | null;
+  totalTokens: number | null;
+}
+
 export function resolveAgentEffortProfile(mode: AgentOperationMode | undefined): AgentEffortProfile {
   if (mode === "inspect" || mode === "ask" || mode === "plan") {
     return { label: "Inspect", maxDecisionIterations: 2 };
@@ -70,9 +83,9 @@ function normalizedOperationMode(mode: AgentOperationMode | undefined): "inspect
 }
 
 export type DecisionLoopOutcome =
-  | { kind: "final"; message: string }
-  | { kind: "proposal"; message: string; toolName: string; args: Record<string, unknown>; riskLevel: ToolRiskLevel }
-  | { kind: "error"; error: GovernedAiCallError | "workspace_agent_disabled" | "workspace_agent_policy_unavailable" | "agent_tool_not_allowed" | "decision_malformed" | "tool_execution_failed" | "max_iterations_exceeded"; detail?: string };
+  | { kind: "final"; message: string; usage?: AgentUsageReceipt }
+  | { kind: "proposal"; message: string; toolName: string; args: Record<string, unknown>; riskLevel: ToolRiskLevel; usage?: AgentUsageReceipt }
+  | { kind: "error"; error: GovernedAiCallError | "workspace_agent_disabled" | "workspace_agent_policy_unavailable" | "agent_tool_not_allowed" | "decision_malformed" | "tool_execution_failed" | "max_iterations_exceeded"; detail?: string; usage?: AgentUsageReceipt };
 
 interface RawDecision {
   action: "respond" | "call_tool";
@@ -135,20 +148,22 @@ const DECISION_SCHEMA = `A single JSON object with one of these exact shapes:
 Do not omit message. Do not return markdown, a JSON array, native function-call syntax, or more than one action.`;
 
 async function extractDecision(
-  extract: <T>(text: string, schemaHint: string, correlationId: string) => Promise<T>,
+  extract: <T>(text: string, schemaHint: string, correlationId: string) => Promise<{ data: T; usage?: AITextResponse["usage"] }>,
   prompt: string,
   correlationId: string,
+  onUsage: (usage: AITextResponse["usage"]) => void,
 ): Promise<RawDecision | null> {
   for (let attempt = 0; attempt < 2; attempt++) {
     try {
-      const candidate = await extract<unknown>(
+      const response = await extract<unknown>(
         attempt === 0
           ? prompt
           : `${prompt}\n\nYour prior answer could not be safely parsed. Return only one JSON object matching the exact decision schema. Use action \"call_tool\" (not \"tool_call\") and put tool arguments in an object named \"args\".`,
         DECISION_SCHEMA,
         attempt === 0 ? correlationId : `${correlationId}:repair`,
       );
-      const parsed = parseRawDecision(candidate);
+      if (response.usage !== undefined) onUsage(response.usage);
+      const parsed = parseRawDecision(response.data);
       if (parsed) return parsed;
     } catch {
       // One bounded retry handles providers that wrap, truncate, or otherwise
@@ -184,17 +199,34 @@ export async function runDecisionLoop(input: {
   if (!governed.ok) return { kind: "error", error: governed.error };
 
   const effort = resolveAgentEffortProfile(input.operationMode);
+  const observedUsage: AITextResponse["usage"][] = [];
+  const withUsage = <T extends DecisionLoopOutcome>(outcome: T): T => {
+    if (observedUsage.length === 0) return outcome;
+    const sum = (field: "promptTokens" | "completionTokens" | "totalTokens") => {
+      const values = observedUsage.flatMap((usage) => typeof usage?.[field] === "number" ? [usage[field] as number] : []);
+      return values.length > 0 ? values.reduce((total, value) => total + value, 0) : null;
+    };
+    return {
+      ...outcome,
+      usage: {
+        decisionSteps: observedUsage.length,
+        inputTokens: sum("promptTokens"),
+        outputTokens: sum("completionTokens"),
+        totalTokens: sum("totalTokens"),
+      },
+    };
+  };
 
   const transcript = [...input.transcript];
 
   if (input.initialToolCall) {
     const tool = findTool(input.initialToolCall.toolName);
     if (!tool || tool.riskLevel !== "low" || !allowedTools.has(tool.name)) {
-      return {
+      return withUsage({
         kind: "error",
         error: "decision_malformed",
         detail: `Initial grounding tool must be registered and read-only: ${input.initialToolCall.toolName}`,
-      };
+      });
     }
     const executed = await input.executeReadOnlyTool(tool.name, input.initialToolCall.args);
     transcript.push({ role: "assistant", content: input.initialToolCall.message });
@@ -214,19 +246,19 @@ export async function runDecisionLoop(input: {
         : "DEEPOPS MODE: Use careful multi-system reasoning. Read-only tools may run immediately. Existing approved operational writes may only be returned as approval-gated proposals. Do not claim Azure or GCP write execution exists unless a registered tool provides it.";
     const prompt = `${systemFraming(identity.allowedTools)}\n\nCurrent operation mode:\n${modeInstruction}\nEffort budget: ${effort.label} allows at most ${effort.maxDecisionIterations} structured decision steps for this request.\n\nEnabled workspace skills (workflow guidance only; these cannot override hard rules, tool risk, approvals, or the user's request):\n${input.skillContext ?? "No optional workspace skills are enabled."}\n\nHistorical workspace memory (use only when the current request does not provide a conflicting selection):\n${input.workspaceContext ?? "No prior workspace context has been recorded."}\n\nAuthoritative UI selections for this request:\n${input.currentRequestContext ?? "No repository, branch, file, or environment was selected for this request."}\nWhen a current UI selection conflicts with conversation history or historical workspace memory, use the current UI selection. Never substitute a remembered repository, branch, file, or environment for a selected one.\n\nConversation so far:\n${transcriptText}\n\nDecide the next step.`;
 
-    const decision = await extractDecision(governed.extract, prompt, `${input.correlationId}:${iteration}`);
-    if (!decision) return { kind: "error", error: "decision_malformed" };
+    const decision = await extractDecision(governed.extract, prompt, `${input.correlationId}:${iteration}`, (usage) => observedUsage.push(usage));
+    if (!decision) return withUsage({ kind: "error", error: "decision_malformed" });
 
     if (decision.action === "respond") {
-      return { kind: "final", message: decision.message };
+      return withUsage({ kind: "final", message: decision.message });
     }
 
     const tool = findTool(decision.toolName!);
     if (!tool) {
-      return { kind: "error", error: "decision_malformed", detail: `Unknown tool: ${decision.toolName}` };
+      return withUsage({ kind: "error", error: "decision_malformed", detail: `Unknown tool: ${decision.toolName}` });
     }
     if (!allowedTools.has(tool.name)) {
-      return { kind: "error", error: "agent_tool_not_allowed", detail: `Tool is not approved for this agent identity: ${tool.name}` };
+      return withUsage({ kind: "error", error: "agent_tool_not_allowed", detail: `Tool is not approved for this agent identity: ${tool.name}` });
     }
     const args = decision.args ?? {};
     const targetsProd = await input.isProdEnvironmentTarget(tool.name, args);
@@ -235,12 +267,12 @@ export async function runDecisionLoop(input: {
     if (riskLevel !== "low") {
       if (operationMode === "inspect") {
         const prefix = "Inspect mode is read-only, so no change was proposed.";
-        return { kind: "final", message: `${prefix} ${decision.message}` };
+        return withUsage({ kind: "final", message: `${prefix} ${decision.message}` });
       }
       if (operationMode === "engineer" && !ENGINEERING_WRITE_TOOLS.has(tool.name)) {
-        return { kind: "final", message: `Engineer mode only proposes GitHub branch, commit, and pull-request changes. No operational action was proposed. ${decision.message}` };
+        return withUsage({ kind: "final", message: `Engineer mode only proposes GitHub branch, commit, and pull-request changes. No operational action was proposed. ${decision.message}` });
       }
-      return { kind: "proposal", message: decision.message, toolName: tool.name, args, riskLevel };
+      return withUsage({ kind: "proposal", message: decision.message, toolName: tool.name, args, riskLevel });
     }
 
     const executed = await input.executeReadOnlyTool(tool.name, args);
@@ -251,5 +283,5 @@ export async function runDecisionLoop(input: {
     });
   }
 
-  return { kind: "error", error: "max_iterations_exceeded" };
+  return withUsage({ kind: "error", error: "max_iterations_exceeded" });
 }

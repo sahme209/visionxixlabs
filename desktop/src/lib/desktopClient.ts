@@ -846,6 +846,8 @@ export class DesktopClient {
   }): Promise<ApiResult<{
     reply: string;
     proposal: { id: string; toolName: string; argsJson: unknown; riskLevel: string; status: string } | null;
+    /** Provider-reported token evidence, not a settled customer credit charge. */
+    usage: { decisionSteps: number; inputTokens: number | null; outputTokens: number | null; totalTokens: number | null } | null;
   }>> {
     return this.post(`/api/desktop/agent/conversations/${encodeURIComponent(conversationId)}/messages`, { message, preferredProvider, workspaceContext });
   }

@@ -215,7 +215,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
 
   if (outcome.kind === "final") {
     await prisma.agentConversationTurn.create({ data: { conversationId, role: "assistant", content: outcome.message } });
-    return NextResponse.json({ ok: true, data: { reply: outcome.message, proposal: null } });
+    return NextResponse.json({ ok: true, data: { reply: outcome.message, proposal: null, usage: outcome.usage ?? null } });
   }
 
   if (outcome.kind === "proposal") {
@@ -223,7 +223,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     if (!reviewed.ok) {
       const reply = `I couldn't prepare a trustworthy approval preview, so no action was proposed. ${reviewed.error}`;
       await prisma.agentConversationTurn.create({ data: { conversationId, role: "assistant", content: reply } });
-      return NextResponse.json({ ok: true, data: { reply, proposal: null } });
+      return NextResponse.json({ ok: true, data: { reply, proposal: null, usage: outcome.usage ?? null } });
     }
     await rememberToolContext(memoryRepo, organizationId, reviewed.args).catch(() => undefined);
     await prisma.agentConversationTurn.create({ data: { conversationId, role: "assistant", content: outcome.message } });
@@ -240,11 +240,12 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
       data: {
         reply: outcome.message,
         proposal: { id: proposal.id, toolName: proposal.toolName, argsJson: proposal.argsJson, riskLevel: proposal.riskLevel, status: proposal.status },
+        usage: outcome.usage ?? null,
       },
     });
   }
 
   const reply = AI_ERROR_MESSAGES[outcome.error] ?? "Something went wrong processing that request.";
   await prisma.agentConversationTurn.create({ data: { conversationId, role: "assistant", content: reply } });
-  return NextResponse.json({ ok: true, data: { reply, proposal: null } });
+  return NextResponse.json({ ok: true, data: { reply, proposal: null, usage: outcome.usage ?? null } });
 }
