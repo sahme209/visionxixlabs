@@ -9,8 +9,14 @@ import { supporterCheckoutReadiness } from "@/lib/supporters/core";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Axiom Founding Supporters | Vision XIX Labs",
+  title: "Axiom Founding Supporters",
   description: "Support the careful development of Axiom Agent—autonomous engineering with human control, security, and governance at its core.",
+  alternates: { canonical: "/support" },
+  openGraph: {
+    title: "Axiom Founding Supporters | Vision XIX Labs",
+    description: "Support the careful development of Axiom Agent—autonomous engineering with human control, security, and governance at its core.",
+    url: "/support",
+  },
 };
 
 const fundingAreas = [
