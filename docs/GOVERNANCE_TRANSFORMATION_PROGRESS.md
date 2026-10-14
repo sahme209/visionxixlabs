@@ -84,9 +84,17 @@ Verification: TypeScript and 12 focused control-plane approval, AI-policy, sessi
 
 Verification: Prisma generation, TypeScript, and 5 focused lease, replay, approval, cancellation, and conflict tests pass.
 
+### Verified AI-credit checkout and fulfillment
+
+- AI-credit add-ons now use server-owned 2x pricing and real Stripe test-mode Checkout sessions.
+- Signed Checkout events fulfill matching purchases exactly once; cumulative refunds reverse credits proportionally.
+- Purchase and Stripe-event ledgers enforce idempotency and replay safety, and partially refunded credits remain netted from entitlements.
+
+Verification: 38 focused catalog, checkout, webhook, replay, fulfillment, and refund tests pass. Prisma generation and the repository-wide type-check must be rerun on a machine whose Prisma engine cache is writable.
+
 ## Next phases
 
-1. Implement real Stripe test-mode credit checkout, signed fulfillment/refund reversal, and atomic AI credit reservation/settlement.
+1. Implement atomic AI credit reservation/settlement around Gateway execution; checkout, fulfillment, and refund reversal are complete on the review branch.
 2. Add paginated audit search/export controls backed by the existing tenant-scoped export pipeline.
 3. Connect durable workflow state only to verified repository/cloud adapters, then expose tenant-scoped monitoring and cancellation controls.
 4. Add a trusted scheduler/worker wake-up path and operational recovery runbook.

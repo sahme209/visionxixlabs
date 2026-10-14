@@ -12,7 +12,8 @@
  *   - Connectors    = base + sum(deliveredConnectors) for "paid"
  *     permanent purchases.
  *
- * Only purchases with status="paid" count. Pending purchases (Stripe
+ * Paid and partially-refunded purchases count, net of their recorded
+ * credit reversal. Pending purchases (Stripe
  * checkout opened but not yet completed) DO NOT apply — that's the
  * webhook's job to flip status and the producer's job to re-resolve.
  *
@@ -26,6 +27,7 @@ export interface AddOnPurchaseRow {
   sku: string;
   status: string;
   deliveredAICreditsCents: number;
+  reversedAICreditsCents?: number;
   deliveredSeats: number;
   deliveredConnectors: number;
   validFor: string;
@@ -53,8 +55,11 @@ export function applyAddOnsToEntitlements(
   let appliedConnectors = 0;
 
   for (const p of purchases) {
-    if (p.status !== "paid") continue;
-    appliedAICreditsCents += Math.max(0, p.deliveredAICreditsCents);
+    if (p.status !== "paid" && p.status !== "partially_refunded") continue;
+    appliedAICreditsCents += Math.max(
+      0,
+      p.deliveredAICreditsCents - Math.max(0, p.reversedAICreditsCents ?? 0),
+    );
     appliedSeats          += Math.max(0, p.deliveredSeats);
     appliedConnectors     += Math.max(0, p.deliveredConnectors);
   }

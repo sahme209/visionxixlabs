@@ -45,19 +45,25 @@ export default async function ControlUsageBillingPage() {
   let members = 0;
   let usage = { calls: 0, inputTokens: 0, outputTokens: 0, billedCents: 0, pendingCalls: 0 };
   let paidCreditCents = 0;
-  let transactions: Array<{ id: string; sku: string; pricePaidCents: number; deliveredAICreditsCents: number; status: string; createdAt: Date }> = [];
+  let transactions: Array<{ id: string; sku: string; pricePaidCents: number; deliveredAICreditsCents: number; reversedAICreditsCents: number; status: string; createdAt: Date }> = [];
   let deployment = await checkDeploymentQuota(prisma, organizationId);
   try {
-    const [memberCount, usageAggregate, pendingCalls, creditAggregate, recentTransactions] = await Promise.all([
+    const [memberCount, usageAggregate, pendingCalls, creditPurchases, recentTransactions] = await Promise.all([
       prisma.orgMembership.count({ where: { organizationId, acceptedAt: { not: null } } }),
       prisma.usageEvent.aggregate({ where: { organizationId, eventKind: "ai_invocation", createdAt: { gte: period.start } }, _count: { _all: true }, _sum: { inputTokens: true, outputTokens: true, billedCents: true } }),
       prisma.usageEvent.count({ where: { organizationId, eventKind: "ai_invocation", billingStatus: "pending", createdAt: { gte: period.start } } }),
-      prisma.addOnPurchase.aggregate({ where: { organizationId, status: "paid", periodMonth: period.key, validFor: "current_month" }, _sum: { deliveredAICreditsCents: true } }),
-      prisma.addOnPurchase.findMany({ where: { organizationId }, orderBy: { createdAt: "desc" }, take: 12, select: { id: true, sku: true, pricePaidCents: true, deliveredAICreditsCents: true, status: true, createdAt: true } }),
+      prisma.addOnPurchase.findMany({
+        where: { organizationId, status: { in: ["paid", "partially_refunded"] }, periodMonth: period.key, validFor: "current_month" },
+        select: { deliveredAICreditsCents: true, reversedAICreditsCents: true },
+      }),
+      prisma.addOnPurchase.findMany({ where: { organizationId }, orderBy: { createdAt: "desc" }, take: 12, select: { id: true, sku: true, pricePaidCents: true, deliveredAICreditsCents: true, reversedAICreditsCents: true, status: true, createdAt: true } }),
     ]);
     members = memberCount;
     usage = { calls: usageAggregate._count._all, inputTokens: usageAggregate._sum.inputTokens ?? 0, outputTokens: usageAggregate._sum.outputTokens ?? 0, billedCents: usageAggregate._sum.billedCents ?? 0, pendingCalls };
-    paidCreditCents = creditAggregate._sum.deliveredAICreditsCents ?? 0;
+    paidCreditCents = creditPurchases.reduce(
+      (total, purchase) => total + Math.max(0, purchase.deliveredAICreditsCents - purchase.reversedAICreditsCents),
+      0,
+    );
     transactions = recentTransactions;
   } catch {
     unavailable = true;
@@ -99,7 +105,12 @@ export default async function ControlUsageBillingPage() {
       <section className="mt-6" aria-labelledby="transactions-heading">
         <div className="flex items-end justify-between gap-3"><div><h2 id="transactions-heading" className="text-lg font-medium">Credit transactions</h2><p className="mt-1 text-xs text-zinc-500">Only Stripe-verified paid records increase available credits.</p></div>{canManage && <Link href="/plans" className="text-xs text-[#ff783d] hover:text-[#ff9a6d]">Review plans →</Link>}</div>
         <div className="mt-3 overflow-hidden rounded-xl border border-white/[0.08] bg-[#171717]">
-          {transactions.length === 0 ? <p className="px-5 py-6 text-sm text-zinc-500">No credit transactions recorded.</p> : transactions.map((transaction) => <div key={transaction.id} className="flex flex-col justify-between gap-2 border-b border-white/[0.06] px-5 py-4 last:border-b-0 sm:flex-row sm:items-center"><div><p className="text-sm text-zinc-200">{transaction.sku.replaceAll("_", " ")}</p><p className="mt-1 text-[11px] text-zinc-600">{transaction.createdAt.toLocaleString()} · {transaction.status}</p></div><p className="text-xs text-zinc-400">Paid {money(transaction.pricePaidCents)} · Credits {money(transaction.deliveredAICreditsCents)}</p></div>)}
+          {transactions.length === 0 ? <p className="px-5 py-6 text-sm text-zinc-500">No credit transactions recorded.</p> : transactions.map((transaction) => {
+            const creditsSettled = transaction.status === "paid" || transaction.status === "partially_refunded";
+            const netCredits = creditsSettled ? Math.max(0, transaction.deliveredAICreditsCents - transaction.reversedAICreditsCents) : 0;
+            const creditLabel = transaction.status === "pending" ? "Awaiting payment" : creditsSettled ? `Credits ${money(netCredits)}${transaction.reversedAICreditsCents > 0 ? " after refund" : ""}` : "No credits applied";
+            return <div key={transaction.id} className="flex flex-col justify-between gap-2 border-b border-white/[0.06] px-5 py-4 last:border-b-0 sm:flex-row sm:items-center"><div><p className="text-sm text-zinc-200">{transaction.sku.replaceAll("_", " ")}</p><p className="mt-1 text-[11px] text-zinc-600">{transaction.createdAt.toLocaleString()} · {transaction.status}</p></div><p className="text-xs text-zinc-400">Paid {money(transaction.pricePaidCents)} · {creditLabel}</p></div>;
+          })}
         </div>
       </section>
 

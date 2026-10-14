@@ -34,7 +34,7 @@ export async function effectiveEntitlements(
     const rows = await prisma.addOnPurchase.findMany({
       where: {
         organizationId,
-        status: "paid",
+        status: { in: ["paid", "partially_refunded"] },
         OR: [
           // current_month add-ons only count when periodMonth matches.
           { validFor: "current_month", periodMonth: period },
@@ -46,6 +46,7 @@ export async function effectiveEntitlements(
         sku: true,
         status: true,
         deliveredAICreditsCents: true,
+        reversedAICreditsCents: true,
         deliveredSeats: true,
         deliveredConnectors: true,
         validFor: true,
