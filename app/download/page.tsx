@@ -53,6 +53,13 @@ const platformLabel: Record<PlatformId, string> = {
   linux: "Linux",
 };
 
+const resolverHref: Record<PlatformId, string> = {
+  "mac-arm": "/api/desktop/download?platform=mac-arm",
+  "mac-intel": "/api/desktop/download?platform=mac-intel",
+  windows: "/api/desktop/download?platform=windows",
+  linux: "/api/desktop/download?platform=linux",
+};
+
 const subscribe = () => () => undefined;
 
 function detectPlatform(): PlatformId {
@@ -92,7 +99,7 @@ export default function DownloadPage() {
   const downloadReady = Boolean(manifest?.runtimeReady && detectedAsset);
   const primaryHref = downloadReady && detectedAsset
     ? detectedAsset.downloadUrl
-    : `/api/desktop/download?platform=${detectedPlatform}`;
+    : resolverHref[detectedPlatform];
 
   const releaseStatus = useMemo(() => {
     if (manifestError) return "Release status unavailable";
@@ -119,7 +126,7 @@ export default function DownloadPage() {
               <a
                 href={primaryHref}
                 download={downloadReady && detectedAsset ? detectedAsset.fileName : undefined}
-                className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-[#f2f2ed] px-6 text-sm font-semibold text-[#11120f] transition hover:bg-white"
+                className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl sm:rounded-full bg-[#f2f2ed] px-6 text-sm font-semibold text-[#11120f] transition hover:bg-white"
               >
                 <ArrowDownTrayIcon className="h-4 w-4" />
                 Download for {platformLabel[detectedPlatform]}
@@ -232,7 +239,7 @@ function DownloadCard({
             return (
               <a
                 key={id}
-                href={available && asset ? asset.downloadUrl : `/api/desktop/download?platform=${id}`}
+                href={available && asset ? asset.downloadUrl : resolverHref[id]}
                 download={available && asset ? asset.fileName : undefined}
                 className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full bg-[#efefea] px-4 text-sm font-medium text-[#11120f] transition hover:bg-white"
               >
