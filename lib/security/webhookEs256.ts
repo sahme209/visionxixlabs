@@ -245,8 +245,16 @@ function derToRawSignature(der: Buffer): Buffer {
 
 function rawToDerSignature(raw: Buffer): Buffer {
   if (raw.length !== 64) throw new Error("Invalid raw ECDSA sig (expected 64 bytes for P-256)");
-  const r = raw.subarray(0, 32);
-  const s = raw.subarray(32, 64);
+  // JWS uses fixed-width R||S. DER INTEGERs must instead be minimally
+  // encoded: retaining a leading zero from the fixed-width representation is
+  // invalid unless it is needed to keep the value positive.
+  const trimInteger = (value: Buffer) => {
+    let offset = 0;
+    while (offset < value.length - 1 && value[offset] === 0x00) offset += 1;
+    return value.subarray(offset);
+  };
+  const r = trimInteger(raw.subarray(0, 32));
+  const s = trimInteger(raw.subarray(32, 64));
   // Add leading zero when high bit is set so DER INTEGER stays positive.
   const rEncoded = r[0] & 0x80 ? Buffer.concat([Buffer.from([0x00]), r]) : r;
   const sEncoded = s[0] & 0x80 ? Buffer.concat([Buffer.from([0x00]), s]) : s;
