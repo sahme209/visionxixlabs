@@ -75,6 +75,23 @@ describe("signWebhookEs256 + verifyWebhookEs256 — round-trip", () => {
     expect(sig).toMatch(/^[A-Za-z0-9_-]+$/);
   });
 
+  it("accepts a JWS raw signature whose fixed-width coordinate has a leading zero", () => {
+    const kp = generateEs256KeyPair();
+    const ts = 1_700_000_000;
+    // Retry only to obtain the boundary encoding that previously flaked; all
+    // generated signatures remain valid and no external dependency is used.
+    let sig = "";
+    for (let attempt = 0; attempt < 2_000; attempt++) {
+      sig = signWebhookEs256({ privateKeyPem: kp.privateKeyPem, rawBody: `payload-${attempt}`, timestampSec: ts });
+      const raw = Buffer.from(sig.replace(/-/g, "+").replace(/_/g, "/"), "base64");
+      if (raw[0] === 0 || raw[32] === 0) {
+        expect(verifyWebhookEs256({ rawBody: `payload-${attempt}`, signatureBase64Url: sig, timestampSec: ts, publicKeyPem: kp.publicKeyPem, nowSec: ts }).valid).toBe(true);
+        return;
+      }
+    }
+    throw new Error("Could not generate a leading-zero P-256 coordinate");
+  });
+
   it("signatures vary across timestamps (timestamp is in the signed payload)", () => {
     const kp = generateEs256KeyPair();
     const body = "x";
