@@ -1,6 +1,11 @@
 {
   "installCommand": "npm install --legacy-peer-deps=false",
   "buildCommand": "NODE_OPTIONS=--max-old-space-size=6144 npm run build",
+  "git": {
+    "deploymentEnabled": {
+      "codex/axiom-founding-supporters": false
+    }
+  },
   "crons": [
     {
       "path": "/api/cloud-operator/run-recurring",
