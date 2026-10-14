@@ -17,21 +17,6 @@ import { CinematicAxiomDemo } from "@/components/marketing/CinematicAxiomDemo";
 
 const phases = ["Window", "Scope", "Execution", "Validation", "Recovery"];
 
-const playbookQuestions = [
-  {
-    label: "What is happening?",
-    copy: "The request, its playbook, and the evidence that is still missing stay together in one record.",
-  },
-  {
-    label: "What needs attention?",
-    copy: "Readiness, risk, authority, rollback, and validation remain distinct so no green state hides an open decision.",
-  },
-  {
-    label: "What changed?",
-    copy: "Versions, authors, approvals, and closure evidence make the operational story reviewable after the release.",
-  },
-];
-
 const pillars = [
   {
     icon: CpuChipIcon,
@@ -51,13 +36,6 @@ const pillars = [
     title: "GitHub, Airflow, and AWS in one governed path.",
     copy: "Branches, commits, and pull requests land on GitHub for real. Airflow can gate delivery on verified DAG completion, and approved AWS deployments run through your workflow with short-lived OIDC credentials and rollback protection.",
   },
-];
-
-const highlights = [
-  { date: "Sep 30, 2026", title: "Secure browser pairing for Axiom Agent", href: "/changelog" },
-  { date: "Sep 29, 2026", title: "Immutable request history and privacy-safe summaries", href: "/changelog" },
-  { date: "Sep 28, 2026", title: "Verified request-to-playbook desktop workflow", href: "/changelog" },
-  { date: "Sep 27, 2026", title: "Explicit reconnect and stale-record handling", href: "/changelog" },
 ];
 
 export default function Home() {
@@ -131,16 +109,6 @@ export default function Home() {
 
         <CinematicAxiomDemo />
 
-        <section className="border-y border-white/[0.06] bg-[#11110f] px-5 py-12 sm:px-8 lg:px-12">
-          <div className="mx-auto max-w-[1400px]">
-            <p className="text-[11px] uppercase tracking-[0.16em] text-zinc-500">One governed record, not another dashboard</p>
-            <h2 className="mt-3 max-w-2xl text-2xl font-medium tracking-[-0.04em] text-zinc-100 sm:text-3xl">The Playbook keeps the operator oriented.</h2>
-            <div className="mt-8 grid border-y border-white/[0.08] md:grid-cols-3 md:divide-x md:divide-white/[0.08]">
-              {playbookQuestions.map((item) => <article key={item.label} className="border-b border-white/[0.08] py-6 last:border-b-0 md:border-b-0 md:px-7 md:first:pl-0 md:last:pr-0"><h3 className="text-sm font-medium text-zinc-100">{item.label}</h3><p className="mt-2 text-sm leading-6 text-zinc-400">{item.copy}</p></article>)}
-            </div>
-          </div>
-        </section>
-
         <section className="mx-auto max-w-[1400px] space-y-8 px-5 py-20 sm:px-8 lg:px-12 lg:py-28">
           <EditorialPanel
             eyebrow="01 · Structured intake"
@@ -173,19 +141,6 @@ export default function Home() {
             <EvidenceCard icon={<FingerPrintIcon className="h-6 w-6" />} title="Browser-authorized desktop sessions" detail="Sign-in and account creation happen in the system browser through an expiring, one-time device-bound challenge." />
             <EvidenceCard icon={<ClockIcon className="h-6 w-6" />} title="Reconnect without rewriting history" detail="Last-known records remain visible and are explicitly marked stale with the last successful service-response time." />
           </div>
-        </section>
-
-        <section className="mx-auto max-w-[1400px] px-5 py-20 sm:px-8 lg:px-12 lg:py-28">
-          <h2 className="text-3xl font-medium tracking-[-0.035em]">Recent highlights</h2>
-          <div className="mt-8 grid gap-px overflow-hidden rounded-xl border border-white/[0.06] bg-white/[0.06] md:grid-cols-2 xl:grid-cols-4">
-            {highlights.map((item) => (
-              <Link key={item.title} href={item.href} className="min-h-40 bg-[#171714] p-5 transition hover:bg-[#1b1b18]">
-                <p className="text-sm text-zinc-600">{item.date} · Product</p>
-                <p className="mt-3 text-lg leading-7 text-zinc-200">{item.title}</p>
-              </Link>
-            ))}
-          </div>
-          <Link href="/changelog" className="mt-6 inline-flex items-center gap-2 text-sm text-orange-500 hover:text-orange-400">View all product changes <ArrowRightIcon className="h-4 w-4" /></Link>
         </section>
 
         <section className="border-y border-white/[0.07] px-5 py-16 sm:px-8 lg:px-12 lg:py-20">

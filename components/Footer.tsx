@@ -5,31 +5,19 @@ const columns = [
   {
     title: "Product",
     links: [
-      ["Deployment operations", "/product"],
-      ["Capabilities", "/capabilities"],
+      ["Axiom Agent", "/product"],
+      ["Product tour", "/demo"],
       ["Integrations", "/integrations"],
-      ["Plans", "/plans"],
-      ["Desktop app", "/download"],
-    ],
-  },
-  {
-    title: "Resources",
-    links: [
-      ["Documentation", "/resources"],
-      ["Getting started", "/docs/getting-started"],
-      ["Security model", "/docs/security-model"],
-      ["Release readiness", "/docs/releaseops/readiness"],
-      ["Service status", "/status"],
+      ["Security", "/security"],
     ],
   },
   {
     title: "Company",
     links: [
       ["About", "/axiom"],
-      ["Principles", "/principles"],
-      ["Case studies", "/case-studies"],
-      ["Support", "/contact"],
       ["Founding Supporters", "/support"],
+      ["Contact", "/contact"],
+      ["Service status", "/status"],
     ],
   },
   {
@@ -44,19 +32,20 @@ const columns = [
 
 export function Footer() {
   return (
-    <footer className="site-footer border-t border-white/[0.07] bg-[#090a08] px-5 pb-8 pt-20 sm:px-8 lg:px-12 lg:pt-24">
+    <footer className="site-footer border-t border-white/[0.07] bg-[#090a08] px-5 pb-8 sm:px-8 lg:px-12">
       <div className="mx-auto max-w-[1400px]">
-        <section className="border-b border-white/[0.07] pb-20 text-center lg:pb-24" aria-labelledby="footer-cta-heading">
-          <p className="text-[10px] font-medium uppercase tracking-[0.22em] text-orange-300">Axiom Agent</p>
-          <h2 id="footer-cta-heading" className="mx-auto mt-5 max-w-5xl text-4xl font-medium leading-[0.98] tracking-[-0.055em] text-zinc-100 sm:text-6xl lg:text-7xl">Turn engineering intent into governed action.</h2>
-          <p className="mx-auto mt-6 max-w-xl text-sm leading-6 text-zinc-400">Start with the product tour, then bring Axiom into the engineering workspace when you are ready.</p>
-          <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
-            <Link href="/download" className="rounded-full bg-zinc-100 px-6 py-3 text-sm font-semibold text-zinc-950 hover:bg-white">Download Axiom</Link>
-            <Link href="/demo" className="rounded-full border border-white/[0.14] px-6 py-3 text-sm text-zinc-200 hover:bg-white/[0.05]">Explore the product</Link>
+        <section className="flex flex-col gap-8 border-b border-white/[0.07] py-16 md:flex-row md:items-end md:justify-between lg:py-20" aria-labelledby="footer-cta-heading">
+          <div>
+            <p className="text-[10px] font-medium uppercase tracking-[0.22em] text-orange-300">Axiom Agent</p>
+            <h2 id="footer-cta-heading" className="mt-4 max-w-3xl text-3xl font-medium leading-tight tracking-[-0.045em] text-zinc-100 sm:text-5xl">Engineering intent, under control.</h2>
+          </div>
+          <div className="flex flex-wrap gap-3">
+            <Link href="/product" className="rounded-full bg-zinc-100 px-5 py-3 text-sm font-semibold text-zinc-950 hover:bg-white">Explore Axiom</Link>
+            <Link href="/support" className="rounded-full border border-orange-300/30 px-5 py-3 text-sm font-medium text-orange-200 transition hover:border-orange-300/60 hover:bg-orange-300/[0.06]">Support Axiom</Link>
           </div>
         </section>
 
-        <div className="grid gap-12 py-16 sm:grid-cols-2 lg:grid-cols-[1.6fr_repeat(4,1fr)] lg:gap-8 lg:py-20">
+        <div className="grid gap-12 py-16 sm:grid-cols-2 lg:grid-cols-[2fr_repeat(3,1fr)] lg:gap-10">
           <div>
             <Link href="/" className="inline-flex items-center gap-2.5 text-sm font-semibold text-zinc-100">
               <Image src="/vision-xix-logo.png" alt="" width={28} height={28} className="rounded-md" />
@@ -77,7 +66,7 @@ export function Footer() {
           ))}
         </div>
 
-        <div className="flex flex-col gap-4 border-t border-white/[0.07] pt-7 text-xs text-zinc-600 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex flex-col items-center justify-center gap-4 border-t border-white/[0.07] pt-7 text-xs text-zinc-600 sm:flex-row sm:justify-between">
           <p>© {new Date().getFullYear()} Vision XIX Labs. All rights reserved.</p>
           <p>Production access is service-verified. Demonstrations are clearly labeled.</p>
         </div>

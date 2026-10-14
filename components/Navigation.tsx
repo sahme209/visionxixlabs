@@ -141,9 +141,9 @@ export function Navigation() {
         >
           <div className="mx-auto flex max-w-lg flex-col">
             <p className="text-[10px] uppercase tracking-[0.18em] text-zinc-500">Explore Axiom</p>
-            <div className="mt-4 grid grid-cols-2 gap-2" aria-label="Primary links">
+            <div className="mt-4 divide-y divide-white/[0.07] border-y border-white/[0.07]" aria-label="Primary links">
               {mobileLinks.map((item) => (
-                <Link key={item.href} href={item.href} onClick={closeMenu} className="rounded-xl border border-white/[0.08] bg-white/[0.025] px-4 py-3.5 text-sm font-medium text-zinc-200 transition hover:border-orange-300/25 hover:bg-white/[0.06]">
+                <Link key={item.href} href={item.href} onClick={closeMenu} className="flex min-h-12 items-center px-1 text-base font-medium text-zinc-200 transition hover:text-orange-200">
                   {item.label}
                 </Link>
               ))}
