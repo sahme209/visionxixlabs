@@ -67,9 +67,14 @@ describe("AI credit checkout", () => {
   });
 
   it("fails closed and marks an unbound pending purchase failed when Stripe is unavailable", async () => {
-    mocks.createCheckout.mockResolvedValue({ ok: false, reason: "not configured" });
+    mocks.createCheckout.mockResolvedValue({ ok: false, reason: "Stripe secret key sk_test_should_not_reach_the_browser" });
     const response = await POST(request() as never);
     expect(response.status).toBe(503);
+    await expect(response.json()).resolves.toEqual({
+      ok: false,
+      error: "stripe_checkout_unavailable",
+      message: "Secure checkout is temporarily unavailable. Please try again later.",
+    });
     expect(mocks.updateMany).toHaveBeenCalledWith(expect.objectContaining({ data: { status: "failed" } }));
   });
 });
