@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { signInWithBrowser } from "../lib/desktopPairing";
 import { verifyAndSaveApiKey } from "../lib/apiKeyStore";
 import { desktopClient, type VerifiedDesktopIdentity } from "../lib/desktopClient";
@@ -17,20 +17,30 @@ export function DesktopSignInView({
   const [checkingKey, setCheckingKey] = useState(false);
   const browserSignIn = useRef<AbortController | null>(null);
 
+  useEffect(() => () => {
+    browserSignIn.current?.abort();
+    browserSignIn.current = null;
+  }, []);
+
   async function continueInBrowser(intent: "sign_in" | "sign_up") {
+    if (browserSignIn.current || checkingKey) return;
     setError(null);
     setState("opening");
     const controller = new AbortController();
     browserSignIn.current = controller;
     try {
-      await signInWithBrowser(intent, () => setState("waiting"), controller.signal);
+      const isCurrent = () => browserSignIn.current === controller && !controller.signal.aborted;
+      await signInWithBrowser(intent, () => { if (isCurrent()) setState("waiting"); }, controller.signal);
+      if (!isCurrent()) return;
       const verified = await desktopClient.verifyCurrentCredential();
+      if (!isCurrent()) return;
       if (!verified.ok) {
         await clearAuthSession().catch(() => undefined);
         throw new Error(`The approved desktop session could not be verified. ${verified.error}`);
       }
-      onSignedIn(verified.data);
+      if (isCurrent()) onSignedIn(verified.data);
     } catch (cause) {
+      if (browserSignIn.current !== controller || controller.signal.aborted) return;
       setState("idle");
       if (cause instanceof DOMException && cause.name === "AbortError") return;
       setError(cause instanceof Error ? cause.message : "Sign-in failed.");

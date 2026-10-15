@@ -5,27 +5,23 @@ Owner: Codex for engineering, design, architecture, governance, product quality,
 documentation, QA and launch coordination. Founder retains external accounts,
 customer commitments, financial/production approvals and final acceptance.
 
-## Current authentication checkpoint — preflight #2
+## Current authentication checkpoint — preflight #3 and access readiness
 
-The protected production read-only preflight has now completed: founder canonical
-account/personal accepted membership check **passed**; seven migrations remain
-pending, including unfinished Agent identity and missing auth schema. Admin
-configuration and actual password/OAuth/pairing acceptance remain unverified.
-The known Organization dependency is a migration-source defect, not proof of a
-lost production Organization table. See `docs/mission/auth-preflight-run-2.json`.
+Protected read-only preflight #3 identifies a configured Neon endpoint. Founder
+canonical account and accepted personal membership passed; seven migrations remain
+pending, the unfinished Agent migration references absent Organization, and auth
+email-verification schema is missing. This does not prove actual login, desktop
+pairing, administrator authority or the serving Vercel deployment's database binding.
+See `docs/mission/auth-preflight-run-3.json` and the auth-only recovery plan.
 
-`docs/PRODUCTION_AUTH_RECOVERY_PLAN.md` proposes only additive auth DDL and exact
-auth ledger resolution first, preserving original failed history and deferring
-Agent-policy/financial changes. Full PostgreSQL rehearsal confirms rollback,
-99-migration baseline and remaining P3009; production remains untouched. Backup,
-target confirmation and explicit execution approval remain required. Owner confirms
-the provider and backup/PITR restore readiness are unverified. The metadata-only
-investigation and gated restore checklist live in
-`docs/PRODUCTION_DATABASE_HOSTING_AND_RESTORE.md`. No provider is inferred from
-example configuration or absence in truncated environment metadata. #125/#126
-billing fairness fixes and #127 desktop verification lifecycle are merged with
-READY automatic main builds. This supersedes earlier preflight-unavailable
-snapshots below; it does not close the overall mission or login acceptance.
+The owner confirmed Neon authorization completed. No callable Neon tools are exposed
+to this chat yet; installation and account authorization do not prove usable tool
+access. Owner console evidence identifies a six-hour retention setting, not an
+account-specific usable recovery point or verified restore. Production binding,
+PITR range, isolated restore rehearsal and exact execution approval remain gates.
+No production changes have been made. Recovery preparation continues alongside all
+independent workstreams. PRs #130–134 are merged; they are preserved rather than
+reimplemented.
 
 ## Scope coverage — explicit answer
 
@@ -195,6 +191,21 @@ register. A row can have tested kernels while the overall journey is partial.
   exactly-once effect, customer logo or product metric without exact evidence.
 
 ## Execution queue and external acceptance
+
+Priority update (2026-10-15): maintain all fourteen product workstreams in parallel.
+Production login is the highest acceptance priority; its external gates do not stop
+independent engineering. The canonical [register workstream matrix](AXIOM_MISSION_REQUIREMENTS.md#active-product-workstreams)
+records active milestones, evidence scope, dependencies, blockers and next actions.
+The six parallel implementation reviews cover desktop cancellation, signup proof
+handoff, Agent revocation, monotonic credit refunds, ECS shell handling and Airflow
+dependency dates. None establishes a complete real customer journey. Combined regression passed 549 files / 5,439 tests, web and desktop TypeScript,
+desktop production build, Python 30 tests and changed-source lint. A recursive
+test-fixture annotation caught by TypeScript was corrected and its focused tests
+rerun successfully. Exact-head CI remains required before merge.
+Fresh read-only domain inspection serves READY #134 main `153bacd4`; the prior
+older-deployment observation is superseded without a routing change by this work. Major visual redesign
+remains deferred. Recovery and release approval gates remain in
+`CRITICAL_RECOVERY_AND_CUSTOMER_ACCEPTANCE.md`.
 
 | Priority | Next concrete work | Independent work / external gate |
 | --- | --- | --- |

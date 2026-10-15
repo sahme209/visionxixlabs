@@ -217,6 +217,21 @@ export async function runDecisionLoop(input: {
     };
   };
 
+  // Inference and provider setup can outlive an operator's permission change.
+  // The prompt's allowlist is only a ceiling, never perpetual authority.
+  const recheckToolAuthority = async (toolName: string): Promise<Extract<DecisionLoopOutcome, { kind: "error" }> | null> => {
+    try {
+      const current = await readWorkspaceAgentIdentity(input.organizationId);
+      if (!current?.enabled) return { kind: "error", error: "workspace_agent_disabled" };
+      if (!current.allowedTools.includes(toolName)) {
+        return { kind: "error", error: "agent_tool_not_allowed", detail: `Tool is no longer approved for this agent identity: ${toolName}` };
+      }
+      return null;
+    } catch {
+      return { kind: "error", error: "workspace_agent_policy_unavailable" };
+    }
+  };
+
   const transcript = [...input.transcript];
 
   if (input.initialToolCall) {
@@ -228,6 +243,8 @@ export async function runDecisionLoop(input: {
         detail: `Initial grounding tool must be registered and read-only: ${input.initialToolCall.toolName}`,
       });
     }
+    const authorityError = await recheckToolAuthority(tool.name);
+    if (authorityError) return withUsage(authorityError);
     const executed = await input.executeReadOnlyTool(tool.name, input.initialToolCall.args);
     transcript.push({ role: "assistant", content: input.initialToolCall.message });
     transcript.push({
@@ -263,6 +280,8 @@ export async function runDecisionLoop(input: {
     const args = decision.args ?? {};
     const targetsProd = await input.isProdEnvironmentTarget(tool.name, args);
     const riskLevel = classifyRisk(tool, { targetsProdEnvironment: targetsProd });
+    const authorityError = await recheckToolAuthority(tool.name);
+    if (authorityError) return withUsage(authorityError);
 
     if (riskLevel !== "low") {
       if (operationMode === "inspect") {
