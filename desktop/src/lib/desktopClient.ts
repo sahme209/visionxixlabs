@@ -860,11 +860,11 @@ export class DesktopClient {
     return this.post(`/api/desktop/agent/actions/${encodeURIComponent(actionId)}/reject`, {});
   }
 
-  listRepositories(): Promise<ApiResult<{ repositories: Array<{ id: string; displayName: string; provider: string; defaultBranch: string }> }>> {
+  listRepositories(): Promise<ApiResult<{ generatedAt: string; repositories: Array<{ id: string; provider: "github" | "gitlab" | "azuredevops" | "other"; displayName: string; remoteUrl: string; defaultBranch: string; protectionStrength: "strong" | "weak" | "none"; flavorBadge: string | null; openPrCount: number; recentTagCount: number; lastWorkflow: { name: string; state: "queued" | "in_progress" | "completed"; conclusion: string | null; startedAtIso: string | null } | null }>; summary: { total: number; byProvider: Record<string, number>; weakProtection: number } }>> {
     return this.get("/api/desktop/repositories");
   }
 
-  registerRepository(input: { provider: string; remoteOwner: string; remoteName: string }): Promise<ApiResult<{ id: string; displayName: string; created: boolean }>> {
+  registerRepository(input: { provider: string; remoteOwner: string; remoteName: string; remoteUrl?: string; defaultBranch?: string; repoFlavor?: string }): Promise<ApiResult<{ id: string; displayName: string; created: boolean }>> {
     return this.post("/api/desktop/repositories", input);
   }
 

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { ViewShell } from "../components/Primitives";
+import { desktopClient } from "../lib/desktopClient";
 
 interface ListRow {
   id: string;
@@ -57,9 +58,8 @@ export function RepositoriesView() {
   function loadList() {
     setLoading(true);
     setNetworkError(null);
-    fetch("/api/dashboard/repository-list", { credentials: "include" })
-      .then((r) => r.json())
-      .then((j: RespBody) => setResp(j))
+    desktopClient.listRepositories()
+      .then((j) => setResp(j.ok ? { ok: true, data: j.data } : { ok: false, error: j.error }))
       .catch((e) => setNetworkError(e instanceof Error ? e.message : "Network error."))
       .finally(() => setLoading(false));
   }
@@ -258,24 +258,18 @@ function NewRepositoryPanel({ onCreated }: { onCreated: () => void }) {
   async function submit() {
     setState({ kind: "submitting" });
     try {
-      const res = await fetch("/api/dashboard/repository-create", {
-        method: "POST",
-        credentials: "include",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          provider, remoteOwner: owner, remoteName: name,
-          ...(url ? { remoteUrl: url } : {}),
-          ...(defaultBranch ? { defaultBranch } : {}),
-          ...(flavor ? { repoFlavor: flavor } : {}),
-        }),
+      const j = await desktopClient.registerRepository({
+        provider, remoteOwner: owner, remoteName: name,
+        ...(url ? { remoteUrl: url } : {}),
+        ...(defaultBranch ? { defaultBranch } : {}),
+        ...(flavor ? { repoFlavor: flavor } : {}),
       });
-      const j = await res.json();
       if (j.ok) {
         setState({ kind: "ok", created: j.data.created, displayName: j.data.displayName });
         onCreated();
         setTimeout(reset, 1200);
       } else {
-        setState({ kind: "error", message: j.hint ?? j.error });
+        setState({ kind: "error", message: j.error });
       }
     } catch (e) {
       setState({ kind: "error", message: e instanceof Error ? e.message : "network error" });
