@@ -15,7 +15,7 @@ interface Delegate<Row> {
   updateMany(args: Record<string, unknown>): Promise<{ count: number }>;
 }
 export interface CloudAccountRow { id: string; organizationId: string; provider: string; externalAccountId: string; alias: string | null; credentialRef: string | null; regions: string[]; enabled: boolean; updatedAt: Date }
-export interface CloudCredentialRow { id: string; organizationId: string; encryptedConfiguration: string; version: number; validatedAt: Date }
+export interface CloudCredentialRow { id: string; organizationId: string; encryptedConfiguration: string; version: number; validatedAt: Date; revokedAt: Date | null }
 export interface EnrollmentAttemptRow extends AwsEnrollmentInput { id: string; organizationId: string; userId: string; externalIdDigest: string; expiresAt: Date; consumedAt: Date | null; expectedCredentialVersion: number | null; expectedAccountUpdatedAt: Date | null; cloudAccountId: string | null }
 export interface EnrollmentRepo {
   cloudAccount: Delegate<CloudAccountRow> & { count(args: { where: { organizationId: string } }): Promise<number> };
@@ -34,7 +34,7 @@ export interface EnrollmentDependencies {
   configured: () => void;
   validate: (input: AwsEnrollmentInput & { externalId: string; sessionName: string }) => Promise<{ accountId: string; assumedRoleArn: string }>;
   seal: (plain: string, context: string) => string;
-  audit: (input: { organizationId: string; userId: string; accountId: string }) => Promise<void>;
+  audit: (input: { organizationId: string; userId: string; accountId: string; action?: "validated" | "disconnected" }) => Promise<void>;
 }
 const defaults: EnrollmentDependencies = { now: () => new Date(), randomId: randomUUID, randomExternalId: () => `axiom-${randomBytes(16).toString("hex")}`, configured: assertAwsEnrollmentConfigured, validate: validateEnrollmentRole, seal: encryptScopedCredential, audit: async () => {} };
 export function createAwsEnrollmentService(repo: EnrollmentRepo, supplied: Partial<EnrollmentDependencies> = {}) {
@@ -48,7 +48,7 @@ export function createAwsEnrollmentService(repo: EnrollmentRepo, supplied: Parti
   async function storageReady(organizationId: string) {
     // Required tables must exist before a provider request or false connection state.
     await repo.cloudAccount.findMany({ where: { organizationId }, select: { id: true }, take: 1 });
-    await repo.cloudAccountCredential.findMany({ where: { organizationId }, select: { id: true }, take: 1 });
+    await repo.cloudAccountCredential.findMany({ where: { organizationId }, select: { id: true, revokedAt: true }, take: 1 });
     await repo.cloudAccountEnrollmentAttempt.findMany({ where: { organizationId }, select: { id: true }, take: 1 });
   }
   async function requireAccountCapacity(tx: EnrollmentRepo, organizationId: string, existing: boolean) {
@@ -131,13 +131,44 @@ export function createAwsEnrollmentService(repo: EnrollmentRepo, supplied: Parti
         saved = { ...saved, regions: [attempt.region], updatedAt: now };
       }
       if (existingCredential) {
-        const updated = await tx.cloudAccountCredential.updateMany({ where: { id: accountId, organizationId: principal.organizationId, version: attempt.expectedCredentialVersion }, data: { encryptedConfiguration, version, validatedAt: now } });
+        const updated = await tx.cloudAccountCredential.updateMany({ where: { id: accountId, organizationId: principal.organizationId, version: attempt.expectedCredentialVersion }, data: { encryptedConfiguration, version, validatedAt: now, revokedAt: null } });
         if (updated.count !== 1) throw new AwsEnrollmentError("enrollment_conflict");
-      } else await tx.cloudAccountCredential.create({ data: { id: accountId, organizationId: principal.organizationId, encryptedConfiguration, version, validatedAt: now } });
-      return accountSummary(saved, { validatedAt: now } );
+      } else await tx.cloudAccountCredential.create({ data: { id: accountId, organizationId: principal.organizationId, encryptedConfiguration, version, validatedAt: now, revokedAt: null } });
+      return accountSummary(saved, { validatedAt: now, version, revokedAt: null } );
     }, { isolationLevel: "Serializable" });
     try { await deps.audit({ ...principal, accountId: account.id }); } catch { /* best effort; never include configuration */ }
     return { account };
+  }
+  async function disconnect(principal: EnrollmentPrincipal, accountId: string, expectedVersion: unknown) {
+    if (!Number.isSafeInteger(expectedVersion) || (expectedVersion as number) < 1) throw new AwsEnrollmentError("invalid_input");
+    // Revocation does not depend on the broker, provider, paid access or a
+    // successful decryption of the credential being removed.
+    const result = await repo.$transaction(async (tx) => {
+      await requireAuthority(tx, principal);
+      const now = deps.now();
+      const rows = await tx.cloudAccount.findMany({ where: { id: accountId, organizationId: principal.organizationId, provider: "aws" }, take: 1 });
+      const account = rows[0];
+      if (!account || account.id !== accountId || account.organizationId !== principal.organizationId || account.provider !== "aws" || account.credentialRef !== `cloud-v2:${account.id}`) throw new AwsEnrollmentError("enrollment_not_found");
+      if (account.enabled) throw new AwsEnrollmentError("enrollment_conflict");
+      const credential = await tx.cloudAccountCredential.findUnique({ where: { id: account.id } });
+      if (!credential || credential.organizationId !== principal.organizationId || !Number.isSafeInteger(credential.version) || credential.version < 1) throw new AwsEnrollmentError("enrollment_unavailable");
+      if (credential.revokedAt) {
+        if (credential.encryptedConfiguration !== "") throw new AwsEnrollmentError("enrollment_unavailable");
+        if (credential.version !== expectedVersion && credential.version !== (expectedVersion as number) + 1) throw new AwsEnrollmentError("enrollment_conflict");
+        return { account: accountSummary(account, credential), changed: false };
+      }
+      if (credential.version !== expectedVersion) throw new AwsEnrollmentError("enrollment_conflict");
+      if (credential.version >= 2_147_483_647) throw new AwsEnrollmentError("enrollment_unavailable");
+      const invalidated = await tx.cloudAccountCredential.updateMany({ where: { id: account.id, organizationId: principal.organizationId, version: expectedVersion, revokedAt: null }, data: { encryptedConfiguration: "", version: { increment: 1 }, revokedAt: now } });
+      if (invalidated.count !== 1) throw new AwsEnrollmentError("enrollment_conflict");
+      const updated = await tx.cloudAccount.updateMany({ where: { id: account.id, organizationId: principal.organizationId, updatedAt: account.updatedAt, credentialRef: account.credentialRef, enabled: false }, data: { enabled: false, updatedAt: now } });
+      if (updated.count !== 1) throw new AwsEnrollmentError("enrollment_conflict");
+      await tx.cloudAccountEnrollmentAttempt.updateMany({ where: { organizationId: principal.organizationId, consumedAt: null, expiresAt: { gt: now }, OR: [{ cloudAccountId: account.id }, { expectedAccountId: account.externalAccountId }] }, data: { expiresAt: now } });
+      const revoked = { ...credential, encryptedConfiguration: "", version: credential.version + 1, revokedAt: now };
+      return { account: accountSummary(account, revoked), changed: true };
+    }, { isolationLevel: "Serializable" });
+    if (result.changed) try { await deps.audit({ ...principal, accountId, action: "disconnected" }); } catch { /* best effort */ }
+    return { account: result.account };
   }
   async function list(organizationId: string) {
     await storageReady(organizationId);
@@ -147,12 +178,14 @@ export function createAwsEnrollmentService(repo: EnrollmentRepo, supplied: Parti
       if (account.enabled || account.organizationId !== organizationId || account.credentialRef !== `cloud-v2:${account.id}`) continue;
       const credential = await repo.cloudAccountCredential.findUnique({ where: { id: account.id } });
       if (!credential || credential.organizationId !== organizationId) continue;
+      if (!Number.isSafeInteger(credential.version) || credential.version < 1 || (credential.revokedAt === null ? !credential.encryptedConfiguration.startsWith("v2.") : !(credential.revokedAt instanceof Date) || credential.encryptedConfiguration !== "")) throw new AwsEnrollmentError("enrollment_unavailable");
       summaries.push(accountSummary(account, credential));
     }
     return { accounts: summaries };
   }
-  return { start, complete, list };
+  return { start, complete, list, disconnect };
 }
-function accountSummary(account: CloudAccountRow, credential: { validatedAt: Date }) {
-  return { id: account.id, provider: "aws" as const, accountId: account.externalAccountId, alias: account.alias ?? null, regions: account.regions, connected: true, status: "connected" as const, lastValidatedAt: credential.validatedAt.toISOString(), enabled: false, agentScanAvailable: false, inventoryAvailability: "not_checked" as const };
+function accountSummary(account: CloudAccountRow, credential: { validatedAt: Date; version: number; revokedAt: Date | null }) {
+  const connected = credential.revokedAt === null;
+  return { id: account.id, provider: "aws" as const, accountId: account.externalAccountId, alias: account.alias ?? null, regions: account.regions, connected, status: connected ? "connected" as const : "disconnected" as const, lastValidatedAt: credential.validatedAt.toISOString(), connectionVersion: credential.version, revokedAt: credential.revokedAt?.toISOString() ?? null, enabled: false, agentScanAvailable: false, inventoryAvailability: connected ? "not_checked" as const : "unavailable" as const };
 }

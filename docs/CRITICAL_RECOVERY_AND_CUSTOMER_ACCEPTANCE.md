@@ -48,10 +48,12 @@ Neon-specific procedure: `NEON_AUTH_RECOVERY_READINESS.md`.
    If a safe private comparison capability is unavailable, an authorized operator
    must attest only match/failed/unverified plus observation time and private
    evidence location. Matching schema or founder records is insufficient.
-3. **Read actual recovery settings.** Owner reports PostgreSQL 17, US East 1, Free
-   plan, main and six-hour history retention. Inspect the actual earliest/latest
-   restorable UTC range and a usable pre-repair point; do not assume configured
-   retention proves that range. Recheck immediately before any repair.
+3. **Read actual recovery settings.** Read-only Neon metadata corroborates the
+   candidate main database, PostgreSQL 17, US East 1, Free plan and 21,600-second
+   retention. No snapshots or schedules were returned; the project is at 10/10
+   branches. Serving/preflight binding, earliest/latest restorable timestamps
+   and a usable pre-repair point remain unverified. Resolve isolated-copy capacity
+   only with separate approval; recheck recovery availability before any repair.
 4. **Prepare exact isolated-restore approval.** Name the source privately, chosen
    timestamp, isolated target, access restrictions, cost cap, expiry and cleanup
    owner. No branch creation, data copy, plan change or restore before approval.
@@ -68,8 +70,13 @@ Neon-specific procedure: `NEON_AUTH_RECOVERY_READINESS.md`.
    existing proposal. No blanket migrate-deploy, fabricated Organization table,
    failed-history reset or unrelated financial migrations.
 6. **Accept login rather than infer it.** Protected preflight must show auth schema
-   present; six pending migrations and the original failed Agent record remain
-   expected. Verify legitimate password/email proof, Google and GitHub sessions,
+   present. The pinned seven-file baseline leaves six pending; a checkout with
+   `20261016010000_cloud_account_enrollment` expects eight before repair and seven
+   afterward; including `20261016020000_cloud_account_credential_revocation`
+   expects nine before and eight afterward. Compare exact pending names; both
+   AWS proposals stay unapplied and
+   separately approved, and the original failed Agent record remains expected.
+   Verify legitimate password/email proof, Google and GitHub sessions,
    founder account/workspace identity and denied access. No admin bootstrap grants.
 
 Auth-only repair does not prepare every Agent/workflow/billing table. The failed

@@ -26,15 +26,16 @@ export function fixture() {
       findMany: vi.fn(async () => state.credential ? [state.credential] : []), findUnique: vi.fn(async () => state.credential),
       create: vi.fn(async ({ data }: { data: Record<string, unknown> }) => state.credential = data as unknown as CloudCredentialRow),
       updateMany: vi.fn(async ({ where, data }: { where: Record<string, unknown>; data: Record<string, unknown> }) => {
-        if (!state.credential || state.credential.id !== where.id || state.credential.organizationId !== where.organizationId || state.credential.version !== where.version) return { count: 0 };
-        state.credential = { ...state.credential, ...data } as CloudCredentialRow; return { count: 1 };
+        if (!state.credential || state.credential.id !== where.id || state.credential.organizationId !== where.organizationId || state.credential.version !== where.version || (where.revokedAt === null && state.credential.revokedAt !== null)) return { count: 0 };
+        state.credential = { ...state.credential, ...data, ...(typeof data.version === "object" ? { version: state.credential.version + (data.version as { increment: number }).increment } : {}) } as CloudCredentialRow; return { count: 1 };
       }),
     },
     cloudAccountEnrollmentAttempt: {
       findMany: vi.fn(async () => state.attempt ? [state.attempt] : []), findUnique: vi.fn(async () => state.attempt),
       create: vi.fn(async ({ data }: { data: Record<string, unknown> }) => state.attempt = { consumedAt: null, ...data } as unknown as EnrollmentAttemptRow),
       updateMany: vi.fn(async ({ where, data }: { where: Record<string, unknown>; data: Record<string, unknown> }) => {
-        if (!state.attempt || state.attempt.consumedAt || state.attempt.expiresAt <= (where.expiresAt as { gt: Date }).gt || state.attempt.organizationId !== where.organizationId || state.attempt.userId !== where.userId || state.attempt.externalIdDigest !== where.externalIdDigest) return { count: 0 };
+        if (!state.attempt || state.attempt.consumedAt || state.attempt.expiresAt <= (where.expiresAt as { gt: Date }).gt || state.attempt.organizationId !== where.organizationId || (where.userId !== undefined && state.attempt.userId !== where.userId) || (where.externalIdDigest !== undefined && state.attempt.externalIdDigest !== where.externalIdDigest)) return { count: 0 };
+        if (Array.isArray(where.OR) && !where.OR.some((condition) => condition.cloudAccountId === state.attempt!.cloudAccountId || condition.expectedAccountId === state.attempt!.expectedAccountId)) return { count: 0 };
         state.attempt = { ...state.attempt, ...data } as EnrollmentAttemptRow; return { count: 1 };
       }),
     },

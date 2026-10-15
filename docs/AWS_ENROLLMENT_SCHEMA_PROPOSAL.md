@@ -25,3 +25,22 @@ PostgreSQL 16 and 17.11 regression evidence is recorded in `docs/mission/aws-enr
 ### Serializable last-slot experiment
 
 The PostgreSQL 17.11 fixture also uses two independent Prisma clients and Serializable transactions. Both count zero accounts in the same fresh synthetic organization, synchronize at a bounded barrier, and insert different AWS external-account IDs. Exactly one commits; the other receives Prisma `P2034` serialization conflict; final count is one. Distinct IDs ensure that per-account uniqueness cannot substitute for the organization predicate conflict. This validates actual PostgreSQL SSI behavior for the backend's count-and-insert transaction pattern, not its plan resolution, role checks, real AWS verification or end-to-end customer acceptance. The fixture does not retry the losing transaction or increase the cap.
+
+
+## Separate local credential revocation proposal
+
+`20261016020000_cloud_account_credential_revocation` adds nullable `revokedAt`
+only after exact prior credential-table shape validation. It is transactional
+with five-second lock and thirty-second statement limits; repeated/partial
+application fails for review. Existing rows remain unrevoked. Source pending
+counts become nine before auth-only recovery and eight afterward; neither cloud
+proposal is authorized by auth-only approval.
+
+The paired owner/admin disconnect transaction clears saved ciphertext, advances
+its version, records local revocation, expires tenant/account challenges and
+preserves the canonical account, quota and history. Reconnection requires fresh
+STS identity verification. This does not modify AWS roles/trust, revoke already
+issued sessions or cancel deployments. Actual disposable PostgreSQL 17 revocation
+rollback, tenant isolation, stale-version and reconnect evidence is recorded in
+`mission/aws-enrollment-schema-rehearsal.json`; actual provider/native acceptance
+and production recovery readiness remain unverified.

@@ -691,6 +691,17 @@ export class DesktopClient {
       : { ok: false, error: "The service returned an invalid cloud account list." };
   }
 
+  async disconnectDesktopAwsAccount(accountId: string, expectedVersion: number): Promise<ApiResult<{ account: DesktopAwsAccount }>> {
+    if (!Number.isSafeInteger(expectedVersion) || expectedVersion < 1) return { ok: false, error: "Refresh the AWS connection before disconnecting it." };
+    const result = await this.cloudEnrollmentRequest<{ account?: unknown }>("POST", `/api/desktop/cloud/accounts/${encodeURIComponent(accountId)}/disconnect`, { expectedVersion });
+    if (!result.ok) return result;
+    const account = result.data?.account;
+    return isDesktopAwsAccount(account) && account.id === accountId && !account.connected
+      && account.connectionVersion >= expectedVersion && account.connectionVersion <= expectedVersion + 1
+      ? { ok: true, data: { account } }
+      : { ok: false, error: "The service did not confirm this AWS connection was disconnected. Refresh its state." };
+  }
+
   async desktopAwsInventory(accountId: string): Promise<ApiResult<DesktopAwsInventory>> {
     const result = await this.cloudEnrollmentRequest<unknown>("GET", `/api/desktop/cloud/accounts/${encodeURIComponent(accountId)}/inventory`);
     if (!result.ok) return result;

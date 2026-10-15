@@ -24,6 +24,7 @@ export async function readTenantAwsInventory(repo: EnrollmentRepo, principal: En
   const storedCredential = await repo.cloudAccountCredential.findUnique({ where: { id: account.id } });
   const credential = storedCredential ? structuredClone(storedCredential) : null;
   if (!credential || credential.organizationId !== principal.organizationId || !Number.isSafeInteger(credential.version) || credential.version < 1) throw new AwsEnrollmentError("enrollment_unavailable");
+  if (credential.revokedAt) throw new AwsEnrollmentError("connection_disconnected");
   let configuration;
   try {
     configuration = JSON.parse((dependencies.open ?? decryptScopedCredential)(credential.encryptedConfiguration, cloudCredentialContext({ organizationId: principal.organizationId, accountId: account.id, version: credential.version }))) as unknown;
@@ -39,6 +40,6 @@ export async function readTenantAwsInventory(repo: EnrollmentRepo, principal: En
   const currentAccount = currentAccounts[0];
   if (!currentAccount || currentAccount.id !== account.id || currentAccount.organizationId !== account.organizationId || currentAccount.provider !== account.provider || currentAccount.externalAccountId !== account.externalAccountId || currentAccount.credentialRef !== account.credentialRef || currentAccount.enabled !== account.enabled || currentAccount.updatedAt.getTime() !== account.updatedAt.getTime() || JSON.stringify(currentAccount.regions) !== JSON.stringify(account.regions)) throw new AwsEnrollmentError("enrollment_conflict");
   const current = await repo.cloudAccountCredential.findUnique({ where: { id: account.id } });
-  if (!current || current.organizationId !== principal.organizationId || current.version !== credential.version) throw new AwsEnrollmentError("enrollment_conflict");
+  if (!current || current.organizationId !== principal.organizationId || current.revokedAt || current.version !== credential.version) throw new AwsEnrollmentError("enrollment_conflict");
   return result;
 }

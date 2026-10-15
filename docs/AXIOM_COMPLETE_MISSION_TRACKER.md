@@ -597,3 +597,50 @@ clean. The two touched legacy scanner files retain exactly their existing
 records the comparison. Isolated PostgreSQL evidence is separate from production
 restore readiness. Production binding remains explicitly unverified by the owner;
 no migration, routing, credential or live-billing change is authorized.
+
+## PR #140 integrated — scoped cloud connection milestone
+
+PR #140 merged as `1cb21007e6f88d353a2f24a2938a246a6e42cbc2` after exact-head
+`21540bf9154e2ca837796df41073f44cf371d339` passed Test run 38820824242,
+Desktop CI run 38820824224 (native tests/Clippy), and isolated auth recovery
+run 38820824270 (both PostgreSQL 17 jobs). Local evidence remains 573 files /
+5,798 tests plus web/desktop builds and 30 Python checks. Preview provisioning
+failed before compilation; no protection, capacity or deployment configuration
+was changed. The automatic main deployment `dpl_DcKZ4QJGUQNoAHNcXCR3zBshyGJQ` subsequently
+reached READY; the custom domain still mapped to #138 at the post-merge check. Source integration is not deployed acceptance.
+
+Active independent work: version-bound local credential disconnect/reconnect;
+wrong-browser-account desktop pairing recovery; coverage-aware Agent read-tool
+planning; and actual Stripe test acceptance preparation. The bounded EC2 sample
+must not enter the legacy full-account snapshot/drift/cost analyzers: unknown
+metrics, incomplete coverage and missing samples cannot establish absence,
+savings, backup state or deployment readiness. Existing scanner guards remain.
+See `STRIPE_TEST_CUSTOMER_ACCEPTANCE.md` for proposed isolated actions and gates;
+no provider-backed billing exercise is authorized or completed.
+
+The owner reports the production binding is still not verified. The existing
+read-only finding is preserved; production repair, recovery resources and domain
+promotion remain separate approval gates. No repeat access request was issued.
+
+
+## Active customer recovery integration after #140
+
+Paired owner/admin disconnect now atomically wipes locally saved AWS configuration,
+advances the credential version, records revocation and expires tenant/account
+challenges while retaining the account/quota/history. It does not revoke provider
+roles, trust or issued STS sessions. Fresh STS verification is required to reconnect;
+late inventory and pending/precommit UI refreshes cannot restore old access. The
+separate nullable revocation-column proposal is not part of auth-only recovery.
+
+Browser pairing now provides an explicit account switch preserving the strict
+pending callback. It signs out the browser only and still requires fresh identity
+and explicit device consent. Google selection is requested in this flow; GitHub
+SSO remains separate and is explained. Real cross-account/provider/native acceptance
+is outstanding. Full integrated checks are underway; focused tests and disposable
+PostgreSQL 17 revocation evidence passed, without production/provider actions.
+
+Integrated local validation: 576 files / 5,849 tests, web and desktop TypeScript,
+desktop build, targeted lint and 30 Python checks passed. The final optimized web
+build is running at this source snapshot; its result and exact-head web/native/
+isolated PostgreSQL CI must be checked in the focused PR before source merge.
+This evidence does not establish production recovery or provider/native acceptance.

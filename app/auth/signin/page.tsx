@@ -19,6 +19,7 @@ function SignInForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const callbackUrl = safeInternalPath(searchParams.get("callbackUrl"), "/auth/success");
+  const switchingAccount = searchParams.get("switchAccount") === "1";
 
   // Surface a clear hint when the OAuth callback errored.
   const oauthError = searchParams.get("error");
@@ -78,7 +79,9 @@ function SignInForm() {
     setOauthLoading(provider);
     setError("");
     try {
-      const res = await signIn(provider, { callbackUrl, redirect: true });
+      const res = switchingAccount && provider === "google"
+        ? await signIn(provider, { callbackUrl, redirect: true }, { prompt: "select_account" })
+        : await signIn(provider, { callbackUrl, redirect: true });
       // When redirect: true succeeds, the browser navigates away. If it
       // returns instead (e.g. cancelled / popup blocked), surface a hint.
       if (res?.error) {
@@ -107,6 +110,8 @@ function SignInForm() {
         <h1 className="mb-2 text-3xl font-normal tracking-[-0.045em]">Welcome to Axiom</h1>
         <p className="mb-2 text-sm text-zinc-400">Sign in to your web companion for account settings, connection context, and release guidance.</p>
         <p className="mb-8 text-xs leading-5 text-zinc-600">The installed Agent remains the secure place for provider configuration and deployment operations.</p>
+
+        {switchingAccount && <p role="status" className="mb-5 rounded-lg border border-white/10 p-3 text-sm text-zinc-300">Choose the account you want to pair. Google will ask you to select an account. Signing out here does not sign you out of GitHub: switch to the intended account on GitHub before continuing if needed. You must still review and approve the desktop after signing in.</p>}
 
         {searchParams.get("verified") === "1" && <p role="status" className="mb-5 rounded-lg border border-white/10 p-3 text-sm text-zinc-300">Email verification completed. Sign in to continue. This confirmation does not sign you in or approve desktop pairing.</p>}
 

@@ -27,6 +27,7 @@ function AwsEnrollmentWorkspace({ identity }: { identity: VerifiedDesktopIdentit
   const canManage = paired && identity.capabilities.includes("connections:manage");
   const [input, setInput] = useState<AwsEnrollmentInput>(emptyInput);
   const [accounts, setAccounts] = useState<DesktopAwsAccount[] | null>(null);
+  const [suspendedAccounts, setSuspendedAccounts] = useState<string[]>([]);
   const [challenge, setChallenge] = useState<AwsEnrollmentChallenge | null>(null);
   const [phase, setPhase] = useState<"idle" | "starting" | "completing">("idle");
   const [refreshing, setRefreshing] = useState(canRead);
@@ -37,16 +38,27 @@ function AwsEnrollmentWorkspace({ identity }: { identity: VerifiedDesktopIdentit
   const mounted = useRef(false);
   const operation = useRef(0);
   const accountRequest = useRef(0);
+  const pendingDisconnects = useRef(new Map<string, number>());
+
+  const applyAccountList = useCallback((next: DesktopAwsAccount[], pendingAtStart: Map<string, number>) => {
+    // A list can predate a still-pending command even if it resolves later.
+    // It cannot release suspension, including for a replaced credential. A
+    // post-settlement read must confirm the authoritative connection state.
+    const blocked = new Set([...pendingAtStart.keys(), ...pendingDisconnects.current.keys()]);
+    setAccounts(next);
+    setSuspendedAccounts(previous => previous.filter(id => blocked.has(id)));
+  }, []);
 
   const refreshAccounts = useCallback(async () => {
     if (!canRead) return;
     const request = ++accountRequest.current;
+    const pendingAtStart = new Map(pendingDisconnects.current);
     const result = await desktopClient.desktopCloudAccounts();
     if (!mounted.current || request !== accountRequest.current || desktopClient.config !== context) return;
     setRefreshing(false);
-    if (result.ok) setAccounts(result.data.accounts);
+    if (result.ok) applyAccountList(result.data.accounts, pendingAtStart);
     else setError(result.error);
-  }, [canRead, context]);
+  }, [canRead, context, applyAccountList]);
 
   useEffect(() => {
     const lifecycle = mounted;
@@ -55,15 +67,16 @@ function AwsEnrollmentWorkspace({ identity }: { identity: VerifiedDesktopIdentit
     lifecycle.current = true;
     if (canRead) {
       const request = ++activeAccountRequest.current;
+      const pendingAtStart = new Map(pendingDisconnects.current);
       void desktopClient.desktopCloudAccounts().then(result => {
         if (!lifecycle.current || request !== activeAccountRequest.current || desktopClient.config !== context) return;
         setRefreshing(false);
-        if (result.ok) setAccounts(result.data.accounts);
+        if (result.ok) applyAccountList(result.data.accounts, pendingAtStart);
         else setError(result.error);
       });
     }
     return () => { lifecycle.current = false; activeOperation.current++; activeAccountRequest.current++; };
-  }, [canRead, context]);
+  }, [canRead, context, applyAccountList]);
 
   useEffect(() => {
     if (!challenge) return;
@@ -113,8 +126,31 @@ function AwsEnrollmentWorkspace({ identity }: { identity: VerifiedDesktopIdentit
     accountRequest.current++;
     setRefreshing(false);
     setAccounts(previous => [...(previous ?? []).filter(item => item.id !== account.id), account]);
+    pendingDisconnects.current.delete(account.id);
+    setSuspendedAccounts(previous => previous.filter(id => id !== account.id));
     setChallenge(null); setTrustConfirmed(false);
     setNotice("AWS role identity verified by the service. Bounded inventory requires a separate read; Agent scans and deployment execution are not enabled.");
+  }
+
+  function beginDisconnect(account: DesktopAwsAccount) {
+    pendingDisconnects.current.set(account.id, account.connectionVersion);
+    accountRequest.current++;
+    operation.current++;
+    setRefreshing(false); setChallenge(null); setPhase("idle"); setTrustConfirmed(false);
+    setSuspendedAccounts(previous => previous.includes(account.id) ? previous : [...previous, account.id]);
+  }
+
+  function confirmDisconnected(account: DesktopAwsAccount) {
+    pendingDisconnects.current.delete(account.id);
+    accountRequest.current++;
+    setRefreshing(false);
+    setAccounts(previous => (previous ?? []).map(item => item.id === account.id ? account : item));
+    setSuspendedAccounts(previous => previous.filter(id => id !== account.id));
+    setNotice("Axiom connection disconnected. AWS roles, trust policies and existing STS sessions were not revoked. Reconnect requires a fresh verified enrollment.");
+  }
+
+  function settleDisconnect(accountId: string, expectedVersion: number) {
+    if (pendingDisconnects.current.get(accountId) === expectedVersion) pendingDisconnects.current.delete(accountId);
   }
 
   function discardChallenge() {
@@ -136,10 +172,14 @@ function AwsEnrollmentWorkspace({ identity }: { identity: VerifiedDesktopIdentit
       {accounts === null ? <p className="mt-1 text-xs text-zinc-500">{refreshing ? "Checking verified accounts…" : "Account state unavailable. Retry when the service is ready."}</p>
         : accounts.length === 0 ? <p className="mt-1 text-xs text-zinc-500">No verified AWS account records were returned.</p>
           : <ul className="mt-2 space-y-2">{accounts.map(account => <li key={account.id} className="rounded-lg border border-white/10 px-3 py-2 text-xs text-zinc-300">
-            <span className="font-mono">{account.accountId}</span> · {account.connected ? "Role identity verified" : "Disconnected"}
-            <p className="mt-1 text-zinc-500">Regions: {account.regions.length ? account.regions.join(", ") : "Not recorded"} · Inventory not checked</p>
+            <span className="font-mono">{account.accountId}</span> · {suspendedAccounts.includes(account.id) ? "Connection state requires refresh" : account.connected ? "Role identity verified" : "Disconnected from Axiom"}
+            <p className="mt-1 text-zinc-500">Regions: {account.regions.length ? account.regions.join(", ") : "Not recorded"} · {account.connected ? "Inventory not checked" : "Inventory unavailable"}</p>
             {account.lastValidatedAt && <p className="mt-1 text-zinc-500">Last service validation: {account.lastValidatedAt}</p>}
-            {account.connected && <AwsBoundedInventory account={account} />}
+            {account.revokedAt && <p className="mt-1 text-zinc-500">Disconnected at: {account.revokedAt}. History and account allowance are retained.</p>}
+            {canManage && account.connected && <AwsDisconnectControls key={account.connectionVersion} account={account} suspended={suspendedAccounts.includes(account.id)} onStarted={() => beginDisconnect(account)} onSettled={() => settleDisconnect(account.id, account.connectionVersion)} onDisconnected={confirmDisconnected} />}
+            {suspendedAccounts.includes(account.id) && <p className="mt-2 text-xs text-zinc-400">Inventory is hidden until a fresh account-state read confirms the disconnect outcome.</p>}
+            {account.connected && !suspendedAccounts.includes(account.id) && <AwsBoundedInventory account={account} />}
+            {!account.connected && canManage && <button type="button" onClick={() => { updateInput("expectedAccountId", account.accountId); setInput(previous => ({ ...previous, expectedAccountId: account.accountId, roleArn: "", region: account.regions[0] ?? "us-east-1" })); }} className="mt-2 rounded-lg border border-white/10 px-3 py-2 text-xs text-zinc-200 hover:bg-white/[0.06]">Prepare a fresh reconnection</button>}
           </li>)}</ul>}
       <button type="button" onClick={() => { setRefreshing(true); void refreshAccounts(); }} disabled={refreshing} className={`${buttonClass} mt-2`}>Refresh AWS account state</button>
     </div>}
@@ -167,7 +207,7 @@ function AwsBoundedInventory({ account }: { account: DesktopAwsAccount }) {
   const mounted = useRef(false);
   const request = useRef(0);
   const regionsKey = account.regions.join(",");
-  const scope = { context, id: account.id, accountId: account.accountId, validatedAt: account.lastValidatedAt, regionsKey };
+  const scope = { context, id: account.id, accountId: account.accountId, validatedAt: account.lastValidatedAt, version: account.connectionVersion, regionsKey };
   const [result, setResult] = useState<{
     scope: typeof scope; loading: boolean; inventory: DesktopAwsInventory | null; error: string | null;
   } | null>(null);
@@ -175,7 +215,7 @@ function AwsBoundedInventory({ account }: { account: DesktopAwsAccount }) {
   // scope changes. Effects only manage lifecycle ownership, never reset state.
   const current = result && result.scope.context === context && result.scope.id === account.id
     && result.scope.accountId === account.accountId && result.scope.validatedAt === account.lastValidatedAt
-    && result.scope.regionsKey === regionsKey ? result : null;
+    && result.scope.version === account.connectionVersion && result.scope.regionsKey === regionsKey ? result : null;
   const loading = current?.loading ?? false;
   const inventory = current?.inventory ?? null;
   const error = current?.error ?? null;
@@ -184,7 +224,7 @@ function AwsBoundedInventory({ account }: { account: DesktopAwsAccount }) {
     const activeRequest = request;
     lifecycle.current = true;
     return () => { lifecycle.current = false; activeRequest.current++; };
-  }, [account.id, account.accountId, account.lastValidatedAt, regionsKey, context]);
+  }, [account.id, account.accountId, account.lastValidatedAt, account.connectionVersion, regionsKey, context]);
 
   async function readInventory() {
     const generation = ++request.current;
@@ -208,5 +248,54 @@ function AwsBoundedInventory({ account }: { account: DesktopAwsAccount }) {
       {inventory.instances.length === 0 ? <p>No instances returned in this bounded sample. This is not proof that the AWS account is empty.</p>
         : <ul className="mt-1 space-y-1">{inventory.instances.map(instance => <li key={instance.instanceId} className="font-mono">{instance.instanceId} · {instance.state} · {instance.instanceType} · {instance.availabilityZone}</li>)}</ul>}
     </div>}
+  </div>;
+}
+
+function AwsDisconnectControls({ account, suspended, onStarted, onSettled, onDisconnected }: {
+  account: DesktopAwsAccount; suspended: boolean; onStarted: () => void; onSettled: () => void; onDisconnected: (account: DesktopAwsAccount) => void;
+}) {
+  const context = desktopClient.config;
+  const mounted = useRef(false);
+  const request = useRef(0);
+  const [confirming, setConfirming] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  useEffect(() => {
+    const lifecycle = mounted;
+    const activeRequest = request;
+    lifecycle.current = true;
+    return () => { lifecycle.current = false; activeRequest.current++; };
+  }, [account.id, account.connectionVersion, context]);
+
+  async function disconnect() {
+    if (busy || suspended) return;
+    const generation = ++request.current;
+    setBusy(true); setError(null); onStarted();
+    const result = await desktopClient.disconnectDesktopAwsAccount(account.id, account.connectionVersion);
+    // This callback only releases the parent's matching pending-version ref;
+    // it cannot apply an outcome or clear suspended inventory. It must run even
+    // if account replacement unmounted this old command's control.
+    onSettled();
+    if (!mounted.current || generation !== request.current || desktopClient.config !== context) return;
+    setBusy(false);
+    if (!result.ok) { setError(`${result.error} The outcome is unconfirmed; refresh account state before using this connection.`); return; }
+    if (result.data.account.accountId !== account.accountId || result.data.account.connected || !result.data.account.revokedAt) {
+      setError("The service did not confirm the intended account was disconnected. Refresh its state."); return;
+    }
+    onDisconnected(result.data.account);
+  }
+
+  return <div className="mt-2">
+    {!confirming ? <button type="button" disabled={suspended} onClick={() => setConfirming(true)} className="rounded-lg border border-white/10 px-3 py-2 text-xs text-zinc-300 hover:bg-white/[0.06] disabled:opacity-50">Disconnect from Axiom</button>
+      : <div role="alertdialog" aria-labelledby={`aws-disconnect-${account.id}`} className="rounded-lg border border-white/15 p-3">
+        <h4 id={`aws-disconnect-${account.id}`} className="text-xs font-semibold text-zinc-200">Disconnect AWS account {account.accountId} from Axiom?</h4>
+        <p className="mt-2 text-xs leading-5 text-zinc-400">This removes Axiom’s saved connection configuration and stops new reads through this connection. It does not delete or modify AWS roles or trust policies, revoke existing STS sessions, stop deployments, or delete history. Previously issued STS sessions may remain valid for up to 15 minutes. The retained account still counts toward your workspace allowance.</p>
+        <div className="mt-3 flex gap-2">
+          <button type="button" disabled={busy || suspended} onClick={() => void disconnect()} className="rounded-lg border border-red-400/25 px-3 py-2 text-xs text-red-200 disabled:opacity-50">{busy ? "Disconnecting Axiom access…" : "Disconnect Axiom access"}</button>
+          {!busy && <button type="button" onClick={() => { setConfirming(false); setError(null); }} className="rounded-lg border border-white/10 px-3 py-2 text-xs text-zinc-300">{suspended ? "Close confirmation" : "Keep connection"}</button>}
+        </div>
+        {busy && <p className="mt-2 text-xs text-zinc-500">Leaving this screen does not cancel a server operation already started. Refresh account state when you return.</p>}
+        {error && <p role="alert" className="mt-2 text-xs text-red-300">{error}</p>}
+      </div>}
   </div>;
 }

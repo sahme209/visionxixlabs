@@ -53,12 +53,12 @@ No secret-value pull or public diagnostic endpoint is added.
 
 | Item | Current status | Evidence needed |
 | --- | --- | --- |
-| Configured provider | Neon endpoint confirmed in run #3 | Account/project/resource corroboration still required |
-| Website/maintenance DB target match | Unverified | Private read-only comparison of current production resource bindings |
-| Backup/PITR enabled | Unverified | Actual resource backup configuration, not provider default/marketing |
-| Retention and restore-point range | Unverified | Account-specific earliest/latest restorable timestamps and retention |
+| Configured provider | Neon endpoint confirmed in run #3; candidate project/default branch/database corroborated read-only | Serving application and protected-preflight binding comparison still required |
+| Website/maintenance DB target match | Unverified; owner attestation: “Not yet verified” | Private read-only comparison of current production resource bindings |
+| Backup/PITR configuration | 21,600-second retention verified; no saved snapshots or schedule entries returned | Usable point and any independent backup still unverified |
+| Retention and restore-point range | Configured retention verified; earliest/latest restorable timestamps unverified | Actual recoverable UTC range and fresh pre-repair point |
 | Current protected recovery point | Unverified | A successful available backup or valid PITR point covering the intended change |
-| Restore procedure | Proposed checklist only | Provider-specific steps reviewed against the actual service/plan |
+| Restore procedure | Neon-specific packet prepared; 10/10 branch capacity blocks isolated copy | Separately approved capacity resolution, target isolation and actual restore verification |
 | Restore exercise | Not performed | Approved isolated restore with integrity evidence and measured recovery time |
 | Production execution approval | Not requested | Verified prerequisites plus explicit approval of exact SQL and ledger step |
 

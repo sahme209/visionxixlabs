@@ -1,13 +1,18 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import Link from "next/link";
+import { signOut } from "next-auth/react";
+import { verificationDesktopCallback } from "@/lib/auth/verificationCallback";
 
 export function PairDesktopClient({ challenge, deviceLabel }: { challenge: string; deviceLabel: string }) {
-  const [state, setState] = useState<"idle" | "loading" | "done">("idle");
+  const [state, setState] = useState<"idle" | "loading" | "switching" | "done">("idle");
   const [error, setError] = useState("");
+  const action = useRef<"approve" | "switch" | null>(null);
 
   async function approve() {
+    if (action.current !== null) return;
+    action.current = "approve";
     setState("loading");
     setError("");
     try {
@@ -21,8 +26,30 @@ export function PairDesktopClient({ challenge, deviceLabel }: { challenge: strin
       setState("done");
       window.setTimeout(() => window.location.assign("axiom-agent://auth/complete"), 450);
     } catch (cause) {
+      action.current = null;
       setState("idle");
       setError(cause instanceof Error ? cause.message : "Pairing failed.");
+    }
+  }
+
+  async function useAnotherAccount() {
+    if (action.current !== null) return;
+    const callback = verificationDesktopCallback(`/desktop/connect?challenge=${encodeURIComponent(challenge)}&intent=sign_in`, challenge);
+    if (!callback) {
+      setError("This pairing request cannot be resumed. Return to Axiom Agent and choose Log in again.");
+      return;
+    }
+    action.current = "switch";
+    setState("switching");
+    setError("");
+    try {
+      // NextAuth ends only the browser session and navigates to explicit login.
+      // No pairing approval, desktop revocation, or identity selection occurs.
+      await signOut({ callbackUrl: `/auth/signin?callbackUrl=${encodeURIComponent(callback)}&switchAccount=1` });
+    } catch {
+      action.current = null;
+      setState("idle");
+      setError("Could not switch browser accounts. Try again, or reload this pairing page before continuing.");
     }
   }
 
@@ -44,17 +71,23 @@ export function PairDesktopClient({ challenge, deviceLabel }: { challenge: strin
         <p className="text-xs uppercase tracking-widest text-zinc-500">Device requesting access</p>
         <p className="mt-2 font-mono text-zinc-100">{deviceLabel}</p>
       </div>
-      {error && <p className="rounded-lg border border-red-500/20 bg-red-500/10 p-3 text-sm text-red-200">{error}</p>}
+      {error && <p role="alert" className="rounded-lg border border-red-500/20 bg-red-500/10 p-3 text-sm text-red-200">{error}</p>}
       <div className="grid grid-cols-2 gap-3">
         <Link href="/" className="inline-flex items-center justify-center rounded-full border border-white/10 bg-white/[0.04] px-5 py-3 text-sm font-semibold text-zinc-300 hover:bg-white/[0.08]">Cancel</Link>
         <button
           type="button"
           onClick={approve}
-          disabled={state === "loading"}
+          disabled={state !== "idle"}
           className="w-full rounded-full bg-white px-5 py-3 text-sm font-semibold text-black transition hover:bg-zinc-100 disabled:opacity-50"
         >
           {state === "loading" ? "Connecting…" : "Continue"}
         </button>
+      </div>
+      <div className="border-t border-white/10 pt-4">
+        <button type="button" onClick={useAnotherAccount} disabled={state !== "idle"} aria-describedby="browser-account-switch-note" className="text-sm text-orange-300 underline disabled:opacity-50">
+          {state === "switching" ? "Switching browser account…" : "Use another account"}
+        </button>
+        <p id="browser-account-switch-note" className="mt-2 text-xs leading-5 text-zinc-500">This signs out only this browser. Existing paired desktop sessions remain signed in. Sign in with the intended account, then review and approve this device.</p>
       </div>
     </div>
   );
