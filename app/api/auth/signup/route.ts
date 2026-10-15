@@ -3,6 +3,7 @@ import { hash } from "bcryptjs";
 import { prisma } from "@/lib/db";
 import { checkRateLimit } from "@/lib/rateLimit";
 import { ensurePersonalWorkspaceMembership } from "@/lib/auth/ensurePersonalWorkspaceMembership";
+import { issueEmailVerificationToken, sendEmailVerification } from "@/lib/auth/emailVerification";
 
 export async function POST(req: NextRequest) {
   if (!process.env.DATABASE_URL) {
@@ -10,6 +11,11 @@ export async function POST(req: NextRequest) {
       { error: "DATABASE_URL is not set. Add PostgreSQL connection string in Vercel Environment Variables." },
       { status: 503 }
     );
+  }
+  // Do this before creating an account: a credentials account without a
+  // deliverable verification route is intentionally unusable.
+  if (!process.env.RESEND_API_KEY?.startsWith("re_")) {
+    return NextResponse.json({ error: "Email verification is not configured. Contact support before creating an account." }, { status: 503 });
   }
   try {
     const sourceIp = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim()
@@ -53,6 +59,12 @@ export async function POST(req: NextRequest) {
         name: normalizedName || undefined,
       },
     });
+    const verification = issueEmailVerificationToken();
+    await prisma.emailVerificationToken.create({
+      data: { userId: user.id, tokenHash: verification.tokenHash, expiresAt: verification.expiresAt },
+    });
+    const delivered = await sendEmailVerification({ to: user.email, token: verification.token });
+    if (!delivered) return NextResponse.json({ error: "Verification email delivery failed. Request a new link before signing in." }, { status: 503 });
     try {
       await ensurePersonalWorkspaceMembership({ userId: user.id, email: user.email });
     } catch (err) {
@@ -63,7 +75,7 @@ export async function POST(req: NextRequest) {
       // their very next sign-in self-heals the missing membership.
       console.error("[Signup] workspace bootstrap failed (best-effort):", err);
     }
-    return NextResponse.json({ id: user.id, email: user.email, name: user.name });
+    return NextResponse.json({ id: user.id, email: user.email, name: user.name, verificationRequired: true });
   } catch (e) {
     const err = e as Error & { code?: string };
     console.error("[Signup]", err);
