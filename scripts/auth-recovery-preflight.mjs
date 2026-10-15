@@ -3,6 +3,7 @@ import { readdirSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { PrismaClient } from "@prisma/client";
+import { databaseHostingMetadata } from "./auth-recovery-database-metadata.mjs";
 
 const root = dirname(dirname(fileURLToPath(import.meta.url)));
 
@@ -80,6 +81,7 @@ export async function inspectAuthRecovery(client, options = {}) {
     const adminConfigAvailable = typeof options.adminEmails === "string";
     return {
       readOnly: true,
+      database: databaseHostingMetadata(options.databaseUrl),
       migrations: { pending, problems: migrationProblems },
       schema: { verificationColumnPresent, verificationTokenTablePresent: tables.has("EmailVerificationToken") },
       founder: {
@@ -108,6 +110,7 @@ export async function inspectAuthRecovery(client, options = {}) {
 export function publicRecoverySummary(report) {
   return {
     readOnly: report.readOnly,
+    database: report.database,
     migrations: report.migrations,
     schema: report.schema,
     accountCheck: report.founder.match === "unique" && report.founder.normalizedEmail &&
@@ -126,6 +129,7 @@ async function main() {
   try {
     const report = await inspectAuthRecovery(client, {
       founderEmail: process.env.AUTH_PREFLIGHT_FOUNDER_EMAIL,
+      databaseUrl: process.env.DATABASE_URL,
       adminEmails: process.env.ADMIN_EMAILS,
     });
     console.log(JSON.stringify(process.argv.includes("--public-summary") ? publicRecoverySummary(report) : report, null, 2));

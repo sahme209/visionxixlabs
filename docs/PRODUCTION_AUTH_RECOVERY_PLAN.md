@@ -66,6 +66,8 @@ statement timeout. It contains no user, membership, Agent-policy or financial
 DML and no migration-history write. It does not verify any existing password
 account, grant roles, seed an Agent allowlist, enable billing or change credentials.
 
+Proposed guarded SQL SHA-256: `3b447f657b20293132b0d39926737314b0ac4776a97cb5a2eeedfb5313d839e6`.
+
 Pinned original SHA-256 values:
 
 - Agent migration: `761c693202763e71c7ee25f99e194fe010335cf902b5ed37124351a93d42e3f7`.
@@ -77,7 +79,8 @@ Before requesting execution approval, record the reviewed PR/commit and SQL hash
 confirm the intended production database binding in the protected runtime, and
 confirm a current restorable backup/PITR point with an isolated restore rehearsal.
 The report does not identify the database host or prove restore capability; those
-remain operator checks. Serialize with all other migration jobs; do not dispatch
+remain operator checks. See `PRODUCTION_DATABASE_HOSTING_AND_RESTORE.md` for
+current discovery evidence, status and the gated restore procedure. Serialize with all other migration jobs; do not dispatch
 the existing production-db-migrate workflow or allow concurrent manual DDL.
 Use the existing required reviewer/change controls; manual execution must not bypass protected production governance. Keep all production billing activation flags and live Stripe settings unchanged.
 Never expose DATABASE_URL, founder address, hashes, tokens or private account rows.
