@@ -414,6 +414,15 @@ export class DesktopClient {
     return this.get(`/api/desktop/ai-call-log${query ? `?${query}` : ""}`);
   }
 
+  /** Immutable ReleaseOps audit events for the paired workspace. */
+  releaseAudit<T>(args?: { kind?: string; limit?: number }): Promise<ApiResult<T>> {
+    const params = new URLSearchParams();
+    if (args?.kind) params.set("kind", args.kind);
+    if (args?.limit) params.set("limit", String(args.limit));
+    const query = params.toString();
+    return this.get(`/api/desktop/release-audit${query ? `?${query}` : ""}`);
+  }
+
   /**
    * Phase 399 — call GET /api/v1/whoami. Returns the workspace + scopes
    * + quota snapshot, or a precise auth-failure code. Doesn't fall back
