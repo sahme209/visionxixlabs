@@ -1,5 +1,26 @@
 # Axiom Agent master-mission status
 
+## PR #109 merged; scheduled-trigger reliability follow-up
+
+PR #109 merged normally at `a604e72d` after its exact head passed GitHub
+Typecheck + Vitest and Desktop CI, including native tests and clippy. The
+founder explicitly authorized completing the merge and Git-triggered build.
+No branch rules were changed or bypassed; the preview provisioning error
+remains recorded separately from application checks.
+
+The next source audit reproduced overlapping scheduler ticks and a lost
+provider response producing fresh DAG-run identities for the same occurrence.
+The follow-up assigns a stable tenant/rule/DAG/occurrence identity and resolves
+409 only by reading the exact run. Manual triggering is preserved; other errors
+and mismatched conflicts fail. Provider uniqueness and retained run identities
+are prerequisites; no general exactly-once or cancellation claim is made.
+No database migration or real Airflow dispatch is performed by these tests.
+Validation: 533 Vitest files / 5,248 tests, web TypeScript, desktop
+TypeScript/frontend build and 30 Python CLI tests pass. PR #109
+production deployment `dpl_8xfHbWuRrPoaUymRWd6GVEm5eJ7j` is READY.
+The scheduler follow-up proceeds as its own validated PR; production login
+and database/founder verification remain unconfirmed.
+
 ## GitHub/Vercel identity correction · 2026-10-15
 
 The authenticated GitHub account, repository, Vercel repository link, namespace

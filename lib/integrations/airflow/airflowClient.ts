@@ -112,9 +112,17 @@ export class AirflowClient {
     })).filter((run) => run.dagRunId);
   }
 
-  async triggerDag(dagId: string, conf: Record<string, unknown> = {}): Promise<AirflowDagRun> {
-    const runId = `axiom__${new Date().toISOString().replaceAll(/[:.]/g, "-")}`;
-    const body = await this.request(`/dags/${encodeURIComponent(dagId)}/dagRuns`, { method: "POST", body: JSON.stringify({ dag_run_id: runId, logical_date: null, conf, note: "Triggered by Axiom Agent" }) }) as Record<string, unknown>;
+  async triggerDag(dagId: string, conf: Record<string, unknown> = {}, scheduledRunId?: string): Promise<AirflowDagRun> {
+    const runId = scheduledRunId ?? `axiom__${new Date().toISOString().replaceAll(/[:.]/g, "-")}`;
+    if (scheduledRunId !== undefined && !/^[A-Za-z0-9_.~:-]{1,250}$/.test(runId)) throw new Error("invalid_airflow_run_id");
+    let body: Record<string, unknown>;
+    try {
+      body = await this.request(`/dags/${encodeURIComponent(dagId)}/dagRuns`, { method: "POST", body: JSON.stringify({ dag_run_id: runId, logical_date: null, conf, note: "Triggered by Axiom Agent" }) }) as Record<string, unknown>;
+    } catch (error) {
+      if (scheduledRunId === undefined || !(error instanceof Error) || error.message !== "airflow_api_failed:409") throw error;
+      body = await this.request(`/dags/${encodeURIComponent(dagId)}/dagRuns/${encodeURIComponent(runId)}`) as Record<string, unknown>;
+      if (body.dag_run_id !== runId || (body.dag_id !== undefined && body.dag_id !== dagId)) throw new Error("airflow_run_conflict_unconfirmed");
+    }
     return { dagId, dagRunId: String(body.dag_run_id ?? runId), state: String(body.state ?? "queued"), logicalDate: typeof body.logical_date === "string" ? body.logical_date : null, startedAt: typeof body.start_date === "string" ? body.start_date : null, endedAt: typeof body.end_date === "string" ? body.end_date : null };
   }
 }
