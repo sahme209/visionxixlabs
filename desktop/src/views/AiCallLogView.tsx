@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { ViewShell } from "../components/Primitives";
+import { desktopClient } from "../lib/desktopClient";
 
 /**
  * AI call log — Phase 531 desktop sibling.
@@ -87,23 +88,19 @@ export function AiCallLogView() {
   const [resp, setResp] = useState<Body | null>(null);
   const [loading, setLoading] = useState(true);
   const [networkError, setNetworkError] = useState<string | null>(null);
-  const [scope, setScope] = useState<"org" | "global">("org");
   const [engineFilter, setEngineFilter] = useState<string | null>(null);
 
   function load() {
     setLoading(true);
     setNetworkError(null);
-    const params = new URLSearchParams();
-    params.set("scope", scope);
-    params.set("take", "200");
-    if (engineFilter) params.set("engineName", engineFilter);
-    fetch(`/api/dashboard/ai-call-log?${params.toString()}`, { credentials: "include" })
-      .then((r) => r.json())
-      .then((j: Body) => setResp(j))
-      .catch((e) => setNetworkError(e instanceof Error ? e.message : "Network error."))
+    void desktopClient.aiCallLog<LogData>({ take: 200, ...(engineFilter ? { engineName: engineFilter } : {}) })
+      .then((result) => {
+        if (result.ok) setResp({ ok: true, data: result.data });
+        else setNetworkError(result.error);
+      })
       .finally(() => setLoading(false));
   }
-  useEffect(() => { load(); }, [scope, engineFilter]);
+  useEffect(() => { load(); }, [engineFilter]);
 
   const data = resp?.ok ? resp.data : null;
   const errorBody = resp && !resp.ok ? resp : null;
@@ -127,9 +124,7 @@ export function AiCallLogView() {
       </div>
 
       <div className="flex items-center gap-2 flex-wrap">
-        <FilterPill label="My org" active={scope === "org"} onClick={() => setScope("org")} />
-        <FilterPill label="Global" active={scope === "global"} onClick={() => setScope("global")} />
-        <span className="text-[10px] font-mono text-zinc-500 ml-2">|</span>
+        <span className="text-[10px] font-mono text-zinc-500">Workspace-scoped</span>
         <FilterPill label="All engines" active={!engineFilter} onClick={() => setEngineFilter(null)} />
         {data?.engines.map((e) => (
           <FilterPill key={e.engineName} label={ENGINE_LABEL[e.engineName] ?? e.engineName} active={engineFilter === e.engineName} onClick={() => setEngineFilter(e.engineName)} />
