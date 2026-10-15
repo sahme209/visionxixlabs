@@ -21,6 +21,7 @@ import {
 } from "lucide-react";
 import { ViewShell } from "../components/Primitives";
 import { desktopClient, type DeploymentExecution, type VerifiedDesktopIdentity, type WorkspaceMember } from "../lib/desktopClient";
+import { deploymentObservationState } from "../lib/deploymentObservationState";
 import { clearApiKey } from "../lib/apiKeyStore";
 import { clearAuthSession } from "../lib/authSession";
 import { normalizeAiProviderStatus, type ModelPolicy, type ProviderModels } from "../lib/aiProviderStatus";
@@ -842,15 +843,23 @@ function DeploymentTargetPanel({ environment, environments, identity }: { enviro
   const [deployError, setDeployError] = useState<string | null>(null);
   const [deployOk, setDeployOk] = useState(false);
   const [execution, setExecution] = useState<DeploymentExecution | null>(null);
+  const [refreshingExecution, setRefreshingExecution] = useState(false);
+  const [observationError, setObservationError] = useState<{ executionId: string; message: string } | null>(null);
+  const observationEpoch = useRef(0);
   const executionId = execution?.id;
-  const executionStatus = execution?.status;
+  const observation = execution ? deploymentObservationState(execution) : null;
+  const canObserve = execution?.environmentId === environmentId && observation?.canPoll === true;
 
   useEffect(() => {
+    const epoch = ++observationEpoch.current;
+    setRefreshingExecution(false);
+    setObservationError(null);
     void Promise.all([
       desktopClient.getDeploymentTarget(environmentId),
       desktopClient.listDeploymentExecutions(),
       desktopClient.listRepositories(),
     ]).then(([result, executions, repositories]) => {
+      if (epoch !== observationEpoch.current) return;
       if (result.ok) {
         if (result.data.target) {
           setRoleArn(result.data.target.roleArn);
@@ -872,10 +881,11 @@ function DeploymentTargetPanel({ environment, environments, identity }: { enviro
       }
       setLoaded(true);
     });
+    return () => { observationEpoch.current += 1; };
   }, [environmentId]);
 
   useEffect(() => {
-    if (!executionId || executionStatus === "completed" || executionStatus === "tracking_unavailable") return;
+    if (!executionId || !canObserve) return;
     let cancelled = false;
     const observe = async () => {
       const result = await desktopClient.observeDeploymentExecution(executionId);
@@ -884,7 +894,24 @@ function DeploymentTargetPanel({ environment, environments, identity }: { enviro
     void observe();
     const timer = window.setInterval(() => void observe(), 5000);
     return () => { cancelled = true; window.clearInterval(timer); };
-  }, [executionId, executionStatus]);
+  }, [executionId, canObserve]);
+
+  async function refreshExecution() {
+    if (!executionId) return;
+    const epoch = observationEpoch.current;
+    setRefreshingExecution(true);
+    setObservationError(null);
+    try {
+      const result = await desktopClient.observeDeploymentExecution(executionId);
+      if (epoch !== observationEpoch.current) return;
+      if (result.ok) setExecution((current) => current?.id === executionId ? result.data : current);
+      else setObservationError({ executionId, message: result.error });
+    } catch {
+      if (epoch === observationEpoch.current) setObservationError({ executionId, message: "Status could not be refreshed. The recorded outcome is unchanged." });
+    } finally {
+      if (epoch === observationEpoch.current) setRefreshingExecution(false);
+    }
+  }
 
   async function save() {
     setSaving(true); setSaveError(null); setSaveOk(false);
@@ -1044,7 +1071,7 @@ function DeploymentTargetPanel({ environment, environments, identity }: { enviro
         )}
         {deployOk && !execution && <p className="text-[12px] text-amber-300">Deploy dispatched, but live tracking could not be saved. Open GitHub Actions to verify the outcome.</p>}
         {deployError && <p role="alert" className="text-[12px] text-rose-300">{deployError}</p>}
-        {execution && (
+        {execution && execution.environmentId === environmentId && (
           <div className="mt-3 rounded-lg border border-white/[0.07] bg-white/[0.025] p-3 text-[12px]">
             <div className="flex items-center justify-between gap-3">
               <div>
@@ -1057,14 +1084,15 @@ function DeploymentTargetPanel({ environment, environments, identity }: { enviro
                   </p>
                 )}
                 <p className="mt-1 text-zinc-500">
-                  {execution.status === "completed"
-                    ? execution.conclusion === "success" ? "Deployment stabilized" : "Deployment failed"
-                    : execution.status === "tracking_unavailable" ? "Live tracking unavailable" : "Deployment in progress"}
+                  {observation?.label}
                   {execution.rollbackStatus === "succeeded" ? " · rollback succeeded" : ""}
                   {execution.rollbackStatus === "failed" ? " · rollback failed" : ""}
                   {execution.rollbackStatus === "in_progress" ? " · rollback in progress" : ""}
                 </p>
+                {!observation?.canPoll && execution.status !== "completed" && <p className="mt-1 text-zinc-500">Refresh the recorded status after reviewing the provider outcome. This does not dispatch or retry a deployment.</p>}
+                {observationError?.executionId === execution.id && <p role="alert" className="mt-1 text-rose-300">{observationError.message}</p>}
               </div>
+              <button type="button" onClick={() => void refreshExecution()} disabled={refreshingExecution} className="rounded-md border border-white/10 px-2.5 py-1.5 text-zinc-300 hover:bg-white/[0.06] disabled:opacity-50">{refreshingExecution ? "Refreshing…" : "Refresh status"}</button>
               {execution.workflowUrl && (
                 <button type="button" onClick={() => void open(execution.workflowUrl!)} className="rounded-md border border-white/10 px-2.5 py-1.5 text-zinc-300 hover:bg-white/[0.06]">
                   View evidence ↗
