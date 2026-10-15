@@ -59,7 +59,7 @@ Existing sign-in gate tests preserve best-effort personal-workspace bootstrap;
 no change to authorization is needed to repair this schema mismatch.
 
 Local validation: all 527 Vitest files / 5,146 tests pass after Prisma client
-generation, web `tsc --noEmit` passes, desktop TypeScript and frontend build
+generation, web `tsc --noEmit` and the full production build pass, desktop TypeScript and frontend build
 pass, and all 30 Python CLI tests pass. Native Rust checks cannot run because
 `cargo` is not installed in this environment. These checks do not establish
 live provider authentication or production schema readiness.
