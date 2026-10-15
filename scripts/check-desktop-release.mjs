@@ -1,6 +1,7 @@
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
+import { desktopVersionAlignmentErrors } from "./desktop-release-versions.mjs";
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const desktopPackage = readJson("desktop/package.json");
@@ -11,11 +12,14 @@ const connectionBanner = readText("desktop/src/components/ConnectionBanner.tsx")
 const footer = readText("components/Footer.tsx");
 const demoLanding = readText("app/demo/page.tsx");
 
-const errors = [];
+const errors = desktopVersionAlignmentErrors({
+  desktopPackage,
+  desktopLock: readJson("desktop/package-lock.json"),
+  tauriConfig,
+  cargoManifest: readText("desktop/src-tauri/Cargo.toml"),
+  cargoLock: readText("desktop/src-tauri/Cargo.lock"),
+});
 
-if (desktopPackage.version !== tauriConfig.version) {
-  errors.push(`desktop/package.json version ${desktopPackage.version} does not match tauri.conf.json version ${tauriConfig.version}`);
-}
 if (desktopPackage.name !== "axiom-desktop") {
   errors.push(`unexpected desktop package name: ${desktopPackage.name}`);
 }

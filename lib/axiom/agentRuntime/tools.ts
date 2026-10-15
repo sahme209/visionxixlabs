@@ -28,6 +28,18 @@ export interface ToolDefinition {
 
 export const TOOL_REGISTRY: readonly ToolDefinition[] = [
   {
+    name: "list_cloud_accounts",
+    description: "List scoped AWS role identity records in the current paired user's workspace. Connection records do not grant deployment permission or prove inventory access. Use this to resolve an account ID before a bounded read; never guess an account from history.",
+    argsSchemaHint: "{} — no arguments.",
+    riskLevel: "low",
+  },
+  {
+    name: "read_aws_inventory",
+    description: "Read a bounded live EC2 observation from one explicitly selected scoped AWS account in its enrolled region. At most five instances, one page; incomplete and not a CloudSnapshot. Costs, utilization, backups, other regions and resource types are unknown. Explain observed facts only; this request becomes report-only and cannot propose changes after this read.",
+    argsSchemaHint: '{ "accountId": "the scoped connection id from list_cloud_accounts, not the 12-digit AWS account number" }',
+    riskLevel: "low",
+  },
+  {
     name: "list_environments",
     description: "List the workspace's configured deployment environments (dev/test/prod, etc.).",
     argsSchemaHint: "{} — no arguments.",

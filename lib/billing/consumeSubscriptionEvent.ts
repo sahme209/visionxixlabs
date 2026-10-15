@@ -1,6 +1,5 @@
 import "server-only";
 
-import { prisma } from "@/lib/db";
 import type { UpsertBillingPlanInput } from "./tenantBillingStore";
 
 type PlanWrite = UpsertBillingPlanInput & {
@@ -8,9 +7,15 @@ type PlanWrite = UpsertBillingPlanInput & {
   stripeSubscriptionId: string;
   lastStripeEventId: string;
 };
+export interface SubscriptionBinding {
+  stripeCustomerId: string | null;
+  stripeSubscriptionId: string | null;
+  lastStripeEventId: string | null;
+}
 interface SubscriptionTransaction {
   stripeBillingEvent: { create(args: { data: { id: string; type: string } }): Promise<unknown> };
   tenantBillingPlan: {
+    findUnique(args: unknown): Promise<SubscriptionBinding | null>;
     findFirst(args: unknown): Promise<{ organizationId: string } | null>;
     upsert(args: unknown): Promise<unknown>;
   };
@@ -22,11 +27,12 @@ export interface SubscriptionEventRepository {
 const replay = new Error("subscription_event_replay");
 const ownershipConflict = new Error("subscription_event_ownership_conflict");
 
-/** Durable duplicate protection, not ordering of distinct Stripe events. */
+/** Atomic durable consumption for a previously observed binding and provider snapshot. */
 export async function consumeSubscriptionEvent(
   eventType: string,
   input: PlanWrite,
-  repository: SubscriptionEventRepository = prisma,
+  repository: SubscriptionEventRepository,
+  expectedBinding: SubscriptionBinding | null,
 ): Promise<"applied" | "replay" | "ownership_conflict"> {
   try {
     return await repository.$transaction(async (tx) => {
@@ -41,6 +47,9 @@ export async function consumeSubscriptionEvent(
       // Preserve the existing last-event guard during rollout and persist it
       // into the durable ledger. Older pre-rollout history is not reconstructible.
       if (await tx.tenantBillingPlan.findFirst({ where: { lastStripeEventId: input.lastStripeEventId }, select: { organizationId: true } })) return "replay";
+      const current = await tx.tenantBillingPlan.findUnique({ where: { organizationId: input.organizationId }, select: { stripeCustomerId: true, stripeSubscriptionId: true, lastStripeEventId: true } });
+      if (!sameSubscriptionBinding(current, expectedBinding)) throw new Error("subscription_snapshot_changed");
+      if (current && ((current.stripeCustomerId && current.stripeCustomerId !== input.stripeCustomerId) || (current.stripeSubscriptionId && current.stripeSubscriptionId !== input.stripeSubscriptionId))) throw ownershipConflict;
       const conflict = await tx.tenantBillingPlan.findFirst({
         where: {
           organizationId: { not: input.organizationId },
@@ -67,4 +76,10 @@ export async function consumeSubscriptionEvent(
     if (error === ownershipConflict) return "ownership_conflict";
     throw error;
   }
+}
+
+/** Equality only: event IDs are opaque tokens, never ordered or timestamped. */
+export function sameSubscriptionBinding(left: SubscriptionBinding | null, right: SubscriptionBinding | null): boolean {
+  return left === null || right === null ? left === right
+    : left.stripeCustomerId === right.stripeCustomerId && left.stripeSubscriptionId === right.stripeSubscriptionId && left.lastStripeEventId === right.lastStripeEventId;
 }

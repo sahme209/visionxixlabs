@@ -421,4 +421,61 @@ describe("runDecisionLoop", () => {
     expect(result).toMatchObject({ kind: "error", error: "agent_tool_not_allowed" });
   });
 
+  const awsObservation = {
+    kind: "aws_bounded_observation", connection: { id: "connection", version: 2, revokedAt: null }, provider: "aws", accountId: "123456789012", source: "live", observedAt: "2026-10-16T00:00:00Z",
+    authority: "observation_only", coverage: { complete: false, regions: ["us-east-1"], resourceTypes: ["ec2_instance"], maximumResources: 5, pagination: "single_page", truncated: true },
+    unknown: { costs: true, utilizationMetrics: true, backups: true, otherRegions: true, otherResourceTypes: true }, instances: [],
+  };
+  function allowCloudRead() { mocks.readWorkspaceAgentIdentity.mockResolvedValue({ enabled: true, allowedTools: ["read_aws_inventory", "trigger_aws_deploy"] }); }
+  it("requires explicit Agent tool permission before reading cloud inventory", async () => {
+    mocks.resolveGovernedAiCall.mockResolvedValue(governed(async () => ({ action: "call_tool", message: "Inspect", toolName: "read_aws_inventory", args: { accountId: "connection" } })));
+    const read = vi.fn(noopReadOnly);
+    const result = await runDecisionLoop({ organizationId: "o", correlationId: "c", transcript: [], executeReadOnlyTool: read, isProdEnvironmentTarget: noopProdCheck });
+    expect(result).toMatchObject({ kind: "error", error: "agent_tool_not_allowed" }); expect(read).not.toHaveBeenCalled();
+  });
+  it("reports bounded facts with unknown coverage and never proposes a same-request write", async () => {
+    allowCloudRead();
+    const extract = vi.fn().mockResolvedValueOnce({ action: "call_tool", message: "Read EC2", toolName: "read_aws_inventory", args: { accountId: "connection" } })
+      .mockResolvedValueOnce({ action: "call_tool", message: "Deploy", toolName: "trigger_aws_deploy", args: { environmentId: "prod" } });
+    mocks.resolveGovernedAiCall.mockResolvedValue(governed(extract));
+    const read = vi.fn(async () => ({ ok: true as const, result: awsObservation }));
+    const result = await runDecisionLoop({ organizationId: "o", correlationId: "c", transcript: [], operationMode: "deepops", executeReadOnlyTool: read, isProdEnvironmentTarget: noopProdCheck });
+    expect(result).toMatchObject({ kind: "final", message: expect.stringContaining("No change was proposed") });
+    expect(read).toHaveBeenCalledTimes(1);
+    expect(extract.mock.calls[1][0]).toContain("REPORT-ONLY AWS OBSERVATION");
+    expect(extract.mock.calls[1][0]).toContain("Do not infer absence, resource deletion, drift, savings or readiness");
+  });
+  it("keeps initial UI grounding observations report-only and prefixes unknowns", async () => {
+    allowCloudRead();
+    mocks.resolveGovernedAiCall.mockResolvedValue(governed(async () => ({ action: "respond", message: "No instances were returned in this page." })));
+    const result = await runDecisionLoop({ organizationId: "o", correlationId: "c", transcript: [],
+      initialToolCall: { toolName: "read_aws_inventory", args: { accountId: "connection" }, message: "Inspect selected account" },
+      executeReadOnlyTool: async () => ({ ok: true, result: awsObservation }), isProdEnvironmentTarget: noopProdCheck });
+    expect(result).toMatchObject({ kind: "final", message: expect.stringContaining("account-wide coverage are unknown") });
+  });
+  it("rejects malformed bounded evidence rather than interpreting it as a snapshot", async () => {
+    allowCloudRead();
+    mocks.resolveGovernedAiCall.mockResolvedValue(governed(async () => ({ action: "call_tool", message: "Inspect", toolName: "read_aws_inventory", args: { accountId: "connection" } })));
+    const result = await runDecisionLoop({ organizationId: "o", correlationId: "c", transcript: [], executeReadOnlyTool: async () => ({ ok: true, result: { ...awsObservation, coverage: { complete: true } } }), isProdEnvironmentTarget: noopProdCheck });
+    expect(result).toMatchObject({ kind: "error", error: "tool_execution_failed" });
+  });
+  it("does not permanently restrict later independently governed operational requests", async () => {
+    allowCloudRead();
+    mocks.resolveGovernedAiCall.mockResolvedValue(governed(async () => ({ action: "call_tool", message: "Propose the independently selected target", toolName: "trigger_aws_deploy", args: { environmentId: "stage", sourceRef: "reviewed-release" } })));
+    const result = await runDecisionLoop({ organizationId: "o", correlationId: "c", transcript: [{ role: "tool_result", content: JSON.stringify({ ...awsObservation, provenance: "Historical observation, not execution evidence" }) }, { role: "user", content: "Propose the separately configured release target" }], operationMode: "deepops", executeReadOnlyTool: noopReadOnly, isProdEnvironmentTarget: noopProdCheck });
+    expect(result).toMatchObject({ kind: "proposal", toolName: "trigger_aws_deploy" });
+  });
+
+  it("does not send a completed observation to another model step after Agent permission is revoked during the read", async () => {
+    allowCloudRead();
+    const extract = vi.fn(async () => ({ action: "call_tool", message: "Inspect", toolName: "read_aws_inventory", args: { accountId: "connection" } }));
+    mocks.resolveGovernedAiCall.mockResolvedValue(governed(extract));
+    const result = await runDecisionLoop({ organizationId: "o", correlationId: "c", transcript: [], executeReadOnlyTool: async () => {
+      mocks.readWorkspaceAgentIdentity.mockResolvedValue({ enabled: false, allowedTools: [] });
+      return { ok: true, result: awsObservation };
+    }, isProdEnvironmentTarget: noopProdCheck });
+    expect(result).toMatchObject({ kind: "error", error: "workspace_agent_disabled" });
+    expect(extract).toHaveBeenCalledTimes(1);
+  });
+
 });

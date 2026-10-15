@@ -49,14 +49,12 @@ existing supported PostgreSQL transaction isolation is honored. An SSI conflict
 is retriable, not automatically retried inside the webhook. Separate provider
 and SQL acceptance must verify this behavior against the isolated test runtime.
 
-**Distinct-event ordering remains unresolved.** A never-before-consumed delayed
-subscription update can still represent older provider state. Event IDs are not
-ordered, and `processedAt` is not Stripe event time. This patch does not invent
-ordering metadata, compare lexical IDs, revoke legitimate subscription changes,
-or treat cancellation as permanently irreversible. Reconciliation against an
-authoritative Stripe subscription snapshot requires its own reviewed design.
-Historical pre-rollout events older than the current last-event pointer cannot
-be reconstructed from the existing database and are not retroactively deduplicated.
+Distinct delayed events now use the established-subscription current-state
+retrieval and local equality fence described in
+`SUBSCRIPTION_AUTHORITATIVE_RECONCILIATION.md`. Event IDs remain opaque and are
+never timestamp-sorted. Unexpected subscription/customer replacement is blocked
+for reconciliation; historical event history is not reconstructed. Actual
+provider-backed acceptance and authorized replacement remain unfinished.
 
 Subscription cancellation/past-due treatment, public versus legacy allowances,
 invoice finalization/payment, usage-invoice credits/refunds and any live billing

@@ -41881,10 +41881,11 @@
       "status": "Partially implemented",
       "engineeringActivity": "active",
       "owner": "Codex integrated parallel workstreams",
-      "activeMilestone": "Validate model-to-tool-to-approval customer journey.",
-      "verification": "Revocation regressions cover authority changes during inference.",
+      "activeMilestone": "Validate governed paired AWS observations and their incomplete-coverage/report-only boundary.",
+      "verification": "Explicitly allowlisted tools reuse tenant-scoped inventory with current paired authority, connection-version and revocation checks. Same-request writes are refused after a bounded read; later independently governed requests remain available. Actual model/provider/customer acceptance remains unverified.",
       "evidence": [
-        "docs/AGENT_GOVERNED_ACTION_ACCEPTANCE.md"
+        "docs/AGENT_GOVERNED_ACTION_ACCEPTANCE.md",
+        "docs/AGENT_AWS_OBSERVATIONS.md"
       ],
       "customerAcceptance": "Not verified",
       "acceptanceDependencies": [
@@ -41982,12 +41983,13 @@
       "status": "Partially implemented",
       "engineeringActivity": "active",
       "owner": "Codex integrated parallel workstreams",
-      "activeMilestone": "Bind readiness, approval, immutable artifact, execution, validation and rollback in one acceptance journey.",
-      "verification": "Shell tests execute extracted workflow scripts against fake AWS.",
+      "activeMilestone": "Implement immutable artifact release contract separately from existing ECS service restart.",
+      "verification": "Source audit proves current ECS workflow restarts the current task definition; no new source/image artifact or immutable image rollback is established. A canonical artifact/provenance/target/baseline and exact-run health receipt contract is prepared; no provider workflow dispatched.",
       "evidence": [
         "docs/ECS_CUSTOMER_JOURNEY_VALIDATION.md",
         "docs/WEBSITE_DEPLOYMENT_READINESS.md",
-        "docs/mission/neon-readiness-inspection.json"
+        "docs/mission/neon-readiness-inspection.json",
+        "docs/ECS_IMMUTABLE_RELEASE_PLAN.md"
       ],
       "customerAcceptance": "Not verified",
       "acceptanceDependencies": [
@@ -42023,14 +42025,16 @@
       "status": "Partially implemented",
       "engineeringActivity": "active",
       "owner": "Codex integrated parallel workstreams",
-      "activeMilestone": "Verify packaged native pairing, recovery, first run, updates and workspace operation.",
-      "verification": "Behavioral tests cover verified recovery to restart without inactive-key takeover, explicit selected credential/no fallback, signout tombstone, precommit cancellation, and stale entitlement/recovery callbacks. Native vault and exact signed-package acceptance remain unverified. Reachable Settings AWS enrollment and bounded inventory composition tests pass with provider responses simulated; new cloud records keep generic Agent disabled.",
+      "activeMilestone": "Validate native/frontend version alignment and prepare immutable candidate-only release approval.",
+      "verification": "Local source checks align npm/Tauri/Cargo and lock identities, with negative command fixtures. Current published installer acceptance and native upgrade/vault migration remain unverified; existing release assets were not replaced.",
       "evidence": [
         "docs/DESKTOP_BROWSER_PAIRING_CANCELLATION.md",
         "docs/DESKTOP_NATIVE_CREDENTIAL_BACKENDS.md",
         "docs/EMAIL_VERIFICATION_CUSTOMER_RECOVERY.md",
         "docs/DESKTOP_DURABLE_CREDENTIAL_RECOVERY.md",
-        "docs/DESKTOP_AWS_READONLY_ENROLLMENT.md"
+        "docs/DESKTOP_AWS_READONLY_ENROLLMENT.md",
+        "scripts/desktop-release-versions.mjs",
+        "lib/desktop/__tests__/desktopReleaseVersions.test.ts"
       ],
       "customerAcceptance": "Not verified",
       "acceptanceDependencies": [
@@ -42045,14 +42049,15 @@
       "status": "Partially implemented",
       "engineeringActivity": "active",
       "owner": "Codex integrated parallel workstreams",
-      "activeMilestone": "Prepare the bounded isolated Stripe customer/provider acceptance exercise; review distinct subscription event ordering before implementation.",
-      "verification": "Composed component/route/helper/signed-webhook tests cover stable intent header, actual redirect contract, response-loss retained pending and late exactly-once fulfillment. Existing uncertain intents cannot be safely reconstructed and are not redispatched. Actual Stripe acceptance remains unverified. New AWS account creation uses canonical plan/count inside Serializable completion, preserving current identity-only commercial access policy; this is resource-cap enforcement, not full subscription gating.",
+      "activeMilestone": "Validate established-subscription reconciliation and prepare isolated Stripe customer acceptance.",
+      "verification": "Distinct subscription events retrieve current provider state and use an equality-only binding/event-token fence before atomic consumption. Exact configured licensed per-seat terms are required; ambiguous snapshots and unexpected replacement fail closed. Local composed tests are not actual Stripe delivery or collection.",
       "evidence": [
         "docs/BILLING_CUSTOMER_JOURNEY_ACCEPTANCE.md",
         "docs/SUBSCRIPTION_EVENT_CONSUMPTION.md",
         "docs/LEAD_ADMIN_GENERATION_AUTHORITY.md",
         "docs/CREDIT_CHECKOUT_UNKNOWN_OUTCOME_RECOVERY.md",
-        "docs/STRIPE_TEST_CUSTOMER_ACCEPTANCE.md"
+        "docs/STRIPE_TEST_CUSTOMER_ACCEPTANCE.md",
+        "docs/SUBSCRIPTION_AUTHORITATIVE_RECONCILIATION.md"
       ],
       "customerAcceptance": "Not verified",
       "acceptanceDependencies": [
