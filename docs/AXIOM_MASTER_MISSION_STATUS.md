@@ -539,3 +539,14 @@ change is authorized by this diagnostic work. Independently, billing candidate
 selection now checks account/customer configuration and fresh monthly capacity
 before LIMIT, preserving already-reserved retry eligibility and ledger holds.
 Real isolated Stripe acceptance and repeated eligible retry fairness remain open.
+
+## Durable retry fairness follow-up
+
+#125 passed exact-head CI and merged. Billing retry rotation now persists an
+attempt marker before contacting Stripe and orders by the existing last-update
+timestamp. Original reservation time, key, tenant, amount and budget hold stay
+unchanged. Five reproduced regressions pass; real SQL rotates waiting work in
+SQLite/PostgreSQL. 539 files / 5,348 local tests, TypeScript, desktop build and
+30 Python CLI tests passed. Real Stripe test-runtime access and production auth
+preflight remain blockers. Desktop focus-verification lifecycle is a new scoped
+follow-up, not a claim that native account pairing is accepted.

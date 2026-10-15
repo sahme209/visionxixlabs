@@ -14,7 +14,7 @@ query = json.loads(sys.argv[1])
 db = sqlite3.connect(':memory:')
 db.executescript('''
 CREATE TABLE "UsageEvent" (id TEXT, organizationId TEXT, billedCents INTEGER, billingStatus TEXT, createdAt TEXT);
-CREATE TABLE "AIUsageBillingSettlement" (usageEventId TEXT, status TEXT, organizationId TEXT, amountCents INTEGER, createdAt TEXT);
+CREATE TABLE "AIUsageBillingSettlement" (usageEventId TEXT, status TEXT, organizationId TEXT, amountCents INTEGER, createdAt TEXT, updatedAt TEXT);
 CREATE TABLE "AIUsageBillingConfig" (organizationId TEXT PRIMARY KEY, enabled BOOLEAN, monthlySpendLimitCents INTEGER);
 CREATE TABLE "TenantBillingPlan" (organizationId TEXT PRIMARY KEY, stripeCustomerId TEXT);
 CREATE TABLE "AIUsageBillingPeriod" (organizationId TEXT, periodMonth TEXT, reservedCents INTEGER);
@@ -24,12 +24,12 @@ INSERT INTO "AIUsageBillingPeriod" VALUES ('org-2', '2026-10', 1);
 INSERT INTO "UsageEvent" VALUES
  ('done', 'org-1', 3, 'settled', '2026-10-01'),
  ('retry', 'org-2', 4, 'settled', '2026-10-02'),
- ('new', 'org-1', 5, 'settled', '2026-10-03'),
+ ('new', 'org-1', 5, 'settled', '2026-10-15T11:30:00.000Z'),
  ('pending', 'org-1', 5, 'pending', '2026-09-01'),
  ('free', 'org-1', 0, 'settled', '2026-09-01');
 INSERT INTO "AIUsageBillingSettlement" VALUES
- ('done', 'submitted', 'org-1', 3, '2026-10-15T11:00:00.000Z'),
- ('retry', 'reserved', 'org-2', 4, '2026-10-15T11:00:00.000Z');
+ ('done', 'submitted', 'org-1', 3, '2026-10-15T11:00:00.000Z', '2026-10-15T11:00:00.000Z'),
+ ('retry', 'reserved', 'org-2', 4, '2026-10-15T11:00:00.000Z', '2026-10-15T11:00:00.000Z');
 ''')
 # Older held records must not fill the entire bounded batch. No hold is deleted.
 for name, status, org, amount, created in [
@@ -42,7 +42,7 @@ for name, status, org, amount, created in [
  ('wrong-tenant', 'reserved', 'org-other', 3, '2026-10-15T11:00:00.000Z'),
  ('wrong-amount', 'reserved', 'org-1', 999, '2026-10-15T11:00:00.000Z')]:
  db.execute('INSERT INTO "UsageEvent" VALUES (?, ?, ?, ?, ?)', (name, 'org-1', 3, 'settled', '2026-09-01'))
- db.execute('INSERT INTO "AIUsageBillingSettlement" VALUES (?, ?, ?, ?, ?)', (name, status, org, amount, created))
+ db.execute('INSERT INTO "AIUsageBillingSettlement" VALUES (?, ?, ?, ?, ?, ?)', (name, status, org, amount, created, created))
 for name, enabled, cap, customer, reserved in [
  ('disabled', False, 100, 'cus_test', 0),
  ('zero-cap', True, 0, 'cus_test', 0),
@@ -88,5 +88,8 @@ describe("AI settlement candidate selection", () => {
   });
   it("keeps already-reserved retries eligible despite a spent cap", () => {
     expect(select(1)).toEqual(["retry"]);
+  });
+  it("rotates a recently attempted retry behind waiting new usage in a one-row batch", () => {
+    expect(select(1, `UPDATE "AIUsageBillingSettlement" SET "updatedAt" = '2026-10-15T12:00:00.000Z' WHERE "usageEventId" = 'retry';`)).toEqual(["new"]);
   });
 });

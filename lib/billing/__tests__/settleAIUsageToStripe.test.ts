@@ -72,6 +72,14 @@ describe("AI usage Stripe settlement retry safety", () => {
     expect(await settleAIUsageToStripe(repo)).toEqual({ inspected: 1, reserved: 1, submitted: 1, blocked: 0, deferred: 0 });
     expect(mocks.invoiceItem).toHaveBeenCalledWith(expect.objectContaining({ amount: 3, customer: "cus_test" }), { idempotencyKey: record.idempotencyKey });
     expect(repo.aIUsageBillingPeriod.updateMany).not.toHaveBeenCalled();
+    expect(repo.aIUsageBillingSettlement.updateMany).toHaveBeenCalledTimes(2);
+    expect(repo.aIUsageBillingSettlement.updateMany.mock.calls[0][0]).toEqual({
+      where: { id: record.id, status: "reserved", organizationId: record.organizationId,
+        usageEventId: record.usageEventId, amountCents: record.amountCents,
+        idempotencyKey: record.idempotencyKey, createdAt: record.createdAt },
+      data: { attemptCount: { increment: 1 }, updatedAt: now },
+    });
+    expect(repo.aIUsageBillingSettlement.updateMany.mock.calls[1][0].data).not.toHaveProperty("attemptCount");
   });
 
   it("never resubmits a durably submitted record", async () => {
@@ -85,8 +93,31 @@ describe("AI usage Stripe settlement retry safety", () => {
     mocks.invoiceItem.mockRejectedValueOnce(new Error("timeout after acceptance"));
     const repo = repository();
     expect(await settleAIUsageToStripe(repo)).toEqual({ inspected: 1, reserved: 1, submitted: 0, blocked: 0, deferred: 1 });
-    expect(repo.aIUsageBillingSettlement.updateMany).not.toHaveBeenCalled();
+    expect(repo.aIUsageBillingSettlement.updateMany).toHaveBeenCalledExactlyOnceWith(expect.objectContaining({
+      data: { attemptCount: { increment: 1 }, updatedAt: now },
+    }));
     expect(repo.aIUsageBillingPeriod.updateMany).not.toHaveBeenCalled();
+  });
+  it("does not contact Stripe when the durable attempt marker cannot be saved", async () => {
+    const repo = repository();
+    repo.aIUsageBillingSettlement.updateMany.mockRejectedValueOnce(new Error("database unavailable"));
+    expect(await settleAIUsageToStripe(repo)).toEqual({ inspected: 1, reserved: 0, submitted: 0, blocked: 0, deferred: 1 });
+    expect(mocks.invoiceItem).not.toHaveBeenCalled();
+  });
+  it("does not contact Stripe when a concurrent state change prevents the attempt marker", async () => {
+    const repo = repository();
+    repo.aIUsageBillingSettlement.updateMany.mockResolvedValueOnce({ count: 0 });
+    expect(await settleAIUsageToStripe(repo)).toEqual({ inspected: 1, reserved: 0, submitted: 0, blocked: 0, deferred: 1 });
+    expect(mocks.invoiceItem).not.toHaveBeenCalled();
+  });
+  it("rechecks retry age after the attempt marker write", async () => {
+    const repo = repository();
+    repo.aIUsageBillingSettlement.updateMany.mockImplementationOnce(async () => {
+      vi.setSystemTime(new Date(now.getTime() + 24 * 60 * 60 * 1000));
+      return { count: 1 };
+    });
+    expect(await settleAIUsageToStripe(repo)).toEqual({ inspected: 1, reserved: 0, submitted: 0, blocked: 1, deferred: 0 });
+    expect(mocks.invoiceItem).not.toHaveBeenCalled();
   });
 
   it("holds a failed ledger state instead of treating it as an unsubmitted reservation", async () => {

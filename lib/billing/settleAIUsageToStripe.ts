@@ -173,6 +173,31 @@ export async function settleAIUsageToStripe(
       result.blocked++;
       continue;
     }
+    try {
+      // Persist queue rotation before contacting Stripe, including uncertain
+      // outcomes. Never move createdAt: it bounds the original retry window.
+      const attempt = await repository.aIUsageBillingSettlement.updateMany({
+        where: {
+          id: settlement.id, status: "reserved",
+          organizationId: event.organizationId, usageEventId: event.id,
+          amountCents: event.billedCents, idempotencyKey: settlement.idempotencyKey,
+          createdAt: settlement.createdAt,
+        },
+        data: { attemptCount: { increment: 1 }, updatedAt: new Date() },
+      });
+      if (attempt.count !== 1) {
+        result.deferred++;
+        continue;
+      }
+    } catch {
+      result.deferred++;
+      continue;
+    }
+    // A slow metadata write must not extend automatic retry eligibility.
+    if (evaluateAIUsageSettlementRetry(settlement, new Date()) !== "submit") {
+      result.blocked++;
+      continue;
+    }
     result.reserved++;
     const submission = await submitInvoiceItem(settlement, plan.stripeCustomerId, config.currency.toLowerCase());
     if (!submission.ok) {
@@ -181,7 +206,7 @@ export async function settleAIUsageToStripe(
     }
     await repository.aIUsageBillingSettlement.updateMany({
       where: { id: settlement.id, status: "reserved" },
-      data: { status: "submitted", stripeInvoiceItemId: submission.stripeInvoiceItemId, submittedAt: new Date(), attemptCount: { increment: 1 } },
+      data: { status: "submitted", stripeInvoiceItemId: submission.stripeInvoiceItemId, submittedAt: new Date() },
     });
     result.submitted++;
   }

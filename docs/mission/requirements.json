@@ -16863,7 +16863,7 @@
       "domain": "billing",
       "scope": "product",
       "status": "Partially implemented",
-      "verification": "Source mapped to existing components; acceptance of this individual requirement has not been demonstrated end to end. Candidate SQL now excludes held reservations (#124), disabled/missing billing configuration, missing customers and new usage without current-month capacity before LIMIT. SQLite and PostgreSQL fixtures validate exact-cap behavior and previously reserved retries at a spent cap. Real Stripe test-tenant invoice/refund/replay acceptance remains unverified.",
+      "verification": "Source mapped to existing components; acceptance of this individual requirement has not been demonstrated end to end. Candidate SQL now excludes held reservations (#124), disabled/missing billing configuration, missing customers and new usage without current-month capacity before LIMIT. SQLite and PostgreSQL fixtures validate exact-cap behavior and previously reserved retries at a spent cap. Real Stripe test-tenant invoice/refund/replay acceptance remains unverified. Five failing-before/passing-after regressions cover durable retry rotation and fail-closed attempt recording; candidate order uses the existing last-updated timestamp while the original retry deadline is unchanged. Full local suite: 539 files / 5,348 tests. This does not certify real Stripe behavior or fairness during database contention.",
       "evidence": [
         "lib/billing/reconcileGatewayUsage.ts",
         "lib/billing/aiBillingMargin.ts",
@@ -16882,9 +16882,10 @@
         114,
         115,
         122,
-        124
+        124,
+        125
       ],
-      "nextAction": "Validate exact-head CI; address repeated eligible retry scheduling without releasing holds; run approved isolated Stripe test-tenant workflows before any live billing proposal.",
+      "nextAction": "Run exact-head CI and approved isolated Stripe test-tenant normal/cap/retry/refund/webhook journeys. Consider bounded backoff and contention behavior without releasing financial holds; keep live billing disabled.",
       "owner": "Codex; external acceptance/approvals remain founder-owned",
       "auditDepth": "Requirement source mapped; individual acceptance review pending"
     },

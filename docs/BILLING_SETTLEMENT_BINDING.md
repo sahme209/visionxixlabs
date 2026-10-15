@@ -75,3 +75,29 @@ open. Live settlement remains disabled and rejects live keys.
 Validation for the configuration/budget follow-up: 539 Vitest files / 5,344
 tests, web and desktop TypeScript, desktop frontend build, 30 Python CLI tests,
 mission register check and disposable PostgreSQL capacity fixtures passed.
+
+## Durable rotation of eligible retries
+
+After #125's eligibility filters, repeated provider failures could still occupy
+the oldest batch slots. Candidate ordering now uses each existing settlement's
+`updatedAt`, falling back to usage creation for unreserved work, with stable
+creation/id tie-breakers. Before a provider request, a conditional write persists
+`attemptCount` and `updatedAt` on the exact reserved identity/amount/key. Failure
+to persist or a concurrent state change defers the row without contacting Stripe.
+A fresh retry-deadline check follows that write. Success no longer increments the
+attempt counter a second time. The counter measures dispatch attempts, including
+an intent persisted before a crash; it is not proof of provider delivery.
+
+Neither reservation creation time nor idempotency key changes, so queue rotation
+cannot extend the original 23-hour automatic retry window. Unknown outcomes keep
+their financial holds. Five regressions failed before and pass after: one-row
+rotation, durable unknown-outcome marker, marker failure, concurrent state change,
+and deadline expiry during marker persistence. The real SQL runs on isolated
+SQLite and PostgreSQL fixtures. This improves cross-batch eligibility scheduling;
+it does not implement exponential backoff, exactly-once provider execution or
+unconditional fairness during database outages/transaction contention. Real
+Stripe test-customer acceptance remains blocked by isolated runtime access.
+
+Retry-rotation validation: 539 Vitest files / 5,348 tests, web/desktop TypeScript,
+desktop frontend build, 30 Python CLI tests, targeted settlement regressions,
+mission check and the generated PostgreSQL ordering query passed locally.
