@@ -86,6 +86,9 @@ export async function reconcilePendingGatewayUsage(
     }
     try {
       const generation = await lookup(event.externalUsageId);
+      // Cost evidence must identify the exact request captured on this event.
+      // A mismatched receipt leaves both usage and its reservation pending.
+      if (generation.id !== event.externalUsageId) throw new Error("gateway_generation_identity_mismatch");
       const providerCostCents = centsFromUsd(generation.totalCost);
       const computedBilledCents = Math.max(providerCostCents, applyMargin(providerCostCents));
       const settle = async (transaction: GatewayUsageTransaction) => {
