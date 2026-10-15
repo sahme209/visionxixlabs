@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { ViewShell } from "../components/Primitives";
+import { desktopClient } from "../lib/desktopClient";
 
 interface DeliveryView {
   id: string;
@@ -37,10 +38,11 @@ export function WebhookDeliveriesView() {
   function loadList() {
     setLoading(true);
     setNetworkError(null);
-    fetch("/api/dashboard/webhook-delivery-list", { credentials: "include" })
-      .then((r) => r.json())
-      .then((j: ListBody) => setResp(j))
-      .catch((e) => setNetworkError(e instanceof Error ? e.message : "Network error."))
+    void desktopClient.webhookDeliveries<ListData>()
+      .then((result) => {
+        if (result.ok) setResp({ ok: true, data: result.data });
+        else setNetworkError(result.error);
+      })
       .finally(() => setLoading(false));
   }
 

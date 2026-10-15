@@ -395,6 +395,11 @@ export class DesktopClient {
     return this.get("/api/desktop/usage-summary");
   }
 
+  /** HMAC-verified webhook delivery history for the paired workspace. */
+  webhookDeliveries<T>(): Promise<ApiResult<T>> {
+    return this.get("/api/desktop/webhook-deliveries");
+  }
+
   /** Paired-session AGI cockpit; never falls back to dashboard cookies. */
   agiCockpit<T>(): Promise<ApiResult<T>> {
     return this.get("/api/desktop/agi-cockpit");
