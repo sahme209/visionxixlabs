@@ -72,7 +72,7 @@ async function submitInvoiceItem(record: SettlementRecord, customerId: string, c
   if (!key) return { ok: false };
   try {
     const Stripe = (await import("stripe")).default;
-    const stripe = new Stripe(key, { apiVersion: "2024-06-20" });
+    const stripe = new Stripe(key, { apiVersion: "2026-01-28.clover" });
     const item = await stripe.invoiceItems.create({
       customer: customerId,
       amount: record.amountCents,
