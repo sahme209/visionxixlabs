@@ -17,5 +17,17 @@
   "restoreProcedureStatus": "neon_procedure_prepared_account_settings_and_exercise_unverified",
   "restoreExercise": "not_performed",
   "productionApproval": "not_requested",
-  "nextAction": "Privately corroborate deployed production Vercel binding against Neon project, branch, endpoint and database; inspect actual history window and available recovery point; obtain separate isolated restore approval before copying production data."
+  "nextAction": "Privately corroborate deployed production Vercel binding against Neon project, branch, endpoint and database; inspect actual history window and available recovery point; obtain separate isolated restore approval before copying production data.",
+  "operatorReportedConfiguration": {
+    "project": "visionxixlabs",
+    "branch": "main",
+    "databaseCount": 1,
+    "postgresVersion": "17",
+    "region": "AWS US East 1",
+    "plan": "Free",
+    "historyRetentionHours": 6,
+    "source": "Owner-provided Neon console overview; not agent control-plane inspection",
+    "availableRecoveryRange": "unverified",
+    "applicationBinding": "unverified"
+  }
 }

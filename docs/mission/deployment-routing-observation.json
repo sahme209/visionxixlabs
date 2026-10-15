@@ -1,0 +1,15 @@
+{
+  "observedDate": "2026-10-15",
+  "domain": "visionxixlabs.com",
+  "servingDeployment": "dpl_B3i6jsefAwdmjz97nvMQe1vGDdn6",
+  "servingCommit": "f1940fec41bd55c19a14703795e4d5117fb05ef5",
+  "servingStatus": "READY",
+  "newerReadyDeployment": "dpl_4LpKaUqzTwQBtG47PYEcVapXVDUj",
+  "newerReadyCommit": "7e5eaf2117c371912e45276a8e43840d3a02557c",
+  "newerReadyAliases": "Default project and git-main URLs; custom domain not listed",
+  "aliasError": "none_reported_for_newer_ready_deployment",
+  "rootCause": "unverified; available project metadata omits auto-assignment and promotion policy",
+  "databaseBinding": "unverified; encrypted environment response is truncated",
+  "changesPerformed": "none",
+  "nextAction": "Inspect production custom-domain assignment/promotion history with sufficient read-only access; propose any routing change for separate approval. Do not infer build failure or silently promote."
+}

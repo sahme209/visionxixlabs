@@ -1,6 +1,6 @@
 import { useRef, useState } from "react";
 import { signInWithBrowser } from "../lib/desktopPairing";
-import { clearApiKey, saveApiKey } from "../lib/apiKeyStore";
+import { verifyAndSaveApiKey } from "../lib/apiKeyStore";
 import { desktopClient, type VerifiedDesktopIdentity } from "../lib/desktopClient";
 import { clearAuthSession } from "../lib/authSession";
 
@@ -50,13 +50,10 @@ export function DesktopSignInView({
     setError(null);
     setCheckingKey(true);
     try {
-      await saveApiKey(apiKey);
-      const verified = await desktopClient.verifyCurrentCredential();
-      if (!verified.ok) throw new Error(verified.error);
+      const identity = await verifyAndSaveApiKey(apiKey);
       setApiKey("");
-      onSignedIn(verified.data);
+      onSignedIn(identity);
     } catch (cause) {
-      await clearApiKey().catch(() => undefined);
       setError(cause instanceof Error ? cause.message : "The workspace key could not be verified.");
     } finally {
       setCheckingKey(false);
@@ -81,7 +78,7 @@ export function DesktopSignInView({
           <button
             type="button"
             onClick={() => void continueInBrowser("sign_in")}
-            disabled={state !== "idle"}
+            disabled={state !== "idle" || checkingKey}
             className="group relative w-full rounded-xl bg-white px-5 py-3.5 text-sm font-semibold text-black transition-all duration-150 hover:bg-zinc-100 hover:shadow-[0_4px_20px_rgba(255,255,255,0.12)] active:scale-[0.99] disabled:opacity-60 disabled:active:scale-100"
           >
             <span className="inline-flex items-center justify-center gap-2">
@@ -89,7 +86,7 @@ export function DesktopSignInView({
               {state === "opening" ? "Opening secure browser…" : state === "waiting" ? "Waiting for browser approval…" : "Log in"}
             </span>
           </button>
-          <button type="button" onClick={() => void continueInBrowser("sign_up")} disabled={state !== "idle"} className="mt-1.5 w-full rounded-xl px-5 py-3.5 text-sm font-medium text-zinc-200 transition-colors duration-150 hover:bg-white/[0.06] disabled:opacity-60">
+          <button type="button" onClick={() => void continueInBrowser("sign_up")} disabled={state !== "idle" || checkingKey} className="mt-1.5 w-full rounded-xl px-5 py-3.5 text-sm font-medium text-zinc-200 transition-colors duration-150 hover:bg-white/[0.06] disabled:opacity-60">
             Create account
           </button>
         </div>
@@ -103,7 +100,7 @@ export function DesktopSignInView({
           <summary className="cursor-pointer text-xs font-medium text-zinc-500 transition-colors group-hover:text-zinc-300">Enterprise recovery sign-in</summary>
           <p className="mt-3 text-xs leading-5 text-zinc-600">For administrator-issued recovery access only. The workspace must still have an active approved pilot or commercial entitlement.</p>
           <label htmlFor="workspace-key" className="mt-3 block text-xs font-medium text-zinc-300">Workspace API key</label>
-          <input id="workspace-key" type="password" autoComplete="off" spellCheck={false} value={apiKey} onChange={(event) => { setApiKey(event.target.value); setError(null); }} onKeyDown={(event) => { if (event.key === "Enter" && apiKey.trim() && !checkingKey) void signInWithKey(); }} placeholder="vxlk_live_…" className="mt-2 w-full rounded-xl border border-white/[0.10] bg-black/30 px-4 py-3 text-sm font-mono text-white outline-none placeholder:text-zinc-700 transition-colors focus:border-violet-500/60 focus:ring-2 focus:ring-violet-500/15" />
+          <input id="workspace-key" type="password" autoComplete="off" spellCheck={false} value={apiKey} onChange={(event) => { setApiKey(event.target.value); setError(null); }} onKeyDown={(event) => { if (event.key === "Enter" && apiKey.trim() && !checkingKey && state === "idle") void signInWithKey(); }} placeholder="vxlk_live_…" className="mt-2 w-full rounded-xl border border-white/[0.10] bg-black/30 px-4 py-3 text-sm font-mono text-white outline-none placeholder:text-zinc-700 transition-colors focus:border-violet-500/60 focus:ring-2 focus:ring-violet-500/15" />
           <button type="button" onClick={() => void signInWithKey()} disabled={!apiKey.trim() || checkingKey || state !== "idle"} className="mt-3 w-full rounded-full border border-white/[0.10] bg-white/[0.05] px-5 py-3 text-sm font-semibold text-zinc-100 transition-colors hover:bg-white/[0.09] disabled:cursor-not-allowed disabled:opacity-50">
             {checkingKey ? "Verifying workspace…" : "Use administrator key"}
           </button>

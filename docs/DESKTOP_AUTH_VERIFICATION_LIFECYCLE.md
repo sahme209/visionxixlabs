@@ -34,3 +34,15 @@ changed by this desktop source repair.
 Local validation: 540 Vitest files / 5,356 tests; web and desktop TypeScript;
 targeted desktop lint; desktop frontend build; 30 Python CLI tests; mission
 register validation. Actual native/runtime acceptance remains open.
+
+## Administrator-key recovery candidate
+
+Recovery input is now verified with an explicit request-scoped bearer before any
+vault write or active transport change. Invalid format, server rejection and
+verification transport failure preserve existing stored credentials. A vault
+write failure does not hot-apply the candidate or delete the previous key; actual
+OS-vault atomicity still requires native acceptance. Successful verification
+keeps commercial access decisions separate, then persists before activation.
+Browser sign-in buttons and the recovery Enter shortcut cannot start an alternate
+flow while key verification is busy. Browser cancellation/unmount races remain a
+separate tracked concern; this change does not claim to resolve them.

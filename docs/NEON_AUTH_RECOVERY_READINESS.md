@@ -109,7 +109,8 @@ reconciliation of post-point writes and external financial outcomes.
 | --- | --- |
 | Protected endpoint provider | Neon, confirmed run #3 |
 | Intended serving application target match | Unverified; private binding + control-plane evidence required |
-| Actual history window / usable point | Unverified; Neon account access required |
+| Configured history retention | Owner reports 6 hours from Neon console; actual recoverable range still unverified |
+| Usable pre-repair point | Unverified; account-specific recovery range required |
 | Isolated restore | Not approved or performed |
 | Local auth-only regression rehearsal | Passed previously; not a production-data restore |
 | Production execution | Not requested or approved |
@@ -120,3 +121,7 @@ Provider documentation reviewed 2026-10-15:
 [backup strategies](https://neon.com/docs/postgres/backup-restore/backups),
 [connection pooling](https://neon.com/docs/connect/connection-pooling).
 These describe capabilities; they do not attest to this account's configuration.
+
+Owner-provided console evidence identifies the candidate project and main branch,
+one database, PostgreSQL 17, AWS US East 1 and Free plan with six-hour history
+retention. This does not prove the serving deployment binding or a usable point.
