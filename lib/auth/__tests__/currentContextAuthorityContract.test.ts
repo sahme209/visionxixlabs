@@ -38,7 +38,7 @@ describe("current workspace authority contract", () => {
   });
 
   it("uses the current durable membership role without needing the bootstrap retry", async () => {
-    mocks.findMembership.mockResolvedValue({ role: "admin" });
+    mocks.findMembership.mockResolvedValue({ role: "admin", acceptedAt: new Date() });
 
     await expect(currentContext()).resolves.toMatchObject({
       isAuthenticated: true,
@@ -52,7 +52,7 @@ describe("current workspace authority contract", () => {
     // never created the row. After the retry's upsert, the row exists.
     mocks.findMembership
       .mockResolvedValueOnce(null)
-      .mockResolvedValueOnce({ role: "owner" });
+      .mockResolvedValueOnce({ role: "owner", acceptedAt: new Date() });
 
     await expect(currentContext()).resolves.toMatchObject({
       isAuthenticated: true,
@@ -69,5 +69,17 @@ describe("current workspace authority contract", () => {
       isAuthenticated: true,
       roles: [],
     });
+  });
+
+  it.each(["owner", "admin", "operator"])("does not grant a pending %s membership authority or bootstrap over it", async (role) => {
+    mocks.findMembership.mockResolvedValue({ role, acceptedAt: null });
+    await expect(currentContext()).resolves.toMatchObject({ isAuthenticated: true, roles: [] });
+    expect(mocks.upsertMembership).not.toHaveBeenCalled();
+  });
+
+  it("does not grant authority when a pending membership appears during the bootstrap retry", async () => {
+    mocks.findMembership.mockResolvedValueOnce(null).mockResolvedValueOnce({ role: "owner", acceptedAt: null });
+    await expect(currentContext()).resolves.toMatchObject({ isAuthenticated: true, roles: [] });
+    expect(mocks.upsertMembership).toHaveBeenCalledTimes(1);
   });
 });

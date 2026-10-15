@@ -92,9 +92,11 @@ async function resolveWorkspaceRoles(input: {
           organizationId: input.organizationId,
         },
       },
-      select: { role: true },
+      select: { role: true, acceptedAt: true },
     });
-    if (membership?.role) return [membership.role];
+    // An invitation is not authority. Preserve a pending membership without
+    // invoking personal-workspace recovery over it, matching the desktop gate.
+    if (membership) return membership.acceptedAt && membership.role ? [membership.role] : [];
   } catch (err) {
     // A missing migration or transient store failure must not expand access.
     log.error("initial membership lookup failed", {
@@ -121,9 +123,9 @@ async function resolveWorkspaceRoles(input: {
       await ensurePersonalWorkspaceMembership({ userId: input.userId, email: input.email });
       const membership = await prisma.orgMembership.findUnique({
         where: { userId_organizationId: { userId: input.userId, organizationId: input.organizationId } },
-        select: { role: true },
+        select: { role: true, acceptedAt: true },
       });
-      if (membership?.role) return [membership.role];
+      if (membership?.acceptedAt && membership.role) return [membership.role];
       log.error("membership bootstrap retry ran without throwing but still produced no role", {
         userId: input.userId,
         organizationId: input.organizationId,

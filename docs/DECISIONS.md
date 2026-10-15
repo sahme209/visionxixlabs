@@ -33,6 +33,18 @@ Last updated: 2026-09-29
 | ADR-027 | Optional website measurement requires an explicit privacy choice. | Active | Essential-only is the default until a visitor chooses; Vercel Analytics mounts only after optional consent. The choice is locally persisted and can be reopened. |
 | ADR-028 | Desktop billing uses an authenticated one-time hosted portal session, not a browser dashboard page or embedded card form. | Active; live Stripe verification pending | A browser-paired desktop session requests the portal server-side; API-key credentials are rejected; the client accepts only HTTPS Stripe destinations; return to the app triggers entitlement re-verification. Stripe webhook state remains authoritative. |
 
+## Browser and desktop membership acceptance · 2026-10-15
+
+Browser workspace roles, like paired desktop roles, require a durable membership
+with a non-null `acceptedAt`. An existing pending membership returns no roles
+and must not trigger personal-workspace bootstrap. Missing personal membership
+may still use the established best-effort recovery, but its resulting row must
+also be accepted before it confers authority. Authentication and explicit
+platform-admin policy remain separate; no role or account is granted by this
+change. Regression cases cover pending owner/admin/operator rows and a pending
+row appearing during the recovery race. This closes a browser/desktop mismatch;
+it is not proof of repaired production login or fully audited tenant isolation.
+
 ## Superseded instructions
 
 - Any instruction that the customer application is delivered as a hosted web application.
