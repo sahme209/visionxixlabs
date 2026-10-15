@@ -1,5 +1,19 @@
 # Axiom Agent master-mission status
 
+## Continuing mission — deployment receipt visibility
+
+Main `ad467cc5` includes merged PRs #109 and #110; both automatic Vercel main
+deployments are READY. Their source and CI evidence is recorded in the PRs.
+Production login and database/founder mapping remain unverified.
+
+The next UI audit reproduced that records with no workflow receipt were
+labeled in progress and continuously polled. A pure presentation/observation
+policy now keeps them awaiting verification without a polling loop. Active
+recorded runs still poll; Refresh status reuses the existing observation path
+without dispatch, retry or hold-release authority. Refresh failures preserve
+the existing record and clear busy state. Late environment/execution responses
+are ignored. The existing layout, authorization and billing limits remain.
+
 ## PR #109 merged; scheduled-trigger reliability follow-up
 
 PR #109 merged normally at `a604e72d` after its exact head passed GitHub

@@ -115,3 +115,15 @@ key and settles the same deployment row, preserving the recorded approver as
 actor when present. It releases a new reservation only for a pre-dispatch
 failure; after its provider request begins it conservatively holds all failed
 outcomes for reconciliation. These paths do not change public plan limits.
+
+## Desktop visibility for unresolved dispatch holds
+
+A reserved execution or an execution without a provider run receipt is labeled
+“Dispatch outcome awaiting verification”, rather than active deployment. It
+does not start a five-second observation loop with no run to observe. Existing
+recorded active runs retain automatic polling. A Refresh status action uses the
+existing observation endpoint to reread recorded/provider status; it never
+dispatches, retries or releases a hold. That endpoint may persist its observed
+status under the existing authorization model. Failed refreshes retain the
+previous record and release the busy state. Late responses from a prior
+environment or execution do not replace a newly selected execution.
