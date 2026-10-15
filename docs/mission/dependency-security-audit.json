@@ -1,0 +1,78 @@
+{
+  "observed_date": "2026-10-15",
+  "scope": "root production dependencies; npm audit --omit=dev; not an application penetration test",
+  "baseline_commit": "62d351457402c120960bb6f510cc66803f0d5bc4",
+  "before": {
+    "info": 0,
+    "low": 0,
+    "moderate": 6,
+    "high": 6,
+    "critical": 0,
+    "total": 12
+  },
+  "after": {
+    "info": 0,
+    "low": 0,
+    "moderate": 2,
+    "high": 0,
+    "critical": 0,
+    "total": 2
+  },
+  "patches": {
+    "next": "16.3.6 -> 16.3.8",
+    "eslint-config-next": "16.3.6 -> 16.3.8",
+    "sharp": "0.35.4 -> 0.35.5",
+    "source-map-js": "1.2.1 -> 1.2.2"
+  },
+  "remaining": {
+    "gaxios": {
+      "name": "gaxios",
+      "severity": "moderate",
+      "isDirect": false,
+      "via": [
+        "uuid"
+      ],
+      "effects": [],
+      "range": "6.4.0 - 6.7.1",
+      "nodes": [
+        "node_modules/@google-cloud/storage/node_modules/gaxios",
+        "node_modules/gtoken/node_modules/gaxios"
+      ],
+      "fixAvailable": true
+    },
+    "uuid": {
+      "name": "uuid",
+      "severity": "moderate",
+      "isDirect": false,
+      "via": [
+        {
+          "source": 1119441,
+          "name": "uuid",
+          "dependency": "uuid",
+          "title": "uuid: Missing buffer bounds check in v3/v5/v6 when buf is provided",
+          "url": "https://github.com/advisories/GHSA-w5hq-g745-h8pq",
+          "severity": "moderate",
+          "cwe": [
+            "CWE-787",
+            "CWE-1285"
+          ],
+          "cvss": {
+            "score": 7.5,
+            "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:H/A:N"
+          },
+          "range": "<11.1.1"
+        }
+      ],
+      "effects": [
+        "gaxios"
+      ],
+      "range": "<11.1.1",
+      "nodes": [
+        "node_modules/@google-cloud/storage/node_modules/uuid",
+        "node_modules/gtoken/node_modules/uuid"
+      ],
+      "fixAvailable": true
+    }
+  },
+  "next_action": "Review upstream Google Storage/gtoken dependency compatibility for uuid fix; no forced major overrides. Reaudit after resolution and before release."
+}

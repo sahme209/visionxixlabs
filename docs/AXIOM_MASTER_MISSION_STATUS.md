@@ -1,5 +1,19 @@
 # Axiom Agent master-mission status
 
+## Security follow-up — production dependencies
+
+PR #118 merged at `d36e5636` after exact-head web checks (`38769106692`)
+and native tests/clippy (`38769106653`) passed. Its automatic main deployment
+is being checked independently; this is not production-login acceptance.
+
+The next focused patch updates Next/ESLint 16.3.6 → 16.3.8, sharp 0.35.4 →
+0.35.5 and source-map-js 1.2.1 → 1.2.2. A clean isolated install and registry
+audit report zero high/critical and two moderate production dependency findings
+(down from six high/six moderate). Remaining Google uuid/gaxios findings remain
+open. See [dependency audit](DEPENDENCY_SECURITY_AUDIT.md). Exact-head validation
+and merge evidence are recorded in the focused PR; no migration or account
+change is part of this patch.
+
 ## Audit-driven execution — desktop identity contract
 
 PR #117 merged the permanent complete-scope tracker at `62d35145`. The first
