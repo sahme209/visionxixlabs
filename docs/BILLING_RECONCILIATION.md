@@ -94,6 +94,10 @@ and server-counted seats. A successful redirect never grants access. The signed
 
 ## Fail-closed rules
 
+- Gateway cost reconciliation requires the returned generation ID to exactly
+  match the usage event's captured request ID before any usage/reservation
+  mutation. Unrelated or empty receipts remain pending for investigation;
+  they cannot provide cost evidence for settlement.
 - A marketing page never grants an entitlement.
 - A checkout redirect never grants an entitlement.
 - Unknown plan, price, organization, or webhook metadata is ignored or rejected rather than guessed.

@@ -64,6 +64,21 @@ describe("reconcilePendingGatewayUsage", () => {
     expect(repository.usageEvent.updateMany).not.toHaveBeenCalled();
   });
 
+  it.each(["gen_other", ""])("rejects a receipt with a different generation identity (%s) before any settlement", async (id) => {
+    const repository = transactionalRepository({
+      usageEvent: {
+        findMany: vi.fn().mockResolvedValue([{ id: "usage_1", externalUsageId: "gen_1" }]),
+        updateMany: vi.fn().mockResolvedValue({ count: 1 }),
+      },
+      aIUsageReservation: { findUnique: vi.fn(), updateMany: vi.fn() },
+    });
+    const result = await reconcilePendingGatewayUsage(repository, vi.fn().mockResolvedValue({ ...generation, id }));
+    expect(result).toEqual({ inspected: 1, settled: 0, deferred: 0, failed: 1 });
+    expect(repository.$transaction).not.toHaveBeenCalled();
+    expect(repository.usageEvent.updateMany).not.toHaveBeenCalled();
+    expect(repository.aIUsageReservation?.updateMany).not.toHaveBeenCalled();
+  });
+
   it("does not count a concurrent or repeated settlement twice", async () => {
     const repository = transactionalRepository({
       usageEvent: {

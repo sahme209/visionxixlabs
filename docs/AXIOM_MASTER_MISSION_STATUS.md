@@ -1,5 +1,21 @@
 # Axiom Agent master-mission status
 
+## Continuing mission — Gateway cost receipt identity
+
+PR #112 merged at `e99af1d3` after GitHub web and native desktop checks passed.
+The next billing audit reproduced settlement accepting an unrelated or empty
+Gateway generation ID. Reconciliation now requires the returned receipt ID to
+match the event's captured external usage ID before entering any transaction.
+Mismatch counts as a failed reconciliation attempt while leaving usage and
+reservations pending. Existing margins, spend caps and test-only Stripe gates
+remain intact. No provider request, live billing or production SQL is used by
+the regression tests. Installed SDK source and generation lookup documentation
+confirm that the returned ID identifies the requested generation.
+Local validation: 534 Vitest files / 5,258 tests, web TypeScript, desktop
+TypeScript/frontend build and 30 Python CLI tests pass. PR #112's automatic
+main deployment `dpl_UD3SX64s38kax51LsyXTk5Fg74o8` is READY. These results
+do not establish live provider reconciliation, financial or login readiness.
+
 ## Continuing mission — concurrent deployment observations
 
 PR #111 merged at `ee8125f5` after GitHub web and native desktop checks passed.
