@@ -1,0 +1,21 @@
+{
+  "target": "isolated_loopback_empty_database",
+  "baselineApplied": 99,
+  "originalFailure": "P3018_missing_Organization",
+  "partialAgentTablePresent": false,
+  "authDdlTransactionRollback": "passed",
+  "existingIdentityAndMembership": "preserved",
+  "existingPasswordsAutomaticallyVerified": false,
+  "exactAuthChecksumRecorded": true,
+  "originalFailedHistory": "unchanged",
+  "pendingAfterAuthOnly": [
+    "20261013172000_add_workspace_agent_identity",
+    "20261013193000_add_durable_agent_workflow",
+    "20261013220000_add_founding_supporters",
+    "20261014090000_add_ai_usage_stripe_settlement",
+    "20261014190000_verified_ai_credit_fulfillment",
+    "20261014210000_ai_usage_reservations"
+  ],
+  "blanketDeployStillBlocked": "P3009",
+  "production": "untouched"
+}

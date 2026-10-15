@@ -1,5 +1,10 @@
 # Production login recovery — 2026-10-15
 
+Current checkpoint: protected preflight #2 completed; founder account check passed,
+but auth schema is missing and the Agent migration is unfinished. The reviewed
+auth-only **proposal** in `PRODUCTION_AUTH_RECOVERY_PLAN.md` supersedes the broad
+all-pending migration approach below. No production repair is approved or run.
+
 ## Confirmed incident
 
 Production deployment `dpl_DNyBMLHZmytDiYcrJ6rYnhnWRBer` is READY on
@@ -17,7 +22,7 @@ deliberately do not apply migrations. The migration adds a nullable verification
 timestamp and an expiring single-use token table; it does not verify existing
 password accounts or alter memberships, admin lists, or pilot access.
 
-## Recovery requiring production approval
+## Original broad recovery approach — superseded for the first repair
 
 1. An authorized operator must inspect production migration status and review
    **all** pending migrations against the intended production database. Do not
@@ -221,3 +226,19 @@ secrets. Inspect the report before proposing a specific repair for approval.
 Password/Google/GitHub authenticated sessions, founder identity and accepted
 workspace mapping, and desktop pairing remain unverified. Never bypass email
 verification or grant founder rights based on repository ownership.
+
+## Protected preflight #2 and scoped recovery proposal
+
+Run 38792352304 completed read-only with diagnostic exit 2. Its public-safe JSON
+is preserved in `docs/mission/auth-preflight-run-2.json`. Seven migrations are
+pending; the Agent migration is unfinished and references nonexistent Organization.
+The auth column/token table are absent. Founder canonical account/accepted personal
+membership passed; platform-admin configuration remains unavailable. This removes
+the missing-report blocker, not the need for production approval or real sessions.
+
+See `PRODUCTION_AUTH_RECOVERY_PLAN.md` for exact auth-only DDL, separate checksum
+ledger resolution, remaining migration order, abort conditions and rollback limits.
+The full historical PostgreSQL fixture reproduced the failure after 99 successful
+migrations, then validated auth-only recovery without changing the failed row,
+identity, membership or password verification. This does not authorize blanket
+migration deployment, Agent allowlist backfill or financial-record changes.
