@@ -136,7 +136,7 @@ register. A row can have tested kernels while the overall journey is partial.
 | Chat/editor/diff/progress/recovery | Partially implemented | AgentChatView, RepositoryWorkspaceView, reviewed file proposals, usage receipt and deployment status observation. | Real context/proposal/resume/cancel journey; ensure no discarded or stale operator state. |
 | Click-first selections and integration management | Partially implemented | Existing repository/environment selectors and service-mediated integration/skill controls. | Trace each selector through real inventory; preserve advanced controls and browser consent boundary. |
 | Desktop typography/spacing/icons/animation | Implemented but not validated | Existing styles/tokens, icons and native shell; reduced-motion and focus styling already exist. | Real rendered screenshots/keyboard/contrast and exact-native acceptance; preserve established brand. |
-| Desktop status truthfulness | Partially implemented | Sidebar currently says Production access active although current commercial kernel grants pilot access independent of plan. | Replace the unsupported entitlement claim with verified connection wording; do not change authorization policy. |
+| Desktop status truthfulness | Implemented but not validated | Follow-up changes the authenticated sidebar to Workspace connected; it does not assert paid/production authority from the current pilot kernel. | Verify actual rendered/native status; entitlement policy remains a separate founder decision. |
 | Native install/menu/keychain/window/notifications | Implemented but not validated | Native modules and release CI, historical signed/notarized 0.1.11 evidence; source currently 0.1.20. | Exact current package and macOS ARM/Intel/Windows/Linux clean-host acceptance, not reused old-release claims. |
 | Native automatic signed update/install/recovery journey | Missing | Pure autoUpdaterManifest/version-decision kernels and tests already exist. No active check/install/recovery wiring located in native main/config/Cargo or customer UI. README roadmap is not runtime evidence. | Reuse existing kernels for signed native update/recovery; publication/configuration remains gated. |
 | Website brand, messaging, demo and screenshots | Partially implemented | Public route/components, scripted labeled demo and existing dark/orange tokens; prior claims audit. | Real current product imagery and route-wide screenshot/copy audit; no fabricated product operations. |
@@ -184,6 +184,16 @@ also run in an approved isolated secure runtime; they do not inherently require
 Mac storage. Missing credentials are access blockers, not requests to paste them.
 
 ## Audit execution notes
+
+The first independent follow-up hardens the desktop startup response boundary:
+HTTP failures cannot become success from a JSON flag, and malformed identity,
+organization, roles, capabilities or access booleans return a structured failure
+instead of throwing or passing truthy values into the shell. Credential kind
+must match the verified response. Valid denied access remains distinct from
+invalid identity; absent optional capabilities preserve backward compatibility.
+The sidebar describes verified connection rather than claiming production
+entitlement. This is a source/test repair, not production login recovery or a
+change to pilot/paid policy.
 
 Local Chromium was found, but two attempts with isolated writable profiles
 timed out before producing a screenshot. No screenshot or visual-pass claim is

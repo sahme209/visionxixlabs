@@ -8,6 +8,7 @@
  */
 
 import { setDesktopTransportCredential } from "./desktopTransport";
+import { parseDesktopIdentityResponse } from "./desktopIdentityResponse";
 
 const DEFAULT_API_BASE = "https://visionxixlabs.com";
 
@@ -384,7 +385,12 @@ export class DesktopClient {
       access: DesktopCommercialAccess;
     }>("/api/desktop/access");
     if (!result.ok) return result;
-    return { ok: true, data: { ...result.data.identity, capabilities: result.data.identity.capabilities ?? [], access: result.data.access } };
+    const identity = parseDesktopIdentityResponse(result.data);
+    const expectedKind = token.startsWith("vxlk_") ? "api_key" : "desktop_session";
+    if (!identity || identity.kind !== expectedKind) {
+      return { ok: false, error: "The service returned an invalid workspace identity. Sign in again or contact support." };
+    }
+    return { ok: true, data: identity };
   }
 
   desktopBillingPortal(): Promise<ApiResult<{ url: string }>> {
@@ -1198,7 +1204,7 @@ export class DesktopClient {
         credentials: "include",
       });
       const json = (await res.json().catch(() => ({}))) as LegacyApiErrorBody & { ok?: boolean; data?: unknown };
-      if (json.ok && json.data !== undefined) return { ok: true, data: json.data as T };
+      if (res.ok && json.ok && json.data !== undefined) return { ok: true, data: json.data as T };
       return { ok: false, error: legacyApiError(json, res.status) };
     } catch (err) {
       return { ok: false, error: err instanceof Error ? err.message : String(err) };
