@@ -16869,7 +16869,7 @@
       "domain": "billing",
       "scope": "product",
       "status": "Partially implemented",
-      "verification": "Source mapped to existing components; acceptance of this individual requirement has not been demonstrated end to end. Candidate SQL now excludes held reservations (#124), disabled/missing billing configuration, missing customers and new usage without current-month capacity before LIMIT. SQLite and PostgreSQL fixtures validate exact-cap behavior and previously reserved retries at a spent cap. Real Stripe test-tenant invoice/refund/replay acceptance remains unverified. Five failing-before/passing-after regressions cover durable retry rotation and fail-closed attempt recording; candidate order uses the existing last-updated timestamp while the original retry deadline is unchanged. Full local suite: 539 files / 5,348 tests. This does not certify real Stripe behavior or fairness during database contention. Local regression reproduced fresh Stripe submission with a negative budget counter after candidate selection; worker now rejects it and atomically requires a nonnegative counter. Simulated Stripe tests also cover competing claims, exact-cap admission and serializable conflicts; actual Stripe acceptance remains unverified.",
+      "verification": "Source mapped to existing components; acceptance of this individual requirement has not been demonstrated end to end. Candidate SQL now excludes held reservations (#124), disabled/missing billing configuration, missing customers and new usage without current-month capacity before LIMIT. SQLite and PostgreSQL fixtures validate exact-cap behavior and previously reserved retries at a spent cap. Real Stripe test-tenant invoice/refund/replay acceptance remains unverified. Five failing-before/passing-after regressions cover durable retry rotation and fail-closed attempt recording; candidate order uses the existing last-updated timestamp while the original retry deadline is unchanged. Full local suite: 539 files / 5,348 tests. This does not certify real Stripe behavior or fairness during database contention. Local regression reproduced fresh Stripe submission with a negative budget counter after candidate selection; worker now rejects it and atomically requires a nonnegative counter. Simulated Stripe tests also cover competing claims, exact-cap admission and serializable conflicts; actual Stripe acceptance remains unverified. Two SQL regressions reproduce one workspace crowding another out of a bounded batch. Candidate ranking now interleaves tenant positions before LIMIT, preserving eligibility and retry rotation. This is batch distribution, not durable cross-batch starvation freedom; backoff, representative load and actual Stripe acceptance remain open.",
       "evidence": [
         "lib/billing/reconcileGatewayUsage.ts",
         "lib/billing/aiBillingMargin.ts",
@@ -16881,7 +16881,9 @@
         "docs/BILLING_RECONCILIATION.md",
         "lib/billing/__tests__/aiUsageSettlementCandidates.test.ts",
         "docs/BILLING_SETTLEMENT_BINDING.md",
-        "lib/billing/__tests__/settleAIUsageToStripe.test.ts"
+        "lib/billing/__tests__/settleAIUsageToStripe.test.ts",
+        "lib/billing/aiUsageSettlementCandidates.ts",
+        "lib/billing/__tests__/aiUsageSettlementCandidates.test.ts"
       ],
       "prs": [
         109,

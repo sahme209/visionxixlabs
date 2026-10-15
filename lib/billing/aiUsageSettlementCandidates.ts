@@ -2,6 +2,7 @@ import { Prisma } from "@prisma/client";
 import { MAX_AUTOMATIC_RETRY_AGE_MS } from "./aiUsageSettlementRetryPolicy";
 
 /** Select unreserved usage or matching reservations still eligible for retry.
+ * Interleave eligible tenant positions before applying the bounded batch limit.
  * Held records remain untouched. The worker rechecks eligibility before Stripe. */
 export function aiUsageSettlementCandidates(limit: number, now = new Date()): Prisma.Sql {
   if (!Number.isFinite(now.getTime())) throw new Error("Invalid settlement selection time");
@@ -9,7 +10,12 @@ export function aiUsageSettlementCandidates(limit: number, now = new Date()): Pr
   const periodMonth = `${now.getUTCFullYear()}-${String(now.getUTCMonth() + 1).padStart(2, "0")}`;
   const batchSize = Number.isFinite(limit) ? Math.max(1, Math.min(500, Math.floor(limit))) : 100;
   return Prisma.sql`
-    SELECT u."id", u."organizationId", u."billedCents"
+    WITH eligible AS (
+    SELECT u."id", u."organizationId", u."billedCents", u."createdAt",
+      COALESCE((
+        SELECT s."updatedAt" FROM "AIUsageBillingSettlement" AS s
+        WHERE s."usageEventId" = u."id"
+      ), u."createdAt") AS "waitingSince"
     FROM "UsageEvent" AS u
     JOIN "AIUsageBillingConfig" AS c ON c."organizationId" = u."organizationId"
     JOIN "TenantBillingPlan" AS b ON b."organizationId" = u."organizationId"
@@ -31,10 +37,15 @@ export function aiUsageSettlementCandidates(limit: number, now = new Date()): Pr
           AND s."amountCents" = u."billedCents"
           AND s."createdAt" > ${cutoff} AND s."createdAt" <= ${now}
       ))
-    ORDER BY COALESCE((
-      SELECT s."updatedAt" FROM "AIUsageBillingSettlement" AS s
-      WHERE s."usageEventId" = u."id"
-    ), u."createdAt") ASC, u."createdAt" ASC, u."id" ASC
+    ), ranked AS (
+      SELECT eligible.*, ROW_NUMBER() OVER (
+        PARTITION BY "organizationId"
+        ORDER BY "waitingSince" ASC, "createdAt" ASC, "id" ASC
+      ) AS "tenantPosition"
+      FROM eligible
+    )
+    SELECT "id", "organizationId", "billedCents" FROM ranked
+    ORDER BY "tenantPosition" ASC, "waitingSince" ASC, "createdAt" ASC, "id" ASC
     LIMIT ${batchSize}
   `;
 }
