@@ -6,6 +6,7 @@ export type DeployResult = {
   url: string;
   deploymentId: string;
   state: string;
+  target?: string;
 };
 
 /**
@@ -31,4 +32,9 @@ export async function deployPreviewFromPlan(
   credentials?: Record<string, string>
 ): Promise<DeployResult> {
   return deploySiteFromPlan(provider, plan, { projectName, credentials });
+}
+
+/** Explicit admin publication intent; a project name alone is never a target. */
+export async function deployProduction(pkg: AIStarterPackage, projectName: string): Promise<DeployResult> {
+  return deploySite("vercel", pkg, { projectName, target: "production" });
 }

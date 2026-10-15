@@ -14,10 +14,11 @@ function assertSupportedProvider(provider: unknown): asserts provider is "vercel
   if (provider !== "vercel") throw new UnsupportedDeploymentProviderError();
 }
 
-export type DeployResult = { url: string; deploymentId: string; state: string };
+export type DeployResult = { url: string; deploymentId: string; state: string; target?: string };
 
 export type DeployOptions = {
   projectName: string;
+  target?: "production";
   credentials?: Record<string, string>;
 };
 
@@ -67,6 +68,7 @@ async function deployToVercel(
 
   const body = {
     name: options.projectName,
+    ...(options.target ? { target: options.target } : {}),
     files: files.map((f) => ({
       file: f.path,
       data: Buffer.from(f.content, "utf8").toString("base64"),
@@ -88,12 +90,21 @@ async function deployToVercel(
 
   if (!res.ok) throw new Error(`Vercel deploy failed: ${res.status} ${await res.text()}`);
 
-  const data = (await res.json()) as { url?: string; id?: string; alias?: string[] };
-  const url = data.url || data.alias?.[0] || `https://${data.id}.vercel.app`;
+  const data = (await res.json()) as { url?: unknown; id?: unknown; readyState?: unknown; state?: unknown; target?: unknown; alias?: unknown };
+  const rawUrl = typeof data.url === "string" ? data.url : Array.isArray(data.alias) && typeof data.alias[0] === "string" ? data.alias[0] : "";
+  let url = "";
+  if (rawUrl) {
+    try {
+      const parsed = new URL(rawUrl.includes("://") ? rawUrl : `https://${rawUrl}`);
+      if (parsed.protocol === "https:" && !parsed.username && !parsed.password) url = rawUrl.includes("://") ? rawUrl : `https://${rawUrl}`;
+    } catch { /* an accepted request need not have a serving URL */ }
+  }
+  const reportedState = typeof data.readyState === "string" ? data.readyState : typeof data.state === "string" ? data.state : "UNKNOWN";
   return {
-    url: url.startsWith("http") ? url : `https://${url}`,
-    deploymentId: data.id || "",
-    state: "READY",
+    url,
+    deploymentId: typeof data.id === "string" ? data.id : "",
+    state: reportedState.toUpperCase(),
+    ...(typeof data.target === "string" ? { target: data.target } : {}),
   };
 }
 

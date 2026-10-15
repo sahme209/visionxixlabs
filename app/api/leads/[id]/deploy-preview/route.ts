@@ -1,7 +1,9 @@
+import type { Prisma } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/admin/auth";
 import { prisma } from "@/lib/db";
 import { deployPreview } from "@/lib/previewDeploy";
+import { websiteDeploymentUpdate } from "@/lib/deploy/websiteDeploymentState";
 import type { AIStarterPackage } from "@/lib/websiteStarter/engine";
 
 /**
@@ -19,10 +21,12 @@ export async function POST(
   const { id } = await params;
   if (!id) return NextResponse.json({ error: "Lead ID required" }, { status: 400 });
 
+  let previousStatus: string | undefined;
   try {
     const lead = await prisma.lead.findUnique({ where: { id } });
     if (!lead) return NextResponse.json({ error: "Lead not found" }, { status: 404 });
 
+    previousStatus = lead.status;
     const payload = (lead.fullPayload as Record<string, unknown>) || {};
     const pkg = payload.aiPackage as AIStarterPackage | undefined;
 
@@ -41,29 +45,13 @@ export async function POST(
     const projectName = `preview-${id.slice(-8)}`;
     const result = await deployPreview(pkg, projectName);
 
-    const updatedPayload = {
-      ...payload,
-      previewUrl: result.url,
-      vercelDeploymentId: result.deploymentId,
-    };
-
-    await prisma.lead.update({
-      where: { id },
-      data: {
-        status: "deploy_ready",
-        fullPayload: updatedPayload,
-      },
-    });
-
-    return NextResponse.json({
-      success: true,
-      status: "deploy_ready",
-      previewUrl: result.url,
-    });
+    const update = websiteDeploymentUpdate({ result, payload, previousStatus: lead.status, kind: "preview" });
+    await prisma.lead.update({ where: { id }, data: { status: update.status, fullPayload: update.payload as Prisma.InputJsonObject } });
+    return NextResponse.json({ success: true, status: update.status, deploymentPending: !update.ready, previewUrl: update.payload.previewUrl ?? null, deployStatus: update.payload.deployStatus });
   } catch (e) {
     console.error("[leads deploy-preview]", e);
-    await prisma.lead
-      .update({ where: { id }, data: { status: "package_ready" } })
+    if (previousStatus) await prisma.lead
+      .update({ where: { id }, data: { status: previousStatus } })
       .catch(() => {});
     return NextResponse.json(
       { error: "Failed to deploy preview" },

@@ -1,3 +1,4 @@
+import { verificationDesktopCallback } from "@/lib/auth/verificationCallback";
 import { NextRequest, NextResponse } from "next/server";
 import { hash } from "bcryptjs";
 import { prisma } from "@/lib/db";
@@ -25,7 +26,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Too many account-creation attempts. Wait a minute and try again." }, { status: 429 });
     }
 
-    const { email, password, name, desktopChallenge, acceptedTerms } = await req.json();
+    const { email, password, name, desktopChallenge, acceptedTerms, callbackUrl } = await req.json();
     if (!email || typeof email !== "string" || !password || typeof password !== "string") {
       return NextResponse.json({ error: "Email and password required" }, { status: 400 });
     }
@@ -63,7 +64,8 @@ export async function POST(req: NextRequest) {
     await prisma.emailVerificationToken.create({
       data: { userId: user.id, tokenHash: verification.tokenHash, expiresAt: verification.expiresAt },
     });
-    const delivered = await sendEmailVerification({ to: user.email, token: verification.token });
+    const callback = verificationDesktopCallback(callbackUrl, desktopChallenge.trim());
+    const delivered = await sendEmailVerification({ to: user.email, token: verification.token, ...(callback ? { callbackUrl: callback } : {}) });
     if (!delivered) return NextResponse.json({ error: "Verification email delivery failed. Request a new link before signing in." }, { status: 503 });
     try {
       await ensurePersonalWorkspaceMembership({ userId: user.id, email: user.email });

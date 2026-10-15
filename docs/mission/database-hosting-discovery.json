@@ -5,19 +5,21 @@
     "Protected preflight run 38796959412 on main 7e5eaf2 reports recognized Neon endpoint; application binding remains not_verified",
     "Prisma PostgreSQL datasource and successful protected PostgreSQL catalog inspection",
     "Vercel integration metadata: Resend; project connector: GitHub",
-    "Repository provider names are examples, not active hosting evidence"
+    "Repository provider names are examples, not active hosting evidence",
+    "Agent read-only Neon inspection confirms owner-reported project/default branch/database, PostgreSQL17, six-hour retention, ten of ten branches and matching preflight schema/migration fingerprint; see neon-readiness-inspection.json"
   ],
   "limitations": [
     "Available project response lacks storage attachment metadata",
     "Nondecrypted environment response is truncated; absence cannot be inferred",
     "GitHub workflow dispatch/run-list CLI denied with Forbidden",
-    "No database-provider backup control-plane access available"
+    "Serving Vercel deployment and protected workflow resource bindings remain unverified",
+    "Actual recoverable timestamp and isolated restore remain unverified; branch count is at reported plan capacity"
   ],
-  "backupStatus": "unverified",
+  "backupStatus": "retention_and_snapshot_inventory_verified_usable_point_unverified",
   "restoreProcedureStatus": "neon_procedure_prepared_account_settings_and_exercise_unverified",
   "restoreExercise": "not_performed",
   "productionApproval": "not_requested",
-  "nextAction": "Privately corroborate deployed production Vercel binding against Neon project, branch, endpoint and database; inspect actual history window and available recovery point; obtain separate isolated restore approval before copying production data.",
+  "nextAction": "Privately establish serving/preflight target equality; review capacity resolution without deleting unverified dependencies; separately approve resource-backed recovery-point verification and isolated restore before auth-only production approval.",
   "operatorReportedConfiguration": {
     "project": "visionxixlabs",
     "branch": "main",

@@ -1,3 +1,4 @@
+import { verificationDesktopCallback } from "@/lib/auth/verificationCallback";
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { hashEmailVerificationToken } from "@/lib/auth/emailVerification";
@@ -23,7 +24,10 @@ export async function GET(request: NextRequest) {
       return true;
     });
     if (!verified) return new NextResponse("This verification link is invalid, expired, or has already been used.", { status: 400 });
-    return NextResponse.redirect(new URL("/auth/signin?verified=1", request.url));
+    const destination = new URL("/auth/signin?verified=1", request.url);
+    const callback = verificationDesktopCallback(request.nextUrl.searchParams.get("callbackUrl"));
+    if (callback) destination.searchParams.set("callbackUrl", callback);
+    return NextResponse.redirect(destination);
   } catch {
     // No token, email, account details, or database diagnostics in this response.
     return new NextResponse("Email verification is temporarily unavailable. Try this link again.", { status: 503 });

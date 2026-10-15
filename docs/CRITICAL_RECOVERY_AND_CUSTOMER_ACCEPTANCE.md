@@ -18,7 +18,7 @@ builds must not be reported as that acceptance.
 | Founder identity/workspace records | Protected read-only preflight #3 accountCheck passed | Mapping passed; actual password/OAuth ownership, platform-admin configuration and operational entitlement not verified. |
 | Signup + email verification | Route/guard regressions; auth token table/column missing in protected target | Blocked by binding/recovery gates. New production test-account creation is not authorized. |
 | Password / Google / GitHub login | Observed P2022 and absent auth schema; handlers/negative cases tested | None verified successfully against production. Require actual sessions and correct workspace access after approved repair. |
-| Desktop authentication / pairing | Native CI and rendered recovery tests passed; #132 preserves rejected credentials | Packaged current-source browser approval, consume/replay/revoke, Keychain and return flow unverified. Browser cancellation races remain open. |
+| Desktop authentication / pairing | Native CI and rendered recovery tests passed; #132 preserves rejected credentials | Packaged current-source browser approval, consume/replay/revoke, Keychain and return flow unverified. Late canceled responses are guarded; cancellation during already-started native writes and packaged vault acceptance remain open. |
 | Cloud connection | Provider validation code / tests; no runtime outbound identities | No customer-owned account connection verified in this runtime. Need scoped sandbox identity and tenant mapping. |
 | AI-assisted plan | Existing planning/runtime and cost-identity kernels | Real model response, bounded spend receipt and immutable approved plan not yet traced together. |
 | Approvals | Default-deny/prerequisite and role tests | Need an actual distinct authorized approver, version-bound evidence and denied/revoked/cross-tenant cases on the same journey. |
@@ -34,10 +34,11 @@ builds must not be reported as that acceptance.
 Existing authoritative proposal: `PRODUCTION_AUTH_RECOVERY_PLAN.md`.
 Neon-specific procedure: `NEON_AUTH_RECOVERY_READINESS.md`.
 
-1. **Connect read-only metadata access.** Neon was found in the integration catalog
-   but is not installed/connected. Authorize the existing account/project through
-   the secure integration flow, using read-only scope if available. No secret
-   values in chat or artifacts. Connection is not permission to mutate anything.
+1. **Read-only metadata access is established.** Neon tools now confirm the
+   reported project/default branch/database and preflight schema fingerprint.
+   See `docs/mission/neon-readiness-inspection.json`. This does not prove serving
+   or workflow bindings, a usable recovery point, or authorize mutation. No secret
+   values belong in chat or artifacts.
 2. **Prove the target.** Privately map the *serving deployment's effective*
    DATABASE_URL and the protected preflight's DATABASE_URL to the same intended
    Neon project, branch and database. Different roles and pooled/direct endpoints
@@ -109,10 +110,11 @@ reconciliation. Record provider receipts and sanitized outcomes; stop the exerci
 on tenant/identity mismatch, missing approval, unknown provider acceptance or
 unexpected charges. Do not replay an unknown outcome or release its hold.
 
-Existing legacy website-builder `lib/deploy/provider.ts` routes AWS/Azure/GCP
-choices to Vercel. That path is not a successful deployment to those providers
-and cannot serve as this acceptance evidence. Audit its reachable lead/preview
-callers separately; do not silently reuse it as the desktop deployment adapter.
+PR #136 corrected legacy website-builder provider misrouting: unsupported
+AWS/Azure/GCP selections now reject before generation/outbound calls. This does
+not implement those cloud adapters or establish deployment acceptance. Admin
+preview/publish APIs now enforce their existing configured administrator guard;
+public signed-token lead flows retain their separate capability boundary.
 
 ## Priority 3: safe website release
 
@@ -164,3 +166,15 @@ If Neon metadata alone cannot establish the Vercel binding, the private comparis
 remains a separate required attestation. Isolated restore, SQL repair, sandbox
 execution/test billing, native publication and website promotion each need their
 own concrete approval packet after their prerequisites are verified.
+
+## Fresh Neon readiness checkpoint
+
+The project is at its reported branch limit (10/10, nine Vercel-created preview
+branches). This blocks new branch creation and the proposed isolated restore
+copy; it is a likely explanation for preview provisioning failure, without a
+per-deployment provider trace. No cleanup/upgrade/retention change is authorized.
+Six-hour retention and empty snapshot/schedule inventory are verified; actual
+recoverable range and independent backups are not. Historical Time Travel itself
+creates ephemeral resources and needs its own reviewed scope. The failed migration
+is older than the configured window. Preserve current data through a fresh
+pre-repair recovery point; do not assume an old healthy timeline is recoverable.

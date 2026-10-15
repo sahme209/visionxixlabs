@@ -2,7 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 const generators = vi.hoisted(() => ({ starter: vi.fn(), plan: vi.fn() }));
 vi.mock("@/lib/scaffoldGenerator", () => ({ generateSiteFiles: generators.starter, generateSiteFilesFromPlan: generators.plan }));
 import { deploySite, deploySiteFromPlan, type DeployProvider } from "../provider";
-import { deployPreview, deployPreviewFromPlan } from "@/lib/previewDeploy";
+import { deployPreview, deployPreviewFromPlan, deployProduction } from "@/lib/previewDeploy";
 import type { AIStarterPackage } from "@/lib/websiteStarter/engine";
 const pkg = {} as AIStarterPackage;
 const plan = { siteName: "test", fullPageHtml: "<h1>test</h1>" };
@@ -41,4 +41,19 @@ describe.each(Object.entries(entrypoints))("%s provider boundary", (_name, deplo
 it.each([() => deployPreview(pkg, "fixture"), () => deployPreviewFromPlan(plan, "fixture")])("preserves omitted preview provider as Vercel", async (deploy) => {
   await expect(deploy()).resolves.toMatchObject({ deploymentId: "dpl_fixture" });
   expect(fetchMock).toHaveBeenCalledTimes(1);
+});
+it.each(["QUEUED", "BUILDING", "PENDING", "ERROR", "CANCELED", undefined])("preserves provider state %s instead of fabricating READY", async (state) => {
+  fetchMock.mockResolvedValue({ ok: true, json: async () => ({ id: "dpl_fixture", url: "fixture.vercel.app", readyState: state }) });
+  const result = await deploySite("vercel", pkg, { projectName: "fixture" });
+  expect(result.state).toBe(state ?? "UNKNOWN");
+});
+it("does not invent a deployment URL from a missing provider URL", async () => {
+  fetchMock.mockResolvedValue({ ok: true, json: async () => ({ id: "dpl_fixture", readyState: "READY" }) });
+  await expect(deploySite("vercel", pkg, { projectName: "fixture" })).resolves.toMatchObject({ url: "", deploymentId: "dpl_fixture" });
+});
+
+it("requests production target only through explicit publication intent", async () => {
+  fetchMock.mockResolvedValue({ ok: true, json: async () => ({ id: "dpl_production", readyState: "READY", target: "production", url: "production.vercel.app" }) });
+  await expect(deployProduction(pkg, "prod-fixture")).resolves.toMatchObject({ target: "production" });
+  expect(JSON.parse(fetchMock.mock.calls[0][1].body).target).toBe("production");
 });

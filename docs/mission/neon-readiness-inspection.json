@@ -1,0 +1,75 @@
+{
+  "observedAtUTC": "2026-10-15T22:03:40Z",
+  "readOnly": true,
+  "scope": "Neon control-plane metadata and PostgreSQL schema/migration metadata only; no account rows or secret values",
+  "provider": "neon",
+  "ownerReportedProjectMatch": true,
+  "defaultBranch": "main",
+  "ownerReportedBranchMatch": true,
+  "databaseCount": 1,
+  "ownerReportedDatabaseMatch": true,
+  "postgresVersion": 17,
+  "region": "aws-us-east-1",
+  "plan": "free_v3",
+  "productionApplicationBinding": "not_verified",
+  "protectedPreflightTargetBinding": "not_verified",
+  "fingerprintComparison": "Matches preflight #3 schema and migration state; matching contents are not resource-binding proof",
+  "capacity": {
+    "branchCount": 10,
+    "branchLimit": 10,
+    "vercelCreatedPreviewBranches": 9,
+    "archivedPreviewBranches": 3,
+    "atReportedCapacity": true,
+    "impact": "New branch creation, including the proposed isolated restore copy, requires capacity resolution. No branch was deleted or plan changed.",
+    "previewFailureAttribution": "Capacity is a concrete likely explanation for Resource provisioning failed; the per-deployment provider trace is unavailable."
+  },
+  "recovery": {
+    "historyRetentionSeconds": 21600,
+    "savedSnapshotsReturned": 0,
+    "snapshotScheduleEntriesReturned": 0,
+    "availableRecoveryRange": "not_verified",
+    "isolatedRestoreRehearsal": "not_performed",
+    "independentLogicalBackups": "unverified",
+    "failedMigrationStartedAtUTC": "2026-10-14T12:36:08.531Z",
+    "preFailurePoint": "Outside configured six-hour maximum; no saved snapshot returned. Other independent backups are unverified.",
+    "freshPreRepairPoint": "must be verified immediately before approved repair; do not assume now minus retention is usable",
+    "timeTravelCaution": "Current Neon documentation says read-only historical queries create temporary branch/compute resources; do not execute them under metadata-only authorization."
+  },
+  "migrations": {
+    "completedDistinct": 99,
+    "activeUnfinished": 1,
+    "activeSourceChecksumMismatches": 0,
+    "historicalRolledBackAttempts": 5,
+    "pending": [
+      "20261013172000_add_workspace_agent_identity",
+      "20261013193000_add_durable_agent_workflow",
+      "20261013220000_add_founding_supporters",
+      "20261014090000_add_ai_usage_stripe_settlement",
+      "20261014120000_add_email_verification",
+      "20261014190000_verified_ai_credit_fulfillment",
+      "20261014210000_ai_usage_reservations"
+    ]
+  },
+  "schema": {
+    "userTablePresent": true,
+    "userIdDataType": "text",
+    "organizationTablePresent": false,
+    "workspaceAgentIdentityTablePresent": false,
+    "emailVerifiedColumnPresent": false,
+    "emailVerificationTokenTablePresent": false
+  },
+  "founderMapping": "Passed in protected preflight #3; not repeated in this metadata inspection. Actual authentication remains unverified.",
+  "productionChangesPerformed": false,
+  "migrationHistoryChangesPerformed": false,
+  "credentialsRetrieved": false,
+  "productionApproval": "not_requested",
+  "evidence": [
+    "Neon list/describe project, branches, endpoints and databases",
+    "Neon list snapshots and get snapshot schedule",
+    "Reviewed SELECT-only schema and migration metadata queries; checksums compared with repository files",
+    "https://neon.com/pricing",
+    "https://neon.com/docs/postgres/backup-restore/history-window",
+    "https://neon.com/docs/postgres/backup-restore/time-travel-assist",
+    "https://neon.com/docs/guides/vercel-overview"
+  ]
+}
