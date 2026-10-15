@@ -1,5 +1,81 @@
 # Axiom Agent master-mission status
 
+## Current validation and integration · 2026-10-15
+
+The combined follow-up candidate passes 530 Vitest files / 5,194 tests, web
+TypeScript, desktop TypeScript/frontend build and 30 Python CLI tests. Native
+Rust checks are unavailable locally. Main remains `9db9f4de`; the only existing
+open PR at refresh is unrelated analytics #1. The founder now authorizes
+validated PR creation and merge; the earlier no-new-PR notes below describe
+historical local milestones. Main merges trigger production Vercel builds, so
+the separate production-approval boundary must be resolved before merging.
+No migration, production data change or credential change is included.
+
+## Follow-up — current Agent policy at approval
+
+The shared browser/desktop decision boundary now rereads the exact workspace
+Agent policy before claiming approval. Missing/disabled identity, a removed
+tool and policy-store failure block execution; rejection remains available.
+Four regression cases failed before the repair; focused approval tests pass
+afterward, including allowed execution and rejection during policy outage.
+This is a pre-claim check, not atomic cancellation of already claimed actions.
+
+## Local follow-up — single-file proposal review integrity
+
+Approval execution now requires a valid server-captured single-file review
+snapshot before resolving credentials or calling GitHub. Previously a missing
+snapshot yielded an undefined expected SHA, bypassing the reviewed-version
+comparison supported by the write client. Missing/malformed snapshots now fail
+closed with `file_review_required`; reviewed new files retain an explicit null
+base SHA and existing files retain their reviewed blob SHA. Multi-file behavior
+is preserved. Validation: 530 Vitest files / 5,188 tests and web TypeScript
+pass; desktop frontend checks and 30 Python CLI tests passed for the preceding
+local milestone and their code is unchanged. Native Rust checks remain
+unavailable. This is cloud-local software evidence, not a live provider test.
+
+## Local follow-up — uncertain provider outcomes and retry authority
+
+The continuing cloud-local candidate persists an Airflow dispatch intent before
+its non-idempotent provider request. After dispatch begins, a timeout or later
+storage failure cannot schedule an automatic replay: it requires reconciliation,
+retaining any known provider receipt when possible. A crash or failed hold write
+leaves the durable running intent outside automatic retry selection. Failures
+before dispatch still use bounded retries. This is conservative duplicate-effect
+prevention, not automatic reconciliation or exactly-once provider execution.
+
+Retries also recheck accepted workspace membership and `agent:approve` for the
+recorded/current approver; missing/revoked authority and store failure block
+execution. Desktop history uses a human-readable uncertain-outcome label,
+refreshes after failed responses, and clears its busy state on request/refresh
+errors. Approval success copy no longer asserts a completed cloud deployment.
+Scheduler counters now distinguish recorded successful actions, failed/uncertain
+outcomes, and benign stale claims/disabled rules. Regression tests reproduce
+the prior overcount for both new proposals and scheduled retries.
+No production data, external operation, release, merge, push, or new PR is
+performed. Crash detection and a governed external-receipt reconciliation
+journey remain separate work; production login is still externally blocked.
+
+Local validation: 530 Vitest files / 5,184 tests, web TypeScript, desktop
+TypeScript/frontend build, and 30 Python CLI tests pass. Native Rust validation
+remains unavailable because cargo is absent. No database migration is required.
+
+## Independent follow-up — paused Airflow execution safety
+
+Main `9db9f4de` includes merged PRs #105–#107. Their implementation is not
+proof of live production login or external provider validation. The next local
+candidate prevents queued/failed executions from dispatching after an operator
+pauses a rule or disconnects Airflow. The scheduler excludes disabled rules,
+and execution atomically requires the related rule to remain enabled. A pause
+does not claim to cancel work already claimed or externally dispatched.
+Regression cases reproduce paused queued/retry execution and a pause between
+read and claim; an enabled rule retains its existing retry path. No schema
+change or production/provider operation is needed for this software repair.
+Per the founder's instruction, no new PR is created for this local milestone.
+Local validation: TypeScript, 529 Vitest files / 5,165 tests, desktop
+TypeScript/frontend build, and 30 Python CLI tests pass. Native Rust checks
+remain unavailable because cargo is absent. This candidate is committed only
+in the cloud workspace; it is not merged, pushed, deployed, or live-validated.
+
 ## Current unified mission · 2026-10-15
 
 The founder's [unified master mission](AXIOM_UNIFIED_MASTER_MISSION.md) now
