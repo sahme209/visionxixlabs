@@ -10,7 +10,7 @@ import { ViewShell } from "../components/Primitives";
  * lifts the release-picker into the desktop sidebar like /releases.
  */
 
-interface ListRow { id: string; releaseTag: string | null; applicationId: string }
+interface ListRow { id: string; releaseTag: string | null; applicationId: string; repositoryId: string | null }
 type ListResp = { ok: true; data: { releases: ListRow[] } } | { ok: false; error: string };
 
 interface ViewRow { key: string; label: string; state: "pass" | "fail" | "not_applicable" | "unknown"; detail: string }
@@ -58,18 +58,22 @@ export function BranchValidationView() {
   useEffect(() => {
     if (!selected) return;
     let cancelled = false;
-    // The branch-detail endpoint needs a repositoryId. On desktop we don't
-    // have a direct release → repository projection yet (Phase A+1 lands
-    // it on the release row), so we skip the call and show a friendly
-    // explainer.
+    const release = releases.find((item) => item.id === selected);
+    // A release's evidence repository is immutable and tenant-validated at
+    // binding time. Never guess from its application when no binding exists.
+    if (!release?.repositoryId) {
+      setDetail({ ok: false, error: "repository_not_bound", hint: "This release has no evidence repository binding, so branch validation cannot be evaluated." });
+      setLoadingDetail(false);
+      return;
+    }
     setLoadingDetail(true);
-    fetch(`/api/dashboard/release-branch-detail/${encodeURIComponent(selected)}?repositoryId=`, { credentials: "include" })
+    fetch(`/api/dashboard/release-branch-detail/${encodeURIComponent(selected)}?repositoryId=${encodeURIComponent(release.repositoryId)}`, { credentials: "include" })
       .then((r) => r.json())
       .then((j: DetailResp) => { if (!cancelled) setDetail(j); })
       .catch((e) => { if (!cancelled) setDetail({ ok: false, error: e instanceof Error ? e.message : "Network error." }); })
       .finally(() => { if (!cancelled) setLoadingDetail(false); });
     return () => { cancelled = true; };
-  }, [selected]);
+  }, [selected, releases]);
 
   return (
     <ViewShell>
@@ -113,10 +117,9 @@ export function BranchValidationView() {
             <div className="glass-card p-4 border border-white/30">
               <p className="text-sm font-semibold text-zinc-300 mb-1">{detail.error}</p>
               {detail.hint && <p className="text-xs text-zinc-400">{detail.hint}</p>}
-              {detail.error === "invalid_payload" && (
+              {detail.error === "repository_not_bound" && (
                 <p className="text-xs text-zinc-400 mt-2">
-                  Branch detail is unavailable because this release does not yet expose the required release-to-repository projection.
-                  No validation result is inferred while that dependency is missing.
+                  Bind an evidence repository to the release before requesting branch validation. No repository is inferred from the application.
                 </p>
               )}
             </div>

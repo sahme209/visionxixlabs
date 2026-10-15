@@ -43,6 +43,8 @@ export type ReleaseSidebarTone = "emerald" | "amber" | "rose" | "blue" | "zinc";
 export interface ReleaseListRow {
   id: string;
   applicationId: string;
+  /** Evidence repository explicitly bound to this release, never inferred. */
+  repositoryId: string | null;
   releaseTag: string | null;
   commitSha: string | null;
   status: ReleaseStatus;
@@ -135,6 +137,7 @@ export async function buildReleaseListResponse(
         return {
           id: r.id,
           applicationId: r.applicationId,
+          repositoryId: r.evidenceRepositoryId ?? null,
           releaseTag: r.releaseTag,
           commitSha: r.commitSha,
           status: r.status,

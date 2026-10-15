@@ -198,6 +198,18 @@ describe("buildReleaseListResponse", () => {
     expect(r.body.data.releases[0].applicationId).toBe("app_a");
   });
 
+  it("surfaces only the release's explicit evidence repository binding", async () => {
+    const repo = makeRepo();
+    const release = await createReleaseDraft(repo, { organizationId: "o", applicationId: "app", releaseTag: "v1" });
+    const stored = repo._releases.find((row) => row.id === release.id);
+    if (!stored) throw new Error("expected stored release");
+    stored.evidenceRepositoryId = "repo_bound";
+
+    const result = await buildReleaseListResponse(repo, "o");
+    if (!result.body.ok) throw new Error("expected ok");
+    expect(result.body.data.releases[0].repositoryId).toBe("repo_bound");
+  });
+
   it("missing-table error → 503 migration_pending", async () => {
     const repo = makeRepo();
     repo.release.findMany = async () => {
