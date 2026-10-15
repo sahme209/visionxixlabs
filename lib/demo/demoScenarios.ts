@@ -98,7 +98,7 @@ export const DEMO_SCENARIOS: Readonly<Record<DemoScenarioId, DemoScenario>> = {
     id: "first_time_workspace_setup",
     title: "First-Time Workspace Setup",
     pitch: "From zero account to first connected provider in ~10 minutes.",
-    description: "Review the setup guides, then follow workspace creation, team invites, the first cloud connector, and the first read-only scan.",
+    description: "Review the setup guides and privacy choices, then follow workspace creation, team invites, the first cloud connector, and the first read-only scan.",
     estimatedMinutes: 12,
     audience: "public",
     lastReviewed: "2026-10-15",

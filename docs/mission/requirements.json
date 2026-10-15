@@ -11483,7 +11483,7 @@
       "domain": "security",
       "scope": "product",
       "status": "Partially implemented",
-      "verification": "Production dependency registry audit: baseline 6 high/6 moderate; framework patches 0 high/2 moderate; compatible Storage 8.4 follow-up 0 findings. Scope is production dependency advisories, not application security certification or live provider acceptance.",
+      "verification": "Production dependency registry audit: baseline 6 high/6 moderate; framework patches 0 high/2 moderate; compatible Storage 8.4 follow-up 0 findings. Scope is production dependency advisories, not application security certification or live provider acceptance. Full development-inclusive audit: nine existing package findings (7 high/2 moderate), unchanged by DOM test tools. Production-only zero does not close development-tool or application security work.",
       "evidence": [
         "lib/security/permissionEngine.ts",
         "lib/security/credentialVault.ts",
@@ -11493,7 +11493,8 @@
         "desktop/src-tauri/src/http.rs",
         "package-lock.json",
         "docs/DEPENDENCY_SECURITY_AUDIT.md",
-        "docs/mission/dependency-security-audit.json"
+        "docs/mission/dependency-security-audit.json",
+        "docs/mission/development-dependency-audit.json"
       ],
       "prs": [
         105,
@@ -11501,7 +11502,7 @@
         109,
         116
       ],
-      "nextAction": "Repeat audit before release and validate approved cloud credential/inventory journeys; preserve production and billing approval gates.",
+      "nextAction": "Review compatible upstream fixes for development lint/CSS/glob advisories and separately validate any framework migration; repeat full and production-only audits before release.",
       "owner": "Codex; external acceptance/approvals remain founder-owned",
       "auditDepth": "Requirement source mapped; individual acceptance review pending"
     },
@@ -11542,7 +11543,7 @@
       "domain": "security",
       "scope": "product",
       "status": "Partially implemented",
-      "verification": "Production dependency registry audit: baseline 6 high/6 moderate; framework patches 0 high/2 moderate; compatible Storage 8.4 follow-up 0 findings. Scope is production dependency advisories, not application security certification or live provider acceptance.",
+      "verification": "Production dependency registry audit: baseline 6 high/6 moderate; framework patches 0 high/2 moderate; compatible Storage 8.4 follow-up 0 findings. Scope is production dependency advisories, not application security certification or live provider acceptance. Full development-inclusive audit: nine existing package findings (7 high/2 moderate), unchanged by DOM test tools. Production-only zero does not close development-tool or application security work.",
       "evidence": [
         "lib/security/permissionEngine.ts",
         "lib/security/credentialVault.ts",
@@ -11552,7 +11553,8 @@
         "desktop/src-tauri/src/http.rs",
         "package-lock.json",
         "docs/DEPENDENCY_SECURITY_AUDIT.md",
-        "docs/mission/dependency-security-audit.json"
+        "docs/mission/dependency-security-audit.json",
+        "docs/mission/development-dependency-audit.json"
       ],
       "prs": [
         105,
@@ -11560,7 +11562,7 @@
         109,
         116
       ],
-      "nextAction": "Repeat audit before release and validate approved cloud credential/inventory journeys; preserve production and billing approval gates.",
+      "nextAction": "Review compatible upstream fixes for development lint/CSS/glob advisories and separately validate any framework migration; repeat full and production-only audits before release.",
       "owner": "Codex; external acceptance/approvals remain founder-owned",
       "auditDepth": "Requirement source mapped; individual acceptance review pending"
     },
@@ -16923,7 +16925,7 @@
       "domain": "billing",
       "scope": "product",
       "status": "Partially implemented",
-      "verification": "Nine sampled public routes HTTP 200; live docs duplicate brand/home canonical reproduced. Full local production build serves correct route canonical and one brand suffix for docs, pricing, downloads, security and terms. Visual/browser interaction and authenticated customer acceptance remain unvalidated.",
+      "verification": "Nine sampled public routes HTTP 200; live docs duplicate brand/home canonical reproduced. Full local production build serves correct route canonical and one brand suffix for docs, pricing, downloads, security and terms. Visual/browser interaction and authenticated customer acceptance remain unvalidated. Thirteen DOM cases cover denied storage, conservative cookie fallback, explicit current-tab fallback, cross-tab withdrawal and retained measurement callbacks. Actual browser/visual/network privacy acceptance remains unvalidated.",
       "evidence": [
         "lib/billing/reconcileGatewayUsage.ts",
         "lib/billing/aiBillingMargin.ts",
@@ -16938,7 +16940,11 @@
         "app/download/layout.tsx",
         "app/security/page.tsx",
         "app/terms/layout.tsx",
-        "docs/mission/public-route-audit.json"
+        "docs/mission/public-route-audit.json",
+        "components/PrivacyConsent.tsx",
+        "lib/privacy/browserConsent.ts",
+        "components/__tests__/PrivacyConsent.test.ts",
+        "docs/PRIVACY_CONSENT_VALIDATION.md"
       ],
       "prs": [
         109,
@@ -16959,14 +16965,18 @@
       "domain": "security",
       "scope": "product",
       "status": "Partially implemented",
-      "verification": "Source mapped to existing components; acceptance of this individual requirement has not been demonstrated end to end.",
+      "verification": "Source mapped to existing components; acceptance of this individual requirement has not been demonstrated end to end. Thirteen DOM cases cover denied storage, conservative cookie fallback, explicit current-tab fallback, cross-tab withdrawal and retained measurement callbacks. Actual browser/visual/network privacy acceptance remains unvalidated.",
       "evidence": [
         "lib/security/permissionEngine.ts",
         "lib/security/credentialVault.ts",
         "lib/security/tenantIsolation.ts",
         "lib/auth/currentContext.ts",
         "lib/desktop/resolveRequestDesktopSession.ts",
-        "desktop/src-tauri/src/http.rs"
+        "desktop/src-tauri/src/http.rs",
+        "components/PrivacyConsent.tsx",
+        "lib/privacy/browserConsent.ts",
+        "components/__tests__/PrivacyConsent.test.ts",
+        "docs/PRIVACY_CONSENT_VALIDATION.md"
       ],
       "prs": [
         105,
@@ -29955,7 +29965,7 @@
       "domain": "journey",
       "scope": "product",
       "status": "Partially implemented",
-      "verification": "Production dependency registry audit: baseline 6 high/6 moderate; framework patches 0 high/2 moderate; compatible Storage 8.4 follow-up 0 findings. Scope is production dependency advisories, not application security certification or live provider acceptance.",
+      "verification": "Production dependency registry audit: baseline 6 high/6 moderate; framework patches 0 high/2 moderate; compatible Storage 8.4 follow-up 0 findings. Scope is production dependency advisories, not application security certification or live provider acceptance. Full development-inclusive audit: nine existing package findings (7 high/2 moderate), unchanged by DOM test tools. Production-only zero does not close development-tool or application security work.",
       "evidence": [
         "desktop/src/views/DeploymentRequestsView.tsx",
         "lib/tauri/deploymentRequestRepo.ts",
@@ -29964,10 +29974,11 @@
         "docs/REQUIREMENTS_MATRIX.md",
         "package-lock.json",
         "docs/DEPENDENCY_SECURITY_AUDIT.md",
-        "docs/mission/dependency-security-audit.json"
+        "docs/mission/dependency-security-audit.json",
+        "docs/mission/development-dependency-audit.json"
       ],
       "prs": [],
-      "nextAction": "Repeat audit before release and validate approved cloud credential/inventory journeys; preserve production and billing approval gates.",
+      "nextAction": "Review compatible upstream fixes for development lint/CSS/glob advisories and separately validate any framework migration; repeat full and production-only audits before release.",
       "owner": "Codex; external acceptance/approvals remain founder-owned",
       "auditDepth": "Requirement source mapped; individual acceptance review pending"
     },
