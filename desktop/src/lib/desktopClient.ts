@@ -373,7 +373,11 @@ export class DesktopClient {
    * valid. Startup calls this before mounting any authenticated workspace UI.
    */
   async verifyCurrentCredential(): Promise<ApiResult<VerifiedDesktopIdentity>> {
-    const token = this.config.sessionToken;
+    return this.verifyCredentialCandidate(this.config.sessionToken);
+  }
+
+  /** Verify without changing the active transport or persisted credential. */
+  async verifyCredentialCandidate(token: string | undefined): Promise<ApiResult<VerifiedDesktopIdentity>> {
     if (!token) return { ok: false, error: "No saved workspace credential was found." };
 
     if (!token.startsWith("vxlk_") && !token.startsWith("axm.desk.")) {
@@ -383,7 +387,7 @@ export class DesktopClient {
     const result = await this.get<{
       identity: { kind: "api_key" | "desktop_session"; organizationId: string; email?: string; displayName?: string; role?: VerifiedDesktopIdentity["role"]; capabilities?: string[] };
       access: DesktopCommercialAccess;
-    }>("/api/desktop/access");
+    }>("/api/desktop/access", token);
     if (!result.ok) return result;
     const identity = parseDesktopIdentityResponse(result.data);
     const expectedKind = token.startsWith("vxlk_") ? "api_key" : "desktop_session";
@@ -1197,10 +1201,10 @@ export class DesktopClient {
   // HTTP helpers
   // -------------------------------------------------------------------------
 
-  private async get<T>(path: string): Promise<ApiResult<T>> {
+  private async get<T>(path: string, credential?: string): Promise<ApiResult<T>> {
     try {
       const res = await fetch(`${this.config.apiBase}${path}`, {
-        headers: this.headers(),
+        headers: credential ? { ...this.headers(), Authorization: `Bearer ${credential}` } : this.headers(),
         credentials: "include",
       });
       const json = (await res.json().catch(() => ({}))) as LegacyApiErrorBody & { ok?: boolean; data?: unknown };

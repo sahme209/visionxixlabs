@@ -34,3 +34,27 @@ changed by this desktop source repair.
 Local validation: 540 Vitest files / 5,356 tests; web and desktop TypeScript;
 targeted desktop lint; desktop frontend build; 30 Python CLI tests; mission
 register validation. Actual native/runtime acceptance remains open.
+
+## Administrator-key recovery candidate
+
+Recovery input is now verified with an explicit request-scoped bearer before any
+vault write or active transport change. Invalid format, server rejection and
+verification transport failure preserve existing stored credentials. A vault
+write failure does not hot-apply the candidate or delete the previous key; actual
+OS-vault atomicity still requires native acceptance. Successful verification
+keeps commercial access decisions separate, then persists before activation.
+Browser sign-in buttons and the recovery Enter shortcut cannot start an alternate
+flow while key verification is busy. Browser cancellation/unmount races remain a
+separate tracked concern; this change does not claim to resolve them.
+
+Recovery-candidate validation: 545 Vitest files / 5,402 tests passed on the combined
+branch, including request-scoped bearer, vault ordering and rendered sign-in
+interaction checks. Web/desktop TypeScript, desktop frontend build and all 30
+Python CLI tests passed. Native Keychain and actual OAuth/pairing acceptance are
+not established by these simulated tests.
+
+Clean web CI follows these component imports into desktop modules. Root development
+dependencies therefore pin the existing desktop versions of the Tauri API and
+shell JavaScript packages for type resolution. Vitest continues to stub native
+calls; no native toolchain, runtime permissions or credential access is added to
+web CI, and no source/test compiler exclusion is introduced.

@@ -17,7 +17,7 @@
  * Authorization: Bearer header.
  */
 
-import { desktopClient } from "./desktopClient";
+import { desktopClient, type VerifiedDesktopIdentity } from "./desktopClient";
 import { readSecret, writeSecret, clearSecret } from "./secureStorage";
 
 const API_KEY_STORE_KEY = "desktop.api_key";
@@ -61,4 +61,16 @@ export async function readPersistedApiKey(): Promise<string | undefined> {
 /** Returns the first 14 chars (the prefix the web admin panel shows). */
 export function apiKeyPrefix(plaintext: string): string {
   return plaintext.trim().slice(0, 14);
+}
+
+/** Verify a recovery candidate before replacing any saved credential. */
+export async function verifyAndSaveApiKey(plaintext: string): Promise<VerifiedDesktopIdentity> {
+  const candidate = plaintext.trim();
+  if (!isWellFormedApiKey(candidate)) {
+    throw new Error("API key format invalid. Expected vxlk_live_… or vxlk_test_… as shown by the admin panel.");
+  }
+  const result = await desktopClient.verifyCredentialCandidate(candidate);
+  if (!result.ok) throw new Error(result.error);
+  await saveApiKey(candidate);
+  return result.data;
 }

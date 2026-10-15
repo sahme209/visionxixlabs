@@ -16905,7 +16905,7 @@
       "domain": "governance",
       "scope": "product",
       "status": "Partially implemented",
-      "verification": "Gateway cost and generation attribution, pricing kernels, Stripe test-only gates and durable reservations exist. Four negative worker regressions now block invoice submission for mismatched organization, usage event or amount while retaining holds. Actual provider/customer billing, refunds and ledger reconciliation remain unvalidated. Desktop startup/focus verification is now coordinated by newest request and immutable credential context; current failure locks transport without automatically deleting vault records. Eight deferred-response tests and first-run wiring checks cover this scope. Native keychain, manual sign-in submission races and actual founder pairing remain unvalidated.",
+      "verification": "Gateway cost and generation attribution, pricing kernels, Stripe test-only gates and durable reservations exist. Four negative worker regressions now block invoice submission for mismatched organization, usage event or amount while retaining holds. Actual provider/customer billing, refunds and ledger reconciliation remain unvalidated. Desktop startup/focus verification is now coordinated by newest request and immutable credential context; current failure locks transport without automatically deleting vault records. Eight deferred-response tests and first-run wiring checks cover this scope. Native keychain, manual sign-in submission races and actual founder pairing remain unvalidated. Administrator recovery candidate verification is prepared without activating or persisting rejected keys, with request-scoped bearer and preserved previous credentials on verification failure. Native OS-vault behavior and browser cancellation races remain unverified.",
       "evidence": [
         "lib/tauri/deploymentOperations.ts",
         "lib/tauri/operationCoordinator.ts",
@@ -16921,7 +16921,9 @@
         "desktop/src/App.tsx",
         "desktop/src/lib/credentialVerificationCoordinator.ts",
         "lib/desktop/__tests__/credentialVerificationCoordinator.test.ts",
-        "docs/DESKTOP_AUTH_VERIFICATION_LIFECYCLE.md"
+        "docs/DESKTOP_AUTH_VERIFICATION_LIFECYCLE.md",
+        "lib/desktop/__tests__/apiKeyRecovery.test.ts",
+        "lib/desktop/__tests__/desktopCredentialCandidate.test.ts"
       ],
       "prs": [
         108,

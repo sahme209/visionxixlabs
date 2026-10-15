@@ -21,6 +21,8 @@ import path from "node:path";
 
 export default defineConfig({
   resolve: {
+    // Desktop component tests share the root renderer; use one React instance.
+    dedupe: ["react", "react-dom"],
     alias: [
       { find: "server-only", replacement: path.resolve(__dirname, "./test/serverOnlyStub.ts") },
       { find: "@tauri-apps/api/core", replacement: path.resolve(__dirname, "./test/tauriApiCoreStub.ts") },

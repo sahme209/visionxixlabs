@@ -17,7 +17,7 @@ describe("desktop first-run contract", () => {
     expect(app).not.toContain("clearApiKey()");
     expect(app).not.toContain("clearAuthSession()");
     expect(app).toContain("<DesktopAccessRequiredView");
-    expect(client).toContain('>("/api/desktop/access")');
+    expect(client).toContain('>("/api/desktop/access", token)');
     expect(app.indexOf('if (authState === "checking")')).toBeLessThan(app.indexOf("<AuthenticatedWorkspace"));
   });
 

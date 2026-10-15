@@ -242,3 +242,13 @@ The full historical PostgreSQL fixture reproduced the failure after 99 successfu
 migrations, then validated auth-only recovery without changing the failed row,
 identity, membership or password verification. This does not authorize blanket
 migration deployment, Agent allowlist backfill or financial-record changes.
+
+### Routing observation after PR #130
+
+A fresh alias lookup still selects #123, commit `f1940fe`, while #129's main
+build `dpl_4LpKaUqzTwQBtG47PYEcVapXVDUj` is READY and has default project /
+git-main aliases only. Its metadata reports no alias error. Available project
+fields omit automatic custom-domain assignment/promotion policy. This establishes
+a serving/build discrepancy, not its cause; no routing or promotion was changed.
+See `docs/mission/deployment-routing-observation.json`. A routing correction, if
+needed, remains separately approved and cannot substitute for database recovery.
