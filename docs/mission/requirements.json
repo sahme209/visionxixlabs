@@ -2986,7 +2986,7 @@
       "domain": "desktop",
       "scope": "product",
       "status": "Partially implemented",
-      "verification": "Source mapped to existing components; acceptance of this individual requirement has not been demonstrated end to end.",
+      "verification": "Source mapped to existing components; acceptance of this individual requirement has not been demonstrated end to end. Audit follow-up adds HTTP-status and identity/access schema guards; exact native and complete login acceptance are still not established.",
       "evidence": [
         "desktop/src/App.tsx",
         "desktop/src/views/AgentChatView.tsx",
@@ -2994,7 +2994,9 @@
         "desktop/src/components/Sidebar.tsx",
         "desktop/src/styles.css",
         "desktop/src/lib/useNativeMenuActions.ts",
-        "desktop/src-tauri/src/menu.rs"
+        "desktop/src-tauri/src/menu.rs",
+        "desktop/src/lib/desktopIdentityResponse.ts",
+        "lib/desktop/__tests__/desktopClientError.test.ts"
       ],
       "prs": [
         111,
@@ -3067,7 +3069,7 @@
       "domain": "desktop",
       "scope": "product",
       "status": "Partially implemented",
-      "verification": "Source mapped to existing components; acceptance of this individual requirement has not been demonstrated end to end.",
+      "verification": "Source mapped to existing components; acceptance of this individual requirement has not been demonstrated end to end. Audit follow-up adds HTTP-status and identity/access schema guards; exact native and complete login acceptance are still not established.",
       "evidence": [
         "desktop/src/App.tsx",
         "desktop/src/views/AgentChatView.tsx",
@@ -3075,7 +3077,9 @@
         "desktop/src/components/Sidebar.tsx",
         "desktop/src/styles.css",
         "desktop/src/lib/useNativeMenuActions.ts",
-        "desktop/src-tauri/src/menu.rs"
+        "desktop/src-tauri/src/menu.rs",
+        "desktop/src/lib/desktopIdentityResponse.ts",
+        "lib/desktop/__tests__/desktopClientError.test.ts"
       ],
       "prs": [
         111,
@@ -16964,7 +16968,7 @@
       "domain": "billing",
       "scope": "product",
       "status": "Partially implemented",
-      "verification": "Source mapped to existing components; acceptance of this individual requirement has not been demonstrated end to end.",
+      "verification": "Source mapped to existing components; acceptance of this individual requirement has not been demonstrated end to end. Audit follow-up adds HTTP-status and identity/access schema guards; exact native and complete login acceptance are still not established.",
       "evidence": [
         "lib/billing/reconcileGatewayUsage.ts",
         "lib/billing/aiBillingMargin.ts",
@@ -16973,7 +16977,9 @@
         "lib/billing/aiUsageSettlementRetryPolicy.ts",
         "lib/billing/aiUsageSettlementCandidates.ts",
         "app/api/billing/stripe-webhook/route.ts",
-        "docs/BILLING_RECONCILIATION.md"
+        "docs/BILLING_RECONCILIATION.md",
+        "desktop/src/lib/desktopIdentityResponse.ts",
+        "lib/desktop/__tests__/desktopClientError.test.ts"
       ],
       "prs": [
         109,
@@ -17968,14 +17974,16 @@
       "domain": "security",
       "scope": "product",
       "status": "Partially implemented",
-      "verification": "Source mapped to existing components; acceptance of this individual requirement has not been demonstrated end to end.",
+      "verification": "Source mapped to existing components; acceptance of this individual requirement has not been demonstrated end to end. Audit follow-up adds HTTP-status and identity/access schema guards; exact native and complete login acceptance are still not established.",
       "evidence": [
         "lib/security/permissionEngine.ts",
         "lib/security/credentialVault.ts",
         "lib/security/tenantIsolation.ts",
         "lib/auth/currentContext.ts",
         "lib/desktop/resolveRequestDesktopSession.ts",
-        "desktop/src-tauri/src/http.rs"
+        "desktop/src-tauri/src/http.rs",
+        "desktop/src/lib/desktopIdentityResponse.ts",
+        "lib/desktop/__tests__/desktopClientError.test.ts"
       ],
       "prs": [
         105,
@@ -17996,7 +18004,7 @@
       "domain": "billing",
       "scope": "product",
       "status": "Partially implemented",
-      "verification": "Source mapped to existing components; acceptance of this individual requirement has not been demonstrated end to end.",
+      "verification": "Source mapped to existing components; acceptance of this individual requirement has not been demonstrated end to end. Audit follow-up adds HTTP-status and identity/access schema guards; exact native and complete login acceptance are still not established.",
       "evidence": [
         "lib/billing/reconcileGatewayUsage.ts",
         "lib/billing/aiBillingMargin.ts",
@@ -18005,7 +18013,9 @@
         "lib/billing/aiUsageSettlementRetryPolicy.ts",
         "lib/billing/aiUsageSettlementCandidates.ts",
         "app/api/billing/stripe-webhook/route.ts",
-        "docs/BILLING_RECONCILIATION.md"
+        "docs/BILLING_RECONCILIATION.md",
+        "desktop/src/lib/desktopIdentityResponse.ts",
+        "lib/desktop/__tests__/desktopClientError.test.ts"
       ],
       "prs": [
         109,
@@ -18054,14 +18064,16 @@
       "domain": "security",
       "scope": "product",
       "status": "Blocked by external access",
-      "verification": "Source/automated evidence exists for subcomponents; exact device, account, credential or approval-dependent acceptance remains open.",
+      "verification": "Source/automated evidence exists for subcomponents; exact device, account, credential or approval-dependent acceptance remains open. Audit follow-up adds HTTP-status and identity/access schema guards; exact native and complete login acceptance are still not established.",
       "evidence": [
         "lib/security/permissionEngine.ts",
         "lib/security/credentialVault.ts",
         "lib/security/tenantIsolation.ts",
         "lib/auth/currentContext.ts",
         "lib/desktop/resolveRequestDesktopSession.ts",
-        "desktop/src-tauri/src/http.rs"
+        "desktop/src-tauri/src/http.rs",
+        "desktop/src/lib/desktopIdentityResponse.ts",
+        "lib/desktop/__tests__/desktopClientError.test.ts"
       ],
       "prs": [
         105,
@@ -18108,7 +18120,7 @@
       "domain": "billing",
       "scope": "product",
       "status": "Partially implemented",
-      "verification": "Source mapped to existing components; acceptance of this individual requirement has not been demonstrated end to end.",
+      "verification": "Source mapped to existing components; acceptance of this individual requirement has not been demonstrated end to end. Audit follow-up adds HTTP-status and identity/access schema guards; exact native and complete login acceptance are still not established.",
       "evidence": [
         "lib/billing/reconcileGatewayUsage.ts",
         "lib/billing/aiBillingMargin.ts",
@@ -18117,7 +18129,9 @@
         "lib/billing/aiUsageSettlementRetryPolicy.ts",
         "lib/billing/aiUsageSettlementCandidates.ts",
         "app/api/billing/stripe-webhook/route.ts",
-        "docs/BILLING_RECONCILIATION.md"
+        "docs/BILLING_RECONCILIATION.md",
+        "desktop/src/lib/desktopIdentityResponse.ts",
+        "lib/desktop/__tests__/desktopClientError.test.ts"
       ],
       "prs": [
         109,

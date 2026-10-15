@@ -115,7 +115,7 @@ export function Sidebar({ activeView, onNavigate }: { activeView: CustomerView; 
       <div className="px-3 py-3 border-t border-white/[0.06]">
         <div role="status" className="flex items-center gap-2 px-3 py-2.5 rounded-lg bg-white/[0.025]">
           <span aria-hidden className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-          <span className="text-[11px] text-zinc-400">Production access active</span>
+          <span className="text-[11px] text-zinc-400">Workspace connected</span>
         </div>
       </div>
     </aside>
