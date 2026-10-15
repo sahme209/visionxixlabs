@@ -428,6 +428,11 @@ export class DesktopClient {
     return this.get(`/api/desktop/release-audit${query ? `?${query}` : ""}`);
   }
 
+  /** Decision-learning signals scoped to the paired workspace. */
+  learningLoop<T>(): Promise<ApiResult<T>> {
+    return this.get("/api/desktop/learning-loop");
+  }
+
   /**
    * Phase 399 — call GET /api/v1/whoami. Returns the workspace + scopes
    * + quota snapshot, or a precise auth-failure code. Doesn't fall back
