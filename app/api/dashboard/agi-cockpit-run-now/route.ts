@@ -72,7 +72,6 @@ import { appendAuditEvent, type AuditEventRepo } from "@/lib/releaseops/auditEve
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
-export const maxDuration = 60;
 
 /** Shared by the cookie dashboard and the paired-desktop route. */
 export async function runAgiCockpitNowForOrganization(orgId: string, actorUserId: string | null) {
