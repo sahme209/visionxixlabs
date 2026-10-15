@@ -1135,6 +1135,15 @@ export class DesktopClient {
     return this.post("/api/desktop/release-workspace/lifecycle", input);
   }
 
+  // ── Applications (paired session; never dashboard cookie auth) ──
+  applications(): Promise<ApiResult<{ generatedAt: string; applications: Array<{ id: string; slug: string; name: string; ownerTeamLabel: string | null; businessTier: string | null; description: string | null; componentCount: number; releaseCount: number; releasesDeployed: number; createdAtIso: string }>; summary: { total: number; withReleases: number; totalComponents: number } }>> {
+    return this.get("/api/desktop/applications");
+  }
+
+  createApplication(input: { slug: string; name: string; ownerTeamLabel?: string; businessTier?: string; description?: string }): Promise<ApiResult<{ created: boolean; slug: string }>> {
+    return this.post("/api/desktop/applications", input);
+  }
+
   // -------------------------------------------------------------------------
   // HTTP helpers
   // -------------------------------------------------------------------------

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { ViewShell } from "../components/Primitives";
+import { desktopClient } from "../lib/desktopClient";
 
 /**
  * Phase 493 — desktop sibling for /dashboard/applications.
@@ -34,9 +35,8 @@ export function ApplicationsView() {
   function loadList() {
     setLoading(true);
     setNetworkError(null);
-    fetch("/api/dashboard/application-list", { credentials: "include" })
-      .then((r) => r.json())
-      .then((j: RespBody) => setResp(j))
+    desktopClient.applications()
+      .then((j) => setResp(j.ok ? { ok: true, data: j.data } : { ok: false, error: j.error }))
       .catch((e) => setNetworkError(e instanceof Error ? e.message : "Network error."))
       .finally(() => setLoading(false));
   }
@@ -155,23 +155,18 @@ function NewApplicationPanel({ onCreated }: { onCreated: () => void }) {
   async function submit() {
     setState({ kind: "submitting" });
     try {
-      const res = await fetch("/api/dashboard/application-create", {
-        method: "POST", credentials: "include",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          slug, name,
-          ...(team ? { ownerTeamLabel: team } : {}),
-          ...(tier ? { businessTier: tier } : {}),
-          ...(desc ? { description: desc } : {}),
-        }),
+      const j = await desktopClient.createApplication({
+        slug, name,
+        ...(team ? { ownerTeamLabel: team } : {}),
+        ...(tier ? { businessTier: tier } : {}),
+        ...(desc ? { description: desc } : {}),
       });
-      const j = await res.json();
       if (j.ok) {
         setState({ kind: "ok", created: j.data.created, slug: j.data.slug });
         onCreated();
         setTimeout(reset, 1200);
       } else {
-        setState({ kind: "error", message: j.hint ?? j.error });
+        setState({ kind: "error", message: j.error });
       }
     } catch (e) {
       setState({ kind: "error", message: e instanceof Error ? e.message : "network error" });
