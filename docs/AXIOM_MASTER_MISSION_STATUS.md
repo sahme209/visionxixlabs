@@ -1,5 +1,18 @@
 # Axiom Agent master-mission status
 
+## Continuing mission — final Gateway prompt redaction
+
+PR #115 merged at `40fbbd48` after exact-head GitHub validation passed.
+The next security audit reproduced known secret patterns reaching the SDK in
+system prompts and composed schema/classification instructions. The final
+Gateway call now redacts both prompt and system strings after composition,
+including direct provider calls, summaries and streams. All six regressions
+fail before the fix and pass afterward; options, attribution and response
+metadata are preserved. No network inference, credential, routing or billing
+change is involved. Known-pattern coverage is not universal secret detection.
+Local checks pass: 537 Vitest files / 5,291 tests, web TypeScript, desktop
+TypeScript/frontend build, 30 Python CLI tests and diff whitespace checks.
+
 ## Continuing mission — settlement batch progress
 
 PR #114 merged at `df8d3788` after exact-head GitHub validation passed.

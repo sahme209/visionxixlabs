@@ -1,6 +1,7 @@
 import "server-only";
 
 import { generateText } from "ai";
+import { redact } from "@/lib/security/redaction";
 import {
   AIProviderError,
   type AIClassifyResponse,
@@ -51,8 +52,10 @@ export class VercelGatewayProvider implements AIProvider {
     try {
       const result = await generateText({
         model,
-        prompt,
-        system: options?.system,
+        // Scrub after composing schema/label instructions, including callers
+        // that reach this provider without going through the manager.
+        prompt: redact(prompt),
+        system: options?.system === undefined ? undefined : redact(options.system),
         temperature: options?.temperature,
         maxOutputTokens: options?.maxTokens,
         abortSignal: options?.timeoutMs ? AbortSignal.timeout(options.timeoutMs) : undefined,
