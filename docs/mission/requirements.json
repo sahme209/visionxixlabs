@@ -16835,14 +16835,18 @@
       "domain": "security",
       "scope": "product",
       "status": "Partially implemented",
-      "verification": "Source mapped to existing components; acceptance of this individual requirement has not been demonstrated end to end.",
+      "verification": "Source mapped to existing components; acceptance of this individual requirement has not been demonstrated end to end. Desktop startup/focus verification is now coordinated by newest request and immutable credential context; current failure locks transport without automatically deleting vault records. Eight deferred-response tests and first-run wiring checks cover this scope. Native keychain, manual sign-in submission races and actual founder pairing remain unvalidated.",
       "evidence": [
         "lib/security/permissionEngine.ts",
         "lib/security/credentialVault.ts",
         "lib/security/tenantIsolation.ts",
         "lib/auth/currentContext.ts",
         "lib/desktop/resolveRequestDesktopSession.ts",
-        "desktop/src-tauri/src/http.rs"
+        "desktop/src-tauri/src/http.rs",
+        "desktop/src/App.tsx",
+        "desktop/src/lib/credentialVerificationCoordinator.ts",
+        "lib/desktop/__tests__/credentialVerificationCoordinator.test.ts",
+        "docs/DESKTOP_AUTH_VERIFICATION_LIFECYCLE.md"
       ],
       "prs": [
         105,
@@ -16898,7 +16902,7 @@
       "domain": "governance",
       "scope": "product",
       "status": "Partially implemented",
-      "verification": "Gateway cost and generation attribution, pricing kernels, Stripe test-only gates and durable reservations exist. Four negative worker regressions now block invoice submission for mismatched organization, usage event or amount while retaining holds. Actual provider/customer billing, refunds and ledger reconciliation remain unvalidated.",
+      "verification": "Gateway cost and generation attribution, pricing kernels, Stripe test-only gates and durable reservations exist. Four negative worker regressions now block invoice submission for mismatched organization, usage event or amount while retaining holds. Actual provider/customer billing, refunds and ledger reconciliation remain unvalidated. Desktop startup/focus verification is now coordinated by newest request and immutable credential context; current failure locks transport without automatically deleting vault records. Eight deferred-response tests and first-run wiring checks cover this scope. Native keychain, manual sign-in submission races and actual founder pairing remain unvalidated.",
       "evidence": [
         "lib/tauri/deploymentOperations.ts",
         "lib/tauri/operationCoordinator.ts",
@@ -16910,14 +16914,18 @@
         "lib/billing/aiUsageSettlementBinding.ts",
         "lib/billing/settleAIUsageToStripe.ts",
         "lib/billing/__tests__/settleAIUsageToStripe.test.ts",
-        "docs/BILLING_SETTLEMENT_BINDING.md"
+        "docs/BILLING_SETTLEMENT_BINDING.md",
+        "desktop/src/App.tsx",
+        "desktop/src/lib/credentialVerificationCoordinator.ts",
+        "lib/desktop/__tests__/credentialVerificationCoordinator.test.ts",
+        "docs/DESKTOP_AUTH_VERIFICATION_LIFECYCLE.md"
       ],
       "prs": [
         108,
         109,
         112
       ],
-      "nextAction": "Validate approved isolated provider/Stripe test-tenant receipts and ledger consistency, refunds and spending-cap concurrency; reconcile contradictory records through reviewed authority; complete held/disabled-row queue fairness before rollout.",
+      "nextAction": "Verify exact current signed native package on macOS, including keychain/deep-link and focus transitions; separately validate manual sign-in submission concurrency. Continue usability work without removing server access gates.",
       "owner": "Codex; external acceptance/approvals remain founder-owned",
       "auditDepth": "Requirement source mapped; individual acceptance review pending"
     },
@@ -17034,13 +17042,17 @@
       "domain": "auth",
       "scope": "product",
       "status": "Blocked by external access",
-      "verification": "Source/automated evidence exists for subcomponents; exact device, account, credential or approval-dependent acceptance remains open. Priority recheck: production 24h callback P2022 counts credentials 6 / Google 5 / GitHub 2; missing User.emailVerifiedAt confirmed. Protected preflight dispatch returns Forbidden before run creation; runtime has no DATABASE_URL. Domain selects READY #123, newer #124 build READY. Actual founder authentication and desktop pairing remain unverified.",
+      "verification": "Source/automated evidence exists for subcomponents; exact device, account, credential or approval-dependent acceptance remains open. Priority recheck: production 24h callback P2022 counts credentials 6 / Google 5 / GitHub 2; missing User.emailVerifiedAt confirmed. Protected preflight dispatch returns Forbidden before run creation; runtime has no DATABASE_URL. Domain selects READY #123, newer #124 build READY. Actual founder authentication and desktop pairing remain unverified. Desktop startup/focus verification is now coordinated by newest request and immutable credential context; current failure locks transport without automatically deleting vault records. Eight deferred-response tests and first-run wiring checks cover this scope. Native keychain, manual sign-in submission races and actual founder pairing remain unvalidated.",
       "evidence": [
         "lib/auth.ts",
         "lib/auth/currentContext.ts",
         "scripts/auth-recovery-preflight.mjs",
         ".github/workflows/auth-recovery-preflight.yml",
-        "docs/AUTH_LOGIN_RECOVERY_2026-10-15.md"
+        "docs/AUTH_LOGIN_RECOVERY_2026-10-15.md",
+        "desktop/src/App.tsx",
+        "desktop/src/lib/credentialVerificationCoordinator.ts",
+        "lib/desktop/__tests__/credentialVerificationCoordinator.test.ts",
+        "docs/DESKTOP_AUTH_VERIFICATION_LIFECYCLE.md"
       ],
       "prs": [
         103,

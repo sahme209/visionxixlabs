@@ -332,3 +332,17 @@ Desktop source audit also identifies overlapping focus verification requests and
 automatic vault deletion on verification failure as a remaining recovery risk.
 This has not yet been repaired or validated; preserve authenticated access gates
 and add deferred-response regression evidence before changing that lifecycle.
+
+## Desktop saved-credential lifecycle follow-up
+
+The identified startup/focus verification race is addressed in a dedicated
+coordinator: newest request and current immutable credential context only,
+explicit transition invalidation and disposal. Current failures lock the active
+transport without automatic vault deletion; accepted workspace access remains
+server-verified. Eight deferred-response tests and first-run wiring checks cover
+the scoped lifecycle. See `docs/DESKTOP_AUTH_VERIFICATION_LIFECYCLE.md`.
+Actual macOS/keychain/deep-link and founder production pairing remain unverified;
+manual sign-in submission lifecycle is not claimed repaired by this change.
+#125 is merged with READY automatic main build; #126 exact-head CI passed and
+merged, with its automatic build tracked separately. No production DB mutation,
+OAuth credential change, live billing or manual domain promotion occurred.

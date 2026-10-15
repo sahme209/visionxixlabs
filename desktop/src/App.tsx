@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Sidebar } from "./components/Sidebar";
 import { TopBar } from "./components/TopBar";
 import { WorkspaceViewBoundary } from "./components/WorkspaceViewBoundary";
@@ -12,8 +12,7 @@ import { AirflowAutomationView } from "./views/AirflowAutomationView";
 import { DesktopSignInView } from "./views/DesktopSignInView";
 import { DesktopAccessRequiredView } from "./views/DesktopAccessRequiredView";
 import { desktopClient, type VerifiedDesktopIdentity } from "./lib/desktopClient";
-import { clearApiKey } from "./lib/apiKeyStore";
-import { clearAuthSession } from "./lib/authSession";
+import { createCredentialVerificationCoordinator, type CredentialVerificationCoordinator } from "./lib/credentialVerificationCoordinator";
 import { readDesktopPreferences } from "./lib/preferences";
 import { useNativeMenuActions } from "./lib/useNativeMenuActions";
 
@@ -42,35 +41,36 @@ export default function App() {
   const [authState, setAuthState] = useState<"checking" | "authenticated" | "access_required" | "unauthenticated">("checking");
   const [authError, setAuthError] = useState<string | null>(null);
   const [identity, setIdentity] = useState<VerifiedDesktopIdentity | null>(null);
+  const credentialVerification = useRef<CredentialVerificationCoordinator | null>(null);
 
   useEffect(() => {
     void readDesktopPreferences().catch(() => undefined);
-    let cancelled = false;
-    async function verifySavedCredential() {
-      if (!desktopClient.hasAuth()) {
-        if (!cancelled) setAuthState("unauthenticated");
-        return;
-      }
-
-      const verified = await desktopClient.verifyCurrentCredential();
-      if (cancelled) return;
-      if (verified.ok) {
-        setIdentity(verified.data);
-        setAuthState(verified.data.access.allowed ? "authenticated" : "access_required");
-        return;
-      }
-
-      await Promise.allSettled([clearApiKey(), clearAuthSession()]);
-      if (cancelled) return;
-      setAuthError(`Your saved sign-in could not be verified. ${verified.error}`);
-      setAuthState("unauthenticated");
-    }
-
-    void verifySavedCredential();
-    const verifyAfterBrowserReturn = () => { void verifySavedCredential(); };
+    const coordinator = createCredentialVerificationCoordinator<VerifiedDesktopIdentity>({
+      // setSession/setApiBase replace config, including a same-token reload.
+      readContext: () => ({ version: desktopClient.config, present: desktopClient.hasAuth() }),
+      verify: () => desktopClient.verifyCurrentCredential(),
+      onVerified: (verified) => {
+        setIdentity(verified);
+        setAuthError(null);
+        setAuthState(verified.access.allowed ? "authenticated" : "access_required");
+      },
+      onRejected: (error) => {
+        // Lock the current transport synchronously. A network/schema failure
+        // is not authority to delete saved credentials from the secure vault.
+        desktopClient.setSession(undefined);
+        setIdentity(null);
+        setAuthError(`Your saved sign-in could not be verified. ${error}`);
+        setAuthState("unauthenticated");
+      },
+      onMissing: () => { setIdentity(null); setAuthState("unauthenticated"); },
+    });
+    credentialVerification.current = coordinator;
+    void coordinator.verify();
+    const verifyAfterBrowserReturn = () => { void coordinator.verify(); };
     window.addEventListener("focus", verifyAfterBrowserReturn);
     return () => {
-      cancelled = true;
+      coordinator.dispose();
+      if (credentialVerification.current === coordinator) credentialVerification.current = null;
       window.removeEventListener("focus", verifyAfterBrowserReturn);
     };
   }, []);
@@ -81,6 +81,7 @@ export default function App() {
       <DesktopSignInView
         initialError={authError}
         onSignedIn={(verifiedIdentity) => {
+          credentialVerification.current?.invalidate();
           setAuthError(null);
           setIdentity(verifiedIdentity);
           setAuthState(verifiedIdentity.access.allowed ? "authenticated" : "access_required");
@@ -94,10 +95,12 @@ export default function App() {
       <DesktopAccessRequiredView
         identity={identity}
         onAccessGranted={(verifiedIdentity) => {
+          credentialVerification.current?.invalidate();
           setIdentity(verifiedIdentity);
           setAuthState("authenticated");
         }}
         onSignedOut={() => {
+          credentialVerification.current?.invalidate();
           setIdentity(null);
           setAuthError(null);
           setAuthState("unauthenticated");
