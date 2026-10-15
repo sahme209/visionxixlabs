@@ -1,5 +1,20 @@
 # Axiom Agent master-mission status
 
+## Complete scope audit and permanent requirement register
+
+The current scope index is [AXIOM_COMPLETE_MISSION_TRACKER.md](AXIOM_COMPLETE_MISSION_TRACKER.md),
+with editable per-row evidence and next actions in `docs/mission/requirements.json`.
+It covers the available original handoff, unified mission, former Claude scope,
+decisions and implementation plans. Exact coverage of the older 36-section
+specification and scenarios A–L remains blocked on missing source; the register
+does not silently replace it with inferred requirements or a completion claim.
+
+Fresh current-main evidence changes the prior routing snapshot: the public
+domain now targets the #116 deployment, without a routing operation by this
+agent. Credentials and Google callbacks on that deployment still show P2022.
+Production schema/founder preflight remains required. Historical sections below
+retain their original evidence dates and are not current readiness assertions.
+
 ## Continuing mission — final Gateway prompt redaction
 
 PR #115 merged at `40fbbd48` after exact-head GitHub validation passed.

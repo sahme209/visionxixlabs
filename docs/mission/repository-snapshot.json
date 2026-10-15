@@ -1,0 +1,823 @@
+{
+  "date": "2026-10-15",
+  "main": "6eb90680815a7c235e7d31ece1c6638dfa44708d",
+  "remoteBranches": [
+    {
+      "branch": "add-deployment-promotion-chain",
+      "sha": "07ff2599533ddd05df91ab26dace43e5f50647c2",
+      "classification": "ancestor_of_main",
+      "action": "No implementation replay needed"
+    },
+    {
+      "branch": "ai-website-build",
+      "sha": "564dfb012c7a9b42553c4f86a92810801c480f0c",
+      "classification": "divergent_review_required",
+      "action": "Review unique diff and linked PR; divergence alone does not mean unfinished work",
+      "commitsBehindMain": 1758,
+      "commitsUniqueToHead": 22,
+      "latestMessage": "Remove left accent bars from stats and home page cards",
+      "changedPathsFromBranchBase": [
+        ".env.example",
+        ".gitignore",
+        ".npmrc",
+        "ADD_IMAGES.md",
+        "ADD_THESE_RULES.md",
+        "ADD_WEBHOOK_SECRET.md",
+        "AI_SETUP.md",
+        "AI_WEBSITE_BUILD_VERIFICATION.md",
+        "AI_WEBSITE_STARTER_VERIFICATION.md",
+        "BUILD_FIX.md",
+        "CANCELLATION_LOGIC_VERIFICATION.md",
+        "CLEANUP_AND_SIMPLIFICATION_RECOMMENDATIONS.md",
+        "CLOUD_SECURITY_SUMMARY.md",
+        "COMPLETE_IMPLEMENTATION.md",
+        "DISCLAIMER_STRATEGY.md",
+        "EMAIL_CONFIG.md",
+        "EMAIL_SETUP.md",
+        "ENHANCEMENTS_COMPLETE.md",
+        "ENHANCEMENT_COMPLETE.md",
+        "ENHANCEMENT_PLAN.md",
+        "ENHANCEMENT_SUMMARY.md",
+        "ENTERPRISE_AUDIT_SUMMARY.md",
+        "FEATURE_ENHANCEMENT_PROPOSAL.md",
+        "FILES_CREATED_MODIFIED.md",
+        "FINAL_IMPLEMENTATION_STATUS.md",
+        "FIREBASE_ADMIN_SETUP.md",
+        "FIRESTORE_RULES_QUICK_UPDATE.md",
+        "FIRESTORE_RULES_SETUP.md",
+        "FIRESTORE_SECURITY_RULES_UPDATE.md",
+        "GROWING_TEAMS_SUMMARY.md"
+      ],
+      "mergedPRsForBranch": []
+    },
+    {
+      "branch": "bump-desktop-v0.1.19",
+      "sha": "279380fd5a320a6b2e5b060434f179df274bfa13",
+      "classification": "ancestor_of_main",
+      "action": "No implementation replay needed"
+    },
+    {
+      "branch": "chore/add-deploy-workflow",
+      "sha": "f7076d46dbe2b29eab4e3496a7858411981a96a2",
+      "classification": "ancestor_of_main",
+      "action": "No implementation replay needed"
+    },
+    {
+      "branch": "chore/bump-desktop-version",
+      "sha": "18d718a7ff9cbb460eb34022b7e62271aa22820f",
+      "classification": "ancestor_of_main",
+      "action": "No implementation replay needed"
+    },
+    {
+      "branch": "chore/bump-desktop-version-0115",
+      "sha": "ae250371232c682abc00bf16072f1ab6f5c6bc3a",
+      "classification": "ancestor_of_main",
+      "action": "No implementation replay needed"
+    },
+    {
+      "branch": "chore/remove-dead-axiom-overclaim-page",
+      "sha": "fcaab14e17be9597e52a66dddf91f740c124a2ce",
+      "classification": "ancestor_of_main",
+      "action": "No implementation replay needed"
+    },
+    {
+      "branch": "chore/rename-amber-css-classes",
+      "sha": "4c8d75fd8d47a2c57bf7d201bb529ca8ee774bf1",
+      "classification": "ancestor_of_main",
+      "action": "No implementation replay needed"
+    },
+    {
+      "branch": "clarify-agent-deploy-target-label",
+      "sha": "8fe2c7e447e15f27a976d7219699cbb21368cd6d",
+      "classification": "ancestor_of_main",
+      "action": "No implementation replay needed"
+    },
+    {
+      "branch": "codex/accepted-browser-membership",
+      "sha": "b72c298c755326cc6ead939c8dba8ed757d1b43c",
+      "classification": "ancestor_of_main",
+      "action": "No implementation replay needed"
+    },
+    {
+      "branch": "codex/agent-effort-budgets",
+      "sha": "120cf486a06afff8955078ed4307534fc997076a",
+      "classification": "ancestor_of_main",
+      "action": "No implementation replay needed"
+    },
+    {
+      "branch": "codex/agent-file-diff-review",
+      "sha": "ed5a9c4c706749d496e02c4407049f0333e730a8",
+      "classification": "ancestor_of_main",
+      "action": "No implementation replay needed"
+    },
+    {
+      "branch": "codex/agent-model-controls",
+      "sha": "2681131f88f08f0650d0d46fcd19dc304efcf83c",
+      "classification": "ancestor_of_main",
+      "action": "No implementation replay needed"
+    },
+    {
+      "branch": "codex/agent-usage-receipts",
+      "sha": "bd30a777061a110118d9cc902ae9545c513adecc",
+      "classification": "ancestor_of_main",
+      "action": "No implementation replay needed"
+    },
+    {
+      "branch": "codex/ai-cost-governance",
+      "sha": "d00d060cd327132d51742b565a821737bce69aee",
+      "classification": "ancestor_of_main",
+      "action": "No implementation replay needed"
+    },
+    {
+      "branch": "codex/ai-usage-billing",
+      "sha": "aa613d65cf3af7eb82b40032f691774134a8c308",
+      "classification": "ancestor_of_main",
+      "action": "No implementation replay needed"
+    },
+    {
+      "branch": "codex/airflow-execution-claim",
+      "sha": "ee364bc8df84f851cad3c22986fe73846fe4dec7",
+      "classification": "ancestor_of_main",
+      "action": "No implementation replay needed"
+    },
+    {
+      "branch": "codex/airflow-governed-automation",
+      "sha": "d732c92a65f0d232dd070f09abe5ecd9a95fcec2",
+      "classification": "divergent_review_required",
+      "action": "Review unique diff and linked PR; divergence alone does not mean unfinished work",
+      "commitsBehindMain": 194,
+      "commitsUniqueToHead": 1,
+      "latestMessage": "fix(airflow): restore production scheduler configuration",
+      "changedPathsFromBranchBase": [
+        "app/api/cron/airflow-automation-tick/route.ts",
+        "docs/AIRFLOW_INTEGRATION.md",
+        "vercel.json"
+      ],
+      "mergedPRsForBranch": [
+        53,
+        52
+      ]
+    },
+    {
+      "branch": "codex/airflow-paused-retry-guard",
+      "sha": "bde025a5a74fbdbcadec74832aa20fb4e62f7bfb",
+      "classification": "ancestor_of_main",
+      "action": "No implementation replay needed"
+    },
+    {
+      "branch": "codex/auth-schema-recovery",
+      "sha": "e89a05eb81f5b29e01bfa66416aa7246266a5f7e",
+      "classification": "ancestor_of_main",
+      "action": "No implementation replay needed"
+    },
+    {
+      "branch": "codex/axiom-founding-supporters",
+      "sha": "e90483a9d73ac38964c9898a9fc4f8627cb004a0",
+      "classification": "ancestor_of_main",
+      "action": "No implementation replay needed"
+    },
+    {
+      "branch": "codex/deployment-observation-race",
+      "sha": "da972b9baa89fff2b809ebc8af05cf5c01fd6776",
+      "classification": "ancestor_of_main",
+      "action": "No implementation replay needed"
+    },
+    {
+      "branch": "codex/deployment-receipt-visibility",
+      "sha": "f0a3e2b36082525eaa7236aae3a49003c8e73b6d",
+      "classification": "ancestor_of_main",
+      "action": "No implementation replay needed"
+    },
+    {
+      "branch": "codex/desktop-agi-auth",
+      "sha": "22ead98c7e3842d36a58dae7d4836bab0cbc9324",
+      "classification": "ancestor_of_main",
+      "action": "No implementation replay needed"
+    },
+    {
+      "branch": "codex/desktop-ai-call-log-auth",
+      "sha": "eb0ba75b37ed90c7db5472cc010b63b355dec355",
+      "classification": "ancestor_of_main",
+      "action": "No implementation replay needed"
+    },
+    {
+      "branch": "codex/desktop-applications-auth",
+      "sha": "fd214a173804ca29209f6a8b5889ad93f933e815",
+      "classification": "ancestor_of_main",
+      "action": "No implementation replay needed"
+    },
+    {
+      "branch": "codex/desktop-branch-validation-auth",
+      "sha": "d2f1f25b726ac6663d465c86e816963b6bd2cbda",
+      "classification": "ancestor_of_main",
+      "action": "No implementation replay needed"
+    },
+    {
+      "branch": "codex/desktop-ci-release-inputs",
+      "sha": "514180f2fd25836c6fd73155627b0ecd804e299d",
+      "classification": "ancestor_of_main",
+      "action": "No implementation replay needed"
+    },
+    {
+      "branch": "codex/desktop-governed-modes",
+      "sha": "f83729abd0f64a55826c4aa57be18e0c7899f4ba",
+      "classification": "ancestor_of_main",
+      "action": "No implementation replay needed"
+    },
+    {
+      "branch": "codex/desktop-learning-loop-auth",
+      "sha": "5e81b9a477e86ca169204cc271c603cb4735d254",
+      "classification": "ancestor_of_main",
+      "action": "No implementation replay needed"
+    },
+    {
+      "branch": "codex/desktop-onboarding-auth",
+      "sha": "3ca5293fbc24adbde823d1a610332d4e71c8e08b",
+      "classification": "ancestor_of_main",
+      "action": "No implementation replay needed"
+    },
+    {
+      "branch": "codex/desktop-release-audit-auth",
+      "sha": "69d7ae14b029f83ac7156d52b72983dd3113bb7f",
+      "classification": "ancestor_of_main",
+      "action": "No implementation replay needed"
+    },
+    {
+      "branch": "codex/desktop-release-footer-gate",
+      "sha": "fcecc3ce297becf98b02fb8c58fe384c01483231",
+      "classification": "ancestor_of_main",
+      "action": "No implementation replay needed"
+    },
+    {
+      "branch": "codex/desktop-release-workspace-auth",
+      "sha": "37c046482a79a588c45a0768e6bd72473bd8a138",
+      "classification": "ancestor_of_main",
+      "action": "No implementation replay needed"
+    },
+    {
+      "branch": "codex/desktop-repository-inventory-auth",
+      "sha": "154185cd1fcd0511ca7427fb3258ce98ecce2de4",
+      "classification": "ancestor_of_main",
+      "action": "No implementation replay needed"
+    },
+    {
+      "branch": "codex/desktop-sbom-provenance",
+      "sha": "d5172dab69e8c6962c9e8ae5992159b4a0b89769",
+      "classification": "ancestor_of_main",
+      "action": "No implementation replay needed"
+    },
+    {
+      "branch": "codex/desktop-webhook-deliveries-auth",
+      "sha": "a58f339557e19e6e54b9d2ad9151de8368405929",
+      "classification": "ancestor_of_main",
+      "action": "No implementation replay needed"
+    },
+    {
+      "branch": "codex/download-support-fix",
+      "sha": "52f567b01bf41d0c1efb2515d874737c6a869863",
+      "classification": "ancestor_of_main",
+      "action": "No implementation replay needed"
+    },
+    {
+      "branch": "codex/ecs-deploy-concurrency-guard",
+      "sha": "2bcded1386472cb8f4b034524cc5cb8335388e2a",
+      "classification": "divergent_review_required",
+      "action": "Review unique diff and linked PR; divergence alone does not mean unfinished work",
+      "commitsBehindMain": 92,
+      "commitsUniqueToHead": 1,
+      "latestMessage": "test(releaseops): keep ECS workflow template in sync",
+      "changedPathsFromBranchBase": [
+        "lib/releaseops/__tests__/awsEcsDeployWorkflowTemplate.test.ts"
+      ],
+      "mergedPRsForBranch": [
+        82
+      ]
+    },
+    {
+      "branch": "codex/ecs-readonly-validation",
+      "sha": "8033a3835c4925fe05942ef538abf0bd676ca86d",
+      "classification": "ancestor_of_main",
+      "action": "No implementation replay needed"
+    },
+    {
+      "branch": "codex/ecs-workflow-log-minimization",
+      "sha": "aa9ec3e665118d8168d67586a07151286f528cfa",
+      "classification": "ancestor_of_main",
+      "action": "No implementation replay needed"
+    },
+    {
+      "branch": "codex/evidence-grounded-agent",
+      "sha": "ccb210fc0f6daf97f6094a36611d4492aad18cd3",
+      "classification": "ancestor_of_main",
+      "action": "No implementation replay needed"
+    },
+    {
+      "branch": "codex/fix-agi-cockpit-route-config",
+      "sha": "102a756559424a7438a36aa3a3005d5bfb48de90",
+      "classification": "ancestor_of_main",
+      "action": "No implementation replay needed"
+    },
+    {
+      "branch": "codex/gateway-receipt-identity",
+      "sha": "8f086688c9cd8050e5b0b7956132cb4e1d76dd95",
+      "classification": "ancestor_of_main",
+      "action": "No implementation replay needed"
+    },
+    {
+      "branch": "codex/gateway-system-redaction",
+      "sha": "93d5c70b67b843f9c5b92ac982ba93804adc1cac",
+      "classification": "ancestor_of_main",
+      "action": "No implementation replay needed"
+    },
+    {
+      "branch": "codex/governance-control-plane",
+      "sha": "35a74ec6819221d9d35c227eec823013d16e976a",
+      "classification": "divergent_review_required",
+      "action": "Review unique diff and linked PR; divergence alone does not mean unfinished work",
+      "commitsBehindMain": 141,
+      "commitsUniqueToHead": 1,
+      "latestMessage": "feat(governance): enforce AI and agent policy",
+      "changedPathsFromBranchBase": [
+        "app/api/autonomy/charter/route.ts",
+        "app/api/control/ai-governance/__tests__/route.test.ts",
+        "app/api/control/ai-governance/route.ts",
+        "app/api/desktop/agent/conversations/[id]/messages/route.ts",
+        "app/control/ai-agents/AIGovernancePanel.tsx",
+        "app/control/ai-agents/page.tsx",
+        "docs/GOVERNANCE_TRANSFORMATION_PROGRESS.md",
+        "lib/axiom/agentRuntime/__tests__/decisionLoop.test.ts",
+        "lib/axiom/agentRuntime/agentIdentityPolicy.ts",
+        "lib/axiom/agentRuntime/decisionLoop.ts",
+        "lib/axiom/agentRuntime/tools.ts",
+        "prisma/migrations/20261013172000_add_workspace_agent_identity/migration.sql",
+        "prisma/schema.prisma"
+      ],
+      "mergedPRsForBranch": [
+        65
+      ]
+    },
+    {
+      "branch": "codex/governed-environment-rbac",
+      "sha": "9d044ad4f504ed57b942ef25e893868fd3d205f9",
+      "classification": "divergent_review_required",
+      "action": "Review unique diff and linked PR; divergence alone does not mean unfinished work",
+      "commitsBehindMain": 198,
+      "commitsUniqueToHead": 1,
+      "latestMessage": "Merge pull request #52 from sahme209/codex/airflow-governed-automation",
+      "changedPathsFromBranchBase": [],
+      "mergedPRsForBranch": [
+        51
+      ]
+    },
+    {
+      "branch": "codex/governed-repository-search",
+      "sha": "3ff0c55b72f25d23fa88f5c3b4b47a46cca11323",
+      "classification": "ancestor_of_main",
+      "action": "No implementation replay needed"
+    },
+    {
+      "branch": "codex/guided-integration-setup",
+      "sha": "18ff0e382af77897ca1344898b0af642f300bbf6",
+      "classification": "ancestor_of_main",
+      "action": "No implementation replay needed"
+    },
+    {
+      "branch": "codex/login-deployment-verification",
+      "sha": "28c7238d19e3611246d6c5aea8ff7a9a7a8a6db9",
+      "classification": "ancestor_of_main",
+      "action": "No implementation replay needed"
+    },
+    {
+      "branch": "codex/mission-post-109",
+      "sha": "e7dbff338ed5a6f6bae17717e8cee04f52a3e40a",
+      "classification": "ancestor_of_main",
+      "action": "No implementation replay needed"
+    },
+    {
+      "branch": "codex/mission-reliability-integration",
+      "sha": "6afbb192b0d086077c472b76f1248e8a5b7c8c43",
+      "classification": "ancestor_of_main",
+      "action": "No implementation replay needed"
+    },
+    {
+      "branch": "codex/model-catalog-hardening",
+      "sha": "421818a9ba44f2eb3cbe0e13917b3706b9215c0f",
+      "classification": "ancestor_of_main",
+      "action": "No implementation replay needed"
+    },
+    {
+      "branch": "codex/pr75-reservation-validation-20261014",
+      "sha": "7688729180910592fd8daab5c62c27bb8ed15fd9",
+      "classification": "ancestor_of_main",
+      "action": "No implementation replay needed"
+    },
+    {
+      "branch": "codex/product-led-website",
+      "sha": "e151cc9f8fa400bdf169e57e516eae1652c281ec",
+      "classification": "divergent_review_required",
+      "action": "Review unique diff and linked PR; divergence alone does not mean unfinished work",
+      "commitsBehindMain": 152,
+      "commitsUniqueToHead": 9,
+      "latestMessage": "feat(control): add real governance posture view",
+      "changedPathsFromBranchBase": [
+        ".env.example",
+        "app/accept-invite/[token]/page.tsx",
+        "app/admin/growth/content/page.tsx",
+        "app/api/admin/agi-smoke-test/route.ts",
+        "app/api/admin/anthropic-test/route.ts",
+        "app/api/ai/generate/route.ts",
+        "app/api/billing/stripe-webhook/__tests__/route.test.ts",
+        "app/api/billing/stripe-webhook/route.ts",
+        "app/api/chat/route.ts",
+        "app/api/cron/reconcile-ai-gateway-usage/route.ts",
+        "app/api/desktop/agent/actions/[id]/approve/__tests__/route.test.ts",
+        "app/api/desktop/agent/actions/[id]/approve/route.ts",
+        "app/api/desktop/ai-providers/route.ts",
+        "app/api/desktop/environments/deploy/__tests__/route.test.ts",
+        "app/api/desktop/environments/deploy/route.ts",
+        "app/api/visionxix-ai-chat/route.ts",
+        "app/control/[section]/page.tsx",
+        "app/control/governance/page.tsx",
+        "app/control/layout.tsx",
+        "app/control/page.tsx",
+        "desktop/src/lib/desktopClient.ts",
+        "desktop/src/views/SettingsView.tsx",
+        "docs/ADR_WEB_GOVERNANCE_DESKTOP_OPERATIONS.md",
+        "docs/AI_GATEWAY_ROLLOUT.md",
+        "docs/BILLING_RECONCILIATION.md",
+        "lib/ai/AIModelRegistry.ts",
+        "lib/ai/AIProvider.ts",
+        "lib/ai/AIProviderManager.ts",
+        "lib/ai/__tests__/AIModelRegistry.test.ts",
+        "lib/ai/__tests__/AIProviderManager.test.ts"
+      ],
+      "mergedPRsForBranch": [
+        64,
+        63
+      ]
+    },
+    {
+      "branch": "codex/provider-evidence-truthfulness",
+      "sha": "f754c27620dd4ea6f2ed6f9b199ef4ae7d3ca90f",
+      "classification": "ancestor_of_main",
+      "action": "No implementation replay needed"
+    },
+    {
+      "branch": "codex/push-all-changes-20260930",
+      "sha": "0f8ac0a008f9edb4f139c24f632b26c3bc0ac19c",
+      "classification": "divergent_review_required",
+      "action": "Review unique diff and linked PR; divergence alone does not mean unfinished work",
+      "commitsBehindMain": 690,
+      "commitsUniqueToHead": 1,
+      "latestMessage": "Implement deployment request workflow and refresh site",
+      "changedPathsFromBranchBase": [
+        "app/api/desktop/deployments/[id]/playbooks/route.ts",
+        "app/api/desktop/deployments/route.ts",
+        "app/demo/page.tsx",
+        "app/download/page.tsx",
+        "app/layout.tsx",
+        "app/page.tsx",
+        "components/AIChatWidget.tsx",
+        "components/Footer.tsx",
+        "components/Navigation.tsx",
+        "components/StickyMobileCTA.tsx",
+        "components/home/MobileHome.tsx",
+        "components/marketing/SandboxNavigation.tsx",
+        "desktop/README.md",
+        "desktop/src/App.tsx",
+        "desktop/src/components/Sidebar.tsx",
+        "desktop/src/components/TopBar.tsx",
+        "desktop/src/lib/desktopClient.ts",
+        "desktop/src/views/DeploymentRequestsView.tsx",
+        "docs/DECISIONS.md",
+        "docs/HANDOFF.md",
+        "docs/PRODUCT_VISION.md",
+        "docs/REQUIREMENTS_MATRIX.md",
+        "docs/ROADMAP.md",
+        "docs/VERIFICATION_REPORT.md",
+        "lib/__tests__/desktopDeliveryBoundary.test.ts",
+        "lib/__tests__/mobileWebsiteContract.test.ts",
+        "lib/desktop/__tests__/desktopClientError.test.ts",
+        "lib/desktop/resolveRequestDesktopSession.ts",
+        "lib/product/__tests__/tauriCapabilityInventory.test.ts",
+        "lib/product/tauriCapabilityInventory.ts"
+      ],
+      "mergedPRsForBranch": []
+    },
+    {
+      "branch": "codex/refresh-mission-evidence",
+      "sha": "04c691209d11b4165956b4d41ef17e6c6bf7fc9e",
+      "classification": "ancestor_of_main",
+      "action": "No implementation replay needed"
+    },
+    {
+      "branch": "codex/request-revision-iteration",
+      "sha": "37bea81dbbb7c3b5c3f525bb6bb998e7fffbf557",
+      "classification": "ancestor_of_main",
+      "action": "No implementation replay needed"
+    },
+    {
+      "branch": "codex/settlement-batch-progress",
+      "sha": "c5e648a511592e00edd38040e23899cbe92abb42",
+      "classification": "ancestor_of_main",
+      "action": "No implementation replay needed"
+    },
+    {
+      "branch": "codex/settlement-retry-window",
+      "sha": "1fb5ab8c09f4f7b36319f0a3bb75da6dd41814db",
+      "classification": "ancestor_of_main",
+      "action": "No implementation replay needed"
+    },
+    {
+      "branch": "codex/unified-mission-evidence",
+      "sha": "36149fa73b14cb2a7b9af6a0c8928807527e1e59",
+      "classification": "ancestor_of_main",
+      "action": "No implementation replay needed"
+    },
+    {
+      "branch": "codex/verified-ai-credit-fulfillment",
+      "sha": "d18571f9e1bfd87b91e7e8d9240edda90fbe0b1f",
+      "classification": "ancestor_of_main",
+      "action": "No implementation replay needed"
+    },
+    {
+      "branch": "codex/verified-email-identity",
+      "sha": "c7f85c6486e32d00b6f471e9f0e609998d80a6d1",
+      "classification": "ancestor_of_main",
+      "action": "No implementation replay needed"
+    },
+    {
+      "branch": "codex/workspace-integration-foundation",
+      "sha": "1bdc684a1683c034c5ccd8f4acf46bd8df2191a7",
+      "classification": "ancestor_of_main",
+      "action": "No implementation replay needed"
+    },
+    {
+      "branch": "docs/org-membership-resolution",
+      "sha": "d8259bd7c28f6b9a486c8e2716c189aca9bf3ee4",
+      "classification": "ancestor_of_main",
+      "action": "No implementation replay needed"
+    },
+    {
+      "branch": "docs/p03-terraform-flag-resolved",
+      "sha": "f84a7166e28391a6eb28366ae1f37e192ea248aa",
+      "classification": "ancestor_of_main",
+      "action": "No implementation replay needed"
+    },
+    {
+      "branch": "feature/agent-runtime",
+      "sha": "33e2abea0b0613352133d335544d34b057c7876e",
+      "classification": "ancestor_of_main",
+      "action": "No implementation replay needed"
+    },
+    {
+      "branch": "feature/aws-deploy-trigger",
+      "sha": "180bbab6f846c680fbb2e2caf8029f602e7a9255",
+      "classification": "ancestor_of_main",
+      "action": "No implementation replay needed"
+    },
+    {
+      "branch": "feature/cognito-oidc-signin",
+      "sha": "1d9c1241bbb2016852251d4c2bb6a5e962bbb606",
+      "classification": "ancestor_of_main",
+      "action": "No implementation replay needed"
+    },
+    {
+      "branch": "feature/compliance-control-checks",
+      "sha": "13999d820cb6321f45e7c8e017cc98bd7d1f1cb1",
+      "classification": "ancestor_of_main",
+      "action": "No implementation replay needed"
+    },
+    {
+      "branch": "feature/desktop-ai-usage",
+      "sha": "1bbe1dd1c441ea432218a599257c343365bdcea8",
+      "classification": "ancestor_of_main",
+      "action": "No implementation replay needed"
+    },
+    {
+      "branch": "feature/desktop-environments",
+      "sha": "7af473372ba0b24dc44f9d1574ba34b66dd0d671",
+      "classification": "ancestor_of_main",
+      "action": "No implementation replay needed"
+    },
+    {
+      "branch": "feature/enterprise-identity",
+      "sha": "e24fb1427bd6079002a946bb3ad6aa2eda8d5a0c",
+      "classification": "ancestor_of_main",
+      "action": "No implementation replay needed"
+    },
+    {
+      "branch": "feature/environments",
+      "sha": "97736483f12e859c370babd33b676eb971d99fe6",
+      "classification": "ancestor_of_main",
+      "action": "No implementation replay needed"
+    },
+    {
+      "branch": "feature/github-write-access",
+      "sha": "63f299074048c511f16ffe63b11e48a4038486c6",
+      "classification": "ancestor_of_main",
+      "action": "No implementation replay needed"
+    },
+    {
+      "branch": "feature/repository-branch-policies",
+      "sha": "99c4ce90beff0e2cbb8c8f1c38fe4b4dae591322",
+      "classification": "ancestor_of_main",
+      "action": "No implementation replay needed"
+    },
+    {
+      "branch": "feature/sso-role-mapping",
+      "sha": "00dbe863d652987ec1b7efb35f9bb2a21a285d42",
+      "classification": "ancestor_of_main",
+      "action": "No implementation replay needed"
+    },
+    {
+      "branch": "fix/add-missing-org-membership-table",
+      "sha": "3c626eff74f37854c8b0f6b682fb9f29787968ba",
+      "classification": "ancestor_of_main",
+      "action": "No implementation replay needed"
+    },
+    {
+      "branch": "fix/github-app-manifest-same-origin",
+      "sha": "ea019017095f5d4f9708d4598d2bc3053656543c",
+      "classification": "ancestor_of_main",
+      "action": "No implementation replay needed"
+    },
+    {
+      "branch": "fix/github-app-setup-url",
+      "sha": "9c5f2625b151fc9b7dae3f53f130de64aad49c15",
+      "classification": "ancestor_of_main",
+      "action": "No implementation replay needed"
+    },
+    {
+      "branch": "fix/membership-bootstrap-observability",
+      "sha": "408050e1c322bc26018e5430f0450d83f5c8de6b",
+      "classification": "ancestor_of_main",
+      "action": "No implementation replay needed"
+    },
+    {
+      "branch": "fix/membership-retry-full-logging",
+      "sha": "a9dd65a333273795ee05e04a5d95deb81fcd487e",
+      "classification": "ancestor_of_main",
+      "action": "No implementation replay needed"
+    },
+    {
+      "branch": "fix/mobile-nav-overlay-offset",
+      "sha": "8b965b74d795f53c0af0b9ee949439b60c8e98fe",
+      "classification": "ancestor_of_main",
+      "action": "No implementation replay needed"
+    },
+    {
+      "branch": "fix/models-screen-stuck-checking",
+      "sha": "9ef47f740d9ad8beebac9520895e4915535d6e31",
+      "classification": "ancestor_of_main",
+      "action": "No implementation replay needed"
+    },
+    {
+      "branch": "fix/production-migration-audit-event-status",
+      "sha": "d36765926f6f811e4582733cc332c2232b22d0c5",
+      "classification": "ancestor_of_main",
+      "action": "No implementation replay needed"
+    },
+    {
+      "branch": "hotfix/terraform-apply-kill-switch",
+      "sha": "75d5a8c104fc55dfe422682d1eb7e9fb54ead6b8",
+      "classification": "ancestor_of_main",
+      "action": "No implementation replay needed"
+    },
+    {
+      "branch": "main",
+      "sha": "6eb90680815a7c235e7d31ece1c6638dfa44708d",
+      "classification": "ancestor_of_main",
+      "action": "No implementation replay needed"
+    },
+    {
+      "branch": "marketing/advertise-ai-governance-integrations",
+      "sha": "64aac53f7773a398714462cb290850de1d5fa651",
+      "classification": "divergent_review_required",
+      "action": "Review unique diff and linked PR; divergence alone does not mean unfinished work",
+      "commitsBehindMain": 259,
+      "commitsUniqueToHead": 1,
+      "latestMessage": "Consolidate homepage + /product to a single accent color",
+      "changedPathsFromBranchBase": [
+        "app/page.tsx",
+        "app/product/page.tsx"
+      ],
+      "mergedPRsForBranch": [
+        30
+      ]
+    },
+    {
+      "branch": "release/desktop-v0.1.20",
+      "sha": "22481b570e09a97dc58d23178e437369af2ff716",
+      "classification": "ancestor_of_main",
+      "action": "No implementation replay needed"
+    },
+    {
+      "branch": "remove-inert-environment-dropdown",
+      "sha": "caef77590a34340e6ded5dc677d4d195e5da583d",
+      "classification": "ancestor_of_main",
+      "action": "No implementation replay needed"
+    },
+    {
+      "branch": "vercel/install-vercel-web-analytics-f-r822hb",
+      "sha": "1f01903be74392285a9e9ac6cd0d0d14ccb6003e",
+      "classification": "divergent_review_required",
+      "action": "Review unique diff and linked PR; divergence alone does not mean unfinished work",
+      "commitsBehindMain": 1795,
+      "commitsUniqueToHead": 1,
+      "latestMessage": "Install Vercel Web Analytics for Next.js",
+      "changedPathsFromBranchBase": [
+        "app/layout.tsx",
+        "package-lock.json",
+        "package.json"
+      ],
+      "mergedPRsForBranch": []
+    },
+    {
+      "branch": "visual/remove-amber-desktop",
+      "sha": "02302747b9ddc1e08d6dda983082edd1a8f617d1",
+      "classification": "ancestor_of_main",
+      "action": "No implementation replay needed"
+    },
+    {
+      "branch": "visual/remove-amber-website",
+      "sha": "6cbef2d6bc00b7ac5b387497480063a08143caf6",
+      "classification": "ancestor_of_main",
+      "action": "No implementation replay needed"
+    },
+    {
+      "branch": "visual/settings-cursor-style-pass",
+      "sha": "2d1b775c8529c42433b742bf98d1fb93100e8df7",
+      "classification": "ancestor_of_main",
+      "action": "No implementation replay needed"
+    },
+    {
+      "branch": "visual/sidebar-cursor-style-pass",
+      "sha": "1b9a6ac16cbc67bcb664634ce79151cd0a0dd3dc",
+      "classification": "ancestor_of_main",
+      "action": "No implementation replay needed"
+    }
+  ],
+  "openPRs": [
+    {
+      "number": 1,
+      "state": "open draft",
+      "action": "Unrelated analytics proposal; review separately, do not duplicate or automatically merge"
+    }
+  ],
+  "recentMergedPRs": [
+    103,
+    104,
+    105,
+    106,
+    107,
+    108,
+    109,
+    110,
+    111,
+    112,
+    113,
+    114,
+    115,
+    116
+  ],
+  "ci": {
+    "head": "93d5c70b67b843f9c5b92ac982ba93804adc1cac",
+    "workflowRun": 38762756384,
+    "result": "success",
+    "tests": 5291,
+    "files": 537,
+    "desktopNative": "last verified in #112; no new native claim"
+  },
+  "deployment": {
+    "id": "dpl_3bPWbdEvNzys5iuArS9cHH6r5DgF",
+    "state": "READY",
+    "sha": "6eb90680815a7c235e7d31ece1c6638dfa44708d",
+    "customDomainDeploymentId": "dpl_3bPWbdEvNzys5iuArS9cHH6r5DgF",
+    "note": "Domain moved since previous audit without action by this agent"
+  },
+  "auth": {
+    "databaseBound": false,
+    "preflightRun": false,
+    "currentDeploymentP2022LastHour": {
+      "credentials": 1,
+      "google": 1
+    },
+    "signinHTTP": 200,
+    "providers": [
+      "credentials",
+      "google",
+      "github",
+      "cognito"
+    ],
+    "authenticatedJourneysVerified": false
+  },
+  "staleRemoteTrackingRefs": [
+    {
+      "branch": "origin",
+      "sha": "6eb90680815a7c235e7d31ece1c6638dfa44708d",
+      "classification": "ancestor_of_main",
+      "action": "No implementation replay needed"
+    }
+  ]
+}
