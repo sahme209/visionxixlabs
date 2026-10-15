@@ -31,7 +31,10 @@ export function aiUsageSettlementCandidates(limit: number, now = new Date()): Pr
           AND s."amountCents" = u."billedCents"
           AND s."createdAt" > ${cutoff} AND s."createdAt" <= ${now}
       ))
-    ORDER BY u."createdAt" ASC, u."id" ASC
+    ORDER BY COALESCE((
+      SELECT s."updatedAt" FROM "AIUsageBillingSettlement" AS s
+      WHERE s."usageEventId" = u."id"
+    ), u."createdAt") ASC, u."createdAt" ASC, u."id" ASC
     LIMIT ${batchSize}
   `;
 }

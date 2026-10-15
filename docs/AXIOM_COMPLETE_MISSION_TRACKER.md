@@ -315,3 +315,20 @@ remain authoritative. Repeated eligible provider failure scheduling and actual
 Stripe test-tenant invoice/refund journeys remain open. All available Codex and
 former Claude responsibilities remain represented; the absent older 36-section
 source remains explicitly blocked rather than reconstructed.
+
+## Durable billing retry rotation
+
+#125 is merged after exact-head CI run 38790618715 passed. A separate retry
+follow-up persists attempt metadata before provider IO and orders candidates by
+last attempt/update, so repeated eligible failures rotate behind waiting work.
+Five regressions failed before and pass after; SQLite/PostgreSQL one-row fixtures
+show the next waiting event is selected after a failed retry's timestamp moves.
+No new columns or migration, financial hold release, key reset or retry-window
+extension. Missing/concurrent attempt-marker writes forbid Stripe submission.
+Actual Stripe test-customer/refund/replay acceptance remains externally blocked;
+full live billing and provider exactly-once guarantees are not claimed.
+
+Desktop source audit also identifies overlapping focus verification requests and
+automatic vault deletion on verification failure as a remaining recovery risk.
+This has not yet been repaired or validated; preserve authenticated access gates
+and add deferred-response regression evidence before changing that lifecycle.
