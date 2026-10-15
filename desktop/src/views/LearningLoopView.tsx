@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { ViewShell } from "../components/Primitives";
+import { desktopClient } from "../lib/desktopClient";
 
 type SignalKind = "rejection_cluster" | "override_cluster" | "low_confidence_acceptance" | "high_rejection_rate";
 
@@ -53,10 +54,11 @@ export function LearningLoopView() {
   function load() {
     setLoading(true);
     setNetworkError(null);
-    fetch("/api/dashboard/learning-loop", { credentials: "include" })
-      .then((r) => r.json())
-      .then((j: Body) => setResp(j))
-      .catch((e) => setNetworkError(e instanceof Error ? e.message : "Network error."))
+    void desktopClient.learningLoop<Data>()
+      .then((result) => {
+        if (result.ok) setResp({ ok: true, data: result.data });
+        else setNetworkError(result.error);
+      })
       .finally(() => setLoading(false));
   }
   useEffect(() => { load(); }, []);
