@@ -49,6 +49,61 @@ this workspace. No production mutation, account role change, migration, merge,
 or deployment was performed during this investigation. Restoration remains
 unverified until the approved migration and real sign-in checks succeed.
 
+## Safety preflight before requesting production approval
+
+The target email-verification SQL was exercised on an isolated PostgreSQL 16
+database. Existing identity, password hash, name, and membership role were
+preserved; existing accounts remained unverified. Unique token hashes, rejection
+of orphan tokens, and token deletion when the fixture user was deleted passed.
+This was synthetic test data, not founder records or production validation.
+
+A fresh replay applied 99 migrations, then failed at
+`20261013172000_add_workspace_agent_identity`: it creates a table and attempts an
+`INSERT ... FROM "Organization"`, but no preceding migration creates that
+relation and the current Prisma schema has no Organization model. A real run
+may therefore have a partially created table and an unfinished migration entry.
+Do not blindly mark it applied/rolled back or edit its historical SQL before
+checking the actual production ledger and schema. This finding may explain why
+later migrations have not reached production; production history is not yet
+available to establish that causal link.
+
+The production workflow applies **all** pending files. Later billing migrations
+backfill `AddOnPurchase.idempotencyKey` and add uniqueness constraints on Stripe
+checkout/payment identifiers. Duplicate historical identifiers could block
+those indexes. They must not be deleted or merged to make a migration pass.
+
+Run `node scripts/auth-recovery-preflight.mjs` from this checkout in an approved
+environment where `DATABASE_URL` selects the intended production database and
+`AUTH_PREFLIGHT_FOUNDER_EMAIL` contains the founder-confirmed login email. A
+SELECT-only database role is preferred. Do not put secrets in chat or command
+history. Supply the existing `ADMIN_EMAILS` configuration only in that secure
+runtime if platform-admin matching is to be verified. Do not infer the founder
+email from repository ownership or commit authorship.
+
+The script uses a repeatable-read, read-only transaction with a five-second
+statement timeout. It checks applied migration checksums, unfinished/unknown
+entries, all pending migration names, the known Organization dependency, auth
+schema, founder case variants/canonical user ID, derived personal workspace,
+existing memberships/accepted status, platform-admin match when configuration
+is available, billing-plan metadata, and financial duplicate-group counts.
+It neither bootstraps memberships nor invokes login callbacks. It never returns
+email addresses, password hashes, Stripe identifiers, tokens, or connection URLs.
+Exit 2 signals findings; exit 1 signals incomplete inspection. Exit 0 is evidence
+collection only and never grants production approval or proves live login.
+Review output privately: user/workspace IDs and membership roles remain internal
+account information and should not be pasted into public PR comments.
+The preflight was run against isolated PostgreSQL using a SELECT-only role. It
+resolved the synthetic account and its existing accepted `read_only` membership,
+retained the unverified-password state, and detected a seeded duplicate checkout
+identifier without returning that identifier or the fixture email/password hash.
+Unit coverage also rejects absent founder emails, non-read-only transactions,
+ambiguous email case variants, and reports failed migrations without repair.
+
+The founder supplied the intended login email in this chat. Its match to a
+production user, memberships, and admin configuration remains **unverified**:
+this runtime has no production database binding. The derived workspace can be
+computed locally but that alone is not evidence of an existing account or role.
+
 ## Regression coverage and handoff
 
 `lib/__tests__/authLoginRecovery.test.ts` exercises verified password login,
@@ -58,13 +113,21 @@ unit tests with mocked storage, not a real OAuth or production database test.
 Existing sign-in gate tests preserve best-effort personal-workspace bootstrap;
 no change to authorization is needed to repair this schema mismatch.
 
-Local validation: all 527 Vitest files / 5,146 tests pass after Prisma client
+Local validation: all 528 Vitest files / 5,151 tests pass after Prisma client
 generation, web `tsc --noEmit` and the full production build pass, desktop TypeScript and frontend build
 pass, and all 30 Python CLI tests pass. Native Rust checks cannot run because
 `cargo` is not installed in this environment. These checks do not establish
 live provider authentication or production schema readiness.
 
-Keep the broader master mission paused at login recovery. The historical 85%
-completion estimate has not been audited. Claude can review recovery UX later;
-the founder can perform real browser sign-in and laptop integration validation
-after production recovery is approved.
+The original master mission remains active. Login recovery is the first gate;
+after real sign-in recovery, resume an audit of current main/PRs/CI and the
+existing execution backlog, then desktop paired authentication/security, AI
+billing, real integration gaps, governed automation, desktop release usability,
+and web companion contracts. Avoid duplicate implementations and preserve
+working functionality. Live cloud tests, live Stripe test-account runs, native
+Mac acceptance, production operations, merges, and deployment approvals retain
+their original founder ownership. The historical 85% estimate is not audited.
+Claude retains later UX/design/governance review; Cursor remains optional for
+local inspection. Existing `docs/AXIOM_EXECUTION_BACKLOG.md` contains historical
+evidence and must be reconciled against current main rather than treated as a
+current deployment inventory.
