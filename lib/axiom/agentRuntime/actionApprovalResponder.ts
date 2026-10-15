@@ -9,6 +9,7 @@
  */
 
 import "server-only";
+import { isSensitiveRepositoryEvidencePath } from "./repositoryEvidencePolicy";
 
 import { resolveTenantScopedToken, parseRepositoryFullName } from "@/lib/connectors/github/resolveTenantScopedToken";
 import { createBranch, commitFile, commitFiles, createPullRequest, dispatchWorkflow, getRepositoryDefaultBranch } from "@/lib/connectors/github/githubWriteClient";
@@ -73,6 +74,7 @@ export async function executeApprovedAction(
     const message = typeof args.message === "string" ? args.message : "";
     const review = githubFileReviewFromArgs(args);
     if (!branch || !path || !content || !message) return { ok: false, error: "invalid_payload" };
+    if (isSensitiveRepositoryEvidencePath(path)) return { ok: false, error: "sensitive_repository_file" };
     if (!review) return { ok: false, error: "file_review_required" };
     const token = await resolveTenantScopedToken(organizationId, parsed);
     if (!token.ok) return { ok: false, error: token.error };
@@ -102,6 +104,7 @@ export async function executeApprovedAction(
       return [{ path: file.path, content: file.content, expectedSha: reviewed.baseSha }];
     });
     if (files.length !== proposed.length) return { ok: false, error: "invalid_payload" };
+    if (files.some((file) => isSensitiveRepositoryEvidencePath(file.path))) return { ok: false, error: "sensitive_repository_file" };
     const token = await resolveTenantScopedToken(organizationId, parsed);
     if (!token.ok) return { ok: false, error: token.error };
     const defaultBranch = await getRepositoryDefaultBranch({ owner: parsed.owner, repo: parsed.repo, installationToken: token.token });

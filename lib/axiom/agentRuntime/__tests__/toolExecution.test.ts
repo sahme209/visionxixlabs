@@ -36,6 +36,22 @@ function toolRepo(overrides: Partial<ToolExecutionRepo> = {}): ToolExecutionRepo
 describe("executeReadOnlyTool", () => {
   beforeEach(() => vi.clearAllMocks());
 
+  it.each([".env", "config/.env.production", "keys/service.pem", "secrets/production.json", "config/credentials/prod.json", ".aws/config", ".ssh/config", ".git/config"])("blocks sensitive Agent file reads before token resolution: %s", async (path) => {
+    const result = await executeReadOnlyTool(toolRepo(), "org-1", "read_github_file", { repositoryFullName: "acme/widgets", branch: "main", path });
+    expect(result).toEqual({ ok: false, error: "sensitive_repository_file" });
+    expect(mocks.resolveTenantScopedToken).not.toHaveBeenCalled();
+    expect(mocks.getFile).not.toHaveBeenCalled();
+  });
+
+  it("excludes sensitive directories from automatic repository evidence", async () => {
+    mocks.resolveTenantScopedToken.mockResolvedValue({ ok: true, token: "fixture-token" });
+    mocks.listRepositoryFiles.mockResolvedValue({ ok: true, data: { files: [{ path: "secrets/production.json", size: 10 }, { path: ".git/config.json", size: 10 }, { path: "src/app.ts", size: 10 }], truncated: false } });
+    mocks.getFile.mockImplementation(async ({ path }: { path: string }) => ({ ok: true, data: { path, sha: "fixture-sha", content: "fixture", htmlUrl: "https://github.test/file" } }));
+    expect(await executeReadOnlyTool(toolRepo(), "org-1", "inspect_github_repository", { repositoryFullName: "acme/widgets", branch: "main" })).toMatchObject({ ok: true });
+    expect(mocks.getFile).toHaveBeenCalledTimes(1);
+    expect(mocks.getFile).toHaveBeenCalledWith(expect.objectContaining({ path: "src/app.ts" }));
+  });
+
   it("list_environments returns the org's environments only", async () => {
     const repo = toolRepo({ environment: { findMany: vi.fn(async () => [{ id: "e1", slug: "dev", name: "Dev", tier: "dev" }]) } });
     const result = await executeReadOnlyTool(repo, "org-1", "list_environments", {});

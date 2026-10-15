@@ -70,6 +70,23 @@ recorder, rejected five malicious/invalid input forms, and preserved the
 existing migration name as one argument. YAML parsing and 15 demo contract
 tests pass. This candidate is cloud-local and has not run against production.
 
+## Separate security follow-up — sensitive Agent repository evidence
+
+Direct Agent file reads bypassed automatic inspection filtering; sensitive
+directory contents also escaped that filename-only filter. A shared pure path
+policy now covers direct reads, automatic inspect/search, review capture and
+legacy proposal execution. Nine read/inspection regressions and three initial
+proposal regressions failed before the repair; multi-file legacy approval is
+also covered. Known environment, key, credential and repository-metadata paths
+are rejected before credential resolution where possible. Ordinary repository
+reads/writes retain scoped tokens and reviewed-SHA checks. This is known-path
+protection, not a claim of secret-free source content. No real provider call,
+credential change or production mutation is performed.
+
+Sensitive-evidence validation: 530 Vitest files / 5,207 tests and web
+TypeScript pass. Desktop/Python code is unchanged from the passing #108
+candidate. Live provider and packaged-device validation remain separate.
+
 ## Current validation and integration · 2026-10-15
 
 The combined follow-up candidate passes 530 Vitest files / 5,194 tests, web

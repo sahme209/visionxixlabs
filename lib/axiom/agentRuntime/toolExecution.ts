@@ -6,6 +6,8 @@
 
 import "server-only";
 
+import { isSensitiveRepositoryEvidencePath } from "./repositoryEvidencePolicy";
+
 import { resolveTenantScopedToken, parseRepositoryFullName } from "@/lib/connectors/github/resolveTenantScopedToken";
 import { getFile, getLatestWorkflowRun, listRepositoryFiles } from "@/lib/connectors/github/githubWriteClient";
 import { AWS_ECS_DEPLOY_WORKFLOW_FILENAME } from "@/lib/releaseops/awsEcsDeployWorkflowTemplate";
@@ -25,14 +27,7 @@ interface RepositoryFileSummary {
 
 function repositoryEvidenceScore(path: string): number {
   const normalized = path.toLowerCase();
-  const fileName = normalized.split("/").at(-1) ?? normalized;
-  if (
-    normalized.includes("node_modules/") || normalized.includes("vendor/") || normalized.includes("/.git/")
-    || fileName.startsWith(".env") || [".npmrc", ".pypirc", ".netrc"].includes(fileName)
-    || /(^|[._-])(secret|secrets|credential|credentials)([._-]|$)/.test(fileName)
-    || /(^|\/)(id_rsa|id_ed25519)(\.|$)/.test(normalized)
-    || /\.(pem|key|p12|pfx|jks|keystore)$/.test(fileName)
-  ) return -1;
+  if (normalized.includes("node_modules/") || normalized.includes("vendor/") || isSensitiveRepositoryEvidencePath(path)) return -1;
   if (/^(readme|architecture)(\.[a-z0-9]+)?$/.test(normalized)) return 1_000;
   if (/^(package\.json|pyproject\.toml|requirements\.txt|go\.mod|cargo\.toml|pom\.xml|build\.gradle|gemfile)$/.test(normalized)) return 950;
   if (/^(dockerfile|compose\.ya?ml|docker-compose\.ya?ml)$/.test(normalized)) return 900;
@@ -230,6 +225,7 @@ export async function executeReadOnlyTool(
     const parsed = parseRepositoryFullName(repositoryFullName);
     if (!parsed) return { ok: false, error: "invalid_repository_full_name" };
     if (!branch || !path) return { ok: false, error: "invalid_payload" };
+    if (isSensitiveRepositoryEvidencePath(path)) return { ok: false, error: "sensitive_repository_file" };
     const tokenResult = await resolveTenantScopedToken(organizationId, parsed);
     if (!tokenResult.ok) return { ok: false, error: tokenResult.error };
     const fileResult = await getFile({ owner: parsed.owner, repo: parsed.repo, branch, path, installationToken: tokenResult.token });

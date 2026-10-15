@@ -22,6 +22,16 @@ describe("prepareProposalArgsForReview", () => {
     mocks.resolveTenantScopedToken.mockResolvedValue({ ok: true, token: "scoped-token" });
   });
 
+  it.each(["commit_github_file", "commit_github_files"])("does not capture sensitive contents for %s", async (tool) => {
+    const result = await prepareProposalArgsForReview("org-1", tool, {
+      repositoryFullName: "acme/widgets", branch: "fix", path: ".env.production", content: "fixture",
+      files: [{ path: "src/app.ts", content: "fixture" }, { path: "secrets/prod.json", content: "fixture" }],
+    });
+    expect(result).toEqual({ ok: false, error: "sensitive_repository_file" });
+    expect(mocks.resolveTenantScopedToken).not.toHaveBeenCalled();
+    expect(mocks.getFile).not.toHaveBeenCalled();
+  });
+
   it("replaces model-supplied review data with a tenant-scoped GitHub snapshot", async () => {
     mocks.getFile.mockResolvedValue({ ok: true, data: { path: "src/app.ts", sha: "base-sha", content: "old\n", htmlUrl: "https://github.test/file" } });
     const result = await prepareProposalArgsForReview("org-1", "commit_github_file", {
