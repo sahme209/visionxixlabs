@@ -1,7 +1,7 @@
 // Stripe API v1 may prune idempotency keys once they are 24 hours old.
 // Reserve a one-hour buffer; this is a retry eligibility bound, not evidence
 // that an earlier provider request failed or that its hold can be released.
-const MAX_AUTOMATIC_RETRY_AGE_MS = 23 * 60 * 60 * 1000;
+export const MAX_AUTOMATIC_RETRY_AGE_MS = 23 * 60 * 60 * 1000;
 
 export function evaluateAIUsageSettlementRetry(
   record: { status: string; createdAt: Date },

@@ -281,3 +281,15 @@ routing last advanced automatically to #120; no manual promotion occurred.
 The old Analytics draft #1 was closed as superseded after confirming current
 main mounts Analytics through the existing consent condition. SQL preflight,
 founder identity and successful account login remain unverified.
+
+## Held billing candidate selection follow-up
+
+Following merged #122 (reservation binding) and #123 (privacy resilience), the
+billing selector also applies the existing bounded retry policy before LIMIT.
+Submitted, held, stale, future-dated or contradictory reservations cannot crowd
+out newer eligible usage. Shared retry-age constant and final per-row authority
+checks preserve the existing security boundary. No holds or quota are released.
+See `docs/BILLING_SETTLEMENT_BINDING.md` and executable candidate SQL tests.
+Disabled-account, exhausted-budget and repeated eligible failure fairness remain
+partially implemented; real Stripe test-tenant acceptance is still blocked by
+external access. Production login/founder preflight remains independently blocked.
