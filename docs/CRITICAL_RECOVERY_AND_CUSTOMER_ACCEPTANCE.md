@@ -119,14 +119,20 @@ public signed-token lead flows retain their separate capability boundary.
 ## Priority 3: safe website release
 
 Fresh read-only Vercel alias inspection now resolves `visionxixlabs.com` to
-`dpl_GURP2EoSvwK9Hd1xXhTxDEX3c3oe`, READY production Git deployment at main
-`153bacd4665149b4afe738397be8281d02b25753` (#134). This supersedes the earlier
-#123 manual-promotion observation. No routing or promotion action was performed
-by this work. The actor/policy that advanced the alias and future assignment
-behavior remain unverified. A READY serving build does not prove authentication.
+`dpl_DdQu4nKjbsETe61AwFPPwMwfvacH`, READY production Git deployment at main
+`3df6d03f92d2eaa198ba021adfda86825c2c1a32` (#138). This supersedes the earlier
+#123 and #134 alias observations. No routing or promotion action was performed
+by this work. Operator attribution and future assignment policy remain
+unverified. Fresh project-filtered events identify a manual
+promotion to #138 at 22:27:11 UTC. Per-deployment alias lists confirm the custom
+domain belongs to #138; the later READY #139 owns two other aliases only. This
+explains current source lag without attributing the operator. No rolling release
+or template is returned. See `mission/vercel-release-inspection.json`. A READY
+serving build does not prove authentication.
 
-Vercel documents rollback/promotion effects on automatic assignment, but no
-project-specific cause is established. Preserve the approval process below for
+Vercel documents rollback/promotion effects on automatic assignment. The current
+manual pin is evidenced; future assignment settings still need review. Preserve
+the approval process below for
 any deliberate release or routing change.
 
 Proposed reviewed process:

@@ -45,16 +45,20 @@ async function handleScanCloud(ctx: TaskContext): Promise<TaskHandlerResult> {
     where: { id: ctx.agentRunId },
   });
 
+  const account = await prisma.cloudAccount.findUnique({
+    where: { id: ctx.cloudAccountId },
+  });
+
+  if (account?.credentialRef?.startsWith("cloud-v2:")) {
+    return { status: "failed", errorMessage: "This scoped enrollment supports bounded inventory only; legacy Agent scanning is unavailable." };
+  }
+
   if (run.snapshotData) {
     return {
       status: "completed",
       outputJson: { skipped: true, reason: "Snapshot already exists." },
     };
   }
-
-  const account = await prisma.cloudAccount.findUnique({
-    where: { id: ctx.cloudAccountId },
-  });
 
   if (!account || !account.enabled) {
     return { status: "failed", errorMessage: "Cloud account not found or disabled." };

@@ -7,6 +7,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/db";
+import { isSameOriginRequest } from "@/lib/auth/requestOrigin";
 import { getEntitlementsFromPlan } from "@/lib/entitlements";
 import {
   resolvePolicy,
@@ -37,6 +38,22 @@ async function authenticate() {
   return userId;
 }
 
+// The selected account owns the tenant boundary. Request-body organization IDs
+// cannot establish membership or administrative authority.
+async function acceptedMembership(userId: string, organizationId: string, manage = false): Promise<boolean> {
+  try {
+    const membership = await prisma.orgMembership.findUnique({
+      where: { userId_organizationId: { userId, organizationId } },
+      select: { acceptedAt: true, role: true },
+    });
+    if (!membership?.acceptedAt) return false;
+    return manage
+      ? membership.role === "owner" || membership.role === "admin"
+      : ["owner", "admin", "operator", "security_reviewer", "finance_viewer", "read_only"].includes(membership.role);
+  } catch { return false; }
+}
+const unavailableAccount = () => NextResponse.json({ error: "Cloud account not found" }, { status: 404 });
+
 export async function GET(req: NextRequest) {
   const userId = await authenticate();
   if (!userId) {
@@ -47,6 +64,9 @@ export async function GET(req: NextRequest) {
   if (!cloudAccountId) {
     return NextResponse.json({ error: "cloudAccountId is required" }, { status: 400 });
   }
+
+  const account = await prisma.cloudAccount.findUnique({ where: { id: cloudAccountId } });
+  if (!account || !await acceptedMembership(userId, account.organizationId)) return unavailableAccount();
 
   const currentMode = await loadAutopilotMode(cloudAccountId);
   const policy = resolvePolicy(currentMode);
@@ -81,13 +101,17 @@ export async function GET(req: NextRequest) {
 }
 
 export async function PUT(req: NextRequest) {
+  if (!isSameOriginRequest(req)) {
+    return NextResponse.json({ error: "invalid_request_origin" }, { status: 403 });
+  }
   const userId = await authenticate();
   if (!userId) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const body = await req.json();
-  const { cloudAccountId, mode, organizationId } = body;
+  const body: unknown = await req.json().catch(() => null);
+  if (!body || typeof body !== "object" || Array.isArray(body)) return NextResponse.json({ error: "invalid_payload" }, { status: 400 });
+  const { cloudAccountId, mode, organizationId } = body as Record<string, unknown>;
 
   if (!cloudAccountId || typeof cloudAccountId !== "string") {
     return NextResponse.json({ error: "cloudAccountId is required" }, { status: 400 });
@@ -97,7 +121,7 @@ export async function PUT(req: NextRequest) {
     return NextResponse.json({ error: "organizationId is required" }, { status: 400 });
   }
 
-  if (!mode || !VALID_MODES.has(mode)) {
+  if (typeof mode !== "string" || !VALID_MODES.has(mode)) {
     return NextResponse.json(
       { error: "mode must be observe_only, recommend, assisted_apply, or full_guarded" },
       { status: 400 },
@@ -108,16 +132,16 @@ export async function PUT(req: NextRequest) {
     where: { id: cloudAccountId },
   });
 
-  if (!account) {
-    return NextResponse.json({ error: "Cloud account not found" }, { status: 404 });
+  if (!account || account.organizationId !== organizationId || !await acceptedMembership(userId, account.organizationId, true)) {
+    return unavailableAccount();
   }
 
-  if (account.organizationId !== organizationId) {
-    return NextResponse.json({ error: "Cloud account does not belong to this organization" }, { status: 403 });
+  if (account.credentialRef?.startsWith("cloud-v2:") && mode !== "observe_only") {
+    return NextResponse.json({ error: "scoped_enrollment_agent_unavailable" }, { status: 409 });
   }
 
   const previousMode = account.autopilotMode as AutopilotMode;
-  const result = await changeAutopilotMode(cloudAccountId, organizationId, userId, mode as AutopilotMode);
+  const result = await changeAutopilotMode(cloudAccountId, account.organizationId, userId, mode as AutopilotMode);
   const newPolicy = resolvePolicy(result.newMode);
   const newCopy = MODE_COPY[result.newMode];
 

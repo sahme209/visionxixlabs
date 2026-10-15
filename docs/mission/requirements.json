@@ -41862,12 +41862,13 @@
       "engineeringActivity": "active",
       "owner": "Codex integrated parallel workstreams",
       "activeMilestone": "Verify serving deployment and preflight target equality, actual recoverable timestamp and isolated restore readiness.",
-      "verification": "Neon read-only metadata confirms reported target, PostgreSQL 17, six-hour retention and 10/10 branch capacity; SELECT-only schema/history matches preflight,99 completed migrations and no active source checksum drift. Founder mapping passed protected preflight.",
+      "verification": "Neon read-only metadata confirms reported target, PostgreSQL 17, six-hour retention and 10/10 branch capacity; SELECT-only schema/history matches preflight,99 completed migrations and no active source checksum drift. Founder mapping passed protected preflight. New source adds a separately gated AWS storage proposal; isolated PostgreSQL16/17 auth fixture preserves original failed history and applies only the unchanged auth SQL.",
       "evidence": [
         "docs/PRODUCTION_AUTH_RECOVERY_PLAN.md",
         "docs/EMAIL_PROOF_ATOMIC_RECOVERY.md",
         "docs/EMAIL_VERIFICATION_CUSTOMER_RECOVERY.md",
-        "docs/mission/neon-readiness-inspection.json"
+        "docs/mission/neon-readiness-inspection.json",
+        "docs/mission/aws-enrollment-schema-rehearsal.json"
       ],
       "customerAcceptance": "Not verified",
       "acceptanceDependencies": [],
@@ -41916,21 +41917,25 @@
       "status": "Partially implemented",
       "engineeringActivity": "active",
       "owner": "Codex integrated parallel workstreams",
-      "activeMilestone": "Implement tenant-scoped desktop cloud enrollment to verified read-only inventory, preserving existing Lead-token website enrollment.",
-      "verification": "Source audit distinguishes existing website token enrollment/real SDK reads, browser redirects, missing desktop enrollment and simulated/missing mutation adapters. No real customer/provider acceptance. Follow-up SELECT-only catalog inspection confirms CloudAccount/CloudProvider absent and connector lifecycle tables present on the inspected Neon target; serving binding remains unverified.",
+      "activeMilestone": "Validate tenant-scoped desktop AWS identity enrollment and bounded read-only inventory; prepare separate storage approval.",
+      "verification": "Reachable Settings UI, actual routes/service/scoped AEAD and mocked STS/EC2 composed tests cover exact account/role identity, challenge consumption/version binding, current session/membership and late-result revocation. One EC2 page is explicitly incomplete; newly enrolled accounts cannot enter generic Agent execution. Isolated PostgreSQL16/17 schema and auth fixtures passed. Actual AWS/customer acceptance remains unverified.",
       "evidence": [
         "docs/ECS_CUSTOMER_JOURNEY_VALIDATION.md",
         "docs/LEGACY_WEBSITE_DEPLOYMENT_BOUNDARIES.md",
         "docs/CLOUD_CUSTOMER_ENROLLMENT_ACCEPTANCE.md",
-        "docs/mission/neon-readiness-inspection.json"
+        "docs/mission/neon-readiness-inspection.json",
+        "lib/cloud/aws/enrollment/README.md",
+        "docs/DESKTOP_AWS_READONLY_ENROLLMENT.md",
+        "docs/AWS_ENROLLMENT_SCHEMA_PROPOSAL.md",
+        "docs/mission/aws-enrollment-schema-rehearsal.json"
       ],
       "customerAcceptance": "Not verified",
       "acceptanceDependencies": [
         "auth_database",
         "github"
       ],
-      "blockers": "Desktop AWS/Azure/GCP enrollment unavailable; canonical account/vault ownership and CloudAccount migration history need review. Generic AWS mutation is simulated; Azure/GCP apply/rollback not implemented. Approved artifact/rollback acceptance remains missing.",
-      "nextAction": "Prepare isolated durable storage and tenant authorization contract, then implement the read-only AWS enrollment slice; keep provider/infrastructure acceptance separately approved."
+      "blockers": "Production auth/binding/restore readiness; separate reviewed cloud-storage execution approval and configured read-only broker; actual AWS role/permission acceptance. Generic Agent snapshot bridge and disconnect management remain missing; Azure/GCP enrollment/apply/rollback are separate unfinished milestones.",
+      "nextAction": "Finish integrated CI and review; obtain separately scoped storage/runtime/provider acceptance authorization without changing auth-only SQL. Then implement reviewed disconnect and secure Agent snapshot bridge."
     },
     {
       "id": "terraform",
@@ -42019,12 +42024,13 @@
       "engineeringActivity": "active",
       "owner": "Codex integrated parallel workstreams",
       "activeMilestone": "Verify packaged native pairing, recovery, first run, updates and workspace operation.",
-      "verification": "Behavioral tests cover verified recovery to restart without inactive-key takeover, explicit selected credential/no fallback, signout tombstone, precommit cancellation, and stale entitlement/recovery callbacks. Native vault and exact signed-package acceptance remain unverified.",
+      "verification": "Behavioral tests cover verified recovery to restart without inactive-key takeover, explicit selected credential/no fallback, signout tombstone, precommit cancellation, and stale entitlement/recovery callbacks. Native vault and exact signed-package acceptance remain unverified. Reachable Settings AWS enrollment and bounded inventory composition tests pass with provider responses simulated; new cloud records keep generic Agent disabled.",
       "evidence": [
         "docs/DESKTOP_BROWSER_PAIRING_CANCELLATION.md",
         "docs/DESKTOP_NATIVE_CREDENTIAL_BACKENDS.md",
         "docs/EMAIL_VERIFICATION_CUSTOMER_RECOVERY.md",
-        "docs/DESKTOP_DURABLE_CREDENTIAL_RECOVERY.md"
+        "docs/DESKTOP_DURABLE_CREDENTIAL_RECOVERY.md",
+        "docs/DESKTOP_AWS_READONLY_ENROLLMENT.md"
       ],
       "customerAcceptance": "Not verified",
       "acceptanceDependencies": [
@@ -42040,7 +42046,7 @@
       "engineeringActivity": "active",
       "owner": "Codex integrated parallel workstreams",
       "activeMilestone": "Run isolated Stripe test-mode checkout/webhook/invoice lifecycle with approved test configuration.",
-      "verification": "Composed component/route/helper/signed-webhook tests cover stable intent header, actual redirect contract, response-loss retained pending and late exactly-once fulfillment. Existing uncertain intents cannot be safely reconstructed and are not redispatched. Actual Stripe acceptance remains unverified.",
+      "verification": "Composed component/route/helper/signed-webhook tests cover stable intent header, actual redirect contract, response-loss retained pending and late exactly-once fulfillment. Existing uncertain intents cannot be safely reconstructed and are not redispatched. Actual Stripe acceptance remains unverified. New AWS account creation uses canonical plan/count inside Serializable completion, preserving current identity-only commercial access policy; this is resource-cap enforcement, not full subscription gating.",
       "evidence": [
         "docs/BILLING_CUSTOMER_JOURNEY_ACCEPTANCE.md",
         "docs/SUBSCRIPTION_EVENT_CONSUMPTION.md",
@@ -42087,9 +42093,10 @@
       "engineeringActivity": "active",
       "owner": "Codex integrated parallel workstreams",
       "activeMilestone": "Run combined regression gates and collect real authorized customer-journey evidence.",
-      "verification": "Focused failing-before regressions exist in all six parallel implementation streams.",
+      "verification": "Focused failing-before regressions exist in all six parallel implementation streams. Actual disposable PostgreSQL16/17 schema/full-history fixtures preserve original auth/Agent checksums and failed history; service/provider boundaries remain simulated.",
       "evidence": [
-        "docs/CRITICAL_RECOVERY_AND_CUSTOMER_ACCEPTANCE.md"
+        "docs/CRITICAL_RECOVERY_AND_CUSTOMER_ACCEPTANCE.md",
+        "docs/mission/aws-enrollment-schema-rehearsal.json"
       ],
       "customerAcceptance": "Not verified",
       "acceptanceDependencies": [
@@ -42132,10 +42139,11 @@
       "engineeringActivity": "active",
       "owner": "Codex integrated parallel workstreams",
       "activeMilestone": "Review promotion settings and prepare an exact release approval with rollback evidence.",
-      "verification": "Fresh read-only alias lookup serves READY main #134 at 153bacd4; previous older-alias observation superseded.",
+      "verification": "Read-only Vercel event and alias evidence explains manual #138 domain pin while later #139 is READY on other aliases. No promotion/routing calls; exact automatic-assignment policy and real customer release acceptance remain unverified.",
       "evidence": [
         "docs/CRITICAL_RECOVERY_AND_CUSTOMER_ACCEPTANCE.md",
-        "docs/mission/neon-readiness-inspection.json"
+        "docs/mission/neon-readiness-inspection.json",
+        "docs/mission/vercel-release-inspection.json"
       ],
       "customerAcceptance": "Not verified",
       "acceptanceDependencies": [
@@ -42143,7 +42151,7 @@
         "security",
         "website"
       ],
-      "blockers": "Alias advancement actor/policy and future assignment behavior unverified; signed installers and real customer journey remain gates. Neon branch capacity is 10/10; preview provisioning likely blocked, provider error attribution not independently confirmed.",
+      "blockers": "Explicit custom-domain release approval, effective runtime binding and actual authentication/customer/native acceptance remain outstanding. Observed source integration builds later main revisions without replacing the manually pinned domain; future policy is not guaranteed.",
       "nextAction": "Review promotion settings and prepare an exact release approval with rollback evidence."
     }
   ]

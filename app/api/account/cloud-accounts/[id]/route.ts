@@ -42,7 +42,7 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
 
   const account = await prisma.cloudAccount.findUnique({
     where: { id },
-    select: { id: true, organizationId: true, enabled: true },
+    select: { id: true, organizationId: true, enabled: true, credentialRef: true },
   });
   if (!account || account.organizationId !== ctx.organizationId) {
     // Same shape whether it doesn't exist or belongs to another org —
@@ -50,8 +50,14 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
     return NextResponse.json({ ok: false, error: "not_found" }, { status: 404 });
   }
 
+  // Scoped enrollment is identity/inventory-only. It is not wired into the
+  // legacy Agent credential provider, even if an operator toggles this row.
+  if (body.enabled && account.credentialRef?.startsWith("cloud-v2:")) {
+    return NextResponse.json({ ok: false, error: "scoped_enrollment_agent_unavailable" }, { status: 409 });
+  }
+
   const updated = await prisma.cloudAccount.update({
-    where: { id },
+    where: { id, ...(body.enabled ? { credentialRef: account.credentialRef } : {}) },
     data: { enabled: body.enabled },
     select: { id: true, enabled: true },
   });

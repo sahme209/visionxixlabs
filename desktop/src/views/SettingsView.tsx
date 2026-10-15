@@ -1,3 +1,4 @@
+import { AwsReadOnlyEnrollment } from "../components/AwsReadOnlyEnrollment";
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { open } from "@tauri-apps/plugin-shell";
 import { invoke } from "@tauri-apps/api/core";
@@ -157,7 +158,7 @@ export function SettingsView({ identity }: { identity: VerifiedDesktopIdentity }
           {active === "environments" && <EnvironmentsSection identity={identity} />}
           {active === "identity" && <IdentitySection />}
           {active === "worktrees" && <WorktreesSection prefs={prefs} />}
-          {active === "integrations" && <IntegrationsSection />}
+          {active === "integrations" && <IntegrationsSection identity={identity} />}
         </div>
       </div>
 
@@ -1546,7 +1547,7 @@ function WorktreesSection({ prefs }: { prefs: DesktopPreferences | null }) {
   </div>;
 }
 
-function IntegrationsSection() {
+function IntegrationsSection({ identity }: { identity: VerifiedDesktopIdentity }) {
   const [integrationStatus, setIntegrationStatus] = useState<{
     configuration?: Record<"github" | "slack" | "teams" | "linear", boolean>;
     cloud: Array<{ provider: "aws" | "azure" | "gcp"; status: string; lastTransitionAt: string | null }>;
@@ -1715,6 +1716,7 @@ function IntegrationsSection() {
         />
       ))}
     </div>
+    <AwsReadOnlyEnrollment identity={identity} />
     {connectionNote && <p role="status" className="mt-3 text-xs text-zinc-400">{connectionNote}</p>}
     <div className="mt-5 rounded-xl border border-white/[0.07] bg-white/[0.025] p-4">
       <p className="text-sm text-zinc-200">What happens when you connect</p>

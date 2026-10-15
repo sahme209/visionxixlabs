@@ -81,6 +81,10 @@ export async function runAgent(input: RunAgentInput): Promise<AgentRunResult> {
       return failRun(runId, emit, "Cloud account does not belong to this organization.");
     }
 
+    if (account.credentialRef?.startsWith("cloud-v2:")) {
+      return failRun(runId, emit, "This scoped enrollment supports bounded inventory only; legacy Agent scanning is unavailable.");
+    }
+
     await setStatus(runId, "running");
     emit(msg.scanStarted(provider, account.externalAccountId));
 

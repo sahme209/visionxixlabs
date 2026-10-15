@@ -1,0 +1,24 @@
+{
+  "baselineMain": "699d0197a347b6ca8408c5fa57bdf9433d57e2a8",
+  "scope": "Legacy scanner files touched only for scoped-credential containment; unchanged pre-existing lint debt is not suppressed or refactored",
+  "files": [
+    {
+      "file": "lib/axiom/agent/runAgent.ts",
+      "baselineErrors": 14,
+      "currentErrors": 14,
+      "baselineWarnings": 7,
+      "currentWarnings": 7,
+      "newViolations": 0
+    },
+    {
+      "file": "lib/axiom/taskQueue/handlers.ts",
+      "baselineErrors": 12,
+      "currentErrors": 12,
+      "baselineWarnings": 1,
+      "currentWarnings": 1,
+      "newViolations": 0
+    }
+  ],
+  "configurationChanged": false,
+  "newViolations": 0
+}

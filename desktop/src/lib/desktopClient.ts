@@ -1,3 +1,4 @@
+import { isAwsEnrollmentChallenge, isDesktopAwsAccount, isDesktopAwsInventory, type AwsEnrollmentInput, type AwsEnrollmentChallenge, type DesktopAwsAccount, type DesktopAwsInventory } from "./awsEnrollmentContract";
 /**
  * Desktop app's web client.
  *
@@ -669,6 +670,48 @@ export class DesktopClient {
   }
   controlPlaneActions(): Promise<ApiResult<{ nextBestActions: ControlPlaneStateLite["nextBestActions"] }>> { return this.get("/api/control-plane/next-actions"); }
   controlPlaneRefresh(): Promise<ApiResult<{ state: ControlPlaneStateLite }>> { return this.post("/api/control-plane/refresh", {}); }
+
+  async startAwsReadOnlyEnrollment(input: AwsEnrollmentInput): Promise<ApiResult<AwsEnrollmentChallenge>> {
+    const result = await this.cloudEnrollmentRequest<unknown>("POST", "/api/desktop/cloud/aws/enrollment", input);
+    if (!result.ok) return result;
+    return isAwsEnrollmentChallenge(result.data) ? { ok: true, data: result.data } : { ok: false, error: "The service returned an invalid AWS enrollment challenge." };
+  }
+
+  async completeAwsReadOnlyEnrollment(attemptId: string, externalId: string): Promise<ApiResult<{ account: DesktopAwsAccount }>> {
+    const result = await this.cloudEnrollmentRequest<{ account?: unknown }>("POST", `/api/desktop/cloud/aws/enrollment/${encodeURIComponent(attemptId)}/complete`, { externalId });
+    if (!result.ok) return result;
+    return isDesktopAwsAccount(result.data?.account) ? { ok: true, data: { account: result.data.account } } : { ok: false, error: "The service returned an invalid AWS account verification result." };
+  }
+
+  async desktopCloudAccounts(): Promise<ApiResult<{ accounts: DesktopAwsAccount[] }>> {
+    const result = await this.cloudEnrollmentRequest<{ accounts?: unknown }>("GET", "/api/desktop/cloud/accounts");
+    if (!result.ok) return result;
+    return Array.isArray(result.data?.accounts) && result.data.accounts.every(isDesktopAwsAccount)
+      ? { ok: true, data: { accounts: result.data.accounts } }
+      : { ok: false, error: "The service returned an invalid cloud account list." };
+  }
+
+  async desktopAwsInventory(accountId: string): Promise<ApiResult<DesktopAwsInventory>> {
+    const result = await this.cloudEnrollmentRequest<unknown>("GET", `/api/desktop/cloud/accounts/${encodeURIComponent(accountId)}/inventory`);
+    if (!result.ok) return result;
+    return isDesktopAwsInventory(result.data) ? { ok: true, data: result.data } : { ok: false, error: "The service returned an invalid bounded AWS inventory result." };
+  }
+
+  private async cloudEnrollmentRequest<T>(method: "GET" | "POST", path: string, body?: unknown): Promise<ApiResult<T>> {
+    // This enrollment requires a paired desktop bearer, never browser-cookie fallback.
+    if (!this.config.sessionToken?.startsWith("axm.desk.")) return { ok: false, error: "A browser-paired desktop session is required for cloud enrollment." };
+    try {
+      const response = await fetch(`${this.config.apiBase}${path}`, {
+        method, headers: { ...this.headers(), ...(method === "POST" ? { "Content-Type": "application/json" } : {}) },
+        credentials: "omit", ...(method === "POST" ? { body: JSON.stringify(body) } : {}),
+      });
+      const payload = await response.json().catch(() => null) as { ok?: boolean; data?: T; message?: unknown } | null;
+      if (response.ok && payload?.ok === true && payload.data !== undefined) return { ok: true, data: payload.data };
+      return { ok: false, error: typeof payload?.message === "string" ? payload.message : `Cloud enrollment is unavailable (HTTP ${response.status}).` };
+    } catch {
+      return { ok: false, error: "The cloud enrollment service could not be reached. Existing connections are unchanged." };
+    }
+  }
 
   // ── Cloud connectors ──────────────────────────────────────────────
   awsValidate(input: { roleArn: string; externalId: string; region: string; requestLive?: boolean }): Promise<ApiResult<unknown>> {
