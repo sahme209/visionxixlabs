@@ -517,3 +517,13 @@ The service already uses the Vercel AI SDK (`ai`) and the Vercel AI Gateway as i
 The requested next capability is intentionally narrower than a live billing toggle: extend the settled ledger to calculate a deterministic **1.5×** customer price and enforce a hard workspace spend limit, then create replay-safe Stripe usage/invoice mutations only for explicitly enabled test workspaces with a verified Stripe customer and payment authority. Reservations, pending costs, missing gateway costs, unavailable limit state, Stripe failures, and duplicate deliveries must all fail closed; they must never create a customer charge. Test normal, cap, retry, refund/credit, and webhook replay journeys before production approval.
 
 Vercel Workflow and Queues are not selected for this financial path today. The current reservation and database idempotency records are already the authoritative accounting boundary, while Queues is beta and at-least-once delivery would add another reconciliation surface. Vercel Observability can be used for operational diagnosis via existing correlation ids only; no prompts, credentials, or payment data may be exported. Any Vercel platform cost must be measured from the account's plan and observed usage before a customer price is set; it is not provider-attributable AI usage and must not be silently included in the 1.5× model charge.
+
+## Held billing candidates checkpoint
+
+Privacy resilience #123 is merged; its automatic main deployment is READY
+(`dpl_B3i6jsefAwdmjz97nvMQe1vGDdn6`). The follow-up billing candidate selector
+excludes existing reconciliation holds before LIMIT while preserving all ledger
+records, quota, idempotency keys and final worker checks. SQLite and disposable
+PostgreSQL 16 fixtures return eligible work behind older held rows. Disabled
+accounts, exhausted budgets and repeatedly failing eligible retries remain open
+fairness cases. No production SQL, live billing or manual promotion was performed.

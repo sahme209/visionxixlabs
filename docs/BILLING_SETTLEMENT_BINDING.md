@@ -25,3 +25,29 @@ No migration, production data repair or live billing activation is involved.
 Next: inspect actual approved test-tenant receipts and ledger consistency before
 any billing rollout. Contradictory historical records require reviewed
 reconciliation. Batch fairness for held/disabled rows remains open.
+
+## Held reservations and bounded selection
+
+Candidate selection now excludes submitted, failed, blocked, unknown, expired,
+future-dated and tenant/amount-mismatched existing reservations before the batch
+limit. The same exported 23-hour retry bound is used by selection and the final
+worker check. Excluded records and monthly holds remain unchanged; no provider
+outcome is inferred and no idempotency key is reset. New unreserved usage remains
+eligible. The worker retains its fresh retry-time, tenant binding, configuration,
+serializable budget and test-mode checks.
+
+An isolated SQL fixture places eight older ineligible records ahead of a recent
+retry and new usage, including the exact retry boundary. Selection still returns
+the eligible work in a one-row batch. This is a bounded selection improvement,
+not complete queue fairness: disabled customers, exhausted budgets and repeatedly
+failing but still eligible retries can still crowd a batch. Those remain open.
+No migration, live billing, production data mutation or credential change occurs.
+
+The generated selection query was also executed against a disposable PostgreSQL
+16 fixture with native timestamp columns and mixed-case quoted identifiers; it
+returned the eligible retry despite older held rows. The container was removed.
+
+Local validation: web/desktop TypeScript, 539 Vitest files / 5,339 tests,
+desktop frontend build, 30 Python CLI tests and mission register check pass.
+The internal governed AI-usage walkthrough reflects held-row selection. No
+production or real Stripe request was used for these checks.
