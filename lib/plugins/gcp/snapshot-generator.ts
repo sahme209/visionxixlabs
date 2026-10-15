@@ -258,7 +258,7 @@ async function fetchCpuMetrics(
   // Build a JWT to call monitoring API directly
   let accessToken: string;
   try {
-    accessToken = await getAccessToken(credentials);
+    accessToken = await getGcpAccessToken(credentials);
   } catch {
     return cpuMap;
   }
@@ -301,16 +301,16 @@ async function fetchCpuMetrics(
   return cpuMap;
 }
 
-async function getAccessToken(
+export async function getGcpAccessToken(
   credentials: { client_email: string; private_key: string },
 ): Promise<string> {
-  // Use google-auth-library style JWT — but since we already have @google-cloud/compute
-  // which bundles auth, we can use a lightweight approach via the Storage client
+  // GoogleAuth returns the bearer string directly; OAuth2Client token objects
+  // are a different SDK contract. Never manufacture or log a credential.
   const storage = new Storage({ credentials });
   const authClient = storage.authClient;
-  const token = await (authClient as { getAccessToken(): Promise<{ token?: string | null }> }).getAccessToken();
-  if (!token?.token) throw new Error("Failed to get access token");
-  return token.token;
+  const token = await authClient.getAccessToken();
+  if (typeof token !== "string" || !token.trim()) throw new Error("Failed to get access token");
+  return token;
 }
 
 // ---------------------------------------------------------------------------
@@ -322,7 +322,7 @@ async function hasSnapshots(
   projectId: string,
 ): Promise<boolean> {
   try {
-    const accessToken = await getAccessToken(credentials);
+    const accessToken = await getGcpAccessToken(credentials);
     const res = await fetch(
       `https://compute.googleapis.com/compute/v1/projects/${projectId}/aggregated/snapshots?maxResults=1`,
       {

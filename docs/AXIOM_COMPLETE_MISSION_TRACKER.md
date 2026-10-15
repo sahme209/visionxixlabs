@@ -69,7 +69,7 @@ Full detail: [repository snapshot](mission/repository-snapshot.json).
 | Item | Observed evidence | Next action / gate |
 | --- | --- | --- |
 | Production login | Current deployment has one credentials and one Google callback P2022 log in the latest one-hour grouped query. Sign-in and providers return HTTP 200; credentials/Google/GitHub/Cognito are registered. | Active incident. Read-only schema/ledger/founder preflight, then a concrete approved repair and real browser round trips. Provider registration is not login success. |
-| Production database | Runtime has no DATABASE_URL; protected preflight has not run. Earlier isolated replay fails at workspace-agent migration's Organization reference. | Inspect actual applied/failed ledger and schema; never blanket `migrate deploy` or rewrite historical SQL speculatively. |
+| Production database | Runtime has no DATABASE_URL; authenticated CLI dispatch of the protected preflight returned Forbidden before starting a run. Earlier isolated replay fails at workspace-agent migration's Organization reference. | Inspect actual applied/failed ledger and schema; never blanket `migrate deploy` or rewrite historical SQL speculatively. |
 | Founder account | Existing identity/membership/plan mapping remains unverified. | Use founder-confirmed email only in protected configuration; never publish it, bootstrap privileges or equate commit authorship with app identity. |
 | Main deployment | `dpl_3bPWbdEvNzys5iuArS9cHH6r5DgF` READY at `6eb90680`. | Continue exact-build health and authenticated checks. |
 | Public routing | Fresh alias read now points visionxixlabs.com to the same current-main deployment. Earlier #106 routing snapshot is historical. No routing change was made by this audit. | Verify future aliases independently; routing is no longer the currently observed mismatch. |
@@ -212,3 +212,17 @@ and image/source-map patches. Clean-install production audit findings fall from
 six high/six moderate to zero high/two moderate. Remaining Google uuid/gaxios
 findings stay open; zero registry findings would not certify application security.
 Exact-head build/test and merge evidence are recorded in the focused PR.
+
+Google follow-up: Storage 8.4.0 removes the remaining uuid/gaxios advisory
+chain without a direct forced override. Web CI matches the existing Node 24
+production runtime. GCP snapshot access-token handling now follows the SDK's
+string contract; seven focused cases cover that boundary. Actual GCP IAM and
+inventory acceptance remains open. See the dependency report for checkpoint
+counts and the final zero-advisory scope.
+
+Execution checkpoint: #117 (permanent register), #118 (desktop identity) and
+#119 (framework patches) are merged. #118 and #119 automatic main deployments
+are READY; the public alias was last read on #116. Main build readiness is not
+public promotion or login acceptance. No manual alias change or SQL mutation
+was performed. CLI workflow-dispatch access remains blocked by GitHub Forbidden;
+no public-input or push-triggered bypass was introduced.

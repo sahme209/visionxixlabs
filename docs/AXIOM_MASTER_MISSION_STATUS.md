@@ -1,5 +1,24 @@
 # Axiom Agent master-mission status
 
+## GCP dependency and token-contract follow-up
+
+PR #119 merged at `65eafebb` after exact-head Test run `38770152418` passed.
+The follow-up uses Storage 8.4.0 within the existing major; production dependency
+audit now reports zero registry findings. Web CI aligns with existing Vercel
+Node 24 rather than changing production configuration. A real snapshot-reader
+bug is fixed: GoogleAuth returns a string, not a token object. Seven focused
+cases pass; no real provider credentials or cloud writes are used. Wider GCP
+acceptance, database/founder preflight and login recovery remain open. The
+protected read-only workflow dispatch was attempted via authenticated CLI but
+GitHub returned Forbidden before starting it. #118/#119 automatic builds are
+READY; the public alias was last confirmed on #116, with no manual promotion.
+
+Validation passes: 538 Vitest files / 5,321 tests, web and desktop TypeScript,
+desktop frontend build, 30 Python CLI tests, the full Next.js production build
+and mission coverage check. Exact-head CI and automatic deployment evidence
+belong to the focused follow-up PR. No actual GCP, production login or current
+macOS package acceptance is inferred from these checks.
+
 ## Security follow-up — production dependencies
 
 PR #118 merged at `d36e5636` after exact-head web checks (`38769106692`)

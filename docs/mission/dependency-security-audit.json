@@ -13,66 +13,27 @@
   "after": {
     "info": 0,
     "low": 0,
-    "moderate": 2,
+    "moderate": 0,
     "high": 0,
     "critical": 0,
-    "total": 2
+    "total": 0
   },
   "patches": {
     "next": "16.3.6 -> 16.3.8",
     "eslint-config-next": "16.3.6 -> 16.3.8",
     "sharp": "0.35.4 -> 0.35.5",
-    "source-map-js": "1.2.1 -> 1.2.2"
+    "source-map-js": "1.2.1 -> 1.2.2",
+    "@google-cloud/storage": "8.2.0 -> 8.4.0"
   },
-  "remaining": {
-    "gaxios": {
-      "name": "gaxios",
-      "severity": "moderate",
-      "isDirect": false,
-      "via": [
-        "uuid"
-      ],
-      "effects": [],
-      "range": "6.4.0 - 6.7.1",
-      "nodes": [
-        "node_modules/@google-cloud/storage/node_modules/gaxios",
-        "node_modules/gtoken/node_modules/gaxios"
-      ],
-      "fixAvailable": true
-    },
-    "uuid": {
-      "name": "uuid",
-      "severity": "moderate",
-      "isDirect": false,
-      "via": [
-        {
-          "source": 1119441,
-          "name": "uuid",
-          "dependency": "uuid",
-          "title": "uuid: Missing buffer bounds check in v3/v5/v6 when buf is provided",
-          "url": "https://github.com/advisories/GHSA-w5hq-g745-h8pq",
-          "severity": "moderate",
-          "cwe": [
-            "CWE-787",
-            "CWE-1285"
-          ],
-          "cvss": {
-            "score": 7.5,
-            "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:H/A:N"
-          },
-          "range": "<11.1.1"
-        }
-      ],
-      "effects": [
-        "gaxios"
-      ],
-      "range": "<11.1.1",
-      "nodes": [
-        "node_modules/@google-cloud/storage/node_modules/uuid",
-        "node_modules/gtoken/node_modules/uuid"
-      ],
-      "fixAvailable": true
-    }
+  "remaining": {},
+  "next_action": "Repeat registry audit before release and validate actual approved GCP inventory/credential journeys. A zero-advisory registry report is not application security certification.",
+  "afterFrameworkPatches": {
+    "info": 0,
+    "low": 0,
+    "moderate": 2,
+    "high": 0,
+    "critical": 0,
+    "total": 2
   },
-  "next_action": "Review upstream Google Storage/gtoken dependency compatibility for uuid fix; no forced major overrides. Reaudit after resolution and before release."
+  "runtime": "Web CI aligned to existing Vercel production Node 24; Storage 8.4 requires Node >=22. Production runtime settings unchanged."
 }

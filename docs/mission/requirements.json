@@ -6550,12 +6550,15 @@
       "domain": "gcp",
       "scope": "product",
       "status": "Blocked by external access",
-      "verification": "Source/automated evidence exists for subcomponents; exact device, account, credential or approval-dependent acceptance remains open.",
+      "verification": "GCP SDK read-only inventory code exists; snapshot bearer-string contract repaired with seven focused tests. Actual credential/IAM/provider journey remains unvalidated; generic deployment and rollback actions remain not implemented.",
       "evidence": [
-        "lib/axiom/provider/gcpAdapter.ts"
+        "lib/axiom/provider/gcpAdapter.ts",
+        "lib/plugins/gcp/snapshot-generator.ts",
+        "lib/plugins/gcp/__tests__/access-token.test.ts",
+        "docs/DEPENDENCY_SECURITY_AUDIT.md"
       ],
       "prs": [],
-      "nextAction": "Trace project selection and SDK inventory/error handling; define governed apply/rollback contracts before implementing missing mutations; validate on an authorized GCP test project.",
+      "nextAction": "Validate current snapshot/discovery against an approved read-only GCP project; retain failure reporting and permissions, then complete governed action support separately.",
       "owner": "Codex; external acceptance/approvals remain founder-owned",
       "auditDepth": "Requirement source mapped; individual acceptance review pending"
     },
@@ -11480,7 +11483,7 @@
       "domain": "security",
       "scope": "product",
       "status": "Partially implemented",
-      "verification": "Read-only production dependency audit: baseline 6 high/6 moderate; compatible Next/sharp/source-map patches reduce to 0 high/2 moderate. Desktop production audit 0. Remaining Google uuid path and release acceptance are open; this is not application security certification.",
+      "verification": "Production dependency registry audit: baseline 6 high/6 moderate; framework patches 0 high/2 moderate; compatible Storage 8.4 follow-up 0 findings. Scope is production dependency advisories, not application security certification or live provider acceptance.",
       "evidence": [
         "lib/security/permissionEngine.ts",
         "lib/security/credentialVault.ts",
@@ -11498,7 +11501,7 @@
         109,
         116
       ],
-      "nextAction": "Validate exact-head builds/CI and upstream Google dependency compatibility for remaining uuid advisory; repeat audit before release, without forced major overrides or suppressions.",
+      "nextAction": "Repeat audit before release and validate approved cloud credential/inventory journeys; preserve production and billing approval gates.",
       "owner": "Codex; external acceptance/approvals remain founder-owned",
       "auditDepth": "Requirement source mapped; individual acceptance review pending"
     },
@@ -11539,7 +11542,7 @@
       "domain": "security",
       "scope": "product",
       "status": "Partially implemented",
-      "verification": "Read-only production dependency audit: baseline 6 high/6 moderate; compatible Next/sharp/source-map patches reduce to 0 high/2 moderate. Desktop production audit 0. Remaining Google uuid path and release acceptance are open; this is not application security certification.",
+      "verification": "Production dependency registry audit: baseline 6 high/6 moderate; framework patches 0 high/2 moderate; compatible Storage 8.4 follow-up 0 findings. Scope is production dependency advisories, not application security certification or live provider acceptance.",
       "evidence": [
         "lib/security/permissionEngine.ts",
         "lib/security/credentialVault.ts",
@@ -11557,7 +11560,7 @@
         109,
         116
       ],
-      "nextAction": "Validate exact-head builds/CI and upstream Google dependency compatibility for remaining uuid advisory; repeat audit before release, without forced major overrides or suppressions.",
+      "nextAction": "Repeat audit before release and validate approved cloud credential/inventory journeys; preserve production and billing approval gates.",
       "owner": "Codex; external acceptance/approvals remain founder-owned",
       "auditDepth": "Requirement source mapped; individual acceptance review pending"
     },
@@ -29942,7 +29945,7 @@
       "domain": "journey",
       "scope": "product",
       "status": "Partially implemented",
-      "verification": "Read-only production dependency audit: baseline 6 high/6 moderate; compatible Next/sharp/source-map patches reduce to 0 high/2 moderate. Desktop production audit 0. Remaining Google uuid path and release acceptance are open; this is not application security certification.",
+      "verification": "Production dependency registry audit: baseline 6 high/6 moderate; framework patches 0 high/2 moderate; compatible Storage 8.4 follow-up 0 findings. Scope is production dependency advisories, not application security certification or live provider acceptance.",
       "evidence": [
         "desktop/src/views/DeploymentRequestsView.tsx",
         "lib/tauri/deploymentRequestRepo.ts",
@@ -29954,7 +29957,7 @@
         "docs/mission/dependency-security-audit.json"
       ],
       "prs": [],
-      "nextAction": "Validate exact-head builds/CI and upstream Google dependency compatibility for remaining uuid advisory; repeat audit before release, without forced major overrides or suppressions.",
+      "nextAction": "Repeat audit before release and validate approved cloud credential/inventory journeys; preserve production and billing approval gates.",
       "owner": "Codex; external acceptance/approvals remain founder-owned",
       "auditDepth": "Requirement source mapped; individual acceptance review pending"
     },
