@@ -204,3 +204,11 @@ authorized device. Current styles/native shortcuts were inspected in source.
 Keep this document and per-row register current after each milestone. Mark the
 specific assertion verified, record the exact candidate and test/live scope,
 and continue the first independent priority instead of replaying stale plans.
+
+## Dependency security follow-up
+
+The [dependency audit](DEPENDENCY_SECURITY_AUDIT.md) records compatible framework
+and image/source-map patches. Clean-install production audit findings fall from
+six high/six moderate to zero high/two moderate. Remaining Google uuid/gaxios
+findings stay open; zero registry findings would not certify application security.
+Exact-head build/test and merge evidence are recorded in the focused PR.

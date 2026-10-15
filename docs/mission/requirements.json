@@ -11480,14 +11480,17 @@
       "domain": "security",
       "scope": "product",
       "status": "Partially implemented",
-      "verification": "Source mapped to existing components; acceptance of this individual requirement has not been demonstrated end to end.",
+      "verification": "Read-only production dependency audit: baseline 6 high/6 moderate; compatible Next/sharp/source-map patches reduce to 0 high/2 moderate. Desktop production audit 0. Remaining Google uuid path and release acceptance are open; this is not application security certification.",
       "evidence": [
         "lib/security/permissionEngine.ts",
         "lib/security/credentialVault.ts",
         "lib/security/tenantIsolation.ts",
         "lib/auth/currentContext.ts",
         "lib/desktop/resolveRequestDesktopSession.ts",
-        "desktop/src-tauri/src/http.rs"
+        "desktop/src-tauri/src/http.rs",
+        "package-lock.json",
+        "docs/DEPENDENCY_SECURITY_AUDIT.md",
+        "docs/mission/dependency-security-audit.json"
       ],
       "prs": [
         105,
@@ -11495,7 +11498,7 @@
         109,
         116
       ],
-      "nextAction": "Continue boundary-specific negative tests for pending/revoked and wrong-tenant authority, SSRF, credentials, audit and restoration; verify exact packaged and deployed behavior rather than certifying the whole system from a kernel test.",
+      "nextAction": "Validate exact-head builds/CI and upstream Google dependency compatibility for remaining uuid advisory; repeat audit before release, without forced major overrides or suppressions.",
       "owner": "Codex; external acceptance/approvals remain founder-owned",
       "auditDepth": "Requirement source mapped; individual acceptance review pending"
     },
@@ -11536,14 +11539,17 @@
       "domain": "security",
       "scope": "product",
       "status": "Partially implemented",
-      "verification": "Source mapped to existing components; acceptance of this individual requirement has not been demonstrated end to end.",
+      "verification": "Read-only production dependency audit: baseline 6 high/6 moderate; compatible Next/sharp/source-map patches reduce to 0 high/2 moderate. Desktop production audit 0. Remaining Google uuid path and release acceptance are open; this is not application security certification.",
       "evidence": [
         "lib/security/permissionEngine.ts",
         "lib/security/credentialVault.ts",
         "lib/security/tenantIsolation.ts",
         "lib/auth/currentContext.ts",
         "lib/desktop/resolveRequestDesktopSession.ts",
-        "desktop/src-tauri/src/http.rs"
+        "desktop/src-tauri/src/http.rs",
+        "package-lock.json",
+        "docs/DEPENDENCY_SECURITY_AUDIT.md",
+        "docs/mission/dependency-security-audit.json"
       ],
       "prs": [
         105,
@@ -11551,7 +11557,7 @@
         109,
         116
       ],
-      "nextAction": "Continue boundary-specific negative tests for pending/revoked and wrong-tenant authority, SSRF, credentials, audit and restoration; verify exact packaged and deployed behavior rather than certifying the whole system from a kernel test.",
+      "nextAction": "Validate exact-head builds/CI and upstream Google dependency compatibility for remaining uuid advisory; repeat audit before release, without forced major overrides or suppressions.",
       "owner": "Codex; external acceptance/approvals remain founder-owned",
       "auditDepth": "Requirement source mapped; individual acceptance review pending"
     },
@@ -29936,16 +29942,19 @@
       "domain": "journey",
       "scope": "product",
       "status": "Partially implemented",
-      "verification": "Source mapped to existing components; acceptance of this individual requirement has not been demonstrated end to end.",
+      "verification": "Read-only production dependency audit: baseline 6 high/6 moderate; compatible Next/sharp/source-map patches reduce to 0 high/2 moderate. Desktop production audit 0. Remaining Google uuid path and release acceptance are open; this is not application security certification.",
       "evidence": [
         "desktop/src/views/DeploymentRequestsView.tsx",
         "lib/tauri/deploymentRequestRepo.ts",
         "lib/tauri/deploymentPlaybookRepo.ts",
         "lib/tauri/templates.ts",
-        "docs/REQUIREMENTS_MATRIX.md"
+        "docs/REQUIREMENTS_MATRIX.md",
+        "package-lock.json",
+        "docs/DEPENDENCY_SECURITY_AUDIT.md",
+        "docs/mission/dependency-security-audit.json"
       ],
       "prs": [],
-      "nextAction": "Verify the named journey against a safe tenant from actual UI through API, persistence and provider evidence; complete missing editing, execution, validation/deferred follow-up, export and closure behavior.",
+      "nextAction": "Validate exact-head builds/CI and upstream Google dependency compatibility for remaining uuid advisory; repeat audit before release, without forced major overrides or suppressions.",
       "owner": "Codex; external acceptance/approvals remain founder-owned",
       "auditDepth": "Requirement source mapped; individual acceptance review pending"
     },
