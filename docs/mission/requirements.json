@@ -2996,7 +2996,7 @@
         "desktop/src/lib/useNativeMenuActions.ts",
         "desktop/src-tauri/src/menu.rs",
         "desktop/src/lib/desktopIdentityResponse.ts",
-        "lib/desktop/__tests__/desktopIdentityResponse.test.ts"
+        "lib/desktop/__tests__/desktopClientError.test.ts"
       ],
       "prs": [
         111,
@@ -3079,7 +3079,7 @@
         "desktop/src/lib/useNativeMenuActions.ts",
         "desktop/src-tauri/src/menu.rs",
         "desktop/src/lib/desktopIdentityResponse.ts",
-        "lib/desktop/__tests__/desktopIdentityResponse.test.ts"
+        "lib/desktop/__tests__/desktopClientError.test.ts"
       ],
       "prs": [
         111,
@@ -16979,7 +16979,7 @@
         "app/api/billing/stripe-webhook/route.ts",
         "docs/BILLING_RECONCILIATION.md",
         "desktop/src/lib/desktopIdentityResponse.ts",
-        "lib/desktop/__tests__/desktopIdentityResponse.test.ts"
+        "lib/desktop/__tests__/desktopClientError.test.ts"
       ],
       "prs": [
         109,
@@ -17983,7 +17983,7 @@
         "lib/desktop/resolveRequestDesktopSession.ts",
         "desktop/src-tauri/src/http.rs",
         "desktop/src/lib/desktopIdentityResponse.ts",
-        "lib/desktop/__tests__/desktopIdentityResponse.test.ts"
+        "lib/desktop/__tests__/desktopClientError.test.ts"
       ],
       "prs": [
         105,
@@ -18015,7 +18015,7 @@
         "app/api/billing/stripe-webhook/route.ts",
         "docs/BILLING_RECONCILIATION.md",
         "desktop/src/lib/desktopIdentityResponse.ts",
-        "lib/desktop/__tests__/desktopIdentityResponse.test.ts"
+        "lib/desktop/__tests__/desktopClientError.test.ts"
       ],
       "prs": [
         109,
@@ -18073,7 +18073,7 @@
         "lib/desktop/resolveRequestDesktopSession.ts",
         "desktop/src-tauri/src/http.rs",
         "desktop/src/lib/desktopIdentityResponse.ts",
-        "lib/desktop/__tests__/desktopIdentityResponse.test.ts"
+        "lib/desktop/__tests__/desktopClientError.test.ts"
       ],
       "prs": [
         105,
@@ -18131,7 +18131,7 @@
         "app/api/billing/stripe-webhook/route.ts",
         "docs/BILLING_RECONCILIATION.md",
         "desktop/src/lib/desktopIdentityResponse.ts",
-        "lib/desktop/__tests__/desktopIdentityResponse.test.ts"
+        "lib/desktop/__tests__/desktopClientError.test.ts"
       ],
       "prs": [
         109,

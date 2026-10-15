@@ -10,7 +10,7 @@ granting authority. Valid denied access and legacy optional capabilities remain
 supported. The sidebar now says Workspace connected rather than asserting
 production entitlement. The commercial-policy discrepancy and actual login
 incident remain open; no account, credentials or production data are changed.
-Validation passes: 538 Vitest files / 5,314 tests, web TypeScript, desktop
+Validation passes: 537 Vitest files / 5,314 tests, web TypeScript, desktop
 TypeScript/frontend build, 30 Python CLI tests and the tracker coverage check.
 The audit PR's automatic main deployment `dpl_8AV4shNSfHpihfYESxeV7DZXbatz`
 is READY. No current native/macOS or successful production-login claim is made.
