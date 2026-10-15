@@ -18,7 +18,7 @@ const record = {
 
 function repository(existing = record) {
   const repo = {
-    usageEvent: { findMany: vi.fn().mockResolvedValue([{ id: "usage-1", organizationId: "org-1", billedCents: 3 }]) },
+    $queryRaw: vi.fn().mockResolvedValue([{ id: "usage-1", organizationId: "org-1", billedCents: 3 }]),
     tenantBillingPlan: { findUnique: vi.fn().mockResolvedValue({ stripeCustomerId: "cus_test" }) },
     aIUsageBillingConfig: { findUnique: vi.fn().mockResolvedValue({ enabled: true, monthlySpendLimitCents: 100, currency: "USD" }) },
     aIUsageBillingPeriod: { findUnique: vi.fn(), create: vi.fn(), updateMany: vi.fn() },
@@ -91,7 +91,7 @@ describe("AI usage Stripe settlement retry safety", () => {
     vi.stubEnv("AXIOM_AI_USAGE_BILLING_TEST_ENABLED", enabled);
     const repo = repository();
     await settleAIUsageToStripe(repo);
-    expect(repo.usageEvent.findMany).not.toHaveBeenCalled();
+    expect(repo.$queryRaw).not.toHaveBeenCalled();
     expect(mocks.invoiceItem).not.toHaveBeenCalled();
   });
 });

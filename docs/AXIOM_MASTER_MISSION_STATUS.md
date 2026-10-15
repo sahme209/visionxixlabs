@@ -1,5 +1,24 @@
 # Axiom Agent master-mission status
 
+## Continuing mission — settlement batch progress
+
+PR #114 merged at `df8d3788` after exact-head GitHub validation passed.
+The next query audit reproduced a completed event consuming a one-row batch
+on every tick. Candidate selection now excludes submitted settlement rows
+before LIMIT, preserving recent reserved retries and new settled usage. The
+existing serializable ledger recheck and bounded retry policy remain in place.
+
+The parameterized SELECT was exercised against disposable PostgreSQL 16:
+the old selection returned `done`; the repaired one-row batch returned `retry`,
+and a two-row batch returned `retry`, `new`. In-memory SQL regressions also
+cover pending/zero-cost exclusion and limit bounds. No production database,
+migration, provider request or billing setting was used. Full queue fairness
+and operator reconciliation remain separate gaps; this fixes completed rows
+starving newer candidates, not every blocked-work scenario.
+Local validation passes: 537 Vitest files / 5,285 tests, web TypeScript,
+desktop TypeScript/frontend build, 30 Python CLI tests and diff whitespace
+checks. The PostgreSQL fixture was removed after verification.
+
 ## Continuing mission — bounded Stripe settlement retries
 
 Main `5541fd04` includes PRs #111–#113; their automatic main deployments are
