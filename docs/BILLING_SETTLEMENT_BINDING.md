@@ -51,3 +51,27 @@ Local validation: web/desktop TypeScript, 539 Vitest files / 5,339 tests,
 desktop frontend build, 30 Python CLI tests and mission register check pass.
 The internal governed AI-usage walkthrough reflects held-row selection. No
 production or real Stripe request was used for these checks.
+
+## Configuration and budget eligibility before LIMIT
+
+After #124 preserved and excluded reconciliation holds, candidate selection also
+requires enabled positive-cap configuration and a nonblank attached Stripe
+customer. New usage must fit the current UTC month's remaining capacity;
+missing monthly counters mean no prior reservation, while negative counters
+fail closed. Existing valid retries are already reserved and remain eligible
+even when their configured cap is spent. Configuration/customer and serializable
+budget checks still run in the worker after selection, handling concurrent
+changes. Selection and reservation use the same captured UTC month; the final
+retry-age check still uses fresh time immediately before provider submission.
+
+This SELECT creates no reservations and mutates no records. SQLite cases cover
+older disabled/missing/blank-customer/exhausted/over-cap records, exact remaining
+capacity, previous-month isolation, missing configuration/plans and retries at
+a spent cap. The generated SQL was independently executed on PostgreSQL 16.
+Eligible repeated provider failures can still crowd the ordered batch; a durable
+fair retry schedule and actual isolated Stripe test-mode customer journeys remain
+open. Live settlement remains disabled and rejects live keys.
+
+Validation for the configuration/budget follow-up: 539 Vitest files / 5,344
+tests, web and desktop TypeScript, desktop frontend build, 30 Python CLI tests,
+mission register check and disposable PostgreSQL capacity fixtures passed.

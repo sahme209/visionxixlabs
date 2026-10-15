@@ -527,3 +527,15 @@ records, quota, idempotency keys and final worker checks. SQLite and disposable
 PostgreSQL 16 fixtures return eligible work behind older held rows. Disabled
 accounts, exhausted budgets and repeatedly failing eligible retries remain open
 fairness cases. No production SQL, live billing or manual promotion was performed.
+
+## Production-login priority recheck
+
+Highest priority remains actual production login, founder mapping and desktop
+pairing. Fresh P2022 evidence confirms missing User.emailVerifiedAt across all
+three requested callback types. Protected preflight dispatch still returns
+Forbidden; external secure main-branch dispatch/report or agent Actions access
+is required. No account mutation, migration, verification bypass or infrastructure
+change is authorized by this diagnostic work. Independently, billing candidate
+selection now checks account/customer configuration and fresh monthly capacity
+before LIMIT, preserving already-reserved retry eligibility and ledger holds.
+Real isolated Stripe acceptance and repeated eligible retry fairness remain open.

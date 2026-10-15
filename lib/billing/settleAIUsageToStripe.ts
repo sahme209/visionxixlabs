@@ -111,9 +111,10 @@ export async function settleAIUsageToStripe(
   const disabled = testModeFailure();
   if (disabled) return { inspected: 0, reserved: 0, submitted: 0, blocked: 0, deferred: 0 };
 
-  const usage = await repository.$queryRaw<SettledUsage[]>(aiUsageSettlementCandidates(limit));
+  const selectionTime = new Date();
+  const usage = await repository.$queryRaw<SettledUsage[]>(aiUsageSettlementCandidates(limit, selectionTime));
   const result: AIUsageSettlementResult = { inspected: usage.length, reserved: 0, submitted: 0, blocked: 0, deferred: 0 };
-  const periodMonth = monthKey();
+  const periodMonth = monthKey(selectionTime);
 
   for (const event of usage) {
     const config = await repository.aIUsageBillingConfig.findUnique({ where: { organizationId: event.organizationId } });

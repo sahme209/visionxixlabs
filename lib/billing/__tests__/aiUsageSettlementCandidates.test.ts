@@ -6,7 +6,7 @@ import { aiUsageSettlementCandidates } from "../aiUsageSettlementCandidates";
 // No external database or credentials are used. PostgreSQL compatibility is
 // additionally checked with a disposable PostgreSQL fixture before merging.
 const now = new Date("2026-10-15T12:00:00.000Z");
-function select(limit: number): string[] {
+function select(limit: number, setup = ""): string[] {
   const query = aiUsageSettlementCandidates(limit, now);
   const script = `
 import json, sqlite3, sys
@@ -15,6 +15,12 @@ db = sqlite3.connect(':memory:')
 db.executescript('''
 CREATE TABLE "UsageEvent" (id TEXT, organizationId TEXT, billedCents INTEGER, billingStatus TEXT, createdAt TEXT);
 CREATE TABLE "AIUsageBillingSettlement" (usageEventId TEXT, status TEXT, organizationId TEXT, amountCents INTEGER, createdAt TEXT);
+CREATE TABLE "AIUsageBillingConfig" (organizationId TEXT PRIMARY KEY, enabled BOOLEAN, monthlySpendLimitCents INTEGER);
+CREATE TABLE "TenantBillingPlan" (organizationId TEXT PRIMARY KEY, stripeCustomerId TEXT);
+CREATE TABLE "AIUsageBillingPeriod" (organizationId TEXT, periodMonth TEXT, reservedCents INTEGER);
+INSERT INTO "AIUsageBillingConfig" VALUES ('org-1', true, 100), ('org-2', true, 1);
+INSERT INTO "TenantBillingPlan" VALUES ('org-1', 'cus_test_1'), ('org-2', 'cus_test_2');
+INSERT INTO "AIUsageBillingPeriod" VALUES ('org-2', '2026-10', 1);
 INSERT INTO "UsageEvent" VALUES
  ('done', 'org-1', 3, 'settled', '2026-10-01'),
  ('retry', 'org-2', 4, 'settled', '2026-10-02'),
@@ -37,9 +43,22 @@ for name, status, org, amount, created in [
  ('wrong-amount', 'reserved', 'org-1', 999, '2026-10-15T11:00:00.000Z')]:
  db.execute('INSERT INTO "UsageEvent" VALUES (?, ?, ?, ?, ?)', (name, 'org-1', 3, 'settled', '2026-09-01'))
  db.execute('INSERT INTO "AIUsageBillingSettlement" VALUES (?, ?, ?, ?, ?)', (name, status, org, amount, created))
+for name, enabled, cap, customer, reserved in [
+ ('disabled', False, 100, 'cus_test', 0),
+ ('zero-cap', True, 0, 'cus_test', 0),
+ ('missing-customer', True, 100, None, 0),
+ ('blank-customer', True, 100, '  ', 0),
+ ('exhausted', True, 100, 'cus_test', 100),
+ ('negative-counter', True, 100, 'cus_test', -1),
+ ('over-cap', True, 2, 'cus_test', 0)]:
+ db.execute('INSERT INTO "UsageEvent" VALUES (?, ?, ?, ?, ?)', (name, name, 3, 'settled', '2026-09-01'))
+ db.execute('INSERT INTO "AIUsageBillingConfig" VALUES (?, ?, ?)', (name, enabled, cap))
+ db.execute('INSERT INTO "TenantBillingPlan" VALUES (?, ?)', (name, customer))
+ db.execute('INSERT INTO "AIUsageBillingPeriod" VALUES (?, ?, ?)', (name, '2026-10', reserved))
+db.executescript(query['setup'])
 print(json.dumps([row[0] for row in db.execute(query['sql'], query['values'])]))
 `;
-  return JSON.parse(execFileSync("python3", ["-c", script, JSON.stringify({ sql: query.sql, values: query.values })], { encoding: "utf8", timeout: 5000 }));
+  return JSON.parse(execFileSync("python3", ["-c", script, JSON.stringify({ sql: query.sql, values: query.values, setup })], { encoding: "utf8", timeout: 5000 }));
 }
 
 describe("AI settlement candidate selection", () => {
@@ -54,5 +73,20 @@ describe("AI settlement candidate selection", () => {
   });
   it("fails closed for an invalid selection clock", () => {
     expect(() => aiUsageSettlementCandidates(100, new Date(NaN))).toThrow("Invalid settlement selection time");
+  });
+  it("allows a new reservation exactly at remaining capacity", () => {
+    expect(select(100, `INSERT INTO "AIUsageBillingPeriod" VALUES ('org-1', '2026-10', 95);`)).toEqual(["retry", "new"]);
+  });
+  it("does not select new usage above remaining capacity", () => {
+    expect(select(100, `INSERT INTO "AIUsageBillingPeriod" VALUES ('org-1', '2026-10', 96);`)).toEqual(["retry"]);
+  });
+  it("ignores a previous month's reservation counter", () => {
+    expect(select(100, `INSERT INTO "AIUsageBillingPeriod" VALUES ('org-1', '2026-09', 100);`)).toEqual(["retry", "new"]);
+  });
+  it("excludes missing opt-in configuration and missing billing plans", () => {
+    expect(select(100, `DELETE FROM "AIUsageBillingConfig" WHERE "organizationId" = 'org-1'; DELETE FROM "TenantBillingPlan" WHERE "organizationId" = 'org-2';`)).toEqual([]);
+  });
+  it("keeps already-reserved retries eligible despite a spent cap", () => {
+    expect(select(1)).toEqual(["retry"]);
   });
 });
