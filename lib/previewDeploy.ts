@@ -10,7 +10,7 @@ export type DeployResult = {
 
 /**
  * Deploy generated site. Uses provider abstraction.
- * Default: Vercel for preview. Falls back to Vercel if provider not supported.
+ * Default: Vercel for preview. Explicit unsupported providers are rejected.
  */
 export async function deployPreview(
   pkg: AIStarterPackage,
@@ -18,8 +18,7 @@ export async function deployPreview(
   provider: DeployProvider = "vercel",
   credentials?: Record<string, string>
 ): Promise<DeployResult> {
-  const prov = ["vercel", "aws", "azure", "gcp"].includes(provider) ? provider : "vercel";
-  return deploySite(prov, pkg, { projectName, credentials });
+  return deploySite(provider, pkg, { projectName, credentials });
 }
 
 /**
@@ -31,6 +30,5 @@ export async function deployPreviewFromPlan(
   provider: DeployProvider = "vercel",
   credentials?: Record<string, string>
 ): Promise<DeployResult> {
-  const prov = ["vercel", "aws", "azure", "gcp"].includes(provider) ? provider : "vercel";
-  return deploySiteFromPlan(prov, plan, { projectName, credentials });
+  return deploySiteFromPlan(provider, plan, { projectName, credentials });
 }
