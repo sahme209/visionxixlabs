@@ -213,7 +213,7 @@ export const DEMO_SCENARIOS: Readonly<Record<DemoScenarioId, DemoScenario>> = {
     description: "Internal-only record retained for product planning. It documents the secure browser handoff and the Integration Center without representing an unsupported customer workflow as available.",
     estimatedMinutes: 6,
     audience: "internal_only",
-    lastReviewed: "2026-10-14",
+    lastReviewed: "2026-10-15",
     steps: [
       { id: "1", title: "Verify desktop distribution", description: "Confirm that every enabled platform points to a verified release asset and unavailable platforms remain disabled.", route: "/download", approval: "none", expectedResult: "Customer receives the verified desktop build or an accurate unavailable state." },
       { id: "2", title: "Pair workspace",             description: "Paste a vxlk_live_* API key minted in /admin/api-keys.", approval: "none", expectedResult: "Test connection shows ✓ + workspace + plan tier." },
@@ -237,6 +237,7 @@ export const DEMO_SCENARIOS: Readonly<Record<DemoScenarioId, DemoScenario>> = {
       { id: "20", title: "Review execution controls", description: "The operator reads the durable status of any recorded consequential operation without gaining an execution control.", approval: "none", expectedResult: "The desktop can display a privacy-safe operation status and reconciliation time. It cannot create, retry, approve, or dispatch an operation, and it never exposes provider URLs, error payloads, idempotency keys, or internal identifiers." },
       { id: "21", title: "Select governed Agent effort", description: "The operator chooses Inspect, Engineer, or DeepOps. Each mode has a bounded number of governed decision steps; provider selection and customer-credit checks remain service controlled.", approval: "none", expectedResult: "Inspect remains read-only with the smallest budget; Engineer proposes only GitHub engineering changes; DeepOps can only return registered operational actions for separate human approval." },
       { id: "22", title: "Review governed AI usage evidence", description: "After an Agent reply, the desktop shows the provider-reported decision-step and token evidence for that turn.", approval: "none", expectedResult: "The receipt never labels token totals as a customer charge; settled customer-credit usage remains governed by workspace policy and the service ledger." },
+      { id: "23", title: "Review uncertain automation outcomes", description: "Illustrative Airflow action history distinguishes an accepted provider request from an outcome that still needs review. A failed refresh releases the busy state without silently retrying the action.", approval: "none", expectedResult: "The operator sees that an unconfirmed outcome requires review before retrying and is not counted as a successful scheduler action; this internal demonstration performs no provider operation." },
     ],
   },
   developer_tools: {
@@ -269,7 +270,7 @@ export const DEMO_SCENARIOS: Readonly<Record<DemoScenarioId, DemoScenario>> = {
       { id: "4", title: "Approval packet",            description: "Two-person approval for any change-class action.", route: "/dashboard/approvals", approval: "two_person", expectedResult: "Both reviewers sign off." },
       { id: "5", title: "Execute",                    description: "Approved automation runs; outputs streamed to the page.", approval: "none", expectedResult: "Execution log + new state visible." },
       { id: "6", title: "Audit log",                  description: "Every action recorded with closed-union AuditAction.", route: "/dashboard/audit", approval: "none", expectedResult: "Audit row with actor, action, outcome, correlation id." },
-      { id: "7", title: "Review duplicate-action protection", description: "Illustrative Airflow completion workflow: concurrent callers compete for one durable attempt claim, pending approval needs an explicit approver, and a paused rule cannot start a queued action or retry.", approval: "none", expectedResult: "One caller claims an enabled rule's observed attempt; paused, competing, or stale callers leave it unchanged. This demonstration performs no provider operation." },
+      { id: "7", title: "Review duplicate-action protection", description: "Illustrative Airflow completion workflow: one enabled attempt is claimed, approval is rechecked against current workspace membership, and uncertain provider outcomes pause automatic replay.", approval: "none", expectedResult: "Paused rules and revoked approvers cannot start work. An uncertain provider outcome requires review before retrying. This demonstration performs no provider operation." },
     ],
   },
   ai_workforce_overview: {

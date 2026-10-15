@@ -14,6 +14,10 @@ const TERMINAL_STATES = new Set(["success", "failed"]);
 export async function runAirflowAutomationTick(now = new Date()): Promise<{ organizations: number; rules: number; proposals: number; actions: number; errors: number }> {
   const organizations = await prisma.airflowAutomation.groupBy({ by: ["organizationId"], where: { enabled: true } });
   const totals = { organizations: organizations.length, rules: 0, proposals: 0, actions: 0, errors: 0 };
+  const recordOutcome = (result: Awaited<ReturnType<typeof executeAirflowAutomation>>) => {
+    if (result.ok) totals.actions += 1;
+    else if (result.error !== "airflow_execution_not_actionable" && result.error !== "airflow_automation_disabled") totals.errors += 1;
+  };
   for (const group of organizations) {
     try {
       const { client, connectionId } = await loadAirflowClient(group.organizationId);
@@ -39,13 +43,13 @@ export async function runAirflowAutomationTick(now = new Date()): Promise<{ orga
             totals.proposals += 1;
             await appendAuditEvent(prisma as unknown as AuditEventRepo, { organizationId: group.organizationId, kind: "airflow.action.proposed", subjectKind: "automation", subjectId: execution.id, summary: `Airflow automation ${rule.name} proposed ${rule.actionType.replaceAll("_", " ")} after ${run.dagId}`, actorUserId: null, detailJson: { dagId: run.dagId, dagRunId: run.dagRunId, actionType: rule.actionType, approvalRequired: rule.approvalRequired } });
             await dispatchWebhookEvent({ organizationId: group.organizationId, eventKind: "airflow.action_proposed", data: { automationId: rule.id, automationName: rule.name, executionId: execution.id, dagId: run.dagId, dagRunId: run.dagRunId, actionType: rule.actionType, approvalRequired: rule.approvalRequired }, fireImmediately: true }).catch(() => undefined);
-            if (!rule.approvalRequired || rule.actionType === "none") { await executeAirflowAutomation(execution.id); totals.actions += 1; }
+            if (!rule.approvalRequired || rule.actionType === "none") recordOutcome(await executeAirflowAutomation(execution.id));
           }
           await prisma.airflowAutomation.update({ where: { id: rule.id }, data: { lastEvaluatedAt: now } });
         } catch { totals.errors += 1; }
       }
       const retries = await prisma.airflowAutomationExecution.findMany({ where: { organizationId: group.organizationId, status: "failed", nextRetryAt: { lte: now }, automation: { enabled: true } }, select: { id: true, decidedByUserId: true } });
-      for (const retry of retries) { await executeAirflowAutomation(retry.id, retry.decidedByUserId ?? undefined); totals.actions += 1; }
+      for (const retry of retries) recordOutcome(await executeAirflowAutomation(retry.id, retry.decidedByUserId ?? undefined));
       await reconcileDeployments(group.organizationId);
     } catch { totals.errors += 1; }
   }

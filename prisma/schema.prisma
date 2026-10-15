@@ -4260,7 +4260,7 @@ model AirflowAutomationExecution {
   sourceDagId           String
   sourceDagRunId        String
   sourceDagState        String
-  /// pending_approval | queued | running | succeeded | failed | rejected | rolled_back
+  /// pending_approval | queued | running | succeeded | failed | needs_reconciliation | rejected | rolled_back
   status                String   @default("pending_approval")
   attempt               Int      @default(0)
   nextRetryAt           DateTime?

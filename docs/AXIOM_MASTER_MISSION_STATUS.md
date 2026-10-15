@@ -1,5 +1,31 @@
 # Axiom Agent master-mission status
 
+## Local follow-up — uncertain provider outcomes and retry authority
+
+The continuing cloud-local candidate persists an Airflow dispatch intent before
+its non-idempotent provider request. After dispatch begins, a timeout or later
+storage failure cannot schedule an automatic replay: it requires reconciliation,
+retaining any known provider receipt when possible. A crash or failed hold write
+leaves the durable running intent outside automatic retry selection. Failures
+before dispatch still use bounded retries. This is conservative duplicate-effect
+prevention, not automatic reconciliation or exactly-once provider execution.
+
+Retries also recheck accepted workspace membership and `agent:approve` for the
+recorded/current approver; missing/revoked authority and store failure block
+execution. Desktop history uses a human-readable uncertain-outcome label,
+refreshes after failed responses, and clears its busy state on request/refresh
+errors. Approval success copy no longer asserts a completed cloud deployment.
+Scheduler counters now distinguish recorded successful actions, failed/uncertain
+outcomes, and benign stale claims/disabled rules. Regression tests reproduce
+the prior overcount for both new proposals and scheduled retries.
+No production data, external operation, release, merge, push, or new PR is
+performed. Crash detection and a governed external-receipt reconciliation
+journey remain separate work; production login is still externally blocked.
+
+Local validation: 530 Vitest files / 5,184 tests, web TypeScript, desktop
+TypeScript/frontend build, and 30 Python CLI tests pass. Native Rust validation
+remains unavailable because cargo is absent. No database migration is required.
+
 ## Independent follow-up — paused Airflow execution safety
 
 Main `9db9f4de` includes merged PRs #105–#107. Their implementation is not

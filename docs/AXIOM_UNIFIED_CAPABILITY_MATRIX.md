@@ -51,6 +51,15 @@ instead of being invented as complete or not implemented.
 
 ## Priority and value matrix
 
+Cloud-local follow-up after the initial snapshot: paused-rule claims are fixed
+in local commit `e20ec878`; the subsequent candidate holds uncertain provider
+outcomes instead of replaying them, persists an intent/known receipt, rechecks
+current approver membership/capability on retries, and exposes a clear desktop
+review state with failure-safe busy handling. These changes are not merged,
+deployed, or live-validated. Automated crash detection, provider-receipt lookup,
+and a governed reconciliation/reset journey remain open. No production or
+commercial readiness percentage is upgraded by this local code evidence.
+
 Effort is a relative planning estimate, not a delivery promise. Readiness records
 whether useful software work can proceed without external credentials.
 

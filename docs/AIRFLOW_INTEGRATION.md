@@ -49,7 +49,9 @@ The scheduler is idempotent per automation and Airflow run. Multiple ticks canno
 - A failed endpoint validation never marks a connection active.
 - Disconnecting Airflow disables its automations.
 - Missing or stale dependency successes keep the action blocked; they do not silently pass.
-- Action failures retry up to the rule's configured limit with a bounded delay.
+- Failures before a provider action starts retry up to the rule's configured
+  limit with a bounded delay. A provider timeout or a persistence failure after
+  dispatch requires reconciliation instead of automatic replay.
 - ECS stability failure and rollback remain owned by the tenant's OIDC-authenticated GitHub Actions workflow. Axiom reconciles that workflow result into the Airflow automation execution.
 - Operators can pause a rule at any time without deleting its execution or audit evidence.
 - Paused or disconnected rules cannot start queued actions or retries. The
@@ -68,10 +70,36 @@ by calling the executor. Regressions exercise concurrent callers, rejection
 races, stale failed attempts, and the authorized approval path with mocked
 provider calls. No real Airflow/GitHub/cloud operation was performed.
 
-This claim does not prove exactly-once effects across provider dispatch and a
-later persistence failure. Durable external-intent reconciliation and
-uncertain-outcome retry behavior remain separate audit/engineering work; do not
-describe the entire integration as live-validated or replay-safe on this fix.
+### Uncertain outcomes and current retry authority
+
+The executor persists a dispatch intent before its non-idempotent PR/workflow
+request. Once that request starts, an unconfirmed response or later persistence
+failure leaves `needs_reconciliation` with no scheduled retry. A known provider
+receipt is retained when storage is available. This state is not eligible for
+another executor claim. If the process or storage fails before the hold can be
+saved, the already durable `running` intent also remains outside automatic
+retry selection. Failures before dispatch retain bounded retries.
+
+Because the current provider adapter does not distinguish every definitive
+rejection from an ambiguous network failure, even an unsuccessful response after
+dispatch starts conservatively requires review. This trades automatic recovery
+for protection against duplicate external effects. Inspect the actual external
+result before authorizing further work; no automatic reconciliation/reset
+operation is supplied by this milestone, and no manual database edit is implied.
+Crash detection, automatic receipt lookup, and a governed reconciliation journey
+remain separate work. This is not an exactly-once or live-validation claim.
+
+Scheduled retries recheck a stored approver against the execution's workspace:
+membership must still be accepted and retain `agent:approve`. Revoked/pending
+memberships, a role without that capability, or an unreadable membership store
+block execution before the claim or provider request. An approval-required rule
+without a recorded approver cannot auto-approve itself. Restoring legitimate
+authority uses existing workspace governance; this code never grants a role.
+
+Desktop history labels an uncertain result as requiring review, refreshes after
+both successful and failed action responses, and releases its busy state if a
+request or refresh fails. Provider-dispatch acceptance is not presented as
+proof of a completed cloud deployment.
 
 ## Production verification checklist
 
@@ -82,3 +110,7 @@ describe the entire integration as live-validated or replay-safe on this fix.
 - Create a development deployment automation and verify the selected Axiom environment resolves to the expected AWS target.
 - Exercise a failed deployment and confirm the GitHub workflow rollback and reconciled Axiom status.
 - Confirm audit events and configured webhook deliveries contain identifiers and outcomes but no Airflow credential or DAG configuration.
+
+Scheduler tick counters record successful executor outcomes as actions. Failed or
+unconfirmed outcomes count as errors; a competing claim or disabled rule is a
+no-op. An action count does not establish that a cloud deployment completed.
