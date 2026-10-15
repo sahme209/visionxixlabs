@@ -1,5 +1,27 @@
 # Axiom Agent master-mission status
 
+## Separate follow-up — unresolved deployment reservations
+
+An unrelated reservation request previously deleted reserved execution rows
+older than fifteen minutes before checking quota. A stale row can represent
+a provider-accepted dispatch whose receipt was not saved, so age alone cannot
+justify discarding its slot or idempotency key. The local repair removes that
+automatic deletion; explicit release/settlement paths are unchanged. A
+stateful regression fails before and passes after the repair. This conservative
+hold may consume allowance until a governed reconciliation flow is completed.
+No prices, plan limits, live charges, records or migration are changed.
+Local validation: 530 Vitest files / 5,195 tests and web TypeScript pass.
+Desktop/Python code is unchanged from the passing #108 candidate. This
+follow-up is retained locally in its own worktree, outside #108.
+
+PR #108 at `bde025a5` passes GitHub Typecheck + Vitest and the full Desktop
+CI, including native tests and clippy. Vercel preview
+`dpl_4iXMzu5XgiSWpRZs4H2CtwN1QcvL` fails after about one second with
+`BUILD_FAILED: Resource provisioning failed`, before an application build.
+Merge is held for this unresolved deployment check and the separate
+production-release boundary. Production auth/founder verification remains
+blocked; no production approval or readiness is inferred from green tests.
+
 ## Current validation and integration · 2026-10-15
 
 The combined follow-up candidate passes 530 Vitest files / 5,194 tests, web

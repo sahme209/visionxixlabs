@@ -296,13 +296,14 @@ export const DEMO_SCENARIOS: Readonly<Record<DemoScenarioId, DemoScenario>> = {
     description: "How operators stay inside their plan + when to upgrade.",
     estimatedMinutes: 4,
     audience: "client",
-    lastReviewed: REVIEWED,
+    lastReviewed: "2026-10-15",
     steps: [
       { id: "1", title: "Plan tier",                  description: "Current tier + entitlements.", route: "/dashboard/billing", approval: "none", expectedResult: "Tier card + month-to-date usage." },
       { id: "2", title: "AI credit usage",            description: "Cents spent month-to-date vs included pool.", route: "/dashboard/ai-usage", approval: "none", expectedResult: "Spend chart + projection." },
       { id: "3", title: "v1 API quota",               description: "Monthly v1 API call count vs the plan cap.", approval: "none", expectedResult: "Quota gauge + nearLimit warning at 90%." },
       { id: "4", title: "Overage alert",              description: "Email + in-app alert at 70/90/100% of any dimension.", approval: "none", expectedResult: "Alert visible in notifications." },
       { id: "5", title: "Upgrade flow",               description: "Request enterprise quote OR self-serve upgrade.", approval: "none", expectedResult: "Upgrade request created or new tier active." },
+      { id: "6", title: "Review unresolved deployment holds", description: "An interrupted provider dispatch can leave a durable reservation. Elapsed time alone cannot prove that no deployment occurred.", approval: "none", expectedResult: "The unresolved hold retains its quota slot and idempotency key until reconciliation; this walkthrough does not release a hold or dispatch a deployment." },
     ],
   },
   internal_growth_automation: {
