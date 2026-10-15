@@ -49,6 +49,31 @@ references only; no secret or price identifier belongs in source control.
 | `STRIPE_PRICE_ENTERPRISE_MONTHLY` | Approved recurring per-seat Enterprise monthly price |
 | `STRIPE_PRICE_ENTERPRISE_ANNUAL` | Approved recurring per-seat Enterprise annual price |
 | `AXIOM_LIVE_BILLING_APPROVED` | Must remain false/unset; a live key cannot create checkout without this second explicit lock |
+| `AXIOM_AI_USAGE_BILLING_TEST_ENABLED` | Must remain unset/false outside the isolated Stripe test environment. This is a separate opt-in for AI usage invoice items. |
+
+## AI usage settlement contract
+
+`UsageEvent` is settled only after Vercel Gateway provides its authoritative
+generation cost. The platform then computes the customer amount exactly once
+as the settled event's `billedCents` (the governed 1.5x amount). A durable
+`AIUsageBillingSettlement` ledger records the Stripe idempotency key before an
+external request, and `AIUsageBillingPeriod` reserves the workspace's monthly
+limit in a serializable transaction. Therefore retries cannot duplicate an
+invoice item or push a workspace over its configured ceiling.
+
+Settlement is deliberately **test-mode only** in this release. The protected
+`/api/cron/settle-ai-usage` job rejects any live key, any mode/key mismatch,
+and any workspace without all of: an enabled `AIUsageBillingConfig`, a
+positive `monthlySpendLimitCents`, and a Stripe customer attached to its
+`TenantBillingPlan`. It creates test-mode invoice items only; it neither
+finalizes an invoice nor collects a payment.
+
+Before scheduling that job in Vercel, an operator must create an isolated test
+workspace, attach its Stripe **test** customer id, set a positive capped
+`AIUsageBillingConfig`, and add `AXIOM_AI_USAGE_BILLING_TEST_ENABLED=true` to
+the test environment. Production must keep that flag unset. A live rollout
+requires a separately approved design for invoice finalization, credits and
+refunds, tax treatment, and customer notice; no code path here enables it.
 
 Checkout metadata records only `organizationId`, public `planId`, interval,
 and server-counted seats. A successful redirect never grants access. The signed
