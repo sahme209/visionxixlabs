@@ -31,7 +31,7 @@ const purchase = {
 
 describe("AI credit Stripe fulfillment", () => {
   beforeEach(() => {
-    vi.clearAllMocks();
+    vi.resetAllMocks();
     mocks.eventCreate.mockResolvedValue({});
     mocks.findPurchase.mockResolvedValue(purchase);
     mocks.updatePurchase.mockResolvedValue({ ...purchase, status: "paid" });
@@ -60,9 +60,54 @@ describe("AI credit Stripe fulfillment", () => {
       { id: "evt_refund", type: "charge.refunded" },
       { payment_intent: "pi_test_1", amount_refunded: 250, currency: "usd" },
     );
-    expect(mocks.updatePurchase).toHaveBeenCalledWith(expect.objectContaining({
+    expect(mocks.updateMany).toHaveBeenCalledWith(expect.objectContaining({
       data: expect.objectContaining({ refundedAmountCents: 250, reversedAICreditsCents: 125, status: "partially_refunded" }),
     }));
+  });
+
+  it("never regrants credits when cumulative refund events arrive out of order", async () => {
+    const stored = { ...purchase, status: "paid", stripePaymentIntentId: "pi_test_1", refundedAmountCents: 0, reversedAICreditsCents: 0 };
+    mocks.findPurchase.mockImplementation(async () => ({ ...stored }));
+    mocks.updatePurchase.mockImplementation(async ({ data }) => Object.assign(stored, data));
+    mocks.updateMany.mockImplementation(async ({ where, data }) => {
+      if (stored.refundedAmountCents > where.refundedAmountCents.lte || stored.reversedAICreditsCents > where.reversedAICreditsCents.lte) return { count: 0 };
+      Object.assign(stored, data);
+      return { count: 1 };
+    });
+    for (const [id, amount] of [["full", 1000], ["older_partial", 250], ["older_zero", 0]] as const) {
+      await reverseAICreditRefund({ id: `evt_${id}`, type: "charge.refunded" }, { payment_intent: "pi_test_1", amount_refunded: amount, currency: "usd" });
+    }
+    expect(stored).toMatchObject({ status: "refunded", refundedAmountCents: 1000, reversedAICreditsCents: 500 });
+    expect(mocks.eventCreate).toHaveBeenCalledTimes(3);
+    expect(mocks.updatePurchase).not.toHaveBeenCalled();
+  });
+
+  it("rejects a smaller concurrent refund even when both handlers read the same older snapshot", async () => {
+    const stored = { ...purchase, status: "paid", refundedAmountCents: 0, reversedAICreditsCents: 0 };
+    let releasePartial!: () => void;
+    const partialWait = new Promise<void>((resolve) => { releasePartial = resolve; });
+    // Both reads return the pre-refund snapshot; the conditional write must
+    // still compare current persisted counters after the larger write wins.
+    mocks.findPurchase.mockResolvedValue({ ...stored });
+    mocks.updatePurchase.mockImplementation(async ({ data }) => {
+      if (data.refundedAmountCents === 250) await partialWait;
+      Object.assign(stored, data);
+      if (data.refundedAmountCents === 1000) releasePartial();
+      return stored;
+    });
+    mocks.updateMany.mockImplementation(async ({ where, data }) => {
+      if (data.refundedAmountCents === 250) await partialWait;
+      const matches = stored.refundedAmountCents <= where.refundedAmountCents.lte && stored.reversedAICreditsCents <= where.reversedAICreditsCents.lte;
+      if (matches) Object.assign(stored, data);
+      if (data.refundedAmountCents === 1000) releasePartial();
+      return { count: matches ? 1 : 0 };
+    });
+    await Promise.all([250, 1000].map((amount) => reverseAICreditRefund(
+      { id: `evt_concurrent_${amount}`, type: "charge.refunded" },
+      { payment_intent: "pi_test_1", amount_refunded: amount, currency: "usd" },
+    )));
+    expect(stored).toMatchObject({ status: "refunded", refundedAmountCents: 1000, reversedAICreditsCents: 500 });
+    expect(mocks.updatePurchase).not.toHaveBeenCalled();
   });
 
   it("fully revokes credits on a full refund", async () => {
@@ -71,7 +116,7 @@ describe("AI credit Stripe fulfillment", () => {
       { id: "evt_refund", type: "charge.refunded" },
       { payment_intent: "pi_test_1", amount_refunded: 1000, currency: "usd" },
     );
-    expect(mocks.updatePurchase).toHaveBeenCalledWith(expect.objectContaining({
+    expect(mocks.updateMany).toHaveBeenCalledWith(expect.objectContaining({
       data: expect.objectContaining({ refundedAmountCents: 1000, reversedAICreditsCents: 500, status: "refunded", refundedAt: expect.any(Date) }),
     }));
   });

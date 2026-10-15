@@ -13,7 +13,7 @@ builds must not be reported as that acceptance.
 
 | Journey or component | Actual evidence | Status / next exit criterion |
 | --- | --- | --- |
-| Website serving / build | #130–134 automatic main builds READY; custom domain last observed on #123 | Serving works; latest release not on custom domain. Release approval remains separate. |
+| Website serving / build | #130–134 main builds READY; fresh domain lookup now serves #134 commit `153bacd4` | Previous older-alias observation superseded; actual authentication remains unverified. |
 | Provider registration | Public `/api/auth/providers` returned HTTP 200 | Configuration discovery only; not OAuth acceptance. |
 | Founder identity/workspace records | Protected read-only preflight #3 accountCheck passed | Mapping passed; actual password/OAuth ownership, platform-admin configuration and operational entitlement not verified. |
 | Signup + email verification | Route/guard regressions; auth token table/column missing in protected target | Blocked by binding/recovery gates. New production test-account creation is not authorized. |
@@ -116,16 +116,16 @@ callers separately; do not silently reuse it as the desktop deployment adapter.
 
 ## Priority 3: safe website release
 
-Read-only Vercel evidence shows the latest returned manual promotion targets #123,
-matching the current custom-domain alias; newer Git production builds receive
-project/branch aliases. Domain verification passed, with no branch/custom-env
-or redirect override. No active rolling release was reported; the last promotion's
-alias mapping completed. The setting/history preventing automatic advancement
-remains unverified. Empty filtered event results do not establish no rollback.
+Fresh read-only Vercel alias inspection now resolves `visionxixlabs.com` to
+`dpl_GURP2EoSvwK9Hd1xXhTxDEX3c3oe`, READY production Git deployment at main
+`153bacd4665149b4afe738397be8281d02b25753` (#134). This supersedes the earlier
+#123 manual-promotion observation. No routing or promotion action was performed
+by this work. The actor/policy that advanced the alias and future assignment
+behavior remain unverified. A READY serving build does not prove authentication.
 
-Vercel documents that rollback can disable automatic assignment and promotion can
-restore it. This is a hypothesis to check against actual history, not a confirmed
-cause for this project. No promotion, rollback or configuration edit is performed.
+Vercel documents rollback/promotion effects on automatic assignment, but no
+project-specific cause is established. Preserve the approval process below for
+any deliberate release or routing change.
 
 Proposed reviewed process:
 

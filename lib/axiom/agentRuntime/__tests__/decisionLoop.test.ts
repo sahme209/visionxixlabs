@@ -375,4 +375,50 @@ describe("runDecisionLoop", () => {
       kind: "proposal", toolName: "trigger_aws_deploy", riskLevel: "high",
     }));
   });
+
+  it.each(["disabled", "removed", "unavailable"] as const)(
+    "blocks a read selected by in-flight inference when Agent policy becomes %s",
+    async (change) => {
+      const read = vi.fn(noopReadOnly);
+      mocks.resolveGovernedAiCall.mockResolvedValue(governed(async () => {
+        if (change === "unavailable") mocks.readWorkspaceAgentIdentity.mockRejectedValue(new Error("storage down"));
+        else mocks.readWorkspaceAgentIdentity.mockResolvedValue({ enabled: change !== "disabled", allowedTools: [] });
+        return { action: "call_tool", message: "Inspect the selected file.", toolName: "read_github_file", args: { repositoryFullName: "acme/widgets", branch: "main", path: "README.md" } };
+      }));
+      const result = await runDecisionLoop({
+        organizationId: "o", correlationId: "c", transcript: [{ role: "user", content: "review README" }],
+        executeReadOnlyTool: read, isProdEnvironmentTarget: noopProdCheck,
+      });
+      expect(result).toMatchObject({ kind: "error", error: change === "disabled" ? "workspace_agent_disabled" : change === "removed" ? "agent_tool_not_allowed" : "workspace_agent_policy_unavailable" });
+      expect(read).not.toHaveBeenCalled();
+    },
+  );
+
+  it("rechecks initial grounding authority after asynchronous AI policy setup", async () => {
+    mocks.resolveGovernedAiCall.mockImplementation(async () => {
+      mocks.readWorkspaceAgentIdentity.mockResolvedValue({ enabled: false, allowedTools: [] });
+      return governed(async () => ({ action: "respond", message: "Done" }));
+    });
+    const read = vi.fn(noopReadOnly);
+    const result = await runDecisionLoop({
+      organizationId: "o", correlationId: "c", transcript: [],
+      initialToolCall: { toolName: "read_github_file", args: {}, message: "Inspect" },
+      executeReadOnlyTool: read, isProdEnvironmentTarget: noopProdCheck,
+    });
+    expect(result).toMatchObject({ kind: "error", error: "workspace_agent_disabled" });
+    expect(read).not.toHaveBeenCalled();
+  });
+
+  it("does not return a write proposal after its tool permission is revoked during inference", async () => {
+    mocks.resolveGovernedAiCall.mockResolvedValue(governed(async () => {
+      mocks.readWorkspaceAgentIdentity.mockResolvedValue({ enabled: true, allowedTools: ["list_environments"] });
+      return { action: "call_tool", message: "Deploy staging", toolName: "trigger_aws_deploy", args: { environmentId: "stage" } };
+    }));
+    const result = await runDecisionLoop({
+      organizationId: "o", correlationId: "c", transcript: [], operationMode: "deepops",
+      executeReadOnlyTool: noopReadOnly, isProdEnvironmentTarget: noopProdCheck,
+    });
+    expect(result).toMatchObject({ kind: "error", error: "agent_tool_not_allowed" });
+  });
+
 });

@@ -33,6 +33,7 @@ function SignUpForm() {
   const [acceptedTerms, setAcceptedTerms] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [verificationEmail, setVerificationEmail] = useState<string | null>(null);
   const [oauthLoading, setOauthLoading] = useState<null | "google" | "github">(null);
   const [enabledProviders, setEnabledProviders] = useState<{ google: boolean; github: boolean } | null>(null);
   const router = useRouter();
@@ -89,11 +90,14 @@ function SignUpForm() {
         setError(data.error || "Sign up failed");
         return;
       }
-      // Auto-sign-in right after creating the account — the user
-      // wants to land in the dashboard, not bounce through signin.
-      // signIn({ redirect: true, callbackUrl }) handles the full
-      // session cookie + redirect for us; falls back to the signin
-      // page if credentials auth isn't configured.
+      if (data.verificationRequired === true) {
+        // Email proof is mandatory. Do not attempt a credentials login before
+        // the user follows the verification link or discard the pairing context.
+        setVerificationEmail(email.trim());
+        setPassword("");
+        return;
+      }
+      // Compatibility for a successful response that does not require proof.
       const signInResult = await signIn("credentials", {
         email: email.trim().toLowerCase(),
         password,
@@ -114,6 +118,27 @@ function SignUpForm() {
       setLoading(false);
     }
   };
+
+  if (verificationEmail !== null) {
+    return (
+      <div className="axiom-canvas flex min-h-screen items-center justify-center px-5 py-24">
+        <section aria-labelledby="verification-title" className="w-full max-w-lg space-y-5">
+          <h1 id="verification-title" className="text-3xl tracking-tight">Check your email</h1>
+          <p role="status" className="text-sm text-zinc-300">
+            We sent a verification link to {verificationEmail}. Open it to verify your email address before signing in.
+          </p>
+          <p className="text-sm text-zinc-400">
+            After verification, return here to continue pairing. If the desktop request expires, return to Axiom Agent and choose Log in again.
+          </p>
+          <Link href={`/auth/signin?callbackUrl=${encodeURIComponent(redirect)}`} className="inline-block rounded-lg bg-zinc-100 px-5 py-3 text-sm font-semibold text-zinc-950">
+            Continue to sign in
+          </Link>
+          <p className="text-xs text-zinc-500">Account creation does not grant deployment access. Your workspace entitlement and approvals still apply.</p>
+          <Link href="/contact" className="block text-sm text-orange-300 underline">Need help with verification?</Link>
+        </section>
+      </div>
+    );
+  }
 
   return (
     <div className="axiom-canvas relative flex min-h-screen overflow-hidden">

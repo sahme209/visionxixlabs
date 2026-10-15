@@ -48,6 +48,23 @@ describe("Airflow tick recorded outcomes", () => {
     expect(mocks.execute).toHaveBeenCalledWith("retry-1", "approver-1");
   });
 
+  it.each([
+    [null, "2026-10-15T10:00:00Z", 0],
+    ["invalid", "2026-10-15T10:00:00Z", 0],
+    ["2026-10-15T10:00:00Z", "invalid", 0],
+    ["2026-10-15T10:00:00Z", null, 0],
+    ["2026-10-15T10:00:00Z", "2026-10-15T09:00:00Z", 0],
+    ["2026-10-15T10:00:00Z", "2026-10-15T10:00:00Z", 1],
+    ["2026-10-15T10:00:00Z", "2026-10-15T11:00:00Z", 1],
+  ])("only proposes dependency-gated actions with correlatable freshness (source %s, dependency %s)", async (sourceDate, dependencyDate, proposals) => {
+    mocks.rules.mockResolvedValue([{ id: "rule-1", name: "Fixture", dagId: "dag-1", triggerMode: "completion", dependencyDagIds: ["upstream"], requiredDagState: "success", createdAt: new Date(0), actionType: "open_pull_request", approvalRequired: false }]);
+    mocks.executions.mockResolvedValue([]);
+    mocks.runs.mockImplementation(async (dagId) => [{ dagId, dagRunId: "run-1", state: "success", logicalDate: dagId === "upstream" ? dependencyDate : sourceDate, startedAt: null, endedAt: null }]);
+    mocks.execute.mockResolvedValue({ ok: true, result: {} });
+    expect(await runAirflowAutomationTick()).toMatchObject({ proposals, actions: proposals });
+    expect(mocks.execute).toHaveBeenCalledTimes(proposals);
+  });
+
   it("does not count a newly proposed action's uncertain outcome as success", async () => {
     mocks.rules.mockResolvedValue([{ id: "rule-1", name: "Fixture", dagId: "dag-1", triggerMode: "completion", dependencyDagIds: [], requiredDagState: "success", createdAt: new Date(0), actionType: "open_pull_request", approvalRequired: false }]);
     mocks.executions.mockResolvedValue([]);

@@ -58,6 +58,9 @@ concurrency:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    env:
+      ECS_CLUSTER: \${{ inputs.cluster }}
+      ECS_SERVICE: \${{ inputs.service }}
     steps:
       - name: Configure AWS credentials (OIDC — no stored keys)
         uses: aws-actions/configure-aws-credentials@v4
@@ -69,16 +72,16 @@ jobs:
         id: capture
         run: |
           PREVIOUS_TASK_DEF=$(aws ecs describe-services \\
-            --cluster "\${{ inputs.cluster }}" \\
-            --services "\${{ inputs.service }}" \\
+            --cluster "$ECS_CLUSTER" \\
+            --services "$ECS_SERVICE" \\
             --query 'services[0].taskDefinition' --output text)
           echo "previous_task_def=$PREVIOUS_TASK_DEF" >> "$GITHUB_OUTPUT"
 
       - name: Force a new ECS deployment
         run: |
           aws ecs update-service \\
-            --cluster "\${{ inputs.cluster }}" \\
-            --service "\${{ inputs.service }}" \\
+            --cluster "$ECS_CLUSTER" \\
+            --service "$ECS_SERVICE" \\
             --force-new-deployment \\
             --output text >/dev/null
 
@@ -87,21 +90,23 @@ jobs:
         continue-on-error: true
         run: |
           aws ecs wait services-stable \\
-            --cluster "\${{ inputs.cluster }}" \\
-            --services "\${{ inputs.service }}"
+            --cluster "$ECS_CLUSTER" \\
+            --services "$ECS_SERVICE"
 
       - name: Roll back — deployment did not stabilize
         if: steps.wait.outcome == 'failure'
+        env:
+          PREVIOUS_TASK_DEF: \${{ steps.capture.outputs.previous_task_def }}
         run: |
           echo "::error::Deployment did not stabilize. Starting rollback."
           aws ecs update-service \\
-            --cluster "\${{ inputs.cluster }}" \\
-            --service "\${{ inputs.service }}" \\
-            --task-definition "\${{ steps.capture.outputs.previous_task_def }}" \\
+            --cluster "$ECS_CLUSTER" \\
+            --service "$ECS_SERVICE" \\
+            --task-definition "$PREVIOUS_TASK_DEF" \\
             --output text >/dev/null
           aws ecs wait services-stable \\
-            --cluster "\${{ inputs.cluster }}" \\
-            --services "\${{ inputs.service }}"
+            --cluster "$ECS_CLUSTER" \\
+            --services "$ECS_SERVICE"
           exit 1
 
       - name: Deployment stabilized

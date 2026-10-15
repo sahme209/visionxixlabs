@@ -111,8 +111,15 @@ export async function reverseAICreditRefund(event: CreditStripeEvent, charge: Re
       Math.ceil((purchase.deliveredAICreditsCents * refundedAmountCents) / purchase.pricePaidCents),
     );
     const fullyRefunded = refundedAmountCents >= purchase.pricePaidCents;
-    return tx.addOnPurchase.update({
-      where: { id: purchase.id },
+    // Stripe retries and delivers events out of order. A lower cumulative
+    // refund must never restore credits already revoked by a newer event.
+    // Compare at write time as concurrent handlers can read the same row.
+    return tx.addOnPurchase.updateMany({
+      where: {
+        id: purchase.id,
+        refundedAmountCents: { lte: refundedAmountCents },
+        reversedAICreditsCents: { lte: reversedAICreditsCents },
+      },
       data: {
         refundedAmountCents,
         reversedAICreditsCents,

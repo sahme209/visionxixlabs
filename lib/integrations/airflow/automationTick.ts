@@ -78,9 +78,15 @@ async function reconcileDeployments(organizationId: string): Promise<void> {
 }
 
 async function dependencyCheck(client: Awaited<ReturnType<typeof loadAirflowClient>>["client"], dependencyDagIds: string[], sourceLogicalDate: string | null): Promise<boolean> {
+  // Airflow 3 manual runs can have no logical date. Without a comparable
+  // source instant, an unrelated historical success cannot prove readiness.
+  if (dependencyDagIds.length === 0) return true;
+  const sourceTime = sourceLogicalDate ? Date.parse(sourceLogicalDate) : NaN;
+  if (!Number.isFinite(sourceTime)) return false;
   for (const dagId of dependencyDagIds) {
     const [latest] = await client.listDagRuns(dagId, 1);
-    if (!latest || latest.state !== "success" || (sourceLogicalDate && (!latest.logicalDate || new Date(latest.logicalDate) < new Date(sourceLogicalDate)))) return false;
+    const dependencyTime = latest?.logicalDate ? Date.parse(latest.logicalDate) : NaN;
+    if (!latest || latest.state !== "success" || !Number.isFinite(dependencyTime) || dependencyTime < sourceTime) return false;
   }
   return true;
 }

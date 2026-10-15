@@ -48,7 +48,7 @@ The scheduler is idempotent per automation and Airflow run. Multiple ticks canno
 
 - A failed endpoint validation never marks a connection active.
 - Disconnecting Airflow disables its automations.
-- Missing or stale dependency successes keep the action blocked; they do not silently pass.
+- Missing, malformed, or stale dependency logical timestamps keep the action blocked. A source run without a valid logical date cannot satisfy configured dependencies; rules without dependencies still support manual runs. See `TERRAFORM_AIRFLOW_CUSTOMER_ACCEPTANCE.md` for acceptance limits.
 - Failures before a provider action starts retry up to the rule's configured
   limit with a bounded delay. A provider timeout or a persistence failure after
   dispatch requires reconciliation instead of automatic replay.
