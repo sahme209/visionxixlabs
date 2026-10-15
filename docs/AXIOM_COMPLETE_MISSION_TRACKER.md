@@ -644,3 +644,56 @@ desktop build, targeted lint and 30 Python checks passed. The final optimized we
 build is running at this source snapshot; its result and exact-head web/native/
 isolated PostgreSQL CI must be checked in the focused PR before source merge.
 This evidence does not establish production recovery or provider/native acceptance.
+
+## PR #141 integrated — connection and pairing recovery
+
+PR #141 merged as `99abab9faf99b0ae91a283db2f86721535187468`, after exact-head
+`5a7a93a7db6e510fab1220789afa0a676fa1cc00` passed Test 38822320124,
+Desktop CI 38822320133 (native tests/Clippy) and both isolated PostgreSQL 17
+jobs in 38822320202. Final optimized web build passed with 293 generated pages;
+local regression was 576 files / 5,849 tests. This supersedes the prior pending
+build note. Preview provisioning again failed before compilation; no capacity,
+protection or routing setting changed. Actual provider/native acceptance remains
+outstanding.
+
+Next cross-workstream integration: governed incomplete AWS observations, guarded
+current-subscription reconciliation and native version-alignment checks. Never
+cast a bounded EC2 sample into a complete snapshot or permanently disable a
+conversation's independently authorized later deployment flow. Subscription
+reconciliation must fence stale provider responses against current tenant binding,
+validate the exact supported seat price and never infer event ordering from
+second-resolution timestamps. New native publication remains unauthorized; review
+candidate-only builds and immutable, separately approved publication before
+replacing any existing release asset.
+
+A further real customer-journey gap was identified: existing ECS force-new-deployment
+restarts the current task definition rather than binding an approved new artifact.
+An immutable source/image/task-definition/target receipt and demonstrable rollback
+contract must precede claiming an end-to-end release. No workflow was dispatched.
+
+## Governed observations, subscription freshness and native identity integration
+
+The allowlisted paired Agent now reads scoped AWS observations through the actual
+inventory service, retaining connection version, incomplete coverage and unknown
+costs/metrics/backups. The current bounded-read request cannot propose a write;
+later operational requests retain their independent authority checks. Historical
+tool facts are explicitly not snapshots, approvals or deployment evidence.
+
+Subscription events now trigger exact current-provider retrieval with canonical
+configured per-seat price validation. A final Serializable binding/token/existence
+fence prevents stale responses from overwriting newer local state. Failures remain
+unconsumed; unexpected replacement needs reconciliation. No timestamp ordering,
+new schema, billing opt-in or commercial-policy change was introduced.
+
+Release source preflight now checks npm, Tauri, Cargo and lock identities through
+actual negative command fixtures. This does not validate installed bundles or
+publish a release. The native candidate/publication plan and immutable ECS release
+plan record the outstanding launch and deployment prerequisites.
+
+Local integration: 579 files / 5,938 tests passed, plus 36 final route/demo checks,
+desktop TypeScript/build, targeted lint without errors and 30 Python checks.
+Four existing unused-argument warnings remain in decision-loop tests. Full web
+TypeScript will be rechecked after the optimized build regenerates its type tree;
+required exact-head CI and the optimized build remain gates before source merge.
+The #141 automatic main deployment reached READY; deliberate custom-domain
+promotion and actual customer authentication are still unapproved/unverified.

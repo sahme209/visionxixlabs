@@ -9,6 +9,7 @@ on:
       - 'components/Footer.tsx'
       - 'app/demo/page.tsx'
       - 'scripts/check-desktop-release.mjs'
+      - 'scripts/desktop-release-versions.mjs'
       - '.github/workflows/desktop-release.yml'
       - '.github/workflows/desktop-ci.yml'
   push:
@@ -22,6 +23,7 @@ on:
       - 'components/Footer.tsx'
       - 'app/demo/page.tsx'
       - 'scripts/check-desktop-release.mjs'
+      - 'scripts/desktop-release-versions.mjs'
       - '.github/workflows/desktop-release.yml'
       - '.github/workflows/desktop-ci.yml'
 

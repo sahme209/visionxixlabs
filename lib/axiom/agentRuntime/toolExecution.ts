@@ -5,6 +5,7 @@
  */
 
 import "server-only";
+import { executeCloudObservationTool, type CloudObservationContext } from "./cloudObservation";
 
 import { isSensitiveRepositoryEvidencePath } from "./repositoryEvidencePolicy";
 
@@ -111,7 +112,9 @@ export async function executeReadOnlyTool(
   organizationId: string,
   toolName: string,
   args: Record<string, unknown>,
+  cloudContext?: CloudObservationContext,
 ): Promise<ToolExecutionResult> {
+  if (toolName === "list_cloud_accounts" || toolName === "read_aws_inventory") return executeCloudObservationTool(organizationId, toolName, args, cloudContext);
   if (toolName === "list_environments") {
     const environments = await repo.environment.findMany({ where: { organizationId } });
     return { ok: true, result: environments.map((e) => ({ id: e.id, slug: e.slug, name: e.name, tier: e.tier })) };

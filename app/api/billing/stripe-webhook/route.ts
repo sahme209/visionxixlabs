@@ -17,12 +17,10 @@
 
 import { NextResponse, type NextRequest } from "next/server";
 import { verifyWebhookSignature, isStripeWebhookConfigured } from "@/lib/billing/stripeHelper";
-import { consumeSubscriptionEvent } from "@/lib/billing/consumeSubscriptionEvent";
-import type { BillingStatus } from "@/lib/billing/tierCatalog";
+import { reconcileSubscriptionEvent } from "@/lib/billing/reconcileSubscriptionEvent";
 import {
   isPaidPublicPlanId,
   isSelfServiceBillingEnabled,
-  legacyEntitlementTierForPublicPlan,
 } from "@/lib/billing/publicPlanCatalog";
 import { resolveCorrelationId } from "@/lib/api";
 import {
@@ -37,6 +35,7 @@ export const runtime = "nodejs";
 interface StripeWebhookEvent {
   id?: string;
   type?: string;
+  livemode?: boolean;
   data?: {
     object?: {
       id?: string;
@@ -143,7 +142,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ ok: true, ignored: "awaiting_subscription_event" }, { status: 200 });
   }
 
-  if (!event.id || !obj?.id || !obj.customer) {
+  if (!event.id || !obj?.id || !obj.customer || typeof event.livemode !== "boolean") {
     return NextResponse.json(
       {
         ok: false,
@@ -157,37 +156,14 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const tier = legacyEntitlementTierForPublicPlan(planId);
-  const status: BillingStatus = event.type === "customer.subscription.deleted"
-    ? "canceled"
-    : mapStripeStatus(obj?.status);
-  const currentPeriodEndsAt = obj?.current_period_end
-    ? new Date(obj.current_period_end * 1000)
-    : null;
-  const seatQuantity = obj?.items?.data?.reduce(
-    (sum, item) => sum + (Number.isSafeInteger(item.quantity) && (item.quantity ?? 0) > 0 ? item.quantity! : 0),
-    0,
-  ) ?? 0;
-  if (event.type !== "customer.subscription.deleted" && seatQuantity < 1) {
-    return NextResponse.json(
-      { ok: false, error: { code: "stripe.seat_quantity_invalid", userMessage: "The subscription has no valid paid seat quantity." }, meta: { correlationId, generatedAt: new Date().toISOString() } },
-      { status: 400 },
-    );
-  }
-
   try {
-    const outcome = await consumeSubscriptionEvent(event.type!, {
-      organizationId,
-      tier,
-      status,
-      trialEndsAt: null,
-      currentPeriodEndsAt,
-      stripeCustomerId: obj.customer,
-      stripeSubscriptionId: obj.id,
-      cancelAtPeriodEnd: obj.cancel_at_period_end ?? false,
-      lastStripeEventId: event.id,
-      seatQuantity: seatQuantity > 0 ? seatQuantity : null,
+    const outcome = await reconcileSubscriptionEvent({
+      id: event.id, type: event.type!, organizationId,
+      customerId: obj.customer, subscriptionId: obj.id, livemode: event.livemode,
     });
+    if (outcome === "replacement_required") {
+      return NextResponse.json({ ok: false, error: { code: "stripe.replacement_requires_reconciliation", userMessage: "This event does not match the workspace's established subscription. Reconciliation is required." } }, { status: 409 });
+    }
     if (outcome === "replay") return NextResponse.json({ ok: true, replay: true }, { status: 200 });
     if (outcome === "ownership_conflict") {
       return NextResponse.json({ ok: false, error: { code: "stripe.ownership_conflict", userMessage: "This Stripe customer or subscription is already assigned to another workspace." }, meta: { correlationId, generatedAt: new Date().toISOString() } }, { status: 409 });
@@ -228,16 +204,4 @@ function isReplay(error: unknown): boolean {
     && error !== null
     && "code" in error
     && (error as { code?: string }).code === "P2002";
-}
-
-function mapStripeStatus(s: string | undefined): BillingStatus {
-  switch ((s ?? "").toLowerCase()) {
-    case "trialing":         return "trialing";
-    case "active":           return "active";
-    case "past_due":
-    case "unpaid":           return "past_due";
-    case "canceled":
-    case "incomplete_expired": return "canceled";
-    default:                 return "no_plan";
-  }
 }

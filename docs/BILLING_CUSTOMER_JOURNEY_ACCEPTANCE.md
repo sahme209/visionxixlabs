@@ -81,3 +81,11 @@ Stop on unexpected live mode, target ambiguity, amount/tenant mismatch,
 insufficient budget or unrecognized external outcome. Retain ledger holds for
 reconciliation rather than deleting evidence. Cleanup of isolated resources or
 refunds still follows the separately approved test packet.
+
+
+Current subscription follow-up: `SUBSCRIPTION_AUTHORITATIVE_RECONCILIATION.md`
+implements current-provider-state retrieval with an equality-only binding/token
+fence for distinct delayed events. Canonical configured seat-price evidence is
+required; failures remain unconsumed. Replacement needs explicit authority rather
+than silently rebinding a tenant. Local composed regressions are not actual Stripe
+provider delivery, collection, invoice refunds or commercial-policy acceptance.

@@ -16,6 +16,8 @@ import { resolveRequestDesktopSession } from "@/lib/desktop/resolveRequestDeskto
 import { prisma } from "@/lib/db";
 import { agentActionDigest, approvalExpiry } from "@/lib/axiom/agentRuntime/proposalIntegrity";
 import { runDecisionLoop, type ConversationTurnInput } from "@/lib/axiom/agentRuntime/decisionLoop";
+import { isBoundedAwsObservation } from "@/lib/axiom/agentRuntime/cloudObservationPolicy";
+import type { EnrollmentRepo } from "@/lib/cloud/aws/enrollment/service";
 import { executeReadOnlyTool, isProdEnvironmentTarget, type ToolExecutionRepo, type ProdEnvironmentCheckRepo } from "@/lib/axiom/agentRuntime/toolExecution";
 import { id as idFactory } from "@/lib/domain/ids";
 import { loadWorkspaceMemory, rememberToolContext, workspaceMemoryPrompt, type WorkspaceMemoryRepo } from "@/lib/axiom/agentRuntime/workspaceMemory";
@@ -193,7 +195,10 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     operationMode,
     initialToolCall: initialRepositoryGrounding({ message, mode, repositoryFullName, branch, filePath }),
     executeReadOnlyTool: async (toolName, args) => {
-      const result = await executeReadOnlyTool(prisma as unknown as ToolExecutionRepo, organizationId, toolName, args);
+      const result = await executeReadOnlyTool(prisma as unknown as ToolExecutionRepo, organizationId, toolName, args, {
+        principal: { organizationId, userId: String(session.userId), sessionId: session.id },
+        repo: prisma as unknown as EnrollmentRepo,
+      });
       if (result.ok) await rememberToolContext(memoryRepo, organizationId, args).catch(() => undefined);
       // Every tool call — including read-only ones — gets its own audit
       // row, immediately marked executed, so "what did the agent look
@@ -208,6 +213,12 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
           executedAt: new Date(),
         },
       });
+      if (toolName === "read_aws_inventory" && result.ok && isBoundedAwsObservation(result.result)) {
+        await prisma.agentConversationTurn.create({ data: {
+          conversationId, role: "tool_result",
+          content: JSON.stringify({ ...result.result, provenance: "Incomplete observation at observedAt; not snapshot, approval, plan or execution evidence. Historical observations do not establish current connection access." }),
+        } });
+      }
       return result;
     },
     isProdEnvironmentTarget: (toolName, args) => isProdEnvironmentTarget(prisma as unknown as ProdEnvironmentCheckRepo, organizationId, args),

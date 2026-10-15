@@ -193,3 +193,101 @@ recoverable range and independent backups are not. Historical Time Travel itself
 creates ephemeral resources and needs its own reviewed scope. The failed migration
 is older than the configured window. Preserve current data through a fresh
 pre-repair recovery point; do not assume an old healthy timeline is recoverable.
+
+## Native release candidate, approval and recovery packet
+
+This is a source-only plan, not permission to build with signing credentials,
+submit notarization, create tags, publish installers, change download selection,
+or change production routing. The existing release workflow still couples builds
+and publication; the separation below is proposed, not implemented or verified.
+
+### Preserve immutable release identity
+
+The fetched `release/desktop-v0.1.20` source at
+`22481b570e09a97dc58d23178e437369af2ff716` declares bare `keyring = "3"`.
+Keyring 3.6.3 selects its mock backend without native features; see
+[the confirmed backend defect and native acceptance gates](DESKTOP_NATIVE_CREDENTIAL_BACKENDS.md).
+Current source fixes backend selection but still reports version `0.1.20`.
+Do not infer that a published installer contains the fix, or replace existing
+`0.1.20` assets in place. Bind each public artifact to its actual recorded source
+SHA and checksum before classifying it. A new release needs a new, unused version
+and tag, after verifying that neither already exists; `0.1.21` is only a possible
+next version, not an approved or verified-available tag.
+
+The source review checkpoint is main merge
+`99abab9faf99b0ae91a283db2f86721535187468` (PR #141); a later release candidate must name its full immutable SHA,
+including any separately reviewed version-alignment/preparation changes. All
+npm package/lock identities, Tauri version, Cargo package and Cargo lock package
+identity must agree. Installer filenames alone do not verify embedded versions.
+
+### Proposed minimal candidate and publication separation
+
+1. Retain the existing platform build matrix, macOS checks, SBOM generation and
+   artifact upload in `.github/workflows/desktop-release.yml`, but remove its
+   public publication path. A tag or manual candidate run produces candidate
+   artifacts only. Build the event's exact `github.sha`; assert the requested
+   private source tag resolves to that SHA. Record source SHA, workflow/run,
+   version, target, installer filenames and SHA-256 hashes, plus the SBOM hash.
+2. Use a separate manual publication workflow that consumes the approved
+   candidate run ID, expected full source SHA, release tag and approval reference.
+   It must reject a different repository/workflow, PR/fork run, unsuccessful run,
+   SHA/tag mismatch, missing platform/SBOM artifacts or changed artifact hashes.
+   Do not rebuild installer bytes after native acceptance. Detached GPG signing
+   may be performed at publication without modifying those bytes; verify every
+   signature against the reviewed public-key fingerprint before upload.
+3. Fail closed if the public release **or its tag** already exists. Remove the
+   existing release-edit/`--clobber` path. Distinguish genuine absence from
+   authorization/network errors. Serialize publication attempts without canceling
+   an active publication. Create a fresh draft, verify its complete asset set,
+   signatures and hashes, then publish only that newly created draft. A partial
+   failure leaves a draft for explicit review, not an automatic overwrite retry.
+4. Publication requires explicit approval for the exact packet below. A named
+   GitHub environment is not evidence of review: inspect actual configured
+   required reviewers and protection behavior separately. Those controls remain
+   unverified here; keep publication disabled until their evidence and approval
+   are recorded. Missing access to verify them blocks publication, not independent
+   candidate/source work.
+
+The private source repository and public artifact repository are different.
+A tag in `sahme209/axiom-releases` belongs to that repository's history; it does
+not prove it points to the private source commit. Bind the private SHA through
+candidate metadata, signed hash manifest and public release attestation instead.
+Publishing a stable release can change the website's selected download within
+its release-manifest cache interval (currently 60 seconds), without a Vercel
+promotion. Approval must explicitly cover that distribution consequence and the
+compatible serving backend; it must not silently authorize future releases.
+
+### Required evidence before publication approval
+
+| Packet field | Required evidence or stop condition |
+| --- | --- |
+| Candidate | New version/tag, full source SHA, successful exact-source checks, candidate run ID, every installer/SBOM SHA-256, final release notes and public-key fingerprint. Unresolved fields mean no publication request yet. |
+| macOS ARM and Intel | Inspect the app extracted from the actual DMG: bundle identifier, embedded version, Mach-O architecture, Developer ID authority/Team ID, strict signature validation, Gatekeeper result and stapled notarization ticket. Verify the DMG itself and correlate its app with the tested bundle. Record OS/hardware; Intel under emulation is not clean Intel-host evidence. |
+| Windows and Linux | Verify installer versions, architecture, hashes and detached GPG signatures. Exercise MSI/EXE and supported Linux package installation on identified hosts. Current workflow declares Windows/Linux OS code signing false; GPG origin verification does not replace Authenticode or Apple notarization. Do not claim configuring an EV secret alone implements a signing pipeline. |
+| Native credential persistence | On an isolated authorized OS user/profile, verify the exact package's browser pairing and workspace identity, fully quit the process (closing its window is insufficient), restart and verify the same selected identity. Exercise denied/locked/corrupt vault, expired/revoked session, offline recovery and absence of mock fallback. Linux requires an actual unlocked Secret Service session. |
+| Upgrade and legacy recovery | Use synthetic legacy credentials, never customer secrets. Prove a failed native write preserves the legacy value; prove successful migration survives full restart and cleans the legacy copy. Verify selected-credential continuity, sign-out tombstone behavior and cleanup failures. Already-lost mock credentials require authorized fresh pairing/recovery, not invented tokens. Do not expose secret values in logs, screenshots or evidence. |
+| Native shell and updates | Verify browser return/deep link, replay/cancel handling, saving-phase behavior, window/tray/Dock/quit and recovery after errors. Test a manual upgrade with retained intended preferences/vault state. Automatic updater delivery remains unwired; the pure manifest kernel is not installed update functionality. |
+| Backend compatibility | Name the serving deployment/source and approved schema state. Verify real signup/login, accepted paired membership, workspace isolation and access policy before claiming the desktop journey works. New cloud enrollment/disconnect schema or unavailable backend routes are not authorized by native release approval. |
+| Observation and recovery | Named operator, observation interval, abort criteria, exact compatible recovery artifact/hash or reviewed rollforward source, and approval boundaries for any download/routing change. Include honest feature limits and support instructions. |
+
+Build/sign/notarization actions, isolated customer acceptance and public
+publication are distinct scopes. No private signing key, password, credential
+value or connection string belongs in the packet. Existing source tests, native
+CI and builder-selection tests complement this evidence; they do not replace
+real platform persistence or customer/provider acceptance.
+
+### Rollback must preserve credential safety
+
+Do not designate the affected `0.1.20` source/artifacts as the automatic rollback
+target. Its mock-backend configuration is unsafe for persistence, and older
+clients may ignore the new active-selection/sign-out tombstone contract or choose
+an inactive legacy credential. Downgrade safety is not established by successful
+installation alone. Validate any proposed older artifact against the current
+vault format, identity selection, backend API and schema before approval.
+
+Prefer retaining OS-vault data and issuing a reviewed new-version rollforward
+when no safe downgrade has been demonstrated. Do not restore plaintext stores,
+erase vault entries, fabricate missing credentials, retag/reuse a published
+version or overwrite old assets to disguise a fix. Public release withdrawal,
+replacement download selection, native credential cleanup and backend/database
+rollback each require their specific approval; none is performed by this plan.

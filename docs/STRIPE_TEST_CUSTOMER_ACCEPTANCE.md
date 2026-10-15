@@ -121,7 +121,7 @@ included-credit treatment, grace periods or live collection policy.
 | 1. Establish owner/session | Existing isolated auth/customer flow | Owner maps to intended synthetic tenant. Member and foreign-tenant negative actors are distinct. Stop on target/identity ambiguity. |
 | 2. Subscription Checkout | `POST /api/billing/checkout-session` with `planId=pro`, `billingInterval=monthly`; server counts accepted seats | Verify owner/admin and same-origin enforcement, actual test Checkout URL and server seat quantity. Ordinary member rejected. Checkout redirect alone does not grant access. |
 | 3. Signed entitlement | Actual provider delivery to `POST /api/billing/stripe-webhook` | Verify test subscription/customer/organization binding, status, seats, exact signed event consumption and resulting plan. A generic `stripe trigger` fixture without application metadata can be ignored and is not acceptance. |
-| 4. Durable replay | Redeliver an actual consumed test event after a later consumed event | Earlier duplicate is a no-op; plan remains at later state. Distinct never-consumed delayed-event ordering is still a known gap. Invalid signature and cross-tenant binding must not grant access. |
+| 4. Durable replay | Redeliver an actual consumed test event after a later consumed event | Earlier duplicate is a no-op; plan remains at later state. Distinct events now retrieve the established subscription and fence stale responses against its current binding/token; exercise real provider delivery and denied replacement separately. Invalid signature and cross-tenant binding must not grant access. |
 | 5. AI request | `POST /api/ai/generate` via approved authenticated surface, small prompt/output and the existing request idempotency header | Retain private request/tenant/reservation/generation linkage. No provider retry or invoice action if generation outcome is unknown. The first test is text-only and performs no deployment. |
 | 6. Actual cost receipt | Authorized `POST /api/cron/reconcile-ai-gateway-usage` with isolated Bearer cron secret | Exact captured Gateway generation ID must match provider receipt. Verify provider cents, governed 1.5x ledger amount, any reservation ceiling, and pending/settled state. A temporary not-yet-available receipt remains pending. |
 | 7. Test invoice item | Authorized `POST /api/cron/settle-ai-usage` | Inspect actual test invoice-item ID/customer/amount/currency/metadata against the immutable settlement and monthly hold. Re-run same maintenance paths and prove no duplicate item/debit. Spending ceiling blocks additional submission. |
@@ -152,8 +152,10 @@ acceptance script currently closes this journey.
 Current AI settlement creates invoice items only. It does not finalize an
 invoice, collect payment, reconcile `invoice.paid`/`invoice.payment_failed`,
 issue usage-invoice credit notes or implement usage-invoice refunds. These are
-independent engineering/policy gaps. Subscription replay deduplication does not
-solve distinct-event ordering. Desktop commercial access is currently a
+independent engineering/policy gaps. Established-subscription reconciliation now retrieves current provider state and
+fences stale responses against the local binding/token; see
+`SUBSCRIPTION_AUTHORITATIVE_RECONCILIATION.md`. Actual provider acceptance and
+authorized replacement remain open. Desktop commercial access is currently a
 separate identity-only policy, while resource and AI quota consumers retain
 other existing rules. No policy is silently changed by this acceptance packet.
 

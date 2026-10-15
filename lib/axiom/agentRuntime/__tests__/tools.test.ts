@@ -7,12 +7,14 @@ describe("TOOL_REGISTRY", () => {
     expect(names).toEqual([
       "check_deploy_status", "commit_github_file", "commit_github_files", "configure_deployment_target",
       "connect_identity_provider", "create_environment", "create_github_branch",
-      "inspect_github_repository", "list_deployment_executions", "list_environments", "list_github_files", "list_integrations", "open_github_pull_request",
-      "preview_scim_lifecycle", "read_github_file", "search_github_code", "trigger_aws_deploy",
+      "inspect_github_repository", "list_cloud_accounts", "list_deployment_executions", "list_environments", "list_github_files", "list_integrations", "open_github_pull_request",
+      "preview_scim_lifecycle", "read_aws_inventory", "read_github_file", "search_github_code", "trigger_aws_deploy",
     ]);
   });
 
   it("classifies every read-only tool as low risk", () => {
+    expect(findTool("list_cloud_accounts")?.riskLevel).toBe("low");
+    expect(findTool("read_aws_inventory")?.riskLevel).toBe("low");
     expect(findTool("list_environments")?.riskLevel).toBe("low");
     expect(findTool("list_integrations")?.riskLevel).toBe("low");
     expect(findTool("check_deploy_status")?.riskLevel).toBe("low");
