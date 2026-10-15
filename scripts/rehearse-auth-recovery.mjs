@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
 import { spawnSync } from "node:child_process";
-import { cpSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { cpSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
@@ -31,6 +31,12 @@ export async function rehearseAuthRecovery(connectionString) {
   const fixtureEmail = "fixture-founder@example.test";
   const workspace = `ws_${createHash("sha256").update(fixtureEmail).digest("hex").slice(0, 16)}`;
   const artifact = readFileSync(join(root, "ops/recovery/20261015_auth_schema_only.sql"), "utf8");
+  const sourcePending = readdirSync(join(root, "prisma/migrations"), { withFileTypes: true })
+    .filter(entry => entry.isDirectory() && entry.name >= agentMigration).map(entry => entry.name).sort();
+  const historicalPending = JSON.parse(readFileSync(join(root, "docs/mission/auth-preflight-run-2.json"), "utf8")).report.migrations.pending;
+  assert.equal(historicalPending.length, 7, "preserve the original seven pending production observations");
+  assert.ok(historicalPending.every(name => sourcePending.includes(name)), "original pending sources must remain represented");
+
   function cli(args, expectedSuccess = true) {
     const result = spawnSync(process.execPath, [join(root, "node_modules/prisma/build/index.js"), ...args, "--schema", schema], {
       env: { ...process.env, DATABASE_URL: target, PRISMA_HIDE_UPDATE_MESSAGE: "true" },
@@ -73,7 +79,7 @@ export async function rehearseAuthRecovery(connectionString) {
     const before = publicRecoverySummary(await inspectAuthRecovery(client, { founderEmail: fixtureEmail, databaseUrl: target }));
     assert.equal(before.database.endpointClassification, "local_or_proxy_underlying_host_unverified");
     assert.equal(before.database.backupStatus, "unverified");
-    assert.equal(before.migrations.pending.length, 7);
+    assert.deepEqual(before.migrations.pending, sourcePending);
     assert.equal(before.accountCheck, "passed");
     assert.equal(before.schema.verificationColumnPresent, false);
     // Verify whole-transaction rollback after DDL, before committing anything.
@@ -94,7 +100,7 @@ export async function rehearseAuthRecovery(connectionString) {
     assert.equal(authRow.finished, true);
     assert.equal(await snapshot(failedSnapshotSql), failedBefore, "failed history must remain untouched");
     const after = publicRecoverySummary(await inspectAuthRecovery(client, { founderEmail: fixtureEmail, databaseUrl: target }));
-    assert.equal(after.migrations.pending.length, 6);
+    assert.deepEqual(after.migrations.pending, sourcePending.filter(name => name !== authMigration));
     assert.equal(after.accountCheck, "passed");
     assert.equal(after.schema.verificationColumnPresent, true);
     assert.equal(after.schema.verificationTokenTablePresent, true);

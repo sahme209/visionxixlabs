@@ -526,13 +526,55 @@ model CloudAccount {
   createdAt         DateTime      @default(now())
   updatedAt         DateTime      @updatedAt
 
+  credential      CloudAccountCredential?
+  enrollmentAttempts CloudAccountEnrollmentAttempt[]
   runs            AxiomAgentRun[]
   scheduledRuns   AxiomScheduledRun[]
   autopilotEvents AxiomAutopilotEvent[]
 
+  @@unique([id, organizationId])
   @@unique([organizationId, provider, externalAccountId])
   @@index([organizationId])
   @@index([provider])
+}
+
+// Server-owned encrypted connector configuration; no plaintext credentials.
+model CloudAccountCredential {
+  id                     String   @id
+  organizationId         String
+  encryptedConfiguration String   @db.Text
+  version                Int      @default(1)
+  validatedAt            DateTime
+  createdAt              DateTime @default(now())
+  updatedAt              DateTime @updatedAt
+
+  cloudAccount CloudAccount @relation(fields: [id, organizationId], references: [id, organizationId], onDelete: Cascade, onUpdate: Cascade)
+
+  @@unique([id, organizationId])
+  @@index([organizationId])
+}
+
+// A short-lived tenant/user challenge, never a provider authorization grant.
+model CloudAccountEnrollmentAttempt {
+  id                        String    @id @default(cuid())
+  organizationId            String
+  userId                    String
+  expectedAccountId         String
+  roleArn                   String
+  region                    String
+  externalIdDigest          String
+  expiresAt                 DateTime
+  consumedAt                DateTime?
+  expectedCredentialVersion Int?
+  expectedAccountUpdatedAt  DateTime?
+  cloudAccountId            String?
+  createdAt                 DateTime  @default(now())
+  updatedAt                 DateTime  @updatedAt
+
+  cloudAccount CloudAccount? @relation(fields: [cloudAccountId, organizationId], references: [id, organizationId], onDelete: Restrict, onUpdate: Cascade)
+
+  @@index([organizationId, userId, expiresAt])
+  @@index([cloudAccountId, organizationId])
 }
 
 // ---------------------------------------------------------------------------

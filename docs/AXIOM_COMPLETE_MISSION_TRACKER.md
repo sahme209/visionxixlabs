@@ -510,3 +510,90 @@ narrow authentication repair. Capacity resolution, isolated restore verification
 auth DDL/ledger, provider acceptance, native publication and routing each retain
 separate approval boundaries. All fourteen mission workstreams remain represented;
 no major visual redesign or production mutation is included.
+
+
+## Recovery continuity merged checkpoint
+
+PR #139 merged as 699d0197a347b6ca8408c5fa57bdf9433d57e2a8 after exact-head
+Test run 38816816547 and Desktop CI run 38816816536 passed for c7697044,
+including native command tests and Clippy. The Vercel preview again failed
+before compilation with Resource provisioning failed; no check protection or
+infrastructure setting changed. Actual production/native/Stripe acceptance
+remains open. The owner confirms serving/preflight binding is not yet verified;
+this blocks production recovery execution, not independent engineering.
+
+A parallel AWS enrollment milestone is in progress across scoped server IO,
+additive isolated schema fixtures and the reachable desktop Settings integration
+UI. Identity verification, bounded single-region inventory and generic Agent
+execution are distinct. New accounts must not enter the legacy unscoped Lead
+credential path. Cloud schema is a separate reviewed proposal, never an implicit
+addition to authentication-only SQL approval. No production migration, IAM change
+or actual cloud API call is authorized or performed by this development work.
+
+
+Latest read-only alias observation supersedes the earlier #134 serving checkpoint:
+visionxixlabs.com now points to READY #138 deployment
+dpl_DdQu4nKjbsETe61AwFPPwMwfvacH (main 3df6d03f). The #139 main build
+dpl_CChjdeohkNxhkBmYXMTmzBBKiTvr is also READY. No Vercel promotion/routing
+tool was invoked. The actor and automatic-assignment policy remain unverified;
+READY/source merges must not be represented as approved production acceptance.
+Pin the then-serving revision again before private binding verification and any
+reviewed release. Further integration must respect the explicit production release
+boundary if automatic assignment cannot be excluded.
+
+
+Read-only deployment events now explain the custom-domain source lag: a manual
+promotion to #138 occurred at 22:27:11 UTC; per-deployment alias lists confirm
+visionxixlabs.com stays on #138 while READY #139 owns two other aliases. No
+rolling release/config is returned. This supersedes unknown-actor/source-lag
+hypotheses above, without attributing the operator or guaranteeing future auto
+assignment. Source integration continues through the existing Git pipeline;
+deliberate custom-domain promotion still requires explicit approval. Sanitized
+evidence: `docs/mission/vercel-release-inspection.json`.
+
+
+## Scoped AWS desktop enrollment and inventory checkpoint
+
+The reachable Settings integration now composes paired tenant authority, an
+existing-role challenge, broker-only bounded STS identity validation, scoped AEAD
+storage and a separate one-region EC2 page. It returns at most five instances,
+labels incomplete/truncated scope and withholds stale results after account,
+credential, session or membership changes. No IAM writes or simulated connected
+state is introduced. Generic Agent scans remain disabled for these accounts;
+legacy Lead-backed credentials are not adopted. Disconnect and the secure Agent
+snapshot bridge remain separate engineering milestones; Azure/GCP remain unavailable.
+
+New-account count is enforced against the canonical plan inside the same
+Serializable transaction as challenge consumption and creation. Revalidation
+does not allocate a slot. Storage errors fail closed. A real PostgreSQL 17.11
+last-slot experiment with two distinct account inserts committed one transaction,
+rejected the other with P2034 and left one account. This proves database predicate
+behavior, not live customer/provider acceptance. The existing desktop commercial
+policy remains deliberately identity-only; resource limits are not a claim that
+paid subscription gating is enforced.
+
+The additive cloud storage proposal passed isolated PostgreSQL 16/17 fixtures
+and the full-history auth rehearsal. Original auth and failed Agent SQL hashes
+are unchanged; new source pending counts include the unapplied cloud proposal.
+No production schema or migration history changed. CI now has separate PostgreSQL
+17 auth and enrollment fixture jobs, without production secrets/environments.
+See `AWS_ENROLLMENT_SCHEMA_PROPOSAL.md`, `DESKTOP_AWS_READONLY_ENROLLMENT.md`,
+`lib/cloud/aws/enrollment/README.md` and the sanitized fixture evidence.
+
+
+Legacy boundary review also closed an existing autopilot tenant-authorization
+gap: current accepted membership now gates mode/event reads, and accepted
+owner/admin plus same origin gates mutation. Client organization IDs do not
+grant authority. Scoped cloud credentials cannot be enabled/escalated through
+legacy controls or scanned through direct/queued paths, even if a stored flag
+is forced on. See `LEGACY_CLOUD_CONTROL_AUTHORITY.md`. New source tests do not
+prove the pinned serving build contains this security fix.
+
+Integrated validation for the AWS enrollment and legacy authority milestone:
+573 test files / 5,798 tests passed; web and desktop TypeScript, optimized web
+build, desktop build and 30 Python checks passed. New feature/API/test lint is
+clean. The two touched legacy scanner files retain exactly their existing
+26 lint errors and eight warnings; `mission/aws-legacy-lint-baseline.json`
+records the comparison. Isolated PostgreSQL evidence is separate from production
+restore readiness. Production binding remains explicitly unverified by the owner;
+no migration, routing, credential or live-billing change is authorized.

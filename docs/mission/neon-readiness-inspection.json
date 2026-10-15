@@ -79,6 +79,9 @@
     "cloudProviderEnumPresent": false,
     "connectorSetupSessionPresent": true,
     "connectorSetupTransitionPresent": true,
-    "productionApplicationBinding": "not_verified"
-  }
+    "productionApplicationBinding": "not_verified",
+    "autopilotModeTypePresent": false,
+    "autopilotTypeObservedAtUTC": "2026-10-15T22:29:36Z"
+  },
+  "ownerBindingAttestation": "Not yet verified"
 }

@@ -57,7 +57,12 @@ Proposed production changes, requiring explicit approval:
    migration-ledger write requiring approval, not a reset or a claim that other
    migrations succeeded. Preserve every failed Agent history row unchanged.
 3. Rerun the protected read-only preflight. Expect auth schema present and six
-   pending migrations, with the original Agent failure still reported. A full
+   pending migrations at the original seven-file baseline, with the original
+   Agent failure still reported. This checkout additionally proposes
+   `20261016010000_cloud_account_enrollment`; when that source is included,
+   expect eight pending before auth-only repair and seven afterward. It remains
+   unapplied and separately reviewed. Compare exact pending names from the
+   pinned checkout, never apply extra files to force an old count. A full
    preflight exit 2 remains expected; it must not be relabeled fully healthy.
 
 The SQL guards require the expected baseline User primary key, absent auth schema,

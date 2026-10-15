@@ -5,6 +5,8 @@ on:
     paths:
       - 'ops/recovery/**'
       - 'scripts/rehearse-auth-recovery.mjs'
+      - 'scripts/rehearse-aws-enrollment.mjs'
+      - 'lib/__tests__/awsEnrollmentRehearsal.test.ts'
       - 'scripts/auth-recovery-preflight.mjs'
       - 'scripts/auth-recovery-database-metadata.mjs'
       - 'prisma/**'
@@ -14,6 +16,8 @@ on:
     paths:
       - 'ops/recovery/**'
       - 'scripts/rehearse-auth-recovery.mjs'
+      - 'scripts/rehearse-aws-enrollment.mjs'
+      - 'lib/__tests__/awsEnrollmentRehearsal.test.ts'
       - 'scripts/auth-recovery-preflight.mjs'
       - 'scripts/auth-recovery-database-metadata.mjs'
       - 'prisma/**'
@@ -28,7 +32,7 @@ jobs:
     timeout-minutes: 10
     services:
       postgres:
-        image: postgres:16-alpine
+        image: postgres:17-alpine
         env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: isolated-fixture-only
@@ -52,3 +56,34 @@ jobs:
         env:
           AUTH_RECOVERY_TEST_DATABASE_URL: postgresql://postgres:isolated-fixture-only@127.0.0.1:5432/axiom_auth_recovery_rehearsal
         run: node scripts/rehearse-auth-recovery.mjs
+
+  aws-enrollment-schema:
+    name: Isolated AWS enrollment schema
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: isolated-fixture-only
+          POSTGRES_DB: axiom_aws_enrollment_rehearsal
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 5s --health-timeout 5s --health-retries 10
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '24'
+          cache: npm
+      - run: npm ci --ignore-scripts
+      - run: npx prisma generate --schema prisma/schema.prisma
+      - name: Validate additive storage, tenant constraints and drift refusal
+        env:
+          AWS_ENROLLMENT_TEST_DATABASE_URL: postgresql://postgres:isolated-fixture-only@127.0.0.1:5432/axiom_aws_enrollment_rehearsal
+        run: node scripts/rehearse-aws-enrollment.mjs

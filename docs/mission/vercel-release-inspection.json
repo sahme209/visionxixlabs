@@ -1,0 +1,46 @@
+{
+  "observedAtUTC": "2026-10-15T22:45:12Z",
+  "readOnly": true,
+  "domain": "visionxixlabs.com",
+  "serving": {
+    "deploymentId": "dpl_DdQu4nKjbsETe61AwFPPwMwfvacH",
+    "commit": "3df6d03f92d2eaa198ba021adfda86825c2c1a32",
+    "pr": 138,
+    "state": "READY",
+    "customDomainAssigned": true
+  },
+  "latestMain": {
+    "deploymentId": "dpl_CChjdeohkNxhkBmYXMTmzBBKiTvr",
+    "commit": "699d0197a347b6ca8408c5fa57bdf9433d57e2a8",
+    "pr": 139,
+    "state": "READY",
+    "aliasCount": 2,
+    "customDomainAssigned": false
+  },
+  "manualPromotionEvents": [
+    {
+      "atUTC": "2026-10-15T21:24:09.390Z",
+      "targetDeploymentId": "dpl_GURP2EoSvwK9Hd1xXhTxDEX3c3oe",
+      "pr": 134
+    },
+    {
+      "atUTC": "2026-10-15T22:27:11.716Z",
+      "targetDeploymentId": "dpl_DdQu4nKjbsETe61AwFPPwMwfvacH",
+      "pr": 138
+    }
+  ],
+  "rollingRelease": null,
+  "rollingReleaseConfig": null,
+  "futureAutomaticAssignmentPolicy": "not_exposed_by_project_projection",
+  "eventActor": "not_attributed_by_this_report",
+  "agentPromotionOrRoutingCalls": false,
+  "interpretation": "Custom domain is pinned by observed manual promotion while later Git main build is READY on other aliases. This explains current source lag; build readiness is not login acceptance. Future policy is not guaranteed, and any deliberate domain promotion remains separately approved.",
+  "productionDatabaseBinding": "unverified",
+  "secretValuesIncluded": false,
+  "evidence": [
+    "Vercel project-filtered manual-deployment-promotion-created events",
+    "Read-only custom-domain alias and per-deployment alias lists",
+    "Read-only exact deployment commit/state",
+    "Read-only rolling release/config getters"
+  ]
+}
