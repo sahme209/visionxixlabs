@@ -80,6 +80,25 @@ describe("executeApprovedAction", () => {
     expect(mocks.commitFile).toHaveBeenCalledWith(expect.objectContaining({ expectedSha: "reviewed-sha" }));
   });
 
+  it.each([undefined, { kind: "github_file", baseContent: "old" }, { kind: "github_file", baseSha: 42, baseContent: "old" }])("rejects missing or malformed single-file review evidence %j before contacting GitHub", async (_review) => {
+    const result = await executeApprovedAction(repo, "org-1", "commit_github_file", {
+      repositoryFullName: "acme/widgets", branch: "fix", path: "src/app.ts", content: "new", message: "Update app", _review,
+    });
+    expect(result).toEqual({ ok: false, error: "file_review_required" });
+    expect(mocks.resolveTenantScopedToken).not.toHaveBeenCalled();
+    expect(mocks.commitFile).not.toHaveBeenCalled();
+  });
+
+  it("preserves reviewed new-file creation with an explicit absent base SHA", async () => {
+    mocks.commitFile.mockResolvedValue({ ok: true, data: { sha: "new", htmlUrl: "https://github.test/file" } });
+    const result = await executeApprovedAction(repo, "org-1", "commit_github_file", {
+      repositoryFullName: "acme/widgets", branch: "fix", path: "src/new.ts", content: "new", message: "Add file",
+      _review: { kind: "github_file", baseSha: null, baseContent: "", htmlUrl: null },
+    });
+    expect(result.ok).toBe(true);
+    expect(mocks.commitFile).toHaveBeenCalledWith(expect.objectContaining({ expectedSha: null }));
+  });
+
   it("commits multiple reviewed files atomically on a non-default branch", async () => {
     mocks.commitFiles.mockResolvedValue({ ok: true, data: { sha: "commit", htmlUrl: "https://github.test/commit", fileCount: 2 } });
     const result = await executeApprovedAction(repo, "org-1", "commit_github_files", {

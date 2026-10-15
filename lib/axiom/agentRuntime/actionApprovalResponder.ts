@@ -72,6 +72,7 @@ export async function executeApprovedAction(
     const message = typeof args.message === "string" ? args.message : "";
     const review = githubFileReviewFromArgs(args);
     if (!branch || !path || !content || !message) return { ok: false, error: "invalid_payload" };
+    if (!review) return { ok: false, error: "file_review_required" };
     const token = await resolveTenantScopedToken(organizationId, parsed);
     if (!token.ok) return { ok: false, error: token.error };
     const defaultBranch = await getRepositoryDefaultBranch({ owner: parsed.owner, repo: parsed.repo, installationToken: token.token });
@@ -80,7 +81,7 @@ export async function executeApprovedAction(
     const result = await commitFile({
       owner: parsed.owner, repo: parsed.repo, branch, path, content, message,
       installationToken: token.token,
-      expectedSha: review?.baseSha,
+      expectedSha: review.baseSha,
     });
     return result.ok ? { ok: true, result: result.data } : { ok: false, error: result.error };
   }

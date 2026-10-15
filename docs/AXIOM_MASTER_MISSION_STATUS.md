@@ -1,5 +1,18 @@
 # Axiom Agent master-mission status
 
+## Local follow-up — single-file proposal review integrity
+
+Approval execution now requires a valid server-captured single-file review
+snapshot before resolving credentials or calling GitHub. Previously a missing
+snapshot yielded an undefined expected SHA, bypassing the reviewed-version
+comparison supported by the write client. Missing/malformed snapshots now fail
+closed with `file_review_required`; reviewed new files retain an explicit null
+base SHA and existing files retain their reviewed blob SHA. Multi-file behavior
+is preserved. Validation: 530 Vitest files / 5,188 tests and web TypeScript
+pass; desktop frontend checks and 30 Python CLI tests passed for the preceding
+local milestone and their code is unchanged. Native Rust checks remain
+unavailable. This is cloud-local software evidence, not a live provider test.
+
 ## Local follow-up — uncertain provider outcomes and retry authority
 
 The continuing cloud-local candidate persists an Airflow dispatch intent before

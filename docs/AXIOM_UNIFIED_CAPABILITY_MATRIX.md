@@ -60,6 +60,12 @@ deployed, or live-validated. Automated crash detection, provider-receipt lookup,
 and a governed reconciliation/reset journey remain open. No production or
 commercial readiness percentage is upgraded by this local code evidence.
 
+The next local proposal-integrity follow-up requires a valid single-file review
+snapshot at approval execution, preserving the reviewed SHA (including an
+explicit null for a new file). Missing/malformed snapshots cannot fall back to
+an unreviewed current version. The focused regression reproduces the prior
+bypass; this remains local software evidence, not a live GitHub write test.
+
 Effort is a relative planning estimate, not a delivery promise. Readiness records
 whether useful software work can proceed without external credentials.
 
