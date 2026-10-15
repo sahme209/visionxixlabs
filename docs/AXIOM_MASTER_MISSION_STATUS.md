@@ -1,5 +1,33 @@
 # Axiom Agent master-mission status
 
+## Privacy-choice resilience and current scope checkpoint
+
+PR #117–#122 are merged; all automatic main builds are READY, including
+`dpl_EMociHcCvJd6Fgphf52qVW1S45Vz` at `478f16d2`. Sign-in/providers return 200
+on the latest build and public domain, with credentials/Google/GitHub/Cognito
+registered and callbacks on visionxixlabs.com. Actual login/founder mapping is
+unverified; protected SQL preflight dispatch returned Forbidden. The environment
+listing is truncated, so production database-binding absence is not inferred.
+
+The privacy follow-up preserves the existing reopening control, handles denied
+read/write persistence and synchronizes another tab’s decision. Future SDK
+events consult current consent and are blocked after withdrawal/unmount. When
+saving fails, the UI explains that the preference could not be retained and
+keeps essential features available while permitting the user to continue.
+Thirteen real DOM cases cover these boundaries; actual browser/network privacy
+acceptance is separate. Production dependency advisories remain zero; the
+broader audit records nine existing development-tool findings, unchanged by
+the dev-only DOM tools. See [privacy validation](PRIVACY_CONSENT_VALIDATION.md).
+The uploaded 24-section unified prompt was verified byte-for-byte against its
+repository copy; the older 36-section source and A–L scenarios remain missing.
+
+Validation passes: 539 Vitest files / 5,338 tests, targeted privacy lint, web and
+desktop TypeScript, desktop frontend build, 30 Python CLI tests, full Next.js
+production build and mission coverage check. Headless Chromium still times out
+even for a clean blank page outside the restricted sandbox; browser visual and
+network acceptance remain unverified. The exact older master-spec path is also
+absent from all fetched history in this non-shallow repository.
+
 ## Billing reservation integrity follow-up
 
 PR #121 merged at `f27adac5` after exact-head CI `38776598039` passed. The next

@@ -19,7 +19,8 @@ specification.** Its expected verbatim file
 `docs/MASTER_BUILD_PROMPT_TAURI_DEPLOYMENT_OPERATIONS_PLATFORM.md` is absent.
 The supplied handoff refers to it but does not contain it. Exact section-27
 scenarios A–L are also unavailable. There are explicit placeholders for all
-36 sections and all twelve scenarios; templates and inferred requirements are
+36 sections and all twelve scenarios; the referenced file was also absent from
+all fetched Git history in this non-shallow repository. Templates and inferred requirements are
 not substituted for missing source. Recovering that text is a source blocker,
 not a reason to stop independent engineering.
 
@@ -32,6 +33,11 @@ product requirements. Related source files are **not** acceptance proof.
 Coverage is complete for the extractor's prose/list/table units; individual
 acceptance review remains explicitly pending on many rows. Code examples are
 reference artifacts, not separately inferred acceptance requirements.
+
+Source verification: the uploaded unified prompt (28,298 bytes, 24 sections)
+is byte-for-byte identical to `docs/AXIOM_UNIFIED_MASTER_MISSION.md`
+(SHA-256 `f1dc19f102970688b068458854fcde787ad4aab3a19b17886a8622fbf513727f`). The older missing 36-section specification
+is a separate referenced source; it is not silently substituted by this file.
 
 Run `python3 scripts/axiom-mission-tracker.py --check` to detect dropped source
 units, changed source text, invalid states, missing evidence paths or stale
@@ -255,3 +261,23 @@ retaining existing reservations. Worker tests verify zero Stripe calls and
 zero settlement/budget mutations for mismatches. Test-mode gates, valid retries,
 unknown-outcome holds, pricing and the 1.5x calculation stay intact. Actual
 provider/customer billing acceptance and held-row queue fairness remain open.
+
+## Privacy-choice and development-tool audit follow-up
+
+The existing reopening control remains. [Real DOM regressions](PRIVACY_CONSENT_VALIDATION.md)
+cover blocked storage, cookie fallback, unsaved current-tab choices, cross-tab
+withdrawal and retained SDK callbacks. An explicit refusal wins over an older
+conflicting saved grant; actual browser/network privacy acceptance remains open.
+Development-only DOM test tools leave production dependencies unchanged.
+
+The [full dependency audit](mission/development-dependency-audit.json) records
+nine existing development-tool package findings: seven high/two moderate,
+unchanged before/after the DOM tools. Production-only findings remain zero.
+Review compatible upstream fixes and separately validate any CSS/lint framework
+migration; a zero production-only audit never closes the wider security scope.
+
+Execution checkpoint: #117–#122 are merged with READY main builds. Public
+routing last advanced automatically to #120; no manual promotion occurred.
+The old Analytics draft #1 was closed as superseded after confirming current
+main mounts Analytics through the existing consent condition. SQL preflight,
+founder identity and successful account login remain unverified.

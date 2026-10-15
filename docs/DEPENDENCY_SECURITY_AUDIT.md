@@ -45,3 +45,13 @@ Exact-head build/test/CI and deployment results belong in the focused PR.
 Application builds forbid migration side effects; local install only generates
 the Prisma client. Actual credential/IAM/inventory journeys, customer login
 and wider security acceptance remain open. Repeat the audit before release.
+
+## Development-tool scope extension
+
+A full audit including development dependencies records nine existing package
+findings: seven high/two moderate in the lint/CSS/glob toolchain. The set and
+counts match before and after adding the DOM test tools; production-only audit
+remains zero. Details and compatibility follow-ups are preserved in
+[development-dependency-audit.json](mission/development-dependency-audit.json).
+These development findings remain open; the earlier zero counts are explicitly
+production-only.

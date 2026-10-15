@@ -162,7 +162,7 @@ describe("desktop first-run contract", () => {
     const consent = readFileSync(join(root, "components/PrivacyConsent.tsx"), "utf8");
     expect(layout).toContain("<PrivacyConsent />");
     expect(layout).not.toContain("<Analytics />");
-    expect(consent).toContain('consent === "accepted" && <Analytics />');
+    expect(consent).toContain('consent === "accepted" && <Analytics beforeSend={beforeSend} />');
     expect(consent).toContain("Essential only");
     expect(consent).toContain("Accept optional");
   });
