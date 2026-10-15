@@ -14,7 +14,8 @@ import {
 import { DocHeader, Callout, DocFeedback } from "@/components/docs/DocPrimitives";
 
 export const metadata: Metadata = {
-  title: "Documentation — Axiom Agent | Vision XIX Labs",
+  title: "Documentation — Axiom Agent",
+  alternates: { canonical: "/docs" },
   description: "Guides for Axiom Agent's governed deployment workflow, desktop installation, security boundaries, and verified integration states.",
 };
 

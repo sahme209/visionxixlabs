@@ -226,3 +226,21 @@ are READY; the public alias was last read on #116. Main build readiness is not
 public promotion or login acceptance. No manual alias change or SQL mutation
 was performed. CLI workflow-dispatch access remains blocked by GitHub Forbidden;
 no public-input or push-triggered bypass was introduced.
+
+## Public route and metadata audit follow-up
+
+Nine sampled routes (`/`, `/plans`, `/download`, `/docs`, `/support`, `/security`,
+`/privacy`, `/terms`, `/auth/signin`) returned HTTP 200. The live docs HTML
+repeats the brand title and incorrectly canonicalizes to the home page.
+Metadata corrections cover docs, pricing, downloads, security and terms without
+changing UI layout, legal text or billing gates. The [route evidence](mission/public-route-audit.json)
+separates public observations from local build checks. HTTP/head checks are not
+screenshots, browser interaction, installer or successful-login acceptance.
+Cloud Chromium times out even on a blank-page capture; visual acceptance stays
+unverified rather than being labeled a pass or a MacBook-only dependency.
+
+Additional governance finding: `app/terms/page.tsx` derives “Last Updated” from
+`new Date()` during rendering. That is not evidence of a policy revision or
+approval. The metadata fix leaves legal text unchanged. Next action: establish
+the approved policy version/effective date, then replace the moving date in a
+focused legal-content review; do not invent an approval date from Git history.

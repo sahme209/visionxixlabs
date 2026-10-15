@@ -5,6 +5,7 @@ import { PublicPlansCatalog } from "@/components/billing/PublicPlansCatalog";
 
 export const metadata: Metadata = {
   title: "Axiom pricing",
+  alternates: { canonical: "/plans" },
   description:
     "Transparent Free, Pro, and Enterprise plans for governed deployments, with activation protected until billing authority and quota enforcement are validated.",
 };
