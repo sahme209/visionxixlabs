@@ -9,11 +9,10 @@ import { NextResponse, type NextRequest } from "next/server";
 import { resolveRequestDesktopSession } from "@/lib/desktop/resolveRequestDesktopSession";
 import { prisma } from "@/lib/db";
 import { buildAgiCockpitResponse, type AgiCockpitRepo } from "@/lib/releaseops/agiCockpitResponder";
-import { runAgiCockpitNowForOrganization } from "@/app/api/dashboard/agi-cockpit-run-now/route";
+import { runAgiCockpitNowForOrganization } from "@/lib/releaseops/runAgiCockpitNow";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
-export const maxDuration = 60;
 
 export async function GET(request: NextRequest): Promise<Response> {
   const session = await resolveRequestDesktopSession(request, {

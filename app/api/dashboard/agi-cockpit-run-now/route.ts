@@ -74,7 +74,7 @@ export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 /** Shared by the cookie dashboard and the paired-desktop route. */
-export async function runAgiCockpitNowForOrganization(orgId: string, actorUserId: string | null) {
+async function runAgiCockpitNowForOrganization(orgId: string, actorUserId: string | null) {
 
   const runners: EngineRunners = {
     async runAdvisor(orgId, releaseId) {
