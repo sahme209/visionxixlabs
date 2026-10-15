@@ -181,3 +181,12 @@ Claude retains later UX/design/governance review; Cursor remains optional for
 local inspection. Existing `docs/AXIOM_EXECUTION_BACKLOG.md` contains historical
 evidence and must be reconciled against current main rather than treated as a
 current deployment inventory.
+
+## Manual recovery input handling
+
+The optional rolled-back migration name is supplied to the shell through an
+environment variable, then checked against an existing migration directory
+with the timestamp/name format. It is never inserted as shell source code.
+This validation does not authorize rollback resolution or establish migration
+safety: inspect the actual production ledger and partial schema and obtain
+explicit approval before dispatching the protected migration workflow.

@@ -271,6 +271,7 @@ export const DEMO_SCENARIOS: Readonly<Record<DemoScenarioId, DemoScenario>> = {
       { id: "5", title: "Execute",                    description: "Approved automation runs; outputs streamed to the page.", approval: "none", expectedResult: "Execution log + new state visible." },
       { id: "6", title: "Audit log",                  description: "Every action recorded with closed-union AuditAction.", route: "/dashboard/audit", approval: "none", expectedResult: "Audit row with actor, action, outcome, correlation id." },
       { id: "7", title: "Review duplicate-action protection", description: "Illustrative Airflow completion workflow: one enabled attempt is claimed, approval is rechecked against current workspace membership, deployment allowance is reserved before dispatch, and uncertain provider outcomes retain the hold and pause automatic replay.", approval: "none", expectedResult: "Paused rules and revoked approvers cannot start work. An uncertain provider outcome requires review before retrying. This demonstration performs no provider operation." },
+      { id: "8", title: "Review manual migration recovery", description: "A separately approved migration recovery accepts only an existing migration folder name as data. The workflow does not interpret the input as shell instructions.", approval: "two_person", expectedResult: "The walkthrough explains input validation and the protected approval boundary; it neither resolves migration history nor changes a database." },
     ],
   },
   ai_workforce_overview: {

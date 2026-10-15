@@ -59,7 +59,13 @@ jobs:
         if: ${{ inputs.resolve_rolled_back_migration != '' }}
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
-        run: npx prisma migrate resolve --rolled-back "${{ inputs.resolve_rolled_back_migration }}" --schema prisma/schema.prisma
+          RESOLVE_MIGRATION_NAME: ${{ inputs.resolve_rolled_back_migration }}
+        run: |
+          if [[ ! "$RESOLVE_MIGRATION_NAME" =~ ^[0-9]{14}_[a-z0-9_]+$ ]] || [[ ! -d "prisma/migrations/$RESOLVE_MIGRATION_NAME" ]]; then
+            echo "Migration name must match an existing migration directory." >&2
+            exit 1
+          fi
+          npx prisma migrate resolve --rolled-back "$RESOLVE_MIGRATION_NAME" --schema prisma/schema.prisma
 
       - name: Apply pending Prisma migrations
         env:

@@ -57,6 +57,19 @@ Merge is held for this unresolved deployment check and the separate
 production-release boundary. Production auth/founder verification remains
 blocked; no production approval or readiness is inferred from green tests.
 
+## Separate security follow-up — manual migration workflow input
+
+The optional migration name was interpolated directly into shell source in a
+secret-bearing approved workflow. It now arrives via an environment variable,
+is checked against an existing timestamped migration folder, and is passed as
+a quoted argument. Local shell fixtures replace Prisma with a harmless command
+recorder; no workflow, migration, database connection or production write runs.
+The existing explicit APPLY/main/protected-environment gates remain unchanged.
+Verification reproduced the prior shell injection using a harmless command
+recorder, rejected five malicious/invalid input forms, and preserved the
+existing migration name as one argument. YAML parsing and 15 demo contract
+tests pass. This candidate is cloud-local and has not run against production.
+
 ## Current validation and integration · 2026-10-15
 
 The combined follow-up candidate passes 530 Vitest files / 5,194 tests, web
