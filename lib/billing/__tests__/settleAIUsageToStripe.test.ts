@@ -16,7 +16,7 @@ const record = {
   status: "reserved", createdAt: new Date(now.getTime() - 60_000),
 };
 
-function repository(existing = record) {
+function repository(existing: typeof record | null = record) {
   const repo = {
     $queryRaw: vi.fn().mockResolvedValue([{ id: "usage-1", organizationId: "org-1", billedCents: 3 }]),
     tenantBillingPlan: { findUnique: vi.fn().mockResolvedValue({ stripeCustomerId: "cus_test" }) },
@@ -42,6 +42,46 @@ describe("AI usage Stripe settlement retry safety", () => {
     mocks.invoiceItem.mockResolvedValue({ id: "ii_test" });
   });
   afterEach(() => { vi.useRealTimers(); vi.unstubAllEnvs(); });
+
+  it("blocks a negative budget counter introduced after candidate selection", async () => {
+    const repo = repository(null);
+    repo.aIUsageBillingPeriod.findUnique.mockResolvedValue({ reservedCents: -1 });
+    repo.aIUsageBillingPeriod.updateMany.mockResolvedValue({ count: 1 });
+    repo.aIUsageBillingSettlement.create.mockResolvedValue(record);
+    expect(await settleAIUsageToStripe(repo)).toEqual({ inspected: 1, reserved: 0, submitted: 0, blocked: 1, deferred: 0 });
+    expect(repo.aIUsageBillingPeriod.updateMany).not.toHaveBeenCalled();
+    expect(repo.aIUsageBillingSettlement.create).not.toHaveBeenCalled();
+    expect(mocks.invoiceItem).not.toHaveBeenCalled();
+  });
+
+  it("atomically reserves the last available cents with a nonnegative counter", async () => {
+    const repo = repository(null);
+    repo.aIUsageBillingPeriod.findUnique.mockResolvedValue({ reservedCents: 97 });
+    repo.aIUsageBillingPeriod.updateMany.mockResolvedValue({ count: 1 });
+    repo.aIUsageBillingSettlement.create.mockResolvedValue(record);
+    expect(await settleAIUsageToStripe(repo)).toEqual({ inspected: 1, reserved: 1, submitted: 1, blocked: 0, deferred: 0 });
+    expect(repo.aIUsageBillingPeriod.updateMany).toHaveBeenCalledWith(expect.objectContaining({
+      where: { organizationId: "org-1", periodMonth: "2026-10", reservedCents: { gte: 0, lte: 97 } },
+    }));
+    expect(repo.$transaction).toHaveBeenCalledWith(expect.any(Function), { isolationLevel: "Serializable" });
+    expect(mocks.invoiceItem).toHaveBeenCalledTimes(1);
+  });
+
+  it("defers a fresh claim after a serializable transaction conflict", async () => {
+    const repo = repository(null);
+    repo.$transaction.mockRejectedValueOnce({ code: "P2034" });
+    expect(await settleAIUsageToStripe(repo)).toEqual({ inspected: 1, reserved: 0, submitted: 0, blocked: 0, deferred: 1 });
+    expect(mocks.invoiceItem).not.toHaveBeenCalled();
+  });
+
+  it("blocks a fresh claim lost to a competing budget reservation", async () => {
+    const repo = repository(null);
+    repo.aIUsageBillingPeriod.findUnique.mockResolvedValue({ reservedCents: 97 });
+    repo.aIUsageBillingPeriod.updateMany.mockResolvedValue({ count: 0 });
+    expect(await settleAIUsageToStripe(repo)).toEqual({ inspected: 1, reserved: 0, submitted: 0, blocked: 1, deferred: 0 });
+    expect(repo.aIUsageBillingSettlement.create).not.toHaveBeenCalled();
+    expect(mocks.invoiceItem).not.toHaveBeenCalled();
+  });
 
   it("holds an unresolved submission after the conservative retry window", async () => {
     const repo = repository({ ...record, createdAt: new Date(now.getTime() - 25 * 60 * 60 * 1000) });
