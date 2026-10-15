@@ -22,6 +22,7 @@ import { resolveRequestDesktopSession } from "@/lib/desktop/resolveRequestDeskto
 import { prisma } from "@/lib/db";
 import { resolveTenantScopedToken, parseRepositoryFullName } from "@/lib/connectors/github/resolveTenantScopedToken";
 import { dispatchWorkflow, resolveGitReference } from "@/lib/connectors/github/githubWriteClient";
+import { isDefiniteWorkflowDispatchRejection } from "@/lib/connectors/github/workflowDispatchOutcome";
 import { AWS_ECS_DEPLOY_WORKFLOW_FILENAME } from "@/lib/releaseops/awsEcsDeployWorkflowTemplate";
 import { appendAuditEvent, type AuditEventRepo } from "@/lib/releaseops/auditEventResponder";
 import { serializeDeploymentExecution } from "@/lib/releaseops/deploymentExecutionResponder";
@@ -196,6 +197,9 @@ export async function POST(request: NextRequest): Promise<Response> {
     installationToken: tokenResult.token,
   });
   if (!dispatchResult.ok) {
+    if (!isDefiniteWorkflowDispatchRejection(dispatchResult.error)) {
+      return NextResponse.json({ ok: false, error: "deployment_outcome_unknown", hint: "The provider may have accepted this deployment. Its reservation is retained; review the external outcome before retrying." }, { status: 502 });
+    }
     await releaseDeploymentDispatch(reservationRepo, organizationId, reservation.reservation.id);
     return NextResponse.json({ ok: false, error: "dispatch_failed", hint: dispatchResult.error }, { status: 502 });
   }

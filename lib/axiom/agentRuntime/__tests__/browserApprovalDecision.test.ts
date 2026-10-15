@@ -72,6 +72,13 @@ describe("browser agent approval decision", () => {
     expect(mocks.execute).toHaveBeenCalledTimes(1);
   });
 
+  it("records uncertainty without claiming that the provider action failed or completed", async () => {
+    mocks.execute.mockResolvedValue({ ok: false, error: "deployment_outcome_unknown" });
+    const { decideAgentAction } = await import("../browserApprovalDecision");
+    expect(await decideAgentAction({ organizationId: "org-1", proposalId: base.id, actorUserId: "reviewer-1", actorRole: "admin", decision: "approve", now: reviewNow })).toMatchObject({ ok: true, errorMessage: "deployment_outcome_unknown" });
+    expect(mocks.createTurn).toHaveBeenCalledWith({ data: expect.objectContaining({ content: expect.stringContaining("provider outcome unconfirmed") }) });
+  });
+
   it("forbids the proposer from approving their own action", async () => {
     const { decideAgentAction } = await import("../browserApprovalDecision");
     expect(await decideAgentAction({ organizationId: "org-1", proposalId: base.id, actorUserId: "author-1", actorRole: "owner", decision: "approve" }))

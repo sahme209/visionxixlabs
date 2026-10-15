@@ -90,6 +90,13 @@ describe("deployment dispatch reservations", () => {
     expect(deploymentExecution.create).not.toHaveBeenCalled();
   });
 
+  it("keeps an unresolved operation blocked for the same key even after its former expiry", async () => {
+    const { repo, deploymentExecution } = repository({ existing: { ...input, id: "exec-unresolved", status: "reserved", createdAt: new Date("2026-10-01T00:00:00Z") } });
+    await expect(reserveDeploymentDispatch(repo, input, new Date("2026-10-15T12:00:00Z"))).resolves.toMatchObject({ ok: false, error: "deployment_already_in_progress" });
+    expect(deploymentExecution.create).not.toHaveBeenCalled();
+    expect(deploymentExecution.deleteMany).not.toHaveBeenCalled();
+  });
+
   it("rejects reuse of a key for a different deployment payload", async () => {
     const existing = { ...input, id: "exec-existing", status: "queued", sourceRef: "release/old" };
     const { repo, deploymentExecution } = repository({ existing });

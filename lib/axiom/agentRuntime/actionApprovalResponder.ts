@@ -13,6 +13,7 @@ import "server-only";
 import { resolveTenantScopedToken, parseRepositoryFullName } from "@/lib/connectors/github/resolveTenantScopedToken";
 import { createBranch, commitFile, commitFiles, createPullRequest, dispatchWorkflow, getRepositoryDefaultBranch } from "@/lib/connectors/github/githubWriteClient";
 import { AWS_ECS_DEPLOY_WORKFLOW_FILENAME } from "@/lib/releaseops/awsEcsDeployWorkflowTemplate";
+import { isDefiniteWorkflowDispatchRejection } from "@/lib/connectors/github/workflowDispatchOutcome";
 import { buildEnvironmentCreateResponse, type EnvironmentCreateRepo } from "@/lib/releaseops/environmentCreateResponder";
 import { buildDeploymentTargetUpsertResponse, type DeploymentTargetRepo } from "@/lib/releaseops/deploymentTargetResponder";
 import { buildIdentityProviderCreateResponse, type IdentityProviderRepo } from "@/lib/identity/identityProviderResponder";
@@ -200,6 +201,7 @@ export async function executeApprovedAction(
       installationToken: token.token,
     });
     if (!result.ok) {
+      if (!isDefiniteWorkflowDispatchRejection(result.error)) return { ok: false, error: "deployment_outcome_unknown" };
       await releaseDeploymentDispatch(reservationRepo, organizationId, reservation.reservation.id);
       return { ok: false, error: result.error };
     }

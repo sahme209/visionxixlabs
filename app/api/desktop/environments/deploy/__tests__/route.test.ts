@@ -158,6 +158,19 @@ describe("POST /api/desktop/environments/deploy", () => {
     const res = await POST(request({ repositoryFullName: "acme/widgets", environmentId: "env_1" }));
     expect(res.status).toBe(502);
     expect(mocks.recordAudit).not.toHaveBeenCalled();
+    expect(mocks.releaseDeploymentDispatch).toHaveBeenCalledWith(expect.anything(), "org-1", "exec-1");
+  });
+
+  it.each(["workflow_dispatch_failed: fetch failed", "workflow_dispatch_failed: github_503: unavailable"])("retains the reservation when dispatch outcome is uncertain: %s", async (error) => {
+    mocks.findEnvironment.mockResolvedValue({ id: "env_1", organizationId: "org-1" });
+    mocks.findTarget.mockResolvedValue(target);
+    mocks.resolveTenantScopedToken.mockResolvedValue({ ok: true, token: "installation-token" });
+    mocks.dispatchWorkflow.mockResolvedValue({ ok: false, error });
+    const { POST } = await import("../route");
+    const res = await POST(request({ repositoryFullName: "acme/widgets", environmentId: "env_1" }));
+    expect(res.status).toBe(502);
+    expect(await res.json()).toMatchObject({ ok: false, error: "deployment_outcome_unknown" });
+    expect(mocks.releaseDeploymentDispatch).not.toHaveBeenCalled();
   });
 
   it("blocks before workflow dispatch when the deployment allowance is exhausted", async () => {

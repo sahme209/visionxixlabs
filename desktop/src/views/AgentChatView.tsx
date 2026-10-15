@@ -433,13 +433,16 @@ export function AgentChatView() {
         setError(result.error);
         return;
       }
+      const decisionData = result.data as { status: string; errorMessage?: string | null };
       setTurns((prev) => [...prev, {
         id: `local_${Date.now()}_d`,
         role: "tool_result",
         content: approve
-          ? (result.data as { status: string; errorMessage?: string | null }).status === "executed"
+          ? decisionData.status === "executed"
             ? `${TOOL_LABELS[pendingProposal.toolName] ?? pendingProposal.toolName} — done.`
-            : `${TOOL_LABELS[pendingProposal.toolName] ?? pendingProposal.toolName} — failed: ${(result.data as { errorMessage?: string | null }).errorMessage ?? "unknown error"}`
+            : decisionData.errorMessage === "deployment_outcome_unknown"
+              ? "Deployment outcome unconfirmed. The provider may have accepted it; its hold is retained. Review the external outcome before retrying."
+            : `${TOOL_LABELS[pendingProposal.toolName] ?? pendingProposal.toolName} — failed: ${decisionData.errorMessage ?? "unknown error"}`
           : `${TOOL_LABELS[pendingProposal.toolName] ?? pendingProposal.toolName} — rejected.`,
       }]);
       setPendingProposal(null);

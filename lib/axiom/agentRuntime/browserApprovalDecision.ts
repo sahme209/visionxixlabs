@@ -102,7 +102,10 @@ export async function decideAgentAction(input: {
       conversationId: proposal.conversationId,
       role: "tool_result",
       actionProposalId: proposal.id,
-      content: execution.ok ? `${proposal.toolName} approved and executed.` : `${proposal.toolName} approved but failed: ${execution.error}`,
+      content: execution.ok ? `${proposal.toolName} approved and executed.`
+        : execution.error === "deployment_outcome_unknown"
+          ? `${proposal.toolName} approved; provider outcome unconfirmed. Its reservation is retained. Review the external outcome before retrying.`
+          : `${proposal.toolName} approved but failed: ${execution.error}`,
     } });
   });
   return execution.ok ? { ok: true, status } : { ok: true, status, errorMessage: execution.error };

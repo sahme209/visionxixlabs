@@ -1,5 +1,23 @@
 # Axiom Agent master-mission status
 
+## Continuing follow-up — uncertain desktop and Agent dispatch responses
+
+Four regressions reproduced release of a deployment hold after transport or
+provider-server failure. Both desktop and Agent callers now release only
+explicit non-accepting GitHub responses; network/server/unknown failures retain
+the durable reservation and return `deployment_outcome_unknown`. Same-key
+retries remain blocked even after the former expiry. Desktop and persisted
+Agent conversation messages describe uncertainty without asserting that a
+provider deployment failed or completed. The existing Agent processing-status
+model is preserved. A receipt-reconciliation/operator-release journey remains
+unfinished; no automatic resend, live provider call or billing activation occurs.
+
+Validation for the continuing dispatch repair: 531 Vitest files / 5,217 tests,
+web TypeScript, desktop TypeScript/frontend build and 30 Python CLI tests pass.
+The React review found no new hooks, effects, dependencies or layout changes;
+only outcome copy and typed response handling changed. No provider call was
+made by these tests. This follow-up remains separate from PR #108.
+
 ## Separate follow-up — unresolved deployment reservations
 
 An unrelated reservation request previously deleted reserved execution rows
