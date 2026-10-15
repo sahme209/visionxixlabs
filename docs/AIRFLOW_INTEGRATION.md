@@ -114,3 +114,12 @@ proof of a completed cloud deployment.
 Scheduler tick counters record successful executor outcomes as actions. Failed or
 unconfirmed outcomes count as errors; a competing claim or disabled rule is a
 no-op. An action count does not establish that a cloud deployment completed.
+
+Airflow deployments use the existing serializable organization deployment
+reservation before dispatch, keyed by the Airflow execution id. Exhausted or
+unavailable allowance blocks the provider request. A recorded deployment is
+linked without dispatching again; accepted dispatch settles that same reserved
+row. If intent persistence fails before dispatch, the new reservation can be
+released. Once dispatch begins, uncertain outcomes retain both the reservation
+and its reference in the action intent/receipt for reconciliation. Existing
+plan limits, pricing and production-approval policy remain unchanged.

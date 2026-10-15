@@ -1,5 +1,22 @@
 # Axiom Agent master-mission status
 
+## Continuing follow-up — Airflow deployment allowance parity
+
+Airflow previously dispatched directly and created a deployment record afterward,
+bypassing the shared allowance reservation used by desktop and Agent paths. It
+now reserves against the same serializable quota with a stable execution key,
+links recorded replays without dispatching, and settles the same reserved row.
+Failed intent persistence before dispatch can release the new slot; uncertain
+provider outcomes retain it and its reference for reconciliation. Recorded
+approvers remain the attributed actors. Existing plan limits/prices and human
+production approvals are unchanged. Four regressions failed before the repair;
+focused cases cover quota denial, stable key/settlement, replay, intent failure,
+tracking failure and an uncertain response without a second dispatch.
+
+Airflow allowance validation: 531 Vitest files / 5,222 tests and web
+TypeScript pass. Desktop/Python code is unchanged from the preceding passing
+dispatch milestone. No real provider or database call was made.
+
 ## Continuing follow-up — uncertain desktop and Agent dispatch responses
 
 Four regressions reproduced release of a deployment hold after transport or
