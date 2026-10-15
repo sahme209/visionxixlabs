@@ -29,6 +29,7 @@ type SettlementRecord = {
   amountCents: number;
   idempotencyKey: string;
   status: string;
+  attemptCount: number;
   createdAt: Date;
 };
 
@@ -174,15 +175,19 @@ export async function settleAIUsageToStripe(
       result.blocked++;
       continue;
     }
+    if (!Number.isSafeInteger(settlement.attemptCount) || settlement.attemptCount < 0) {
+      result.blocked++;
+      continue;
+    }
     try {
-      // Persist queue rotation before contacting Stripe, including uncertain
-      // outcomes. Never move createdAt: it bounds the original retry window.
+      // Claim the observed attempt count and persist queue rotation before Stripe,
+      // including uncertain outcomes. Never move createdAt: it bounds the original retry window.
       const attempt = await repository.aIUsageBillingSettlement.updateMany({
         where: {
           id: settlement.id, status: "reserved",
           organizationId: event.organizationId, usageEventId: event.id,
           amountCents: event.billedCents, idempotencyKey: settlement.idempotencyKey,
-          createdAt: settlement.createdAt,
+          createdAt: settlement.createdAt, attemptCount: settlement.attemptCount,
         },
         data: { attemptCount: { increment: 1 }, updatedAt: new Date() },
       });
