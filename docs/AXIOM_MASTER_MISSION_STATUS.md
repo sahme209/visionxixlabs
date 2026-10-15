@@ -1,5 +1,17 @@
 # Axiom Agent master-mission status
 
+## Billing reservation integrity follow-up
+
+PR #121 merged at `f27adac5` after exact-head CI `38776598039` passed. The next
+focused billing repair reproduces four invalid reservations reaching invoice
+submission: a different organization, usage event, larger amount or smaller
+amount. Binding validation now blocks all four and retains existing ledger and
+quota state for reconciliation. Valid retry keys/amounts and the test-only
+billing gate remain intact. See [binding evidence](BILLING_SETTLEMENT_BINDING.md).
+Validation: 538 Vitest files / 5,325 tests, web and desktop TypeScript, desktop
+frontend build, 30 Python CLI tests and mission coverage check. Production data,
+credentials, migrations and billing activation are outside this repair.
+
 ## Website metadata follow-up
 
 PR #120 merged at `5981608b`; exact-head Node 24 CI `38772363956` and its

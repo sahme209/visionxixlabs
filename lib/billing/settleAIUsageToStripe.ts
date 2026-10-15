@@ -13,6 +13,7 @@ import type { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/db";
 import { evaluateAIUsageSettlementRetry } from "./aiUsageSettlementRetryPolicy";
 import { aiUsageSettlementCandidates } from "./aiUsageSettlementCandidates";
+import { isAIUsageSettlementBoundToUsage } from "./aiUsageSettlementBinding";
 
 type SettledUsage = {
   id: string;
@@ -159,7 +160,9 @@ export async function settleAIUsageToStripe(
       result.deferred++;
       continue;
     }
-    if (!settlement) {
+    if (!settlement || !isAIUsageSettlementBoundToUsage(event, settlement)) {
+      // Hold any existing reservation for reconciliation. Never submit a
+      // different tenant/event/amount or release an unknown provider outcome.
       result.blocked++;
       continue;
     }

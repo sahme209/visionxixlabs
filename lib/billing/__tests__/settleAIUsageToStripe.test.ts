@@ -52,6 +52,21 @@ describe("AI usage Stripe settlement retry safety", () => {
     expect(result).toEqual({ inspected: 1, reserved: 0, submitted: 0, blocked: 1, deferred: 0 });
   });
 
+  it.each([
+    { mismatch: "organization", existing: { ...record, organizationId: "org-other" } },
+    { mismatch: "usage event", existing: { ...record, usageEventId: "usage-other" } },
+    { mismatch: "larger amount", existing: { ...record, amountCents: 30 } },
+    { mismatch: "smaller amount", existing: { ...record, amountCents: 1 } },
+  ])("holds a reservation with a mismatched $mismatch without submitting or releasing it", async ({ existing }) => {
+    const repo = repository(existing);
+    expect(await settleAIUsageToStripe(repo)).toEqual({ inspected: 1, reserved: 0, submitted: 0, blocked: 1, deferred: 0 });
+    expect(mocks.invoiceItem).not.toHaveBeenCalled();
+    expect(repo.aIUsageBillingSettlement.updateMany).not.toHaveBeenCalled();
+    expect(repo.aIUsageBillingSettlement.create).not.toHaveBeenCalled();
+    expect(repo.aIUsageBillingPeriod.updateMany).not.toHaveBeenCalled();
+    expect(repo.aIUsageBillingPeriod.create).not.toHaveBeenCalled();
+  });
+
   it("retries a recent reservation with its original amount and idempotency key", async () => {
     const repo = repository();
     expect(await settleAIUsageToStripe(repo)).toEqual({ inspected: 1, reserved: 1, submitted: 1, blocked: 0, deferred: 0 });

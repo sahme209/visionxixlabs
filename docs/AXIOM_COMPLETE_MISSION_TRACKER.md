@@ -130,6 +130,7 @@ register. A row can have tested kernels while the overall journey is partial.
 | Retention, backup and disaster recovery | Partially implemented | Policies/records are present in parts; no exact deployed restore exercise is established. | Map stores/retention/deletion and run an authorized isolated restore/incident exercise. |
 | Gateway actual cost / 1.5× arithmetic | Partially implemented | Cost lookup and generation identity #113, pending ledger and margin kernel; 1.5× arithmetic separately tested. | Actual capped provider receipt reconciliation; disclose cent rounding, reserved caps and platform overhead. |
 | Spending reservations / ledger replay | Partially implemented | Serializable AI/deployment/seat claims; #114 bounds uncertain Stripe retries, #115 excludes completed batch work. | Remaining concurrent failure/refund/reconciliation tests and authorized financial test-mode journeys. |
+| Persisted invoice reservation binding | Implemented and verified | Four failing-before/passing-after worker cases enforce exact organization, usage event and billed amount before submission; valid retries keep their key and amount. | Validate actual test-tenant ledger evidence; contradictory records stay held for reviewed reconciliation. |
 | Stripe subscription/webhook/refunds | Partially implemented | Canonical organization webhook, signature/idempotency/ownership controls and credit fulfillment exist. | Reconcile immutable customers, seats, refunds, renewals and invoices on isolated test customers. No live activation. |
 | Public catalog / legacy plan policy | Blocked by external access | Unified source mentions Starter/Growth/Scale; newer catalog proposes Free/Pro/Enterprise; ADR-021 paid wall conflicts with current always-allowed pilot kernel. | Concrete founder product decision before access, prices or subscription migration changes. |
 | Desktop reachable information architecture | Partially implemented | Seven customer destinations in App; dormant modules are not automatically navigable features. Native Settings/Models/shortcuts exist. | Measured reachable-view keyboard, back/focus, resize and error-state audit. |
@@ -244,3 +245,13 @@ Additional governance finding: `app/terms/page.tsx` derives “Last Updated” f
 approval. The metadata fix leaves legal text unchanged. Next action: establish
 the approved policy version/effective date, then replace the moving date in a
 focused legal-content review; do not invent an approval date from Git history.
+
+## Billing reservation integrity follow-up
+
+The [settlement binding review](BILLING_SETTLEMENT_BINDING.md) reproduces a
+persisted reservation reaching invoice submission with the wrong tenant,
+usage event, or amount. A pure predicate now blocks those four cases while
+retaining existing reservations. Worker tests verify zero Stripe calls and
+zero settlement/budget mutations for mismatches. Test-mode gates, valid retries,
+unknown-outcome holds, pricing and the 1.5x calculation stay intact. Actual
+provider/customer billing acceptance and held-row queue fairness remain open.
