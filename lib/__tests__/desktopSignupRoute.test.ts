@@ -5,6 +5,9 @@ const mocks = vi.hoisted(() => ({
   findPairing: vi.fn(),
   findUser: vi.fn(),
   createUser: vi.fn(),
+  createVerificationToken: vi.fn(),
+  issueVerificationToken: vi.fn(),
+  sendVerificationEmail: vi.fn(),
   upsertMembership: vi.fn(),
   rateLimit: vi.fn(() => true),
   hash: vi.fn(async () => "hashed-password"),
@@ -14,11 +17,16 @@ vi.mock("@/lib/db", () => ({
   prisma: {
     desktopPairingChallengeRecord: { findUnique: mocks.findPairing },
     user: { findUnique: mocks.findUser, create: mocks.createUser },
+    emailVerificationToken: { create: mocks.createVerificationToken },
     orgMembership: { upsert: mocks.upsertMembership },
   },
 }));
 vi.mock("@/lib/rateLimit", () => ({ checkRateLimit: mocks.rateLimit }));
 vi.mock("bcryptjs", () => ({ hash: mocks.hash }));
+vi.mock("@/lib/auth/emailVerification", () => ({
+  issueEmailVerificationToken: mocks.issueVerificationToken,
+  sendEmailVerification: mocks.sendVerificationEmail,
+}));
 
 function request(body: object) {
   return new NextRequest("https://visionxixlabs.com/api/auth/signup", {
@@ -40,10 +48,14 @@ describe("desktop-initiated signup", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     vi.stubEnv("DATABASE_URL", "postgresql://test.invalid/axiom");
+    vi.stubEnv("RESEND_API_KEY", "re_test_verification");
     mocks.rateLimit.mockReturnValue(true);
     mocks.findPairing.mockResolvedValue({ status: "pending", consumedAt: null, expiresAt: new Date("2030-01-01T00:00:00.000Z") });
     mocks.findUser.mockResolvedValue(null);
     mocks.createUser.mockResolvedValue({ id: "user-1", email: "new.user@example.test", name: "New Operator" });
+    mocks.issueVerificationToken.mockReturnValue({ token: "opaque-token", tokenHash: "hashed-token", expiresAt: new Date("2030-01-02T00:00:00.000Z") });
+    mocks.createVerificationToken.mockResolvedValue({});
+    mocks.sendVerificationEmail.mockResolvedValue(true);
     mocks.upsertMembership.mockResolvedValue({});
   });
 
@@ -73,6 +85,10 @@ describe("desktop-initiated signup", () => {
         name: "New Operator",
       },
     });
+    expect(mocks.createVerificationToken).toHaveBeenCalledWith({
+      data: { userId: "user-1", tokenHash: "hashed-token", expiresAt: new Date("2030-01-02T00:00:00.000Z") },
+    });
+    expect(mocks.sendVerificationEmail).toHaveBeenCalledWith({ to: "new.user@example.test", token: "opaque-token" });
     expect(JSON.stringify(mocks.createUser.mock.calls)).not.toContain("starter");
   });
 
