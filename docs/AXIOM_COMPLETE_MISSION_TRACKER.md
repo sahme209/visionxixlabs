@@ -441,7 +441,7 @@ database, secret, infrastructure, routing or live-billing action occurred.
 
 ## Website verification recovery and deployment readiness checkpoint
 
-PRs #135–137 are merged after applicable exact-head CI, including full native
+PRs #135–138 are merged after applicable exact-head CI, including full native
 tests and Clippy for the credential-backend fix. The recovery milestone reuses
 the existing resend API through shared website controls, preserves only strict
 navigation context through email proof, and keeps account-specific delivery
@@ -455,8 +455,13 @@ new schema, infrastructure, deployment dispatch or production record operation
 is performed by this work. See `EMAIL_VERIFICATION_CUSTOMER_RECOVERY.md` and
 `WEBSITE_DEPLOYMENT_READINESS.md`. Combined checks passed 560 files / 5,595 tests, web/desktop TypeScript, desktop
 build, 30 Python tests, lint and mission checks. Full optimized web production
-build compiled and generated 293 pages successfully. Exact-head CI remains required
-before merge for this checkpoint. Actual email/provider/customer acceptance, background notification,
+build compiled and generated 293 pages successfully. Exact-head Test run
+38814815293 passed for da163066; PR #138 merged as
+3df6d03f92d2eaa198ba021adfda86825c2c1a32. The preview failed before compilation
+with Resource provisioning failed; no check or infrastructure protection was bypassed.
+Its automatic main production build dpl_DdQu4nKjbsETe61AwFPPwMwfvacH is READY
+for merge commit 3df6d03f92d2eaa198ba021adfda86825c2c1a32. The last custom-domain
+inspection still resolves to #134; READY is not proof of serving identity or login. Actual email/provider/customer acceptance, background notification,
 provider-create crash recovery and concurrent submission serialization remain
 open; production binding, usable PITR and restore gates remain unchanged.
 
@@ -464,3 +469,44 @@ The same website checkpoint closes missing admin API authority on legacy lead
 regeneration and tier mutation, using the existing administrator guard before AI
 or data access. Public selected-tier capture remains intact and is not treated as
 verified paid entitlement; see `LEAD_ADMIN_GENERATION_AUTHORITY.md`.
+
+## Customer recovery continuity and authority checkpoint
+
+The next integrated milestone closes reachable customer recovery failures:
+
+- Verified desktop browser/key recovery now persists credential and active choice
+  in one vault envelope. Restart cannot silently restore an inactive key; selected
+  missing/corrupt credentials fail closed. Explicit sign-out writes a tombstone
+  before legacy cleanup. Pre-commit cancellation and stale callbacks are guarded;
+  already-started native writes are not promised cancelable. Actual OS-vault and
+  signed-package acceptance remain unverified.
+- Credit Checkout now sends the required workspace/SKU intent key and consumes
+  the actual redirect field. Lost provider responses retain pending intent for
+  late signed fulfillment; only the uniquely created intent dispatches. Existing
+  uncertain intents are held for reconciliation because original request parameters
+  are not fully stored. Tab/reload intent storage is not global duplicate prevention.
+  Composed mocked provider tests are not actual Stripe acceptance.
+- Signed handoff issuance refuses caller-asserted plan/approval/checksum authority
+  until a server-owned artifact can be resolved. Approved tenant HCL downloads and
+  unsigned remediation previews remain functional; no local execution is enabled.
+
+See `DESKTOP_DURABLE_CREDENTIAL_RECOVERY.md`,
+`CREDIT_CHECKOUT_UNKNOWN_OUTCOME_RECOVERY.md` and
+`TERRAFORM_AIRFLOW_CUSTOMER_ACCEPTANCE.md`. Integrated validation and exact-head
+CI must pass before merge; customer acceptance remains explicitly unverified.
+Combined local validation passed 565 files / 5,652 Vitest tests, web/desktop
+TypeScript, desktop production build, 30 Python CLI tests, lint and tracker checks.
+The first sandboxed run could not collect local Python SQL-fixture children
+(EPERM); the unchanged fixtures and full suite passed with process permission.
+No tests were excluded and no production runtime was accessed.
+
+The cloud audit in `CLOUD_CUSTOMER_ENROLLMENT_ACCEPTANCE.md` distinguishes
+existing website token enrollment and real SDK reads from blocked desktop
+connection and simulated/missing execution. Follow-up SELECT-only catalog checks
+confirm CloudAccount/CloudProvider absent and connector lifecycle tables present
+on the inspected Neon target. This does not prove the serving application binding
+or authorize cloud schema changes. Keep that storage proposal separate from the
+narrow authentication repair. Capacity resolution, isolated restore verification,
+auth DDL/ledger, provider acceptance, native publication and routing each retain
+separate approval boundaries. All fourteen mission workstreams remain represented;
+no major visual redesign or production mutation is included.

@@ -3,9 +3,8 @@
  *
  * Returns a *preview* of the desktop handoff Axiom would sign for a given
  * remediation candidate. Never signs or transmits a real handoff — the
- * real signing path is `/api/desktop/handoff` and requires a typed
- * approval id + policy decision id from the approvals + governance
- * surfaces.
+ * signed issuing boundary `/api/desktop/handoff` currently refuses issuance
+ * until server-owned artifact and approval provenance can be resolved.
  *
  * Body: { candidateId: string }
  */
@@ -62,7 +61,7 @@ export async function POST(req: Request): Promise<NextResponse> {
         },
         notes: [
           "Preview only — Axiom does not sign or transmit this handoff from this endpoint.",
-          "Real signing requires a typed approval id and policy decision id.",
+          "Signed issuance is unavailable until server-owned artifact and approval provenance can be verified.",
           "Local apply remains blocked until governance + signed binaries land.",
         ],
       },

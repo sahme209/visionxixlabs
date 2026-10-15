@@ -33,7 +33,7 @@ describe("desktop administrator recovery preserves existing credentials", () => 
     mocks.verify.mockResolvedValue({ ok: true, data: identity });
     mocks.write.mockImplementation(async () => { expect(mocks.verify).toHaveBeenCalledExactlyOnceWith(key); expect(mocks.setSession).not.toHaveBeenCalled(); });
     expect(await verifyAndSaveApiKey(` ${key} `)).toEqual(identity);
-    expect(mocks.write).toHaveBeenCalledExactlyOnceWith("desktop.api_key", key);
+    expect(mocks.write).toHaveBeenCalledExactlyOnceWith("desktop.credential.selection.v1", { version: 1, active: "api_key", apiKey: key });
     expect(mocks.setSession).toHaveBeenCalledExactlyOnceWith(key);
     expect(mocks.clear).not.toHaveBeenCalled();
   });

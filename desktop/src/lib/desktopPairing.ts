@@ -1,6 +1,8 @@
 import { open } from "@tauri-apps/plugin-shell";
 import { invoke } from "@tauri-apps/api/core";
-import { saveAuthSession, type PairedSession } from "./authSession";
+import { type PairedSession } from "./authSession";
+import { verifyAndActivatePairedSession } from "./activeDesktopCredential";
+import type { VerifiedDesktopIdentity } from "./desktopClient";
 import { readSecret, writeSecret } from "./secureStorage";
 import { DESKTOP_VERSION } from "./desktopMetadata";
 
@@ -68,7 +70,7 @@ async function jsonRequest<T>(path: string, body: unknown, signal?: AbortSignal)
 
 export type DesktopAuthIntent = "sign_in" | "sign_up";
 
-export async function signInWithBrowser(intent: DesktopAuthIntent, onWaiting: () => void, signal?: AbortSignal): Promise<PairedSession> {
+export async function signInWithBrowser(intent: DesktopAuthIntent, onWaiting: () => void, signal?: AbortSignal, onCommitting?: () => void): Promise<VerifiedDesktopIdentity> {
   throwIfCancelled(signal);
   const fingerprint = await deviceFingerprint();
   throwIfCancelled(signal);
@@ -108,9 +110,9 @@ export async function signInWithBrowser(intent: DesktopAuthIntent, onWaiting: ()
     if (!status.response.ok) throw new Error(status.body.error || "Desktop sign-in failed.");
     if (status.body.status === "approved" && status.body.token && status.body.session) {
       throwIfCancelled(signal);
-      await saveAuthSession(status.body.token, status.body.session);
+      const identity = await verifyAndActivatePairedSession(status.body.token, status.body.session, signal, onCommitting);
       throwIfCancelled(signal);
-      return status.body.session;
+      return identity;
     }
   }
   throw new Error("Sign-in expired. Please try again.");

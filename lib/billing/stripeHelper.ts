@@ -199,12 +199,16 @@ export async function createCheckoutSession(input: CreateCheckoutInput): Promise
  * test credentials only; enabling recurring live billing must never silently
  * activate prepaid-credit sales.
  */
-export async function createAddOnCheckoutSession(input: CreateAddOnCheckoutInput): Promise<CheckoutSessionResult & { sessionId?: string }> {
+export type AddOnCheckoutResult =
+  | { ok: true; url: string; sessionId: string }
+  | { ok: false; outcome: "not_dispatched" | "unknown"; reason: string };
+
+export async function createAddOnCheckoutSession(input: CreateAddOnCheckoutInput): Promise<AddOnCheckoutResult> {
   if (resolveStripeMode() !== "test") {
-    return { ok: false, reason: "AI credit checkout requires AXIOM_STRIPE_MODE=test with an sk_test_ key." };
+    return { ok: false, outcome: "not_dispatched", reason: "AI credit checkout requires AXIOM_STRIPE_MODE=test with an sk_test_ key." };
   }
   if (!Number.isSafeInteger(input.priceCents) || input.priceCents < 50) {
-    return { ok: false, reason: "The add-on price is invalid." };
+    return { ok: false, outcome: "not_dispatched", reason: "The add-on price is invalid." };
   }
 
   type StripeCheckoutCtor = new (key: string, opts?: unknown) => {
@@ -222,7 +226,7 @@ export async function createAddOnCheckoutSession(input: CreateAddOnCheckoutInput
     const mod = (await import("stripe")) as unknown as { default: StripeCheckoutCtor };
     StripeCtor = mod.default;
   } catch (err) {
-    return { ok: false, reason: `Stripe SDK unavailable: ${err instanceof Error ? err.message : String(err)}` };
+    return { ok: false, outcome: "not_dispatched", reason: `Stripe SDK unavailable: ${err instanceof Error ? err.message : String(err)}` };
   }
 
   try {
@@ -250,10 +254,10 @@ export async function createAddOnCheckoutSession(input: CreateAddOnCheckoutInput
       metadata,
       payment_intent_data: { metadata },
     }, { idempotencyKey: input.idempotencyKey });
-    if (!session.url) return { ok: false, reason: "Stripe did not return a checkout URL." };
+    if (!session.url) return { ok: false, outcome: "unknown", reason: "Stripe did not return a checkout URL." };
     return { ok: true, url: session.url, sessionId: session.id };
   } catch (err) {
-    return { ok: false, reason: `Stripe create failed: ${err instanceof Error ? err.message : String(err)}` };
+    return { ok: false, outcome: "unknown", reason: `Stripe create failed: ${err instanceof Error ? err.message : String(err)}` };
   }
 }
 

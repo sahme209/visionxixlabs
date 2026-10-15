@@ -156,12 +156,14 @@ Targeted current-main run: 11 files / 78 tests passed (auth recovery/login gates
 desktop recovery UI, governed prerequisites, ECS template, Airflow client,
 rollback decision, Stripe helpers). These complement the earlier full 5,409-test
 run; they are not real customer acceptance or a Neon restore rehearsal.
-Runtime readiness is current/connected but has no secrets, runtime bindings or
-outbound identities. No production DB access or Neon control-plane tool exists.
+This earlier validation checkpoint predates the connected Neon read-only inspection
+below. Neon metadata and schema access now work; serving runtime binding, actual
+recoverability and real customer acceptance remain unverified.
 
-**Essential next action now:** install/authorize the offered Neon integration, or
-supply the private operator attestation for the serving/preflight target match and
-actual restorable range. We do not need passwords or connection strings in chat.
+**Essential next action now:** privately attest whether the serving deployment and
+protected preflight target match the inspected Neon resource. Neon is already
+authorized; reinstalling it is unnecessary. Actual restorable range remains a
+separate readiness gate. We do not need passwords or connection strings in chat.
 If Neon metadata alone cannot establish the Vercel binding, the private comparison
 remains a separate required attestation. Isolated restore, SQL repair, sandbox
 execution/test billing, native publication and website promotion each need their

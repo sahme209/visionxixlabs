@@ -12,22 +12,17 @@
  *     mintable from the admin panel (Phase 394+). Same key works on
  *     every v1 endpoint, scope-checked, quota-enforced.
  *
- * The desktop client prefers the API key when present; falls back to
- * the legacy pairing token otherwise. Both flows go through the same
- * Authorization: Bearer header.
+ * Startup honors the verified active credential selection. Only older installs
+ * without a selection retain API-key-first compatibility. Both credential kinds
+ * use the same Authorization: Bearer boundary.
  */
 
 import { desktopClient, type VerifiedDesktopIdentity } from "./desktopClient";
 import { readSecret, writeSecret, clearSecret } from "./secureStorage";
+import { isWellFormedApiKey, verifyAndActivateApiKey } from "./activeDesktopCredential";
+export { isWellFormedApiKey } from "./activeDesktopCredential";
 
 const API_KEY_STORE_KEY = "desktop.api_key";
-
-/** Structure: `vxlk_<env>_<24-secret>_<6-checksum>` — see lib/security/apiKeyCrypto.ts on the web side. */
-const VXLK_KEY_RE = /^vxlk_(live|test)_[0-9A-HJKMNPQRSTVWXYZ]{24}_[0-9A-HJKMNPQRSTVWXYZ]{6}$/;
-
-export function isWellFormedApiKey(s: string): boolean {
-  return VXLK_KEY_RE.test(s.trim());
-}
 
 /** Hydrate the desktopClient with the persisted key (if any). */
 export async function hydrateApiKey(): Promise<string | undefined> {
@@ -64,13 +59,6 @@ export function apiKeyPrefix(plaintext: string): string {
 }
 
 /** Verify a recovery candidate before replacing any saved credential. */
-export async function verifyAndSaveApiKey(plaintext: string): Promise<VerifiedDesktopIdentity> {
-  const candidate = plaintext.trim();
-  if (!isWellFormedApiKey(candidate)) {
-    throw new Error("API key format invalid. Expected vxlk_live_… or vxlk_test_… as shown by the admin panel.");
-  }
-  const result = await desktopClient.verifyCredentialCandidate(candidate);
-  if (!result.ok) throw new Error(result.error);
-  await saveApiKey(candidate);
-  return result.data;
+export async function verifyAndSaveApiKey(plaintext: string, signal?: AbortSignal, onCommitting?: () => void): Promise<VerifiedDesktopIdentity> {
+  return verifyAndActivateApiKey(plaintext.trim(), signal, onCommitting);
 }

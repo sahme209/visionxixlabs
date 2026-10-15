@@ -22,8 +22,7 @@ import {
 import { ViewShell } from "../components/Primitives";
 import { desktopClient, type DeploymentExecution, type VerifiedDesktopIdentity, type WorkspaceMember } from "../lib/desktopClient";
 import { deploymentObservationState } from "../lib/deploymentObservationState";
-import { clearApiKey } from "../lib/apiKeyStore";
-import { clearAuthSession } from "../lib/authSession";
+import { signOutDesktopCredentials } from "../lib/activeDesktopCredential";
 import { normalizeAiProviderStatus, type ModelPolicy, type ProviderModels } from "../lib/aiProviderStatus";
 import { markNotificationPrefDirty, notifyResult } from "../lib/notifications";
 import {
@@ -105,8 +104,12 @@ export function SettingsView({ identity }: { identity: VerifiedDesktopIdentity }
   }
 
   async function signOut() {
-    await Promise.allSettled([clearApiKey(), clearAuthSession()]);
-    window.location.reload();
+    try {
+      await signOutDesktopCredentials();
+      window.location.reload();
+    } catch (cause) {
+      setError(cause instanceof Error ? cause.message : "Sign-out could not be saved. Retry when secure storage is available.");
+    }
   }
 
   return (

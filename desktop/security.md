@@ -25,7 +25,19 @@ governance.
 
 ## Handoff contract
 
-Every web-to-desktop handoff is:
+Signed issuance through `POST /api/desktop/handoff` is currently refused with
+`handoff.authoritative_artifact_unavailable` (HTTP 422), after authentication
+and existing availability/configuration checks. A caller-supplied approval ID,
+policy ID or checksum cannot establish authoritative artifact provenance. This
+applies to review, preview, verification and execution requests alike.
+
+The unsigned remediation preview and tenant-scoped approved HCL download remain
+available. Neither proves acceptance of an exact saved Terraform binary plan.
+Local execution remains disabled. Unknown external signed-issuance callers now
+receive the explicit policy refusal instead of a signed envelope.
+
+The signer/validator library contract remains available for verified fixtures
+and a future server-owned artifact issuing boundary. It defines:
 
 - HMAC-SHA256 signed over canonical JSON
 - Single-use nonce (replay-protected)
