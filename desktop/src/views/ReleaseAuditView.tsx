@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { ViewShell } from "../components/Primitives";
+import { desktopClient } from "../lib/desktopClient";
 
 interface EventView {
   id: string;
@@ -40,13 +41,11 @@ export function ReleaseAuditView() {
   function loadList(filterKind: string) {
     setLoading(true);
     setNetworkError(null);
-    const url = filterKind
-      ? `/api/dashboard/audit-event-list?kind=${encodeURIComponent(filterKind)}`
-      : "/api/dashboard/audit-event-list";
-    fetch(url, { credentials: "include" })
-      .then((r) => r.json())
-      .then((j: ListBody) => setResp(j))
-      .catch((e) => setNetworkError(e instanceof Error ? e.message : "Network error."))
+    void desktopClient.releaseAudit<ListData>({ limit: 200, ...(filterKind ? { kind: filterKind } : {}) })
+      .then((result) => {
+        if (result.ok) setResp({ ok: true, data: result.data });
+        else setNetworkError(result.error);
+      })
       .finally(() => setLoading(false));
   }
 
