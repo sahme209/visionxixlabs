@@ -261,7 +261,7 @@ export const DEMO_SCENARIOS: Readonly<Record<DemoScenarioId, DemoScenario>> = {
     description: "The safety wall around any automation: dry-run first, then human approval, then audited execution.",
     estimatedMinutes: 7,
     audience: "client",
-    lastReviewed: REVIEWED,
+    lastReviewed: "2026-10-15",
     steps: [
       { id: "1", title: "Pick automation",            description: "Library of curated Python scripts + workflows.", route: "/dashboard/automation", approval: "none", expectedResult: "Script card with description + last reviewed." },
       { id: "2", title: "Dry-run",                    description: "Runs without touching any real resource. Outputs the planned actions.", approval: "none", expectedResult: "Plan output + risk classification." },
@@ -269,6 +269,7 @@ export const DEMO_SCENARIOS: Readonly<Record<DemoScenarioId, DemoScenario>> = {
       { id: "4", title: "Approval packet",            description: "Two-person approval for any change-class action.", route: "/dashboard/approvals", approval: "two_person", expectedResult: "Both reviewers sign off." },
       { id: "5", title: "Execute",                    description: "Approved automation runs; outputs streamed to the page.", approval: "none", expectedResult: "Execution log + new state visible." },
       { id: "6", title: "Audit log",                  description: "Every action recorded with closed-union AuditAction.", route: "/dashboard/audit", approval: "none", expectedResult: "Audit row with actor, action, outcome, correlation id." },
+      { id: "7", title: "Review duplicate-action protection", description: "Illustrative Airflow completion workflow: concurrent callers compete for one durable attempt claim, and pending approval still requires an explicit approver.", approval: "none", expectedResult: "One caller claims the observed attempt; competing or stale callers leave it unchanged. This demonstration performs no provider operation." },
     ],
   },
   ai_workforce_overview: {

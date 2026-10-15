@@ -53,6 +53,22 @@ The scheduler is idempotent per automation and Airflow run. Multiple ticks canno
 - ECS stability failure and rollback remain owned by the tenant's OIDC-authenticated GitHub Actions workflow. Axiom reconciles that workflow result into the Airflow automation execution.
 - Operators can pause a rule at any time without deleting its execution or audit evidence.
 
+## Execution claim safety · 2026-10-15
+
+Each action must atomically claim the tenant execution's observed status and
+attempt number before contacting GitHub or a cloud workflow. Competing callers
+cannot execute the same observed attempt, and a rejection after the initial
+read prevents the stale approver from dispatching it. Consuming a pending
+approval requires an explicit approver; the scheduler cannot approve it merely
+by calling the executor. Regressions exercise concurrent callers, rejection
+races, stale failed attempts, and the authorized approval path with mocked
+provider calls. No real Airflow/GitHub/cloud operation was performed.
+
+This claim does not prove exactly-once effects across provider dispatch and a
+later persistence failure. Durable external-intent reconciliation and
+uncertain-outcome retry behavior remain separate audit/engineering work; do not
+describe the entire integration as live-validated or replay-safe on this fix.
+
 ## Production verification checklist
 
 - Connect a non-production Airflow 3 instance with a least-privilege test identity.
