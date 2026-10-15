@@ -40,3 +40,10 @@ This is a conservative known-path policy, including environment-file examples;
 it is not content scanning and cannot establish that other source files contain
 no secrets. Credential changes belong in the existing secure credential flow,
 not in Agent evidence or file proposals. Other repository browsing is unchanged.
+
+Conversation history redacts structured objects whose `path` identifies a known
+sensitive file before returning stored action arguments/results. Nested
+inspection results and multi-file review snapshots use the same policy. Stored
+audit data and statuses are not modified. This prevents redisplaying known
+structured sensitive snapshots, but does not scan or certify free-text user,
+assistant or tool messages; historical data review remains a private follow-up.

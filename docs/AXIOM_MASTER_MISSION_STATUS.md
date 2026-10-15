@@ -1,5 +1,31 @@
 # Axiom Agent master-mission status
 
+## Integrated local candidate · 2026-10-15
+
+Branch `codex/mission-reliability-integration` combines the independent
+reservation, uncertain-dispatch, Airflow quota, workflow-input and sensitive
+evidence repairs on the tested #108 head. Overlapping status/walkthrough notes
+and approval regressions were reconciled while preserving every case. Before
+the history follow-up, the combined candidate passed 531 files / 5,235 tests,
+web TypeScript, desktop TypeScript/frontend build and 30 Python CLI tests.
+These are local results; #108 remains at its original CI-tested head.
+
+The history follow-up now redacts known structured sensitive snapshots from
+conversation action arguments/results, including nested inspections and
+multi-file reviews, without modifying stored records. Focused route tests
+verify withholding, preservation of ordinary source and unchanged stored
+fixtures. This does not establish that historical free-text turns are free
+of secrets; private historical review and any remediation remain separate.
+
+Main is unchanged; #108 remains blocked by Vercel provisioning failure and
+the separate production-release boundary. No production migration, data write,
+credential change, billing activation, provider dispatch or deployment runs.
+Final integrated validation: 532 Vitest files / 5,237 tests, web TypeScript,
+desktop TypeScript/frontend build and 30 Python CLI tests pass. Native Rust
+source is unchanged from #108, whose GitHub native tests/clippy pass; this
+local integration is not represented as a new native CI or live validation.
+The ledger sections below preserve each prior source/validation snapshot.
+
 ## Continuing follow-up — Airflow deployment allowance parity
 
 Airflow previously dispatched directly and created a deployment record afterward,

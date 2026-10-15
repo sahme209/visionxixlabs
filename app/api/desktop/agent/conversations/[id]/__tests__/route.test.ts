@@ -56,4 +56,18 @@ describe("GET /api/desktop/agent/conversations/[id]", () => {
       where: expect.objectContaining({ organizationId: "org-1", userId: "user-1" }),
     }));
   });
+
+  it("withholds sensitive legacy action snapshots without changing stored records", async () => {
+    mocks.findFirst.mockResolvedValue({ id: "conv_1", organizationId: "org-1", title: null });
+    const argsJson = { path: ".env.production", content: "fixture-private-content", _review: { baseContent: "fixture-private-base" } };
+    const resultJson = { inspectedFiles: [{ path: "secrets/prod.json", content: "fixture-private-result" }, { path: "src/app.ts", content: "public source fixture" }] };
+    mocks.findManyActions.mockResolvedValue([{ id: "legacy", toolName: "commit_github_file", argsJson, resultJson, riskLevel: "medium", status: "proposed", createdAt: new Date("2026-01-01") }]);
+    const { GET } = await import("../route");
+    const body = await (await GET(request(), params)).json();
+    const serialized = JSON.stringify(body);
+    expect(serialized).not.toContain("fixture-private-");
+    expect(serialized).toContain("public source fixture");
+    expect(body.data.actions[0].argsJson).toEqual({ path: ".env.production", evidenceRestricted: true });
+    expect(argsJson._review.baseContent).toBe("fixture-private-base");
+  });
 });
