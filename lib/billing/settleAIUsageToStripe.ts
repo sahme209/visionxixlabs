@@ -10,6 +10,7 @@
 import "server-only";
 
 import { prisma } from "@/lib/db";
+import { evaluateAIUsageSettlementRetry } from "./aiUsageSettlementRetryPolicy";
 
 type SettledUsage = {
   id: string;
@@ -25,6 +26,7 @@ type SettlementRecord = {
   amountCents: number;
   idempotencyKey: string;
   status: string;
+  createdAt: Date;
 };
 
 type BillingRepository = {
@@ -87,8 +89,8 @@ async function submitInvoiceItem(record: SettlementRecord, customerId: string, c
     }, { idempotencyKey: record.idempotencyKey });
     return { ok: true, stripeInvoiceItemId: item.id };
   } catch {
-    // Preserve the reservation. Retrying with the same idempotency key is safe
-    // after a timeout because Stripe will return the original invoice item.
+    // Preserve the reservation. Automatic retries reuse the original key only
+    // within our bounded window; old unknown outcomes require reconciliation.
     return { ok: false };
   }
 }
@@ -164,9 +166,12 @@ export async function settleAIUsageToStripe(
       result.blocked++;
       continue;
     }
-    // A prior tick completed the Stripe call and durably recorded its result.
-    // Never send a second invoice item for an already-submitted ledger row.
-    if (settlement.status === "submitted") continue;
+    const retry = evaluateAIUsageSettlementRetry(settlement, new Date());
+    if (retry === "already_submitted") continue;
+    if (retry === "needs_reconciliation") {
+      result.blocked++;
+      continue;
+    }
     result.reserved++;
     const submission = await submitInvoiceItem(settlement, plan.stripeCustomerId, config.currency.toLowerCase());
     if (!submission.ok) {

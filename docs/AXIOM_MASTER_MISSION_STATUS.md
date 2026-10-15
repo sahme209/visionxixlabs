@@ -1,5 +1,26 @@
 # Axiom Agent master-mission status
 
+## Continuing mission — bounded Stripe settlement retries
+
+Main `5541fd04` includes PRs #111–#113; their automatic main deployments are
+READY. The custom domain was separately verified on the older PR #106 build;
+no promotion was performed. Database/founder mapping and real login remain
+unverified. The only unrelated open PR at this audit was the old Analytics draft.
+
+The next billing audit reproduced a 25-hour-old unresolved settlement calling
+Stripe again. Stripe's documented API v1 idempotency retention is at least
+24 hours, after which reuse can create a new request. A pure retry policy now
+permits only reserved rows less than 23 hours old. Old/invalid/future rows and
+other unsettled states remain held and count as blocked; submitted rows skip.
+No allowance is released, key reset, billing flag enabled, or provider called
+by these mocked tests. Operator reconciliation and actual isolated test-mode
+acceptance remain required; this is not a live financial readiness claim.
+Local validation passes: 536 Vitest files / 5,277 tests, web TypeScript,
+desktop TypeScript/frontend build, 30 Python CLI tests and diff whitespace
+checks. The 19 added cases cover cutoff boundaries, clock anomalies, state
+gates, recent same-key replay, submitted rows, timeout retention and live-key
+rejection without contacting Stripe.
+
 ## Continuing mission — Gateway cost receipt identity
 
 PR #112 merged at `e99af1d3` after GitHub web and native desktop checks passed.
