@@ -74,13 +74,8 @@ export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 export const maxDuration = 60;
 
-export async function POST(_req: NextRequest) {
-  const ctx = await currentContext();
-  if (!ctx.isAuthenticated || !ctx.organizationId) {
-    return NextResponse.json({ ok: false, error: "auth_required" }, { status: 401 });
-  }
-
-  const orgId = ctx.organizationId;
+/** Shared by the cookie dashboard and the paired-desktop route. */
+export async function runAgiCockpitNowForOrganization(orgId: string, actorUserId: string | null) {
 
   const runners: EngineRunners = {
     async runAdvisor(orgId, releaseId) {
@@ -201,7 +196,7 @@ export async function POST(_req: NextRequest) {
       subjectKind: "agi_cockpit",
       subjectId: orgId,
       summary: `Manual AGI tick · ${report.okRuns} ok · ${report.errorRuns} err · ${report.skippedRuns} skipped`,
-      actorUserId: ctx.userId ?? null,
+      actorUserId,
     });
     return NextResponse.json({
       ok: true,
@@ -213,4 +208,12 @@ export async function POST(_req: NextRequest) {
   }
 
   return NextResponse.json(report, { status: 503 });
+}
+
+export async function POST(_req: NextRequest) {
+  const ctx = await currentContext();
+  if (!ctx.isAuthenticated || !ctx.organizationId) {
+    return NextResponse.json({ ok: false, error: "auth_required" }, { status: 401 });
+  }
+  return runAgiCockpitNowForOrganization(ctx.organizationId, ctx.userId ?? null);
 }
