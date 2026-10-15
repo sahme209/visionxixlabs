@@ -550,3 +550,12 @@ SQLite/PostgreSQL. 539 files / 5,348 local tests, TypeScript, desktop build and
 30 Python CLI tests passed. Real Stripe test-runtime access and production auth
 preflight remain blockers. Desktop focus-verification lifecycle is a new scoped
 follow-up, not a claim that native account pairing is accepted.
+
+## Desktop verification lifecycle follow-up
+
+Startup/focus checks now reject superseded responses, credential-context changes
+and post-unmount results. Current failure locks the transport but preserves the
+saved vault credential; explicit sign-out still clears it. Eight deferred-response
+cases cover the scoped coordinator. Server identity/access validation remains
+required. Actual production founder login/pairing and macOS keychain acceptance
+remain externally blocked; manual sign-in submission races are a separate scope.

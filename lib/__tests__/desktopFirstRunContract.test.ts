@@ -12,7 +12,10 @@ describe("desktop first-run contract", () => {
     const client = readFileSync(join(root, "desktop/src/lib/desktopClient.ts"), "utf8");
     expect(app).toContain('"access_required"');
     expect(app).toContain("desktopClient.verifyCurrentCredential()");
-    expect(app).toContain("verified.data.access.allowed");
+    expect(app).toContain('verified.access.allowed ? "authenticated" : "access_required"');
+    expect(app).toContain("createCredentialVerificationCoordinator<VerifiedDesktopIdentity>");
+    expect(app).not.toContain("clearApiKey()");
+    expect(app).not.toContain("clearAuthSession()");
     expect(app).toContain("<DesktopAccessRequiredView");
     expect(client).toContain('>("/api/desktop/access")');
     expect(app.indexOf('if (authState === "checking")')).toBeLessThan(app.indexOf("<AuthenticatedWorkspace"));
