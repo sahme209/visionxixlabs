@@ -20,7 +20,7 @@ vi.mock("@/lib/releaseops/releaseLifecycleResponder", () => ({
 }));
 
 const session = { id: "session-1", userId: "user-1", organizationId: "org-1", credentialKind: "desktop_session" as const };
-const request = (url: string, init?: RequestInit) => new NextRequest(url, init);
+const request = (url: string, init?: ConstructorParameters<typeof NextRequest>[1]) => new NextRequest(url, init);
 
 describe("desktop release workspace routes", () => {
   beforeEach(() => {
