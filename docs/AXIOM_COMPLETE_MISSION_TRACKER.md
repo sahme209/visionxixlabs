@@ -406,3 +406,26 @@ build, Python 30 tests, mission checks and changed-source lint (pre-existing unu
 placeholder warnings only). Exact-head CI remains required before merge; no
 production/provider actions were performed. Actual customer login,
 PITR/binding verification, provider readiness and resend/callback UX remain open.
+
+## Durable desktop credentials and subscription replay checkpoint
+
+PRs #135 and #136 are merged with applicable exact-head CI passed. PR135 main
+build is READY; preview builds still fail resource provisioning before compilation.
+No preview protection or provisioning configuration was bypassed.
+
+The exact keyring 3.6.3 source confirms that the previous bare dependency selected
+a mock backend, so earlier compile/tests did not prove persistent credentials.
+Explicit native backends and a fail-closed mock guard are now implemented, with
+no-vault builder tests. Prior mock migration may have removed a legacy value;
+recovery must use authorized pairing, never fabricated tokens or privilege grants.
+Actual installed-package/native-vault acceptance remains open.
+
+Subscription-event replay now uses the existing durable ledger and plan write in
+one Serializable transaction, preserving current policy. Distinct-event ordering,
+actual provider collection and inconsistent entitlement policy remain open. See
+`DESKTOP_NATIVE_CREDENTIAL_BACKENDS.md` and `SUBSCRIPTION_EVENT_CONSUMPTION.md`.
+Combined regression passed 553 files / 5,497 tests, web/desktop TypeScript, desktop
+build, Python 30 tests, lint and tracker checks. Two isolated Rust backend-selection
+tests passed without vault access. Exact-head full native CI remains required
+before merge; actual platform acceptance is still open. No vault, production
+database, secret, infrastructure, routing or live-billing action occurred.

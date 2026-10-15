@@ -6,6 +6,7 @@ mod git;
 mod http;
 mod menu;
 mod secure;
+mod credential_backend;
 mod tray;
 mod verification;
 mod window_state;
