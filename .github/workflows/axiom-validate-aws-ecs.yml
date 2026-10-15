@@ -1,0 +1,92 @@
+name: Axiom AWS ECS Read-Only Validation
+
+# This workflow deliberately contains no ECS mutation command. It is the
+# prerequisite for any separately approved deployment workflow dispatch.
+on:
+  workflow_dispatch:
+    inputs:
+      role_arn:
+        description: OIDC role with read-only ECS and STS permissions
+        required: true
+        type: string
+      region:
+        description: AWS region containing the non-production ECS service
+        required: true
+        type: string
+      expected_account_id:
+        description: Required non-production AWS account ID; fails closed on mismatch
+        required: true
+        type: string
+      cluster:
+        description: Non-production ECS cluster name or ARN
+        required: true
+        type: string
+      service:
+        description: Non-production ECS service name or ARN
+        required: true
+        type: string
+
+permissions:
+  id-token: write
+  contents: read
+
+concurrency:
+  group: axiom-ecs-readonly-${{ inputs.expected_account_id }}-${{ inputs.region }}-${{ inputs.cluster }}-${{ inputs.service }}
+  cancel-in-progress: false
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Configure AWS credentials through OIDC
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ inputs.role_arn }}
+          aws-region: ${{ inputs.region }}
+
+      - name: Verify the intended non-production account
+        id: identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          ACCOUNT_ID="$(aws sts get-caller-identity --query Account --output text)"
+          if [[ "$ACCOUNT_ID" != "${{ inputs.expected_account_id }}" ]]; then
+            echo "::error::OIDC role resolved to account $ACCOUNT_ID, not the explicitly requested non-production account."
+            exit 1
+          fi
+          echo "account_id=$ACCOUNT_ID" >> "$GITHUB_OUTPUT"
+
+      - name: Verify ECS service identity and capture read-only evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          SERVICE_JSON="$(aws ecs describe-services \
+            --cluster "${{ inputs.cluster }}" \
+            --services "${{ inputs.service }}" \
+            --query 'services[0]' \
+            --output json)"
+          if [[ "$SERVICE_JSON" == "null" ]]; then
+            echo "::error::ECS service was not found in the specified non-production cluster."
+            exit 1
+          fi
+          STATUS="$(jq -r '.status // empty' <<<"$SERVICE_JSON")"
+          TASK_DEFINITION="$(jq -r '.taskDefinition // empty' <<<"$SERVICE_JSON")"
+          if [[ "$STATUS" != "ACTIVE" || -z "$TASK_DEFINITION" ]]; then
+            echo "::error::ECS service is not active or has no task definition."
+            exit 1
+          fi
+          echo "### ECS read-only validation" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Account: \`${{ steps.identity.outputs.account_id }}\`" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Region: \`${{ inputs.region }}\`" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Cluster: \`${{ inputs.cluster }}\`" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Service: \`${{ inputs.service }}\`" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Task definition: \`$TASK_DEFINITION\`" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Running/desired: \`$(jq -r '.runningCount // 0' <<<"$SERVICE_JSON")/$(jq -r '.desiredCount // 0' <<<"$SERVICE_JSON")\`" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Safety: no deployment, task-definition update, or service update was requested." >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Verify the referenced task definition is readable
+        shell: bash
+        run: |
+          set -euo pipefail
+          TASK_DEFINITION="$(aws ecs describe-services --cluster "${{ inputs.cluster }}" --services "${{ inputs.service }}" --query 'services[0].taskDefinition' --output text)"
+          aws ecs describe-task-definition --task-definition "$TASK_DEFINITION" --query 'taskDefinition.taskDefinitionArn' --output text >/dev/null
