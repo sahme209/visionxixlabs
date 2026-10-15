@@ -74,6 +74,15 @@ provider's invoice-item evidence and the exact settlement/customer mapping.
 An operator reconciliation workflow and live test-mode acceptance remain open.
 Reference: [Stripe idempotent requests](https://docs.stripe.com/api/idempotent_requests).
 
+The bounded settlement query excludes durably submitted ledger rows before
+applying its limit. This prevents completed usage from repeatedly filling
+every batch while newer events never enter it. It uses a parameterized
+read-only SELECT over the existing tables; no schema or migration is needed.
+Recent reserved rows remain candidates, and the serializable transaction
+still rechecks existing ledger state to handle a concurrent submission.
+This is not general queue fairness: disabled configuration, exhausted budgets
+or held uncertain records can still require operator reconciliation.
+
 Settlement is deliberately **test-mode only** in this release. The protected
 `/api/cron/settle-ai-usage` job rejects any live key, any mode/key mismatch,
 and any workspace without all of: an enabled `AIUsageBillingConfig`, a

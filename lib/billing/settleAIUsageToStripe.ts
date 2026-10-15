@@ -8,9 +8,11 @@
  */
 
 import "server-only";
+import type { Prisma } from "@prisma/client";
 
 import { prisma } from "@/lib/db";
 import { evaluateAIUsageSettlementRetry } from "./aiUsageSettlementRetryPolicy";
+import { aiUsageSettlementCandidates } from "./aiUsageSettlementCandidates";
 
 type SettledUsage = {
   id: string;
@@ -30,7 +32,7 @@ type SettlementRecord = {
 };
 
 type BillingRepository = {
-  usageEvent: { findMany(args: unknown): Promise<SettledUsage[]> };
+  $queryRaw: <T>(query: Prisma.Sql) => Promise<T>;
   tenantBillingPlan: { findUnique(args: unknown): Promise<{ stripeCustomerId: string | null } | null> };
   aIUsageBillingConfig: { findUnique(args: unknown): Promise<{ enabled: boolean; monthlySpendLimitCents: number; currency: string } | null> };
   aIUsageBillingPeriod: {
@@ -108,12 +110,7 @@ export async function settleAIUsageToStripe(
   const disabled = testModeFailure();
   if (disabled) return { inspected: 0, reserved: 0, submitted: 0, blocked: 0, deferred: 0 };
 
-  const usage = await repository.usageEvent.findMany({
-    where: { billingStatus: "settled", billedCents: { gt: 0 } },
-    select: { id: true, organizationId: true, billedCents: true },
-    orderBy: { createdAt: "asc" },
-    take: Math.max(1, Math.min(500, Math.floor(limit))),
-  });
+  const usage = await repository.$queryRaw<SettledUsage[]>(aiUsageSettlementCandidates(limit));
   const result: AIUsageSettlementResult = { inspected: usage.length, reserved: 0, submitted: 0, blocked: 0, deferred: 0 };
   const periodMonth = monthKey();
 
