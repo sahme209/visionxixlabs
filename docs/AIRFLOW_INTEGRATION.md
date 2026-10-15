@@ -123,3 +123,14 @@ row. If intent persistence fails before dispatch, the new reservation can be
 released. Once dispatch begins, uncertain outcomes retain both the reservation
 and its reference in the action intent/receipt for reconciliation. Existing
 plan limits, pricing and production-approval policy remain unchanged.
+
+Scheduled DAG triggers use a deterministic run id for the exact tenant, rule,
+DAG and scheduled occurrence (using creation time for legacy rules without a
+next occurrence). Overlapping ticks and a retry after a lost response reuse
+that id. Airflow enforces its DAG/run-id uniqueness; a 409 is accepted only
+after reading that exact run and checking its identity. Other errors and
+unconfirmed conflicts remain errors; no fresh id is substituted. Manual
+triggers keep their existing behavior. This depends on Airflow retaining and
+enforcing run identities; it is not a general exactly-once execution guarantee
+or automatic cancellation of a trigger already in flight. No schema change
+or real provider operation is needed to validate this software behavior.

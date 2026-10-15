@@ -3,6 +3,7 @@ import "server-only";
 import { prisma } from "@/lib/db";
 import { loadAirflowClient } from "./connection";
 import { nextCronOccurrence } from "./schedule";
+import { scheduledDagRunId } from "./scheduledRunId";
 import { executeAirflowAutomation } from "./automationExecutor";
 import { dispatchWebhookEvent } from "@/lib/webhooks/dispatchWebhookEvent";
 import { parseRepositoryFullName, resolveTenantScopedToken } from "@/lib/connectors/github/resolveTenantScopedToken";
@@ -26,7 +27,8 @@ export async function runAirflowAutomationTick(now = new Date()): Promise<{ orga
       for (const rule of rules) {
         try {
           if (rule.triggerMode === "schedule" && rule.scheduleCron && (!rule.nextScheduledAt || rule.nextScheduledAt <= now)) {
-            const triggered = await client.triggerDag(rule.dagId, { axiom_automation_id: rule.id });
+            const runId = scheduledDagRunId({ organizationId: group.organizationId, automationId: rule.id, dagId: rule.dagId, scheduledAt: rule.nextScheduledAt ?? rule.createdAt });
+            const triggered = await client.triggerDag(rule.dagId, { axiom_automation_id: rule.id }, runId);
             await persistRun(group.organizationId, connectionId, triggered);
             await prisma.airflowAutomation.update({ where: { id: rule.id }, data: { nextScheduledAt: nextCronOccurrence(rule.scheduleCron, now), lastEvaluatedAt: now } });
           }
