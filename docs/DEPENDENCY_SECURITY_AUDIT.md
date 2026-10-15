@@ -1,34 +1,47 @@
 # Dependency security audit — 2026-10-15
 
-A read-only `npm audit --omit=dev --json` against main `62d35145`
-reported 12 production dependency findings: six high and six moderate.
-Desktop production dependencies reported zero findings. These are registry
-advisory results, not proof that the whole application is secure.
+The production dependency registry audit now reports **zero findings** after
+compatible framework/image/source-map patches and Google Storage 8.4.0.
+This is `npm audit --omit=dev --json` evidence, not application security
+certification, actual IAM acceptance or successful production login.
 
-Compatible patches selected without forced major-version overrides:
+| Checkpoint | High | Moderate | Total |
+| --- | --- | --- | --- |
+| Main `62d35145` | 6 | 6 | 12 |
+| Framework patch, merged PR #119 (`65eafebb`) | 0 | 2 | 2 |
+| Compatible Google Storage follow-up | 0 | 0 | 0 |
+
+Desktop production dependencies separately reported zero findings at the
+initial checkpoint. Development dependencies are outside these counts.
 
 | Dependency | Before | After | Reason |
 | --- | --- | --- | --- |
-| Next.js / matching ESLint config | 16.3.6 | 16.3.8 | Framework security fixes including image optimization SSRF, cache isolation and route authorization advisories |
-| sharp | 0.35.4 | 0.35.5 | Patched bundled image dependency; stays within Next's supported range |
+| Next.js / matching ESLint config | 16.3.6 | 16.3.8 | Framework fixes including image optimization SSRF, cache isolation and route authorization advisories |
+| sharp | 0.35.4 | 0.35.5 | Patched bundled image dependency within Next's supported range |
 | source-map-js | 1.2.1 | 1.2.2 | Indexed source-map offset denial of service |
+| Google Cloud Storage | 8.2.0 | 8.4.0 | Same-major upstream update removes the older GoogleAuth/gaxios/uuid chain |
 
-A clean, isolated `npm ci` succeeds. Repeating the production audit reports
-**zero high/critical and two moderate findings**. The remaining advisories are
-`uuid <11.1.1` and its parent `gaxios 6.4.0–6.7.1`, in Google Storage/gtoken
-transitive dependencies. The installed gaxios 6 branch still requests uuid 9;
-blindly replacing it across a major boundary would bypass the upstream contract.
-The uuid advisory concerns buffer handling in v3/v5/v6. The two inspected gaxios copies call uuid v4 for multipart boundaries; the
-advisory concerns v3/v5/v6. This narrows that inspected call path, but does not
-establish all application call paths or clear those dependencies.
+The intermediate moderate findings were uuid <11.1.1 and parent gaxios
+6.4.0–6.7.1 in Google Storage/gtoken. Inspected gaxios copies called uuid v4
+for multipart boundaries; the advisory concerned v3/v5/v6. No blanket
+exploitability waiver or forced transitive major override was used. Updating
+Storage through its upstream dependency contract removes the vulnerable chain.
 
-Next action: review the upstream Google dependency path and validate a compatible
-resolution with provider contract tests. Reaudit before release. Do not suppress
-the remaining findings or claim a clean audit.
+Storage 8.4 requires Node >=22. The existing Vercel project uses Node 24;
+web CI now matches that runtime rather than continuing on Node 20. Production
+runtime settings are unchanged. Other tooling/native workflows are outside
+this web runtime alignment.
 
-Machine-readable counts and remaining advisories are preserved in
+The compatibility review also found the GCP snapshot reader casting
+GoogleAuth's string access token to an OAuth-style token object. The reader
+now uses the typed string contract and rejects missing/malformed tokens without
+logging them. Seven focused cases cover valid strings, absent/malformed values
+and credential failure. SDK construction/bucket/auth method smoke checks use
+fake credentials and no network; they do not prove actual provider acceptance.
+
+Machine-readable checkpoint counts and scope are preserved in
 [dependency-security-audit.json](mission/dependency-security-audit.json).
-Local validation passes: 537 Vitest files / 5,314 tests, web TypeScript,
-desktop TypeScript/build, 30 Python CLI tests and mission coverage validation.
-Exact-head CI and production-build results belong in the focused PR. Package installation generates the local Prisma
-client; application builds explicitly forbid running migrations.
+Exact-head build/test/CI and deployment results belong in the focused PR.
+Application builds forbid migration side effects; local install only generates
+the Prisma client. Actual credential/IAM/inventory journeys, customer login
+and wider security acceptance remain open. Repeat the audit before release.
