@@ -5,6 +5,24 @@ Owner: Codex for engineering, design, architecture, governance, product quality,
 documentation, QA and launch coordination. Founder retains external accounts,
 customer commitments, financial/production approvals and final acceptance.
 
+## Current authentication checkpoint — preflight #2
+
+The protected production read-only preflight has now completed: founder canonical
+account/personal accepted membership check **passed**; seven migrations remain
+pending, including unfinished Agent identity and missing auth schema. Admin
+configuration and actual password/OAuth/pairing acceptance remain unverified.
+The known Organization dependency is a migration-source defect, not proof of a
+lost production Organization table. See `docs/mission/auth-preflight-run-2.json`.
+
+`docs/PRODUCTION_AUTH_RECOVERY_PLAN.md` proposes only additive auth DDL and exact
+auth ledger resolution first, preserving original failed history and deferring
+Agent-policy/financial changes. Full PostgreSQL rehearsal confirms rollback,
+99-migration baseline and remaining P3009; production remains untouched. Backup,
+target confirmation and explicit execution approval remain required. #125/#126
+billing fairness fixes and #127 desktop verification lifecycle are merged with
+READY automatic main builds. This supersedes earlier preflight-unavailable
+snapshots below; it does not close the overall mission or login acceptance.
+
 ## Scope coverage — explicit answer
 
 **Every responsibility in the available original Codex project handoff and the
@@ -25,7 +43,7 @@ not substituted for missing source. Recovering that text is a source blocker,
 not a reason to stop independent engineering.
 
 The [editable register](mission/requirements.json) and
-[complete row table](AXIOM_MISSION_REQUIREMENTS.md) contain **1,744 source units
+[complete row table](AXIOM_MISSION_REQUIREMENTS.md) contain **1,745 source units
 and placeholders across 15 available sources**. Each has a status, source
 location, domain, scope, evidence, verification limit, owner and next action.
 The register includes process controls and historical proposals as well as

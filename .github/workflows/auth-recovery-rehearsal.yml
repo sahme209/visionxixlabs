@@ -1,0 +1,51 @@
+name: Isolated auth recovery rehearsal
+
+on:
+  pull_request:
+    paths:
+      - 'ops/recovery/**'
+      - 'scripts/rehearse-auth-recovery.mjs'
+      - 'scripts/auth-recovery-preflight.mjs'
+      - 'prisma/**'
+      - '.github/workflows/auth-recovery-rehearsal.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'ops/recovery/**'
+      - 'scripts/rehearse-auth-recovery.mjs'
+      - 'prisma/**'
+      - '.github/workflows/auth-recovery-rehearsal.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  rehearse:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: isolated-fixture-only
+          POSTGRES_DB: axiom_auth_recovery_rehearsal
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 5s --health-timeout 5s --health-retries 10
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '24'
+          cache: npm
+      - run: npm ci --ignore-scripts
+      - run: npx prisma generate --schema prisma/schema.prisma
+      - name: Reproduce failed history and rehearse only additive auth recovery
+        env:
+          AUTH_RECOVERY_TEST_DATABASE_URL: postgresql://postgres:isolated-fixture-only@127.0.0.1:5432/axiom_auth_recovery_rehearsal
+        run: node scripts/rehearse-auth-recovery.mjs

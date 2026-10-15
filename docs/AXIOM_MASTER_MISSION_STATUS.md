@@ -559,3 +559,15 @@ saved vault credential; explicit sign-out still clears it. Eight deferred-respon
 cases cover the scoped coordinator. Server identity/access validation remains
 required. Actual production founder login/pairing and macOS keychain acceptance
 remain externally blocked; manual sign-in submission races are a separate scope.
+
+## Protected production preflight #2 received
+
+Run 38792352304 completed with diagnostic exit 2: read-only, seven pending
+migrations, unfinished workspace-agent identity, nonexistent Organization
+reference, missing email-verification schema. Founder account check passed;
+platform-admin policy and actual authentication/pairing remain unverified.
+A guarded auth-only production proposal and full-history PostgreSQL rehearsal
+are prepared in PRODUCTION_AUTH_RECOVERY_PLAN.md. No production mutation or
+ledger reset occurred. Backup/target confirmation and explicit scoped execution
+approval remain required. Unrelated Agent-policy and financial changes stay
+separately gated. #125–#127 are merged with READY automatic main builds.
