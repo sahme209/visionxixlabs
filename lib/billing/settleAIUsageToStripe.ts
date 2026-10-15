@@ -138,11 +138,12 @@ export async function settleAIUsageToStripe(
             organizationId: event.organizationId, periodMonth, limitCents: config.monthlySpendLimitCents, reservedCents: event.billedCents,
           } });
         } else {
+          if (current.reservedCents < 0) return null;
           const reserved = await tx.aIUsageBillingPeriod.updateMany({
             where: {
               organizationId: event.organizationId,
               periodMonth,
-              reservedCents: { lte: config.monthlySpendLimitCents - event.billedCents },
+              reservedCents: { gte: 0, lte: config.monthlySpendLimitCents - event.billedCents },
             },
             data: { reservedCents: { increment: event.billedCents }, limitCents: config.monthlySpendLimitCents },
           });
