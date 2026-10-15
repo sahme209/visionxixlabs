@@ -190,3 +190,34 @@ with the timestamp/name format. It is never inserted as shell source code.
 This validation does not authorize rollback resolution or establish migration
 safety: inspect the actual production ledger and partial schema and obtain
 explicit approval before dispatching the protected migration workflow.
+
+## Priority recheck after #124
+
+Read-only production log review on 2026-10-15 still reports
+`User.emailVerifiedAt` missing (Prisma P2022). The 24-hour callback groups contain
+six credentials, five Google and two GitHub P2022 records. This confirms the
+observed failure path; it does not establish the entire current migration
+ledger, founder mapping or any additional provider/account issue.
+
+The domain alias currently selects #123 (`dpl_B3i6jsefAwdmjz97nvMQe1vGDdn6`),
+while the newer #124 automatic main build is also READY. No manual promotion or
+routing change was performed. `/api/auth/providers` returns 200 with credentials,
+Google and GitHub callbacks on `visionxixlabs.com`; this is not login acceptance.
+
+The protected read-only preflight dispatch on main again returns HTTP Forbidden
+before a run starts. This agent runtime has neither DATABASE_URL nor the private
+founder-email configuration. Existing Vercel environment listings are truncated;
+no absence of a production secret is inferred from that listing.
+
+Required external action: in GitHub Actions, open **Read-only production auth
+preflight**, select **Run workflow → main**, and satisfy its production environment
+review. Confirm `DATABASE_URL` and `AUTH_PREFLIGHT_FOUNDER_EMAIL` are configured
+securely in the protected `production` environment. Share only the public-safe
+summary/run URL. Alternatively grant the agent GitHub Actions read/write access
+so it can dispatch this same protected job. A chat selection alone does not
+change connection permissions. Do not run the migration workflow or expose
+secrets. Inspect the report before proposing a specific repair for approval.
+
+Password/Google/GitHub authenticated sessions, founder identity and accepted
+workspace mapping, and desktop pairing remain unverified. Never bypass email
+verification or grant founder rights based on repository ownership.
