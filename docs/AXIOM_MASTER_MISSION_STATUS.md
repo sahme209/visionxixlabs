@@ -22,6 +22,13 @@ authorized by the mission's expanded ownership. Continue safe independent
 milestones while production evidence is pending rather than repeating access
 requests or duplicating completed implementations.
 
+PR #107 is a second independent operational-safety candidate: atomic Airflow
+execution claims prevent competing callers from dispatching the same observed
+attempt and preserve a rejection racing with approval. Pending approval needs
+an explicit approver. Its candidate passes TypeScript and 5,157 tests locally;
+provider dispatches were mocked. Post-dispatch persistence failure/reconciliation
+remains open; neither PR establishes exactly-once effects or live validation.
+
 ## Historical snapshot — do not use as current main/credential evidence
 
 Updated 2026-10-14 from the current `main` checkout at `d1dc9c9d`.
