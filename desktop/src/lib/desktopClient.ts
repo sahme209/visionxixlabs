@@ -405,6 +405,15 @@ export class DesktopClient {
     return this.post("/api/desktop/agi-cockpit", {});
   }
 
+  /** Tenant-scoped AI provider observability for a paired desktop session. */
+  aiCallLog<T>(args?: { engineName?: string; take?: number }): Promise<ApiResult<T>> {
+    const params = new URLSearchParams();
+    if (args?.engineName) params.set("engineName", args.engineName);
+    if (args?.take) params.set("take", String(args.take));
+    const query = params.toString();
+    return this.get(`/api/desktop/ai-call-log${query ? `?${query}` : ""}`);
+  }
+
   /**
    * Phase 399 — call GET /api/v1/whoami. Returns the workspace + scopes
    * + quota snapshot, or a precise auth-failure code. Doesn't fall back
