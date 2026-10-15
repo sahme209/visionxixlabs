@@ -111,7 +111,7 @@ export default async function WorkforceHealthPage() {
     select: { aiCostCents: true, totalCostCents: true, aiInvocationCount: true, lastRebuiltAt: true },
   }).catch(() => null);
   const margin = loadAiBillingMargin();
-  const billedNowCents = applyMargin(costRollup.totalCents, margin);
+  const billedNowCents = applyMargin(costRollup.totalCents);
 
   // Specialty freshness.
   const now = Date.now();

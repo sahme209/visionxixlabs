@@ -46,6 +46,7 @@ been verified.
 12. Add SBOM generation and independent clean-host evidence to the recorded v0.1.11 commit/version/checksum/signing/notarization evidence.
 13. Configure and verify the production contact sender; exercise durable acceptance, provider delivery, bounce/failure visibility, and abuse controls.
 14. Replace preview cloud paths with live SDK validation only after safe-tenant contract tests; keep the claim map synchronized.
+15. **Governed AI actual-cost and usage billing.** Keep the existing Vercel AI SDK/Gateway-only inference boundary and Gateway generation reconciliation as the single source for provider-attributable cost; do not add a parallel SDK call path. Extend the settled per-workspace ledger to support a deterministic 1.5× customer price, a hard workspace spending limit, idempotent Stripe usage/invoice mutations, refunds/credit notes, and a reconciliation/audit surface. The feature must default off, require a verified Stripe customer and explicit workspace opt-in, never charge a reservation or an estimated token price, and fail closed when authoritative cost, limit state, or Stripe delivery state is unavailable. Use Stripe test mode and automated normal/failure/replay tests before any production approval.
 
 ## P1 — missing original behavior
 
@@ -64,6 +65,7 @@ been verified.
 4. Backup/restore and supported-version migration exercises.
 5. Signed updater with rollback/recovery behavior, or explicit absence in product/UI.
 6. Add outcome-memory retention/deletion controls and store-level tenant scoping; verify the same behavior through the packaged desktop journey.
+7. Evaluate Vercel Workflow and Queues only for non-financial asynchronous work after a measured need exists. Do not use beta queue delivery as the source of truth for charges or limits; preserve the database reservation and idempotency ledger as authority. Use Vercel Observability for operational diagnosis only, with tenant-safe correlation identifiers and no prompt, credential, or payment data.
 
 ## P3 — usability, accessibility, performance
 
