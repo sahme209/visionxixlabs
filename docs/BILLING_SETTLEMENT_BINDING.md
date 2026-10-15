@@ -101,3 +101,16 @@ Stripe test-customer acceptance remains blocked by isolated runtime access.
 Retry-rotation validation: 539 Vitest files / 5,348 tests, web/desktop TypeScript,
 desktop frontend build, 30 Python CLI tests, targeted settlement regressions,
 mission check and the generated PostgreSQL ordering query passed locally.
+
+## Authoritative budget claim recheck
+
+Candidate filtering does not replace the serializable reservation transaction.
+A negative monthly reserved counter observed after selection now blocks a fresh
+claim before any write or Stripe call; the conditional update also requires a
+nonnegative counter to guard a subsequent change. No financial counter is repaired
+or released automatically. Regressions cover the reproduced invalid-counter
+submission, an exact-cap valid claim, a competing claim and a transaction conflict.
+Stripe responses are simulated; actual test-mode customer acceptance remains open.
+
+Budget-claim validation: 542 Vitest files / 5,394 tests passed, including the
+new regression that failed before the fix. No actual Stripe operation was made.
