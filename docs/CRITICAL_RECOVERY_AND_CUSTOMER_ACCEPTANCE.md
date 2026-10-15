@@ -291,3 +291,17 @@ erase vault entries, fabricate missing credentials, retag/reuse a published
 version or overwrite old assets to disguise a fix. Public release withdrawal,
 replacement download selection, native credential cleanup and backend/database
 rollback each require their specific approval; none is performed by this plan.
+
+### Read-only published-release provenance check
+
+The public `desktop-v0.1.20` release notes identify source
+`f72fa7489317e1915b16ebf6ae486f9a8a4d92a3`; that source also declares bare
+`keyring = "3"`, preceding the native-backend fix. The API reports fourteen
+assets (seven installers and their detached signatures), SHA-256 digests and
+`immutable:false`; no SBOM asset is listed. This corroborates the release risk,
+not clean-host behavior or cryptographic verification of installer contents.
+The separately fetched release branch at `22481b57` is not substituted for the
+public release's recorded source. See
+`mission/native-published-release-inspection.json`. No assets, release notes,
+public tags or download routing were modified. A new immutable version and
+separately approved native acceptance/publication remain necessary.

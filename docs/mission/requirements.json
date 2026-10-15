@@ -9140,16 +9140,15 @@
       "section": "13. PRODUCT STRATEGY AND COMPETITIVE POSITIONING",
       "requirement": "Create a concise feature-priority matrix based on user value, engineering effort, risk, differentiation, and readiness.",
       "domain": "strategy",
-      "scope": "product",
-      "status": "Partially implemented",
-      "verification": "Source mapped to existing components; acceptance of this individual requirement has not been demonstrated end to end.",
+      "scope": "process",
+      "status": "Implemented and verified",
+      "verification": "The existing priority/value matrix was refreshed against current main: eight milestones explicitly compare user value, effort, risk, differentiation hypotheses and readiness. Local references and matrix structure were checked; conceptual comparison is not competitor superiority or real customer acceptance.",
       "evidence": [
-        "docs/PRODUCT_VISION.md",
-        "docs/AXIOM_AGENT_EXECUTIVE_VISION.md",
-        "docs/PRODUCT_LED_TRANSFORMATION_PLAN.md"
+        "docs/AXIOM_UNIFIED_CAPABILITY_MATRIX.md",
+        "docs/CRITICAL_RECOVERY_AND_CUSTOMER_ACCEPTANCE.md"
       ],
       "prs": [],
-      "nextAction": "Prioritize one reliable governed partner journey by value, effort, risk and evidence; conduct user/partner acceptance and competitive workflow research without copying designs or inventing commitments.",
+      "nextAction": "Maintain priorities as recovery and customer-acceptance evidence changes; do not infer product completion from this planning deliverable.",
       "owner": "Codex; external acceptance/approvals remain founder-owned",
       "auditDepth": "Requirement source mapped; individual acceptance review pending"
     },
@@ -41868,7 +41867,8 @@
         "docs/EMAIL_PROOF_ATOMIC_RECOVERY.md",
         "docs/EMAIL_VERIFICATION_CUSTOMER_RECOVERY.md",
         "docs/mission/neon-readiness-inspection.json",
-        "docs/mission/aws-enrollment-schema-rehearsal.json"
+        "docs/mission/aws-enrollment-schema-rehearsal.json",
+        "docs/NEON_PREVIEW_CAPACITY_AUDIT.md"
       ],
       "customerAcceptance": "Not verified",
       "acceptanceDependencies": [],
@@ -42146,12 +42146,15 @@
       "status": "Partially implemented",
       "engineeringActivity": "active",
       "owner": "Codex integrated parallel workstreams",
-      "activeMilestone": "Review promotion settings and prepare an exact release approval with rollback evidence.",
-      "verification": "PR #140 source merged after exact-head web, desktop/native and both PostgreSQL jobs passed. Its automatic main deployment is READY; post-merge custom domain still points to manually promoted #138. No promotion/routing calls. Real customer release acceptance remains unverified.",
+      "activeMilestone": "Validate candidate-only immutable native release guards; retain separate actual OS, publication and production release approval gates.",
+      "verification": "Native source guards default to candidate-only, bind hashes/source/run, reject overwrite and unknown API outcomes, verify intended signatures/remote digests, and keep installer trust false without packaged verification. Independent source review and 326 related regressions passed; real installer/customer acceptance and reviewer configuration remain unverified.",
       "evidence": [
         "docs/CRITICAL_RECOVERY_AND_CUSTOMER_ACCEPTANCE.md",
         "docs/mission/neon-readiness-inspection.json",
-        "docs/mission/vercel-release-inspection.json"
+        "docs/mission/vercel-release-inspection.json",
+        "desktop/release-notes.md",
+        "lib/desktop/__tests__/nativeReleaseCandidateGuards.test.ts",
+        "docs/mission/native-published-release-inspection.json"
       ],
       "customerAcceptance": "Not verified",
       "acceptanceDependencies": [

@@ -42,5 +42,31 @@
     "Read-only custom-domain alias and per-deployment alias lists",
     "Read-only exact deployment commit/state",
     "Read-only rolling release/config getters"
-  ]
+  ],
+  "subsequentMainBuilds": [
+    {
+      "pr": 140,
+      "commit": "1cb21007e6f88d353a2f24a2938a246a6e42cbc2",
+      "deploymentId": "dpl_DcKZ4QJGUQNoAHNcXCR3zBshyGJQ",
+      "state": "READY"
+    },
+    {
+      "pr": 141,
+      "commit": "99abab9faf99b0ae91a283db2f86721535187468",
+      "deploymentId": "dpl_EoHiSJKE2GWNpaxQcCniU27B1zWw",
+      "state": "READY"
+    },
+    {
+      "pr": 142,
+      "commit": "823f5df13fd25ca8b3df46fc8d237f98612e122f",
+      "deploymentId": "dpl_BFLhTxNHnve54m3nMjZMnDCEyuhw",
+      "state": "READY"
+    }
+  ],
+  "post142AliasObservation": {
+    "date": "2026-10-15",
+    "servingDeploymentId": "dpl_DdQu4nKjbsETe61AwFPPwMwfvacH",
+    "pr": 138,
+    "routingChangedByAgent": false
+  }
 }

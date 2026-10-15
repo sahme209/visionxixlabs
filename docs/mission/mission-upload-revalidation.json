@@ -1,0 +1,20 @@
+{
+  "date": "2026-10-15",
+  "normalization": "strip outer whitespace",
+  "files": [
+    {
+      "path": "docs/AXIOM_ORIGINAL_PROJECT_HANDOFF.md",
+      "lines": 192,
+      "sha256": "38960b33e016bfaf8414b1eb31c1b8598c4de78d9f5cdf50737ce17bee690c28",
+      "matchesUserUpload": true
+    },
+    {
+      "path": "docs/AXIOM_UNIFIED_MASTER_MISSION.md",
+      "lines": 829,
+      "sha256": "f1dc19f102970688b068458854fcde787ad4aab3a19b17886a8622fbf513727f",
+      "matchesUserUpload": true
+    }
+  ],
+  "older36SectionSpecification": "not included in either upload; remains unavailable",
+  "olderALScenarios": "not included in either upload; remains unavailable"
+}
