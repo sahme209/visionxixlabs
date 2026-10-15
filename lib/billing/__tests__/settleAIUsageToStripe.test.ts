@@ -13,7 +13,7 @@ const now = new Date("2026-10-15T12:00:00Z");
 const record = {
   id: "settlement-1", organizationId: "org-1", usageEventId: "usage-1",
   periodMonth: "2026-10", amountCents: 3, idempotencyKey: "axiom-ai-usage-usage-1",
-  status: "reserved", createdAt: new Date(now.getTime() - 60_000),
+  status: "reserved", attemptCount: 0, createdAt: new Date(now.getTime() - 60_000),
 };
 
 function repository(existing: typeof record | null = record) {
@@ -42,6 +42,52 @@ describe("AI usage Stripe settlement retry safety", () => {
     mocks.invoiceItem.mockResolvedValue({ id: "ii_test" });
   });
   afterEach(() => { vi.useRealTimers(); vi.unstubAllEnvs(); });
+
+  it("allows only one worker to claim the same observed attempt", async () => {
+    vi.useRealTimers();
+    await import("stripe");
+    const concurrentRecord = { ...record, createdAt: new Date(Date.now() - 60_000), periodMonth: new Date().toISOString().slice(0, 7) };
+    const repo = repository(concurrentRecord);
+    let state: Record<string, unknown> = { ...concurrentRecord };
+    let readers = 0;
+    let markers = 0;
+    let providerStarted!: () => void;
+    const providerReady = new Promise<void>(resolve => { providerStarted = resolve; });
+    mocks.invoiceItem.mockImplementation(async () => { providerStarted(); return { id: "ii_test" }; });
+    let release!: () => void;
+    const ready = new Promise<void>(resolve => { release = resolve; });
+    repo.aIUsageBillingSettlement.findUnique.mockImplementation(async () => {
+      const snapshot = { ...state };
+      if (++readers === 2) release();
+      await ready;
+      return snapshot;
+    });
+    repo.aIUsageBillingSettlement.updateMany.mockImplementation(async ({ where, data }) => {
+      const matches = Object.entries(where).every(([key, value]) => {
+        const current = state[key];
+        return value instanceof Date && current instanceof Date ? value.getTime() === current.getTime() : value === current;
+      });
+      if (!matches) return { count: 0 };
+      state = { ...state, ...data, attemptCount: data.attemptCount ? Number(state.attemptCount) + 1 : state.attemptCount };
+      // Both claims overlap, but serialize SDK module loading in this harness.
+      if (data.attemptCount && ++markers === 2) await providerReady;
+      return { count: 1 };
+    });
+    const results = await Promise.all([settleAIUsageToStripe(repo), settleAIUsageToStripe(repo)]);
+    expect(mocks.invoiceItem).toHaveBeenCalledTimes(1);
+    expect(results.reduce((sum, item) => sum + item.submitted, 0)).toBe(1);
+    expect(results.reduce((sum, item) => sum + item.deferred, 0)).toBe(1);
+    expect(state.attemptCount).toBe(1);
+    expect(repo.aIUsageBillingPeriod.updateMany).not.toHaveBeenCalled();
+  });
+
+  it.each([undefined, -1, NaN, 1.5])("holds an invalid attempt counter without dispatch: %s", async attemptCount => {
+    const repo = repository();
+    repo.aIUsageBillingSettlement.findUnique.mockResolvedValue({ ...record, attemptCount });
+    expect(await settleAIUsageToStripe(repo)).toEqual({ inspected: 1, reserved: 0, submitted: 0, blocked: 1, deferred: 0 });
+    expect(repo.aIUsageBillingSettlement.updateMany).not.toHaveBeenCalled();
+    expect(mocks.invoiceItem).not.toHaveBeenCalled();
+  });
 
   it("blocks a negative budget counter introduced after candidate selection", async () => {
     const repo = repository(null);
@@ -116,7 +162,7 @@ describe("AI usage Stripe settlement retry safety", () => {
     expect(repo.aIUsageBillingSettlement.updateMany.mock.calls[0][0]).toEqual({
       where: { id: record.id, status: "reserved", organizationId: record.organizationId,
         usageEventId: record.usageEventId, amountCents: record.amountCents,
-        idempotencyKey: record.idempotencyKey, createdAt: record.createdAt },
+        idempotencyKey: record.idempotencyKey, createdAt: record.createdAt, attemptCount: record.attemptCount },
       data: { attemptCount: { increment: 1 }, updatedAt: now },
     });
     expect(repo.aIUsageBillingSettlement.updateMany.mock.calls[1][0].data).not.toHaveProperty("attemptCount");

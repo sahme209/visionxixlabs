@@ -16869,7 +16869,7 @@
       "domain": "billing",
       "scope": "product",
       "status": "Partially implemented",
-      "verification": "Source mapped to existing components; acceptance of this individual requirement has not been demonstrated end to end. Candidate SQL now excludes held reservations (#124), disabled/missing billing configuration, missing customers and new usage without current-month capacity before LIMIT. SQLite and PostgreSQL fixtures validate exact-cap behavior and previously reserved retries at a spent cap. Real Stripe test-tenant invoice/refund/replay acceptance remains unverified. Five failing-before/passing-after regressions cover durable retry rotation and fail-closed attempt recording; candidate order uses the existing last-updated timestamp while the original retry deadline is unchanged. Full local suite: 539 files / 5,348 tests. This does not certify real Stripe behavior or fairness during database contention. Local regression reproduced fresh Stripe submission with a negative budget counter after candidate selection; worker now rejects it and atomically requires a nonnegative counter. Simulated Stripe tests also cover competing claims, exact-cap admission and serializable conflicts; actual Stripe acceptance remains unverified. Two SQL regressions reproduce one workspace crowding another out of a bounded batch. Candidate ranking now interleaves tenant positions before LIMIT, preserving eligibility and retry rotation. This is batch distribution, not durable cross-batch starvation freedom; backoff, representative load and actual Stripe acceptance remain open.",
+      "verification": "Source mapped to existing components; acceptance of this individual requirement has not been demonstrated end to end. Candidate SQL now excludes held reservations (#124), disabled/missing billing configuration, missing customers and new usage without current-month capacity before LIMIT. SQLite and PostgreSQL fixtures validate exact-cap behavior and previously reserved retries at a spent cap. Real Stripe test-tenant invoice/refund/replay acceptance remains unverified. Five failing-before/passing-after regressions cover durable retry rotation and fail-closed attempt recording; candidate order uses the existing last-updated timestamp while the original retry deadline is unchanged. Full local suite: 539 files / 5,348 tests. This does not certify real Stripe behavior or fairness during database contention. Local regression reproduced fresh Stripe submission with a negative budget counter after candidate selection; worker now rejects it and atomically requires a nonnegative counter. Simulated Stripe tests also cover competing claims, exact-cap admission and serializable conflicts; actual Stripe acceptance remains unverified. Two SQL regressions reproduce one workspace crowding another out of a bounded batch. Candidate ranking now interleaves tenant positions before LIMIT, preserving eligibility and retry rotation. This is batch distribution, not durable cross-batch starvation freedom; backoff, representative load and actual Stripe acceptance remain open. A barrier-based regression reproduced duplicate provider calls from the same observed attempt count. The marker now compares and increments that count, deferring the loser; missing/invalid counts block. Later-generation retries still need provider idempotency, and this is not an execution lease or backoff.",
       "evidence": [
         "lib/billing/reconcileGatewayUsage.ts",
         "lib/billing/aiBillingMargin.ts",
@@ -16892,7 +16892,9 @@
         115,
         122,
         124,
-        125
+        125,
+        131,
+        133
       ],
       "nextAction": "Run exact-head CI and approved isolated Stripe test-tenant normal/cap/retry/refund/webhook journeys. Consider bounded backoff and contention behavior without releasing financial holds; keep live billing disabled.",
       "owner": "Codex; external acceptance/approvals remain founder-owned",
@@ -16907,7 +16909,7 @@
       "domain": "governance",
       "scope": "product",
       "status": "Partially implemented",
-      "verification": "Gateway cost and generation attribution, pricing kernels, Stripe test-only gates and durable reservations exist. Four negative worker regressions now block invoice submission for mismatched organization, usage event or amount while retaining holds. Actual provider/customer billing, refunds and ledger reconciliation remain unvalidated. Desktop startup/focus verification is now coordinated by newest request and immutable credential context; current failure locks transport without automatically deleting vault records. Eight deferred-response tests and first-run wiring checks cover this scope. Native keychain, manual sign-in submission races and actual founder pairing remain unvalidated. Administrator recovery candidate verification is prepared without activating or persisting rejected keys, with request-scoped bearer and preserved previous credentials on verification failure. Native OS-vault behavior and browser cancellation races remain unverified.",
+      "verification": "Gateway cost and generation attribution, pricing kernels, Stripe test-only gates and durable reservations exist. Four negative worker regressions now block invoice submission for mismatched organization, usage event or amount while retaining holds. Actual provider/customer billing, refunds and ledger reconciliation remain unvalidated. Desktop startup/focus verification is now coordinated by newest request and immutable credential context; current failure locks transport without automatically deleting vault records. Eight deferred-response tests and first-run wiring checks cover this scope. Native keychain, manual sign-in submission races and actual founder pairing remain unvalidated. Administrator recovery candidate verification is merged in #132 without activating or persisting rejected keys, with request-scoped bearer and preserved previous credentials on verification failure. Native OS-vault behavior and browser cancellation races remain unverified.",
       "evidence": [
         "lib/tauri/deploymentOperations.ts",
         "lib/tauri/operationCoordinator.ts",
@@ -16930,7 +16932,8 @@
       "prs": [
         108,
         109,
-        112
+        112,
+        132
       ],
       "nextAction": "Verify exact current signed native package on macOS, including keychain/deep-link and focus transitions; separately validate manual sign-in submission concurrency. Continue usability work without removing server access gates.",
       "owner": "Codex; external acceptance/approvals remain founder-owned",
@@ -17049,7 +17052,7 @@
       "domain": "auth",
       "scope": "product",
       "status": "Blocked by external access",
-      "verification": "Protected production preflight #2 (run 38792352304, main 043664b1) completed read-only with diagnostic exit 2: seven pending migrations, unfinished Agent migration and absent Organization, missing auth schema; accountCheck passed and no scoped billing duplicates found. Platform-admin configuration and actual password/OAuth/pairing remain unverified. Full PostgreSQL rehearsal applied 99 migrations then reproduced P3018, validated atomic auth-only recovery and exact checksum resolution without editing failed history, and retained P3009 for blanket deploy. This is a proposal, not production execution approval. #125/#126 billing and #127 desktop startup/focus fixes are merged with READY main builds. Owner confirms provider and backup/PITR restore readiness are unverified. Vercel integration metadata exposes Resend and GitHub, not a database resource; repository provider references are examples. Protected preflight now emits credential-free endpoint classification, retaining binding/backup/restore status unverified. No host has been inferred or secret decrypted. Protected preflight #3 (38796959412, main 7e5eaf2) confirms Neon configured endpoint; application binding, account-specific PITR and restore readiness remain unverified. Neon-specific gated target comparison and isolated restore procedure prepared; no control-plane access or execution approval.",
+      "verification": "Protected production preflight #2 (run 38792352304, main 043664b1) completed read-only with diagnostic exit 2: seven pending migrations, unfinished Agent migration and absent Organization, missing auth schema; accountCheck passed and no scoped billing duplicates found. Platform-admin configuration and actual password/OAuth/pairing remain unverified. Full PostgreSQL rehearsal applied 99 migrations then reproduced P3018, validated atomic auth-only recovery and exact checksum resolution without editing failed history, and retained P3009 for blanket deploy. This is a proposal, not production execution approval. #125/#126 billing and #127 desktop startup/focus fixes are merged with READY main builds. Owner confirms provider and backup/PITR restore readiness are unverified. Vercel integration metadata exposes Resend and GitHub, not a database resource; repository provider references are examples. Protected preflight now emits credential-free endpoint classification, retaining binding/backup/restore status unverified. No host has been inferred or secret decrypted. Protected preflight #3 (38796959412, main 7e5eaf2) confirms Neon configured endpoint; application binding, account-specific PITR and restore readiness remain unverified. Neon-specific gated target comparison and isolated restore procedure prepared; no control-plane access or execution approval. Owner console evidence identifies a candidate main branch with PostgreSQL 17, AWS US East 1 and six-hour configured history retention; usable recovery range and application binding remain unverified. Read-only Vercel activity identifies the latest manual promotion as #123, which still serves the custom domain. Later Git production builds are READY with project/branch aliases. No active rolling release or pending failed promotion is reported; automatic custom-domain assignment policy remains unverified. PR #132 contains the sanitized follow-up evidence.",
       "evidence": [
         "lib/auth.ts",
         "lib/auth/currentContext.ts",
@@ -17079,7 +17082,10 @@
         125,
         126,
         127,
-        128
+        128,
+        129,
+        130,
+        132
       ],
       "nextAction": "Obtain read-only Neon project metadata and private comparison of the serving Vercel deployment and protected maintenance binding. Verify actual history window/recovery point, then separately approve isolated restore before requesting exact production auth-only SQL approval.",
       "owner": "Codex; external acceptance/approvals remain founder-owned",

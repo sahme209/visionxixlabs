@@ -142,3 +142,28 @@ production plan/load evidence or a production backup/restore exercise.
 Workspace-distribution validation: 545 Vitest files / 5,404 tests, web and desktop
 TypeScript, desktop frontend build, 30 Python CLI tests, mission coverage and diff
 checks passed locally before push.
+
+## Competing claims of the same attempt
+
+The pre-provider marker now compares the persisted attempt count read with the
+reservation and atomically increments it. Two workers that read the same count
+cannot both claim that observation, even when timestamps have millisecond ties.
+The losing worker defers without submitting or releasing the financial hold.
+Missing, negative or noninteger counters block before the update, so an undefined
+Prisma filter cannot accidentally remove the compare-and-set condition.
+
+A barrier-based worker regression reproduces two simulated Stripe calls before
+the fix and one afterward. This is not a provider exactly-once guarantee, a
+long-running lease, backoff or a ban on later retries: a worker that reads the
+new count can make a later eligible attempt. Stripe retains the original amount
+and idempotency key; the original 23-hour retry deadline and uncertain holds are
+unchanged. No migration, counter reset or billing activation is introduced.
+
+A PostgreSQL 16 predicate probe also ran two connections against the same observed
+counter: exactly one increment succeeded. This probe verifies database compare-
+and-set behavior, not the whole Prisma/Stripe workflow. Its synthetic fixture
+was removed afterward.
+
+Attempt-claim validation: 545 Vitest files / 5,409 tests, web/desktop TypeScript,
+desktop frontend build, 30 Python CLI tests, mission and diff checks passed.
+Stripe responses were simulated; no real customer/provider acceptance is claimed.
