@@ -1,5 +1,6 @@
 "use client";
 
+import { websiteDeploymentAwaitingProvider } from "@/lib/deploy/websiteDeploymentState";
 import { useState, useEffect } from "react";
 import {
   DocumentTextIcon,
@@ -37,6 +38,8 @@ export default function AdminLeadsPage() {
   const [upgrading, setUpgrading] = useState<string | null>(null);
   const [sourceFilter, setSourceFilter] = useState<"website-request" | "contact" | "all">("website-request");
   const [runningAgent, setRunningAgent] = useState(false);
+  const [refreshing, setRefreshing] = useState<Record<string, boolean>>({});
+  const [deploymentErrors, setDeploymentErrors] = useState<Record<string, string>>({});
 
   const loadLeads = () =>
     fetch(`/api/leads/list?source=${sourceFilter}`)
@@ -68,6 +71,21 @@ export default function AdminLeadsPage() {
       alert("Action failed");
     } finally {
       setActioning(null);
+    }
+  };
+
+  const refreshDeployment = async (leadId: string) => {
+    setRefreshing((current) => ({ ...current, [leadId]: true }));
+    setDeploymentErrors((current) => ({ ...current, [leadId]: "" }));
+    try {
+      const response = await fetch(`/api/leads/status?leadId=${encodeURIComponent(leadId)}`, { cache: "no-store" });
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.error || "Could not refresh deployment.");
+      await loadLeads();
+    } catch (error) {
+      setDeploymentErrors((current) => ({ ...current, [leadId]: error instanceof Error ? error.message : "Could not refresh deployment." }));
+    } finally {
+      setRefreshing((current) => ({ ...current, [leadId]: false }));
     }
   };
 
@@ -179,7 +197,12 @@ export default function AdminLeadsPage() {
               const previewUrl = payload.previewUrl as string | undefined;
               const productionUrl = payload.productionUrl as string | undefined;
               const aiPackage = payload.aiPackage as Record<string, unknown> | undefined;
-              const isActioning = actioning === lead.id;
+              const pendingDeployment = websiteDeploymentAwaitingProvider(payload);
+              const receipts = [payload.previewDeployment, payload.productionDeployment] as Array<{ deploymentId?: unknown; state?: unknown } | undefined>;
+              const configurationPending = receipts.some((receipt) => receipt?.deploymentId === "managed-pending");
+              const failedDeployment = receipts.some((receipt) => ["ERROR", "CANCELED", "CANCELLED"].includes(String(receipt?.state)));
+              const isRefreshing = Boolean(refreshing[lead.id]);
+              const isActioning = actioning === lead.id || isRefreshing;
               const showAiOutput = expandedAi === lead.id;
 
               return (
@@ -205,9 +228,17 @@ export default function AdminLeadsPage() {
                           rel="noopener noreferrer"
                           className="inline-block mt-2 text-sm text-orange-400 hover:underline"
                         >
-                          Preview: {previewUrl}
+                          Current preview: {previewUrl}
                         </a>
                       )}
+                      {pendingDeployment && (
+                        <p className="mt-2 text-sm text-amber-300" role="status">
+                          Deployment pending. Refresh to check provider readiness; any current preview remains available.
+                        </p>
+                      )}
+                      {configurationPending && !pendingDeployment && <p className="mt-2 text-sm text-amber-300" role="status">Deployment configuration unavailable. No provider request was sent; an authorized operator can retry after configuration is restored.</p>}
+                      {failedDeployment && <p className="mt-2 text-sm text-red-400" role="alert">Latest deployment failed. Any current preview remains available; review the failure before retrying.</p>}
+                      {deploymentErrors[lead.id] && <p className="mt-2 text-sm text-red-400" role="alert">{deploymentErrors[lead.id]}</p>}
                       {productionUrl && (
                         <a
                           href={productionUrl}
@@ -221,9 +252,15 @@ export default function AdminLeadsPage() {
                     </div>
                     {lead.source !== "contact" && (
                     <div className="flex flex-wrap gap-2">
+                      {pendingDeployment && (
+                        <button type="button" onClick={() => refreshDeployment(lead.id)} disabled={isActioning}
+                          className="btn-axiom rounded-lg bg-white/[0.06] px-3 py-2 text-sm font-medium text-zinc-300 hover:bg-white/[0.1] disabled:opacity-50">
+                          {isRefreshing ? "Refreshing deployment..." : "Refresh deployment"}
+                        </button>
+                      )}
                       <button
                         onClick={() => runAction(lead.id, "generate")}
-                        disabled={isActioning}
+                        disabled={isActioning || pendingDeployment}
                         className="btn-axiom inline-flex items-center gap-1.5 rounded-lg bg-white/[0.06] px-3 py-2 text-sm font-medium text-zinc-300 hover:bg-white/[0.1] disabled:opacity-50 transition-colors"
                       >
                         <DocumentTextIcon className="h-4 w-4" />
@@ -231,7 +268,7 @@ export default function AdminLeadsPage() {
                       </button>
                       <button
                         onClick={() => runAction(lead.id, "deploy")}
-                        disabled={isActioning}
+                        disabled={isActioning || pendingDeployment}
                         className="btn-axiom inline-flex items-center gap-1.5 rounded-lg bg-orange-500/10 px-3 py-2 text-sm font-medium text-orange-400 hover:bg-orange-500/20 disabled:opacity-50 transition-colors"
                       >
                         <CloudArrowUpIcon className="h-4 w-4" />
@@ -239,7 +276,7 @@ export default function AdminLeadsPage() {
                       </button>
                       <button
                         onClick={() => runAction(lead.id, "publish")}
-                        disabled={isActioning}
+                        disabled={isActioning || pendingDeployment}
                         className="btn-axiom inline-flex items-center gap-1.5 rounded-lg bg-emerald-500/10 px-3 py-2 text-sm font-medium text-emerald-300 hover:bg-emerald-500/20 disabled:opacity-50 transition-colors"
                       >
                         <RocketLaunchIcon className="h-4 w-4" />

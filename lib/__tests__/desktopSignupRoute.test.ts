@@ -92,6 +92,18 @@ describe("desktop-initiated signup", () => {
     expect(JSON.stringify(mocks.createUser.mock.calls)).not.toContain("starter");
   });
 
+  it("passes only the pairing destination matching its validated desktop request into proof mail", async () => {
+    const { POST } = await import("../../app/api/auth/signup/route");
+    await POST(request({ ...validBody, callbackUrl: "/desktop/connect?challenge=pairing-123&intent=sign_up" }));
+    expect(mocks.sendVerificationEmail).toHaveBeenCalledWith({ to: "new.user@example.test", token: "opaque-token", callbackUrl: "/desktop/connect?challenge=pairing-123&intent=sign_up" });
+  });
+  it.each(["https://evil.test", "/desktop/connect?challenge=other-device"])("drops invalid or mismatched proof destinations %s without bypassing challenge validation", async (callbackUrl) => {
+    const { POST } = await import("../../app/api/auth/signup/route");
+    await POST(request({ ...validBody, callbackUrl }));
+    expect(mocks.findPairing).toHaveBeenCalledWith({ where: { id: "pairing-123" } });
+    expect(mocks.sendVerificationEmail).toHaveBeenCalledWith({ to: "new.user@example.test", token: "opaque-token" });
+  });
+
   it("still returns the created identity when workspace membership bootstrap fails (self-heals on next sign-in)", async () => {
     mocks.upsertMembership.mockRejectedValue(new Error("unique constraint race"));
     const { POST } = await import("../../app/api/auth/signup/route");

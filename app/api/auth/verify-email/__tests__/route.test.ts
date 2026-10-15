@@ -52,7 +52,12 @@ vi.mock("@/lib/db", () => {
 
 import { hashEmailVerificationToken } from "@/lib/auth/emailVerification";
 import { GET } from "../route";
-const request = (token = "private-proof-token") => new NextRequest(`https://example.test/api/auth/verify-email?token=${encodeURIComponent(token)}`);
+const request = (token = "private-proof-token", callbackUrl?: string) => {
+  const url = new URL("https://example.test/api/auth/verify-email");
+  url.searchParams.set("token", token);
+  if (callbackUrl) url.searchParams.set("callbackUrl", callbackUrl);
+  return new NextRequest(url);
+};
 beforeEach(() => {
   model.token = { tokenHash: hashEmailVerificationToken("private-proof-token"), userId: "user-1", usedAt: null, expiresAt: new Date(Date.now() + 60_000) };
   model.verifiedAt = null;
@@ -95,4 +100,18 @@ describe("email proof commit boundary", () => {
     expect(model.token?.usedAt).toBeNull();
     expect(model.userUpdates).toBe(0);
   });
+});
+
+it("preserves sanitized navigation after proof without granting a session", async () => {
+  const callback = "/desktop/connect?challenge=pair_123&intent=sign_up";
+  const response = await GET(request("private-proof-token", callback));
+  const destination = new URL(response.headers.get("location")!);
+  expect(destination.pathname).toBe("/auth/signin");
+  expect(destination.searchParams.get("callbackUrl")).toBe(callback);
+  expect(response.headers.get("set-cookie")).toBeNull();
+});
+it.each(["https://evil.test", "//evil.test", "/desktop/connect?challenge=a&challenge=b"])("drops unsafe proof navigation %s", async (callback) => {
+  const response = await GET(request("private-proof-token", callback));
+  expect(response.status).toBe(307);
+  expect(new URL(response.headers.get("location")!).searchParams.has("callbackUrl")).toBe(false);
 });

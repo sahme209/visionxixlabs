@@ -1,5 +1,6 @@
 "use client";
 
+import { VerificationRecovery } from "@/components/auth/VerificationRecovery";
 import { useState, Suspense, useEffect } from "react";
 import { signIn, getProviders } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -107,6 +108,8 @@ function SignInForm() {
         <p className="mb-2 text-sm text-zinc-400">Sign in to your web companion for account settings, connection context, and release guidance.</p>
         <p className="mb-8 text-xs leading-5 text-zinc-600">The installed Agent remains the secure place for provider configuration and deployment operations.</p>
 
+        {searchParams.get("verified") === "1" && <p role="status" className="mb-5 rounded-lg border border-white/10 p-3 text-sm text-zinc-300">Email verification completed. Sign in to continue. This confirmation does not sign you in or approve desktop pairing.</p>}
+
         <form onSubmit={handleSubmit} className="space-y-4" noValidate>
           <div>
             <label htmlFor="email" className="block text-sm font-medium text-zinc-300 mb-1.5">
@@ -166,6 +169,8 @@ function SignInForm() {
             {!loading && <ArrowRightIcon className="h-4 w-4" />}
           </button>
         </form>
+
+        <VerificationRecovery initialEmail={email} callbackUrl={callbackUrl} />
 
         {/* OAuth buttons — only render when actually configured. Cleaner than
             showing greyed-out "NOT SET" buttons (the previous approach). */}

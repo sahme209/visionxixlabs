@@ -1,16 +1,20 @@
 import { NextRequest, NextResponse } from "next/server";
+import { requireAdmin } from "@/lib/admin/auth";
 import { prisma } from "@/lib/db";
 import { generateWebsiteStarter } from "@/lib/websiteStarter/engine";
 
 /**
  * POST /api/leads/[id]/generate — Trigger AI package generation.
  * Updates lead status and fullPayload.aiPackage when done.
- * Called async after lead creation or by admin.
+ * Admin action. Public lead generation uses the signed-token trigger flow.
  */
 export async function POST(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const auth = await requireAdmin(req);
+  if ("error" in auth) return auth.error;
+
   const { id } = await params;
   if (!id) return NextResponse.json({ error: "Lead ID required" }, { status: 400 });
 

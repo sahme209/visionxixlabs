@@ -4,6 +4,8 @@ Audit: 2026-10-15. Baseline: main `6eb90680815a7c235e7d31ece1c6638dfa44708d`.
 Owner: Codex for engineering, design, architecture, governance, product quality,
 documentation, QA and launch coordination. Founder retains external accounts,
 customer commitments, financial/production approvals and final acceptance.
+The current workstream matrix and latest checkpoints supersede earlier historical
+checkpoint status; previous observations are retained as evidence history.
 
 ## Current authentication checkpoint — preflight #3 and access readiness
 
@@ -14,14 +16,21 @@ email-verification schema is missing. This does not prove actual login, desktop
 pairing, administrator authority or the serving Vercel deployment's database binding.
 See `docs/mission/auth-preflight-run-3.json` and the auth-only recovery plan.
 
-The owner confirmed Neon authorization completed. No callable Neon tools are exposed
-to this chat yet; installation and account authorization do not prove usable tool
-access. Owner console evidence identifies a six-hour retention setting, not an
-account-specific usable recovery point or verified restore. Production binding,
-PITR range, isolated restore rehearsal and exact execution approval remain gates.
-No production changes have been made. Recovery preparation continues alongside all
-independent workstreams. PRs #130–134 are merged; they are preserved rather than
-reimplemented.
+Neon tools are now connected. Read-only control-plane and schema/history checks
+confirm the reported project/default main branch/database, PostgreSQL 17, six-hour
+retention and matching preflight fingerprint: 99 completed migrations, no active
+source checksum mismatches, same seven pending migrations and absent auth schema.
+The active failed Agent attempt began October 14, outside the configured window.
+No saved snapshots or snapshot schedule entries were returned. Ten branches meet
+the reported ten-branch limit; nine are Vercel-created previews. This blocks new
+branch creation and the planned isolated restore copy. No branch was deleted,
+plan/retention changed, credentials retrieved or production data/history modified.
+
+Serving deployment/preflight resource bindings, a usable fresh pre-repair recovery
+point and isolated restore remain unverified. Metadata access is not permission
+for Time Travel resource provisioning, restore, migration or routing changes.
+See `docs/mission/neon-readiness-inspection.json`. Earlier tool-unavailable
+checkpoints below are historical. Independent workstreams continue.
 
 ## Scope coverage — explicit answer
 
@@ -429,3 +438,29 @@ build, Python 30 tests, lint and tracker checks. Two isolated Rust backend-selec
 tests passed without vault access. Exact-head full native CI remains required
 before merge; actual platform acceptance is still open. No vault, production
 database, secret, infrastructure, routing or live-billing action occurred.
+
+## Website verification recovery and deployment readiness checkpoint
+
+PRs #135–137 are merged after applicable exact-head CI, including full native
+tests and Clippy for the credential-backend fix. The recovery milestone reuses
+the existing resend API through shared website controls, preserves only strict
+navigation context through email proof, and keeps account-specific delivery
+failures publicly neutral. It does not establish a session or authorize pairing.
+
+Legacy preview/publication now uses exact provider-reported readiness and saved
+receipts; bounded authorized observation and conditional local commits preserve
+working previews and reject stale results. The internal admin workflow exposes
+pending state and refreshes through its existing authority. No major redesign,
+new schema, infrastructure, deployment dispatch or production record operation
+is performed by this work. See `EMAIL_VERIFICATION_CUSTOMER_RECOVERY.md` and
+`WEBSITE_DEPLOYMENT_READINESS.md`. Combined checks passed 560 files / 5,595 tests, web/desktop TypeScript, desktop
+build, 30 Python tests, lint and mission checks. Full optimized web production
+build compiled and generated 293 pages successfully. Exact-head CI remains required
+before merge for this checkpoint. Actual email/provider/customer acceptance, background notification,
+provider-create crash recovery and concurrent submission serialization remain
+open; production binding, usable PITR and restore gates remain unchanged.
+
+The same website checkpoint closes missing admin API authority on legacy lead
+regeneration and tier mutation, using the existing administrator guard before AI
+or data access. Public selected-tier capture remains intact and is not treated as
+verified paid entitlement; see `LEAD_ADMIN_GENERATION_AUTHORITY.md`.

@@ -22,7 +22,7 @@ No AWS calls, GitHub dispatch, infrastructure changes, or credentials were used.
 | Rollback | Failed stabilization reselects captured task definition and waits; workflow remains failed | With mutable tags, old task definition may pull new image bytes. Image digest and previous deployment artifact identity must be verified. Real induced failure/rollback requires approved sandbox. |
 | Airflow dependency | `automationExecutor.ts` rechecks accepted approver membership/capability, claims attempt, evaluates policy and reserves dispatch | Requires real DAG completion, connection, retry/reconciliation evidence; deploy is the same restart-only ECS workflow. Separate Airflow workstream owns implementation. |
 | Terraform | Plan/governance surfaces exist elsewhere in product | This ECS workflow does not run Terraform. Actual reviewed-plan/apply/state-lock acceptance is a separate milestone; do not infer completion from ECS tests. |
-| AWS/Azure/GCP website deployment | `lib/deploy/provider.ts` accepts provider choices | Both public functions route AWS/Azure/GCP choices to Vercel. This is an implementation gap, not just missing credentials. Placeholder private functions are not live adapters. |
+| AWS/Azure/GCP website deployment | `lib/deploy/provider.ts` accepts provider choices | PR #136 makes unsupported AWS/Azure/GCP choices reject before generation or outbound calls. Actual cloud adapters remain missing; placeholder private functions are not live adapters. |
 
 ## Approval and trust boundary limitations
 

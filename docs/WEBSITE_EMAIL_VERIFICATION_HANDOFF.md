@@ -31,3 +31,12 @@ Outstanding issues outside this change include the verification endpoint losing 
 ## Follow-up recovery milestone (source review)
 
 Reuse `app/api/auth/resend-verification/route.ts`; it already exists. Before claiming reliable proof recovery, make token consumption and user verification atomic in `verify-email/route.ts`, preserve only a strictly validated desktop callback, and add account-neutral resend UI/route regressions. The current separate token-consumption and user-update operations can burn a token if the identity update fails. Resend delivery-error responses also require account-disclosure review. These findings are not fixed by the signup handoff.
+
+## Superseding recovery implementation
+
+Atomic proof consumption/identity update is implemented in merged PR #136. The
+current recovery milestone adds the existing resend API website UI, neutral
+account-specific failure responses and strictly sanitized navigation-only
+callback handoff; see `EMAIL_VERIFICATION_CUSTOMER_RECOVERY.md`. Earlier gaps
+above describe the original handoff patch. Actual production email/session and
+installed desktop acceptance remain unverified.

@@ -12,8 +12,10 @@ are not established. Diagnostic exit 2 is expected. No production change occurre
 An authorized operator needs read-only Neon project metadata and permission to
 inspect production configuration privately in its secure runtime. No connection
 strings, passwords, endpoint/resource identifiers or account rows belong in chat,
-GitHub logs or this repository. No such Neon control-plane connection is available
-to this agent. Do not retrieve decrypted Vercel secrets through connector outputs.
+GitHub logs or this repository. Neon control-plane access is now available and metadata inspection is complete;
+see `docs/mission/neon-readiness-inspection.json`. The serving application and
+protected workflow resource bindings remain unverified. Do not retrieve decrypted
+Vercel secrets through connector outputs.
 
 1. Resolve the deployment currently serving visionxixlabs.com; distinguish it from
    the newest main deployment and from previews. Record its deployment reference
@@ -125,3 +127,28 @@ These describe capabilities; they do not attest to this account's configuration.
 Owner-provided console evidence identifies the candidate project and main branch,
 one database, PostgreSQL 17, AWS US East 1 and Free plan with six-hour history
 retention. This does not prove the serving deployment binding or a usable point.
+
+## Current read-only evidence and capacity gate
+
+Agent inspection confirms the reported project/default main branch/database,
+PostgreSQL 17, Free plan, six-hour retention, no snapshots returned and no snapshot
+schedule entries. There are ten branches at the reported ten-branch limit; nine
+were created by Vercel, including three archived branches. No branch was deleted,
+plan upgraded, retention changed or infrastructure provisioned. Review actual
+dependencies before proposing cleanup; archived/preview naming is not proof that
+a branch is unused. Capacity must be resolved before an isolated restore copy.
+
+SELECT-only catalog/history inspection finds 99 completed migrations, the same
+seven pending migrations, five pre-existing historical rolled-back attempts and
+no checksum differences for completed/active migration source. WorkspaceAgentIdentity
+and Organization are absent, as are auth verification schema objects. The active
+failed migration started 2026-10-14T12:36:08.531Z, outside the configured six-hour
+maximum. A pre-failure healthy PITR point cannot be assumed; independent backups
+remain unverified. Prepare a fresh recoverable pre-repair baseline that preserves
+current data, rather than restoring an old timeline and discarding later writes.
+
+Current Neon Time Travel documentation states that historical read-only queries
+create temporary branch/compute resources. Metadata access does not authorize
+that provisioning. A usable timestamp, target isolation, cost and cleanup must
+be reviewed and separately approved; the existing restore rehearsal gate remains.
+Matching schema/history fingerprints do not prove the serving Vercel binding.

@@ -1,5 +1,7 @@
 "use client";
 
+import { VerificationRecovery } from "@/components/auth/VerificationRecovery";
+import { verificationDesktopCallback } from "@/lib/auth/verificationCallback";
 import { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { getProviders, signIn } from "next-auth/react";
@@ -82,6 +84,7 @@ function SignUpForm() {
           password,
           name: name.trim() || undefined,
           desktopChallenge,
+          callbackUrl: verificationDesktopCallback(redirect),
           acceptedTerms,
         }),
       });
@@ -134,7 +137,7 @@ function SignUpForm() {
             Continue to sign in
           </Link>
           <p className="text-xs text-zinc-500">Account creation does not grant deployment access. Your workspace entitlement and approvals still apply.</p>
-          <Link href="/contact" className="block text-sm text-orange-300 underline">Need help with verification?</Link>
+          <VerificationRecovery initialEmail={verificationEmail} callbackUrl={redirect} />
         </section>
       </div>
     );
@@ -262,6 +265,7 @@ function SignUpForm() {
                 </div>
               </>
             )}
+            <VerificationRecovery initialEmail={email} callbackUrl={redirect} />
             <p className="mt-6 text-sm text-zinc-500 text-center">
               Already have an account?{" "}
               <Link
@@ -275,7 +279,7 @@ function SignUpForm() {
             <p className="mt-4 text-xs text-zinc-600 text-center">
               An approved pilot or commercial workspace entitlement is provisioned separately before deployment operations unlock.
             </p>
-            {!desktopChallenge && <p role="alert" className="mt-3 text-xs text-zinc-300 text-center">This sign-up link is not attached to a valid desktop pairing request. Return to Axiom Agent and choose Continue securely in browser.</p>}
+            {!desktopChallenge && <p role="alert" className="mt-3 text-xs text-zinc-300 text-center">This sign-up link is not attached to a valid desktop pairing request. Return to Axiom Agent and choose Log in again.</p>}
           </div>
       </div>
     </div>
@@ -283,12 +287,8 @@ function SignUpForm() {
 }
 
 function desktopChallengeFromRedirect(redirect: string): string {
-  try {
-    const url = new URL(redirect, "https://desktop-auth.invalid");
-    return url.pathname === "/desktop/connect" ? url.searchParams.get("challenge")?.trim() ?? "" : "";
-  } catch {
-    return "";
-  }
+  const callback = verificationDesktopCallback(redirect);
+  return callback ? new URL(callback, "https://desktop-auth.invalid").searchParams.get("challenge") ?? "" : "";
 }
 
 function safeInternalPath(value: string | null, fallback: string): string {

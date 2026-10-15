@@ -1,7 +1,9 @@
+import type { Prisma } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/admin/auth";
 import { prisma } from "@/lib/db";
-import { deployPreview } from "@/lib/previewDeploy";
+import { deployProduction } from "@/lib/previewDeploy";
+import { websiteDeploymentUpdate } from "@/lib/deploy/websiteDeploymentState";
 import type { AIStarterPackage } from "@/lib/websiteStarter/engine";
 
 /**
@@ -33,28 +35,11 @@ export async function POST(
     }
 
     const projectName = `prod-${id.slice(-8)}`;
-    const result = await deployPreview(pkg, projectName);
+    const result = await deployProduction(pkg, projectName);
 
-    const updatedPayload = {
-      ...payload,
-      productionUrl: result.url,
-      productionDeploymentId: result.deploymentId,
-      publishedAt: new Date().toISOString(),
-    };
-
-    await prisma.lead.update({
-      where: { id },
-      data: {
-        status: "published",
-        fullPayload: updatedPayload,
-      },
-    });
-
-    return NextResponse.json({
-      success: true,
-      status: "published",
-      productionUrl: result.url,
-    });
+    const update = websiteDeploymentUpdate({ result, payload, previousStatus: lead.status, kind: "production" });
+    await prisma.lead.update({ where: { id }, data: { status: update.status, fullPayload: update.payload as Prisma.InputJsonObject } });
+    return NextResponse.json({ success: true, status: update.status, deploymentPending: !update.ready, productionUrl: update.payload.productionUrl ?? null, deploymentState: update.payload.productionDeployment });
   } catch (e) {
     console.error("[leads publish]", e);
     return NextResponse.json(
