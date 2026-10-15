@@ -1,5 +1,29 @@
 # Axiom Agent master-mission status
 
+## Current unified mission · 2026-10-15
+
+The founder's [unified master mission](AXIOM_UNIFIED_MASTER_MISSION.md) now
+combines engineering, UX/design, architecture, governance, security, QA and
+launch-readiness responsibilities. Preserve the prior mission and established
+architecture; do not restart or reserve unfinished review work for another AI.
+
+The [capability and priority matrix](AXIOM_UNIFIED_CAPABILITY_MATRIX.md) records
+the initial review against main `ea88095c` (PR #104). The historical ~85% figure
+remains unverified and must not rise because a PR exists. Production auth,
+database ledger/founder verification, domain promotion, preview provisioning,
+exact native builds and live-provider/Stripe validation remain distinct gates.
+
+PR #105 independently repairs browser authority for pending workspace
+memberships, matching the desktop acceptance requirement. Its candidate passes
+5,156 tests, TypeScript, desktop frontend checks and Python CLI tests locally;
+it has not been merged, deployed, or live-validated at this snapshot. No
+production migration, cloud mutation, billing activation or release is
+authorized by the mission's expanded ownership. Continue safe independent
+milestones while production evidence is pending rather than repeating access
+requests or duplicating completed implementations.
+
+## Historical snapshot — do not use as current main/credential evidence
+
 Updated 2026-10-14 from the current `main` checkout at `d1dc9c9d`.
 
 ## Evidence-based snapshot
