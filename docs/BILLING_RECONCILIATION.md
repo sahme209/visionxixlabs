@@ -85,7 +85,7 @@ and server-counted seats. A successful redirect never grants access. The signed
 2. Review the implemented immutable public plan identifiers and monthly/annual Stripe price mappings on the organization billing path.
 3. Define a migration from legacy `User.plan` rows and existing Stripe subscriptions to `TenantBillingPlan`; produce a dry-run report before writing data.
 4. **Deployment and seat concurrency complete.** Deployment dispatch reserves an organization allowance slot in a serializable transaction and binds it to a unique organization/idempotency key. Invite acceptance and enterprise SSO now claim accepted seats transactionally; paid plans fail closed unless the signed Stripe subscription supplies a positive seat quantity. Legacy-plan migration and Stripe test-mode reconciliation remain below.
-5. **Implemented for AWS ECS desktop and Agent dispatch.** Active reservations temporarily consume a slot; failed provider dispatches release it, accepted dispatches settle the same durable execution row, stale reservations expire, and exact retries replay the prior execution without dispatching twice.
+5. **Implemented for AWS ECS desktop, Agent and Airflow dispatch.** Active reservations temporarily consume a slot; explicit non-accepting GitHub responses release it, accepted dispatches settle the same durable execution row, unresolved reservations retain their quota and idempotency key until their outcome is reconciled, and exact retries replay the prior recorded execution without dispatching twice. Age alone does not prove that an external dispatch failed; automatic stale-reservation deletion is disabled. This conservative hold can reduce available allowance after an interrupted request. A governed receipt-reconciliation/release workflow remains unfinished; desktop and Agent callers release only explicit non-accepting GitHub 400/401/403/404/405/410/422/429 responses. Network failures, timeouts, server errors and unfamiliar response formats retain the hold and return `deployment_outcome_unknown`. They require external-outcome reconciliation, rather than an automatic resend. The Agent ledger retains its existing failed processing status but records that the provider outcome is unconfirmed; it does not assert provider failure.
 6. Cover upgrades, downgrades, renewals, cancellation, past-due state, refunds, and webhook re-delivery in integration tests.
 7. Verify the same entitlement response is consumed by the website, desktop app, and every mutating API boundary.
 8. Create or reconcile versioned Pro and Enterprise recurring per-seat prices in Stripe test mode only; Free has no Stripe price.
@@ -109,3 +109,9 @@ and server-counted seats. A successful redirect never grants access. The signed
 - Full Vitest suite: 501 files / 5,008 tests pass.
 - Reservation coverage includes quota exhaustion, exact replay, payload-conflict rejection, failure release, and accepted-dispatch settlement.
 - No billing flag, live Stripe setting, subscription, deployment, or production release was changed.
+
+Airflow uses the same serializable quota reservation with a stable execution
+key and settles the same deployment row, preserving the recorded approver as
+actor when present. It releases a new reservation only for a pre-dispatch
+failure; after its provider request begins it conservatively holds all failed
+outcomes for reconciliation. These paths do not change public plan limits.

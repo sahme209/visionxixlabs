@@ -922,7 +922,14 @@ function DeploymentTargetPanel({ environment, environments, identity }: { enviro
         ...(emergencyBypass ? { emergencyBypass: true, bypassReason } : {}),
         idempotencyKey: deployOperationRef.current.key,
       });
-      if (!result.ok) { setDeployError(result.error); return; }
+      if (!result.ok) {
+        setDeployError(result.error === "deployment_outcome_unknown"
+          ? "Deployment outcome unconfirmed. The provider may have accepted it; its hold is retained. Review the external outcome before retrying."
+          : result.error === "deployment_already_in_progress"
+            ? "This deployment is still in progress or awaiting outcome verification. Its hold prevents another dispatch."
+            : result.error);
+        return;
+      }
       deployOperationRef.current = null;
       setDeployOk(true);
       setExecution(result.data.execution);

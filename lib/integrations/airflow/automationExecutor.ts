@@ -8,6 +8,7 @@ import { AWS_ECS_DEPLOY_WORKFLOW_FILENAME } from "@/lib/releaseops/awsEcsDeployW
 import { appendAuditEvent, type AuditEventRepo } from "@/lib/releaseops/auditEventResponder";
 import { dispatchWebhookEvent } from "@/lib/webhooks/dispatchWebhookEvent";
 import { hasDesktopCapability } from "@/lib/desktop/desktopAuthorization";
+import { reserveDeploymentDispatch, releaseDeploymentDispatch, settleDeploymentDispatch, type DeploymentReservationRepo } from "@/lib/billing/deploymentDispatchReservation";
 
 export async function executeAirflowAutomation(executionId: string, actorUserId?: string): Promise<{ ok: true; result: Record<string, unknown> } | { ok: false; error: string }> {
   const execution = await prisma.airflowAutomationExecution.findUnique({ where: { id: executionId }, include: { automation: true } });
@@ -42,11 +43,13 @@ export async function executeAirflowAutomation(executionId: string, actorUserId?
   if (claimed.count !== 1) return { ok: false, error: "airflow_execution_not_actionable" };
   let providerActionStarted = false;
   let providerReceipt: Record<string, unknown> | null = null;
+  let reservedDeploymentId: string | null = null;
+  const reservationRepo = prisma as unknown as DeploymentReservationRepo;
   const dispatchIntent = { action: automation.actionType, repositoryFullName: automation.repositoryFullName, sourceRef: automation.sourceRef };
   const markDispatchIntent = async () => {
     // Persist uncertainty before the non-idempotent request. A process crash
     // leaves the claimed row running, outside the scheduler's retry selection.
-    await prisma.airflowAutomationExecution.update({ where: { id: execution.id }, data: { resultJson: { ...dispatchIntent, phase: "dispatching" } } });
+    await prisma.airflowAutomationExecution.update({ where: { id: execution.id }, data: { resultJson: { ...dispatchIntent, ...(providerReceipt ?? {}), phase: "dispatching" } } });
     providerActionStarted = true;
   };
   try {
@@ -74,17 +77,38 @@ export async function executeAirflowAutomation(executionId: string, actorUserId?
       if (!target) throw new Error("deployment_target_not_configured");
       const policy = await evaluateDeploymentPolicy(prisma as unknown as DeploymentPolicyRepo, { organizationId: automation.organizationId, environmentId: environment.id, owner: repository.owner, repo: repository.repo, sourceRef: automation.sourceRef, sourceKind: automation.sourceKind === "tag" ? "tag" : "branch", ...(automation.promotedFromExecutionId ? { promotedFromExecutionId: automation.promotedFromExecutionId } : {}), ...(environment.tier === "prod" ? { requiredControlSet: "production" as const } : {}), installationToken: token.token });
       if (!policy.ok) throw new Error(policy.error);
+      const reservation = await reserveDeploymentDispatch(reservationRepo, {
+        organizationId: automation.organizationId,
+        idempotencyKey: `airflow-execution:${execution.id}`,
+        environmentId: environment.id,
+        repositoryFullName: automation.repositoryFullName!,
+        sourceRef: automation.sourceRef,
+        sourceKind: automation.sourceKind === "tag" ? "tag" : "branch",
+        sourceCommitSha: policy.sourceCommitSha,
+        branchPolicyId: policy.policyId,
+        promotedFromExecutionId: automation.promotedFromExecutionId ?? null,
+        pullRequestUrl: policy.pullRequestUrl ?? null,
+        source: "agent",
+        triggeredByUserId: approvalActorId ?? automation.createdByUserId,
+      });
+      if (!reservation.ok) throw new Error(reservation.error);
+      if (reservation.reused) {
+        await prisma.airflowAutomationExecution.update({ where: { id: execution.id }, data: { deploymentExecutionId: reservation.reservation.id } });
+        return await succeed(execution.id, { action: "deploy", deploymentExecutionId: reservation.reservation.id, workflowUrl: reservation.reservation.workflowUrl, replayed: true });
+      }
+      reservedDeploymentId = reservation.reservation.id;
+      providerReceipt = { action: "deploy", deploymentExecutionId: reservedDeploymentId };
       await markDispatchIntent();
       const dispatched = await dispatchWorkflow({ owner: repository.owner, repo: repository.repo, workflowFile: AWS_ECS_DEPLOY_WORKFLOW_FILENAME, ref: automation.sourceRef, inputs: { role_arn: target.roleArn, region: target.region, cluster: target.ecsCluster, service: target.ecsService }, installationToken: token.token });
       if (!dispatched.ok) throw new Error(dispatched.error);
-      providerReceipt = { action: "deploy", workflowRunId: dispatched.data.workflowRunId, workflowUrl: dispatched.data.htmlUrl };
-      const deployment = await prisma.deploymentExecution.create({ data: { organizationId: automation.organizationId, environmentId: environment.id, repositoryFullName: automation.repositoryFullName!, sourceRef: automation.sourceRef, sourceKind: automation.sourceKind ?? "branch", sourceCommitSha: policy.sourceCommitSha, branchPolicyId: policy.policyId, promotedFromExecutionId: automation.promotedFromExecutionId, pullRequestUrl: policy.pullRequestUrl, workflowRunId: dispatched.data.workflowRunId, workflowUrl: dispatched.data.htmlUrl, source: "agent", triggeredByUserId: actorUserId ?? automation.createdByUserId, status: dispatched.data.workflowRunId ? "queued" : "tracking_unavailable" } });
-      providerReceipt.deploymentExecutionId = deployment.id;
-      await prisma.airflowAutomationExecution.update({ where: { id: execution.id }, data: { deploymentExecutionId: deployment.id } });
-      return await succeed(execution.id, { action: "deploy", deploymentExecutionId: deployment.id, workflowUrl: dispatched.data.htmlUrl, rollback: "AWS ECS workflow automatically restores the prior task definition if steady-state validation fails" });
+      providerReceipt = { action: "deploy", deploymentExecutionId: reservedDeploymentId, workflowRunId: dispatched.data.workflowRunId, workflowUrl: dispatched.data.htmlUrl };
+      if (!await settleDeploymentDispatch(reservationRepo, automation.organizationId, reservedDeploymentId, { workflowRunId: dispatched.data.workflowRunId, workflowUrl: dispatched.data.htmlUrl })) throw new Error("deployment_tracking_unavailable");
+      await prisma.airflowAutomationExecution.update({ where: { id: execution.id }, data: { deploymentExecutionId: reservedDeploymentId } });
+      return await succeed(execution.id, { action: "deploy", deploymentExecutionId: reservedDeploymentId, workflowUrl: dispatched.data.htmlUrl, rollback: "AWS ECS workflow automatically restores the prior task definition if steady-state validation fails" });
     }
     throw new Error("unsupported_automation_action");
   } catch (error) {
+    if (reservedDeploymentId && !providerActionStarted) await releaseDeploymentDispatch(reservationRepo, automation.organizationId, reservedDeploymentId);
     const message = providerActionStarted ? "airflow_provider_outcome_unknown" : error instanceof Error ? error.message.split(":")[0] : "automation_execution_failed";
     const attempt = execution.attempt + 1;
     const retry = !providerActionStarted && attempt < automation.maxRetries;

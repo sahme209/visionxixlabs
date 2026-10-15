@@ -53,6 +53,41 @@ beforeEach(() => {
 });
 
 describe("executeApprovedAction", () => {
+  it.each(["workflow_dispatch_failed: fetch failed", "workflow_dispatch_failed: github_503: unavailable"])("preserves the Agent deployment reservation for an uncertain dispatch: %s", async (error) => {
+    mocks.dispatchWorkflow.mockResolvedValue({ ok: false, error });
+    expect(await executeApprovedAction(repo, "org-1", "trigger_aws_deploy", { repositoryFullName: "acme/widgets", environmentId: "env_1" }, "user-1", "action-uncertain"))
+      .toEqual({ ok: false, error: "deployment_outcome_unknown" });
+    expect(mocks.releaseDeploymentDispatch).not.toHaveBeenCalled();
+  });
+
+  it("releases the Agent deployment reservation after a definite provider rejection", async () => {
+    mocks.dispatchWorkflow.mockResolvedValue({ ok: false, error: "workflow_dispatch_failed: github_422: invalid ref" });
+    expect(await executeApprovedAction(repo, "org-1", "trigger_aws_deploy", { repositoryFullName: "acme/widgets", environmentId: "env_1" }, "user-1", "action-rejected"))
+      .toEqual({ ok: false, error: "workflow_dispatch_failed: github_422: invalid ref" });
+    expect(mocks.releaseDeploymentDispatch).toHaveBeenCalledWith(expect.anything(), "org-1", "exec-1");
+  });
+
+
+  it("rejects an older sensitive-file proposal even when it has valid review metadata", async () => {
+    const result = await executeApprovedAction(repo, "org-1", "commit_github_file", {
+      repositoryFullName: "acme/widgets", branch: "fix", path: ".env.production", content: "fixture", message: "Fixture",
+      _review: { kind: "github_file", baseSha: "fixture-sha", baseContent: "fixture", htmlUrl: null },
+    });
+    expect(result).toEqual({ ok: false, error: "sensitive_repository_file" });
+    expect(mocks.resolveTenantScopedToken).not.toHaveBeenCalled();
+    expect(mocks.commitFile).not.toHaveBeenCalled();
+  });
+
+  it("rejects an older multi-file sensitive proposal before resolving credentials", async () => {
+    const result = await executeApprovedAction(repo, "org-1", "commit_github_files", {
+      repositoryFullName: "acme/widgets", branch: "fix", message: "Fixture",
+      files: [{ path: "src/app.ts", content: "fixture" }, { path: "secrets/prod.json", content: "fixture" }],
+      _review: { kind: "github_files", files: [{ path: "src/app.ts", baseSha: "app", baseContent: "fixture" }, { path: "secrets/prod.json", baseSha: "config", baseContent: "fixture" }] },
+    });
+    expect(result).toEqual({ ok: false, error: "sensitive_repository_file" });
+    expect(mocks.resolveTenantScopedToken).not.toHaveBeenCalled();
+    expect(mocks.commitFiles).not.toHaveBeenCalled();
+  });
   it("rejects an unknown tool name", async () => {
     const result = await executeApprovedAction(repo, "org-1", "delete_everything", {});
     expect(result.ok).toBe(false);

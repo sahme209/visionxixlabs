@@ -1,5 +1,139 @@
 # Axiom Agent master-mission status
 
+## GitHub/Vercel identity correction · 2026-10-15
+
+The authenticated GitHub account, repository, Vercel repository link, namespace
+admin access and confirmed Vercel owner all identify `sahme209`. Earlier cloud
+commit authors were not associated with a GitHub account. Repository-local
+future author email now uses the account-specific GitHub no-reply address;
+verification commit `baf8a4df` resolves author and committer to `sahme209`, and
+Vercel event metadata records that author login. No history was rewritten or
+account credentials, installations, permissions or working deployment settings
+changed. The new preview still fails provisioning before build, demonstrating
+that author association alone does not fix the platform error.
+
+PR #108 has since been merged at main `7316be61`; its existing production
+deployment `dpl_8Pghk2udZ5MnaGchysd21zJWjkRa` is READY. The integration branch
+merged this main revision normally, with an identical file tree; its 5,237-test
+source validation remains applicable. Detailed evidence is in
+[the author diagnosis](VERCEL_GITHUB_AUTHOR_DIAGNOSIS.md). Application founder
+identity and the read-only database/login verification gate are unchanged.
+The sections below retain historical snapshots rather than claiming they are
+the latest PR/deployment status.
+
+## Integrated local candidate · 2026-10-15
+
+Branch `codex/mission-reliability-integration` combines the independent
+reservation, uncertain-dispatch, Airflow quota, workflow-input and sensitive
+evidence repairs on the tested #108 head. Overlapping status/walkthrough notes
+and approval regressions were reconciled while preserving every case. Before
+the history follow-up, the combined candidate passed 531 files / 5,235 tests,
+web TypeScript, desktop TypeScript/frontend build and 30 Python CLI tests.
+These are local results; #108 remains at its original CI-tested head.
+
+The history follow-up now redacts known structured sensitive snapshots from
+conversation action arguments/results, including nested inspections and
+multi-file reviews, without modifying stored records. Focused route tests
+verify withholding, preservation of ordinary source and unchanged stored
+fixtures. This does not establish that historical free-text turns are free
+of secrets; private historical review and any remediation remain separate.
+
+Main is unchanged; #108 remains blocked by Vercel provisioning failure and
+the separate production-release boundary. No production migration, data write,
+credential change, billing activation, provider dispatch or deployment runs.
+Final integrated validation: 532 Vitest files / 5,237 tests, web TypeScript,
+desktop TypeScript/frontend build and 30 Python CLI tests pass. Native Rust
+source is unchanged from #108, whose GitHub native tests/clippy pass; this
+local integration is not represented as a new native CI or live validation.
+The ledger sections below preserve each prior source/validation snapshot.
+
+## Continuing follow-up — Airflow deployment allowance parity
+
+Airflow previously dispatched directly and created a deployment record afterward,
+bypassing the shared allowance reservation used by desktop and Agent paths. It
+now reserves against the same serializable quota with a stable execution key,
+links recorded replays without dispatching, and settles the same reserved row.
+Failed intent persistence before dispatch can release the new slot; uncertain
+provider outcomes retain it and its reference for reconciliation. Recorded
+approvers remain the attributed actors. Existing plan limits/prices and human
+production approvals are unchanged. Four regressions failed before the repair;
+focused cases cover quota denial, stable key/settlement, replay, intent failure,
+tracking failure and an uncertain response without a second dispatch.
+
+Airflow allowance validation: 531 Vitest files / 5,222 tests and web
+TypeScript pass. Desktop/Python code is unchanged from the preceding passing
+dispatch milestone. No real provider or database call was made.
+
+## Continuing follow-up — uncertain desktop and Agent dispatch responses
+
+Four regressions reproduced release of a deployment hold after transport or
+provider-server failure. Both desktop and Agent callers now release only
+explicit non-accepting GitHub responses; network/server/unknown failures retain
+the durable reservation and return `deployment_outcome_unknown`. Same-key
+retries remain blocked even after the former expiry. Desktop and persisted
+Agent conversation messages describe uncertainty without asserting that a
+provider deployment failed or completed. The existing Agent processing-status
+model is preserved. A receipt-reconciliation/operator-release journey remains
+unfinished; no automatic resend, live provider call or billing activation occurs.
+
+Validation for the continuing dispatch repair: 531 Vitest files / 5,217 tests,
+web TypeScript, desktop TypeScript/frontend build and 30 Python CLI tests pass.
+The React review found no new hooks, effects, dependencies or layout changes;
+only outcome copy and typed response handling changed. No provider call was
+made by these tests. This follow-up remains separate from PR #108.
+
+## Separate follow-up — unresolved deployment reservations
+
+An unrelated reservation request previously deleted reserved execution rows
+older than fifteen minutes before checking quota. A stale row can represent
+a provider-accepted dispatch whose receipt was not saved, so age alone cannot
+justify discarding its slot or idempotency key. The local repair removes that
+automatic deletion; explicit release/settlement paths are unchanged. A
+stateful regression fails before and passes after the repair. This conservative
+hold may consume allowance until a governed reconciliation flow is completed.
+No prices, plan limits, live charges, records or migration are changed.
+Local validation: 530 Vitest files / 5,195 tests and web TypeScript pass.
+Desktop/Python code is unchanged from the passing #108 candidate. This
+follow-up is retained locally in its own worktree, outside #108.
+
+PR #108 at `bde025a5` passes GitHub Typecheck + Vitest and the full Desktop
+CI, including native tests and clippy. Vercel preview
+`dpl_4iXMzu5XgiSWpRZs4H2CtwN1QcvL` fails after about one second with
+`BUILD_FAILED: Resource provisioning failed`, before an application build.
+Merge is held for this unresolved deployment check and the separate
+production-release boundary. Production auth/founder verification remains
+blocked; no production approval or readiness is inferred from green tests.
+
+## Separate security follow-up — manual migration workflow input
+
+The optional migration name was interpolated directly into shell source in a
+secret-bearing approved workflow. It now arrives via an environment variable,
+is checked against an existing timestamped migration folder, and is passed as
+a quoted argument. Local shell fixtures replace Prisma with a harmless command
+recorder; no workflow, migration, database connection or production write runs.
+The existing explicit APPLY/main/protected-environment gates remain unchanged.
+Verification reproduced the prior shell injection using a harmless command
+recorder, rejected five malicious/invalid input forms, and preserved the
+existing migration name as one argument. YAML parsing and 15 demo contract
+tests pass. This candidate is cloud-local and has not run against production.
+
+## Separate security follow-up — sensitive Agent repository evidence
+
+Direct Agent file reads bypassed automatic inspection filtering; sensitive
+directory contents also escaped that filename-only filter. A shared pure path
+policy now covers direct reads, automatic inspect/search, review capture and
+legacy proposal execution. Nine read/inspection regressions and three initial
+proposal regressions failed before the repair; multi-file legacy approval is
+also covered. Known environment, key, credential and repository-metadata paths
+are rejected before credential resolution where possible. Ordinary repository
+reads/writes retain scoped tokens and reviewed-SHA checks. This is known-path
+protection, not a claim of secret-free source content. No real provider call,
+credential change or production mutation is performed.
+
+Sensitive-evidence validation: 530 Vitest files / 5,207 tests and web
+TypeScript pass. Desktop/Python code is unchanged from the passing #108
+candidate. Live provider and packaged-device validation remain separate.
+
 ## Current validation and integration · 2026-10-15
 
 The combined follow-up candidate passes 530 Vitest files / 5,194 tests, web

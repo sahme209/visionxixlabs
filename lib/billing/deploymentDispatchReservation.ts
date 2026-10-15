@@ -2,8 +2,6 @@ import { PUBLIC_PLAN_CATALOG, type PublicPlanId } from "./publicPlanCatalog";
 import { billingTierToPublicPlan } from "./deploymentQuota";
 import type { DeploymentExecutionRow } from "@/lib/releaseops/deploymentExecutionResponder";
 
-const RESERVATION_TTL_MS = 15 * 60 * 1000;
-
 export interface DeploymentReservationInput {
   organizationId: string;
   idempotencyKey: string;
@@ -88,9 +86,9 @@ export async function reserveDeploymentDispatch(
         return { ok: true as const, reservation: existing, reused: true, planId: null, used: null, limit: null };
       }
 
-      await tx.deploymentExecution.deleteMany({
-        where: { organizationId: input.organizationId, status: "reserved", createdAt: { lt: new Date(now.getTime() - RESERVATION_TTL_MS) } },
-      });
+      // A stale reservation can represent an accepted provider request whose
+      // receipt could not be stored. Never free its quota or idempotency key
+      // merely because time elapsed; reconcile the external outcome first.
       const billing = await tx.tenantBillingPlan.findUnique({ where: { organizationId: input.organizationId } });
       const planId = billingTierToPublicPlan(billing?.tier, billing?.status);
       const plan = PUBLIC_PLAN_CATALOG.find((candidate) => candidate.id === planId);

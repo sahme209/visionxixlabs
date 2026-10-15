@@ -49,6 +49,24 @@ instead of being invented as complete or not implemented.
 | Architecture and durability | Partially implemented; audit incomplete | Existing Tauri/React/Next/Prisma split, pure kernels and narrow I/O conventions in CLAUDE.md/DECISIONS.md | Reconcile stale decisions with current code; inspect queue claims, plan versions, cancellation, uncertain outcomes and separation of duties before selecting new infrastructure |
 | Product strategy / partner launch | Blocked by external validation; review incomplete | Founder-defined five design-partner goal and governed playbook positioning; no new customer evidence supplied | Prioritize reliable onboarding and one verified journey per partner; founder owns commitments, commercial terms and launch approval; no invented adoption or competitive superiority |
 
+## Integrated local follow-up · 2026-10-15
+
+`codex/mission-reliability-integration` combines independently reviewed repairs:
+unresolved deployment reservations retain their idempotency keys; uncertain
+desktop/Agent dispatch responses retain their holds; Airflow uses the same
+serializable allowance; manual migration names are validated shell data; and
+Agent evidence/proposals/history exclude known sensitive structured paths.
+The integrated candidate passes 532 Vitest files / 5,237 tests, web TypeScript,
+desktop TypeScript/frontend build and 30 Python CLI tests. Historical shell
+injection was reproduced only with a harmless command recorder, never Prisma.
+
+These are local automated checks, not live provider/financial validation or
+production readiness. PR #108 remains on its prior CI-tested head, with Vercel
+preview provisioning failed before build. Production preflight/founder mapping,
+real login, governed receipt reconciliation, historical free-text review,
+exact native device acceptance and partner/provider launch evidence remain
+open. Pricing, public limits, integrations and production approval are preserved.
+
 ## Priority and value matrix
 
 Cloud-local follow-up after the initial snapshot: paused-rule claims are fixed

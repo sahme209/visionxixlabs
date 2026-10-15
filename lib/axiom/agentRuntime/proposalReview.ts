@@ -1,4 +1,5 @@
 import "server-only";
+import { isSensitiveRepositoryEvidencePath } from "./repositoryEvidencePolicy";
 
 import { getFile } from "@/lib/connectors/github/githubWriteClient";
 import { parseRepositoryFullName, resolveTenantScopedToken } from "@/lib/connectors/github/resolveTenantScopedToken";
@@ -37,6 +38,9 @@ export async function prepareProposalArgsForReview(
   const branch = typeof args.branch === "string" ? args.branch : "";
   const parsed = parseRepositoryFullName(repositoryFullName);
   if (!parsed || !branch) return { ok: false, error: "invalid_file_proposal" };
+  const proposedPaths = toolName === "commit_github_file" ? [args.path] : Array.isArray(args.files)
+    ? args.files.map((file) => typeof file === "object" && file !== null ? (file as Record<string, unknown>).path : undefined) : [];
+  if (proposedPaths.some((path) => typeof path === "string" && isSensitiveRepositoryEvidencePath(path))) return { ok: false, error: "sensitive_repository_file" };
 
   const token = await resolveTenantScopedToken(organizationId, parsed);
   if (!token.ok) return { ok: false, error: token.error };

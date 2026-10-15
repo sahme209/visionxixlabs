@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-const mocks = vi.hoisted(() => ({ find: vi.fn(), findRequired: vi.fn(), update: vi.fn(), claim: vi.fn(), openPR: vi.fn(), token: vi.fn(), dispatch: vi.fn(), createDeployment: vi.fn(), membership: vi.fn() }));
+const mocks = vi.hoisted(() => ({ find: vi.fn(), findRequired: vi.fn(), update: vi.fn(), claim: vi.fn(), openPR: vi.fn(), token: vi.fn(), dispatch: vi.fn(), createDeployment: vi.fn(), membership: vi.fn(), reserve: vi.fn(), release: vi.fn(), settle: vi.fn() }));
 vi.mock("@/lib/db", () => ({ prisma: { airflowAutomationExecution: {
   findUnique: mocks.find, findUniqueOrThrow: mocks.findRequired, update: mocks.update, updateMany: mocks.claim,
 }, orgMembership: { findUnique: mocks.membership }, environment: { findFirst: async () => ({ id: "env-1", tier: "dev" }) }, deploymentTarget: { findFirst: async () => ({}) }, deploymentExecution: { create: mocks.createDeployment } } }));
@@ -12,6 +12,7 @@ vi.mock("@/lib/connectors/github/githubWriteClient", () => ({ createPullRequest:
 vi.mock("@/lib/releaseops/deploymentPolicyGuard", () => ({ evaluateDeploymentPolicy: async () => ({ ok: true, sourceCommitSha: "fixture-sha", policyId: "policy-1" }) }));
 vi.mock("@/lib/releaseops/auditEventResponder", () => ({ appendAuditEvent: vi.fn() }));
 vi.mock("@/lib/webhooks/dispatchWebhookEvent", () => ({ dispatchWebhookEvent: vi.fn() }));
+vi.mock("@/lib/billing/deploymentDispatchReservation", () => ({ reserveDeploymentDispatch: mocks.reserve, releaseDeploymentDispatch: mocks.release, settleDeploymentDispatch: mocks.settle }));
 import { executeAirflowAutomation } from "../automationExecutor";
 
 let row: { id: string; organizationId: string; status: string; attempt: number; decidedByUserId: string | null; nextRetryAt: Date | null; errorCode: string | null; resultJson: unknown };
@@ -52,9 +53,55 @@ beforeEach(() => {
   mocks.dispatch.mockResolvedValue({ ok: true, data: { workflowRunId: "run-1", htmlUrl: "https://github.com/fixture/repository/actions/runs/1" } });
   mocks.createDeployment.mockResolvedValue({ id: "deployment-1" });
   mocks.membership.mockResolvedValue({ role: "admin", acceptedAt: new Date() });
+  mocks.reserve.mockResolvedValue({ ok: true, reused: false, reservation: { id: "deployment-1" } });
+  mocks.release.mockResolvedValue(true);
+  mocks.settle.mockResolvedValue(true);
 });
 
 describe("Airflow execution claim", () => {
+  it("blocks deployment before dispatch when the shared allowance is exhausted", async () => {
+    automation.actionType = "deploy";
+    mocks.reserve.mockResolvedValue({ ok: false, error: "deployment_quota_exhausted" });
+    expect(await executeAirflowAutomation(row.id)).toEqual({ ok: false, error: "deployment_quota_exhausted" });
+    expect(mocks.dispatch).not.toHaveBeenCalled();
+  });
+
+  it("retains the shared hold and reservation reference after an uncertain provider response", async () => {
+    automation.actionType = "deploy";
+    mocks.dispatch.mockResolvedValue({ ok: false, error: "workflow_dispatch_failed: fetch failed" });
+    expect(await executeAirflowAutomation(row.id)).toEqual({ ok: false, error: "airflow_provider_outcome_unknown" });
+    expect(row.status).toBe("needs_reconciliation");
+    expect(row.resultJson).toMatchObject({ deploymentExecutionId: "deployment-1", phase: "outcome_unconfirmed" });
+    expect(mocks.release).not.toHaveBeenCalled();
+    expect(await executeAirflowAutomation(row.id)).toMatchObject({ ok: false });
+    expect(mocks.dispatch).toHaveBeenCalledTimes(1);
+  });
+
+  it("uses a stable execution key and settles the same reserved deployment", async () => {
+    automation.actionType = "deploy";
+    expect(await executeAirflowAutomation(row.id)).toMatchObject({ ok: true });
+    expect(mocks.reserve).toHaveBeenCalledWith(expect.anything(), expect.objectContaining({ organizationId: "org-1", idempotencyKey: "airflow-execution:execution-1", sourceCommitSha: "fixture-sha" }));
+    expect(mocks.settle).toHaveBeenCalledWith(expect.anything(), "org-1", "deployment-1", expect.objectContaining({ workflowRunId: "run-1" }));
+    expect(mocks.createDeployment).not.toHaveBeenCalled();
+  });
+
+  it("links an already recorded deployment without dispatching another workflow", async () => {
+    automation.actionType = "deploy";
+    mocks.reserve.mockResolvedValue({ ok: true, reused: true, reservation: { id: "deployment-existing", workflowUrl: "https://github.test/run", workflowRunId: "recorded-run" } });
+    expect(await executeAirflowAutomation(row.id)).toMatchObject({ ok: true, result: { deploymentExecutionId: "deployment-existing", replayed: true } });
+    expect(mocks.dispatch).not.toHaveBeenCalled();
+  });
+
+  it("releases a newly reserved slot if its durable dispatch intent cannot be saved", async () => {
+    automation.actionType = "deploy";
+    mocks.update.mockImplementation(async ({ data }) => {
+      if (data.resultJson?.phase === "dispatching") throw new Error("intent_store_unavailable");
+      return apply(data);
+    });
+    expect(await executeAirflowAutomation(row.id)).toEqual({ ok: false, error: "intent_store_unavailable" });
+    expect(mocks.dispatch).not.toHaveBeenCalled();
+    expect(mocks.release).toHaveBeenCalledWith(expect.anything(), "org-1", "deployment-1");
+  });
   it.each([null, { role: "admin", acceptedAt: null }, { role: "read_only", acceptedAt: new Date() }, { role: "operator", acceptedAt: new Date() }])("does not reuse approval after membership or approval capability is lost", async (membership) => {
     row.status = "failed";
     row.decidedByUserId = "previous-approver";
@@ -116,13 +163,14 @@ describe("Airflow execution claim", () => {
 
   it("does not redispatch a workflow when deployment tracking storage fails", async () => {
     automation.actionType = "deploy";
-    mocks.createDeployment.mockRejectedValue(new Error("deployment_store_unavailable"));
+    mocks.settle.mockResolvedValue(false);
     expect(await executeAirflowAutomation(row.id)).toEqual({ ok: false, error: "airflow_provider_outcome_unknown" });
     expect(row.status).toBe("needs_reconciliation");
     expect(row.resultJson).toMatchObject({ action: "deploy", workflowRunId: "run-1" });
     expect(row.nextRetryAt).toBeNull();
     expect(await executeAirflowAutomation(row.id)).toMatchObject({ ok: false });
     expect(mocks.dispatch).toHaveBeenCalledTimes(1);
+    expect(mocks.release).not.toHaveBeenCalled();
   });
 
   it("holds an action for reconciliation when the provider response times out", async () => {

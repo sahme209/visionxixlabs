@@ -27,3 +27,23 @@ missing/disabled identity, a removed tool, or an unavailable policy store blocks
 execution. Rejection remains available without Agent permission. This check is
 a current read before the claim; it does not claim an atomic lock against a
 policy change that races with an already claimed external operation.
+
+Known sensitive repository paths are excluded consistently from automatic
+inspection/search, direct Agent reads, review-snapshot capture, and approval
+execution (including older proposals with stored snapshots). This covers
+environment files, private-key/credential filenames and `.git`, `.aws`, `.ssh`,
+`.kube`, `secrets`, and `credentials` directory segments. Rejection happens
+before token resolution on direct reads and review preparation. Normal source
+inspection/commits retain tenant-scoped tokens and reviewed-SHA checks.
+
+This is a conservative known-path policy, including environment-file examples;
+it is not content scanning and cannot establish that other source files contain
+no secrets. Credential changes belong in the existing secure credential flow,
+not in Agent evidence or file proposals. Other repository browsing is unchanged.
+
+Conversation history redacts structured objects whose `path` identifies a known
+sensitive file before returning stored action arguments/results. Nested
+inspection results and multi-file review snapshots use the same policy. Stored
+audit data and statuses are not modified. This prevents redisplaying known
+structured sensitive snapshots, but does not scan or certify free-text user,
+assistant or tool messages; historical data review remains a private follow-up.

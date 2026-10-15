@@ -67,11 +67,34 @@ describe("deployment dispatch reservations", () => {
     expect(deploymentExecution.create).not.toHaveBeenCalled();
   });
 
+  it("does not erase an old unresolved dispatch to free quota for another request", async () => {
+    const { repo, deploymentExecution } = repository();
+    let occupiedSlots = 10;
+    // The tenth slot represents a dispatch whose provider outcome could not
+    // be persisted. Age alone cannot establish that no external effect ran.
+    deploymentExecution.deleteMany.mockImplementation(async () => {
+      occupiedSlots -= 1;
+      return { count: 1 };
+    });
+    deploymentExecution.count.mockImplementation(async () => occupiedSlots);
+    await expect(reserveDeploymentDispatch(repo, { ...input, idempotencyKey: "unrelated-request" }, new Date("2026-10-15T12:00:00Z")))
+      .resolves.toMatchObject({ ok: false, error: "deployment_quota_exhausted" });
+    expect(deploymentExecution.deleteMany).not.toHaveBeenCalled();
+    expect(deploymentExecution.create).not.toHaveBeenCalled();
+  });
+
   it("returns a completed idempotent operation instead of reserving or dispatching again", async () => {
     const existing = { ...input, id: "exec-existing", status: "queued" };
     const { repo, deploymentExecution } = repository({ existing });
     await expect(reserveDeploymentDispatch(repo, input)).resolves.toMatchObject({ ok: true, reused: true, reservation: existing });
     expect(deploymentExecution.create).not.toHaveBeenCalled();
+  });
+
+  it("keeps an unresolved operation blocked for the same key even after its former expiry", async () => {
+    const { repo, deploymentExecution } = repository({ existing: { ...input, id: "exec-unresolved", status: "reserved", createdAt: new Date("2026-10-01T00:00:00Z") } });
+    await expect(reserveDeploymentDispatch(repo, input, new Date("2026-10-15T12:00:00Z"))).resolves.toMatchObject({ ok: false, error: "deployment_already_in_progress" });
+    expect(deploymentExecution.create).not.toHaveBeenCalled();
+    expect(deploymentExecution.deleteMany).not.toHaveBeenCalled();
   });
 
   it("rejects reuse of a key for a different deployment payload", async () => {
