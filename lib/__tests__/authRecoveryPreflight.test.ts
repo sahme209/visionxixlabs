@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import { inspectAuthRecovery } from "../../scripts/auth-recovery-preflight.mjs";
+import { inspectAuthRecovery, publicRecoverySummary } from "../../scripts/auth-recovery-preflight.mjs";
 
 function fixture(overrides: { readOnly?: string; users?: unknown[]; history?: unknown[]; duplicates?: unknown[] } = {}) {
   const statements: string[] = [];
@@ -24,6 +24,17 @@ function fixture(overrides: { readOnly?: string; users?: unknown[]; history?: un
 }
 
 describe("read-only login recovery preflight", () => {
+  it("keeps account identifiers, membership roles, and billing plans out of public workflow output", async () => {
+    const { client } = fixture();
+    const report = await inspectAuthRecovery(client, { founderEmail: "founder@example.test" });
+    const summary = publicRecoverySummary(report);
+    expect(summary.accountCheck).toBe("needs_private_review");
+    const serialized = JSON.stringify(summary);
+    for (const privateValue of ["existing-user", "other-tenant", "read_only", "starter", "founder@example.test", report.founder.derivedPersonalWorkspaceId]) {
+      expect(serialized).not.toContain(privateValue);
+    }
+    expect(summary.migrations.pending).toContain("20261014120000_add_email_verification");
+  });
   it("refuses to inspect arbitrary accounts when no founder email is supplied", async () => {
     const { client } = fixture();
     await expect(inspectAuthRecovery(client)).rejects.toThrow("founder_email_required");

@@ -51,6 +51,56 @@ unverified until the approved migration and real sign-in checks succeed.
 
 ## Safety preflight before requesting production approval
 
+### Deployment follow-up after PR #103 merged
+
+Current main is `dbf942fcb3fb3bbb6ade4f02650987c45c061370`.
+Deployment `dpl_BqYXNPpRC8x3HGk6V5YVGeAaJuqu` is READY; its build logs
+confirm completion and its direct sign-in page returns HTTP 200 with that
+deployment ID. GitHub Actions passed for PR #103's final source commit.
+The public custom domain's alias and HTML still identify
+`dpl_DNyBMLHZmytDiYcrJ6rYnhnWRBer` (#102). Moving that alias is a production
+release action; it has not been changed during investigation.
+
+The failed PR preview `dpl_7jhYoxxDYccqvFGTLVjZqKzzv8KR` and a single
+same-commit preview retry `dpl_5S7LkCjLXVhL1hLBtVarBtv911dz` both failed
+in about one second with `BUILD_FAILED: Resource provisioning failed`, with no
+build events available. This is a pre-build provisioning failure; its specific
+provider/platform cause is not exposed by the available tools. Do not change
+application code, weaken protection, or provision new services on that evidence.
+The team/project settings or Vercel support need to resolve the preview blocker.
+
+The deployed custom-domain `/api/auth/providers` endpoint returns HTTP 200 and
+lists credentials, Google, and GitHub with same-origin callback URLs. This
+confirms provider registration, not successful sign-in. No authenticated browser
+or test-account credentials are available here, so full password/OAuth flows
+remain unverified. Earlier production callback logs establish the missing
+verification column; absence of newer errors is not proof it was repaired.
+
+### Protected GitHub Actions alternative
+
+The repository is public. Never put the detailed preflight JSON into Actions
+logs or downloadable artifacts. The manual **Read-only production auth preflight**
+workflow invokes the script with `--public-summary`, which omits account IDs,
+workspace IDs, membership roles, plan details, and financial identifiers. It
+does not accept a public founder-email input. Set `AUTH_PREFLIGHT_FOUNDER_EMAIL`
+to the founder-confirmed address as a protected `production` environment secret;
+the workflow reuses the existing `DATABASE_URL` secret binding. Keep database
+credentials in the secure runtime. Platform-admin matching stays unavailable
+in this workflow because it does not receive the deployment's admin config.
+
+After the workflow PR is reviewed and merged, manually run it on `main` and
+satisfy any existing `production` environment review requirement. It has no
+push/PR trigger, cannot run a feature-branch job, shares the migration workflow's
+concurrency lock, and supplies credentials only to the final read-only step.
+Dependencies/client generation run without database credentials. Findings cause
+exit 2; inspection errors cause exit 1. A summary `accountCheck: passed` means
+the configured address uniquely matched an existing canonical account and an
+accepted membership in its derived personal workspace; it does not grant a role,
+prove external OAuth ownership, or establish platform-admin authority. Use the
+original secure-runtime command for private account details and admin-config
+verification. No workflow applies or resolves a migration, changes memberships,
+or approves a production release.
+
 The target email-verification SQL was exercised on an isolated PostgreSQL 16
 database. Existing identity, password hash, name, and membership role were
 preserved; existing accounts remained unverified. Unique token hashes, rejection
@@ -113,7 +163,7 @@ unit tests with mocked storage, not a real OAuth or production database test.
 Existing sign-in gate tests preserve best-effort personal-workspace bootstrap;
 no change to authorization is needed to repair this schema mismatch.
 
-Local validation: all 528 Vitest files / 5,151 tests pass after Prisma client
+Local validation: all 528 Vitest files / 5,152 tests pass after Prisma client
 generation, web `tsc --noEmit` and the full production build pass, desktop TypeScript and frontend build
 pass, and all 30 Python CLI tests pass. Native Rust checks cannot run because
 `cargo` is not installed in this environment. These checks do not establish

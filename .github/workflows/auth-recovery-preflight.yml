@@ -1,0 +1,41 @@
+name: Read-only production auth preflight
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: production-database-migrations
+  cancel-in-progress: false
+
+jobs:
+  inspect:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    environment: production
+    timeout-minutes: 10
+    steps:
+      - name: Check out reviewed main
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+
+      - name: Set up Node.js
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '20'
+          cache: npm
+
+      - name: Install locked tooling without lifecycle scripts
+        run: npm ci --ignore-scripts
+
+      - name: Generate database client without database credentials
+        run: npx prisma generate --schema prisma/schema.prisma
+
+      - name: Inspect using a read-only transaction and public-safe output
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          AUTH_PREFLIGHT_FOUNDER_EMAIL: ${{ secrets.AUTH_PREFLIGHT_FOUNDER_EMAIL }}
+        run: node scripts/auth-recovery-preflight.mjs --public-summary

@@ -103,6 +103,23 @@ export async function inspectAuthRecovery(client, options = {}) {
   }, { isolationLevel: "RepeatableRead", maxWait: 5000, timeout: 30000 });
 }
 
+// Public repositories must not publish private account IDs, roles, or plans
+// in Actions logs. The detailed report remains available only in secure runtimes.
+export function publicRecoverySummary(report) {
+  return {
+    readOnly: report.readOnly,
+    migrations: report.migrations,
+    schema: report.schema,
+    accountCheck: report.founder.match === "unique" && report.founder.normalizedEmail &&
+      report.founder.personalMembership?.accepted ? "passed" : "needs_private_review",
+    platformAdminCheck: report.founder.platformAdmin === "configuration_unavailable"
+      ? "configuration_unavailable" : "inspected_privately",
+    billingDuplicates: report.billing.duplicateGroups === null ? "not_inspected"
+      : report.billing.duplicateGroups.some((row) => row.groups > 0) ? "found" : "none_found",
+    productionApproval: "not_requested",
+  };
+}
+
 async function main() {
   if (!process.env.DATABASE_URL) throw new Error("database_connection_unavailable");
   const client = new PrismaClient();
@@ -111,7 +128,7 @@ async function main() {
       founderEmail: process.env.AUTH_PREFLIGHT_FOUNDER_EMAIL,
       adminEmails: process.env.ADMIN_EMAILS,
     });
-    console.log(JSON.stringify(report, null, 2));
+    console.log(JSON.stringify(process.argv.includes("--public-summary") ? publicRecoverySummary(report) : report, null, 2));
     if (report.migrations.pending.length || report.migrations.problems.length ||
         !report.schema.verificationColumnPresent || !report.schema.verificationTokenTablePresent ||
         report.founder.match !== "unique" || !report.founder.normalizedEmail ||
