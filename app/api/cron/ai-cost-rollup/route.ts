@@ -113,7 +113,7 @@ export async function GET(req: NextRequest) {
         outputTokens += BigInt(r.completionTokens ?? 0);
       }
 
-      const billedCents = applyMargin(cost.totalCents, margin);
+      const billedCents = applyMargin(cost.totalCents);
 
       await prisma.workspaceUsageSummary.upsert({
         where: { organizationId_periodMonth: { organizationId: orgId, periodMonth: period } },
