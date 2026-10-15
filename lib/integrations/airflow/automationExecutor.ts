@@ -11,8 +11,16 @@ import { dispatchWebhookEvent } from "@/lib/webhooks/dispatchWebhookEvent";
 export async function executeAirflowAutomation(executionId: string, actorUserId?: string): Promise<{ ok: true; result: Record<string, unknown> } | { ok: false; error: string }> {
   const execution = await prisma.airflowAutomationExecution.findUnique({ where: { id: executionId }, include: { automation: true } });
   if (!execution || !["pending_approval", "queued", "failed"].includes(execution.status)) return { ok: false, error: "airflow_execution_not_actionable" };
+  if (execution.status === "pending_approval" && !actorUserId) return { ok: false, error: "airflow_human_approval_required" };
   const automation = execution.automation;
-  await prisma.airflowAutomationExecution.update({ where: { id: execution.id }, data: { status: "running", attempt: { increment: 1 }, errorCode: null, nextRetryAt: null, ...(actorUserId ? { decidedByUserId: actorUserId, decidedAt: new Date() } : {}) } });
+  // Competing approvals/ticks must claim the exact observed attempt before
+  // any provider action. Status alone is insufficient if a concurrent retry
+  // has already run and failed again. Rejection wins if it changed the row.
+  const claimed = await prisma.airflowAutomationExecution.updateMany({
+    where: { id: execution.id, organizationId: execution.organizationId, status: execution.status, attempt: execution.attempt },
+    data: { status: "running", attempt: { increment: 1 }, errorCode: null, nextRetryAt: null, ...(actorUserId ? { decidedByUserId: actorUserId, decidedAt: new Date() } : {}) },
+  });
+  if (claimed.count !== 1) return { ok: false, error: "airflow_execution_not_actionable" };
   try {
     if (automation.actionType === "none") return await succeed(execution.id, { action: "none" });
     const repository = automation.repositoryFullName ? parseRepositoryFullName(automation.repositoryFullName) : null;
