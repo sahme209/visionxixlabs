@@ -1,5 +1,22 @@
 # Axiom Agent master-mission status
 
+## Independent follow-up — paused Airflow execution safety
+
+Main `9db9f4de` includes merged PRs #105–#107. Their implementation is not
+proof of live production login or external provider validation. The next local
+candidate prevents queued/failed executions from dispatching after an operator
+pauses a rule or disconnects Airflow. The scheduler excludes disabled rules,
+and execution atomically requires the related rule to remain enabled. A pause
+does not claim to cancel work already claimed or externally dispatched.
+Regression cases reproduce paused queued/retry execution and a pause between
+read and claim; an enabled rule retains its existing retry path. No schema
+change or production/provider operation is needed for this software repair.
+Per the founder's instruction, no new PR is created for this local milestone.
+Local validation: TypeScript, 529 Vitest files / 5,165 tests, desktop
+TypeScript/frontend build, and 30 Python CLI tests pass. Native Rust checks
+remain unavailable because cargo is absent. This candidate is committed only
+in the cloud workspace; it is not merged, pushed, deployed, or live-validated.
+
 ## Current unified mission · 2026-10-15
 
 The founder's [unified master mission](AXIOM_UNIFIED_MASTER_MISSION.md) now

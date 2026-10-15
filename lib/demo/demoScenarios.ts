@@ -269,7 +269,7 @@ export const DEMO_SCENARIOS: Readonly<Record<DemoScenarioId, DemoScenario>> = {
       { id: "4", title: "Approval packet",            description: "Two-person approval for any change-class action.", route: "/dashboard/approvals", approval: "two_person", expectedResult: "Both reviewers sign off." },
       { id: "5", title: "Execute",                    description: "Approved automation runs; outputs streamed to the page.", approval: "none", expectedResult: "Execution log + new state visible." },
       { id: "6", title: "Audit log",                  description: "Every action recorded with closed-union AuditAction.", route: "/dashboard/audit", approval: "none", expectedResult: "Audit row with actor, action, outcome, correlation id." },
-      { id: "7", title: "Review duplicate-action protection", description: "Illustrative Airflow completion workflow: concurrent callers compete for one durable attempt claim, and pending approval still requires an explicit approver.", approval: "none", expectedResult: "One caller claims the observed attempt; competing or stale callers leave it unchanged. This demonstration performs no provider operation." },
+      { id: "7", title: "Review duplicate-action protection", description: "Illustrative Airflow completion workflow: concurrent callers compete for one durable attempt claim, pending approval needs an explicit approver, and a paused rule cannot start a queued action or retry.", approval: "none", expectedResult: "One caller claims an enabled rule's observed attempt; paused, competing, or stale callers leave it unchanged. This demonstration performs no provider operation." },
     ],
   },
   ai_workforce_overview: {

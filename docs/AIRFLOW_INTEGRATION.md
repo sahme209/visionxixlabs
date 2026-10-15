@@ -52,6 +52,10 @@ The scheduler is idempotent per automation and Airflow run. Multiple ticks canno
 - Action failures retry up to the rule's configured limit with a bounded delay.
 - ECS stability failure and rollback remain owned by the tenant's OIDC-authenticated GitHub Actions workflow. Axiom reconciles that workflow result into the Airflow automation execution.
 - Operators can pause a rule at any time without deleting its execution or audit evidence.
+- Paused or disconnected rules cannot start queued actions or retries. The
+  executor rechecks the enabled rule when it atomically claims an attempt, so
+  a pause after its initial read still blocks the provider call. This does not
+  cancel an operation already claimed and possibly dispatched externally.
 
 ## Execution claim safety · 2026-10-15
 

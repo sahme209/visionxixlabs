@@ -44,7 +44,7 @@ export async function runAirflowAutomationTick(now = new Date()): Promise<{ orga
           await prisma.airflowAutomation.update({ where: { id: rule.id }, data: { lastEvaluatedAt: now } });
         } catch { totals.errors += 1; }
       }
-      const retries = await prisma.airflowAutomationExecution.findMany({ where: { organizationId: group.organizationId, status: "failed", nextRetryAt: { lte: now } }, select: { id: true, decidedByUserId: true } });
+      const retries = await prisma.airflowAutomationExecution.findMany({ where: { organizationId: group.organizationId, status: "failed", nextRetryAt: { lte: now }, automation: { enabled: true } }, select: { id: true, decidedByUserId: true } });
       for (const retry of retries) { await executeAirflowAutomation(retry.id, retry.decidedByUserId ?? undefined); totals.actions += 1; }
       await reconcileDeployments(group.organizationId);
     } catch { totals.errors += 1; }
