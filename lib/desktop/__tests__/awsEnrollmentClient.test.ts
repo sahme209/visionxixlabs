@@ -2,7 +2,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { DesktopClient } from "../../../desktop/src/lib/desktopClient";
 const input = { expectedAccountId: "123456789012", roleArn: "arn:aws:iam::123456789012:role/AxiomReadOnly", region: "us-east-1" };
 const challenge = { ...input, attemptId: "attempt/1", externalId: "server-issued-external-id", expiresAt: "2099-01-01T00:00:00Z" };
-const account = { id: "account-1", provider: "aws", accountId: input.expectedAccountId, alias: null, regions: [input.region], connected: true, status: "connected", lastValidatedAt: "2026-10-15T00:00:00Z", inventoryAvailability: "not_checked", enabled: false, agentScanAvailable: false };
+const account = { id: "account-1", provider: "aws", accountId: input.expectedAccountId, alias: null, regions: [input.region], connected: true, status: "connected", lastValidatedAt: "2026-10-15T00:00:00Z", connectionVersion: 1, revokedAt: null, inventoryAvailability: "not_checked", enabled: false, agentScanAvailable: false };
 function client(token = "axm.desk.session.signature") { return new DesktopClient({ apiBase: "https://service.example.test", sessionToken: token }); }
 function respond(data: unknown, status = 200) { const fetch = vi.fn().mockResolvedValue(new Response(JSON.stringify({ ok: true, data }), { status })); vi.stubGlobal("fetch", fetch); return fetch; }
 afterEach(() => vi.unstubAllGlobals());
@@ -56,5 +56,34 @@ describe("bounded live AWS inventory client", () => {
   it("does not convert provider denial into an empty successful inventory", async () => {
     vi.stubGlobal("fetch", vi.fn().mockResolvedValue(new Response(JSON.stringify({ ok: false, error: "aws_inventory_denied", message: "AWS did not permit this bounded inventory read." }), { status: 403 })));
     expect(await client().desktopAwsInventory("account-1")).toEqual({ ok: false, error: "AWS did not permit this bounded inventory read." });
+  });
+});
+
+describe("version-bound AWS disconnect client", () => {
+  const disconnected = { ...account, connected: false, status: "disconnected", connectionVersion: 2, revokedAt: "2026-10-15T01:00:00Z", inventoryAvailability: "unavailable" };
+  it("posts only expected version to the paired tenant account endpoint", async () => {
+    const fetch = respond({ account: disconnected });
+    expect(await client().disconnectDesktopAwsAccount("account-1", 1)).toEqual({ ok: true, data: { account: disconnected } });
+    expect(fetch).toHaveBeenCalledWith("https://service.example.test/api/desktop/cloud/accounts/account-1/disconnect", expect.objectContaining({ method: "POST", credentials: "omit", body: JSON.stringify({ expectedVersion: 1 }) }));
+  });
+  it("does not manufacture a disconnected state from HTTP failure", async () => {
+    respond({ account: disconnected }, 503); expect(await client().disconnectDesktopAwsAccount("account-1", 1)).toMatchObject({ ok: false });
+  });
+  it.each([
+    account,
+    { ...disconnected, id: "other-account" },
+    { ...disconnected, revokedAt: null },
+    { ...disconnected, connectionVersion: 0 },
+    { ...disconnected, connectionVersion: 8 },
+  ])("rejects malformed or mismatched disconnect results: %j", async value => {
+    respond({ account: value }); expect(await client().disconnectDesktopAwsAccount("account-1", 1)).toMatchObject({ ok: false });
+  });
+  it("does not request disconnect without a valid expected connection revision", async () => {
+    const fetch = vi.fn(); vi.stubGlobal("fetch", fetch);
+    expect(await client().disconnectDesktopAwsAccount("account-1", 0)).toMatchObject({ ok: false }); expect(fetch).not.toHaveBeenCalled();
+  });
+  it("does not expose the paired-only mutation to recovery API keys", async () => {
+    const fetch = vi.fn(); vi.stubGlobal("fetch", fetch);
+    expect(await client("vxlk_recovery").disconnectDesktopAwsAccount("account-1", 1)).toMatchObject({ ok: false }); expect(fetch).not.toHaveBeenCalled();
   });
 });

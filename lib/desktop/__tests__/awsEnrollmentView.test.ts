@@ -3,13 +3,13 @@ import { createElement } from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import type { VerifiedDesktopIdentity } from "../../../desktop/src/lib/desktopClient";
-const mock = vi.hoisted(() => ({ client: { config: {} as { sessionToken?: string }, desktopCloudAccounts: vi.fn(), startAwsReadOnlyEnrollment: vi.fn(), completeAwsReadOnlyEnrollment: vi.fn(), desktopAwsInventory: vi.fn() } }));
+const mock = vi.hoisted(() => ({ client: { config: {} as { sessionToken?: string }, desktopCloudAccounts: vi.fn(), startAwsReadOnlyEnrollment: vi.fn(), completeAwsReadOnlyEnrollment: vi.fn(), desktopAwsInventory: vi.fn(), disconnectDesktopAwsAccount: vi.fn() } }));
 vi.mock("../../../desktop/src/lib/desktopClient", () => ({ desktopClient: mock.client }));
 import { AwsReadOnlyEnrollment } from "../../../desktop/src/components/AwsReadOnlyEnrollment";
 const identity = { kind: "desktop_session", organizationId: "workspace-1", capabilities: ["workspace:read", "connections:manage"] } as VerifiedDesktopIdentity;
 const input = { expectedAccountId: "123456789012", roleArn: "arn:aws:iam::123456789012:role/AxiomReadOnly", region: "us-east-1" };
 const challenge = { ...input, attemptId: "attempt-1", externalId: "server-issued-external-id", expiresAt: "2099-01-01T00:00:00Z" };
-const account = { id: "account-1", provider: "aws", accountId: input.expectedAccountId, alias: null, regions: [input.region], connected: true, status: "connected", lastValidatedAt: "2026-10-15T00:00:00Z", inventoryAvailability: "not_checked", enabled: false, agentScanAvailable: false };
+const account = { id: "account-1", provider: "aws", accountId: input.expectedAccountId, alias: null, regions: [input.region], connected: true, status: "connected", lastValidatedAt: "2026-10-15T00:00:00Z", connectionVersion: 1, revokedAt: null, inventoryAvailability: "not_checked", enabled: false, agentScanAvailable: false };
 function deferred<T>() { let resolve!: (value: T) => void; const promise = new Promise<T>(done => { resolve = done; }); return { promise, resolve }; }
 function fill() {
   fireEvent.change(screen.getByLabelText("Expected AWS account ID"), { target: { value: input.expectedAccountId } });
@@ -188,5 +188,125 @@ describe("bounded inventory is separate from role identity verification", () => 
     mock.client.desktopAwsInventory.mockResolvedValue({ ok: true, data: { ...inventory, instances: [], truncated: false } }); await showAccount();
     fireEvent.click(screen.getByRole("button", { name: "Read bounded EC2 inventory" }));
     expect(await screen.findByText(/This is not proof that the AWS account is empty/)).toBeTruthy();
+  });
+});
+
+describe("AWS disconnect confirmation and stale outcome handling", () => {
+  const disconnected = { ...account, connected: false, status: "disconnected", connectionVersion: 2, revokedAt: "2026-10-15T01:00:00Z", inventoryAvailability: "unavailable" };
+  const inventory = { accountId: input.expectedAccountId, region: input.region, source: "live", complete: false, truncated: false, observedAt: "2026-10-15T00:00:00Z", instances: [{ instanceId: "i-before", state: "running", instanceType: "t3.micro", availabilityZone: "us-east-1a" }] };
+  async function renderConnected(viewIdentity = identity) {
+    mock.client.desktopCloudAccounts.mockResolvedValue({ ok: true, data: { accounts: [account] } });
+    const view = render(createElement(AwsReadOnlyEnrollment, { identity: viewIdentity }));
+    await screen.findByRole("button", { name: "Read bounded EC2 inventory" }); return view;
+  }
+  function confirmDisconnect() {
+    fireEvent.click(screen.getByRole("button", { name: "Disconnect from Axiom" }));
+    fireEvent.click(screen.getByRole("button", { name: "Disconnect Axiom access" }));
+  }
+  it("requires explicit confirmation and explains local-only removal versus AWS revocation", async () => {
+    await renderConnected(); fireEvent.click(screen.getByRole("button", { name: "Disconnect from Axiom" }));
+    expect(screen.getByRole("alertdialog")).toBeTruthy();
+    expect(screen.getByText(/does not delete or modify AWS roles or trust policies/)).toBeTruthy();
+    expect(mock.client.disconnectDesktopAwsAccount).not.toHaveBeenCalled();
+    fireEvent.click(screen.getByRole("button", { name: "Keep connection" }));
+    expect(screen.queryByRole("alertdialog")).toBeNull(); expect(mock.client.disconnectDesktopAwsAccount).not.toHaveBeenCalled();
+  });
+  it("updates only after service confirmation and removes the old inventory display", async () => {
+    mock.client.desktopAwsInventory.mockResolvedValue({ ok: true, data: inventory });
+    mock.client.disconnectDesktopAwsAccount.mockResolvedValue({ ok: true, data: { account: disconnected } });
+    await renderConnected(); fireEvent.click(screen.getByRole("button", { name: "Read bounded EC2 inventory" })); await screen.findByText(/i-before/);
+    confirmDisconnect();
+    await screen.findByText(/Axiom connection disconnected/);
+    expect(mock.client.disconnectDesktopAwsAccount).toHaveBeenCalledExactlyOnceWith("account-1", 1);
+    expect(screen.queryByText(/i-before/)).toBeNull(); expect(screen.queryByRole("button", { name: "Read bounded EC2 inventory" })).toBeNull();
+    expect(screen.getByRole("button", { name: "Prepare a fresh reconnection" })).toBeTruthy();
+  });
+  it("does not reuse a stale enrollment challenge for reconnection", async () => {
+    mock.client.disconnectDesktopAwsAccount.mockResolvedValue({ ok: true, data: { account: disconnected } });
+    await renderConnected(); await prepare(); confirmDisconnect(); await screen.findByText(/Axiom connection disconnected/);
+    expect(screen.queryByLabelText("Enrollment external ID")).toBeNull();
+    fireEvent.click(screen.getByRole("button", { name: "Prepare a fresh reconnection" }));
+    expect((screen.getByLabelText("Expected AWS account ID") as HTMLInputElement).value).toBe(input.expectedAccountId);
+    expect((screen.getByLabelText("Existing IAM role ARN") as HTMLInputElement).value).toBe("");
+    expect(mock.client.startAwsReadOnlyEnrollment).toHaveBeenCalledTimes(1); expect(mock.client.completeAwsReadOnlyEnrollment).not.toHaveBeenCalled();
+  });
+  it("does not claim success on ambiguous failure and hides inventory until a fresh read", async () => {
+    mock.client.disconnectDesktopAwsAccount.mockResolvedValue({ ok: false, error: "The service could not be reached." });
+    await renderConnected(); confirmDisconnect();
+    expect((await screen.findByRole("alert")).textContent).toContain("outcome is unconfirmed");
+    expect(screen.queryByText(/Axiom connection disconnected/)).toBeNull();
+    expect(screen.queryByRole("button", { name: "Read bounded EC2 inventory" })).toBeNull();
+    fireEvent.click(screen.getByRole("button", { name: "Refresh AWS account state" }));
+    await screen.findByRole("button", { name: "Read bounded EC2 inventory" });
+  });
+  it("does not apply an old disconnect result after credentials change", async () => {
+    const pending = deferred<unknown>(); mock.client.disconnectDesktopAwsAccount.mockReturnValue(pending.promise);
+    await renderConnected(); confirmDisconnect(); mock.client.config = { sessionToken: "axm.desk.replacement.signature" };
+    pending.resolve({ ok: true, data: { account: disconnected } });
+    await new Promise(resolve => setTimeout(resolve, 0)); expect(screen.queryByText(/Axiom connection disconnected/)).toBeNull();
+  });
+  it("does not expose disconnect to a read-only paired viewer", async () => {
+    await renderConnected({ ...identity, capabilities: ["workspace:read"] });
+    expect(screen.queryByRole("button", { name: "Disconnect from Axiom" })).toBeNull();
+  });
+  it("does not let an older list refresh resurrect a confirmed disconnected account", async () => {
+    const stale = deferred<unknown>(); await renderConnected();
+    mock.client.desktopCloudAccounts.mockReturnValue(stale.promise);
+    fireEvent.click(screen.getByRole("button", { name: "Refresh AWS account state" }));
+    mock.client.disconnectDesktopAwsAccount.mockResolvedValue({ ok: true, data: { account: disconnected } }); confirmDisconnect();
+    await screen.findByText(/Axiom connection disconnected/); stale.resolve({ ok: true, data: { accounts: [account] } });
+    await new Promise(resolve => setTimeout(resolve, 0)); expect(screen.queryByRole("button", { name: "Read bounded EC2 inventory" })).toBeNull();
+  });
+  it("cannot display an inventory request that finishes after disconnect started", async () => {
+    const inventoryRead = deferred<unknown>(); mock.client.desktopAwsInventory.mockReturnValue(inventoryRead.promise);
+    const disconnect = deferred<unknown>(); mock.client.disconnectDesktopAwsAccount.mockReturnValue(disconnect.promise);
+    await renderConnected(); fireEvent.click(screen.getByRole("button", { name: "Read bounded EC2 inventory" }));
+    confirmDisconnect(); inventoryRead.resolve({ ok: true, data: inventory });
+    await new Promise(resolve => setTimeout(resolve, 0)); expect(screen.queryByText(/i-before/)).toBeNull();
+  });
+  it("does not overwrite a newly refreshed connection with an older disconnect completion", async () => {
+    const pending = deferred<unknown>(); mock.client.disconnectDesktopAwsAccount.mockReturnValue(pending.promise);
+    await renderConnected(); confirmDisconnect();
+    mock.client.desktopCloudAccounts.mockResolvedValue({ ok: true, data: { accounts: [{ ...account, connectionVersion: 3, lastValidatedAt: "2026-10-15T02:00:00Z" }] } });
+    fireEvent.click(screen.getByRole("button", { name: "Refresh AWS account state" }));
+    await screen.findByText("Last service validation: 2026-10-15T02:00:00Z");
+    pending.resolve({ ok: true, data: { account: disconnected } });
+    await new Promise(resolve => setTimeout(resolve, 0));
+    expect(screen.queryByText(/Axiom connection disconnected/)).toBeNull();
+    expect(screen.queryByRole("button", { name: "Read bounded EC2 inventory" })).toBeNull();
+    fireEvent.click(screen.getByRole("button", { name: "Refresh AWS account state" }));
+    await screen.findByRole("button", { name: "Read bounded EC2 inventory" });
+  });
+  it("keeps inventory hidden when a newer list returns precommit state during disconnect", async () => {
+    const pending = deferred<unknown>(); mock.client.disconnectDesktopAwsAccount.mockReturnValue(pending.promise);
+    await renderConnected(); confirmDisconnect();
+    fireEvent.click(screen.getByRole("button", { name: "Refresh AWS account state" }));
+    await waitFor(() => expect(mock.client.desktopCloudAccounts).toHaveBeenCalledTimes(2));
+    await waitFor(() => expect((screen.getByRole("button", { name: "Refresh AWS account state" }) as HTMLButtonElement).disabled).toBe(false));
+    expect(screen.queryByRole("button", { name: "Read bounded EC2 inventory" })).toBeNull();
+    expect(screen.getByRole("button", { name: "Disconnecting Axiom access…" })).toBeTruthy();
+    pending.resolve({ ok: true, data: { account: disconnected } });
+    await screen.findByText(/Axiom connection disconnected/);
+    expect(screen.queryByRole("button", { name: "Read bounded EC2 inventory" })).toBeNull();
+  });
+  it("requires a post-settlement list instead of a delayed precommit list to release suspension", async () => {
+    const command = deferred<unknown>(); mock.client.disconnectDesktopAwsAccount.mockReturnValue(command.promise);
+    await renderConnected(); confirmDisconnect();
+    const precommit = deferred<unknown>(); mock.client.desktopCloudAccounts.mockReturnValueOnce(precommit.promise);
+    fireEvent.click(screen.getByRole("button", { name: "Refresh AWS account state" }));
+    command.resolve({ ok: false, error: "Connection result unavailable." });
+    await screen.findByRole("alert");
+    precommit.resolve({ ok: true, data: { accounts: [account] } });
+    await waitFor(() => expect((screen.getByRole("button", { name: "Refresh AWS account state" }) as HTMLButtonElement).disabled).toBe(false));
+    expect(screen.queryByRole("button", { name: "Read bounded EC2 inventory" })).toBeNull();
+    fireEvent.click(screen.getByRole("button", { name: "Refresh AWS account state" }));
+    await screen.findByRole("button", { name: "Read bounded EC2 inventory" });
+  });
+  it("invalidates a displayed inventory when connection version changes with the same timestamp", async () => {
+    mock.client.desktopAwsInventory.mockResolvedValue({ ok: true, data: inventory }); await renderConnected();
+    fireEvent.click(screen.getByRole("button", { name: "Read bounded EC2 inventory" })); await screen.findByText(/i-before/);
+    mock.client.desktopCloudAccounts.mockResolvedValue({ ok: true, data: { accounts: [{ ...account, connectionVersion: 3 }] } });
+    fireEvent.click(screen.getByRole("button", { name: "Refresh AWS account state" }));
+    await waitFor(() => expect(screen.queryByText(/i-before/)).toBeNull());
   });
 });

@@ -8,6 +8,7 @@ import { PrismaClient } from "@prisma/client";
 
 const root = dirname(dirname(fileURLToPath(import.meta.url)));
 export const enrollmentMigration = "20261016010000_cloud_account_enrollment";
+export const revocationMigration = "20261016020000_cloud_account_credential_revocation";
 export function validateAwsEnrollmentRehearsalTarget(value) {
   let url;
   try { url = new URL(value); } catch { throw new Error("isolated_aws_enrollment_target_required"); }
@@ -22,6 +23,7 @@ export async function rehearseAwsEnrollment(value) {
   const client = new PrismaClient({ datasources: { db: { url: target } } });
   const temp = mkdtempSync(join(tmpdir(), "axiom-aws-enrollment-"));
   const sql = readFileSync(join(root, "prisma/migrations", enrollmentMigration, "migration.sql"), "utf8");
+  const revokeSql = readFileSync(join(root, "prisma/migrations", revocationMigration, "migration.sql"), "utf8");
   function apply(text = sql, success = true, expectedError) {
     const path = join(temp, "fixture.sql");
     writeFileSync(path, text);
@@ -45,6 +47,7 @@ export async function rehearseAwsEnrollment(value) {
     const [types] = await client.$queryRawUnsafe(`SELECT count(*)::int AS count FROM pg_type t JOIN pg_namespace n ON n.oid=t.typnamespace WHERE n.nspname='public' AND t.typtype='e'`);
     assert.equal(initial.count, 0, "refusing populated fixture; no reset is implemented");
     assert.equal(types.count, 0, "refusing pre-existing fixture enums");
+    apply(revokeSql, false, "cloud_revocation_credentials_table_required");
     // The absent baseline creates every proposed object, then deliberately rolls
     // back. This is not the historical application baseline or a restore drill.
     apply(sql.replace(/COMMIT;\s*$/, "ROLLBACK;"));
@@ -125,7 +128,36 @@ export async function rehearseAwsEnrollment(value) {
     apply(sql, false, "cloud_enrollment_partial_or_already_present");
     const [remaining] = await client.$queryRawUnsafe(`SELECT version FROM "CloudAccountCredential" WHERE id='fixture-account'`);
     assert.equal(remaining.version, 2);
-    return { target: "isolated_loopback_empty_fixture", absentBaselineTransaction: "passed_rolled_back", incompatibleEnums: "rejected_unchanged", missingPrimaryKey: "rejected", wrongNamedUniqueIndex: "rejected", existingAccount: "preserved", compositeTenantForeignKeys: "passed", versionCompareAndSwap: "passed", challengeSingleConsumptionPredicate: "passed", repeatedMigration: "rejected_unchanged", serializableLastSlot: { concurrentSnapshots: 2, committed: 1, rejected: 1, failureCode: lastSlotFailureCode, finalAccountCount: 1, distinctExternalAccountIds: true }, production: "untouched", providerCalls: "none", historicalAgentMigration: "not_modified" };
+    apply(revokeSql.replace(/COMMIT;\s*$/, "ROLLBACK;"));
+    const column = async () => (await client.$queryRawUnsafe(`SELECT data_type, is_nullable, datetime_precision FROM information_schema.columns WHERE table_schema='public' AND table_name='CloudAccountCredential' AND column_name='revokedAt'`));
+    assert.equal((await column()).length, 0, "revocation DDL rollback must not retain the column");
+    await client.$executeRawUnsafe(`ALTER TABLE "CloudAccountCredential" ADD COLUMN "revokedAt" TEXT`);
+    apply(revokeSql, false, "cloud_revocation_column_already_present");
+    await client.$executeRawUnsafe(`ALTER TABLE "CloudAccountCredential" DROP COLUMN "revokedAt"`);
+    await client.$executeRawUnsafe(`ALTER TABLE "CloudAccountCredential" ALTER COLUMN version TYPE BIGINT`);
+    apply(revokeSql, false, "cloud_revocation_incompatible_credentials_shape");
+    assert.equal((await column()).length, 0);
+    await client.$executeRawUnsafe(`ALTER TABLE "CloudAccountCredential" ALTER COLUMN version TYPE INTEGER`);
+    apply(revokeSql);
+    assert.deepEqual(await column(), [{ data_type: "timestamp without time zone", is_nullable: "YES", datetime_precision: 3 }]);
+    const credential = async () => (await client.$queryRawUnsafe(`SELECT version,"encryptedConfiguration","revokedAt" FROM "CloudAccountCredential" WHERE id='fixture-account'`))[0];
+    assert.deepEqual(await credential(), { version: 2, encryptedConfiguration: "synthetic-ciphertext", revokedAt: null });
+    apply(`BEGIN; UPDATE "CloudAccountCredential" SET version=version+1,"encryptedConfiguration"='',"revokedAt"=now() WHERE id='fixture-account' AND version=2; DO $$ BEGIN RAISE EXCEPTION 'injected_revocation_failure'; END $$; COMMIT;`, false, "injected_revocation_failure");
+    assert.deepEqual(await credential(), { version: 2, encryptedConfiguration: "synthetic-ciphertext", revokedAt: null });
+    for (const [id, org, bound] of [["revoke-bound", "fixture-org", "fixture-account"], ["revoke-null", "fixture-org", null], ["revoke-foreign", "foreign-org", null]]) {
+      await client.$executeRawUnsafe(`INSERT INTO "CloudAccountEnrollmentAttempt" (id,"organizationId","userId","expectedAccountId","roleArn",region,"externalIdDigest","expiresAt","cloudAccountId","updatedAt") VALUES ($1,$2,'fixture-user','123456789012','fixture-role','us-east-1',repeat('b',64),now()+interval '5 minutes',$3,now())`, id, org, bound);
+    }
+    await client.$transaction(async tx => {
+      assert.equal(await tx.$executeRawUnsafe(`UPDATE "CloudAccountCredential" SET version=version+1,"encryptedConfiguration"='',"revokedAt"=now() WHERE id='fixture-account' AND "organizationId"='fixture-org' AND version=2 AND "revokedAt" IS NULL`), 1);
+      assert.equal(await tx.$executeRawUnsafe(`UPDATE "CloudAccountEnrollmentAttempt" SET "expiresAt"=now() WHERE "organizationId"='fixture-org' AND "consumedAt" IS NULL AND "expiresAt">now() AND ("cloudAccountId"='fixture-account' OR "expectedAccountId"='123456789012')`), 2);
+    }, { isolationLevel: "Serializable" });
+    const revoked = await credential(); assert.equal(revoked.version, 3); assert.equal(revoked.encryptedConfiguration, ""); assert.ok(revoked.revokedAt instanceof Date);
+    assert.equal(await client.$executeRawUnsafe(`UPDATE "CloudAccountCredential" SET "encryptedConfiguration"='stale-reconnect' WHERE id='fixture-account' AND version=2 AND "revokedAt" IS NULL`), 0);
+    const [foreignAttempt] = await client.$queryRawUnsafe(`SELECT "expiresAt">now() AS active FROM "CloudAccountEnrollmentAttempt" WHERE id='revoke-foreign'`); assert.equal(foreignAttempt.active, true);
+    assert.equal(await client.$executeRawUnsafe(`UPDATE "CloudAccountCredential" SET version=version+1,"encryptedConfiguration"='fresh-fixture-only',"revokedAt"=NULL WHERE id='fixture-account' AND version=3`), 1);
+    assert.equal((await credential()).version, 4);
+    apply(revokeSql, false, "cloud_revocation_column_already_present");
+    return { target: "isolated_loopback_empty_fixture", absentBaselineTransaction: "passed_rolled_back", incompatibleEnums: "rejected_unchanged", missingPrimaryKey: "rejected", wrongNamedUniqueIndex: "rejected", existingAccount: "preserved", compositeTenantForeignKeys: "passed", versionCompareAndSwap: "passed", challengeSingleConsumptionPredicate: "passed", repeatedMigration: "rejected_unchanged", serializableLastSlot: { concurrentSnapshots: 2, committed: 1, rejected: 1, failureCode: lastSlotFailureCode, finalAccountCount: 1, distinctExternalAccountIds: true }, production: "untouched", providerCalls: "none", historicalAgentMigration: "not_modified", localRevocation: { separateMigration: revocationMigration, additiveExistingCiphertext: "preserved", wrongShape: "rejected", ddlRollback: "passed", configurationWipeAndVersion: "passed", pendingBoundAndNullSiblingExpiry: "passed", foreignTenantAttempt: "preserved", staleCompletion: "rejected", reconnectVersion: 4, repeatedMigration: "rejected", providerSessionRevocation: "not_attempted" } };
   } finally {
     await client.$disconnect();
     rmSync(temp, { recursive: true, force: true });

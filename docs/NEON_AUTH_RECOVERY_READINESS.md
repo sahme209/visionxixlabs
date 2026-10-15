@@ -98,8 +98,13 @@ Original hashes, SQL guards, risk analysis and regression evidence remain in
 PRODUCTION_AUTH_RECOVERY_PLAN.md. Existing isolated PostgreSQL tests establish
 SQL behavior, not Neon backup readiness or actual production login.
 
-After approved repair: rerun protected preflight (six pending and the original
-agent failure remain expected), then validate legitimate founder password/email
+After approved repair: rerun protected preflight. The pinned seven-file baseline
+leaves six pending; a checkout including `20261016010000_cloud_account_enrollment`
+expects eight before auth-only repair and seven afterward; including the later
+`20261016020000_cloud_account_credential_revocation` proposal expects nine before
+and eight afterward. Compare exact pending
+names; the AWS proposal stays unapplied and separately approved, and the original
+Agent failure remains expected. Then validate legitimate founder password/email
 proof, Google and GitHub OAuth callbacks, workspace access and desktop pairing.
 Keep additive schema on application rollback where possible. A production PITR
 restore/routing switch requires separate approval, write coordination and
@@ -109,12 +114,13 @@ reconciliation of post-point writes and external financial outcomes.
 
 | Gate | Status |
 | --- | --- |
-| Protected endpoint provider | Neon, confirmed run #3 |
-| Intended serving application target match | Unverified; private binding + control-plane evidence required |
-| Configured history retention | Owner reports 6 hours from Neon console; actual recoverable range still unverified |
+| Protected endpoint provider | Neon endpoint confirmed in run #3; candidate project/default branch/database corroborated by read-only Neon metadata |
+| Intended serving application and protected-preflight target match | Unverified; owner attestation is “Not yet verified”; private binding comparison required |
+| Configured history retention | Read-only metadata confirms 21,600 seconds (6 hours); actual recoverable timestamps remain unverified |
+| Recovery inventory and capacity | No saved snapshots or schedule entries returned; 10/10 branches, so isolated-copy capacity needs separately approved resolution |
 | Usable pre-repair point | Unverified; account-specific recovery range required |
 | Isolated restore | Not approved or performed |
-| Local auth-only regression rehearsal | Passed previously; not a production-data restore |
+| Local auth-only regression rehearsal | Passed on disposable PostgreSQL 16 and 17.11; not a Neon production-data restore |
 | Production execution | Not requested or approved |
 | Production login / native pairing | Not verified |
 

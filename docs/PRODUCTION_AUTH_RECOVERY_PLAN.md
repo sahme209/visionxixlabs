@@ -60,8 +60,10 @@ Proposed production changes, requiring explicit approval:
    pending migrations at the original seven-file baseline, with the original
    Agent failure still reported. This checkout additionally proposes
    `20261016010000_cloud_account_enrollment`; when that source is included,
-   expect eight pending before auth-only repair and seven afterward. It remains
-   unapplied and separately reviewed. Compare exact pending names from the
+   expect eight pending before auth-only repair and seven afterward. Including
+   the separate `20261016020000_cloud_account_credential_revocation` proposal
+   expects nine before and eight afterward. Both remain unapplied and separately
+   reviewed. Compare exact pending names from the
    pinned checkout, never apply extra files to force an old count. A full
    preflight exit 2 remains expected; it must not be relabeled fully healthy.
 
@@ -149,20 +151,25 @@ order (auth already applied in phase one):
 5. 20261014210000_ai_usage_reservations — reservation table and unique indexes.
 
 The original unfinished Agent migration remains a prerequisite for blanket deploy.
-All six pending items are retained in the tracker; none is silently skipped or
-represented as completed by the auth-only plan.
+All six original remaining items, plus the separately proposed
+`20261016010000_cloud_account_enrollment` and
+`20261016020000_cloud_account_credential_revocation`, are retained in the tracker; none is
+silently skipped or represented as completed by the auth-only plan.
 
 ## Rehearsal and acceptance evidence
 
 `node scripts/rehearse-auth-recovery.mjs` accepts only the explicitly named empty
 loopback fixture via AUTH_RECOVERY_TEST_DATABASE_URL. It refuses a populated DB
 and never resets it. A dedicated CI workflow has only contents:read, no protected
-production environment and no production secrets. It recreates the full original
-chain in PostgreSQL 16, confirms 99 applied migrations then P3018, injects DDL
-rollback, preserves existing identity/membership and unverified status, records
+production environment and no production secrets. The harness has passed local
+disposable PostgreSQL 16 and 17.11: it recreates the full original chain, confirms
+99 applied migrations then P3018, injects DDL rollback, preserves existing identity/membership and unverified status, records
 only the exact auth checksum, preserves the original failed row, and confirms
 blanket deployment remains blocked with P3009. Local evidence is in
-`docs/mission/auth-recovery-rehearsal.json`. No historical migration file changes.
+`docs/mission/auth-recovery-rehearsal.json`; newer PostgreSQL 16/17.11 source and
+engine compatibility evidence is in `docs/mission/aws-enrollment-schema-rehearsal.json`.
+Synthetic engine compatibility is not Neon target binding or restore readiness.
+No historical migration file changes.
 
 Actual production acceptance still requires: successful founder Google and GitHub
 sessions; successful verified-password login for an account that legitimately has a

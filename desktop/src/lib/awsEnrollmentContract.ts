@@ -3,7 +3,8 @@ export interface AwsEnrollmentChallenge extends AwsEnrollmentInput { attemptId: 
 export interface DesktopAwsAccount {
   id: string; provider: "aws"; accountId: string; alias: string | null; regions: string[];
   connected: boolean; status: "connected" | "disconnected"; lastValidatedAt: string | null;
-  inventoryAvailability: "not_checked"; enabled: false; agentScanAvailable: false;
+  connectionVersion: number; revokedAt: string | null;
+  inventoryAvailability: "not_checked" | "unavailable"; enabled: false; agentScanAvailable: false;
 }
 
 export function awsEnrollmentInputError(input: AwsEnrollmentInput): string | null {
@@ -35,7 +36,10 @@ export function isDesktopAwsAccount(value: unknown): value is DesktopAwsAccount 
     && typeof item.connected === "boolean" && (item.status === "connected" || item.status === "disconnected")
     && item.connected === (item.status === "connected")
     && (item.lastValidatedAt === null || validTime) && (!item.connected || validTime)
-    && item.inventoryAvailability === "not_checked" && item.enabled === false && item.agentScanAvailable === false;
+    && Number.isSafeInteger(item.connectionVersion) && item.connectionVersion >= 1
+    && (item.connected ? item.revokedAt === null && item.inventoryAvailability === "not_checked"
+      : typeof item.revokedAt === "string" && Number.isFinite(Date.parse(item.revokedAt)) && item.inventoryAvailability === "unavailable")
+    && item.enabled === false && item.agentScanAvailable === false;
 }
 
 export interface DesktopAwsInventory {

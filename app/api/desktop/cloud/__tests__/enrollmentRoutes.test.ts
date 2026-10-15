@@ -8,6 +8,7 @@ vi.mock("@/lib/cloud/aws/enrollment/stsValidation", () => ({ assertAwsEnrollment
 import { POST as start } from "../aws/enrollment/route";
 import { POST as complete } from "../aws/enrollment/[id]/complete/route";
 import { GET as list } from "../accounts/route";
+import { POST as disconnect } from "../accounts/[id]/disconnect/route";
 import { GET as inventory } from "../accounts/[id]/inventory/route";
 import { isAwsEnrollmentChallenge, isDesktopAwsAccount, isDesktopAwsInventory } from "@/desktop/src/lib/awsEnrollmentContract";
 import { fixture, principal, input } from "@/lib/cloud/aws/enrollment/__tests__/fixture";
@@ -28,6 +29,7 @@ it.each(["missing", "api_key"])("denies all routes for %s paired authority befor
   expect((await start(request("aws/enrollment", "POST", input))).status).toBe(401);
   expect((await complete(request("aws/enrollment/x/complete", "POST", { externalId: "x" }), { params: Promise.resolve({ id: "x" }) })).status).toBe(401);
   expect((await list(request("accounts"))).status).toBe(401);
+  expect((await disconnect(request("accounts/x/disconnect", "POST", {expectedVersion: 1}), {params: Promise.resolve({id: "x"})})).status).toBe(401);
   expect((await inventory(request("accounts/x/inventory"), { params: Promise.resolve({ id: "x" }) })).status).toBe(401);
   expect(f.repo.cloudAccount.findMany).not.toHaveBeenCalled(); expect(mocks.validate).not.toHaveBeenCalled(); expect(mocks.read).not.toHaveBeenCalled();
   expect(mocks.resolve.mock.calls.every(([, options]) => options.allowApiKey === false)).toBe(true);
@@ -70,4 +72,27 @@ it("returns a retryable conflict without retained writes after a simulated seria
   const response = await complete(request(`aws/enrollment/${challenge.attemptId}/complete`, "POST", { externalId: challenge.externalId }), { params: Promise.resolve({ id: challenge.attemptId }) });
   expect(response.status).toBe(409); expect((await response.json()).error).toBe("enrollment_conflict");
   expect(f.state.account).toBeNull(); expect(f.state.credential).toBeNull(); expect(f.state.attempt?.consumedAt).toBeNull();
+});
+
+it("composes local disconnect without provider/configuration access and preserves desktop DTO contract", async () => {
+  const challenge = (await (await start(request("aws/enrollment", "POST", input))).json()).data;
+  const account = (await (await complete(request("complete", "POST", {externalId: challenge.externalId}), {params: Promise.resolve({id: challenge.attemptId})})).json()).data.account;
+  expect(isDesktopAwsAccount(account)).toBe(true);
+  mocks.validate.mockClear(); mocks.read.mockClear(); mocks.configured.mockClear();
+  const response = await disconnect(request("disconnect", "POST", {expectedVersion: account.connectionVersion}), {params: Promise.resolve({id: account.id})});
+  expect(response.status).toBe(200);
+  const disconnected = (await response.json()).data.account;
+  expect(isDesktopAwsAccount(disconnected)).toBe(true);
+  expect(disconnected).toMatchObject({id: account.id, connected: false, status: "disconnected", inventoryAvailability: "unavailable", connectionVersion: 2});
+  expect(mocks.resolve.mock.calls.at(-1)![1]).toMatchObject({requireActiveAccess: false, requiredCapability: "connections:manage", allowApiKey: false});
+  const accounts = (await (await list(request("accounts"))).json()).data.accounts;
+  expect(accounts).toHaveLength(1); expect(accounts.every(isDesktopAwsAccount)).toBe(true); expect(accounts[0].connected).toBe(false);
+  expect((await inventory(request("inventory"), {params: Promise.resolve({id: account.id})})).status).toBe(409);
+  expect(mocks.validate).not.toHaveBeenCalled(); expect(mocks.read).not.toHaveBeenCalled(); expect(mocks.configured).not.toHaveBeenCalled();
+});
+it("rejects disconnect tenant/body overrides and unsafe version before service writes", async () => {
+  for (const body of [{expectedVersion: 1, organizationId: "foreign"}, {expectedVersion: 0}, {expectedVersion: 1.5}]) {
+    expect((await disconnect(request("disconnect", "POST", body), {params: Promise.resolve({id: "id"})})).status).toBe(400);
+  }
+  expect(f.repo.cloudAccountCredential.updateMany).not.toHaveBeenCalled(); expect(mocks.validate).not.toHaveBeenCalled();
 });

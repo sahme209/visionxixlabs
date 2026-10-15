@@ -81,5 +81,21 @@
     "blanketDeployStillBlocked": "P3009",
     "production": "untouched"
   },
-  "serializableLastSlotScope": "Actual PostgreSQL 17.11 SSI predicate experiment: two independent Prisma clients/Serializable transactions count the same synthetic organization at zero, synchronize before inserting distinct account IDs, and finish with one commit, one P2034 conflict and one account. This proves database predicate-conflict behavior, not the service billing-plan policy or a customer/provider journey."
+  "serializableLastSlotScope": "Actual PostgreSQL 17.11 SSI predicate experiment: two independent Prisma clients/Serializable transactions count the same synthetic organization at zero, synchronize before inserting distinct account IDs, and finish with one commit, one P2034 conflict and one account. This proves database predicate-conflict behavior, not the service billing-plan policy or a customer/provider journey.",
+  "localRevocation": {
+    "separateMigration": "20261016020000_cloud_account_credential_revocation",
+    "additiveExistingCiphertext": "preserved",
+    "wrongShape": "rejected",
+    "ddlRollback": "passed",
+    "configurationWipeAndVersion": "passed",
+    "pendingBoundAndNullSiblingExpiry": "passed",
+    "foreignTenantAttempt": "preserved",
+    "staleCompletion": "rejected",
+    "reconnectVersion": 4,
+    "repeatedMigration": "rejected",
+    "providerSessionRevocation": "not_attempted",
+    "engine": "PostgreSQL 17.11 isolated disposable fixture",
+    "fullHistoryAuthWithRevocationSource": "Not rerun locally; source-derived protected/auth fixture expects nine before auth-only repair and eight afterward. CI must verify the new source."
+  },
+  "fullHistorySnapshotBasis": "Enrollment-only source at PR #140: eight pending before auth-only repair, seven afterward. Historical result preserved; does not include the later revocation proposal."
 }

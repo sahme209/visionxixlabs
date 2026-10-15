@@ -543,6 +543,8 @@ model CloudAccountCredential {
   id                     String   @id
   organizationId         String
   encryptedConfiguration String   @db.Text
+  /// Local Axiom revocation only; does not revoke AWS roles or issued STS sessions.
+  revokedAt              DateTime?
   version                Int      @default(1)
   validatedAt            DateTime
   createdAt              DateTime @default(now())

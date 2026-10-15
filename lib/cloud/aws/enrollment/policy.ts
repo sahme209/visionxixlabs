@@ -1,6 +1,6 @@
 import { createHash, timingSafeEqual } from "node:crypto";
 
-export type EnrollmentErrorCode = "invalid_input" | "enrollment_unavailable" | "enrollment_not_found" | "enrollment_expired" | "enrollment_conflict" | "connection_authority_required" | "aws_identity_unverified" | "aws_inventory_denied" | "cloud_account_limit_reached";
+export type EnrollmentErrorCode = "invalid_input" | "enrollment_unavailable" | "enrollment_not_found" | "enrollment_expired" | "enrollment_conflict" | "connection_authority_required" | "aws_identity_unverified" | "aws_inventory_denied" | "cloud_account_limit_reached" | "connection_disconnected";
 export class AwsEnrollmentError extends Error {
   constructor(readonly code: EnrollmentErrorCode) { super(code); this.name = "AwsEnrollmentError"; }
 }
