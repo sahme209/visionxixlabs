@@ -58,8 +58,21 @@ generation cost. The platform then computes the customer amount exactly once
 as the settled event's `billedCents` (the governed 1.5x amount). A durable
 `AIUsageBillingSettlement` ledger records the Stripe idempotency key before an
 external request, and `AIUsageBillingPeriod` reserves the workspace's monthly
-limit in a serializable transaction. Therefore retries cannot duplicate an
-invoice item or push a workspace over its configured ceiling.
+limit in a serializable transaction. The reservation guards the configured
+ceiling. Automatic submissions require a `reserved` row less than 23 hours old,
+using its original key and amount. Stripe API v1 can prune idempotency keys
+after 24 hours, so a durable local key alone is not perpetual deduplication.
+The one-hour buffer limits automatic replay exposure; it is not proof of
+provider failure or a general exactly-once guarantee.
+
+Old reservations, invalid/future timestamps, and other unsettled ledger states
+are counted as blocked and retained unchanged for reconciliation. Submitted
+rows are never resubmitted. A provider timeout retains the reservation and
+monthly allowance. No automatic release, replacement key, or retry-window
+reset is provided. Before any approved recovery, an operator must inspect the
+provider's invoice-item evidence and the exact settlement/customer mapping.
+An operator reconciliation workflow and live test-mode acceptance remain open.
+Reference: [Stripe idempotent requests](https://docs.stripe.com/api/idempotent_requests).
 
 Settlement is deliberately **test-mode only** in this release. The protected
 `/api/cron/settle-ai-usage` job rejects any live key, any mode/key mismatch,
