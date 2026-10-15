@@ -1,0 +1,39 @@
+{
+  "sourceRun": "https://github.com/sahme209/visionxixlabs/actions/runs/38796959412",
+  "sourceCommit": "7e5eaf2117c371912e45276a8e43840d3a02557c",
+  "interpretation": "Inspection completed with diagnostic exit 2; no production mutation. Account check passed is not proof of successful OAuth/password authentication or platform administration.",
+  "report": {
+    "readOnly": true,
+    "migrations": {
+      "pending": [
+        "20261013172000_add_workspace_agent_identity",
+        "20261013193000_add_durable_agent_workflow",
+        "20261013220000_add_founding_supporters",
+        "20261014090000_add_ai_usage_stripe_settlement",
+        "20261014120000_add_email_verification",
+        "20261014190000_verified_ai_credit_fulfillment",
+        "20261014210000_ai_usage_reservations"
+      ],
+      "problems": [
+        "unfinished:20261013172000_add_workspace_agent_identity",
+        "missing_relation:20261013172000_add_workspace_agent_identity:Organization"
+      ]
+    },
+    "schema": {
+      "verificationColumnPresent": false,
+      "verificationTokenTablePresent": false
+    },
+    "accountCheck": "passed",
+    "platformAdminCheck": "configuration_unavailable",
+    "billingDuplicates": "none_found",
+    "productionApproval": "not_requested",
+    "database": {
+      "configuredEndpointProvider": "neon",
+      "endpointClassification": "recognized_provider_hostname",
+      "evidence": "connection_configuration_only",
+      "applicationDatabaseBinding": "not_verified",
+      "backupStatus": "unverified",
+      "restoreStatus": "unverified"
+    }
+  }
+}

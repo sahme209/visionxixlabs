@@ -1,6 +1,8 @@
 # Production database hosting and restore readiness
 
-Status: provider, backup/PITR availability and restore procedure are **unverified**.
+Status: protected preflight #3 identifies a **Neon configured endpoint**. The
+application binding, actual backup/PITR availability and restore readiness remain
+**unverified**. See NEON_AUTH_RECOVERY_READINESS.md for the provider-specific procedure.
 The owner confirmed this status after production preflight #2. No production
 migration, backup creation, restore, credential retrieval or infrastructure change
 is authorized by this discovery work.
@@ -51,7 +53,7 @@ No secret-value pull or public diagnostic endpoint is added.
 
 | Item | Current status | Evidence needed |
 | --- | --- | --- |
-| Configured provider | Unverified | Updated protected preflight endpoint classification; provider control-plane corroboration |
+| Configured provider | Neon endpoint confirmed in run #3 | Account/project/resource corroboration still required |
 | Website/maintenance DB target match | Unverified | Private read-only comparison of current production resource bindings |
 | Backup/PITR enabled | Unverified | Actual resource backup configuration, not provider default/marketing |
 | Retention and restore-point range | Unverified | Account-specific earliest/latest restorable timestamps and retention |

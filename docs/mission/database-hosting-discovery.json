@@ -1,7 +1,8 @@
 {
-  "provider": "unverified",
+  "provider": "neon_configured_endpoint",
   "databaseEngine": "postgresql_compatible",
   "evidence": [
+    "Protected preflight run 38796959412 on main 7e5eaf2 reports recognized Neon endpoint; application binding remains not_verified",
     "Prisma PostgreSQL datasource and successful protected PostgreSQL catalog inspection",
     "Vercel integration metadata: Resend; project connector: GitHub",
     "Repository provider names are examples, not active hosting evidence"
@@ -13,8 +14,8 @@
     "No database-provider backup control-plane access available"
   ],
   "backupStatus": "unverified",
-  "restoreProcedureStatus": "proposed_generic_checklist_not_provider_validated",
+  "restoreProcedureStatus": "neon_procedure_prepared_account_settings_and_exercise_unverified",
   "restoreExercise": "not_performed",
   "productionApproval": "not_requested",
-  "nextAction": "Run updated protected read-only preflight on main for sanitized endpoint-provider classification; corroborate resource binding and account-specific backups before any production execution approval."
+  "nextAction": "Privately corroborate deployed production Vercel binding against Neon project, branch, endpoint and database; inspect actual history window and available recovery point; obtain separate isolated restore approval before copying production data."
 }

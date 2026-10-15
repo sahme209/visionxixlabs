@@ -17044,7 +17044,7 @@
       "domain": "auth",
       "scope": "product",
       "status": "Blocked by external access",
-      "verification": "Protected production preflight #2 (run 38792352304, main 043664b1) completed read-only with diagnostic exit 2: seven pending migrations, unfinished Agent migration and absent Organization, missing auth schema; accountCheck passed and no scoped billing duplicates found. Platform-admin configuration and actual password/OAuth/pairing remain unverified. Full PostgreSQL rehearsal applied 99 migrations then reproduced P3018, validated atomic auth-only recovery and exact checksum resolution without editing failed history, and retained P3009 for blanket deploy. This is a proposal, not production execution approval. #125/#126 billing and #127 desktop startup/focus fixes are merged with READY main builds. Owner confirms provider and backup/PITR restore readiness are unverified. Vercel integration metadata exposes Resend and GitHub, not a database resource; repository provider references are examples. Protected preflight now emits credential-free endpoint classification, retaining binding/backup/restore status unverified. No host has been inferred or secret decrypted.",
+      "verification": "Protected production preflight #2 (run 38792352304, main 043664b1) completed read-only with diagnostic exit 2: seven pending migrations, unfinished Agent migration and absent Organization, missing auth schema; accountCheck passed and no scoped billing duplicates found. Platform-admin configuration and actual password/OAuth/pairing remain unverified. Full PostgreSQL rehearsal applied 99 migrations then reproduced P3018, validated atomic auth-only recovery and exact checksum resolution without editing failed history, and retained P3009 for blanket deploy. This is a proposal, not production execution approval. #125/#126 billing and #127 desktop startup/focus fixes are merged with READY main builds. Owner confirms provider and backup/PITR restore readiness are unverified. Vercel integration metadata exposes Resend and GitHub, not a database resource; repository provider references are examples. Protected preflight now emits credential-free endpoint classification, retaining binding/backup/restore status unverified. No host has been inferred or secret decrypted. Protected preflight #3 (38796959412, main 7e5eaf2) confirms Neon configured endpoint; application binding, account-specific PITR and restore readiness remain unverified. Neon-specific gated target comparison and isolated restore procedure prepared; no control-plane access or execution approval.",
       "evidence": [
         "lib/auth.ts",
         "lib/auth/currentContext.ts",
@@ -17063,7 +17063,9 @@
         "docs/PRODUCTION_DATABASE_HOSTING_AND_RESTORE.md",
         "docs/mission/database-hosting-discovery.json",
         "scripts/auth-recovery-database-metadata.mjs",
-        "lib/__tests__/authRecoveryDatabaseMetadata.test.ts"
+        "lib/__tests__/authRecoveryDatabaseMetadata.test.ts",
+        "docs/mission/auth-preflight-run-3.json",
+        "docs/NEON_AUTH_RECOVERY_READINESS.md"
       ],
       "prs": [
         103,
@@ -17074,7 +17076,7 @@
         127,
         128
       ],
-      "nextAction": "Run updated protected preflight on main to classify the configured endpoint without exposing credentials. Corroborate actual provider/resource binding, inspect account-specific backups and review an isolated restore plan; no migration before verified prerequisites and explicit execution approval.",
+      "nextAction": "Obtain read-only Neon project metadata and private comparison of the serving Vercel deployment and protected maintenance binding. Verify actual history window/recovery point, then separately approve isolated restore before requesting exact production auth-only SQL approval.",
       "owner": "Codex; external acceptance/approvals remain founder-owned",
       "auditDepth": "Requirement source mapped; individual acceptance review pending"
     },
