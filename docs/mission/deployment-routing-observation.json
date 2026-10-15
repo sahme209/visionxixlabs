@@ -11,5 +11,14 @@
   "rootCause": "unverified; available project metadata omits auto-assignment and promotion policy",
   "databaseBinding": "unverified; encrypted environment response is truncated",
   "changesPerformed": "none",
-  "nextAction": "Inspect production custom-domain assignment/promotion history with sufficient read-only access; propose any routing change for separate approval. Do not infer build failure or silently promote."
+  "nextAction": "Inspect production custom-domain assignment/promotion history with sufficient read-only access; propose any routing change for separate approval. Do not infer build failure or silently promote.",
+  "projectDomainCheck": {
+    "verified": true,
+    "gitBranchOverride": null,
+    "customEnvironmentOverride": null,
+    "redirect": null
+  },
+  "latestValidatedMainDeployment": "dpl_BNW2Ej51bKugGVwnP3fmU4gyNd7p",
+  "latestValidatedMainCommit": "d650136fdc09989108fbfebb621a972c7074e043",
+  "latestValidatedMainStatus": "READY"
 }

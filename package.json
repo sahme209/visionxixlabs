@@ -75,6 +75,8 @@
     "zod": "^4.3.6"
   },
   "devDependencies": {
+    "@tauri-apps/api": "2.11.0",
+    "@tauri-apps/plugin-shell": "2.3.5",
     "@testing-library/react": "16.3.3",
     "@types/archiver": "^7.0.0",
     "@types/bcryptjs": "^2.4.6",

@@ -52,3 +52,9 @@ branch, including request-scoped bearer, vault ordering and rendered sign-in
 interaction checks. Web/desktop TypeScript, desktop frontend build and all 30
 Python CLI tests passed. Native Keychain and actual OAuth/pairing acceptance are
 not established by these simulated tests.
+
+Clean web CI follows these component imports into desktop modules. Root development
+dependencies therefore pin the existing desktop versions of the Tauri API and
+shell JavaScript packages for type resolution. Vitest continues to stub native
+calls; no native toolchain, runtime permissions or credential access is added to
+web CI, and no source/test compiler exclusion is introduced.
