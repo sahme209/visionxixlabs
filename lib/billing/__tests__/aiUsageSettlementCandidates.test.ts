@@ -62,6 +62,24 @@ print(json.dumps([row[0] for row in db.execute(query['sql'], query['values'])]))
 }
 
 describe("AI settlement candidate selection", () => {
+  const backlog = `
+    UPDATE "UsageEvent" SET "billingStatus" = 'pending';
+    UPDATE "AIUsageBillingConfig" SET "monthlySpendLimitCents" = 100;
+    DELETE FROM "AIUsageBillingPeriod";
+    INSERT INTO "UsageEvent" VALUES
+      ('a1', 'org-1', 3, 'settled', '2026-10-01'),
+      ('a2', 'org-1', 3, 'settled', '2026-10-02'),
+      ('a3', 'org-1', 3, 'settled', '2026-10-03'),
+      ('b1', 'org-2', 3, 'settled', '2026-10-10'),
+      ('b2', 'org-2', 3, 'settled', '2026-10-11');
+  `;
+  it("admits another workspace before a backlog consumes the two-row batch", () => {
+    expect(select(2, backlog)).toEqual(["a1", "b1"]);
+  });
+  it("interleaves tenant positions while preserving each tenant's waiting order", () => {
+    expect(select(4, backlog)).toEqual(["a1", "b1", "a2", "b2"]);
+  });
+
   it("lets a recent retry into a one-row batch despite an older submitted event", () => {
     expect(select(1)).toEqual(["retry"]);
   });

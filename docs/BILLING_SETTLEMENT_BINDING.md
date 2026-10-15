@@ -114,3 +114,31 @@ Stripe responses are simulated; actual test-mode customer acceptance remains ope
 
 Budget-claim validation: 542 Vitest files / 5,394 tests passed, including the
 new regression that failed before the fix. No actual Stripe operation was made.
+
+## Workspace distribution within each batch
+
+Eligible rows are ranked within each workspace using the existing last-attempt,
+event-created and event-id order. Selection then interleaves those positions
+before applying LIMIT. A workspace with a large old backlog can no longer take a
+second slot before another eligible workspace's first slot in the same batch.
+All opt-in, customer, budget, hold, tenant/amount binding and retry-age filters
+remain ahead of ranking. The serializable worker rechecks remain authoritative.
+
+Two generated-SQL regressions failed before and pass after this change, covering
+two-row admission and four-row interleaving. Existing held-record, cap and retry
+rotation cases remain covered. This is fairness within a batch, not a durable
+round-robin cursor across batches: with more eligible workspaces than slots,
+one-row batches, unavailable storage or repeated transaction conflicts, global
+starvation freedom is not established. Exponential backoff and real Stripe test
+customer acceptance remain open. Window ranking adds sorting work; production
+query plans and load behavior still require representative read-only validation.
+No migration, billing activation, financial repair or hold release is included.
+
+The generated query also passed PostgreSQL 16 fixture checks for existing retry
+eligibility, two-row admission and four-row ordering. The disposable database
+contained synthetic records only and was removed after verification. This is not
+production plan/load evidence or a production backup/restore exercise.
+
+Workspace-distribution validation: 545 Vitest files / 5,404 tests, web and desktop
+TypeScript, desktop frontend build, 30 Python CLI tests, mission coverage and diff
+checks passed locally before push.
