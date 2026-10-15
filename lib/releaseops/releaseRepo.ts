@@ -67,6 +67,8 @@ export interface ReleaseRow {
   actualDeployStart: Date | null;
   actualDeployEnd: Date | null;
   summary: string | null;
+  /** Immutable, tenant-validated evidence repository binding when present. */
+  evidenceRepositoryId?: string | null;
   createdAt: Date;
   createdByUserId: string | null;
   updatedAt: Date;
