@@ -21,3 +21,9 @@ This boundary prevents omitted review evidence from bypassing the existing
 version comparison. It does not establish a live GitHub acceptance result or
 remove every race at the provider boundary. No credentials, production records,
 deployment, billing policy or database schema are changed by this repair.
+
+Approval also rechecks the workspace Agent identity before claiming the proposal:
+missing/disabled identity, a removed tool, or an unavailable policy store blocks
+execution. Rejection remains available without Agent permission. This check is
+a current read before the claim; it does not claim an atomic lock against a
+policy change that races with an already claimed external operation.

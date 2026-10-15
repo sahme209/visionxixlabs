@@ -5,10 +5,11 @@ import type { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/db";
 import { agentActionDigest } from "./proposalIntegrity";
 import { executeApprovedAction, type ActionExecutionRepo } from "./actionApprovalResponder";
+import { readWorkspaceAgentIdentity } from "./agentIdentityPolicy";
 
 export type BrowserApprovalResult =
   | { ok: true; status: "rejected" | "executed" | "failed"; errorMessage?: string | null }
-  | { ok: false; error: "not_found" | "already_decided" | "self_approval_forbidden" | "approval_expired" | "proposal_integrity_failed" };
+  | { ok: false; error: "not_found" | "already_decided" | "self_approval_forbidden" | "approval_expired" | "proposal_integrity_failed" | "workspace_agent_disabled" | "workspace_agent_policy_unavailable" | "agent_tool_not_allowed" };
 
 export async function decideAgentAction(input: {
   organizationId: string;
@@ -40,6 +41,18 @@ export async function decideAgentAction(input: {
     args: proposal.argsJson,
   });
   if (!proposal.actionDigest || proposal.actionDigest !== digest) return { ok: false, error: "proposal_integrity_failed" };
+
+  // Proposal-time permission is not perpetual execution authority. Operators
+  // must still be able to reject a proposal after revoking Agent access.
+  if (input.decision === "approve") {
+    try {
+      const identity = await readWorkspaceAgentIdentity(input.organizationId);
+      if (!identity?.enabled) return { ok: false, error: "workspace_agent_disabled" };
+      if (!identity.allowedTools.includes(proposal.toolName)) return { ok: false, error: "agent_tool_not_allowed" };
+    } catch {
+      return { ok: false, error: "workspace_agent_policy_unavailable" };
+    }
+  }
 
   const claimedStatus = input.decision === "approve" ? "approved" : "rejected";
   const claimed = await prisma.$transaction(async (tx) => {

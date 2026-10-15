@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { agentActionDigest } from "../proposalIntegrity";
 
 const mocks = vi.hoisted(() => ({
-  findFirst: vi.fn(), updateMany: vi.fn(), update: vi.fn(), createTurn: vi.fn(), createAudit: vi.fn(), execute: vi.fn(),
+  findFirst: vi.fn(), updateMany: vi.fn(), update: vi.fn(), createTurn: vi.fn(), createAudit: vi.fn(), execute: vi.fn(), identity: vi.fn(),
 }));
 const transactionRepo = {
   agentActionProposal: { updateMany: mocks.updateMany, update: mocks.update },
@@ -15,6 +15,7 @@ vi.mock("@/lib/db", () => ({ prisma: {
   $transaction: (callback: (tx: typeof transactionRepo) => unknown) => callback(transactionRepo),
 } }));
 vi.mock("../actionApprovalResponder", () => ({ executeApprovedAction: mocks.execute }));
+vi.mock("../agentIdentityPolicy", () => ({ readWorkspaceAgentIdentity: mocks.identity }));
 
 const base = {
   id: "proposal-1", organizationId: "org-1", conversationId: "conversation-1", proposedByUserId: "author-1",
@@ -33,6 +34,42 @@ describe("browser agent approval decision", () => {
     mocks.createTurn.mockResolvedValue({});
     mocks.createAudit.mockResolvedValue({});
     mocks.execute.mockResolvedValue({ ok: true, result: { number: 42 } });
+    mocks.identity.mockResolvedValue({ enabled: true, allowedTools: [base.toolName] });
+  });
+
+  it.each([
+    [null, "workspace_agent_disabled"],
+    [{ enabled: false, allowedTools: [base.toolName] }, "workspace_agent_disabled"],
+    [{ enabled: true, allowedTools: [] }, "agent_tool_not_allowed"],
+  ])("blocks approval when current policy is %j", async (identity, error) => {
+    mocks.identity.mockResolvedValue(identity);
+    const { decideAgentAction } = await import("../browserApprovalDecision");
+    expect(await decideAgentAction({ organizationId: "org-1", proposalId: base.id, actorUserId: "reviewer-1", actorRole: "admin", decision: "approve", now: reviewNow })).toEqual({ ok: false, error });
+    expect(mocks.identity).toHaveBeenCalledWith("org-1");
+    expect(mocks.updateMany).not.toHaveBeenCalled();
+    expect(mocks.execute).not.toHaveBeenCalled();
+  });
+
+  it("fails closed when current Agent policy cannot be read", async () => {
+    mocks.identity.mockRejectedValue(new Error("policy store unavailable"));
+    const { decideAgentAction } = await import("../browserApprovalDecision");
+    expect(await decideAgentAction({ organizationId: "org-1", proposalId: base.id, actorUserId: "reviewer-1", actorRole: "admin", decision: "approve", now: reviewNow })).toEqual({ ok: false, error: "workspace_agent_policy_unavailable" });
+    expect(mocks.execute).not.toHaveBeenCalled();
+    expect(mocks.updateMany).not.toHaveBeenCalled();
+  });
+
+  it("still permits rejection when the Agent has been disabled", async () => {
+    mocks.identity.mockRejectedValue(new Error("policy store unavailable"));
+    const { decideAgentAction } = await import("../browserApprovalDecision");
+    expect(await decideAgentAction({ organizationId: "org-1", proposalId: base.id, actorUserId: "reviewer-1", actorRole: "admin", decision: "reject", now: reviewNow })).toEqual({ ok: true, status: "rejected" });
+    expect(mocks.identity).not.toHaveBeenCalled();
+    expect(mocks.execute).not.toHaveBeenCalled();
+  });
+
+  it("executes a separately approved action still allowed by current policy", async () => {
+    const { decideAgentAction } = await import("../browserApprovalDecision");
+    expect(await decideAgentAction({ organizationId: "org-1", proposalId: base.id, actorUserId: "reviewer-1", actorRole: "admin", decision: "approve", now: reviewNow })).toEqual({ ok: true, status: "executed" });
+    expect(mocks.execute).toHaveBeenCalledTimes(1);
   });
 
   it("forbids the proposer from approving their own action", async () => {

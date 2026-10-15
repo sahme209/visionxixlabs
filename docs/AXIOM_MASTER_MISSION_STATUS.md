@@ -1,5 +1,25 @@
 # Axiom Agent master-mission status
 
+## Current validation and integration · 2026-10-15
+
+The combined follow-up candidate passes 530 Vitest files / 5,194 tests, web
+TypeScript, desktop TypeScript/frontend build and 30 Python CLI tests. Native
+Rust checks are unavailable locally. Main remains `9db9f4de`; the only existing
+open PR at refresh is unrelated analytics #1. The founder now authorizes
+validated PR creation and merge; the earlier no-new-PR notes below describe
+historical local milestones. Main merges trigger production Vercel builds, so
+the separate production-approval boundary must be resolved before merging.
+No migration, production data change or credential change is included.
+
+## Follow-up — current Agent policy at approval
+
+The shared browser/desktop decision boundary now rereads the exact workspace
+Agent policy before claiming approval. Missing/disabled identity, a removed
+tool and policy-store failure block execution; rejection remains available.
+Four regression cases failed before the repair; focused approval tests pass
+afterward, including allowed execution and rejection during policy outage.
+This is a pre-claim check, not atomic cancellation of already claimed actions.
+
 ## Local follow-up — single-file proposal review integrity
 
 Approval execution now requires a valid server-captured single-file review
