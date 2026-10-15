@@ -293,3 +293,25 @@ See `docs/BILLING_SETTLEMENT_BINDING.md` and executable candidate SQL tests.
 Disabled-account, exhausted-budget and repeated eligible failure fairness remain
 partially implemented; real Stripe test-tenant acceptance is still blocked by
 external access. Production login/founder preflight remains independently blocked.
+
+## Production-login priority and budget selection checkpoint
+
+Production authentication is the highest priority. Fresh 24-hour production log
+counts: credentials 6 / Google 5 / GitHub 2 P2022 errors, with missing
+`User.emailVerifiedAt` confirmed. This identifies the observed failure but does
+not replace inspection of the actual migration ledger and founder mapping.
+The protected preflight dispatch returns Forbidden before run creation; secure
+runtime database access is absent. Required external action is documented in
+`docs/AUTH_LOGIN_RECOVERY_2026-10-15.md`. No migration is proposed for approval
+before that report. Real founder password/OAuth sessions and desktop pairing
+remain unverified. The domain still selects READY #123; #124's main build is also
+READY. Provider registration/callback-host checks pass; login acceptance does not.
+
+Independent billing work extends #124 to exclude disabled accounts, missing
+customers and fresh events without current-month capacity before LIMIT. Exact
+capacity and previously reserved retries at a spent cap pass SQLite/PostgreSQL
+fixtures. Serializability, per-row configuration and fresh retry-time checks
+remain authoritative. Repeated eligible provider failure scheduling and actual
+Stripe test-tenant invoice/refund journeys remain open. All available Codex and
+former Claude responsibilities remain represented; the absent older 36-section
+source remains explicitly blocked rather than reconstructed.

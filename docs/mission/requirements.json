@@ -16863,7 +16863,7 @@
       "domain": "billing",
       "scope": "product",
       "status": "Partially implemented",
-      "verification": "Source mapped to existing components; acceptance of this individual requirement has not been demonstrated end to end.",
+      "verification": "Source mapped to existing components; acceptance of this individual requirement has not been demonstrated end to end. Candidate SQL now excludes held reservations (#124), disabled/missing billing configuration, missing customers and new usage without current-month capacity before LIMIT. SQLite and PostgreSQL fixtures validate exact-cap behavior and previously reserved retries at a spent cap. Real Stripe test-tenant invoice/refund/replay acceptance remains unverified.",
       "evidence": [
         "lib/billing/reconcileGatewayUsage.ts",
         "lib/billing/aiBillingMargin.ts",
@@ -16872,15 +16872,19 @@
         "lib/billing/aiUsageSettlementRetryPolicy.ts",
         "lib/billing/aiUsageSettlementCandidates.ts",
         "app/api/billing/stripe-webhook/route.ts",
-        "docs/BILLING_RECONCILIATION.md"
+        "docs/BILLING_RECONCILIATION.md",
+        "lib/billing/__tests__/aiUsageSettlementCandidates.test.ts",
+        "docs/BILLING_SETTLEMENT_BINDING.md"
       ],
       "prs": [
         109,
         113,
         114,
-        115
+        115,
+        122,
+        124
       ],
-      "nextAction": "Audit concurrent reservation/refund/replay paths and immutable customer mapping; build governed reconciliation; run capped isolated Gateway/Stripe test-mode journeys when approved credentials exist; keep live flags off.",
+      "nextAction": "Validate exact-head CI; address repeated eligible retry scheduling without releasing holds; run approved isolated Stripe test-tenant workflows before any live billing proposal.",
       "owner": "Codex; external acceptance/approvals remain founder-owned",
       "auditDepth": "Requirement source mapped; individual acceptance review pending"
     },
@@ -17029,7 +17033,7 @@
       "domain": "auth",
       "scope": "product",
       "status": "Blocked by external access",
-      "verification": "Source/automated evidence exists for subcomponents; exact device, account, credential or approval-dependent acceptance remains open.",
+      "verification": "Source/automated evidence exists for subcomponents; exact device, account, credential or approval-dependent acceptance remains open. Priority recheck: production 24h callback P2022 counts credentials 6 / Google 5 / GitHub 2; missing User.emailVerifiedAt confirmed. Protected preflight dispatch returns Forbidden before run creation; runtime has no DATABASE_URL. Domain selects READY #123, newer #124 build READY. Actual founder authentication and desktop pairing remain unverified.",
       "evidence": [
         "lib/auth.ts",
         "lib/auth/currentContext.ts",
@@ -17042,7 +17046,7 @@
         104,
         105
       ],
-      "nextAction": "Run protected SELECT-only preflight; inspect schema/ledger and existing founder memberships; propose only a proven, separately approved repair, then exercise password/Google/GitHub and pairing.",
+      "nextAction": "Obtain existing protected read-only preflight public-safe report via manual main dispatch or agent Actions permission; inspect ledger/founder mapping before requesting a concrete production repair approval.",
       "owner": "Codex; external acceptance/approvals remain founder-owned",
       "auditDepth": "Requirement source mapped; individual acceptance review pending"
     },
