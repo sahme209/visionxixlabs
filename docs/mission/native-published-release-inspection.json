@@ -1,0 +1,85 @@
+{
+  "observedDate": "2026-10-15",
+  "readOnly": true,
+  "repository": "sahme209/axiom-releases",
+  "tag": "desktop-v0.1.20",
+  "publishedAt": "2026-10-09T16:53:11Z",
+  "releaseImmutable": false,
+  "releaseNotesSourceCommit": "f72fa7489317e1915b16ebf6ae486f9a8a4d92a3",
+  "sourceKeyringDeclaration": "keyring = \"3\"",
+  "sourceNativeBackendFixPresent": false,
+  "assets": [
+    {
+      "name": "Axiom.Agent-0.1.20-1.x86_64.rpm",
+      "sizeBytes": 6940561,
+      "providerSha256": "sha256:0e9525797543ac2d6d61bfc5e7ded82ba22e11a9ec1ffc3560eb311cc632b29f"
+    },
+    {
+      "name": "Axiom.Agent-0.1.20-1.x86_64.rpm.asc",
+      "sizeBytes": 833,
+      "providerSha256": "sha256:67c039596ac409b05da51cbf065cbe7b3b457e60a370cac45867b2b7f892b15f"
+    },
+    {
+      "name": "Axiom.Agent_0.1.20_aarch64.dmg",
+      "sizeBytes": 7683804,
+      "providerSha256": "sha256:71389d31f2cbf85c29511597100409824033b4676df91320d380675254f1b1bc"
+    },
+    {
+      "name": "Axiom.Agent_0.1.20_aarch64.dmg.asc",
+      "sizeBytes": 833,
+      "providerSha256": "sha256:4201bc8a24ffdbeb050f0905ea302c41594d20d53dee7dd89de99635f449d4c8"
+    },
+    {
+      "name": "Axiom.Agent_0.1.20_amd64.AppImage",
+      "sizeBytes": 84244984,
+      "providerSha256": "sha256:eb4ecfe0ce92dc52a1e3c8675d3e7d855db9a89d6a94cec3470bbdc175a6db4b"
+    },
+    {
+      "name": "Axiom.Agent_0.1.20_amd64.AppImage.asc",
+      "sizeBytes": 833,
+      "providerSha256": "sha256:42d9695b74cfac2a960d05567ac8ecf6f6811b445be91836cb51c5c2f9e81b67"
+    },
+    {
+      "name": "Axiom.Agent_0.1.20_amd64.deb",
+      "sizeBytes": 6939326,
+      "providerSha256": "sha256:fdbd96176a09d79169f1fe532939bf54392bd99b0fa6b3dcf4f5fb7cf383f96c"
+    },
+    {
+      "name": "Axiom.Agent_0.1.20_amd64.deb.asc",
+      "sizeBytes": 833,
+      "providerSha256": "sha256:fc2d40c22c8a08ed479949b4d0d730bcdd12d356910872cdee1ebbf6f6cd48bb"
+    },
+    {
+      "name": "Axiom.Agent_0.1.20_x64-setup.exe",
+      "sizeBytes": 3545025,
+      "providerSha256": "sha256:da3aa3f89e8aa5d98fa9d63b28ffd1ea768ddc45b73f8733e01790c9f1607f76"
+    },
+    {
+      "name": "Axiom.Agent_0.1.20_x64-setup.exe.asc",
+      "sizeBytes": 833,
+      "providerSha256": "sha256:5dc3e83a3c9063268164b7bcb343fc390bbe0354bd346957dc7f2356e57a88c5"
+    },
+    {
+      "name": "Axiom.Agent_0.1.20_x64.dmg",
+      "sizeBytes": 8056996,
+      "providerSha256": "sha256:e1b591280c650fb08b3d8ab96e14d6e7cdc1173223559df8b2bf5287f8925ab5"
+    },
+    {
+      "name": "Axiom.Agent_0.1.20_x64.dmg.asc",
+      "sizeBytes": 833,
+      "providerSha256": "sha256:0b285bc3991372ae83b2f6f95c369d93be59be82f22be44878db3cab520fb969"
+    },
+    {
+      "name": "Axiom.Agent_0.1.20_x64_en-US.msi",
+      "sizeBytes": 5275648,
+      "providerSha256": "sha256:c1e05d1942a5026130741da9a78d6325fbe0d877268c1e0c03d15606b6949720"
+    },
+    {
+      "name": "Axiom.Agent_0.1.20_x64_en-US.msi.asc",
+      "sizeBytes": 833,
+      "providerSha256": "sha256:28f78bdfe1411d6823c7cc4ed0e6fbf2844758e5da100e208cbf5f17ba34f91b"
+    }
+  ],
+  "limits": "Source claim and provider-reported asset digests were inspected; installer bytes, GPG verification, OS vault persistence and clean-host acceptance were not exercised. Existing assets unchanged.",
+  "productionActions": false
+}

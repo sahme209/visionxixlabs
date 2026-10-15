@@ -1,7 +1,35 @@
 # Axiom Desktop · release notes
 
-Honest changelog. Versions stay in `preview` until signing + notarization
-land — there are no public binary distributions yet.
+Historical preview notes follow. Published installers and their exact source must
+be inspected separately; a source change does not update an existing installer.
+
+## Unreleased source — reviewed native release candidates
+
+Tag builds and manual dispatches create private, source-bound candidate artifacts
+without publishing. Publication additionally requires the explicit `publish`
+input, `AXIOM_DESKTOP_PUBLICATION_READY=true`, the `desktop-release` environment,
+and the reviewed `AXIOM_DESKTOP_PUBLIC_KEY_FINGERPRINT`. Environment reviewers and
+operator approval settings remain unverified; naming an environment or setting a
+variable does not itself establish independent approval.
+
+Candidates bind the actual checkout, run, version, platform and installer/SBOM
+hashes. Publication consumes the exact verified artifact ID, checks unchanged
+bytes, verifies detached signatures against the intended published public key,
+claims a new public tag exclusively and verifies uploaded asset hashes before
+publishing that exact new draft. Existing tags or releases are refused, including
+partial failed attempts; recovery requires a separately reviewed decision. The
+public artifact tag refers to public repository history; the manifest separately
+records the private source commit.
+
+Public `desktop-v0.1.20` remains unchanged. These controls do not prove installer
+embedded metadata, clean-host installation, native credential persistence or
+browser pairing on a physical host. macOS build app signing checks do not replace
+packaged installer acceptance. The macOS downloadable-artifact notarization flag
+remains false until packaged app identity/ticket verification exists, so the
+website must not treat a future candidate as notarization-verified. Windows installers remain unsigned by
+Authenticode; Linux assets have detached signatures. Automatic in-app updates
+remain unavailable; use reviewed manual installation. No release dispatch,
+publication or native host acceptance is recorded by this source change.
 
 ## 0.1.0 — preview · 2026-05-14
 

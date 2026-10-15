@@ -697,3 +697,56 @@ TypeScript will be rechecked after the optimized build regenerates its type tree
 required exact-head CI and the optimized build remain gates before source merge.
 The #141 automatic main deployment reached READY; deliberate custom-domain
 promotion and actual customer authentication are still unapproved/unverified.
+
+## PR #142 integrated — governed observations and subscription freshness
+
+PR #142 merged as `823f5df13fd25ca8b3df46fc8d237f98612e122f` after exact-head
+`2e43b5b49b93a3b84075b146c336bf998a3f2202` passed Test 38823359304 and
+Desktop CI 38823359318, including native tests and Clippy. Optimized web build,
+full web TypeScript after generated files stabilized, desktop TypeScript/build,
+30 Python checks and 5,938 tests passed. This supersedes the prior pending build
+note. Four pre-existing test lint warnings remain, with no new lint errors.
+Preview provisioning failed before compilation; no protection/capacity setting
+was changed. Merged source is not real customer/provider/native acceptance.
+
+The two original user-uploaded handoff/unified mission documents were retrieved
+and re-read. They exactly match the repository copies after outer-whitespace
+normalization: 192-line original handoff and 829-line unified mission. Their
+existing requirement coverage remains intact; no duplicate source was added.
+The separately referenced older 36-section specification and A–L scenario text
+are not contained in either upload and remain explicit unavailable-source gaps.
+See `mission/mission-upload-revalidation.json` for non-sensitive source hashes.
+
+## Immutable native candidate guard — source review complete
+
+Tags and ordinary manual release runs now default to candidate-only output.
+Publication additionally requires explicit opt-in, an external readiness
+attestation and the release environment; actual reviewer protection, key setup
+and publication authority remain unverified. Exact source, clean tracked lock
+inputs, platform/SBOM manifests, hashes, intended public signing key and remote
+asset digests are checked. Only a newly claimed public tag/new draft may proceed;
+existing releases/assets and unknown API outcomes fail closed. No overwrite,
+version bump, tag, signing credential change, dispatch or publication occurred.
+
+Build-app checks are not shipped-installer proof: artifact-level macOS trust
+stays false, with separate build-app evidence. The actual website manifest
+consumer test refuses the notarized/fully-ready claim. Packaged-app, vault,
+clean-host installation, update/upgrade and real release acceptance remain open.
+Independent review accepted the final source with these limits. Root checks:
+32 files / 326 relevant tests, including 33 workflow guard cases with fake GitHub
+responses and disposable synthetic GPG keys; full web TypeScript, targeted lint,
+YAML parsing and release alignment passed. Exact-head full/native CI remains
+required before merge; no unchanged web build was repeated for workflow/docs.
+
+The refreshed existing priority matrix fulfills the specific planning deliverable
+with separate value/effort/risk/differentiation/readiness; it does not establish
+competitive superiority or customer acceptance. The read-only Neon capacity
+inventory found retained Vercel aliases for every preview, including archived
+branches: zero verified-unused branches and no deletion/upgrade authorization.
+
+Final dependency-default correction: the upstream SBOM action enables release
+asset uploads by default. The candidate job now explicitly disables that path,
+and its repository contents token is read-only. An additional actual-YAML
+contract test covers both restrictions and absence of Tauri release inputs.
+The updated 34 guard tests and lint passed; exact new-head CI must replace the
+prior-head result before merge. No release workflow was dispatched.

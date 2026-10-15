@@ -69,34 +69,39 @@ open. Pricing, public limits, integrations and production approval are preserved
 
 ## Priority and value matrix
 
-Cloud-local follow-up after the initial snapshot: paused-rule claims are fixed
-in local commit `e20ec878`; the subsequent candidate holds uncertain provider
-outcomes instead of replaying them, persists an intent/known receipt, rechecks
-current approver membership/capability on retries, and exposes a clear desktop
-review state with failure-safe busy handling. These changes are not merged,
-deployed, or live-validated. Automated crash detection, provider-receipt lookup,
-and a governed reconciliation/reset journey remain open. No production or
-commercial readiness percentage is upgraded by this local code evidence.
+Refreshed 2026-10-15 against the [customer acceptance checkpoint](CRITICAL_RECOVERY_AND_CUSTOMER_ACCEPTANCE.md).
+This updates the initial PR #104 priorities; the capability snapshot above remains
+historical. The [complete mission tracker](AXIOM_COMPLETE_MISSION_TRACKER.md) remains
+the requirement register. This is the existing unified mission section 13 deliverable,
+not a new strategy, pricing decision or approval policy.
 
-The next local proposal-integrity follow-up requires a valid single-file review
-snapshot at approval execution, preserving the reviewed SHA (including an
-explicit null for a new file). Missing/malformed snapshots cannot fall back to
-an unreviewed current version. The focused regression reproduces the prior
-bypass; this remains local software evidence, not a live GitHub write test.
+Value/effort/risk are qualitative planning judgments, not measured outcomes or delivery
+promises. Differentiation is a customer hypothesis, not superiority or an availability
+claim. Workstreams run in parallel despite blocked external acceptance.
 
-Effort is a relative planning estimate, not a delivery promise. Readiness records
-whether useful software work can proceed without external credentials.
-
-| Priority | Next milestone | User value / differentiation | Effort | Risk | Readiness |
+| Priority / milestone | User value | Effort | Risk | Differentiation hypothesis | Readiness / next exit criterion |
 | --- | --- | --- | --- | --- | --- |
-| P0 | Real auth recovery and approved domain routing | Every account/desktop journey depends on it | Small–medium once ledger known | High: identity/production schema | Blocked on protected preflight and approved recovery; keep proposed operations concrete |
-| P1 | Accepted membership parity and remaining desktop auth audit | Prevents premature workspace authority | Small per boundary | High security consequence | Independent software work; focused regression fix first |
-| P1 | Agent tool authorization / proposal integrity / spending review | Makes natural-language operations governable and costs understandable | Medium | High security/financial consequence | Code/tests independently actionable; no live mutations |
-| P1 | Durable automation claim/retry/approval audit | Prevents duplicated or unauthorized scheduled actions | Medium | High operational consequence | Source/test audit actionable; external dispatch remains gated |
-| P2 | Exact AWS/GitHub/Airflow vertical journey, then Azure/GCP gaps | Real cross-provider execution evidence | Medium–large | High during execution | Independent error/contract work available; live tests need approved accounts |
-| P2 | Click-first onboarding and account→desktop journey | Reduces expertise required without hiding governance | Medium | Moderate | Incremental design/contract work; packaged/user acceptance externally gated |
-| P3 | Visual/accessibility/architecture consolidation | Calm, understandable engineering workspace | Medium | Low–moderate if incremental | Reuse existing components; fix measured friction rather than redesign |
-| P3 | Release and partner launch evidence | Commercial credibility and supportable promises | Medium | High if claims outrun evidence | Native/live/partner acceptance still external; never announce readiness prematurely |
+| P0 — Production login recovery | Reach the correct account/workspace | Medium + external verification | Critical identity/data/availability | Recoverable identity with explicit authority | [Auth-only proposal](PRODUCTION_AUTH_RECOVERY_PLAN.md) and [Neon procedure](NEON_AUTH_RECOVERY_READINESS.md) prepared. Confirm serving database binding and usable PITR/restore readiness; obtain exact repair approval, then verify actual password/Google/GitHub sessions. Founder mapping alone is insufficient. |
+| P1 — Exact-build pairing/native recovery | Pair the intended identity without losing recoverable credentials | Medium + platform acceptance | High credential/tenant authority | Understandable browser/device handoff and recovery | [Atomic proof](EMAIL_PROOF_ATOMIC_RECOVERY.md), [resend recovery](EMAIL_VERIFICATION_CUSTOMER_RECOVERY.md) and browser-switch regressions cover software boundaries. Install exact build; verify vault restart, pair/consume/replay/revoke. Google chooser parameters are not provider acceptance; GitHub SSO may retain its account. |
+| P1 — Governed artifact release/rollback | Deploy the approved application change and recover safely | Large shared contract | Critical workload/authority | Evidence → immutable artifact → approval → receipt → recovery | [ECS workflow](../.github/workflows/axiom-deploy-aws-ecs.yml) restarts the current task definition; it does not deploy a new source-bound artifact. Review shared artifact/target/approval/receipt contract while preserving legitimate restart behavior. Actual sandbox rollout/failure/rollback needs explicit authorization. |
+| P1 — Governed typed read observations | Ask about connected cloud resources without invented evidence | Medium | High if incomplete observations authorize writes | Unified repository/cloud context with visible uncertainty | [Agent read tools](../lib/axiom/agentRuntime/toolExecution.ts) have source/test evidence. Preserve paired tenant scope, allowlist and bounded coverage; unknown cost/metrics/backups stay unknown. Verify customer-owned reads; never promote samples into complete snapshots or approval. |
+| P1 — Stripe test customer acceptance | Understand usage/caps and avoid duplicate charges | Medium | Critical financial | Actual-cost attribution with understandable holds/recovery | Existing checkout/settlement/reconciliation tests are software evidence. Execute [test packet](STRIPE_TEST_CUSTOMER_ACCEPTANCE.md) only in an explicitly authorized isolated test runtime; verify real invoice/webhook replay/refund and ledger agreement. No live billing or pricing activation. |
+| P2 — Azure/GCP governed writes | Operate workloads beyond AWS | Large provider-specific work | Critical IAM/workload/recovery | Common policy with provider-specific depth | Read/validation exists; adapter apply/rollback remains unimplemented. Design typed action preconditions, plan evidence, permissions, idempotency and recovery, then authorized sandbox acceptance. Credentials cannot replace missing adapters. |
+| P2 — Terraform/Airflow/release acceptance | Repeatable conditional operations and supportable installation | Medium–large | High state/schedule/release | One auditable chain across operational tools | Preserve existing default-deny/plan-integrity, dependency and uncertain-outcome guards. Verify exact plan/state/receipt, nonproduction dependencies/retries, signing/updates and exact native build. SDKs and CI do not prove these journeys. |
+| Hold — Major visual redesign | Future usability improvement after core acceptance | Large if broad | Moderate regression/consistency | Not yet a validated reason to delay functionality | Founder explicitly deferred redesign. Continue necessary website/desktop engineering, accessibility and honest recovery states in the existing design. No launch-readiness claim. |
+
+### Conceptual comparison lenses
+
+Use Cursor/GitHub Copilot as lenses for intent, editing context and review;
+GitHub/GitHub Actions and CI/CD tools for source/workflow authority and receipts;
+Terraform/infrastructure automation for plan identity, state and recovery; cloud
+consoles for provider/resource scope; incident/operations assistants for evidence,
+uncertainty and follow-up. These are review questions, not audited competitor
+feature descriptions or claims that Axiom exceeds another product.
+
+Validate the proposed unified experience with the same customer, workspace,
+artifact, approval and provider receipts across the acceptance journey. No complete
+real-customer journey or competitive superiority is established by this matrix.
 
 ## Decision and execution rules
 
@@ -109,7 +114,8 @@ whether useful software work can proceed without external credentials.
 - No new framework/database/orchestrator is selected by this audit. Use existing
   persistence and authorization models first; record justified decisions.
 - Production routing, migrations, deployments, cloud mutations, live billing,
-  merges, pricing and launch remain explicit founder-controlled actions.
+  pricing and launch remain explicit founder-controlled actions. Source merges
+  use the founder's standing authorization after required checks pass.
 - While production access is blocked, continue independent high-priority code,
   design, architecture and governance work. Do not repeatedly request the same
   missing information or claim unattended background work.
