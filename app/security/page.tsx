@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import {
   ArrowRightIcon,
@@ -9,6 +10,12 @@ import {
 } from "@heroicons/react/24/outline";
 import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/Footer";
+
+export const metadata: Metadata = {
+  title: "Security and governance",
+  description: "Review Axiom Agent security boundaries, permissions, credential handling and current verification limits.",
+  alternates: { canonical: "/security" },
+};
 
 const CONTROLS = [
   {

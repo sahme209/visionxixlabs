@@ -1,0 +1,91 @@
+{
+  "observedDate": "2026-10-15",
+  "deployedAliasLastConfirmed": "dpl_3bPWbdEvNzys5iuArS9cHH6r5DgF",
+  "scope": "HTTP reachability and HTML metadata only; no authenticated, visual, native, provider, installer or billing acceptance",
+  "publicRoutes": [
+    {
+      "path": "/",
+      "status": 200,
+      "title": "Axiom Agent | Governed cloud operations"
+    },
+    {
+      "path": "/plans",
+      "status": 200,
+      "title": "Axiom pricing | Vision XIX Labs"
+    },
+    {
+      "path": "/download",
+      "status": 200,
+      "title": "Axiom Agent | Governed cloud operations"
+    },
+    {
+      "path": "/docs",
+      "status": 200,
+      "title": "Documentation — Axiom Agent | Vision XIX Labs | Vision XIX Labs"
+    },
+    {
+      "path": "/support",
+      "status": 200,
+      "title": "Axiom Founding Supporters | Vision XIX Labs"
+    },
+    {
+      "path": "/security",
+      "status": 200,
+      "title": "Axiom Agent | Governed cloud operations"
+    },
+    {
+      "path": "/privacy",
+      "status": 200,
+      "title": "Privacy Policy | Vision XIX Labs"
+    },
+    {
+      "path": "/terms",
+      "status": 200,
+      "title": "Axiom Agent | Governed cloud operations"
+    },
+    {
+      "path": "/auth/signin",
+      "status": 200,
+      "title": "Axiom Agent | Governed cloud operations"
+    }
+  ],
+  "docsMetadataBefore": {
+    "path": "/docs",
+    "status": 200,
+    "title": "Documentation — Axiom Agent | Vision XIX Labs | Vision XIX Labs",
+    "canonical": "<link rel=\"canonical\" href=\"https://visionxixlabs.com\"/>"
+  },
+  "localBuiltRoutes": [
+    {
+      "path": "/docs",
+      "status": 200,
+      "title": "Documentation — Axiom Agent | Vision XIX Labs",
+      "canonical": "https://visionxixlabs.com/docs"
+    },
+    {
+      "path": "/plans",
+      "status": 200,
+      "title": "Axiom pricing | Vision XIX Labs",
+      "canonical": "https://visionxixlabs.com/plans"
+    },
+    {
+      "path": "/download",
+      "status": 200,
+      "title": "Download Axiom Agent | Vision XIX Labs",
+      "canonical": "https://visionxixlabs.com/download"
+    },
+    {
+      "path": "/security",
+      "status": 200,
+      "title": "Security and governance | Vision XIX Labs",
+      "canonical": "https://visionxixlabs.com/security"
+    },
+    {
+      "path": "/terms",
+      "status": 200,
+      "title": "Terms of Service | Vision XIX Labs",
+      "canonical": "https://visionxixlabs.com/terms"
+    }
+  ],
+  "localVerification": "Full Next production build served locally: all five routes HTTP 200, canonical matches route on production metadataBase, brand suffix occurs exactly once. No browser visual, authentication or provider acceptance inferred."
+}

@@ -1,5 +1,23 @@
 # Axiom Agent master-mission status
 
+## Website metadata follow-up
+
+PR #120 merged at `5981608b`; exact-head Node 24 CI `38772363956` and its
+automatic deployment `dpl_Dd2pg3shwBVsY1QnsQxEQ7pCRpT7` are green/READY.
+A read-only public route audit confirms nine HTTP 200 pages, but docs repeat
+the brand title and inherit the homepage canonical. A focused correction adds
+page titles/canonicals for docs, pricing, downloads, security and terms. No UI
+redesign, legal-text change, billing activation or production promotion is
+part of this work. See `docs/mission/public-route-audit.json` for scoped evidence.
+Login and founder verification remain blocked; cloud screenshot capture has
+not succeeded, so visual/native acceptance is not inferred.
+
+Validation passes: web/desktop TypeScript, 538 Vitest files / 5,321 tests, desktop
+build, 30 Python CLI tests and full Next production build. A local production
+server returned the correct canonical and a single brand suffix on all five
+repaired routes. Cloud screenshot and native/browser interaction acceptance
+remain unverified.
+
 ## GCP dependency and token-contract follow-up
 
 PR #119 merged at `65eafebb` after exact-head Test run `38770152418` passed.

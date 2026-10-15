@@ -98,10 +98,10 @@ export const DEMO_SCENARIOS: Readonly<Record<DemoScenarioId, DemoScenario>> = {
     id: "first_time_workspace_setup",
     title: "First-Time Workspace Setup",
     pitch: "From zero account to first connected provider in ~10 minutes.",
-    description: "Walks a new operator through workspace creation, team invites, the first cloud connector, and the first read-only scan.",
+    description: "Review the setup guides, then follow workspace creation, team invites, the first cloud connector, and the first read-only scan.",
     estimatedMinutes: 12,
     audience: "public",
-    lastReviewed: REVIEWED,
+    lastReviewed: "2026-10-15",
     steps: [
       { id: "1", title: "Create the workspace",       description: "Pick a workspace name + region. Determines data residency.", route: "/dashboard/onboarding", approval: "none", expectedResult: "Workspace dashboard appears in preview mode." },
       { id: "2", title: "Invite teammates",           description: "Add 1-3 teammates with view-only or operator role.", route: "/dashboard/settings/workspace", approval: "none", expectedResult: "Invitees receive email; roles visible in Users & roles." },

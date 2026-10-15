@@ -16919,7 +16919,7 @@
       "domain": "billing",
       "scope": "product",
       "status": "Partially implemented",
-      "verification": "Source mapped to existing components; acceptance of this individual requirement has not been demonstrated end to end.",
+      "verification": "Nine sampled public routes HTTP 200; live docs duplicate brand/home canonical reproduced. Full local production build serves correct route canonical and one brand suffix for docs, pricing, downloads, security and terms. Visual/browser interaction and authenticated customer acceptance remain unvalidated.",
       "evidence": [
         "lib/billing/reconcileGatewayUsage.ts",
         "lib/billing/aiBillingMargin.ts",
@@ -16928,7 +16928,13 @@
         "lib/billing/aiUsageSettlementRetryPolicy.ts",
         "lib/billing/aiUsageSettlementCandidates.ts",
         "app/api/billing/stripe-webhook/route.ts",
-        "docs/BILLING_RECONCILIATION.md"
+        "docs/BILLING_RECONCILIATION.md",
+        "app/docs/page.tsx",
+        "app/(marketing)/plans/page.tsx",
+        "app/download/layout.tsx",
+        "app/security/page.tsx",
+        "app/terms/layout.tsx",
+        "docs/mission/public-route-audit.json"
       ],
       "prs": [
         109,
@@ -16936,7 +16942,7 @@
         114,
         115
       ],
-      "nextAction": "Audit concurrent reservation/refund/replay paths and immutable customer mapping; build governed reconciliation; run capped isolated Gateway/Stripe test-mode journeys when approved credentials exist; keep live flags off.",
+      "nextAction": "Check built/deployed HTML titles and canonical URLs for the five repaired routes; continue route-wide visual, accessibility and actual onboarding/customer acceptance without inferring it from HTTP 200.",
       "owner": "Codex; external acceptance/approvals remain founder-owned",
       "auditDepth": "Requirement source mapped; individual acceptance review pending"
     },
