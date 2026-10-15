@@ -152,3 +152,29 @@ create temporary branch/compute resources. Metadata access does not authorize
 that provisioning. A usable timestamp, target isolation, cost and cleanup must
 be reviewed and separately approved; the existing restore rehearsal gate remains.
 Matching schema/history fingerprints do not prove the serving Vercel binding.
+
+
+## Capacity resolution review packet — no action authorized
+
+The recovery sequence is binding attestation → reviewed capacity resolution →
+approved isolated recovery-point verification/restore → exact authentication-only
+repair approval. Do not combine these approvals or delete a preview as an implicit
+side effect of a login repair.
+
+Before proposing removal of any one of the nine integration-created branches,
+privately inventory its parent/children, endpoint usage, Vercel integration and
+deployment references, active pull request, branch-specific configuration, other
+clients and unique data. Archived state or an old PR is insufficient. Record the
+selected resource privately, its dependents, rollback/export requirements and
+expected integration behavior. If dependency absence cannot be established, do
+not select it for deletion. A paid capacity change is an alternative requiring
+explicit cost/infrastructure approval; no plan change is implied here.
+
+After capacity is available, present a separate resource-creation packet: exact
+source identity matching the serving deployment, freshly verified recoverable
+timestamp, isolated target name, no application binding, restricted access,
+expected compute/storage cost, lifetime and cleanup approval. Never include a
+source restore/reset or connection-string replacement. Preserve current writes;
+the failed migration predates the configured history window. Stop if the requested
+point cannot actually be restored. The existing isolated rehearsal checks and
+artifact hashes remain mandatory before proposing production DDL.

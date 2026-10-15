@@ -3,8 +3,8 @@
  *
  * Lists every add-on package the current plan can purchase + the
  * workspace's purchase history. Operator clicks "Buy" → API initiates
- * a Stripe Checkout Session (stubbed today; real wiring when the
- * price IDs land).
+ * a separately enabled test-mode Stripe Checkout Session. Unknown outcomes
+ * preserve the durable intent for reconciliation.
  */
 
 import type { Metadata } from "next";
@@ -26,6 +26,7 @@ import { planForStripeTier } from "@/lib/billing/planRegistry";
 import { findAddOnsForPlan, type AddOnCategory } from "@/lib/billing/addOnCatalog";
 import { effectiveEntitlements } from "@/lib/billing/effectiveEntitlements";
 import { formatCents } from "@/lib/billing/computeInvocationCost";
+import { ModuleIntro } from "@/components/portal/ModuleIntro";
 import { PurchaseAddOnButton } from "@/components/billing/PurchaseAddOnButton";
 
 export const metadata: Metadata = {
@@ -70,6 +71,16 @@ export default async function AddOnsPage() {
 
   return (
     <div className="relative max-w-5xl">
+      <ModuleIntro
+        title="Add-ons and credit purchases"
+        explanation="Review workspace add-ons and purchase history before starting a separately enabled credit checkout."
+        helpsYouDo={["Review current credits and purchase history", "Start an authorized AI credit checkout", "Keep uncertain purchases for reconciliation"]}
+        connectFirst={["An authenticated workspace owner or administrator", "Explicitly enabled Stripe test-mode billing"]}
+        aiEngineers={[]}
+        approval={{ severity: "soft", note: "An owner or administrator must initiate checkout. Uncertain purchases require reconciliation before another attempt; this page does not authorize live billing." }}
+        storageKey="billing-add-ons"
+        lastReviewed="2026-10-15"
+      />
       <div className="mb-6">
         <Link href="/dashboard/billing/usage" className="text-[11px] text-zinc-300 hover:text-white inline-flex items-center gap-1">
           <ArrowRightIcon className="h-3 w-3 rotate-180" />
@@ -86,7 +97,7 @@ export default async function AddOnsPage() {
           Top up. <span className="text-gradient">Without changing plans.</span>
         </h1>
         <p className="text-[13px] text-zinc-400 max-w-2xl leading-relaxed">
-          Buy more AI credits for the current month, or add a seat or connector that persists. Operator-friendly discount vs upgrading to the next tier — you only pay for what you need.
+          Review current-month AI credits and existing add-ons. Credit checkout requires billing to be enabled and workspace owner or administrator access. Contact support for seat or connector purchases.
         </p>
       </div>
 
@@ -105,7 +116,7 @@ export default async function AddOnsPage() {
           tone="text-zinc-300" />
       </section>
 
-      <p className="text-[10px] font-semibold text-zinc-400 uppercase tracking-widest mb-3">// available add-ons</p>
+      <p className="text-[10px] font-semibold text-zinc-400 uppercase tracking-widest mb-3">{"// available add-ons"}</p>
       <section className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-10">
         {catalog.map((a) => {
           const meta = CATEGORY_META[a.category];
@@ -137,13 +148,17 @@ export default async function AddOnsPage() {
                 </div>
               </dl>
 
-              <PurchaseAddOnButton sku={a.sku} label={`Buy for ${formatCents(a.priceCents)}`} />
+              {a.category === "ai_credits" ? (
+                <PurchaseAddOnButton organizationId={orgId} sku={a.sku} label={`Buy for ${formatCents(a.priceCents)}`} />
+              ) : (
+                <p className="text-xs text-zinc-400">Self-service checkout is unavailable for this add-on. Contact support.</p>
+              )}
             </article>
           );
         })}
       </section>
 
-      <p className="text-[10px] font-semibold text-zinc-400 uppercase tracking-widest mb-3">// purchase history</p>
+      <p className="text-[10px] font-semibold text-zinc-400 uppercase tracking-widest mb-3">{"// purchase history"}</p>
       {purchases.length === 0 ? (
         <section className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-8 text-center">
           <ClockIcon className="h-6 w-6 text-zinc-500 mx-auto mb-3" />
@@ -178,7 +193,7 @@ export default async function AddOnsPage() {
       )}
 
       <section className="rounded-2xl border border-white/15 bg-white/[0.04] p-5">
-        <p className="text-[10px] font-semibold text-zinc-300 uppercase tracking-widest mb-2">// how add-ons work</p>
+        <p className="text-[10px] font-semibold text-zinc-300 uppercase tracking-widest mb-2">{"// how add-ons work"}</p>
         <ul className="text-[12px] text-zinc-300 leading-relaxed list-disc list-inside marker:text-white/70 space-y-1">
           <li>AI credit packs apply to the current month — they roll off at the next billing cycle.</li>
           <li>Seat + connector add-ons are recurring monthly until cancelled.</li>

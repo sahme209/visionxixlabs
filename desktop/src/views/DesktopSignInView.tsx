@@ -1,8 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { signInWithBrowser } from "../lib/desktopPairing";
 import { verifyAndSaveApiKey } from "../lib/apiKeyStore";
-import { desktopClient, type VerifiedDesktopIdentity } from "../lib/desktopClient";
-import { clearAuthSession } from "../lib/authSession";
+import { type VerifiedDesktopIdentity } from "../lib/desktopClient";
 
 export function DesktopSignInView({
   onSignedIn,
@@ -11,11 +10,12 @@ export function DesktopSignInView({
   onSignedIn: (identity: VerifiedDesktopIdentity) => void;
   initialError?: string | null;
 }) {
-  const [state, setState] = useState<"idle" | "opening" | "waiting">("idle");
+  const [state, setState] = useState<"idle" | "opening" | "waiting" | "saving">("idle");
   const [error, setError] = useState<string | null>(initialError ?? null);
   const [apiKey, setApiKey] = useState("");
   const [checkingKey, setCheckingKey] = useState(false);
   const browserSignIn = useRef<AbortController | null>(null);
+  const committing = useRef(false);
 
   useEffect(() => () => {
     browserSignIn.current?.abort();
@@ -28,28 +28,26 @@ export function DesktopSignInView({
     setState("opening");
     const controller = new AbortController();
     browserSignIn.current = controller;
+    committing.current = false;
     try {
       const isCurrent = () => browserSignIn.current === controller && !controller.signal.aborted;
-      await signInWithBrowser(intent, () => { if (isCurrent()) setState("waiting"); }, controller.signal);
+      const identity = await signInWithBrowser(intent, () => { if (isCurrent()) setState("waiting"); }, controller.signal, () => {
+        if (isCurrent()) { committing.current = true; setState("saving"); }
+      });
       if (!isCurrent()) return;
-      const verified = await desktopClient.verifyCurrentCredential();
-      if (!isCurrent()) return;
-      if (!verified.ok) {
-        await clearAuthSession().catch(() => undefined);
-        throw new Error(`The approved desktop session could not be verified. ${verified.error}`);
-      }
-      if (isCurrent()) onSignedIn(verified.data);
+      onSignedIn(identity);
     } catch (cause) {
       if (browserSignIn.current !== controller || controller.signal.aborted) return;
       setState("idle");
       if (cause instanceof DOMException && cause.name === "AbortError") return;
       setError(cause instanceof Error ? cause.message : "Sign-in failed.");
     } finally {
-      if (browserSignIn.current === controller) browserSignIn.current = null;
+      if (browserSignIn.current === controller) { browserSignIn.current = null; committing.current = false; }
     }
   }
 
   function cancelBrowserSignIn() {
+    if (committing.current) return;
     browserSignIn.current?.abort();
     browserSignIn.current = null;
     setState("idle");
@@ -57,16 +55,30 @@ export function DesktopSignInView({
   }
 
   async function signInWithKey() {
+    if (browserSignIn.current || checkingKey) return;
+    const controller = new AbortController();
+    browserSignIn.current = controller;
+    committing.current = false;
+    const isCurrent = () => browserSignIn.current === controller && !controller.signal.aborted;
     setError(null);
     setCheckingKey(true);
     try {
-      const identity = await verifyAndSaveApiKey(apiKey);
+      const identity = await verifyAndSaveApiKey(apiKey, controller.signal, () => {
+        if (isCurrent()) { committing.current = true; setState("saving"); }
+      });
+      if (!isCurrent()) return;
       setApiKey("");
       onSignedIn(identity);
     } catch (cause) {
+      if (!isCurrent()) return;
       setError(cause instanceof Error ? cause.message : "The workspace key could not be verified.");
     } finally {
-      setCheckingKey(false);
+      if (browserSignIn.current === controller) {
+        browserSignIn.current = null;
+        committing.current = false;
+        setCheckingKey(false);
+        setState("idle");
+      }
     }
   }
 
@@ -93,14 +105,14 @@ export function DesktopSignInView({
           >
             <span className="inline-flex items-center justify-center gap-2">
               {state !== "idle" && <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-black/20 border-t-black/70" aria-hidden />}
-              {state === "opening" ? "Opening secure browser…" : state === "waiting" ? "Waiting for browser approval…" : "Log in"}
+              {state === "saving" ? "Saving secure sign-in…" : state === "opening" ? "Opening secure browser…" : state === "waiting" ? "Waiting for browser approval…" : "Log in"}
             </span>
           </button>
           <button type="button" onClick={() => void continueInBrowser("sign_up")} disabled={state !== "idle" || checkingKey} className="mt-1.5 w-full rounded-xl px-5 py-3.5 text-sm font-medium text-zinc-200 transition-colors duration-150 hover:bg-white/[0.06] disabled:opacity-60">
             Create account
           </button>
         </div>
-        {state !== "idle" && (
+        {(state === "opening" || state === "waiting") && (
           <button type="button" onClick={cancelBrowserSignIn} className="mt-3 w-full rounded-xl px-5 py-2 text-sm font-medium text-zinc-500 transition-colors hover:bg-white/[0.04] hover:text-white">
             Cancel
           </button>

@@ -2,12 +2,13 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 const mocks = vi.hoisted(() => ({ open: vi.fn(), save: vi.fn(), read: vi.fn() }));
 vi.mock("@tauri-apps/plugin-shell", () => ({ open: mocks.open }));
 vi.mock("@tauri-apps/api/core", () => ({ invoke: vi.fn().mockResolvedValue({ platform: "macos", arch: "arm64" }) }));
-vi.mock("../../../desktop/src/lib/authSession", () => ({ saveAuthSession: mocks.save }));
+vi.mock("../../../desktop/src/lib/activeDesktopCredential", () => ({ verifyAndActivatePairedSession: mocks.save }));
 vi.mock("../../../desktop/src/lib/secureStorage", () => ({ readSecret: mocks.read, writeSecret: vi.fn() }));
 import { signInWithBrowser } from "../../../desktop/src/lib/desktopPairing";
 const session = { id: "session", deviceLabel: "Mac", expiresAt: "2099-01-01T00:00:00Z" };
 function response(body: unknown, status = 200) { return { ok: status < 400, status, json: vi.fn().mockResolvedValue(body) }; }
 beforeEach(() => {
+  mocks.save.mockResolvedValue({ organizationId: "verified" });
   vi.useFakeTimers(); mocks.read.mockResolvedValue("fingerprint"); mocks.open.mockResolvedValue(undefined);
   vi.stubGlobal("navigator", { platform: "MacIntel" });
 });
@@ -44,7 +45,7 @@ describe("browser pairing cancellation boundaries", () => {
       .mockResolvedValueOnce(response({ status: "approved", token: "axm.desk.session.signature", session })));
     const waiting = vi.fn(); const attempt = signInWithBrowser("sign_in", waiting);
     await vi.advanceTimersByTimeAsync(2000);
-    await expect(attempt).resolves.toEqual(session); expect(waiting).toHaveBeenCalledOnce();
-    expect(mocks.save).toHaveBeenCalledExactlyOnceWith("axm.desk.session.signature", session);
+    await expect(attempt).resolves.toEqual({ organizationId: "verified" }); expect(waiting).toHaveBeenCalledOnce();
+    expect(mocks.save).toHaveBeenCalledExactlyOnceWith("axm.desk.session.signature", session, undefined, undefined);
   });
 });

@@ -1,8 +1,7 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { open } from "@tauri-apps/plugin-shell";
 import { desktopClient, type VerifiedDesktopIdentity } from "../lib/desktopClient";
-import { clearApiKey } from "../lib/apiKeyStore";
-import { clearAuthSession } from "../lib/authSession";
+import { signOutDesktopCredentials } from "../lib/activeDesktopCredential";
 
 const WEB_BASE = "https://visionxixlabs.com";
 
@@ -19,26 +18,51 @@ export function DesktopAccessRequiredView({
   const [openingBilling, setOpeningBilling] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const requestGeneration = useRef(0);
+  const mounted = useRef(true);
+  const [signingOut, setSigningOut] = useState(false);
+  useEffect(() => {
+    mounted.current = true;
+    const generation = requestGeneration;
+    return () => { mounted.current = false; generation.current++; };
+  }, []);
+
   async function checkAgain() {
+    if (signingOut) return;
+    const request = ++requestGeneration.current;
+    const context = desktopClient.config;
+    const isCurrent = () => mounted.current && request === requestGeneration.current && desktopClient.config === context && desktopClient.hasAuth();
     setChecking(true);
     setError(null);
-    const verified = await desktopClient.verifyCurrentCredential();
-    setChecking(false);
-    if (!verified.ok) {
-      setError(verified.error);
-      return;
+    try {
+      const verified = await desktopClient.verifyCurrentCredential();
+      if (!isCurrent()) return;
+      if (!verified.ok) { setError(verified.error); return; }
+      if (!verified.data.access.allowed) {
+        setError("Access is not active yet. If an administrator just provisioned it, wait a moment and check again.");
+        return;
+      }
+      onAccessGranted(verified.data);
+    } catch {
+      if (isCurrent()) setError("Workspace access could not be checked. Try again.");
+    } finally {
+      if (mounted.current && request === requestGeneration.current) setChecking(false);
     }
-    if (!verified.data.access.allowed) {
-      setError("Access is not active yet. If an administrator just provisioned it, wait a moment and check again.");
-      return;
-    }
-    onAccessGranted(verified.data);
   }
 
   async function signOut() {
-    await Promise.allSettled([clearApiKey(), clearAuthSession()]);
-    desktopClient.setSession(undefined);
-    onSignedOut();
+    requestGeneration.current++;
+    setSigningOut(true);
+    setChecking(false);
+    setError(null);
+    try {
+      await signOutDesktopCredentials();
+      if (mounted.current) onSignedOut();
+    } catch (cause) {
+      if (mounted.current) setError(cause instanceof Error ? cause.message : "Sign-out could not be saved. Retry when secure storage is available.");
+    } finally {
+      if (mounted.current) setSigningOut(false);
+    }
   }
 
   async function openBillingPortal() {
@@ -87,13 +111,13 @@ export function DesktopAccessRequiredView({
             Request pilot access
           </button>
         )}
-        <button type="button" onClick={() => void checkAgain()} disabled={checking} className="mt-3 w-full rounded-full bg-violet-600 px-5 py-3 text-sm font-semibold hover:bg-violet-500 disabled:opacity-60">
+        <button type="button" onClick={() => void checkAgain()} disabled={checking || signingOut} className="mt-3 w-full rounded-full bg-violet-600 px-5 py-3 text-sm font-semibold hover:bg-violet-500 disabled:opacity-60">
           {checking ? "Checking access…" : "Check access again"}
         </button>
         <div className="mt-4 flex items-center justify-center gap-4 text-xs">
           <button type="button" onClick={() => void open(`${WEB_BASE}${identity.access.pricingPath}`)} className="text-violet-300 hover:text-violet-200">Review access model</button>
           <span className="text-zinc-700">•</span>
-          <button type="button" onClick={() => void signOut()} className="text-zinc-400 hover:text-white">Use another account</button>
+          <button type="button" disabled={signingOut} onClick={() => void signOut()} className="text-zinc-400 hover:text-white">Use another account</button>
         </div>
         <p className="mt-6 text-center text-xs leading-5 text-zinc-600">Creating an account verifies identity only. Deployment operations require a separately provisioned approved pilot or commercial workspace entitlement.</p>
       </div>

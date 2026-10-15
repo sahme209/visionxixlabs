@@ -71,5 +71,14 @@
     "https://neon.com/docs/postgres/backup-restore/history-window",
     "https://neon.com/docs/postgres/backup-restore/time-travel-assist",
     "https://neon.com/docs/guides/vercel-overview"
-  ]
+  ],
+  "cloudSchemaFollowUp": {
+    "observedAtUTC": "2026-10-15T22:18:29Z",
+    "scope": "SELECT-only catalog existence on the same inspected target; no account data or mutations",
+    "cloudAccountTablePresent": false,
+    "cloudProviderEnumPresent": false,
+    "connectorSetupSessionPresent": true,
+    "connectorSetupTransitionPresent": true,
+    "productionApplicationBinding": "not_verified"
+  }
 }

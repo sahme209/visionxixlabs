@@ -41836,19 +41836,20 @@
       "domain": "architecture",
       "scope": "process",
       "status": "Partially implemented",
-      "verification": "Auth-only proposal and guarded SQL prepared; full-history PostgreSQL rehearsal preserves failed Agent history and identity/membership. Production target/restore confirmation, review and explicit execution approval remain outstanding. No decision adopted by this proposal. Proposal/test PR #128 passed web and full PostgreSQL rehearsal CI and merged; its automatic main build is READY. Owner confirms hosting and restore readiness remain unverified, so production execution remains blocked.",
+      "verification": "Auth-only proposal and full-history PostgreSQL rehearsal preserve failed Agent history and identity/membership. Neon read-only inspection confirms reported target, matching schema/history, six-hour retention and 10/10 branch capacity; no snapshots returned. Serving/preflight binding, usable point and isolated restore remain unverified. No production execution approved.",
       "evidence": [
         "docs/PRODUCTION_AUTH_RECOVERY_PLAN.md",
         "docs/mission/auth-preflight-run-2.json",
         "docs/mission/auth-recovery-rehearsal.json",
         "ops/recovery/20261015_auth_schema_only.sql",
         "scripts/rehearse-auth-recovery.mjs",
-        "docs/PRODUCTION_DATABASE_HOSTING_AND_RESTORE.md"
+        "docs/PRODUCTION_DATABASE_HOSTING_AND_RESTORE.md",
+        "docs/mission/neon-readiness-inspection.json"
       ],
       "prs": [
         128
       ],
-      "nextAction": "Finish exact-head CI and review, confirm backup/target, then request scoped production approval. Do not apply blanket pending migrations or infer Agent policy.",
+      "nextAction": "Confirm serving/preflight binding, separately approve capacity/resource resolution and isolated restore verification, then present exact guarded authentication-only changes for approval.",
       "owner": "Codex; production execution approval remains founder-owned",
       "auditDepth": "Scoped proposal and isolated rehearsal; production execution not authorized"
     }
@@ -41915,19 +41916,21 @@
       "status": "Partially implemented",
       "engineeringActivity": "active",
       "owner": "Codex integrated parallel workstreams",
-      "activeMilestone": "Close actual executor routing and Azure/GCP write contracts before claiming cloud deployment.",
-      "verification": "ECS restart argument handling tested with fake AWS only. Admin lead deployment APIs enforce existing admin authority; unsupported providers reject without side effects.",
+      "activeMilestone": "Implement tenant-scoped desktop cloud enrollment to verified read-only inventory, preserving existing Lead-token website enrollment.",
+      "verification": "Source audit distinguishes existing website token enrollment/real SDK reads, browser redirects, missing desktop enrollment and simulated/missing mutation adapters. No real customer/provider acceptance. Follow-up SELECT-only catalog inspection confirms CloudAccount/CloudProvider absent and connector lifecycle tables present on the inspected Neon target; serving binding remains unverified.",
       "evidence": [
         "docs/ECS_CUSTOMER_JOURNEY_VALIDATION.md",
-        "docs/LEGACY_WEBSITE_DEPLOYMENT_BOUNDARIES.md"
+        "docs/LEGACY_WEBSITE_DEPLOYMENT_BOUNDARIES.md",
+        "docs/CLOUD_CUSTOMER_ENROLLMENT_ACCEPTANCE.md",
+        "docs/mission/neon-readiness-inspection.json"
       ],
       "customerAcceptance": "Not verified",
       "acceptanceDependencies": [
         "auth_database",
         "github"
       ],
-      "blockers": "Cloud adapters remain missing in legacy website builder; unsupported choices reject. Exact receipt readiness now has an observation path, but real provider-backed acceptance still requires separately approved sandbox.",
-      "nextAction": "Close actual executor routing and Azure/GCP write contracts before claiming cloud deployment."
+      "blockers": "Desktop AWS/Azure/GCP enrollment unavailable; canonical account/vault ownership and CloudAccount migration history need review. Generic AWS mutation is simulated; Azure/GCP apply/rollback not implemented. Approved artifact/rollback acceptance remains missing.",
+      "nextAction": "Prepare isolated durable storage and tenant authorization contract, then implement the read-only AWS enrollment slice; keep provider/infrastructure acceptance separately approved."
     },
     {
       "id": "terraform",
@@ -41936,9 +41939,10 @@
       "engineeringActivity": "active",
       "owner": "Codex integrated parallel workstreams",
       "activeMilestone": "Design saved-plan integrity, tenant executor, approval and state locking/recovery contract.",
-      "verification": "Audit documents existing planning foundation and disabled live apply.",
+      "verification": "Caller-asserted signed handoff issuance now refused for every operation; boundary tests preserve approved tenant HCL export and unsigned remediation preview. Exact approved Terraform artifact delivery/execution remains missing.",
       "evidence": [
-        "docs/TERRAFORM_AIRFLOW_CUSTOMER_ACCEPTANCE.md"
+        "docs/TERRAFORM_AIRFLOW_CUSTOMER_ACCEPTANCE.md",
+        "app/api/desktop/handoff/__tests__/route.test.ts"
       ],
       "customerAcceptance": "Not verified",
       "acceptanceDependencies": [
@@ -41946,7 +41950,7 @@
         "governance"
       ],
       "blockers": "Engineering contracts incomplete; real apply is not verified.",
-      "nextAction": "Design saved-plan integrity, tenant executor, approval and state locking/recovery contract."
+      "nextAction": "Bind persisted artifact bytes and exact approved revision, tenant target/backend/state and durable grant before enabling signed execution."
     },
     {
       "id": "airflow",
@@ -41996,16 +42000,17 @@
       "engineeringActivity": "active",
       "owner": "Codex integrated parallel workstreams",
       "activeMilestone": "Verify policy revocation and approval-to-execution authority across complete journey.",
-      "verification": "Current Agent tool authority rechecked at execution/proposal boundary.",
+      "verification": "Boundary tests refuse signed caller assertions for every handoff operation and preserve approved tenant HCL export/unsigned preview; exact saved-plan approval authority remains missing.",
       "evidence": [
-        "docs/AGENT_GOVERNED_ACTION_ACCEPTANCE.md"
+        "docs/AGENT_GOVERNED_ACTION_ACCEPTANCE.md",
+        "app/api/desktop/handoff/__tests__/route.test.ts"
       ],
       "customerAcceptance": "Not verified",
       "acceptanceDependencies": [
         "auth_database"
       ],
       "blockers": "Direct manual provider workflow dispatch lacks independent Axiom approval proof.",
-      "nextAction": "Verify policy revocation and approval-to-execution authority across complete journey."
+      "nextAction": "Implement persisted artifact and current approval binding before signed issuance or local execution."
     },
     {
       "id": "desktop",
@@ -42014,18 +42019,19 @@
       "engineeringActivity": "active",
       "owner": "Codex integrated parallel workstreams",
       "activeMilestone": "Verify packaged native pairing, recovery, first run, updates and workspace operation.",
-      "verification": "Late canceled responses covered by focused view and pairing regressions. Confirmed pinned keyring without platform features selected mock; explicit native backends and no-vault builder tests now added.",
+      "verification": "Behavioral tests cover verified recovery to restart without inactive-key takeover, explicit selected credential/no fallback, signout tombstone, precommit cancellation, and stale entitlement/recovery callbacks. Native vault and exact signed-package acceptance remain unverified.",
       "evidence": [
         "docs/DESKTOP_BROWSER_PAIRING_CANCELLATION.md",
         "docs/DESKTOP_NATIVE_CREDENTIAL_BACKENDS.md",
-        "docs/EMAIL_VERIFICATION_CUSTOMER_RECOVERY.md"
+        "docs/EMAIL_VERIFICATION_CUSTOMER_RECOVERY.md",
+        "docs/DESKTOP_DURABLE_CREDENTIAL_RECOVERY.md"
       ],
       "customerAcceptance": "Not verified",
       "acceptanceDependencies": [
         "auth_database"
       ],
       "blockers": "Actual signed-package persistence, legacy upgrade and denied-vault recovery require native hosts and approved account; prior mock builds may have lost legacy credentials, requiring authorized re-pairing.",
-      "nextAction": "Run exact-head native CI and separately authorized signed-package persistence/recovery acceptance on all supported platforms."
+      "nextAction": "Run exact-head native CI and separately authorized signed-package restart, denied-vault, signout and browser pairing acceptance."
     },
     {
       "id": "billing",
@@ -42034,18 +42040,19 @@
       "engineeringActivity": "active",
       "owner": "Codex integrated parallel workstreams",
       "activeMilestone": "Run isolated Stripe test-mode checkout/webhook/invoice lifecycle with approved test configuration.",
-      "verification": "Monotonic refund regression and composed Gateway-ledger-worker tests; no live calls. Serializable event-ledger/plan transaction covers consumed-event replay and rollback in a stateful simulator.",
+      "verification": "Composed component/route/helper/signed-webhook tests cover stable intent header, actual redirect contract, response-loss retained pending and late exactly-once fulfillment. Existing uncertain intents cannot be safely reconstructed and are not redispatched. Actual Stripe acceptance remains unverified.",
       "evidence": [
         "docs/BILLING_CUSTOMER_JOURNEY_ACCEPTANCE.md",
         "docs/SUBSCRIPTION_EVENT_CONSUMPTION.md",
-        "docs/LEAD_ADMIN_GENERATION_AUTHORITY.md"
+        "docs/LEAD_ADMIN_GENERATION_AUTHORITY.md",
+        "docs/CREDIT_CHECKOUT_UNKNOWN_OUTCOME_RECOVERY.md"
       ],
       "customerAcceptance": "Not verified",
       "acceptanceDependencies": [
         "auth_database"
       ],
       "blockers": "Distinct-event ordering, historical pre-rollout event reconstruction, actual Stripe collection and unified entitlement/refund policy remain unresolved. Legacy public requested tier is not verified paid revision entitlement; commercial enforcement contract remains unresolved.",
-      "nextAction": "Run isolated Stripe test-mode checkout/webhook/invoice lifecycle with approved test configuration."
+      "nextAction": "Run separately approved isolated Stripe test-mode checkout/payment/refund and invoice lifecycle; reconcile held unknown intents without provider recreation."
     },
     {
       "id": "website",
@@ -42054,14 +42061,15 @@
       "engineeringActivity": "active",
       "owner": "Codex integrated parallel workstreams",
       "activeMilestone": "Verify signup email delivery, proof, login, pricing, downloads and account journey.",
-      "verification": "Proof-required signup handoff tested in DOM; sanitized callback preserved. Email proof and user verification share a transaction; modeled failure/replay regressions cover recovery, not live SQL acceptance. Admin lead deployment APIs enforce existing admin authority; unsupported providers reject without side effects. Shared resend UI, strict navigation-only callback and account-neutral failure regressions added. Provider readiness follows exact saved receipt with conditional observation commit; internal admin refresh is being validated.",
+      "verification": "Proof-required signup handoff tested in DOM; sanitized callback preserved. Email proof and user verification share a transaction; modeled failure/replay regressions cover recovery, not live SQL acceptance. Admin lead deployment APIs enforce existing admin authority; unsupported providers reject without side effects. Shared resend UI, strict navigation-only callback and account-neutral failure regressions added. Provider readiness follows exact saved receipt with conditional observation commit; internal admin refresh is being validated. Reachable credit purchase component now sends a workspace-scoped stable intent key and reads the actual URL response; unsupported add-on checkout is labeled honestly.",
       "evidence": [
         "docs/WEBSITE_EMAIL_VERIFICATION_HANDOFF.md",
         "docs/EMAIL_PROOF_ATOMIC_RECOVERY.md",
         "docs/LEGACY_WEBSITE_DEPLOYMENT_BOUNDARIES.md",
         "docs/EMAIL_VERIFICATION_CUSTOMER_RECOVERY.md",
         "docs/WEBSITE_DEPLOYMENT_READINESS.md",
-        "docs/LEAD_ADMIN_GENERATION_AUTHORITY.md"
+        "docs/LEAD_ADMIN_GENERATION_AUTHORITY.md",
+        "components/billing/__tests__/PurchaseAddOnButton.test.ts"
       ],
       "customerAcceptance": "Not verified",
       "acceptanceDependencies": [

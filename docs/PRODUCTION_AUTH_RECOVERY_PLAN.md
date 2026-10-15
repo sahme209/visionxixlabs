@@ -29,7 +29,9 @@ report is preserved in `docs/mission/auth-preflight-run-2.json`:
 invalid dependency. Do not create a fabricated Organization table, infer an
 Agent tool allowlist from membership, reset migrations, rewrite historical SQL,
 or mark this failed migration successful without implementing reviewed policy
-postconditions. Actual production partial effects are not shown by this summary.
+postconditions. Fresh read-only catalog inspection confirms the Agent table is
+absent on the inspected Neon target; this supersedes the earlier unknown partial
+effect status. Serving/preflight resource binding is still unverified.
 
 ## Recommended first phase: authentication only
 
@@ -78,8 +80,11 @@ Pinned original SHA-256 values:
 Before requesting execution approval, record the reviewed PR/commit and SQL hash,
 confirm the intended production database binding in the protected runtime, and
 confirm a current restorable backup/PITR point with an isolated restore rehearsal.
-The report does not identify the database host or prove restore capability; those
-remain operator checks. See `PRODUCTION_DATABASE_HOSTING_AND_RESTORE.md` for
+Fresh read-only inspection identifies Neon and the reported main database, but
+does not establish the serving/preflight resource binding or restore capability.
+The project is at its reported 10/10 branch limit, its history retention is six
+hours, and no snapshots or schedule entries were returned. Capacity resolution,
+a usable fresh pre-repair point and isolated restore verification remain gates. See `PRODUCTION_DATABASE_HOSTING_AND_RESTORE.md` for
 current discovery evidence, status and the gated restore procedure. Serialize with all other migration jobs; do not dispatch
 the existing production-db-migrate workflow or allow concurrent manual DDL.
 Use the existing required reviewer/change controls; manual execution must not bypass protected production governance. Keep all production billing activation flags and live Stripe settings unchanged.

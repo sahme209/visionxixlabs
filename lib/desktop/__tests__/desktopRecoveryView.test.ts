@@ -53,13 +53,13 @@ describe("browser sign-in attempt ownership", () => {
     expect(mocks.verify).not.toHaveBeenCalled(); expect(onSignedIn).not.toHaveBeenCalled();
     expect(screen.getByRole("button", { name: "Opening secure browser…" })).toBeTruthy();
   });
-  it("does not erase credentials when cancelled identity verification later fails", async () => {
-    const verification = deferred<unknown>(); mocks.browser.mockResolvedValue(undefined); mocks.verify.mockReturnValue(verification.promise);
+  it("ignores a canceled browser attempt that completes verification later", async () => {
+    const verification = deferred<unknown>(); mocks.browser.mockReturnValue(verification.promise);
     const onSignedIn = vi.fn(); render(createElement(DesktopSignInView, { onSignedIn }));
     fireEvent.click(screen.getByRole("button", { name: "Log in" }));
-    await waitFor(() => expect(mocks.verify).toHaveBeenCalledOnce());
+    await waitFor(() => expect(mocks.browser).toHaveBeenCalledOnce());
     fireEvent.click(screen.getByRole("button", { name: "Cancel" }));
-    verification.resolve({ ok: false, error: "Old request failed" });
+    verification.resolve({ organizationId: "old" });
     await new Promise(resolve => setTimeout(resolve, 0));
     expect(mocks.clear).not.toHaveBeenCalled(); expect(onSignedIn).not.toHaveBeenCalled();
     expect(screen.queryByRole("alert")).toBeNull();
@@ -70,5 +70,33 @@ describe("browser sign-in attempt ownership", () => {
     fireEvent.click(screen.getByRole("button", { name: "Log in" }));
     const signal = mocks.browser.mock.calls[0][2] as AbortSignal;
     view.unmount(); expect(signal.aborted).toBe(true);
+  });
+});
+
+describe("browser credential commit boundary", () => {
+  it("stops offering cancellation while a verified credential is being saved", async () => {
+    const saved = deferred<unknown>();
+    mocks.browser.mockImplementation((_intent, _waiting, _signal, committing) => { committing(); return saved.promise; });
+    const onSignedIn = vi.fn(); render(createElement(DesktopSignInView, { onSignedIn }));
+    fireEvent.click(screen.getByRole("button", { name: "Log in" }));
+    expect(screen.queryByRole("button", { name: "Cancel" })).toBeNull();
+    expect(screen.getByRole("button", { name: "Saving secure sign-in…" })).toBeTruthy();
+    expect(onSignedIn).not.toHaveBeenCalled();
+    saved.resolve({ organizationId: "verified" });
+    await waitFor(() => expect(onSignedIn).toHaveBeenCalledExactlyOnceWith({ organizationId: "verified" }));
+  });
+});
+
+describe("administrator recovery ownership", () => {
+  it("ignores verification completing after the sign-in view unmounts", async () => {
+    const pending = deferred<unknown>(); mocks.recover.mockReturnValue(pending.promise);
+    const onSignedIn = vi.fn(); const view = render(createElement(DesktopSignInView, { onSignedIn }));
+    fireEvent.click(screen.getByText("Enterprise recovery sign-in"));
+    fireEvent.change(screen.getByLabelText("Workspace API key"), { target: { value: "candidate" } });
+    fireEvent.click(screen.getByRole("button", { name: "Use administrator key" }));
+    const signal = mocks.recover.mock.calls[0][1] as AbortSignal;
+    view.unmount(); expect(signal.aborted).toBe(true);
+    pending.resolve({ organizationId: "old" });
+    await new Promise(resolve => setTimeout(resolve, 0)); expect(onSignedIn).not.toHaveBeenCalled();
   });
 });
