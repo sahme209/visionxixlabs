@@ -395,6 +395,16 @@ export class DesktopClient {
     return this.get("/api/desktop/usage-summary");
   }
 
+  /** Paired-session AGI cockpit; never falls back to dashboard cookies. */
+  agiCockpit<T>(): Promise<ApiResult<T>> {
+    return this.get("/api/desktop/agi-cockpit");
+  }
+
+  /** Manually trigger the tenant-scoped AGI sweep with the current desktop role. */
+  runAgiCockpit<T>(): Promise<ApiResult<T>> {
+    return this.post("/api/desktop/agi-cockpit", {});
+  }
+
   /**
    * Phase 399 — call GET /api/v1/whoami. Returns the workspace + scopes
    * + quota snapshot, or a precise auth-failure code. Doesn't fall back

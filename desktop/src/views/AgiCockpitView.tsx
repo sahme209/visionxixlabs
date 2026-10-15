@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import type { View } from "../App";
 import { ViewShell } from "../components/Primitives";
+import { desktopClient } from "../lib/desktopClient";
 
 interface CockpitRec {
   id: string; releaseId: string; kind: string; title: string;
@@ -72,10 +73,6 @@ interface RunNowReport {
     proactiveSuggestionRun: { outcome: string } | null;
   }>;
 }
-type RunNowBody =
-  | { ok: true; data: { report: RunNowReport; org: RunNowReport["perOrg"][number] | null } }
-  | { ok: false; error: string; hint?: string };
-
 export function AgiCockpitView({ onNavigate }: { onNavigate?: (v: View) => void } = {}) {
   const [resp, setResp] = useState<CockpitBody | null>(null);
   const [loading, setLoading] = useState(true);
@@ -87,10 +84,11 @@ export function AgiCockpitView({ onNavigate }: { onNavigate?: (v: View) => void 
   function loadCockpit() {
     setLoading(true);
     setNetworkError(null);
-    fetch("/api/dashboard/agi-cockpit", { credentials: "include" })
-      .then((r) => r.json())
-      .then((j: CockpitBody) => setResp(j))
-      .catch((e) => setNetworkError(e instanceof Error ? e.message : "Network error."))
+    void desktopClient.agiCockpit<CockpitData>()
+      .then((result) => {
+        if (result.ok) setResp({ ok: true, data: result.data });
+        else setNetworkError(result.error);
+      })
       .finally(() => setLoading(false));
   }
 
@@ -99,10 +97,9 @@ export function AgiCockpitView({ onNavigate }: { onNavigate?: (v: View) => void 
     setRunError(null);
     setRunResult(null);
     try {
-      const res = await fetch("/api/dashboard/agi-cockpit-run-now", { method: "POST", credentials: "include" });
-      const j: RunNowBody = await res.json();
-      if (j.ok) {
-        const org = j.data.org;
+      const result = await desktopClient.runAgiCockpit<{ report: RunNowReport; org: RunNowReport["perOrg"][number] | null }>();
+      if (result.ok) {
+        const org = result.data.org;
         if (org) {
           const counts = [
             ...org.advisorRuns.map((r) => `advisor:${r.outcome}`),
@@ -113,11 +110,11 @@ export function AgiCockpitView({ onNavigate }: { onNavigate?: (v: View) => void 
           ].filter(Boolean) as string[];
           setRunResult(counts.join(" · ") || "no engines fired");
         } else {
-          setRunResult(`${j.data.report.okRuns} ok · ${j.data.report.errorRuns} err · ${j.data.report.skippedRuns} skipped`);
+          setRunResult(`${result.data.report.okRuns} ok · ${result.data.report.errorRuns} err · ${result.data.report.skippedRuns} skipped`);
         }
         loadCockpit();
       } else {
-        setRunError(j.hint ?? j.error);
+        setRunError(result.error);
       }
     } catch (e) {
       setRunError(e instanceof Error ? e.message : "network error");
