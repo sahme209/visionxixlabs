@@ -743,3 +743,10 @@ with separate value/effort/risk/differentiation/readiness; it does not establish
 competitive superiority or customer acceptance. The read-only Neon capacity
 inventory found retained Vercel aliases for every preview, including archived
 branches: zero verified-unused branches and no deletion/upgrade authorization.
+
+Final dependency-default correction: the upstream SBOM action enables release
+asset uploads by default. The candidate job now explicitly disables that path,
+and its repository contents token is read-only. An additional actual-YAML
+contract test covers both restrictions and absence of Tauri release inputs.
+The updated 34 guard tests and lint passed; exact new-head CI must replace the
+prior-head result before merge. No release workflow was dispatched.

@@ -9,9 +9,9 @@ import { parse } from "yaml";
 
 vi.mock("server-only", () => ({}));
 
-interface Step { name?: string; run?: string; with?: Record<string, unknown> }
+interface Step { uses?: string; name?: string; run?: string; with?: Record<string, unknown> }
 interface Job { if?: string; environment?: string; steps: Step[]; outputs?: Record<string, string> }
-const workflow = parse(readFileSync(join(process.cwd(), ".github/workflows/desktop-release.yml"), "utf8")) as { on: { workflow_dispatch: { inputs: { publish: { default: boolean } } } }; jobs: Record<string, Job> };
+const workflow = parse(readFileSync(join(process.cwd(), ".github/workflows/desktop-release.yml"), "utf8")) as { permissions: Record<string, string>; on: { workflow_dispatch: { inputs: { publish: { default: boolean } } } }; jobs: Record<string, Job> };
 function step(job: string, name: string): Step { const found = workflow.jobs[job].steps.find(item => item.name === name); if (!found?.run) throw Error(`Missing actual workflow step: ${name}`); return found; }
 function nodeBlock(job: string, name: string) { const match = step(job, name).run!.match(/node <<'NODE'\n([\s\S]*?)\nNODE/); if (!match) throw Error("Node boundary missing"); return match[1]; }
 const temporary: string[] = [];
@@ -79,6 +79,15 @@ reply(undefined, 500);
 }
 
 describe("actual native workflow publication eligibility", () => {
+  it("prevents candidate actions from using implicit release upload permissions", () => {
+    expect(workflow.permissions.contents).toBe("read");
+    const sbomSteps = workflow.jobs.sbom.steps.filter(item => item.uses?.startsWith("anchore/sbom-action@"));
+    expect(sbomSteps).toHaveLength(1);
+    expect(sbomSteps[0].with?.["upload-release-assets"]).toBe(false);
+    const tauriSteps = workflow.jobs.build.steps.filter(item => item.uses?.startsWith("tauri-apps/tauri-action@"));
+    expect(tauriSteps).toHaveLength(1);
+    for (const key of ["releaseId", "tagName", "releaseName", "releaseBody"]) expect(tauriSteps[0].with?.[key]).toBeUndefined();
+  });
   it("defaults dispatches to candidate-only and does not publish tag pushes", () => {
     expect(workflow.on.workflow_dispatch.inputs.publish.default).toBe(false);
     const expression = workflow.jobs.publish.if!;

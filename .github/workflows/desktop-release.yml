@@ -48,7 +48,7 @@ concurrency:
 
 permissions:
   actions: read
-  contents: write
+  contents: read
 
 jobs:
   validate-release:
@@ -104,6 +104,8 @@ jobs:
           format: cyclonedx-json
           output-file: axiom-agent.sbom.cdx.json
           artifact-name: axiom-sbom
+          # The action defaults to release upload on tags; candidates must not.
+          upload-release-assets: false
 
 
       - name: Record SBOM candidate provenance
