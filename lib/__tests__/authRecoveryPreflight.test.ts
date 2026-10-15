@@ -24,6 +24,17 @@ function fixture(overrides: { readOnly?: string; users?: unknown[]; history?: un
 }
 
 describe("read-only login recovery preflight", () => {
+  it("includes only sanitized endpoint-provider metadata in the public summary", async () => {
+    const { client } = fixture();
+    const report = await inspectAuthRecovery(client, {
+      founderEmail: "founder@example.test",
+      databaseUrl: "postgresql://private-user:private-password@ep-private.us-east-2.aws.neon.tech/private-db?token=private-token",
+    });
+    const summary = publicRecoverySummary(report);
+    expect(summary.database.configuredEndpointProvider).toBe("neon");
+    expect(summary.database.backupStatus).toBe("unverified");
+    for (const value of ["private-user", "private-password", "ep-private", "private-db", "private-token"]) expect(JSON.stringify(summary)).not.toContain(value);
+  });
   it("keeps account identifiers, membership roles, and billing plans out of public workflow output", async () => {
     const { client } = fixture();
     const report = await inspectAuthRecovery(client, { founderEmail: "founder@example.test" });

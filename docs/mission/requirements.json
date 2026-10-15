@@ -17044,7 +17044,7 @@
       "domain": "auth",
       "scope": "product",
       "status": "Blocked by external access",
-      "verification": "Protected production preflight #2 (run 38792352304, main 043664b1) completed read-only with diagnostic exit 2: seven pending migrations, unfinished Agent migration and absent Organization, missing auth schema; accountCheck passed and no scoped billing duplicates found. Platform-admin configuration and actual password/OAuth/pairing remain unverified. Full PostgreSQL rehearsal applied 99 migrations then reproduced P3018, validated atomic auth-only recovery and exact checksum resolution without editing failed history, and retained P3009 for blanket deploy. This is a proposal, not production execution approval. #125/#126 billing and #127 desktop startup/focus fixes are merged with READY main builds.",
+      "verification": "Protected production preflight #2 (run 38792352304, main 043664b1) completed read-only with diagnostic exit 2: seven pending migrations, unfinished Agent migration and absent Organization, missing auth schema; accountCheck passed and no scoped billing duplicates found. Platform-admin configuration and actual password/OAuth/pairing remain unverified. Full PostgreSQL rehearsal applied 99 migrations then reproduced P3018, validated atomic auth-only recovery and exact checksum resolution without editing failed history, and retained P3009 for blanket deploy. This is a proposal, not production execution approval. #125/#126 billing and #127 desktop startup/focus fixes are merged with READY main builds. Owner confirms provider and backup/PITR restore readiness are unverified. Vercel integration metadata exposes Resend and GitHub, not a database resource; repository provider references are examples. Protected preflight now emits credential-free endpoint classification, retaining binding/backup/restore status unverified. No host has been inferred or secret decrypted.",
       "evidence": [
         "lib/auth.ts",
         "lib/auth/currentContext.ts",
@@ -17059,7 +17059,11 @@
         "docs/mission/auth-recovery-rehearsal.json",
         "docs/PRODUCTION_AUTH_RECOVERY_PLAN.md",
         "ops/recovery/20261015_auth_schema_only.sql",
-        "scripts/rehearse-auth-recovery.mjs"
+        "scripts/rehearse-auth-recovery.mjs",
+        "docs/PRODUCTION_DATABASE_HOSTING_AND_RESTORE.md",
+        "docs/mission/database-hosting-discovery.json",
+        "scripts/auth-recovery-database-metadata.mjs",
+        "lib/__tests__/authRecoveryDatabaseMetadata.test.ts"
       ],
       "prs": [
         103,
@@ -17067,9 +17071,10 @@
         105,
         125,
         126,
-        127
+        127,
+        128
       ],
-      "nextAction": "Review auth-only SQL and isolated CI; confirm intended production database and restorable backup/PITR. Obtain explicit approval for only auth DDL and exact auth ledger resolution before execution. Then verify real founder sessions/pairing. Agent policy repair and unrelated financial migrations require separate review.",
+      "nextAction": "Run updated protected preflight on main to classify the configured endpoint without exposing credentials. Corroborate actual provider/resource binding, inspect account-specific backups and review an isolated restore plan; no migration before verified prerequisites and explicit execution approval.",
       "owner": "Codex; external acceptance/approvals remain founder-owned",
       "auditDepth": "Requirement source mapped; individual acceptance review pending"
     },
@@ -41817,15 +41822,18 @@
       "domain": "architecture",
       "scope": "process",
       "status": "Partially implemented",
-      "verification": "Auth-only proposal and guarded SQL prepared; full-history PostgreSQL rehearsal preserves failed Agent history and identity/membership. Production target/restore confirmation, review and explicit execution approval remain outstanding. No decision adopted by this proposal.",
+      "verification": "Auth-only proposal and guarded SQL prepared; full-history PostgreSQL rehearsal preserves failed Agent history and identity/membership. Production target/restore confirmation, review and explicit execution approval remain outstanding. No decision adopted by this proposal. Proposal/test PR #128 passed web and full PostgreSQL rehearsal CI and merged; its automatic main build is READY. Owner confirms hosting and restore readiness remain unverified, so production execution remains blocked.",
       "evidence": [
         "docs/PRODUCTION_AUTH_RECOVERY_PLAN.md",
         "docs/mission/auth-preflight-run-2.json",
         "docs/mission/auth-recovery-rehearsal.json",
         "ops/recovery/20261015_auth_schema_only.sql",
-        "scripts/rehearse-auth-recovery.mjs"
+        "scripts/rehearse-auth-recovery.mjs",
+        "docs/PRODUCTION_DATABASE_HOSTING_AND_RESTORE.md"
       ],
-      "prs": [],
+      "prs": [
+        128
+      ],
       "nextAction": "Finish exact-head CI and review, confirm backup/target, then request scoped production approval. Do not apply blanket pending migrations or infer Agent policy.",
       "owner": "Codex; production execution approval remains founder-owned",
       "auditDepth": "Scoped proposal and isolated rehearsal; production execution not authorized"

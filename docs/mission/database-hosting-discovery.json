@@ -1,0 +1,20 @@
+{
+  "provider": "unverified",
+  "databaseEngine": "postgresql_compatible",
+  "evidence": [
+    "Prisma PostgreSQL datasource and successful protected PostgreSQL catalog inspection",
+    "Vercel integration metadata: Resend; project connector: GitHub",
+    "Repository provider names are examples, not active hosting evidence"
+  ],
+  "limitations": [
+    "Available project response lacks storage attachment metadata",
+    "Nondecrypted environment response is truncated; absence cannot be inferred",
+    "GitHub workflow dispatch/run-list CLI denied with Forbidden",
+    "No database-provider backup control-plane access available"
+  ],
+  "backupStatus": "unverified",
+  "restoreProcedureStatus": "proposed_generic_checklist_not_provider_validated",
+  "restoreExercise": "not_performed",
+  "productionApproval": "not_requested",
+  "nextAction": "Run updated protected read-only preflight on main for sanitized endpoint-provider classification; corroborate resource binding and account-specific backups before any production execution approval."
+}

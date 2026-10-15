@@ -571,3 +571,15 @@ are prepared in PRODUCTION_AUTH_RECOVERY_PLAN.md. No production mutation or
 ledger reset occurred. Backup/target confirmation and explicit scoped execution
 approval remain required. Unrelated Agent-policy and financial changes stay
 separately gated. #125–#127 are merged with READY automatic main builds.
+
+## Database provider and restore-readiness discovery
+
+Owner confirms both are unverified. Read-only Vercel metadata identifies Resend
+and GitHub integrations, not the database; repository provider names are examples.
+A sanitized configured-endpoint classification is added to the existing protected
+preflight, with no URL/host/database/credential output and no new secret scope.
+Provider control-plane backup status and website target equivalence remain
+unverified. The documented restore checklist requires provider-specific review
+and an approved isolated restore before production approval. #128's proposal
+and rehearsal CI passed and its main build is READY; no production migration,
+backup/restore, ledger mutation or live billing activation was performed.

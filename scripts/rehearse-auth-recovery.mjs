@@ -70,7 +70,9 @@ export async function rehearseAuthRecovery(connectionString) {
     const membershipSql = 'SELECT to_jsonb(m) AS row FROM "OrgMembership" m ORDER BY id';
     const userBefore = await snapshot(userSql);
     const membershipBefore = await snapshot(membershipSql);
-    const before = publicRecoverySummary(await inspectAuthRecovery(client, { founderEmail: fixtureEmail }));
+    const before = publicRecoverySummary(await inspectAuthRecovery(client, { founderEmail: fixtureEmail, databaseUrl: target }));
+    assert.equal(before.database.endpointClassification, "local_or_proxy_underlying_host_unverified");
+    assert.equal(before.database.backupStatus, "unverified");
     assert.equal(before.migrations.pending.length, 7);
     assert.equal(before.accountCheck, "passed");
     assert.equal(before.schema.verificationColumnPresent, false);
@@ -91,7 +93,7 @@ export async function rehearseAuthRecovery(connectionString) {
     assert.equal(authRow.checksum, authChecksum);
     assert.equal(authRow.finished, true);
     assert.equal(await snapshot(failedSnapshotSql), failedBefore, "failed history must remain untouched");
-    const after = publicRecoverySummary(await inspectAuthRecovery(client, { founderEmail: fixtureEmail }));
+    const after = publicRecoverySummary(await inspectAuthRecovery(client, { founderEmail: fixtureEmail, databaseUrl: target }));
     assert.equal(after.migrations.pending.length, 6);
     assert.equal(after.accountCheck, "passed");
     assert.equal(after.schema.verificationColumnPresent, true);

@@ -6,6 +6,7 @@ on:
       - 'ops/recovery/**'
       - 'scripts/rehearse-auth-recovery.mjs'
       - 'scripts/auth-recovery-preflight.mjs'
+      - 'scripts/auth-recovery-database-metadata.mjs'
       - 'prisma/**'
       - '.github/workflows/auth-recovery-rehearsal.yml'
   push:
@@ -13,6 +14,8 @@ on:
     paths:
       - 'ops/recovery/**'
       - 'scripts/rehearse-auth-recovery.mjs'
+      - 'scripts/auth-recovery-preflight.mjs'
+      - 'scripts/auth-recovery-database-metadata.mjs'
       - 'prisma/**'
       - '.github/workflows/auth-recovery-rehearsal.yml'
 

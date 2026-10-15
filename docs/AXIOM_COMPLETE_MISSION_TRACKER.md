@@ -18,7 +18,11 @@ lost production Organization table. See `docs/mission/auth-preflight-run-2.json`
 auth ledger resolution first, preserving original failed history and deferring
 Agent-policy/financial changes. Full PostgreSQL rehearsal confirms rollback,
 99-migration baseline and remaining P3009; production remains untouched. Backup,
-target confirmation and explicit execution approval remain required. #125/#126
+target confirmation and explicit execution approval remain required. Owner confirms
+the provider and backup/PITR restore readiness are unverified. The metadata-only
+investigation and gated restore checklist live in
+`docs/PRODUCTION_DATABASE_HOSTING_AND_RESTORE.md`. No provider is inferred from
+example configuration or absence in truncated environment metadata. #125/#126
 billing fairness fixes and #127 desktop verification lifecycle are merged with
 READY automatic main builds. This supersedes earlier preflight-unavailable
 snapshots below; it does not close the overall mission or login acceptance.
@@ -364,3 +368,16 @@ manual sign-in submission lifecycle is not claimed repaired by this change.
 #125 is merged with READY automatic main build; #126 exact-head CI passed and
 merged, with its automatic build tracked separately. No production DB mutation,
 OAuth credential change, live billing or manual domain promotion occurred.
+
+## Database-hosting discovery follow-up
+
+#128's recovery proposal is merged after both exact-head CI jobs passed and has
+a READY automatic main build; no production recovery SQL was executed. Current
+non-sensitive integration/project metadata cannot establish the database host.
+The existing protected preflight now classifies only its configured endpoint
+inside the secure runtime, without returning any connection identifier or secret.
+Backup, restore and website/maintenance target binding remain explicitly
+unverified. A provider name alone cannot satisfy the restore-readiness gate.
+The proposed restore procedure is documented, but no provider-specific procedure
+or real production-data restore is claimed verified. No provisioning or database
+mutation is part of discovery. All original mission scope and open tasks remain.
