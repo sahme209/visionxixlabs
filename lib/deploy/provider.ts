@@ -2,6 +2,18 @@ import { generateSiteFiles, generateSiteFilesFromPlan, type WebsiteBuilderPlan }
 import type { AIStarterPackage } from "@/lib/websiteStarter/engine";
 
 export type DeployProvider = "vercel" | "aws" | "azure" | "gcp";
+export class UnsupportedDeploymentProviderError extends Error {
+  readonly code = "deployment_provider_not_supported";
+  constructor() {
+    super("Deployment provider is not supported by the website preview service.");
+    this.name = "UnsupportedDeploymentProviderError";
+  }
+}
+
+function assertSupportedProvider(provider: unknown): asserts provider is "vercel" {
+  if (provider !== "vercel") throw new UnsupportedDeploymentProviderError();
+}
+
 export type DeployResult = { url: string; deploymentId: string; state: string };
 
 export type DeployOptions = {
@@ -17,17 +29,10 @@ export async function deploySiteFromPlan(
   plan: WebsiteBuilderPlan,
   options: DeployOptions
 ): Promise<DeployResult> {
+  assertSupportedProvider(provider);
   const files = generateSiteFilesFromPlan(plan);
   if (files.length === 0) throw new Error("No HTML generated from plan");
-  if (provider === "aws" || provider === "azure" || provider === "gcp") {
-    return deployToVercel(files, options);
-  }
-  switch (provider) {
-    case "vercel":
-      return deployToVercel(files, options);
-    default:
-      return deployToVercel(files, options);
-  }
+  return deployToVercel(files, options);
 }
 
 /**
@@ -39,17 +44,10 @@ export async function deploySite(
   pkg: AIStarterPackage,
   options: DeployOptions
 ): Promise<DeployResult> {
+  assertSupportedProvider(provider);
   const files = generateSiteFiles(pkg);
 
-  if (provider === "aws" || provider === "azure" || provider === "gcp") {
-    return deployToVercel(files, options);
-  }
-  switch (provider) {
-    case "vercel":
-      return deployToVercel(files, options);
-    default:
-      return deployToVercel(files, options);
-  }
+  return deployToVercel(files, options);
 }
 
 async function deployToVercel(

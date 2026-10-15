@@ -392,3 +392,17 @@ unverified. A provider name alone cannot satisfy the restore-readiness gate.
 The proposed restore procedure is documented, but no provider-specific procedure
 or real production-data restore is claimed verified. No provisioning or database
 mutation is part of discovery. All original mission scope and open tasks remain.
+
+## Follow-up authentication and deployment authority checkpoint
+
+Independent source review found two admin website deployment APIs lacked their
+existing API-level admin guard, and explicitly unsupported cloud selections could
+silently deploy to Vercel. The focused correction preserves public signed-token
+lead flows and the existing admin allowlist. Email-proof consumption and identity
+verification now share one transaction, preserving the link on modeled identity
+write failure. See `LEGACY_WEBSITE_DEPLOYMENT_BOUNDARIES.md` and
+`EMAIL_PROOF_ATOMIC_RECOVERY.md`. Integrated checks passed 552 files / 5,487 tests, web/desktop TypeScript, desktop
+build, Python 30 tests, mission checks and changed-source lint (pre-existing unused
+placeholder warnings only). Exact-head CI remains required before merge; no
+production/provider actions were performed. Actual customer login,
+PITR/binding verification, provider readiness and resend/callback UX remain open.
