@@ -196,6 +196,12 @@ register. A row can have tested kernels while the overall journey is partial.
 
 ## Execution queue and external acceptance
 
+Priority update (2026-10-15): close production recovery and one real customer
+journey before further backend expansion or major visual redesign. The concrete
+gates and current evidence are in `CRITICAL_RECOVERY_AND_CUSTOMER_ACCEPTANCE.md`.
+Neon installation/authorization is pending owner confirmation. Small fixes should
+be driven by failures in these milestones, not treated as launch completion.
+
 | Priority | Next concrete work | Independent work / external gate |
 | --- | --- | --- |
 | P0 | Production schema/ledger/founder preflight, proven repair and password/Google/GitHub login | Secure production runtime or protected workflow execution; any migration/data repair needs separate approval. No credential values in chat. |

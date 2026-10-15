@@ -16882,8 +16882,7 @@
         "lib/billing/__tests__/aiUsageSettlementCandidates.test.ts",
         "docs/BILLING_SETTLEMENT_BINDING.md",
         "lib/billing/__tests__/settleAIUsageToStripe.test.ts",
-        "lib/billing/aiUsageSettlementCandidates.ts",
-        "lib/billing/__tests__/aiUsageSettlementCandidates.test.ts"
+        "docs/CRITICAL_RECOVERY_AND_CUSTOMER_ACCEPTANCE.md"
       ],
       "prs": [
         109,
@@ -16927,7 +16926,8 @@
         "lib/desktop/__tests__/credentialVerificationCoordinator.test.ts",
         "docs/DESKTOP_AUTH_VERIFICATION_LIFECYCLE.md",
         "lib/desktop/__tests__/apiKeyRecovery.test.ts",
-        "lib/desktop/__tests__/desktopCredentialCandidate.test.ts"
+        "lib/desktop/__tests__/desktopCredentialCandidate.test.ts",
+        "docs/CRITICAL_RECOVERY_AND_CUSTOMER_ACCEPTANCE.md"
       ],
       "prs": [
         108,
@@ -17073,7 +17073,8 @@
         "scripts/auth-recovery-database-metadata.mjs",
         "lib/__tests__/authRecoveryDatabaseMetadata.test.ts",
         "docs/mission/auth-preflight-run-3.json",
-        "docs/NEON_AUTH_RECOVERY_READINESS.md"
+        "docs/NEON_AUTH_RECOVERY_READINESS.md",
+        "docs/CRITICAL_RECOVERY_AND_CUSTOMER_ACCEPTANCE.md"
       ],
       "prs": [
         103,
@@ -17087,7 +17088,7 @@
         130,
         132
       ],
-      "nextAction": "Obtain read-only Neon project metadata and private comparison of the serving Vercel deployment and protected maintenance binding. Verify actual history window/recovery point, then separately approve isolated restore before requesting exact production auth-only SQL approval.",
+      "nextAction": "Confirm offered Neon connection, inspect actual resource and recoverable range, obtain private serving/preflight binding comparison, then prepare separately approved isolated restore and exact auth-only repair. Execute one isolated customer journey and a separately approved immutable website promotion; no visual redesign.",
       "owner": "Codex; external acceptance/approvals remain founder-owned",
       "auditDepth": "Requirement source mapped; individual acceptance review pending"
     },
