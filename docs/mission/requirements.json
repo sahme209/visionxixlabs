@@ -42010,16 +42010,17 @@
       "engineeringActivity": "active",
       "owner": "Codex integrated parallel workstreams",
       "activeMilestone": "Verify packaged native pairing, recovery, first run, updates and workspace operation.",
-      "verification": "Late canceled responses covered by focused view and pairing regressions.",
+      "verification": "Late canceled responses covered by focused view and pairing regressions. Confirmed pinned keyring without platform features selected mock; explicit native backends and no-vault builder tests now added.",
       "evidence": [
-        "docs/DESKTOP_BROWSER_PAIRING_CANCELLATION.md"
+        "docs/DESKTOP_BROWSER_PAIRING_CANCELLATION.md",
+        "docs/DESKTOP_NATIVE_CREDENTIAL_BACKENDS.md"
       ],
       "customerAcceptance": "Not verified",
       "acceptanceDependencies": [
         "auth_database"
       ],
-      "blockers": "Native vault operations already underway cannot be undone by cancellation; packaged acceptance pending.",
-      "nextAction": "Verify packaged native pairing, recovery, first run, updates and workspace operation."
+      "blockers": "Actual signed-package persistence, legacy upgrade and denied-vault recovery require native hosts and approved account; prior mock builds may have lost legacy credentials, requiring authorized re-pairing.",
+      "nextAction": "Run exact-head native CI and separately authorized signed-package persistence/recovery acceptance on all supported platforms."
     },
     {
       "id": "billing",
@@ -42028,15 +42029,16 @@
       "engineeringActivity": "active",
       "owner": "Codex integrated parallel workstreams",
       "activeMilestone": "Run isolated Stripe test-mode checkout/webhook/invoice lifecycle with approved test configuration.",
-      "verification": "Monotonic refund regression and composed Gateway-ledger-worker tests; no live calls.",
+      "verification": "Monotonic refund regression and composed Gateway-ledger-worker tests; no live calls. Serializable event-ledger/plan transaction covers consumed-event replay and rollback in a stateful simulator.",
       "evidence": [
-        "docs/BILLING_CUSTOMER_JOURNEY_ACCEPTANCE.md"
+        "docs/BILLING_CUSTOMER_JOURNEY_ACCEPTANCE.md",
+        "docs/SUBSCRIPTION_EVENT_CONSUMPTION.md"
       ],
       "customerAcceptance": "Not verified",
       "acceptanceDependencies": [
         "auth_database"
       ],
-      "blockers": "Invoice item is not collected invoice; usage-invoice refund policy unfinished.",
+      "blockers": "Distinct-event ordering, historical pre-rollout event reconstruction, actual Stripe collection and unified entitlement/refund policy remain unresolved.",
       "nextAction": "Run isolated Stripe test-mode checkout/webhook/invoice lifecycle with approved test configuration."
     },
     {
@@ -42092,7 +42094,9 @@
       "verification": "Agent revocation, desktop stale response and literal workflow arguments covered. Admin lead deployment APIs enforce existing admin authority; unsupported providers reject without side effects.",
       "evidence": [
         "docs/AGENT_GOVERNED_ACTION_ACCEPTANCE.md",
-        "docs/LEGACY_WEBSITE_DEPLOYMENT_BOUNDARIES.md"
+        "docs/LEGACY_WEBSITE_DEPLOYMENT_BOUNDARIES.md",
+        "docs/DESKTOP_NATIVE_CREDENTIAL_BACKENDS.md",
+        "docs/SUBSCRIPTION_EVENT_CONSUMPTION.md"
       ],
       "customerAcceptance": "Not verified",
       "acceptanceDependencies": [

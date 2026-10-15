@@ -2,9 +2,8 @@
  * POST /api/billing/stripe-webhook
  *
  * Stripe webhook receiver. Verifies the signature against
- * STRIPE_WEBHOOK_SECRET, parses the event, then updates the
- * TenantBillingPlan row idempotently (lastStripeEventId guards
- * against re-delivery).
+ * STRIPE_WEBHOOK_SECRET, parses the event, then atomically records the event in StripeBillingEvent and updates
+ * TenantBillingPlan. Distinct-event ordering is not inferred from event IDs.
  *
  * Hard rules:
  *   - Reads the raw body for signature verification — Next.js
@@ -18,14 +17,13 @@
 
 import { NextResponse, type NextRequest } from "next/server";
 import { verifyWebhookSignature, isStripeWebhookConfigured } from "@/lib/billing/stripeHelper";
-import { upsertBillingPlan } from "@/lib/billing/tenantBillingStore";
+import { consumeSubscriptionEvent } from "@/lib/billing/consumeSubscriptionEvent";
 import type { BillingStatus } from "@/lib/billing/tierCatalog";
 import {
   isPaidPublicPlanId,
   isSelfServiceBillingEnabled,
   legacyEntitlementTierForPublicPlan,
 } from "@/lib/billing/publicPlanCatalog";
-import { prisma } from "@/lib/db";
 import { resolveCorrelationId } from "@/lib/api";
 import {
   fulfillAICreditCheckout,
@@ -159,56 +157,6 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  try {
-    const existing = await prisma.tenantBillingPlan.findFirst({
-      where: { lastStripeEventId: event.id },
-      select: { organizationId: true },
-    });
-    if (existing) {
-      return NextResponse.json({ ok: true, replay: true }, { status: 200 });
-    }
-
-    // A Stripe customer or subscription is authority for exactly one Axiom
-    // workspace. Never let copied metadata move that authority silently.
-    const ownershipConflict = await prisma.tenantBillingPlan.findFirst({
-      where: {
-        organizationId: { not: organizationId },
-        OR: [
-          { stripeCustomerId: obj.customer },
-          { stripeSubscriptionId: obj.id },
-        ],
-      },
-      select: { organizationId: true },
-    });
-    if (ownershipConflict) {
-      return NextResponse.json(
-        {
-          ok: false,
-          error: {
-            code: "stripe.ownership_conflict",
-            userMessage: "This Stripe customer or subscription is already assigned to another workspace.",
-          },
-          meta: { correlationId, generatedAt: new Date().toISOString() },
-        },
-        { status: 409 },
-      );
-    }
-  } catch {
-    // Entitlements must not change when replay or ownership checks are
-    // unavailable. Stripe will retry the signed event later.
-    return NextResponse.json(
-      {
-        ok: false,
-        error: {
-          code: "billing.verification_unavailable",
-          userMessage: "Billing ownership could not be verified. The event was not applied.",
-        },
-        meta: { correlationId, generatedAt: new Date().toISOString() },
-      },
-      { status: 503 },
-    );
-  }
-
   const tier = legacyEntitlementTierForPublicPlan(planId);
   const status: BillingStatus = event.type === "customer.subscription.deleted"
     ? "canceled"
@@ -228,7 +176,7 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    await upsertBillingPlan({
+    const outcome = await consumeSubscriptionEvent(event.type!, {
       organizationId,
       tier,
       status,
@@ -240,18 +188,22 @@ export async function POST(req: NextRequest) {
       lastStripeEventId: event.id,
       seatQuantity: seatQuantity > 0 ? seatQuantity : null,
     });
+    if (outcome === "replay") return NextResponse.json({ ok: true, replay: true }, { status: 200 });
+    if (outcome === "ownership_conflict") {
+      return NextResponse.json({ ok: false, error: { code: "stripe.ownership_conflict", userMessage: "This Stripe customer or subscription is already assigned to another workspace." }, meta: { correlationId, generatedAt: new Date().toISOString() } }, { status: 409 });
+    }
     return NextResponse.json({ ok: true }, { status: 200 });
-  } catch (err) {
+  } catch {
     return NextResponse.json(
       {
         ok: false,
         error: {
-          code: "billing.write_failed",
-          userMessage: err instanceof Error ? err.message.slice(0, 200) : "Failed to upsert billing plan.",
+          code: "billing.verification_unavailable",
+          userMessage: "Subscription verification or storage could not be confirmed. Please retry this event.",
         },
         meta: { correlationId, generatedAt: new Date().toISOString() },
       },
-      { status: 500 },
+      { status: 503 },
     );
   }
 }

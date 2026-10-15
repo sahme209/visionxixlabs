@@ -5,6 +5,7 @@ const SERVICE: &str = "com.visionxixlabs.axiom";
 const LEGACY_STORE: &str = "axiom-desktop.dat";
 
 fn entry(key: &str) -> Result<keyring::Entry, String> {
+    crate::credential_backend::ensure_native_backend()?;
     if key.trim().is_empty() {
         return Err("Secure-storage key cannot be empty.".to_string());
     }

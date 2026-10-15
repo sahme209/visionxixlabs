@@ -4,8 +4,7 @@ import { NextRequest } from "next/server";
 const mocks = vi.hoisted(() => ({
   isStripeWebhookConfigured: vi.fn(),
   verifyWebhookSignature: vi.fn(),
-  findFirst: vi.fn(),
-  upsertBillingPlan: vi.fn(),
+  consumeSubscriptionEvent: vi.fn(),
   fulfillCredit: vi.fn(),
   failCredit: vi.fn(),
   refundCredit: vi.fn(),
@@ -15,11 +14,8 @@ vi.mock("@/lib/billing/stripeHelper", () => ({
   isStripeWebhookConfigured: mocks.isStripeWebhookConfigured,
   verifyWebhookSignature: mocks.verifyWebhookSignature,
 }));
-vi.mock("@/lib/db", () => ({
-  prisma: { tenantBillingPlan: { findFirst: mocks.findFirst } },
-}));
-vi.mock("@/lib/billing/tenantBillingStore", () => ({
-  upsertBillingPlan: mocks.upsertBillingPlan,
+vi.mock("@/lib/billing/consumeSubscriptionEvent", () => ({
+  consumeSubscriptionEvent: mocks.consumeSubscriptionEvent,
 }));
 vi.mock("@/lib/billing/aiCreditFulfillment", () => ({
   fulfillAICreditCheckout: mocks.fulfillCredit,
@@ -62,8 +58,7 @@ describe("POST /api/billing/stripe-webhook", () => {
     process.env.AXIOM_SELF_SERVICE_BILLING_ENABLED = "true";
     mocks.isStripeWebhookConfigured.mockReturnValue(true);
     mocks.verifyWebhookSignature.mockReturnValue({ ok: true });
-    mocks.findFirst.mockResolvedValue(null);
-    mocks.upsertBillingPlan.mockResolvedValue({ organizationId: "org-1" });
+    mocks.consumeSubscriptionEvent.mockResolvedValue("applied");
     mocks.fulfillCredit.mockResolvedValue({});
     mocks.failCredit.mockResolvedValue({});
     mocks.refundCredit.mockResolvedValue({});
@@ -87,7 +82,7 @@ describe("POST /api/billing/stripe-webhook", () => {
     const { POST } = await import("../route");
     const response = await POST(request(subscriptionEvent()));
     expect(response.status).toBe(401);
-    expect(mocks.upsertBillingPlan).not.toHaveBeenCalled();
+    expect(mocks.consumeSubscriptionEvent).not.toHaveBeenCalled();
   });
 
   it("does not grant entitlements from checkout completion", async () => {
@@ -96,8 +91,7 @@ describe("POST /api/billing/stripe-webhook", () => {
     const response = await POST(request(event));
     expect(response.status).toBe(200);
     expect(await response.json()).toMatchObject({ ignored: "awaiting_subscription_event" });
-    expect(mocks.findFirst).not.toHaveBeenCalled();
-    expect(mocks.upsertBillingPlan).not.toHaveBeenCalled();
+    expect(mocks.consumeSubscriptionEvent).not.toHaveBeenCalled();
   });
 
   it("fulfills a signed paid AI-credit checkout", async () => {
@@ -109,7 +103,7 @@ describe("POST /api/billing/stripe-webhook", () => {
     const { POST } = await import("../route");
     expect((await POST(request(event))).status).toBe(200);
     expect(mocks.fulfillCredit).toHaveBeenCalledWith({ id: "evt_credit_1", type: "checkout.session.completed" }, event.data.object);
-    expect(mocks.upsertBillingPlan).not.toHaveBeenCalled();
+    expect(mocks.consumeSubscriptionEvent).not.toHaveBeenCalled();
   });
 
   it("routes cumulative refunds through the credit reversal ledger", async () => {
@@ -124,41 +118,39 @@ describe("POST /api/billing/stripe-webhook", () => {
     const { POST } = await import("../route");
     const response = await POST(request(event));
     expect(response.status).toBe(400);
-    expect(mocks.upsertBillingPlan).not.toHaveBeenCalled();
+    expect(mocks.consumeSubscriptionEvent).not.toHaveBeenCalled();
   });
 
   it("accepts an already applied event without mutating the plan", async () => {
-    mocks.findFirst.mockResolvedValueOnce({ organizationId: "org-1" });
+    mocks.consumeSubscriptionEvent.mockResolvedValueOnce("replay");
     const { POST } = await import("../route");
     const response = await POST(request(subscriptionEvent()));
     expect(response.status).toBe(200);
     expect(await response.json()).toMatchObject({ replay: true });
-    expect(mocks.upsertBillingPlan).not.toHaveBeenCalled();
+    expect(mocks.consumeSubscriptionEvent).toHaveBeenCalledTimes(1);
   });
 
   it("rejects customer or subscription ownership conflicts", async () => {
-    mocks.findFirst
-      .mockResolvedValueOnce(null)
-      .mockResolvedValueOnce({ organizationId: "org-other" });
+    mocks.consumeSubscriptionEvent.mockResolvedValueOnce("ownership_conflict");
     const { POST } = await import("../route");
     const response = await POST(request(subscriptionEvent()));
     expect(response.status).toBe(409);
-    expect(mocks.upsertBillingPlan).not.toHaveBeenCalled();
+    expect(mocks.consumeSubscriptionEvent).toHaveBeenCalledTimes(1);
   });
 
   it("does not mutate entitlements when verification storage is unavailable", async () => {
-    mocks.findFirst.mockRejectedValue(new Error("database unavailable"));
+    mocks.consumeSubscriptionEvent.mockRejectedValueOnce(new Error("database unavailable"));
     const { POST } = await import("../route");
     const response = await POST(request(subscriptionEvent()));
     expect(response.status).toBe(503);
-    expect(mocks.upsertBillingPlan).not.toHaveBeenCalled();
+    expect(mocks.consumeSubscriptionEvent).toHaveBeenCalledTimes(1);
   });
 
   it("maps the public Pro plan to the existing growth entitlement", async () => {
     const { POST } = await import("../route");
     const response = await POST(request(subscriptionEvent()));
     expect(response.status).toBe(200);
-    expect(mocks.upsertBillingPlan).toHaveBeenCalledWith({
+    expect(mocks.consumeSubscriptionEvent).toHaveBeenCalledWith("customer.subscription.updated", {
       organizationId: "org-1",
       tier: "growth",
       status: "active",
@@ -172,6 +164,19 @@ describe("POST /api/billing/stripe-webhook", () => {
     });
   });
 
+  it.each([
+    ["customer.subscription.created", "active", "active"],
+    ["customer.subscription.updated", "past_due", "past_due"],
+    ["customer.subscription.deleted", "active", "canceled"],
+    ["customer.subscription.updated", "unrecognized", "no_plan"],
+  ])("preserves lifecycle mapping for %s/%s", async (type, providerStatus, status) => {
+    const event = subscriptionEvent({ type });
+    event.data.object.status = providerStatus;
+    const { POST } = await import("../route");
+    expect((await POST(request(event))).status).toBe(200);
+    expect(mocks.consumeSubscriptionEvent).toHaveBeenCalledWith(type, expect.objectContaining({ status, tier: "growth", seatQuantity: 3 }));
+  });
+
   it("fails closed when an active subscription has no valid seat quantity", async () => {
     const event = subscriptionEvent();
     event.data.object.items = { data: [] };
@@ -179,6 +184,6 @@ describe("POST /api/billing/stripe-webhook", () => {
     const response = await POST(request(event));
     expect(response.status).toBe(400);
     expect(await response.json()).toMatchObject({ error: { code: "stripe.seat_quantity_invalid" } });
-    expect(mocks.upsertBillingPlan).not.toHaveBeenCalled();
+    expect(mocks.consumeSubscriptionEvent).not.toHaveBeenCalled();
   });
 });
