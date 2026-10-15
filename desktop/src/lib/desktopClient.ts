@@ -1118,6 +1118,23 @@ export class DesktopClient {
     return this.get("/api/desktop/release-manifest");
   }
 
+  // ── Release workspace (paired session; never dashboard cookie auth) ──
+  releaseWorkspaceList(): Promise<ApiResult<{ releases: Array<{ id: string; releaseTag: string | null; applicationId: string }> }>> {
+    return this.get("/api/desktop/release-workspace");
+  }
+
+  releaseWorkspaceDetail(releaseId: string): Promise<ApiResult<unknown>> {
+    return this.get(`/api/desktop/release-workspace/${encodeURIComponent(releaseId)}`);
+  }
+
+  releaseWorkspaceActivity(releaseId: string): Promise<ApiResult<{ releaseId: string; events: Array<{ kind: string; atIso: string; actorUserId: string | null; summary: string; tone: "info" | "success" | "warning" | "danger" }> }>> {
+    return this.get(`/api/desktop/release-workspace/${encodeURIComponent(releaseId)}/activity`);
+  }
+
+  transitionReleaseWorkspace(input: { releaseId: string; action: "finalize_scope" | "start_deploy" | "complete_deploy" | "mark_rolled_back" | "mark_failed" }): Promise<ApiResult<{ previousStatus: string; status: string }>> {
+    return this.post("/api/desktop/release-workspace/lifecycle", input);
+  }
+
   // -------------------------------------------------------------------------
   // HTTP helpers
   // -------------------------------------------------------------------------

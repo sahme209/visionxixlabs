@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { ViewShell } from "../components/Primitives";
+import { desktopClient } from "../lib/desktopClient";
 
 /**
  * Phase 483 — desktop sibling for the web /dashboard/releases/[id]
@@ -8,7 +9,6 @@ import { ViewShell } from "../components/Primitives";
  */
 
 interface ListRow { id: string; releaseTag: string | null; applicationId: string }
-type ListResp = { ok: true; data: { releases: ListRow[] } } | { ok: false; error: string };
 
 interface ReleaseData {
   id: string;
@@ -60,9 +60,8 @@ export function ReleaseOverviewView() {
       setSelected(handoff);
       delete (window as unknown as { __releaseopsSelectedReleaseId?: string }).__releaseopsSelectedReleaseId;
     }
-    fetch("/api/dashboard/release-list", { credentials: "include" })
-      .then((r) => r.json())
-      .then((j: ListResp) => {
+    desktopClient.releaseWorkspaceList()
+      .then((j) => {
         if (cancelled) return;
         if (j.ok) {
           setReleases(j.data.releases);
@@ -88,10 +87,8 @@ export function ReleaseOverviewView() {
     if (!selected) return;
     let cancelled = false;
     setLoadingDetail(true);
-    fetch(`/api/dashboard/release-detail/${encodeURIComponent(selected)}`, { credentials: "include" })
-      .then((r) => r.json())
-      .then((j: DetailResp) => { if (!cancelled) setDetail(j); })
-      .catch((e) => { if (!cancelled) setDetail({ ok: false, error: e instanceof Error ? e.message : "Network error." }); })
+    desktopClient.releaseWorkspaceDetail(selected)
+      .then((j) => { if (!cancelled) setDetail(j.ok ? { ok: true, data: j.data as DetailData } : { ok: false, error: j.error }); })
       .finally(() => { if (!cancelled) setLoadingDetail(false); });
     return () => { cancelled = true; };
   }, [selected]);
@@ -341,9 +338,8 @@ function ActivityTimeline({ releaseId }: { releaseId: string }) {
 
   useEffect(() => {
     let cancelled = false;
-    fetch(`/api/dashboard/release-activity/${encodeURIComponent(releaseId)}`, { credentials: "include" })
-      .then((r) => r.json())
-      .then((j: TimelineRespBody) => { if (!cancelled) setResp(j); })
+    desktopClient.releaseWorkspaceActivity(releaseId)
+      .then((j) => { if (!cancelled) setResp(j.ok ? { ok: true, data: j.data } : { ok: false, error: j.error }); })
       .catch(() => { /* swallow */ })
       .finally(() => { if (!cancelled) setLoading(false); });
     return () => { cancelled = true; };
@@ -391,18 +387,13 @@ function LifecycleControls({ releaseId, currentStatus }: { releaseId: string; cu
   async function trigger(action: LifecycleAction) {
     setState({ kind: "submitting", action });
     try {
-      const res = await fetch("/api/dashboard/release-lifecycle", {
-        method: "POST", credentials: "include",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ releaseId, action }),
-      });
-      const j = await res.json();
+      const j = await desktopClient.transitionReleaseWorkspace({ releaseId, action });
       if (j.ok) {
         setState({ kind: "ok", previousStatus: j.data.previousStatus, status: j.data.status });
         // Trigger overview reload by re-dispatching the select event.
         setTimeout(() => window.dispatchEvent(new CustomEvent("releaseops:select-release", { detail: { releaseId } })), 400);
       } else {
-        setState({ kind: "error", message: j.hint ?? j.error });
+        setState({ kind: "error", message: j.error });
       }
     } catch (e) {
       setState({ kind: "error", message: e instanceof Error ? e.message : "network error" });
