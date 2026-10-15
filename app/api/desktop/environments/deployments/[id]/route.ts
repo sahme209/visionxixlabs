@@ -42,8 +42,18 @@ export async function GET(
   if (!observed.ok) return NextResponse.json({ ok: false, error: "deployment_observation_failed" }, { status: 502 });
 
   const completedAt = observed.data.status === "completed" ? new Date(observed.data.updatedAt) : null;
-  await repo.deploymentExecution.updateMany({
-    where: { id, organizationId },
+  // An overlapping observation may have settled this row while provider reads
+  // were in flight. Publish only against the exact snapshot that we read.
+  const persisted = await repo.deploymentExecution.updateMany({
+    where: {
+      id, organizationId,
+      updatedAt: execution.updatedAt,
+      lastObservedAt: execution.lastObservedAt,
+      workflowRunId: execution.workflowRunId,
+      status: execution.status,
+      conclusion: execution.conclusion,
+      rollbackStatus: execution.rollbackStatus,
+    },
     data: {
       status: observed.data.status,
       conclusion: observed.data.conclusion,
@@ -53,6 +63,11 @@ export async function GET(
       completedAt,
     },
   });
+  if (persisted.count !== 1) {
+    const current = await repo.deploymentExecution.findFirst({ where: { id, organizationId } });
+    if (!current) return NextResponse.json({ ok: false, error: "deployment_execution_not_found" }, { status: 404 });
+    return NextResponse.json({ ok: true, data: serializeDeploymentExecution(current) });
+  }
   if (
     execution.status !== observed.data.status
     || execution.conclusion !== observed.data.conclusion

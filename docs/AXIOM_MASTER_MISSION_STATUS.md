@@ -1,5 +1,20 @@
 # Axiom Agent master-mission status
 
+## Continuing mission — concurrent deployment observations
+
+PR #111 merged at `ee8125f5` after GitHub web and native desktop checks passed.
+The following audit reproduced a delayed active observation overwriting a
+newer completed result. Observation persistence now compares the exact stored
+snapshot before updating. If another request changed the row, the response
+returns the current tenant-scoped record without writing stale audit evidence.
+A disappearing record returns 404. These are automated regression checks;
+no production record, provider workflow, schema or credentials are changed.
+Local validation passes: 534 Vitest files / 5,256 tests, web TypeScript,
+desktop TypeScript/frontend build and 30 Python CLI tests. PR #111's automatic
+main deployment `dpl_84sM3yz7h6xcPZDUjX1iJfpchXCJ` is READY; its direct
+sign-in and auth-provider endpoints return HTTP 200. This does not verify an
+authenticated login or the custom domain's current alias.
+
 ## Continuing mission — deployment receipt visibility
 
 Main `ad467cc5` includes merged PRs #109 and #110; both automatic Vercel main

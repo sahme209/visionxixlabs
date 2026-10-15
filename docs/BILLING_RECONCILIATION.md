@@ -118,6 +118,12 @@ outcomes for reconciliation. These paths do not change public plan limits.
 
 ## Desktop visibility for unresolved dispatch holds
 
+Concurrent observation responses use a snapshot compare-and-set. A delayed
+response cannot overwrite a record changed by another observer while its
+provider reads were in flight. A conflict returns the current tenant-scoped
+record without a stale transition audit. This does not reconcile missing
+receipts, release holds, or guarantee provider responses themselves are fresh.
+
 A reserved execution or an execution without a provider run receipt is labeled
 “Dispatch outcome awaiting verification”, rather than active deployment. It
 does not start a five-second observation loop with no run to observe. Existing

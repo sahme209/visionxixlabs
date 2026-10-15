@@ -74,4 +74,57 @@ describe("GET /api/desktop/environments/deployments/:id", () => {
     expect(response.status).toBe(404);
     expect(mocks.getWorkflowRun).not.toHaveBeenCalled();
   });
+
+  it("returns a tenant-scoped not-found result if the row disappears during observation", async () => {
+    mocks.findExecution.mockResolvedValueOnce(execution).mockResolvedValueOnce(null);
+    mocks.updateExecution.mockResolvedValueOnce({ count: 0 });
+    mocks.getWorkflowRun.mockResolvedValue({ ok: true, data: {
+      workflowRunId: "123", status: "completed", conclusion: "success", rollback: "not_started",
+      htmlUrl: execution.workflowUrl, createdAt: "2026-10-07T10:00:00Z", startedAt: null,
+      updatedAt: "2026-10-07T10:08:00Z",
+    } });
+    const { GET } = await import("../route");
+    const response = await GET(new NextRequest("https://visionxixlabs.com/api/desktop/environments/deployments/exec_1"), { params: Promise.resolve({ id: "exec_1" }) });
+    expect(response.status).toBe(404);
+    expect(mocks.findExecution).toHaveBeenLastCalledWith({ where: { id: "exec_1", organizationId: "org-1" } });
+    expect(mocks.appendAudit).not.toHaveBeenCalled();
+  });
+
+  it("does not overwrite a newer completed observation with a delayed active response", async () => {
+    let stored = { ...execution };
+    mocks.findExecution.mockImplementation(async () => ({ ...stored }));
+    mocks.updateExecution.mockImplementation(async ({ where, data }) => {
+      const matches = Object.entries(where).every(([key, value]) => {
+        const current = stored[key as keyof typeof stored];
+        return current instanceof Date && value instanceof Date
+          ? current.getTime() === value.getTime() : current === value;
+      });
+      if (!matches) return { count: 0 };
+      stored = { ...stored, ...data, updatedAt: new Date("2026-10-07T10:09:00Z") };
+      return { count: 1 };
+    });
+    let releaseOld!: (value: unknown) => void;
+    let oldStarted!: () => void;
+    const started = new Promise<void>((resolve) => { oldStarted = resolve; });
+    const oldResponse = new Promise((resolve) => { releaseOld = resolve; });
+    const observation = {
+      workflowRunId: "123", status: "in_progress", conclusion: null, rollback: "not_started",
+      htmlUrl: execution.workflowUrl, createdAt: "2026-10-07T10:00:00Z", startedAt: null,
+      updatedAt: "2026-10-07T10:02:00Z",
+    };
+    mocks.getWorkflowRun.mockImplementationOnce(() => { oldStarted(); return oldResponse; });
+    mocks.getWorkflowRun.mockResolvedValueOnce({ ok: true, data: {
+      ...observation, status: "completed", conclusion: "success", updatedAt: "2026-10-07T10:08:00Z",
+    } });
+    const { GET } = await import("../route");
+    const request = () => GET(new NextRequest("https://visionxixlabs.com/api/desktop/environments/deployments/exec_1"), { params: Promise.resolve({ id: "exec_1" }) });
+    const delayed = request();
+    await started;
+    await request();
+    releaseOld({ ok: true, data: observation });
+    const response = await delayed;
+    expect(stored.status).toBe("completed");
+    expect((await response.json()).data).toEqual(expect.objectContaining({ status: "completed", conclusion: "success" }));
+    expect(mocks.appendAudit).toHaveBeenCalledTimes(1);
+  });
 });

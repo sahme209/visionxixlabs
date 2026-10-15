@@ -51,7 +51,16 @@ export interface DeploymentExecutionRepo {
       take: number;
     }): Promise<DeploymentExecutionRow[]>;
     updateMany(args: {
-      where: { id: string; organizationId: string };
+      where: {
+        id: string;
+        organizationId: string;
+        updatedAt: Date;
+        lastObservedAt: Date | null;
+        workflowRunId: string | null;
+        status: string;
+        conclusion: string | null;
+        rollbackStatus: string;
+      };
       data: {
         status: string;
         conclusion: string | null;
