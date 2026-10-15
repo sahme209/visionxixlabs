@@ -44,7 +44,10 @@ function buildProviders(): NextAuthOptions["providers"] {
         let user;
         try {
           user = await prisma.user.findUnique({ where: { email: normalizedEmail } });
-          if (!user?.passwordHash) return null;
+          // Password possession is not proof of mailbox control. Credentials
+          // accounts are deliberately unable to sign in until the expiring,
+          // single-use verification flow marks them verified.
+          if (!user?.passwordHash || !user.emailVerifiedAt) return null;
           const valid = await compare(credentials.password, user.passwordHash);
           if (!valid) return null;
         } catch (err) {
