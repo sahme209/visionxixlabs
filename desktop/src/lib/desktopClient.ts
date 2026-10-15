@@ -1144,6 +1144,11 @@ export class DesktopClient {
     return this.post("/api/desktop/applications", input);
   }
 
+  // ── Onboarding checklist (paired session; never dashboard cookie auth) ──
+  onboardingChecklist(): Promise<ApiResult<{ generatedAt: string; checklist: { items: Array<{ key: string; title: string; description: string; done: boolean; cta: { label: string; href: string }; blockedByPredecessor: boolean }>; completed: number; total: number; percent: number; allDone: boolean } }>> {
+    return this.get("/api/desktop/onboarding-checklist");
+  }
+
   // -------------------------------------------------------------------------
   // HTTP helpers
   // -------------------------------------------------------------------------

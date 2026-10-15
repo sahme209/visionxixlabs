@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import type { View } from "../App";
+import { desktopClient } from "../lib/desktopClient";
 
 /**
  * Phase 503 — desktop sibling of the web OnboardingChecklist.
@@ -42,9 +43,8 @@ export function OnboardingChecklist({ onNavigate }: Props) {
 
   useEffect(() => {
     let cancelled = false;
-    fetch("/api/dashboard/onboarding-checklist", { credentials: "include" })
-      .then((r) => r.json())
-      .then((j: RespBody) => { if (!cancelled) setResp(j); })
+    desktopClient.onboardingChecklist()
+      .then((j) => { if (!cancelled) setResp(j.ok ? { ok: true, data: j.data } : { ok: false, error: j.error }); })
       .catch(() => { /* swallow */ });
     return () => { cancelled = true; };
   }, []);
