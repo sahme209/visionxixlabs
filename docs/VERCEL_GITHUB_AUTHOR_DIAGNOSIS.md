@@ -37,7 +37,20 @@ The previous integration preview `dpl_6XWGTx4q7XUpafUWVG6PkPwc8ic3` failed
 before build with `BUILD_FAILED: Resource provisioning failed`. Missing author
 association plausibly explains the reported “GitHub user not found” warning,
 but the exposed deployment error does not establish that it caused provisioning
-failure. A new correctly attributed branch commit is the verification step.
+failure. Verification commit `baf8a4df` resolves both author and committer to GitHub
+account `sahme209` / `225285479`. Vercel event `uev_SN0BhPkYPUTsqiVfoC21kalQ`
+also records `githubCommitAuthorLogin: sahme209`; earlier workspace events
+lacked this field. Repository discovery returns the exact repository id
+`1130181785` under this GitHub owner.
+
+The new preview `dpl_49YcSn54z4x1S4jtd8r8NiE1TgmD` still fails after about
+one second with the same provisioning error and no build events. Author
+association is corrected, while provisioning remains independently unresolved.
+Historical warnings on older commits can persist because history is preserved.
 Production deployments, aliases, protection, credentials and database records
 remain unchanged. Production preflight and founder/login verification remain
 separate gates in the unified mission.
+
+Git authorship is independent of the application founder-account email. This
+correction does not change the founder identity supplied for the private
+authentication preflight or grant any application role.

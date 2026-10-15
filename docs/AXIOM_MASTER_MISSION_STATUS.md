@@ -1,5 +1,26 @@
 # Axiom Agent master-mission status
 
+## GitHub/Vercel identity correction · 2026-10-15
+
+The authenticated GitHub account, repository, Vercel repository link, namespace
+admin access and confirmed Vercel owner all identify `sahme209`. Earlier cloud
+commit authors were not associated with a GitHub account. Repository-local
+future author email now uses the account-specific GitHub no-reply address;
+verification commit `baf8a4df` resolves author and committer to `sahme209`, and
+Vercel event metadata records that author login. No history was rewritten or
+account credentials, installations, permissions or working deployment settings
+changed. The new preview still fails provisioning before build, demonstrating
+that author association alone does not fix the platform error.
+
+PR #108 has since been merged at main `7316be61`; its existing production
+deployment `dpl_8Pghk2udZ5MnaGchysd21zJWjkRa` is READY. The integration branch
+merged this main revision normally, with an identical file tree; its 5,237-test
+source validation remains applicable. Detailed evidence is in
+[the author diagnosis](VERCEL_GITHUB_AUTHOR_DIAGNOSIS.md). Application founder
+identity and the read-only database/login verification gate are unchanged.
+The sections below retain historical snapshots rather than claiming they are
+the latest PR/deployment status.
+
 ## Integrated local candidate · 2026-10-15
 
 Branch `codex/mission-reliability-integration` combines the independent
