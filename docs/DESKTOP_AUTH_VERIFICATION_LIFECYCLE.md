@@ -46,3 +46,9 @@ keeps commercial access decisions separate, then persists before activation.
 Browser sign-in buttons and the recovery Enter shortcut cannot start an alternate
 flow while key verification is busy. Browser cancellation/unmount races remain a
 separate tracked concern; this change does not claim to resolve them.
+
+Recovery-candidate validation: 545 Vitest files / 5,402 tests passed on the combined
+branch, including request-scoped bearer, vault ordering and rendered sign-in
+interaction checks. Web/desktop TypeScript, desktop frontend build and all 30
+Python CLI tests passed. Native Keychain and actual OAuth/pairing acceptance are
+not established by these simulated tests.
