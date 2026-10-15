@@ -2164,6 +2164,55 @@ model TenantBillingPlan {
   @@index([tier, status])
 }
 
+/// Explicit opt-in for metered AI settlement.  A missing row is equivalent to
+/// disabled; this prevents a newly connected Stripe customer from being billed
+/// merely because it has generated AI usage.
+model AIUsageBillingConfig {
+  organizationId            String   @id
+  enabled                   Boolean  @default(false)
+  /// Hard monthly customer-charge ceiling, in USD cents.  Zero blocks all
+  /// settlement until an operator sets a positive value.
+  monthlySpendLimitCents    Int      @default(0)
+  currency                  String   @default("usd")
+  updatedAt                 DateTime @updatedAt
+  createdAt                 DateTime @default(now())
+}
+
+/// One immutable Stripe-settlement intent per reconciled UsageEvent. The
+/// idempotency key is sent to Stripe, so a timeout never becomes a duplicate
+/// invoice item on retry.
+model AIUsageBillingSettlement {
+  id                  String   @id @default(cuid())
+  organizationId      String
+  usageEventId        String   @unique
+  periodMonth         String
+  amountCents         Int
+  /// reserved | submitted | failed | blocked
+  status              String   @default("reserved")
+  idempotencyKey      String   @unique
+  stripeInvoiceItemId String?  @unique
+  failureReason       String?
+  attemptCount        Int      @default(0)
+  submittedAt         DateTime?
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  @@index([organizationId, periodMonth, status])
+}
+
+/// Serializable monthly counter used to reserve a workspace's configured
+/// spending ceiling before the Stripe request is made.
+model AIUsageBillingPeriod {
+  organizationId String
+  periodMonth    String
+  limitCents     Int
+  reservedCents  Int      @default(0)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@id([organizationId, periodMonth])
+}
+
 /// In-product feedback row. Captured from /api/feedback. NEVER
 /// blocking the dashboard — the form is fire-and-forget. Stored
 /// for follow-up + optionally mirrored to Slack via the outbound lane.
