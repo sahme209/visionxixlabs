@@ -933,7 +933,12 @@ or granting authority. Integrated local verification passed 594 test files /
 CLI tests, tracker consistency and whitespace checks. The isolated local
 production build passed, generating 293 static/SSG pages with no production
 database or provider credentials. This candidate still requires exact-head
-required CI before merge.
+required CI before merge. Initial PR #148 web CI exposed a missing root Tauri
+notification test dependency masked by local desktop installation. The exact
+`2.4.0` dev dependency and lock entry correct that clean-install boundary; a fresh
+isolated locked three-package install typechecked the actual notification source,
+and 24 focused approval/pairing tests passed. No runtime, schema or production
+change is involved; corrected-head CI remains required.
 PR #147 merged normally after both push and PR Test checks passed on exact head
 `79686649b5640593ed90aacbb07a1d42d1cb22e0` (merge
 `cca52dfb61534b8d96ac8a602d604b49c376fc66`; PR run `38833921557`,
@@ -1080,3 +1085,44 @@ Known subscription history (including canceled/past-due) is refused before a new
 Checkout request, because replacement IDs are not yet a supported lifecycle. Four
 regressions failed on the previous route; unknown concurrent initial purchase
 recovery still needs durable intent. Support payment routes remain untouched.
+
+## Durable ECS review storage candidate — no execution authority
+
+PR #147 is merged as `cca52dfb61534b8d96ac8a602d604b49c376fc66` after both
+exact-head Test runs passed; actual CI included 591 files and the 293-page build.
+The next review-only core adds immutable application packets, append-only voter
+revisions and recomputed checkpoints through parameterized Serializable storage.
+Missing independent verification fails before persistence; current management
+authority and selected policy are checked before provider-boundary IO and again
+afterward. Execution is literally disabled, with no route, dispatcher or quota use.
+
+Integrated contract/service tests pass 80 cases, TypeScript and Prisma validation
+pass; the producer's real PostgreSQL17 lifecycle/revision-race rehearsal passed and
+its owned fixture was removed. Independent source review found no material blocker
+within this limited boundary. After merging main #148, final local regression passed 595 files / 6,251
+tests, desktop TypeScript/build, 30 Python tests, lint and tracker checks. Exact-head
+CI/build passed in PR #149; this source adds no runtime route.
+Stored facts and checkpoints do not establish fresh provider readiness or atomic
+execution/revocation authority. Trusted provenance ingestion, full policy handling,
+execution claims and actual rollout/health/rollback remain unfinished.
+
+The new additive SQL is a separate unapproved proposal. Relative to the original
+observed ledger and this source set, expected pending proposals become 10 before
+and 9 after auth-only repair; those are source expectations, not new production
+observations. Generic `migrate deploy` can apply all eligible proposals: do not use
+it for auth-only repair. Exact recovery SQL and checksums are unchanged.
+
+
+PR #148 merged as `96fdef14e211a566242d31a5a18c5a1894b9b8d4` after exact-head
+push/PR Test and Desktop CI passed, including 594 files / 6,234 tests and the
+293-page production build. CI exposed a missing root notification SDK for actual
+desktop preview tests; the explicit locked dev dependency and clean-install type
+resolution fix passed on head `524cd566`. No Vercel deployment, installer
+publication or production change occurred.
+
+
+PR #149 merged as `7fd354e1d2a0fc0d2ec8fb3ccc9bd86566a00010` after exact-head
+Test (push and PR), Desktop CI and isolated auth-recovery rehearsal passed. Actual
+CI ran 595 files / 6,251 tests and built all 293 pages. The source-only review
+migration is still unapproved for production; no provider or database authority
+was enabled.

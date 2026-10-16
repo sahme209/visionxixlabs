@@ -65,3 +65,77 @@ Composed tests must cover all four dispatch callers through the same contract, c
 ## Approval and remaining external evidence
 
 No production SQL, infrastructure, workflow dispatch, credentials, routing or live billing changes are authorized by this plan. Actual target ownership/OIDC trust, artifact registry access, health destination ownership and sandbox mutation/recovery acceptance remain access- and approval-dependent. Production database binding/PITR readiness and login recovery remain independent priority blockers; they must not be described as resolved by ECS regression tests.
+
+
+## Next trusted ingestion and executor integration boundary
+
+Design only. No workflow, provider, credential, routing, migration or deployment action is performed by this plan. The four-input installed legacy workflow remains unchanged and remains a requested service restart with unknown artifact/health/image-recovery proof.
+
+## Next executable source boundary: real read-only ingestion
+
+The durable review core's verifier is intentionally unavailable by default. The next milestone must supply independently verified facts, not another candidate parser or a callback that relabels submitted JSON.
+
+| Proposed source | Concrete responsibility | Fail-closed dependencies |
+| --- | --- | --- |
+| `lib/releaseops/ecsReleaseV2/githubBuildEvidence.ts` | Tenant installation-scoped exact repository/run/attempt/source and workflow identity; bounded attestation-bundle acquisition | Current installation authority, repository access, exact build event/status/attempt, bounded responses and timeout; no latest-run guessing |
+| `lib/releaseops/ecsReleaseV2/sigstoreBuildVerifier.ts` | Pinned reviewed official GitHub/Sigstore verification and trusted roots, exact OCI subject digest/source/builder/workflow policy | No verification from metadata, OCI labels, caller digest or TypeScript type; absent supported verifier/trust roots returns unavailable |
+| `lib/releaseops/ecsReleaseV2/awsTaskDefinitionEvidence.ts` | Full ECS service/task-definition/container/image and associated ALB target-group observations; ECR immutable image metadata as needed | Paired accepted tenant account, scoped vault, fresh broker-only exact STS identity, bounded read permissions and pre/post IO revocation/version checks |
+
+Reuse existing enrollment authority/credential binding principles; do not feed cloud-v2 refs into the legacy Lead vault or reuse generic Agent credentials. The configured GitHub OIDC deployment role is not an ambient server/broker credential. Read-only inspection uses a separately authorized customer inspection role and reports denied/unavailable permissions honestly.
+
+Every declared proposed/baseline container must equal the complete independently described task definition, including sidecars. A current mutable-tag definition cannot establish immutable baseline recovery merely because DescribeTasks exposes a currently running image digest. Creating a digest-pinned replacement baseline requires a separately approved task-definition registration write. Ingestion must return unavailable rather than register or invent that baseline.
+
+The local `gh` executable inspected during planning has no `attestation` command. A tool upgrade/dependency must be pinned and reviewed; current CLI metadata access is not cryptographic verification. Exact package/CLI version, trusted roots and upstream fixture behavior must be evaluated before implementing the verifier.
+
+## Build, registration and immutable identity
+
+A customer's separately authorized build pipeline checks out the exact source commit, builds and pushes an OCI image, records its digest and produces verified provenance. The existing candidate contract requires already registered new and baseline task-definition ARNs. Registration is an explicit provider write and is not silently authorized by a review packet, source checkout or image build. Either consume an existing authorized pipeline's registered definition or review registration authority separately.
+
+Clarify `workflowSha` as GitHub's workflow commit identity; it must not be confused with a file blob SHA. If file-content identity is needed, independently record/verify that blob identity without overloading the existing field. Build workflow and release executor identities remain distinct.
+
+## Separate executor and server authority
+
+A new `axiom-release-aws-ecs-v2.yml` capability should accept server operation/manifest identity and invoke an immutable pinned reusable executor. Do not add required inputs to or automatically fall back to the installed four-input legacy workflow.
+
+The executor obtains GitHub OIDC for an explicit server audience and requests a claim. A future server endpoint must verify JWT signature/issuer/JWKS/algorithm/audience/expiry and exact repository numeric identity, run ID/attempt, event, source, workflow path/commit, reusable job identity and environment. Independently read GitHub run metadata; token or caller claims alone are not a current durable approval decision.
+
+The claim reloads durable packet/decisions, current membership/quorum/policy, exact provider target/baseline and expiration. Actual execution needs a shared approval-revocation/claim fencing mechanism, not a Serializable review snapshot alone. Only then may it atomically claim the existing deployment allowance and execution identity. Until these boundaries are reviewed and implemented, the endpoint must remain unavailable. The review core does not consume live quota or mint claims.
+
+A short-lived signed response binds manifest, operation, exact run/attempt/executor, target, new immutable task definition, approved baseline and nonce. Signing authority, issuer/audience, JWKS rotation, replay/expiry and unknown-outcome reconciliation require explicit design and tests. A reusable bearer approval is insufficient.
+
+## Cloud trust cannot be assumed
+
+AWS IAM must not be assumed to enforce arbitrary GitHub custom JWT claims directly. A repository/ref-only OIDC role permits another workflow to bypass the server claim path. A separately approved v2 trust configuration must bind the intended immutable reusable job, for example through a verified customized GitHub `sub` containing pinned `job_workflow_ref` and the required repository/environment identity, with strict `aud`; otherwise use a reviewed server credential-broker design. Actual subject format/encoding and AWS trust behavior require independent validation, not invented IAM condition keys.
+
+Existing production roles/trust and workflows must not be changed by this source milestone. Missing private trust evidence keeps v2 execution unavailable. GitHub environment/repository controls remain additional gates; do not describe them as a cryptographic server-approval binding without evidence.
+
+## Execution and receipt acceptance
+
+After authenticating the server authorization, the executor independently validates STS account, target, exact new task definition and baseline, then explicitly updates the service to the approved new ARN. Bounded stabilization must be followed by task/image observation and ALB target membership/health correlated to the new ECS deployment. Healthy old targets do not prove the new release healthy.
+
+Upload a structured terminal receipt bound to exact run/attempt/manifest/target. Server-side independent observations must agree before release acceptance. Failed rollout restores the approved immutable baseline, verifies its image digests and health, and leaves the original release failed. Lost responses, cancellation, timeout, missing receipts and ambiguous provider writes retain unknown execution claims; no blind retry or premature quota release.
+
+## Locally executable acceptance before provider writes
+
+1. Real offline cryptographic verification using pinned upstream signed bundle/trust fixtures: malformed signature/log proof, wrong digest/source/workflow/issuer and metadata-only JSON must fail. These fixtures are not real customer/provider acceptance.
+2. Recording GitHub/ECS/ECR transports: tenant/install scope, bounded pagination/responses, exact run attempt, source/workflow drift, missing sidecar, mutable baseline, denied permissions and revocation during IO.
+3. Locally signed JWT/JWKS fixtures: signature and algorithm policy, wrong audience/issuer, expiry, exact reusable workflow/run identity and replay. Local fixture signing does not prove actual GitHub identity.
+4. Execute actual new template shell against fake `aws`, `gh` and HTTP executables, retaining template parity tests. Assert zero writes while claim authority is unavailable or identity/baseline changes; exact approved new ARN on rollout; health correlated to deployment; immutable baseline recovery; truthful recovery failure/unknown outcomes.
+5. Two independent PostgreSQL clients race approval revocation against the actual execution claim/fence before connecting a dispatcher or live quota. Review checkpoint concurrency evidence alone is insufficient.
+6. Separately authorized customer sandbox acceptance: real OIDC/read permissions, verified source-bound image and registered task definitions, reviewed rollout, observed health, induced safe failure and verified recovery. No production acceptance follows from local fixtures alone.
+
+The next implementation target is trusted read-only ingestion. Workflow publication/dispatch, registry push, task-definition registration, IAM changes and actual rollout/recovery remain separate approval-dependent milestones.
+
+### First ingestion implementation proposal and dependency review boundary
+
+No dependencies are added by this document. The proposed exact low-level verifier pin is `@sigstore/verify@4.1.2`, with explicit `@sigstore/bundle@5.0.0` if importing its JSON decoder. Their complete resolved transitive graph and integrity/provenance must enter a reviewed lockfile change; no floating runtime trust dependency or install-time execution is proposed. The [official tagged package manifest](https://raw.githubusercontent.com/sigstore/sigstore-js/%40sigstore%2Fverify%404.1.2/packages/verify/package.json) requires Node `^22.22.2 || ^24.15.0 || >=26.0.0`. Existing web CI uses Node24, but desktop/manual auth/migration workflows still include Node20. Confirm the actual serving backend runtime and every importing build/test path before approving this dependency; do not silently upgrade production runtime or choose an older crypto library just to bypass its engine requirement.
+
+Use the official package's `bundleFromJSON` → `toSignedEntity` → `Verifier(toTrustMaterial(...)).verify(entity, explicitIdentityPolicy)` path. The [tagged exports and upstream tests](https://raw.githubusercontent.com/sigstore/sigstore-js/%40sigstore%2Fverify%404.1.2/packages/verify/src/__tests__/verifier.test.ts) provide the API and valid signed DSSE/Rekor-v2 fixtures. Test inputs/trust material are in that tag's `packages/verify/src/__tests__/__fixtures__/bundles.ts` and `trust.ts`. Resolve the tag to a reviewed immutable commit, preserve Apache-2.0 attribution and record imported file hashes before fixture adoption. Upstream test roots contain test/staging material and must never become production trusted roots. Actual production trust acquisition/rotation/revocation policy is a separate reviewed input, not accepted from a candidate or arbitrary URL.
+
+[GitHub's offline verification guidance](https://docs.github.com/en/actions/how-tos/secure-your-work/use-artifact-attestations/verify-attestations-offline) distinguishes public Sigstore and GitHub-private trust roots and numeric repository identity. A matching owner/name is insufficient after renames/name reuse. The [official attestation security description](https://docs.github.com/en/actions/concepts/security/artifact-attestations) notes that GitHub's private instance has no transparency log. Therefore implement explicit reviewed trust profiles; do not globally lower verification thresholds to accommodate missing proofs. Public-profile verification requires its expected certificate/log/timestamp evidence; private-profile verification needs official private-instance root/timestamp fixtures and policy before enabling it. Until then, private-profile input returns unsupported/unavailable, never verified from API metadata alone.
+
+The initial source change should compose real read-only GitHub evidence and cryptographic verification, then actual bounded AWS task-definition observations, into the review core's internal boundary. Reuse `resolveTenantScopedToken` and `githubAppAuth` for tenant/repository-scoped tokens, but add exact run-attempt and attestation reads with explicit response-byte, pagination, timeout and redirect policy. The existing private `gh()` fetch helper in `githubWriteClient.ts` has no timeout/response-byte bounds; do not assume it already supplies a secure attestation downloader or copy its write API surface into this reader.
+
+For AWS, reuse `readTenantAwsInventory`'s pre/post paired-session, accepted membership, scoped AEAD credential, account/ref/region/version/revocation fences. `assumeVerifiedRole` in enrollment `stsValidation.ts` is currently private and broker-only; refactor a bounded scoped read primitive carefully rather than export raw temporary credentials or enable generic workloads. The existing ECS SDK dependency can describe services/task definitions/tasks. ECR SDK is not currently a direct dependency; add it only after a separate exact-version review if registry existence inspection is required. Neither task-definition image references nor attestation subjects alone prove a registry object remains pullable.
+
+Meaningful initial acceptance is real offline signature verification plus recording read-only transports and current authority/revocation regressions; missing fixtures/runtime/trust/read access remain explicit unavailable outcomes. No helper may construct `independently_verified` merely because JSON fields compare. Cloud writes, approval claim distribution and workflow execution remain disabled while these inputs are incomplete.
