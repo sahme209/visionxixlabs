@@ -24,6 +24,8 @@ export async function runOwnedLocalAuthHttp(env, adapters = {}) {
     /^(DATABASE_URL|DIRECT_URL|AUTH_HTTP_TEST_DATABASE_URL|PGHOST|PGPORT|PGDATABASE|PGUSER|PGPASSWORD|PGSERVICE|PGSERVICEFILE|PGPASSFILE|PGOPTIONS|PGSSLMODE|NEXTAUTH_URL|NEXT_PUBLIC_BASE_URL|RESEND_BASE_URL|POSTGRES_PASSWORD|POSTGRES_DB|POSTGRES_USER|DOCKER_HOST|DOCKER_CONTEXT|DOCKER_TLS_VERIFY|DOCKER_CERT_PATH|NODE_OPTIONS|NEXTAUTH_SECRET|DESKTOP_SESSION_SIGNING_KEY|RESEND_API_KEY|GH_TOKEN|GITHUB_TOKEN)$/.test(key) ||
     /^(STRIPE_|AWS_|AZURE_|GOOGLE_|OPENAI_|ANTHROPIC_|VERCEL_)/.test(key)
   )), "local_auth_http_external_binding_forbidden");
+  assert.ok(env.AXIOM_RUN_LOCAL_AZURE_HTTP === undefined || env.AXIOM_RUN_LOCAL_AZURE_HTTP === "1", "local_azure_http_opt_in_invalid");
+  if (env.AXIOM_RUN_LOCAL_AZURE_HTTP === "1") assert.ok(env.AXIOM_RUN_LOCAL_AWS_HTTP !== "1" && env.AXIOM_RUN_LOCAL_TERRAFORM_HTTP !== "1", "separate_owned_azure_fixture_required");
   assert.ok(env.AXIOM_RUN_LOCAL_AWS_HTTP === undefined || env.AXIOM_RUN_LOCAL_AWS_HTTP === "1", "local_aws_http_opt_in_invalid");
   assert.ok(env.AXIOM_RUN_LOCAL_AGENT_RECEIPT_HTTP === undefined || env.AXIOM_RUN_LOCAL_AGENT_RECEIPT_HTTP === "1", "local_agent_receipt_http_opt_in_invalid");
   assert.ok(env.AXIOM_RUN_LOCAL_AGENT_READINESS_HTTP === undefined || env.AXIOM_RUN_LOCAL_AGENT_READINESS_HTTP === "1", "local_agent_readiness_http_opt_in_invalid");
@@ -76,7 +78,7 @@ export async function runOwnedLocalAuthHttp(env, adapters = {}) {
     }
     assert.ok(ready);
     const target = `postgresql://fixture:${password}@127.0.0.1:${port}/${database}`;
-    const options = { ...(env.AXIOM_RUN_LOCAL_AWS_HTTP === "1" ? { awsWireFixture: true } : {}), ...(env.AXIOM_RUN_LOCAL_AGENT_RECEIPT_HTTP === "1" ? { agentReceiptFixture: true } : {}), ...(env.AXIOM_RUN_LOCAL_AGENT_READINESS_HTTP === "1" ? { agentReadinessFixture: true } : {}), ...(env.AXIOM_RUN_LOCAL_TERRAFORM_HTTP === "1" ? { savedTerraformFixture: true, savedTerraformExecutable: env.AXIOM_LOCAL_TERRAFORM_EXECUTABLE } : {}) };
+    const options = { ...(env.AXIOM_RUN_LOCAL_AZURE_HTTP === "1" ? { azureWireFixture: true } : {}), ...(env.AXIOM_RUN_LOCAL_AWS_HTTP === "1" ? { awsWireFixture: true } : {}), ...(env.AXIOM_RUN_LOCAL_AGENT_RECEIPT_HTTP === "1" ? { agentReceiptFixture: true } : {}), ...(env.AXIOM_RUN_LOCAL_AGENT_READINESS_HTTP === "1" ? { agentReadinessFixture: true } : {}), ...(env.AXIOM_RUN_LOCAL_TERRAFORM_HTTP === "1" ? { savedTerraformFixture: true, savedTerraformExecutable: env.AXIOM_LOCAL_TERRAFORM_EXECUTABLE } : {}) };
     report = Object.keys(options).length ? await rehearse(target, options) : await rehearse(target);
     signal?.throwIfAborted();
   } catch {
