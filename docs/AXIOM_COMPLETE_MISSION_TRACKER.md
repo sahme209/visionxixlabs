@@ -1213,3 +1213,57 @@ After integrating main #150, the combined local suite passed 599 files / 6,321
 tests. The additional customer-only regression then passed with all 17 Checkout
 route tests; final web TypeScript and scoped lint passed. The final exact-head
 CI will validate the combined source and production compilation before merge.
+
+
+## ECS v2 cryptographic build provenance — source candidate
+
+Main #151 merged as `f3fb123a` after final head `a7521098`: PR CI
+[38840040891](https://github.com/sahme209/visionxixlabs/actions/runs/38840040891),
+push CI [38840037945](https://github.com/sahme209/visionxixlabs/actions/runs/38840037945)
+and native CI [38840040894](https://github.com/sahme209/visionxixlabs/actions/runs/38840040894)
+all passed. Exact-head CI verified 599 test files / 6,322 tests and the 293-page
+production compilation. This branch preserves those
+billing, website and Airflow improvements and adds a narrow internal offline
+provenance boundary, not an enabled ECS release lane.
+
+Official pinned `@sigstore/verify` 4.1.2, `@sigstore/bundle` 5.0.0 and
+`@sigstore/protobuf-specs` 0.5.0 verify actual DSSE signatures, certificate/CT/log
+evidence and signed SLSA v1 bindings. Checks include numeric repository identity,
+source SHA/ref, caller workflow commit, separately pinned reusable signer,
+run/attempt and complete subject digests, with tenant authority checked before
+and after verification. Unsupported Node runtimes fail closed before verifier
+imports; private trust remains unavailable. Runtime code imports no fixture or
+default root. Reviewed public trust configuration is still required.
+
+Evidence: `docs/ECS_PROVENANCE_INGESTION.md`, `sigstoreBuildVerifier.ts`, 39 new
+regressions including a genuine upstream signed wheel fixture and an actual
+unsupported-runtime import trap; the existing 80 ECS contract/review tests remain
+applicable. Independent review found no material crypto/authority bypass. These
+fixtures prove offline software behavior, not Axiom image provenance or a real
+customer deployment. No route, full `VerifiedReviewBoundary`, provider read/write,
+workflow dispatch, schema change, live quota or execution authority is enabled.
+The production database binding, recovery readiness and login acceptance gates
+remain unchanged. Full merged-main local checks and exact-head CI are required
+before merge; results are recorded below when complete.
+
+
+Local integration on main #151 passed 601 files / 6,361 tests, web and desktop
+TypeScript, desktop build, 30 Python CLI tests, scoped lint, tracker consistency
+and a 293-page optimized website build. The local website build invoked Next.js
+directly without Prisma generation; no shared client or database was modified.
+Main #152 (`8c997184`) was then integrated after its four CI jobs passed; its
+separate inactive billing fixture/contract changes are preserved. Focused combined
+ECS/billing/demo checks passed 165 tests (four existing PostgreSQL-only tests were
+skipped without an explicit disposable fixture URL); final TypeScript validates
+this merge. Final PR CI must
+still verify the exact combined head before merge. Production acceptance remains
+unverified, and no source-only pass authorizes production activation.
+
+
+PR #152 merged as `8c997184` after final head `94108b93`: PR CI
+[38840350263](https://github.com/sahme209/visionxixlabs/actions/runs/38840350263),
+push CI [38840298650](https://github.com/sahme209/visionxixlabs/actions/runs/38840298650)
+and native runs [38840350249](https://github.com/sahme209/visionxixlabs/actions/runs/38840350249)
+/ [38840298654](https://github.com/sahme209/visionxixlabs/actions/runs/38840298654)
+all passed. Its isolated new-test subscription lane remains unactivated; no route,
+existing customer terms, live Stripe billing or production schema was changed.
