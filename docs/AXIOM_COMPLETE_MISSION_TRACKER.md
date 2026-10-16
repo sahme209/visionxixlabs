@@ -1042,7 +1042,7 @@ afterward. Execution is literally disabled, with no route, dispatcher or quota u
 Integrated contract/service tests pass 80 cases, TypeScript and Prisma validation
 pass; the producer's real PostgreSQL17 lifecycle/revision-race rehearsal passed and
 its owned fixture was removed. Independent source review found no material blocker
-within this limited boundary. Final local regression passed 592 files / 6,193
+within this limited boundary. After merging main #148, final local regression passed 595 files / 6,251
 tests, desktop TypeScript/build, 30 Python tests, lint and tracker checks. Exact-head
 CI/build remains pending; this source adds no runtime route.
 Stored facts and checkpoints do not establish fresh provider readiness or atomic
@@ -1054,3 +1054,11 @@ observed ledger and this source set, expected pending proposals become 10 before
 and 9 after auth-only repair; those are source expectations, not new production
 observations. Generic `migrate deploy` can apply all eligible proposals: do not use
 it for auth-only repair. Exact recovery SQL and checksums are unchanged.
+
+
+PR #148 merged as `96fdef14e211a566242d31a5a18c5a1894b9b8d4` after exact-head
+push/PR Test and Desktop CI passed, including 594 files / 6,234 tests and the
+293-page production build. CI exposed a missing root notification SDK for actual
+desktop preview tests; the explicit locked dev dependency and clean-install type
+resolution fix passed on head `524cd566`. No Vercel deployment, installer
+publication or production change occurred.
