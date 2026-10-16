@@ -171,6 +171,8 @@ it('composes actual STS/XML and ECS/ECR/JSON SDK deserialization with native own
     vi.stubEnv('AWS_SECRET_ACCESS_KEY', 'ambient-must-not-be-used');
     const calls = await fixture();
     const result = await readVerifiedEcsObservation(input, target, AbortSignal.timeout(5000));
+    expect(wire.keyChecks).toHaveLength(calls.length);
+    expect(wire.keyChecks.every(Boolean)).toBe(true);
     expect(calls).toEqual(['AssumeRole', 'GetCallerIdentity', 'DescribeServices', 'DescribeTaskDefinition', 'DescribeTaskDefinition', 'DescribeImages', 'DescribeServices']);
     expect(result.baseline.arn).toBe(baseline);
     expect(result.proposed.arn).toBe(proposed);
