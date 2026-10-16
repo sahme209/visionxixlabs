@@ -1213,3 +1213,36 @@ After integrating main #150, the combined local suite passed 599 files / 6,321
 tests. The additional customer-only regression then passed with all 17 Checkout
 route tests; final web TypeScript and scoped lint passed. The final exact-head
 CI will validate the combined source and production compilation before merge.
+
+### Owned local authentication rehearsal evidence — 2026-10-16 UTC
+
+The committed launcher candidate `15f6131928f2816b6add50b66b60b6ff22d7d225`
+reused the existing Next.js/PostgreSQL HTTP harness and passed 25 actual local
+protocol checks: eleven signup/email-proof/password/session checks, ten desktop
+pairing/consume/replay/revocation checks, and four approval-decision checks.
+The new opt-in launcher used the cached PostgreSQL 17 image, an independently
+owned synthetic database, literal-loopback binding, and verified exact-container
+cleanup. The default inherited runtime binding was refused before container IO;
+the accepted run used an explicit OS/proxy/CA-only environment. Sixty-three
+focused safety/protocol tests across four files passed. Evidence and rerun
+instructions: `docs/LOCAL_AUTH_HTTP_ACCEPTANCE.md` and
+`docs/mission/local-auth-http-owned-launcher-acceptance.json`.
+
+This verifies reusable local backend acceptance only. It does not verify
+production login or migration recovery, native/browser/vault behavior, OAuth,
+external mail delivery, paid entitlement policy, Stripe, or provider execution.
+The observed identity-only `allowed: true` / `no_plan` remains a policy observation.
+No existing mission scope or external approval gate is removed by this milestone.
+
+Required local integration gates passed for this source branch: web TypeScript,
+600 test files / 6,341 tests (local `--testTimeout=20000` runner bound),
+desktop TypeScript and production frontend build,
+and 30 Python CLI tests. These checks complement the source-pinned HTTP result;
+they do not expand its production/native/paid-policy acceptance scope.
+
+After normal integration of main through PR #151, the first combined suite hit
+the existing native publication fixture's default five-second timeout under
+concurrent compiler load; no assertion failed. Its unchanged focused file then
+passed 34/34 tests at the default bound (the named case took 3.222 seconds), and
+the complete combined suite passed with the explicit local 20-second bound.
+No source test, native publication guard or CI timeout was weakened.

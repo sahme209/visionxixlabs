@@ -48,17 +48,63 @@ HTTP requests and the overall journey are bounded (90 seconds per request, four 
 There is no existing browser E2E dependency/harness; prior Chromium startup/blank-page captures time out in this runtime. This task did not repeat that probe or add browser dependencies. DOM tests and this HTTP run do not prove real browser interactions, mail deliverability, production recovery/password login, Google/GitHub OAuth, signed desktop pairing/native vault, cloud deployment, rollback or Stripe acceptance. Those remain explicit, separately evidenced workstreams and approval gates. Run TypeScript/build checks after the local development server stops; Next regenerates development types while compiling routes, so concurrent typechecking is not stable.
 
 
-## Integrated extensions — prepared, not yet accepted
+## Integrated extensions — accepted within local HTTP scope
 
-The same guarded fixture now calls separate local HTTP pairing and approval
-continuations. Pairing covers authenticated consent, device-bound consumption,
-replay denial, identity inspection and owner revocation; it observes existing
-identity-only commercial policy without claiming billing enforcement. Approval
-uses one synthetic pending row and real concurrent form requests, requiring one
-303 winner, one409 loser and one durable actor/time decision. No provider
-executor is invoked. Their exact integrated-commit result must be recorded before
-these prepared continuations are marked verified.
+The committed-source run on `f7de88f0` accepted the separate pairing and approval
+continuations described above. Their results are recorded in the linked report;
+preparation alone is not acceptance for another source candidate. Native/browser,
+provider execution and paid-policy verification remain outside this evidence.
+
+## Opt-in owned fixture launcher
+
+The existing application rehearsal can now be invoked through an owned local
+PostgreSQL launcher, without supplying or reusing a database connection:
+
+```sh
+AXIOM_RUN_LOCAL_AUTH_HTTP=1 node scripts/run-owned-local-auth-http.mjs
+```
+
+Use an isolated, clean committed checkout with installed dependencies, an already
+available Docker daemon on `unix:///var/run/docker.sock`, and the cached
+`postgres:17-alpine` image. The launcher never pulls an image, accepts an existing
+container, or uses a caller-provided database URL. It refuses inherited database,
+remote Docker and provider bindings, chooses a random synthetic database/password,
+publishes PostgreSQL only on literal `127.0.0.1`, and requires TCP readiness.
+The unchanged application harness still enforces empty-database, committed-source,
+dotenv, environment and loopback boundaries. Its bootstrap uses `prisma db push
+--skip-generate`; it does not regenerate the shared Prisma client or apply the
+production migration chain. Do not run a build/typecheck concurrently in this
+checkout while Next generates development types.
+
+Cleanup verifies a random ownership label on the exact returned container ID
+before deleting only that container and its anonymous fixture volumes. Failures
+and interrupts attempt the same cleanup; ownership uncertainty refuses deletion
+and fails the run. Abrupt host/process termination (including SIGKILL) cannot
+promise cleanup and requires a private operator inspection of that owned fixture.
+Public output contains the existing sanitized acceptance report and cleanup state,
+never the generated connection URL/password. Unit safety tests use Docker/journey
+adapters and do not establish actual PostgreSQL/application acceptance. Record a
+new clean-candidate run separately before treating this launcher as exercised.
 
 ## Integrated approval HTTP origin qualification
 
 The installed Next.js `NextRequest` normalizes literal loopback IP URLs to `localhost`. The initial integrated fixture therefore received 403 for its literal-IP Origin header, rather than reaching an approval decision. The harness now derives only the approval Origin/Referer metadata with the actual installed `NextRequest` normalization; application, database and mail transport still require literal `127.0.0.1`. Application same-origin checks are unchanged, and the foreign-origin refusal remains tested. This is explicit synthetic HTTP metadata, **not evidence that a real browser at a literal-IP origin can submit the same form**. The committed-source rehearsal subsequently passed on `f7de88f0`; this qualification remains part of its acceptance scope.
+
+## Owned launcher acceptance — 2026-10-16 UTC
+
+The launcher passed against clean committed candidate
+`15f6131928f2816b6add50b66b60b6ff22d7d225`, based on main through PR150.
+The actual Next.js/PostgreSQL rehearsal repeated all eleven authentication,
+ten desktop pairing and four approval protocol assertions above. Ownership
+verification and exact-container removal succeeded; no owned fixture remained.
+See [the sanitized owned-launcher report](mission/local-auth-http-owned-launcher-acceptance.json).
+
+The existing runtime environment was correctly refused before any Docker
+operation. The accepted invocation used an explicitly constructed OS/proxy/CA-only
+environment plus the opt-in, with all inherited application/database/provider
+bindings excluded. The cached PostgreSQL image was not pulled, production data
+was not accessed, and the shared Prisma client was not regenerated. Sixty-three
+focused safety/protocol tests across four files also passed. The observed
+`allowed: true` / `no_plan` identity-only policy remains outside paid-entitlement
+acceptance. Browser/native/OAuth/provider/Stripe and production recovery claims
+remain excluded.
