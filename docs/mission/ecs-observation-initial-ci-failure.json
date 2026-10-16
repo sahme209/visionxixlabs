@@ -1,0 +1,71 @@
+{
+  "head": "8c01701226de5b7287bf92e84b635bd658de1b37",
+  "push": {
+    "run": 38853196876,
+    "job": 116818761531,
+    "lines": [
+      "2026-10-16T04:58:25.8450651Z  Test Files  622 passed | 1 skipped (623)",
+      "2026-10-16T04:58:25.8451346Z       Tests  6628 passed | 6 skipped (6634)",
+      "2026-10-16T04:58:26.1049292Z Error: Node-only cloud SDKs must be listed in serverExternalPackages: @aws-sdk/client-ecr"
+    ]
+  },
+  "pr": {
+    "run": 38853215196,
+    "job": 116818821769,
+    "lines": [
+      "FAIL  lib/desktop/__tests__/awsEnrollmentView.test.ts > AWS disconnect confirmation and stale outcome handling > does not overwrite a newly refreshed connection with an older disconnect completion",
+      "2026-10-16T04:59:35.6079592Z AssertionError: expected <p role=\"status\" \u2026(1)></p> to be null",
+      "2026-10-16T04:59:35.6079943Z ",
+      "2026-10-16T04:59:35.6080085Z - Expected:",
+      "2026-10-16T04:59:35.6080307Z null",
+      "2026-10-16T04:59:35.6080412Z ",
+      "2026-10-16T04:59:35.6080542Z + Received:",
+      "2026-10-16T04:59:35.6080751Z <p",
+      "2026-10-16T04:59:35.6108203Z   class=\"mt-3 text-xs leading-5 text-zinc-400\"",
+      "2026-10-16T04:59:35.6108555Z   role=\"status\"",
+      "2026-10-16T04:59:35.6108762Z >",
+      "2026-10-16T04:59:35.6109579Z   Axiom connection disconnected. AWS roles, trust policies and existing STS sessions were not revoked. Reconnect requires a fresh verified enrollment.",
+      "2026-10-16T04:59:35.6110706Z </p>",
+      "2026-10-16T04:59:35.6110901Z ",
+      "2026-10-16T04:59:35.6111709Z  \u276f lib/desktop/__tests__/awsEnrollmentView.test.ts:275:65",
+      "2026-10-16T04:59:35.6113431Z     273|     pending.resolve({ ok: true, data: { account: disconnected } });",
+      "2026-10-16T04:59:35.6115421Z     274|     await new Promise(resolve => setTimeout(resolve, 0));",
+      "2026-10-16T04:59:35.6117682Z     275|     expect(screen.queryByText(/Axiom connection disconnected/)).toBeNu\u2026",
+      "2026-10-16T04:59:35.6118843Z        |                                                                 ^",
+      "2026-10-16T04:59:35.6119948Z     276|     expect(screen.queryByRole(\"button\", { name: \"Read bounded EC2 inve\u2026",
+      "2026-10-16T04:59:35.6121196Z     277|     fireEvent.click(screen.getByRole(\"button\", { name: \"Refresh AWS ac\u2026",
+      "2026-10-16T04:59:35.6121792Z ",
+      "2026-10-16T04:59:35.6122267Z \u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af[1/1]\u23af",
+      "2026-10-16T04:59:35.6122640Z ",
+      "2026-10-16T04:59:35.6122673Z ",
+      "2026-10-16T04:59:35.6123775Z  Test Files  1 failed | 621 passed | 1 skipped (623)",
+      "2026-10-16T04:59:35.6126060Z       Tests  1 failed | 6627 passed | 6 skipped (6634)",
+      "2026-10-16T04:59:35.6127200Z    Start at  04:"
+    ]
+  },
+  "native": {
+    "run": 38853196885,
+    "result": "success"
+  },
+  "reviewedRecovery": {
+    "ecrCommit": "a10f81bf",
+    "uiCommit": "48bc2ef84a4b2ff3084ac73545323ec174216019",
+    "uiRootCause": "An older disconnect completion could replace a freshly refreshed connection before passive effect cleanup invalidated its callback.",
+    "regression": "A deterministic same-batch fresh-version-3/old-disconnect-version-2 regression failed before the parent snapshot/version fence and passed after it; this was a real race, not a flaky-test dismissal.",
+    "combinedLocalSource": "48bc2ef84a4b2ff3084ac73545323ec174216019",
+    "localGates": {
+      "vitestPassed": 6629,
+      "vitestSkipped": 6,
+      "filesPassed": 622,
+      "filesSkipped": 1,
+      "webTypes": "passed",
+      "desktopReleaseTypesBuild": "passed",
+      "pythonTestsPassed": 30,
+      "scopedLint": "passed",
+      "buildContractExternalSdkCount": 37,
+      "tracker": "passed"
+    },
+    "productionBuild": "fresh exact-head CI remains required; no local Next build/deployment was performed",
+    "dependencyQualification": "Local cached protobuf-specs0.5.2 versus locked0.5.0; clean exact-lock CI is required."
+  }
+}

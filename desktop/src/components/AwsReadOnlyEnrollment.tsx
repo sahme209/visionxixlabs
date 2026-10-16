@@ -39,12 +39,16 @@ function AwsEnrollmentWorkspace({ identity }: { identity: VerifiedDesktopIdentit
   const operation = useRef(0);
   const accountRequest = useRef(0);
   const pendingDisconnects = useRef(new Map<string, number>());
+  // Advance ownership when the authoritative response arrives, before React
+  // commits keyed child replacement or runs passive unmount cleanup.
+  const authoritativeAccounts = useRef<DesktopAwsAccount[]>([]);
 
   const applyAccountList = useCallback((next: DesktopAwsAccount[], pendingAtStart: Map<string, number>) => {
     // A list can predate a still-pending command even if it resolves later.
     // It cannot release suspension, including for a replaced credential. A
     // post-settlement read must confirm the authoritative connection state.
     const blocked = new Set([...pendingAtStart.keys(), ...pendingDisconnects.current.keys()]);
+    authoritativeAccounts.current = next;
     setAccounts(next);
     setSuspendedAccounts(previous => previous.filter(id => blocked.has(id)));
   }, []);
@@ -125,7 +129,9 @@ function AwsEnrollmentWorkspace({ identity }: { identity: VerifiedDesktopIdentit
     // Prevent an older in-flight list response from undoing the verified result.
     accountRequest.current++;
     setRefreshing(false);
-    setAccounts(previous => [...(previous ?? []).filter(item => item.id !== account.id), account]);
+    const next = [...authoritativeAccounts.current.filter(item => item.id !== account.id), account];
+    authoritativeAccounts.current = next;
+    setAccounts(next);
     pendingDisconnects.current.delete(account.id);
     setSuspendedAccounts(previous => previous.filter(id => id !== account.id));
     setChallenge(null); setTrustConfirmed(false);
@@ -140,11 +146,18 @@ function AwsEnrollmentWorkspace({ identity }: { identity: VerifiedDesktopIdentit
     setSuspendedAccounts(previous => previous.includes(account.id) ? previous : [...previous, account.id]);
   }
 
-  function confirmDisconnected(account: DesktopAwsAccount) {
+  function confirmDisconnected(expected: DesktopAwsAccount, account: DesktopAwsAccount) {
+    const current = authoritativeAccounts.current.find(item => item.id === expected.id);
+    // Child unmount cleanup can lag a newer list response. An older command
+    // cannot replace a re-enrolled credential or publish a stale success notice.
+    if (!current || current.accountId !== expected.accountId || current.connectionVersion !== expected.connectionVersion
+      || account.id !== expected.id || account.accountId !== expected.accountId
+      || account.connectionVersion !== expected.connectionVersion + 1) return;
+    authoritativeAccounts.current = authoritativeAccounts.current.map(item => item.id === expected.id ? account : item);
     pendingDisconnects.current.delete(account.id);
     accountRequest.current++;
     setRefreshing(false);
-    setAccounts(previous => (previous ?? []).map(item => item.id === account.id ? account : item));
+    setAccounts(authoritativeAccounts.current);
     setSuspendedAccounts(previous => previous.filter(id => id !== account.id));
     setNotice("Axiom connection disconnected. AWS roles, trust policies and existing STS sessions were not revoked. Reconnect requires a fresh verified enrollment.");
   }
@@ -176,7 +189,7 @@ function AwsEnrollmentWorkspace({ identity }: { identity: VerifiedDesktopIdentit
             <p className="mt-1 text-zinc-500">Regions: {account.regions.length ? account.regions.join(", ") : "Not recorded"} · {account.connected ? "Inventory not checked" : "Inventory unavailable"}</p>
             {account.lastValidatedAt && <p className="mt-1 text-zinc-500">Last service validation: {account.lastValidatedAt}</p>}
             {account.revokedAt && <p className="mt-1 text-zinc-500">Disconnected at: {account.revokedAt}. History and account allowance are retained.</p>}
-            {canManage && account.connected && <AwsDisconnectControls key={account.connectionVersion} account={account} suspended={suspendedAccounts.includes(account.id)} onStarted={() => beginDisconnect(account)} onSettled={() => settleDisconnect(account.id, account.connectionVersion)} onDisconnected={confirmDisconnected} />}
+            {canManage && account.connected && <AwsDisconnectControls key={account.connectionVersion} account={account} suspended={suspendedAccounts.includes(account.id)} onStarted={() => beginDisconnect(account)} onSettled={() => settleDisconnect(account.id, account.connectionVersion)} onDisconnected={updated => confirmDisconnected(account, updated)} />}
             {suspendedAccounts.includes(account.id) && <p className="mt-2 text-xs text-zinc-400">Inventory is hidden until a fresh account-state read confirms the disconnect outcome.</p>}
             {account.connected && !suspendedAccounts.includes(account.id) && <AwsBoundedInventory account={account} />}
             {!account.connected && canManage && <button type="button" onClick={() => { updateInput("expectedAccountId", account.accountId); setInput(previous => ({ ...previous, expectedAccountId: account.accountId, roleArn: "", region: account.regions[0] ?? "us-east-1" })); }} className="mt-2 rounded-lg border border-white/10 px-3 py-2 text-xs text-zinc-200 hover:bg-white/[0.06]">Prepare a fresh reconnection</button>}

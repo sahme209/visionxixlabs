@@ -15,6 +15,7 @@ const nextConfig: NextConfig = {
     "@aws-sdk/client-cloudwatch-logs",
     "@aws-sdk/client-cost-explorer",
     "@aws-sdk/client-ec2",
+    "@aws-sdk/client-ecr",
     "@aws-sdk/client-ecs",
     "@aws-sdk/client-eks",
     "@aws-sdk/client-elastic-load-balancing-v2",

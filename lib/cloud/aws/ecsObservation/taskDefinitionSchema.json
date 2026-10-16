@@ -1,0 +1,1127 @@
+{
+  "sdk": "3.1049.0",
+  "root": "RegisterTaskDefinitionRequest",
+  "definitions": {
+    "RegisterTaskDefinitionRequest": {
+      "fields": {
+        "family": {
+          "schema": "string",
+          "optional": false
+        },
+        "taskRoleArn": {
+          "schema": "string",
+          "optional": true
+        },
+        "executionRoleArn": {
+          "schema": "string",
+          "optional": true
+        },
+        "networkMode": {
+          "schema": {
+            "ref": "NetworkMode"
+          },
+          "optional": true
+        },
+        "containerDefinitions": {
+          "schema": {
+            "array": {
+              "ref": "ContainerDefinition"
+            }
+          },
+          "optional": false
+        },
+        "volumes": {
+          "schema": {
+            "array": {
+              "ref": "Volume"
+            }
+          },
+          "optional": true
+        },
+        "placementConstraints": {
+          "schema": {
+            "array": {
+              "ref": "TaskDefinitionPlacementConstraint"
+            }
+          },
+          "optional": true
+        },
+        "requiresCompatibilities": {
+          "schema": {
+            "array": {
+              "ref": "Compatibility"
+            }
+          },
+          "optional": true
+        },
+        "cpu": {
+          "schema": "string",
+          "optional": true
+        },
+        "memory": {
+          "schema": "string",
+          "optional": true
+        },
+        "pidMode": {
+          "schema": {
+            "ref": "PidMode"
+          },
+          "optional": true
+        },
+        "ipcMode": {
+          "schema": {
+            "ref": "IpcMode"
+          },
+          "optional": true
+        },
+        "proxyConfiguration": {
+          "schema": {
+            "ref": "ProxyConfiguration"
+          },
+          "optional": true
+        },
+        "inferenceAccelerators": {
+          "schema": {
+            "array": {
+              "ref": "InferenceAccelerator"
+            }
+          },
+          "optional": true
+        },
+        "ephemeralStorage": {
+          "schema": {
+            "ref": "EphemeralStorage"
+          },
+          "optional": true
+        },
+        "runtimePlatform": {
+          "schema": {
+            "ref": "RuntimePlatform"
+          },
+          "optional": true
+        },
+        "enableFaultInjection": {
+          "schema": "boolean",
+          "optional": true
+        }
+      }
+    },
+    "NetworkMode": {
+      "enum": [
+        "awsvpc",
+        "bridge",
+        "host",
+        "none"
+      ]
+    },
+    "ContainerDefinition": {
+      "fields": {
+        "name": {
+          "schema": "string",
+          "optional": true
+        },
+        "image": {
+          "schema": "string",
+          "optional": true
+        },
+        "repositoryCredentials": {
+          "schema": {
+            "ref": "RepositoryCredentials"
+          },
+          "optional": true
+        },
+        "cpu": {
+          "schema": "number",
+          "optional": true
+        },
+        "memory": {
+          "schema": "number",
+          "optional": true
+        },
+        "memoryReservation": {
+          "schema": "number",
+          "optional": true
+        },
+        "links": {
+          "schema": {
+            "array": "string"
+          },
+          "optional": true
+        },
+        "portMappings": {
+          "schema": {
+            "array": {
+              "ref": "PortMapping"
+            }
+          },
+          "optional": true
+        },
+        "essential": {
+          "schema": "boolean",
+          "optional": true
+        },
+        "restartPolicy": {
+          "schema": {
+            "ref": "ContainerRestartPolicy"
+          },
+          "optional": true
+        },
+        "entryPoint": {
+          "schema": {
+            "array": "string"
+          },
+          "optional": true
+        },
+        "command": {
+          "schema": {
+            "array": "string"
+          },
+          "optional": true
+        },
+        "environment": {
+          "schema": {
+            "array": {
+              "ref": "KeyValuePair"
+            }
+          },
+          "optional": true
+        },
+        "environmentFiles": {
+          "schema": {
+            "array": {
+              "ref": "EnvironmentFile"
+            }
+          },
+          "optional": true
+        },
+        "mountPoints": {
+          "schema": {
+            "array": {
+              "ref": "MountPoint"
+            }
+          },
+          "optional": true
+        },
+        "volumesFrom": {
+          "schema": {
+            "array": {
+              "ref": "VolumeFrom"
+            }
+          },
+          "optional": true
+        },
+        "linuxParameters": {
+          "schema": {
+            "ref": "LinuxParameters"
+          },
+          "optional": true
+        },
+        "secrets": {
+          "schema": {
+            "array": {
+              "ref": "Secret"
+            }
+          },
+          "optional": true
+        },
+        "dependsOn": {
+          "schema": {
+            "array": {
+              "ref": "ContainerDependency"
+            }
+          },
+          "optional": true
+        },
+        "startTimeout": {
+          "schema": "number",
+          "optional": true
+        },
+        "stopTimeout": {
+          "schema": "number",
+          "optional": true
+        },
+        "versionConsistency": {
+          "schema": {
+            "ref": "VersionConsistency"
+          },
+          "optional": true
+        },
+        "hostname": {
+          "schema": "string",
+          "optional": true
+        },
+        "user": {
+          "schema": "string",
+          "optional": true
+        },
+        "workingDirectory": {
+          "schema": "string",
+          "optional": true
+        },
+        "disableNetworking": {
+          "schema": "boolean",
+          "optional": true
+        },
+        "privileged": {
+          "schema": "boolean",
+          "optional": true
+        },
+        "readonlyRootFilesystem": {
+          "schema": "boolean",
+          "optional": true
+        },
+        "dnsServers": {
+          "schema": {
+            "array": "string"
+          },
+          "optional": true
+        },
+        "dnsSearchDomains": {
+          "schema": {
+            "array": "string"
+          },
+          "optional": true
+        },
+        "extraHosts": {
+          "schema": {
+            "array": {
+              "ref": "HostEntry"
+            }
+          },
+          "optional": true
+        },
+        "dockerSecurityOptions": {
+          "schema": {
+            "array": "string"
+          },
+          "optional": true
+        },
+        "interactive": {
+          "schema": "boolean",
+          "optional": true
+        },
+        "pseudoTerminal": {
+          "schema": "boolean",
+          "optional": true
+        },
+        "dockerLabels": {
+          "schema": {
+            "map": "string"
+          },
+          "optional": true
+        },
+        "ulimits": {
+          "schema": {
+            "array": {
+              "ref": "Ulimit"
+            }
+          },
+          "optional": true
+        },
+        "logConfiguration": {
+          "schema": {
+            "ref": "LogConfiguration"
+          },
+          "optional": true
+        },
+        "healthCheck": {
+          "schema": {
+            "ref": "HealthCheck"
+          },
+          "optional": true
+        },
+        "systemControls": {
+          "schema": {
+            "array": {
+              "ref": "SystemControl"
+            }
+          },
+          "optional": true
+        },
+        "resourceRequirements": {
+          "schema": {
+            "array": {
+              "ref": "ResourceRequirement"
+            }
+          },
+          "optional": true
+        },
+        "firelensConfiguration": {
+          "schema": {
+            "ref": "FirelensConfiguration"
+          },
+          "optional": true
+        },
+        "credentialSpecs": {
+          "schema": {
+            "array": "string"
+          },
+          "optional": true
+        }
+      }
+    },
+    "RepositoryCredentials": {
+      "fields": {
+        "credentialsParameter": {
+          "schema": "string",
+          "optional": false
+        }
+      }
+    },
+    "PortMapping": {
+      "fields": {
+        "containerPort": {
+          "schema": "number",
+          "optional": true
+        },
+        "hostPort": {
+          "schema": "number",
+          "optional": true
+        },
+        "protocol": {
+          "schema": {
+            "ref": "TransportProtocol"
+          },
+          "optional": true
+        },
+        "name": {
+          "schema": "string",
+          "optional": true
+        },
+        "appProtocol": {
+          "schema": {
+            "ref": "ApplicationProtocol"
+          },
+          "optional": true
+        },
+        "containerPortRange": {
+          "schema": "string",
+          "optional": true
+        }
+      }
+    },
+    "TransportProtocol": {
+      "enum": [
+        "tcp",
+        "udp"
+      ]
+    },
+    "ApplicationProtocol": {
+      "enum": [
+        "grpc",
+        "http",
+        "http2"
+      ]
+    },
+    "ContainerRestartPolicy": {
+      "fields": {
+        "enabled": {
+          "schema": "boolean",
+          "optional": false
+        },
+        "ignoredExitCodes": {
+          "schema": {
+            "array": "number"
+          },
+          "optional": true
+        },
+        "restartAttemptPeriod": {
+          "schema": "number",
+          "optional": true
+        }
+      }
+    },
+    "KeyValuePair": {
+      "fields": {
+        "name": {
+          "schema": "string",
+          "optional": true
+        },
+        "value": {
+          "schema": "string",
+          "optional": true
+        }
+      }
+    },
+    "EnvironmentFile": {
+      "fields": {
+        "value": {
+          "schema": "string",
+          "optional": false
+        },
+        "type": {
+          "schema": {
+            "ref": "EnvironmentFileType"
+          },
+          "optional": false
+        }
+      }
+    },
+    "EnvironmentFileType": {
+      "enum": [
+        "s3"
+      ]
+    },
+    "MountPoint": {
+      "fields": {
+        "sourceVolume": {
+          "schema": "string",
+          "optional": true
+        },
+        "containerPath": {
+          "schema": "string",
+          "optional": true
+        },
+        "readOnly": {
+          "schema": "boolean",
+          "optional": true
+        }
+      }
+    },
+    "VolumeFrom": {
+      "fields": {
+        "sourceContainer": {
+          "schema": "string",
+          "optional": true
+        },
+        "readOnly": {
+          "schema": "boolean",
+          "optional": true
+        }
+      }
+    },
+    "LinuxParameters": {
+      "fields": {
+        "capabilities": {
+          "schema": {
+            "ref": "KernelCapabilities"
+          },
+          "optional": true
+        },
+        "devices": {
+          "schema": {
+            "array": {
+              "ref": "Device"
+            }
+          },
+          "optional": true
+        },
+        "initProcessEnabled": {
+          "schema": "boolean",
+          "optional": true
+        },
+        "sharedMemorySize": {
+          "schema": "number",
+          "optional": true
+        },
+        "tmpfs": {
+          "schema": {
+            "array": {
+              "ref": "Tmpfs"
+            }
+          },
+          "optional": true
+        },
+        "maxSwap": {
+          "schema": "number",
+          "optional": true
+        },
+        "swappiness": {
+          "schema": "number",
+          "optional": true
+        }
+      }
+    },
+    "KernelCapabilities": {
+      "fields": {
+        "add": {
+          "schema": {
+            "array": "string"
+          },
+          "optional": true
+        },
+        "drop": {
+          "schema": {
+            "array": "string"
+          },
+          "optional": true
+        }
+      }
+    },
+    "Device": {
+      "fields": {
+        "hostPath": {
+          "schema": "string",
+          "optional": false
+        },
+        "containerPath": {
+          "schema": "string",
+          "optional": true
+        },
+        "permissions": {
+          "schema": {
+            "array": {
+              "ref": "DeviceCgroupPermission"
+            }
+          },
+          "optional": true
+        }
+      }
+    },
+    "DeviceCgroupPermission": {
+      "enum": [
+        "mknod",
+        "read",
+        "write"
+      ]
+    },
+    "Tmpfs": {
+      "fields": {
+        "containerPath": {
+          "schema": "string",
+          "optional": false
+        },
+        "size": {
+          "schema": "number",
+          "optional": false
+        },
+        "mountOptions": {
+          "schema": {
+            "array": "string"
+          },
+          "optional": true
+        }
+      }
+    },
+    "Secret": {
+      "fields": {
+        "name": {
+          "schema": "string",
+          "optional": false
+        },
+        "valueFrom": {
+          "schema": "string",
+          "optional": false
+        }
+      }
+    },
+    "ContainerDependency": {
+      "fields": {
+        "containerName": {
+          "schema": "string",
+          "optional": false
+        },
+        "condition": {
+          "schema": {
+            "ref": "ContainerCondition"
+          },
+          "optional": false
+        }
+      }
+    },
+    "ContainerCondition": {
+      "enum": [
+        "COMPLETE",
+        "HEALTHY",
+        "START",
+        "SUCCESS"
+      ]
+    },
+    "VersionConsistency": {
+      "enum": [
+        "disabled",
+        "enabled"
+      ]
+    },
+    "HostEntry": {
+      "fields": {
+        "hostname": {
+          "schema": "string",
+          "optional": false
+        },
+        "ipAddress": {
+          "schema": "string",
+          "optional": false
+        }
+      }
+    },
+    "Ulimit": {
+      "fields": {
+        "name": {
+          "schema": {
+            "ref": "UlimitName"
+          },
+          "optional": false
+        },
+        "softLimit": {
+          "schema": "number",
+          "optional": false
+        },
+        "hardLimit": {
+          "schema": "number",
+          "optional": false
+        }
+      }
+    },
+    "UlimitName": {
+      "enum": [
+        "core",
+        "cpu",
+        "data",
+        "fsize",
+        "locks",
+        "memlock",
+        "msgqueue",
+        "nice",
+        "nofile",
+        "nproc",
+        "rss",
+        "rtprio",
+        "rttime",
+        "sigpending",
+        "stack"
+      ]
+    },
+    "LogConfiguration": {
+      "fields": {
+        "logDriver": {
+          "schema": {
+            "ref": "LogDriver"
+          },
+          "optional": false
+        },
+        "options": {
+          "schema": {
+            "map": "string"
+          },
+          "optional": true
+        },
+        "secretOptions": {
+          "schema": {
+            "array": {
+              "ref": "Secret"
+            }
+          },
+          "optional": true
+        }
+      }
+    },
+    "LogDriver": {
+      "enum": [
+        "awsfirelens",
+        "awslogs",
+        "fluentd",
+        "gelf",
+        "journald",
+        "json-file",
+        "splunk",
+        "syslog"
+      ]
+    },
+    "HealthCheck": {
+      "fields": {
+        "command": {
+          "schema": {
+            "array": "string"
+          },
+          "optional": false
+        },
+        "interval": {
+          "schema": "number",
+          "optional": true
+        },
+        "timeout": {
+          "schema": "number",
+          "optional": true
+        },
+        "retries": {
+          "schema": "number",
+          "optional": true
+        },
+        "startPeriod": {
+          "schema": "number",
+          "optional": true
+        }
+      }
+    },
+    "SystemControl": {
+      "fields": {
+        "namespace": {
+          "schema": "string",
+          "optional": true
+        },
+        "value": {
+          "schema": "string",
+          "optional": true
+        }
+      }
+    },
+    "ResourceRequirement": {
+      "fields": {
+        "value": {
+          "schema": "string",
+          "optional": false
+        },
+        "type": {
+          "schema": {
+            "ref": "ResourceType"
+          },
+          "optional": false
+        }
+      }
+    },
+    "ResourceType": {
+      "enum": [
+        "GPU",
+        "InferenceAccelerator"
+      ]
+    },
+    "FirelensConfiguration": {
+      "fields": {
+        "type": {
+          "schema": {
+            "ref": "FirelensConfigurationType"
+          },
+          "optional": false
+        },
+        "options": {
+          "schema": {
+            "map": "string"
+          },
+          "optional": true
+        }
+      }
+    },
+    "FirelensConfigurationType": {
+      "enum": [
+        "fluentbit",
+        "fluentd"
+      ]
+    },
+    "Volume": {
+      "fields": {
+        "name": {
+          "schema": "string",
+          "optional": true
+        },
+        "host": {
+          "schema": {
+            "ref": "HostVolumeProperties"
+          },
+          "optional": true
+        },
+        "dockerVolumeConfiguration": {
+          "schema": {
+            "ref": "DockerVolumeConfiguration"
+          },
+          "optional": true
+        },
+        "efsVolumeConfiguration": {
+          "schema": {
+            "ref": "EFSVolumeConfiguration"
+          },
+          "optional": true
+        },
+        "s3filesVolumeConfiguration": {
+          "schema": {
+            "ref": "S3FilesVolumeConfiguration"
+          },
+          "optional": true
+        },
+        "fsxWindowsFileServerVolumeConfiguration": {
+          "schema": {
+            "ref": "FSxWindowsFileServerVolumeConfiguration"
+          },
+          "optional": true
+        },
+        "configuredAtLaunch": {
+          "schema": "boolean",
+          "optional": true
+        }
+      }
+    },
+    "HostVolumeProperties": {
+      "fields": {
+        "sourcePath": {
+          "schema": "string",
+          "optional": true
+        }
+      }
+    },
+    "DockerVolumeConfiguration": {
+      "fields": {
+        "scope": {
+          "schema": {
+            "ref": "Scope"
+          },
+          "optional": true
+        },
+        "autoprovision": {
+          "schema": "boolean",
+          "optional": true
+        },
+        "driver": {
+          "schema": "string",
+          "optional": true
+        },
+        "driverOpts": {
+          "schema": {
+            "map": "string"
+          },
+          "optional": true
+        },
+        "labels": {
+          "schema": {
+            "map": "string"
+          },
+          "optional": true
+        }
+      }
+    },
+    "Scope": {
+      "enum": [
+        "shared",
+        "task"
+      ]
+    },
+    "EFSVolumeConfiguration": {
+      "fields": {
+        "fileSystemId": {
+          "schema": "string",
+          "optional": false
+        },
+        "rootDirectory": {
+          "schema": "string",
+          "optional": true
+        },
+        "transitEncryption": {
+          "schema": {
+            "ref": "EFSTransitEncryption"
+          },
+          "optional": true
+        },
+        "transitEncryptionPort": {
+          "schema": "number",
+          "optional": true
+        },
+        "authorizationConfig": {
+          "schema": {
+            "ref": "EFSAuthorizationConfig"
+          },
+          "optional": true
+        }
+      }
+    },
+    "EFSTransitEncryption": {
+      "enum": [
+        "DISABLED",
+        "ENABLED"
+      ]
+    },
+    "EFSAuthorizationConfig": {
+      "fields": {
+        "accessPointId": {
+          "schema": "string",
+          "optional": true
+        },
+        "iam": {
+          "schema": {
+            "ref": "EFSAuthorizationConfigIAM"
+          },
+          "optional": true
+        }
+      }
+    },
+    "EFSAuthorizationConfigIAM": {
+      "enum": [
+        "DISABLED",
+        "ENABLED"
+      ]
+    },
+    "S3FilesVolumeConfiguration": {
+      "fields": {
+        "fileSystemArn": {
+          "schema": "string",
+          "optional": false
+        },
+        "rootDirectory": {
+          "schema": "string",
+          "optional": true
+        },
+        "transitEncryptionPort": {
+          "schema": "number",
+          "optional": true
+        },
+        "accessPointArn": {
+          "schema": "string",
+          "optional": true
+        }
+      }
+    },
+    "FSxWindowsFileServerVolumeConfiguration": {
+      "fields": {
+        "fileSystemId": {
+          "schema": "string",
+          "optional": false
+        },
+        "rootDirectory": {
+          "schema": "string",
+          "optional": false
+        },
+        "authorizationConfig": {
+          "schema": {
+            "ref": "FSxWindowsFileServerAuthorizationConfig"
+          },
+          "optional": false
+        }
+      }
+    },
+    "FSxWindowsFileServerAuthorizationConfig": {
+      "fields": {
+        "credentialsParameter": {
+          "schema": "string",
+          "optional": false
+        },
+        "domain": {
+          "schema": "string",
+          "optional": false
+        }
+      }
+    },
+    "TaskDefinitionPlacementConstraint": {
+      "fields": {
+        "type": {
+          "schema": {
+            "ref": "TaskDefinitionPlacementConstraintType"
+          },
+          "optional": true
+        },
+        "expression": {
+          "schema": "string",
+          "optional": true
+        }
+      }
+    },
+    "TaskDefinitionPlacementConstraintType": {
+      "enum": [
+        "memberOf"
+      ]
+    },
+    "Compatibility": {
+      "enum": [
+        "EC2",
+        "EXTERNAL",
+        "FARGATE",
+        "MANAGED_INSTANCES"
+      ]
+    },
+    "Tag": {
+      "fields": {
+        "key": {
+          "schema": "string",
+          "optional": true
+        },
+        "value": {
+          "schema": "string",
+          "optional": true
+        }
+      }
+    },
+    "PidMode": {
+      "enum": [
+        "host",
+        "task"
+      ]
+    },
+    "IpcMode": {
+      "enum": [
+        "host",
+        "none",
+        "task"
+      ]
+    },
+    "ProxyConfiguration": {
+      "fields": {
+        "type": {
+          "schema": {
+            "ref": "ProxyConfigurationType"
+          },
+          "optional": true
+        },
+        "containerName": {
+          "schema": "string",
+          "optional": false
+        },
+        "properties": {
+          "schema": {
+            "array": {
+              "ref": "KeyValuePair"
+            }
+          },
+          "optional": true
+        }
+      }
+    },
+    "ProxyConfigurationType": {
+      "enum": [
+        "APPMESH"
+      ]
+    },
+    "InferenceAccelerator": {
+      "fields": {
+        "deviceName": {
+          "schema": "string",
+          "optional": false
+        },
+        "deviceType": {
+          "schema": "string",
+          "optional": false
+        }
+      }
+    },
+    "EphemeralStorage": {
+      "fields": {
+        "sizeInGiB": {
+          "schema": "number",
+          "optional": false
+        }
+      }
+    },
+    "RuntimePlatform": {
+      "fields": {
+        "cpuArchitecture": {
+          "schema": {
+            "ref": "CPUArchitecture"
+          },
+          "optional": true
+        },
+        "operatingSystemFamily": {
+          "schema": {
+            "ref": "OSFamily"
+          },
+          "optional": true
+        }
+      }
+    },
+    "CPUArchitecture": {
+      "enum": [
+        "ARM64",
+        "X86_64"
+      ]
+    },
+    "OSFamily": {
+      "enum": [
+        "LINUX",
+        "WINDOWS_SERVER_2004_CORE",
+        "WINDOWS_SERVER_2016_FULL",
+        "WINDOWS_SERVER_2019_CORE",
+        "WINDOWS_SERVER_2019_FULL",
+        "WINDOWS_SERVER_2022_CORE",
+        "WINDOWS_SERVER_2022_FULL",
+        "WINDOWS_SERVER_2025_CORE",
+        "WINDOWS_SERVER_2025_FULL",
+        "WINDOWS_SERVER_20H2_CORE"
+      ]
+    }
+  }
+}
