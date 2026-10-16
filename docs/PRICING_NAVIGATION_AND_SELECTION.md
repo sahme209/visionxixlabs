@@ -27,3 +27,7 @@ passed. An actual loopback production server returned `/plans` 200 with Pricing
 navigation and disabled checkout, and redirected `/pricing` to `/plans`; owned
 server stopped. No browser payment, real Stripe event or production login is
 verified by this check. Exact-head CI is required before merge.
+
+Independent review: existing customer-only bindings are also refused before
+seat/provider IO, since creating a new customer would conflict with webhook
+ownership. Regression demonstrated the unsafe previous behavior before the fix.

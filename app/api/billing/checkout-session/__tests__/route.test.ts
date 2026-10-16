@@ -110,13 +110,23 @@ describe("POST /api/billing/checkout-session", () => {
     expect(mocks.createCheckoutSession).not.toHaveBeenCalled();
   });
 
+  it("refuses a customer-only binding before another customer can be charged", async () => {
+    mocks.readBilling.mockResolvedValue({ stripeCustomerId: "cus_existing", stripeSubscriptionId: null });
+    const { POST } = await import("../route");
+    const response = await POST(request({ planId: "pro", expectedOrganizationId: "org-1" }));
+    expect(response.status).toBe(412);
+    expect(await response.json()).toMatchObject({ error: { code: "billing.subscription_change_required" } });
+    expect(mocks.countMemberships).not.toHaveBeenCalled();
+    expect(mocks.createCheckoutSession).not.toHaveBeenCalled();
+  });
+
   it.each(["active", "past_due", "canceled"])("does not create a replacement subscription for known %s billing history", async (status) => {
     mocks.readBilling.mockResolvedValue({ stripeSubscriptionId: "sub_existing", status });
     const { POST } = await import("../route");
     const response = await POST(request({ planId: "pro", expectedOrganizationId: "org-1" }));
     expect(response.status).toBe(412);
     expect(await response.json()).toMatchObject({ error: { code: "billing.subscription_change_required" } });
-    expect(mocks.readBilling).toHaveBeenCalledWith({ where: { organizationId: "org-1" }, select: { stripeSubscriptionId: true } });
+    expect(mocks.readBilling).toHaveBeenCalledWith({ where: { organizationId: "org-1" }, select: { stripeCustomerId: true, stripeSubscriptionId: true } });
     expect(mocks.countMemberships).not.toHaveBeenCalled();
     expect(mocks.createCheckoutSession).not.toHaveBeenCalled();
   });

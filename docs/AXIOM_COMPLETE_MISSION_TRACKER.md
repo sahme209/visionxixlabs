@@ -1082,8 +1082,8 @@ RepeatableRead evidence matches the existing reservation engine's raw plan tier,
 net eligible current/permanent add-ons, usage and all unresolved linked/pending
 holds. It reports included allowance remaining, not spending permission or new
 public-catalog entitlements. No legacy pool/status/charging policy is changed.
-Known subscription history (including canceled/past-due) is refused before a new
-Checkout request, because replacement IDs are not yet a supported lifecycle. Four
+Known customer or subscription history (including canceled/past-due) is refused before a new
+Checkout request, because replacement IDs are not yet a supported lifecycle. Five
 regressions failed on the previous route; unknown concurrent initial purchase
 recovery still needs durable intent. Support payment routes remain untouched.
 
@@ -1176,3 +1176,14 @@ PR #150 merged as `0e383a44d8e5e5eab91febdd0135d9a96db3166f` after both
 exact-head CI runs passed TypeScript, 6,265 tests and production compilation.
 The pricing branch integrates those changes without replacing either tracker
 section; provider/customer acceptance remains unverified.
+
+Independent pricing review also identified customer-only Stripe bindings: starting
+a new customer checkout would conflict with existing webhook ownership and risk
+payment without activation. The new regression failed before correction. Checkout
+now refuses either customer or subscription history before seat/provider IO;
+existing customer terms and support payments are unchanged.
+
+After integrating main #150, the combined local suite passed 599 files / 6,321
+tests. The additional customer-only regression then passed with all 17 Checkout
+route tests; final web TypeScript and scoped lint passed. The final exact-head
+CI will validate the combined source and production compilation before merge.

@@ -60,10 +60,10 @@ export async function POST(req: NextRequest) {
     // or canceled-account recovery until that lifecycle is reviewed.
     const existing = await prisma.tenantBillingPlan.findUnique({
       where: { organizationId: String(ctx.organizationId) },
-      select: { stripeSubscriptionId: true },
+      select: { stripeCustomerId: true, stripeSubscriptionId: true },
     });
-    if (existing?.stripeSubscriptionId) {
-      throw new AxiomError({ code: "billing.subscription_change_required", category: "precondition", userMessage: "This workspace already has a subscription record. Review Usage & billing or contact support before starting a subscription change." });
+    if (existing?.stripeCustomerId || existing?.stripeSubscriptionId) {
+      throw new AxiomError({ code: "billing.subscription_change_required", category: "precondition", userMessage: "This workspace already has a billing record. Review Usage & billing or contact support before starting a subscription change." });
     }
 
     const seatCount = Math.max(1, await prisma.orgMembership.count({
