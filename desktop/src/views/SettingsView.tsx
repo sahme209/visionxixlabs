@@ -79,8 +79,8 @@ const sections: Array<{ id: Section; label: string; icon: typeof CircleUserRound
   { id: "integrations", label: "Integrations", icon: Link2 },
 ];
 
-export function SettingsView({ identity }: { identity: VerifiedDesktopIdentity }) {
-  const [active, setActive] = useState<Section>("general");
+export function SettingsView({ identity, initialSection }: { identity: VerifiedDesktopIdentity; initialSection?: "models" }) {
+  const [active, setActive] = useState<Section>(initialSection ?? "general");
   const [prefs, setPrefs] = useState<DesktopPreferences | null>(null);
   const [saved, setSaved] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -414,12 +414,17 @@ function ModelsSection() {
   const [query, setQuery] = useState("");
   const [savingModel, setSavingModel] = useState<string | null>(null);
   const [loadError, setLoadError] = useState<string | null>(null);
+  const [attempt, setAttempt] = useState(0);
 
   useEffect(() => {
     let cancelled = false;
+    setLoadError(null);
+    setProviders(null);
+    setPolicy(null);
+    const context = desktopClient.config;
     void desktopClient.aiProviderStatus()
       .then((result) => {
-        if (cancelled) return;
+        if (cancelled || context !== desktopClient.config) return;
         if (result.ok) {
           const status = normalizeAiProviderStatus(result.data);
           if (!status) {
@@ -439,10 +444,10 @@ function ModelsSection() {
         }
       })
       .catch(() => {
-        if (!cancelled) setLoadError("Could not load provider availability. Try again later.");
+        if (!cancelled && context === desktopClient.config) setLoadError("Could not load provider availability. Try again later.");
       });
     return () => { cancelled = true; };
-  }, []);
+  }, [attempt]);
 
   const rows = useMemo(() => (providers ?? [])
     .flatMap((provider) => provider.models.map((model) => ({ ...model, provider: provider.provider })))
@@ -495,8 +500,8 @@ function ModelsSection() {
         <p className="mt-2 text-[11px] text-zinc-600">One active model per provider. Multiple providers can be enabled and are used in fallback order.</p>
       </div>
       {providers === null && loadError === null && <p className="p-4 text-sm text-zinc-500">Checking service-configured models…</p>}
-      {loadError !== null && <p role="alert" className="p-4 text-sm text-rose-300">{loadError}</p>}
-      {providers !== null && rows.length === 0 && <p className="p-4 text-sm text-zinc-500">No configured model matches this search.</p>}
+      {loadError !== null && <div role="alert" className="flex items-center justify-between gap-4 p-4 text-sm text-rose-300"><p>{loadError}</p><button type="button" onClick={() => setAttempt((current) => current + 1)} className="shrink-0 text-xs text-zinc-300 underline underline-offset-2">Retry models</button></div>}
+      {providers !== null && loadError === null && rows.length === 0 && <p className="p-4 text-sm text-zinc-500">{providers.every((provider) => provider.models.length === 0) ? "No service-configured models are available. Ask a workspace administrator to review service setup." : "No configured model matches this search."}</p>}
       {rows.map((model) => {
         const enabled = Boolean(policy?.enabled && policy.modelSelections[model.provider] === model.id);
         const key = `${model.provider}:${model.id}`;

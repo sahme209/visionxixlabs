@@ -12,6 +12,7 @@ import { startOwnedAwsWireFixture } from "./fixtures/ownedAwsWireFixture.mjs";
 import { localAwsChildEnvironment } from "./fixtures/localAwsChildEnvironment.mjs";
 import { rehearseLocalCloudHttp } from "./rehearse-local-cloud-http.mjs";
 import { rehearseLocalAgentReceiptHttp } from "./rehearse-local-agent-receipt-http.mjs";
+import { rehearseLocalAgentReadinessHttp } from "./rehearse-local-agent-readiness-http.mjs";
 import { rehearseLocalApprovalHttp } from "./rehearse-local-approval-http.mjs";
 
 const root = dirname(dirname(fileURLToPath(import.meta.url)));
@@ -67,9 +68,10 @@ async function unusedPort() { const server = createServer(); const origin = awai
 const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 /** Actual app HTTP + real disposable PostgreSQL; local mail capture, not browser/provider acceptance. */
-export async function rehearseLocalAuthHttp(value, { awsWireFixture = false, agentReceiptFixture = false } = {}) {
+export async function rehearseLocalAuthHttp(value, { awsWireFixture = false, agentReceiptFixture = false, agentReadinessFixture = false } = {}) {
   assert.equal(typeof awsWireFixture, "boolean", "explicit_aws_fixture_option_required");
   assert.equal(typeof agentReceiptFixture, "boolean", "explicit_receipt_fixture_option_required");
+  assert.equal(typeof agentReadinessFixture, "boolean", "explicit_agent_readiness_fixture_option_required");
   const databaseUrl = validateLocalAuthHttpTarget(value);
   assertNoRuntimeDotenv(root);
   const sourceCommit = assertCommittedApplicationSource(root);
@@ -164,9 +166,11 @@ export async function rehearseLocalAuthHttp(value, { awsWireFixture = false, age
     assert.equal(memberships.length, 1); assert.equal(memberships[0].organizationId, expectedWorkspace); assert.equal(memberships[0].role, "owner"); assert.ok(memberships[0].acceptedAt);
     assert.equal(await client.tenantBillingPlan.count(), 0, "identity_flow_must_not_provision_billing");
     let agentReceipt;
+    let agentReadiness;
     const desktopPairing = await rehearseLocalDesktopPairingHttp({ appOrigin, webRequest: request, challenge,
       deviceFingerprint: "isolated-http-fixture", expectedWorkspace, email: user.email,
-      ...((awsWire || agentReceiptFixture) ? { onPaired: async ({ token, deviceRequest }) => {
+      ...((awsWire || agentReceiptFixture || agentReadinessFixture) ? { onPaired: async ({ token, deviceRequest }) => {
+        if (agentReadinessFixture) agentReadiness = await rehearseLocalAgentReadinessHttp({ databaseUrl, client, deviceRequest, token, organizationId: expectedWorkspace, userId: user.id });
         const cloud = awsWire ? await rehearseLocalCloudHttp({ databaseUrl, client, deviceRequest, token, organizationId: expectedWorkspace, userId: user.id, fixture: awsWire, encryptionSecret: awsWire.encryptionSecret }) : undefined;
         if (agentReceiptFixture) agentReceipt = await rehearseLocalAgentReceiptHttp({ databaseUrl, client, deviceRequest, token, organizationId: expectedWorkspace, userId: user.id });
         return cloud;
@@ -174,7 +178,7 @@ export async function rehearseLocalAuthHttp(value, { awsWireFixture = false, age
     const approvalDecisions = await rehearseLocalApprovalHttp({ databaseUrl, client, request, appOrigin,
       userId: user.id, organizationId: expectedWorkspace });
     assert.equal(assertCommittedApplicationSource(root), sourceCommit, "application_source_changed_during_journey");
-    return { sourceCommit, desktopPairing, approvalDecisions, ...(agentReceipt ? { agentReceipt } : {}), schemaFixture: "current_schema_not_migration_recovery", transport: "real_local_next_http", database: "disposable_synthetic_postgresql", mail: "loopback_capture_not_provider_delivery",
+    return { sourceCommit, desktopPairing, approvalDecisions, ...(agentReceipt ? { agentReceipt } : {}), ...(agentReadiness ? { agentReadiness } : {}), schemaFixture: "current_schema_not_migration_recovery", transport: "real_local_next_http", database: "disposable_synthetic_postgresql", mail: "loopback_capture_not_provider_delivery",
       verified: ["desktop_origin_challenge", "signup_requires_email_proof", "actual_sdk_mail_capture", "unverified_password_denied", "expired_proof_denied", "actual_resend_replacement", "single_use_proof_and_callback", "incorrect_password_denied", "verified_credentials_csrf_cookie_session", "accepted_personal_workspace_only", "no_billing_plan_created"],
       notVerified: ["browser_render_or_interaction", "production_recovery_or_login", "google_github_oauth", "native_pairing_or_vault", "external_mail_delivery", "cloud_execution_or_billing"] };
   } catch (error) {
