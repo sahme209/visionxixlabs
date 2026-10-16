@@ -95,5 +95,22 @@
       },
       "fixtureCleanup": "owned_disposable_container_removed"
     }
-  ]
+  ],
+  "localRegression": {
+    "sourceCommit": "1f0172f6",
+    "vitest": {
+      "filesPassed": 616,
+      "testsPassed": 6545,
+      "filesSkipped": 1,
+      "testsSkipped": 5,
+      "configuration": "repository_default_no_timeout_override"
+    },
+    "webTypeScript": "passed",
+    "desktopReleaseAlignmentTypeScriptViteBuild": "passed",
+    "pythonCliTests": 30,
+    "changedSourceLint": "passed",
+    "trackerCoverageCheck": "passed",
+    "productionWebsiteBuild": "required_exact_head_ci_pending",
+    "prismaGeneration": "not_run"
+  }
 }

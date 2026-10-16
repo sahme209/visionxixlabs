@@ -1403,3 +1403,11 @@ requests, and owned PostgreSQL17 container removal. The original `644f539d`
 evidence remains preserved under the base report; `additionalSourceRuns` records
 the later combined source without replacing history. Full regression/type/build
 gates follow; real customer/provider/production acceptance remains separate.
+
+Combined local gates passed on `1f0172f6`: default-configuration Vitest 616 files /
+6,545 tests (one file/five tests intentionally skipped), web TypeScript, desktop
+release alignment/TypeScript/Vite build, 30 Python CLI tests, changed-source lint
+and tracker coverage. No timeout override, provider call, shared dependency
+mutation or Prisma generation was used. Exact-head push/PR CI and production
+website builds remain required; local desktop Vite compilation is not native
+installer or real OS acceptance.
