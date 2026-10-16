@@ -1,5 +1,6 @@
 import { DeploymentWorkflowEvidence } from "../components/DeploymentWorkflowEvidence";
 import { AwsReadOnlyEnrollment } from "../components/AwsReadOnlyEnrollment";
+import { AzureReadOnlyEnrollment } from "../components/AzureReadOnlyEnrollment";
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { open } from "@tauri-apps/plugin-shell";
 import { invoke } from "@tauri-apps/api/core";
@@ -1714,7 +1715,7 @@ function IntegrationsSection({ identity }: { identity: VerifiedDesktopIdentity }
 
   return <div>
     <SectionHeading title="Integration Center" detail="Connect the systems that already run your releases. Every connection is tenant-scoped, least-privilege, and shown as connected only after server-side validation." />
-    <Notice title="No secrets in the desktop app" detail="Connections open in the secure browser. The desktop app never collects an identity-provider password or long-lived provider secret, and no connection can silently gain write access." />
+    <Notice title="Provider-specific secure connections" detail="OAuth connections use browser consent. The Azure read-only candidate accepts an existing service-principal secret transiently and sends it to the backend encrypted vault; it clears after submission and is not persisted in desktop settings. Cloud changes remain unavailable." />
     <div className="space-y-3">
       <IntegrationRow name="GitHub" group="Source control" detail={githubDetail} state={githubState} tone={github?.status === "validation_overdue" ? "attention" : undefined} action={providerAction("github", github?.status ?? "not_connected", github?.status === "installation_recorded" || github?.status === "validation_overdue", validatingGitHub, validateGitHub)} />
       <IntegrationRow name="Slack" group="Collaboration" detail="Release notifications with channels:read and chat:write. Consent is not active access until Axiom validates the token server-side." state={formatConnectorState(providerStatus("slack"))} action={providerAction("slack", providerStatus("slack"), slackCanValidate, validatingSlack, validateSlack)} />
@@ -1731,6 +1732,7 @@ function IntegrationsSection({ identity }: { identity: VerifiedDesktopIdentity }
       ))}
     </div>
     <AwsReadOnlyEnrollment identity={identity} />
+    <AzureReadOnlyEnrollment identity={identity} />
     {connectionNote && <p role="status" className="mt-3 text-xs text-zinc-400">{connectionNote}</p>}
     <div className="mt-5 rounded-xl border border-white/[0.07] bg-white/[0.025] p-4">
       <p className="text-sm text-zinc-200">What happens when you connect</p>

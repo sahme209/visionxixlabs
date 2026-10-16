@@ -20,6 +20,12 @@ export default function AzureSetupPage() {
                 The current Azure path validates configuration shape and can render preview findings. It must not be presented as a successful live subscription scan. Before live availability, the product needs authenticated Azure Resource Manager inventory traversal, least-privilege verification, tenant-scoped persistence, error handling, and safe integration tests.
             </Callout>
 
+            <DocSection id="desktop-candidate" title="Desktop source candidate" kicker="Candidate">
+                <p className="text-zinc-400">The source candidate adds paired-desktop enrollment for an existing service principal in Settings → Integrations. An accepted workspace owner/admin enters the tenant, subscription, client UUID and secret. The backend verifies the exact tenant/subscription read identity and stores the credential in the canonical tenant-bound encrypted vault. The secret clears after submission and is not persisted in desktop settings.</p>
+                <p className="mt-3 text-zinc-400">Inventory is an explicit read of at most 100 resource groups from one first page, always labeled incomplete. Validation does not establish Reader-only permissions or VM, storage, security or cost coverage. Disconnect zeroizes Axiom&apos;s stored credential and advances its version; Azure service-principal grants and previously issued tokens are not revoked. Reconnect requires fresh provider validation.</p>
+                <p className="mt-3 text-zinc-400">This implemented source candidate is not proof of live Azure authorization, production deployment or verified native release availability. Missing storage, configuration or current authority produces an unavailable state. Provider mutation and generic Agent scans remain disabled.</p>
+            </DocSection>
+
             <DocSection id="available" title="What is available" kicker="01">
                 <ul className="list-disc list-inside space-y-1.5 text-zinc-400">
                     <li>Azure credential and configuration-shape validation</li>
