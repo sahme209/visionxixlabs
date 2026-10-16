@@ -1,6 +1,8 @@
 import { deploymentEvidence } from "@/lib/releaseops/deploymentEvidence";
 import "server-only";
 
+import { loadAirflowClient } from "./connection";
+import { latestDependenciesReady } from "./dependencyReadiness";
 import { prisma } from "@/lib/db";
 import { parseRepositoryFullName, resolveTenantScopedToken } from "@/lib/connectors/github/resolveTenantScopedToken";
 import { createPullRequest, dispatchWorkflow } from "@/lib/connectors/github/githubWriteClient";
@@ -34,11 +36,37 @@ export async function executeAirflowAutomation(executionId: string, actorUserId?
       return { ok: false, error: "airflow_approval_authority_unavailable" };
     }
   }
+  if (automation.organizationId !== execution.organizationId || execution.sourceDagId !== automation.dagId) {
+    return { ok: false, error: "airflow_source_not_ready" };
+  }
+  if (automation.actionType !== "none") {
+    try {
+      const current = await loadAirflowClient(execution.organizationId);
+      if (current.connectionId !== automation.connectionId) return { ok: false, error: "airflow_connection_changed" };
+      const source = await current.client.getDagRun(execution.sourceDagId, execution.sourceDagRunId);
+      const sourceTime = source.logicalDate ? Date.parse(source.logicalDate) : null;
+      if (source.dagId !== execution.sourceDagId || source.dagRunId !== execution.sourceDagRunId ||
+          !["success", "failed"].includes(source.state) || source.state !== execution.sourceDagState ||
+          (automation.requiredDagState !== "any" && source.state !== automation.requiredDagState) ||
+          (sourceTime !== null && (!Number.isFinite(sourceTime) || sourceTime < automation.createdAt.getTime()))) {
+        return { ok: false, error: "airflow_source_not_ready" };
+      }
+      if (!await latestDependenciesReady(current.client, automation.dependencyDagIds, source.logicalDate)) {
+        return { ok: false, error: "airflow_dependencies_not_ready" };
+      }
+      // Re-read the same credential/endpoint binding after remote reads. A
+      // concurrent reconnect or revocation must not authorize stale evidence.
+      const binding = await prisma.tenantIntegrationConnection.findFirst({ where: {
+        id: current.connectionId, organizationId: execution.organizationId, provider: "airflow", status: "active", updatedAt: current.connectionUpdatedAt,
+      }, select: { id: true } });
+      if (!binding) return { ok: false, error: "airflow_connection_changed" };
+    } catch { return { ok: false, error: "airflow_preconditions_unavailable" }; }
+  }
   // Competing approvals/ticks must claim the exact observed attempt before
   // any provider action. Status alone is insufficient if a concurrent retry
   // has already run and failed again. Rejection wins if it changed the row.
   const claimed = await prisma.airflowAutomationExecution.updateMany({
-    where: { id: execution.id, organizationId: execution.organizationId, status: execution.status, attempt: execution.attempt, automation: { enabled: true } },
+    where: { id: execution.id, organizationId: execution.organizationId, status: execution.status, attempt: execution.attempt, automation: { enabled: true, updatedAt: automation.updatedAt, connectionId: automation.connectionId } },
     data: { status: "running", attempt: { increment: 1 }, errorCode: null, nextRetryAt: null, ...(actorUserId ? { decidedByUserId: actorUserId, decidedAt: new Date() } : {}) },
   });
   if (claimed.count !== 1) return { ok: false, error: "airflow_execution_not_actionable" };
