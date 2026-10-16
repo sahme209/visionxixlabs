@@ -1,0 +1,108 @@
+{
+  "schema": "axiom.direct-workflow-oci.local-proof.v1",
+  "sourceCommit": "f2b482947c11783d6e0bd93bd1eca7d6bab72f18",
+  "baseCommit": "24fb7ddec0db26f909279dbc1e0cfbf8be29aced",
+  "startedAt": "2026-10-16T12:50:24.216363+00:00",
+  "completedAt": "2026-10-16T12:50:27.115362+00:00",
+  "sourceBinding": {
+    "unchangedBeforeAfter": true,
+    "algorithm": "sha256",
+    "files": {
+      "lib/releaseops/ecsReleaseV2/sigstoreBuildVerifier.ts": "e24d00a1783b7cf13856e79301947c70b903b2b84a67c0f264060aacd9b49a0d",
+      "lib/releaseops/ecsReleaseV2/githubBuildEvidence.ts": "94ab272d33f58ddfcbc18e2d382054194ffb844d67b861a4430a32541e8b5d71",
+      "lib/releaseops/ecsReleaseV2/__tests__/directWorkflowOciEvidence.test.ts": "07ee54c361f75b88ed3b80eb5c289574d7c7e5d13957585be3ca10b86fc27ff8",
+      "lib/releaseops/ecsReleaseV2/__tests__/directWorkflowGithubEvidence.test.ts": "3f032062bf614dc3abdfc205549bafc9b3cdf60ca40dadf51022653be01bee42",
+      "lib/releaseops/ecsReleaseV2/__tests__/fixtures/directWorkflowFixture.ts": "3a23f92a213e2dadc459b1f1aee56cee999984f17d94e39754a85c3e3bbee227",
+      "lib/releaseops/ecsReleaseV2/__tests__/fixtures/trusted_root.json": "455b3fe53e2678889f093d66ebbfda5f12ebb9d682b146c3535fa04e97689787",
+      "lib/demo/demoScenarios.ts": "e8352c3de3252aff4ba26d912c0ab884de0faf3002756e40db48ea23c3cc3620",
+      "lib/releaseops/ecsReleaseV2/__tests__/fixtures/direct-workflow-oci/LICENSE.txt": "a2010f343487d3f7618affe54f789f5487602331c0a8d03f49e9a7c547cf0499",
+      "lib/releaseops/ecsReleaseV2/__tests__/fixtures/direct-workflow-oci/PROVENANCE.md": "ab99997cd011e95e52a41d2398b530c0aa08033c0355691c750eb9dda6c80e77",
+      "lib/releaseops/ecsReleaseV2/__tests__/fixtures/direct-workflow-oci/bundle-manifest.json": "aa5e53aa720c58532973c396630d4cd0d9df9cde9ae13ab509f20770554abef5",
+      "lib/releaseops/ecsReleaseV2/__tests__/fixtures/direct-workflow-oci/bundle.sigstore.json": "49edde03a1879f18b95f03fb8b691137e6d3718fc21f64a22909b14fbb472c89",
+      "lib/releaseops/ecsReleaseV2/__tests__/fixtures/direct-workflow-oci/image-index.json": "06e6818324cb20e1ea6f22da7fb925323fb57251c98768c88b93872b50590f92",
+      "lib/releaseops/ecsReleaseV2/__tests__/fixtures/direct-workflow-oci/workflow.yml": "ab7e725dc352ce2a8f4d9bbe4d3f76cdee1709bf1f8514c20a9878a9a12df585"
+    }
+  },
+  "runtime": {
+    "node": "v24.19.0",
+    "installedPackages": {
+      "@sigstore/verify": "4.1.2",
+      "@sigstore/bundle": "5.0.0",
+      "@sigstore/protobuf-specs": "0.5.2"
+    },
+    "lockedProtobufSpecs": "0.5.0",
+    "overlayQualification": "Installed protobuf-specs 0.5.2 differs from lockfile 0.5.0; clean CI remains authoritative; no packages were installed."
+  },
+  "checks": {
+    "focusedVitest": {
+      "command": "node node_modules/vitest/vitest.mjs run lib/releaseops/ecsReleaseV2/__tests__/directWorkflowGithubEvidence.test.ts lib/releaseops/ecsReleaseV2/__tests__/githubBuildEvidence.test.ts lib/releaseops/ecsReleaseV2/__tests__/directWorkflowOciEvidence.test.ts lib/releaseops/ecsReleaseV2/__tests__/sigstoreBuildVerifier.test.ts lib/releaseops/ecsReleaseV2/__tests__/sigstoreBuildVerifierRuntime.test.ts lib/demo/__tests__/demoScenarios.test.ts",
+      "exitCode": 0,
+      "passedTests": 149,
+      "passedFiles": 6,
+      "newDirectTests": 64
+    },
+    "scopedEslint": {
+      "exitCode": 0,
+      "errors": 0,
+      "warnings": 0
+    },
+    "isolatedAffectedSourceTypes": {
+      "exitCode": 0
+    },
+    "diffCheck": {
+      "exitCode": 0
+    }
+  },
+  "tdd": {
+    "verifierRed": {
+      "failed": 2,
+      "passed": 33,
+      "cause": "Missing explicit direct profile before implementation"
+    },
+    "readerRed": {
+      "failed": 15,
+      "passed": 14,
+      "cause": "Original reader required immutable reusable referenced_workflows for direct caller"
+    }
+  },
+  "genuineEvidence": {
+    "sourceRepository": "github/artifact-attestations-workflows",
+    "sourceCommit": "cc78c9cd50c7bace6c3be36bbd22f2f1b5f8182b",
+    "repositoryId": "804468129",
+    "runId": "10782915115",
+    "runAttempt": 1,
+    "signedSubject": "ghcr.io/github/artifact-attestations-workflows",
+    "subjectSha256": "06e6818324cb20e1ea6f22da7fb925323fb57251c98768c88b93872b50590f92",
+    "bundleSha256": "49edde03a1879f18b95f03fb8b691137e6d3718fc21f64a22909b14fbb472c89",
+    "upstreamLicense": "CC0-1.0",
+    "licenseGitBlob": "0e259d42c996742e9e3cba14c677129b2c1b6311",
+    "officialCryptographyMocked": false
+  },
+  "simulation": {
+    "githubHttpMetadata": "in-process exact-resource guarded fetch fixture",
+    "installationToken": "synthetic",
+    "currentTenantState": "synthetic",
+    "realProviderRequests": 0,
+    "loopbackHttpRequests": 0,
+    "databaseUsed": false,
+    "serverStarted": false
+  },
+  "boundaries": {
+    "existingReusableProfileRegressionsPassed": true,
+    "ecrSubjectSubstitutionRejected": true,
+    "defaultProductionTrustInstalled": false,
+    "artifactMediaTypeInferredFromDsse": false,
+    "reviewFactsProduced": false,
+    "executionAuthorityProduced": false,
+    "providerMutationPerformed": false,
+    "imageLayersDownloaded": false
+  },
+  "remaining": [
+    "root independent frozen-source security review",
+    "root whole-application types/build and broad suite",
+    "clean CI with lockfile dependencies",
+    "exact genuine ECR-subject proof",
+    "reviewed immutable executor and durable execution/OIDC claim",
+    "real provider/application health/recovery acceptance"
+  ]
+}

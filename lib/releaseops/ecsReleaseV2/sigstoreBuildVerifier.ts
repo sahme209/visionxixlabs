@@ -26,6 +26,10 @@ export interface PublicTrustProfile {
   signerWorkflow: string;
   signerWorkflowSha: string;
 }
+export interface DirectWorkflowPublicTrustProfile extends Omit<PublicTrustProfile, "kind"> {
+  kind: "public_sigstore_direct_workflow_v1";
+}
+export type ReviewedPublicTrustProfile = PublicTrustProfile | DirectWorkflowPublicTrustProfile;
 type ProvenanceResult = {
   kind: "verified_build_provenance";
   organizationId: string;
@@ -73,7 +77,7 @@ function utf8DER(value: string): Buffer {
 }
 /** Static server-configuration check only; it does not verify a bundle or grant authority. */
 export function inspectPublicTrustConfiguration(profile: unknown, clock: Date):
-  { kind: "configured"; profile: PublicTrustProfile } | { kind: "unavailable"; reason: string } {
+  { kind: "configured"; profile: ReviewedPublicTrustProfile } | { kind: "unavailable"; reason: string } {
   const bad = (reason: string) => ({ kind: "unavailable" as const, reason });
   try {
     const profileJson = JSON.stringify(profile), now = clock.getTime();
@@ -81,12 +85,19 @@ export function inspectPublicTrustConfiguration(profile: unknown, clock: Date):
     if (!profileJson || profileJson.length > 256 * 1024) return bad("trust_profile_unavailable");
     const p = object(JSON.parse(profileJson));
     if (p.kind === "private_github") return bad("private_trust_profile_unavailable");
-    if (p.kind !== "public_sigstore") return bad("trust_profile_unavailable");
+    if (p.kind !== "public_sigstore" && p.kind !== "public_sigstore_direct_workflow_v1") return bad("trust_profile_unavailable");
+    const direct = p.kind === "public_sigstore_direct_workflow_v1";
+    if (direct && (Object.keys(p).length !== 7 || !["kind", "trustedRoot", "trustedRootDigest", "reviewedAt", "reviewExpiresAt", "signerWorkflow", "signerWorkflowSha"].every(key => Object.hasOwn(p, key))))
+      return bad("trust_profile_unavailable");
     const reviewedAt = Date.parse(String(p.reviewedAt)), expires = Date.parse(String(p.reviewExpiresAt));
     if (!Number.isFinite(reviewedAt) || !Number.isFinite(expires) || reviewedAt > now || expires <= now
       || expires <= reviewedAt || expires - reviewedAt > 7 * 86400_000) return bad("trust_review_expired_or_invalid");
     if (sha(Buffer.from(JSON.stringify(p.trustedRoot))) !== p.trustedRootDigest) return bad("trust_root_digest_mismatch");
-    if (typeof p.signerWorkflowSha !== "string" || !hex40.test(p.signerWorkflowSha)
+    if (direct) {
+      const signer = typeof p.signerWorkflow === "string" && /^https:\/\/github\.com\/[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+\/\.github\/workflows\/[A-Za-z0-9_.-]+\.ya?ml@refs\/heads\/([A-Za-z0-9_][A-Za-z0-9_./-]{0,254})$/.exec(p.signerWorkflow);
+      if (typeof p.signerWorkflowSha !== "string" || !hex40.test(p.signerWorkflowSha) || !signer || signer[1].endsWith("/") || signer[1].includes("..") || signer[1].includes("//"))
+        return bad("pinned_direct_signer_required");
+    } else if (typeof p.signerWorkflowSha !== "string" || !hex40.test(p.signerWorkflowSha)
       || typeof p.signerWorkflow !== "string" || !/^https:\/\/github\.com\/[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+\/\.github\/workflows\/[A-Za-z0-9_.-]+\.ya?ml@[a-f0-9]{40}$/.test(p.signerWorkflow)
       || !p.signerWorkflow.endsWith(`@${p.signerWorkflowSha}`)) return bad("pinned_signer_required");
     const root = object(p.trustedRoot);
@@ -94,7 +105,7 @@ export function inspectPublicTrustConfiguration(profile: unknown, clock: Date):
     for (const field of ["certificateAuthorities", "ctlogs", "tlogs"]) {
       if (!Array.isArray(root[field]) || root[field].length === 0) return bad("public_trust_material_incomplete");
     }
-    return { kind: "configured", profile: p as unknown as PublicTrustProfile };
+    return { kind: "configured", profile: p as unknown as ReviewedPublicTrustProfile };
   } catch { return bad("trust_profile_unavailable"); }
 }
 
@@ -146,6 +157,11 @@ export async function verifyBuildProvenance(input: {
     const repositoryUrl = `https://github.com/${b.repositoryFullName}`;
     const invocation = `${repositoryUrl}/actions/runs/${b.runId}/attempts/${b.runAttempt}`;
     const callerWorkflow = `${repositoryUrl}/${b.workflowPath}@${b.sourceRef}`;
+    if (p.kind === "public_sigstore_direct_workflow_v1") {
+      same(p.signerWorkflow, callerWorkflow);
+      same(p.signerWorkflowSha, b.workflowSha);
+      same(b.workflowSha, b.sourceSha);
+    }
     // Fulcio's modern GitHub identity OIDs are DER UTF8 strings; verify through the official policy engine.
     const oidValues: [number, string][] = [[9, p.signerWorkflow], [10, p.signerWorkflowSha], [12, repositoryUrl],
       [13, b.sourceSha], [14, b.sourceRef], [15, b.repositoryId], [18, callerWorkflow], [19, b.workflowSha], [21, invocation], [22, "public"]];
@@ -160,7 +176,10 @@ export async function verifyBuildProvenance(input: {
     same(statement._type, "https://in-toto.io/Statement/v1");
     same(statement.predicateType, "https://slsa.dev/provenance/v1");
     const predicate = object(statement.predicate), definition = object(predicate.buildDefinition);
-    same(definition.buildType, "https://slsa-framework.github.io/github-actions-buildtypes/workflow/v1");
+    same(definition.buildType, p.kind === "public_sigstore_direct_workflow_v1"
+      ? "https://actions.github.io/buildtypes/workflow/v1"
+      : "https://slsa-framework.github.io/github-actions-buildtypes/workflow/v1");
+    if (p.kind === "public_sigstore_direct_workflow_v1") same(object(object(predicate.runDetails).builder).id, p.signerWorkflow);
     const workflow = object(object(definition.externalParameters).workflow);
     same(workflow.repository, repositoryUrl); same(workflow.path, b.workflowPath); same(workflow.ref, b.sourceRef);
     same(object(object(definition.internalParameters).github).repository_id, b.repositoryId);
