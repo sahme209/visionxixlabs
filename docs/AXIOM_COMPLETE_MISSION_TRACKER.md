@@ -1209,6 +1209,14 @@ The observed identity-only `allowed: true` / `no_plan` remains a policy observat
 No existing mission scope or external approval gate is removed by this milestone.
 
 Required local integration gates passed for this source branch: web TypeScript,
-596 test files / 6,284 tests, desktop TypeScript and production frontend build,
+600 test files / 6,341 tests (local `--testTimeout=20000` runner bound),
+desktop TypeScript and production frontend build,
 and 30 Python CLI tests. These checks complement the source-pinned HTTP result;
 they do not expand its production/native/paid-policy acceptance scope.
+
+After normal integration of main through PR #151, the first combined suite hit
+the existing native publication fixture's default five-second timeout under
+concurrent compiler load; no assertion failed. Its unchanged focused file then
+passed 34/34 tests at the default bound (the named case took 3.222 seconds), and
+the complete combined suite passed with the explicit local 20-second bound.
+No source test, native publication guard or CI timeout was weakened.
