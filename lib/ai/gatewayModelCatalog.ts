@@ -1,3 +1,4 @@
+import { denyIsolatedExternalIO } from "@/lib/billing/isolatedApplication/runtime";
 import "server-only";
 
 export interface GatewayModelOption {
@@ -12,6 +13,7 @@ export function isGatewayModelId(value: string): boolean {
 
 /** Live, server-side catalog. Failure returns no choices instead of stale fabricated models. */
 export async function loadGatewayModelCatalog(): Promise<GatewayModelOption[]> {
+  denyIsolatedExternalIO();
   const response = await fetch("https://ai-gateway.vercel.sh/v1/models", { next: { revalidate: 900 } });
   if (!response.ok) throw new Error("gateway_model_catalog_unavailable");
   const body = await response.json() as { data?: Array<{ id?: unknown; name?: unknown; type?: unknown; tags?: unknown }> };

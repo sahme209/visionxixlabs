@@ -1339,3 +1339,30 @@ PR #154 merged as `50f54d65b5d3406f9535b04f7c1a05e58c542431`; its tree matches f
 The next source slice adds an internal read-only GitHub build-evidence adapter, reusing tenant installation resolution, transport, selected durable review policy and actual offline Sigstore verification. Current tenant/member/repository/environment/installation/policy snapshots are checked around bounded I/O; the read-only token profile is repository-scoped and cannot reuse a broad token. Snapshot and credential selection use the same explicitly supplied client. Repository, source, caller workflow, reusable signer, current run and exact attempt bind to the signed subject set. No route, schema, approval, AWS facts, execution activation or provider write was added.
 
 Evidence: [implementation and limits](ECS_GITHUB_BUILD_INGESTION.md), `githubBuildEvidence.ts`, `githubBuildSnapshot.ts` and nine focused transport/auth/snapshot/crypto test files (112 tests passed), clean scoped ESLint and diff check. These are simulated API/DB responses composed with genuine upstream offline signature evidence; live GitHub grants, actual bundle origins, reviewed runtime roots, Axiom OCI ingestion and AWS/health/rollback acceptance remain unverified or unimplemented. Branch-policy snapshots are change fences, not fulfilled readiness/approval facts. Production login binding, PITR/restore readiness and explicit recovery approval remain blocked separately; no production changes occurred.
+
+## Isolated public TEST application bridge · 2026-10-16
+
+**Implemented locally; production/hosted-provider acceptance not verified.**
+The default-off owned-loopback lane reuses actual NextAuth/currentContext, billing
+page/current allowance, credit preflight and Serializable reservations with one
+verified version resolver. No missing new proof can become the legacy Growth pool.
+Exact HTTP/method/server-action restrictions and shared provider/background denial
+preserve the bounded scope; external IO and invoicing remain disabled. Actual
+local HTTP proves synthetic credentials/session, public per-seat read/cap, pending
+holds, missing-provenance unavailability, current-role denial and provider-disabled
+hold release; this is not Stripe checkout/payment, AI generation or cloud workflow
+acceptance. Existing customers, support source and User.plan remain unchanged.
+See [ISOLATED_PUBLIC_TEST_APPLICATION_BRIDGE.md](ISOLATED_PUBLIC_TEST_APPLICATION_BRIDGE.md)
+and [sanitized evidence](mission/isolated-public-test-http.json). Local full Vitest
+passed 6447 tests/606 files (5 skipped), web TypeScript and desktop build/type checks
+passed, Python passed 30 tests, and the direct optimized Next build passed
+with offline fixture fonts (no Prisma generation). Exact-head CI and real provider-attempt
+proof/access remain integration/acceptance gates.
+
+PR #155 merged as `3952e131779771e54d3c57b4971c24bebd18f76d` after exact-head
+push [38847173942](https://github.com/sahme209/visionxixlabs/actions/runs/38847173942)
+and PR [38847192840](https://github.com/sahme209/visionxixlabs/actions/runs/38847192840)
+checks passed: 6447 tests, TypeScript and both 293-page production builds.
+Desktop CI was excluded by its existing path filters; local desktop gates passed.
+The GitHub reader branch preserves both tracker sections while integrating this
+main revision. Combined-source regression checks remain required before its PR.

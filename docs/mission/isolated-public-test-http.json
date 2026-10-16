@@ -1,0 +1,71 @@
+{
+  "baseline": "main154 50f54d65",
+  "date": "2026-10-16",
+  "scope": "default-off owned-loopback actual Next credentials/read/admission bridge",
+  "actualHttpFixture": {
+    "testsPassed": 5,
+    "durationSeconds": 31.75
+  },
+  "actualModels": [
+    "User",
+    "OrgMembership",
+    "TenantBillingPlan",
+    "StripeBillingEvent",
+    "UsageEvent",
+    "AIUsageReservation",
+    "AddOnPurchase"
+  ],
+  "database": "owned empty PostgreSQL17 full current schema; generation disabled",
+  "authentication": "actual NextAuth CSRF, credentials callback and session for synthetic verified account",
+  "markerBeforeAuthentication": "wrong account marker yields no authenticated session; valid marker login succeeds",
+  "htmlAllowanceCents": {
+    "base": 3000,
+    "pendingHold": 250,
+    "remaining": 2750
+  },
+  "capAdmission": "denied before new reservation",
+  "unsupportedOperations": "HTTP method/path/server-action and shared background/provider denials",
+  "providerDisabledFailure": "actual new 100-cent hold released; zero generated usage rows",
+  "currentRoleChange": "new admission denied with zero reservation",
+  "missingProvenance": "Unavailable HTML, no legacy 200-dollar fallback",
+  "providerPurchaseEvidence": "simulated foundation boundary, not hosted Stripe",
+  "externalProviderEvidence": "source-denied SDK/HTTP boundaries; no positive generation or packet-capture claim",
+  "childEnvironment": "sanitized; no inherited usable provider/cloud/Stripe credentials; inert synthetic marker exercises admission branch",
+  "cleanup": "owned Next process group, PostgreSQL container and font fixture removed",
+  "legacyCustomers": "unchanged default path; no new proof-table queries",
+  "supportPaymentSource": "unchanged",
+  "production": "no database, routing, secrets, infrastructure, billing or deployment changes",
+  "hostedStripeAcceptance": false,
+  "positiveAIGeneration": false,
+  "fullCustomerJourneyComplete": false,
+  "remaining": [
+    "exact-head required CI",
+    "secure Stripe TEST access and independent actual attempt-proof adapter",
+    "approved runtime/schema activation",
+    "actual provider receipt and broader native/cloud customer workflows"
+  ],
+  "deploymentAllowance": "unsupported/Unavailable; legacy quota not queried in isolated lane",
+  "unverifiedPlan": "compatibility Pro panel hidden when isolated proof unavailable",
+  "validationEnvironment": "owned dependency overlay for declared Sigstore packages and shared desktop dependency link; no shared mutation/generation",
+  "fullRegression": {
+    "filesPassed": 606,
+    "testsPassed": 6447,
+    "testsSkipped": 5,
+    "durationSeconds": 70.17,
+    "environment": "required loopback/native execution permitted; matching declared dependency overlay",
+    "deadlines": "unchanged"
+  },
+  "localChecks": {
+    "webTypeScript": "passed",
+    "desktopTypeScriptAndBuild": "passed; v0.1.20 release alignment and Vite5.55s; existing mixed-import warning",
+    "pythonUnitTestsPassed": 30,
+    "focusedLint": "new bridge modules/tests clean; changed-file lint retains five pre-existing explicit-any errors in aiCreditReservation.ts",
+    "nextOptimizedBuild": {
+      "result": "passed",
+      "webpackSeconds": 56,
+      "typeScriptSeconds": 76,
+      "staticPages": 293,
+      "conditions": "direct Next CLI; no Prisma generation; fixture-only offline font CSS;4GB heap after initial3GB resource-only OOM"
+    }
+  }
+}

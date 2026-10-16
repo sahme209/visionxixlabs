@@ -1,3 +1,4 @@
+import { denyIsolatedUnsupportedOperation } from "@/lib/billing/isolatedApplication/runtime";
 /**
  * Tier gate — convenience facade around plan + cap + counter.
  *
@@ -33,6 +34,7 @@ export async function gateAndConsume(opts: {
   organizationId: string;
   capName: CapName;
 }): Promise<GateDecision> {
+  denyIsolatedUnsupportedOperation();
   const dateKey = todayUtcKey();
   const plan = await readBillingPlan(opts.organizationId).catch(() => null);
   // Default to "trial" plan when read fails — most-permissive fallback.
@@ -63,6 +65,7 @@ export async function peekGate(opts: {
   organizationId: string;
   capName: CapName;
 }): Promise<GateDecision> {
+  denyIsolatedUnsupportedOperation();
   const dateKey = todayUtcKey();
   const plan = await readBillingPlan(opts.organizationId).catch(() => null);
   const tier = plan?.tier ?? "trial";

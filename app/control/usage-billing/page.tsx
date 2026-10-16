@@ -1,3 +1,5 @@
+import { isolatedRuntimeRequested } from "@/lib/billing/isolatedApplication/runtime";
+import { withIsolatedWorkspaceScope } from "@/lib/billing/isolatedApplication/scope";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 
@@ -48,8 +50,9 @@ export default async function ControlUsageBillingPage() {
   let members = 0;
   let usage = { calls: 0, inputTokens: 0, outputTokens: 0, billedCents: 0, pendingCalls: 0 };
   let transactions: Array<{ id: string; sku: string; pricePaidCents: number; deliveredAICreditsCents: number; reversedAICreditsCents: number; status: string; createdAt: Date }> = [];
-  const deployment = await checkDeploymentQuota(prisma, organizationId);
-  const allowance = await readCurrentAIAllowance(prisma, organizationId, now);
+  const isolated = isolatedRuntimeRequested();
+  const deployment = isolated ? { allowed: false, reason: "deployment_quota_unavailable", planId: null, used: null, limit: null, remaining: 0 } as const : await checkDeploymentQuota(prisma, organizationId);
+  const allowance = await withIsolatedWorkspaceScope(context, "read", () => readCurrentAIAllowance(prisma, organizationId, now));
   try {
     const [memberCount, usageAggregate, pendingCalls, recentTransactions] = await Promise.all([
       prisma.orgMembership.count({ where: { organizationId, acceptedAt: { not: null } } }),
@@ -65,6 +68,7 @@ export default async function ControlUsageBillingPage() {
   }
   const deploymentUnavailable = !deployment.allowed && deployment.reason === "deployment_quota_unavailable";
   const creditUnavailable = !allowance.available;
+  const planAvailable = billingRead.available && (!isolated || allowance.available);
   const anyUnavailable = unavailable || deploymentUnavailable || !billingRead.available || creditUnavailable;
   const paidSeats = billing.seatQuantity ?? (publicPlanId === "free" ? publicPlan.includedSeats ?? 0 : 0);
 
@@ -77,7 +81,7 @@ export default async function ControlUsageBillingPage() {
       {anyUnavailable && <div role="alert" className="mt-8 border-y border-white/[0.08] py-5 text-sm text-zinc-400">Some authoritative billing or usage records are unavailable. Missing values are not estimated.</div>}
 
       <div className="mt-10 grid gap-5 lg:grid-cols-[0.72fr_1fr]">
-        {billingRead.available ? (
+        {planAvailable ? (
           <AccountBillingPanel planLabel={publicPlan.name} status={billing.status} billingEnabled={isSelfServiceBillingEnabled()} canManage={canManage} hasStripeCustomer={Boolean(billing.stripeCustomerId)} />
         ) : (
           <aside className="rounded-2xl border border-white/[0.08] bg-white/[0.025] p-5 sm:p-7">
@@ -88,9 +92,9 @@ export default async function ControlUsageBillingPage() {
         <section className="rounded-2xl border border-white/[0.08] bg-[#171717] p-5 sm:p-7" aria-labelledby="allowance-heading">
           <div className="flex items-center justify-between gap-3"><div><p className="text-[10px] uppercase tracking-[0.18em] text-zinc-600">Current period</p><h2 id="allowance-heading" className="mt-2 text-xl font-medium">Allowances</h2></div><span className="text-xs text-zinc-500">{period.key}</span></div>
           <dl className="mt-6 grid gap-5 sm:grid-cols-2">
-            <div><dt className="text-xs text-zinc-500">Organization seats</dt><dd className="mt-2 text-2xl tabular-nums">{unavailable ? "Unavailable" : members} {!unavailable && <span className="text-sm text-zinc-600">/ {billingRead.available ? paidSeats || "—" : "unavailable"}</span>}</dd></div>
-            <div><dt className="text-xs text-zinc-500">Counted deployments</dt><dd className="mt-2 text-2xl tabular-nums">{deploymentUnavailable ? "Unavailable" : <>{deployment.used} <span className="text-sm text-zinc-600">/ {deployment.limit ?? "unlimited"}</span></>}</dd></div>
-            <div><dt className="text-xs text-zinc-500">Included AI allowance remaining</dt><dd className="mt-2 text-2xl tabular-nums">{allowance.available ? money(allowance.includedRemainingCents) : "Unavailable"}</dd>{allowance.available && <><p className="mt-1 text-[11px] text-zinc-600">{money(allowance.poolCents)} current account allowance · {money(allowance.heldCents)} held for unresolved requests</p><p className="mt-1 text-[11px] text-zinc-600">Current reservation policy: {allowance.overagePolicy.replaceAll("_", " ")}. This snapshot is not spend authorization; access, request limits and billing safeguards still apply. Current account allowance is separate from new subscription catalog terms.</p></>}</div>
+            <div><dt className="text-xs text-zinc-500">Organization seats</dt><dd className="mt-2 text-2xl tabular-nums">{unavailable ? "Unavailable" : members} {!unavailable && <span className="text-sm text-zinc-600">/ {planAvailable ? paidSeats || "—" : "unavailable"}</span>}</dd></div>
+            <div><dt className="text-xs text-zinc-500">Counted deployments</dt><dd className="mt-2 text-2xl tabular-nums">{deploymentUnavailable ? "Unavailable" : <>{deployment.used} <span className="text-sm text-zinc-600">/ {deployment.limit ?? "unlimited"}</span></>}</dd>{isolated && <p className="mt-1 text-[11px] text-zinc-600">Deployment allowance is unsupported in this isolated TEST lane.</p>}</div>
+            <div><dt className="text-xs text-zinc-500">Included AI allowance remaining</dt><dd className="mt-2 text-2xl tabular-nums">{allowance.available ? money(allowance.includedRemainingCents) : "Unavailable"}</dd>{allowance.available && <><p className="mt-1 text-[11px] text-zinc-600">{money(allowance.poolCents)} current account allowance · {money(allowance.heldCents)} held for unresolved requests</p><p className="mt-1 text-[11px] text-zinc-600">Current reservation policy: {allowance.overagePolicy.replaceAll("_", " ")}. This snapshot is not spend authorization; access, request limits and billing safeguards still apply. {isolatedRuntimeRequested() ? "This isolated account uses the versioned public TEST catalog; this is not a production entitlement." : "Current account allowance is separate from new subscription catalog terms."}</p></>}</div>
             <div><dt className="text-xs text-zinc-500">Gateway calls</dt><dd className="mt-2 text-2xl tabular-nums">{unavailable ? "Unavailable" : usage.calls}</dd>{!unavailable && <p className="mt-1 text-[11px] text-zinc-600">{usage.pendingCalls} awaiting cost settlement</p>}</div>
           </dl>
         </section>

@@ -1,6 +1,10 @@
+import { createServer } from "node:net";
+import { tmpdir } from "node:os";
+import { hash } from "bcryptjs";
+import { deriveWorkspaceIdFromEmail } from "../../auth/workspaceId";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
-import { execFileSync } from "node:child_process";
-import { existsSync } from "node:fs";
+import { spawn, execFileSync } from "node:child_process";
+import { existsSync, mkdtempSync, writeFileSync, rmSync } from "node:fs";
 import { resolve } from "node:path";
 import { randomBytes, createHash } from "node:crypto";
 import { PrismaClient } from "@prisma/client";
@@ -152,5 +156,78 @@ suite("owned PG17 new TEST subscription service, synthetic provider only", () =>
       expect(legacy.ok).toBe(true);
     } finally { await db.$executeRawUnsafe('ALTER TABLE "HiddenFixtureContract" RENAME TO "OrganizationTestSubscriptionContract"'); }
   });
+
+  it.runIf(process.env.AXIOM_RUN_OWNED_COMMERCIAL_HTTP === "1")("actual local Next HTTP authenticates, reads versioned allowance, denies unsupported operations and releases provider-disabled hold", async () => {
+    const email = "bridge-synthetic@example.invalid", password = randomBytes(20).toString("hex");
+    const user = await db.user.create({ data: { email, passwordHash: await hash(password, 4), emailVerifiedAt: new Date(), plan: null } });
+    const org = String(deriveWorkspaceIdFromEmail(email));
+    const actor = { organizationId: org, userId: user.id };
+    for (const userId of [user.id, "bridge-member-2", "bridge-member-3"]) await db.orgMembership.create({ data: { userId, organizationId: org, role: userId === user.id ? "owner" : "read_only", acceptedAt: new Date() } });
+    loseResponse = false; status = "active"; seats = 3; priceAmount = 2900;
+    const httpProvider: ProviderBoundary = { ...provider,
+      create: async (request, key) => ({ ...await provider.create(request, key), id: "cs-http" }),
+      verifyAndRetrieve: async (raw, signature) => ({ ...await provider.verifyAndRetrieve(raw, signature), eventId: "evt-http", organizationId: org, sessionId: "cs-http", customerId: "cus-http", subscriptionId: "sub-http", status: "active" }),
+    };
+    const setup = core(httpProvider); const intent = await setup.prepare(actor, { ...request, email }); await setup.attempt(actor, intent.id);
+    await setup.reconcile("synthetic-provider-evidence", "synthetic-verified-signature", org);
+    await db.organizationAIProviderPolicy.create({ data: { organizationId: org, enabled: true, allowedProviders: ["vercel_gateway"], modelSelections: { vercel_gateway: "openai/gpt-4o-mini" }, fallbackOrder: ["vercel_gateway"], updatedBy: user.id } });
+    await db.aIUsageReservation.create({ data: { organizationId: org, idempotencyKey: "http_pending_hold_123", reservedCents: 250, status: "pending_settlement", expiresAt: new Date(0) } });
+    const listener = createServer(); await new Promise<void>(resolve => listener.listen(0, "127.0.0.1", resolve));
+    const address = listener.address(); if (!address || typeof address === "string") throw new Error("fixture_port_unavailable"); const port = address.port;
+    await new Promise<void>(resolve => listener.close(() => resolve()));
+    const base = `http://127.0.0.1:${port}`, temporary = mkdtempSync(resolve(tmpdir(), "axiom-http-font-"));
+    const fonts = resolve(temporary, "fonts.cjs");
+    const fontCss = "@font-face { font-family: Isolated; src: url(https://synthetic.invalid/font.woff2); }";
+    writeFileSync(fonts, `module.exports = new Proxy({}, { get: () => ${JSON.stringify(fontCss)} });`);
+
+    const child = spawn(process.execPath, [resolve("node_modules/next/dist/bin/next"), "dev", "--webpack", "--hostname", "127.0.0.1", "--port", String(port)], { cwd: process.cwd(), detached: true, stdio: "pipe", env: {
+      PATH: process.env.PATH, NODE_ENV: "development", NODE_OPTIONS: "--max-old-space-size=3072", NEXT_TELEMETRY_DISABLED: "1", NEXT_FONT_GOOGLE_MOCKED_RESPONSES: fonts,
+      DATABASE_URL: url, DIRECT_URL: url, NEXTAUTH_URL: base, NEXTAUTH_SECRET: randomBytes(32).toString("hex"),
+      AXIOM_ISOLATED_PUBLIC_TEST_RUNTIME: "true", AXIOM_ISOLATED_TEST_RUNTIME_ID: runtime, AXIOM_ISOLATED_TEST_ACCOUNT_ID: "acct-test", AXIOM_ISOLATED_TEST_ORGANIZATIONS: org,
+      // Inert synthetic marker only to exercise existing configured-policy/hold path.
+      // Not a usable provider credential; all SDK/provider IO is independently denied.
+      AI_GATEWAY_API_KEY: "synthetic-inert-not-a-provider-credential", AI_GATEWAY_MODEL: "openai/gpt-4o-mini", AXIOM_AI_MAX_REQUEST_CREDITS_CENTS: "100",
+      AWS_CONFIG_FILE: "/dev/null", AWS_SHARED_CREDENTIALS_FILE: "/dev/null", AWS_EC2_METADATA_DISABLED: "true",
+    } });
+    let output = ""; child.stdout?.on("data", chunk => { output += chunk; }); child.stderr?.on("data", chunk => { output += chunk; });
+    const jar = new Map<string, string>();
+    const http = async (path: string, init: RequestInit = {}) => { const response = await fetch(base + path, { ...init, redirect: "manual", headers: { ...Object.fromEntries(new Headers(init.headers)), cookie: [...jar.values()].join("; ") } }); for (const item of response.headers.getSetCookie()) { const pair = item.split(";")[0]; jar.set(pair.slice(0, pair.indexOf("=")), pair); } return response; };
+    try {
+      for (let i = 0; ; i++) { try { const response = await http("/api/auth/csrf"); if (response.ok) break; } catch { /* local startup */ } if (i >= 120 || child.exitCode !== null) throw new Error("isolated_next_start_failed"); await new Promise(resolve => setTimeout(resolve, 250)); }
+      const csrf = await (await http("/api/auth/csrf")).json();
+      await db.$executeRawUnsafe('UPDATE "IsolatedTestRuntime" SET account=$1 WHERE id=$2', "blocked-before-auth", runtime);
+      await http("/api/auth/callback/credentials", { method: "POST", headers: { "content-type": "application/x-www-form-urlencoded", origin: base }, body: new URLSearchParams({ csrfToken: csrf.csrfToken, email, password, callbackUrl: `${base}/control/usage-billing`, json: "true" }) });
+      const deniedSession = await (await http("/api/auth/session")).json(); expect(deniedSession.user).toBeUndefined();
+      await db.$executeRawUnsafe('UPDATE "IsolatedTestRuntime" SET account=$1 WHERE id=$2', "acct-test", runtime);
+      const signIn = await http("/api/auth/callback/credentials", { method: "POST", headers: { "content-type": "application/x-www-form-urlencoded", origin: base }, body: new URLSearchParams({ csrfToken: csrf.csrfToken, email, password, callbackUrl: `${base}/control/usage-billing`, json: "true" }) });
+      expect(signIn.status).toBe(200);
+      const session = await (await http("/api/auth/session")).json(); expect(session.user.email).toBe(email);
+      const page = await http("/control/usage-billing"); expect(page.status).toBe(200); const html = await page.text(); expect(html).toContain("$27.50"); expect(html).toContain("$30.00"); expect(html).not.toContain("$200.00"); expect(html).toContain("Deployment allowance is unsupported in this isolated TEST lane.");
+      expect((await http("/api/cron/settle-ai-usage", { method: "POST" })).status).toBe(503);
+      expect((await http("/api/axiom/chat", { method: "POST" })).status).toBe(503);
+      expect((await http("/api/billing/checkout-session", { method: "POST" })).status).toBe(503);
+      await db.aIUsageReservation.updateMany({ where: { organizationId: org, status: "pending_settlement" }, data: { reservedCents: 2950 } });
+      const capped = await http("/api/ai/generate", { method: "POST", headers: { "content-type": "application/json", "idempotency-key": "http_cap_denied_123456", origin: base }, body: JSON.stringify({ prompt: "Must not exceed public test pool" }) });
+      expect(capped.status).toBeGreaterThanOrEqual(400);
+      expect(await db.aIUsageReservation.count({ where: { organizationId: org, idempotencyKey: "http_cap_denied_123456" } })).toBe(0);
+      await db.aIUsageReservation.updateMany({ where: { organizationId: org, status: "pending_settlement" }, data: { reservedCents: 250 } });
+      const generation = await http("/api/ai/generate", { method: "POST", headers: { "content-type": "application/json", "idempotency-key": "http_actual_hold_123456", origin: base }, body: JSON.stringify({ prompt: "Synthetic local admission only" }) });
+      expect(generation.status).toBeGreaterThanOrEqual(400);
+      const hold = await db.aIUsageReservation.findUnique({ where: { organizationId_idempotencyKey: { organizationId: org, idempotencyKey: "http_actual_hold_123456" } } });
+      expect(hold?.status).toBe("released"); expect(await db.usageEvent.count({ where: { organizationId: org } })).toBe(0);
+      await db.orgMembership.update({ where: { userId_organizationId: { userId: user.id, organizationId: org } }, data: { role: "read_only" } });
+      expect((await http("/api/ai/generate", { method: "POST", headers: { "content-type": "application/json", "idempotency-key": "http_denied_role_12345" }, body: JSON.stringify({ prompt: "Denied" }) })).status).toBeGreaterThanOrEqual(400);
+      expect(await db.aIUsageReservation.count({ where: { organizationId: org, idempotencyKey: "http_denied_role_12345" } })).toBe(0);
+      await db.$executeRawUnsafe('ALTER TABLE "OrganizationTestSubscriptionContract" RENAME TO "UnavailableHttpContract"');
+      try {
+        const unavailablePage = await http("/control/usage-billing"); expect(unavailablePage.status).toBe(200); const unavailableHtml = await unavailablePage.text();
+        expect(unavailableHtml).toContain("Unavailable"); expect(unavailableHtml).toContain("Plan unavailable"); expect(unavailableHtml).not.toContain("$200.00");
+      } finally { await db.$executeRawUnsafe('ALTER TABLE "UnavailableHttpContract" RENAME TO "OrganizationTestSubscriptionContract"'); }
+
+    } finally {
+      if (child.pid) { try { process.kill(-child.pid, "SIGTERM"); } catch { /* already exited */ } await Promise.race([new Promise(resolve => child.once("exit", resolve)), new Promise(resolve => setTimeout(resolve, 3000))]); try { process.kill(-child.pid, "SIGKILL"); } catch { /* only owned process group */ } }
+      writeFileSync("/tmp/axiom-isolated-next-http.log", output); rmSync(temporary, { recursive: true, force: true });
+    }
+  }, 180000);
 
 });

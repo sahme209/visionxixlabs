@@ -1,3 +1,4 @@
+import { isolatedHttpAllowed, isolatedRuntimeRequested } from "./lib/billing/isolatedApplication/runtime";
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
@@ -22,6 +23,7 @@ function applySecurityHeaders(response: NextResponse): NextResponse {
 
 export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
+  if ((isolatedRuntimeRequested() && request.headers.has("next-action")) || !isolatedHttpAllowed(pathname, request.method)) return applySecurityHeaders(NextResponse.json({ ok: false, error: "isolated_entrypoint_unsupported" }, { status: 503 }));
   const origin = request.headers.get("origin");
   const desktopOrigin = origin && ALLOWED_DESKTOP_ORIGINS.has(origin) ? origin : null;
 

@@ -1,3 +1,4 @@
+import { denyIsolatedExternalIO } from "@/lib/billing/isolatedApplication/runtime";
 /**
  * Gemini provider.
  */
@@ -7,6 +8,7 @@ import type { GenerateTextOptions, GenerateTextResult } from "./types";
 export async function generateText(
   opts: GenerateTextOptions
 ): Promise<GenerateTextResult> {
+  denyIsolatedExternalIO();
   const apiKey = process.env.GEMINI_API_KEY?.trim();
   if (!apiKey) throw new Error("GEMINI_API_KEY not set");
 
