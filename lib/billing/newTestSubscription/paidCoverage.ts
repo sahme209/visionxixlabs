@@ -8,13 +8,13 @@ export type EvidenceInput = PaidIdentity & { invoiceId: string; lineId: string; 
 export type PaidInvoiceEvidence = EvidenceInput & { version: 1; digest: string };
 export type CollectionResult = { kind: "collected"; evidence: PaidInvoiceEvidence } | { kind: "unavailable"; reason: "not_collected" | "unsupported_collection" | "refunded_or_disputed" | "unsupported_terms" | "replay_unavailable" };
 export type CoverageObservation = { eventToken: string; latestInvoiceId: string | null; currentPeriodStart: string; currentPeriodEnd: string; collection: CollectionResult; invalidatingEventId?: string };
-const unavailable = (): never => { throw new Error("paid_coverage_unavailable"); };
+function unavailable(): never { throw new Error("paid_coverage_unavailable"); }
 const scopeKeys = ["runtimeId", "accountId", "organizationId", "originatingIntentId", "sessionId", "customerId", "subscriptionId", "planId", "seatQuantity", "interval", "priceId", "unitAmountCents"] as const;
 export function paidIdentity(contract: Contract, intent: Intent): PaidIdentity { return { runtimeId: contract.runtimeId, accountId: contract.accountId, organizationId: contract.organizationId, originatingIntentId: contract.originatingIntentId, sessionId: contract.sessionId, customerId: contract.customerId, subscriptionId: contract.subscriptionId, planId: contract.planId, seatQuantity: contract.seatQuantity, interval: intent.terms.interval, priceId: intent.terms.priceId, unitAmountCents: intent.terms.unitAmountCents }; }
 function iso(value: string): number { const n = new Date(value).getTime(); if (!Number.isFinite(n) || new Date(n).toISOString() !== value) unavailable(); return n; }
 export function collectedEvidence(input: EvidenceInput): PaidInvoiceEvidence {
   if (!input || scopeKeys.some(key => input[key] === undefined) || [...scopeKeys.filter(k => !["seatQuantity", "unitAmountCents"].includes(k)), "invoiceId", "lineId", "subscriptionItemId", "paymentId", "paymentIntentId", "chargeId"].some(k => typeof input[k as keyof EvidenceInput] !== "string" || !(input[k as keyof EvidenceInput] as string).trim())) unavailable();
-  const catalog = PUBLIC_PLAN_CATALOG.find(p => p.id === input.planId && p.id !== "free");
+  const catalog = PUBLIC_PLAN_CATALOG.find(p => p.id !== "free" && p.id === input.planId);
   const annual = input.interval === "annual";
   const expectedUnit = catalog && (annual ? catalog.annualPricePerUserCents * 12 : catalog.monthlyPricePerUserCents);
   if (!catalog || !["monthly", "annual"].includes(input.interval) || !supportedChargeMethodType(input.paymentMethodType) || input.currency !== "usd" || !Number.isSafeInteger(input.seatQuantity) || input.seatQuantity < 1 || input.unitAmountCents !== expectedUnit || !Number.isSafeInteger(input.amountCents) || input.amountCents < 1 || input.amountCents !== input.unitAmountCents * input.seatQuantity) unavailable();

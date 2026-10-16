@@ -11,7 +11,7 @@ function unsupported(): never { throw new Error("owned_test_child_options_unsupp
  * opaquely; never remove inherited preloads/guards in order to start a child.
  * Unsupported Node/trust configuration refuses launch, without echoing values.
  * This neither makes a provider permit nor proves managed proxy compatibility. */
-export function newTestChildEnvironment(inherited: NodeJS.ProcessEnv, execArgv: readonly string[], fixture: {
+export function newTestChildEnvironment(inherited: Readonly<Record<string, string | undefined>>, execArgv: readonly string[], fixture: {
   databaseUrl: string; appOrigin: string; fontResponses: string;
   runtimeId: string; accountId: string; organizationId: string; authSecret: string;
 }): NodeJS.ProcessEnv {

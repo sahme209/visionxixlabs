@@ -4,7 +4,7 @@ import type Stripe from "stripe";
 import { collectedEvidence, type PaidIdentity, type CollectionResult } from "./paidCoverage";
 
 export type BoundedRead = <T>(operation: (timeout: number) => Promise<T>) => Promise<T>;
-const fail = (code: string): never => { throw new Error(code); };
+function fail(code: string): never { throw new Error(code); }
 const id = (value: string | { id: string } | null | undefined) => typeof value === "string" ? value : value?.id;
 const empty = (value: unknown) => Array.isArray(value) && value.length === 0;
 const none = (value: unknown) => value === null || empty(value);
@@ -26,7 +26,7 @@ export async function retrieveCollectedCoverage(stripe: Stripe, identity: PaidId
   if (invoice.collection_method !== "charge_automatically" || invoice.currency !== "usd" || invoice.amount_due !== amount || invoice.amount_paid !== amount || invoice.amount_remaining !== 0 || invoice.amount_overpaid !== 0 || invoice.starting_balance !== 0 || invoice.ending_balance !== 0 || invoice.subtotal !== amount || invoice.total !== amount || invoice.pre_payment_credit_notes_amount !== 0 || invoice.post_payment_credit_notes_amount !== 0 || !empty(invoice.discounts) || !none(invoice.total_discount_amounts) || !none(invoice.total_pretax_credit_amounts) || !none(invoice.total_taxes) || invoice.automatic_tax?.enabled === true || !timestamp(invoice.status_transitions.paid_at) || !timestamp(invoice.status_transitions.finalized_at) || invoice.status_transitions.paid_at! < invoice.status_transitions.finalized_at!) return negative("unsupported_collection");
   if (!invoice.lines || invoice.lines.has_more !== false || !Array.isArray(invoice.lines.data) || invoice.lines.data.length !== 1) return negative("unsupported_collection");
   const line = invoice.lines.data[0]; const details = line.parent?.subscription_item_details;
-  if (line.parent?.type !== "subscription_item_details" || details?.subscription !== identity.subscriptionId || details?.subscription_item !== item.id || line.pricing?.type !== "price_details" || id(line.pricing.price_details?.price) !== identity.priceId || line.pricing.price_details?.product !== id(item.price.product)) fail("collection_identity_mismatch");
+  if (!details || line.parent?.type !== "subscription_item_details" || details.subscription !== identity.subscriptionId || details.subscription_item !== item.id || line.pricing?.type !== "price_details" || id(line.pricing.price_details?.price) !== identity.priceId || line.pricing.price_details?.product !== id(item.price.product)) fail("collection_identity_mismatch");
   if (details.proration !== false || line.currency !== "usd" || line.amount !== amount || line.subtotal !== amount || line.quantity !== identity.seatQuantity || line.pricing?.unit_amount_decimal !== String(identity.unitAmountCents) || !empty(line.discounts) || !none(line.discount_amounts) || !none(line.pretax_credit_amounts) || !none(line.taxes) || line.period.start !== item.current_period_start || line.period.end !== item.current_period_end) return negative("unsupported_collection");
   const payments = await read(timeout => stripe.invoicePayments.list({ invoice: invoiceId, status: "paid", limit: 2 }, stripeDeadlineOptions(timeout)));
   if (payments.has_more !== false || payments.data.length !== 1) return negative("unsupported_collection");

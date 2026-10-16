@@ -224,3 +224,14 @@ whitespace checks pass. No compiler, owned server/database, real provider call,
 shared Prisma generation, hosted checkout or managed-proxy compatibility proof
 has run for this correction. Whole-web compilation and exact-source owned
 acceptance follow the independent scoped reviews and main integration.
+
+Integrated main at 579ae03a passed both scoped reviews but whole-web compilation
+reported narrowing, Next ProcessEnv augmentation and SDK excess-property errors.
+The correction makes never-returning guards explicit function declarations,
+retains the runtime Free exclusion before catalog matching, explicitly guards
+nullable line details, accepts a readonly partial inherited environment domain,
+and binds exact installed RawRequestOptions before the SDK call. No assertion,
+suppression or weakened billing check is introduced. A targeted no-emit TypeScript
+program including next-env augmentation now exits 0; 317 focused tests pass with
+8 owned cases skipped, and changed-source lint/whitespace checks pass. This is
+not a whole-web compilation or owned runtime acceptance result.

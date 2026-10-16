@@ -63,7 +63,10 @@ export function createStripeTestProvider(options: {
       runtime();
       // Installed Stripe SDK replaces derived headers with additionalHeaders.
       // Preserve the durable original key alongside the internal deadline owner.
-      const s = await single(opts => stripe.checkout.sessions.create(request, { ...opts, idempotencyKey: key, additionalHeaders: { ...opts.additionalHeaders, "Idempotency-Key": key } }));
+      const s = await single(opts => {
+        const requestOptions: Stripe.RawRequestOptions = { ...opts, idempotencyKey: key, additionalHeaders: { ...opts.additionalHeaders, "Idempotency-Key": key } };
+        return stripe.checkout.sessions.create(request, requestOptions);
+      });
       await account();
       const response = s.lastResponse;
       if (s.livemode !== false || !s.url || (typeof response?.requestId !== "string" || !response.requestId.trim()) || !Number.isInteger(response.statusCode) || response.statusCode < 200 || response.statusCode >= 300
