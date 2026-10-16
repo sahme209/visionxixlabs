@@ -41,7 +41,7 @@ export async function captureSavedPlan(input: { id: string; binding: SavedPlanBi
     await writeFile(config, `disable_checkpoint = true\nprovider_installation { filesystem_mirror { path = ${JSON.stringify(join(directory, "providers"))} } }\n`, { mode: 0o600, flag: "wx" });
     // Next augments ProcessEnv with required NODE_ENV for Node applications.
     // This fixed external Terraform environment intentionally omits it.
-    const options = { cwd: directory, env: { PATH: "/usr/bin:/bin", TF_IN_AUTOMATION: "1", TF_INPUT: "0", CHECKPOINT_DISABLE: "1", TF_CLI_CONFIG_FILE: config, TF_DATA_DIR: join(directory, "data") } as NodeJS.ProcessEnv,
+    const options = { cwd: directory, env: { PATH: "/usr/bin:/bin", TF_IN_AUTOMATION: "1", TF_INPUT: "0", CHECKPOINT_DISABLE: "1", TF_CLI_CONFIG_FILE: config, TF_DATA_DIR: join(directory, "data") } as unknown as NodeJS.ProcessEnv,
       timeout: 30_000, maxBuffer: MAX_SHOW_BYTES, encoding: "utf8" as const, windowsHide: true };
     const version = await execute(input.executablePath, ["version", "-json"], { ...options, maxBuffer: 64 * 1024 });
     if ((JSON.parse(version.stdout) as { terraform_version?: unknown }).terraform_version !== binding.terraformVersion) throw new Error("saved_plan_cli_version_changed");
