@@ -3,9 +3,8 @@
 Decision received2026-10-16: use the current public catalog for **new TEST
 subscriptions only**, preserving existing customers unchanged. This authorizes
 local isolated implementation design, not live products/prices, production
-migrations, production activation or changes to historical contracts. Source
-baseline main147 `cca52dfb`; earlier workspace/desktop management authority fixes
-are separate integrated work and must not be duplicated.
+migrations, production activation or changes to historical contracts. The integration includes main #150 and the pricing/navigation changes from
+PR #151; earlier workspace/desktop management authority fixes are reused.
 
 **This document proposes schema; it does not add a migration or runtime wiring.**
 Actual Stripe TEST access is absent. Fixture evidence cannot be called checkout
@@ -198,3 +197,92 @@ are preliminary building blocks, not an end-to-end implementation milestone.
 Any unresolved status/period/seat rule returns policy_unresolved and cannot permit
 AI spend. Existing operational routes remain untouched until a separately
 reviewed integration is authorized. No real Stripe checkout success is implied.
+
+## Implemented actual-application isolated fixture slice · 2026-10-16
+
+`newTestSubscription/service.ts` composes server-counted accepted seats and
+current management authority, exact price/request freeze, durable attempt claim,
+unknown hold, verified-boundary late observation, event/plan/contract/intent atomic
+binding and current-role credit preview. No public route/live adapter selects it.
+Catalog version labels and signatures alone are not attempt provenance: the
+trusted provider boundary must independently establish the original request key
+and digest, exact account/session/customer/subscription binding. Real provider
+implementation of that boundary remains missing; fixture proof is synthetic.
+Frozen account identity is checked before dispatch and after provider IO.
+
+The fixture constructs a **full current application schema** with Prisma db push
+--skip-generate only after an owned random-loopback database is confirmed empty.
+It refuses local .env files and overrides all database URL variables for that
+child process. It never runs migration deploy, resolves history or resets data.
+Existing generated delegates are reused; no shared client generation occurs.
+
+Actual OrgMembership governs seats/management; actual TenantBillingPlan is the
+only current subscription status/quantity/token authority; actual StripeBillingEvent
+stores replay consumption; actual UsageEvent, AIUsageReservation and AddOnPurchase
+supply cost/hold/top-up evidence. The separate proposed intent/fence/immutable
+provenance tables contain no alternate mutable balance or plan status. Parameterized
+adapter SQL constructs its own client from an explicitly guarded fixture URL,
+requires a runtime marker and fails closed if new tables are absent. Legacy
+callers never query these new tables. Actual PostgreSQL triggers protect frozen
+intent terms/set-once provider IDs, immutable contract identity and revision CAS.
+
+The original consumer transaction body is extracted without changing its outer
+replay/ownership/rollback semantics. Internal composition invokes that helper in
+the same Serializable transaction as provenance and intent writes and requires an
+applied outcome. Existing production wrapper and call sites remain unchanged.
+The actual existing reserveAICredits ledger receives an internal plan resolver
+only from this guarded fixture lane: it independently checks durable verified
+contract/current binding inside the same transaction, **before even accepting an
+existing idempotent hold**. The default legacy path retains its existing mapping
+and never queries provenance. No request-body callback/version grants authority.
+New-contract hard-stop allocation composes existing paid-top-up/used/pending-hold
+reads; the existing settlement function and established1.5x margin arithmetic are
+reused. No separate charging ledger is added.
+
+Isolated TEST assumptions: active paid/Free inactive mapping consistent with
+existing deploymentQuota, UTC calendar month, current verified licensed seats,
+remaining=max(0,allocation+verified top-ups-used-held). Annual still monthly pool.
+These are not new live terms; no historical subscription is reinterpreted.
+Preview operationalPermit and invoiceSubmissionEnabled are literallyfalse; no
+User.plan grants, invoice items, runtime production routes or live adapter added.
+
+Validation (explicit owned-container resource opt-in):
+
+```sh
+AXIOM_RUN_OWNED_COMMERCIAL_FIXTURE=1 npx vitest run lib/billing/__tests__/newTestSubscriptionService.postgres.test.ts lib/billing/__tests__/newTestSubscriptionContract.test.ts lib/billing/__tests__/consumeSubscriptionEvent.test.ts lib/billing/__tests__/aiCreditReservation.test.ts
+```
+
+The fixture uses only cached postgres:17-alpine --pull=never, a unique container,
+random synthetic credentials, random127.0.0.1 port and dedicated initially empty
+database. Teardown disconnects all clients and removes only that owned container.
+Without opt-in the PostgreSQL test is skipped. Tests cover unknown outcome/late
+binding/replay; exact price/amount/annual/quantity/account/attempt evidence;
+current-seat checks; atomic plan/event rollback on injected failure; SQL
+immutability; separate-client Serializable purchase and stale-observation races;
+actual AI hold/cap/settlement using2c synthetic provider amount→3c ledger; pending
+holds preserved; new-table absence blocks new lane while legacy reserve still
+works; current-role downgrade blocks even an existing hold replay. Existing
+consumer/reservation regressions are compared before/after refactoring.
+
+**Evidence limits:** no Next browser/HTTP customer workflow, hosted Stripe
+Checkout/payment/renewal/refund, real Gateway cost receipt or external provider
+call is verified. Snapshot/signature/attempt evidence is provider-simulated.
+Actual Stripe credentials/runtime are absent. No production schema or data,
+existing customer pricing, User.plan or support-payment behavior changed. Future
+integration needs reviewed new-table DDL, real independent provider-attempt
+reconciliation, server-selected isolated lane and actual secure Stripe TEST
+acceptance. Production activation remains separately approval-gated.
+
+
+## Mandatory application-exposure gate
+
+The owned database must **not** be connected to an unmodified running application:
+a new-test compatibility `growth` plan would otherwise select the legacy $200
+flat pool through public AI/feature routes. A preview's operationalPermit:false
+is not a guard on those routes. All admission, read and background/provider entry
+points for this version must select a verified version resolver or explicitly
+deny; missing/unavailable new provenance may never fall back to legacy. Website
+balance reads likewise remain legacy until the reviewed isolated bridge exists.
+See [the concrete application bridge audit](NEW_TEST_APPLICATION_BRIDGE_AUDIT.md).
+Actual Next/hosted Stripe acceptance remains unverified and this exposure gate is
+not implemented by the current fixture slice.

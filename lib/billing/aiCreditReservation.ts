@@ -1,6 +1,8 @@
 import "server-only";
+import type { Prisma, TenantBillingPlan } from "@prisma/client";
 
 import { applyAddOnsToEntitlements } from "./applyAddOnsToEntitlements";
+import type { PricingPlan } from "./planRegistry";
 import { planForStripeTier } from "./planRegistry";
 
 const RESERVATION_TTL_MS = 5 * 60 * 1000;
@@ -24,12 +26,18 @@ export async function reserveAICredits(
   repo: any,
   input: { organizationId: string; idempotencyKey: string; reservedCents: number; correlationId?: string },
   now = new Date(),
+  /** Internal isolated-test composition only; never supplied by a request body.
+   * Resolver must verify durable provenance using this same transaction. Existing
+   * production callers omit it and retain their exact legacy path. */
+  isolatedVerifiedPlan?: (transaction: Prisma.TransactionClient, organizationId: string, billing: TenantBillingPlan | null) => Promise<PricingPlan>,
 ): Promise<AICreditReservationResult> {
   if (!input.organizationId || !/^[A-Za-z0-9_-]{16,200}$/.test(input.idempotencyKey) || !Number.isSafeInteger(input.reservedCents) || input.reservedCents < 1) {
     return { ok: false, error: "ai_credit_reservation_unavailable" };
   }
   try {
     return await repo.$transaction(async (tx: any) => {
+      // A reused hold is not proof that an isolated contract remains valid.
+      const isolatedPlan = isolatedVerifiedPlan ? await isolatedVerifiedPlan(tx, input.organizationId, await tx.tenantBillingPlan.findUnique({ where: { organizationId: input.organizationId } })) : undefined;
       const existing = await tx.aIUsageReservation.findUnique({ where: { organizationId_idempotencyKey: { organizationId: input.organizationId, idempotencyKey: input.idempotencyKey } } });
       if (existing) {
         if (existing.reservedCents !== input.reservedCents) return { ok: false as const, error: "idempotency_key_conflict" as const };
@@ -57,7 +65,7 @@ export async function reserveAICredits(
           _sum: { reservedCents: true },
         }),
       ]);
-      const plan = planForStripeTier(billing?.tier);
+      const plan = isolatedPlan ?? planForStripeTier(billing?.tier);
       const pool = applyAddOnsToEntitlements(plan, purchases).includedAICreditsCents;
       const used = usage._sum.billedCents ?? 0;
       const held = active._sum.reservedCents ?? 0;
