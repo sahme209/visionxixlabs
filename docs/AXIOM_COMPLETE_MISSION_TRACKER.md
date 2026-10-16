@@ -933,7 +933,12 @@ or granting authority. Integrated local verification passed 594 test files /
 CLI tests, tracker consistency and whitespace checks. The isolated local
 production build passed, generating 293 static/SSG pages with no production
 database or provider credentials. This candidate still requires exact-head
-required CI before merge.
+required CI before merge. Initial PR #148 web CI exposed a missing root Tauri
+notification test dependency masked by local desktop installation. The exact
+`2.4.0` dev dependency and lock entry correct that clean-install boundary; a fresh
+isolated locked three-package install typechecked the actual notification source,
+and 24 focused approval/pairing tests passed. No runtime, schema or production
+change is involved; corrected-head CI remains required.
 PR #147 merged normally after both push and PR Test checks passed on exact head
 `79686649b5640593ed90aacbb07a1d42d1cb22e0` (merge
 `cca52dfb61534b8d96ac8a602d604b49c376fc66`; PR run `38833921557`,
