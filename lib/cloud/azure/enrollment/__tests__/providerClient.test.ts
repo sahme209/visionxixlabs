@@ -1,4 +1,6 @@
 import { expect, it, vi } from "vitest";
+import { ResourceManagementClient } from "@azure/arm-resources";
+import { logPolicyName } from "@azure/core-rest-pipeline";
 import { createAzureProviderClient } from "../providerClient";
 import { input } from "./fixture";
 import type { AzureRawResponse, AzureRawSend } from "../boundedHttp";
@@ -36,3 +38,13 @@ it("withholds a provider echo of submitted secret in otherwise valid resource me
 
 it("does not let SDK missing-value fallback fabricate an observed empty page", async () => { await expect(setup("missing_value").client.read(input)).rejects.toMatchObject({code:"azure_inventory_unavailable"}); });
 it("ignores ambient endpoint and credential variables",async()=>{vi.stubEnv("AZURE_AUTHORITY_HOST","https://evil.invalid");vi.stubEnv("AZURE_CLIENT_ID","other");vi.stubEnv("AZURE_CLIENT_SECRET","other");try{const f=setup();await f.client.validate(input);expect(f.urls.every(value=>["login.microsoftonline.com","management.azure.com"].includes(new URL(value).hostname))).toBe(true);}finally{vi.unstubAllEnvs();}});
+
+it("removes only the actual ARM client's logging policy before its first SDK request", async () => {
+    const original = ResourceManagementClient.prototype.sendRequest;
+    const requestSpy = vi.spyOn(ResourceManagementClient.prototype, "sendRequest").mockImplementation(function (this: ResourceManagementClient, request) {
+        expect(this.pipeline.getOrderedPolicies().some(policy => policy.name === logPolicyName)).toBe(false);
+        return original.call(this, request);
+    });
+    try { await setup().client.read(input); expect(requestSpy).toHaveBeenCalledTimes(1); }
+    finally { requestSpy.mockRestore(); }
+});

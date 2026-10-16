@@ -8,7 +8,7 @@ type Args = {
 };
 export function fixture() {
     const date = new Date("2026-10-16T12:00:00Z");
-    const state = { account: null as AzureAccountRow | null, credential: null as AzureCredentialRow | null, extraAccounts: 0, membership: { acceptedAt: date as Date | null, role: "owner" }, device: { id: "device", ...principal, expiresAt: new Date(date.getTime() + 60000), revokedAt: null as Date | null }, billing: null as null | {
+    const state = { account: null as AzureAccountRow | null, credential: null as AzureCredentialRow | null, extraAccounts: 0, membership: { acceptedAt: date as Date | null, role: "owner" }, device: { id: "device", ...principal, expiresAt: new Date("2099-01-01T00:00:00Z"), revokedAt: null as Date | null }, billing: null as null | {
             organizationId: string;
             tier: string;
             status: string;
@@ -33,7 +33,7 @@ export function fixture() {
         cloudAccountCredential: {
             findUnique: vi.fn(async ({ where }: Args) => matches(state.credential, where) ? structuredClone(state.credential) : null),
             findMany: vi.fn(async () => state.credential ? [structuredClone(state.credential)] : []),
-            create: vi.fn(async ({ data }: Args) => { state.credential = data as AzureCredentialRow; return structuredClone(state.credential); }),
+            create: vi.fn(async ({ data }: { data: AzureCredentialRow }) => { state.credential = structuredClone(data); return structuredClone(state.credential); }),
             updateMany: vi.fn(async ({ where, data }: Args) => { if (!matches(state.credential, where))
                 return { count: 0 }; update(state.credential, data); return { count: 1 }; }),
         },

@@ -1,9 +1,28 @@
 import "server-only";
 import { ClientSecretCredential } from "@azure/identity";
 import { ResourceManagementClient } from "@azure/arm-resources";
-import { createHttpHeaders, createPipelineRequest } from "@azure/core-rest-pipeline";
+import { createHttpHeaders, createPipelineRequest, logPolicyName, type Pipeline } from "@azure/core-rest-pipeline";
+import type { Debugger } from "@azure/logger";
 import { AzureEnrollmentError, isAzureUuid, type AzureCredentialInput, type AzureInventoryPage, type AzureResourceGroup } from "./policy";
 import { createBoundedAzureHttpClient, type AzureRawSend } from "./boundedHttp";
+/** Per-client closed sink, including SDK Debugger children; never touches global Azure logging. */
+export function createSilentAzureLogger(namespace = "axiom:azure-enrollment"): Debugger {
+    const discard = (..._args: unknown[]): void => {};
+    return Object.assign(discard, {
+        enabled: false,
+        destroy: () => false,
+        log: discard,
+        namespace,
+        extend: (child: string) => createSilentAzureLogger(`${namespace}:${child}`),
+    });
+}
+/** Installed ARM SDK exposes pipeline mutation, not loggingOptions. Remove only this client's HTTP logger. */
+export function removeAzureHttpLogPolicy(pipeline: Pipeline): void {
+    pipeline.removePolicy({ name: logPolicyName });
+    if (pipeline.getOrderedPolicies().some(policy => policy.name === logPolicyName)) {
+        throw new AzureEnrollmentError("azure_inventory_unavailable");
+    }
+}
 /** Test transport dependency is never derived from a request or environment. */
 export function createAzureProviderClient(deps: {
     send?: AzureRawSend;
@@ -11,7 +30,7 @@ export function createAzureProviderClient(deps: {
     async function session(input: AzureCredentialInput, operation: "validate" | "inventory") {
         const signal = AbortSignal.timeout(15000);
         const httpClient = createBoundedAzureHttpClient({ ...input, operation, signal, send: deps.send });
-        const credential = new ClientSecretCredential(input.tenantId, input.clientId, input.clientSecret, { authorityHost: "https://login.microsoftonline.com", disableInstanceDiscovery: true, httpClient, retryOptions: { maxRetries: 0 }, redirectOptions: { maxRetries: 0 }, loggingOptions: { logger: () => { }, allowLoggingAccountIdentifiers: false, enableUnsafeSupportLogging: false } });
+        const credential = new ClientSecretCredential(input.tenantId, input.clientId, input.clientSecret, { authorityHost: "https://login.microsoftonline.com", disableInstanceDiscovery: true, httpClient, retryOptions: { maxRetries: 0 }, redirectOptions: { maxRetries: 0 }, loggingOptions: { logger: createSilentAzureLogger(), allowLoggingAccountIdentifiers: false, enableUnsafeSupportLogging: false } });
         const token = await credential.getToken("https://management.azure.com/.default", { abortSignal: signal });
         if (!token || !token.token || token.expiresOnTimestamp <= Date.now())
             throw new Error("azure_token_unavailable");
@@ -40,7 +59,8 @@ export function createAzureProviderClient(deps: {
         try {
             const { httpClient, signal, token } = await session(input, "inventory");
             // Reuse only this operation's internally acquired token. No SDK reauthentication or token API.
-            const resourceClient = new ResourceManagementClient({ getToken: async () => token }, input.subscriptionId, { endpoint: "https://management.azure.com", apiVersion: "2025-04-01", httpClient, retryOptions: { maxRetries: 0 }, redirectOptions: { maxRetries: 0 }, loggingOptions: { logger: () => { } } });
+            const resourceClient = new ResourceManagementClient({ getToken: async () => token }, input.subscriptionId, { endpoint: "https://management.azure.com", apiVersion: "2025-04-01", httpClient, retryOptions: { maxRetries: 0 }, redirectOptions: { maxRetries: 0 } });
+            removeAzureHttpLogPolicy(resourceClient.pipeline);
             const first = await resourceClient.resourceGroups.list({ top: 100, abortSignal: signal }).byPage().next();
             if (first.done || !Array.isArray(first.value))
                 throw new Error("azure_page_invalid");
