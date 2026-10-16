@@ -51,7 +51,25 @@ suite("owned PG17 new TEST subscription service, synthetic provider only", () =>
     for (const statement of sql) await db.$executeRawUnsafe(statement);
     await db.$executeRawUnsafe('CREATE UNIQUE INDEX intent_client_key ON "RecurringSubscriptionIntent" (org,(body->>\'clientIntentKey\'))');
     await db.$executeRawUnsafe(`CREATE FUNCTION freeze_test_intent() RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN
-      IF (OLD.body - ARRAY['state','sessionId','customerId','subscriptionId','revision']) IS DISTINCT FROM (NEW.body - ARRAY['state','sessionId','customerId','subscriptionId','revision']) THEN RAISE EXCEPTION 'immutable_intent'; END IF;
+      IF OLD.id IS DISTINCT FROM NEW.id OR OLD.org IS DISTINCT FROM NEW.org THEN RAISE EXCEPTION 'immutable_intent_identity'; END IF;
+      IF (OLD.body - ARRAY['state','sessionId','customerId','subscriptionId','revision','originalCreateProof']) IS DISTINCT FROM (NEW.body - ARRAY['state','sessionId','customerId','subscriptionId','revision','originalCreateProof']) THEN RAISE EXCEPTION 'immutable_intent'; END IF;
+      IF OLD.body ? 'originalCreateProof' THEN
+        IF OLD.body->'originalCreateProof' IS DISTINCT FROM NEW.body->'originalCreateProof' THEN RAISE EXCEPTION 'original_proof_immutable'; END IF;
+      ELSIF NEW.body ? 'originalCreateProof' THEN
+        IF OLD.body->>'state' <> 'attempted' OR NEW.body->>'state' <> 'session_confirmed' OR OLD.body->>'sessionId' IS NOT NULL
+          OR jsonb_typeof(NEW.body->'originalCreateProof') <> 'object'
+          OR NEW.body->>'sessionId' IS NULL OR NEW.body->'originalCreateProof'->>'sessionId' IS DISTINCT FROM NEW.body->>'sessionId'
+          OR NEW.body->'originalCreateProof'->>'runtimeId' IS DISTINCT FROM OLD.body->>'runtimeId'
+          OR NEW.body->'originalCreateProof'->>'accountId' IS DISTINCT FROM OLD.body->>'accountId'
+          OR NEW.body->'originalCreateProof'->>'outboundRequestKey' IS DISTINCT FROM OLD.body->>'providerIdempotencyKey'
+          OR NEW.body->'originalCreateProof'->>'outboundRequestDigest' IS DISTINCT FROM OLD.body->>'requestDigest'
+          OR jsonb_typeof(NEW.body->'originalCreateProof'->'requestId') IS DISTINCT FROM 'string'
+          OR COALESCE(NEW.body->'originalCreateProof'->>'requestId','') = ''
+          OR (NEW.body->'originalCreateProof' ? 'observedIdempotencyKey' AND NEW.body->'originalCreateProof'->>'observedIdempotencyKey' IS DISTINCT FROM OLD.body->>'providerIdempotencyKey')
+          OR (NEW.body->'originalCreateProof' ? 'observedAccountId' AND NEW.body->'originalCreateProof'->>'observedAccountId' IS DISTINCT FROM OLD.body->>'accountId')
+          OR COALESCE((NEW.body->'originalCreateProof'->>'statusCode')::int,0) NOT BETWEEN 200 AND 299
+          THEN RAISE EXCEPTION 'original_proof_capture_invalid'; END IF;
+      END IF;
       IF ((OLD.body->>'revision')::int + 1) <> (NEW.body->>'revision')::int THEN RAISE EXCEPTION 'revision_changed'; END IF;
       IF OLD.body->>'sessionId' IS NOT NULL AND OLD.body->>'sessionId' IS DISTINCT FROM NEW.body->>'sessionId' THEN RAISE EXCEPTION 'session_changed'; END IF;
       IF OLD.body->>'subscriptionId' IS NOT NULL AND OLD.body->>'subscriptionId' IS DISTINCT FROM NEW.body->>'subscriptionId' THEN RAISE EXCEPTION 'subscription_changed'; END IF;
@@ -146,6 +164,22 @@ suite("owned PG17 new TEST subscription service, synthetic provider only", () =>
     expect(results.filter(result => result.status === "rejected")).toHaveLength(1);
     expect(await db.$queryRawUnsafe('SELECT count(*)::int AS count FROM "RecurringSubscriptionPurchaseFence" WHERE org=$1', racing.organizationId)).toEqual([{ count: 1 }]);
     expect(await db.$queryRawUnsafe('SELECT count(*)::int AS count FROM "RecurringSubscriptionIntent" WHERE org=$1', racing.organizationId)).toEqual([{ count: 1 }]);
+  });
+  it("original response proof captures once in real intent CAS and cannot be rewritten", async () => {
+    const actor = { userId: "owner", organizationId: "original-proof-org" };
+    for (const userId of ["owner", "proof-member-2", "proof-member-3"]) await db.orgMembership.create({ data: { userId, organizationId: actor.organizationId, role: userId === "owner" ? "owner" : "read_only", acceptedAt: new Date(now) } });
+    loseResponse = false; providerAccount = "acct-test";
+    const boundary: ProviderBoundary = { ...provider, create: async (body, key) => ({ ...await provider.create(body, key), originalCreateProof: {
+      runtimeId: runtime, accountId: "acct-test", sessionId: "cs-test", outboundRequestKey: key, outboundRequestDigest: createHash("sha256").update(body).digest("hex"), requestId: "req-synthetic-original", statusCode: 200,
+    } }) };
+    const service = core(boundary); const i = await service.prepare(actor, { ...request, clientIntentKey: "original_proof_key_123" });
+    expect(await service.attempt(actor, i.id)).toMatchObject({ kind: "checkout_ready" });
+    const rows = await db.$queryRawUnsafe<Array<{ body: import("../newTestSubscription/service").Intent }>>('SELECT body FROM "RecurringSubscriptionIntent" WHERE id=$1', i.id);
+    expect(rows[0].body).toMatchObject({ state: "session_confirmed", originalCreateProof: { requestId: "req-synthetic-original", outboundRequestDigest: i.requestDigest } });
+    const rewritten = { ...rows[0].body, revision: rows[0].body.revision + 1, originalCreateProof: { ...rows[0].body.originalCreateProof!, requestId: "req-rewrite" } };
+    await expect(db.$executeRawUnsafe('UPDATE "RecurringSubscriptionIntent" SET body=$1::jsonb WHERE id=$2', JSON.stringify(rewritten), i.id)).rejects.toThrow();
+    const after = await db.$queryRawUnsafe<Array<{ body: typeof i }>>('SELECT body FROM "RecurringSubscriptionIntent" WHERE id=$1', i.id);
+    expect(after[0].body).toEqual(rows[0].body);
   });
   it("missing new provenance fails closed only for explicit lane; legacy reservation remains independent", async () => {
     await db.orgMembership.updateMany({ where: { organizationId: scope.organizationId, userId: scope.userId }, data: { role: "owner" } });

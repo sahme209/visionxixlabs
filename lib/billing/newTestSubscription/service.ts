@@ -1,7 +1,8 @@
 import { PUBLIC_PLAN_CATALOG } from "../publicPlanCatalog";
 import { matchNewTestTerms, NEW_TEST_CATALOG_VERSION, decideRecurringIntentRecovery, type FrozenRecurringIntent, type NewTestTerms } from "../newTestSubscriptionContract";
 export type Scope = { organizationId: string; userId: string };
-export type Intent = FrozenRecurringIntent & { livemode: false; id: string; terms: NewTestTerms; email: string; runtimeId: string; accountId: string; sessionId: string | null; customerId: string | null; subscriptionId: string | null; revision: number };
+export type OriginalCreateProof = { runtimeId: string; accountId: string; sessionId: string; outboundRequestKey: string; outboundRequestDigest: string; requestId: string; statusCode: number; observedIdempotencyKey?: string; observedAccountId?: string; apiVersion?: string };
+export type Intent = FrozenRecurringIntent & { originalCreateProof?: OriginalCreateProof; livemode: false; id: string; terms: NewTestTerms; email: string; runtimeId: string; accountId: string; sessionId: string | null; customerId: string | null; subscriptionId: string | null; revision: number };
 export type Contract = { livemode: false; planId: "pro" | "enterprise"; organizationId: string; originatingIntentId: string; catalogVersion: string; runtimeId: string; accountId: string; sessionId: string; customerId: string; subscriptionId: string; eventToken: string; status: string; seatQuantity: number };
 export interface Transaction {
   eligible(scope: Scope): Promise<boolean>;
@@ -21,7 +22,7 @@ export interface ProviderBoundary {
   /** Constructed only by isolated trusted IO, never from caller metadata. */
   mode(): { livemode: false; accountId: string };
   price(planId: "pro" | "enterprise", interval: "monthly" | "annual"): Promise<Parameters<typeof matchNewTestTerms>[0]["price"]>;
-  create(request: string, key: string): Promise<{ id: string; url: string; accountId: string; livemode: boolean }>;
+  create(request: string, key: string, scope?: Scope): Promise<{ id: string; url: string; accountId: string; livemode: boolean; originalCreateProof?: OriginalCreateProof }>;
   verifyAndRetrieve(rawBody: string, signature: string): Promise<{
     providerRequestKey: string; providerRequestDigest: string; eventId: string; accountId: string; livemode: boolean; organizationId: string; intentId: string;
     catalogVersion: string; sessionId: string; sessionStatus: string; paymentStatus: string;
@@ -88,13 +89,32 @@ export function createNewTestSubscriptionService(options: {
         return intent;
       });
       try {
-        const session = await provider.create(claimed.canonicalRequest!, claimed.providerIdempotencyKey);
+        const session = await provider.create(claimed.canonicalRequest!, claimed.providerIdempotencyKey, scope);
         if (mode().accountId !== claimed.accountId || session.accountId !== claimed.accountId || session.livemode !== false) deny("test_runtime_changed");
+        const proof = session.originalCreateProof;
+        if (proof && (proof.runtimeId !== claimed.runtimeId || proof.accountId !== claimed.accountId || proof.sessionId !== session.id
+          || proof.outboundRequestKey !== claimed.providerIdempotencyKey || proof.outboundRequestDigest !== claimed.requestDigest
+          || (typeof proof.requestId !== "string" || !proof.requestId.trim()) || !Number.isInteger(proof.statusCode) || proof.statusCode < 200 || proof.statusCode >= 300
+          || (proof.observedIdempotencyKey !== undefined && proof.observedIdempotencyKey !== claimed.providerIdempotencyKey)
+          || (proof.observedAccountId !== undefined && proof.observedAccountId !== claimed.accountId))) deny("original_create_proof_mismatch");
         if (!session.id || !session.url.startsWith("https://checkout.stripe.com/")) deny("provider_response_invalid");
         await store.transaction(async tx => {
           const current = await tx.intent(claimed.id);
-          if (!current || current.state !== "attempted" || current.revision !== claimed.revision + 1) deny("attempt_state_changed");
-          await tx.saveIntent({ ...current, sessionId: session.id, state: "session_confirmed", revision: current.revision + 1 }, current.revision);
+          if (!current || current.state !== "attempted" || current.revision !== claimed.revision + 1 || current.runtimeId !== claimed.runtimeId || current.accountId !== claimed.accountId || current.organizationId !== claimed.organizationId || current.canonicalRequest !== claimed.canonicalRequest || current.requestDigest !== claimed.requestDigest || current.providerIdempotencyKey !== claimed.providerIdempotencyKey || current.sessionId !== null) deny("attempt_state_changed");
+          await tx.saveIntent({ ...current, ...(proof ? { originalCreateProof: proof } : {}), sessionId: session.id, state: "session_confirmed", revision: current.revision + 1 }, current.revision);
+        });
+        // Receipt is durable even when local authority changed during IO.
+        await store.transaction(async tx => {
+          await manager(tx, scope);
+          if (await tx.acceptedSeats(scope.organizationId) !== claimed.terms.seatQuantity) deny("seat_snapshot_changed");
+          const current = await tx.intent(claimed.id);
+          if (!current || current.sessionId !== session.id || current.organizationId !== scope.organizationId || current.requestDigest !== claimed.requestDigest || current.accountId !== claimed.accountId || current.runtimeId !== claimed.runtimeId || !["session_confirmed", "bound"].includes(current.state)) deny("attempt_state_changed");
+          const contract = await tx.contract(scope.organizationId);
+          const ownBound = current.state === "bound" && contract && contract.originatingIntentId === current.id
+            && contract.organizationId === current.organizationId && contract.runtimeId === current.runtimeId && contract.accountId === current.accountId
+            && contract.catalogVersion === current.terms.catalogVersion && contract.planId === current.terms.planId && contract.livemode === false
+            && contract.sessionId === current.sessionId && contract.customerId === current.customerId && contract.subscriptionId === current.subscriptionId;
+          if ((contract && !ownBound) || (await tx.legacyBinding(scope.organizationId) && !ownBound)) deny("existing_customer_unchanged");
         });
         return { kind: "checkout_ready" as const, url: session.url };
       } catch {
