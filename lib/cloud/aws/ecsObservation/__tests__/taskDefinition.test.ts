@@ -29,7 +29,7 @@ it('rejects inherited-looking unknown field names and binds own prototype-named 
 });
 it('pins every recursively reachable registration field to the installed SDK declaration snapshot', async () => {
     const { execFileSync } = await import('node:child_process');
-    expect(execFileSync(process.execPath, ['scripts/fixtures/generateEcsTaskSchema.cjs', '--check'], { encoding: 'utf8' }).trim()).toBe('57');
+    expect(execFileSync(process.execPath, ['scripts/fixtures/generateEcsTaskSchema.mjs', '--check'], { encoding: 'utf8' }).trim()).toBe('57');
 });
 it.each([Infinity, 9007199254740992, 1.5, 0, -1])('rejects unsafe revision identity %s', revision => { expect(() => projectTaskDefinition({ ...task(), revision, taskDefinitionArn: arn.replace(/:1$/, ':' + revision) })).toThrow(); });
 it('binds every optional top-level registration field and the complete nested model projection', async () => {
