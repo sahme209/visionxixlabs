@@ -1,0 +1,76 @@
+{
+  "observedAtUTC": "2026-10-16T11:05:11Z",
+  "readOnly": true,
+  "scope": "Three control-plane metadata reads and source review; no production SQL or secret-value lookup",
+  "sourceMain": "2682ba732ab1bd262dcaa378e3a6e3119d245229",
+  "servingDeployment": {
+    "domain": "visionxixlabs.com",
+    "reference": "dpl_6cv75StHTFg1enN1xPYRuLEcXzoX",
+    "state": "READY",
+    "target": "production",
+    "branch": "main",
+    "commit": "fef79a0eed15c8251dd46560e2e42f140b8c7177",
+    "createdAtUTC": "2026-10-15T23:54:19.624Z",
+    "readyAtUTC": "2026-10-15T23:57:25.101Z",
+    "aliasUpdatedAtUTC": "2026-10-16T00:03:06.398Z",
+    "effectiveDatabaseBinding": "not_verified",
+    "limits": "Alias/deployment metadata exposes no datasource mapping; READY is not authentication acceptance or proof current main is serving"
+  },
+  "candidateBranchMetadata": {
+    "currentState": "ready",
+    "primary": true,
+    "default": true,
+    "protected": false,
+    "integrationRestrictions": [
+      "branch_deletion",
+      "read_write_compute_deletion",
+      "read_write_compute_movement_via_api"
+    ],
+    "recoverableRangeFieldsReturned": false,
+    "limits": "Integration restrictions do not establish branch protection or backup/restore readiness; no settings changed"
+  },
+  "bindingComparison": "not_verified",
+  "backupStatus": "usable_point_unverified",
+  "restoreStatus": "not_performed",
+  "historicalEvidence": {
+    "neonInspection": "docs/mission/neon-readiness-inspection.json",
+    "protectedPreflight": "docs/mission/auth-preflight-run-3.json",
+    "retentionCapacityAndSnapshotInventoryRequeried": false,
+    "founderMapping": "Passed in protected preflight #3; not repeated; not ownership, login, admin, entitlement or pairing acceptance"
+  },
+  "sourceDerivedPendingExpectation": {
+    "condition": "Previously inspected production migration baseline remains unchanged; this is not a new production schema observation",
+    "historicalOriginalBeforeAuthOnly": 7,
+    "historicalOriginalAfterAuthOnly": 6,
+    "currentBeforeAuthOnly": 10,
+    "currentAfterAuthOnly": 9,
+    "currentBeforeNames": [
+      "20261013172000_add_workspace_agent_identity",
+      "20261013193000_add_durable_agent_workflow",
+      "20261013220000_add_founding_supporters",
+      "20261014090000_add_ai_usage_stripe_settlement",
+      "20261014120000_add_email_verification",
+      "20261014190000_verified_ai_credit_fulfillment",
+      "20261014210000_ai_usage_reservations",
+      "20261016010000_cloud_account_enrollment",
+      "20261016020000_cloud_account_credential_revocation",
+      "20261016030000_ecs_release_review_core"
+    ],
+    "onlyMigrationRemovedAfterApprovedAuthOnlyRepair": "20261014120000_add_email_verification",
+    "newerProposalsIncludedInAuthOnlyRepair": false,
+    "requiredComparison": "Exact pending names from the pinned checkout; diagnostic exit 2 remains expected"
+  },
+  "actionsCapability": {
+    "dispatchToolExposed": false,
+    "previousCliDenial": "Forbidden; historical, not repeated",
+    "dispatchAttempted": false,
+    "protectedEnvironmentReviewersVerified": false
+  },
+  "productionSqlPerformed": false,
+  "credentialsRetrieved": false,
+  "settingsChanged": false,
+  "deploymentOrRoutingChanged": false,
+  "resourcesCreatedOrDeleted": false,
+  "productionExecutionApproval": "not_requested",
+  "operatorProcedure": "docs/AUTH_RECOVERY_OPERATOR_EVIDENCE.md"
+}

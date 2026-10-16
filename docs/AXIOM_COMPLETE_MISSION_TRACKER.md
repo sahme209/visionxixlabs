@@ -7,6 +7,47 @@ customer commitments, financial/production approvals and final acceptance.
 The current workstream matrix and latest checkpoints supersede earlier historical
 checkpoint status; previous observations are retained as evidence history.
 
+## Current execution checkpoint — October 16, 2026
+
+Main `2682ba732ab1bd262dcaa378e3a6e3119d245229` includes PRs #157–160.
+PR #160 passed both exact-head GitHub test runs and native checks: 6,629 web
+checks across 622 files, 293 built pages, ten native tests and Clippy. These
+are source-validation results, not live customer acceptance or a release.
+
+The latest complete-project execution order is retained verbatim in
+`AXIOM_COMPLETE_PROJECT_EXECUTION_ORDER.md`. Its 85 units extend the canonical
+register to **1,830 rows across 16 unique available sources**; earlier units
+were preserved. Every responsibility in the available Codex and former Claude
+sources is mapped. The unavailable older 36-section source and scenarios A–L
+remain explicitly missing; source coverage does not close their acceptance gap.
+
+Parallel source packages remain active: governed ECS target snapshots and final
+transaction fences; isolated TEST billing lifecycle; desktop Agent model recovery;
+Azure enrollment/inventory; inactive Terraform saved-plan review; authentication
+recovery evidence. Details and independent review gates are recorded in
+`mission/execution-2026-10-16.md`. No major visual redesign is underway.
+
+The target-snapshot package passed independent specification/security review,
+317 focused tests and 15 demo checks, owned PostgreSQL Serializable drift/replay
+acceptance, and web/desktop compiler checks. Integration-wide tests and exact-head
+CI remain required before its source merge. It does not activate execution.
+Desktop model recovery passed independent review and 30 owned HTTP check groups;
+its native/browser/provider journey remains separate. Billing review found that
+seat changes could enlarge allowance before collection; the isolated TEST fix
+rejects quantity changes and is awaiting its final independent review and renewed
+owned application acceptance. Hosted Stripe payment proof remains unavailable.
+
+Latest read-only serving metadata identifies deployment
+`dpl_6cv75StHTFg1enN1xPYRuLEcXzoX`, commit
+`fef79a0eed15c8251dd46560e2e42f140b8c7177`, rather than current main.
+Effective deployment/preflight/Neon binding, a usable recovery timestamp and a
+verified isolated restore remain **unverified**. Current source migration counts
+are conditionally ten before/nine after auth-only repair; historical seven/six
+counts below describe earlier source, not a fresh database query. See
+`AUTH_RECOVERY_OPERATOR_EVIDENCE.md` and
+`mission/auth-readiness-follow-up-2026-10-16.json` for exact evidence limits and
+the private operator attestation procedure. No production action is authorized.
+
 ## Current authentication checkpoint — preflight #3 and access readiness
 
 Protected read-only preflight #3 identifies a configured Neon endpoint. Founder
@@ -52,8 +93,8 @@ not substituted for missing source. Recovering that text is a source blocker,
 not a reason to stop independent engineering.
 
 The [editable register](mission/requirements.json) and
-[complete row table](AXIOM_MISSION_REQUIREMENTS.md) contain **1,745 source units
-and placeholders across 15 available sources**. Each has a status, source
+[complete row table](AXIOM_MISSION_REQUIREMENTS.md) contain **1,830 source units
+and placeholders across 16 available sources**. Each has a status, source
 location, domain, scope, evidence, verification limit, owner and next action.
 The register includes process controls and historical proposals as well as
 product requirements. Related source files are **not** acceptance proof.
