@@ -46494,14 +46494,15 @@
       "engineeringActivity": "active",
       "owner": "Codex integrated parallel workstreams",
       "activeMilestone": "Validate candidate-only immutable native release guards; retain separate actual OS, publication and production release approval gates.",
-      "verification": "Native source guards default to candidate-only, bind hashes/source/run, reject overwrite and unknown API outcomes, verify intended signatures/remote digests, and keep installer trust false without packaged verification. Independent source review and 326 related regressions passed; real installer/customer acceptance and reviewer configuration remain unverified. PR #143 merged after exact-head 5,972-test web CI and native tests/Clippy passed; no release dispatch/publication.",
+      "verification": "Native source guards default to candidate-only, bind hashes/source/run, reject overwrite and unknown API outcomes, verify intended signatures/remote digests, and keep installer trust false without packaged verification. Independent source review and 326 related regressions passed; real installer/customer acceptance and reviewer configuration remain unverified. PR #143 merged after exact-head 5,972-test web CI and native tests/Clippy passed; no release dispatch/publication. Owner instruction October 16 requires one final Vercel production deployment only, after all intended website source and required security/billing/authentication/database-recovery/CI gates pass; no intermediate deployments are authorized.",
       "evidence": [
         "docs/CRITICAL_RECOVERY_AND_CUSTOMER_ACCEPTANCE.md",
         "docs/mission/neon-readiness-inspection.json",
         "docs/mission/vercel-release-inspection.json",
         "desktop/release-notes.md",
         "lib/desktop/__tests__/nativeReleaseCandidateGuards.test.ts",
-        "docs/mission/native-published-release-inspection.json"
+        "docs/mission/native-published-release-inspection.json",
+        "docs/FINAL_VERCEL_RELEASE_GATE.md"
       ],
       "customerAcceptance": "Not verified",
       "acceptanceDependencies": [
@@ -46510,7 +46511,7 @@
         "website"
       ],
       "blockers": "Explicit custom-domain release approval, effective runtime binding and actual authentication/customer/native acceptance remain outstanding. Observed source integration builds later main revisions without replacing the manually pinned domain; future policy is not guaranteed.",
-      "nextAction": "Review promotion settings and prepare an exact release approval with rollback evidence."
+      "nextAction": "Continue verified source integration without Vercel deployments. Prepare one exact-commit final release report with included features, blockers and compatible rollback plan; wait for explicit final owner approval. Desktop, migrations and production payments retain separate gates."
     },
     {
       "id": "vercel_cost",
@@ -46519,16 +46520,17 @@
       "engineeringActivity": "active",
       "owner": "Codex integrated parallel workstreams",
       "activeMilestone": "Secondary: retain repository-only suppression; no ongoing provider-setting investigation.",
-      "verification": "PR #145 merged after exact-head CI including production build. No Vercel calls in Actions; owner confirms no hooks. Two main merge revisions and the PR head returned zero deployments; domain remains #143. Old refs, external callers and actual manual runtime acceptance are not verified. Owner chose repository control only; ignored-build fallback remains unused. Core engineering resumed.",
+      "verification": "PR #145 merged after exact-head CI including production build. No Vercel calls in Actions; owner confirms no hooks. Two main merge revisions and the PR head returned zero deployments; domain remains #143. Old refs, external callers and actual manual runtime acceptance are not verified. Owner chose repository control only; ignored-build fallback remains unused. Core engineering resumed. Owner instruction October 16 requires one final Vercel production deployment only, after all intended website source and required security/billing/authentication/database-recovery/CI gates pass; no intermediate deployments are authorized.",
       "evidence": [
         "docs/VERCEL_MANUAL_DEPLOYMENT_PLAN.md",
         "docs/VERCEL_IGNORED_BUILD_APPROVAL.md",
-        "docs/mission/vercel-manual-trigger-audit.json"
+        "docs/mission/vercel-manual-trigger-audit.json",
+        "docs/FINAL_VERCEL_RELEASE_GATE.md"
       ],
       "customerAcceptance": "Not verified",
       "acceptanceDependencies": [],
       "blockers": "Exact configuration plan requires owner approval before implementation; manual deployment runtime/protection readiness remains to be verified.",
-      "nextAction": "Keep repository control intact during normal verified source integration; no Vercel deployment/settings action without approval."
+      "nextAction": "Continue verified source integration without Vercel deployments. Prepare one exact-commit final release report with included features, blockers and compatible rollback plan; wait for explicit final owner approval. Desktop, migrations and production payments retain separate gates."
     },
     {
       "id": "support_partnerships",

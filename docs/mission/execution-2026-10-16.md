@@ -221,3 +221,10 @@ An unavailable local Chromium launch is not a successful browser journey.
 - Billing remains unmerged: one bundled correction addresses negative replay deprivileging, identified non-customer-balance charge sources and owned hard-abort transport deadlines. Scoped independent re-review precedes application acceptance.
 - The next Agent journey is authorized only for owned synthetic model transport feasibility. No actual model/provider request or production enablement is authorized.
 - Support/strategic-partnerships remains deferred under the verbatim directive and dedicated plan, with no payment, page, outreach or production changes.
+
+### Owner final-release policy
+
+One final Vercel production deployment only; no per-PR, merge or intermediate
+release. `docs/FINAL_VERCEL_RELEASE_GATE.md` records the exact-commit report,
+required acceptance and rollback evidence, explicit final approval and separate
+native/database/payment gates. No deployment or Vercel setting was changed.
