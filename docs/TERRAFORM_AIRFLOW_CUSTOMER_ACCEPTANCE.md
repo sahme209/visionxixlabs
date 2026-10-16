@@ -16,7 +16,7 @@ There is no active customer plan producer, current backend/target attestation,
 approval binding, collector/upload endpoint, signing or apply action. Approval
 is explicitly unavailable. Existing ECS review machinery and all legacy apply
 kill switches are unchanged. See [implementation plan](TERRAFORM_SAVED_PLAN_REVIEW_PLAN.md).
-Owned acceptance evidence is recorded separately and cannot establish cloud
+[Owned acceptance evidence](mission/local-terraform-saved-plan-http-acceptance.json) at `62e47d94` records genuine CLI, PostgreSQL and paired HTTP checks with verified cleanup. It cannot establish cloud
 backend locking, provider credentials, apply/recovery or packaged native behavior.
 
 Reviewed 2026-10-15. This is implementation evidence, not evidence of a completed provider-backed customer journey.
