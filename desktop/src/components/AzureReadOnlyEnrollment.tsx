@@ -1,7 +1,48 @@
-import { useCallback, useEffect, useRef, useState } from "react";
-import { desktopClient, type VerifiedDesktopIdentity } from "../lib/desktopClient";
+import { useEffect, useRef, useState, type Dispatch, type SetStateAction } from "react";
+import { desktopClient, type DesktopClientConfig, type VerifiedDesktopIdentity } from "../lib/desktopClient";
 import { azureEnrollmentClient } from "../lib/azureEnrollmentClient";
 import type { DesktopAzureAccount, DesktopAzureInventory } from "../lib/azureEnrollmentContract";
+interface AzureRequestOwner {
+    mounted: boolean;
+    catalog: number;
+    mutation: number;
+    authoritative: DesktopAzureAccount[];
+    pending: Map<string, number>;
+    inventoryRequests: Map<string, number>;
+}
+interface AzureCatalogUpdates {
+    setAccounts: Dispatch<SetStateAction<DesktopAzureAccount[]>>;
+    setSuspended: Dispatch<SetStateAction<string[]>>;
+    setInventories: Dispatch<SetStateAction<Record<string, DesktopAzureInventory>>>;
+    setError: Dispatch<SetStateAction<string | null>>;
+}
+function requestAzureCatalog(context: DesktopClientConfig, owner: AzureRequestOwner, updates: AzureCatalogUpdates): Promise<void> {
+    const request = ++owner.catalog;
+    const pendingAtStart = new Set(owner.pending.keys());
+    return azureEnrollmentClient.list().then(result => {
+        if (!owner.mounted || desktopClient.config !== context || owner.catalog !== request)
+            return;
+        if (!result.ok) {
+            updates.setError(result.error);
+            return;
+        }
+        const before = owner.authoritative;
+        // A refresh can predate an unsettled POST; it cannot undo its suspension or newer revision.
+        const blocked = new Set([...pendingAtStart, ...owner.pending.keys()]);
+        const merged = result.data.accounts.map(account => {
+            const old = before.find(row => row.id === account.id);
+            return old && old.connectionVersion > account.connectionVersion ? old : account;
+        });
+        for (const old of before)
+            if (blocked.has(old.id) && !merged.some(row => row.id === old.id))
+                merged.push(old);
+        owner.authoritative = merged;
+        updates.setAccounts(merged);
+        updates.setSuspended(previous => previous.filter(id => blocked.has(id)));
+        updates.setInventories(previous => Object.fromEntries(Object.entries(previous).filter(([id, page]) => merged.some(account => account.id === id && account.connected && account.connectionVersion === page.connectionVersion && !blocked.has(id)))));
+        updates.setError(null);
+    });
+}
 /** Credentials exist transiently in this form/request; only the backend vault persists them. */
 export function AzureReadOnlyEnrollment({ identity }: {
     identity: VerifiedDesktopIdentity;
@@ -31,60 +72,41 @@ function AzureEnrollmentWorkspace({ identity }: {
     const [busy, setBusy] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [notice, setNotice] = useState<string | null>(null);
-    const mounted = useRef(false);
-    const catalog = useRef(0);
-    const mutation = useRef(0);
-    const authoritative = useRef<DesktopAzureAccount[]>([]);
-    const pending = useRef(new Map<string, number>());
-    const inventoryRequests = useRef(new Map<string, number>());
-    const current = () => mounted.current && desktopClient.config === context;
-    const refresh = useCallback(async () => {
-        if (!canRead)
-            return;
-        const request = ++catalog.current;
-        const pendingAtStart = new Set(pending.current.keys());
-        const result = await azureEnrollmentClient.list();
-        if (!mounted.current || desktopClient.config !== context || catalog.current !== request)
-            return;
-        if (!result.ok) {
-            setError(result.error);
-            return;
-        }
-        const next = result.data.accounts;
-        const before = authoritative.current;
-        // A refresh can predate an unsettled POST; it cannot undo its suspension or newer revision.
-        const blocked = new Set([...pendingAtStart, ...pending.current.keys()]);
-        const merged = next.map(account => {
-            const old = before.find(row => row.id === account.id);
-            return old && old.connectionVersion > account.connectionVersion ? old : account;
-        });
-        for (const old of before)
-            if (blocked.has(old.id) && !merged.some(row => row.id === old.id))
-                merged.push(old);
-        authoritative.current = merged;
-        setAccounts(merged);
-        setSuspended(previous => previous.filter(id => blocked.has(id)));
-        setInventories(previous => Object.fromEntries(Object.entries(previous).filter(([id, page]) => merged.some(account => account.id === id && account.connected && account.connectionVersion === page.connectionVersion && !blocked.has(id)))));
-        setError(null);
-    }, [canRead, context]);
+    const owner = useRef<AzureRequestOwner>({
+        mounted: false, catalog: 0, mutation: 0, authoritative: [],
+        pending: new Map(), inventoryRequests: new Map(),
+    });
+    const current = () => owner.current.mounted && desktopClient.config === context;
+    function refresh() {
+        if (canRead)
+            return requestAzureCatalog(context, owner.current, { setAccounts, setSuspended, setInventories, setError });
+    }
     useEffect(() => {
-        mounted.current = true;
-        void refresh();
-        return () => { mounted.current = false; catalog.current++; mutation.current++; pending.current.clear(); inventoryRequests.current.clear(); };
-    }, [refresh]);
+        const requests = owner.current;
+        requests.mounted = true;
+        if (canRead)
+            void requestAzureCatalog(context, requests, { setAccounts, setSuspended, setInventories, setError });
+        return () => {
+            requests.mounted = false;
+            requests.catalog++;
+            requests.mutation++;
+            requests.pending.clear();
+            requests.inventoryRequests.clear();
+        };
+    }, [canRead, context]);
     async function enroll() {
         if (!canManage || busy)
             return;
         const normalized = subscriptionId.trim().toLowerCase();
-        const old = authoritative.current.find(account => account.subscriptionId === normalized);
+        const old = owner.current.authoritative.find(account => account.subscriptionId === normalized);
         const submitted = { tenantId, subscriptionId, clientId, clientSecret: secret, expectedVersion: old?.connectionVersion ?? null };
         setSecret("");
         setError(null);
         setNotice(null);
         setBusy(true);
-        const request = ++mutation.current;
+        const request = ++owner.current.mutation;
         const result = await azureEnrollmentClient.enroll(submitted);
-        if (!current() || mutation.current !== request)
+        if (!current() || owner.current.mutation !== request)
             return;
         setBusy(false);
         if (!result.ok) {
@@ -92,32 +114,32 @@ function AzureEnrollmentWorkspace({ identity }: {
             return;
         }
         const account = result.data.account;
-        const latest = authoritative.current.find(row => row.subscriptionId === normalized);
+        const latest = owner.current.authoritative.find(row => row.subscriptionId === normalized);
         if (!account.connected || account.subscriptionId !== normalized || account.connectionVersion !== (old?.connectionVersion ?? 0) + 1 || (old ? latest?.id !== old.id || latest.connectionVersion !== old.connectionVersion : latest !== undefined)) {
             setError("Connection state changed while validating. Refresh before retrying.");
             return;
         }
-        catalog.current++;
-        const next = [...authoritative.current.filter(row => row.id !== account.id), account];
-        authoritative.current = next;
+        owner.current.catalog++;
+        const next = [...owner.current.authoritative.filter(row => row.id !== account.id), account];
+        owner.current.authoritative = next;
         setAccounts(next);
         setInventories(previous => { const copy = { ...previous }; delete copy[account.id]; return copy; });
         setSuspended(previous => previous.filter(id => id !== account.id));
         setNotice("Azure subscription read access verified by this service response. Request bounded resource-group inventory separately. Agent scans and cloud changes remain unavailable.");
     }
     async function read(account: DesktopAzureAccount) {
-        if (!canRead || !account.connected || pending.current.has(account.id) || suspended.includes(account.id))
+        if (!canRead || !account.connected || owner.current.pending.has(account.id) || suspended.includes(account.id))
             return;
-        const request = (inventoryRequests.current.get(account.id) ?? 0) + 1;
-        inventoryRequests.current.set(account.id, request);
+        const request = (owner.current.inventoryRequests.get(account.id) ?? 0) + 1;
+        owner.current.inventoryRequests.set(account.id, request);
         setReading(previous => [...previous.filter(id => id !== account.id), account.id]);
         setError(null);
         const result = await azureEnrollmentClient.inventory(account.id);
-        if (!current() || inventoryRequests.current.get(account.id) !== request)
+        if (!current() || owner.current.inventoryRequests.get(account.id) !== request)
             return;
         setReading(previous => previous.filter(id => id !== account.id));
-        const latest = authoritative.current.find(row => row.id === account.id);
-        if (pending.current.has(account.id) || !latest?.connected || latest.connectionVersion !== account.connectionVersion)
+        const latest = owner.current.authoritative.find(row => row.id === account.id);
+        if (owner.current.pending.has(account.id) || !latest?.connected || latest.connectionVersion !== account.connectionVersion)
             return;
         if (!result.ok) {
             setError(result.error);
@@ -132,37 +154,37 @@ function AzureEnrollmentWorkspace({ identity }: {
     async function disconnect(account: DesktopAzureAccount) {
         if (!canManage || busy)
             return;
-        const latest = authoritative.current.find(row => row.id === account.id);
+        const latest = owner.current.authoritative.find(row => row.id === account.id);
         if (!latest?.connected || latest.connectionVersion !== account.connectionVersion)
             return;
-        pending.current.set(account.id, account.connectionVersion);
-        catalog.current++;
-        inventoryRequests.current.set(account.id, (inventoryRequests.current.get(account.id) ?? 0) + 1);
+        owner.current.pending.set(account.id, account.connectionVersion);
+        owner.current.catalog++;
+        owner.current.inventoryRequests.set(account.id, (owner.current.inventoryRequests.get(account.id) ?? 0) + 1);
         setSuspended(previous => [...previous.filter(id => id !== account.id), account.id]);
         setReading(previous => previous.filter(id => id !== account.id));
         setInventories(previous => { const copy = { ...previous }; delete copy[account.id]; return copy; });
         setBusy(true);
         setError(null);
         setNotice(null);
-        const request = ++mutation.current;
+        const request = ++owner.current.mutation;
         const result = await azureEnrollmentClient.disconnect(account.id, account.connectionVersion);
-        if (!current() || mutation.current !== request)
+        if (!current() || owner.current.mutation !== request)
             return;
         setBusy(false);
-        pending.current.delete(account.id);
+        owner.current.pending.delete(account.id);
         if (!result.ok) {
             setError(result.error);
             return;
         }
-        const before = authoritative.current.find(row => row.id === account.id);
+        const before = owner.current.authoritative.find(row => row.id === account.id);
         const returned = result.data.account;
         if (!before || before.connectionVersion !== account.connectionVersion || returned.id !== account.id || returned.subscriptionId !== account.subscriptionId || returned.connected || returned.connectionVersion !== account.connectionVersion + 1) {
             setError("Connection changed while disconnecting. Refresh its current state.");
             return;
         }
-        catalog.current++;
-        const next = authoritative.current.map(row => row.id === account.id ? returned : row);
-        authoritative.current = next;
+        owner.current.catalog++;
+        const next = owner.current.authoritative.map(row => row.id === account.id ? returned : row);
+        owner.current.authoritative = next;
         setAccounts(next);
         setNotice("Axiom's stored Azure credential was removed. The Azure service principal, its grants, and previously issued tokens were not revoked.");
     }
@@ -176,7 +198,7 @@ function AzureEnrollmentWorkspace({ identity }: {
       <label className="text-xs text-zinc-400">Azure subscription ID<input className={inputClass} value={subscriptionId} onChange={event => setSubscriptionId(event.target.value)}/></label>
       <label className="text-xs text-zinc-400">Azure client ID<input className={inputClass} value={clientId} onChange={event => setClientId(event.target.value)}/></label>
       <label className="text-xs text-zinc-400">Azure client secret<input type="password" autoComplete="new-password" className={inputClass} value={secret} onChange={event => setSecret(event.target.value)}/></label>
-      <p className="text-xs text-zinc-500 sm:col-span-2">The secret is sent only to Axiom's backend encrypted vault. It clears after submission and is not saved in desktop settings. Subscription read validation does not verify a Reader-only role assignment.</p>
+      <p className="text-xs text-zinc-500 sm:col-span-2">The secret is sent only to Axiom&apos;s backend encrypted vault. It clears after submission and is not saved in desktop settings. Subscription read validation does not verify a Reader-only role assignment.</p>
       <button disabled={busy} className="rounded-lg bg-white px-3 py-2 text-xs font-semibold text-black disabled:opacity-50">{busy ? "Working…" : "Validate & connect Azure"}</button>
     </form>}
     {canRead && <button type="button" disabled={busy} onClick={() => void refresh()} className="mt-3 rounded-lg border border-white/15 px-3 py-2 text-xs text-zinc-300 disabled:opacity-50">Refresh Azure connections</button>}

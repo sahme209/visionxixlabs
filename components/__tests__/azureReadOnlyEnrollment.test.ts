@@ -1,5 +1,5 @@
 /** @vitest-environment jsdom */
-import { createElement } from "react";
+import { createElement, StrictMode } from "react";
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import { cleanup, fireEvent, render, screen, waitFor, act } from "@testing-library/react";
 const mocks = vi.hoisted(() => ({ desktop: { config: {} }, client: { list: vi.fn(), enroll: vi.fn(), inventory: vi.fn(), disconnect: vi.fn() } }));
@@ -18,3 +18,42 @@ it("removes secret fields and results synchronously on workspace/capability chan
 it("withholds inventory that resolves after disconnect starts", async () => { mocks.client.list.mockResolvedValue({ ok: true, data: { accounts: [account] } }); let resolveRead: (value: unknown) => void = () => { }; mocks.client.inventory.mockReturnValue(new Promise(resolve => { resolveRead = resolve; })); render(createElement(AzureReadOnlyEnrollment, { identity })); fireEvent.click(await screen.findByRole("button", { name: "Read first resource-group page" })); fireEvent.click(screen.getByRole("button", { name: "Disconnect Azure" })); await screen.findByText("disconnected"); await act(async () => { resolveRead({ ok: true, data: page }); }); expect(screen.queryByText("group")).toBeNull(); });
 it("a stale list response cannot undo a freshly enrolled version", async () => { let resolveList: (value: unknown) => void = () => { }; mocks.client.list.mockReturnValueOnce(new Promise(resolve => { resolveList = resolve; })); render(createElement(AzureReadOnlyEnrollment, { identity })); await fill(); fireEvent.click(screen.getByRole("button", { name: "Validate & connect Azure" })); await screen.findByRole("button", { name: "Read first resource-group page" }); await act(async () => { resolveList({ ok: true, data: { accounts: [] } }); }); expect(screen.getByRole("button", { name: "Read first resource-group page" })).toBeDefined(); });
 it("uncertain POST does not retry and releases busy state", async () => { mocks.client.enroll.mockResolvedValue({ ok: false, error: "Refresh connection state before trying again." }); render(createElement(AzureReadOnlyEnrollment, { identity })); await fill(); fireEvent.click(screen.getByRole("button", { name: "Validate & connect Azure" })); await waitFor(() => expect((screen.getByRole("button", { name: "Validate & connect Azure" }) as HTMLButtonElement).disabled).toBe(false)); expect(mocks.client.enroll).toHaveBeenCalledTimes(1); expect((screen.getByLabelText("Azure client secret") as HTMLInputElement).value).toBe(""); });
+it("preserves newer catalog authority when an older inventory completes after refresh", async () => {
+    mocks.client.list.mockResolvedValueOnce({ok:true,data:{accounts:[account]}}).mockResolvedValueOnce({ok:true,data:{accounts:[{...account,connectionVersion:3}]}});
+    let resolveRead:(value:unknown)=>void=()=>{};
+    mocks.client.inventory.mockReturnValueOnce(new Promise(resolve=>{resolveRead=resolve;}));
+    render(createElement(AzureReadOnlyEnrollment,{identity}));
+    fireEvent.click(await screen.findByRole("button",{name:"Read first resource-group page"}));
+    fireEvent.click(screen.getByRole("button",{name:"Refresh Azure connections"}));
+    await screen.findByText(/Connection version 3/);
+    await act(async()=>{resolveRead({ok:true,data:page});});
+    expect(screen.queryByText("group")).toBeNull();
+    expect(screen.getByText(/Connection version 3/)).toBeDefined();
+});
+it("drops a delayed enrollment after workspace replacement without publishing its notice",async()=>{
+    let resolveEnroll:(value:unknown)=>void=()=>{};
+    mocks.client.enroll.mockReturnValueOnce(new Promise(resolve=>{resolveEnroll=resolve;}));
+    const view=render(createElement(AzureReadOnlyEnrollment,{identity}));await fill();
+    fireEvent.click(screen.getByRole("button",{name:"Validate & connect Azure"}));
+    view.rerender(createElement(AzureReadOnlyEnrollment,{identity:{...identity,organizationId:"new-workspace"}}));
+    await act(async()=>{resolveEnroll({ok:true,data:{account}});});
+    expect(screen.queryByRole("button",{name:"Read first resource-group page"})).toBeNull();
+    expect(screen.queryByText(/Azure subscription read access verified/)).toBeNull();
+    expect((screen.getByLabelText("Azure client secret") as HTMLInputElement).value).toBe("");
+});
+it("does not restart initial catalog reads while the credential form changes",async()=>{
+    render(createElement(AzureReadOnlyEnrollment,{identity}));
+    await waitFor(()=>expect(mocks.client.list).toHaveBeenCalledTimes(1));await fill();
+    expect(mocks.client.list).toHaveBeenCalledTimes(1);
+});
+it("ignores the first effect's catalog completion after StrictMode cleanup and restart", async () => {
+    let resolveFirst: (value: unknown) => void = () => {};
+    mocks.client.list.mockReturnValueOnce(new Promise(resolve => { resolveFirst = resolve; }))
+        .mockResolvedValueOnce({ ok: true, data: { accounts: [{ ...account, connectionVersion: 3 }] } });
+    render(createElement(StrictMode, null, createElement(AzureReadOnlyEnrollment, { identity })));
+    await screen.findByText(/Connection version 3/);
+    await act(async () => { resolveFirst({ ok: true, data: { accounts: [account] } }); });
+    expect(mocks.client.list).toHaveBeenCalledTimes(2);
+    expect(screen.getByText(/Connection version 3/)).toBeDefined();
+    expect(screen.queryByText(/Connection version 1/)).toBeNull();
+});

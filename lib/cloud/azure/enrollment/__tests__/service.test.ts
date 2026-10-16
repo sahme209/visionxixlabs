@@ -1,4 +1,4 @@
-import { expect, it, vi } from "vitest";
+import { expect, it } from "vitest";
 import { createAzureEnrollmentService } from "../service";
 import { parseAzureEnrollmentInput, azureCredentialContext } from "../policy";
 import { input, principal, fixture } from "./fixture";

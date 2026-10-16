@@ -7,7 +7,7 @@ import { AzureEnrollmentError, isAzureUuid, type AzureCredentialInput, type Azur
 import { createBoundedAzureHttpClient, type AzureRawSend } from "./boundedHttp";
 /** Per-client closed sink, including SDK Debugger children; never touches global Azure logging. */
 export function createSilentAzureLogger(namespace = "axiom:azure-enrollment"): Debugger {
-    const discard = (..._args: unknown[]): void => {};
+    const discard = (): void => {};
     return Object.assign(discard, {
         enabled: false,
         destroy: () => false,
