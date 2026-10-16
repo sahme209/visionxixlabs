@@ -41924,8 +41924,8 @@
       "status": "Partially implemented",
       "engineeringActivity": "active",
       "owner": "Codex integrated parallel workstreams",
-      "activeMilestone": "Validate paired existing-role enrollment through actual local HTTP/storage/SDK composition; obtain separate real AWS and production-storage acceptance.",
-      "verification": "Reachable Settings UI, actual routes/service/scoped AEAD and mocked STS/EC2 composed tests cover exact account/role identity, challenge consumption/version binding, current session/membership and late-result revocation. One EC2 page is explicitly incomplete; newly enrolled accounts cannot enter generic Agent execution. Isolated PostgreSQL16/17 schema and auth fixtures passed. Actual AWS/customer acceptance remains unverified. Owned local Next HTTP/PostgreSQL17 acceptance on committed644f539d verifies challenge/completion, real scoped encrypted storage, replay/foreign synthetic metadata denial, bounded native-SDK wire inventory and versioned disconnect/revoked-read denial. All25 existing auth/pairing/approval assertions and10 cloud assertions passed; exactly5 owned-loopback SDK requests, no paid-plan grant or provider writes. This is not real AWS/IAM, native or commercial acceptance. Combined main156 local gates passed616files/6545tests at repository default timeouts, web TypeScript, desktop release-alignment/TypeScript/Vite build,30Python CLI tests, scoped lint and tracker coverage. Exact-head CI/production build remains required before merge.",
+      "activeMilestone": "Integrate and validate the inactive tenant ECS/ECR observation boundary without granting deployment authority.",
+      "verification": "Existing paired AWS enrollment, encrypted scoped vault, disconnect/version invalidation and bounded EC2 inventory remain intact. PR #157 added actual local application/PostgreSQL/SDK-wire acceptance using synthetic AWS replies, not a customer account. The next inactive internal ECS/ECR observation slice reuses scoped authority/AEAD and exact broker identity, binds selected target/service/task definitions and complete digest-pinned container sets, and checks ACTIVE ECR metadata. A pinned 57-model registration projection and pre-deserialization wire byte/deadline limits are covered by 71 focused tests, including 24 actual SDK/native-wire cases. No public route, enablement, schema migration, ReviewFacts, approval, health, pullability or execution authority is added. Independent source reviews closed identified canonicalization/identity issues. Fresh-main full gates and exact-head CI remain pending.",
       "evidence": [
         "docs/ECS_CUSTOMER_JOURNEY_VALIDATION.md",
         "docs/LEGACY_WEBSITE_DEPLOYMENT_BOUNDARIES.md",
@@ -41937,15 +41937,18 @@
         "docs/mission/aws-enrollment-schema-rehearsal.json",
         "scripts/rehearse-local-cloud-http.mjs",
         "scripts/fixtures/ownedAwsHttpPreload.cjs",
-        "docs/mission/local-cloud-http-acceptance.json"
+        "docs/mission/local-cloud-http-acceptance.json",
+        "docs/ECS_IMMUTABLE_RELEASE_PLAN.md",
+        "lib/cloud/aws/ecsObservation/reader.ts",
+        "lib/cloud/aws/ecsObservation/__tests__/wire.test.ts"
       ],
       "customerAcceptance": "Not verified",
       "acceptanceDependencies": [
         "auth_database",
         "github"
       ],
-      "blockers": "Production auth/binding/restore readiness; separate reviewed cloud-storage execution approval and configured read-only broker; actual AWS role/permission acceptance. Azure/GCP enrollment/apply/rollback and generic governed provider write acceptance remain separate unfinished milestones.",
-      "nextAction": "Complete latest-main regression and exact-head CI; obtain separately scoped storage/runtime/read-only-provider acceptance authorization without changing auth-only SQL. Native UI and paid-policy acceptance remain distinct."
+      "blockers": "Serving database binding/PITR/restore and production login remain unverified. Cloud storage/runtime/broker configuration and real AWS permission/customer acceptance require separate approval/access. ECS observation is inactive; v2 integer target revision, authentic OCI provenance, workload/health/rollback and governed execution remain unfinished. Azure/GCP enrollment/apply/rollback are separate unfinished milestones.",
+      "nextAction": "Pass fresh-main integration/CI, then obtain separately authorized actual provider-read acceptance and resolve durable target revision/provenance/health authority before execution."
     },
     {
       "id": "terraform",
@@ -41997,7 +42000,7 @@
       "engineeringActivity": "active",
       "owner": "Codex integrated parallel workstreams",
       "activeMilestone": "Integrate durable ECS review packets, revisioned decisions and review checkpoints with execution explicitly disabled; implement trusted ingestion before any execution lane.",
-      "verification": "Merged PR #147 passed exact-head CI (591 files / 6,176 tests and 293-page production build). Dashboard restart uses shared quota/idempotency, current authority/policy/installation snapshots and a pre-dispatch lifecycle claim; unknown outcomes remain held. Actual synthetic Next/PostgreSQL HTTP acceptance covers authentication, desktop pairing/revocation and competing approval decisions on source f7de88f0. The new internal ECS review core passes 80 contract/service tests; producer-reported isolated PostgreSQL17 lifecycle and independent-client Serializable revision tests passed and fixtures were removed. Independent source review found no material blocker in the execution-disabled storage boundary. Integrated TypeScript and schema validation pass. Missing verifier persists no packets; no public route, provider execution, quota consumption or production migration is enabled. Full integrated local regression passed 595 files / 6,251 tests after integrating merged main #148; desktop TypeScript/build, 30 Python tests, scoped lint and tracker checks pass. PR #149 exact-head CI/build, Desktop CI and isolated auth-recovery rehearsal passed and merged as 7fd354e1; no runtime route is connected.",
+      "verification": "Merged PR #147 passed exact-head CI (591 files / 6,176 tests and 293-page production build). Dashboard restart uses shared quota/idempotency, current authority/policy/installation snapshots and a pre-dispatch lifecycle claim; unknown outcomes remain held. Actual synthetic Next/PostgreSQL HTTP acceptance covers authentication, desktop pairing/revocation and competing approval decisions on source f7de88f0. The new internal ECS review core passes 80 contract/service tests; producer-reported isolated PostgreSQL17 lifecycle and independent-client Serializable revision tests passed and fixtures were removed. Independent source review found no material blocker in the execution-disabled storage boundary. Integrated TypeScript and schema validation pass. Missing verifier persists no packets; no public route, provider execution, quota consumption or production migration is enabled. Full integrated local regression passed 595 files / 6,251 tests after integrating merged main #148; desktop TypeScript/build, 30 Python tests, scoped lint and tracker checks pass. PR #149 exact-head CI/build, Desktop CI and isolated auth-recovery rehearsal passed and merged as 7fd354e1; no runtime route is connected. The next inactive tenant ECS/ECR reader returns only current scoped observations, never full ReviewFacts or approval/execution authority; focused synthetic actual-SDK-wire tests pass, while fresh-main integration and real AWS acceptance remain pending. Target id+updatedAt does not certify the existing manifest integer revision.",
       "evidence": [
         "docs/ECS_CUSTOMER_JOURNEY_VALIDATION.md",
         "docs/WEBSITE_DEPLOYMENT_READINESS.md",
@@ -42007,7 +42010,8 @@
         "docs/ECS_V2_PURE_EVIDENCE_CONTRACT.md",
         "docs/DASHBOARD_RESTART_GOVERNANCE.md",
         "docs/ECS_DURABLE_REVIEW_CORE.md",
-        "docs/mission/ecs-review-rehearsal.json"
+        "docs/mission/ecs-review-rehearsal.json",
+        "lib/cloud/aws/ecsObservation/reader.ts"
       ],
       "customerAcceptance": "Not verified",
       "acceptanceDependencies": [
@@ -42016,7 +42020,7 @@
         "governance"
       ],
       "blockers": "Actual trusted provenance/provider ingestion, complete deployment policy and workflow trust distribution, atomic execution/revocation/quota claims, and separately approved sandbox rollout/health/rollback acceptance. Production schema application remains separately approval-gated; generic migrate deploy must not be used for auth-only recovery.",
-      "nextAction": "Complete integration/CI of review-only storage, then implement independently verified read-only evidence ingestion. Never treat a review checkpoint as an execution token or authorize SQL through disabled execution flags."
+      "nextAction": "Validate the inactive observation slice on fresh main, resolve target revision and trusted provenance/readiness/health ownership, then review a separate durable execution authority before any activation."
     },
     {
       "id": "governance",
@@ -42025,7 +42029,7 @@
       "engineeringActivity": "active",
       "owner": "Codex integrated parallel workstreams",
       "activeMilestone": "Integrate durable ECS review packets, revisioned decisions and review checkpoints with execution explicitly disabled; implement trusted ingestion before any execution lane.",
-      "verification": "Merged PR #147 passed exact-head CI (591 files / 6,176 tests and 293-page production build). Dashboard restart uses shared quota/idempotency, current authority/policy/installation snapshots and a pre-dispatch lifecycle claim; unknown outcomes remain held. Actual synthetic Next/PostgreSQL HTTP acceptance covers authentication, desktop pairing/revocation and competing approval decisions on source f7de88f0. The new internal ECS review core passes 80 contract/service tests; producer-reported isolated PostgreSQL17 lifecycle and independent-client Serializable revision tests passed and fixtures were removed. Independent source review found no material blocker in the execution-disabled storage boundary. Integrated TypeScript and schema validation pass. Missing verifier persists no packets; no public route, provider execution, quota consumption or production migration is enabled. Full integrated local regression passed 595 files / 6,251 tests after integrating merged main #148; desktop TypeScript/build, 30 Python tests, scoped lint and tracker checks pass. PR #149 exact-head CI/build, Desktop CI and isolated auth-recovery rehearsal passed and merged as 7fd354e1; no runtime route is connected.",
+      "verification": "Merged PR #147 passed exact-head CI (591 files / 6,176 tests and 293-page production build). Dashboard restart uses shared quota/idempotency, current authority/policy/installation snapshots and a pre-dispatch lifecycle claim; unknown outcomes remain held. Actual synthetic Next/PostgreSQL HTTP acceptance covers authentication, desktop pairing/revocation and competing approval decisions on source f7de88f0. The new internal ECS review core passes 80 contract/service tests; producer-reported isolated PostgreSQL17 lifecycle and independent-client Serializable revision tests passed and fixtures were removed. Independent source review found no material blocker in the execution-disabled storage boundary. Integrated TypeScript and schema validation pass. Missing verifier persists no packets; no public route, provider execution, quota consumption or production migration is enabled. Full integrated local regression passed 595 files / 6,251 tests after integrating merged main #148; desktop TypeScript/build, 30 Python tests, scoped lint and tracker checks pass. PR #149 exact-head CI/build, Desktop CI and isolated auth-recovery rehearsal passed and merged as 7fd354e1; no runtime route is connected. The next inactive tenant ECS/ECR reader returns only current scoped observations, never full ReviewFacts or approval/execution authority; focused synthetic actual-SDK-wire tests pass, while fresh-main integration and real AWS acceptance remain pending. Target id+updatedAt does not certify the existing manifest integer revision.",
       "evidence": [
         "docs/AGENT_GOVERNED_ACTION_ACCEPTANCE.md",
         "app/api/desktop/handoff/__tests__/route.test.ts",
@@ -42033,14 +42037,16 @@
         "docs/ECS_V2_PURE_EVIDENCE_CONTRACT.md",
         "docs/APPROVAL_DECISION_CONCURRENCY.md",
         "docs/ECS_DURABLE_REVIEW_CORE.md",
-        "docs/mission/ecs-review-rehearsal.json"
+        "docs/mission/ecs-review-rehearsal.json",
+        "docs/ECS_IMMUTABLE_RELEASE_PLAN.md",
+        "lib/cloud/aws/ecsObservation/reader.ts"
       ],
       "customerAcceptance": "Not verified",
       "acceptanceDependencies": [
         "auth_database"
       ],
       "blockers": "Actual trusted provenance/provider ingestion, complete deployment policy and workflow trust distribution, atomic execution/revocation/quota claims, and separately approved sandbox rollout/health/rollback acceptance. Production schema application remains separately approval-gated; generic migrate deploy must not be used for auth-only recovery.",
-      "nextAction": "Complete integration/CI of review-only storage, then implement independently verified read-only evidence ingestion. Never treat a review checkpoint as an execution token or authorize SQL through disabled execution flags."
+      "nextAction": "Validate the inactive observation slice on fresh main, resolve target revision and trusted provenance/readiness/health ownership, then review a separate durable execution authority before any activation."
     },
     {
       "id": "desktop",

@@ -1411,3 +1411,13 @@ and tracker coverage. No timeout override, provider call, shared dependency
 mutation or Prisma generation was used. Exact-head push/PR CI and production
 website builds remain required; local desktop Vite compilation is not native
 installer or real OS acceptance.
+
+### Inactive tenant ECS/ECR observation candidate · 2026-10-16
+
+PR #156 merged as `cdb3996d` after exact-head push run38848283984 and PR run38848311628 passed: 6517 tests (five skipped), TypeScript and both293-page production builds. The new observation candidate starts at main157 `eeec4cfc` and normally integrates main158 `a2fbf18b`; the existing billing and synthetic application-wire evidence is preserved.
+
+The source now contains an inactive internal tenant ECS/ECR observation reader, reusing paired/session/membership/scoped-vault fences and broker identity. It reads only the exact selected service, baseline/proposed task definitions and bounded ACTIVE ECR digest metadata. The57-model pinned registration projection includes S3 Files/FSx Windows and all modeled nested configuration; summaries withhold raw configuration/credentials. Native response bodies and errors are bounded before actual SDK parsing. Independent reviews closed prototype-key, ARN/revision and signing-evidence findings. Actual wire tests caught an ambient endpoint resolution issue; the new profile now binds explicit standard service origins, preserving existing inventory defaults.
+
+Focused verification passed71 tests in five files (24 actual SDK/native-wire cases), scoped ESLint and diff checks. Replies are synthetic owned-loopback fixtures, not customer AWS evidence. Local dependencies use an isolated overlay: cached protobuf-specs0.5.2 differs from locked0.5.0; clean exact-lock CI remains required. The exact ECR3.1049.0 package and integrity were inspected; the dependency delta adds only one package entry and no transitive versions. No shared install/client generation occurred.
+
+Fresh-main159 full regression/type/desktop/Python/build gates and exact-head CI remain pending. No public route, active integration, storage migration, ReviewFacts, integer target revision, health/pullability/rollback proof, approval or execution is enabled. Production database binding/recovery remains independently approval-gated. Canonical cloud/deployment/governance workstreams and the existing ECS demo explanation carry these limits; generated requirement documents were regenerated from JSON.
