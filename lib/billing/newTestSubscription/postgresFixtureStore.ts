@@ -1,12 +1,11 @@
 import { readVerifiedNewTestContract } from "./verifiedContract";
+import { readFixtureCoverage, writeFixtureCoverage } from "./fixtureCoverage";
 import { PrismaClient, type Prisma } from "@prisma/client";
 import type { Store, Transaction, Intent, Contract, Scope } from "./service";
 import { consumeSubscriptionEventInTransaction, type SubscriptionTransaction } from "../consumeSubscriptionEvent";
 import { reserveAICredits } from "../aiCreditReservation";
-import { planForStripeTier } from "../planRegistry";
-import { PUBLIC_PLAN_CATALOG } from "../publicPlanCatalog";
+import { newTestPricingPlan } from "./paidPlan";
 import type { BillingStatus } from "../tierCatalog";
-import { NEW_TEST_CATALOG_VERSION } from "../newTestSubscriptionContract";
 
 /** Owned-loopback fixture adapter only. Constructs its own database client;
  * no DATABASE_URL fallback and no production route/import invokes this lane. */
@@ -25,6 +24,7 @@ export function postgresFixtureStore(target: string, runtimeId: string, accountI
     const one = async <T>(sql: string, ...args: unknown[]) => (await tx.$queryRawUnsafe<T[]>(sql, ...args))[0] ?? null;
     const readIntent = async (id: string) => (await one<{ body: Intent }>('SELECT body FROM "RecurringSubscriptionIntent" WHERE id=$1', id))?.body ?? null;
     const port: Transaction = {
+      currentTime: async () => { const rows = await tx.$queryRawUnsafe<Array<{ now: Date }>>('SELECT clock_timestamp() AS now'); if (!(rows[0]?.now instanceof Date)) throw new Error("paid_coverage_unavailable"); return rows[0].now; },
       eligible: async scope => { const row = await tx.orgMembership.findUnique({ where: { userId_organizationId: { userId: scope.userId, organizationId: scope.organizationId } } }); return !!row?.acceptedAt && ["owner", "admin"].includes(row.role); },
       acceptedSeats: org => tx.orgMembership.count({ where: { organizationId: org, acceptedAt: { not: null } } }),
       intent: readIntent,
@@ -35,9 +35,15 @@ export function postgresFixtureStore(target: string, runtimeId: string, accountI
       },
       async saveIntent(i, revision) { const n = await tx.$executeRawUnsafe('UPDATE "RecurringSubscriptionIntent" SET body=$1::jsonb WHERE id=$2 AND org=$3 AND (body->>\'revision\')::int=$4', JSON.stringify(i), i.id, i.organizationId, revision); if (n !== 1) throw new Error("intent_revision_changed"); },
       contract: org => readContract(tx, org),
+      coverage: org => readFixtureCoverage(tx, org),
+      async invalidateCoverage(c, signedTriggerEventId) {
+        const prior = await readFixtureCoverage(tx, c.organizationId); const intent = await readIntent(c.originatingIntentId);
+        if (!prior || !intent || prior.observation.eventToken !== c.eventToken) throw new Error("subscription_snapshot_changed");
+        await writeFixtureCoverage(tx, c, intent, { ...prior.observation, invalidatingEventId: signedTriggerEventId, collection: { kind: "unavailable", reason: "unsupported_terms" } });
+      },
       legacyBinding: async org => { const p = await tx.tenantBillingPlan.findUnique({ where: { organizationId: org } }); return !!(p?.stripeCustomerId || p?.stripeSubscriptionId); },
       eventExists: async id => !!await tx.stripeBillingEvent.findUnique({ where: { id } }),
-      async bind(c, event, observation) {
+      async bind(c, event, observation, coverage) {
         const expected = await tx.tenantBillingPlan.findUnique({ where: { organizationId: c.organizationId }, select: { stripeCustomerId: true, stripeSubscriptionId: true, lastStripeEventId: true } });
         const applied = await consumeSubscriptionEventInTransaction(tx as unknown as SubscriptionTransaction, observation?.eventType ?? "customer.subscription.updated", { organizationId: c.organizationId, tier: c.planId === "enterprise" ? "enterprise" : "growth", status: c.status as BillingStatus, stripeCustomerId: c.customerId, stripeSubscriptionId: c.subscriptionId, lastStripeEventId: event, seatQuantity: c.seatQuantity,
           currentPeriodEndsAt: observation?.currentPeriodEndsAt ? new Date(observation.currentPeriodEndsAt) : null, cancelAtPeriodEnd: observation?.cancelAtPeriodEnd ?? false }, expected);
@@ -47,6 +53,8 @@ export function postgresFixtureStore(target: string, runtimeId: string, accountI
         delete (identity as Partial<Contract>).seatQuantity;
         delete (identity as Partial<Contract>).eventToken;
         await tx.$executeRawUnsafe('INSERT INTO "OrganizationTestSubscriptionContract" (org,intent,customer,subscription,body) VALUES ($1,$2,$3,$4,$5::jsonb) ON CONFLICT (org) DO UPDATE SET body=EXCLUDED.body', c.organizationId, c.originatingIntentId, c.customerId, c.subscriptionId, JSON.stringify(identity));
+        const intent = await readIntent(c.originatingIntentId); if (!intent) throw new Error("intent_unavailable");
+        await writeFixtureCoverage(tx, c, intent, coverage);
       },
       async creditEvidence(org, month, now) {
         const start = new Date(`${month}-01T00:00:00Z`); const end = new Date(Date.UTC(start.getUTCFullYear(), start.getUTCMonth() + 1, 1));
@@ -65,13 +73,8 @@ export function postgresFixtureStore(target: string, runtimeId: string, accountI
       await checkMarker(tx);
       const member = await tx.orgMembership.findUnique({ where: { userId_organizationId: { userId: scope.userId, organizationId: org } } });
       if (!member?.acceptedAt || !["owner", "admin"].includes(member.role)) throw new Error("test_manager_required");
-      const contract = await readContract(tx, org); if (!contract) throw new Error("new_test_contract_unavailable");
-      const rows = await tx.$queryRawUnsafe<Array<{ body: Intent }>>('SELECT body FROM "RecurringSubscriptionIntent" WHERE id=$1 AND org=$2', contract.originatingIntentId, org);
-      const intent = rows[0]?.body; if (!intent || intent.organizationId !== org || intent.livemode !== false || intent.runtimeId !== runtimeId || intent.accountId !== contract.accountId || intent.state !== "bound" || intent.terms.catalogVersion !== NEW_TEST_CATALOG_VERSION || intent.terms.planId !== contract.planId || intent.subscriptionId !== contract.subscriptionId || intent.customerId !== contract.customerId) throw new Error("new_test_contract_unavailable");
-      const planId = contract.status === "active" ? intent.terms.planId : "free";
-      const catalog = PUBLIC_PLAN_CATALOG.find(p => p.id === planId); if (!catalog) throw new Error("policy_unresolved");
-      const legacy = planForStripeTier("starter");
-      return { ...legacy, entitlements: { ...legacy.entitlements, includedAICreditsCents: catalog.monthlyAiCreditCents * (catalog.aiCreditBasis === "paid_seat" ? contract.seatQuantity : 1), overagePolicy: "hard_stop" } };
+      const verified = await readVerifiedNewTestContract(tx, { runtimeId, accountId }, org); if (!verified) throw new Error("new_test_contract_unavailable");
+      return newTestPricingPlan(tx, verified);
     }),
   };
 }

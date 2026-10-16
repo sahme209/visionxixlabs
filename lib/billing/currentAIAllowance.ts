@@ -1,3 +1,4 @@
+import { newTestPlanGuard } from "./newTestSubscription/paidPlan";
 import { isolatedRuntimeRequested } from "./isolatedApplication/runtime";
 import { resolveIsolatedApplicationPlan } from "./isolatedApplication/plan";
 import "server-only";
@@ -16,15 +17,17 @@ const cents = (value: unknown): value is number => Number.isSafeInteger(value) &
  * Linked/pending holds remain included regardless of age or month. */
 export async function readCurrentAIAllowance(repo: Pick<PrismaClient, "$transaction">, organizationId: string, now = new Date()): Promise<CurrentAIAllowance> {
   if (!organizationId || !Number.isFinite(now.getTime())) return { available: false };
-  const month = `${now.getUTCFullYear()}-${String(now.getUTCMonth() + 1).padStart(2, "0")}`;
   try {
     return await repo.$transaction(async (tx) => {
+      const isolatedPlan = isolatedRuntimeRequested() ? await resolveIsolatedApplicationPlan(tx, organizationId, "read") : undefined;
+      const decisionNow = newTestPlanGuard(isolatedPlan)?.clock ?? now;
+      const decisionMonth = decisionNow.toISOString().slice(0, 7);
       const [billing, purchases, usage, active] = await Promise.all([
         tx.tenantBillingPlan.findUnique({ where: { organizationId } }),
-        tx.addOnPurchase.findMany({ where: { organizationId, status: { in: ["paid", "partially_refunded"] }, OR: [{ validFor: "current_month", periodMonth: month }, { validFor: "permanent", refundedAt: null }] } }),
-        tx.usageEvent.aggregate({ where: { organizationId, eventKind: "ai_invocation", createdAt: { gte: new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1)) } }, _sum: { billedCents: true } }),
+        tx.addOnPurchase.findMany({ where: { organizationId, status: { in: ["paid", "partially_refunded"] }, OR: [{ validFor: "current_month", periodMonth: decisionMonth }, { validFor: "permanent", refundedAt: null }] } }),
+        tx.usageEvent.aggregate({ where: { organizationId, eventKind: "ai_invocation", createdAt: { gte: new Date(Date.UTC(decisionNow.getUTCFullYear(), decisionNow.getUTCMonth(), 1)) } }, _sum: { billedCents: true } }),
         tx.aIUsageReservation.aggregate({ where: { organizationId, OR: [
-          { status: "reserved", usageEventId: null, expiresAt: { gt: now } },
+          { status: "reserved", usageEventId: null, expiresAt: { gt: decisionNow } },
           { status: "reserved", usageEventId: { not: null } },
           { status: "pending_settlement" },
         ] }, _sum: { reservedCents: true } }),
@@ -36,7 +39,7 @@ export async function readCurrentAIAllowance(repo: Pick<PrismaClient, "$transact
       const used = usage?._sum?.billedCents;
       const held = active?._sum?.reservedCents;
       if (!(used === null || cents(used)) || !(held === null || cents(held))) return { available: false };
-      const plan = isolatedRuntimeRequested() ? await resolveIsolatedApplicationPlan(tx, organizationId, "read") : planForStripeTier(billing?.tier);
+      const plan = isolatedPlan ?? planForStripeTier(billing?.tier);
       const effective = applyAddOnsToEntitlements(plan, purchases);
       const usedCents = used ?? 0, heldCents = held ?? 0;
       if (!cents(effective.includedAICreditsCents) || !cents(effective.appliedAICreditsCents) || !cents(usedCents + heldCents)) return { available: false };

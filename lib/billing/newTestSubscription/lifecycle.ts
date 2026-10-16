@@ -2,7 +2,9 @@ import type { Intent } from "./service";
 import type { BillingStatus } from "../tierCatalog";
 
 export type LifecycleEventType = "customer.subscription.created" | "customer.subscription.updated" | "customer.subscription.deleted";
-export type SubscriptionObservation = { eventType: "checkout.session.completed" | LifecycleEventType; currentPeriodEndsAt: string | null; cancelAtPeriodEnd: boolean };
+export type CollectionEventType = "invoice.paid" | "invoice.payment_failed" | "invoice.marked_uncollectible" | "invoice.voided" | "credit_note.created" | "charge.refunded" | "charge.dispute.created" | "charge.dispute.updated" | "charge.dispute.closed";
+export const isCollectionEventType = (type: string): type is CollectionEventType => ["invoice.paid", "invoice.payment_failed", "invoice.marked_uncollectible", "invoice.voided", "credit_note.created", "charge.refunded", "charge.dispute.created", "charge.dispute.updated", "charge.dispute.closed"].includes(type);
+export type SubscriptionObservation = { eventType: "checkout.session.completed" | LifecycleEventType | CollectionEventType; currentPeriodEndsAt: string | null; cancelAtPeriodEnd: boolean };
 export function isLifecycleEventType(type: string): type is LifecycleEventType {
   return ["customer.subscription.created", "customer.subscription.updated", "customer.subscription.deleted"].includes(type);
 }

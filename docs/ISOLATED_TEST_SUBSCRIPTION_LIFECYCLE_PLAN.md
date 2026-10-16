@@ -1,5 +1,13 @@
 # Isolated TEST subscription lifecycle — audit, specification and plan
 
+**Historical status-only acceptance.** The later financial review identified
+that active status and original Checkout creation do not prove current payment.
+Recovery/renewal authority from this document is superseded by
+[the collected-coverage plan](ISOLATED_TEST_PAID_COVERAGE_PLAN.md). Its original
+execution records remain evidence for their pinned source only. Current active
+access requires separately collected calendar-aligned coverage; standard
+mid-month checkout/recovery and general plan/seat changes remain unsupported.
+
 Audit base: main PR160, `2682ba732ab1bd262dcaa378e3a6e3119d245229`.
 Worktree: `/workspace/axiom-billing-test-lifecycle`; branch
 `codex/billing-test-lifecycle`. Prepared 2026-10-16 for coordinator review before

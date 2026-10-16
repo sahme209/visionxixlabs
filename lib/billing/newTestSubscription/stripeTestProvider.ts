@@ -3,8 +3,10 @@ import Stripe from "stripe";
 import { denyIsolatedExternalIO } from "../isolatedApplication/runtime";
 import { createHash } from "node:crypto";
 import { matchNewTestTerms, NEW_TEST_CATALOG_VERSION } from "../newTestSubscriptionContract";
+import { retrieveCollectedCoverage, type BoundedRead } from "./stripePaidCoverage";
+import { paidIdentity } from "./paidCoverage";
 import type { Intent, ProviderBoundary, Store } from "./service";
-import { hasOriginalCreateProof, isLifecycleEventType, lifecycleObservation } from "./lifecycle";
+import { hasOriginalCreateProof, isCollectionEventType, isLifecycleEventType, lifecycleObservation } from "./lifecycle";
 function fail(code: string): never { throw new Error(code); }
 const digest = (body: string) => createHash("sha256").update(body).digest("hex");
 /** Inactive, explicitly constructed internal TEST adapter. Never read ambient
@@ -68,65 +70,91 @@ export function createStripeTestProvider(options: {
           ...(response.idempotencyKey !== undefined ? { observedIdempotencyKey: response.idempotencyKey } : {}),
           ...(response.stripeAccount !== undefined ? { observedAccountId: response.stripeAccount } : {}), ...(response.apiVersion ? { apiVersion: response.apiVersion } : {}) } };
     },
-    async verifyAndRetrieve(raw, signature) {
+    async verifyAndRetrieve(raw, signature, organizationId) {
       runtime();
       if (typeof raw !== "string" || !raw.length || raw.length > 262_144 || Buffer.byteLength(raw, "utf8") > 262_144 || typeof signature !== "string" || !signature.length || signature.length > 4096 || Buffer.byteLength(signature, "utf8") > 4096) fail("provider_input_bounds");
+      const deadline = Date.now() + 30_000; let reads = 0;
+      const read: BoundedRead = async operation => {
+        runtime(); const remaining = deadline - Date.now();
+        if (remaining <= 0 || ++reads > 14) fail("provider_read_budget_exceeded");
+        const result = await operation(Math.min(10_000, remaining));
+        runtime(); if (Date.now() >= deadline) fail("provider_read_budget_exceeded");
+        return result;
+      };
+      const readAccount = async () => { const a = await read(timeout => stripe.accounts.retrieve({}, { timeout, maxNetworkRetries: 0 })); if (a.id !== expectedAccountId) fail("test_account_mismatch"); };
       const event = stripe.webhooks.constructEvent(raw, signature, webhookSecret);
-      const lifecycle = isLifecycleEventType(event.type);
-      if (!event.id || event.livemode !== false || (event.type !== "checkout.session.completed" && !lifecycle) || (event.account && event.account !== expectedAccountId)) fail("signed_binding_mismatch");
-      await account();
+      const lifecycle = isLifecycleEventType(event.type); const collectionEvent = isCollectionEventType(event.type);
+      if (!event.id || event.livemode !== false || (event.type !== "checkout.session.completed" && !lifecycle && !collectionEvent) || (event.account && event.account !== expectedAccountId)) fail("signed_binding_mismatch");
+      await readAccount();
       const hint = event.data.object as Stripe.Checkout.Session | Stripe.Subscription;
-      const id = hint.metadata?.intentId; if (!id) fail("attempt_provenance_unavailable");
-      const i = await store.transaction(tx => tx.intent(id!));
+      const boundForTrigger = collectionEvent && organizationId ? await store.transaction(tx => tx.contract(organizationId)) : null;
+      const intentId = collectionEvent ? boundForTrigger?.originatingIntentId : hint.metadata?.intentId;
+      if (!intentId) fail("attempt_provenance_unavailable");
+      const i = await store.transaction(tx => tx.intent(intentId));
       const proof = i?.originalCreateProof;
-      if (!intentValid(i) || !hasOriginalCreateProof(i) || !proof) fail("attempt_provenance_unavailable");
-      if (lifecycle) {
-        const bound = await store.transaction(tx => tx.contract(i.organizationId));
+      if (!intentValid(i) || !hasOriginalCreateProof(i) || !proof || organizationId && i.organizationId !== organizationId) fail("attempt_provenance_unavailable");
+      let session: Stripe.Checkout.Session | null = null;
+      const bound = lifecycle || collectionEvent || i.state === "bound" ? await store.transaction(tx => tx.contract(i.organizationId)) : null;
+      if (bound || lifecycle || collectionEvent) {
         if (!bound || i.state !== "bound" || bound.livemode !== false || bound.runtimeId !== runtimeId || bound.accountId !== expectedAccountId
           || bound.organizationId !== i.organizationId || bound.originatingIntentId !== i.id || bound.catalogVersion !== NEW_TEST_CATALOG_VERSION || bound.planId !== i.terms.planId
-          || bound.sessionId !== i.sessionId || bound.customerId !== i.customerId || bound.subscriptionId !== i.subscriptionId
-          || hint.id !== bound.subscriptionId || hint.customer !== bound.customerId || hint.livemode !== false
-          || hint.metadata?.organizationId !== i.organizationId || hint.metadata?.catalogVersion !== NEW_TEST_CATALOG_VERSION) fail("signed_binding_mismatch");
+          || bound.sessionId !== i.sessionId || bound.customerId !== i.customerId || bound.subscriptionId !== i.subscriptionId) fail("signed_binding_mismatch");
+        if (lifecycle && (hint.id !== bound.subscriptionId || hint.customer !== bound.customerId || hint.livemode !== false
+          || hint.metadata?.organizationId !== i.organizationId || hint.metadata?.catalogVersion !== NEW_TEST_CATALOG_VERSION)) fail("signed_binding_mismatch");
         if (bound.seatQuantity !== i.terms.seatQuantity) fail("seat_change_requires_review");
-        runtime();
-        const sub = await stripe.subscriptions.retrieve(bound.subscriptionId);
-        runtime();
-        const item = sub.items.data[0];
-        if (sub.id !== bound.subscriptionId || sub.livemode !== false || sub.customer !== bound.customerId || sub.items.has_more !== false || sub.items.data.length !== 1 || !item
-          || sub.metadata.intentId !== i.id || sub.metadata.organizationId !== i.organizationId || sub.metadata.catalogVersion !== NEW_TEST_CATALOG_VERSION
-          || sub.metadata.planId !== i.terms.planId || sub.metadata.billingInterval !== i.terms.interval || item.price.id !== i.terms.priceId) fail("signed_terms_mismatch");
-        if (item.quantity !== bound.seatQuantity) fail("seat_change_requires_review");
-        if (!item.price.recurring || item.price.unit_amount === null || matchNewTestTerms({ planId: i.terms.planId, interval: i.terms.interval,
-          seatQuantity: item.quantity!, configuredPriceId: i.terms.priceId, price: { ...item.price, unit_amount: item.price.unit_amount, recurring: item.price.recurring } }).kind !== "supported_terms") fail("signed_terms_mismatch");
-        const observation = lifecycleObservation(sub.status, item.current_period_end, sub.cancel_at_period_end);
-        const p = await price(i.terms.planId, i.terms.interval);
-        if (matchNewTestTerms({ planId: i.terms.planId, interval: i.terms.interval, seatQuantity: item.quantity!, configuredPriceId: i.terms.priceId, price: p }).kind !== "supported_terms") fail("signed_terms_mismatch");
-        await account();
-        return { providerRequestKey: proof.outboundRequestKey, providerRequestDigest: proof.outboundRequestDigest, eventId: event.id,
-          accountId: expectedAccountId, livemode: false, organizationId: i.organizationId, intentId: i.id, catalogVersion: NEW_TEST_CATALOG_VERSION,
-          sessionId: bound.sessionId, customerId: bound.customerId, subscriptionId: bound.subscriptionId,
-          seatQuantity: item.quantity!, price: p, eventType: event.type as import("./lifecycle").LifecycleEventType, ...observation };
       }
-      if (hint.id !== i.sessionId) fail("attempt_provenance_unavailable");
-      runtime();
-      const session = await stripe.checkout.sessions.retrieve(i.sessionId!, { expand: ["line_items"] });
-      if (session.livemode !== false || session.mode !== "subscription" || session.id !== proof.sessionId || session.metadata?.intentId !== i.id
-        || session.metadata?.organizationId !== i.organizationId || session.metadata?.catalogVersion !== NEW_TEST_CATALOG_VERSION
-        || typeof session.customer !== "string" || typeof session.subscription !== "string" || !session.line_items || session.line_items.has_more || session.line_items.data.length !== 1) fail("signed_binding_mismatch");
-      runtime();
-      const sub = await stripe.subscriptions.retrieve(session.subscription as string);
-      runtime();
+      if (!lifecycle && !collectionEvent) {
+        if (hint.id !== i.sessionId) fail("attempt_provenance_unavailable");
+        session = await read(timeout => stripe.checkout.sessions.retrieve(i.sessionId!, { expand: ["line_items"] }, { timeout, maxNetworkRetries: 0 }));
+        if (session.livemode !== false || session.mode !== "subscription" || session.id !== proof.sessionId || session.metadata?.intentId !== i.id
+          || session.metadata?.organizationId !== i.organizationId || session.metadata?.catalogVersion !== NEW_TEST_CATALOG_VERSION
+          || typeof session.customer !== "string" || typeof session.subscription !== "string" || session.status !== "complete" || session.payment_status !== "paid"
+          || !session.line_items || session.line_items.has_more !== false || session.line_items.data.length !== 1
+          || session.line_items.data[0].price?.id !== i.terms.priceId || session.line_items.data[0].quantity !== i.terms.seatQuantity) fail("signed_binding_mismatch");
+      }
+      const subscriptionId = bound?.subscriptionId ?? session!.subscription as string;
+      const customerId = bound?.customerId ?? session!.customer as string;
+      const sub = await read(timeout => stripe.subscriptions.retrieve(subscriptionId, {}, { timeout, maxNetworkRetries: 0 }));
+      if (sub.id !== subscriptionId || sub.livemode !== false || sub.customer !== customerId
+        || sub.metadata.intentId !== i.id || sub.metadata.organizationId !== i.organizationId || sub.metadata.catalogVersion !== NEW_TEST_CATALOG_VERSION) fail("signed_binding_mismatch");
+      if (collectionEvent) {
+        const previous = await store.transaction(tx => tx.coverage(i.organizationId));
+        const h = event.data.object as unknown as { id: string; invoice?: string; charge?: string; customer?: string; livemode?: boolean; parent?: { type: string; subscription_details?: { subscription?: string } } };
+        const reference = event.type.startsWith("invoice.") ? h.id : event.type === "credit_note.created" ? h.invoice : event.type === "charge.refunded" ? h.id : h.charge;
+        const latest = typeof sub.latest_invoice === "string" ? sub.latest_invoice : sub.latest_invoice?.id;
+        const expected = event.type.startsWith("invoice.") || event.type === "credit_note.created" ? latest : previous?.observation.collection.kind === "collected" ? previous.observation.collection.evidence.chargeId : previous?.originalEvidence.chargeId;
+        const linkedInvoice = event.type.startsWith("invoice.") && h.parent?.type === "subscription_details" && h.parent.subscription_details?.subscription === subscriptionId && h.customer === customerId;
+        const knownOriginal = event.type.startsWith("invoice.") && reference === previous?.originalEvidence.invoiceId;
+        if (!reference || reference !== expected && !linkedInvoice && !knownOriginal || h.livemode !== false || h.customer && h.customer !== customerId) fail("signed_binding_mismatch");
+      }
       const item = sub.items.data[0];
-      if (sub.id !== session.subscription || sub.livemode !== false || sub.customer !== session.customer || sub.items.has_more || sub.items.data.length !== 1 || !item
-        || sub.metadata.intentId !== i.id || sub.metadata.organizationId !== i.organizationId || sub.metadata.catalogVersion !== NEW_TEST_CATALOG_VERSION
-        || item.price.id !== i.terms.priceId || session.line_items.data[0].price?.id !== i.terms.priceId
-        || session.line_items.data[0].quantity !== i.terms.seatQuantity || item.quantity !== i.terms.seatQuantity) fail("signed_terms_mismatch");
-      const p = await price(i.terms.planId, i.terms.interval);
-      await account();
+      const supported = sub.items.has_more === false && sub.items.data.length === 1 && item
+        && sub.metadata.planId === i.terms.planId && sub.metadata.billingInterval === i.terms.interval && item.price.id === i.terms.priceId
+        && item.quantity === i.terms.seatQuantity && (!bound || item.quantity === bound.seatQuantity)
+        && item.price.recurring && item.price.unit_amount !== null && matchNewTestTerms({ planId: i.terms.planId, interval: i.terms.interval,
+          seatQuantity: item.quantity!, configuredPriceId: i.terms.priceId, price: { ...item.price, unit_amount: item.price.unit_amount, recurring: item.price.recurring } }).kind === "supported_terms";
+      if (!supported) {
+        if (!bound) fail("signed_terms_mismatch");
+        const finalSub = await read(timeout => stripe.subscriptions.retrieve(subscriptionId, {}, { timeout, maxNetworkRetries: 0 }));
+        if (JSON.stringify(sub) !== JSON.stringify(finalSub)) fail("collection_snapshot_changed");
+        await readAccount();
+        return { kind: "unsupported_bound_terms" as const, binding: bound, signedTriggerEventId: event.id };
+      }
+      const observation = lifecycleObservation(sub.status, item.current_period_end, sub.cancel_at_period_end);
+      const p = await read(timeout => stripe.prices.retrieve(i.terms.priceId, { expand: ["product"] }, { timeout, maxNetworkRetries: 0 }));
+      if (configuredPrices[`${i.terms.planId}:${i.terms.interval}`] !== p.id || typeof p.product === "string" || p.product.deleted || !p.product.active || p.product.livemode !== false || !p.recurring || p.unit_amount === null || matchNewTestTerms({ planId: i.terms.planId, interval: i.terms.interval, seatQuantity: item.quantity!, configuredPriceId: i.terms.priceId, price: { ...p, unit_amount: p.unit_amount, recurring: p.recurring } }).kind !== "supported_terms") fail("signed_terms_mismatch");
+      if ((typeof item.price.product === "string" ? item.price.product : item.price.product.id) !== p.product.id) fail("signed_terms_mismatch");
+      const identity = paidIdentity({ livemode: false, organizationId: i.organizationId, originatingIntentId: i.id, runtimeId, accountId: expectedAccountId, sessionId: i.sessionId!, customerId, subscriptionId, planId: i.terms.planId, catalogVersion: NEW_TEST_CATALOG_VERSION, seatQuantity: item.quantity!, status: observation.status, eventToken: event.id }, i);
+      const coverage = await retrieveCollectedCoverage(stripe, identity, sub, read);
+      if (session && (typeof session.invoice === "string" ? session.invoice : session.invoice?.id) !== coverage.latestInvoiceId) fail("collection_identity_mismatch");
+      const finalSub = await read(timeout => stripe.subscriptions.retrieve(subscriptionId, {}, { timeout, maxNetworkRetries: 0 }));
+      if (JSON.stringify(sub) !== JSON.stringify(finalSub)) fail("collection_snapshot_changed");
+      await readAccount();
       return { providerRequestKey: proof.outboundRequestKey, providerRequestDigest: proof.outboundRequestDigest, eventId: event.id,
         accountId: expectedAccountId, livemode: false, organizationId: i.organizationId, intentId: i.id, catalogVersion: NEW_TEST_CATALOG_VERSION,
-        sessionId: session.id, sessionStatus: session.status ?? "", paymentStatus: session.payment_status, customerId: session.customer as string,
-        subscriptionId: session.subscription as string, status: sub.status, seatQuantity: item.quantity!, price: p };
+        sessionId: i.sessionId!, ...(session ? { sessionStatus: session.status ?? "", paymentStatus: session.payment_status } : {}), customerId, subscriptionId,
+        seatQuantity: item.quantity!, price: { ...p, unit_amount: p.unit_amount!, recurring: p.recurring! }, eventType: event.type as import("./lifecycle").SubscriptionObservation["eventType"], ...observation,
+        coverage: { ...coverage, eventToken: event.id } };
     },
   };
 }

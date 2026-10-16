@@ -13,6 +13,9 @@ import { reserveAICredits, settleAICreditReservation } from "../aiCreditReservat
 import { applyMargin } from "../aiBillingMargin";
 import { postgresFixtureStore } from "../newTestSubscription/postgresFixtureStore";
 import Stripe from "stripe";
+import { fixtureCoverageDDL } from "../newTestSubscription/fixtureCoverage";
+import { collectedEvidence, type CoverageObservation } from "../newTestSubscription/paidCoverage";
+import { paidFixture } from "./fixtures/newTestPaidFixture";
 import { createStripeTestProvider } from "../newTestSubscription/stripeTestProvider";
 
 const enabled = process.env.AXIOM_RUN_OWNED_COMMERCIAL_FIXTURE === "1";
@@ -25,12 +28,16 @@ suite("owned PG17 new TEST subscription service, synthetic provider only", () =>
   const runtime = "synthetic-runtime-1";
   const scope = { organizationId: "synthetic-org", userId: "owner" };
   const now = Date.UTC(2026, 9, 16);
-  let creates = 0; let loseResponse = false; let eventId = "evt-1"; let seats = 3; let status = "active"; let priceAmount = 2900; let currentIntent = ""; let currentKey = ""; let currentDigest = ""; let providerAccount = "acct-test";
+  let creates = 0; let loseResponse = false; let eventId = "evt-1"; let seats = 3; let status = "active"; let priceAmount = 2900; let currentIntent = ""; let currentKey = ""; let currentDigest = ""; let currentOrg = scope.organizationId; let providerAccount = "acct-test";
   const price = () => ({ id: "price-test", livemode: false, active: true, currency: "usd", type: "recurring", billing_scheme: "per_unit", unit_amount: priceAmount, recurring: { interval: "month", interval_count: 1, usage_type: "licensed" } });
   const provider: ProviderBoundary = {
     mode: () => ({ livemode: false, accountId: providerAccount }), price: async () => price(),
-    create: async (request, key) => { creates++; currentKey = key; currentDigest = createHash("sha256").update(request).digest("hex"); const parsed = JSON.parse(request); currentIntent = parsed.metadata.intentId; if (loseResponse) throw new Error("response lost after provider commit"); return { id: "cs-test", url: "https://checkout.stripe.com/test", accountId: providerAccount, livemode: false }; },
-    verifyAndRetrieve: async (_, signature) => { if (signature !== "synthetic-verified-signature") throw new Error("invalid_signature"); return { providerRequestKey: currentKey, providerRequestDigest: currentDigest, eventId, accountId: providerAccount, livemode: false, organizationId: scope.organizationId, intentId: currentIntent, catalogVersion: "axiom_public_test_v1", sessionId: "cs-test", sessionStatus: "complete", paymentStatus: "paid", customerId: "cus-test", subscriptionId: "sub-test", status, seatQuantity: seats, price: price() }; },
+    create: async (request, key) => { creates++; currentKey = key; currentDigest = createHash("sha256").update(request).digest("hex"); const parsed = JSON.parse(request); currentIntent = parsed.metadata.intentId; currentOrg = parsed.metadata.organizationId; if (loseResponse) throw new Error("response lost after provider commit"); return { id: "cs-test", url: "https://checkout.stripe.com/test", accountId: providerAccount, livemode: false, originalCreateProof: { runtimeId: runtime, accountId: providerAccount, sessionId: "cs-test", outboundRequestKey: key, outboundRequestDigest: currentDigest, requestId: "req-generic-synthetic", statusCode: 200 } }; },
+    verifyAndRetrieve: async (_, signature) => { if (signature !== "synthetic-verified-signature") throw new Error("invalid_signature"); return { providerRequestKey: currentKey, providerRequestDigest: currentDigest, eventId, accountId: providerAccount, livemode: false, organizationId: currentOrg, intentId: currentIntent, catalogVersion: "axiom_public_test_v1", sessionId: "cs-test", sessionStatus: "complete", paymentStatus: "paid", customerId: "cus-test", subscriptionId: "sub-test", status, seatQuantity: seats, price: price(), currentPeriodEndsAt: "2026-11-01T00:00:00.000Z", cancelAtPeriodEnd: false, coverage: syntheticCoverage(currentOrg, currentIntent, eventId) }; },
+  };
+  const syntheticCoverage = (org: string, intent: string, token: string, session = "cs-test", customer = "cus-test", subscription = "sub-test"): CoverageObservation => {
+    const evidence = collectedEvidence({ runtimeId: runtime, accountId: "acct-test", organizationId: org, originatingIntentId: intent, sessionId: session, customerId: customer, subscriptionId: subscription, planId: "pro", interval: "monthly", seatQuantity: 3, priceId: "price-test", unitAmountCents: 2900, invoiceId: `in-${org}`, lineId: `il-${org}`, subscriptionItemId: `si-${org}`, paymentId: `inpay-${org}`, paymentIntentId: `pi-${org}`, chargeId: `ch-${org}`, currency: "usd", amountCents: 8700, collectedAt: "2026-10-01T00:00:00.000Z", serviceStart: "2026-10-01T00:00:00.000Z", serviceEnd: "2026-11-01T00:00:00.000Z" });
+    return { eventToken: token, latestInvoiceId: evidence.invoiceId, currentPeriodStart: evidence.serviceStart, currentPeriodEnd: evidence.serviceEnd, collection: { kind: "collected", evidence } };
   };
   const request = { clientIntentKey: "intent_key_12345678", planId: "pro" as const, interval: "monthly" as const, seatQuantity: 3, email: "synthetic@example.invalid", successUrl: "https://isolated.invalid/success", cancelUrl: "https://isolated.invalid/cancel" };
   const core = (boundary = provider) => { const store = postgresFixtureStore(url, runtime, "acct-test"); stores.push(store); return createNewTestSubscriptionService({ store, provider: boundary, configuredPrices: { "pro:monthly": "price-test" }, now: () => now, id: () => randomBytes(12).toString("hex"), digest: text => createHash("sha256").update(text).digest("hex") }); };
@@ -50,7 +57,7 @@ suite("owned PG17 new TEST subscription service, synthetic provider only", () =>
       'CREATE TABLE "OrganizationTestSubscriptionContract" (org text PRIMARY KEY,intent text UNIQUE NOT NULL,customer text UNIQUE NOT NULL,subscription text UNIQUE NOT NULL,body jsonb NOT NULL,FOREIGN KEY(intent,org) REFERENCES "RecurringSubscriptionIntent"(id,org))',
     ];
     // Expression uniqueness is created as a separate index in PostgreSQL.
-    for (const statement of sql) await db.$executeRawUnsafe(statement);
+    for (const statement of [...sql, ...fixtureCoverageDDL]) await db.$executeRawUnsafe(statement);
     await db.$executeRawUnsafe('CREATE UNIQUE INDEX intent_client_key ON "RecurringSubscriptionIntent" (org,(body->>\'clientIntentKey\'))');
     await db.$executeRawUnsafe(`CREATE FUNCTION freeze_test_intent() RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN
       IF OLD.id IS DISTINCT FROM NEW.id OR OLD.org IS DISTINCT FROM NEW.org THEN RAISE EXCEPTION 'immutable_intent_identity'; END IF;
@@ -86,6 +93,8 @@ suite("owned PG17 new TEST subscription service, synthetic provider only", () =>
     await db.$executeRawUnsafe('INSERT INTO "IsolatedTestRuntime" VALUES ($1,$2)', runtime, "acct-test");
     await db.$executeRawUnsafe(`CREATE FUNCTION fail_observation_fixture() RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN IF NEW."lastStripeEventId"='evt-injected-rollback' THEN RAISE EXCEPTION 'fixture_write_failure'; END IF; RETURN NEW; END $$`);
     await db.$executeRawUnsafe('CREATE TRIGGER fail_observation_fixture AFTER UPDATE ON "TenantBillingPlan" FOR EACH ROW EXECUTE FUNCTION fail_observation_fixture()');
+    await db.$executeRawUnsafe(`CREATE FUNCTION fail_coverage_fixture() RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN IF NEW.body->>'eventToken'='evt-coverage-rollback' THEN RAISE EXCEPTION 'fixture_coverage_failure'; END IF; RETURN NEW; END $$`);
+    await db.$executeRawUnsafe('CREATE TRIGGER fail_coverage_fixture AFTER INSERT OR UPDATE ON "OrganizationTestCoverageObservation" FOR EACH ROW EXECUTE FUNCTION fail_coverage_fixture()');
     for (const userId of ["owner", "member-2", "member-3"]) await db.orgMembership.create({ data: { userId, organizationId: scope.organizationId, role: userId === "owner" ? "owner" : "read_only", acceptedAt: new Date(now) } });
     await db.usageEvent.create({ data: { organizationId: scope.organizationId, eventKind: "ai_invocation", billedCents: 100, createdAt: new Date(now) } });
     await db.aIUsageReservation.create({ data: { organizationId: scope.organizationId, idempotencyKey: "synthetic_pending_hold", reservedCents: 250, status: "pending_settlement", expiresAt: new Date(now - 1000) } });
@@ -93,7 +102,7 @@ suite("owned PG17 new TEST subscription service, synthetic provider only", () =>
 
   }, 30000);
   afterAll(async () => { await Promise.all(stores.map(store => store.disconnect())); if (db) await db.$disconnect(); if (started) execFileSync("docker", ["rm", "-f", name], { stdio: "pipe" }); });
-  it("retains unknown outcome, late-binds once, protects financial/tenant state and models monthly remaining pool", async () => {
+  it("binds captured original collection once, protects financial/tenant state and models monthly remaining pool", async () => {
     expect(applyMargin(2)).toBe(3); // reuse established actual-cost ledger arithmetic; no new pricing formula
     const service = core();
     const intent = await service.prepare(scope, request); expect(intent.terms.monthlyAICreditsCents).toBe(3000);
@@ -102,10 +111,10 @@ suite("owned PG17 new TEST subscription service, synthetic provider only", () =>
     providerAccount = "acct-other";
     await expect(service.attempt(scope, intent.id)).rejects.toThrow("intent_unavailable"); expect(creates).toBe(0);
     providerAccount = "acct-test";
-    loseResponse = true;
-    expect(await service.attempt(scope, intent.id)).toEqual({ kind: "reconciliation_required" });
+    loseResponse = false;
+    expect(await service.attempt(scope, intent.id)).toMatchObject({ kind: "checkout_ready" });
     expect(creates).toBe(1);
-    await expect(service.attempt(scope, intent.id)).rejects.toThrow("reconciliation_required"); expect(creates).toBe(1);
+    await expect(service.attempt(scope, intent.id)).rejects.toThrow("observe_existing"); expect(creates).toBe(1);
     await expect(service.reconcile("synthetic", "bad", scope.organizationId)).rejects.toThrow("invalid_signature");
     const originalKey = currentKey; currentKey = "unrelated_attempt";
     await expect(service.reconcile("synthetic", "synthetic-verified-signature", scope.organizationId)).rejects.toThrow("attempt_provenance_unavailable");
@@ -123,18 +132,19 @@ suite("owned PG17 new TEST subscription service, synthetic provider only", () =>
     await expect(service.previewRemaining(scope)).rejects.toThrow("new_test_contract_unavailable");
     providerAccount = "acct-test";
     eventId = "evt-2"; seats = 1;
-    expect(await service.reconcile("synthetic", "synthetic-verified-signature", scope.organizationId)).toBe("applied");
-    expect(await service.previewRemaining(scope)).toMatchObject({ remainingCents: 1147 });
+    await expect(service.reconcile("synthetic", "synthetic-verified-signature", scope.organizationId)).rejects.toThrow();
+    seats = 3;
+    expect(await service.previewRemaining(scope)).toMatchObject({ remainingCents: 3147 });
     eventId = "evt-1"; seats = 3;
     expect(await service.reconcile("synthetic", "synthetic-verified-signature", scope.organizationId)).toBe("replay");
-    expect(await service.previewRemaining(scope)).toMatchObject({ remainingCents: 1147 });
+    expect(await service.previewRemaining(scope)).toMatchObject({ remainingCents: 3147 });
     eventId = "evt-invalid"; priceAmount = 1;
     await expect(service.reconcile("synthetic", "synthetic-verified-signature", scope.organizationId)).rejects.toThrow("signed_terms_mismatch");
     expect(await db.$queryRawUnsafe('SELECT id FROM "StripeBillingEvent" WHERE id=$1', eventId)).toEqual([]);
     priceAmount = 2900; eventId = "evt-injected-rollback";
     await expect(service.reconcile("synthetic", "synthetic-verified-signature", scope.organizationId)).rejects.toThrow();
     expect(await db.$queryRawUnsafe('SELECT id FROM "StripeBillingEvent" WHERE id=$1', eventId)).toEqual([]);
-    expect(await service.previewRemaining(scope)).toMatchObject({ remainingCents: 1147 });
+    expect(await service.previewRemaining(scope)).toMatchObject({ remainingCents: 3147 });
     await expect(db.$executeRawUnsafe(`UPDATE "RecurringSubscriptionIntent" SET body=jsonb_set(body,'{terms,seatQuantity}','999') WHERE id=$1`, intent.id)).rejects.toThrow();
     await expect(db.$executeRawUnsafe(`UPDATE "OrganizationTestSubscriptionContract" SET customer='different' WHERE org=$1`, scope.organizationId)).rejects.toThrow();
     priceAmount = 2900; status = "past_due"; eventId = "evt-3";
@@ -150,8 +160,8 @@ suite("owned PG17 new TEST subscription service, synthetic provider only", () =>
     let arrived = 0; let release!: () => void;
     const barrier = new Promise<void>(resolve => { release = resolve; });
     const boundary = (id: string): ProviderBoundary => ({ ...provider, verifyAndRetrieve: async (raw, signature) => {
-      const snapshot = await provider.verifyAndRetrieve(raw, signature); arrived++; if (arrived === 2) release();
-      await barrier; return { ...snapshot, eventId: id };
+      const snapshot = await provider.verifyAndRetrieve(raw, signature); if (snapshot.kind === "unsupported_bound_terms") throw new Error("unexpected_fixture_verdict"); arrived++; if (arrived === 2) release();
+      await barrier; return { ...snapshot, eventId: id, coverage: { ...snapshot.coverage, eventToken: id } };
     } });
     const outcomes = await Promise.allSettled([core(boundary("evt-race-a")).reconcile("synthetic", "synthetic-verified-signature", scope.organizationId), core(boundary("evt-race-b")).reconcile("synthetic", "synthetic-verified-signature", scope.organizationId)]);
     expect(outcomes.filter(result => result.status === "fulfilled")).toHaveLength(1);
@@ -188,18 +198,20 @@ suite("owned PG17 new TEST subscription service, synthetic provider only", () =>
     for (const userId of ["owner", "lifecycle-member-2", "lifecycle-member-3"]) await db.orgMembership.create({ data: { userId, organizationId: actor.organizationId, role: userId === "owner" ? "owner" : "read_only", acceptedAt: new Date(now) } });
     const sdk = new Stripe("sk_test_synthetic");
     const canonicalPrice = { ...price(), product: { id: "prod-test", livemode: false, active: true } };
-    let metadata: Record<string, string> = {}; let quantity = 3; let lifecycleStatus = "active"; let cancel = false; let period = 1794787200; let created = 0;
-    const session = () => ({ id: "cs-sdk-lifecycle", livemode: false, mode: "subscription", status: "complete", payment_status: "paid", customer: "cus-sdk-lifecycle", subscription: "sub-sdk-lifecycle", metadata, line_items: { has_more: false, data: [{ quantity: 3, price: canonicalPrice }] } });
-    const subscription = () => ({ id: "sub-sdk-lifecycle", livemode: false, customer: "cus-sdk-lifecycle", metadata, status: lifecycleStatus, cancel_at_period_end: cancel, items: { has_more: false, data: [{ quantity, price: canonicalPrice, current_period_end: period }] } });
-    const client = { accounts: { retrieve: async () => ({ id: "acct-test" }) }, prices: { retrieve: async () => canonicalPrice },
+    let metadata: Record<string, string> = {}; let quantity = 3; let lifecycleStatus = "active"; let cancel = false; const period = Date.UTC(2026, 10, 1) / 1000; let created = 0;
+    const paid = paidFixture({ runtimeId: runtime, accountId: "acct-test", organizationId: actor.organizationId, sessionId: "cs-sdk-lifecycle", customerId: "cus-sdk-lifecycle", subscriptionId: "sub-sdk-lifecycle", priceId: "price-test" }); paid.line.pricing.price_details.product = "prod-test";
+    const session = () => ({ invoice: paid.invoice.id, id: "cs-sdk-lifecycle", livemode: false, mode: "subscription", status: "complete", payment_status: "paid", customer: "cus-sdk-lifecycle", subscription: "sub-sdk-lifecycle", metadata, line_items: { has_more: false, data: [{ quantity: 3, price: canonicalPrice }] } });
+    const subscription = () => ({ latest_invoice: paid.invoice.id, id: "sub-sdk-lifecycle", livemode: false, customer: "cus-sdk-lifecycle", metadata, status: lifecycleStatus, cancel_at_period_end: cancel, items: { has_more: false, data: [{ id: "si_test", quantity, price: canonicalPrice, current_period_start: paid.line.period.start, current_period_end: period }] } });
+    const client = { ...paid.client, accounts: { retrieve: async () => ({ id: "acct-test" }) }, prices: { retrieve: async () => canonicalPrice },
       checkout: { sessions: { create: async (input: Stripe.Checkout.SessionCreateParams) => { created++; metadata = input.subscription_data!.metadata as Record<string, string>; return { ...session(), url: "https://checkout.stripe.com/test", lastResponse: { requestId: "req-sdk-original", statusCode: 200 } }; }, retrieve: async () => session() } },
       subscriptions: { retrieve: async () => subscription() }, webhooks: sdk.webhooks };
     const store = postgresFixtureStore(url, runtime, "acct-test"); stores.push(store);
     const adapter = createStripeTestProvider({ secretKey: "sk_test_synthetic", webhookSecret: "whsec_synthetic", expectedAccountId: "acct-test", store, configuredPrices: { "pro:monthly": "price-test" }, sdkFactory: () => client as unknown as Stripe });
     const service = core(adapter); const origin = await service.prepare(actor, { ...request, clientIntentKey: "sdk_lifecycle_key_123" });
     expect(await service.attempt(actor, origin.id)).toMatchObject({ kind: "checkout_ready" });
-    const deliver = async (id: string, type = "customer.subscription.updated") => {
-      const raw = JSON.stringify({ id, type, livemode: false, data: { object: type === "checkout.session.completed" ? session() : { ...subscription(), status: "canceled" } } });
+    const deliver = async (id: string, type = "customer.subscription.updated", hint?: unknown) => {
+      const object = hint ?? (type === "checkout.session.completed" ? session() : type.startsWith("invoice.") ? paid.invoice : type === "charge.refunded" ? paid.charge : { ...subscription(), status: "canceled" });
+      const raw = JSON.stringify({ id, type, livemode: false, data: { object } });
       return service.reconcile(raw, sdk.webhooks.generateTestHeaderString({ payload: raw, secret: "whsec_synthetic" }), actor.organizationId);
     };
     expect(await deliver("evt-sdk-bound", "checkout.session.completed")).toBe("applied");
@@ -213,20 +225,55 @@ suite("owned PG17 new TEST subscription service, synthetic provider only", () =>
     expect(await db.tenantBillingPlan.findUnique({ where: { organizationId: actor.organizationId } })).toMatchObject({ status: "active", seatQuantity: 3, cancelAtPeriodEnd: true, currentPeriodEndsAt: new Date(period * 1000) });
     expect(await db.stripeBillingEvent.findUnique({ where: { id: "evt-sdk-scheduled" } })).toMatchObject({ type: "customer.subscription.updated" });
     expect(await service.previewRemaining(actor)).toMatchObject({ remainingCents: 2550 });
+    const originalCollection = await store.transaction(tx => tx.coverage(actor.organizationId));
+    const originalInvoice = structuredClone(paid.invoice);
+    paid.invoice.id = "in_next_open"; paid.invoice.status = "open";
+    expect(await deliver("evt-sdk-open-renewal", "invoice.payment_failed")).toBe("applied");
+    await expect(service.previewRemaining(actor)).rejects.toThrow("paid_coverage_unavailable");
+    expect(await store.reserveCredits(actor, { idempotencyKey: "open_renewal_no_hold", reservedCents: 1 }, new Date(now))).toMatchObject({ ok: false, error: "ai_credit_reservation_unavailable" });
+    expect(await deliver("evt-sdk-old-paid", "invoice.paid", originalInvoice)).toBe("applied");
+    await expect(service.previewRemaining(actor)).rejects.toThrow("paid_coverage_unavailable");
+    paid.invoice.status = "uncollectible";
+    expect(await deliver("evt-sdk-uncollectible", "invoice.marked_uncollectible")).toBe("applied");
+    await expect(service.previewRemaining(actor)).rejects.toThrow("paid_coverage_unavailable");
+    Object.assign(paid.invoice, originalInvoice); paid.invoice.lines.data = [paid.line]; paid.charge.amount_refunded = 1;
+    expect(await deliver("evt-sdk-refunded", "charge.refunded")).toBe("applied");
+    await expect(service.previewRemaining(actor)).rejects.toThrow("paid_coverage_unavailable");
+    expect((await store.transaction(tx => tx.coverage(actor.organizationId)))?.originalEvidence).toEqual(originalCollection?.originalEvidence);
+    // A separate full cash invoice, not a reversed refund or active status,
+    // restores eligibility in this synthetic provider fixture.
+    paid.invoice.id = "in_recovery"; paid.line.id = "il_recovery";
+    paid.payment.id = "inpay_recovery"; paid.payment.invoice = paid.invoice.id; paid.payment.payment.payment_intent = "pi_recovery";
+    paid.paymentIntent.id = "pi_recovery"; paid.paymentIntent.latest_charge = "ch_recovery";
+    paid.charge.id = "ch_recovery"; paid.charge.payment_intent = "pi_recovery"; paid.charge.amount_refunded = 0;
+    const beforeCoverageRollback = await store.transaction(tx => tx.coverage(actor.organizationId));
+    const planBeforeCoverageRollback = await db.tenantBillingPlan.findUnique({ where: { organizationId: actor.organizationId } });
+    await expect(deliver("evt-coverage-rollback", "invoice.paid")).rejects.toThrow();
+    expect(await db.stripeBillingEvent.findUnique({ where: { id: "evt-coverage-rollback" } })).toBeNull();
+    expect(await db.tenantBillingPlan.findUnique({ where: { organizationId: actor.organizationId } })).toEqual(planBeforeCoverageRollback);
+    expect(await store.transaction(tx => tx.coverage(actor.organizationId))).toEqual(beforeCoverageRollback);
+    expect(await db.$queryRawUnsafe('SELECT count(*)::int AS count FROM "NewTestPaidInvoiceEvidence" WHERE org=$1', actor.organizationId)).toEqual([{ count: 1 }]);
+    expect(await deliver("evt-sdk-cash-recovery", "invoice.paid")).toBe("applied");
+    expect(await service.previewRemaining(actor)).toMatchObject({ remainingCents: 2550 });
+    expect(await db.$queryRawUnsafe('SELECT count(*)::int AS count FROM "NewTestPaidInvoiceEvidence" WHERE org=$1', actor.organizationId)).toEqual([{ count: 2 }]);
+    expect(await financial()).toEqual(before);
+    await expect(db.$executeRawUnsafe('UPDATE "NewTestPaidInvoiceEvidence" SET body=body WHERE org=$1', actor.organizationId)).rejects.toThrow("paid_evidence_immutable");
     for (const changed of [4, 2]) {
       quantity = changed;
       const planBeforeChange = await db.tenantBillingPlan.findUnique({ where: { organizationId: actor.organizationId } });
-      await expect(deliver(`evt-sdk-seat-change-${changed}`)).rejects.toThrow("seat_change_requires_review");
+      expect(await deliver(`evt-sdk-seat-change-${changed}`)).toBe("unavailable");
       expect(await db.stripeBillingEvent.findUnique({ where: { id: `evt-sdk-seat-change-${changed}` } })).toBeNull();
       expect(await db.tenantBillingPlan.findUnique({ where: { organizationId: actor.organizationId } })).toEqual(planBeforeChange);
-      expect(await financial()).toEqual(before); expect(await service.previewRemaining(actor)).toMatchObject({ remainingCents: 2550 });
+      expect(await financial()).toEqual(before); await expect(service.previewRemaining(actor)).rejects.toThrow("paid_coverage_unavailable");
+      quantity = 3; expect(await deliver(`evt-sdk-restored-original-${changed}`)).toBe("applied");
+      expect(await service.previewRemaining(actor)).toMatchObject({ remainingCents: 2550 });
     }
     quantity = 3;
     lifecycleStatus = "unpaid"; cancel = false;
     expect(await deliver("evt-sdk-failed")).toBe("applied"); expect(await service.previewRemaining(actor)).toMatchObject({ remainingCents: 0 });
     expect(await store.reserveCredits(actor, { idempotencyKey: "lifecycle_fail_no_hold", reservedCents: 1 }, new Date(now))).toMatchObject({ ok: false, error: "ai_credit_pool_exhausted" });
-    lifecycleStatus = "active"; period += 30 * 86400;
-    expect(await deliver("evt-sdk-renewed", "customer.subscription.created")).toBe("applied");
+    lifecycleStatus = "active"; // Recovery requires the same current paid invoice coverage, never status alone.
+    expect(await deliver("evt-sdk-recovered-collected", "customer.subscription.created")).toBe("applied");
     expect(await service.previewRemaining(actor)).toMatchObject({ remainingCents: 2550 });
     expect(await db.tenantBillingPlan.findUnique({ where: { organizationId: actor.organizationId } })).toMatchObject({ currentPeriodEndsAt: new Date(period * 1000), cancelAtPeriodEnd: false, seatQuantity: 3 });
     expect(await deliver("evt-sdk-distinct-delayed")).toBe("applied"); expect(await service.previewRemaining(actor)).toMatchObject({ remainingCents: 2550 });
@@ -240,6 +287,19 @@ suite("owned PG17 new TEST subscription service, synthetic provider only", () =>
     expect(await db.stripeBillingEvent.findUnique({ where: { id: "evt-sdk-deleted" } })).toMatchObject({ type: "customer.subscription.deleted" });
     expect(await financial()).toEqual(before);
     const persisted = await store.transaction(tx => tx.intent(origin.id)); expect(persisted?.terms).toEqual(origin.terms); expect(persisted?.originalCreateProof?.requestId).toBe("req-sdk-original"); expect(created).toBe(1);
+  });
+  it("response loss retains unknown intent and cannot bind even a synthetic paid observation", async () => {
+    const actor = { organizationId: "lost-original-proof-org", userId: "owner" };
+    for (const userId of ["owner", "lost-member-2", "lost-member-3"]) await db.orgMembership.create({ data: { userId, organizationId: actor.organizationId, role: userId === "owner" ? "owner" : "read_only", acceptedAt: new Date() } });
+    const service = core(); const intent = await service.prepare(actor, { ...request, clientIntentKey: "lost_response_key_123" });
+    loseResponse = true; eventId = "evt-lost-original-proof";
+    try {
+      expect(await service.attempt(actor, intent.id)).toEqual({ kind: "reconciliation_required" });
+      await expect(service.reconcile("synthetic", "synthetic-verified-signature", actor.organizationId)).rejects.toThrow("attempt_provenance_unavailable");
+      expect(await db.stripeBillingEvent.findUnique({ where: { id: eventId } })).toBeNull();
+      expect(await db.tenantBillingPlan.findUnique({ where: { organizationId: actor.organizationId } })).toBeNull();
+      expect(await db.$queryRawUnsafe('SELECT org FROM "OrganizationTestCoverageObservation" WHERE org=$1', actor.organizationId)).toEqual([]);
+    } finally { loseResponse = false; }
   });
   it("missing new provenance fails closed only for explicit lane; legacy reservation remains independent", async () => {
     await db.orgMembership.updateMany({ where: { organizationId: scope.organizationId, userId: scope.userId }, data: { role: "owner" } });
@@ -259,11 +319,21 @@ suite("owned PG17 new TEST subscription service, synthetic provider only", () =>
     for (const userId of [user.id, "bridge-member-2", "bridge-member-3"]) await db.orgMembership.create({ data: { userId, organizationId: org, role: userId === user.id ? "owner" : "read_only", acceptedAt: new Date() } });
     loseResponse = false; status = "active"; seats = 3; priceAmount = 2900;
     let httpEvent = "evt-http"; let httpStatus = "active"; let httpSeats = 3; let httpCancel = false;
+    let httpCollection: "collected" | "unsupported" | "expired" = "collected";
+    const httpCoverage = () => {
+      const o = syntheticCoverage(org, currentIntent, httpEvent, "cs-http", "cus-http", "sub-http");
+      if (httpCollection === "unsupported") o.collection = { kind: "unavailable", reason: "not_collected" };
+      if (httpCollection === "expired" && o.collection.kind === "collected") {
+        const e = collectedEvidence({ ...o.collection.evidence, invoiceId: "in-http-expired", serviceStart: "2026-09-01T00:00:00.000Z", serviceEnd: "2026-10-01T00:00:00.000Z", collectedAt: "2026-09-01T00:00:00.000Z" });
+        o.latestInvoiceId = e.invoiceId; o.currentPeriodStart = e.serviceStart; o.currentPeriodEnd = e.serviceEnd; o.collection = { kind: "collected", evidence: e };
+      }
+      return o;
+    };
     let httpType: "checkout.session.completed" | "customer.subscription.updated" | "customer.subscription.deleted" = "checkout.session.completed";
     const httpProvider: ProviderBoundary = { ...provider,
       create: async (request, key) => ({ ...await provider.create(request, key), id: "cs-http", originalCreateProof: { runtimeId: runtime, accountId: "acct-test", sessionId: "cs-http", outboundRequestKey: key, outboundRequestDigest: createHash("sha256").update(request).digest("hex"), requestId: "req-synthetic-http-original", statusCode: 200 } }),
       verifyAndRetrieve: async (raw, signature) => ({ ...await provider.verifyAndRetrieve(raw, signature), eventId: httpEvent, organizationId: org, sessionId: "cs-http", customerId: "cus-http", subscriptionId: "sub-http", status: httpStatus, seatQuantity: httpSeats,
-        eventType: httpType, currentPeriodEndsAt: "2026-11-16T00:00:00.000Z", cancelAtPeriodEnd: httpCancel }),
+        eventType: httpType, currentPeriodEndsAt: httpCoverage().currentPeriodEnd, cancelAtPeriodEnd: httpCancel, coverage: httpCoverage() }),
     };
     const setup = core(httpProvider); const intent = await setup.prepare(actor, { ...request, email }); await setup.attempt(actor, intent.id);
     await setup.reconcile("synthetic-provider-evidence", "synthetic-verified-signature", org);
@@ -315,18 +385,22 @@ suite("owned PG17 new TEST subscription service, synthetic provider only", () =>
       const originalIntent = await stores[stores.length - 1].transaction(tx => tx.intent(intent.id));
       const financialBeforeLifecycle = { usage: await db.usageEvent.findMany({ where: { organizationId: org } }), holds: await db.aIUsageReservation.findMany({ where: { organizationId: org } }), purchases: await db.addOnPurchase.findMany({ where: { organizationId: org } }) };
       for (const phase of [
-        { event: "evt-http-scheduled", status: "active", seats: 3, cancel: true, pool: "$30.00", remaining: "$27.50", exhausted: false },
-        { event: "evt-http-past-due", status: "past_due", seats: 3, cancel: false, pool: "$2.00", remaining: "$0.00", exhausted: true },
-        { event: "evt-http-recovered", status: "active", seats: 3, cancel: false, pool: "$30.00", remaining: "$27.50", exhausted: false },
-        { event: "evt-http-canceled", status: "canceled", seats: 3, cancel: false, pool: "$2.00", remaining: "$0.00", exhausted: true },
+        { event: "evt-http-scheduled", status: "active", collection: "collected" as const, unavailable: false, seats: 3, cancel: true, pool: "$30.00", remaining: "$27.50", exhausted: false },
+        { event: "evt-http-open-invoice", status: "active", collection: "unsupported" as const, unavailable: true, seats: 3, cancel: false, pool: "", remaining: "", exhausted: true },
+        { event: "evt-http-expired", status: "active", collection: "expired" as const, unavailable: true, seats: 3, cancel: false, pool: "", remaining: "", exhausted: true },
+        { event: "evt-http-past-due", status: "past_due", collection: "unsupported" as const, unavailable: false, seats: 3, cancel: false, pool: "$2.00", remaining: "$0.00", exhausted: true },
+        { event: "evt-http-recovered", status: "active", collection: "collected" as const, unavailable: false, seats: 3, cancel: false, pool: "$30.00", remaining: "$27.50", exhausted: false },
+        { event: "evt-http-canceled", status: "canceled", collection: "unsupported" as const, unavailable: false, seats: 3, cancel: false, pool: "$2.00", remaining: "$0.00", exhausted: true },
       ]) {
-        httpEvent = phase.event; httpStatus = phase.status; httpSeats = phase.seats; httpCancel = phase.cancel;
+        httpEvent = phase.event; httpCollection = phase.collection; httpStatus = phase.status; httpSeats = phase.seats; httpCancel = phase.cancel;
         httpType = phase.status === "canceled" ? "customer.subscription.deleted" : "customer.subscription.updated";
         // Trusted synthetic lifecycle IO remains outside the provider-disabled app.
         expect(await setup.reconcile("synthetic-current-subscription", "synthetic-verified-signature", org)).toBe("applied");
         const observation = await db.tenantBillingPlan.findUnique({ where: { organizationId: org } }); expect(observation).toMatchObject({ status: phase.status, seatQuantity: phase.seats, cancelAtPeriodEnd: phase.cancel });
         const currentPage = await http("/control/usage-billing"); expect(currentPage.status).toBe(200); const currentHtml = await currentPage.text();
-        expect(currentHtml.replace(/<!--[\s\S]*?-->/g, "")).toContain(`${phase.pool} current account allowance`); expect(currentHtml).toContain(phase.remaining); expect(currentHtml).not.toContain("$200.00");
+        if (phase.unavailable) { expect(currentHtml).toContain("Unavailable"); expect(currentHtml).toContain("Plan unavailable"); }
+        else { expect(currentHtml.replace(/<!--[\s\S]*?-->/g, "")).toContain(`${phase.pool} current account allowance`); expect(currentHtml).toContain(phase.remaining); }
+        expect(currentHtml).not.toContain("$200.00");
         if (phase.exhausted) {
           const key = `${phase.event}-no-new-hold`;
           const denied = await http("/api/ai/generate", { method: "POST", headers: { "content-type": "application/json", "idempotency-key": key, origin: base }, body: JSON.stringify({ prompt: "Inactive pool is exhausted by unresolved hold" }) });

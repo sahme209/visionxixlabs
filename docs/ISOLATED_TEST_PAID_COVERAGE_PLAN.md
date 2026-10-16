@@ -1,0 +1,139 @@
+# Inactive NEW TEST collected coverage — approved implementation plan
+
+Coordinator approved implementation on 2026-10-16. This supersedes the earlier
+status-only lifecycle recovery claim. Earlier pinned HTTP evidence remains
+historical evidence of status mapping, not proof of collection or renewal.
+
+## Scope and policy
+
+Only exact `axiom_public_test_v1` contracts in the owned loopback fixture qualify.
+Original create-attempt proof is necessary identity provenance, never payment
+proof. Original price, interval, quantity, customer and subscription stay fixed.
+No production model/migration, support path, shared event-consumer semantics,
+public route, deployment flag or provider-IO permission changes are authorized.
+The existing isolated application flag denies every Stripe boundary absolutely.
+
+Supported paid coverage is full-price USD cash collection for one recurring line
+whose own service period is aligned to UTC calendar months: one complete month,
+or twelve complete months for annual terms. **Standard mid-month checkout and
+recovery, prorations, partial periods, discounts (including zero-price), credits,
+taxes, manual/out-of-band payments and multi-payment collection are unsupported.**
+This bounded inactive proof slice does not complete the hosted payment journey.
+Initial binding also requires the original Checkout invoice to remain the current
+latest invoice; late first binding after a later renewal is unsupported.
+
+Active paid access requires valid original provenance, immutable collected
+evidence and a current observation referencing that evidence, with
+`serviceStart <= current clock < serviceEnd`. Missing, unsupported, future or
+expired coverage is Unavailable, never Free or legacy fallback. A currently
+verified inactive status may retain the existing Free policy only on an
+authentically bound, originally collected contract. Missing identity/provenance
+is Unavailable regardless of status. No grace or write-off policy is invented.
+
+## Collection and retrieval boundary
+
+Use installed Stripe SDK types, not guessed compatibility fields. Retrieve the
+current subscription and latest invoice; match invoice subscription/customer,
+one complete non-prorated recurring line, subscription-item/price/product,
+original quantity, currency and full expected amount. Coverage comes from the
+invoice line's period, not invoice period_start/end. Require finalized paid
+invoice, exact cash due/paid, zero remaining/overpaid/balance/credit/discount/tax,
+one full paid InvoicePayment linked to a succeeded PaymentIntent and its paid,
+captured, unrefunded, undisputed Charge. Reject payment_record/manual/forgiven/
+uncollectible/zero-due/partial outcomes. Reread invoice, charge, subscription and
+account before returning; a changed snapshot fails closed. Unsupported current
+collection on an established contract clears positive coverage atomically.
+
+At most 14 remote reads, each list limit 2 with has_more false; no pagination.
+Zero retries, 10-second maximum per request and 30-second total deadline. Check
+the existing provider denial/runtime/deadline before and after every awaited
+SDK boundary; no ambient credentials or actual provider requests in acceptance.
+Relevant signed invoice/refund/dispute/credit-note triggers only locate an exact
+bound contract; current retrieved state wins over event arrival order.
+
+## Fixture persistence and access
+
+Add fixture-only immutable NewTestPaidInvoiceEvidence and mutable
+OrganizationTestCoverageObservation tables (no Prisma schema change). Evidence
+records exact scope, invoice/line/payment/intent/charge IDs, cash amounts, service
+period and canonical digest. Unique scoped invoice evidence cannot be rewritten.
+Projection stores current event token, subscription period/latest invoice, and
+collected evidence or explicit negative outcome. Refund/dispute observations
+invalidate projection without deleting historical collection evidence.
+
+Coordinator amendment: a verified current subscription with exact original
+identity but changed terms produces a typed `unsupported_bound_terms` verdict.
+It deprivileges only the separate coverage projection to Unavailable; it adopts
+no terms and consumes no event or plan/intent/financial write. Foreign identity
+or failed retrieval produces no write. Projection revision is captured before
+provider IO and CAS-fenced along with the plan token on every positive/negative
+commit; every projection write increments it. Reservation admission also fences
+that revision. Thus a late positive cannot overwrite a newer negative merely
+because deprivileging leaves the plan token unchanged. Historical replay receipts
+grant no authority. This explicitly supersedes the earlier coverage-free
+no-mutation ruling for term drift, and adds no upgrade/downgrade policy.
+
+Reuse the existing subscription event consumer in the same Serializable
+transaction as evidence/projection/plan/intent writes. Preserve its opaque token
+CAS. Invalid identity/read failure consumes nothing. Reads and previews use one
+pure coverage kernel; annual cash funds only its twelve existing UTC monthly
+buckets. Existing usage, top-ups, holds and replay receipts remain unchanged.
+NEW TEST admission carries an internal guard and conditionally inserts the
+existing reservation row against database clock, current event token and month;
+replay also revalidates current authority. Legacy reservations retain their
+existing path. Expiry alone cannot grant a fresh month even without a webhook.
+
+## RED matrix and execution order
+
+1. Pure kernel RED: monthly/annual collected positive; exact scope and original
+   terms; active missing/unsupported/future/expired denied; inactive Free only
+   after original collected provenance; mid-month/month-span mismatch denied.
+2. SDK RED: active draft/open/uncollectible/forgiven denied; full collection
+   chain positive; discount/credit/tax/manual/partial/pagination/foreign-ID,
+   refund/dispute and inconsistent reread denied; bounded timeout/read count;
+   flag changes at every await prevent subsequent SDK work.
+3. Service/store RED: initial binding requires proof; unsupported current state
+   replaces positive projection; evidence immutable; duplicate replay,
+   out-of-order delivery/current-state retrieval, token race and write rollback
+   leave event/projection/plan atomic; financial rows never reset or minted.
+4. Resolver/reservation RED: UTC month/year boundaries, expiry without webhook,
+   stale preview, month rollover and reused receipt cannot authorize a new
+   admission; database-clock/event-token write fence; legacy path unchanged.
+   Deterministic races cover negative→stale-positive (same plan token) and
+   positive→stale-negative. Terms drift followed by refund and old paid delivery
+   cannot retain paid authority or rewrite immutable original collection proof.
+5. Focused light tests while coordinator full gates run. Freeze source for
+   independent review. Only after explicit granted window run owned PostgreSQL/
+   actual Next acceptance and web TypeScript sequentially, then release all
+   owned resources. Remote SDK objects are qualified provider fixtures, not
+   hosted Stripe proof. Pricing-to-checkout HTTP transport acceptance remains
+   deferred until this safety slice is reviewed.
+
+## Historical tracker proposal
+
+Retain old held-row fairness blockers as history, marking pre-LIMIT eligibility,
+tenant interleaving and timestamp/CAS rotation superseded by existing source and
+tests. Cross-batch starvation/load/backoff remains separate. Do not use this
+slice to claim hosted checkout, supported mid-month subscriptions or general
+billing completion.
+
+## Execution record (review candidate)
+
+The initial RED reproduced a $30 active preview with no collection evidence.
+The new kernel and collection modules first failed as missing implementations.
+Focused source, boundary, legacy-consumer and demo regressions now pass 240 tests
+across 11 files (2026-10-16). Eight owned PostgreSQL/Next cases are deliberately
+skipped until the coordinator grants an acceptance window. Those cases include
+cash recovery, an open/uncollectible invoice, refund invalidation, immutable
+evidence, post-evidence-insert rollback, and actual application Unavailable for
+unsupported/expired coverage. They are not yet validation evidence for this
+candidate. Focused new/changed-source lint and diff whitespace checks pass;
+the shared reservation module retains its pre-existing explicit-any signatures.
+No compiler, full suite, owned server/database, SDK network call or shared Prisma
+generation has run during this implementation window.
+
+Candidate is to be frozen for independent review before owned acceptance and
+web TypeScript. Earlier status-only 7/7 HTTP evidence does not validate these
+new collection/coverage changes. All remote Stripe objects in current tests are
+explicitly synthetic provider fixtures; actual signature construction verifies
+only the local signature path. Hosted Stripe acceptance remains a separate gate.

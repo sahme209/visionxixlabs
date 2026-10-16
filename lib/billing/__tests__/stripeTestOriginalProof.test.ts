@@ -1,4 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
+import { paidFixture } from "./fixtures/newTestPaidFixture";
 import { createHash } from "node:crypto";
 import { createNewTestSubscriptionService, type Intent, type Store, type Transaction, type Contract } from "../newTestSubscription/service";
 import Stripe from "stripe";
@@ -68,7 +69,7 @@ describe("inactive original Stripe TEST proof adapter", () => {
 describe("original proof composed with existing intent CAS", () => {
   function composed(failConfirmation = false) {
     const f = fixture(); let row: Intent | null = null; let consumed = false; let ownContract: Contract | null = null; let bindOnCapture = false; let legacyBound = false; let authorized = true; let failOnce = failConfirmation;
-    const tx: Transaction = {
+    const tx: Transaction = { invalidateCoverage: async () => { throw new Error("unexpected"); }, currentTime: async () => new Date(), coverage: async () => null,
       eligible: async () => authorized, acceptedSeats: async () => 1, intent: async () => row,
       activeIntent: async () => row, insertIntent: async i => { row = structuredClone(i); },
       saveIntent: async (i, revision) => {
@@ -157,11 +158,12 @@ describe("original proof composed with existing intent CAS", () => {
   it("actual local signature plus captured original response binds exactly once", async () => {
     const f = composed(); const i = await f.service.prepare(scope, selection);
     await f.service.attempt(scope, i.id);
-    const metadata = { intentId: i.id, organizationId: "org", catalogVersion: "axiom_public_test_v1" };
-    const session = { id: "cs_test", livemode: false, mode: "subscription", status: "complete", payment_status: "paid", metadata,
-      customer: "cus_test", subscription: "sub_test", line_items: { has_more: false, data: [{ price, quantity: 1 }] } };
+    const metadata = { intentId: i.id, organizationId: "org", catalogVersion: "axiom_public_test_v1", planId: "pro", billingInterval: "monthly" };
+    const paid = paidFixture({ originatingIntentId: i.id, seatQuantity: 1, priceId: "price_pro" }); paid.line.pricing.price_details.product = "prod_pro"; Object.assign(f.client, paid.client);
+    const session = { invoice: "in_test", id: "cs_test", livemode: false, mode: "subscription", status: "complete", payment_status: "paid", metadata,
+      customer: "cus_test", subscription: "sub_test", line_items: { has_more: false, data: [{ id: "si_test", price, quantity: 1, current_period_start: paid.line.period.start, current_period_end: paid.line.period.end }] } };
     f.client.checkout.sessions.retrieve.mockResolvedValue(session);
-    f.client.subscriptions.retrieve.mockResolvedValue({ id: "sub_test", livemode: false, customer: "cus_test", status: "active", metadata, items: { has_more: false, data: [{ price, quantity: 1 }] } });
+    f.client.subscriptions.retrieve.mockResolvedValue({ id: "sub_test", livemode: false, customer: "cus_test", status: "active", metadata, latest_invoice: "in_test", cancel_at_period_end: false, items: { has_more: false, data: [{ id: "si_test", price, quantity: 1, current_period_start: paid.line.period.start, current_period_end: paid.line.period.end }] } });
     const sdk = new Stripe("sk_test_synthetic");
     f.client.webhooks.constructEvent.mockImplementation((raw, signature, secret) => sdk.webhooks.constructEvent(raw as string, signature as string, secret as string));
     const raw = JSON.stringify({ id: "evt_real_local_signature", livemode: false, type: "checkout.session.completed", data: { object: session } });
@@ -182,7 +184,7 @@ describe("original proof composed with existing intent CAS", () => {
     f.client.webhooks.constructEvent.mockImplementation((raw, signature, secret) => sdk.webhooks.constructEvent(raw as string, signature as string, secret as string));
     const raw = JSON.stringify({ id: "evt_real_local_signature", livemode: false, type: "checkout.session.completed", data: { object: session } });
     const signature = sdk.webhooks.generateTestHeaderString({ payload: raw, secret: "whsec_synthetic" });
-    await expect(f.service.reconcile(raw, signature, "org")).rejects.toThrow("signed_terms_mismatch");
+    await expect(f.service.reconcile(raw, signature, "org")).rejects.toThrow("signed_binding_mismatch");
     expect(f.row().state).toBe("session_confirmed"); expect(f.consumed()).toBe(false);
   });
   it("malformed persisted response status is not accepted as proof", async () => {
