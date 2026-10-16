@@ -13,7 +13,7 @@ const PROVIDERS = [
     id: "azure",
     name: "Microsoft Azure",
     auth: "Service principal",
-    detail: "Validation adapter exists. This candidate does not accept client secrets because durable desktop enrollment and permission enforcement are not connected.",
+    detail: "Source candidate in Settings: explicit service-principal enrollment, tenant-scoped encrypted vault, bounded first-page resource groups and local disconnect. Real Azure and native release acceptance remain unverified.",
     color: "text-blue-300",
   },
   {
@@ -37,9 +37,9 @@ export function ConnectorsView({ onNavigate }: { onNavigate: (view: View) => voi
       </div>
 
       <div role="status" className="rounded-xl border border-white/25 bg-white/[0.08] p-4">
-        <p className="text-sm font-semibold text-zinc-200">Enrollment unavailable in this candidate</p>
+        <p className="text-sm font-semibold text-zinc-200">Provider setup capabilities</p>
         <p className="mt-1 text-xs leading-5 text-zinc-400">
-          A scoped, tenant-audited desktop connector-management endpoint is still required. No provider credential is requested, stored, or reported as connected from this screen.
+          Azure setup is available in this source candidate from Settings. This capability screen does not collect credentials or confirm provider acceptance.
         </p>
       </div>
 
@@ -52,11 +52,11 @@ export function ConnectorsView({ onNavigate }: { onNavigate: (view: View) => voi
                 <p className="mt-1 text-xs font-mono text-zinc-500">{provider.auth}</p>
               </div>
               <span className="rounded-full border border-white/20 bg-white/10 px-2 py-1 text-[9px] font-mono uppercase tracking-wider text-zinc-300">
-                setup blocked
+                {provider.id === "azure" ? "source candidate" : "setup blocked"}
               </span>
             </div>
             <p className="mt-5 flex-1 text-xs leading-5 text-zinc-400">{provider.detail}</p>
-            <p className="mt-4 text-[10px] font-mono uppercase tracking-wider text-zinc-600">No secret fields enabled</p>
+            {provider.id === "azure" ? <button type="button" onClick={() => onNavigate("settings")} className="mt-4 rounded-lg border border-white/15 px-3 py-2 text-xs text-zinc-300">Open Azure setup in Settings</button> : <p className="mt-4 text-[10px] font-mono uppercase tracking-wider text-zinc-600">No secret fields enabled</p>}
           </article>
         ))}
       </div>

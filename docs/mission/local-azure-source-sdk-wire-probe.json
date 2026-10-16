@@ -1,0 +1,27 @@
+{
+  "verified": [
+    "actual_source_default_transport",
+    "actual_msal_token_post",
+    "actual_arm_first_page_serialization",
+    "source_streaming_budget",
+    "no_pagination_or_public_network"
+  ],
+  "notVerified": [
+    "real_azure",
+    "routes",
+    "database",
+    "desktop"
+  ],
+  "wire": {
+    "requests": [
+      "Token",
+      "Subscription",
+      "Token",
+      "ResourceGroupsFirstPage"
+    ],
+    "guardedRequests": 4,
+    "guardedProcesses": 1,
+    "realAzure": false,
+    "fixtureOnly": true
+  }
+}

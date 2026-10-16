@@ -617,6 +617,16 @@ evidence: `docs/mission/vercel-release-inspection.json`.
 
 ## Scoped AWS desktop enrollment and inventory checkpoint
 
+October 16 integration update: the paragraph below records an earlier AWS
+checkpoint. Subsequent merged work added disconnect and bounded Agent AWS
+observations; governed execution remains separately gated. The Azure source
+candidate now includes scoped enrollment, disconnect and resource-group inventory
+with owned application/PostgreSQL and synthetic SDK-wire acceptance. Its final
+integrated regression passed 6,836 tests; desktop lifecycle lint corrections and
+exact-head CI remain merge gates. GCP mutation and a real customer cloud-to-
+deployment journey remain unverified. See the canonical requirements register and
+`AZURE_READONLY_CUSTOMER_ACCEPTANCE.md` for the current qualified evidence.
+
 The reachable Settings integration now composes paired tenant authority, an
 existing-role challenge, broker-only bounded STS identity validation, scoped AEAD
 storage and a separate one-region EC2 page. It returns at most five instances,
