@@ -127,3 +127,18 @@ An unavailable local Chromium launch is not a successful browser journey.
 - Desktop TypeScript and production bundle passed (release alignment 0.1.20,
   1,615 modules; existing plugin-shell mixed-import warning). Exact-head clean
   GitHub CI remains required before merge.
+
+### Desktop Agent readiness integration
+
+- Reviewed source `fa5f9b02`, evidence-only final `f9ce5500`, integrated normally
+  with the reviewed deployment/recovery foundation. Existing demo edits merged
+  without conflict. No production provider, schema or commercial policy changed.
+- 14 model-readiness React checks, 89 focused checks across seven files and 29
+  harness-safety checks passed on the feature branch. Actual local Next/owned
+  PostgreSQL acceptance passed 30 groups, including safe disabled-Agent state,
+  persisted denial/reopen, foreign history/send denial and no provider/tool/usage/
+  deployment/billing side effects. Owned fixture was removed.
+- Worker web/desktop compilers and desktop bundle passed. Independent source
+  review passed. Integration-wide full suite and exact-head GitHub CI still gate
+  this branch. Cached Chromium launch timed out; browser/native/provider recovery
+  is not verified. No successful inference or complete customer release claimed.
