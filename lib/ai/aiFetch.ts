@@ -1,3 +1,4 @@
+import { denyIsolatedExternalIO } from "@/lib/billing/isolatedApplication/runtime";
 /**
  * Tiny shared HTTP helper for AI providers.
  *
@@ -21,6 +22,7 @@ export interface AIFetchOptions {
 }
 
 export async function aiFetch(opts: AIFetchOptions): Promise<{ res: Response; latencyMs: number }> {
+  denyIsolatedExternalIO();
   const ctrl = new AbortController();
   const timeoutMs = opts.timeoutMs ?? 30_000;
   const timer = setTimeout(() => ctrl.abort(), timeoutMs);

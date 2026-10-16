@@ -1,3 +1,4 @@
+import { denyIsolatedExternalIO } from "@/lib/billing/isolatedApplication/runtime";
 /**
  * AIProviderManager — singleton that:
  *   - wires every provider from env (no secrets in logs)
@@ -61,6 +62,7 @@ export class AIProviderManager {
 
   /** Production inference is Gateway-only. Missing configuration fails closed. */
   private chain(opts?: { only?: AIProviderName; allowedProviders?: readonly AIProviderName[]; fallbackOrder?: readonly AIProviderName[] }): AIProvider[] {
+    denyIsolatedExternalIO();
     const gateway = this.providers.get("vercel_gateway");
     if (!gateway?.isConfigured()) return [];
     if (opts?.only && opts.only !== "vercel_gateway") return [];
@@ -213,6 +215,7 @@ export class AIProviderManager {
   }
 
   async healthCheckAll(allowedProviders?: readonly AIProviderName[]): Promise<AIHealthCheck[]> {
+    denyIsolatedExternalIO();
     const rows: AIHealthCheck[] = [];
     const allowed = allowedProviders ? new Set(allowedProviders) : null;
     for (const name of PROVIDER_PRIORITY) {

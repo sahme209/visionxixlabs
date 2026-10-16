@@ -1,3 +1,4 @@
+import { denyIsolatedExternalIO } from "@/lib/billing/isolatedApplication/runtime";
 import "server-only";
 
 import { generateText } from "ai";
@@ -41,6 +42,7 @@ export class VercelGatewayProvider implements AIProvider {
   }
 
   async generateText(prompt: string, options?: AIRequestOptions): Promise<AITextResponse> {
+    denyIsolatedExternalIO();
     if (!this.isConfigured()) {
       throw new AIProviderError({ provider: this.name, kind: "not_configured", message: "AI Gateway is not configured" });
     }

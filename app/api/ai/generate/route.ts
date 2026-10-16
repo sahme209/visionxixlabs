@@ -1,3 +1,4 @@
+import { withIsolatedWorkspaceScope } from "@/lib/billing/isolatedApplication/scope";
 /**
  * POST /api/ai/generate
  *
@@ -48,10 +49,9 @@ interface PostBody {
   only?: AIProviderName;
 }
 
-export async function POST(req: NextRequest) {
+async function handlePost(req: NextRequest, ctx: Awaited<ReturnType<typeof currentContext>>) {
   const correlationId = resolveCorrelationId(req.headers);
   try {
-    const ctx = await currentContext();
     if (!ctx.isAuthenticated || !ctx.organizationId) {
       throw AxiomErrors.validation("auth.required", "Sign in required.");
     }
@@ -224,5 +224,14 @@ export async function POST(req: NextRequest) {
     });
   } catch (err) {
     return apiErr(err, { correlationId, safetyContract: "audit_read_only" });
+  }
+}
+
+export async function POST(req: NextRequest) {
+  try {
+    const context = await currentContext();
+    return await withIsolatedWorkspaceScope(context, "admission", () => handlePost(req, context));
+  } catch (error) {
+    return apiErr(error, { correlationId: resolveCorrelationId(req.headers), safetyContract: "audit_read_only" });
   }
 }

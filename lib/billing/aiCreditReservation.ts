@@ -1,3 +1,5 @@
+import { isolatedRuntimeRequested } from "./isolatedApplication/runtime";
+import { resolveIsolatedApplicationPlan } from "./isolatedApplication/plan";
 import "server-only";
 import type { Prisma, TenantBillingPlan } from "@prisma/client";
 
@@ -37,7 +39,8 @@ export async function reserveAICredits(
   try {
     return await repo.$transaction(async (tx: any) => {
       // A reused hold is not proof that an isolated contract remains valid.
-      const isolatedPlan = isolatedVerifiedPlan ? await isolatedVerifiedPlan(tx, input.organizationId, await tx.tenantBillingPlan.findUnique({ where: { organizationId: input.organizationId } })) : undefined;
+      const isolatedPlan = isolatedRuntimeRequested() ? await resolveIsolatedApplicationPlan(tx, input.organizationId, "admission") : isolatedVerifiedPlan ? await isolatedVerifiedPlan(tx, input.organizationId, await tx.tenantBillingPlan.findUnique({ where: { organizationId: input.organizationId } })) : undefined;
+      if (isolatedRuntimeRequested() && !isolatedPlan) throw new Error("isolated_plan_unavailable");
       const existing = await tx.aIUsageReservation.findUnique({ where: { organizationId_idempotencyKey: { organizationId: input.organizationId, idempotencyKey: input.idempotencyKey } } });
       if (existing) {
         if (existing.reservedCents !== input.reservedCents) return { ok: false as const, error: "idempotency_key_conflict" as const };

@@ -1,3 +1,5 @@
+import { isolatedRuntimeRequested } from "./isolatedApplication/runtime";
+import { resolveIsolatedApplicationPlan } from "./isolatedApplication/plan";
 import "server-only";
 import type { PrismaClient } from "@prisma/client";
 import { planForStripeTier } from "./planRegistry";
@@ -34,7 +36,7 @@ export async function readCurrentAIAllowance(repo: Pick<PrismaClient, "$transact
       const used = usage?._sum?.billedCents;
       const held = active?._sum?.reservedCents;
       if (!(used === null || cents(used)) || !(held === null || cents(held))) return { available: false };
-      const plan = planForStripeTier(billing?.tier);
+      const plan = isolatedRuntimeRequested() ? await resolveIsolatedApplicationPlan(tx, organizationId, "read") : planForStripeTier(billing?.tier);
       const effective = applyAddOnsToEntitlements(plan, purchases);
       const usedCents = used ?? 0, heldCents = held ?? 0;
       if (!cents(effective.includedAICreditsCents) || !cents(effective.appliedAICreditsCents) || !cents(usedCents + heldCents)) return { available: false };

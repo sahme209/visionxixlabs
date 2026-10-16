@@ -1,3 +1,4 @@
+import { denyIsolatedUnsupportedOperation } from "@/lib/billing/isolatedApplication/runtime";
 /**
  * Plugin execution engine — runs execution plugins with entitlement validation,
  * scope checks, timeout, dry-run support, and audit logging.
@@ -95,6 +96,7 @@ function validateScopes(
  * Execute a single plugin with validation, timeout, and logging.
  */
 export async function executePlugin(opts: ExecutePluginOptions): Promise<ExecutePluginResult> {
+  denyIsolatedUnsupportedOperation();
   const { pluginId, input = {}, ctx, skipEntitlementCheck } = opts;
   const plugin = getExecutionPlugin(pluginId);
   if (!plugin) {

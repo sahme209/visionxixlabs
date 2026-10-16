@@ -1331,3 +1331,22 @@ verification. The source remained clean; no concurrent compiler or shared-client
 generation ran. This is real local Next.js/PostgreSQL acceptance, not production
 login, native/browser/vault, OAuth, paid policy, Stripe, cloud or provenance-runtime
 acceptance. Existing production binding/recovery approvals remain unchanged.
+
+## Isolated public TEST application bridge · 2026-10-16
+
+**Implemented locally; production/hosted-provider acceptance not verified.**
+The default-off owned-loopback lane reuses actual NextAuth/currentContext, billing
+page/current allowance, credit preflight and Serializable reservations with one
+verified version resolver. No missing new proof can become the legacy Growth pool.
+Exact HTTP/method/server-action restrictions and shared provider/background denial
+preserve the bounded scope; external IO and invoicing remain disabled. Actual
+local HTTP proves synthetic credentials/session, public per-seat read/cap, pending
+holds, missing-provenance unavailability, current-role denial and provider-disabled
+hold release; this is not Stripe checkout/payment, AI generation or cloud workflow
+acceptance. Existing customers, support source and User.plan remain unchanged.
+See [ISOLATED_PUBLIC_TEST_APPLICATION_BRIDGE.md](ISOLATED_PUBLIC_TEST_APPLICATION_BRIDGE.md)
+and [sanitized evidence](mission/isolated-public-test-http.json). Local full Vitest
+passed 6447 tests/606 files (5 skipped), web TypeScript and desktop build/type checks
+passed, Python passed 30 tests, and the direct optimized Next build passed
+with offline fixture fonts (no Prisma generation). Exact-head CI and real provider-attempt
+proof/access remain integration/acceptance gates.

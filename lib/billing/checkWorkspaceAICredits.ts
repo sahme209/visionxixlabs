@@ -1,3 +1,6 @@
+import { isolatedRuntimeRequested } from "./isolatedApplication/runtime";
+import { requireIsolatedWorkspaceScope } from "./isolatedApplication/scope";
+import { readCurrentAIAllowance } from "./currentAIAllowance";
 /**
  * Live AI credit pre-flight — Phase 382.
  *
@@ -29,6 +32,13 @@ export async function checkWorkspaceAICredits(
   expectedAdditionalCostCents = 0,
   options?: { failClosedOnUsageReadError?: boolean },
 ): Promise<PreflightDecision> {
+  if (isolatedRuntimeRequested()) {
+    requireIsolatedWorkspaceScope(organizationId, "admission");
+    const allowance = await readCurrentAIAllowance(prisma, organizationId);
+    if (!allowance.available) throw new Error("ai_credit_meter_unavailable");
+    const base = planForStripeTier("starter");
+    return preflightAICreditCheck({ plan: { ...base, entitlements: { ...base.entitlements, includedAICreditsCents: allowance.poolCents, overagePolicy: "hard_stop" } }, currentAICostCents: allowance.usedCents + allowance.heldCents, expectedAdditionalCostCents });
+  }
   let plan;
   try {
     const billing = await readBillingPlan(organizationId);
