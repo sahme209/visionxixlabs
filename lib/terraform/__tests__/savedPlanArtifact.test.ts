@@ -54,7 +54,7 @@ describe("immutable saved plan envelopes", () => {
     const record = sealSavedPlan("artifact-fixture", parseSavedPlanBinding(binding()), Buffer.from("fixture-bytes"), JSON.stringify(show()));
     const scope = { organizationId: "org-fixture", requestId: "request-fixture", requestVersion: 1 };
     const now = new Date("2026-10-16T12:30:00Z");
-    for (const changed of [{ ...record, binaryDigest: digest("other") }, { ...record, binaryBytes: 2 }, { ...record, encryptedShow: record.encryptedBinary }, { ...record, bindingJson: { ...binding(), targetDigest: digest("changed") } }]) {
+    for (const changed of [{ ...record, binaryDigest: digest("other") }, { ...record, binaryBytes: 2 }, { ...record, encryptedShow: record.encryptedBinary }, { ...record, bindingJson: { ...record.bindingJson, targetDigest: digest("changed") } }]) {
       expect(() => openSavedPlan(changed, scope, now)).toThrow();
     }
     expect(() => openSavedPlan(record, { ...scope, requestVersion: 2 }, now)).toThrow();
