@@ -72,14 +72,14 @@
   "repositoryControl": {
     "git.deploymentEnabled": false,
     "preservedCronCount": 29,
-    "status": "Prepared; provider suppression not yet verified"
+    "status": "Merged in PR #145; PR and two main revisions observed without Vercel deployments. Older refs and global enforcement remain unverified."
   },
   "unverified": [
     "Effective provider settings not returned by safe projection",
     "Older branches/forks lacking the new configuration",
     "Manual exact-commit deployment runtime and integration acceptance",
-    "Post-merge suppression and unchanged alias",
-    "Replacement-flag hook semantics not established, but owner reports no configured hooks."
+    "Replacement-flag hook semantics not established, but owner reports no configured hooks.",
+    "Longer-term enforcement and refs that do not contain the repository suppression configuration"
   ],
   "deployHooks": {
     "status": "none",
@@ -91,6 +91,29 @@
     "desktopTypeScriptAndBuild": "passed",
     "pythonTests": "30 passed",
     "productionBuild": "passed; 293 pages generated",
-    "independentReview": "No blocker; repository-only scope, provider/old-ref enforcement unverified"
+    "independentReview": "No blocker; repository-only scope, provider/old-ref enforcement unverified",
+    "exactHeadCI": {
+      "run": 38828352714,
+      "result": "passed TypeScript, 5,972 tests and production build (293 pages)"
+    }
+  },
+  "postMergeObservations": [
+    {
+      "at": "2026-10-16T00:22:37.933Z",
+      "sha": "275eec9aef910193cec32dadc9ceb445393d2219",
+      "deploymentCount": 0,
+      "paginationCount": 0
+    },
+    {
+      "at": "2026-10-16T00:22:37.933Z",
+      "sha": "364b048d5b13d762170c7e86882f0cfacc1e847c",
+      "deploymentCount": 0,
+      "paginationCount": 0
+    }
+  ],
+  "postMergeDomain": {
+    "domain": "visionxixlabs.com",
+    "deploymentId": "dpl_6cv75StHTFg1enN1xPYRuLEcXzoX",
+    "unchanged": true
   }
 }
