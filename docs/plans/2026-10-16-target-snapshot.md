@@ -29,22 +29,22 @@ Tests must cover strict mixed/missing/forged snapshots; every projected field an
 
 Files: `lib/releaseops/ecsReleaseV2/{contract,targetSnapshot}.ts`, contract/snapshot tests, `lib/cloud/aws/{enrollment/scopedConnection,ecsObservation/reader}.ts`, reader tests; test fixture type refinements only where union narrowing is needed.
 Interfaces: contract variants and projector above; safe callback row snapshot; reader targetSnapshot uses shared schema.
-- [ ] Write tests for old v2 golden digest and strict v3 parser/evidence/receipt behavior plus snapshot projection mutations and reader identity/drift.
-- [ ] Run focused tests and observe intended missing-v3/projector failures.
-- [ ] Implement contract union, strict variant parsing, projector and reader reuse; preserve byte semantics.
-- [ ] Run contract/snapshot/reader/enrollment focused tests; expected all pass.
-- [ ] Update living source documentation/demo together with implementation commit.
+- [x] Write tests for old v2 golden digest and strict v3 parser/evidence/receipt behavior plus snapshot projection mutations and reader identity/drift.
+- [x] Run focused tests and observe intended missing-v3/projector failures.
+- [x] Implement contract union, strict variant parsing, projector and reader reuse; preserve byte semantics.
+- [x] Run contract/snapshot/reader/enrollment focused tests; expected all pass.
+- [x] Update living source documentation/demo together with implementation commit.
 
 ## Task 2: Final packet transaction fence and durable regression
 
 Files: `lib/releaseops/ecsReleaseV2/{reviewCore,postgresReviewStore}.ts`, review tests, `scripts/{rehearse-ecs-review.mjs,fixtures/ecsReviewFixture.ts,fixtures/ecsReviewHarness.ts}`, source living docs/demo.
 Interfaces: required ReviewTransaction currentTargetSnapshot above; existing store transaction remains Serializable.
-- [ ] Write tests proving missing/drifted target/connection prevents v3 create/replay, old v2 remains unchanged, valid v3 replay/conflict and current quorum work.
-- [ ] Run tests; expected failures before the fence implementation.
-- [ ] Implement scoped SQL row reader and final comparison; no packet schema change.
-- [ ] Extend owned PostgreSQL rehearsal with synthetic existing target/account tables, v3 create/replay, independent row mutation before final transaction and same-transaction integrity failure rollback; run under owned loopback only.
-- [ ] Update living docs/demo and run focused suites plus demo contract; expected all pass.
-- [ ] Commit and provide parent exact changes/test evidence/limitations for independent review and coordinated heavy gates.
+- [x] Write tests proving missing/drifted target/connection prevents v3 create/replay, old v2 remains unchanged, valid v3 replay/conflict and current quorum work.
+- [x] Run tests; expected failures before the fence implementation.
+- [x] Implement scoped SQL row reader and final comparison; no packet schema change.
+- [x] Extend owned PostgreSQL rehearsal with synthetic existing target/account tables, v3 create/replay, independent row mutation before final transaction and same-transaction integrity failure rollback; run under owned loopback only.
+- [x] Update living docs/demo and run focused suites plus demo contract; expected all pass.
+- [x] Commit and provide parent exact changes/test evidence/limitations for independent review and coordinated heavy gates.
 
 ## Execution ledger
 
@@ -54,3 +54,10 @@ Interfaces: required ReviewTransaction currentTargetSnapshot above; existing sto
 - Ruling: full suite/build and fresh reviewer remain root-coordinated per task constraints. Only focused checks run here.
 
 - Root approved the concrete plan before source edits. Task 1 RED: valid v3 rejected (1 failure/75 pass); projector null failed independent canonical expectation; reader returned old id/timestamp and failed canonical snapshot expectation. GREEN: contract+projector+reader+enrollment 200/200. No live providers.
+
+- Task 1 complete: commit `1916b797`; focused 13 files / 306 tests pass. A test-only automated narrowing edit briefly caused a syntax failure; corrected and reran successfully. Fresh reviewer independently confirmed frozen Task 1 with no material findings.
+- Task 2 RED: 10 review-core failures demonstrated stale/forged target snapshots still recorded. GREEN: review core 28/28. Final prepare now compares current persisted snapshot before creation/replay; observed facts are detached before the final transaction.
+- Owned PostgreSQL17 RED: v3 packet preparation unavailable while the transaction adapter method was absent. GREEN: actual adapter completed native `txid_current()` same-transaction/Serializable assertions, 7 SQL drift cases at create and replay, foreign tenant/environment/connection refusal, and after-INSERT rollback. Existing voter race remained one commit/one rejection. Both fresh owned cached-image containers were removed after ownership-label verification. Logs: `/tmp/target-snapshot-pg-red.log`, `/tmp/target-snapshot-pg-green.log`.
+- Focused combined verification: 13 files / 317 tests pass (`node node_modules/vitest/vitest.mjs run lib/releaseops/ecsReleaseV2/__tests__ lib/cloud/aws/ecsObservation/__tests__/reader.test.ts lib/cloud/aws/enrollment/__tests__ lib/demo/__tests__/demoScenarios.test.ts --reporter=dot`). Existing Vite CommonJS config-loader warning remains.
+- Scope: no schema/dependency/provider/route/workflow changes; source packet protocol and existing inactive review lifecycle only. Source-only facts composition remains absent. Production SQL and operational release acceptance remain separately gated.
+- Parent owns final independent review, coordinated full compiler/suite/build and exact-head clean CI. No shared Prisma generation. Runtime overlay protobuf 0.5.2 versus lock 0.5.0 remains disclosed; tests do not replace clean install CI.

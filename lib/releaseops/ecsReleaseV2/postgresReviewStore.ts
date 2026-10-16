@@ -1,5 +1,6 @@
 import type { Prisma, PrismaClient } from "@prisma/client";
 import { evidenceDigest } from "./contract";
+import { projectTargetSnapshot, type TargetSnapshotRows } from "./targetSnapshot";
 import type { ReviewStore, ReviewTransaction, ReviewPacket, ReviewDecision, ReviewCheckpoint, ReviewPolicy } from "./reviewCore";
 type Database = Pick<Prisma.TransactionClient, "$queryRawUnsafe" | "$executeRawUnsafe">;
 /** Reused read-only selected-policy interpretation; not approval or execution authority. */
@@ -16,6 +17,15 @@ export async function readPostgresReviewPolicy(db: Pick<Prisma.TransactionClient
 function transactionStore(db: Database): ReviewTransaction {
     const one = async <T>(sql: string, ...parameters: unknown[]) => (await db.$queryRawUnsafe<T[]>(sql, ...parameters))[0] ?? null;
     return {
+        async currentTargetSnapshot(org, environment, connection) {
+            // These reads and packet create/replay share the caller's final
+            // Serializable transaction. No vault content is selected or hashed.
+            const target = await one<TargetSnapshotRows["target"]>('SELECT "id","organizationId","environmentId","provider","roleArn","region","ecsCluster","ecsService","updatedAt" FROM "DeploymentTarget" WHERE "organizationId"=$1 AND "environmentId"=$2', org, environment);
+            const scopedEnvironment = await one<TargetSnapshotRows["environment"]>('SELECT "id","organizationId","updatedAt" FROM "Environment" WHERE "organizationId"=$1 AND "id"=$2', org, environment);
+            const account = await one<TargetSnapshotRows["account"]>('SELECT "id","organizationId","provider","externalAccountId","credentialRef","regions","enabled","updatedAt" FROM "CloudAccount" WHERE "organizationId"=$1 AND "id"=$2 AND "provider"=\'aws\'', org, connection);
+            const credential = await one<TargetSnapshotRows["credential"]>('SELECT "id","organizationId","version","revokedAt" FROM "CloudAccountCredential" WHERE "organizationId"=$1 AND "id"=$2', org, connection);
+            return target && scopedEnvironment && account && credential ? projectTargetSnapshot({ target, environment: scopedEnvironment, account, credential }) : null;
+        },
         packetByOperation: (org, operation) => one<ReviewPacket>('SELECT * FROM "EcsReleaseReviewPacket" WHERE "organizationId"=$1 AND "operationId"=$2', org, operation),
         packetById: (org, id) => one<ReviewPacket>('SELECT * FROM "EcsReleaseReviewPacket" WHERE "organizationId"=$1 AND "id"=$2', org, id),
         async createPacket(p) {
