@@ -1,3 +1,4 @@
+import { AgentRestartReceipts } from "../components/AgentRestartReceipts";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Badge, riskToneFor } from "../components/Primitives";
 import { desktopClient, type AgentSkillCatalogItem } from "../lib/desktopClient";
@@ -16,6 +17,7 @@ interface ChatTurn {
   id: string;
   role: "user" | "assistant" | "tool_result";
   content: string;
+  actionProposalId?: string | null;
 }
 
 interface Proposal {
@@ -152,9 +154,28 @@ function describeEvidenceResult(action: Proposal): string {
 }
 
 export function AgentChatView() {
+  const context = desktopClient.config;
+  const [scope, setScope] = useState(() => ({ context, generation: 0 }));
+  if (scope.context !== context) {
+    setScope({ context, generation: scope.generation + 1 });
+    return <AgentChatSession key={scope.generation + 1} />;
+  }
+  return <AgentChatSession key={scope.generation} />;
+}
+
+function AgentChatSession() {
   const [conversationId, setConversationId] = useState<string | null>(null);
   const [conversations, setConversations] = useState<ConversationSummary[]>([]);
   const [turns, setTurns] = useState<ChatTurn[]>([]);
+  const [restartActions, setRestartActions] = useState<Proposal[]>([]);
+  const decisionEpoch = useRef(0);
+  const conversationEpoch = useRef(0);
+  const activeConversation = useRef<string | null>(null);
+  const transportContext = desktopClient.config;
+  useEffect(() => {
+    decisionEpoch.current += 1; conversationEpoch.current += 1; activeConversation.current = null;
+    return () => { decisionEpoch.current += 1; conversationEpoch.current += 1; activeConversation.current = null; };
+  }, [transportContext]);
   const [pendingProposal, setPendingProposal] = useState<Proposal | null>(null);
   const [evidenceActions, setEvidenceActions] = useState<Proposal[]>([]);
   const [input, setInput] = useState("");
@@ -189,6 +210,8 @@ export function AgentChatView() {
 
   useEffect(() => {
     let cancelled = false;
+    const generation = ++conversationEpoch.current;
+    const context = desktopClient.config;
     setError(null);
     void Promise.all([
       desktopClient.listAgentConversations(),
@@ -198,7 +221,7 @@ export function AgentChatView() {
       desktopClient.listEnvironments(),
     ])
       .then(async ([conversationList, models, skills, repositories, environments]) => {
-        if (cancelled) return;
+        if (cancelled || generation !== conversationEpoch.current || context !== desktopClient.config) return;
         if (!conversationList.ok) {
           setError("The Agent service could not load conversation history. Retry in a moment.");
         } else {
@@ -206,19 +229,22 @@ export function AgentChatView() {
           const mostRecent = conversationList.data.conversations[0];
           if (mostRecent) {
             const conversation = await desktopClient.getAgentConversation(mostRecent.id);
-            if (cancelled) return;
-            if (conversation.ok) {
+            if (cancelled || generation !== conversationEpoch.current || context !== desktopClient.config) return;
+            if (conversation.ok && conversation.data.id === mostRecent.id) {
+              activeConversation.current = conversation.data.id;
               setConversationId(conversation.data.id);
               setTurns(conversation.data.turns.filter((turn): turn is typeof turn & { role: ChatTurn["role"] } => turn.role === "user" || turn.role === "assistant" || turn.role === "tool_result"));
               setPendingProposal([...conversation.data.actions].reverse().find((action) => action.status === "proposed") ?? null);
               setEvidenceActions(conversation.data.actions.filter((action) => action.riskLevel === "low"));
+              setRestartActions(conversation.data.actions.filter((action) => action.toolName === "trigger_aws_deploy"));
             } else {
               setError("The most recent Agent conversation could not be reopened.");
             }
           } else {
             const created = await desktopClient.createAgentConversation();
-            if (cancelled) return;
+            if (cancelled || generation !== conversationEpoch.current || context !== desktopClient.config) return;
             if (created.ok) {
+              activeConversation.current = created.data.id;
               setConversationId(created.data.id);
               setConversations([{ ...created.data, turnCount: 0, updatedAt: created.data.createdAt }]);
             } else {
@@ -262,7 +288,7 @@ export function AgentChatView() {
         setContextLoading(false);
       })
       .catch(() => {
-        if (!cancelled) {
+        if (!cancelled && generation === conversationEpoch.current && context === desktopClient.config) {
           setError("The Agent could not start. Check your connection and try again.");
           setContextLoading(false);
         }
@@ -334,45 +360,42 @@ export function AgentChatView() {
   }, [manualRepository, repositoryFullName]);
 
   async function openConversation(id: string) {
-    if (id === conversationId || sending || decidingId) return;
-    setLoadingConversation(true);
-    setError(null);
+    if (sending || (id === conversationId && !loadingConversation)) return;
+    const generation = ++conversationEpoch.current, context = desktopClient.config;
+    decisionEpoch.current += 1; activeConversation.current = null; setDecidingId(null);
+    setLoadingConversation(true); setError(null);
     try {
       const result = await desktopClient.getAgentConversation(id);
-      if (!result.ok) {
-        setError(result.error);
-        return;
-      }
+      if (generation !== conversationEpoch.current || context !== desktopClient.config) return;
+      if (!result.ok || result.data.id !== id) { activeConversation.current = conversationId; setError("The selected conversation could not be verified."); return; }
+      activeConversation.current = result.data.id;
       setConversationId(result.data.id);
       setTurns(result.data.turns.filter((turn): turn is typeof turn & { role: ChatTurn["role"] } => turn.role === "user" || turn.role === "assistant" || turn.role === "tool_result"));
       setPendingProposal([...result.data.actions].reverse().find((action) => action.status === "proposed") ?? null);
       setEvidenceActions(result.data.actions.filter((action) => action.riskLevel === "low"));
-    } finally {
-      setLoadingConversation(false);
-    }
+      setRestartActions(result.data.actions.filter((action) => action.toolName === "trigger_aws_deploy"));
+    } catch {
+      if (generation === conversationEpoch.current && context === desktopClient.config) { activeConversation.current = conversationId; setError("The selected conversation could not be loaded."); }
+    } finally { if (generation === conversationEpoch.current && context === desktopClient.config) setLoadingConversation(false); }
   }
 
   async function newConversation() {
-    if (sending || decidingId) return;
-    setLoadingConversation(true);
-    setError(null);
+    if (sending || loadingConversation) return;
+    const generation = ++conversationEpoch.current, context = desktopClient.config;
+    decisionEpoch.current += 1; activeConversation.current = null; setDecidingId(null);
+    setLoadingConversation(true); setError(null);
     try {
       const result = await desktopClient.createAgentConversation();
-      if (!result.ok) {
-        setError(result.error);
-        return;
-      }
+      if (generation !== conversationEpoch.current || context !== desktopClient.config) return;
+      if (!result.ok) { activeConversation.current = conversationId; setError(result.error); return; }
       const summary: ConversationSummary = { ...result.data, turnCount: 0, updatedAt: result.data.createdAt };
       setConversations((current) => [summary, ...current]);
-      setConversationId(result.data.id);
-      setTurns([]);
-      setPendingProposal(null);
-      setEvidenceActions([]);
-      setLatestUsage(null);
-      setInput("");
-    } finally {
-      setLoadingConversation(false);
-    }
+      activeConversation.current = result.data.id;
+      setConversationId(result.data.id); setTurns([]); setPendingProposal(null);
+      setEvidenceActions([]); setRestartActions([]); setLatestUsage(null); setInput("");
+    } catch {
+      if (generation === conversationEpoch.current && context === desktopClient.config) { activeConversation.current = conversationId; setError("A new conversation could not be started."); }
+    } finally { if (generation === conversationEpoch.current && context === desktopClient.config) setLoadingConversation(false); }
   }
 
   useEffect(() => {
@@ -381,7 +404,9 @@ export function AgentChatView() {
 
   async function send() {
     const instruction = input.trim();
-    if (!instruction || !conversationId || sending || (composerMode === "code" && (!repositoryFullName.includes("/") || !branch.trim() || !filePath.trim()))) return;
+    if (!instruction || !conversationId || activeConversation.current !== conversationId || loadingConversation || sending || (composerMode === "code" && (!repositoryFullName.includes("/") || !branch.trim() || !filePath.trim()))) return;
+    const context = desktopClient.config, ownerConversation = conversationId, generation = conversationEpoch.current;
+    const owned = () => context === desktopClient.config && activeConversation.current === ownerConversation && generation === conversationEpoch.current;
     setInput("");
     setError(null);
     setTurns((prev) => [...prev, { id: `local_${Date.now()}`, role: "user", content: instruction }]);
@@ -395,6 +420,7 @@ export function AgentChatView() {
         mode: composerMode,
         operationMode,
       });
+      if (!owned()) return;
       if (!result.ok) {
         setError(result.error);
         return;
@@ -403,8 +429,10 @@ export function AgentChatView() {
       setPendingProposal(result.data.proposal && result.data.proposal.status === "proposed" ? result.data.proposal : null);
       setLatestUsage(result.data.usage);
       const refreshed = await desktopClient.getAgentConversation(conversationId);
-      if (refreshed.ok) {
+      if (!owned()) return;
+      if (refreshed.ok && refreshed.data.id === ownerConversation) {
         setEvidenceActions(refreshed.data.actions.filter((action) => action.riskLevel === "low"));
+        setRestartActions(refreshed.data.actions.filter((action) => action.toolName === "trigger_aws_deploy"));
       }
       setConversations((current) => {
         const selected = current.find((conversation) => conversation.id === conversationId);
@@ -417,37 +445,59 @@ export function AgentChatView() {
         };
         return [updated, ...current.filter((conversation) => conversation.id !== conversationId)];
       });
+    } catch {
+      if (owned()) setError("The Agent response could not be read. Reopen this conversation to inspect its saved state.");
     } finally {
-      setSending(false);
+      if (owned()) setSending(false);
     }
   }
 
   async function decide(approve: boolean) {
-    if (!pendingProposal) return;
-    setDecidingId(pendingProposal.id);
+    if (!pendingProposal || !conversationId || activeConversation.current !== conversationId || loadingConversation) return;
+    const context = desktopClient.config;
+    const generation = ++decisionEpoch.current;
+    const proposal = pendingProposal;
+    const ownerConversation = conversationId;
+    setDecidingId(proposal.id);
+    let decisionSaved = false;
     try {
       const result = approve
         ? await desktopClient.approveAgentAction(pendingProposal.id)
         : await desktopClient.rejectAgentAction(pendingProposal.id);
+      if (generation !== decisionEpoch.current || context !== desktopClient.config || activeConversation.current !== ownerConversation) return;
       if (!result.ok) {
         setError(result.error);
         return;
       }
+      decisionSaved = true;
       const decisionData = result.data as { status: string; errorMessage?: string | null };
       setTurns((prev) => [...prev, {
         id: `local_${Date.now()}_d`,
         role: "tool_result",
+        actionProposalId: proposal.id,
         content: approve
           ? decisionData.status === "executed"
-            ? `${TOOL_LABELS[pendingProposal.toolName] ?? pendingProposal.toolName} — done.`
+            ? pendingProposal.toolName === "trigger_aws_deploy"
+              ? "ECS restart workflow request accepted. Service outcome and application health remain unverified."
+              : `${TOOL_LABELS[pendingProposal.toolName] ?? pendingProposal.toolName} — done.`
             : decisionData.errorMessage === "deployment_outcome_unknown"
               ? "Deployment outcome unconfirmed. The provider may have accepted it; its hold is retained. Review the external outcome before retrying."
             : `${TOOL_LABELS[pendingProposal.toolName] ?? pendingProposal.toolName} — failed: ${decisionData.errorMessage ?? "unknown error"}`
           : `${TOOL_LABELS[pendingProposal.toolName] ?? pendingProposal.toolName} — rejected.`,
       }]);
       setPendingProposal(null);
+      if (approve && proposal.toolName === "trigger_aws_deploy" && conversationId) {
+        const refreshed = await desktopClient.getAgentConversation(conversationId);
+        if (generation !== decisionEpoch.current || context !== desktopClient.config || activeConversation.current !== ownerConversation) return;
+        if (refreshed.ok && refreshed.data.id === conversationId) setRestartActions(refreshed.data.actions.filter(action => action.toolName === "trigger_aws_deploy"));
+        else setError("The decision is saved, but its workflow receipt could not be read. Reopen the conversation; do not approve again.");
+      }
+    } catch {
+      if (generation === decisionEpoch.current && context === desktopClient.config && activeConversation.current === ownerConversation) setError(decisionSaved
+        ? "The decision is saved, but its workflow receipt could not be read. Reopen the conversation; do not approve again."
+        : "The decision outcome could not be verified. Reopen the conversation before trying another decision.");
     } finally {
-      setDecidingId(null);
+      if (generation === decisionEpoch.current && context === desktopClient.config && activeConversation.current === ownerConversation) setDecidingId(null);
     }
   }
 
@@ -460,7 +510,7 @@ export function AgentChatView() {
             aria-label="Agent conversation"
             value={conversationId ?? ""}
             onChange={(event) => void openConversation(event.target.value)}
-            disabled={loadingConversation || sending || Boolean(decidingId) || conversations.length === 0}
+            disabled={sending || conversations.length === 0}
             className="min-w-0 max-w-md flex-1 truncate rounded-md border border-white/10 bg-[#151719] px-2.5 py-1.5 text-xs text-zinc-300 outline-none focus:border-white/25 disabled:opacity-50"
           >
             {conversations.length === 0 && <option value="">No conversations yet</option>}
@@ -471,7 +521,7 @@ export function AgentChatView() {
             ))}
           </select>
         </label>
-        <button type="button" onClick={() => void newConversation()} disabled={loadingConversation || sending || Boolean(decidingId)} className="shrink-0 rounded-lg border border-white/10 px-3 py-2 text-xs text-zinc-200 hover:bg-white/[0.06] disabled:opacity-50">
+        <button type="button" onClick={() => void newConversation()} disabled={loadingConversation || sending} className="shrink-0 rounded-lg border border-white/10 px-3 py-2 text-xs text-zinc-200 hover:bg-white/[0.06] disabled:opacity-50">
           {loadingConversation ? "Loading…" : "New chat"}
         </button>
       </div>
@@ -567,11 +617,12 @@ export function AgentChatView() {
               </div>
             </div>
           )}
-          {turns.map((turn) => <ChatBubble key={turn.id} turn={turn} />)}
+          {turns.map((turn) => <ChatBubble key={turn.id} turn={turn.role === "tool_result" && restartActions.some(action => action.id === turn.actionProposalId && action.status === "executed") ? { ...turn, content: "ECS restart workflow request recorded. Service outcome and application health remain unverified." } : turn} />)}
+          <AgentRestartReceipts key={conversationId} conversationId={conversationId} actions={restartActions} />
           {evidenceActions.length > 0 && <EvidencePanel actions={evidenceActions.slice(-8)} />}
           {latestUsage && <UsageReceipt usage={latestUsage} />}
           {pendingProposal && (
-            <ProposalCard proposal={pendingProposal} deciding={decidingId === pendingProposal.id} onApprove={() => void decide(true)} onReject={() => void decide(false)} />
+            <ProposalCard proposal={pendingProposal} deciding={loadingConversation || decidingId === pendingProposal.id} onApprove={() => void decide(true)} onReject={() => void decide(false)} />
           )}
           {error && (
             <div role="alert" className="flex items-center justify-between gap-4 rounded-xl border border-rose-400/20 bg-rose-400/[0.05] px-4 py-3">
