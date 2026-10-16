@@ -1144,7 +1144,10 @@ Integrated validation passed 6,282 tests (four owned-PG tests skipped in the def
 suite and passed separately), web/desktop types, desktop build, 30 Python tests
 and lint on new code. The reservation file retains five pre-existing explicit-any
 lint errors; the new callback is typed with Prisma types and introduces none.
-Exact-head CI/build remains pending. No support payment path changed.
+Combined integration with main #150 and pricing #151 passed 6,353 tests
+(four owned PostgreSQL tests skipped by default and passed separately), final web
+and desktop TypeScript, desktop build and tracker checks. Exact-head CI/build
+remains pending. No support payment path changed.
 PR #149 merged as `7fd354e1d2a0fc0d2ec8fb3ccc9bd86566a00010` after exact-head
 Test (push and PR), Desktop CI and isolated auth-recovery rehearsal passed. Actual
 CI ran 595 files / 6,251 tests and built all 293 pages. The source-only review
