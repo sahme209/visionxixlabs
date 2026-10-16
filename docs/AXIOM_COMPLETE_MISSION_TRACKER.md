@@ -7,6 +7,28 @@ customer commitments, financial/production approvals and final acceptance.
 The current workstream matrix and latest checkpoints supersede earlier historical
 checkpoint status; previous observations are retained as evidence history.
 
+PR #161 source integration is complete at main `608efe0fd70623aaf71cb80f799d3b822b9855cd` after both exact-head Test runs and review passed. This is not a production release.
+
+## Additional deferred workstream — support and partnerships
+
+The new support/strategic-partnerships directive is preserved verbatim in
+`SUPPORT_STRATEGIC_PARTNERSHIPS_DIRECTIVE.md`: 151 additional units bring the
+canonical register to **1,981 rows across 17 available sources**. Earlier 1,830
+requirement identities, source text and statuses are preserved. See
+`SUPPORT_PARTNERSHIPS_DEFERRED_PLAN.md` for the read-only audit and proposal.
+No critical agent was reassigned. The page/payment implementation, CRM writes,
+outreach, live payment testing and deployment are not authorized by this audit.
+The warm-white $1 concept applies only to this deferred page; the main product
+visual redesign remains deferred. No support/payment source changed.
+
+Billing milestone correction: same-seat lifecycle recovery passed isolated
+HTTP/PG checks, but independent financial review found active status does not
+prove paid renewal coverage. Current isolated allowance and preview also ignore
+paid-term expiry. **Hold the lifecycle merge and financial acceptance** until
+NEWTEST-only paid-through enforcement is designed, reviewed and verified. Prior
+status-based recovery tests do not prove payment collection. Legacy and supporter
+payment paths remain unchanged.
+
 ## Current execution checkpoint — October 16, 2026
 
 Main `2682ba732ab1bd262dcaa378e3a6e3119d245229` includes PRs #157–160.
@@ -93,8 +115,8 @@ not substituted for missing source. Recovering that text is a source blocker,
 not a reason to stop independent engineering.
 
 The [editable register](mission/requirements.json) and
-[complete row table](AXIOM_MISSION_REQUIREMENTS.md) contain **1,830 source units
-and placeholders across 16 available sources**. Each has a status, source
+[complete row table](AXIOM_MISSION_REQUIREMENTS.md) contain **1,981 source units
+and placeholders across 17 available sources**. Each has a status, source
 location, domain, scope, evidence, verification limit, owner and next action.
 The register includes process controls and historical proposals as well as
 product requirements. Related source files are **not** acceptance proof.

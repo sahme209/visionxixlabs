@@ -50,6 +50,9 @@
     },
     {
       "path": "docs/AXIOM_COMPLETE_PROJECT_EXECUTION_ORDER.md"
+    },
+    {
+      "path": "docs/SUPPORT_STRATEGIC_PARTNERSHIPS_DIRECTIVE.md"
     }
   ],
   "requirements": [
@@ -43408,6 +43411,2724 @@
       "nextAction": "Continue the active engineering streams and verify the intended customer workflow; preserve the stated approval gates.",
       "owner": "Codex coordinated engineering; external operations retain owner approval",
       "auditDepth": "Current execution order fully source-mapped; individual customer acceptance remains required"
+    },
+    {
+      "id": "R17-001",
+      "source": "docs/SUPPORT_STRATEGIC_PARTNERSHIPS_DIRECTIVE.md",
+      "line": 4,
+      "section": "Complete Independent Workstream Directive",
+      "requirement": "Create a separate workstream for improving the existing Vision XIX Labs Support page and establishing two professional outreach programs.",
+      "domain": "website",
+      "scope": "proposal",
+      "status": "Missing",
+      "verification": "Directive preserved and deferred source audit/proposal recorded. Existing support code is reusable but hosted payment, design, outreach and launch acceptance are not established. No page/payment implementation, CRM write or outbound message is authorized or performed.",
+      "evidence": [
+        "docs/SUPPORT_PARTNERSHIPS_DEFERRED_PLAN.md"
+      ],
+      "prs": [],
+      "nextAction": "Preserve critical engineering priorities and approval boundaries; review the isolated proposal with the founder when spare capacity exists, then implement only specifically approved work.",
+      "owner": "Codex deferred support/partnerships; founder approves implementation and every outbound message",
+      "auditDepth": "Exact available source unit mapped; read-only audit and proposal only"
+    },
+    {
+      "id": "R17-002",
+      "source": "docs/SUPPORT_STRATEGIC_PARTNERSHIPS_DIRECTIVE.md",
+      "line": 6,
+      "section": "Complete Independent Workstream Directive / CRITICAL: DO NOT DEVIATE FROM THE CURRENT AXIOM AGENT MISSION.",
+      "requirement": "**CRITICAL: DO NOT DEVIATE FROM THE CURRENT AXIOM AGENT MISSION.**",
+      "domain": "governance",
+      "scope": "process",
+      "status": "Partially implemented",
+      "verification": "Directive preserved and deferred source audit/proposal recorded. Existing support code is reusable but hosted payment, design, outreach and launch acceptance are not established. No page/payment implementation, CRM write or outbound message is authorized or performed.",
+      "evidence": [
+        "docs/SUPPORT_PARTNERSHIPS_DEFERRED_PLAN.md"
+      ],
+      "prs": [],
+      "nextAction": "Preserve critical engineering priorities and approval boundaries; review the isolated proposal with the founder when spare capacity exists, then implement only specifically approved work.",
+      "owner": "Codex deferred support/partnerships; founder approves implementation and every outbound message",
+      "auditDepth": "Exact available source unit mapped; read-only audit and proposal only"
+    },
+    {
+      "id": "R17-003",
+      "source": "docs/SUPPORT_STRATEGIC_PARTNERSHIPS_DIRECTIVE.md",
+      "line": 8,
+      "section": "Complete Independent Workstream Directive / CRITICAL: DO NOT DEVIATE FROM THE CURRENT AXIOM AGENT MISSION.",
+      "requirement": "Continue all existing Axiom engineering, production authentication recovery, deployment governance, AWS/Azure, AI Agent, Terraform, Airflow, Stripe billing, desktop, testing, and validated GitHub merges without interruption.",
+      "domain": "website",
+      "scope": "proposal",
+      "status": "Missing",
+      "verification": "Directive preserved and deferred source audit/proposal recorded. Existing support code is reusable but hosted payment, design, outreach and launch acceptance are not established. No page/payment implementation, CRM write or outbound message is authorized or performed.",
+      "evidence": [
+        "docs/SUPPORT_PARTNERSHIPS_DEFERRED_PLAN.md"
+      ],
+      "prs": [],
+      "nextAction": "Preserve critical engineering priorities and approval boundaries; review the isolated proposal with the founder when spare capacity exists, then implement only specifically approved work.",
+      "owner": "Codex deferred support/partnerships; founder approves implementation and every outbound message",
+      "auditDepth": "Exact available source unit mapped; read-only audit and proposal only"
+    },
+    {
+      "id": "R17-004",
+      "source": "docs/SUPPORT_STRATEGIC_PARTNERSHIPS_DIRECTIVE.md",
+      "line": 10,
+      "section": "Complete Independent Workstream Directive / CRITICAL: DO NOT DEVIATE FROM THE CURRENT AXIOM AGENT MISSION.",
+      "requirement": "This initiative must be independently tracked, isolated from critical engineering, and implemented only when spare capacity exists and I approve the work. Do not reassign active engineering agents.",
+      "domain": "governance",
+      "scope": "process",
+      "status": "Partially implemented",
+      "verification": "Directive preserved and deferred source audit/proposal recorded. Existing support code is reusable but hosted payment, design, outreach and launch acceptance are not established. No page/payment implementation, CRM write or outbound message is authorized or performed.",
+      "evidence": [
+        "docs/SUPPORT_PARTNERSHIPS_DEFERRED_PLAN.md"
+      ],
+      "prs": [],
+      "nextAction": "Preserve critical engineering priorities and approval boundaries; review the isolated proposal with the founder when spare capacity exists, then implement only specifically approved work.",
+      "owner": "Codex deferred support/partnerships; founder approves implementation and every outbound message",
+      "auditDepth": "Exact available source unit mapped; read-only audit and proposal only"
+    },
+    {
+      "id": "R17-005",
+      "source": "docs/SUPPORT_STRATEGIC_PARTNERSHIPS_DIRECTIVE.md",
+      "line": 14,
+      "section": "1. First, inspect what already exists",
+      "requirement": "Before making changes:",
+      "domain": "website",
+      "scope": "proposal",
+      "status": "Partially implemented",
+      "verification": "Directive preserved and deferred source audit/proposal recorded. Existing support code is reusable but hosted payment, design, outreach and launch acceptance are not established. No page/payment implementation, CRM write or outbound message is authorized or performed.",
+      "evidence": [
+        "docs/SUPPORT_PARTNERSHIPS_DEFERRED_PLAN.md"
+      ],
+      "prs": [],
+      "nextAction": "Preserve critical engineering priorities and approval boundaries; review the isolated proposal with the founder when spare capacity exists, then implement only specifically approved work.",
+      "owner": "Codex deferred support/partnerships; founder approves implementation and every outbound message",
+      "auditDepth": "Exact available source unit mapped; read-only audit and proposal only"
+    },
+    {
+      "id": "R17-006",
+      "source": "docs/SUPPORT_STRATEGIC_PARTNERSHIPS_DIRECTIVE.md",
+      "line": 16,
+      "section": "1. First, inspect what already exists",
+      "requirement": "- Locate the existing long-form Support page.",
+      "domain": "website",
+      "scope": "proposal",
+      "status": "Partially implemented",
+      "verification": "Directive preserved and deferred source audit/proposal recorded. Existing support code is reusable but hosted payment, design, outreach and launch acceptance are not established. No page/payment implementation, CRM write or outbound message is authorized or performed.",
+      "evidence": [
+        "docs/SUPPORT_PARTNERSHIPS_DEFERRED_PLAN.md"
+      ],
+      "prs": [],
+      "nextAction": "Preserve critical engineering priorities and approval boundaries; review the isolated proposal with the founder when spare capacity exists, then implement only specifically approved work.",
+      "owner": "Codex deferred support/partnerships; founder approves implementation and every outbound message",
+      "auditDepth": "Exact available source unit mapped; read-only audit and proposal only"
+    },
+    {
+      "id": "R17-007",
+      "source": "docs/SUPPORT_STRATEGIC_PARTNERSHIPS_DIRECTIVE.md",
+      "line": 17,
+      "section": "1. First, inspect what already exists",
+      "requirement": "- Review its current design, content, storytelling, and functionality.",
+      "domain": "website",
+      "scope": "proposal",
+      "status": "Partially implemented",
+      "verification": "Directive preserved and deferred source audit/proposal recorded. Existing support code is reusable but hosted payment, design, outreach and launch acceptance are not established. No page/payment implementation, CRM write or outbound message is authorized or performed.",
+      "evidence": [
+        "docs/SUPPORT_PARTNERSHIPS_DEFERRED_PLAN.md"
+      ],
+      "prs": [],
+      "nextAction": "Preserve critical engineering priorities and approval boundaries; review the isolated proposal with the founder when spare capacity exists, then implement only specifically approved work.",
+      "owner": "Codex deferred support/partnerships; founder approves implementation and every outbound message",
+      "auditDepth": "Exact available source unit mapped; read-only audit and proposal only"
+    },
+    {
+      "id": "R17-008",
+      "source": "docs/SUPPORT_STRATEGIC_PARTNERSHIPS_DIRECTIVE.md",
+      "line": 18,
+      "section": "1. First, inspect what already exists",
+      "requirement": "- Inspect the existing working Stripe payment integration.",
+      "domain": "website",
+      "scope": "proposal",
+      "status": "Partially implemented",
+      "verification": "Directive preserved and deferred source audit/proposal recorded. Existing support code is reusable but hosted payment, design, outreach and launch acceptance are not established. No page/payment implementation, CRM write or outbound message is authorized or performed.",
+      "evidence": [
+        "docs/SUPPORT_PARTNERSHIPS_DEFERRED_PLAN.md"
+      ],
+      "prs": [],
+      "nextAction": "Preserve critical engineering priorities and approval boundaries; review the isolated proposal with the founder when spare capacity exists, then implement only specifically approved work.",
+      "owner": "Codex deferred support/partnerships; founder approves implementation and every outbound message",
+      "auditDepth": "Exact available source unit mapped; read-only audit and proposal only"
+    },
+    {
+      "id": "R17-009",
+      "source": "docs/SUPPORT_STRATEGIC_PARTNERSHIPS_DIRECTIVE.md",
+      "line": 19,
+      "section": "1. First, inspect what already exists",
+      "requirement": "- Identify existing supporter options, payment amounts, and custom contribution functionality.",
+      "domain": "website",
+      "scope": "proposal",
+      "status": "Partially implemented",
+      "verification": "Directive preserved and deferred source audit/proposal recorded. Existing support code is reusable but hosted payment, design, outreach and launch acceptance are not established. No page/payment implementation, CRM write or outbound message is authorized or performed.",
+      "evidence": [
+        "docs/SUPPORT_PARTNERSHIPS_DEFERRED_PLAN.md"
+      ],
+      "prs": [],
+      "nextAction": "Preserve critical engineering priorities and approval boundaries; review the isolated proposal with the founder when spare capacity exists, then implement only specifically approved work.",
+      "owner": "Codex deferred support/partnerships; founder approves implementation and every outbound message",
+      "auditDepth": "Exact available source unit mapped; read-only audit and proposal only"
+    },
+    {
+      "id": "R17-010",
+      "source": "docs/SUPPORT_STRATEGIC_PARTNERSHIPS_DIRECTIVE.md",
+      "line": 20,
+      "section": "1. First, inspect what already exists",
+      "requirement": "- Review current product evidence, screenshots, milestones, and company information.",
+      "domain": "website",
+      "scope": "proposal",
+      "status": "Partially implemented",
+      "verification": "Directive preserved and deferred source audit/proposal recorded. Existing support code is reusable but hosted payment, design, outreach and launch acceptance are not established. No page/payment implementation, CRM write or outbound message is authorized or performed.",
+      "evidence": [
+        "docs/SUPPORT_PARTNERSHIPS_DEFERRED_PLAN.md"
+      ],
+      "prs": [],
+      "nextAction": "Preserve critical engineering priorities and approval boundaries; review the isolated proposal with the founder when spare capacity exists, then implement only specifically approved work.",
+      "owner": "Codex deferred support/partnerships; founder approves implementation and every outbound message",
+      "auditDepth": "Exact available source unit mapped; read-only audit and proposal only"
+    },
+    {
+      "id": "R17-011",
+      "source": "docs/SUPPORT_STRATEGIC_PARTNERSHIPS_DIRECTIVE.md",
+      "line": 21,
+      "section": "1. First, inspect what already exists",
+      "requirement": "- Determine what can be reused and what actually needs improvement.",
+      "domain": "website",
+      "scope": "proposal",
+      "status": "Partially implemented",
+      "verification": "Directive preserved and deferred source audit/proposal recorded. Existing support code is reusable but hosted payment, design, outreach and launch acceptance are not established. No page/payment implementation, CRM write or outbound message is authorized or performed.",
+      "evidence": [
+        "docs/SUPPORT_PARTNERSHIPS_DEFERRED_PLAN.md"
+      ],
+      "prs": [],
+      "nextAction": "Preserve critical engineering priorities and approval boundaries; review the isolated proposal with the founder when spare capacity exists, then implement only specifically approved work.",
+      "owner": "Codex deferred support/partnerships; founder approves implementation and every outbound message",
+      "auditDepth": "Exact available source unit mapped; read-only audit and proposal only"
+    },
+    {
+      "id": "R17-012",
+      "source": "docs/SUPPORT_STRATEGIC_PARTNERSHIPS_DIRECTIVE.md",
+      "line": 23,
+      "section": "1. First, inspect what already exists",
+      "requirement": "Preserve existing working functionality. Do not rebuild the payment system or redesign unrelated website pages.",
+      "domain": "governance",
+      "scope": "process",
+      "status": "Partially implemented",
+      "verification": "Directive preserved and deferred source audit/proposal recorded. Existing support code is reusable but hosted payment, design, outreach and launch acceptance are not established. No page/payment implementation, CRM write or outbound message is authorized or performed.",
+      "evidence": [
+        "docs/SUPPORT_PARTNERSHIPS_DEFERRED_PLAN.md"
+      ],
+      "prs": [],
+      "nextAction": "Preserve critical engineering priorities and approval boundaries; review the isolated proposal with the founder when spare capacity exists, then implement only specifically approved work.",
+      "owner": "Codex deferred support/partnerships; founder approves implementation and every outbound message",
+      "auditDepth": "Exact available source unit mapped; read-only audit and proposal only"
+    },
+    {
+      "id": "R17-013",
+      "source": "docs/SUPPORT_STRATEGIC_PARTNERSHIPS_DIRECTIVE.md",
+      "line": 27,
+      "section": "2. Premium minimalist design — Apple × Cursor inspiration",
+      "requirement": "The Support page should feel like a serious, ambitious technology company inviting people to support meaningful innovation.",
+      "domain": "website",
+      "scope": "proposal",
+      "status": "Missing",
+      "verification": "Directive preserved and deferred source audit/proposal recorded. Existing support code is reusable but hosted payment, design, outreach and launch acceptance are not established. No page/payment implementation, CRM write or outbound message is authorized or performed.",
+      "evidence": [
+        "docs/SUPPORT_PARTNERSHIPS_DEFERRED_PLAN.md"
+      ],
+      "prs": [],
+      "nextAction": "Preserve critical engineering priorities and approval boundaries; review the isolated proposal with the founder when spare capacity exists, then implement only specifically approved work.",
+      "owner": "Codex deferred support/partnerships; founder approves implementation and every outbound message",
+      "auditDepth": "Exact available source unit mapped; read-only audit and proposal only"
+    },
+    {
+      "id": "R17-014",
+      "source": "docs/SUPPORT_STRATEGIC_PARTNERSHIPS_DIRECTIVE.md",
+      "line": 29,
+      "section": "2. Premium minimalist design — Apple × Cursor inspiration",
+      "requirement": "Design direction:",
+      "domain": "website",
+      "scope": "proposal",
+      "status": "Missing",
+      "verification": "Directive preserved and deferred source audit/proposal recorded. Existing support code is reusable but hosted payment, design, outreach and launch acceptance are not established. No page/payment implementation, CRM write or outbound message is authorized or performed.",
+      "evidence": [
+        "docs/SUPPORT_PARTNERSHIPS_DEFERRED_PLAN.md"
+      ],
+      "prs": [],
+      "nextAction": "Preserve critical engineering priorities and approval boundaries; review the isolated proposal with the founder when spare capacity exists, then implement only specifically approved work.",
+      "owner": "Codex deferred support/partnerships; founder approves implementation and every outbound message",
+      "auditDepth": "Exact available source unit mapped; read-only audit and proposal only"
+    },
+    {
+      "id": "R17-015",
+      "source": "docs/SUPPORT_STRATEGIC_PARTNERSHIPS_DIRECTIVE.md",
+      "line": 31,
+      "section": "2. Premium minimalist design — Apple × Cursor inspiration",
+      "requirement": "- Warm off-white background (#F8F8F6).",
+      "domain": "website",
+      "scope": "proposal",
+      "status": "Missing",
+      "verification": "Directive preserved and deferred source audit/proposal recorded. Existing support code is reusable but hosted payment, design, outreach and launch acceptance are not established. No page/payment implementation, CRM write or outbound message is authorized or performed.",
+      "evidence": [
+        "docs/SUPPORT_PARTNERSHIPS_DEFERRED_PLAN.md"
+      ],
+      "prs": [],
+      "nextAction": "Preserve critical engineering priorities and approval boundaries; review the isolated proposal with the founder when spare capacity exists, then implement only specifically approved work.",
+      "owner": "Codex deferred support/partnerships; founder approves implementation and every outbound message",
+      "auditDepth": "Exact available source unit mapped; read-only audit and proposal only"
+    },
+    {
+      "id": "R17-016",
+      "source": "docs/SUPPORT_STRATEGIC_PARTNERSHIPS_DIRECTIVE.md",
+      "line": 32,
+      "section": "2. Premium minimalist design — Apple × Cursor inspiration",
+      "requirement": "- Charcoal typography (#202020).",
+      "domain": "website",
+      "scope": "proposal",
+      "status": "Missing",
+      "verification": "Directive preserved and deferred source audit/proposal recorded. Existing support code is reusable but hosted payment, design, outreach and launch acceptance are not established. No page/payment implementation, CRM write or outbound message is authorized or performed.",
+      "evidence": [
+        "docs/SUPPORT_PARTNERSHIPS_DEFERRED_PLAN.md"
+      ],
+      "prs": [],
+      "nextAction": "Preserve critical engineering priorities and approval boundaries; review the isolated proposal with the founder when spare capacity exists, then implement only specifically approved work.",
+      "owner": "Codex deferred support/partnerships; founder approves implementation and every outbound message",
+      "auditDepth": "Exact available source unit mapped; read-only audit and proposal only"
+    },
+    {
+      "id": "R17-017",
+      "source": "docs/SUPPORT_STRATEGIC_PARTNERSHIPS_DIRECTIVE.md",
+      "line": 33,
+      "section": "2. Premium minimalist design — Apple × Cursor inspiration",
+      "requirement": "- Generous whitespace.",
+      "domain": "website",
+      "scope": "proposal",
+      "status": "Missing",
+      "verification": "Directive preserved and deferred source audit/proposal recorded. Existing support code is reusable but hosted payment, design, outreach and launch acceptance are not established. No page/payment implementation, CRM write or outbound message is authorized or performed.",
+      "evidence": [
+        "docs/SUPPORT_PARTNERSHIPS_DEFERRED_PLAN.md"
+      ],
+      "prs": [],
+      "nextAction": "Preserve critical engineering priorities and approval boundaries; review the isolated proposal with the founder when spare capacity exists, then implement only specifically approved work.",
+      "owner": "Codex deferred support/partnerships; founder approves implementation and every outbound message",
+      "auditDepth": "Exact available source unit mapped; read-only audit and proposal only"
+    },
+    {
+      "id": "R17-018",
+      "source": "docs/SUPPORT_STRATEGIC_PARTNERSHIPS_DIRECTIVE.md",
+      "line": 34,
+      "section": "2. Premium minimalist design — Apple × Cursor inspiration",
+      "requirement": "- Exceptional typography and visual hierarchy.",
+      "domain": "website",
+      "scope": "proposal",
+      "status": "Missing",
+      "verification": "Directive preserved and deferred source audit/proposal recorded. Existing support code is reusable but hosted payment, design, outreach and launch acceptance are not established. No page/payment implementation, CRM write or outbound message is authorized or performed.",
+      "evidence": [
+        "docs/SUPPORT_PARTNERSHIPS_DEFERRED_PLAN.md"
+      ],
+      "prs": [],
+      "nextAction": "Preserve critical engineering priorities and approval boundaries; review the isolated proposal with the founder when spare capacity exists, then implement only specifically approved work.",
+      "owner": "Codex deferred support/partnerships; founder approves implementation and every outbound message",
+      "auditDepth": "Exact available source unit mapped; read-only audit and proposal only"
+    },
+    {
+      "id": "R17-019",
+      "source": "docs/SUPPORT_STRATEGIC_PARTNERSHIPS_DIRECTIVE.md",
+      "line": 35,
+      "section": "2. Premium minimalist design — Apple × Cursor inspiration",
+      "requirement": "- Minimal navigation and distractions.",
+      "domain": "website",
+      "scope": "proposal",
+      "status": "Missing",
+      "verification": "Directive preserved and deferred source audit/proposal recorded. Existing support code is reusable but hosted payment, design, outreach and launch acceptance are not established. No page/payment implementation, CRM write or outbound message is authorized or performed.",
+      "evidence": [
+        "docs/SUPPORT_PARTNERSHIPS_DEFERRED_PLAN.md"
+      ],
+      "prs": [],
+      "nextAction": "Preserve critical engineering priorities and approval boundaries; review the isolated proposal with the founder when spare capacity exists, then implement only specifically approved work.",
+      "owner": "Codex deferred support/partnerships; founder approves implementation and every outbound message",
+      "auditDepth": "Exact available source unit mapped; read-only audit and proposal only"
+    },
+    {
+      "id": "R17-020",
+      "source": "docs/SUPPORT_STRATEGIC_PARTNERSHIPS_DIRECTIVE.md",
+      "line": 36,
+      "section": "2. Premium minimalist design — Apple × Cursor inspiration",
+      "requirement": "- Elegant, subtle interactions.",
+      "domain": "website",
+      "scope": "proposal",
+      "status": "Missing",
+      "verification": "Directive preserved and deferred source audit/proposal recorded. Existing support code is reusable but hosted payment, design, outreach and launch acceptance are not established. No page/payment implementation, CRM write or outbound message is authorized or performed.",
+      "evidence": [
+        "docs/SUPPORT_PARTNERSHIPS_DEFERRED_PLAN.md"
+      ],
+      "prs": [],
+      "nextAction": "Preserve critical engineering priorities and approval boundaries; review the isolated proposal with the founder when spare capacity exists, then implement only specifically approved work.",
+      "owner": "Codex deferred support/partnerships; founder approves implementation and every outbound message",
+      "auditDepth": "Exact available source unit mapped; read-only audit and proposal only"
+    },
+    {
+      "id": "R17-021",
+      "source": "docs/SUPPORT_STRATEGIC_PARTNERSHIPS_DIRECTIVE.md",
+      "line": 37,
+      "section": "2. Premium minimalist design — Apple × Cursor inspiration",
+      "requirement": "- Premium Apple/Cursor-inspired presentation while retaining Vision XIX Labs' own identity.",
+      "domain": "website",
+      "scope": "proposal",
+      "status": "Missing",
+      "verification": "Directive preserved and deferred source audit/proposal recorded. Existing support code is reusable but hosted payment, design, outreach and launch acceptance are not established. No page/payment implementation, CRM write or outbound message is authorized or performed.",
+      "evidence": [
+        "docs/SUPPORT_PARTNERSHIPS_DEFERRED_PLAN.md"
+      ],
+      "prs": [],
+      "nextAction": "Preserve critical engineering priorities and approval boundaries; review the isolated proposal with the founder when spare capacity exists, then implement only specifically approved work.",
+      "owner": "Codex deferred support/partnerships; founder approves implementation and every outbound message",
+      "auditDepth": "Exact available source unit mapped; read-only audit and proposal only"
+    },
+    {
+      "id": "R17-022",
+      "source": "docs/SUPPORT_STRATEGIC_PARTNERSHIPS_DIRECTIVE.md",
+      "line": 38,
+      "section": "2. Premium minimalist design — Apple × Cursor inspiration",
+      "requirement": "- Fully responsive, accessible, and fast.",
+      "domain": "website",
+      "scope": "proposal",
+      "status": "Missing",
+      "verification": "Directive preserved and deferred source audit/proposal recorded. Existing support code is reusable but hosted payment, design, outreach and launch acceptance are not established. No page/payment implementation, CRM write or outbound message is authorized or performed.",
+      "evidence": [
+        "docs/SUPPORT_PARTNERSHIPS_DEFERRED_PLAN.md"
+      ],
+      "prs": [],
+      "nextAction": "Preserve critical engineering priorities and approval boundaries; review the isolated proposal with the founder when spare capacity exists, then implement only specifically approved work.",
+      "owner": "Codex deferred support/partnerships; founder approves implementation and every outbound message",
+      "auditDepth": "Exact available source unit mapped; read-only audit and proposal only"
+    },
+    {
+      "id": "R17-023",
+      "source": "docs/SUPPORT_STRATEGIC_PARTNERSHIPS_DIRECTIVE.md",
+      "line": 40,
+      "section": "2. Premium minimalist design — Apple × Cursor inspiration",
+      "requirement": "Avoid bright orange donation buttons, excessive gradients, flashing effects, aggressive animations, fake urgency, and anything resembling a scam or gambling website.",
+      "domain": "website",
+      "scope": "proposal",
+      "status": "Missing",
+      "verification": "Directive preserved and deferred source audit/proposal recorded. Existing support code is reusable but hosted payment, design, outreach and launch acceptance are not established. No page/payment implementation, CRM write or outbound message is authorized or performed.",
+      "evidence": [
+        "docs/SUPPORT_PARTNERSHIPS_DEFERRED_PLAN.md"
+      ],
+      "prs": [],
+      "nextAction": "Preserve critical engineering priorities and approval boundaries; review the isolated proposal with the founder when spare capacity exists, then implement only specifically approved work.",
+      "owner": "Codex deferred support/partnerships; founder approves implementation and every outbound message",
+      "auditDepth": "Exact available source unit mapped; read-only audit and proposal only"
+    },
+    {
+      "id": "R17-024",
+      "source": "docs/SUPPORT_STRATEGIC_PARTNERSHIPS_DIRECTIVE.md",
+      "line": 42,
+      "section": "2. Premium minimalist design — Apple × Cursor inspiration",
+      "requirement": "The page should feel trustworthy, intelligent, calm, and powerful.",
+      "domain": "website",
+      "scope": "proposal",
+      "status": "Missing",
+      "verification": "Directive preserved and deferred source audit/proposal recorded. Existing support code is reusable but hosted payment, design, outreach and launch acceptance are not established. No page/payment implementation, CRM write or outbound message is authorized or performed.",
+      "evidence": [
+        "docs/SUPPORT_PARTNERSHIPS_DEFERRED_PLAN.md"
+      ],
+      "prs": [],
+      "nextAction": "Preserve critical engineering priorities and approval boundaries; review the isolated proposal with the founder when spare capacity exists, then implement only specifically approved work.",
+      "owner": "Codex deferred support/partnerships; founder approves implementation and every outbound message",
+      "auditDepth": "Exact available source unit mapped; read-only audit and proposal only"
+    },
+    {
+      "id": "R17-025",
+      "source": "docs/SUPPORT_STRATEGIC_PARTNERSHIPS_DIRECTIVE.md",
+      "line": 46,
+      "section": "3. The giant $1 support button",
+      "requirement": "Make the $1 contribution experience the main visual centerpiece.",
+      "domain": "website",
+      "scope": "proposal",
+      "status": "Missing",
+      "verification": "Directive preserved and deferred source audit/proposal recorded. Existing support code is reusable but hosted payment, design, outreach and launch acceptance are not established. No page/payment implementation, CRM write or outbound message is authorized or performed.",
+      "evidence": [
+        "docs/SUPPORT_PARTNERSHIPS_DEFERRED_PLAN.md"
+      ],
+      "prs": [],
+      "nextAction": "Preserve critical engineering priorities and approval boundaries; review the isolated proposal with the founder when spare capacity exists, then implement only specifically approved work.",
+      "owner": "Codex deferred support/partnerships; founder approves implementation and every outbound message",
+      "auditDepth": "Exact available source unit mapped; read-only audit and proposal only"
+    },
+    {
+      "id": "R17-026",
+      "source": "docs/SUPPORT_STRATEGIC_PARTNERSHIPS_DIRECTIVE.md",
+      "line": 48,
+      "section": "3. The giant $1 support button",
+      "requirement": "Suggested hero:",
+      "domain": "website",
+      "scope": "proposal",
+      "status": "Missing",
+      "verification": "Directive preserved and deferred source audit/proposal recorded. Existing support code is reusable but hosted payment, design, outreach and launch acceptance are not established. No page/payment implementation, CRM write or outbound message is authorized or performed.",
+      "evidence": [
+        "docs/SUPPORT_PARTNERSHIPS_DEFERRED_PLAN.md"
+      ],
+      "prs": [],
+      "nextAction": "Preserve critical engineering priorities and approval boundaries; review the isolated proposal with the founder when spare capacity exists, then implement only specifically approved work.",
+      "owner": "Codex deferred support/partnerships; founder approves implementation and every outbound message",
+      "auditDepth": "Exact available source unit mapped; read-only audit and proposal only"
+    },
+    {
+      "id": "R17-027",
+      "source": "docs/SUPPORT_STRATEGIC_PARTNERSHIPS_DIRECTIVE.md",
+      "line": 50,
+      "section": "3. The giant $1 support button / Help build what comes next.",
+      "requirement": "**Help build what comes next.**",
+      "domain": "website",
+      "scope": "proposal",
+      "status": "Missing",
+      "verification": "Directive preserved and deferred source audit/proposal recorded. Existing support code is reusable but hosted payment, design, outreach and launch acceptance are not established. No page/payment implementation, CRM write or outbound message is authorized or performed.",
+      "evidence": [
+        "docs/SUPPORT_PARTNERSHIPS_DEFERRED_PLAN.md"
+      ],
+      "prs": [],
+      "nextAction": "Preserve critical engineering priorities and approval boundaries; review the isolated proposal with the founder when spare capacity exists, then implement only specifically approved work.",
+      "owner": "Codex deferred support/partnerships; founder approves implementation and every outbound message",
+      "auditDepth": "Exact available source unit mapped; read-only audit and proposal only"
+    },
+    {
+      "id": "R17-028",
+      "source": "docs/SUPPORT_STRATEGIC_PARTNERSHIPS_DIRECTIVE.md",
+      "line": 52,
+      "section": "3. The giant $1 support button / Help build what comes next.",
+      "requirement": "Independent technology. Ambitious ideas. Built with purpose.",
+      "domain": "website",
+      "scope": "proposal",
+      "status": "Missing",
+      "verification": "Directive preserved and deferred source audit/proposal recorded. Existing support code is reusable but hosted payment, design, outreach and launch acceptance are not established. No page/payment implementation, CRM write or outbound message is authorized or performed.",
+      "evidence": [
+        "docs/SUPPORT_PARTNERSHIPS_DEFERRED_PLAN.md"
+      ],
+      "prs": [],
+      "nextAction": "Preserve critical engineering priorities and approval boundaries; review the isolated proposal with the founder when spare capacity exists, then implement only specifically approved work.",
+      "owner": "Codex deferred support/partnerships; founder approves implementation and every outbound message",
+      "auditDepth": "Exact available source unit mapped; read-only audit and proposal only"
+    },
+    {
+      "id": "R17-029",
+      "source": "docs/SUPPORT_STRATEGIC_PARTNERSHIPS_DIRECTIVE.md",
+      "line": 54,
+      "section": "3. The giant $1 support button / Help build what comes next.",
+      "requirement": "Create one oversized, beautifully designed charcoal circular button:",
+      "domain": "website",
+      "scope": "proposal",
+      "status": "Missing",
+      "verification": "Directive preserved and deferred source audit/proposal recorded. Existing support code is reusable but hosted payment, design, outreach and launch acceptance are not established. No page/payment implementation, CRM write or outbound message is authorized or performed.",
+      "evidence": [
+        "docs/SUPPORT_PARTNERSHIPS_DEFERRED_PLAN.md"
+      ],
+      "prs": [],
+      "nextAction": "Preserve critical engineering priorities and approval boundaries; review the isolated proposal with the founder when spare capacity exists, then implement only specifically approved work.",
+      "owner": "Codex deferred support/partnerships; founder approves implementation and every outbound message",
+      "auditDepth": "Exact available source unit mapped; read-only audit and proposal only"
+    },
+    {
+      "id": "R17-030",
+      "source": "docs/SUPPORT_STRATEGIC_PARTNERSHIPS_DIRECTIVE.md",
+      "line": 56,
+      "section": "3. The giant $1 support button / $1",
+      "requirement": "**$1** Support the work ↗",
+      "domain": "website",
+      "scope": "proposal",
+      "status": "Missing",
+      "verification": "Directive preserved and deferred source audit/proposal recorded. Existing support code is reusable but hosted payment, design, outreach and launch acceptance are not established. No page/payment implementation, CRM write or outbound message is authorized or performed.",
+      "evidence": [
+        "docs/SUPPORT_PARTNERSHIPS_DEFERRED_PLAN.md"
+      ],
+      "prs": [],
+      "nextAction": "Preserve critical engineering priorities and approval boundaries; review the isolated proposal with the founder when spare capacity exists, then implement only specifically approved work.",
+      "owner": "Codex deferred support/partnerships; founder approves implementation and every outbound message",
+      "auditDepth": "Exact available source unit mapped; read-only audit and proposal only"
+    },
+    {
+      "id": "R17-031",
+      "source": "docs/SUPPORT_STRATEGIC_PARTNERSHIPS_DIRECTIVE.md",
+      "line": 59,
+      "section": "3. The giant $1 support button / $1",
+      "requirement": "Requirements:",
+      "domain": "website",
+      "scope": "proposal",
+      "status": "Missing",
+      "verification": "Directive preserved and deferred source audit/proposal recorded. Existing support code is reusable but hosted payment, design, outreach and launch acceptance are not established. No page/payment implementation, CRM write or outbound message is authorized or performed.",
+      "evidence": [
+        "docs/SUPPORT_PARTNERSHIPS_DEFERRED_PLAN.md"
+      ],
+      "prs": [],
+      "nextAction": "Preserve critical engineering priorities and approval boundaries; review the isolated proposal with the founder when spare capacity exists, then implement only specifically approved work.",
+      "owner": "Codex deferred support/partnerships; founder approves implementation and every outbound message",
+      "auditDepth": "Exact available source unit mapped; read-only audit and proposal only"
+    },
+    {
+      "id": "R17-032",
+      "source": "docs/SUPPORT_STRATEGIC_PARTNERSHIPS_DIRECTIVE.md",
+      "line": 61,
+      "section": "3. The giant $1 support button / $1",
+      "requirement": "- Large enough to immediately attract attention.",
+      "domain": "website",
+      "scope": "proposal",
+      "status": "Missing",
+      "verification": "Directive preserved and deferred source audit/proposal recorded. Existing support code is reusable but hosted payment, design, outreach and launch acceptance are not established. No page/payment implementation, CRM write or outbound message is authorized or performed.",
+      "evidence": [
+        "docs/SUPPORT_PARTNERSHIPS_DEFERRED_PLAN.md"
+      ],
+      "prs": [],
+      "nextAction": "Preserve critical engineering priorities and approval boundaries; review the isolated proposal with the founder when spare capacity exists, then implement only specifically approved work.",
+      "owner": "Codex deferred support/partnerships; founder approves implementation and every outbound message",
+      "auditDepth": "Exact available source unit mapped; read-only audit and proposal only"
+    },
+    {
+      "id": "R17-033",
+      "source": "docs/SUPPORT_STRATEGIC_PARTNERSHIPS_DIRECTIVE.md",
+      "line": 62,
+      "section": "3. The giant $1 support button / $1",
+      "requirement": "- Elegant, sophisticated, and unmistakably clickable.",
+      "domain": "website",
+      "scope": "proposal",
+      "status": "Missing",
+      "verification": "Directive preserved and deferred source audit/proposal recorded. Existing support code is reusable but hosted payment, design, outreach and launch acceptance are not established. No page/payment implementation, CRM write or outbound message is authorized or performed.",
+      "evidence": [
+        "docs/SUPPORT_PARTNERSHIPS_DEFERRED_PLAN.md"
+      ],
+      "prs": [],
+      "nextAction": "Preserve critical engineering priorities and approval boundaries; review the isolated proposal with the founder when spare capacity exists, then implement only specifically approved work.",
+      "owner": "Codex deferred support/partnerships; founder approves implementation and every outbound message",
+      "auditDepth": "Exact available source unit mapped; read-only audit and proposal only"
+    },
+    {
+      "id": "R17-034",
+      "source": "docs/SUPPORT_STRATEGIC_PARTNERSHIPS_DIRECTIVE.md",
+      "line": 63,
+      "section": "3. The giant $1 support button / $1",
+      "requirement": "- Subtle hover and press feedback.",
+      "domain": "website",
+      "scope": "proposal",
+      "status": "Missing",
+      "verification": "Directive preserved and deferred source audit/proposal recorded. Existing support code is reusable but hosted payment, design, outreach and launch acceptance are not established. No page/payment implementation, CRM write or outbound message is authorized or performed.",
+      "evidence": [
+        "docs/SUPPORT_PARTNERSHIPS_DEFERRED_PLAN.md"
+      ],
+      "prs": [],
+      "nextAction": "Preserve critical engineering priorities and approval boundaries; review the isolated proposal with the founder when spare capacity exists, then implement only specifically approved work.",
+      "owner": "Codex deferred support/partnerships; founder approves implementation and every outbound message",
+      "auditDepth": "Exact available source unit mapped; read-only audit and proposal only"
+    },
+    {
+      "id": "R17-035",
+      "source": "docs/SUPPORT_STRATEGIC_PARTNERSHIPS_DIRECTIVE.md",
+      "line": 64,
+      "section": "3. The giant $1 support button / $1",
+      "requirement": "- No flashing, pulsing glow, or aggressive effects.",
+      "domain": "website",
+      "scope": "proposal",
+      "status": "Missing",
+      "verification": "Directive preserved and deferred source audit/proposal recorded. Existing support code is reusable but hosted payment, design, outreach and launch acceptance are not established. No page/payment implementation, CRM write or outbound message is authorized or performed.",
+      "evidence": [
+        "docs/SUPPORT_PARTNERSHIPS_DEFERRED_PLAN.md"
+      ],
+      "prs": [],
+      "nextAction": "Preserve critical engineering priorities and approval boundaries; review the isolated proposal with the founder when spare capacity exists, then implement only specifically approved work.",
+      "owner": "Codex deferred support/partnerships; founder approves implementation and every outbound message",
+      "auditDepth": "Exact available source unit mapped; read-only audit and proposal only"
+    },
+    {
+      "id": "R17-036",
+      "source": "docs/SUPPORT_STRATEGIC_PARTNERSHIPS_DIRECTIVE.md",
+      "line": 65,
+      "section": "3. The giant $1 support button / $1",
+      "requirement": "- Mobile-friendly and accessible.",
+      "domain": "website",
+      "scope": "proposal",
+      "status": "Missing",
+      "verification": "Directive preserved and deferred source audit/proposal recorded. Existing support code is reusable but hosted payment, design, outreach and launch acceptance are not established. No page/payment implementation, CRM write or outbound message is authorized or performed.",
+      "evidence": [
+        "docs/SUPPORT_PARTNERSHIPS_DEFERRED_PLAN.md"
+      ],
+      "prs": [],
+      "nextAction": "Preserve critical engineering priorities and approval boundaries; review the isolated proposal with the founder when spare capacity exists, then implement only specifically approved work.",
+      "owner": "Codex deferred support/partnerships; founder approves implementation and every outbound message",
+      "auditDepth": "Exact available source unit mapped; read-only audit and proposal only"
+    },
+    {
+      "id": "R17-037",
+      "source": "docs/SUPPORT_STRATEGIC_PARTNERSHIPS_DIRECTIVE.md",
+      "line": 66,
+      "section": "3. The giant $1 support button / $1",
+      "requirement": "- Clearly communicate that clicking proceeds toward a $1 contribution, not an unexpected charge.",
+      "domain": "website",
+      "scope": "proposal",
+      "status": "Missing",
+      "verification": "Directive preserved and deferred source audit/proposal recorded. Existing support code is reusable but hosted payment, design, outreach and launch acceptance are not established. No page/payment implementation, CRM write or outbound message is authorized or performed.",
+      "evidence": [
+        "docs/SUPPORT_PARTNERSHIPS_DEFERRED_PLAN.md"
+      ],
+      "prs": [],
+      "nextAction": "Preserve critical engineering priorities and approval boundaries; review the isolated proposal with the founder when spare capacity exists, then implement only specifically approved work.",
+      "owner": "Codex deferred support/partnerships; founder approves implementation and every outbound message",
+      "auditDepth": "Exact available source unit mapped; read-only audit and proposal only"
+    },
+    {
+      "id": "R17-038",
+      "source": "docs/SUPPORT_STRATEGIC_PARTNERSHIPS_DIRECTIVE.md",
+      "line": 68,
+      "section": "3. The giant $1 support button / $1",
+      "requirement": "Beneath it, include a quiet secondary option:",
+      "domain": "website",
+      "scope": "proposal",
+      "status": "Missing",
+      "verification": "Directive preserved and deferred source audit/proposal recorded. Existing support code is reusable but hosted payment, design, outreach and launch acceptance are not established. No page/payment implementation, CRM write or outbound message is authorized or performed.",
+      "evidence": [
+        "docs/SUPPORT_PARTNERSHIPS_DEFERRED_PLAN.md"
+      ],
+      "prs": [],
+      "nextAction": "Preserve critical engineering priorities and approval boundaries; review the isolated proposal with the founder when spare capacity exists, then implement only specifically approved work.",
+      "owner": "Codex deferred support/partnerships; founder approves implementation and every outbound message",
+      "auditDepth": "Exact available source unit mapped; read-only audit and proposal only"
+    },
+    {
+      "id": "R17-039",
+      "source": "docs/SUPPORT_STRATEGIC_PARTNERSHIPS_DIRECTIVE.md",
+      "line": 70,
+      "section": "3. The giant $1 support button / Or choose your own amount →",
+      "requirement": "**Or choose your own amount →**",
+      "domain": "website",
+      "scope": "proposal",
+      "status": "Missing",
+      "verification": "Directive preserved and deferred source audit/proposal recorded. Existing support code is reusable but hosted payment, design, outreach and launch acceptance are not established. No page/payment implementation, CRM write or outbound message is authorized or performed.",
+      "evidence": [
+        "docs/SUPPORT_PARTNERSHIPS_DEFERRED_PLAN.md"
+      ],
+      "prs": [],
+      "nextAction": "Preserve critical engineering priorities and approval boundaries; review the isolated proposal with the founder when spare capacity exists, then implement only specifically approved work.",
+      "owner": "Codex deferred support/partnerships; founder approves implementation and every outbound message",
+      "auditDepth": "Exact available source unit mapped; read-only audit and proposal only"
+    },
+    {
+      "id": "R17-040",
+      "source": "docs/SUPPORT_STRATEGIC_PARTNERSHIPS_DIRECTIVE.md",
+      "line": 72,
+      "section": "3. The giant $1 support button / Or choose your own amount →",
+      "requirement": "Allow visitors to enter their preferred contribution amount, with clear confirmation of the total before payment.",
+      "domain": "website",
+      "scope": "proposal",
+      "status": "Missing",
+      "verification": "Directive preserved and deferred source audit/proposal recorded. Existing support code is reusable but hosted payment, design, outreach and launch acceptance are not established. No page/payment implementation, CRM write or outbound message is authorized or performed.",
+      "evidence": [
+        "docs/SUPPORT_PARTNERSHIPS_DEFERRED_PLAN.md"
+      ],
+      "prs": [],
+      "nextAction": "Preserve critical engineering priorities and approval boundaries; review the isolated proposal with the founder when spare capacity exists, then implement only specifically approved work.",
+      "owner": "Codex deferred support/partnerships; founder approves implementation and every outbound message",
+      "auditDepth": "Exact available source unit mapped; read-only audit and proposal only"
+    },
+    {
+      "id": "R17-041",
+      "source": "docs/SUPPORT_STRATEGIC_PARTNERSHIPS_DIRECTIVE.md",
+      "line": 74,
+      "section": "3. The giant $1 support button / Or choose your own amount →",
+      "requirement": "Preserve the existing Stripe integration. Any necessary changes must be independently reviewed and tested before approval.",
+      "domain": "website",
+      "scope": "proposal",
+      "status": "Missing",
+      "verification": "Directive preserved and deferred source audit/proposal recorded. Existing support code is reusable but hosted payment, design, outreach and launch acceptance are not established. No page/payment implementation, CRM write or outbound message is authorized or performed.",
+      "evidence": [
+        "docs/SUPPORT_PARTNERSHIPS_DEFERRED_PLAN.md"
+      ],
+      "prs": [],
+      "nextAction": "Preserve critical engineering priorities and approval boundaries; review the isolated proposal with the founder when spare capacity exists, then implement only specifically approved work.",
+      "owner": "Codex deferred support/partnerships; founder approves implementation and every outbound message",
+      "auditDepth": "Exact available source unit mapped; read-only audit and proposal only"
+    },
+    {
+      "id": "R17-042",
+      "source": "docs/SUPPORT_STRATEGIC_PARTNERSHIPS_DIRECTIVE.md",
+      "line": 78,
+      "section": "4. Make contributing memorable",
+      "requirement": "Create a small, tasteful interactive experience that makes the contribution feel meaningful.",
+      "domain": "website",
+      "scope": "proposal",
+      "status": "Missing",
+      "verification": "Directive preserved and deferred source audit/proposal recorded. Existing support code is reusable but hosted payment, design, outreach and launch acceptance are not established. No page/payment implementation, CRM write or outbound message is authorized or performed.",
+      "evidence": [
+        "docs/SUPPORT_PARTNERSHIPS_DEFERRED_PLAN.md"
+      ],
+      "prs": [],
+      "nextAction": "Preserve critical engineering priorities and approval boundaries; review the isolated proposal with the founder when spare capacity exists, then implement only specifically approved work.",
+      "owner": "Codex deferred support/partnerships; founder approves implementation and every outbound message",
+      "auditDepth": "Exact available source unit mapped; read-only audit and proposal only"
+    },
+    {
+      "id": "R17-043",
+      "source": "docs/SUPPORT_STRATEGIC_PARTNERSHIPS_DIRECTIVE.md",
+      "line": 80,
+      "section": "4. Make contributing memorable",
+      "requirement": "Ideas to explore:",
+      "domain": "website",
+      "scope": "proposal",
+      "status": "Missing",
+      "verification": "Directive preserved and deferred source audit/proposal recorded. Existing support code is reusable but hosted payment, design, outreach and launch acceptance are not established. No page/payment implementation, CRM write or outbound message is authorized or performed.",
+      "evidence": [
+        "docs/SUPPORT_PARTNERSHIPS_DEFERRED_PLAN.md"
+      ],
+      "prs": [],
+      "nextAction": "Preserve critical engineering priorities and approval boundaries; review the isolated proposal with the founder when spare capacity exists, then implement only specifically approved work.",
+      "owner": "Codex deferred support/partnerships; founder approves implementation and every outbound message",
+      "auditDepth": "Exact available source unit mapped; read-only audit and proposal only"
+    },
+    {
+      "id": "R17-044",
+      "source": "docs/SUPPORT_STRATEGIC_PARTNERSHIPS_DIRECTIVE.md",
+      "line": 82,
+      "section": "4. Make contributing memorable",
+      "requirement": "- A minimal visual response when the $1 button is selected.",
+      "domain": "website",
+      "scope": "proposal",
+      "status": "Missing",
+      "verification": "Directive preserved and deferred source audit/proposal recorded. Existing support code is reusable but hosted payment, design, outreach and launch acceptance are not established. No page/payment implementation, CRM write or outbound message is authorized or performed.",
+      "evidence": [
+        "docs/SUPPORT_PARTNERSHIPS_DEFERRED_PLAN.md"
+      ],
+      "prs": [],
+      "nextAction": "Preserve critical engineering priorities and approval boundaries; review the isolated proposal with the founder when spare capacity exists, then implement only specifically approved work.",
+      "owner": "Codex deferred support/partnerships; founder approves implementation and every outbound message",
+      "auditDepth": "Exact available source unit mapped; read-only audit and proposal only"
+    },
+    {
+      "id": "R17-045",
+      "source": "docs/SUPPORT_STRATEGIC_PARTNERSHIPS_DIRECTIVE.md",
+      "line": 83,
+      "section": "4. Make contributing memorable",
+      "requirement": "- A subtle animation after verified payment success.",
+      "domain": "website",
+      "scope": "proposal",
+      "status": "Missing",
+      "verification": "Directive preserved and deferred source audit/proposal recorded. Existing support code is reusable but hosted payment, design, outreach and launch acceptance are not established. No page/payment implementation, CRM write or outbound message is authorized or performed.",
+      "evidence": [
+        "docs/SUPPORT_PARTNERSHIPS_DEFERRED_PLAN.md"
+      ],
+      "prs": [],
+      "nextAction": "Preserve critical engineering priorities and approval boundaries; review the isolated proposal with the founder when spare capacity exists, then implement only specifically approved work.",
+      "owner": "Codex deferred support/partnerships; founder approves implementation and every outbound message",
+      "auditDepth": "Exact available source unit mapped; read-only audit and proposal only"
+    },
+    {
+      "id": "R17-046",
+      "source": "docs/SUPPORT_STRATEGIC_PARTNERSHIPS_DIRECTIVE.md",
+      "line": 84,
+      "section": "4. Make contributing memorable",
+      "requirement": "- A personalized thank-you experience.",
+      "domain": "website",
+      "scope": "proposal",
+      "status": "Missing",
+      "verification": "Directive preserved and deferred source audit/proposal recorded. Existing support code is reusable but hosted payment, design, outreach and launch acceptance are not established. No page/payment implementation, CRM write or outbound message is authorized or performed.",
+      "evidence": [
+        "docs/SUPPORT_PARTNERSHIPS_DEFERRED_PLAN.md"
+      ],
+      "prs": [],
+      "nextAction": "Preserve critical engineering priorities and approval boundaries; review the isolated proposal with the founder when spare capacity exists, then implement only specifically approved work.",
+      "owner": "Codex deferred support/partnerships; founder approves implementation and every outbound message",
+      "auditDepth": "Exact available source unit mapped; read-only audit and proposal only"
+    },
+    {
+      "id": "R17-047",
+      "source": "docs/SUPPORT_STRATEGIC_PARTNERSHIPS_DIRECTIVE.md",
+      "line": 85,
+      "section": "4. Make contributing memorable",
+      "requirement": "- An optional supporter message.",
+      "domain": "website",
+      "scope": "proposal",
+      "status": "Missing",
+      "verification": "Directive preserved and deferred source audit/proposal recorded. Existing support code is reusable but hosted payment, design, outreach and launch acceptance are not established. No page/payment implementation, CRM write or outbound message is authorized or performed.",
+      "evidence": [
+        "docs/SUPPORT_PARTNERSHIPS_DEFERRED_PLAN.md"
+      ],
+      "prs": [],
+      "nextAction": "Preserve critical engineering priorities and approval boundaries; review the isolated proposal with the founder when spare capacity exists, then implement only specifically approved work.",
+      "owner": "Codex deferred support/partnerships; founder approves implementation and every outbound message",
+      "auditDepth": "Exact available source unit mapped; read-only audit and proposal only"
+    },
+    {
+      "id": "R17-048",
+      "source": "docs/SUPPORT_STRATEGIC_PARTNERSHIPS_DIRECTIVE.md",
+      "line": 86,
+      "section": "4. Make contributing memorable",
+      "requirement": "- An optional public supporters wall with explicit consent.",
+      "domain": "website",
+      "scope": "proposal",
+      "status": "Missing",
+      "verification": "Directive preserved and deferred source audit/proposal recorded. Existing support code is reusable but hosted payment, design, outreach and launch acceptance are not established. No page/payment implementation, CRM write or outbound message is authorized or performed.",
+      "evidence": [
+        "docs/SUPPORT_PARTNERSHIPS_DEFERRED_PLAN.md"
+      ],
+      "prs": [],
+      "nextAction": "Preserve critical engineering priorities and approval boundaries; review the isolated proposal with the founder when spare capacity exists, then implement only specifically approved work.",
+      "owner": "Codex deferred support/partnerships; founder approves implementation and every outbound message",
+      "auditDepth": "Exact available source unit mapped; read-only audit and proposal only"
+    },
+    {
+      "id": "R17-049",
+      "source": "docs/SUPPORT_STRATEGIC_PARTNERSHIPS_DIRECTIVE.md",
+      "line": 87,
+      "section": "4. Make contributing memorable",
+      "requirement": "- A transparent progress indicator tied to a real, documented funding objective.",
+      "domain": "website",
+      "scope": "proposal",
+      "status": "Missing",
+      "verification": "Directive preserved and deferred source audit/proposal recorded. Existing support code is reusable but hosted payment, design, outreach and launch acceptance are not established. No page/payment implementation, CRM write or outbound message is authorized or performed.",
+      "evidence": [
+        "docs/SUPPORT_PARTNERSHIPS_DEFERRED_PLAN.md"
+      ],
+      "prs": [],
+      "nextAction": "Preserve critical engineering priorities and approval boundaries; review the isolated proposal with the founder when spare capacity exists, then implement only specifically approved work.",
+      "owner": "Codex deferred support/partnerships; founder approves implementation and every outbound message",
+      "auditDepth": "Exact available source unit mapped; read-only audit and proposal only"
+    },
+    {
+      "id": "R17-050",
+      "source": "docs/SUPPORT_STRATEGIC_PARTNERSHIPS_DIRECTIVE.md",
+      "line": 89,
+      "section": "4. Make contributing memorable",
+      "requirement": "Do not use misleading psychological tricks, fake scarcity, invented supporter counts, fabricated progress, guilt, or pressure to contribute more.",
+      "domain": "governance",
+      "scope": "process",
+      "status": "Partially implemented",
+      "verification": "Directive preserved and deferred source audit/proposal recorded. Existing support code is reusable but hosted payment, design, outreach and launch acceptance are not established. No page/payment implementation, CRM write or outbound message is authorized or performed.",
+      "evidence": [
+        "docs/SUPPORT_PARTNERSHIPS_DEFERRED_PLAN.md"
+      ],
+      "prs": [],
+      "nextAction": "Preserve critical engineering priorities and approval boundaries; review the isolated proposal with the founder when spare capacity exists, then implement only specifically approved work.",
+      "owner": "Codex deferred support/partnerships; founder approves implementation and every outbound message",
+      "auditDepth": "Exact available source unit mapped; read-only audit and proposal only"
+    },
+    {
+      "id": "R17-051",
+      "source": "docs/SUPPORT_STRATEGIC_PARTNERSHIPS_DIRECTIVE.md",
+      "line": 91,
+      "section": "4. Make contributing memorable",
+      "requirement": "Keep the experience enjoyable without compromising trust.",
+      "domain": "website",
+      "scope": "proposal",
+      "status": "Missing",
+      "verification": "Directive preserved and deferred source audit/proposal recorded. Existing support code is reusable but hosted payment, design, outreach and launch acceptance are not established. No page/payment implementation, CRM write or outbound message is authorized or performed.",
+      "evidence": [
+        "docs/SUPPORT_PARTNERSHIPS_DEFERRED_PLAN.md"
+      ],
+      "prs": [],
+      "nextAction": "Preserve critical engineering priorities and approval boundaries; review the isolated proposal with the founder when spare capacity exists, then implement only specifically approved work.",
+      "owner": "Codex deferred support/partnerships; founder approves implementation and every outbound message",
+      "auditDepth": "Exact available source unit mapped; read-only audit and proposal only"
+    },
+    {
+      "id": "R17-052",
+      "source": "docs/SUPPORT_STRATEGIC_PARTNERSHIPS_DIRECTIVE.md",
+      "line": 95,
+      "section": "5. Real evidence and credibility",
+      "requirement": "This page must demonstrate that Vision XIX Labs is a real company building real technology.",
+      "domain": "website",
+      "scope": "proposal",
+      "status": "Missing",
+      "verification": "Directive preserved and deferred source audit/proposal recorded. Existing support code is reusable but hosted payment, design, outreach and launch acceptance are not established. No page/payment implementation, CRM write or outbound message is authorized or performed.",
+      "evidence": [
+        "docs/SUPPORT_PARTNERSHIPS_DEFERRED_PLAN.md"
+      ],
+      "prs": [],
+      "nextAction": "Preserve critical engineering priorities and approval boundaries; review the isolated proposal with the founder when spare capacity exists, then implement only specifically approved work.",
+      "owner": "Codex deferred support/partnerships; founder approves implementation and every outbound message",
+      "auditDepth": "Exact available source unit mapped; read-only audit and proposal only"
+    },
+    {
+      "id": "R17-053",
+      "source": "docs/SUPPORT_STRATEGIC_PARTNERSHIPS_DIRECTIVE.md",
+      "line": 97,
+      "section": "5. Real evidence and credibility",
+      "requirement": "Use verified information only:",
+      "domain": "website",
+      "scope": "proposal",
+      "status": "Missing",
+      "verification": "Directive preserved and deferred source audit/proposal recorded. Existing support code is reusable but hosted payment, design, outreach and launch acceptance are not established. No page/payment implementation, CRM write or outbound message is authorized or performed.",
+      "evidence": [
+        "docs/SUPPORT_PARTNERSHIPS_DEFERRED_PLAN.md"
+      ],
+      "prs": [],
+      "nextAction": "Preserve critical engineering priorities and approval boundaries; review the isolated proposal with the founder when spare capacity exists, then implement only specifically approved work.",
+      "owner": "Codex deferred support/partnerships; founder approves implementation and every outbound message",
+      "auditDepth": "Exact available source unit mapped; read-only audit and proposal only"
+    },
+    {
+      "id": "R17-054",
+      "source": "docs/SUPPORT_STRATEGIC_PARTNERSHIPS_DIRECTIVE.md",
+      "line": 99,
+      "section": "5. Real evidence and credibility",
+      "requirement": "- Company identity and official website.",
+      "domain": "website",
+      "scope": "proposal",
+      "status": "Missing",
+      "verification": "Directive preserved and deferred source audit/proposal recorded. Existing support code is reusable but hosted payment, design, outreach and launch acceptance are not established. No page/payment implementation, CRM write or outbound message is authorized or performed.",
+      "evidence": [
+        "docs/SUPPORT_PARTNERSHIPS_DEFERRED_PLAN.md"
+      ],
+      "prs": [],
+      "nextAction": "Preserve critical engineering priorities and approval boundaries; review the isolated proposal with the founder when spare capacity exists, then implement only specifically approved work.",
+      "owner": "Codex deferred support/partnerships; founder approves implementation and every outbound message",
+      "auditDepth": "Exact available source unit mapped; read-only audit and proposal only"
+    },
+    {
+      "id": "R17-055",
+      "source": "docs/SUPPORT_STRATEGIC_PARTNERSHIPS_DIRECTIVE.md",
+      "line": 100,
+      "section": "5. Real evidence and credibility",
+      "requirement": "- Axiom Agent's actual product capabilities.",
+      "domain": "website",
+      "scope": "proposal",
+      "status": "Missing",
+      "verification": "Directive preserved and deferred source audit/proposal recorded. Existing support code is reusable but hosted payment, design, outreach and launch acceptance are not established. No page/payment implementation, CRM write or outbound message is authorized or performed.",
+      "evidence": [
+        "docs/SUPPORT_PARTNERSHIPS_DEFERRED_PLAN.md"
+      ],
+      "prs": [],
+      "nextAction": "Preserve critical engineering priorities and approval boundaries; review the isolated proposal with the founder when spare capacity exists, then implement only specifically approved work.",
+      "owner": "Codex deferred support/partnerships; founder approves implementation and every outbound message",
+      "auditDepth": "Exact available source unit mapped; read-only audit and proposal only"
+    },
+    {
+      "id": "R17-056",
+      "source": "docs/SUPPORT_STRATEGIC_PARTNERSHIPS_DIRECTIVE.md",
+      "line": 101,
+      "section": "5. Real evidence and credibility",
+      "requirement": "- Authentic screenshots and demonstrations.",
+      "domain": "website",
+      "scope": "proposal",
+      "status": "Missing",
+      "verification": "Directive preserved and deferred source audit/proposal recorded. Existing support code is reusable but hosted payment, design, outreach and launch acceptance are not established. No page/payment implementation, CRM write or outbound message is authorized or performed.",
+      "evidence": [
+        "docs/SUPPORT_PARTNERSHIPS_DEFERRED_PLAN.md"
+      ],
+      "prs": [],
+      "nextAction": "Preserve critical engineering priorities and approval boundaries; review the isolated proposal with the founder when spare capacity exists, then implement only specifically approved work.",
+      "owner": "Codex deferred support/partnerships; founder approves implementation and every outbound message",
+      "auditDepth": "Exact available source unit mapped; read-only audit and proposal only"
+    },
+    {
+      "id": "R17-057",
+      "source": "docs/SUPPORT_STRATEGIC_PARTNERSHIPS_DIRECTIVE.md",
+      "line": 102,
+      "section": "5. Real evidence and credibility",
+      "requirement": "- Verified engineering milestones.",
+      "domain": "website",
+      "scope": "proposal",
+      "status": "Missing",
+      "verification": "Directive preserved and deferred source audit/proposal recorded. Existing support code is reusable but hosted payment, design, outreach and launch acceptance are not established. No page/payment implementation, CRM write or outbound message is authorized or performed.",
+      "evidence": [
+        "docs/SUPPORT_PARTNERSHIPS_DEFERRED_PLAN.md"
+      ],
+      "prs": [],
+      "nextAction": "Preserve critical engineering priorities and approval boundaries; review the isolated proposal with the founder when spare capacity exists, then implement only specifically approved work.",
+      "owner": "Codex deferred support/partnerships; founder approves implementation and every outbound message",
+      "auditDepth": "Exact available source unit mapped; read-only audit and proposal only"
+    },
+    {
+      "id": "R17-058",
+      "source": "docs/SUPPORT_STRATEGIC_PARTNERSHIPS_DIRECTIVE.md",
+      "line": 103,
+      "section": "5. Real evidence and credibility",
+      "requirement": "- Existing integrations and their actual readiness.",
+      "domain": "website",
+      "scope": "proposal",
+      "status": "Missing",
+      "verification": "Directive preserved and deferred source audit/proposal recorded. Existing support code is reusable but hosted payment, design, outreach and launch acceptance are not established. No page/payment implementation, CRM write or outbound message is authorized or performed.",
+      "evidence": [
+        "docs/SUPPORT_PARTNERSHIPS_DEFERRED_PLAN.md"
+      ],
+      "prs": [],
+      "nextAction": "Preserve critical engineering priorities and approval boundaries; review the isolated proposal with the founder when spare capacity exists, then implement only specifically approved work.",
+      "owner": "Codex deferred support/partnerships; founder approves implementation and every outbound message",
+      "auditDepth": "Exact available source unit mapped; read-only audit and proposal only"
+    },
+    {
+      "id": "R17-059",
+      "source": "docs/SUPPORT_STRATEGIC_PARTNERSHIPS_DIRECTIVE.md",
+      "line": 104,
+      "section": "5. Real evidence and credibility",
+      "requirement": "- Publicly supportable technical achievements.",
+      "domain": "website",
+      "scope": "proposal",
+      "status": "Missing",
+      "verification": "Directive preserved and deferred source audit/proposal recorded. Existing support code is reusable but hosted payment, design, outreach and launch acceptance are not established. No page/payment implementation, CRM write or outbound message is authorized or performed.",
+      "evidence": [
+        "docs/SUPPORT_PARTNERSHIPS_DEFERRED_PLAN.md"
+      ],
+      "prs": [],
+      "nextAction": "Preserve critical engineering priorities and approval boundaries; review the isolated proposal with the founder when spare capacity exists, then implement only specifically approved work.",
+      "owner": "Codex deferred support/partnerships; founder approves implementation and every outbound message",
+      "auditDepth": "Exact available source unit mapped; read-only audit and proposal only"
+    },
+    {
+      "id": "R17-060",
+      "source": "docs/SUPPORT_STRATEGIC_PARTNERSHIPS_DIRECTIVE.md",
+      "line": 105,
+      "section": "5. Real evidence and credibility",
+      "requirement": "- Product roadmap and future objectives, clearly labeled as planned.",
+      "domain": "website",
+      "scope": "proposal",
+      "status": "Missing",
+      "verification": "Directive preserved and deferred source audit/proposal recorded. Existing support code is reusable but hosted payment, design, outreach and launch acceptance are not established. No page/payment implementation, CRM write or outbound message is authorized or performed.",
+      "evidence": [
+        "docs/SUPPORT_PARTNERSHIPS_DEFERRED_PLAN.md"
+      ],
+      "prs": [],
+      "nextAction": "Preserve critical engineering priorities and approval boundaries; review the isolated proposal with the founder when spare capacity exists, then implement only specifically approved work.",
+      "owner": "Codex deferred support/partnerships; founder approves implementation and every outbound message",
+      "auditDepth": "Exact available source unit mapped; read-only audit and proposal only"
+    },
+    {
+      "id": "R17-061",
+      "source": "docs/SUPPORT_STRATEGIC_PARTNERSHIPS_DIRECTIVE.md",
+      "line": 106,
+      "section": "5. Real evidence and credibility",
+      "requirement": "- Transparent explanation of how contributions support development.",
+      "domain": "website",
+      "scope": "proposal",
+      "status": "Missing",
+      "verification": "Directive preserved and deferred source audit/proposal recorded. Existing support code is reusable but hosted payment, design, outreach and launch acceptance are not established. No page/payment implementation, CRM write or outbound message is authorized or performed.",
+      "evidence": [
+        "docs/SUPPORT_PARTNERSHIPS_DEFERRED_PLAN.md"
+      ],
+      "prs": [],
+      "nextAction": "Preserve critical engineering priorities and approval boundaries; review the isolated proposal with the founder when spare capacity exists, then implement only specifically approved work.",
+      "owner": "Codex deferred support/partnerships; founder approves implementation and every outbound message",
+      "auditDepth": "Exact available source unit mapped; read-only audit and proposal only"
+    },
+    {
+      "id": "R17-062",
+      "source": "docs/SUPPORT_STRATEGIC_PARTNERSHIPS_DIRECTIVE.md",
+      "line": 108,
+      "section": "5. Real evidence and credibility",
+      "requirement": "Do not present local tests as production verification, unreleased functionality as launched, or planned integrations as completed.",
+      "domain": "governance",
+      "scope": "process",
+      "status": "Partially implemented",
+      "verification": "Directive preserved and deferred source audit/proposal recorded. Existing support code is reusable but hosted payment, design, outreach and launch acceptance are not established. No page/payment implementation, CRM write or outbound message is authorized or performed.",
+      "evidence": [
+        "docs/SUPPORT_PARTNERSHIPS_DEFERRED_PLAN.md"
+      ],
+      "prs": [],
+      "nextAction": "Preserve critical engineering priorities and approval boundaries; review the isolated proposal with the founder when spare capacity exists, then implement only specifically approved work.",
+      "owner": "Codex deferred support/partnerships; founder approves implementation and every outbound message",
+      "auditDepth": "Exact available source unit mapped; read-only audit and proposal only"
+    },
+    {
+      "id": "R17-063",
+      "source": "docs/SUPPORT_STRATEGIC_PARTNERSHIPS_DIRECTIVE.md",
+      "line": 110,
+      "section": "5. Real evidence and credibility",
+      "requirement": "Create a concise, evidence-backed project brief suitable for serious supporters and potential partners.",
+      "domain": "website",
+      "scope": "proposal",
+      "status": "Missing",
+      "verification": "Directive preserved and deferred source audit/proposal recorded. Existing support code is reusable but hosted payment, design, outreach and launch acceptance are not established. No page/payment implementation, CRM write or outbound message is authorized or performed.",
+      "evidence": [
+        "docs/SUPPORT_PARTNERSHIPS_DEFERRED_PLAN.md"
+      ],
+      "prs": [],
+      "nextAction": "Preserve critical engineering priorities and approval boundaries; review the isolated proposal with the founder when spare capacity exists, then implement only specifically approved work.",
+      "owner": "Codex deferred support/partnerships; founder approves implementation and every outbound message",
+      "auditDepth": "Exact available source unit mapped; read-only audit and proposal only"
+    },
+    {
+      "id": "R17-064",
+      "source": "docs/SUPPORT_STRATEGIC_PARTNERSHIPS_DIRECTIVE.md",
+      "line": 114,
+      "section": "6. TRACK A — Wealthy individuals and philanthropists",
+      "requirement": "Create a dedicated outreach strategy for high-net-worth individuals, technology philanthropists, foundations, and other relevant supporters.",
+      "domain": "website",
+      "scope": "proposal",
+      "status": "Missing",
+      "verification": "Directive preserved and deferred source audit/proposal recorded. Existing support code is reusable but hosted payment, design, outreach and launch acceptance are not established. No page/payment implementation, CRM write or outbound message is authorized or performed.",
+      "evidence": [
+        "docs/SUPPORT_PARTNERSHIPS_DEFERRED_PLAN.md"
+      ],
+      "prs": [],
+      "nextAction": "Preserve critical engineering priorities and approval boundaries; review the isolated proposal with the founder when spare capacity exists, then implement only specifically approved work.",
+      "owner": "Codex deferred support/partnerships; founder approves implementation and every outbound message",
+      "auditDepth": "Exact available source unit mapped; read-only audit and proposal only"
+    },
+    {
+      "id": "R17-065",
+      "source": "docs/SUPPORT_STRATEGIC_PARTNERSHIPS_DIRECTIVE.md",
+      "line": 116,
+      "section": "6. TRACK A — Wealthy individuals and philanthropists",
+      "requirement": "Objectives:",
+      "domain": "website",
+      "scope": "proposal",
+      "status": "Missing",
+      "verification": "Directive preserved and deferred source audit/proposal recorded. Existing support code is reusable but hosted payment, design, outreach and launch acceptance are not established. No page/payment implementation, CRM write or outbound message is authorized or performed.",
+      "evidence": [
+        "docs/SUPPORT_PARTNERSHIPS_DEFERRED_PLAN.md"
+      ],
+      "prs": [],
+      "nextAction": "Preserve critical engineering priorities and approval boundaries; review the isolated proposal with the founder when spare capacity exists, then implement only specifically approved work.",
+      "owner": "Codex deferred support/partnerships; founder approves implementation and every outbound message",
+      "auditDepth": "Exact available source unit mapped; read-only audit and proposal only"
+    },
+    {
+      "id": "R17-066",
+      "source": "docs/SUPPORT_STRATEGIC_PARTNERSHIPS_DIRECTIVE.md",
+      "line": 118,
+      "section": "6. TRACK A — Wealthy individuals and philanthropists",
+      "requirement": "- Research potential supporters using legitimate, publicly available professional contact channels.",
+      "domain": "website",
+      "scope": "proposal",
+      "status": "Missing",
+      "verification": "Directive preserved and deferred source audit/proposal recorded. Existing support code is reusable but hosted payment, design, outreach and launch acceptance are not established. No page/payment implementation, CRM write or outbound message is authorized or performed.",
+      "evidence": [
+        "docs/SUPPORT_PARTNERSHIPS_DEFERRED_PLAN.md"
+      ],
+      "prs": [],
+      "nextAction": "Preserve critical engineering priorities and approval boundaries; review the isolated proposal with the founder when spare capacity exists, then implement only specifically approved work.",
+      "owner": "Codex deferred support/partnerships; founder approves implementation and every outbound message",
+      "auditDepth": "Exact available source unit mapped; read-only audit and proposal only"
+    },
+    {
+      "id": "R17-067",
+      "source": "docs/SUPPORT_STRATEGIC_PARTNERSHIPS_DIRECTIVE.md",
+      "line": 119,
+      "section": "6. TRACK A — Wealthy individuals and philanthropists",
+      "requirement": "- Prioritize people whose publicly stated interests align with independent AI, technology, research, education, or entrepreneurship.",
+      "domain": "website",
+      "scope": "proposal",
+      "status": "Missing",
+      "verification": "Directive preserved and deferred source audit/proposal recorded. Existing support code is reusable but hosted payment, design, outreach and launch acceptance are not established. No page/payment implementation, CRM write or outbound message is authorized or performed.",
+      "evidence": [
+        "docs/SUPPORT_PARTNERSHIPS_DEFERRED_PLAN.md"
+      ],
+      "prs": [],
+      "nextAction": "Preserve critical engineering priorities and approval boundaries; review the isolated proposal with the founder when spare capacity exists, then implement only specifically approved work.",
+      "owner": "Codex deferred support/partnerships; founder approves implementation and every outbound message",
+      "auditDepth": "Exact available source unit mapped; read-only audit and proposal only"
+    },
+    {
+      "id": "R17-068",
+      "source": "docs/SUPPORT_STRATEGIC_PARTNERSHIPS_DIRECTIVE.md",
+      "line": 120,
+      "section": "6. TRACK A — Wealthy individuals and philanthropists",
+      "requirement": "- Prepare personalized, professional, evidence-backed outreach emails.",
+      "domain": "website",
+      "scope": "proposal",
+      "status": "Missing",
+      "verification": "Directive preserved and deferred source audit/proposal recorded. Existing support code is reusable but hosted payment, design, outreach and launch acceptance are not established. No page/payment implementation, CRM write or outbound message is authorized or performed.",
+      "evidence": [
+        "docs/SUPPORT_PARTNERSHIPS_DEFERRED_PLAN.md"
+      ],
+      "prs": [],
+      "nextAction": "Preserve critical engineering priorities and approval boundaries; review the isolated proposal with the founder when spare capacity exists, then implement only specifically approved work.",
+      "owner": "Codex deferred support/partnerships; founder approves implementation and every outbound message",
+      "auditDepth": "Exact available source unit mapped; read-only audit and proposal only"
+    },
+    {
+      "id": "R17-069",
+      "source": "docs/SUPPORT_STRATEGIC_PARTNERSHIPS_DIRECTIVE.md",
+      "line": 121,
+      "section": "6. TRACK A — Wealthy individuals and philanthropists",
+      "requirement": "- Explain what Vision XIX Labs is building and why the work matters.",
+      "domain": "website",
+      "scope": "proposal",
+      "status": "Missing",
+      "verification": "Directive preserved and deferred source audit/proposal recorded. Existing support code is reusable but hosted payment, design, outreach and launch acceptance are not established. No page/payment implementation, CRM write or outbound message is authorized or performed.",
+      "evidence": [
+        "docs/SUPPORT_PARTNERSHIPS_DEFERRED_PLAN.md"
+      ],
+      "prs": [],
+      "nextAction": "Preserve critical engineering priorities and approval boundaries; review the isolated proposal with the founder when spare capacity exists, then implement only specifically approved work.",
+      "owner": "Codex deferred support/partnerships; founder approves implementation and every outbound message",
+      "auditDepth": "Exact available source unit mapped; read-only audit and proposal only"
+    },
+    {
+      "id": "R17-070",
+      "source": "docs/SUPPORT_STRATEGIC_PARTNERSHIPS_DIRECTIVE.md",
+      "line": 122,
+      "section": "6. TRACK A — Wealthy individuals and philanthropists",
+      "requirement": "- Present verified progress, future goals, and the specific purpose of requested support.",
+      "domain": "website",
+      "scope": "proposal",
+      "status": "Missing",
+      "verification": "Directive preserved and deferred source audit/proposal recorded. Existing support code is reusable but hosted payment, design, outreach and launch acceptance are not established. No page/payment implementation, CRM write or outbound message is authorized or performed.",
+      "evidence": [
+        "docs/SUPPORT_PARTNERSHIPS_DEFERRED_PLAN.md"
+      ],
+      "prs": [],
+      "nextAction": "Preserve critical engineering priorities and approval boundaries; review the isolated proposal with the founder when spare capacity exists, then implement only specifically approved work.",
+      "owner": "Codex deferred support/partnerships; founder approves implementation and every outbound message",
+      "auditDepth": "Exact available source unit mapped; read-only audit and proposal only"
+    },
+    {
+      "id": "R17-071",
+      "source": "docs/SUPPORT_STRATEGIC_PARTNERSHIPS_DIRECTIVE.md",
+      "line": 123,
+      "section": "6. TRACK A — Wealthy individuals and philanthropists",
+      "requirement": "- Include a link to the Support page and a professional company contact option.",
+      "domain": "website",
+      "scope": "proposal",
+      "status": "Missing",
+      "verification": "Directive preserved and deferred source audit/proposal recorded. Existing support code is reusable but hosted payment, design, outreach and launch acceptance are not established. No page/payment implementation, CRM write or outbound message is authorized or performed.",
+      "evidence": [
+        "docs/SUPPORT_PARTNERSHIPS_DEFERRED_PLAN.md"
+      ],
+      "prs": [],
+      "nextAction": "Preserve critical engineering priorities and approval boundaries; review the isolated proposal with the founder when spare capacity exists, then implement only specifically approved work.",
+      "owner": "Codex deferred support/partnerships; founder approves implementation and every outbound message",
+      "auditDepth": "Exact available source unit mapped; read-only audit and proposal only"
+    },
+    {
+      "id": "R17-072",
+      "source": "docs/SUPPORT_STRATEGIC_PARTNERSHIPS_DIRECTIVE.md",
+      "line": 124,
+      "section": "6. TRACK A — Wealthy individuals and philanthropists",
+      "requirement": "- Offer appropriate acknowledgment without promising financial returns.",
+      "domain": "website",
+      "scope": "proposal",
+      "status": "Missing",
+      "verification": "Directive preserved and deferred source audit/proposal recorded. Existing support code is reusable but hosted payment, design, outreach and launch acceptance are not established. No page/payment implementation, CRM write or outbound message is authorized or performed.",
+      "evidence": [
+        "docs/SUPPORT_PARTNERSHIPS_DEFERRED_PLAN.md"
+      ],
+      "prs": [],
+      "nextAction": "Preserve critical engineering priorities and approval boundaries; review the isolated proposal with the founder when spare capacity exists, then implement only specifically approved work.",
+      "owner": "Codex deferred support/partnerships; founder approves implementation and every outbound message",
+      "auditDepth": "Exact available source unit mapped; read-only audit and proposal only"
+    },
+    {
+      "id": "R17-073",
+      "source": "docs/SUPPORT_STRATEGIC_PARTNERSHIPS_DIRECTIVE.md",
+      "line": 126,
+      "section": "6. TRACK A — Wealthy individuals and philanthropists",
+      "requirement": "Develop a prioritized prospect list with source evidence, relevance, preferred professional contact channel, outreach status, and suggested follow-up.",
+      "domain": "website",
+      "scope": "proposal",
+      "status": "Missing",
+      "verification": "Directive preserved and deferred source audit/proposal recorded. Existing support code is reusable but hosted payment, design, outreach and launch acceptance are not established. No page/payment implementation, CRM write or outbound message is authorized or performed.",
+      "evidence": [
+        "docs/SUPPORT_PARTNERSHIPS_DEFERRED_PLAN.md"
+      ],
+      "prs": [],
+      "nextAction": "Preserve critical engineering priorities and approval boundaries; review the isolated proposal with the founder when spare capacity exists, then implement only specifically approved work.",
+      "owner": "Codex deferred support/partnerships; founder approves implementation and every outbound message",
+      "auditDepth": "Exact available source unit mapped; read-only audit and proposal only"
+    },
+    {
+      "id": "R17-074",
+      "source": "docs/SUPPORT_STRATEGIC_PARTNERSHIPS_DIRECTIVE.md",
+      "line": 128,
+      "section": "6. TRACK A — Wealthy individuals and philanthropists",
+      "requirement": "Do not scrape private contact details, fabricate relationships, send mass spam, or automatically email anyone.",
+      "domain": "governance",
+      "scope": "process",
+      "status": "Partially implemented",
+      "verification": "Directive preserved and deferred source audit/proposal recorded. Existing support code is reusable but hosted payment, design, outreach and launch acceptance are not established. No page/payment implementation, CRM write or outbound message is authorized or performed.",
+      "evidence": [
+        "docs/SUPPORT_PARTNERSHIPS_DEFERRED_PLAN.md"
+      ],
+      "prs": [],
+      "nextAction": "Preserve critical engineering priorities and approval boundaries; review the isolated proposal with the founder when spare capacity exists, then implement only specifically approved work.",
+      "owner": "Codex deferred support/partnerships; founder approves implementation and every outbound message",
+      "auditDepth": "Exact available source unit mapped; read-only audit and proposal only"
+    },
+    {
+      "id": "R17-075",
+      "source": "docs/SUPPORT_STRATEGIC_PARTNERSHIPS_DIRECTIVE.md",
+      "line": 130,
+      "section": "6. TRACK A — Wealthy individuals and philanthropists",
+      "requirement": "All outbound messages require my explicit approval.",
+      "domain": "governance",
+      "scope": "process",
+      "status": "Partially implemented",
+      "verification": "Directive preserved and deferred source audit/proposal recorded. Existing support code is reusable but hosted payment, design, outreach and launch acceptance are not established. No page/payment implementation, CRM write or outbound message is authorized or performed.",
+      "evidence": [
+        "docs/SUPPORT_PARTNERSHIPS_DEFERRED_PLAN.md"
+      ],
+      "prs": [],
+      "nextAction": "Preserve critical engineering priorities and approval boundaries; review the isolated proposal with the founder when spare capacity exists, then implement only specifically approved work.",
+      "owner": "Codex deferred support/partnerships; founder approves implementation and every outbound message",
+      "auditDepth": "Exact available source unit mapped; read-only audit and proposal only"
+    },
+    {
+      "id": "R17-076",
+      "source": "docs/SUPPORT_STRATEGIC_PARTNERSHIPS_DIRECTIVE.md",
+      "line": 134,
+      "section": "7. TRACK B — AI companies, technology sponsors, and investors",
+      "requirement": "Build a completely separate professional outreach strategy targeting:",
+      "domain": "website",
+      "scope": "proposal",
+      "status": "Missing",
+      "verification": "Directive preserved and deferred source audit/proposal recorded. Existing support code is reusable but hosted payment, design, outreach and launch acceptance are not established. No page/payment implementation, CRM write or outbound message is authorized or performed.",
+      "evidence": [
+        "docs/SUPPORT_PARTNERSHIPS_DEFERRED_PLAN.md"
+      ],
+      "prs": [],
+      "nextAction": "Preserve critical engineering priorities and approval boundaries; review the isolated proposal with the founder when spare capacity exists, then implement only specifically approved work.",
+      "owner": "Codex deferred support/partnerships; founder approves implementation and every outbound message",
+      "auditDepth": "Exact available source unit mapped; read-only audit and proposal only"
+    },
+    {
+      "id": "R17-077",
+      "source": "docs/SUPPORT_STRATEGIC_PARTNERSHIPS_DIRECTIVE.md",
+      "line": 136,
+      "section": "7. TRACK B — AI companies, technology sponsors, and investors",
+      "requirement": "- AI research and technology companies.",
+      "domain": "website",
+      "scope": "proposal",
+      "status": "Missing",
+      "verification": "Directive preserved and deferred source audit/proposal recorded. Existing support code is reusable but hosted payment, design, outreach and launch acceptance are not established. No page/payment implementation, CRM write or outbound message is authorized or performed.",
+      "evidence": [
+        "docs/SUPPORT_PARTNERSHIPS_DEFERRED_PLAN.md"
+      ],
+      "prs": [],
+      "nextAction": "Preserve critical engineering priorities and approval boundaries; review the isolated proposal with the founder when spare capacity exists, then implement only specifically approved work.",
+      "owner": "Codex deferred support/partnerships; founder approves implementation and every outbound message",
+      "auditDepth": "Exact available source unit mapped; read-only audit and proposal only"
+    },
+    {
+      "id": "R17-078",
+      "source": "docs/SUPPORT_STRATEGIC_PARTNERSHIPS_DIRECTIVE.md",
+      "line": 137,
+      "section": "7. TRACK B — AI companies, technology sponsors, and investors",
+      "requirement": "- Cloud and infrastructure providers.",
+      "domain": "website",
+      "scope": "proposal",
+      "status": "Missing",
+      "verification": "Directive preserved and deferred source audit/proposal recorded. Existing support code is reusable but hosted payment, design, outreach and launch acceptance are not established. No page/payment implementation, CRM write or outbound message is authorized or performed.",
+      "evidence": [
+        "docs/SUPPORT_PARTNERSHIPS_DEFERRED_PLAN.md"
+      ],
+      "prs": [],
+      "nextAction": "Preserve critical engineering priorities and approval boundaries; review the isolated proposal with the founder when spare capacity exists, then implement only specifically approved work.",
+      "owner": "Codex deferred support/partnerships; founder approves implementation and every outbound message",
+      "auditDepth": "Exact available source unit mapped; read-only audit and proposal only"
+    },
+    {
+      "id": "R17-079",
+      "source": "docs/SUPPORT_STRATEGIC_PARTNERSHIPS_DIRECTIVE.md",
+      "line": 138,
+      "section": "7. TRACK B — AI companies, technology sponsors, and investors",
+      "requirement": "- AI model and API providers.",
+      "domain": "website",
+      "scope": "proposal",
+      "status": "Missing",
+      "verification": "Directive preserved and deferred source audit/proposal recorded. Existing support code is reusable but hosted payment, design, outreach and launch acceptance are not established. No page/payment implementation, CRM write or outbound message is authorized or performed.",
+      "evidence": [
+        "docs/SUPPORT_PARTNERSHIPS_DEFERRED_PLAN.md"
+      ],
+      "prs": [],
+      "nextAction": "Preserve critical engineering priorities and approval boundaries; review the isolated proposal with the founder when spare capacity exists, then implement only specifically approved work.",
+      "owner": "Codex deferred support/partnerships; founder approves implementation and every outbound message",
+      "auditDepth": "Exact available source unit mapped; read-only audit and proposal only"
+    },
+    {
+      "id": "R17-080",
+      "source": "docs/SUPPORT_STRATEGIC_PARTNERSHIPS_DIRECTIVE.md",
+      "line": 139,
+      "section": "7. TRACK B — AI companies, technology sponsors, and investors",
+      "requirement": "- Developer tooling companies.",
+      "domain": "website",
+      "scope": "proposal",
+      "status": "Missing",
+      "verification": "Directive preserved and deferred source audit/proposal recorded. Existing support code is reusable but hosted payment, design, outreach and launch acceptance are not established. No page/payment implementation, CRM write or outbound message is authorized or performed.",
+      "evidence": [
+        "docs/SUPPORT_PARTNERSHIPS_DEFERRED_PLAN.md"
+      ],
+      "prs": [],
+      "nextAction": "Preserve critical engineering priorities and approval boundaries; review the isolated proposal with the founder when spare capacity exists, then implement only specifically approved work.",
+      "owner": "Codex deferred support/partnerships; founder approves implementation and every outbound message",
+      "auditDepth": "Exact available source unit mapped; read-only audit and proposal only"
+    },
+    {
+      "id": "R17-081",
+      "source": "docs/SUPPORT_STRATEGIC_PARTNERSHIPS_DIRECTIVE.md",
+      "line": 140,
+      "section": "7. TRACK B — AI companies, technology sponsors, and investors",
+      "requirement": "- Venture capital firms and strategic investors.",
+      "domain": "website",
+      "scope": "proposal",
+      "status": "Missing",
+      "verification": "Directive preserved and deferred source audit/proposal recorded. Existing support code is reusable but hosted payment, design, outreach and launch acceptance are not established. No page/payment implementation, CRM write or outbound message is authorized or performed.",
+      "evidence": [
+        "docs/SUPPORT_PARTNERSHIPS_DEFERRED_PLAN.md"
+      ],
+      "prs": [],
+      "nextAction": "Preserve critical engineering priorities and approval boundaries; review the isolated proposal with the founder when spare capacity exists, then implement only specifically approved work.",
+      "owner": "Codex deferred support/partnerships; founder approves implementation and every outbound message",
+      "auditDepth": "Exact available source unit mapped; read-only audit and proposal only"
+    },
+    {
+      "id": "R17-082",
+      "source": "docs/SUPPORT_STRATEGIC_PARTNERSHIPS_DIRECTIVE.md",
+      "line": 141,
+      "section": "7. TRACK B — AI companies, technology sponsors, and investors",
+      "requirement": "- Technology partnership and startup-support programs.",
+      "domain": "website",
+      "scope": "proposal",
+      "status": "Missing",
+      "verification": "Directive preserved and deferred source audit/proposal recorded. Existing support code is reusable but hosted payment, design, outreach and launch acceptance are not established. No page/payment implementation, CRM write or outbound message is authorized or performed.",
+      "evidence": [
+        "docs/SUPPORT_PARTNERSHIPS_DEFERRED_PLAN.md"
+      ],
+      "prs": [],
+      "nextAction": "Preserve critical engineering priorities and approval boundaries; review the isolated proposal with the founder when spare capacity exists, then implement only specifically approved work.",
+      "owner": "Codex deferred support/partnerships; founder approves implementation and every outbound message",
+      "auditDepth": "Exact available source unit mapped; read-only audit and proposal only"
+    },
+    {
+      "id": "R17-083",
+      "source": "docs/SUPPORT_STRATEGIC_PARTNERSHIPS_DIRECTIVE.md",
+      "line": 143,
+      "section": "7. TRACK B — AI companies, technology sponsors, and investors",
+      "requirement": "Explore several distinct opportunities:",
+      "domain": "website",
+      "scope": "proposal",
+      "status": "Missing",
+      "verification": "Directive preserved and deferred source audit/proposal recorded. Existing support code is reusable but hosted payment, design, outreach and launch acceptance are not established. No page/payment implementation, CRM write or outbound message is authorized or performed.",
+      "evidence": [
+        "docs/SUPPORT_PARTNERSHIPS_DEFERRED_PLAN.md"
+      ],
+      "prs": [],
+      "nextAction": "Preserve critical engineering priorities and approval boundaries; review the isolated proposal with the founder when spare capacity exists, then implement only specifically approved work.",
+      "owner": "Codex deferred support/partnerships; founder approves implementation and every outbound message",
+      "auditDepth": "Exact available source unit mapped; read-only audit and proposal only"
+    },
+    {
+      "id": "R17-084",
+      "source": "docs/SUPPORT_STRATEGIC_PARTNERSHIPS_DIRECTIVE.md",
+      "line": 145,
+      "section": "7. TRACK B — AI companies, technology sponsors, and investors",
+      "requirement": "**Corporate sponsorship:** Financial or in-kind support for independent development.",
+      "domain": "website",
+      "scope": "proposal",
+      "status": "Missing",
+      "verification": "Directive preserved and deferred source audit/proposal recorded. Existing support code is reusable but hosted payment, design, outreach and launch acceptance are not established. No page/payment implementation, CRM write or outbound message is authorized or performed.",
+      "evidence": [
+        "docs/SUPPORT_PARTNERSHIPS_DEFERRED_PLAN.md"
+      ],
+      "prs": [],
+      "nextAction": "Preserve critical engineering priorities and approval boundaries; review the isolated proposal with the founder when spare capacity exists, then implement only specifically approved work.",
+      "owner": "Codex deferred support/partnerships; founder approves implementation and every outbound message",
+      "auditDepth": "Exact available source unit mapped; read-only audit and proposal only"
+    },
+    {
+      "id": "R17-085",
+      "source": "docs/SUPPORT_STRATEGIC_PARTNERSHIPS_DIRECTIVE.md",
+      "line": 147,
+      "section": "7. TRACK B — AI companies, technology sponsors, and investors",
+      "requirement": "**Infrastructure credits:** Cloud, GPU, AI API, hosting, and developer-tool credits.",
+      "domain": "website",
+      "scope": "proposal",
+      "status": "Missing",
+      "verification": "Directive preserved and deferred source audit/proposal recorded. Existing support code is reusable but hosted payment, design, outreach and launch acceptance are not established. No page/payment implementation, CRM write or outbound message is authorized or performed.",
+      "evidence": [
+        "docs/SUPPORT_PARTNERSHIPS_DEFERRED_PLAN.md"
+      ],
+      "prs": [],
+      "nextAction": "Preserve critical engineering priorities and approval boundaries; review the isolated proposal with the founder when spare capacity exists, then implement only specifically approved work.",
+      "owner": "Codex deferred support/partnerships; founder approves implementation and every outbound message",
+      "auditDepth": "Exact available source unit mapped; read-only audit and proposal only"
+    },
+    {
+      "id": "R17-086",
+      "source": "docs/SUPPORT_STRATEGIC_PARTNERSHIPS_DIRECTIVE.md",
+      "line": 149,
+      "section": "7. TRACK B — AI companies, technology sponsors, and investors",
+      "requirement": "**Technology partnerships:** Integration support, technical collaboration, and distribution opportunities.",
+      "domain": "website",
+      "scope": "proposal",
+      "status": "Missing",
+      "verification": "Directive preserved and deferred source audit/proposal recorded. Existing support code is reusable but hosted payment, design, outreach and launch acceptance are not established. No page/payment implementation, CRM write or outbound message is authorized or performed.",
+      "evidence": [
+        "docs/SUPPORT_PARTNERSHIPS_DEFERRED_PLAN.md"
+      ],
+      "prs": [],
+      "nextAction": "Preserve critical engineering priorities and approval boundaries; review the isolated proposal with the founder when spare capacity exists, then implement only specifically approved work.",
+      "owner": "Codex deferred support/partnerships; founder approves implementation and every outbound message",
+      "auditDepth": "Exact available source unit mapped; read-only audit and proposal only"
+    },
+    {
+      "id": "R17-087",
+      "source": "docs/SUPPORT_STRATEGIC_PARTNERSHIPS_DIRECTIVE.md",
+      "line": 151,
+      "section": "7. TRACK B — AI companies, technology sponsors, and investors",
+      "requirement": "**Strategic investment:** A separately evaluated commercial investment opportunity.",
+      "domain": "website",
+      "scope": "proposal",
+      "status": "Missing",
+      "verification": "Directive preserved and deferred source audit/proposal recorded. Existing support code is reusable but hosted payment, design, outreach and launch acceptance are not established. No page/payment implementation, CRM write or outbound message is authorized or performed.",
+      "evidence": [
+        "docs/SUPPORT_PARTNERSHIPS_DEFERRED_PLAN.md"
+      ],
+      "prs": [],
+      "nextAction": "Preserve critical engineering priorities and approval boundaries; review the isolated proposal with the founder when spare capacity exists, then implement only specifically approved work.",
+      "owner": "Codex deferred support/partnerships; founder approves implementation and every outbound message",
+      "auditDepth": "Exact available source unit mapped; read-only audit and proposal only"
+    },
+    {
+      "id": "R17-088",
+      "source": "docs/SUPPORT_STRATEGIC_PARTNERSHIPS_DIRECTIVE.md",
+      "line": 153,
+      "section": "7. TRACK B — AI companies, technology sponsors, and investors",
+      "requirement": "Create professional outreach materials including:",
+      "domain": "website",
+      "scope": "proposal",
+      "status": "Missing",
+      "verification": "Directive preserved and deferred source audit/proposal recorded. Existing support code is reusable but hosted payment, design, outreach and launch acceptance are not established. No page/payment implementation, CRM write or outbound message is authorized or performed.",
+      "evidence": [
+        "docs/SUPPORT_PARTNERSHIPS_DEFERRED_PLAN.md"
+      ],
+      "prs": [],
+      "nextAction": "Preserve critical engineering priorities and approval boundaries; review the isolated proposal with the founder when spare capacity exists, then implement only specifically approved work.",
+      "owner": "Codex deferred support/partnerships; founder approves implementation and every outbound message",
+      "auditDepth": "Exact available source unit mapped; read-only audit and proposal only"
+    },
+    {
+      "id": "R17-089",
+      "source": "docs/SUPPORT_STRATEGIC_PARTNERSHIPS_DIRECTIVE.md",
+      "line": 155,
+      "section": "7. TRACK B — AI companies, technology sponsors, and investors",
+      "requirement": "- Vision XIX Labs company overview.",
+      "domain": "website",
+      "scope": "proposal",
+      "status": "Missing",
+      "verification": "Directive preserved and deferred source audit/proposal recorded. Existing support code is reusable but hosted payment, design, outreach and launch acceptance are not established. No page/payment implementation, CRM write or outbound message is authorized or performed.",
+      "evidence": [
+        "docs/SUPPORT_PARTNERSHIPS_DEFERRED_PLAN.md"
+      ],
+      "prs": [],
+      "nextAction": "Preserve critical engineering priorities and approval boundaries; review the isolated proposal with the founder when spare capacity exists, then implement only specifically approved work.",
+      "owner": "Codex deferred support/partnerships; founder approves implementation and every outbound message",
+      "auditDepth": "Exact available source unit mapped; read-only audit and proposal only"
+    },
+    {
+      "id": "R17-090",
+      "source": "docs/SUPPORT_STRATEGIC_PARTNERSHIPS_DIRECTIVE.md",
+      "line": 156,
+      "section": "7. TRACK B — AI companies, technology sponsors, and investors",
+      "requirement": "- Axiom Agent product explanation.",
+      "domain": "website",
+      "scope": "proposal",
+      "status": "Missing",
+      "verification": "Directive preserved and deferred source audit/proposal recorded. Existing support code is reusable but hosted payment, design, outreach and launch acceptance are not established. No page/payment implementation, CRM write or outbound message is authorized or performed.",
+      "evidence": [
+        "docs/SUPPORT_PARTNERSHIPS_DEFERRED_PLAN.md"
+      ],
+      "prs": [],
+      "nextAction": "Preserve critical engineering priorities and approval boundaries; review the isolated proposal with the founder when spare capacity exists, then implement only specifically approved work.",
+      "owner": "Codex deferred support/partnerships; founder approves implementation and every outbound message",
+      "auditDepth": "Exact available source unit mapped; read-only audit and proposal only"
+    },
+    {
+      "id": "R17-091",
+      "source": "docs/SUPPORT_STRATEGIC_PARTNERSHIPS_DIRECTIVE.md",
+      "line": 157,
+      "section": "7. TRACK B — AI companies, technology sponsors, and investors",
+      "requirement": "- Verified technical achievements and demonstrations.",
+      "domain": "website",
+      "scope": "proposal",
+      "status": "Missing",
+      "verification": "Directive preserved and deferred source audit/proposal recorded. Existing support code is reusable but hosted payment, design, outreach and launch acceptance are not established. No page/payment implementation, CRM write or outbound message is authorized or performed.",
+      "evidence": [
+        "docs/SUPPORT_PARTNERSHIPS_DEFERRED_PLAN.md"
+      ],
+      "prs": [],
+      "nextAction": "Preserve critical engineering priorities and approval boundaries; review the isolated proposal with the founder when spare capacity exists, then implement only specifically approved work.",
+      "owner": "Codex deferred support/partnerships; founder approves implementation and every outbound message",
+      "auditDepth": "Exact available source unit mapped; read-only audit and proposal only"
+    },
+    {
+      "id": "R17-092",
+      "source": "docs/SUPPORT_STRATEGIC_PARTNERSHIPS_DIRECTIVE.md",
+      "line": 158,
+      "section": "7. TRACK B — AI companies, technology sponsors, and investors",
+      "requirement": "- Problem, market opportunity, and differentiation.",
+      "domain": "website",
+      "scope": "proposal",
+      "status": "Missing",
+      "verification": "Directive preserved and deferred source audit/proposal recorded. Existing support code is reusable but hosted payment, design, outreach and launch acceptance are not established. No page/payment implementation, CRM write or outbound message is authorized or performed.",
+      "evidence": [
+        "docs/SUPPORT_PARTNERSHIPS_DEFERRED_PLAN.md"
+      ],
+      "prs": [],
+      "nextAction": "Preserve critical engineering priorities and approval boundaries; review the isolated proposal with the founder when spare capacity exists, then implement only specifically approved work.",
+      "owner": "Codex deferred support/partnerships; founder approves implementation and every outbound message",
+      "auditDepth": "Exact available source unit mapped; read-only audit and proposal only"
+    },
+    {
+      "id": "R17-093",
+      "source": "docs/SUPPORT_STRATEGIC_PARTNERSHIPS_DIRECTIVE.md",
+      "line": 159,
+      "section": "7. TRACK B — AI companies, technology sponsors, and investors",
+      "requirement": "- Current development stage and outstanding milestones.",
+      "domain": "website",
+      "scope": "proposal",
+      "status": "Missing",
+      "verification": "Directive preserved and deferred source audit/proposal recorded. Existing support code is reusable but hosted payment, design, outreach and launch acceptance are not established. No page/payment implementation, CRM write or outbound message is authorized or performed.",
+      "evidence": [
+        "docs/SUPPORT_PARTNERSHIPS_DEFERRED_PLAN.md"
+      ],
+      "prs": [],
+      "nextAction": "Preserve critical engineering priorities and approval boundaries; review the isolated proposal with the founder when spare capacity exists, then implement only specifically approved work.",
+      "owner": "Codex deferred support/partnerships; founder approves implementation and every outbound message",
+      "auditDepth": "Exact available source unit mapped; read-only audit and proposal only"
+    },
+    {
+      "id": "R17-094",
+      "source": "docs/SUPPORT_STRATEGIC_PARTNERSHIPS_DIRECTIVE.md",
+      "line": 160,
+      "section": "7. TRACK B — AI companies, technology sponsors, and investors",
+      "requirement": "- Partnership benefits and proposed collaboration.",
+      "domain": "website",
+      "scope": "proposal",
+      "status": "Missing",
+      "verification": "Directive preserved and deferred source audit/proposal recorded. Existing support code is reusable but hosted payment, design, outreach and launch acceptance are not established. No page/payment implementation, CRM write or outbound message is authorized or performed.",
+      "evidence": [
+        "docs/SUPPORT_PARTNERSHIPS_DEFERRED_PLAN.md"
+      ],
+      "prs": [],
+      "nextAction": "Preserve critical engineering priorities and approval boundaries; review the isolated proposal with the founder when spare capacity exists, then implement only specifically approved work.",
+      "owner": "Codex deferred support/partnerships; founder approves implementation and every outbound message",
+      "auditDepth": "Exact available source unit mapped; read-only audit and proposal only"
+    },
+    {
+      "id": "R17-095",
+      "source": "docs/SUPPORT_STRATEGIC_PARTNERSHIPS_DIRECTIVE.md",
+      "line": 161,
+      "section": "7. TRACK B — AI companies, technology sponsors, and investors",
+      "requirement": "- Specific, realistic requests appropriate to each recipient.",
+      "domain": "website",
+      "scope": "proposal",
+      "status": "Missing",
+      "verification": "Directive preserved and deferred source audit/proposal recorded. Existing support code is reusable but hosted payment, design, outreach and launch acceptance are not established. No page/payment implementation, CRM write or outbound message is authorized or performed.",
+      "evidence": [
+        "docs/SUPPORT_PARTNERSHIPS_DEFERRED_PLAN.md"
+      ],
+      "prs": [],
+      "nextAction": "Preserve critical engineering priorities and approval boundaries; review the isolated proposal with the founder when spare capacity exists, then implement only specifically approved work.",
+      "owner": "Codex deferred support/partnerships; founder approves implementation and every outbound message",
+      "auditDepth": "Exact available source unit mapped; read-only audit and proposal only"
+    },
+    {
+      "id": "R17-096",
+      "source": "docs/SUPPORT_STRATEGIC_PARTNERSHIPS_DIRECTIVE.md",
+      "line": 162,
+      "section": "7. TRACK B — AI companies, technology sponsors, and investors",
+      "requirement": "- Founder contact information through verified official channels.",
+      "domain": "website",
+      "scope": "proposal",
+      "status": "Missing",
+      "verification": "Directive preserved and deferred source audit/proposal recorded. Existing support code is reusable but hosted payment, design, outreach and launch acceptance are not established. No page/payment implementation, CRM write or outbound message is authorized or performed.",
+      "evidence": [
+        "docs/SUPPORT_PARTNERSHIPS_DEFERRED_PLAN.md"
+      ],
+      "prs": [],
+      "nextAction": "Preserve critical engineering priorities and approval boundaries; review the isolated proposal with the founder when spare capacity exists, then implement only specifically approved work.",
+      "owner": "Codex deferred support/partnerships; founder approves implementation and every outbound message",
+      "auditDepth": "Exact available source unit mapped; read-only audit and proposal only"
+    },
+    {
+      "id": "R17-097",
+      "source": "docs/SUPPORT_STRATEGIC_PARTNERSHIPS_DIRECTIVE.md",
+      "line": 164,
+      "section": "7. TRACK B — AI companies, technology sponsors, and investors",
+      "requirement": "Prepare different email templates for AI companies, cloud providers, sponsors, and investors. Personalize them before any approved outreach.",
+      "domain": "website",
+      "scope": "proposal",
+      "status": "Missing",
+      "verification": "Directive preserved and deferred source audit/proposal recorded. Existing support code is reusable but hosted payment, design, outreach and launch acceptance are not established. No page/payment implementation, CRM write or outbound message is authorized or performed.",
+      "evidence": [
+        "docs/SUPPORT_PARTNERSHIPS_DEFERRED_PLAN.md"
+      ],
+      "prs": [],
+      "nextAction": "Preserve critical engineering priorities and approval boundaries; review the isolated proposal with the founder when spare capacity exists, then implement only specifically approved work.",
+      "owner": "Codex deferred support/partnerships; founder approves implementation and every outbound message",
+      "auditDepth": "Exact available source unit mapped; read-only audit and proposal only"
+    },
+    {
+      "id": "R17-098",
+      "source": "docs/SUPPORT_STRATEGIC_PARTNERSHIPS_DIRECTIVE.md",
+      "line": 166,
+      "section": "7. TRACK B — AI companies, technology sponsors, and investors",
+      "requirement": "Never describe investment as a charitable donation or promise equity, returns, or ownership without appropriate legal documentation and authorization.",
+      "domain": "website",
+      "scope": "proposal",
+      "status": "Missing",
+      "verification": "Directive preserved and deferred source audit/proposal recorded. Existing support code is reusable but hosted payment, design, outreach and launch acceptance are not established. No page/payment implementation, CRM write or outbound message is authorized or performed.",
+      "evidence": [
+        "docs/SUPPORT_PARTNERSHIPS_DEFERRED_PLAN.md"
+      ],
+      "prs": [],
+      "nextAction": "Preserve critical engineering priorities and approval boundaries; review the isolated proposal with the founder when spare capacity exists, then implement only specifically approved work.",
+      "owner": "Codex deferred support/partnerships; founder approves implementation and every outbound message",
+      "auditDepth": "Exact available source unit mapped; read-only audit and proposal only"
+    },
+    {
+      "id": "R17-099",
+      "source": "docs/SUPPORT_STRATEGIC_PARTNERSHIPS_DIRECTIVE.md",
+      "line": 170,
+      "section": "8. Stripe, financial transparency, and security",
+      "requirement": "The existing Support page already has a working Stripe integration. Protect it.",
+      "domain": "billing",
+      "scope": "proposal",
+      "status": "Partially implemented",
+      "verification": "Directive preserved and deferred source audit/proposal recorded. Existing support code is reusable but hosted payment, design, outreach and launch acceptance are not established. No page/payment implementation, CRM write or outbound message is authorized or performed.",
+      "evidence": [
+        "docs/SUPPORT_PARTNERSHIPS_DEFERRED_PLAN.md"
+      ],
+      "prs": [],
+      "nextAction": "Preserve critical engineering priorities and approval boundaries; review the isolated proposal with the founder when spare capacity exists, then implement only specifically approved work.",
+      "owner": "Codex deferred support/partnerships; founder approves implementation and every outbound message",
+      "auditDepth": "Exact available source unit mapped; read-only audit and proposal only"
+    },
+    {
+      "id": "R17-100",
+      "source": "docs/SUPPORT_STRATEGIC_PARTNERSHIPS_DIRECTIVE.md",
+      "line": 172,
+      "section": "8. Stripe, financial transparency, and security",
+      "requirement": "- Do not disrupt existing checkout, payment processing, webhooks, or billing.",
+      "domain": "billing",
+      "scope": "process",
+      "status": "Partially implemented",
+      "verification": "Directive preserved and deferred source audit/proposal recorded. Existing support code is reusable but hosted payment, design, outreach and launch acceptance are not established. No page/payment implementation, CRM write or outbound message is authorized or performed.",
+      "evidence": [
+        "docs/SUPPORT_PARTNERSHIPS_DEFERRED_PLAN.md"
+      ],
+      "prs": [],
+      "nextAction": "Preserve critical engineering priorities and approval boundaries; review the isolated proposal with the founder when spare capacity exists, then implement only specifically approved work.",
+      "owner": "Codex deferred support/partnerships; founder approves implementation and every outbound message",
+      "auditDepth": "Exact available source unit mapped; read-only audit and proposal only"
+    },
+    {
+      "id": "R17-101",
+      "source": "docs/SUPPORT_STRATEGIC_PARTNERSHIPS_DIRECTIVE.md",
+      "line": 173,
+      "section": "8. Stripe, financial transparency, and security",
+      "requirement": "- Keep support contributions separate from Axiom customer subscriptions and AI credits.",
+      "domain": "billing",
+      "scope": "proposal",
+      "status": "Partially implemented",
+      "verification": "Directive preserved and deferred source audit/proposal recorded. Existing support code is reusable but hosted payment, design, outreach and launch acceptance are not established. No page/payment implementation, CRM write or outbound message is authorized or performed.",
+      "evidence": [
+        "docs/SUPPORT_PARTNERSHIPS_DEFERRED_PLAN.md"
+      ],
+      "prs": [],
+      "nextAction": "Preserve critical engineering priorities and approval boundaries; review the isolated proposal with the founder when spare capacity exists, then implement only specifically approved work.",
+      "owner": "Codex deferred support/partnerships; founder approves implementation and every outbound message",
+      "auditDepth": "Exact available source unit mapped; read-only audit and proposal only"
+    },
+    {
+      "id": "R17-102",
+      "source": "docs/SUPPORT_STRATEGIC_PARTNERSHIPS_DIRECTIVE.md",
+      "line": 174,
+      "section": "8. Stripe, financial transparency, and security",
+      "requirement": "- Do not grant product entitlements from contributions unless a separately approved product offering explicitly provides them.",
+      "domain": "billing",
+      "scope": "process",
+      "status": "Partially implemented",
+      "verification": "Directive preserved and deferred source audit/proposal recorded. Existing support code is reusable but hosted payment, design, outreach and launch acceptance are not established. No page/payment implementation, CRM write or outbound message is authorized or performed.",
+      "evidence": [
+        "docs/SUPPORT_PARTNERSHIPS_DEFERRED_PLAN.md"
+      ],
+      "prs": [],
+      "nextAction": "Preserve critical engineering priorities and approval boundaries; review the isolated proposal with the founder when spare capacity exists, then implement only specifically approved work.",
+      "owner": "Codex deferred support/partnerships; founder approves implementation and every outbound message",
+      "auditDepth": "Exact available source unit mapped; read-only audit and proposal only"
+    },
+    {
+      "id": "R17-103",
+      "source": "docs/SUPPORT_STRATEGIC_PARTNERSHIPS_DIRECTIVE.md",
+      "line": 175,
+      "section": "8. Stripe, financial transparency, and security",
+      "requirement": "- Validate the intended amount, currency, payment status, and success handling.",
+      "domain": "billing",
+      "scope": "proposal",
+      "status": "Partially implemented",
+      "verification": "Directive preserved and deferred source audit/proposal recorded. Existing support code is reusable but hosted payment, design, outreach and launch acceptance are not established. No page/payment implementation, CRM write or outbound message is authorized or performed.",
+      "evidence": [
+        "docs/SUPPORT_PARTNERSHIPS_DEFERRED_PLAN.md"
+      ],
+      "prs": [],
+      "nextAction": "Preserve critical engineering priorities and approval boundaries; review the isolated proposal with the founder when spare capacity exists, then implement only specifically approved work.",
+      "owner": "Codex deferred support/partnerships; founder approves implementation and every outbound message",
+      "auditDepth": "Exact available source unit mapped; read-only audit and proposal only"
+    },
+    {
+      "id": "R17-104",
+      "source": "docs/SUPPORT_STRATEGIC_PARTNERSHIPS_DIRECTIVE.md",
+      "line": 176,
+      "section": "8. Stripe, financial transparency, and security",
+      "requirement": "- Prevent duplicate fulfillment and misleading success messages.",
+      "domain": "billing",
+      "scope": "proposal",
+      "status": "Partially implemented",
+      "verification": "Directive preserved and deferred source audit/proposal recorded. Existing support code is reusable but hosted payment, design, outreach and launch acceptance are not established. No page/payment implementation, CRM write or outbound message is authorized or performed.",
+      "evidence": [
+        "docs/SUPPORT_PARTNERSHIPS_DEFERRED_PLAN.md"
+      ],
+      "prs": [],
+      "nextAction": "Preserve critical engineering priorities and approval boundaries; review the isolated proposal with the founder when spare capacity exists, then implement only specifically approved work.",
+      "owner": "Codex deferred support/partnerships; founder approves implementation and every outbound message",
+      "auditDepth": "Exact available source unit mapped; read-only audit and proposal only"
+    },
+    {
+      "id": "R17-105",
+      "source": "docs/SUPPORT_STRATEGIC_PARTNERSHIPS_DIRECTIVE.md",
+      "line": 177,
+      "section": "8. Stripe, financial transparency, and security",
+      "requirement": "- Do not expose payment secrets or sensitive customer information.",
+      "domain": "billing",
+      "scope": "process",
+      "status": "Partially implemented",
+      "verification": "Directive preserved and deferred source audit/proposal recorded. Existing support code is reusable but hosted payment, design, outreach and launch acceptance are not established. No page/payment implementation, CRM write or outbound message is authorized or performed.",
+      "evidence": [
+        "docs/SUPPORT_PARTNERSHIPS_DEFERRED_PLAN.md"
+      ],
+      "prs": [],
+      "nextAction": "Preserve critical engineering priorities and approval boundaries; review the isolated proposal with the founder when spare capacity exists, then implement only specifically approved work.",
+      "owner": "Codex deferred support/partnerships; founder approves implementation and every outbound message",
+      "auditDepth": "Exact available source unit mapped; read-only audit and proposal only"
+    },
+    {
+      "id": "R17-106",
+      "source": "docs/SUPPORT_STRATEGIC_PARTNERSHIPS_DIRECTIVE.md",
+      "line": 178,
+      "section": "8. Stripe, financial transparency, and security",
+      "requirement": "- Provide clear contribution terms, company identity, privacy information, and refund/contact information.",
+      "domain": "billing",
+      "scope": "proposal",
+      "status": "Partially implemented",
+      "verification": "Directive preserved and deferred source audit/proposal recorded. Existing support code is reusable but hosted payment, design, outreach and launch acceptance are not established. No page/payment implementation, CRM write or outbound message is authorized or performed.",
+      "evidence": [
+        "docs/SUPPORT_PARTNERSHIPS_DEFERRED_PLAN.md"
+      ],
+      "prs": [],
+      "nextAction": "Preserve critical engineering priorities and approval boundaries; review the isolated proposal with the founder when spare capacity exists, then implement only specifically approved work.",
+      "owner": "Codex deferred support/partnerships; founder approves implementation and every outbound message",
+      "auditDepth": "Exact available source unit mapped; read-only audit and proposal only"
+    },
+    {
+      "id": "R17-107",
+      "source": "docs/SUPPORT_STRATEGIC_PARTNERSHIPS_DIRECTIVE.md",
+      "line": 179,
+      "section": "8. Stripe, financial transparency, and security",
+      "requirement": "- Clearly distinguish voluntary support payments from charitable gifts, sponsorship contracts, and investment transactions.",
+      "domain": "billing",
+      "scope": "proposal",
+      "status": "Partially implemented",
+      "verification": "Directive preserved and deferred source audit/proposal recorded. Existing support code is reusable but hosted payment, design, outreach and launch acceptance are not established. No page/payment implementation, CRM write or outbound message is authorized or performed.",
+      "evidence": [
+        "docs/SUPPORT_PARTNERSHIPS_DEFERRED_PLAN.md"
+      ],
+      "prs": [],
+      "nextAction": "Preserve critical engineering priorities and approval boundaries; review the isolated proposal with the founder when spare capacity exists, then implement only specifically approved work.",
+      "owner": "Codex deferred support/partnerships; founder approves implementation and every outbound message",
+      "auditDepth": "Exact available source unit mapped; read-only audit and proposal only"
+    },
+    {
+      "id": "R17-108",
+      "source": "docs/SUPPORT_STRATEGIC_PARTNERSHIPS_DIRECTIVE.md",
+      "line": 180,
+      "section": "8. Stripe, financial transparency, and security",
+      "requirement": "- Do not claim contributions are tax-deductible without verified legal eligibility.",
+      "domain": "billing",
+      "scope": "process",
+      "status": "Partially implemented",
+      "verification": "Directive preserved and deferred source audit/proposal recorded. Existing support code is reusable but hosted payment, design, outreach and launch acceptance are not established. No page/payment implementation, CRM write or outbound message is authorized or performed.",
+      "evidence": [
+        "docs/SUPPORT_PARTNERSHIPS_DEFERRED_PLAN.md"
+      ],
+      "prs": [],
+      "nextAction": "Preserve critical engineering priorities and approval boundaries; review the isolated proposal with the founder when spare capacity exists, then implement only specifically approved work.",
+      "owner": "Codex deferred support/partnerships; founder approves implementation and every outbound message",
+      "auditDepth": "Exact available source unit mapped; read-only audit and proposal only"
+    },
+    {
+      "id": "R17-109",
+      "source": "docs/SUPPORT_STRATEGIC_PARTNERSHIPS_DIRECTIVE.md",
+      "line": 182,
+      "section": "8. Stripe, financial transparency, and security",
+      "requirement": "Use isolated testing. Do not change live Stripe settings or production payment behavior without approval.",
+      "domain": "billing",
+      "scope": "process",
+      "status": "Partially implemented",
+      "verification": "Directive preserved and deferred source audit/proposal recorded. Existing support code is reusable but hosted payment, design, outreach and launch acceptance are not established. No page/payment implementation, CRM write or outbound message is authorized or performed.",
+      "evidence": [
+        "docs/SUPPORT_PARTNERSHIPS_DEFERRED_PLAN.md"
+      ],
+      "prs": [],
+      "nextAction": "Preserve critical engineering priorities and approval boundaries; review the isolated proposal with the founder when spare capacity exists, then implement only specifically approved work.",
+      "owner": "Codex deferred support/partnerships; founder approves implementation and every outbound message",
+      "auditDepth": "Exact available source unit mapped; read-only audit and proposal only"
+    },
+    {
+      "id": "R17-110",
+      "source": "docs/SUPPORT_STRATEGIC_PARTNERSHIPS_DIRECTIVE.md",
+      "line": 186,
+      "section": "9. Use existing tools and agents intelligently",
+      "requirement": "Available tools include:",
+      "domain": "website",
+      "scope": "proposal",
+      "status": "Missing",
+      "verification": "Directive preserved and deferred source audit/proposal recorded. Existing support code is reusable but hosted payment, design, outreach and launch acceptance are not established. No page/payment implementation, CRM write or outbound message is authorized or performed.",
+      "evidence": [
+        "docs/SUPPORT_PARTNERSHIPS_DEFERRED_PLAN.md"
+      ],
+      "prs": [],
+      "nextAction": "Preserve critical engineering priorities and approval boundaries; review the isolated proposal with the founder when spare capacity exists, then implement only specifically approved work.",
+      "owner": "Codex deferred support/partnerships; founder approves implementation and every outbound message",
+      "auditDepth": "Exact available source unit mapped; read-only audit and proposal only"
+    },
+    {
+      "id": "R17-111",
+      "source": "docs/SUPPORT_STRATEGIC_PARTNERSHIPS_DIRECTIVE.md",
+      "line": 188,
+      "section": "9. Use existing tools and agents intelligently",
+      "requirement": "- Figma — polished design and visual consistency.",
+      "domain": "website",
+      "scope": "proposal",
+      "status": "Missing",
+      "verification": "Directive preserved and deferred source audit/proposal recorded. Existing support code is reusable but hosted payment, design, outreach and launch acceptance are not established. No page/payment implementation, CRM write or outbound message is authorized or performed.",
+      "evidence": [
+        "docs/SUPPORT_PARTNERSHIPS_DEFERRED_PLAN.md"
+      ],
+      "prs": [],
+      "nextAction": "Preserve critical engineering priorities and approval boundaries; review the isolated proposal with the founder when spare capacity exists, then implement only specifically approved work.",
+      "owner": "Codex deferred support/partnerships; founder approves implementation and every outbound message",
+      "auditDepth": "Exact available source unit mapped; read-only audit and proposal only"
+    },
+    {
+      "id": "R17-112",
+      "source": "docs/SUPPORT_STRATEGIC_PARTNERSHIPS_DIRECTIVE.md",
+      "line": 189,
+      "section": "9. Use existing tools and agents intelligently",
+      "requirement": "- Product Design — user journeys and usability review.",
+      "domain": "website",
+      "scope": "proposal",
+      "status": "Missing",
+      "verification": "Directive preserved and deferred source audit/proposal recorded. Existing support code is reusable but hosted payment, design, outreach and launch acceptance are not established. No page/payment implementation, CRM write or outbound message is authorized or performed.",
+      "evidence": [
+        "docs/SUPPORT_PARTNERSHIPS_DEFERRED_PLAN.md"
+      ],
+      "prs": [],
+      "nextAction": "Preserve critical engineering priorities and approval boundaries; review the isolated proposal with the founder when spare capacity exists, then implement only specifically approved work.",
+      "owner": "Codex deferred support/partnerships; founder approves implementation and every outbound message",
+      "auditDepth": "Exact available source unit mapped; read-only audit and proposal only"
+    },
+    {
+      "id": "R17-113",
+      "source": "docs/SUPPORT_STRATEGIC_PARTNERSHIPS_DIRECTIVE.md",
+      "line": 190,
+      "section": "9. Use existing tools and agents intelligently",
+      "requirement": "- MagicPath — interactive design prototypes.",
+      "domain": "website",
+      "scope": "proposal",
+      "status": "Missing",
+      "verification": "Directive preserved and deferred source audit/proposal recorded. Existing support code is reusable but hosted payment, design, outreach and launch acceptance are not established. No page/payment implementation, CRM write or outbound message is authorized or performed.",
+      "evidence": [
+        "docs/SUPPORT_PARTNERSHIPS_DEFERRED_PLAN.md"
+      ],
+      "prs": [],
+      "nextAction": "Preserve critical engineering priorities and approval boundaries; review the isolated proposal with the founder when spare capacity exists, then implement only specifically approved work.",
+      "owner": "Codex deferred support/partnerships; founder approves implementation and every outbound message",
+      "auditDepth": "Exact available source unit mapped; read-only audit and proposal only"
+    },
+    {
+      "id": "R17-114",
+      "source": "docs/SUPPORT_STRATEGIC_PARTNERSHIPS_DIRECTIVE.md",
+      "line": 191,
+      "section": "9. Use existing tools and agents intelligently",
+      "requirement": "- GitHub — implementation and source control.",
+      "domain": "website",
+      "scope": "proposal",
+      "status": "Missing",
+      "verification": "Directive preserved and deferred source audit/proposal recorded. Existing support code is reusable but hosted payment, design, outreach and launch acceptance are not established. No page/payment implementation, CRM write or outbound message is authorized or performed.",
+      "evidence": [
+        "docs/SUPPORT_PARTNERSHIPS_DEFERRED_PLAN.md"
+      ],
+      "prs": [],
+      "nextAction": "Preserve critical engineering priorities and approval boundaries; review the isolated proposal with the founder when spare capacity exists, then implement only specifically approved work.",
+      "owner": "Codex deferred support/partnerships; founder approves implementation and every outbound message",
+      "auditDepth": "Exact available source unit mapped; read-only audit and proposal only"
+    },
+    {
+      "id": "R17-115",
+      "source": "docs/SUPPORT_STRATEGIC_PARTNERSHIPS_DIRECTIVE.md",
+      "line": 192,
+      "section": "9. Use existing tools and agents intelligently",
+      "requirement": "- Stripe — billing configuration review.",
+      "domain": "website",
+      "scope": "proposal",
+      "status": "Missing",
+      "verification": "Directive preserved and deferred source audit/proposal recorded. Existing support code is reusable but hosted payment, design, outreach and launch acceptance are not established. No page/payment implementation, CRM write or outbound message is authorized or performed.",
+      "evidence": [
+        "docs/SUPPORT_PARTNERSHIPS_DEFERRED_PLAN.md"
+      ],
+      "prs": [],
+      "nextAction": "Preserve critical engineering priorities and approval boundaries; review the isolated proposal with the founder when spare capacity exists, then implement only specifically approved work.",
+      "owner": "Codex deferred support/partnerships; founder approves implementation and every outbound message",
+      "auditDepth": "Exact available source unit mapped; read-only audit and proposal only"
+    },
+    {
+      "id": "R17-116",
+      "source": "docs/SUPPORT_STRATEGIC_PARTNERSHIPS_DIRECTIVE.md",
+      "line": 193,
+      "section": "9. Use existing tools and agents intelligently",
+      "requirement": "- HubSpot — relationship and outreach tracking.",
+      "domain": "website",
+      "scope": "proposal",
+      "status": "Missing",
+      "verification": "Directive preserved and deferred source audit/proposal recorded. Existing support code is reusable but hosted payment, design, outreach and launch acceptance are not established. No page/payment implementation, CRM write or outbound message is authorized or performed.",
+      "evidence": [
+        "docs/SUPPORT_PARTNERSHIPS_DEFERRED_PLAN.md"
+      ],
+      "prs": [],
+      "nextAction": "Preserve critical engineering priorities and approval boundaries; review the isolated proposal with the founder when spare capacity exists, then implement only specifically approved work.",
+      "owner": "Codex deferred support/partnerships; founder approves implementation and every outbound message",
+      "auditDepth": "Exact available source unit mapped; read-only audit and proposal only"
+    },
+    {
+      "id": "R17-117",
+      "source": "docs/SUPPORT_STRATEGIC_PARTNERSHIPS_DIRECTIVE.md",
+      "line": 194,
+      "section": "9. Use existing tools and agents intelligently",
+      "requirement": "- PostHog — future engagement and conversion analysis.",
+      "domain": "website",
+      "scope": "proposal",
+      "status": "Missing",
+      "verification": "Directive preserved and deferred source audit/proposal recorded. Existing support code is reusable but hosted payment, design, outreach and launch acceptance are not established. No page/payment implementation, CRM write or outbound message is authorized or performed.",
+      "evidence": [
+        "docs/SUPPORT_PARTNERSHIPS_DEFERRED_PLAN.md"
+      ],
+      "prs": [],
+      "nextAction": "Preserve critical engineering priorities and approval boundaries; review the isolated proposal with the founder when spare capacity exists, then implement only specifically approved work.",
+      "owner": "Codex deferred support/partnerships; founder approves implementation and every outbound message",
+      "auditDepth": "Exact available source unit mapped; read-only audit and proposal only"
+    },
+    {
+      "id": "R17-118",
+      "source": "docs/SUPPORT_STRATEGIC_PARTNERSHIPS_DIRECTIVE.md",
+      "line": 195,
+      "section": "9. Use existing tools and agents intelligently",
+      "requirement": "- Linear — optional task coordination.",
+      "domain": "website",
+      "scope": "proposal",
+      "status": "Missing",
+      "verification": "Directive preserved and deferred source audit/proposal recorded. Existing support code is reusable but hosted payment, design, outreach and launch acceptance are not established. No page/payment implementation, CRM write or outbound message is authorized or performed.",
+      "evidence": [
+        "docs/SUPPORT_PARTNERSHIPS_DEFERRED_PLAN.md"
+      ],
+      "prs": [],
+      "nextAction": "Preserve critical engineering priorities and approval boundaries; review the isolated proposal with the founder when spare capacity exists, then implement only specifically approved work.",
+      "owner": "Codex deferred support/partnerships; founder approves implementation and every outbound message",
+      "auditDepth": "Exact available source unit mapped; read-only audit and proposal only"
+    },
+    {
+      "id": "R17-119",
+      "source": "docs/SUPPORT_STRATEGIC_PARTNERSHIPS_DIRECTIVE.md",
+      "line": 197,
+      "section": "9. Use existing tools and agents intelligently",
+      "requirement": "Apollo.io may be considered for business contact research if connected and approved.",
+      "domain": "website",
+      "scope": "proposal",
+      "status": "Missing",
+      "verification": "Directive preserved and deferred source audit/proposal recorded. Existing support code is reusable but hosted payment, design, outreach and launch acceptance are not established. No page/payment implementation, CRM write or outbound message is authorized or performed.",
+      "evidence": [
+        "docs/SUPPORT_PARTNERSHIPS_DEFERRED_PLAN.md"
+      ],
+      "prs": [],
+      "nextAction": "Preserve critical engineering priorities and approval boundaries; review the isolated proposal with the founder when spare capacity exists, then implement only specifically approved work.",
+      "owner": "Codex deferred support/partnerships; founder approves implementation and every outbound message",
+      "auditDepth": "Exact available source unit mapped; read-only audit and proposal only"
+    },
+    {
+      "id": "R17-120",
+      "source": "docs/SUPPORT_STRATEGIC_PARTNERSHIPS_DIRECTIVE.md",
+      "line": 199,
+      "section": "9. Use existing tools and agents intelligently",
+      "requirement": "Use a dedicated support/partnership planning agent only when spare capacity permits. Do not pull agents away from critical Axiom engineering.",
+      "domain": "governance",
+      "scope": "process",
+      "status": "Partially implemented",
+      "verification": "Directive preserved and deferred source audit/proposal recorded. Existing support code is reusable but hosted payment, design, outreach and launch acceptance are not established. No page/payment implementation, CRM write or outbound message is authorized or performed.",
+      "evidence": [
+        "docs/SUPPORT_PARTNERSHIPS_DEFERRED_PLAN.md"
+      ],
+      "prs": [],
+      "nextAction": "Preserve critical engineering priorities and approval boundaries; review the isolated proposal with the founder when spare capacity exists, then implement only specifically approved work.",
+      "owner": "Codex deferred support/partnerships; founder approves implementation and every outbound message",
+      "auditDepth": "Exact available source unit mapped; read-only audit and proposal only"
+    },
+    {
+      "id": "R17-121",
+      "source": "docs/SUPPORT_STRATEGIC_PARTNERSHIPS_DIRECTIVE.md",
+      "line": 201,
+      "section": "9. Use existing tools and agents intelligently",
+      "requirement": "Avoid duplicate trackers and unnecessary tooling.",
+      "domain": "website",
+      "scope": "proposal",
+      "status": "Missing",
+      "verification": "Directive preserved and deferred source audit/proposal recorded. Existing support code is reusable but hosted payment, design, outreach and launch acceptance are not established. No page/payment implementation, CRM write or outbound message is authorized or performed.",
+      "evidence": [
+        "docs/SUPPORT_PARTNERSHIPS_DEFERRED_PLAN.md"
+      ],
+      "prs": [],
+      "nextAction": "Preserve critical engineering priorities and approval boundaries; review the isolated proposal with the founder when spare capacity exists, then implement only specifically approved work.",
+      "owner": "Codex deferred support/partnerships; founder approves implementation and every outbound message",
+      "auditDepth": "Exact available source unit mapped; read-only audit and proposal only"
+    },
+    {
+      "id": "R17-122",
+      "source": "docs/SUPPORT_STRATEGIC_PARTNERSHIPS_DIRECTIVE.md",
+      "line": 205,
+      "section": "10. Deliverables and execution phases / Phase 1 — Read-only audit",
+      "requirement": "**Phase 1 — Read-only audit**",
+      "domain": "website",
+      "scope": "proposal",
+      "status": "Missing",
+      "verification": "Directive preserved and deferred source audit/proposal recorded. Existing support code is reusable but hosted payment, design, outreach and launch acceptance are not established. No page/payment implementation, CRM write or outbound message is authorized or performed.",
+      "evidence": [
+        "docs/SUPPORT_PARTNERSHIPS_DEFERRED_PLAN.md"
+      ],
+      "prs": [],
+      "nextAction": "Preserve critical engineering priorities and approval boundaries; review the isolated proposal with the founder when spare capacity exists, then implement only specifically approved work.",
+      "owner": "Codex deferred support/partnerships; founder approves implementation and every outbound message",
+      "auditDepth": "Exact available source unit mapped; read-only audit and proposal only"
+    },
+    {
+      "id": "R17-123",
+      "source": "docs/SUPPORT_STRATEGIC_PARTNERSHIPS_DIRECTIVE.md",
+      "line": 207,
+      "section": "10. Deliverables and execution phases / Phase 1 — Read-only audit",
+      "requirement": "Identify the existing Support page, Stripe integration, current content, design, and evidence.",
+      "domain": "website",
+      "scope": "proposal",
+      "status": "Missing",
+      "verification": "Directive preserved and deferred source audit/proposal recorded. Existing support code is reusable but hosted payment, design, outreach and launch acceptance are not established. No page/payment implementation, CRM write or outbound message is authorized or performed.",
+      "evidence": [
+        "docs/SUPPORT_PARTNERSHIPS_DEFERRED_PLAN.md"
+      ],
+      "prs": [],
+      "nextAction": "Preserve critical engineering priorities and approval boundaries; review the isolated proposal with the founder when spare capacity exists, then implement only specifically approved work.",
+      "owner": "Codex deferred support/partnerships; founder approves implementation and every outbound message",
+      "auditDepth": "Exact available source unit mapped; read-only audit and proposal only"
+    },
+    {
+      "id": "R17-124",
+      "source": "docs/SUPPORT_STRATEGIC_PARTNERSHIPS_DIRECTIVE.md",
+      "line": 209,
+      "section": "10. Deliverables and execution phases / Phase 2 — Independent plan",
+      "requirement": "**Phase 2 — Independent plan**",
+      "domain": "website",
+      "scope": "proposal",
+      "status": "Missing",
+      "verification": "Directive preserved and deferred source audit/proposal recorded. Existing support code is reusable but hosted payment, design, outreach and launch acceptance are not established. No page/payment implementation, CRM write or outbound message is authorized or performed.",
+      "evidence": [
+        "docs/SUPPORT_PARTNERSHIPS_DEFERRED_PLAN.md"
+      ],
+      "prs": [],
+      "nextAction": "Preserve critical engineering priorities and approval boundaries; review the isolated proposal with the founder when spare capacity exists, then implement only specifically approved work.",
+      "owner": "Codex deferred support/partnerships; founder approves implementation and every outbound message",
+      "auditDepth": "Exact available source unit mapped; read-only audit and proposal only"
+    },
+    {
+      "id": "R17-125",
+      "source": "docs/SUPPORT_STRATEGIC_PARTNERSHIPS_DIRECTIVE.md",
+      "line": 211,
+      "section": "10. Deliverables and execution phases / Phase 2 — Independent plan",
+      "requirement": "Prepare the premium design concept, interactive $1 experience, technical integration plan, security checklist, and Track A/B outreach strategy.",
+      "domain": "website",
+      "scope": "proposal",
+      "status": "Missing",
+      "verification": "Directive preserved and deferred source audit/proposal recorded. Existing support code is reusable but hosted payment, design, outreach and launch acceptance are not established. No page/payment implementation, CRM write or outbound message is authorized or performed.",
+      "evidence": [
+        "docs/SUPPORT_PARTNERSHIPS_DEFERRED_PLAN.md"
+      ],
+      "prs": [],
+      "nextAction": "Preserve critical engineering priorities and approval boundaries; review the isolated proposal with the founder when spare capacity exists, then implement only specifically approved work.",
+      "owner": "Codex deferred support/partnerships; founder approves implementation and every outbound message",
+      "auditDepth": "Exact available source unit mapped; read-only audit and proposal only"
+    },
+    {
+      "id": "R17-126",
+      "source": "docs/SUPPORT_STRATEGIC_PARTNERSHIPS_DIRECTIVE.md",
+      "line": 213,
+      "section": "10. Deliverables and execution phases / Phase 3 — Founder review",
+      "requirement": "**Phase 3 — Founder review**",
+      "domain": "website",
+      "scope": "proposal",
+      "status": "Missing",
+      "verification": "Directive preserved and deferred source audit/proposal recorded. Existing support code is reusable but hosted payment, design, outreach and launch acceptance are not established. No page/payment implementation, CRM write or outbound message is authorized or performed.",
+      "evidence": [
+        "docs/SUPPORT_PARTNERSHIPS_DEFERRED_PLAN.md"
+      ],
+      "prs": [],
+      "nextAction": "Preserve critical engineering priorities and approval boundaries; review the isolated proposal with the founder when spare capacity exists, then implement only specifically approved work.",
+      "owner": "Codex deferred support/partnerships; founder approves implementation and every outbound message",
+      "auditDepth": "Exact available source unit mapped; read-only audit and proposal only"
+    },
+    {
+      "id": "R17-127",
+      "source": "docs/SUPPORT_STRATEGIC_PARTNERSHIPS_DIRECTIVE.md",
+      "line": 215,
+      "section": "10. Deliverables and execution phases / Phase 3 — Founder review",
+      "requirement": "Present the proposed design, contribution flow, verified evidence, outreach materials, and any required payment changes for approval.",
+      "domain": "website",
+      "scope": "proposal",
+      "status": "Missing",
+      "verification": "Directive preserved and deferred source audit/proposal recorded. Existing support code is reusable but hosted payment, design, outreach and launch acceptance are not established. No page/payment implementation, CRM write or outbound message is authorized or performed.",
+      "evidence": [
+        "docs/SUPPORT_PARTNERSHIPS_DEFERRED_PLAN.md"
+      ],
+      "prs": [],
+      "nextAction": "Preserve critical engineering priorities and approval boundaries; review the isolated proposal with the founder when spare capacity exists, then implement only specifically approved work.",
+      "owner": "Codex deferred support/partnerships; founder approves implementation and every outbound message",
+      "auditDepth": "Exact available source unit mapped; read-only audit and proposal only"
+    },
+    {
+      "id": "R17-128",
+      "source": "docs/SUPPORT_STRATEGIC_PARTNERSHIPS_DIRECTIVE.md",
+      "line": 217,
+      "section": "10. Deliverables and execution phases / Phase 4 — Isolated implementation",
+      "requirement": "**Phase 4 — Isolated implementation**",
+      "domain": "website",
+      "scope": "proposal",
+      "status": "Missing",
+      "verification": "Directive preserved and deferred source audit/proposal recorded. Existing support code is reusable but hosted payment, design, outreach and launch acceptance are not established. No page/payment implementation, CRM write or outbound message is authorized or performed.",
+      "evidence": [
+        "docs/SUPPORT_PARTNERSHIPS_DEFERRED_PLAN.md"
+      ],
+      "prs": [],
+      "nextAction": "Preserve critical engineering priorities and approval boundaries; review the isolated proposal with the founder when spare capacity exists, then implement only specifically approved work.",
+      "owner": "Codex deferred support/partnerships; founder approves implementation and every outbound message",
+      "auditDepth": "Exact available source unit mapped; read-only audit and proposal only"
+    },
+    {
+      "id": "R17-129",
+      "source": "docs/SUPPORT_STRATEGIC_PARTNERSHIPS_DIRECTIVE.md",
+      "line": 219,
+      "section": "10. Deliverables and execution phases / Phase 4 — Isolated implementation",
+      "requirement": "Only after approval and when capacity is available, implement and test the improvements without disrupting the main engineering mission.",
+      "domain": "governance",
+      "scope": "process",
+      "status": "Partially implemented",
+      "verification": "Directive preserved and deferred source audit/proposal recorded. Existing support code is reusable but hosted payment, design, outreach and launch acceptance are not established. No page/payment implementation, CRM write or outbound message is authorized or performed.",
+      "evidence": [
+        "docs/SUPPORT_PARTNERSHIPS_DEFERRED_PLAN.md"
+      ],
+      "prs": [],
+      "nextAction": "Preserve critical engineering priorities and approval boundaries; review the isolated proposal with the founder when spare capacity exists, then implement only specifically approved work.",
+      "owner": "Codex deferred support/partnerships; founder approves implementation and every outbound message",
+      "auditDepth": "Exact available source unit mapped; read-only audit and proposal only"
+    },
+    {
+      "id": "R17-130",
+      "source": "docs/SUPPORT_STRATEGIC_PARTNERSHIPS_DIRECTIVE.md",
+      "line": 221,
+      "section": "10. Deliverables and execution phases / Phase 5 — Outreach preparation",
+      "requirement": "**Phase 5 — Outreach preparation**",
+      "domain": "website",
+      "scope": "proposal",
+      "status": "Missing",
+      "verification": "Directive preserved and deferred source audit/proposal recorded. Existing support code is reusable but hosted payment, design, outreach and launch acceptance are not established. No page/payment implementation, CRM write or outbound message is authorized or performed.",
+      "evidence": [
+        "docs/SUPPORT_PARTNERSHIPS_DEFERRED_PLAN.md"
+      ],
+      "prs": [],
+      "nextAction": "Preserve critical engineering priorities and approval boundaries; review the isolated proposal with the founder when spare capacity exists, then implement only specifically approved work.",
+      "owner": "Codex deferred support/partnerships; founder approves implementation and every outbound message",
+      "auditDepth": "Exact available source unit mapped; read-only audit and proposal only"
+    },
+    {
+      "id": "R17-131",
+      "source": "docs/SUPPORT_STRATEGIC_PARTNERSHIPS_DIRECTIVE.md",
+      "line": 223,
+      "section": "10. Deliverables and execution phases / Phase 5 — Outreach preparation",
+      "requirement": "Create personalized prospect lists, professional email drafts, evidence briefs, and HubSpot tracking records as appropriate. Do not send emails without approval.",
+      "domain": "governance",
+      "scope": "process",
+      "status": "Partially implemented",
+      "verification": "Directive preserved and deferred source audit/proposal recorded. Existing support code is reusable but hosted payment, design, outreach and launch acceptance are not established. No page/payment implementation, CRM write or outbound message is authorized or performed.",
+      "evidence": [
+        "docs/SUPPORT_PARTNERSHIPS_DEFERRED_PLAN.md"
+      ],
+      "prs": [],
+      "nextAction": "Preserve critical engineering priorities and approval boundaries; review the isolated proposal with the founder when spare capacity exists, then implement only specifically approved work.",
+      "owner": "Codex deferred support/partnerships; founder approves implementation and every outbound message",
+      "auditDepth": "Exact available source unit mapped; read-only audit and proposal only"
+    },
+    {
+      "id": "R17-132",
+      "source": "docs/SUPPORT_STRATEGIC_PARTNERSHIPS_DIRECTIVE.md",
+      "line": 225,
+      "section": "10. Deliverables and execution phases / Phase 6 — Release readiness",
+      "requirement": "**Phase 6 — Release readiness**",
+      "domain": "website",
+      "scope": "proposal",
+      "status": "Missing",
+      "verification": "Directive preserved and deferred source audit/proposal recorded. Existing support code is reusable but hosted payment, design, outreach and launch acceptance are not established. No page/payment implementation, CRM write or outbound message is authorized or performed.",
+      "evidence": [
+        "docs/SUPPORT_PARTNERSHIPS_DEFERRED_PLAN.md"
+      ],
+      "prs": [],
+      "nextAction": "Preserve critical engineering priorities and approval boundaries; review the isolated proposal with the founder when spare capacity exists, then implement only specifically approved work.",
+      "owner": "Codex deferred support/partnerships; founder approves implementation and every outbound message",
+      "auditDepth": "Exact available source unit mapped; read-only audit and proposal only"
+    },
+    {
+      "id": "R17-133",
+      "source": "docs/SUPPORT_STRATEGIC_PARTNERSHIPS_DIRECTIVE.md",
+      "line": 227,
+      "section": "10. Deliverables and execution phases / Phase 6 — Release readiness",
+      "requirement": "Validate mobile/desktop presentation, accessibility, real user interactions, isolated Stripe checkout, payment security, and all existing support functionality.",
+      "domain": "website",
+      "scope": "proposal",
+      "status": "Missing",
+      "verification": "Directive preserved and deferred source audit/proposal recorded. Existing support code is reusable but hosted payment, design, outreach and launch acceptance are not established. No page/payment implementation, CRM write or outbound message is authorized or performed.",
+      "evidence": [
+        "docs/SUPPORT_PARTNERSHIPS_DEFERRED_PLAN.md"
+      ],
+      "prs": [],
+      "nextAction": "Preserve critical engineering priorities and approval boundaries; review the isolated proposal with the founder when spare capacity exists, then implement only specifically approved work.",
+      "owner": "Codex deferred support/partnerships; founder approves implementation and every outbound message",
+      "auditDepth": "Exact available source unit mapped; read-only audit and proposal only"
+    },
+    {
+      "id": "R17-134",
+      "source": "docs/SUPPORT_STRATEGIC_PARTNERSHIPS_DIRECTIVE.md",
+      "line": 229,
+      "section": "10. Deliverables and execution phases / Phase 6 — Release readiness",
+      "requirement": "Prepare a release candidate, but do not deploy to Vercel or change production payments without explicit approval.",
+      "domain": "governance",
+      "scope": "process",
+      "status": "Partially implemented",
+      "verification": "Directive preserved and deferred source audit/proposal recorded. Existing support code is reusable but hosted payment, design, outreach and launch acceptance are not established. No page/payment implementation, CRM write or outbound message is authorized or performed.",
+      "evidence": [
+        "docs/SUPPORT_PARTNERSHIPS_DEFERRED_PLAN.md"
+      ],
+      "prs": [],
+      "nextAction": "Preserve critical engineering priorities and approval boundaries; review the isolated proposal with the founder when spare capacity exists, then implement only specifically approved work.",
+      "owner": "Codex deferred support/partnerships; founder approves implementation and every outbound message",
+      "auditDepth": "Exact available source unit mapped; read-only audit and proposal only"
+    },
+    {
+      "id": "R17-135",
+      "source": "docs/SUPPORT_STRATEGIC_PARTNERSHIPS_DIRECTIVE.md",
+      "line": 233,
+      "section": "11. Non-negotiable boundaries",
+      "requirement": "- Main Axiom engineering remains the highest priority.",
+      "domain": "governance",
+      "scope": "process",
+      "status": "Partially implemented",
+      "verification": "Directive preserved and deferred source audit/proposal recorded. Existing support code is reusable but hosted payment, design, outreach and launch acceptance are not established. No page/payment implementation, CRM write or outbound message is authorized or performed.",
+      "evidence": [
+        "docs/SUPPORT_PARTNERSHIPS_DEFERRED_PLAN.md"
+      ],
+      "prs": [],
+      "nextAction": "Preserve critical engineering priorities and approval boundaries; review the isolated proposal with the founder when spare capacity exists, then implement only specifically approved work.",
+      "owner": "Codex deferred support/partnerships; founder approves implementation and every outbound message",
+      "auditDepth": "Exact available source unit mapped; read-only audit and proposal only"
+    },
+    {
+      "id": "R17-136",
+      "source": "docs/SUPPORT_STRATEGIC_PARTNERSHIPS_DIRECTIVE.md",
+      "line": 234,
+      "section": "11. Non-negotiable boundaries",
+      "requirement": "- No interruption to existing agents or validation.",
+      "domain": "website",
+      "scope": "proposal",
+      "status": "Missing",
+      "verification": "Directive preserved and deferred source audit/proposal recorded. Existing support code is reusable but hosted payment, design, outreach and launch acceptance are not established. No page/payment implementation, CRM write or outbound message is authorized or performed.",
+      "evidence": [
+        "docs/SUPPORT_PARTNERSHIPS_DEFERRED_PLAN.md"
+      ],
+      "prs": [],
+      "nextAction": "Preserve critical engineering priorities and approval boundaries; review the isolated proposal with the founder when spare capacity exists, then implement only specifically approved work.",
+      "owner": "Codex deferred support/partnerships; founder approves implementation and every outbound message",
+      "auditDepth": "Exact available source unit mapped; read-only audit and proposal only"
+    },
+    {
+      "id": "R17-137",
+      "source": "docs/SUPPORT_STRATEGIC_PARTNERSHIPS_DIRECTIVE.md",
+      "line": 235,
+      "section": "11. Non-negotiable boundaries",
+      "requirement": "- No unrelated website redesign.",
+      "domain": "website",
+      "scope": "proposal",
+      "status": "Missing",
+      "verification": "Directive preserved and deferred source audit/proposal recorded. Existing support code is reusable but hosted payment, design, outreach and launch acceptance are not established. No page/payment implementation, CRM write or outbound message is authorized or performed.",
+      "evidence": [
+        "docs/SUPPORT_PARTNERSHIPS_DEFERRED_PLAN.md"
+      ],
+      "prs": [],
+      "nextAction": "Preserve critical engineering priorities and approval boundaries; review the isolated proposal with the founder when spare capacity exists, then implement only specifically approved work.",
+      "owner": "Codex deferred support/partnerships; founder approves implementation and every outbound message",
+      "auditDepth": "Exact available source unit mapped; read-only audit and proposal only"
+    },
+    {
+      "id": "R17-138",
+      "source": "docs/SUPPORT_STRATEGIC_PARTNERSHIPS_DIRECTIVE.md",
+      "line": 236,
+      "section": "11. Non-negotiable boundaries",
+      "requirement": "- No replacement of working Stripe infrastructure.",
+      "domain": "website",
+      "scope": "proposal",
+      "status": "Missing",
+      "verification": "Directive preserved and deferred source audit/proposal recorded. Existing support code is reusable but hosted payment, design, outreach and launch acceptance are not established. No page/payment implementation, CRM write or outbound message is authorized or performed.",
+      "evidence": [
+        "docs/SUPPORT_PARTNERSHIPS_DEFERRED_PLAN.md"
+      ],
+      "prs": [],
+      "nextAction": "Preserve critical engineering priorities and approval boundaries; review the isolated proposal with the founder when spare capacity exists, then implement only specifically approved work.",
+      "owner": "Codex deferred support/partnerships; founder approves implementation and every outbound message",
+      "auditDepth": "Exact available source unit mapped; read-only audit and proposal only"
+    },
+    {
+      "id": "R17-139",
+      "source": "docs/SUPPORT_STRATEGIC_PARTNERSHIPS_DIRECTIVE.md",
+      "line": 237,
+      "section": "11. Non-negotiable boundaries",
+      "requirement": "- No production database or billing changes.",
+      "domain": "governance",
+      "scope": "process",
+      "status": "Partially implemented",
+      "verification": "Directive preserved and deferred source audit/proposal recorded. Existing support code is reusable but hosted payment, design, outreach and launch acceptance are not established. No page/payment implementation, CRM write or outbound message is authorized or performed.",
+      "evidence": [
+        "docs/SUPPORT_PARTNERSHIPS_DEFERRED_PLAN.md"
+      ],
+      "prs": [],
+      "nextAction": "Preserve critical engineering priorities and approval boundaries; review the isolated proposal with the founder when spare capacity exists, then implement only specifically approved work.",
+      "owner": "Codex deferred support/partnerships; founder approves implementation and every outbound message",
+      "auditDepth": "Exact available source unit mapped; read-only audit and proposal only"
+    },
+    {
+      "id": "R17-140",
+      "source": "docs/SUPPORT_STRATEGIC_PARTNERSHIPS_DIRECTIVE.md",
+      "line": 238,
+      "section": "11. Non-negotiable boundaries",
+      "requirement": "- No Vercel deployment.",
+      "domain": "governance",
+      "scope": "process",
+      "status": "Partially implemented",
+      "verification": "Directive preserved and deferred source audit/proposal recorded. Existing support code is reusable but hosted payment, design, outreach and launch acceptance are not established. No page/payment implementation, CRM write or outbound message is authorized or performed.",
+      "evidence": [
+        "docs/SUPPORT_PARTNERSHIPS_DEFERRED_PLAN.md"
+      ],
+      "prs": [],
+      "nextAction": "Preserve critical engineering priorities and approval boundaries; review the isolated proposal with the founder when spare capacity exists, then implement only specifically approved work.",
+      "owner": "Codex deferred support/partnerships; founder approves implementation and every outbound message",
+      "auditDepth": "Exact available source unit mapped; read-only audit and proposal only"
+    },
+    {
+      "id": "R17-141",
+      "source": "docs/SUPPORT_STRATEGIC_PARTNERSHIPS_DIRECTIVE.md",
+      "line": 239,
+      "section": "11. Non-negotiable boundaries",
+      "requirement": "- No live payment testing without approval.",
+      "domain": "governance",
+      "scope": "process",
+      "status": "Partially implemented",
+      "verification": "Directive preserved and deferred source audit/proposal recorded. Existing support code is reusable but hosted payment, design, outreach and launch acceptance are not established. No page/payment implementation, CRM write or outbound message is authorized or performed.",
+      "evidence": [
+        "docs/SUPPORT_PARTNERSHIPS_DEFERRED_PLAN.md"
+      ],
+      "prs": [],
+      "nextAction": "Preserve critical engineering priorities and approval boundaries; review the isolated proposal with the founder when spare capacity exists, then implement only specifically approved work.",
+      "owner": "Codex deferred support/partnerships; founder approves implementation and every outbound message",
+      "auditDepth": "Exact available source unit mapped; read-only audit and proposal only"
+    },
+    {
+      "id": "R17-142",
+      "source": "docs/SUPPORT_STRATEGIC_PARTNERSHIPS_DIRECTIVE.md",
+      "line": 240,
+      "section": "11. Non-negotiable boundaries",
+      "requirement": "- No unsolicited mass email campaigns.",
+      "domain": "website",
+      "scope": "proposal",
+      "status": "Missing",
+      "verification": "Directive preserved and deferred source audit/proposal recorded. Existing support code is reusable but hosted payment, design, outreach and launch acceptance are not established. No page/payment implementation, CRM write or outbound message is authorized or performed.",
+      "evidence": [
+        "docs/SUPPORT_PARTNERSHIPS_DEFERRED_PLAN.md"
+      ],
+      "prs": [],
+      "nextAction": "Preserve critical engineering priorities and approval boundaries; review the isolated proposal with the founder when spare capacity exists, then implement only specifically approved work.",
+      "owner": "Codex deferred support/partnerships; founder approves implementation and every outbound message",
+      "auditDepth": "Exact available source unit mapped; read-only audit and proposal only"
+    },
+    {
+      "id": "R17-143",
+      "source": "docs/SUPPORT_STRATEGIC_PARTNERSHIPS_DIRECTIVE.md",
+      "line": 241,
+      "section": "11. Non-negotiable boundaries",
+      "requirement": "- No automatic outreach.",
+      "domain": "governance",
+      "scope": "process",
+      "status": "Partially implemented",
+      "verification": "Directive preserved and deferred source audit/proposal recorded. Existing support code is reusable but hosted payment, design, outreach and launch acceptance are not established. No page/payment implementation, CRM write or outbound message is authorized or performed.",
+      "evidence": [
+        "docs/SUPPORT_PARTNERSHIPS_DEFERRED_PLAN.md"
+      ],
+      "prs": [],
+      "nextAction": "Preserve critical engineering priorities and approval boundaries; review the isolated proposal with the founder when spare capacity exists, then implement only specifically approved work.",
+      "owner": "Codex deferred support/partnerships; founder approves implementation and every outbound message",
+      "auditDepth": "Exact available source unit mapped; read-only audit and proposal only"
+    },
+    {
+      "id": "R17-144",
+      "source": "docs/SUPPORT_STRATEGIC_PARTNERSHIPS_DIRECTIVE.md",
+      "line": 242,
+      "section": "11. Non-negotiable boundaries",
+      "requirement": "- No fabricated evidence or unsupported claims.",
+      "domain": "website",
+      "scope": "proposal",
+      "status": "Missing",
+      "verification": "Directive preserved and deferred source audit/proposal recorded. Existing support code is reusable but hosted payment, design, outreach and launch acceptance are not established. No page/payment implementation, CRM write or outbound message is authorized or performed.",
+      "evidence": [
+        "docs/SUPPORT_PARTNERSHIPS_DEFERRED_PLAN.md"
+      ],
+      "prs": [],
+      "nextAction": "Preserve critical engineering priorities and approval boundaries; review the isolated proposal with the founder when spare capacity exists, then implement only specifically approved work.",
+      "owner": "Codex deferred support/partnerships; founder approves implementation and every outbound message",
+      "auditDepth": "Exact available source unit mapped; read-only audit and proposal only"
+    },
+    {
+      "id": "R17-145",
+      "source": "docs/SUPPORT_STRATEGIC_PARTNERSHIPS_DIRECTIVE.md",
+      "line": 243,
+      "section": "11. Non-negotiable boundaries",
+      "requirement": "- No implementation before the required founder approval.",
+      "domain": "governance",
+      "scope": "process",
+      "status": "Partially implemented",
+      "verification": "Directive preserved and deferred source audit/proposal recorded. Existing support code is reusable but hosted payment, design, outreach and launch acceptance are not established. No page/payment implementation, CRM write or outbound message is authorized or performed.",
+      "evidence": [
+        "docs/SUPPORT_PARTNERSHIPS_DEFERRED_PLAN.md"
+      ],
+      "prs": [],
+      "nextAction": "Preserve critical engineering priorities and approval boundaries; review the isolated proposal with the founder when spare capacity exists, then implement only specifically approved work.",
+      "owner": "Codex deferred support/partnerships; founder approves implementation and every outbound message",
+      "auditDepth": "Exact available source unit mapped; read-only audit and proposal only"
+    },
+    {
+      "id": "R17-146",
+      "source": "docs/SUPPORT_STRATEGIC_PARTNERSHIPS_DIRECTIVE.md",
+      "line": 247,
+      "section": "FINAL OBJECTIVE",
+      "requirement": "Create an exceptionally elegant, credible, and memorable support experience where anyone can support Vision XIX Labs starting with just **$1**, while allowing larger voluntary contributions.",
+      "domain": "website",
+      "scope": "proposal",
+      "status": "Missing",
+      "verification": "Directive preserved and deferred source audit/proposal recorded. Existing support code is reusable but hosted payment, design, outreach and launch acceptance are not established. No page/payment implementation, CRM write or outbound message is authorized or performed.",
+      "evidence": [
+        "docs/SUPPORT_PARTNERSHIPS_DEFERRED_PLAN.md"
+      ],
+      "prs": [],
+      "nextAction": "Preserve critical engineering priorities and approval boundaries; review the isolated proposal with the founder when spare capacity exists, then implement only specifically approved work.",
+      "owner": "Codex deferred support/partnerships; founder approves implementation and every outbound message",
+      "auditDepth": "Exact available source unit mapped; read-only audit and proposal only"
+    },
+    {
+      "id": "R17-147",
+      "source": "docs/SUPPORT_STRATEGIC_PARTNERSHIPS_DIRECTIVE.md",
+      "line": 249,
+      "section": "FINAL OBJECTIVE",
+      "requirement": "In parallel, establish two distinct, evidence-driven opportunities:",
+      "domain": "website",
+      "scope": "proposal",
+      "status": "Missing",
+      "verification": "Directive preserved and deferred source audit/proposal recorded. Existing support code is reusable but hosted payment, design, outreach and launch acceptance are not established. No page/payment implementation, CRM write or outbound message is authorized or performed.",
+      "evidence": [
+        "docs/SUPPORT_PARTNERSHIPS_DEFERRED_PLAN.md"
+      ],
+      "prs": [],
+      "nextAction": "Preserve critical engineering priorities and approval boundaries; review the isolated proposal with the founder when spare capacity exists, then implement only specifically approved work.",
+      "owner": "Codex deferred support/partnerships; founder approves implementation and every outbound message",
+      "auditDepth": "Exact available source unit mapped; read-only audit and proposal only"
+    },
+    {
+      "id": "R17-148",
+      "source": "docs/SUPPORT_STRATEGIC_PARTNERSHIPS_DIRECTIVE.md",
+      "line": 251,
+      "section": "FINAL OBJECTIVE",
+      "requirement": "**TRACK A:** Individual supporters and philanthropists.",
+      "domain": "website",
+      "scope": "proposal",
+      "status": "Missing",
+      "verification": "Directive preserved and deferred source audit/proposal recorded. Existing support code is reusable but hosted payment, design, outreach and launch acceptance are not established. No page/payment implementation, CRM write or outbound message is authorized or performed.",
+      "evidence": [
+        "docs/SUPPORT_PARTNERSHIPS_DEFERRED_PLAN.md"
+      ],
+      "prs": [],
+      "nextAction": "Preserve critical engineering priorities and approval boundaries; review the isolated proposal with the founder when spare capacity exists, then implement only specifically approved work.",
+      "owner": "Codex deferred support/partnerships; founder approves implementation and every outbound message",
+      "auditDepth": "Exact available source unit mapped; read-only audit and proposal only"
+    },
+    {
+      "id": "R17-149",
+      "source": "docs/SUPPORT_STRATEGIC_PARTNERSHIPS_DIRECTIVE.md",
+      "line": 253,
+      "section": "FINAL OBJECTIVE",
+      "requirement": "**TRACK B:** AI companies, corporate sponsors, technology partners, and strategic investors.",
+      "domain": "website",
+      "scope": "proposal",
+      "status": "Missing",
+      "verification": "Directive preserved and deferred source audit/proposal recorded. Existing support code is reusable but hosted payment, design, outreach and launch acceptance are not established. No page/payment implementation, CRM write or outbound message is authorized or performed.",
+      "evidence": [
+        "docs/SUPPORT_PARTNERSHIPS_DEFERRED_PLAN.md"
+      ],
+      "prs": [],
+      "nextAction": "Preserve critical engineering priorities and approval boundaries; review the isolated proposal with the founder when spare capacity exists, then implement only specifically approved work.",
+      "owner": "Codex deferred support/partnerships; founder approves implementation and every outbound message",
+      "auditDepth": "Exact available source unit mapped; read-only audit and proposal only"
+    },
+    {
+      "id": "R17-150",
+      "source": "docs/SUPPORT_STRATEGIC_PARTNERSHIPS_DIRECTIVE.md",
+      "line": 255,
+      "section": "FINAL OBJECTIVE",
+      "requirement": "The finished experience should feel like a premium technology company—not a generic donation website.",
+      "domain": "website",
+      "scope": "proposal",
+      "status": "Missing",
+      "verification": "Directive preserved and deferred source audit/proposal recorded. Existing support code is reusable but hosted payment, design, outreach and launch acceptance are not established. No page/payment implementation, CRM write or outbound message is authorized or performed.",
+      "evidence": [
+        "docs/SUPPORT_PARTNERSHIPS_DEFERRED_PLAN.md"
+      ],
+      "prs": [],
+      "nextAction": "Preserve critical engineering priorities and approval boundaries; review the isolated proposal with the founder when spare capacity exists, then implement only specifically approved work.",
+      "owner": "Codex deferred support/partnerships; founder approves implementation and every outbound message",
+      "auditDepth": "Exact available source unit mapped; read-only audit and proposal only"
+    },
+    {
+      "id": "R17-151",
+      "source": "docs/SUPPORT_STRATEGIC_PARTNERSHIPS_DIRECTIVE.md",
+      "line": 257,
+      "section": "FINAL OBJECTIVE / For now, record this as an independent, deferred workstream, complete the read-only audit and proposal when spare capacity permits, and continue the current Axiom Agent engineering mission without deviation.",
+      "requirement": "**For now, record this as an independent, deferred workstream, complete the read-only audit and proposal when spare capacity permits, and continue the current Axiom Agent engineering mission without deviation.**",
+      "domain": "governance",
+      "scope": "process",
+      "status": "Partially implemented",
+      "verification": "Directive preserved and deferred source audit/proposal recorded. Existing support code is reusable but hosted payment, design, outreach and launch acceptance are not established. No page/payment implementation, CRM write or outbound message is authorized or performed.",
+      "evidence": [
+        "docs/SUPPORT_PARTNERSHIPS_DEFERRED_PLAN.md"
+      ],
+      "prs": [],
+      "nextAction": "Preserve critical engineering priorities and approval boundaries; review the isolated proposal with the founder when spare capacity exists, then implement only specifically approved work.",
+      "owner": "Codex deferred support/partnerships; founder approves implementation and every outbound message",
+      "auditDepth": "Exact available source unit mapped; read-only audit and proposal only"
     }
   ],
   "workstreams": [
@@ -43653,8 +46374,8 @@
       "status": "Partially implemented",
       "engineeringActivity": "active",
       "owner": "Codex integrated parallel workstreams",
-      "activeMilestone": "Review inactive original Stripe TEST proof capture, then collect separately approved hosted TEST acceptance after secure access.",
-      "verification": "PR #155 merged after exact-head push/PR CI passed 6447 tests and both 293-page production builds. The default-off owned-loopback application lane reuses verified public TEST provenance for actual NextAuth, allowance, preflight and reservations; separate five-case HTTP/PostgreSQL acceptance covers display, cap denial, role changes, missing proof and provider-disabled hold release. Unsupported deployment limits are unavailable; existing customers and support payment source are unchanged. This is not hosted Stripe checkout or positive AI generation. Distinct subscription events retrieve current provider state and use an equality-only binding/event-token fence before atomic consumption. Exact configured licensed per-seat terms are required; ambiguous snapshots and unexpected replacement fail closed. Local composed tests are not actual Stripe delivery or collection. Inactive original-attempt adapter source captures trusted SDK response proof through the existing intent JSON CAS before URL release, rechecks current authority/binding and rejects proofless late events. Local SDK/signature/kernel fixtures passed 51 tests; owned PostgreSQL passed five proof/storage cases, with the optional HTTP case skipped. Final local TypeScript and focused lint passed. No hosted Stripe call, live activation, public route, new financial ledger or production schema change is established by these fixtures. After normal integration of main157, the full default suite passed 6565 tests across 617 files (six skipped) in 78.43s; web TypeScript, desktop release/types/build, Python 30 tests and focused lint passed. Required exact-head CI remains the integration gate; no provider/customer acceptance is inferred.",
+      "activeMilestone": "Close paid-through coverage and renewal/recovery entitlement safety before isolated TEST lifecycle merge; preserve legacy/support flows.",
+      "verification": "PR #155 merged after exact-head push/PR CI passed 6447 tests and both 293-page production builds. The default-off owned-loopback application lane reuses verified public TEST provenance for actual NextAuth, allowance, preflight and reservations; separate five-case HTTP/PostgreSQL acceptance covers display, cap denial, role changes, missing proof and provider-disabled hold release. Unsupported deployment limits are unavailable; existing customers and support payment source are unchanged. This is not hosted Stripe checkout or positive AI generation. Distinct subscription events retrieve current provider state and use an equality-only binding/event-token fence before atomic consumption. Exact configured licensed per-seat terms are required; ambiguous snapshots and unexpected replacement fail closed. Local composed tests are not actual Stripe delivery or collection. Inactive original-attempt adapter source captures trusted SDK response proof through the existing intent JSON CAS before URL release, rechecks current authority/binding and rejects proofless late events. Local SDK/signature/kernel fixtures passed 51 tests; owned PostgreSQL passed five proof/storage cases, with the optional HTTP case skipped. Final local TypeScript and focused lint passed. No hosted Stripe call, live activation, public route, new financial ledger or production schema change is established by these fixtures. After normal integration of main157, the full default suite passed 6565 tests across 617 files (six skipped) in 78.43s; web TypeScript, desktop release/types/build, Python 30 tests and focused lint passed. Required exact-head CI remains the integration gate; no provider/customer acceptance is inferred. New isolated TEST lifecycle candidate passed 7 owned HTTP/PG groups and fixed seat-change proof gaps, but further independent review found status alone can restore/extend allowance without paid-through invoice evidence. Existing calendar-month resolver also ignores expiry; financial acceptance and merge are held pending NEWTEST-only paid-coverage enforcement. This is not a live billing change.",
       "evidence": [
         "docs/BILLING_CUSTOMER_JOURNEY_ACCEPTANCE.md",
         "docs/SUBSCRIPTION_EVENT_CONSUMPTION.md",
@@ -43673,7 +46394,7 @@
         "auth_database"
       ],
       "blockers": "Distinct-event ordering, historical pre-rollout event reconstruction, actual Stripe collection and unified entitlement/refund policy remain unresolved. Legacy public requested tier is not verified paid revision entitlement; commercial enforcement contract remains unresolved. Existing desktop commercial policy remains identity-only; pilot/legacy enforcement requires an explicit commercial decision, not inferred from successful pairing.",
-      "nextAction": "Run separately approved isolated Stripe test-mode checkout/payment/refund and invoice lifecycle; reconcile held unknown intents without provider recreation. Review and explicitly approve any future actual TEST adapter runtime/webhook activation; missing original attempt proof stays unresolved, with no automatic retry or event-metadata reconstruction."
+      "nextAction": "Review explicit paid-coverage design for SDK/service/fixture/allowance/preview, then validate actual isolated application flow; hosted Stripe remains a separate gate."
     },
     {
       "id": "website",
@@ -43802,6 +46523,26 @@
       "acceptanceDependencies": [],
       "blockers": "Exact configuration plan requires owner approval before implementation; manual deployment runtime/protection readiness remains to be verified.",
       "nextAction": "Keep repository control intact during normal verified source integration; no Vercel deployment/settings action without approval."
+    },
+    {
+      "id": "support_partnerships",
+      "name": "Support page and strategic partnerships (deferred)",
+      "status": "Partially implemented",
+      "engineeringActivity": "deferred",
+      "owner": "Codex planning only; founder approves implementation/outreach",
+      "activeMilestone": "Read-only support/payment/content audit and independent proposal; implementation deferred until capacity and founder approval.",
+      "verification": "Existing /support, one-time minimum-$1 custom checkout, paid-state confirmation, separate supporter ledger, consent and inquiry code inspected read-only. Page currently dark/orange, suggested $25/$100/$500/$2500 with initial $100. Giant $1 hero, warm-white scoped design, evidence brief and two separate outreach programs are proposals, not implementations. Hosted Stripe/payment security acceptance, company/contact verification, screenshot provenance and prospects remain unverified. No active engineering agent reassigned or support payment source modified.",
+      "evidence": [
+        "docs/SUPPORT_STRATEGIC_PARTNERSHIPS_DIRECTIVE.md",
+        "docs/SUPPORT_PARTNERSHIPS_DEFERRED_PLAN.md",
+        "app/(marketing)/support/page.tsx",
+        "components/support/SupporterCheckout.tsx",
+        "app/api/support/stripe-webhook/route.ts"
+      ],
+      "customerAcceptance": "Not verified",
+      "acceptanceDependencies": [],
+      "blockers": "Spare capacity and founder approval required for scoped design/payment implementation; every outbound message, live payment and deployment separately gated. Real funding objectives and publishable company/product/contact evidence need verification.",
+      "nextAction": "Present scoped design/contribution flow/evidence and security proposal for founder review after core milestones stabilize; no implementation or outreach now."
     }
   ]
 }

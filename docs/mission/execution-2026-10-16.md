@@ -142,3 +142,35 @@ An unavailable local Chromium launch is not a successful browser journey.
   review passed. Integration-wide full suite and exact-head GitHub CI still gate
   this branch. Cached Chromium launch timed out; browser/native/provider recovery
   is not verified. No successful inference or complete customer release claimed.
+
+### Deferred support directive and financial acceptance correction
+
+- New support/partnership source retained verbatim and all 151 units mapped;
+  canonical register now 17 sources / 1,981 rows. Prior 1,830 requirement rows
+  remained unchanged on import. New independent stream is explicitly deferred.
+- Coordinator used validation wait time for a read-only source audit and proposal.
+  No active agent reassigned, support source changed, payment/provider operation,
+  CRM write, prospect outreach or website implementation performed. Founder
+  approval remains required before implementation and every outbound message.
+- Further financial review supersedes the earlier narrow seat-fix acceptance:
+  active subscription status does not attest paid-through invoice coverage.
+  Existing isolated allowance/preview can ignore term expiry. The lifecycle merge
+  is held pending a coherent NEWTEST-only coverage design; no live billing change.
+- Desktop integration default suite passed 6,703 checks across 624 files (six
+  skipped checks / one optional database fixture). Python CLI 30 passed.
+  Integrated web/desktop TypeScript and desktop production bundle passed; exact-head CI remains required before the desktop merge.
+
+### Verified source merge
+
+- PR #161 merged normally as `608efe0fd70623aaf71cb80f799d3b822b9855cd`.
+  Reviewed head `b172ebb01381b84fa0d9798a8f1fa68befcd5f73` passed push run
+  `38894226227`, PR run `38894244415` and Vercel Agent Review. The PR test-merge
+  parents were verified as original main `2682ba73` and the exact reviewed head.
+  Desktop CI was not path-triggered for that web-only source change.
+- Desktop branch integrated that main normally; no runtime tree changes resulted
+  from the merge. Full 6,703-test local run plus integrated web/desktop compilers,
+  desktop bundle and Python CLI passed before opening its PR.
+- Deferred directive SHA-256:
+  `62e1f25b2f600cd5c67e758210ce144ea946cb6d16a8d6301d20054e524f0306`.
+  Tracker check and a missing-support-workstream negative validation passed;
+  existing supporter application/payment source remains byte-unchanged.
