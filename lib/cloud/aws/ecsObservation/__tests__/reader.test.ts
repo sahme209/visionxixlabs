@@ -1,4 +1,5 @@
 import { expect, it, vi } from 'vitest';
+import { projectTargetSnapshot } from '@/lib/releaseops/ecsReleaseV2/targetSnapshot';
 import { createAwsEnrollmentService } from '../../enrollment/service';
 import { fixture, input, externalId, principal } from '../../enrollment/__tests__/fixture';
 import { readTenantEcsObservation, type EcsObservationRepo } from '../reader';
@@ -56,5 +57,17 @@ it.each(['session', 'membership', 'credential', 'connection', 'target', 'environ
             x.environment.updatedAt = new Date(x.environment.updatedAt.getTime() + 1);
         return value;
     });
+    await expect(readTenantEcsObservation(x.repo, principal, x.request, x.dependencies)).rejects.toThrow('ecs_observation_unavailable');
+});
+
+it('produces the canonical persisted target, environment and connection snapshot', async () => {
+    const x = await ready();
+    const result = await readTenantEcsObservation(x.repo, principal, x.request, x.dependencies);
+    expect(result.targetSnapshot).toEqual(projectTargetSnapshot({ target: x.target, environment: x.environment, account: x.f.state.account!, credential: x.f.state.credential! }));
+    expect(result.targetSnapshot).toMatchObject({ schema: 'axiom.ecs.target-snapshot.v1', connection: { id: x.request.cloudAccountId, version: 1 } });
+});
+it('rejects recreation of the target row during provider IO even with identical coordinates and timestamp', async () => {
+    const x = await ready(), value = await x.read();
+    x.read.mockImplementation(async () => { x.target.id = 'replacement-target'; return value; });
     await expect(readTenantEcsObservation(x.repo, principal, x.request, x.dependencies)).rejects.toThrow('ecs_observation_unavailable');
 });
