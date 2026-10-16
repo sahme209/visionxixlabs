@@ -22,7 +22,7 @@ export async function rehearseLocalCloudHttp({ databaseUrl, client, deviceReques
   const completePath = `/api/desktop/cloud/aws/enrollment/${encodeURIComponent(attempt.attemptId)}/complete`;
   const complete = await deviceRequest(completePath, { token, body: { externalId: attempt.externalId } });
   assert.equal(complete.status, 200, "actual_cloud_identity_verification_blocked");
-  const connected = (await complete.json()).data;
+  const connected = (await complete.json()).data.account;
   assert.ok(connected?.connected === true && connected.connectionVersion === 1 && connected.enabled === false && connected.agentScanAvailable === false, "bounded_connection_summary_required");
   const account = await client.cloudAccount.findUniqueOrThrow({ where: { id: connected.id } });
   const credential = await client.cloudAccountCredential.findUniqueOrThrow({ where: { id: connected.id } });
