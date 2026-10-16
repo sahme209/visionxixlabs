@@ -1421,3 +1421,42 @@ The source now contains an inactive internal tenant ECS/ECR observation reader, 
 Focused verification passed71 tests in five files (24 actual SDK/native-wire cases), scoped ESLint and diff checks. Replies are synthetic owned-loopback fixtures, not customer AWS evidence. Local dependencies use an isolated overlay: cached protobuf-specs0.5.2 differs from locked0.5.0; clean exact-lock CI remains required. The exact ECR3.1049.0 package and integrity were inspected; the dependency delta adds only one package entry and no transitive versions. No shared install/client generation occurred.
 
 Fresh-main159 full regression/type/desktop/Python/build gates and exact-head CI remain pending. No public route, active integration, storage migration, ReviewFacts, integer target revision, health/pullability/rollback proof, approval or execution is enabled. Production database binding/recovery remains independently approval-gated. Canonical cloud/deployment/governance workstreams and the existing ECS demo explanation carry these limits; generated requirement documents were regenerated from JSON.
+
+## Agent restart receipt continuity — scoped UI and actual local transport
+
+Main #158 (`a2fbf18b`) was integrated normally before clean source
+`591e3b7bbb2b20512a9db58f47b6f0685e707100` passed the owned PostgreSQL17/Next
+HTTP rehearsal: all 25 existing identity/pairing/approval assertions plus five
+synthetic persisted receipt assertions. The protected fixture reads a redacted
+Agent conversation, observes a null-run `tracking_unavailable` execution and
+denies foreign-tenant conversation/execution reads. It seeds no entitlement or
+validated cloud state. The null-run route test makes token resolution and
+GitHub workflow reads throw if reached; both remain uncalled. This is bounded
+control-flow evidence, not a universal network sandbox. Owned container cleanup
+passed. Existing HTTP evidence remains preserved; see
+[receipt report](mission/local-agent-receipt-http-acceptance.json).
+
+The Agent UI now recovers durable whitelisted receipts after decisions/reopen,
+uses manual canonical observation and never calls accepted dispatch a completed
+service restart. Conversation/config ownership fences discard stale results;
+credential changes reset old content and busy state before loading the new
+workspace. Sixteen focused component/target-preview regressions pass; actual
+React render/click transport remains mocked. The actual HTTP report proves
+synthetic receipt reads, not React-to-HTTP clicks, real dispatch, independent
+approver approval, native installation or provider health/rollback. Existing
+self-approval denial and identity-only commercial policy are unchanged.
+
+Thirty-nine focused UI/receipt/owned-launcher/canonical-route tests and desktop
+plus focused-test TypeScript checks passed after main158 integration. Full
+mandatory regression/type/build gates and exact-head CI remain the next gate.
+
+Final integrated local gates pass after main #158: 619 Vitest files / 6,579
+tests (one file/six tests intentionally skipped), web and focused-test TypeScript,
+desktop release identity/TypeScript/Vite build, 30 Python CLI tests, changed-source
+lint and the 15-source/1,745-row tracker check. The initial restricted sandbox
+refused fixture listen sockets; a later old dependency cache lacked Sigstore.
+Both logs are retained. The unchanged final suite used the existing validated
+local cache, whose protobuf-specs is 0.5.2 rather than lockfile 0.5.0; this is not
+an exact-lock installation claim. Required clean npm-ci exact-head CI, including
+production website builds and native CI, remains the authoritative merge gate.
+No production migration, credentials, infrastructure, routing or billing changed.

@@ -24,6 +24,7 @@ export async function runOwnedLocalAuthHttp(env, adapters = {}) {
     /^(STRIPE_|AWS_|AZURE_|GOOGLE_|OPENAI_|ANTHROPIC_|VERCEL_)/.test(key)
   )), "local_auth_http_external_binding_forbidden");
   assert.ok(env.AXIOM_RUN_LOCAL_AWS_HTTP === undefined || env.AXIOM_RUN_LOCAL_AWS_HTTP === "1", "local_aws_http_opt_in_invalid");
+  assert.ok(env.AXIOM_RUN_LOCAL_AGENT_RECEIPT_HTTP === undefined || env.AXIOM_RUN_LOCAL_AGENT_RECEIPT_HTTP === "1", "local_agent_receipt_http_opt_in_invalid");
   const suffix = randomBytes(6).toString("hex");
   const owner = randomBytes(16).toString("hex");
   const password = randomBytes(24).toString("hex");
@@ -70,7 +71,8 @@ export async function runOwnedLocalAuthHttp(env, adapters = {}) {
     }
     assert.ok(ready);
     const target = `postgresql://fixture:${password}@127.0.0.1:${port}/${database}`;
-    report = env.AXIOM_RUN_LOCAL_AWS_HTTP === "1" ? await rehearse(target, { awsWireFixture: true }) : await rehearse(target);
+    const options = { ...(env.AXIOM_RUN_LOCAL_AWS_HTTP === "1" ? { awsWireFixture: true } : {}), ...(env.AXIOM_RUN_LOCAL_AGENT_RECEIPT_HTTP === "1" ? { agentReceiptFixture: true } : {}) };
+    report = Object.keys(options).length ? await rehearse(target, options) : await rehearse(target);
     signal?.throwIfAborted();
   } catch {
     throw new Error("owned_local_auth_http_failed");

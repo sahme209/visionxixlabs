@@ -20671,13 +20671,15 @@
       "domain": "governance",
       "scope": "product",
       "status": "Partially implemented",
-      "verification": "Source mapped to existing components; acceptance of this individual requirement has not been demonstrated end to end.",
+      "verification": "Source mapped to existing components; acceptance of this individual requirement has not been demonstrated end to end. Durable Agent restart receipt source and scoped React race regressions implemented; actual owned HTTP read/observe evidence uses synthetic tracking_unavailable/null-run rows, not actual dispatch or native UI.",
       "evidence": [
         "lib/tauri/deploymentOperations.ts",
         "lib/tauri/operationCoordinator.ts",
         "lib/tauri/prismaOperationLedger.ts",
         "lib/axiom/agentRuntime/browserApprovalDecision.ts",
-        "docs/GOVERNED_EXECUTION_BOUNDARY.md"
+        "docs/GOVERNED_EXECUTION_BOUNDARY.md",
+        "desktop/src/components/AgentRestartReceipts.tsx",
+        "docs/mission/local-agent-receipt-http-acceptance.json"
       ],
       "prs": [
         108,
@@ -42029,7 +42031,7 @@
       "engineeringActivity": "active",
       "owner": "Codex integrated parallel workstreams",
       "activeMilestone": "Integrate durable ECS review packets, revisioned decisions and review checkpoints with execution explicitly disabled; implement trusted ingestion before any execution lane.",
-      "verification": "Merged PR #147 passed exact-head CI (591 files / 6,176 tests and 293-page production build). Dashboard restart uses shared quota/idempotency, current authority/policy/installation snapshots and a pre-dispatch lifecycle claim; unknown outcomes remain held. Actual synthetic Next/PostgreSQL HTTP acceptance covers authentication, desktop pairing/revocation and competing approval decisions on source f7de88f0. The new internal ECS review core passes 80 contract/service tests; producer-reported isolated PostgreSQL17 lifecycle and independent-client Serializable revision tests passed and fixtures were removed. Independent source review found no material blocker in the execution-disabled storage boundary. Integrated TypeScript and schema validation pass. Missing verifier persists no packets; no public route, provider execution, quota consumption or production migration is enabled. Full integrated local regression passed 595 files / 6,251 tests after integrating merged main #148; desktop TypeScript/build, 30 Python tests, scoped lint and tracker checks pass. PR #149 exact-head CI/build, Desktop CI and isolated auth-recovery rehearsal passed and merged as 7fd354e1; no runtime route is connected. The next inactive tenant ECS/ECR reader returns only current scoped observations, never full ReviewFacts or approval/execution authority; focused synthetic actual-SDK-wire tests pass, while fresh-main integration and real AWS acceptance remain pending. Target id+updatedAt does not certify the existing manifest integer revision.",
+      "verification": "Merged PR #147 passed exact-head CI (591 files / 6,176 tests and 293-page production build). Dashboard restart uses shared quota/idempotency, current authority/policy/installation snapshots and a pre-dispatch lifecycle claim; unknown outcomes remain held. Actual synthetic Next/PostgreSQL HTTP acceptance covers authentication, desktop pairing/revocation and competing approval decisions on source f7de88f0. The new internal ECS review core passes 80 contract/service tests; producer-reported isolated PostgreSQL17 lifecycle and independent-client Serializable revision tests passed and fixtures were removed. Independent source review found no material blocker in the execution-disabled storage boundary. Integrated TypeScript and schema validation pass. Missing verifier persists no packets; no public route, provider execution, quota consumption or production migration is enabled. Full integrated local regression passed 595 files / 6,251 tests after integrating merged main #148; desktop TypeScript/build, 30 Python tests, scoped lint and tracker checks pass. PR #149 exact-head CI/build, Desktop CI and isolated auth-recovery rehearsal passed and merged as 7fd354e1; no runtime route is connected. Source 591e3b7b adds durable redacted Agent restart receipts on reopen/manual canonical observation; queued or tracking-unavailable is not service completion. Real React render/click regressions use mocked transport and cover late approval, reverse loads and populated credential-switch recovery. Actual owned Next HTTP/PostgreSQL 17 verifies 25 existing auth/pairing/approval assertions plus 5 synthetic persisted receipt assertions, sensitive-path redaction, null-run canonical tracking_unavailable and foreign-tenant denial; no entitlement/cloud state was seeded, no real approval/dispatch/native/provider acceptance is claimed. Independent source review closed context/race findings. Final combined local gates pass: 619 Vitest files / 6,579 tests (six skipped), web/focused TypeScript, desktop release/types/Vite build, 30 Python tests and scoped lint. Existing local cache protobuf-specs 0.5.2 differs from lock 0.5.0; exact-lock clean CI/build/native checks remain required before merge. The next inactive tenant ECS/ECR reader returns only current scoped observations, never full ReviewFacts or approval/execution authority; focused synthetic actual-SDK-wire tests pass, while fresh-main integration and real AWS acceptance remain pending. Target id+updatedAt does not certify the existing manifest integer revision.",
       "evidence": [
         "docs/AGENT_GOVERNED_ACTION_ACCEPTANCE.md",
         "app/api/desktop/handoff/__tests__/route.test.ts",
@@ -42038,6 +42040,10 @@
         "docs/APPROVAL_DECISION_CONCURRENCY.md",
         "docs/ECS_DURABLE_REVIEW_CORE.md",
         "docs/mission/ecs-review-rehearsal.json",
+        "docs/AGENT_ECS_RESTART_APPROVAL_BINDING.md",
+        "desktop/src/components/AgentRestartReceipts.tsx",
+        "lib/desktop/__tests__/agentRestartObservationJourney.test.ts",
+        "docs/mission/local-agent-receipt-http-acceptance.json",
         "docs/ECS_IMMUTABLE_RELEASE_PLAN.md",
         "lib/cloud/aws/ecsObservation/reader.ts"
       ],
@@ -42055,7 +42061,7 @@
       "engineeringActivity": "active",
       "owner": "Codex integrated parallel workstreams",
       "activeMilestone": "Validate native/frontend version alignment and prepare immutable candidate-only release approval.",
-      "verification": "Local source checks align npm/Tauri/Cargo and lock identities, with negative command fixtures. Current published installer acceptance and native upgrade/vault migration remain unverified; existing release assets were not replaced. Real integrated synthetic NextHTTP/PostgreSQL acceptance passed on committed sourcef7de88f0:11auth assertions,10desktop HTTP protocol assertions through consume/replay/revoke,4approval assertions through competing303/409 and persisted actor/time. Approval metadata follows actual Next loopback normalization; no browser/production/provider/native inference. Existing identity-only commercial response allowed no-plan access; paid-entitlement enforcement is NOTverified.",
+      "verification": "Local source checks align npm/Tauri/Cargo and lock identities, with negative command fixtures. Current published installer acceptance and native upgrade/vault migration remain unverified; existing release assets were not replaced. Real integrated synthetic NextHTTP/PostgreSQL acceptance passed on committed sourcef7de88f0:11auth assertions,10desktop HTTP protocol assertions through consume/replay/revoke,4approval assertions through competing303/409 and persisted actor/time. Approval metadata follows actual Next loopback normalization; no browser/production/provider/native inference. Existing identity-only commercial response allowed no-plan access; paid-entitlement enforcement is NOTverified. Source 591e3b7b adds durable redacted Agent restart receipts on reopen/manual canonical observation; queued or tracking-unavailable is not service completion. Real React render/click regressions use mocked transport and cover late approval, reverse loads and populated credential-switch recovery. Actual owned Next HTTP/PostgreSQL 17 verifies 25 existing auth/pairing/approval assertions plus 5 synthetic persisted receipt assertions, sensitive-path redaction, null-run canonical tracking_unavailable and foreign-tenant denial; no entitlement/cloud state was seeded, no real approval/dispatch/native/provider acceptance is claimed. Independent source review closed context/race findings. Final combined local gates pass: 619 Vitest files / 6,579 tests (six skipped), web/focused TypeScript, desktop release/types/Vite build, 30 Python tests and scoped lint. Existing local cache protobuf-specs 0.5.2 differs from lock 0.5.0; exact-lock clean CI/build/native checks remain required before merge.",
       "evidence": [
         "docs/DESKTOP_BROWSER_PAIRING_CANCELLATION.md",
         "docs/DESKTOP_NATIVE_CREDENTIAL_BACKENDS.md",
@@ -42065,7 +42071,11 @@
         "scripts/desktop-release-versions.mjs",
         "lib/desktop/__tests__/desktopReleaseVersions.test.ts",
         "docs/LOCAL_AUTH_HTTP_ACCEPTANCE.md",
-        "docs/mission/local-auth-http-acceptance.json"
+        "docs/mission/local-auth-http-acceptance.json",
+        "docs/AGENT_ECS_RESTART_APPROVAL_BINDING.md",
+        "desktop/src/components/AgentRestartReceipts.tsx",
+        "lib/desktop/__tests__/agentRestartObservationJourney.test.ts",
+        "docs/mission/local-agent-receipt-http-acceptance.json"
       ],
       "customerAcceptance": "Not verified",
       "acceptanceDependencies": [
@@ -42135,7 +42145,7 @@
       "engineeringActivity": "active",
       "owner": "Codex integrated parallel workstreams",
       "activeMilestone": "Run combined regression gates and collect real authorized customer-journey evidence.",
-      "verification": "Focused failing-before regressions exist in all six parallel implementation streams. Actual disposable PostgreSQL16/17 schema/full-history fixtures preserve original auth/Agent checksums and failed history; service/provider boundaries remain simulated. Real integrated synthetic NextHTTP/PostgreSQL acceptance passed on committed sourcef7de88f0:11auth assertions,10desktop HTTP protocol assertions through consume/replay/revoke,4approval assertions through competing303/409 and persisted actor/time. Approval metadata follows actual Next loopback normalization; no browser/production/provider/native inference. Existing identity-only commercial response allowed no-plan access; paid-entitlement enforcement is NOTverified. Explicit owned AWS protocol extension additionally passed10 actual HTTP/storage/native-SDK lifecycle assertions on644f539d (35total), with5 guard-stamped loopback wire requests and owned PostgreSQL17 cleanup. Default25-check launcher behavior is preserved; real IAM and commercial billing remain unverified. Combined main156 local gates passed616files/6545tests at repository default timeouts, web TypeScript, desktop release-alignment/TypeScript/Vite build,30Python CLI tests, scoped lint and tracker coverage. Exact-head CI/production build remains required before merge. Inactive Stripe TEST original-attempt fixtures separately passed 51 SDK/signature/kernel tests and five actual owned PostgreSQL proof/storage tests. These cover original response capture, immutable proof, authority/binding races and no-IO denial; remote Stripe retrieval/create remain mocked and hosted payment/customer lifecycle acceptance is not established. After normal integration of main157, the full default suite passed 6565 tests across 617 files (six skipped) in 78.43s; web TypeScript, desktop release/types/build, Python 30 tests and focused lint passed. Required exact-head CI remains the integration gate; no provider/customer acceptance is inferred.",
+      "verification": "Focused failing-before regressions exist in all six parallel implementation streams. Actual disposable PostgreSQL16/17 schema/full-history fixtures preserve original auth/Agent checksums and failed history; service/provider boundaries remain simulated. Real integrated synthetic NextHTTP/PostgreSQL acceptance passed on committed sourcef7de88f0:11auth assertions,10desktop HTTP protocol assertions through consume/replay/revoke,4approval assertions through competing303/409 and persisted actor/time. Approval metadata follows actual Next loopback normalization; no browser/production/provider/native inference. Existing identity-only commercial response allowed no-plan access; paid-entitlement enforcement is NOTverified. Explicit owned AWS protocol extension additionally passed10 actual HTTP/storage/native-SDK lifecycle assertions on644f539d (35total), with5 guard-stamped loopback wire requests and owned PostgreSQL17 cleanup. Default25-check launcher behavior is preserved; real IAM and commercial billing remain unverified. Combined main156 local gates passed616files/6545tests at repository default timeouts, web TypeScript, desktop release-alignment/TypeScript/Vite build,30Python CLI tests, scoped lint and tracker coverage. Exact-head CI/production build remains required before merge. Inactive Stripe TEST original-attempt fixtures separately passed 51 SDK/signature/kernel tests and five actual owned PostgreSQL proof/storage tests. These cover original response capture, immutable proof, authority/binding races and no-IO denial; remote Stripe retrieval/create remain mocked and hosted payment/customer lifecycle acceptance is not established. After normal integration of main157, the full default suite passed 6565 tests across 617 files (six skipped) in 78.43s; web TypeScript, desktop release/types/build, Python 30 tests and focused lint passed. Required exact-head CI remains the integration gate; no provider/customer acceptance is inferred. Source 591e3b7b adds durable redacted Agent restart receipts on reopen/manual canonical observation; queued or tracking-unavailable is not service completion. Real React render/click regressions use mocked transport and cover late approval, reverse loads and populated credential-switch recovery. Actual owned Next HTTP/PostgreSQL 17 verifies 25 existing auth/pairing/approval assertions plus 5 synthetic persisted receipt assertions, sensitive-path redaction, null-run canonical tracking_unavailable and foreign-tenant denial; no entitlement/cloud state was seeded, no real approval/dispatch/native/provider acceptance is claimed. Independent source review closed context/race findings. Final combined local gates pass: 619 Vitest files / 6,579 tests (six skipped), web/focused TypeScript, desktop release/types/Vite build, 30 Python tests and scoped lint. Existing local cache protobuf-specs 0.5.2 differs from lock 0.5.0; exact-lock clean CI/build/native checks remain required before merge.",
       "evidence": [
         "docs/CRITICAL_RECOVERY_AND_CUSTOMER_ACCEPTANCE.md",
         "docs/mission/aws-enrollment-schema-rehearsal.json",
@@ -42144,7 +42154,11 @@
         "docs/mission/local-cloud-http-acceptance.json",
         "docs/STRIPE_TEST_ORIGINAL_ATTEMPT_PROOF.md",
         "lib/billing/newTestSubscription/stripeTestProvider.ts",
-        "lib/billing/__tests__/stripeTestOriginalProof.test.ts"
+        "lib/billing/__tests__/stripeTestOriginalProof.test.ts",
+        "docs/AGENT_ECS_RESTART_APPROVAL_BINDING.md",
+        "desktop/src/components/AgentRestartReceipts.tsx",
+        "lib/desktop/__tests__/agentRestartObservationJourney.test.ts",
+        "docs/mission/local-agent-receipt-http-acceptance.json"
       ],
       "customerAcceptance": "Not verified",
       "acceptanceDependencies": [
