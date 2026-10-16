@@ -89,3 +89,22 @@ new clean-candidate run separately before treating this launcher as exercised.
 ## Integrated approval HTTP origin qualification
 
 The installed Next.js `NextRequest` normalizes literal loopback IP URLs to `localhost`. The initial integrated fixture therefore received 403 for its literal-IP Origin header, rather than reaching an approval decision. The harness now derives only the approval Origin/Referer metadata with the actual installed `NextRequest` normalization; application, database and mail transport still require literal `127.0.0.1`. Application same-origin checks are unchanged, and the foreign-origin refusal remains tested. This is explicit synthetic HTTP metadata, **not evidence that a real browser at a literal-IP origin can submit the same form**. The committed-source rehearsal subsequently passed on `f7de88f0`; this qualification remains part of its acceptance scope.
+
+## Owned launcher acceptance — 2026-10-16 UTC
+
+The launcher passed against clean committed candidate
+`15f6131928f2816b6add50b66b60b6ff22d7d225`, based on main through PR150.
+The actual Next.js/PostgreSQL rehearsal repeated all eleven authentication,
+ten desktop pairing and four approval protocol assertions above. Ownership
+verification and exact-container removal succeeded; no owned fixture remained.
+See [the sanitized owned-launcher report](mission/local-auth-http-owned-launcher-acceptance.json).
+
+The existing runtime environment was correctly refused before any Docker
+operation. The accepted invocation used an explicitly constructed OS/proxy/CA-only
+environment plus the opt-in, with all inherited application/database/provider
+bindings excluded. The cached PostgreSQL image was not pulled, production data
+was not accessed, and the shared Prisma client was not regenerated. Sixty-three
+focused safety/protocol tests across four files also passed. The observed
+`allowed: true` / `no_plan` identity-only policy remains outside paid-entitlement
+acceptance. Browser/native/OAuth/provider/Stripe and production recovery claims
+remain excluded.
