@@ -41970,7 +41970,7 @@
       "engineeringActivity": "active",
       "owner": "Codex integrated parallel workstreams",
       "activeMilestone": "Define run correlation semantics and validate approved dispatch with real Airflow 3.",
-      "verification": "Current-condition dispatch candidate: exact source/state and latest dependency freshness are rechecked before claim, token resolution or allowance reservation. Merged-main full regression passed 595 files / 6,264 tests, web/desktop TypeScript, desktop build, 30 Python CLI tests and scoped lint. Exact-head CI and real provider/customer acceptance remain pending.",
+      "verification": "Current-condition dispatch candidate with approver authority rechecked after remote reads: exact source/state and latest dependency freshness are rechecked before claim, token resolution or allowance reservation. Merged-main full regression passed 595 files / 6,265 tests, web/desktop TypeScript, desktop build, 30 Python CLI tests and scoped lint. Exact-head CI and real provider/customer acceptance remain pending.",
       "evidence": [
         "docs/TERRAFORM_AIRFLOW_CUSTOMER_ACCEPTANCE.md",
         "docs/ECS_RESTART_RECEIPT_LIMITS.md",

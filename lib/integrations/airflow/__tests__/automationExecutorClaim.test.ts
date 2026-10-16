@@ -346,3 +346,14 @@ it.each([null, "invalid", "2026-10-15T09:00:00Z"])("refuses missing/malformed/st
   expect(await executeAirflowAutomation(row.id)).toEqual({ ok: false, error: "airflow_dependencies_not_ready" });
   expect(mocks.claim).not.toHaveBeenCalled();
 });
+it("denies approval authority revoked while remote source evidence is read", async () => {
+  automation.approvalRequired = true;
+  mocks.source.mockImplementation(async () => {
+    mocks.membership.mockResolvedValue({ role: "read_only", acceptedAt: new Date() });
+    return { dagId: "dag", dagRunId: "run", state: "success", logicalDate: null };
+  });
+  expect(await executeAirflowAutomation(row.id, "approver")).toEqual({ ok: false, error: "airflow_approval_authority_required" });
+  expect(mocks.claim).not.toHaveBeenCalled(); expect(mocks.token).not.toHaveBeenCalled();
+  expect(mocks.reserve).not.toHaveBeenCalled(); expect(mocks.openPR).not.toHaveBeenCalled(); expect(mocks.dispatch).not.toHaveBeenCalled();
+  expect(row.status).toBe("queued"); expect(row.attempt).toBe(0);
+});

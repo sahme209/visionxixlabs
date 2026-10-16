@@ -1081,7 +1081,7 @@ Evidence: `docs/TERRAFORM_AIRFLOW_CUSTOMER_ACCEPTANCE.md`, shared
 `lib/integrations/airflow/dependencyReadiness.ts`, and executor claim regressions.
 Three tests failed against the former executor because it still opened a PR after
 source failure, dependency failure or unavailable Airflow; 81 Airflow regressions
-and web TypeScript passed in isolation. Merged-main local gates passed 595 files / 6,264 tests, web/desktop TypeScript,
+and web TypeScript passed in isolation. Merged-main local gates passed 595 files / 6,265 tests, web/desktop TypeScript,
 desktop build, 30 Python CLI tests, scoped lint and tracker consistency. The first
 restricted-sandbox run blocked loopback sockets and native Git/GPG fixtures; the
 final full run with normal local fixture permissions passed without source or test
@@ -1089,3 +1089,11 @@ changes (bounded 20-second test allowance). Exact-head push/PR CI and production
 compilation remain pending. Live provider/customer acceptance remains unverified.
 The optional strict-policy sidecar/readiness plan is documentation only; there is
 no hidden configuration, schema activation, provider dispatch or production change.
+
+Independent review identified approver revocation during the newly added remote
+reads. Initial authority checks remain, and accepted membership/capability is
+rechecked immediately before the claim. The new mid-read revocation regression
+failed before this correction; the subsequent full local suite passed 595 files /
+6,265 tests, web TypeScript and scoped lint. Prior unchanged desktop build/types
+and 30 Python results remain applicable. The final post-read authority race is
+documented; exact-head CI remains required before merging PR #150.
