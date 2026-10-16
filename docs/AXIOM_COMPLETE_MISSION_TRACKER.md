@@ -7,6 +7,69 @@ customer commitments, financial/production approvals and final acceptance.
 The current workstream matrix and latest checkpoints supersede earlier historical
 checkpoint status; previous observations are retained as evidence history.
 
+PR #161 source integration is complete at main `608efe0fd70623aaf71cb80f799d3b822b9855cd` after both exact-head Test runs and review passed. This is not a production release.
+
+## Additional deferred workstream — support and partnerships
+
+The new support/strategic-partnerships directive is preserved verbatim in
+`SUPPORT_STRATEGIC_PARTNERSHIPS_DIRECTIVE.md`: 151 additional units bring the
+canonical register to **1,981 rows across 17 available sources**. Earlier 1,830
+requirement identities, source text and statuses are preserved. See
+`SUPPORT_PARTNERSHIPS_DEFERRED_PLAN.md` for the read-only audit and proposal.
+No critical agent was reassigned. The page/payment implementation, CRM writes,
+outreach, live payment testing and deployment are not authorized by this audit.
+The warm-white $1 concept applies only to this deferred page; the main product
+visual redesign remains deferred. No support/payment source changed.
+
+Billing milestone correction: same-seat lifecycle recovery passed isolated
+HTTP/PG checks, but independent financial review found active status does not
+prove paid renewal coverage. Current isolated allowance and preview also ignore
+paid-term expiry. **Hold the lifecycle merge and financial acceptance** until
+NEWTEST-only paid-through enforcement is designed, reviewed and verified. Prior
+status-based recovery tests do not prove payment collection. Legacy and supporter
+payment paths remain unchanged.
+
+## Current execution checkpoint — October 16, 2026
+
+Main `2682ba732ab1bd262dcaa378e3a6e3119d245229` includes PRs #157–160.
+PR #160 passed both exact-head GitHub test runs and native checks: 6,629 web
+checks across 622 files, 293 built pages, ten native tests and Clippy. These
+are source-validation results, not live customer acceptance or a release.
+
+The latest complete-project execution order is retained verbatim in
+`AXIOM_COMPLETE_PROJECT_EXECUTION_ORDER.md`. Its 85 units extend the canonical
+register to **1,830 rows across 16 unique available sources**; earlier units
+were preserved. Every responsibility in the available Codex and former Claude
+sources is mapped. The unavailable older 36-section source and scenarios A–L
+remain explicitly missing; source coverage does not close their acceptance gap.
+
+Parallel source packages remain active: governed ECS target snapshots and final
+transaction fences; isolated TEST billing lifecycle; desktop Agent model recovery;
+Azure enrollment/inventory; inactive Terraform saved-plan review; authentication
+recovery evidence. Details and independent review gates are recorded in
+`mission/execution-2026-10-16.md`. No major visual redesign is underway.
+
+The target-snapshot package passed independent specification/security review,
+317 focused tests and 15 demo checks, owned PostgreSQL Serializable drift/replay
+acceptance, and web/desktop compiler checks. Integration-wide tests and exact-head
+CI remain required before its source merge. It does not activate execution.
+Desktop model recovery passed independent review and 30 owned HTTP check groups;
+its native/browser/provider journey remains separate. Billing review found that
+seat changes could enlarge allowance before collection; the isolated TEST fix
+rejects quantity changes and is awaiting its final independent review and renewed
+owned application acceptance. Hosted Stripe payment proof remains unavailable.
+
+Latest read-only serving metadata identifies deployment
+`dpl_6cv75StHTFg1enN1xPYRuLEcXzoX`, commit
+`fef79a0eed15c8251dd46560e2e42f140b8c7177`, rather than current main.
+Effective deployment/preflight/Neon binding, a usable recovery timestamp and a
+verified isolated restore remain **unverified**. Current source migration counts
+are conditionally ten before/nine after auth-only repair; historical seven/six
+counts below describe earlier source, not a fresh database query. See
+`AUTH_RECOVERY_OPERATOR_EVIDENCE.md` and
+`mission/auth-readiness-follow-up-2026-10-16.json` for exact evidence limits and
+the private operator attestation procedure. No production action is authorized.
+
 ## Current authentication checkpoint — preflight #3 and access readiness
 
 Protected read-only preflight #3 identifies a configured Neon endpoint. Founder
@@ -52,8 +115,8 @@ not substituted for missing source. Recovering that text is a source blocker,
 not a reason to stop independent engineering.
 
 The [editable register](mission/requirements.json) and
-[complete row table](AXIOM_MISSION_REQUIREMENTS.md) contain **1,745 source units
-and placeholders across 15 available sources**. Each has a status, source
+[complete row table](AXIOM_MISSION_REQUIREMENTS.md) contain **1,981 source units
+and placeholders across 17 available sources**. Each has a status, source
 location, domain, scope, evidence, verification limit, owner and next action.
 The register includes process controls and historical proposals as well as
 product requirements. Related source files are **not** acceptance proof.

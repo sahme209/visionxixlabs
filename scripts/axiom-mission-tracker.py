@@ -73,7 +73,7 @@ def render(data):
     out += [f"| {state} | {counts[state]} |" for state in sorted(STATES)]
     out += ["", "Process, historical proposals, source gaps and product acceptance rows are distinct in JSON. "
             "Do not interpret this distribution as a product completion percentage.", ""]
-    out += ["## Active product workstreams", "", "Dependencies below gate customer acceptance, not independent engineering. All streams remain active; major visual redesign is deferred.", "", "| Workstream | Engineering / customer acceptance | Verified evidence scope | Acceptance dependencies / blockers | Next action |", "| --- | --- | --- | --- | --- |"]
+    out += ["## Active product workstreams", "", "Dependencies below gate customer acceptance, not independent engineering. Core engineering streams remain active; support/partnerships is deferred pending capacity and founder approval. Major visual redesign is deferred.", "", "| Workstream | Engineering / customer acceptance | Verified evidence scope | Acceptance dependencies / blockers | Next action |", "| --- | --- | --- | --- | --- |"]
     for stream in data.get("workstreams", []):
         evidence = "; ".join(f"[{p}](../{p})" for p in stream["evidence"])
         cells = [stream["name"], stream["engineeringActivity"] + " / " + stream["customerAcceptance"], stream["verification"] + " " + evidence, ", ".join(stream["acceptanceDependencies"]) + ": " + stream["blockers"], stream["nextAction"]]
@@ -114,7 +114,7 @@ def validate(data):
             errors.append(f"Source coverage mismatch: {source['path']} ({len(expected - actual)} missing/stale units)")
     streams = data.get("workstreams", [])
     stream_ids = {stream["id"] for stream in streams}
-    required = {"auth_database", "ai_agent", "github", "cloud", "terraform", "airflow", "deployment", "governance", "desktop", "billing", "website", "testing", "security", "launch", "vercel_cost"}
+    required = {"auth_database", "ai_agent", "github", "cloud", "terraform", "airflow", "deployment", "governance", "desktop", "billing", "website", "testing", "security", "launch", "vercel_cost", "support_partnerships"}
     if stream_ids != required or len(streams) != len(required):
         errors.append("Missing, duplicate or unexpected active workstream")
     for stream in streams:
