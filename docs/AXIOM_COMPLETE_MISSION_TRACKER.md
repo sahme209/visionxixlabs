@@ -801,3 +801,46 @@ remain intact. No executable Vercel configuration, settings, routing or integrat
 change is authorized. The plan must verify manual builds/deployment of an exact
 approved commit, resource/environment effects, separate routing approval and a
 reversible trigger-control change before owner approval.
+
+
+## PR #144 and #145 integrated — ECS limits and manual Git deployment control
+
+PR #145 merged as `275eec9aef910193cec32dadc9ceb445393d2219`, after
+exact-head run 38828352714 passed web types, 5,972 tests and the new GitHub
+production build (293 pages). The only Vercel configuration change is
+`git.deploymentEnabled: false`; all 29 crons and other fields are unchanged.
+No Actions workflow dispatches Vercel. The owner confirms no deploy hooks.
+PR SHA and both subsequent main merge SHAs returned zero Vercel deployments;
+the first post-merge observation at 00:22:37 UTC retains domain deployment
+`dpl_6cv75StHTFg1enN1xPYRuLEcXzoX` (#143), superseding older #138 observations.
+Covered revision suppression is observed, not a guarantee about old branches,
+external callers or zero runtime cost. See the sanitized trigger audit.
+
+PR #144 merged afterward as `364b048d5b13d762170c7e86882f0cfacc1e847c`;
+its exact-head web CI passed 582 files / 5,988 tests, with native tests/Clippy
+passing. Unsupported ECS artifact promotion is denied across the corrected
+paths; existing workflow outcomes remain distinct from artifact/health proof.
+No provider workflow or production database operation was executed.
+
+An optional project-level Ignored Build Step `exit 0` and explicit per-deployment
+manual override are prepared in `VERCEL_IGNORED_BUILD_APPROVAL.md`. That setting
+remains unapplied and requires owner approval plus the current saved-value
+record. The documented bypass is not real deployment acceptance. Direct Git
+connection, production credentials, callbacks, domain and existing integrations
+remain intact; production binding/PITR/restore and actual login remain unverified.
+
+## ECS v2 first implementation slice — pure evidence, no authority
+
+The next contract validates detached structural candidates and compares them to
+independent trusted boundary inputs. It binds repository/build/executor identity,
+immutable container images, proposed/baseline task definitions, target, policy,
+approval expiry and exact run/attempt receipts. Independent review caught missing
+prior-repository promotion binding; wrong-repository/fork regressions now pass.
+Root full regression: 583 files / 6,051 tests, including 63 contract tests.
+Final web TypeScript, desktop TypeScript/build, 30 Python tests and focused lint passed. The unchanged application build is covered by the new GitHub production-build gate; exact-head CI remains pending.
+
+This does not enable ECS v2 or verify cryptographic provenance. Durable storage,
+approvals/claims, exact-task health observation, trusted OIDC workflow distribution,
+common dispatch service and actual sandbox rollout/recovery remain unfinished.
+All fifteen workstreams stay represented; no end-to-end customer journey or
+overall production-readiness percentage is asserted.

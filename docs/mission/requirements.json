@@ -41901,10 +41901,11 @@
       "engineeringActivity": "active",
       "owner": "Codex integrated parallel workstreams",
       "activeMilestone": "Define versioned dispatch contract binding approved source and immutable artifact.",
-      "verification": "Workflow shell regression coverage; existing App scope controls retained. ECS receipts and rendered desktop/web views distinguish requested intent, raw workflow status and unverified artifact/health/image recovery. Server-owned ECS capability rejects artifact promotion; emergency and dashboard paths separately check required promotion before dispatch. Independent review accepted the narrow promotion-denial scope. Full 5,985-test regression plus final focused policy/UI cases, web/desktop types/builds and Python checks passed; exact-head CI remains required before merge.",
+      "verification": "Workflow shell regression coverage; existing App scope controls retained. ECS receipts and rendered desktop/web views distinguish requested intent, raw workflow status and unverified artifact/health/image recovery. Server-owned ECS capability rejects artifact promotion; emergency and dashboard paths separately check required promotion before dispatch. Independent review accepted the narrow promotion-denial scope. Full 5,985-test regression plus final focused policy/UI cases, web/desktop types/builds and Python checks passed; exact-head CI remains required before merge. ECS v2 pure candidate/evidence comparisons pass 63 tests; repository-bound promotion and exact run/attempt are checked. No trusted IO, storage, authority or dispatch is enabled.",
       "evidence": [
         "docs/ECS_CUSTOMER_JOURNEY_VALIDATION.md",
-        "docs/ECS_RESTART_RECEIPT_LIMITS.md"
+        "docs/ECS_RESTART_RECEIPT_LIMITS.md",
+        "docs/ECS_V2_PURE_EVIDENCE_CONTRACT.md"
       ],
       "customerAcceptance": "Not verified",
       "acceptanceDependencies": [
@@ -41985,14 +41986,15 @@
       "status": "Partially implemented",
       "engineeringActivity": "active",
       "owner": "Codex integrated parallel workstreams",
-      "activeMilestone": "Implement immutable artifact release contract separately from existing ECS service restart.",
-      "verification": "Source audit proves current ECS workflow restarts the current task definition; no new source/image artifact or immutable image rollback is established. A canonical artifact/provenance/target/baseline and exact-run health receipt contract is prepared; no provider workflow dispatched. ECS receipts and rendered desktop/web views distinguish requested intent, raw workflow status and unverified artifact/health/image recovery. Server-owned ECS capability rejects artifact promotion; emergency and dashboard paths separately check required promotion before dispatch. Independent review accepted the narrow promotion-denial scope. Full 5,985-test regression plus final focused policy/UI cases, web/desktop types/builds and Python checks passed; exact-head CI remains required before merge.",
+      "activeMilestone": "Design and implement durable manifest/approval storage and trusted provenance ingestion before a common v2 dispatch service.",
+      "verification": "Source audit proves current ECS workflow restarts the current task definition; no new source/image artifact or immutable image rollback is established. A canonical artifact/provenance/target/baseline and exact-run health receipt contract is prepared; no provider workflow dispatched. ECS receipts and rendered desktop/web views distinguish requested intent, raw workflow status and unverified artifact/health/image recovery. Server-owned ECS capability rejects artifact promotion; emergency and dashboard paths separately check required promotion before dispatch. Independent review accepted the narrow promotion-denial scope. Full 5,985-test regression plus final focused policy/UI cases, web/desktop types/builds and Python checks passed; exact-head CI remains required before merge. ECS v2 pure candidate/evidence comparisons pass 63 tests; repository-bound promotion and exact run/attempt are checked. No trusted IO, storage, authority or dispatch is enabled.",
       "evidence": [
         "docs/ECS_CUSTOMER_JOURNEY_VALIDATION.md",
         "docs/WEBSITE_DEPLOYMENT_READINESS.md",
         "docs/mission/neon-readiness-inspection.json",
         "docs/ECS_IMMUTABLE_RELEASE_PLAN.md",
-        "docs/ECS_RESTART_RECEIPT_LIMITS.md"
+        "docs/ECS_RESTART_RECEIPT_LIMITS.md",
+        "docs/ECS_V2_PURE_EVIDENCE_CONTRACT.md"
       ],
       "customerAcceptance": "Not verified",
       "acceptanceDependencies": [
@@ -42010,11 +42012,12 @@
       "engineeringActivity": "active",
       "owner": "Codex integrated parallel workstreams",
       "activeMilestone": "Verify policy revocation and approval-to-execution authority across complete journey.",
-      "verification": "Boundary tests refuse signed caller assertions for every handoff operation and preserve approved tenant HCL export/unsigned preview; exact saved-plan approval authority remains missing. ECS receipts and rendered desktop/web views distinguish requested intent, raw workflow status and unverified artifact/health/image recovery. Server-owned ECS capability rejects artifact promotion; emergency and dashboard paths separately check required promotion before dispatch. Independent review accepted the narrow promotion-denial scope. Full 5,985-test regression plus final focused policy/UI cases, web/desktop types/builds and Python checks passed; exact-head CI remains required before merge.",
+      "verification": "Boundary tests refuse signed caller assertions for every handoff operation and preserve approved tenant HCL export/unsigned preview; exact saved-plan approval authority remains missing. ECS receipts and rendered desktop/web views distinguish requested intent, raw workflow status and unverified artifact/health/image recovery. Server-owned ECS capability rejects artifact promotion; emergency and dashboard paths separately check required promotion before dispatch. Independent review accepted the narrow promotion-denial scope. Full 5,985-test regression plus final focused policy/UI cases, web/desktop types/builds and Python checks passed; exact-head CI remains required before merge. ECS v2 pure candidate/evidence comparisons pass 63 tests; repository-bound promotion and exact run/attempt are checked. No trusted IO, storage, authority or dispatch is enabled.",
       "evidence": [
         "docs/AGENT_GOVERNED_ACTION_ACCEPTANCE.md",
         "app/api/desktop/handoff/__tests__/route.test.ts",
-        "docs/ECS_RESTART_RECEIPT_LIMITS.md"
+        "docs/ECS_RESTART_RECEIPT_LIMITS.md",
+        "docs/ECS_V2_PURE_EVIDENCE_CONTRACT.md"
       ],
       "customerAcceptance": "Not verified",
       "acceptanceDependencies": [
@@ -42175,15 +42178,17 @@
       "status": "Partially implemented",
       "engineeringActivity": "active",
       "owner": "Codex integrated parallel workstreams",
-      "activeMilestone": "Prepare an approval-only manual deployment strategy while preserving GitHub CI, source integration and the serving website.",
-      "verification": "Investigation only. No Vercel settings, routing, integrations, executable configuration or production changes authorized. Exact approved-commit manual build/deployment path and trigger exclusions must be verified against official documentation.",
+      "activeMilestone": "Verify covered Git/PR/main suppression and preserve production builds in GitHub; prepare optional approved ignored-build fallback.",
+      "verification": "PR #145 merged after exact-head CI including production build. No Vercel calls in Actions; owner confirms no hooks. Two main merge revisions and the PR head returned zero deployments; domain remains #143. Old refs, external callers and actual manual runtime acceptance are not verified.",
       "evidence": [
-        "docs/AXIOM_COMPLETE_MISSION_TRACKER.md"
+        "docs/VERCEL_MANUAL_DEPLOYMENT_PLAN.md",
+        "docs/VERCEL_IGNORED_BUILD_APPROVAL.md",
+        "docs/mission/vercel-manual-trigger-audit.json"
       ],
       "customerAcceptance": "Not verified",
       "acceptanceDependencies": [],
       "blockers": "Exact configuration plan requires owner approval before implementation; manual deployment runtime/protection readiness remains to be verified.",
-      "nextAction": "Compare Git deployment controls, CLI/API manual paths, resource side effects and reversibility; present the precise change and release gates."
+      "nextAction": "Continue covered-ref observation; apply no provider setting without exact approval and prior-value snapshot; approve any actual candidate/resources separately."
     }
   ]
 }
