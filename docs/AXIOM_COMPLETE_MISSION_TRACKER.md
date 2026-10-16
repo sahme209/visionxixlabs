@@ -1097,3 +1097,28 @@ failed before this correction; the subsequent full local suite passed 595 files 
 6,265 tests, web TypeScript and scoped lint. Prior unchanged desktop build/types
 and 30 Python results remain applicable. The final post-read authority race is
 documented; exact-head CI remains required before merging PR #150.
+
+### Owned local authentication rehearsal evidence — 2026-10-16 UTC
+
+The committed launcher candidate `15f6131928f2816b6add50b66b60b6ff22d7d225`
+reused the existing Next.js/PostgreSQL HTTP harness and passed 25 actual local
+protocol checks: eleven signup/email-proof/password/session checks, ten desktop
+pairing/consume/replay/revocation checks, and four approval-decision checks.
+The new opt-in launcher used the cached PostgreSQL 17 image, an independently
+owned synthetic database, literal-loopback binding, and verified exact-container
+cleanup. The default inherited runtime binding was refused before container IO;
+the accepted run used an explicit OS/proxy/CA-only environment. Sixty-three
+focused safety/protocol tests across four files passed. Evidence and rerun
+instructions: `docs/LOCAL_AUTH_HTTP_ACCEPTANCE.md` and
+`docs/mission/local-auth-http-owned-launcher-acceptance.json`.
+
+This verifies reusable local backend acceptance only. It does not verify
+production login or migration recovery, native/browser/vault behavior, OAuth,
+external mail delivery, paid entitlement policy, Stripe, or provider execution.
+The observed identity-only `allowed: true` / `no_plan` remains a policy observation.
+No existing mission scope or external approval gate is removed by this milestone.
+
+Required local integration gates passed for this source branch: web TypeScript,
+596 test files / 6,284 tests, desktop TypeScript and production frontend build,
+and 30 Python CLI tests. These checks complement the source-pinned HTTP result;
+they do not expand its production/native/paid-policy acceptance scope.
