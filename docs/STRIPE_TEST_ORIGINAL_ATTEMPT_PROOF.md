@@ -86,6 +86,8 @@ owned PostgreSQL suite passed 5 tests (one HTTP case intentionally skipped).
 The combined focused run passed 56 tests in 9.48s; the later strengthened guard
 assertions passed the same 51 SDK/kernel tests separately. Focused changed-source
 lint and web TypeScript passed. Independent read-only review found no remaining
-material blocker within this inactive scope. Full regression and exact-head CI
-remain coordinator integration gates. These counts do not represent hosted
+material blocker within this inactive scope. After normal integration of main157, the full default suite passed 6,565 tests
+across 617 files (six skipped, 78.43s); web TypeScript, desktop release/types/build,
+30 Python tests and focused lint passed. Exact-head CI remains the coordinator
+integration gate. These counts do not represent hosted
 customer workflows.
