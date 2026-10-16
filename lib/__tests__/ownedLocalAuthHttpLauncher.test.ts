@@ -70,3 +70,13 @@ it("requires a separate exact synthetic receipt opt-in without enabling the AWS 
   await expect(runOwnedLocalAuthHttp({ AXIOM_RUN_LOCAL_AUTH_HTTP: "1", AXIOM_RUN_LOCAL_AGENT_RECEIPT_HTTP: "true" }, invalid)).rejects.toThrow("local_agent_receipt_http_opt_in_invalid");
   expect(invalid.calls).toEqual([]);
 });
+
+it("opts into actual Agent disabled-state HTTP without enabling a provider or synthetic dispatch receipt", async () => {
+  const f = fixture();
+  let options;
+  await runOwnedLocalAuthHttp({ AXIOM_RUN_LOCAL_AUTH_HTTP: "1", AXIOM_RUN_LOCAL_AGENT_READINESS_HTTP: "1" }, { ...f, rehearse: async (_url: string, value: unknown) => { options = value; return { verified: [] }; } });
+  expect(options).toEqual({ agentReadinessFixture: true });
+  const invalid = fixture();
+  await expect(runOwnedLocalAuthHttp({ AXIOM_RUN_LOCAL_AUTH_HTTP: "1", AXIOM_RUN_LOCAL_AGENT_READINESS_HTTP: "true" }, invalid)).rejects.toThrow("local_agent_readiness_http_opt_in_invalid");
+  expect(invalid.calls).toEqual([]);
+});

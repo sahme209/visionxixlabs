@@ -1,8 +1,8 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Sidebar } from "./components/Sidebar";
 import { TopBar } from "./components/TopBar";
 import { WorkspaceViewBoundary } from "./components/WorkspaceViewBoundary";
-import { AgentChatView } from "./views/AgentChatView";
+import { AgentChatView, type AgentSettingsDestination } from "./views/AgentChatView";
 import { DeploymentRequestsView } from "./views/DeploymentRequestsView";
 import { DocsView } from "./views/DocsView";
 import { SettingsView } from "./views/SettingsView";
@@ -114,7 +114,9 @@ export default function App() {
 function AuthenticatedWorkspace({ identity }: { identity: VerifiedDesktopIdentity }) {
   const [activeView, setActiveView] = useState<CustomerView>("agent");
   const [booted, setBooted] = useState(false);
-  useNativeMenuActions(setActiveView);
+  const [settingsDestination, setSettingsDestination] = useState<AgentSettingsDestination | undefined>();
+  const navigate = useCallback((view: CustomerView) => { setSettingsDestination(undefined); setActiveView(view); }, []);
+  useNativeMenuActions(navigate);
 
   useEffect(() => {
     const timer = setTimeout(() => setBooted(true), 250);
@@ -125,17 +127,17 @@ function AuthenticatedWorkspace({ identity }: { identity: VerifiedDesktopIdentit
 
   return (
     <div className="flex h-screen bg-axiom-bg text-white overflow-hidden">
-      <Sidebar activeView={activeView} onNavigate={setActiveView} />
+      <Sidebar activeView={activeView} onNavigate={navigate} />
       <main className="flex-1 flex flex-col min-w-0 min-h-0">
         <TopBar activeView={activeView} identity={identity} />
         <WorkspaceViewBoundary key={activeView} onReturnToAgent={() => setActiveView("agent")}>
-          {activeView === "agent" && <AgentChatView />}
+          {activeView === "agent" && <AgentChatView onOpenSettings={(destination) => { setSettingsDestination(destination); setActiveView("settings"); }} />}
           {activeView === "deployment-requests" && <DeploymentRequestsView />}
           {activeView === "airflow-automation" && <AirflowAutomationView />}
           {activeView === "repository-workspace" && <RepositoryWorkspaceView />}
           {activeView === "plugins-skills" && <PluginsSkillsView onOpenSettings={() => setActiveView("settings")} onOpenAirflow={() => setActiveView("airflow-automation")} />}
           {activeView === "docs" && <DocsView />}
-          {activeView === "settings" && <SettingsView identity={identity} />}
+          {activeView === "settings" && <SettingsView identity={identity} initialSection={settingsDestination} />}
         </WorkspaceViewBoundary>
       </main>
     </div>

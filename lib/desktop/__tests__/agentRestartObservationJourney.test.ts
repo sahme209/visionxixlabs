@@ -11,7 +11,7 @@ function conversation(actions: unknown[], turns: unknown[] = []) { return { ok: 
 beforeEach(() => {
   vi.resetAllMocks(); window.localStorage.clear(); Element.prototype.scrollIntoView = vi.fn(); Element.prototype.scrollTo = vi.fn(); m.client.config = { sessionToken: "paired" };
   m.client.listAgentConversations.mockResolvedValue({ ok: true, data: { conversations: [{ id: "conversation-1", title: "Restart", turnCount: 0, createdAt: "2026-10-16T00:00:00Z", updatedAt: "2026-10-16T00:00:00Z" }] } });
-  m.client.aiProviderStatus.mockResolvedValue({ ok: true, data: { providers: [], policy: { enabled: false, allowedProviders: [], modelSelections: {}, fallbackOrder: [] } } });
+  m.client.aiProviderStatus.mockResolvedValue({ ok: true, data: { providers: [{ provider: "vercel_gateway", models: [] }], policy: { enabled: true, allowedProviders: ["vercel_gateway"], modelSelections: { vercel_gateway: "service-default" }, fallbackOrder: ["vercel_gateway"] } } });
   m.client.listAgentSkills.mockResolvedValue({ ok: true, data: { skills: [] } }); m.client.listGithubRepositories.mockResolvedValue({ ok: true, data: { repositories: [] } }); m.client.listEnvironments.mockResolvedValue({ ok: true, data: { environments: [] } });
 });
 afterEach(cleanup);
