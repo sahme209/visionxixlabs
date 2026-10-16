@@ -18,18 +18,20 @@ export function boundedAwsHandler(parent: AbortSignal, budget: AwsResponseBudget
         async handle(request: Parameters<NodeHttpHandler['handle']>[0], call: Parameters<NodeHttpHandler['handle']>[1] = {}) {
             if (parent.aborted || budget.remaining <= 0)
                 throw new Error('aws_response_unavailable');
+            const suppliedSignal = call.abortSignal;
+            if (suppliedSignal && !(suppliedSignal instanceof AbortSignal)) throw new Error("aws_response_unavailable");
             const controller = new AbortController();
             const abort = () => controller.abort();
             parent.addEventListener('abort', abort, { once: true });
-            call.abortSignal?.addEventListener('abort', abort, { once: true });
+            suppliedSignal?.addEventListener('abort', abort, { once: true });
             const timer = setTimeout(abort, options.timeoutMs ?? 6000);
             let source: IncomingMessage | undefined, bounded: Transform | undefined;
-            const cleanup = () => { clearTimeout(timer); parent.removeEventListener('abort', abort); call.abortSignal?.removeEventListener('abort', abort); active.delete(stop); };
+            const cleanup = () => { clearTimeout(timer); parent.removeEventListener('abort', abort); suppliedSignal?.removeEventListener('abort', abort); active.delete(stop); };
             const stop = () => { controller.abort(); source?.destroy(); bounded?.destroy(new Error('aws_response_unavailable')); cleanup(); };
             active.add(stop);
             controller.signal.addEventListener('abort', stop, { once: true });
             try {
-                if (call.abortSignal?.aborted)
+                if (suppliedSignal?.aborted)
                     controller.abort();
                 const result = await native.handle(request, { ...call, abortSignal: controller.signal });
                 source = result.response.body;
