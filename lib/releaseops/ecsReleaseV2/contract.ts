@@ -99,7 +99,7 @@ export interface TrustedReleaseEvidence {
   associatedTargetGroups: string[];
   approval: { receiptId: string; manifestDigest: string; policyDigest: string; expiresAt: string };
 }
-export function matchTrustedReleaseEvidence(candidate: ManifestCandidate, trusted: TrustedReleaseEvidence, now: Date): { kind: "evidence_match"; manifestDigest: string } | ContractFailure {
+export function matchTrustedReviewEvidence(candidate: ManifestCandidate, trusted: Omit<TrustedReleaseEvidence, "approval">, now: Date): { kind: "review_facts_match"; manifestDigest: string } | ContractFailure {
   const checked = parseManifestCandidate(candidate.manifest, now);
   if (checked.kind !== "structural_candidate" || checked.digest !== candidate.digest) return rejected("candidate_changed_or_expired");
   const m = checked.manifest;
@@ -110,6 +110,15 @@ export function matchTrustedReleaseEvidence(candidate: ManifestCandidate, truste
   if (canonical({ ...trusted.proposed, images: sortedImages(trusted.proposed.images) }) !== canonical(m.proposed)) return rejected("artifact_changed");
   if (canonical({ ...trusted.baseline, images: sortedImages(trusted.baseline.images) }) !== canonical(m.baseline)) return rejected("baseline_changed");
   if (!trusted.associatedTargetGroups.includes(m.health.targetGroupArn)) return rejected("health_target_unbound");
+  return { kind: "review_facts_match", manifestDigest: checked.digest };
+}
+
+export function matchTrustedReleaseEvidence(candidate: ManifestCandidate, trusted: TrustedReleaseEvidence, now: Date): { kind: "evidence_match"; manifestDigest: string } | ContractFailure {
+  const facts = matchTrustedReviewEvidence(candidate, trusted, now);
+  if (facts.kind === "rejected") return facts;
+  const checked = parseManifestCandidate(candidate.manifest, now);
+  if (checked.kind !== "structural_candidate") return checked;
+  const m = checked.manifest;
   if (!text(trusted.approval.receiptId) || trusted.approval.manifestDigest !== checked.digest || trusted.approval.policyDigest !== m.policyDigest || !time(trusted.approval.expiresAt) || Date.parse(trusted.approval.expiresAt) <= now.getTime() || Date.parse(trusted.approval.expiresAt) > Date.parse(m.expiresAt)) return rejected("approval_mismatch_or_expired");
   return { kind: "evidence_match", manifestDigest: checked.digest };
 }

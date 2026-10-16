@@ -1,0 +1,20 @@
+{
+  "engine": "PostgreSQL 17 disposable loopback fixture",
+  "target": "initially_empty_axiom_ecs_review_rehearsal",
+  "migration": "20261016030000_ecs_release_review_core",
+  "migrationRollback": "passed",
+  "repeatedMigration": "rejected",
+  "missingVerifier": "no_packet_persisted",
+  "syntheticReview": "prepared_voted_checkpointed",
+  "appendOnlyRevocation": "invalidates_previous_checkpoint",
+  "realSerializableVoterRace": {"committed": 1, "rejected": 1},
+  "crossTenantForeignKey": "rejected",
+  "currentMembership": "rechecked",
+  "expiry": "rejected",
+  "executionEnabled": false,
+  "quotaConsumption": "none",
+  "providerCalls": "none",
+  "production": "untouched",
+  "provenance": "synthetic_fixture_only_not_verified",
+  "fixtureRemoved": true
+}
