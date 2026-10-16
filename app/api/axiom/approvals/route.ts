@@ -1,3 +1,4 @@
+import { isSameOriginRequest } from "@/lib/auth/requestOrigin";
 /**
  * GET  /api/axiom/approvals?organizationId=...&status=...&provider=...&riskLevel=...
  * POST /api/axiom/approvals  — batch approve or reject multiple items
@@ -6,6 +7,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
+import { currentContext } from "@/lib/auth/currentContext";
+import { canDecideApprovals } from "@/lib/auth/platformAdmin";
 import { prisma } from "@/lib/db";
 import { getEntitlementsFromPlan } from "@/lib/entitlements";
 import {
@@ -45,10 +48,15 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const organizationId = req.nextUrl.searchParams.get("organizationId");
-  if (!organizationId) {
-    return NextResponse.json({ error: "organizationId is required" }, { status: 400 });
+  const ctx = await currentContext();
+  if (!ctx.organizationId || ctx.userId !== userId || ctx.roles.length === 0) {
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
+  const requestedOrganizationId = req.nextUrl.searchParams.get("organizationId");
+  if (requestedOrganizationId && requestedOrganizationId !== ctx.organizationId) {
+    return NextResponse.json({ error: "Not found" }, { status: 404 });
+  }
+  const organizationId = ctx.organizationId;
 
   const status = req.nextUrl.searchParams.get("status");
   const provider = req.nextUrl.searchParams.get("provider");
@@ -79,9 +87,17 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
+  if (!isSameOriginRequest(req)) {
+    return NextResponse.json({ ok: false, error: "invalid_request_origin" }, { status: 403 });
+  }
   const userId = await authenticate();
   if (!userId) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  const ctx = await currentContext();
+  if (!ctx.organizationId || ctx.userId !== userId || !canDecideApprovals({ email: ctx.email, roles: ctx.roles })) {
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
   const body = await req.json();
@@ -112,6 +128,7 @@ export async function POST(req: NextRequest) {
     const result = await batchDecide({
       itemIds,
       userId,
+      organizationId: ctx.organizationId,
       action,
       note: note ?? undefined,
     });

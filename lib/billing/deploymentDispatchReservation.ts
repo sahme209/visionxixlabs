@@ -13,7 +13,7 @@ export interface DeploymentReservationInput {
   branchPolicyId: string | null;
   promotedFromExecutionId: string | null;
   pullRequestUrl: string | null;
-  source: "desktop" | "agent";
+  source: "desktop" | "agent" | "dashboard";
   triggeredByUserId: string;
 }
 

@@ -58,3 +58,24 @@ dependencies therefore pin the existing desktop versions of the Tauri API and
 shell JavaScript packages for type resolution. Vitest continues to stub native
 calls; no native toolchain, runtime permissions or credential access is added to
 web CI, and no source/test compiler exclusion is introduced.
+
+## Local backend pairing protocol rehearsal (2026-10-16)
+
+`scripts/rehearse-local-desktop-pairing-http.mjs` extends the isolated auth HTTP
+harness after its real web session and accepted synthetic workspace exist. The
+parent supplies only its bounded loopback web request function and synthetic
+challenge context; device polling and identity checks use a separate cookie-free
+HTTP channel. The module checks pending/device binding, authenticated consent,
+approval, single-use consumption, workspace identity, owner session listing and
+revocation invalidation. Bearer/session identifiers remain in memory and are not
+included in its result.
+
+The module reports commercial access as an **observation**, not entitlement
+acceptance. Current source deliberately uses identity-only commercial access;
+a no-plan account may therefore report `allowed: true`. Whether to enforce paid
+access remains an explicit product/commercial policy decision. This rehearsal
+neither changes that policy nor exercises cloud enrollment, deployment, billing
+providers or production. Its protocol safety tests use a local test server;
+actual application/PostgreSQL acceptance must be recorded separately by running
+the parent isolated harness. It proves neither browser consent interaction nor
+native deep links, Keychain persistence, installer behavior or production login.

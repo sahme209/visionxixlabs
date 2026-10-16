@@ -71,6 +71,7 @@ export type ApprovalCenterSummary = {
 
 export type ApprovalDecisionInput = {
   itemId: string;
+  organizationId: string;
   userId: string;
   action: "approve" | "reject" | "snooze";
   note?: string;
@@ -79,6 +80,7 @@ export type ApprovalDecisionInput = {
 
 export type BatchDecisionInput = {
   itemIds: string[];
+  organizationId: string;
   userId: string;
   action: "approve" | "reject";
   note?: string;
@@ -94,7 +96,7 @@ const TRANSITIONS: Record<string, Set<string>> = {
   approved: new Set(["applied", "failed"]),
   rejected: new Set([]),
   applied:  new Set([]),
-  failed:   new Set(["approved"]),
+  failed:   new Set([]),
   expired:  new Set([]),
 };
 
@@ -323,13 +325,16 @@ export async function listPendingApprovals(
 export async function decideItem(
   input: ApprovalDecisionInput,
 ): Promise<{ success: boolean; item: { id: string; status: string }; error?: string }> {
-  const item = await prisma.axiomApprovalItem.findUniqueOrThrow({
-    where: { id: input.itemId },
+  const item = await prisma.axiomApprovalItem.findFirst({
+    where: { id: input.itemId, organizationId: input.organizationId },
   });
+  if (!item) {
+    return { success: false, item: { id: input.itemId, status: "unavailable" }, error: "Approval unavailable." };
+  }
 
   const targetStatus = actionToStatus(input.action);
 
-  if (!canTransition(item.status, targetStatus)) {
+  if ((item.status !== "pending" && item.status !== "snoozed") || !canTransition(item.status, targetStatus)) {
     return {
       success: false,
       item: { id: item.id, status: item.status },
@@ -353,14 +358,17 @@ export async function decideItem(
     data.snoozedUntil = null;
   }
 
-  const updated = await prisma.axiomApprovalItem.update({
-    where: { id: input.itemId },
+  const updated = await prisma.axiomApprovalItem.updateMany({
+    where: { id: input.itemId, organizationId: input.organizationId, status: item.status, updatedAt: item.updatedAt },
     data,
   });
+  if (updated.count !== 1) {
+    return { success: false, item: { id: item.id, status: item.status }, error: "Approval changed; reload before deciding." };
+  }
 
   return {
     success: true,
-    item: { id: updated.id, status: updated.status },
+    item: { id: item.id, status: targetStatus },
   };
 }
 
@@ -378,6 +386,7 @@ export async function batchDecide(
   for (const itemId of input.itemIds) {
     const result = await decideItem({
       itemId,
+      organizationId: input.organizationId,
       userId: input.userId,
       action: input.action,
       note: input.note,
@@ -437,9 +446,10 @@ export async function expireStaleItems(maxAgeDays: number = 30): Promise<number>
 
 export async function getItemHistory(
   planItemId: string,
+  organizationId: string,
 ): Promise<Array<{ runId: string; status: string; decidedBy: string | null; decidedAt: string | null; note: string | null; createdAt: string }>> {
   const items = await prisma.axiomApprovalItem.findMany({
-    where: { planItemId },
+    where: { planItemId, organizationId },
     orderBy: { createdAt: "desc" },
     select: {
       runId: true,

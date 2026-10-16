@@ -844,3 +844,85 @@ approvals/claims, exact-task health observation, trusted OIDC workflow distribut
 common dispatch service and actual sandbox rollout/recovery remain unfinished.
 All fifteen workstreams stay represented; no end-to-end customer journey or
 overall production-readiness percentage is asserted.
+
+
+## Current integrated customer-governance milestone (2026-10-16)
+
+PR #146 merged as `f22006e09a7110d3859cbec9beb5d56ce658c8d7` after
+exact-head CI passed 583 files / 6,051 tests and the production build. GitHub's
+required-check status briefly lagged completed runs; normal merge succeeded
+only after the gate cleared. No bypass or Vercel deployment was performed.
+Owner chose **repository control only**: the unused ignored-build proposal is
+reference material, with no provider setting change authorized. Vercel work is
+secondary and does not block product engineering.
+
+The next integrated source milestone closes concrete public execution/approval
+bypasses: dashboard restart now uses current accepted admin authority, exact
+tag/source policy checks, scoped GitHub installation and policy snapshots, shared
+quota/idempotency and a serializable release claim before provider invocation.
+Unknown acceptance, commit and receipt outcomes retain claims/holds; original
+accepted-action auditing remains best effort. Readiness freshness is not artifact
+or durable approval proof; required approvals/windows unavailable to this legacy
+path fail closed. ECS v2 storage/trusted ingestion/execution remains unfinished.
+
+Approval form, JSON, bulk and snooze mutations consume only actionable tenant-
+scoped revisions atomically, record actor/time, require current role and same
+origin, and cannot resurrect terminal decisions through a sibling endpoint.
+Concurrent losers do not emit success audits. JSON list/history reads are tenant
+scoped; ordinary accepted members retain read access. Failed execution recovery
+requires a separately reviewed workflow instead of replacing terminal approval.
+
+Actual integrated synthetic local HTTP acceptance passed on committed source
+`f7de88f0c0d5cffe0d15234534453c4068e41d9c`: eleven signup/proof/password/session/
+workspace assertions, ten desktop protocol assertions (device binding, explicit
+approval, cookie-free single consumption, replay denial, membership, listing and
+revocation), and four approval decision assertions (foreign-origin denial,
+competing 303/409, persisted actor/time and terminal retention). It used real
+Next routes, PostgreSQL17, CSRF/cookies and loopback SDK mail capture; owned
+fixtures and servers were removed. Approval headers use actual Next loopback
+normalization, explicitly synthetic HTTP metadata rather than browser evidence.
+See `docs/mission/local-auth-http-acceptance.json`. Production migrations/login,
+external mail, Google/GitHub OAuth, browser/native/vault, real cloud deployment/
+rollback and Stripe acceptance remain unverified. The existing desktop response
+allowed identity access with no billing plan; paid-entitlement enforcement is
+NOT verified and its policy decision remains separate.
+
+Airflow's existing latest-success dependency policy is preserved. Strict business-
+partition correlation needs an explicit per-rule policy and compatible, separately
+reviewed storage/configuration rollout; no hidden policy or unused strict kernel
+was added. The concrete next design is recorded in the Airflow proposal.
+Production database target binding, usable PITR and isolated restore remain
+unverified; no production recovery, secrets, routing or live billing action
+is authorized by this milestone. All fifteen workstreams and unavailable
+original-source placeholders remain represented.
+
+
+### Parallel customer-boundary work prepared for the next integration
+
+Independent branches have prepared desktop consent-link validation against the
+configured service, Airflow DAG/occurrence response identity checks with unknown
+trigger outcomes preserved, truthful billing evidence-unavailable rendering, and
+Agent restart approvals bound to the server-observed target. These patches remain
+unmerged and require integrated review, regression and exact-head CI; their local
+tests are not native, provider or production customer acceptance.
+
+The next ECS review-only core has a separate additive schema proposal and an
+isolated PostgreSQL17 service/store rehearsal covering approval revisions,
+revocation, tenant constraints and competing decisions. Execution stays explicitly
+disabled, independently verified ingestion remains unavailable by default, and no
+live quota is consumed. This is not executable release or rollback authority.
+Production installation of that schema is not authorized.
+
+
+### Integrated milestone local validation
+
+Final serialized regression passed **591 files / 6,176 tests**. Web TypeScript,
+293-page optimized production build, desktop TypeScript/build, 30 Python tests,
+tracker consistency and scoped lint passed (zero lint errors, two existing unused
+imports). An initial unchanged native shell fixture exceeded five seconds under
+compiler load and passed its isolated 34-test rerun. A concurrent Prisma generation
+race invalidated a later test import; the final full run was serialized after the
+build and passed with a bounded 20-second per-test allowance. These local validation
+incidents are not suppressed application failures. Exact-head GitHub CI and merge
+remain pending. Real HTTP evidence remains attributed to `f7de88f0`; later commits
+only record documentation and results. No deployment or production change occurred.

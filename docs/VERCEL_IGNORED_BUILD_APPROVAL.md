@@ -1,4 +1,6 @@
-# Optional Vercel project setting — awaiting approval
+# Unused Vercel fallback — repository-only control selected
+
+Owner decision (2026-10-16): **keep repository control only**. This fallback is reference material, not active work or an approved setting change.
 
 Project: existing `visionxixlabs`, `prj_BwKc7V1daPJ938ZW2QKYxZsTkZnp`. No settings change is authorized or applied.
 
