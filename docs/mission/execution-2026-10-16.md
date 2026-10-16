@@ -228,3 +228,10 @@ One final Vercel production deployment only; no per-PR, merge or intermediate
 release. `docs/FINAL_VERCEL_RELEASE_GATE.md` records the exact-commit report,
 required acceptance and rollback evidence, explicit final approval and separate
 native/database/payment gates. No deployment or Vercel setting was changed.
+
+### Azure lifecycle final source gate
+
+- Frozen lifecycle source `1dd8c24278dbe66b4f20e18d345ecf88fbcf9420` passed independent delta review. Captured request-owner cleanup preserves stale context/catalog/mutation/version fences; four regressions cover catalog drift, replaced workspace, typing and StrictMode restart. No lint suppression or global config change.
+- Final default suite passed 6,840 tests / 639 files (six checks and one optional file skipped). Whole web and desktop TypeScript, desktop bundle, zero-warning scoped changed-source lint, Python CLI30, 37-SDK build contract and tracker consistency passed.
+- Earlier owned HTTP receipt remains exactly bound to `4478efb0`. Two later source hashes differ: desktop lifecycle and silent logger's unused argument signature. Other eleven manifest hashes match. This distinction is preserved; real Azure/native/customer acceptance is not claimed.
+- Exact-head GitHub CI and normal merge remain required. The single final Vercel production release is not authorized; normal source integration changes no deployment policy.
