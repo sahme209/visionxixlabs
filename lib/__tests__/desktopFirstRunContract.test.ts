@@ -200,7 +200,7 @@ describe("desktop first-run contract", () => {
     // surfaces below.
     expect(app).toContain('useState<CustomerView>("agent")');
     expect(sidebar).toContain('import type { CustomerView } from "../App"');
-    expect(app).toContain("<AgentChatView />");
+    expect(app).toContain("<AgentChatView ");
     expect(app).toContain("<DeploymentRequestsView />");
     expect(app).not.toContain('from "./lib/mockData"');
     expect(existsSync(join(root, "desktop/src/lib/mockData.ts"))).toBe(false);

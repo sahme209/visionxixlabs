@@ -9,6 +9,7 @@ import { isAwsEnrollmentChallenge, isDesktopAwsAccount, isDesktopAwsInventory, t
  */
 
 import { setDesktopTransportCredential } from "./desktopTransport";
+import type { SavedPlanReadData } from "../../../lib/terraform/savedPlanDto";
 import { parseDesktopIdentityResponse } from "./desktopIdentityResponse";
 
 const DEFAULT_API_BASE = "https://visionxixlabs.com";
@@ -353,6 +354,21 @@ export interface SecurityScanLite {
 
 export class DesktopClient {
   config: DesktopClientConfig;
+  private contextRevision = 0;
+  private readonly contextListeners = new Set<() => void>();
+
+  /** Local view invalidation only; carries no token and grants no authority. */
+  getContextRevision = (): number => this.contextRevision;
+  subscribeContext = (listener: () => void): (() => void) => {
+    this.contextListeners.add(listener);
+    return () => { this.contextListeners.delete(listener); };
+  };
+  private invalidateContext(): void {
+    this.contextRevision += 1;
+    for (const listener of this.contextListeners) {
+      try { listener(); } catch { /* A view cannot block an authentication change. */ }
+    }
+  }
 
   constructor(config?: Partial<DesktopClientConfig>) {
     this.config = {
@@ -363,12 +379,24 @@ export class DesktopClient {
   }
 
   setSession(token: string | undefined) {
+    const changed = this.config.sessionToken !== token;
     this.config = { ...this.config, sessionToken: token };
     setDesktopTransportCredential(token);
+    if (changed) this.invalidateContext();
   }
 
   setApiBase(base: string) {
+    const changed = this.config.apiBase !== base;
     this.config = { ...this.config, apiBase: base };
+    if (changed) this.invalidateContext();
+  }
+
+  listDeploymentTerraformPlans(id: string): Promise<ApiResult<SavedPlanReadData>> {
+    return this.get(`/api/desktop/deployments/${encodeURIComponent(id)}/terraform-plans`);
+  }
+
+  getDeploymentTerraformPlan(id: string, artifactId: string): Promise<ApiResult<SavedPlanReadData>> {
+    return this.get(`/api/desktop/deployments/${encodeURIComponent(id)}/terraform-plans/${encodeURIComponent(artifactId)}`);
   }
 
   /** True when the desktop is not connected to an authenticated workspace. */
