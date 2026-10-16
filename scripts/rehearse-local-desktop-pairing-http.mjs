@@ -4,7 +4,7 @@ import assert from "node:assert/strict";
  * webRequest is the parent harness's loopback-only authenticated cookie jar.
  * Device requests deliberately have no cookie jar and retain bearer only in memory.
  */
-export async function rehearseLocalDesktopPairingHttp({ appOrigin, webRequest, challenge, deviceFingerprint, expectedWorkspace, email }) {
+export async function rehearseLocalDesktopPairingHttp({ appOrigin, webRequest, challenge, deviceFingerprint, expectedWorkspace, email, onPaired = /** @type {Function | undefined} */ (undefined) }) {
   const origin = new URL(appOrigin);
   assert.ok(origin.protocol === "http:" && origin.hostname === "127.0.0.1" && origin.port && origin.pathname === "/" && !origin.username && !origin.password && !origin.search && !origin.hash, "pairing_loopback_origin_required");
   assert.ok(/^pair_[A-Za-z0-9_-]{43}$/.test(challenge), "synthetic_pairing_challenge_required");
@@ -48,10 +48,11 @@ export async function rehearseLocalDesktopPairingHttp({ appOrigin, webRequest, c
   assert.equal(sessionsResponse.status, 200, "owner_pairing_list_failed");
   const sessions = (await sessionsResponse.json()).data?.sessions;
   assert.ok(Array.isArray(sessions) && sessions.some((session) => session.id === paired.session.id && session.status === "active"), "owner_pairing_listing_missing");
+  const cloudLifecycle = onPaired ? await onPaired({ token: paired.token, sessionId: paired.session.id, deviceRequest }) : undefined;
   const revoke = await webRequest(`/api/desktop/session?id=${encodeURIComponent(paired.session.id)}`, { method: "DELETE", headers: { origin: origin.origin } });
   assert.equal(revoke.status, 200, "owner_pairing_revocation_failed");
   assert.equal((await deviceRequest("/api/desktop/access", { token: paired.token })).status, 401, "revoked_pairing_must_fail");
-  return { verified: ["authenticated_consent_metadata", "device_bound_pending_poll", "wrong_device_denied", "legacy_unbound_poll_denied", "web_session_pairing_approval", "cookie_free_pairing_consume", "single_use_pairing_replay_denied", "paired_identity_current_workspace_membership", "owner_pairing_listing", "owner_revocation_invalidates_bearer"],
+  return { ...(cloudLifecycle ? { cloudLifecycle } : {}), verified: ["authenticated_consent_metadata", "device_bound_pending_poll", "wrong_device_denied", "legacy_unbound_poll_denied", "web_session_pairing_approval", "cookie_free_pairing_consume", "single_use_pairing_replay_denied", "paired_identity_current_workspace_membership", "owner_pairing_listing", "owner_revocation_invalidates_bearer"],
     commercialAccessObservation: { allowed: access.access.allowed, code: access.access.code, billingStatus: access.access.billingStatus, enforcement: "not_verified_policy_decision_required" },
     notVerified: ["native_browser_or_vault", "production_pairing", "billing_enforcement", "cloud_or_deployment_authority", "provider_execution"] };
 }

@@ -8,6 +8,9 @@ import { dirname, join } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { PrismaClient } from "@prisma/client";
 import { rehearseLocalDesktopPairingHttp } from "./rehearse-local-desktop-pairing-http.mjs";
+import { startOwnedAwsWireFixture } from "./fixtures/ownedAwsWireFixture.mjs";
+import { localAwsChildEnvironment } from "./fixtures/localAwsChildEnvironment.mjs";
+import { rehearseLocalCloudHttp } from "./rehearse-local-cloud-http.mjs";
 import { rehearseLocalApprovalHttp } from "./rehearse-local-approval-http.mjs";
 
 const root = dirname(dirname(fileURLToPath(import.meta.url)));
@@ -63,7 +66,8 @@ async function unusedPort() { const server = createServer(); const origin = awai
 const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 /** Actual app HTTP + real disposable PostgreSQL; local mail capture, not browser/provider acceptance. */
-export async function rehearseLocalAuthHttp(value) {
+export async function rehearseLocalAuthHttp(value, { awsWireFixture = false } = {}) {
+  assert.equal(typeof awsWireFixture, "boolean", "explicit_aws_fixture_option_required");
   const databaseUrl = validateLocalAuthHttpTarget(value);
   assertNoRuntimeDotenv(root);
   const sourceCommit = assertCommittedApplicationSource(root);
@@ -85,6 +89,7 @@ export async function rehearseLocalAuthHttp(value) {
     } catch { response.writeHead(400).end(); }
   });
   let app;
+  let awsWire;
   let appLog = "";
   try {
     const [tables] = await client.$queryRawUnsafe("SELECT count(*)::int AS count FROM pg_tables WHERE schemaname NOT IN ('pg_catalog', 'information_schema') AND schemaname NOT LIKE 'pg_toast%'");
@@ -95,7 +100,9 @@ export async function rehearseLocalAuthHttp(value) {
     const env = localAuthChildEnvironment(process.env, { databaseUrl, appOrigin, mailOrigin });
     const bootstrap = spawnSync(process.execPath, [join(root, "node_modules/prisma/build/index.js"), "db", "push", "--skip-generate", "--schema", join(root, "prisma/schema.prisma")], { cwd: root, env, encoding: "utf8", timeout: 120_000, maxBuffer: 4 * 1024 * 1024 });
     assert.equal(bootstrap.status, 0, "current_schema_fixture_bootstrap_failed");
-    app = spawn(process.execPath, [join(root, "node_modules/next/dist/bin/next"), "dev", "--webpack", "--hostname", "127.0.0.1", "--port", appPort], { cwd: root, env, detached: true, stdio: ["ignore", "pipe", "pipe"] });
+    if (awsWireFixture) awsWire = await startOwnedAwsWireFixture();
+    const appEnv = awsWire ? localAwsChildEnvironment(env, { appOrigin, mailOrigin, fixture: awsWire }) : env;
+    app = spawn(process.execPath, [join(root, "node_modules/next/dist/bin/next"), "dev", "--webpack", "--hostname", "127.0.0.1", "--port", appPort], { cwd: root, env: appEnv, detached: true, stdio: ["ignore", "pipe", "pipe"] });
     for (const stream of [app.stdout, app.stderr]) stream.on("data", (data) => { appLog = (appLog + data).slice(-100_000); });
     const jar = new Map();
     async function request(path, options = {}) {
@@ -155,7 +162,8 @@ export async function rehearseLocalAuthHttp(value) {
     assert.equal(memberships.length, 1); assert.equal(memberships[0].organizationId, expectedWorkspace); assert.equal(memberships[0].role, "owner"); assert.ok(memberships[0].acceptedAt);
     assert.equal(await client.tenantBillingPlan.count(), 0, "identity_flow_must_not_provision_billing");
     const desktopPairing = await rehearseLocalDesktopPairingHttp({ appOrigin, webRequest: request, challenge,
-      deviceFingerprint: "isolated-http-fixture", expectedWorkspace, email: user.email });
+      deviceFingerprint: "isolated-http-fixture", expectedWorkspace, email: user.email,
+      ...(awsWire ? { onPaired: ({ token, deviceRequest }) => rehearseLocalCloudHttp({ databaseUrl, client, deviceRequest, token, organizationId: expectedWorkspace, userId: user.id, fixture: awsWire, encryptionSecret: awsWire.encryptionSecret }) } : {}) });
     const approvalDecisions = await rehearseLocalApprovalHttp({ databaseUrl, client, request, appOrigin,
       userId: user.id, organizationId: expectedWorkspace });
     assert.equal(assertCommittedApplicationSource(root), sourceCommit, "application_source_changed_during_journey");
@@ -173,8 +181,14 @@ export async function rehearseLocalAuthHttp(value) {
       await Promise.race([new Promise((resolve) => app.once("exit", resolve)), wait(5_000)]);
       if (app.exitCode === null) { try { process.kill(-app.pid, "SIGKILL"); } catch { /* already exited */ } }
     }
-    if (mailServer.listening) await new Promise((resolve) => mailServer.close(resolve));
-    await client.$disconnect();
+    // A wire cleanup failure must never skip independently owned mail/DB cleanup.
+    try {
+      if (awsWire) await awsWire.close();
+    } finally {
+      try {
+        if (mailServer.listening) await new Promise((resolve) => mailServer.close(resolve));
+      } finally { await client.$disconnect(); }
+    }
   }
 }
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {

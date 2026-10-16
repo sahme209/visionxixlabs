@@ -1370,3 +1370,44 @@ main revision. Combined local regression then passed 6517 tests across 612 files
 build/release alignment, and 30 Python CLI tests. Canonical workstream data was
 updated before regenerating the requirement register. Exact-head GitHub CI and
 its clean production build remain required before merging the reader.
+
+## Paired AWS customer lifecycle: actual local HTTP acceptance
+
+Main #155 (`3952e131`) and #156 (`cdb3996d`) are integrated normally without
+rewriting history. #156 exact-head push/PR runs 38848311628/38848283984 passed
+6,517 tests and 293-page production builds; that closure does not expand this
+cloud fixture's authority.
+
+The optional owned rehearsal passed on clean committed `644f539d`: all existing
+25 authentication/pairing/approval assertions plus 10 actual cloud lifecycle
+assertions using real Next HTTP, Prisma/PostgreSQL17, scoped encrypted storage,
+and installed AWS SDK clients. The only AWS endpoint was an owned loopback
+Query/XML fixture: exactly five guard-stamped identity/inventory requests.
+Replay, existing synthetic foreign metadata and revoked connection reads caused
+no additional provider IO. Disconnect removed encrypted configuration and
+incremented its version. No credential rows or paid plan were seeded; deployment
+and Terraform execution tables remained empty. Owned container cleanup passed.
+See `docs/mission/local-cloud-http-acceptance.json`; its original source report
+is retained when later combined-source results are added.
+
+This is stronger composition evidence than mocked SDK/service tests, but real
+AWS IAM/trust/permissions, native UI, production binding/schema/login, Stripe
+checkout/paid-policy and governed provider execution/rollback remain unverified.
+The observed no-plan identity response is not commercial authority. Latest-main
+combined HTTP and regression checks are the current next gate; no production or
+provider change is authorized by this evidence.
+
+The combined-source owned HTTP rerun then passed on clean `b98f6587` after main
+#155/#156 integration: all 35 assertions, exactly five stamped native-SDK wire
+requests, and owned PostgreSQL17 container removal. The original `644f539d`
+evidence remains preserved under the base report; `additionalSourceRuns` records
+the later combined source without replacing history. Full regression/type/build
+gates follow; real customer/provider/production acceptance remains separate.
+
+Combined local gates passed on `1f0172f6`: default-configuration Vitest 616 files /
+6,545 tests (one file/five tests intentionally skipped), web TypeScript, desktop
+release alignment/TypeScript/Vite build, 30 Python CLI tests, changed-source lint
+and tracker coverage. No timeout override, provider call, shared dependency
+mutation or Prisma generation was used. Exact-head push/PR CI and production
+website builds remain required; local desktop Vite compilation is not native
+installer or real OS acceptance.
