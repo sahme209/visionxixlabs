@@ -36,9 +36,11 @@ vi.mock("@/lib/billing/deploymentDispatchReservation", () => ({
 
 import { executeApprovedAction, type ActionExecutionRepo } from "../actionApprovalResponder";
 
+const target = { id: "target-1", provider: "aws", updatedAt: new Date("2026-10-16T00:00:00Z"), organizationId: "org-1", roleArn: "arn:aws:iam::123:role/x", region: "us-east-2", ecsCluster: "c", ecsService: "s" };
+const review = { kind: "ecs_restart_target", organizationId: "org-1", environmentId: "env_1", environmentTier: "dev", targetId: target.id, provider: "aws", targetUpdatedAt: target.updatedAt.toISOString(), roleArn: target.roleArn, region: target.region, ecsCluster: target.ecsCluster, ecsService: target.ecsService };
 const repo: ActionExecutionRepo = {
   environment: { findUnique: vi.fn(async () => ({ id: "env_1", organizationId: "org-1", tier: "dev" })) },
-  deploymentTarget: { findUnique: vi.fn(async () => ({ organizationId: "org-1", roleArn: "arn:aws:iam::123:role/x", region: "us-east-2", ecsCluster: "c", ecsService: "s" })) },
+  deploymentTarget: { findUnique: vi.fn(async () => ({ ...target })) },
   repository: { findMany: vi.fn(async () => []) },
   branchEnvironmentPolicy: { findMany: vi.fn(async () => []) },
 };
@@ -56,14 +58,14 @@ beforeEach(() => {
 describe("executeApprovedAction", () => {
   it.each(["workflow_dispatch_failed: fetch failed", "workflow_dispatch_failed: github_503: unavailable"])("preserves the Agent deployment reservation for an uncertain dispatch: %s", async (error) => {
     mocks.dispatchWorkflow.mockResolvedValue({ ok: false, error });
-    expect(await executeApprovedAction(repo, "org-1", "trigger_aws_deploy", { repositoryFullName: "acme/widgets", environmentId: "env_1" }, "user-1", "action-uncertain"))
+    expect(await executeApprovedAction(repo, "org-1", "trigger_aws_deploy", { repositoryFullName: "acme/widgets", environmentId: "env_1", _review: review }, "user-1", "action-uncertain"))
       .toEqual({ ok: false, error: "deployment_outcome_unknown" });
     expect(mocks.releaseDeploymentDispatch).not.toHaveBeenCalled();
   });
 
   it("releases the Agent deployment reservation after a definite provider rejection", async () => {
     mocks.dispatchWorkflow.mockResolvedValue({ ok: false, error: "workflow_dispatch_failed: github_422: invalid ref" });
-    expect(await executeApprovedAction(repo, "org-1", "trigger_aws_deploy", { repositoryFullName: "acme/widgets", environmentId: "env_1" }, "user-1", "action-rejected"))
+    expect(await executeApprovedAction(repo, "org-1", "trigger_aws_deploy", { repositoryFullName: "acme/widgets", environmentId: "env_1", _review: review }, "user-1", "action-rejected"))
       .toEqual({ ok: false, error: "workflow_dispatch_failed: github_422: invalid ref" });
     expect(mocks.releaseDeploymentDispatch).toHaveBeenCalledWith(expect.anything(), "org-1", "exec-1");
   });
@@ -164,7 +166,7 @@ describe("executeApprovedAction", () => {
       repository: { findMany: vi.fn(async () => []) },
       branchEnvironmentPolicy: { findMany: vi.fn(async () => []) },
     };
-    const result = await executeApprovedAction(otherOrgRepo, "org-1", "trigger_aws_deploy", { repositoryFullName: "acme/widgets", environmentId: "env_1" }, "user-1", "test-action");
+    const result = await executeApprovedAction(otherOrgRepo, "org-1", "trigger_aws_deploy", { repositoryFullName: "acme/widgets", environmentId: "env_1", _review: review }, "user-1", "test-action");
     expect(result).toEqual({ ok: false, error: "environment_not_found" });
   });
 
@@ -175,14 +177,14 @@ describe("executeApprovedAction", () => {
       repository: { findMany: vi.fn(async () => []) },
       branchEnvironmentPolicy: { findMany: vi.fn(async () => []) },
     };
-    const result = await executeApprovedAction(noTargetRepo, "org-1", "trigger_aws_deploy", { repositoryFullName: "acme/widgets", environmentId: "env_1" }, "user-1", "test-action");
+    const result = await executeApprovedAction(noTargetRepo, "org-1", "trigger_aws_deploy", { repositoryFullName: "acme/widgets", environmentId: "env_1", _review: review }, "user-1", "test-action");
     expect(result).toEqual({ ok: false, error: "deployment_target_not_configured" });
   });
 
   it("trigger_aws_deploy denies a promotion-required policy with no promotedFromExecutionId, even without deploymentExecution storage wired in", async () => {
     const promotionRepo: ActionExecutionRepo = {
       environment: { findUnique: vi.fn(async () => ({ id: "env_1", organizationId: "org-1", tier: "dev" })) },
-      deploymentTarget: { findUnique: vi.fn(async () => ({ organizationId: "org-1", roleArn: "arn:aws:iam::123:role/x", region: "us-east-2", ecsCluster: "c", ecsService: "s" })) },
+      deploymentTarget: { findUnique: vi.fn(async () => ({ ...target })) },
       repository: { findMany: vi.fn(async () => [{ id: "repo_1", organizationId: "org-1", provider: "github", remoteOwner: "acme", remoteName: "widgets" }]) },
       branchEnvironmentPolicy: {
         findMany: vi.fn(async () => [{
@@ -192,14 +194,14 @@ describe("executeApprovedAction", () => {
         }]),
       },
     };
-    const result = await executeApprovedAction(promotionRepo, "org-1", "trigger_aws_deploy", { repositoryFullName: "acme/widgets", environmentId: "env_1" }, "user-1", "test-action");
+    const result = await executeApprovedAction(promotionRepo, "org-1", "trigger_aws_deploy", { repositoryFullName: "acme/widgets", environmentId: "env_1", _review: review }, "user-1", "test-action");
     expect(result).toEqual({ ok: false, error: "branch_policy_promotion_artifact_unverified" });
     expect(mocks.dispatchWorkflow).not.toHaveBeenCalled();
   });
 
   it("trigger_aws_deploy dispatches the workflow with the target's own config", async () => {
     mocks.dispatchWorkflow.mockResolvedValue({ ok: true, data: { workflowRunId: "123", runUrl: "https://api.github.test/runs/123", htmlUrl: "https://github.test/runs/123" } });
-    const result = await executeApprovedAction(repo, "org-1", "trigger_aws_deploy", { repositoryFullName: "acme/widgets", environmentId: "env_1" }, "user-1", "test-action");
+    const result = await executeApprovedAction(repo, "org-1", "trigger_aws_deploy", { repositoryFullName: "acme/widgets", environmentId: "env_1", _review: review }, "user-1", "test-action");
     expect(result).toEqual({ ok: true, result: { dispatched: true, evidence: deploymentEvidence("service_restart"), execution: null, trackingAvailable: false, policyId: null, sourceRef: "main", sourceKind: "branch" } });
     expect(mocks.dispatchWorkflow).toHaveBeenCalledWith(expect.objectContaining({
       inputs: { role_arn: "arn:aws:iam::123:role/x", region: "us-east-2", cluster: "c", service: "s" },
@@ -208,8 +210,33 @@ describe("executeApprovedAction", () => {
 
   it("trigger_aws_deploy stops after policy evaluation when quota is exhausted", async () => {
     mocks.reserveDeploymentDispatch.mockResolvedValue({ ok: false, error: "deployment_quota_exhausted", used: 10, limit: 10 });
-    const result = await executeApprovedAction(repo, "org-1", "trigger_aws_deploy", { repositoryFullName: "acme/widgets", environmentId: "env_1" }, "user-1", "test-action");
+    const result = await executeApprovedAction(repo, "org-1", "trigger_aws_deploy", { repositoryFullName: "acme/widgets", environmentId: "env_1", _review: review }, "user-1", "test-action");
     expect(result).toEqual({ ok: false, error: "deployment_quota_exhausted" });
     expect(mocks.dispatchWorkflow).not.toHaveBeenCalled();
+  });
+});
+
+describe("reviewed ECS restart target binding", () => {
+  beforeEach(() => { mocks.dispatchWorkflow.mockResolvedValue({ ok: true, data: { workflowRunId: null, htmlUrl: null } }); });
+  it("rejects historical proposals without trusted target evidence before token/provider IO", async () => {
+    expect(await executeApprovedAction(repo, "org-1", "trigger_aws_deploy", { repositoryFullName: "acme/widgets", environmentId: "env_1" }, "reviewer", "old"))
+      .toEqual({ ok: false, error: "deployment_target_review_stale" });
+    expect(mocks.resolveTenantScopedToken).not.toHaveBeenCalled(); expect(mocks.dispatchWorkflow).not.toHaveBeenCalled();
+  });
+  it.each(["roleArn", "region", "ecsCluster", "ecsService", "targetUpdatedAt", "targetId", "environmentTier", "organizationId"])("rejects a changed %s before dispatch", async (field) => {
+    expect(await executeApprovedAction(repo, "org-1", "trigger_aws_deploy", { repositoryFullName: "acme/widgets", environmentId: "env_1", _review: { ...review, [field]: "changed" } }, "reviewer", "stale"))
+      .toEqual({ ok: false, error: "deployment_target_review_stale" });
+    expect(mocks.dispatchWorkflow).not.toHaveBeenCalled(); expect(mocks.reserveDeploymentDispatch).not.toHaveBeenCalled();
+  });
+  it("rechecks target after policy and reservation IO; never sends changed target", async () => {
+    const findUnique = vi.fn().mockResolvedValue({ ...target });
+    const changingRepo = { ...repo, deploymentTarget: { findUnique } };
+    mocks.reserveDeploymentDispatch.mockImplementationOnce(async () => {
+      findUnique.mockResolvedValue({ ...target, ecsService: "other-service", updatedAt: new Date("2026-10-16T01:00:00Z") });
+      return { ok: true, reused: false, reservation: { id: "held" } };
+    });
+    expect(await executeApprovedAction(changingRepo, "org-1", "trigger_aws_deploy", { repositoryFullName: "acme/widgets", environmentId: "env_1", _review: review }, "reviewer", "late"))
+      .toEqual({ ok: false, error: "deployment_target_review_stale" });
+    expect(mocks.dispatchWorkflow).not.toHaveBeenCalled(); expect(mocks.releaseDeploymentDispatch).toHaveBeenCalledWith(changingRepo, "org-1", "held");
   });
 });

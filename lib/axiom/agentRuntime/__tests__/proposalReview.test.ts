@@ -14,6 +14,7 @@ vi.mock("@/lib/connectors/github/resolveTenantScopedToken", () => ({
 }));
 vi.mock("@/lib/connectors/github/githubWriteClient", () => ({ getFile: mocks.getFile }));
 
+import { agentActionDigest } from "../proposalIntegrity";
 import { prepareProposalArgsForReview } from "../proposalReview";
 
 describe("prepareProposalArgsForReview", () => {
@@ -76,5 +77,26 @@ describe("prepareProposalArgsForReview", () => {
         expect.objectContaining({ path: "src/b.ts", baseSha: null, baseContent: "" }),
       ] },
     }) });
+  });
+});
+
+describe("ECS restart proposal server target evidence", () => {
+  const row = { id: "target", organizationId: "org-1", provider: "aws", updatedAt: new Date("2026-10-16T00:00:00Z"), roleArn: "arn:aws:iam::123456789012:role/restart", region: "us-east-1", ecsCluster: "cluster", ecsService: "service" };
+  const targetRepo = { environment: { findUnique: vi.fn(async () => ({ id: "env", organizationId: "org-1", tier: "dev" })) }, deploymentTarget: { findUnique: vi.fn(async () => row) } };
+  it("discards forged caller review and captures exact current tenant target", async () => {
+    const result = await prepareProposalArgsForReview("org-1", "trigger_aws_deploy", { environmentId: "env", _review: { kind: "ecs_restart_target", roleArn: "attacker" } }, targetRepo);
+    expect(result).toEqual({ ok: true, args: { environmentId: "env", _review: { kind: "ecs_restart_target", organizationId: "org-1", environmentId: "env", environmentTier: "dev", targetId: "target", provider: "aws", targetUpdatedAt: row.updatedAt.toISOString(), roleArn: row.roleArn, region: row.region, ecsCluster: row.ecsCluster, ecsService: row.ecsService } } });
+  });
+  it("binds captured target data into the existing approval digest", async () => {
+    const prepared = await prepareProposalArgsForReview("org-1", "trigger_aws_deploy", { environmentId: "env" }, targetRepo);
+    if (!prepared.ok) throw new Error("expected server review");
+    const digest = (args: Record<string, unknown>) => agentActionDigest({ organizationId: "org-1", conversationId: "conversation", proposedByUserId: "author", toolName: "trigger_aws_deploy", args });
+    expect(digest(prepared.args)).not.toBe(digest({ ...prepared.args, _review: { ...(prepared.args._review as object), ecsService: "different" } }));
+  });
+  it("cannot trust caller evidence without a server repository", async () => {
+    expect(await prepareProposalArgsForReview("org-1", "trigger_aws_deploy", { environmentId: "env", _review: row })).toEqual({ ok: false, error: "deployment_target_review_unavailable" });
+  });
+  it("does not capture another tenant target", async () => {
+    expect(await prepareProposalArgsForReview("other-org", "trigger_aws_deploy", { environmentId: "env" }, targetRepo)).toEqual({ ok: false, error: "deployment_target_review_unavailable" });
   });
 });

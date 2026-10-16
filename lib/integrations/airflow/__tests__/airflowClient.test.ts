@@ -44,10 +44,10 @@ describe("AirflowClient", () => {
   });
 
   it("creates an explicitly attributable DAG run", async () => {
-    const fetcher = vi.fn().mockResolvedValue(new Response(JSON.stringify({ dag_run_id: "axiom-run", state: "queued" }), { status: 200 }));
+    const fetcher = vi.fn().mockImplementation(async (_url, init) => Response.json({ dag_id: "deploy_batch", dag_run_id: JSON.parse(init.body).dag_run_id, state: "queued" }));
     vi.stubGlobal("fetch", fetcher);
     const run = await new AirflowClient("https://airflow.example.com", { authMode: "token", token: "gateway-token" }).triggerDag("deploy_batch", { release: "42" });
-    expect(run.dagRunId).toBe("axiom-run");
+    expect(run.dagRunId).toBe(JSON.parse(fetcher.mock.calls[0][1].body).dag_run_id);
     expect(fetcher.mock.calls[0][0]).toBe("https://airflow.example.com/api/v2/dags/deploy_batch/dagRuns");
     expect(JSON.parse(fetcher.mock.calls[0][1].body)).toMatchObject({ conf: { release: "42" }, note: "Triggered by Axiom Agent" });
   });

@@ -103,26 +103,44 @@ export class AirflowClient {
   }
 
   async listDagRuns(dagId: string, limit = 50): Promise<AirflowDagRun[]> {
-    const body = await this.request(`/dags/${encodeURIComponent(dagId)}/dagRuns?limit=${Math.min(100, Math.max(1, limit))}&order_by=-logical_date`) as { dag_runs?: Array<Record<string, unknown>> };
-    return (body.dag_runs ?? []).map((run) => ({
-      dagId: String(run.dag_id ?? dagId), dagRunId: String(run.dag_run_id ?? ""), state: String(run.state ?? "unknown"),
-      logicalDate: typeof run.logical_date === "string" ? run.logical_date : null,
-      startedAt: typeof run.start_date === "string" ? run.start_date : null,
-      endedAt: typeof run.end_date === "string" ? run.end_date : null,
-    })).filter((run) => run.dagRunId);
+    const body = await this.request(`/dags/${encodeURIComponent(dagId)}/dagRuns?limit=${Math.min(100, Math.max(1, limit))}&order_by=-logical_date`);
+    if (!isRecord(body) || !Array.isArray(body.dag_runs)) throw new Error("airflow_run_response_invalid");
+    return body.dag_runs.map((run: unknown) => {
+      if (!isRunForDag(run, dagId)) throw new Error("airflow_run_response_invalid");
+      return toDagRun(run);
+    });
   }
 
   async triggerDag(dagId: string, conf: Record<string, unknown> = {}, scheduledRunId?: string): Promise<AirflowDagRun> {
     const runId = scheduledRunId ?? `axiom__${new Date().toISOString().replaceAll(/[:.]/g, "-")}`;
     if (scheduledRunId !== undefined && !/^[A-Za-z0-9_.~:-]{1,250}$/.test(runId)) throw new Error("invalid_airflow_run_id");
-    let body: Record<string, unknown>;
+    let body: unknown;
     try {
       body = await this.request(`/dags/${encodeURIComponent(dagId)}/dagRuns`, { method: "POST", body: JSON.stringify({ dag_run_id: runId, logical_date: null, conf, note: "Triggered by Axiom Agent" }) }) as Record<string, unknown>;
     } catch (error) {
-      if (scheduledRunId === undefined || !(error instanceof Error) || error.message !== "airflow_api_failed:409") throw error;
+      if (scheduledRunId === undefined || !(error instanceof Error) || error.message !== "airflow_api_failed:409") {
+        if (error instanceof SyntaxError) throw new Error("airflow_trigger_outcome_unknown");
+        throw error;
+      }
       body = await this.request(`/dags/${encodeURIComponent(dagId)}/dagRuns/${encodeURIComponent(runId)}`) as Record<string, unknown>;
-      if (body.dag_run_id !== runId || (body.dag_id !== undefined && body.dag_id !== dagId)) throw new Error("airflow_run_conflict_unconfirmed");
+      if (!isRunForDag(body, dagId) || body.dag_run_id !== runId) throw new Error("airflow_run_conflict_unconfirmed");
     }
-    return { dagId, dagRunId: String(body.dag_run_id ?? runId), state: String(body.state ?? "queued"), logicalDate: typeof body.logical_date === "string" ? body.logical_date : null, startedAt: typeof body.start_date === "string" ? body.start_date : null, endedAt: typeof body.end_date === "string" ? body.end_date : null };
+    // HTTP success does not prove the requested occurrence was created when
+    // the response cannot identify it. Never fabricate a receipt or replay here.
+    if (!isRunForDag(body, dagId) || body.dag_run_id !== runId) throw new Error("airflow_trigger_outcome_unknown");
+    return toDagRun(body);
   }
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return value !== null && typeof value === "object" && !Array.isArray(value);
+}
+function isRunForDag(value: unknown, dagId: string): value is Record<string, unknown> & { dag_id: string; dag_run_id: string } {
+  return isRecord(value) && value.dag_id === dagId && typeof value.dag_run_id === "string" && value.dag_run_id.trim().length > 0;
+}
+function toDagRun(run: Record<string, unknown> & { dag_id: string; dag_run_id: string }): AirflowDagRun {
+  return { dagId: run.dag_id, dagRunId: run.dag_run_id, state: typeof run.state === "string" ? run.state : "unknown",
+    logicalDate: typeof run.logical_date === "string" ? run.logical_date : null,
+    startedAt: typeof run.start_date === "string" ? run.start_date : null,
+    endedAt: typeof run.end_date === "string" ? run.end_date : null };
 }

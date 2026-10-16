@@ -2,11 +2,30 @@ import { open } from "@tauri-apps/plugin-shell";
 import { invoke } from "@tauri-apps/api/core";
 import { type PairedSession } from "./authSession";
 import { verifyAndActivatePairedSession } from "./activeDesktopCredential";
-import type { VerifiedDesktopIdentity } from "./desktopClient";
+import { desktopClient, type VerifiedDesktopIdentity } from "./desktopClient";
 import { readSecret, writeSecret } from "./secureStorage";
 import { DESKTOP_VERSION } from "./desktopMetadata";
 
-const API_BASE = "https://visionxixlabs.com";
+function trustedPairingOrigin(): string {
+  const configured = new URL(desktopClient.config.apiBase);
+  const local = ["127.0.0.1", "localhost", "[::1]"].includes(configured.hostname);
+  if ((configured.protocol !== "https:" && !(configured.protocol === "http:" && local)) || configured.username || configured.password || configured.pathname !== "/" || configured.search || configured.hash) {
+    throw new Error("Desktop sign-in requires a secure service origin or local development origin.");
+  }
+  return configured.origin;
+}
+
+function trustedVerificationUrl(value: string, origin: string, challenge: string, intent: DesktopAuthIntent): string {
+  let url: URL;
+  try { url = new URL(value); } catch { throw new Error("The service returned an invalid desktop sign-in link. Try again."); }
+  const keys = [...url.searchParams.keys()];
+  if (url.origin !== origin || url.username || url.password || url.hash || url.pathname !== "/desktop/connect" ||
+    keys.length !== 2 || !keys.includes("challenge") || !keys.includes("intent") ||
+    url.searchParams.get("challenge") !== challenge || url.searchParams.get("intent") !== intent) {
+    throw new Error("The service returned an unexpected desktop sign-in link. No browser was opened.");
+  }
+  return url.toString();
+}
 const FINGERPRINT_KEY = "desktop.device.fingerprint";
 
 async function deviceFingerprint(): Promise<string> {
@@ -40,14 +59,16 @@ async function platform(): Promise<DesktopPlatform> {
   }
 }
 
-async function jsonRequest<T>(path: string, body: unknown, signal?: AbortSignal): Promise<{ response: Response; body: T }> {
+async function jsonRequest<T>(origin: string, path: string, body: unknown, signal?: AbortSignal): Promise<{ response: Response; body: T }> {
   throwIfCancelled(signal);
   const controller = new AbortController();
   const abort = () => controller.abort();
   signal?.addEventListener("abort", abort, { once: true });
   const timeout = setTimeout(() => controller.abort(), 30_000);
   try {
-    const response = await fetch(`${API_BASE}${path}`, {
+    const response = await fetch(`${origin}${path}`, {
+      redirect: "error",
+      credentials: "omit",
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body),
@@ -72,10 +93,11 @@ export type DesktopAuthIntent = "sign_in" | "sign_up";
 
 export async function signInWithBrowser(intent: DesktopAuthIntent, onWaiting: () => void, signal?: AbortSignal, onCommitting?: () => void): Promise<VerifiedDesktopIdentity> {
   throwIfCancelled(signal);
+  const origin = trustedPairingOrigin();
   const fingerprint = await deviceFingerprint();
   throwIfCancelled(signal);
   const start = await jsonRequest<{ challenge?: string; verificationUrl?: string; error?: string }>(
-    "/api/desktop/pair/start",
+    origin, "/api/desktop/pair/start",
     {
       deviceFingerprint: fingerprint,
       deviceLabel: `${navigator.platform || "Desktop"} · Axiom Agent`,
@@ -90,7 +112,9 @@ export async function signInWithBrowser(intent: DesktopAuthIntent, onWaiting: ()
   }
 
   throwIfCancelled(signal);
-  await open(start.body.verificationUrl);
+  const verificationUrl = trustedVerificationUrl(start.body.verificationUrl, origin, start.body.challenge, intent);
+  if (trustedPairingOrigin() !== origin) throw new Error("The sign-in service changed. Start sign-in again.");
+  await open(verificationUrl);
   throwIfCancelled(signal);
   onWaiting();
 
@@ -102,7 +126,7 @@ export async function signInWithBrowser(intent: DesktopAuthIntent, onWaiting: ()
       token?: string;
       session?: PairedSession;
       error?: string;
-    }>("/api/desktop/pair/status", {
+    }>(origin, "/api/desktop/pair/status", {
       challenge: start.body.challenge,
       deviceFingerprint: fingerprint,
     }, signal);
@@ -110,6 +134,7 @@ export async function signInWithBrowser(intent: DesktopAuthIntent, onWaiting: ()
     if (!status.response.ok) throw new Error(status.body.error || "Desktop sign-in failed.");
     if (status.body.status === "approved" && status.body.token && status.body.session) {
       throwIfCancelled(signal);
+      if (trustedPairingOrigin() !== origin) throw new Error("The sign-in service changed. Start sign-in again.");
       const identity = await verifyAndActivatePairedSession(status.body.token, status.body.session, signal, onCommitting);
       throwIfCancelled(signal);
       return identity;
