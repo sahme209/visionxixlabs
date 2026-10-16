@@ -1,5 +1,5 @@
 {
-  "ownedHttpSourceCommit": "15878450068a7dc08a22d556ad27fd08fb68585a",
+  "ownedHttpSourceCommit": "4478efb00df46fd2f2aa2212d762988ce24ab2cd",
   "algorithm": "sha256",
   "files": {
     "app/api/desktop/cloud/azure/accounts/[id]/disconnect/route.ts": "8e2dde347b2b4b0b26ae02a40aba0bf5d3792f2b90cc69e59ccfec6cc6ac9d82",
@@ -17,7 +17,7 @@
     "lib/cloud/azure/enrollment/service.ts": "6b131c84b68a6a630a456bd7026cd736bafb4c3245c09b7a5180947e7fe235f4"
   },
   "baseProductionSourceCommit": "22d83f31",
-  "productionSourceReference": "current committed tree; providerClient.ts receives supported per-client SDK logging",
+  "productionSourceReference": "4478efb00df46fd2f2aa2212d762988ce24ab2cd",
   "changedProductionModulesSinceBase": [
     "lib/cloud/azure/enrollment/providerClient.ts"
   ]
