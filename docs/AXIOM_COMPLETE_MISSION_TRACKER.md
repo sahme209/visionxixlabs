@@ -1316,3 +1316,18 @@ sections and the source-pinned HTTP evidence. Combined launcher/ECS/demo checks
 passed 153 tests across six files; final web TypeScript, scoped lint and tracker
 consistency passed. This does not rerun or expand the actual HTTP acceptance;
 exact final-head PR CI is still the merge gate.
+
+
+### Combined-source actual HTTP acceptance
+
+The existing owned launcher then passed once on clean committed
+`d4688abe5bd73fccd37c30ff7740406b7848baed` (main #153 plus inactive provenance
+source): 11 actual authentication, 10 pairing and four approval protocol checks.
+`docs/mission/local-auth-http-owned-launcher-acceptance.json` preserves the original
+`15f61319` report and adds this source-bound run. An explicit OS/proxy/CA-only
+environment excluded inherited application credentials; the cached PostgreSQL17
+fixture was newly owned, loopback-only and removed only after exact ownership
+verification. The source remained clean; no concurrent compiler or shared-client
+generation ran. This is real local Next.js/PostgreSQL acceptance, not production
+login, native/browser/vault, OAuth, paid policy, Stripe, cloud or provenance-runtime
+acceptance. Existing production binding/recovery approvals remain unchanged.

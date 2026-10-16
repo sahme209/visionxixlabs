@@ -108,3 +108,30 @@ focused safety/protocol tests across four files also passed. The observed
 `allowed: true` / `no_plan` identity-only policy remains outside paid-entitlement
 acceptance. Browser/native/OAuth/provider/Stripe and production recovery claims
 remain excluded.
+
+
+## Combined main #153 and provenance-source acceptance — 2026-10-16 UTC
+
+The unchanged owned launcher passed once on clean committed source
+`d4688abe5bd73fccd37c30ff7740406b7848baed`, after integration of main #151–153
+and the inactive ECS provenance boundary. All 25 actual local HTTP checks passed:
+eleven authentication, ten desktop pairing and four approval assertions. The
+sanitized report is retained as `additionalSourceRuns` in the existing
+[owned-launcher evidence](mission/local-auth-http-owned-launcher-acceptance.json);
+the original `15f61319` report remains intact.
+
+The invocation constructed an explicit OS/proxy/CA-only environment plus
+`AXIOM_RUN_LOCAL_AUTH_HTTP=1`. It used the cached PostgreSQL17 image, a newly
+owned synthetic database and loopback-only application/mail transport. The
+launcher verified its exact container ownership and removed that container and
+its anonymous volumes before returning success; the checkout remained clean.
+No image pull, shared Prisma generation, production connection, migration chain,
+provider dispatch, external mail or billing operation occurred. Compilers and
+tests were stopped before the dev server started, avoiding generated-type races.
+
+This accepts the same bounded backend HTTP journey on the combined source; it
+does not exercise pricing checkout, paid entitlement enforcement, cryptographic
+provenance ingestion, cloud deployment or production login merely because their
+source/dependencies are present. The observed identity-only `allowed: true` /
+`no_plan` remains a policy observation. Browser/native/vault, OAuth, external mail,
+Stripe and production recovery remain separate unverified acceptance gates.
