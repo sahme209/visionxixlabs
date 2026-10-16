@@ -1396,3 +1396,10 @@ checkout/paid-policy and governed provider execution/rollback remain unverified.
 The observed no-plan identity response is not commercial authority. Latest-main
 combined HTTP and regression checks are the current next gate; no production or
 provider change is authorized by this evidence.
+
+The combined-source owned HTTP rerun then passed on clean `b98f6587` after main
+#155/#156 integration: all 35 assertions, exactly five stamped native-SDK wire
+requests, and owned PostgreSQL17 container removal. The original `644f539d`
+evidence remains preserved under the base report; `additionalSourceRuns` records
+the later combined source without replacing history. Full regression/type/build
+gates follow; real customer/provider/production acceptance remains separate.

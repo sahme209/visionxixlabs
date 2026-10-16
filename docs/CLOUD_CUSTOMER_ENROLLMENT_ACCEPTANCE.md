@@ -117,3 +117,10 @@ new test read `.data` instead of the existing `.data.account` response; the
 fixture-only parsing correction preceded the successful committed-source rerun.
 No application response contract changed. See
 `docs/mission/local-cloud-http-acceptance.json` for scoped evidence.
+
+The same explicit owned HTTP/PostgreSQL17 run also passed on committed combined
+source `b98f6587` after normal integration of main #155/#156 (`cdb3996d`). All 35
+assertions and the exact five stamped SDK wire requests passed again, and owned
+container removal was confirmed. The original `644f539d` report remains intact;
+this later result is stored under `additionalSourceRuns`. No real AWS/IAM or
+commercial acceptance claim is added.
