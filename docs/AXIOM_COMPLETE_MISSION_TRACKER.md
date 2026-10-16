@@ -1022,3 +1022,61 @@ incidents are not suppressed application failures. Subsequent exact-head GitHub 
 passed and PR #147 merged, as recorded above. Real HTTP evidence remains attributed
 to `f7de88f0`; later commits
 only record documentation and results. No deployment or production change occurred.
+
+
+## Pricing-to-application audit and safe wiring candidate
+
+The existing `/pricing` route redirects to canonical `/plans`. Read-only source
+audit covered the public catalog, legacy pricing/entitlement registries, Checkout,
+signed subscription events, usage/credit reservations, refunds, quota/status gates,
+portal management and desktop DTO/UI. Existing billing evidence and the full
+commercial decision packet are in `BILLING_CUSTOMER_JOURNEY_ACCEPTANCE.md`;
+uncertain recurring purchase recovery is designed in
+`RECURRING_SUBSCRIPTION_INTENT_DESIGN.md`, with no schema/financial change enabled.
+
+Safe source candidate restores Pricing in shared desktop/mobile navigation and
+footer, preserves validated plan/interval through sign-in, requires a fresh
+purchase click and binds the displayed workspace to fresh server authority before
+seat counts or Stripe IO. Desktop billing management now requires current
+owner/admin authority consistently with the browser; no-plan identity access is
+no longer presented as an approved commercial trial. Existing billing activation,
+prices, commercial access and support payment paths are unchanged. Integrated
+checks and exact-head CI remain pending; local producer regressions exercise real
+components/routes with provider responses mocked.
+
+Important unresolved commercial disconnections:
+
+- Public proposed Free/Pro/Enterprise allowances ($2 per organization/$10 per paid
+  seat/$30 per paid seat) differ from enforced legacy $25/$200/$5,000 flat pools;
+  inactive-status behavior and overage rules also differ. No policy was silently
+  selected or existing customer reinterpreted. Owner approved the public catalog
+  for newly created TEST subscriptions only on 2026-10-16, preserving existing
+  customers unchanged; live activation and production migrations remain unapproved.
+- Organization webhook updates `TenantBillingPlan`; older feature paths still
+  authorize against `User.plan`. Desktop commercial policy remains deliberately
+  identity-only. These are not verified purchased-feature provisioning.
+- Recurring checkout lacks durable immutable intent/unknown-outcome recovery;
+  portal price-only changes without matching metadata fail closed. Current
+  subscription snapshots are not invoice-finalization/payment reconciliation.
+
+Runtime presence-only inspection confirms no Stripe key, webhook secret or
+DATABASE_URL; no Stripe connector is exposed. No credentials were retrieved.
+Hosted Stripe TEST checkout, signed test delivery, current account provisioning,
+renewal/failure/cancel/upgrade/downgrade and credit exhaustion remain **unverified**.
+Public catalog selection for new test subscriptions is approved. Next gates are
+reviewed version/status/overage/legacy compatibility and securely configured
+isolated Stripe test prices/webhook/database. Test prices
+must privately attest currency, quantity basis and actual amount, not merely IDs.
+No live billing, production price, database, Vercel or support-payment change is
+authorized. Deferred support storytelling remains independent and unimplemented.
+
+
+The pricing candidate also corrects current-account credit reporting: read-only
+RepeatableRead evidence matches the existing reservation engine's raw plan tier,
+net eligible current/permanent add-ons, usage and all unresolved linked/pending
+holds. It reports included allowance remaining, not spending permission or new
+public-catalog entitlements. No legacy pool/status/charging policy is changed.
+Known subscription history (including canceled/past-due) is refused before a new
+Checkout request, because replacement IDs are not yet a supported lifecycle. Four
+regressions failed on the previous route; unknown concurrent initial purchase
+recovery still needs durable intent. Support payment routes remain untouched.

@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { COUNTED_DEPLOYMENT_DEFINITION, isSelfServiceBillingEnabled } from "@/lib/billing/publicPlanCatalog";
+import { currentContext } from "@/lib/auth/currentContext";
+import { parsePublicPlanSelection } from "@/lib/billing/planSelection";
+import type { PublicCheckoutWorkspace } from "@/components/billing/PublicPlansCatalog";
 import { PublicPlansCatalog } from "@/components/billing/PublicPlansCatalog";
 
 export const metadata: Metadata = {
@@ -10,8 +13,18 @@ export const metadata: Metadata = {
     "Transparent Free, Pro, and Enterprise plans for governed deployments, with activation protected until billing authority and quota enforcement are validated.",
 };
 
-export default function PlansPage() {
+export default async function PlansPage({ searchParams }: { searchParams?: Promise<{ plan?: string | string[]; interval?: string | string[] }> } = {}) {
   const checkoutEnabled = isSelfServiceBillingEnabled();
+  const initialSelection = parsePublicPlanSelection(await searchParams ?? {});
+  let workspace: PublicCheckoutWorkspace = { status: "unavailable" };
+  if (checkoutEnabled) {
+    try {
+      const context = await currentContext();
+      workspace = !context.isAuthenticated ? { status: "signed_out" }
+        : context.organizationId && context.roles.length > 0 ? { status: "ready", organizationId: String(context.organizationId), label: context.workspaceLabel ?? "Current workspace" }
+          : { status: "unavailable" };
+    } catch { /* A public price page remains readable without billing authority. */ }
+  }
   return (
     <main className="relative isolate overflow-hidden">
       <div
@@ -34,7 +47,7 @@ export default function PlansPage() {
         </div>
       </section>
 
-      <PublicPlansCatalog checkoutEnabled={checkoutEnabled} />
+      <PublicPlansCatalog checkoutEnabled={checkoutEnabled} initialSelection={initialSelection} workspace={workspace} />
 
       <section className="border-y border-white/[0.07] bg-[#171717] px-5 py-16 sm:px-8 lg:px-12">
         <div className="mx-auto grid max-w-[1400px] gap-8 lg:grid-cols-[0.75fr_1.25fr] lg:items-start">

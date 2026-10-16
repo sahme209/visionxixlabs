@@ -75,3 +75,13 @@ publication or native host acceptance is recorded by this source change.
 - Public signed binaries on the download page
 - Auto-update via `tauri-plugin-updater`
 - Enterprise workstation mode
+
+### Source-only billing status presentation correction (2026-10-16)
+
+Plan & usage reports `no_plan` as **No subscription**, separately from identity
+sign-in. The legacy `trial` tier alone no longer implies an approved trial;
+no-charge trial/pilot labels require their explicit supported billing status.
+Existing identity-only access policy, raw legacy paid tier names, credit pools
+and subscription authority remain unchanged. Component tests exercise the real
+no-plan DTO and preserve explicit trial/pilot presentation. This is not paid
+checkout, credit reconciliation or native installer acceptance.

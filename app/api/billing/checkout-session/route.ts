@@ -1,7 +1,7 @@
 /**
  * POST /api/billing/checkout-session
  *
- * Body: { planId: "pro" | "enterprise", billingInterval: "monthly" | "annual" }
+ * Body: { planId: "pro" | "enterprise", billingInterval: "monthly" | "annual", expectedOrganizationId: string }
  *
  * Returns a Stripe Checkout URL when Stripe is configured. Returns
  * an honest `{ ok: false, reason }` when it isn't — callers render
@@ -40,13 +40,30 @@ export async function POST(req: NextRequest) {
     if (!isAdminOrOwner({ email: ctx.email, roles: ctx.roles })) {
       throw new AxiomError({ code: "billing.admin_required", category: "authorization", userMessage: "A workspace owner or admin must manage billing." });
     }
-    const body = (await req.json()) as { planId?: string; billingInterval?: string } | null;
+    const body = (await req.json()) as { planId?: string; billingInterval?: string; expectedOrganizationId?: unknown } | null;
     if (!body?.planId || !isPaidPublicPlanId(body.planId)) {
       throw AxiomErrors.validation("billing.plan.invalid", "planId must be pro or enterprise.");
     }
     const billingInterval = body.billingInterval ?? "monthly";
     if (!isBillingInterval(billingInterval)) {
       throw AxiomErrors.validation("billing.interval.invalid", "billingInterval must be monthly or annual.");
+    }
+
+    // Bind this explicit purchase to the workspace shown to the customer.
+    // A stale tab must never silently purchase for a newly selected workspace.
+    if (typeof body.expectedOrganizationId !== "string" || body.expectedOrganizationId !== String(ctx.organizationId)) {
+      throw new AxiomError({ code: "billing.workspace_changed", category: "authorization", userMessage: "Your workspace changed or could not be confirmed. Refresh the plans page and review your selection before trying again." });
+    }
+
+    // The existing event consumer refuses replacement subscription identities.
+    // Starting another paid subscription cannot implement an upgrade, renewal,
+    // or canceled-account recovery until that lifecycle is reviewed.
+    const existing = await prisma.tenantBillingPlan.findUnique({
+      where: { organizationId: String(ctx.organizationId) },
+      select: { stripeSubscriptionId: true },
+    });
+    if (existing?.stripeSubscriptionId) {
+      throw new AxiomError({ code: "billing.subscription_change_required", category: "precondition", userMessage: "This workspace already has a subscription record. Review Usage & billing or contact support before starting a subscription change." });
     }
 
     const seatCount = Math.max(1, await prisma.orgMembership.count({

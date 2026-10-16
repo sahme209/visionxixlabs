@@ -9,6 +9,7 @@ const primaryLinks = [
   { href: "/product", label: "Axiom" },
   { href: "/demo", label: "Product tour" },
   { href: "/integrations", label: "Integrations" },
+  { href: "/plans", label: "Pricing" },
   { href: "/security", label: "Security" },
 ];
 
@@ -17,7 +18,6 @@ const mobileLinks = [
   { href: "/capabilities", label: "Capabilities" },
   { href: "/resources", label: "Resources" },
   { href: "/status", label: "Status" },
-  { href: "/plans", label: "Plans" },
   { href: "/support", label: "Founding Supporters" },
   { href: "/contact", label: "Contact" },
 ];
