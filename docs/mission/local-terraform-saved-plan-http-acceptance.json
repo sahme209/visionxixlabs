@@ -1,0 +1,53 @@
+{
+  "sourceCommit": "62e47d9421d1a95a2cd0eaabe42870a8cf801209",
+  "sourceDependency": "f9ce5500 Agent readiness source/harness (normally merged; root integrates first)",
+  "acceptance": {
+    "executableVersion": "1.9.8",
+    "binaryDigest": "bd4c9d8c7e240660786168fdd63317f5bae35fe2171758bd1ca98041ab0335f7",
+    "binaryBytes": 1544,
+    "showDigest": "13fbe1877755c7df12494d1c1e779b42f8facaf6e088b8322e15124958855730",
+    "artifact": "genuine_builtin_terraform_data_plan",
+    "authority": "synthetic_owned_local_fixture_only",
+    "childEnvironment": "no_HOME_no_inherited_provider_credentials_empty_mirror",
+    "invalidSavedPlanRejected": true,
+    "applyExecuted": false,
+    "proposal": "review_only_installed_in_owned_fixture",
+    "proposalRollback": "passed",
+    "exactCatalog": "ready",
+    "unmarkedAndRemovedMarker": "drift",
+    "immutableUpdateDelete": "rejected",
+    "mixedTenantInsert": "rejected",
+    "duplicateInsert": "rejected",
+    "pairedList": "metadata_only",
+    "pairedDetail": "exact_binary_show_summary",
+    "staleRequestVersion": "rejected",
+    "missingStorageAndDrift": "503",
+    "unauthenticated": "401",
+    "foreignRequest": "404",
+    "approval": "unavailable",
+    "executionEnabled": false,
+    "transport": "real_local_next_http",
+    "persistence": "owned_disposable_postgresql",
+    "notVerified": [
+      "customer_backend_state_or_locks",
+      "live_provider",
+      "current_target_credentials_or_approval",
+      "cloud_apply_recovery",
+      "native_packaged_UI"
+    ]
+  },
+  "fixtureCleanup": "owned_disposable_container_removed",
+  "terraformDistribution": {
+    "fixtureOnlyVersion": "1.9.8",
+    "archiveBytes": 27041434,
+    "archiveSha256": "186e0145f5e5f2eb97cbd785bc78f21bae4ef15119349f6ad4fa535b83b10df8",
+    "executableSha256": "7386e89a97d0f24024955acc79ccf693b75b97f7c6383cb9d966e7d59aa5b223",
+    "officialChecksumSignature": "GOODSIG/VALIDSIG",
+    "primaryFingerprint": "C874011F0AB405110D02105534365D9472D7468F",
+    "signingSubkeyFingerprint": "374EC75B485913604A831CC7C820C6D5CD27AB87",
+    "keySourceCommit": "d5830be52fc3f571c341a25b76589f38b28ee381",
+    "keySourceSha256": "7371881a6448f91100225f1e3f52455e1a326513b9b39a42ad19fd9affebf441",
+    "trustQualification": "Official source acquisition + pinned fingerprint; not independently certified web of trust; GPG TRUST_UNDEFINED and expired historical key certification reported"
+  },
+  "productionChanges": false
+}

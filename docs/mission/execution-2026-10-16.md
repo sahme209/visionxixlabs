@@ -174,3 +174,41 @@ An unavailable local Chromium launch is not a successful browser journey.
   `62e1f25b2f600cd5c67e758210ce144ea946cb6d16a8d6301d20054e524f0306`.
   Tracker check and a missing-support-workstream negative validation passed;
   existing supporter application/payment source remains byte-unchanged.
+
+### Terraform saved-plan review integration
+
+- Feature runtime `62e47d94`, evidence-only final `3a74b249`, independently
+  reviewed including import/move/action-tuple refusal and the genuine PostgreSQL
+  PK-rendering correction. Integrated normally with desktop/mission foundation.
+- Actual owned CLI captured a saved binary and its own show JSON, rejected corrupt
+  input, and performed no apply, provider/backend operation or production SQL.
+  Owned PostgreSQL validated the exact proposed catalog, tenant/duplicate and
+  UPDATE/DELETE guards; paired HTTP exercised list/detail, auth and drift/version
+  refusals. Fixture resources were stopped/removed after ownership verification.
+- Metadata-only list avoids encrypted bulk loading; detail authenticates exact
+  bytes. Target/backend/credential and approval remain unavailable. Storage is a
+  proposal, not an active migration; no creation/upload/approval/apply route.
+- Worker focused 113 tests passed; integration-wide defaults/compilers and
+  exact-head CI remain required. Real provider, native and customer-originated
+  plan-to-apply acceptance are not claimed.
+
+### Saved-plan broad gates and desktop source merge
+
+- PR #162 merged normally as `f78753dc5a3eb2581f2c74149f3cfc78c0019ab9`.
+  Exact head `507f7e0a1ef81dde7b019434eb288d8dc0eb43fe` passed push/PR Test
+  runs `38895745420` / `38895768155` and push/PR Desktop CI
+  `38895745448` / `38895768034`. No publication or production deployment.
+- Saved-plan integrated default suite passed 6,758 checks across 631 files
+  (six skipped checks / one optional fixture). Initial run had three import-only
+  failures because this worktree lacked the existing desktop dependency overlay;
+  restored the ignored local link, verified locked notification version 2.4.0,
+  reran those 28 checks and the full suite successfully. No source workaround.
+- Whole-web TypeScript caught a fixture literal widening and Next's unrelated
+  required NODE_ENV environment augmentation. Reviewed typing-only fixes
+  `739e6d79` / `5d771e3f` retain the exact Terraform child environment with no
+  HOME/NODE_ENV or ambient credentials. Isolated strict typing RED/GREEN and 24
+  focused checks passed; final integrated whole-web TypeScript passed.
+- Desktop TypeScript/build passed; scoped changed-source lint, Python CLI 30,
+  37-SDK build contract, tracker coverage and diff checks passed. Actual CLI/PG/
+  paired HTTP evidence remains valid within its original inactive fixture scope.
+  Exact-head clean GitHub CI remains required before the Terraform source merge.
