@@ -114,7 +114,7 @@ def validate(data):
             errors.append(f"Source coverage mismatch: {source['path']} ({len(expected - actual)} missing/stale units)")
     streams = data.get("workstreams", [])
     stream_ids = {stream["id"] for stream in streams}
-    required = {"auth_database", "ai_agent", "github", "cloud", "terraform", "airflow", "deployment", "governance", "desktop", "billing", "website", "testing", "security", "launch"}
+    required = {"auth_database", "ai_agent", "github", "cloud", "terraform", "airflow", "deployment", "governance", "desktop", "billing", "website", "testing", "security", "launch", "vercel_cost"}
     if stream_ids != required or len(streams) != len(required):
         errors.append("Missing, duplicate or unexpected active workstream")
     for stream in streams:

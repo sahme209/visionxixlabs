@@ -1,3 +1,4 @@
+import { deploymentEvidence } from "@/lib/releaseops/deploymentEvidence";
 /**
  * Executes the "low" risk, read-only tools. It never touches a write path.
  * These tools are safe to run without human approval, which is exactly why
@@ -130,6 +131,7 @@ export async function executeReadOnlyTool(
     return {
       ok: true,
       result: executions.map((e) => ({
+        evidence: deploymentEvidence(),
         id: e.id,
         environmentId: e.environmentId,
         repositoryFullName: e.repositoryFullName,
@@ -218,7 +220,7 @@ export async function executeReadOnlyTool(
       owner: parsed.owner, repo: parsed.repo, workflowFile: AWS_ECS_DEPLOY_WORKFLOW_FILENAME, installationToken: tokenResult.token,
     });
     if (!runResult.ok) return { ok: false, error: runResult.error };
-    return { ok: true, result: runResult.data ?? { status: "no_runs_yet" } };
+    return { ok: true, result: { ...(runResult.data ?? { status: "no_runs_yet" }), evidence: deploymentEvidence() } };
   }
 
   if (toolName === "read_github_file") {

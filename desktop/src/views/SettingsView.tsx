@@ -1,3 +1,4 @@
+import { DeploymentWorkflowEvidence } from "../components/DeploymentWorkflowEvidence";
 import { AwsReadOnlyEnrollment } from "../components/AwsReadOnlyEnrollment";
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { open } from "@tauri-apps/plugin-shell";
@@ -963,7 +964,7 @@ function DeploymentTargetPanel({ environment, environments, identity }: { enviro
       }
       deployOperationRef.current = null;
       setDeployOk(true);
-      setExecution(result.data.execution);
+      setExecution(result.data.execution ? { ...result.data.execution, evidence: result.data.evidence ?? result.data.execution.evidence } : null);
     } finally {
       setDeploying(false);
     }
@@ -1018,7 +1019,7 @@ function DeploymentTargetPanel({ environment, environments, identity }: { enviro
 
       <div className="mt-2 border-t border-white/[0.04] pt-3">
         <p className="mb-2 text-[11px] text-zinc-500">
-          Add .github/workflows/axiom-deploy-aws-ecs.yml to the target repo once (see the Git &amp; PRs section to commit it via a pull request), then trigger a deploy here:
+          Add .github/workflows/axiom-deploy-aws-ecs.yml to the target repo once (see the Git &amp; PRs section to commit it via a pull request), then dispatch that workflow here. The bundled four-input template requests an ECS service restart; it does not release a new source artifact. Installed custom workflow behavior remains unverified.
         </p>
         <div className="grid grid-cols-2 items-end gap-3 xl:grid-cols-[1.4fr_1fr_0.65fr_0.65fr_auto_auto]">
           <label className="block">
@@ -1028,7 +1029,7 @@ function DeploymentTargetPanel({ environment, environments, identity }: { enviro
               {deployRepositories.map((repository) => <option key={repository.id} value={repository.displayName}>{repository.displayName}</option>)}
             </select>
           </label>
-          <LabeledInput label="Source branch or tag" placeholder="main or v1.2.3" value={sourceRef} onChange={(value) => { setSourceRef(value); setReadiness(null); }} />
+          <LabeledInput label="Workflow source branch or tag" placeholder="main or v1.2.3" value={sourceRef} onChange={(value) => { setSourceRef(value); setReadiness(null); }} />
           <label className="block">
             <span className="mb-1 block text-[11px] text-zinc-500">Source type</span>
             <select value={sourceKind} onChange={(event) => { setSourceKind(event.target.value as "branch" | "tag"); setReadiness(null); }} className="w-full rounded-lg border border-white/10 bg-black/25 px-3 py-2 text-xs text-zinc-200 outline-none focus:border-white/25">
@@ -1040,15 +1041,16 @@ function DeploymentTargetPanel({ environment, environments, identity }: { enviro
           <button type="button" onClick={() => void checkReadiness()} disabled={checkingReadiness || deploying || !deployRepo || !sourceRef.trim()} className="inline-flex items-center justify-center gap-2 rounded-lg border border-white/10 bg-white/[0.04] px-3 py-2 text-xs text-zinc-200 hover:bg-white/[0.08] disabled:opacity-50 shrink-0">
             {checkingReadiness ? "Checking…" : "Check readiness"}
           </button>
-          <button type="button" onClick={() => void triggerDeploy()} disabled={deploying || !deployRepo.includes("/") || !sourceRef.trim() || !readiness || (emergencyBypass && bypassReason.trim().length < 20)} title={readiness ? "Deploy the verified commit to this environment" : "Check readiness before deploying"} className="inline-flex items-center justify-center gap-2 rounded-lg border border-emerald-500/30 bg-emerald-500/[0.08] px-3 py-2 text-xs text-emerald-200 hover:bg-emerald-500/[0.14] disabled:opacity-50 shrink-0">
-            {deploying ? "Deploying…" : "Deploy"}
+          <button type="button" onClick={() => void triggerDeploy()} disabled={deploying || !deployRepo.includes("/") || !sourceRef.trim() || !readiness || (emergencyBypass && bypassReason.trim().length < 20)} title={readiness ? "Dispatch the policy-checked workflow; artifact release remains unverified" : "Check workflow policy before dispatch"} className="inline-flex items-center justify-center gap-2 rounded-lg border border-emerald-500/30 bg-emerald-500/[0.08] px-3 py-2 text-xs text-emerald-200 hover:bg-emerald-500/[0.14] disabled:opacity-50 shrink-0">
+            {deploying ? "Dispatching…" : "Dispatch workflow"}
           </button>
         </div>
+        {environment.tier !== "dev" && <p className="mt-3 text-[11px] text-zinc-500">A successful workflow is not source-artifact promotion evidence. Promotion remains blocked until artifact identity and provenance are verified.</p>}
         {environment.tier !== "dev" && (
           <label className="mt-3 block">
-            <span className="mb-1 block text-[11px] text-zinc-500">Promote a successful deployment</span>
+            <span className="mb-1 block text-[11px] text-zinc-500">Prior workflow receipt (not verified artifact promotion)</span>
             <select value={promotedFromExecutionId} onChange={(event) => { setPromotedFromExecutionId(event.target.value); setReadiness(null); }} className="w-full rounded-lg border border-white/10 bg-black/25 px-3 py-2 text-xs text-zinc-200 outline-none focus:border-white/25">
-              <option value="">Select the verified prior-environment deployment…</option>
+              <option value="">Select a prior workflow receipt…</option>
               {successfulExecutions.map((item) => {
                 const sourceEnvironment = environments.find((candidate) => candidate.id === item.environmentId);
                 return <option key={item.id} value={item.id}>{sourceEnvironment?.name ?? "Prior environment"} · {item.repositoryFullName} · {item.sourceCommitSha?.slice(0, 12)}</option>;
@@ -1068,12 +1070,12 @@ function DeploymentTargetPanel({ environment, environments, identity }: { enviro
         {readinessError && <p role="alert" className="mt-2 text-[12px] text-rose-300">{readinessError}</p>}
         {readiness && (
           <div className="mt-2 rounded-lg border border-emerald-500/20 bg-emerald-500/[0.06] px-3 py-2 text-[12px] text-emerald-200">
-            Ready to deploy commit <span className="font-mono">{readiness.sourceCommitSha.slice(0, 12)}</span>
+            Workflow policy check passed for source <span className="font-mono">{readiness.sourceCommitSha.slice(0, 12)}</span>
             {readiness.governanceMode === "emergency_bypass" ? " · emergency admin bypass will be audited" : readiness.policyId ? " · configured branch policy satisfied" : " · development target verified"}
             {readiness.pullRequestUrl && <> · <button type="button" onClick={() => void open(readiness.pullRequestUrl!)} className="underline underline-offset-2">verified pull request</button></>}
           </div>
         )}
-        {deployOk && !execution && <p className="text-[12px] text-amber-300">Deploy dispatched, but live tracking could not be saved. Open GitHub Actions to verify the outcome.</p>}
+        {deployOk && !execution && <p className="text-[12px] text-amber-300">Workflow dispatched, but tracking could not be saved. Open GitHub Actions to verify the outcome.</p>}
         {deployError && <p role="alert" className="text-[12px] text-rose-300">{deployError}</p>}
         {execution && execution.environmentId === environmentId && (
           <div className="mt-3 rounded-lg border border-white/[0.07] bg-white/[0.025] p-3 text-[12px]">
@@ -1089,10 +1091,8 @@ function DeploymentTargetPanel({ environment, environments, identity }: { enviro
                 )}
                 <p className="mt-1 text-zinc-500">
                   {observation?.label}
-                  {execution.rollbackStatus === "succeeded" ? " · rollback succeeded" : ""}
-                  {execution.rollbackStatus === "failed" ? " · rollback failed" : ""}
-                  {execution.rollbackStatus === "in_progress" ? " · rollback in progress" : ""}
                 </p>
+                <DeploymentWorkflowEvidence execution={execution} />
                 {!observation?.canPoll && execution.status !== "completed" && <p className="mt-1 text-zinc-500">Refresh the recorded status after reviewing the provider outcome. This does not dispatch or retry a deployment.</p>}
                 {observationError?.executionId === execution.id && <p role="alert" className="mt-1 text-rose-300">{observationError.message}</p>}
               </div>

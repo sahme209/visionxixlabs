@@ -1,3 +1,4 @@
+import { deploymentEvidence } from "@/lib/releaseops/deploymentEvidence";
 /**
  * Read-only deployment readiness check. It resolves the same tenant-scoped
  * GitHub token and runs the same live policy guard as the write route, but
@@ -8,7 +9,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { resolveRequestDesktopSession } from "@/lib/desktop/resolveRequestDesktopSession";
 import { prisma } from "@/lib/db";
 import { parseRepositoryFullName, resolveTenantScopedToken } from "@/lib/connectors/github/resolveTenantScopedToken";
-import { evaluateDeploymentPolicy, type DeploymentPolicyRepo } from "@/lib/releaseops/deploymentPolicyGuard";
+import { checkLegacyEcsPromotionRequirement, evaluateDeploymentPolicy, type DeploymentPolicyRepo } from "@/lib/releaseops/deploymentPolicyGuard";
 import { resolveGitReference } from "@/lib/connectors/github/githubWriteClient";
 
 export const dynamic = "force-dynamic";
@@ -73,6 +74,13 @@ export async function POST(request: NextRequest): Promise<Response> {
 
   const token = await resolveTenantScopedToken(organizationId, parsed);
   if (!token.ok) return NextResponse.json({ ok: false, error: token.error }, { status: 409 });
+  if (promotedFromExecutionId) return NextResponse.json({ ok: false, error: "branch_policy_promotion_artifact_unverified" }, { status: 409 });
+
+  if (emergencyBypass) {
+    const promotion = await checkLegacyEcsPromotionRequirement(prisma as unknown as DeploymentPolicyRepo, {organizationId,environmentId,owner:parsed.owner,repo:parsed.repo,sourceRefs:[sourceRef]});
+    if (!promotion.ok) return NextResponse.json({ok:false,error:promotion.error}, {status:409});
+  }
+
   const decision = emergencyBypass
     ? await resolveGitReference({
         owner: parsed.owner,
@@ -84,6 +92,7 @@ export async function POST(request: NextRequest): Promise<Response> {
         ? { ok: true as const, policyId: null, sourceCommitSha: reference.data.commitSha, pullRequestUrl: null }
         : { ok: false as const, error: reference.error })
     : await evaluateDeploymentPolicy(prisma as unknown as DeploymentPolicyRepo, {
+      requestedCapability: "legacy_ecs_restart",
         organizationId,
         environmentId,
         owner: parsed.owner,
@@ -103,6 +112,7 @@ export async function POST(request: NextRequest): Promise<Response> {
     ok: true,
     data: {
       ready: true,
+      evidence: deploymentEvidence("service_restart"),
       policyId: decision.policyId,
       sourceCommitSha: decision.sourceCommitSha,
       pullRequestUrl: decision.pullRequestUrl,

@@ -1,3 +1,4 @@
+import { deploymentEvidence } from "@/lib/releaseops/deploymentEvidence";
 /**
  * POST /api/desktop/environments/deploy
  * Body: { repositoryFullName, environmentId, sourceRef?, sourceKind?, pullRequestNumber?, promotedFromExecutionId? }
@@ -26,7 +27,7 @@ import { isDefiniteWorkflowDispatchRejection } from "@/lib/connectors/github/wor
 import { AWS_ECS_DEPLOY_WORKFLOW_FILENAME } from "@/lib/releaseops/awsEcsDeployWorkflowTemplate";
 import { appendAuditEvent, type AuditEventRepo } from "@/lib/releaseops/auditEventResponder";
 import { serializeDeploymentExecution } from "@/lib/releaseops/deploymentExecutionResponder";
-import { evaluateDeploymentPolicy, type DeploymentPolicyRepo } from "@/lib/releaseops/deploymentPolicyGuard";
+import { checkLegacyEcsPromotionRequirement, evaluateDeploymentPolicy, type DeploymentPolicyRepo } from "@/lib/releaseops/deploymentPolicyGuard";
 import {
   releaseDeploymentDispatch,
   reserveDeploymentDispatch,
@@ -107,6 +108,13 @@ export async function POST(request: NextRequest): Promise<Response> {
     return NextResponse.json({ ok: false, error: tokenResult.error }, { status: 409 });
   }
 
+  if (promotedFromExecutionId) return NextResponse.json({ ok: false, error: "branch_policy_promotion_artifact_unverified" }, { status: 409 });
+
+  if (emergencyBypass) {
+    const promotion = await checkLegacyEcsPromotionRequirement(prisma as unknown as DeploymentPolicyRepo, {organizationId,environmentId,owner:repo.owner,repo:repo.repo,sourceRefs:[sourceRef]});
+    if (!promotion.ok) return NextResponse.json({ok:false,error:promotion.error}, {status:409});
+  }
+
   const policy = emergencyBypass
     ? await resolveGitReference({
         owner: repo.owner,
@@ -118,6 +126,7 @@ export async function POST(request: NextRequest): Promise<Response> {
         ? { ok: true as const, policyId: null, sourceCommitSha: reference.data.commitSha, pullRequestUrl: null }
         : { ok: false as const, error: reference.error })
     : await evaluateDeploymentPolicy(prisma as unknown as DeploymentPolicyRepo, {
+      requestedCapability: "legacy_ecs_restart",
         organizationId,
         environmentId,
         owner: repo.owner,
@@ -172,6 +181,7 @@ export async function POST(request: NextRequest): Promise<Response> {
       ok: true,
       data: {
         dispatched: true,
+          evidence: deploymentEvidence("service_restart"),
         execution: serializeDeploymentExecution(reservation.reservation),
         trackingAvailable: Boolean(reservation.reservation.workflowRunId),
         policyId: reservation.reservation.branchPolicyId,
@@ -249,6 +259,7 @@ export async function POST(request: NextRequest): Promise<Response> {
     ok: true,
     data: {
       dispatched: true,
+          evidence: deploymentEvidence("service_restart"),
       execution,
       trackingAvailable: Boolean(execution && dispatchResult.data.workflowRunId),
       policyId: policy.policyId,

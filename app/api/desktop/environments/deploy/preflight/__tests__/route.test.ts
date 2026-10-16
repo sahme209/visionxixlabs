@@ -1,3 +1,4 @@
+import { deploymentEvidence } from "@/lib/releaseops/deploymentEvidence";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { NextRequest } from "next/server";
 
@@ -48,6 +49,15 @@ describe("POST /api/desktop/environments/deploy/preflight", () => {
     mocks.resolveRef.mockResolvedValue({ ok: true, data: { kind: "branch", ref: "main", commitSha: "abc123" } });
   });
 
+  it("emergency preflight cannot bypass the server-required artifact promotion", async () => {
+    mocks.resolveSession.mockResolvedValue({id:"session",userId:"user",organizationId:"org-1",capabilities:["deploy:production_bypass"]});
+    mocks.findEnvironment.mockResolvedValue({id:"env_1",organizationId:"org-1",tier:"prod"});
+    mocks.findRepositories.mockResolvedValue([{id:"repo",remoteOwner:"acme",remoteName:"widgets"}]);
+    mocks.findPolicies.mockResolvedValue([{branchPattern:"*",requirePromotionFromEnvironmentId:"dev"}]);
+    const {POST} = await import("../route"); const response = await POST(request({...validBody,emergencyBypass:true,bypassReason:"Explicit emergency cannot certify an artifact"}));
+    expect(response.status).toBe(409); expect((await response.json()).error).toBe("branch_policy_promotion_artifact_unverified");
+    expect(mocks.resolveRef).not.toHaveBeenCalled();
+  });
   it("requires an admin desktop session", async () => {
     mocks.resolveSession.mockResolvedValue(undefined);
     const { POST } = await import("../route");
@@ -68,7 +78,7 @@ describe("POST /api/desktop/environments/deploy/preflight", () => {
     expect(response.status).toBe(200);
     expect(await response.json()).toEqual({
       ok: true,
-      data: { ready: true, policyId: null, sourceCommitSha: "abc123", pullRequestUrl: null, governanceMode: "policy_enforced" },
+      data: { evidence: deploymentEvidence("service_restart"), ready: true, policyId: null, sourceCommitSha: "abc123", pullRequestUrl: null, governanceMode: "policy_enforced" },
     });
     expect(mocks.resolveRef).toHaveBeenCalledWith(expect.objectContaining({ installationToken: "scoped-token" }));
   });

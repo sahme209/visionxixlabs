@@ -1,3 +1,5 @@
+import { checkLegacyEcsPromotionRequirement, type DeploymentPolicyRepo } from "@/lib/releaseops/deploymentPolicyGuard";
+import { deploymentEvidence } from "@/lib/releaseops/deploymentEvidence";
 /**
  * POST /api/dashboard/release-deploy
  * Body: { releaseId }
@@ -81,6 +83,13 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ ok: false, error: "deployment_target_not_configured", hint: "Configure an AWS deploy target for this environment first." }, { status: 409 });
   }
 
+  const promotion = await checkLegacyEcsPromotionRequirement(prisma as unknown as DeploymentPolicyRepo, {
+    organizationId:ctx.organizationId,environmentId:release.targetEnvironmentId,
+    owner:repository.remoteOwner,repo:repository.remoteName,
+    sourceRefs:[repository.defaultBranch,release.releaseTag,release.commitSha].filter((value): value is string => typeof value === "string" && value.length > 0),
+  });
+  if (!promotion.ok) return NextResponse.json({ok:false,error:promotion.error}, {status:409});
+
   const tokenResult = await resolveTenantScopedToken(ctx.organizationId, { owner: repository.remoteOwner, repo: repository.remoteName });
   if (!tokenResult.ok) {
     return NextResponse.json({ ok: false, error: tokenResult.error }, { status: 409 });
@@ -119,7 +128,7 @@ export async function POST(req: NextRequest) {
       kind: "release.deploy_triggered",
       subjectKind: "release",
       subjectId: release.id,
-      summary: `Dispatched AWS ECS deploy for ${release.releaseTag ?? release.id} → ${target.ecsCluster}/${target.ecsService} (${target.region})`,
+      summary: `Requested ECS restart workflow for ${release.releaseTag ?? release.id} → ${target.ecsCluster}/${target.ecsService} (${target.region})`,
       actorUserId: ctx.userId,
     });
   } catch { /* best-effort */ }
@@ -130,10 +139,10 @@ export async function POST(req: NextRequest) {
     // "deploying" even though the workflow run is live. Not a dispatch
     // failure; the release just wasn't in the "ready" state.
     return NextResponse.json(
-      { ok: false, error: "dispatched_but_lifecycle_transition_failed", hint: `Workflow dispatched, but release status could not move to "deploying": ${lifecycle.body.error}.` },
+      { ok: false, error: "dispatched_but_lifecycle_transition_failed", evidence: deploymentEvidence("service_restart"), hint: `Workflow dispatched, but release status could not move to "deploying": ${lifecycle.body.error}.` },
       { status: 207 },
     );
   }
 
-  return NextResponse.json({ ok: true, data: { releaseId: release.id, status: lifecycle.body.data.status } });
+  return NextResponse.json({ ok: true, data: { releaseId: release.id, status: lifecycle.body.data.status, evidence: deploymentEvidence("service_restart") } });
 }

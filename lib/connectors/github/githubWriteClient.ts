@@ -536,9 +536,7 @@ export async function getWorkflowRun(input: {
       ? "not_started"
       : rollbackStep.status !== "completed"
         ? "in_progress"
-        : rollbackStep.conclusion === "success"
-          ? "succeeded"
-          : "failed";
+        : "unknown"; // A step conclusion cannot prove image recovery; bundled recovery exits 1 even after restoration.
   return {
     ok: true,
     data: {

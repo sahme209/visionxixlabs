@@ -81,8 +81,8 @@ export async function GET(
         subjectId: execution.id,
         outcome: observed.data.conclusion === "success" ? "ok" : observed.data.conclusion ? "error" : "ok",
         summary: observed.data.status === "completed"
-          ? `Deployment ${observed.data.conclusion ?? "completed"}; rollback ${observed.data.rollback}.`
-          : `Deployment is ${observed.data.status}; rollback ${observed.data.rollback}.`,
+          ? `Workflow ${observed.data.conclusion ?? "completed"}; rollback step ${observed.data.rollback}; artifact, application health and image recovery unverified.`
+          : `Workflow is ${observed.data.status}; rollback step ${observed.data.rollback}; artifact, application health and image recovery unverified.`,
         actorUserId: String(session.userId),
         correlationId: request.headers.get("x-correlation-id"),
         detailJson: {

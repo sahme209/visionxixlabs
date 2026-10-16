@@ -83,6 +83,28 @@ describe("POST /api/desktop/environments/deploy", () => {
     mocks.settleDeploymentDispatch.mockResolvedValue(false);
   });
 
+  it("refuses explicit artifact promotion before reserving or dispatching even for an emergency restart", async () => {
+    mocks.resolveRequestDesktopSession.mockResolvedValue(adminSession);
+    mocks.findEnvironment.mockResolvedValue({id:"env_1",organizationId:"org-1",tier:"prod"});
+    mocks.findTarget.mockResolvedValue(target);
+    mocks.resolveTenantScopedToken.mockResolvedValue({ok:true,token:"fixture"});
+    const {POST} = await import("../route");
+    const response = await POST(request({repositoryFullName:"acme/widgets",environmentId:"env_1",sourceRef:"main",sourceKind:"branch",promotedFromExecutionId:"successful-same-source",emergencyBypass:true,bypassReason:"Emergency restart does not attest an artifact"}));
+    expect(response.status).toBe(409);
+    expect((await response.json()).error).toBe("branch_policy_promotion_artifact_unverified");
+    expect(mocks.reserveDeploymentDispatch).not.toHaveBeenCalled(); expect(mocks.dispatchWorkflow).not.toHaveBeenCalled();
+  });
+
+  it("emergency restart cannot omit the ID to bypass a server-required promotion", async () => {
+    mocks.resolveRequestDesktopSession.mockResolvedValue(adminSession);
+    mocks.findEnvironment.mockResolvedValue({id:"env_1",organizationId:"org-1",tier:"prod"}); mocks.findTarget.mockResolvedValue(target);
+    mocks.resolveTenantScopedToken.mockResolvedValue({ok:true,token:"fixture"});
+    mocks.findRepositories.mockResolvedValue([{id:"repo",remoteOwner:"acme",remoteName:"widgets"}]);
+    mocks.findBranchPolicies.mockResolvedValue([{branchPattern:"*",requirePromotionFromEnvironmentId:"dev"}]);
+    const {POST} = await import("../route"); const response = await POST(request({repositoryFullName:"acme/widgets",environmentId:"env_1",sourceRef:"main",sourceKind:"branch",emergencyBypass:true,bypassReason:"Emergency must not fabricate artifact promotion"}));
+    expect(response.status).toBe(409); expect((await response.json()).error).toBe("branch_policy_promotion_artifact_unverified");
+    expect(mocks.reserveDeploymentDispatch).not.toHaveBeenCalled(); expect(mocks.dispatchWorkflow).not.toHaveBeenCalled();
+  });
   it("requires a desktop session", async () => {
     mocks.resolveRequestDesktopSession.mockResolvedValue(undefined);
     const { POST } = await import("../route");

@@ -258,3 +258,19 @@ describe("evaluateDeploymentPolicy", () => {
     });
   });
 });
+
+describe("legacy ECS restart cannot provide artifact promotion evidence", () => {
+  it("refuses caller-supplied promotion before GitHub/provider work even with no configured policies", async () => {
+    const result = await evaluateDeploymentPolicy(makeRepo([], []), { ...input, requestedCapability: "legacy_ecs_restart", promotedFromExecutionId: "prior-success" });
+    expect(result).toEqual({ ok: false, error: "branch_policy_promotion_artifact_unverified" });
+    expect(mocks.resolveGitReference).not.toHaveBeenCalled();
+  });
+  it("refuses required promotion despite a successful same-source prior workflow", async () => {
+    const repo = makeRepo([{ ...basePolicy, requirePromotionFromEnvironmentId: "env-dev" }], [registered], [{id:"prior",environmentId:"env-dev",sourceCommitSha:"sha-1",status:"completed",conclusion:"success"}]);
+    const result = await evaluateDeploymentPolicy(repo, {...input,requestedCapability:"legacy_ecs_restart"});
+    expect(result).toEqual({ok:false,error:"branch_policy_promotion_artifact_unverified",policyId:"policy_1"});
+  });
+  it("preserves ordinary branch-checked restart and existing generic policy behavior", async () => {
+    expect(await evaluateDeploymentPolicy(makeRepo(), {...input,requestedCapability:"legacy_ecs_restart"})).toMatchObject({ok:true,sourceCommitSha:"sha-1"});
+  });
+});

@@ -1,4 +1,5 @@
 import "server-only";
+import { deploymentEvidence } from "./deploymentEvidence";
 
 export interface DeploymentExecutionRow {
   id: string;
@@ -75,6 +76,7 @@ export interface DeploymentExecutionRepo {
 
 export function serializeDeploymentExecution(row: DeploymentExecutionRow) {
   return {
+    evidence: deploymentEvidence(),
     id: row.id,
     environmentId: row.environmentId,
     repositoryFullName: row.repositoryFullName,

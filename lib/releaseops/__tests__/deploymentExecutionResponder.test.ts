@@ -28,6 +28,8 @@ describe("serializeDeploymentExecution", () => {
       updatedAt: new Date("2026-10-07T20:01:00.000Z"),
     };
 
+    row.status = "completed"; row.conclusion = "success"; row.rollbackStatus = "succeeded";
+    expect(serializeDeploymentExecution(row).evidence).toEqual({operation:"unknown",statusScope:"github_workflow",sourceArtifactVerified:false,applicationHealthVerified:false,rollbackImageVerified:false});
     expect(serializeDeploymentExecution(row)).toMatchObject({
       sourceRef: "release/2026-10-07",
       sourceKind: "branch",

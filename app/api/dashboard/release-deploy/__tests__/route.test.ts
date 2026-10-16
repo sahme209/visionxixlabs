@@ -5,6 +5,8 @@ const mocks = vi.hoisted(() => ({
   currentContext: vi.fn(),
   findRelease: vi.fn(),
   findRepository: vi.fn(),
+  findRepositories: vi.fn(),
+  findPolicies: vi.fn(),
   findDeploymentTarget: vi.fn(),
   updateRelease: vi.fn(),
   resolveTenantScopedToken: vi.fn(),
@@ -19,7 +21,8 @@ vi.mock("@/lib/auth/currentContext", () => ({ currentContext: mocks.currentConte
 vi.mock("@/lib/db", () => ({
   prisma: {
     release: { findUnique: mocks.findRelease, update: mocks.updateRelease },
-    repository: { findUnique: mocks.findRepository },
+    repository: { findUnique: mocks.findRepository, findMany: mocks.findRepositories },
+    branchEnvironmentPolicy: {findMany:mocks.findPolicies},
     deploymentTarget: { findUnique: mocks.findDeploymentTarget },
   },
 }));
@@ -68,8 +71,16 @@ describe("POST /api/dashboard/release-deploy", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mocks.currentContext.mockResolvedValue(adminCtx);
+    mocks.findRepositories.mockResolvedValue([githubRepo]); mocks.findPolicies.mockResolvedValue([]);
   });
 
+  it("refuses server-required artifact promotion without dispatch or lifecycle mutation", async () => {
+    mocks.findRelease.mockResolvedValue(readyRelease()); mocks.findRepository.mockResolvedValue(githubRepo); mocks.findDeploymentTarget.mockResolvedValue(target);
+    mocks.findPolicies.mockResolvedValue([{branchPattern:"*",requirePromotionFromEnvironmentId:"env-dev"}]);
+    const {POST} = await import("../route"); const response = await POST(request({releaseId:"rel_1"}));
+    expect(response.status).toBe(409); expect((await response.json()).error).toBe("branch_policy_promotion_artifact_unverified");
+    expect(mocks.dispatchWorkflow).not.toHaveBeenCalled(); expect(mocks.updateRelease).not.toHaveBeenCalled();
+  });
   it("requires authentication", async () => {
     mocks.currentContext.mockResolvedValue({ isAuthenticated: false, roles: [] });
     const { POST } = await import("../route");

@@ -350,7 +350,7 @@ describe("dispatchWorkflow", () => {
 describe("getWorkflowRun", () => {
   beforeEach(() => vi.clearAllMocks());
 
-  it("reports successful rollback evidence from the exact run's steps", async () => {
+  it("does not certify rollback recovery from an opaque successful step", async () => {
     fetchMock
       .mockResolvedValueOnce(jsonResponse(200, {
         id: 123, status: "completed", conclusion: "failure",
@@ -362,7 +362,7 @@ describe("getWorkflowRun", () => {
         { name: "Roll back — deployment did not stabilize", status: "completed", conclusion: "success" },
       ] }] }));
     const result = await getWorkflowRun({ owner: "acme", repo: "widgets", workflowRunId: "123", installationToken: "tok" });
-    expect(result).toEqual({ ok: true, data: expect.objectContaining({ status: "completed", conclusion: "failure", rollback: "succeeded" }) });
+    expect(result).toEqual({ ok: true, data: expect.objectContaining({ status: "completed", conclusion: "failure", rollback: "unknown" }) });
   });
 
   it("rejects an invalid run id before contacting GitHub", async () => {
