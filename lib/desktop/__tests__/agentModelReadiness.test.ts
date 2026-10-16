@@ -83,7 +83,7 @@ it("blocks new sends while model verification is loading", async () => {
 });
 it("ignores an old model retry after credential replacement", async () => {
   const old = deferred<unknown>(); m.client.aiProviderStatus.mockResolvedValueOnce({ ok: false, error: "unavailable" }).mockReturnValueOnce(old.promise).mockResolvedValue({ ok: true, data: { ...ready.data, providers: [], policy: { enabled: false, allowedProviders: [], modelSelections: {}, fallbackOrder: [] } } });
-  const view = render(createElement(AgentChatView)); fireEvent.click(await screen.findByRole("button", { name: "Retry models" }));
+  const view = render(createElement(AgentChatView)); await screen.findByText(/Workspace models could not be verified/); fireEvent.click(screen.getByRole("button", { name: "Retry models" }));
   m.client.config = { sessionToken: "replacement" }; view.rerender(createElement(AgentChatView)); await screen.findByText(/AI is disabled for this workspace/);
   await act(async () => { old.resolve(ready); }); expect(screen.queryByRole("option", { name: "Fixture model" })).toBeNull();
 });
@@ -104,12 +104,14 @@ it("does not erase an environment failure when repository branches load successf
   m.client.listEnvironments.mockResolvedValue({ ok: false, error: "unavailable" }); render(createElement(AgentChatView));
   await screen.findByRole("option", { name: "main · protected" }); await screen.findByText(/Deployment environments could not be loaded/);
 });
-it("opens Settings Models through the real App callback and retries its failed lookup before returning to Agent", async () => {
+it.each([{ ok: false, error: "provider_policy_unavailable" }, { ok: true, data: {} }])("opens Settings Models through the real App callback and retries its failed lookup before returning to Agent %j", async failure => {
   m.client.hasAuth.mockReturnValue(true);
   m.client.verifyCurrentCredential.mockResolvedValue({ ok: true, data: { kind: "desktop_session", organizationId: "fixture-workspace", role: "owner", capabilities: [], access: { allowed: true, code: "active", title: "Access active", message: "Fixture", billingStatus: "no_plan", planTier: "trial" } } });
-  m.client.aiProviderStatus.mockResolvedValueOnce({ ...ready, data: { ...ready.data, policy: { ...ready.data.policy, enabled: false } } }).mockResolvedValueOnce({ ok: false, error: "provider_policy_unavailable" }).mockResolvedValue(ready);
+  m.client.aiProviderStatus.mockResolvedValueOnce({ ...ready, data: { ...ready.data, policy: { ...ready.data.policy, enabled: false } } }).mockResolvedValueOnce(failure).mockResolvedValue(ready);
   render(createElement(App)); fireEvent.click(await screen.findByRole("button", { name: "Model settings" }));
   await screen.findByRole("heading", { name: "Models" });
+  await screen.findByRole("alert");
+  expect(screen.queryByText(/No service-configured models are available/)).toBeNull();
   fireEvent.click(await screen.findByRole("button", { name: "Retry models" }));
   await screen.findByRole("switch", { name: "Disable Fixture model" });
   fireEvent.click(screen.getByRole("button", { name: "Agent" })); await screen.findByRole("option", { name: "Fixture model" });
