@@ -4701,3 +4701,62 @@ model SupporterStripeEvent {
 
   @@index([processedAt])
 }
+
+/// Review-only ECS v2 evidence. No workflow authority or live quota claim.
+model EcsReleaseReviewPacket {
+  id                   String   @id @default(cuid())
+  organizationId       String
+  environmentId        String
+  operationId          String
+  manifestJson         Json
+  manifestDigest       String
+  imageSetDigest       String
+  healthPolicyDigest   String
+  verifiedEvidenceJson Json
+  evidenceDigest       String
+  policyDigest         String
+  createdByUserId      String
+  createdAt            DateTime @default(now())
+  expiresAt            DateTime
+  decisions            EcsReleaseReviewDecision[]
+  checkpoints          EcsReleaseReviewCheckpoint[]
+
+  @@unique([organizationId, operationId])
+  @@unique([id, organizationId])
+  @@index([organizationId, environmentId, expiresAt], map: "EcsReleaseReviewPacket_scope_expiry_idx")
+}
+
+/// Append a new revision to approve, reject or revoke; never overwrite a vote.
+model EcsReleaseReviewDecision {
+  id             String   @id @default(cuid())
+  packetId       String
+  organizationId String
+  userId         String
+  revision       Int
+  decision       String
+  manifestDigest String
+  policyDigest   String
+  decidedAt      DateTime @default(now())
+  expiresAt      DateTime
+  packet         EcsReleaseReviewPacket @relation(fields: [packetId, organizationId], references: [id, organizationId], onDelete: Restrict)
+
+  @@unique([packetId, userId, revision])
+  @@index([organizationId, packetId, userId, revision(sort: Desc)], map: "EcsReleaseReviewDecision_scope_revision_idx")
+}
+
+/// Review snapshot only. A fresh checkpoint never permits external execution.
+model EcsReleaseReviewCheckpoint {
+  id                String   @id @default(cuid())
+  packetId          String
+  organizationId    String
+  manifestDigest    String
+  policyDigest      String
+  decisionSetDigest String
+  decisionIds       Json
+  createdAt         DateTime @default(now())
+  expiresAt         DateTime
+  packet            EcsReleaseReviewPacket @relation(fields: [packetId, organizationId], references: [id, organizationId], onDelete: Restrict)
+
+  @@unique([packetId, decisionSetDigest])
+  @@index([organizationId, packetId])
+}
