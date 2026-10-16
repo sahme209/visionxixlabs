@@ -52,3 +52,7 @@ uses one synthetic pending row and real concurrent form requests, requiring one
 303 winner, one409 loser and one durable actor/time decision. No provider
 executor is invoked. Their exact integrated-commit result must be recorded before
 these prepared continuations are marked verified.
+
+## Integrated approval HTTP origin qualification
+
+The installed Next.js `NextRequest` normalizes literal loopback IP URLs to `localhost`. The initial integrated fixture therefore received 403 for its literal-IP Origin header, rather than reaching an approval decision. The harness now derives only the approval Origin/Referer metadata with the actual installed `NextRequest` normalization; application, database and mail transport still require literal `127.0.0.1`. Application same-origin checks are unchanged, and the foreign-origin refusal remains tested. This is explicit synthetic HTTP metadata, **not evidence that a real browser at a literal-IP origin can submit the same form**. Integrated approval/pairing results are not upgraded until the final committed-source rehearsal succeeds.

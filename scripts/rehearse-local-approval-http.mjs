@@ -1,5 +1,17 @@
 import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
+import { NextRequest } from "next/server.js";
+
+/** Literal loopback transport, framework-canonical local HTTP metadata only. */
+export function localApprovalRequestMetadata(appOrigin) {
+  const origin = new URL(appOrigin);
+  assert.ok(origin.protocol === "http:" && origin.hostname === "127.0.0.1" && origin.port && origin.pathname === "/" && !origin.search && !origin.hash && !origin.username && !origin.password,
+    "isolated_approval_http_origin_required");
+  // NextRequest normalizes loopback IP origins to localhost. Model the server's
+  // own origin expectation without changing its same-origin security policy.
+  const canonical = new NextRequest(new URL("/api/approvals/decide", origin)).nextUrl.origin;
+  return { origin: canonical, referer: `${canonical}/dashboard/approvals` };
+}
 
 /**
  * Parent-only continuation of the disposable authentication HTTP fixture.
@@ -11,9 +23,7 @@ export async function rehearseLocalApprovalHttp({ databaseUrl, client, request, 
   const database = new URL(databaseUrl);
   assert.ok(["postgres:", "postgresql:"].includes(database.protocol) && database.hostname === "127.0.0.1" && database.port &&
     /^\/axiom_auth_http_[a-f0-9]{12}$/.test(database.pathname) && !database.search && !database.hash, "isolated_approval_http_target_required");
-  const origin = new URL(appOrigin);
-  assert.ok(origin.protocol === "http:" && origin.hostname === "127.0.0.1" && origin.port && origin.pathname === "/" && !origin.search && !origin.hash && !origin.username && !origin.password,
-    "isolated_approval_http_origin_required");
+  const metadata = localApprovalRequestMetadata(appOrigin);
   assert.equal(typeof request, "function", "parent_authenticated_request_required");
   const [binding] = await client.$queryRawUnsafe("SELECT current_database() AS database");
   assert.equal(binding.database, database.pathname.slice(1), "parent_database_binding_mismatch");
@@ -33,9 +43,9 @@ export async function rehearseLocalApprovalHttp({ databaseUrl, client, request, 
     dispositionReason: "Local HTTP decision-only regression; no provider target", rollbackAvailable: false,
   } });
   assert.equal(item.status, "pending", "pending_fixture_default_required");
-  async function decide(action, suppliedOrigin = origin.origin) {
+  async function decide(action, suppliedOrigin = metadata.origin) {
     return request("/api/approvals/decide", {
-      method: "POST", headers: { "content-type": "application/x-www-form-urlencoded", origin: suppliedOrigin, referer: `${origin.origin}/dashboard/approvals` },
+      method: "POST", headers: { "content-type": "application/x-www-form-urlencoded", origin: suppliedOrigin, referer: metadata.referer },
       body: new URLSearchParams({ itemId: item.id, action }).toString(),
     });
   }
@@ -55,6 +65,6 @@ export async function rehearseLocalApprovalHttp({ databaseUrl, client, request, 
   assert.equal(retained.status, committed.status);
   assert.equal(retained.decidedAt.getTime(), committed.decidedAt.getTime());
   assert.equal(await client.axiomApprovalItem.count(), 1, "exactly_one_synthetic_approval_retained");
-  return { transport: "real_local_next_http", persistence: "real_disposable_postgresql", verified: ["cross_origin_decision_denied", "parallel_decisions_one303_one409", "persisted_authenticated_actor_and_time", "terminal_decision_retained"],
+  return { transport: "real_local_next_http", requestMetadata: "next_request_normalized_loopback_headers_not_browser", persistence: "real_disposable_postgresql", verified: ["cross_origin_decision_denied", "parallel_decisions_one303_one409", "persisted_authenticated_actor_and_time", "terminal_decision_retained"],
     notVerified: ["provider_execution", "saved_terraform_plan_authority", "production_approval_or_login", "deterministic_simultaneous_database_snapshots"] };
 }
