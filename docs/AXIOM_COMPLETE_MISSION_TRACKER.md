@@ -1062,3 +1062,28 @@ push/PR Test and Desktop CI passed, including 594 files / 6,234 tests and the
 desktop preview tests; the explicit locked dev dependency and clean-install type
 resolution fix passed on head `524cd566`. No Vercel deployment, installer
 publication or production change occurred.
+
+
+## Public catalog: bounded new TEST subscription integration
+
+Owner approved the public catalog for NEW TEST subscriptions only, preserving
+existing customer terms. The internal service uses immutable purchase intents,
+unknown-outcome fences, exact account/mode/request provenance, and atomic applied-only
+event consumption with actual application billing/usage/reservation models.
+Independent read-only review resolved five material constraints before integration.
+The coordinator reran 51 focused tests including four owned PostgreSQL17 journeys;
+provider facts are synthetic, not Stripe signature/payment acceptance.
+No runtime route, provider adapter, production schema or live billing is activated.
+
+The existing reservation and subscription consumers preserve their default legacy
+behavior. The new resolver runs before reservation replay and missing proposal
+tables deny only the explicitly selected isolated lane. Exposing compatibility
+rows to unmodified application endpoints would select legacy allowances; this is
+not safe application activation. `NEW_TEST_APPLICATION_BRIDGE_AUDIT.md` records
+concrete AI, feature, cloud, background, settlement and read-surface dependencies.
+Actual Next/browser and hosted Stripe TEST journeys remain unverified.
+Integrated validation passed 6,282 tests (four owned-PG tests skipped in the default
+suite and passed separately), web/desktop types, desktop build, 30 Python tests
+and lint on new code. The reservation file retains five pre-existing explicit-any
+lint errors; the new callback is typed with Prisma types and introduces none.
+Exact-head CI/build remains pending. No support payment path changed.

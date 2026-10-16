@@ -2,7 +2,7 @@ import "server-only";
 
 import type { UpsertBillingPlanInput } from "./tenantBillingStore";
 
-type PlanWrite = UpsertBillingPlanInput & {
+export type PlanWrite = UpsertBillingPlanInput & {
   stripeCustomerId: string;
   stripeSubscriptionId: string;
   lastStripeEventId: string;
@@ -12,7 +12,7 @@ export interface SubscriptionBinding {
   stripeSubscriptionId: string | null;
   lastStripeEventId: string | null;
 }
-interface SubscriptionTransaction {
+export interface SubscriptionTransaction {
   stripeBillingEvent: { create(args: { data: { id: string; type: string } }): Promise<unknown> };
   tenantBillingPlan: {
     findUnique(args: unknown): Promise<SubscriptionBinding | null>;
@@ -36,6 +36,20 @@ export async function consumeSubscriptionEvent(
 ): Promise<"applied" | "replay" | "ownership_conflict"> {
   try {
     return await repository.$transaction(async (tx) => {
+      return consumeSubscriptionEventInTransaction(tx, eventType, input, expectedBinding);
+    }, { isolationLevel: "Serializable" });
+  } catch (error) {
+    if (error === replay) return "replay";
+    if (error === ownershipConflict) return "ownership_conflict";
+    throw error;
+  }
+}
+
+/** Internal composition boundary. Caller must own a Serializable transaction;
+ * propagate failures out so event insert and all composed writes roll back. */
+export async function consumeSubscriptionEventInTransaction(
+  tx: SubscriptionTransaction, eventType: string, input: PlanWrite, expectedBinding: SubscriptionBinding | null,
+): Promise<"applied" | "replay"> {
       try {
         await tx.stripeBillingEvent.create({ data: { id: input.lastStripeEventId, type: eventType } });
       } catch (error) {
@@ -70,12 +84,6 @@ export async function consumeSubscriptionEvent(
       };
       await tx.tenantBillingPlan.upsert({ where: { organizationId: input.organizationId }, update: data, create: { organizationId: input.organizationId, ...data } });
       return "applied";
-    }, { isolationLevel: "Serializable" });
-  } catch (error) {
-    if (error === replay) return "replay";
-    if (error === ownershipConflict) return "ownership_conflict";
-    throw error;
-  }
 }
 
 /** Equality only: event IDs are opaque tokens, never ordered or timestamped. */

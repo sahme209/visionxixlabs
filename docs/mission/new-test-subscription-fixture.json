@@ -1,0 +1,38 @@
+{
+  "baseline": "main147 cca52dfb",
+  "date": "2026-10-16",
+  "scope": "internal isolated new TEST contract with actual application model integration",
+  "postgres": "owned disposable PostgreSQL17 loopback empty fixture",
+  "testsPassed": 51,
+  "unknownCheckout": "retained, no automatic redispatch",
+  "lateObservation": "synthetic verified boundary, durable bind once",
+  "replay": "older duplicate cannot regress newer observation",
+  "transactionFailure": "event and state rolled back",
+  "immutability": "PostgreSQL trigger rejection",
+  "purchaseRace": {
+    "committed": 1,
+    "rejected": 1
+  },
+  "subscriptionObservationRace": {
+    "committed": 1,
+    "rejected": 1
+  },
+  "fixtureCleanup": "owned container removed",
+  "providerEvidence": "simulated, not hosted Stripe acceptance",
+  "productionSchema": "unchanged",
+  "legacyCustomers": "unchanged",
+  "operationalPermit": false,
+  "invoiceSubmissionEnabled": false,
+  "remaining": "real secure Stripe provider adapter/hosted acceptance and reviewed runtime lane/schema activation",
+  "schema": "full current Prisma schema via db push --skip-generate only after owned empty target verification",
+  "actualModels": [
+    "OrgMembership",
+    "TenantBillingPlan",
+    "StripeBillingEvent",
+    "UsageEvent",
+    "AIUsageReservation",
+    "AddOnPurchase"
+  ],
+  "legacyRegressionBeforeAfter": "16 existing tests pass before and after",
+  "creditAdmission": "existing reserveAICredits/settleAICreditReservation, durable test contract resolver before replay"
+}
