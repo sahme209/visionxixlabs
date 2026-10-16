@@ -12,7 +12,7 @@ export default async function GovernancePage() {
   const [members, environments, proposals] = await Promise.all([
     prisma.orgMembership.groupBy({ by: ["role"], where: { organizationId, acceptedAt: { not: null } }, _count: { _all: true } }),
     prisma.environment.findMany({ where: { organizationId }, select: { id: true, name: true, slug: true, tier: true, approvalPolicyId: true }, orderBy: [{ displayOrder: "asc" }, { name: "asc" }] }),
-    prisma.agentActionProposal.findMany({ where: { organizationId, status: "proposed" }, select: { id: true, toolName: true, riskLevel: true, createdAt: true, approvalExpiresAt: true, actionDigest: true, proposedByUserId: true }, orderBy: { createdAt: "asc" }, take: 20 }),
+    prisma.agentActionProposal.findMany({ where: { organizationId, status: "proposed" }, select: { id: true, toolName: true, argsJson: true, riskLevel: true, createdAt: true, approvalExpiresAt: true, actionDigest: true, proposedByUserId: true }, orderBy: { createdAt: "asc" }, take: 20 }),
   ]);
   const canDecide = canDecideApprovals({ email: context.email, roles: context.roles });
 
@@ -28,13 +28,22 @@ export default async function GovernancePage() {
           <p className="mt-3 text-sm text-zinc-500">No Agent actions currently await approval.</p>
         ) : (
           <div className="mt-4 divide-y divide-white/[0.07] border-y border-white/[0.07]">
-            {proposals.map((proposal) => (
+            {proposals.map((proposal) => {
+              const args = proposal.argsJson && typeof proposal.argsJson === "object" && !Array.isArray(proposal.argsJson) ? proposal.argsJson as Record<string, unknown> : {};
+              const review = args._review && typeof args._review === "object" && !Array.isArray(args._review) ? args._review as Record<string, unknown> : null;
+              return (
               <div key={proposal.id} className="grid gap-4 py-4 md:grid-cols-[minmax(0,1fr)_auto_auto] md:items-center">
-                <div><p className="text-sm text-zinc-200">{proposal.toolName.replaceAll("_", " ")}</p><p className="mt-1 font-mono text-[11px] text-zinc-600">{proposal.id}</p></div>
+                <div><p className="text-sm text-zinc-200">{proposal.toolName.replaceAll("_", " ")}</p><p className="mt-1 font-mono text-[11px] text-zinc-600">{proposal.id}</p>
+                  {proposal.toolName === "trigger_aws_deploy" && <div className="mt-3 space-y-1 break-all text-xs text-zinc-400">
+                    <p className="text-amber-300">Restart existing task definition only; no source release or artifact promotion.</p>
+                    <p>Repository: {typeof args.repositoryFullName === "string" ? args.repositoryFullName : "Unavailable"} · Workflow ref: {typeof args.sourceRef === "string" ? args.sourceRef : "main"}</p>
+                    {review?.kind === "ecs_restart_target" ? [["Environment", review.environmentId], ["Tier", review.environmentTier], ["Role", review.roleArn], ["Region", review.region], ["Cluster", review.ecsCluster], ["Service", review.ecsService], ["Target revision", review.targetUpdatedAt]].map(([label, value]) => <p key={String(label)}>{String(label)}: {typeof value === "string" ? value : "Unavailable"}</p>) : <p>No target review is bound. Request a new proposal.</p>}
+                  </div>}
+                </div>
                 <div className="text-left sm:text-right"><p className="text-xs uppercase tracking-[0.12em] text-[#ff783d]">{proposal.riskLevel} risk</p><time className="mt-1 block text-xs text-zinc-600">{proposal.createdAt.toLocaleString()}</time></div>
-                <ApprovalDecisionButtons proposalId={proposal.id} disabledReason={!canDecide ? "An authorized approver role is required." : proposal.proposedByUserId === String(context.userId) ? "A different authorized user must decide this proposal." : !proposal.actionDigest ? "This legacy proposal has no integrity binding and cannot be decided in the browser." : proposal.approvalExpiresAt && proposal.approvalExpiresAt <= new Date() ? "This proposal has expired." : undefined} />
+                <ApprovalDecisionButtons proposalId={proposal.id} approveDisabledReason={proposal.toolName === "trigger_aws_deploy" && review?.kind !== "ecs_restart_target" ? "No bound target review. Request a new proposal before approval; rejection remains available." : undefined} disabledReason={!canDecide ? "An authorized approver role is required." : proposal.proposedByUserId === String(context.userId) ? "A different authorized user must decide this proposal." : !proposal.actionDigest ? "This legacy proposal has no integrity binding and cannot be decided in the browser." : proposal.approvalExpiresAt && proposal.approvalExpiresAt <= new Date() ? "This proposal has expired." : undefined} />
               </div>
-            ))}
+            ); })}
           </div>
         )}
         <p className="mt-4 text-xs leading-5 text-zinc-600">Approvals are bound to the exact action, expire after 24 hours, require a separate authorized reviewer, and are claimed once before backend execution.</p>

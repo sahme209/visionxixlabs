@@ -899,12 +899,55 @@ original-source placeholders remain represented.
 
 ### Parallel customer-boundary work prepared for the next integration
 
-Independent branches have prepared desktop consent-link validation against the
-configured service, Airflow DAG/occurrence response identity checks with unknown
-trigger outcomes preserved, truthful billing evidence-unavailable rendering, and
-Agent restart approvals bound to the server-observed target. These patches remain
-unmerged and require integrated review, regression and exact-head CI; their local
-tests are not native, provider or production customer acceptance.
+The `codex/customer-boundary-integrity` candidate assembles four independent
+changes for integrated review; it is not merged:
+
+- Authentication/desktop: consent links must match the configured service origin,
+  exact challenge and intent; changing origin aborts the attempt. Evidence:
+  `docs/DESKTOP_BROWSER_PAIRING_CANCELLATION.md` and
+  `lib/desktop/__tests__/desktopPairingCancellation.test.ts`. Actual OS browser,
+  signed-package vault recovery and production authentication remain unverified.
+- Agent/governance: ECS restart approval binds a server-observed environment and
+  target revision, with pre-dispatch revalidation and visible target review.
+  Evidence: `docs/AGENT_ECS_RESTART_APPROVAL_BINDING.md` and
+  `lib/axiom/agentRuntime/__tests__/restartTargetPreview.test.ts`. This is current
+  service restart intent, not immutable artifact release or verified rollback;
+  final provider races and credential attestation remain separate gaps.
+- Airflow/automation: list and trigger receipts require exact DAG/run identity;
+  malformed successful POST responses remain unknown. Scheduled reconciliation
+  preserves the occurrence identity; manual unknown outcomes require inspection.
+  Evidence: `docs/AIRFLOW_PROVIDER_RUN_IDENTITY.md` and
+  `lib/integrations/airflow/__tests__/providerRunIdentity.test.ts`. Live provider
+  acceptance and explicit business-partition policy remain outstanding.
+- Billing/website: unavailable evidence is distinguished from genuine zero/empty
+  values, while independently available usage and quota remain visible. Evidence:
+  `docs/BILLING_EVIDENCE_AVAILABILITY.md` and
+  `app/control/usage-billing/__tests__/page.test.ts`. This does not settle allowance
+  policy or prove Stripe acceptance. Durable recurring Checkout intent/recovery
+  remains a substantive separate blocker; prepaid-credit recovery is not a
+  substitute.
+
+Matching demo scenarios document these boundaries without changing their audience
+or granting authority. Integrated local verification passed 594 test files /
+6,234 tests, web and desktop TypeScript, desktop build, scoped lint, 30 Python
+CLI tests, tracker consistency and whitespace checks. The isolated local
+production build passed, generating 293 static/SSG pages with no production
+database or provider credentials. This candidate still requires exact-head
+required CI before merge.
+PR #147 merged normally after both push and PR Test checks passed on exact head
+`79686649b5640593ed90aacbb07a1d42d1cb22e0` (merge
+`cca52dfb61534b8d96ac8a602d604b49c376fc66`; PR run `38833921557`,
+job `116758638103`). That dependency verified 591 test files / 6,176 tests and
+a 293-page local/CI build. Its local HTTP evidence remains attributed to source
+`f7de88f0c0d5cffe0d15234534453c4068e41d9c`, not this candidate. Source-level and simulated IO regressions are
+not browser, native, provider, financial or production customer acceptance. No
+production database, secrets, infrastructure, routing or live billing changes are
+included or authorized.
+
+A read-only Vercel exact-head listing at `2026-10-16T01:17:20.158Z` returned
+zero deployments for PR #147 head `79686649b5640593ed90aacbb07a1d42d1cb22e0`.
+This is an exact-head observation, not a global deployment guarantee. No provider
+deployment action was requested; repository-only controls remain intact.
 
 The next ECS review-only core has a separate additive schema proposal and an
 isolated PostgreSQL17 service/store rehearsal covering approval revisions,
@@ -912,3 +955,56 @@ revocation, tenant constraints and competing decisions. Execution stays explicit
 disabled, independently verified ingestion remains unavailable by default, and no
 live quota is consumed. This is not executable release or rollback authority.
 Production installation of that schema is not authorized.
+
+
+## Deferred independent website task: supporter and partnership story
+
+Owner requested 2026-10-16; **planned, not implemented; resume only after critical
+engineering is stable and owner approves the content changes**. Existing page:
+`app/(marketing)/support/page.tsx` (`/support`), with `SupporterCheckout`,
+`SponsorInquiryForm` and the existing scripted `CinematicAxiomDemo`. No active
+engineering agent was reassigned. This is a source-only content/security audit;
+production payment delivery, legal eligibility and browser accessibility were not
+validated. Existing dark/orange long-form storytelling and page structure remain.
+
+Read-only findings: the page already distinguishes implemented/planned work, labels
+scripted demonstrations, explains the for-profit company and explicitly disclaims
+charitable tax deductions, equity and returns. It already separates one-time
+supporter checkout from a no-payment sponsorship inquiry, but the latter combines
+individual and corporate audiences; funding categories lack approved amounts,
+budget periods or measurable milestones. Founder identity is intentionally withheld
+until verified and approved. No verified sponsor, research partnership, security
+certification, fundraising total or production-readiness claim may be invented.
+
+Deferred content plan:
+
+- Preserve the story; connect the founder motivation and independent-development
+  thesis to dated, linked product evidence, separating local verification from
+  production/provider acceptance. Use real approved screenshots only.
+- Offer private individuals/philanthropic supporters a clear personal-impact story,
+  milestone-based use of funds and an optional private substantial-support inquiry;
+  retain the existing legally accurate supporter-purchase language and checkout.
+- Give AI companies/technology partners a separate narrative and inquiry CTA for
+  sponsorship, infrastructure/model credits and research collaboration. State
+  proposed scope and evaluation criteria without promising access, endorsement,
+  deployment authority, exclusive rights or commercial benefits.
+- Publish only owner-approved funding objectives, time horizon, allocation ranges,
+  progress cadence, delivery risks and accountability contacts. Recognition must
+  remain consent-based; no funding-progress meter without an auditable source.
+
+Security boundaries observed: same-origin and rate checks on inquiry/checkout;
+length limits, honeypot and message secret redaction on inquiry; server-normalized
+checkout inputs and Stripe idempotency; signed webhook verification and event
+ledger; signed badge access with XML escaping and private/no-store headers. These
+are inspected controls, not proof of complete payment security. Follow-up review
+items: rate limiting is process-local; inquiry logs may contain provider errors;
+checkout generates a fresh key on each submission; signed financial events need
+explicit amount/session/currency and out-of-order-state regression evidence.
+Updates are preselected despite opt-in wording; review consent/privacy copy later.
+Do not change these payment/backend paths as part of the deferred content task.
+
+Approval/validation gate: approve the content and legal/funding facts first; later
+verify audience CTAs, accessible keyboard/mobile reading and truthful evidence.
+Any payment-security remediation needs a separate focused review and existing
+regression gates. **No Stripe checkout/webhook/billing changes, tax-deductibility
+claims, major redesign, Vercel deployment or production changes are authorized.**
