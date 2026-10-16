@@ -1,9 +1,10 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-const mocks = vi.hoisted(() => ({ find: vi.fn(), findRequired: vi.fn(), update: vi.fn(), claim: vi.fn(), openPR: vi.fn(), token: vi.fn(), dispatch: vi.fn(), createDeployment: vi.fn(), membership: vi.fn(), reserve: vi.fn(), release: vi.fn(), settle: vi.fn() }));
+const mocks = vi.hoisted(() => ({ find: vi.fn(), findRequired: vi.fn(), update: vi.fn(), claim: vi.fn(), openPR: vi.fn(), token: vi.fn(), dispatch: vi.fn(), createDeployment: vi.fn(), membership: vi.fn(), reserve: vi.fn(), release: vi.fn(), settle: vi.fn(), airflow: vi.fn(), source: vi.fn(), dependencies: vi.fn(), binding: vi.fn() }));
+vi.mock("../connection", () => ({ loadAirflowClient: mocks.airflow }));
 vi.mock("@/lib/db", () => ({ prisma: { airflowAutomationExecution: {
   findUnique: mocks.find, findUniqueOrThrow: mocks.findRequired, update: mocks.update, updateMany: mocks.claim,
-}, orgMembership: { findUnique: mocks.membership }, environment: { findFirst: async () => ({ id: "env-1", tier: "dev" }) }, deploymentTarget: { findFirst: async () => ({}) }, deploymentExecution: { create: mocks.createDeployment } } }));
+}, tenantIntegrationConnection: { findFirst: mocks.binding }, orgMembership: { findUnique: mocks.membership }, environment: { findFirst: async () => ({ id: "env-1", tier: "dev" }) }, deploymentTarget: { findFirst: async () => ({}) }, deploymentExecution: { create: mocks.createDeployment } } }));
 vi.mock("@/lib/connectors/github/resolveTenantScopedToken", () => ({
   parseRepositoryFullName: () => ({ owner: "fixture", repo: "repository" }),
   resolveTenantScopedToken: mocks.token,
@@ -17,12 +18,13 @@ import { executeAirflowAutomation } from "../automationExecutor";
 
 let row: { id: string; organizationId: string; status: string; attempt: number; decidedByUserId: string | null; nextRetryAt: Date | null; errorCode: string | null; resultJson: unknown };
 const automation = {
+  connectionId: "connection-1", dagId: "dag", requiredDagState: "success", dependencyDagIds: [] as string[], createdAt: new Date(0), updatedAt: new Date(1),
   organizationId: "org-1", actionType: "open_pull_request", approvalRequired: false, enabled: true,
   repositoryFullName: "fixture/repository", sourceRef: "work", pullRequestBase: "main", pullRequestTitle: "Fixture proposal",
   maxRetries: 3, retryDelaySeconds: 60, notifyOnSuccess: false, notifyOnFailure: false, name: "Fixture automation",
   environmentId: "env-1", createdByUserId: "user-1",
 };
-const snapshot = () => ({ ...row, automation: { ...automation }, sourceDagId: "dag", sourceDagRunId: "run" });
+const snapshot = () => ({ ...row, automation: { ...automation }, sourceDagId: "dag", sourceDagRunId: "run", sourceDagState: "success" });
 function apply(data: Record<string, unknown>) {
   if (typeof data.status === "string") row.status = data.status;
   if (data.attempt) row.attempt += (data.attempt as { increment: number }).increment;
@@ -35,6 +37,13 @@ function apply(data: Record<string, unknown>) {
 
 beforeEach(() => {
   vi.resetAllMocks();
+  automation.dependencyDagIds = [];
+  automation.requiredDagState = "success";
+  automation.updatedAt = new Date(1);
+  mocks.binding.mockResolvedValue({ id: "connection-1" });
+  mocks.airflow.mockResolvedValue({ connectionId: "connection-1", connectionUpdatedAt: new Date(1), client: { getDagRun: mocks.source, listDagRuns: mocks.dependencies } });
+  mocks.source.mockResolvedValue({ dagId: "dag", dagRunId: "run", state: "success", logicalDate: "2026-10-15T10:00:00Z" });
+  mocks.dependencies.mockResolvedValue([{ dagId: "upstream", dagRunId: "upstream-run", state: "success", logicalDate: "2026-10-15T10:00:00Z" }]);
   automation.enabled = true;
   automation.actionType = "open_pull_request";
   automation.approvalRequired = false;
@@ -44,7 +53,7 @@ beforeEach(() => {
   mocks.update.mockImplementation(async ({ data }) => apply(data));
   // Model the database compare-and-swap, including the observed attempt.
   mocks.claim.mockImplementation(async ({ where, data }) => {
-    if (where.id !== row.id || where.organizationId !== row.organizationId || where.status !== row.status || where.attempt !== row.attempt || (where.automation?.enabled && !automation.enabled)) return { count: 0 };
+    if ((where.automation?.updatedAt && where.automation.updatedAt.getTime() !== automation.updatedAt.getTime()) || where.id !== row.id || where.organizationId !== row.organizationId || where.status !== row.status || where.attempt !== row.attempt || (where.automation?.enabled && !automation.enabled)) return { count: 0 };
     apply(data);
     return { count: 1 };
   });
@@ -279,4 +288,72 @@ describe("Airflow execution claim", () => {
     expect(await executeAirflowAutomation(row.id)).toMatchObject({ ok: false });
     expect(mocks.openPR).not.toHaveBeenCalled();
   });
+});
+
+describe("dispatch-time current Airflow preconditions", () => {
+  it("refuses a source cleared or failed after proposal before claiming or resolving credentials", async () => {
+    mocks.source.mockResolvedValue({ dagId: "dag", dagRunId: "run", state: "failed", logicalDate: "2026-10-15T10:00:00Z" });
+    expect(await executeAirflowAutomation(row.id)).toEqual({ ok: false, error: "airflow_source_not_ready" });
+    expect(mocks.claim).not.toHaveBeenCalled(); expect(mocks.token).not.toHaveBeenCalled(); expect(mocks.openPR).not.toHaveBeenCalled(); expect(mocks.reserve).not.toHaveBeenCalled();
+    expect(row.status).toBe("queued"); expect(row.attempt).toBe(0);
+  });
+  it("refuses a dependency that became failed after proposal", async () => {
+    automation.dependencyDagIds = ["upstream"];
+    mocks.dependencies.mockResolvedValue([{ dagId: "upstream", state: "failed", logicalDate: "2026-10-15T10:00:00Z" }]);
+    expect(await executeAirflowAutomation(row.id)).toEqual({ ok: false, error: "airflow_dependencies_not_ready" });
+    expect(mocks.claim).not.toHaveBeenCalled(); expect(mocks.dispatch).not.toHaveBeenCalled(); expect(mocks.reserve).not.toHaveBeenCalled();
+  });
+  it("fails closed when current Airflow cannot be read", async () => {
+    mocks.airflow.mockRejectedValue(new Error("airflow_not_connected"));
+    expect(await executeAirflowAutomation(row.id)).toEqual({ ok: false, error: "airflow_preconditions_unavailable" });
+    expect(mocks.claim).not.toHaveBeenCalled(); expect(mocks.token).not.toHaveBeenCalled();
+  });
+  it("retains no-dependency null-date manual support", async () => {
+    mocks.source.mockResolvedValue({ dagId: "dag", dagRunId: "run", state: "success", logicalDate: null });
+    expect(await executeAirflowAutomation(row.id)).toMatchObject({ ok: true });
+    expect(mocks.openPR).toHaveBeenCalledTimes(1);
+  });
+});
+
+it.each(["failed", "any"])("preserves configured %s source completion semantics", async (required) => {
+  automation.requiredDagState = required;
+  mocks.find.mockImplementation(async () => ({ ...snapshot(), sourceDagState: "failed" }));
+  mocks.source.mockResolvedValue({ dagId: "dag", dagRunId: "run", state: "failed", logicalDate: "2026-10-15T10:00:00Z" });
+  expect(await executeAirflowAutomation(row.id)).toMatchObject({ ok: true });
+});
+it("does not require remote dependency reads for read-only none actions", async () => {
+  automation.actionType = "none";
+  mocks.airflow.mockRejectedValue(new Error("unavailable"));
+  expect(await executeAirflowAutomation(row.id)).toMatchObject({ ok: true });
+  expect(mocks.airflow).not.toHaveBeenCalled();
+});
+it("refuses a revoked or changed connection after reading provider evidence", async () => {
+  mocks.binding.mockResolvedValue(null);
+  expect(await executeAirflowAutomation(row.id)).toEqual({ ok: false, error: "airflow_connection_changed" });
+  expect(mocks.claim).not.toHaveBeenCalled(); expect(mocks.reserve).not.toHaveBeenCalled();
+});
+it("fences a rule revision changed during remote reads before any write", async () => {
+  mocks.source.mockImplementation(async () => {
+    automation.updatedAt = new Date(2);
+    return { dagId: "dag", dagRunId: "run", state: "success", logicalDate: null };
+  });
+  expect(await executeAirflowAutomation(row.id)).toEqual({ ok: false, error: "airflow_execution_not_actionable" });
+  expect(mocks.token).not.toHaveBeenCalled(); expect(mocks.reserve).not.toHaveBeenCalled();
+});
+it.each([null, "invalid", "2026-10-15T09:00:00Z"])("refuses missing/malformed/stale dependency timestamp %s at dispatch", async (logicalDate) => {
+  automation.dependencyDagIds = ["upstream"];
+  mocks.dependencies.mockResolvedValue([{ dagId: "upstream", state: "success", logicalDate }]);
+  expect(await executeAirflowAutomation(row.id)).toEqual({ ok: false, error: "airflow_dependencies_not_ready" });
+  expect(mocks.claim).not.toHaveBeenCalled();
+});
+it("denies approval authority revoked while remote source evidence is read", async () => {
+  automation.approvalRequired = true;
+  mocks.source.mockImplementation(async () => {
+    mocks.membership.mockResolvedValue({ role: "read_only", acceptedAt: new Date() });
+    return { dagId: "dag", dagRunId: "run", state: "success", logicalDate: null };
+  });
+  expect(await executeAirflowAutomation(row.id, "approver")).toEqual({ ok: false, error: "airflow_approval_authority_required" });
+  expect(mocks.claim).not.toHaveBeenCalled(); expect(mocks.token).not.toHaveBeenCalled();
+  expect(mocks.reserve).not.toHaveBeenCalled(); expect(mocks.openPR).not.toHaveBeenCalled(); expect(mocks.dispatch).not.toHaveBeenCalled();
+  expect(row.status).toBe("queued"); expect(row.attempt).toBe(0);
 });

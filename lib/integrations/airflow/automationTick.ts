@@ -2,6 +2,7 @@ import "server-only";
 
 import { prisma } from "@/lib/db";
 import { loadAirflowClient } from "./connection";
+import { latestDependenciesReady } from "./dependencyReadiness";
 import { nextCronOccurrence } from "./schedule";
 import { scheduledDagRunId } from "./scheduledRunId";
 import { executeAirflowAutomation } from "./automationExecutor";
@@ -36,7 +37,7 @@ export async function runAirflowAutomationTick(now = new Date()): Promise<{ orga
           for (const run of runs) await persistRun(group.organizationId, connectionId, run);
           const candidates = runs.filter((run) => TERMINAL_STATES.has(run.state) && (!run.logicalDate || new Date(run.logicalDate) >= rule.createdAt) && (rule.requiredDagState === "any" || rule.requiredDagState === run.state));
           for (const run of candidates) {
-            const dependenciesReady = await dependencyCheck(client, rule.dependencyDagIds, run.logicalDate);
+            const dependenciesReady = await latestDependenciesReady(client, rule.dependencyDagIds, run.logicalDate);
             if (!dependenciesReady) continue;
             const existing = await prisma.airflowAutomationExecution.findUnique({ where: { automationId_sourceDagRunId: { automationId: rule.id, sourceDagRunId: run.dagRunId } }, select: { id: true } });
             if (existing) continue;
@@ -75,20 +76,6 @@ async function reconcileDeployments(organizationId: string): Promise<void> {
     await prisma.deploymentExecution.update({ where: { id: deployment.id }, data: { status: observed.data.status, conclusion: observed.data.conclusion, rollbackStatus: observed.data.rollback, workflowUrl: observed.data.htmlUrl, lastObservedAt: new Date(), completedAt: observed.data.status === "completed" ? new Date(observed.data.updatedAt) : null } });
     if (observed.data.status === "completed") await prisma.airflowAutomationExecution.update({ where: { id: item.id }, data: { rollbackStatus: observed.data.rollback, status: observed.data.rollback === "succeeded" ? "rolled_back" : observed.data.conclusion === "success" ? "succeeded" : "failed", completedAt: new Date(observed.data.updatedAt) } });
   }
-}
-
-async function dependencyCheck(client: Awaited<ReturnType<typeof loadAirflowClient>>["client"], dependencyDagIds: string[], sourceLogicalDate: string | null): Promise<boolean> {
-  // Airflow 3 manual runs can have no logical date. Without a comparable
-  // source instant, an unrelated historical success cannot prove readiness.
-  if (dependencyDagIds.length === 0) return true;
-  const sourceTime = sourceLogicalDate ? Date.parse(sourceLogicalDate) : NaN;
-  if (!Number.isFinite(sourceTime)) return false;
-  for (const dagId of dependencyDagIds) {
-    const [latest] = await client.listDagRuns(dagId, 1);
-    const dependencyTime = latest?.logicalDate ? Date.parse(latest.logicalDate) : NaN;
-    if (!latest || latest.state !== "success" || !Number.isFinite(dependencyTime) || dependencyTime < sourceTime) return false;
-  }
-  return true;
 }
 
 async function persistRun(organizationId: string, connectionId: string, run: { dagId: string; dagRunId: string; state: string; logicalDate: string | null; startedAt: string | null; endedAt: string | null }): Promise<void> {
