@@ -10,6 +10,7 @@ import { isAwsEnrollmentChallenge, isDesktopAwsAccount, isDesktopAwsInventory, t
 
 import { setDesktopTransportCredential } from "./desktopTransport";
 import type { SavedPlanReadData } from "../../../lib/terraform/savedPlanDto";
+import type { AirflowRestartReviewDto } from "../../../lib/integrations/airflow/restartReviewDto";
 import { parseDesktopIdentityResponse } from "./desktopIdentityResponse";
 
 const DEFAULT_API_BASE = "https://visionxixlabs.com";
@@ -872,7 +873,8 @@ export class DesktopClient {
   listAirflowAutomations(): Promise<ApiResult<{ automations: AirflowAutomation[]; executions: AirflowAutomationExecution[] }>> { return this.get("/api/desktop/airflow/automations"); }
   createAirflowAutomation(input: Record<string, unknown>): Promise<ApiResult<{ automation: AirflowAutomation }>> { return this.post("/api/desktop/airflow/automations", input); }
   setAirflowAutomationEnabled(id: string, enabled: boolean): Promise<ApiResult<{ automation: AirflowAutomation }>> { return this.patch(`/api/desktop/airflow/automations/${encodeURIComponent(id)}`, { enabled }); }
-  approveAirflowExecution(id: string): Promise<ApiResult<Record<string, unknown>>> { return this.post(`/api/desktop/airflow/executions/${encodeURIComponent(id)}/approve`, {}); }
+  getAirflowExecutionReview(id: string): Promise<ApiResult<AirflowRestartReviewDto>> { return this.get(`/api/desktop/airflow/executions/${encodeURIComponent(id)}/review`); }
+  approveAirflowExecution(id: string, expectedReviewDigest?: string): Promise<ApiResult<Record<string, unknown>>> { return this.post(`/api/desktop/airflow/executions/${encodeURIComponent(id)}/approve`, expectedReviewDigest === undefined ? {} : { expectedReviewDigest }); }
   rejectAirflowExecution(id: string): Promise<ApiResult<{ rejected: boolean }>> { return this.post(`/api/desktop/airflow/executions/${encodeURIComponent(id)}/reject`, {}); }
 
   createGithubBranch(input: { repositoryFullName: string; baseBranch: string; newBranchName: string }): Promise<ApiResult<{ ref: string; sha: string }>> {

@@ -12,8 +12,10 @@ import { appendAuditEvent, type AuditEventRepo } from "@/lib/releaseops/auditEve
 import { dispatchWebhookEvent } from "@/lib/webhooks/dispatchWebhookEvent";
 import { hasDesktopCapability } from "@/lib/desktop/desktopAuthorization";
 import { reserveDeploymentDispatch, releaseDeploymentDispatch, settleDeploymentDispatch, type DeploymentReservationRepo } from "@/lib/billing/deploymentDispatchReservation";
+import { requireCurrentRestartReview, fenceRestartDispatch } from "./restartReviewIO";
+import type { RestartReviewRecord } from "./restartReview";
 
-export async function executeAirflowAutomation(executionId: string, actorUserId?: string): Promise<{ ok: true; result: Record<string, unknown> } | { ok: false; error: string }> {
+export async function executeAirflowAutomation(executionId: string, actorUserId?: string, expectedReviewDigest?: string): Promise<{ ok: true; result: Record<string, unknown> } | { ok: false; error: string }> {
   const execution = await prisma.airflowAutomationExecution.findUnique({ where: { id: executionId }, include: { automation: true } });
   if (!execution || !["pending_approval", "queued", "failed"].includes(execution.status)) return { ok: false, error: "airflow_execution_not_actionable" };
   if (execution.status === "pending_approval" && !actorUserId) return { ok: false, error: "airflow_human_approval_required" };
@@ -25,6 +27,13 @@ export async function executeAirflowAutomation(executionId: string, actorUserId?
   if (initialAuthorityError) return { ok: false, error: initialAuthorityError };
   if (automation.organizationId !== execution.organizationId || execution.sourceDagId !== automation.dagId) {
     return { ok: false, error: "airflow_source_not_ready" };
+  }
+  let reviewedRestart: RestartReviewRecord | null = null;
+  if (automation.actionType === "deploy") {
+    if (!approvalActorId) return { ok: false, error: "airflow_human_approval_required" };
+    if (execution.status === "pending_approval" && !/^[a-f0-9]{64}$/.test(expectedReviewDigest ?? "")) return { ok: false, error: "airflow_review_required" };
+    try { reviewedRestart = await requireCurrentRestartReview(prisma, execution, automation, expectedReviewDigest); }
+    catch (error) { return { ok: false, error: safeReviewError(error) }; }
   }
   if (automation.actionType !== "none") {
     try {
@@ -49,6 +58,7 @@ export async function executeAirflowAutomation(executionId: string, actorUserId?
       if (!binding) return { ok: false, error: "airflow_connection_changed" };
     } catch { return { ok: false, error: "airflow_preconditions_unavailable" }; }
   }
+  const restartReview = reviewedRestart;
   // Remote reads may take long enough for an approver to be removed or lose
   // capability. Recheck immediately before consuming the execution claim.
   const currentAuthorityError = await currentApprovalAuthorityError(approvalActorId, automation.organizationId);
@@ -56,16 +66,24 @@ export async function executeAirflowAutomation(executionId: string, actorUserId?
   // Competing approvals/ticks must claim the exact observed attempt before
   // any provider action. Status alone is insufficient if a concurrent retry
   // has already run and failed again. Rejection wins if it changed the row.
-  const claimed = await prisma.airflowAutomationExecution.updateMany({
+  const claim = {
     where: { id: execution.id, organizationId: execution.organizationId, status: execution.status, attempt: execution.attempt, automation: { enabled: true, updatedAt: automation.updatedAt, connectionId: automation.connectionId } },
     data: { status: "running", attempt: { increment: 1 }, errorCode: null, nextRetryAt: null, ...(actorUserId ? { decidedByUserId: actorUserId, decidedAt: new Date() } : {}) },
-  });
+  };
+  let claimed: { count: number };
+  try {
+    claimed = restartReview ? await prisma.$transaction(async tx => {
+      await requireCurrentRestartReview(tx, execution, automation, restartReview.digest);
+      return tx.airflowAutomationExecution.updateMany(claim);
+    }, { isolationLevel: "Serializable" }) : await prisma.airflowAutomationExecution.updateMany(claim);
+  } catch (error) { return { ok: false, error: safeReviewError(error) }; }
   if (claimed.count !== 1) return { ok: false, error: "airflow_execution_not_actionable" };
   let providerActionStarted = false;
   let providerReceipt: Record<string, unknown> | null = null;
   let reservedDeploymentId: string | null = null;
+  let finalReviewFenceStarted = false;
   const reservationRepo = prisma as unknown as DeploymentReservationRepo;
-  const dispatchIntent = { action: automation.actionType, repositoryFullName: automation.repositoryFullName, sourceRef: automation.sourceRef };
+  const dispatchIntent = { action: automation.actionType, repositoryFullName: automation.repositoryFullName, sourceRef: automation.sourceRef, ...(restartReview ? { reviewDigest: restartReview.digest } : {}) };
   const markDispatchIntent = async () => {
     // Persist uncertainty before the non-idempotent request. A process crash
     // leaves the claimed row running, outside the scheduler's retry selection.
@@ -90,11 +108,9 @@ export async function executeAirflowAutomation(executionId: string, actorUserId?
 
     if (automation.actionType === "deploy") {
       if (!automation.environmentId || !automation.sourceRef) throw new Error("deployment_configuration_incomplete");
-      const environment = await prisma.environment.findFirst({ where: { id: automation.environmentId, organizationId: automation.organizationId } });
-      if (!environment) throw new Error("environment_not_found");
-      if (environment.tier === "prod" && !(actorUserId || execution.decidedByUserId)) throw new Error("production_human_approval_required");
-      const target = await prisma.deploymentTarget.findFirst({ where: { environmentId: environment.id, organizationId: automation.organizationId } });
-      if (!target) throw new Error("deployment_target_not_configured");
+      if (!restartReview) throw new Error("airflow_review_required");
+      const target = restartReview.payload.target;
+      const environment = { id: target.environmentId, tier: target.environmentTier };
       const policy = await evaluateDeploymentPolicy(prisma as unknown as DeploymentPolicyRepo, {
       requestedCapability: "legacy_ecs_restart", organizationId: automation.organizationId, environmentId: environment.id, owner: repository.owner, repo: repository.repo, sourceRef: automation.sourceRef, sourceKind: automation.sourceKind === "tag" ? "tag" : "branch", ...(automation.promotedFromExecutionId ? { promotedFromExecutionId: automation.promotedFromExecutionId } : {}), ...(environment.tier === "prod" ? { requiredControlSet: "production" as const } : {}), installationToken: token.token });
       if (!policy.ok) throw new Error(policy.error);
@@ -119,7 +135,9 @@ export async function executeAirflowAutomation(executionId: string, actorUserId?
       }
       reservedDeploymentId = reservation.reservation.id;
       providerReceipt = { action: "deploy", evidence: deploymentEvidence("service_restart"), deploymentExecutionId: reservedDeploymentId };
-      await markDispatchIntent();
+      finalReviewFenceStarted = true;
+      await prisma.$transaction(tx => fenceRestartDispatch(tx, restartReview, execution.attempt + 1, approvalActorId!, { ...dispatchIntent, ...providerReceipt }), { isolationLevel: "Serializable" });
+      providerActionStarted = true;
       const dispatched = await dispatchWorkflow({ owner: repository.owner, repo: repository.repo, workflowFile: AWS_ECS_DEPLOY_WORKFLOW_FILENAME, ref: automation.sourceRef, inputs: { role_arn: target.roleArn, region: target.region, cluster: target.ecsCluster, service: target.ecsService }, installationToken: token.token });
       if (!dispatched.ok) throw new Error(dispatched.error);
       providerReceipt = { action: "deploy", evidence: deploymentEvidence("service_restart"), deploymentExecutionId: reservedDeploymentId, workflowRunId: dispatched.data.workflowRunId, workflowUrl: dispatched.data.htmlUrl };
@@ -129,15 +147,36 @@ export async function executeAirflowAutomation(executionId: string, actorUserId?
     }
     throw new Error("unsupported_automation_action");
   } catch (error) {
-    if (reservedDeploymentId && !providerActionStarted) await releaseDeploymentDispatch(reservationRepo, automation.organizationId, reservedDeploymentId);
-    const message = providerActionStarted ? "airflow_provider_outcome_unknown" : error instanceof Error ? error.message.split(":")[0] : "automation_execution_failed";
+    // This variable is assigned only for a newly acquired reservation. Never
+    // release a reused receipt/unknown hold from an earlier provider attempt.
+    let releaseUnconfirmed = false;
+    if (reservedDeploymentId && !providerActionStarted) {
+      try { releaseUnconfirmed = !await releaseDeploymentDispatch(reservationRepo, automation.organizationId, reservedDeploymentId); }
+      catch { releaseUnconfirmed = true; }
+    }
+    const reviewRefused = finalReviewFenceStarted && !providerActionStarted;
+    const message = releaseUnconfirmed ? "airflow_reservation_release_unconfirmed" : providerActionStarted ? "airflow_provider_outcome_unknown" : reviewRefused ? safeReviewError(error) : error instanceof Error ? error.message.split(":")[0] : "automation_execution_failed";
     const attempt = execution.attempt + 1;
-    const retry = !providerActionStarted && attempt < automation.maxRetries;
-    await prisma.airflowAutomationExecution.update({ where: { id: execution.id }, data: { status: providerActionStarted ? "needs_reconciliation" : "failed", errorCode: message, nextRetryAt: retry ? new Date(Date.now() + automation.retryDelaySeconds * 1000) : null, completedAt: providerActionStarted || retry ? null : new Date(), ...(providerActionStarted ? { resultJson: { ...dispatchIntent, ...(providerReceipt ?? {}), phase: "outcome_unconfirmed" } } : {}) } });
+    const retry = !providerActionStarted && !releaseUnconfirmed && !reviewRefused && attempt < automation.maxRetries;
+    if (reviewRefused && !releaseUnconfirmed) {
+      try {
+        const restored = await prisma.airflowAutomationExecution.updateMany({ where: { id: execution.id, organizationId: execution.organizationId, status: "running", attempt }, data: { status: "pending_approval", errorCode: message, nextRetryAt: null, completedAt: null } });
+        if (restored.count !== 1) return { ok: false, error: "airflow_execution_state_unconfirmed" };
+      } catch {
+        // No provider request was sent. Do not claim that the rejectable state
+        // was saved when storage failed; the durable running claim blocks replay.
+        return { ok: false, error: "airflow_execution_state_unconfirmed" };
+      }
+    } else await prisma.airflowAutomationExecution.update({ where: { id: execution.id }, data: { status: providerActionStarted || releaseUnconfirmed ? "needs_reconciliation" : "failed", errorCode: message, nextRetryAt: retry ? new Date(Date.now() + automation.retryDelaySeconds * 1000) : null, completedAt: providerActionStarted || releaseUnconfirmed || retry ? null : new Date(), ...(providerActionStarted || releaseUnconfirmed ? { resultJson: { ...dispatchIntent, ...(providerReceipt ?? {}), phase: releaseUnconfirmed ? "reservation_release_unconfirmed" : "outcome_unconfirmed" } } : {}) } });
     await appendAuditEvent(prisma as unknown as AuditEventRepo, { organizationId: automation.organizationId, kind: "airflow.automation.failed", subjectKind: "automation", subjectId: execution.id, outcome: "error", summary: providerActionStarted ? `Airflow automation ${automation.name} outcome is unconfirmed; automatic retry paused` : `Airflow automation ${automation.name} failed: ${message}`, actorUserId: actorUserId ?? null });
     if (automation.notifyOnFailure) await dispatchWebhookEvent({ organizationId: automation.organizationId, eventKind: "airflow.automation_failed", data: { automationId: automation.id, automationName: automation.name, executionId: execution.id, error: message, retryScheduled: retry } }).catch(() => undefined);
     return { ok: false, error: message };
   }
+}
+
+function safeReviewError(error: unknown): string {
+  const allowed = ["airflow_review_storage_unavailable", "airflow_review_required", "airflow_review_changed", "airflow_restart_review_stale"];
+  return error instanceof Error && allowed.includes(error.message) ? error.message : "airflow_review_storage_unavailable";
 }
 
 async function succeed(executionId: string, result: Record<string, unknown>): Promise<{ ok: true; result: Record<string, unknown> }> {
