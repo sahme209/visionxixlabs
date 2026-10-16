@@ -31,10 +31,10 @@
 
 **Interfaces:** Preserve `PublicTrustProfile`; add `DirectWorkflowPublicTrustProfile` and `ReviewedPublicTrustProfile`; `inspectPublicTrustConfiguration` returns that union. `verifyBuildProvenance` output is unchanged.
 
-- [ ] Verify immutable upstream license/blob plus cached workflow/bundle/index hashes; retain exact assets and provenance note.
-- [ ] Add genuine direct fixture acceptance plus profile/identity/subject/crypto/lifetime/context mutation assertions; run focused test and record expected missing-profile RED.
-- [ ] Implement explicit profile validation and exact direct identity/buildType/builder binding, preserving old branch byte semantics.
-- [ ] Run new and existing genuine reusable verifier tests GREEN; no mocked crypto success.
+- [x] Verify immutable upstream license/blob plus cached workflow/bundle/index hashes; retain exact assets and provenance note.
+- [x] Add genuine direct fixture acceptance plus profile/identity/subject/crypto/lifetime/context mutation assertions; run focused test and record expected missing-profile RED.
+- [x] Implement explicit profile validation and exact direct identity/buildType/builder binding, preserving old branch byte semantics.
+- [x] Run new and existing genuine reusable verifier tests GREEN; no mocked crypto success.
 
 ### Task 2: Actual bounded reader composition
 
@@ -42,15 +42,21 @@
 
 **Interfaces:** `createGithubBuildEvidenceReader` and its output remain unchanged. Reader inspects the configured profile discriminant; no request profile input is added.
 
-- [ ] Add real-reader/real-crypto test with synthetic metadata and absent/empty referenced workflows; observe expected reader RED after Task 1.
-- [ ] Add wrong/mixed metadata, exact current source/ref/attempt, workflow blob and context/config drift tests; keep download/deadline negatives.
-- [ ] Implement direct caller run comparison only for the new profile; preserve reusable requirement and all existing bounds/current checks.
-- [ ] Run new and existing reader regressions GREEN. Use guarded in-process HTTP simulation; no external requests.
+- [x] Add real-reader/real-crypto test with synthetic metadata and absent/empty referenced workflows; observe expected reader RED after Task 1.
+- [x] Add wrong/mixed metadata, exact current source/ref/attempt, workflow blob and context/config drift tests; keep download/deadline negatives.
+- [x] Implement direct caller run comparison only for the new profile; preserve reusable requirement and all existing bounds/current checks.
+- [x] Run new and existing reader regressions GREEN. Use guarded in-process HTTP simulation; no external requests.
 
 ### Task 3: Frozen reviewable evidence
 
 **Files:** Update this plan, spec and relevant internal release/desktop scenario in `lib/demo/demoScenarios.ts`; create concise acceptance/provenance receipt without rewriting historical evidence.
 
-- [ ] Run focused verifier/reader/runtime/demo tests, scoped zero-warning lint, isolated affected-source types and diff checks.
-- [ ] Record RED/GREEN counts, source/dependency qualification, genuine crypto versus synthetic metadata and unresolved ECR/executor limits.
-- [ ] Freeze clean source commit and return exact SHA to root for independent security review. Do not push/integrate or claim full gates before root runs them.
+- [x] Run focused verifier/reader/runtime/demo tests, scoped zero-warning lint, isolated affected-source types and diff checks.
+- [x] Record RED/GREEN counts, source/dependency qualification, genuine crypto versus synthetic metadata and unresolved ECR/executor limits.
+- [x] Freeze clean source commit and return exact SHA to root for independent security review. Do not push/integrate or claim full gates before root runs them.
+
+## Observed execution evidence
+
+Spec/plan persisted at `4b726865` before production changes. New actual verifier tests were RED with two expected failures (missing direct profile and absent post-crypto authority check); 33 negatives/fixture checks already passed. New direct reader tests then showed 15 expected failures because the original reader required reusable signer metadata; 14 closed negatives already passed. After the two bounded production changes, 134 tests in five verifier/reader/runtime files passed. Final focused verification including living-demo contracts passed **149 tests across six files**. Real official crypto uses the unchanged genuine upstream signatures; GitHub HTTP metadata, current state and installation token remain synthetic. Scoped ESLint with `--max-warnings 0`, isolated affected-source/fixture types and `git diff --check` passed. Root's whole-application gates and independent security review remain pending.
+
+Immutable upstream public license/commit-tree/workflow provenance was read only with explicit root authorization. `LICENSE.txt` at the pinned source is CC0-1.0, not an assumed CLI license. No image layers, workflow runs, provider writes, dependency install, full compiler, server or Postgres were used. Installed overlay remains protobuf-specs 0.5.2 versus lockfile 0.5.0; clean CI is authoritative. The exact frozen-source receipt is recorded separately after committing production bytes; documentation commits do not pretend to be additional runtime acceptance.

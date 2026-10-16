@@ -118,7 +118,13 @@ export function createGithubBuildEvidenceReader(options: Options = {}) {
           const observedBranch = sourceBranch(run.head_branch);
           requireRead(branch === undefined || branch === observedBranch, "github_build_ref_changed"); branch = observedBranch;
           const workflows = run.referenced_workflows;
-          requireRead(Array.isArray(workflows) && workflows.length <= 20 && workflows.some(value => { const w = record(value); return w.path === profile.signerWorkflow.replace("https://github.com/", "") && w.sha === profile.signerWorkflowSha; }), "github_signer_workflow_unavailable");
+          if (profile.kind === "public_sigstore_direct_workflow_v1") {
+            requireRead((workflows === undefined || (Array.isArray(workflows) && workflows.length === 0))
+              && profile.signerWorkflow === `https://github.com/${r.expected.repositoryFullName}/${r.expected.workflowPath}@refs/heads/${observedBranch}`
+              && profile.signerWorkflowSha === r.expected.workflowSha, "github_direct_signer_workflow_unavailable");
+          } else {
+            requireRead(Array.isArray(workflows) && workflows.length <= 20 && workflows.some(value => { const w = record(value); return w.path === profile.signerWorkflow.replace("https://github.com/", "") && w.sha === profile.signerWorkflowSha; }), "github_signer_workflow_unavailable");
+          }
           const rules = [...initial.branchPolicies].sort((a, b) => a.priority - b.priority || a.id.localeCompare(b.id));
           const selected = rules.find(p => matchesPattern(observedBranch, p.branchPattern));
           requireRead(!rules.length || (selected && !selected.requireReleaseTag), "unsupported_build_ref_policy");
