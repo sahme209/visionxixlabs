@@ -9,6 +9,7 @@ import { PUBLIC_PLAN_CATALOG, isSelfServiceBillingEnabled } from "@/lib/billing/
 import { describeStripeStatus } from "@/lib/billing/stripeHelper";
 import { readBillingPlanWithAvailability } from "@/lib/billing/tenantBillingStore";
 import { prisma } from "@/lib/db";
+import { readCurrentAIAllowance } from "@/lib/billing/currentAIAllowance";
 
 export const dynamic = "force-dynamic";
 
@@ -35,7 +36,8 @@ export default async function ControlUsageBillingPage() {
   if (!context.isAuthenticated || !context.organizationId || !context.email) redirect("/auth/signin?callbackUrl=/control/usage-billing");
   const organizationId = String(context.organizationId);
   const canManage = isAdminOrOwner({ email: context.email, roles: context.roles });
-  const period = currentPeriod();
+  const now = new Date();
+  const period = currentPeriod(now);
   const billingRead = await readBillingPlanWithAvailability(organizationId);
   const billing = billingRead.plan;
   const publicPlanId = planIdFor(billing.tier, billing.status);
@@ -45,37 +47,26 @@ export default async function ControlUsageBillingPage() {
   let unavailable = false;
   let members = 0;
   let usage = { calls: 0, inputTokens: 0, outputTokens: 0, billedCents: 0, pendingCalls: 0 };
-  let paidCreditCents = 0;
   let transactions: Array<{ id: string; sku: string; pricePaidCents: number; deliveredAICreditsCents: number; reversedAICreditsCents: number; status: string; createdAt: Date }> = [];
   const deployment = await checkDeploymentQuota(prisma, organizationId);
+  const allowance = await readCurrentAIAllowance(prisma, organizationId, now);
   try {
-    const [memberCount, usageAggregate, pendingCalls, creditPurchases, recentTransactions] = await Promise.all([
+    const [memberCount, usageAggregate, pendingCalls, recentTransactions] = await Promise.all([
       prisma.orgMembership.count({ where: { organizationId, acceptedAt: { not: null } } }),
       prisma.usageEvent.aggregate({ where: { organizationId, eventKind: "ai_invocation", createdAt: { gte: period.start } }, _count: { _all: true }, _sum: { inputTokens: true, outputTokens: true, billedCents: true } }),
       prisma.usageEvent.count({ where: { organizationId, eventKind: "ai_invocation", billingStatus: "pending", createdAt: { gte: period.start } } }),
-      prisma.addOnPurchase.findMany({
-        where: { organizationId, status: { in: ["paid", "partially_refunded"] }, periodMonth: period.key, validFor: "current_month" },
-        select: { deliveredAICreditsCents: true, reversedAICreditsCents: true },
-      }),
       prisma.addOnPurchase.findMany({ where: { organizationId }, orderBy: { createdAt: "desc" }, take: 12, select: { id: true, sku: true, pricePaidCents: true, deliveredAICreditsCents: true, reversedAICreditsCents: true, status: true, createdAt: true } }),
     ]);
     members = memberCount;
     usage = { calls: usageAggregate._count._all, inputTokens: usageAggregate._sum.inputTokens ?? 0, outputTokens: usageAggregate._sum.outputTokens ?? 0, billedCents: usageAggregate._sum.billedCents ?? 0, pendingCalls };
-    paidCreditCents = creditPurchases.reduce(
-      (total, purchase) => total + Math.max(0, purchase.deliveredAICreditsCents - purchase.reversedAICreditsCents),
-      0,
-    );
     transactions = recentTransactions;
   } catch {
     unavailable = true;
   }
   const deploymentUnavailable = !deployment.allowed && deployment.reason === "deployment_quota_unavailable";
-  const creditUnavailable = unavailable || !billingRead.available;
-  const anyUnavailable = unavailable || deploymentUnavailable || !billingRead.available;
+  const creditUnavailable = !allowance.available;
+  const anyUnavailable = unavailable || deploymentUnavailable || !billingRead.available || creditUnavailable;
   const paidSeats = billing.seatQuantity ?? (publicPlanId === "free" ? publicPlan.includedSeats ?? 0 : 0);
-  const includedAiCredits = publicPlan.monthlyAiCreditCents * (publicPlan.aiCreditBasis === "paid_seat" ? Math.max(1, paidSeats) : 1);
-  const totalAiCredits = includedAiCredits + paidCreditCents;
-  const remainingAiCredits = Math.max(0, totalAiCredits - usage.billedCents);
 
   return (
     <div className="max-w-5xl">
@@ -99,7 +90,7 @@ export default async function ControlUsageBillingPage() {
           <dl className="mt-6 grid gap-5 sm:grid-cols-2">
             <div><dt className="text-xs text-zinc-500">Organization seats</dt><dd className="mt-2 text-2xl tabular-nums">{unavailable ? "Unavailable" : members} {!unavailable && <span className="text-sm text-zinc-600">/ {billingRead.available ? paidSeats || "—" : "unavailable"}</span>}</dd></div>
             <div><dt className="text-xs text-zinc-500">Counted deployments</dt><dd className="mt-2 text-2xl tabular-nums">{deploymentUnavailable ? "Unavailable" : <>{deployment.used} <span className="text-sm text-zinc-600">/ {deployment.limit ?? "unlimited"}</span></>}</dd></div>
-            <div><dt className="text-xs text-zinc-500">AI credit available</dt><dd className="mt-2 text-2xl tabular-nums">{creditUnavailable ? "Unavailable" : money(remainingAiCredits)}</dd>{!creditUnavailable && <p className="mt-1 text-[11px] text-zinc-600">{money(totalAiCredits)} listed plan and paid top-ups</p>}</div>
+            <div><dt className="text-xs text-zinc-500">Included AI allowance remaining</dt><dd className="mt-2 text-2xl tabular-nums">{allowance.available ? money(allowance.includedRemainingCents) : "Unavailable"}</dd>{allowance.available && <><p className="mt-1 text-[11px] text-zinc-600">{money(allowance.poolCents)} current account allowance · {money(allowance.heldCents)} held for unresolved requests</p><p className="mt-1 text-[11px] text-zinc-600">Current reservation policy: {allowance.overagePolicy.replaceAll("_", " ")}. This snapshot is not spend authorization; access, request limits and billing safeguards still apply. Current account allowance is separate from new subscription catalog terms.</p></>}</div>
             <div><dt className="text-xs text-zinc-500">Gateway calls</dt><dd className="mt-2 text-2xl tabular-nums">{unavailable ? "Unavailable" : usage.calls}</dd>{!unavailable && <p className="mt-1 text-[11px] text-zinc-600">{usage.pendingCalls} awaiting cost settlement</p>}</div>
           </dl>
         </section>
@@ -108,7 +99,7 @@ export default async function ControlUsageBillingPage() {
       <section className="mt-6 rounded-2xl border border-white/[0.08] bg-[#171717] p-5 sm:p-7" aria-labelledby="usage-heading">
         <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-end"><div><h2 id="usage-heading" className="text-lg font-medium">AI usage</h2><p className="mt-1 text-xs text-zinc-500">Customer debit is settled from Vercel Gateway generation cost; pending generations are never presented as free.</p></div><span className="text-sm font-medium">{unavailable ? "Settled amount unavailable" : `${money(usage.billedCents)} settled`}</span></div>
         <dl className="mt-5 grid gap-px overflow-hidden rounded-xl border border-white/[0.07] bg-white/[0.07] sm:grid-cols-3">
-          {[["Input tokens", unavailable ? "Unavailable" : usage.inputTokens.toLocaleString()], ["Output tokens", unavailable ? "Unavailable" : usage.outputTokens.toLocaleString()], ["Paid top-ups", unavailable ? "Unavailable" : money(paidCreditCents)]].map(([label, value]) => <div key={label} className="bg-[#151515] p-4"><dt className="text-xs text-zinc-600">{label}</dt><dd className="mt-2 text-base tabular-nums text-zinc-200">{value}</dd></div>)}
+          {[["Input tokens", unavailable ? "Unavailable" : usage.inputTokens.toLocaleString()], ["Output tokens", unavailable ? "Unavailable" : usage.outputTokens.toLocaleString()], ["Applied paid top-ups", allowance.available ? money(allowance.addOnCents) : "Unavailable"]].map(([label, value]) => <div key={label} className="bg-[#151515] p-4"><dt className="text-xs text-zinc-600">{label}</dt><dd className="mt-2 text-base tabular-nums text-zinc-200">{value}</dd></div>)}
         </dl>
       </section>
 

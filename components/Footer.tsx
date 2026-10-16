@@ -8,6 +8,7 @@ const columns = [
       ["Axiom Agent", "/product"],
       ["Product tour", "/demo"],
       ["Integrations", "/integrations"],
+      ["Pricing", "/plans"],
       ["Security", "/security"],
     ],
   },
