@@ -41,3 +41,10 @@ jobs:
 
       - name: Run Vitest suite
         run: npx vitest run --reporter=dot
+
+      # Validate production compilation in GitHub without deploying or loading
+      # Vercel production credentials. Git-triggered Vercel builds are disabled.
+      - name: Build production website (no deployment)
+        env:
+          NODE_OPTIONS: --max-old-space-size=6144
+        run: npm run build
