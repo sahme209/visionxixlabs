@@ -912,3 +912,17 @@ revocation, tenant constraints and competing decisions. Execution stays explicit
 disabled, independently verified ingestion remains unavailable by default, and no
 live quota is consumed. This is not executable release or rollback authority.
 Production installation of that schema is not authorized.
+
+
+### Integrated milestone local validation
+
+Final serialized regression passed **591 files / 6,176 tests**. Web TypeScript,
+293-page optimized production build, desktop TypeScript/build, 30 Python tests,
+tracker consistency and scoped lint passed (zero lint errors, two existing unused
+imports). An initial unchanged native shell fixture exceeded five seconds under
+compiler load and passed its isolated 34-test rerun. A concurrent Prisma generation
+race invalidated a later test import; the final full run was serialized after the
+build and passed with a bounded 20-second per-test allowance. These local validation
+incidents are not suppressed application failures. Exact-head GitHub CI and merge
+remain pending. Real HTTP evidence remains attributed to `f7de88f0`; later commits
+only record documentation and results. No deployment or production change occurred.
