@@ -92,3 +92,11 @@ it("requires an explicit saved Terraform fixture and exact owned executable path
   await expect(runOwnedLocalAuthHttp({ AXIOM_RUN_LOCAL_AUTH_HTTP: "1", AXIOM_RUN_LOCAL_TERRAFORM_HTTP: "1", AXIOM_LOCAL_TERRAFORM_EXECUTABLE: "/usr/bin/terraform" }, invalid)).rejects.toThrow("owned_saved_plan_executable_required");
   expect(invalid.calls).toEqual([]);
 });
+
+it("opts into Azure wire only explicitly and preserves separate owned encryption/transport authority", async () => {
+ const f=fixture();let options;
+ await runOwnedLocalAuthHttp({AXIOM_RUN_LOCAL_AUTH_HTTP:"1",AXIOM_RUN_LOCAL_AZURE_HTTP:"1"},{...f,rehearse:async(_url:string,value:unknown)=>{options=value;return {verified:[]};}});
+ expect(options).toEqual({azureWireFixture:true});
+ const invalid=fixture();await expect(runOwnedLocalAuthHttp({AXIOM_RUN_LOCAL_AUTH_HTTP:"1",AXIOM_RUN_LOCAL_AZURE_HTTP:"true"},invalid)).rejects.toThrow("local_azure_http_opt_in_invalid");expect(invalid.calls).toEqual([]);
+ for(const flag of ["AXIOM_RUN_LOCAL_AWS_HTTP","AXIOM_RUN_LOCAL_TERRAFORM_HTTP"]){const separate=fixture();await expect(runOwnedLocalAuthHttp({AXIOM_RUN_LOCAL_AUTH_HTTP:"1",AXIOM_RUN_LOCAL_AZURE_HTTP:"1",[flag]:"1"},separate)).rejects.toThrow("separate_owned_azure_fixture_required");expect(separate.calls).toEqual([]);}
+});

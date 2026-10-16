@@ -1,0 +1,7 @@
+import { expect, it } from "vitest";
+import { localAzureChildEnvironment } from "../../../../../scripts/fixtures/localAzureChildEnvironment.mjs";
+const fixture = { origin: "http://127.0.0.1:12346", proof: "a".repeat(32), encryptionSecret: "synthetic-owned-key" };
+const base = { DATABASE_URL: "postgresql://fixture:fixture@127.0.0.1:12345/axiom_auth_http_123456789abc" };
+it.each(["AZURE_CLIENT_SECRET", "ARM_CLIENT_SECRET", "NODE_OPTIONS", "CREDENTIAL_ENCRYPTION_KEY"])("rejects inherited %s instead of extending fixture authority", key => { expect(() => localAzureChildEnvironment({ ...base, [key]: "forbidden" }, { appOrigin: "http://127.0.0.1:12347", mailOrigin: "http://127.0.0.1:12348", fixture })).toThrow("inherited_azure_fixture_configuration_forbidden"); });
+it("builds only owned loopback fixture selectors without Azure endpoint/credential environment fallback", () => { const env = localAzureChildEnvironment(base, { appOrigin: "http://127.0.0.1:12347", mailOrigin: "http://127.0.0.1:12348", fixture }); expect(env.NODE_OPTIONS).toContain("ownedAzureHttpPreload.cjs"); expect(Object.keys(env).some(key => key.startsWith("AZURE_") || key.startsWith("ARM_"))).toBe(false); });
+it("rejects non-owned origins before any child launch", () => { expect(() => localAzureChildEnvironment(base, { appOrigin: "https://visionxixlabs.com", mailOrigin: "http://127.0.0.1:12348", fixture })).toThrow("owned_azure_child_origins_required"); });

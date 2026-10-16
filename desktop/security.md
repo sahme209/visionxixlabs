@@ -76,3 +76,9 @@ fake "signed build" claims.
 
 `security@visionxixlabs.com`. We don't run a bug bounty yet — preview-state
 honesty.
+
+### Azure service-principal candidate
+
+Azure input is transient UI/request state, cleared at submission and when paired identity/workspace/capabilities change. It is not written to localStorage, native secure settings, URLs, logs or AI. The Azure client accepts only the approved product API origin, a paired desktop bearer and cookie omission. Safe fixed error text prevents provider/server messages from echoing secrets. The backend rechecks current accepted session authority around provider IO, uses tenant/provider/account/version-bound AES-GCM, and keeps canonical accounts disabled for generic Agent scans.
+
+Only fixed public Microsoft token and exact ARM read paths are allowed. SDK requests have no redirects/retries/pagination, a three-request budget, 15-second operation deadline, five-second request limit and a 128 KiB streamed response limit before buffering; compressed responses are rejected. Resource-group results are a single first page capped at 100, always incomplete. No permission-assignment, cost, secret enumeration or mutation operation exists in this candidate. Local disconnect erases ciphertext and invalidates late results; Azure-issued tokens/grants remain outside that revocation.
