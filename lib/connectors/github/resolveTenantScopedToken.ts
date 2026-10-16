@@ -27,13 +27,13 @@ export type ResolveTenantScopedTokenResult =
   | { ok: true; token: string }
   | { ok: false; error: "github_not_connected" | "github_token_unavailable" };
 
-interface InstallationRepo {
+export interface InstallationRepo {
   gitHubInstallation: {
     findFirst(args: {
       where: { organizationId: string; status: string };
       orderBy: { installedAt: "desc" };
-      select: { githubInstallationId: true };
-    }): Promise<{ githubInstallationId: string } | null>;
+      select: { githubInstallationId: true; id?: true; updatedAt?: true; revokedAt?: true; suspendedAt?: true };
+    }): Promise<{ githubInstallationId: string; id?: string; updatedAt?: Date; revokedAt?: Date | null; suspendedAt?: Date | null } | null>;
   };
 }
 
@@ -44,17 +44,24 @@ interface InstallationRepo {
  * prefix) — matching what resolveGithubInstallationToken's `repositories`
  * option expects.
  */
-export async function resolveTenantScopedToken(organizationId: string, repo: RepoRef): Promise<ResolveTenantScopedTokenResult> {
-  const installation = await (prisma as unknown as InstallationRepo).gitHubInstallation.findFirst({
+export async function resolveTenantScopedToken(organizationId: string, repo: RepoRef,
+  expectedInstallation?: { id: string; githubInstallationId: string; updatedAt: Date; signal?: AbortSignal; permissionProfile?: "provenance_read" },
+  installationRepo: InstallationRepo = prisma as unknown as InstallationRepo,
+): Promise<ResolveTenantScopedTokenResult> {
+  const installation = await installationRepo.gitHubInstallation.findFirst({
     where: { organizationId, status: "active" },
     orderBy: { installedAt: "desc" },
-    select: { githubInstallationId: true },
+    select: expectedInstallation ? { githubInstallationId: true, id: true, updatedAt: true, revokedAt: true, suspendedAt: true } : { githubInstallationId: true },
   }).catch(() => null);
   if (!installation) return { ok: false, error: "github_not_connected" };
+  if (expectedInstallation && (installation.id !== expectedInstallation.id || installation.githubInstallationId !== expectedInstallation.githubInstallationId
+    || installation.updatedAt?.getTime() !== expectedInstallation.updatedAt.getTime() || installation.revokedAt || installation.suspendedAt))
+    return { ok: false, error: "github_not_connected" };
 
   const installationId = Number(installation.githubInstallationId);
-  const outcome = await resolveGithubInstallationToken({ installationId, repositories: [repo.repo] });
+  const outcome = await resolveGithubInstallationToken({ installationId, repositories: [repo.repo], ...(expectedInstallation?.signal ? { signal: expectedInstallation.signal } : {}), ...(expectedInstallation?.permissionProfile ? { permissionProfile: expectedInstallation.permissionProfile } : {}) });
   if (!outcome.ok) return { ok: false, error: "github_token_unavailable" };
+  if (expectedInstallation && outcome.installationId !== installationId) return { ok: false, error: "github_token_unavailable" };
   return { ok: true, token: outcome.token };
 }
 

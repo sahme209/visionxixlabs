@@ -1331,3 +1331,11 @@ verification. The source remained clean; no concurrent compiler or shared-client
 generation ran. This is real local Next.js/PostgreSQL acceptance, not production
 login, native/browser/vault, OAuth, paid policy, Stripe, cloud or provenance-runtime
 acceptance. Existing production binding/recovery approvals remain unchanged.
+
+### PR #154 closure and bounded GitHub build ingestion
+
+PR #154 merged as `50f54d65b5d3406f9535b04f7c1a05e58c542431`; its tree matches final head `91e04d502a61c8ffd39c6e138254cb95f3b68713`. Final CI runs [38842503728](https://github.com/sahme209/visionxixlabs/actions/runs/38842503728) and [38842499193](https://github.com/sahme209/visionxixlabs/actions/runs/38842499193) passed, including 6411 tests (four owned PostgreSQL opt-ins skipped) and the 293-route production build. The combined-source 25-check local HTTP report above remains source-bound evidence, not production acceptance. Vercel automatic Git deployment remains disabled.
+
+The next source slice adds an internal read-only GitHub build-evidence adapter, reusing tenant installation resolution, transport, selected durable review policy and actual offline Sigstore verification. Current tenant/member/repository/environment/installation/policy snapshots are checked around bounded I/O; the read-only token profile is repository-scoped and cannot reuse a broad token. Snapshot and credential selection use the same explicitly supplied client. Repository, source, caller workflow, reusable signer, current run and exact attempt bind to the signed subject set. No route, schema, approval, AWS facts, execution activation or provider write was added.
+
+Evidence: [implementation and limits](ECS_GITHUB_BUILD_INGESTION.md), `githubBuildEvidence.ts`, `githubBuildSnapshot.ts` and nine focused transport/auth/snapshot/crypto test files (112 tests passed), clean scoped ESLint and diff check. These are simulated API/DB responses composed with genuine upstream offline signature evidence; live GitHub grants, actual bundle origins, reviewed runtime roots, Axiom OCI ingestion and AWS/health/rollback acceptance remain unverified or unimplemented. Branch-policy snapshots are change fences, not fulfilled readiness/approval facts. Production login binding, PITR/restore readiness and explicit recovery approval remain blocked separately; no production changes occurred.
