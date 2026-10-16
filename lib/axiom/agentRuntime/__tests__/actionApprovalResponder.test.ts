@@ -1,3 +1,4 @@
+import { deploymentEvidence } from "@/lib/releaseops/deploymentEvidence";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const mocks = vi.hoisted(() => ({
@@ -192,14 +193,14 @@ describe("executeApprovedAction", () => {
       },
     };
     const result = await executeApprovedAction(promotionRepo, "org-1", "trigger_aws_deploy", { repositoryFullName: "acme/widgets", environmentId: "env_1" }, "user-1", "test-action");
-    expect(result).toEqual({ ok: false, error: "branch_policy_promotion_required" });
+    expect(result).toEqual({ ok: false, error: "branch_policy_promotion_artifact_unverified" });
     expect(mocks.dispatchWorkflow).not.toHaveBeenCalled();
   });
 
   it("trigger_aws_deploy dispatches the workflow with the target's own config", async () => {
     mocks.dispatchWorkflow.mockResolvedValue({ ok: true, data: { workflowRunId: "123", runUrl: "https://api.github.test/runs/123", htmlUrl: "https://github.test/runs/123" } });
     const result = await executeApprovedAction(repo, "org-1", "trigger_aws_deploy", { repositoryFullName: "acme/widgets", environmentId: "env_1" }, "user-1", "test-action");
-    expect(result).toEqual({ ok: true, result: { dispatched: true, execution: null, trackingAvailable: false, policyId: null, sourceRef: "main", sourceKind: "branch" } });
+    expect(result).toEqual({ ok: true, result: { dispatched: true, evidence: deploymentEvidence("service_restart"), execution: null, trackingAvailable: false, policyId: null, sourceRef: "main", sourceKind: "branch" } });
     expect(mocks.dispatchWorkflow).toHaveBeenCalledWith(expect.objectContaining({
       inputs: { role_arn: "arn:aws:iam::123:role/x", region: "us-east-2", cluster: "c", service: "s" },
     }));

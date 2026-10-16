@@ -13,7 +13,7 @@ builds must not be reported as that acceptance.
 
 | Journey or component | Actual evidence | Status / next exit criterion |
 | --- | --- | --- |
-| Website serving / build | #130–134 main builds READY; fresh domain lookup now serves #134 commit `153bacd4` | Previous older-alias observation superseded; actual authentication remains unverified. |
+| Website serving / build | Latest retained read-only alias observation serves manually promoted #138 commit `3df6d03f`; #139–142 main builds READY without custom-domain acceptance | Main build success does not prove domain routing or login; see `mission/vercel-release-inspection.json`. |
 | Provider registration | Public `/api/auth/providers` returned HTTP 200 | Configuration discovery only; not OAuth acceptance. |
 | Founder identity/workspace records | Protected read-only preflight #3 accountCheck passed | Mapping passed; actual password/OAuth ownership, platform-admin configuration and operational entitlement not verified. |
 | Signup + email verification | Route/guard regressions; auth token table/column missing in protected target | Blocked by binding/recovery gates. New production test-account creation is not authorized. |
@@ -22,7 +22,7 @@ builds must not be reported as that acceptance.
 | Cloud connection | Provider validation code / tests; no runtime outbound identities | No customer-owned account connection verified in this runtime. Need scoped sandbox identity and tenant mapping. |
 | AI-assisted plan | Existing planning/runtime and cost-identity kernels | Real model response, bounded spend receipt and immutable approved plan not yet traced together. |
 | Approvals | Default-deny/prerequisite and role tests | Need an actual distinct authorized approver, version-bound evidence and denied/revoked/cross-tenant cases on the same journey. |
-| AWS ECS execution | Checked-in workflow and template parity, target serialization and stabilization/rollback commands | Not dispatched. Need reviewed target, OIDC role/trust, approval binding and cost limit; prove no direct-dispatch bypass before acceptance. |
+| AWS ECS execution | Bundled four-input workflow restarts existing task definition; truthful receipts/UI and required-promotion denial are undergoing integration | Not a verified source artifact release. Need versioned immutable artifact/provenance, approval binding, independent health receipts and approved sandbox acceptance. Legacy dashboard full governance parity remains unresolved. |
 | Rollback | Decision tests and workflow recovery commands | Actual controlled failure, rollback stabilization and independent health evidence unverified. A rollback plan is not executed recovery. |
 | Airflow dependencies | Client and automation tests | Real Airflow 3 DAG/dependency/retry observation unverified. Include only if the selected customer workflow requires it. |
 | Azure / GCP execution | Existing read/inventory paths; adapter apply/rollback TODOs | Missing generic write/rollback implementation; credentials alone cannot close this gap. |

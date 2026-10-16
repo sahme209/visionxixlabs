@@ -750,3 +750,54 @@ and its repository contents token is read-only. An additional actual-YAML
 contract test covers both restrictions and absence of Tauri release inputs.
 The updated 34 guard tests and lint passed; exact new-head CI must replace the
 prior-head result before merge. No release workflow was dispatched.
+
+
+## PR #143 integrated — native candidate publication safeguards
+
+PR #143 merged as `fef79a0eed15c8251dd46560e2e42f140b8c7177`.
+Exact-head Test run 38825492060 passed 580 files / 5,972 tests, and Desktop CI
+38825492086 passed native tests and Clippy. This supersedes the pending-CI
+notes above. The final 34 workflow guard cases explicitly cover disabling
+the SBOM action's default release upload and candidate read-only permissions.
+Preview provisioning failed before compilation; capacity and routing were unchanged.
+Actual packaged installer trust, OS vault/upgrade behavior, configured release
+reviewers and publication approval remain open. No release was dispatched.
+
+## ECS customer evidence correction — integration underway
+
+Existing four-input workflow dispatch requests an ECS service restart; an installed
+workflow filename does not attest actual behavior. Responses and desktop/web views
+separate requested intent and raw workflow outcomes from unknown source artifact,
+application health and recovered-image proof. Historical receipt rows carry no
+verified artifact contract. Completed prior runs cannot authorize ECS artifact
+promotion. Independent review found and then confirmed closure of emergency and legacy-dashboard
+promotion-policy gaps. Focused regressions assert zero reservation/dispatch on denial.
+Broader dashboard branch/CI/approval/quota parity and post-dispatch lifecycle
+ordering remain separate unresolved legacy dependencies. The versioned immutable artifact release remains an engineering milestone,
+not completed by receipt wording or mocked tests.
+
+The operator's latest serving-database comparison is explicitly **not yet verified**.
+No new access question or production approval is inferred. Neon metadata/schema
+equality cannot establish the serving deployment's binding. Fresh usable recovery
+point, approved isolated restore and exact auth-only execution approval remain
+required. All independent workstreams and unavailable-source placeholders remain
+in the canonical register; no real end-to-end customer journey is yet verified.
+
+Integration validation so far: 582 files / 5,985 tests passed, followed by
+68 focused final promotion/demo tests and 54 final rendered UI/Agent tests.
+Web/desktop TypeScript, desktop optimized build and 30 Python tests passed.
+Changed source lint excluding the existing releases page has zero errors and
+four pre-existing mock-argument warnings. The releases page retains its baseline
+three set-state-in-effect errors and one unused-import warning; no suppression
+was added. Optimized website build passed with 293 generated pages. Exact-head CI remains required before merge.
+
+
+## Additional workstream — Vercel cost optimization (2026-10-16)
+
+Owner requests a manual-only deployment strategy without changing GitHub pushes,
+PRs, required CI or normal verified source integration. Investigation runs in
+parallel with existing priorities; the serving website and login recovery gates
+remain intact. No executable Vercel configuration, settings, routing or integration
+change is authorized. The plan must verify manual builds/deployment of an exact
+approved commit, resource/environment effects, separate routing approval and a
+reversible trigger-control change before owner approval.

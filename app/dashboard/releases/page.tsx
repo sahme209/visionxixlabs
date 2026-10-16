@@ -8,7 +8,7 @@
  * /api/dashboard/release-list. Detail page lands in a future phase.
  */
 
-import { useEffect, useState, type MouseEvent } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import {
   RocketLaunchIcon,
@@ -18,6 +18,7 @@ import {
   ClockIcon,
   ArrowPathIcon,
 } from "@heroicons/react/24/outline";
+import { ReleaseWorkflowButton } from "@/components/releases/ReleaseWorkflowButton";
 import { PageIntro } from "@/components/dashboard/PageIntro";
 import { OnboardingChecklist } from "@/components/dashboard/OnboardingChecklist";
 
@@ -113,16 +114,16 @@ export default function ReleasesPage() {
         kicker={`ReleaseOps · releases${data ? ` · ${data.summary.total} tracked` : ""}`}
         title={<>Every release. <span className="text-zinc-500">One canonical audit.</span></>}
         description="Per-release status, readiness score, evidence pack, and signed-state. Drives the dashboard sidebar dot and the on-call routing for sticky errors."
-        helps="See which releases are deploying, which need attention, and which evidence packs are still unsigned."
-        connectFirst="Already wired via the Phase 442 lifecycle + Phase 444 readiness persistence."
+        helps="Review recorded release states and workflow dispatches; workflow success does not verify a source artifact release, application health or image rollback."
+        connectFirst="Bind the tenant repository, target environment and authorized workflow. The bundled ECS template requests a service restart; installed custom behavior remains unverified."
         engineers={["Release Captain", "DevOps", "Compliance"]}
-        requiresApproval="Scope changes after readiness approval, exception waivers, and emergency-change deploys."
+        requiresApproval="Existing release, role and workflow authority gates apply. Dispatch acceptance is not artifact promotion or verified recovery."
         actions={[
           { label: "ReleaseOps command center", href: "/dashboard/releaseops" },
           { label: "Environments",               href: "/dashboard/environments" },
           { label: "Connector setup",            href: "/dashboard/connector-setup" },
         ]}
-        safetyNote="Click any release → full overview · every transition audited"
+        safetyNote="Review workflow and lifecycle evidence separately; neither alone proves a healthy artifact release."
       />
 
       <OnboardingChecklist />
@@ -216,7 +217,7 @@ function ReleaseRow({ r, now }: { r: ReleaseListRow; now: Date }) {
               evidence {r.evidencePack.signed ? "signed" : "draft"}
             </span>
           )}
-          {r.status === "ready" && r.targetEnvironmentId && <DeployButton releaseId={r.id} />}
+          {r.status === "ready" && r.targetEnvironmentId && <ReleaseWorkflowButton releaseId={r.id} />}
           <span className="text-[10px] font-mono text-orange-300/70">overview →</span>
         </div>
       </div>
@@ -229,50 +230,6 @@ function ReleaseRow({ r, now }: { r: ReleaseListRow; now: Date }) {
   );
 }
 
-type DeployState = { kind: "idle" } | { kind: "deploying" } | { kind: "ok" } | { kind: "error"; message: string };
-
-function DeployButton({ releaseId }: { releaseId: string }) {
-  const [state, setState] = useState<DeployState>({ kind: "idle" });
-
-  async function deploy(e: MouseEvent<HTMLButtonElement>) {
-    e.preventDefault();
-    e.stopPropagation();
-    setState({ kind: "deploying" });
-    try {
-      const res = await fetch("/api/dashboard/release-deploy", {
-        method: "POST",
-        credentials: "include",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ releaseId }),
-      });
-      const j = await res.json();
-      if (j.ok) {
-        setState({ kind: "ok" });
-      } else {
-        setState({ kind: "error", message: j.hint ?? j.error });
-      }
-    } catch (err) {
-      setState({ kind: "error", message: err instanceof Error ? err.message : "network error" });
-    }
-  }
-
-  if (state.kind === "ok") {
-    return <span className="text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded border bg-emerald-500/15 text-emerald-300 border-emerald-500/25">deploying</span>;
-  }
-  return (
-    <span className="inline-flex items-center gap-1.5">
-      <button
-        type="button"
-        onClick={deploy}
-        disabled={state.kind === "deploying"}
-        className="text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded border border-orange-500/40 bg-orange-500/[0.12] text-orange-100 hover:bg-orange-500/[0.20] disabled:opacity-50 disabled:cursor-wait transition-colors"
-      >
-        {state.kind === "deploying" ? "deploying…" : "deploy"}
-      </button>
-      {state.kind === "error" && <span className="text-[9.5px] font-mono text-rose-300">✗ {state.message}</span>}
-    </span>
-  );
-}
 
 function Stat({ icon: Icon, label, value, tone }: { icon: typeof RocketLaunchIcon; label: string; value: string; tone: "emerald" | "amber" | "rose" | "zinc" }) {
   const cls = {

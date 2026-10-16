@@ -1,3 +1,4 @@
+import { DeploymentWorkflowEvidence } from "../components/DeploymentWorkflowEvidence";
 import { useCallback, useEffect, useState, type FormEvent } from "react";
 import { ExternalLink, ViewShell } from "../components/Primitives";
 import { desktopClient, type DeploymentExecution } from "../lib/desktopClient";
@@ -471,11 +472,11 @@ export function DeploymentRequestsView() {
       )}
 
       {executions.length > 0 && (
-        <section className="glass-card p-4" aria-label="Live deployments">
+        <section className="glass-card p-4" aria-label="Workflow execution evidence">
           <div className="flex items-center justify-between gap-3">
             <div>
-              <p className="text-sm font-semibold text-white">Live deployment evidence</p>
-              <p className="mt-0.5 text-[11px] text-zinc-500">Exact GitHub workflow runs, validation outcomes, and automatic rollback evidence.</p>
+              <p className="text-sm font-semibold text-white">Workflow execution evidence</p>
+              <p className="mt-0.5 text-[11px] text-zinc-500">Recorded GitHub workflow runs and reported rollback steps. Artifact release, application health and recovery are not verified.</p>
             </div>
             <span className="text-[10px] font-mono uppercase tracking-wider text-zinc-500">Latest {Math.min(executions.length, 5)}</span>
           </div>
@@ -492,11 +493,8 @@ export function DeploymentRequestsView() {
                       {execution.branchPolicyId ? " · policy enforced" : ""}
                     </p>
                   )}
-                  <p className="mt-1 text-[10px] text-zinc-500">
-                    {execution.status === "completed" ? `Completed · ${execution.conclusion ?? "unknown"}` : execution.status.replaceAll("_", " ")}
-                    {execution.rollbackStatus !== "not_started" ? ` · rollback ${execution.rollbackStatus.replaceAll("_", " ")}` : ""}
-                    {` · ${new Date(execution.createdAt).toLocaleString()}`}
-                  </p>
+                  <DeploymentWorkflowEvidence execution={execution} />
+                  <p className="mt-1 text-[10px] text-zinc-500">{new Date(execution.createdAt).toLocaleString()}</p>
                 </div>
                 {execution.workflowUrl && (
                   <ExternalLink href={execution.workflowUrl} className="shrink-0 text-[11px] font-medium text-zinc-300 hover:text-white">

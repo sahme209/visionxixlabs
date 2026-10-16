@@ -58,6 +58,8 @@ export interface DeploymentPolicyRepo {
 }
 
 export interface DeploymentPolicyInput {
+  /** Server-owned execution capability, never copied from request input. */
+  requestedCapability?: "legacy_ecs_restart";
   organizationId: string;
   environmentId: string;
   owner: string;
@@ -100,6 +102,10 @@ export async function evaluateDeploymentPolicy(
 ): Promise<DeploymentPolicyDecision> {
   if (!validSourceRef(input.sourceRef)) return { ok: false, error: "invalid_source_ref" };
   if (input.sourceKind !== "branch" && input.sourceKind !== "tag") return { ok: false, error: "invalid_source_kind" };
+
+  if (input.requestedCapability === "legacy_ecs_restart" && input.promotedFromExecutionId) {
+    return { ok: false, error: "branch_policy_promotion_artifact_unverified" };
+  }
 
   let repositories: RepositoryRow[];
   try {
@@ -169,6 +175,10 @@ export async function evaluateDeploymentPolicy(
     if (ci.data.state === "failure") return { ok: false, error: "branch_policy_tests_failed", policyId: policy.id };
   }
 
+  if (policy.requirePromotionFromEnvironmentId && input.requestedCapability === "legacy_ecs_restart") {
+    return { ok: false, error: "branch_policy_promotion_artifact_unverified", policyId: policy.id };
+  }
+
   if (policy.requirePromotionFromEnvironmentId) {
     if (!input.promotedFromExecutionId) {
       return { ok: false, error: "branch_policy_promotion_required", policyId: policy.id };
@@ -234,4 +244,39 @@ async function resolveUnconfiguredReference(input: DeploymentPolicyInput): Promi
   });
   if (!reference.ok) return { ok: false, error: reference.error };
   return { ok: true, policyId: null, sourceCommitSha: reference.data.commitSha, pullRequestUrl: null };
+}
+
+/** Checks the non-bypassable artifact-promotion requirement without enforcing
+ * branch/CI rules that an explicitly authorized emergency restart may bypass. */
+export async function checkLegacyEcsPromotionRequirement(
+  repo: Pick<DeploymentPolicyRepo, "repository" | "branchEnvironmentPolicy">,
+  input: { organizationId: string; environmentId: string; owner: string; repo: string; sourceRefs: string[] },
+): Promise<{ ok: true } | { ok: false; error: string }> {
+  try {
+    const repositories = await repo.repository.findMany({
+      where: { organizationId: input.organizationId, provider: "github" },
+    });
+    const registered = repositories.find(row =>
+      row.remoteOwner.toLowerCase() === input.owner.toLowerCase()
+      && row.remoteName.toLowerCase() === input.repo.toLowerCase());
+    if (!registered) return { ok: true };
+    const policies = await repo.branchEnvironmentPolicy.findMany({
+      where: {
+        organizationId: input.organizationId,
+        repositoryId: registered.id,
+        environmentId: input.environmentId,
+        enabled: true,
+      },
+      orderBy: [{ priority: "asc" }],
+    });
+    for (const sourceRef of input.sourceRefs) {
+      const matched = policies.find(policy => matchesPattern(sourceRef, policy.branchPattern));
+      if (matched?.requirePromotionFromEnvironmentId) {
+        return { ok: false, error: "branch_policy_promotion_artifact_unverified" };
+      }
+    }
+    return { ok: true };
+  } catch {
+    return { ok: false, error: "branch_policy_lookup_failed" };
+  }
 }

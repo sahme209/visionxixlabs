@@ -53,13 +53,13 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = [
   },
   {
     name: "check_deploy_status",
-    description: "Check the status of the most recent AWS ECS deploy workflow run for a repository.",
+    description: "Read the most recent configured ECS workflow run. Workflow conclusions are not immutable artifact, application health or image rollback proof.",
     argsSchemaHint: '{ "repositoryFullName": "owner/repo" }',
     riskLevel: "low",
   },
   {
     name: "list_deployment_executions",
-    description: "List recent recorded deploy executions for this workspace, optionally filtered to one environment. Use this to find the id of a prior successful deploy before proposing trigger_aws_deploy as a promotion (e.g. promoting a build that already succeeded in dev to test).",
+    description: "List recorded workflow executions for this workspace. Current records do not prove source artifacts, application health or image recovery and cannot establish immutable artifact promotion.",
     argsSchemaHint: '{ "environmentId": "optional, from list_environments" }',
     riskLevel: "low",
   },
@@ -137,8 +137,8 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = [
   },
   {
     name: "trigger_aws_deploy",
-    description: "Trigger a real AWS ECS deployment for a repository's configured environment from an explicit branch or tag. Configured branch policies are checked against live GitHub evidence before dispatch. Some environments require promotion: their policy only allows a deploy that carries promotedFromExecutionId pointing at a completed, successful deploy execution against the specific prior environment (e.g. test requires promoting from a dev execution), with the exact same resolved commit — use list_deployment_executions to find that id. This changes what's running in production or another live environment — always treated as the highest-risk action available.",
-    argsSchemaHint: '{ "repositoryFullName": "owner/repo", "environmentId": "the environment\'s id, from list_environments", "sourceRef": "main or v1.2.3", "sourceKind": "branch|tag", "pullRequestNumber": 123, "promotedFromExecutionId": "optional, required by some environments\' policy, from list_deployment_executions" }',
+    description: "Request the configured high-risk ECS service restart workflow. The bundled workflow restarts the existing task definition; it does not build or release the selected source artifact. Branch/tag policy checks do not prove running code. Installed workflow contents and application health/image rollback remain unverified. Artifact promotion is unavailable for this legacy capability. Existing approval and production controls still apply.",
+    argsSchemaHint: '{ "repositoryFullName": "owner/repo", "environmentId": "the environment\'s id, from list_environments", "sourceRef": "main or v1.2.3", "sourceKind": "branch|tag", "pullRequestNumber": 123, "promotedFromExecutionId": "unsupported for this legacy restart capability; any supplied value is rejected" }',
     riskLevel: "high",
   },
 ] as const;

@@ -1,3 +1,4 @@
+import { deploymentEvidence } from "@/lib/releaseops/deploymentEvidence";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const mocks = vi.hoisted(() => ({
@@ -71,6 +72,7 @@ describe("executeReadOnlyTool", () => {
     expect(result).toEqual({
       ok: true,
       result: [{
+        evidence: deploymentEvidence(),
         id: "exec_1", environmentId: "env_dev", repositoryFullName: "acme/widgets",
         sourceRef: "main", sourceCommitSha: "sha1", status: "completed", conclusion: "success",
         createdAt: createdAt.toISOString(),

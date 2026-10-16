@@ -1,3 +1,4 @@
+import { deploymentEvidence } from "@/lib/releaseops/deploymentEvidence";
 /**
  * Executes an approved AgentActionProposal. This is the only place the
  * agent runtime ever calls a write function — and only after a human
@@ -155,6 +156,7 @@ export async function executeApprovedAction(
       deploymentExecution: { findFirst: repo.deploymentExecution?.findFirst ?? (async () => null) },
     };
     const policy = await evaluateDeploymentPolicy(policyRepo, {
+      requestedCapability: "legacy_ecs_restart",
       organizationId,
       environmentId,
       owner: parsed.owner,
@@ -189,6 +191,7 @@ export async function executeApprovedAction(
         ok: true,
         result: {
           dispatched: true,
+          evidence: deploymentEvidence("service_restart"),
           execution: serializeDeploymentExecution(reservation.reservation),
           trackingAvailable: Boolean(reservation.reservation.workflowRunId),
           policyId: reservation.reservation.branchPolicyId,
@@ -228,6 +231,7 @@ export async function executeApprovedAction(
       ok: true,
       result: {
         dispatched: true,
+          evidence: deploymentEvidence("service_restart"),
         execution,
         trackingAvailable: Boolean(execution && result.data.workflowRunId),
         policyId: policy.policyId,
