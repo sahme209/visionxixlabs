@@ -1137,3 +1137,42 @@ routing, not hosted checkout, OAuth, payment or paid entitlement provisioning.
 The production build caught an optional page-props signature incompatible with
 Next-generated types; corrected required props passed the focused tests and build.
 No production deployment, provider call or support checkout change was made.
+## Airflow current-condition dispatch candidate
+
+PR #149 merged as `7fd354e1d2a0fc0d2ec8fb3ccc9bd86566a00010`; its ECS review
+storage proposal remains disabled and unapplied. This candidate adds no schema.
+The existing documented Airflow latest-run freshness contract now gates actual
+write dispatch as well as proposal. Exact source identity/original terminal state,
+configured success/failed/any condition and current latest dependency freshness
+are reread before claim, GitHub token resolution or deployment allowance.
+Unavailable/changed evidence leaves the execution unclaimed. Current connection
+binding is reread after remote checks; the rule revision/connection are fenced in
+the atomic claim. These checks do not atomically lock provider state or establish
+immutable preproposal dependency/rerun evidence.
+
+Evidence: `docs/TERRAFORM_AIRFLOW_CUSTOMER_ACCEPTANCE.md`, shared
+`lib/integrations/airflow/dependencyReadiness.ts`, and executor claim regressions.
+Three tests failed against the former executor because it still opened a PR after
+source failure, dependency failure or unavailable Airflow; 81 Airflow regressions
+and web TypeScript passed in isolation. Merged-main local gates passed 595 files / 6,265 tests, web/desktop TypeScript,
+desktop build, 30 Python CLI tests, scoped lint and tracker consistency. The first
+restricted-sandbox run blocked loopback sockets and native Git/GPG fixtures; the
+final full run with normal local fixture permissions passed without source or test
+changes (bounded 20-second test allowance). Exact-head push/PR CI and production
+compilation remain pending. Live provider/customer acceptance remains unverified.
+The optional strict-policy sidecar/readiness plan is documentation only; there is
+no hidden configuration, schema activation, provider dispatch or production change.
+
+Independent review identified approver revocation during the newly added remote
+reads. Initial authority checks remain, and accepted membership/capability is
+rechecked immediately before the claim. The new mid-read revocation regression
+failed before this correction; the subsequent full local suite passed 595 files /
+6,265 tests, web TypeScript and scoped lint. Prior unchanged desktop build/types
+and 30 Python results remain applicable. The final post-read authority race is
+documented; exact-head CI remains required before merging PR #150.
+
+
+PR #150 merged as `0e383a44d8e5e5eab91febdd0135d9a96db3166f` after both
+exact-head CI runs passed TypeScript, 6,265 tests and production compilation.
+The pricing branch integrates those changes without replacing either tracker
+section; provider/customer acceptance remains unverified.

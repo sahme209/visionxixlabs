@@ -111,6 +111,12 @@ export class AirflowClient {
     });
   }
 
+  async getDagRun(dagId: string, dagRunId: string): Promise<AirflowDagRun> {
+    const body = await this.request(`/dags/${encodeURIComponent(dagId)}/dagRuns/${encodeURIComponent(dagRunId)}`);
+    if (!isRunForDag(body, dagId) || body.dag_run_id !== dagRunId) throw new Error("airflow_run_response_invalid");
+    return toDagRun(body);
+  }
+
   async triggerDag(dagId: string, conf: Record<string, unknown> = {}, scheduledRunId?: string): Promise<AirflowDagRun> {
     const runId = scheduledRunId ?? `axiom__${new Date().toISOString().replaceAll(/[:.]/g, "-")}`;
     if (scheduledRunId !== undefined && !/^[A-Za-z0-9_.~:-]{1,250}$/.test(runId)) throw new Error("invalid_airflow_run_id");

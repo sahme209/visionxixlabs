@@ -52,3 +52,12 @@ describe("AirflowClient", () => {
     expect(JSON.parse(fetcher.mock.calls[0][1].body)).toMatchObject({ conf: { release: "42" }, note: "Triggered by Axiom Agent" });
   });
 });
+
+it("reads only the exact requested source run identity", async () => {
+  const fetcher = vi.fn().mockResolvedValueOnce(Response.json({ dag_id: "daily", dag_run_id: "expected", state: "success", logical_date: null })).mockResolvedValueOnce(Response.json({ dag_id: "daily", dag_run_id: "wrong" }));
+  vi.stubGlobal("fetch", fetcher);
+  const client = new AirflowClient("https://airflow.example.com", { authMode: "token", token: "fixture" });
+  expect(await client.getDagRun("daily", "expected")).toMatchObject({ dagId: "daily", dagRunId: "expected", logicalDate: null });
+  await expect(client.getDagRun("daily", "expected")).rejects.toThrow("airflow_run_response_invalid");
+  expect(fetcher.mock.calls[0][0]).toBe("https://airflow.example.com/api/v2/dags/daily/dagRuns/expected");
+});
