@@ -38,7 +38,7 @@ export async function readSavedPlanStorageReadiness(db: SavedPlanDatabase): Prom
     if (!catalog || JSON.stringify(catalog.columns.slice().sort()) !== JSON.stringify(expectedColumns)
       || !catalog.guardSource || bytesDigest(catalog.guardSource) !== GUARD_CHECKSUM || JSON.stringify(catalog.triggerTypes) !== "[31]") return "drift";
     const definitions = catalog.constraints.map(c => c.replace(/\s+/g, " "));
-    if (definitions.length !== 12 || !definitions.includes('PRIMARY KEY ("version")') || !definitions.includes('PRIMARY KEY (id)')
+    if (definitions.length !== 12 || !definitions.includes('PRIMARY KEY (version)') || !definitions.includes('PRIMARY KEY (id)')
       || !definitions.includes('FOREIGN KEY ("deploymentRequestId") REFERENCES "TauriDeploymentRequest"(id)')
       || !definitions.includes('UNIQUE ("organizationId", "deploymentRequestId", "requestVersion", "bindingDigest", "binaryDigest")')
       || !["proposalChecksum", "bindingDigest", "binaryDigest", "showDigest"].every(c => definitions.some(d => d.includes(`"${c}" ~ '^[a-f0-9]{64}$'::text`)))

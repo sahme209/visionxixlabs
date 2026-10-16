@@ -1,0 +1,40 @@
+{
+  "origin": "genuine owned PostgreSQL 17 catalog from review-only proposal; synthetic parent tables; not customer schema acceptance",
+  "catalog": {
+    "columns": [
+      "TerraformSavedPlanArtifact:binaryBytes:integer:true",
+      "TerraformSavedPlanArtifact:binaryDigest:text:true",
+      "TerraformSavedPlanArtifact:bindingDigest:text:true",
+      "TerraformSavedPlanArtifact:bindingJson:jsonb:true",
+      "TerraformSavedPlanArtifact:createdAt:timestamp(3) without time zone:true",
+      "TerraformSavedPlanArtifact:deploymentRequestId:text:true",
+      "TerraformSavedPlanArtifact:encryptedBinary:text:true",
+      "TerraformSavedPlanArtifact:encryptedShow:text:true",
+      "TerraformSavedPlanArtifact:expiresAt:timestamp(3) without time zone:true",
+      "TerraformSavedPlanArtifact:id:text:true",
+      "TerraformSavedPlanArtifact:organizationId:text:true",
+      "TerraformSavedPlanArtifact:requestVersion:integer:true",
+      "TerraformSavedPlanArtifact:showDigest:text:true",
+      "TerraformSavedPlanFeature:proposalChecksum:text:true",
+      "TerraformSavedPlanFeature:version:integer:true"
+    ],
+    "constraints": [
+      "CHECK ((\"binaryDigest\" ~ '^[a-f0-9]{64}$'::text))",
+      "CHECK ((\"bindingDigest\" ~ '^[a-f0-9]{64}$'::text))",
+      "CHECK ((\"expiresAt\" > \"createdAt\"))",
+      "CHECK ((\"proposalChecksum\" ~ '^[a-f0-9]{64}$'::text))",
+      "CHECK ((\"requestVersion\" > 0))",
+      "CHECK ((\"showDigest\" ~ '^[a-f0-9]{64}$'::text))",
+      "CHECK (((\"binaryBytes\" >= 1) AND (\"binaryBytes\" <= 16777216)))",
+      "CHECK ((version = 1))",
+      "FOREIGN KEY (\"deploymentRequestId\") REFERENCES \"TauriDeploymentRequest\"(id)",
+      "PRIMARY KEY (id)",
+      "PRIMARY KEY (version)",
+      "UNIQUE (\"organizationId\", \"deploymentRequestId\", \"requestVersion\", \"bindingDigest\", \"binaryDigest\")"
+    ],
+    "guardSource": "\nBEGIN\n  IF TG_OP <> 'INSERT' THEN RAISE EXCEPTION 'saved_plan_immutable'; END IF;\n  IF NOT EXISTS (SELECT 1 FROM \"TauriDeploymentRequest\" r\n    JOIN \"TauriDeploymentRequestVersion\" v ON v.\"deploymentRequestId\"=r.\"id\"\n      AND v.\"organizationId\"=r.\"organizationId\" AND v.\"version\"=NEW.\"requestVersion\"\n    WHERE r.\"id\"=NEW.\"deploymentRequestId\" AND r.\"organizationId\"=NEW.\"organizationId\"\n      AND r.\"version\"=NEW.\"requestVersion\") THEN\n    RAISE EXCEPTION 'saved_plan_tenant_request_version_mismatch';\n  END IF;\n  RETURN NEW;\nEND ",
+    "triggerTypes": [
+      31
+    ]
+  }
+}

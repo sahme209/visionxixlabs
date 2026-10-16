@@ -3,8 +3,18 @@ import { readSavedPlanStorageReadiness, listSavedPlanRecords, SAVED_PLAN_PROPOSA
 import { bytesDigest } from "../savedPlanArtifact";
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
+import catalogFixture from "./savedPlanCatalog.fixture.json";
 
 describe("optional Terraform artifact storage", () => {
+  it("recognizes the exact genuine owned PostgreSQL catalog rendering", async () => {
+    const query = vi.fn().mockResolvedValueOnce([{ feature: true, artifact: true }]).mockResolvedValueOnce([{ version: 1, proposalChecksum: SAVED_PLAN_PROPOSAL_CHECKSUM }]).mockResolvedValueOnce([catalogFixture.catalog]);
+    expect(await readSavedPlanStorageReadiness({ $queryRawUnsafe: query })).toBe("ready");
+  });
+  it.each(["columns", "constraints", "guardSource", "triggerTypes"])("rejects catalog drift in %s", async (field) => {
+    const catalog = { ...catalogFixture.catalog, [field]: field === "guardSource" ? "altered function" : [] };
+    const query = vi.fn().mockResolvedValueOnce([{ feature: true, artifact: true }]).mockResolvedValueOnce([{ version: 1, proposalChecksum: SAVED_PLAN_PROPOSAL_CHECKSUM }]).mockResolvedValueOnce([catalog]);
+    expect(await readSavedPlanStorageReadiness({ $queryRawUnsafe: query })).toBe("drift");
+  });
   it("pins the exact review-only SQL proposal", () => {
     expect(bytesDigest(readFileSync(resolve("docs/proposals/terraform-saved-plan-storage-v1.sql")))).toBe(SAVED_PLAN_PROPOSAL_CHECKSUM);
   });
