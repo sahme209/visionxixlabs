@@ -41970,11 +41970,12 @@
       "engineeringActivity": "active",
       "owner": "Codex integrated parallel workstreams",
       "activeMilestone": "Define run correlation semantics and validate approved dispatch with real Airflow 3.",
-      "verification": "Missing and malformed dependency timestamps now fail closed in regressions. ECS receipts and rendered desktop/web views distinguish requested intent, raw workflow status and unverified artifact/health/image recovery. Server-owned ECS capability rejects artifact promotion; emergency and dashboard paths separately check required promotion before dispatch. Independent review accepted the narrow promotion-denial scope. Full 5,985-test regression plus final focused policy/UI cases, web/desktop types/builds and Python checks passed; exact-head CI remains required before merge.",
+      "verification": "Current-condition dispatch candidate: exact source/state and latest dependency freshness are rechecked before claim, token resolution or allowance reservation. Merged-main full regression passed 595 files / 6,264 tests, web/desktop TypeScript, desktop build, 30 Python CLI tests and scoped lint. Exact-head CI and real provider/customer acceptance remain pending.",
       "evidence": [
         "docs/TERRAFORM_AIRFLOW_CUSTOMER_ACCEPTANCE.md",
         "docs/ECS_RESTART_RECEIPT_LIMITS.md",
-        "docs/AIRFLOW_STRICT_CORRELATION_PROPOSAL.md"
+        "docs/AIRFLOW_STRICT_CORRELATION_PROPOSAL.md",
+        "lib/integrations/airflow/dependencyReadiness.ts"
       ],
       "customerAcceptance": "Not verified",
       "acceptanceDependencies": [
@@ -41982,7 +41983,7 @@
         "governance"
       ],
       "blockers": "Timestamp freshness is not business-partition proof; scheduled run correlation incomplete.",
-      "nextAction": "Define run correlation semantics and validate approved dispatch with real Airflow 3."
+      "nextAction": "Pass exact-head push/PR CI and production compilation, then validate the governed journey on an explicitly authorized nonproduction Airflow 3 endpoint. Strict interval matching remains an optional separately reviewed schema/API/UI proposal."
     },
     {
       "id": "deployment",

@@ -1062,3 +1062,30 @@ push/PR Test and Desktop CI passed, including 594 files / 6,234 tests and the
 desktop preview tests; the explicit locked dev dependency and clean-install type
 resolution fix passed on head `524cd566`. No Vercel deployment, installer
 publication or production change occurred.
+
+
+## Airflow current-condition dispatch candidate
+
+PR #149 merged as `7fd354e1d2a0fc0d2ec8fb3ccc9bd86566a00010`; its ECS review
+storage proposal remains disabled and unapplied. This candidate adds no schema.
+The existing documented Airflow latest-run freshness contract now gates actual
+write dispatch as well as proposal. Exact source identity/original terminal state,
+configured success/failed/any condition and current latest dependency freshness
+are reread before claim, GitHub token resolution or deployment allowance.
+Unavailable/changed evidence leaves the execution unclaimed. Current connection
+binding is reread after remote checks; the rule revision/connection are fenced in
+the atomic claim. These checks do not atomically lock provider state or establish
+immutable preproposal dependency/rerun evidence.
+
+Evidence: `docs/TERRAFORM_AIRFLOW_CUSTOMER_ACCEPTANCE.md`, shared
+`lib/integrations/airflow/dependencyReadiness.ts`, and executor claim regressions.
+Three tests failed against the former executor because it still opened a PR after
+source failure, dependency failure or unavailable Airflow; 81 Airflow regressions
+and web TypeScript passed in isolation. Merged-main local gates passed 595 files / 6,264 tests, web/desktop TypeScript,
+desktop build, 30 Python CLI tests, scoped lint and tracker consistency. The first
+restricted-sandbox run blocked loopback sockets and native Git/GPG fixtures; the
+final full run with normal local fixture permissions passed without source or test
+changes (bounded 20-second test allowance). Exact-head push/PR CI and production
+compilation remain pending. Live provider/customer acceptance remains unverified.
+The optional strict-policy sidecar/readiness plan is documentation only; there is
+no hidden configuration, schema activation, provider dispatch or production change.
