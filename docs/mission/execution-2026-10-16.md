@@ -212,3 +212,12 @@ An unavailable local Chromium launch is not a successful browser journey.
   37-SDK build contract, tracker coverage and diff checks passed. Actual CLI/PG/
   paired HTTP evidence remains valid within its original inactive fixture scope.
   Exact-head clean GitHub CI remains required before the Terraform source merge.
+
+### Corrected Azure application acceptance and integrated regression
+
+- Terraform saved-plan PR #163 merged normally as `24fb7ddec0db26f909279dbc1e0cfbf8be29aced` after both push/PR web and Desktop CI and independent review passed. Approval/apply remain unavailable.
+- Azure runtime `4478efb00df46fd2f2aa2212d762988ce24ab2cd` passed the corrected-source owned Next/PostgreSQL rehearsal: 38 groups, including 13 Azure groups, and 20 synthetic SDK wire observations. Source checksum binding and owned-process/container cleanup passed. This is real local application HTTP and persistence with synthetic provider replies, not real Azure IAM, production login, native UX or paid entitlement proof.
+- Integrated final regression: 639 files / 6836 tests passed; one optional file and six tests skipped. Web/desktop TypeScript and desktop bundle passed on the runtime source before documentation-only integration. Cached dependency qualifications remain recorded in the acceptance report; clean exact-head CI is still required before merge.
+- Billing remains unmerged: one bundled correction addresses negative replay deprivileging, identified non-customer-balance charge sources and owned hard-abort transport deadlines. Scoped independent re-review precedes application acceptance.
+- The next Agent journey is authorized only for owned synthetic model transport feasibility. No actual model/provider request or production enablement is authorized.
+- Support/strategic-partnerships remains deferred under the verbatim directive and dedicated plan, with no payment, page, outreach or production changes.

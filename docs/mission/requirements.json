@@ -46205,8 +46205,8 @@
       "status": "Partially implemented",
       "engineeringActivity": "active",
       "owner": "Codex integrated parallel workstreams",
-      "activeMilestone": "Integrate and validate the inactive tenant ECS/ECR observation boundary without granting deployment authority.",
-      "verification": "Existing paired AWS enrollment, encrypted scoped vault, disconnect/version invalidation and bounded EC2 inventory remain intact. PR #157 added actual local application/PostgreSQL/SDK-wire acceptance using synthetic AWS replies, not a customer account. The next inactive internal ECS/ECR observation slice reuses scoped authority/AEAD and exact broker identity, binds selected target/service/task definitions and complete digest-pinned container sets, and checks ACTIVE ECR metadata. A pinned 57-model registration projection and pre-deserialization wire byte/deadline limits are covered by 72 focused tests, including 24 actual SDK/native-wire cases. No public route, enablement, schema migration, ReviewFacts, approval, health, pullability or execution authority is added. Independent source reviews closed identified canonicalization/identity issues. Fresh-main159 local gates passed: 622 Vitest files/6629 tests (six skipped), web/desktop TypeScript, desktop build/release alignment, Python30, scoped lint and tracker consistency. The check-only generator moved to ESM after lint; its unchanged 57-model snapshot and 12 focused tests passed again. Exact-head CI/production build remain pending; cached protobuf-specs0.5.2 versus locked0.5.0 is qualified. CI exposed a real same-batch stale disconnect race; an authoritative parent account/version fence now refuses an older response before state or success notice mutation. The deterministic regression failed before the fix and passed after; ECR externalization now passes the generic37-SDK build contract.",
+      "activeMilestone": "Integrate reviewed Azure read-only enrollment, scoped credential recovery, bounded inventory and desktop Settings access; retain separate governed ECS execution gates.",
+      "verification": "Existing paired AWS enrollment, encrypted scoped vault, disconnect/version invalidation and bounded EC2 inventory remain intact. PR #157 added actual local application/PostgreSQL/SDK-wire acceptance using synthetic AWS replies, not a customer account. The next inactive internal ECS/ECR observation slice reuses scoped authority/AEAD and exact broker identity, binds selected target/service/task definitions and complete digest-pinned container sets, and checks ACTIVE ECR metadata. A pinned 57-model registration projection and pre-deserialization wire byte/deadline limits are covered by 72 focused tests, including 24 actual SDK/native-wire cases. No public route, enablement, schema migration, ReviewFacts, approval, health, pullability or execution authority is added. Independent source reviews closed identified canonicalization/identity issues. Fresh-main159 local gates passed: 622 Vitest files/6629 tests (six skipped), web/desktop TypeScript, desktop build/release alignment, Python30, scoped lint and tracker consistency. The check-only generator moved to ESM after lint; its unchanged 57-model snapshot and 12 focused tests passed again. Exact-head CI/production build remain pending; cached protobuf-specs0.5.2 versus locked0.5.0 is qualified. CI exposed a real same-batch stale disconnect race; an authoritative parent account/version fence now refuses an older response before state or success notice mutation. The deterministic regression failed before the fix and passed after; ECR externalization now passes the generic37-SDK build contract. Azure runtime 4478efb0 passed independent review, installed SDK compiler checks, 116 focused tests, and owned application/PostgreSQL acceptance with 38 check groups and 20 synthetic SDK wire observations. Current integrated regression passed 6836 tests across 639 files (six tests and one optional file skipped); web and desktop TypeScript and desktop build passed. Azure logging is silenced through typed identity logger and removal of only the owned ARM pipeline log policy. Enrollment, resource-group inventory, tenant authority, revocation/version fences and cleanup were checked against owned fixtures; no real Azure account, mutation, production login, native interaction or paid-entitlement claim.",
       "evidence": [
         "docs/ECS_CUSTOMER_JOURNEY_VALIDATION.md",
         "docs/LEGACY_WEBSITE_DEPLOYMENT_BOUNDARIES.md",
@@ -46221,7 +46221,10 @@
         "docs/mission/local-cloud-http-acceptance.json",
         "docs/ECS_IMMUTABLE_RELEASE_PLAN.md",
         "lib/cloud/aws/ecsObservation/reader.ts",
-        "lib/cloud/aws/ecsObservation/__tests__/wire.test.ts"
+        "lib/cloud/aws/ecsObservation/__tests__/wire.test.ts",
+        "docs/AZURE_READONLY_CUSTOMER_ACCEPTANCE.md",
+        "docs/mission/local-azure-readonly-http-acceptance.json",
+        "docs/mission/local-azure-source-sha256.json"
       ],
       "customerAcceptance": "Not verified",
       "acceptanceDependencies": [
@@ -46229,7 +46232,7 @@
         "github"
       ],
       "blockers": "Serving database binding/PITR/restore and production login remain unverified. Cloud storage/runtime/broker configuration and real AWS permission/customer acceptance require separate approval/access. ECS observation is inactive; v2 integer target revision, authentic OCI provenance, workload/health/rollback and governed execution remain unfinished. Azure/GCP enrollment/apply/rollback are separate unfinished milestones.",
-      "nextAction": "Pass fresh-main integration/CI, then obtain separately authorized actual provider-read acceptance and resolve durable target revision/provenance/health authority before execution. Review the target-snapshot compatibility proposal in ECS_IMMUTABLE_RELEASE_PLAN.md; it is design-only and does not enable packets or claims."
+      "nextAction": "Pass exact-head CI and normal source merge; separately obtain authorized real-account and native acceptance, then complete governed customer deployment without treating synthetic inventory as execution proof."
     },
     {
       "id": "terraform",
