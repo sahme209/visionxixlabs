@@ -61,7 +61,9 @@ export function createStripeTestProvider(options: {
       if (configured.id !== i.terms.priceId || request.mode !== "subscription" || request.metadata?.organizationId !== i.organizationId || request.metadata?.catalogVersion !== NEW_TEST_CATALOG_VERSION || request.line_items?.length !== 1 || request.line_items[0].price !== i.terms.priceId || request.line_items[0].quantity !== i.terms.seatQuantity) fail("signed_terms_mismatch");
       await authority(); // Fresh local authority after provider reads; no atomic external revocation claim.
       runtime();
-      const s = await single(opts => stripe.checkout.sessions.create(request, { ...opts, idempotencyKey: key }));
+      // Installed Stripe SDK replaces derived headers with additionalHeaders.
+      // Preserve the durable original key alongside the internal deadline owner.
+      const s = await single(opts => stripe.checkout.sessions.create(request, { ...opts, idempotencyKey: key, additionalHeaders: { ...opts.additionalHeaders, "Idempotency-Key": key } }));
       await account();
       const response = s.lastResponse;
       if (s.livemode !== false || !s.url || (typeof response?.requestId !== "string" || !response.requestId.trim()) || !Number.isInteger(response.statusCode) || response.statusCode < 200 || response.statusCode >= 300

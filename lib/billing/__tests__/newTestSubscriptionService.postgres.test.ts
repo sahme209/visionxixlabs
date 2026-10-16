@@ -16,6 +16,7 @@ import Stripe from "stripe";
 import { fixtureCoverageDDL } from "../newTestSubscription/fixtureCoverage";
 import { collectedEvidence, type CoverageObservation } from "../newTestSubscription/paidCoverage";
 import { paidFixture } from "./fixtures/newTestPaidFixture";
+import { newTestChildEnvironment } from "./fixtures/newTestChildEnvironment";
 import { createStripeTestProvider } from "../newTestSubscription/stripeTestProvider";
 
 const enabled = process.env.AXIOM_RUN_OWNED_COMMERCIAL_FIXTURE === "1";
@@ -362,15 +363,11 @@ suite("owned PG17 new TEST subscription service, synthetic provider only", () =>
     const fontCss = "@font-face { font-family: Isolated; src: url(https://synthetic.invalid/font.woff2); }";
     writeFileSync(fonts, `module.exports = new Proxy({}, { get: () => ${JSON.stringify(fontCss)} });`);
 
-    const child = spawn(process.execPath, [resolve("node_modules/next/dist/bin/next"), "dev", "--webpack", "--hostname", "127.0.0.1", "--port", String(port)], { cwd: process.cwd(), detached: true, stdio: "pipe", env: {
-      PATH: process.env.PATH, NODE_ENV: "development", NODE_OPTIONS: "--max-old-space-size=3072", NEXT_TELEMETRY_DISABLED: "1", NEXT_FONT_GOOGLE_MOCKED_RESPONSES: fonts,
-      DATABASE_URL: url, DIRECT_URL: url, NEXTAUTH_URL: base, NEXTAUTH_SECRET: randomBytes(32).toString("hex"),
-      AXIOM_ISOLATED_PUBLIC_TEST_RUNTIME: "true", AXIOM_ISOLATED_TEST_RUNTIME_ID: runtime, AXIOM_ISOLATED_TEST_ACCOUNT_ID: "acct-test", AXIOM_ISOLATED_TEST_ORGANIZATIONS: org,
-      // Inert synthetic marker only to exercise existing configured-policy/hold path.
-      // Not a usable provider credential; all SDK/provider IO is independently denied.
-      AI_GATEWAY_API_KEY: "synthetic-inert-not-a-provider-credential", AI_GATEWAY_MODEL: "openai/gpt-4o-mini", AXIOM_AI_MAX_REQUEST_CREDITS_CENTS: "100",
-      AWS_CONFIG_FILE: "/dev/null", AWS_SHARED_CREDENTIALS_FILE: "/dev/null", AWS_EC2_METADATA_DISABLED: "true",
-    } });
+    let childEnv: NodeJS.ProcessEnv;
+    try { childEnv = newTestChildEnvironment(process.env, process.execArgv, { databaseUrl: url, appOrigin: base, fontResponses: fonts,
+      runtimeId: runtime, accountId: "acct-test", organizationId: org, authSecret: randomBytes(32).toString("hex") }); }
+    catch (error) { rmSync(temporary, { recursive: true, force: true }); throw error; }
+    const child = spawn(process.execPath, [resolve("node_modules/next/dist/bin/next"), "dev", "--webpack", "--hostname", "127.0.0.1", "--port", String(port)], { cwd: process.cwd(), detached: true, stdio: "pipe", env: childEnv });
     let output = ""; child.stdout?.on("data", chunk => { output += chunk; }); child.stderr?.on("data", chunk => { output += chunk; });
     const jar = new Map<string, string>();
     const http = async (path: string, init: RequestInit = {}) => { const response = await fetch(base + path, { ...init, redirect: "manual", headers: { ...Object.fromEntries(new Headers(init.headers)), cookie: [...jar.values()].join("; ") } }); for (const item of response.headers.getSetCookie()) { const pair = item.split(";")[0]; jar.set(pair.slice(0, pair.indexOf("=")), pair); } return response; };

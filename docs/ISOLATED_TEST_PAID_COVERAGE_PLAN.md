@@ -194,3 +194,33 @@ runtime. Default real transport derives unsupported configuration refusal from
 process key presence itself; fixture configuration is available only together
 with an explicitly injected synthetic native wire. No managed proxy or trust
 values are inspected, logged, changed or bypassed.
+
+## Installed-SDK creation and owned launcher review correction
+
+Scoped financial review of 80007c96 found that installed Stripe's
+`additionalHeaders` replaces headers derived from `idempotencyKey`. The actual
+SDK with an injected synthetic native HTTPS wire reproduced RED: the outbound
+checkout POST had no Idempotency-Key. Creation now explicitly merges the exact
+immutable attempt key into additionalHeaders alongside the internal deadline
+owner. The actual installed SDK regression proves two low-level identical
+attempt calls keep that key and body, strip the internal token before the native
+wire, retain the same original response proof, and do not change intent data.
+This does not authorize service retries of unknown attempts, which remain denied.
+
+The owned Next child now uses a fixture-only environment builder. It copies
+approved inherited proxy/CA selectors opaquely, excludes ambient provider and
+application credentials, retains supported heap-only Node options, and refuses
+unsupported inherited preloads/guards/trust selectors before spawn without
+including values in errors. Known Vitest node/development conditions are harmless
+runner options; other CLI options fail closed. Unsupported trust alteration
+selectors also refuse launch. Owned DB and application targets remain exact
+loopback fixture targets; the absolute provider-denied flag and inert synthetic
+AI marker remain mandatory. Fixture temporary font output is removed if launcher
+configuration is refused. No managed transport values are logged or modified.
+
+Focused validation passes 317 tests across 15 files, with 8 owned PG/Next cases
+still skipped pending review and a coordinator grant. Changed-source lint and
+whitespace checks pass. No compiler, owned server/database, real provider call,
+shared Prisma generation, hosted checkout or managed-proxy compatibility proof
+has run for this correction. Whole-web compilation and exact-source owned
+acceptance follow the independent scoped reviews and main integration.

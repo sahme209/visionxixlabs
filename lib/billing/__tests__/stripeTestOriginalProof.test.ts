@@ -3,6 +3,11 @@ import { paidFixture } from "./fixtures/newTestPaidFixture";
 import { createHash } from "node:crypto";
 import { createNewTestSubscriptionService, type Intent, type Store, type Transaction, type Contract } from "../newTestSubscription/service";
 import Stripe from "stripe";
+import { EventEmitter } from "node:events";
+import { PassThrough } from "node:stream";
+import type { ClientRequest, IncomingMessage } from "node:http";
+import type { RequestOptions } from "node:https";
+import { createBoundedStripeHttpClient } from "../newTestSubscription/stripeHttpClient";
 import { createStripeTestProvider } from "../newTestSubscription/stripeTestProvider";
 afterEach(() => vi.unstubAllEnvs());
 const price = { id: "price_pro", livemode: false, active: true, currency: "usd", type: "recurring", billing_scheme: "per_unit", unit_amount: 2900, recurring: { interval: "month", interval_count: 1, usage_type: "licensed" }, product: { id: "prod_pro", active: true, livemode: false, deleted: false } };
@@ -52,6 +57,40 @@ describe("inactive original Stripe TEST proof adapter", () => {
     expect(result.originalCreateProof).toMatchObject({ sessionId: "cs_test", outboundRequestKey: "durable_key", requestId: "req_original", accountId: "acct_test", runtimeId: "runtime" });
     expect(result.originalCreateProof?.observedIdempotencyKey).toBeUndefined();
     expect(client.checkout.sessions.create).toHaveBeenCalledWith(JSON.parse(body), expect.objectContaining({ idempotencyKey: "durable_key", timeout: 10000, maxNetworkRetries: 0 }));
+  });
+  it("actual installed SDK retains the original key and body on repeated create with the deadline owner stripped", async () => {
+    const f = fixture();
+    const body = JSON.stringify({ mode: "subscription", metadata: { intentId: "intent", organizationId: "org", catalogVersion: "axiom_public_test_v1" }, line_items: [{ price: "price_pro", quantity: 1 }] });
+    const row = { revision: 1, id: "intent", organizationId: "org", terms: { priceId: "price_pro", seatQuantity: 1, planId: "pro", interval: "monthly", catalogVersion: "axiom_public_test_v1" }, runtimeId: "runtime", accountId: "acct_test", livemode: false, state: "attempted", canonicalRequest: body, requestDigest: createHash("sha256").update(body).digest("hex"), providerIdempotencyKey: "durable_key", sessionId: null };
+    const original = structuredClone(row);
+    f.transaction.mockImplementation(async fn => fn({ contract: async () => null, legacyBinding: async () => false, eligible: async () => true, acceptedSeats: async () => 1, intent: async () => row } as unknown as Transaction));
+    const outbound: Array<{ options: RequestOptions; body: unknown }> = [];
+    const syntheticRequest = (options: RequestOptions, callback: (response: IncomingMessage) => void) => {
+      const response = Object.assign(new PassThrough(), { statusCode: 200, headers: { "content-type": "application/json", "request-id": "req_original", ...(options.method === "POST" ? { "idempotency-key": "durable_key" } : {}) } });
+      response.on("error", () => {});
+      const request = new EventEmitter() as EventEmitter & { end: (value: unknown) => void; destroy: (error?: Error) => void };
+      request.destroy = (error?: Error) => { response.destroy(error); queueMicrotask(() => { if (error) request.emit("error", error); request.emit("close"); }); };
+      request.end = value => { outbound.push({ options, body: value }); queueMicrotask(() => { callback(response as unknown as IncomingMessage); response.end(JSON.stringify(options.path === "/v1/account" ? { id: "acct_test" } : options.path?.startsWith("/v1/prices/") ? price : { id: "cs_test", url: "https://checkout.stripe.com/c/pay", livemode: false })); }); };
+      return request as unknown as ClientRequest;
+    };
+    const sdk = new Stripe("sk_test_synthetic", { httpClient: createBoundedStripeHttpClient({ syntheticRequest, configuredTransportKeys: [] }), maxNetworkRetries: 0 });
+    const provider = createStripeTestProvider({ ...f.options, sdkFactory: () => sdk });
+    // Low-level repeat of the same attempted request, not service authorization
+    // to retry an unknown attempt (the service separately rejects that retry).
+    const first = await provider.create(body, "durable_key", { organizationId: "org", userId: "owner" });
+    const second = await provider.create(body, "durable_key", { organizationId: "org", userId: "owner" });
+    const creates = outbound.filter(call => call.options.method === "POST");
+    expect(creates).toHaveLength(2);
+    for (const call of creates) {
+      expect(call.options.path).toBe("/v1/checkout/sessions");
+      expect(call.options.headers).toHaveProperty("Idempotency-Key", "durable_key");
+      expect(Object.keys(call.options.headers!).some(key => key.toLowerCase() === "x-axiom-internal-deadline")).toBe(false);
+      expect(new URLSearchParams(String(call.body)).get("metadata[intentId]")).toBe("intent");
+    }
+    expect(creates[0].body).toBe(creates[1].body);
+    expect(second.originalCreateProof).toEqual(first.originalCreateProof);
+    expect(first.originalCreateProof).toMatchObject({ outboundRequestKey: "durable_key", observedIdempotencyKey: "durable_key", outboundRequestDigest: row.requestDigest, requestId: "req_original" });
+    expect(row).toEqual(original);
   });
   it("denies account mismatch before session creation", async () => {
     const { options, client } = fixture(); client.accounts.retrieve.mockResolvedValue({ id: "acct_other" });
