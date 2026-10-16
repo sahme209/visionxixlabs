@@ -10,7 +10,8 @@ const azureRoot = path.join(root, 'lib/cloud/azure/enrollment') + path.sep;
 const previous = require.extensions['.ts'];
 require.extensions['.ts'] = function (module, file) {
   assert.ok(file.startsWith(azureRoot), 'azure_probe_source_scope_required');
-  const source = fs.readFileSync(file, 'utf8');
+  // Next resolves this build-time marker; the standalone fixture strips only that marker.
+  const source = fs.readFileSync(file, 'utf8').replace(/^import \"server-only\";\s*$/m, '');
   const output = ts.transpileModule(source, { compilerOptions: { target: ts.ScriptTarget.ES2022, module: ts.ModuleKind.CommonJS, esModuleInterop: true } }).outputText;
   module._compile(output, file);
 };
@@ -24,4 +25,4 @@ require.extensions['.ts'] = function (module, file) {
   assert.ok(page.complete === false && page.limit === 100 && page.resourceGroups.length === 1 && page.resourceGroups[0].name === 'owned-azure-group');
   assert.ok(!JSON.stringify(page).includes(input.clientSecret));
   process.stdout.write(JSON.stringify({ verified: ['actual_source_default_transport', 'actual_msal_token_post', 'actual_arm_first_page_serialization', 'source_streaming_budget', 'no_pagination_or_public_network'], notVerified: ['real_azure', 'routes', 'database', 'desktop'] }) + '\n');
-})().catch(() => { process.stderr.write('owned_azure_source_probe_failed\n'); process.exitCode = 1; }).finally(() => { if (previous) require.extensions['.ts'] = previous; else delete require.extensions['.ts']; });
+})().catch(error => { const directory = fs.mkdtempSync('/tmp/axiom-azure-probe-private-'); fs.writeFileSync(path.join(directory, 'error.json'), JSON.stringify({name:error.name,code:error.code,message:error.message,stack:error.stack}), {mode:0o600}); process.stderr.write('owned_azure_source_probe_failed\n'); process.exitCode = 1; }).finally(() => { if (previous) require.extensions['.ts'] = previous; else delete require.extensions['.ts']; });
