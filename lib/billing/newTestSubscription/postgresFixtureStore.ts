@@ -1,3 +1,4 @@
+import { readVerifiedNewTestContract } from "./verifiedContract";
 import { PrismaClient, type Prisma } from "@prisma/client";
 import type { Store, Transaction, Intent, Contract, Scope } from "./service";
 import { consumeSubscriptionEventInTransaction, type SubscriptionTransaction } from "../consumeSubscriptionEvent";
@@ -17,12 +18,8 @@ export function postgresFixtureStore(target: string, runtimeId: string, accountI
     const marker = await tx.$queryRawUnsafe<Array<{ id: string }>>('SELECT id FROM "IsolatedTestRuntime" WHERE id=$1 AND account=$2', runtimeId, accountId);
     if (marker.length !== 1) throw new Error("isolated_fixture_marker_missing");
   };
-  const readContract = async (tx: Prisma.TransactionClient, org: string): Promise<Contract | null> => {
-    const rows = await tx.$queryRawUnsafe<Array<{ body: Contract; status: string | null; seatQuantity: number | null; eventToken: string | null; customer: string | null; subscription: string | null }>>('SELECT c.body,p.status,p."seatQuantity",p."lastStripeEventId" AS "eventToken",p."stripeCustomerId" AS customer,p."stripeSubscriptionId" AS subscription FROM "OrganizationTestSubscriptionContract" c LEFT JOIN "TenantBillingPlan" p ON p."organizationId"=c.org WHERE c.org=$1', org);
-    const row = rows[0]; if (!row) return null;
-    if (!row.status || !["active", "past_due", "canceled", "trialing", "no_plan"].includes(row.status) || typeof row.seatQuantity !== "number" || !Number.isSafeInteger(row.seatQuantity) || (row.seatQuantity ?? 0) < 1 || !row.eventToken || row.body.customerId !== row.customer || row.body.subscriptionId !== row.subscription || row.body.runtimeId !== runtimeId || row.body.catalogVersion !== NEW_TEST_CATALOG_VERSION || row.body.livemode !== false || row.body.accountId !== accountId) throw new Error("verified_contract_binding_unavailable");
-    return { ...row.body, status: row.status, seatQuantity: row.seatQuantity, eventToken: row.eventToken };
-  };
+  const readContract = async (tx: Prisma.TransactionClient, org: string): Promise<Contract | null> => (await readVerifiedNewTestContract(tx, { runtimeId, accountId }, org))?.contract ?? null;
+
   const store: Store = { runtimeId, transaction: operation => client.$transaction(async tx => {
     await checkMarker(tx);
     const one = async <T>(sql: string, ...args: unknown[]) => (await tx.$queryRawUnsafe<T[]>(sql, ...args))[0] ?? null;

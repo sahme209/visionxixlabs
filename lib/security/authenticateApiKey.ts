@@ -1,3 +1,4 @@
+import { denyIsolatedUnsupportedOperation } from "@/lib/billing/isolatedApplication/runtime";
 /**
  * API-key authentication boundary — Phase 394.
  *
@@ -115,6 +116,7 @@ async function emitDeniedAudit(
 }
 
 export async function authenticateApiKey(input: AuthenticateInput): Promise<AuthResult> {
+  denyIsolatedUnsupportedOperation();
   const plaintext = bearerToken(input.authorizationHeader);
   if (!plaintext) {
     await emitDeniedAudit("no_bearer_token", input, null, null);

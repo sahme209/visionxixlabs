@@ -1,3 +1,4 @@
+import { denyIsolatedUnsupportedOperation } from "./isolatedApplication/runtime";
 import "server-only";
 
 import { gateway } from "ai";
@@ -64,6 +65,7 @@ export async function reconcilePendingGatewayUsage(
   lookup: GenerationLookup = (id) => gateway.getGenerationInfo({ id }),
   limit = 100,
 ): Promise<GatewayUsageReconciliationResult> {
+  denyIsolatedUnsupportedOperation();
   const pending = await repository.usageEvent.findMany({
     where: {
       provider: "vercel_gateway",

@@ -1,3 +1,4 @@
+import { denyIsolatedUnsupportedOperation } from "@/lib/billing/isolatedApplication/runtime";
 /**
  * Execution Engine — validates permissions, calls cloud APIs, logs actions, handles error recovery.
  * All cloud actions require explicit user authorization.
@@ -74,6 +75,7 @@ export async function execute(
   userPlan: string | null | undefined,
   source: "builder" | "axiom"
 ): Promise<ExecuteEngineResult> {
+  denyIsolatedUnsupportedOperation();
   const { context, actions, approvedActionIds } = opts;
   const approved = new Set(approvedActionIds);
 

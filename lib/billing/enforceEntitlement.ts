@@ -1,3 +1,4 @@
+import { denyIsolatedUnsupportedOperation } from "@/lib/billing/isolatedApplication/runtime";
 /**
  * Live entitlement enforcer — Phase 384.
  *
@@ -111,6 +112,7 @@ export interface EnforceEntitlementInput {
 }
 
 export async function enforceEntitlement(input: EnforceEntitlementInput): Promise<EntitlementDecision> {
+  denyIsolatedUnsupportedOperation();
   let plan;
   try {
     const billing = await readBillingPlan(input.organizationId);

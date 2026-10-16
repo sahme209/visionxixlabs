@@ -4,6 +4,7 @@ import { cleanup, render, screen } from "@testing-library/react";
 
 const io = vi.hoisted(() => ({ members: vi.fn(), usage: vi.fn(), pending: vi.fn(), purchases: vi.fn(), quota: vi.fn(), plan: vi.fn(), holds: vi.fn() }));
 vi.mock("server-only", () => ({}));
+vi.mock("@/lib/billing/isolatedApplication/scope", () => ({ withIsolatedWorkspaceScope: (_context: unknown, _kind: unknown, operation: () => unknown) => operation() }));
 vi.mock("@/lib/auth/currentContext", () => ({ currentContext: async () => ({ isAuthenticated: true, organizationId: "org_evidence", email: "owner@example.test", roles: ["owner"] }) }));
 vi.mock("@/lib/auth/platformAdmin", () => ({ isAdminOrOwner: () => true }));
 vi.mock("@/lib/billing/stripeHelper", () => ({ describeStripeStatus: () => ({ mode: "test" }) }));
@@ -163,5 +164,15 @@ describe("current enforced AI allowance in the real server page", () => {
     expect(value("Included AI allowance remaining")).toBe("$0.00");
     expect(screen.getByText(/Current reservation policy: metered billing/)).toBeTruthy();
     expect(screen.getByText(/not spend authorization/)).toBeTruthy();
+  });
+});
+
+describe("isolated billing page refuses unsupported or unverified claims", () => {
+  it("does not query/display legacy deployment quota and hides compatibility plan when proof is unavailable", async () => {
+    vi.stubEnv("AXIOM_ISOLATED_PUBLIC_TEST_RUNTIME", "true");
+    render(await Page());
+    expect(io.quota).not.toHaveBeenCalled();
+    expect(value("Counted deployments")).toBe("Unavailable");
+    expect(screen.getByRole("heading", { name: "Plan unavailable" })).toBeTruthy();
   });
 });
