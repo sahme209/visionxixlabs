@@ -64,3 +64,15 @@ describe("local pairing HTTP harness protocol and safety", () => {
     expect(called).toBe(false);
   });
 });
+it("runs an explicit lifecycle callback while bearer is active, then retains original revocation checks", async () => {
+  const { input, token } = await fixture();
+  let called = false;
+  const result = await rehearseLocalDesktopPairingHttp({ ...input, onPaired: async ({ token: actual, deviceRequest }: { token: string; deviceRequest: (path: string, options: { token: string }) => Promise<Response> }) => {
+    expect(actual).toBe(token); called = true;
+    expect((await deviceRequest("/api/desktop/access", { token: actual })).status).toBe(200);
+    return { verified: ["synthetic_callback"] };
+  } });
+  expect(called).toBe(true); expect(result.cloudLifecycle).toEqual({ verified: ["synthetic_callback"] });
+  expect(result.verified).toContain("owner_revocation_invalidates_bearer");
+  expect(JSON.stringify(result)).not.toContain(token);
+});
