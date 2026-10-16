@@ -112,3 +112,10 @@ state, replay, existing top-up/usage/hold preservation and rollback. This remain
 local evidence: no actual Stripe account, request, payment or delivery is claimed.
 The separate application process still prohibits every provider IO boundary.
 See `ISOLATED_TEST_SUBSCRIPTION_LIFECYCLE_PLAN.md` for exact scope and validation.
+
+Scoped-reviewed clean runtime source `21769547` passed 40 lifecycle SDK/service
+cases (138 focused tests including existing proof/consumer regressions), 15 demo
+checks, focused lint, and final web TypeScript. Its final owned PostgreSQL/actual
+Next fixture passed all 7 tests in 32.66s, preserving the original three-seat
+terms and rejecting quantity changes without event/plan/financial mutation.
+These are local results with mocked Stripe IO, not provider-attempt acceptance.

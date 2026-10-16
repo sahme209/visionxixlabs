@@ -144,6 +144,11 @@ application behavior, not hosted Stripe renewal, collection or payment recovery.
 See `ISOLATED_TEST_SUBSCRIPTION_LIFECYCLE_PLAN.md`.
 
 Independent review subsequently required all lifecycle quantity changes to deny
-until a collection strategy exists. The post-review candidate keeps recovery on
-the original three-seat $30 terms and requires a new pinned local validation run.
-The recorded `d4b31cdc` run remains historical evidence, not proof for that fix.
+until a collection strategy exists. Scoped-reviewed clean `21769547` passed the
+final owned PostgreSQL/actual Next run: all 7 tests in 32.66s. Recovery retains the
+original three-seat $30 terms; increased/decreased quantities leave the event
+ledger, plan, usage, paid credits and unresolved holds unchanged. The recovered
+100-cent admission hold is released by provider denial. Final web TypeScript
+passed. The recorded `d4b31cdc` run remains historical evidence for its source;
+`21769547` is the accepted post-review runtime source. No provider acceptance is
+implied.

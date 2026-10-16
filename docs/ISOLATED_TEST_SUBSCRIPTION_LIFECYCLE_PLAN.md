@@ -147,7 +147,7 @@ Files: existing owned PG/Next test above;
   setup is labeled; actual HTTP/SQL evidence must not become hosted Stripe proof.
 - [x] Update corresponding documentation with precise local evidence/remaining
   gates, preserving support flow and existing-customer scope.
-- [ ] Request independent read-only review through the coordinator before full
+- [x] Request independent read-only review through the coordinator before full
   integration gates. Run focused lint/types first; coordinate heavy suites/build.
 
 ## Review focus
@@ -208,9 +208,19 @@ replacement remain unsupported pending an explicit collection strategy.
 Five new SDK/service regressions failed by incorrectly applying 3→4, 3→2 and a
 drifted bound quantity before the fix. The owned PG checks now require rejected
 quantity events to leave the event ledger, plan, credits, usage and holds intact.
-The final post-review runtime candidate requires scoped review and a newly
-granted final HTTP/PG and TypeScript window; the earlier positive HTTP evidence
-is historical evidence for its recorded source.
+Independent scoped review approved clean commit
+`217695474371939a0899658b1874f3e4c658ee4b` with no further material findings.
+At that exact clean source, the final owned PostgreSQL/actual Next run passed all
+7 tests in 32.66s (2026-10-16 11:24 UTC), including unchanged three-seat recovery,
+rejected increases/decreases with no event/plan/financial mutation, and the
+100-cent provider-disabled hold/release. Final web TypeScript passed with exit 0
+and no diagnostics. The approved Node 24.19.0 root/desktop dependency overlays
+were reused; shared Prisma generation never ran. Cleanup found zero owned
+commercial-test containers and no owned Next process. Focused tests passed
+138/138 plus 15 demo-contract checks; focused lint passed. No product or test
+changes followed this pinned acceptance. Full integration gates remain with the
+coordinator. The earlier positive HTTP evidence is historical evidence for its
+recorded source.
 
 Ruling: reject all lifecycle quantity changes rather than infer payment from
 active state — collection authority is absent — the cost is deferred TEST seat
