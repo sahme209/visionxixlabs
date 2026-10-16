@@ -174,3 +174,20 @@ An unavailable local Chromium launch is not a successful browser journey.
   `62e1f25b2f600cd5c67e758210ce144ea946cb6d16a8d6301d20054e524f0306`.
   Tracker check and a missing-support-workstream negative validation passed;
   existing supporter application/payment source remains byte-unchanged.
+
+### Terraform saved-plan review integration
+
+- Feature runtime `62e47d94`, evidence-only final `3a74b249`, independently
+  reviewed including import/move/action-tuple refusal and the genuine PostgreSQL
+  PK-rendering correction. Integrated normally with desktop/mission foundation.
+- Actual owned CLI captured a saved binary and its own show JSON, rejected corrupt
+  input, and performed no apply, provider/backend operation or production SQL.
+  Owned PostgreSQL validated the exact proposed catalog, tenant/duplicate and
+  UPDATE/DELETE guards; paired HTTP exercised list/detail, auth and drift/version
+  refusals. Fixture resources were stopped/removed after ownership verification.
+- Metadata-only list avoids encrypted bulk loading; detail authenticates exact
+  bytes. Target/backend/credential and approval remain unavailable. Storage is a
+  proposal, not an active migration; no creation/upload/approval/apply route.
+- Worker focused 113 tests passed; integration-wide defaults/compilers and
+  exact-head CI remain required. Real provider, native and customer-originated
+  plan-to-apply acceptance are not claimed.

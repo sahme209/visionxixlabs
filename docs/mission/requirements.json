@@ -46237,12 +46237,15 @@
       "status": "Partially implemented",
       "engineeringActivity": "active",
       "owner": "Codex integrated parallel workstreams",
-      "activeMilestone": "Design saved-plan integrity, tenant executor, approval and state locking/recovery contract.",
-      "verification": "Caller-asserted signed handoff issuance now refused for every operation; boundary tests preserve approved tenant HCL export and unsigned remediation preview. Exact approved Terraform artifact delivery/execution remains missing. Integrated source closes concurrent approval overwrite and public bulk/snooze sibling bypasses with tenant/revision/role/origin checks; final combined gates and actual local HTTP decision acceptance are pending.",
+      "activeMilestone": "Integrate exact saved-binary capture, encrypted review evidence and paired desktop read-only list/detail; approval/apply remain unavailable.",
+      "verification": "Caller-asserted signed handoff issuance now refused for every operation; boundary tests preserve approved tenant HCL export and unsigned remediation preview. Exact approved Terraform artifact delivery/execution remains missing. Integrated source closes concurrent approval overwrite and public bulk/snooze sibling bypasses with tenant/revision/role/origin checks; final combined gates and actual local HTTP decision acceptance are pending. Runtime62e47d94 passed genuine Terraform1.9.8 builtin-resource CLI plan/show, owned PostgreSQL catalog/immutability/tenant checks and actual paired Next list/detail HTTP, with verified cleanup. Exact source binary→own-show sealing, domain AAD, metadata-only lists, drift denial, context invalidation and explicit unavailable target/backend/credential/approval were independently reviewed. Current scope has no customer upload/producer or apply/approval route and no active migration.",
       "evidence": [
         "docs/TERRAFORM_AIRFLOW_CUSTOMER_ACCEPTANCE.md",
         "app/api/desktop/handoff/__tests__/route.test.ts",
-        "docs/APPROVAL_DECISION_CONCURRENCY.md"
+        "docs/APPROVAL_DECISION_CONCURRENCY.md",
+        "docs/TERRAFORM_SAVED_PLAN_REVIEW_PLAN.md",
+        "docs/mission/local-terraform-saved-plan-http-acceptance.json",
+        "docs/proposals/terraform-saved-plan-storage-v1.sql"
       ],
       "customerAcceptance": "Not verified",
       "acceptanceDependencies": [
@@ -46250,7 +46253,7 @@
         "governance"
       ],
       "blockers": "Engineering contracts incomplete; real apply is not verified.",
-      "nextAction": "Bind persisted artifact bytes and exact approved revision, tenant target/backend/state and durable grant before enabling signed execution."
+      "nextAction": "Pass integrated full regression, compilers and exact-head CI; independently establish trusted backend/target/credential producer and reuse fenced approval authority before any execution enablement."
     },
     {
       "id": "airflow",
