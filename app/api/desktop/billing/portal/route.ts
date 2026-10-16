@@ -12,6 +12,8 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     requiredScope: "release_gate:read",
     route: "/api/desktop/billing/portal",
     requireActiveAccess: false,
+    allowApiKey: false,
+    requireWorkspaceAdmin: true,
   });
   if (!principal || principal.credentialKind !== "desktop_session") {
     return NextResponse.json({ ok: false, error: "desktop_session_required", message: "Sign in to Axiom Agent again to manage billing." }, { status: 401 });
