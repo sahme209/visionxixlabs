@@ -80,3 +80,15 @@ it("opts into actual Agent disabled-state HTTP without enabling a provider or sy
   await expect(runOwnedLocalAuthHttp({ AXIOM_RUN_LOCAL_AUTH_HTTP: "1", AXIOM_RUN_LOCAL_AGENT_READINESS_HTTP: "true" }, invalid)).rejects.toThrow("local_agent_readiness_http_opt_in_invalid");
   expect(invalid.calls).toEqual([]);
 });
+
+it("requires an explicit saved Terraform fixture and exact owned executable path", async () => {
+  const f = fixture(); let options;
+  const executable = "/tmp/axiom-terraform-artifact-fixture/bin/terraform";
+  await runOwnedLocalAuthHttp({ AXIOM_RUN_LOCAL_AUTH_HTTP: "1", AXIOM_RUN_LOCAL_TERRAFORM_HTTP: "1", AXIOM_LOCAL_TERRAFORM_EXECUTABLE: executable }, { ...f, rehearse: async (_url: string, value: unknown) => { options = value; return { verified: [] }; } });
+  expect(options).toEqual({ savedTerraformFixture: true, savedTerraformExecutable: executable });
+  const invalid = fixture();
+  await expect(runOwnedLocalAuthHttp({ AXIOM_RUN_LOCAL_AUTH_HTTP: "1", AXIOM_RUN_LOCAL_TERRAFORM_HTTP: "true" }, invalid)).rejects.toThrow("local_terraform_http_opt_in_invalid");
+  expect(invalid.calls).toEqual([]);
+  await expect(runOwnedLocalAuthHttp({ AXIOM_RUN_LOCAL_AUTH_HTTP: "1", AXIOM_RUN_LOCAL_TERRAFORM_HTTP: "1", AXIOM_LOCAL_TERRAFORM_EXECUTABLE: "/usr/bin/terraform" }, invalid)).rejects.toThrow("owned_saved_plan_executable_required");
+  expect(invalid.calls).toEqual([]);
+});
