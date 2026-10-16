@@ -1214,6 +1214,60 @@ tests. The additional customer-only regression then passed with all 17 Checkout
 route tests; final web TypeScript and scoped lint passed. The final exact-head
 CI will validate the combined source and production compilation before merge.
 
+
+## ECS v2 cryptographic build provenance — source candidate
+
+Main #151 merged as `f3fb123a` after final head `a7521098`: PR CI
+[38840040891](https://github.com/sahme209/visionxixlabs/actions/runs/38840040891),
+push CI [38840037945](https://github.com/sahme209/visionxixlabs/actions/runs/38840037945)
+and native CI [38840040894](https://github.com/sahme209/visionxixlabs/actions/runs/38840040894)
+all passed. Exact-head CI verified 599 test files / 6,322 tests and the 293-page
+production compilation. This branch preserves those
+billing, website and Airflow improvements and adds a narrow internal offline
+provenance boundary, not an enabled ECS release lane.
+
+Official pinned `@sigstore/verify` 4.1.2, `@sigstore/bundle` 5.0.0 and
+`@sigstore/protobuf-specs` 0.5.0 verify actual DSSE signatures, certificate/CT/log
+evidence and signed SLSA v1 bindings. Checks include numeric repository identity,
+source SHA/ref, caller workflow commit, separately pinned reusable signer,
+run/attempt and complete subject digests, with tenant authority checked before
+and after verification. Unsupported Node runtimes fail closed before verifier
+imports; private trust remains unavailable. Runtime code imports no fixture or
+default root. Reviewed public trust configuration is still required.
+
+Evidence: `docs/ECS_PROVENANCE_INGESTION.md`, `sigstoreBuildVerifier.ts`, 39 new
+regressions including a genuine upstream signed wheel fixture and an actual
+unsupported-runtime import trap; the existing 80 ECS contract/review tests remain
+applicable. Independent review found no material crypto/authority bypass. These
+fixtures prove offline software behavior, not Axiom image provenance or a real
+customer deployment. No route, full `VerifiedReviewBoundary`, provider read/write,
+workflow dispatch, schema change, live quota or execution authority is enabled.
+The production database binding, recovery readiness and login acceptance gates
+remain unchanged. Full merged-main local checks and exact-head CI are required
+before merge; results are recorded below when complete.
+
+
+Local integration on main #151 passed 601 files / 6,361 tests, web and desktop
+TypeScript, desktop build, 30 Python CLI tests, scoped lint, tracker consistency
+and a 293-page optimized website build. The local website build invoked Next.js
+directly without Prisma generation; no shared client or database was modified.
+Main #152 (`8c997184`) was then integrated after its four CI jobs passed; its
+separate inactive billing fixture/contract changes are preserved. Focused combined
+ECS/billing/demo checks passed 165 tests (four existing PostgreSQL-only tests were
+skipped without an explicit disposable fixture URL); final TypeScript validates
+this merge. Final PR CI must
+still verify the exact combined head before merge. Production acceptance remains
+unverified, and no source-only pass authorizes production activation.
+
+
+PR #152 merged as `8c997184` after final head `94108b93`: PR CI
+[38840350263](https://github.com/sahme209/visionxixlabs/actions/runs/38840350263),
+push CI [38840298650](https://github.com/sahme209/visionxixlabs/actions/runs/38840298650)
+and native runs [38840350249](https://github.com/sahme209/visionxixlabs/actions/runs/38840350249)
+/ [38840298654](https://github.com/sahme209/visionxixlabs/actions/runs/38840298654)
+all passed. Its isolated new-test subscription lane remains unactivated; no route,
+existing customer terms, live Stripe billing or production schema was changed.
+
 ### Owned local authentication rehearsal evidence — 2026-10-16 UTC
 
 The committed launcher candidate `15f6131928f2816b6add50b66b60b6ff22d7d225`
@@ -1246,3 +1300,34 @@ concurrent compiler load; no assertion failed. Its unchanged focused file then
 passed 34/34 tests at the default bound (the named case took 3.222 seconds), and
 the complete combined suite passed with the explicit local 20-second bound.
 No source test, native publication guard or CI timeout was weakened.
+
+
+PR #153 merged normally as `a4baa514` after final head `91e8b29c`: Test
+push [38841446680](https://github.com/sahme209/visionxixlabs/actions/runs/38841446680),
+Test PR [38841452287](https://github.com/sahme209/visionxixlabs/actions/runs/38841452287)
+and Desktop [38841446648](https://github.com/sahme209/visionxixlabs/actions/runs/38841446648)
+all passed, including production builds, native compilation and Clippy. Its actual
+local HTTP acceptance remains pinned to `15f61319`; this merge preserves that
+qualification and does not convert it to production/native acceptance.
+
+
+The provenance branch then merged main #153 normally, preserving both tracker
+sections and the source-pinned HTTP evidence. Combined launcher/ECS/demo checks
+passed 153 tests across six files; final web TypeScript, scoped lint and tracker
+consistency passed. This does not rerun or expand the actual HTTP acceptance;
+exact final-head PR CI is still the merge gate.
+
+
+### Combined-source actual HTTP acceptance
+
+The existing owned launcher then passed once on clean committed
+`d4688abe5bd73fccd37c30ff7740406b7848baed` (main #153 plus inactive provenance
+source): 11 actual authentication, 10 pairing and four approval protocol checks.
+`docs/mission/local-auth-http-owned-launcher-acceptance.json` preserves the original
+`15f61319` report and adds this source-bound run. An explicit OS/proxy/CA-only
+environment excluded inherited application credentials; the cached PostgreSQL17
+fixture was newly owned, loopback-only and removed only after exact ownership
+verification. The source remained clean; no concurrent compiler or shared-client
+generation ran. This is real local Next.js/PostgreSQL acceptance, not production
+login, native/browser/vault, OAuth, paid policy, Stripe, cloud or provenance-runtime
+acceptance. Existing production binding/recovery approvals remain unchanged.
