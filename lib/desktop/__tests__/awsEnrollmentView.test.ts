@@ -1,7 +1,7 @@
 /** @vitest-environment jsdom */
 import { createElement } from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { act, cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import type { VerifiedDesktopIdentity } from "../../../desktop/src/lib/desktopClient";
 const mock = vi.hoisted(() => ({ client: { config: {} as { sessionToken?: string }, desktopCloudAccounts: vi.fn(), startAwsReadOnlyEnrollment: vi.fn(), completeAwsReadOnlyEnrollment: vi.fn(), desktopAwsInventory: vi.fn(), disconnectDesktopAwsAccount: vi.fn() } }));
 vi.mock("../../../desktop/src/lib/desktopClient", () => ({ desktopClient: mock.client }));
@@ -274,6 +274,26 @@ describe("AWS disconnect confirmation and stale outcome handling", () => {
     await new Promise(resolve => setTimeout(resolve, 0));
     expect(screen.queryByText(/Axiom connection disconnected/)).toBeNull();
     expect(screen.queryByRole("button", { name: "Read bounded EC2 inventory" })).toBeNull();
+    fireEvent.click(screen.getByRole("button", { name: "Refresh AWS account state" }));
+    await screen.findByRole("button", { name: "Read bounded EC2 inventory" });
+  });
+  it("rejects stale disconnect state and notice when a newer list resolves in the same React batch", async () => {
+    const command = deferred<unknown>(); mock.client.disconnectDesktopAwsAccount.mockReturnValue(command.promise);
+    await renderConnected(); confirmDisconnect();
+    const refreshed = deferred<unknown>(); mock.client.desktopCloudAccounts.mockReturnValueOnce(refreshed.promise);
+    fireEvent.click(screen.getByRole("button", { name: "Refresh AWS account state" }));
+    await act(async () => {
+      refreshed.resolve({ ok: true, data: { accounts: [{ ...account, connectionVersion: 3, lastValidatedAt: "2026-10-15T02:00:00Z" }] } });
+      // The authoritative read finishes before the old command, but React has
+      // not committed replacement/unmount passive cleanup within this batch.
+      await Promise.resolve();
+      command.resolve({ ok: true, data: { account: disconnected } });
+      await Promise.resolve();
+    });
+    expect(screen.queryByText(/Axiom connection disconnected/)).toBeNull();
+    expect(screen.getByText("Last service validation: 2026-10-15T02:00:00Z")).toBeTruthy();
+    expect(screen.queryByRole("button", { name: "Read bounded EC2 inventory" })).toBeNull();
+    mock.client.desktopCloudAccounts.mockResolvedValue({ ok: true, data: { accounts: [{ ...account, connectionVersion: 3 }] } });
     fireEvent.click(screen.getByRole("button", { name: "Refresh AWS account state" }));
     await screen.findByRole("button", { name: "Read bounded EC2 inventory" });
   });
