@@ -135,3 +135,9 @@ provenance ingestion, cloud deployment or production login merely because their
 source/dependencies are present. The observed identity-only `allowed: true` /
 `no_plan` remains a policy observation. Browser/native/vault, OAuth, external mail,
 Stripe and production recovery remain separate unverified acceptance gates.
+
+## Agent model recovery continuation — 2026-10-16 UTC
+
+The exact additional opt-in `AXIOM_RUN_LOCAL_AGENT_READINESS_HTTP=1` runs a disabled-Agent continuation inside the existing paired fixture, alongside `AXIOM_RUN_LOCAL_AUTH_HTTP=1`. It does not enable a model or Agent identity, seed a paid plan, or return fake inference. A clean-source run on `fa5f9b0212e721c2bcb4566246c5f63b058a39ba` accepted the real disabled model-policy GET, conversation create/message/reopen, persisted governance explanation, foreign history/send denial and zero inference/tool/deployment/billing side effects. All eleven authentication, ten pairing, four approval and five readiness checks passed; exact owned-container cleanup succeeded.
+
+See the [sanitized report](mission/local-agent-readiness-http-acceptance.json) and [Agent recovery acceptance](AGENT_GOVERNED_ACTION_ACCEPTANCE.md). This actual local HTTP acceptance remains distinct from the mocked React setup/retry journey and from browser/native/provider/production acceptance. The one approved elevated Chromium data-URL probe timed out with no DOM; no browser download or repeated probe was attempted.
