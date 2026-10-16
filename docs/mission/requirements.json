@@ -218,7 +218,7 @@
       "domain": "auth",
       "scope": "product",
       "status": "Blocked by external access",
-      "verification": "Current-main credentials and Google callbacks show P2022; protected production schema/ledger and founder mapping are unavailable in this runtime.",
+      "verification": "Historical credentials and Google callbacks showed P2022; protected preflight #3 inspected schema/ledger and passed canonical founder/personal membership mapping. Serving/preflight target equality, external identity ownership, successful login, platform administration, paid entitlement and native pairing remain unverified.",
       "evidence": [
         "lib/auth.ts",
         "lib/auth/currentContext.ts",
@@ -244,7 +244,7 @@
       "domain": "auth",
       "scope": "product",
       "status": "Blocked by external access",
-      "verification": "Current-main credentials and Google callbacks show P2022; protected production schema/ledger and founder mapping are unavailable in this runtime.",
+      "verification": "Historical credentials and Google callbacks showed P2022; protected preflight #3 inspected schema/ledger and passed canonical founder/personal membership mapping. Serving/preflight target equality, external identity ownership, successful login, platform administration, paid entitlement and native pairing remain unverified.",
       "evidence": [
         "lib/auth.ts",
         "lib/auth/currentContext.ts",
@@ -270,7 +270,7 @@
       "domain": "auth",
       "scope": "product",
       "status": "Blocked by external access",
-      "verification": "Current-main credentials and Google callbacks show P2022; protected production schema/ledger and founder mapping are unavailable in this runtime.",
+      "verification": "Historical credentials and Google callbacks showed P2022; protected preflight #3 inspected schema/ledger and passed canonical founder/personal membership mapping. Serving/preflight target equality, external identity ownership, successful login, platform administration, paid entitlement and native pairing remain unverified.",
       "evidence": [
         "lib/auth.ts",
         "lib/auth/currentContext.ts",
@@ -296,7 +296,7 @@
       "domain": "auth",
       "scope": "product",
       "status": "Blocked by external access",
-      "verification": "Current-main credentials and Google callbacks show P2022; protected production schema/ledger and founder mapping are unavailable in this runtime.",
+      "verification": "Historical credentials and Google callbacks showed P2022; protected preflight #3 inspected schema/ledger and passed canonical founder/personal membership mapping. Serving/preflight target equality, external identity ownership, successful login, platform administration, paid entitlement and native pairing remain unverified.",
       "evidence": [
         "lib/auth.ts",
         "lib/auth/currentContext.ts",
@@ -322,7 +322,7 @@
       "domain": "auth",
       "scope": "product",
       "status": "Blocked by external access",
-      "verification": "Current-main credentials and Google callbacks show P2022; protected production schema/ledger and founder mapping are unavailable in this runtime.",
+      "verification": "Historical credentials and Google callbacks showed P2022; protected preflight #3 inspected schema/ledger and passed canonical founder/personal membership mapping. Serving/preflight target equality, external identity ownership, successful login, platform administration, paid entitlement and native pairing remain unverified.",
       "evidence": [
         "lib/auth.ts",
         "lib/auth/currentContext.ts",
@@ -348,7 +348,7 @@
       "domain": "auth",
       "scope": "product",
       "status": "Blocked by external access",
-      "verification": "Current-main credentials and Google callbacks show P2022; protected production schema/ledger and founder mapping are unavailable in this runtime.",
+      "verification": "Historical credentials and Google callbacks showed P2022; protected preflight #3 inspected schema/ledger and passed canonical founder/personal membership mapping. Serving/preflight target equality, external identity ownership, successful login, platform administration, paid entitlement and native pairing remain unverified.",
       "evidence": [
         "lib/auth.ts",
         "lib/auth/currentContext.ts",
@@ -374,7 +374,7 @@
       "domain": "auth",
       "scope": "product",
       "status": "Blocked by external access",
-      "verification": "Current-main credentials and Google callbacks show P2022; protected production schema/ledger and founder mapping are unavailable in this runtime.",
+      "verification": "Historical credentials and Google callbacks showed P2022; protected preflight #3 inspected schema/ledger and passed canonical founder/personal membership mapping. Serving/preflight target equality, external identity ownership, successful login, platform administration, paid entitlement and native pairing remain unverified.",
       "evidence": [
         "lib/auth.ts",
         "lib/auth/currentContext.ts",
@@ -400,7 +400,7 @@
       "domain": "auth",
       "scope": "product",
       "status": "Blocked by external access",
-      "verification": "Current-main credentials and Google callbacks show P2022; protected production schema/ledger and founder mapping are unavailable in this runtime.",
+      "verification": "Historical credentials and Google callbacks showed P2022; protected preflight #3 inspected schema/ledger and passed canonical founder/personal membership mapping. Serving/preflight target equality, external identity ownership, successful login, platform administration, paid entitlement and native pairing remain unverified.",
       "evidence": [
         "lib/auth.ts",
         "lib/auth/currentContext.ts",
@@ -426,7 +426,7 @@
       "domain": "auth",
       "scope": "product",
       "status": "Blocked by external access",
-      "verification": "Current-main credentials and Google callbacks show P2022; protected production schema/ledger and founder mapping are unavailable in this runtime.",
+      "verification": "Historical credentials and Google callbacks showed P2022; protected preflight #3 inspected schema/ledger and passed canonical founder/personal membership mapping. Serving/preflight target equality, external identity ownership, successful login, platform administration, paid entitlement and native pairing remain unverified.",
       "evidence": [
         "lib/auth.ts",
         "lib/auth/currentContext.ts",
@@ -452,7 +452,7 @@
       "domain": "auth",
       "scope": "product",
       "status": "Blocked by external access",
-      "verification": "Current-main credentials and Google callbacks show P2022; protected production schema/ledger and founder mapping are unavailable in this runtime.",
+      "verification": "Historical credentials and Google callbacks showed P2022; protected preflight #3 inspected schema/ledger and passed canonical founder/personal membership mapping. Serving/preflight target equality, external identity ownership, successful login, platform administration, paid entitlement and native pairing remain unverified.",
       "evidence": [
         "lib/auth.ts",
         "lib/auth/currentContext.ts",
@@ -478,7 +478,7 @@
       "domain": "auth",
       "scope": "product",
       "status": "Blocked by external access",
-      "verification": "Current-main credentials and Google callbacks show P2022; protected production schema/ledger and founder mapping are unavailable in this runtime.",
+      "verification": "Historical credentials and Google callbacks showed P2022; protected preflight #3 inspected schema/ledger and passed canonical founder/personal membership mapping. Serving/preflight target equality, external identity ownership, successful login, platform administration, paid entitlement and native pairing remain unverified.",
       "evidence": [
         "lib/auth.ts",
         "lib/auth/currentContext.ts",
@@ -504,7 +504,7 @@
       "domain": "auth",
       "scope": "product",
       "status": "Blocked by external access",
-      "verification": "Current-main credentials and Google callbacks show P2022; protected production schema/ledger and founder mapping are unavailable in this runtime.",
+      "verification": "Historical credentials and Google callbacks showed P2022; protected preflight #3 inspected schema/ledger and passed canonical founder/personal membership mapping. Serving/preflight target equality, external identity ownership, successful login, platform administration, paid entitlement and native pairing remain unverified.",
       "evidence": [
         "lib/auth.ts",
         "lib/auth/currentContext.ts",
@@ -530,7 +530,7 @@
       "domain": "auth",
       "scope": "product",
       "status": "Blocked by external access",
-      "verification": "Current-main credentials and Google callbacks show P2022; protected production schema/ledger and founder mapping are unavailable in this runtime.",
+      "verification": "Historical credentials and Google callbacks showed P2022; protected preflight #3 inspected schema/ledger and passed canonical founder/personal membership mapping. Serving/preflight target equality, external identity ownership, successful login, platform administration, paid entitlement and native pairing remain unverified.",
       "evidence": [
         "lib/auth.ts",
         "lib/auth/currentContext.ts",
@@ -556,7 +556,7 @@
       "domain": "auth",
       "scope": "product",
       "status": "Blocked by external access",
-      "verification": "Current-main credentials and Google callbacks show P2022; protected production schema/ledger and founder mapping are unavailable in this runtime.",
+      "verification": "Historical credentials and Google callbacks showed P2022; protected preflight #3 inspected schema/ledger and passed canonical founder/personal membership mapping. Serving/preflight target equality, external identity ownership, successful login, platform administration, paid entitlement and native pairing remain unverified.",
       "evidence": [
         "lib/auth.ts",
         "lib/auth/currentContext.ts",
@@ -582,7 +582,7 @@
       "domain": "auth",
       "scope": "product",
       "status": "Blocked by external access",
-      "verification": "Current-main credentials and Google callbacks show P2022; protected production schema/ledger and founder mapping are unavailable in this runtime.",
+      "verification": "Historical credentials and Google callbacks showed P2022; protected preflight #3 inspected schema/ledger and passed canonical founder/personal membership mapping. Serving/preflight target equality, external identity ownership, successful login, platform administration, paid entitlement and native pairing remain unverified.",
       "evidence": [
         "lib/auth.ts",
         "lib/auth/currentContext.ts",
@@ -608,7 +608,7 @@
       "domain": "auth",
       "scope": "product",
       "status": "Blocked by external access",
-      "verification": "Current-main credentials and Google callbacks show P2022; protected production schema/ledger and founder mapping are unavailable in this runtime.",
+      "verification": "Historical credentials and Google callbacks showed P2022; protected preflight #3 inspected schema/ledger and passed canonical founder/personal membership mapping. Serving/preflight target equality, external identity ownership, successful login, platform administration, paid entitlement and native pairing remain unverified.",
       "evidence": [
         "lib/auth.ts",
         "lib/auth/currentContext.ts",
@@ -634,7 +634,7 @@
       "domain": "auth",
       "scope": "product",
       "status": "Blocked by external access",
-      "verification": "Current-main credentials and Google callbacks show P2022; protected production schema/ledger and founder mapping are unavailable in this runtime.",
+      "verification": "Historical credentials and Google callbacks showed P2022; protected preflight #3 inspected schema/ledger and passed canonical founder/personal membership mapping. Serving/preflight target equality, external identity ownership, successful login, platform administration, paid entitlement and native pairing remain unverified.",
       "evidence": [
         "lib/auth.ts",
         "lib/auth/currentContext.ts",
@@ -660,7 +660,7 @@
       "domain": "auth",
       "scope": "product",
       "status": "Blocked by external access",
-      "verification": "Current-main credentials and Google callbacks show P2022; protected production schema/ledger and founder mapping are unavailable in this runtime.",
+      "verification": "Historical credentials and Google callbacks showed P2022; protected preflight #3 inspected schema/ledger and passed canonical founder/personal membership mapping. Serving/preflight target equality, external identity ownership, successful login, platform administration, paid entitlement and native pairing remain unverified.",
       "evidence": [
         "lib/auth.ts",
         "lib/auth/currentContext.ts",
@@ -686,7 +686,7 @@
       "domain": "auth",
       "scope": "product",
       "status": "Blocked by external access",
-      "verification": "Current-main credentials and Google callbacks show P2022; protected production schema/ledger and founder mapping are unavailable in this runtime.",
+      "verification": "Historical credentials and Google callbacks showed P2022; protected preflight #3 inspected schema/ledger and passed canonical founder/personal membership mapping. Serving/preflight target equality, external identity ownership, successful login, platform administration, paid entitlement and native pairing remain unverified.",
       "evidence": [
         "lib/auth.ts",
         "lib/auth/currentContext.ts",
@@ -712,7 +712,7 @@
       "domain": "auth",
       "scope": "product",
       "status": "Blocked by external access",
-      "verification": "Current-main credentials and Google callbacks show P2022; protected production schema/ledger and founder mapping are unavailable in this runtime.",
+      "verification": "Historical credentials and Google callbacks showed P2022; protected preflight #3 inspected schema/ledger and passed canonical founder/personal membership mapping. Serving/preflight target equality, external identity ownership, successful login, platform administration, paid entitlement and native pairing remain unverified.",
       "evidence": [
         "lib/auth.ts",
         "lib/auth/currentContext.ts",
@@ -738,7 +738,7 @@
       "domain": "auth",
       "scope": "product",
       "status": "Blocked by external access",
-      "verification": "Current-main credentials and Google callbacks show P2022; protected production schema/ledger and founder mapping are unavailable in this runtime.",
+      "verification": "Historical credentials and Google callbacks showed P2022; protected preflight #3 inspected schema/ledger and passed canonical founder/personal membership mapping. Serving/preflight target equality, external identity ownership, successful login, platform administration, paid entitlement and native pairing remain unverified.",
       "evidence": [
         "lib/auth.ts",
         "lib/auth/currentContext.ts",
@@ -764,7 +764,7 @@
       "domain": "auth",
       "scope": "product",
       "status": "Blocked by external access",
-      "verification": "Current-main credentials and Google callbacks show P2022; protected production schema/ledger and founder mapping are unavailable in this runtime.",
+      "verification": "Historical credentials and Google callbacks showed P2022; protected preflight #3 inspected schema/ledger and passed canonical founder/personal membership mapping. Serving/preflight target equality, external identity ownership, successful login, platform administration, paid entitlement and native pairing remain unverified.",
       "evidence": [
         "lib/auth.ts",
         "lib/auth/currentContext.ts",
@@ -3620,7 +3620,7 @@
       "domain": "auth",
       "scope": "product",
       "status": "Blocked by external access",
-      "verification": "Current-main credentials and Google callbacks show P2022; protected production schema/ledger and founder mapping are unavailable in this runtime.",
+      "verification": "Historical credentials and Google callbacks showed P2022; protected preflight #3 inspected schema/ledger and passed canonical founder/personal membership mapping. Serving/preflight target equality, external identity ownership, successful login, platform administration, paid entitlement and native pairing remain unverified.",
       "evidence": [
         "lib/auth.ts",
         "lib/auth/currentContext.ts",
@@ -10857,7 +10857,7 @@
       "domain": "auth",
       "scope": "product",
       "status": "Blocked by external access",
-      "verification": "Current-main credentials and Google callbacks show P2022; protected production schema/ledger and founder mapping are unavailable in this runtime.",
+      "verification": "Historical credentials and Google callbacks showed P2022; protected preflight #3 inspected schema/ledger and passed canonical founder/personal membership mapping. Serving/preflight target equality, external identity ownership, successful login, platform administration, paid entitlement and native pairing remain unverified.",
       "evidence": [
         "lib/auth.ts",
         "lib/auth/currentContext.ts",
@@ -11067,7 +11067,7 @@
       "domain": "auth",
       "scope": "product",
       "status": "Blocked by external access",
-      "verification": "Current-main credentials and Google callbacks show P2022; protected production schema/ledger and founder mapping are unavailable in this runtime.",
+      "verification": "Historical credentials and Google callbacks showed P2022; protected preflight #3 inspected schema/ledger and passed canonical founder/personal membership mapping. Serving/preflight target equality, external identity ownership, successful login, platform administration, paid entitlement and native pairing remain unverified.",
       "evidence": [
         "lib/auth.ts",
         "lib/auth/currentContext.ts",
@@ -13563,7 +13563,7 @@
       "domain": "auth",
       "scope": "product",
       "status": "Blocked by external access",
-      "verification": "Current-main credentials and Google callbacks show P2022; protected production schema/ledger and founder mapping are unavailable in this runtime.",
+      "verification": "Historical credentials and Google callbacks showed P2022; protected preflight #3 inspected schema/ledger and passed canonical founder/personal membership mapping. Serving/preflight target equality, external identity ownership, successful login, platform administration, paid entitlement and native pairing remain unverified.",
       "evidence": [
         "lib/auth.ts",
         "lib/auth/currentContext.ts",
@@ -13795,7 +13795,7 @@
       "domain": "auth",
       "scope": "product",
       "status": "Blocked by external access",
-      "verification": "Current-main credentials and Google callbacks show P2022; protected production schema/ledger and founder mapping are unavailable in this runtime.",
+      "verification": "Historical credentials and Google callbacks showed P2022; protected preflight #3 inspected schema/ledger and passed canonical founder/personal membership mapping. Serving/preflight target equality, external identity ownership, successful login, platform administration, paid entitlement and native pairing remain unverified.",
       "evidence": [
         "lib/auth.ts",
         "lib/auth/currentContext.ts",
@@ -13821,7 +13821,7 @@
       "domain": "auth",
       "scope": "product",
       "status": "Blocked by external access",
-      "verification": "Current-main credentials and Google callbacks show P2022; protected production schema/ledger and founder mapping are unavailable in this runtime.",
+      "verification": "Historical credentials and Google callbacks showed P2022; protected preflight #3 inspected schema/ledger and passed canonical founder/personal membership mapping. Serving/preflight target equality, external identity ownership, successful login, platform administration, paid entitlement and native pairing remain unverified.",
       "evidence": [
         "lib/auth.ts",
         "lib/auth/currentContext.ts",
@@ -13847,7 +13847,7 @@
       "domain": "auth",
       "scope": "product",
       "status": "Blocked by external access",
-      "verification": "Current-main credentials and Google callbacks show P2022; protected production schema/ledger and founder mapping are unavailable in this runtime.",
+      "verification": "Historical credentials and Google callbacks showed P2022; protected preflight #3 inspected schema/ledger and passed canonical founder/personal membership mapping. Serving/preflight target equality, external identity ownership, successful login, platform administration, paid entitlement and native pairing remain unverified.",
       "evidence": [
         "lib/auth.ts",
         "lib/auth/currentContext.ts",
@@ -13873,7 +13873,7 @@
       "domain": "auth",
       "scope": "product",
       "status": "Blocked by external access",
-      "verification": "Current-main credentials and Google callbacks show P2022; protected production schema/ledger and founder mapping are unavailable in this runtime.",
+      "verification": "Historical credentials and Google callbacks showed P2022; protected preflight #3 inspected schema/ledger and passed canonical founder/personal membership mapping. Serving/preflight target equality, external identity ownership, successful login, platform administration, paid entitlement and native pairing remain unverified.",
       "evidence": [
         "lib/auth.ts",
         "lib/auth/currentContext.ts",
@@ -13899,7 +13899,7 @@
       "domain": "auth",
       "scope": "product",
       "status": "Blocked by external access",
-      "verification": "Current-main credentials and Google callbacks show P2022; protected production schema/ledger and founder mapping are unavailable in this runtime.",
+      "verification": "Historical credentials and Google callbacks showed P2022; protected preflight #3 inspected schema/ledger and passed canonical founder/personal membership mapping. Serving/preflight target equality, external identity ownership, successful login, platform administration, paid entitlement and native pairing remain unverified.",
       "evidence": [
         "lib/auth.ts",
         "lib/auth/currentContext.ts",
@@ -13925,7 +13925,7 @@
       "domain": "auth",
       "scope": "product",
       "status": "Blocked by external access",
-      "verification": "Current-main credentials and Google callbacks show P2022; protected production schema/ledger and founder mapping are unavailable in this runtime.",
+      "verification": "Historical credentials and Google callbacks showed P2022; protected preflight #3 inspected schema/ledger and passed canonical founder/personal membership mapping. Serving/preflight target equality, external identity ownership, successful login, platform administration, paid entitlement and native pairing remain unverified.",
       "evidence": [
         "lib/auth.ts",
         "lib/auth/currentContext.ts",
@@ -13951,7 +13951,7 @@
       "domain": "auth",
       "scope": "product",
       "status": "Blocked by external access",
-      "verification": "Current-main credentials and Google callbacks show P2022; protected production schema/ledger and founder mapping are unavailable in this runtime.",
+      "verification": "Historical credentials and Google callbacks showed P2022; protected preflight #3 inspected schema/ledger and passed canonical founder/personal membership mapping. Serving/preflight target equality, external identity ownership, successful login, platform administration, paid entitlement and native pairing remain unverified.",
       "evidence": [
         "lib/auth.ts",
         "lib/auth/currentContext.ts",
@@ -13977,7 +13977,7 @@
       "domain": "auth",
       "scope": "product",
       "status": "Blocked by external access",
-      "verification": "Current-main credentials and Google callbacks show P2022; protected production schema/ledger and founder mapping are unavailable in this runtime.",
+      "verification": "Historical credentials and Google callbacks showed P2022; protected preflight #3 inspected schema/ledger and passed canonical founder/personal membership mapping. Serving/preflight target equality, external identity ownership, successful login, platform administration, paid entitlement and native pairing remain unverified.",
       "evidence": [
         "lib/auth.ts",
         "lib/auth/currentContext.ts",
@@ -14003,7 +14003,7 @@
       "domain": "auth",
       "scope": "product",
       "status": "Blocked by external access",
-      "verification": "Current-main credentials and Google callbacks show P2022; protected production schema/ledger and founder mapping are unavailable in this runtime.",
+      "verification": "Historical credentials and Google callbacks showed P2022; protected preflight #3 inspected schema/ledger and passed canonical founder/personal membership mapping. Serving/preflight target equality, external identity ownership, successful login, platform administration, paid entitlement and native pairing remain unverified.",
       "evidence": [
         "lib/auth.ts",
         "lib/auth/currentContext.ts",
@@ -14029,7 +14029,7 @@
       "domain": "auth",
       "scope": "product",
       "status": "Blocked by external access",
-      "verification": "Current-main credentials and Google callbacks show P2022; protected production schema/ledger and founder mapping are unavailable in this runtime.",
+      "verification": "Historical credentials and Google callbacks showed P2022; protected preflight #3 inspected schema/ledger and passed canonical founder/personal membership mapping. Serving/preflight target equality, external identity ownership, successful login, platform administration, paid entitlement and native pairing remain unverified.",
       "evidence": [
         "lib/auth.ts",
         "lib/auth/currentContext.ts",
@@ -14055,7 +14055,7 @@
       "domain": "auth",
       "scope": "product",
       "status": "Blocked by external access",
-      "verification": "Current-main credentials and Google callbacks show P2022; protected production schema/ledger and founder mapping are unavailable in this runtime.",
+      "verification": "Historical credentials and Google callbacks showed P2022; protected preflight #3 inspected schema/ledger and passed canonical founder/personal membership mapping. Serving/preflight target equality, external identity ownership, successful login, platform administration, paid entitlement and native pairing remain unverified.",
       "evidence": [
         "lib/auth.ts",
         "lib/auth/currentContext.ts",
@@ -14081,7 +14081,7 @@
       "domain": "auth",
       "scope": "product",
       "status": "Blocked by external access",
-      "verification": "Current-main credentials and Google callbacks show P2022; protected production schema/ledger and founder mapping are unavailable in this runtime.",
+      "verification": "Historical credentials and Google callbacks showed P2022; protected preflight #3 inspected schema/ledger and passed canonical founder/personal membership mapping. Serving/preflight target equality, external identity ownership, successful login, platform administration, paid entitlement and native pairing remain unverified.",
       "evidence": [
         "lib/auth.ts",
         "lib/auth/currentContext.ts",
@@ -14107,7 +14107,7 @@
       "domain": "auth",
       "scope": "product",
       "status": "Blocked by external access",
-      "verification": "Current-main credentials and Google callbacks show P2022; protected production schema/ledger and founder mapping are unavailable in this runtime.",
+      "verification": "Historical credentials and Google callbacks showed P2022; protected preflight #3 inspected schema/ledger and passed canonical founder/personal membership mapping. Serving/preflight target equality, external identity ownership, successful login, platform administration, paid entitlement and native pairing remain unverified.",
       "evidence": [
         "lib/auth.ts",
         "lib/auth/currentContext.ts",
@@ -14133,7 +14133,7 @@
       "domain": "auth",
       "scope": "product",
       "status": "Blocked by external access",
-      "verification": "Current-main credentials and Google callbacks show P2022; protected production schema/ledger and founder mapping are unavailable in this runtime.",
+      "verification": "Historical credentials and Google callbacks showed P2022; protected preflight #3 inspected schema/ledger and passed canonical founder/personal membership mapping. Serving/preflight target equality, external identity ownership, successful login, platform administration, paid entitlement and native pairing remain unverified.",
       "evidence": [
         "lib/auth.ts",
         "lib/auth/currentContext.ts",
@@ -14159,7 +14159,7 @@
       "domain": "auth",
       "scope": "product",
       "status": "Blocked by external access",
-      "verification": "Current-main credentials and Google callbacks show P2022; protected production schema/ledger and founder mapping are unavailable in this runtime.",
+      "verification": "Historical credentials and Google callbacks showed P2022; protected preflight #3 inspected schema/ledger and passed canonical founder/personal membership mapping. Serving/preflight target equality, external identity ownership, successful login, platform administration, paid entitlement and native pairing remain unverified.",
       "evidence": [
         "lib/auth.ts",
         "lib/auth/currentContext.ts",
@@ -14185,7 +14185,7 @@
       "domain": "auth",
       "scope": "product",
       "status": "Blocked by external access",
-      "verification": "Current-main credentials and Google callbacks show P2022; protected production schema/ledger and founder mapping are unavailable in this runtime.",
+      "verification": "Historical credentials and Google callbacks showed P2022; protected preflight #3 inspected schema/ledger and passed canonical founder/personal membership mapping. Serving/preflight target equality, external identity ownership, successful login, platform administration, paid entitlement and native pairing remain unverified.",
       "evidence": [
         "lib/auth.ts",
         "lib/auth/currentContext.ts",
@@ -14211,7 +14211,7 @@
       "domain": "auth",
       "scope": "product",
       "status": "Blocked by external access",
-      "verification": "Current-main credentials and Google callbacks show P2022; protected production schema/ledger and founder mapping are unavailable in this runtime.",
+      "verification": "Historical credentials and Google callbacks showed P2022; protected preflight #3 inspected schema/ledger and passed canonical founder/personal membership mapping. Serving/preflight target equality, external identity ownership, successful login, platform administration, paid entitlement and native pairing remain unverified.",
       "evidence": [
         "lib/auth.ts",
         "lib/auth/currentContext.ts",
@@ -14237,7 +14237,7 @@
       "domain": "auth",
       "scope": "product",
       "status": "Blocked by external access",
-      "verification": "Current-main credentials and Google callbacks show P2022; protected production schema/ledger and founder mapping are unavailable in this runtime.",
+      "verification": "Historical credentials and Google callbacks showed P2022; protected preflight #3 inspected schema/ledger and passed canonical founder/personal membership mapping. Serving/preflight target equality, external identity ownership, successful login, platform administration, paid entitlement and native pairing remain unverified.",
       "evidence": [
         "lib/auth.ts",
         "lib/auth/currentContext.ts",
@@ -17054,7 +17054,7 @@
       "domain": "auth",
       "scope": "product",
       "status": "Blocked by external access",
-      "verification": "Protected production preflight #2 (run 38792352304, main 043664b1) completed read-only with diagnostic exit 2: seven pending migrations, unfinished Agent migration and absent Organization, missing auth schema; accountCheck passed and no scoped billing duplicates found. Platform-admin configuration and actual password/OAuth/pairing remain unverified. Full PostgreSQL rehearsal applied 99 migrations then reproduced P3018, validated atomic auth-only recovery and exact checksum resolution without editing failed history, and retained P3009 for blanket deploy. This is a proposal, not production execution approval. #125/#126 billing and #127 desktop startup/focus fixes are merged with READY main builds. Owner confirms provider and backup/PITR restore readiness are unverified. Vercel integration metadata exposes Resend and GitHub, not a database resource; repository provider references are examples. Protected preflight now emits credential-free endpoint classification, retaining binding/backup/restore status unverified. No host has been inferred or secret decrypted. Protected preflight #3 (38796959412, main 7e5eaf2) confirms Neon configured endpoint; application binding, account-specific PITR and restore readiness remain unverified. Neon-specific gated target comparison and isolated restore procedure prepared; no control-plane access or execution approval. Owner console evidence identifies a candidate main branch with PostgreSQL 17, AWS US East 1 and six-hour configured history retention; usable recovery range and application binding remain unverified. Read-only Vercel activity identifies the latest manual promotion as #123, which still serves the custom domain. Later Git production builds are READY with project/branch aliases. No active rolling release or pending failed promotion is reported; automatic custom-domain assignment policy remains unverified. PR #132 contains the sanitized follow-up evidence.",
+      "verification": "Protected production preflight #2 (38792352304, main 043664b1) and #3 (38796959412, main 7e5eaf2) completed read-only with diagnostic exit 2: seven pending migrations at that historical source, unfinished Agent migration referencing absent Organization, and missing auth verification schema. Canonical founder/personal membership mapping passed; this proves neither external identity ownership, successful login, platform administration, paid entitlement nor native pairing. The full-history isolated PostgreSQL rehearsal preserves failed Agent history and checks the unchanged auth-only SQL/checksum; it does not prove production restore or login acceptance. Neon inspection dated 2026-10-15 confirms the reported candidate target, PostgreSQL 17, six-hour configured retention and 10/10 branch capacity with no snapshots/schedule entries returned; actual recoverable times and isolated restore remain unverified. Read-only follow-up on 2026-10-16 resolves visionxixlabs.com to READY production deployment dpl_6cv75StHTFg1enN1xPYRuLEcXzoX at main fef79a0eed15c8251dd46560e2e42f140b8c7177; its metadata exposes no effective datasource mapping. Candidate branch protected=false is distinct from integration deletion/compute restrictions. Serving/preflight/intended-target equality remains unverified; no new SQL, preflight, secret-value lookup, deployment or settings change occurred. Current merged source adds enrollment, revocation and ECS review-core proposals: ten pending before/nine after an approved auth-only repair only if the historical database baseline is unchanged. Compare exact names; all newer proposals remain separately gated. No dispatch tool is exposed; historical CLI Forbidden was not retried. This evidence is not production execution approval.",
       "evidence": [
         "lib/auth.ts",
         "lib/auth/currentContext.ts",
@@ -17076,7 +17076,9 @@
         "lib/__tests__/authRecoveryDatabaseMetadata.test.ts",
         "docs/mission/auth-preflight-run-3.json",
         "docs/NEON_AUTH_RECOVERY_READINESS.md",
-        "docs/CRITICAL_RECOVERY_AND_CUSTOMER_ACCEPTANCE.md"
+        "docs/CRITICAL_RECOVERY_AND_CUSTOMER_ACCEPTANCE.md",
+        "docs/AUTH_RECOVERY_OPERATOR_EVIDENCE.md",
+        "docs/mission/auth-readiness-follow-up-2026-10-16.json"
       ],
       "prs": [
         103,
@@ -17090,7 +17092,7 @@
         130,
         132
       ],
-      "nextAction": "Confirm offered Neon connection, inspect actual resource and recoverable range, obtain private serving/preflight binding comparison, then prepare separately approved isolated restore and exact auth-only repair. Execute one isolated customer journey and a separately approved immutable website promotion; no visual redesign.",
+      "nextAction": "Use the private operator evidence packet to attest serving/preflight/intended-target equality and actual recoverable UTC range; separately approve capacity/isolation and restore verification before presenting exact guarded auth-only SQL and ledger changes. After approved recovery, verify legitimate password/Google/GitHub sessions, admin policy, entitlement and native pairing separately. No deployment, routing or production mutation is authorized by this evidence.",
       "owner": "Codex; external acceptance/approvals remain founder-owned",
       "auditDepth": "Requirement source mapped; individual acceptance review pending"
     },
@@ -21302,7 +21304,7 @@
       "domain": "auth",
       "scope": "product",
       "status": "Blocked by external access",
-      "verification": "Current-main credentials and Google callbacks show P2022; protected production schema/ledger and founder mapping are unavailable in this runtime.",
+      "verification": "Historical credentials and Google callbacks showed P2022; protected preflight #3 inspected schema/ledger and passed canonical founder/personal membership mapping. Serving/preflight target equality, external identity ownership, successful login, platform administration, paid entitlement and native pairing remain unverified.",
       "evidence": [
         "lib/auth.ts",
         "lib/auth/currentContext.ts",
@@ -23143,7 +23145,7 @@
       "domain": "auth",
       "scope": "product",
       "status": "Blocked by external access",
-      "verification": "Current-main credentials and Google callbacks show P2022; protected production schema/ledger and founder mapping are unavailable in this runtime.",
+      "verification": "Historical credentials and Google callbacks showed P2022; protected preflight #3 inspected schema/ledger and passed canonical founder/personal membership mapping. Serving/preflight target equality, external identity ownership, successful login, platform administration, paid entitlement and native pairing remain unverified.",
       "evidence": [
         "lib/auth.ts",
         "lib/auth/currentContext.ts",
@@ -23352,7 +23354,7 @@
       "domain": "auth",
       "scope": "product",
       "status": "Blocked by external access",
-      "verification": "Current-main credentials and Google callbacks show P2022; protected production schema/ledger and founder mapping are unavailable in this runtime.",
+      "verification": "Historical credentials and Google callbacks showed P2022; protected preflight #3 inspected schema/ledger and passed canonical founder/personal membership mapping. Serving/preflight target equality, external identity ownership, successful login, platform administration, paid entitlement and native pairing remain unverified.",
       "evidence": [
         "lib/auth.ts",
         "lib/auth/currentContext.ts",
@@ -29253,7 +29255,7 @@
       "domain": "auth",
       "scope": "product",
       "status": "Blocked by external access",
-      "verification": "Current-main credentials and Google callbacks show P2022; protected production schema/ledger and founder mapping are unavailable in this runtime.",
+      "verification": "Historical credentials and Google callbacks showed P2022; protected preflight #3 inspected schema/ledger and passed canonical founder/personal membership mapping. Serving/preflight target equality, external identity ownership, successful login, platform administration, paid entitlement and native pairing remain unverified.",
       "evidence": [
         "lib/auth.ts",
         "lib/auth/currentContext.ts",
@@ -43416,7 +43418,7 @@
       "engineeringActivity": "active",
       "owner": "Codex integrated parallel workstreams",
       "activeMilestone": "Verify serving deployment and preflight target equality, actual recoverable timestamp and isolated restore readiness.",
-      "verification": "Neon read-only metadata confirms reported target, PostgreSQL 17, six-hour retention and 10/10 branch capacity; SELECT-only schema/history matches preflight,99 completed migrations and no active source checksum drift. Founder mapping passed protected preflight. New source adds a separately gated AWS storage proposal; isolated PostgreSQL16/17 auth fixture preserves original failed history and applies only the unchanged auth SQL. Latest operator comparison remains not yet verified; no production changes authorized. Real integrated synthetic NextHTTP/PostgreSQL acceptance passed on committed sourcef7de88f0:11auth assertions,10desktop HTTP protocol assertions through consume/replay/revoke,4approval assertions through competing303/409 and persisted actor/time. Approval metadata follows actual Next loopback normalization; no browser/production/provider/native inference. Existing identity-only commercial response allowed no-plan access; paid-entitlement enforcement is NOTverified.",
+      "verification": "Neon read-only metadata confirms reported target, PostgreSQL 17, six-hour retention and 10/10 branch capacity; SELECT-only schema/history matches preflight,99 completed migrations and no active source checksum drift. Founder mapping passed protected preflight. Current source adds separately gated enrollment, revocation and ECS review-core proposals; isolated PostgreSQL16/17 auth fixture preserves original failed history and applies only the unchanged auth SQL. Latest operator comparison remains not yet verified; no production changes authorized. Real integrated synthetic NextHTTP/PostgreSQL acceptance passed on committed sourcef7de88f0:11auth assertions,10desktop HTTP protocol assertions through consume/replay/revoke,4approval assertions through competing303/409 and persisted actor/time. Approval metadata follows actual Next loopback normalization; no browser/production/provider/native inference. Existing identity-only commercial response allowed no-plan access; paid-entitlement enforcement is NOTverified. Dated 2026-10-16 alias/deployment metadata identifies the serving READY production revision fef79a0e, without effective datasource mapping. Branch protected=false and integration deletion/compute restrictions are distinct; no recoverable timestamps returned. No new production SQL/preflight or secret retrieval occurred. Ten-before/nine-after pending counts are source-derived expectations only if the previously inspected production baseline is unchanged; historical seven/six evidence is retained. External identity ownership, actual login/admin, paid entitlement and native pairing remain unverified.",
       "evidence": [
         "docs/PRODUCTION_AUTH_RECOVERY_PLAN.md",
         "docs/EMAIL_PROOF_ATOMIC_RECOVERY.md",
@@ -43425,12 +43427,14 @@
         "docs/mission/aws-enrollment-schema-rehearsal.json",
         "docs/NEON_PREVIEW_CAPACITY_AUDIT.md",
         "docs/LOCAL_AUTH_HTTP_ACCEPTANCE.md",
-        "docs/mission/local-auth-http-acceptance.json"
+        "docs/mission/local-auth-http-acceptance.json",
+        "docs/AUTH_RECOVERY_OPERATOR_EVIDENCE.md",
+        "docs/mission/auth-readiness-follow-up-2026-10-16.json"
       ],
       "customerAcceptance": "Not verified",
       "acceptanceDependencies": [],
       "blockers": "Serving Vercel and protected workflow resource bindings remain unverified. No saved snapshots returned; usable PITR/restore unverified. Ten-branch limit blocks isolated restore copy; resource changes and exact auth-only execution require separate approval.",
-      "nextAction": "Verify serving deployment and preflight target equality, actual recoverable timestamp and isolated restore readiness."
+      "nextAction": "Use the existing private operator evidence packet to verify serving/preflight/intended-target equality and actual recoverable timestamps; then prepare separately approved capacity/isolation, restore verification and exact auth-only recovery. Do not repeat metadata inventory or request the same access without new proof ability."
     },
     {
       "id": "ai_agent",
