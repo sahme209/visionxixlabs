@@ -77,13 +77,13 @@ describe("pricing navigation and explicit plan selection", () => {
   });
   it("keeps the public pricing page usable but prevents checkout when workspace lookup fails", async () => {
     vi.stubEnv("AXIOM_SELF_SERVICE_BILLING_ENABLED","true"); io.context.mockRejectedValue(new Error("context unavailable"));
-    render(await PlansPage());
+    render(await PlansPage({}));
     expect(screen.getByRole("button",{name:"Choose Pro"}).hasAttribute("disabled")).toBe(true);
     expect(screen.getByRole("status").textContent).toContain("Workspace verification unavailable");
     expect(io.fetch).not.toHaveBeenCalled();
   });
   it("does not read authority or enable billing when the existing preview gate is closed", async () => {
-    vi.stubEnv("AXIOM_SELF_SERVICE_BILLING_ENABLED","false"); render(await PlansPage());
+    vi.stubEnv("AXIOM_SELF_SERVICE_BILLING_ENABLED","false"); render(await PlansPage({}));
     expect(io.context).not.toHaveBeenCalled(); expect(io.fetch).not.toHaveBeenCalled();
     expect(screen.getByRole("link",{name:"Start free"}).getAttribute("href")).toBe("/download");
     expect(screen.queryByRole("button",{name:"Choose Pro"})).toBeNull();

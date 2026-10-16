@@ -1046,8 +1046,9 @@ seat counts or Stripe IO. Desktop billing management now requires current
 owner/admin authority consistently with the browser; no-plan identity access is
 no longer presented as an approved commercial trial. Existing billing activation,
 prices, commercial access and support payment paths are unchanged. Integrated
-checks and exact-head CI remain pending; local producer regressions exercise real
-components/routes with provider responses mocked.
+validation passed 599 files / 6,307 tests, web/desktop TypeScript, desktop build,
+30 Python tests, scoped lint and a 293-page local production build. Exact-head
+CI remains pending; provider responses in component/route tests are mocked.
 
 Important unresolved commercial disconnections:
 
@@ -1126,3 +1127,13 @@ Test (push and PR), Desktop CI and isolated auth-recovery rehearsal passed. Actu
 CI ran 595 files / 6,251 tests and built all 293 pages. The source-only review
 migration is still unapproved for production; no provider or database authority
 was enabled.
+
+
+Pricing integration local application check (2026-10-16): the built Next server
+was started only on loopback with checkout disabled. Actual HTTP `/plans` returned
+200 with Pricing navigation and the no-charge preview; `/pricing` redirected to
+`/plans`. The owned server was stopped afterward. This verifies rendered application
+routing, not hosted checkout, OAuth, payment or paid entitlement provisioning.
+The production build caught an optional page-props signature incompatible with
+Next-generated types; corrected required props passed the focused tests and build.
+No production deployment, provider call or support checkout change was made.

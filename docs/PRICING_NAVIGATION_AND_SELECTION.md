@@ -19,3 +19,11 @@ unavailable history read also refuses before financial IO. Four regressions fail
 against the previous route. This does not solve different-key concurrent initial
 purchases or ambiguous provider responses; durable recurring intent remains
 required before activating the new test lane.
+
+
+Local integrated verification (2026-10-16): 599 files / 6,307 tests, web and
+desktop types/build, 30 Python tests, scoped lint, and 293-page production build
+passed. An actual loopback production server returned `/plans` 200 with Pricing
+navigation and disabled checkout, and redirected `/pricing` to `/plans`; owned
+server stopped. No browser payment, real Stripe event or production login is
+verified by this check. Exact-head CI is required before merge.

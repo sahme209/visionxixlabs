@@ -13,7 +13,7 @@ export const metadata: Metadata = {
     "Transparent Free, Pro, and Enterprise plans for governed deployments, with activation protected until billing authority and quota enforcement are validated.",
 };
 
-export default async function PlansPage({ searchParams }: { searchParams?: Promise<{ plan?: string | string[]; interval?: string | string[] }> } = {}) {
+export default async function PlansPage({ searchParams }: { searchParams?: Promise<{ plan?: string | string[]; interval?: string | string[] }> }) {
   const checkoutEnabled = isSelfServiceBillingEnabled();
   const initialSelection = parsePublicPlanSelection(await searchParams ?? {});
   let workspace: PublicCheckoutWorkspace = { status: "unavailable" };
