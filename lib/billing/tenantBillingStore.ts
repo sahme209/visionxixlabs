@@ -48,7 +48,15 @@ export interface BillingPlanRecord {
   spec: TierSpec;
 }
 
+/** Existing callers retain the historical no-plan fallback on read failure. */
 export async function readBillingPlan(organizationId: string): Promise<BillingPlanRecord> {
+  return (await readBillingPlanWithAvailability(organizationId)).plan;
+}
+
+/** Read-only evidence for surfaces that must distinguish a real missing plan
+ * from unavailable storage. No private error details leave this boundary. */
+export async function readBillingPlanWithAvailability(organizationId: string): Promise<{ plan: BillingPlanRecord; available: boolean }> {
+  let available = true;
   try {
     const row = await prisma.tenantBillingPlan.findUnique({
       where: { organizationId },
@@ -59,7 +67,7 @@ export async function readBillingPlan(organizationId: string): Promise<BillingPl
       // remain as historical artefacts but never surface as an active trial.
       const isLegacyTrial = row.tier === "trial" || row.status === "trialing";
       if (isLegacyTrial) {
-        return shape(row.organizationId, {
+        return { available, plan: shape(row.organizationId, {
           tier: "trial",
           status: "no_plan",
           trialEndsAt: null,
@@ -67,9 +75,9 @@ export async function readBillingPlan(organizationId: string): Promise<BillingPl
           stripeCustomerId: row.stripeCustomerId,
           stripeSubscriptionId: row.stripeSubscriptionId,
           cancelAtPeriodEnd: false,
-        });
+        }) };
       }
-      return shape(row.organizationId, {
+      return { available, plan: shape(row.organizationId, {
         tier: row.tier,
         status: row.status,
         trialEndsAt: row.trialEndsAt,
@@ -80,12 +88,13 @@ export async function readBillingPlan(organizationId: string): Promise<BillingPl
         seatQuantity: typeof (row as unknown as { seatQuantity?: unknown }).seatQuantity === "number"
           ? (row as unknown as { seatQuantity: number }).seatQuantity
           : null,
-      });
+      }) };
     }
   } catch {
-    // Fall through to the no-plan default.
+    available = false;
+    // Keep the legacy fallback while exposing that its evidence was unavailable.
   }
-  return shape(organizationId, {
+  return { available, plan: shape(organizationId, {
     tier: "trial",
     status: "no_plan",
     trialEndsAt: null,
@@ -93,7 +102,7 @@ export async function readBillingPlan(organizationId: string): Promise<BillingPl
     stripeCustomerId: null,
     stripeSubscriptionId: null,
     cancelAtPeriodEnd: false,
-  });
+  }) };
 }
 
 /** Idempotently ensure a tenant has a trial row. Called on first sign-in. */

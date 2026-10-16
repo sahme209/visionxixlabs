@@ -77,7 +77,7 @@ const TOOL_LABELS: Record<string, string> = {
   commit_github_file: "Commit a file",
   commit_github_files: "Commit multiple files",
   open_github_pull_request: "Open a pull request",
-  trigger_aws_deploy: "Deploy to AWS",
+  trigger_aws_deploy: "Restart AWS ECS service",
   read_github_file: "Read a repository file",
   create_environment: "Create an environment",
   configure_deployment_target: "Configure a deployment target",
@@ -102,7 +102,7 @@ function describeArgs(toolName: string, args: unknown): string {
     case "open_github_pull_request":
       return `${a.repositoryFullName}: PR "${a.title}" — ${a.head} → ${a.base}`;
     case "trigger_aws_deploy":
-      return `${a.repositoryFullName} → environment ${a.environmentId}${a.promotedFromExecutionId ? ` (promoting ${a.promotedFromExecutionId})` : ""}`;
+      return `${a.repositoryFullName} → restart environment ${a.environmentId} (workflow ref: ${a.sourceRef ?? "main"}; artifact promotion unavailable)`;
     case "create_environment":
       return `${a.name} (${a.slug}) · ${a.tier}`;
     case "configure_deployment_target":
@@ -715,7 +715,7 @@ function EvidencePanel({ actions }: { actions: Proposal[] }) {
   );
 }
 
-function ProposalCard({ proposal, deciding, onApprove, onReject }: { proposal: Proposal; deciding: boolean; onApprove: () => void; onReject: () => void }) {
+export function ProposalCard({ proposal, deciding, onApprove, onReject }: { proposal: Proposal; deciding: boolean; onApprove: () => void; onReject: () => void }) {
   const [showDetails, setShowDetails] = useState(false);
   const args = typeof proposal.argsJson === "object" && proposal.argsJson !== null
     ? proposal.argsJson as Record<string, unknown>
@@ -737,6 +737,14 @@ function ProposalCard({ proposal, deciding, onApprove, onReject }: { proposal: P
         <Badge tone={riskToneFor(proposal.riskLevel)}>{proposal.riskLevel} risk</Badge>
       </div>
       <p className="text-xs text-zinc-400 font-mono mb-4">{describeArgs(proposal.toolName, proposal.argsJson)}</p>
+      {proposal.toolName === "trigger_aws_deploy" && (
+        <div className="mb-4 rounded-lg border border-amber-500/20 p-3 text-xs text-zinc-300">
+          <p className="font-medium">Restart existing task definition only — no source release or image promotion.</p>
+          {review?.kind === "ecs_restart_target" ? <dl className="mt-2 space-y-1 break-all">
+            {[["Environment", review.environmentId], ["Tier", review.environmentTier], ["Role", review.roleArn], ["Region", review.region], ["Cluster", review.ecsCluster], ["Service", review.ecsService], ["Target revision", review.targetUpdatedAt]].map(([label, value]) => <div key={String(label)}><dt className="inline text-zinc-500">{String(label)}: </dt><dd className="inline">{typeof value === "string" ? value : "Unavailable"}</dd></div>)}
+          </dl> : <p className="mt-2 text-amber-300">No bound target review. Create a new proposal; this historical proposal cannot execute.</p>}
+        </div>
+      )}
       <button type="button" aria-expanded={showDetails} onClick={() => setShowDetails((current) => !current)} className="mb-4 text-xs text-zinc-400 underline decoration-zinc-700 underline-offset-4 hover:text-zinc-200">
         {showDetails ? "Hide approval details" : "Review approval details"}
       </button>
@@ -789,7 +797,7 @@ function ProposalCard({ proposal, deciding, onApprove, onReject }: { proposal: P
         <button
           type="button"
           onClick={onApprove}
-          disabled={deciding}
+          disabled={deciding || (proposal.toolName === "trigger_aws_deploy" && review?.kind !== "ecs_restart_target")}
           className="rounded-lg bg-white px-4 py-2 text-xs font-semibold text-black disabled:opacity-50"
         >
           {deciding ? "Working…" : "Approve & run"}

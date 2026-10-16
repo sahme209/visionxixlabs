@@ -230,7 +230,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
   }
 
   if (outcome.kind === "proposal") {
-    const reviewed = await prepareProposalArgsForReview(organizationId, outcome.toolName, outcome.args);
+    const reviewed = await prepareProposalArgsForReview(organizationId, outcome.toolName, outcome.args, prisma);
     if (!reviewed.ok) {
       const reply = `I couldn't prepare a trustworthy approval preview, so no action was proposed. ${reviewed.error}`;
       await prisma.agentConversationTurn.create({ data: { conversationId, role: "assistant", content: reply } });

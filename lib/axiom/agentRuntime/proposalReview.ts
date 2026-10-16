@@ -1,4 +1,5 @@
 import "server-only";
+import { captureRestartTarget, type RestartTargetRepo } from "./restartTargetReview";
 import { isSensitiveRepositoryEvidencePath } from "./repositoryEvidencePolicy";
 
 import { getFile } from "@/lib/connectors/github/githubWriteClient";
@@ -29,9 +30,17 @@ export async function prepareProposalArgsForReview(
   organizationId: string,
   toolName: string,
   args: Record<string, unknown>,
+  targetRepo?: RestartTargetRepo,
 ): Promise<ProposalReviewResult> {
   const { _review: _untrustedReview, ...sanitizedArgs } = args;
   void _untrustedReview;
+  if (toolName === "trigger_aws_deploy") {
+    if (!targetRepo || typeof args.environmentId !== "string") return { ok: false, error: "deployment_target_review_unavailable" };
+    try {
+      const review = await captureRestartTarget(targetRepo, organizationId, args.environmentId);
+      return review ? { ok: true, args: { ...sanitizedArgs, _review: review } } : { ok: false, error: "deployment_target_review_unavailable" };
+    } catch { return { ok: false, error: "deployment_target_review_unavailable" }; }
+  }
   if (toolName !== "commit_github_file" && toolName !== "commit_github_files") return { ok: true, args: sanitizedArgs };
 
   const repositoryFullName = typeof args.repositoryFullName === "string" ? args.repositoryFullName : "";

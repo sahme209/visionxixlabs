@@ -10,6 +10,7 @@ import { deploymentEvidence } from "@/lib/releaseops/deploymentEvidence";
  */
 
 import "server-only";
+import { captureRestartTarget, matchesRestartTarget } from "./restartTargetReview";
 import { isSensitiveRepositoryEvidencePath } from "./repositoryEvidencePolicy";
 
 import { resolveTenantScopedToken, parseRepositoryFullName } from "@/lib/connectors/github/resolveTenantScopedToken";
@@ -37,7 +38,7 @@ export interface ActionExecutionRepo {
     findUnique(args: { where: { id: string } }): Promise<{ id: string; organizationId: string; tier: string } | null>;
   };
   deploymentTarget: {
-    findUnique(args: { where: { environmentId: string } }): Promise<{ organizationId: string; roleArn: string; region: string; ecsCluster: string; ecsService: string } | null>;
+    findUnique(args: { where: { environmentId: string } }): Promise<{ id?: string; provider?: string; updatedAt?: Date; organizationId: string; roleArn: string; region: string; ecsCluster: string; ecsService: string } | null>;
   };
   repository: DeploymentPolicyRepo["repository"];
   branchEnvironmentPolicy: DeploymentPolicyRepo["branchEnvironmentPolicy"];
@@ -145,6 +146,10 @@ export async function executeApprovedAction(
     if (!environment || environment.organizationId !== organizationId) return { ok: false, error: "environment_not_found" };
     const target = await repo.deploymentTarget.findUnique({ where: { environmentId } });
     if (!target || target.organizationId !== organizationId) return { ok: false, error: "deployment_target_not_configured" };
+    let reviewedTarget;
+    try { reviewedTarget = await captureRestartTarget(repo, organizationId, environmentId); }
+    catch { return { ok: false, error: "deployment_target_review_unavailable" }; }
+    if (!reviewedTarget || !matchesRestartTarget(args._review, reviewedTarget)) return { ok: false, error: "deployment_target_review_stale" };
     const token = await resolveTenantScopedToken(organizationId, parsed);
     if (!token.ok) return { ok: false, error: token.error };
     const policyRepo: DeploymentPolicyRepo = {
@@ -165,7 +170,7 @@ export async function executeApprovedAction(
       sourceKind,
       ...(pullRequestNumber !== undefined ? { pullRequestNumber } : {}),
       ...(promotedFromExecutionId ? { promotedFromExecutionId } : {}),
-      ...(environment.tier === "prod" ? { requiredControlSet: "production" as const } : {}),
+      ...(reviewedTarget.environmentTier === "prod" ? { requiredControlSet: "production" as const } : {}),
       installationToken: token.token,
     });
     if (!policy.ok) return { ok: false, error: policy.error };
@@ -201,9 +206,21 @@ export async function executeApprovedAction(
         },
       };
     }
+    // Policy and reservation involve IO. Re-read configuration before dispatch;
+    // a reconfigured target requires a fresh, separately reviewed proposal.
+    let latestTarget;
+    try { latestTarget = await captureRestartTarget(repo, organizationId, environmentId); }
+    catch {
+      await releaseDeploymentDispatch(reservationRepo, organizationId, reservation.reservation.id);
+      return { ok: false, error: "deployment_target_review_unavailable" };
+    }
+    if (!latestTarget || !matchesRestartTarget(args._review, latestTarget)) {
+      await releaseDeploymentDispatch(reservationRepo, organizationId, reservation.reservation.id);
+      return { ok: false, error: "deployment_target_review_stale" };
+    }
     const result = await dispatchWorkflow({
       owner: parsed.owner, repo: parsed.repo, workflowFile: AWS_ECS_DEPLOY_WORKFLOW_FILENAME, ref: sourceRef,
-      inputs: { role_arn: target.roleArn, region: target.region, cluster: target.ecsCluster, service: target.ecsService },
+      inputs: { role_arn: reviewedTarget.roleArn, region: reviewedTarget.region, cluster: reviewedTarget.ecsCluster, service: reviewedTarget.ecsService },
       installationToken: token.token,
     });
     if (!result.ok) {
