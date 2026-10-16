@@ -110,3 +110,20 @@ An unavailable local Chromium launch is not a successful browser journey.
   to the preceding source and is not relabeled as evidence for this fix.
 - Repository Vercel Git suppression remains intact. No deployments, production
   mutations, installer publication, live billing or external provider writes ran.
+
+### Coordinator integration validation
+
+- Frozen runtime tree at `b9b2c2f5`: complete default Vitest run passed
+  **6,688 tests across 623 files**, six skipped checks and one skipped optional
+  database fixture file; owned database acceptance is separately recorded above.
+- Web TypeScript (`--noEmit --incremental false`) passed. Scoped ESLint passed
+  with one unused `_revision` fixture warning and no errors. Python CLI: 30
+  tests passed. Vercel build contract: 37 SDK externalizations and no migration
+  side effects verified. Canonical coverage check: 16 sources / 1,830 rows.
+- Independent integration documentation review passed: all 85 new extracted units
+  mapped exactly, prior requirement identities/source text/statuses retained,
+  no production or recovery-readiness inflation. Existing assessment corrections
+  remain dated verification/next-action changes rather than status promotions.
+- Desktop TypeScript and production bundle passed (release alignment 0.1.20,
+  1,615 modules; existing plugin-shell mixed-import warning). Exact-head clean
+  GitHub CI remains required before merge.
