@@ -41924,8 +41924,8 @@
       "status": "Partially implemented",
       "engineeringActivity": "active",
       "owner": "Codex integrated parallel workstreams",
-      "activeMilestone": "Complete version-bound local credential disconnect/reconnect and preserve incomplete inventory coverage before a governed Agent read bridge.",
-      "verification": "Reachable Settings UI, actual routes/service/scoped AEAD and mocked STS/EC2 composed tests cover exact account/role identity, challenge consumption/version binding, current session/membership and late-result revocation. One EC2 page is explicitly incomplete; newly enrolled accounts cannot enter generic Agent execution. Isolated PostgreSQL16/17 schema and auth fixtures passed. Actual AWS/customer acceptance remains unverified.",
+      "activeMilestone": "Validate paired existing-role enrollment through actual local HTTP/storage/SDK composition; obtain separate real AWS and production-storage acceptance.",
+      "verification": "Reachable Settings UI, actual routes/service/scoped AEAD and mocked STS/EC2 composed tests cover exact account/role identity, challenge consumption/version binding, current session/membership and late-result revocation. One EC2 page is explicitly incomplete; newly enrolled accounts cannot enter generic Agent execution. Isolated PostgreSQL16/17 schema and auth fixtures passed. Actual AWS/customer acceptance remains unverified. Owned local Next HTTP/PostgreSQL17 acceptance on committed644f539d verifies challenge/completion, real scoped encrypted storage, replay/foreign synthetic metadata denial, bounded native-SDK wire inventory and versioned disconnect/revoked-read denial. All25 existing auth/pairing/approval assertions and10 cloud assertions passed; exactly5 owned-loopback SDK requests, no paid-plan grant or provider writes. This is not real AWS/IAM, native or commercial acceptance.",
       "evidence": [
         "docs/ECS_CUSTOMER_JOURNEY_VALIDATION.md",
         "docs/LEGACY_WEBSITE_DEPLOYMENT_BOUNDARIES.md",
@@ -41934,15 +41934,18 @@
         "lib/cloud/aws/enrollment/README.md",
         "docs/DESKTOP_AWS_READONLY_ENROLLMENT.md",
         "docs/AWS_ENROLLMENT_SCHEMA_PROPOSAL.md",
-        "docs/mission/aws-enrollment-schema-rehearsal.json"
+        "docs/mission/aws-enrollment-schema-rehearsal.json",
+        "scripts/rehearse-local-cloud-http.mjs",
+        "scripts/fixtures/ownedAwsHttpPreload.cjs",
+        "docs/mission/local-cloud-http-acceptance.json"
       ],
       "customerAcceptance": "Not verified",
       "acceptanceDependencies": [
         "auth_database",
         "github"
       ],
-      "blockers": "Production auth/binding/restore readiness; separate reviewed cloud-storage execution approval and configured read-only broker; actual AWS role/permission acceptance. Generic Agent snapshot bridge and disconnect management remain missing; Azure/GCP enrollment/apply/rollback are separate unfinished milestones.",
-      "nextAction": "Finish integrated CI and review; obtain separately scoped storage/runtime/provider acceptance authorization without changing auth-only SQL. Then implement reviewed disconnect and secure Agent snapshot bridge."
+      "blockers": "Production auth/binding/restore readiness; separate reviewed cloud-storage execution approval and configured read-only broker; actual AWS role/permission acceptance. Azure/GCP enrollment/apply/rollback and generic governed provider write acceptance remain separate unfinished milestones.",
+      "nextAction": "Complete latest-main regression and exact-head CI; obtain separately scoped storage/runtime/read-only-provider acceptance authorization without changing auth-only SQL. Native UI and paid-policy acceptance remain distinct."
     },
     {
       "id": "terraform",
@@ -42123,12 +42126,13 @@
       "engineeringActivity": "active",
       "owner": "Codex integrated parallel workstreams",
       "activeMilestone": "Run combined regression gates and collect real authorized customer-journey evidence.",
-      "verification": "Focused failing-before regressions exist in all six parallel implementation streams. Actual disposable PostgreSQL16/17 schema/full-history fixtures preserve original auth/Agent checksums and failed history; service/provider boundaries remain simulated. Real integrated synthetic NextHTTP/PostgreSQL acceptance passed on committed sourcef7de88f0:11auth assertions,10desktop HTTP protocol assertions through consume/replay/revoke,4approval assertions through competing303/409 and persisted actor/time. Approval metadata follows actual Next loopback normalization; no browser/production/provider/native inference. Existing identity-only commercial response allowed no-plan access; paid-entitlement enforcement is NOTverified.",
+      "verification": "Focused failing-before regressions exist in all six parallel implementation streams. Actual disposable PostgreSQL16/17 schema/full-history fixtures preserve original auth/Agent checksums and failed history; service/provider boundaries remain simulated. Real integrated synthetic NextHTTP/PostgreSQL acceptance passed on committed sourcef7de88f0:11auth assertions,10desktop HTTP protocol assertions through consume/replay/revoke,4approval assertions through competing303/409 and persisted actor/time. Approval metadata follows actual Next loopback normalization; no browser/production/provider/native inference. Existing identity-only commercial response allowed no-plan access; paid-entitlement enforcement is NOTverified. Explicit owned AWS protocol extension additionally passed10 actual HTTP/storage/native-SDK lifecycle assertions on644f539d (35total), with5 guard-stamped loopback wire requests and owned PostgreSQL17 cleanup. Default25-check launcher behavior is preserved; real IAM and commercial billing remain unverified.",
       "evidence": [
         "docs/CRITICAL_RECOVERY_AND_CUSTOMER_ACCEPTANCE.md",
         "docs/mission/aws-enrollment-schema-rehearsal.json",
         "docs/LOCAL_AUTH_HTTP_ACCEPTANCE.md",
-        "docs/mission/local-auth-http-acceptance.json"
+        "docs/mission/local-auth-http-acceptance.json",
+        "docs/mission/local-cloud-http-acceptance.json"
       ],
       "customerAcceptance": "Not verified",
       "acceptanceDependencies": [
