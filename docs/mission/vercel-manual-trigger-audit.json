@@ -1,0 +1,96 @@
+{
+  "observedAt": "2026-10-16 UTC",
+  "scope": "Read-only provider metadata and repository source; no hook invocation, deployment, routing or settings mutation",
+  "productionDeployment": {
+    "id": "dpl_6cv75StHTFg1enN1xPYRuLEcXzoX",
+    "source": "git",
+    "target": "production",
+    "state": "READY",
+    "ref": "main",
+    "sha": "fef79a0eed15c8251dd46560e2e42f140b8c7177"
+  },
+  "previewDeployment": {
+    "id": "dpl_BQ3AMcWkaxGT31k3obcaWwBqxYmZ",
+    "source": "git",
+    "state": "ERROR",
+    "ref": "codex/ecs-workflow-evidence",
+    "sha": "5ee141bf2a747c246537b7b3f2650b92308cca12",
+    "error": "Resource provisioning failed"
+  },
+  "preChangeDomain": {
+    "domain": "visionxixlabs.com",
+    "deploymentId": "dpl_6cv75StHTFg1enN1xPYRuLEcXzoX"
+  },
+  "cause": "Native Git-sourced deployments; only codex/ai-agent-governance was disabled, and unspecified branches default to enabled. Specific webhook delivery IDs not exposed.",
+  "actionsAudit": {
+    "vercelDeploymentCommandsFound": false,
+    "repositoryDispatchEntrypointFound": false,
+    "productionCompilationStepAdded": true,
+    "standaloneMutatorsNotInvoked": [
+      "scripts/setup-vercel-env.mjs",
+      "scripts/setup-oauth.sh"
+    ],
+    "workflows": [
+      {
+        "path": ".github/workflows/_axiom-release-gate.yml",
+        "sha256": "4f5d124ec7818f907ce30d621df9d7d848869c695e209174f4896960a14da4ec"
+      },
+      {
+        "path": ".github/workflows/auth-recovery-preflight.yml",
+        "sha256": "9559445b15a354d47adf12f6fc6726d8c924d9c0da45bf06a3f0def5cc529666"
+      },
+      {
+        "path": ".github/workflows/auth-recovery-rehearsal.yml",
+        "sha256": "071bb380e4095e19bde4e9c264d9c46bffa7e408c2d34115a927b7cbe2c66a58"
+      },
+      {
+        "path": ".github/workflows/axiom-deploy-aws-ecs.yml",
+        "sha256": "79f99c247155c0d33a4e69c50ffb1ff3beea686a31dce84545ee5843484b27e5"
+      },
+      {
+        "path": ".github/workflows/axiom-validate-aws-ecs.yml",
+        "sha256": "0acc2151c413c607c520efa0a2771c2f7b5259a907d6780c6f074b36fd427867"
+      },
+      {
+        "path": ".github/workflows/desktop-ci.yml",
+        "sha256": "324cb7f89800da863f2211dddfbe166aa4dfeabfc72a273b0cc4d6deb70dbd7d"
+      },
+      {
+        "path": ".github/workflows/desktop-release.yml",
+        "sha256": "247dd2c46c1182496e4997467e15a84bd99cc925f985744b910b6c68eacc78a6"
+      },
+      {
+        "path": ".github/workflows/production-db-migrate.yml",
+        "sha256": "d25cac6a0cfe6e56ff46054244fd7e118fce76f95052d25e7af376218786c099"
+      },
+      {
+        "path": ".github/workflows/test.yml",
+        "sha256": "0db7057fbaedd73da62bf8dd107fe23f9012f7b256ba8136363414c19de0cbff"
+      }
+    ]
+  },
+  "repositoryControl": {
+    "git.deploymentEnabled": false,
+    "preservedCronCount": 29,
+    "status": "Prepared; provider suppression not yet verified"
+  },
+  "unverified": [
+    "Effective provider settings not returned by safe projection",
+    "Older branches/forks lacking the new configuration",
+    "Manual exact-commit deployment runtime and integration acceptance",
+    "Post-merge suppression and unchanged alias",
+    "Replacement-flag hook semantics not established, but owner reports no configured hooks."
+  ],
+  "deployHooks": {
+    "status": "none",
+    "evidence": "Owner privately checked Vercel Project Settings → Git → Deploy Hooks on 2026-10-16; sanitized attestation, no URLs supplied."
+  },
+  "validation": {
+    "localTests": "580 files / 5,972 tests passed",
+    "webTypeScript": "passed",
+    "desktopTypeScriptAndBuild": "passed",
+    "pythonTests": "30 passed",
+    "productionBuild": "passed; 293 pages generated",
+    "independentReview": "No blocker; repository-only scope, provider/old-ref enforcement unverified"
+  }
+}

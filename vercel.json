@@ -2,9 +2,7 @@
   "installCommand": "npm install --legacy-peer-deps=false",
   "buildCommand": "NODE_OPTIONS=--max-old-space-size=6144 npm run build",
   "git": {
-    "deploymentEnabled": {
-      "codex/ai-agent-governance": false
-    }
+    "deploymentEnabled": false
   },
   "crons": [
     {
