@@ -16,11 +16,11 @@ Desktop adds a selected-request read panel via existing DeploymentRequestsView, 
 
 Implementation plan (inline, no subagents):
 
-- [ ] TDD exact-byte capture/strict decoding and artifact envelope; reuse summarizeTerraformPlan and the existing Terraform capability boundary.
-- [ ] TDD proposed storage/readiness and immutable tenant-bound store; no new Prisma migration/model.
-- [ ] TDD paired list/detail read handlers and actual desktop panel/client methods.
-- [ ] Update Desktop App Pairing demo and customer acceptance documentation in the same commit.
-- [ ] Focused tests/lint/diff; root schedules heavy checks and owned PostgreSQL/HTTP acceptance, owns review/push/PR/merge.
+- [x] TDD exact-byte capture/strict decoding and artifact envelope; reuse summarizeTerraformPlan and the existing Terraform capability boundary.
+- [x] TDD proposed storage/readiness and immutable tenant-bound store; no new Prisma migration/model.
+- [x] TDD paired list/detail read handlers and actual desktop panel/client methods.
+- [x] Update Desktop App Pairing demo and customer acceptance documentation in the same commit.
+- [x] Focused tests/lint/diff; root schedules heavy checks and owned PostgreSQL/HTTP acceptance, owns review/push/PR/merge.
 
 Acceptance: genuine pinned Terraform builtin terraform_data saved binary -> own show -> encrypted record -> exact sanitized list/detail, corrupt/substituted binaries, unknown action/incomplete plans, mixed tenants, absent/partial/drift storage, stale request versions, ciphertext/summary mutation and session/request changes. Owned PostgreSQL verifies proposal rollback, atomic immutable insert, tenant/version rejection and optional-read fallback. Actual paired HTTP tests use existing owned fixture when the coordinator opens that window. Genuine local artifacts and synthetic tenant authority are labelled separately; cloud backend locks, current approval, apply and recovery remain unverified.
 
@@ -29,3 +29,19 @@ Execution ledger:
 - Baseline: 12 existing summarizer/kill-switch tests passed; no product changes before approved plan.
 - Ruling: no approval-core extraction or new approval engine; all new DTOs fix approval to unavailable and execution to false.
 - Ruling: no runtime producer implementation for remote customer plans; local CLI capture proves bytes-to-show behavior only.
+
+
+Owned acceptance completed at runtime commit `62e47d94`: genuine pinned CLI plan capture, proposal rollback, exact PostgreSQL catalog, immutable mixed-tenant/duplicate/write refusal, actual paired list/detail, stale version and missing/drift refusal. The first rehearsal exposed PostgreSQL rendering `PRIMARY KEY (version)` without quotes; the captured real-catalog regression failed before the exact comparison fix and passes afterward. No schema acceptance was inferred from mocks. [Machine evidence](mission/local-terraform-saved-plan-http-acceptance.json) records the precise scope and verified cleanup.
+
+The implementation normally merges Agent source/harness dependency `f9ce5500` first; no ECS review-kernel or live provider behavior is included. The context revision added to DesktopClient is a local monotonic notification, synchronously advanced on changed setSession/setApiBase, token-free, unsubscribable and exception-isolated. It invalidates this panel's state/late results; every API request independently reauthorizes the paired session.
+
+Reproduce only after coordinator grants the owned application window, with the official checksum/signature-verified fixture binary present at the documented private `/tmp/axiom-terraform-artifact-*/bin/terraform` location:
+
+```bash
+env -i PATH=/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin:/usr/local/bin:/usr/bin:/bin \
+  AXIOM_RUN_LOCAL_AUTH_HTTP=1 AXIOM_RUN_LOCAL_TERRAFORM_HTTP=1 \
+  AXIOM_LOCAL_TERRAFORM_EXECUTABLE=/tmp/axiom-terraform-artifact-r0tc5e8t/bin/terraform \
+  /opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/node scripts/run-owned-local-auth-http.mjs
+```
+
+This runner creates a fresh labelled cached-image PostgreSQL fixture, starts the actual Next app, proves real sign-up/email/CSRF/login/pairing through the existing harness, installs the proposal only in that owned schema, and cleans exact owned resources. It accepts no existing database/daemon binding, never sets HOME, and never invokes a provider backend or apply. The 1.9.8 executable pin belongs only to this owned fixture. Actual customer CLI support, trusted producer, backend/state locks, target/credential observation, current approval and recovery remain unimplemented/unverified. A successful local create summary is not customer execution readiness.
