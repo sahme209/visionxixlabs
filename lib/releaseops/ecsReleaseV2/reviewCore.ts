@@ -91,7 +91,7 @@ async function authority(tx: ReviewTransaction, scope: Scope): Promise<string> {
         deny("current_management_membership_required");
     return member.role;
 }
-function policyValid(policy: ReviewPolicy | null, digest: string): policy is ReviewPolicy {
+export function policyValid(policy: ReviewPolicy | null, digest: string): policy is ReviewPolicy {
     return Boolean(policy && policy.digest === digest && !policy.blocked && Number.isSafeInteger(policy.requiredApprovals) && policy.requiredApprovals >= 1 && policy.requiredApprovals <= 20
         && Array.isArray(policy.allowedRoles) && policy.allowedRoles.every(role => ["owner", "admin"].includes(role)) && typeof policy.allowSelfApproval === "boolean");
 }
