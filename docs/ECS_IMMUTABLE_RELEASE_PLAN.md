@@ -202,3 +202,96 @@ Concrete next slice (single cohesive review/PR, only after design review):
 6. Verify one real Node HTTP→actual STS/ECS/ECR SDK parser fixture with synthetic protocol replies and source-owned loopback transport. Exercise success and provider-error paths; chunked/false-length/overflow/compression/stalled streams, aggregate exhaustion and cancellation must stop before unbounded collection. Composed reader tests cover tenant/session/version/role/target changes, complete container sets, foreign/mutable/missing images, denied reads and no writes. Fixtures never become real AWS acceptance.
 
 Expected ownership is approximately 14 files: four new runtime modules (registration schema/projector, scoped connection boundary, bounded Smithy response handler, ECS observation reader), two existing enrollment files refactored (inventory and STS), four dedicated behavioral/schema/wire/composed test files, package.json and package-lock for the separately reviewed exact ECR pin, this existing plan and the enrollment/service documentation. Existing runtime auth/routes, Prisma/schema, master execution protocol and dispatch workflows remain untouched. Exact file count may change only to preserve the actual existing kernel instead of duplicating it. No standalone helper PR is proposed. Full compilation waits for the coordinated independent-review/active-harness window; no heavy checks or implementation were performed for this plan.
+
+
+## Proposed target-snapshot compatibility milestone (read-only audit, not implemented)
+
+Inspected the inactive contract/review core and the proposed tenant AWS reader.
+No provider calls, tests, schema execution or implementation occurred for this
+proposal. This closes neither execution authorization nor customer acceptance.
+
+### Exact incompatibility and recommended boundary
+
+`ecsReleaseV2/contract.ts` requires protocol `axiom.ecs.release.v2` and an exact
+seven-field target including positive integer `revision`. Trusted review facts,
+release evidence and receipts compare that complete target. `DeploymentTarget`
+(`schema.prisma`) has id, scoped configuration and `updatedAt`, but no revision;
+`deploymentTargetResponder.ts` upserts configuration without a revision counter.
+`ecsObservation/reader.ts` honestly returns `{id,updatedAt}` after full pre/post
+row comparison. A timestamp, credential version, voter decision revision or ECS
+task-definition ARN revision must never be relabeled as that missing target token.
+
+Recommended source-only decision: add an explicit new manifest protocol variant
+(for example `axiom.ecs.release.v3`) to the SAME parser/comparison/review kernel.
+Its target retains the exact AWS coordinates, but replaces integer revision with
+an explicitly typed target snapshot: persisted target id plus versioned canonical
+snapshot digest. Require strict, disjoint field sets; reject mixed variants.
+Do not silently change v2 semantics or automatically upgrade old packets.
+
+One shared server projector should hash a labeled schema and all scoped target
+fields: id, organizationId, environmentId, provider, roleArn, region, ecsCluster,
+ecsService and explicit ISO updatedAt. Bind the selected connection id/credential
+version in the new snapshot contract/context as well, so replacement/revocation
+cannot be hidden behind matching ARNs. No encrypted configuration, external ID
+or secret enters the projection. Reuse `evidenceDigest`; a digest is equality
+identity, never provenance, management authority or permission to execute.
+Snapshot equality cannot promise detection of every historical ABA write or
+exclude a change after commit; it is not a fabricated monotonic generation.
+
+### One coherent producer/consumer change, with ownership seams
+
+| Seam / owner boundary | Required reviewed change |
+| --- | --- |
+| Contract owner: `ecsReleaseV2/contract.ts` | Discriminated manifest/target variant, strict parser, full manifest digest, trusted review/release comparison and receipt target matching all understand the same version. Existing v2 bytes/digests retain their meaning. Promotion still binds artifact/source and separately proven prior health. |
+| AWS evidence owner: `ecsObservation/reader.ts` and scoped connection | Produce the canonical snapshot digest from independently loaded rows, bracket provider IO, and return exact row/connection identity. Never copy a candidate token into trusted facts. Explicitly require supported task digest schema before mapping the reader's `{arn,digestSchema,contentDigest,images}` into existing task pins; its content digest already commits the registration schema. |
+| Build evidence owner: `githubBuildEvidence.ts`, `sigstoreBuildVerifier.ts` | Use the shared version-aware candidate type/parser; preserve complete attested image subjects, repository/run/attempt/workflow identity and post-IO context checks. Neither component can certify AWS state or management readiness. No second release kernel. |
+| Independent review-boundary owner | Compose independently verified GitHub and AWS observations, exact environment/policy and supported target snapshot into ReviewFacts; never manufacture facts by copying the submitted manifest. This composition is currently absent. |
+| Transaction/store owner: `reviewCore.ts`, `postgresReviewStore.ts` | Add a narrow current snapshot reader on the existing ReviewTransaction. After provider IO and before create/replay, re-read scoped environment/target and connection generation in the SAME final Serializable packet transaction; compare with the captured digest and current policy/membership. Current prepare only rechecks membership/policy, so a standalone reader adapter is insufficient. Preserve unique tenant/operation replay and different-content conflict. |
+| Approval owner: packet/decision/checkpoint lifecycle | Store new variant in existing JSON fields; keep revision CAS and current-member quorum/revocation checks. New protocol/snapshot means a new digest and fresh review, never reinterpret existing approvals. Checkpoint remains review-only stored evidence, not fresh provider readiness or an execution permit. |
+| Future execution/receipt owner | At an actual claim boundary re-read target/connection/provider baseline, current policy and durable approval/revocation under a shared claim fence before quota/dispatch. Bind the new version/digest into exact run/attempt authorization and independent rollout/recovery receipt validation. No such executor/claim/authorization boundary is implemented by this compatibility slice. |
+| Fixtures/docs/customer callers | Update strict contract/receipt fixtures, review harness and owned PG tests for both variants. Any future UI/API must show the server-resolved target identity and require fresh review after mismatch; currently no public v2 review/execution route is activated. |
+
+Existing review SQL stores manifest/evidence JSON objects and digest references,
+not a SQL target-revision column/protocol enum. This source compatibility choice
+therefore needs no new production schema migration. Existing proposed review
+storage still requires its own production approval/readiness; do not assume those
+tables exist merely because the owned PostgreSQL rehearsal supports them.
+
+### Alternative: future persisted monotonic revision
+
+A separately approved DeploymentTarget revision column could provide explicit
+optimistic generation semantics, but requires migration/backfill/default decisions,
+all create/update/upsert/import/direct-SQL writers to increment conditionally,
+concurrency/overflow/recreation rules and old-client compatibility. Adding it to
+normal Prisma model reads risks P2022 against unmigrated production. It cannot
+be inferred/backfilled as historical truth from timestamps. Even a real counter
+would not replace row id, tenant scope, provider/connection freshness or final
+claim fencing. Prefer the source-only explicit snapshot variant now; consider a
+real revision only as a future approved migration, not a temporary integer shim.
+
+### Acceptance and activation gates remain separate
+
+The GitHub reader snapshots branch rules and verifies build provenance; it does
+NOT establish CODEOWNERS approval, linked PR review, change-ticket validity,
+release-tag readiness or verified promotion. Resolve these from their actual
+trusted producers and bind policy/current context; unsupported required evidence
+must keep review/readiness unavailable. AWS describe/ECR observations establish
+neither registry pullability, running-image convergence, ALB application health,
+rollback success nor GitHub deployment OIDC permission. The inspection role and
+deployment role/trust remain different authorities.
+
+Before merging a source-only compatibility implementation: independent review;
+old-v2/new-variant parsing/hash/receipt tests; missing/mixed/forged-token rejection;
+row recreation and target/connection drift during IO and before packet commit;
+existing packet replay/conflict/quorum/revocation tests; actual owned-PG final-tx
+fence checks; full regression and exact-head CI. No activation follows from green
+fixtures. Directly installed legacy `axiom-deploy-aws-ecs.yml` and exported
+four-input template remain unchanged; never fall back to restart as a v3 release.
+
+Before any operational release: separately approve runtime/storage activation,
+required readiness evidence, immutable pinned executor distribution, exact GitHub
+run/attempt claim plus signing/broker and replay design, revocation/claim fence,
+private OIDC/IAM trust and bounded nonproduction execution. Prove actual source
+artifact rollout, health and baseline recovery with independent receipts. Production
+DB/infrastructure/workflow publication, live quota consumption and dispatch remain
+outside this proposal and require their existing explicit approval gates.

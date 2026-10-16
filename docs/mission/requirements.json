@@ -41948,7 +41948,7 @@
         "github"
       ],
       "blockers": "Serving database binding/PITR/restore and production login remain unverified. Cloud storage/runtime/broker configuration and real AWS permission/customer acceptance require separate approval/access. ECS observation is inactive; v2 integer target revision, authentic OCI provenance, workload/health/rollback and governed execution remain unfinished. Azure/GCP enrollment/apply/rollback are separate unfinished milestones.",
-      "nextAction": "Pass fresh-main integration/CI, then obtain separately authorized actual provider-read acceptance and resolve durable target revision/provenance/health authority before execution."
+      "nextAction": "Pass fresh-main integration/CI, then obtain separately authorized actual provider-read acceptance and resolve durable target revision/provenance/health authority before execution. Review the target-snapshot compatibility proposal in ECS_IMMUTABLE_RELEASE_PLAN.md; it is design-only and does not enable packets or claims."
     },
     {
       "id": "terraform",
@@ -42020,7 +42020,7 @@
         "governance"
       ],
       "blockers": "Actual trusted provenance/provider ingestion, complete deployment policy and workflow trust distribution, atomic execution/revocation/quota claims, and separately approved sandbox rollout/health/rollback acceptance. Production schema application remains separately approval-gated; generic migrate deploy must not be used for auth-only recovery.",
-      "nextAction": "Validate the inactive observation slice on fresh main, resolve target revision and trusted provenance/readiness/health ownership, then review a separate durable execution authority before any activation."
+      "nextAction": "Validate the inactive observation slice on fresh main, resolve target revision and trusted provenance/readiness/health ownership, then review a separate durable execution authority before any activation. Review the target-snapshot compatibility proposal in ECS_IMMUTABLE_RELEASE_PLAN.md; it is design-only and does not enable packets or claims."
     },
     {
       "id": "governance",
@@ -42046,7 +42046,7 @@
         "auth_database"
       ],
       "blockers": "Actual trusted provenance/provider ingestion, complete deployment policy and workflow trust distribution, atomic execution/revocation/quota claims, and separately approved sandbox rollout/health/rollback acceptance. Production schema application remains separately approval-gated; generic migrate deploy must not be used for auth-only recovery.",
-      "nextAction": "Validate the inactive observation slice on fresh main, resolve target revision and trusted provenance/readiness/health ownership, then review a separate durable execution authority before any activation."
+      "nextAction": "Validate the inactive observation slice on fresh main, resolve target revision and trusted provenance/readiness/health ownership, then review a separate durable execution authority before any activation. Review the target-snapshot compatibility proposal in ECS_IMMUTABLE_RELEASE_PLAN.md; it is design-only and does not enable packets or claims."
     },
     {
       "id": "desktop",

@@ -31,7 +31,7 @@ it('pins every recursively reachable registration field to the installed SDK dec
     const { execFileSync } = await import('node:child_process');
     expect(execFileSync(process.execPath, ['scripts/fixtures/generateEcsTaskSchema.cjs', '--check'], { encoding: 'utf8' }).trim()).toBe('57');
 });
-it.each([Infinity, 9007199254740992, 1.5, 0, -1])('rejects unsafe revision identity %s', revision => { expect(() => projectTaskDefinition({ ...task(), revision, taskDefinitionArn: arn.replace(':1', ':' + revision) })).toThrow(); });
+it.each([Infinity, 9007199254740992, 1.5, 0, -1])('rejects unsafe revision identity %s', revision => { expect(() => projectTaskDefinition({ ...task(), revision, taskDefinitionArn: arn.replace(/:1$/, ':' + revision) })).toThrow(); });
 it('binds every optional top-level registration field and the complete nested model projection', async () => {
     const snapshot = (await import('../taskDefinitionSchema.json')).default;
     type Node = string | {
@@ -75,3 +75,5 @@ it('binds every optional top-level registration field and the complete nested mo
         expect(projectTaskDefinition(changed).contentDigest, key).not.toBe(original.contentDigest);
     }
 });
+
+it('rejects distinct unsafe ARN revisions that round to the same Number',()=>{expect(()=>projectTaskDefinition({...task(),revision:9007199254740992,taskDefinitionArn:'arn:aws:ecs:us-east-1:123456789012:task-definition/app:9007199254740993'})).toThrow();});
