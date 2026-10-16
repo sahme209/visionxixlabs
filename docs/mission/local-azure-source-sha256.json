@@ -1,0 +1,20 @@
+{
+  "productionSourceCommit": "22d83f31",
+  "ownedHttpSourceCommit": "15878450068a7dc08a22d556ad27fd08fb68585a",
+  "algorithm": "sha256",
+  "files": {
+    "app/api/desktop/cloud/azure/accounts/[id]/disconnect/route.ts": "8e2dde347b2b4b0b26ae02a40aba0bf5d3792f2b90cc69e59ccfec6cc6ac9d82",
+    "app/api/desktop/cloud/azure/accounts/[id]/inventory/route.ts": "4100658fbf6574134da9b64057ba37f30d10c2736414139794afe47aad8585ec",
+    "app/api/desktop/cloud/azure/accounts/route.ts": "bbe96bf94522ef2fd9178380b7cfce781160402e119d1661de8f189b07d82f0b",
+    "app/api/desktop/cloud/azure/enrollment/route.ts": "a3c81f0385663277064986e9d6ef39f266348eb0418b604f8687bb28e4f5680c",
+    "desktop/src/components/AzureReadOnlyEnrollment.tsx": "f831ba4881f3aaa1c3269a07d5ca08611fe0ee126f0547b0d77c2f824459000b",
+    "desktop/src/lib/azureEnrollmentClient.ts": "867fb6633a5e6b133841ec2c2b881acd8a4731e1a5021c606760e8e602b7923f",
+    "desktop/src/lib/azureEnrollmentContract.ts": "235f6650137b8697d50412ba5e69a9fdd920c67cc7e9035cb46799db882c3edc",
+    "lib/cloud/azure/enrollment/boundedHttp.ts": "0576683361cb4391ad7a4175a3013458c8f809ea704bd5b6cc9d7aee34285459",
+    "lib/cloud/azure/enrollment/policy.ts": "7d1868d92b01fcc1cbdc3196c09dfb5544052e240f0f7f7ae5c8f93db71f88e8",
+    "lib/cloud/azure/enrollment/providerClient.ts": "fe78b92b3c58a9b2f2f91a1e892b37af2cfe0c55393ef1e75980979d919c8e90",
+    "lib/cloud/azure/enrollment/runtime.ts": "06c0927f10581d711711a14c316c8f821a238531a8df10ecead8242469d508eb",
+    "lib/cloud/azure/enrollment/scopedConnection.ts": "6c1ff54c22c896d316df71c02614dd43cb9292e3e1da3b01b29a58d458edb929",
+    "lib/cloud/azure/enrollment/service.ts": "6b131c84b68a6a630a456bd7026cd736bafb4c3245c09b7a5180947e7fe235f4"
+  }
+}

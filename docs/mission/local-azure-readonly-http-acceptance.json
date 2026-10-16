@@ -1,0 +1,125 @@
+{
+  "sourceCommit": "15878450068a7dc08a22d556ad27fd08fb68585a",
+  "desktopPairing": {
+    "verified": [
+      "authenticated_consent_metadata",
+      "device_bound_pending_poll",
+      "wrong_device_denied",
+      "legacy_unbound_poll_denied",
+      "web_session_pairing_approval",
+      "cookie_free_pairing_consume",
+      "single_use_pairing_replay_denied",
+      "paired_identity_current_workspace_membership",
+      "owner_pairing_listing",
+      "owner_revocation_invalidates_bearer"
+    ],
+    "commercialAccessObservation": {
+      "allowed": true,
+      "code": "active",
+      "billingStatus": "no_plan",
+      "enforcement": "not_verified_policy_decision_required"
+    },
+    "notVerified": [
+      "native_browser_or_vault",
+      "production_pairing",
+      "billing_enforcement",
+      "cloud_or_deployment_authority",
+      "provider_execution"
+    ]
+  },
+  "approvalDecisions": {
+    "transport": "real_local_next_http",
+    "requestMetadata": "next_request_normalized_loopback_headers_not_browser",
+    "persistence": "real_disposable_postgresql",
+    "verified": [
+      "cross_origin_decision_denied",
+      "parallel_decisions_one303_one409",
+      "persisted_authenticated_actor_and_time",
+      "terminal_decision_retained"
+    ],
+    "notVerified": [
+      "provider_execution",
+      "saved_terraform_plan_authority",
+      "production_approval_or_login",
+      "deterministic_simultaneous_database_snapshots"
+    ]
+  },
+  "azure": {
+    "verified": [
+      "actual_pairing_bearer_azure_routes",
+      "actual_msal_and_arm_sdk_wire",
+      "canonical_azure_scoped_aead",
+      "foreign_existing_metadata_denied_without_io",
+      "first_page_only_complete_false",
+      "denied_redirect_oversize_compression_fail_closed",
+      "current_authority_rechecked_after_io",
+      "late_inventory_rejected_after_disconnect",
+      "zeroized_versioned_disconnect",
+      "fresh_reconnect_cas",
+      "wrong_identity_retains_connection",
+      "quota_denied_before_provider",
+      "no_lead_or_billing_grants"
+    ],
+    "wire": {
+      "requests": [
+        "Token",
+        "Subscription",
+        "Token",
+        "ResourceGroupsFirstPage",
+        "Token",
+        "ResourceGroupsFirstPage",
+        "Token",
+        "ResourceGroupsFirstPage",
+        "Token",
+        "ResourceGroupsFirstPage",
+        "Token",
+        "ResourceGroupsFirstPage",
+        "Token",
+        "ResourceGroupsFirstPage",
+        "Token",
+        "ResourceGroupsFirstPage",
+        "Token",
+        "Subscription",
+        "Token",
+        "Subscription"
+      ],
+      "guardedRequests": 20,
+      "guardedProcesses": 1,
+      "realAzure": false,
+      "fixtureOnly": true
+    },
+    "notVerified": [
+      "real_azure_iam",
+      "production_deployment_or_schema",
+      "native_ui_vault_or_installer",
+      "permission_role_assignments",
+      "provider_mutations_or_billing"
+    ]
+  },
+  "schemaFixture": "current_schema_not_migration_recovery",
+  "transport": "real_local_next_http",
+  "database": "disposable_synthetic_postgresql",
+  "mail": "loopback_capture_not_provider_delivery",
+  "verified": [
+    "desktop_origin_challenge",
+    "signup_requires_email_proof",
+    "actual_sdk_mail_capture",
+    "unverified_password_denied",
+    "expired_proof_denied",
+    "actual_resend_replacement",
+    "single_use_proof_and_callback",
+    "incorrect_password_denied",
+    "verified_credentials_csrf_cookie_session",
+    "accepted_personal_workspace_only",
+    "no_billing_plan_created"
+  ],
+  "notVerified": [
+    "browser_render_or_interaction",
+    "production_recovery_or_login",
+    "google_github_oauth",
+    "native_pairing_or_vault",
+    "external_mail_delivery",
+    "cloud_execution_or_billing"
+  ],
+  "fixtureCleanup": "owned_disposable_container_removed"
+}

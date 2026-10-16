@@ -120,3 +120,15 @@
 ## Self-review before handoff
 
 Every spec requirement maps to a task: inputs/body/AAD/stream bounds Task 1; real provider identity/budget and bounded page Task 2; authority/quota/reconnect/disconnect races Task 3; paired routing/safe envelopes Task 4; desktop ownership/copy/docs Task 5; complete actual HTTP+DB+SDK chain Task 6. Shared model and AWS contracts remain untouched. All five Review Focus risks have explicit assertions. The throwaway SDK probe is complete; all product tasks remain unchecked until root review.
+
+## Execution evidence (2026-10-16)
+
+Root approved `82f5a14d`, then independently reviewed production Azure source `22d83f31` and explicit fixture wiring `e65d88f3` with no material findings. Service, strict transport, real SDK, paired routes and desktop tests were observed red before implementation and green afterward. Regression tests additionally caught SDK missing-value-to-empty fallback and provider error/secret echoes; the boundary now rejects/sanitizes them before public results or SDK error logging.
+
+Production Azure source remains unchanged from `22d83f31`. Normal merges retain reviewed App `f9ce5500` and finalized Terraform `3a74b249` dependencies. Standalone fixture-only `15878450` removes the Next build-time server-only marker from the temporary source loader; actual ClientSecretCredential/MSAL, ARM serialization and default bounded product HTTPS remain intact.
+
+Actual owned HTTP+Postgres acceptance passed at exact source `15878450068a7dc08a22d556ad27fd08fb68585a`: 38 named check groups, including 13 Azure groups, with 20 guarded wire calls. Separate small actual-source SDK probe: four wire calls. See `docs/AZURE_READONLY_CUSTOMER_ACCEPTANCE.md` and receipts under `docs/mission/local-azure-*`. Existing commercial observation is no_plan/allowed, not a paid grant. Owned container and Next processes were independently confirmed absent after cleanup.
+
+No schema, dependency, shared-vault implementation, AWS, ECS review kernel, Terraform apply or canonical tracker changes were made by the Azure increment. Root retains full compiler/build/broad-suite/CI/integration ownership. Real Azure/native/production acceptance remains outside this evidence.
+
+Final focused verification: **113 tests passed across 9 files** (Azure service/transport/provider/fixture, paired routes, desktop client/UI, demo contracts and owned launcher). `git diff --check` passed. `docs/mission/local-azure-source-sha256.json` confirms all 13 Azure production modules are byte-identical to reviewed `22d83f31`; the complete HTTP receipt binds the integrated source to `15878450`.
