@@ -4,7 +4,7 @@ import { createHash } from "node:crypto";
  * authorization minting, workflow dispatch, AWS call or persistence. */
 export interface ImagePin { container: string; image: string }
 export interface TaskDefinitionPin { arn: string; contentDigest: string; images: ImagePin[] }
-export interface ReleaseManifest {
+export interface ReleaseManifestV2 {
   protocol: "axiom.ecs.release.v2";
   operationId: string; organizationId: string; environmentId: string;
   repository: { id: string; fullName: string; sourceSha: string };
@@ -18,6 +18,17 @@ export interface ReleaseManifest {
   policyDigest: string;
   createdAt: string; expiresAt: string;
 }
+export interface TargetSnapshot {
+  schema: "axiom.ecs.target-snapshot.v1";
+  id: string;
+  digest: string;
+  connection: { id: string; version: number };
+}
+export interface ReleaseManifestV3 extends Omit<ReleaseManifestV2, "protocol" | "target"> {
+  protocol: "axiom.ecs.release.v3";
+  target: Omit<ReleaseManifestV2["target"], "revision"> & { snapshot: TargetSnapshot };
+}
+export type ReleaseManifest = ReleaseManifestV2 | ReleaseManifestV3;
 export type ContractFailure = { kind: "rejected"; reason: string };
 export interface ManifestCandidate { kind: "structural_candidate"; manifest: ReleaseManifest; digest: string; imageSetDigest: string; healthPolicyDigest: string }
 const rejected = (reason: string): ContractFailure => ({ kind: "rejected", reason });
@@ -48,6 +59,11 @@ function taskPin(value: unknown): value is TaskDefinitionPin {
     && value.images.every(image => fields(image, ["container", "image"]) && typeof image.container === "string" && /^[A-Za-z0-9_-]{1,255}$/.test(image.container) && validImage(image.image))
     && new Set(value.images.map(image => image.container)).size === value.images.length;
 }
+function validTargetSnapshot(value: unknown): value is TargetSnapshot {
+  return fields(value, ["schema", "id", "digest", "connection"]) && value.schema === "axiom.ecs.target-snapshot.v1"
+    && text(value.id) && typeof value.digest === "string" && DIGEST.test(value.digest)
+    && fields(value.connection, ["id", "version"]) && text(value.connection.id) && integer(value.connection.version, 2147483647);
+}
 function taskInTarget(pin: TaskDefinitionPin, target: ReleaseManifest["target"]): boolean {
   const match = /^arn:([^:]+):ecs:([^:]+):(\d{12}):task-definition\/([A-Za-z0-9_-]{1,255}):(\d+)$/.exec(pin.arn);
   return Boolean(match && match[1] === target.partition && match[2] === target.region && match[3] === target.accountId && integer(Number(match[5])));
@@ -57,7 +73,7 @@ function taskInTarget(pin: TaskDefinitionPin, target: ReleaseManifest["target"])
 export function parseManifestCandidate(value: unknown, now: Date): ManifestCandidate | ContractFailure {
   if (!Number.isFinite(now.getTime())) return rejected("invalid_clock");
   if (!fields(value, ["protocol", "operationId", "organizationId", "environmentId", "repository", "build", "executor", "target", "proposed", "baseline", "health", "promotion", "policyDigest", "createdAt", "expiresAt"])) return rejected("invalid_manifest");
-  if (value.protocol !== "axiom.ecs.release.v2" || !text(value.operationId) || !text(value.organizationId) || !text(value.environmentId)) return rejected("invalid_identity");
+  if (!["axiom.ecs.release.v2", "axiom.ecs.release.v3"].includes(value.protocol as string) || !text(value.operationId) || !text(value.organizationId) || !text(value.environmentId)) return rejected("invalid_identity");
   const repository = value.repository;
   if (!fields(repository, ["id", "fullName", "sourceSha"]) || !text(repository.id, 32) || !/^[1-9]\d*$/.test(repository.id) || !text(repository.fullName) || !/^[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+$/.test(repository.fullName) || typeof repository.sourceSha !== "string" || !SHA.test(repository.sourceSha)) return rejected("invalid_repository");
   const build = value.build;
@@ -65,7 +81,8 @@ export function parseManifestCandidate(value: unknown, now: Date): ManifestCandi
   const executor = value.executor;
   if (!fields(executor, ["workflowPath", "workflowSha"]) || typeof executor.workflowPath !== "string" || !/^\.github\/workflows\/[A-Za-z0-9_.-]+\.ya?ml$/.test(executor.workflowPath) || typeof executor.workflowSha !== "string" || !SHA.test(executor.workflowSha)) return rejected("invalid_executor_reference");
   const target = value.target;
-  if (!fields(target, ["accountId", "partition", "region", "roleArn", "clusterArn", "serviceArn", "revision"]) || typeof target.accountId !== "string" || !/^\d{12}$/.test(target.accountId) || typeof target.partition !== "string" || !["aws", "aws-us-gov", "aws-cn"].includes(target.partition) || typeof target.region !== "string" || !/^[a-z]{2}(?:-[a-z]+)+-\d$/.test(target.region) || !integer(target.revision)) return rejected("invalid_target");
+  const targetFields = ["accountId", "partition", "region", "roleArn", "clusterArn", "serviceArn", value.protocol === "axiom.ecs.release.v2" ? "revision" : "snapshot"];
+  if (!fields(target, targetFields) || typeof target.accountId !== "string" || !/^\d{12}$/.test(target.accountId) || typeof target.partition !== "string" || !["aws", "aws-us-gov", "aws-cn"].includes(target.partition) || typeof target.region !== "string" || !/^[a-z]{2}(?:-[a-z]+)+-\d$/.test(target.region) || (value.protocol === "axiom.ecs.release.v2" ? !integer(target.revision) : !validTargetSnapshot(target.snapshot))) return rejected("invalid_target");
   const t = target as unknown as ReleaseManifest["target"];
   if ((t.partition === "aws-cn") !== t.region.startsWith("cn-") || (t.partition === "aws-us-gov") !== t.region.startsWith("us-gov-")) return rejected("target_partition_mismatch");
   const prefix = `arn:${t.partition}:ecs:${t.region}:${t.accountId}:`;

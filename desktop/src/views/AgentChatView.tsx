@@ -153,17 +153,19 @@ function describeEvidenceResult(action: Proposal): string {
   return "Verified by the service.";
 }
 
-export function AgentChatView() {
+export type AgentSettingsDestination = "models";
+
+export function AgentChatView({ onOpenSettings }: { onOpenSettings?: (destination: AgentSettingsDestination) => void }) {
   const context = desktopClient.config;
   const [scope, setScope] = useState(() => ({ context, generation: 0 }));
   if (scope.context !== context) {
     setScope({ context, generation: scope.generation + 1 });
-    return <AgentChatSession key={scope.generation + 1} />;
+    return <AgentChatSession key={scope.generation + 1} onOpenSettings={onOpenSettings} />;
   }
-  return <AgentChatSession key={scope.generation} />;
+  return <AgentChatSession key={scope.generation} onOpenSettings={onOpenSettings} />;
 }
 
-function AgentChatSession() {
+function AgentChatSession({ onOpenSettings }: { onOpenSettings?: (destination: AgentSettingsDestination) => void }) {
   const [conversationId, setConversationId] = useState<string | null>(null);
   const [conversations, setConversations] = useState<ConversationSummary[]>([]);
   const [turns, setTurns] = useState<ChatTurn[]>([]);
@@ -190,8 +192,12 @@ function AgentChatSession() {
   const [branch, setBranch] = useState("main");
   const [manualBranch, setManualBranch] = useState(false);
   const [branchOptions, setBranchOptions] = useState<GitHubBranchOption[]>([]);
-  const [contextLoading, setContextLoading] = useState(true);
-  const [contextError, setContextError] = useState<string | null>(null);
+  const [repositoriesLoading, setRepositoriesLoading] = useState(true);
+  const [environmentsLoading, setEnvironmentsLoading] = useState(true);
+  const [repositoryError, setRepositoryError] = useState<string | null>(null);
+  const [environmentError, setEnvironmentError] = useState<string | null>(null);
+  const [branchError, setBranchError] = useState<string | null>(null);
+  const contextError = [repositoryError, environmentError, branchError].filter(Boolean).join(". ");
   const [filePath, setFilePath] = useState("");
   const [manualFilePath, setManualFilePath] = useState(false);
   const [fileOptions, setFileOptions] = useState<GitHubFileOption[]>([]);
@@ -205,6 +211,9 @@ function AgentChatSession() {
   const [enabledSkills, setEnabledSkills] = useState<AgentSkillCatalogItem[]>([]);
   const [latestUsage, setLatestUsage] = useState<{ decisionSteps: number; inputTokens: number | null; outputTokens: number | null; totalTokens: number | null } | null>(null);
   const [startupAttempt, setStartupAttempt] = useState(0);
+  const [modelAttempt, setModelAttempt] = useState(0);
+  const [modelState, setModelState] = useState<"loading" | "ready" | "disabled" | "empty" | "unavailable">("loading");
+  const [modelError, setModelError] = useState<string | null>(null);
   const [loadingConversation, setLoadingConversation] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
 
@@ -213,14 +222,8 @@ function AgentChatSession() {
     const generation = ++conversationEpoch.current;
     const context = desktopClient.config;
     setError(null);
-    void Promise.all([
-      desktopClient.listAgentConversations(),
-      desktopClient.aiProviderStatus(),
-      desktopClient.listAgentSkills(),
-      desktopClient.listGithubRepositories(),
-      desktopClient.listEnvironments(),
-    ])
-      .then(async ([conversationList, models, skills, repositories, environments]) => {
+    void desktopClient.listAgentConversations()
+      .then(async (conversationList) => {
         if (cancelled || generation !== conversationEpoch.current || context !== desktopClient.config) return;
         if (!conversationList.ok) {
           setError("The Agent service could not load conversation history. Retry in a moment.");
@@ -252,49 +255,92 @@ function AgentChatSession() {
             }
           }
         }
-        if (models.ok) {
-          const status = normalizeAiProviderStatus(models.data);
-          if (!status) {
-            setError("The service returned an unsupported model configuration. Update the app or try again later.");
-            return;
-          }
-          const options = status.policy.allowedProviders.flatMap((provider) => {
-            const selectedModel = status.policy.modelSelections[provider];
-            const model = status.providers.find((item) => item.provider === provider)?.models.find((item) => item.id === selectedModel);
-            return selectedModel ? [{ provider, label: model?.label ?? selectedModel }] : [];
-          });
-          setModelOptions(options);
-          setSelectedProvider(status.policy.fallbackOrder[0] ?? options[0]?.provider ?? "");
-        }
-        if (skills.ok) setEnabledSkills(skills.data.skills.filter((skill) => skill.status === "enabled"));
-        if (repositories.ok) {
-          setRepositoryOptions(repositories.data.repositories);
-          const preferredRepository = window.localStorage.getItem(ACTIVE_REPOSITORY_KEY);
-          const preferred = repositories.data.repositories.find((repository) => repository.fullName === preferredRepository);
-          const selected = preferred ?? repositories.data.repositories[0];
-          setRepositoryFullName(selected?.fullName ?? "");
-          setBranch(selected?.defaultBranch ?? "main");
-        }
-        if (environments.ok) {
-          setEnvironmentOptions(environments.data.environments);
-          const preferredEnvironment = window.localStorage.getItem(ACTIVE_ENVIRONMENT_KEY) ?? "";
-          setEnvironmentId(environments.data.environments.some((environment) => environment.id === preferredEnvironment) ? preferredEnvironment : "");
-        }
-        const contextFailures = [
-          repositories.ok ? null : "GitHub repositories could not be loaded",
-          environments.ok ? null : "deployment environments could not be loaded",
-        ].filter((message): message is string => Boolean(message));
-        setContextError(contextFailures.length > 0 ? contextFailures.join(" and ") : null);
-        setContextLoading(false);
       })
       .catch(() => {
         if (!cancelled && generation === conversationEpoch.current && context === desktopClient.config) {
           setError("The Agent could not start. Check your connection and try again.");
-          setContextLoading(false);
         }
       });
     return () => { cancelled = true; };
   }, [startupAttempt]);
+
+  useEffect(() => {
+    let cancelled = false;
+    const context = desktopClient.config;
+    const owned = () => !cancelled && context === desktopClient.config;
+    setModelState("loading");
+    setModelError(null);
+    void desktopClient.aiProviderStatus().then((result) => {
+      if (!owned()) return;
+      const status = result.ok ? normalizeAiProviderStatus(result.data) : null;
+      if (!status) {
+        setModelOptions([]);
+        setSelectedProvider("");
+        setModelState("unavailable");
+        setModelError(result.ok
+          ? "The service returned an unsupported model configuration. Update the app or retry."
+          : "Workspace models could not be verified. Retry or review Model settings.");
+        return;
+      }
+      const options = status.policy.allowedProviders.flatMap((provider) => {
+        const catalog = status.providers.find((item) => item.provider === provider);
+        if (!catalog) return [];
+        const selected = status.policy.modelSelections[provider];
+        const model = catalog.models.find((item) => item.id === selected);
+        if (selected && selected !== "service-default" && !model) return [];
+        return [{ provider, label: model?.label ?? "Service-managed default" }];
+      });
+      setModelOptions(status.policy.enabled ? options : []);
+      setSelectedProvider((current) => options.some((option) => option.provider === current) ? current
+        : status.policy.fallbackOrder.find((provider) => options.some((option) => option.provider === provider)) ?? options[0]?.provider ?? "");
+      setModelState(!status.policy.enabled ? "disabled" : status.providers.length === 0 ? "empty" : options.length > 0 ? "ready" : "unavailable");
+      if (status.policy.enabled && status.providers.length > 0 && options.length === 0) {
+        setModelError("No approved model is currently available. Review Model settings or ask a workspace administrator.");
+      }
+    }).catch(() => {
+      if (!owned()) return;
+      setModelOptions([]);
+      setSelectedProvider("");
+      setModelState("unavailable");
+      setModelError("Workspace models could not be verified. Check your connection and retry.");
+    });
+    return () => { cancelled = true; };
+  }, [modelAttempt]);
+
+  useEffect(() => {
+    let cancelled = false;
+    const context = desktopClient.config;
+    const owned = () => !cancelled && context === desktopClient.config;
+    void desktopClient.listAgentSkills().then((result) => {
+      if (owned() && result.ok) setEnabledSkills(result.data.skills.filter((skill) => skill.status === "enabled"));
+    }).catch(() => undefined);
+    return () => { cancelled = true; };
+  }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+    const context = desktopClient.config;
+    const owned = () => !cancelled && context === desktopClient.config;
+    // Each catalog publishes independently; one unavailable system must not
+    // prevent selecting context returned successfully by another system.
+    void desktopClient.listGithubRepositories().then((result) => {
+      if (!owned()) return;
+      if (!result.ok) { setRepositoryError("GitHub repositories could not be loaded"); return; }
+      setRepositoryOptions(result.data.repositories);
+      const preferred = result.data.repositories.find((repository) => repository.fullName === window.localStorage.getItem(ACTIVE_REPOSITORY_KEY));
+      const selected = preferred ?? result.data.repositories[0];
+      setRepositoryFullName(selected?.fullName ?? "");
+      setBranch(selected?.defaultBranch ?? "main");
+    }).catch(() => { if (owned()) setRepositoryError("GitHub repositories could not be loaded"); }).finally(() => { if (owned()) setRepositoriesLoading(false); });
+    void desktopClient.listEnvironments().then((result) => {
+      if (!owned()) return;
+      if (!result.ok) { setEnvironmentError("Deployment environments could not be loaded"); return; }
+      setEnvironmentOptions(result.data.environments);
+      const preferred = window.localStorage.getItem(ACTIVE_ENVIRONMENT_KEY) ?? "";
+      setEnvironmentId(result.data.environments.some((environment) => environment.id === preferred) ? preferred : "");
+    }).catch(() => { if (owned()) setEnvironmentError("Deployment environments could not be loaded"); }).finally(() => { if (owned()) setEnvironmentsLoading(false); });
+    return () => { cancelled = true; };
+  }, []);
 
   useEffect(() => {
     if (repositoryFullName && !manualRepository) window.localStorage.setItem(ACTIVE_REPOSITORY_KEY, repositoryFullName);
@@ -349,11 +395,11 @@ function AgentChatSession() {
       if (cancelled) return;
       if (!result.ok) {
         setBranchOptions([]);
-        setContextError("Branches could not be loaded. You can enter a branch manually.");
+        setBranchError("Branches could not be loaded. You can enter a branch manually.");
         return;
       }
       setBranchOptions(result.data.branches);
-      setContextError(null);
+      setBranchError(null);
       setBranch((current) => current || result.data.branches[0]?.name || "main");
     });
     return () => { cancelled = true; };
@@ -404,7 +450,7 @@ function AgentChatSession() {
 
   async function send() {
     const instruction = input.trim();
-    if (!instruction || !conversationId || activeConversation.current !== conversationId || loadingConversation || sending || (composerMode === "code" && (!repositoryFullName.includes("/") || !branch.trim() || !filePath.trim()))) return;
+    if (modelState !== "ready" || !selectedProvider || !instruction || !conversationId || activeConversation.current !== conversationId || loadingConversation || sending || (composerMode === "code" && (!repositoryFullName.includes("/") || !branch.trim() || !filePath.trim()))) return;
     const context = desktopClient.config, ownerConversation = conversationId, generation = conversationEpoch.current;
     const owned = () => context === desktopClient.config && activeConversation.current === ownerConversation && generation === conversationEpoch.current;
     setInput("");
@@ -547,7 +593,7 @@ function AgentChatSession() {
                 setRepositoryFullName(event.target.value);
                 setBranch(repository?.defaultBranch ?? "main");
               }}
-              disabled={contextLoading}
+              disabled={repositoriesLoading}
               className="mt-1 w-full truncate rounded-lg border border-white/10 bg-[#151719] px-3 py-2 text-xs normal-case tracking-normal text-zinc-200 outline-none focus:border-white/25 disabled:opacity-50"
             >
               {repositoryOptions.length === 0 && <option value="">No connected repositories</option>}
@@ -585,7 +631,7 @@ function AgentChatSession() {
               aria-label="Active deployment environment"
               value={environmentId}
               onChange={(event) => setEnvironmentId(event.target.value)}
-              disabled={contextLoading}
+              disabled={environmentsLoading}
               className="mt-1 w-full truncate rounded-lg border border-white/10 bg-[#151719] px-3 py-2 text-xs normal-case tracking-normal text-zinc-200 outline-none focus:border-white/25 disabled:opacity-50"
             >
               <option value="">No deployment environment</option>
@@ -600,7 +646,7 @@ function AgentChatSession() {
             <span className="text-zinc-300">{selected.name}</span> is the active deployment destination. The Agent will use only that environment&apos;s configured cloud target; GitHub writes still require approval and production still requires verified promotion evidence.
           </p>;
         })()}
-        {contextError && <p role="status" className="mx-auto mt-2 max-w-5xl text-[11px] text-amber-300">{contextError}. Manual entry remains available.</p>}
+        {contextError && <p role="status" className="mx-auto mt-2 max-w-5xl text-[11px] text-amber-300">{contextError}. Repository and branch can be entered manually.</p>}
       </div>
       <div ref={scrollRef} className="flex-1 overflow-y-auto px-8 py-8">
         <div className="max-w-3xl mx-auto space-y-5">
@@ -644,12 +690,19 @@ function AgentChatSession() {
             <button type="button" aria-pressed={composerMode === "code"} onClick={() => setComposerMode("code")} className={`rounded-md px-3 py-1.5 text-xs ${composerMode === "code" ? "bg-white/[0.09] text-white" : "text-zinc-500 hover:text-zinc-300"}`}>Edit repository file</button>
             <label className="ml-auto flex items-center gap-2 text-[11px] text-zinc-500">
               <span>Model</span>
-              <select aria-label="Agent model" value={selectedProvider} onChange={(event) => setSelectedProvider(event.target.value)} disabled={sending || modelOptions.length === 0} className="max-w-52 rounded-md border border-white/10 bg-[#151719] px-2 py-1.5 text-xs text-zinc-300 outline-none focus:border-white/25 disabled:opacity-50">
+              <select aria-label="Agent model" value={selectedProvider} onChange={(event) => setSelectedProvider(event.target.value)} disabled={sending || modelState !== "ready" || modelOptions.length === 0} className="max-w-52 rounded-md border border-white/10 bg-[#151719] px-2 py-1.5 text-xs text-zinc-300 outline-none focus:border-white/25 disabled:opacity-50">
                 {modelOptions.length === 0 && <option value="">No model enabled</option>}
                 {modelOptions.map((model) => <option key={model.provider} value={model.provider}>{model.label}</option>)}
               </select>
             </label>
           </div>
+          {modelState !== "ready" && <div role="status" className="mb-3 flex flex-wrap items-center justify-between gap-2 rounded-lg border border-white/10 bg-white/[0.025] px-3 py-2 text-[11px] text-zinc-400">
+            <p>{modelState === "loading" ? "Checking workspace models…" : modelState === "disabled" ? "AI is disabled for this workspace. A workspace administrator can enable an approved model in Model settings." : modelState === "empty" ? "No service-configured AI model is available. Ask a workspace administrator to review service setup." : modelError} New requests wait for a verified enabled model; saved approvals and receipts remain available.</p>
+            <div className="flex shrink-0 gap-3">
+              <button type="button" disabled={modelState === "loading"} onClick={() => setModelAttempt((attempt) => attempt + 1)} className="underline underline-offset-2 disabled:opacity-40">Retry models</button>
+              {onOpenSettings && <button type="button" onClick={() => onOpenSettings("models")} className="underline underline-offset-2">Model settings</button>}
+            </div>
+          </div>}
           <p className="mb-3 text-[11px] text-zinc-500">{OPERATION_MODES.find((mode) => mode.id === operationMode)?.description}. Provider selection and customer credit checks remain governed by your workspace policy.</p>
           {composerMode === "code" && <div className="mb-3 space-y-2">
             <label className="block text-[10px] uppercase tracking-[0.12em] text-zinc-600">
@@ -692,7 +745,7 @@ function AgentChatSession() {
           <button
             type="button"
             onClick={() => void send()}
-            disabled={sending || !input.trim() || !conversationId || Boolean(pendingProposal) || (composerMode === "code" && (!repositoryFullName.includes("/") || !branch.trim() || !filePath.trim()))}
+            disabled={modelState !== "ready" || !selectedProvider || sending || !input.trim() || !conversationId || Boolean(pendingProposal) || (composerMode === "code" && (!repositoryFullName.includes("/") || !branch.trim() || !filePath.trim()))}
             className="rounded-xl bg-white px-5 py-3 text-sm font-semibold text-black disabled:opacity-40"
           >
             {sending ? "Thinking…" : "Send"}

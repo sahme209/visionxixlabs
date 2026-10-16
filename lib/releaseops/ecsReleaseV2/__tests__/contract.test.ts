@@ -1,11 +1,11 @@
 import { describe, expect, it } from "vitest";
 import { evidenceDigest, imageSetDigest, matchExecutionReceipt, matchPromotion, matchTrustedReleaseEvidence, parseManifestCandidate,
-  type ReleaseManifest, type ManifestCandidate, type TrustedReleaseEvidence, type ExecutionReceipt, type TrustedReceiptEvidence, type TrustedPriorRelease } from "../contract";
+  type ReleaseManifestV2, type ReleaseManifest, type ManifestCandidate, type TrustedReleaseEvidence, type ExecutionReceipt, type TrustedReceiptEvidence, type TrustedPriorRelease } from "../contract";
 const now = new Date("2026-10-16T12:00:00Z");
 const hash = (digit: string) => `sha256:${digit.repeat(64)}`;
 const sourceSha = "a".repeat(40);
 const image = (name: string, digit: string) => ({ container: name, image: `123456789012.dkr.ecr.us-east-1.amazonaws.com/${name}@${hash(digit)}` });
-function manifest(): ReleaseManifest {
+function manifest(): ReleaseManifestV2 {
   return { protocol: "axiom.ecs.release.v2", operationId: "op-1", organizationId: "org-1", environmentId: "stage",
     repository: { id: "123", fullName: "owner/repo", sourceSha },
     build: { runId: "31", attempt: 1, workflowPath: ".github/workflows/build.yml", workflowSha: "b".repeat(40), attestationDigest: hash("c") },
@@ -78,7 +78,7 @@ describe("independently obtained trusted release evidence", () => {
     ["attestation", (t: TrustedReleaseEvidence) => { t.build.attestationDigest = hash("1"); }],
     ["image subject", (t: TrustedReleaseEvidence) => { t.attestedImageSetDigest = hash("1"); }],
     ["workflow revision", (t: TrustedReleaseEvidence) => { t.executor.workflowSha = "1".repeat(40); }],
-    ["target revision", (t: TrustedReleaseEvidence) => { t.target.revision++; }],
+    ["target revision", (t: TrustedReleaseEvidence) => { if ("revision" in t.target) t.target.revision++; }],
     ["artifact", (t: TrustedReleaseEvidence) => { t.proposed.contentDigest = hash("1"); }],
     ["baseline", (t: TrustedReleaseEvidence) => { t.baseline.images[0] = image("app", "9"); }],
     ["health binding", (t: TrustedReleaseEvidence) => { t.associatedTargetGroups = []; }],
@@ -88,7 +88,7 @@ describe("independently obtained trusted release evidence", () => {
   ] as const)("rejects changed %s", (_label, mutate) => { const c = candidate(); const t = trusted(c); mutate(t); expect(matchTrustedReleaseEvidence(c, t, now).kind).toBe("rejected"); });
   it("rechecks expiry and post-review candidate mutation", () => {
     const c = candidate(); expect(matchTrustedReleaseEvidence(c, trusted(c), new Date(c.manifest.expiresAt)).kind).toBe("rejected");
-    const t = trusted(c); c.manifest.target.revision++; expect(matchTrustedReleaseEvidence(c, t, now).kind).toBe("rejected");
+    const t = trusted(c); if ("revision" in c.manifest.target) c.manifest.target.revision++; expect(matchTrustedReleaseEvidence(c, t, now).kind).toBe("rejected");
   });
 });
 
@@ -114,7 +114,7 @@ describe("exact claimed workflow and independently observed AWS receipts", () =>
     const c = candidate(); const r = receipt(c); const t = receiptEvidence(r);
     if (mode === "run") r.runId = "92"; if (mode === "attempt") r.runAttempt++; if (mode === "source") r.sourceSha = "1".repeat(40);
     if (mode === "executor") { r.workflowSha = "1".repeat(40); t.run.workflowSha = r.workflowSha; }
-    if (mode === "manifest") r.manifestDigest = hash("1"); if (mode === "target") r.target.revision++;
+    if (mode === "manifest") r.manifestDigest = hash("1"); if (mode === "target" && "revision" in r.target) r.target.revision++;
     if (mode === "artifact") r.taskDefinition!.images[0] = image("app", "9"); if (mode === "deployment") r.ecsDeploymentId = "other";
     if (mode === "health") r.health.outcome = "failed";
     expect(matchExecutionReceipt(c, r, t).kind).toBe("rejected");
@@ -147,4 +147,50 @@ describe("exact claimed workflow and independently observed AWS receipts", () =>
     expect(matchExecutionReceipt(c, value, t)).toEqual({ kind: "rejected", reason: "receipt_invalid" });
   });
 
+});
+
+describe('versioned target snapshot compatibility', () => {
+  function v3() {
+    const { revision: _revision, ...coordinates } = manifest().target;
+    return { ...manifest(), protocol: 'axiom.ecs.release.v3', target: { ...coordinates, snapshot: {
+      schema: 'axiom.ecs.target-snapshot.v1', id: 'target-1', digest: hash('6'), connection: { id: 'connection-1', version: 2 },
+    } } };
+  }
+  it('preserves the exact old v2 canonical manifest digest', () => {
+    expect(candidate().digest).toBe('sha256:17fe497995214c06d9880357886826c66f894a699bd420a5a2cf3f05e0a6e43a');
+  });
+  it('uses the same evidence, promotion and receipt kernel for v3 snapshots', () => {
+    const parsed = parseManifestCandidate(v3(), now);
+    expect(parsed.kind).toBe('structural_candidate');
+    if (parsed.kind !== 'structural_candidate') throw new Error(parsed.reason);
+    expect(matchTrustedReleaseEvidence(parsed, trusted(parsed), now).kind).toBe('evidence_match');
+    const r = receipt(parsed);
+    expect(matchExecutionReceipt(parsed, r, receiptEvidence(r))).toEqual({ kind: 'matched_receipt', releaseSucceeded: true, recoverySucceeded: false });
+    expect(parsed.digest).not.toBe(candidate().digest);
+    const moved = v3(); moved.target.snapshot.connection.version++;
+    const next = parseManifestCandidate(moved, now);
+    expect(next.kind).toBe('structural_candidate');
+    if (next.kind !== 'structural_candidate') throw new Error(next.reason);
+    expect(next.digest).not.toBe(parsed.digest);
+    expect(matchTrustedReleaseEvidence(next, trusted(parsed), now)).toMatchObject({ reason: 'target_changed' });
+    expect(matchExecutionReceipt(next, r, receiptEvidence(r))).toMatchObject({ kind: 'rejected' });
+  });
+  it.each(['old_protocol', 'new_revision', 'missing', 'unknown_schema', 'empty_id', 'malformed_digest', 'zero_version', 'fractional_version', 'unknown_snapshot', 'unknown_connection'])(
+    'rejects mixed or incomplete snapshot variant: %s', mode => {
+      const m = v3();
+      if (mode === 'old_protocol') m.protocol = 'axiom.ecs.release.v2';
+      if (mode === 'new_revision') Object.assign(m.target, { revision: 1 });
+      if (mode === 'missing') delete (m.target as Partial<typeof m.target>).snapshot;
+      if (mode === 'unknown_schema') m.target.snapshot.schema = 'v0';
+      if (mode === 'empty_id') m.target.snapshot.id = '';
+      if (mode === 'malformed_digest') m.target.snapshot.digest = 'sha256:123';
+      if (mode === 'zero_version') m.target.snapshot.connection.version = 0;
+      if (mode === 'fractional_version') m.target.snapshot.connection.version = 1.5;
+      if (mode === 'unknown_snapshot') Object.assign(m.target.snapshot, { revision: 1 });
+      if (mode === 'unknown_connection') Object.assign(m.target.snapshot.connection, { encryptedConfiguration: 'never' });
+      expect(parseManifestCandidate(m, now).kind).toBe('rejected');
+    });
+  it('rejects old revision targets labeled as v3', () => {
+    expect(parseManifestCandidate({ ...manifest(), protocol: 'axiom.ecs.release.v3' }, now)).toMatchObject({ kind: 'rejected' });
+  });
 });

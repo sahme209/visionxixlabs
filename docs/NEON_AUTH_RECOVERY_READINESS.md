@@ -7,6 +7,13 @@ identity migration referencing absent Organization, and absent email verificatio
 schema. Founder mapping passed; actual authentication and platform administration
 are not established. Diagnostic exit 2 is expected. No production change occurred.
 
+Follow-up: read-only control-plane metadata observed 2026-10-16 identifies the
+custom domain's serving deployment and its main revision; it exposes no effective
+database binding or actual recoverable timestamp range. See the dated
+`docs/mission/auth-readiness-follow-up-2026-10-16.json` and
+[private operator evidence packet](AUTH_RECOVERY_OPERATOR_EVIDENCE.md). No new
+preflight, production SQL, deployment or resource change was performed.
+
 ## Gate 1: establish the actual production target privately
 
 An authorized operator needs read-only Neon project metadata and permission to
@@ -102,8 +109,11 @@ After approved repair: rerun protected preflight. The pinned seven-file baseline
 leaves six pending; a checkout including `20261016010000_cloud_account_enrollment`
 expects eight before auth-only repair and seven afterward; including the later
 `20261016020000_cloud_account_credential_revocation` proposal expects nine before
-and eight afterward. Compare exact pending
-names; the AWS proposal stays unapplied and separately approved, and the original
+and eight afterward. Adding `20261016030000_ecs_release_review_core` gives ten
+before and nine afterward. These counts are source-derived expectations only
+if the previously inspected production baseline is unchanged; they are not a new
+production inspection. Compare exact pending names; all three newer proposals
+remain separately gated and outside auth-only repair, and the original
 Agent failure remains expected. Then validate legitimate founder password/email
 proof, Google and GitHub OAuth callbacks, workspace access and desktop pairing.
 Keep additive schema on application rollback where possible. A production PITR
@@ -123,6 +133,13 @@ reconciliation of post-point writes and external financial outcomes.
 | Local auth-only regression rehearsal | Passed on disposable PostgreSQL 16 and 17.11; not a Neon production-data restore |
 | Production execution | Not requested or approved |
 | Production login / native pairing | Not verified |
+
+The 2026-10-16 branch metadata reports `protected: false`, alongside separate
+Vercel integration restrictions on branch deletion and read-write compute
+deletion/movement. Those restrictions do not establish branch protection or
+backup/restore readiness. No setting was changed. This response provides no
+recoverable timestamp range; the six-hour retention and 10/10 capacity above
+remain dated 2026-10-15 observations, not fresh recovery-point evidence.
 
 Provider documentation reviewed 2026-10-15:
 [branch creation, past data, role inheritance and expiry](https://neon.com/docs/manage/branches),

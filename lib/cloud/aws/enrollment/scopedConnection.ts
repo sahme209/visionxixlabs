@@ -4,9 +4,10 @@ import { decryptScopedCredential } from "@/lib/security/credentialVault";
 import { hasDesktopCapability } from "@/lib/desktop/desktopAuthorization";
 import { AwsEnrollmentError, cloudCredentialContext, parseAwsEnrollmentInput } from "./policy";
 import type { EnrollmentPrincipal, EnrollmentRepo } from "./service";
+import type { TargetSnapshotRows } from "@/lib/releaseops/ecsReleaseV2/targetSnapshot";
 import { readEnrollmentInventory } from "./stsValidation";
 
-export async function withTenantAwsConnection<T>(repo: EnrollmentRepo, principal: EnrollmentPrincipal, accountId: string, operation: (input: Parameters<typeof readEnrollmentInventory>[0], connection: { id: string; version: number }) => Promise<T>, dependencies: {
+export async function withTenantAwsConnection<T>(repo: EnrollmentRepo, principal: EnrollmentPrincipal, accountId: string, operation: (input: Parameters<typeof readEnrollmentInventory>[0], connection: { id: string; version: number }, snapshot: Pick<TargetSnapshotRows, "account" | "credential">) => Promise<T>, dependencies: {
   now?: () => Date;
   open?: typeof decryptScopedCredential;
   managementOnly?: boolean;
@@ -33,7 +34,10 @@ export async function withTenantAwsConnection<T>(repo: EnrollmentRepo, principal
   const stored = configuration as Record<string, unknown>;
   const parsed = parseAwsEnrollmentInput({ expectedAccountId: stored.expectedAccountId, roleArn: stored.roleArn, region: stored.region });
   if (parsed.expectedAccountId !== account.externalAccountId || !account.regions.includes(parsed.region) || typeof stored.externalId !== "string" || !/^axiom-[a-f0-9]{32}$/.test(stored.externalId)) throw new AwsEnrollmentError("enrollment_unavailable");
-  const result = await operation({ ...parsed, externalId: stored.externalId, sessionName: `axiom-inventory-${randomBytes(10).toString("hex")}` }, { id: account.id, version: credential.version });
+  const result = await operation({ ...parsed, externalId: stored.externalId, sessionName: `axiom-inventory-${randomBytes(10).toString("hex")}` }, { id: account.id, version: credential.version }, {
+    account: { id: account.id, organizationId: account.organizationId, provider: account.provider, externalAccountId: account.externalAccountId, credentialRef: account.credentialRef, regions: [...account.regions], enabled: account.enabled, updatedAt: new Date(account.updatedAt) },
+    credential: { id: credential.id, organizationId: credential.organizationId, version: credential.version, revokedAt: credential.revokedAt },
+  });
   await authority();
   // Never deliver a late inventory from a replaced connection/vault revision.
   const currentAccounts = await repo.cloudAccount.findMany({ where: { id: accountId, organizationId: principal.organizationId, provider: "aws" }, take: 1 });

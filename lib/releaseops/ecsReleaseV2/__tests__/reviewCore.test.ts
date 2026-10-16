@@ -1,12 +1,14 @@
 import { expect, it, vi } from "vitest";
 import { createReviewCore, type ReviewStore, type ReviewTransaction, type ReviewPacket, type ReviewDecision, type ReviewCheckpoint, type ReviewPolicy } from "../reviewCore";
-import { reviewManifest, reviewNow, syntheticReviewFacts } from "@/scripts/fixtures/ecsReviewFixture";
+import { reviewManifest, reviewNow, syntheticReviewFacts, reviewSnapshotRows, reviewSnapshotManifest } from "@/scripts/fixtures/ecsReviewFixture";
+import { projectTargetSnapshot } from "../targetSnapshot";
 import { validateReviewRehearsalTarget } from "@/scripts/rehearse-ecs-review.mjs";
 function fixture() {
     const packets: ReviewPacket[] = [], decisions: ReviewDecision[] = [], checkpoints: ReviewCheckpoint[] = [];
     const members = new Map(["author", "alice", "bob"].map(user => [user, { role: "admin", acceptedAt: new Date(reviewNow) }]));
     const policy: ReviewPolicy = { digest: reviewManifest().policyDigest, requiredApprovals: 2, allowedRoles: ["admin"], allowSelfApproval: false, blocked: false };
     const tx: ReviewTransaction = {
+        currentTargetSnapshot: vi.fn(async () => null),
         packetByOperation: async (org, op) => packets.find(p => p.organizationId === org && p.operationId === op) ?? null,
         packetById: async (org, id) => packets.find(p => p.organizationId === org && p.id === id) ?? null,
         createPacket: async (p) => { packets.push(structuredClone(p)); },
@@ -78,5 +80,58 @@ it("rechecks authority after verifier IO without preserving an unauthorized pack
     const f = fixture();
     f.verifier.inspect.mockImplementation(async (candidate) => { f.members.delete("author"); return { kind: "independently_verified", facts: syntheticReviewFacts(candidate) }; });
     expect(await f.core.prepare(f.author, reviewManifest())).toMatchObject({ reason: "current_management_membership_required" });
+    expect(f.packets).toHaveLength(0);
+});
+
+function snapshotFixture() {
+    const f = fixture(), rows = reviewSnapshotRows(), snapshot = projectTargetSnapshot(rows)!;
+    const manifest = reviewSnapshotManifest(snapshot);
+    f.tx.currentTargetSnapshot = vi.fn(async (org, env, connection) => org === rows.target.organizationId && env === rows.target.environmentId && connection === rows.account.id ? projectTargetSnapshot(rows) : null);
+    // Synthetic build/task evidence; target identity independently comes from persisted row fixtures.
+    f.verifier.inspect.mockImplementation(async candidate => ({ kind: 'independently_verified', facts: { ...syntheticReviewFacts(candidate), target: { ...manifest.target, snapshot: structuredClone(snapshot) } } }));
+    return { ...f, rows, manifest };
+}
+it('keeps old v2 review preparation independent of the new snapshot read', async () => {
+    const f = fixture();
+    expect((await f.core.prepare(f.author, reviewManifest())).kind).toBe('review_packet_recorded');
+    expect(f.tx.currentTargetSnapshot).not.toHaveBeenCalled();
+});
+it('records/replays the new snapshot variant and preserves operation conflict and review quorum', async () => {
+    const f = snapshotFixture();
+    expect(await f.core.prepare(f.author, f.manifest)).toMatchObject({ kind: 'review_packet_recorded', replayed: false });
+    expect(await f.core.prepare(f.author, f.manifest)).toMatchObject({ kind: 'review_packet_recorded', replayed: true });
+    expect(f.tx.currentTargetSnapshot).toHaveBeenCalledWith('org-1', 'stage', 'connection-1');
+    const changed = structuredClone(f.manifest); changed.createdAt = '2026-10-16T11:01:00Z';
+    expect(await f.core.prepare(f.author, changed)).toMatchObject({ reason: 'review_operation_conflict' });
+    for (const userId of ['alice', 'bob']) await f.core.decide({ ...f.author, userId }, { packetId: f.packets[0].id, expectedPriorRevision: 0, decision: 'approved' });
+    expect(await f.core.checkpoint(f.author, f.packets[0].id)).toMatchObject({ kind: 'review_ready_execution_disabled', executionEnabled: false });
+});
+it.each(['target', 'recreated', 'environment', 'account', 'replacement', 'revoked', 'generation', 'missing'])(
+    'rejects %s drift after provider IO before create and replay', async mode => {
+        for (const replay of [false, true]) {
+            const f = snapshotFixture();
+            if (replay) await f.core.prepare(f.author, f.manifest);
+            const original = f.verifier.inspect.getMockImplementation()!;
+            f.verifier.inspect.mockImplementation(async candidate => {
+                const observed = await original(candidate);
+                if (mode === 'target') f.rows.target.ecsService = 'changed';
+                if (mode === 'recreated') f.rows.target.id = 'replacement-target';
+                if (mode === 'environment') f.rows.environment.updatedAt = new Date(reviewNow);
+                if (mode === 'account') f.rows.account.updatedAt = new Date(reviewNow);
+                if (mode === 'replacement') f.rows.account.id = 'replacement-connection';
+                if (mode === 'revoked') f.rows.credential.revokedAt = new Date(reviewNow);
+                if (mode === 'generation') f.rows.credential.version++;
+                if (mode === 'missing') f.tx.currentTargetSnapshot = async () => null;
+                return observed;
+            });
+            expect(await f.core.prepare(f.author, f.manifest)).toMatchObject({ reason: 'current_target_snapshot_unavailable', executionEnabled: false });
+            expect(f.packets).toHaveLength(replay ? 1 : 0);
+        }
+    });
+it('rejects a syntactically valid forged digest despite candidate-matching synthetic verifier facts', async () => {
+    const f = snapshotFixture();
+    f.manifest.target.snapshot.digest = 'sha256:' + '9'.repeat(64);
+    f.verifier.inspect.mockImplementation(async candidate => ({ kind: 'independently_verified', facts: syntheticReviewFacts(candidate) }));
+    expect(await f.core.prepare(f.author, f.manifest)).toMatchObject({ reason: 'current_target_snapshot_unavailable' });
     expect(f.packets).toHaveLength(0);
 });

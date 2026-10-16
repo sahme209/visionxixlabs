@@ -1,4 +1,5 @@
 import { DeploymentWorkflowEvidence } from "../components/DeploymentWorkflowEvidence";
+import { TerraformPlanReview } from "../components/TerraformPlanReview";
 import { useCallback, useEffect, useState, type FormEvent } from "react";
 import { ExternalLink, ViewShell } from "../components/Primitives";
 import { desktopClient, type DeploymentExecution } from "../lib/desktopClient";
@@ -270,6 +271,7 @@ export function DeploymentRequestsView() {
   const [githubEvidence, setGitHubEvidence] = useState<Record<string, GitHubReleaseEvidence>>({});
   const [githubEvidenceErrors, setGitHubEvidenceErrors] = useState<Record<string, string>>({});
   const [executions, setExecutions] = useState<DeploymentExecution[]>([]);
+  const [terraformRequestId, setTerraformRequestId] = useState<string>();
 
   const loadExecutions = useCallback(async () => {
     const result = await desktopClient.listDeploymentExecutions();
@@ -546,6 +548,7 @@ export function DeploymentRequestsView() {
                   Request updated {new Date(request.updatedAt).toLocaleString()}.
                 </p>
                 <div className="flex flex-wrap gap-2">
+                  <button type="button" className="btn-secondary" onClick={() => setTerraformRequestId(current => current === request.id ? undefined : request.id)}>Review Terraform evidence</button>
                   <button
                     type="button"
                     className="btn-secondary disabled:opacity-50"
@@ -589,6 +592,7 @@ export function DeploymentRequestsView() {
                 </div>
               </div>
               <ReleaseContext request={request} />
+              {terraformRequestId === request.id && <TerraformPlanReview key={`${request.id}:${request.version}`} requestId={request.id} requestVersion={request.version} />}
               {githubEvidenceErrors[request.id] && (
                 <p role="alert" className="mt-3 text-xs text-rose-300">
                   GitHub evidence could not be collected: {githubEvidenceErrors[request.id]}

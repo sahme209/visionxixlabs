@@ -150,7 +150,7 @@ it("does not convert a genuine wheel proof into OCI manifest evidence", async ()
 });
 it.each(["expiry", "mutation"])("rechecks manifest %s after provider IO instead of certifying a stale candidate", async kind => {
   const f = fixture(), parsed = candidate();
-  f.onRead(url => { if (url !== bundleUrl) return; if (kind === "expiry") f.setClock(new Date(parsed.manifest.expiresAt)); else parsed.manifest.target.revision++; });
+  f.onRead(url => { if (url !== bundleUrl) return; if (kind === "expiry") f.setClock(new Date(parsed.manifest.expiresAt)); else if ("revision" in parsed.manifest.target) parsed.manifest.target.revision++; });
   expect(await f.reader.inspectManifest(scope, { repositoryRecordId: request.repositoryRecordId, candidate: parsed })).toEqual({ kind: "unavailable", reason: "invalid_or_expired_manifest" });
   expect(f.fetched).toContain(bundleUrl);
 });
@@ -159,4 +159,18 @@ it("cannot resolve ambient credentials from an injected snapshot without an expl
   expect(await createGithubBuildEvidenceReader({ ...f.options, token: undefined }).inspectBuild(scope, request)).toMatchObject({ kind: "unavailable" });
   expect(f.token).not.toHaveBeenCalled();
   expect(f.fetcher).not.toHaveBeenCalled();
+});
+it.each([false, true])('uses the shared v3 candidate and rechecks snapshot drift after GitHub IO (drift=%s)', async drift => {
+  const f = fixture(), legacy = candidate();
+  const { revision: _revision, ...coordinates } = legacy.manifest.target as ReturnType<typeof reviewManifest>['target'];
+  const parsed = parseManifestCandidate({ ...legacy.manifest, protocol: 'axiom.ecs.release.v3', target: { ...coordinates, snapshot: {
+    schema: 'axiom.ecs.target-snapshot.v1', id: 'target-1', digest: `sha256:${'6'.repeat(64)}`, connection: { id: 'connection-1', version: 2 },
+  } } }, now);
+  if (parsed.kind !== 'structural_candidate') throw new Error(parsed.reason);
+  f.onRead(url => { if (drift && url === bundleUrl && parsed.manifest.protocol === 'axiom.ecs.release.v3') parsed.manifest.target.snapshot.connection.version++; });
+  const result = await f.reader.inspectManifest(scope, { repositoryRecordId: request.repositoryRecordId, candidate: parsed });
+  expect(f.fetched).toContain(bundleUrl);
+  expect(result.kind).toBe('unavailable'); // Genuine upstream wheel proof cannot certify OCI images.
+  if (drift) expect(result).toEqual({ kind: 'unavailable', reason: 'invalid_or_expired_manifest' });
+  else expect(result).not.toMatchObject({ reason: 'invalid_or_expired_manifest' });
 });

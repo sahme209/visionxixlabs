@@ -1,10 +1,10 @@
-import type { ReleaseManifest, ManifestCandidate } from "../../lib/releaseops/ecsReleaseV2/contract";
+import type { ReleaseManifestV2, ReleaseManifestV3, ManifestCandidate } from "../../lib/releaseops/ecsReleaseV2/contract";
 import type { ReviewFacts } from "../../lib/releaseops/ecsReleaseV2/reviewCore";
 export const reviewNow = new Date("2026-10-16T12:00:00Z");
 const hash = (digit: string) => `sha256:${digit.repeat(64)}`;
 const sourceSha = "a".repeat(40);
 const image = (name: string, digit: string) => ({ container: name, image: `123456789012.dkr.ecr.us-east-1.amazonaws.com/${name}@${hash(digit)}` });
-export function reviewManifest(): ReleaseManifest {
+export function reviewManifest(): ReleaseManifestV2 {
     return { protocol: "axiom.ecs.release.v2", operationId: "op-1", organizationId: "org-1", environmentId: "stage",
         repository: { id: "123", fullName: "owner/repo", sourceSha },
         build: { runId: "31", attempt: 1, workflowPath: ".github/workflows/build.yml", workflowSha: "b".repeat(40), attestationDigest: hash("c") },
@@ -19,4 +19,20 @@ export function reviewManifest(): ReleaseManifest {
 export function syntheticReviewFacts(candidate: ManifestCandidate): ReviewFacts {
     const m = structuredClone(candidate.manifest);
     return { source: "trusted_application_boundary", organizationId: m.organizationId, environmentId: m.environmentId, repository: m.repository, build: m.build, executor: m.executor, attestedImageSetDigest: candidate.imageSetDigest, target: m.target, proposed: m.proposed, baseline: m.baseline, associatedTargetGroups: [m.health.targetGroupArn] };
+}
+
+/** Synthetic persisted rows, independent of any submitted candidate. */
+export function reviewSnapshotRows() {
+    return {
+        target: { id: 'target-1', organizationId: 'org-1', environmentId: 'stage', provider: 'aws', roleArn: 'arn:aws:iam::123456789012:role/Deploy', region: 'us-east-1', ecsCluster: 'app', ecsService: 'web', updatedAt: new Date('2026-10-16T10:00:00Z') },
+        environment: { id: 'stage', organizationId: 'org-1', updatedAt: new Date('2026-10-16T10:00:00Z') },
+        account: { id: 'connection-1', organizationId: 'org-1', provider: 'aws', externalAccountId: '123456789012', credentialRef: 'cloud-v2:connection-1', regions: ['us-east-1'], enabled: false, updatedAt: new Date('2026-10-16T10:00:00Z') },
+        credential: { id: 'connection-1', organizationId: 'org-1', version: 2, revokedAt: null as Date | null },
+    };
+}
+
+export function reviewSnapshotManifest(snapshot: ReleaseManifestV3['target']['snapshot']): ReleaseManifestV3 {
+    const legacy = reviewManifest();
+    const { revision: _revision, ...coordinates } = legacy.target;
+    return { ...legacy, protocol: 'axiom.ecs.release.v3', target: { ...coordinates, snapshot: structuredClone(snapshot) } };
 }

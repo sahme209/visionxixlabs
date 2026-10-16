@@ -1,4 +1,4 @@
-import { evidenceDigest, matchTrustedReviewEvidence, parseManifestCandidate, type ManifestCandidate, type TrustedReleaseEvidence } from "./contract";
+import { evidenceDigest, matchTrustedReviewEvidence, parseManifestCandidate, type ManifestCandidate, type TargetSnapshot, type TrustedReleaseEvidence } from "./contract";
 export const ECS_REVIEW_EXECUTION_ENABLED = false;
 export type ReviewFacts = Omit<TrustedReleaseEvidence, "approval">;
 export interface ReviewPolicy {
@@ -48,6 +48,7 @@ export interface ReviewCheckpoint {
     expiresAt: Date;
 }
 export interface ReviewTransaction {
+    currentTargetSnapshot(organizationId: string, environmentId: string, connectionId: string): Promise<TargetSnapshot | null>;
     packetByOperation(organizationId: string, operationId: string): Promise<ReviewPacket | null>;
     packetById(organizationId: string, packetId: string): Promise<ReviewPacket | null>;
     createPacket(packet: ReviewPacket): Promise<void>;
@@ -136,6 +137,7 @@ export function createReviewCore(store: ReviewStore, options: {
                 const observed = await options.verifier.inspect(candidate);
                 if (observed.kind !== "independently_verified" || !sameFacts(candidate, observed.facts))
                     deny("independent_evidence_unavailable");
+                const facts = structuredClone(observed.facts);
                 return await store.transaction(async (tx) => {
                     await authority(tx, scope);
                     const current = parseManifestCandidate(candidate.manifest, clock());
@@ -144,16 +146,22 @@ export function createReviewCore(store: ReviewStore, options: {
                     const policy = await tx.policy(scope.organizationId, candidate.manifest.environmentId);
                     if (!policyValid(policy, candidate.manifest.policyDigest))
                         deny("current_review_policy_unavailable");
+                    if (candidate.manifest.protocol === "axiom.ecs.release.v3") {
+                        const expected = candidate.manifest.target.snapshot;
+                        const snapshot = await tx.currentTargetSnapshot(scope.organizationId, candidate.manifest.environmentId, expected.connection.id);
+                        if (!snapshot || evidenceDigest(snapshot) !== evidenceDigest(expected) || !sameFacts(candidate, facts))
+                            deny("current_target_snapshot_unavailable");
+                    }
                     const prior = await tx.packetByOperation(scope.organizationId, candidate.manifest.operationId);
                     if (prior) {
                         checkedPacket(prior, scope.organizationId, clock());
-                        if (prior.manifestDigest !== candidate.digest || prior.evidenceDigest !== evidenceDigest(observed.facts))
+                        if (prior.manifestDigest !== candidate.digest || prior.evidenceDigest !== evidenceDigest(facts))
                             deny("review_operation_conflict");
                         return { kind: "review_packet_recorded" as const, packetId: prior.id, replayed: true, executionEnabled: false as const };
                     }
                     const packet: ReviewPacket = { id: options.id(), organizationId: scope.organizationId, environmentId: candidate.manifest.environmentId, operationId: candidate.manifest.operationId,
                         manifestJson: candidate.manifest, manifestDigest: candidate.digest, imageSetDigest: candidate.imageSetDigest, healthPolicyDigest: candidate.healthPolicyDigest,
-                        verifiedEvidenceJson: structuredClone(observed.facts), evidenceDigest: evidenceDigest(observed.facts), policyDigest: policy.digest,
+                        verifiedEvidenceJson: structuredClone(facts), evidenceDigest: evidenceDigest(facts), policyDigest: policy.digest,
                         createdByUserId: scope.userId, createdAt: clock(), expiresAt: new Date(candidate.manifest.expiresAt) };
                     await tx.createPacket(packet);
                     return { kind: "review_packet_recorded" as const, packetId: packet.id, replayed: false, executionEnabled: false as const };

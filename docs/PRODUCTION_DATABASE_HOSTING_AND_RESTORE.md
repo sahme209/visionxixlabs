@@ -21,9 +21,24 @@ is authorized by this discovery work.
   are not hosting evidence.
 - Nondecrypted environment metadata is truncated; missing keys in that response
   are not proof that a production database variable or integration is absent.
-- This agent's GitHub workflow dispatch/run-list CLI requests return Forbidden.
+- Earlier GitHub workflow dispatch/run-list CLI requests returned Forbidden.
   A known run can be inspected through the connected job tools, as #2 was.
-  No database-provider control-plane/backup connection is currently available.
+  Those CLI denials are historical; no workflow-dispatch tool is exposed in the
+  2026-10-16 connected catalog, so no new dispatch was attempted. Neon control-plane
+  metadata is available; serving/preflight binding, actual recoverable timestamps
+  and restore readiness remain unverified.
+
+Read-only follow-up observed 2026-10-16: `visionxixlabs.com` resolves to a READY
+production deployment from main `fef79a0eed15c8251dd46560e2e42f140b8c7177`.
+This identifies the serving revision, not its effective database binding or
+authentication behavior. The deployment metadata contains no datasource mapping;
+no environment-value lookup was performed. Neon reports the candidate default
+branch ready with `protected: false` and separate integration deletion/compute
+restrictions; neither fact proves recoverability. The branch response includes
+no recoverable timestamp range. Dated sanitized evidence is in
+`docs/mission/auth-readiness-follow-up-2026-10-16.json`; the
+[private operator evidence packet](AUTH_RECOVERY_OPERATOR_EVIDENCE.md) states the
+remaining read-only checks and approval boundaries.
 
 ## Safe identification through the existing protected runtime
 

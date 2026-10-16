@@ -141,3 +141,9 @@ npm run tauri dev
 
 `npm run tauri build` produces an unsigned binary for the host platform.
 Signed-release builds are produced by CI only.
+
+### Azure read-only source candidate
+
+Settings → Integrations includes an Azure candidate for a browser-paired accepted owner/admin to submit an **existing** service principal. Explicit tenant/subscription/client UUIDs and secret go only to the backend's canonical, tenant-bound encrypted account vault. The password field clears on submission and workspace change; desktop settings do not persist it. API keys cannot enroll. Current workspace readers may request a separate first resource-group page (at most 100, always incomplete); unavailable/denied responses do not become empty successful inventory. Generic Agent scans and all Azure mutations remain disabled.
+
+Disconnect zeroizes the stored credential and advances its version without calling Azure or requiring paid access. It does not revoke the Azure principal, grants or issued tokens. Reconnect validates fresh credentials against the current version. Source and owned-fixture checks do not establish real Azure IAM, production deployment or native release acceptance.

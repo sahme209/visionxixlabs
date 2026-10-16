@@ -1,0 +1,97 @@
+{
+  "sourceCommit": "fa5f9b0212e721c2bcb4566246c5f63b058a39ba",
+  "desktopPairing": {
+    "verified": [
+      "authenticated_consent_metadata",
+      "device_bound_pending_poll",
+      "wrong_device_denied",
+      "legacy_unbound_poll_denied",
+      "web_session_pairing_approval",
+      "cookie_free_pairing_consume",
+      "single_use_pairing_replay_denied",
+      "paired_identity_current_workspace_membership",
+      "owner_pairing_listing",
+      "owner_revocation_invalidates_bearer"
+    ],
+    "commercialAccessObservation": {
+      "allowed": true,
+      "code": "active",
+      "billingStatus": "no_plan",
+      "enforcement": "not_verified_policy_decision_required"
+    },
+    "notVerified": [
+      "native_browser_or_vault",
+      "production_pairing",
+      "billing_enforcement",
+      "cloud_or_deployment_authority",
+      "provider_execution"
+    ]
+  },
+  "approvalDecisions": {
+    "transport": "real_local_next_http",
+    "requestMetadata": "next_request_normalized_loopback_headers_not_browser",
+    "persistence": "real_disposable_postgresql",
+    "verified": [
+      "cross_origin_decision_denied",
+      "parallel_decisions_one303_one409",
+      "persisted_authenticated_actor_and_time",
+      "terminal_decision_retained"
+    ],
+    "notVerified": [
+      "provider_execution",
+      "saved_terraform_plan_authority",
+      "production_approval_or_login",
+      "deterministic_simultaneous_database_snapshots"
+    ]
+  },
+  "agentReadiness": {
+    "verified": [
+      "paired_disabled_model_policy",
+      "disabled_agent_explanation_without_inference",
+      "persisted_user_and_governance_reply",
+      "foreign_history_and_send_denied",
+      "no_identity_provider_tool_usage_dispatch_or_billing_side_effect"
+    ],
+    "transport": "real_local_next_http",
+    "persistence": "owned_disposable_postgresql",
+    "notVerified": [
+      "react_or_browser_interaction",
+      "successful_inference_or_tool_execution",
+      "native_vault_or_packaged_app",
+      "provider_or_paid_entitlement_or_production"
+    ]
+  },
+  "schemaFixture": "current_schema_not_migration_recovery",
+  "transport": "real_local_next_http",
+  "database": "disposable_synthetic_postgresql",
+  "mail": "loopback_capture_not_provider_delivery",
+  "verified": [
+    "desktop_origin_challenge",
+    "signup_requires_email_proof",
+    "actual_sdk_mail_capture",
+    "unverified_password_denied",
+    "expired_proof_denied",
+    "actual_resend_replacement",
+    "single_use_proof_and_callback",
+    "incorrect_password_denied",
+    "verified_credentials_csrf_cookie_session",
+    "accepted_personal_workspace_only",
+    "no_billing_plan_created"
+  ],
+  "notVerified": [
+    "browser_render_or_interaction",
+    "production_recovery_or_login",
+    "google_github_oauth",
+    "native_pairing_or_vault",
+    "external_mail_delivery",
+    "cloud_execution_or_billing"
+  ],
+  "fixtureCleanup": "owned_disposable_container_removed",
+  "evidenceDate": "2026-10-16",
+  "evidenceTimezone": "Etc/UTC",
+  "launcher": "scripts/run-owned-local-auth-http.mjs",
+  "launchEnvironment": "explicit_os_proxy_ca_only_allowlist",
+  "fixtureImage": "cached_postgres_17_alpine_no_pull",
+  "productionChanges": false,
+  "acceptanceScope": "actual_disabled_agent_http_not_successful_inference_or_browser_native"
+}

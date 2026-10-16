@@ -62,10 +62,19 @@ Proposed production changes, requiring explicit approval:
    `20261016010000_cloud_account_enrollment`; when that source is included,
    expect eight pending before auth-only repair and seven afterward. Including
    the separate `20261016020000_cloud_account_credential_revocation` proposal
-   expects nine before and eight afterward. Both remain unapplied and separately
-   reviewed. Compare exact pending names from the
+   expects nine before and eight afterward. Including the later
+   `20261016030000_ecs_release_review_core` proposal expects ten before and nine
+   afterward. These are source-derived expectations **if the previously inspected
+   production baseline is unchanged**, not a fresh production observation. All
+   three newer proposals remain separately gated; this recovery applies none of
+   them. Compare exact pending names from the
    pinned checkout, never apply extra files to force an old count. A full
    preflight exit 2 remains expected; it must not be relabeled fully healthy.
+
+The dated source comparison and serving deployment observation are preserved in
+`docs/mission/auth-readiness-follow-up-2026-10-16.json`. The
+[private operator evidence packet](AUTH_RECOVERY_OPERATOR_EVIDENCE.md) describes
+the remaining binding and recovery-point checks without retrieving secrets here.
 
 The SQL guards require the expected baseline User primary key, absent auth schema,
 exactly one active failed Agent row with the original checksum, and no existing
@@ -152,8 +161,9 @@ order (auth already applied in phase one):
 
 The original unfinished Agent migration remains a prerequisite for blanket deploy.
 All six original remaining items, plus the separately proposed
-`20261016010000_cloud_account_enrollment` and
-`20261016020000_cloud_account_credential_revocation`, are retained in the tracker; none is
+`20261016010000_cloud_account_enrollment`,
+`20261016020000_cloud_account_credential_revocation` and
+`20261016030000_ecs_release_review_core`, are retained in the tracker; none is
 silently skipped or represented as completed by the auth-only plan.
 
 ## Rehearsal and acceptance evidence
