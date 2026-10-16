@@ -2,6 +2,15 @@ import type { Prisma, PrismaClient } from "@prisma/client";
 import { evidenceDigest } from "./contract";
 import type { ReviewStore, ReviewTransaction, ReviewPacket, ReviewDecision, ReviewCheckpoint, ReviewPolicy } from "./reviewCore";
 type Database = Pick<Prisma.TransactionClient, "$queryRawUnsafe" | "$executeRawUnsafe">;
+/** Reused read-only selected-policy interpretation; not approval or execution authority. */
+export async function readPostgresReviewPolicy(db: Pick<Prisma.TransactionClient, "$queryRawUnsafe">, org: string, environment: string): Promise<ReviewPolicy | null> {
+    const rows = await db.$queryRawUnsafe<{ id: string; enabled: boolean; blockAction: boolean; requiredApprovals: number; requiredRoles: string[]; updatedAt: Date }[]>(
+        'SELECT p."id",p."enabled",p."blockAction",p."requiredApprovals",p."requiredRoles",p."updatedAt" FROM "Environment" e JOIN "AxiomApprovalPolicy" p ON p."id"=e."approvalPolicyId" AND p."organizationId"=e."organizationId" WHERE e."organizationId"=$1 AND e."id"=$2', org, environment);
+    const row = rows[0];
+    if (!row || !row.enabled || !Array.isArray(row.requiredRoles) || row.requiredRoles.some(role => !["owner", "admin"].includes(role))) return null;
+    const material = { id: row.id, updatedAt: row.updatedAt.toISOString(), requiredApprovals: row.requiredApprovals, allowedRoles: row.requiredRoles, allowSelfApproval: false, blocked: row.blockAction };
+    return { ...material, digest: evidenceDigest(material) } satisfies ReviewPolicy;
+}
 /** SQL text is static; every caller value is a parameter, never interpolation.
  * No factory is connected to any public route or execution dispatcher. */
 function transactionStore(db: Database): ReviewTransaction {
@@ -24,20 +33,7 @@ function transactionStore(db: Database): ReviewTransaction {
             acceptedAt: Date | null;
             role: string;
         }>('SELECT "acceptedAt","role" FROM "OrgMembership" WHERE "organizationId"=$1 AND "userId"=$2', org, user),
-        async policy(org, environment) {
-            const row = await one<{
-                id: string;
-                enabled: boolean;
-                blockAction: boolean;
-                requiredApprovals: number;
-                requiredRoles: string[];
-                updatedAt: Date;
-            }>('SELECT p."id",p."enabled",p."blockAction",p."requiredApprovals",p."requiredRoles",p."updatedAt" FROM "Environment" e JOIN "AxiomApprovalPolicy" p ON p."id"=e."approvalPolicyId" AND p."organizationId"=e."organizationId" WHERE e."organizationId"=$1 AND e."id"=$2', org, environment);
-            if (!row || !row.enabled || !Array.isArray(row.requiredRoles) || row.requiredRoles.some(role => !["owner", "admin"].includes(role)))
-                return null;
-            const material = { id: row.id, updatedAt: row.updatedAt.toISOString(), requiredApprovals: row.requiredApprovals, allowedRoles: row.requiredRoles, allowSelfApproval: false, blocked: row.blockAction };
-            return { ...material, digest: evidenceDigest(material) } satisfies ReviewPolicy;
-        },
+        policy: (org, environment) => readPostgresReviewPolicy(db, org, environment),
     };
 }
 export function postgresReviewStore(client: Pick<PrismaClient, "$transaction">): ReviewStore {

@@ -57,7 +57,7 @@ export function sigstoreRuntimeSupported(version: string): boolean {
   const [major, minor, patch] = match.slice(1).map(Number);
   return major >= 26 || (major === 24 && minor >= 15) || (major === 22 && (minor > 22 || (minor === 22 && patch >= 2)));
 }
-function validBinding(b: BuildBinding): boolean {
+export function isValidBuildBinding(b: BuildBinding): boolean {
   return typeof b.organizationId === "string" && b.organizationId.length > 0 && b.organizationId.length <= 200
     && numeric.test(b.repositoryId) && repo.test(b.repositoryFullName) && hex40.test(b.sourceSha) && hex40.test(b.workflowSha)
     && /^refs\/(heads|tags)\/[^\s]+$/.test(b.sourceRef) && /^\.github\/workflows\/[A-Za-z0-9_.-]+\.ya?ml$/.test(b.workflowPath)
@@ -71,6 +71,33 @@ function utf8DER(value: string): Buffer {
   if (bytes.length > 255) throw new Error("identity too long");
   return Buffer.concat([Buffer.from(bytes.length < 128 ? [12, bytes.length] : [12, 129, bytes.length]), bytes]);
 }
+/** Static server-configuration check only; it does not verify a bundle or grant authority. */
+export function inspectPublicTrustConfiguration(profile: unknown, clock: Date):
+  { kind: "configured"; profile: PublicTrustProfile } | { kind: "unavailable"; reason: string } {
+  const bad = (reason: string) => ({ kind: "unavailable" as const, reason });
+  try {
+    const profileJson = JSON.stringify(profile), now = clock.getTime();
+    if (!Number.isFinite(now)) return bad("invalid_verification_time");
+    if (!profileJson || profileJson.length > 256 * 1024) return bad("trust_profile_unavailable");
+    const p = object(JSON.parse(profileJson));
+    if (p.kind === "private_github") return bad("private_trust_profile_unavailable");
+    if (p.kind !== "public_sigstore") return bad("trust_profile_unavailable");
+    const reviewedAt = Date.parse(String(p.reviewedAt)), expires = Date.parse(String(p.reviewExpiresAt));
+    if (!Number.isFinite(reviewedAt) || !Number.isFinite(expires) || reviewedAt > now || expires <= now
+      || expires <= reviewedAt || expires - reviewedAt > 7 * 86400_000) return bad("trust_review_expired_or_invalid");
+    if (sha(Buffer.from(JSON.stringify(p.trustedRoot))) !== p.trustedRootDigest) return bad("trust_root_digest_mismatch");
+    if (typeof p.signerWorkflowSha !== "string" || !hex40.test(p.signerWorkflowSha)
+      || typeof p.signerWorkflow !== "string" || !/^https:\/\/github\.com\/[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+\/\.github\/workflows\/[A-Za-z0-9_.-]+\.ya?ml@[a-f0-9]{40}$/.test(p.signerWorkflow)
+      || !p.signerWorkflow.endsWith(`@${p.signerWorkflowSha}`)) return bad("pinned_signer_required");
+    const root = object(p.trustedRoot);
+    // Public and private domains cannot be exchanged by simply disabling thresholds.
+    for (const field of ["certificateAuthorities", "ctlogs", "tlogs"]) {
+      if (!Array.isArray(root[field]) || root[field].length === 0) return bad("public_trust_material_incomplete");
+    }
+    return { kind: "configured", profile: p as unknown as PublicTrustProfile };
+  } catch { return bad("trust_profile_unavailable"); }
+}
+
 /** Offline crypto verification only. This returns build evidence, never full AWS/review facts,
  * approval, execution permission, image availability or application health. */
 export async function verifyBuildProvenance(input: {
@@ -89,25 +116,12 @@ export async function verifyBuildProvenance(input: {
     const profileJson = JSON.stringify(input.profile);
     const now = input.now.getTime();
     if (!Number.isFinite(now)) return unavailable("invalid_verification_time");
-    if (!validBinding(b)) return unavailable("invalid_build_binding");
+    if (!isValidBuildBinding(b)) return unavailable("invalid_build_binding");
     if (!await input.authorize(b.organizationId)) return unavailable("current_tenant_authority_required");
     if (sha(bytes) !== b.attestationDigest) return unavailable("attestation_digest_mismatch");
-    if (!profileJson || profileJson.length > 256 * 1024) return unavailable("trust_profile_unavailable");
-    const p = object(JSON.parse(profileJson));
-    if (p.kind === "private_github") return unavailable("private_trust_profile_unavailable");
-    if (p.kind !== "public_sigstore") return unavailable("trust_profile_unavailable");
-    const reviewedAt = Date.parse(String(p.reviewedAt)), expires = Date.parse(String(p.reviewExpiresAt));
-    if (!Number.isFinite(reviewedAt) || !Number.isFinite(expires) || reviewedAt > now || expires <= now
-      || expires <= reviewedAt || expires - reviewedAt > 7 * 86400_000) return unavailable("trust_review_expired_or_invalid");
-    if (sha(Buffer.from(JSON.stringify(p.trustedRoot))) !== p.trustedRootDigest) return unavailable("trust_root_digest_mismatch");
-    if (typeof p.signerWorkflowSha !== "string" || !hex40.test(p.signerWorkflowSha)
-      || typeof p.signerWorkflow !== "string" || !/^https:\/\/github\.com\/[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+\/\.github\/workflows\/[A-Za-z0-9_.-]+\.ya?ml@[a-f0-9]{40}$/.test(p.signerWorkflow)
-      || !p.signerWorkflow.endsWith(`@${p.signerWorkflowSha}`)) return unavailable("pinned_signer_required");
-    const root = object(p.trustedRoot);
-    // Public and private domains cannot be exchanged by simply disabling thresholds.
-    for (const field of ["certificateAuthorities", "ctlogs", "tlogs"]) {
-      if (!Array.isArray(root[field]) || root[field].length === 0) return unavailable("public_trust_material_incomplete");
-    }
+    const config = inspectPublicTrustConfiguration(profileJson ? JSON.parse(profileJson) : undefined, new Date(now));
+    if (config.kind !== "configured") return config;
+    const p = config.profile, root = object(p.trustedRoot);
     const [{ bundleFromJSON }, { Verifier, toSignedEntity, toTrustMaterial }, { TrustedRoot }] = await Promise.all([
       import("@sigstore/bundle"), import("@sigstore/verify"), import("@sigstore/protobuf-specs"),
     ]);

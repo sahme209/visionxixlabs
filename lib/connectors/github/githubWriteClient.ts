@@ -14,6 +14,8 @@
 
 import "server-only";
 
+import { readBoundedGithubBody, withGithubAbort, type GithubReadBudget } from "./boundedGithubRead";
+
 const GITHUB_API = "https://api.github.com";
 
 export type GithubWriteResult<T> = { ok: true; data: T } | { ok: false; error: string };
@@ -53,9 +55,16 @@ export function isSafeRepositoryPath(path: string): boolean {
 async function gh<T>(
   path: string,
   token: string,
-  init: { method?: string; body?: unknown; apiVersion?: string } = {},
+  init: { method?: string; body?: unknown; apiVersion?: string; bounded?: { signal: AbortSignal; maxBytes: number; budget?: GithubReadBudget } } = {},
 ): Promise<GithubWriteResult<T>> {
   try {
+    if (init.bounded) {
+      const bytes = await boundedRead(`${GITHUB_API}${path}`, {
+        Accept: "application/vnd.github+json", Authorization: `Bearer ${token}`,
+        "X-GitHub-Api-Version": init.apiVersion ?? "2022-11-28",
+      }, init.bounded.signal, init.bounded.maxBytes, init.bounded.budget);
+      return { ok: true, data: JSON.parse(new TextDecoder("utf-8", { fatal: true }).decode(bytes)) as T };
+    }
     const response = await fetch(`${GITHUB_API}${path}`, {
       method: init.method ?? "GET",
       headers: {
@@ -73,8 +82,64 @@ async function gh<T>(
     const data = (await response.json().catch(() => ({}))) as T;
     return { ok: true, data };
   } catch (error) {
+    if (init.bounded) return { ok: false, error: "github_provenance_read_unavailable" };
     return { ok: false, error: error instanceof Error ? error.message : "network_error" };
   }
+}
+
+/** Shared bounded transport for the new GET-only reader. Legacy gh defaults stay unchanged. */
+async function boundedRead(url: string, headers: Record<string, string>, parentSignal: AbortSignal, maxBytes: number, budget?: GithubReadBudget): Promise<Uint8Array> {
+  parentSignal.throwIfAborted();
+  if (budget && (!Number.isSafeInteger(budget.remainingBytes) || budget.remainingBytes < 1)) throw new Error("read_budget_exhausted");
+  const signal = AbortSignal.any([parentSignal, AbortSignal.timeout(8_000)]);
+  const response = await withGithubAbort(fetch(url, {
+    method: "GET", headers, signal, credentials: "omit", redirect: "error", cache: "no-store", referrerPolicy: "no-referrer",
+  }), signal);
+  return readBoundedGithubBody(response, signal, maxBytes, budget);
+}
+
+export type GithubProvenanceResource = { kind: "repository" }
+  | { kind: "run"; runId: string; attempt?: number }
+  | { kind: "workflow"; workflowPath: string; commitSha: string }
+  | { kind: "attestations"; subjectSha256: string };
+
+/** Exact server-constructed resources only; no arbitrary API path or token fallback. */
+export async function readGithubProvenanceResource(input: {
+  owner: string; repo: string; installationToken: string; signal: AbortSignal; resource: GithubProvenanceResource; budget?: GithubReadBudget;
+}): Promise<GithubWriteResult<unknown>> {
+  const name = /^[A-Za-z0-9][A-Za-z0-9_.-]{0,99}$/;
+  if (!name.test(input.owner) || !name.test(input.repo) || !input.installationToken) return { ok: false, error: "github_provenance_read_unavailable" };
+  let path = `/repos/${encodeURIComponent(input.owner)}/${encodeURIComponent(input.repo)}`;
+  const r = input.resource;
+  if (r.kind === "run") {
+    if (!/^[1-9]\d{0,31}$/.test(r.runId) || (r.attempt !== undefined && (!Number.isSafeInteger(r.attempt) || r.attempt < 1))) return { ok: false, error: "github_provenance_read_unavailable" };
+    path += `/actions/runs/${r.runId}${r.attempt === undefined ? "" : `/attempts/${r.attempt}`}`;
+  } else if (r.kind === "workflow") {
+    if (!/^\.github\/workflows\/[A-Za-z0-9_.-]+\.ya?ml$/.test(r.workflowPath) || !/^[a-f0-9]{40}$/.test(r.commitSha)) return { ok: false, error: "github_provenance_read_unavailable" };
+    path += `/contents/${r.workflowPath}?ref=${r.commitSha}`;
+  } else if (r.kind === "attestations") {
+    if (!/^[a-f0-9]{64}$/.test(r.subjectSha256)) return { ok: false, error: "github_provenance_read_unavailable" };
+    path += `/attestations/${encodeURIComponent(`sha256:${r.subjectSha256}`)}?per_page=5`;
+  } else if (r.kind !== "repository") return { ok: false, error: "github_provenance_read_unavailable" };
+  return gh(path, input.installationToken, { apiVersion: "2026-03-10", bounded: { signal: input.signal, maxBytes: 256 * 1024, budget: input.budget } });
+}
+
+export interface GithubBundleDownloadRule { origin: string; pathPrefix: string }
+
+/** API-returned URL plus server-reviewed origin/path policy; never accepts public caller URLs. */
+export async function readGithubProvenanceBundle(input: { url: string; policy: readonly GithubBundleDownloadRule[]; signal: AbortSignal; budget?: GithubReadBudget }): Promise<GithubWriteResult<Uint8Array>> {
+  try {
+    const url = new URL(input.url);
+    if (input.url.length > 8192 || url.protocol !== "https:" || url.username || url.password || url.hash || (url.port && url.port !== "443")
+      || !input.policy.length || input.policy.length > 8 || !input.policy.some(rule => {
+        const origin = new URL(rule.origin);
+        return origin.origin === rule.origin && origin.protocol === "https:" && !origin.username && !origin.password && !origin.port
+          && origin.hostname !== "localhost" && !/^[\d.]+$/.test(origin.hostname) && !origin.hostname.includes(":")
+          && /^\/attestations\/[1-9]\d*\/$/.test(rule.pathPrefix) && url.origin === origin.origin && url.pathname.startsWith(rule.pathPrefix)
+          && !/%(?:2f|2e|5c)/i.test(url.pathname);
+      })) return { ok: false, error: "github_bundle_download_unavailable" };
+    return { ok: true, data: await boundedRead(url.href, { Accept: "application/json" }, input.signal, 1024 * 1024, input.budget) };
+  } catch { return { ok: false, error: "github_bundle_download_unavailable" }; }
 }
 
 /** Lists branches visible through an already repository-scoped installation token. */
