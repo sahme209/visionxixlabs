@@ -37,9 +37,10 @@ export function postgresFixtureStore(target: string, runtimeId: string, accountI
       contract: org => readContract(tx, org),
       legacyBinding: async org => { const p = await tx.tenantBillingPlan.findUnique({ where: { organizationId: org } }); return !!(p?.stripeCustomerId || p?.stripeSubscriptionId); },
       eventExists: async id => !!await tx.stripeBillingEvent.findUnique({ where: { id } }),
-      async bind(c, event) {
+      async bind(c, event, observation) {
         const expected = await tx.tenantBillingPlan.findUnique({ where: { organizationId: c.organizationId }, select: { stripeCustomerId: true, stripeSubscriptionId: true, lastStripeEventId: true } });
-        const applied = await consumeSubscriptionEventInTransaction(tx as unknown as SubscriptionTransaction, "customer.subscription.updated", { organizationId: c.organizationId, tier: c.planId === "enterprise" ? "enterprise" : "growth", status: c.status as BillingStatus, stripeCustomerId: c.customerId, stripeSubscriptionId: c.subscriptionId, lastStripeEventId: event, seatQuantity: c.seatQuantity }, expected);
+        const applied = await consumeSubscriptionEventInTransaction(tx as unknown as SubscriptionTransaction, observation?.eventType ?? "customer.subscription.updated", { organizationId: c.organizationId, tier: c.planId === "enterprise" ? "enterprise" : "growth", status: c.status as BillingStatus, stripeCustomerId: c.customerId, stripeSubscriptionId: c.subscriptionId, lastStripeEventId: event, seatQuantity: c.seatQuantity,
+          currentPeriodEndsAt: observation?.currentPeriodEndsAt ? new Date(observation.currentPeriodEndsAt) : null, cancelAtPeriodEnd: observation?.cancelAtPeriodEnd ?? false }, expected);
         if (applied !== "applied") throw new Error("subscription_event_not_applied");
         const identity = { ...c };
         delete (identity as Partial<Contract>).status;

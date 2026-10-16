@@ -1,5 +1,6 @@
 import { PUBLIC_PLAN_CATALOG } from "../publicPlanCatalog";
 import { matchNewTestTerms, NEW_TEST_CATALOG_VERSION, decideRecurringIntentRecovery, type FrozenRecurringIntent, type NewTestTerms } from "../newTestSubscriptionContract";
+import { hasOriginalCreateProof, isLifecycleEventType, type SubscriptionObservation } from "./lifecycle";
 export type Scope = { organizationId: string; userId: string };
 export type OriginalCreateProof = { runtimeId: string; accountId: string; sessionId: string; outboundRequestKey: string; outboundRequestDigest: string; requestId: string; statusCode: number; observedIdempotencyKey?: string; observedAccountId?: string; apiVersion?: string };
 export type Intent = FrozenRecurringIntent & { originalCreateProof?: OriginalCreateProof; livemode: false; id: string; terms: NewTestTerms; email: string; runtimeId: string; accountId: string; sessionId: string | null; customerId: string | null; subscriptionId: string | null; revision: number };
@@ -14,7 +15,7 @@ export interface Transaction {
   contract(org: string): Promise<Contract | null>;
   legacyBinding(org: string): Promise<boolean>;
   eventExists(id: string): Promise<boolean>;
-  bind(contract: Contract, eventId: string): Promise<void>;
+  bind(contract: Contract, eventId: string, observation?: SubscriptionObservation): Promise<void>;
   creditEvidence(org: string, month: string, now: Date): Promise<{ usedCents: number; heldCents: number; paidTopUpsCents: number }>;
 }
 export interface Store { runtimeId: string; transaction<T>(operation: (tx: Transaction) => Promise<T>): Promise<T> }
@@ -25,7 +26,8 @@ export interface ProviderBoundary {
   create(request: string, key: string, scope?: Scope): Promise<{ id: string; url: string; accountId: string; livemode: boolean; originalCreateProof?: OriginalCreateProof }>;
   verifyAndRetrieve(rawBody: string, signature: string): Promise<{
     providerRequestKey: string; providerRequestDigest: string; eventId: string; accountId: string; livemode: boolean; organizationId: string; intentId: string;
-    catalogVersion: string; sessionId: string; sessionStatus: string; paymentStatus: string;
+    catalogVersion: string; sessionId: string; sessionStatus?: string; paymentStatus?: string;
+    eventType?: SubscriptionObservation["eventType"]; currentPeriodEndsAt?: string | null; cancelAtPeriodEnd?: boolean;
     customerId: string; subscriptionId: string; status: string; seatQuantity: number;
     price: Parameters<typeof matchNewTestTerms>[0]["price"];
   }>;
@@ -128,9 +130,13 @@ export function createNewTestSubscriptionService(options: {
       const account = mode();
       const before = await store.transaction(tx => tx.contract(organizationId));
       const observed = await provider.verifyAndRetrieve(rawBody, signature);
+      const eventType = observed.eventType ?? "checkout.session.completed";
+      const lifecycle = isLifecycleEventType(eventType);
       if (!observed.eventId || observed.accountId !== account.accountId || observed.livemode !== false || observed.organizationId !== organizationId
         || observed.catalogVersion !== NEW_TEST_CATALOG_VERSION || !observed.customerId || !observed.subscriptionId || !observed.sessionId
-        || observed.sessionStatus !== "complete" || observed.paymentStatus !== "paid") deny("signed_binding_mismatch");
+        || (!lifecycle && (eventType !== "checkout.session.completed" || observed.sessionStatus !== "complete" || observed.paymentStatus !== "paid"))) deny("signed_binding_mismatch");
+      if (lifecycle && (!before || typeof observed.cancelAtPeriodEnd !== "boolean" || typeof observed.currentPeriodEndsAt !== "string"
+        || !Number.isFinite(new Date(observed.currentPeriodEndsAt).getTime()))) deny("subscription_snapshot_invalid");
       const currentMode = mode();
       if (currentMode.accountId !== account.accountId) deny("test_runtime_changed");
       return store.transaction(async tx => {
@@ -141,6 +147,8 @@ export function createNewTestSubscriptionService(options: {
         if (!intent || intent.organizationId !== organizationId || intent.livemode !== false || intent.runtimeId !== store.runtimeId || intent.accountId !== account.accountId || intent.state === "prepared" || intent.state === "terminal_verified"
           || (intent.sessionId && intent.sessionId !== observed.sessionId)) deny("signed_binding_mismatch");
         if (observed.providerRequestKey !== intent.providerIdempotencyKey || observed.providerRequestDigest !== intent.requestDigest) deny("attempt_provenance_unavailable");
+        if (lifecycle && (!current || intent.state !== "bound" || !hasOriginalCreateProof(intent)
+          || current.sessionId !== intent.sessionId || current.originatingIntentId !== intent.id)) deny("attempt_provenance_unavailable");
         if (current && (current.originatingIntentId !== intent.id || current.customerId !== observed.customerId || current.subscriptionId !== observed.subscriptionId)) deny("replacement_requires_review");
         if (!current && await tx.legacyBinding(organizationId)) deny("existing_customer_unchanged");
         const matched = matchNewTestTerms({ planId: intent.terms.planId, interval: intent.terms.interval, seatQuantity: observed.seatQuantity, configuredPriceId: intent.terms.priceId, price: observed.price });
@@ -148,7 +156,8 @@ export function createNewTestSubscriptionService(options: {
         if (!["active", "past_due", "canceled", "trialing", "no_plan"].includes(observed.status)) deny("policy_unresolved");
         await tx.bind({ livemode: false, planId: intent.terms.planId, organizationId, originatingIntentId: intent.id, catalogVersion: NEW_TEST_CATALOG_VERSION, runtimeId: store.runtimeId,
           accountId: account.accountId, sessionId: observed.sessionId, customerId: observed.customerId, subscriptionId: observed.subscriptionId,
-          eventToken: observed.eventId, status: observed.status, seatQuantity: observed.seatQuantity }, observed.eventId);
+          eventToken: observed.eventId, status: observed.status, seatQuantity: observed.seatQuantity }, observed.eventId,
+          { eventType, currentPeriodEndsAt: observed.currentPeriodEndsAt ?? null, cancelAtPeriodEnd: observed.cancelAtPeriodEnd ?? false });
         await tx.saveIntent({ ...intent, state: "bound", sessionId: observed.sessionId, customerId: observed.customerId, subscriptionId: observed.subscriptionId, revision: intent.revision + 1 }, intent.revision);
         return "applied" as const;
       });
