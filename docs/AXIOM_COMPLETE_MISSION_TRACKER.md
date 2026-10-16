@@ -926,3 +926,30 @@ build and passed with a bounded 20-second per-test allowance. These local valida
 incidents are not suppressed application failures. Exact-head GitHub CI and merge
 remain pending. Real HTTP evidence remains attributed to `f7de88f0`; later commits
 only record documentation and results. No deployment or production change occurred.
+
+
+## Durable ECS review storage candidate — no execution authority
+
+PR #147 is merged as `cca52dfb61534b8d96ac8a602d604b49c376fc66` after both
+exact-head Test runs passed; actual CI included 591 files and the 293-page build.
+The next review-only core adds immutable application packets, append-only voter
+revisions and recomputed checkpoints through parameterized Serializable storage.
+Missing independent verification fails before persistence; current management
+authority and selected policy are checked before provider-boundary IO and again
+afterward. Execution is literally disabled, with no route, dispatcher or quota use.
+
+Integrated contract/service tests pass 80 cases, TypeScript and Prisma validation
+pass; the producer's real PostgreSQL17 lifecycle/revision-race rehearsal passed and
+its owned fixture was removed. Independent source review found no material blocker
+within this limited boundary. Final local regression passed 592 files / 6,193
+tests, desktop TypeScript/build, 30 Python tests, lint and tracker checks. Exact-head
+CI/build remains pending; this source adds no runtime route.
+Stored facts and checkpoints do not establish fresh provider readiness or atomic
+execution/revocation authority. Trusted provenance ingestion, full policy handling,
+execution claims and actual rollout/health/rollback remain unfinished.
+
+The new additive SQL is a separate unapproved proposal. Relative to the original
+observed ledger and this source set, expected pending proposals become 10 before
+and 9 after auth-only repair; those are source expectations, not new production
+observations. Generic `migrate deploy` can apply all eligible proposals: do not use
+it for auth-only repair. Exact recovery SQL and checksums are unchanged.
