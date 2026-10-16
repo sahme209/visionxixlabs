@@ -153,6 +153,9 @@ export function createNewTestSubscriptionService(options: {
         if (!current && await tx.legacyBinding(organizationId)) deny("existing_customer_unchanged");
         const matched = matchNewTestTerms({ planId: intent.terms.planId, interval: intent.terms.interval, seatQuantity: observed.seatQuantity, configuredPriceId: intent.terms.priceId, price: observed.price });
         if (matched.kind !== "supported_terms" || (!current && observed.seatQuantity !== intent.terms.seatQuantity)) deny("signed_terms_mismatch");
+        // Active subscription state does not independently prove collection for
+        // changed quantities. This inactive lane supports unchanged paid terms.
+        if (lifecycle && (observed.seatQuantity !== current?.seatQuantity || observed.seatQuantity !== intent.terms.seatQuantity)) deny("seat_change_requires_review");
         if (!["active", "past_due", "canceled", "trialing", "no_plan"].includes(observed.status)) deny("policy_unresolved");
         await tx.bind({ livemode: false, planId: intent.terms.planId, organizationId, originatingIntentId: intent.id, catalogVersion: NEW_TEST_CATALOG_VERSION, runtimeId: store.runtimeId,
           accountId: account.accountId, sessionId: observed.sessionId, customerId: observed.customerId, subscriptionId: observed.subscriptionId,

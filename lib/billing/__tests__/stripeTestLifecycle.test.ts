@@ -25,31 +25,50 @@ function fixture() {
     creditEvidence: async () => ({ usedCents: 0, heldCents: 0, paidTopUpsCents: 0 }) };
   const store: Store = { runtimeId: "runtime", transaction: async fn => fn(tx) };
   const subscription = { id: "sub_original", livemode: false, customer: "cus_original", metadata: { ...metadata }, status: "active", cancel_at_period_end: true,
-    items: { has_more: false, data: [{ quantity: 2, price: { ...price }, current_period_end: 1794787200 }] } };
+    items: { has_more: false, data: [{ quantity: 3, price: { ...price }, current_period_end: 1794787200 }] } };
   const sdk = new Stripe("sk_test_synthetic");
   const client = { accounts: { retrieve: vi.fn(async () => ({ id: "acct_test" })) }, prices: { retrieve: vi.fn(async () => structuredClone(price)) },
     subscriptions: { retrieve: vi.fn(async () => structuredClone(subscription)) }, checkout: { sessions: { retrieve: vi.fn(), create: vi.fn() } },
     webhooks: { constructEvent: sdk.webhooks.constructEvent.bind(sdk.webhooks) } };
   const provider = createStripeTestProvider({ secretKey: "sk_test_synthetic", webhookSecret: "whsec_synthetic", expectedAccountId: "acct_test", store,
     configuredPrices: { "pro:monthly": price.id }, sdkFactory: () => client as unknown as Stripe });
-  const service = createNewTestSubscriptionService({ store, provider, configuredPrices: { "pro:monthly": price.id }, now: () => 1_000_000, id: () => "unused", digest: text => createHash("sha256").update(text).digest("hex") });
+  const serviceFor = (boundary = provider) => createNewTestSubscriptionService({ store, provider: boundary, configuredPrices: { "pro:monthly": price.id }, now: () => 1_000_000, id: () => "unused", digest: text => createHash("sha256").update(text).digest("hex") });
+  const service = serviceFor();
   const delivery = (type = "customer.subscription.updated", id = "evt_lifecycle", hint: Record<string, unknown> = {}) => {
     const raw = JSON.stringify({ id, type, livemode: false, data: { object: { id: "sub_original", customer: "cus_original", livemode: false, metadata, status: "canceled", ...hint } } });
     return [raw, sdk.webhooks.generateTestHeaderString({ payload: raw, secret: "whsec_synthetic" }), "org"] as const;
   };
-  return { intent, subscription, client, provider, service, delivery, bind, events, store, setContract: (c: Contract | null) => { contract = c; }, contract: () => contract };
+  return { intent, subscription, client, provider, service, serviceFor, delivery, bind, events, store, setContract: (c: Contract | null) => { contract = c; }, contract: () => contract };
 }
 afterEach(() => vi.unstubAllEnvs());
 describe("inactive established TEST subscription lifecycle", () => {
-  it.each(["customer.subscription.created", "customer.subscription.updated", "customer.subscription.deleted"])("%s retrieves current state, retains event/period/cancel and permits current licensed seats", async type => {
+  it.each(["customer.subscription.created", "customer.subscription.updated", "customer.subscription.deleted"])("%s retrieves current state and retains event/period/cancel on unchanged paid terms", async type => {
     const f = fixture(); const original = structuredClone(f.intent);
     expect(await f.service.reconcile(...f.delivery(type))).toBe("applied");
-    expect(f.contract()).toMatchObject({ status: "active", seatQuantity: 2 });
+    expect(f.contract()).toMatchObject({ status: "active", seatQuantity: 3 });
     expect(f.bind).toHaveBeenCalledWith(expect.anything(), "evt_lifecycle", { eventType: type, currentPeriodEndsAt: "2026-11-16T00:00:00.000Z", cancelAtPeriodEnd: true });
     expect(f.intent.terms).toEqual(original.terms); expect(f.intent.originalCreateProof).toEqual(original.originalCreateProof);
     expect(f.client.checkout.sessions.retrieve).not.toHaveBeenCalled(); expect(f.client.checkout.sessions.create).not.toHaveBeenCalled();
     expect(await f.service.reconcile(...f.delivery(type))).toBe("replay");
     expect(f.bind).toHaveBeenCalledTimes(1);
+  });
+  it.each([2, 4])("SDK rejects active quantity 3→%s without consuming or changing established allowance", async quantity => {
+    const f = fixture(); const before = structuredClone({ contract: f.contract(), intent: f.intent });
+    f.subscription.items.data[0].quantity = quantity;
+    await expect(f.service.reconcile(...f.delivery())).rejects.toThrow("seat_change_requires_review");
+    expect(f.events.size).toBe(0); expect(f.bind).not.toHaveBeenCalled();
+    expect({ contract: f.contract(), intent: f.intent }).toEqual(before);
+    expect(await f.service.previewRemaining({ organizationId: "org", userId: "owner" })).toMatchObject({ remainingCents: 3000 });
+  });
+  it.each([2, 4])("service independently rejects active quantity 3→%s from its trusted provider port", async quantity => {
+    const f = fixture(); const before = structuredClone({ contract: f.contract(), intent: f.intent });
+    const service = f.serviceFor({ ...f.provider, verifyAndRetrieve: async (raw, signature) => ({ ...await f.provider.verifyAndRetrieve(raw, signature), seatQuantity: quantity }) });
+    await expect(service.reconcile(...f.delivery())).rejects.toThrow("seat_change_requires_review");
+    expect(f.events.size).toBe(0); expect(f.bind).not.toHaveBeenCalled(); expect({ contract: f.contract(), intent: f.intent }).toEqual(before);
+  });
+  it("does not adopt a drifted bound seat quantity without original paid terms", async () => {
+    const f = fixture(); f.subscription.items.data[0].quantity = 2; f.setContract({ ...f.contract()!, seatQuantity: 2 });
+    await expect(f.service.reconcile(...f.delivery())).rejects.toThrow("seat_change_requires_review"); expect(f.events.size).toBe(0);
   });
   it.each([["active", "active"], ["trialing", "trialing"], ["past_due", "past_due"], ["unpaid", "past_due"], ["canceled", "canceled"], ["incomplete_expired", "canceled"], ["incomplete", "no_plan"], ["paused", "no_plan"]])("maps current %s to %s", async (status, expected) => {
     const f = fixture(); f.subscription.status = status;

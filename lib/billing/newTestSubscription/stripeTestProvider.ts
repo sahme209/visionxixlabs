@@ -87,6 +87,7 @@ export function createStripeTestProvider(options: {
           || bound.sessionId !== i.sessionId || bound.customerId !== i.customerId || bound.subscriptionId !== i.subscriptionId
           || hint.id !== bound.subscriptionId || hint.customer !== bound.customerId || hint.livemode !== false
           || hint.metadata?.organizationId !== i.organizationId || hint.metadata?.catalogVersion !== NEW_TEST_CATALOG_VERSION) fail("signed_binding_mismatch");
+        if (bound.seatQuantity !== i.terms.seatQuantity) fail("seat_change_requires_review");
         runtime();
         const sub = await stripe.subscriptions.retrieve(bound.subscriptionId);
         runtime();
@@ -94,6 +95,7 @@ export function createStripeTestProvider(options: {
         if (sub.id !== bound.subscriptionId || sub.livemode !== false || sub.customer !== bound.customerId || sub.items.has_more !== false || sub.items.data.length !== 1 || !item
           || sub.metadata.intentId !== i.id || sub.metadata.organizationId !== i.organizationId || sub.metadata.catalogVersion !== NEW_TEST_CATALOG_VERSION
           || sub.metadata.planId !== i.terms.planId || sub.metadata.billingInterval !== i.terms.interval || item.price.id !== i.terms.priceId) fail("signed_terms_mismatch");
+        if (item.quantity !== bound.seatQuantity) fail("seat_change_requires_review");
         if (!item.price.recurring || item.price.unit_amount === null || matchNewTestTerms({ planId: i.terms.planId, interval: i.terms.interval,
           seatQuantity: item.quantity!, configuredPriceId: i.terms.priceId, price: { ...item.price, unit_amount: item.price.unit_amount, recurring: item.price.recurring } }).kind !== "supported_terms") fail("signed_terms_mismatch");
         const observation = lifecycleObservation(sub.status, item.current_period_end, sub.cancel_at_period_end);

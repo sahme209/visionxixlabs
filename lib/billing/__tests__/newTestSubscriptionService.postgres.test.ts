@@ -213,15 +213,24 @@ suite("owned PG17 new TEST subscription service, synthetic provider only", () =>
     expect(await db.tenantBillingPlan.findUnique({ where: { organizationId: actor.organizationId } })).toMatchObject({ status: "active", seatQuantity: 3, cancelAtPeriodEnd: true, currentPeriodEndsAt: new Date(period * 1000) });
     expect(await db.stripeBillingEvent.findUnique({ where: { id: "evt-sdk-scheduled" } })).toMatchObject({ type: "customer.subscription.updated" });
     expect(await service.previewRemaining(actor)).toMatchObject({ remainingCents: 2550 });
+    for (const changed of [4, 2]) {
+      quantity = changed;
+      const planBeforeChange = await db.tenantBillingPlan.findUnique({ where: { organizationId: actor.organizationId } });
+      await expect(deliver(`evt-sdk-seat-change-${changed}`)).rejects.toThrow("seat_change_requires_review");
+      expect(await db.stripeBillingEvent.findUnique({ where: { id: `evt-sdk-seat-change-${changed}` } })).toBeNull();
+      expect(await db.tenantBillingPlan.findUnique({ where: { organizationId: actor.organizationId } })).toEqual(planBeforeChange);
+      expect(await financial()).toEqual(before); expect(await service.previewRemaining(actor)).toMatchObject({ remainingCents: 2550 });
+    }
+    quantity = 3;
     lifecycleStatus = "unpaid"; cancel = false;
     expect(await deliver("evt-sdk-failed")).toBe("applied"); expect(await service.previewRemaining(actor)).toMatchObject({ remainingCents: 0 });
     expect(await store.reserveCredits(actor, { idempotencyKey: "lifecycle_fail_no_hold", reservedCents: 1 }, new Date(now))).toMatchObject({ ok: false, error: "ai_credit_pool_exhausted" });
-    lifecycleStatus = "active"; quantity = 2; period += 30 * 86400;
+    lifecycleStatus = "active"; period += 30 * 86400;
     expect(await deliver("evt-sdk-renewed", "customer.subscription.created")).toBe("applied");
-    expect(await service.previewRemaining(actor)).toMatchObject({ remainingCents: 1550 });
-    expect(await db.tenantBillingPlan.findUnique({ where: { organizationId: actor.organizationId } })).toMatchObject({ currentPeriodEndsAt: new Date(period * 1000), cancelAtPeriodEnd: false, seatQuantity: 2 });
-    expect(await deliver("evt-sdk-distinct-delayed")).toBe("applied"); expect(await service.previewRemaining(actor)).toMatchObject({ remainingCents: 1550 });
-    expect(await deliver("evt-sdk-failed")).toBe("replay"); expect(await service.previewRemaining(actor)).toMatchObject({ remainingCents: 1550 });
+    expect(await service.previewRemaining(actor)).toMatchObject({ remainingCents: 2550 });
+    expect(await db.tenantBillingPlan.findUnique({ where: { organizationId: actor.organizationId } })).toMatchObject({ currentPeriodEndsAt: new Date(period * 1000), cancelAtPeriodEnd: false, seatQuantity: 3 });
+    expect(await deliver("evt-sdk-distinct-delayed")).toBe("applied"); expect(await service.previewRemaining(actor)).toMatchObject({ remainingCents: 2550 });
+    expect(await deliver("evt-sdk-failed")).toBe("replay"); expect(await service.previewRemaining(actor)).toMatchObject({ remainingCents: 2550 });
     lifecycleStatus = "past_due";
     await expect(deliver("evt-injected-rollback")).rejects.toThrow();
     expect(await db.stripeBillingEvent.findUnique({ where: { id: "evt-injected-rollback" } })).toBeNull();
@@ -308,8 +317,8 @@ suite("owned PG17 new TEST subscription service, synthetic provider only", () =>
       for (const phase of [
         { event: "evt-http-scheduled", status: "active", seats: 3, cancel: true, pool: "$30.00", remaining: "$27.50", exhausted: false },
         { event: "evt-http-past-due", status: "past_due", seats: 3, cancel: false, pool: "$2.00", remaining: "$0.00", exhausted: true },
-        { event: "evt-http-recovered", status: "active", seats: 2, cancel: false, pool: "$20.00", remaining: "$17.50", exhausted: false },
-        { event: "evt-http-canceled", status: "canceled", seats: 2, cancel: false, pool: "$2.00", remaining: "$0.00", exhausted: true },
+        { event: "evt-http-recovered", status: "active", seats: 3, cancel: false, pool: "$30.00", remaining: "$27.50", exhausted: false },
+        { event: "evt-http-canceled", status: "canceled", seats: 3, cancel: false, pool: "$2.00", remaining: "$0.00", exhausted: true },
       ]) {
         httpEvent = phase.event; httpStatus = phase.status; httpSeats = phase.seats; httpCancel = phase.cancel;
         httpType = phase.status === "canceled" ? "customer.subscription.deleted" : "customer.subscription.updated";

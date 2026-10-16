@@ -67,8 +67,9 @@ subscription-entitlement slice. Both remain deferred.
    organization/intent/session/customer/subscription identity before retrieval.
    Independently read current account and retrieve the exact bound subscription.
    Validate full single licensed item, approved configured TEST price/product and
-   frozen plan/interval. Licensed quantity may change to a positive safe integer;
-   original checkout quantity/terms/proof remain immutable. No subscription write
+   frozen plan/interval. Licensed quantity must match both the exact current bound contract and the
+   original proved paid quantity; all quantity changes remain unsupported.
+   Original checkout quantity/terms/proof remain immutable. No subscription write
    or change request is added.
 3. Signed event contents only trigger current-state retrieval; event IDs/times
    never order state. Map Stripe statuses to existing application states:
@@ -87,7 +88,7 @@ subscription-entitlement slice. Both remain deferred.
    provider denial is checked before each external IO, including flag drift.
 6. Active scheduled cancellation retains paid allowance until provider state
    becomes inactive. Past-due/canceled use Free $2/org/month for new spending;
-   active recovery restores the current verified seat pool. Renewal changes
+   active recovery restores the unchanged verified paid-seat pool. Renewal changes
    period observation, not credit balances or UTC-month allocation. Existing
    usage, purchased credits, unresolved holds, identity and records survive all
    transitions. Exhaustion denies before any new hold; recovery never enables
@@ -105,29 +106,29 @@ Files: `lib/billing/newTestSubscription/service.ts`,
 `lib/billing/newTestSubscription/stripeTestProvider.ts`, a focused pure lifecycle
 validator if needed, and `lib/billing/__tests__/stripeTestLifecycle.test.ts`.
 
-- [ ] Write failing tests for signed lifecycle triggers on exact bound original
+- [x] Write failing tests for signed lifecycle triggers on exact bound original
   proof, current-state retrieval, status mapping, scheduled cancellation, period
-  validation, positive seat changes and unsupported plan/interval changes.
-- [ ] Cover unbound/proofless/foreign identities, malformed/paginated/mixed items,
+  validation, unchanged seats and unsupported quantity/plan/interval changes.
+- [x] Cover unbound/proofless/foreign identities, malformed/paginated/mixed items,
   invalid signatures/live mode, account/runtime drift and zero IO under isolated
   application flag (including flag changes between awaited operations).
-- [ ] Extend `ProviderBoundary.verifyAndRetrieve` with typed event/lifecycle
+- [x] Extend `ProviderBoundary.verifyAndRetrieve` with typed event/lifecycle
   observation; preserve existing checkout behavior and legacy trusted fixtures.
-- [ ] Run focused adapter/service tests and confirm the new cases pass.
+- [x] Run focused adapter/service tests and confirm the new cases pass.
 
 ### Task 2: Existing durable consumer and owned PG lifecycle progression
 
 Files: `lib/billing/newTestSubscription/postgresFixtureStore.ts`,
 `lib/billing/__tests__/newTestSubscriptionService.postgres.test.ts`.
 
-- [ ] Write failing actual PG assertions for event type, cancellation/period
+- [x] Write failing actual PG assertions for event type, cancellation/period
   persistence, active→scheduled-cancel→past-due→active→canceled progression,
   current-state late delivery, duplicate replay and unchanged financial rows.
-- [ ] Pass observations to `consumeSubscriptionEventInTransaction`; retain
+- [x] Pass observations to `consumeSubscriptionEventInTransaction`; retain
   Serializable token fencing, immutable contract body and originating intent.
-- [ ] Verify rollback leaves no event/state change and concurrent observations
+- [x] Verify rollback leaves no event/state change and concurrent observations
   consume only the winner. Preserve current usage/top-ups/holds across transition.
-- [ ] Run owned fixture only with its existing explicit local opt-in, cached
+- [x] Run owned fixture only with its existing explicit local opt-in, cached
   PG17 image and `db push --skip-generate`; never generate shared Prisma output.
 
 ### Task 3: Actual customer application evidence and documentation
@@ -137,14 +138,14 @@ Files: existing owned PG/Next test above;
 `docs/STRIPE_TEST_ORIGINAL_ATTEMPT_PROOF.md`,
 `docs/BILLING_CUSTOMER_JOURNEY_ACCEPTANCE.md`, this report.
 
-- [ ] Extend the existing authenticated local Next flow to observe scheduled
+- [x] Extend the existing authenticated local Next flow to observe scheduled
   cancellation retaining $30, past-due/canceled Free $2 with unresolved holds,
-  denied exhausted admission with no new hold, and active recovery to verified
-  seats without new credits/usage. Perform lifecycle updates through the service
+  denied exhausted admission with no new hold, and active recovery to the same verified
+  paid seats without new credits/usage. Perform lifecycle updates through the service
   outside the app; retain route/provider denial inside the app.
-- [ ] Verify signed SDK remote reads remain mocked and synthetic trusted fixture
+- [x] Verify signed SDK remote reads remain mocked and synthetic trusted fixture
   setup is labeled; actual HTTP/SQL evidence must not become hosted Stripe proof.
-- [ ] Update corresponding documentation with precise local evidence/remaining
+- [x] Update corresponding documentation with precise local evidence/remaining
   gates, preserving support flow and existing-customer scope.
 - [ ] Request independent read-only review through the coordinator before full
   integration gates. Run focused lint/types first; coordinate heavy suites/build.
@@ -155,7 +156,8 @@ Files: existing owned PG/Next test above;
   checkout alone; only the exact existing verified contract qualifies.
 * A delayed distinct event retrieves current state and cannot overwrite a newer
   concurrent local token. No lexical/timestamp event ordering is introduced.
-* Current subscription seat changes do not mutate the original request/proof.
+* Subscription seat changes are denied without consumption or ledger mutation;
+  the unchanged bound quantity must agree with the original paid terms.
 * Scheduled cancellation must not revoke active paid access early, and payment
   recovery must not reset used/held/paid-credit evidence or mint credits.
 * The inactive adapter must still stop before every SDK read if the isolated
@@ -163,7 +165,7 @@ Files: existing owned PG/Next test above;
 
 ## Execution record
 
-Coordinator reviewed and approved this plan on2026-10-16 for inline execution.
+Coordinator reviewed and approved this plan on 2026-10-16 for inline execution.
 Task1 source and tests are implemented:35 lifecycle cases plus existing proof,
 contract and durable consumer regressions pass133 tests across5 files. Fifteen
 new lifecycle cases failed before implementation; two further strict price-shape
@@ -172,11 +174,16 @@ and pagination cases failed before their guard changes.
 Task2 first owned PG run failed on the expected missing cancellation/period
 observation; its persistence fix passed6 tests with the HTTP case skipped.
 Task3 initial actual Next/PG progression passed7 tests in46.46s. Final candidate
-adds the recovered100c admission/release assertion and explicit existing-top-up
-and lifecycle rollback checks; its pinned final HTTP/PG run is pending the
-coordinator's exclusive window. Focused source lint passes. Initial web TypeScript
+`d4b31cdc6de3772aaa443846047f070a83eace6a` adds the recovered100c admission/release
+assertion and explicit existing-top-up and lifecycle rollback checks. Its final
+owned HTTP/PG run passed7 tests in42.03s from a clean worktree under the
+coordinator's exclusive window (Node24.19.0). No product/test changes followed.
+Cleanup found zero owned commercial-test containers and no owned Next process;
+an unrelated pre-existing Next server remained untouched. Focused source lint
+passes. Initial web TypeScript
 reported only missing desktop dependency-overlay modules; the approved local
-overlay is now linked and final TypeScript follows the owned HTTP run.
+overlay was linked and final TypeScript passed with exit 0 after the owned HTTP
+run. This validation precedes the independent-review amendment below.
 
 Ruling: this single document carries the approved spec, implementation plan and
 execution ledger because the coordinator explicitly requested a concrete combined
@@ -187,3 +194,25 @@ Coordinator owns independent review, integration and full gates. Secure Stripe
 account/key/webhook/prices remain unavailable; no actual Stripe API operation is
 planned or claimed. The original source findings above describe the audit base,
 not the implemented candidate.
+
+## Independent review amendment
+
+The independent review of `d4b31cdc` found one material P1: active subscription
+quantity alone cannot prove collection for an enlarged paid-seat allowance. The
+coordinator approved conservative unsupported behavior for every lifecycle
+quantity change. SDK and service boundaries now require both the exact bound
+quantity and consistency with original proved paid terms. Status recovery retains
+the same three-seat $30 base. Price, interval, seat upgrades/downgrades and
+replacement remain unsupported pending an explicit collection strategy.
+
+Five new SDK/service regressions failed by incorrectly applying 3→4, 3→2 and a
+drifted bound quantity before the fix. The owned PG checks now require rejected
+quantity events to leave the event ledger, plan, credits, usage and holds intact.
+The final post-review runtime candidate requires scoped review and a newly
+granted final HTTP/PG and TypeScript window; the earlier positive HTTP evidence
+is historical evidence for its recorded source.
+
+Ruling: reject all lifecycle quantity changes rather than infer payment from
+active state — collection authority is absent — the cost is deferred TEST seat
+upgrade/downgrade acceptance. Legacy/support behavior and the shared event
+consumer remain unchanged.

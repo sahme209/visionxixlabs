@@ -122,3 +122,28 @@ bounded evidence. OAuth/email/signup/native desktop and governed cloud deploymen
 are not exercised by this credentials/read/admission slice. Extending the
 allowlist requires its own version-aware admission/read/role/provider review.
 Production/live activation or migration still requires explicit owner approval.
+
+## Local established-subscription lifecycle continuation
+
+At clean source `d4b31cdc`, the owned PostgreSQL/actual Next fixture additionally
+verified active scheduled cancellation retaining the three-seat $30 allowance;
+past-due reducing the new TEST base to Free $2; active recovery; and cancellation
+returning to Free $2. The existing $2.50 unresolved hold remains
+across every transition. Exhausted inactive admission creates no new hold.
+Recovered active admission creates its actual 100c hold, then provider-disabled
+failure releases it without generated usage. Original request/terms/proof,
+existing financial records and accepted identity are preserved.
+
+Final pinned fixture:7 tests passed in42.03s. Lifecycle setup outside the running
+application uses an explicitly synthetic trusted provider port; separate SDK/PG
+regressions verify local signatures with all remote Stripe reads mocked. No
+webhook HTTP route, provider permit, real Stripe call, live configuration or
+desktop/cloud access is added. Period/cancellation/actual event type persist
+through the existing authoritative subscription consumer. This proves local
+application behavior, not hosted Stripe renewal, collection or payment recovery.
+See `ISOLATED_TEST_SUBSCRIPTION_LIFECYCLE_PLAN.md`.
+
+Independent review subsequently required all lifecycle quantity changes to deny
+until a collection strategy exists. The post-review candidate keeps recovery on
+the original three-seat $30 terms and requires a new pinned local validation run.
+The recorded `d4b31cdc` run remains historical evidence, not proof for that fix.

@@ -90,6 +90,21 @@ required; failures remain unconsumed. Replacement needs explicit authority rathe
 than silently rebinding a tenant. Local composed regressions are not actual Stripe
 provider delivery, collection, invoice refunds or commercial-policy acceptance.
 
+Local new TEST lifecycle follow-up: `ISOLATED_TEST_SUBSCRIPTION_LIFECYCLE_PLAN.md`
+extends only the inactive original-proof adapter for already-bound subscriptions.
+Created/updated/deleted notifications retrieve current state and retain actual
+event type, period and scheduled cancellation through the same durable consumer.
+The clean `d4b31cdc` owned PostgreSQL/actual Next run passed 7 tests, including
+scheduled-cancel paid allowance, past-due/canceled Free exhaustion, active
+active recovery and provider-disabled 100c hold release. Financial rows
+and original terms remain preserved; no credit grants or provider success are
+fabricated. Local SDK signatures use synthetic secrets and remote fixtures.
+Hosted Stripe renewal, invoice collection and payment-failure acceptance remain
+unverified. Price/interval changes, replacements and existing customers retain
+their previous behavior. Independent review subsequently required all lifecycle
+quantity changes to deny without event/plan/credit/hold mutation; same-quantity
+three-seat recovery requires a new pinned validation after that fix.
+
 ## Full commercial lifecycle source audit · 2026-10-16
 
 Audit base: main PR #147, `cca52dfb`. This is source inspection and existing
