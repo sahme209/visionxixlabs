@@ -872,15 +872,20 @@ Concurrent losers do not emit success audits. JSON list/history reads are tenant
 scoped; ordinary accepted members retain read access. Failed execution recovery
 requires a separately reviewed workflow instead of replacing terminal approval.
 
-Actual synthetic local HTTP signup/proof/password/session/workspace acceptance
-passed on source `364b048d`; it used real Next routes, PostgreSQL17, CSRF/cookies
-and loopback SDK mail capture. It did not exercise production migrations or
-external mail. The integrated clean-commit rehearsal additionally includes real
-backend pairing/consumption/revocation and competing approval decisions, and
-remains pending until its exact source/result is recorded. Browser/native,
-Google/GitHub OAuth, real cloud deployment/rollback and Stripe acceptance remain
-unverified. The explicit existing desktop commercial policy is identity-only;
-pairing success must not be reported as verified paid entitlement enforcement.
+Actual integrated synthetic local HTTP acceptance passed on committed source
+`f7de88f0c0d5cffe0d15234534453c4068e41d9c`: eleven signup/proof/password/session/
+workspace assertions, ten desktop protocol assertions (device binding, explicit
+approval, cookie-free single consumption, replay denial, membership, listing and
+revocation), and four approval decision assertions (foreign-origin denial,
+competing 303/409, persisted actor/time and terminal retention). It used real
+Next routes, PostgreSQL17, CSRF/cookies and loopback SDK mail capture; owned
+fixtures and servers were removed. Approval headers use actual Next loopback
+normalization, explicitly synthetic HTTP metadata rather than browser evidence.
+See `docs/mission/local-auth-http-acceptance.json`. Production migrations/login,
+external mail, Google/GitHub OAuth, browser/native/vault, real cloud deployment/
+rollback and Stripe acceptance remain unverified. The existing desktop response
+allowed identity access with no billing plan; paid-entitlement enforcement is
+NOT verified and its policy decision remains separate.
 
 Airflow's existing latest-success dependency policy is preserved. Strict business-
 partition correlation needs an explicit per-rule policy and compatible, separately

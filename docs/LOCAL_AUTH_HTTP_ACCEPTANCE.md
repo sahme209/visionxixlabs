@@ -1,7 +1,7 @@
 # Isolated real HTTP authentication acceptance
 
-Evidence: 2026-10-15 (America/New_York), application commit `364b048d5b13d762170c7e86882f0cfacc1e847c`.
-This is a local application-route/session milestone, not production recovery or browser/native acceptance.
+Evidence: 2026-10-15 (America/New_York), application/harness commit `f7de88f0c0d5cffe0d15234534453c4068e41d9c`.
+This is a local application-route/session, desktop-protocol and approval-decision milestone, not production recovery or browser/native acceptance.
 
 ## What ran
 
@@ -17,6 +17,12 @@ The successful run verified:
 6. Single-use verification and callback preservation; replay denied.
 7. Incorrect password denied after verification; correct password accepted through actual CSRF/credentials transport and session cookie.
 8. Exactly one accepted owner membership in the synthetic customer's derived personal workspace, a hashed password, and no tenant billing plan created.
+
+The same committed-source run additionally verified ten actual desktop protocol assertions: authenticated consent metadata, device-bound pending poll, wrong-device and unbound-poll denial, browser-session approval, cookie-free one-time consumption, replay denial, paired identity/current membership, owner listing and revocation invalidating the bearer. These are HTTP protocol results, not packaged native/browser/vault acceptance.
+
+Four approval assertions passed against PostgreSQL: foreign-origin refusal, competing form decisions yielding one 303 and one 409, persisted authenticated actor/time, and terminal decision retention. This does not establish provider execution, saved Terraform plan authority or deterministic simultaneous database snapshots.
+
+The desktop commercial-access response reported `allowed: true` with `billingStatus: no_plan`, matching the existing identity-only policy. This is an explicit policy observation, **not verified paid-entitlement enforcement**; no billing plan was created and no policy was changed.
 
 Sanitized result: [local auth HTTP report](mission/local-auth-http-acceptance.json).
 Separate safety regressions cover target validation, credential/environment isolation and dotenv refusal. They complement, rather than substitute for, the real HTTP run.
@@ -55,4 +61,4 @@ these prepared continuations are marked verified.
 
 ## Integrated approval HTTP origin qualification
 
-The installed Next.js `NextRequest` normalizes literal loopback IP URLs to `localhost`. The initial integrated fixture therefore received 403 for its literal-IP Origin header, rather than reaching an approval decision. The harness now derives only the approval Origin/Referer metadata with the actual installed `NextRequest` normalization; application, database and mail transport still require literal `127.0.0.1`. Application same-origin checks are unchanged, and the foreign-origin refusal remains tested. This is explicit synthetic HTTP metadata, **not evidence that a real browser at a literal-IP origin can submit the same form**. Integrated approval/pairing results are not upgraded until the final committed-source rehearsal succeeds.
+The installed Next.js `NextRequest` normalizes literal loopback IP URLs to `localhost`. The initial integrated fixture therefore received 403 for its literal-IP Origin header, rather than reaching an approval decision. The harness now derives only the approval Origin/Referer metadata with the actual installed `NextRequest` normalization; application, database and mail transport still require literal `127.0.0.1`. Application same-origin checks are unchanged, and the foreign-origin refusal remains tested. This is explicit synthetic HTTP metadata, **not evidence that a real browser at a literal-IP origin can submit the same form**. The committed-source rehearsal subsequently passed on `f7de88f0`; this qualification remains part of its acceptance scope.

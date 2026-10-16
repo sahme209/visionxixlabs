@@ -3,7 +3,51 @@
   "evidenceTimezone": "America/New_York",
   "fixtureCleanup": "disposable_container_removed",
   "productionChanges": false,
-  "sourceCommit": "364b048d5b13d762170c7e86882f0cfacc1e847c",
+  "sourceCommit": "f7de88f0c0d5cffe0d15234534453c4068e41d9c",
+  "desktopPairing": {
+    "verified": [
+      "authenticated_consent_metadata",
+      "device_bound_pending_poll",
+      "wrong_device_denied",
+      "legacy_unbound_poll_denied",
+      "web_session_pairing_approval",
+      "cookie_free_pairing_consume",
+      "single_use_pairing_replay_denied",
+      "paired_identity_current_workspace_membership",
+      "owner_pairing_listing",
+      "owner_revocation_invalidates_bearer"
+    ],
+    "commercialAccessObservation": {
+      "allowed": true,
+      "code": "active",
+      "billingStatus": "no_plan",
+      "enforcement": "not_verified_policy_decision_required"
+    },
+    "notVerified": [
+      "native_browser_or_vault",
+      "production_pairing",
+      "billing_enforcement",
+      "cloud_or_deployment_authority",
+      "provider_execution"
+    ]
+  },
+  "approvalDecisions": {
+    "transport": "real_local_next_http",
+    "requestMetadata": "next_request_normalized_loopback_headers_not_browser",
+    "persistence": "real_disposable_postgresql",
+    "verified": [
+      "cross_origin_decision_denied",
+      "parallel_decisions_one303_one409",
+      "persisted_authenticated_actor_and_time",
+      "terminal_decision_retained"
+    ],
+    "notVerified": [
+      "provider_execution",
+      "saved_terraform_plan_authority",
+      "production_approval_or_login",
+      "deterministic_simultaneous_database_snapshots"
+    ]
+  },
   "schemaFixture": "current_schema_not_migration_recovery",
   "transport": "real_local_next_http",
   "database": "disposable_synthetic_postgresql",

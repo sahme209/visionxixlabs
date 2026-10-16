@@ -41861,7 +41861,7 @@
       "engineeringActivity": "active",
       "owner": "Codex integrated parallel workstreams",
       "activeMilestone": "Verify serving deployment and preflight target equality, actual recoverable timestamp and isolated restore readiness.",
-      "verification": "Neon read-only metadata confirms reported target, PostgreSQL 17, six-hour retention and 10/10 branch capacity; SELECT-only schema/history matches preflight,99 completed migrations and no active source checksum drift. Founder mapping passed protected preflight. New source adds a separately gated AWS storage proposal; isolated PostgreSQL16/17 auth fixture preserves original failed history and applies only the unchanged auth SQL. Latest operator comparison remains not yet verified; no production changes authorized. Real synthetic NextHTTP/PostgreSQL signup, proof, credentials/cookies and accepted workspace passed on recorded source364b048d; expanded integrated pairing/approval fixture is pending. No production/browser/provider/native inference.",
+      "verification": "Neon read-only metadata confirms reported target, PostgreSQL 17, six-hour retention and 10/10 branch capacity; SELECT-only schema/history matches preflight,99 completed migrations and no active source checksum drift. Founder mapping passed protected preflight. New source adds a separately gated AWS storage proposal; isolated PostgreSQL16/17 auth fixture preserves original failed history and applies only the unchanged auth SQL. Latest operator comparison remains not yet verified; no production changes authorized. Real integrated synthetic NextHTTP/PostgreSQL acceptance passed on committed sourcef7de88f0:11auth assertions,10desktop HTTP protocol assertions through consume/replay/revoke,4approval assertions through competing303/409 and persisted actor/time. Approval metadata follows actual Next loopback normalization; no browser/production/provider/native inference. Existing identity-only commercial response allowed no-plan access; paid-entitlement enforcement is NOTverified.",
       "evidence": [
         "docs/PRODUCTION_AUTH_RECOVERY_PLAN.md",
         "docs/EMAIL_PROOF_ATOMIC_RECOVERY.md",
@@ -41869,7 +41869,8 @@
         "docs/mission/neon-readiness-inspection.json",
         "docs/mission/aws-enrollment-schema-rehearsal.json",
         "docs/NEON_PREVIEW_CAPACITY_AUDIT.md",
-        "docs/LOCAL_AUTH_HTTP_ACCEPTANCE.md"
+        "docs/LOCAL_AUTH_HTTP_ACCEPTANCE.md",
+        "docs/mission/local-auth-http-acceptance.json"
       ],
       "customerAcceptance": "Not verified",
       "acceptanceDependencies": [],
@@ -42038,7 +42039,7 @@
       "engineeringActivity": "active",
       "owner": "Codex integrated parallel workstreams",
       "activeMilestone": "Validate native/frontend version alignment and prepare immutable candidate-only release approval.",
-      "verification": "Local source checks align npm/Tauri/Cargo and lock identities, with negative command fixtures. Current published installer acceptance and native upgrade/vault migration remain unverified; existing release assets were not replaced. Real synthetic NextHTTP/PostgreSQL signup, proof, credentials/cookies and accepted workspace passed on recorded source364b048d; expanded integrated pairing/approval fixture is pending. No production/browser/provider/native inference.",
+      "verification": "Local source checks align npm/Tauri/Cargo and lock identities, with negative command fixtures. Current published installer acceptance and native upgrade/vault migration remain unverified; existing release assets were not replaced. Real integrated synthetic NextHTTP/PostgreSQL acceptance passed on committed sourcef7de88f0:11auth assertions,10desktop HTTP protocol assertions through consume/replay/revoke,4approval assertions through competing303/409 and persisted actor/time. Approval metadata follows actual Next loopback normalization; no browser/production/provider/native inference. Existing identity-only commercial response allowed no-plan access; paid-entitlement enforcement is NOTverified.",
       "evidence": [
         "docs/DESKTOP_BROWSER_PAIRING_CANCELLATION.md",
         "docs/DESKTOP_NATIVE_CREDENTIAL_BACKENDS.md",
@@ -42047,7 +42048,8 @@
         "docs/DESKTOP_AWS_READONLY_ENROLLMENT.md",
         "scripts/desktop-release-versions.mjs",
         "lib/desktop/__tests__/desktopReleaseVersions.test.ts",
-        "docs/LOCAL_AUTH_HTTP_ACCEPTANCE.md"
+        "docs/LOCAL_AUTH_HTTP_ACCEPTANCE.md",
+        "docs/mission/local-auth-http-acceptance.json"
       ],
       "customerAcceptance": "Not verified",
       "acceptanceDependencies": [
@@ -42112,11 +42114,12 @@
       "engineeringActivity": "active",
       "owner": "Codex integrated parallel workstreams",
       "activeMilestone": "Run combined regression gates and collect real authorized customer-journey evidence.",
-      "verification": "Focused failing-before regressions exist in all six parallel implementation streams. Actual disposable PostgreSQL16/17 schema/full-history fixtures preserve original auth/Agent checksums and failed history; service/provider boundaries remain simulated. Real synthetic NextHTTP/PostgreSQL signup, proof, credentials/cookies and accepted workspace passed on recorded source364b048d; expanded integrated pairing/approval fixture is pending. No production/browser/provider/native inference.",
+      "verification": "Focused failing-before regressions exist in all six parallel implementation streams. Actual disposable PostgreSQL16/17 schema/full-history fixtures preserve original auth/Agent checksums and failed history; service/provider boundaries remain simulated. Real integrated synthetic NextHTTP/PostgreSQL acceptance passed on committed sourcef7de88f0:11auth assertions,10desktop HTTP protocol assertions through consume/replay/revoke,4approval assertions through competing303/409 and persisted actor/time. Approval metadata follows actual Next loopback normalization; no browser/production/provider/native inference. Existing identity-only commercial response allowed no-plan access; paid-entitlement enforcement is NOTverified.",
       "evidence": [
         "docs/CRITICAL_RECOVERY_AND_CUSTOMER_ACCEPTANCE.md",
         "docs/mission/aws-enrollment-schema-rehearsal.json",
-        "docs/LOCAL_AUTH_HTTP_ACCEPTANCE.md"
+        "docs/LOCAL_AUTH_HTTP_ACCEPTANCE.md",
+        "docs/mission/local-auth-http-acceptance.json"
       ],
       "customerAcceptance": "Not verified",
       "acceptanceDependencies": [
