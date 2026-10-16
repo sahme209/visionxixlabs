@@ -1365,4 +1365,8 @@ and PR [38847192840](https://github.com/sahme209/visionxixlabs/actions/runs/3884
 checks passed: 6447 tests, TypeScript and both 293-page production builds.
 Desktop CI was excluded by its existing path filters; local desktop gates passed.
 The GitHub reader branch preserves both tracker sections while integrating this
-main revision. Combined-source regression checks remain required before its PR.
+main revision. Combined local regression then passed 6517 tests across 612 files
+(five owned PostgreSQL opt-ins skipped), web and desktop TypeScript, desktop
+build/release alignment, and 30 Python CLI tests. Canonical workstream data was
+updated before regenerating the requirement register. Exact-head GitHub CI and
+its clean production build remain required before merging the reader.

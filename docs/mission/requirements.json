@@ -41902,19 +41902,21 @@
       "status": "Partially implemented",
       "engineeringActivity": "active",
       "owner": "Codex integrated parallel workstreams",
-      "activeMilestone": "Define versioned dispatch contract binding approved source and immutable artifact.",
-      "verification": "Workflow shell regression coverage; existing App scope controls retained. ECS receipts and rendered desktop/web views distinguish requested intent, raw workflow status and unverified artifact/health/image recovery. Server-owned ECS capability rejects artifact promotion; emergency and dashboard paths separately check required promotion before dispatch. Independent review accepted the narrow promotion-denial scope. Full 5,985-test regression plus final focused policy/UI cases, web/desktop types/builds and Python checks passed; exact-head CI remains required before merge. ECS v2 pure candidate/evidence comparisons pass 63 tests; repository-bound promotion and exact run/attempt are checked. No trusted IO, storage, authority or dispatch is enabled.",
+      "activeMilestone": "Validate tenant-scoped GitHub build evidence without enabling readiness or dispatch authority.",
+      "verification": "Existing GitHub App scope, promotion denial and requested-intent versus observed-receipt boundaries remain intact. The internal read-only build adapter reuses actual offline Sigstore verification with current accepted role, tenant repository/environment, selected policy and installation revision checks around bounded IO. Snapshot and credential selection share an explicit client; one-repository read-only grants have a distinct cache profile, and raw bundle downloads use only that repository's reviewed origin/path policy without credentials or redirects. Exact repository, source, caller/signer workflow, current run/attempt and signed subjects are checked. Independent reviews closed cross-repository download and ambient-client gaps. Focused 112 tests and combined-main-155 regression 6517 tests passed; positive API/database metadata is simulated around a genuine upstream offline signature. No live GitHub read, authentic Axiom OCI artifact, AWS facts, fulfilled approval or runtime dispatch is claimed. Exact-head CI remains the merge gate.",
       "evidence": [
         "docs/ECS_CUSTOMER_JOURNEY_VALIDATION.md",
         "docs/ECS_RESTART_RECEIPT_LIMITS.md",
-        "docs/ECS_V2_PURE_EVIDENCE_CONTRACT.md"
+        "docs/ECS_V2_PURE_EVIDENCE_CONTRACT.md",
+        "docs/ECS_GITHUB_BUILD_INGESTION.md",
+        "lib/releaseops/ecsReleaseV2/__tests__/githubBuildEvidence.test.ts"
       ],
       "customerAcceptance": "Not verified",
       "acceptanceDependencies": [
         "auth_database"
       ],
-      "blockers": "Mutable workflow ref and installation/account acceptance unresolved.",
-      "nextAction": "Define versioned dispatch contract binding approved source and immutable artifact."
+      "blockers": "Live App grant/response compatibility, reviewed runtime trust roots and actual bundle origins, authentic project OCI attestations and independently verified AWS/readiness facts remain unverified or unimplemented.",
+      "nextAction": "Pass exact-head integration CI, then collect authorized provider-read evidence and genuine project OCI provenance before any execution activation."
     },
     {
       "id": "cloud",
@@ -42069,15 +42071,17 @@
       "status": "Partially implemented",
       "engineeringActivity": "active",
       "owner": "Codex integrated parallel workstreams",
-      "activeMilestone": "Validate established-subscription reconciliation and prepare isolated Stripe customer acceptance.",
-      "verification": "Distinct subscription events retrieve current provider state and use an equality-only binding/event-token fence before atomic consumption. Exact configured licensed per-seat terms are required; ambiguous snapshots and unexpected replacement fail closed. Local composed tests are not actual Stripe delivery or collection.",
+      "activeMilestone": "Validate public TEST application credits and prepare independently captured Stripe attempt proof without activation.",
+      "verification": "PR #155 merged after exact-head push/PR CI passed 6447 tests and both 293-page production builds. The default-off owned-loopback application lane reuses verified public TEST provenance for actual NextAuth, allowance, preflight and reservations; separate five-case HTTP/PostgreSQL acceptance covers display, cap denial, role changes, missing proof and provider-disabled hold release. Unsupported deployment limits are unavailable; existing customers and support payment source are unchanged. This is not hosted Stripe checkout or positive AI generation. Distinct subscription events retrieve current provider state and use an equality-only binding/event-token fence before atomic consumption. Exact configured licensed per-seat terms are required; ambiguous snapshots and unexpected replacement fail closed. Local composed tests are not actual Stripe delivery or collection.",
       "evidence": [
         "docs/BILLING_CUSTOMER_JOURNEY_ACCEPTANCE.md",
         "docs/SUBSCRIPTION_EVENT_CONSUMPTION.md",
         "docs/LEAD_ADMIN_GENERATION_AUTHORITY.md",
         "docs/CREDIT_CHECKOUT_UNKNOWN_OUTCOME_RECOVERY.md",
         "docs/STRIPE_TEST_CUSTOMER_ACCEPTANCE.md",
-        "docs/SUBSCRIPTION_AUTHORITATIVE_RECONCILIATION.md"
+        "docs/SUBSCRIPTION_AUTHORITATIVE_RECONCILIATION.md",
+        "docs/ISOLATED_PUBLIC_TEST_APPLICATION_BRIDGE.md",
+        "docs/mission/isolated-public-test-http.json"
       ],
       "customerAcceptance": "Not verified",
       "acceptanceDependencies": [
