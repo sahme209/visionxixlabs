@@ -1,4 +1,5 @@
 import "server-only";
+import { projectTargetSnapshot } from "@/lib/releaseops/ecsReleaseV2/targetSnapshot";
 import { randomBytes } from "node:crypto";
 import { withTenantAwsConnection } from "../enrollment/scopedConnection";
 import type { EnrollmentRepo, EnrollmentPrincipal } from "../enrollment/service";
@@ -41,7 +42,7 @@ export async function readTenantEcsObservation(repo: EcsObservationRepo, princip
     principal = structuredClone(principal);
     const controller = new AbortController(), timer = setTimeout(() => controller.abort(), 45000), signal = controller.signal;
     try {
-        const operation = withTenantAwsConnection(repo, principal, request.cloudAccountId, async (input, connection) => {
+        const operation = withTenantAwsConnection(repo, principal, request.cloudAccountId, async (input, connection, connectionRows) => {
             async function snapshot() {
                 signal.throwIfAborted();
                 const environment = await repo.environment.findFirst({ where: { id: request.environmentId, organizationId: principal.organizationId } });
@@ -59,7 +60,9 @@ export async function readTenantEcsObservation(repo: EcsObservationRepo, princip
             if (JSON.stringify(before) !== JSON.stringify(await snapshot()))
                 throw new Error('ecs_observation_unavailable');
             signal.throwIfAborted();
-            return { kind: 'aws_ecs_observation' as const, organizationId: principal.organizationId, environmentId: request.environmentId, connection, targetSnapshot: { id: t.id, updatedAt: t.updatedAt.toISOString() }, accountId: input.expectedAccountId, partition, region: input.region, roleArn: input.roleArn, clusterArn: target.clusterArn, serviceArn: target.serviceArn, ...observed, observedAt: (dependencies.now?.() ?? new Date()).toISOString(), limits: { providerReadOnly: true, serviceSnapshotOnly: true, registryPullabilityVerified: false, healthVerified: false, rollbackVerified: false, executionAuthorized: false } };
+            const targetSnapshot = projectTargetSnapshot({ ...before, ...connectionRows });
+            if (!targetSnapshot) throw new Error('ecs_observation_unavailable');
+            return { kind: 'aws_ecs_observation' as const, organizationId: principal.organizationId, environmentId: request.environmentId, connection, targetSnapshot, accountId: input.expectedAccountId, partition, region: input.region, roleArn: input.roleArn, clusterArn: target.clusterArn, serviceArn: target.serviceArn, ...observed, observedAt: (dependencies.now?.() ?? new Date()).toISOString(), limits: { providerReadOnly: true, serviceSnapshotOnly: true, registryPullabilityVerified: false, healthVerified: false, rollbackVerified: false, executionAuthorized: false } };
         }, { now: dependencies.now, open: dependencies.open, managementOnly: true });
         return await Promise.race([operation, new Promise<never>((_, reject) => signal.addEventListener('abort', () => reject(new Error('ecs_observation_unavailable')), { once: true }))]);
     }
