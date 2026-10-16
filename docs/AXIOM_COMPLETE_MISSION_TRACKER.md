@@ -1267,3 +1267,52 @@ and native runs [38840350249](https://github.com/sahme209/visionxixlabs/actions/
 / [38840298654](https://github.com/sahme209/visionxixlabs/actions/runs/38840298654)
 all passed. Its isolated new-test subscription lane remains unactivated; no route,
 existing customer terms, live Stripe billing or production schema was changed.
+
+### Owned local authentication rehearsal evidence — 2026-10-16 UTC
+
+The committed launcher candidate `15f6131928f2816b6add50b66b60b6ff22d7d225`
+reused the existing Next.js/PostgreSQL HTTP harness and passed 25 actual local
+protocol checks: eleven signup/email-proof/password/session checks, ten desktop
+pairing/consume/replay/revocation checks, and four approval-decision checks.
+The new opt-in launcher used the cached PostgreSQL 17 image, an independently
+owned synthetic database, literal-loopback binding, and verified exact-container
+cleanup. The default inherited runtime binding was refused before container IO;
+the accepted run used an explicit OS/proxy/CA-only environment. Sixty-three
+focused safety/protocol tests across four files passed. Evidence and rerun
+instructions: `docs/LOCAL_AUTH_HTTP_ACCEPTANCE.md` and
+`docs/mission/local-auth-http-owned-launcher-acceptance.json`.
+
+This verifies reusable local backend acceptance only. It does not verify
+production login or migration recovery, native/browser/vault behavior, OAuth,
+external mail delivery, paid entitlement policy, Stripe, or provider execution.
+The observed identity-only `allowed: true` / `no_plan` remains a policy observation.
+No existing mission scope or external approval gate is removed by this milestone.
+
+Required local integration gates passed for this source branch: web TypeScript,
+600 test files / 6,341 tests (local `--testTimeout=20000` runner bound),
+desktop TypeScript and production frontend build,
+and 30 Python CLI tests. These checks complement the source-pinned HTTP result;
+they do not expand its production/native/paid-policy acceptance scope.
+
+After normal integration of main through PR #151, the first combined suite hit
+the existing native publication fixture's default five-second timeout under
+concurrent compiler load; no assertion failed. Its unchanged focused file then
+passed 34/34 tests at the default bound (the named case took 3.222 seconds), and
+the complete combined suite passed with the explicit local 20-second bound.
+No source test, native publication guard or CI timeout was weakened.
+
+
+PR #153 merged normally as `a4baa514` after final head `91e8b29c`: Test
+push [38841446680](https://github.com/sahme209/visionxixlabs/actions/runs/38841446680),
+Test PR [38841452287](https://github.com/sahme209/visionxixlabs/actions/runs/38841452287)
+and Desktop [38841446648](https://github.com/sahme209/visionxixlabs/actions/runs/38841446648)
+all passed, including production builds, native compilation and Clippy. Its actual
+local HTTP acceptance remains pinned to `15f61319`; this merge preserves that
+qualification and does not convert it to production/native acceptance.
+
+
+The provenance branch then merged main #153 normally, preserving both tracker
+sections and the source-pinned HTTP evidence. Combined launcher/ECS/demo checks
+passed 153 tests across six files; final web TypeScript, scoped lint and tracker
+consistency passed. This does not rerun or expand the actual HTTP acceptance;
+exact final-head PR CI is still the merge gate.
