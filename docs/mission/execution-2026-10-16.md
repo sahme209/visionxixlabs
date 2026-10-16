@@ -64,8 +64,8 @@ reimplement them. A merged feature is not necessarily released or provider-teste
 | All implementations | Existing demo scenarios and living documentation | Each feature updates its applicable scenario; preserve other branches during integration |
 | Authentication / controller | Canonical requirement JSON | Authentication edits only the exact stale verification sentences, R03-010 and auth workstream; controller preserves the 85 new source units during merge |
 | All implementations | PostgreSQL containers, Next servers, full Vitest and compilers | Focused light tests may overlap; reserve owned server/container and heavy-suite windows explicitly to prevent artificial timing/OOM failures |
-| Governed ECS task 1 / task 2 | TargetSnapshot/projector consumed by transaction fence | Independent task-1 review precedes building the final fence; final branch review covers both |
-| Billing tasks | Original proof and current contract observation | Immutable purchase terms stay frozen; later status/seat/period observations cannot bootstrap a new contract or mint/reset credits |
+| Governed ECS task 1 / task 2 | TargetSnapshot/projector consumed by transaction fence | Task 2 was built while task-1 review was queued; preserve that work, but require independent review of both tasks before integration. Final whole-branch review passed |
+| Billing tasks | Original proof and current contract observation | Immutable purchase terms stay frozen; later status/period observations cannot bootstrap a new contract or mint/reset credits; quantity changes are rejected pending collection policy |
 
 ## Environment and evidence constraints
 
@@ -90,3 +90,23 @@ An unavailable local Chromium launch is not a successful browser journey.
 - Subsequent task commits, independent findings, focused evidence and exact-head
   CI outcomes are appended as work packages reach their gates. No package is
   marked product-complete merely because its source tests pass.
+
+### Reviewed integration checkpoint
+
+- Coordinator integrated target-snapshot commits `1916b797`, `693a728c` and
+  `a61a9731` at merge `24879b31`, after independent whole-branch review passed.
+  Independent v2 golden digest and old receipt behavior remain unchanged;
+  owned SQL showed target reads and packet writes in one Serializable transaction,
+  with drift/replay denial and rollback. No execution route or schema activation.
+- Auth evidence correction was cherry-picked as `6a24ad60`. It changes documents
+  and dated assessments only; effective binding/PITR/restore remain unverified.
+- Agent recovery frozen `fa5f9b02` passed independent review and 30 actual owned
+  HTTP check groups. Compiler checks remain in progress; disabled Agent behavior
+  is not successful provider execution.
+- Billing frozen fix `21769547` rejects increased/decreased seat quantity at both
+  SDK and service boundaries, including drift from original paid terms. Its 138
+  focused checks and 15 demo checks passed; scoped independent re-review and a
+  final owned application run remain pending. Earlier application evidence belongs
+  to the preceding source and is not relabeled as evidence for this fix.
+- Repository Vercel Git suppression remains intact. No deployments, production
+  mutations, installer publication, live billing or external provider writes ran.
