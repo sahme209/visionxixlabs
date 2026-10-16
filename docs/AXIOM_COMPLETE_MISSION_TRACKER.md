@@ -1332,6 +1332,14 @@ generation ran. This is real local Next.js/PostgreSQL acceptance, not production
 login, native/browser/vault, OAuth, paid policy, Stripe, cloud or provenance-runtime
 acceptance. Existing production binding/recovery approvals remain unchanged.
 
+### PR #154 closure and bounded GitHub build ingestion
+
+PR #154 merged as `50f54d65b5d3406f9535b04f7c1a05e58c542431`; its tree matches final head `91e04d502a61c8ffd39c6e138254cb95f3b68713`. Final CI runs [38842503728](https://github.com/sahme209/visionxixlabs/actions/runs/38842503728) and [38842499193](https://github.com/sahme209/visionxixlabs/actions/runs/38842499193) passed, including 6411 tests (four owned PostgreSQL opt-ins skipped) and the 293-route production build. The combined-source 25-check local HTTP report above remains source-bound evidence, not production acceptance. Vercel automatic Git deployment remains disabled.
+
+The next source slice adds an internal read-only GitHub build-evidence adapter, reusing tenant installation resolution, transport, selected durable review policy and actual offline Sigstore verification. Current tenant/member/repository/environment/installation/policy snapshots are checked around bounded I/O; the read-only token profile is repository-scoped and cannot reuse a broad token. Snapshot and credential selection use the same explicitly supplied client. Repository, source, caller workflow, reusable signer, current run and exact attempt bind to the signed subject set. No route, schema, approval, AWS facts, execution activation or provider write was added.
+
+Evidence: [implementation and limits](ECS_GITHUB_BUILD_INGESTION.md), `githubBuildEvidence.ts`, `githubBuildSnapshot.ts` and nine focused transport/auth/snapshot/crypto test files (112 tests passed), clean scoped ESLint and diff check. These are simulated API/DB responses composed with genuine upstream offline signature evidence; live GitHub grants, actual bundle origins, reviewed runtime roots, Axiom OCI ingestion and AWS/health/rollback acceptance remain unverified or unimplemented. Branch-policy snapshots are change fences, not fulfilled readiness/approval facts. Production login binding, PITR/restore readiness and explicit recovery approval remain blocked separately; no production changes occurred.
+
 ## Isolated public TEST application bridge · 2026-10-16
 
 **Implemented locally; production/hosted-provider acceptance not verified.**
@@ -1350,3 +1358,56 @@ passed 6447 tests/606 files (5 skipped), web TypeScript and desktop build/type c
 passed, Python passed 30 tests, and the direct optimized Next build passed
 with offline fixture fonts (no Prisma generation). Exact-head CI and real provider-attempt
 proof/access remain integration/acceptance gates.
+
+PR #155 merged as `3952e131779771e54d3c57b4971c24bebd18f76d` after exact-head
+push [38847173942](https://github.com/sahme209/visionxixlabs/actions/runs/38847173942)
+and PR [38847192840](https://github.com/sahme209/visionxixlabs/actions/runs/38847192840)
+checks passed: 6447 tests, TypeScript and both 293-page production builds.
+Desktop CI was excluded by its existing path filters; local desktop gates passed.
+The GitHub reader branch preserves both tracker sections while integrating this
+main revision. Combined local regression then passed 6517 tests across 612 files
+(five owned PostgreSQL opt-ins skipped), web and desktop TypeScript, desktop
+build/release alignment, and 30 Python CLI tests. Canonical workstream data was
+updated before regenerating the requirement register. Exact-head GitHub CI and
+its clean production build remain required before merging the reader.
+
+## Paired AWS customer lifecycle: actual local HTTP acceptance
+
+Main #155 (`3952e131`) and #156 (`cdb3996d`) are integrated normally without
+rewriting history. #156 exact-head push/PR runs 38848311628/38848283984 passed
+6,517 tests and 293-page production builds; that closure does not expand this
+cloud fixture's authority.
+
+The optional owned rehearsal passed on clean committed `644f539d`: all existing
+25 authentication/pairing/approval assertions plus 10 actual cloud lifecycle
+assertions using real Next HTTP, Prisma/PostgreSQL17, scoped encrypted storage,
+and installed AWS SDK clients. The only AWS endpoint was an owned loopback
+Query/XML fixture: exactly five guard-stamped identity/inventory requests.
+Replay, existing synthetic foreign metadata and revoked connection reads caused
+no additional provider IO. Disconnect removed encrypted configuration and
+incremented its version. No credential rows or paid plan were seeded; deployment
+and Terraform execution tables remained empty. Owned container cleanup passed.
+See `docs/mission/local-cloud-http-acceptance.json`; its original source report
+is retained when later combined-source results are added.
+
+This is stronger composition evidence than mocked SDK/service tests, but real
+AWS IAM/trust/permissions, native UI, production binding/schema/login, Stripe
+checkout/paid-policy and governed provider execution/rollback remain unverified.
+The observed no-plan identity response is not commercial authority. Latest-main
+combined HTTP and regression checks are the current next gate; no production or
+provider change is authorized by this evidence.
+
+The combined-source owned HTTP rerun then passed on clean `b98f6587` after main
+#155/#156 integration: all 35 assertions, exactly five stamped native-SDK wire
+requests, and owned PostgreSQL17 container removal. The original `644f539d`
+evidence remains preserved under the base report; `additionalSourceRuns` records
+the later combined source without replacing history. Full regression/type/build
+gates follow; real customer/provider/production acceptance remains separate.
+
+Combined local gates passed on `1f0172f6`: default-configuration Vitest 616 files /
+6,545 tests (one file/five tests intentionally skipped), web TypeScript, desktop
+release alignment/TypeScript/Vite build, 30 Python CLI tests, changed-source lint
+and tracker coverage. No timeout override, provider call, shared dependency
+mutation or Prisma generation was used. Exact-head push/PR CI and production
+website builds remain required; local desktop Vite compilation is not native
+installer or real OS acceptance.

@@ -66,3 +66,61 @@ binding remains unverified, so this finding is scoped to the inspected target.
 Do not mix cloud enrollment schema reconciliation into the proposed auth-only
 repair or assume code can safely use CloudAccount before its reviewed storage
 dependency is satisfied.
+## Owned local AWS HTTP rehearsal
+
+The explicit test-only `AXIOM_RUN_LOCAL_AWS_HTTP=1` option extends the owned
+`AXIOM_RUN_LOCAL_AUTH_HTTP=1 node scripts/run-owned-local-auth-http.mjs` launcher.
+The default authentication rehearsal remains unchanged. No product runtime test
+flag, entitlement grant, credential-row seed, or provider override was added.
+
+The extension uses the actual Next routes, accepted signup/pairing identity,
+Prisma storage, scoped credential encryption, enrollment service and installed
+AWS SDK. A separate owned literal-loopback Query/XML fixture answers only
+AssumeRole, GetCallerIdentity and DescribeInstances. A process preload installed
+before Next patches Node HTTP/HTTPS entry points, synchronizes ESM builtins,
+rejects destinations outside owned loopback ports, and substitutes fixed native
+agents. Every SDK wire request must have a matching process/sequence stamp;
+fixture readiness precedes cloud IO. This is bounded native-SDK transport
+containment, not universal Node network isolation or real AWS IAM validation.
+
+The child omits HOME, ignores inherited NODE_OPTIONS/AWS settings, disables EC2
+metadata, uses `/dev/null` shared AWS configuration and synthetic keys, and uses
+SDK-native STS/EC2 endpoint settings. No external AWS requests are intended or
+permitted through this guarded path. New SDK transports require review before
+adding them to this fixture.
+
+Assertions cover actual role challenge/completion, route-created canonical
+account and context-bound encrypted configuration, challenge replay denial,
+metadata-only foreign-account denial before provider reads, bounded inventory,
+local disconnect/version invalidation, and denied subsequent inventory without
+more provider traffic. The foreign row is owned synthetic metadata, has no
+credential, and is removed in `finally`. No paid plan, deployment execution or
+Terraform job may be created. App, protocol server, mail capture, Prisma client
+and the exact owned PostgreSQL container have independent cleanup paths; the
+wire server forcibly closes active sockets with a bounded close deadline.
+
+This complements schema/CAS fixtures. It does not prove a real AWS account,
+actual IAM trust/permissions, production schema or database binding, native UI,
+OAuth, Stripe checkout, governed deployment execution or rollback. Those retain
+separate acceptance and approval gates.
+
+### Verified local result (2026-10-16)
+
+Committed source `644f539d0c86f0d2c5acddd82cfb35717eb8b769` passed the owned
+PostgreSQL 17 + actual Next HTTP extension: all existing 25 authentication,
+pairing and approval assertions plus 10 cloud lifecycle assertions. Five stamped
+SDK requests were observed in one guarded Next process, exactly AssumeRole,
+GetCallerIdentity, AssumeRole, GetCallerIdentity, DescribeInstances. The owned
+container was removed. No paid entitlement or provider write was performed.
+The first run reached enrollment completion HTTP 200 but failed because this
+new test read `.data` instead of the existing `.data.account` response; the
+fixture-only parsing correction preceded the successful committed-source rerun.
+No application response contract changed. See
+`docs/mission/local-cloud-http-acceptance.json` for scoped evidence.
+
+The same explicit owned HTTP/PostgreSQL17 run also passed on committed combined
+source `b98f6587` after normal integration of main #155/#156 (`cdb3996d`). All 35
+assertions and the exact five stamped SDK wire requests passed again, and owned
+container removal was confirmed. The original `644f539d` report remains intact;
+this later result is stored under `additionalSourceRuns`. No real AWS/IAM or
+commercial acceptance claim is added.

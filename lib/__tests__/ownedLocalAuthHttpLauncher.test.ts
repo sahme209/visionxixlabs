@@ -51,3 +51,12 @@ describe("owned local auth HTTP launcher safety", () => {
     const f = fixture("wrong-owner"); await expect(runOwnedLocalAuthHttp({ AXIOM_RUN_LOCAL_AUTH_HTTP: "1" }, f)).rejects.toThrow("owned_local_auth_http_cleanup_unverified"); expect(f.calls.some(args => args[2] === "rm")).toBe(false);
   });
 });
+it("requires a separate exact AWS wire opt-in and otherwise preserves the auth-only call", async () => {
+  const f = fixture();
+  let options;
+  await runOwnedLocalAuthHttp({ AXIOM_RUN_LOCAL_AUTH_HTTP: "1", AXIOM_RUN_LOCAL_AWS_HTTP: "1" }, { ...f, rehearse: async (_url: string, value: unknown) => { options = value; return { verified: [] }; } });
+  expect(options).toEqual({ awsWireFixture: true });
+  const invalid = fixture();
+  await expect(runOwnedLocalAuthHttp({ AXIOM_RUN_LOCAL_AUTH_HTTP: "1", AXIOM_RUN_LOCAL_AWS_HTTP: "true" }, invalid)).rejects.toThrow("local_aws_http_opt_in_invalid");
+  expect(invalid.calls).toEqual([]);
+});

@@ -1,0 +1,116 @@
+{
+  "observedAt": "2026-10-16T03:49:49Z",
+  "sourceCommit": "644f539d0c86f0d2c5acddd82cfb35717eb8b769",
+  "command": "AXIOM_RUN_LOCAL_AUTH_HTTP=1 AXIOM_RUN_LOCAL_AWS_HTTP=1 node scripts/run-owned-local-auth-http.mjs",
+  "transport": "actual_local_next_http_and_installed_aws_sdk",
+  "database": "owned_disposable_postgresql_17_current_schema_not_migration_recovery",
+  "existingAuthPairingApprovalAssertions": 25,
+  "cloudVerified": [
+    "real_paired_cloud_challenge",
+    "sdk_verified_identity_protocol_fixture",
+    "canonical_encrypted_versioned_storage",
+    "wrong_context_decryption_denied",
+    "single_use_cloud_challenge",
+    "existing_foreign_metadata_denied_without_provider_io",
+    "bounded_inventory_via_actual_sdk",
+    "disconnect_zeroes_credential_and_increments_version",
+    "revoked_read_has_no_provider_io",
+    "no_paid_entitlement_or_deployment_created"
+  ],
+  "wire": {
+    "requests": [
+      "AssumeRole",
+      "GetCallerIdentity",
+      "AssumeRole",
+      "GetCallerIdentity",
+      "DescribeInstances"
+    ],
+    "guardedRequests": 5,
+    "guardedProcesses": 1,
+    "realAwsAccount": false,
+    "universalNetworkIsolation": false
+  },
+  "commercialAccessObservation": {
+    "allowed": true,
+    "code": "active",
+    "billingStatus": "no_plan",
+    "enforcement": "not_verified_policy_decision_required"
+  },
+  "firstAttempt": "new_fixture_response_parsing_assertion_failed_after_complete_http200_corrected_data_account_without_product_change",
+  "fixtureCleanup": "owned_disposable_container_removed",
+  "notVerified": [
+    "real_aws_account_or_iam_trust_permissions",
+    "production_login_schema_or_binding",
+    "native_ui",
+    "google_github_oauth",
+    "stripe_checkout_or_paid_policy",
+    "governed_cloud_execution_rollback_or_terraform_apply"
+  ],
+  "additionalSourceRuns": [
+    {
+      "sourceCommit": "b98f6587c023ff022b74d007b08a3166b8df3f57",
+      "baseMain": "cdb3996da267916ea0c2e5fc6132c35b28a5b885",
+      "existingAuthPairingApprovalAssertions": 25,
+      "cloudLifecycle": {
+        "verified": [
+          "real_paired_cloud_challenge",
+          "sdk_verified_identity_protocol_fixture",
+          "canonical_encrypted_versioned_storage",
+          "wrong_context_decryption_denied",
+          "single_use_cloud_challenge",
+          "existing_foreign_metadata_denied_without_provider_io",
+          "bounded_inventory_via_actual_sdk",
+          "disconnect_zeroes_credential_and_increments_version",
+          "revoked_read_has_no_provider_io",
+          "no_paid_entitlement_or_deployment_created"
+        ],
+        "provider": "owned_loopback_aws_query_fixture_not_real_aws",
+        "wire": {
+          "requests": [
+            "AssumeRole",
+            "GetCallerIdentity",
+            "AssumeRole",
+            "GetCallerIdentity",
+            "DescribeInstances"
+          ],
+          "guardedRequests": 5,
+          "guardedProcesses": 1,
+          "realAwsAccount": false,
+          "universalNetworkIsolation": false
+        },
+        "notVerified": [
+          "aws_iam_trust_or_permissions",
+          "real_aws_account",
+          "production_login_or_schema",
+          "native_ui",
+          "stripe_checkout_or_paid_policy",
+          "cloud_deployment_or_terraform_apply"
+        ]
+      },
+      "commercialAccessObservation": {
+        "allowed": true,
+        "code": "active",
+        "billingStatus": "no_plan",
+        "enforcement": "not_verified_policy_decision_required"
+      },
+      "fixtureCleanup": "owned_disposable_container_removed"
+    }
+  ],
+  "localRegression": {
+    "sourceCommit": "1f0172f6",
+    "vitest": {
+      "filesPassed": 616,
+      "testsPassed": 6545,
+      "filesSkipped": 1,
+      "testsSkipped": 5,
+      "configuration": "repository_default_no_timeout_override"
+    },
+    "webTypeScript": "passed",
+    "desktopReleaseAlignmentTypeScriptViteBuild": "passed",
+    "pythonCliTests": 30,
+    "changedSourceLint": "passed",
+    "trackerCoverageCheck": "passed",
+    "productionWebsiteBuild": "required_exact_head_ci_pending",
+    "prismaGeneration": "not_run"
+  }
+}

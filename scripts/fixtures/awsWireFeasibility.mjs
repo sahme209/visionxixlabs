@@ -1,0 +1,31 @@
+import assert from "node:assert/strict";
+import { createRequire } from "node:module";
+import { startOwnedAwsWireFixture } from "./ownedAwsWireFixture.mjs";
+assert.equal(process.env.AXIOM_AWS_WIRE_FIXTURE, "isolated-synthetic", "explicit_synthetic_worker_required");
+const permitted = new Set(["AWS_CONFIG_FILE", "AWS_SHARED_CREDENTIALS_FILE", "AWS_EC2_METADATA_DISABLED"]);
+assert.ok(Object.keys(process.env).filter(key => key.startsWith("AWS_")).every(key => permitted.has(key)), "inherited_aws_configuration_forbidden");
+assert.equal(process.env.AWS_CONFIG_FILE, "/dev/null"); assert.equal(process.env.AWS_SHARED_CREDENTIALS_FILE, "/dev/null"); assert.equal(process.env.AWS_EC2_METADATA_DISABLED, "true");
+const fixture = await startOwnedAwsWireFixture();
+const { installOwnedAwsHttpGuard } = createRequire(import.meta.url)("./ownedAwsHttpPreload.cjs");
+const guard = installOwnedAwsHttpGuard({ origins: [fixture.origin], awsOrigin: fixture.origin, proof: fixture.proof, announceReady: true });
+const clients = [];
+try {
+  await fixture.waitUntilReady();
+  fixture.allowEnrollment("axiom-synthetic-only");
+  process.env.AWS_ENDPOINT_URL_STS = fixture.origin; process.env.AWS_ENDPOINT_URL_EC2 = fixture.origin;
+  const { STSClient, AssumeRoleCommand, GetCallerIdentityCommand } = await import("@aws-sdk/client-sts");
+  const { EC2Client, DescribeInstancesCommand } = await import("@aws-sdk/client-ec2");
+  const options = { region: "us-east-1", maxAttempts: 1 };
+  const broker = new STSClient({ ...options, credentials: { accessKeyId: fixture.brokerKey, secretAccessKey: fixture.secret } }); clients.push(broker);
+  const assumed = await broker.send(new AssumeRoleCommand({ RoleArn: fixture.roleArn, RoleSessionName: "axiom-wire-feasibility", ExternalId: "axiom-synthetic-only", DurationSeconds: 900 }), { abortSignal: AbortSignal.timeout(3000) });
+  const credentials = { accessKeyId: assumed.Credentials.AccessKeyId, secretAccessKey: assumed.Credentials.SecretAccessKey, sessionToken: assumed.Credentials.SessionToken };
+  const tenant = new STSClient({ ...options, credentials }); clients.push(tenant);
+  const identity = await tenant.send(new GetCallerIdentityCommand({}), { abortSignal: AbortSignal.timeout(3000) });
+  assert.equal(identity.Account, fixture.accountId); assert.equal(identity.Arn, assumed.AssumedRoleUser.Arn);
+  const ec2 = new EC2Client({ ...options, credentials }); clients.push(ec2);
+  const inventory = await ec2.send(new DescribeInstancesCommand({ MaxResults: 5 }), { abortSignal: AbortSignal.timeout(3000) });
+  assert.equal(inventory.Reservations?.[0]?.Instances?.[0]?.InstanceId, "i-fixture"); assert.equal(inventory.NextToken, "fixture-next-page");
+  assert.deepEqual(fixture.report().requests, ["AssumeRole", "GetCallerIdentity", "DescribeInstances"]);
+  assert.deepEqual(guard.report(), { allowed: 3, blocked: 0, sdkRequests: 3 });
+  console.log(JSON.stringify({ kind: "synthetic_sdk_wire_feasibility", nativeEndpointConfiguration: true, builtinTransport: guard.report(), ...fixture.report(), applicationHttpOrStorage: false }));
+} finally { for (const client of clients) client.destroy(); guard.restore(); await fixture.close(); }

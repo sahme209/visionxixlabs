@@ -23,6 +23,7 @@ export async function runOwnedLocalAuthHttp(env, adapters = {}) {
     /^(DATABASE_URL|DIRECT_URL|AUTH_HTTP_TEST_DATABASE_URL|PGHOST|PGPORT|PGDATABASE|PGUSER|PGPASSWORD|PGSERVICE|PGSERVICEFILE|PGPASSFILE|PGOPTIONS|PGSSLMODE|NEXTAUTH_URL|NEXT_PUBLIC_BASE_URL|RESEND_BASE_URL|POSTGRES_PASSWORD|POSTGRES_DB|POSTGRES_USER|DOCKER_HOST|DOCKER_CONTEXT|DOCKER_TLS_VERIFY|DOCKER_CERT_PATH|NODE_OPTIONS|NEXTAUTH_SECRET|DESKTOP_SESSION_SIGNING_KEY|RESEND_API_KEY|GH_TOKEN|GITHUB_TOKEN)$/.test(key) ||
     /^(STRIPE_|AWS_|AZURE_|GOOGLE_|OPENAI_|ANTHROPIC_|VERCEL_)/.test(key)
   )), "local_auth_http_external_binding_forbidden");
+  assert.ok(env.AXIOM_RUN_LOCAL_AWS_HTTP === undefined || env.AXIOM_RUN_LOCAL_AWS_HTTP === "1", "local_aws_http_opt_in_invalid");
   const suffix = randomBytes(6).toString("hex");
   const owner = randomBytes(16).toString("hex");
   const password = randomBytes(24).toString("hex");
@@ -68,7 +69,8 @@ export async function runOwnedLocalAuthHttp(env, adapters = {}) {
       await pause(500);
     }
     assert.ok(ready);
-    report = await rehearse(`postgresql://fixture:${password}@127.0.0.1:${port}/${database}`);
+    const target = `postgresql://fixture:${password}@127.0.0.1:${port}/${database}`;
+    report = env.AXIOM_RUN_LOCAL_AWS_HTTP === "1" ? await rehearse(target, { awsWireFixture: true }) : await rehearse(target);
     signal?.throwIfAborted();
   } catch {
     throw new Error("owned_local_auth_http_failed");
