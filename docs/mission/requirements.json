@@ -41861,14 +41861,15 @@
       "engineeringActivity": "active",
       "owner": "Codex integrated parallel workstreams",
       "activeMilestone": "Verify serving deployment and preflight target equality, actual recoverable timestamp and isolated restore readiness.",
-      "verification": "Neon read-only metadata confirms reported target, PostgreSQL 17, six-hour retention and 10/10 branch capacity; SELECT-only schema/history matches preflight,99 completed migrations and no active source checksum drift. Founder mapping passed protected preflight. New source adds a separately gated AWS storage proposal; isolated PostgreSQL16/17 auth fixture preserves original failed history and applies only the unchanged auth SQL. Latest operator comparison remains not yet verified; no production changes authorized.",
+      "verification": "Neon read-only metadata confirms reported target, PostgreSQL 17, six-hour retention and 10/10 branch capacity; SELECT-only schema/history matches preflight,99 completed migrations and no active source checksum drift. Founder mapping passed protected preflight. New source adds a separately gated AWS storage proposal; isolated PostgreSQL16/17 auth fixture preserves original failed history and applies only the unchanged auth SQL. Latest operator comparison remains not yet verified; no production changes authorized. Real synthetic NextHTTP/PostgreSQL signup, proof, credentials/cookies and accepted workspace passed on recorded source364b048d; expanded integrated pairing/approval fixture is pending. No production/browser/provider/native inference.",
       "evidence": [
         "docs/PRODUCTION_AUTH_RECOVERY_PLAN.md",
         "docs/EMAIL_PROOF_ATOMIC_RECOVERY.md",
         "docs/EMAIL_VERIFICATION_CUSTOMER_RECOVERY.md",
         "docs/mission/neon-readiness-inspection.json",
         "docs/mission/aws-enrollment-schema-rehearsal.json",
-        "docs/NEON_PREVIEW_CAPACITY_AUDIT.md"
+        "docs/NEON_PREVIEW_CAPACITY_AUDIT.md",
+        "docs/LOCAL_AUTH_HTTP_ACCEPTANCE.md"
       ],
       "customerAcceptance": "Not verified",
       "acceptanceDependencies": [],
@@ -41947,10 +41948,11 @@
       "engineeringActivity": "active",
       "owner": "Codex integrated parallel workstreams",
       "activeMilestone": "Design saved-plan integrity, tenant executor, approval and state locking/recovery contract.",
-      "verification": "Caller-asserted signed handoff issuance now refused for every operation; boundary tests preserve approved tenant HCL export and unsigned remediation preview. Exact approved Terraform artifact delivery/execution remains missing.",
+      "verification": "Caller-asserted signed handoff issuance now refused for every operation; boundary tests preserve approved tenant HCL export and unsigned remediation preview. Exact approved Terraform artifact delivery/execution remains missing. Integrated source closes concurrent approval overwrite and public bulk/snooze sibling bypasses with tenant/revision/role/origin checks; final combined gates and actual local HTTP decision acceptance are pending.",
       "evidence": [
         "docs/TERRAFORM_AIRFLOW_CUSTOMER_ACCEPTANCE.md",
-        "app/api/desktop/handoff/__tests__/route.test.ts"
+        "app/api/desktop/handoff/__tests__/route.test.ts",
+        "docs/APPROVAL_DECISION_CONCURRENCY.md"
       ],
       "customerAcceptance": "Not verified",
       "acceptanceDependencies": [
@@ -41970,7 +41972,8 @@
       "verification": "Missing and malformed dependency timestamps now fail closed in regressions. ECS receipts and rendered desktop/web views distinguish requested intent, raw workflow status and unverified artifact/health/image recovery. Server-owned ECS capability rejects artifact promotion; emergency and dashboard paths separately check required promotion before dispatch. Independent review accepted the narrow promotion-denial scope. Full 5,985-test regression plus final focused policy/UI cases, web/desktop types/builds and Python checks passed; exact-head CI remains required before merge.",
       "evidence": [
         "docs/TERRAFORM_AIRFLOW_CUSTOMER_ACCEPTANCE.md",
-        "docs/ECS_RESTART_RECEIPT_LIMITS.md"
+        "docs/ECS_RESTART_RECEIPT_LIMITS.md",
+        "docs/AIRFLOW_STRICT_CORRELATION_PROPOSAL.md"
       ],
       "customerAcceptance": "Not verified",
       "acceptanceDependencies": [
@@ -41986,15 +41989,16 @@
       "status": "Partially implemented",
       "engineeringActivity": "active",
       "owner": "Codex integrated parallel workstreams",
-      "activeMilestone": "Design and implement durable manifest/approval storage and trusted provenance ingestion before a common v2 dispatch service.",
-      "verification": "Source audit proves current ECS workflow restarts the current task definition; no new source/image artifact or immutable image rollback is established. A canonical artifact/provenance/target/baseline and exact-run health receipt contract is prepared; no provider workflow dispatched. ECS receipts and rendered desktop/web views distinguish requested intent, raw workflow status and unverified artifact/health/image recovery. Server-owned ECS capability rejects artifact promotion; emergency and dashboard paths separately check required promotion before dispatch. Independent review accepted the narrow promotion-denial scope. Full 5,985-test regression plus final focused policy/UI cases, web/desktop types/builds and Python checks passed; exact-head CI remains required before merge. ECS v2 pure candidate/evidence comparisons pass 63 tests; repository-bound promotion and exact run/attempt are checked. No trusted IO, storage, authority or dispatch is enabled.",
+      "activeMilestone": "Validate governed dashboard restart pre-dispatch claims, then implement durable v2 manifest/approval storage and trusted provenance ingestion.",
+      "verification": "Source audit proves current ECS workflow restarts the current task definition; no new source/image artifact or immutable image rollback is established. A canonical artifact/provenance/target/baseline and exact-run health receipt contract is prepared; no provider workflow dispatched. ECS receipts and rendered desktop/web views distinguish requested intent, raw workflow status and unverified artifact/health/image recovery. Server-owned ECS capability rejects artifact promotion; emergency and dashboard paths separately check required promotion before dispatch. Independent review accepted the narrow promotion-denial scope. Full 5,985-test regression plus final focused policy/UI cases, web/desktop types/builds and Python checks passed; exact-head CI remains required before merge. ECS v2 pure candidate/evidence comparisons pass 63 tests; repository-bound promotion and exact run/attempt are checked. No trusted IO, storage, authority or dispatch is enabled. Dashboard source now uses shared quota/idempotency and current authority/policy/installation snapshots before lifecycle claim and dispatch; uncertainty remains held. Final combined acceptance pending.",
       "evidence": [
         "docs/ECS_CUSTOMER_JOURNEY_VALIDATION.md",
         "docs/WEBSITE_DEPLOYMENT_READINESS.md",
         "docs/mission/neon-readiness-inspection.json",
         "docs/ECS_IMMUTABLE_RELEASE_PLAN.md",
         "docs/ECS_RESTART_RECEIPT_LIMITS.md",
-        "docs/ECS_V2_PURE_EVIDENCE_CONTRACT.md"
+        "docs/ECS_V2_PURE_EVIDENCE_CONTRACT.md",
+        "docs/DASHBOARD_RESTART_GOVERNANCE.md"
       ],
       "customerAcceptance": "Not verified",
       "acceptanceDependencies": [
@@ -42012,12 +42016,13 @@
       "engineeringActivity": "active",
       "owner": "Codex integrated parallel workstreams",
       "activeMilestone": "Verify policy revocation and approval-to-execution authority across complete journey.",
-      "verification": "Boundary tests refuse signed caller assertions for every handoff operation and preserve approved tenant HCL export/unsigned preview; exact saved-plan approval authority remains missing. ECS receipts and rendered desktop/web views distinguish requested intent, raw workflow status and unverified artifact/health/image recovery. Server-owned ECS capability rejects artifact promotion; emergency and dashboard paths separately check required promotion before dispatch. Independent review accepted the narrow promotion-denial scope. Full 5,985-test regression plus final focused policy/UI cases, web/desktop types/builds and Python checks passed; exact-head CI remains required before merge. ECS v2 pure candidate/evidence comparisons pass 63 tests; repository-bound promotion and exact run/attempt are checked. No trusted IO, storage, authority or dispatch is enabled.",
+      "verification": "Boundary tests refuse signed caller assertions for every handoff operation and preserve approved tenant HCL export/unsigned preview; exact saved-plan approval authority remains missing. ECS receipts and rendered desktop/web views distinguish requested intent, raw workflow status and unverified artifact/health/image recovery. Server-owned ECS capability rejects artifact promotion; emergency and dashboard paths separately check required promotion before dispatch. Independent review accepted the narrow promotion-denial scope. Full 5,985-test regression plus final focused policy/UI cases, web/desktop types/builds and Python checks passed; exact-head CI remains required before merge. ECS v2 pure candidate/evidence comparisons pass 63 tests; repository-bound promotion and exact run/attempt are checked. No trusted IO, storage, authority or dispatch is enabled. Integrated source closes concurrent approval overwrite and public bulk/snooze sibling bypasses with tenant/revision/role/origin checks; final combined gates and actual local HTTP decision acceptance are pending.",
       "evidence": [
         "docs/AGENT_GOVERNED_ACTION_ACCEPTANCE.md",
         "app/api/desktop/handoff/__tests__/route.test.ts",
         "docs/ECS_RESTART_RECEIPT_LIMITS.md",
-        "docs/ECS_V2_PURE_EVIDENCE_CONTRACT.md"
+        "docs/ECS_V2_PURE_EVIDENCE_CONTRACT.md",
+        "docs/APPROVAL_DECISION_CONCURRENCY.md"
       ],
       "customerAcceptance": "Not verified",
       "acceptanceDependencies": [
@@ -42033,7 +42038,7 @@
       "engineeringActivity": "active",
       "owner": "Codex integrated parallel workstreams",
       "activeMilestone": "Validate native/frontend version alignment and prepare immutable candidate-only release approval.",
-      "verification": "Local source checks align npm/Tauri/Cargo and lock identities, with negative command fixtures. Current published installer acceptance and native upgrade/vault migration remain unverified; existing release assets were not replaced.",
+      "verification": "Local source checks align npm/Tauri/Cargo and lock identities, with negative command fixtures. Current published installer acceptance and native upgrade/vault migration remain unverified; existing release assets were not replaced. Real synthetic NextHTTP/PostgreSQL signup, proof, credentials/cookies and accepted workspace passed on recorded source364b048d; expanded integrated pairing/approval fixture is pending. No production/browser/provider/native inference.",
       "evidence": [
         "docs/DESKTOP_BROWSER_PAIRING_CANCELLATION.md",
         "docs/DESKTOP_NATIVE_CREDENTIAL_BACKENDS.md",
@@ -42041,7 +42046,8 @@
         "docs/DESKTOP_DURABLE_CREDENTIAL_RECOVERY.md",
         "docs/DESKTOP_AWS_READONLY_ENROLLMENT.md",
         "scripts/desktop-release-versions.mjs",
-        "lib/desktop/__tests__/desktopReleaseVersions.test.ts"
+        "lib/desktop/__tests__/desktopReleaseVersions.test.ts",
+        "docs/LOCAL_AUTH_HTTP_ACCEPTANCE.md"
       ],
       "customerAcceptance": "Not verified",
       "acceptanceDependencies": [
@@ -42070,7 +42076,7 @@
       "acceptanceDependencies": [
         "auth_database"
       ],
-      "blockers": "Distinct-event ordering, historical pre-rollout event reconstruction, actual Stripe collection and unified entitlement/refund policy remain unresolved. Legacy public requested tier is not verified paid revision entitlement; commercial enforcement contract remains unresolved.",
+      "blockers": "Distinct-event ordering, historical pre-rollout event reconstruction, actual Stripe collection and unified entitlement/refund policy remain unresolved. Legacy public requested tier is not verified paid revision entitlement; commercial enforcement contract remains unresolved. Existing desktop commercial policy remains identity-only; pilot/legacy enforcement requires an explicit commercial decision, not inferred from successful pairing.",
       "nextAction": "Run separately approved isolated Stripe test-mode checkout/payment/refund and invoice lifecycle; reconcile held unknown intents without provider recreation."
     },
     {
@@ -42106,10 +42112,11 @@
       "engineeringActivity": "active",
       "owner": "Codex integrated parallel workstreams",
       "activeMilestone": "Run combined regression gates and collect real authorized customer-journey evidence.",
-      "verification": "Focused failing-before regressions exist in all six parallel implementation streams. Actual disposable PostgreSQL16/17 schema/full-history fixtures preserve original auth/Agent checksums and failed history; service/provider boundaries remain simulated.",
+      "verification": "Focused failing-before regressions exist in all six parallel implementation streams. Actual disposable PostgreSQL16/17 schema/full-history fixtures preserve original auth/Agent checksums and failed history; service/provider boundaries remain simulated. Real synthetic NextHTTP/PostgreSQL signup, proof, credentials/cookies and accepted workspace passed on recorded source364b048d; expanded integrated pairing/approval fixture is pending. No production/browser/provider/native inference.",
       "evidence": [
         "docs/CRITICAL_RECOVERY_AND_CUSTOMER_ACCEPTANCE.md",
-        "docs/mission/aws-enrollment-schema-rehearsal.json"
+        "docs/mission/aws-enrollment-schema-rehearsal.json",
+        "docs/LOCAL_AUTH_HTTP_ACCEPTANCE.md"
       ],
       "customerAcceptance": "Not verified",
       "acceptanceDependencies": [
@@ -42128,7 +42135,7 @@
       "engineeringActivity": "active",
       "owner": "Codex integrated parallel workstreams",
       "activeMilestone": "Review authority boundaries across real paired customer workflow and cross-tenant negative paths.",
-      "verification": "Agent revocation, desktop stale response and literal workflow arguments covered. Admin lead deployment APIs enforce existing admin authority; unsupported providers reject without side effects. PR #140 adds accepted membership before autopilot reads and owner/admin plus same-origin before changes; scoped credentials are refused at legacy enable, escalation and both scanner boundaries. Exact-head CI passed; serving custom-domain acceptance is unverified.",
+      "verification": "Agent revocation, desktop stale response and literal workflow arguments covered. Admin lead deployment APIs enforce existing admin authority; unsupported providers reject without side effects. PR #140 adds accepted membership before autopilot reads and owner/admin plus same-origin before changes; scoped credentials are refused at legacy enable, escalation and both scanner boundaries. Exact-head CI passed; serving custom-domain acceptance is unverified. Integrated source closes concurrent approval overwrite and public bulk/snooze sibling bypasses with tenant/revision/role/origin checks; final combined gates and actual local HTTP decision acceptance are pending.",
       "evidence": [
         "docs/AGENT_GOVERNED_ACTION_ACCEPTANCE.md",
         "docs/LEGACY_WEBSITE_DEPLOYMENT_BOUNDARIES.md",
@@ -42137,7 +42144,8 @@
         "docs/WEBSITE_DEPLOYMENT_READINESS.md",
         "docs/LEAD_ADMIN_GENERATION_AUTHORITY.md",
         "docs/LEGACY_CLOUD_CONTROL_AUTHORITY.md",
-        "lib/axiom/agent/__tests__/cloudV2Containment.test.ts"
+        "lib/axiom/agent/__tests__/cloudV2Containment.test.ts",
+        "docs/APPROVAL_DECISION_CONCURRENCY.md"
       ],
       "customerAcceptance": "Not verified",
       "acceptanceDependencies": [
@@ -42178,8 +42186,8 @@
       "status": "Partially implemented",
       "engineeringActivity": "active",
       "owner": "Codex integrated parallel workstreams",
-      "activeMilestone": "Verify covered Git/PR/main suppression and preserve production builds in GitHub; prepare optional approved ignored-build fallback.",
-      "verification": "PR #145 merged after exact-head CI including production build. No Vercel calls in Actions; owner confirms no hooks. Two main merge revisions and the PR head returned zero deployments; domain remains #143. Old refs, external callers and actual manual runtime acceptance are not verified.",
+      "activeMilestone": "Secondary: retain repository-only suppression; no ongoing provider-setting investigation.",
+      "verification": "PR #145 merged after exact-head CI including production build. No Vercel calls in Actions; owner confirms no hooks. Two main merge revisions and the PR head returned zero deployments; domain remains #143. Old refs, external callers and actual manual runtime acceptance are not verified. Owner chose repository control only; ignored-build fallback remains unused. Core engineering resumed.",
       "evidence": [
         "docs/VERCEL_MANUAL_DEPLOYMENT_PLAN.md",
         "docs/VERCEL_IGNORED_BUILD_APPROVAL.md",
@@ -42188,7 +42196,7 @@
       "customerAcceptance": "Not verified",
       "acceptanceDependencies": [],
       "blockers": "Exact configuration plan requires owner approval before implementation; manual deployment runtime/protection readiness remains to be verified.",
-      "nextAction": "Continue covered-ref observation; apply no provider setting without exact approval and prior-value snapshot; approve any actual candidate/resources separately."
+      "nextAction": "Keep repository control intact during normal verified source integration; no Vercel deployment/settings action without approval."
     }
   ]
 }

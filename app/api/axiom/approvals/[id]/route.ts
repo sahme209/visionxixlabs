@@ -1,3 +1,4 @@
+import { isSameOriginRequest } from "@/lib/auth/requestOrigin";
 /**
  * GET /api/axiom/approvals/[id]         — get item history by planItemId
  * PUT /api/axiom/approvals/[id]         — approve, reject, or snooze a single item
@@ -6,6 +7,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
+import { currentContext } from "@/lib/auth/currentContext";
+import { canDecideApprovals } from "@/lib/auth/platformAdmin";
 import { prisma } from "@/lib/db";
 import { getEntitlementsFromPlan } from "@/lib/entitlements";
 import { decideItem, getItemHistory } from "@/lib/axiom/approvalCenter";
@@ -35,10 +38,16 @@ export async function GET(
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
+  const ctx = await currentContext();
+  if (!ctx.organizationId || ctx.userId !== userId || ctx.roles.length === 0) {
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  }
+
   const { id } = await params;
 
   try {
-    const history = await getItemHistory(id);
+    const history = await getItemHistory(id, ctx.organizationId);
+    if (history.length === 0) return NextResponse.json({ error: "Not found" }, { status: 404 });
     return NextResponse.json({ planItemId: id, history });
   } catch (e) {
     console.error("[axiom approval history]", e);
@@ -50,9 +59,17 @@ export async function PUT(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> },
 ) {
+  if (!isSameOriginRequest(req)) {
+    return NextResponse.json({ ok: false, error: "invalid_request_origin" }, { status: 403 });
+  }
   const userId = await authenticate();
   if (!userId) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  const ctx = await currentContext();
+  if (!ctx.organizationId || ctx.userId !== userId || !canDecideApprovals({ email: ctx.email, roles: ctx.roles })) {
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
   const { id } = await params;
@@ -79,6 +96,7 @@ export async function PUT(
     const result = await decideItem({
       itemId: id,
       userId,
+      organizationId: ctx.organizationId,
       action,
       note: note ?? undefined,
       snoozeDays: snoozeDays ?? undefined,

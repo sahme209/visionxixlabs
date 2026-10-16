@@ -844,3 +844,49 @@ approvals/claims, exact-task health observation, trusted OIDC workflow distribut
 common dispatch service and actual sandbox rollout/recovery remain unfinished.
 All fifteen workstreams stay represented; no end-to-end customer journey or
 overall production-readiness percentage is asserted.
+
+
+## Current integrated customer-governance milestone (2026-10-16)
+
+PR #146 merged as `f22006e09a7110d3859cbec9beb5d56ce658c8d7` after
+exact-head CI passed 583 files / 6,051 tests and the production build. GitHub's
+required-check status briefly lagged completed runs; normal merge succeeded
+only after the gate cleared. No bypass or Vercel deployment was performed.
+Owner chose **repository control only**: the unused ignored-build proposal is
+reference material, with no provider setting change authorized. Vercel work is
+secondary and does not block product engineering.
+
+The next integrated source milestone closes concrete public execution/approval
+bypasses: dashboard restart now uses current accepted admin authority, exact
+tag/source policy checks, scoped GitHub installation and policy snapshots, shared
+quota/idempotency and a serializable release claim before provider invocation.
+Unknown acceptance, commit and receipt outcomes retain claims/holds; original
+accepted-action auditing remains best effort. Readiness freshness is not artifact
+or durable approval proof; required approvals/windows unavailable to this legacy
+path fail closed. ECS v2 storage/trusted ingestion/execution remains unfinished.
+
+Approval form, JSON, bulk and snooze mutations consume only actionable tenant-
+scoped revisions atomically, record actor/time, require current role and same
+origin, and cannot resurrect terminal decisions through a sibling endpoint.
+Concurrent losers do not emit success audits. JSON list/history reads are tenant
+scoped; ordinary accepted members retain read access. Failed execution recovery
+requires a separately reviewed workflow instead of replacing terminal approval.
+
+Actual synthetic local HTTP signup/proof/password/session/workspace acceptance
+passed on source `364b048d`; it used real Next routes, PostgreSQL17, CSRF/cookies
+and loopback SDK mail capture. It did not exercise production migrations or
+external mail. The integrated clean-commit rehearsal additionally includes real
+backend pairing/consumption/revocation and competing approval decisions, and
+remains pending until its exact source/result is recorded. Browser/native,
+Google/GitHub OAuth, real cloud deployment/rollback and Stripe acceptance remain
+unverified. The explicit existing desktop commercial policy is identity-only;
+pairing success must not be reported as verified paid entitlement enforcement.
+
+Airflow's existing latest-success dependency policy is preserved. Strict business-
+partition correlation needs an explicit per-rule policy and compatible, separately
+reviewed storage/configuration rollout; no hidden policy or unused strict kernel
+was added. The concrete next design is recorded in the Airflow proposal.
+Production database target binding, usable PITR and isolated restore remain
+unverified; no production recovery, secrets, routing or live billing action
+is authorized by this milestone. All fifteen workstreams and unavailable
+original-source placeholders remain represented.

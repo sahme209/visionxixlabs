@@ -1,0 +1,32 @@
+{
+  "evidenceDate": "2026-10-15",
+  "evidenceTimezone": "America/New_York",
+  "fixtureCleanup": "disposable_container_removed",
+  "productionChanges": false,
+  "sourceCommit": "364b048d5b13d762170c7e86882f0cfacc1e847c",
+  "schemaFixture": "current_schema_not_migration_recovery",
+  "transport": "real_local_next_http",
+  "database": "disposable_synthetic_postgresql",
+  "mail": "loopback_capture_not_provider_delivery",
+  "verified": [
+    "desktop_origin_challenge",
+    "signup_requires_email_proof",
+    "actual_sdk_mail_capture",
+    "unverified_password_denied",
+    "expired_proof_denied",
+    "actual_resend_replacement",
+    "single_use_proof_and_callback",
+    "incorrect_password_denied",
+    "verified_credentials_csrf_cookie_session",
+    "accepted_personal_workspace_only",
+    "no_billing_plan_created"
+  ],
+  "notVerified": [
+    "browser_render_or_interaction",
+    "production_recovery_or_login",
+    "google_github_oauth",
+    "native_pairing_or_vault",
+    "external_mail_delivery",
+    "cloud_execution_or_billing"
+  ]
+}
