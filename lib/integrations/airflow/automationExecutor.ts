@@ -1,6 +1,8 @@
 import { deploymentEvidence } from "@/lib/releaseops/deploymentEvidence";
 import "server-only";
 
+import { loadAirflowClient } from "./connection";
+import { latestDependenciesReady } from "./dependencyReadiness";
 import { prisma } from "@/lib/db";
 import { parseRepositoryFullName, resolveTenantScopedToken } from "@/lib/connectors/github/resolveTenantScopedToken";
 import { createPullRequest, dispatchWorkflow } from "@/lib/connectors/github/githubWriteClient";
@@ -19,26 +21,43 @@ export async function executeAirflowAutomation(executionId: string, actorUserId?
   if (!automation.enabled) return { ok: false, error: "airflow_automation_disabled" };
   const approvalActorId = actorUserId ?? execution.decidedByUserId;
   if (automation.approvalRequired && !approvalActorId) return { ok: false, error: "airflow_human_approval_required" };
-  if (approvalActorId) {
-    try {
-      // A stored approval is not perpetual authority for scheduled retries.
-      // Use the same accepted-membership/capability model as desktop approval.
-      const membership = await prisma.orgMembership.findUnique({
-        where: { userId_organizationId: { userId: approvalActorId, organizationId: automation.organizationId } },
-        select: { acceptedAt: true, role: true },
-      });
-      if (!membership?.acceptedAt || !hasDesktopCapability(membership.role, "agent:approve")) {
-        return { ok: false, error: "airflow_approval_authority_required" };
-      }
-    } catch {
-      return { ok: false, error: "airflow_approval_authority_unavailable" };
-    }
+  const initialAuthorityError = await currentApprovalAuthorityError(approvalActorId, automation.organizationId);
+  if (initialAuthorityError) return { ok: false, error: initialAuthorityError };
+  if (automation.organizationId !== execution.organizationId || execution.sourceDagId !== automation.dagId) {
+    return { ok: false, error: "airflow_source_not_ready" };
   }
+  if (automation.actionType !== "none") {
+    try {
+      const current = await loadAirflowClient(execution.organizationId);
+      if (current.connectionId !== automation.connectionId) return { ok: false, error: "airflow_connection_changed" };
+      const source = await current.client.getDagRun(execution.sourceDagId, execution.sourceDagRunId);
+      const sourceTime = source.logicalDate ? Date.parse(source.logicalDate) : null;
+      if (source.dagId !== execution.sourceDagId || source.dagRunId !== execution.sourceDagRunId ||
+          !["success", "failed"].includes(source.state) || source.state !== execution.sourceDagState ||
+          (automation.requiredDagState !== "any" && source.state !== automation.requiredDagState) ||
+          (sourceTime !== null && (!Number.isFinite(sourceTime) || sourceTime < automation.createdAt.getTime()))) {
+        return { ok: false, error: "airflow_source_not_ready" };
+      }
+      if (!await latestDependenciesReady(current.client, automation.dependencyDagIds, source.logicalDate)) {
+        return { ok: false, error: "airflow_dependencies_not_ready" };
+      }
+      // Re-read the same credential/endpoint binding after remote reads. A
+      // concurrent reconnect or revocation must not authorize stale evidence.
+      const binding = await prisma.tenantIntegrationConnection.findFirst({ where: {
+        id: current.connectionId, organizationId: execution.organizationId, provider: "airflow", status: "active", updatedAt: current.connectionUpdatedAt,
+      }, select: { id: true } });
+      if (!binding) return { ok: false, error: "airflow_connection_changed" };
+    } catch { return { ok: false, error: "airflow_preconditions_unavailable" }; }
+  }
+  // Remote reads may take long enough for an approver to be removed or lose
+  // capability. Recheck immediately before consuming the execution claim.
+  const currentAuthorityError = await currentApprovalAuthorityError(approvalActorId, automation.organizationId);
+  if (currentAuthorityError) return { ok: false, error: currentAuthorityError };
   // Competing approvals/ticks must claim the exact observed attempt before
   // any provider action. Status alone is insufficient if a concurrent retry
   // has already run and failed again. Rejection wins if it changed the row.
   const claimed = await prisma.airflowAutomationExecution.updateMany({
-    where: { id: execution.id, organizationId: execution.organizationId, status: execution.status, attempt: execution.attempt, automation: { enabled: true } },
+    where: { id: execution.id, organizationId: execution.organizationId, status: execution.status, attempt: execution.attempt, automation: { enabled: true, updatedAt: automation.updatedAt, connectionId: automation.connectionId } },
     data: { status: "running", attempt: { increment: 1 }, errorCode: null, nextRetryAt: null, ...(actorUserId ? { decidedByUserId: actorUserId, decidedAt: new Date() } : {}) },
   });
   if (claimed.count !== 1) return { ok: false, error: "airflow_execution_not_actionable" };
@@ -127,4 +146,15 @@ async function succeed(executionId: string, result: Record<string, unknown>): Pr
   await appendAuditEvent(prisma as unknown as AuditEventRepo, { organizationId: row.organizationId, kind: "airflow.automation.succeeded", subjectKind: "automation", subjectId: row.id, summary: `Airflow automation ${current.automation.name} completed its governed action`, actorUserId: row.decidedByUserId });
   if (current.automation.notifyOnSuccess) await dispatchWebhookEvent({ organizationId: row.organizationId, eventKind: "airflow.automation_succeeded", data: { automationId: current.automation.id, automationName: current.automation.name, executionId: row.id, result } }).catch(() => undefined);
   return { ok: true, result };
+}
+
+async function currentApprovalAuthorityError(actorUserId: string | null | undefined, organizationId: string): Promise<"airflow_approval_authority_required" | "airflow_approval_authority_unavailable" | null> {
+  if (!actorUserId) return null;
+  try {
+    const membership = await prisma.orgMembership.findUnique({
+      where: { userId_organizationId: { userId: actorUserId, organizationId } },
+      select: { acceptedAt: true, role: true },
+    });
+    return membership?.acceptedAt && hasDesktopCapability(membership.role, "agent:approve") ? null : "airflow_approval_authority_required";
+  } catch { return "airflow_approval_authority_unavailable"; }
 }

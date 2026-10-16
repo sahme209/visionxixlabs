@@ -2,13 +2,13 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { cleanup, render, screen } from "@testing-library/react";
 
-const io = vi.hoisted(() => ({ members: vi.fn(), usage: vi.fn(), pending: vi.fn(), purchases: vi.fn(), quota: vi.fn(), plan: vi.fn() }));
+const io = vi.hoisted(() => ({ members: vi.fn(), usage: vi.fn(), pending: vi.fn(), purchases: vi.fn(), quota: vi.fn(), plan: vi.fn(), holds: vi.fn() }));
 vi.mock("server-only", () => ({}));
 vi.mock("@/lib/auth/currentContext", () => ({ currentContext: async () => ({ isAuthenticated: true, organizationId: "org_evidence", email: "owner@example.test", roles: ["owner"] }) }));
 vi.mock("@/lib/auth/platformAdmin", () => ({ isAdminOrOwner: () => true }));
 vi.mock("@/lib/billing/stripeHelper", () => ({ describeStripeStatus: () => ({ mode: "test" }) }));
 vi.mock("@/lib/billing/deploymentQuota", () => ({ checkDeploymentQuota: io.quota }));
-vi.mock("@/lib/db", () => ({ prisma: { tenantBillingPlan: { findUnique: io.plan }, orgMembership: { count: io.members }, usageEvent: { aggregate: io.usage, count: io.pending }, addOnPurchase: { findMany: io.purchases } } }));
+vi.mock("@/lib/db", () => ({ prisma: { $transaction: async (fn: (tx: unknown) => unknown) => fn({ tenantBillingPlan: { findUnique: io.plan }, addOnPurchase: { findMany: io.purchases }, usageEvent: { aggregate: io.usage }, aIUsageReservation: { aggregate: io.holds } }), tenantBillingPlan: { findUnique: io.plan }, orgMembership: { count: io.members }, usageEvent: { aggregate: io.usage, count: io.pending }, addOnPurchase: { findMany: io.purchases } } }));
 import Page from "../page";
 import { readBillingPlan, readBillingPlanWithAvailability } from "@/lib/billing/tenantBillingStore";
 
@@ -20,7 +20,8 @@ beforeEach(() => {
   io.members.mockResolvedValue(3);
   io.usage.mockResolvedValue({ _count: { _all: 2 }, _sum: { inputTokens: 100, outputTokens: 20, billedCents: 30 } });
   io.pending.mockResolvedValue(1);
-  io.purchases.mockImplementation(async (query) => query.select.id ? [] : [{ deliveredAICreditsCents: 500, reversedAICreditsCents: 0 }]);
+  io.purchases.mockImplementation(async (query) => query.select?.id ? [] : [{ sku: "credits", status: "paid", validFor: "current_month", deliveredAICreditsCents: 500, reversedAICreditsCents: 0, deliveredSeats: 0, deliveredConnectors: 0 }]);
+  io.holds.mockResolvedValue({ _sum: { reservedCents: 0 } });
   io.quota.mockResolvedValue({ allowed: true, planId: "pro", used: 2, limit: 100, remaining: 98 });
 });
 afterEach(() => { cleanup(); vi.unstubAllEnvs(); });
@@ -30,7 +31,7 @@ describe("canonical customer billing evidence", () => {
     render(await Page());
     expect(value("Organization seats")).toBe("3 / 3");
     expect(value("Counted deployments")).toBe("2 / 100");
-    expect(value("AI credit available")).toBe("$34.70");
+    expect(value("Included AI allowance remaining")).toBe("$204.70");
     expect(value("Gateway calls")).toBe("2");
     expect(screen.getByText("$0.30 settled")).toBeTruthy();
     expect(screen.queryByRole("alert")).toBeNull();
@@ -43,10 +44,10 @@ describe("canonical customer billing evidence", () => {
     render(await Page());
     expect(screen.getByRole("alert")).toBeTruthy();
     expect(value("Organization seats")).toBe("Unavailable");
-    expect(value("AI credit available")).toBe("Unavailable");
+    expect(value("Included AI allowance remaining")).toBe(["usage", "purchases"].includes(boundary) ? "Unavailable" : "$204.70");
     expect(value("Gateway calls")).toBe("Unavailable");
     expect(value("Input tokens")).toBe("Unavailable");
-    expect(value("Paid top-ups")).toBe("Unavailable");
+    expect(value("Applied paid top-ups")).toBe(["usage", "purchases"].includes(boundary) ? "Unavailable" : "$5.00");
     expect(screen.getByText("Settled amount unavailable")).toBeTruthy();
     expect(screen.getByText("Credit transactions are unavailable.")).toBeTruthy();
     expect(screen.queryByText(/No credit transactions recorded/)).toBeNull();
@@ -62,7 +63,7 @@ describe("canonical customer billing evidence", () => {
     expect(value("Counted deployments")).toBe("Unavailable");
     expect(screen.queryByText(/unlimited/)).toBeNull();
     expect(screen.getByRole("alert")).toBeTruthy();
-    expect(value("AI credit available")).toBe("$34.70");
+    expect(value("Included AI allowance remaining")).toBe("$204.70");
     expect(value("Gateway calls")).toBe("2");
   });
 
@@ -76,7 +77,7 @@ describe("canonical customer billing evidence", () => {
     render(await Page());
     expect(screen.getByRole("heading", { name: "Plan unavailable" })).toBeTruthy();
     expect(screen.getByRole("alert")).toBeTruthy();
-    expect(value("AI credit available")).toBe("Unavailable");
+    expect(value("Included AI allowance remaining")).toBe("Unavailable");
     expect(value("Organization seats")).toBe("3 / unavailable");
     expect(value("Gateway calls")).toBe("2");
     expect(screen.getByText("$0.30 settled")).toBeTruthy();
@@ -100,7 +101,7 @@ describe("canonical customer billing evidence", () => {
     render(await Page());
     expect(value("Gateway calls")).toBe("0");
     expect(value("Input tokens")).toBe("0");
-    expect(value("Paid top-ups")).toBe("$0.00");
+    expect(value("Applied paid top-ups")).toBe("$0.00");
     expect(screen.getByText("$0.00 settled")).toBeTruthy();
     expect(screen.getByText("No credit transactions recorded.")).toBeTruthy();
     expect(screen.queryByRole("alert")).toBeNull();
@@ -118,5 +119,49 @@ describe("canonical customer billing evidence", () => {
     render(await Page());
     expect(value("Counted deployments")).toBe("3 / unlimited");
     expect(screen.queryByRole("alert")).toBeNull();
+  });
+});
+
+
+describe("current enforced AI allowance in the real server page", () => {
+  it("shows legacy Growth's flat $200 pool rather than three public $10 seats", async () => {
+    io.purchases.mockResolvedValue([]);
+    io.holds.mockResolvedValue({ _sum: { reservedCents: 1250 } });
+    render(await Page());
+    expect(value("Included AI allowance remaining")).toBe("$187.20");
+    expect(screen.getByText(/\$200.00 current account allowance/)).toBeTruthy();
+    expect(screen.getByText(/\$12.50 held for unresolved requests/)).toBeTruthy();
+    expect(screen.getByText(/not spend authorization/)).toBeTruthy();
+    expect(screen.queryByText(/\$30.00 listed plan/)).toBeNull();
+  });
+  it("shows the existing no-plan $25 reservation baseline without granting a paid plan", async () => {
+    io.plan.mockResolvedValue(null); io.purchases.mockResolvedValue([]);
+    render(await Page());
+    expect(value("Included AI allowance remaining")).toBe("$24.70");
+    expect(screen.getByRole("heading", { name: "Free" })).toBeTruthy();
+    expect(screen.getByText(/Current reservation policy: hard stop/)).toBeTruthy();
+  });
+  it("uses net current and permanent paid credits without counting refunded credits", async () => {
+    io.purchases.mockImplementation(async q => q.select?.id ? [] : [
+      { sku: "current", status: "partially_refunded", validFor: "current_month", deliveredAICreditsCents: 1000, reversedAICreditsCents: 400, deliveredSeats: 0, deliveredConnectors: 0 },
+      { sku: "permanent", status: "paid", validFor: "permanent", deliveredAICreditsCents: 200, reversedAICreditsCents: 0, deliveredSeats: 0, deliveredConnectors: 0 },
+    ]);
+    render(await Page());
+    expect(value("Applied paid top-ups")).toBe("$8.00");
+    expect(value("Included AI allowance remaining")).toBe("$207.70");
+  });
+  it("never turns a missing hold ledger into an available balance", async () => {
+    io.holds.mockRejectedValue(new Error("private storage outage"));
+    render(await Page());
+    expect(value("Included AI allowance remaining")).toBe("Unavailable");
+    expect(value("Gateway calls")).toBe("2");
+    expect(screen.getByRole("alert")).toBeTruthy();
+  });
+  it("distinguishes exhausted included allowance from overage authorization", async () => {
+    io.holds.mockResolvedValue({ _sum: { reservedCents: 25000 } });
+    render(await Page());
+    expect(value("Included AI allowance remaining")).toBe("$0.00");
+    expect(screen.getByText(/Current reservation policy: metered billing/)).toBeTruthy();
+    expect(screen.getByText(/not spend authorization/)).toBeTruthy();
   });
 });

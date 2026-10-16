@@ -3,9 +3,8 @@
 Decision received2026-10-16: use the current public catalog for **new TEST
 subscriptions only**, preserving existing customers unchanged. This authorizes
 local isolated implementation design, not live products/prices, production
-migrations, production activation or changes to historical contracts. Source
-baseline main147 `cca52dfb`; earlier workspace/desktop management authority fixes
-are separate integrated work and must not be duplicated.
+migrations, production activation or changes to historical contracts. The integration includes main #150 and the pricing/navigation changes from
+PR #151; earlier workspace/desktop management authority fixes are reused.
 
 **This document proposes schema; it does not add a migration or runtime wiring.**
 Actual Stripe TEST access is absent. Fixture evidence cannot be called checkout

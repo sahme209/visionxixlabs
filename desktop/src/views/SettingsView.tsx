@@ -242,18 +242,27 @@ function PlanSection({ identity }: { identity: VerifiedDesktopIdentity }) {
     } catch (cause) { setError(cause instanceof Error ? cause.message : "The billing portal could not be opened."); }
     finally { setOpening(false); }
   }
-  const isNoChargeAccess = access.allowed && (access.planTier === "pilot" || access.planTier === "trial");
-  const accessModel = isNoChargeAccess
+  const isNoPlan = access.billingStatus === "no_plan";
+  const isNoChargeAccess = access.allowed && !isNoPlan && (
+    (access.planTier === "pilot" && access.billingStatus === "active") ||
+    (access.planTier === "trial" && access.billingStatus === "trialing")
+  );
+  const accessModel = isNoPlan ? "No subscription" : isNoChargeAccess
     ? access.planTier === "trial" ? "No-charge trial" : "No-charge pilot"
     : access.planTier;
   return <div>
-    <SectionHeading title="Access & usage" detail="Approved pilot or commercial access is verified by the service before production records load." />
+    <SectionHeading title="Access & usage" detail="Identity and billing status are reported separately by the service." />
     <div className="grid gap-4 sm:grid-cols-2">
       <SummaryCard label="Access model" value={accessModel} detail={access.title} />
-      <SummaryCard label="Access state" value={isNoChargeAccess ? "Active" : access.billingStatus.replaceAll("_", " ")} detail={isNoChargeAccess ? "Provisioned for this workspace; no billing setup is required" : access.currentPeriodEndsAt ? `Period ends ${new Date(access.currentPeriodEndsAt).toLocaleDateString()}` : "Managed by your workspace agreement"} />
+      <SummaryCard label="Access state" value={isNoPlan ? "No plan" : isNoChargeAccess ? "Active" : access.billingStatus.replaceAll("_", " ")} detail={isNoPlan ? "Sign-in status does not establish a trial or paid subscription" : isNoChargeAccess ? "Provisioned for this workspace; no billing setup is required" : access.currentPeriodEndsAt ? `Period ends ${new Date(access.currentPeriodEndsAt).toLocaleDateString()}` : "Managed by your workspace agreement"} />
     </div>
     <div className="mt-5 rounded-xl border border-white/[0.07] bg-white/[0.025] p-5">
-      {isNoChargeAccess ? (
+      {isNoPlan ? (
+        <div>
+          <p className="text-sm text-zinc-200">No subscription is attached to this workspace</p>
+          <p className="mt-1 max-w-xl text-xs leading-5 text-zinc-500">{access.allowed ? "Identity sign-in is active." : "Check the service sign-in status."} This billing status does not establish approved trial, pilot, or paid access.</p>
+        </div>
+      ) : isNoChargeAccess ? (
         <div>
           <p className="text-sm text-zinc-200">{access.planTier === "trial" ? "Trial access is active" : "Pilot access is active"}</p>
           <p className="mt-1 max-w-xl text-xs leading-5 text-zinc-500">This workspace has approved no-charge access. No card, Stripe customer, or checkout is needed, and production safeguards remain enforced.</p>

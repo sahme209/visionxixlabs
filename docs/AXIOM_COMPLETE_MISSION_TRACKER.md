@@ -1029,6 +1029,64 @@ to `f7de88f0`; later commits
 only record documentation and results. No deployment or production change occurred.
 
 
+## Pricing-to-application audit and safe wiring candidate
+
+The existing `/pricing` route redirects to canonical `/plans`. Read-only source
+audit covered the public catalog, legacy pricing/entitlement registries, Checkout,
+signed subscription events, usage/credit reservations, refunds, quota/status gates,
+portal management and desktop DTO/UI. Existing billing evidence and the full
+commercial decision packet are in `BILLING_CUSTOMER_JOURNEY_ACCEPTANCE.md`;
+uncertain recurring purchase recovery is designed in
+`RECURRING_SUBSCRIPTION_INTENT_DESIGN.md`, with no schema/financial change enabled.
+
+Safe source candidate restores Pricing in shared desktop/mobile navigation and
+footer, preserves validated plan/interval through sign-in, requires a fresh
+purchase click and binds the displayed workspace to fresh server authority before
+seat counts or Stripe IO. Desktop billing management now requires current
+owner/admin authority consistently with the browser; no-plan identity access is
+no longer presented as an approved commercial trial. Existing billing activation,
+prices, commercial access and support payment paths are unchanged. Integrated
+validation passed 599 files / 6,307 tests, web/desktop TypeScript, desktop build,
+30 Python tests, scoped lint and a 293-page local production build. Exact-head
+CI remains pending; provider responses in component/route tests are mocked.
+
+Important unresolved commercial disconnections:
+
+- Public proposed Free/Pro/Enterprise allowances ($2 per organization/$10 per paid
+  seat/$30 per paid seat) differ from enforced legacy $25/$200/$5,000 flat pools;
+  inactive-status behavior and overage rules also differ. No policy was silently
+  selected or existing customer reinterpreted. Owner approved the public catalog
+  for newly created TEST subscriptions only on 2026-10-16, preserving existing
+  customers unchanged; live activation and production migrations remain unapproved.
+- Organization webhook updates `TenantBillingPlan`; older feature paths still
+  authorize against `User.plan`. Desktop commercial policy remains deliberately
+  identity-only. These are not verified purchased-feature provisioning.
+- Recurring checkout lacks durable immutable intent/unknown-outcome recovery;
+  portal price-only changes without matching metadata fail closed. Current
+  subscription snapshots are not invoice-finalization/payment reconciliation.
+
+Runtime presence-only inspection confirms no Stripe key, webhook secret or
+DATABASE_URL; no Stripe connector is exposed. No credentials were retrieved.
+Hosted Stripe TEST checkout, signed test delivery, current account provisioning,
+renewal/failure/cancel/upgrade/downgrade and credit exhaustion remain **unverified**.
+Public catalog selection for new test subscriptions is approved. Next gates are
+reviewed version/status/overage/legacy compatibility and securely configured
+isolated Stripe test prices/webhook/database. Test prices
+must privately attest currency, quantity basis and actual amount, not merely IDs.
+No live billing, production price, database, Vercel or support-payment change is
+authorized. Deferred support storytelling remains independent and unimplemented.
+
+
+The pricing candidate also corrects current-account credit reporting: read-only
+RepeatableRead evidence matches the existing reservation engine's raw plan tier,
+net eligible current/permanent add-ons, usage and all unresolved linked/pending
+holds. It reports included allowance remaining, not spending permission or new
+public-catalog entitlements. No legacy pool/status/charging policy is changed.
+Known customer or subscription history (including canceled/past-due) is refused before a new
+Checkout request, because replacement IDs are not yet a supported lifecycle. Five
+regressions failed on the previous route; unknown concurrent initial purchase
+recovery still needs durable intent. Support payment routes remain untouched.
+
 ## Durable ECS review storage candidate — no execution authority
 
 PR #147 is merged as `cca52dfb61534b8d96ac8a602d604b49c376fc66` after both
@@ -1044,7 +1102,7 @@ pass; the producer's real PostgreSQL17 lifecycle/revision-race rehearsal passed 
 its owned fixture was removed. Independent source review found no material blocker
 within this limited boundary. After merging main #148, final local regression passed 595 files / 6,251
 tests, desktop TypeScript/build, 30 Python tests, lint and tracker checks. Exact-head
-CI/build remains pending; this source adds no runtime route.
+CI/build passed in PR #149; this source adds no runtime route.
 Stored facts and checkpoints do not establish fresh provider readiness or atomic
 execution/revocation authority. Trusted provenance ingestion, full policy handling,
 execution claims and actual rollout/health/rollback remain unfinished.
@@ -1087,3 +1145,68 @@ suite and passed separately), web/desktop types, desktop build, 30 Python tests
 and lint on new code. The reservation file retains five pre-existing explicit-any
 lint errors; the new callback is typed with Prisma types and introduces none.
 Exact-head CI/build remains pending. No support payment path changed.
+PR #149 merged as `7fd354e1d2a0fc0d2ec8fb3ccc9bd86566a00010` after exact-head
+Test (push and PR), Desktop CI and isolated auth-recovery rehearsal passed. Actual
+CI ran 595 files / 6,251 tests and built all 293 pages. The source-only review
+migration is still unapproved for production; no provider or database authority
+was enabled.
+
+
+Pricing integration local application check (2026-10-16): the built Next server
+was started only on loopback with checkout disabled. Actual HTTP `/plans` returned
+200 with Pricing navigation and the no-charge preview; `/pricing` redirected to
+`/plans`. The owned server was stopped afterward. This verifies rendered application
+routing, not hosted checkout, OAuth, payment or paid entitlement provisioning.
+The production build caught an optional page-props signature incompatible with
+Next-generated types; corrected required props passed the focused tests and build.
+No production deployment, provider call or support checkout change was made.
+## Airflow current-condition dispatch candidate
+
+PR #149 merged as `7fd354e1d2a0fc0d2ec8fb3ccc9bd86566a00010`; its ECS review
+storage proposal remains disabled and unapplied. This candidate adds no schema.
+The existing documented Airflow latest-run freshness contract now gates actual
+write dispatch as well as proposal. Exact source identity/original terminal state,
+configured success/failed/any condition and current latest dependency freshness
+are reread before claim, GitHub token resolution or deployment allowance.
+Unavailable/changed evidence leaves the execution unclaimed. Current connection
+binding is reread after remote checks; the rule revision/connection are fenced in
+the atomic claim. These checks do not atomically lock provider state or establish
+immutable preproposal dependency/rerun evidence.
+
+Evidence: `docs/TERRAFORM_AIRFLOW_CUSTOMER_ACCEPTANCE.md`, shared
+`lib/integrations/airflow/dependencyReadiness.ts`, and executor claim regressions.
+Three tests failed against the former executor because it still opened a PR after
+source failure, dependency failure or unavailable Airflow; 81 Airflow regressions
+and web TypeScript passed in isolation. Merged-main local gates passed 595 files / 6,265 tests, web/desktop TypeScript,
+desktop build, 30 Python CLI tests, scoped lint and tracker consistency. The first
+restricted-sandbox run blocked loopback sockets and native Git/GPG fixtures; the
+final full run with normal local fixture permissions passed without source or test
+changes (bounded 20-second test allowance). Exact-head push/PR CI and production
+compilation remain pending. Live provider/customer acceptance remains unverified.
+The optional strict-policy sidecar/readiness plan is documentation only; there is
+no hidden configuration, schema activation, provider dispatch or production change.
+
+Independent review identified approver revocation during the newly added remote
+reads. Initial authority checks remain, and accepted membership/capability is
+rechecked immediately before the claim. The new mid-read revocation regression
+failed before this correction; the subsequent full local suite passed 595 files /
+6,265 tests, web TypeScript and scoped lint. Prior unchanged desktop build/types
+and 30 Python results remain applicable. The final post-read authority race is
+documented; exact-head CI remains required before merging PR #150.
+
+
+PR #150 merged as `0e383a44d8e5e5eab91febdd0135d9a96db3166f` after both
+exact-head CI runs passed TypeScript, 6,265 tests and production compilation.
+The pricing branch integrates those changes without replacing either tracker
+section; provider/customer acceptance remains unverified.
+
+Independent pricing review also identified customer-only Stripe bindings: starting
+a new customer checkout would conflict with existing webhook ownership and risk
+payment without activation. The new regression failed before correction. Checkout
+now refuses either customer or subscription history before seat/provider IO;
+existing customer terms and support payments are unchanged.
+
+After integrating main #150, the combined local suite passed 599 files / 6,321
+tests. The additional customer-only regression then passed with all 17 Checkout
+route tests; final web TypeScript and scoped lint passed. The final exact-head
+CI will validate the combined source and production compilation before merge.
