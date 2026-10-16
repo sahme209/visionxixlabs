@@ -36,7 +36,7 @@ suite("owned PG17 new TEST subscription service, synthetic provider only", () =>
     verifyAndRetrieve: async (_, signature) => { if (signature !== "synthetic-verified-signature") throw new Error("invalid_signature"); return { providerRequestKey: currentKey, providerRequestDigest: currentDigest, eventId, accountId: providerAccount, livemode: false, organizationId: currentOrg, intentId: currentIntent, catalogVersion: "axiom_public_test_v1", sessionId: "cs-test", sessionStatus: "complete", paymentStatus: "paid", customerId: "cus-test", subscriptionId: "sub-test", status, seatQuantity: seats, price: price(), currentPeriodEndsAt: "2026-11-01T00:00:00.000Z", cancelAtPeriodEnd: false, coverage: syntheticCoverage(currentOrg, currentIntent, eventId) }; },
   };
   const syntheticCoverage = (org: string, intent: string, token: string, session = "cs-test", customer = "cus-test", subscription = "sub-test"): CoverageObservation => {
-    const evidence = collectedEvidence({ runtimeId: runtime, accountId: "acct-test", organizationId: org, originatingIntentId: intent, sessionId: session, customerId: customer, subscriptionId: subscription, planId: "pro", interval: "monthly", seatQuantity: 3, priceId: "price-test", unitAmountCents: 2900, invoiceId: `in-${org}`, lineId: `il-${org}`, subscriptionItemId: `si-${org}`, paymentId: `inpay-${org}`, paymentIntentId: `pi-${org}`, chargeId: `ch-${org}`, currency: "usd", amountCents: 8700, collectedAt: "2026-10-01T00:00:00.000Z", serviceStart: "2026-10-01T00:00:00.000Z", serviceEnd: "2026-11-01T00:00:00.000Z" });
+    const evidence = collectedEvidence({ runtimeId: runtime, accountId: "acct-test", organizationId: org, originatingIntentId: intent, sessionId: session, customerId: customer, subscriptionId: subscription, planId: "pro", interval: "monthly", seatQuantity: 3, priceId: "price-test", unitAmountCents: 2900, invoiceId: `in-${org}`, lineId: `il-${org}`, subscriptionItemId: `si-${org}`, paymentId: `inpay-${org}`, paymentIntentId: `pi-${org}`, chargeId: `ch-${org}`, paymentMethodType: "card", currency: "usd", amountCents: 8700, collectedAt: "2026-10-01T00:00:00.000Z", serviceStart: "2026-10-01T00:00:00.000Z", serviceEnd: "2026-11-01T00:00:00.000Z" });
     return { eventToken: token, latestInvoiceId: evidence.invoiceId, currentPeriodStart: evidence.serviceStart, currentPeriodEnd: evidence.serviceEnd, collection: { kind: "collected", evidence } };
   };
   const request = { clientIntentKey: "intent_key_12345678", planId: "pro" as const, interval: "monthly" as const, seatQuantity: 3, email: "synthetic@example.invalid", successUrl: "https://isolated.invalid/success", cancelUrl: "https://isolated.invalid/cancel" };
@@ -225,6 +225,21 @@ suite("owned PG17 new TEST subscription service, synthetic provider only", () =>
     expect(await db.tenantBillingPlan.findUnique({ where: { organizationId: actor.organizationId } })).toMatchObject({ status: "active", seatQuantity: 3, cancelAtPeriodEnd: true, currentPeriodEndsAt: new Date(period * 1000) });
     expect(await db.stripeBillingEvent.findUnique({ where: { id: "evt-sdk-scheduled" } })).toMatchObject({ type: "customer.subscription.updated" });
     expect(await service.previewRemaining(actor)).toMatchObject({ remainingCents: 2550 });
+    const planBeforeReplay = await db.tenantBillingPlan.findUnique({ where: { organizationId: actor.organizationId } });
+    const intentBeforeReplay = await store.transaction(tx => tx.intent(origin.id));
+    const revisionBeforeReplay = (await store.transaction(tx => tx.coverage(actor.organizationId)))!.revision;
+    paid.invoice.status = "open";
+    expect(await deliver("evt-sdk-scheduled")).toBe("replay");
+    await expect(service.previewRemaining(actor)).rejects.toThrow("paid_coverage_unavailable");
+    expect(await db.tenantBillingPlan.findUnique({ where: { organizationId: actor.organizationId } })).toEqual(planBeforeReplay);
+    expect(await store.transaction(tx => tx.intent(origin.id))).toEqual(intentBeforeReplay);
+    expect((await store.transaction(tx => tx.coverage(actor.organizationId)))!.revision).toBe(revisionBeforeReplay + 1);
+    paid.invoice.status = "paid";
+    expect(await deliver("evt-sdk-scheduled")).toBe("replay");
+    await expect(service.previewRemaining(actor)).rejects.toThrow("paid_coverage_unavailable");
+    expect(await deliver("evt-sdk-fresh-collected-after-replay")).toBe("applied");
+    expect(await service.previewRemaining(actor)).toMatchObject({ remainingCents: 2550 });
+    expect(await financial()).toEqual(before);
     const originalCollection = await store.transaction(tx => tx.coverage(actor.organizationId));
     const originalInvoice = structuredClone(paid.invoice);
     paid.invoice.id = "in_next_open"; paid.invoice.status = "open";

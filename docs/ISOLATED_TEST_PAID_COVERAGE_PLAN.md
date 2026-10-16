@@ -15,9 +15,11 @@ The existing isolated application flag denies every Stripe boundary absolutely.
 
 Supported paid coverage is full-price USD cash collection for one recurring line
 whose own service period is aligned to UTC calendar months: one complete month,
-or twelve complete months for annual terms. **Standard mid-month checkout and
-recovery, prorations, partial periods, discounts (including zero-price), credits,
+or twelve complete months for annual terms. **Service periods starting/ending mid-month, prorations, partial periods,
+discounts (including zero-price), credits,
 taxes, manual/out-of-band payments and multi-payment collection are unsupported.**
+Calendar alignment constrains service endpoints, not collection time: full cash
+collected October 16 for an October 1–November 1 service line is supported.
 This bounded inactive proof slice does not complete the hosted payment journey.
 Initial binding also requires the original Checkout invoice to remain the current
 latest invoice; late first binding after a later renewal is unsupported.
@@ -39,13 +41,25 @@ original quantity, currency and full expected amount. Coverage comes from the
 invoice line's period, not invoice period_start/end. Require finalized paid
 invoice, exact cash due/paid, zero remaining/overpaid/balance/credit/discount/tax,
 one full paid InvoicePayment linked to a succeeded PaymentIntent and its paid,
-captured, unrefunded, undisputed Charge. Reject payment_record/manual/forgiven/
+captured, unrefunded, undisputed Charge with one identified installed-SDK payment
+source. Customer-balance funding, missing/unknown/ambiguous source, and invoice
+balance application are unsupported; identified non-card sources use the same
+full collection checks. Retain the method type in immutable evidence. Reject payment_record/manual/forgiven/
 uncollectible/zero-due/partial outcomes. Reread invoice, charge, subscription and
 account before returning; a changed snapshot fails closed. Unsupported current
 collection on an established contract clears positive coverage atomically.
 
 At most 14 remote reads, each list limit 2 with has_more false; no pagination.
-Zero retries, 10-second maximum per request and 30-second total deadline. Check
+Zero retries, 10-second maximum per request and 30-second monotonic total
+verification deadline. The owned HTTPS transport hard-aborts the request, response
+and agent through complete bounded body consumption. It fixes api.stripe.com:443 and requires TLS certificate/hostname verification,
+without replacing inherited CA roots or disabling trust. No redirects/retries.
+The actual default derives refusal itself when managed proxy or custom trust/
+transport settings are present but unsupported: it inspects key presence only,
+never values, and fails before socket creation. It does not bypass configured
+proxies or alter managed environment. Genuine managed proxy compatibility is
+unverified and blocked; inert configuration/native-wire injection is internal
+test-only, never selected by public routes or runtime flags. Check
 the existing provider denial/runtime/deadline before and after every awaited
 SDK boundary; no ambient credentials or actual provider requests in acceptance.
 Relevant signed invoice/refund/dispute/credit-note triggers only locate an exact
@@ -70,7 +84,10 @@ provider IO and CAS-fenced along with the plan token on every positive/negative
 commit; every projection write increments it. Reservation admission also fences
 that revision. Thus a late positive cannot overwrite a newer negative merely
 because deprivileging leaves the plan token unchanged. Historical replay receipts
-grant no authority. This explicitly supersedes the earlier coverage-free
+grant no authority. A historical event receipt does not discard freshly verified
+negative collection: it revision-fences a projection-only replay_unavailable
+observation, without rewriting the event/plan/intent or financial rows. Positive
+replay never restores that projection. This explicitly supersedes the earlier coverage-free
 no-mutation ruling for term drift, and adds no upgrade/downgrade policy.
 
 Reuse the existing subscription event consumer in the same Serializable
@@ -114,7 +131,7 @@ existing path. Expiry alone cannot grant a fresh month even without a webhook.
 Retain old held-row fairness blockers as history, marking pre-LIMIT eligibility,
 tenant interleaving and timestamp/CAS rotation superseded by existing source and
 tests. Cross-batch starvation/load/backoff remains separate. Do not use this
-slice to claim hosted checkout, supported mid-month subscriptions or general
+slice to claim hosted checkout, supported mid-month service periods or general
 billing completion.
 
 ## Execution record (review candidate)
@@ -137,3 +154,43 @@ web TypeScript. Earlier status-only 7/7 HTTP evidence does not validate these
 new collection/coverage changes. All remote Stripe objects in current tests are
 explicitly synthetic provider fixtures; actual signature construction verifies
 only the local signature path. Hosted Stripe acceptance remains a separate gate.
+
+## Bundled independent-review correction
+
+Review of frozen 2f574d8e identified three findings: historical replay discarded
+fresh negative collection; Charge funding source was not identified/rejected for
+customer balance; socket inactivity was incorrectly described as a hard deadline.
+Eleven new source/replay regressions failed before their fixes. Replay now only
+deprivileges the revision-fenced projection, never restores positive authority
+or rewrites the receipt/plan/intent/financial rows. Explicit replay_unavailable
+also prevents old inactive state from becoming an active-unpaid Free fallback.
+Known unambiguous non-customer-balance payment-method details are required and
+retained in immutable evidence; non-card sources use the same full cash checks.
+
+The owned HTTPS adapter holds a hard timer through bounded complete JSON body
+consumption, destroys request/response/per-request agent on all outcomes, and
+uses integer remaining time from a monotonic total verification budget. Native
+wire tests cover hung headers/body, trickle, shortened remaining time, bounds,
+redirect/abort cleanup, managed-configuration refusal, isolation denial and actual
+Stripe SDK parsing without retries. They use synthetic native responses and no
+network; they do not prove genuine Stripe or managed proxy compatibility.
+
+Calendar alignment restricts invoice-line service endpoints. October 16 full
+cash collection for October 1–November 1 is explicitly supported and tested.
+Mid-month service endpoints, prorations and unsupported collection sources stay
+Unavailable; hosted test checkout and general billing completion remain unproved.
+
+Final bundled candidate focused verification passes 270 tests across 12 files;
+8 owned PostgreSQL/Next cases remain deliberately skipped. Focused changed-source
+lint passes and whitespace checks are clean. No compiler or owned acceptance has
+yet run for this candidate. The deadline owner is propagated by a typed installed-
+SDK internal request header, stripped before native HTTPS; active requests are
+canceled on expiry, and removed/expired owners forbid delayed SDK request starts
+even when asynchronous callback context is lost. Sixteen synthetic native-wire
+cases cover whole-body abort/cleanup, absolute/late-start cancellation, managed-
+configuration refusal, runtime isolation and actual SDK receipt/error parsing.
+This token is cancellation bookkeeping, never an IO permit or request-selected
+runtime. Default real transport derives unsupported configuration refusal from
+process key presence itself; fixture configuration is available only together
+with an explicitly injected synthetic native wire. No managed proxy or trust
+values are inspected, logged, changed or bypassed.

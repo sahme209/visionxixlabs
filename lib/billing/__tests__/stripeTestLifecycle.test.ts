@@ -21,11 +21,11 @@ function fixture() {
     sessionId: "cs_original", customerId: "cus_original", subscriptionId: "sub_original", eventToken: "evt_original", status: "active", seatQuantity: 3 };
   const paid = paidFixture({ sessionId: "cs_original", customerId: "cus_original", subscriptionId: "sub_original", priceId: "price_pro" });
   paid.line.pricing.price_details.product = "prod";
-  const originalEvidence = collectedEvidence({ ...paid.identity, invoiceId: paid.invoice.id, lineId: paid.line.id, subscriptionItemId: "si_test", paymentId: paid.payment.id, paymentIntentId: paid.paymentIntent.id, chargeId: paid.charge.id, currency: "usd", amountCents: 8700, collectedAt: "2026-10-01T00:00:00.000Z", serviceStart: "2026-10-01T00:00:00.000Z", serviceEnd: "2026-11-01T00:00:00.000Z" });
+  const originalEvidence = collectedEvidence({ ...paid.identity, invoiceId: paid.invoice.id, lineId: paid.line.id, subscriptionItemId: "si_test", paymentId: paid.payment.id, paymentIntentId: paid.paymentIntent.id, chargeId: paid.charge.id, paymentMethodType: "card", currency: "usd", amountCents: 8700, collectedAt: "2026-10-01T00:00:00.000Z", serviceStart: "2026-10-01T00:00:00.000Z", serviceEnd: "2026-11-01T00:00:00.000Z" });
   let coverage: { observation: CoverageObservation; originalEvidence: typeof originalEvidence; revision: number } | null = { revision: 1, originalEvidence, observation: { eventToken: "evt_original", latestInvoiceId: "in_test", currentPeriodStart: originalEvidence.serviceStart, currentPeriodEnd: originalEvidence.serviceEnd, collection: { kind: "collected", evidence: originalEvidence } } };
   const events = new Set<string>();
   const bind = vi.fn(async (next: Contract, event: string, _observation: unknown, nextCoverage: CoverageObservation) => { contract = structuredClone(next); coverage = { revision: (coverage?.revision ?? 0) + 1, originalEvidence, observation: structuredClone(nextCoverage) }; events.add(event); });
-  const tx: Transaction = { invalidateCoverage: async (_contract, eventId) => { if (!coverage) throw new Error("missing"); coverage = { ...coverage, revision: coverage.revision + 1, observation: { ...coverage.observation, invalidatingEventId: eventId, collection: { kind: "unavailable", reason: "unsupported_terms" } } }; }, currentTime: async () => new Date("2026-10-16T00:00:00Z"), coverage: async () => structuredClone(coverage), eligible: async () => true, acceptedSeats: async () => 3, intent: async () => structuredClone(intent), activeIntent: async () => structuredClone(intent),
+  const tx: Transaction = { invalidateCoverage: async (_contract, eventId, reason = "unsupported_terms") => { if (!coverage) throw new Error("missing"); coverage = { ...coverage, revision: coverage.revision + 1, observation: { ...coverage.observation, invalidatingEventId: eventId, collection: { kind: "unavailable", reason } } }; }, currentTime: async () => new Date("2026-10-16T00:00:00Z"), coverage: async () => structuredClone(coverage), eligible: async () => true, acceptedSeats: async () => 3, intent: async () => structuredClone(intent), activeIntent: async () => structuredClone(intent),
     insertIntent: async () => { throw new Error("unexpected_insert"); }, saveIntent: async next => { Object.assign(intent, structuredClone(next)); },
     contract: async () => structuredClone(contract), legacyBinding: async () => true, eventExists: async id => events.has(id), bind,
     creditEvidence: async () => ({ usedCents: 0, heldCents: 0, paidTopUpsCents: 0 }) };
@@ -154,9 +154,9 @@ describe("inactive established TEST subscription lifecycle", () => {
     for (const call of requests) expect(call.at(-1)).toMatchObject({ timeout: expect.any(Number), maxNetworkRetries: 0 });
   });
   it("rejects elapsed total retrieval deadline without consuming", async () => {
-    const f = fixture(); const time = vi.spyOn(Date, "now"); let clock = 1000; time.mockImplementation(() => clock);
+    const f = fixture(); const time = vi.spyOn(performance, "now"); let clock = 1000; time.mockImplementation(() => clock);
     f.client.invoices.retrieve.mockImplementation(async () => { clock += 30000; return structuredClone(f.paid.invoice); });
-    try { await expect(f.service.reconcile(...f.delivery())).rejects.toThrow("provider_read_budget_exceeded"); expect(f.events.size).toBe(0); expect(f.client.invoicePayments.list).not.toHaveBeenCalled(); } finally { time.mockRestore(); }
+    try { await expect(f.service.reconcile(...f.delivery())).rejects.toThrow("stripe_hard_deadline"); expect(f.events.size).toBe(0); expect(f.client.invoicePayments.list).not.toHaveBeenCalled(); } finally { time.mockRestore(); }
   });
   it.each(["invoice", "invoicePayments", "paymentIntent", "charge", "finalInvoice", "finalCharge", "finalSubscription", "finalAccount"])("retains absolute provider denial after %s await", async stage => {
     const f = fixture(); const enable = () => vi.stubEnv("AXIOM_ISOLATED_PUBLIC_TEST_RUNTIME", "true");
@@ -210,6 +210,43 @@ describe("inactive established TEST subscription lifecycle", () => {
     expect(await f.service.reconcile(...f.delivery("charge.refunded", "evt_refund_after_drift", { id: "ch_test" }))).toBe("unavailable");
     expect(await f.service.reconcile(...f.delivery("invoice.paid", "evt_old_paid_after_drift", { id: "in_test" }))).toBe("unavailable");
     expect(f.coverage()?.revision).toBe(4); expect(f.coverage()?.originalEvidence).toEqual(original); expect(f.events.size).toBe(0);
+    await expect(f.service.previewRemaining({ organizationId: "org", userId: "owner" })).rejects.toThrow("paid_coverage_unavailable");
+  });
+  it.each(["refunded", "open", "uncollectible", "missing_source"])("a duplicate receipt still deprivileges freshly verified %s collection", async invalid => {
+    const f = fixture(); const event = f.delivery(undefined, "evt_existing_receipt");
+    expect(await f.service.reconcile(...event)).toBe("applied");
+    const before = structuredClone({ contract: f.contract(), intent: f.intent, original: f.coverage()?.originalEvidence });
+    if (invalid === "refunded") f.paid.charge.amount_refunded = 1;
+    if (invalid === "open") f.paid.invoice.status = "open";
+    if (invalid === "uncollectible") f.paid.invoice.status = "uncollectible";
+    if (invalid === "missing_source") f.paid.charge.payment_method_details = null;
+    expect(await f.service.reconcile(...event)).toBe("replay");
+    expect(f.coverage()?.observation.collection).toEqual({ kind: "unavailable", reason: "replay_unavailable" });
+    expect(f.coverage()?.revision).toBe(3); expect(f.events.size).toBe(1); expect(f.bind).toHaveBeenCalledTimes(1);
+    expect({ contract: f.contract(), intent: f.intent, original: f.coverage()?.originalEvidence }).toEqual(before);
+    await expect(f.service.previewRemaining({ organizationId: "org", userId: "owner" })).rejects.toThrow("paid_coverage_unavailable");
+  });
+  it("positive replay cannot restore a previously deprivileged projection", async () => {
+    const f = fixture(); const event = f.delivery(undefined, "evt_existing_receipt");
+    expect(await f.service.reconcile(...event)).toBe("applied"); f.paid.invoice.status = "open";
+    expect(await f.service.reconcile(...event)).toBe("replay"); const negative = structuredClone(f.coverage());
+    f.paid.invoice.status = "paid";
+    expect(await f.service.reconcile(...event)).toBe("replay"); expect(f.coverage()).toEqual(negative);
+    await expect(f.service.previewRemaining({ organizationId: "org", userId: "owner" })).rejects.toThrow("paid_coverage_unavailable");
+  });
+  it("fresh active-unpaid replay cannot use an old inactive Free status as fallback", async () => {
+    const f = fixture(); f.subscription.status = "past_due"; const event = f.delivery(undefined, "evt_inactive_receipt");
+    expect(await f.service.reconcile(...event)).toBe("applied");
+    expect(await f.service.previewRemaining({ organizationId: "org", userId: "owner" })).toMatchObject({ remainingCents: 200 });
+    f.subscription.status = "active"; f.paid.invoice.status = "open";
+    expect(await f.service.reconcile(...event)).toBe("replay"); expect(f.contract()?.status).toBe("past_due");
+    await expect(f.service.previewRemaining({ organizationId: "org", userId: "owner" })).rejects.toThrow("paid_coverage_unavailable");
+  });
+  it("a canceled current state on an old receipt cannot retain active paid authority", async () => {
+    const f = fixture(); const event = f.delivery(undefined, "evt_existing_receipt");
+    expect(await f.service.reconcile(...event)).toBe("applied"); f.subscription.status = "canceled";
+    expect(await f.service.reconcile(...event)).toBe("replay"); expect(f.contract()?.status).toBe("active");
+    expect(f.coverage()?.observation.collection).toEqual({ kind: "unavailable", reason: "replay_unavailable" });
     await expect(f.service.previewRemaining({ organizationId: "org", userId: "owner" })).rejects.toThrow("paid_coverage_unavailable");
   });
   it.each(["before", "account", "subscription", "price"])("preserves absolute provider denial when isolated flag changes %s", async boundary => {

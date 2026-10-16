@@ -6,7 +6,8 @@ Recovery/renewal authority from this document is superseded by
 [the collected-coverage plan](ISOLATED_TEST_PAID_COVERAGE_PLAN.md). Its original
 execution records remain evidence for their pinned source only. Current active
 access requires separately collected calendar-aligned coverage; standard
-mid-month checkout/recovery and general plan/seat changes remain unsupported.
+mid-month service periods and general plan/seat changes remain unsupported.
+Mid-month collection for an otherwise full aligned service line is supported.
 
 Audit base: main PR160, `2682ba732ab1bd262dcaa378e3a6e3119d245229`.
 Worktree: `/workspace/axiom-billing-test-lifecycle`; branch

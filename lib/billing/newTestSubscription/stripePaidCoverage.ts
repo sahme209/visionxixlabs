@@ -1,3 +1,5 @@
+import { stripeDeadlineOptions } from "./stripeDeadline";
+import { identifiedChargeSource } from "./chargeSource";
 import type Stripe from "stripe";
 import { collectedEvidence, type PaidIdentity, type CollectionResult } from "./paidCoverage";
 
@@ -17,7 +19,7 @@ export async function retrieveCollectedCoverage(stripe: Stripe, identity: PaidId
   const base = { latestInvoiceId: invoiceId ?? null, currentPeriodStart: iso(item.current_period_start), currentPeriodEnd: iso(item.current_period_end) };
   const negative = (reason: "not_collected" | "unsupported_collection" | "refunded_or_disputed") => ({ ...base, collection: { kind: "unavailable" as const, reason } });
   if (!invoiceId) return negative("not_collected");
-  const invoice = await read(timeout => stripe.invoices.retrieve(invoiceId, {}, { timeout, maxNetworkRetries: 0 }));
+  const invoice = await read(timeout => stripe.invoices.retrieve(invoiceId, {}, stripeDeadlineOptions(timeout)));
   if (invoice.id !== invoiceId || invoice.livemode !== false || id(invoice.customer) !== identity.customerId || invoice.parent?.type !== "subscription_details" || id(invoice.parent.subscription_details?.subscription) !== identity.subscriptionId) fail("collection_identity_mismatch");
   if (invoice.status !== "paid") return negative("not_collected");
   const amount = identity.unitAmountCents * identity.seatQuantity;
@@ -26,25 +28,27 @@ export async function retrieveCollectedCoverage(stripe: Stripe, identity: PaidId
   const line = invoice.lines.data[0]; const details = line.parent?.subscription_item_details;
   if (line.parent?.type !== "subscription_item_details" || details?.subscription !== identity.subscriptionId || details?.subscription_item !== item.id || line.pricing?.type !== "price_details" || id(line.pricing.price_details?.price) !== identity.priceId || line.pricing.price_details?.product !== id(item.price.product)) fail("collection_identity_mismatch");
   if (details.proration !== false || line.currency !== "usd" || line.amount !== amount || line.subtotal !== amount || line.quantity !== identity.seatQuantity || line.pricing?.unit_amount_decimal !== String(identity.unitAmountCents) || !empty(line.discounts) || !none(line.discount_amounts) || !none(line.pretax_credit_amounts) || !none(line.taxes) || line.period.start !== item.current_period_start || line.period.end !== item.current_period_end) return negative("unsupported_collection");
-  const payments = await read(timeout => stripe.invoicePayments.list({ invoice: invoiceId, status: "paid", limit: 2 }, { timeout, maxNetworkRetries: 0 }));
+  const payments = await read(timeout => stripe.invoicePayments.list({ invoice: invoiceId, status: "paid", limit: 2 }, stripeDeadlineOptions(timeout)));
   if (payments.has_more !== false || payments.data.length !== 1) return negative("unsupported_collection");
   const payment = payments.data[0];
   if (payment.livemode !== false || id(payment.invoice) !== invoiceId) fail("collection_identity_mismatch");
   if (payment.status !== "paid" || payment.currency !== "usd" || payment.amount_requested !== amount || payment.amount_paid !== amount || payment.payment.type !== "payment_intent" || !timestamp(payment.status_transitions.paid_at)) return negative("unsupported_collection");
   const paymentIntentId = id(payment.payment.payment_intent); if (!paymentIntentId) return negative("unsupported_collection");
-  const pi = await read(timeout => stripe.paymentIntents.retrieve(paymentIntentId, {}, { timeout, maxNetworkRetries: 0 }));
+  const pi = await read(timeout => stripe.paymentIntents.retrieve(paymentIntentId, {}, stripeDeadlineOptions(timeout)));
   if (pi.id !== paymentIntentId || pi.livemode !== false || id(pi.customer) !== identity.customerId) fail("collection_identity_mismatch");
   if (pi.status !== "succeeded" || pi.currency !== "usd" || pi.amount !== amount || pi.amount_received !== amount || pi.amount_capturable !== 0 || !id(pi.latest_charge)) return negative("unsupported_collection");
   const chargeId = id(pi.latest_charge)!;
-  const charge = await read(timeout => stripe.charges.retrieve(chargeId, {}, { timeout, maxNetworkRetries: 0 }));
+  const charge = await read(timeout => stripe.charges.retrieve(chargeId, {}, stripeDeadlineOptions(timeout)));
   if (charge.id !== chargeId || charge.livemode !== false || id(charge.customer) !== identity.customerId || id(charge.payment_intent) !== paymentIntentId) fail("collection_identity_mismatch");
+  const paymentMethodType = identifiedChargeSource(charge.payment_method_details);
+  if (!paymentMethodType) return negative("unsupported_collection");
   if (charge.refunded !== false || charge.disputed !== false || charge.amount_refunded !== 0) return negative("refunded_or_disputed");
   if (charge.currency !== "usd" || charge.amount !== amount || charge.amount_captured !== amount || charge.paid !== true || charge.captured !== true) return negative("unsupported_collection");
-  const finalInvoice = await read(timeout => stripe.invoices.retrieve(invoiceId, {}, { timeout, maxNetworkRetries: 0 }));
-  const finalCharge = await read(timeout => stripe.charges.retrieve(chargeId, {}, { timeout, maxNetworkRetries: 0 }));
+  const finalInvoice = await read(timeout => stripe.invoices.retrieve(invoiceId, {}, stripeDeadlineOptions(timeout)));
+  const finalCharge = await read(timeout => stripe.charges.retrieve(chargeId, {}, stripeDeadlineOptions(timeout)));
   if (JSON.stringify(finalInvoice) !== JSON.stringify(invoice) || JSON.stringify(finalCharge) !== JSON.stringify(charge)) fail("collection_snapshot_changed");
   try {
-    const evidence = collectedEvidence({ ...identity, invoiceId, lineId: line.id, subscriptionItemId: item.id, paymentId: payment.id, paymentIntentId, chargeId, currency: "usd", amountCents: amount, collectedAt: iso(Math.max(invoice.status_transitions.paid_at!, payment.status_transitions.paid_at!)), serviceStart: iso(line.period.start), serviceEnd: iso(line.period.end) });
+    const evidence = collectedEvidence({ ...identity, invoiceId, lineId: line.id, subscriptionItemId: item.id, paymentId: payment.id, paymentIntentId, chargeId, paymentMethodType, currency: "usd", amountCents: amount, collectedAt: iso(Math.max(invoice.status_transitions.paid_at!, payment.status_transitions.paid_at!)), serviceStart: iso(line.period.start), serviceEnd: iso(line.period.end) });
     return { ...base, collection: { kind: "collected", evidence } };
   } catch { return negative("unsupported_collection"); }
 }

@@ -15,7 +15,7 @@ export interface Transaction {
   saveIntent(intent: Intent, expectedRevision: number): Promise<void>;
   contract(org: string): Promise<Contract | null>;
   coverage(org: string): Promise<{ observation: CoverageObservation; originalEvidence: PaidInvoiceEvidence; revision: number } | null>;
-  invalidateCoverage(contract: Contract, signedTriggerEventId: string): Promise<void>;
+  invalidateCoverage(contract: Contract, signedTriggerEventId: string, reason?: "unsupported_terms" | "replay_unavailable"): Promise<void>;
   legacyBinding(org: string): Promise<boolean>;
   eventExists(id: string): Promise<boolean>;
   bind(contract: Contract, eventId: string, observation: SubscriptionObservation, coverage: CoverageObservation): Promise<void>;
@@ -166,7 +166,7 @@ export function createNewTestSubscriptionService(options: {
       const currentMode = mode();
       if (currentMode.accountId !== account.accountId) deny("test_runtime_changed");
       return store.transaction(async tx => {
-        if (await tx.eventExists(observed.eventId)) return "replay" as const;
+        const historicalReceipt = await tx.eventExists(observed.eventId);
         const current = await tx.contract(organizationId);
         if (!sameBinding(current, before)) deny("subscription_snapshot_changed");
         const intent = await tx.intent(observed.intentId);
@@ -194,6 +194,18 @@ export function createNewTestSubscriptionService(options: {
         if ((prior?.revision ?? null) !== captured.coverageRevision) deny("coverage_snapshot_changed");
         if (current) { if (!prior) deny("paid_coverage_unavailable"); validateEvidence(identity, prior.originalEvidence); }
         else if (observed.coverage.collection.kind !== "collected") deny("initial_collection_required");
+        if (historicalReceipt) {
+          if (!current || !prior) deny("paid_coverage_unavailable");
+          let deprivilege = observed.coverage.collection.kind === "unavailable" || observed.status !== current.status
+            || observed.coverage.currentPeriodStart !== prior.observation.currentPeriodStart || observed.coverage.currentPeriodEnd !== prior.observation.currentPeriodEnd;
+          if (!deprivilege && observed.status === "active") {
+            const now = await tx.currentTime();
+            try { paidAccess(identity, observed.status, observed.eventId, observed.coverage, true, now); }
+            catch { deprivilege = true; }
+          }
+          if (deprivilege) await tx.invalidateCoverage(current, observed.eventId, "replay_unavailable");
+          return "replay" as const;
+        }
         await tx.bind(next, observed.eventId,
           { eventType, currentPeriodEndsAt: observed.currentPeriodEndsAt ?? null, cancelAtPeriodEnd: observed.cancelAtPeriodEnd ?? false }, observed.coverage);
         await tx.saveIntent({ ...intent, state: "bound", sessionId: observed.sessionId, customerId: observed.customerId, subscriptionId: observed.subscriptionId, revision: intent.revision + 1 }, intent.revision);

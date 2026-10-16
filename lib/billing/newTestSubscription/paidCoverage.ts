@@ -1,11 +1,12 @@
+import { supportedChargeMethodType } from "./chargeSource";
 import { createHash } from "node:crypto";
 import { PUBLIC_PLAN_CATALOG } from "../publicPlanCatalog";
 import type { Contract, Intent } from "./service";
 
 export type PaidIdentity = Pick<Contract, "runtimeId" | "accountId" | "organizationId" | "originatingIntentId" | "sessionId" | "customerId" | "subscriptionId" | "planId" | "seatQuantity"> & { interval: "monthly" | "annual"; priceId: string; unitAmountCents: number };
-export type EvidenceInput = PaidIdentity & { invoiceId: string; lineId: string; subscriptionItemId: string; paymentId: string; paymentIntentId: string; chargeId: string; currency: "usd"; amountCents: number; collectedAt: string; serviceStart: string; serviceEnd: string };
+export type EvidenceInput = PaidIdentity & { invoiceId: string; lineId: string; subscriptionItemId: string; paymentId: string; paymentIntentId: string; chargeId: string; paymentMethodType: string; currency: "usd"; amountCents: number; collectedAt: string; serviceStart: string; serviceEnd: string };
 export type PaidInvoiceEvidence = EvidenceInput & { version: 1; digest: string };
-export type CollectionResult = { kind: "collected"; evidence: PaidInvoiceEvidence } | { kind: "unavailable"; reason: "not_collected" | "unsupported_collection" | "refunded_or_disputed" | "unsupported_terms" };
+export type CollectionResult = { kind: "collected"; evidence: PaidInvoiceEvidence } | { kind: "unavailable"; reason: "not_collected" | "unsupported_collection" | "refunded_or_disputed" | "unsupported_terms" | "replay_unavailable" };
 export type CoverageObservation = { eventToken: string; latestInvoiceId: string | null; currentPeriodStart: string; currentPeriodEnd: string; collection: CollectionResult; invalidatingEventId?: string };
 const unavailable = (): never => { throw new Error("paid_coverage_unavailable"); };
 const scopeKeys = ["runtimeId", "accountId", "organizationId", "originatingIntentId", "sessionId", "customerId", "subscriptionId", "planId", "seatQuantity", "interval", "priceId", "unitAmountCents"] as const;
@@ -16,11 +17,11 @@ export function collectedEvidence(input: EvidenceInput): PaidInvoiceEvidence {
   const catalog = PUBLIC_PLAN_CATALOG.find(p => p.id === input.planId && p.id !== "free");
   const annual = input.interval === "annual";
   const expectedUnit = catalog && (annual ? catalog.annualPricePerUserCents * 12 : catalog.monthlyPricePerUserCents);
-  if (!catalog || !["monthly", "annual"].includes(input.interval) || input.currency !== "usd" || !Number.isSafeInteger(input.seatQuantity) || input.seatQuantity < 1 || input.unitAmountCents !== expectedUnit || !Number.isSafeInteger(input.amountCents) || input.amountCents < 1 || input.amountCents !== input.unitAmountCents * input.seatQuantity) unavailable();
+  if (!catalog || !["monthly", "annual"].includes(input.interval) || !supportedChargeMethodType(input.paymentMethodType) || input.currency !== "usd" || !Number.isSafeInteger(input.seatQuantity) || input.seatQuantity < 1 || input.unitAmountCents !== expectedUnit || !Number.isSafeInteger(input.amountCents) || input.amountCents < 1 || input.amountCents !== input.unitAmountCents * input.seatQuantity) unavailable();
   const start = new Date(iso(input.serviceStart)); const end = iso(input.serviceEnd); iso(input.collectedAt);
   if (start.getTime() !== Date.UTC(start.getUTCFullYear(), start.getUTCMonth(), 1) || end !== Date.UTC(start.getUTCFullYear(), start.getUTCMonth() + (annual ? 12 : 1), 1)) unavailable();
   // Canonical closed schema: extra caller fields do not enter the digest.
-  const normalized: EvidenceInput = { runtimeId: input.runtimeId, accountId: input.accountId, organizationId: input.organizationId, originatingIntentId: input.originatingIntentId, sessionId: input.sessionId, customerId: input.customerId, subscriptionId: input.subscriptionId, planId: input.planId, seatQuantity: input.seatQuantity, interval: input.interval, priceId: input.priceId, unitAmountCents: input.unitAmountCents, invoiceId: input.invoiceId, lineId: input.lineId, subscriptionItemId: input.subscriptionItemId, paymentId: input.paymentId, paymentIntentId: input.paymentIntentId, chargeId: input.chargeId, currency: input.currency, amountCents: input.amountCents, collectedAt: input.collectedAt, serviceStart: input.serviceStart, serviceEnd: input.serviceEnd };
+  const normalized: EvidenceInput = { runtimeId: input.runtimeId, accountId: input.accountId, organizationId: input.organizationId, originatingIntentId: input.originatingIntentId, sessionId: input.sessionId, customerId: input.customerId, subscriptionId: input.subscriptionId, planId: input.planId, seatQuantity: input.seatQuantity, interval: input.interval, priceId: input.priceId, unitAmountCents: input.unitAmountCents, invoiceId: input.invoiceId, lineId: input.lineId, subscriptionItemId: input.subscriptionItemId, paymentId: input.paymentId, paymentIntentId: input.paymentIntentId, chargeId: input.chargeId, paymentMethodType: input.paymentMethodType, currency: input.currency, amountCents: input.amountCents, collectedAt: input.collectedAt, serviceStart: input.serviceStart, serviceEnd: input.serviceEnd };
   return { ...normalized, version: 1, digest: createHash("sha256").update(JSON.stringify(normalized)).digest("hex") };
 }
 export function validateEvidence(identity: PaidIdentity, evidence: PaidInvoiceEvidence): void {
@@ -32,13 +33,13 @@ export function validateObservation(identity: PaidIdentity, eventToken: string, 
   if (o.collection?.kind === "collected") {
     const e = o.collection.evidence; validateEvidence(identity, e);
     if (e.invoiceId !== o.latestInvoiceId || e.serviceStart !== o.currentPeriodStart || e.serviceEnd !== o.currentPeriodEnd) unavailable();
-  } else if (o.collection?.kind !== "unavailable" || !["not_collected", "unsupported_collection", "refunded_or_disputed", "unsupported_terms"].includes(o.collection.reason)) unavailable();
+  } else if (o.collection?.kind !== "unavailable" || !["not_collected", "unsupported_collection", "refunded_or_disputed", "unsupported_terms", "replay_unavailable"].includes(o.collection.reason)) unavailable();
 }
 /** Paid and inactive Free policies are explicit branches. No missing-proof fallback. */
 export function paidAccess(identity: PaidIdentity, status: string, eventToken: string, observation: CoverageObservation | null, originallyCollected: boolean, now: Date): { kind: "paid" | "free"; monthlyAICreditsCents: number; month: string } {
   if (!originallyCollected || !observation || !Number.isFinite(now.getTime())) unavailable();
   validateObservation(identity, eventToken, observation);
-  if (observation.collection.kind === "unavailable" && observation.collection.reason === "unsupported_terms") unavailable();
+  if (observation.collection.kind === "unavailable" && ["unsupported_terms", "replay_unavailable"].includes(observation.collection.reason)) unavailable();
   const month = now.toISOString().slice(0, 7);
   if (["past_due", "canceled", "trialing", "no_plan"].includes(status)) return { kind: "free", monthlyAICreditsCents: 200, month };
   if (status !== "active" || observation.collection.kind !== "collected") unavailable();

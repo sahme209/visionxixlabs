@@ -2,12 +2,18 @@ import { describe, expect, it } from "vitest";
 import { collectedEvidence, paidAccess, type CoverageObservation } from "../newTestSubscription/paidCoverage";
 
 export const identity = { runtimeId: "runtime", accountId: "acct_test", organizationId: "org", originatingIntentId: "intent", sessionId: "cs_test", customerId: "cus_test", subscriptionId: "sub_test", planId: "pro" as const, interval: "monthly" as const, seatQuantity: 3, priceId: "price_test", unitAmountCents: 2900 };
-export function evidenceInput() { return { ...identity, invoiceId: "in_test", lineId: "il_test", subscriptionItemId: "si_test", paymentId: "inpay_test", paymentIntentId: "pi_test", chargeId: "ch_test", currency: "usd" as const, amountCents: 8700, collectedAt: "2026-10-01T00:00:00.000Z", serviceStart: "2026-10-01T00:00:00.000Z", serviceEnd: "2026-11-01T00:00:00.000Z" }; }
+export function evidenceInput() { return { ...identity, invoiceId: "in_test", lineId: "il_test", subscriptionItemId: "si_test", paymentId: "inpay_test", paymentIntentId: "pi_test", chargeId: "ch_test", paymentMethodType: "card", currency: "usd" as const, amountCents: 8700, collectedAt: "2026-10-01T00:00:00.000Z", serviceStart: "2026-10-01T00:00:00.000Z", serviceEnd: "2026-11-01T00:00:00.000Z" }; }
 const observation = (): CoverageObservation => ({ eventToken: "evt_test", latestInvoiceId: "in_test", currentPeriodStart: "2026-10-01T00:00:00.000Z", currentPeriodEnd: "2026-11-01T00:00:00.000Z", collection: { kind: "collected", evidence: collectedEvidence(evidenceInput()) } });
 describe("NEW TEST calendar-aligned collected coverage kernel", () => {
   it("funds only the current full calendar bucket", () => {
     expect(paidAccess(identity, "active", "evt_test", observation(), true, new Date("2026-10-16Z"))).toEqual({ kind: "paid", monthlyAICreditsCents: 3000, month: "2026-10" });
     for (const now of ["2026-09-30T23:59:59.999Z", "2026-11-01T00:00:00Z", "2027-10-16Z"]) expect(() => paidAccess(identity, "active", "evt_test", observation(), true, new Date(now))).toThrow("paid_coverage_unavailable");
+  });
+  it("allows October 16 full cash recovery for an October 1–November 1 service line", () => {
+    const proof = collectedEvidence({ ...evidenceInput(), collectedAt: "2026-10-16T12:00:00.000Z" });
+    const o = { ...observation(), collection: { kind: "collected" as const, evidence: proof } };
+    expect(paidAccess(identity, "active", "evt_test", o, true, new Date("2026-10-16T12:01:00Z"))).toMatchObject({ kind: "paid", monthlyAICreditsCents: 3000 });
+    expect(() => paidAccess(identity, "active", "evt_test", o, true, new Date("2026-10-16T11:59:59Z"))).toThrow();
   });
   it("requires current projection, original collection and exact proof scope", () => {
     for (const altered of [null, { ...observation(), eventToken: "old" }, { ...observation(), latestInvoiceId: "in_other" }, { ...observation(), currentPeriodEnd: "2026-12-01T00:00:00.000Z" }, { ...observation(), collection: { kind: "unavailable" as const, reason: "unsupported_collection" as const } }]) expect(() => paidAccess(identity, "active", "evt_test", altered, true, new Date("2026-10-16Z"))).toThrow();

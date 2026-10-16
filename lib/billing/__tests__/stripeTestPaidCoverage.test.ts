@@ -14,6 +14,19 @@ describe("inactive Stripe collection chain (all remote responses are fixtures)",
     const f = paidFixture({ interval: "annual", unitAmountCents: 27840 });
     expect((await f.run()).collection).toMatchObject({ kind: "collected", evidence: { amountCents: 83520, serviceStart: "2026-10-01T00:00:00.000Z", serviceEnd: "2027-10-01T00:00:00.000Z" } });
   });
+  it.each(["missing", "customer_balance", "ambiguous", "unknown", "missing_details"])("rejects %s Charge funding source", async invalid => {
+    const f = paidFixture();
+    if (invalid === "missing") f.charge.payment_method_details = null;
+    if (invalid === "customer_balance") f.charge.payment_method_details = { type: "customer_balance", customer_balance: {} };
+    if (invalid === "ambiguous") f.charge.payment_method_details = { type: "card", card: {}, customer_balance: {} };
+    if (invalid === "unknown") f.charge.payment_method_details = { type: "unreviewed_future_source" };
+    if (invalid === "missing_details") f.charge.payment_method_details = { type: "card" };
+    expect((await f.run()).collection).toEqual({ kind: "unavailable", reason: "unsupported_collection" });
+  });
+  it("accepts an identified non-card source with the same full captured collection chain", async () => {
+    const f = paidFixture(); f.charge.payment_method_details = { type: "sepa_debit", sepa_debit: {} };
+    expect((await f.run()).collection).toMatchObject({ kind: "collected", evidence: { paymentMethodType: "sepa_debit" } });
+  });
   it.each(["draft", "open", "uncollectible", "void"])("active subscription with %s invoice has no paid coverage", async status => {
     const f = paidFixture(); f.invoice.status = status;
     expect((await f.run()).collection).toEqual({ kind: "unavailable", reason: "not_collected" }); expect(f.client.paymentIntents.retrieve).not.toHaveBeenCalled();

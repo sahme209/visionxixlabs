@@ -36,10 +36,10 @@ export function postgresFixtureStore(target: string, runtimeId: string, accountI
       async saveIntent(i, revision) { const n = await tx.$executeRawUnsafe('UPDATE "RecurringSubscriptionIntent" SET body=$1::jsonb WHERE id=$2 AND org=$3 AND (body->>\'revision\')::int=$4', JSON.stringify(i), i.id, i.organizationId, revision); if (n !== 1) throw new Error("intent_revision_changed"); },
       contract: org => readContract(tx, org),
       coverage: org => readFixtureCoverage(tx, org),
-      async invalidateCoverage(c, signedTriggerEventId) {
+      async invalidateCoverage(c, signedTriggerEventId, reason = "unsupported_terms") {
         const prior = await readFixtureCoverage(tx, c.organizationId); const intent = await readIntent(c.originatingIntentId);
         if (!prior || !intent || prior.observation.eventToken !== c.eventToken) throw new Error("subscription_snapshot_changed");
-        await writeFixtureCoverage(tx, c, intent, { ...prior.observation, invalidatingEventId: signedTriggerEventId, collection: { kind: "unavailable", reason: "unsupported_terms" } });
+        await writeFixtureCoverage(tx, c, intent, { ...prior.observation, invalidatingEventId: signedTriggerEventId, collection: { kind: "unavailable", reason } });
       },
       legacyBinding: async org => { const p = await tx.tenantBillingPlan.findUnique({ where: { organizationId: org } }); return !!(p?.stripeCustomerId || p?.stripeSubscriptionId); },
       eventExists: async id => !!await tx.stripeBillingEvent.findUnique({ where: { id } }),
