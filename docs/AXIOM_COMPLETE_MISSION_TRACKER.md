@@ -895,3 +895,20 @@ Production database target binding, usable PITR and isolated restore remain
 unverified; no production recovery, secrets, routing or live billing action
 is authorized by this milestone. All fifteen workstreams and unavailable
 original-source placeholders remain represented.
+
+
+### Parallel customer-boundary work prepared for the next integration
+
+Independent branches have prepared desktop consent-link validation against the
+configured service, Airflow DAG/occurrence response identity checks with unknown
+trigger outcomes preserved, truthful billing evidence-unavailable rendering, and
+Agent restart approvals bound to the server-observed target. These patches remain
+unmerged and require integrated review, regression and exact-head CI; their local
+tests are not native, provider or production customer acceptance.
+
+The next ECS review-only core has a separate additive schema proposal and an
+isolated PostgreSQL17 service/store rehearsal covering approval revisions,
+revocation, tenant constraints and competing decisions. Execution stays explicitly
+disabled, independently verified ingestion remains unavailable by default, and no
+live quota is consumed. This is not executable release or rollback authority.
+Production installation of that schema is not authorized.
