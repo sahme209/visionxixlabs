@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-require-imports -- Node --require preload must install guards synchronously before application imports. */
 'use strict';
 const assert = require('node:assert/strict');
 const http = require('node:http');
