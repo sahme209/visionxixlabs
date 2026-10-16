@@ -964,7 +964,7 @@ export class DesktopClient {
     return this.post(`/api/desktop/agent/conversations/${encodeURIComponent(conversationId)}/messages`, { message, preferredProvider, workspaceContext });
   }
 
-  approveAgentAction(actionId: string): Promise<ApiResult<{ id: string; status: string; resultJson: unknown; errorMessage: string | null }>> {
+  approveAgentAction(actionId: string): Promise<ApiResult<{ id: string; status: string; errorMessage: string | null }>> {
     return this.post(`/api/desktop/agent/actions/${encodeURIComponent(actionId)}/approve`, {});
   }
 

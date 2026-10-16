@@ -42,6 +42,20 @@ describe("GET /api/desktop/environments/deployments/:id", () => {
     mocks.appendAudit.mockResolvedValue(true);
   });
 
+  it("returns null-run Agent tracking evidence before any provider credential or workflow read", async () => {
+    mocks.findExecution.mockResolvedValue({ ...execution, source: "agent", status: "tracking_unavailable", workflowRunId: null, workflowUrl: null });
+    mocks.resolveToken.mockRejectedValue(new Error("provider credential resolver must be unreachable"));
+    mocks.getWorkflowRun.mockRejectedValue(new Error("provider workflow read must be unreachable"));
+    const { GET } = await import("../route");
+    const response = await GET(new NextRequest("http://127.0.0.1:3000/api/desktop/environments/deployments/exec_1"), { params: Promise.resolve({ id: "exec_1" }) });
+    expect(response.status).toBe(200);
+    expect((await response.json()).data).toEqual(expect.objectContaining({ id: "exec_1", source: "agent", status: "tracking_unavailable", workflowRunId: null }));
+    expect(mocks.resolveToken).not.toHaveBeenCalled();
+    expect(mocks.getWorkflowRun).not.toHaveBeenCalled();
+    expect(mocks.updateExecution).not.toHaveBeenCalled();
+    expect(mocks.appendAudit).not.toHaveBeenCalled();
+  });
+
   it("scopes the execution lookup to the authenticated tenant", async () => {
     mocks.getWorkflowRun.mockResolvedValue({ ok: true, data: {
       workflowRunId: "123", status: "in_progress", conclusion: null, rollback: "not_started",

@@ -31,3 +31,48 @@ typechecked the actual notification source without desktop dependency fallback.
 Focused approval/pairing rendering regressions passed 24 tests. Exact-head CI must
 pass again after this correction; the earlier full-suite/build evidence does not
 make the failed CI head acceptable.
+
+## Bounded desktop receipt observation plan (2026-10-16)
+
+The approved desktop change closes only the Agent approval-to-observation gap.
+`AgentChatView` will refresh the existing redacted conversation after a decision
+and restore restart receipts on conversation hydration. A small receipt view will
+render only whitelisted execution identity/status fields, reuse
+`DeploymentWorkflowEvidence` / `deploymentObservationState`, and offer manual
+refresh through the existing tenant-authorized execution endpoint. Approval DTO
+typing will match the existing route; raw action result JSON will not be added to
+the approval response. No polling, approval-policy change, dispatch retry or new
+execution authority is introduced.
+
+Regression acceptance covers queued/tracking-unavailable receipts, reopen,
+malformed/mismatched receipt refusal, manual observation, failed observations,
+conversation switches, unmounts and credential changes. Tests must distinguish
+workflow dispatch from ECS outcome and application health. Existing sanitization
+and paired-session tenant enforcement remain server-owned. Native/browser,
+provider dispatch and actual AWS service acceptance remain unverified.
+
+### Implemented source boundary and focused UI evidence
+
+The Agent now recovers approved restart receipts from the existing redacted
+conversation and offers manual canonical workflow observation. Only whitelisted
+identity/status fields are rendered; arbitrary action result fields are not
+printed or added to approval responses. Queued or tracking-unavailable dispatch
+is never described as a completed ECS restart. Reopened server tool-result turns
+for successful restart requests receive the same truthful workflow-only wording.
+Existing artifact/health/image-recovery evidence remains explicitly unverified.
+
+Conversation selection and creation invalidate old UI ownership, not the durable
+server decision. All restore/open/message/decision reads capture the credential
+context and conversation generation; the current request ID must still match
+before publishing results. Credential/base changes remount an opaque scoped Agent
+session, clearing prior content and busy flags before a fresh loader can publish.
+Deferred-response regressions cover approval followed by navigation, reopen,
+reverse selection completion, credential changes during restore/message refresh,
+and a populated old session with a pending send followed by successful fresh
+session loading/sending. Receipt refresh is manual; no polling or retry occurs.
+
+Sixteen focused regressions across the actual React Agent/receipt components and
+existing approval target previews pass. Transport responses in these component
+tests are controlled fixtures; they are not real browser/native interaction,
+actual Next/PostgreSQL UI transport, or provider acceptance. The separate local
+HTTP backend evidence must not be reused as proof of this new UI click path.
