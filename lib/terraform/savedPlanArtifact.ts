@@ -57,9 +57,11 @@ export function inspectSavedPlanJson(json: string, terraformVersion: string): Pl
     || (value.resource_drift !== undefined && (!Array.isArray(value.resource_drift) || value.resource_drift.length > 0))) throw new Error("saved_plan_show_unsupported");
   const seen = new Set<string>();
   const actions = new Set(["no-op", "create", "read", "update", "delete", "delete,create", "create,delete"]);
+  const atoms = new Set(["no-op", "create", "read", "update", "delete"]);
   const changes: PlanResourceChange[] = value.resource_changes.map((row: unknown) => {
     if (!record(row) || !text(row.address) || seen.has(row.address) || !text(row.provider_name) || !record(row.change)
-      || !Array.isArray(row.change.actions) || !row.change.actions.every(a => typeof a === "string") || !actions.has(row.change.actions.join(","))) throw new Error("saved_plan_actions_unsupported");
+      || row.previous_address !== undefined || (row.change.importing !== undefined && row.change.importing !== null)
+      || !Array.isArray(row.change.actions) || !row.change.actions.every(a => typeof a === "string" && atoms.has(a)) || !actions.has(row.change.actions.join(","))) throw new Error("saved_plan_actions_unsupported");
     seen.add(row.address);
     return { address: row.address, provider: row.provider_name, actions: row.change.actions };
   });

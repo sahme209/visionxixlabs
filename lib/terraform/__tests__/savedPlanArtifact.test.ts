@@ -17,9 +17,15 @@ describe("saved Terraform plan document", () => {
   ])("rejects incomplete or unsupported document %j", (change) => {
     expect(() => inspectSavedPlanJson(JSON.stringify({ ...show(), ...change }), "1.9.8")).toThrow();
   });
-  it.each([["forget"], ["create", "read"], [], ["update", "update"]])("rejects unsupported action tuple %j instead of no-op", (actions) => {
+  it.each([["forget"], ["create", "read"], [], ["update", "update"], ["delete,create"]].map(actions => [actions]))("rejects unsupported action tuple %j instead of no-op", (actions) => {
     const document = show(); document.resource_changes[0].change.actions = actions;
     expect(() => inspectSavedPlanJson(JSON.stringify(document), "1.9.8")).toThrow();
+  });
+  it("refuses unmodeled import and moved-address state transitions", () => {
+    const imported = show(); Object.assign(imported.resource_changes[0].change, { importing: { id: "external-resource" } });
+    expect(() => inspectSavedPlanJson(JSON.stringify(imported), "1.9.8")).toThrow();
+    const moved = show(); Object.assign(moved.resource_changes[0], { previous_address: "terraform_data.old" });
+    expect(() => inspectSavedPlanJson(JSON.stringify(moved), "1.9.8")).toThrow();
   });
   it("rejects duplicate addresses and oversized documents", () => {
     const document = show(); document.resource_changes.push(document.resource_changes[0]);
