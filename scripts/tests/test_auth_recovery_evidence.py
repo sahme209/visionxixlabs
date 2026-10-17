@@ -19,11 +19,16 @@ class EvidenceGateTests(unittest.TestCase):
             "effective_database_branch_id": "branch_example",
             "neon_project_id": "project_example",
             "neon_branch_id": "branch_example",
+            "effective_database_binding_verified": True,
             "migration_history_verified": True,
             "schema_drift_checked": True,
             "restore_point_verified": True,
             "isolated_restore_verified": True,
             "production_login_verified": True,
+            "evidence": {
+                gate: f"https://example.org/evidence/{gate}"
+                for gate in module.EVIDENCE_GATES
+            },
         }
 
     def test_all_attested(self):
@@ -52,6 +57,29 @@ class EvidenceGateTests(unittest.TestCase):
 
     def test_non_object_fails(self):
         self.assertTrue(module.check([]))
+
+    def test_missing_evidence_reference_fails(self):
+        data = dict(self.valid, evidence={})
+        self.assertIn("production_login_verified: HTTPS evidence URL without credentials/query required", module.check(data))
+
+    def test_evidence_with_credentials_fails(self):
+        data = dict(self.valid)
+        data["evidence"] = dict(data["evidence"], production_login_verified="https://user:password@example.org/login")
+        self.assertTrue(module.check(data))
+
+    def test_evidence_with_query_fails(self):
+        data = dict(self.valid)
+        data["evidence"] = dict(data["evidence"], production_login_verified="https://example.org/login?token=secret")
+        self.assertTrue(module.check(data))
+
+    def test_missing_binding_verification_fails(self):
+        data = dict(self.valid)
+        data.pop("effective_database_binding_verified")
+        self.assertIn("effective_database_binding_verified: explicit boolean required", module.check(data))
+
+    def test_invalid_commit_fails(self):
+        data = dict(self.valid, deployment_commit="short")
+        self.assertIn("deployment_commit: full lowercase Git commit SHA required", module.check(data))
 
 
 if __name__ == "__main__":
