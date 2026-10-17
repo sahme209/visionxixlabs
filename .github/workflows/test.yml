@@ -1,14 +1,5 @@
 name: Test
 
-# Installs real dependencies and runs the actual TypeScript compiler +
-# Vitest suite on every push and pull request. This repo's Vercel builds
-# only prove `next build` compiles — they never execute `vitest run` — so
-# until this workflow existed, "Vercel green" was the only automated
-# signal available and was never a substitute for "tests pass." Local
-# development sandboxes in use this session also had no route to
-# registry.npmjs.org, so this is the first place dependencies can
-# actually be installed and the suite actually executed.
-
 on:
   push:
     branches: ["**"]
@@ -29,7 +20,6 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          # Match the existing Vercel production runtime and current cloud SDK support.
           node-version: "24"
           cache: npm
 
@@ -42,8 +32,9 @@ jobs:
       - name: Run Vitest suite
         run: npx vitest run --reporter=dot
 
-      # Validate production compilation in GitHub without deploying or loading
-      # Vercel production credentials. Git-triggered Vercel builds are disabled.
+      - name: Run offline auth recovery evidence tests
+        run: python3 -m unittest discover -s scripts/tests -p 'test_auth_recovery_evidence.py' -v
+
       - name: Build production website (no deployment)
         env:
           NODE_OPTIONS: --max-old-space-size=6144
