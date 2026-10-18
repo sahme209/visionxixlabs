@@ -152,7 +152,7 @@
     },
     {
       "path": "lib/billing/__tests__/fixtures/ownedCheckoutWorkerBundle.ts",
-      "sha256": "4fe9cc077a62c366ce0acd438e6dae13e87069d1c2f963c3a4fdce516b2afe38"
+      "sha256": "8160938e1c67cfa6c1481860f89e59bb6ae7eceb8b3df52f6c994b880523dd26"
     },
     {
       "path": "lib/billing/__tests__/fixtures/ownedCheckoutWorkerSupervisor.ts",
