@@ -73,7 +73,21 @@ Regression evidence: `automationTickCounts.test.ts` exercises missing/malformed/
 
 `lib/terraform/runner.ts` is a legacy lead/starter-token path. Live apply is disabled by default with `TERRAFORM_LEGACY_APPLY_ENABLED`; the tenant orchestration boundary independently keeps apply disabled. Preserve those gates.
 
-The existing runner generates a textual plan, then would run a fresh `terraform apply -auto-approve` if its legacy flag were enabled. It does not persist a saved binary plan, bind approval to a plan digest and tenant/environment/credential identity, atomically consume current role authorization, or establish state lock/recovery evidence. Those are missing engineering requirements, not merely missing cloud credentials. Do not enable either apply flag as an acceptance shortcut. Plan/refresh and provider initialization may contact external services; this audit did not run them against customer accounts.
+The older lead/text-job path now refuses live planning and apply approval before
+CLI detection, initialization, provider IO or job/approval writes. Direct exported
+init/validate/plan helpers also refuse. Historical status and approval timestamps
+remain readable with explicit legacy-text scope, unavailable approval and
+execution disabled; Resilience keeps configuration generation without live
+plan/confirmation/apply controls or Ready to deploy claims. See
+[legacy authority containment](TERRAFORM_LEGACY_AUTHORITY_CONTAINMENT.md).
+
+The historical apply implementation would still run a fresh
+`terraform apply -auto-approve` if its separate legacy kill switch were enabled;
+that switch and the signed-handoff refusal are unchanged. It has no saved-binary
+approval binding, current tenant/target/backend/credential authority or state
+lock/recovery evidence. These remain missing engineering, not merely missing
+cloud credentials. Do not enable either apply flag as an acceptance shortcut.
+No customer provider initialization, plan, refresh or apply was run.
 
 Before a Terraform execution milestone can be claimed, implement the canonical tenant executor with saved-plan artifact integrity, approved target/credential binding, current approver capabilities, exclusive claim/state locking, bounded execution and explicit unknown-outcome reconciliation. Then validate in an explicitly authorized disposable nonproduction account and account for sensitive plan/state artifacts. A Terraform rollback is a separately planned and approved change; no generic automatic reversal is promised.
 

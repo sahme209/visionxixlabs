@@ -1,0 +1,9 @@
+# Owned ECS private diagnostics correction
+
+Root approved narrow fixture source only after attempt1 failed at29ab35c7 with unknown redacted stage. Whole web types/36 guards passed; attempt1 cause and call counts stay unverified. No full compiler, SDK/PG/Next/container/runtime or second attempt is authorized by this source plan.
+
+Add one fixture-only CJS helper that constructs only closed stage/error/cleanup records and capped primitive counters, null for unobserved. Use a fixed newly owned0700 temporary directory and0600 atomic fixed-basename files,8KiB maximum; verify ownership and no symlinks. Never serialize raw stderr, Error/message/stack/meta, env, URLs, keys, tokens, bodies or headers. Writer failures return a closed status and MUST NOT throw from uncaughtExceptionMonitor, suppress/replace original fatal or cleanup failure, or convert failure to success.
+
+Add observational phase calls only in the fixed runner/preload/probe. Preserve public generic failure, shared wrapper, all runtime guard/native allowances, source loader and authority behavior, provider transports/configuration, roots/crypto and production source. Preload monitor preserves Node fatal semantics; no unhandledRejection swallowing listener. Final owner cleanup state records actual completed boundaries and explicitly unknown/not-created cases. No added Docker/provider operation or arbitrary module/adapter.
+
+TDD pure record/writer tests with local temp files and counting canaries: lost phase/private failure record, field validation, null/zero distinctions, caps,0600/0700 atomic no-symlink/ownership checks, malicious accessor/toJSON/error/env data, writer failures and original fatal/cleanup failure preservation. Retain existing36 no-send guard cases. Scoped syntax/lint/pure tests only. Freeze exact delta for independent closure before any newly granted attempt2. Historical failure evidence remains unchanged.

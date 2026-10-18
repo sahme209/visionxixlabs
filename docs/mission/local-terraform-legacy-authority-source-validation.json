@@ -1,0 +1,524 @@
+{
+  "schemaVersion": 1,
+  "recordedAtUtc": "2026-10-18",
+  "evidenceKind": "source_validation_not_application_acceptance",
+  "scope": "Legacy Terraform authority containment: actual route handlers, direct runner no-send refusal, actual Resilience React component and actual Assistant prompt-composition tests use synthetic IO boundaries. Compiler/default-suite/desktop-build/Python checks do not establish live Terraform, database, native or provider acceptance.",
+  "sourceCommit": "62f2155262cdd14c1bdbac84e9bc1795c8c4dcb1",
+  "integratedMain": "10882dc2ccd647cba8092cef479ace6aa71568ee",
+  "sourceCleanAtGateStartAndCleanup": true,
+  "reviewedFeatureCommits": [
+    "2ee70d279ecd7251ca0dc9fb10dc41c0bbb46597",
+    "980b900382bcc02fcb9e7480caa3a0de7d5d118c"
+  ],
+  "mergeCorrection": {
+    "normalMerge": "2fe83fb9a995cc3e47f13f17a1f536b6311331d2",
+    "additiveCorrection": "62f2155262cdd14c1bdbac84e9bc1795c8c4dcb1",
+    "reason": "An unpublished intermediate merge accidentally committed unresolved demo conflict markers after a failed assertion. Before any compiler/test gate, the additive correction removed only marker lines and duplicated old step24, preserving exact Terraform step24 from980b and incoming Airflow step25 from10882. Root independently verified correction, both merge parents and canonical bytes. History was not rewritten."
+  },
+  "sourceSha256": [
+    {
+      "path": "PHASE4-CONTROLLED-EXECUTION.md",
+      "sha256": "c68825830920ee05941b85ffa01d93ff1ff74e9aeb2664c3e079d5f501f483c5"
+    },
+    {
+      "path": "app/api/terraform/approve/route.ts",
+      "sha256": "ac4cc09db5798be8cd3eab5e14eaa5643285eec471b790eebaa8600dcdcf53be"
+    },
+    {
+      "path": "app/api/terraform/plan/route.ts",
+      "sha256": "997d03935ffef234c665bad95b33072e25cb1b7e6d98c4027a248b81d2d70eea"
+    },
+    {
+      "path": "app/dashboard/resilience/page.tsx",
+      "sha256": "e2395b1252f92cd8fe1d6410ab466f52ee7b1171373b4d4f8d90a1c0e263e8ab"
+    },
+    {
+      "path": "components/__tests__/resilienceTerraformAuthority.test.ts",
+      "sha256": "89cb1c7dd541124009605a57598e3f53952f606bd43a8b71329c46f715ab5a1c"
+    },
+    {
+      "path": "docs/TERRAFORM_AIRFLOW_CUSTOMER_ACCEPTANCE.md",
+      "sha256": "378ffb159e3977027c1185a64e2e90a0809b2e9a8684850c77e647dcabefcfe4"
+    },
+    {
+      "path": "docs/TERRAFORM_LEGACY_AUTHORITY_CONTAINMENT.md",
+      "sha256": "c920993947f7c854c8f3bb1134283e5080a4f064d911a84204d235192612d5a8"
+    },
+    {
+      "path": "docs/TERRAFORM_SAVED_PLAN_REVIEW_PLAN.md",
+      "sha256": "289098d9cb91945c44ba3e71836f7161ee437d09cd9407dda4b4a78c17a7e245"
+    },
+    {
+      "path": "lib/agents/__tests__/legacyTerraformGuidance.test.ts",
+      "sha256": "f974bb662cfa6589406ad542310b2df13257cb73d8112148b42e649cb0f7de41"
+    },
+    {
+      "path": "lib/agents/axiomAssistantAgent.ts",
+      "sha256": "7ecd70f6990828e04d417a914d3b1782b6f995cbe7e07b03fbc4e5388a1f1006"
+    },
+    {
+      "path": "lib/demo/demoScenarios.ts",
+      "sha256": "403a349f79da782907746576e5aaac9ef507f392b4e9df5610853f74db292a4b"
+    },
+    {
+      "path": "lib/terraform/__tests__/legacyTerraformAuthority.test.ts",
+      "sha256": "0ddf5b47232ddd3fbbbf23f632fb7b60154860ef1bf1517dba0f8cc7bc2793ec"
+    },
+    {
+      "path": "lib/terraform/runner.ts",
+      "sha256": "717d1f0ebca278460f4073e816d891b2cd79b3de1b6cf3769b65de429f357435"
+    }
+  ],
+  "dependencyOverlay": {
+    "root": "/workspace/.axiom-validation/ecs-direct-root/node_modules",
+    "desktop": "/workspace/visionxixlabs/desktop/node_modules",
+    "policy": "Owned ignored links only; desktop link absent during web types, present for desktop checks, removed at cleanup. No dependency installation/shared-cache edit. No HOME override."
+  },
+  "gates": [
+    {
+      "sourceCommit": "62f2155262cdd14c1bdbac84e9bc1795c8c4dcb1",
+      "command": "node --max-old-space-size=8192 node_modules/typescript/bin/tsc --noEmit --incremental false",
+      "freshProgram": true,
+      "incremental": false,
+      "heapLimitMiB": 8192,
+      "elapsedSeconds": 53.43,
+      "maxRssKiB": 3987916,
+      "exitCode": 0,
+      "desktopLinkWasPresent": false,
+      "ownedRootOverlay": "/workspace/.axiom-validation/ecs-direct-root/node_modules",
+      "log": "/tmp/axiom-terraform-legacy-web-tsc-62f21552.log"
+    },
+    {
+      "sourceCommit": "62f2155262cdd14c1bdbac84e9bc1795c8c4dcb1",
+      "command": "node node_modules/vitest/vitest.mjs run --reporter=dot",
+      "elapsedSeconds": 73.12,
+      "maxRssKiB": 610132,
+      "exitCode": 0,
+      "runtimeOptIns": "all AXIOM_RUN_* enabled flags absent",
+      "log": "/tmp/axiom-terraform-legacy-full-vitest-62f21552.log",
+      "passedTests": 7150,
+      "passedFiles": 658,
+      "skippedTests": 8,
+      "skippedFiles": 1
+    },
+    {
+      "sourceCommit": "62f2155262cdd14c1bdbac84e9bc1795c8c4dcb1",
+      "label": "desktop-tsc",
+      "command": [
+        "node",
+        "node_modules/typescript/bin/tsc",
+        "--noEmit"
+      ],
+      "workingDirectory": "/workspace/axiom-terraform-legacy-authority/desktop",
+      "elapsedSeconds": 6.59,
+      "exitCode": 0,
+      "log": "/tmp/axiom-terraform-legacy-desktop-tsc-62f21552.log"
+    },
+    {
+      "sourceCommit": "62f2155262cdd14c1bdbac84e9bc1795c8c4dcb1",
+      "label": "desktop-build",
+      "command": [
+        "npm",
+        "run",
+        "build"
+      ],
+      "workingDirectory": "/workspace/axiom-terraform-legacy-authority/desktop",
+      "elapsedSeconds": 10.85,
+      "exitCode": 0,
+      "log": "/tmp/axiom-terraform-legacy-desktop-build-62f21552.log"
+    },
+    {
+      "sourceCommit": "62f2155262cdd14c1bdbac84e9bc1795c8c4dcb1",
+      "label": "python-cli",
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "sdk.python.__tests__.test_vxl_cli"
+      ],
+      "workingDirectory": "/workspace/axiom-terraform-legacy-authority",
+      "elapsedSeconds": 0.15,
+      "exitCode": 0,
+      "log": "/tmp/axiom-terraform-legacy-python-cli-62f21552.log"
+    },
+    {
+      "sourceCommit": "62f2155262cdd14c1bdbac84e9bc1795c8c4dcb1",
+      "label": "offline-evidence",
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "scripts/tests",
+        "-p",
+        "test_auth_recovery_evidence.py",
+        "-v"
+      ],
+      "workingDirectory": "/workspace/axiom-terraform-legacy-authority",
+      "elapsedSeconds": 0.07,
+      "exitCode": 0,
+      "log": "/tmp/axiom-terraform-legacy-offline-evidence-62f21552.log"
+    },
+    {
+      "sourceCommit": "62f2155262cdd14c1bdbac84e9bc1795c8c4dcb1",
+      "label": "tracker",
+      "command": [
+        "python3",
+        "scripts/axiom-mission-tracker.py",
+        "--check"
+      ],
+      "workingDirectory": "/workspace/axiom-terraform-legacy-authority",
+      "elapsedSeconds": 0.13,
+      "exitCode": 0,
+      "log": "/tmp/axiom-terraform-legacy-tracker-62f21552.log"
+    },
+    {
+      "sourceCommit": "62f2155262cdd14c1bdbac84e9bc1795c8c4dcb1",
+      "label": "diff",
+      "command": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "workingDirectory": "/workspace/axiom-terraform-legacy-authority",
+      "elapsedSeconds": 0.01,
+      "exitCode": 0,
+      "log": "/tmp/axiom-terraform-legacy-diff-62f21552.log"
+    }
+  ],
+  "testSemantics": {
+    "redGreen": "14 expected route/runner/page failures plus5 existing input/auth/isolation passes became19 passes; actual Assistant request composition had2 expected failures plus2 unrelated plugin-confirmation passes, then4 passed. Final focused set12files/97tests passed before main integration.",
+    "noSend": "Direct runner tests load actual exported helpers with a harmless subprocess callback-error sentinel. No real Terraform executable/provider operation. Route and React tests mock persistence/auth/transport; prompt tests mock model/persistence/tools. Prompt delivery is not deterministic model compliance.",
+    "defaultRuntimeFlags": "All enabled AXIOM_RUN_* runtime fixture opt-ins absent;8tests/1optionalfile skipped."
+  },
+  "diagnostics": {
+    "assistantLint": {
+      "strictMaxWarningsZeroExitCode": 1,
+      "errorCount": 0,
+      "warningCount": 2,
+      "baselineCommit": "2ee70d279ecd7251ca0dc9fb10dc41c0bbb46597",
+      "unchangedBaselineDiagnostics": [
+        {
+          "ruleId": "@typescript-eslint/no-unused-vars",
+          "severity": 1,
+          "message": "'e' is defined but never used.",
+          "line": 237,
+          "column": 12
+        },
+        {
+          "ruleId": "@typescript-eslint/no-unused-vars",
+          "severity": 1,
+          "message": "'requiresApproval' is assigned a value but never used.",
+          "line": 315,
+          "column": 9
+        }
+      ],
+      "comparison": "ESLint.lintText before/after diagnostics identical in rule, severity, message, line and column; no suppression or unrelated runtime cleanup. New prompt regression strict lint and original7 feature-file strict lint passed with zero warnings."
+    },
+    "desktopBuildAdvisories": [
+      "Existing plugin-shell dynamic/static import overlap.",
+      "Existing minified application chunk exceeds500kB."
+    ],
+    "configurationRelaxed": false
+  },
+  "cleanup": {
+    "sourceCommit": "62f2155262cdd14c1bdbac84e9bc1795c8c4dcb1",
+    "sourceClean": true,
+    "sourceHashesVerified": 13,
+    "ownedWorktreeProcesses": [],
+    "desktopDependencyLinkPresent": false,
+    "nextDirectoryPresent": false,
+    "NextPgTerraformProviderRuntime": "not started; no container resources created",
+    "cleanup": "only temporary own ignored desktop dependency link was added and removed; Python bytecode disabled",
+    "heavyWindowReleased": true
+  },
+  "logArtifacts": [
+    {
+      "path": "/tmp/axiom-terraform-legacy-web-tsc-62f21552.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/tmp/axiom-terraform-legacy-full-vitest-62f21552.log",
+      "bytes": 33271,
+      "sha256": "d3cd70b21b8b3ac1d52cff60ea2dee8618459a64a4259158e225e51b7657d3b9"
+    },
+    {
+      "path": "/tmp/axiom-terraform-legacy-desktop-tsc-62f21552.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/tmp/axiom-terraform-legacy-desktop-build-62f21552.log",
+      "bytes": 1586,
+      "sha256": "71a8d92a28c38313e83517cb6472aab630ce0205279f1615454f118f65906a50"
+    },
+    {
+      "path": "/tmp/axiom-terraform-legacy-python-cli-62f21552.log",
+      "bytes": 1104,
+      "sha256": "3b3895eac8f7316899e268e7dcec0d268bcbcc70ee744238dd8debe7517b8082"
+    },
+    {
+      "path": "/tmp/axiom-terraform-legacy-offline-evidence-62f21552.log",
+      "bytes": 2169,
+      "sha256": "381dbeb54dd75da419b31a8ae5980b44ca9c359c10deb1dd738de515219e1143"
+    },
+    {
+      "path": "/tmp/axiom-terraform-legacy-tracker-62f21552.log",
+      "bytes": 266,
+      "sha256": "b0a637ed960bcb3fbc0d8ac6e1c144aba72fcf1aaefb67e38a5ccb0c551d02de"
+    },
+    {
+      "path": "/tmp/axiom-terraform-legacy-diff-62f21552.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/tmp/axiom-terraform-legacy-authority-red.log",
+      "bytes": 13295,
+      "sha256": "e079f3c13b0c0b1de7eb26d4e7613d1991782adbba5e97b72c1e1007c49a198d"
+    },
+    {
+      "path": "/tmp/axiom-terraform-legacy-authority-green.log",
+      "bytes": 647,
+      "sha256": "cbf468e4c0a87c504f712ab882ab2dbc7147ed5df78b8e7029afdeaae288e5d0"
+    },
+    {
+      "path": "/tmp/axiom-terraform-legacy-authority-focused-with-guidance.log",
+      "bytes": 805,
+      "sha256": "ea4bed8fdca5a07f2e522ae55e2344937fd2980e8a889bd1036bb1abab1efa1b"
+    },
+    {
+      "path": "/tmp/axiom-terraform-guidance-red.log",
+      "bytes": 2559,
+      "sha256": "dbe47cc26afe0d61e3ca23e3e8c56e8be739571a6ab36c5f1c8171032ea72ab3"
+    },
+    {
+      "path": "/tmp/axiom-terraform-guidance-green.log",
+      "bytes": 655,
+      "sha256": "5b9ab8883393d6bd73e00f586b86717e5ff60189a2a49611a3e22095f501367c"
+    },
+    {
+      "path": "/tmp/axiom-terraform-guidance-lint.log",
+      "bytes": 380,
+      "sha256": "d5cde2c441e3169f3c4b34bec4c28325ea24d6e7f521474cf295215efd3a23e0"
+    },
+    {
+      "path": "/tmp/axiom-terraform-guidance-new-test-lint.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/tmp/axiom-terraform-guidance-lint-baseline-comparison.json",
+      "bytes": 971,
+      "sha256": "0c11f8fc14673f9c30a9253f69a6e4a0d49203558d4ddf25988b3cf4fd19b35f"
+    },
+    {
+      "path": "/tmp/axiom-terraform-demo-merge-correction-verified.json",
+      "bytes": 520,
+      "sha256": "b1f3a5b65b25e24cd342338c0aa483be2d5a4f68a7f909140b6bc8dcbb931d8b"
+    },
+    {
+      "path": "/tmp/axiom-terraform-legacy-cleanup-62f21552.json",
+      "bytes": 453,
+      "sha256": "aeda227100dd18a259d24f1c1327d9eed5f560513c938068fa57ebcbb33594e9"
+    }
+  ],
+  "historicalApplicationEvidence": {
+    "path": "docs/mission/local-terraform-saved-plan-http-acceptance.json",
+    "sourceCommit": "62e47d9421d1a95a2cd0eaabe42870a8cf801209",
+    "status": "Preserved historical genuine builtin-CLI/owned-PostgreSQL/paired-HTTP observation; not rerun or relabeled as current source acceptance."
+  },
+  "notRun": [
+    "Terraform CLI detection/init/validate/plan/apply",
+    "Next or owned HTTP/PG application continuation",
+    "Live provider/backend/state/lock/credential operation",
+    "Production DB/schema operation",
+    "Native filesystem/Git/vault/installer execution",
+    "Deployment or publication"
+  ],
+  "remainingCustomerGaps": [
+    "Trusted customer saved-plan producer and current backend/state/target/credential authority",
+    "Tenant-bound fenced approval consumption and exact saved-binary apply",
+    "Apply recovery and live provider acceptance"
+  ],
+  "executionEnabled": false,
+  "approval": "unavailable",
+  "ci": "Final exact-head remote checks remain a separate merge gate.",
+  "subsequentIntegration": {
+    "sourceCommit": "7c14b0a3c1fd29069623cc28354f9c5fb3328296",
+    "integratedMain": "037eacb6fdbb5e4261d755754240400ed328ed94",
+    "parents": [
+      "ed1c5d162c6d2a8ab874f199bca5d1568b96b702",
+      "037eacb6fdbb5e4261d755754240400ed328ed94"
+    ],
+    "scope": "Source-only normal PR171/main integration, then fresh whole-web types and focused combined source/component checks. No repeated full default suite, desktop build or runtime acceptance. The earlier62f full/default/desktop/Python observations remain unchanged above.",
+    "sourceCleanBeforeTypeCheck": true,
+    "coordinatorDocumentationDuringChecks": "Only three canonical checkpoint documents changed during the type/focused window. They are coordinator-owned metadata; product/test bytes remained bound to this sourceCommit. No fresh full-suite result is attributed to this combined head.",
+    "preservation": {
+      "integrationHead": "7c14b0a3c1fd29069623cc28354f9c5fb3328296",
+      "parents": [
+        "ed1c5d162c6d2a8ab874f199bca5d1568b96b702",
+        "037eacb6fdbb5e4261d755754240400ed328ed94"
+      ],
+      "conflicts": false,
+      "ownedFeatureFiles": 13,
+      "ownedUnchangedExceptIncomingDemoStep3": true,
+      "receiptUnchanged": true,
+      "incomingFiles": 8,
+      "incomingUnchangedExceptPreservedTerraformAirflowDemoSteps": true,
+      "canonicalFilesByteEqualMain": true,
+      "demo": "Exact premerge source with only incoming native repository step3 replacement; Terraform24 and Airflow25 unchanged; zero conflict markers",
+      "sourceClean": true
+    },
+    "sourceSha256": [
+      {
+        "path": "PHASE4-CONTROLLED-EXECUTION.md",
+        "sha256": "c68825830920ee05941b85ffa01d93ff1ff74e9aeb2664c3e079d5f501f483c5"
+      },
+      {
+        "path": "app/api/terraform/approve/route.ts",
+        "sha256": "ac4cc09db5798be8cd3eab5e14eaa5643285eec471b790eebaa8600dcdcf53be"
+      },
+      {
+        "path": "app/api/terraform/plan/route.ts",
+        "sha256": "997d03935ffef234c665bad95b33072e25cb1b7e6d98c4027a248b81d2d70eea"
+      },
+      {
+        "path": "app/dashboard/resilience/page.tsx",
+        "sha256": "e2395b1252f92cd8fe1d6410ab466f52ee7b1171373b4d4f8d90a1c0e263e8ab"
+      },
+      {
+        "path": "components/__tests__/resilienceTerraformAuthority.test.ts",
+        "sha256": "89cb1c7dd541124009605a57598e3f53952f606bd43a8b71329c46f715ab5a1c"
+      },
+      {
+        "path": "docs/TERRAFORM_AIRFLOW_CUSTOMER_ACCEPTANCE.md",
+        "sha256": "378ffb159e3977027c1185a64e2e90a0809b2e9a8684850c77e647dcabefcfe4"
+      },
+      {
+        "path": "docs/TERRAFORM_LEGACY_AUTHORITY_CONTAINMENT.md",
+        "sha256": "4e3756b2948ca9b6fcbe439196d67370890307122fd9250a989353f14682ce8b"
+      },
+      {
+        "path": "docs/TERRAFORM_SAVED_PLAN_REVIEW_PLAN.md",
+        "sha256": "289098d9cb91945c44ba3e71836f7161ee437d09cd9407dda4b4a78c17a7e245"
+      },
+      {
+        "path": "lib/agents/__tests__/legacyTerraformGuidance.test.ts",
+        "sha256": "f974bb662cfa6589406ad542310b2df13257cb73d8112148b42e649cb0f7de41"
+      },
+      {
+        "path": "lib/agents/axiomAssistantAgent.ts",
+        "sha256": "7ecd70f6990828e04d417a914d3b1782b6f995cbe7e07b03fbc4e5388a1f1006"
+      },
+      {
+        "path": "lib/demo/demoScenarios.ts",
+        "sha256": "b0140abdb1cd7ef29caae55c2fd909ba2cb4f7ce579420482d34e0a561c06f9b"
+      },
+      {
+        "path": "lib/terraform/__tests__/legacyTerraformAuthority.test.ts",
+        "sha256": "0ddf5b47232ddd3fbbbf23f632fb7b60154860ef1bf1517dba0f8cc7bc2793ec"
+      },
+      {
+        "path": "lib/terraform/runner.ts",
+        "sha256": "717d1f0ebca278460f4073e816d891b2cd79b3de1b6cf3769b65de429f357435"
+      },
+      {
+        "path": "desktop/src/views/RepositoryWorkspaceView.tsx",
+        "sha256": "66865cc1ea88a520a1476dfe24461fb252fdf6691a85a2f8e2cf1324fe3c3bf2"
+      },
+      {
+        "path": "lib/desktop/__tests__/repositoryWorkspaceOwnership.test.ts",
+        "sha256": "43d9e7f2b1edc9ff3338c32b3f048111446d5e05aaaf524f46b863013e0bef2f"
+      }
+    ],
+    "gates": [
+      {
+        "sourceCommit": "7c14b0a3c1fd29069623cc28354f9c5fb3328296",
+        "command": [
+          "node",
+          "--max-old-space-size=8192",
+          "node_modules/typescript/bin/tsc",
+          "--noEmit",
+          "--incremental",
+          "false"
+        ],
+        "freshProgram": true,
+        "incremental": false,
+        "heapLimitMiB": 8192,
+        "elapsedSeconds": 56.89,
+        "maxRssKiB": 4024292,
+        "exitCode": 0,
+        "desktopLinkWasPresent": false,
+        "ownedRootOverlay": "/workspace/.axiom-validation/ecs-direct-root/node_modules",
+        "log": "/tmp/axiom-terraform-legacy-integrated-web-tsc-7c14b0a3.log"
+      },
+      {
+        "sourceCommit": "7c14b0a3c1fd29069623cc28354f9c5fb3328296",
+        "command": [
+          "node",
+          "node_modules/vitest/vitest.mjs",
+          "run",
+          "lib/terraform/__tests__/legacyTerraformAuthority.test.ts",
+          "lib/terraform/__tests__/savedPlanArtifact.test.ts",
+          "lib/terraform/__tests__/savedPlanArtifactIO.test.ts",
+          "lib/terraform/__tests__/savedPlanFixtureTarget.test.ts",
+          "lib/terraform/__tests__/savedPlanRead.test.ts",
+          "lib/terraform/__tests__/savedPlanStore.test.ts",
+          "lib/terraform/__tests__/terraformApplyKillSwitch.test.ts",
+          "lib/agents/__tests__/legacyTerraformGuidance.test.ts",
+          "components/__tests__/resilienceTerraformAuthority.test.ts",
+          "app/api/terraform/apply/__tests__/route.test.ts",
+          "app/api/desktop/deployments/[id]/terraform-plans/__tests__/route.test.ts",
+          "app/api/desktop/handoff/__tests__/route.test.ts",
+          "lib/desktop/__tests__/terraformPlanReview.test.ts",
+          "lib/desktop/__tests__/repositoryWorkspaceOwnership.test.ts",
+          "lib/demo/__tests__/demoScenarios.test.ts",
+          "lib/iac/__tests__/terraformPlanSummarizer.test.ts",
+          "--reporter=verbose"
+        ],
+        "elapsedSeconds": 4.11,
+        "exitCode": 0,
+        "log": "/tmp/axiom-terraform-legacy-integrated-focused-7c14b0a3.log",
+        "scope": "Actual handler/runner/component/prompt plus saved-plan contracts, paired/native mocked reads, apply/signing gates, demo and incoming desktop ownership. Synthetic IO; no real Terraform/provider/native operation.",
+        "passedFiles": 16,
+        "passedTests": 132
+      }
+    ],
+    "logArtifacts": [
+      {
+        "path": "/tmp/axiom-terraform-legacy-integrated-web-tsc-7c14b0a3.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "/tmp/axiom-terraform-legacy-integrated-focused-7c14b0a3.log",
+        "bytes": 20452,
+        "sha256": "63e05c379dfef02946e48356e9e0656cf1f0eee45dbee0d84c3692197c51e79a"
+      },
+      {
+        "path": "/tmp/axiom-terraform-legacy-integration-037-proof.json",
+        "bytes": 612,
+        "sha256": "64cec7f245d061470b905617a7f9bc8b1cadf705658af85180e1205d8fc7ad23"
+      },
+      {
+        "path": "/tmp/axiom-terraform-legacy-integration-037-cleanup.json",
+        "bytes": 371,
+        "sha256": "bdc0de23552f4b07206331c3373a209a394ab7d30a6e9b199bd23aea8c39c23b"
+      }
+    ],
+    "cleanup": {
+      "sourceCommit": "7c14b0a3c1fd29069623cc28354f9c5fb3328296",
+      "sourceHashesPreserved": true,
+      "ownedWorktreeProcesses": [],
+      "desktopLinkPresent": false,
+      "nextDirectoryPresent": false,
+      "runtimeResourcesStarted": false,
+      "heavyWindowReleased": true,
+      "dirtyFiles": "Only coordinator-authored canonical checkpoint documentation; product and tests unchanged."
+    },
+    "remainingGate": "Final exact-head remote CI clean-install/full production build and required review, managed by root."
+  }
+}

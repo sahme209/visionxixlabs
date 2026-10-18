@@ -10,13 +10,19 @@ import { inspectPublicTrustConfiguration, isValidBuildBinding, manifestBuildBind
 import { readGithubBuildSnapshot, type GithubBuildSnapshotClient } from "./githubBuildSnapshot";
 
 export interface GithubBuildSnapshot {
-  membership: { id: string; organizationId: string; userId: string; role: string; acceptedAt: string | null; updatedAt: string };
+  membership: { id: string; organizationId: string; userId: string; role: string; providerScopes?: string[]; acceptedAt: string | null; updatedAt: string };
   repository: { id: string; organizationId: string; provider: string; remoteOwner: string; remoteName: string; updatedAt: string };
-  environment: { id: string; organizationId: string; approvalPolicyId: string | null; updatedAt: string };
-  installation: { id: string; organizationId: string; githubInstallationId: string; accountLogin: string; status: string; installedAt: string; updatedAt: string; revokedAt: string | null; suspendedAt: string | null };
+  environment: { id: string; organizationId: string; approvalPolicyId: string | null; tier?: string; updatedAt: string };
+  installation: { id: string; organizationId: string; githubInstallationId: string; accountLogin: string; accountType?: string; repositorySelection?: string; status: string; installedAt: string; updatedAt: string; revokedAt: string | null; suspendedAt: string | null };
   policy: ReviewPolicy;
   branchPolicies: { id: string; organizationId: string; repositoryId: string; environmentId: string; branchPattern: string; priority: number; requireReleaseTag: boolean; requireCodeowners: boolean; requirePrLink: boolean; requireChangeTicket: boolean; requirePromotionFromEnvironmentId: string | null; requireTestsPassing: boolean; enabled: boolean; updatedAt: string }[];
 }
+
+/** Retained only after metadata, signed binding, crypto and current-context checks succeed. */
+export type CheckedGithubBuildEvidenceV1 = Extract<Awaited<ReturnType<typeof verifyBuildProvenance>>, { kind: "verified_build_provenance" }> & {
+  checkedBinding: { schema: "axiom.github.checked-build.v1"; sourceRef: string; workflowPath: string; contextDigest: string };
+};
+
 export interface GithubBuildScope { organizationId: string; userId: string }
 export interface GithubBuildRequest {
   repositoryRecordId: string; environmentId: string; policyDigest: string;
@@ -38,7 +44,7 @@ function numberId(value: unknown): string | null {
   if (typeof value === "number" && Number.isSafeInteger(value) && value > 0) return String(value);
   return typeof value === "string" && /^[1-9]\d{0,31}$/.test(value) ? value : null;
 }
-function validSnapshot(s: GithubBuildSnapshot, scope: GithubBuildScope, r: GithubBuildRequest): boolean {
+export function validGithubBuildSnapshot(s: GithubBuildSnapshot, scope: GithubBuildScope, r: GithubBuildRequest): boolean {
   const m = s.membership, repo = s.repository, env = s.environment, install = s.installation;
   return Boolean(m.id && m.organizationId === scope.organizationId && m.userId === scope.userId && m.acceptedAt && ["owner", "admin"].includes(m.role)
     && repo.id === r.repositoryRecordId && repo.organizationId === scope.organizationId && repo.provider === "github" && `${repo.remoteOwner}/${repo.remoteName}` === r.expected.repositoryFullName
@@ -50,7 +56,7 @@ function validSnapshot(s: GithubBuildSnapshot, scope: GithubBuildScope, r: Githu
     && Array.isArray(s.branchPolicies) && s.branchPolicies.length <= 100 && s.branchPolicies.every(p => p.organizationId === scope.organizationId && p.repositoryId === repo.id && p.environmentId === env.id
       && p.enabled && p.id && typeof p.branchPattern === "string" && p.branchPattern.length > 0 && p.branchPattern.length <= 256 && Number.isSafeInteger(p.priority) && Number.isFinite(Date.parse(p.updatedAt))));
 }
-function snapshotDigest(s: GithubBuildSnapshot): string { return evidenceDigest({ ...s, branchPolicies: [...s.branchPolicies].sort((a, b) => a.id.localeCompare(b.id)) }); }
+export function githubBuildSnapshotDigest(s: GithubBuildSnapshot): string { return evidenceDigest({ ...s, branchPolicies: [...s.branchPolicies].sort((a, b) => a.id.localeCompare(b.id)) }); }
 function sourceBranch(value: unknown): string {
   requireRead(typeof value === "string" && value.length > 0 && value.length <= 255 && !value.startsWith("/") && !value.endsWith("/") && !value.includes("..") && !value.includes("@{") && !/[\s~^:?*\[\]\\]/.test(value), "unsupported_build_ref");
   return value;
@@ -67,7 +73,7 @@ export function createGithubBuildEvidenceReader(options: Options = {}) {
   const token: typeof resolveTenantScopedToken = options.token ?? ((organizationId, repository, expectedInstallation) =>
     options.client ? resolveTenantScopedToken(organizationId, repository, expectedInstallation, options.client)
       : Promise.resolve({ ok: false, error: "github_token_unavailable" }));
-  async function inspectBuild(scopeInput: GithubBuildScope, requestInput: GithubBuildRequest) {
+  async function inspectBuild(scopeInput: GithubBuildScope, requestInput: GithubBuildRequest, parentSignal?: AbortSignal) {
     if (!sigstoreRuntimeSupported(process.versions.node)) return unavailable("unsupported_sigstore_runtime");
     try {
       const scope: GithubBuildScope = structuredClone(scopeInput), r: GithubBuildRequest = structuredClone(requestInput);
@@ -82,20 +88,20 @@ export function createGithubBuildEvidenceReader(options: Options = {}) {
       const configDigest = evidenceDigest({ profile, policy });
       const controller = new AbortController();
       const timeout = setTimeout(() => controller.abort(), 30_000);
-      const signal = controller.signal, budget = { remainingBytes: 4 * 1024 * 1024 };
+      const signal = parentSignal ? AbortSignal.any([controller.signal, parentSignal]) : controller.signal, budget = { remainingBytes: 4 * 1024 * 1024 };
       try {
         async function capture() {
           signal.throwIfAborted();
           const snapshot = await withGithubAbort(load(scope, r), signal);
-          requireRead(snapshot && validSnapshot(snapshot, scope, r), "current_github_review_authority_unavailable");
+          requireRead(snapshot && validGithubBuildSnapshot(snapshot, scope, r), "current_github_review_authority_unavailable");
           return structuredClone(snapshot);
         }
-        const initial = await capture(), initialDigest = snapshotDigest(initial);
+        const initial = await capture(), initialDigest = githubBuildSnapshotDigest(initial);
         async function current(): Promise<boolean> {
           const nowConfig = inspectPublicTrustConfiguration(options.profile, clock());
           const currentPolicy = (options.downloadPolicy ?? []).filter(p => p.pathPrefix === `/attestations/${r.expected.repositoryId}/`);
           if (nowConfig.kind !== "configured" || evidenceDigest({ profile: nowConfig.profile, policy: currentPolicy }) !== configDigest) return false;
-          return snapshotDigest(await capture()) === initialDigest;
+          return githubBuildSnapshotDigest(await capture()) === initialDigest;
         }
         const repository = parseRepositoryFullName(r.expected.repositoryFullName);
         requireRead(repository, "github_repository_unavailable");
@@ -158,10 +164,12 @@ export function createGithubBuildEvidenceReader(options: Options = {}) {
         await validateRun({ kind: "run", runId: r.expected.runId });
         await validateRun({ kind: "run", runId: r.expected.runId, attempt: r.expected.runAttempt });
         requireRead(await current(), "github_review_context_changed");
-        const result = await verifyBuildProvenance({ bytes: bundle, binding: { ...r.expected, organizationId: scope.organizationId, sourceRef: `refs/heads/${branch}` }, profile, authorize: async org => org === scope.organizationId && await current(), now: clock() });
+        const binding: BuildBinding = { ...r.expected, organizationId: scope.organizationId, sourceRef: `refs/heads/${branch}` };
+        const result = await verifyBuildProvenance({ bytes: bundle, binding, profile, authorize: async org => org === scope.organizationId && await current(), now: clock() });
         signal.throwIfAborted();
         requireRead(await current(), "github_review_context_changed");
-        return result;
+        if (result.kind !== "verified_build_provenance") return result;
+        return { ...result, checkedBinding: { schema: "axiom.github.checked-build.v1" as const, sourceRef: binding.sourceRef, workflowPath: binding.workflowPath, contextDigest: initialDigest } } satisfies CheckedGithubBuildEvidenceV1;
       } finally { clearTimeout(timeout); controller.abort(); }
     } catch (error) { return unavailable(error instanceof ReadFailure ? error.message : "github_build_evidence_unavailable"); }
   }
