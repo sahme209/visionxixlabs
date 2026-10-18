@@ -217,7 +217,7 @@ it.each(["success", "error", "rejection"])("ignores a prior credential catalog %
 it("keeps local Refresh independent of the connected GitHub catalog", async () => {
   await start();
   expect(m.client.listGithubRepositories).toHaveBeenCalledTimes(1);
-  fireEvent.click(screen.getByRole("button", { name: "Refresh", exact: true }));
+  fireEvent.click(screen.getByRole("button", { name: "Refresh" }));
   await waitFor(() => expect(m.invoke.mock.calls.filter(([name]) => name === "list_local_repositories")).toHaveLength(2));
   expect(m.client.listGithubRepositories).toHaveBeenCalledTimes(1);
 });
@@ -239,7 +239,7 @@ it("reconciles a removed connected selection to the visible replacement before c
   fireEvent.click(screen.getByRole("button", { name: "Refresh connected repositories" }));
   await screen.findByRole("option", { name: "fixture/replacement · private" });
   expect(selection.value).toBe("fixture/replacement");
-  fireEvent.click(screen.getByRole("button", { name: "Clone", exact: true }));
+  fireEvent.click(screen.getByRole("button", { name: "Clone" }));
   await waitFor(() => expect(m.client.mintGithubCloneToken).toHaveBeenCalledWith({ repositoryFullName: selection.value, purpose: "clone" }));
   expect(m.client.mintGithubCloneToken).toHaveBeenCalledWith({ repositoryFullName: "fixture/replacement", purpose: "clone" });
 });
@@ -251,7 +251,7 @@ it("clears a removed connected selection and disables Clone when the refreshed c
   fireEvent.click(screen.getByRole("button", { name: "Refresh connected repositories" }));
   await screen.findByRole("option", { name: "No connected repositories" });
   expect(selection.value).toBe("");
-  const clone = screen.getByRole("button", { name: "Clone", exact: true }) as HTMLButtonElement;
+  const clone = screen.getByRole("button", { name: "Clone" }) as HTMLButtonElement;
   expect(clone.disabled).toBe(true);
   fireEvent.click(clone);
   expect(m.client.mintGithubCloneToken).not.toHaveBeenCalled();
@@ -266,6 +266,6 @@ it("retains an explicitly selected repository that remains in the refreshed cata
   fireEvent.click(screen.getByRole("button", { name: "Refresh connected repositories" }));
   await waitFor(() => expect(m.client.listGithubRepositories).toHaveBeenCalledTimes(2));
   expect(selection.value).toBe("fixture/kept");
-  fireEvent.click(screen.getByRole("button", { name: "Clone", exact: true }));
+  fireEvent.click(screen.getByRole("button", { name: "Clone" }));
   await waitFor(() => expect(m.client.mintGithubCloneToken).toHaveBeenCalledWith({ repositoryFullName: "fixture/kept", purpose: "clone" }));
 });
