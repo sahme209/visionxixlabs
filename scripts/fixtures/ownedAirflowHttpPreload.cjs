@@ -2,6 +2,7 @@
 'use strict';
 const assert = require('node:assert/strict');
 const dns = require('node:dns');
+const dgram = require('node:dgram');
 const net = require('node:net');
 const { syncBuiltinESMExports } = require('node:module');
 const { installOwnedAwsHttpGuard } = require('./ownedAwsHttpPreload.cjs');
@@ -31,6 +32,28 @@ function ownedAirflowLookup(hostname, options = {}) {
   if (!address) throw new Error('owned_airflow_dns_denied');
   return options.all ? [{ address, family: 4 }] : { address, family: 4 };
 }
+/** c-ares and UDP bypass TCP Socket.connect. Fence prototype methods too so
+ * captured constructors/instances cannot select custom native DNS servers. */
+function installOwnedAirflowDnsUdpGuard() {
+  const saved = [], visited = new Set();
+  function replace(object, key, value) { saved.push([object, key, Object.getOwnPropertyDescriptor(object, key)]); object[key] = value; }
+  const denyDns = () => { throw new Error('owned_airflow_dns_denied'); };
+  const denyUdp = () => { throw new Error('owned_airflow_udp_denied'); };
+  const dnsEntry = /^(lookup|resolve|reverse$|setServers$|setLocalAddress$)/;
+  for (const api of [dns, dns.promises]) {
+    for (let prototype = api.Resolver.prototype; prototype !== Object.prototype; prototype = Object.getPrototypeOf(prototype)) {
+      if (visited.has(prototype)) continue; visited.add(prototype);
+      for (const key of Object.getOwnPropertyNames(prototype)) if (dnsEntry.test(key) && typeof prototype[key] === 'function') replace(prototype, key, denyDns);
+    }
+    replace(api, 'Resolver', function deniedResolver() { return denyDns(); });
+    for (const key of Object.keys(api)) if (key !== 'lookup' && dnsEntry.test(key) && typeof api[key] === 'function') replace(api, key, api === dns.promises ? async () => denyDns() : denyDns);
+  }
+  for (const key of Object.getOwnPropertyNames(dgram.Socket.prototype)) if (/^(send|connect|bind)/.test(key) && typeof dgram.Socket.prototype[key] === 'function') replace(dgram.Socket.prototype, key, denyUdp);
+  replace(dgram, 'Socket', function deniedUdpSocket() { return denyUdp(); });
+  replace(dgram, 'createSocket', denyUdp);
+  syncBuiltinESMExports();
+  return { restore() { for (const [object, key, descriptor] of saved.reverse()) Object.defineProperty(object, key, descriptor); syncBuiltinESMExports(); } };
+}
 function installOwnedAirflowGuard({ origins, wireOrigin, proof, databaseUrl }) {
   const db = new URL(databaseUrl);
   assert.ok(['postgres:', 'postgresql:'].includes(db.protocol) && db.hostname === '127.0.0.1' && db.port && /^\/axiom_auth_http_[a-f0-9]{12}$/.test(db.pathname) && !db.search && !db.hash, 'owned_airflow_database_required');
@@ -40,6 +63,7 @@ function installOwnedAirflowGuard({ origins, wireOrigin, proof, databaseUrl }) {
   // Reuse the existing literal-loopback builtin HTTP guard. Its historical AWS
   // name does not enable any AWS behavior or credential in this separate child.
   const builtin = installOwnedAwsHttpGuard({ origins: [...origins, wireOrigin], awsOrigin: wireOrigin, proof, announceReady: true });
+  const dnsUdp = installOwnedAirflowDnsUdpGuard();
   globalThis.fetch = fetch;
   dns.promises.lookup = async (hostname, options) => ownedAirflowLookup(hostname, options);
   dns.lookup = (hostname, options, callback) => {
@@ -52,7 +76,7 @@ function installOwnedAirflowGuard({ origins, wireOrigin, proof, databaseUrl }) {
     return original.connect.apply(this, args);
   };
   syncBuiltinESMExports();
-  return { report: builtin.report, restore() { globalThis.fetch = original.fetch; net.Socket.prototype.connect = original.connect; dns.lookup = original.lookup; dns.promises.lookup = original.lookupPromise; builtin.restore(); syncBuiltinESMExports(); } };
+  return { report: builtin.report, restore() { dnsUdp.restore(); globalThis.fetch = original.fetch; net.Socket.prototype.connect = original.connect; dns.lookup = original.lookup; dns.promises.lookup = original.lookupPromise; builtin.restore(); syncBuiltinESMExports(); } };
 }
 module.exports = { makeOwnedAirflowFetch, ownedAirflowLookup, installOwnedAirflowGuard };
 if (process.env.AXIOM_OWNED_AIRFLOW_WIRE === '1') installOwnedAirflowGuard({ origins: JSON.parse(process.env.AXIOM_OWNED_AIRFLOW_HTTP_ORIGINS || 'null'), wireOrigin: process.env.AXIOM_OWNED_AIRFLOW_ORIGIN, proof: process.env.AXIOM_OWNED_AIRFLOW_PROOF, databaseUrl: process.env.DATABASE_URL });
