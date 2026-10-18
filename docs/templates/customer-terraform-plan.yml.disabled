@@ -1,0 +1,54 @@
+# INACTIVE SOURCE PROPOSAL. Not a workflow installed or dispatched by Axiom.
+# Before a customer installs a reviewed copy, the owner must separately approve:
+# - protected environment reviewers/branch rules and this exact workflow/helper;
+# - a reviewed Terraform executable at the fixed path below (no installer here);
+# - OIDC plan-role trust/provider read permissions and S3/DynamoDB backend writes;
+# - existing versioned private SSE-KMS artifact storage and attestation publication.
+# CI init/plan acquires the normal backend lock. This is customer cloud activity,
+# unlike Axiom's observation role. Approval/apply authority is never produced.
+# The two pins are sourced from existing repository source/genuine OCI fixture;
+# that fixture is NOT Terraform tuple acceptance or a fresh action security audit.
+name: Customer reviewed Terraform plan proposal
+on:
+  workflow_dispatch:
+    inputs:
+      profile_export:
+        description: Export from the current tenant/request plan profile; contains no cloud credentials
+        required: true
+        type: string
+permissions:
+  contents: read
+  id-token: write
+  attestations: write
+concurrency:
+  group: customer-terraform-plan-${{ github.repository_id }}-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  plan:
+    environment: terraform-plan-review
+    runs-on: ubuntu-24.04
+    timeout-minutes: 14
+    steps:
+      - name: Checkout exact dispatch source
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Produce and privately store the fixed plan tuple
+        env:
+          AXIOM_PROFILE_EXPORT_JSON: ${{ inputs.profile_export }}
+          # Must already be provisioned and independently reviewed; the helper
+          # refuses a missing binary or mismatched version/SHA before cloud IO.
+          # The stock hosted image is not claimed to contain this toolchain.
+          AXIOM_TERRAFORM_EXECUTABLE: /opt/axiom-reviewed/terraform
+        run: node scripts/terraform/customer-plan-producer.mjs
+      - name: Attest exact three subjects without publishing their values
+        uses: actions/attest-build-provenance@1c608d11d69870c2092266b3f9a6f3abbf17002c
+        with:
+          subject-path: |
+            ${{ runner.temp }}/axiom-customer-plan/plan.tfplan
+            ${{ runner.temp }}/axiom-customer-plan/plan.show.json
+            ${{ runner.temp }}/axiom-customer-plan/plan.receipt.json
+      - name: Remove only the owned plaintext tuple
+        if: always()
+        run: node --input-type=module -e 'import {rm} from "node:fs/promises"; import path from "node:path"; await rm(path.join(process.env.RUNNER_TEMP,"axiom-customer-plan"),{recursive:true,force:true});'
