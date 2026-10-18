@@ -4,6 +4,11 @@
 # - a reviewed Terraform executable at the fixed path below (no installer here);
 # - OIDC plan-role trust/provider read permissions and S3/DynamoDB backend writes;
 # - existing versioned private SSE-KMS artifact storage and attestation publication.
+# Slice1 accepts only bounded canonical .tf.json root files. backend.tf.json
+# must be exactly {"terraform":{"backend":{"s3":{}}}}; other terraform blocks
+# allow only required_version/required_providers. No .tf, tfvars, overrides,
+# symlinks, backend cache or modules. The approved-hash provider lock is the
+# sole .hcl exception. No conversion or permissive HCL fallback is provided.
 # CI init/plan acquires the normal backend lock. This is customer cloud activity,
 # unlike Axiom's observation role. Approval/apply authority is never produced.
 # The two pins are sourced from existing repository source/genuine OCI fixture;

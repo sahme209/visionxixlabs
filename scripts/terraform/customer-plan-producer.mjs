@@ -3,7 +3,7 @@
  * A reviewed executable and protected workflow must be provisioned separately. */
 import { execFileSync } from "node:child_process";
 import { createHash } from "node:crypto";
-import { lstat, mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
+import { lstat, mkdir, mkdtemp, readFile, rm, writeFile, realpath, readdir } from "node:fs/promises";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
 
@@ -16,6 +16,58 @@ const hex=v=>typeof v==="string"&&/^[a-f0-9]{64}$/.test(v);
 const safePath=v=>typeof v==="string"&&v.length<=512&&/^[A-Za-z0-9_.-]+(?:\/[A-Za-z0-9_.-]+)*$/.test(v)&&!v.split("/").some(s=>s==="."||s==="..");
 function exact(value,keys){requireValue(value&&typeof value==="object"&&!Array.isArray(value)&&Object.keys(value).length===keys.length&&keys.every(k=>Object.hasOwn(value,k)));return value;}
 async function privateFile(file,max){const stat=await lstat(file);requireValue(stat.isFile()&&!stat.isSymbolicLink()&&stat.size>0&&stat.size<=max);const bytes=await readFile(file);requireValue(bytes.length===stat.size);return bytes;}
+
+function plain(value){return value!==null&&typeof value==="object"&&!Array.isArray(value)&&Object.getPrototypeOf(value)===Object.prototype;}
+function closedJson(bytes){
+ const text=new TextDecoder("utf-8",{fatal:true}).decode(bytes),value=JSON.parse(text);
+ const pending=[{value,depth:0}];let nodes=0;
+ while(pending.length){
+  const {value:child,depth}=pending.pop();requireValue(++nodes<=10_000&&depth<=32);
+  if(child&&typeof child==="object"){
+   requireValue(Array.isArray(child)||plain(child));const entries=Object.entries(child);requireValue(entries.length<=1000);
+   for(const [key,value] of entries){requireValue(key.length<=256&&!["__proto__","constructor","prototype"].includes(key));pending.push({value,depth:depth+1});}
+  }
+ }
+ // Exact canonical bytes, not a regex HCL parser. Duplicate/escaped keys,
+ // comments and alternative representations cannot survive this round-trip.
+ requireValue(plain(value)&&Buffer.from(JSON.stringify(normalize(value)),"utf8").equals(bytes));return value;
+}
+/** Slice1 intentionally accepts ONLY canonical JSON Terraform configuration.
+ * Scan real filesystem entries (including ignored/untracked files), not only
+ * Git status. There is no HCL converter, parser or permissive init fallback. */
+async function inspectClosedRoot(checkout,root,lockDigest){
+ requireValue(await realpath(checkout)===path.resolve(checkout)&&root.startsWith(checkout+path.sep));
+ const ancestors=[checkout];let current=checkout;
+ for(const part of path.relative(checkout,root).split(path.sep)){current=path.join(current,part);ancestors.push(current);}
+ for(const directory of ancestors){
+  const stat=await lstat(directory);requireValue(stat.isDirectory()&&!stat.isSymbolicLink()&&await realpath(directory)===path.resolve(directory));
+  try{await lstat(path.join(directory,".terraform"));throw Error("customer_plan_producer_unavailable");}catch(error){requireValue(error?.code==="ENOENT");}
+ }
+ const entries=await readdir(root,{withFileTypes:true});requireValue(entries.length>0&&entries.length<=1000);
+ const names=entries.map(e=>e.name).sort(),records=new Map();let total=0;
+ for(const entry of entries){
+  const name=entry.name,lower=name.toLowerCase();requireValue(Buffer.byteLength(name)<=255&&!entry.isSymbolicLink());
+  if(name===".terraform.lock.hcl"){
+   const bytes=await privateFile(path.join(root,name),128*1024);requireValue(sha(bytes)===lockDigest);
+   const stat=await lstat(path.join(root,name));records.set(name,{sha:createHash("sha1").update(`blob ${bytes.length}\0`).update(bytes).digest("hex"),mode:stat.mode&0o111?"100755":"100644"});continue;
+  }
+  requireValue(!lower.startsWith(".terraform")&&!lower.includes(".tfstate")&&!/\.tf$|\.hcl$|\.tfvars(?:\.json)?$|(?:^|_)override\.tf\.json$/.test(lower));
+  if(!lower.endsWith(".tf.json"))continue;
+  requireValue(name.endsWith(".tf.json")&&!name.startsWith(".")&&safePath(name)&&entry.isFile());
+  const bytes=await privateFile(path.join(root,name),128*1024);requireValue((total+=bytes.length)<=1024*1024);const config=closedJson(bytes);
+  requireValue(Object.keys(config).every(k=>["terraform","provider","resource","data","variable","locals","output","check","moved","import","removed","module"].includes(k)));
+  if(name==="backend.tf.json")requireValue(bytes.toString("utf8")===JSON.stringify(normalize({terraform:{backend:{s3:{}}}})));
+  else if(Object.hasOwn(config,"terraform")){
+   requireValue(plain(config.terraform)&&Object.keys(config.terraform).every(k=>["required_version","required_providers"].includes(k)));
+   if(Object.hasOwn(config.terraform,"required_version"))requireValue(typeof config.terraform.required_version==="string"&&config.terraform.required_version.length<=256);
+   if(Object.hasOwn(config.terraform,"required_providers"))requireValue(plain(config.terraform.required_providers));
+  }
+  if(Object.hasOwn(config,"module"))requireValue(plain(config.module)&&Object.keys(config.module).length===0);
+  const stat=await lstat(path.join(root,name));records.set(name,{sha:createHash("sha1").update(`blob ${bytes.length}\0`).update(bytes).digest("hex"),mode:stat.mode&0o111?"100755":"100644"});
+ }
+ requireValue(records.has("backend.tf.json")&&records.has(".terraform.lock.hcl")&&JSON.stringify((await readdir(root)).sort())===JSON.stringify(names));
+ return records;
+}
 
 /** No work occurs on import. The CLI entry below uses only its fixed workflow
  * environment. Test composition replaces child_process/fetch, not verification. */
@@ -41,11 +93,17 @@ export async function produceCustomerPlan(environment){
    &&/^[1-9]\d{0,31}$/.test(env.GITHUB_RUN_ID)&&/^[1-9]\d{0,8}$/.test(env.GITHUB_RUN_ATTEMPT));
   const runId=env.GITHUB_RUN_ID,attempt=Number(env.GITHUB_RUN_ATTEMPT),started=Date.now();
   const checkout=env.GITHUB_WORKSPACE,temp=env.RUNNER_TEMP,executable=env.AXIOM_TERRAFORM_EXECUTABLE;
-  requireValue([checkout,temp,executable].every(v=>typeof v==="string"&&path.isAbsolute(v)&&v.length<=1024)&&temp!==checkout&&!temp.startsWith(checkout+path.sep));
+  requireValue([checkout,temp,executable].every(v=>typeof v==="string"&&path.isAbsolute(v)&&v.length<=1024&&path.resolve(v)===v)&&temp!==checkout&&!temp.startsWith(checkout+path.sep));
   requireValue(sha(await privateFile(executable,128*1024*1024))===toolchain.executableDigest);
   const child={PATH:"/usr/local/bin:/usr/bin:/bin",LANG:"C.UTF-8",AWS_REGION:b.region,AWS_DEFAULT_REGION:b.region,AWS_EC2_METADATA_DISABLED:"true",AWS_PAGER:"",AWS_MAX_ATTEMPTS:"1",AWS_CLI_AUTO_PROMPT:"off"};
   for(const name of ["HTTP_PROXY","HTTPS_PROXY","ALL_PROXY","NO_PROXY","http_proxy","https_proxy","all_proxy","no_proxy","NODE_EXTRA_CA_CERTS","AWS_CA_BUNDLE","REQUESTS_CA_BUNDLE","SSL_CERT_FILE","SSL_CERT_DIR"]){if(typeof env[name]==="string")child[name]=env[name];}
   privateRoot=await mkdtemp(path.join(temp,"axiom-plan-private-"));
+  // Omitting HOME alone does not prevent AWS tools from discovering a runner
+  // home through the OS account database. Pin all profile/config readers to
+  // one owned empty file; only this job's verified CI role credentials follow.
+  const emptyConfig=path.join(privateRoot,"empty-config");await writeFile(emptyConfig,"",{mode:0o600,flag:"wx"});
+  child.AWS_CONFIG_FILE=emptyConfig;child.AWS_SHARED_CREDENTIALS_FILE=emptyConfig;child.BOTO_CONFIG=emptyConfig;
+  child.GIT_CONFIG_NOSYSTEM="1";child.GIT_CONFIG_GLOBAL=emptyConfig;child.GIT_TERMINAL_PROMPT="0";
   child.TF_DATA_DIR=path.join(privateRoot,"terraform-data");child.TF_CLI_CONFIG_FILE=path.join(privateRoot,"terraform.rc");child.TF_IN_AUTOMATION="true";child.TF_INPUT="0";child.TF_WORKSPACE="default";
   await writeFile(child.TF_CLI_CONFIG_FILE,'disable_checkpoint = true\nprovider_installation {\n  direct {}\n}\n',{mode:0o600});
   const root=path.join(checkout,c.root),call=(file,args,{max=512*1024,timeout=60_000,cwd=root}={})=>{
@@ -54,6 +112,7 @@ export async function produceCustomerPlan(environment){
   const git=args=>call("/usr/bin/git",args,{cwd:checkout,max:2*1024*1024}).toString("utf8");
   const tf=(args,options={})=>call(executable,args,options);
   async function checkSource(){
+   const configs=await inspectClosedRoot(checkout,root,c.providerLockDigest);
    requireValue(git(["rev-parse","HEAD"]).trim()===r.sourceSha&&git(["status","--porcelain","--untracked-files=all"])==="");
    requireValue(sha(await privateFile(path.join(checkout,w.workflowPath),128*1024))===w.workflowDigest&&sha(await privateFile(path.join(checkout,w.scriptPath),128*1024))===w.scriptDigest
     &&sha(await privateFile(path.join(root,".terraform.lock.hcl"),128*1024))===c.providerLockDigest&&sha(await privateFile(executable,128*1024*1024))===toolchain.executableDigest);
@@ -63,9 +122,10 @@ export async function produceCustomerPlan(environment){
     const match=/^(100644|100755) blob ([a-f0-9]{40})\t(.+)$/.exec(entry);requireValue(match&&match[3].startsWith(c.root+"/"));
     const relative=match[3].slice(c.root.length+1);requireValue(safePath(relative)&&!relative.startsWith(".terraform/"));
     const bytes=await privateFile(path.join(checkout,match[3]),STATE_MAX);requireValue((total+=bytes.length)<=STATE_MAX&&createHash("sha1").update(`blob ${bytes.length}\0`).update(bytes).digest("hex")===match[2]);
+    if(configs.has(relative)){const config=configs.get(relative);requireValue(config.sha===match[2]&&config.mode===match[1]);configs.delete(relative);}
     tree.push({path:relative,mode:match[1],sha:match[2]});
    }
-   tree.sort((a,b)=>a.path<b.path?-1:a.path>b.path?1:0);requireValue(hash(tree)===c.treeDigest);
+   tree.sort((a,b)=>a.path<b.path?-1:a.path>b.path?1:0);requireValue(configs.size===0&&hash(tree)===c.treeDigest);
   }
   await checkSource();
   requireValue(JSON.parse(tf(["version","-json"]).toString("utf8")).terraform_version===toolchain.version);
@@ -104,6 +164,9 @@ export async function produceCustomerPlan(environment){
   }
   function unlocked(){const lock=aws("dynamodb","get-item",["--table-name",b.lockTable,"--key",JSON.stringify({LockID:{S:b.lockKey}}),"--consistent-read"]);requireValue(lock.Item===undefined);}
   unlocked();const stateBefore=await readState();
+  // Revalidate the actual closed root and immutable tracked bytes immediately
+  // before credentials can reach init. Retain the post-init checks below.
+  await checkSource();
   tf(["init","-input=false","-no-color","-lockfile=readonly",`-backend-config=bucket=${b.bucket}`,`-backend-config=key=${b.key}`,`-backend-config=region=${b.region}`,`-backend-config=dynamodb_table=${b.lockTable}`,"-backend-config=encrypt=true",`-backend-config=allowed_account_ids=[\"${b.accountId}\"]`],{timeout:180_000});
   // Provider lock pins providers only. Init may download modules, so refuse ALL
   // non-root entries before planning; remote/local modules are outside slice1.
