@@ -1,3 +1,5 @@
+import { denyIsolatedExternalIO } from "@/lib/billing/isolatedApplication/runtime";
+import { claimNewTestBillableDispatch } from "@/lib/billing/newTestSubscription/usageAllocationIO";
 import { withIsolatedWorkspaceScope } from "@/lib/billing/isolatedApplication/scope";
 /**
  * POST /api/ai/generate
@@ -20,7 +22,7 @@ import { isAIProviderName, type AIProviderName } from "@/lib/ai/AIProvider";
 import { isKnownModel } from "@/lib/ai/AIModelRegistry";
 import { loadWorkspaceAIProviderPolicyWithState, resolveWorkspaceAIProviderPolicy } from "@/lib/ai/workspaceProviderPolicy";
 import { checkWorkspaceAICredits } from "@/lib/billing/checkWorkspaceAICredits";
-import { recordAIUsageEvent } from "@/lib/billing/recordAIUsageEvent";
+import { recordAIUsageEvent, recordReservedAIUsageEventV2 } from "@/lib/billing/recordAIUsageEvent";
 import { attachAICreditReservationUsage, releaseAICreditReservation, reserveAICredits, settleAICreditReservation } from "@/lib/billing/aiCreditReservation";
 import { prisma } from "@/lib/db";
 import { apiOk, apiErr, asApiSourceMode, resolveCorrelationId } from "@/lib/api";
@@ -147,6 +149,12 @@ async function handlePost(req: NextRequest, ctx: Awaited<ReturnType<typeof curre
     }
     let result;
     try {
+      // Local TEST provider denial is checked before a durable dispatch claim.
+      denyIsolatedExternalIO();
+      if (reservation.allocationPolicy === "axiom_test_anniversary_v2") {
+        const claimed = await prisma.$transaction(tx => claimNewTestBillableDispatch(tx, { organizationId, userId: ctx.userId! }, reservation.reservation.id), { isolationLevel: "Serializable" });
+        if (!claimed) throw new Error("ai_dispatch_claim_unavailable");
+      }
       result = await mgr.generateText(body.prompt, {
       system: body.system,
       maxTokens: typeof body.maxTokens === "number" ? body.maxTokens : undefined,
@@ -166,6 +174,8 @@ async function handlePost(req: NextRequest, ctx: Awaited<ReturnType<typeof curre
     // Persist only provider-reported usage. Prompts, system instructions,
     // credentials, and provider account data never enter the usage event.
     if (result.usage) {
+      if (reservation.allocationPolicy === "axiom_test_anniversary_v2" && result.provider !== "vercel_gateway"
+        && ![result.usage.promptTokens, result.usage.completionTokens].every(n => typeof n === "number" && Number.isSafeInteger(n) && n >= 0)) throw new Error("ai_usage_meter_unavailable");
       const usageInput = {
         organizationId: ctx.organizationId,
         provider: result.provider,
@@ -177,42 +187,47 @@ async function handlePost(req: NextRequest, ctx: Awaited<ReturnType<typeof curre
         correlationId,
         metadata: { route: "api/ai/generate" },
       };
-      let usageWrite;
-      let gatewayUsageAttached = false;
-      if (result.provider === "vercel_gateway") {
-        try {
-          usageWrite = await prisma.$transaction(async (tx) => {
-            const pendingUsage = await recordAIUsageEvent(usageInput, tx);
-            if (!pendingUsage.recorded || pendingUsage.cost) return pendingUsage;
-            if (!pendingUsage.usageEventId || !await attachAICreditReservationUsage(tx, organizationId, reservation.reservation.id, pendingUsage.usageEventId)) {
-              // Throwing rolls back the just-created pending UsageEvent as
-              // well as any attachment, leaving the original hold releasable.
-              throw new Error("ai_usage_reservation_attach_failed");
-            }
-            return pendingUsage;
-          });
-          gatewayUsageAttached = usageWrite.recorded && !usageWrite.cost;
-        } catch (error) {
-          await releaseAICreditReservation(prisma, ctx.organizationId, reservation.reservation.id);
-          throw error;
-        }
+      if (reservation.allocationPolicy === "axiom_test_anniversary_v2") {
+        const attributed = await recordReservedAIUsageEventV2(usageInput, reservation.reservation.id);
+        if (!attributed.recorded) throw new Error("ai_usage_meter_unavailable");
       } else {
-        usageWrite = await recordAIUsageEvent(usageInput);
-      }
-      if (!usageWrite.recorded) {
-        await releaseAICreditReservation(prisma, ctx.organizationId, reservation.reservation.id);
-        throw new Error("ai_usage_meter_unavailable");
-      }
-      // Gateway settlement is authoritative but asynchronous. Keep the hold
-      // active until that reconciler supplies a real cost; direct-provider
-      // calls settle immediately against their measured amount.
-      if (usageWrite.cost && !await settleAICreditReservation(prisma, ctx.organizationId, reservation.reservation.id, usageWrite.cost.totalCents, usageWrite.usageEventId)) {
-        await releaseAICreditReservation(prisma, ctx.organizationId, reservation.reservation.id);
-        throw new Error("ai_usage_meter_unavailable");
-      }
-      if (!usageWrite.cost && !gatewayUsageAttached && !await attachAICreditReservationUsage(prisma, ctx.organizationId, reservation.reservation.id, usageWrite.usageEventId!)) {
-        await releaseAICreditReservation(prisma, ctx.organizationId, reservation.reservation.id);
-        throw new Error("ai_usage_meter_unavailable");
+        let usageWrite;
+        let gatewayUsageAttached = false;
+        if (result.provider === "vercel_gateway") {
+          try {
+            usageWrite = await prisma.$transaction(async (tx) => {
+              const pendingUsage = await recordAIUsageEvent(usageInput, tx);
+              if (!pendingUsage.recorded || pendingUsage.cost) return pendingUsage;
+              if (!pendingUsage.usageEventId || !await attachAICreditReservationUsage(tx, organizationId, reservation.reservation.id, pendingUsage.usageEventId)) {
+                // Throwing rolls back the just-created pending UsageEvent as
+                // well as any attachment, leaving the original hold releasable.
+                throw new Error("ai_usage_reservation_attach_failed");
+              }
+              return pendingUsage;
+            });
+            gatewayUsageAttached = usageWrite.recorded && !usageWrite.cost;
+          } catch (error) {
+            await releaseAICreditReservation(prisma, ctx.organizationId, reservation.reservation.id);
+            throw error;
+          }
+        } else {
+          usageWrite = await recordAIUsageEvent(usageInput);
+        }
+        if (!usageWrite.recorded) {
+          await releaseAICreditReservation(prisma, ctx.organizationId, reservation.reservation.id);
+          throw new Error("ai_usage_meter_unavailable");
+        }
+        // Gateway settlement is authoritative but asynchronous. Keep the hold
+        // active until that reconciler supplies a real cost; direct-provider
+        // calls settle immediately against their measured amount.
+        if (usageWrite.cost && !await settleAICreditReservation(prisma, ctx.organizationId, reservation.reservation.id, usageWrite.cost.totalCents, usageWrite.usageEventId)) {
+          await releaseAICreditReservation(prisma, ctx.organizationId, reservation.reservation.id);
+          throw new Error("ai_usage_meter_unavailable");
+        }
+        if (!usageWrite.cost && !gatewayUsageAttached && !await attachAICreditReservationUsage(prisma, ctx.organizationId, reservation.reservation.id, usageWrite.usageEventId!)) {
+          await releaseAICreditReservation(prisma, ctx.organizationId, reservation.reservation.id);
+          throw new Error("ai_usage_meter_unavailable");
+        }
       }
     } else {
       await releaseAICreditReservation(prisma, ctx.organizationId, reservation.reservation.id);

@@ -1,3 +1,4 @@
+import { newTestAllocationPricingPlan } from "./allocationPlan";
 import "server-only";
 import type { Prisma } from "@prisma/client";
 import { randomUUID } from "node:crypto";
@@ -9,6 +10,7 @@ type Guard = { revision: number; org: string; runtimeId: string; accountId: stri
 const guards = new WeakMap<PricingPlan, Guard>();
 export const newTestPlanGuard = (plan: PricingPlan | undefined) => plan ? guards.get(plan) : undefined;
 export async function newTestPricingPlan(tx: Prisma.TransactionClient, verified: NonNullable<Awaited<ReturnType<typeof readVerifiedNewTestContract>>>): Promise<PricingPlan> {
+  if (verified.allowance) return newTestAllocationPricingPlan(tx, verified.contract, verified, verified.allowance);
   const clock = await tx.$queryRawUnsafe<Array<{ now: Date }>>('SELECT clock_timestamp() AS now');
   if (!(clock[0]?.now instanceof Date)) throw new Error("paid_coverage_unavailable");
   const { contract, intent, coverage } = verified;

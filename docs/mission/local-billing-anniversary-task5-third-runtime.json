@@ -1,0 +1,300 @@
+{
+  "schemaVersion": 1,
+  "kind": "partial_owned_runtime_receipt_not_full_acceptance",
+  "sourceCommit": "9b60227c2a82a63214d21ec7195d3cbc3ae3ada8",
+  "sourceCleanBeforeAfter": true,
+  "sourceHashBinding": {
+    "productFiles": [
+      {
+        "path": "app/api/ai/generate/route.ts",
+        "sha256": "765eeb50e995e6b6c896231a0f518d4c3779fcc53204c50bc519144f62d31569",
+        "unchangedFromProductBase": true
+      },
+      {
+        "path": "lib/billing/aiCreditReservation.ts",
+        "sha256": "5107e0c7039aa66d08117985507549a681df3ee39a987c6c5f053fb5f9cbf69c",
+        "unchangedFromProductBase": true
+      },
+      {
+        "path": "lib/billing/currentAIAllowance.ts",
+        "sha256": "770cea486a3a39aee2fd5d51dfdc7274d4fd93af42f7321193a2ba9796ce333a",
+        "unchangedFromProductBase": true
+      },
+      {
+        "path": "lib/billing/isolatedApplication/plan.ts",
+        "sha256": "643f5afd9b7971c5f6a23446fda981a021804028e5f9fb2d8d675be4163efdf1",
+        "unchangedFromProductBase": true
+      },
+      {
+        "path": "lib/billing/newTestSubscription/allocationPlan.ts",
+        "sha256": "bbf78b1e9b0f5684086dbd3a7a717af502025ef44916c75edf445ee87e3a207d",
+        "unchangedFromProductBase": false,
+        "authorizedDifference": "Use existing complete predicate in actual lock statement; all16 args and later postlock/final fences unchanged.",
+        "productBaseSha256": "6d63702a2bbfdbfa5d07a5431ab636ab6a375bb1373a11dff3aa0fcb78325897"
+      },
+      {
+        "path": "lib/billing/newTestSubscription/allocationV2.ts",
+        "sha256": "07483577291e15d7b23eb505baa7e1653d13b76e618bfb1646040d3a5a730a2d",
+        "unchangedFromProductBase": true
+      },
+      {
+        "path": "lib/billing/newTestSubscription/anniversaryWindow.ts",
+        "sha256": "9996a150880c2f91e1618f81382362a99132f991f7d398880eb0e6ded431b298",
+        "unchangedFromProductBase": true
+      },
+      {
+        "path": "lib/billing/newTestSubscription/fixtureAllocation.ts",
+        "sha256": "226a04f6431bf0cc748a5026d808161aeabb2b0158b3a9540d40909c22d78c74",
+        "unchangedFromProductBase": false,
+        "productBaseSha256": "4b00376e5a20ba6a13820e34a04c1c52fd7777d3aa01d40719527ac8b9136a53",
+        "authorizedDifference": "Parenthesize existing SQL CASE expression in fixture DDL; no predicate/amount/raise/trigger change."
+      },
+      {
+        "path": "lib/billing/newTestSubscription/fixtureUsageGuards.ts",
+        "sha256": "d52e698765f732bac7812453451fced9e257411d3020db53e4699188e2def5b5",
+        "unchangedFromProductBase": true
+      },
+      {
+        "path": "lib/billing/newTestSubscription/paidCoverage.ts",
+        "sha256": "a19ae9ba35aa7de6a4dd7d96137a27c6f73451c1396c3c48049f1905795807a9",
+        "unchangedFromProductBase": true
+      },
+      {
+        "path": "lib/billing/newTestSubscription/paidPlan.ts",
+        "sha256": "e6cb89868ca3ce0eaf6198da3e6426cb84e3295327f580392aa1da9133288d83",
+        "unchangedFromProductBase": true
+      },
+      {
+        "path": "lib/billing/newTestSubscription/postgresFixtureStore.ts",
+        "sha256": "ad3425428f9b41598dfd9add76963a80c6311a25f1f65387811f2ef874568ebb",
+        "unchangedFromProductBase": true
+      },
+      {
+        "path": "lib/billing/newTestSubscription/service.ts",
+        "sha256": "da116e4690c17319eb811903de2381fdda9685a5d7a49efcea49fdb7236ed354",
+        "unchangedFromProductBase": true
+      },
+      {
+        "path": "lib/billing/newTestSubscription/stripePaidCoverage.ts",
+        "sha256": "8385ddaaf42f5d42e8f15a78e4f7084a611217a53f998f414a08bb7664908193",
+        "unchangedFromProductBase": true
+      },
+      {
+        "path": "lib/billing/newTestSubscription/stripeTestProvider.ts",
+        "sha256": "7081360821a265f72c1520b1e4259317b6974f9d6a51eb873ca27e3566a9cbdd",
+        "unchangedFromProductBase": true
+      },
+      {
+        "path": "lib/billing/newTestSubscription/usageAllocationIO.ts",
+        "sha256": "aa8a93877533d73ab3369c56b6ad2ba3447319ce10fe5abbd067b7bcddfa8928",
+        "unchangedFromProductBase": true
+      },
+      {
+        "path": "lib/billing/newTestSubscription/verifiedContract.ts",
+        "sha256": "f9238dff5852cf45945a8319aa2e1cb00e0d5011923d6bf6b820915c43a08675",
+        "unchangedFromProductBase": true
+      },
+      {
+        "path": "lib/billing/planRegistry.ts",
+        "sha256": "cbf68c8187937e358314506fec8b30a7c1dfff43073b9def6bc1211abe6c8171",
+        "unchangedFromProductBase": true
+      },
+      {
+        "path": "lib/billing/reconcileGatewayUsage.ts",
+        "sha256": "65efff13fdf74685a843489f85361d75ebce21944a1071be1c2f5244eacb4568",
+        "unchangedFromProductBase": true
+      },
+      {
+        "path": "lib/billing/recordAIUsageEvent.ts",
+        "sha256": "a70f6c3969a90a0af967f6e991495799bd4dbba0562740d1d53a9edb6b12549a",
+        "unchangedFromProductBase": true
+      },
+      {
+        "path": "lib/demo/demoScenarios.ts",
+        "sha256": "7673c06c13d14fa54bf3cbfb15e1569763915be733f808a1a463987113045e1a",
+        "unchangedFromProductBase": true
+      }
+    ],
+    "protectedFiles": [
+      {
+        "path": "prisma/schema.prisma",
+        "sha256": "3abed3e94c18cd2554f18b847d27ab505e3e8fa9fde968a0a7c72fdb6e787c9c",
+        "unchangedFromProductBase": true
+      },
+      {
+        "path": "package-lock.json",
+        "sha256": "4923306fbdd3e436cbb2466d611716d94133797e64fb29298e4a36298c9a2049",
+        "unchangedFromProductBase": true
+      },
+      {
+        "path": "lib/billing/aiCreditFulfillment.ts",
+        "sha256": "e2ea638f918f26e17f7a308ec421f517c0cc840764c4b648b38b783e10ebeb36",
+        "unchangedFromProductBase": true
+      },
+      {
+        "path": "lib/billing/isolatedApplication/runtime.ts",
+        "sha256": "57496e9ecf84351a32211450f7d19ec062779bec9c328d1cbdeee9b1bf4a59a8",
+        "unchangedFromProductBase": true
+      },
+      {
+        "path": "lib/billing/isolatedApplication/scope.ts",
+        "sha256": "bb27edac701bfb9c7812a77aeb17266b1effa7c95ab472f0b70c5d4d2a72d539",
+        "unchangedFromProductBase": true
+      },
+      {
+        "path": "app/api/billing/checkout-session/route.ts",
+        "sha256": "43f7a66dc68bf6cf1584473110aa85f9aeac5587bdb3c793265bd02f7ea68674",
+        "unchangedFromProductBase": true
+      },
+      {
+        "path": "app/api/billing/stripe-webhook/route.ts",
+        "sha256": "fc0832c7df1659cbe01e72386bad207d766e55406ac000a5cfeed567ffe7052b",
+        "unchangedFromProductBase": true
+      }
+    ],
+    "fixtureFiles": [
+      {
+        "path": "lib/billing/__tests__/fixtures/newTestAnniversaryFixture.ts",
+        "sha256": "376b82d82cde877154c338817a328890449ccb9686c4bca6d8eea4cdf4b259ed"
+      },
+      {
+        "path": "lib/billing/__tests__/fixtures/newTestAnniversaryAcceptance.ts",
+        "sha256": "8c430bab247fc769ef733cb26e3acda2b65a9f74978d6e0b718f5612b9abcecc"
+      },
+      {
+        "path": "lib/billing/__tests__/fixtures/newTestAnniversaryHttp.ts",
+        "sha256": "b9de0c22ba1c3abfe37d3172afb4b37163d728ef8ee7eb110c69815be4e4c68b"
+      },
+      {
+        "path": "lib/billing/__tests__/fixtures/newTestChildEnvironment.ts",
+        "sha256": "3bec9efa59f74176884354ed133307df37c374b923b266d95a83c512e9ac82b0"
+      },
+      {
+        "path": "lib/billing/__tests__/newTestChildEnvironment.test.ts",
+        "sha256": "4b2b6425a3d82a0e37fa1306d5e7a85572b9501c88f9d2c4df2617df7ccc5fb2"
+      },
+      {
+        "path": "lib/billing/__tests__/newTestSubscriptionService.postgres.test.ts",
+        "sha256": "f5198ea494b6960da561262340fc82311acca09e03258ad5a5f39a61500c524a"
+      },
+      {
+        "path": "lib/billing/__tests__/anniversaryWindow.test.ts",
+        "sha256": "7422745db63ea370d6f92dc29100262fa28d1497278a60553d0e64baf50024ff"
+      },
+      {
+        "path": "lib/billing/__tests__/newTestAllocationStore.test.ts",
+        "sha256": "5224d86264aea09ab07527eb5d1a2594d0a9ad03ad243493da43b2ceea3f4c99"
+      },
+      {
+        "path": "lib/billing/__tests__/newTestAllocationAdmission.test.ts",
+        "sha256": "e92468966898e07afc392a1c20f22e7c94548acab91b145f8fba918935e3b93e"
+      }
+    ]
+  },
+  "invocation": {
+    "path": "/tmp/axiom-anniversary-task5-9b6-run.py",
+    "sha256": "61e947e25926c807da95fd7b8c2159629c8025cc37c6c15b5b1937df69b89419"
+  },
+  "compiler": {
+    "sourceCommit": "9b60227c2a82a63214d21ec7195d3cbc3ae3ada8",
+    "startedUtc": "2026-10-18T06:03:13Z",
+    "heapMiB": 8192,
+    "incremental": false,
+    "exit": 0,
+    "elapsedSeconds": 53.63,
+    "log": {
+      "path": "/tmp/axiom-anniversary-task5-9b6-types.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "exitObservation": "Owner-observed runner subprocess return via execution tool; successful compiler log is empty."
+  },
+  "ownedAttempt": {
+    "sourceCommit": "9b60227c2a82a63214d21ec7195d3cbc3ae3ada8",
+    "startedUtc": "2026-10-18T06:04:42Z",
+    "attemptsOnSource": 1,
+    "runnerExit": 1,
+    "runnerElapsedSeconds": 36.81,
+    "vitestDurationSeconds": 36.24,
+    "registeredCases": 27,
+    "passedCases": 8,
+    "failedCases": 1,
+    "notRunCases": 18,
+    "notRunQualification": "27 registered minus8passed minus1failed; bail1 stopped remaining cases.",
+    "passedCaseLabels": [
+      "binds captured original collection once, protects financial/tenant state and models monthly remaining pool 444ms",
+      "fences concurrent provider snapshots with opaque local token equality, not event ordering 87ms",
+      "actual separate-client Serializable purchase race retains only one unresolved organization intent 75ms",
+      "original response proof captures once in real intent CAS and cannot be rewritten 72ms",
+      "inactive SDK lifecycle preserves immutable origin and financial evidence through actual durable PG consumer 1185ms",
+      "response loss retains unknown intent and cannot bind even a synthetic paid observation 99ms",
+      "missing new provenance fails closed only for explicit lane; legacy reservation remains independent 22ms",
+      "actual local Next HTTP authenticates, reads versioned allowance, denies unsupported operations and releases provider-disabled hold 25951ms"
+    ],
+    "failedCase": "V2 real SQL parses read/reserve/claim with empty and purchase selections (monthly)",
+    "observedError": "gateway_usage_already_settled",
+    "failureQualification": "Singleton error stack points to module allocation, not per-call stage. Source/control-flow diagnosis identifies the repeated composer call; no new instrumented replay was run.",
+    "log": {
+      "path": "/tmp/axiom-anniversary-task5-9b6-owned.log",
+      "sha256": "76cea08ecc19bb2f4a8616b36a4ea22ee82fd8f9286c8a9b50e86864074bfdaa"
+    },
+    "actualNextChildLog": {
+      "path": "/tmp/axiom-anniversary-task5-9b6-next-http.log",
+      "sha256": "9bea56d6f92ce313672429d5d830110920fe52467788dd6069b058b7f136e7bf"
+    },
+    "actualNextHttpCasePassed": true,
+    "v2HttpAssertionsSourceBound": [
+      "known-org credentials session reads Free2",
+      "provider denial before dispatch claim releases only still-reserved hold and creates no usage",
+      "parent synthetic collection changes pool35 and remaining34",
+      "original purchased Free hold late80 leaves current34.20 and immutable attribution",
+      "active open invoice unavailable/no newhold",
+      "same-window synthetic collected recovery34.20 without reset",
+      "inactive permission denies oldpaid included newclaim, purchase420 preserved",
+      "public Checkout/webhook/cron remain503"
+    ],
+    "providerFixtureQualification": "Parent SDK/current-retrieval/consumer/cost facts synthetic; actual child HTTP reads/admission use owned database and absolute provider denial. No HTTP webhook or hosted payment.",
+    "unknownTtlInitializationPassed": true,
+    "genuineFiveMinuteTtlWaitReached": false,
+    "all27Acceptance": false,
+    "providerCalls": false
+  },
+  "cleanup": {
+    "observation": "Owner-observed after awaited harness cleanup and before window release, local Docker/process/font checks only.",
+    "matchingOwnedContainerPrefixAfterRun": 0,
+    "ownedNextNodeProcessesByExactCwd": 0,
+    "fontTemporaryDirectoriesAfterRun": 0,
+    "cleanupFailureReported": false,
+    "sourceStillClean": true,
+    "windowReleased": true
+  },
+  "sourceDiagnosis": {
+    "lowerBoundary": "usageAllocationIO.ts111-126: exact replay validates every sealed field then returns already_settled without writes",
+    "composer": "reconcileGatewayUsage.ts125-126: converts already_settled to private singleton",
+    "outerConsumer": "reconcileGatewayUsage.ts103-104: exact singleton skips duplicate settlement count",
+    "badFixtureExpectation": "newTestAnniversaryAcceptance.ts35 awaits second composer call as ordinary successfulvoid",
+    "minimalProposal": "TEST-only assert closed composer sentinel/nonmutation; separately exercise actual lower settled replay and per-field contradictions/nonmutation with fixed synthetic generation facts. No product/guard change."
+  },
+  "historicalReceipts": [
+    {
+      "path": "docs/mission/local-billing-anniversary-task5-first-runtime.json",
+      "sha256": "15cccd863d0dd664cf7b6f1dc2f175ea7179d1eba764f5de238254ac42a2cd34"
+    },
+    {
+      "path": "docs/mission/local-billing-anniversary-task5-second-runtime.json",
+      "sha256": "0488f23581b34c5d5de53000d213ed161eca8cab710b60724f0ea33f9c1b9137"
+    }
+  ],
+  "pending": [
+    "Root review of fixture replay proposal",
+    "source correction and independent closure",
+    "new separately coordinated actual owned27case attempt",
+    "full coordinated gates"
+  ],
+  "unproved": [
+    "all27 acceptance",
+    "genuine5min unknown expiry",
+    "remaining owned constraint/rollback/member/refund cases",
+    "natural anniversary/UTC-month lock race",
+    "hosted payment/actualprovider/native/production/public activation"
+  ]
+}

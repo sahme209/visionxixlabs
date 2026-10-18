@@ -1,3 +1,5 @@
+import { originalCreateProofDigest } from "./fixtureAllocation";
+import { ANNIVERSARY_POLICY_V2 } from "./anniversaryWindow";
 import "server-only";
 import Stripe from "stripe";
 import { denyIsolatedExternalIO } from "../isolatedApplication/runtime";
@@ -101,6 +103,9 @@ export function createStripeTestProvider(options: {
       const i = await store.transaction(tx => tx.intent(intentId));
       const proof = i?.originalCreateProof;
       if (!intentValid(i) || !hasOriginalCreateProof(i) || !proof || organizationId && i.organizationId !== organizationId) fail("attempt_provenance_unavailable");
+      const allowance = i.allowanceV2 ? await store.transaction(tx => tx.allowance?.(i.organizationId) ?? Promise.resolve(null)) : null;
+      if (i.allowanceV2 && (!allowance || i.allowanceV2.policy !== ANNIVERSARY_POLICY_V2 || allowance.enrollment.digest !== i.allowanceV2.enrollmentDigest)) fail("allowance_provenance_unavailable");
+      const policyMetadata = (metadata: Stripe.Metadata | null | undefined) => !i.allowanceV2 || metadata?.allowancePolicy === ANNIVERSARY_POLICY_V2 && metadata?.allowanceEnrollmentDigest === i.allowanceV2.enrollmentDigest;
       let session: Stripe.Checkout.Session | null = null;
       const bound = lifecycle || collectionEvent || i.state === "bound" ? await store.transaction(tx => tx.contract(i.organizationId)) : null;
       if (bound || lifecycle || collectionEvent) {
@@ -114,7 +119,7 @@ export function createStripeTestProvider(options: {
       if (!lifecycle && !collectionEvent) {
         if (hint.id !== i.sessionId) fail("attempt_provenance_unavailable");
         session = await read(timeout => stripe.checkout.sessions.retrieve(i.sessionId!, { expand: ["line_items"] }, stripeDeadlineOptions(timeout)));
-        if (session.livemode !== false || session.mode !== "subscription" || session.id !== proof.sessionId || session.metadata?.intentId !== i.id
+        if (!policyMetadata(session.metadata) || session.livemode !== false || session.mode !== "subscription" || session.id !== proof.sessionId || session.metadata?.intentId !== i.id
           || session.metadata?.organizationId !== i.organizationId || session.metadata?.catalogVersion !== NEW_TEST_CATALOG_VERSION
           || typeof session.customer !== "string" || typeof session.subscription !== "string" || session.status !== "complete" || session.payment_status !== "paid"
           || !session.line_items || session.line_items.has_more !== false || session.line_items.data.length !== 1
@@ -136,7 +141,7 @@ export function createStripeTestProvider(options: {
         if (!reference || reference !== expected && !linkedInvoice && !knownOriginal || h.livemode !== false || h.customer && h.customer !== customerId) fail("signed_binding_mismatch");
       }
       const item = sub.items.data[0];
-      const supported = sub.items.has_more === false && sub.items.data.length === 1 && item
+      const supported = policyMetadata(sub.metadata) && (!allowance?.paidBasis || sub.billing_cycle_anchor === Date.parse(allowance.paidBasis.anchor) / 1000 && sub.start_date === Date.parse(allowance.paidBasis.anchor) / 1000) && sub.items.has_more === false && sub.items.data.length === 1 && item
         && sub.metadata.planId === i.terms.planId && sub.metadata.billingInterval === i.terms.interval && item.price.id === i.terms.priceId
         && item.quantity === i.terms.seatQuantity && (!bound || item.quantity === bound.seatQuantity)
         && item.price.recurring && item.price.unit_amount !== null && matchNewTestTerms({ planId: i.terms.planId, interval: i.terms.interval,
@@ -153,7 +158,8 @@ export function createStripeTestProvider(options: {
       if (configuredPrices[`${i.terms.planId}:${i.terms.interval}`] !== p.id || typeof p.product === "string" || p.product.deleted || !p.product.active || p.product.livemode !== false || !p.recurring || p.unit_amount === null || matchNewTestTerms({ planId: i.terms.planId, interval: i.terms.interval, seatQuantity: item.quantity!, configuredPriceId: i.terms.priceId, price: { ...p, unit_amount: p.unit_amount, recurring: p.recurring } }).kind !== "supported_terms") fail("signed_terms_mismatch");
       if ((typeof item.price.product === "string" ? item.price.product : item.price.product.id) !== p.product.id) fail("signed_terms_mismatch");
       const identity = paidIdentity({ livemode: false, organizationId: i.organizationId, originatingIntentId: i.id, runtimeId, accountId: expectedAccountId, sessionId: i.sessionId!, customerId, subscriptionId, planId: i.terms.planId, catalogVersion: NEW_TEST_CATALOG_VERSION, seatQuantity: item.quantity!, status: observation.status, eventToken: event.id }, i);
-      const coverage = await retrieveCollectedCoverage(stripe, identity, sub, read);
+      const anniversary = i.allowanceV2 ? { policy: ANNIVERSARY_POLICY_V2, enrollmentDigest: i.allowanceV2.enrollmentDigest, originalAnchor: allowance?.paidBasis?.anchor ?? new Date(sub.billing_cycle_anchor * 1000).toISOString(), originalCreateProofDigest: originalCreateProofDigest(i) } : undefined;
+      const coverage = await retrieveCollectedCoverage(stripe, identity, sub, read, anniversary);
       if (session && (typeof session.invoice === "string" ? session.invoice : session.invoice?.id) !== coverage.latestInvoiceId) fail("collection_identity_mismatch");
       const finalSub = await read(timeout => stripe.subscriptions.retrieve(subscriptionId, {}, stripeDeadlineOptions(timeout)));
       if (JSON.stringify(sub) !== JSON.stringify(finalSub)) fail("collection_snapshot_changed");
