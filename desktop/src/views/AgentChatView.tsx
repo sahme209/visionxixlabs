@@ -186,9 +186,18 @@ function AgentChatSession({ onOpenSettings }: { onOpenSettings?: (destination: A
   const [decidingId, setDecidingId] = useState<string | null>(null);
   const [composerMode, setComposerMode] = useState<"chat" | "code">("chat");
   const [operationMode, setOperationMode] = useState<"inspect" | "engineer" | "deepops">("engineer");
-  const [repositoryFullName, setRepositoryFullName] = useState(() => window.localStorage.getItem(ACTIVE_REPOSITORY_KEY) ?? "");
+  const [savedContext] = useState(() => ({ repository: window.localStorage.getItem(ACTIVE_REPOSITORY_KEY) ?? "", environment: window.localStorage.getItem(ACTIVE_ENVIRONMENT_KEY) ?? "" }));
+  const preferredRepository = useRef(savedContext.repository);
+  const preferredEnvironment = useRef(savedContext.environment);
+  const retryBranch = useRef<{ repository: string; branch: string; manual: boolean } | null>(null);
+  const manualRepositoryRef = useRef(false);
+  const [repositoryFullName, setRepositoryFullName] = useState("");
+  const [repositorySearch, setRepositorySearch] = useState("");
+  const [environmentSearch, setEnvironmentSearch] = useState("");
+  const [catalogAttempt, setCatalogAttempt] = useState(0);
   const [manualRepository, setManualRepository] = useState(false);
   const [repositoryOptions, setRepositoryOptions] = useState<GitHubRepositoryOption[]>([]);
+  const [repositoriesTruncated, setRepositoriesTruncated] = useState(false);
   const [branch, setBranch] = useState("main");
   const [manualBranch, setManualBranch] = useState(false);
   const [branchOptions, setBranchOptions] = useState<GitHubBranchOption[]>([]);
@@ -204,7 +213,7 @@ function AgentChatSession({ onOpenSettings }: { onOpenSettings?: (destination: A
   const [fileCatalogLoading, setFileCatalogLoading] = useState(false);
   const [fileCatalogTruncated, setFileCatalogTruncated] = useState(false);
   const [fileCatalogError, setFileCatalogError] = useState<string | null>(null);
-  const [environmentId, setEnvironmentId] = useState(() => window.localStorage.getItem(ACTIVE_ENVIRONMENT_KEY) ?? "");
+  const [environmentId, setEnvironmentId] = useState("");
   const [environmentOptions, setEnvironmentOptions] = useState<EnvironmentOption[]>([]);
   const [selectedProvider, setSelectedProvider] = useState("");
   const [modelOptions, setModelOptions] = useState<Array<{ provider: string; label: string }>>([]);
@@ -327,29 +336,39 @@ function AgentChatSession({ onOpenSettings }: { onOpenSettings?: (destination: A
       if (!owned()) return;
       if (!result.ok) { setRepositoryError("GitHub repositories could not be loaded"); return; }
       setRepositoryOptions(result.data.repositories);
-      const preferred = result.data.repositories.find((repository) => repository.fullName === window.localStorage.getItem(ACTIVE_REPOSITORY_KEY));
+      setRepositoriesTruncated(result.data.truncated === true);
+      const preferred = result.data.repositories.find((repository) => repository.fullName === preferredRepository.current);
       const selected = preferred ?? result.data.repositories[0];
-      setRepositoryFullName(selected?.fullName ?? "");
-      setBranch(selected?.defaultBranch ?? "main");
+      if (!manualRepositoryRef.current) {
+        setRepositoryFullName(selected?.fullName ?? "");
+        const retained = retryBranch.current;
+        if (selected && retained?.repository === selected.fullName) {
+          setBranch(retained.branch); setManualBranch(retained.manual);
+        } else {
+          setBranch(selected?.defaultBranch ?? "main"); setManualBranch(false);
+          setFilePath(""); setFileOptions([]); setManualFilePath(false);
+        }
+      }
     }).catch(() => { if (owned()) setRepositoryError("GitHub repositories could not be loaded"); }).finally(() => { if (owned()) setRepositoriesLoading(false); });
     void desktopClient.listEnvironments().then((result) => {
       if (!owned()) return;
       if (!result.ok) { setEnvironmentError("Deployment environments could not be loaded"); return; }
       setEnvironmentOptions(result.data.environments);
-      const preferred = window.localStorage.getItem(ACTIVE_ENVIRONMENT_KEY) ?? "";
+      const preferred = preferredEnvironment.current;
       setEnvironmentId(result.data.environments.some((environment) => environment.id === preferred) ? preferred : "");
     }).catch(() => { if (owned()) setEnvironmentError("Deployment environments could not be loaded"); }).finally(() => { if (owned()) setEnvironmentsLoading(false); });
     return () => { cancelled = true; };
-  }, []);
+  }, [catalogAttempt]);
 
   useEffect(() => {
     if (repositoryFullName && !manualRepository) window.localStorage.setItem(ACTIVE_REPOSITORY_KEY, repositoryFullName);
   }, [manualRepository, repositoryFullName]);
 
   useEffect(() => {
+    if (environmentsLoading || environmentError) return;
     if (environmentId) window.localStorage.setItem(ACTIVE_ENVIRONMENT_KEY, environmentId);
     else window.localStorage.removeItem(ACTIVE_ENVIRONMENT_KEY);
-  }, [environmentId]);
+  }, [environmentId, environmentsLoading, environmentError]);
 
   useEffect(() => {
     let cancelled = false;
@@ -404,6 +423,21 @@ function AgentChatSession({ onOpenSettings }: { onOpenSettings?: (destination: A
     });
     return () => { cancelled = true; };
   }, [manualRepository, repositoryFullName]);
+
+  function retryContextCatalogs() {
+    if (repositoriesLoading || environmentsLoading) return;
+    if (!manualRepository) {
+      preferredRepository.current = repositoryFullName || preferredRepository.current;
+      if (repositoryFullName) retryBranch.current = { repository: repositoryFullName, branch, manual: manualBranch };
+      setRepositoryFullName(""); setBranch("");
+      setFilePath(""); setFileOptions([]); setManualFilePath(false);
+    }
+    preferredEnvironment.current = environmentId || preferredEnvironment.current;
+    setEnvironmentId(""); setRepositoryOptions([]); setEnvironmentOptions([]); setRepositoriesTruncated(false);
+    setRepositoryError(null); setEnvironmentError(null);
+    setRepositoriesLoading(true); setEnvironmentsLoading(true);
+    setCatalogAttempt(attempt => attempt + 1);
+  }
 
   async function openConversation(id: string) {
     if (sending || (id === conversationId && !loadingConversation)) return;
@@ -573,19 +607,22 @@ function AgentChatSession({ onOpenSettings }: { onOpenSettings?: (destination: A
       </div>
       <div className="border-b border-white/[0.06] bg-white/[0.015] px-8 py-3">
         <div className="mx-auto grid max-w-5xl grid-cols-1 gap-2 md:grid-cols-3">
-          <label className="min-w-0 text-[10px] uppercase tracking-[0.12em] text-zinc-600">
+          <div className="min-w-0 text-[10px] uppercase tracking-[0.12em] text-zinc-600">
             Repository
+            <input type="search" aria-label="Search connected repositories" value={repositorySearch} onChange={event => setRepositorySearch(event.target.value)} placeholder="Find a connected repository" className="mt-1 w-full rounded-lg border border-white/10 bg-[#151719] px-3 py-2 text-xs normal-case tracking-normal text-zinc-200 outline-none focus:border-white/25" />
             <select
               aria-label="Active GitHub repository"
               value={manualRepository ? "__manual__" : repositoryFullName}
               onChange={(event) => {
                 if (event.target.value === "__manual__") {
+                  manualRepositoryRef.current = true;
                   setManualRepository(true);
                   setRepositoryFullName("");
                   setManualBranch(true);
                   return;
                 }
                 const repository = repositoryOptions.find((item) => item.fullName === event.target.value);
+                manualRepositoryRef.current = false;
                 setManualRepository(false);
                 setManualBranch(false);
                 setManualFilePath(false);
@@ -596,18 +633,22 @@ function AgentChatSession({ onOpenSettings }: { onOpenSettings?: (destination: A
               disabled={repositoriesLoading}
               className="mt-1 w-full truncate rounded-lg border border-white/10 bg-[#151719] px-3 py-2 text-xs normal-case tracking-normal text-zinc-200 outline-none focus:border-white/25 disabled:opacity-50"
             >
-              {repositoryOptions.length === 0 && <option value="">No connected repositories</option>}
-              {repositoryOptions.map((repository) => <option key={repository.id} value={repository.fullName}>{repository.fullName} · {repository.visibility}</option>)}
+              {repositoryOptions.length === 0 && <option value="">{repositoriesLoading ? "Loading connected repositories…" : repositoryError ? "Repositories unavailable" : "No connected repositories"}</option>}
+              {repositoryOptions.filter(repository => repository.fullName === repositoryFullName || repository.fullName.toLowerCase().includes(repositorySearch.trim().toLowerCase())).map((repository) => <option key={repository.id} value={repository.fullName}>{repository.fullName} · {repository.visibility}</option>)}
               <option value="__manual__">Enter another repository…</option>
             </select>
+            {repositoriesTruncated && <span className="mt-1 block normal-case tracking-normal">Repository catalog is truncated. Search filters the loaded connected repositories only.</span>}
+            {repositorySearch && !repositoriesLoading && !repositoryOptions.some(repository => repository.fullName.toLowerCase().includes(repositorySearch.trim().toLowerCase())) && <span className="mt-1 block normal-case tracking-normal">No matching connected repositories. Your selection is retained.</span>}
+            {manualRepository && <span className="mt-1 block normal-case tracking-normal">Entered manually; catalog membership unverified. The service still authorizes access.</span>}
             {manualRepository && <input autoFocus aria-label="Repository owner and name" value={repositoryFullName} onChange={(event) => setRepositoryFullName(event.target.value)} placeholder="owner/repository" className="mt-2 w-full rounded-lg border border-white/10 bg-[#151719] px-3 py-2 text-xs normal-case tracking-normal text-zinc-200 outline-none placeholder:text-zinc-600 focus:border-white/25" />}
-          </label>
+          </div>
           <label className="min-w-0 text-[10px] uppercase tracking-[0.12em] text-zinc-600">
             Branch
             <select
               aria-label="Active GitHub branch"
               value={manualBranch ? "__manual__" : branch}
               onChange={(event) => {
+                setFilePath(""); setFileOptions([]); setManualFilePath(false);
                 if (event.target.value === "__manual__") {
                   setManualBranch(true);
                   setBranch("");
@@ -623,22 +664,31 @@ function AgentChatSession({ onOpenSettings }: { onOpenSettings?: (destination: A
               {branchOptions.map((option) => <option key={option.name} value={option.name}>{option.name}{option.protected ? " · protected" : ""}</option>)}
               <option value="__manual__">Enter another branch…</option>
             </select>
-            {manualBranch && <input autoFocus aria-label="Git branch name" value={branch} onChange={(event) => setBranch(event.target.value)} placeholder="branch name" className="mt-2 w-full rounded-lg border border-white/10 bg-[#151719] px-3 py-2 text-xs normal-case tracking-normal text-zinc-200 outline-none placeholder:text-zinc-600 focus:border-white/25" />}
+            {manualBranch && <input autoFocus aria-label="Git branch name" value={branch} onChange={(event) => { setBranch(event.target.value); setFilePath(""); setFileOptions([]); setManualFilePath(false); }} placeholder="branch name" className="mt-2 w-full rounded-lg border border-white/10 bg-[#151719] px-3 py-2 text-xs normal-case tracking-normal text-zinc-200 outline-none placeholder:text-zinc-600 focus:border-white/25" />}
           </label>
-          <label className="min-w-0 text-[10px] uppercase tracking-[0.12em] text-zinc-600">
+          <div className="min-w-0 text-[10px] uppercase tracking-[0.12em] text-zinc-600">
             Deployment environment
+            <input type="search" aria-label="Search deployment environments" value={environmentSearch} onChange={event => setEnvironmentSearch(event.target.value)} placeholder="Find an environment" className="mt-1 w-full rounded-lg border border-white/10 bg-[#151719] px-3 py-2 text-xs normal-case tracking-normal text-zinc-200 outline-none focus:border-white/25" />
             <select
               aria-label="Active deployment environment"
               value={environmentId}
-              onChange={(event) => setEnvironmentId(event.target.value)}
+              onChange={(event) => {
+                // An explicit empty choice must replace, not fall back to, the
+                // unverified saved preference during a later catalog retry.
+                preferredEnvironment.current = event.target.value;
+                setEnvironmentId(event.target.value);
+              }}
               disabled={environmentsLoading}
               className="mt-1 w-full truncate rounded-lg border border-white/10 bg-[#151719] px-3 py-2 text-xs normal-case tracking-normal text-zinc-200 outline-none focus:border-white/25 disabled:opacity-50"
             >
               <option value="">No deployment environment</option>
-              {environmentOptions.map((environment) => <option key={environment.id} value={environment.id}>{environment.name} · {environment.tier}</option>)}
+              {environmentOptions.filter(environment => environment.id === environmentId || `${environment.name} ${environment.tier}`.toLowerCase().includes(environmentSearch.trim().toLowerCase())).map((environment) => <option key={environment.id} value={environment.id}>{environment.name} · {environment.tier}</option>)}
             </select>
-          </label>
+            {environmentSearch && !environmentsLoading && !environmentOptions.some(environment => `${environment.name} ${environment.tier}`.toLowerCase().includes(environmentSearch.trim().toLowerCase())) && <span className="mt-1 block normal-case tracking-normal">No matching environments. Your selection is retained.</span>}
+          </div>
         </div>
+        <p aria-label="Selected Agent context" className="mx-auto mt-2 max-w-5xl text-[11px] text-zinc-400">Repository: {repositoryFullName || "None selected"}{manualRepository ? " (manual, catalog unverified)" : ""} · Branch: {repositoryFullName ? branch || "None selected" : "None selected"} · Environment: {environmentOptions.find(environment => environment.id === environmentId)?.name ?? "None selected"}</p>
+        {(repositoryError || environmentError) && <button type="button" disabled={repositoriesLoading || environmentsLoading} onClick={retryContextCatalogs} className="mt-2 rounded-lg border border-white/10 px-3 py-2 text-xs text-zinc-200 disabled:opacity-50">Retry repository and environment catalogs</button>}
         {environmentId && (() => {
           const selected = environmentOptions.find((environment) => environment.id === environmentId);
           if (!selected) return null;
@@ -658,7 +708,7 @@ function AgentChatSession({ onOpenSettings }: { onOpenSettings?: (destination: A
               </p>
               <div className="mt-5 flex flex-wrap justify-center gap-2" aria-label="Suggested Agent requests">
                 <button type="button" disabled={!repositoryFullName || sending} onClick={() => { setComposerMode("chat"); setInput("Review this repository and tell me the highest-impact improvements."); }} className="rounded-full border border-white/10 bg-white/[0.035] px-3 py-2 text-xs text-zinc-300 hover:bg-white/[0.07] disabled:cursor-not-allowed disabled:opacity-35">Review repository</button>
-                <button type="button" disabled={!environmentId || sending} onClick={() => { setComposerMode("chat"); setInput("Check whether the selected repository is ready to deploy to the selected environment."); }} className="rounded-full border border-white/10 bg-white/[0.035] px-3 py-2 text-xs text-zinc-300 hover:bg-white/[0.07] disabled:cursor-not-allowed disabled:opacity-35">Check deploy readiness</button>
+                <button type="button" disabled={!repositoryFullName || !environmentId || sending} onClick={() => { setComposerMode("chat"); setInput("Check whether the selected repository is ready to deploy to the selected environment."); }} className="rounded-full border border-white/10 bg-white/[0.035] px-3 py-2 text-xs text-zinc-300 hover:bg-white/[0.07] disabled:cursor-not-allowed disabled:opacity-35">Check deploy readiness</button>
                 <button type="button" disabled={sending} onClick={() => { setComposerMode("chat"); setInput("Show me which systems are connected and what needs attention."); }} className="rounded-full border border-white/10 bg-white/[0.035] px-3 py-2 text-xs text-zinc-300 hover:bg-white/[0.07] disabled:cursor-not-allowed disabled:opacity-35">Check connections</button>
               </div>
             </div>
