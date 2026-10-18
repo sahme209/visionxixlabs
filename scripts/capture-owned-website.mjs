@@ -5,9 +5,37 @@ import { request } from 'node:http';
 import policy from './fixtures/ownedWebsitePolicy.cjs';
 import transport from './fixtures/ownedWebsiteSession.cjs';
 import managedNodePath from './fixtures/ownedWebsiteManagedNodePath.cjs';
+function readPreImageDomSnapshot() {
+  try {
+    const play = document.querySelector('[aria-label="Play story"]');
+    return { readyState: document.readyState, tourPresent: Boolean(document.querySelector('#product-tour')), playPresent: Boolean(play),
+      playDisabled: play instanceof HTMLButtonElement ? play.disabled : null, reducedMotion: window.matchMedia('(prefers-reduced-motion: reduce)').matches, visibility: document.visibilityState };
+  } catch { return null; }
+}
+/** Only fixed primitive observations cross into the private receipt; unknown is not readiness evidence. */
+function sanitizePreImageDomSnapshot(value) {
+  try {
+    const keys = ['readyState', 'tourPresent', 'playPresent', 'playDisabled', 'reducedMotion', 'visibility'];
+    if (!value || typeof value !== 'object' || Object.getPrototypeOf(value) !== Object.prototype || Reflect.ownKeys(value).length !== keys.length) return null;
+    /** @type {Record<string, unknown>} */
+    const data = {};
+    for (const key of keys) {
+      const descriptor = Object.getOwnPropertyDescriptor(value, key);
+      if (!descriptor?.enumerable || !Object.hasOwn(descriptor, 'value')) return null;
+      data[key] = descriptor.value;
+    }
+    if (typeof data.readyState !== 'string' || !['loading', 'interactive', 'complete'].includes(data.readyState)
+      || typeof data.tourPresent !== 'boolean' || typeof data.playPresent !== 'boolean' || typeof data.reducedMotion !== 'boolean'
+      || (data.playPresent ? typeof data.playDisabled !== 'boolean' : data.playDisabled !== null)
+      || typeof data.visibility !== 'string' || !['hidden', 'visible'].includes(data.visibility)) return null;
+    return { readyState: data.readyState, tourPresent: data.tourPresent, playPresent: data.playPresent, playDisabled: data.playDisabled, reducedMotion: data.reducedMotion, visibility: data.visibility };
+  } catch { return null; }
+}
 // Start the absolute clock before config, listener checks, HTTP or WebSocket setup.
 const session = transport.createSession({ duration: 120000 });
 let directory, config, success = false, failure = null, denied = 0, imageBytes = 0;
+/** @type {{phase: string, lastDomSnapshot: ReturnType<typeof sanitizePreImageDomSnapshot>} | null} */
+let preImageWait = null;
 const consoleErrors = [], evidence = [], images = [];
 const interrupted = () => session.stop(Error('website_driver_interrupted'));
 process.once('SIGTERM', interrupted); process.once('SIGINT', interrupted);
@@ -57,9 +85,24 @@ try {
     if (data.method === 'Log.entryAdded' && data.params.entry.level === 'error' && consoleErrors.length < 128) consoleErrors.push(String(data.params.entry.source));
   } });
   async function evaluate(fn, argument) { const result = await send('Runtime.evaluate', { expression: `(${fn})(${JSON.stringify(argument)})`, returnByValue: true, awaitPromise: true }); assert.ok(!result.exceptionDetails, 'website_browser_evaluation_failed'); return result.result.value; }
-  async function waitFor(fn, argument, timeout = 45000) { const deadline = Date.now() + timeout; while (Date.now() < deadline) { if (await evaluate(fn, argument)) return; await sleep(100); } throw Error('website_dom_timeout'); }
+  /** @param {string} [preImagePhase] */
+  async function waitFor(fn, argument, timeout = 45000, preImagePhase = undefined) {
+    const deadline = Date.now() + timeout;
+    if (preImagePhase !== undefined) assert.ok(['homepage_document', 'homepage_playback'].includes(preImagePhase), 'website_dom_diagnostic_phase');
+    /** @type {{phase: string, lastDomSnapshot: ReturnType<typeof sanitizePreImageDomSnapshot>} | null} */
+    const diagnostic = preImagePhase === undefined ? null : { phase: preImagePhase, lastDomSnapshot: null };
+    if (diagnostic) preImageWait = diagnostic;
+    while (Date.now() < deadline) {
+      const polled = await evaluate(diagnostic ? `argument => ({ satisfied: (${fn})(argument), snapshot: (${readPreImageDomSnapshot})() })` : fn, argument);
+      if (diagnostic) diagnostic.lastDomSnapshot = sanitizePreImageDomSnapshot(polled.snapshot);
+      if (diagnostic ? polled.satisfied : polled) { if (diagnostic) preImageWait = null; return; }
+      await sleep(100);
+    }
+    throw Error('website_dom_timeout');
+  }
   async function viewport(width, reduced = false) { await send('Emulation.setDeviceMetricsOverride', { width, height: 1000, deviceScaleFactor: 1, mobile: width === 360 }); await send('Emulation.setEmulatedMedia', { features: [{ name: 'prefers-reduced-motion', value: reduced ? 'reduce' : 'no-preference' }] }); }
-  async function navigate(path) { assert.ok(['/', '/product', '/docs/approval-workflow'].includes(path)); await send('Page.navigate', { url: `${windowState.origin}${path}` }); await waitFor(path => document.readyState === 'complete' && Boolean(document.querySelector(path === '/docs/approval-workflow' ? '#execution' : '#product-tour')), path); }
+  /** @param {string} [preImagePhase] */
+  async function navigate(path, preImagePhase = undefined) { assert.ok(['/', '/product', '/docs/approval-workflow'].includes(path)); await send('Page.navigate', { url: `${windowState.origin}${path}` }); await waitFor(path => document.readyState === 'complete' && Boolean(document.querySelector(path === '/docs/approval-workflow' ? '#execution' : '#product-tour')), path, 45000, preImagePhase); }
   async function click(label) {
     const point = await evaluate(label => { const element = [...document.querySelectorAll('#product-tour button, #product-tour a')].find(el => (el.getAttribute('aria-label') ?? el.textContent.trim()) === label); if (!element || element.disabled) throw Error('missing_control'); element.scrollIntoView({ block: 'center' }); const box = element.getBoundingClientRect(); return { x: box.x + box.width / 2, y: box.y + box.height / 2 }; }, label);
     await send('Input.dispatchMouseEvent', { type: 'mousePressed', button: 'left', clickCount: 1, ...point }); await send('Input.dispatchMouseEvent', { type: 'mouseReleased', button: 'left', clickCount: 1, ...point });
@@ -75,7 +118,7 @@ try {
   }
   const state = () => evaluate(() => ({ title: document.querySelector('#product-tour h2').textContent, code: document.querySelector('#product-tour pre')?.innerText ?? '' }));
   await send('Page.enable'); await send('Runtime.enable'); await send('Log.enable'); await send('Fetch.enable', { patterns: [{ urlPattern: '*', requestStage: 'Request' }] });
-  await viewport(1440); await navigate('/'); await waitFor(() => !document.querySelector('[aria-label="Play story"]').disabled);
+  await viewport(1440); await navigate('/', 'homepage_document'); await waitFor(() => !document.querySelector('[aria-label="Play story"]').disabled, undefined, 45000, 'homepage_playback');
   await frame('home-desktop');
   await click('Step 2: Make a small, reviewable edit.'); await click('Play story'); await sleep(700); await click('Pause story');
   const paused = await state(); await sleep(700); assert.deepEqual(await state(), paused); evidence.push('play_pause_preserves_typed_output');
@@ -113,7 +156,7 @@ try {
   // The only post-stop writes are this single final evidence/nonce receipt. Parent waits
   // for this owned driver's positive exit before touching its profile/dist artifacts.
   if (config) {
-    const result = { success, failure, bundler: 'webpack', productionEquivalent: false, evidence, images, deniedRequests: denied, consoleErrorCategories: consoleErrors, qualification: 'Actual local integrated Next pages; API requests denied; external fonts may fall back; screenshots require human inspection. No provider/native acceptance.' };
+    const result = { success, failure, preImageWait, bundler: 'webpack', productionEquivalent: false, evidence, images, deniedRequests: denied, consoleErrorCategories: consoleErrors, qualification: 'Actual local integrated Next pages; API requests denied; external fonts may fall back; screenshots require human inspection. No provider/native acceptance.' };
     writeFileSync(join(directory, 'capture.json'), JSON.stringify(result, null, 2), { mode: 0o600 });
     writeFileSync(join(directory, 'done.json'), JSON.stringify({ success, nonce: config.nonce }), { mode: 0o600 });
     process.stdout.write(`${join(directory, 'capture.json')}\n`);
