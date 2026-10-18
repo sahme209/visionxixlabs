@@ -3,6 +3,7 @@ import { createElement } from "react";
 import { act, cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import { CinematicAxiomDemo } from "../CinematicAxiomDemo";
+import ApprovalWorkflowPage from "@/app/docs/approval-workflow/page";
 
 let intersect: (entries: { isIntersecting: boolean }[]) => void;
 let motionChange: (event: { matches: boolean }) => void;
@@ -16,6 +17,19 @@ beforeEach(() => {
 afterEach(() => { cleanup(); vi.useRealTimers(); vi.unstubAllGlobals(); });
 function mount() { render(createElement(CinematicAxiomDemo)); act(() => intersect([{ isIntersecting: true }])); }
 function advance(ms = 6000) { act(() => vi.advanceTimersByTime(ms)); }
+
+it("keeps the linked approval documentation distinct from verified ECS execution and recovery", () => {
+  const { container } = render(createElement(ApprovalWorkflowPage));
+  const execution = container.querySelector("#execution")!;
+  expect(execution.textContent).toContain("separately configured tenant-owned workflow");
+  expect(execution.textContent).toContain("does not verify ECS execution, service health or rollback");
+  const recovery = screen.getByText("Is every rollback universal?").parentElement!;
+  expect(recovery.textContent).toContain("Automatic ECS rollback is not verified");
+  expect(container.textContent).not.toContain("restores the prior definition if stabilization fails");
+  expect(container.textContent).not.toContain("automatic rollback applies to the released ECS workflow");
+  expect(screen.getByText(/The Agent cannot approve its own request/)).toBeDefined();
+  expect(screen.getByText(/A workspace administrator must approve the persisted proposal/)).toBeDefined();
+});
 
 it("links every story to working approval documentation without promising a retired full walkthrough", () => {
   mount();

@@ -33,7 +33,7 @@ export default function ApprovalWorkflowPage() {
       </DocSection>
 
       <DocSection id="execution" title="Execution and recovery" kicker="03">
-        <p>After approval, Axiom calls the same scoped responder used by the product surface. For AWS ECS, the tenant workflow captures the current task definition, waits for steady state, and restores the prior definition if stabilization fails.</p>
+        <p>After approval, the scoped responder must still satisfy current authorization and target checks. An AWS ECS request depends on a separately configured tenant-owned workflow. Approval or dispatch acceptance does not verify ECS execution, service health or rollback; each requires independent outcome evidence. The website preview grants no execution authority.</p>
       </DocSection>
 
       <DocSection id="audit" title="Audit evidence" kicker="04">
@@ -47,7 +47,7 @@ export default function ApprovalWorkflowPage() {
           { question: "Who approves?", answer: "A workspace administrator authenticated through the desktop-session path." },
           { question: "Are reads recorded?", answer: "Yes. Low-risk tool calls receive executed action records." },
           { question: "Does approval prove success?", answer: "No. Approval authorizes execution; the external result and validation provide outcome evidence." },
-          { question: "Is every rollback universal?", answer: "No. The documented automatic rollback applies to the released ECS workflow." },
+          { question: "Is every rollback universal?", answer: "No. Automatic ECS rollback is not verified by this preview or by approval. Recovery depends on the configured tenant-owned workflow and independently observed evidence." },
         ]} />
       </DocSection>
 
