@@ -72,7 +72,7 @@ export function allocationAuthoritySQLV2(g: AllocationGuardV2, selected: Purchas
     SELECT e.org FROM "OrganizationTestAllowanceEnrollment" e JOIN "IsolatedTestRuntime" r ON r.id=e.runtime AND r.account=e.account
     WHERE e.org=$1 AND e.runtime=$2 AND e.account=$3 AND e.body->>'digest'=$4 AND e.revision=$5
     FOR UPDATE OF e), selected AS MATERIALIZED (
-    SELECT p.* FROM "AddOnPurchase" p JOIN jsonb_to_recordset($8::jsonb) AS wanted(id text,"organizationId" text,status text,"deliveredAICreditsCents" integer,"reversedAICreditsCents" integer,"validFor" text,"periodMonth" text,"refundedAt" text) w ON p.id=w.id
+    SELECT p.* FROM "AddOnPurchase" p JOIN jsonb_to_recordset($8::jsonb) AS w(id text,"organizationId" text,status text,"deliveredAICreditsCents" integer,"reversedAICreditsCents" integer,"validFor" text,"periodMonth" text,"refundedAt" text) ON p.id=w.id
     WHERE p."organizationId"=$1 AND p."organizationId"=w."organizationId" AND p.status=w.status AND p."deliveredAICreditsCents"=w."deliveredAICreditsCents" AND p."reversedAICreditsCents"=w."reversedAICreditsCents" AND p."validFor"=w."validFor" AND p."periodMonth"=w."periodMonth" AND p."refundedAt" IS NOT DISTINCT FROM (w."refundedAt"::timestamptz AT TIME ZONE 'UTC')
     ORDER BY p.id FOR UPDATE OF p), bound AS MATERIALIZED (
     SELECT p."organizationId" FROM "TenantBillingPlan" p JOIN "OrganizationTestCoverageObservation" o ON o.org=p."organizationId" WHERE p."organizationId"=$1 AND p."lastStripeEventId"=$9 AND p.status=$13 AND p."seatQuantity"=$14 AND p."currentPeriodEndsAt" AT TIME ZONE 'UTC'=$15::timestamptz AND o.revision=$10 AND o."originalDigest"=$11 AND o."evidenceDigest" IS NOT DISTINCT FROM $12::text AND o.body->>'eventToken'=$9 FOR SHARE OF p,o)

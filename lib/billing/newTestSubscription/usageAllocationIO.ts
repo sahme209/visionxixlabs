@@ -46,9 +46,19 @@ export async function claimNewTestBillableDispatch(tx: Prisma.TransactionClient,
   if (hold.status !== "reserved" || hold.usageEventId !== null || hold.expiresAt <= original.now) return false;
   const currentPlan = await newTestAllocationPricingPlan(tx, original.scope, original.verified, state), g = newTestAllocationGuard(currentPlan); if (!g) deny();
   const a = hold.attribution!, { basis, window } = originalWindow(hold, original.facts.bases);
+  // A historical paid ceiling is not current paid dispatch permission. Keep
+  // already-claimed settlement independent, and keep original Free funding
+  // through paid activation; neither branch transfers this reservation.
+  if (basis.kind === "paid" && a.allocation.some(c => c.source === "included")
+    && (g.basis.kind !== "paid" || g.basis.digest !== basis.digest || g.window.bucketId !== window.bucketId || g.window.start !== window.start || g.window.end !== window.end)) return false;
   const selected = a.allocation.flatMap(c => c.source === "purchase" ? [original.facts.purchases.find(p => p.id === c.purchaseId) ?? deny()] : []);
   await lockSelectedPurchasesV2(tx, selected);
   await lockAllocationAuthorityV2(tx, g);
+  // An independent membership UPDATE must conflict with this held row lock.
+  // Await it after other potentially waiting locks and before the DB clock.
+  const members = await tx.$queryRawUnsafe<Array<{ userId: string; organizationId: string; role: string; acceptedAt: Date | null }>>('SELECT "userId","organizationId",role,"acceptedAt" FROM "OrgMembership" WHERE "userId"=$1 AND "organizationId"=$2 FOR SHARE', scope.userId, scope.organizationId);
+  const finalMember = members[0];
+  if (members.length !== 1 || !finalMember || finalMember.userId !== scope.userId || finalMember.organizationId !== scope.organizationId || !(finalMember.acceptedAt instanceof Date) || !Number.isFinite(finalMember.acceptedAt.getTime()) || !["owner", "admin"].includes(finalMember.role)) deny();
   const facts = await readAllocationFactsV2(tx, state), now = await allocationClock(tx), current = facts.holds.find(h => h.id === id);
   if (!current || current.status !== "reserved" || current.usageEventId !== null || current.expiresAt <= now || !sameAllocationJSON(current.attribution, a)) return false;
   if (selected.some(p => !facts.purchases.some(f => sameAllocationJSON(purchaseFingerprintV2(f), purchaseFingerprintV2(p))))) deny();
@@ -56,7 +66,7 @@ export async function claimNewTestBillableDispatch(tx: Prisma.TransactionClient,
   const capacity = resolveAllocationV2(basis, window, withoutOwn, now).capacity;
   if (a.allocation.some(c => c.maxCents > (c.source === "included" ? capacity.includedCents : capacity.purchases.find(p => p.purchaseId === c.purchaseId)?.cents ?? 0))) return false;
   const { sql, predicate, args } = allocationAuthoritySQLV2(g, selected);
-  const changed = await tx.$queryRawUnsafe<Array<{ id: string }>>(sql + `UPDATE "AIUsageReservation" h SET status='dispatch_unknown',"updatedAt"=clock_timestamp() AT TIME ZONE 'UTC' FROM authority WHERE h.id=$17 AND h."organizationId"=$1 AND h.status='reserved' AND h."usageEventId" IS NULL AND h."expiresAt" AT TIME ZONE 'UTC'>clock_timestamp() AND clock_timestamp()>=$18::timestamptz AND clock_timestamp()<$19::timestamptz AND ${predicate} RETURNING h.id`, ...args, id, a.windowStart, a.windowEnd);
+  const changed = await tx.$queryRawUnsafe<Array<{ id: string }>>(sql + `UPDATE "AIUsageReservation" h SET status='dispatch_unknown',"updatedAt"=clock_timestamp() AT TIME ZONE 'UTC' FROM authority WHERE h.id=$17 AND h."organizationId"=$1 AND h.status='reserved' AND h."usageEventId" IS NULL AND h."expiresAt" AT TIME ZONE 'UTC'>clock_timestamp() AND clock_timestamp()>=$18::timestamptz AND clock_timestamp()<$19::timestamptz AND ${predicate} AND EXISTS(SELECT 1 FROM "OrgMembership" m WHERE m."userId"=$20 AND m."organizationId"=$1 AND m."acceptedAt" IS NOT NULL AND m.role IN ('owner','admin')) RETURNING h.id`, ...args, id, a.windowStart, a.windowEnd, scope.userId);
   return changed.length === 1;
 }
 /** No provider-specific definitive nonacceptance policy is currently supported.
@@ -107,7 +117,7 @@ export async function settleAttributedUsageV2(tx: Prisma.TransactionClient, inpu
   const { hold } = await originalHold(tx, receipt.reservationId, event.organizationId);
   if (hold.usageEventId !== event.id) deny();
   const billedCents = Math.min(input.billedCents, hold.reservedCents);
-  if (hold.status === "settled") { if (event.billingStatus !== "settled" || event.costCents !== input.providerCostCents || event.billedCents !== billedCents) deny(); return "already_settled"; }
+  if (hold.status === "settled") { if (event.billingStatus !== "settled" || event.costCents !== input.providerCostCents || event.billedCents !== billedCents || event.model !== input.model || event.inputTokens !== input.inputTokens || event.outputTokens !== input.outputTokens || event.cachedReadTokens !== input.cachedReadTokens) deny(); return "already_settled"; }
   if (hold.status !== "pending_settlement" || event.billingStatus !== "pending") deny();
   const holdWrite = await tx.aIUsageReservation.updateMany({ where: { id: hold.id, organizationId: hold.organizationId, status: "pending_settlement", usageEventId: event.id }, data: { status: "settled", settledCents: billedCents, settledAt: await allocationClock(tx) } });
   if (holdWrite.count !== 1) deny();

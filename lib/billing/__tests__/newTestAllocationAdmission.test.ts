@@ -10,11 +10,12 @@ function fixture() {
   const scope = { runtimeId: "r", accountId: "a", organizationId: "o" }, enrollment = createEnrollmentV2(scope), freeBasis = createAllowanceBasisV2({ ...scope, version: 2, policy: ANNIVERSARY_POLICY_V2, enrollmentDigest: enrollment.digest, kind: "free" });
   const state = { enrollment, freeBasis, paidBasis: null, revision: 1 }; let now = new Date("2026-10-31T23:59:59Z");
   const purchases: PurchaseV2[] = [{ id: "purchase", organizationId: "o", status: "paid", validFor: "current_month", periodMonth: "2026-10", deliveredAICreditsCents: 500, reversedAICreditsCents: 0, refundedAt: null, createdAt: now }];
-  let onLock = () => {}; let onAuthority = () => {}; let denyInsert = false;
+  let memberRole = "owner"; let accepted = true; let onLock = () => {}; let onAuthority = () => {}; let denyInsert = false;
   const usage: unknown[] = [], holds: HoldV2[] = [];
   const execute = vi.fn(async (_sql: string, id: string, _org: string, _digest: string, body: string) => { const h = holds.find(h => h.id === id); if (h) h.attribution = JSON.parse(body) as ReservationAttributionV2; return 1; });
   const query = vi.fn(async (sql: string) => {
     if (sql.startsWith('SELECT a.body FROM "NewTestReservationAttribution"')) return holds[0]?.attribution ? [{ body: holds[0].attribution }] : [];
+    if (sql.startsWith('SELECT "userId","organizationId",role,"acceptedAt" FROM "OrgMembership"')) return [{ userId: "owner", organizationId: "o", role: memberRole, acceptedAt: accepted ? now : null }];
     if (sql.startsWith('SELECT id FROM "AIUsageReservation"')) return holds.length ? [{ id: "hold" }] : [];
     if (sql.startsWith('SELECT id FROM "IsolatedTestRuntime"')) return [{ id: "r" }];
     if (sql.includes("to_regclass")) return [{ installed: true, partial: true }];
@@ -30,8 +31,8 @@ function fixture() {
     if (sql.includes("SELECT org FROM authority")) { onAuthority(); return [{ org: "o" }]; }
     throw new Error("unowned_test_query");
   });
-  const tx = { orgMembership: { findUnique: async () => ({ acceptedAt: now, role: "owner" }) }, aIUsageReservation: { updateMany: async ({ where }: {where: {status:string}}) => ({ count: holds[0]?.status === where.status ? 1 : 0 }) }, $queryRawUnsafe: query, $executeRawUnsafe: execute, tenantBillingPlan: { findUnique: async () => null }, usageEvent: { findMany: async () => structuredClone(usage) }, addOnPurchase: { findMany: async () => structuredClone(purchases) } } as unknown as Prisma.TransactionClient;
-  return { tx, scope, state, query, execute, usage, purchases, holds, setLock: (fn: () => void) => { onLock = fn; }, setAuthority: (fn: () => void) => { onAuthority = fn; }, setNow: (n: string) => { now = new Date(n); }, refuse: () => { denyInsert = true; } };
+  const tx = { orgMembership: { findUnique: async () => ({ acceptedAt: accepted ? now : null, role: memberRole }) }, aIUsageReservation: { updateMany: async ({ where }: {where: {status:string}}) => ({ count: holds[0]?.status === where.status ? 1 : 0 }) }, $queryRawUnsafe: query, $executeRawUnsafe: execute, tenantBillingPlan: { findUnique: async () => null }, usageEvent: { findMany: async () => structuredClone(usage) }, addOnPurchase: { findMany: async () => structuredClone(purchases) } } as unknown as Prisma.TransactionClient;
+  return { tx, scope, state, query, execute, usage, purchases, holds, demote: () => { memberRole = "read_only"; }, unaccept: () => { accepted = false; }, setLock: (fn: () => void) => { onLock = fn; }, setAuthority: (fn: () => void) => { onAuthority = fn; }, setNow: (n: string) => { now = new Date(n); }, refuse: () => { denyInsert = true; } };
 }
 const input = { organizationId: "o", idempotencyKey: "request_123456789", reservedCents: 250 };
 describe("V2 existing-hold admission composition (synthetic SQL boundary)", () => {
@@ -83,6 +84,22 @@ describe("V2 existing-hold admission composition (synthetic SQL boundary)", () =
     const f = fixture(), plan = await newTestAllocationPricingPlan(f.tx, f.scope, null, f.state);
     f.setAuthority(() => f.setNow("2026-11-01T00:00:00Z"));
     await expect(readAllocationAllowanceV2(f.tx, plan)).rejects.toThrow();
+  });
+  it.each(["demoted", "unaccepted"])("rechecks %s membership after awaited purchase locks and before claim", async change => {
+    const f = fixture(), plan = await newTestAllocationPricingPlan(f.tx, f.scope, null, f.state);
+    await reserveAllocationV2(f.tx, plan, input, false);
+    f.setLock(() => { if (change === "demoted") f.demote(); else f.unaccept(); });
+    const before = structuredClone({ holds: f.holds, purchases: f.purchases, usage: f.usage });
+    await expect(claimNewTestBillableDispatch(f.tx, { organizationId: "o", userId: "owner" }, "hold")).rejects.toThrow("attributed_usage_unavailable");
+    expect({ holds: f.holds, purchases: f.purchases, usage: f.usage }).toEqual(before);
+    expect(f.holds[0].status).toBe("reserved");
+    expect(f.query.mock.calls.some(([sql]) => sql.includes('UPDATE "AIUsageReservation" h SET'))).toBe(false);
+  });
+  it("uses one recordset alias in the SQL declaration (shape regression only, not parser proof)", async () => {
+    const f = fixture(), plan = await newTestAllocationPricingPlan(f.tx, f.scope, null, f.state);
+    await reserveAllocationV2(f.tx, plan, input, false);
+    const sql = f.query.mock.calls.find(([sql]) => sql.includes('INSERT INTO "AIUsageReservation"'))![0];
+    expect(sql).toContain('jsonb_to_recordset($8::jsonb) AS w('); expect(sql).not.toContain(') w ON');
   });
   it("does not aggregate away an unknown zero-cost event", async () => {
     const f = fixture(), plan = await newTestAllocationPricingPlan(f.tx, f.scope, null, f.state);

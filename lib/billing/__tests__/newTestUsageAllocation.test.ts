@@ -11,11 +11,11 @@ import { collectedEvidenceV2, type CoverageObservation } from "../newTestSubscri
 import type { Contract, Intent } from "../newTestSubscription/service";
 import { readVerifiedNewTestContract } from "../newTestSubscription/verifiedContract";
 import { newTestAllocationPricingPlan, readAllocationAllowanceV2 } from "../newTestSubscription/allocationPlan";
-import { recordAttributedUsageV2, settleAttributedUsageV2 } from "../newTestSubscription/usageAllocationIO";
+import { claimNewTestBillableDispatch, recordAttributedUsageV2, settleAttributedUsageV2 } from "../newTestSubscription/usageAllocationIO";
 function fixture(purchased = false) {
   const scope = { runtimeId: "r", accountId: "a", organizationId: "o" }, enrollment = createEnrollmentV2(scope), freeBasis = createAllowanceBasisV2({ ...scope, version: 2, policy: ANNIVERSARY_POLICY_V2, enrollmentDigest: enrollment.digest, kind: "free" });
   const admitted = new Date("2026-10-18T11:00:00Z"), now = new Date("2026-11-18T14:00:00Z"), result = resolveAllowanceWindowV2(freeBasis, null, admitted); if (result.kind !== "available") throw new Error("fixture");
-  const a = createReservationAttributionV2(freeBasis, result.window, admitted, purchased ? [{ source: "purchase", purchaseId: "p", maxCents: 100 }] : [{ source: "included", bucketId: result.window.bucketId, maxCents: 100 }]);
+  let a = createReservationAttributionV2(freeBasis, result.window, admitted, purchased ? [{ source: "purchase", purchaseId: "p", maxCents: 100 }] : [{ source: "included", bucketId: result.window.bucketId, maxCents: 100 }]);
   const hold: HoldV2 = { id: "h", organizationId: "o", reservedCents: 100, status: "dispatch_unknown", createdAt: admitted, usageEventId: null, settledCents: null, expiresAt: new Date(admitted.getTime() + 300000), attribution: a };
   const usages: Array<UsageV2 & Record<string, unknown>> = [];
   const purchases = [{ id: "p", organizationId: "o", deliveredAICreditsCents: 500, reversedAICreditsCents: 0, validFor: "permanent", periodMonth: "2026-10", status: "paid", refundedAt: null, createdAt: admitted }];
@@ -33,23 +33,39 @@ function fixture(purchased = false) {
     if (sql.includes('FROM "NewTestReservationAttribution" a')) return [{ body: a }];
     if (sql.includes("to_regclass")) return [{ installed: true, partial: true }];
     if (sql.startsWith("SELECT e.body")) return [{ body: enrollment, revision: state.revision, free: freeBasis, paid: state.paidBasis }];
+    if (sql.startsWith('SELECT "userId","organizationId",role,"acceptedAt" FROM "OrgMembership"')) return [{ userId: "owner", organizationId: "o", role: "owner", acceptedAt: admitted }];
+    if (sql.includes('UPDATE "AIUsageReservation" h SET')) { hold.status = "dispatch_unknown"; return [{ id: "h" }]; }
     if (sql.startsWith("SELECT clock_timestamp")) return [{ now }];
     if (sql.startsWith('SELECT id FROM "AIUsageReservation"')) return [{ id: "h" }];
     if (sql.startsWith("SELECT h.*")) return [structuredClone(hold)];
     if (sql.startsWith("SELECT c.body")) return paid ? [{ body: paid.contract, periodEnd: new Date(paid.observation.currentPeriodEnd), status: paid.contract.status, seatQuantity: 3, eventToken: paid.contract.eventToken, customer: "cus", subscription: "sub" }] : [];
     if (sql.startsWith('SELECT body FROM "RecurringSubscriptionIntent"')) return paid ? [{ body: paid.intent }] : [];
-    if (sql.startsWith("SELECT o.body")) return paid ? [{ body: paid.observation, revision: 1, original: paid.original, current: paid.original }] : [];
+    if (sql.startsWith("SELECT o.body")) return paid ? [{ body: paid.observation, revision: 1, original: paid.original, current: paid.observation.collection.kind === "collected" ? paid.observation.collection.evidence : null }] : [];
     if (sql.includes("SELECT org FROM authority")) return [{ org: "o" }];
     if (sql.includes('FROM "IsolatedTestRuntime"')) return [{ id: "r" }];
     throw new Error("unowned_test_query");
   });
-  const tx = { $queryRawUnsafe: raw, usageEvent: { findMany: async () => structuredClone(usages), findUnique: async ({ where }: { where: { id?: string; externalUsageId?: string } }) => structuredClone(usages.find(u => where.id ? u.id === where.id : u.externalUsageId === where.externalUsageId) ?? null),
+  const tx = { orgMembership: { findUnique: async () => ({ role: "owner", acceptedAt: admitted }) }, $queryRawUnsafe: raw, usageEvent: { findMany: async () => structuredClone(usages), findUnique: async ({ where }: { where: { id?: string; externalUsageId?: string } }) => structuredClone(usages.find(u => where.id ? u.id === where.id : u.externalUsageId === where.externalUsageId) ?? null),
     create: vi.fn(async ({ data }: { data: Record<string, unknown> }) => { const event = { id: "u", ...data } as typeof usages[number]; usages.push(event); return structuredClone(event); }),
     updateMany: vi.fn(async ({ where, data }: { where: { id: string; billingStatus: string }; data: object }) => { const u = usages.find(u => u.id === where.id && u.billingStatus === where.billingStatus); if (!u) return { count: 0 }; Object.assign(u, data); return { count: 1 }; }) },
     aIUsageReservation: { findUnique: async () => structuredClone(hold), updateMany: vi.fn(async ({ where, data }: { where: { status: string; usageEventId?: string | null }; data: object }) => { if (where.status !== hold.status || where.usageEventId !== undefined && where.usageEventId !== hold.usageEventId) return { count: 0 }; Object.assign(hold, data); return { count: 1 }; }) },
     addOnPurchase: { findMany: async () => structuredClone(purchases) } } as unknown as Prisma.TransactionClient;
   const input: RecordAIUsageInput = { organizationId: "o", provider: "openai", model: "model", inputTokens: 10, outputTokens: 20, metadata: { unrelated: "kept" } };
-  return { tx, state, hold, a, usages, purchases, input, now, scope, activatePaid };
+  function paidIncludedHold(status = "reserved") {
+    activatePaid(); const at = new Date("2026-10-18T12:59:00Z"), basis = state.paidBasis!;
+    const result = resolveAllowanceWindowV2(basis, { version: 2, policy: ANNIVERSARY_POLICY_V2, kind: "collected", status: "active", basisDigest: basis.digest, evidenceDigest: paid!.original.digest, serviceStart: paid!.original.serviceStart, serviceEnd: paid!.original.serviceEnd, collectedAt: paid!.original.collectedAt }, at);
+    if (result.kind !== "available") throw new Error("fixture");
+    a = createReservationAttributionV2(basis, result.window, at, [{ source: "included", bucketId: result.window.bucketId, maxCents: 1000 }]);
+    Object.assign(hold, { attribution: a, reservedCents: 1000, createdAt: at, expiresAt: new Date(at.getTime() + 300000), status });
+  }
+  function inactive() { if (!paid) throw new Error("fixture"); paid.contract.status = "past_due"; paid.observation.collection = { kind: "unavailable", reason: "not_collected" }; }
+  function freeReservedBeforePaid() {
+    const at = new Date("2026-10-18T11:59:00Z"), result = resolveAllowanceWindowV2(freeBasis, null, at); if (result.kind !== "available") throw new Error("fixture");
+    a = createReservationAttributionV2(freeBasis, result.window, at, [{ source: "included", bucketId: result.window.bucketId, maxCents: 100 }]);
+    Object.assign(hold, { attribution: a, createdAt: at, expiresAt: new Date(at.getTime() + 300000), status: "reserved" });
+    activatePaid(); now.setTime(Date.parse("2026-10-18T12:01:00Z"));
+  }
+  return { tx, state, hold, a, usages, purchases, input, now, scope, activatePaid, paidIncludedHold, inactive, freeReservedBeforePaid };
 }
 const cost = { totalCents: 80, inputCents: 20, outputCents: 60, cachedReadCents: 0, appliedBatchRate: false };
 describe("V2 actual existing usage composition with synthetic cost", () => {
@@ -70,6 +86,31 @@ describe("V2 actual existing usage composition with synthetic cost", () => {
     expect(allowance.baseCents).toBe(3000); expect(allowance.includedRemainingCents).toBe(purchased ? 3420 : 3500);
     expect(f.usages[0].metadata).toMatchObject({ axiomTestAllocationV2: { kind: "free", bucketId: f.a.bucketId } });
     expect(f.purchases[0].deliveredAICreditsCents).toBe(500); expect(f.purchases[0].reversedAICreditsCents).toBe(0);
+  });
+  it("cannot dispatch a still-reserved paid included1000 under current inactive Free200", async () => {
+    const f = fixture(); f.paidIncludedHold(); f.inactive();
+    const before = structuredClone({ hold: f.hold, usage: f.usages, purchases: f.purchases });
+    expect(await claimNewTestBillableDispatch(f.tx, { organizationId: "o", userId: "owner" }, "h")).toBe(false);
+    expect({ hold: f.hold, usage: f.usages, purchases: f.purchases }).toEqual(before);
+  });
+  it("retains current collected permission for an original paid included dispatch", async () => {
+    const f = fixture(); f.paidIncludedHold(); expect(await claimNewTestBillableDispatch(f.tx, { organizationId: "o", userId: "owner" }, "h")).toBe(true);
+  });
+  it("keeps admitted original Free funding through paid activation without reallocation", async () => {
+    const f = fixture(); f.freeReservedBeforePaid(); const original = structuredClone(f.hold.attribution);
+    expect(await claimNewTestBillableDispatch(f.tx, { organizationId: "o", userId: "owner" }, "h")).toBe(true);
+    expect(f.hold.attribution).toEqual(original); expect(f.hold.attribution!.kind).toBe("free");
+  });
+  it("settles already-unknown paid usage after inactive status without granting new dispatch", async () => {
+    const f = fixture(); f.paidIncludedHold("dispatch_unknown"); f.inactive();
+    await recordAttributedUsageV2(f.tx, "h", f.input, cost);
+    expect(f.hold).toMatchObject({ status: "settled", settledCents: 80 }); expect(f.usages[0].metadata).toMatchObject({ axiomTestAllocationV2: { kind: "paid", bucketId: f.hold.attribution!.bucketId } });
+  });
+  it("settles an already-pending paid Gateway record after inactive status", async () => {
+    const f = fixture(); f.paidIncludedHold("dispatch_unknown");
+    await recordAttributedUsageV2(f.tx, "h", { ...f.input, provider: "vercel_gateway", externalUsageId: "gen_exact" }, null); f.inactive();
+    await settleAttributedUsageV2(f.tx, { eventId: "u", externalUsageId: "gen_exact", providerCostCents: 53, billedCents: 80, model: "model", inputTokens: 10, outputTokens: 20, cachedReadTokens: 0 });
+    expect(f.hold).toMatchObject({ status: "settled", settledCents: 80 });
   });
   it("links Gateway pending usage before late authoritative settlement and preserves unrelated metadata", async () => {
     const f = fixture(true); f.input.provider = "vercel_gateway";
@@ -97,6 +138,16 @@ describe("V2 actual existing usage composition with synthetic cost", () => {
     const settled = { eventId: "u", externalUsageId: "gen_exact", providerCostCents: 53, billedCents: 80, model: "model", inputTokens: 10, outputTokens: 20, cachedReadTokens: 0 };
     expect(await settleAttributedUsageV2(f.tx, settled)).toBe("settled");
     expect(await settleAttributedUsageV2(f.tx, settled)).toBe("already_settled"); expect(f.usages).toHaveLength(1);
+  });
+  it.each(["model", "inputTokens", "outputTokens", "cachedReadTokens"] as const)("rejects a changed sealed Gateway %s on replay without writes", async field => {
+    const f = fixture(true), input = { ...f.input, provider: "vercel_gateway", externalUsageId: "gen_exact" };
+    await recordAttributedUsageV2(f.tx, "h", input, null);
+    const settled = { eventId: "u", externalUsageId: "gen_exact", providerCostCents: 53, billedCents: 80, model: "model", inputTokens: 10, outputTokens: 20, cachedReadTokens: 0 };
+    await settleAttributedUsageV2(f.tx, settled); vi.mocked(f.tx.usageEvent.updateMany).mockClear(); vi.mocked(f.tx.aIUsageReservation.updateMany).mockClear();
+    const before = structuredClone({ hold: f.hold, usage: f.usages, purchases: f.purchases });
+    const changed = field === "model" ? { ...settled, model: "changed" } : { ...settled, [field]: settled[field] + 1 };
+    await expect(settleAttributedUsageV2(f.tx, changed)).rejects.toThrow("attributed_usage_unavailable");
+    expect(f.tx.usageEvent.updateMany).not.toHaveBeenCalled(); expect(f.tx.aIUsageReservation.updateMany).not.toHaveBeenCalled(); expect({ hold: f.hold, usage: f.usages, purchases: f.purchases }).toEqual(before);
   });
   it.each(["forged_namespace", "over_budget", "wrong_org", "not_claimed"])("refuses %s before usage or hold mutation", async bad => {
     const f = fixture(); if (bad === "forged_namespace") f.input.metadata = { axiomTestAllocationV2: {} };
