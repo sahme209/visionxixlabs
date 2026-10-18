@@ -21,6 +21,23 @@ describe("owned worker build recipe does not execute during source verification"
     expect(() => b.verifyOwnedBytes(receipt, source, { ...outputs, "injected.js": "" })).toThrow("owned_checkout_build_drift");
   });
 
+  it("verifies the actual extended build-receipt shape without letting metadata bypass byte drift", async () => {
+    const b = await import("./fixtures/ownedCheckoutWorkerBundle");
+    const sources = { "lib/inert.ts": "export const value = 1;" }, outputs = { "lib/inert.js": "exports.value = 1;" };
+    // Complete actual return shape, with inert unit-only metadata; no build/transpile.
+    const full: Awaited<ReturnType<typeof b.buildOwnedWorker>>["receipt"] = {
+      recipe: b.ownedWorkerRecipe(), compilerOptions: { target: ts.ScriptTarget.ES2022, module: ts.ModuleKind.CommonJS, jsx: ts.JsxEmit.ReactJSX, esModuleInterop: true, sourceMap: false, declaration: false },
+      schemaQualification: { source: "unit-source-schema", generated: "unit-generated-schema", modelFacts: [] },
+      tooling: [], configuration: [], compiler: { version: "5.9.3", sha256: "unit-only", integrity: "unit-only" }, externalGraphs: [], ...b.ownedByteReceipt(sources, outputs),
+    };
+    expect(() => b.verifyOwnedBytes(full, sources, outputs)).not.toThrow();
+    expect(() => b.verifyOwnedBytes(full, { "lib/inert.ts": "export const value = 2;" }, outputs)).toThrow("owned_checkout_build_drift");
+    expect(() => b.verifyOwnedBytes(full, sources, { "lib/inert.js": "exports.value = 2;" })).toThrow("owned_checkout_build_drift");
+    expect(() => b.verifyOwnedBytes(full, sources, { ...outputs, "injected.js": "" })).toThrow("owned_checkout_build_drift");
+    expect(() => b.verifyOwnedBytes({ ...full, sources: [{ ...full.sources[0], sha256: "0".repeat(64) }] }, sources, outputs)).toThrow("owned_checkout_build_drift");
+    expect(() => b.verifyOwnedBytes({ ...full, outputs: [{ ...full.outputs[0], sha256: "0".repeat(64) }] }, sources, outputs)).toThrow("owned_checkout_build_drift");
+  });
+
   it("preserves known-literal import/export/call AST output with a Node visitor and typed SourceFile root", async () => {
     const b = await import("./fixtures/ownedCheckoutWorkerBundle"), file = "lib/nested/entry.ts";
     const input = 'import { value as alias } from "@/lib/shared"; export { value } from "@/lib/shared"; const a = require("@/lib/shared"); const b = import("@/lib/shared"); import type { Shape } from "@/lib/types"; export const result: Shape = alias;';
