@@ -20,6 +20,15 @@ function fixture(mode = "success") {
   return { calls, observed, execute, rehearse, sleep: async () => {} };
 }
 describe("owned local auth HTTP launcher safety", () => {
+  it("adds Airflow only through its exact mutually exclusive opt-in", async () => {
+    const f = fixture(); let options;
+    await runOwnedLocalAuthHttp({ AXIOM_RUN_LOCAL_AUTH_HTTP: "1", AXIOM_RUN_LOCAL_AIRFLOW_HTTP: "1" }, { ...f, rehearse: async (_url: string, value: unknown) => { options = value; return {}; } });
+    expect(options).toEqual({ airflowWireFixture: true });
+    for (const key of ["AXIOM_RUN_LOCAL_AWS_HTTP", "AXIOM_RUN_LOCAL_AZURE_HTTP", "AXIOM_RUN_LOCAL_TERRAFORM_HTTP", "AXIOM_RUN_LOCAL_AGENT_RECEIPT_HTTP", "AXIOM_RUN_LOCAL_AGENT_READINESS_HTTP"]) {
+      const invalid = fixture(); await expect(runOwnedLocalAuthHttp({ AXIOM_RUN_LOCAL_AUTH_HTTP: "1", AXIOM_RUN_LOCAL_AIRFLOW_HTTP: "1", [key]: "1" }, invalid)).rejects.toThrow("separate_owned_airflow_fixture_required"); expect(invalid.calls).toEqual([]);
+    }
+    const invalid = fixture(); await expect(runOwnedLocalAuthHttp({ AXIOM_RUN_LOCAL_AUTH_HTTP: "1", AXIOM_RUN_LOCAL_AIRFLOW_HTTP: "true" }, invalid)).rejects.toThrow("local_airflow_http_opt_in_invalid"); expect(invalid.calls).toEqual([]);
+  });
   it.each([{}, { AXIOM_RUN_LOCAL_AUTH_HTTP: "true" }])("requires exact opt-in before any container operation", async env => {
     const f = fixture(); await expect(runOwnedLocalAuthHttp(env, f)).rejects.toThrow("local_auth_http_opt_in_required"); expect(f.calls).toEqual([]);
   });

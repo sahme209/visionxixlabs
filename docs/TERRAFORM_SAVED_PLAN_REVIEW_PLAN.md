@@ -2,6 +2,12 @@
 
 Approved scope, 2026-10-16; base `2682ba73`. No live planning, backend, provider, apply, signing, quota, installer or approval mutation is enabled. Storage SQL is a proposal outside Prisma migration discovery. No existing Prisma model gains a column. The ECS review core is unchanged; Terraform approval remains explicitly unavailable.
 
+The separate [legacy authority containment](TERRAFORM_LEGACY_AUTHORITY_CONTAINMENT.md)
+closes the older Resilience lead/text-job planning and approval path. It neither
+creates a customer producer nor promotes generated configuration or old approval
+timestamps into this saved-plan contract. The artifact bytes, optional storage,
+paired read and native inspection implementation below are unchanged.
+
 The internal capture reader accepts a trusted owned producer context and exact binary bytes, writes an exclusive private snapshot, runs only a fixed executable's `show -json`, and hashes the same bytes before and after. It never accepts a caller-supplied show document, working-directory command or environment. Executable SHA256 and reported Terraform version must match the trusted context. Fixture pin 1.9.8 is not a customer CLI requirement. New fixture execution must not set or repurpose HOME: use TF_CLI_CONFIG_FILE/TF_DATA_DIR, an empty provider mirror and an allowlisted environment without credentials. The earlier feasibility probe used a task-owned HOME; that is an environment qualification, corrected by the checked-in runner.
 
 Immutable binding covers organization/request/version, environment, target/configuration/provider-lock digests, Terraform executable identity, backend/workspace/state identity, credential connection revision and expiry. Local fixture binding explicitly has no remote backend or cloud credentials. Customer remote binding requires an authoritative producer that is deliberately absent. No API converts request assertions, a legacy lead, generated HCL or existing approval IDs into this authority.

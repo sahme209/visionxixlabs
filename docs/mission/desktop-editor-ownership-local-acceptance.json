@@ -1,0 +1,59 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-10-18",
+  "scope": "Source-only desktop repository editor ownership; local React/native-transport contract acceptance",
+  "source": {
+    "reviewedProductCommit": "74954bc6c3c1d303ab05e1682a9edb5cce34afba",
+    "integratedMain": "10882dc2ccd647cba8092cef479ace6aa71568ee",
+    "normalMergeCommit": "59a112f26645d596301e646790665d6ad961a66a",
+    "validatedCheckpoint": "245ccef8082150e4f96a327c87a8b191487a99f0",
+    "fileSha256": {
+      "desktop/src/views/RepositoryWorkspaceView.tsx": "66865cc1ea88a520a1476dfe24461fb252fdf6691a85a2f8e2cf1324fe3c3bf2",
+      "lib/desktop/__tests__/repositoryWorkspaceOwnership.test.ts": "43d9e7f2b1edc9ff3338c32b3f048111446d5e05aaaf524f46b863013e0bef2f",
+      "lib/demo/demoScenarios.ts": "bec6d59482d278cfeeec91f5b93bfd6b19137b4ebdacd65af85e21f9b834c804"
+    }
+  },
+  "acceptance": {
+    "focused": {
+      "files": 3,
+      "passed": 36,
+      "editorOwnershipCases": 11
+    },
+    "regressions": [
+      "Previous source: eight failures and one passing unsaved-change baseline.",
+      "Actual DesktopClient context notification without parent rerender: one additional failure before subscription/immutable-session correction.",
+      "Deferred repository/file/status/check/save completions cannot populate another context; exact loaded file/content save ownership and unsaved-change confirmation remain covered."
+    ],
+    "transport": "Actual React render/events and actual DesktopClient.setSession context notification; mocked Tauri invocations and service/provider methods. No real file writes or Git/provider operations."
+  },
+  "validation": {
+    "wholeWebTypeScript": "PASS: fresh tsc --noEmit --incremental false, 8192 MiB heap",
+    "defaultVitest": {
+      "filesPassed": 656,
+      "filesSkipped": 1,
+      "testsPassed": 7138,
+      "testsSkipped": 8,
+      "durationSeconds": 71.09,
+      "timeoutOverride": false
+    },
+    "desktopTypeScript": "PASS: separate fresh desktop/tsconfig.json check",
+    "desktopBuild": "PASS: release alignment, TypeScript and Vite; existing chunk-size warning only",
+    "pythonSdkTestsPassed": 30,
+    "offlineAuthenticationGateTestsPassed": 16,
+    "missionTracker": {
+      "sources": 18,
+      "requirements": 2112,
+      "check": "PASS"
+    },
+    "scopedLint": "PASS",
+    "environment": "Existing root dependency overlay reused; no fresh exact-lock installation or shared Prisma regeneration. Desktop dependency link restored only after whole-web types/default suite.",
+    "initialFailure": "First whole-web TypeScript run found a test mock literal-return inference mismatch. Explicit (): number annotation corrected only mock typing; fresh unchanged compiler options passed."
+  },
+  "limitations": [
+    "No native application, actual filesystem, keyboard/OS, installer/signing/updater/vault or real GitHub acceptance.",
+    "No production authentication/database, paid-policy, cloud deployment/rollback, provider or live billing acceptance.",
+    "Already-started native/remote operations may complete in their original repository; navigation is not cancellation or rollback.",
+    "Clean exact-head CI, production compilation and applicable native CI remain merge gates."
+  ],
+  "externalChanges": false
+}

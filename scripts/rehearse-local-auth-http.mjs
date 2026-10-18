@@ -8,6 +8,9 @@ import { dirname, join } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { PrismaClient } from "@prisma/client";
 import { rehearseLocalDesktopPairingHttp } from "./rehearse-local-desktop-pairing-http.mjs";
+import { startOwnedAirflowWireFixture } from "./fixtures/ownedAirflowWireFixture.mjs";
+import { localAirflowChildEnvironment } from "./fixtures/localAirflowChildEnvironment.mjs";
+import { rehearseLocalAirflowHttp } from "./rehearse-local-airflow-http.mjs";
 import { startOwnedAzureWireFixture } from "./fixtures/ownedAzureWireFixture.mjs";
 import { localAzureChildEnvironment } from "./fixtures/localAzureChildEnvironment.mjs";
 import { rehearseLocalAzureHttp } from "./rehearse-local-azure-http.mjs";
@@ -73,7 +76,9 @@ async function unusedPort() { const server = createServer(); const origin = awai
 const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 /** Actual app HTTP + real disposable PostgreSQL; local mail capture, not browser/provider acceptance. */
-export async function rehearseLocalAuthHttp(value, { azureWireFixture = false, awsWireFixture = false, agentReceiptFixture = false, agentReadinessFixture = false, savedTerraformFixture = false, savedTerraformExecutable } = {}) {
+export async function rehearseLocalAuthHttp(value, { airflowWireFixture = false, azureWireFixture = false, awsWireFixture = false, agentReceiptFixture = false, agentReadinessFixture = false, savedTerraformFixture = false, savedTerraformExecutable } = {}) {
+  assert.equal(typeof airflowWireFixture, "boolean", "explicit_airflow_fixture_option_required");
+  if (airflowWireFixture) assert.ok(!azureWireFixture && !awsWireFixture && !savedTerraformFixture && !agentReceiptFixture && !agentReadinessFixture, "separate_owned_airflow_fixture_required");
   assert.equal(typeof azureWireFixture, "boolean", "explicit_azure_fixture_option_required");
   if (azureWireFixture) assert.ok(!awsWireFixture && !savedTerraformFixture, "separate_owned_azure_fixture_required");
   assert.equal(typeof awsWireFixture, "boolean", "explicit_aws_fixture_option_required");
@@ -104,6 +109,7 @@ export async function rehearseLocalAuthHttp(value, { azureWireFixture = false, a
   let app;
   let awsWire;
   let azureWire;
+  let airflowWire;
   let appLog = "";
   try {
     const [tables] = await client.$queryRawUnsafe("SELECT count(*)::int AS count FROM pg_tables WHERE schemaname NOT IN ('pg_catalog', 'information_schema') AND schemaname NOT LIKE 'pg_toast%'");
@@ -114,10 +120,11 @@ export async function rehearseLocalAuthHttp(value, { azureWireFixture = false, a
     const env = localAuthChildEnvironment(process.env, { databaseUrl, appOrigin, mailOrigin });
     const bootstrap = spawnSync(process.execPath, [join(root, "node_modules/prisma/build/index.js"), "db", "push", "--skip-generate", "--schema", join(root, "prisma/schema.prisma")], { cwd: root, env, encoding: "utf8", timeout: 120_000, maxBuffer: 4 * 1024 * 1024 });
     assert.equal(bootstrap.status, 0, "current_schema_fixture_bootstrap_failed");
+    if (airflowWireFixture) airflowWire = await startOwnedAirflowWireFixture();
     if (awsWireFixture) awsWire = await startOwnedAwsWireFixture();
     if (azureWireFixture) azureWire = await startOwnedAzureWireFixture();
     const savedTerraformKey = savedTerraformFixture ? `synthetic-saved-plan-${randomBytes(24).toString("hex")}` : undefined;
-    const appEnv = azureWire ? localAzureChildEnvironment(env, { appOrigin, mailOrigin, fixture: azureWire }) : awsWire ? localAwsChildEnvironment(env, { appOrigin, mailOrigin, fixture: awsWire }) : savedTerraformKey ? { ...env, CREDENTIAL_ENCRYPTION_KEY: savedTerraformKey } : env;
+    const appEnv = airflowWire ? localAirflowChildEnvironment(env, { appOrigin, mailOrigin, fixture: airflowWire }) : azureWire ? localAzureChildEnvironment(env, { appOrigin, mailOrigin, fixture: azureWire }) : awsWire ? localAwsChildEnvironment(env, { appOrigin, mailOrigin, fixture: awsWire }) : savedTerraformKey ? { ...env, CREDENTIAL_ENCRYPTION_KEY: savedTerraformKey } : env;
     app = spawn(process.execPath, [join(root, "node_modules/next/dist/bin/next"), "dev", "--webpack", "--hostname", "127.0.0.1", "--port", appPort], { cwd: root, env: appEnv, detached: true, stdio: ["ignore", "pipe", "pipe"] });
     for (const stream of [app.stdout, app.stderr]) stream.on("data", (data) => { appLog = (appLog + data).slice(-100_000); });
     const jar = new Map();
@@ -181,9 +188,11 @@ export async function rehearseLocalAuthHttp(value, { azureWireFixture = false, a
     let agentReadiness;
     let savedTerraform;
     let azure;
+    let airflow;
     const desktopPairing = await rehearseLocalDesktopPairingHttp({ appOrigin, webRequest: request, challenge,
       deviceFingerprint: "isolated-http-fixture", expectedWorkspace, email: user.email,
-      ...((azureWire || awsWire || agentReceiptFixture || agentReadinessFixture || savedTerraformFixture) ? { onPaired: async ({ token, deviceRequest }) => {
+      ...((airflowWire || azureWire || awsWire || agentReceiptFixture || agentReadinessFixture || savedTerraformFixture) ? { onPaired: async ({ token, deviceRequest }) => {
+        if (airflowWire) airflow = await rehearseLocalAirflowHttp({ databaseUrl, client, appOrigin, token, organizationId: expectedWorkspace, userId: user.id, fixture: airflowWire });
         if (azureWire) { await azureWire.waitUntilReady(); azure = await rehearseLocalAzureHttp({ databaseUrl, client, deviceRequest, token, organizationId: expectedWorkspace, userId: user.id, fixture: azureWire }); }
         if (savedTerraformFixture) savedTerraform = await rehearseLocalSavedTerraformHttp({ databaseUrl, client, deviceRequest, token, organizationId: expectedWorkspace, userId: user.id, executablePath: savedTerraformExecutable, encryptionSecret: savedTerraformKey });
         if (agentReadinessFixture) agentReadiness = await rehearseLocalAgentReadinessHttp({ databaseUrl, client, deviceRequest, token, organizationId: expectedWorkspace, userId: user.id });
@@ -194,7 +203,7 @@ export async function rehearseLocalAuthHttp(value, { azureWireFixture = false, a
     const approvalDecisions = await rehearseLocalApprovalHttp({ databaseUrl, client, request, appOrigin,
       userId: user.id, organizationId: expectedWorkspace });
     assert.equal(assertCommittedApplicationSource(root), sourceCommit, "application_source_changed_during_journey");
-    return { sourceCommit, desktopPairing, approvalDecisions, ...(azure ? { azure } : {}), ...(agentReceipt ? { agentReceipt } : {}), ...(agentReadiness ? { agentReadiness } : {}), ...(savedTerraform ? { savedTerraform } : {}), schemaFixture: "current_schema_not_migration_recovery", transport: "real_local_next_http", database: "disposable_synthetic_postgresql", mail: "loopback_capture_not_provider_delivery",
+    return { sourceCommit, desktopPairing, approvalDecisions, ...(airflow ? { airflow } : {}), ...(azure ? { azure } : {}), ...(agentReceipt ? { agentReceipt } : {}), ...(agentReadiness ? { agentReadiness } : {}), ...(savedTerraform ? { savedTerraform } : {}), schemaFixture: "current_schema_not_migration_recovery", transport: "real_local_next_http", database: "disposable_synthetic_postgresql", mail: "loopback_capture_not_provider_delivery",
       verified: ["desktop_origin_challenge", "signup_requires_email_proof", "actual_sdk_mail_capture", "unverified_password_denied", "expired_proof_denied", "actual_resend_replacement", "single_use_proof_and_callback", "incorrect_password_denied", "verified_credentials_csrf_cookie_session", "accepted_personal_workspace_only", "no_billing_plan_created"],
       notVerified: ["browser_render_or_interaction", "production_recovery_or_login", "google_github_oauth", "native_pairing_or_vault", "external_mail_delivery", "cloud_execution_or_billing"] };
   } catch (error) {
@@ -210,7 +219,9 @@ export async function rehearseLocalAuthHttp(value, { azureWireFixture = false, a
     }
     // A wire cleanup failure must never skip independently owned mail/DB cleanup.
     try {
-      try { if (awsWire) await awsWire.close(); } finally { if (azureWire) await azureWire.close(); }
+      try {
+        try { if (awsWire) await awsWire.close(); } finally { if (azureWire) await azureWire.close(); }
+      } finally { if (airflowWire) await airflowWire.close(); }
     } finally {
       try {
         if (mailServer.listening) await new Promise((resolve) => mailServer.close(resolve));

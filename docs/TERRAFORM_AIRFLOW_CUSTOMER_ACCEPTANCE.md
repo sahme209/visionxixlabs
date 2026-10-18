@@ -23,6 +23,42 @@ Reviewed 2026-10-15. This is implementation evidence, not evidence of a complete
 
 ## Airflow readiness and governed execution
 
+The 2026-10-16 destination-integrity source milestone adds immutable scheduler
+review evidence, an authenticated paired review read, digest-bound approval and
+the actual native Batch automation approval card. It reuses the existing target
+snapshot, execution CAS, policy and stable allowance reservation. The final local
+target/connection/approver fence follows reservation and precedes durable intent;
+dispatch receives reviewed fields. No provider-wide lock after commit is claimed.
+
+Optional restart-review storage remains proposal-only under
+`docs/proposals/airflow-execution-review-v1.sql`. Absent/partial/drift/unavailable
+catalog evidence blocks restart proposals and approvals without new ordinary
+Prisma columns. Historical executions cannot recapture today's target; rejection
+remains available. A stale final target releases only a new confirmed hold and
+restores a rejectable pending action with no retry. Release uncertainty retains
+reconciliation; a failed pending-state write reports local state uncertainty.
+Existing unknown holds and receipt replay retain their prior stable key.
+
+Focused tests include scheduler execution/sidecar atomic composition, preclaim
+and final-fence refusals, digest/body requirements, release and state-write
+failures, unchanged non-restart behavior and actual native-panel stale-context
+isolation. They use recording providers and bounded in-memory repositories.
+[Owned acceptance evidence](mission/local-airflow-restart-review-acceptance.json)
+at clean `2c9fd78e` records exact real-catalog readiness, actual paired Next HTTP,
+two-client PostgreSQL target/membership lock waits and verified cleanup. The
+synthetic Airflow3 fixture served only GETs; no provider write, GitHub dispatch,
+real Airflow/timetable, packaged native UI or production installation is claimed.
+Fresh web/desktop TypeScript, desktop build, 6,964 default tests and 30 Python
+tests passed. See `AIRFLOW_RESTART_REVIEW_PROPOSAL.md` for commands and limits.
+
+The separate [combined-source observation](mission/local-airflow-billing-combined-acceptance.json)
+records another actual owned Airflow Next/PG pass and 7,117 default tests at
+billing-integrated `f5aedfac`. After the desktop-only main merge, final
+`6247b784` passed fresh web/desktop types, 51 focused component/demo tests,
+desktop build, Python30, offline16 and tracker checks. These are distinct
+source scopes; the earlier receipts remain unchanged. No real provider or
+production acceptance follows, and exact-final-head full CI remains required.
+
 The Airflow 3 client uses `/api/v2`, tenant-encrypted connection credentials, bounded requests, and redirect refusal. Scheduled DAG triggers use the existing deterministic occurrence identifier and reconcile a 409 against the exact run; that idempotency implementation is retained.
 
 Dependency-gated proposals require successful dependency runs whose valid logical timestamps are at least as recent as the source's valid logical timestamp. Missing or malformed timestamps cannot establish freshness and block proposal/dispatch. In particular, an Airflow 3 manual run with `logical_date: null` must not inherit permission from an unrelated historical success. Rules without dependencies retain manual-run support. This is a freshness gate, not proof that upstream and downstream share a business partition: exact data-interval correlation is still missing. A null-date dependency workflow needs an explicit reviewed correlation policy before enabling execution; do not invent a timestamp or disable dependencies to bypass the gate.
@@ -37,7 +73,21 @@ Regression evidence: `automationTickCounts.test.ts` exercises missing/malformed/
 
 `lib/terraform/runner.ts` is a legacy lead/starter-token path. Live apply is disabled by default with `TERRAFORM_LEGACY_APPLY_ENABLED`; the tenant orchestration boundary independently keeps apply disabled. Preserve those gates.
 
-The existing runner generates a textual plan, then would run a fresh `terraform apply -auto-approve` if its legacy flag were enabled. It does not persist a saved binary plan, bind approval to a plan digest and tenant/environment/credential identity, atomically consume current role authorization, or establish state lock/recovery evidence. Those are missing engineering requirements, not merely missing cloud credentials. Do not enable either apply flag as an acceptance shortcut. Plan/refresh and provider initialization may contact external services; this audit did not run them against customer accounts.
+The older lead/text-job path now refuses live planning and apply approval before
+CLI detection, initialization, provider IO or job/approval writes. Direct exported
+init/validate/plan helpers also refuse. Historical status and approval timestamps
+remain readable with explicit legacy-text scope, unavailable approval and
+execution disabled; Resilience keeps configuration generation without live
+plan/confirmation/apply controls or Ready to deploy claims. See
+[legacy authority containment](TERRAFORM_LEGACY_AUTHORITY_CONTAINMENT.md).
+
+The historical apply implementation would still run a fresh
+`terraform apply -auto-approve` if its separate legacy kill switch were enabled;
+that switch and the signed-handoff refusal are unchanged. It has no saved-binary
+approval binding, current tenant/target/backend/credential authority or state
+lock/recovery evidence. These remain missing engineering, not merely missing
+cloud credentials. Do not enable either apply flag as an acceptance shortcut.
+No customer provider initialization, plan, refresh or apply was run.
 
 Before a Terraform execution milestone can be claimed, implement the canonical tenant executor with saved-plan artifact integrity, approved target/credential binding, current approver capabilities, exclusive claim/state locking, bounded execution and explicit unknown-outcome reconciliation. Then validate in an explicitly authorized disposable nonproduction account and account for sensitive plan/state artifacts. A Terraform rollback is a separately planned and approved change; no generic automatic reversal is promised.
 

@@ -44,6 +44,52 @@ The scheduler is idempotent per automation and Airflow run. Multiple ticks canno
 - Production deployment proposals still pass the standard environment policy evaluator. Airflow never grants an administrative bypass.
 - Connection, trigger, proposal, approval, rejection, success, failure, deployment, and rollback outcomes are recorded in the tenant audit trail.
 
+### Immutable service-restart destination review · 2026-10-16
+
+The source path for a new `deploy` proposal now requires one server-captured,
+immutable destination review created in the same transaction as its execution.
+In **Batch automation → Approvals**, **Review restart destination** shows the
+source DAG/run/state, repository/ref context, environment/tier, target ID and
+revision, role ARN, region and ECS cluster/service. **Approve service restart**
+sends the displayed digest through the current paired session. Credential or
+service-origin replacement clears the review and discards late responses.
+
+The optional storage is **not installed by this feature**. Its exact SQL lives
+under `docs/proposals/airflow-execution-review-v1.sql`, outside automatic Prisma
+migrations. A separate owner-reviewed installation is required before new
+restart proposals are available. Raw catalog/marker checks fail closed on
+absent, partial, changed or unavailable storage without adding columns to
+ordinary Prisma reads. Historical pending/failed actions without immutable
+evidence cannot be backfilled from today's destination. Reject them and review
+a new eligible source-run proposal; rejection remains available independently.
+
+Approval compares the stored review with current rule, connection and target
+before the execution claim. A final short transaction, after a newly acquired
+allowance reservation, locks the current local authority/configuration rows and
+checks the exact target again before saving durable dispatch intent. The workflow
+receives the reviewed target fields. A confirmed pre-dispatch refusal releases
+only the newly acquired hold and restores pending approval without an automatic
+retry. An unconfirmed release retains reconciliation state; an unconfirmed local
+state write reports that uncertainty and leaves replay paused. Existing receipts
+and unknown-outcome holds are never released by this refusal path.
+
+This transaction does not lock the remote provider after commit. Source policy,
+the existing deployment capability gate and other approval checks still apply.
+An ECS service restart does not promote a source artifact, establish image
+provenance, verify application health or prove image recovery. Dependencies still
+use latest-run freshness, not exact cross-DAG interval correlation. Focused
+recording-fixture tests are source evidence. The
+[owned acceptance receipt](mission/local-airflow-restart-review-acceptance.json)
+at clean `2c9fd78e` separately records actual PostgreSQL catalog/two-client fence
+and paired Next HTTP checks with verified cleanup. Its Airflow3 GET data is
+synthetic; provider dispatch, real Airflow and packaged native acceptance remain
+unverified. Optional SQL was installed only in that disposable owned fixture.
+An [additive combined-source receipt](mission/local-airflow-billing-combined-acceptance.json)
+records the repeated owned Airflow run and full default suite at `f5aedfac`, then
+fresh types/focused desktop/build checks after desktop-main integration at
+`6247b784`. It retains the historical receipt and explicitly distinguishes the
+commits tested; provider/native/production limits are unchanged.
+
 ## Failure and recovery
 
 - A failed endpoint validation never marks a connection active.
