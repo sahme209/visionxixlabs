@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState, type KeyboardEvent } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, type KeyboardEvent } from "react";
 import { invoke } from "@tauri-apps/api/core";
 import { ExternalLink } from "../components/Primitives";
 import { desktopClient } from "../lib/desktopClient";
@@ -58,9 +58,19 @@ function isProjectMetadata(path: string): boolean {
 }
 
 export function RepositoryWorkspaceView() {
+  const context = desktopClient.config;
+  const [scope, setScope] = useState(() => ({ context, generation: 0 }));
+  if (scope.context !== context) {
+    setScope({ context, generation: scope.generation + 1 });
+    return <RepositoryWorkspaceSession key={scope.generation + 1} />;
+  }
+  return <RepositoryWorkspaceSession key={scope.generation} />;
+}
+
+function RepositoryWorkspaceSession() {
   const [parentPath, setParentPath] = useState("");
   const [repositories, setRepositories] = useState<string[]>([]);
-  const [selectedRepository, setSelectedRepository] = useState<string | null>(null);
+  const [selectedRepository, setSelectedRepositoryState] = useState<string | null>(null);
   const [status, setStatus] = useState<RepositoryStatus | null>(null);
   const [files, setFiles] = useState<string[]>([]);
   const [filter, setFilter] = useState("");
@@ -81,61 +91,102 @@ export function RepositoryWorkspaceView() {
   const [prTitle, setPrTitle] = useState("");
   const [prBase, setPrBase] = useState("main");
   const [prUrl, setPrUrl] = useState<string | null>(null);
-  const [confirmation, setConfirmation] = useState<Confirmation | null>(null);
+  const [confirmation, setConfirmationState] = useState<Confirmation | null>(null);
   const [checks, setChecks] = useState<RepositoryCheck[]>([]);
   const [verificationResult, setVerificationResult] = useState<RepositoryCheckResult | null>(null);
   const [showVerification, setShowVerification] = useState(false);
 
+  const context = desktopClient.config;
+  const mounted = useRef(false);
+  const owner = useRef({ repository: null as string | null, generation: 0 });
+  const fileRequest = useRef(0);
+  const statusRequest = useRef(0);
+  const listRequest = useRef(0);
+  const operationRequest = useRef(0);
+  const activeBusy = useRef<string | null>(null);
+  const loadedFile = useRef<{ repository: string; path: string; content: string; saved: string } | null>(null);
+  const owns = useCallback((captured: typeof owner.current) => mounted.current && desktopClient.config === context
+    && captured.generation === owner.current.generation && captured.repository === owner.current.repository, [context]);
+
+  useEffect(() => {
+    const lifecycle = mounted, selection = owner, activeOperation = operationRequest;
+    lifecycle.current = true;
+    return () => { lifecycle.current = false; selection.current = { ...selection.current, generation: selection.current.generation + 1 }; activeOperation.current++; };
+  }, []);
+
+  const setSelectedRepository = useCallback((next: string | null | ((current: string | null) => string | null)) => {
+    const repository = typeof next === "function" ? next(owner.current.repository) : next;
+    if (repository === owner.current.repository) return;
+    owner.current = { repository, generation: owner.current.generation + 1 };
+    fileRequest.current++; operationRequest.current++; activeBusy.current = null; loadedFile.current = null;
+    setSelectedRepositoryState(repository); setStatus(null); setFiles([]); setChecks([]);
+    setSelectedFile(null); setContent(""); setSavedContent(""); setBusy(null);
+    setError(null); setNotice(null); setPrUrl(null); setVerificationResult(null); setConfirmationState(null);
+  }, []);
+
+  function setConfirmation(next: Confirmation | null) {
+    const captured = owner.current;
+    setConfirmationState(next ? { ...next, onConfirm: async () => { if (owns(captured)) await next.onConfirm(); } } : null);
+  }
+
+  function editContent(next: string) {
+    if (!loadedFile.current || loadedFile.current.repository !== owner.current.repository) return;
+    loadedFile.current.content = next; setContent(next);
+  }
+
   const refreshRepository = useCallback(async (repositoryPath: string) => {
+    const captured = owner.current, request = ++statusRequest.current;
+    if (!owns(captured) || captured.repository !== repositoryPath) return;
     const [nextStatus, nextFiles] = await Promise.all([
       invoke<RepositoryStatus>("repository_status", { repositoryPath }),
       invoke<string[]>("list_repository_files", { repositoryPath }),
     ]);
-    setStatus(nextStatus);
-    setFiles(nextFiles);
-  }, []);
+    if (!owns(captured) || captured.repository !== repositoryPath || request !== statusRequest.current) return;
+    setStatus(nextStatus); setFiles(nextFiles);
+  }, [owns]);
 
-  const refreshList = useCallback(async (directory: string) => {
+  const refreshList = useCallback(async (directory: string, selectRepository = true) => {
+    if (!mounted.current || desktopClient.config !== context) return;
+    const request = ++listRequest.current;
     const next = await invoke<string[]>("list_local_repositories", { parentPath: directory });
+    if (!mounted.current || desktopClient.config !== context || request !== listRequest.current) return;
     setRepositories(next);
-    setSelectedRepository((current) => current && next.includes(current) ? current : (next[0] ?? null));
-  }, []);
+    if (selectRepository) setSelectedRepository(current => current && next.includes(current) ? current : (next[0] ?? null));
+  }, [context, setSelectedRepository]);
 
   useEffect(() => {
-    void invoke<string>("default_repos_directory").then((directory) => {
-      setParentPath(directory);
-      return refreshList(directory);
-    }).catch((cause) => setError(String(cause)));
-  }, [refreshList]);
+    let cancelled = false;
+    void invoke<string>("default_repos_directory").then(directory => {
+      if (cancelled || desktopClient.config !== context) return;
+      setParentPath(directory); return refreshList(directory);
+    }).catch(cause => { if (!cancelled && desktopClient.config === context) setError(String(cause)); });
+    return () => { cancelled = true; };
+  }, [context, refreshList]);
 
   useEffect(() => {
-    void desktopClient.listGithubRepositories().then((repositoriesResult) => {
-      if (!repositoriesResult.ok) {
-        setRepositoryCatalogError(repositoriesResult.error);
-      } else {
+    let cancelled = false;
+    void desktopClient.listGithubRepositories().then(repositoriesResult => {
+      if (cancelled || desktopClient.config !== context) return;
+      if (!repositoriesResult.ok) setRepositoryCatalogError(repositoriesResult.error);
+      else {
         setRemoteRepositories(repositoriesResult.data.repositories);
         const preferred = window.localStorage.getItem("axiom.workspace.repository.v1");
-        const selected = repositoriesResult.data.repositories.find((repository) => repository.fullName === preferred) ?? repositoriesResult.data.repositories[0];
-        setCloneRepository((current) => current || selected?.fullName || "");
-        setRepositoryCatalogTruncated(repositoriesResult.data.truncated);
-        setRepositoryCatalogError(null);
+        const selected = repositoriesResult.data.repositories.find(repository => repository.fullName === preferred) ?? repositoriesResult.data.repositories[0];
+        setCloneRepository(current => current || selected?.fullName || "");
+        setRepositoryCatalogTruncated(repositoriesResult.data.truncated); setRepositoryCatalogError(null);
       }
-    });
-  }, []);
+    }).catch(() => { if (!cancelled && desktopClient.config === context) setRepositoryCatalogError("Connected repositories could not be loaded."); });
+    return () => { cancelled = true; };
+  }, [context]);
 
   useEffect(() => {
     if (!selectedRepository) return;
-    setError(null);
-    setSelectedFile(null);
-    setContent("");
-    setSavedContent("");
-    setPrUrl(null);
-    setVerificationResult(null);
+    const captured = owner.current;
     void Promise.all([
       refreshRepository(selectedRepository),
-      invoke<RepositoryCheck[]>("detect_repository_checks", { repositoryPath: selectedRepository }).then(setChecks),
-    ]).catch((cause) => setError(String(cause)));
-  }, [refreshRepository, selectedRepository]);
+      invoke<RepositoryCheck[]>("detect_repository_checks", { repositoryPath: selectedRepository }).then(next => { if (owns(captured)) setChecks(next); }),
+    ]).catch(cause => { if (owns(captured)) setError(String(cause)); });
+  }, [owns, refreshRepository, selectedRepository]);
 
   const visibleFiles = useMemo(() => {
     const query = filter.trim().toLowerCase();
@@ -156,28 +207,37 @@ export function RepositoryWorkspaceView() {
   useEffect(() => {
     if (!confirmation) return;
     const dismiss = (event: globalThis.KeyboardEvent) => {
-      if (event.key === "Escape") setConfirmation(null);
+      if (event.key === "Escape") setConfirmationState(null);
     };
     window.addEventListener("keydown", dismiss);
     return () => window.removeEventListener("keydown", dismiss);
   }, [confirmation]);
 
-  async function run(label: string, operation: () => Promise<void>) {
-    setBusy(label); setError(null); setNotice(null);
-    try { await operation(); } catch (cause) { setError(cause instanceof Error ? cause.message : String(cause)); }
-    finally { setBusy(null); }
+  async function run(label: string, operation: (current: () => boolean) => Promise<void>) {
+    const captured = owner.current;
+    if (!owns(captured)) return;
+    const request = ++operationRequest.current;
+    const current = () => owns(captured) && request === operationRequest.current;
+    activeBusy.current = label; setBusy(label); setError(null); setNotice(null);
+    try { await operation(current); } catch (cause) { if (current()) setError(cause instanceof Error ? cause.message : String(cause)); }
+    finally { if (current()) { activeBusy.current = null; setBusy(null); } }
   }
 
   async function openFile(path: string) {
-    if (!selectedRepository) return;
-    await run("open", async () => {
-      const next = await invoke<string>("read_repository_file", { repositoryPath: selectedRepository, relativePath: path });
+    const repository = owner.current.repository;
+    if (!repository) return;
+    const request = ++fileRequest.current;
+    loadedFile.current = null; setSelectedFile(null); setContent(""); setSavedContent("");
+    await run("open", async current => {
+      const next = await invoke<string>("read_repository_file", { repositoryPath: repository, relativePath: path });
+      if (!current() || request !== fileRequest.current) return;
+      loadedFile.current = { repository, path, content: next, saved: next };
       setSelectedFile(path); setContent(next); setSavedContent(next); setCommitMessage("");
     });
   }
 
   function selectFile(path: string) {
-    if (content !== savedContent) {
+    if (loadedFile.current && loadedFile.current.content !== loadedFile.current.saved) {
       setConfirmation({
         title: "Discard unsaved changes?",
         description: `Your edits to ${selectedFile ?? "the current file"} have not been saved.`,
@@ -192,7 +252,7 @@ export function RepositoryWorkspaceView() {
 
   function chooseRepository(repository: string) {
     if (repository === selectedRepository) return;
-    if (content !== savedContent) {
+    if (loadedFile.current && loadedFile.current.content !== loadedFile.current.saved) {
       setConfirmation({
         title: "Switch repositories?",
         description: `Your edits to ${selectedFile ?? "the current file"} will be discarded.`,
@@ -206,39 +266,49 @@ export function RepositoryWorkspaceView() {
   }
 
   async function saveFile() {
-    if (!selectedRepository || !selectedFile) return;
-    await run("save", async () => {
-      await invoke("write_repository_file", { repositoryPath: selectedRepository, relativePath: selectedFile, content });
-      setSavedContent(content); setNotice(`Saved ${selectedFile}`);
-      await refreshRepository(selectedRepository);
+    const file = loadedFile.current;
+    if (activeBusy.current || !file || file.repository !== owner.current.repository || file.path !== selectedFile || file.content !== content) return;
+    const snapshot = file.content;
+    await run("save", async current => {
+      if (!current() || loadedFile.current !== file || file.content !== snapshot) return;
+      await invoke("write_repository_file", { repositoryPath: file.repository, relativePath: file.path, content: snapshot });
+      if (!current() || loadedFile.current !== file) return;
+      file.saved = snapshot; setSavedContent(snapshot); setNotice(`Saved ${file.path}`);
+      await refreshRepository(file.repository);
     });
   }
 
   async function clone() {
     const repositoryFullName = cloneRepository.trim();
     if (!repositoryFullName.includes("/") || !parentPath) return;
-    await run("clone", async () => {
+    await run("clone", async current => {
       const credential = await desktopClient.mintGithubCloneToken({ repositoryFullName, purpose: "clone" });
+      if (!current()) return;
       if (!credential.ok) throw new Error(credential.error);
       const repositoryName = repositoryFullName.split("/")[1];
       const destinationPath = `${parentPath.replace(/\/$/, "")}/${repositoryName}`;
       await invoke("clone_repository", { cloneUrl: credential.data.cloneUrl, destinationPath });
-      await refreshList(parentPath);
+      if (!current()) return;
+      await refreshList(parentPath, false);
+      if (!current()) return;
       setSelectedRepository(destinationPath);
       setNotice(`Cloned ${repositoryFullName} without storing its access token.`);
     });
   }
 
   async function performSync(direction: "pull" | "push") {
-    if (!selectedRepository || !status?.repositoryFullName) return;
-    await run(direction, async () => {
+    if (!selectedRepository || selectedRepository !== owner.current.repository || !status?.repositoryFullName) return;
+    await run(direction, async current => {
       const repositoryFullName = status.repositoryFullName;
       if (!repositoryFullName) return;
       if (direction === "push" && onDefaultBranch) throw new Error("Create a branch and open a pull request; direct pushes to the default branch are not allowed.");
       const credential = await desktopClient.mintGithubCloneToken({ repositoryFullName, purpose: direction, ...(direction === "push" ? { branch: status.branch } : {}) });
+      if (!current()) return;
       if (!credential.ok) throw new Error(credential.error);
       await invoke(`${direction}_repository`, { repositoryPath: selectedRepository, authenticatedUrl: credential.data.cloneUrl });
+      if (!current()) return;
       await refreshRepository(selectedRepository);
+      if (!current()) return;
       setNotice(direction === "push" ? "Branch pushed to GitHub." : "Repository synchronized with a fast-forward pull.");
     });
   }
@@ -256,42 +326,52 @@ export function RepositoryWorkspaceView() {
   }
 
   async function createBranch() {
-    if (!selectedRepository || !branchName.trim()) return;
-    await run("branch", async () => {
+    if (!selectedRepository || selectedRepository !== owner.current.repository || !branchName.trim()) return;
+    await run("branch", async current => {
       await invoke("create_repository_branch", { repositoryPath: selectedRepository, branchName: branchName.trim() });
+      if (!current()) return;
       setBranchName("");
       await refreshRepository(selectedRepository);
+      if (!current()) return;
       setNotice("Local branch created. Push it when you are ready to publish it.");
     });
   }
 
   async function commit() {
-    if (!selectedRepository || !selectedFile || !commitMessage.trim()) return;
-    await run("commit", async () => {
+    const file = loadedFile.current;
+    if (!file || file.repository !== owner.current.repository || file.path !== selectedFile || file.content !== content || activeBusy.current || !commitMessage.trim()) return;
+    const snapshot = file.content;
+    await run("commit", async current => {
       if (onDefaultBranch) throw new Error("Create a branch before committing. Changes must reach the default branch through a pull request.");
-      if (content !== savedContent) {
-        await invoke("write_repository_file", { repositoryPath: selectedRepository, relativePath: selectedFile, content });
-        setSavedContent(content);
+      if (!current() || loadedFile.current !== file || file.content !== snapshot) return;
+      if (snapshot !== file.saved) {
+        await invoke("write_repository_file", { repositoryPath: file.repository, relativePath: file.path, content: snapshot });
+        if (!current() || loadedFile.current !== file) return;
+        file.saved = snapshot; setSavedContent(snapshot);
       }
-      const sha = await invoke<string>("commit_repository_file", { repositoryPath: selectedRepository, relativePath: selectedFile, message: commitMessage.trim() });
-      setCommitMessage("");
-      await refreshRepository(selectedRepository);
-      setNotice(`Committed ${selectedFile} at ${sha.slice(0, 8)}. Push explicitly when ready.`);
+      if (!current() || loadedFile.current !== file || file.content !== snapshot) throw new Error("The file changed while saving. Review it before committing.");
+      const sha = await invoke<string>("commit_repository_file", { repositoryPath: file.repository, relativePath: file.path, message: commitMessage.trim() });
+      if (!current()) return;
+      setCommitMessage(""); await refreshRepository(file.repository);
+      if (current()) setNotice(`Committed ${file.path} at ${sha.slice(0, 8)}. Push explicitly when ready.`);
     });
   }
 
   async function publishAndOpenPullRequest() {
-    if (!status?.repositoryFullName || !prTitle.trim() || !prBase.trim() || !status.branch || status.branch === prBase.trim()) return;
-    await run("pr", async () => {
+    if (!selectedRepository || selectedRepository !== owner.current.repository || !status?.repositoryFullName || !prTitle.trim() || !prBase.trim() || !status.branch || status.branch === prBase.trim()) return;
+    await run("pr", async current => {
       const repositoryFullName = status.repositoryFullName;
       if (!repositoryFullName || !selectedRepository) return;
       const credential = await desktopClient.mintGithubCloneToken({ repositoryFullName, purpose: "push", branch: status.branch });
+      if (!current()) return;
       if (!credential.ok) throw new Error(credential.error);
       await invoke("push_repository", { repositoryPath: selectedRepository, authenticatedUrl: credential.data.cloneUrl });
+      if (!current()) return;
       const result = await desktopClient.openGithubPullRequest({
         repositoryFullName, head: status.branch, base: prBase.trim(), title: prTitle.trim(),
         body: "Opened from the governed Axiom Agent desktop repository workspace.",
       });
+      if (!current()) return;
       if (!result.ok) throw new Error(result.error);
       setPrUrl(result.data.htmlUrl); setPrTitle("");
       setNotice(`Pull request #${result.data.number} opened.`);
@@ -316,17 +396,19 @@ export function RepositoryWorkspaceView() {
   }
 
   function verify(check: RepositoryCheck) {
-    if (!selectedRepository) return;
+    if (!selectedRepository || selectedRepository !== owner.current.repository) return;
     setConfirmation({
       title: `Run ${check.label}?`,
       description: `${check.command} will run inside this repository with credentials removed, a 5 minute timeout, and a 1 MB output limit. Repository scripts are code; run only repositories you trust.`,
       confirmLabel: "Run check",
       onConfirm: async () => {
-        await run(`verify:${check.id}`, async () => {
+        await run(`verify:${check.id}`, async current => {
           const result = await invoke<RepositoryCheckResult>("run_repository_check", { repositoryPath: selectedRepository, checkId: check.id });
+          if (!current()) return;
           setVerificationResult(result);
           setShowVerification(true);
           await refreshRepository(selectedRepository);
+          if (!current()) return;
           setNotice(result.success ? `${check.label} passed.` : `${check.label} failed with exit code ${result.exitCode ?? "unknown"}.`);
         });
       },
@@ -340,7 +422,7 @@ export function RepositoryWorkspaceView() {
       const target = event.currentTarget;
       const next = `${content.slice(0, target.selectionStart)}  ${content.slice(target.selectionEnd)}`;
       const cursor = target.selectionStart + 2;
-      setContent(next);
+      editContent(next);
       requestAnimationFrame(() => { target.selectionStart = cursor; target.selectionEnd = cursor; });
     }
   }
@@ -413,7 +495,7 @@ export function RepositoryWorkspaceView() {
             <button type="button" disabled={Boolean(busy) || content === savedContent} onClick={() => void saveFile()} className="btn-secondary disabled:opacity-40">Save ⌘S</button>
           </div>
           {isProjectMetadata(selectedFile) && <div role="status" className="border-b border-white/[0.08] bg-white/[0.025] px-4 py-2 text-xs text-zinc-400">This is generated project metadata. Edit it only when you understand the project format; source files are safer for normal changes.</div>}
-          <textarea value={content} onChange={(event) => setContent(event.target.value)} onKeyDown={editorKeyDown} spellCheck={false} aria-label={`Editing ${selectedFile}`} className="min-h-0 flex-1 resize-none bg-[#0b0c0e] p-4 font-mono text-[13px] leading-6 text-zinc-200 outline-none selection:bg-violet-500/30" />
+          <textarea value={content} onChange={(event) => editContent(event.target.value)} onKeyDown={editorKeyDown} spellCheck={false} aria-label={`Editing ${selectedFile}`} className="min-h-0 flex-1 resize-none bg-[#0b0c0e] p-4 font-mono text-[13px] leading-6 text-zinc-200 outline-none selection:bg-violet-500/30" />
           <div className="grid grid-cols-[minmax(220px,1fr)_auto_minmax(180px,0.7fr)_120px_auto] items-center gap-2 border-t border-white/[0.07] bg-[#111315] p-3">
             <input value={commitMessage} onChange={(event) => setCommitMessage(event.target.value)} placeholder="Commit message for this file" className="rounded-md border border-white/10 bg-black/25 px-3 py-2 text-xs outline-none" />
             <button type="button" disabled={Boolean(busy) || !commitMessage.trim() || onDefaultBranch} title={onDefaultBranch ? "Create a branch before committing." : undefined} onClick={() => void commit()} className="btn-primary disabled:opacity-40">{busy === "commit" ? "Committing…" : "Commit file"}</button>

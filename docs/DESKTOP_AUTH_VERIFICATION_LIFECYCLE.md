@@ -143,3 +143,33 @@ installer/keyboard/vault, real GitHub selection, production authentication, paid
 entitlement or provider deployment/rollback acceptance. Required clean exact-head
 CI and production compilation remain merge gates; existing production blockers
 and every other workstream remain active.
+
+## Native repository editor ownership (2026-10-18)
+
+The existing explorer/editor, Git operations and detected checks use actual
+registered Tauri commands; this change introduces no terminal or local Agent
+execution authority. The native canonical Git-root/path containment and existing
+server authorization for short-lived GitHub credentials remain unchanged.
+
+Editor state is now owned by the current immutable credential configuration,
+selected repository generation and latest file read. Selecting another repository
+clears its predecessor's file/content, status, checks, result and confirmation
+immediately. Reversed file/status/check responses cannot repopulate the current
+editor. Credential changes remount the entire scoped workspace. Unsaved-change
+confirmation and Cancel still preserve the user's draft.
+
+Save and commit bind the exact loaded repository, path and content snapshot before
+native invocation. Keyboard Save cannot bypass an in-flight operation. A completed
+write marks only its own snapshot saved; edits made while writing remain unsaved.
+Late save, verification, branch, remote Git or PR responses cannot update another
+context or release a newer operation's busy state. Multi-stage actions recheck
+ownership before beginning their next native or remote step. Already-started local
+or remote operations may finish in their original repository: navigation does not
+promise cancellation, undo, provider rollback or suppression of external effects.
+
+Actual React render/click tests with mocked Tauri/client transport reproduced eight
+failures in the previous source, including an A-file response saved into repository
+B, before passing with the ownership fix. Existing unsaved-confirmation behavior
+remains covered. These tests perform no real file writes, Git operations, checks,
+provider calls or native runtime operations. Full compilers/regression and actual
+OS installation/filesystem acceptance remain distinct scheduled gates.
