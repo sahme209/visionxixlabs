@@ -11,24 +11,42 @@ PR #161 source integration is complete at main `608efe0fd70623aaf71cb80f799d3b82
 
 ## Resumed execution checkpoint — latest owner order
 
-Current main is `1cd5bc23417049ad7c29da884ed9591cb5b205a4` (merged PR #170, following #168 and #167).
-The verbatim [resume order](AXIOM_RESUME_ENGINEERING_ORDER.md) adds 131 units
-without replacing any prior requirement: **2,112 rows across 18 available sources**.
-All available original Codex and former Claude responsibilities remain mapped;
-the absent original 36-section specification and scenarios A–L remain unresolved.
-Historical counts and dated observations below retain their original scope.
+Current main is `bd44b180fafcd8429e31c74fa83c8967e28a218c`, including validated
+merges #169 (Airflow), #171 (desktop editor ownership) and #172 (Terraform legacy
+authority containment). These source merges are not production releases.
 
-PR #167 passed both exact-head CI runs, code review and its 293-page build, then merged normally. Billing PR #168 and desktop context PR #170 have merged after their exact-head checks passed; Airflow owned application acceptance and combined regression have passed with source-bound evidence and its updated PR #169 still requires final CI. Neither result establishes production recovery or a release.
+The Azure testing, premium visual demonstration, continuity and NEW TEST credit
+policy orders add 42 units: **2,154 rows across 22 available sources**. All earlier
+2,112 requirement objects are preserved. Every available original Codex and former
+Claude responsibility remains mapped; the unavailable original 36-section source
+and scenarios A–L remain explicitly unresolved. Coverage is not verified completion.
 
-Existing parallel packages continue: billing collected-payment lifecycle and
-owned application acceptance; Agent guarded real-application cloud continuation;
-Airflow immutable destination review; desktop verified connected-context recovery;
-and ECS immutable-executor admission prerequisites. PR #167's offline evidence
-gate now requires three-way database identity and separate password/Google/GitHub/
-founder-workspace attestations. It validates format, not the truth of evidence.
-Actual production binding, usable recovery point, isolated restore and production
-login remain unverified. No final-release readiness or completion percentage is
-claimed. See the execution ledger for frozen hashes, reviews and validation limits.
+ECS integrated source `9c60bff0` passed owned22-group/218-request acceptance,
+web types, full7,346-test regression, desktop types/build, Python30 and offline16.
+Its artifact mismatch correctly grants no admission or execution authority. The
+source-qualified final package `13f07f6a` awaits exact-head GitHub CI/review.
+Agent's fourth application attempt failed closed in11.56seconds with exact
+`aws.identity_entry_missing`; cleanup is verified, actual continuation remains
+unverified and no identity relaxation or retry is approved. Billing's anniversary
+fixture source review is clear after disabling Prisma's update request; real PG/Next
+acceptance is underway after its compiler gate. Terraform transport review and
+premium demo content review passed; cloud authority and browser QA remain pending.
+
+Azure CLI is installed in an owned isolated environment. No configured local identity
+or cache was found; directory identities remain unknown. Interactive sign-in is blocked
+by the environment network allowlist. Identity creation, role grants and sandbox costs
+still require exact owner approval. Premium demos reuse existing components and are
+explicit scripted simulations; two content/link review findings require closure and
+integrated browser validation remains pending. Neither additive workstream replaces
+existing engineering priorities.
+
+Production deployment/preflight/Neon database equality, a usable recovery point,
+verified isolated restore and actual password/Google/GitHub/founder-workspace login
+remain unverified. The offline evidence gate validates attestation format, not truth.
+No production change, desktop release, live payment activation or Vercel deployment
+is authorized. One final exact-commit release report and explicit deployment approval
+remain required. No product completion percentage or customer end-to-end success is
+claimed. See the execution ledger for source hashes, reviews and evidence limits.
 
 ## Additional deferred workstream — support and partnerships
 

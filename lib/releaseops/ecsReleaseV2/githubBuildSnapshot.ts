@@ -1,5 +1,5 @@
 import "server-only";
-import type { PrismaClient } from "@prisma/client";
+import type { PrismaClient, Prisma } from "@prisma/client";
 import { readPostgresReviewPolicy } from "./postgresReviewStore";
 import type { GithubBuildScope, GithubBuildRequest, GithubBuildSnapshot } from "./githubBuildEvidence";
 
@@ -8,13 +8,17 @@ export type GithubBuildSnapshotClient = Pick<PrismaClient, "$transaction">;
 /** Existing tenant/configuration tables only, in one bounded read-only transaction.
  * No review packet, credential, quota, target, audit or provider state is written. */
 export async function readGithubBuildSnapshot(client: GithubBuildSnapshotClient, scope: GithubBuildScope, request: GithubBuildRequest): Promise<GithubBuildSnapshot | null> {
-  return client.$transaction(async tx => {
-    const membership = await tx.orgMembership.findUnique({ where: { userId_organizationId: scope }, select: { id: true, organizationId: true, userId: true, role: true, acceptedAt: true, updatedAt: true } });
+  return client.$transaction(tx => readGithubBuildSnapshotInTransaction(tx, scope, request), { isolationLevel: "Serializable", maxWait: 3_000, timeout: 5_000 });
+}
+
+/** Shared inside a caller-owned read-only transaction; never nests transactions. */
+export async function readGithubBuildSnapshotInTransaction(tx: Prisma.TransactionClient, scope: GithubBuildScope, request: GithubBuildRequest): Promise<GithubBuildSnapshot | null> {
+    const membership = await tx.orgMembership.findUnique({ where: { userId_organizationId: scope }, select: { id: true, organizationId: true, userId: true, role: true, providerScopes: true, acceptedAt: true, updatedAt: true } });
     if (!membership?.acceptedAt || !["owner", "admin"].includes(membership.role)) return null;
     const [repository, environment, installation, policy] = await Promise.all([
       tx.repository.findFirst({ where: { id: request.repositoryRecordId, organizationId: scope.organizationId, provider: "github" }, select: { id: true, organizationId: true, provider: true, remoteOwner: true, remoteName: true, updatedAt: true } }),
-      tx.environment.findFirst({ where: { id: request.environmentId, organizationId: scope.organizationId }, select: { id: true, organizationId: true, approvalPolicyId: true, updatedAt: true } }),
-      tx.gitHubInstallation.findFirst({ where: { organizationId: scope.organizationId, status: "active" }, orderBy: { installedAt: "desc" }, select: { id: true, organizationId: true, githubInstallationId: true, accountLogin: true, status: true, installedAt: true, updatedAt: true, revokedAt: true, suspendedAt: true } }),
+      tx.environment.findFirst({ where: { id: request.environmentId, organizationId: scope.organizationId }, select: { id: true, organizationId: true, approvalPolicyId: true, tier: true, updatedAt: true } }),
+      tx.gitHubInstallation.findFirst({ where: { organizationId: scope.organizationId, status: "active" }, orderBy: [{ installedAt: "desc" }, { id: "asc" }], select: { id: true, organizationId: true, githubInstallationId: true, accountLogin: true, accountType: true, repositorySelection: true, status: true, installedAt: true, updatedAt: true, revokedAt: true, suspendedAt: true } }),
       readPostgresReviewPolicy(tx, scope.organizationId, request.environmentId),
     ]);
     if (!repository || !environment?.approvalPolicyId || !installation || !policy) return null;
@@ -23,5 +27,4 @@ export async function readGithubBuildSnapshot(client: GithubBuildSnapshotClient,
     if (branchPolicies.length > 100) return null;
     // Convert dates explicitly through JSON; the canonical digest must include revisions, not Date's empty enumerable keys.
     return JSON.parse(JSON.stringify({ membership, repository, environment, installation, policy, branchPolicies })) as GithubBuildSnapshot;
-  }, { isolationLevel: "Serializable", maxWait: 3_000, timeout: 5_000 });
 }

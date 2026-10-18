@@ -1,13 +1,21 @@
 import "server-only";
 import { randomBytes } from "node:crypto";
 import { decryptScopedCredential } from "@/lib/security/credentialVault";
-import { hasDesktopCapability } from "@/lib/desktop/desktopAuthorization";
+import { hasDesktopCapability, type DesktopWorkspaceRole } from "@/lib/desktop/desktopAuthorization";
 import { AwsEnrollmentError, cloudCredentialContext, parseAwsEnrollmentInput } from "./policy";
-import type { EnrollmentPrincipal, EnrollmentRepo } from "./service";
+import type { CloudAccountRow, CloudCredentialRow, EnrollmentPrincipal } from "./service";
 import type { TargetSnapshotRows } from "@/lib/releaseops/ecsReleaseV2/targetSnapshot";
 import { readEnrollmentInventory } from "./stsValidation";
 
-export async function withTenantAwsConnection<T>(repo: EnrollmentRepo, principal: EnrollmentPrincipal, accountId: string, operation: (input: Parameters<typeof readEnrollmentInventory>[0], connection: { id: string; version: number }, snapshot: Pick<TargetSnapshotRows, "account" | "credential">) => Promise<T>, dependencies: {
+/** Exact read delegates used by the broker; accepts real Prisma without a write/transaction facade. */
+export interface AwsConnectionReadRepo {
+  desktopSessionRecord: { findUnique(args: { where: { id: string } }): Promise<{ id: string; userId: string; organizationId: string; expiresAt: Date; revokedAt: Date | null } | null> };
+  orgMembership: { findUnique(args: { where: { userId_organizationId: { userId: string; organizationId: string } } }): Promise<{ acceptedAt: Date | null; role: DesktopWorkspaceRole } | null> };
+  cloudAccount: { findMany(args: { where: { id: string; organizationId: string; provider: "aws" }; take: number }): Promise<CloudAccountRow[]> };
+  cloudAccountCredential: { findUnique(args: { where: { id: string } }): Promise<CloudCredentialRow | null> };
+}
+
+export async function withTenantAwsConnection<T>(repo: AwsConnectionReadRepo, principal: EnrollmentPrincipal, accountId: string, operation: (input: Parameters<typeof readEnrollmentInventory>[0], connection: { id: string; version: number }, snapshot: Pick<TargetSnapshotRows, "account" | "credential">) => Promise<T>, dependencies: {
   now?: () => Date;
   open?: typeof decryptScopedCredential;
   managementOnly?: boolean;
