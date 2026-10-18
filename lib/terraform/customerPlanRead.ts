@@ -34,7 +34,7 @@ function base64(value:unknown,max:number):Buffer{requireValue(typeof value==="st
  * metadata only. Customer detail re-verifies stored signature/bytes separately
  * from a fresh read-only backend observation; neither grants approval/apply. */
 export async function readTerraformPlans(db:SavedPlanDatabase,principalInput:CustomerPlanPrincipal,requestId:string,artifactId?:string,nowInput:Date|(()=>Date)=()=>new Date(),parent?:AbortSignal):Promise<TerraformPlanReadResult>{
- const principal={...principalInput},clock=typeof nowInput==="function"?nowInput:()=>new Date(nowInput.getTime());let timer:ReturnType<typeof setTimeout>|undefined;
+ const principal={...principalInput},clock=typeof nowInput==="function"?nowInput:()=>new Date(nowInput.getTime());let timer:ReturnType<typeof setTimeout>|undefined;let finalizeCustomerDetail:(()=>void)|undefined;
  const failure=(status:number,error:string):TerraformPlanReadResult=>({status,body:{ok:false,error}});
  try{
   async function actor(){const rows=await loadCustomerPlanActorRows(db,principal);if(!rows||!inspectCustomerPlanActor(rows,principal,"read",clock()))throw new Denied();return rows;}
@@ -77,10 +77,14 @@ export async function readTerraformPlans(db:SavedPlanDatabase,principalInput:Cus
      }
     }
    }
-   signal.throwIfAborted();const finalTrust=readConfiguredCustomerPlanTrust(profile,clock());requireValue(finalTrust&&finalTrust.digest===binding.producer.trustDigest);
-   if(Date.parse(binding.expiresAt)<=clock().getTime()){detail.validity="expired";detail.historical=true;detail.currentTarget="unavailable";delete detail.observedAt;}
+   // The final actor read below is asynchronous. Revalidate delivery after
+   // it completes so no earlier expiry/trust/deadline snapshot can survive it.
+   finalizeCustomerDetail=()=>{
+    signal.throwIfAborted();const finalTrust=readConfiguredCustomerPlanTrust(profile,clock());requireValue(finalTrust&&finalTrust.digest===binding.producer.trustDigest);
+    if(Date.parse(binding.expiresAt)<=clock().getTime()){detail.validity="expired";detail.historical=true;detail.currentTarget="unavailable";delete detail.observedAt;}
+   };
    plans.push(detail);
   }
-  await actor();return {status:200,body:{ok:true,data:{plans,truncated:records.length>20,producer:v2?"customer_ci_import":"unavailable",executionEnabled:false}}};
+  await actor();finalizeCustomerDetail?.();return {status:200,body:{ok:true,data:{plans,truncated:records.length>20,producer:v2?"customer_ci_import":"unavailable",executionEnabled:false}}};
  }catch(error){return error instanceof Denied?failure(403,"customer_plan_current_actor_required"):failure(409,"saved_plan_evidence_unavailable");}finally{if(timer)clearTimeout(timer);}
 }

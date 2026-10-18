@@ -87,3 +87,33 @@ it("withholds verified detail when the currently reviewed trust is revoked durin
 it("denies a foreign parent before either optional storage probe or artifact/provider access",async()=>{
  const f=await fixture();f.rows.request.organizationId="foreign";expect((await readTerraformPlans(f.typedDb,f.principal,f.profile.deploymentRequestId,undefined,f.now)).status).toBe(404);expect(m.ready).not.toHaveBeenCalled();expect(m.legacyReady).not.toHaveBeenCalled();expect(m.backend).not.toHaveBeenCalled();
 });
+
+/** Discover the final canonical actor read from a successful real-reader pass,
+ * then defer that same DB boundary. No production timing hook is introduced. */
+async function finalActorBarrier(){
+ const f=await fixture(),clock=()=>new Date(f.now),requestId=f.profile.deploymentRequestId;
+ expect(await readTerraformPlans(f.typedDb,f.principal,requestId,f.artifact.id,clock)).toMatchObject({status:200,body:{data:{plans:[{currentTarget:"observed_match",validity:"unexpired"}]}}});
+ const memberSql='FROM public."OrgMembership"',lastActor=f.db.$queryRawUnsafe.mock.calls.filter(([sql])=>sql.includes(memberSql)).length,query=f.db.$queryRawUnsafe.getMockImplementation()!;
+ f.db.$queryRawUnsafe.mockClear();let actorReads=0,release!:()=>void,entered!:()=>void;
+ const held=new Promise<void>(resolve=>{release=resolve;}),waiting=new Promise<void>(resolve=>{entered=resolve;});
+ f.db.$queryRawUnsafe.mockImplementation(async(sql:string,...values:unknown[])=>{const rows=await query(sql,...values);if(sql.includes(memberSql)&&++actorReads===lastActor){entered();await held;}return rows;});
+ return {f,clock,waiting,release};
+}
+it("expires observed evidence after the deferred final actor read without returning its old match or observation time",async()=>{
+ const {f,clock,waiting,release}=await finalActorBarrier(),pending=readTerraformPlans(f.typedDb,f.principal,f.profile.deploymentRequestId,f.artifact.id,clock);await waiting;
+ f.now.setTime(Date.parse("2026-10-18T12:16:00Z"));release();const result=await pending;
+ expect(result).toMatchObject({status:200,body:{data:{plans:[{validity:"expired",historical:true,currentTarget:"unavailable"}]}}});expect(JSON.stringify(result)).not.toContain("observedAt");
+});
+it("fails closed when the absolute reader deadline expires during the deferred final actor read",async()=>{
+ const {f,clock,waiting,release}=await finalActorBarrier();vi.useFakeTimers();
+ try{const pending=readTerraformPlans(f.typedDb,f.principal,f.profile.deploymentRequestId,f.artifact.id,clock);await waiting;await vi.advanceTimersByTimeAsync(30_001);release();const result=await pending;expect(result.status).toBe(409);expect(JSON.stringify(result)).not.toContain("summary");}
+ finally{release();vi.useRealTimers();}
+});
+it("withholds verified detail when trust is revoked during the deferred final actor read",async()=>{
+ const {f,clock,waiting,release}=await finalActorBarrier(),pending=readTerraformPlans(f.typedDb,f.principal,f.profile.deploymentRequestId,f.artifact.id,clock);await waiting;
+ m.trust.mockReturnValue(null);release();const result=await pending;expect(result.status).toBe(409);expect(JSON.stringify(result)).not.toContain("summary");
+});
+it("fails closed when its parent is cancelled during the deferred final actor read",async()=>{
+ const {f,clock,waiting,release}=await finalActorBarrier(),parent=new AbortController(),pending=readTerraformPlans(f.typedDb,f.principal,f.profile.deploymentRequestId,f.artifact.id,clock,parent.signal);await waiting;
+ parent.abort();release();const result=await pending;expect(result.status).toBe(409);expect(JSON.stringify(result)).not.toContain("summary");
+});
