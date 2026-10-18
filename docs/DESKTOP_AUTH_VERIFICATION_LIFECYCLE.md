@@ -79,3 +79,41 @@ providers or production. Its protocol safety tests use a local test server;
 actual application/PostgreSQL acceptance must be recorded separately by running
 the parent isolated harness. It proves neither browser consent interaction nor
 native deep links, Keychain persistence, installer behavior or production login.
+
+## Connected Agent context selection (2026-10-18)
+
+The existing Agent repository, branch and environment selectors now include
+labeled native search fields and a visible selected-context summary. Searches
+filter the service-returned catalog, retain the current selection, and report
+no matches; a truncated repository catalog explicitly limits search coverage.
+Selecting a connected repository retains its server-reported default branch.
+No new provider or deployment operation is introduced.
+
+Saved repository/environment preferences are advisory snapshots. Active IDs
+start empty; only the current credential's successful catalogs can restore
+matching IDs. Failed, missing or foreign saved entries never initiate branch or
+file reads. Catalogs load independently and expose a scoped retry, so one
+unavailable integration does not disable an independently verified selection.
+Retry and credential changes discard late catalog responses. A saved environment
+is not cleared by the initial empty render before catalog validation finishes.
+
+Explicit manual repository recovery remains available, visibly labeled as
+catalog-unverified. It never restores a cached repository automatically or
+claims connected authority; existing server authorization, model readiness and
+approval checks still apply. Deploy-readiness guidance requires both an explicit
+repository and a selected service-returned environment.
+
+Focused React render/click tests exercise service-returned fixture catalogs,
+exact message context, independent failures, retry, saved-preference validation,
+manual recovery, truncation and stale credential results. Transport remains
+mocked; these tests do not establish real GitHub access, native keyboard/installer
+acceptance, provider execution, or production login.
+
+Catalog retry preserves explicit choices: choosing no environment clears the
+saved preference instead of resurrecting it later. A selected or manually
+entered branch is retained only when the same repository is revalidated;
+a different selected repository uses its own default branch. Branch changes
+invalidate dependent file selection until the current branch catalog returns.
+Independent review reproduced both retry regressions before the fix; actual
+component tests now cover explicit empty environment, nondefault/manual branch
+continuity and dependent-file invalidation in addition to the initial flows.
