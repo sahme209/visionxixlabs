@@ -37,17 +37,18 @@ Shared names:
 
 - `AllowanceBasisV2`: exact policy/scope/enrollment/basis digest and original provider anchor; Free/paid discriminated variants per spec.
 - `resolveAllowanceWindowV2(basis, coverage, now): {kind:'available',window:AllowanceWindowV2}|{kind:'unavailable',reason}`; window `{bucketId,basisDigest,kind,start,end,includedCents}`.
-- `ReservationAttributionV2`: immutable spec body; reservationId is the existing hold ID, no new hold identity.
+- `ReservationAttributionV2`: immutable spec body; reservationId is the existing hold ID, no new hold identity. A separate write-once releaseEvidence column retains definitive non-use proof; allocation body never mutates.
+- `claimNewTestBillableDispatch(tx,reservationId): claimed|unavailable` CASes existing reserved→dispatch_unknown before any billable call; `releaseNewTestUnusedDispatch(tx,reservationId,DefinitiveUnusedVerdict)` is the only validated post-claim release path. These are Task4 interfaces, not Task1 code.
 - `resolveAllocationV2(window, verifiedUsage, verifiedHolds, eligiblePurchases): available balances and reserve funding plan | unavailable`.
 - `recordAttributedUsageV2(tx, reservationId, trustedProviderUsage): existing UsageEvent/result`; `settleAttributedUsageV2(tx, reservationId, eventId, authoritativeCost): settled|already_settled|unavailable`. Inputs are server-selected original admission references; generic metadata cannot supply authority.
 
 ## Task1: Versioned basis and exact windows
 
-**Files:** create anniversaryWindow.ts; extend paidCoverage.ts discriminated V2 while leaving V1 bytes/hash unchanged; tests anniversaryWindow.test.ts and existing newTestPaidCoverage.test.ts.
+**Files:** create anniversaryWindow.ts; leave paidCoverage.ts implementation unchanged; add fixed V1 digest/mid-month regression; tests anniversaryWindow.test.ts and existing newTestPaidCoverage.test.ts.
 
 - [ ] Write RED table tests for Oct18, UTCtime, Jan31Feb28Mar31, leap Jan31Feb29Mar31, annual Feb29→Feb28 and exactly12 subwindows; first full pool3000 after Free200 spent; Nov1 no reset; exact end denies; missing next proof/no current collection denies.
 - [ ] Run only these cases and observe failure against calendar-only kernel.
-- [ ] Implement direct original-anchor F(n), closed canonical bucket identity and version dispatch. No arithmetic-loop rollover or interval guessing; old V1 accepts exactly its old calendar slice and rejects reinterpretation.
+- [ ] Implement detached direct original-anchor F(n) and closed canonical basis/bucket identities; frozen original subscription/create/first-collection provenance stays in the basis, replacement invoice identity does not enter the current bucket. No arithmetic-loop rollover or interval guessing; old V1 accepts exactly its old calendar slice and rejects reinterpretation.
 - [ ] GREEN tests plus existing V1 evidence digest regression; commit kernel+matching spec clarification only.
 
 ## Task2: Frozen original anchor and fixture-only basis/attribution storage
@@ -66,7 +67,7 @@ Shared names:
 - [ ] RED: included bucket balances; purchase500→Free debit80 leaves420 across paid start; active purchase hold100 leaves400 globally; current_month expiry unchanged; permanent credit not reissued at anniversary; unknown/foreign attribution denies; negative refund balance denies new spending.
 - [ ] Observe RED. Implement included-first then existing-expiry/createdAt/id purchase allocation, using existing net delivered/reversed rows and attributed billed/held amounts across all buckets. Never sum full delivered credit as a new balance each period.
 - [ ] Replace only V2 preview/app/reserve aggregates with shared exact bucket/purchase arithmetic. Enrolled pre-contract Free derives200 from public policy; V1 missing provenance still denies, and legacy/no-enrollment path stays identical.
-- [ ] Final insert uses enrollment lock/revision + existing coverage/plan token/revision + DBclock inside bucket/coverage, inserting existing hold and immutable attribution atomically. Old preflight after paid transition/window end fails; no hold is transferred/reset. Historical request replay does not dispatch.
+- [ ] Final insert uses enrollment lock/revision + existing coverage/plan token/revision + selected actual purchase FOR UPDATE locks/current fingerprint/global balance + post-lock DBclock inside bucket/coverage AND original purchase UTC validity, inserting existing hold and immutable attribution atomically. Existing refund UPDATE conflicts with the same purchase row lock; no assumption that reversal takes enrollment lock. Old preflight after paid transition/window end fails; no hold is transferred/reset. Historical request replay does not dispatch.
 - [ ] GREEN arithmetic/IO/legacy regressions; commit.
 
 ## Task4: Atomic existing usage linkage and late settlement
@@ -74,8 +75,9 @@ Shared names:
 **Files:** usageAllocationIO.ts, recordAIUsageEvent.ts, aiCreditReservation.ts, app/api/ai/generate/route.ts, reconcileGatewayUsage.ts; tests newTestUsageAllocation.test.ts and existing Gateway/usage tests.
 
 - [ ] RED mandatory race: Free100 hold→paid bind→actual80 settles; event metadata points original Free bucket, paid included3000 untouched. Variant Free included exhausted and purchase500 funding100→actual80 leaves420 purchased plus3000 paid. Test cross-window and paid→inactive late costs too.
+- [ ] RED unlinked purchase hold after five-minute TTL/crash before attachment cannot regrant, generic failure cannot release after claim, late actual usage retains original bucket, and same-key retry cannot redispatch. RED Oct31→Nov1 after lock wait and independent refund before/after reserve/claim both conserve funding.
 - [ ] RED missing/foreign reservation, forged metadata namespace, wrong externalUsageId org, duplicate direct/Gateway usage, excessive billed amount, attribution mismatch, pending→settled replay and transaction failure between usage write and hold status.
-- [ ] Observe RED. V2 direct event creation/attachment/settlement is one tx; Gateway pending event links original attribution before asynchronous reconciliation. Preserve unrelated metadata and externalUsageId/usageEventId identities; customer debit<=reserved source ceilings. The fixture-only DB guards seal completed metadata and amounts.
+- [ ] Observe RED. First implement V2-only dispatch_unknown on the existing hold, durable committed CAS before billable work and counting unknown capacity without TTL/link requirements. Local provider-denial guard remains before claim; generic caught errors never prove unused. Write-once definitive-unused receipt plus CAS is the only post-claim release. Repeat selected-purchase/current-clock fence at claim, not only reserve. V2 direct event creation/attachment/settlement is one tx; Gateway pending event links original attribution before asynchronous reconciliation. Preserve unrelated metadata and externalUsageId/usageEventId identities; customer debit<=reserved source ceilings. The fixture-only DB guards seal completed metadata and amounts.
 - [ ] Usage linkage always selects original reservation provenance, never current paid plan/time. On uncertain commit preserve unresolved financial hold; no optimistic release/regrant. Unknown writer without a trusted reservation refuses V2 accounting/admission. Old legacy writer/reconciler semantics are untouched.
 - [ ] Factor the actual existing settlement IO for injected synthetic cost fixtures without removing `denyIsolatedUnsupportedOperation` or enabling real Gateway calls/cron. All existing other isolated routes stay denied.
 - [ ] GREEN direct/Gateway cost/cap/refund/conservation and legacy regressions; commit.
@@ -103,6 +105,10 @@ Shared names:
 | Free preflight rev0 loses paid transition rev1 | Final reservation denied, no partial hold/attribution. |
 | Free reserve wins first, paid bind waits | Both succeed in order; old reservation immutable original basis. |
 | Pending linked/unknown hold crosses boundary | Retained in original funding; purchase portion continues globally. |
+| Dispatch claim committed, crash/unlinked past5minutes, new admission | dispatch_unknown remains live without usage link; purchased ceiling remains spent/reserved, no TTL regrant. |
+| Provider/usage/attach/settle generic error after claim | Unknown hold retained; no ordinary catch/release or timeout is unused proof. |
+| Oct31 selected current_month purchase waits on lock untilNov1 | Final post-lock INSERT and dispatch CAS recheck DBmonth and refuse, although paid anniversary bucket is unchanged. |
+| Existing refund UPDATE wins first or waits behind reserve/claim | Current row fingerprint/locks prevent stale net grant; both orders preserve committed hold/spend. |
 | Old idempotency request after transition | Historical progress only; no new hold/provider dispatch/bucket. |
 | Unattributed AI event/hold (even zero/pending), V1 proof upgrade | Unavailable; no inference/backfill/reset. |
 | Scope, source ceilings, purchase ID or reserved metadata forged | Deny before mutation; no wrong-org read/debit/grant. |
@@ -117,3 +123,10 @@ Shared names:
 Each owner policy is covered by tasks1/3/4 and the matrix. Review-focus classes map to tasks4/2/1/3/4. Interfaces above are single-source names; IO gets complete validated financial sets or Unavailable. Main concrete review decision is the fixture-only immutable reservation-attribution sidecar: current schema has no reservation JSON field, so pretending metadata already exists or deriving a late bucket from createdAt is invalid. This document proposes that exact interface without implementing it.
 
 Plan-only branch has no dependency installation/baseline runtime under light-only scheduling. Root review is the next step; the owner's economic policy is already accepted and is not being reopened.
+
+
+## Review amendments and Task1 execution record
+
+Independent financial architecture review found two material omissions in the initial plan: generic expiry/release can lose an unknown pre-link provider hold, and refund/UTC purchase expiry is not fenced by an enrollment lock. The spec's final two sections now bind the exact existing status/writer paths, proposed durable dispatch_unknown transition/release evidence and selected-purchase FOR UPDATE/post-lock DB-time checks. Tasks3/4 and four added matrix rows own their RED races. Task2+ remains on hold for architecture re-review; no such IO/schema implementation exists yet.
+
+Normal main10882dc2 was merged without conflicts as3ddebcd2. Task1 only: a detached pure anniversaryWindow.ts plus tests was implemented after13 real behavior RED failures against a fail-closed resolver, followed by a separate original-subscription provenance RED. Thirty tests now pass across anniversaryWindow/newTestPaidCoverage, including published V1 SHA2565819f0d3a6c64943441da1243e78ea403ca7a69c5a9c41b7de49b0beabe1612d and unchanged V1 mid-month rejection. Source never imports the new kernel from consumer/sidecar/admission/usage paths. Scoped lint/diff checks pass. No compiler, full suite, server, PG, provider calls, route activation or dependency install ran; existing read-only root overlay was linked for pure tests. This does not establish V2 ledger safety or hosted customer acceptance.
