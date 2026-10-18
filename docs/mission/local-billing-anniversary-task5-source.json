@@ -122,7 +122,7 @@
     },
     {
       "path": "lib/billing/__tests__/fixtures/newTestAnniversaryAcceptance.ts",
-      "sha256": "8c430bab247fc769ef733cb26e3acda2b65a9f74978d6e0b718f5612b9abcecc"
+      "sha256": "896d04936d133dbff4789bfba3ca64a8d83c89cc3e9a12d776c16ea9df99e575"
     },
     {
       "path": "lib/billing/__tests__/fixtures/newTestAnniversaryHttp.ts",
@@ -225,6 +225,14 @@
     {
       "path": "/tmp/axiom-anniversary-lock-binding-default-skip.log",
       "sha256": "03fb8af7568a2d7051d9ddd8c25824d304db8accb7d36d95fe326f24ce8c25e1"
+    },
+    {
+      "path": "/tmp/axiom-anniversary-replay-source-focused.log",
+      "sha256": "f0bcebb0f7c70e0ef12d888ed13d764d6ea80afb6a6be39b973bfae0b905ac03"
+    },
+    {
+      "path": "/tmp/axiom-anniversary-replay-source-lint.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
     }
   ],
   "ownedCases": {
@@ -234,9 +242,9 @@
     "defaultSkipped": 27
   },
   "pending": [
-    "independent exact lock SQL source closure",
+    "independent exact fixture replay source closure",
     "fresh whole-web compiler after grant",
-    "actual owned PG parameter/parser/financial/Next acceptance after exclusive grant",
+    "actual owned PG financial/Next/TTL27case acceptance after exclusive grant",
     "full coordinated gates"
   ],
   "unproved": [
@@ -356,5 +364,20 @@
       "runtimeExecuted": false,
       "genericRefusalProvesSpecificCause": false
     }
+  },
+  "replayFixtureCorrection": {
+    "sourceBase": "50ac13b3fceb2b266f3aa925a24b4fd1c03692b1",
+    "actualProductUnchangedFrom": "9b60227c2a82a63214d21ec7195d3cbc3ae3ada8",
+    "testPath": "lib/billing/__tests__/fixtures/newTestAnniversaryAcceptance.ts",
+    "firstComposerSettlementUnchanged": true,
+    "exactClosedComposerReplayRejection": true,
+    "actualSealedReplayAndFiveContradictionsDeclared": true,
+    "fullFinancialNonmutationAnd420Declared": true,
+    "catchIgnore": false,
+    "focusedExistingSyntheticTestsPassed": 28,
+    "defaultOwnedCasesSkipped": 27,
+    "newOwnedAssertionsExecuted": false,
+    "compilerRetried": false,
+    "ownedRuntimeRetried": false
   }
 }

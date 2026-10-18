@@ -2,7 +2,7 @@
  * installs nothing. The default suite skips all database/server work. */
 import { beforeAll, expect, it } from "vitest";
 import type { Prisma } from "@prisma/client";
-import { claimNewTestBillableDispatch } from "../../newTestSubscription/usageAllocationIO";
+import { claimNewTestBillableDispatch, settleAttributedUsageV2, type AttributedGatewayCostV2 } from "../../newTestSubscription/usageAllocationIO";
 import { reserveAllocationV2, newTestAllocationPricingPlan } from "../../newTestSubscription/allocationPlan";
 import { readFixtureEnrollment } from "../../newTestSubscription/fixtureAllocation";
 import { releaseAICreditReservation } from "../../aiCreditReservation";
@@ -32,7 +32,20 @@ export function registerAnniversaryAcceptance(harness: AnniversaryAcceptanceHarn
     expect(await f.service.previewRemaining(f.actor)).toMatchObject({ remainingCents: 420 });
     const body = await ctx.db.$queryRawUnsafe<Array<{ body: { allocation: Array<{ source: string; purchaseId?: string }> } }>>('SELECT body FROM "NewTestReservationAttribution" WHERE "reservationId"=$1', topup.id);
     expect(body[0].body.allocation).toEqual([expect.objectContaining({ source: "purchase", maxCents: 100 })]);
-    const sealed = await f.financial(); await f.settle(pending.usageEventId!, topup.id); expect(await f.financial()).toEqual(sealed);
+    const sealed = await f.financial();
+    // The unchanged composer signals historical replay to its outer loop with
+    // this closed error. It is not a second successful settlement or a debit.
+    await expect(f.settle(pending.usageEventId!, topup.id)).rejects.toThrow("gateway_usage_already_settled");
+    expect(await f.financial()).toEqual(sealed);
+    const originalCost: AttributedGatewayCostV2 = { eventId: pending.usageEventId!, externalUsageId: `gen-${topup.id}`, providerCostCents: 53, billedCents: 80, model: "synthetic_gateway", inputTokens: 10, outputTokens: 20, cachedReadTokens: 0 };
+    const sealedReplay = (cost: AttributedGatewayCostV2) => ctx.db.$transaction(tx => settleAttributedUsageV2(tx, cost), { isolationLevel: "Serializable" });
+    expect(await sealedReplay(originalCost)).toBe("already_settled");
+    expect(await f.financial()).toEqual(sealed);
+    for (const changed of [{ ...originalCost, model: "changed" }, { ...originalCost, inputTokens: 11 }, { ...originalCost, outputTokens: 21 }, { ...originalCost, cachedReadTokens: 1 }, { ...originalCost, providerCostCents: 54, billedCents: 81 }]) {
+      await expect(sealedReplay(changed)).rejects.toThrow("attributed_usage_unavailable");
+      expect(await f.financial()).toEqual(sealed);
+    }
+    expect(await f.service.previewRemaining(f.actor)).toMatchObject({ remainingCents: 420 });
     expect(f.created()).toBe(1);
   }, 30000);
 
