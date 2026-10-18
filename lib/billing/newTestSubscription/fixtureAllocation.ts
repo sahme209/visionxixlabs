@@ -1,3 +1,4 @@
+import { fixtureUsageGuardsDDL } from "./fixtureUsageGuards";
 import { resolveAllocationV2, type AllocationFactsV2, type HoldV2, type PurchaseV2, type ReservationAttributionV2, type UsageV2 } from "./allocationV2";
 import "server-only";
 import { createHash } from "node:crypto";
@@ -42,8 +43,42 @@ export const fixtureAllocationDDL = [
   'CREATE TRIGGER freeze_test_allowance_basis BEFORE UPDATE OR DELETE ON "NewTestAllowanceBasis" FOR EACH ROW EXECUTE FUNCTION freeze_test_allowance_basis()',
   `CREATE FUNCTION freeze_test_enrollment() RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN IF TG_OP='DELETE' OR OLD.org IS DISTINCT FROM NEW.org OR OLD.runtime IS DISTINCT FROM NEW.runtime OR OLD.account IS DISTINCT FROM NEW.account OR OLD.body IS DISTINCT FROM NEW.body OR OLD."freeBasisDigest" IS DISTINCT FROM NEW."freeBasisDigest" OR OLD."paidBasisDigest" IS NOT NULL OR NEW."paidBasisDigest" IS NULL OR NEW.revision<>OLD.revision+1 THEN RAISE EXCEPTION 'enrollment_immutable'; END IF; RETURN NEW; END $$`,
   'CREATE TRIGGER freeze_test_enrollment BEFORE UPDATE OR DELETE ON "OrganizationTestAllowanceEnrollment" FOR EACH ROW EXECUTE FUNCTION freeze_test_enrollment()',
-  `CREATE FUNCTION check_test_attribution() RETURNS trigger LANGUAGE plpgsql AS $$ DECLARE h record; e record; a jsonb; total bigint:=0; BEGIN IF TG_OP='DELETE' OR TG_OP='UPDATE' AND (OLD.body IS DISTINCT FROM NEW.body OR OLD.org IS DISTINCT FROM NEW.org OR OLD."reservationId" IS DISTINCT FROM NEW."reservationId" OR OLD."enrollmentDigest" IS DISTINCT FROM NEW."enrollmentDigest" OR OLD."releaseEvidence" IS NOT NULL OR NEW."releaseEvidence" IS NULL) THEN RAISE EXCEPTION 'attribution_immutable'; END IF; SELECT * INTO STRICT h FROM "AIUsageReservation" WHERE id=NEW."reservationId"; SELECT * INTO STRICT e FROM "OrganizationTestAllowanceEnrollment" WHERE org=NEW.org; IF h."organizationId"<>NEW.org OR NEW.body->>'organizationId' IS DISTINCT FROM NEW.org OR NEW.body->>'enrollmentDigest' IS DISTINCT FROM NEW."enrollmentDigest" OR e.body->>'digest' IS DISTINCT FROM NEW."enrollmentDigest" OR NEW.body->>'runtimeId' IS DISTINCT FROM e.runtime OR NEW.body->>'accountId' IS DISTINCT FROM e.account OR NEW.body->>'policy' IS DISTINCT FROM 'axiom_test_anniversary_v2' OR NEW.body->>'version' IS DISTINCT FROM '2' OR NOT EXISTS(SELECT 1 FROM "NewTestAllowanceBasis" WHERE digest=NEW.body->>'basisDigest' AND org=NEW.org) THEN RAISE EXCEPTION 'attribution_scope'; END IF; FOR a IN SELECT * FROM jsonb_array_elements(NEW.body->'allocation') LOOP IF (a->>'maxCents')::bigint<=0 THEN RAISE EXCEPTION 'attribution_amount'; END IF; total:=total+(a->>'maxCents')::bigint; IF a->>'source'='purchase' AND NOT EXISTS(SELECT 1 FROM "AddOnPurchase" WHERE id=a->>'purchaseId' AND "organizationId"=NEW.org) THEN RAISE EXCEPTION 'attribution_purchase_scope'; ELSIF a->>'source'='included' AND a->>'bucketId' IS DISTINCT FROM NEW.body->>'bucketId' THEN RAISE EXCEPTION 'attribution_bucket'; ELSIF a->>'source' NOT IN ('included','purchase') THEN RAISE EXCEPTION 'attribution_source'; END IF; END LOOP; IF total<>h."reservedCents" THEN RAISE EXCEPTION 'attribution_amount'; END IF; RETURN NEW; END $$`,
+  `CREATE FUNCTION check_test_attribution() RETURNS trigger LANGUAGE plpgsql AS $$
+  DECLARE h record; e record; b record; a jsonb; total bigint:=0; seen text[]:='{}'; source_key text;
+  BEGIN
+    IF TG_OP='DELETE' THEN RAISE EXCEPTION 'attribution_immutable'; END IF;
+    IF NEW."releaseEvidence" IS NOT NULL THEN RAISE EXCEPTION 'test_unused_proof_unsupported'; END IF;
+    IF TG_OP='UPDATE' THEN RAISE EXCEPTION 'attribution_immutable'; END IF;
+    SELECT * INTO STRICT h FROM "AIUsageReservation" WHERE id=NEW."reservationId";
+    SELECT * INTO STRICT e FROM "OrganizationTestAllowanceEnrollment" WHERE org=NEW.org;
+    SELECT * INTO STRICT b FROM "NewTestAllowanceBasis" WHERE digest=NEW.body->>'basisDigest' AND org=NEW.org;
+    IF jsonb_typeof(NEW.body) IS DISTINCT FROM 'object' OR NOT NEW.body ?& ARRAY['version','policy','runtimeId','accountId','organizationId','enrollmentDigest','basisDigest','bucketId','kind','windowStart','windowEnd','admittedAt','allocation','digest']
+      OR NEW.body-ARRAY['version','policy','runtimeId','accountId','organizationId','enrollmentDigest','basisDigest','bucketId','kind','windowStart','windowEnd','admittedAt','allocation','digest']<>'{}'::jsonb
+      OR h."organizationId"<>NEW.org OR NEW.body->>'organizationId' IS DISTINCT FROM NEW.org OR NEW.body->>'enrollmentDigest' IS DISTINCT FROM NEW."enrollmentDigest"
+      OR e.body->>'digest' IS DISTINCT FROM NEW."enrollmentDigest" OR NEW.body->>'runtimeId' IS DISTINCT FROM e.runtime OR NEW.body->>'accountId' IS DISTINCT FROM e.account
+      OR NEW.body->>'policy' IS DISTINCT FROM 'axiom_test_anniversary_v2' OR NEW.body->'version' IS DISTINCT FROM '2'::jsonb OR NEW.body->>'kind' IS DISTINCT FROM b.kind
+      OR NEW.body->>'bucketId' IS NULL OR NEW.body->>'bucketId' !~ '^[a-f0-9]{64}$' OR NEW.body->>'digest' IS NULL OR NEW.body->>'digest' !~ '^[a-f0-9]{64}$'
+      OR NEW.body->>'admittedAt' IS NULL OR NEW.body->>'windowStart' IS NULL OR NEW.body->>'windowEnd' IS NULL THEN RAISE EXCEPTION 'attribution_scope'; END IF;
+    IF jsonb_typeof(NEW.body->'allocation') IS DISTINCT FROM 'array' OR jsonb_array_length(NEW.body->'allocation')<1 OR jsonb_array_length(NEW.body->'allocation')>101 THEN RAISE EXCEPTION 'attribution_amount'; END IF;
+    FOR a IN SELECT * FROM jsonb_array_elements(NEW.body->'allocation') LOOP
+      source_key:=(a->>'source')||':'||coalesce(a->>'purchaseId',a->>'bucketId');
+      IF source_key IS NULL OR source_key=ANY(seen) THEN RAISE EXCEPTION 'attribution_duplicate'; END IF;
+      seen:=array_append(seen,source_key);
+      IF jsonb_typeof(a->'maxCents') IS DISTINCT FROM 'number' OR (a->>'maxCents')::bigint<=0 THEN RAISE EXCEPTION 'attribution_amount'; END IF;
+      total:=total+(a->>'maxCents')::bigint;
+      IF a->>'source'='purchase' THEN
+        IF a-ARRAY['source','purchaseId','maxCents']<>'{}'::jsonb OR NOT EXISTS(SELECT 1 FROM "AddOnPurchase" WHERE id=a->>'purchaseId' AND "organizationId"=NEW.org) THEN RAISE EXCEPTION 'attribution_purchase_scope'; END IF;
+      ELSIF a->>'source'='included' THEN
+        IF a-ARRAY['source','bucketId','maxCents']<>'{}'::jsonb OR cardinality(seen)<>1 OR a->>'bucketId' IS DISTINCT FROM NEW.body->>'bucketId'
+          OR (a->>'maxCents')::bigint>CASE WHEN b.kind='free' THEN 200 ELSE (b.body->'terms'->>'monthlyAICreditsCents')::bigint END THEN RAISE EXCEPTION 'attribution_bucket'; END IF;
+      ELSE RAISE EXCEPTION 'attribution_source'; END IF;
+    END LOOP;
+    IF total<>h."reservedCents" OR date_trunc('milliseconds',h."createdAt") IS DISTINCT FROM (NEW.body->>'admittedAt')::timestamp
+      OR (NEW.body->>'admittedAt')::timestamptz<(NEW.body->>'windowStart')::timestamptz OR (NEW.body->>'admittedAt')::timestamptz>=(NEW.body->>'windowEnd')::timestamptz THEN RAISE EXCEPTION 'attribution_amount'; END IF;
+    RETURN NEW;
+  END $$`,
   'CREATE TRIGGER check_test_attribution BEFORE INSERT OR UPDATE OR DELETE ON "NewTestReservationAttribution" FOR EACH ROW EXECUTE FUNCTION check_test_attribution()',
+  ...fixtureUsageGuardsDDL,
 ];
 export async function readFixtureEnrollment(tx: Prisma.TransactionClient, scope: AllocationScopeV2, lock = false): Promise<VerifiedEnrollmentV2 | null> {
   const state = await tx.$queryRawUnsafe<Array<{ installed: boolean; partial: boolean }>>(`SELECT (to_regclass('"OrganizationTestAllowanceEnrollment"') IS NOT NULL AND to_regclass('"NewTestAllowanceBasis"') IS NOT NULL AND to_regclass('"NewTestReservationAttribution"') IS NOT NULL) AS installed,(to_regclass('"OrganizationTestAllowanceEnrollment"') IS NOT NULL OR to_regclass('"NewTestAllowanceBasis"') IS NOT NULL OR to_regclass('"NewTestReservationAttribution"') IS NOT NULL) AS partial`);

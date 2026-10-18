@@ -16,7 +16,7 @@ function fixture(enrolled: boolean) {
   let id = 0;
   const service = createNewTestSubscriptionService({ store: { runtimeId: scope.runtimeId, transaction: async f => f(tx) }, provider, configuredPrices: { "pro:monthly": price.id }, now: () => 1, id: () => `fixture_${++id}`, digest: text => createHash("sha256").update(text).digest("hex") });
   const input = { clientIntentKey: "fixture_intent_12345", planId: "pro" as const, interval: "monthly" as const, seatQuantity: 3, email: "fixture@example.invalid", successUrl: "http://127.0.0.1/success", cancelUrl: "http://127.0.0.1/cancel" };
-  return { service, provider, input, saved: () => saved, drift: () => { if (state) state = { ...state, revision: state.revision + 1 }; } };
+  return { service, provider, input, saved: () => saved, drift: () => { if (state) state = { ...state, revision: state.revision + 1 }; }, foreign: () => { if (state) state = { ...state, enrollment: createEnrollmentV2({ ...scope, accountId: "foreign" }) }; } };
 }
 describe("V2 intent policy is authoritative store provenance", () => {
   it.each([false, true])("freezes policy in both original metadata scopes only when enrolled=%s", async enrolled => {
@@ -26,6 +26,11 @@ describe("V2 intent policy is authoritative store provenance", () => {
       for (const metadata of [request.metadata, request.subscription_data.metadata]) expect(metadata).toMatchObject({ allowancePolicy: ANNIVERSARY_POLICY_V2, allowanceEnrollmentDigest: intent.allowanceV2!.enrollmentDigest });
     } else { expect(intent.allowanceV2).toBeUndefined(); expect(request.metadata.allowancePolicy).toBeUndefined(); }
     expect((await f.service.prepare({ organizationId: scope.organizationId, userId: "owner" }, f.input)).canonicalRequest).toBe(intent.canonicalRequest);
+  });
+  it("refuses foreign enrollment before price IO even through its trusted store port", async () => {
+    const f = fixture(true); f.foreign();
+    await expect(f.service.prepare({ organizationId: scope.organizationId, userId: "owner" }, f.input)).rejects.toThrow("allowance_provenance_unavailable");
+    expect(f.provider.price).not.toHaveBeenCalled(); expect(f.saved()).toBeNull();
   });
   it("refuses changed enrollment after price IO without creating an intent", async () => {
     const f = fixture(true), read = f.provider.price;

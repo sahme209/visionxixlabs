@@ -1,3 +1,5 @@
+import type { Prisma } from "@prisma/client";
+import { settleAttributedUsageV2 } from "./newTestSubscription/usageAllocationIO";
 import { denyIsolatedUnsupportedOperation } from "./isolatedApplication/runtime";
 import "server-only";
 
@@ -8,6 +10,7 @@ import { applyMargin } from "./aiBillingMargin";
 export interface PendingGatewayUsage {
   id: string;
   externalUsageId: string | null;
+  metadata?: unknown;
 }
 
 export interface GatewayGenerationUsage {
@@ -32,7 +35,7 @@ export interface GatewayUsageTransaction {
 }
 
 export interface GatewayUsageRepository extends GatewayUsageTransaction {
-  $transaction: <T>(operation: (transaction: GatewayUsageTransaction) => Promise<T>) => Promise<T>;
+  $transaction: <T>(operation: (transaction: GatewayUsageTransaction) => Promise<T>, options?: { isolationLevel: "Serializable" }) => Promise<T>;
 }
 
 export interface GatewayUsageReconciliationResult {
@@ -72,7 +75,7 @@ export async function reconcilePendingGatewayUsage(
       billingStatus: "pending",
       externalUsageId: { not: null },
     },
-    select: { id: true, externalUsageId: true },
+    select: { id: true, externalUsageId: true, metadata: true },
     orderBy: { createdAt: "asc" },
     take: Math.max(1, Math.min(500, Math.floor(limit))),
   });
@@ -87,47 +90,15 @@ export async function reconcilePendingGatewayUsage(
       continue;
     }
     try {
+      denyIsolatedUnsupportedOperation();
       const generation = await lookup(event.externalUsageId);
+      denyIsolatedUnsupportedOperation();
       // Cost evidence must identify the exact request captured on this event.
       // A mismatched receipt leaves both usage and its reservation pending.
       if (generation.id !== event.externalUsageId) throw new Error("gateway_generation_identity_mismatch");
-      const providerCostCents = centsFromUsd(generation.totalCost);
-      const computedBilledCents = Math.max(providerCostCents, applyMargin(providerCostCents));
-      const settle = async (transaction: GatewayUsageTransaction) => {
-        const reservation = transaction.aIUsageReservation
-          ? await transaction.aIUsageReservation.findUnique({ where: { usageEventId: event.id }, select: { id: true, organizationId: true, reservedCents: true } })
-          : null;
-        // A customer debit is never allowed to exceed the budget explicitly
-        // reserved before this generation. Any provider overrun is platform
-        // cost to investigate, not an unapproved customer charge.
-        const billedCents = reservation ? Math.min(computedBilledCents, reservation.reservedCents) : computedBilledCents;
-        if (reservation && transaction.aIUsageReservation) {
-          const reservationUpdate = await transaction.aIUsageReservation.updateMany({
-            where: {
-              id: reservation.id,
-              organizationId: reservation.organizationId,
-              status: { in: ["pending_settlement", "reserved"] },
-              usageEventId: event.id,
-            },
-            data: { status: "settled", settledCents: billedCents, settledAt: new Date() },
-          });
-          if (reservationUpdate.count !== 1) throw reservationTransitionFailed;
-        }
-        const usageUpdate = await transaction.usageEvent.updateMany({
-          where: { id: event.id, billingStatus: "pending" },
-          data: {
-            model: generation.model,
-            inputTokens: Math.max(0, Math.floor(generation.promptTokens)),
-            outputTokens: Math.max(0, Math.floor(generation.completionTokens)),
-            cachedReadTokens: Math.max(0, Math.floor(generation.cachedTokens)),
-            costCents: providerCostCents,
-            billedCents,
-            billingStatus: "settled",
-          },
-        });
-        if (usageUpdate.count !== 1) throw usageAlreadySettled;
-      };
-      await repository.$transaction(settle);
+      const settle = (transaction: GatewayUsageTransaction) => settleGatewayGenerationInTransaction(transaction, event, generation);
+      if (hasV2Allocation(event)) await repository.$transaction(settle, { isolationLevel: "Serializable" });
+      else await repository.$transaction(settle);
       settled++;
     } catch (error) {
       if (error === usageAlreadySettled) continue;
@@ -137,4 +108,54 @@ export async function reconcilePendingGatewayUsage(
   }
 
   return { inspected: pending.length, settled, deferred, failed };
+}
+
+function hasV2Allocation(event: PendingGatewayUsage): boolean {
+  return !!event.metadata && typeof event.metadata === "object" && !Array.isArray(event.metadata) && Object.hasOwn(event.metadata, "axiomTestAllocationV2");
+}
+
+/** No provider lookup here: the same settlement composition is exercised by
+ * owned fixtures with explicitly synthetic generation records. */
+export async function settleGatewayGenerationInTransaction(transaction: GatewayUsageTransaction, event: PendingGatewayUsage, generation: GatewayGenerationUsage): Promise<void> {
+  if (!event.externalUsageId || generation.id !== event.externalUsageId) throw new Error("gateway_generation_identity_mismatch");
+  const providerCostCents = centsFromUsd(generation.totalCost);
+  const computedBilledCents = Math.max(providerCostCents, applyMargin(providerCostCents));
+  if (hasV2Allocation(event)) {
+    if (!("$queryRawUnsafe" in transaction) || typeof transaction.$queryRawUnsafe !== "function") throw new Error("attributed_usage_unavailable");
+    const result = await settleAttributedUsageV2(transaction as unknown as Prisma.TransactionClient, { eventId: event.id, externalUsageId: event.externalUsageId, providerCostCents, billedCents: computedBilledCents, model: generation.model, inputTokens: Math.max(0, Math.floor(generation.promptTokens)), outputTokens: Math.max(0, Math.floor(generation.completionTokens)), cachedReadTokens: Math.max(0, Math.floor(generation.cachedTokens)) });
+    if (result === "already_settled") throw usageAlreadySettled;
+    return;
+  }
+  const reservation = transaction.aIUsageReservation
+    ? await transaction.aIUsageReservation.findUnique({ where: { usageEventId: event.id }, select: { id: true, organizationId: true, reservedCents: true } })
+    : null;
+  // A customer debit is never allowed to exceed the budget explicitly
+  // reserved before this generation. Any provider overrun is platform
+  // cost to investigate, not an unapproved customer charge.
+  const billedCents = reservation ? Math.min(computedBilledCents, reservation.reservedCents) : computedBilledCents;
+  if (reservation && transaction.aIUsageReservation) {
+    const reservationUpdate = await transaction.aIUsageReservation.updateMany({
+      where: {
+        id: reservation.id,
+        organizationId: reservation.organizationId,
+        status: { in: ["pending_settlement", "reserved"] },
+        usageEventId: event.id,
+      },
+      data: { status: "settled", settledCents: billedCents, settledAt: new Date() },
+    });
+    if (reservationUpdate.count !== 1) throw reservationTransitionFailed;
+  }
+  const usageUpdate = await transaction.usageEvent.updateMany({
+    where: { id: event.id, billingStatus: "pending" },
+    data: {
+      model: generation.model,
+      inputTokens: Math.max(0, Math.floor(generation.promptTokens)),
+      outputTokens: Math.max(0, Math.floor(generation.completionTokens)),
+      cachedReadTokens: Math.max(0, Math.floor(generation.cachedTokens)),
+      costCents: providerCostCents,
+      billedCents,
+      billingStatus: "settled",
+    },
+  });
+  if (usageUpdate.count !== 1) throw usageAlreadySettled;
 }

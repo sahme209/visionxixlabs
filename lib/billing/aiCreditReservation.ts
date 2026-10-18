@@ -17,7 +17,7 @@ type ReservationRow = {
 };
 
 export type AICreditReservationResult =
-  | { ok: true; reservation: ReservationRow; reused: boolean }
+  | { ok: true; reservation: ReservationRow; reused: boolean; allocationPolicy?: "axiom_test_anniversary_v2" }
   | { ok: false; error: "ai_credit_pool_exhausted" | "ai_credit_reservation_unavailable" | "idempotency_key_conflict" };
 
 /**
@@ -52,11 +52,11 @@ export async function reserveAICredits(
         if (existing.reservedCents !== input.reservedCents) return { ok: false as const, error: "idempotency_key_conflict" as const };
         if (allocationGuard) await reserveAllocationV2(tx, isolatedPlan!, input, true);
         if (guard) await fenceNewTestAdmission(tx, isolatedPlan!, input, false);
-        return { ok: true as const, reservation: existing, reused: true };
+        return { ok: true as const, reservation: existing, reused: true, ...(allocationGuard ? { allocationPolicy: "axiom_test_anniversary_v2" as const } : {}) };
       }
       if (allocationGuard) {
         const reservation = (await reserveAllocationV2(tx, isolatedPlan!, input, false))!;
-        return { ok: true as const, reservation, reused: false };
+        return { ok: true as const, reservation, reused: false, allocationPolicy: "axiom_test_anniversary_v2" as const };
       }
       await tx.aIUsageReservation.updateMany({
         where: { organizationId: input.organizationId, status: "reserved", usageEventId: null, expiresAt: { lte: decisionNow } },

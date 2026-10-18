@@ -55,12 +55,16 @@ export function createNewTestSubscriptionService(options: {
 }) {
   const { store, provider } = options;
   function mode() { const m = provider.mode(); if (m.livemode !== false || !m.accountId || !store.runtimeId) deny("test_runtime_unavailable"); return m; }
+  function allowanceScope(state: VerifiedEnrollmentV2 | null | undefined, org: string, accountId: string) {
+    if (state && (state.enrollment.runtimeId !== store.runtimeId || state.enrollment.accountId !== accountId || state.enrollment.organizationId !== org || state.enrollment.policy !== ANNIVERSARY_POLICY_V2)) deny("allowance_provenance_unavailable");
+  }
   async function manager(tx: Transaction, scope: Scope) { if (!await tx.eligible(scope)) deny("test_manager_required"); }
   return {
     async prepare(scope: Scope, input: { clientIntentKey: string; planId: "pro" | "enterprise"; interval: "monthly" | "annual"; seatQuantity: number; email: string; successUrl: string; cancelUrl: string }) {
       const account = mode();
       if (!/^[A-Za-z0-9_-]{16,200}$/.test(input.clientIntentKey)) deny("intent_key_invalid");
       const existing = await store.transaction(async tx => { await manager(tx, scope); return { intent: await tx.activeIntent(scope.organizationId), seats: await tx.acceptedSeats(scope.organizationId), allowance: await tx.allowance?.(scope.organizationId) ?? null }; }); // no unauthorized provider read
+      allowanceScope(existing.allowance, scope.organizationId, account.accountId);
       if (existing.seats !== input.seatQuantity || existing.seats < 1) deny("seat_snapshot_changed");
       const intentId = existing.intent?.clientIntentKey === input.clientIntentKey ? existing.intent.id : options.id();
       const snapshot = await provider.price(input.planId, input.interval);
@@ -80,6 +84,7 @@ export function createNewTestSubscriptionService(options: {
         if (await tx.acceptedSeats(scope.organizationId) !== terms.seatQuantity) deny("seat_snapshot_changed");
         if (await tx.legacyBinding(scope.organizationId) || await tx.contract(scope.organizationId)) deny("existing_customer_unchanged");
         const enrollment = await tx.allowance?.(scope.organizationId) ?? null;
+        allowanceScope(enrollment, scope.organizationId, account.accountId);
         if ((enrollment?.enrollment.digest ?? null) !== (existing.allowance?.enrollment.digest ?? null) || (enrollment?.revision ?? null) !== (existing.allowance?.revision ?? null)) deny("allowance_snapshot_changed");
         const active = await tx.activeIntent(scope.organizationId);
         if (active) {
@@ -144,9 +149,11 @@ export function createNewTestSubscriptionService(options: {
     async reconcile(rawBody: string, signature: string, organizationId: string) {
       const account = mode();
       const captured = await store.transaction(async tx => ({ contract: await tx.contract(organizationId), coverageRevision: (await tx.coverage(organizationId))?.revision ?? null, allowance: await tx.allowance?.(organizationId) ?? null }));
+      allowanceScope(captured.allowance, organizationId, account.accountId);
       const before = captured.contract;
       async function currentAllowance(tx: Transaction) {
         const state = await tx.allowance?.(organizationId) ?? null;
+        allowanceScope(state, organizationId, account.accountId);
         if ((state?.enrollment.digest ?? null) !== (captured.allowance?.enrollment.digest ?? null) || (state?.revision ?? null) !== (captured.allowance?.revision ?? null)) deny("allowance_snapshot_changed");
         return state;
       }
@@ -248,6 +255,7 @@ export function createNewTestSubscriptionService(options: {
         await manager(tx, scope);
         const enrollment = await tx.allowance?.(scope.organizationId);
         if (enrollment) {
+          allowanceScope(enrollment, scope.organizationId, account.accountId);
           if (enrollment.enrollment.runtimeId !== store.runtimeId || enrollment.enrollment.accountId !== account.accountId || !tx.allowanceCredits) deny("allowance_provenance_unavailable");
           const result = await tx.allowanceCredits(scope.organizationId);
           return { kind: "isolated_test_preview" as const, ...result, operationalPermit: false as const, invoiceSubmissionEnabled: false as const };

@@ -5,7 +5,7 @@ export type SpendV2 = { source: "included"; bucketId: string; cents: number } | 
 export type ReservationAttributionV2 = { version: 2; policy: "axiom_test_anniversary_v2"; runtimeId: string; accountId: string; organizationId: string; enrollmentDigest: string; basisDigest: string; bucketId: string; kind: "free" | "paid"; windowStart: string; windowEnd: string; admittedAt: string; allocation: CeilingV2[]; digest: string };
 export type UsageAttributionV2 = Omit<ReservationAttributionV2, "policy" | "runtimeId" | "accountId" | "organizationId" | "digest" | "allocation"> & { reservationId: string; attributionDigest: string } & ({ state: "pending"; allocation?: never } | { state: "settled"; allocation: SpendV2[] });
 export type PurchaseV2 = { id: string; organizationId: string; deliveredAICreditsCents: number; reversedAICreditsCents: number; status: string; validFor: string; periodMonth: string; refundedAt: Date | null; createdAt: Date };
-export type HoldV2 = { id: string; organizationId: string; reservedCents: number; settledCents: number | null; status: string; expiresAt: Date; usageEventId: string | null; attribution: ReservationAttributionV2 | null };
+export type HoldV2 = { id: string; organizationId: string; reservedCents: number; settledCents: number | null; status: string; createdAt: Date; expiresAt: Date; usageEventId: string | null; attribution: ReservationAttributionV2 | null };
 export type UsageV2 = { id: string; organizationId: string; billedCents: number; billingStatus: string; metadata: unknown };
 export type AllocationFactsV2 = { bases: AllowanceBasisV2[]; holds: HoldV2[]; usage: UsageV2[]; purchases: PurchaseV2[] };
 
@@ -51,7 +51,7 @@ export function eligiblePurchaseV2(p: PurchaseV2, now: Date): boolean {
 }
 /** Full bounded fact sets, not aggregates. Every AI row must have original
  * attribution. The return is a projection/funding candidate, never a balance. */
-export function resolveAllocationV2(basis: AllowanceBasisV2, window: AllowanceWindowV2, facts: AllocationFactsV2, now: Date, reserveCents = 0): { available: true; remainingCents: number; baseCents: number; addOnCents: number; usedCents: number; heldCents: number; allocation: CeilingV2[]; selectedPurchases: PurchaseV2[] } {
+export function resolveAllocationV2(basis: AllowanceBasisV2, window: AllowanceWindowV2, facts: AllocationFactsV2, now: Date, reserveCents = 0): { available: true; remainingCents: number; baseCents: number; addOnCents: number; usedCents: number; heldCents: number; allocation: CeilingV2[]; selectedPurchases: PurchaseV2[]; capacity: { includedCents: number; purchases: Array<{ purchaseId: string; cents: number }> } } {
   if (!validateAllowanceWindowV2(basis, window) || !(now instanceof Date) || !Number.isFinite(now.getTime()) || now < new Date(window.start) || now >= new Date(window.end) || !cents(reserveCents)
     || !facts || facts.holds.length > 4096 || facts.usage.length > 4096 || facts.purchases.length > 100 || facts.bases.length > 2) deny();
   const scope = (v: { organizationId: string }) => { if (v.organizationId !== basis.organizationId) deny(); };
@@ -68,6 +68,7 @@ export function resolveAllocationV2(basis: AllowanceBasisV2, window: AllowanceWi
   for (const h of facts.holds) {
     scope(h); const a = h.attribution; if (!a || !cents(h.reservedCents) || h.reservedCents < 1 || !(h.expiresAt instanceof Date) || !Number.isFinite(h.expiresAt.getTime())) deny();
     validateReservationAttributionV2(facts.bases, a); scope(a);
+    if (!(h.createdAt instanceof Date) || !Number.isFinite(h.createdAt.getTime()) || h.createdAt.toISOString() !== a.admittedAt) deny();
     if (a.allocation.reduce((s, c) => s + c.maxCents, 0) !== h.reservedCents || a.allocation.some(c => c.source === "purchase" && !purchaseMap.has(c.purchaseId))) deny();
     if (!["reserved", "dispatch_unknown", "pending_settlement", "settled", "released", "expired"].includes(h.status)) deny();
     const u = h.usageEventId ? facts.usage.find(u => u.id === h.usageEventId) : null;
@@ -95,5 +96,5 @@ export function resolveAllocationV2(basis: AllowanceBasisV2, window: AllowanceWi
   let request = reserveCents; const allocation: CeilingV2[] = [], selectedPurchases: PurchaseV2[] = [];
   const first = Math.min(included, request); if (first) { allocation.push({ source: "included", bucketId: window.bucketId, maxCents: first }); request -= first; }
   for (const p of purchases) { const amount = Math.min(remaining.get(p.id)!, request); if (amount) { allocation.push({ source: "purchase", purchaseId: p.id, maxCents: amount }); selectedPurchases.push(p); request -= amount; } }
-  return { available: true, remainingCents, baseCents: window.includedCents, addOnCents, usedCents, heldCents, allocation, selectedPurchases };
+  return { available: true, remainingCents, baseCents: window.includedCents, addOnCents, usedCents, heldCents, allocation, selectedPurchases, capacity: { includedCents: included, purchases: purchases.map(p => ({ purchaseId: p.id, cents: remaining.get(p.id)! })) } };
 }
