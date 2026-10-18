@@ -10,6 +10,7 @@ export type Contract = { livemode: false; planId: "pro" | "enterprise"; organiza
 export interface Transaction {
   currentTime(): Promise<Date>;
   allowance?(org: string): Promise<VerifiedEnrollmentV2 | null>;
+  allowanceCredits?(org: string): Promise<{ remainingCents: number; month: string }>;
   eligible(scope: Scope): Promise<boolean>;
   acceptedSeats(org: string): Promise<number>;
   intent(id: string): Promise<Intent | null>;
@@ -245,6 +246,12 @@ export function createNewTestSubscriptionService(options: {
       const account = mode();
       return store.transaction(async tx => {
         await manager(tx, scope);
+        const enrollment = await tx.allowance?.(scope.organizationId);
+        if (enrollment) {
+          if (enrollment.enrollment.runtimeId !== store.runtimeId || enrollment.enrollment.accountId !== account.accountId || !tx.allowanceCredits) deny("allowance_provenance_unavailable");
+          const result = await tx.allowanceCredits(scope.organizationId);
+          return { kind: "isolated_test_preview" as const, ...result, operationalPermit: false as const, invoiceSubmissionEnabled: false as const };
+        }
         const contract = await tx.contract(scope.organizationId);
         if (!contract || contract.catalogVersion !== NEW_TEST_CATALOG_VERSION || contract.livemode !== false || contract.runtimeId !== store.runtimeId || contract.accountId !== account.accountId) deny("new_test_contract_unavailable");
         const intent = await tx.intent(contract.originatingIntentId);

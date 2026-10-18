@@ -1,10 +1,11 @@
+import { resolveAllocationV2, type AllocationFactsV2, type HoldV2, type PurchaseV2, type ReservationAttributionV2, type UsageV2 } from "./allocationV2";
 import "server-only";
 import { createHash } from "node:crypto";
 import type { Prisma } from "@prisma/client";
 import type { Contract, Intent } from "./service";
 import { hasOriginalCreateProof } from "./lifecycle";
 import { paidIdentity, validateEvidence, type CoverageObservation, type PaidInvoiceEvidence } from "./paidCoverage";
-import { ANNIVERSARY_POLICY_V2, createAllowanceBasisV2, type AllowanceBasisV2, type FreeBasisInputV2, type PaidBasisInputV2 } from "./anniversaryWindow";
+import { ANNIVERSARY_POLICY_V2, createAllowanceBasisV2, resolveAllowanceWindowV2, type AllowanceBasisV2, type FreeBasisInputV2, type PaidBasisInputV2 } from "./anniversaryWindow";
 export type AllocationScopeV2 = { runtimeId: string; accountId: string; organizationId: string };
 export type EnrollmentV2 = AllocationScopeV2 & { version: 2; policy: typeof ANNIVERSARY_POLICY_V2; digest: string };
 export type VerifiedEnrollmentV2 = { enrollment: EnrollmentV2; freeBasis: AllowanceBasisV2 & FreeBasisInputV2; paidBasis: (AllowanceBasisV2 & PaidBasisInputV2) | null; revision: number };
@@ -77,8 +78,24 @@ export async function activateFixturePaidBasis(tx: Prisma.TransactionClient, con
   const state = await readFixtureEnrollment(tx, contract, true); if (!state || state.enrollment.digest !== intent.allowanceV2.enrollmentDigest) deny();
   if (state.paidBasis) { if (state.paidBasis.origin.intentId !== intent.id || state.paidBasis.origin.createProofDigest !== originalCreateProofDigest(intent)) deny(); return; }
   if (observation.collection.kind !== "collected") deny();
+  const nowRows = await tx.$queryRawUnsafe<Array<{ now: Date }>>('SELECT clock_timestamp() AS now');
+  const now = nowRows[0]?.now; if (!(now instanceof Date)) deny();
+  const freeWindow = resolveAllowanceWindowV2(state.freeBasis, null, now);
+  if (freeWindow.kind !== "available") deny();
+  resolveAllocationV2(state.freeBasis, freeWindow.window, await readAllocationFactsV2(tx, state), now);
   const basis = paidBasisForOriginalCollection(state.enrollment, intent, observation.collection.evidence);
   await insertFixtureBasis(tx, basis);
   const n = await tx.$executeRawUnsafe('UPDATE "OrganizationTestAllowanceEnrollment" SET "paidBasisDigest"=$1,revision=revision+1 WHERE org=$2 AND revision=$3 AND "paidBasisDigest" IS NULL', basis.digest, contract.organizationId, state.revision);
   if (n !== 1) deny();
+}
+
+export async function readAllocationFactsV2(tx: Prisma.TransactionClient, state: VerifiedEnrollmentV2): Promise<AllocationFactsV2> {
+  const org = state.enrollment.organizationId;
+  const [usage, holds, purchases] = await Promise.all([
+    tx.usageEvent.findMany({ where: { organizationId: org, eventKind: "ai_invocation" }, take: 4097 }),
+    tx.$queryRawUnsafe<Array<Omit<HoldV2, "attribution"> & { attribution: ReservationAttributionV2 | null }>>('SELECT h.*,a.body AS attribution FROM "AIUsageReservation" h LEFT JOIN "NewTestReservationAttribution" a ON a."reservationId"=h.id AND a.org=h."organizationId" WHERE h."organizationId"=$1 ORDER BY h.id LIMIT 4097', org),
+    tx.addOnPurchase.findMany({ where: { organizationId: org }, take: 101 }),
+  ]);
+  if (usage.length > 4096 || holds.length > 4096 || purchases.length > 100) deny();
+  return { bases: [state.freeBasis, ...(state.paidBasis ? [state.paidBasis] : [])], usage: usage as UsageV2[], holds, purchases: purchases as PurchaseV2[] };
 }

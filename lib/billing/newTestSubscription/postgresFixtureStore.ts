@@ -1,3 +1,4 @@
+import { newTestAllocationPricingPlan, readAllocationAllowanceV2 } from "./allocationPlan";
 import { activateFixturePaidBasis, readFixtureEnrollment } from "./fixtureAllocation";
 import { readVerifiedNewTestContract } from "./verifiedContract";
 import { readFixtureCoverage, writeFixtureCoverage } from "./fixtureCoverage";
@@ -25,6 +26,12 @@ export function postgresFixtureStore(target: string, runtimeId: string, accountI
     const one = async <T>(sql: string, ...args: unknown[]) => (await tx.$queryRawUnsafe<T[]>(sql, ...args))[0] ?? null;
     const readIntent = async (id: string) => (await one<{ body: Intent }>('SELECT body FROM "RecurringSubscriptionIntent" WHERE id=$1', id))?.body ?? null;
     const port: Transaction = {
+      allowanceCredits: async org => {
+        const verified = await readVerifiedNewTestContract(tx, { runtimeId, accountId }, org);
+        const plan = verified ? await newTestPricingPlan(tx, verified) : await newTestAllocationPricingPlan(tx, { runtimeId, accountId, organizationId: org }, null);
+        const allowance = await readAllocationAllowanceV2(tx, plan); const now = await port.currentTime();
+        return { remainingCents: allowance.includedRemainingCents, month: now.toISOString().slice(0, 7) };
+      },
       allowance: org => readFixtureEnrollment(tx, { runtimeId, accountId, organizationId: org }, true),
       currentTime: async () => { const rows = await tx.$queryRawUnsafe<Array<{ now: Date }>>('SELECT clock_timestamp() AS now'); if (!(rows[0]?.now instanceof Date)) throw new Error("paid_coverage_unavailable"); return rows[0].now; },
       eligible: async scope => { const row = await tx.orgMembership.findUnique({ where: { userId_organizationId: { userId: scope.userId, organizationId: scope.organizationId } } }); return !!row?.acceptedAt && ["owner", "admin"].includes(row.role); },
@@ -76,8 +83,8 @@ export function postgresFixtureStore(target: string, runtimeId: string, accountI
       await checkMarker(tx);
       const member = await tx.orgMembership.findUnique({ where: { userId_organizationId: { userId: scope.userId, organizationId: org } } });
       if (!member?.acceptedAt || !["owner", "admin"].includes(member.role)) throw new Error("test_manager_required");
-      const verified = await readVerifiedNewTestContract(tx, { runtimeId, accountId }, org); if (!verified) throw new Error("new_test_contract_unavailable");
-      return newTestPricingPlan(tx, verified);
+      const verified = await readVerifiedNewTestContract(tx, { runtimeId, accountId }, org);
+      return verified ? newTestPricingPlan(tx, verified) : newTestAllocationPricingPlan(tx, { runtimeId, accountId, organizationId: org }, null);
     }),
   };
 }

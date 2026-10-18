@@ -62,6 +62,16 @@ export function validAnniversaryServicePeriod(anchorISO: string, interval: "mont
       && boundary(anchor, n).getTime() === start.getTime() && boundary(anchor, n + count).getTime() === end.getTime();
   } catch { return false; }
 }
+/** Structural window validation only; IO still owns collection/enrollment authority. */
+export function validateAllowanceWindowV2(basis: AllowanceBasisV2, window: AllowanceWindowV2): boolean {
+  try {
+    if (createAllowanceBasisV2(basis).digest !== basis.digest || window.version !== 2 || window.policy !== ANNIVERSARY_POLICY_V2 || window.basisDigest !== basis.digest || window.kind !== basis.kind) return false;
+    const start = iso(window.start), end = iso(window.end);
+    if (basis.kind === "paid" ? !validAnniversaryServicePeriod(basis.anchor, "monthly", window.start, window.end) || window.includedCents !== basis.terms.monthlyAICreditsCents
+      : start.getTime() !== Date.UTC(start.getUTCFullYear(), start.getUTCMonth(), 1) || end.getTime() !== Date.UTC(start.getUTCFullYear(), start.getUTCMonth() + 1, 1) || window.includedCents !== 200) return false;
+    return window.bucketId === hash({ version: 2, enrollmentDigest: basis.enrollmentDigest, basisDigest: basis.digest, kind: basis.kind, start: window.start, end: window.end });
+  } catch { return false; }
+}
 function available(basis: AllowanceBasisV2, start: Date, end: Date, includedCents: number): WindowResultV2 {
   const bounds = { start: start.toISOString(), end: end.toISOString() };
   const bucketId = hash({ version: 2, enrollmentDigest: basis.enrollmentDigest, basisDigest: basis.digest, kind: basis.kind, ...bounds });
