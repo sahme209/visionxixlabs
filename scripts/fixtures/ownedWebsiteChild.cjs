@@ -7,10 +7,12 @@ const http = require('node:http');
 const { allowedRequest, endpoint, sha256 } = require('./ownedWebsitePolicy.cjs');
 const { installOwnedWebsiteGuard } = require('./ownedWebsiteGuard.cjs');
 const framework = require('./ownedWebsiteFramework.cjs');
+const managedNodePath = require('./ownedWebsiteManagedNodePath.cjs');
 assert.equal(process.env.AXIOM_WEBSITE_VISUAL_MODE, 'owned-website-visual');
 const directory = process.env.AXIOM_WEBSITE_CONFIG?.replace(/\/config\.json$/, '');
 assert.ok(directory?.startsWith('/tmp/axiom-website-') && process.env.AXIOM_WEBSITE_CONFIG === join(directory, 'config.json'));
 const config = JSON.parse(readFileSync(process.env.AXIOM_WEBSITE_CONFIG, 'utf8'));
+managedNodePath.revalidate(process.env.NODE_PATH, config.managedNodePath);
 const root = realpathSync(join(__dirname, '../..'));
 assert.equal(config.root, root); assert.equal(realpathSync(process.cwd()), root);
 assert.match(config.nonce, /^[a-f0-9]{32}$/); assert.equal(config.directory, directory);
@@ -33,8 +35,10 @@ server.once('error', () => { report('listen_failed'); process.exit(1); });
 server.listen({ host: '127.0.0.1', port: config.appPort, exclusive: true }, async () => {
   try {
     guard = installOwnedWebsiteGuard();
+    managedNodePath.revalidate(process.env.NODE_PATH, config.managedNodePath);
     const mode = framework.installOwnedWebsiteFramework({ root, role: 'website-server', environment: process.env, identity: config.framework });
     report('guarded');
+    managedNodePath.revalidate(process.env.NODE_PATH, config.managedNodePath);
     const next = require('next');
     // conf is the real pinned config loaded through Next; only owned distDir is overridden.
     const loadConfig = require('next/dist/server/config').default;

@@ -8,16 +8,18 @@ import { fileURLToPath } from 'node:url';
 import policy from './fixtures/ownedWebsitePolicy.cjs';
 import framework from './fixtures/ownedWebsiteFramework.cjs';
 import lifecycle from './fixtures/ownedWebsiteLifecycle.cjs';
+import managedNodePath from './fixtures/ownedWebsiteManagedNodePath.cjs';
 const root = realpathSync(join(dirname(fileURLToPath(import.meta.url)), '..'));
 const browser = '/usr/lib/chromium/chromium';
-const sourceFiles = ['scripts/run-owned-website-visual.mjs', 'scripts/fixtures/ownedWebsitePolicy.cjs', 'scripts/fixtures/ownedWebsiteGuard.cjs', 'scripts/fixtures/ownedWebsiteFramework.cjs', 'scripts/fixtures/ownedWebsiteChild.cjs', 'scripts/fixtures/ownedWebsiteLifecycle.cjs', 'scripts/fixtures/ownedWebsiteSession.cjs', 'scripts/capture-owned-website.mjs'];
+const sourceFiles = ['scripts/run-owned-website-visual.mjs', 'scripts/fixtures/ownedWebsitePolicy.cjs', 'scripts/fixtures/ownedWebsiteGuard.cjs', 'scripts/fixtures/ownedWebsiteFramework.cjs', 'scripts/fixtures/ownedWebsiteChild.cjs', 'scripts/fixtures/ownedWebsiteLifecycle.cjs', 'scripts/fixtures/ownedWebsiteSession.cjs', 'scripts/fixtures/ownedWebsiteManagedNodePath.cjs', 'scripts/capture-owned-website.mjs'];
 const pause = ms => new Promise(resolve => setTimeout(resolve, ms));
-function git(args) { return execFileSync('git', args, { cwd: root, encoding: 'utf8', env: { PATH: process.env.PATH, GIT_CONFIG_NOSYSTEM: '1', GIT_CONFIG_GLOBAL: '/dev/null' }, timeout: 5000 }).trim(); }
+function git(args, managedIdentity) { managedNodePath.revalidate(process.env.NODE_PATH, managedIdentity); return execFileSync('git', args, { cwd: root, encoding: 'utf8', env: { PATH: process.env.PATH, NODE_PATH: process.env.NODE_PATH, GIT_CONFIG_NOSYSTEM: '1', GIT_CONFIG_GLOBAL: '/dev/null' }, timeout: 5000 }).trim(); }
 function capture() {
   policy.checkedEnvironment(process.env, process.execArgv); // Refuse inherited guard/trust changes before even a git child.
-  assert.equal(git(['status', '--porcelain', '--untracked-files=no']), '', 'website_clean_source_required');
+  const managedIdentity = managedNodePath.capture(process.env.NODE_PATH);
+  assert.equal(git(['status', '--porcelain', '--untracked-files=no'], managedIdentity), '', 'website_clean_source_required');
   for (const name of ['.env', '.env.local', '.env.development', '.env.development.local']) assert.equal(existsSync(join(root, name)), false, 'website_ambient_env_file');
-  return { schema: 1, root, sourceHead: git(['rev-parse', 'HEAD']), framework: framework.captureOwnedWebsiteFramework(root), hashes: Object.fromEntries([...sourceFiles.map(path => join(root, path)), realpathSync(process.execPath), realpathSync(browser)].map(path => [path, policy.sha256(path)])), productionEquivalent: false };
+  return { schema: 1, root, sourceHead: git(['rev-parse', 'HEAD'], managedIdentity), managedNodePath: managedIdentity, framework: framework.captureOwnedWebsiteFramework(root), hashes: Object.fromEntries([...sourceFiles.map(path => join(root, path)), realpathSync(process.execPath), realpathSync(browser)].map(path => [path, policy.sha256(path)])), productionEquivalent: false };
 }
 function groupMembers(group) {
   return readdirSync('/proc').filter(name => /^\d+$/.test(name)).flatMap(name => { try { const row = policy.snapshot(Number(name)); return row.group === group && row.state !== 'Z' ? [row] : []; } catch (error) { if (['ENOENT', 'ESRCH'].includes(error.code)) return []; throw error; } });
@@ -50,7 +52,7 @@ async function execute(manifest) {
   writeFileSync(join(dist, 'tsconfig.json'), JSON.stringify({ extends: join(root, 'tsconfig.next.json') }), { mode: 0o600 });
   for (const name of ['home', 'config', 'cache', 'tmp', 'chromium', 'screenshots']) mkdirSync(join(directory, name), { mode: 0o700 });
   const assets = policy.publicAssets(root);
-  const config = { root, directory, dist, nonce, appPort, proxyPort, cdpPort, assets, hashes: manifest.hashes, framework: manifest.framework };
+  const config = { root, directory, dist, nonce, appPort, proxyPort, cdpPort, assets, hashes: manifest.hashes, framework: manifest.framework, managedNodePath: manifest.managedNodePath };
   const configPath = join(directory, 'config.json'); writeFileSync(configPath, JSON.stringify(config), { mode: 0o600 });
   const env = policy.childEnvironment(process.env, { directory, configPath });
   const logs = [];
@@ -58,6 +60,8 @@ async function execute(manifest) {
   let proxy;
   const disk = setInterval(() => { try { if (directoryBytes(directory) + directoryBytes(dist) > 400 * 1024 * 1024) control.cancel(Error('website_resource_limit')); } catch { control.cancel(Error('website_resource_limit')); } }, 5000);
   function launch(executable, args, childEnv) {
+    managedNodePath.revalidate(process.env.NODE_PATH, manifest.managedNodePath);
+    managedNodePath.revalidate(childEnv.NODE_PATH, manifest.managedNodePath);
     return control.run(() => ledger.launch(executable, args, { cwd: root, env: childEnv, detached: true, stdio: ['ignore', 'pipe', 'pipe'] }, child => {
       let count = 0;
       for (const stream of [child.stdout, child.stderr]) stream.on('data', chunk => { count += chunk.length; if (count <= 512_000) logs.push(chunk.toString()); });
@@ -118,7 +122,7 @@ async function execute(manifest) {
       rmSync(join(directory, 'chromium'), { recursive: true });
     }
     writeFileSync(join(directory, 'bounded-runtime.log'), logs.join(''), { mode: 0o600 });
-    const sourceUnchanged = git(['rev-parse', 'HEAD']) === manifest.sourceHead && git(['status', '--porcelain', '--untracked-files=no']) === '';
+    const sourceUnchanged = git(['rev-parse', 'HEAD'], manifest.managedNodePath) === manifest.sourceHead && git(['status', '--porcelain', '--untracked-files=no'], manifest.managedNodePath) === '';
     if (cleanupErrors.length || !sourceUnchanged || control.report().failure) result.status = 'failed';
     if (control.report().failure && !result.error) result.error = control.report().failure;
     writeFileSync(join(directory, 'result.json'), JSON.stringify({ ...result, coordinator: control.report(), cleanup: cleanupErrors.length ? 'failed' : 'owned_groups_empty', cleanupErrors, children: ledger.records.map(record => ({ pid: record.pid, owner: record.owner, exited: record.exited, neverSpawned: record.neverSpawned, exitCode: record.exitCode, signal: record.signal })), fontRendering: 'external-font-fetch-denied; inspect fallback rendering', sourceUnchanged }), { mode: 0o600 });

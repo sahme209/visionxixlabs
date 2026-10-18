@@ -95,3 +95,9 @@ it("uses the pinned in-process TS API with no new process and restores the preci
     })().catch(error=>{console.error(String(error));process.exitCode=1});`;
   expect(execFileSync(process.execPath, ["-e", script], { cwd: root, env: { PATH: process.env.PATH }, encoding: "utf8", timeout: 10000 }).trim()).toContain("pinned_api_without_process");
 });
+
+it("preserves reviewed managed NODE_PATH without printing or substituting its value", () => {
+  if (process.env.NODE_PATH === undefined) return;
+  const child = policy.childEnvironment({ NODE_PATH: process.env.NODE_PATH }, { directory: "/tmp/axiom-website-test", configPath: "/tmp/axiom-website-test/config.json" }, []);
+  expect(child.NODE_PATH === process.env.NODE_PATH).toBe(true);
+});

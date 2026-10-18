@@ -4,6 +4,7 @@ import { join } from 'node:path';
 import { request } from 'node:http';
 import policy from './fixtures/ownedWebsitePolicy.cjs';
 import transport from './fixtures/ownedWebsiteSession.cjs';
+import managedNodePath from './fixtures/ownedWebsiteManagedNodePath.cjs';
 // Start the absolute clock before config, listener checks, HTTP or WebSocket setup.
 const session = transport.createSession({ duration: 120000 });
 let directory, config, success = false, failure = null, denied = 0, imageBytes = 0;
@@ -15,6 +16,7 @@ try {
   assert.ok(/^\/tmp\/axiom-website-[A-Za-z0-9]+$/.test(directory ?? '') && realpathSync(directory) === directory, 'website_owned_capture_directory');
   const candidate = JSON.parse(readFileSync(join(directory, 'config.json'), 'utf8'));
   assert.equal(candidate.directory, directory); assert.match(candidate.nonce, /^[a-f0-9]{32}$/);
+  managedNodePath.revalidate(process.env.NODE_PATH, candidate.managedNodePath);
   config = candidate; // Only a validated, directory-bound nonce can be written in the final receipt.
   const windowState = JSON.parse(readFileSync(join(directory, 'window.json'), 'utf8'));
   assert.equal(windowState.directory, directory); assert.equal(windowState.nonce, config.nonce);

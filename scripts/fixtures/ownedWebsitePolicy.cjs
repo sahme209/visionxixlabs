@@ -4,8 +4,9 @@ const assert = require('node:assert/strict');
 const { realpathSync, readFileSync, readdirSync, readlinkSync } = require('node:fs');
 const { join } = require('node:path');
 const { createHash } = require('node:crypto');
+const managedNodePath = require('./ownedWebsiteManagedNodePath.cjs');
 const pages = new Set(['/', '/product', '/docs/approval-workflow']);
-const inherited = ['PATH', 'TMPDIR', 'LANG', 'LC_ALL', 'HTTP_PROXY', 'HTTPS_PROXY', 'ALL_PROXY', 'NO_PROXY', 'http_proxy', 'https_proxy', 'all_proxy', 'no_proxy', 'NODE_EXTRA_CA_CERTS', 'SSL_CERT_FILE', 'SSL_CERT_DIR', 'CODEX_PROXY_CERT', 'NODE_USE_ENV_PROXY', 'REQUESTS_CA_BUNDLE', 'CURL_CA_BUNDLE', 'AWS_CA_BUNDLE'];
+const inherited = ['PATH', 'TMPDIR', 'LANG', 'LC_ALL', 'HTTP_PROXY', 'HTTPS_PROXY', 'ALL_PROXY', 'NO_PROXY', 'http_proxy', 'https_proxy', 'all_proxy', 'no_proxy', 'NODE_EXTRA_CA_CERTS', 'SSL_CERT_FILE', 'SSL_CERT_DIR', 'CODEX_PROXY_CERT', 'NODE_USE_ENV_PROXY', 'REQUESTS_CA_BUNDLE', 'CURL_CA_BUNDLE', 'AWS_CA_BUNDLE', 'NODE_PATH'];
 const sha256 = path => createHash('sha256').update(readFileSync(path)).digest('hex');
 function endpoint(port) { assert.ok(Number.isInteger(port) && port >= 20000 && port <= 60000, 'website_port'); return `http://127.0.0.1:${port}`; }
 function publicAssets(root) {
@@ -32,10 +33,11 @@ function allowedRequest({ method, raw, origin, assets }) {
 // 3bec9efa59f74176884354ed133307df37c374b923b266d95a83c512e9ac82b0.
 // Website has no Vitest subprocess purpose: all preload/loader CLI options are unsupported.
 function checkedEnvironment(env, execArgv) {
+  managedNodePath.capture(env.NODE_PATH);
   const unsupported = () => { throw Error('website_child_options_unsupported'); };
   const heap = /^--max[-_]old[-_]space[-_]size=[1-9][0-9]*$/;
   for (const key of Object.keys(env)) {
-    if (/^(LD_|DYLD_|OPENSSL_)/.test(key) || (key.startsWith('NODE_') && !['NODE_OPTIONS', 'NODE_ENV', 'NODE_EXTRA_CA_CERTS', 'NODE_USE_ENV_PROXY'].includes(key))) unsupported();
+    if (/^(LD_|DYLD_|OPENSSL_)/.test(key) || (key.startsWith('NODE_') && !['NODE_OPTIONS', 'NODE_ENV', 'NODE_EXTRA_CA_CERTS', 'NODE_USE_ENV_PROXY', 'NODE_PATH'].includes(key))) unsupported();
   }
   if (env.NODE_OPTIONS?.trim() && !heap.test(env.NODE_OPTIONS.trim())) unsupported();
   if (execArgv.some(option => !heap.test(option))) unsupported();
