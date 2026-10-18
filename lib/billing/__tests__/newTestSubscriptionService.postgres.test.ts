@@ -72,7 +72,10 @@ suite("owned PG17 new TEST subscription service, synthetic provider only", () =>
     for (let attempt = 0; ; attempt++) { try { await db.$queryRawUnsafe("SELECT 1"); break; } catch { if (attempt > 40) throw new Error("owned_fixture_not_ready"); await new Promise(resolve => setTimeout(resolve, 100)); } }
     const tables = await db.$queryRawUnsafe<Array<{ count: number }>>("SELECT count(*)::int AS count FROM pg_tables WHERE schemaname='public'"); expect(tables[0].count).toBe(0);
     for (const envName of [".env", ".env.local", ".env.production", "prisma/.env"]) if (existsSync(resolve(envName))) throw new Error("fixture_refuses_env_files");
-    execFileSync(process.execPath, [resolve("node_modules/prisma/build/index.js"), "db", "push", "--skip-generate", "--schema", resolve("prisma/schema.prisma")], { cwd: process.cwd(), env: newTestPrismaEnvironment(process.env, process.execArgv, url), stdio: "pipe" });
+    const schemaEnvironment = process.env.AXIOM_RUN_OWNED_CHECKOUT_HTTP === "1"
+      ? (await import("./fixtures/ownedCheckoutLaunchPolicy")).ownedCheckoutPrismaEnvironment(process.env, process.execArgv, url)
+      : newTestPrismaEnvironment(process.env, process.execArgv, url);
+    execFileSync(process.execPath, [resolve("node_modules/prisma/build/index.js"), "db", "push", "--skip-generate", "--schema", resolve("prisma/schema.prisma")], { cwd: process.cwd(), env: schemaEnvironment, stdio: "pipe" });
     const sql = [
       'CREATE TABLE "IsolatedTestRuntime" (id text PRIMARY KEY,account text NOT NULL)',
       'CREATE TABLE "RecurringSubscriptionIntent" (id text PRIMARY KEY,org text NOT NULL,body jsonb NOT NULL,UNIQUE(id,org))',

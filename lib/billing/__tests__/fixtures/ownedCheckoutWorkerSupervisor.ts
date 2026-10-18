@@ -10,7 +10,7 @@ import { ownedCheckoutLaunchPolicy } from "./ownedCheckoutLaunchPolicy";
 import { ownedCheckoutChild, ownedCheckoutControl } from "./ownedCheckoutProcess";
 import { assertSyntheticSupervisor, buildOwnedWorker, verifyOwnedBytes, verifyOwnedOutputTree } from "./ownedCheckoutWorkerBundle";
 export type OwnedWorkerReview = Parameters<typeof buildOwnedWorker>[1];
-export async function startOwnedCheckoutWorker(input: { db: PrismaClient; databaseUrl: string; runtimeId: string; organizationId: string; origin: string; reviewed: OwnedWorkerReview; control?: ReturnType<typeof ownedCheckoutControl> }) {
+export async function startOwnedCheckoutWorker(input: { db: Pick<PrismaClient, "$queryRawUnsafe">; databaseUrl: string; runtimeId: string; organizationId: string; origin: string; reviewed: OwnedWorkerReview; control?: ReturnType<typeof ownedCheckoutControl> }) {
   assertSyntheticSupervisor(process.env); const policy = ownedCheckoutLaunchPolicy(process.env, process.execArgv); newTestPrismaEnvironment(process.env, process.execArgv, input.databaseUrl);
   const control = input.control ?? ownedCheckoutControl();
   let rows: Array<{ id: string }>;

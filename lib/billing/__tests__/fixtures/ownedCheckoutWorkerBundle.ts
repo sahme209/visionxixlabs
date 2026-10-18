@@ -49,6 +49,23 @@ function tree(directory: string): Array<{ path: string; sha256: string }> {
   const rows: Array<{ path: string; sha256: string }> = [];
   const walk = (path: string) => { for (const name of readdirSync(path).sort()) { const file = resolve(path, name), stat = lstatSync(file); if (stat.isSymbolicLink()) invalid(); if (stat.isDirectory()) walk(file); else if (stat.isFile()) rows.push({ path: relative(directory, file), sha256: sha(readFileSync(file)) }); else invalid(); } }; walk(directory); return rows;
 }
+/** Pure transformer; source tests may use inert literal ASTs/printer only.
+ * The root stays SourceFile, while nested nodes have the full Node domain. */
+export function ownedWorkerAliasTransform(path: string, sources: Readonly<Record<string, string>>): ts.TransformerFactory<ts.SourceFile> {
+  return context => sourceFile => {
+    const visit: ts.Visitor = node => {
+      const rewrite = (literal: ts.Expression) => {
+        if (!ts.isStringLiteral(literal) || !literal.text.startsWith("@/")) return literal;
+        const target = importedPath(path, literal.text, p => p in sources); if (!target) invalid(); const rel = posix.relative(posix.dirname(path), target).replace(/\.tsx?$/, ""); return context.factory.createStringLiteral(rel.startsWith(".") ? rel : "./" + rel);
+      };
+      if (ts.isImportDeclaration(node)) return context.factory.updateImportDeclaration(node, node.modifiers, node.importClause, rewrite(node.moduleSpecifier), node.attributes);
+      if (ts.isExportDeclaration(node) && node.moduleSpecifier) return context.factory.updateExportDeclaration(node, node.modifiers, node.isTypeOnly, node.exportClause, rewrite(node.moduleSpecifier), node.attributes);
+      if (ts.isCallExpression(node) && (node.expression.kind === ts.SyntaxKind.ImportKeyword || ts.isIdentifier(node.expression) && node.expression.text === "require")) return context.factory.updateCallExpression(node, node.expression, node.typeArguments, node.arguments.map(rewrite));
+      return ts.visitEachChild(node, visit, context);
+    };
+    return ts.visitEachChild(sourceFile, visit, context);
+  };
+}
 /** Call only after separate source closure and owned runtime grant. Pins source,
  * compiler implementation/lock and entire external package trees. No install,
  * generation, permissive runtime loader or shared dependency mutation. */
@@ -84,16 +101,7 @@ export async function buildOwnedWorker(directory: string, reviewed: { sources: A
   const outputs: Record<string, string> = {};
   const compilerOptions = { target: ts.ScriptTarget.ES2022, module: ts.ModuleKind.CommonJS, jsx: ts.JsxEmit.ReactJSX, esModuleInterop: true, sourceMap: false, declaration: false };
   for (const [path, source] of Object.entries(sources)) {
-    const result = ts.transpileModule(source, { fileName: path, compilerOptions, reportDiagnostics: true, transformers: { before: [context => file => ts.visitNode(file, function visit(node): ts.VisitResult<ts.Node> {
-      const rewrite = (literal: ts.Expression) => {
-        if (!ts.isStringLiteral(literal) || !literal.text.startsWith("@/")) return literal;
-        const target = importedPath(path, literal.text, p => p in sources); if (!target) invalid(); const rel = posix.relative(posix.dirname(path), target).replace(/\.tsx?$/, ""); return context.factory.createStringLiteral(rel.startsWith(".") ? rel : "./" + rel);
-      };
-      if (ts.isImportDeclaration(node)) return context.factory.updateImportDeclaration(node, node.modifiers, node.importClause, rewrite(node.moduleSpecifier), node.attributes);
-      if (ts.isExportDeclaration(node) && node.moduleSpecifier) return context.factory.updateExportDeclaration(node, node.modifiers, node.isTypeOnly, node.exportClause, rewrite(node.moduleSpecifier), node.attributes);
-      if (ts.isCallExpression(node) && (node.expression.kind === ts.SyntaxKind.ImportKeyword || ts.isIdentifier(node.expression) && node.expression.text === "require")) return context.factory.updateCallExpression(node, node.expression, node.typeArguments, node.arguments.map(rewrite));
-      return ts.visitEachChild(node, visit, context);
-    }) as ts.SourceFile] } });
+    const result = ts.transpileModule(source, { fileName: path, compilerOptions, reportDiagnostics: true, transformers: { before: [ownedWorkerAliasTransform(path, sources)] } });
     if (result.diagnostics?.some(d => d.category === ts.DiagnosticCategory.Error)) invalid();
     const target = path.replace(/\.tsx?$/, ".js"); outputs[target] = result.outputText; const destination = resolve(output, target); mkdirSync(dirname(destination), { recursive: true, mode: 0o700 }); writeFileSync(destination, result.outputText, { flag: "wx", mode: 0o600 });
   }

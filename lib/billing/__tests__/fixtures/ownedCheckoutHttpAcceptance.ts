@@ -40,7 +40,7 @@ export async function exerciseOwnedCheckoutHttp(input: { db: PrismaClient; url: 
     const reviewed = JSON.parse(readFileSync(resolve("docs/mission/owned-checkout-worker-source.json"), "utf8")) as OwnedWorkerReview;
     worker = await startOwnedCheckoutWorker({ db: input.db, databaseUrl: input.url, runtimeId: input.runtime, organizationId, origin, reviewed, control });
     phase = "next_start";
-    const env = { ...newTestChildEnvironment(process.env, process.execArgv, { databaseUrl: input.url, appOrigin: origin, fontResponses: fonts, runtimeId: input.runtime, accountId: "acct-test", organizationId, authSecret: randomBytes(32).toString("hex") }), ...worker.bridgeEnv, ...(policy.env.NODE_PATH === undefined ? {} : { NODE_PATH: policy.env.NODE_PATH }) };
+    const env = { ...policy.env, ...newTestChildEnvironment(process.env, process.execArgv, { databaseUrl: input.url, appOrigin: origin, fontResponses: fonts, runtimeId: input.runtime, accountId: "acct-test", organizationId, authSecret: randomBytes(32).toString("hex") }), ...worker.bridgeEnv, ...(policy.env.NODE_PATH === undefined ? {} : { NODE_PATH: policy.env.NODE_PATH }) };
     policy.revalidate(process.env); policy.revalidate(env, "child"); control.check();
     next = ownedCheckoutChild("next", temporary!, () => spawn(process.execPath, [resolve("node_modules/next/dist/bin/next"), "dev", "--webpack", "--hostname", "127.0.0.1", "--port", String(port)], { cwd: process.cwd(), env, detached: true, stdio: "pipe" }), control);
     await control.run(() => next!.ready); const nextChild = next.child; if (!nextChild) throw new Error("owned_checkout_next_unavailable");

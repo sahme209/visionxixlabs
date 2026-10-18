@@ -3,7 +3,7 @@
 import { createHash } from "node:crypto";
 import { accessSync, constants, lstatSync, realpathSync } from "node:fs";
 import { dirname, normalize } from "node:path";
-import { checkedChildEnvironment } from "./newTestChildEnvironment";
+import { checkedChildEnvironment, newTestPrismaEnvironment } from "./newTestChildEnvironment";
 const reviewedPathHash = "dbc7bc884f72c70bb3d320e868da710a56a621286fba48b3c6b610776b41b4fd";
 function unsupported(): never { throw new Error("owned_checkout_launch_policy_unsupported"); }
 type PathIO = { digest(value: string): string; realpath(path: string): string; lstat(path: string): { isDirectory(): boolean; isSymbolicLink(): boolean; uid: number; gid: number; mode: number; dev: number; ino: number; ctimeMs: number }; uid(): number | undefined; writable(path: string): boolean };
@@ -42,14 +42,28 @@ export function ownedCheckoutLaunchPolicy(inherited: Readonly<Record<string, str
     checkedDeployment(inherited);
     checkedControls(inherited);
     const managedNodePath = captureOwnedNodePath(inherited.NODE_PATH);
-    const env = { ...checkedChildEnvironment(inherited, execArgv), ...(inherited.NODE_PATH === undefined ? {} : { NODE_PATH: inherited.NODE_PATH }) };
+    // Capture actual inherited controls before the shared helper filters them.
+    // No managed defaults or provider credentials are introduced here.
+    const managed = Object.fromEntries(Object.keys(inherited).filter(key => key.startsWith("CODEX_") || key === "GNUPGHOME").map(key => [key, inherited[key]]));
+    const env: NodeJS.ProcessEnv = { ...checkedChildEnvironment(inherited, execArgv), ...managed, ...(inherited.NODE_PATH === undefined ? {} : { NODE_PATH: inherited.NODE_PATH }) };
     // Fixed complete key universe: absence is part of the identity. A selector
     // first appearing after capture must not disappear from the comparison.
-    const signature = (value: Readonly<Record<string, string | undefined>>) => JSON.stringify(managedSelectorKeys.map(key => [key, Object.prototype.hasOwnProperty.call(value, key), value[key] ?? null]));
+    const signature = (value: Readonly<Record<string, string | undefined>>) => {
+      const dynamic = Object.keys(value).filter(key => key.startsWith("CODEX_") && !(managedSelectorKeys as readonly string[]).includes(key)).sort();
+      return JSON.stringify([...managedSelectorKeys, "GNUPGHOME", ...dynamic].map(key => [key, Object.prototype.hasOwnProperty.call(value, key), value[key] ?? null]));
+    };
     const inheritedSignature = signature(inherited), childSignature = signature(env);
     return { env, managedNodePath, revalidate(current: Readonly<Record<string, string | undefined>>, scope: "parent" | "child" = "parent") {
       checkedDeployment(current); checkedControls(current);
       if (signature(current) !== (scope === "child" ? childSignature : inheritedSignature) || JSON.stringify(captureOwnedNodePath(current.NODE_PATH)) !== JSON.stringify(managedNodePath)) unsupported();
     } };
   } catch { return unsupported(); }
+}
+
+/** Only the selected28 fixture's Prisma CLI uses this composition. The shared
+ * helper, owned URL validation and fixed checkpoint denial remain unchanged. */
+export function ownedCheckoutPrismaEnvironment(inherited: Readonly<Record<string, string | undefined>>, execArgv: readonly string[], databaseUrl: string): NodeJS.ProcessEnv {
+  const policy = ownedCheckoutLaunchPolicy(inherited, execArgv);
+  const env = { ...policy.env, ...newTestPrismaEnvironment(inherited, execArgv, databaseUrl) };
+  policy.revalidate(inherited); policy.revalidate(env, "child"); return env;
 }

@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import ts from "typescript";
 describe("owned worker build recipe does not execute during source verification", () => {
   it("fixes its entry, conditions, external names and synthetic-only launch domain", async () => {
     const b = await import("./fixtures/ownedCheckoutWorkerBundle");
@@ -18,6 +19,17 @@ describe("owned worker build recipe does not execute during source verification"
     expect(() => b.verifyOwnedBytes(receipt, { "lib/entry.ts": "export const x = 2;" }, outputs)).toThrow("owned_checkout_build_drift");
     expect(() => b.verifyOwnedBytes(receipt, source, { "lib/entry.js": "exports.x = 2;" })).toThrow("owned_checkout_build_drift");
     expect(() => b.verifyOwnedBytes(receipt, source, { ...outputs, "injected.js": "" })).toThrow("owned_checkout_build_drift");
+  });
+
+  it("preserves known-literal import/export/call AST output with a Node visitor and typed SourceFile root", async () => {
+    const b = await import("./fixtures/ownedCheckoutWorkerBundle"), file = "lib/nested/entry.ts";
+    const input = 'import { value as alias } from "@/lib/shared"; export { value } from "@/lib/shared"; const a = require("@/lib/shared"); const b = import("@/lib/shared"); import type { Shape } from "@/lib/types"; export const result: Shape = alias;';
+    const expected = 'import { value as alias } from "../shared"; export { value } from "../shared"; const a = require("../shared"); const b = import("../shared"); import type { Shape } from "../types"; export const result: Shape = alias;';
+    const source = ts.createSourceFile(file, input, ts.ScriptTarget.ES2022, true), comparison = ts.createSourceFile(file, expected, ts.ScriptTarget.ES2022, true);
+    const transformed = ts.transform(source, [b.ownedWorkerAliasTransform(file, { [file]: input, "lib/shared.ts": "export const value=1;", "lib/types.ts": "export type Shape=number;" })]);
+    try { expect(ts.createPrinter().printFile(transformed.transformed[0])).toBe(ts.createPrinter().printFile(comparison)); } finally { transformed.dispose(); }
+    for (const unknown of ['import x from "@/lib/unknown";', 'import x from "@/../escape";']) expect(() => ts.transform(ts.createSourceFile(file, unknown, ts.ScriptTarget.ES2022, true), [b.ownedWorkerAliasTransform(file, { [file]: unknown })])).toThrow("owned_checkout_closure_invalid");
+    // AST/printer only: no transpileModule, actual worker closure or output files.
   });
 
   it("detects an extra or modified actual output file before a child can be launched", async () => {

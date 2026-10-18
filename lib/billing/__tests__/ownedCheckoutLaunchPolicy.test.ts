@@ -24,7 +24,7 @@ describe("owned bridge managed launcher policy (metadata only; no process)", () 
     const inherited = { [key]: "original" }, present = p.ownedCheckoutLaunchPolicy(inherited, []);
     expect(present.env[key]).toBe("original"); present.revalidate(inherited); present.revalidate(present.env, "child");
     expect(() => present.revalidate({})).toThrow(); expect(() => present.revalidate({ [key]: "changed" })).toThrow();
-    const removedChild = { ...present.env }; delete removedChild[key];
+    const removedChild: NodeJS.ProcessEnv = { ...present.env }; delete removedChild[key];
     expect(() => present.revalidate(removedChild, "child")).toThrow(); expect(() => present.revalidate({ ...present.env, [key]: "changed" }, "child")).toThrow();
   });
   it.each(["NODE_ENV", "NODE_OPTIONS"])("captures absent and exact %s without confusing parent and child normalization", async key => {
@@ -33,7 +33,7 @@ describe("owned bridge managed launcher policy (metadata only; no process)", () 
     expect(() => absent.revalidate({ [key]: value })).toThrow();
     const original = { [key]: value }, present = p.ownedCheckoutLaunchPolicy(original, []); present.revalidate(original); present.revalidate(present.env, "child");
     expect(() => present.revalidate({})).toThrow(); expect(() => present.revalidate({ [key]: changed })).toThrow();
-    const removed = { ...present.env }; delete removed[key]; expect(() => present.revalidate(removed, "child")).toThrow();
+    const removed: NodeJS.ProcessEnv = { ...present.env }; delete removed[key]; expect(() => present.revalidate(removed, "child")).toThrow();
     expect(() => present.revalidate({ ...present.env, [key]: key === "NODE_ENV" ? "test" : changed }, "child")).toThrow();
   });
   it.each(["VERCEL", "VERCEL_ENV"])("refuses %s initially and on final parent/child revalidation", async key => {
@@ -53,6 +53,29 @@ describe("owned bridge managed launcher policy (metadata only; no process)", () 
     policy.revalidate(original); policy.revalidate(policy.env, "child");
     expect(() => policy.revalidate(policy.env)).toThrow(); expect(() => policy.revalidate(original, "child")).toThrow();
     expect(() => policy.revalidate({ ...original, NODE_ENV: "production" })).toThrow();
+  });
+  it.each(["CODEX_HOME", "CODEX_SANDBOX_NETWORK_DISABLED", "CODEX_FUTURE_MANAGED_CONTROL", "GNUPGHOME"])("retains %s before filtering and fences dynamic parent/child changes", async key => {
+    const p = await import("./fixtures/ownedCheckoutLaunchPolicy");
+    const inherited = { HOME: "owned-home", [key]: "original", CODEX_EMPTY_CONTROL: "", STRIPE_SECRET_KEY: "excluded-provider" };
+    const policy = p.ownedCheckoutLaunchPolicy(inherited, []), env: NodeJS.ProcessEnv = policy.env;
+    expect(env[key]).toBe("original"); expect(env.CODEX_EMPTY_CONTROL).toBe(""); expect(env.HOME).toBe("owned-home"); expect(env.STRIPE_SECRET_KEY).toBeUndefined();
+    policy.revalidate(inherited); policy.revalidate(env, "child");
+    for (const scope of ["parent", "child"] as const) {
+      const before: Record<string, string | undefined> = { ...(scope === "parent" ? inherited : env) }, removed = { ...before }; delete removed[key];
+      for (const current of [removed, { ...before, [key]: "changed" }, { ...before, CODEX_NEW_MANAGED_CONTROL: "new" }]) expect(() => policy.revalidate(current, scope)).toThrow();
+    }
+    const absent = p.ownedCheckoutLaunchPolicy({}, []); expect(() => absent.revalidate({ [key]: "added" })).toThrow(); expect(() => absent.revalidate({ ...absent.env, [key]: "added" }, "child")).toThrow();
+  });
+  it("composes selected28 Prisma and Next environments with exact managed controls and existing denials", async () => {
+    const p = await import("./fixtures/ownedCheckoutLaunchPolicy"), original = await import("./fixtures/newTestChildEnvironment");
+    const inherited = { CODEX_HOME: "owned-code-home", CODEX_SANDBOX_NETWORK_DISABLED: "1", GNUPGHOME: "owned-gpg", HOME: "owned-home" };
+    const databaseUrl = "postgresql://postgres:opaque@127.0.0.1:5999/axiom_new_test_contract_rehearsal";
+    const prisma = p.ownedCheckoutPrismaEnvironment(inherited, [], databaseUrl); expect(prisma).toMatchObject({ ...inherited, CHECKPOINT_DISABLE: "1", DATABASE_URL: databaseUrl, AXIOM_ISOLATED_PUBLIC_TEST_RUNTIME: "true" });
+    const policy = p.ownedCheckoutLaunchPolicy(inherited, []), next = { ...policy.env, ...original.newTestChildEnvironment(inherited, [], { databaseUrl, appOrigin: "http://127.0.0.1:4100", fontResponses: "/owned/fonts.cjs", runtimeId: "runtime", accountId: "acct-test", organizationId: "org", authSecret: "synthetic-auth" }) };
+    expect(next).toMatchObject(inherited); expect(next.AXIOM_ISOLATED_PUBLIC_TEST_RUNTIME).toBe("true"); policy.revalidate(next, "child");
+    expect(() => p.ownedCheckoutPrismaEnvironment(inherited, [], "postgresql://foreign.invalid/prod")).toThrow();
+    // The shared helper itself remains unchanged; only this owned composition adds controls.
+    expect(original.newTestPrismaEnvironment(inherited, [], databaseUrl).CODEX_HOME).toBeUndefined();
   });
   it("requires nonwritable, same metadata on every managed path ancestor; never accepts a same-name arbitrary path", async () => {
     const p = await import("./fixtures/ownedCheckoutLaunchPolicy");
