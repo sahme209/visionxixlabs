@@ -11,6 +11,7 @@
 
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
+import { WORKFLOW_STORIES, scenarioFor } from "../workflowStories";
 
 function source(path: string): string {
   return readFileSync(new URL(`../../../${path}`, import.meta.url), "utf8");
@@ -19,11 +20,23 @@ function source(path: string): string {
 describe("CinematicAxiomDemo — honesty contract", () => {
   const src = source("components/marketing/CinematicAxiomDemo.tsx");
 
-  it("shows the governed workflow with implemented system boundaries", () => {
-    expect(src).toContain("Airflow");
-    expect(src).toContain("GitHub workflow");
-    expect(src).toContain("AWS ECS");
-    expect(src).toContain("Automatic rollback");
+  it("maps every story to an existing public scenario step", () => {
+    for (const story of WORKFLOW_STORIES) {
+      const scenario = scenarioFor(story);
+      expect(scenario.audience).toBe("public");
+      expect(scenario.steps.some(step => step.id === story.source.step)).toBe(true);
+      expect(story.steps.length).toBeGreaterThanOrEqual(3);
+    }
+  });
+
+  it("withholds Terraform actions and never claims cloud completion", () => {
+    const story = WORKFLOW_STORIES.find(item => item.id === "cloud")!;
+    expect(story.steps.every(step => !step.review)).toBe(true);
+    expect(story.limitation).toContain("remain unavailable");
+    const scenes = source("components/marketing/WorkflowStoryScene.tsx");
+    expect(scenes).toContain("AWS ECS health not observed");
+    expect(scenes).toContain("Terraform apply disabled");
+    expect(scenes).not.toContain("Automatic rollback");
   });
 
   it("clearly discloses that the interactive experience is simulated", () => {
