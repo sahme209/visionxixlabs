@@ -48,7 +48,11 @@ function createLedger({ spawn, snapshot, canonical, stopGroup, groupMembers, onC
   }
   async function cleanup() {
     const errors = [];
-    for (const record of [...records].reverse()) {
+    // Close the fixed proxy before waiting on capture/browser cleanup. The signal
+    // crosses a process boundary; identity/exit checks remain mandatory.
+    const reversed = [...records].reverse();
+    const ordered = [...reversed.filter(record => record.role === 'proxy'), ...reversed.filter(record => record.role !== 'proxy')];
+    for (const record of ordered) {
       try {
         let timer;
         try {

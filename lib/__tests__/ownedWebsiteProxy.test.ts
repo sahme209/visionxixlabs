@@ -9,16 +9,21 @@ class Stream extends EventEmitter {
   pipe = vi.fn(); setTimeout = vi.fn();
   destroy = vi.fn(() => { if (!this.destroyed) { this.destroyed = true; this.emit("close"); } return this; });
 }
-function fixture() {
+function fixture(isStopping = () => false) {
   const upstream = new Stream(); let reply: (stream: Stream) => void = () => {};
   const request = vi.fn((_options: Record<string, unknown>, callback: (stream: Stream) => void) => { reply = callback; return upstream; });
   const events: string[] = [];
-  const handler = proxy.createProxyTransport({ origin: "http://127.0.0.1:38001", appPort: 38001, assets: [], request, onEvent: (event: string) => events.push(event) });
+  const handler = proxy.createProxyTransport({ origin: "http://127.0.0.1:38001", appPort: 38001, assets: [], request, isStopping, onEvent: (event: string) => events.push(event) });
   const req = Object.assign(new Stream(), { method: "GET", url: "http://127.0.0.1:38001/product", headers: {} }); const res = new Stream();
   return { handler, req, res, upstream, request, events, reply: (value: Stream) => reply(value) };
 }
 
 describe("owned proxy stream lifecycle", () => {
+  it("refuses otherwise allowed forwarding after the child enters stopping", () => {
+    let stopping = false; const f = fixture(() => stopping);
+    stopping = true; f.handler.request(f.req, f.res);
+    expect(f.request).not.toHaveBeenCalled(); expect(f.res.writeHead).toHaveBeenCalledWith(403);
+  });
   it("handles reset after CONNECT refusal without forwarding or throwing", () => {
     const f = fixture(); const socket = new Stream(); f.handler.connect(f.req, socket);
     expect(socket.end).toHaveBeenCalledWith("HTTP/1.1 403 Forbidden\r\n\r\n"); expect(() => socket.emit("error", Error("ECONNRESET"))).not.toThrow();

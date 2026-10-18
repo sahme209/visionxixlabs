@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-require-imports -- Fixed loopback proxy policy; transport is injected for tests. */
 'use strict';
 const { allowedRequest, endpoint } = require('./ownedWebsitePolicy.cjs');
-function createProxyTransport({ origin, appPort, assets, request, onEvent = () => {} }) {
+function createProxyTransport({ origin, appPort, assets, request, isStopping = () => false, onEvent = () => {} }) {
   if (origin !== endpoint(appPort)) throw Error('website_proxy_origin');
   const watched = new WeakSet();
   const destroy = stream => { if (stream && !stream.destroyed) stream.destroy(); };
@@ -28,7 +28,7 @@ function createProxyTransport({ origin, appPort, assets, request, onEvent = () =
     res.on('close', () => { if (!res.writableEnded) cancel(); });
     let url;
     try { url = new URL(req.url); } catch { /* denied below */ }
-    if (!url || url.origin !== origin || url.username || url.password || url.hash || !allowedRequest({ method: req.method, raw: `${url.pathname}${url.search}`, origin, assets })) {
+    if (isStopping() || !url || url.origin !== origin || url.username || url.password || url.hash || !allowedRequest({ method: req.method, raw: `${url.pathname}${url.search}`, origin, assets })) {
       onEvent('denied');
       if (!closed && !res.destroyed) { try { res.writeHead(403).end(); } catch { cancel(); } }
       return;

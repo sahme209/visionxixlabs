@@ -240,6 +240,29 @@ it("owned child pipe errors cancel instead of becoming unhandled supervisor sock
   lifecycle.observeOwnedChild(handle, { critical: true, isCleaning: () => false, onFailure: cancel, onData: () => {} });
   expect(() => handle.stdout.emit("error", Error("ECONNRESET"))).not.toThrow(); expect(() => handle.stderr.emit("error", Error("ECONNRESET"))).not.toThrow(); expect(cancel).toHaveBeenCalledTimes(2);
 });
+it("cancellation stops and awaits proxy admission closure before held capture cleanup", async () => {
+  const control = lifecycle.createCoordinator({ signals: new EventEmitter() });
+  const roles = ["server", "proxy", "browser", "capture"]; const handles = roles.map((_, i) => Object.assign(child(), { pid: 42 + i })); let next = 0;
+  const events: string[] = []; let admissionClosed = false; let releaseCapture = () => {};
+  const heldCapture = new Promise<void>(resolve => { releaseCapture = resolve; });
+  let reachedCapture = () => {}; const captureStarted = new Promise<void>(resolve => { reachedCapture = resolve; });
+  const ledger = lifecycle.createLedger({ spawn: () => handles[next++], snapshot: (pid: number) => ({ ...owner, pid, group: pid }), canonical: (v: string) => v, groupMembers: () => [], waitExit: async () => {}, onFailure: control.cancel,
+    stopGroup: async (row: { pid: number }) => {
+      const index = row.pid - 42; const role = roles[index]; events.push(role);
+      if (role === "proxy") { await Promise.resolve(); admissionClosed = true; events.push("proxy-admission-closed"); }
+      if (role === "capture") { reachedCapture(); await heldCapture; }
+      handles[index].emit("exit", 0, null);
+    } });
+  try {
+    for (const [index, role] of roles.entries()) { const launch = ledger.launch("/owned/node", [], {}, () => {}, role); handles[index].emit("spawn"); await launch; }
+    control.cancel(Error("cancelled")); const cleanup = ledger.cleanup();
+    await captureStarted;
+    try { expect(admissionClosed).toBe(true); expect(events).toEqual(["proxy", "proxy-admission-closed", "capture"]); }
+    finally { releaseCapture(); await cleanup; }
+    expect(events).toEqual(["proxy", "proxy-admission-closed", "capture", "browser", "server"]);
+    expect(control.report().failure).toBe("cancelled");
+  } finally { releaseCapture(); control.dispose(); }
+});
 it.each(["server", "proxy", "browser", "capture"])("post-registration %s handle errors cancel without certifying exit", async role => {
   const control = lifecycle.createCoordinator({ signals: new EventEmitter() }); const handle = child();
   const stop = vi.fn(async () => { handle.emit("exit", 0, null); });

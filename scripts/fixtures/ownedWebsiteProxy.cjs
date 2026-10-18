@@ -20,7 +20,7 @@ for (const [path, hash] of Object.entries(config.hashes)) assert.equal(policy.sh
 const origin = policy.endpoint(config.appPort); policy.endpoint(config.proxyPort); assert.notEqual(config.appPort, config.proxyPort);
 let stopping = false;
 const counts = {};
-const transport = createProxyTransport({ origin, appPort: config.appPort, assets: config.assets, request: http.request, onEvent: event => { counts[event] = Math.min((counts[event] ?? 0) + 1, 1000000); } });
+const transport = createProxyTransport({ origin, appPort: config.appPort, assets: config.assets, request: http.request, isStopping: () => stopping, onEvent: event => { counts[event] = Math.min((counts[event] ?? 0) + 1, 1000000); } });
 const server = http.createServer(transport.request);
 server.on('connection', transport.connection); server.on('connect', transport.connect); server.on('upgrade', transport.upgrade); server.on('clientError', transport.clientError);
 function report(stage) { writeFileSync(join(config.directory, 'proxy.json'), JSON.stringify({ stage, pid: process.pid, nonce: config.nonce, origin: policy.endpoint(config.proxyPort), counts, productionEquivalent: false }), { mode: 0o600 }); }
