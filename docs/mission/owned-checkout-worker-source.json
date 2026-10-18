@@ -156,7 +156,7 @@
     },
     {
       "path": "lib/billing/__tests__/fixtures/ownedCheckoutWorkerSupervisor.ts",
-      "sha256": "5e4c14f0aeba1b19658e148f957ca8d5566501d94b7911e2c968ad106ce69a74"
+      "sha256": "2f07a0984c73115d28ec054e2b95a5909be0c8b89f84c9e4b731c5641502142c"
     }
   ],
   "configuration": [

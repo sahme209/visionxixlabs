@@ -1,0 +1,54 @@
+{
+  "version": 1,
+  "stage": "one_tooling_rebind_concrete_marker_compiler_preparation_only",
+  "sourceFreeze": "8451d667cc23986d63e0747e31e169ca6dc350fb",
+  "newPrivateRoot": "/workspace/.axiom-validation/billing-checkout-marker-3rgwi7b2",
+  "priorPrivateRoot": "/workspace/.axiom-validation/billing-checkout-typed-815_g61p",
+  "historicalManifestSha256": "b04a99bc5a377accd78d5b9137fd3e5d30b438b25fdae72bf3f0dac2a46a9b94",
+  "newManifestSha256": "e0b3f4582a56e62cf5acb5df3362670a83d4da8861ed8771c721baf902cd4977",
+  "exactOneRebinding": {
+    "path": "lib/billing/__tests__/fixtures/ownedCheckoutWorkerSupervisor.ts",
+    "before": "5e4c14f0aeba1b19658e148f957ca8d5566501d94b7911e2c968ad106ce69a74",
+    "after": "2f07a0984c73115d28ec054e2b95a5909be0c8b89f84c9e4b731c5641502142c"
+  },
+  "unchangedGroups": [
+    "sources33",
+    "configurations7",
+    "compiler",
+    "externalGraphs705",
+    "otherTooling5"
+  ],
+  "oldCacheRetained": [
+    {
+      "path": "node_modules/.vite/vitest",
+      "kind": "directory",
+      "mode": "0o700",
+      "bytes": 4096,
+      "sha256": null
+    },
+    {
+      "path": "node_modules/.vite/vitest/da39a3ee5e6b4b0d3255bfef95601890afd80709",
+      "kind": "directory",
+      "mode": "0o700",
+      "bytes": 4096,
+      "sha256": null
+    },
+    {
+      "path": "node_modules/.vite/vitest/da39a3ee5e6b4b0d3255bfef95601890afd80709/results.json",
+      "kind": "file",
+      "mode": "0o600",
+      "bytes": 137,
+      "sha256": "c4a4ca279443c7a204185e10fa5d23796172bbf0b689ab72a0b901c47bfb1941"
+    }
+  ],
+  "overlayEntries": 809,
+  "overlayCanonicalPathsAndPackageHashesUnchanged": true,
+  "newPrivateCachesEmpty0700": true,
+  "launcherSha256": "fecf6b2f84b0ec9ca08f78a7c66dcbb9d20f5f4e4dc243cda06bbdb5d8a784a0",
+  "launcherOnlyDifference": "fixed BASE path; reversing replacement is byte-identical to reviewed177 launcher",
+  "bindingTemplateSha256": "a0ec84e1c7e426a27503b08f77327e4ecf234d54a175424db8d1d1ea3a1483b8",
+  "sourceFiles": 122,
+  "compilerPackageFilesReverified": 132,
+  "bothHistoricalCompilerArtifactsUnchanged": true,
+  "noExecution": true
+}
