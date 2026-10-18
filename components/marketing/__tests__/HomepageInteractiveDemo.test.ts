@@ -1,12 +1,6 @@
 /**
- * Source-text verification (see HomepageMediaShowcase.test.ts for why:
- * this repo's vitest runs in a plain Node environment with no
- * jsdom/React Testing Library, so component functions aren't rendered
- * directly in tests).
- *
- * This locks in the honesty contract for the homepage's embedded
- * cinematic demo. The reconstruction may use scripted sample data, but
- * must disclose that boundary and describe only implemented workflows.
+ * Registry and source-boundary checks complement WorkflowStories.test.ts,
+ * which renders the component in jsdom for interaction regressions.
  */
 
 import { readFileSync } from "node:fs";

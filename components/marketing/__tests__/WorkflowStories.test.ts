@@ -17,6 +17,23 @@ afterEach(() => { cleanup(); vi.useRealTimers(); vi.unstubAllGlobals(); });
 function mount() { render(createElement(CinematicAxiomDemo)); act(() => intersect([{ isIntersecting: true }])); }
 function advance(ms = 6000) { act(() => vi.advanceTimersByTime(ms)); }
 
+it("links every story to working approval documentation without promising a retired full walkthrough", () => {
+  mount();
+  for (const label of ["Code & review", "Agent & approval", "Terraform & cloud"]) {
+    fireEvent.click(screen.getByRole("button", { name: label }));
+    expect(screen.getByRole("link", { name: "Read approval workflow" }).getAttribute("href")).toBe("/docs/approval-workflow");
+    expect(screen.queryByRole("link", { name: "Read the full walkthrough" })).toBeNull();
+    expect(screen.getAllByRole("link").some(link => link.getAttribute("href")?.startsWith("/demo/"))).toBe(false);
+  }
+});
+
+it("describes check environment and output limits without promising credential isolation", () => {
+  mount(); fireEvent.click(screen.getByRole("button", { name: "Step 3: Review the bounded check." }));
+  expect(screen.getByText(/local files and stored credentials can still be read with your user permissions/)).toBeDefined();
+  expect(screen.getByText(/5-minute timeout and separate 1 MB limits for standard output and error output/)).toBeDefined();
+  expect(screen.queryByText(/removes credentials/)).toBeNull();
+});
+
 it("pauses at human review without recording approval or contacting a service", () => {
   const fetch = vi.fn(); vi.stubGlobal("fetch", fetch); mount();
   fireEvent.click(screen.getByRole("button", { name: "Play story" })); advance(); advance();

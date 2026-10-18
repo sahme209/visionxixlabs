@@ -3,7 +3,7 @@
 import { useRef, useState, type KeyboardEvent } from "react";
 import Link from "next/link";
 import { ArrowPathIcon, ChevronLeftIcon, ChevronRightIcon, PauseIcon, PlayIcon } from "@heroicons/react/24/outline";
-import { WORKFLOW_STORIES, scenarioFor } from "./workflowStories";
+import { WORKFLOW_STORIES } from "./workflowStories";
 import { useStoryPlayback } from "./useStoryPlayback";
 import { WorkflowStoryScene, storyButton, type SampleDecision, type StoryContext } from "./WorkflowStoryScene";
 
@@ -15,7 +15,6 @@ export function CinematicAxiomDemo() {
   const container = useRef<HTMLElement>(null);
   const playback = useStoryPlayback(story.steps, container);
   const step = story.steps[playback.index] ?? story.steps[0];
-  const scenario = scenarioFor(story);
   function selectStory(index: number) { setStoryIndex(index); setDecision(null); playback.reset(); }
   function choose(index: number) { setDecision(null); playback.choose(index); }
   function changeContext(key: keyof StoryContext, value: string) { setContext(current => ({ ...current, [key]: value })); setDecision(null); playback.reset(); }
@@ -54,7 +53,7 @@ export function CinematicAxiomDemo() {
         <div className="border-t border-white/10 bg-white/[0.02] px-4 py-3"><p className="text-[11px] leading-5 text-zinc-400">Illustrated from Axiom workflows. Sample content; no live actions.</p></div>
       </div>
     </div>
-    <div className="mt-6 rounded-xl border border-white/[0.08] bg-white/[0.02] p-4"><p className="text-[10px] font-medium uppercase tracking-widest text-orange-200">Current availability</p><p className="mt-2 text-xs leading-6 text-zinc-400">{story.limitation}</p><Link href={`/demo/${scenario.id}`} className="mt-2 inline-flex min-h-11 items-center gap-2 text-xs font-medium text-orange-200 underline-offset-4 hover:underline">Read the full walkthrough <ChevronRightIcon className="h-3 w-3" /></Link></div>
+    <div className="mt-6 rounded-xl border border-white/[0.08] bg-white/[0.02] p-4"><p className="text-[10px] font-medium uppercase tracking-widest text-orange-200">Current availability</p><p className="mt-2 text-xs leading-6 text-zinc-400">{story.limitation}</p><Link href="/docs/approval-workflow" className="mt-2 inline-flex min-h-11 items-center gap-2 text-xs font-medium text-orange-200 underline-offset-4 hover:underline">Read approval workflow <ChevronRightIcon className="h-3 w-3" /></Link></div>
     <div className="mt-6 flex flex-col gap-3 border-t border-white/[0.07] pt-5 text-xs leading-6 text-zinc-400 sm:flex-row sm:items-center sm:justify-between"><p>Scripted sample data. No cloud account, repository, AI credits, or deployment is touched.</p><Link href="/demo" className="inline-flex min-h-11 shrink-0 items-center gap-2 font-medium text-orange-200">Explore every safe demo <ChevronRightIcon className="h-4 w-4" /></Link></div>
   </section>;
 }
