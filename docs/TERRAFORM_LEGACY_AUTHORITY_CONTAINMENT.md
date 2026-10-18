@@ -53,6 +53,24 @@ existing apply gates, saved-plan artifact/read/paired/native behavior, signed
 handoff refusal, approved HCL/unsigned preview boundaries and demo contracts.
 This focused count does not substitute for the deferred full suite or runtime.
 
+Independent source review passed the route/runner/page implementation and found
+one adjacent P2: the live Assistant system prompt still recommended the removed
+confirmation panel. Only Terraform-specific rules 15/16 were aligned. The actual
+assistant request-composition regression failed RED for ordinary Terraform and
+`CONFIRM APPLY` requests, then passed with unavailable guidance. Two additional
+actual assistant cases preserve unrelated plugin confirmation/dry-run behavior.
+Model, persistence and plugin boundaries are synthetic no-provider adapters;
+prompt delivery does not prove deterministic model compliance. The actual
+route/runner refusals remain enforcement. No tool, permission or capability was
+added or changed.
+
+With that follow-up, 12 focused files / 97 tests passed. The new prompt regression
+has zero lint warnings. Linting the existing Assistant file with max-warnings0
+still reports its two pre-existing unused-variable warnings (`e` at237 and
+`requiresApproval` at315), zero errors; programmatic before/after lint-text
+comparison confirmed identical diagnostics. No unrelated runtime cleanup or
+rule suppression was included to hide this baseline limitation.
+
 Full compiler/default-suite/desktop/Python/CI and any actual owned application
 continuation remain separately scheduled after source freeze and independent
 review. Existing genuine CLI/PG/paired evidence in the saved-plan receipt stays
