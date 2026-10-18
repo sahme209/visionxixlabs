@@ -1,5 +1,5 @@
 {
-  "status": "local_gates_passed_pending_independent_receipt_review",
+  "status": "local_gates_and_independent_receipt_review_passed_pending_exact_head_ci",
   "reviewedSourceCommit": "685c7a39089457dce75f5532a5ebaa6b38b383b6",
   "reviewedChangeCommits": [
     "aec6e1126b1eba6cfdb6b241e6001975cb26c793",
@@ -138,5 +138,16 @@
     "providerCallsMade": false,
     "processInspection": "No live vitest/tsc/vite/esbuild processes in final process inspection. PPID1 defunct esbuild entries remain, including final build child PID174548; zombies are exited, unreaped, and not claimed removed.",
     "heavyWindowReleased": true
+  },
+  "independentRootReview": {
+    "reviewedReceiptCommit": "a2006605daefcba1ff41d9eefe61076334519bf3",
+    "sourceHashesVerified": 4,
+    "gateLogHashesVerified": 7,
+    "reviewedProductBytesIdentical": true,
+    "main291AncestryVerified": true,
+    "additionalOfflineEvidenceFormatTests": 16,
+    "trackerSources": 22,
+    "trackerRows": 2154,
+    "productionOrNativeAcceptance": false
   }
 }
