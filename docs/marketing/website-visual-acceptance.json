@@ -1,0 +1,255 @@
+{
+  "schema": 1,
+  "status": "browser_acceptance_blocked",
+  "recordedDate": "2026-10-18",
+  "sourceHead": "1f21b4e32d9e610f32c29342715aa3a02abed159",
+  "productSourceHead": "c5c2577df862602b8706bcac5b442bb61d50ceb2",
+  "productionEquivalent": false,
+  "manifest": {
+    "path": "/tmp/axiom-website-review-1f21b4e3.json",
+    "sha256": "a86eeb80b0760d8b6469a17bec63f9f8692761e2d5fe3be6414247d899bed3f3",
+    "pinnedScriptAndExecutableCount": 13,
+    "managedPathProfile": "system-0"
+  },
+  "attempts": [
+    {
+      "sourceHead": "acbbe0af714014e176f6849245bafe16b41ece36",
+      "directory": "/tmp/axiom-website-17dnAJ",
+      "failure": "website_server_exited",
+      "stage": "Turbopack rejected dependency symlink before Chromium launch",
+      "cleanup": "original receipt failed on unrelated proc exe EACCES; separate read-only inventory found no recorded-group members",
+      "images": 0
+    },
+    {
+      "sourceHead": "18c79d6c6789d08f0bdf186b3bbdd1cec55006ac",
+      "directory": "/tmp/axiom-website-qkNrkF",
+      "failure": "coordinator unhandled Socket ECONNRESET; driver later website_dom_timeout",
+      "stage": "Next and Chromium started; coordinator finally bypassed",
+      "cleanup": "separate explicitly authorized recorded-group recovery; zero live recorded members/listeners, ten zombie records; driver PID/start identity was not durably recorded",
+      "normalResultReconstructed": false,
+      "deniedTransportClassification": "unknown",
+      "images": 0
+    },
+    {
+      "sourceHead": "1f21b4e32d9e610f32c29342715aa3a02abed159",
+      "directory": "/tmp/axiom-website-lYTxL1",
+      "failure": "website_dom_timeout",
+      "supervisorFailure": "website_driver_failed\n\n1 !== 0\n",
+      "stage": "integrated homepage returned HTTP 200; required DOM condition timed out before first capture",
+      "sourceUnchanged": true,
+      "images": 0,
+      "evidence": []
+    }
+  ],
+  "finalCleanup": {
+    "supervisorReceipt": "owned_groups_empty",
+    "errors": [],
+    "children": [
+      {
+        "role": "server",
+        "pid": 181042,
+        "expected": "/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/node",
+        "owner": {
+          "pid": 181042,
+          "state": "R",
+          "group": 181042,
+          "start": "1382930",
+          "executable": "/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/node"
+        },
+        "state": "exited",
+        "exited": true,
+        "neverSpawned": false,
+        "exitCode": 0,
+        "signal": null
+      },
+      {
+        "role": "proxy",
+        "pid": 181097,
+        "expected": "/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/node",
+        "owner": {
+          "pid": 181097,
+          "state": "R",
+          "group": 181097,
+          "start": "1383311",
+          "executable": "/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/node"
+        },
+        "state": "exited",
+        "exited": true,
+        "neverSpawned": false,
+        "exitCode": 0,
+        "signal": null
+      },
+      {
+        "role": "browser",
+        "pid": 181124,
+        "expected": "/usr/lib/chromium/chromium",
+        "owner": {
+          "pid": 181124,
+          "state": "R",
+          "group": 181124,
+          "start": "1383423",
+          "executable": "/usr/lib/chromium/chromium"
+        },
+        "state": "exited",
+        "exited": true,
+        "neverSpawned": false,
+        "exitCode": 0,
+        "signal": null
+      },
+      {
+        "role": "capture",
+        "pid": 181191,
+        "expected": "/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/node",
+        "owner": {
+          "pid": 181191,
+          "state": "R",
+          "group": 181191,
+          "start": "1383447",
+          "executable": "/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/node"
+        },
+        "state": "exited",
+        "exited": true,
+        "neverSpawned": false,
+        "exitCode": 1,
+        "signal": null
+      }
+    ],
+    "liveRecordedMembers": [],
+    "listeners": [],
+    "unreadableStatPids": [],
+    "zombieRecords": [
+      {
+        "pid": 181128,
+        "group": 181124,
+        "state": "Z",
+        "start": "1383428"
+      },
+      {
+        "pid": 181130,
+        "group": 181124,
+        "state": "Z",
+        "start": "1383428"
+      },
+      {
+        "pid": 181153,
+        "group": 181124,
+        "state": "Z",
+        "start": "1383438"
+      },
+      {
+        "pid": 181156,
+        "group": 181124,
+        "state": "Z",
+        "start": "1383438"
+      },
+      {
+        "pid": 181178,
+        "group": 181124,
+        "state": "Z",
+        "start": "1383443"
+      },
+      {
+        "pid": 181193,
+        "group": 181124,
+        "state": "Z",
+        "start": "1383448"
+      },
+      {
+        "pid": 181207,
+        "group": 181124,
+        "state": "Z",
+        "start": "1383451"
+      },
+      {
+        "pid": 181208,
+        "group": 181124,
+        "state": "Z",
+        "start": "1383451"
+      }
+    ],
+    "qualification": "owned_groups_empty uses a live-member filter; it does not mean zombie records are absent. All four known child handles positively exited."
+  },
+  "transport": {
+    "applicationGuardDenied": 9,
+    "proxyDenied": 25,
+    "captureDenied": 4,
+    "classification": "aggregate denials unclassified; runtime log separately identifies blocked Inter and JetBrains Mono font fetches with fallback",
+    "consoleErrorCategories": [
+      "network",
+      "network",
+      "network",
+      "network",
+      "network",
+      "network",
+      "network",
+      "network",
+      "network",
+      "network",
+      "network",
+      "network",
+      "network",
+      "network",
+      "network",
+      "network",
+      "network",
+      "network",
+      "network",
+      "network"
+    ]
+  },
+  "acceptance": {
+    "freshScreenshots": false,
+    "hydrationVerified": false,
+    "browserControlsVerified": false,
+    "mobileLayoutVerified": false,
+    "browserAccessibilityVerified": false,
+    "nativeOrProviderVerified": false,
+    "deployed": false,
+    "qualification": "Source/DOM tests and compiler pass do not establish browser acceptance. No further runtime retry is authorized by this receipt."
+  },
+  "sourceChecks": {
+    "focusedFixtureTests": 116,
+    "marketingScenarioTestsPreviouslyPassed": 37,
+    "wholeWebCompiler": "PASS at exact sourceHead, root-owned 8192 MiB noEmit/incremental-false invocation",
+    "independentSourceReview": "PASS at exact sourceHead; approved product content unchanged since productSourceHead",
+    "postIntegrationGates": "pending"
+  },
+  "artifacts": [
+    {
+      "path": "/tmp/axiom-website-lYTxL1/result.json",
+      "sha256": "c134d68249c1cc07d1423de800b8e6e38bc9f9ef759f5fdee5bc5dc80764e85d"
+    },
+    {
+      "path": "/tmp/axiom-website-lYTxL1/capture.json",
+      "sha256": "ed2664ddc48310fae3731718deecfe260b618369a0427e51b0b5c2966a7beab7"
+    },
+    {
+      "path": "/tmp/axiom-website-lYTxL1/done.json",
+      "sha256": "df8a012603c8218fc4e9c186f0c3e1d4abd94eea629c5477fbf228c232e234ab"
+    },
+    {
+      "path": "/tmp/axiom-website-lYTxL1/ledger.json",
+      "sha256": "2392b60df3ce0a0de7c9d9ce943bb905405a62d2103bd3e149c833b62ddde849"
+    },
+    {
+      "path": "/tmp/axiom-website-lYTxL1/server.json",
+      "sha256": "fe831b2efc382914046137dfd7d6034708d1c551b2d004f2dbacab6a2a821a9f"
+    },
+    {
+      "path": "/tmp/axiom-website-lYTxL1/proxy.json",
+      "sha256": "d6688aed69677c714e3a29e50f76843676734441e719e5cfa5efec75ea180dba"
+    },
+    {
+      "path": "/tmp/axiom-website-lYTxL1/window.json",
+      "sha256": "882e8edcb93fd955a9dab0aec4bc703fd0cb3420a1d426aa33d95153779dce4f"
+    },
+    {
+      "path": "/tmp/axiom-website-lYTxL1/bounded-runtime.log",
+      "sha256": "f3ee5688e4cd5b6744086d15709a28e78042bc2fb17bd87ea00ef095a8648745"
+    },
+    {
+      "path": "/tmp/axiom-website-lYTxL1/post-cleanup-readonly-inventory.json",
+      "sha256": "672b392f7e5b7f22d2cb745c2674a74736db31ebffe6669f4bbe16dc79b6ff34"
+    }
+  ]
+}
