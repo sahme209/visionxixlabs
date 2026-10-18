@@ -59,6 +59,7 @@ function installOwnedEcsCheckedInputGuard({ origin, proof, announce = false }) {
   patch(process.binding('process_wrap').Process.prototype, ['spawn']);
   patch(process.binding('spawn_sync'), ['spawn']);
   patch(workerThreads, ['Worker']);
+  patch(process, ['execve']);
   function headers(value) {
     const result = new Headers(value);
     for (const name of result.keys()) if (name.startsWith('x-axiom-') || ['cookie', 'proxy-authorization', 'proxy-connection'].includes(name)) return reject();

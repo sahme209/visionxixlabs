@@ -88,3 +88,26 @@ it("denies Worker constructors acquired after preload including ESM without star
  assert.equal(delegates,0);assert.equal(sends,0);require('node:fs').writeSync(1,'no_send_pass');
  })().catch(()=>{process.exitCode=1});
 `));
+it("denies current global/CJS and identity-verified ESM execve before an inert descriptor delegate", () => noSend(`
+ const original=Object.getOwnPropertyDescriptor(process,'execve');let delegates=0;
+ const inert=()=>{delegates++;throw Error('inert_execve_must_not_delegate')};
+ Object.defineProperty(process,'execve',{value:inert,writable:true,configurable:true,enumerable:original?.enumerable??true});
+ (async()=>{try{
+ const g=installOwnedEcsCheckedInputGuard({origin:'http://127.0.0.1:34567',proof:'a'.repeat(32)});
+ const esm=await import('node:process'),guarded=process.execve;
+ // Identity checks precede EVERY possible named call; never invoke a captured native reference.
+ assert.notEqual(guarded,original?.value);assert.equal(require('node:process').execve,guarded);assert.equal(esm.execve,guarded);
+ for(const fn of [process.execve,require('node:process').execve,esm.execve])assert.throws(()=>fn('inert-no-path',[],{}),/owned_ecs_egress_denied/);
+ assert.equal(delegates,0);assert.equal(g.report().denied,3);assert.equal(sends,0);
+ }finally{if(original)Object.defineProperty(process,'execve',original);else delete process.execve;require('node:module').syncBuiltinESMExports();assert.deepEqual(Object.getOwnPropertyDescriptor(process,'execve'),original)}
+ require('node:fs').writeSync(1,'no_send_pass');
+ })().catch(()=>{process.exitCode=1});
+`));
+it("leaves an absent execve descriptor absent for older Node compatibility and restores exact original", () => noSend(`
+ const original=Object.getOwnPropertyDescriptor(process,'execve');
+ try{delete process.execve;
+ const g=installOwnedEcsCheckedInputGuard({origin:'http://127.0.0.1:34567',proof:'a'.repeat(32)});
+ assert.equal(Object.hasOwn(process,'execve'),false);assert.equal(Object.hasOwn(require('node:process'),'execve'),false);assert.equal(g.report().denied,0);assert.equal(sends,0);
+ }finally{if(original)Object.defineProperty(process,'execve',original);else delete process.execve;require('node:module').syncBuiltinESMExports();assert.deepEqual(Object.getOwnPropertyDescriptor(process,'execve'),original)}
+ require('node:fs').writeSync(1,'no_send_pass');
+`));
