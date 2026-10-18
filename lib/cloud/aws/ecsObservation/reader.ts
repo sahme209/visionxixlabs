@@ -1,8 +1,8 @@
 import "server-only";
 import { projectTargetSnapshot } from "@/lib/releaseops/ecsReleaseV2/targetSnapshot";
 import { randomBytes } from "node:crypto";
-import { withTenantAwsConnection } from "../enrollment/scopedConnection";
-import type { EnrollmentRepo, EnrollmentPrincipal } from "../enrollment/service";
+import { withTenantAwsConnection, type AwsConnectionReadRepo } from "../enrollment/scopedConnection";
+import type { EnrollmentPrincipal } from "../enrollment/service";
 import { readVerifiedEcsObservation } from "../enrollment/stsValidation";
 import type { EcsObservationTarget } from "./sdkObservation";
 interface TargetRow {
@@ -16,16 +16,16 @@ interface TargetRow {
     ecsService: string;
     updatedAt: Date;
 }
-export interface EcsObservationRepo extends EnrollmentRepo {
+export interface EcsObservationRepo extends AwsConnectionReadRepo {
     environment: {
-        findFirst(args: Record<string, unknown>): Promise<{
+        findFirst(args: { where: { id: string; organizationId: string } }): Promise<{
             id: string;
             organizationId: string;
             updatedAt: Date;
         } | null>;
     };
     deploymentTarget: {
-        findUnique(args: Record<string, unknown>): Promise<TargetRow | null>;
+        findUnique(args: { where: { environmentId: string } }): Promise<TargetRow | null>;
     };
 }
 export async function readTenantEcsObservation(repo: EcsObservationRepo, principal: EnrollmentPrincipal, request: {
@@ -35,13 +35,15 @@ export async function readTenantEcsObservation(repo: EcsObservationRepo, princip
     proposedArn: string;
 }, dependencies: {
     now?: () => Date;
+    signal?: AbortSignal;
     open?: NonNullable<Parameters<typeof withTenantAwsConnection>[4]>['open'];
     read?: typeof readVerifiedEcsObservation;
 } = {}) {
     request = structuredClone(request);
     principal = structuredClone(principal);
-    const controller = new AbortController(), timer = setTimeout(() => controller.abort(), 45000), signal = controller.signal;
+    const controller = new AbortController(), timer = setTimeout(() => controller.abort(), 45000), signal = dependencies.signal ? AbortSignal.any([controller.signal, dependencies.signal]) : controller.signal;
     try {
+        signal.throwIfAborted();
         const operation = withTenantAwsConnection(repo, principal, request.cloudAccountId, async (input, connection, connectionRows) => {
             async function snapshot() {
                 signal.throwIfAborted();

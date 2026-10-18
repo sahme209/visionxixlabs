@@ -1,0 +1,35 @@
+import { expect, it } from "vitest";
+import { readEcsAdmissionContext } from "../admissionInputs/context";
+import { contextFixture, date, now, principal, selectors } from "./fixtures/admissionInputFixture";
+it("captures actual selected policy, full current identity context and canonical target in one bounded read-only transaction", async () => {
+  const f = contextFixture(), result = await readEcsAdmissionContext(f.client, principal, selectors, "config", now);
+  expect(result).toMatchObject({ schema: "axiom.ecs.checked-input-context.v1", session: { id: "session", issuedAt: date.toISOString() }, github: { environment: { tier: "stage" }, installation: { accountType: "Organization", repositorySelection: "selected" } }, target: { id: "target", connection: { id: "account", version: 1 } } });
+  expect(f.transaction).toHaveBeenCalledWith(expect.any(Function), { isolationLevel: "Serializable", maxWait: 3000, timeout: 5000 });
+  expect(f.tx.gitHubInstallation.findFirst).toHaveBeenCalledWith(expect.objectContaining({ orderBy: [{ installedAt: "desc" }, { id: "asc" }] }));
+  expect(f.tx.cloudAccountCredential.findFirst).toHaveBeenCalledWith({ where: { id: "account", organizationId: "org" }, select: { id: true, organizationId: true, version: true, revokedAt: true } });
+  expect(JSON.stringify(f.tx.desktopSessionRecord.findUnique.mock.calls)).not.toContain("lastSeenAt");
+  expect(f.tx.$executeRawUnsafe).not.toHaveBeenCalled();
+});
+it.each(["provider_scope", "missing_provider_scope", "future_membership", "expired", "future_session", "revoked", "foreign_session", "pending", "read_only", "foreign_repo", "prod", "missing_install_type", "missing_install_selection", "foreign_target", "foreign_account", "revoked_credential", "disabled_policy", "policy_overflow", "wrong_task_account"])("rejects %s before any provider is available", async mode => {
+  const f = contextFixture(), input = structuredClone(selectors);
+  if (mode === "missing_provider_scope") Reflect.deleteProperty(f.member, "providerScopes");
+  if (mode === "future_membership") f.member.acceptedAt = new Date(now.getTime() + 1);
+  if (mode === "provider_scope") f.member.providerScopes = ["gcp"];
+  if (mode === "expired") f.session.expiresAt = now;
+  if (mode === "future_session") f.session.issuedAt = new Date(now.getTime() + 1);
+  if (mode === "revoked") f.session.revokedAt = now;
+  if (mode === "foreign_session") f.session.userId = "other";
+  if (mode === "pending") f.member.acceptedAt = null;
+  if (mode === "read_only") f.member.role = "read_only";
+  if (mode === "foreign_repo") f.repository.remoteOwner = "foreign";
+  if (mode === "prod") f.environment.tier = "prod";
+  if (mode === "missing_install_type") f.installation.accountType = "";
+  if (mode === "missing_install_selection") f.installation.repositorySelection = "";
+  if (mode === "foreign_target") f.target.organizationId = "foreign";
+  if (mode === "foreign_account") f.account.id = "foreign";
+  if (mode === "revoked_credential") f.credential.revokedAt = now;
+  if (mode === "disabled_policy") f.policy.enabled = false;
+  if (mode === "policy_overflow") f.branchPolicies.push(...Array.from({ length: 101 }, () => ({})));
+  if (mode === "wrong_task_account") input.proposedArn = input.proposedArn.replace("123456789012", "999999999999");
+  expect(await readEcsAdmissionContext(f.client, principal, input, "config", now)).toBeNull();
+});

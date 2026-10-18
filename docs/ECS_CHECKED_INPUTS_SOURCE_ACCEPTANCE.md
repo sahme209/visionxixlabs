@@ -1,0 +1,18 @@
+# Checked ECS inputs: inactive source acceptance
+
+This source package composes current paired/provider context with independently checked Github build evidence and the canonical scoped AWS observation reader. It exposes no route, workflow, catalog, trust default, schema change, packet, ReviewFacts, admission permit or executor. It does not prove a reviewed runtime/action closure, durable execution claim, quota, voter/OIDC/run admission, deployment health, stabilization, rollback or external-writer protection. The later executor design remains mandatory.
+
+`checked_provider_context_inputs` means exact name+sha256 coverage and **inputs only**. `checked_provider_inputs_subject_mismatch` retains independently checked evidence but is explicitly **not usable for admission**. Existing genuine GHCR fixture provenance cannot cover ECR by substitution. The positive exact-set comparison is a pure diagnostic test; it is not genuine ECR provenance or an executor admission happy path.
+
+Focused validation performed locally on 2026-10-18:
+
+- 223 tests across10 files passed: current context/composition, existing direct/reusable Github readers, actual selected-policy SQL/digest mock transaction, scoped AWS reader/enrollment/inventory/disconnect and demo contracts.
+- Actual offline Sigstore verification uses the unchanged genuine upstream direct/reusable fixtures and reviewed roots. GitHub metadata/token-mint IO is simulated. Composition tests run actual scoped AEAD encrypt/decrypt and current reader fences with mocked AWS SDK-boundary results. No live AWS observation or provider IO is claimed.
+- RED→GREEN regressions cover missing/current providerScopes, checked-binding retention, already-aborted parents, expiry during the final context transaction, malformed/foreign contexts, config and database revision drift, parent cancellation during a pending mocked SDK read, and immutable selectors. ECR signed-subject substitution fails actual crypto before AWS IO.
+- Scoped ESLint and `git diff --check` passed. An isolated exact-file TypeScript fixture passed with the native PrismaClient assignability assertion and existing AWS reader/inventory callers. No whole compiler, build, server, PostgreSQL, native SDK-wire runtime or production/provider operation ran for this package.
+
+Production Github snapshot reads add actual providerScopes, environment tier and installation accountType/repositorySelection with deterministic installation tie breaking. Existing reader fixtures lacking additive fields retain their old acceptance; new V1 context requires those fields and denies missing providerScopes rather than treating it as empty. Actual providerScopes drift invalidates the snapshot. Historical receipts/manifests remain unchanged and provide no new V1 context authority. AWS broker/reader delegate type narrowing only removes unused write/transaction requirements and preserves runtime authority semantics.
+
+Validation used the existing dependency overlay at `/workspace/.axiom-validation/ecs-direct-root/node_modules`; no dependency was installed or changed. Clean lockfile CI remains authoritative. The unchanged upstream fixture provenance/license and offline crypto qualification remain recorded in `DIRECT_WORKFLOW_OCI_EVIDENCE_ACCEPTANCE.md`.
+
+Next gate: independent frozen-source and prospective owned guard review, then a root-scheduled exclusive owned SDK-wire/PostgreSQL acceptance window. That rehearsal must use actual provider serialization/crypto and canonical database authority, report exact source bindings and cleanup, and retain GHCR/ECR mismatch. It cannot be relabeled as complete admission or genuine ECR proof.
