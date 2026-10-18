@@ -48,11 +48,21 @@ export async function ownedWebhookPost(req: NextRequest): Promise<NextResponse |
     if (!signature || Buffer.byteLength(signature) > 4096) return response("stripe.signature_invalid", 401);
     const body = await rawBytes(req, 262144);
     const result = await requestOwnedCheckout({ kind: "reconcile", body: body.toString("base64"), signature });
-    if (result.kind === "reconciled") return NextResponse.json({ ok: true, outcome: result.outcome });
+    if (result.kind === "reconciled" && result.outcome !== "unavailable") return NextResponse.json({ ok: true, outcome: result.outcome });
     if (result.kind === "invalid_signature") return response("stripe.signature_invalid", 401);
     return response("owned_checkout_verification_unavailable", 503);
   } catch { return response("owned_checkout_verification_unavailable", 503); }
 }
 export async function ownedPlansBinding(): Promise<{ organizationId: string } | null> {
   try { const config = ownedCheckoutConfiguration(); return config && (await requestOwnedCheckout({ kind: "hello" })).kind === "ready" ? { organizationId: config.organizationId } : null; } catch { return null; }
+}
+
+/** Closed current intent status only. It never supplies paid/collection facts. */
+export async function ownedPlansIntentState(userId: string, organizationId: string) {
+  try {
+    const config = ownedCheckoutConfiguration();
+    if (!config || config.organizationId !== organizationId) return "unavailable" as const;
+    const result = await requestOwnedCheckout({ kind: "status", userId, organizationId });
+    return result.kind === "intent_state" ? result.state : "unavailable" as const;
+  } catch { return "unavailable" as const; }
 }

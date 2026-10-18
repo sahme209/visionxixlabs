@@ -23,6 +23,17 @@ describe("owned existing HTTP composition (synthetic private worker port)", () =
     const req = new NextRequest(env.NEXTAUTH_URL + "/api/billing/stripe-webhook", { method: "POST", headers: { "stripe-signature": "synthetic-signed" }, body: raw });
     const response = await h.ownedWebhookPost(req); expect(response?.status).toBe(200); expect(state.calls).toEqual([{ kind: "reconcile", body: Buffer.from(raw).toString("base64"), signature: "synthetic-signed" }]);
   });
+  it("keeps a fresh unavailable reconciliation retryable instead of acknowledging delivery", async () => {
+    const h = await import("../ownedCheckoutBridge/http"); state.result = { kind: "reconciled", outcome: "unavailable" };
+    const req = new NextRequest(env.NEXTAUTH_URL + "/api/billing/stripe-webhook", { method: "POST", headers: { "stripe-signature": "synthetic-signed" }, body: "{}" });
+    expect((await h.ownedWebhookPost(req))?.status).toBe(503); expect(state.calls).toHaveLength(1);
+  });
+  it("reads current owned intent state for SSR without treating it as entitlement", async () => {
+    const h = await import("../ownedCheckoutBridge/http"); state.result = { kind: "intent_state", state: "unknown" };
+    expect(await h.ownedPlansIntentState("owner", "org")).toBe("unknown"); expect(state.calls).toEqual([{ kind: "status", userId: "owner", organizationId: "org" }]);
+    state.result = { kind: "unavailable" }; expect(await h.ownedPlansIntentState("owner", "org")).toBe("unavailable");
+    const count = state.calls.length; expect(await h.ownedPlansIntentState("owner", "foreign")).toBe("unavailable"); expect(state.calls).toHaveLength(count);
+  });
   it("does not select the bridge outside its owned lane", async () => {
     const h = await import("../ownedCheckoutBridge/http"); vi.stubEnv("AXIOM_OWNED_CHECKOUT_BRIDGE", "false"); expect(await h.ownedCheckoutPost(checkout(body))).toBeNull(); expect(state.calls).toHaveLength(0);
   });

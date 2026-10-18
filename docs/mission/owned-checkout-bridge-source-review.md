@@ -1,4 +1,6 @@
-# Owned TEST Checkout bridge — source review freeze
+# Owned TEST Checkout bridge — historical b4 source review freeze
+
+This historical receipt is bound to b4f9b069. The reviewed correction freeze is described in `owned-checkout-bridge-review-closure.md`; current worker/tooling hashes are in its JSON receipt. Historical hashes below must be evaluated against b4, not substituted for current-source proof.
 
 2026-10-18. Base `291a4c579f12671a3f0c086417ac118570c75a47`. This is an implementation/source-test receipt, not an executed worker, database, actual HTTP or hosted payment receipt. The coordinator approved source/TDD only; independent security/financial review and explicit runtime gates remain pending.
 
