@@ -1,0 +1,87 @@
+{
+  "version": 1,
+  "stage": "owned28_evidence_source_final_compiler_preparation_only",
+  "sourceFreeze": "4612a10ecb137b460a4bac4836c01f3d7ff40a5e",
+  "newPrivateRoot": "/workspace/.axiom-validation/billing-checkout-evidence-bismbi5h",
+  "priorPrivateRoot": "/workspace/.axiom-validation/billing-checkout-marker-3rgwi7b2",
+  "historicalManifestSha256": "e0b3f4582a56e62cf5acb5df3362670a83d4da8861ed8771c721baf902cd4977",
+  "newManifestSha256": "085c00c38aebad03b7f9e2e5c6fb85cadf7f6f470469c61bc5277067ead14286",
+  "exactOneRebinding": {
+    "path": "lib/billing/__tests__/fixtures/ownedCheckoutHttpAcceptance.ts",
+    "before": "19f5072418314770a6b477b9f1e906cd583062da92f5a695727d04efff00b214",
+    "after": "9fcbdfdaa332f6926165cca9cfcb95b846e3c8d676a95ea93c14877bcb93a5fc"
+  },
+  "unchangedGroups": [
+    "sources33",
+    "configurations7",
+    "compiler",
+    "externalGraphs705",
+    "otherTooling5"
+  ],
+  "oldCacheRetained": [
+    {
+      "path": "node_modules/.vite/vitest",
+      "kind": "directory",
+      "mode": "0o700",
+      "bytes": 4096,
+      "sha256": null
+    },
+    {
+      "path": "node_modules/.vite/vitest/da39a3ee5e6b4b0d3255bfef95601890afd80709",
+      "kind": "directory",
+      "mode": "0o700",
+      "bytes": 4096,
+      "sha256": null
+    },
+    {
+      "path": "node_modules/.vite/vitest/da39a3ee5e6b4b0d3255bfef95601890afd80709/results.json",
+      "kind": "file",
+      "mode": "0o600",
+      "bytes": 240,
+      "sha256": "a7abaedee1692220f25d99887732a6603a8ff818e8a6044e30835fda0ad2629f"
+    }
+  ],
+  "overlayEntries": 809,
+  "overlayCanonicalPathsAndPackageHashesUnchanged": true,
+  "newPrivateCachesEmpty0700": true,
+  "launcherSha256": "d7824e1087fc639641d80caeacc72e0e9cbc516f662bb8f80e7daf1e423fd81a",
+  "launcherOnlyDifference": "fixed BASE path; reversing replacement is byte-identical to accepted615 launcher",
+  "bindingTemplateSha256": "f8b07d7ff3700fdf35fe397befa8794e2bc6f13118099348e95fa0cddd21aa8b",
+  "sourceFiles": 123,
+  "compilerPackageFilesReverified": 132,
+  "allThreeHistoricalCompilerArtifactsUnchanged": true,
+  "noExecution": true,
+  "externalFilesReverified": 705,
+  "runtimePreparation": {
+    "runtimeLauncherSha256": "48990de923c8207a83768f99810107c7fd71ac482db228ea13c77fa4458bc6be",
+    "collectorSha256": "141c64945f37a1f90d151ec61d09be5ce68f6677d08325bdf63e18384d17c5a2",
+    "runtimeBindingTemplateSha256": "3cb9d81c01358b9598740f74389c00efca8393542fe722fa1423858264162ea1",
+    "runtimeToolFiles": 175,
+    "runtimeBodyUnchangedExceptFixedPrivateBase": true,
+    "collectorPurePrefixByteIdentical": true,
+    "collectorDoesNotLaunchProcesses": true,
+    "finalRuntimeBindingPendingFreshCompilerExit0Artifacts": true,
+    "actualOutputManifestProduced": false,
+    "noRuntimeExecuted": true
+  },
+  "runtimeFiles": [
+    {
+      "path": "/workspace/.axiom-validation/billing-checkout-evidence-bismbi5h/run-owned-checkout-http.py",
+      "sha256": "48990de923c8207a83768f99810107c7fd71ac482db228ea13c77fa4458bc6be"
+    },
+    {
+      "path": "/workspace/.axiom-validation/billing-checkout-evidence-bismbi5h/collect-owned-checkout-http.py",
+      "sha256": "141c64945f37a1f90d151ec61d09be5ce68f6677d08325bdf63e18384d17c5a2"
+    },
+    {
+      "path": "/workspace/.axiom-validation/billing-checkout-evidence-bismbi5h/owned-http-binding-template.json",
+      "sha256": "3cb9d81c01358b9598740f74389c00efca8393542fe722fa1423858264162ea1"
+    }
+  ],
+  "qualification": [
+    "No final whole compiler ran after4612 source; prior615PASS stays615.",
+    "Runtime binding is a template until final exact-source compiler exit0 artifacts are available.",
+    "Collector is a separate fixed post-run metadata operation, never an outer process or kill/retry framework.",
+    "No actual bundle/output digest/HTTP/OS cleanup/provider evidence produced."
+  ]
+}

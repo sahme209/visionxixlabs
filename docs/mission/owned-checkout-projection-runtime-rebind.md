@@ -1,0 +1,9 @@
+# Minimal runtime rebind after projection source review
+
+Independent review accepted4b24d8e0: one implementation-only byte projection with unchanged public types and all metadata/output-tree/financial behavior preserved. The actual whole-web PASS remains historicalbf5f5184; no new compiler was run or implied. Final integrated publication gates remain required.
+
+This metadata-only freeze archives the actual first-run085c manifest as `owned-checkout-worker-source-bf5f5184.json` and changes only the Bundle tooling hash. All33 worker sources,7 configurations,5 other tooling entries,705 external files and132 compiler pins remain unchanged. A fresh owned runtime-only overlay retains the same809 canonical links with new empty0700 caches. The first failed run's private binding/start/log, compiler artifacts and old cache remain in their original root.
+
+Runtime launcher and fixed collector differ from the reviewed bf versions only in fixed BASE paths, verified by reversing the replacements. Current binding pins123 source/config files and175 runtime/tool files; actual historicalbf compiler artifacts remain hash-bound with an explicit unchanged-type/source-review qualification. No new diagnostics, source guard, selector, callback, compiler or process framework is introduced. The final private binding receives this clean metadata commit SHA after commit and is reported before an exact one-attempt grant.
+
+The paired JSON identifies the exact one-hash change, paths, retained cache evidence and code hashes. This is preparation only: no compiler, packaging, worker, socket, Prisma CLI, PG, Next or provider run occurred. The first owned failure remains unproved beyond its closed worker_source_binding phase; its actual cleanup and generic failure are preserved. The new source defect regression is not retrospective reached-proof or a successful runtime receipt.

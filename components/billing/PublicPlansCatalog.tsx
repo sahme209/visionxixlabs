@@ -8,13 +8,16 @@ import { PUBLIC_PLAN_CATALOG, isPaidPublicPlanId, type BillingInterval, type Pai
 
 import { publicPlanSignInPath, type PublicPlanSelection } from "@/lib/billing/planSelection";
 
+export type OwnedCheckoutIntentState = "none" | "prepared" | "attempted" | "unknown" | "session_confirmed" | "bound" | "terminal_verified" | "unavailable";
 export type PublicCheckoutWorkspace =
   | { status: "signed_out" }
   | { status: "unavailable" }
   | { status: "ready"; organizationId: string; label: string };
 
-export function PublicPlansCatalog({ checkoutEnabled, initialSelection = null, workspace = { status: "unavailable" } }: {
+export function PublicPlansCatalog({ checkoutEnabled, initialSelection = null, workspace = { status: "unavailable" }, ownedTestCheckout = false, ownedIntentState = "unavailable" }: {
   checkoutEnabled: boolean;
+  ownedTestCheckout?: boolean;
+  ownedIntentState?: OwnedCheckoutIntentState;
   initialSelection?: PublicPlanSelection | null;
   workspace?: PublicCheckoutWorkspace;
 }) {
@@ -23,16 +26,19 @@ export function PublicPlansCatalog({ checkoutEnabled, initialSelection = null, w
   const [busyPlan, setBusyPlan] = useState<PaidPublicPlanId | null>(null);
   const [error, setError] = useState<string | null>(null);
 
+  const [ownedBlocked, setOwnedBlocked] = useState(false);
+  const ownedCannotPurchase = ownedTestCheckout && workspace.status !== "signed_out" && (ownedIntentState !== "none" || ownedBlocked);
   const mounted = useRef(true);
   const pending = useRef(false);
-  const scope = `${checkoutEnabled}:${workspace.status}:${workspace.status === "ready" ? workspace.organizationId : ""}`;
+  const ownedKeys = useRef(new Map<string, string>());
+  const scope = `${ownedIntentState}:${ownedTestCheckout}:${checkoutEnabled}:${workspace.status}:${workspace.status === "ready" ? workspace.organizationId : ""}`;
   const latestScope = useRef(scope);
   latestScope.current = scope;
   useEffect(() => { mounted.current = true; return () => { mounted.current = false; }; }, []);
   useEffect(() => { setInterval(initialSelection?.billingInterval ?? "monthly"); }, [initialSelection?.billingInterval]);
 
   async function startCheckout(planId: PaidPublicPlanId) {
-    if (!checkoutEnabled || pending.current) return;
+    if (!checkoutEnabled || ownedCannotPurchase || pending.current) return;
     const selection = { planId, billingInterval: interval };
     if (workspace.status === "signed_out") { router.push(publicPlanSignInPath(selection)); return; }
     if (workspace.status !== "ready") { setError("Your workspace could not be verified. Refresh this page before choosing a plan."); return; }
@@ -42,11 +48,18 @@ export function PublicPlansCatalog({ checkoutEnabled, initialSelection = null, w
     setBusyPlan(planId);
     setError(null);
     try {
+      let clientIntentKey: string | undefined;
+      if (ownedTestCheckout) {
+        const name = `axiom:owned-checkout:v1:${workspace.organizationId}:${planId}:${interval}`;
+        clientIntentKey = ownedKeys.current.get(name) ?? window.sessionStorage.getItem(name) ?? undefined;
+        if (!clientIntentKey) { clientIntentKey = crypto.randomUUID().replaceAll("-", ""); window.sessionStorage.setItem(name, clientIntentKey); }
+        ownedKeys.current.set(name, clientIntentKey);
+      }
       const response = await fetch("/api/billing/checkout-session", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "same-origin",
-        body: JSON.stringify({ planId, billingInterval: interval, expectedOrganizationId: workspace.organizationId }),
+        body: JSON.stringify({ planId, billingInterval: interval, expectedOrganizationId: workspace.organizationId, ...(ownedTestCheckout ? { clientIntentKey } : {}) }),
       });
       if (!isCurrent()) return;
       if (response.status === 401) {
@@ -62,10 +75,12 @@ export function PublicPlansCatalog({ checkoutEnabled, initialSelection = null, w
         window.location.assign(payload.data.url);
         return;
       }
+      if (ownedTestCheckout) setOwnedBlocked(true);
       setError(payload.data?.reason || payload.error?.userMessage || "Checkout could not be started.");
     } catch {
       if (!isCurrent()) return;
-      setError("Checkout could not be reached. Try again without refreshing your plan selection.");
+      if (ownedTestCheckout) setOwnedBlocked(true);
+      setError(ownedTestCheckout ? "Checkout outcome is unavailable. Refresh to verify its current state before purchasing." : "Checkout could not be reached. Try again without refreshing your plan selection.");
     } finally {
       pending.current = false;
       if (mounted.current) setBusyPlan(null);
@@ -92,6 +107,7 @@ export function PublicPlansCatalog({ checkoutEnabled, initialSelection = null, w
         {initialSelection && <p className="max-w-xl text-center text-xs text-zinc-400">Restored {initialSelection.planId === "pro" ? "Pro" : "Enterprise"} selection. Review the interval and workspace, then choose a plan explicitly. No checkout has started.</p>}
         {checkoutEnabled && workspace.status === "ready" && <p className="max-w-xl text-center text-sm text-zinc-400">Billing workspace: {workspace.label}. A workspace owner or admin must confirm the purchase.</p>}
         {checkoutEnabled && workspace.status === "unavailable" && <p role="status" className="max-w-xl text-center text-sm text-amber-300">Workspace verification unavailable. Refresh before purchasing.</p>}
+        {ownedCannotPurchase && <p role="status" className="max-w-xl text-center text-sm text-amber-300">{ownedIntentState === "unavailable" || ownedBlocked ? "Checkout verification unavailable. Refresh to verify the current purchase state." : "An existing checkout requires reconciliation. A new purchase cannot be started."}</p>}
         {error ? <p role="alert" className="max-w-xl text-center text-sm text-red-300">{error}</p> : null}
       </div>
 
@@ -124,7 +140,7 @@ export function PublicPlansCatalog({ checkoutEnabled, initialSelection = null, w
                     {plan.id === "free" ? "Start free" : "Try Axiom before billing opens"}
                   </Link>
                 ) : (
-                  <button type="button" disabled={busyPlan !== null || workspace.status === "unavailable"} onClick={() => void startCheckout(paidPlanId)} className={`flex min-h-12 w-full items-center justify-center rounded-full px-5 text-sm font-semibold transition disabled:cursor-wait disabled:opacity-60 ${featured ? "bg-[#f54e00] text-white hover:bg-[#ff641f]" : "border border-white/[0.14] bg-white/[0.04] text-zinc-100 hover:bg-white/[0.08]"}`}>
+                  <button type="button" disabled={busyPlan !== null || workspace.status === "unavailable" || ownedCannotPurchase} onClick={() => void startCheckout(paidPlanId)} className={`flex min-h-12 w-full items-center justify-center rounded-full px-5 text-sm font-semibold transition disabled:cursor-wait disabled:opacity-60 ${featured ? "bg-[#f54e00] text-white hover:bg-[#ff641f]" : "border border-white/[0.14] bg-white/[0.04] text-zinc-100 hover:bg-white/[0.08]"}`}>
                     {busyPlan === plan.id ? "Opening secure checkout…" : `Choose ${plan.name}`}
                   </button>
                 )}

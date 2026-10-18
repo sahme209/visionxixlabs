@@ -1,0 +1,197 @@
+{
+  "sourceBefore": "c08ade0e3e6ed8799350c60da1a5444d3d4fab2a",
+  "sourceAfter": "c08ade0e3e6ed8799350c60da1a5444d3d4fab2a",
+  "sourceCleanAfter": true,
+  "invocations": 1,
+  "nativePermission": true,
+  "exitCode": 2,
+  "observedCompleteUtc": "2026-10-18T08:23:44Z",
+  "elapsedSecondsUpperBoundAtObservation": 132.2,
+  "heapMiB": 8192,
+  "incremental": false,
+  "start": {
+    "path": "/workspace/.axiom-validation/billing-checkout-root-dhwve79m/compiler-start.json",
+    "sha256": "88b59d7a069d3e5a4111b7a4e898f66ed2ffe4d7df33f240116c8edfc8889839",
+    "bytes": 1250
+  },
+  "log": {
+    "path": "/workspace/.axiom-validation/billing-checkout-root-dhwve79m/compiler.log",
+    "sha256": "00f81248c9ad82448990fcdca8b75b057ced8db05494ad6103e74711dc373409",
+    "bytes": 8897
+  },
+  "launcher": {
+    "path": "/workspace/.axiom-validation/billing-checkout-root-dhwve79m/run-web-compiler.py",
+    "sha256": "1db4657e0f2181385838628e945e723d9e5d09e7532ac7a5a1878e27afe93cc4",
+    "bytes": 5487
+  },
+  "binding": {
+    "path": "/workspace/.axiom-validation/billing-checkout-root-dhwve79m/compiler-binding.json",
+    "sha256": "3b2c17e61f976e87f71904243d4f9008f537b094fadfdf94b2ed1978270b4f87",
+    "bytes": 222325
+  },
+  "runtimeAfter": {
+    "nextOutputAbsent": true,
+    "desktopLinkAbsent": true,
+    "workerPackagingOrServerStarted": false,
+    "databaseOrProviderStarted": false,
+    "privateViteCachesEmpty": true
+  },
+  "qualification": "Elapsed is completion observation upper bound, not measured process-only CPU/runtime. Compiler exit2 observed through execution tool; no retry.",
+  "sourceBindingFilesVerifiedAfter": 122,
+  "sourceBindingMismatches": [],
+  "diagnostics": [
+    {
+      "path": "lib/billing/__tests__/fixtures/ownedCheckoutWorkerBundle.ts",
+      "line": 92,
+      "column": 99,
+      "code": "TS2339",
+      "headline": "Property 'modifiers' does not exist on type 'never'."
+    },
+    {
+      "path": "lib/billing/__tests__/fixtures/ownedCheckoutWorkerBundle.ts",
+      "line": 92,
+      "column": 115,
+      "code": "TS2339",
+      "headline": "Property 'importClause' does not exist on type 'never'."
+    },
+    {
+      "path": "lib/billing/__tests__/fixtures/ownedCheckoutWorkerBundle.ts",
+      "line": 92,
+      "column": 142,
+      "code": "TS2339",
+      "headline": "Property 'moduleSpecifier' does not exist on type 'never'."
+    },
+    {
+      "path": "lib/billing/__tests__/fixtures/ownedCheckoutWorkerBundle.ts",
+      "line": 92,
+      "column": 165,
+      "code": "TS2339",
+      "headline": "Property 'attributes' does not exist on type 'never'."
+    },
+    {
+      "path": "lib/billing/__tests__/fixtures/ownedCheckoutWorkerBundle.ts",
+      "line": 93,
+      "column": 48,
+      "code": "TS2339",
+      "headline": "Property 'moduleSpecifier' does not exist on type 'never'."
+    },
+    {
+      "path": "lib/billing/__tests__/fixtures/ownedCheckoutWorkerBundle.ts",
+      "line": 93,
+      "column": 123,
+      "code": "TS2339",
+      "headline": "Property 'modifiers' does not exist on type 'never'."
+    },
+    {
+      "path": "lib/billing/__tests__/fixtures/ownedCheckoutWorkerBundle.ts",
+      "line": 93,
+      "column": 139,
+      "code": "TS2339",
+      "headline": "Property 'isTypeOnly' does not exist on type 'never'."
+    },
+    {
+      "path": "lib/billing/__tests__/fixtures/ownedCheckoutWorkerBundle.ts",
+      "line": 93,
+      "column": 156,
+      "code": "TS2339",
+      "headline": "Property 'exportClause' does not exist on type 'never'."
+    },
+    {
+      "path": "lib/billing/__tests__/fixtures/ownedCheckoutWorkerBundle.ts",
+      "line": 93,
+      "column": 183,
+      "code": "TS2339",
+      "headline": "Property 'moduleSpecifier' does not exist on type 'never'."
+    },
+    {
+      "path": "lib/billing/__tests__/fixtures/ownedCheckoutWorkerBundle.ts",
+      "line": 93,
+      "column": 206,
+      "code": "TS2339",
+      "headline": "Property 'attributes' does not exist on type 'never'."
+    },
+    {
+      "path": "lib/billing/__tests__/fixtures/ownedCheckoutWorkerBundle.ts",
+      "line": 94,
+      "column": 46,
+      "code": "TS2339",
+      "headline": "Property 'expression' does not exist on type 'never'."
+    },
+    {
+      "path": "lib/billing/__tests__/fixtures/ownedCheckoutWorkerBundle.ts",
+      "line": 94,
+      "column": 118,
+      "code": "TS2339",
+      "headline": "Property 'expression' does not exist on type 'never'."
+    },
+    {
+      "path": "lib/billing/__tests__/fixtures/ownedCheckoutWorkerBundle.ts",
+      "line": 94,
+      "column": 138,
+      "code": "TS2339",
+      "headline": "Property 'expression' does not exist on type 'never'."
+    },
+    {
+      "path": "lib/billing/__tests__/fixtures/ownedCheckoutWorkerBundle.ts",
+      "line": 94,
+      "column": 225,
+      "code": "TS2339",
+      "headline": "Property 'expression' does not exist on type 'never'."
+    },
+    {
+      "path": "lib/billing/__tests__/fixtures/ownedCheckoutWorkerBundle.ts",
+      "line": 94,
+      "column": 242,
+      "code": "TS2339",
+      "headline": "Property 'typeArguments' does not exist on type 'never'."
+    },
+    {
+      "path": "lib/billing/__tests__/fixtures/ownedCheckoutWorkerBundle.ts",
+      "line": 94,
+      "column": 262,
+      "code": "TS2339",
+      "headline": "Property 'arguments' does not exist on type 'never'."
+    },
+    {
+      "path": "lib/billing/__tests__/fixtures/ownedCheckoutWorkerBundle.ts",
+      "line": 95,
+      "column": 38,
+      "code": "TS2769",
+      "headline": "No overload matches this call."
+    },
+    {
+      "path": "lib/billing/__tests__/ownedCheckoutLaunchPolicy.test.ts",
+      "line": 25,
+      "column": 12,
+      "code": "TS7053",
+      "headline": "Element implicitly has an 'any' type because expression of type 'string' can't be used to index type '{ NODE_PATH?: string | undefined; NODE_ENV: \"development\" | \"production\" | \"test\"; TZ?: string | undefined; NEXTAUTH_URL?: string | undefined; NEXTAUTH_SECRET?: string | undefined; AUTH_SECRET?: string | undefined; VERCEL?: \"1\" | undefined; }'."
+    },
+    {
+      "path": "lib/billing/__tests__/ownedCheckoutLaunchPolicy.test.ts",
+      "line": 27,
+      "column": 53,
+      "code": "TS7053",
+      "headline": "Element implicitly has an 'any' type because expression of type 'string' can't be used to index type '{ NODE_PATH?: string | undefined; NODE_ENV: \"development\" | \"production\" | \"test\"; TZ?: string | undefined; NEXTAUTH_URL?: string | undefined; NEXTAUTH_SECRET?: string | undefined; AUTH_SECRET?: string | undefined; VERCEL?: \"1\" | undefined; }'."
+    },
+    {
+      "path": "lib/billing/__tests__/ownedCheckoutLaunchPolicy.test.ts",
+      "line": 36,
+      "column": 48,
+      "code": "TS7053",
+      "headline": "Element implicitly has an 'any' type because expression of type 'string' can't be used to index type '{ NODE_PATH?: string | undefined; NODE_ENV: \"development\" | \"production\" | \"test\"; TZ?: string | undefined; NEXTAUTH_URL?: string | undefined; NEXTAUTH_SECRET?: string | undefined; AUTH_SECRET?: string | undefined; VERCEL?: \"1\" | undefined; }'."
+    },
+    {
+      "path": "lib/billing/__tests__/ownedCheckoutSupervisor.test.ts",
+      "line": 23,
+      "column": 51,
+      "code": "TS2352",
+      "headline": "Conversion of type '{ db: { $queryRawUnsafe: () => Promise<{ id: string; }[]>; }; databaseUrl: string; runtimeId: string; organizationId: string; origin: string; reviewed: { sources: never[]; tooling: never[]; configuration: never[]; compiler: { ...; }; externalGraphs: never[]; }; }' to type '{ db: PrismaClient<PrismaClientOptions, never, DefaultArgs>; databaseUrl: string; runtimeId: string; organizationId: string; origin: string; reviewed: { ...; }; control?: { ...; } | undefined; }' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first."
+    }
+  ],
+  "underlyingIssues": [
+    "AST visitor contextually inferred SourceFile, making nested kind guards never; needs ts.Node visitor and typed SourceFile transform.",
+    "Dynamic test maps inferred named fields without string index signature; explicit NodeJS.ProcessEnv maps retain required Next NODE_ENV.",
+    "Supervisor test casts partial DB to complete PrismaClient; properly typed generic mock and actual sole-used Pick interface needed."
+  ],
+  "followup": "No retry or runtime waiver. Preserve this failed source/log; coordinator separately authorized bounded source/TDD fixes and managed runtime-control amendment after release."
+}

@@ -1,9 +1,11 @@
+import { ownedPlansBinding, ownedPlansIntentState } from "@/lib/billing/ownedCheckoutBridge/http";
+import { isolatedRuntimeRequested } from "@/lib/billing/isolatedApplication/runtime";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { COUNTED_DEPLOYMENT_DEFINITION, isSelfServiceBillingEnabled } from "@/lib/billing/publicPlanCatalog";
 import { currentContext } from "@/lib/auth/currentContext";
 import { parsePublicPlanSelection } from "@/lib/billing/planSelection";
-import type { PublicCheckoutWorkspace } from "@/components/billing/PublicPlansCatalog";
+import type { PublicCheckoutWorkspace, OwnedCheckoutIntentState } from "@/components/billing/PublicPlansCatalog";
 import { PublicPlansCatalog } from "@/components/billing/PublicPlansCatalog";
 
 export const metadata: Metadata = {
@@ -14,15 +16,19 @@ export const metadata: Metadata = {
 };
 
 export default async function PlansPage({ searchParams }: { searchParams?: Promise<{ plan?: string | string[]; interval?: string | string[] }> }) {
-  const checkoutEnabled = isSelfServiceBillingEnabled();
+  const ownedBinding = isolatedRuntimeRequested() ? await ownedPlansBinding() : null;
+  const ownedTestCheckout = !!ownedBinding;
+  const checkoutEnabled = isolatedRuntimeRequested() ? ownedTestCheckout : isSelfServiceBillingEnabled();
   const initialSelection = parsePublicPlanSelection(await searchParams ?? {});
+  let ownedIntentState: OwnedCheckoutIntentState = "unavailable";
   let workspace: PublicCheckoutWorkspace = { status: "unavailable" };
   if (checkoutEnabled) {
     try {
       const context = await currentContext();
       workspace = !context.isAuthenticated ? { status: "signed_out" }
-        : context.organizationId && context.roles.length > 0 ? { status: "ready", organizationId: String(context.organizationId), label: context.workspaceLabel ?? "Current workspace" }
+        : context.organizationId && context.roles.length > 0 && (!ownedBinding || ownedBinding.organizationId === String(context.organizationId)) ? { status: "ready", organizationId: String(context.organizationId), label: context.workspaceLabel ?? "Current workspace" }
           : { status: "unavailable" };
+      if (ownedTestCheckout && workspace.status === "ready" && context.userId) ownedIntentState = await ownedPlansIntentState(String(context.userId), workspace.organizationId);
     } catch { /* A public price page remains readable without billing authority. */ }
   }
   return (
@@ -43,11 +49,11 @@ export default async function PlansPage({ searchParams }: { searchParams?: Promi
           Security, approval gates, and audit protection stay in every plan. Choose monthly or annual billing; activation remains locked until organization billing and quotas complete review.
         </p>
         <div className="mx-auto mt-8 inline-flex rounded-full border border-[#f54e00]/25 bg-[#f54e00]/[0.07] px-4 py-2 text-xs text-[#ff9a72]">
-          {checkoutEnabled ? "Secure self-service checkout available" : "Pricing preview · no charges can be started from this page"}
+          {ownedTestCheckout ? "Owned TEST checkout rehearsal · no live billing" : checkoutEnabled ? "Secure self-service checkout available" : "Pricing preview · no charges can be started from this page"}
         </div>
       </section>
 
-      <PublicPlansCatalog checkoutEnabled={checkoutEnabled} initialSelection={initialSelection} workspace={workspace} />
+      <PublicPlansCatalog ownedIntentState={ownedIntentState} ownedTestCheckout={ownedTestCheckout} checkoutEnabled={checkoutEnabled} initialSelection={initialSelection} workspace={workspace} />
 
       <section className="border-y border-white/[0.07] bg-[#171717] px-5 py-16 sm:px-8 lg:px-12">
         <div className="mx-auto grid max-w-[1400px] gap-8 lg:grid-cols-[0.75fr_1.25fr] lg:items-start">

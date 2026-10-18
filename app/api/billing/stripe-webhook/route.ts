@@ -1,3 +1,4 @@
+import { ownedWebhookPost } from "@/lib/billing/ownedCheckoutBridge/http";
 /**
  * POST /api/billing/stripe-webhook
  *
@@ -61,6 +62,8 @@ interface StripeWebhookEvent {
 }
 
 export async function POST(req: NextRequest) {
+  const owned = await ownedWebhookPost(req);
+  if (owned) return owned;
   const correlationId = resolveCorrelationId(req.headers);
 
   if (!isSelfServiceBillingEnabled()) {

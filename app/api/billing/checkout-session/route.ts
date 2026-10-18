@@ -1,3 +1,4 @@
+import { ownedCheckoutPost } from "@/lib/billing/ownedCheckoutBridge/http";
 /**
  * POST /api/billing/checkout-session
  *
@@ -25,6 +26,8 @@ import { prisma } from "@/lib/db";
 export const dynamic = "force-dynamic";
 
 export async function POST(req: NextRequest) {
+  const owned = await ownedCheckoutPost(req);
+  if (owned) return owned;
   const correlationId = resolveCorrelationId(req.headers);
   try {
     if (!isSelfServiceBillingEnabled()) {

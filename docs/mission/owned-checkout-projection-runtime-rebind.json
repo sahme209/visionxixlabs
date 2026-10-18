@@ -1,0 +1,68 @@
+{
+  "version": 1,
+  "stage": "minimal_projection_runtime_rebind_only",
+  "sourceFreeze": "4b24d8e088c00f19c67f21aad9c11db1d42692c8",
+  "newPrivateRoot": "/workspace/.axiom-validation/billing-checkout-projection-krpy6fas",
+  "priorPrivateRoot": "/workspace/.axiom-validation/billing-checkout-evidence-bismbi5h",
+  "oldManifestSha256": "085c00c38aebad03b7f9e2e5c6fb85cadf7f6f470469c61bc5277067ead14286",
+  "newManifestSha256": "f0db7eaa504e96e2708f6974236bbfd2d594bd5aa1d69977ddce5307ab08eeea",
+  "exactOneToolingHash": {
+    "path": "lib/billing/__tests__/fixtures/ownedCheckoutWorkerBundle.ts",
+    "before": "4fe9cc077a62c366ce0acd438e6dae13e87069d1c2f963c3a4fdce516b2afe38",
+    "after": "8160938e1c67cfa6c1481860f89e59bb6ae7eceb8b3df52f6c994b880523dd26"
+  },
+  "unchanged": [
+    "sources33",
+    "configuration7",
+    "otherTooling5",
+    "external705",
+    "compiler132"
+  ],
+  "sameCanonicalOverlayEntries": 809,
+  "oldCacheRetained": [
+    {
+      "path": "/workspace/.axiom-validation/billing-checkout-evidence-bismbi5h/node_modules/.vite/vitest",
+      "mode": "0o700",
+      "bytes": 4096,
+      "sha256": null
+    },
+    {
+      "path": "/workspace/.axiom-validation/billing-checkout-evidence-bismbi5h/node_modules/.vite/vitest/da39a3ee5e6b4b0d3255bfef95601890afd80709",
+      "mode": "0o700",
+      "bytes": 4096,
+      "sha256": null
+    },
+    {
+      "path": "/workspace/.axiom-validation/billing-checkout-evidence-bismbi5h/node_modules/.vite/vitest/da39a3ee5e6b4b0d3255bfef95601890afd80709/results.json",
+      "mode": "0o600",
+      "bytes": 355,
+      "sha256": "0999e75d96adb47332ecf8b8696918cf6d818c873f901b207d7a9d1306867834"
+    }
+  ],
+  "newCachesEmpty0700": true,
+  "code": [
+    {
+      "path": "/workspace/.axiom-validation/billing-checkout-projection-krpy6fas/run-owned-checkout-http.py",
+      "sha256": "fe608d8c48b4df287ae21ffa2c83233297f8bc28d2bb0bb4a60136452d022b91",
+      "reverseBaseReplacementByteEqual": true
+    },
+    {
+      "path": "/workspace/.axiom-validation/billing-checkout-projection-krpy6fas/collect-owned-checkout-http.py",
+      "sha256": "b38a166d6e9ca7d8b9abe1b9632f7e114fb533ec65fbad337c9f3dc09133c480",
+      "reverseBaseReplacementByteEqual": true
+    }
+  ],
+  "sourceFiles": 123,
+  "runtimeToolFiles": 175,
+  "runtimeBindingTemplateSha256": "74b7c0048d349b02d8fbcacde348f53bae9e03737dbe2968eabc74cb2cfb3045",
+  "typeQualification": {
+    "actualWholeWebSource": "bf5f5184a2a375320d7df6002e0653a114b09cfd",
+    "actualWholeWebExitCode": 0,
+    "currentWholeWebRerun": false,
+    "changedPublicTypes": false,
+    "reviewedImplementationSource": "4b24d8e088c00f19c67f21aad9c11db1d42692c8",
+    "implementationDelta": "verifyOwnedBytes projects only sources/outputs; other helper bytes unchanged",
+    "finalIntegratedPublicationGatesStillRequired": true
+  },
+  "noCompilerOrRuntime": true
+}
