@@ -1,0 +1,11 @@
+# Website pre-image wait diagnostics
+
+Source-only addition based on main `5c76ad4442aadfd5e470a9a3601348307b5903a4`. The existing premium worktree, original `1f21b4e3` branch and failed browser evidence are preserved. This change does not attribute the historical DOM timeout or authorize another browser attempt.
+
+The capture driver's first homepage waits now retain one closed phase: `homepage_document` for the existing complete-document/product-tour predicate, or `homepage_playback` for the existing enabled-Play predicate. The existing CDP evaluation also returns a six-field DOM observation: `readyState`, `tourPresent`, `playPresent`, `playDisabled`, `reducedMotion`, `visibility`. There is no extra evaluation command. Only closed state strings, booleans and the absent-button null state enter `capture.json`; unknown, malformed, extra or accessor-bearing snapshots become null. No HTML, page text, URL, cookies or network details are collected. A completed wait clears its diagnostic; a failed wait retains its last bounded observation.
+
+The original predicates, 45-second wait defaults, 100ms polling delay, absolute driver deadline, capture actions, request decisions and cleanup remain unchanged. Snapshot availability never grants readiness or substitutes for the original predicate. Only the two pre-first-image waits are stamped. All later waits retain their prior evaluation behavior.
+
+Pure tests execute the actual polling and snapshot code extracted from the driver with a synthetic DOM and clock, without importing the executable recipe. Against the old driver, four assertions failed and the unchanged-predicate check passed. All five tests pass after the addition; scoped ESLint, syntax and diff checks pass. The existing Vite configuration warning remains visible. No compiler, full suite, browser, server, provider request or native subprocess probe ran. Existing cached dependencies are reused through a private link overlay with owned Vite caches; no dependency installation occurred.
+
+The frozen source/evidence packet is prepared separately for root review. Browser acceptance remains blocked after the three retained failures. This diagnostic cannot recover observations that the historical receipts did not record.
