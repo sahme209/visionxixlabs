@@ -54,6 +54,14 @@ function boundary(anchor: Date, index: number): Date {
   const last = new Date(Date.UTC(year, monthOfYear + 1, 0)).getUTCDate();
   return new Date(Date.UTC(year, monthOfYear, Math.min(anchor.getUTCDate(), last), anchor.getUTCHours(), anchor.getUTCMinutes(), anchor.getUTCSeconds()));
 }
+/** Exact complete service periods measured from the immutable original anchor. */
+export function validAnniversaryServicePeriod(anchorISO: string, interval: "monthly" | "annual", startISO: string, endISO: string): boolean {
+  try {
+    const anchor = iso(anchorISO), start = iso(startISO), end = iso(endISO), n = monthIndex(start) - monthIndex(anchor), count = interval === "annual" ? 12 : 1;
+    return ["monthly", "annual"].includes(interval) && anchor.getUTCMilliseconds() === 0 && n >= 0 && (count !== 12 || n % 12 === 0)
+      && boundary(anchor, n).getTime() === start.getTime() && boundary(anchor, n + count).getTime() === end.getTime();
+  } catch { return false; }
+}
 function available(basis: AllowanceBasisV2, start: Date, end: Date, includedCents: number): WindowResultV2 {
   const bounds = { start: start.toISOString(), end: end.toISOString() };
   const bucketId = hash({ version: 2, enrollmentDigest: basis.enrollmentDigest, basisDigest: basis.digest, kind: basis.kind, ...bounds });
