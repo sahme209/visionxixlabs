@@ -10,6 +10,9 @@ import { dispatchWebhookEvent } from "@/lib/webhooks/dispatchWebhookEvent";
 import { parseRepositoryFullName, resolveTenantScopedToken } from "@/lib/connectors/github/resolveTenantScopedToken";
 import { getWorkflowRun } from "@/lib/connectors/github/githubWriteClient";
 import { appendAuditEvent, type AuditEventRepo } from "@/lib/releaseops/auditEventResponder";
+import { captureRestartTarget } from "@/lib/axiom/agentRuntime/restartTargetReview";
+import { buildRestartReview } from "./restartReview";
+import { insertRestartReview, restartReviewReadiness } from "./restartReviewStore";
 
 const TERMINAL_STATES = new Set(["success", "failed"]);
 
@@ -22,7 +25,7 @@ export async function runAirflowAutomationTick(now = new Date()): Promise<{ orga
   };
   for (const group of organizations) {
     try {
-      const { client, connectionId } = await loadAirflowClient(group.organizationId);
+      const { client, connectionId, baseUrl, connectionUpdatedAt } = await loadAirflowClient(group.organizationId);
       const rules = await prisma.airflowAutomation.findMany({ where: { organizationId: group.organizationId, enabled: true }, orderBy: { createdAt: "asc" } });
       totals.rules += rules.length;
       for (const rule of rules) {
@@ -41,12 +44,29 @@ export async function runAirflowAutomationTick(now = new Date()): Promise<{ orga
             if (!dependenciesReady) continue;
             const existing = await prisma.airflowAutomationExecution.findUnique({ where: { automationId_sourceDagRunId: { automationId: rule.id, sourceDagRunId: run.dagRunId } }, select: { id: true } });
             if (existing) continue;
-            const status = rule.actionType === "none" ? "queued" : rule.approvalRequired ? "pending_approval" : "queued";
-            const execution = await prisma.airflowAutomationExecution.create({ data: { organizationId: group.organizationId, automationId: rule.id, sourceDagId: run.dagId, sourceDagRunId: run.dagRunId, sourceDagState: run.state, status } });
+            const status = rule.actionType === "none" ? "queued" : rule.actionType === "deploy" || rule.approvalRequired ? "pending_approval" : "queued";
+            const data = { organizationId: group.organizationId, automationId: rule.id, sourceDagId: run.dagId, sourceDagRunId: run.dagRunId, sourceDagState: run.state, status };
+            let execution: { id: string };
+            try {
+              execution = rule.actionType === "deploy" ? await prisma.$transaction(async tx => {
+                if (await restartReviewReadiness(tx) !== "ready") throw new Error("airflow_review_storage_unavailable");
+                const connection = await tx.tenantIntegrationConnection.findFirst({ where: { id: connectionId, organizationId: group.organizationId, provider: "airflow", status: "active" } });
+                const metadata = connection?.scopesJson as { baseUrl?: unknown } | null;
+                const target = rule.environmentId ? await captureRestartTarget(tx, group.organizationId, rule.environmentId) : null;
+                if (!connection || typeof metadata?.baseUrl !== "string" || !target || metadata.baseUrl !== baseUrl || connection.updatedAt.getTime() !== connectionUpdatedAt.getTime()) throw new Error("airflow_restart_review_unavailable");
+                const created = await tx.airflowAutomationExecution.create({ data });
+                await insertRestartReview(tx, buildRestartReview(created, rule, { id: connection.id, baseUrl: metadata.baseUrl, updatedAt: connection.updatedAt.toISOString() }, target));
+                return created;
+              }, { isolationLevel: "Serializable" }) : await prisma.airflowAutomationExecution.create({ data });
+            } catch (error) {
+              if (error && typeof error === "object" && "code" in error && error.code === "P2002"
+                && await prisma.airflowAutomationExecution.findUnique({ where: { automationId_sourceDagRunId: { automationId: rule.id, sourceDagRunId: run.dagRunId } }, select: { id: true } })) continue;
+              throw error;
+            }
             totals.proposals += 1;
             await appendAuditEvent(prisma as unknown as AuditEventRepo, { organizationId: group.organizationId, kind: "airflow.action.proposed", subjectKind: "automation", subjectId: execution.id, summary: `Airflow automation ${rule.name} proposed ${rule.actionType.replaceAll("_", " ")} after ${run.dagId}`, actorUserId: null, detailJson: { dagId: run.dagId, dagRunId: run.dagRunId, actionType: rule.actionType, approvalRequired: rule.approvalRequired } });
             await dispatchWebhookEvent({ organizationId: group.organizationId, eventKind: "airflow.action_proposed", data: { automationId: rule.id, automationName: rule.name, executionId: execution.id, dagId: run.dagId, dagRunId: run.dagRunId, actionType: rule.actionType, approvalRequired: rule.approvalRequired }, fireImmediately: true }).catch(() => undefined);
-            if (!rule.approvalRequired || rule.actionType === "none") recordOutcome(await executeAirflowAutomation(execution.id));
+            if (rule.actionType === "none" || (rule.actionType !== "deploy" && !rule.approvalRequired)) recordOutcome(await executeAirflowAutomation(execution.id));
           }
           await prisma.airflowAutomation.update({ where: { id: rule.id }, data: { lastEvaluatedAt: now } });
         } catch { totals.errors += 1; }

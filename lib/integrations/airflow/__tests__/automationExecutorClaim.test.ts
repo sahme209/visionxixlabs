@@ -1,10 +1,11 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-const mocks = vi.hoisted(() => ({ find: vi.fn(), findRequired: vi.fn(), update: vi.fn(), claim: vi.fn(), openPR: vi.fn(), token: vi.fn(), dispatch: vi.fn(), createDeployment: vi.fn(), membership: vi.fn(), reserve: vi.fn(), release: vi.fn(), settle: vi.fn(), airflow: vi.fn(), source: vi.fn(), dependencies: vi.fn(), binding: vi.fn() }));
+const mocks = vi.hoisted(() => ({ find: vi.fn(), findRequired: vi.fn(), update: vi.fn(), claim: vi.fn(), openPR: vi.fn(), token: vi.fn(), dispatch: vi.fn(), createDeployment: vi.fn(), membership: vi.fn(), reserve: vi.fn(), release: vi.fn(), settle: vi.fn(), airflow: vi.fn(), source: vi.fn(), dependencies: vi.fn(), binding: vi.fn(), target: vi.fn(), review: vi.fn(), fence: vi.fn() }));
 vi.mock("../connection", () => ({ loadAirflowClient: mocks.airflow }));
-vi.mock("@/lib/db", () => ({ prisma: { airflowAutomationExecution: {
+vi.mock("../restartReviewIO", () => ({ requireCurrentRestartReview: mocks.review, fenceRestartDispatch: mocks.fence }));
+vi.mock("@/lib/db", () => { const db = { airflowAutomationExecution: {
   findUnique: mocks.find, findUniqueOrThrow: mocks.findRequired, update: mocks.update, updateMany: mocks.claim,
-}, tenantIntegrationConnection: { findFirst: mocks.binding }, orgMembership: { findUnique: mocks.membership }, environment: { findFirst: async () => ({ id: "env-1", tier: "dev" }) }, deploymentTarget: { findFirst: async () => ({}) }, deploymentExecution: { create: mocks.createDeployment } } }));
+}, tenantIntegrationConnection: { findFirst: mocks.binding }, orgMembership: { findUnique: mocks.membership }, environment: { findFirst: async () => ({ id: "env-1", tier: "dev" }) }, deploymentTarget: { findFirst: mocks.target }, deploymentExecution: { create: mocks.createDeployment } }; return { prisma: { ...db, $transaction: async (fn: (tx: unknown) => Promise<unknown>) => fn(db) } }; });
 vi.mock("@/lib/connectors/github/resolveTenantScopedToken", () => ({
   parseRepositoryFullName: () => ({ owner: "fixture", repo: "repository" }),
   resolveTenantScopedToken: mocks.token,
@@ -18,13 +19,13 @@ import { executeAirflowAutomation } from "../automationExecutor";
 
 let row: { id: string; organizationId: string; status: string; attempt: number; decidedByUserId: string | null; nextRetryAt: Date | null; errorCode: string | null; resultJson: unknown };
 const automation = {
-  connectionId: "connection-1", dagId: "dag", requiredDagState: "success", dependencyDagIds: [] as string[], createdAt: new Date(0), updatedAt: new Date(1),
+  id: "rule-1", connectionId: "connection-1", dagId: "dag", requiredDagState: "success", dependencyDagIds: [] as string[], createdAt: new Date(0), updatedAt: new Date(1),
   organizationId: "org-1", actionType: "open_pull_request", approvalRequired: false, enabled: true,
   repositoryFullName: "fixture/repository", sourceRef: "work", pullRequestBase: "main", pullRequestTitle: "Fixture proposal",
   maxRetries: 3, retryDelaySeconds: 60, notifyOnSuccess: false, notifyOnFailure: false, name: "Fixture automation",
   environmentId: "env-1", createdByUserId: "user-1",
 };
-const snapshot = () => ({ ...row, automation: { ...automation }, sourceDagId: "dag", sourceDagRunId: "run", sourceDagState: "success" });
+const snapshot = () => ({ ...row, automationId: "rule-1", automation: { ...automation }, sourceDagId: "dag", sourceDagRunId: "run", sourceDagState: "success" });
 function apply(data: Record<string, unknown>) {
   if (typeof data.status === "string") row.status = data.status;
   if (data.attempt) row.attempt += (data.attempt as { increment: number }).increment;
@@ -65,11 +66,68 @@ beforeEach(() => {
   mocks.reserve.mockResolvedValue({ ok: true, reused: false, reservation: { id: "deployment-1" } });
   mocks.release.mockResolvedValue(true);
   mocks.settle.mockResolvedValue(true);
+  mocks.review.mockResolvedValue({ digest: "a".repeat(64), payload: { target: { kind: "ecs_restart_target", organizationId: "org-1", environmentId: "env-1", environmentTier: "dev", targetId: "target", provider: "aws", targetUpdatedAt: new Date(1).toISOString(), roleArn: "arn:aws:iam::123456789012:role/restart-A", region: "us-east-1", ecsCluster: "cluster-A", ecsService: "service-A" } } });
+  mocks.fence.mockImplementation(async (_db, review, _attempt, _actor, intent) => { await mocks.update({ data: { resultJson: { ...intent, reviewDigest: review.digest, phase: "dispatching" } } }); });
+  mocks.target.mockResolvedValue({ id: "target", organizationId: "org-1", provider: "aws", updatedAt: new Date(1), roleArn: "arn:aws:iam::123456789012:role/restart-A", region: "us-east-1", ecsCluster: "cluster-A", ecsService: "service-A" });
 });
 
 describe("Airflow execution claim", () => {
+  it("refuses missing persisted review even when the caller supplies a digest", async () => {
+    automation.actionType = "deploy"; automation.approvalRequired = true; row.status = "pending_approval";
+    mocks.review.mockRejectedValue(new Error("airflow_review_required"));
+    expect(await executeAirflowAutomation(row.id, "approver", "a".repeat(64))).toEqual({ ok: false, error: "airflow_review_required" });
+    expect(mocks.claim).not.toHaveBeenCalled(); expect(mocks.dispatch).not.toHaveBeenCalled();
+  });
+  it("blocks final target changes after reservation and restores rejectable state without retry", async () => {
+    automation.actionType = "deploy"; row.decidedByUserId = "previous-approver";
+    mocks.fence.mockRejectedValue(new Error("airflow_restart_review_stale"));
+    expect(await executeAirflowAutomation(row.id)).toEqual({ ok: false, error: "airflow_restart_review_stale" });
+    expect(row.status).toBe("pending_approval"); expect(row.nextRetryAt).toBeNull();
+    expect(mocks.release).toHaveBeenCalledWith(expect.anything(), "org-1", "deployment-1");
+    expect(mocks.dispatch).not.toHaveBeenCalled();
+  });
+  it("retains an unconfirmed release for reconciliation instead of scheduling another attempt", async () => {
+    automation.actionType = "deploy"; row.decidedByUserId = "previous-approver";
+    mocks.fence.mockRejectedValue(new Error("airflow_restart_review_stale")); mocks.release.mockResolvedValue(false);
+    expect(await executeAirflowAutomation(row.id)).toEqual({ ok: false, error: "airflow_reservation_release_unconfirmed" });
+    expect(row.status).toBe("needs_reconciliation"); expect(row.nextRetryAt).toBeNull();
+    expect(await executeAirflowAutomation(row.id)).toMatchObject({ ok: false });
+    expect(mocks.dispatch).not.toHaveBeenCalled(); expect(mocks.reserve).toHaveBeenCalledTimes(1);
+  });
+  it("reports an unconfirmed local state if the post-refusal pending-state write fails", async () => {
+    automation.actionType = "deploy"; row.decidedByUserId = "previous-approver";
+    mocks.fence.mockRejectedValue(new Error("airflow_restart_review_stale"));
+    mocks.claim.mockImplementation(async ({ data }) => {
+      if (data.status === "pending_approval") throw new Error("storage_lost_after_release");
+      apply(data); return { count: 1 };
+    });
+    expect(await executeAirflowAutomation(row.id)).toEqual({ ok: false, error: "airflow_execution_state_unconfirmed" });
+    expect(row.status).toBe("running"); expect(row.nextRetryAt).toBeNull(); expect(mocks.dispatch).not.toHaveBeenCalled();
+    expect(mocks.release).toHaveBeenCalledOnce();
+  });
+  it("never releases a reused receipt's hold when later local storage fails", async () => {
+    automation.actionType = "deploy"; row.decidedByUserId = "previous-approver";
+    mocks.reserve.mockResolvedValue({ ok: true, reused: true, reservation: { id: "previous-reservation", workflowRunId: "already-started" } });
+    mocks.update.mockRejectedValueOnce(new Error("local_write_failed"));
+    expect(await executeAirflowAutomation(row.id)).toMatchObject({ ok: false });
+    expect(mocks.release).not.toHaveBeenCalled(); expect(mocks.dispatch).not.toHaveBeenCalled();
+  });
+  it("cannot approve a historical pending restart against a replacement destination without immutable review evidence", async () => {
+    automation.actionType = "deploy";
+    row.decidedByUserId = "previous-approver";
+    automation.approvalRequired = true;
+    row.status = "pending_approval";
+    // The existing persisted proposal contains source evidence only. Its
+    // environment's target has since changed; no review is manufactured.
+    mocks.target.mockResolvedValue({ id: "target-B", organizationId: "org-1", provider: "aws", updatedAt: new Date(2), roleArn: "arn:aws:iam::123456789012:role/restart-B", region: "us-west-2", ecsCluster: "cluster-B", ecsService: "service-B" });
+    expect(await executeAirflowAutomation(row.id, "approver")).toMatchObject({ ok: false });
+    expect(mocks.claim).not.toHaveBeenCalled();
+    expect(mocks.reserve).not.toHaveBeenCalled();
+    expect(mocks.dispatch).not.toHaveBeenCalled();
+  });
   it("blocks deployment before dispatch when the shared allowance is exhausted", async () => {
     automation.actionType = "deploy";
+    row.decidedByUserId = "previous-approver";
     mocks.reserve.mockResolvedValue({ ok: false, error: "deployment_quota_exhausted" });
     expect(await executeAirflowAutomation(row.id)).toEqual({ ok: false, error: "deployment_quota_exhausted" });
     expect(mocks.dispatch).not.toHaveBeenCalled();
@@ -77,6 +135,7 @@ describe("Airflow execution claim", () => {
 
   it("retains the shared hold and reservation reference after an uncertain provider response", async () => {
     automation.actionType = "deploy";
+    row.decidedByUserId = "previous-approver";
     mocks.dispatch.mockResolvedValue({ ok: false, error: "workflow_dispatch_failed: fetch failed" });
     expect(await executeAirflowAutomation(row.id)).toEqual({ ok: false, error: "airflow_provider_outcome_unknown" });
     expect(row.status).toBe("needs_reconciliation");
@@ -88,6 +147,7 @@ describe("Airflow execution claim", () => {
 
   it("uses a stable execution key and settles the same reserved deployment", async () => {
     automation.actionType = "deploy";
+    row.decidedByUserId = "previous-approver";
     expect(await executeAirflowAutomation(row.id)).toMatchObject({ ok: true });
     expect(mocks.reserve).toHaveBeenCalledWith(expect.anything(), expect.objectContaining({ organizationId: "org-1", idempotencyKey: "airflow-execution:execution-1", sourceCommitSha: "fixture-sha" }));
     expect(mocks.settle).toHaveBeenCalledWith(expect.anything(), "org-1", "deployment-1", expect.objectContaining({ workflowRunId: "run-1" }));
@@ -96,6 +156,7 @@ describe("Airflow execution claim", () => {
 
   it("links an already recorded deployment without dispatching another workflow", async () => {
     automation.actionType = "deploy";
+    row.decidedByUserId = "previous-approver";
     mocks.reserve.mockResolvedValue({ ok: true, reused: true, reservation: { id: "deployment-existing", workflowUrl: "https://github.test/run", workflowRunId: "recorded-run" } });
     expect(await executeAirflowAutomation(row.id)).toMatchObject({ ok: true, result: { deploymentExecutionId: "deployment-existing", replayed: true } });
     expect(mocks.dispatch).not.toHaveBeenCalled();
@@ -103,11 +164,14 @@ describe("Airflow execution claim", () => {
 
   it("releases a newly reserved slot if its durable dispatch intent cannot be saved", async () => {
     automation.actionType = "deploy";
+    row.decidedByUserId = "previous-approver";
     mocks.update.mockImplementation(async ({ data }) => {
       if (data.resultJson?.phase === "dispatching") throw new Error("intent_store_unavailable");
       return apply(data);
     });
-    expect(await executeAirflowAutomation(row.id)).toEqual({ ok: false, error: "intent_store_unavailable" });
+    expect(await executeAirflowAutomation(row.id)).toEqual({ ok: false, error: "airflow_review_storage_unavailable" });
+    expect(row.status).toBe("pending_approval");
+    expect(row.nextRetryAt).toBeNull();
     expect(mocks.dispatch).not.toHaveBeenCalled();
     expect(mocks.release).toHaveBeenCalledWith(expect.anything(), "org-1", "deployment-1");
   });
@@ -172,6 +236,7 @@ describe("Airflow execution claim", () => {
 
   it("does not redispatch a workflow when deployment tracking storage fails", async () => {
     automation.actionType = "deploy";
+    row.decidedByUserId = "previous-approver";
     mocks.settle.mockResolvedValue(false);
     expect(await executeAirflowAutomation(row.id)).toEqual({ ok: false, error: "airflow_provider_outcome_unknown" });
     expect(row.status).toBe("needs_reconciliation");
