@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { retrySavedDesktopSignIn } from "../lib/activeDesktopCredential";
 import { signInWithBrowser } from "../lib/desktopPairing";
 import { verifyAndSaveApiKey } from "../lib/apiKeyStore";
 import { type VerifiedDesktopIdentity } from "../lib/desktopClient";
@@ -6,12 +7,15 @@ import { type VerifiedDesktopIdentity } from "../lib/desktopClient";
 export function DesktopSignInView({
   onSignedIn,
   initialError,
+  canRetrySavedSignIn = false,
 }: {
   onSignedIn: (identity: VerifiedDesktopIdentity) => void;
   initialError?: string | null;
+  canRetrySavedSignIn?: boolean;
 }) {
-  const [state, setState] = useState<"idle" | "opening" | "waiting" | "saving">("idle");
+  const [state, setState] = useState<"idle" | "opening" | "waiting" | "saving" | "retrying">("idle");
   const [error, setError] = useState<string | null>(initialError ?? null);
+  const [retryAvailable, setRetryAvailable] = useState(canRetrySavedSignIn);
   const [apiKey, setApiKey] = useState("");
   const [checkingKey, setCheckingKey] = useState(false);
   const browserSignIn = useRef<AbortController | null>(null);
@@ -43,6 +47,22 @@ export function DesktopSignInView({
       setError(cause instanceof Error ? cause.message : "Sign-in failed.");
     } finally {
       if (browserSignIn.current === controller) { browserSignIn.current = null; committing.current = false; }
+    }
+  }
+
+  async function retrySavedSignIn() {
+    if (browserSignIn.current || checkingKey) return;
+    const controller = new AbortController();
+    browserSignIn.current = controller;
+    setState("retrying"); setError(null);
+    try {
+      const result = await retrySavedDesktopSignIn(controller.signal);
+      if (browserSignIn.current !== controller || controller.signal.aborted) return;
+      if (result.ok) { onSignedIn(result.data); return; }
+      setRetryAvailable(result.failureKind === "unavailable");
+      if (result.failureKind !== "canceled") setError(result.error);
+    } finally {
+      if (browserSignIn.current === controller) { browserSignIn.current = null; setState("idle"); }
     }
   }
 
@@ -96,6 +116,7 @@ export function DesktopSignInView({
           Sign in through your system browser, then return here automatically. Your workspace access is verified before operational data loads.
         </p>
         {error && <div role="alert" className="mt-5 rounded-xl border border-red-500/20 bg-red-500/[0.08] p-3.5 text-left text-xs leading-5 text-red-200">{error}</div>}
+        {retryAvailable && <button type="button" disabled={state !== "idle" || checkingKey} onClick={() => void retrySavedSignIn()} className="mt-5 w-full rounded-xl border border-white/10 px-5 py-3 text-sm text-zinc-200 disabled:opacity-60">Retry saved sign-in</button>}
         <div className="mt-8 rounded-2xl border border-white/[0.08] bg-white/[0.02] p-1.5 shadow-[0_1px_0_rgba(255,255,255,0.03)_inset]">
           <button
             type="button"
@@ -105,14 +126,14 @@ export function DesktopSignInView({
           >
             <span className="inline-flex items-center justify-center gap-2">
               {state !== "idle" && <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-black/20 border-t-black/70" aria-hidden />}
-              {state === "saving" ? "Saving secure sign-in…" : state === "opening" ? "Opening secure browser…" : state === "waiting" ? "Waiting for browser approval…" : "Log in"}
+              {state === "retrying" ? "Checking saved sign-in…" : state === "saving" ? "Saving secure sign-in…" : state === "opening" ? "Opening secure browser…" : state === "waiting" ? "Waiting for browser approval…" : "Log in"}
             </span>
           </button>
           <button type="button" onClick={() => void continueInBrowser("sign_up")} disabled={state !== "idle" || checkingKey} className="mt-1.5 w-full rounded-xl px-5 py-3.5 text-sm font-medium text-zinc-200 transition-colors duration-150 hover:bg-white/[0.06] disabled:opacity-60">
             Create account
           </button>
         </div>
-        {(state === "opening" || state === "waiting") && (
+        {(state === "opening" || state === "waiting" || state === "retrying") && (
           <button type="button" onClick={cancelBrowserSignIn} className="mt-3 w-full rounded-xl px-5 py-2 text-sm font-medium text-zinc-500 transition-colors hover:bg-white/[0.04] hover:text-white">
             Cancel
           </button>

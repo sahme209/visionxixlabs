@@ -94,9 +94,23 @@ function respond(data: unknown, status = 200) {
 }
 
 describe("desktop startup identity response boundary", () => {
+  it("requests the access endpoint with only the candidate bearer and rejects malformed identity", async () => {
+    const fetch = respond({ identity: { ...identity, organizationId: "" }, access });
+    const active = client();
+    const original = active.config;
+    expect(await active.verifyCredentialCandidate("vxlk_candidate")).toEqual({
+      ok: false, failureKind: "invalid", error: "The saved sign-in could not be verified. Sign in again.",
+    });
+    expect(fetch).toHaveBeenCalledExactlyOnceWith("https://service.example.test/api/desktop/access", expect.objectContaining({
+      headers: expect.objectContaining({ Authorization: "Bearer vxlk_candidate" }),
+    }));
+    expect(active.config).toBe(original);
+    expect(active.config.sessionToken).toBe("axm.desk.fixture");
+  });
+
   it("rejects a non-success HTTP response even when its body claims success", async () => {
     respond({ identity, access }, 503);
-    expect(await client().verifyCurrentCredential()).toEqual({ ok: false, error: "HTTP 503" });
+    expect(await client().verifyCurrentCredential()).toEqual({ ok: false, failureKind: "unavailable", error: "The workspace service could not be reached. Try again." });
   });
 
   it.each([
@@ -118,7 +132,7 @@ describe("desktop startup identity response boundary", () => {
     { identity, access: { ...access, cancelAtPeriodEnd: "false" } },
   ])("returns an actionable failure for malformed identity/access %#", async (data) => {
     respond(data);
-    await expect(client().verifyCurrentCredential()).resolves.toEqual({ ok: false, error: "The service returned an invalid workspace identity. Sign in again or contact support." });
+    await expect(client().verifyCurrentCredential()).resolves.toEqual({ ok: false, failureKind: "invalid", error: "The saved sign-in could not be verified. Sign in again." });
   });
 
   it("preserves a verified identity with denied access as a separate state", async () => {
