@@ -306,3 +306,15 @@ desktop and exact-head CI gates still precede push/merge. Hosted payment, manage
 proxy compatibility and unsupported mid-month service periods/general billing
 completion remain separate gates. Historical b139ca02 seven-case and earlier
 status-only HTTP evidence is not relabeled as this exact-source acceptance.
+
+Final local regression on clean evidence-only candidate
+`f8db137c00f81d7921e8dec7860fe8b0c5baad03` passed 7,057 default tests across
+646 files in 65.84 seconds (8 owned tests/1 optional file deliberately skipped),
+desktop release 0.1.20 alignment/TypeScript/Vite build, and 30 Python tests.
+The desktop graph stayed separate; ordinary import/chunk-size warnings do not
+establish native packaging acceptance. All 26 accepted product/test SHA256s still
+match 29a395be. The receipt records final log hashes and clean source before/after.
+No whole-web or owned HTTP rerun was needed for the documentation-only change.
+No owned compiler/server processes remained and the heavy window was released.
+Coordinator exact-head CI and normal review/merge remain; this worktree has not
+pushed, deployed or activated billing.

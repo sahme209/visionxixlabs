@@ -479,8 +479,45 @@
     "ownedNextGeneratedOutput": "70 MiB inert output retained; no shared cache removed"
   },
   "remainingGates": [
-    "Coordinator full billing/default regression, desktop checks and exact-head CI before push/merge.",
+    "Coordinator review, exact-head CI and normal PR/merge; no push or deployment performed by this billing worktree.",
     "Hosted test Checkout/payment/webhook and managed proxy acceptance require separate authorized provider gate.",
     "Service periods starting mid-month, prorations/discounts/credits/customer-balance/manual or partial collection and plan/seat changes remain unsupported."
-  ]
+  ],
+  "finalLocalRegression": {
+    "commitBefore": "f8db137c00f81d7921e8dec7860fe8b0c5baad03",
+    "commitAfter": "f8db137c00f81d7921e8dec7860fe8b0c5baad03",
+    "sourceCleanBeforeAfter": true,
+    "codeSha256StillMatchesAcceptedSource": true,
+    "defaultSuite": {
+      "passed": 7057,
+      "filesPassed": 646,
+      "testsSkipped": 8,
+      "optionalFilesSkipped": 1,
+      "elapsedSeconds": 65.84,
+      "exitCode": 0,
+      "qualification": "Owned eight-case fixture disabled by default here; separately passed on accepted product source29a395be."
+    },
+    "desktop": {
+      "releaseVersion": "0.1.20",
+      "releaseAlignment": "passed",
+      "typeScript": "passed",
+      "viteBuild": "passed",
+      "viteBuildSeconds": 3.72,
+      "exitCode": 0,
+      "qualification": "Separate desktop cache graph; ordinary dynamic/static import and chunk-size warnings, not native packaging or installation acceptance."
+    },
+    "python": {
+      "unitTestsPassed": 30,
+      "exitCode": 0
+    },
+    "logSha256": {
+      "full": "0da0725c37d90c8fc782babcc7825b7b595851b07f275dcd3bac31f2b6b9c94e",
+      "desktop": "6095d45126bfdeccbf9d10c0480ff582cff43ca37ffed09df08bd82867d92395",
+      "python": "ff04685cf8f165986edb171f41998029bc46acfccf08a2404d1db8722913183e"
+    },
+    "cleanup": {
+      "ownedRuntimeOrCompilerProcessesRemaining": 0
+    },
+    "qualification": "Sequential local default tests/desktop/Python only. No repeated owned runtime or whole-web compile for docs-only change. No push, deployment, provider call or live billing change."
+  }
 }
