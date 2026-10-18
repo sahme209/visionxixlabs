@@ -1,5 +1,13 @@
 /* eslint-disable @typescript-eslint/no-require-imports -- synchronous fixture-only preload before application/SDK imports */
 'use strict';
+const { createDiagnostics, fatalObserver } = require('./ecsCheckedInputDiagnostics.cjs');
+const diagnosticSymbol = Symbol.for('axiom.owned.ecs.checked-input.diagnostics');
+if (process.env.AXIOM_OWNED_ECS_CHECKED_INPUTS === '1') {
+  const diagnostic = createDiagnostics('child', process.env.AXIOM_OWNED_ECS_SOURCE_COMMIT, process.env.AXIOM_OWNED_ECS_DIAGNOSTIC_DIRECTORY);
+  Object.defineProperty(globalThis, diagnosticSymbol, { value: diagnostic });
+  process.on('uncaughtExceptionMonitor', fatalObserver(diagnostic, () => globalThis[Symbol.for('axiom.owned.ecs.checked-input.guard')]?.report()));
+  diagnostic.update({ stage: 'guard_installing' }); diagnostic.write();
+}
 const assert = require('node:assert/strict');
 const http = require('node:http'), https = require('node:https'), net = require('node:net');
 const dns = require('node:dns'), dgram = require('node:dgram'), tls = require('node:tls'), http2 = require('node:http2');
@@ -135,4 +143,7 @@ function installOwnedEcsCheckedInputGuard({ origin, proof, announce = false }) {
   const result = Object.freeze({ report, ready }); Object.defineProperty(globalThis, guardSymbol, { value: result }); return result;
 }
 module.exports = { installOwnedEcsCheckedInputGuard };
-if (process.env.AXIOM_OWNED_ECS_CHECKED_INPUTS === '1') installOwnedEcsCheckedInputGuard({ origin: process.env.AXIOM_OWNED_ECS_ORIGIN, proof: process.env.AXIOM_OWNED_ECS_PROOF, announce: true });
+if (process.env.AXIOM_OWNED_ECS_CHECKED_INPUTS === '1') {
+  installOwnedEcsCheckedInputGuard({ origin: process.env.AXIOM_OWNED_ECS_ORIGIN, proof: process.env.AXIOM_OWNED_ECS_PROOF, announce: true });
+  const diagnostic = globalThis[diagnosticSymbol]; diagnostic.update({ stage: 'guard_installed' }); diagnostic.write();
+}

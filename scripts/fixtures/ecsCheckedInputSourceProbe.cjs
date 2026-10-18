@@ -1,6 +1,9 @@
 /* eslint-disable @typescript-eslint/no-require-imports -- fixture-only exact source loader under preinstalled guard */
 'use strict';
 const assert = require('node:assert/strict'), fs = require('node:fs'), path = require('node:path'), crypto = require('node:crypto');
+const diagnostic = globalThis[Symbol.for('axiom.owned.ecs.checked-input.diagnostics')];
+function phase(stage, values = {}) { diagnostic?.update({ ...values, stage }); diagnostic?.write(); }
+phase('source_graph_scan');
 const root = path.resolve(__dirname, '../..'), guard = globalThis[Symbol.for('axiom.owned.ecs.checked-input.guard')];
 assert.equal(process.env.AXIOM_OWNED_ECS_CHECKED_INPUTS, '1'); assert.ok(guard && process.send);
 const target = new URL(process.env.DATABASE_URL);
@@ -32,13 +35,16 @@ process.on('message', message => { if (message?.kind !== 'owned_ecs_control_repl
 function control(command, details = {}) { return new Promise((resolve, reject) => { const id = ++commandId, timer = setTimeout(() => { pending.delete(id); reject(new Error('owned_ecs_control_timeout')); }, 7000); pending.set(id, { resolve, reject, timer }); process.send({ kind: 'owned_ecs_control', proof: process.env.AXIOM_OWNED_ECS_PROOF, id, command, ...details }); }); }
 const pause = ms => new Promise(resolve => setTimeout(resolve, ms));
 let client, second, activeCase = 'bootstrap'; const groups = [], mutations = [];
-async function group(name, action) { activeCase = name; await action(); groups.push(name); }
+async function group(name, action) { activeCase = name; phase('source_case', { caseIndex: groups.length + 1, completedGroups: groups.length }); await action(); groups.push(name); phase('source_case', { caseIndex: groups.length, completedGroups: groups.length }); }
 (async () => {
-  await guard.ready;
+  await guard.ready; phase('guarded_ready');
+  phase('prisma_import');
   const { PrismaClient } = require('@prisma/client');
   client = require(path.join(root, 'lib/db.ts')).prisma;
   second = new PrismaClient({ datasources: { db: { url: target.href } } });
+  phase('owned_db_identity');
   for (const database of [client, second]) { const [row] = await database.$queryRawUnsafe('SELECT current_database() AS name'); assert.equal(row.name, target.pathname.slice(1)); }
+  phase('source_imports');
   const { createEcsCheckedInputReader } = require(path.join(root, roots[0]));
   const { resolveRequestDesktopSession } = require(path.join(root, roots[1]));
   const { createDesktopSession } = require(path.join(root, roots[2]));
@@ -51,6 +57,7 @@ async function group(name, action) { activeCase = name; await action(); groups.p
   const fixtureDirectory = path.join(root, 'lib/releaseops/ecsReleaseV2/__tests__/fixtures');
   const bundle = fs.readFileSync(path.join(fixtureDirectory, 'direct-workflow-oci/bundle.sigstore.json')), trustedRootBytes = fs.readFileSync(path.join(fixtureDirectory, 'trusted_root.json')), trustedRoot = JSON.parse(trustedRootBytes);
   assert.equal(await client.user.count(), 0, 'owned_ecs_initially_empty_rows_required'); assert.equal(await client.platformGithubAppCredential.count(), 0);
+  phase('synthetic_seed');
   await client.user.create({ data: { id: userId, email: `owned-ecs-${suffix}@example.test`, name: 'Synthetic ECS source fixture', emailVerifiedAt: now } });
   await client.orgMembership.create({ data: { userId, organizationId, role: 'admin', acceptedAt: now, providerScopes: [] } });
   const membership = { userId_organizationId: { userId, organizationId } };
@@ -64,7 +71,7 @@ async function group(name, action) { activeCase = name; await action(); groups.p
   const deploymentTarget = await client.deploymentTarget.create({ data: { organizationId, environmentId, provider: 'aws', roleArn: configuration.roleArn, region: 'us-east-1', ecsCluster: 'app', ecsService: 'web' } });
   let session, token;
   async function freshSession() { session = await createDesktopSession({ organizationId, userId, deviceFingerprint: 'owned-source-probe', deviceLabel: 'Synthetic source fixture', platform: 'unknown' }); token = mintDesktopToken(session.id); }
-  await freshSession();
+  await freshSession(); phase('principal_resolution');
   async function principal(overrideToken = token) {
     const request = new NextRequest('http://127.0.0.1/internal/owned-ecs-checked-inputs', { headers: { authorization: 'Bearer ' + overrideToken } });
     const resolved = await resolveRequestDesktopSession(request, { requiredScope: 'pipeline:trigger', route: 'owned_source_probe', allowApiKey: false, requireWorkspaceAdmin: true, requiredCapability: 'connections:manage', requireWorkspaceMembership: true });
@@ -112,16 +119,21 @@ async function group(name, action) { activeCase = name; await action(); groups.p
   await group('cancel_actual_native_response', async () => { const controller = new AbortController(); unavailable(await heldRace('DescribeServicesFinal', async () => { controller.abort(); await pause(25); }, request, controller.signal)); });
   for (const mode of ['denied', 'redirect', 'oversized', 'compressed']) await group('actual_aws_' + mode, async () => { await control('response', { operation: 'DescribeImages', mode }); unavailable(await inspect()); });
   await group('credential_revocation_after_actual_aws_io', async () => { unavailable(await heldRace('DescribeServicesFinal', () => second.cloudAccountCredential.update({ where: { id: accountId }, data: { version: 2, encryptedConfiguration: '', revokedAt: new Date() } }))); const before = await control('summary'); unavailable(await inspect()); assert.deepEqual((await control('summary')).requests, before.requests); mutations.push('credential_zeroized_and_version_incremented'); });
+  phase('final_checks');
   assert.deepEqual(await counts(), beforeCounts); assert.equal(await client.platformGithubAppCredential.count(), 0);
   for (const [file, hash] of Object.entries(sourceHashes)) assert.equal(digest(fs.readFileSync(path.join(root, file))), hash, 'owned_ecs_source_bytes_changed');
   assert.equal(guard.report().denied, 0, 'unexpected_guard_denial');
   const installedPackages = {}; for (const name of ['@prisma/client', '@aws-sdk/client-sts', '@aws-sdk/client-ecs', '@aws-sdk/client-ecr', '@sigstore/bundle', '@sigstore/verify', '@sigstore/protobuf-specs']) installedPackages[name] = JSON.parse(fs.readFileSync(path.join(root, 'node_modules', name, 'package.json'), 'utf8')).version;
   const receipt = { nodeVersion: process.versions.node, installedPackages, dependencyQualification: 'existing_dependency_overlay_clean_lockfile_CI_remains_authoritative', kind: 'owned_ecs_checked_inputs', sourceCommit: process.env.AXIOM_OWNED_ECS_SOURCE_COMMIT, groups, groupCount: groups.length, sourceHashes, rootsBytesSha256: digest(trustedRootBytes), bundleSha256: digest(bundle), workflowSha256: digest(fs.readFileSync(path.join(fixtureDirectory, 'direct-workflow-oci/workflow.yml'))), fixtureProfile: { kind: profile.kind, reviewedAt: profile.reviewedAt, reviewExpiresAt: profile.reviewExpiresAt, trustedRootDigest: profile.trustedRootDigest, bundleOrigin: downloadPolicy[0].origin, qualification: 'explicit_owned_fixture_only_not_production_trust' }, guard: guard.report(), deliberateOwnedDbMutations: mutations, unchangedOperationCounts: beforeCounts,
     sourceOutcome: 'checked_subject_mismatch_not_usable_for_admission', evidenceScope: 'actual_source_native_wire_owned_synthetic_upstream', authentication: 'actual_hmac_and_current_durable_resolver_synthetic_session_not_browser_pairing', githubApp: 'synthetic_env_app_key_real_RS256_and_scoped_mint', database: 'constructor_bound_owned_postgres_not_universal_node_sandbox', notVerified: ['real_aws_or_github', 'genuine_ecr_proof', 'matched_admission', 'public_route_or_browser_pairing', 'aws_enrollment_or_disconnect_service', 'runtime_executor_quota_oidc_voters_health_rollback', 'expiry_inside_final_context_transaction', 'os_or_arbitrary_native_code_sandbox'] };
+  diagnostic?.update({ guardDenied: receipt.guard.denied, mappedRequests: receipt.guard.mappedRequests, completedGroups: groups.length }); diagnostic?.write();
   fs.writeSync(1, JSON.stringify(receipt));
-})().catch(() => { fs.writeSync(2, 'owned_ecs_source_probe_failed:' + activeCase + '\n'); process.exitCode = 1; }).finally(async () => {
+})().catch(error => { diagnostic?.fail(error); try { const report = guard.report(); diagnostic?.update({ guardDenied: report.denied, mappedRequests: report.mappedRequests }); } catch { /* Observation cannot replace the source failure. */ } diagnostic?.write(); fs.writeSync(2, 'owned_ecs_source_probe_failed:' + activeCase + '\n'); process.exitCode = 1; }).finally(async () => {
   for (const entry of pending.values()) { clearTimeout(entry.timer); entry.reject(new Error('owned_ecs_probe_closed')); } pending.clear();
-  if (second) await second.$disconnect(); if (client) await client.$disconnect();
+  phase('disconnect', { cleanupDatabase: 'pending' });
+  try { if (second) await second.$disconnect(); if (client) await client.$disconnect(); phase('disconnect', { cleanupDatabase: 'verified' }); }
+  catch (error) { diagnostic?.fail(error); phase('disconnect', { cleanupDatabase: 'unverified' }); throw error; }
   if (priorLoader) require.extensions['.ts'] = priorLoader; else delete require.extensions['.ts'];
   if (process.connected) process.disconnect();
+  diagnostic?.update({ outcome: 'completed' }); diagnostic?.write();
 });
