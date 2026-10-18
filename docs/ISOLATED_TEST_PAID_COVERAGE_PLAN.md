@@ -267,3 +267,42 @@ Targeted no-emit types with Next augmentation, changed-fixture lint and whitespa
 checks pass. No whole-web compiler, PostgreSQL or Next acceptance was rerun for
 this correction. Freeze and scoped security review precede the next owned run;
 hosted Stripe payment and managed proxy compatibility remain unverified.
+
+## Fresh owned acceptance at integrated source 29a395be (2026-10-18)
+
+Source `29a395beba06d77a46bd6d662a527670a43f8d56` was clean before and after
+fresh whole-web TypeScript and all eight owned PostgreSQL/actual Next HTTP cases.
+The [durable acceptance receipt](mission/local-billing-paid-coverage-acceptance.json)
+records source SHA256 checksums, individual cases, log hashes, dependency and
+cleanup evidence. PostgreSQL cases cover immutable original/payment evidence,
+Serializable snapshot/purchase fences, negative replay, current open/uncollectible
+invoice and refund denial, separate cash recovery, rollback after evidence writes,
+and no financial-history rewrite. Actual reservation SQL uses the database clock;
+HTTP expired coverage denies admission. This is not an injected clock rollover
+or SQL expiry-race test.
+
+Authenticated HTTP verifies the $30 three-seat allowance/$27.50 remaining,
+scheduled cancellation, Unavailable active missing/expired coverage, verified
+inactive exhausted $2 Free allowance, unchanged collected recovery, cancellation,
+cap/authority denial and released 100-cent provider-disabled reservations. Existing
+usage, unresolved holds and purchases remain unchanged. Installed Stripe signature
+and remote objects are synthetic fixtures; the app's provider IO denial stays
+absolute, no public billing route is activated and no actual Stripe call is made.
+
+Fresh web compilation passed in 55.26 seconds with 8192 MiB heap and peak RSS
+4,019,524 KiB; eight owned cases passed in 32.34 seconds (HTTP 22.98 seconds).
+Earlier 3072 MiB OOM and four missing cache-import failures are not passing gates.
+The missing ECR/Sigstore packages were reconstructed only in the owned persistent
+root overlay from exact lockfile tarballs, each SHA512 verified; 45 resolved
+transitive paths match their applicable nested/root lock entries. This run uses
+exact protobuf-specs 0.5.0, distinct from historical 0.5.2 cache qualification.
+Source/lockfiles/shared caches were unchanged; a full clean-install CI claim is
+not made. No shared Prisma generation occurred.
+
+Owned Next processes, PostgreSQL containers and temporary font directories were
+all absent after awaited cleanup; the coordinator's heavy window was released.
+Only inert owned .next output (70 MiB) remains. Coordinator full regression,
+desktop and exact-head CI gates still precede push/merge. Hosted payment, managed
+proxy compatibility and unsupported mid-month service periods/general billing
+completion remain separate gates. Historical b139ca02 seven-case and earlier
+status-only HTTP evidence is not relabeled as this exact-source acceptance.

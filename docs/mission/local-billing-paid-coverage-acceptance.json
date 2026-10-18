@@ -1,0 +1,486 @@
+{
+  "schemaVersion": 1,
+  "recordedAtUtc": "2026-10-18",
+  "sourceCommitBefore": "29a395beba06d77a46bd6d662a527670a43f8d56",
+  "sourceCommitAfter": "29a395beba06d77a46bd6d662a527670a43f8d56",
+  "sourceCleanBeforeAfter": true,
+  "scope": "Inactive new TEST calendar-aligned paid-coverage lifecycle; owned synthetic provider fixtures, actual local PostgreSQL/Next HTTP. No hosted Stripe or production acceptance.",
+  "sourceSha256": [
+    {
+      "path": "lib/billing/__tests__/fixtures/newTestChildEnvironment.ts",
+      "sha256": "14fc33278030a9799a45fff304b915f571ca573d874e63ba0fc2e69c3311438a"
+    },
+    {
+      "path": "lib/billing/__tests__/fixtures/newTestPaidFixture.ts",
+      "sha256": "1fc7ab45a7bbbab193cbb96678e2de28499d9afeb6e194f554357f0dcae78dee"
+    },
+    {
+      "path": "lib/billing/__tests__/isolatedAllowance.test.ts",
+      "sha256": "3ec9160d5952937259e72251fe29468500478fb771d069ae0003a21eaf208d65"
+    },
+    {
+      "path": "lib/billing/__tests__/newTestChildEnvironment.test.ts",
+      "sha256": "93b77c45ab592329ec6a0fd48956bbec0d69670e62a5fc6e9862363094bd8c3a"
+    },
+    {
+      "path": "lib/billing/__tests__/newTestPaidCoverage.test.ts",
+      "sha256": "76280f253997bacf840e75d2724c60f8a27742b733dbad7b7ff98fbee8df6495"
+    },
+    {
+      "path": "lib/billing/__tests__/newTestSubscriptionService.postgres.test.ts",
+      "sha256": "027ea728176f3809095dce7b594795636386a31ae96cf7e0ec525fec6518e73f"
+    },
+    {
+      "path": "lib/billing/__tests__/stripeTestHttpClient.test.ts",
+      "sha256": "874c14feee4c719f07164dcf23267aaf3b8ac835033c51074ca85154c09b3120"
+    },
+    {
+      "path": "lib/billing/__tests__/stripeTestLifecycle.test.ts",
+      "sha256": "e887508419ad424ad1d2f394c8dc57d9df07157430a22bfd4aef07b95e9c7dcc"
+    },
+    {
+      "path": "lib/billing/__tests__/stripeTestOriginalProof.test.ts",
+      "sha256": "3f4c9fa87e87c4026c12d88aa03dd1021634fd1369393a19c1fe7c8f6812c878"
+    },
+    {
+      "path": "lib/billing/__tests__/stripeTestPaidCoverage.test.ts",
+      "sha256": "9ee64f8c3554d5514044faa0d252ae1edc50f34f0958f120ea53a5d5164bedbc"
+    },
+    {
+      "path": "lib/billing/aiCreditReservation.ts",
+      "sha256": "75d2faf493b0350c1e5f827832069f1c0dfc47aaa85b1af4a8436a38b7d07046"
+    },
+    {
+      "path": "lib/billing/currentAIAllowance.ts",
+      "sha256": "4d965e1f2a454867b63e1e4785f33037f2a36bceb73da178fbfd0344031f1a32"
+    },
+    {
+      "path": "lib/billing/isolatedApplication/plan.ts",
+      "sha256": "ee7f6d9d5f18c9e62f12df509d4cd3b25b79e723f6eb06c0ef81b3070caf298d"
+    },
+    {
+      "path": "lib/billing/newTestSubscription/chargeSource.ts",
+      "sha256": "b3d300c917e6253d9ed70870e952efa68941c05006221880bd02433129b7bd80"
+    },
+    {
+      "path": "lib/billing/newTestSubscription/fixtureCoverage.ts",
+      "sha256": "c436aa287c861e98f56709b90f45d500fb628cbb8e8ca13066c78554b1c3cefb"
+    },
+    {
+      "path": "lib/billing/newTestSubscription/lifecycle.ts",
+      "sha256": "735a67cc8b2cbfc3c291c70604e007249a0aebe0bc90fd05b5a348cc4ccf7d38"
+    },
+    {
+      "path": "lib/billing/newTestSubscription/paidCoverage.ts",
+      "sha256": "ebc74f82d61368a8cfbacfed4d6483cca1272c7eddd035a3875d9b1188ef3e25"
+    },
+    {
+      "path": "lib/billing/newTestSubscription/paidPlan.ts",
+      "sha256": "402fdc2f66c592d210801dc01da677bd8ecd7e531622a41d5bec620c23fb45ab"
+    },
+    {
+      "path": "lib/billing/newTestSubscription/postgresFixtureStore.ts",
+      "sha256": "c7729a6e5fe7e16d9042f05fe4d21fcbe32d7bedc4acf33dd293664b8834715f"
+    },
+    {
+      "path": "lib/billing/newTestSubscription/service.ts",
+      "sha256": "63a91b35064f8b6daa32870c9e036bf2c55b2be177c26bcd0194e1daa4de72bd"
+    },
+    {
+      "path": "lib/billing/newTestSubscription/stripeDeadline.ts",
+      "sha256": "c951e5ac7848ae315321a99c7e4d09d9f78d27a6dc5ff6244dae3c758ccb6ee6"
+    },
+    {
+      "path": "lib/billing/newTestSubscription/stripeHttpClient.ts",
+      "sha256": "4a2bae0de8e041fe16b0bb5e61075505ae3eb9373ef7c75fe5f928b8b3b930e5"
+    },
+    {
+      "path": "lib/billing/newTestSubscription/stripePaidCoverage.ts",
+      "sha256": "abd64290a57a31da34b6ae48788675f76667b77c5dd80458181afaef75fe8e5a"
+    },
+    {
+      "path": "lib/billing/newTestSubscription/stripeTestProvider.ts",
+      "sha256": "c455e5aa03ccc4efd3c816c48439440ad52728226b0a43095f40e376d04ee148"
+    },
+    {
+      "path": "lib/billing/newTestSubscription/verifiedContract.ts",
+      "sha256": "270b98a3cb9e6680dedb8872be8f4dcdc809b7071e8e30ba99a77111f3f73ca7"
+    },
+    {
+      "path": "lib/demo/demoScenarios.ts",
+      "sha256": "4dcf683cde4b9b06b2eb868d25e2ac2f51432b431fabc406e9b90713a6affc6d"
+    }
+  ],
+  "webTypeScript": {
+    "result": "passed",
+    "freshProgram": true,
+    "incremental": false,
+    "nodeVersion": "24.19.0",
+    "heapLimitMiB": 8192,
+    "elapsedSeconds": 55.26,
+    "maxRssKiB": 4019524,
+    "exitCode": 0,
+    "logSha256": "c2a0be98497fb473c839e19050d25a4687173f59fc71386fd67868cc89917682"
+  },
+  "ownedAcceptance": {
+    "result": "passed",
+    "casesPassed": 8,
+    "elapsedSeconds": 32.34,
+    "actualNextHttpDurationMs": 22982,
+    "cases": [
+      {
+        "case": "binds captured original collection once, protects financial/tenant state and models monthly remaining pool",
+        "durationMs": 330,
+        "result": "passed"
+      },
+      {
+        "case": "fences concurrent provider snapshots with opaque local token equality, not event ordering",
+        "durationMs": 101,
+        "result": "passed"
+      },
+      {
+        "case": "actual separate-client Serializable purchase race retains only one unresolved organization intent",
+        "durationMs": 94,
+        "result": "passed"
+      },
+      {
+        "case": "original response proof captures once in real intent CAS and cannot be rewritten",
+        "durationMs": 92,
+        "result": "passed"
+      },
+      {
+        "case": "inactive SDK lifecycle preserves immutable origin and financial evidence through actual durable PG consumer",
+        "durationMs": 1033,
+        "result": "passed"
+      },
+      {
+        "case": "response loss retains unknown intent and cannot bind even a synthetic paid observation",
+        "durationMs": 80,
+        "result": "passed"
+      },
+      {
+        "case": "missing new provenance fails closed only for explicit lane; legacy reservation remains independent",
+        "durationMs": 19,
+        "result": "passed"
+      },
+      {
+        "case": "actual local Next HTTP authenticates, reads versioned allowance, denies unsupported operations and releases provider-disabled hold",
+        "durationMs": 22982,
+        "result": "passed"
+      }
+    ],
+    "logSha256": "f1397b5bb526e12550d7d859fae315ce67d7f6ab28703f538663aac4829b96d7",
+    "postgresImage": "postgres:17-alpine",
+    "cachedImageId": "sha256:79bd7c99e923138f136f8009d6bffa66e21e9d4fda5c0c561b00fc9c90cfe537",
+    "imagePull": false,
+    "dockerEndpoint": "unix:///var/run/docker.sock",
+    "database": "fresh owned loopback-only axiom_new_test_contract_rehearsal",
+    "schema": "prisma db push --skip-generate to owned empty database plus fixture-only DDL/triggers; no production schema or migration"
+  },
+  "providerQualification": {
+    "remoteStripeReplies": "synthetic SDK fixtures; local installed SDK signature verification",
+    "actualStripeApiCalls": 0,
+    "hostedPaymentVerified": false,
+    "managedProxyCompatibilityVerified": false,
+    "applicationExternalProviderIoDenied": true,
+    "publicBillingRoutesActivated": false
+  },
+  "observedChecks": [
+    "Immutable original attempt proof and paid invoice evidence; exact original 3-seat/$87 monthly invoice terms retained.",
+    "Real Serializable purchase/snapshot races retain one current winner; replay may deprivilege projection without restoring positive authority or rewriting financial rows.",
+    "Open/uncollectible latest invoice and old-paid delivery deny active access; refunded charge invalidates projection while original evidence remains immutable.",
+    "Separate current synthetic full-cash invoice restores coverage; injected after-projection failure rolls back evidence, event, plan and projection writes.",
+    "Seat increase and decrease are unavailable, consume no event, adopt no plan terms and preserve usage/hold/top-up rows.",
+    "Actual existing reservation SQL and database clock are exercised; expired coverage is unavailable through actual HTTP. No simulated clock rollover or SQL expiry race is claimed.",
+    "Authenticated actual Next usage page shows $30 pool/$27.50 remaining, scheduled cancellation retains paid access, active missing/expired coverage is Unavailable, verified inactive status uses exhausted $2 Free pool, collected recovery restores unchanged pool, canceled returns inactive Free policy.",
+    "Admission at cap or unavailable coverage creates no hold; recovered admission reaches absolute provider denial and releases the 100-cent reservation. Existing unresolved holds/usage/top-ups remain unchanged.",
+    "Current membership/runtime/contract failures deny; legacy reservation lane remains independent."
+  ],
+  "dependencyOverlay": {
+    "path": "/workspace/.axiom-validation/ecs-direct-root/node_modules",
+    "mode": "owned root-only graph reusing cached dependencies; five reconstructed tarballs verified against exact lockfile SHA512; no npm install/scripts/source/lock/shared-cache changes",
+    "restoredPackages": [
+      {
+        "name": "@aws-sdk/client-ecr",
+        "version": "3.1049.0",
+        "resolved": "https://registry.npmjs.org/@aws-sdk/client-ecr/-/client-ecr-3.1049.0.tgz",
+        "integrity": "sha512-DkLyg4kXthvZOLT84gdXVBwQQ4qc749TG05r1boTMmlgF/ns+7JjgFpJ1CNXIgxP4Q/72N//H3vIUhTVNBi8NA==",
+        "archive_sha512_verified": true,
+        "owned_path": "/workspace/.axiom-validation/ecs-direct-root/node_modules/@aws-sdk/client-ecr"
+      },
+      {
+        "name": "@sigstore/bundle",
+        "version": "5.0.0",
+        "resolved": "https://registry.npmjs.org/@sigstore/bundle/-/bundle-5.0.0.tgz",
+        "integrity": "sha512-wefjygudENbzbQMks1t5u34EP0fFoD0XvaEP7DOUP/sXKvogzEJYFw5E6pegGyp3onGWzVEYKVa3bNZWyTYX+A==",
+        "archive_sha512_verified": true,
+        "owned_path": "/workspace/.axiom-validation/ecs-direct-root/node_modules/@sigstore/bundle"
+      },
+      {
+        "name": "@sigstore/core",
+        "version": "4.0.1",
+        "resolved": "https://registry.npmjs.org/@sigstore/core/-/core-4.0.1.tgz",
+        "integrity": "sha512-9v5hRjujn5NXq8o7XFEUgLyAtdr5Iisb4pzM05u3K61IS5q3hP3luWAndk0RkPPLTUFoTbg7Vb84UQ1ZQeajWQ==",
+        "archive_sha512_verified": true,
+        "owned_path": "/workspace/.axiom-validation/ecs-direct-root/node_modules/@sigstore/core"
+      },
+      {
+        "name": "@sigstore/protobuf-specs",
+        "version": "0.5.0",
+        "resolved": "https://registry.npmjs.org/@sigstore/protobuf-specs/-/protobuf-specs-0.5.0.tgz",
+        "integrity": "sha512-MM8XIwUjN2bwvCg1QvrMtbBmpcSHrkhFSCu1D11NyPvDQ25HEc4oG5/OcQfd/Tlf/OxmKWERDj0zGE23jQaMwA==",
+        "archive_sha512_verified": true,
+        "owned_path": "/workspace/.axiom-validation/ecs-direct-root/node_modules/@sigstore/protobuf-specs"
+      },
+      {
+        "name": "@sigstore/verify",
+        "version": "4.1.2",
+        "resolved": "https://registry.npmjs.org/@sigstore/verify/-/verify-4.1.2.tgz",
+        "integrity": "sha512-BfD9eLrz3A/DG58aSgfgZYmIR6V9Yw96QVN/frtu2bEH7ctSTk2TDvHU12un3JsDPBTqTNkqkIkucjxljpOFqQ==",
+        "archive_sha512_verified": true,
+        "owned_path": "/workspace/.axiom-validation/ecs-direct-root/node_modules/@sigstore/verify"
+      }
+    ],
+    "resolvedClosureChecked": 45,
+    "resolvedClosureMismatches": [],
+    "resolvedClosure": [
+      {
+        "name": "@aws-sdk/client-ecr",
+        "version": "3.1049.0",
+        "lockPath": "node_modules/@aws-sdk/client-ecr"
+      },
+      {
+        "name": "@aws-crypto/sha256-browser",
+        "version": "5.2.0",
+        "lockPath": "node_modules/@aws-crypto/sha256-browser"
+      },
+      {
+        "name": "@aws-crypto/sha256-js",
+        "version": "5.2.0",
+        "lockPath": "node_modules/@aws-crypto/sha256-js"
+      },
+      {
+        "name": "@aws-crypto/util",
+        "version": "5.2.0",
+        "lockPath": "node_modules/@aws-crypto/util"
+      },
+      {
+        "name": "@aws-sdk/types",
+        "version": "3.973.9",
+        "lockPath": "node_modules/@aws-sdk/types"
+      },
+      {
+        "name": "@smithy/types",
+        "version": "4.19.0",
+        "lockPath": "node_modules/@smithy/types"
+      },
+      {
+        "name": "tslib",
+        "version": "2.8.1",
+        "lockPath": "node_modules/tslib"
+      },
+      {
+        "name": "@smithy/util-utf8",
+        "version": "2.3.0",
+        "lockPath": "node_modules/@aws-crypto/util/node_modules/@smithy/util-utf8"
+      },
+      {
+        "name": "@smithy/util-buffer-from",
+        "version": "2.2.0",
+        "lockPath": "node_modules/@aws-crypto/util/node_modules/@smithy/util-buffer-from"
+      },
+      {
+        "name": "@smithy/is-array-buffer",
+        "version": "2.2.0",
+        "lockPath": "node_modules/@aws-crypto/util/node_modules/@smithy/is-array-buffer"
+      },
+      {
+        "name": "@aws-crypto/supports-web-crypto",
+        "version": "5.2.0",
+        "lockPath": "node_modules/@aws-crypto/supports-web-crypto"
+      },
+      {
+        "name": "@aws-sdk/util-locate-window",
+        "version": "3.965.4",
+        "lockPath": "node_modules/@aws-sdk/util-locate-window"
+      },
+      {
+        "name": "@smithy/util-utf8",
+        "version": "2.3.0",
+        "lockPath": "node_modules/@aws-crypto/sha256-browser/node_modules/@smithy/util-utf8"
+      },
+      {
+        "name": "@smithy/util-buffer-from",
+        "version": "2.2.0",
+        "lockPath": "node_modules/@aws-crypto/sha256-browser/node_modules/@smithy/util-buffer-from"
+      },
+      {
+        "name": "@smithy/is-array-buffer",
+        "version": "2.2.0",
+        "lockPath": "node_modules/@aws-crypto/sha256-browser/node_modules/@smithy/is-array-buffer"
+      },
+      {
+        "name": "@aws-sdk/core",
+        "version": "3.974.13",
+        "lockPath": "node_modules/@aws-sdk/core"
+      },
+      {
+        "name": "@aws-sdk/xml-builder",
+        "version": "3.972.25",
+        "lockPath": "node_modules/@aws-sdk/xml-builder"
+      },
+      {
+        "name": "@nodable/entities",
+        "version": "2.1.0",
+        "lockPath": "node_modules/@nodable/entities"
+      },
+      {
+        "name": "fast-xml-parser",
+        "version": "5.7.3",
+        "lockPath": "node_modules/fast-xml-parser"
+      },
+      {
+        "name": "fast-xml-builder",
+        "version": "1.2.0",
+        "lockPath": "node_modules/fast-xml-builder"
+      },
+      {
+        "name": "path-expression-matcher",
+        "version": "1.5.0",
+        "lockPath": "node_modules/path-expression-matcher"
+      },
+      {
+        "name": "xml-naming",
+        "version": "0.1.0",
+        "lockPath": "node_modules/xml-naming"
+      },
+      {
+        "name": "strnum",
+        "version": "2.3.0",
+        "lockPath": "node_modules/strnum"
+      },
+      {
+        "name": "@aws/lambda-invoke-store",
+        "version": "0.2.3",
+        "lockPath": "node_modules/@aws/lambda-invoke-store"
+      },
+      {
+        "name": "@smithy/core",
+        "version": "3.35.0",
+        "lockPath": "node_modules/@smithy/core"
+      },
+      {
+        "name": "@smithy/signature-v4",
+        "version": "5.4.3",
+        "lockPath": "node_modules/@smithy/signature-v4"
+      },
+      {
+        "name": "bowser",
+        "version": "2.14.1",
+        "lockPath": "node_modules/bowser"
+      },
+      {
+        "name": "@aws-sdk/credential-provider-node",
+        "version": "3.972.43",
+        "lockPath": "node_modules/@aws-sdk/credential-provider-node"
+      },
+      {
+        "name": "@aws-sdk/credential-provider-env",
+        "version": "3.972.38",
+        "lockPath": "node_modules/@aws-sdk/credential-provider-env"
+      },
+      {
+        "name": "@aws-sdk/credential-provider-http",
+        "version": "3.972.40",
+        "lockPath": "node_modules/@aws-sdk/credential-provider-http"
+      },
+      {
+        "name": "@smithy/fetch-http-handler",
+        "version": "5.4.3",
+        "lockPath": "node_modules/@smithy/fetch-http-handler"
+      },
+      {
+        "name": "@smithy/node-http-handler",
+        "version": "4.7.3",
+        "lockPath": "node_modules/@smithy/node-http-handler"
+      },
+      {
+        "name": "@aws-sdk/credential-provider-ini",
+        "version": "3.972.42",
+        "lockPath": "node_modules/@aws-sdk/credential-provider-ini"
+      },
+      {
+        "name": "@aws-sdk/credential-provider-login",
+        "version": "3.972.42",
+        "lockPath": "node_modules/@aws-sdk/credential-provider-login"
+      },
+      {
+        "name": "@aws-sdk/nested-clients",
+        "version": "3.997.10",
+        "lockPath": "node_modules/@aws-sdk/nested-clients"
+      },
+      {
+        "name": "@aws-sdk/signature-v4-multi-region",
+        "version": "3.996.28",
+        "lockPath": "node_modules/@aws-sdk/signature-v4-multi-region"
+      },
+      {
+        "name": "@aws-sdk/credential-provider-process",
+        "version": "3.972.38",
+        "lockPath": "node_modules/@aws-sdk/credential-provider-process"
+      },
+      {
+        "name": "@aws-sdk/credential-provider-sso",
+        "version": "3.972.42",
+        "lockPath": "node_modules/@aws-sdk/credential-provider-sso"
+      },
+      {
+        "name": "@aws-sdk/token-providers",
+        "version": "3.1049.0",
+        "lockPath": "node_modules/@aws-sdk/token-providers"
+      },
+      {
+        "name": "@aws-sdk/credential-provider-web-identity",
+        "version": "3.972.42",
+        "lockPath": "node_modules/@aws-sdk/credential-provider-web-identity"
+      },
+      {
+        "name": "@smithy/credential-provider-imds",
+        "version": "4.3.3",
+        "lockPath": "node_modules/@smithy/credential-provider-imds"
+      },
+      {
+        "name": "@sigstore/verify",
+        "version": "4.1.2",
+        "lockPath": "node_modules/@sigstore/verify"
+      },
+      {
+        "name": "@sigstore/bundle",
+        "version": "5.0.0",
+        "lockPath": "node_modules/@sigstore/bundle"
+      },
+      {
+        "name": "@sigstore/protobuf-specs",
+        "version": "0.5.0",
+        "lockPath": "node_modules/@sigstore/protobuf-specs"
+      },
+      {
+        "name": "@sigstore/core",
+        "version": "4.0.1",
+        "lockPath": "node_modules/@sigstore/core"
+      }
+    ],
+    "qualification": "Restored protobuf-specs is exact locked 0.5.0. Historical 0.5.2 cache evidence is separate; this is not a complete clean-install CI result."
+  },
+  "cleanup": {
+    "ownedRuntimeProcessesRemaining": 0,
+    "ownedCommercialContainersRemaining": 0,
+    "ownedTemporaryFontDirectoriesRemaining": 0,
+    "ownedNextGeneratedOutput": "70 MiB inert output retained; no shared cache removed"
+  },
+  "remainingGates": [
+    "Coordinator full billing/default regression, desktop checks and exact-head CI before push/merge.",
+    "Hosted test Checkout/payment/webhook and managed proxy acceptance require separate authorized provider gate.",
+    "Service periods starting mid-month, prorations/discounts/credits/customer-balance/manual or partial collection and plan/seat changes remain unsupported."
+  ]
+}
