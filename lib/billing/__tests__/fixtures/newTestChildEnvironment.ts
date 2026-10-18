@@ -1,4 +1,7 @@
-import { isAbsolute } from "node:path";
+import { dirname, isAbsolute, resolve } from "node:path";
+import { createRequire } from "node:module";
+import { createHash } from "node:crypto";
+import { readFileSync, realpathSync } from "node:fs";
 
 const passthrough = [
   "PATH", "HOME", "TMPDIR", "TMP", "TEMP", "LANG", "LC_ALL",
@@ -7,6 +10,20 @@ const passthrough = [
 ] as const;
 const heapOnly = /^--max[-_]old[-_]space[-_]size=[1-9][0-9]*$/;
 function unsupported(): never { throw new Error("owned_test_child_options_unsupported"); }
+function trustedWarningPreload(): string {
+  try {
+    const require = createRequire(import.meta.url);
+    const pkg = realpathSync(require.resolve("vitest/package.json"));
+    const installed = JSON.parse(readFileSync(pkg, "utf8")) as { version?: unknown };
+    const lock = JSON.parse(readFileSync(new URL("../../../../package-lock.json", import.meta.url), "utf8")) as { packages?: Record<string, { version?: unknown }> };
+    const preload = realpathSync(resolve(dirname(pkg), "suppress-warnings.cjs"));
+    // Explicitly reviewed installed/locked framework code, not an arbitrary
+    // caller-selected preload or a basename-based guard exception.
+    if (installed.version !== "4.1.11" || lock.packages?.["node_modules/vitest"]?.version !== installed.version
+      || createHash("sha256").update(readFileSync(preload)).digest("hex") !== "a5012da3d2027007781baecda154d343d8c7ad2327b79bec65b1b60a41f42dd1") unsupported();
+    return preload;
+  } catch { return unsupported(); }
+}
 /** Internal owned-fixture launcher only. Copy managed transport selectors
  * opaquely; never remove inherited preloads/guards in order to start a child.
  * Unsupported Node/trust configuration refuses launch, without echoing values.
@@ -18,10 +35,16 @@ export function newTestChildEnvironment(inherited: Readonly<Record<string, strin
   if (["NODE_TLS_REJECT_UNAUTHORIZED", "OPENSSL_CONF"].some(key => Object.prototype.hasOwnProperty.call(inherited, key))) unsupported();
   const nodeOptions = inherited.NODE_OPTIONS;
   if (nodeOptions?.trim() && !heapOnly.test(nodeOptions.trim())) unsupported();
-  const cliHeap: string[] = [];
+  const cliHeap: string[] = []; const framework: string[] = [];
   for (let i = 0; i < execArgv.length; i++) {
     const option = execArgv[i];
     if (heapOnly.test(option)) { cliHeap.push(option); continue; }
+    if (option === "--experimental-import-meta-resolve") { framework.push(option); continue; }
+    if (option === "--require") {
+      const trusted = trustedWarningPreload();
+      if (execArgv[i + 1] !== trusted) unsupported();
+      framework.push("--require=" + JSON.stringify(trusted)); i++; continue;
+    }
     // Harmless Vitest worker export conditions are not child application guards.
     if (/^--conditions=(node|development)$/.test(option)) continue;
     if (option === "--conditions" && ["node", "development"].includes(execArgv[i + 1])) { i++; continue; }
@@ -32,9 +55,10 @@ export function newTestChildEnvironment(inherited: Readonly<Record<string, strin
     || origin.protocol !== "http:" || origin.hostname !== "127.0.0.1" || !origin.port || origin.pathname !== "/" || origin.username || origin.password || origin.search || origin.hash
     || !isAbsolute(fixture.fontResponses) || !fixture.runtimeId || !fixture.accountId || !fixture.organizationId || !fixture.authSecret) throw new Error("owned_test_child_scope_required");
   const inheritedSelectors = Object.fromEntries(passthrough.filter(key => typeof inherited[key] === "string").map(key => [key, inherited[key]]));
-  const preservedOptions = [nodeOptions, ...cliHeap].filter(value => value !== undefined && value !== "").join(" ");
+  const heapOptions = [nodeOptions, ...cliHeap].filter(value => value !== undefined && value !== "").join(" ");
+  const preservedOptions = [heapOptions.trim() ? heapOptions : "--max-old-space-size=3072", ...framework].join(" ");
   return {
-    ...inheritedSelectors, NODE_ENV: "development", NODE_OPTIONS: preservedOptions.trim() ? preservedOptions : "--max-old-space-size=3072",
+    ...inheritedSelectors, NODE_ENV: "development", NODE_OPTIONS: preservedOptions,
     NEXT_TELEMETRY_DISABLED: "1", NEXT_FONT_GOOGLE_MOCKED_RESPONSES: fixture.fontResponses,
     DATABASE_URL: fixture.databaseUrl, DIRECT_URL: fixture.databaseUrl, NEXTAUTH_URL: fixture.appOrigin, NEXTAUTH_SECRET: fixture.authSecret,
     AXIOM_ISOLATED_PUBLIC_TEST_RUNTIME: "true", AXIOM_ISOLATED_TEST_RUNTIME_ID: fixture.runtimeId,

@@ -225,8 +225,8 @@ shared Prisma generation, hosted checkout or managed-proxy compatibility proof
 has run for this correction. Whole-web compilation and exact-source owned
 acceptance follow the independent scoped reviews and main integration.
 
-Integrated main at 579ae03a passed both scoped reviews but whole-web compilation
-reported narrowing, Next ProcessEnv augmentation and SDK excess-property errors.
+The scoped-reviewed candidate was integrated with main at 579ae03a; whole-web
+compilation reported narrowing, Next ProcessEnv augmentation and SDK excess-property errors.
 The correction makes never-returning guards explicit function declarations,
 retains the runtime Free exclusion before catalog matching, explicitly guards
 nullable line details, accepts a readonly partial inherited environment domain,
@@ -235,3 +235,35 @@ suppression or weakened billing check is introduced. A targeted no-emit TypeScri
 program including next-env augmentation now exits 0; 317 focused tests pass with
 8 owned cases skipped, and changed-source lint/whitespace checks pass. This is
 not a whole-web compilation or owned runtime acceptance result.
+
+
+## Exact Vitest worker launcher correction (2026-10-18)
+
+Whole-web compilation passed at b139ca02. Seven owned PostgreSQL cases passed
+on that source; the eighth HTTP case refused launch before Next started because
+installed Vitest adds `--experimental-import-meta-resolve` and an explicit
+warning preload to its worker. That run does not establish HTTP acceptance for
+paid coverage. The previous temporary run log did not survive the execution
+environment restart; the earlier reported database outcome stays historical.
+
+The fixture-only launcher now retains the exact built-in option and trusted
+warning preload in the child NODE_OPTIONS, rather than dropping either. The
+preload is derived from locally installed Vitest, canonicalized by realpath,
+matched against the repository-locked 4.1.11 version, and checked against reviewed
+source SHA256 `a5012da3d2027007781baecda154d343d8c7ad2327b79bec65b1b60a41f42dd1`.
+Any other require/import/loader/guard/trust option, alternate path or modified
+framework source/version refuses launch. Existing heap-only handling and known
+node/development condition handling are retained. This is an internal test
+launcher exception; no production or provider boundary changes.
+
+The actual worker-argv regression reproduced RED before this correction. Now
+21 focused launcher cases pass, including a literal local Node child with the
+trusted preload actually loaded, the built-in and heap options retained, managed
+proxy selector preserved, absolute provider denial true and no Stripe key.
+Substituted source/installed-version/lock-version and alternate/extra preload
+cases all deny. The subprocess roundtrip passed under narrowly approved local
+subprocess access; normal sandbox execution reported EPERM and was not waived.
+Targeted no-emit types with Next augmentation, changed-fixture lint and whitespace
+checks pass. No whole-web compiler, PostgreSQL or Next acceptance was rerun for
+this correction. Freeze and scoped security review precede the next owned run;
+hosted Stripe payment and managed proxy compatibility remain unverified.
