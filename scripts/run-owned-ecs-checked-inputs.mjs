@@ -7,6 +7,7 @@ import { runOwnedLocalAuthHttp } from "./run-owned-local-auth-http.mjs";
 import { validateLocalAuthHttpTarget, assertNoRuntimeDotenv, assertCommittedApplicationSource } from "./rehearse-local-auth-http.mjs";
 import { startOwnedEcsCheckedInputWire, ECS_WIRE } from "./fixtures/ownedEcsCheckedInputWire.mjs";
 import diagnostics from "./fixtures/ecsCheckedInputDiagnostics.cjs";
+import completionProtocol from "./fixtures/ownedEcsCompletion.cjs";
 const root = dirname(dirname(fileURLToPath(import.meta.url)));
 const opaqueEnvironment = ["PATH", "TMPDIR", "LANG", "LC_ALL", "HTTP_PROXY", "HTTPS_PROXY", "ALL_PROXY", "NO_PROXY", "http_proxy", "https_proxy", "all_proxy", "no_proxy", "NODE_EXTRA_CA_CERTS", "SSL_CERT_FILE", "SSL_CERT_DIR", "CODEX_PROXY_CERT"];
 export function ownedEcsBaseEnvironment(env) {
@@ -31,7 +32,7 @@ export async function runOwnedEcsCheckedInputs(env) {
   const base = ownedEcsBaseEnvironment(env), diagnostic = diagnostics.createDiagnostics("owner", null);
   const phase = (stage, values = {}) => { diagnostic.update({ ...values, stage }); diagnostic.write(); };
   phase("validating_source");
-  let sourceCommit;
+  let sourceCommit, activeCompletion;
   try { assertNoRuntimeDotenv(root); sourceCommit = assertCommittedApplicationSource(root); }
   catch (error) { diagnostic.fail(error); diagnostic.write(); throw error; }
   // Bind once after the existing committed-source check, without serializing any source content.
@@ -45,7 +46,13 @@ export async function runOwnedEcsCheckedInputs(env) {
       const keys = generateKeyPairSync("rsa", { modulusLength: 2048, publicKeyEncoding: { type: "spki", format: "pem" }, privateKeyEncoding: { type: "pkcs8", format: "pem" } });
       const proof = randomBytes(16).toString("hex"), wire = await startOwnedEcsCheckedInputWire({ proof, publicKey: keys.publicKey });
       diagnostic.update({ cleanupWire: "pending", cleanupChild: "not_created" }); diagnostic.write();
-      let child, exited = false, childClosed, report, output = "", bytes = 0, lastControlId = 0;
+      const completion = completionProtocol.createCompletionReceiver({ proof, sourceCommit }); activeCompletion = completion;
+      let child, exited = false, childClosed, closeCheck, report, lastControlId = 0, pendingControls = 0;
+      async function requireChildClose() {
+        if (!childClosed) return;
+        if (!closeCheck) closeCheck = (async () => { let timer; try { await Promise.race([childClosed, new Promise((_, reject) => { timer = setTimeout(() => reject(new Error("owned_ecs_child_cleanup_unverified")), 3000); })]); } finally { clearTimeout(timer); } })();
+        return closeCheck;
+      }
       try {
         // No query/reset against an arbitrary target: parent created this URL/container just above.
         const schemaEnvironment = { ...base, DATABASE_URL: databaseUrl, DIRECT_URL: databaseUrl, PRISMA_HIDE_UPDATE_MESSAGE: "true", CHECKPOINT_DISABLE: "1" };
@@ -62,33 +69,54 @@ export async function runOwnedEcsCheckedInputs(env) {
         const probe = fileURLToPath(new URL("./fixtures/ecsCheckedInputSourceProbe.cjs", import.meta.url));
         child = spawn(process.execPath, ["--conditions=react-server", probe], { cwd: root, env: childEnv, detached: true, stdio: ["ignore", "pipe", "pipe", "ipc"] });
         diagnostic.update({ cleanupChild: "pending" }); diagnostic.write();
-        childClosed = new Promise(resolve => child.once("close", () => { exited = true; resolve(); }));
+        childClosed = new Promise(resolve => child.once("close", () => { exited = true; completion.close(); resolve(); }));
         wire.bindProcess(child.pid); phase("child_running");
         const stop = () => { if (child && !exited) { try { process.kill(-child.pid, "SIGKILL"); } catch (error) { if (error.code !== "ESRCH") throw new Error("owned_ecs_child_cleanup_failed"); } } };
         controller.signal.addEventListener("abort", stop, { once: true });
-        child.stdout.on("data", chunk => { bytes += chunk.length; if (bytes > 128 * 1024) { controller.abort(); return; } output += chunk; });
-        child.stderr.on("data", chunk => { bytes += chunk.length; if (bytes > 128 * 1024) controller.abort(); }); // Never echo raw child/provider errors.
+        const failProtocol = reason => {
+          try { completion.fail(reason); }
+          catch (error) { phase(completion.stage()); diagnostic.fail(error); diagnostic.write(); controller.abort(); }
+        };
+        const observe = chunk => { try { completion.observeBytes(chunk.length); } catch { failProtocol("byte_limit"); } };
+        child.stdout.on("data", observe); child.stderr.on("data", observe); // Count and discard all raw output; never parse/log it.
+        function reply(value) {
+          try { if (!child.connected) { failProtocol("disconnected"); return; } child.send(value, error => { if (error) failProtocol("send_failed"); }); }
+          catch { failProtocol("send_failed"); }
+        }
         child.on("message", async message => {
-          if (!message || message.kind !== "owned_ecs_control" || message.proof !== proof || !Number.isSafeInteger(message.id) || message.id !== lastControlId + 1) { controller.abort(); return; }
-          lastControlId = message.id;
-          try { const result = await wire.control(message); if (child.connected) child.send({ kind: "owned_ecs_control_reply", id: message.id, ok: true, result }, () => {}); }
-          catch { if (child.connected) child.send({ kind: "owned_ecs_control_reply", id: message.id, ok: false }, () => {}); }
+          try { completion.assertCanReceive(); } catch { failProtocol("terminal_message"); return; }
+          if (message?.command === "complete") {
+            try {
+              completion.accept(message, lastControlId + 1, pendingControls); lastControlId = message.id;
+              phase("receipt_wait_close"); reply({ kind: "owned_ecs_completion_ack", proof, sourceCommit, id: message.id, ok: true });
+            } catch { failProtocol("protocol"); }
+            return;
+          }
+          if (!message || message.kind !== "owned_ecs_control" || message.proof !== proof || !Number.isSafeInteger(message.id) || message.id !== lastControlId + 1) { failProtocol("protocol"); return; }
+          lastControlId = message.id; pendingControls++;
+          try { const result = await wire.control(message); reply({ kind: "owned_ecs_control_reply", id: message.id, ok: true, result }); }
+          catch { failProtocol("protocol"); }
+          finally { pendingControls--; }
         });
-        try { const status = await new Promise((resolve, reject) => { child.once("error", reject); child.once("exit", code => { exited = true; resolve(code); }); }); assert.equal(status, 0, "owned_ecs_source_probe_failed"); controller.signal.throwIfAborted(); }
-        finally { controller.signal.removeEventListener("abort", stop); stop(); }
-        phase("receipt_validation");
-        report = JSON.parse(output); assert.equal(report.kind, "owned_ecs_checked_inputs"); assert.equal(report.sourceCommit, sourceCommit);
+        try {
+          const status = await new Promise((resolve, reject) => { child.once("error", reject); child.once("exit", (code, signal) => { exited = true; completion.exit(code, signal); resolve(code); }); });
+          assert.equal(status, 0, "owned_ecs_source_probe_failed"); controller.signal.throwIfAborted();
+          phase("receipt_wait_close");
+          await requireChildClose();
+          controller.signal.throwIfAborted(); phase("receipt_validation"); report = completion.result({ aborted: controller.signal.aborted });
+        } finally { controller.signal.removeEventListener("abort", stop); stop(); }
         phase("source_validation");
         assert.equal(assertCommittedApplicationSource(root), sourceCommit, "owned_ecs_source_changed");
         phase("wire_validation");
         const transport = wire.summary(); assert.equal(transport.violation, false); assert.equal(transport.pendingResponses, 0); assert.equal(transport.guardProcesses, 1);
+        completion.assertHealthy(); controller.signal.throwIfAborted();
         return { ...report, transport, productionProviderCalls: false, schema: "owned_current_schema_not_migration_acceptance" };
       } catch (error) { diagnostic.fail(error); diagnostic.write(); throw error; }
       finally {
         try { diagnostic.wireSummary(wire.summary()); diagnostic.write(); } catch { /* Observation must not interrupt owned cleanup. */ }
         try {
           if (child && !exited) { try { process.kill(-child.pid, "SIGKILL"); } catch (error) { if (error.code !== "ESRCH") throw new Error("owned_ecs_child_cleanup_unverified"); } }
-          if (childClosed) { let timer; try { await Promise.race([childClosed, new Promise((_, reject) => { timer = setTimeout(() => reject(new Error("owned_ecs_child_cleanup_unverified")), 3000); })]); } finally { clearTimeout(timer); } }
+          await requireChildClose();
           diagnostic.update({ cleanupChild: childClosed ? "verified" : "not_created" }); diagnostic.write();
         } catch (error) { diagnostic.fail(error); diagnostic.update({ cleanupChild: "unverified" }); diagnostic.write(); throw error; }
         finally {
@@ -97,6 +125,7 @@ export async function runOwnedEcsCheckedInputs(env) {
         }
       }
     } });
+    activeCompletion.assertHealthy(); controller.signal.throwIfAborted();
     diagnostic.update({ cleanupContainer: result.fixtureCleanup === "owned_disposable_container_removed" ? "verified" : "unobserved", outcome: "completed" }); phase("completed"); return result;
   } catch (error) { diagnostic.fail(error); diagnostic.containerFailure(error); diagnostic.write(); throw error; }
   finally { clearTimeout(deadline); process.removeListener("SIGINT", interrupt); process.removeListener("SIGTERM", interrupt); }

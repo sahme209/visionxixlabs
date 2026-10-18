@@ -4,6 +4,7 @@ const assert = require('node:assert/strict'), fs = require('node:fs'), path = re
 const diagnostic = globalThis[Symbol.for('axiom.owned.ecs.checked-input.diagnostics')];
 function phase(stage, values = {}) { diagnostic?.update({ ...values, stage }); diagnostic?.write(); }
 phase('source_graph_scan');
+const { sendCompletion } = require('./ownedEcsCompletion.cjs');
 const root = path.resolve(__dirname, '../..'), guard = globalThis[Symbol.for('axiom.owned.ecs.checked-input.guard')];
 assert.equal(process.env.AXIOM_OWNED_ECS_CHECKED_INPUTS, '1'); assert.ok(guard && process.send);
 const target = new URL(process.env.DATABASE_URL);
@@ -34,7 +35,7 @@ const pending = new Map(); let commandId = 0;
 process.on('message', message => { if (message?.kind !== 'owned_ecs_control_reply') return; const item = pending.get(message.id); if (!item) return; pending.delete(message.id); clearTimeout(item.timer); if (message.ok) item.resolve(message.result); else item.reject(new Error('owned_ecs_control_rejected')); });
 function control(command, details = {}) { return new Promise((resolve, reject) => { const id = ++commandId, timer = setTimeout(() => { pending.delete(id); reject(new Error('owned_ecs_control_timeout')); }, 7000); pending.set(id, { resolve, reject, timer }); process.send({ kind: 'owned_ecs_control', proof: process.env.AXIOM_OWNED_ECS_PROOF, id, command, ...details }); }); }
 const pause = ms => new Promise(resolve => setTimeout(resolve, ms));
-let client, second, activeCase = 'bootstrap'; const groups = [], mutations = [];
+let client, second, completedReceipt, activeCase = 'bootstrap'; const groups = [], mutations = [];
 async function group(name, action) { activeCase = name; phase('source_case', { caseIndex: groups.length + 1, completedGroups: groups.length }); await action(); groups.push(name); phase('source_case', { caseIndex: groups.length, completedGroups: groups.length }); }
 (async () => {
   await guard.ready; phase('guarded_ready');
@@ -127,13 +128,17 @@ async function group(name, action) { activeCase = name; phase('source_case', { c
   const receipt = { nodeVersion: process.versions.node, installedPackages, dependencyQualification: 'existing_dependency_overlay_clean_lockfile_CI_remains_authoritative', kind: 'owned_ecs_checked_inputs', sourceCommit: process.env.AXIOM_OWNED_ECS_SOURCE_COMMIT, groups, groupCount: groups.length, sourceHashes, rootsBytesSha256: digest(trustedRootBytes), bundleSha256: digest(bundle), workflowSha256: digest(fs.readFileSync(path.join(fixtureDirectory, 'direct-workflow-oci/workflow.yml'))), fixtureProfile: { kind: profile.kind, reviewedAt: profile.reviewedAt, reviewExpiresAt: profile.reviewExpiresAt, trustedRootDigest: profile.trustedRootDigest, bundleOrigin: downloadPolicy[0].origin, qualification: 'explicit_owned_fixture_only_not_production_trust' }, guard: guard.report(), deliberateOwnedDbMutations: mutations, unchangedOperationCounts: beforeCounts,
     sourceOutcome: 'checked_subject_mismatch_not_usable_for_admission', evidenceScope: 'actual_source_native_wire_owned_synthetic_upstream', authentication: 'actual_hmac_and_current_durable_resolver_synthetic_session_not_browser_pairing', githubApp: 'synthetic_env_app_key_real_RS256_and_scoped_mint', database: 'constructor_bound_owned_postgres_not_universal_node_sandbox', notVerified: ['real_aws_or_github', 'genuine_ecr_proof', 'matched_admission', 'public_route_or_browser_pairing', 'aws_enrollment_or_disconnect_service', 'runtime_executor_quota_oidc_voters_health_rollback', 'expiry_inside_final_context_transaction', 'os_or_arbitrary_native_code_sandbox'] };
   diagnostic?.update({ guardDenied: receipt.guard.denied, mappedRequests: receipt.guard.mappedRequests, completedGroups: groups.length }); diagnostic?.write();
-  fs.writeSync(1, JSON.stringify(receipt));
+  completedReceipt = JSON.stringify(receipt);
 })().catch(error => { diagnostic?.fail(error); try { const report = guard.report(); diagnostic?.update({ guardDenied: report.denied, mappedRequests: report.mappedRequests }); } catch { /* Observation cannot replace the source failure. */ } diagnostic?.write(); fs.writeSync(2, 'owned_ecs_source_probe_failed:' + activeCase + '\n'); process.exitCode = 1; }).finally(async () => {
   for (const entry of pending.values()) { clearTimeout(entry.timer); entry.reject(new Error('owned_ecs_probe_closed')); } pending.clear();
   phase('disconnect', { cleanupDatabase: 'pending' });
   try { if (second) await second.$disconnect(); if (client) await client.$disconnect(); phase('disconnect', { cleanupDatabase: 'verified' }); }
   catch (error) { diagnostic?.fail(error); phase('disconnect', { cleanupDatabase: 'unverified' }); throw error; }
   if (priorLoader) require.extensions['.ts'] = priorLoader; else delete require.extensions['.ts'];
+  if (completedReceipt && process.exitCode !== 1) {
+    phase('receipt_delivery');
+    await sendCompletion(process, { kind: 'owned_ecs_control', proof: process.env.AXIOM_OWNED_ECS_PROOF, id: ++commandId, command: 'complete', sourceCommit: process.env.AXIOM_OWNED_ECS_SOURCE_COMMIT, receiptJson: completedReceipt });
+  }
   if (process.connected) process.disconnect();
   diagnostic?.update({ outcome: 'completed' }); diagnostic?.write();
 });
