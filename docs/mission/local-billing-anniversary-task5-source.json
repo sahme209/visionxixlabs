@@ -27,8 +27,10 @@
     },
     {
       "path": "lib/billing/newTestSubscription/allocationPlan.ts",
-      "sha256": "6d63702a2bbfdbfa5d07a5431ab636ab6a375bb1373a11dff3aa0fcb78325897",
-      "unchangedFromProductBase": true
+      "sha256": "bbf78b1e9b0f5684086dbd3a7a717af502025ef44916c75edf445ee87e3a207d",
+      "unchangedFromProductBase": false,
+      "authorizedDifference": "Use existing complete predicate in actual lock statement; all16 args and later postlock/final fences unchanged.",
+      "productBaseSha256": "6d63702a2bbfdbfa5d07a5431ab636ab6a375bb1373a11dff3aa0fcb78325897"
     },
     {
       "path": "lib/billing/newTestSubscription/allocationV2.ts",
@@ -120,7 +122,7 @@
     },
     {
       "path": "lib/billing/__tests__/fixtures/newTestAnniversaryAcceptance.ts",
-      "sha256": "f56c38ab9e9d3c0baa940ac3db9f9378b29a5fc80916914f194dc3fa29ef1322"
+      "sha256": "8c430bab247fc769ef733cb26e3acda2b65a9f74978d6e0b718f5612b9abcecc"
     },
     {
       "path": "lib/billing/__tests__/fixtures/newTestAnniversaryHttp.ts",
@@ -145,6 +147,10 @@
     {
       "path": "lib/billing/__tests__/newTestAllocationStore.test.ts",
       "sha256": "5224d86264aea09ab07527eb5d1a2594d0a9ad03ad243493da43b2ceea3f4c99"
+    },
+    {
+      "path": "lib/billing/__tests__/newTestAllocationAdmission.test.ts",
+      "sha256": "e92468966898e07afc392a1c20f22e7c94548acab91b145f8fba918935e3b93e"
     }
   ],
   "lightCheckLogs": [
@@ -203,6 +209,22 @@
     {
       "path": "/tmp/axiom-anniversary-ddl-source-lint.log",
       "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/tmp/axiom-anniversary-lock-binding-red.log",
+      "sha256": "c73f1a5d0630882d81924971716065a7b4ae5f1f3e0d6ae4f273b9d393bb48ed"
+    },
+    {
+      "path": "/tmp/axiom-anniversary-lock-binding-green.log",
+      "sha256": "e82a5de2bf341adc38b7f06a88ffb0ada50036aa21ff5660738374e85a70badb"
+    },
+    {
+      "path": "/tmp/axiom-anniversary-lock-binding-lint.log",
+      "sha256": "7f5d647a31d5535ae8a569cfaa1b2756e28e428a1404b3f2d2108878acdf1ebc"
+    },
+    {
+      "path": "/tmp/axiom-anniversary-lock-binding-default-skip.log",
+      "sha256": "03fb8af7568a2d7051d9ddd8c25824d304db8accb7d36d95fe326f24ce8c25e1"
     }
   ],
   "ownedCases": {
@@ -212,9 +234,9 @@
     "defaultSkipped": 27
   },
   "pending": [
-    "independent exact DDL syntax source closure",
+    "independent exact lock SQL source closure",
     "fresh whole-web compiler after grant",
-    "actual owned PG parser/financial/Next acceptance after exclusive grant",
+    "actual owned PG parameter/parser/financial/Next acceptance after exclusive grant",
     "full coordinated gates"
   ],
   "unproved": [
@@ -312,5 +334,27 @@
     "postgresParserGreen": false,
     "compilerRetried": false,
     "ownedRuntimeRetried": false
+  },
+  "lockBindingCorrection": {
+    "sourceBase": "ead037e17d32a2ac0049412e35ab62b127bd3ace",
+    "productPath": "lib/billing/newTestSubscription/allocationPlan.ts",
+    "correction": "Existing full predicate replaces identity-only fragment in lock query; same16 args.",
+    "noSendRegressionRed": 1,
+    "focusedGreen": 72,
+    "underlyingRuntimeCauseObserved": false,
+    "postgresAcceptance": false,
+    "compilerRetried": false,
+    "ownedRuntimeRetried": false,
+    "optionalQueryObserverAdded": false,
+    "testOnlyTtlExpectation": {
+      "expectedClosedResult": {
+        "ok": false,
+        "error": "ai_credit_reservation_unavailable"
+      },
+      "existingCurrent400UnknownExpiryAssertionsRetained": true,
+      "explicitNoFinancialMutationNoNewHoldAssertions": true,
+      "runtimeExecuted": false,
+      "genericRefusalProvesSpecificCause": false
+    }
   }
 }

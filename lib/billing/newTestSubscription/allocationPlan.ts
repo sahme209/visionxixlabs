@@ -93,8 +93,8 @@ export async function lockAllocationEnrollmentV2(tx: Prisma.TransactionClient, g
 /** Explicit awaited lock statement before reading DB time. This avoids relying
  * on SQL boolean evaluation order around potentially waiting authority locks. */
 export async function lockAllocationAuthorityV2(tx: Prisma.TransactionClient, g: AllocationGuardV2) {
-  const { sql, identityPredicate, args } = allocationAuthoritySQLV2(g, []);
-  const rows = await tx.$queryRawUnsafe<Array<{ org: string }>>(sql + `SELECT org FROM authority WHERE ${identityPredicate}`, ...args);
+  const { sql, predicate, args } = allocationAuthoritySQLV2(g, []);
+  const rows = await tx.$queryRawUnsafe<Array<{ org: string }>>(sql + `SELECT org FROM authority WHERE ${predicate}`, ...args);
   if (rows.length !== 1) deny();
 }
 export async function reserveAllocationV2(tx: Prisma.TransactionClient, plan: PricingPlan, input: { organizationId: string; idempotencyKey: string; reservedCents: number; correlationId?: string }, reused: boolean) {

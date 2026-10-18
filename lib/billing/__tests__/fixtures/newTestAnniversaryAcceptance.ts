@@ -221,7 +221,12 @@ export function registerAnniversaryAcceptance(harness: AnniversaryAcceptanceHarn
     expect(actual).toMatchObject({ status: "dispatch_unknown", usageEventId: null, expiresAt: ttl.expiresAt, createdAt: ttl.admittedAt });
     expect(await releaseAICreditReservation(db, ttl.f.actor.organizationId, ttl.id)).toBe(false); expect(await ttl.f.claim(ttl.id)).toBe(false);
     expect(await ttl.f.service.previewRemaining(ttl.f.actor)).toMatchObject({ remainingCents: 400 });
-    expect(await ttl.f.store.reserveCredits(ttl.f.actor, { idempotencyKey: `ttl_no_regrant_${fixtureId()}`, reservedCents: 401 }, new Date())).toMatchObject({ ok: false, error: "ai_credit_pool_exhausted" });
+    const beforeDenied = await ttl.f.financial(), deniedKey = `ttl_no_regrant_${fixtureId()}`;
+    expect(await ttl.f.store.reserveCredits(ttl.f.actor, { idempotencyKey: deniedKey, reservedCents: 401 }, new Date())).toEqual({ ok: false, error: "ai_credit_reservation_unavailable" });
+    expect(await ttl.f.financial()).toEqual(beforeDenied);
+    expect(await db.aIUsageReservation.count({ where: { organizationId: ttl.f.actor.organizationId, idempotencyKey: deniedKey } })).toBe(0);
+    // Generic refusal alone does not prove exhaustion. Real current400 preview,
+    // unchanged ledger and the other positive reservations supply that context.
     expect((await db.aIUsageReservation.findUniqueOrThrow({ where: { id: ttl.id } })).status).toBe("dispatch_unknown");
     await ttl.f.direct(ttl.id, 80); expect(await ttl.f.service.previewRemaining(ttl.f.actor)).toMatchObject({ remainingCents: 420 });
   }, 360000);
