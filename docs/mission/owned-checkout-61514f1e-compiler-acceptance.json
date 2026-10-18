@@ -1,0 +1,42 @@
+{
+  "sourceBefore": "61514f1e79e4167c516d40f9a4e19f5ad743c0b8",
+  "sourceAfter": "61514f1e79e4167c516d40f9a4e19f5ad743c0b8",
+  "sourceCleanAfter": true,
+  "invocations": 1,
+  "nativePermission": true,
+  "exitCode": 0,
+  "observedCompleteUtc": "2026-10-18T08:45:36.470720+00:00",
+  "elapsedSecondsUpperBoundAtObservation": 70.4,
+  "heapMiB": 8192,
+  "incremental": false,
+  "sourceBindingFilesVerifiedAfter": 122,
+  "sourceBindingMismatches": [],
+  "runtimeAfter": {
+    "nextOutputAbsent": true,
+    "desktopLinkAbsent": true,
+    "workerPackagingOrServerStarted": false,
+    "databaseOrProviderStarted": false,
+    "privateViteCachesEmpty": true
+  },
+  "qualification": "Elapsed is completion-observation upper bound, not measured process-only runtime/CPU/peak. No retry.",
+  "start": {
+    "path": "/workspace/.axiom-validation/billing-checkout-marker-3rgwi7b2/compiler-start.json",
+    "sha256": "07b344989a2652c6f5ae67b5b4523a79b5cc6f9ee207ad37e2acfc2c1c13458b",
+    "bytes": 1250
+  },
+  "log": {
+    "path": "/workspace/.axiom-validation/billing-checkout-marker-3rgwi7b2/compiler.log",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "bytes": 0
+  },
+  "launcher": {
+    "path": "/workspace/.axiom-validation/billing-checkout-marker-3rgwi7b2/run-web-compiler.py",
+    "sha256": "fecf6b2f84b0ec9ca08f78a7c66dcbb9d20f5f4e4dc243cda06bbdb5d8a784a0",
+    "bytes": 5489
+  },
+  "binding": {
+    "path": "/workspace/.axiom-validation/billing-checkout-marker-3rgwi7b2/compiler-binding.json",
+    "sha256": "0c797e3f7243626840b699a1978be55ecfffeb15aa5a9a378995dc56ffac9820",
+    "bytes": 222325
+  }
+}

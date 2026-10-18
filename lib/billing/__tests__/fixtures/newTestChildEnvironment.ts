@@ -24,7 +24,7 @@ function trustedWarningPreload(): string {
     return preload;
   } catch { return unsupported(); }
 }
-function checkedChildEnvironment(inherited: Readonly<Record<string, string | undefined>>, execArgv: readonly string[]): NodeJS.ProcessEnv {
+export function checkedChildEnvironment(inherited: Readonly<Record<string, string | undefined>>, execArgv: readonly string[]): NodeJS.ProcessEnv {
   if (["NODE_TLS_REJECT_UNAUTHORIZED", "OPENSSL_CONF"].some(key => Object.prototype.hasOwnProperty.call(inherited, key))) unsupported();
   const nodeOptions = inherited.NODE_OPTIONS;
   if (nodeOptions?.trim() && !heapOnly.test(nodeOptions.trim())) unsupported();

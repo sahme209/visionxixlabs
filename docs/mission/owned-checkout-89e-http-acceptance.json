@@ -1,0 +1,195 @@
+{
+  "version": 1,
+  "stage": "actual_owned28_local_http_acceptance",
+  "executedSource": "89e408dcb10bea72d844560ee137331bc50fc2ec",
+  "sourceAfterExecution": "89e408dcb10bea72d844560ee137331bc50fc2ec",
+  "runnerInvocations": 1,
+  "runnerExitCodeObserved": 0,
+  "runnerDurationSeconds": 39.05,
+  "passed": 1,
+  "skipped": 27,
+  "fixedCollectorExitCodeObserved": 0,
+  "receiptMarkerCount": 1,
+  "workerSourceCount": 33,
+  "workerOutputCount": 33,
+  "workerOutputDigest": "c7e71775f088b3e63b70a01f6e447dac6d230256fe8ce799cdd58b298e656b0f",
+  "httpObservations": [
+    {
+      "stage": "next_start",
+      "status": 200
+    },
+    {
+      "stage": "authentication",
+      "status": 200
+    },
+    {
+      "stage": "authentication",
+      "status": 200
+    },
+    {
+      "stage": "pricing",
+      "status": 200
+    },
+    {
+      "stage": "free_read",
+      "status": 200
+    },
+    {
+      "stage": "stale_workspace",
+      "status": 400
+    },
+    {
+      "stage": "checkout",
+      "status": 200
+    },
+    {
+      "stage": "refreshed_status",
+      "status": 200
+    },
+    {
+      "stage": "confirmed_repeat",
+      "status": 409
+    },
+    {
+      "stage": "before_collection",
+      "status": 200
+    },
+    {
+      "stage": "invalid_signature",
+      "status": 401
+    },
+    {
+      "stage": "signed_webhook",
+      "status": 200
+    },
+    {
+      "stage": "paid_read",
+      "status": 200
+    },
+    {
+      "stage": "fresh_replay",
+      "status": 200
+    },
+    {
+      "stage": "unsupported_entrypoints",
+      "status": 503
+    },
+    {
+      "stage": "unsupported_entrypoints",
+      "status": 503
+    }
+  ],
+  "scope": {
+    "syntheticProviderOnly": true,
+    "actualHostedPayment": false,
+    "actualCredentialsSessionAndPricingCheckoutWebhookBillingRead": true,
+    "locallySignedRawWebhook": true,
+    "allowanceReadFreeCents": 200,
+    "allowanceReadPaidCents": 3000,
+    "seats": 3,
+    "noPositiveAIExecution": true,
+    "noOriginal27Rerun": true,
+    "noNewRenewalCancelUpgradeDowngradeOrNativeAcceptanceClaim": true
+  },
+  "sourceProof": {
+    "sourceCleanBefore": true,
+    "initialOutcomeSourceCleanAfter": false,
+    "onlyTransientDirtyPath": "CLAUDE.md",
+    "cause": "Installed Next dev appended standard nextjs-agent-rules block",
+    "exactBeforeBytesRestoredAfterProcessExit": true,
+    "sourceCleanAfterCleanup": true,
+    "executedSourceConfigFilesVerified": 123,
+    "mismatches": [],
+    "actualWholeWebCompilerSource": "bf5f5184a2a375320d7df6002e0653a114b09cfd",
+    "currentWholeWebTypePassClaim": false,
+    "qualification": "Current implementation-only byte projection was independently reviewed with unchanged public types. Final integrated source gates remain required."
+  },
+  "cleanup": {
+    "duringRegisteredGroups": 2,
+    "remainingKnownGroupMembers": 0,
+    "remainingOwnedNodeProcesses": 0,
+    "remainingContainers": 0,
+    "remainingOwnedDirectories": 0,
+    "removedExactNewOwnedPGVolumes": 1,
+    "volumeAbsenceConfirmed": true,
+    "ownNextGeneratedOutputRemoved": true,
+    "nextGeneratedBytesFreed": 70673283,
+    "noSharedDeletionOrPrune": true
+  },
+  "artifacts": [
+    {
+      "path": "/workspace/.axiom-validation/billing-checkout-projection-krpy6fas/owned-http-binding.json",
+      "sha256": "776557a547540ed267191f1688f67e7bb58e0438ec6fe9ca4572446263cece74",
+      "bytes": 389400
+    },
+    {
+      "path": "/workspace/.axiom-validation/billing-checkout-projection-krpy6fas/run-owned-checkout-http.py",
+      "sha256": "fe608d8c48b4df287ae21ffa2c83233297f8bc28d2bb0bb4a60136452d022b91",
+      "bytes": 8729
+    },
+    {
+      "path": "/workspace/.axiom-validation/billing-checkout-projection-krpy6fas/collect-owned-checkout-http.py",
+      "sha256": "b38a166d6e9ca7d8b9abe1b9632f7e114fb533ec65fbad337c9f3dc09133c480",
+      "bytes": 4439
+    },
+    {
+      "path": "/workspace/.axiom-validation/billing-checkout-projection-krpy6fas/owned-http-start.json",
+      "sha256": "9b29c74adc9af55a91467414cf481d9734085f5faad0b3a9614c51d1e8cf0893",
+      "bytes": 1600
+    },
+    {
+      "path": "/workspace/.axiom-validation/billing-checkout-projection-krpy6fas/owned-http.log",
+      "sha256": "da8b83b072601de41e6dca2bc5b94c99d92995588135b3826a3710d0997ba0e7",
+      "bytes": 99270
+    },
+    {
+      "path": "/workspace/.axiom-validation/billing-checkout-projection-krpy6fas/owned-http-receipt.json",
+      "sha256": "96d685c37105266d6604ab22f0c6077678ee4423154db6c91eef623739e48feb",
+      "bytes": 144627
+    },
+    {
+      "path": "/tmp/axiom-owned-checkout-89e-runtime-outcome.json",
+      "sha256": "6db74b4e105d23c8f6b1c60bbf65d6296dd327a96f61082629036ba6b64b6e2c",
+      "bytes": 2654
+    },
+    {
+      "path": "/tmp/axiom-owned-checkout-89e-runtime-during-1.json",
+      "sha256": "d7bbff2feda48e89388ad4e34d29d08e28cb0adb77f6f95b94268b32e7b41c41",
+      "bytes": 2109
+    },
+    {
+      "path": "/tmp/axiom-owned-checkout-89e-runtime-cleanup-inventory.json",
+      "sha256": "a21df6ddbdb462b16831a1400ae74c986b57fa6ed908d778b33eaa28e760da7b",
+      "bytes": 1027
+    },
+    {
+      "path": "/tmp/axiom-owned-checkout-89e-runtime-storage-cleanup.json",
+      "sha256": "8b0d66697be9b505323590de1e0c62d0d5fe399295ade28f9c4dfc17f7d41913",
+      "bytes": 499
+    },
+    {
+      "path": "/tmp/axiom-owned-checkout-89e-generated-source-cleanup.json",
+      "sha256": "72c6600f100aff31550b281a036aa494930b870be25e65c66ac9b93cc9b28553",
+      "bytes": 772
+    },
+    {
+      "path": "/tmp/axiom-owned-checkout-89e-generated-CLAUDE.md",
+      "sha256": "dc3aa3e350ad6714ed59e13f41465742063f73f3c55c5ffa17ca2332c6ea6eb0",
+      "bytes": 3850
+    }
+  ],
+  "workerManifest": {
+    "path": "docs/mission/owned-checkout-worker-source.json",
+    "sha256": "f0db7eaa504e96e2708f6974236bbfd2d594bd5aa1d69977ddce5307ab08eeea"
+  },
+  "historicalFailureReceipt": {
+    "path": "docs/mission/owned-checkout-bf5f-owned-attempt.json",
+    "sha256": "f29148f1723b6f106b07a42c2c923c9b85a7cefb9bcc99e44c6b585dfd97b087"
+  },
+  "qualification": [
+    "Private collector verifies metadata/source/output consistency only; runner exit and cleanup are separate actual tool/inventory evidence.",
+    "The57.2s/92.8s observation timings in prior/this raw outcome are delayed observation upper bounds; actual runner durations remain9.61s/39.05s separately.",
+    "Actual Stripe TEST catalog/key/managed egress/proxy compatibility and genuine hosted collection/delivery remain unverified. No real Stripe/provider mutation or public/live billing activation occurred.",
+    "This is one actual local HTTP composition acceptance, not proof of full customer billing lifecycle, native access or original27 success at this source."
+  ]
+}

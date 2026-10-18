@@ -1,3 +1,4 @@
+import { ownedCheckoutHttpAllowed } from "../ownedCheckoutBridge/configuration";
 /** Server-selected, default-off local application lane. No request value can
  * select this lane. Enabling it with an invalid target fails closed. */
 export function isolatedRuntimeRequested(): boolean {
@@ -9,6 +10,7 @@ export function denyIsolatedExternalIO(): void {
 }
 export function isolatedHttpAllowed(path: string, method: string): boolean {
   if (!isolatedRuntimeRequested()) return true;
+  if (ownedCheckoutHttpAllowed(path, method)) return true;
   const auth: Record<string, readonly string[]> = {
     "/api/auth/csrf": ["GET"], "/api/auth/session": ["GET"], "/api/auth/providers": ["GET"],
     "/api/auth/callback/credentials": ["POST"], "/api/auth/signout": ["GET", "POST"],

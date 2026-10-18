@@ -1,0 +1,596 @@
+{
+  "version": 1,
+  "stage": "source_only_typing_and_managed_execution_control_amendment",
+  "priorCompilerSource": "c08ade0e3e6ed8799350c60da1a5444d3d4fab2a",
+  "priorCompilerReceipt": {
+    "path": "docs/mission/owned-checkout-c08-compiler-attempt.json",
+    "sha256": "f9f1eb2583084da74692016df6366ce6834f76b9f5b7d0c89625c79e10c5c2a5",
+    "bytes": 8541
+  },
+  "receiptParent": "b0efb2b532387a1400c8b583413de14c9d912681",
+  "changedSource": [
+    {
+      "path": "lib/billing/__tests__/fixtures/ownedCheckoutHttpAcceptance.ts",
+      "sha256": "19f5072418314770a6b477b9f1e906cd583062da92f5a695727d04efff00b214",
+      "bytes": 10572
+    },
+    {
+      "path": "lib/billing/__tests__/fixtures/ownedCheckoutLaunchPolicy.ts",
+      "sha256": "e38f87b05f39ac3298d027ff89255eb496b04357bbe16314de8a922f6b8eabaf",
+      "bytes": 5895
+    },
+    {
+      "path": "lib/billing/__tests__/fixtures/ownedCheckoutWorkerBundle.ts",
+      "sha256": "4fe9cc077a62c366ce0acd438e6dae13e87069d1c2f963c3a4fdce516b2afe38",
+      "bytes": 14802
+    },
+    {
+      "path": "lib/billing/__tests__/fixtures/ownedCheckoutWorkerSupervisor.ts",
+      "sha256": "5e4c14f0aeba1b19658e148f957ca8d5566501d94b7911e2c968ad106ce69a74",
+      "bytes": 7198
+    },
+    {
+      "path": "lib/billing/__tests__/newTestSubscriptionService.postgres.test.ts",
+      "sha256": "dede36cdd2f8a1ee313f842730bbfef7ac13fab85310e943ae214be5e05c7e02",
+      "bytes": 57139
+    },
+    {
+      "path": "lib/billing/__tests__/ownedCheckoutBundleRecipe.test.ts",
+      "sha256": "5bd0f5d950e1fe9abe3b38c52160025468b3d025801ebacd578b040588c6083e",
+      "bytes": 5178
+    },
+    {
+      "path": "lib/billing/__tests__/ownedCheckoutLaunchPolicy.test.ts",
+      "sha256": "f0e575b3233a7512122b5d86e5e9074763935611f5f1123e5e6ddce932528f61",
+      "bytes": 9405
+    },
+    {
+      "path": "lib/billing/__tests__/ownedCheckoutSupervisor.test.ts",
+      "sha256": "25c4542bd0b4b3cd10c1a6d1dd51e5d8dcd8d20fbbf81bea90774c8f02414cf2",
+      "bytes": 4184
+    },
+    {
+      "path": "lib/demo/demoScenarios.ts",
+      "sha256": "cf4fc3af6102018fe2c7b3b3257f44270e6148044cbbf91a960033ca7e6fabd8",
+      "bytes": 60290
+    }
+  ],
+  "protectedUnchangedFromC08": [
+    {
+      "path": "lib/auth.ts",
+      "sha256": "64c3894c6d97d525367890d8b95f3df556a5574f23700125e2ad901e07d60c78",
+      "bytes": 16019
+    },
+    {
+      "path": "lib/auth/currentContext.ts",
+      "sha256": "f477cacc20e59f99230e0ad41a13af4827497a17575ccd8329da9055ee52d78b",
+      "bytes": 7454
+    },
+    {
+      "path": "lib/auth/emailVerification.ts",
+      "sha256": "4750c03ac9a2a2baab37dd57a94ca9980103267eb36a37dc05a8c9a155a31522",
+      "bytes": 1820
+    },
+    {
+      "path": "lib/auth/ensurePersonalWorkspaceMembership.ts",
+      "sha256": "c244260a49b6bc33c2c9bca3258f8aaaa2fa9ecce32f5c11b1ed5dce0b859edf",
+      "bytes": 845
+    },
+    {
+      "path": "lib/auth/platformAdmin.ts",
+      "sha256": "fbcd20110e9bf602dc018a159c2ba496bbc41a275c17a39d741b497d09d16f16",
+      "bytes": 3621
+    },
+    {
+      "path": "lib/auth/requestOrigin.ts",
+      "sha256": "3f017a62ba6717b63a751b459e76f1c6460a0c63dfcf0336ea41a9ba573d49fa",
+      "bytes": 421
+    },
+    {
+      "path": "lib/auth/verificationCallback.ts",
+      "sha256": "b73fe56f40af921b65ba568af8aa180c8ab8da9164bbb487198e0e24e6c4c230",
+      "bytes": 1342
+    },
+    {
+      "path": "lib/auth/workspaceId.ts",
+      "sha256": "e491b26714185ac45f3be53e02174077a39ca67d12590233aa715e365d868589",
+      "bytes": 953
+    },
+    {
+      "path": "lib/billing/addOnCatalog.ts",
+      "sha256": "4dfba282d226e608c118502650b190875bccdb82ebe1557cf210abb6dfe2b149",
+      "bytes": 4398
+    },
+    {
+      "path": "lib/billing/aiBillingMargin.ts",
+      "sha256": "3549ac55c37ffa191632a43df6181d08b6c602133f5b2a41fb381fbbcf6592ba",
+      "bytes": 1152
+    },
+    {
+      "path": "lib/billing/aiCallCostAttribution.ts",
+      "sha256": "77ee3de1d3a9d96b75681d1bfef9328a6e250338ce964b7573562441b64ee969",
+      "bytes": 5284
+    },
+    {
+      "path": "lib/billing/aiCreditFulfillment.ts",
+      "sha256": "e2ea638f918f26e17f7a308ec421f517c0cc840764c4b648b38b783e10ebeb36",
+      "bytes": 4953
+    },
+    {
+      "path": "lib/billing/aiCreditReservation.ts",
+      "sha256": "5107e0c7039aa66d08117985507549a681df3ee39a987c6c5f053fb5f9cbf69c",
+      "bytes": 8285
+    },
+    {
+      "path": "lib/billing/aiUsageSettlementBinding.ts",
+      "sha256": "89671082a9ff10e645d0f7a2abd5b6b1e47f45adb1459602f2f61d97803c5bd6",
+      "bytes": 631
+    },
+    {
+      "path": "lib/billing/aiUsageSettlementCandidates.ts",
+      "sha256": "3e8cd97a7c54be034b773a6fa6b4aff947f421736786a4375f4ef320385cabf9",
+      "bytes": 2656
+    },
+    {
+      "path": "lib/billing/aiUsageSettlementRetryPolicy.ts",
+      "sha256": "2fabf47c0b53c3057a654889b8df28b5745222fdabf97033859dcf8d1a5d618b",
+      "bytes": 843
+    },
+    {
+      "path": "lib/billing/applyAddOnsToEntitlements.ts",
+      "sha256": "0e01a67dc5185ad4a57a6c16db77110d5338a49fa32a4fc9513ec3f3897d0b31",
+      "bytes": 2720
+    },
+    {
+      "path": "lib/billing/awsCostExplorerExtractor.ts",
+      "sha256": "23f57dcf63338ca7f319fad8178b5f2ff976656ebbdfc2043aa06d47e375e13a",
+      "bytes": 7829
+    },
+    {
+      "path": "lib/billing/azureCostManagementExtractor.ts",
+      "sha256": "d4af6a6c05bacd324f899494d3a42c0e0dc605ddac2f4640df2957b614577684",
+      "bytes": 8455
+    },
+    {
+      "path": "lib/billing/billingConnectorsBuilder.ts",
+      "sha256": "ab0bd05654c1339ae658026263b1e6d1cfe58a39afb3a9b6268d79d6514cf96e",
+      "bytes": 9567
+    },
+    {
+      "path": "lib/billing/billingConnectorsModel.ts",
+      "sha256": "4aeb55fc0dfaf2c239c999c5488ce32203c233745ec15f756c7b68dc0f7306d7",
+      "bytes": 4876
+    },
+    {
+      "path": "lib/billing/checkEntitlement.ts",
+      "sha256": "359c7ae7bea33acb25bf49af8d629b293504096a00026f1c6587dda3c6b079eb",
+      "bytes": 5037
+    },
+    {
+      "path": "lib/billing/checkWorkspaceAICredits.ts",
+      "sha256": "f254d17a43318c92cb8c86478c85ef6383bce20a76695deafaa7f5a475e206b0",
+      "bytes": 3399
+    },
+    {
+      "path": "lib/billing/computeInvocationCost.ts",
+      "sha256": "685532f2198aea93c911d6702f2de2c7f0faf71e6fbecae1d09fbc23dbf58367",
+      "bytes": 3311
+    },
+    {
+      "path": "lib/billing/computeOverageRevenue.ts",
+      "sha256": "010c39d2936cd535ad377b743f6c3aa17a4ed54fff830d707d1cbc8b04adebf9",
+      "bytes": 4204
+    },
+    {
+      "path": "lib/billing/computePlanMargin.ts",
+      "sha256": "bb857ec8716cf03e955b71abdbad1fb93fdcb63dced675d10dfa2b199d7386bd",
+      "bytes": 4474
+    },
+    {
+      "path": "lib/billing/consumeSubscriptionEvent.ts",
+      "sha256": "b703d235ee3559daef5b1becec0cfa7615e542a1468425beb0a86a7408f746fd",
+      "bytes": 4853
+    },
+    {
+      "path": "lib/billing/costAnomalyAttributor.ts",
+      "sha256": "7403e333eb99a080f87167ef95abdcd9c69f165c9ea352b0e7be0a8af8bc1570",
+      "bytes": 2857
+    },
+    {
+      "path": "lib/billing/costAnomalyExplainer.ts",
+      "sha256": "8c6da40767222fe99ef562a17f2afc1b226b8dddaef69c7d4a7885907499e09c",
+      "bytes": 10388
+    },
+    {
+      "path": "lib/billing/costForecaster.ts",
+      "sha256": "04ff92a0c733da17a34ec803b1b9a2d78d66259c9db3bd1325279551f30bb9a4",
+      "bytes": 2268
+    },
+    {
+      "path": "lib/billing/currentAIAllowance.ts",
+      "sha256": "770cea486a3a39aee2fd5d51dfdc7274d4fd93af42f7321193a2ba9796ce333a",
+      "bytes": 4258
+    },
+    {
+      "path": "lib/billing/deploymentDispatchReservation.ts",
+      "sha256": "890d7f3dfa64d0fd58f06e1222f67625dd22a95b1bf0e86301544ac33140ee73",
+      "bytes": 6492
+    },
+    {
+      "path": "lib/billing/deploymentQuota.ts",
+      "sha256": "aaea52e10a8df324a36c4a608d143b6d857a81c0f5145cf9d36d629c7a3f2c96",
+      "bytes": 3005
+    },
+    {
+      "path": "lib/billing/effectiveEntitlements.ts",
+      "sha256": "0e13141cfb995d7c68ebe36d8093257c3bac716a53624acdea14a97e2f0d506b",
+      "bytes": 2001
+    },
+    {
+      "path": "lib/billing/enforceEntitlement.ts",
+      "sha256": "ab72e7cf1292c42e575938161a1e0d8b7e2d078b8da0a64bfa5e5ab40c139d5b",
+      "bytes": 4656
+    },
+    {
+      "path": "lib/billing/ensureProviderRate.ts",
+      "sha256": "6e8d1f964abf42e62088b89aa5db3abda84ddc50de96bb530ef2d86eda7b8f46",
+      "bytes": 2887
+    },
+    {
+      "path": "lib/billing/isolatedApplication/databaseTarget.ts",
+      "sha256": "906be3530e34e133b0b2265d37090588ae55683c5517ef69dedfd6ef4cad69d8",
+      "bytes": 1174
+    },
+    {
+      "path": "lib/billing/isolatedApplication/plan.ts",
+      "sha256": "643f5afd9b7971c5f6a23446fda981a021804028e5f9fb2d8d675be4163efdf1",
+      "bytes": 1404
+    },
+    {
+      "path": "lib/billing/isolatedApplication/scope.ts",
+      "sha256": "bb27edac701bfb9c7812a77aeb17266b1effa7c95ab472f0b70c5d4d2a72d539",
+      "bytes": 1464
+    },
+    {
+      "path": "lib/billing/multiCloudCostNormalizer.ts",
+      "sha256": "5173aa55e80cd4dbf904ed0091c74ad864e79763fba6453e7e22e8786d42f5b0",
+      "bytes": 3157
+    },
+    {
+      "path": "lib/billing/newTestSubscription/allocationPlan.ts",
+      "sha256": "bbf78b1e9b0f5684086dbd3a7a717af502025ef44916c75edf445ee87e3a207d",
+      "bytes": 13129
+    },
+    {
+      "path": "lib/billing/newTestSubscription/allocationV2.ts",
+      "sha256": "07483577291e15d7b23eb505baa7e1653d13b76e618bfb1646040d3a5a730a2d",
+      "bytes": 12615
+    },
+    {
+      "path": "lib/billing/newTestSubscription/anniversaryWindow.ts",
+      "sha256": "9996a150880c2f91e1618f81382362a99132f991f7d398880eb0e6ded431b298",
+      "bytes": 10829
+    },
+    {
+      "path": "lib/billing/newTestSubscription/chargeSource.ts",
+      "sha256": "b3d300c917e6253d9ed70870e952efa68941c05006221880bd02433129b7bd80",
+      "bytes": 1608
+    },
+    {
+      "path": "lib/billing/newTestSubscription/fixtureAllocation.ts",
+      "sha256": "226a04f6431bf0cc748a5026d808161aeabb2b0158b3a9540d40909c22d78c74",
+      "bytes": 17480
+    },
+    {
+      "path": "lib/billing/newTestSubscription/fixtureCoverage.ts",
+      "sha256": "c436aa287c861e98f56709b90f45d500fb628cbb8e8ca13066c78554b1c3cefb",
+      "bytes": 5392
+    },
+    {
+      "path": "lib/billing/newTestSubscription/fixtureUsageGuards.ts",
+      "sha256": "d52e698765f732bac7812453451fced9e257411d3020db53e4699188e2def5b5",
+      "bytes": 9844
+    },
+    {
+      "path": "lib/billing/newTestSubscription/lifecycle.ts",
+      "sha256": "735a67cc8b2cbfc3c291c70604e007249a0aebe0bc90fd05b5a348cc4ccf7d38",
+      "bytes": 2651
+    },
+    {
+      "path": "lib/billing/newTestSubscription/paidCoverage.ts",
+      "sha256": "a19ae9ba35aa7de6a4dd7d96137a27c6f73451c1396c3c48049f1905795807a9",
+      "bytes": 8684
+    },
+    {
+      "path": "lib/billing/newTestSubscription/paidPlan.ts",
+      "sha256": "e6cb89868ca3ce0eaf6198da3e6426cb84e3295327f580392aa1da9133288d83",
+      "bytes": 4809
+    },
+    {
+      "path": "lib/billing/newTestSubscription/postgresFixtureStore.ts",
+      "sha256": "ad3425428f9b41598dfd9add76963a80c6311a25f1f65387811f2ef874568ebb",
+      "bytes": 9097
+    },
+    {
+      "path": "lib/billing/newTestSubscription/service.ts",
+      "sha256": "da116e4690c17319eb811903de2381fdda9685a5d7a49efcea49fdb7236ed354",
+      "bytes": 27888
+    },
+    {
+      "path": "lib/billing/newTestSubscription/stripeDeadline.ts",
+      "sha256": "c951e5ac7848ae315321a99c7e4d09d9f78d27a6dc5ff6244dae3c758ccb6ee6",
+      "bytes": 2664
+    },
+    {
+      "path": "lib/billing/newTestSubscription/stripeHttpClient.ts",
+      "sha256": "4a2bae0de8e041fe16b0bb5e61075505ae3eb9373ef7c75fe5f928b8b3b930e5",
+      "bytes": 7099
+    },
+    {
+      "path": "lib/billing/newTestSubscription/stripePaidCoverage.ts",
+      "sha256": "8385ddaaf42f5d42e8f15a78e4f7084a611217a53f998f414a08bb7664908193",
+      "bytes": 8016
+    },
+    {
+      "path": "lib/billing/newTestSubscription/stripeTestProvider.ts",
+      "sha256": "7081360821a265f72c1520b1e4259317b6974f9d6a51eb873ca27e3566a9cbdd",
+      "bytes": 18460
+    },
+    {
+      "path": "lib/billing/newTestSubscription/usageAllocationIO.ts",
+      "sha256": "aa8a93877533d73ab3369c56b6ad2ba3447319ce10fe5abbd067b7bcddfa8928",
+      "bytes": 14774
+    },
+    {
+      "path": "lib/billing/newTestSubscription/verifiedContract.ts",
+      "sha256": "f9238dff5852cf45945a8319aa2e1cb00e0d5011923d6bf6b820915c43a08675",
+      "bytes": 4447
+    },
+    {
+      "path": "lib/billing/newTestSubscriptionContract.ts",
+      "sha256": "93cd286a0ba6b2a78c1126114df03bad678542c678c3e31d01167e0425a8df3e",
+      "bytes": 4586
+    },
+    {
+      "path": "lib/billing/organizationSeatClaim.ts",
+      "sha256": "083f678bb6f1ffd676f1aa65558ae45090f9010dd6a420f2cc8b1675c201d795",
+      "bytes": 3444
+    },
+    {
+      "path": "lib/billing/planSelection.ts",
+      "sha256": "7e95e6bd1c8c8d76cdd04829471902d58a5851bbf452b99285ba6d976470bcfc",
+      "bytes": 991
+    },
+    {
+      "path": "lib/billing/preflightAICreditCheck.ts",
+      "sha256": "766a10d5832ce74c87207d098a5f7407d523252df4f85487d6e15a39fd7f0c3e",
+      "bytes": 2615
+    },
+    {
+      "path": "lib/billing/providerRateSeeds.ts",
+      "sha256": "2203252a710104bd3555f364e72dae6bb071726040ebc3929f4d2991b11ff374",
+      "bytes": 3705
+    },
+    {
+      "path": "lib/billing/publicPlanCatalog.ts",
+      "sha256": "3c46f92b4f2f66a4b904ea81ba0903402fa35d3731c1ebfd3779aaeeb561b14f",
+      "bytes": 4125
+    },
+    {
+      "path": "lib/billing/rebuildUsageSummary.ts",
+      "sha256": "2d7da3a89a4c67b49620a4612e5d2ea63c4349534f5c953405fe656765a4b6d8",
+      "bytes": 4170
+    },
+    {
+      "path": "lib/billing/reconcileGatewayUsage.ts",
+      "sha256": "65efff13fdf74685a843489f85361d75ebce21944a1071be1c2f5244eacb4568",
+      "bytes": 7095
+    },
+    {
+      "path": "lib/billing/reconcileSubscriptionEvent.ts",
+      "sha256": "04c00f56d65727b3d19a19055d52d4a64aa92f23ff95bf6fe9b8872b2894fd4e",
+      "bytes": 7155
+    },
+    {
+      "path": "lib/billing/recordAIUsageEvent.ts",
+      "sha256": "a70f6c3969a90a0af967f6e991495799bd4dbba0562740d1d53a9edb6b12549a",
+      "bytes": 6141
+    },
+    {
+      "path": "lib/billing/scanBillingAlerts.ts",
+      "sha256": "ecda7ea1c0020875e3593c51c02b2f2c699fe6e04660483491080c073e3eb9ca",
+      "bytes": 8102
+    },
+    {
+      "path": "lib/billing/settleAIUsageToStripe.ts",
+      "sha256": "2789c620f2eeef756147bc6cb7dd3aba54cac5958f3f2ae5ba19f17a392efb72",
+      "bytes": 9362
+    },
+    {
+      "path": "lib/billing/stripeHelper.ts",
+      "sha256": "5e41b880258df6cbafb80682f39e701ebab75abf7204138614a3afbf181b2d62",
+      "bytes": 14320
+    },
+    {
+      "path": "lib/billing/tenantBillingStore.ts",
+      "sha256": "cc32f04f38ff28dd0d2536b0c1fc5190ac9ae6f227dc11465ec9d27f07941a8c",
+      "bytes": 8434
+    },
+    {
+      "path": "lib/billing/tierCapEnforcer.ts",
+      "sha256": "f903ea573bc2c408b696fad3f7df87d3ec39a22ac25820db0059b8a77cfa341e",
+      "bytes": 2486
+    },
+    {
+      "path": "lib/billing/tierCatalog.ts",
+      "sha256": "43b6efe7fb15685751b8bfeeebb21bb6048304fe1352e9e63e5bf82bf6d28bb2",
+      "bytes": 4372
+    },
+    {
+      "path": "lib/billing/tierGate.ts",
+      "sha256": "6cd0fa3c93a6d8289a9fa47af7b0716500420119226bf5c8caaf71c2e9fcbcfb",
+      "bytes": 2831
+    },
+    {
+      "path": "lib/billing/usageCounterStore.ts",
+      "sha256": "85a5cfa550c731dcaaafc7d245daaec71c424c1a9613cd764a4d4ce1f9463db0",
+      "bytes": 2745
+    },
+    {
+      "path": "lib/billing/usageSummaryResponder.ts",
+      "sha256": "dff3b9f868bfb0c418fab17668917e3b528561d950aa1239257ddc92c1d4a383",
+      "bytes": 2372
+    },
+    {
+      "path": "lib/billing/whichAlertsToFire.ts",
+      "sha256": "c576e43e98b753804cc8bdfc7d2ef0c3d8ea20d71fc84a1543b308ac8a7942a3",
+      "bytes": 1615
+    },
+    {
+      "path": "lib/db.ts",
+      "sha256": "c03c925e7154dadcef4b1e6ea8e29fdb257fa02b95768f23e3cb7c6be5671bf4",
+      "bytes": 1334
+    },
+    {
+      "path": "next.config.ts",
+      "sha256": "e29e0ed18407a18820a2047e41e52272a80dc7cd1f69dbb221ad9e9977f1a040",
+      "bytes": 5607
+    },
+    {
+      "path": "package-lock.json",
+      "sha256": "24228d15d056785f239f77107cd9ed1f8161beed53e1edc128826e4ce4298fd7",
+      "bytes": 518437
+    },
+    {
+      "path": "package.json",
+      "sha256": "6201717595cfb27706f75883b10a6bee501048a085ec64a5eec9446c6a193ba5",
+      "bytes": 3629
+    },
+    {
+      "path": "prisma/schema.prisma",
+      "sha256": "3abed3e94c18cd2554f18b847d27ab505e3e8fa9fde968a0a7c72fdb6e787c9c",
+      "bytes": 180230
+    },
+    {
+      "path": "proxy.ts",
+      "sha256": "29d87b508614d14a2e562301fa46958ee10eac22b475bcb9098f362275b4a606",
+      "bytes": 5094
+    },
+    {
+      "path": "tsconfig.json",
+      "sha256": "49995c2a39f9d8442187af48c2070474181bee8eca5812ca44075db407ece5d1",
+      "bytes": 916
+    },
+    {
+      "path": "tsconfig.next.json",
+      "sha256": "1b7acd54eea2b33af5e4c8601132f9244687ed14ebbbb3f330a295d199fdac41",
+      "bytes": 194
+    }
+  ],
+  "allFinancialTestBodiesUnchangedFromFirstCase": {
+    "path": "lib/billing/__tests__/newTestSubscriptionService.postgres.test.ts",
+    "sha256": "64f9eb4045d4db5d1443db65edf7320024c8a3a54c6c682e75a0ce076083e1fb",
+    "bytes": 40804,
+    "includesOriginal27AndOptIn28": true
+  },
+  "sharedHelperUnchanged": {
+    "path": "lib/billing/__tests__/fixtures/newTestChildEnvironment.ts",
+    "sha256": "1ea5d274bdf4e0fdf22661e3a306bffdc8f7c3cd0410f4c9c340eee8bbf7d78e",
+    "bytes": 6545
+  },
+  "workerManifestPreserved": {
+    "path": "docs/mission/owned-checkout-worker-source.json",
+    "sha256": "c695af32e1b853bb610474e4e843609bbec313f03d0847d7c23c7a467b3bbcff",
+    "bytes": 122693
+  },
+  "manifestKnownToolingDriftFailClosedUntilReviewedRebind": [
+    {
+      "group": "tooling",
+      "path": "lib/billing/__tests__/fixtures/ownedCheckoutHttpAcceptance.ts",
+      "reviewedSha256": "0f3fcfdbd3b4d9a6f7d1b2ace6e30731cdb0023e5ae792cee980deacb7707291",
+      "currentSha256": "19f5072418314770a6b477b9f1e906cd583062da92f5a695727d04efff00b214"
+    },
+    {
+      "group": "tooling",
+      "path": "lib/billing/__tests__/fixtures/ownedCheckoutLaunchPolicy.ts",
+      "reviewedSha256": "0f1eada9035f9543b037274f7e81d220df7d2f63291d5182abfee716d78d030a",
+      "currentSha256": "e38f87b05f39ac3298d027ff89255eb496b04357bbe16314de8a922f6b8eabaf"
+    },
+    {
+      "group": "tooling",
+      "path": "lib/billing/__tests__/fixtures/ownedCheckoutWorkerBundle.ts",
+      "reviewedSha256": "ebe721ef445d6a56a21b1fc5e9d99b8aab0dec693ad97fa961fec1a82601207c",
+      "currentSha256": "4fe9cc077a62c366ce0acd438e6dae13e87069d1c2f963c3a4fdce516b2afe38"
+    },
+    {
+      "group": "tooling",
+      "path": "lib/billing/__tests__/fixtures/ownedCheckoutWorkerSupervisor.ts",
+      "reviewedSha256": "1738ed45b06ff7a1dc019917b5115e5a4b862523530ad32702a5b1ba87b87317",
+      "currentSha256": "5e4c14f0aeba1b19658e148f957ca8d5566501d94b7911e2c968ad106ce69a74"
+    }
+  ],
+  "gates": {
+    "red": {
+      "exitCode": 1,
+      "failed": 6,
+      "passed": 42,
+      "files": 2
+    },
+    "initialGreen": {
+      "exitCode": 0,
+      "passed": 49,
+      "files": 3,
+      "qualification": "fourth supplied filename did not exist; corrected focused invocation below includes actual Lifecycle filename"
+    },
+    "focusedGreen": {
+      "exitCode": 0,
+      "passed": 60,
+      "files": 4
+    },
+    "demoAndWiring": {
+      "exitCode": 0,
+      "passed": 17,
+      "files": 2
+    },
+    "scopedLint": {
+      "exitCode": 0,
+      "diagnostics": 0
+    }
+  },
+  "logs": [
+    {
+      "path": "/tmp/axiom-owned-checkout-runtime-controls-typing-red.log",
+      "sha256": "2caea9bd0800542d130000a3dcbb8f636c99ab16dfd8dab390ccd19489bc023a",
+      "bytes": 3213
+    },
+    {
+      "path": "/tmp/axiom-owned-checkout-runtime-controls-typing-green.log",
+      "sha256": "97004b34a87daaab795ee69bd286c3bbb10f88d81e2a6772e459a074d51f653f",
+      "bytes": 698
+    },
+    {
+      "path": "/tmp/axiom-owned-checkout-runtime-controls-typing-focused.log",
+      "sha256": "cfacbbc9207136da033bfd1c84c4e53be3f8f6dd69a06cef753ad2ef0eae61f7",
+      "bytes": 720
+    },
+    {
+      "path": "/tmp/axiom-owned-checkout-runtime-controls-typing-lint.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "/tmp/axiom-owned-checkout-runtime-controls-typing-doc-wiring.log",
+      "sha256": "fd2289205b954b6da59073145a3c3fdaee2ba7acf777044b2041177f7c753ab7",
+      "bytes": 634
+    }
+  ],
+  "qualifications": [
+    "Vitest printed existing configLoader native/CommonJS warning; it was not suppressed.",
+    "Known-literal AST transform/printer only; no transpileModule or actual worker closure packaging.",
+    "No fresh whole compiler after source amendment; c08 exit2 is preserved, typing closure remains pending.",
+    "No worker, socket, PG, Prisma CLI, Next server, Stripe SDK send or hosted payment ran.",
+    "Original86 protected files compared to integrated c08, not pre-main379; main-owned package/config deltas remain qualified separately.",
+    "No claim that inert lifecycle tests establish real OS descendant, process cancellation or cleanup acceptance.",
+    "Current managed controls are copied opaquely without value logging or invented defaults."
+  ]
+}

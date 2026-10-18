@@ -1,0 +1,174 @@
+{
+  "version": 1,
+  "stage": "one_owned28_failed_before_next",
+  "outcome": {
+    "sourceBefore": "bf5f5184a2a375320d7df6002e0653a114b09cfd",
+    "sourceAfter": "bf5f5184a2a375320d7df6002e0653a114b09cfd",
+    "sourceCleanAfter": true,
+    "invocations": 1,
+    "nativePermission": true,
+    "exitCode": 1,
+    "closedCodes": [
+      "owned_checkout_http_worker_source_binding_failed"
+    ],
+    "testSummary": [
+      "RUN  v4.1.11 /workspace/axiom-owned-test-checkout",
+      "Test Files  1 failed (1)",
+      "Tests  1 failed | 27 skipped (28)",
+      "Start at  09:08:02",
+      "Duration  9.61s (transform 679ms, setup 0ms, import 942ms, tests 8.54s, environment 0ms)"
+    ],
+    "observedCompleteUtc": "2026-10-18T09:08:55.209616+00:00",
+    "elapsedSecondsUpperBoundAtObservation": 57.2,
+    "sourceFilesVerified": 123,
+    "sourceMismatches": [],
+    "log": {
+      "path": "/workspace/.axiom-validation/billing-checkout-evidence-bismbi5h/owned-http.log",
+      "sha256": "96c212197e204556edeb6da486d689b8d09839ccf11e3204abd9ea1a22dbcdac",
+      "bytes": 1276
+    },
+    "receiptMarkerCount": 0,
+    "receiptProduced": false,
+    "nextOutputExists": false,
+    "qualification": "No retry or source patch. Timing is observation upper bound, not actual runner duration."
+  },
+  "compiler": {
+    "sourceBefore": "bf5f5184a2a375320d7df6002e0653a114b09cfd",
+    "sourceAfter": "bf5f5184a2a375320d7df6002e0653a114b09cfd",
+    "sourceCleanAfter": true,
+    "invocations": 1,
+    "nativePermission": true,
+    "exitCode": 0,
+    "observedCompleteUtc": "2026-10-18T09:05:45.824178+00:00",
+    "elapsedSecondsUpperBoundAtObservation": 88.8,
+    "heapMiB": 8192,
+    "incremental": false,
+    "sourceBindingFilesVerifiedAfter": 123,
+    "sourceBindingMismatches": [],
+    "runtimeAfter": {
+      "nextOutputAbsent": true,
+      "desktopLinkAbsent": true,
+      "workerPackagingOrServerStarted": false,
+      "databaseOrProviderStarted": false,
+      "privateViteCachesEmpty": true
+    },
+    "qualification": "Elapsed is completion-observation upper bound, not measured process-only runtime/CPU/peak. No retry.",
+    "start": {
+      "path": "/workspace/.axiom-validation/billing-checkout-evidence-bismbi5h/compiler-start.json",
+      "sha256": "e0107c0e9af6d12fd64fdc4638ecc3a25b441c5606b039dee57148f42f27df6e",
+      "bytes": 1250
+    },
+    "log": {
+      "path": "/workspace/.axiom-validation/billing-checkout-evidence-bismbi5h/compiler.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launcher": {
+      "path": "/workspace/.axiom-validation/billing-checkout-evidence-bismbi5h/run-web-compiler.py",
+      "sha256": "d7824e1087fc639641d80caeacc72e0e9cbc516f662bb8f80e7daf1e423fd81a",
+      "bytes": 5491
+    },
+    "binding": {
+      "path": "/workspace/.axiom-validation/billing-checkout-evidence-bismbi5h/compiler-binding.json",
+      "sha256": "4b833fad8138123e400a02f661007ea072abd60c02e1d4422eaa09e149c5d5e1",
+      "bytes": 222489
+    }
+  },
+  "cleanup": {
+    "observedUtc": "2026-10-18T09:09:44.928768+00:00",
+    "ownedContainerEvents": [
+      {
+        "type": "container",
+        "action": "create",
+        "id": "b6bd69cc7e52eac655859095bba2d8c4c5867ff217574d7521e09ebfa36b85bc",
+        "name": "axiom-commercial-test-1aee7508137e",
+        "image": "postgres:17-alpine",
+        "timeNano": 1792314486700535622
+      },
+      {
+        "type": "container",
+        "action": "start",
+        "id": "b6bd69cc7e52eac655859095bba2d8c4c5867ff217574d7521e09ebfa36b85bc",
+        "name": "axiom-commercial-test-1aee7508137e",
+        "image": "postgres:17-alpine",
+        "timeNano": 1792314486808708601
+      },
+      {
+        "type": "container",
+        "action": "kill",
+        "id": "b6bd69cc7e52eac655859095bba2d8c4c5867ff217574d7521e09ebfa36b85bc",
+        "name": "axiom-commercial-test-1aee7508137e",
+        "image": "postgres:17-alpine",
+        "timeNano": 1792314492253674709
+      },
+      {
+        "type": "container",
+        "action": "die",
+        "id": "b6bd69cc7e52eac655859095bba2d8c4c5867ff217574d7521e09ebfa36b85bc",
+        "name": "axiom-commercial-test-1aee7508137e",
+        "image": "postgres:17-alpine",
+        "timeNano": 1792314492347141657
+      },
+      {
+        "type": "container",
+        "action": "destroy",
+        "id": "b6bd69cc7e52eac655859095bba2d8c4c5867ff217574d7521e09ebfa36b85bc",
+        "name": "axiom-commercial-test-1aee7508137e",
+        "image": "postgres:17-alpine",
+        "timeNano": 1792314492466272914
+      }
+    ],
+    "ownedVolumeEvents": [
+      {
+        "action": "mount",
+        "name": "878d97792eefda69b158e76038cf2375db3e3e18a632ef43b0c5484738be03a1",
+        "container": "b6bd69cc7e52eac655859095bba2d8c4c5867ff217574d7521e09ebfa36b85bc",
+        "destination": "/var/lib/postgresql/data",
+        "timeNano": 1792314486705524443
+      },
+      {
+        "action": "unmount",
+        "name": "878d97792eefda69b158e76038cf2375db3e3e18a632ef43b0c5484738be03a1",
+        "container": "b6bd69cc7e52eac655859095bba2d8c4c5867ff217574d7521e09ebfa36b85bc",
+        "destination": null,
+        "timeNano": 1792314492345368518
+      }
+    ],
+    "ownedContainersRemaining": [],
+    "ownedDirectoriesRemaining": [],
+    "ownedNodeProcessesRemaining": [],
+    "nextOutputAbsent": true,
+    "desktopLinkAbsent": true,
+    "sourceClean": true,
+    "qualification": "Read-only Docker event recovery after fast failure; no raw event attrs/env/argv are retained. Volume removal not yet claimed."
+  },
+  "volumeCleanup": {
+    "removedExactEventBoundNewOwnedVolumes": [
+      "878d97792eefda69b158e76038cf2375db3e3e18a632ef43b0c5484738be03a1"
+    ],
+    "alreadyAbsent": [],
+    "noPruneOrSharedDeletion": true,
+    "ownership": "new creation time plus mount/unmount events linked to the sole exact owned run container; zero remaining references checked",
+    "allConfirmedAbsent": true
+  },
+  "runtimeBinding": {
+    "path": "/workspace/.axiom-validation/billing-checkout-evidence-bismbi5h/owned-http-binding.json",
+    "sha256": "3cf1e588a29cf4554e4cf325b9fb7581ba6e43bc93ca20c01e62d4bd219d1555"
+  },
+  "runtimeStart": {
+    "path": "/workspace/.axiom-validation/billing-checkout-evidence-bismbi5h/owned-http-start.json",
+    "sha256": "7fc6412b0a91ad4fed619b1c542e50f3c20eadf267c3c0c801fc1d50e3ffaa0d"
+  },
+  "sourceFrozenUntilOutcome": true,
+  "collectorInvoked": false,
+  "noSourceOrRuntimeRetry": true,
+  "qualification": [
+    "Actual runner duration9.61s;57.2s is delayed completion-observation upper bound only.",
+    "Test entered worker_source_binding after ownedPG/schema/fixture/user/membership/enrollment setup; no Next HTTP or payment success.",
+    "Closed phase spans packaging, process start and readiness; inner failing call was not observed and cannot be asserted from generic failure.",
+    "The full-receipt-vs-byte-projection source defect is a deterministic candidate requiring pure RED, not retrospectively observed runtime cause.",
+    "No emitted output manifest/HTTP receipt survived this failed run; no collector was invoked without a marker.",
+    "Docker events recovered sole owned container identity and its exact temporary anonymous volume after fast cleanup; no shared prune.",
+    "No genuine Stripe SDK/network/hosted payment or live/production changes."
+  ]
+}
