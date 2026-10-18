@@ -26,6 +26,9 @@ export interface DesktopClientConfig {
 
 export type ApiResult<T> = { ok: true; data: T } | { ok: false; error: string };
 
+export type CredentialFailureKind = "unavailable" | "rejected" | "invalid" | "canceled";
+export type CredentialVerificationResult = { ok: true; data: VerifiedDesktopIdentity } | { ok: false; error: string; failureKind: CredentialFailureKind };
+
 export interface DesktopCommercialAccess {
   allowed: boolean;
   code: "active" | "production_access_required" | "payment_past_due" | "access_canceled";
@@ -439,29 +442,33 @@ export class DesktopClient {
    * A credential being present in the OS vault is not proof that it is still
    * valid. Startup calls this before mounting any authenticated workspace UI.
    */
-  async verifyCurrentCredential(): Promise<ApiResult<VerifiedDesktopIdentity>> {
+  async verifyCurrentCredential(): Promise<CredentialVerificationResult> {
     return this.verifyCredentialCandidate(this.config.sessionToken);
   }
 
-  /** Verify without changing the active transport or persisted credential. */
-  async verifyCredentialCandidate(token: string | undefined): Promise<ApiResult<VerifiedDesktopIdentity>> {
-    if (!token) return { ok: false, error: "No saved workspace credential was found." };
-
-    if (!token.startsWith("vxlk_") && !token.startsWith("axm.desk.")) {
-      return { ok: false, error: "The saved credential type is not supported." };
+  /** Verify without changing transport or vault; never return raw service errors. */
+  async verifyCredentialCandidate(token: string | undefined, signal?: AbortSignal): Promise<CredentialVerificationResult> {
+    const failure = (failureKind: CredentialFailureKind): CredentialVerificationResult => ({ ok: false, failureKind,
+      error: failureKind === "unavailable" ? "The workspace service could not be reached. Try again."
+        : failureKind === "canceled" ? "Sign-in canceled."
+        : "The saved sign-in could not be verified. Sign in again." });
+    if (signal?.aborted) return failure("canceled");
+    if (!token || (!token.startsWith("vxlk_") && !token.startsWith("axm.desk."))) return failure("invalid");
+    try {
+      const response = await fetch(`${this.config.apiBase}/api/desktop/access`, {
+        headers: { ...this.headers(), Authorization: `Bearer ${token}` }, credentials: "include", signal,
+      });
+      if (signal?.aborted) return failure("canceled");
+      if (!response.ok) return failure(response.status === 401 || response.status === 403 ? "rejected"
+        : response.status >= 500 || response.status === 408 || response.status === 429 ? "unavailable" : "invalid");
+      const body = await response.json().catch(() => null);
+      if (signal?.aborted) return failure("canceled");
+      const identity = body?.ok ? parseDesktopIdentityResponse(body.data) : null;
+      const expectedKind = token.startsWith("vxlk_") ? "api_key" : "desktop_session";
+      return identity && identity.kind === expectedKind ? { ok: true, data: identity } : failure("invalid");
+    } catch {
+      return failure(signal?.aborted ? "canceled" : "unavailable");
     }
-
-    const result = await this.get<{
-      identity: { kind: "api_key" | "desktop_session"; organizationId: string; email?: string; displayName?: string; role?: VerifiedDesktopIdentity["role"]; capabilities?: string[] };
-      access: DesktopCommercialAccess;
-    }>("/api/desktop/access", token);
-    if (!result.ok) return result;
-    const identity = parseDesktopIdentityResponse(result.data);
-    const expectedKind = token.startsWith("vxlk_") ? "api_key" : "desktop_session";
-    if (!identity || identity.kind !== expectedKind) {
-      return { ok: false, error: "The service returned an invalid workspace identity. Sign in again or contact support." };
-    }
-    return { ok: true, data: identity };
   }
 
   desktopBillingPortal(): Promise<ApiResult<{ url: string }>> {

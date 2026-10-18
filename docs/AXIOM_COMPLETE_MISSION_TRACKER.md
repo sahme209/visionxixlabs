@@ -11,8 +11,8 @@ PR #161 source integration is complete at main `608efe0fd70623aaf71cb80f799d3b82
 
 ## Resumed execution checkpoint — latest owner order
 
-Current main is `291a4c579f12671a3f0c086417ac118570c75a47`, including validated
-merges #169–174. These source merges are not production releases.
+Current main is `89aac954a146bdbfe23b0c0605e0e44f07895dde`, including validated
+merges #169–175. These source merges are not production releases.
 
 The additive orders remain represented by **2,154 rows across 22 available sources**.
 All earlier 2,112 requirement objects remain preserved. Every available original Codex
@@ -33,14 +33,18 @@ ECS checked-input source merged in #173 after required CI and review. Its synthe
 provider artifact mismatch grants no admission or execution authority. Connected
 claim/worker/recovery implementation is underway but inactive. Terraform customer
 producer/import composition continues; no actual Terraform CLI/cloud execution is
-claimed. Desktop catalog recovery passed independent source and receipt review, fresh web/desktop
-types,7,458 default tests and desktop frontend build on main291. Exact-head CI
-precedes merge; native/provider/customer acceptance remains separate.
+claimed. Desktop catalog recovery merged in #175 after all5 exact-head checks. Explicit saved-sign-in
+recovery passed independent security/receipt review,142focused checks, fresh web/desktop
+types,7,483 default tests and desktop frontend build on main89. Exact-head CI precedes
+its merge; mocked vault/transport are not native/provider/customer acceptance.
 
 Agent's fourth application attempt remains failed closed at `aws.identity_entry_missing`.
 A subsequent fixed metadata-only probe preserved real process identity through the
 reviewed virtual-title helper, with exact descriptor restoration and owned cleanup.
 It loaded no Next/TypeScript consumers and proves no application continuation.
+The later8af actual run failedclosed after12.5seconds on an unexpected guard denial.
+Its exact operation is unknown; a host-only closed diagnostic retention change has
+passed source review, with no permission broadening or further actual proof.
 Premium demos closed source/content/guard review. Actual browser attempts failed
 before screenshots, first on dependency-root refusal and then an unhandled proxy
 socket reset. Owned live processes/listeners were cleared, with unreaped zombies
