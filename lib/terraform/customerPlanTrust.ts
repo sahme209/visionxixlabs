@@ -1,7 +1,7 @@
 import "server-only";
 import { sha256ContentHash } from "@/lib/tauri/contentHash";
 import { inspectPublicTrustConfiguration } from "@/lib/releaseops/ecsReleaseV2/sigstoreBuildVerifier";
-import { parseCustomerPlanProfile, type CustomerPlanProfile } from "./customerPlanContract";
+import { parseCustomerPlanProfile } from "./customerPlanContract";
 import type { CustomerPlanTrust } from "./customerPlanProvenance";
 const hex=(value:unknown):value is string=>typeof value==="string"&&/^[a-f0-9]{64}$/.test(value);
 const id=(value:unknown):value is string=>typeof value==="string"&&/^[A-Za-z0-9_.:-]{1,200}$/.test(value);
@@ -11,7 +11,7 @@ function exact(value:unknown,keys:string[]):Record<string,unknown>|null {
 }
 /** Configuration inspection only. The profile can select IDs, never roots or
  * verifier policy. This does not execute/verify a plan or confer authority. */
-export function resolveCustomerPlanTrust(profileInput:CustomerPlanProfile,now:Date,configuration:unknown):CustomerPlanTrust|null {
+export function resolveCustomerPlanTrust(profileInput:unknown,now:Date,configuration:unknown):CustomerPlanTrust|null {
  try {
   const profile=parseCustomerPlanProfile(profileInput);
   const json=JSON.stringify(configuration);if(!json||json.length>1024*1024||!Number.isFinite(now.getTime()))return null;
@@ -37,6 +37,6 @@ export function resolveCustomerPlanTrust(profileInput:CustomerPlanProfile,now:Da
 }
 /** Server operator configuration only. Missing/malformed is unavailable, never
  * a built-in root, runtime fetch, private-repository fallback or enabling flag. */
-export function readConfiguredCustomerPlanTrust(profile:CustomerPlanProfile,now:Date):CustomerPlanTrust|null {
+export function readConfiguredCustomerPlanTrust(profile:unknown,now:Date):CustomerPlanTrust|null {
  try {const value=process.env.AXIOM_TERRAFORM_CUSTOMER_PLAN_TRUST;if(!value||value.length>1024*1024)return null;return resolveCustomerPlanTrust(profile,now,JSON.parse(value));}catch{return null;}
 }

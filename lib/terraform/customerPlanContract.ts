@@ -93,7 +93,7 @@ export interface CustomerTargetRows {
  credential: { id: string; organizationId: string; version: number; revokedAt: Date | null };
 }
 /** Equality of independently loaded rows only. No planning capability or lock permit. */
-export function projectCustomerTarget(profileInput: CustomerPlanProfile, rows: CustomerTargetRows): { digest: string; connection: { id: string; version: number } } | null {
+export function projectCustomerTarget(profileInput: unknown, rows: CustomerTargetRows): { digest: string; connection: { id: string; version: number } } | null {
  try {
   const p = parseCustomerPlanProfile(profileInput), {environment:e,account:a,credential:c} = rows;
   if (e.id !== p.environmentId || e.organizationId !== p.organizationId || a.id !== p.connection.id || c.id !== a.id || a.organizationId !== p.organizationId || c.organizationId !== p.organizationId

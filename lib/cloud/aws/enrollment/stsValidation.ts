@@ -2,7 +2,8 @@ import "server-only";
 import { STSClient, AssumeRoleCommand, GetCallerIdentityCommand } from "@aws-sdk/client-sts";
 import { loadAppEnv } from "@/lib/config/env";
 import { boundedAwsHandler, awsReadEndpoint, type AwsResponseBudget } from "../ecsObservation/boundedAwsHandler";
-import { AwsEnrollmentError, type AwsEnrollmentInput } from "./policy";
+import { AwsEnrollmentError, parseAwsEnrollmentInput, type AwsEnrollmentInput } from "./policy";
+import { parseCustomerPlanProfile, CUSTOMER_RESPONSE_BUDGET_BYTES } from "@/lib/terraform/customerPlanContract";
 export function assertAwsEnrollmentConfigured(): void {
     const config = loadAppEnv();
     if (process.env.ENABLE_CLOUD_CONNECTORS_AWS === "false" || config.awsScanMode !== "live" || !config.awsBrokerConfigured)
@@ -94,4 +95,23 @@ export async function readVerifiedEcsObservation(input: AwsEnrollmentInput & {
     const verified = await assumeVerifiedRole(input, { signal, budget });
     const { describeEcsResources } = await import("../ecsObservation/sdkObservation");
     return describeEcsResources(verified.credentials, verified.accountId, target, signal, budget);
+}
+/** Internal inactive Terraform read boundary. A verified identity supplies no
+ * plan/apply capability; temporary credentials never leave this broker stack. */
+export async function readVerifiedTerraformBackend(input: AwsEnrollmentInput & {
+    externalId: string;
+    sessionName: string;
+}, profileInput: unknown, parent: AbortSignal, runInput?: { id: string; attempt: number }) {
+    const profile = parseCustomerPlanProfile(profileInput);
+    const connection = { ...parseAwsEnrollmentInput({ expectedAccountId: input.expectedAccountId, roleArn: input.roleArn, region: input.region }), externalId: input.externalId, sessionName: input.sessionName };
+    const run = runInput && { ...runInput };
+    if (parent.aborted || connection.expectedAccountId !== profile.backend.accountId || connection.region !== profile.backend.region || connection.roleArn === profile.producer.planRoleArn
+        || !/^axiom-[a-f0-9]{32}$/.test(connection.externalId) || !/^[A-Za-z0-9_+=,.@-]{2,64}$/.test(connection.sessionName)
+        || run && (!/^[1-9]\d{0,31}$/.test(run.id) || !Number.isSafeInteger(run.attempt) || run.attempt < 1 || run.attempt > 2147483647))
+        throw new AwsEnrollmentError("enrollment_unavailable");
+    const signal = AbortSignal.any([parent, AbortSignal.timeout(30_000)]);
+    const budget = { remaining: CUSTOMER_RESPONSE_BUDGET_BYTES };
+    const verified = await assumeVerifiedRole(connection, { signal, budget });
+    const { readCustomerPlanAws } = await import("@/lib/terraform/customerPlanAwsRead");
+    return readCustomerPlanAws({ profile, accountId: verified.accountId, credentials: verified.credentials, signal, budget, run });
 }

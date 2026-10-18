@@ -1,5 +1,6 @@
 import "server-only";
-import { Transform, type TransformCallback } from "node:stream";
+import { Readable, Transform, type TransformCallback } from "node:stream";
+import { finished } from "node:stream/promises";
 import { IncomingMessage } from "node:http";
 import { NodeHttpHandler } from "@smithy/node-http-handler";
 export interface AwsResponseBudget {
@@ -8,6 +9,8 @@ export interface AwsResponseBudget {
 /** Owns actual native response streams before Smithy collection, including error bodies. */
 export function boundedAwsHandler(parent: AbortSignal, budget: AwsResponseBudget, options: {
     maxBytes?: number;
+    /** S3 HEAD only: declared object length is metadata; the observed body must be empty. */
+    headObjectMetadata?: boolean;
     timeoutMs?: number;
     native?: NodeHttpHandler;
 } = {}) {
@@ -17,6 +20,9 @@ export function boundedAwsHandler(parent: AbortSignal, budget: AwsResponseBudget
         metadata: { handlerProtocol: "http/1.1" },
         async handle(request: Parameters<NodeHttpHandler['handle']>[0], call: Parameters<NodeHttpHandler['handle']>[1] = {}) {
             if (parent.aborted || budget.remaining <= 0)
+                throw new Error('aws_response_unavailable');
+            const headMetadata = options.headObjectMetadata === true && request.method === "HEAD";
+            if (headMetadata && !Number.isSafeInteger(budget.remaining))
                 throw new Error('aws_response_unavailable');
             const suppliedSignal = call.abortSignal;
             if (suppliedSignal && !(suppliedSignal instanceof AbortSignal)) throw new Error("aws_response_unavailable");
@@ -40,12 +46,12 @@ export function boundedAwsHandler(parent: AbortSignal, budget: AwsResponseBudget
                 const limit = options.maxBytes ?? 512 * 1024;
                 const lengths = source.rawHeaders.filter((_, index) => index % 2 === 0).filter(k => k.toLowerCase() === 'content-length');
                 const length = result.response.headers['content-length'];
-                if (lengths.length > 1 || (length !== undefined && (!/^\d+$/.test(length) || Number(length) > Math.min(limit, budget.remaining))) ||
+                if (lengths.length > 1 || (length !== undefined && (!/^\d+$/.test(length) || Number(length) > (headMetadata ? limit : Math.min(limit, budget.remaining)))) ||
                     (result.response.headers['content-encoding'] && result.response.headers['content-encoding'] !== 'identity') || result.response.statusCode >= 300 && result.response.statusCode < 400)
                     throw new Error('aws_response_unavailable');
                 let received = 0;
                 bounded = new Transform({ transform(chunk: Buffer, _encoding: BufferEncoding, done: TransformCallback) {
-                        if (!Buffer.isBuffer(chunk) || controller.signal.aborted || received + chunk.length > limit || chunk.length > budget.remaining) {
+                        if (!Buffer.isBuffer(chunk) || controller.signal.aborted || received + chunk.length > (headMetadata ? 0 : limit) || chunk.length > budget.remaining) {
                             budget.remaining = 0;
                             done(new Error('aws_response_unavailable'));
                             return;
@@ -63,8 +69,18 @@ export function boundedAwsHandler(parent: AbortSignal, budget: AwsResponseBudget
                         source?.destroy();
                     cleanup();
                 });
-                source.pipe(body);
-                result.response.body = body;
+                if (headMetadata) {
+                    // SDK HeadObject parsers may otherwise ignore a body. Wait
+                    // for an empty stream before exposing usable metadata.
+                    const complete = finished(body, { cleanup: true });
+                    body.resume();
+                    source.pipe(body);
+                    await complete;
+                    result.response.body = Readable.from([]);
+                } else {
+                    source.pipe(body);
+                    result.response.body = body;
+                }
                 return result;
             }
             catch {
@@ -80,7 +96,7 @@ export function boundedAwsHandler(parent: AbortSignal, budget: AwsResponseBudget
     };
 }
 /** Fixed reviewed service origins: never accept ambient endpoint URL configuration. */
-export function awsReadEndpoint(service: 'sts' | 'ecs' | 'ecr', region: string, partition: string): string {
+export function awsReadEndpoint(service: 'sts' | 'ecs' | 'ecr' | 's3' | 'dynamodb', region: string, partition: string): string {
     if (!/^[a-z]{2}(?:-[a-z]+)+-[0-9]$/.test(region) || !['aws', 'aws-us-gov', 'aws-cn'].includes(partition) || (partition === 'aws-cn') !== region.startsWith('cn-') || (partition === 'aws-us-gov') !== region.startsWith('us-gov-'))
         throw new Error('aws_response_unavailable');
     return `https://${service === 'ecr' ? 'api.ecr' : service}.${region}.amazonaws.com${partition === 'aws-cn' ? '.cn' : ''}`;

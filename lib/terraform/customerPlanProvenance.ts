@@ -4,13 +4,13 @@ import { sha256ContentHash } from "@/lib/tauri/contentHash";
 import { encryptScopedCredential } from "@/lib/security/credentialVault";
 import { verifyBuildProvenance, type BuildBinding } from "@/lib/releaseops/ecsReleaseV2/sigstoreBuildVerifier";
 import { bytesDigest, inspectSavedPlanJson, MAX_PLAN_BYTES, MAX_SHOW_BYTES, type SavedPlanRecord } from "./savedPlanArtifact";
-import { CUSTOMER_RECEIPT_MAX_BYTES, parseCustomerPlanProfile, parseCustomerBackendState, parseCustomerSavedPlanBinding, customerImportId, type CustomerPlanProfile, type CustomerSavedPlanBinding } from "./customerPlanContract";
+import { CUSTOMER_RECEIPT_MAX_BYTES, parseCustomerPlanProfile, parseCustomerBackendState, parseCustomerSavedPlanBinding, customerImportId, type CustomerSavedPlanBinding } from "./customerPlanContract";
 
 export interface CustomerPlanTrust {
  publicProfile: unknown; digest: string; terraformVersion: string; executableDigest: string; reviewExpiresAt: string; downloadPolicy:readonly GithubBundleDownloadRule[];
 }
 export interface CustomerProducerInput {
- profile: CustomerPlanProfile; requestContentHash:string; targetDigest:string; run:{id:string;attempt:number};
+ profile: unknown; requestContentHash:string; targetDigest:string; run:{id:string;attempt:number};
  binary:Uint8Array; show:Uint8Array; receipt:Uint8Array; bundle:Uint8Array;
  trust:CustomerPlanTrust; now:Date; authorize:(organizationId:string)=>Promise<boolean>;
 }
