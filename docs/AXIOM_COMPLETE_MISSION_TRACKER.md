@@ -21,13 +21,16 @@ policy orders add 42 units: **2,154 rows across 22 available sources**. All earl
 Claude responsibility remains mapped; the unavailable original 36-section source
 and scenarios A–L remain explicitly unresolved. Coverage is not verified completion.
 
-ECS has a parent-validated owned-application run with real source graph and bounded
-provider-wire fixtures; its checked subject mismatch correctly grants no admission
-or execution authority. Integration and publication gates remain. Agent application
-acceptance is awaiting a fresh compiler check and its fourth owned run after reviewed
-guard/body fixes. Billing's four financial source-review findings are closed; real
-PostgreSQL and application acceptance for anniversary allowances remains pending.
-Terraform customer-plan provenance and current-authority work continues independently.
+ECS integrated source `9c60bff0` passed owned22-group/218-request acceptance,
+web types, full7,346-test regression, desktop types/build, Python30 and offline16.
+Its artifact mismatch correctly grants no admission or execution authority. The
+source-qualified final package `13f07f6a` awaits exact-head GitHub CI/review.
+Agent's fourth application attempt failed closed in11.56seconds with exact
+`aws.identity_entry_missing`; cleanup is verified, actual continuation remains
+unverified and no identity relaxation or retry is approved. Billing's anniversary
+fixture source review is clear after disabling Prisma's update request; real PG/Next
+acceptance is underway after its compiler gate. Terraform transport review and
+premium demo content review passed; cloud authority and browser QA remain pending.
 
 Azure CLI is installed in an owned isolated environment. No configured local identity
 or cache was found; directory identities remain unknown. Interactive sign-in is blocked
