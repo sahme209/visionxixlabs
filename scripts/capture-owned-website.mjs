@@ -20,6 +20,7 @@ try {
   config = candidate; // Only a validated, directory-bound nonce can be written in the final receipt.
   const windowState = JSON.parse(readFileSync(join(directory, 'window.json'), 'utf8'));
   assert.equal(windowState.directory, directory); assert.equal(windowState.nonce, config.nonce);
+  assert.equal(windowState.bundler, 'webpack');
   assert.equal(windowState.origin, policy.endpoint(config.appPort)); assert.equal(windowState.productionEquivalent, false);
   for (const owner of windowState.owners) assert.ok(policy.sameOwner(owner, policy.snapshot(owner.pid)), 'website_capture_owner_changed');
   for (const [path, hash] of Object.entries(config.hashes)) assert.equal(policy.sha256(path), hash, 'website_capture_source_changed');
@@ -112,7 +113,7 @@ try {
   // The only post-stop writes are this single final evidence/nonce receipt. Parent waits
   // for this owned driver's positive exit before touching its profile/dist artifacts.
   if (config) {
-    const result = { success, failure, productionEquivalent: false, evidence, images, deniedRequests: denied, consoleErrorCategories: consoleErrors, qualification: 'Actual local integrated Next pages; API requests denied; external fonts may fall back; screenshots require human inspection. No provider/native acceptance.' };
+    const result = { success, failure, bundler: 'webpack', productionEquivalent: false, evidence, images, deniedRequests: denied, consoleErrorCategories: consoleErrors, qualification: 'Actual local integrated Next pages; API requests denied; external fonts may fall back; screenshots require human inspection. No provider/native acceptance.' };
     writeFileSync(join(directory, 'capture.json'), JSON.stringify(result, null, 2), { mode: 0o600 });
     writeFileSync(join(directory, 'done.json'), JSON.stringify({ success, nonce: config.nonce }), { mode: 0o600 });
     process.stdout.write(`${join(directory, 'capture.json')}\n`);

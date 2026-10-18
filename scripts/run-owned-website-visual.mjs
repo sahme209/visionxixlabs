@@ -21,9 +21,7 @@ function capture() {
   for (const name of ['.env', '.env.local', '.env.development', '.env.development.local']) assert.equal(existsSync(join(root, name)), false, 'website_ambient_env_file');
   return { schema: 1, root, sourceHead: git(['rev-parse', 'HEAD'], managedIdentity), managedNodePath: managedIdentity, framework: framework.captureOwnedWebsiteFramework(root), hashes: Object.fromEntries([...sourceFiles.map(path => join(root, path)), realpathSync(process.execPath), realpathSync(browser)].map(path => [path, policy.sha256(path)])), productionEquivalent: false };
 }
-function groupMembers(group) {
-  return readdirSync('/proc').filter(name => /^\d+$/.test(name)).flatMap(name => { try { const row = policy.snapshot(Number(name)); return row.group === group && row.state !== 'Z' ? [row] : []; } catch (error) { if (['ENOENT', 'ESRCH'].includes(error.code)) return []; throw error; } });
-}
+const groupMembers = policy.groupMembers;
 async function stopGroup(owner) {
   function members() { const rows = groupMembers(owner.group); for (const row of rows) assert.ok(Number(row.start) >= Number(owner.start) && row.executable === owner.executable, 'website_cleanup_foreign_group_member'); return rows; }
   if (!members().length) return;
@@ -68,7 +66,7 @@ async function execute(manifest) {
     }));
   }
   async function waitFor(check, milliseconds) { const deadline = Date.now() + milliseconds; while (Date.now() < deadline) { control.check(); const result = await control.run(check); if (result) return result; await control.run(() => pause(100)); } throw Error('website_readiness_timeout'); }
-  let result = { status: 'failed', productionEquivalent: false, sourceHead: manifest.sourceHead };
+  let result = { status: 'failed', bundler: 'webpack', productionEquivalent: false, sourceHead: manifest.sourceHead };
   try {
     const serverRecord = await launch(process.execPath, [join(root, 'scripts/fixtures/ownedWebsiteChild.cjs')], env);
     const child = serverRecord.handle;

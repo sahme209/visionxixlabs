@@ -2,7 +2,7 @@
 'use strict';
 const assert = require('node:assert/strict');
 const { realpathSync, readFileSync, readdirSync, readlinkSync } = require('node:fs');
-const { join } = require('node:path');
+const { join, relative } = require('node:path');
 const { createHash } = require('node:crypto');
 const managedNodePath = require('./ownedWebsiteManagedNodePath.cjs');
 const pages = new Set(['/', '/product', '/docs/approval-workflow']);
@@ -55,9 +55,36 @@ function chromiumArgs({ profile, proxyPort, cdpPort }) {
   endpoint(proxyPort); endpoint(cdpPort); assert.notEqual(proxyPort, cdpPort);
   return ['--headless=new', '--enable-automation', '--no-sandbox', '--disable-dev-shm-usage', '--disable-gpu', '--disable-background-networking', '--disable-component-update', '--disable-default-apps', '--disable-extensions', '--disable-sync', '--disable-quic', '--no-first-run', '--no-default-browser-check', '--disable-breakpad', '--disable-features=MediaRouter,OptimizationHints,AutofillServerCommunication', '--host-resolver-rules=MAP * ~NOTFOUND, EXCLUDE 127.0.0.1', `--proxy-server=http://127.0.0.1:${proxyPort}`, '--proxy-bypass-list=<-loopback>', '--remote-debugging-address=127.0.0.1', `--remote-debugging-port=${cdpPort}`, `--user-data-dir=${profile}`, '--window-size=1440,1000', 'about:blank'];
 }
-function snapshot(pid) {
+function processStat(pid) {
   const raw = readFileSync(`/proc/${pid}/stat`, 'utf8'); const fields = raw.slice(raw.lastIndexOf(')') + 2).split(' ');
-  return { pid, state: fields[0], group: Number(fields[2]), start: fields[19], executable: realpathSync(`/proc/${pid}/exe`) };
+  return { pid, state: fields[0], group: Number(fields[2]), start: fields[19] };
+}
+function snapshot(pid) { return { ...processStat(pid), executable: realpathSync(`/proc/${pid}/exe`) }; }
+function groupMembers(group, io = { pids: () => readdirSync('/proc').filter(name => /^\d+$/.test(name)).map(Number), stat: processStat, executable: pid => realpathSync(`/proc/${pid}/exe`) }) {
+  assert.ok(Number.isInteger(group) && group > 0, 'website_group_invalid');
+  const rows = [];
+  const gone = error => ['ENOENT', 'ESRCH'].includes(error.code);
+  function readStat(pid) { try { return io.stat(pid); } catch (error) { if (gone(error)) return null; throw error; } }
+  for (const pid of io.pids()) {
+    const before = readStat(pid);
+    // Unrelated executable metadata is never consulted. Unreadable stat still refuses,
+    // because relevance cannot be established safely in that case.
+    if (!before || before.group !== group || before.state === 'Z') continue;
+    let executable, metadataError;
+    try { executable = io.executable(pid); } catch (error) { metadataError = error; }
+    const after = readStat(pid);
+    if (!after) continue;
+    assert.ok(before.pid === after.pid && before.group === after.group && before.start === after.start, 'website_group_identity_changed');
+    if (after.state === 'Z') continue;
+    if (metadataError) throw metadataError; // A live relevant member must remain inspectable.
+    rows.push({ ...after, executable });
+  }
+  return rows;
+}
+function ownedNextOptions({ root, dist, appPort, actual }) {
+  endpoint(appPort);
+  assert.ok(dist.startsWith(`${root}/.next/visual-`), 'website_owned_dist');
+  return { dev: true, webpack: true, dir: root, hostname: '127.0.0.1', port: appPort, conf: { ...actual, distDir: relative(root, dist), typescript: { ...actual.typescript, tsconfigPath: relative(root, join(dist, 'tsconfig.json')) } } };
 }
 function sameOwner(original, current) { return original.pid === current.pid && original.start === current.start && original.group === original.pid && current.group === original.group && current.executable === original.executable; }
 function listeners() {
@@ -83,4 +110,4 @@ function proveListener(owner, port, io = { snapshot, listeners, descriptors }) {
   assert.deepEqual(io.listeners().filter(candidate => candidate.port === port), rows, 'website_listener_changed');
   return { inode: row.inode, owner };
 }
-module.exports = { checkedEnvironment, proveListener, sha256, endpoint, publicAssets, allowedRequest, childEnvironment, chromiumArgs, snapshot, sameOwner };
+module.exports = { groupMembers, ownedNextOptions, checkedEnvironment, proveListener, sha256, endpoint, publicAssets, allowedRequest, childEnvironment, chromiumArgs, snapshot, sameOwner };

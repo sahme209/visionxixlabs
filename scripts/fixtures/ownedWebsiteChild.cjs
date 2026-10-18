@@ -2,9 +2,9 @@
 'use strict';
 const assert = require('node:assert/strict');
 const { readFileSync, writeFileSync, existsSync, realpathSync } = require('node:fs');
-const { join, relative } = require('node:path');
+const { join } = require('node:path');
 const http = require('node:http');
-const { allowedRequest, endpoint, sha256 } = require('./ownedWebsitePolicy.cjs');
+const { allowedRequest, endpoint, sha256, ownedNextOptions } = require('./ownedWebsitePolicy.cjs');
 const { installOwnedWebsiteGuard } = require('./ownedWebsiteGuard.cjs');
 const framework = require('./ownedWebsiteFramework.cjs');
 const managedNodePath = require('./ownedWebsiteManagedNodePath.cjs');
@@ -21,7 +21,7 @@ for (const [path, hash] of Object.entries(config.hashes)) assert.equal(sha256(pa
 for (const filename of ['.env', '.env.local', '.env.development', '.env.development.local']) assert.equal(existsSync(join(root, filename)), false, 'website_ambient_env_file');
 const origin = endpoint(config.appPort);
 let app, ready = false, guard;
-function report(stage) { writeFileSync(join(directory, 'server.json'), JSON.stringify({ stage, pid: process.pid, nonce: config.nonce, origin, productionEquivalent: false, framework: config.framework, guard: guard?.report() }), { mode: 0o600 }); }
+function report(stage) { writeFileSync(join(directory, 'server.json'), JSON.stringify({ stage, pid: process.pid, nonce: config.nonce, origin, productionEquivalent: false, bundler: 'webpack', framework: config.framework, guard: guard?.report() }), { mode: 0o600 }); }
 const server = http.createServer(async (req, res) => {
   if (req.headers.host !== `127.0.0.1:${config.appPort}` || !allowedRequest({ method: req.method, raw: req.url, origin, assets: config.assets })) { res.writeHead(403).end('Owned visual fixture: request denied'); return; }
   if (!ready) { res.writeHead(503).end('Owned visual fixture preparing'); return; }
@@ -40,11 +40,12 @@ server.listen({ host: '127.0.0.1', port: config.appPort, exclusive: true }, asyn
     report('guarded');
     managedNodePath.revalidate(process.env.NODE_PATH, config.managedNodePath);
     const next = require('next');
-    // conf is the real pinned config loaded through Next; only owned distDir is overridden.
+    // Real pinned config; explicit supported custom-server Webpack selects the fixture bundler.
+    // Workers/processes remain denied, and the actual Turbopack filesystem root is unchanged.
     const loadConfig = require('next/dist/server/config').default;
     const constants = require('next/constants');
     const actual = await loadConfig(constants.PHASE_DEVELOPMENT_SERVER, root);
-    app = next({ dev: true, dir: root, hostname: '127.0.0.1', port: config.appPort, conf: { ...actual, distDir: relative(root, config.dist), typescript: { ...actual.typescript, tsconfigPath: relative(root, join(config.dist, "tsconfig.json")) } } });
+    app = next(ownedNextOptions({ root, dist: config.dist, appPort: config.appPort, actual }));
     await app.prepare(); mode.report(); ready = true; report('ready');
   } catch { report('startup_failed'); process.exitCode = 1; server.closeAllConnections(); server.close(); clearTimeout(expiry); }
 });
