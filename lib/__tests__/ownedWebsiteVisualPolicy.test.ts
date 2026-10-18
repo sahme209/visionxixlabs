@@ -19,11 +19,11 @@ describe("owned website request boundary", () => {
   it.each(["POST", "PUT", "PATCH", "DELETE", "CONNECT", "OPTIONS"])("refuses %s even on allowed paths", method => expect(request("/product", method)).toBe(false));
 });
 
-it("strips ambient credentials and options while retaining managed proxy/CA configuration", () => {
-  const env = policy.childEnvironment({ PATH: "/bin", HTTPS_PROXY: "managed-proxy", NODE_EXTRA_CA_CERTS: "/managed-ca", AWS_SECRET_ACCESS_KEY: "private", DATABASE_URL: "private", NODE_OPTIONS: "--require=unsafe", LD_PRELOAD: "unsafe", HOME: "/ambient-home", GITHUB_TOKEN: "private", NEXT_PUBLIC_API_URL: "external" }, { directory: "/tmp/axiom-website-test", configPath: "/tmp/axiom-website-test/config.json" });
+it("strips ambient credentials while retaining managed proxy/CA configuration", () => {
+  const env = policy.childEnvironment({ PATH: "/bin", HTTPS_PROXY: "managed-proxy", NODE_EXTRA_CA_CERTS: "/managed-ca", AWS_SECRET_ACCESS_KEY: "private", DATABASE_URL: "private", HOME: "/ambient-home", GITHUB_TOKEN: "private", NEXT_PUBLIC_API_URL: "external" }, { directory: "/tmp/axiom-website-test", configPath: "/tmp/axiom-website-test/config.json" }, []);
   expect(env.HTTPS_PROXY).toBe("managed-proxy"); expect(env.NODE_EXTRA_CA_CERTS).toBe("/managed-ca");
   expect(env.HOME).toBe("/tmp/axiom-website-test/home"); expect(env.TMPDIR).toBe("/tmp/axiom-website-test/tmp");
-  for (const key of ["AWS_SECRET_ACCESS_KEY", "DATABASE_URL", "NODE_OPTIONS", "LD_PRELOAD", "GITHUB_TOKEN", "NEXT_PUBLIC_API_URL"]) expect(env[key]).toBeUndefined();
+  for (const key of ["AWS_SECRET_ACCESS_KEY", "DATABASE_URL", "LD_PRELOAD", "GITHUB_TOKEN", "NEXT_PUBLIC_API_URL"]) expect(env[key]).toBeUndefined();
   expect(env.AWS_SHARED_CREDENTIALS_FILE).toBe("/dev/null");
 });
 

@@ -7,18 +7,20 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import policy from './fixtures/ownedWebsitePolicy.cjs';
 import framework from './fixtures/ownedWebsiteFramework.cjs';
+import lifecycle from './fixtures/ownedWebsiteLifecycle.cjs';
 const root = realpathSync(join(dirname(fileURLToPath(import.meta.url)), '..'));
 const browser = '/usr/lib/chromium/chromium';
-const sourceFiles = ['scripts/run-owned-website-visual.mjs', 'scripts/fixtures/ownedWebsitePolicy.cjs', 'scripts/fixtures/ownedWebsiteGuard.cjs', 'scripts/fixtures/ownedWebsiteFramework.cjs', 'scripts/fixtures/ownedWebsiteChild.cjs', 'scripts/capture-owned-website.mjs'];
+const sourceFiles = ['scripts/run-owned-website-visual.mjs', 'scripts/fixtures/ownedWebsitePolicy.cjs', 'scripts/fixtures/ownedWebsiteGuard.cjs', 'scripts/fixtures/ownedWebsiteFramework.cjs', 'scripts/fixtures/ownedWebsiteChild.cjs', 'scripts/fixtures/ownedWebsiteLifecycle.cjs', 'scripts/fixtures/ownedWebsiteSession.cjs', 'scripts/capture-owned-website.mjs'];
 const pause = ms => new Promise(resolve => setTimeout(resolve, ms));
 function git(args) { return execFileSync('git', args, { cwd: root, encoding: 'utf8', env: { PATH: process.env.PATH, GIT_CONFIG_NOSYSTEM: '1', GIT_CONFIG_GLOBAL: '/dev/null' }, timeout: 5000 }).trim(); }
 function capture() {
+  policy.checkedEnvironment(process.env, process.execArgv); // Refuse inherited guard/trust changes before even a git child.
   assert.equal(git(['status', '--porcelain', '--untracked-files=no']), '', 'website_clean_source_required');
   for (const name of ['.env', '.env.local', '.env.development', '.env.development.local']) assert.equal(existsSync(join(root, name)), false, 'website_ambient_env_file');
   return { schema: 1, root, sourceHead: git(['rev-parse', 'HEAD']), framework: framework.captureOwnedWebsiteFramework(root), hashes: Object.fromEntries([...sourceFiles.map(path => join(root, path)), realpathSync(process.execPath), realpathSync(browser)].map(path => [path, policy.sha256(path)])), productionEquivalent: false };
 }
 function groupMembers(group) {
-  return readdirSync('/proc').filter(name => /^\d+$/.test(name)).flatMap(name => { try { const row = policy.snapshot(Number(name)); return row.group === group && row.state !== 'Z' ? [row] : []; } catch (error) { if (['ENOENT', 'ESRCH', 'EACCES'].includes(error.code)) return []; throw error; } });
+  return readdirSync('/proc').filter(name => /^\d+$/.test(name)).flatMap(name => { try { const row = policy.snapshot(Number(name)); return row.group === group && row.state !== 'Z' ? [row] : []; } catch (error) { if (['ENOENT', 'ESRCH'].includes(error.code)) return []; throw error; } });
 }
 async function stopGroup(owner) {
   function members() { const rows = groupMembers(owner.group); for (const row of rows) assert.ok(Number(row.start) >= Number(owner.start) && row.executable === owner.executable, 'website_cleanup_foreign_group_member'); return rows; }
@@ -48,28 +50,24 @@ async function execute(manifest) {
   const config = { root, directory, dist, nonce, appPort, proxyPort, cdpPort, assets, hashes: manifest.hashes, framework: manifest.framework };
   const configPath = join(directory, 'config.json'); writeFileSync(configPath, JSON.stringify(config), { mode: 0o600 });
   const env = policy.childEnvironment(process.env, { directory, configPath });
-  const owners = [], logs = [];
+  const logs = [];
+  const ledger = lifecycle.createLedger({ spawn, snapshot: policy.snapshot, canonical: realpathSync, stopGroup, groupMembers });
   let proxy, expired = false, diskExceeded = false;
   const wall = setTimeout(() => { expired = true; }, 300_000);
   const disk = setInterval(() => { try { if (directoryBytes(directory) + directoryBytes(dist) > 400 * 1024 * 1024) diskExceeded = true; } catch { diskExceeded = true; } }, 5000);
-  async function launch(executable, args, childEnv) {
-    const child = spawn(executable, args, { cwd: root, env: childEnv, detached: true, stdio: ['ignore', 'pipe', 'pipe'] });
-    let count = 0;
-    for (const stream of [child.stdout, child.stderr]) stream.on('data', chunk => { count += chunk.length; if (count <= 512_000) logs.push(chunk.toString()); });
-    await new Promise((resolve, reject) => { child.once('spawn', resolve); child.once('error', reject); });
-    await register(child, executable); return child;
-  }
-  async function register(child, executable) {
-    const deadline = Date.now() + 3000;
-    while (Date.now() < deadline) { try { const row = policy.snapshot(child.pid); if (row.executable === realpathSync(executable)) { assert.equal(row.group, child.pid); owners.push(row); return; } } catch (error) { if (!['ENOENT', 'ESRCH'].includes(error.code)) throw error; } await pause(20); }
-    throw Error('website_child_registration_failed');
+  function launch(executable, args, childEnv) {
+    return ledger.launch(executable, args, { cwd: root, env: childEnv, detached: true, stdio: ['ignore', 'pipe', 'pipe'] }, child => {
+      let count = 0;
+      for (const stream of [child.stdout, child.stderr]) stream.on('data', chunk => { count += chunk.length; if (count <= 512_000) logs.push(chunk.toString()); });
+    });
   }
   async function waitFor(check, milliseconds) { const deadline = Date.now() + milliseconds; while (Date.now() < deadline) { assert.ok(!expired && !diskExceeded, 'website_resource_limit'); const result = await check(); if (result) return result; await pause(100); } throw Error('website_readiness_timeout'); }
   let result = { status: 'failed', productionEquivalent: false, sourceHead: manifest.sourceHead };
   try {
-    const child = await launch(process.execPath, ['--max-old-space-size=3072', join(root, 'scripts/fixtures/ownedWebsiteChild.cjs')], env);
+    const serverRecord = await launch(process.execPath, [join(root, 'scripts/fixtures/ownedWebsiteChild.cjs')], env);
+    const child = serverRecord.handle;
     const receipt = await waitFor(() => {
-      assert.ok(child.exitCode === null, 'website_server_exited');
+      assert.ok(!serverRecord.exited, 'website_server_exited');
       if (!existsSync(join(directory, 'server.json'))) return false;
       let value; try { value = JSON.parse(readFileSync(join(directory, 'server.json'), 'utf8')); } catch { return false; }
       assert.equal(value.pid, child.pid); assert.equal(value.nonce, nonce); assert.equal(value.origin, origin);
@@ -87,20 +85,26 @@ async function execute(manifest) {
     proxy.on('upgrade', (_req, socket) => { proxyDenied++; socket.destroy(); });
     await new Promise((resolve, reject) => { proxy.once('error', reject); proxy.listen({ host: '127.0.0.1', port: proxyPort, exclusive: true }, resolve); });
     const browserEnv = { ...env }; delete browserEnv.AXIOM_WEBSITE_CONFIG; delete browserEnv.AXIOM_WEBSITE_VISUAL_MODE;
-    await launch(browser, policy.chromiumArgs({ profile: join(directory, 'chromium'), proxyPort, cdpPort }), browserEnv);
-    result = { ...result, status: 'owned_window_ready', directory, origin, cdpOrigin: policy.endpoint(cdpPort), nonce, receipt, owners, proxyDenied };
+    const browserRecord = await launch(browser, policy.chromiumArgs({ profile: join(directory, 'chromium'), proxyPort, cdpPort }), browserEnv);
+    await waitFor(() => {
+      assert.ok(!browserRecord.exited, 'website_browser_exited');
+      try { return policy.proveListener(browserRecord.owner, cdpPort); } catch (error) { if (error.message === 'website_listener_not_ready') return false; throw error; }
+    }, 10_000);
+    result = { ...result, status: 'owned_window_ready', directory, origin, cdpOrigin: policy.endpoint(cdpPort), nonce, receipt, owners: ledger.owners(), browserOwner: browserRecord.owner, proxyDenied };
     writeFileSync(join(directory, 'window.json'), JSON.stringify(result), { mode: 0o600 });
     process.stdout.write(`${JSON.stringify({ directory, origin, cdpOrigin: policy.endpoint(cdpPort), productionEquivalent: false })}\n`);
-    // CDP driver is separately reviewed and bounded; it writes done.json only inside this private directory.
-    await waitFor(() => existsSync(join(directory, 'done.json')), 120_000);
+    // Fixed manifest-pinned driver is an owned child, never an untracked external process.
+    const driver = await launch(process.execPath, [join(root, 'scripts/capture-owned-website.mjs'), directory], env);
+    await waitFor(() => driver.exited, 125_000);
+    assert.equal(driver.exitCode, 0, 'website_driver_failed'); assert.equal(driver.signal, null, 'website_driver_signalled');
+    assert.ok(existsSync(join(directory, 'done.json')), 'website_driver_receipt_missing');
     const completed = JSON.parse(readFileSync(join(directory, 'done.json'), 'utf8'));
     assert.equal(completed.nonce, nonce); assert.equal(completed.success, true, 'website_capture_failed');
     result = { ...result, status: 'driver_finished', proxyDenied };
   } catch (error) { result = { ...result, error: error instanceof Error ? error.message : 'website_fixture_failed' }; }
   finally {
     clearTimeout(wall); clearInterval(disk);
-    const cleanupErrors = [];
-    for (const owner of [...owners].reverse()) { try { await stopGroup(owner); } catch (error) { cleanupErrors.push(String(error.message)); } }
+    const cleanupErrors = await ledger.cleanup();
     proxy?.closeAllConnections(); await new Promise(resolve => proxy?.listening ? proxy.close(resolve) : resolve());
     // Retain owned artifacts if a process could not be safely stopped; never remove any existing .next root.
     if (cleanupErrors.length === 0) {
@@ -110,7 +114,7 @@ async function execute(manifest) {
     writeFileSync(join(directory, 'bounded-runtime.log'), logs.join(''), { mode: 0o600 });
     const sourceUnchanged = git(['rev-parse', 'HEAD']) === manifest.sourceHead && git(['status', '--porcelain', '--untracked-files=no']) === '';
     if (cleanupErrors.length || !sourceUnchanged) result.status = 'failed';
-    writeFileSync(join(directory, 'result.json'), JSON.stringify({ ...result, cleanup: cleanupErrors.length ? 'failed' : 'owned_groups_empty', cleanupErrors, fontRendering: 'external-font-fetch-denied; inspect fallback rendering', sourceUnchanged }), { mode: 0o600 });
+    writeFileSync(join(directory, 'result.json'), JSON.stringify({ ...result, cleanup: cleanupErrors.length ? 'failed' : 'owned_groups_empty', cleanupErrors, children: ledger.records.map(record => ({ pid: record.pid, owner: record.owner, exited: record.exited, neverSpawned: record.neverSpawned, exitCode: record.exitCode, signal: record.signal })), fontRendering: 'external-font-fetch-denied; inspect fallback rendering', sourceUnchanged }), { mode: 0o600 });
     process.stdout.write(`${join(directory, 'result.json')}\n`);
   }
   if (result.status !== 'driver_finished') process.exitCode = 1;
