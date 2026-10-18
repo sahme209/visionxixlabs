@@ -138,3 +138,68 @@ it("retains artifacts eligibility when an unregistered exited child has descenda
 it("distinguishes an absent listener from a collision without any network probe", () => {
   expect(() => policy.proveListener(owner, 38003, listenerIO({ listeners: () => [] }))).toThrow("website_listener_not_ready");
 });
+
+describe("coordinator signals cancel active work through owned cleanup", () => {
+  it("interrupts pending registration promptly and cleans the subsequently verified child", async () => {
+    const signals = new EventEmitter(); const control = lifecycle.createCoordinator({ signals }); const handle = child();
+    const stop = vi.fn(async () => { handle.emit("exit", null, "SIGTERM"); });
+    const ledger = lifecycle.createLedger({ spawn: () => handle, snapshot: () => owner, canonical: (v: string) => v, stopGroup: stop, groupMembers: () => [], waitExit: async () => {} });
+    try {
+      const pending = control.run(() => ledger.launch("/owned/node", [], {}));
+      const rejected = expect(pending).rejects.toThrow("website_coordinator_SIGTERM"); signals.emit("SIGTERM"); await rejected;
+      const cleanup = ledger.cleanup(); handle.emit("spawn"); expect(await cleanup).toEqual([]); expect(stop).toHaveBeenCalledOnce();
+      const late = vi.fn(); await expect(control.run(late)).rejects.toThrow("website_coordinator_SIGTERM"); expect(late).not.toHaveBeenCalled();
+      expect(control.report()).toMatchObject({ signal: "SIGTERM", interrupted: true });
+    } finally { control.dispose(); }
+    expect(signals.listenerCount("SIGTERM")).toBe(0); expect(signals.listenerCount("SIGINT")).toBe(0);
+  });
+  it("interrupts a driver wait without waiting its 120 seconds and preserves the first signal", async () => {
+    const signals = new EventEmitter(); const control = lifecycle.createCoordinator({ signals });
+    try {
+      const pending = control.run(() => new Promise(() => {})); const rejected = expect(pending).rejects.toThrow("website_coordinator_SIGINT");
+      signals.emit("SIGINT"); signals.emit("SIGTERM"); await rejected;
+      expect(control.report()).toMatchObject({ signal: "SIGINT", interrupted: true, failure: "website_coordinator_SIGINT" });
+    } finally { control.dispose(); }
+  });
+  it("signals during cleanup neither abort cleanup nor replace an earlier failure", async () => {
+    const signals = new EventEmitter(); const control = lifecycle.createCoordinator({ signals }); const handle = child();
+    const stop = vi.fn(async () => { signals.emit("SIGTERM"); signals.emit("SIGINT"); handle.emit("exit", 1, null); });
+    const ledger = lifecycle.createLedger({ spawn: () => handle, snapshot: () => owner, canonical: (v: string) => v, stopGroup: stop, groupMembers: () => [], waitExit: async () => {} });
+    try {
+      const launch = ledger.launch("/owned/node", [], {}); handle.emit("spawn"); await launch;
+      control.cancel(Error("original_failure")); expect(await ledger.cleanup()).toEqual([]); expect(stop).toHaveBeenCalledOnce();
+      expect(control.report()).toMatchObject({ signal: "SIGTERM", interrupted: true, failure: "original_failure" });
+      expect(() => control.check()).toThrow("original_failure");
+    } finally { control.dispose(); }
+  });
+  it("absolute parent deadline cancels pending waits and refuses later launches", async () => {
+    vi.useFakeTimers(); const control = lifecycle.createCoordinator({ signals: new EventEmitter(), duration: 1000 });
+    try {
+      const pending = control.run(() => new Promise(() => {})); const rejected = expect(pending).rejects.toThrow("website_coordinator_deadline");
+      await vi.advanceTimersByTimeAsync(1000); await rejected;
+      expect(() => control.check()).toThrow("website_coordinator_deadline");
+    } finally { control.dispose(); vi.useRealTimers(); }
+  });
+});
+
+it("unverified registration after interruption stays bounded and cannot become a late cleanup success", async () => {
+  vi.useFakeTimers(); const control = lifecycle.createCoordinator({ signals: new EventEmitter() }); const handle = child(); const stop = vi.fn();
+  const ledger = lifecycle.createLedger({ spawn: () => handle, snapshot: () => owner, canonical: (v: string) => v, stopGroup: stop, groupMembers: () => [], waitExit: async () => {} });
+  try {
+    const launch = control.run(() => ledger.launch("/owned/node", [], {})); const rejected = expect(launch).rejects.toThrow("cancelled"); control.cancel(Error("cancelled")); await rejected;
+    const cleanup = ledger.cleanup(); await vi.advanceTimersByTimeAsync(2000);
+    expect(await cleanup).toEqual(["website_pending_child_unresolved"]);
+    handle.emit("spawn"); await Promise.resolve(); expect(ledger.owners()).toEqual([]); expect(stop).not.toHaveBeenCalled();
+  } finally { control.dispose(); vi.useRealTimers(); }
+});
+
+it("a signal during otherwise successful cleanup prevents a success report", async () => {
+  const signals = new EventEmitter(); const control = lifecycle.createCoordinator({ signals }); const handle = child();
+  const ledger = lifecycle.createLedger({ spawn: () => handle, snapshot: () => owner, canonical: (v: string) => v, stopGroup: async () => { signals.emit("SIGTERM"); handle.emit("exit", 0, null); }, groupMembers: () => [], waitExit: async () => {} });
+  try {
+    const launch = control.run(() => ledger.launch("/owned/node", [], {})); handle.emit("spawn"); await launch;
+    expect(await ledger.cleanup()).toEqual([]);
+    expect(control.report()).toMatchObject({ interrupted: true, failure: "website_coordinator_SIGTERM" });
+    expect(() => control.check()).toThrow("website_coordinator_SIGTERM");
+  } finally { control.dispose(); }
+});

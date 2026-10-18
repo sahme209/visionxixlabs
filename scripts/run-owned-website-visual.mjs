@@ -34,6 +34,9 @@ async function stopGroup(owner) {
 }
 function directoryBytes(path) { let total = 0; for (const item of readdirSync(path, { withFileTypes: true })) { if (item.isSymbolicLink()) continue; const next = join(path, item.name); total += item.isDirectory() ? directoryBytes(next) : statSync(next).size; } return total; }
 async function execute(manifest) {
+  // Install cancellation before capture() can spawn even its bounded local git checks.
+  const control = lifecycle.createCoordinator();
+  try {
   assert.deepEqual(capture(), manifest, 'website_reviewed_manifest_changed');
   const directory = mkdtempSync('/tmp/axiom-website-');
   const nonce = randomBytes(16).toString('hex');
@@ -52,16 +55,15 @@ async function execute(manifest) {
   const env = policy.childEnvironment(process.env, { directory, configPath });
   const logs = [];
   const ledger = lifecycle.createLedger({ spawn, snapshot: policy.snapshot, canonical: realpathSync, stopGroup, groupMembers });
-  let proxy, expired = false, diskExceeded = false;
-  const wall = setTimeout(() => { expired = true; }, 300_000);
-  const disk = setInterval(() => { try { if (directoryBytes(directory) + directoryBytes(dist) > 400 * 1024 * 1024) diskExceeded = true; } catch { diskExceeded = true; } }, 5000);
+  let proxy;
+  const disk = setInterval(() => { try { if (directoryBytes(directory) + directoryBytes(dist) > 400 * 1024 * 1024) control.cancel(Error('website_resource_limit')); } catch { control.cancel(Error('website_resource_limit')); } }, 5000);
   function launch(executable, args, childEnv) {
-    return ledger.launch(executable, args, { cwd: root, env: childEnv, detached: true, stdio: ['ignore', 'pipe', 'pipe'] }, child => {
+    return control.run(() => ledger.launch(executable, args, { cwd: root, env: childEnv, detached: true, stdio: ['ignore', 'pipe', 'pipe'] }, child => {
       let count = 0;
       for (const stream of [child.stdout, child.stderr]) stream.on('data', chunk => { count += chunk.length; if (count <= 512_000) logs.push(chunk.toString()); });
-    });
+    }));
   }
-  async function waitFor(check, milliseconds) { const deadline = Date.now() + milliseconds; while (Date.now() < deadline) { assert.ok(!expired && !diskExceeded, 'website_resource_limit'); const result = await check(); if (result) return result; await pause(100); } throw Error('website_readiness_timeout'); }
+  async function waitFor(check, milliseconds) { const deadline = Date.now() + milliseconds; while (Date.now() < deadline) { control.check(); const result = await control.run(check); if (result) return result; await control.run(() => pause(100)); } throw Error('website_readiness_timeout'); }
   let result = { status: 'failed', productionEquivalent: false, sourceHead: manifest.sourceHead };
   try {
     const serverRecord = await launch(process.execPath, [join(root, 'scripts/fixtures/ownedWebsiteChild.cjs')], env);
@@ -75,7 +77,9 @@ async function execute(manifest) {
       return value.stage === 'ready' && value;
     }, 150_000);
     let proxyDenied = 0;
+    control.check();
     proxy = createServer((req, res) => {
+      try { control.check(); } catch { res.writeHead(503).end(); return; }
       let url; try { url = new URL(req.url); } catch { proxyDenied++; res.writeHead(403).end(); return; }
       if (url.origin !== origin || url.username || url.password || url.hash || !policy.allowedRequest({ method: req.method, raw: `${url.pathname}${url.search}`, origin, assets })) { proxyDenied++; res.writeHead(403).end(); return; }
       const upstream = request({ hostname: '127.0.0.1', port: appPort, path: `${url.pathname}${url.search}`, method: req.method, agent: false, headers: { host: `127.0.0.1:${appPort}`, accept: req.headers.accept ?? '*/*', ...(req.headers.rsc === '1' ? { rsc: '1' } : {}) } }, reply => { res.writeHead(reply.statusCode, reply.headers); reply.pipe(res); });
@@ -83,7 +87,7 @@ async function execute(manifest) {
     });
     proxy.on('connect', (_req, socket) => { proxyDenied++; socket.end('HTTP/1.1 403 Forbidden\r\n\r\n'); });
     proxy.on('upgrade', (_req, socket) => { proxyDenied++; socket.destroy(); });
-    await new Promise((resolve, reject) => { proxy.once('error', reject); proxy.listen({ host: '127.0.0.1', port: proxyPort, exclusive: true }, resolve); });
+    await control.run(() => new Promise((resolve, reject) => { proxy.once('error', reject); proxy.listen({ host: '127.0.0.1', port: proxyPort, exclusive: true }, resolve); }));
     const browserEnv = { ...env }; delete browserEnv.AXIOM_WEBSITE_CONFIG; delete browserEnv.AXIOM_WEBSITE_VISUAL_MODE;
     const browserRecord = await launch(browser, policy.chromiumArgs({ profile: join(directory, 'chromium'), proxyPort, cdpPort }), browserEnv);
     await waitFor(() => {
@@ -100,10 +104,12 @@ async function execute(manifest) {
     assert.ok(existsSync(join(directory, 'done.json')), 'website_driver_receipt_missing');
     const completed = JSON.parse(readFileSync(join(directory, 'done.json'), 'utf8'));
     assert.equal(completed.nonce, nonce); assert.equal(completed.success, true, 'website_capture_failed');
+    control.check();
     result = { ...result, status: 'driver_finished', proxyDenied };
-  } catch (error) { result = { ...result, error: error instanceof Error ? error.message : 'website_fixture_failed' }; }
+  } catch (error) { control.cancel(error instanceof Error ? error : Error('website_fixture_failed')); result = { ...result, error: control.report().failure }; }
   finally {
-    clearTimeout(wall); clearInterval(disk);
+    clearInterval(disk);
+    // Signals remain installed; cleanup is intentionally not raced against cancellation.
     const cleanupErrors = await ledger.cleanup();
     proxy?.closeAllConnections(); await new Promise(resolve => proxy?.listening ? proxy.close(resolve) : resolve());
     // Retain owned artifacts if a process could not be safely stopped; never remove any existing .next root.
@@ -113,11 +119,13 @@ async function execute(manifest) {
     }
     writeFileSync(join(directory, 'bounded-runtime.log'), logs.join(''), { mode: 0o600 });
     const sourceUnchanged = git(['rev-parse', 'HEAD']) === manifest.sourceHead && git(['status', '--porcelain', '--untracked-files=no']) === '';
-    if (cleanupErrors.length || !sourceUnchanged) result.status = 'failed';
-    writeFileSync(join(directory, 'result.json'), JSON.stringify({ ...result, cleanup: cleanupErrors.length ? 'failed' : 'owned_groups_empty', cleanupErrors, children: ledger.records.map(record => ({ pid: record.pid, owner: record.owner, exited: record.exited, neverSpawned: record.neverSpawned, exitCode: record.exitCode, signal: record.signal })), fontRendering: 'external-font-fetch-denied; inspect fallback rendering', sourceUnchanged }), { mode: 0o600 });
+    if (cleanupErrors.length || !sourceUnchanged || control.report().failure) result.status = 'failed';
+    if (control.report().failure && !result.error) result.error = control.report().failure;
+    writeFileSync(join(directory, 'result.json'), JSON.stringify({ ...result, coordinator: control.report(), cleanup: cleanupErrors.length ? 'failed' : 'owned_groups_empty', cleanupErrors, children: ledger.records.map(record => ({ pid: record.pid, owner: record.owner, exited: record.exited, neverSpawned: record.neverSpawned, exitCode: record.exitCode, signal: record.signal })), fontRendering: 'external-font-fetch-denied; inspect fallback rendering', sourceUnchanged }), { mode: 0o600 });
     process.stdout.write(`${join(directory, 'result.json')}\n`);
   }
   if (result.status !== 'driver_finished') process.exitCode = 1;
+  } finally { control.dispose(); }
 }
 const [command, path, expectedDigest] = process.argv.slice(2);
 if (command === '--prepare' && path?.startsWith('/tmp/axiom-website-review-') && expectedDigest === undefined) {
