@@ -101,3 +101,39 @@ The workflow does not supply ADMIN_EMAILS, so configuration_unavailable is not
 an admin denial or grant. Actual acceptance follows only after separately
 approved schema recovery and the distinct authentication/access checks in
 [the recovery plan](PRODUCTION_AUTH_RECOVERY_PLAN.md).
+
+## Offline acceptance-format checker (PR #167)
+
+`scripts/check-auth-recovery-evidence.py <private-attestation.json>` checks an
+operator-supplied sanitized JSON record without fetching references or querying
+providers. Exit 0 means **attested format only**, never independently verified
+production login, migration permission or release authorization. References can
+be stale or incorrect; an authorized operator must independently review them.
+Do not commit the private record or include credentials, connection strings,
+cookies, email addresses, tokens or account records.
+
+The record requires `deployment_id`, full lowercase `deployment_commit` and
+`vercel_project_id`; `effective_database_project_id`,
+`effective_database_branch_id`, `effective_database_name`; `neon_project_id`,
+`neon_branch_id`, `neon_database_name`; and `preflight_database_project_id`,
+`preflight_database_branch_id`, `preflight_database_name`. The serving deployment,
+intended Neon target and protected preflight must agree on project, branch **and
+database**, not merely similar names or matching schemas.
+
+Each verification has an explicit boolean and an entry of the same name in the
+`evidence` object containing a sanitized HTTPS reference without credentials,
+query or fragment: `effective_database_binding_verified`,
+`migration_history_verified`, `schema_drift_checked`, `restore_point_verified`,
+`isolated_restore_verified`, `production_login_verified`,
+`email_password_verified`, `google_oauth_verified`, `github_oauth_verified` and
+`founder_workspace_access_verified`. A generic login flag cannot substitute for
+actual tests of the three sign-in methods and current founder workspace access.
+References are never printed or opened by this checker; malformed references
+are rejected without echoing their contents.
+
+These are final acceptance observations, not prerequisites invented to prevent
+preparing an auth-only recovery. Recovery planning and read-only evidence
+collection continue while login is blocked. Exact database changes still need
+binding, usable backup/restore evidence and separate owner approval; no supplied
+boolean grants that approval. The current binding and restore blockers above
+remain unresolved unless new independent evidence establishes otherwise.
