@@ -47,7 +47,7 @@ export async function startOwnedEcsCheckedInputWire({ proof, publicKey }) {
         const now = Math.floor(Date.now() / 1000); assert.ok(claims.iat <= now && claims.iat >= now - 120 && claims.exp > now && claims.exp <= now + 600);
         assert.ok(verify("RSA-SHA256", Buffer.from(parts[0] + "." + parts[1]), publicKey, Buffer.from(parts[2], "base64url")));
         assert.deepEqual(JSON.parse(body), { repositories: ["artifact-attestations-workflows"], permissions: { contents: "read", actions: "read", attestations: "read" } });
-        operation = "GithubToken"; value = { token: "owned-ecs-installation-token", expires_at: new Date(Date.now() + 3600_000).toISOString() };
+        operation = "GithubToken"; value = { token: "owned-ecs-installation-token", expires_at: new Date(Date.now() + 3600_000).toISOString(), permissions: { contents: "read", actions: "read", attestations: "read" }, repositories: [{ id: Number(ECS_WIRE.repositoryId), name: ECS_WIRE.repositoryFullName.split("/")[1], full_name: ECS_WIRE.repositoryFullName }], repository_selection: "selected" };
       } else {
         assert.equal(request.method, "GET"); assert.equal(request.headers.authorization, "Bearer owned-ecs-installation-token");
         const prefix = "/repos/" + ECS_WIRE.repositoryFullName;
