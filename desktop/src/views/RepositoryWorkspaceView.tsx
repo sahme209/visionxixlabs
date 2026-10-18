@@ -177,6 +177,8 @@ function RepositoryWorkspaceSession({ revision }: { revision: number }) {
   useEffect(() => {
     if (!selectedRepository) return;
     const captured = owner.current;
+    // Selection can advance before this committed render's passive effect runs.
+    if (captured.repository !== selectedRepository || !owns(captured)) return;
     void Promise.all([
       refreshRepository(selectedRepository),
       invoke<RepositoryCheck[]>("detect_repository_checks", { repositoryPath: selectedRepository }).then(next => { if (owns(captured)) setChecks(next); }),

@@ -1,5 +1,5 @@
 /** @vitest-environment jsdom */
-import { createElement } from "react";
+import { createElement, Profiler } from "react";
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import { act, cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 const m = vi.hoisted(() => ({ invoke: vi.fn(), client: { config: {} as { sessionToken?: string }, listGithubRepositories: vi.fn(), mintGithubCloneToken: vi.fn(), subscribeContext: (listener: () => void) => { void listener; return () => {}; }, getContextRevision: (): number => 0, setSession: (token: string | undefined) => { void token; } } }));
@@ -153,4 +153,24 @@ it("reacts to context notifications without parent rerender and refuses immediat
   expect(m.invoke.mock.calls.filter(([name]) => name === "write_repository_file")).toEqual([]);
   expect(screen.queryByDisplayValue("old-context edit")).toBeNull();
   expect(screen.queryByDisplayValue("/owned/A:same.ts")).toBeNull();
+});
+
+it("does not bind a pending A selection effect to B ownership", async () => {
+  const oldChecks = deferred<unknown>();
+  checks = path => path === "/owned/A" ? oldChecks.promise : [{ id: "b", label: "B check", command: "npm test", description: "fixture" }];
+  let switched = false;
+  render(createElement(Profiler, { id: "selection-order", onRender: () => {
+    const button = screen.queryByRole("button", { name: "B" });
+    if (button && !switched) {
+      switched = true;
+      // A's selection has committed, but its passive effect has not run.
+      // A repository click updates ownership immediately, before that effect.
+      button.click();
+    }
+  } }, createElement(RepositoryWorkspaceView)));
+  await screen.findByRole("button", { name: "B check" });
+  await act(async () => { oldChecks.resolve([{ id: "a", label: "A stale check", command: "npm test", description: "fixture" }]); });
+  expect(switched).toBe(true);
+  expect(screen.queryByRole("button", { name: "A stale check" })).toBeNull();
+  expect(screen.getByRole("button", { name: "B check" })).toBeTruthy();
 });
