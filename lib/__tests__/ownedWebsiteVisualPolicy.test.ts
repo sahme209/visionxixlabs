@@ -64,7 +64,7 @@ it("actual isolated guard denies captured transports, native spawn, DNS and list
       assert.throws(()=>new (require('node:worker_threads').Worker)(''),/owned_website_worker_denied/);
       console.log(JSON.stringify(guard.report()));
     })().catch(error=>{console.error(String(error));process.exitCode=1});`;
-  const result = JSON.parse(execFileSync(process.execPath, ["-e", script], { cwd: root, env: { PATH: process.env.PATH }, encoding: "utf8", timeout: 10000 }));
+  const result = JSON.parse(execFileSync(process.execPath, ["-e", script], { cwd: root, env: { PATH: process.env.PATH, NODE_ENV: "test" }, encoding: "utf8", timeout: 10000 }));
   expect(result.transport).toBeGreaterThanOrEqual(5); expect(result.process).toBe(1); expect(result.worker).toBe(1); expect(result.listener).toBe(1);
   expect(result.productionEquivalent).toBe(false);
 });
@@ -93,7 +93,7 @@ it("uses the pinned in-process TS API with no new process and restores the preci
       mode.restore();assert.deepEqual(Object.getOwnPropertyDescriptor(defaults.experimental,'useTypeScriptCli'),before);
       console.log('pinned_api_without_process');
     })().catch(error=>{console.error(String(error));process.exitCode=1});`;
-  expect(execFileSync(process.execPath, ["-e", script], { cwd: root, env: { PATH: process.env.PATH }, encoding: "utf8", timeout: 10000 }).trim()).toContain("pinned_api_without_process");
+  expect(execFileSync(process.execPath, ["-e", script], { cwd: root, env: { PATH: process.env.PATH, NODE_ENV: "test" }, encoding: "utf8", timeout: 10000 }).trim()).toContain("pinned_api_without_process");
 });
 
 it("preserves reviewed managed NODE_PATH without printing or substituting its value", () => {
