@@ -8,8 +8,9 @@ import { isAwsEnrollmentChallenge, isDesktopAwsAccount, isDesktopAwsInventory, t
  * data. UI surfaces show preview state accordingly.
  */
 
+import {isCustomerPlanProfileView,isCustomerPlanImported} from "./terraformCustomerPlanContract";
 import { setDesktopTransportCredential } from "./desktopTransport";
-import type { SavedPlanReadData } from "../../../lib/terraform/savedPlanDto";
+import type { TerraformPlanReadData,CustomerPlanProfileView,CustomerPlanConfigurationInput,CustomerPlanImportInput,CustomerPlanImported } from "../../../lib/terraform/customerPlanDto";
 import type { AirflowRestartReviewDto } from "../../../lib/integrations/airflow/restartReviewDto";
 import { parseDesktopIdentityResponse } from "./desktopIdentityResponse";
 
@@ -24,6 +25,9 @@ export interface DesktopClientConfig {
 }
 
 export type ApiResult<T> = { ok: true; data: T } | { ok: false; error: string };
+
+export type CredentialFailureKind = "unavailable" | "rejected" | "invalid" | "canceled";
+export type CredentialVerificationResult = { ok: true; data: VerifiedDesktopIdentity } | { ok: false; error: string; failureKind: CredentialFailureKind };
 
 export interface DesktopCommercialAccess {
   allowed: boolean;
@@ -392,12 +396,38 @@ export class DesktopClient {
     if (changed) this.invalidateContext();
   }
 
-  listDeploymentTerraformPlans(id: string): Promise<ApiResult<SavedPlanReadData>> {
+  listDeploymentTerraformPlans(id: string): Promise<ApiResult<TerraformPlanReadData>> {
     return this.get(`/api/desktop/deployments/${encodeURIComponent(id)}/terraform-plans`);
   }
 
-  getDeploymentTerraformPlan(id: string, artifactId: string): Promise<ApiResult<SavedPlanReadData>> {
+  getDeploymentTerraformPlan(id: string, artifactId: string): Promise<ApiResult<TerraformPlanReadData>> {
     return this.get(`/api/desktop/deployments/${encodeURIComponent(id)}/terraform-plans/${encodeURIComponent(artifactId)}`);
+  }
+
+  async getDeploymentTerraformProfile(id:string):Promise<ApiResult<CustomerPlanProfileView>> {
+    const result=await this.terraformPlanRequest<unknown>("GET",`/api/desktop/deployments/${encodeURIComponent(id)}/terraform-plan-profile`);
+    if(!result.ok)return result;return isCustomerPlanProfileView(result.data,id)?{ok:true,data:result.data}:{ok:false,error:"Customer plan profile response is unavailable."};
+  }
+  async configureDeploymentTerraformProfile(id:string,input:{requestVersion:number;expectedRevision:number;profileInput:CustomerPlanConfigurationInput}):Promise<ApiResult<CustomerPlanProfileView>> {
+    const result=await this.terraformPlanRequest<unknown>("POST",`/api/desktop/deployments/${encodeURIComponent(id)}/terraform-plan-profile`,{operation:input.expectedRevision===0?"configure":"revise",...input});
+    if(!result.ok)return result;return isCustomerPlanProfileView(result.data,id)&&result.data.status==="active"&&result.data.profile?.revision===input.expectedRevision+1&&result.data.profile.requestVersion===input.requestVersion?{ok:true,data:result.data}:{ok:false,error:"Customer plan profile changed. Refresh and review again."};
+  }
+  async revokeDeploymentTerraformProfile(id:string,input:{requestVersion:number;profileId:string;expectedRevision:number}):Promise<ApiResult<CustomerPlanProfileView>> {
+    const result=await this.terraformPlanRequest<unknown>("POST",`/api/desktop/deployments/${encodeURIComponent(id)}/terraform-plan-profile`,{operation:"revoke",...input});
+    if(!result.ok)return result;return isCustomerPlanProfileView(result.data,id)&&result.data.status==="revoked"&&result.data.profile?.id===input.profileId&&result.data.profile.revision===input.expectedRevision+1?{ok:true,data:result.data}:{ok:false,error:"Customer plan revocation changed. Refresh and review again."};
+  }
+  async importDeploymentTerraformPlan(id:string,input:CustomerPlanImportInput):Promise<ApiResult<CustomerPlanImported>> {
+    const result=await this.terraformPlanRequest<unknown>("POST",`/api/desktop/deployments/${encodeURIComponent(id)}/terraform-plans/import`,input);
+    if(!result.ok)return result;return isCustomerPlanImported(result.data)?{ok:true,data:result.data}:{ok:false,error:"Customer plan evidence response is unavailable."};
+  }
+  private async terraformPlanRequest<T>(method:"GET"|"POST",path:string,body?:unknown):Promise<ApiResult<T>> {
+    if(!this.config.sessionToken?.startsWith("axm.desk."))return {ok:false,error:"A currently paired desktop session is required for customer plan evidence."};
+    try{
+      const response=await fetch(`${this.config.apiBase}${path}`,{method,credentials:"omit",headers:{...this.headers(),...(method==="POST"?{"Content-Type":"application/json"}:{})},...(method==="POST"?{body:JSON.stringify(body)}:{})});
+      const value=await response.json().catch(()=>null) as {ok?:boolean;data?:T;error?:unknown}|null;
+      if(response.ok&&value?.ok===true&&value.data!==undefined)return {ok:true,data:value.data};
+      return {ok:false,error:value?.error==="customer_plan_environment_immutable_new_request"?"customer_plan_environment_immutable_new_request":response.status===503?"customer_plan_storage_or_producer_unavailable":"customer_plan_refresh_and_review_required"};
+    }catch{return {ok:false,error:"customer_plan_service_unavailable"};}
   }
 
   /** True when the desktop is not connected to an authenticated workspace. */
@@ -412,29 +442,33 @@ export class DesktopClient {
    * A credential being present in the OS vault is not proof that it is still
    * valid. Startup calls this before mounting any authenticated workspace UI.
    */
-  async verifyCurrentCredential(): Promise<ApiResult<VerifiedDesktopIdentity>> {
+  async verifyCurrentCredential(): Promise<CredentialVerificationResult> {
     return this.verifyCredentialCandidate(this.config.sessionToken);
   }
 
-  /** Verify without changing the active transport or persisted credential. */
-  async verifyCredentialCandidate(token: string | undefined): Promise<ApiResult<VerifiedDesktopIdentity>> {
-    if (!token) return { ok: false, error: "No saved workspace credential was found." };
-
-    if (!token.startsWith("vxlk_") && !token.startsWith("axm.desk.")) {
-      return { ok: false, error: "The saved credential type is not supported." };
+  /** Verify without changing transport or vault; never return raw service errors. */
+  async verifyCredentialCandidate(token: string | undefined, signal?: AbortSignal): Promise<CredentialVerificationResult> {
+    const failure = (failureKind: CredentialFailureKind): CredentialVerificationResult => ({ ok: false, failureKind,
+      error: failureKind === "unavailable" ? "The workspace service could not be reached. Try again."
+        : failureKind === "canceled" ? "Sign-in canceled."
+        : "The saved sign-in could not be verified. Sign in again." });
+    if (signal?.aborted) return failure("canceled");
+    if (!token || (!token.startsWith("vxlk_") && !token.startsWith("axm.desk."))) return failure("invalid");
+    try {
+      const response = await fetch(`${this.config.apiBase}/api/desktop/access`, {
+        headers: { ...this.headers(), Authorization: `Bearer ${token}` }, credentials: "include", signal,
+      });
+      if (signal?.aborted) return failure("canceled");
+      if (!response.ok) return failure(response.status === 401 || response.status === 403 ? "rejected"
+        : response.status >= 500 || response.status === 408 || response.status === 429 ? "unavailable" : "invalid");
+      const body = await response.json().catch(() => null);
+      if (signal?.aborted) return failure("canceled");
+      const identity = body?.ok ? parseDesktopIdentityResponse(body.data) : null;
+      const expectedKind = token.startsWith("vxlk_") ? "api_key" : "desktop_session";
+      return identity && identity.kind === expectedKind ? { ok: true, data: identity } : failure("invalid");
+    } catch {
+      return failure(signal?.aborted ? "canceled" : "unavailable");
     }
-
-    const result = await this.get<{
-      identity: { kind: "api_key" | "desktop_session"; organizationId: string; email?: string; displayName?: string; role?: VerifiedDesktopIdentity["role"]; capabilities?: string[] };
-      access: DesktopCommercialAccess;
-    }>("/api/desktop/access", token);
-    if (!result.ok) return result;
-    const identity = parseDesktopIdentityResponse(result.data);
-    const expectedKind = token.startsWith("vxlk_") ? "api_key" : "desktop_session";
-    if (!identity || identity.kind !== expectedKind) {
-      return { ok: false, error: "The service returned an invalid workspace identity. Sign in again or contact support." };
-    }
-    return { ok: true, data: identity };
   }
 
   desktopBillingPortal(): Promise<ApiResult<{ url: string }>> {

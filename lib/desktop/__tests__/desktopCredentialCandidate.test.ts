@@ -21,3 +21,15 @@ describe("non-mutating recovery credential verification", () => {
     expect(client.config.sessionToken).toBe("axm.desk.previous");
   });
 });
+it.each([[401, "rejected"], [403, "rejected"], [500, "unavailable"], [429, "unavailable"], [404, "invalid"], [200, "invalid"]])("classifies access HTTP %s without leaking response errors", async (status, failureKind) => {
+  const client = new DesktopClient();
+  vi.stubGlobal("fetch", vi.fn().mockResolvedValue(new Response(JSON.stringify({ ok: false, error: "private details" }), { status: status as number })));
+  const result = await client.verifyCredentialCandidate("vxlk_candidate");
+  expect(result).toMatchObject({ ok: false, failureKind });
+  expect(JSON.stringify(result)).not.toContain("private details");
+});
+it("classifies an aborted verification as cancellation rather than unavailable", async () => {
+  const client = new DesktopClient(); const controller = new AbortController();
+  vi.stubGlobal("fetch", vi.fn().mockImplementation(async () => { controller.abort(); throw new Error("private abort"); }));
+  expect(await client.verifyCredentialCandidate("vxlk_candidate", controller.signal)).toMatchObject({ ok: false, failureKind: "canceled" });
+});

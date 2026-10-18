@@ -39,6 +39,7 @@ export type View = CustomerView
 
 export default function App() {
   const [authState, setAuthState] = useState<"checking" | "authenticated" | "access_required" | "unauthenticated">("checking");
+  const [canRetrySavedSignIn, setCanRetrySavedSignIn] = useState(false);
   const [authError, setAuthError] = useState<string | null>(null);
   const [identity, setIdentity] = useState<VerifiedDesktopIdentity | null>(null);
   const credentialVerification = useRef<CredentialVerificationCoordinator | null>(null);
@@ -52,13 +53,15 @@ export default function App() {
       onVerified: (verified) => {
         setIdentity(verified);
         setAuthError(null);
+        setCanRetrySavedSignIn(false);
         setAuthState(verified.access.allowed ? "authenticated" : "access_required");
       },
-      onRejected: (error) => {
+      onRejected: (error, failureKind) => {
         // Lock the current transport synchronously. A network/schema failure
         // is not authority to delete saved credentials from the secure vault.
         desktopClient.setSession(undefined);
         setIdentity(null);
+        setCanRetrySavedSignIn(failureKind === "unavailable");
         setAuthError(`Your saved sign-in could not be verified. ${error}`);
         setAuthState("unauthenticated");
       },
@@ -80,9 +83,11 @@ export default function App() {
     return (
       <DesktopSignInView
         initialError={authError}
+        canRetrySavedSignIn={canRetrySavedSignIn}
         onSignedIn={(verifiedIdentity) => {
           credentialVerification.current?.invalidate();
           setAuthError(null);
+          setCanRetrySavedSignIn(false);
           setIdentity(verifiedIdentity);
           setAuthState(verifiedIdentity.access.allowed ? "authenticated" : "access_required");
         }}
@@ -96,6 +101,7 @@ export default function App() {
         identity={identity}
         onAccessGranted={(verifiedIdentity) => {
           credentialVerification.current?.invalidate();
+          setCanRetrySavedSignIn(false);
           setIdentity(verifiedIdentity);
           setAuthState("authenticated");
         }}
@@ -103,6 +109,7 @@ export default function App() {
           credentialVerification.current?.invalidate();
           setIdentity(null);
           setAuthError(null);
+          setCanRetrySavedSignIn(false);
           setAuthState("unauthenticated");
         }}
       />

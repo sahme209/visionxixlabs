@@ -206,9 +206,9 @@ export default function ResilienceDashboard() {
     <div className="max-w-[1000px] mx-auto py-8 px-5 text-zinc-200">
       <ModuleIntro storageKey="resilience" title="Cloud resilience"
         explanation="Review resilience analysis and generate a Terraform configuration draft."
-        helpsYouDo={["Review provider and recovery risks", "Generate configuration for manual review"]}
+        helpsYouDo={["Review provider and recovery risks", "Generate configuration for manual review", "Use the paired desktop deployment request for optional customer CI plan evidence"]}
         connectFirst={["Connect a cloud account for analysis"]} aiEngineers={["Cloud Engineer"]}
-        approval={{ severity: "read_only", note: "Live Terraform planning and approval are unavailable. Apply remains disabled; a configuration draft or historical approval cannot authorize deployment." }}
+        approval={{ severity: "read_only", note: "Live Terraform planning and approval are unavailable. Apply remains disabled; a configuration draft or historical approval cannot authorize deployment. Optional customer CI evidence needs separately reviewed storage, trust and connected read access; it grants no apply permission." }}
         demoHref="/demo/cloud_operations" docsHref="/docs/terraform-export" lastReviewed="2026-10-18" />
 
       {/* Header */}
