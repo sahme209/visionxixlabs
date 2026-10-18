@@ -1,6 +1,6 @@
 {
   "baseCommit": "291a4c579f12671a3f0c086417ac118570c75a47",
-  "status": "local_gates_passed_pending_independent_review",
+  "status": "local_gates_and_independent_source_receipt_review_passed_pending_exact_head_ci",
   "sourceHashes": {
     "desktop/src/App.tsx": "1f739c6303c306bd1eca2d42b10335e1e637bc899cb72d6573413990bd72ba7f",
     "desktop/src/lib/activeDesktopCredential.ts": "dd2cc53825f02bef901ece36cecd139a4b3a04ebe773ccc13fe600f4c8c271e3",
@@ -169,5 +169,14 @@
     "log": "/tmp/saved-signin-focused-final.log",
     "sourceCommit": "f0f468323dff2fb962d0536f116fd74b10776b3a",
     "qualification": "Original reviewed isolated-source evidence; final integrated gates listed separately."
+  },
+  "independentRootReview": {
+    "reviewedReceiptCommit": "2d9dca9fe853d4cc783ea14987d1ea5732319f3a",
+    "sourceHashesVerified": 12,
+    "finalGateLogHashesVerified": 9,
+    "historicalFailureLogHashesVerified": 1,
+    "reviewedByteIdentityFilesVerified": 9,
+    "main89AncestryVerified": true,
+    "nativeOrProductionAcceptance": false
   }
 }
