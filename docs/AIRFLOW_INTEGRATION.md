@@ -78,8 +78,12 @@ the existing deployment capability gate and other approval checks still apply.
 An ECS service restart does not promote a source artifact, establish image
 provenance, verify application health or prove image recovery. Dependencies still
 use latest-run freshness, not exact cross-DAG interval correlation. Focused
-recording-fixture tests are source evidence; owned PostgreSQL/paired HTTP and
-actual provider/native acceptance are recorded separately.
+recording-fixture tests are source evidence. The
+[owned acceptance receipt](mission/local-airflow-restart-review-acceptance.json)
+at clean `2c9fd78e` separately records actual PostgreSQL catalog/two-client fence
+and paired Next HTTP checks with verified cleanup. Its Airflow3 GET data is
+synthetic; provider dispatch, real Airflow and packaged native acceptance remain
+unverified. Optional SQL was installed only in that disposable owned fixture.
 
 ## Failure and recovery
 

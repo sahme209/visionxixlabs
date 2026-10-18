@@ -43,9 +43,13 @@ Focused tests include scheduler execution/sidecar atomic composition, preclaim
 and final-fence refusals, digest/body requirements, release and state-write
 failures, unchanged non-restart behavior and actual native-panel stale-context
 isolation. They use recording providers and bounded in-memory repositories.
-Exact real-catalog, two-client PostgreSQL and owned paired HTTP acceptance are
-still pending the dedicated root-scheduled window. See
-`AIRFLOW_RESTART_REVIEW_PROPOSAL.md` for the approved runnable acceptance plan.
+[Owned acceptance evidence](mission/local-airflow-restart-review-acceptance.json)
+at clean `2c9fd78e` records exact real-catalog readiness, actual paired Next HTTP,
+two-client PostgreSQL target/membership lock waits and verified cleanup. The
+synthetic Airflow3 fixture served only GETs; no provider write, GitHub dispatch,
+real Airflow/timetable, packaged native UI or production installation is claimed.
+Fresh web/desktop TypeScript, desktop build, 6,964 default tests and 30 Python
+tests passed. See `AIRFLOW_RESTART_REVIEW_PROPOSAL.md` for commands and limits.
 
 The Airflow 3 client uses `/api/v2`, tenant-encrypted connection credentials, bounded requests, and redirect refusal. Scheduled DAG triggers use the existing deterministic occurrence identifier and reconcile a 409 against the exact run; that idempotency implementation is retained.
 
