@@ -2,7 +2,7 @@ import { IncomingMessage } from "node:http";
 import { Socket } from "node:net";
 import { beforeEach, expect, it, vi } from "vitest";
 import { customerProfile } from "./customerPlanFixtures";
-const m=vi.hoisted(()=>({requests:[] as Array<{method:string;hostname:string;path:string;query:Record<string,string>;headers:Record<string,string>;body?:string}>,mode:"ok",native:vi.fn()}));
+const m=vi.hoisted(()=>({requests:[] as Array<{method:string;hostname:string;path:string;query:Record<string,string>;headers:Record<string,string>;body?:string}>,mode:"ok",native:vi.fn(),destroy:vi.fn(),bytes:0,bodies:[] as import("node:http").IncomingMessage[]}));
 // Actual AWS SDK serialization/deserialization + actual bounded stream handler;
 // only its lowest native transport is replaced. No connect/DNS/send occurs.
 vi.mock("@smithy/node-http-handler",()=>({NodeHttpHandler:class {
@@ -15,7 +15,7 @@ vi.mock("@smithy/node-http-handler",()=>({NodeHttpHandler:class {
    else data=JSON.stringify(m.mode==="locked"?{Item:{LockID:{S:"customer-state/infra/terraform.tfstate"},Info:{S:"synthetic private lock"}}}:m.mode==="malformedLock"?{Item:{}}:{});
    headers["content-type"]="application/x-amz-json-1.0";
   }else if(request.hostname==="s3.us-east-1.amazonaws.com"){
-   if(["/customer-state/","/customer-state","/customer-plan-artifacts/","/customer-plan-artifacts"].includes(request.path))data=`<VersioningConfiguration xmlns="http://s3.amazonaws.com/doc/2006-03-01/"><Status>${m.mode==="unversioned"?"Suspended":"Enabled"}</Status></VersioningConfiguration>`;
+   if(["/customer-state/","/customer-state","/customer-plan-artifacts/","/customer-plan-artifacts"].includes(request.path))data=m.mode==="http200Error"?'<Error><Code>AccessDenied</Code></Error>':m.mode==="stall"||m.mode==="sourceError"?'<VersioningConfiguration>':`<VersioningConfiguration xmlns="http://s3.amazonaws.com/doc/2006-03-01/"><Status>${m.mode==="unversioned"?"Suspended":"Enabled"}</Status></VersioningConfiguration>`;
    else if(request.path.startsWith("/customer-plan-artifacts/axiom-plans/12345/888/1/")){
     const file=request.path.split("/").at(-1)!;
     if(!["plan.tfplan","plan.show.json","plan.receipt.json"].includes(file))throw Error("unexpected synthetic artifact");
@@ -32,13 +32,14 @@ vi.mock("@smithy/node-http-handler",()=>({NodeHttpHandler:class {
    }else throw Error(`unexpected synthetic path:${request.path}`);
    headers["content-type"]="application/xml";
   }else throw Error("unmatched synthetic endpoint");
-  const body=new IncomingMessage(new Socket());body.push(Buffer.from(data));body.push(null);
+  const body=new IncomingMessage(new Socket());m.bodies.push(body);m.bytes+=Buffer.byteLength(data);body.push(Buffer.from(data));
+  if(m.mode==="sourceError")setImmediate(()=>body.destroy(Error("synthetic source failure")));else if(m.mode!=="stall")body.push(null);
   return {response:{statusCode:status,reason:"synthetic",headers,body}};
  }
- destroy(){}
+ destroy(){m.destroy();}
 }}));
 import { readCustomerPlanAws } from "../customerPlanAwsRead";
-beforeEach(()=>{m.requests=[];m.mode="ok";m.native.mockClear();});
+beforeEach(()=>{m.requests=[];m.mode="ok";m.native.mockClear();m.destroy.mockClear();m.bytes=0;m.bodies=[];});
 const input=()=>({profile:customerProfile(),credentials:{accessKeyId:"ASIA-SYNTHETIC-ONLY",secretAccessKey:"synthetic-secret-not-real",sessionToken:"synthetic-session-not-real"},accountId:"123456789012",signal:new AbortController().signal});
 it("uses actual SDK fixed S3 reads and strongly consistent GetItem without returning state values or credentials",async()=>{
  const result=await readCustomerPlanAws(input());
@@ -69,4 +70,37 @@ it("reads only the three fixed run-scoped version-pinned SSE-KMS objects as untr
 });
 it.each(["artifactUnencrypted","artifactWrongKms"])("refuses %s artifact metadata without returning a partial bundle",async mode=>{
  m.mode=mode;expect(await readCustomerPlanAws({...input(),run:{id:"888",attempt:1}})).toMatchObject({kind:"unavailable"});
+});
+it.each([0,Number.NaN,Number.POSITIVE_INFINITY,1.5,96*1024*1024+1])("rejects invalid/exhausted owned budget %s before native construction",async remaining=>{
+ expect(await readCustomerPlanAws({...input(),budget:{remaining}})).toMatchObject({kind:"unavailable"});expect(m.native).not.toHaveBeenCalled();
+});
+it("debits actual response bytes and refuses a final observation once the shared budget is exhausted",async()=>{
+ const budget={remaining:64};expect(await readCustomerPlanAws({...input(),budget})).toMatchObject({kind:"unavailable"});expect(budget.remaining).toBe(0);
+ m.native.mockClear();expect(await readCustomerPlanAws({...input(),budget})).toMatchObject({kind:"unavailable"});expect(m.native).not.toHaveBeenCalled();
+});
+it("charges native response bytes once even while actual S3 middleware tees/inspects the body",async()=>{
+ const budget={remaining:96*1024*1024};expect((await readCustomerPlanAws({...input(),budget})).kind).toBe("observed_customer_backend");expect(budget.remaining).toBe(96*1024*1024-m.bytes);expect(m.destroy).toHaveBeenCalledTimes(2);
+});
+it.each(["sourceError","http200Error"])("retains actual S3 %s failure classification without extra requests or leaked body values",async mode=>{
+ m.mode=mode;const budget={remaining:96*1024*1024};const result=await readCustomerPlanAws({...input(),budget});expect(result).toEqual({kind:"unavailable",reason:"customer_plan_backend_unavailable"});
+ expect(m.requests).toHaveLength(1);expect(budget.remaining).toBe(96*1024*1024-m.bytes);expect(m.destroy).toHaveBeenCalledTimes(2);expect(m.bodies.every(b=>b.destroyed)).toBe(true);
+});
+it.each(["abort","deadline"])("settles actual S3 split-stream %s and cleans both branches/native ownership",async mode=>{
+ m.mode="stall";const parent=new AbortController(),budget={remaining:96*1024*1024};
+ const signal=mode==="deadline"?AbortSignal.any([parent.signal,AbortSignal.timeout(100)]):parent.signal;
+ const pending=readCustomerPlanAws({...input(),signal,budget});
+ if(mode==="abort"){await vi.waitFor(()=>expect(m.requests).toHaveLength(1));parent.abort();}
+ try{expect(await pending).toEqual({kind:"unavailable",reason:"customer_plan_backend_unavailable"});expect(m.requests).toHaveLength(1);expect(m.destroy).toHaveBeenCalledTimes(2);expect(m.bodies.every(b=>b.destroyed)).toBe(true);expect(budget.remaining).toBe(96*1024*1024-m.bytes);}
+ finally{parent.abort();}
+});
+it.each(["sourceError","abort"])("retains %s in the unconsumed second real SDK tee branch as well as rejecting its active branch",async mode=>{
+ const tees:Array<[ReadableStream<Uint8Array>,ReadableStream<Uint8Array>]>=[],original=ReadableStream.prototype.tee;
+ const spy=vi.spyOn(ReadableStream.prototype,"tee").mockImplementation(function(this:ReadableStream<Uint8Array>){const pair=original.call(this) as [ReadableStream<Uint8Array>,ReadableStream<Uint8Array>];tees.push(pair);return pair;});
+ const parent=new AbortController();m.mode=mode==="abort"?"stall":"sourceError";
+ try{
+  const pending=readCustomerPlanAws({...input(),signal:parent.signal});if(mode==="abort"){await vi.waitFor(()=>expect(m.requests).toHaveLength(1));parent.abort();}
+  expect((await pending).kind).toBe("unavailable");expect(tees).toHaveLength(1);expect(m.requests).toHaveLength(1);
+  const other=tees[0][1].getReader();try{await expect(other.read()).rejects.toThrow("aws_response_unavailable");}finally{other.releaseLock();}
+  expect(m.bodies.every(b=>b.destroyed)).toBe(true);expect(m.destroy).toHaveBeenCalledTimes(2);
+ }finally{parent.abort();spy.mockRestore();}
 });

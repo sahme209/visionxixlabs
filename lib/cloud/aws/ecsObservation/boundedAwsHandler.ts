@@ -32,16 +32,26 @@ export function boundedAwsHandler(parent: AbortSignal, budget: AwsResponseBudget
             suppliedSignal?.addEventListener('abort', abort, { once: true });
             const timer = setTimeout(abort, options.timeoutMs ?? 6000);
             let source: IncomingMessage | undefined, bounded: Transform | undefined;
-            const cleanup = () => { clearTimeout(timer); parent.removeEventListener('abort', abort); suppliedSignal?.removeEventListener('abort', abort); active.delete(stop); };
-            const stop = () => { controller.abort(); source?.destroy(); bounded?.destroy(new Error('aws_response_unavailable')); cleanup(); };
+            let bodyStarted = headMetadata, pendingFailure: Error | undefined;
+            const failBody = () => {
+                if (!bounded) return;
+                const error = new Error('aws_response_unavailable');
+                if (bodyStarted) bounded.destroy(error);
+                else pendingFailure ??= error;
+            };
+            const cleanup = () => { clearTimeout(timer); parent.removeEventListener('abort', abort); suppliedSignal?.removeEventListener('abort', abort); controller.signal.removeEventListener('abort', stop); active.delete(stop); };
+            const stop = () => { controller.abort(); source?.destroy(); failBody(); cleanup(); };
             active.add(stop);
             controller.signal.addEventListener('abort', stop, { once: true });
             try {
                 if (suppliedSignal?.aborted)
                     controller.abort();
                 const result = await native.handle(request, { ...call, abortSignal: controller.signal });
-                source = result.response.body;
-                if (!(source instanceof IncomingMessage))
+                const nativeBody = result.response.body;
+                if (!(nativeBody instanceof IncomingMessage))
+                    throw new Error('aws_response_unavailable');
+                source = nativeBody;
+                if (controller.signal.aborted)
                     throw new Error('aws_response_unavailable');
                 const limit = options.maxBytes ?? 512 * 1024;
                 const lengths = source.rawHeaders.filter((_, index) => index % 2 === 0).filter(k => k.toLowerCase() === 'content-length');
@@ -61,7 +71,7 @@ export function boundedAwsHandler(parent: AbortSignal, budget: AwsResponseBudget
                         done(null, chunk);
                     } });
                 const body = bounded;
-                source.once('error', () => body.destroy(new Error('aws_response_unavailable')));
+                source.once('error', stop);
                 body.once('error', () => { source?.destroy(); controller.abort(); cleanup(); });
                 body.once('end', () => { cleanup(); controller.signal.removeEventListener('abort', stop); });
                 body.once('close', () => {
@@ -78,7 +88,22 @@ export function boundedAwsHandler(parent: AbortSignal, budget: AwsResponseBudget
                     await complete;
                     result.response.body = Readable.from([]);
                 } else {
-                    source.pipe(body);
+                    // Start only on consumer demand: an eager buffered source
+                    // could emit its terminal error before the SDK installs
+                    // its collector listeners. A pre-read stop still closes
+                    // native resources immediately and retains only a generic
+                    // failure for that first read, never a successful empty body.
+                    const read = body._read.bind(body);
+                    body._read = (size: number) => {
+                        const first = !bodyStarted;
+                        bodyStarted = true;
+                        if (pendingFailure || controller.signal.aborted) {
+                            body.destroy(pendingFailure ?? new Error('aws_response_unavailable'));
+                            return;
+                        }
+                        read(size);
+                        if (first) source!.pipe(body);
+                    };
                     result.response.body = body;
                 }
                 return result;

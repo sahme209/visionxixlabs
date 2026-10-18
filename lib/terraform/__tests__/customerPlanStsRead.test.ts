@@ -36,3 +36,10 @@ it("snapshots the reviewed profile, role and run before the first await",async()
  expect(await pending).toMatchObject({kind:"observed_customer_backend"});
  expect(m.read).toHaveBeenCalledWith(expect.objectContaining({profile:expect.objectContaining({backend:expect.objectContaining({accountId:"123456789012"})}),run:{id:"888",attempt:1}}));
 });
+it.each([0,Number.NaN,Number.POSITIVE_INFINITY,1.5,96*1024*1024+1])("refuses invalid/exhausted shared budget %s before STS",async remaining=>{
+ await expect(readVerifiedTerraformBackend(request(),customerProfile(),new AbortController().signal,undefined,{remaining})).rejects.toThrow();expect(m.sts).not.toHaveBeenCalled();expect(m.read).not.toHaveBeenCalled();
+});
+it("reuses one owned budget across initial/final observations without resetting its balance",async()=>{
+ const budget={remaining:1024};m.read.mockImplementation(async(input:{budget:{remaining:number}})=>{expect(input.budget).toBe(budget);input.budget.remaining-=128;return {kind:"observed_customer_backend"};});
+ const signal=new AbortController().signal;await readVerifiedTerraformBackend(request(),customerProfile(),signal,undefined,budget);await readVerifiedTerraformBackend(request(),customerProfile(),signal,undefined,budget);expect(budget.remaining).toBe(768);
+});

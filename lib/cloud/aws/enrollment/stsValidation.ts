@@ -101,16 +101,16 @@ export async function readVerifiedEcsObservation(input: AwsEnrollmentInput & {
 export async function readVerifiedTerraformBackend(input: AwsEnrollmentInput & {
     externalId: string;
     sessionName: string;
-}, profileInput: unknown, parent: AbortSignal, runInput?: { id: string; attempt: number }) {
+}, profileInput: unknown, parent: AbortSignal, runInput?: { id: string; attempt: number }, sharedBudget?: AwsResponseBudget) {
     const profile = parseCustomerPlanProfile(profileInput);
     const connection = { ...parseAwsEnrollmentInput({ expectedAccountId: input.expectedAccountId, roleArn: input.roleArn, region: input.region }), externalId: input.externalId, sessionName: input.sessionName };
     const run = runInput && { ...runInput };
-    if (parent.aborted || connection.expectedAccountId !== profile.backend.accountId || connection.region !== profile.backend.region || connection.roleArn === profile.producer.planRoleArn
+    const budget = sharedBudget ?? { remaining: CUSTOMER_RESPONSE_BUDGET_BYTES };
+    if (!Number.isSafeInteger(budget.remaining) || budget.remaining <= 0 || budget.remaining > CUSTOMER_RESPONSE_BUDGET_BYTES || parent.aborted || connection.expectedAccountId !== profile.backend.accountId || connection.region !== profile.backend.region || connection.roleArn === profile.producer.planRoleArn
         || !/^axiom-[a-f0-9]{32}$/.test(connection.externalId) || !/^[A-Za-z0-9_+=,.@-]{2,64}$/.test(connection.sessionName)
         || run && (!/^[1-9]\d{0,31}$/.test(run.id) || !Number.isSafeInteger(run.attempt) || run.attempt < 1 || run.attempt > 2147483647))
         throw new AwsEnrollmentError("enrollment_unavailable");
     const signal = AbortSignal.any([parent, AbortSignal.timeout(30_000)]);
-    const budget = { remaining: CUSTOMER_RESPONSE_BUDGET_BYTES };
     const verified = await assumeVerifiedRole(connection, { signal, budget });
     const { readCustomerPlanAws } = await import("@/lib/terraform/customerPlanAwsRead");
     return readCustomerPlanAws({ profile, accountId: verified.accountId, credentials: verified.credentials, signal, budget, run });

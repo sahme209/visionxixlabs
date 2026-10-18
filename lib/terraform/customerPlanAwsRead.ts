@@ -1,5 +1,6 @@
 import "server-only";
 import { createHash } from "node:crypto";
+import { Readable } from "node:stream";
 import { S3Client, GetBucketVersioningCommand, HeadObjectCommand, GetObjectCommand } from "@aws-sdk/client-s3";
 import { DynamoDBClient, GetItemCommand } from "@aws-sdk/client-dynamodb";
 import { awsReadEndpoint, boundedAwsHandler, type AwsResponseBudget } from "@/lib/cloud/aws/ecsObservation/boundedAwsHandler";
@@ -29,14 +30,29 @@ export async function readCustomerPlanAws(input:CustomerPlanAwsInput):Promise<Cu
   // Parse and snapshot before constructing a native transport or awaiting work.
   const p=parseCustomerPlanProfile(input.profile),credentials={...input.credentials},run=input.run&&{...input.run};
   const budget=input.budget??{remaining:CUSTOMER_RESPONSE_BUDGET_BYTES};
-  if(input.accountId!==p.backend.accountId||input.signal.aborted||!Number.isSafeInteger(budget.remaining)||budget.remaining<=0
+  if(input.accountId!==p.backend.accountId||input.signal.aborted||!Number.isSafeInteger(budget.remaining)||budget.remaining<=0||budget.remaining>CUSTOMER_RESPONSE_BUDGET_BYTES
    ||![credentials.accessKeyId,credentials.secretAccessKey,credentials.sessionToken].every(v=>typeof v==="string"&&v.length>0&&v.length<=4096)
    ||run&&(!/^[1-9]\d{0,31}$/.test(run.id)||!Number.isSafeInteger(run.attempt)||run.attempt<1||run.attempt>2147483647))throw Error("unavailable");
   const signal=AbortSignal.any([input.signal,AbortSignal.timeout(30_000)]);
   const config={region:p.backend.region,credentials,maxAttempts:1,ignoreConfiguredEndpointUrls:true,useFipsEndpoint:false,useDualstackEndpoint:false};
+  const s3Handler=boundedAwsHandler(signal,budget,{maxBytes:MAX_SHOW_BYTES,headObjectMetadata:true});
+  const nativeRead=s3Handler.handle.bind(s3Handler);
+  s3Handler.handle=async(request,call)=>{
+   const result=await nativeRead(request,call);
+   if(request.method!=="HEAD"){
+    // S3's retained HTTP200-error middleware tees the body. Its Node pipe
+    // splitter does not forward upstream errors to either branch. Web tee
+    // retains/propagates the original bounded failure without disabling that
+    // middleware. Native bytes are charged once before tee; one bounded extra
+    // object copy may remain buffered while the SDK inspects the other branch.
+    if(!(result.response.body instanceof Readable))throw Error("unavailable");
+    result.response.body=Readable.toWeb(result.response.body);
+   }
+   return result;
+  };
   s3=new S3Client({...config,endpoint:awsReadEndpoint("s3",p.backend.region,"aws"),forcePathStyle:true,followRegionRedirects:false,
    requestChecksumCalculation:"WHEN_REQUIRED",responseChecksumValidation:"WHEN_REQUIRED",
-   requestHandler:boundedAwsHandler(signal,budget,{maxBytes:MAX_SHOW_BYTES,headObjectMetadata:true})});
+   requestHandler:s3Handler});
   ddb=new DynamoDBClient({...config,endpoint:awsReadEndpoint("dynamodb",p.backend.region,"aws"),endpointDiscoveryEnabled:false,requestHandler:boundedAwsHandler(signal,budget)});
   const call={abortSignal:signal},bucket={Bucket:p.backend.bucket,ExpectedBucketOwner:p.backend.accountId},object={...bucket,Key:p.backend.key};
   const versioning=await s3.send(new GetBucketVersioningCommand(bucket),call);

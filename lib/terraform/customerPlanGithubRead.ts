@@ -5,11 +5,13 @@ import { resolveTenantScopedToken, parseRepositoryFullName, type InstallationRep
 import { readGithubProvenanceResource, readGithubTerraformSource, readGithubProvenanceBundle, type GithubBundleDownloadRule, type GithubProvenanceResource, type GithubTerraformSourceResource } from "@/lib/connectors/github/githubWriteClient";
 import { withGithubAbort } from "@/lib/connectors/github/boundedGithubRead";
 import { bytesDigest } from "./savedPlanArtifact";
-import { customerPath, parseCustomerPlanProfile } from "./customerPlanContract";
+import { customerPath, parseCustomerPlanProfile, CUSTOMER_RESPONSE_BUDGET_BYTES } from "./customerPlanContract";
 export interface CustomerPlanGithubInput {
  profile:unknown;run:{id:string;attempt:number};receiptDigest:string;
  installation:{id:string;githubInstallationId:string;accountLogin:string;status:string;revokedAt:Date|null;suspendedAt:Date|null;updatedAt:Date};
  repo:InstallationRepo;current:()=>Promise<boolean>;signal:AbortSignal;downloadPolicy:readonly GithubBundleDownloadRule[];
+ /** Internal service-owned aggregate, never accepted from HTTP input. */
+ budget?:{remaining:number};
 }
 const unavailable=()=>({kind:"unavailable" as const,reason:"customer_plan_github_unavailable"});
 function requireValue(condition:unknown):asserts condition {if(!condition)throw new Error("customer_plan_github_unavailable");}
@@ -25,7 +27,17 @@ function decodeFile(value:unknown,path:string):{bytes:Buffer;sha:string}{
 export async function readCustomerPlanGithubEvidence(input:CustomerPlanGithubInput):Promise<{kind:"read_customer_plan_source";bundles:Buffer[]}|ReturnType<typeof unavailable>>{
  try{
   const profile=parseCustomerPlanProfile(input.profile),run=structuredClone(input.run),installation=structuredClone(input.installation),policy=structuredClone(input.downloadPolicy),current=input.current;
-  const receiptDigest=input.receiptDigest,repo=input.repo,signal=AbortSignal.any([input.signal,AbortSignal.timeout(30_000)]),budget={remainingBytes:8*1024*1024};
+  const receiptDigest=input.receiptDigest,repo=input.repo,signal=AbortSignal.any([input.signal,AbortSignal.timeout(30_000)]);
+  const shared=input.budget??{remaining:CUSTOMER_RESPONSE_BUDGET_BYTES};
+  requireValue(Number.isSafeInteger(shared.remaining)&&shared.remaining>0&&shared.remaining<=CUSTOMER_RESPONSE_BUDGET_BYTES);
+  let localRemaining=8*1024*1024;
+  const budget={
+   get remainingBytes(){requireValue(Number.isSafeInteger(shared.remaining)&&shared.remaining>=0);return Math.min(localRemaining,shared.remaining);},
+   set remainingBytes(next:number){
+    const available=Math.min(localRemaining,shared.remaining);requireValue(Number.isSafeInteger(next)&&next>=0&&next<=available);
+    const spent=available-next;localRemaining-=spent;shared.remaining-=spent;
+   }
+  };
   const repository=parseRepositoryFullName(profile.repository.fullName);
   requireValue(repository&&policy.length>0&&policy.length<=8&&policy.every(p=>p.pathPrefix===`/attestations/${profile.repository.remoteId}/`));
   requireValue(typeof run.id==="string"&&/^[1-9]\d{0,31}$/.test(run.id)&&Number.isSafeInteger(run.attempt)&&run.attempt>0&&/^[a-f0-9]{64}$/.test(receiptDigest));

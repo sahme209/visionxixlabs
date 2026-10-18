@@ -66,3 +66,19 @@ it("never falls back to global credentials or an unreviewed bundle URL",async()=
  const g=fixture();m.token.mockResolvedValue({ok:true,token:"synthetic"});g.input.downloadPolicy=[];
  expect(await readCustomerPlanGithubEvidence(g.input)).toMatchObject({kind:"unavailable"});expect(g.fetched).toEqual([]);
 });
+it.each([0,Number.NaN,Number.POSITIVE_INFINITY,1.5,96*1024*1024+1])("refuses invalid/exhausted shared budget %s before token mint/fetch",async remaining=>{
+ const f=fixture();expect(await readCustomerPlanGithubEvidence({...f.input,budget:{remaining}})).toMatchObject({kind:"unavailable"});expect(m.token).not.toHaveBeenCalled();expect(f.fetched).toHaveLength(0);
+});
+it("charges actual bounded body bytes to the same budget across initial and final reads",async()=>{
+ const f=fixture(),budget={remaining:96*1024*1024};expect((await readCustomerPlanGithubEvidence({...f.input,budget})).kind).toBe("read_customer_plan_source");const first=budget.remaining;expect(first).toBeLessThan(96*1024*1024-f.bundle.length);
+ expect((await readCustomerPlanGithubEvidence({...f.input,budget})).kind).toBe("read_customer_plan_source");expect(budget.remaining).toBeLessThan(first);
+ budget.remaining=1;expect((await readCustomerPlanGithubEvidence({...f.input,budget})).kind).toBe("unavailable");expect(budget.remaining).toBe(0);
+});
+it("keeps the debit from a partial failed stream instead of restoring it for retry",async()=>{
+ const f=fixture(),budget={remaining:1024};let stage=0;
+ vi.mocked(fetch).mockImplementationOnce(async()=>new Response(new ReadableStream<Uint8Array>({pull(controller){if(stage++===0)controller.enqueue(Buffer.from("{"));else controller.error(Error("synthetic stream failure"));}})));
+ expect((await readCustomerPlanGithubEvidence({...f.input,budget})).kind).toBe("unavailable");expect(budget.remaining).toBe(1023);
+});
+it("cancels the whole operation without minting or resetting its owned budget",async()=>{
+ const f=fixture(),controller=new AbortController(),budget={remaining:1024};controller.abort();expect((await readCustomerPlanGithubEvidence({...f.input,signal:controller.signal,budget})).kind).toBe("unavailable");expect(m.token).not.toHaveBeenCalled();expect(budget.remaining).toBe(1024);
+});
