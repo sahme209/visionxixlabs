@@ -15,6 +15,8 @@
  * The unactivated, explicitly enrolled NEW TEST anniversary V2 fixture policy
  * uses public catalog terms and existing financial rows separately; it does
  * not change these legacy tiers, allocations or calendar accounting.
+ * The owned pricing/Checkout bridge is source-only and default off; it enables
+ * no public billing route, hosted payment or legacy price change by itself.
  */
 
 export type PlanTier = "starter" | "growth" | "business" | "enterprise";

@@ -1,0 +1,3047 @@
+{
+  "sources": [
+    {
+      "path": "lib/billing/__tests__/fixtures/ownedCheckoutSyntheticProvider.ts",
+      "sha256": "95101b7845d7532b37d80964827ae5fa2e3a5beb3e2b4ce507ebc32d9db98f9d"
+    },
+    {
+      "path": "lib/billing/__tests__/fixtures/ownedCheckoutWorkerEntry.ts",
+      "sha256": "bbdffad1b4c3a68d1098c31ad7ac716056cc19077d5c570f7f8066ce04c32ccd"
+    },
+    {
+      "path": "lib/billing/aiCreditReservation.ts",
+      "sha256": "5107e0c7039aa66d08117985507549a681df3ee39a987c6c5f053fb5f9cbf69c"
+    },
+    {
+      "path": "lib/billing/applyAddOnsToEntitlements.ts",
+      "sha256": "0e01a67dc5185ad4a57a6c16db77110d5338a49fa32a4fc9513ec3f3897d0b31"
+    },
+    {
+      "path": "lib/billing/consumeSubscriptionEvent.ts",
+      "sha256": "b703d235ee3559daef5b1becec0cfa7615e542a1468425beb0a86a7408f746fd"
+    },
+    {
+      "path": "lib/billing/isolatedApplication/databaseTarget.ts",
+      "sha256": "906be3530e34e133b0b2265d37090588ae55683c5517ef69dedfd6ef4cad69d8"
+    },
+    {
+      "path": "lib/billing/isolatedApplication/plan.ts",
+      "sha256": "643f5afd9b7971c5f6a23446fda981a021804028e5f9fb2d8d675be4163efdf1"
+    },
+    {
+      "path": "lib/billing/isolatedApplication/runtime.ts",
+      "sha256": "6c77e7ebba72de82977f59014c6c93fd30c13d0ebcbead4f4835a8c9f2890126"
+    },
+    {
+      "path": "lib/billing/isolatedApplication/scope.ts",
+      "sha256": "bb27edac701bfb9c7812a77aeb17266b1effa7c95ab472f0b70c5d4d2a72d539"
+    },
+    {
+      "path": "lib/billing/newTestSubscription/allocationPlan.ts",
+      "sha256": "bbf78b1e9b0f5684086dbd3a7a717af502025ef44916c75edf445ee87e3a207d"
+    },
+    {
+      "path": "lib/billing/newTestSubscription/allocationV2.ts",
+      "sha256": "07483577291e15d7b23eb505baa7e1653d13b76e618bfb1646040d3a5a730a2d"
+    },
+    {
+      "path": "lib/billing/newTestSubscription/anniversaryWindow.ts",
+      "sha256": "9996a150880c2f91e1618f81382362a99132f991f7d398880eb0e6ded431b298"
+    },
+    {
+      "path": "lib/billing/newTestSubscription/chargeSource.ts",
+      "sha256": "b3d300c917e6253d9ed70870e952efa68941c05006221880bd02433129b7bd80"
+    },
+    {
+      "path": "lib/billing/newTestSubscription/fixtureAllocation.ts",
+      "sha256": "226a04f6431bf0cc748a5026d808161aeabb2b0158b3a9540d40909c22d78c74"
+    },
+    {
+      "path": "lib/billing/newTestSubscription/fixtureCoverage.ts",
+      "sha256": "c436aa287c861e98f56709b90f45d500fb628cbb8e8ca13066c78554b1c3cefb"
+    },
+    {
+      "path": "lib/billing/newTestSubscription/fixtureUsageGuards.ts",
+      "sha256": "d52e698765f732bac7812453451fced9e257411d3020db53e4699188e2def5b5"
+    },
+    {
+      "path": "lib/billing/newTestSubscription/lifecycle.ts",
+      "sha256": "735a67cc8b2cbfc3c291c70604e007249a0aebe0bc90fd05b5a348cc4ccf7d38"
+    },
+    {
+      "path": "lib/billing/newTestSubscription/paidCoverage.ts",
+      "sha256": "a19ae9ba35aa7de6a4dd7d96137a27c6f73451c1396c3c48049f1905795807a9"
+    },
+    {
+      "path": "lib/billing/newTestSubscription/paidPlan.ts",
+      "sha256": "e6cb89868ca3ce0eaf6198da3e6426cb84e3295327f580392aa1da9133288d83"
+    },
+    {
+      "path": "lib/billing/newTestSubscription/postgresFixtureStore.ts",
+      "sha256": "ad3425428f9b41598dfd9add76963a80c6311a25f1f65387811f2ef874568ebb"
+    },
+    {
+      "path": "lib/billing/newTestSubscription/service.ts",
+      "sha256": "da116e4690c17319eb811903de2381fdda9685a5d7a49efcea49fdb7236ed354"
+    },
+    {
+      "path": "lib/billing/newTestSubscription/stripeDeadline.ts",
+      "sha256": "c951e5ac7848ae315321a99c7e4d09d9f78d27a6dc5ff6244dae3c758ccb6ee6"
+    },
+    {
+      "path": "lib/billing/newTestSubscription/stripeHttpClient.ts",
+      "sha256": "4a2bae0de8e041fe16b0bb5e61075505ae3eb9373ef7c75fe5f928b8b3b930e5"
+    },
+    {
+      "path": "lib/billing/newTestSubscription/stripePaidCoverage.ts",
+      "sha256": "8385ddaaf42f5d42e8f15a78e4f7084a611217a53f998f414a08bb7664908193"
+    },
+    {
+      "path": "lib/billing/newTestSubscription/stripeTestProvider.ts",
+      "sha256": "7081360821a265f72c1520b1e4259317b6974f9d6a51eb873ca27e3566a9cbdd"
+    },
+    {
+      "path": "lib/billing/newTestSubscription/verifiedContract.ts",
+      "sha256": "f9238dff5852cf45945a8319aa2e1cb00e0d5011923d6bf6b820915c43a08675"
+    },
+    {
+      "path": "lib/billing/newTestSubscriptionContract.ts",
+      "sha256": "93cd286a0ba6b2a78c1126114df03bad678542c678c3e31d01167e0425a8df3e"
+    },
+    {
+      "path": "lib/billing/ownedCheckoutBridge/configuration.ts",
+      "sha256": "e9ae25697d38875fc666831557b3664c5f28fcc49eb0f8a6da60ea15fbdcdfb7"
+    },
+    {
+      "path": "lib/billing/ownedCheckoutBridge/conversation.ts",
+      "sha256": "b04fb8de68cf27afeb135c7a92eac201aa521e19184c179c23dcaf2da3e175d5"
+    },
+    {
+      "path": "lib/billing/ownedCheckoutBridge/operations.ts",
+      "sha256": "4f6ffb509dad61dc2cdc5074e73b50146c764cef92908ee238db0aea511e5f3a"
+    },
+    {
+      "path": "lib/billing/ownedCheckoutBridge/protocol.ts",
+      "sha256": "ad924c12c4fc48e0a1419bceca3b884114c176ea8204630cdacc15bed4bb910e"
+    },
+    {
+      "path": "lib/billing/planRegistry.ts",
+      "sha256": "d02ad9b6b3ed7981ae07e71ff1882287514918a12d95f60694f198b3d856f097"
+    },
+    {
+      "path": "lib/billing/publicPlanCatalog.ts",
+      "sha256": "3c46f92b4f2f66a4b904ea81ba0903402fa35d3731c1ebfd3779aaeeb561b14f"
+    }
+  ],
+  "tooling": [
+    {
+      "path": "lib/billing/__tests__/fixtures/newTestChildEnvironment.ts",
+      "sha256": "1ea5d274bdf4e0fdf22661e3a306bffdc8f7c3cd0410f4c9c340eee8bbf7d78e"
+    },
+    {
+      "path": "lib/billing/__tests__/fixtures/ownedCheckoutHttpAcceptance.ts",
+      "sha256": "3dd2fbe3810dbd5cbba51e468f820620edeb3926ce0b6c9aa7076d9afc865a28"
+    },
+    {
+      "path": "lib/billing/__tests__/fixtures/ownedCheckoutWorkerBundle.ts",
+      "sha256": "36880c1aa9e6c41ccb031452c4686b77fe98296cc198031c9de9df3de3b86863"
+    },
+    {
+      "path": "lib/billing/__tests__/fixtures/ownedCheckoutWorkerSupervisor.ts",
+      "sha256": "fafc37c0974064ade95dbe39038a28a5334970e8a99a91ad5a1d3712007580b3"
+    }
+  ],
+  "configuration": [
+    {
+      "path": "next.config.ts",
+      "sha256": "2548092481546cca521731e629e81702c9df19dd5195607edba0eca95f8cba30"
+    },
+    {
+      "path": "package-lock.json",
+      "sha256": "4923306fbdd3e436cbb2466d611716d94133797e64fb29298e4a36298c9a2049"
+    },
+    {
+      "path": "package.json",
+      "sha256": "810a5faf66cb1853aedc5797b18cba258380cf98c74d7896eb5cd85866df658e"
+    },
+    {
+      "path": "prisma/schema.prisma",
+      "sha256": "3abed3e94c18cd2554f18b847d27ab505e3e8fa9fde968a0a7c72fdb6e787c9c"
+    },
+    {
+      "path": "tsconfig.json",
+      "sha256": "49995c2a39f9d8442187af48c2070474181bee8eca5812ca44075db407ece5d1"
+    },
+    {
+      "path": "tsconfig.next.json",
+      "sha256": "1b7acd54eea2b33af5e4c8601132f9244687ed14ebbbb3f330a295d199fdac41"
+    },
+    {
+      "path": "vitest.config.ts",
+      "sha256": "48d5d1bb920398b20264209a5b01693763df73b27c472267a3dc30915443cb23"
+    }
+  ],
+  "compiler": {
+    "sha256": "3ae902c92cc44dace175c0e69e13a4b0899f6983c6121d76b9ab8dd5795e7675",
+    "version": "5.9.3",
+    "integrity": "sha512-jl1vZzPDinLr9eUt3J/t7V6FgNEw9QjvBPdysz9KfQDD41fQrC2Y4vKQdiaUpFT4bXlb1RHhLpp8wtm6M5TgSw=="
+  },
+  "externalGraphs": [
+    {
+      "name": "stripe",
+      "directory": "/workspace/axiom-privacy-controls/node_modules/stripe",
+      "owner": "stripe",
+      "version": "20.3.1",
+      "integrity": "sha512-k990yOT5G5rhX3XluRPw5Y8RLdJDW4dzQ29wWT66piHrbnM2KyamJ1dKgPsw4HzGHRWjDiSSdcI2WdxQUPV3aQ==",
+      "files": [
+        {
+          "path": "CHANGELOG.md",
+          "sha256": "1e7782242b3eb7aa42d58760f90d70f84231bd2fa689c257841e260590c78346"
+        },
+        {
+          "path": "LICENSE",
+          "sha256": "b36d54d51ac6f20b867c24264b9433f54372c3370d4984cf1c9884c5c6de1f7a"
+        },
+        {
+          "path": "OPENAPI_VERSION",
+          "sha256": "d7dd8762e567e04797e8b48381130dde138ce876e75c04d179c1275b97fdfca0"
+        },
+        {
+          "path": "README.md",
+          "sha256": "5d11b9c568b5d21583a8499af236eb300eaefddf9bbe752e5589b8e6ee72470f"
+        },
+        {
+          "path": "VERSION",
+          "sha256": "25660beed426f4757e5b077fa3376a39164d0457c911953ba49a2aff773f9721"
+        },
+        {
+          "path": "cjs/Error.js",
+          "sha256": "69661cdfef69b1b72e18ff9c0dab1b30d7e92e41a092dcbc219b1d7faf61a364"
+        },
+        {
+          "path": "cjs/RequestSender.js",
+          "sha256": "56c3d582165ccfbbc079a925f55630f14774faf85ca3a4d473fd42e8b53d8bb3"
+        },
+        {
+          "path": "cjs/ResourceNamespace.js",
+          "sha256": "af08e496f07da6ad5c831fe4318735f6c241910826e75295602c6da050377530"
+        },
+        {
+          "path": "cjs/StripeContext.js",
+          "sha256": "e2ccd679eb3b30d1f0bceef7d3b95a7139ac0831f26aa978ab4ed964c5434b06"
+        },
+        {
+          "path": "cjs/StripeEmitter.js",
+          "sha256": "6cd958ea8fd94be0edd330a5c82f69eafaa0cb1521144b13e13e50638f84c308"
+        },
+        {
+          "path": "cjs/StripeMethod.js",
+          "sha256": "a80a2e33c415193d2a2ffd8f1a1acaf95a12c476965282210e5cbadd2526be84"
+        },
+        {
+          "path": "cjs/StripeResource.js",
+          "sha256": "e17c9e93293258d175a24acf8016843da36a9dc297c197dfa54fa99fba4603aa"
+        },
+        {
+          "path": "cjs/Webhooks.js",
+          "sha256": "34ae233e5fcc241a145cb12940beb02f7230e88cc9749847291bab7703db06a1"
+        },
+        {
+          "path": "cjs/apiVersion.js",
+          "sha256": "42419f65a9582b895ee1424910737b9c4d59ca1458752b807b2e01b8375861ed"
+        },
+        {
+          "path": "cjs/autoPagination.js",
+          "sha256": "64329b25b4b636fcfe2a581e03309a6f34b6da0048081d9b9d78e143186c680c"
+        },
+        {
+          "path": "cjs/crypto/CryptoProvider.js",
+          "sha256": "d3f99958422323f14058c7b7c961c68ece978db3dab039c4c7e1b1287e76142f"
+        },
+        {
+          "path": "cjs/crypto/NodeCryptoProvider.js",
+          "sha256": "89808410017ae98eb7e6cbe445e0fff529bc3f6e4b6d4404c3a2d7f09805f8c4"
+        },
+        {
+          "path": "cjs/crypto/SubtleCryptoProvider.js",
+          "sha256": "17151dc6110b5f088627a32b2c4530b3b25e7530456b3a273d6cce04c178314f"
+        },
+        {
+          "path": "cjs/multipart.js",
+          "sha256": "7bf5fcaf4053a999113589f546e6123b08e21e6271346e7bbae905a98e9dc078"
+        },
+        {
+          "path": "cjs/net/FetchHttpClient.js",
+          "sha256": "6dc15d15f4c90bfe565c340afc3b72c64b239d7810cb638c9beb0a0c1c30e3b1"
+        },
+        {
+          "path": "cjs/net/HttpClient.js",
+          "sha256": "562c6baa3f5d4bd8c301b9988482c4ac4170f198d08e59ce50bdad26d33481a5"
+        },
+        {
+          "path": "cjs/net/NodeHttpClient.js",
+          "sha256": "21dfa278bcf730a0dfb288b34b64affce981829678e128a0b8b0eba71cc1911d"
+        },
+        {
+          "path": "cjs/package.json",
+          "sha256": "dbf8353f77358bc12169b7bb7301e1978d5b503e002ee927229a8993672818fc"
+        },
+        {
+          "path": "cjs/platform/NodePlatformFunctions.js",
+          "sha256": "1d4a585be25bb67b00eac68473e3da14477d312bca7819d75dccb17ec3272411"
+        },
+        {
+          "path": "cjs/platform/PlatformFunctions.js",
+          "sha256": "85eb93565bd304940c5c6d8ab1caca3e460148700af9329755b8e8f70b196c90"
+        },
+        {
+          "path": "cjs/platform/WebPlatformFunctions.js",
+          "sha256": "094082b6b47fbb74c8db0ff2e1c18a5bb82fbe3ad00f0cdf2a77ba08ce76eaf3"
+        },
+        {
+          "path": "cjs/resources/AccountLinks.js",
+          "sha256": "917d17f1de7b315d4251da7d3995ad1470a33e83f67203cf74a2f52d9aab724d"
+        },
+        {
+          "path": "cjs/resources/AccountSessions.js",
+          "sha256": "8e2261e74cf07b07d7721196f01b02b926c659cd7a3821c91b874f6ebe2b9f2f"
+        },
+        {
+          "path": "cjs/resources/Accounts.js",
+          "sha256": "7843bdad94029c1ca21aab12cab4c161a77f4a970ee7dc8a3a46ee503fc81ce0"
+        },
+        {
+          "path": "cjs/resources/ApplePayDomains.js",
+          "sha256": "2c46a2f79e06ba5c2d7c81bbc9a4b518dfcc7f67b22f236e1adb7d9aee27a9de"
+        },
+        {
+          "path": "cjs/resources/ApplicationFees.js",
+          "sha256": "0337b2b2a9c72ade42060f052ea17bf56a15fb7e641cb41ecf9e458e8be9f225"
+        },
+        {
+          "path": "cjs/resources/Apps/Secrets.js",
+          "sha256": "61090d5fd0dbad59ce5504e5fd21a78c15afce31e47c897b561a8899b087f3eb"
+        },
+        {
+          "path": "cjs/resources/Balance.js",
+          "sha256": "e82193274c5913bc854a39111f528728d0d06ac7f8e9f82054f1d5fdfa4bb2ab"
+        },
+        {
+          "path": "cjs/resources/BalanceSettings.js",
+          "sha256": "84a48da60ec94ae29fed9eff83bb371fbf7ebda278e8fffd25b36ca53c6c1bc5"
+        },
+        {
+          "path": "cjs/resources/BalanceTransactions.js",
+          "sha256": "d6f8de49dec47fce83175a988d12e8f3abe1ee34461d9873e4363a225ae28fe0"
+        },
+        {
+          "path": "cjs/resources/Billing/Alerts.js",
+          "sha256": "ca0acf17e6863671d3b1a9ed23d29604d7a461a0cafd4028a7be73ae5476c39e"
+        },
+        {
+          "path": "cjs/resources/Billing/CreditBalanceSummary.js",
+          "sha256": "fadd69dd8a883b87446d90b3171d64b9de691e6228a72899d68ed0954561f813"
+        },
+        {
+          "path": "cjs/resources/Billing/CreditBalanceTransactions.js",
+          "sha256": "3f1dae62751f4115fc57801e8ae49c011235719da2089b6e689d496cf654fa41"
+        },
+        {
+          "path": "cjs/resources/Billing/CreditGrants.js",
+          "sha256": "24c89abbf79cc07c8b848c5a18143f8602d8bc91adf6e964e3063dae10200896"
+        },
+        {
+          "path": "cjs/resources/Billing/MeterEventAdjustments.js",
+          "sha256": "057afb0b67051c2580e3bcdfa3118de707a62f8b07ff041caa71450cc2e05620"
+        },
+        {
+          "path": "cjs/resources/Billing/MeterEvents.js",
+          "sha256": "dde4919e12e0a9330b04b4d9db2fc6f305ab13b323c7cf3b65a220a7e7caf3a9"
+        },
+        {
+          "path": "cjs/resources/Billing/Meters.js",
+          "sha256": "1fb124f3fa175ca93b86ed454aaff90f4c185a9e67806c1a4799b50e93160a38"
+        },
+        {
+          "path": "cjs/resources/BillingPortal/Configurations.js",
+          "sha256": "c72c758f4970b0f0cb9a1c5b2455c63c72bfde7e7cbf3f3905a7eb801673ff62"
+        },
+        {
+          "path": "cjs/resources/BillingPortal/Sessions.js",
+          "sha256": "dce0c9c4710f2053c7f1fcf13a1733a229cb763a6392a218d9d159b7dfbcda8b"
+        },
+        {
+          "path": "cjs/resources/Charges.js",
+          "sha256": "4dcfaec9eac458f8fef5404d8094c1e69e368c2fefa3cdc1092ef64f54f9f0f4"
+        },
+        {
+          "path": "cjs/resources/Checkout/Sessions.js",
+          "sha256": "8ac986535d1e37fe26707a287339f220219c28f63957d4218d6847de2714fd39"
+        },
+        {
+          "path": "cjs/resources/Climate/Orders.js",
+          "sha256": "82134de60f626f0c84bf3ec425f33a4dc2631008fac8d20b574d3bcf92433d1b"
+        },
+        {
+          "path": "cjs/resources/Climate/Products.js",
+          "sha256": "8c8cecd44501020167dcb162fc3728e5fb18267f0bdd0de9b9e6b68d028ca246"
+        },
+        {
+          "path": "cjs/resources/Climate/Suppliers.js",
+          "sha256": "d5ae4889a023d5931c303e13479f1f8e195d6f920cb27a32205eefd12498fe7b"
+        },
+        {
+          "path": "cjs/resources/ConfirmationTokens.js",
+          "sha256": "54356763e77df3554c27f584bad1f958dbd6bbb0f9cbefea6e6c9ba931c4559a"
+        },
+        {
+          "path": "cjs/resources/CountrySpecs.js",
+          "sha256": "e59205b0aa6f489535d5de3143f69a348842fdfc33464bb4795bccdc10c95cf0"
+        },
+        {
+          "path": "cjs/resources/Coupons.js",
+          "sha256": "ba3e785b3e0a87e84f4b73d2f9f37d5ab4f22621676b7fc8062db3ba8925f16a"
+        },
+        {
+          "path": "cjs/resources/CreditNotes.js",
+          "sha256": "89e4ac0dbfd843ba1465599f4589c5a61591ccde1a209dbb4cf2b733728c7508"
+        },
+        {
+          "path": "cjs/resources/CustomerSessions.js",
+          "sha256": "d1c8b7fe5c815bbcc9fa089951e1d928fb7067d3cb113e4a3d31d880fb1c1f71"
+        },
+        {
+          "path": "cjs/resources/Customers.js",
+          "sha256": "e1f5b82dcd9960e0a8c24f09ca93e0b02da45e285c2031f324244cc51b7f6901"
+        },
+        {
+          "path": "cjs/resources/Disputes.js",
+          "sha256": "16b3eec43e5f17fb489dd8ac5940f6550a5dbbbdba62dc88280a17bdbbabf1da"
+        },
+        {
+          "path": "cjs/resources/Entitlements/ActiveEntitlements.js",
+          "sha256": "9467854ade62051f6a03d274a1df7161b47f2779c74300cc07bf4616a4d49504"
+        },
+        {
+          "path": "cjs/resources/Entitlements/Features.js",
+          "sha256": "0c9545f96b8f6cae518ba56fb8eb4302149e46f7e3801139c4b336da7e041ad9"
+        },
+        {
+          "path": "cjs/resources/EphemeralKeys.js",
+          "sha256": "e737bf5311f02771b7a56f8a0e2ba4f11f30e908a94c84f05c58e887d525ae2b"
+        },
+        {
+          "path": "cjs/resources/Events.js",
+          "sha256": "8cbcb40da342f84539640fae81c59256c46bdb15b2d90825313670912f668e19"
+        },
+        {
+          "path": "cjs/resources/ExchangeRates.js",
+          "sha256": "36f9c33f68e9470fabe03ec585bab0b6190f248aca465c605f62a2216cf776af"
+        },
+        {
+          "path": "cjs/resources/FileLinks.js",
+          "sha256": "14a25daa6df047ae8e3195ec2f7f34dd726654a7fd57f76befee9167890a033e"
+        },
+        {
+          "path": "cjs/resources/Files.js",
+          "sha256": "0309a7b4aabd6045134b281c39317306fa843e34e66fb6f42cf661032383543b"
+        },
+        {
+          "path": "cjs/resources/FinancialConnections/Accounts.js",
+          "sha256": "29c68dee8338359fddd7756c9d41079360b33c51d993a387d2f9ce5057009869"
+        },
+        {
+          "path": "cjs/resources/FinancialConnections/Sessions.js",
+          "sha256": "9e57d3ba0e084af00c400d2b6f80c54efb7a8c55803601d8ba7676b1fa921018"
+        },
+        {
+          "path": "cjs/resources/FinancialConnections/Transactions.js",
+          "sha256": "a63acff09ad2c5edf31639da4fdf77f30492d29c39ee6218f1e79fa58aa54fe8"
+        },
+        {
+          "path": "cjs/resources/Forwarding/Requests.js",
+          "sha256": "db7f87a4fdfe3ca0efa451a99386ce2a6e0ec25b76ea26ac8760728b7175e41e"
+        },
+        {
+          "path": "cjs/resources/Identity/VerificationReports.js",
+          "sha256": "3ad915c7155663b535f8ba11c49114c06aaf24a6027268b60a6f40701beee1d8"
+        },
+        {
+          "path": "cjs/resources/Identity/VerificationSessions.js",
+          "sha256": "f1029ad0c4884106055cc6c63b61c5b41fc2933f8ff144737daf8c6792ff0a21"
+        },
+        {
+          "path": "cjs/resources/InvoiceItems.js",
+          "sha256": "5f96639c9bb8a53a4b91f577bf5af7ae795ac3b0b4d5b85a08cbe4fe07f4c9ca"
+        },
+        {
+          "path": "cjs/resources/InvoicePayments.js",
+          "sha256": "b4ac9ea08d247aa929ec4e21ac948919b8784d457abc1cbe50cbba899aa856d9"
+        },
+        {
+          "path": "cjs/resources/InvoiceRenderingTemplates.js",
+          "sha256": "111a35982f7cfd02efbc051a36f3d439d17430ceaff27239b1b148b9c7dba4f0"
+        },
+        {
+          "path": "cjs/resources/Invoices.js",
+          "sha256": "f7bc82730c67cf683485d6156fce989ee938d8411e5b468747a34b3c47787624"
+        },
+        {
+          "path": "cjs/resources/Issuing/Authorizations.js",
+          "sha256": "b2bb251e98e047938b10ca8c69a5a708d37ef57f3401136d96f4e0b93d6d83bd"
+        },
+        {
+          "path": "cjs/resources/Issuing/Cardholders.js",
+          "sha256": "44d183d806f417680015a22a0a6b1c70466e1cc8745dd0caf2a476566d7fe549"
+        },
+        {
+          "path": "cjs/resources/Issuing/Cards.js",
+          "sha256": "6d20c3e2a93e91f253e0f8a567b0b73e1bf62e1bc0b1ae6607141d4cea396dc5"
+        },
+        {
+          "path": "cjs/resources/Issuing/Disputes.js",
+          "sha256": "993b89551c5ec04bdae7e94b73138a1902b4ec3b460f5b1cedd3787a23531279"
+        },
+        {
+          "path": "cjs/resources/Issuing/PersonalizationDesigns.js",
+          "sha256": "1ad17b896356c0ae1d44f7d410bd3ce58c54a728ede1894aecd4a3961a854570"
+        },
+        {
+          "path": "cjs/resources/Issuing/PhysicalBundles.js",
+          "sha256": "e7d0b0376c2f843fb5fa8d4988c9c8ceaea7aa06f3e52015967643d1677eb050"
+        },
+        {
+          "path": "cjs/resources/Issuing/Tokens.js",
+          "sha256": "143e9e005ffe429399c956163071851baa9cb9271208388fdbb36857f9f196c5"
+        },
+        {
+          "path": "cjs/resources/Issuing/Transactions.js",
+          "sha256": "2f9efd19ee0d4b1f53b7b505eb32978995f3aa4c609589848f415292a14199a3"
+        },
+        {
+          "path": "cjs/resources/Mandates.js",
+          "sha256": "d462cca8fe3df979bff43a9f69808b982ac270449c6bde860e46dd66ae4cedfa"
+        },
+        {
+          "path": "cjs/resources/OAuth.js",
+          "sha256": "4dcf3497b79db0dd1c3eabdea3b542a8d10435cc4a84e341549fbebcf0c0a015"
+        },
+        {
+          "path": "cjs/resources/PaymentAttemptRecords.js",
+          "sha256": "d89db1cfababb75d1339f39ce170a386024b60415559ebe5e56f736a4f5cdbda"
+        },
+        {
+          "path": "cjs/resources/PaymentIntents.js",
+          "sha256": "8d593f830ce8eb742ab54389086abfd413e7f0a7de32c8efd17a446f9d74a2e8"
+        },
+        {
+          "path": "cjs/resources/PaymentLinks.js",
+          "sha256": "d1a39e778ead6a79f47cd610a23f3996737013669335a18ae339f734af278b06"
+        },
+        {
+          "path": "cjs/resources/PaymentMethodConfigurations.js",
+          "sha256": "6d2a508ffa84afc341324a81687a741f4e2ae630cf61af96861bcdf6241d8e36"
+        },
+        {
+          "path": "cjs/resources/PaymentMethodDomains.js",
+          "sha256": "28df6b7acfbc9ebce4707493bf0b4c60c5ddbbc4c13a9011722b17adb9ca2163"
+        },
+        {
+          "path": "cjs/resources/PaymentMethods.js",
+          "sha256": "11435cdc9f603ba5c391d2934a63b578294fb8adb9f3f470d315263658febab8"
+        },
+        {
+          "path": "cjs/resources/PaymentRecords.js",
+          "sha256": "b30771748ece91f44aa6af816f6d55e6760fcd2dd0b64e5f0b2345bb95176ab1"
+        },
+        {
+          "path": "cjs/resources/Payouts.js",
+          "sha256": "8e43efacdcc134c915d8db7b4e5cfdf85aae576ecbbbb06c7c0edacb266aa679"
+        },
+        {
+          "path": "cjs/resources/Plans.js",
+          "sha256": "aed9c04eefc71e8cc2fc6f99481e5fbf5a40527a6dd2cb83c10196a1cf217d4f"
+        },
+        {
+          "path": "cjs/resources/Prices.js",
+          "sha256": "3ed12ad4647e3958298c2b320f138c8c113b24b4c8d3eba1fb7b3f862b7778b5"
+        },
+        {
+          "path": "cjs/resources/Products.js",
+          "sha256": "6e9dafdbd2f97a5fcdd48cf7cdc05ab5571a7414952ba0dfc3a5ea3b81b3e4ba"
+        },
+        {
+          "path": "cjs/resources/PromotionCodes.js",
+          "sha256": "91b7649031c240e918824f75a021611e21d473feee816a20acaf6971690f5a73"
+        },
+        {
+          "path": "cjs/resources/Quotes.js",
+          "sha256": "6500469acce71ea004f2184a70b1c0710f5e4ad3f06f8f3bdb1868a77af9f553"
+        },
+        {
+          "path": "cjs/resources/Radar/EarlyFraudWarnings.js",
+          "sha256": "2e45e8c8520245888658268b15f8194613fd372c61bcb4dd304ff3b0498e10ac"
+        },
+        {
+          "path": "cjs/resources/Radar/PaymentEvaluations.js",
+          "sha256": "8ae324d2585d5519e84b77d1acdda4a9a56dcf8b75528499a5e294b1154ad0ae"
+        },
+        {
+          "path": "cjs/resources/Radar/ValueListItems.js",
+          "sha256": "2beeb0b273f369ad4b7d4c417b0e78d4f790f98234c848b93d43d169278149e4"
+        },
+        {
+          "path": "cjs/resources/Radar/ValueLists.js",
+          "sha256": "281c378af0629f0cca91e8ba53496c88aba9538eabb50871d9791e1afcb9c000"
+        },
+        {
+          "path": "cjs/resources/Refunds.js",
+          "sha256": "e2e01b574115a2327bf26b4600d73ff8568d1dfe82a1a569ccab078f7cd72d2e"
+        },
+        {
+          "path": "cjs/resources/Reporting/ReportRuns.js",
+          "sha256": "51a8a7e2c931359344424e58f99080082724c520257b7fc3411973926ba3ffa5"
+        },
+        {
+          "path": "cjs/resources/Reporting/ReportTypes.js",
+          "sha256": "8575f696242fcc745ee65f96a2d9dace46134362b126c8498a156d696bfc150c"
+        },
+        {
+          "path": "cjs/resources/Reviews.js",
+          "sha256": "44cd399225229b9dd1dc0bc4d08062d179e378f1a04d95b69cf684fb48471a48"
+        },
+        {
+          "path": "cjs/resources/SetupAttempts.js",
+          "sha256": "523abbe493aca9b5117c56e113eb2182168e30a15fa9485c4a425c8da9141f37"
+        },
+        {
+          "path": "cjs/resources/SetupIntents.js",
+          "sha256": "89a4553640b364470ad3e0cd1ed7dd1c21ddd83293b7fe844616d3e1476da156"
+        },
+        {
+          "path": "cjs/resources/ShippingRates.js",
+          "sha256": "7a5bbcfe972087574926eedf02bf1f0ae0ff39cb6da46ad887410627878fbac4"
+        },
+        {
+          "path": "cjs/resources/Sigma/ScheduledQueryRuns.js",
+          "sha256": "949cf2fce1f3e69a3c8bc80a11ba7444af59ef3f4e42c020031565d2dea113c0"
+        },
+        {
+          "path": "cjs/resources/Sources.js",
+          "sha256": "74ae869db0d31679b06064a40bfd0dd4e9f33dc5615da2ee09b8a2ee0d3a3de4"
+        },
+        {
+          "path": "cjs/resources/SubscriptionItems.js",
+          "sha256": "ff81e90fd27513d830baecee3d65087dcbfa61636213a01e1dadd5964eaa9792"
+        },
+        {
+          "path": "cjs/resources/SubscriptionSchedules.js",
+          "sha256": "374fe656af7b0261e9736dc47263ff6e20700f2b4feeef7cd14a84b0633d8a7f"
+        },
+        {
+          "path": "cjs/resources/Subscriptions.js",
+          "sha256": "4eb5905e01ddcc263f58ed9a799cb51dc7bbebea2796372fa34b2e2ddfd9868e"
+        },
+        {
+          "path": "cjs/resources/Tax/Associations.js",
+          "sha256": "4b565d568476c93c50732cdb35ff33ed249c71a0bb4c64f2d05964d161b42548"
+        },
+        {
+          "path": "cjs/resources/Tax/Calculations.js",
+          "sha256": "ab44167dc41f983e9262e4fa389f8f91752628e9bd35e14d99ce606c3c006f1c"
+        },
+        {
+          "path": "cjs/resources/Tax/Registrations.js",
+          "sha256": "002e76b8756bd9a3abc8cac5ed3e96bfe08b14c38f918e88c4d84d5b8c370b69"
+        },
+        {
+          "path": "cjs/resources/Tax/Settings.js",
+          "sha256": "c97e4983dbe803c3072057933e83054132296907dc1279478ff0daf727d464f7"
+        },
+        {
+          "path": "cjs/resources/Tax/Transactions.js",
+          "sha256": "13058172e0bbf07a31c04b20260e24c8579a64933e15640967f8834f255ada4d"
+        },
+        {
+          "path": "cjs/resources/TaxCodes.js",
+          "sha256": "08ba1d69a03870c966a688147331dcf33b6138973aa91ae0356a9458483562fd"
+        },
+        {
+          "path": "cjs/resources/TaxIds.js",
+          "sha256": "3ec52a1ca5e0cd1adc65e4fd230f12e22fd7ec1650b74aea4f57f95d751d5257"
+        },
+        {
+          "path": "cjs/resources/TaxRates.js",
+          "sha256": "a8330bed9a61f7f2745585e337896e5d90fb51a0c2bdd00144ae33d78796f7f5"
+        },
+        {
+          "path": "cjs/resources/Terminal/Configurations.js",
+          "sha256": "09b2858321ccc69ecb8f1cf839a2428b52e1abb10f86a7763d0b4056dc44557e"
+        },
+        {
+          "path": "cjs/resources/Terminal/ConnectionTokens.js",
+          "sha256": "8aff25399027f11dc7ad2144d70461a6299c67bb2447c819f7fdef2fcba3df6f"
+        },
+        {
+          "path": "cjs/resources/Terminal/Locations.js",
+          "sha256": "347c5496aa2699733fd565d449459288cf7d3481fa548c8575f1a0892a8fa60b"
+        },
+        {
+          "path": "cjs/resources/Terminal/OnboardingLinks.js",
+          "sha256": "5896b52b254dfd67577d666a72fd7ca8ff366728d1ecb3ef8b72603d52a4fa09"
+        },
+        {
+          "path": "cjs/resources/Terminal/Readers.js",
+          "sha256": "9010ad931b780495a99076111875ad3766e9dbde24b2bad82f547b93c0a14c67"
+        },
+        {
+          "path": "cjs/resources/TestHelpers/ConfirmationTokens.js",
+          "sha256": "77ffec3a949b4172704160f309b64e0512fec0098d6a8e41cd0387ff7e22dd7e"
+        },
+        {
+          "path": "cjs/resources/TestHelpers/Customers.js",
+          "sha256": "36e54e93e62206505d0c9805f877178438265aaf7a2d425454a38bb2c53fe633"
+        },
+        {
+          "path": "cjs/resources/TestHelpers/Issuing/Authorizations.js",
+          "sha256": "d9cfab007f67de15de7ea32340e7ab3ad0aa47cc675b737299b7f3d1b10d19e7"
+        },
+        {
+          "path": "cjs/resources/TestHelpers/Issuing/Cards.js",
+          "sha256": "5648bf362d4a7eef8ca16359444dec9a2ecfdf9092df4fcfcefbc530defda231"
+        },
+        {
+          "path": "cjs/resources/TestHelpers/Issuing/PersonalizationDesigns.js",
+          "sha256": "78d654c5555e24dd37b2633fd0498ed9423ee3a408c7260388d173e6c612bff5"
+        },
+        {
+          "path": "cjs/resources/TestHelpers/Issuing/Transactions.js",
+          "sha256": "845fb2b00260c6539665a32bc39bfa9b24c1381052e9026faff3e2ead3548252"
+        },
+        {
+          "path": "cjs/resources/TestHelpers/Refunds.js",
+          "sha256": "921867e3ca37121557b5797d8539630a67f0a661cbe4fe756eb6a523f97ce1ab"
+        },
+        {
+          "path": "cjs/resources/TestHelpers/Terminal/Readers.js",
+          "sha256": "149764ee0b10e524496a697ea8febe8e033f05305f60068ff0c05e7bf48ddd4a"
+        },
+        {
+          "path": "cjs/resources/TestHelpers/TestClocks.js",
+          "sha256": "9b3684df0820fe09b1acc4be4b50c2f96f459d184d27bfdd496292846437130a"
+        },
+        {
+          "path": "cjs/resources/TestHelpers/Treasury/InboundTransfers.js",
+          "sha256": "5ff04e0cc0b4589a8a27886526a3d22eaed19b797fa756a166583e8d83448da6"
+        },
+        {
+          "path": "cjs/resources/TestHelpers/Treasury/OutboundPayments.js",
+          "sha256": "1889c35670d6251cc7a8d0c0b3d263b8d9c909c343d03f8ef2a0401c9a81cb9a"
+        },
+        {
+          "path": "cjs/resources/TestHelpers/Treasury/OutboundTransfers.js",
+          "sha256": "25a34fc9dd8a3dd7f39618989c1037a7f5c96929f58ad39582ded90701f88406"
+        },
+        {
+          "path": "cjs/resources/TestHelpers/Treasury/ReceivedCredits.js",
+          "sha256": "7942e2441e6c47051ba9153b2aa2b1c0b1bd109be97502b284ad5f69dabb66c0"
+        },
+        {
+          "path": "cjs/resources/TestHelpers/Treasury/ReceivedDebits.js",
+          "sha256": "47aa0d195622df52bfeafee33a927f64977ad8ba06e0660fc9f2a7bad726d287"
+        },
+        {
+          "path": "cjs/resources/Tokens.js",
+          "sha256": "a2fe8519474b08ba568130ccc8eb3cf58cd6646fec4db3498a3883f639560bb3"
+        },
+        {
+          "path": "cjs/resources/Topups.js",
+          "sha256": "ca7b64b4a6c6aa702a5967b5f411a4bb66eb2329f109cc1a938227b39aa4618c"
+        },
+        {
+          "path": "cjs/resources/Transfers.js",
+          "sha256": "aa8e4cad14cfe0b35236208727fe81130627ef3aea23504ed6a760ebcccd29f2"
+        },
+        {
+          "path": "cjs/resources/Treasury/CreditReversals.js",
+          "sha256": "eb3e6ef187b309e9ef3f80a4a8ad2dfc95518ee726aeec19a3d4962497a39a90"
+        },
+        {
+          "path": "cjs/resources/Treasury/DebitReversals.js",
+          "sha256": "52f82aeef74282730ace848531ab8964ee9c5327eb8ab61bfb000ba399ec10e0"
+        },
+        {
+          "path": "cjs/resources/Treasury/FinancialAccounts.js",
+          "sha256": "0622a8829c970936a09e3a546d380f549b27379c8134d240b5b627d90e7846e8"
+        },
+        {
+          "path": "cjs/resources/Treasury/InboundTransfers.js",
+          "sha256": "ce8a21ee085a8b6542353c957748ef9c9e74850265a11b90dad7a4b69d315da5"
+        },
+        {
+          "path": "cjs/resources/Treasury/OutboundPayments.js",
+          "sha256": "0ce5fe6697b2b4617190ec1efd363b514182c5129e83ff2da570ddd1842838a5"
+        },
+        {
+          "path": "cjs/resources/Treasury/OutboundTransfers.js",
+          "sha256": "131d87038237281be7c02349f185193308a1c67258377926bc45a932b03df147"
+        },
+        {
+          "path": "cjs/resources/Treasury/ReceivedCredits.js",
+          "sha256": "a2668f4b6d87f78922643be509e4dda066fc94d090c960561da7c2969156c286"
+        },
+        {
+          "path": "cjs/resources/Treasury/ReceivedDebits.js",
+          "sha256": "f3e47b4566fb71add01a22e4dd9bf1a6ae00dc674daceff1d2f6699b898c3347"
+        },
+        {
+          "path": "cjs/resources/Treasury/TransactionEntries.js",
+          "sha256": "00446af04b15a8ab895217f40521cb6b37bc1bcff1488a1b9494377827aaa412"
+        },
+        {
+          "path": "cjs/resources/Treasury/Transactions.js",
+          "sha256": "c48418cc888fbc13e7a0feac601c99fa21abfe70f72f57594e6c7036a037ce55"
+        },
+        {
+          "path": "cjs/resources/V2/Billing/MeterEventAdjustments.js",
+          "sha256": "d278ca4f61762cdac06092e4c11369057a9161d38874f33b3bfe69e26702bcc6"
+        },
+        {
+          "path": "cjs/resources/V2/Billing/MeterEventSession.js",
+          "sha256": "015803fe5d003fed738c14f0986ad1a23aadc8b19f264bb08e4fe787f1b8055d"
+        },
+        {
+          "path": "cjs/resources/V2/Billing/MeterEventStream.js",
+          "sha256": "2cf310aed9589d6325e88a55453043f72c58a423ed697fc616ff6b7df6ee74f4"
+        },
+        {
+          "path": "cjs/resources/V2/Billing/MeterEvents.js",
+          "sha256": "a5a836a9a9486b2b735dd1a26dd2873763b526ebda88037c112c3caa9fa83ebc"
+        },
+        {
+          "path": "cjs/resources/V2/Core/AccountLinks.js",
+          "sha256": "561d75b3bb4b6c3a08286fbc99484c4ef84ff28873a3a1de397e79a45d0054ca"
+        },
+        {
+          "path": "cjs/resources/V2/Core/AccountTokens.js",
+          "sha256": "2beabde13b749c11c967644136b9cd7c19a242b95106a041f2703afd0bad8707"
+        },
+        {
+          "path": "cjs/resources/V2/Core/Accounts/PersonTokens.js",
+          "sha256": "49091c11bd1683d50f7f8378bc298b0f6f64c6e49b9183a5ae62b57c1ff1da17"
+        },
+        {
+          "path": "cjs/resources/V2/Core/Accounts/Persons.js",
+          "sha256": "1db089d9380eaea12005c5929999a3aa794d7b5297182cb2da3294bf984463c0"
+        },
+        {
+          "path": "cjs/resources/V2/Core/Accounts.js",
+          "sha256": "e93760e5139f7622ccbaf147e6882127a106cb4beed50efc531b2ee07db87493"
+        },
+        {
+          "path": "cjs/resources/V2/Core/EventDestinations.js",
+          "sha256": "a9f569f10053b1f938fa1b69d39555f8528c1142ec67e4b7c197aafb84b8ed6f"
+        },
+        {
+          "path": "cjs/resources/V2/Core/Events.js",
+          "sha256": "38ba04f091c3a14f50386ac5553cb1852b56d4d431466319f83c33f5f0956791"
+        },
+        {
+          "path": "cjs/resources/WebhookEndpoints.js",
+          "sha256": "7d2849ef382a29b83084966c8cfe9558688ae9abf9dd577d01893f69ab46e13c"
+        },
+        {
+          "path": "cjs/resources.js",
+          "sha256": "077fba10a2694c07b936862170d134f00b7c757c0f1c4707df1842d7b31c8ae2"
+        },
+        {
+          "path": "cjs/stripe.cjs.node.js",
+          "sha256": "dfe0d4f904542217714f4fb6918432db1f9082cfdd19273d2e327d3245504ea5"
+        },
+        {
+          "path": "cjs/stripe.cjs.worker.js",
+          "sha256": "a4142a9702c4d2c2058659c561967575d46237894e8b984dea32cb6b7fe6c53d"
+        },
+        {
+          "path": "cjs/stripe.core.js",
+          "sha256": "12dbbe383d58f0442060e2d06fd14ec38d30c69a4a00a3b7b1aaa8134bb3fd61"
+        },
+        {
+          "path": "cjs/utils.js",
+          "sha256": "9b89613dc24462622f2c457372f60b3119d3c32462b57a5196af22b961772ef9"
+        },
+        {
+          "path": "esm/Error.js",
+          "sha256": "bd71900d6fbaabfd8e62de9356a642c1517bbfa2285b2400e8e1214e3981721a"
+        },
+        {
+          "path": "esm/RequestSender.js",
+          "sha256": "ddfd85829ce24759dd4e709c7c35ef3b0defe69c34dc705c7e76b74549097cb1"
+        },
+        {
+          "path": "esm/ResourceNamespace.js",
+          "sha256": "ac15ecb11762a0d1cb8581a36fccc0ee43baf3cfbaa0d978dde9425c01219e24"
+        },
+        {
+          "path": "esm/StripeContext.js",
+          "sha256": "8ebd4e4a297e81ef8988b5069449eb9176190a2d5dbd38953e6797876b70ef88"
+        },
+        {
+          "path": "esm/StripeEmitter.js",
+          "sha256": "51974e9625cc55ad5412afff1d1abbbfbd239e459063d2b9919225c560c0fd68"
+        },
+        {
+          "path": "esm/StripeMethod.js",
+          "sha256": "7e42334ef11d0dc8865bff2fbb1ae0d5b5dfb58100071f57f1adae252a8c10bd"
+        },
+        {
+          "path": "esm/StripeResource.js",
+          "sha256": "9f8052d077a893cca023fc2004c1dd8a1a575f7a130a02f9a5fbb6295c5b42bc"
+        },
+        {
+          "path": "esm/Webhooks.js",
+          "sha256": "a0ba668f48c823bcc56721c4a3057a1ecc9beb6cf4e1213e7d436d63c2c503be"
+        },
+        {
+          "path": "esm/apiVersion.js",
+          "sha256": "300df540a0d57d281015f5bf949ce1d7ee7585b0d669cb01048385338fe263a1"
+        },
+        {
+          "path": "esm/autoPagination.js",
+          "sha256": "83757e122299635bd8a3e99a56450ec945de9d089a3e5f78ead2de288fcef789"
+        },
+        {
+          "path": "esm/crypto/CryptoProvider.js",
+          "sha256": "0ec6d377a585f7faba0a7980d49116faeedec4337a54546ab33c4010b3da782c"
+        },
+        {
+          "path": "esm/crypto/NodeCryptoProvider.js",
+          "sha256": "090b8f1fe5d85b4fc11594feb86978698566ffec8685ad8de5853e39a33f7b52"
+        },
+        {
+          "path": "esm/crypto/SubtleCryptoProvider.js",
+          "sha256": "e55daa4f0d8fb6cce6832f9347d71bccab44de1e0cad760cbd1ff87e3c691835"
+        },
+        {
+          "path": "esm/multipart.js",
+          "sha256": "b9e21102e757742bcede6d149054be2b98c4d9de1e13b4b51335636f8bcd99ce"
+        },
+        {
+          "path": "esm/net/FetchHttpClient.js",
+          "sha256": "3fa6828d80a2a43508fd60c39d11fd70615a4b0b427b50c0d5eb65b4fd3051a9"
+        },
+        {
+          "path": "esm/net/HttpClient.js",
+          "sha256": "06804bc75f8f1e7240f90d3bde22d4837269b3959c7d0fe0c570558cb134f58c"
+        },
+        {
+          "path": "esm/net/NodeHttpClient.js",
+          "sha256": "60cdfe540cfada7349f9c5ba8e8990def0fda4a3d7abccde6e89c7e8099c6d81"
+        },
+        {
+          "path": "esm/package.json",
+          "sha256": "1239d4d885dcad42201a27ed9324f8f0f760b78700d8db9ced39a511cffe7eae"
+        },
+        {
+          "path": "esm/platform/NodePlatformFunctions.js",
+          "sha256": "436bc343f0152482a8d342272be1e19d7ca516f50e88eb1d96a264e693bc4ef5"
+        },
+        {
+          "path": "esm/platform/PlatformFunctions.js",
+          "sha256": "acc819937a7c89b0e6416e8e5505c3f626f5068a521378f98808a711afa29ba8"
+        },
+        {
+          "path": "esm/platform/WebPlatformFunctions.js",
+          "sha256": "35a6cb84e917e6339f8d2b1fdd73ef002b7e75fe95ae8bb8fd4e8e50128a39f9"
+        },
+        {
+          "path": "esm/resources/AccountLinks.js",
+          "sha256": "42d7a8aeebe5ad23c4df425f3580a345a2b1e39e87c9c848d29a5a88ad534351"
+        },
+        {
+          "path": "esm/resources/AccountSessions.js",
+          "sha256": "6613a64246e8ccd1afc4f2f35a03c6a13bdd56c3e7b02e594fe896153cffeb41"
+        },
+        {
+          "path": "esm/resources/Accounts.js",
+          "sha256": "69cac3ff34ac3c7d7f51773b2abb4828dbae666c7fe30ca18dcfd293051c46f6"
+        },
+        {
+          "path": "esm/resources/ApplePayDomains.js",
+          "sha256": "6cd9dba236fbc6fb17cfcb4e1b839e915464509dc3b6651963c3dd1256c39e61"
+        },
+        {
+          "path": "esm/resources/ApplicationFees.js",
+          "sha256": "a2174d671ea4500c45d09b16d6e126cbd6b23b0518ac2a762536bd6cfff92ac6"
+        },
+        {
+          "path": "esm/resources/Apps/Secrets.js",
+          "sha256": "44ebc2fca26ed314e946138a8e77fb47a38ae9842864bed0326f150c271a00d8"
+        },
+        {
+          "path": "esm/resources/Balance.js",
+          "sha256": "4e9c2d37ad39330942338e26de38e56347e0f84dad2427dc6db3f0b07b21a4f2"
+        },
+        {
+          "path": "esm/resources/BalanceSettings.js",
+          "sha256": "bd18e4b66ef7cfd60e64acf89dab3edf1dd325c6fc5ea9cf09a5a1eee9f88fd7"
+        },
+        {
+          "path": "esm/resources/BalanceTransactions.js",
+          "sha256": "ab9819b5803f2b2f29b33becb8c2b319b361682ad0695f4750e7eaa109aa3565"
+        },
+        {
+          "path": "esm/resources/Billing/Alerts.js",
+          "sha256": "f12ba8a94eeba50a8365565293e6ce933bfc375b3e83b5500cefb36a30ac370a"
+        },
+        {
+          "path": "esm/resources/Billing/CreditBalanceSummary.js",
+          "sha256": "783ef8ad13802e28454c14176a1f29cf35521d00d9836620cfc5d3a499e3f6e0"
+        },
+        {
+          "path": "esm/resources/Billing/CreditBalanceTransactions.js",
+          "sha256": "0ffe2e90b65c9afde09fbd76836101d1c6c2cd4cb6a8fc47a98c50547563b406"
+        },
+        {
+          "path": "esm/resources/Billing/CreditGrants.js",
+          "sha256": "5b80f9273de9c407697ca6daf59bd7418d5ad862bcfc28c2ae9453e86fac4664"
+        },
+        {
+          "path": "esm/resources/Billing/MeterEventAdjustments.js",
+          "sha256": "62ffdc1b1da4013b4fab951e619f95bd9d35347230b196f6263dfe5d3d4d1356"
+        },
+        {
+          "path": "esm/resources/Billing/MeterEvents.js",
+          "sha256": "0856a04123ef7340917314c1fdfacc08bcc6e4399feb428d96153a39416354b5"
+        },
+        {
+          "path": "esm/resources/Billing/Meters.js",
+          "sha256": "8f73cf41f24b85e3bc631d66883fa9cd227fc7a9711efde5448fbb81342cbfc2"
+        },
+        {
+          "path": "esm/resources/BillingPortal/Configurations.js",
+          "sha256": "cc9ee787837c6fb6cf0e20f67c78a2f5606e349f7502a6fb30d01680d85a26ca"
+        },
+        {
+          "path": "esm/resources/BillingPortal/Sessions.js",
+          "sha256": "545c37e1faacab3d3e7e0d0b4b143cb95171ae6abeb88516df873df87d32bb18"
+        },
+        {
+          "path": "esm/resources/Charges.js",
+          "sha256": "b9b4f9a56a1d29b879a3c871fa0a6cd7102a2b3c8a336a35f70fd8fc0c280c07"
+        },
+        {
+          "path": "esm/resources/Checkout/Sessions.js",
+          "sha256": "e6925aa238d8827cbb93b6c1671cec6f01460789e412aa3792ec4d75777247f0"
+        },
+        {
+          "path": "esm/resources/Climate/Orders.js",
+          "sha256": "b02a1c538355ce39b0c83e96c16313c267116291482a957ce06cd47b3a3b2a4f"
+        },
+        {
+          "path": "esm/resources/Climate/Products.js",
+          "sha256": "2b7fcc037899bc4a1a1a3e86adaa46d7da4af175557079dea8ae929590f6a85c"
+        },
+        {
+          "path": "esm/resources/Climate/Suppliers.js",
+          "sha256": "681ff4fa30a47d16907ffc1aab2d4e493e95d080fb88a9219df9d0b647dba34a"
+        },
+        {
+          "path": "esm/resources/ConfirmationTokens.js",
+          "sha256": "83b862a433d41b6bf6ae1fc588c811ce61aaf63b6b9b67d2a906ad0029bd9589"
+        },
+        {
+          "path": "esm/resources/CountrySpecs.js",
+          "sha256": "4ac0967b4547de94295f7647f8596cecd43e673ed9e8863593101910d097ad23"
+        },
+        {
+          "path": "esm/resources/Coupons.js",
+          "sha256": "3d8cfa757145e9d54d7eacd6a58289c7ce4cab3d524375e113608bc3e918c179"
+        },
+        {
+          "path": "esm/resources/CreditNotes.js",
+          "sha256": "7c37784474aaec5d5dd84faa6d6be3e2a93b5dc0b5de567eaf48834abadeb5a7"
+        },
+        {
+          "path": "esm/resources/CustomerSessions.js",
+          "sha256": "4dfbd714fa4dc8b9e02c857e34bfc5f05df5ed7a7776fec17feb51931b40a596"
+        },
+        {
+          "path": "esm/resources/Customers.js",
+          "sha256": "29f47225cfe81dd51481aa308c8b6c61d54ff573249725fc019196c914cd89b4"
+        },
+        {
+          "path": "esm/resources/Disputes.js",
+          "sha256": "be56d18c118e97e33e4ce756692775c2b2733d3289969e4269919d082074d52f"
+        },
+        {
+          "path": "esm/resources/Entitlements/ActiveEntitlements.js",
+          "sha256": "e0cbd3fe5f0b82a10001f2c1fefef265a209562233e0d6a71fe84b4619ed8d6c"
+        },
+        {
+          "path": "esm/resources/Entitlements/Features.js",
+          "sha256": "e881b790bbd56a61c6cfbd7681d666798599ee1cb810477c06b6d0a24efe9136"
+        },
+        {
+          "path": "esm/resources/EphemeralKeys.js",
+          "sha256": "9f85bd6b2b297d2a018d30002e23b8ce9900832b0daadf2476ea0bdc0bf6a902"
+        },
+        {
+          "path": "esm/resources/Events.js",
+          "sha256": "5086ffae32bc327120c2c3cd62f34ab92f553c4ffbb8d24bf53f1fb57b17408d"
+        },
+        {
+          "path": "esm/resources/ExchangeRates.js",
+          "sha256": "64875faae4b6bd87746721612c58d9785319d130cd95acfec6959e7441eab013"
+        },
+        {
+          "path": "esm/resources/FileLinks.js",
+          "sha256": "69d2f24b171ba086e56460a700b275fd22739e2bb98572d1cc7e1b7a3c245c43"
+        },
+        {
+          "path": "esm/resources/Files.js",
+          "sha256": "dc08a79f48286cb576214138a621715925f53fa6204c0e7d539061afcd92b0ab"
+        },
+        {
+          "path": "esm/resources/FinancialConnections/Accounts.js",
+          "sha256": "2b983e8af383d8d1775d94188d9237fa6d15a3d3e7fdd942bfeb5be9dd0bbb4e"
+        },
+        {
+          "path": "esm/resources/FinancialConnections/Sessions.js",
+          "sha256": "52c65d0f79c0c012366e5a4b4cfdba0d886ffc86cc8d4dbd543fa1c6865cc100"
+        },
+        {
+          "path": "esm/resources/FinancialConnections/Transactions.js",
+          "sha256": "d0bbf64695cd87ba5aeba4255606456f0557d8a7c1e52ddd9c057a5bae753eb1"
+        },
+        {
+          "path": "esm/resources/Forwarding/Requests.js",
+          "sha256": "0acf7b45728378cd0a404d0c1890110b5fb6cf918e739128b30a0a5c6d09d052"
+        },
+        {
+          "path": "esm/resources/Identity/VerificationReports.js",
+          "sha256": "b829998afd9b7e7c24ebfd595aa6222ac2453f3fb34047fd2f8c4488b233b03d"
+        },
+        {
+          "path": "esm/resources/Identity/VerificationSessions.js",
+          "sha256": "a01bc9dc66d4ade8789730380d396bb71958b5979dda742d95f6af0c65d6202e"
+        },
+        {
+          "path": "esm/resources/InvoiceItems.js",
+          "sha256": "ef23566dfde52f53de5dbe8191b51770f5bbcbfba1418efbcc484b4cf6f696a1"
+        },
+        {
+          "path": "esm/resources/InvoicePayments.js",
+          "sha256": "dae600091de0a797b0bfbb3e2bed7c1a8fd6ed7ca751e51307ffd25a4a2ba171"
+        },
+        {
+          "path": "esm/resources/InvoiceRenderingTemplates.js",
+          "sha256": "39aa8608aeaa00f064fbb58a12600a27f49e9c807ccb3b1d64d20f3d6ade7ac8"
+        },
+        {
+          "path": "esm/resources/Invoices.js",
+          "sha256": "28072b24f1d34d5e8b7ed1cd0fe78282f31656b89c9e0c17b3ac07215eb1360d"
+        },
+        {
+          "path": "esm/resources/Issuing/Authorizations.js",
+          "sha256": "9c98509bf769a2d3e0c6794a922d88cdb7a87f4ab646c049cf7cc8d2773d895d"
+        },
+        {
+          "path": "esm/resources/Issuing/Cardholders.js",
+          "sha256": "b86755953ec543e8f449be916aaf691ad3e761d6fbbf13bfcf6b28a97cde39b1"
+        },
+        {
+          "path": "esm/resources/Issuing/Cards.js",
+          "sha256": "508dcad473e30bddceedab936e33a2f13a2380bec2ea45950303149394f26da6"
+        },
+        {
+          "path": "esm/resources/Issuing/Disputes.js",
+          "sha256": "61b6f4983436bf5cb27d1fb1a7c2155190a98ff696637267295aefec6c692462"
+        },
+        {
+          "path": "esm/resources/Issuing/PersonalizationDesigns.js",
+          "sha256": "30b146bd55e3237e0907b4dbdd5703e399ba8d7909f1e38172c0e8aae5e64c36"
+        },
+        {
+          "path": "esm/resources/Issuing/PhysicalBundles.js",
+          "sha256": "63aeedb9271833a2cd55376126209ed73ba18dec820249fc3bacd9a2d85d47b0"
+        },
+        {
+          "path": "esm/resources/Issuing/Tokens.js",
+          "sha256": "d7a7e7d2546b6d54114e14c47b0121c20615bbde4b33df23dc862f920923afba"
+        },
+        {
+          "path": "esm/resources/Issuing/Transactions.js",
+          "sha256": "c9887f351e5bfe4762c6105a27b415e42160d23b6f5d66676a8f2760250d1575"
+        },
+        {
+          "path": "esm/resources/Mandates.js",
+          "sha256": "245e3f324dda6b6e558627b105ea582511c6161965934a3fea0b90d3bdc837bf"
+        },
+        {
+          "path": "esm/resources/OAuth.js",
+          "sha256": "e78c2251b5addc9bfb6b1b15aed8720066afddce557e6033814de2814999b8ef"
+        },
+        {
+          "path": "esm/resources/PaymentAttemptRecords.js",
+          "sha256": "d2b191baa6474a2fe20e9fecc85ea7fa38269aab40e1dc54c7caf425155dabc4"
+        },
+        {
+          "path": "esm/resources/PaymentIntents.js",
+          "sha256": "3806cb493dc63fe9913b790972cce119f280a48bbe0f7a118dd6f2c589db23b9"
+        },
+        {
+          "path": "esm/resources/PaymentLinks.js",
+          "sha256": "92851fb2563d005415884a9b31ea932e121de492edf309a20a8614323fe5313b"
+        },
+        {
+          "path": "esm/resources/PaymentMethodConfigurations.js",
+          "sha256": "3c7f6e248f6e32ad07c8be8e74bb5c4fb5c3b341f858541a6b3ef604c1100e50"
+        },
+        {
+          "path": "esm/resources/PaymentMethodDomains.js",
+          "sha256": "2a5bcc904343b3089313e3270fee9e4bcad2e01f3249458ac2b4337902fa0e9d"
+        },
+        {
+          "path": "esm/resources/PaymentMethods.js",
+          "sha256": "4bebbc8f55c598bc1d4b60cf4229a5a8f4c9ca1cf66d8531f92f3170ccb0a209"
+        },
+        {
+          "path": "esm/resources/PaymentRecords.js",
+          "sha256": "73e81263d1a6ff0dcae1ba748341a19821bf57984658efd246fd34a3c7d3897a"
+        },
+        {
+          "path": "esm/resources/Payouts.js",
+          "sha256": "3da9b13b44543a44807b9a55d7a1c6f29176c71d3326af3c9a10393e0b6e3376"
+        },
+        {
+          "path": "esm/resources/Plans.js",
+          "sha256": "141cc6b48c1a88b500cd7181707791313ddc2708149e3708f1b6c578bd54d071"
+        },
+        {
+          "path": "esm/resources/Prices.js",
+          "sha256": "03fa1be60308ea0d3cb524d55d05d8fb05d2e9ed91dfcf93e8022380d9495091"
+        },
+        {
+          "path": "esm/resources/Products.js",
+          "sha256": "71e37ff08945295ee48a5b08870785130eaaec9293fe384856736c302f23a527"
+        },
+        {
+          "path": "esm/resources/PromotionCodes.js",
+          "sha256": "13930ad9ea4ccd79428592357d2aac8699f866332b36a43bf473c53d2f1d2063"
+        },
+        {
+          "path": "esm/resources/Quotes.js",
+          "sha256": "b668831f04195d8ae22caadc6612a629b4b94a1db26816e248913b676a48006d"
+        },
+        {
+          "path": "esm/resources/Radar/EarlyFraudWarnings.js",
+          "sha256": "82589723efa8e5472d8af305f18b8136688825609abb23161e24efc03c783114"
+        },
+        {
+          "path": "esm/resources/Radar/PaymentEvaluations.js",
+          "sha256": "69a7dc3a52c95a22148ee02f0fe87d50ec3c784f2c23a47652c51571b248dae2"
+        },
+        {
+          "path": "esm/resources/Radar/ValueListItems.js",
+          "sha256": "9c4ef92c2730c3be73849f82e50577ac3aebe978d75e091a6bdd8bc9ab88a543"
+        },
+        {
+          "path": "esm/resources/Radar/ValueLists.js",
+          "sha256": "b2bdca1c23fc3d62f7eb7220c988b60b151571128a83da1b20f9d023607973f1"
+        },
+        {
+          "path": "esm/resources/Refunds.js",
+          "sha256": "25e5f5a7d7b26d351d075c8513f7a231fe31b9de3f507e762da1d209b3c7e4a4"
+        },
+        {
+          "path": "esm/resources/Reporting/ReportRuns.js",
+          "sha256": "04f9ce277727de964d4973714405b205f629621f003965800669f2219d387aff"
+        },
+        {
+          "path": "esm/resources/Reporting/ReportTypes.js",
+          "sha256": "a76336532851727627652119e4c9a455456023137df59c6bb7e86ebfd4f229d3"
+        },
+        {
+          "path": "esm/resources/Reviews.js",
+          "sha256": "c810569d10d7203978843aeb15cd2f467159f7e3d5024c08b0e141797715d53c"
+        },
+        {
+          "path": "esm/resources/SetupAttempts.js",
+          "sha256": "bc0c5be1e0e3c60a94cfd04bc7d58aaf62e16c12a63defc43aef2092e86852fb"
+        },
+        {
+          "path": "esm/resources/SetupIntents.js",
+          "sha256": "246619597dbf7104342fd79bd81e176e479e09a74a21fd715de7287916a12362"
+        },
+        {
+          "path": "esm/resources/ShippingRates.js",
+          "sha256": "f492b2fd3944a99b4ab2e536598b9f5c2b73da24288d8ae38f8e7491ac39ae23"
+        },
+        {
+          "path": "esm/resources/Sigma/ScheduledQueryRuns.js",
+          "sha256": "a1efa9c78d60c1ad071f0aedaffd662fc85d75edd15b23ee85f1af12863d88d0"
+        },
+        {
+          "path": "esm/resources/Sources.js",
+          "sha256": "c0db7f9d983d1905944345696de6d5257528a56c8aa56533d36b0dd9fca97947"
+        },
+        {
+          "path": "esm/resources/SubscriptionItems.js",
+          "sha256": "c5d7cf71fc27dc6ac2f3be90a633c7123daa1184d49119c5d6c131ec900be635"
+        },
+        {
+          "path": "esm/resources/SubscriptionSchedules.js",
+          "sha256": "818aba4b0b088d3427e0e5d48b6dba75fd9d34487e75dc8d8b234f24976273f4"
+        },
+        {
+          "path": "esm/resources/Subscriptions.js",
+          "sha256": "ad38b2ce737fe710c6c29d2eadc9d8acca7de5c966bceb70efaee3ff0145902f"
+        },
+        {
+          "path": "esm/resources/Tax/Associations.js",
+          "sha256": "62015cd8458c4fa682cfa3ace91111194f1e8a1d52ddf56a80d8633fc8b7360d"
+        },
+        {
+          "path": "esm/resources/Tax/Calculations.js",
+          "sha256": "8ad878ee4f32a8f0b4fd06cfd3344971dbabc40cb8f5cd833b0288c5c4c56872"
+        },
+        {
+          "path": "esm/resources/Tax/Registrations.js",
+          "sha256": "c45a8e6cd282a2c9075b15f4261d7ae970cf15ca759437054627b167bb8f6b4c"
+        },
+        {
+          "path": "esm/resources/Tax/Settings.js",
+          "sha256": "a616f573fb88b20a98ff70df75243f1e70c80632cae3301864354a8ebfce002c"
+        },
+        {
+          "path": "esm/resources/Tax/Transactions.js",
+          "sha256": "125c108075ddb101937a5722e7a5b8e5bec81d2ed4c5192056145859b2e3a92c"
+        },
+        {
+          "path": "esm/resources/TaxCodes.js",
+          "sha256": "63cfca908a529001ead5ba16933b2c9dbdba3c46629afd130592e9db2fa19dce"
+        },
+        {
+          "path": "esm/resources/TaxIds.js",
+          "sha256": "f4559683fa71d10f403eb1c5a5236bb875da1e3e310f37bfb3589231d214ca52"
+        },
+        {
+          "path": "esm/resources/TaxRates.js",
+          "sha256": "ab6216469830ed402e13ee5e4acb75e464f695c0fcd866dfbd57dfe22e61915f"
+        },
+        {
+          "path": "esm/resources/Terminal/Configurations.js",
+          "sha256": "14b56fe3bba4d6b93eb9292e45674061361074682a36a8f7422fd47cc4a44a92"
+        },
+        {
+          "path": "esm/resources/Terminal/ConnectionTokens.js",
+          "sha256": "4685121cfe1e2acd605b97603fb3275ca2926642bb4c3c58d38f114782917460"
+        },
+        {
+          "path": "esm/resources/Terminal/Locations.js",
+          "sha256": "3aee72d0e9cdb3b6429cd90dce4159e5d96dd7bc32c0c90248a010461888dfac"
+        },
+        {
+          "path": "esm/resources/Terminal/OnboardingLinks.js",
+          "sha256": "d503a8320fcf09e1df9e055d1c225311164c31bfc75468b694067473e11fa9a4"
+        },
+        {
+          "path": "esm/resources/Terminal/Readers.js",
+          "sha256": "e89dafbf00653dd9075b43a53941bd5f87a1023a45cf2780f97d17011070b0e6"
+        },
+        {
+          "path": "esm/resources/TestHelpers/ConfirmationTokens.js",
+          "sha256": "6f6c3c8cc9cea11ee38c9030a74516381a28d77649be1f1ebd25b75f2c93f3a6"
+        },
+        {
+          "path": "esm/resources/TestHelpers/Customers.js",
+          "sha256": "b1d56de06715bd4a973bdddd486256077ee411edd6400ff841d55852568b8430"
+        },
+        {
+          "path": "esm/resources/TestHelpers/Issuing/Authorizations.js",
+          "sha256": "d72fe44a8f94cc2a967d51f61496364461c50cc7cdf8aa9cdef785b06fca83e2"
+        },
+        {
+          "path": "esm/resources/TestHelpers/Issuing/Cards.js",
+          "sha256": "6fc4a3e95b8679bf3cd6026e65287d61c54ef0a335f13be80960fe2b831f41b4"
+        },
+        {
+          "path": "esm/resources/TestHelpers/Issuing/PersonalizationDesigns.js",
+          "sha256": "ac07c740609f0b224c77ed0b3b2abe36246c502fb0b6a837706c74ba2b0e2d65"
+        },
+        {
+          "path": "esm/resources/TestHelpers/Issuing/Transactions.js",
+          "sha256": "3967347521d7b192c353594e42c6e35c44e0ba189b04cf2669308192043d2f52"
+        },
+        {
+          "path": "esm/resources/TestHelpers/Refunds.js",
+          "sha256": "07073046bdc7f4b537759e9256da3c16deedba2877633e39375ba1464608b0a1"
+        },
+        {
+          "path": "esm/resources/TestHelpers/Terminal/Readers.js",
+          "sha256": "568513936f4d03aa498586468cb43ab64153525f4708cc951327060ef72d6604"
+        },
+        {
+          "path": "esm/resources/TestHelpers/TestClocks.js",
+          "sha256": "eb5c8db6fe4debff9daeca279224095aacff4fb88e828222d5ed1212e6884a2e"
+        },
+        {
+          "path": "esm/resources/TestHelpers/Treasury/InboundTransfers.js",
+          "sha256": "5b800a972a4b47d01da90477c7566095941bf76605a83d0f3d5509fcd4834a3f"
+        },
+        {
+          "path": "esm/resources/TestHelpers/Treasury/OutboundPayments.js",
+          "sha256": "16803e241b6cd1f3c7de55eaf7a030f2c2283d0d7a257f9a2c66f746b6433193"
+        },
+        {
+          "path": "esm/resources/TestHelpers/Treasury/OutboundTransfers.js",
+          "sha256": "e4b6ed2e7f5b93f97eda2c37e4cc0592d9770d7c9e5db1568b959a8ca31daffa"
+        },
+        {
+          "path": "esm/resources/TestHelpers/Treasury/ReceivedCredits.js",
+          "sha256": "bad9b9486a756217acc03321bfde6d3263d61549f5295c2e17e4d151a36a4a7a"
+        },
+        {
+          "path": "esm/resources/TestHelpers/Treasury/ReceivedDebits.js",
+          "sha256": "c0cf64dcab4a82cc2492d44e88502b4a4da357cff3efa6f32836610eb3990f49"
+        },
+        {
+          "path": "esm/resources/Tokens.js",
+          "sha256": "aefeee6c3c6e39f1bda70816d00df3ef6cf13e1ef53c20b02317347b1d1f4eed"
+        },
+        {
+          "path": "esm/resources/Topups.js",
+          "sha256": "4c18b3757e4841ce4fe78a678e9ca89cc5284956ac6564d54dc682d24489e9b4"
+        },
+        {
+          "path": "esm/resources/Transfers.js",
+          "sha256": "88d11bd53f69fc8a17024e5680aeeba8d895f02556e5b3d2e3f3a8b44a0f85ac"
+        },
+        {
+          "path": "esm/resources/Treasury/CreditReversals.js",
+          "sha256": "7da22330508ab961b008fb4e7f3a240da0d5e7e71b28b7ecb8045d98109214d2"
+        },
+        {
+          "path": "esm/resources/Treasury/DebitReversals.js",
+          "sha256": "b873c705059383d79ffc7ecf04d0d48290abd8bee8028658ce0be6d4216f804c"
+        },
+        {
+          "path": "esm/resources/Treasury/FinancialAccounts.js",
+          "sha256": "5cc78dcc1f9bc5aaffac9690a21f171ac8966634db3a73e6fbce2cbe76d41f1d"
+        },
+        {
+          "path": "esm/resources/Treasury/InboundTransfers.js",
+          "sha256": "528dbc335ea4ec348d3fa11a055a918fec456d8f7509633c5e7c714639babae3"
+        },
+        {
+          "path": "esm/resources/Treasury/OutboundPayments.js",
+          "sha256": "8e5a9cbd6cf22937a92e70d959b08033ccb34ca8bfa49cdb2d26b51f7d7b460b"
+        },
+        {
+          "path": "esm/resources/Treasury/OutboundTransfers.js",
+          "sha256": "aee0ff7312e2c87afc9488aeee89d1d75a6cabc8f3c1f98f463d4f31b6ffdf52"
+        },
+        {
+          "path": "esm/resources/Treasury/ReceivedCredits.js",
+          "sha256": "681f8a2fa43c4a8f5f0bfe1a5c3adb8d409c9f3f4aa12f501d6c88139d7277b0"
+        },
+        {
+          "path": "esm/resources/Treasury/ReceivedDebits.js",
+          "sha256": "eff542d11d446e140a8119f9e7da4080d462ad521de56068246a373ef632347f"
+        },
+        {
+          "path": "esm/resources/Treasury/TransactionEntries.js",
+          "sha256": "04fa9998fb810df937a52f53305baebe2bba40fb6a1f916da480b583fb0080f8"
+        },
+        {
+          "path": "esm/resources/Treasury/Transactions.js",
+          "sha256": "cf07f85fb4ac581161f47c0f3c2805591a6c82af2a4f7e5e1885e26e4a2c9f94"
+        },
+        {
+          "path": "esm/resources/V2/Billing/MeterEventAdjustments.js",
+          "sha256": "a6a48510a0b422afe823dbf691c8bd4c2dc0681a556d671601dcf4e8f2e82eca"
+        },
+        {
+          "path": "esm/resources/V2/Billing/MeterEventSession.js",
+          "sha256": "170f50cca8899b8d2ff9a66ad1a1c3a6f0f83365d6a1e843dbbe531eb6a9edd9"
+        },
+        {
+          "path": "esm/resources/V2/Billing/MeterEventStream.js",
+          "sha256": "e53ae547f971185b4e86f1398ae0a51885f7563740a30eafb67aeb1a5c5f0dc0"
+        },
+        {
+          "path": "esm/resources/V2/Billing/MeterEvents.js",
+          "sha256": "0a511be6045e020fd4980c447f099832628307746ee9ec6519de784950c9d2da"
+        },
+        {
+          "path": "esm/resources/V2/Core/AccountLinks.js",
+          "sha256": "e20194ef2bfe113bdda10b700a9490af5f93c7f9e8dc855d40b741c29f6416f4"
+        },
+        {
+          "path": "esm/resources/V2/Core/AccountTokens.js",
+          "sha256": "757b5d1585ebdb0ebb63d6497c435e82f2bc385854a1a6e87d4d2293c414ea80"
+        },
+        {
+          "path": "esm/resources/V2/Core/Accounts/PersonTokens.js",
+          "sha256": "83109b42617d0fa72e6d58fd4945e30bf28d070a9fc816cdd6761e736752202a"
+        },
+        {
+          "path": "esm/resources/V2/Core/Accounts/Persons.js",
+          "sha256": "2db265097ab4dfd44f722027b23c8a5582746294549afff02838789b4237496d"
+        },
+        {
+          "path": "esm/resources/V2/Core/Accounts.js",
+          "sha256": "b47a420ab481037143d03e4ea456ff9f254decd3b5fbec6821d694261417d16e"
+        },
+        {
+          "path": "esm/resources/V2/Core/EventDestinations.js",
+          "sha256": "1b92906f18089029dba4f6364355b859f720bc8282db3f50c704a0704165153f"
+        },
+        {
+          "path": "esm/resources/V2/Core/Events.js",
+          "sha256": "6624d9d7f780f9d867d76b1b3ff1fc7caca6039207834bbea0107b3c6a2bf2bc"
+        },
+        {
+          "path": "esm/resources/WebhookEndpoints.js",
+          "sha256": "06acdc8dd29b12ffe6af00d825be2ce4347c577475e1ae139d8ce38be30a70c7"
+        },
+        {
+          "path": "esm/resources.js",
+          "sha256": "fa20de0c324a8fe830166a30b2449cf81a0e0f72baeae4946be9b7f9207eccdc"
+        },
+        {
+          "path": "esm/stripe.core.js",
+          "sha256": "aca6854833713ded02f059a5e9a010d161e2d99541cec890960e767218cd3f89"
+        },
+        {
+          "path": "esm/stripe.esm.node.js",
+          "sha256": "b08593092971792eda36f64fe3975e6760426c0414d44740d33437f46a737220"
+        },
+        {
+          "path": "esm/stripe.esm.worker.js",
+          "sha256": "e38ae20c246dada70f6acce93ad28ef1f989a65f0295f4c74f28931710420e82"
+        },
+        {
+          "path": "esm/utils.js",
+          "sha256": "c1461eb8ef7e96fa63ee8eb5b343e631154c5026986d62ec0589a826922b9f61"
+        },
+        {
+          "path": "package.json",
+          "sha256": "c7794f5f4445daf21bc12f652a91ca2e3ef09c65db84af80fa3eda338e916fc4"
+        },
+        {
+          "path": "types/.eslintrc.js",
+          "sha256": "aa549bc014bb703b511d7e97efefa302a8645f3b04ae3bf7c2546f7bc6b23389"
+        },
+        {
+          "path": "types/AccountLinks.d.ts",
+          "sha256": "488e16fece449a5b0f122e0365a907cd7deb480ebec73357e09fbe972dd19a21"
+        },
+        {
+          "path": "types/AccountLinksResource.d.ts",
+          "sha256": "c9bf780f99a02f19e2ea5b06856774263dd623c54bb5196e5aa7d11ed0e6c846"
+        },
+        {
+          "path": "types/AccountSessions.d.ts",
+          "sha256": "833fc4b37f3f586ffac1fbc26f8f68773ffb0c5e2ae729d36335a3332fac3fd8"
+        },
+        {
+          "path": "types/AccountSessionsResource.d.ts",
+          "sha256": "ee44e6b4d765cdbdd2a8334277a341a6fbdbd7599e9fea66003c2b22c9b7aaa4"
+        },
+        {
+          "path": "types/Accounts.d.ts",
+          "sha256": "24b32360d0ce4724f71833ace8195b592038f802cbe48c401b4830432b25aa82"
+        },
+        {
+          "path": "types/AccountsResource.d.ts",
+          "sha256": "54ec91c3df229e9d404b68beef51f84cf176515458f7b6a8644cd535fab8f1b2"
+        },
+        {
+          "path": "types/ApplePayDomains.d.ts",
+          "sha256": "b68868886ec1fdf0ebe9ac77ffc64f551d4e6fce20ed81b43ad269482635a44d"
+        },
+        {
+          "path": "types/ApplePayDomainsResource.d.ts",
+          "sha256": "04342b37fe58ab10f85a82cb095d0ac7603a38048b742856a82682e42e5374b6"
+        },
+        {
+          "path": "types/ApplicationFees.d.ts",
+          "sha256": "e42e97e41aaa1471fd1c32f58b21bf8188654c4972d70f2510db726fa9a69c6c"
+        },
+        {
+          "path": "types/ApplicationFeesResource.d.ts",
+          "sha256": "8447b557c00ae34540fbc6d0c5d27a2106c302a14dc33115750500e444c9ecd9"
+        },
+        {
+          "path": "types/Applications.d.ts",
+          "sha256": "eeb540679fcd5c9ed3f0b0f0d2701678f6ac3048f2e06ed794ea9207036a2474"
+        },
+        {
+          "path": "types/Apps/Secrets.d.ts",
+          "sha256": "66b93d97e6bf3da3cee00b8422ee4ae07dbc231cfbba497d50f38c3d4d24e876"
+        },
+        {
+          "path": "types/Apps/SecretsResource.d.ts",
+          "sha256": "bdf095a90885e0fe7b3c4107baccda7ba734a879948d8536d7f69f0142299cb4"
+        },
+        {
+          "path": "types/Balance.d.ts",
+          "sha256": "1ae330a2f21773863b6d29fa522e2092d35b705dd9737d50d999bff3924daed4"
+        },
+        {
+          "path": "types/BalanceResource.d.ts",
+          "sha256": "02467e832e085a7868dbad2a24ca24b1b64f2355905914403c0004ce72fc2e45"
+        },
+        {
+          "path": "types/BalanceSettings.d.ts",
+          "sha256": "226baa0e4f61381172e89443fdfb79dbcaad9cd2bb578dfa1a0421d372689221"
+        },
+        {
+          "path": "types/BalanceSettingsResource.d.ts",
+          "sha256": "3a34a657f65683555a0277a263179d848bb4c768af48112678966fc62b44db2e"
+        },
+        {
+          "path": "types/BalanceTransactionSources.d.ts",
+          "sha256": "3aca4dbdc398645e18b35eb1ff3da172c75738f137efdb0a60fe49696f7fa431"
+        },
+        {
+          "path": "types/BalanceTransactions.d.ts",
+          "sha256": "ecbc9c46bd7da99e30aca19d0fe231cedb6f5261f6820ba884edef80f5cc5eb6"
+        },
+        {
+          "path": "types/BalanceTransactionsResource.d.ts",
+          "sha256": "c946fc7645fd2ce1b20ef7d758ae4d4907a65be25fa49d477fa921bf97d37c06"
+        },
+        {
+          "path": "types/BankAccounts.d.ts",
+          "sha256": "4f0660a8f8ba52467f5a050f3c4c827155e3ba8da83388a6f4740560697be4d4"
+        },
+        {
+          "path": "types/Billing/AlertTriggereds.d.ts",
+          "sha256": "c1f3febd0b3b773f44d15f472fa06a1456c445762acdc72ee481415619a5b204"
+        },
+        {
+          "path": "types/Billing/Alerts.d.ts",
+          "sha256": "ef43e8d9cde7c1a50d9376ce47b0c5531ae9d7f60b3eb2d12b7d9773048268d6"
+        },
+        {
+          "path": "types/Billing/AlertsResource.d.ts",
+          "sha256": "8f9649a19d37c97605f91b38bd260f0f15b86d13a50e89e416a601d023fd180b"
+        },
+        {
+          "path": "types/Billing/CreditBalanceSummary.d.ts",
+          "sha256": "88da9856e40d2db7b05c6096a16aeb9d85d21c3e91cec77ba276a775660c2e2c"
+        },
+        {
+          "path": "types/Billing/CreditBalanceSummaryResource.d.ts",
+          "sha256": "97efbf931589b0a22fcd0582bce4746d63c653537bbe60503b5d283e60a29bbc"
+        },
+        {
+          "path": "types/Billing/CreditBalanceTransactions.d.ts",
+          "sha256": "d4cc1fa2579465da35331a1d00014c55117fb7676996ece38a25b80a1036069a"
+        },
+        {
+          "path": "types/Billing/CreditBalanceTransactionsResource.d.ts",
+          "sha256": "b9c15d32cb0a7386b745fe4822fae82fdc5ef9cd168a394a32126b472e97f898"
+        },
+        {
+          "path": "types/Billing/CreditGrants.d.ts",
+          "sha256": "1e7eadb18a86a635f496817c511ddd13c1f3d136b18439271b61568308b7db99"
+        },
+        {
+          "path": "types/Billing/CreditGrantsResource.d.ts",
+          "sha256": "ae0d1c1494146201a6c439b13e27d298e7e81f9b965533238d308bdde9617003"
+        },
+        {
+          "path": "types/Billing/MeterEventAdjustments.d.ts",
+          "sha256": "c23090199551eaf0130c1ae8400726a7e4749a915cf1634e9093dea8d25d70be"
+        },
+        {
+          "path": "types/Billing/MeterEventAdjustmentsResource.d.ts",
+          "sha256": "79f33d7f269c713197498beb51fe18ec1708f783e9ee36e3aced3bc01d9b327e"
+        },
+        {
+          "path": "types/Billing/MeterEventSummaries.d.ts",
+          "sha256": "ae5d03618590d27f170976005e97817d19ed73d620ec58d707dd650e4c1c3dca"
+        },
+        {
+          "path": "types/Billing/MeterEvents.d.ts",
+          "sha256": "d45d20c0d1b29672d420536bfce2a7fbcf374b2e9a65fdf5892ec459df32bf17"
+        },
+        {
+          "path": "types/Billing/MeterEventsResource.d.ts",
+          "sha256": "d3735ac53d11b5b01036c44274ea88a80c9119c068a782870c6aedc08c0d6f6b"
+        },
+        {
+          "path": "types/Billing/Meters.d.ts",
+          "sha256": "2e7c6fc58ff11d5df58982645f08fd1edf66d0b987f31dfa29cb430f6b8e090f"
+        },
+        {
+          "path": "types/Billing/MetersResource.d.ts",
+          "sha256": "a6a6683feb381fc8b72b288fce7a6b32e1a132503bbc3b51f31c6da6e6375232"
+        },
+        {
+          "path": "types/BillingPortal/Configurations.d.ts",
+          "sha256": "f7618d7920ab2a1b9f97ffd10e017d74c82a4437f94bd414760fc78464b5759c"
+        },
+        {
+          "path": "types/BillingPortal/ConfigurationsResource.d.ts",
+          "sha256": "9f1a9745319552594b3d958579a74341a68503f33b715c1382677eb81ade1d5b"
+        },
+        {
+          "path": "types/BillingPortal/Sessions.d.ts",
+          "sha256": "33c4b8bea86ffed6857bb5bc7d524794c0506ab00bd76a36104eda6dad029caf"
+        },
+        {
+          "path": "types/BillingPortal/SessionsResource.d.ts",
+          "sha256": "eaa5553621fff400493de6e9e5d802d84fe8bb5eba28905358a672312b8e999d"
+        },
+        {
+          "path": "types/Capabilities.d.ts",
+          "sha256": "2f3846d4df33313856085668c1da5355fd96b0f56b482d7e6a3ebbc31483a5ca"
+        },
+        {
+          "path": "types/Cards.d.ts",
+          "sha256": "b2445c21ff75d64dfe8f58bef5a7c16cec742bfacbe33a4940ef2cfaba2a0da7"
+        },
+        {
+          "path": "types/CashBalances.d.ts",
+          "sha256": "c705b455518462bdec7d07673fef559d61ddbd1a123ce9aa63b7f96c27fd9c5e"
+        },
+        {
+          "path": "types/Charges.d.ts",
+          "sha256": "352e52214626243c5fa773ff37db6405fc153f91834afd3f37dabf119d33d472"
+        },
+        {
+          "path": "types/ChargesResource.d.ts",
+          "sha256": "cf5629254fd2be86e2fc651d0c92448c3917f72c0ce8547625f6a530acffd5eb"
+        },
+        {
+          "path": "types/Checkout/Sessions.d.ts",
+          "sha256": "e51e701d5b14b73ac232287d3359a0f6240a8075996fa209622938e43fefd687"
+        },
+        {
+          "path": "types/Checkout/SessionsResource.d.ts",
+          "sha256": "96e6ced89c437ba46b8c912b428521301c9698abeea8aef4d675c52b2044e87b"
+        },
+        {
+          "path": "types/Climate/Orders.d.ts",
+          "sha256": "393f0c4e427c9b18f52be8b12bb1da713bd07456444013d1ba45ba4208ec6a3d"
+        },
+        {
+          "path": "types/Climate/OrdersResource.d.ts",
+          "sha256": "b0325527deaa3db11630d12de27a0853386e2e40fef6d5d00ee9116a15482092"
+        },
+        {
+          "path": "types/Climate/Products.d.ts",
+          "sha256": "09fd7e2c1608d3181cd69e23ea833d25653f60012331a2db0c9bab6616090338"
+        },
+        {
+          "path": "types/Climate/ProductsResource.d.ts",
+          "sha256": "c3b360be6b8292032f8e567175acab932bdd53f9641a307c8dc0feb5817c5757"
+        },
+        {
+          "path": "types/Climate/Suppliers.d.ts",
+          "sha256": "9648eb8f1f1e8bacddc8a852f0d3ef8e43fe13fff6c4b0d53eb54c256e2287a4"
+        },
+        {
+          "path": "types/Climate/SuppliersResource.d.ts",
+          "sha256": "3824b6994efd620592570559e58b10c810c56de51ec9e0c918064aa15d9a0a6a"
+        },
+        {
+          "path": "types/ConfirmationTokens.d.ts",
+          "sha256": "9820e6e5f724616ba932febb0c71927c3e1bb53c9b1c82350e03c5d716e89398"
+        },
+        {
+          "path": "types/ConfirmationTokensResource.d.ts",
+          "sha256": "91992163e20474f706604a2bf8ddbbef93475a7fc81a2bd931958f2652fb1f22"
+        },
+        {
+          "path": "types/ConnectCollectionTransfers.d.ts",
+          "sha256": "4717ec6b7732c61a0e7ab383a476c9817b29328b16b34156cfc5ad0b9d7d8f58"
+        },
+        {
+          "path": "types/CountrySpecs.d.ts",
+          "sha256": "9584cf628af3669890d3c67a7a0be8e7cf36454025eab012b6b3ae1c1ed41e8b"
+        },
+        {
+          "path": "types/CountrySpecsResource.d.ts",
+          "sha256": "7318fc87ac80ab31b5da74ee7968ac0e7a208fa3347615caaafa1dc17d83499d"
+        },
+        {
+          "path": "types/Coupons.d.ts",
+          "sha256": "969e387953b66fe2e27b796ca235d751243e5b746a0ad26dc02cb7f50dea035f"
+        },
+        {
+          "path": "types/CouponsResource.d.ts",
+          "sha256": "4f0adc406484f5e817b22eeeadc3680ef19aef0200413cd9827ca3afe6abf2b4"
+        },
+        {
+          "path": "types/CreditNoteLineItems.d.ts",
+          "sha256": "d400938223c332fa238c7f6f9a27d21a81e89dbd4106fd83f22e5f98cc62cd43"
+        },
+        {
+          "path": "types/CreditNotes.d.ts",
+          "sha256": "eac3cb43feeb57d83ad2610e3c9c365bfcb1e70ec2cc9b8eacf300b62c672165"
+        },
+        {
+          "path": "types/CreditNotesResource.d.ts",
+          "sha256": "707e958380567531c9157c2711254fd1e9e033d868df60b48ff8bd35072b6dd4"
+        },
+        {
+          "path": "types/CustomerBalanceTransactions.d.ts",
+          "sha256": "854e4efd068b9fde06e1e0cba673649272e552fa264f5b99f9a674c728727276"
+        },
+        {
+          "path": "types/CustomerCashBalanceTransactions.d.ts",
+          "sha256": "c7c56f91e2d2f0e617301ebcca17e90665c42193e5132220d5335502e884f040"
+        },
+        {
+          "path": "types/CustomerSessions.d.ts",
+          "sha256": "f5228bd87b386ab845c6bd7c871d7e2bc1a474272afad08d23d4e8bf3de2cc67"
+        },
+        {
+          "path": "types/CustomerSessionsResource.d.ts",
+          "sha256": "f00562b2b26c58e66099f6d340fa3b5c2145ea04f5dc7966713eb0a6cda1c2d8"
+        },
+        {
+          "path": "types/CustomerSources.d.ts",
+          "sha256": "df53ec34e7ad7e938aad672dd08d9b75c16123464bbe1f387164a3cc78d1cc51"
+        },
+        {
+          "path": "types/Customers.d.ts",
+          "sha256": "6275701baf8ec9b061258bac433c1eb30a44f9998dd7883a49d83b55b476dfdf"
+        },
+        {
+          "path": "types/CustomersResource.d.ts",
+          "sha256": "63f8559b473163708af8faf43d8865ca227a478426d5a5f4da083d7348321cc8"
+        },
+        {
+          "path": "types/Discounts.d.ts",
+          "sha256": "ab92e613480d1f980451f8b24d27e1c52b679ab59ded19e7b4b361ff5a9cc9cb"
+        },
+        {
+          "path": "types/Disputes.d.ts",
+          "sha256": "f41a76a05587df019df78ec7f6493969fa00ae075b15ec8637b2760921f65285"
+        },
+        {
+          "path": "types/DisputesResource.d.ts",
+          "sha256": "551b0e010a33e64e6e05b03e51a35ca5db018e86d2bf47d9ab4d25c7287ab857"
+        },
+        {
+          "path": "types/Entitlements/ActiveEntitlementSummaries.d.ts",
+          "sha256": "404d9d0ea2927613a7e98143ec064879380eed25f66be8913d133aea11ad06d8"
+        },
+        {
+          "path": "types/Entitlements/ActiveEntitlements.d.ts",
+          "sha256": "16911f24ecb7a8571ab22fa0960e25b6859fd0d4d8ffa119a06bace8db3d8a7a"
+        },
+        {
+          "path": "types/Entitlements/ActiveEntitlementsResource.d.ts",
+          "sha256": "6cab2a965d8cf4c880908bc5427aa111297197e0976f4df8dc072a12998e5c5b"
+        },
+        {
+          "path": "types/Entitlements/Features.d.ts",
+          "sha256": "ad6975af7ee038b7f75af724695551c7fc9f3e28a1aa7497d78f5f6bf9e95d46"
+        },
+        {
+          "path": "types/Entitlements/FeaturesResource.d.ts",
+          "sha256": "9fafc8a20a54f227f8ffc97fb526e01d7d40e7f746b97c3c4dcc786a8f583e0b"
+        },
+        {
+          "path": "types/EphemeralKeys.d.ts",
+          "sha256": "ab6aa891f03df0f4369739449c0d00933e3d130a6eac0d7cfb9f665f3423ea45"
+        },
+        {
+          "path": "types/EphemeralKeysResource.d.ts",
+          "sha256": "ac81562b12319a11a039148b94e618c626fd338ee08df2fe916711a50893108f"
+        },
+        {
+          "path": "types/Errors.d.ts",
+          "sha256": "a4e037aee1bfbe770ba3bbca72963ad00c8eaea2aade8e03cdaa126a8a1ac60b"
+        },
+        {
+          "path": "types/EventTypes.d.ts",
+          "sha256": "f4af69cff9a088ca663f58d90c08d048f4f76f5623c23ffdac0a6b06e038fe4f"
+        },
+        {
+          "path": "types/Events.d.ts",
+          "sha256": "a147581ba015dca068ff3f5dc39f69918adf42e662831c79d345b2aeabfb59f0"
+        },
+        {
+          "path": "types/EventsResource.d.ts",
+          "sha256": "e47bc0c0462b2836daf4029ee3793b18485aab82ce6df16a1d1dae7dadc08753"
+        },
+        {
+          "path": "types/ExchangeRates.d.ts",
+          "sha256": "aa064e026c8d5f1656074afdd4413fde5cfe8f64dbdf6a07fb59d7d03efa9a30"
+        },
+        {
+          "path": "types/ExchangeRatesResource.d.ts",
+          "sha256": "9cbbb6a50517dda878f57d5fe73d05b4e86d1c41b11f945a42a7fe69ceaece45"
+        },
+        {
+          "path": "types/ExternalAccounts.d.ts",
+          "sha256": "be332510bcd8c40389283bea35e93f1f902cb9d7ef180cf2c0e927a05f085369"
+        },
+        {
+          "path": "types/FeeRefunds.d.ts",
+          "sha256": "61fdb22875f754e80409265d2534f6f3c63b3c75aa9c402a51c728bc82e4b7c5"
+        },
+        {
+          "path": "types/FileLinks.d.ts",
+          "sha256": "a2fc7abd2169d64e4dd88dc8edc882cc3cd6bbd4e73835b985db47672e0272cb"
+        },
+        {
+          "path": "types/FileLinksResource.d.ts",
+          "sha256": "1f16820ce994e16d699130322383933bd63034d75eb64405d70aefc5ac50d6d0"
+        },
+        {
+          "path": "types/Files.d.ts",
+          "sha256": "0916e0160603f8f176249bf270b634152137c69c6c067056131beb38d0df36c9"
+        },
+        {
+          "path": "types/FilesResource.d.ts",
+          "sha256": "f1abc8e9e7fc4e325cb2f9e651576599efff765c5ea446cf92302282272646a3"
+        },
+        {
+          "path": "types/FinancialConnections/AccountOwners.d.ts",
+          "sha256": "8dc226f7642712a4bf68991506ab095578fdb540c2da229c3abfa67f7fe4c030"
+        },
+        {
+          "path": "types/FinancialConnections/AccountOwnerships.d.ts",
+          "sha256": "20a143dcd7b924cafc6ab6b5b70a94a04e318e897fab3bf0a2eb21f67f67aed7"
+        },
+        {
+          "path": "types/FinancialConnections/Accounts.d.ts",
+          "sha256": "e3f98de0547defbb49376a9f1a7ed51265af50b9d0731dd28ceea9354ce8a2cc"
+        },
+        {
+          "path": "types/FinancialConnections/AccountsResource.d.ts",
+          "sha256": "1475ad31afa2dd95edbff9081881c1fc1da6a5ad4bd97b4efee6beda8f38a456"
+        },
+        {
+          "path": "types/FinancialConnections/Sessions.d.ts",
+          "sha256": "f11e8f0aa094aea118a4997a4ac398530e2cbdec9d84caaa5b42b4174926161f"
+        },
+        {
+          "path": "types/FinancialConnections/SessionsResource.d.ts",
+          "sha256": "2d958c37993f7500dbdc12ed42aa40523ccbf874693da66110767b58abf5264a"
+        },
+        {
+          "path": "types/FinancialConnections/Transactions.d.ts",
+          "sha256": "a71944ec810edbda13dd7523dcf48b4bd466ef18e21343f17cd48d50b0293736"
+        },
+        {
+          "path": "types/FinancialConnections/TransactionsResource.d.ts",
+          "sha256": "f7ba7111e582efd9a804135bd0b156fdc56c20c57f030c30012f62317d6642af"
+        },
+        {
+          "path": "types/Forwarding/Requests.d.ts",
+          "sha256": "57524b5bfc9d178384df83e8d5d4bf44aa4838f9e876680331b18a17af5172ba"
+        },
+        {
+          "path": "types/Forwarding/RequestsResource.d.ts",
+          "sha256": "d35f9f214b2d04eb2f2e98c78d5228983ddfb77f42994600af3efa3188e838f0"
+        },
+        {
+          "path": "types/FundingInstructions.d.ts",
+          "sha256": "de644bea026fac5c5337bb1f8a92f8924ebb14c8bd3ab9609cd08d9b903188df"
+        },
+        {
+          "path": "types/Identity/VerificationReports.d.ts",
+          "sha256": "6c1ce676c098e187dc470b67c35bc0ef9cbd0f0c003d014083cb372c677b51d3"
+        },
+        {
+          "path": "types/Identity/VerificationReportsResource.d.ts",
+          "sha256": "1d6fa4d92a8099cbbf35c8043965dd29aebd41aec0c21cf8795c2ba4791ff876"
+        },
+        {
+          "path": "types/Identity/VerificationSessions.d.ts",
+          "sha256": "e219c58c12f2bf7ef6f021f03aac6eda11063a023c7e92b99bf31fc4fdc47aaf"
+        },
+        {
+          "path": "types/Identity/VerificationSessionsResource.d.ts",
+          "sha256": "a73eac92de2d07aafebcb44086125a2e87ce6e80b07c9b94039e367190788bde"
+        },
+        {
+          "path": "types/InvoiceItems.d.ts",
+          "sha256": "d4850ea58e46606f3d6b120a4e49891393ab510747c42644fe0c46d4ee0b8a2f"
+        },
+        {
+          "path": "types/InvoiceItemsResource.d.ts",
+          "sha256": "bf893edbd6a57ec8e7cd6e6b0adb2fe2dc5a0698b4b2929831cc153bae0ea168"
+        },
+        {
+          "path": "types/InvoiceLineItems.d.ts",
+          "sha256": "86401b7e6b11e7b1ac48c05d55c9aaeb37d02eb180ede3d2da6c86b1860c0335"
+        },
+        {
+          "path": "types/InvoicePayments.d.ts",
+          "sha256": "8ef3098a67038e850f11e02db29ddb011129b77ba941c6c424b774c520848a9f"
+        },
+        {
+          "path": "types/InvoicePaymentsResource.d.ts",
+          "sha256": "1bd754a87d4083d40a56f264d94e2a75cc374e7cebe4461196b01d22605be3c1"
+        },
+        {
+          "path": "types/InvoiceRenderingTemplates.d.ts",
+          "sha256": "944b1c40953001b0dc355b98ba539c2ea1b8f4d3a3915452a36aab4886485f16"
+        },
+        {
+          "path": "types/InvoiceRenderingTemplatesResource.d.ts",
+          "sha256": "f6247942f8d5c18d46f87cc5c69efbb34940e3994023112053119aa6a4154776"
+        },
+        {
+          "path": "types/Invoices.d.ts",
+          "sha256": "edc308181d97069fc3766b05225f0c1a2c7c4e83baa4fdc237190877133a919e"
+        },
+        {
+          "path": "types/InvoicesResource.d.ts",
+          "sha256": "caef0aba894dd7e7d8d4133cc1f554643edb97082866d30ad237d917b3fb89e1"
+        },
+        {
+          "path": "types/Issuing/Authorizations.d.ts",
+          "sha256": "59c08b9f58dd13738a7052c06a5c82f69ebe61297b0d4e12130157bfdeb9fc7e"
+        },
+        {
+          "path": "types/Issuing/AuthorizationsResource.d.ts",
+          "sha256": "8429a156436295bf586c78c41b99fa06ec620312a3e0805dcf347691dee7acc9"
+        },
+        {
+          "path": "types/Issuing/Cardholders.d.ts",
+          "sha256": "5e597f19b0ddd7357a9a4fab7467146121f6accb9b126174c4674a15aa0afbe2"
+        },
+        {
+          "path": "types/Issuing/CardholdersResource.d.ts",
+          "sha256": "1bff6f94ee83885baf1a7b8ecb367e1bb515cef1de90ef49b30708343cd15779"
+        },
+        {
+          "path": "types/Issuing/Cards.d.ts",
+          "sha256": "2c3aa78fc4d3ac8058141e35c4503275f2bdb4ca7bbae5962eea379459c3046f"
+        },
+        {
+          "path": "types/Issuing/CardsResource.d.ts",
+          "sha256": "a2766bca7a74d2da370eeffd5f07d50b0098797de1de0282407c8abd4fd03a49"
+        },
+        {
+          "path": "types/Issuing/Disputes.d.ts",
+          "sha256": "ddbd751d49739b5e025e948aa8bdaf05f8a0d51596d7d9b623935e7d6ecc0cdd"
+        },
+        {
+          "path": "types/Issuing/DisputesResource.d.ts",
+          "sha256": "0544e92abbea76001928c194871dbe2f3fd703717354b96b634ed4ebf2f410f6"
+        },
+        {
+          "path": "types/Issuing/PersonalizationDesigns.d.ts",
+          "sha256": "18a6d60a9a03bafe447734424ff05388dcc4125c5f9e4fbbafe4adf6c86d088f"
+        },
+        {
+          "path": "types/Issuing/PersonalizationDesignsResource.d.ts",
+          "sha256": "975f9a1dcf989fee02675314af225bbd87d02c845fd88f9e46a43d8c31a6abfb"
+        },
+        {
+          "path": "types/Issuing/PhysicalBundles.d.ts",
+          "sha256": "849a24a41402fc007986121747da0ded06ac5434e33396d92a2088fbecbcd66e"
+        },
+        {
+          "path": "types/Issuing/PhysicalBundlesResource.d.ts",
+          "sha256": "60c97ba6ec78a39b5fef27c89c1d53f724e1dbceec301d6fcee4a8b5eeae9e5c"
+        },
+        {
+          "path": "types/Issuing/Tokens.d.ts",
+          "sha256": "d3124001e9567e1357196d1f0c249434faaf4a3908656d92e67cd8096ee43ca0"
+        },
+        {
+          "path": "types/Issuing/TokensResource.d.ts",
+          "sha256": "ae456a438db6b13b89582d2c2ffe847b1c180254dce2885b29079ad23dfbfce3"
+        },
+        {
+          "path": "types/Issuing/Transactions.d.ts",
+          "sha256": "a9b9ae62e1a2ba880ba9996f151700a13a544fd55a957e61a75836ed987bc820"
+        },
+        {
+          "path": "types/Issuing/TransactionsResource.d.ts",
+          "sha256": "44c04bb20deffcc274bf63be29943f8ee71cd8905277c8c0e2db9ca8a9512339"
+        },
+        {
+          "path": "types/LineItems.d.ts",
+          "sha256": "efdf6180b844fd40d32b687583894c5701bbe1eeb594185f7b5e165a4d9166ed"
+        },
+        {
+          "path": "types/LoginLinks.d.ts",
+          "sha256": "96d9d5151709d0ccf6498548abe00f8088eeee7d5678225142f5c35566007001"
+        },
+        {
+          "path": "types/Mandates.d.ts",
+          "sha256": "a122bd4de4696cc5b6c2fc29270994ec63fa190eea08e1acbd7d65396a1fe420"
+        },
+        {
+          "path": "types/MandatesResource.d.ts",
+          "sha256": "95427c6bdbf8371f1ff39cf33d2f165b4912f80f6e4b92c1d44325df64ac151d"
+        },
+        {
+          "path": "types/OAuth.d.ts",
+          "sha256": "8ad2f4ca786f17b3aa031e7474c7270e60cad48f17c0e3f4655ced6a8d22eb19"
+        },
+        {
+          "path": "types/PaymentAttemptRecords.d.ts",
+          "sha256": "b18b1b91ffd825f83c0ae238371de37a8e2649fe5c306a2316030df82b967950"
+        },
+        {
+          "path": "types/PaymentAttemptRecordsResource.d.ts",
+          "sha256": "fe7802d3cb3e438e53ebcd4dab6c108527ef56dfcf8e96560a561bb29abadeee"
+        },
+        {
+          "path": "types/PaymentIntentAmountDetailsLineItems.d.ts",
+          "sha256": "f91eb4d9262c31cf1a6eaea5613a35ccab93e623b20c735c60c90b672bf1989f"
+        },
+        {
+          "path": "types/PaymentIntents.d.ts",
+          "sha256": "d010ff8d13f835be25d0de27c28c1297dc284e248ff61f4f4f1337050ddbe34c"
+        },
+        {
+          "path": "types/PaymentIntentsResource.d.ts",
+          "sha256": "850b27c1eee65090f48213a7aa7262cf7ed06b8bb6462a3695b9c6bad09dda47"
+        },
+        {
+          "path": "types/PaymentLinks.d.ts",
+          "sha256": "4bd0b49ae37cc8b5d4f7e23af41fa9384741e33e6fa08e394a93268d06bd3529"
+        },
+        {
+          "path": "types/PaymentLinksResource.d.ts",
+          "sha256": "80bc54c54dfa6e6e85aa7a58fd07cef5f94a2622b87c64393f2d9bfa43ba775a"
+        },
+        {
+          "path": "types/PaymentMethodConfigurations.d.ts",
+          "sha256": "6b705e490938d29f40fb7c63ce698de786c6cf61014b9872c34bf4ca87492972"
+        },
+        {
+          "path": "types/PaymentMethodConfigurationsResource.d.ts",
+          "sha256": "9717415a96a317939a0eea8912cf23c03b0c5d4ba7d7a9fa8758543da0b06dfa"
+        },
+        {
+          "path": "types/PaymentMethodDomains.d.ts",
+          "sha256": "f50a66d309edb12da18a33646c0813e66fb1893949c0beb65f6dc9b7e6945068"
+        },
+        {
+          "path": "types/PaymentMethodDomainsResource.d.ts",
+          "sha256": "0c1ec9da17b07f968bc0eb7498ee8e174abbe4f8fb9dacc80b061b9299318151"
+        },
+        {
+          "path": "types/PaymentMethods.d.ts",
+          "sha256": "a9ac7fba93ca5b7f8ef02a984dcfb1f36f89dceaa74b79eefdedeb4f3cd97b22"
+        },
+        {
+          "path": "types/PaymentMethodsResource.d.ts",
+          "sha256": "c9099aff9e8cca7351fdb66a0289cd1531a01ee2d82d1348ed1212658eb35b4d"
+        },
+        {
+          "path": "types/PaymentRecords.d.ts",
+          "sha256": "77f9681fb7d43b381998757fa014af98148ece769cadc841ac42e857eadd699e"
+        },
+        {
+          "path": "types/PaymentRecordsResource.d.ts",
+          "sha256": "ece0b6d61c7dc1c5a272f050c7ea6fab4e68b81a92f7d8cac6ff42895b8e7842"
+        },
+        {
+          "path": "types/Payouts.d.ts",
+          "sha256": "5458b69dbecdcc097379cb51b487963dd4c2cdf5cfc8a8c3dcee93186a46cacf"
+        },
+        {
+          "path": "types/PayoutsResource.d.ts",
+          "sha256": "034090fbd350cbc2e55532f5f66ceb8f83d73b04bd2316fb298ac16b629b85d8"
+        },
+        {
+          "path": "types/Persons.d.ts",
+          "sha256": "acf3234f063bb9ccdfb0f24c97c1d4a3d5818bbb9914c8dfc6b3da511821f751"
+        },
+        {
+          "path": "types/Plans.d.ts",
+          "sha256": "8c130ff997effc3a93b1d912418bd9155fd76e2e7e4c5b0d69cdad0ec2cae61b"
+        },
+        {
+          "path": "types/PlansResource.d.ts",
+          "sha256": "1986efeafee99f2bf7b07bd542a25959ff1a739030bb2242857fe0d532d22302"
+        },
+        {
+          "path": "types/Prices.d.ts",
+          "sha256": "f4717964bc4aa708bb171676f41b87211ffd024fe5fcef21c0532c6329c87f28"
+        },
+        {
+          "path": "types/PricesResource.d.ts",
+          "sha256": "a15b19bdd9a24a70fd693bfc7a093136010045b26f80601c6fec02fc9d208553"
+        },
+        {
+          "path": "types/ProductFeatures.d.ts",
+          "sha256": "a9c4875e7cf70b355b32ebc8a9623017be71a5ce18cd01b21e8a5369ce1c9e42"
+        },
+        {
+          "path": "types/Products.d.ts",
+          "sha256": "84af1ae5fbd553585b9180961e307592ec7d0074dfc7c9f0183f9072228f3a34"
+        },
+        {
+          "path": "types/ProductsResource.d.ts",
+          "sha256": "0e806aa977b11bd23549f6d67d7ba68bc4f9bf35a166cfe0a2752b392697e19f"
+        },
+        {
+          "path": "types/PromotionCodes.d.ts",
+          "sha256": "8eb6c61f921fe2ce5a1e6d274299e033a99ea7ebe6649d36a13f4343eb332f1d"
+        },
+        {
+          "path": "types/PromotionCodesResource.d.ts",
+          "sha256": "d78cabc03429e1dffa3903fb6b26ba19d393cc1219b2b9effcc4d9dcd4dd7b94"
+        },
+        {
+          "path": "types/Quotes.d.ts",
+          "sha256": "38e82f4b87e301d691f0caf4cd7a3fdc77dd12dd5c940e7f601d57f8e51f878e"
+        },
+        {
+          "path": "types/QuotesResource.d.ts",
+          "sha256": "41cc5078a9dc7cd25bf2c6061b6ef95d739d0719b6d3db61e0813056bd5405df"
+        },
+        {
+          "path": "types/Radar/EarlyFraudWarnings.d.ts",
+          "sha256": "35da462e78772382ddbed2b1f7574b93bc14ce51a5b111569d6aac49a2263c17"
+        },
+        {
+          "path": "types/Radar/EarlyFraudWarningsResource.d.ts",
+          "sha256": "06657c2de01950b2e35a8d354c1ce19cb05ed85aeadd5a13813f760c9eb5fe25"
+        },
+        {
+          "path": "types/Radar/PaymentEvaluations.d.ts",
+          "sha256": "369e5b049adcc177ab2006b230fc970bb6de245652d7d1c7f059c873f968218f"
+        },
+        {
+          "path": "types/Radar/PaymentEvaluationsResource.d.ts",
+          "sha256": "ce4acf8ddc3248bee9df6c6de77ff6e91dc0d9d685bef9d763cc07ac476a4ebb"
+        },
+        {
+          "path": "types/Radar/ValueListItems.d.ts",
+          "sha256": "a9e3bcb260d06880b4cbc03acc2c3fb4637de7a370a0957e1d34fe6b773e8435"
+        },
+        {
+          "path": "types/Radar/ValueListItemsResource.d.ts",
+          "sha256": "331461a6784e9645aa85262f3665861581e68d20af109ef5169a4599a948a0f9"
+        },
+        {
+          "path": "types/Radar/ValueLists.d.ts",
+          "sha256": "359ce5a56ca9b9541050d4387e47e25ecc9c84079123bb79b4735834e2ca030d"
+        },
+        {
+          "path": "types/Radar/ValueListsResource.d.ts",
+          "sha256": "da251bafecf00f808dcfbb1160004e94347d9d89ca40661477c7dee367d5cec3"
+        },
+        {
+          "path": "types/Refunds.d.ts",
+          "sha256": "a2f9217d53259f3f8f674a6058a70c1ecdc12d7247695da275ea3402498d0a95"
+        },
+        {
+          "path": "types/RefundsResource.d.ts",
+          "sha256": "517cb14a2efa0742ae26d8a2284d90b1e751d790f254fd57cbddf46f3d2c1d92"
+        },
+        {
+          "path": "types/Reporting/ReportRuns.d.ts",
+          "sha256": "f47f47661ee89c31ad3e64452f94667ad34f5e8bc66e19c551aaf7cacfa27795"
+        },
+        {
+          "path": "types/Reporting/ReportRunsResource.d.ts",
+          "sha256": "e923cb772cbb55eeece7fe5ad3986064ebf65492f11c9d13ff1169fab14537b0"
+        },
+        {
+          "path": "types/Reporting/ReportTypes.d.ts",
+          "sha256": "5954009df2894847efbfbc854fe74fad8eb52c50b9d72b930613f1efc6578391"
+        },
+        {
+          "path": "types/Reporting/ReportTypesResource.d.ts",
+          "sha256": "3c65ea8a95ce5a11f482abae178572a13a337216664fb481e151bfe696bbe9e9"
+        },
+        {
+          "path": "types/ReserveTransactions.d.ts",
+          "sha256": "122cfa505c7ebd278f37dc10283f4c441d150445c92a6c2bf2ba3e9176bb2f91"
+        },
+        {
+          "path": "types/Reviews.d.ts",
+          "sha256": "1ca4def1357bfa45e1f4336a0ab414bdf14fde7885b6442ceb99944da4fa660b"
+        },
+        {
+          "path": "types/ReviewsResource.d.ts",
+          "sha256": "a0a8eb2072f7780bc794b545e3e760685fe67575d7c3cec11ba6f134624fa8dc"
+        },
+        {
+          "path": "types/SetupAttempts.d.ts",
+          "sha256": "028fd5c581dfb5a128ddd693667a994ee24e19ad6ecfe587978dca94bd52233d"
+        },
+        {
+          "path": "types/SetupAttemptsResource.d.ts",
+          "sha256": "dc04dc2984778ba15a13361aea9c915182f64a1d5bcdb5b4c430168e2b154daf"
+        },
+        {
+          "path": "types/SetupIntents.d.ts",
+          "sha256": "5deccd7030016e70fa1934e24eac6f809e5e60c59028d6b6bc0a6aec68fc9bbe"
+        },
+        {
+          "path": "types/SetupIntentsResource.d.ts",
+          "sha256": "e0e30890e93e930a1e2c3aecf88db49c4f0f1f1ad67fce2c94414901c71dc2d4"
+        },
+        {
+          "path": "types/ShippingRates.d.ts",
+          "sha256": "414d34be0e62479062d15a0e888b1aa37fa0f6074939e5f59245482219be6659"
+        },
+        {
+          "path": "types/ShippingRatesResource.d.ts",
+          "sha256": "ea686154f808a141f69a245438e353f6e5c17dc63195955c365698a25cb544bd"
+        },
+        {
+          "path": "types/Sigma/ScheduledQueryRuns.d.ts",
+          "sha256": "19cbe3c5322c43eeaae6393aeae385b1356f10dfc212070327115c5eb780e296"
+        },
+        {
+          "path": "types/Sigma/ScheduledQueryRunsResource.d.ts",
+          "sha256": "1d2190bc27ec5febe38395dceed4786120cd18abcabb2621eb57d8595fec0d69"
+        },
+        {
+          "path": "types/SourceMandateNotifications.d.ts",
+          "sha256": "e4326dd3c5bbdd160a642aaa1328b4ec3fc50d4e152ecbf01fedbf529c2e0660"
+        },
+        {
+          "path": "types/SourceTransactions.d.ts",
+          "sha256": "53eb2db64558891b5dfa684e391e1c90ec47301a9f1505cf428f16f6cf7de5cf"
+        },
+        {
+          "path": "types/Sources.d.ts",
+          "sha256": "cd759bada853734f8102a252bc53f15a40ba8986e00c5fa63ece478cebda5331"
+        },
+        {
+          "path": "types/SourcesResource.d.ts",
+          "sha256": "80731af129629f413e56bcf0958b05326bf21fb1070687404a58dee5cbb79193"
+        },
+        {
+          "path": "types/SubscriptionItems.d.ts",
+          "sha256": "5d83249e92c2b9f66a1e08311b2cd841b472f82167a5a6352b8d2eb7306ab8a4"
+        },
+        {
+          "path": "types/SubscriptionItemsResource.d.ts",
+          "sha256": "ba73194a09f5f60a49594d4f05460588ae0958f1a751e17a866b0452d28132fd"
+        },
+        {
+          "path": "types/SubscriptionSchedules.d.ts",
+          "sha256": "e977fac653d905769c49c68bfba43c39fc4fc994996b59c39010e5ecbfbb06a5"
+        },
+        {
+          "path": "types/SubscriptionSchedulesResource.d.ts",
+          "sha256": "4e48b2037f74031122251068c39e21149dc3074ae4c2b1a6e69df6ed968d9325"
+        },
+        {
+          "path": "types/Subscriptions.d.ts",
+          "sha256": "9449f4cea65e5c2636c3b51e5c64e9ef148ee4708ea028bc321e34337f139d1c"
+        },
+        {
+          "path": "types/SubscriptionsResource.d.ts",
+          "sha256": "70ed695891ed1f6415c454c18d1626fa28063826c07cb61f76df25a8f8eadaf5"
+        },
+        {
+          "path": "types/Tax/Associations.d.ts",
+          "sha256": "3a95ff33b820cd1afc880719911116c646d0b968822eee9693b6614ac37deab3"
+        },
+        {
+          "path": "types/Tax/AssociationsResource.d.ts",
+          "sha256": "7e2a9a5141d0e559539cdcfea8fd119f2f60f09c11c0676fbb901e3625654f60"
+        },
+        {
+          "path": "types/Tax/CalculationLineItems.d.ts",
+          "sha256": "d5f3689a9905e6ec888d4420e62dc012b8c0b0801961b00c92c3f2c66876a577"
+        },
+        {
+          "path": "types/Tax/Calculations.d.ts",
+          "sha256": "60db0e07ce7605f6d178d5470cacf503e438cf225c08629c7b6082ba5392438e"
+        },
+        {
+          "path": "types/Tax/CalculationsResource.d.ts",
+          "sha256": "356c4ef827965b122e486e84e8614e0bd5b247817bbf260dc0f391df9583b232"
+        },
+        {
+          "path": "types/Tax/Registrations.d.ts",
+          "sha256": "e26952f7da1792c8a0bedf99c8ca813a7360cdfb5fe73965ff5775acad55c0a4"
+        },
+        {
+          "path": "types/Tax/RegistrationsResource.d.ts",
+          "sha256": "aa18290063d4cd835ae652b153a7d27cc23d7e5925b052e4af8d835e17cd8240"
+        },
+        {
+          "path": "types/Tax/Settings.d.ts",
+          "sha256": "d1dba59721a0d692a125f1a39198e38fe1320867d3cb0adafb3e2c2378eb6a5d"
+        },
+        {
+          "path": "types/Tax/SettingsResource.d.ts",
+          "sha256": "ee3f66ecd47d32813b852d4a1ff6ed3636ca276aed3774ad4c30c6f6c9e7310e"
+        },
+        {
+          "path": "types/Tax/TransactionLineItems.d.ts",
+          "sha256": "120cc53d8b6eabc46b890f419345cd3d472b3ee399db4c0f5800a1d17d08d5e3"
+        },
+        {
+          "path": "types/Tax/Transactions.d.ts",
+          "sha256": "3b64c0d4342b9b5fb5a11ceb7c99d511849d19afb52a1c63ecceac20b84f22da"
+        },
+        {
+          "path": "types/Tax/TransactionsResource.d.ts",
+          "sha256": "6c006d41ecddf69972a4d2aec70a26b59c6194d10305d1a29642ea2a66af5fab"
+        },
+        {
+          "path": "types/TaxCodes.d.ts",
+          "sha256": "b74233955e8b40025dddb55303ac2cb5189f22685b4f30dbf21ce1b1a5656ded"
+        },
+        {
+          "path": "types/TaxCodesResource.d.ts",
+          "sha256": "5e3cea7a1cc38b2bb8730c66f3b3da817370ea208ef3da43e6e2a8208c32679b"
+        },
+        {
+          "path": "types/TaxDeductedAtSources.d.ts",
+          "sha256": "dba0925c06074e9ea94c9fce95887dd8bae26262e1522d52b769e59e90a311e5"
+        },
+        {
+          "path": "types/TaxIds.d.ts",
+          "sha256": "9546c9562bfcde8c9cdfbd01af6728325eba69c0df5ec52a5252c7100e7f82ab"
+        },
+        {
+          "path": "types/TaxIdsResource.d.ts",
+          "sha256": "a9dada5704a54eddfb095f5ca98f527dadc278f07b3d9d00b58df63bbc831578"
+        },
+        {
+          "path": "types/TaxRates.d.ts",
+          "sha256": "5aefd158bb1adcb376685e8ef64a3ef2906b443d6e954d21e1ade72d6b195acc"
+        },
+        {
+          "path": "types/TaxRatesResource.d.ts",
+          "sha256": "0eb30ce7af19931b2454b98c47e94cdecd864e6c20bb40d54c46fbf10ce7fd32"
+        },
+        {
+          "path": "types/Terminal/Configurations.d.ts",
+          "sha256": "76ae8d67dcb3b4e709c055c052648d47ebe44b2cd6409e5457038a030db0cab3"
+        },
+        {
+          "path": "types/Terminal/ConfigurationsResource.d.ts",
+          "sha256": "31d838953c32cae1f6f7307b4eca9888c87e8bee0c61e4b36f5863b8e31eb726"
+        },
+        {
+          "path": "types/Terminal/ConnectionTokens.d.ts",
+          "sha256": "8044b5c100df922eac291de0e0c59d49faed710be161cb6ba47e4d4ce1f608eb"
+        },
+        {
+          "path": "types/Terminal/ConnectionTokensResource.d.ts",
+          "sha256": "64ac7c1e4f911961a13f32954a53c5d722c57b27c390a3cb9cd05dc74026b480"
+        },
+        {
+          "path": "types/Terminal/Locations.d.ts",
+          "sha256": "c987e12e32e29c2100cce66f1db386d411f5427e7317cad7da5b5b620cd1a391"
+        },
+        {
+          "path": "types/Terminal/LocationsResource.d.ts",
+          "sha256": "d8debcb90373bcf50e49c806f349ab780cbb3e1fabc6312da0a8a12bef19dde6"
+        },
+        {
+          "path": "types/Terminal/OnboardingLinks.d.ts",
+          "sha256": "85a2f50e7b7b0b8cb485510b9c3912291756fe52219dfb8b9a90402f2ea98e56"
+        },
+        {
+          "path": "types/Terminal/OnboardingLinksResource.d.ts",
+          "sha256": "07bcd659ee7e34d7c452fcb2f0e3d0ace938952f60f71a2ededdf95804ed142e"
+        },
+        {
+          "path": "types/Terminal/Readers.d.ts",
+          "sha256": "eb2f99189a4f6755df3e2f708bb3399565b93ceef6c4b3d64e4af00c8599de22"
+        },
+        {
+          "path": "types/Terminal/ReadersResource.d.ts",
+          "sha256": "67e405311da6b04d075dabdce0d519dddfd9eac88ae47284ec9ad399d4773db9"
+        },
+        {
+          "path": "types/TestHelpers/ConfirmationTokensResource.d.ts",
+          "sha256": "96066906ed61a9c3d65798685b192267118b9921dc410f496ada8b4d09ee6e7a"
+        },
+        {
+          "path": "types/TestHelpers/CustomersResource.d.ts",
+          "sha256": "fab017e282000731b51376a25383b99655424d30eb25dba5b3d6ebfca2935e14"
+        },
+        {
+          "path": "types/TestHelpers/Issuing/AuthorizationsResource.d.ts",
+          "sha256": "e6c97752f849b6ee130be920f5b32d412f002a87f31e2abd0ce18774ddfdd139"
+        },
+        {
+          "path": "types/TestHelpers/Issuing/CardsResource.d.ts",
+          "sha256": "cf1b35415240b6dff4ca871afe1a6eac0d94cb2dad2480576ed05c9512c281fd"
+        },
+        {
+          "path": "types/TestHelpers/Issuing/PersonalizationDesignsResource.d.ts",
+          "sha256": "019721ef1a2e4e735bf370f32ec513ccf719f4919e3be3b41acf9c0b353c9d16"
+        },
+        {
+          "path": "types/TestHelpers/Issuing/TransactionsResource.d.ts",
+          "sha256": "65d07820eaa2117c1a327b842c5f9e293b0692c9d954a12e29201217832371d0"
+        },
+        {
+          "path": "types/TestHelpers/RefundsResource.d.ts",
+          "sha256": "a26c924fd884bcb2e55cb5fd0008ce58113d459bbc1cb924c99847767f2a8886"
+        },
+        {
+          "path": "types/TestHelpers/Terminal/ReadersResource.d.ts",
+          "sha256": "00ad6d7ccbbd931f8d0af76292f0f8df4d82ab4f109152dc6ba69b00f9c8e31b"
+        },
+        {
+          "path": "types/TestHelpers/TestClocks.d.ts",
+          "sha256": "59ab362eaa15d882855ae715d8eb0cc757b7d5770ad97db5db4cd1319d760c2a"
+        },
+        {
+          "path": "types/TestHelpers/TestClocksResource.d.ts",
+          "sha256": "a9ed29c4dde54a0c6da1a8092a3754e24de6b74040c68612081267506c7c14b3"
+        },
+        {
+          "path": "types/TestHelpers/Treasury/InboundTransfersResource.d.ts",
+          "sha256": "cd2886147f367b00e24c700f7e6d6e7f4cdb27284f5d9463f412a172b094dc24"
+        },
+        {
+          "path": "types/TestHelpers/Treasury/OutboundPaymentsResource.d.ts",
+          "sha256": "7409ef36c625d60a86ac1407e49de90da47270bda094e2b9a37d470e26c10c4e"
+        },
+        {
+          "path": "types/TestHelpers/Treasury/OutboundTransfersResource.d.ts",
+          "sha256": "eca94a391666cab6347eccf0ec1eabe75bbb012ac3c8efc72c2fc1096ad84bd0"
+        },
+        {
+          "path": "types/TestHelpers/Treasury/ReceivedCreditsResource.d.ts",
+          "sha256": "c63f37c5c6cc0ddb9fd0b89feb343e9f0c1186c93260f9cce435d40f513772fe"
+        },
+        {
+          "path": "types/TestHelpers/Treasury/ReceivedDebitsResource.d.ts",
+          "sha256": "f51a9bc4203aa1ad2e7673f73f71027445b8c695aa5099f8a54d42e5a712a7a5"
+        },
+        {
+          "path": "types/Tokens.d.ts",
+          "sha256": "ed7a95651ae6cfcbeb3d34e94b42125d4bfab85ce45c8db416d72547b9c10093"
+        },
+        {
+          "path": "types/TokensResource.d.ts",
+          "sha256": "ffcb54151fe99e8960fdf581fac5a0c22762357aa2132807b9cfd33ed27bdbc6"
+        },
+        {
+          "path": "types/Topups.d.ts",
+          "sha256": "409d99ad904943a5669d847d60cc475c6035c916119cddd1be88f001034e3ce8"
+        },
+        {
+          "path": "types/TopupsResource.d.ts",
+          "sha256": "91995fd8d3f21658305cf50fb28ea45d7cb11dc352f693fde95d7976e8c31bc1"
+        },
+        {
+          "path": "types/TransferReversals.d.ts",
+          "sha256": "1d815d2c06b12c2e84af05dcb9c0ce82da5c0ddc32066a09cc5043883286937e"
+        },
+        {
+          "path": "types/Transfers.d.ts",
+          "sha256": "eac8f481a29ded57f70e5000649a2aad992696dfff91731638bbbede11033bac"
+        },
+        {
+          "path": "types/TransfersResource.d.ts",
+          "sha256": "0f250afefb974006b9c9098add95a745938d441ff947816af67663f1c98a952c"
+        },
+        {
+          "path": "types/Treasury/CreditReversals.d.ts",
+          "sha256": "8675c2d389b630337326d19c0a176b198776e143e6e3431c0950557c1e1f8530"
+        },
+        {
+          "path": "types/Treasury/CreditReversalsResource.d.ts",
+          "sha256": "a9c320c74a82a4c459095f7f347795a0678da2f8a4a8e833112e15fbbdc322f1"
+        },
+        {
+          "path": "types/Treasury/DebitReversals.d.ts",
+          "sha256": "0d8b465572dfda56cf5b353b6d5a89280419efa05aa7957532fac17c23564c34"
+        },
+        {
+          "path": "types/Treasury/DebitReversalsResource.d.ts",
+          "sha256": "89e3f2caea97ae903d1759050f6e4e2342c8a84b7fba30ace6127cdb697dd9c9"
+        },
+        {
+          "path": "types/Treasury/FinancialAccountFeatures.d.ts",
+          "sha256": "b6c0494560264d7dbbf8a495e37c709cf59cebdf7c5c03590e69eb743503bc89"
+        },
+        {
+          "path": "types/Treasury/FinancialAccounts.d.ts",
+          "sha256": "24f79e010004a74115564974cc616b1ebee21c1a55ced1e4fbb19ac0d9abcaae"
+        },
+        {
+          "path": "types/Treasury/FinancialAccountsResource.d.ts",
+          "sha256": "68a3aff7041c8436bb5cd237c7a2ac0e1837db36327d86d730c130eeedd7ed8a"
+        },
+        {
+          "path": "types/Treasury/InboundTransfers.d.ts",
+          "sha256": "13bf57974bd7c24c49535215014bf10d5274c045c6448660e1ef938dfdb7da45"
+        },
+        {
+          "path": "types/Treasury/InboundTransfersResource.d.ts",
+          "sha256": "e2f81ecfc836042053b91a29717696fd2fca7aa75a619c2caec528878be1bdfe"
+        },
+        {
+          "path": "types/Treasury/OutboundPayments.d.ts",
+          "sha256": "5c8d304e3b21b337cd30acf48daa6e353aaeba5676994fb547c2ff55342591f5"
+        },
+        {
+          "path": "types/Treasury/OutboundPaymentsResource.d.ts",
+          "sha256": "b487e44e549ed8e4a27dcbe54559eb13603feed4a7e1441eaf428196f39145d0"
+        },
+        {
+          "path": "types/Treasury/OutboundTransfers.d.ts",
+          "sha256": "a9f087cec6c35d63b7ac5182a59719a967d4338bbb78afde6669a3bc15d45459"
+        },
+        {
+          "path": "types/Treasury/OutboundTransfersResource.d.ts",
+          "sha256": "6dc33ea9b09d87f98a20abc498ff91892de49ec0baa7aa03d3eeb20e77436251"
+        },
+        {
+          "path": "types/Treasury/ReceivedCredits.d.ts",
+          "sha256": "a82bfe9e57b4cc15798b7fb4c5bc659b4b070342838fdeb3e64053da75ed91be"
+        },
+        {
+          "path": "types/Treasury/ReceivedCreditsResource.d.ts",
+          "sha256": "dbe240f7eec217e2d4a77ff6f66e29f8be67f060188c4b021908a35fa99d2d40"
+        },
+        {
+          "path": "types/Treasury/ReceivedDebits.d.ts",
+          "sha256": "a5c389c4534adbaaa599d88ba7f016c08837a7640e25bc56061e7d754a962652"
+        },
+        {
+          "path": "types/Treasury/ReceivedDebitsResource.d.ts",
+          "sha256": "fa66f4d1d69c409c1ea535aceeab5bb0ccb1e93d92e1b2abfe9835900d828adc"
+        },
+        {
+          "path": "types/Treasury/TransactionEntries.d.ts",
+          "sha256": "66250611908950566a3dcdd388d0d5366586d51b081102a993ca14d9cb204d64"
+        },
+        {
+          "path": "types/Treasury/TransactionEntriesResource.d.ts",
+          "sha256": "4604dc1a62ac42e1fd3f5d0a5478359ba92958b237aa2e24403a86e7210c53ac"
+        },
+        {
+          "path": "types/Treasury/Transactions.d.ts",
+          "sha256": "047376887ddb5f8d681bf97bad3237206cf3439c5540db9ca0bac3ed3ed1e7be"
+        },
+        {
+          "path": "types/Treasury/TransactionsResource.d.ts",
+          "sha256": "98de9ba7c7ffc2ed99fd98aae6ebea602bd1bc402c34212401c0d2d5084c600f"
+        },
+        {
+          "path": "types/UpcomingInvoices.d.ts",
+          "sha256": "dffa2b8d7f35ccfa857bc50f164b9535dc04b8e3171c60d659073577ae593558"
+        },
+        {
+          "path": "types/V2/Billing/MeterEventAdjustments.d.ts",
+          "sha256": "5e22d0ebd4e1c30152675aa52dece859cc8c9acecd7959c4b2b10ce8d051598a"
+        },
+        {
+          "path": "types/V2/Billing/MeterEventAdjustmentsResource.d.ts",
+          "sha256": "2df41b284a9220755ea0231eb9fa1f9dcf4b16a9ab55e2cf86eeea53f23dd032"
+        },
+        {
+          "path": "types/V2/Billing/MeterEventSessionResource.d.ts",
+          "sha256": "97e95b0d014b9cc1b330d0c7d3accc30221a091b349f2b79f5958551fb57510d"
+        },
+        {
+          "path": "types/V2/Billing/MeterEventSessions.d.ts",
+          "sha256": "8ab7225e3f5cba6478f7a4313d419b6579b631f5cea92f7ff0ee893513206216"
+        },
+        {
+          "path": "types/V2/Billing/MeterEventStreamResource.d.ts",
+          "sha256": "c36362484aaa1ce3681a7a0e95078da88a61eb1581ba4c78e3467d6b7d7eb0f6"
+        },
+        {
+          "path": "types/V2/Billing/MeterEvents.d.ts",
+          "sha256": "4ce9273e2f62ad46ccda434b2a474d02ad9ba481cdf00eecf4e7344af4f1f47e"
+        },
+        {
+          "path": "types/V2/Billing/MeterEventsResource.d.ts",
+          "sha256": "612bad7b6de5dbec926fd384a9f1f6be35d62a64cce688fb5acd511659ffd5bd"
+        },
+        {
+          "path": "types/V2/Core/AccountLinks.d.ts",
+          "sha256": "dc0c66a0fb735ae080699df6c800e9c7ec36fd2c7f20f28e8afb5fb3db407a46"
+        },
+        {
+          "path": "types/V2/Core/AccountLinksResource.d.ts",
+          "sha256": "96e801e1049269e17fac928ba244560ce694b0bb50d296188ece8bc1cadc2261"
+        },
+        {
+          "path": "types/V2/Core/AccountPersonTokens.d.ts",
+          "sha256": "cfaa2151bd0ff5084b52172d611249f51dcba301a9b20b93e7c0257d6f952725"
+        },
+        {
+          "path": "types/V2/Core/AccountPersons.d.ts",
+          "sha256": "6f36c251013b358d485dad3e8853f49d654993adefe423961a1a0e6c7fcbd037"
+        },
+        {
+          "path": "types/V2/Core/AccountTokens.d.ts",
+          "sha256": "c142b954f10d85ea707f5c3e239e28d81a5befd0111d0b22da4fb570bfae16e7"
+        },
+        {
+          "path": "types/V2/Core/AccountTokensResource.d.ts",
+          "sha256": "e7f21911dbbfb87446870e815b27a87d5ad2e5d4fd21b95610075e03589e791d"
+        },
+        {
+          "path": "types/V2/Core/Accounts/PersonTokensResource.d.ts",
+          "sha256": "17e591c821a704a5076924384a1b0d31c2c8c2c766c6dd7699a777064ea59cbd"
+        },
+        {
+          "path": "types/V2/Core/Accounts/PersonsResource.d.ts",
+          "sha256": "f3546bb9262103663c6055c277048b8ba7cf9a34101efc715277dbefeb1139d7"
+        },
+        {
+          "path": "types/V2/Core/Accounts.d.ts",
+          "sha256": "b5608d5d39c2548451a842f668ab4b55cd0be78e3b4425c8142deff2409b3997"
+        },
+        {
+          "path": "types/V2/Core/AccountsResource.d.ts",
+          "sha256": "2b6f3055adc32492ed3e05be4184ee9add7fd1b5b4da4c86de604fb0a2e830f4"
+        },
+        {
+          "path": "types/V2/Core/EventDestinations.d.ts",
+          "sha256": "38ab3fee9ea95e6f65366aa1c5961dc3b256afc45e98d2b54133c96b65545d98"
+        },
+        {
+          "path": "types/V2/Core/EventDestinationsResource.d.ts",
+          "sha256": "1c79f6916809af132b50698e4830296e20e986e77abdbc0cb9b25f3db999f409"
+        },
+        {
+          "path": "types/V2/Core/EventTypes.d.ts",
+          "sha256": "eb2a574d60ac903535ba4b3da144603fe9cc8565914b1652cecb8018c25514a3"
+        },
+        {
+          "path": "types/V2/Core/Events.d.ts",
+          "sha256": "41f8cd5df27baf20e0a53e6c081072184ac9a0db03be20335310ea9048e72c7d"
+        },
+        {
+          "path": "types/V2/Core/EventsResource.d.ts",
+          "sha256": "45141230872c1846da0d1b46110e2e337b6a6ecc70a223c94bef7737d5262195"
+        },
+        {
+          "path": "types/V2/DeletedObject.d.ts",
+          "sha256": "bfdf1ee5ca2beb7726651045452fe4c6e7b73167652ba4756bdffcb45fa71c10"
+        },
+        {
+          "path": "types/V2/EventMisc.d.ts",
+          "sha256": "451530f3ff8e7702949aaaebda8a5275511c07f64d2e086e40498d7e9fddefbd"
+        },
+        {
+          "path": "types/WebhookEndpoints.d.ts",
+          "sha256": "fa1dd10a1cac1d92fade2efdc48d2b01b21bccb29024e2b4b0db2302ecb624af"
+        },
+        {
+          "path": "types/WebhookEndpointsResource.d.ts",
+          "sha256": "4ba17182848f28e02705cc93132fda9731f0316b43917f9c8f19441aec0ccd28"
+        },
+        {
+          "path": "types/Webhooks.d.ts",
+          "sha256": "1847ed6a92c0558751560e0c8d84cc6192244266536777a5a23f6d7e2a7a0f1d"
+        },
+        {
+          "path": "types/apiVersion.d.ts",
+          "sha256": "e0171af88ffc3a3c70b2a25e51d6b0a2adcddd8356f8d3c1d7c3f8c6c774eb72"
+        },
+        {
+          "path": "types/crypto/crypto.d.ts",
+          "sha256": "c476a04be192caca1ff19a8e7b2fae5a738a87cb82c9a5473dce53a334d4b3e8"
+        },
+        {
+          "path": "types/index.d.ts",
+          "sha256": "2b66ab66713603c6dd9183ac10b4e9aa23522d57c083292019062f5ce4029eae"
+        },
+        {
+          "path": "types/lib.d.ts",
+          "sha256": "334c9d0ce8247a01317d0a91a6cf80034a6f25e5da139595259ca2f366763a94"
+        },
+        {
+          "path": "types/net/net.d.ts",
+          "sha256": "195b43fb03896d064b88cb04d5f749809f6366415a6e433b70df295bc3cdbece"
+        },
+        {
+          "path": "types/shared.d.ts",
+          "sha256": "0ebd8d27ba65f83621e8324644dc19c7e64fe3a9d979137cd80ebf40e28b0462"
+        },
+        {
+          "path": "types/test/.eslintrc.js",
+          "sha256": "131483b4a6f394d0cc569165b0e963e41fd1fbadce16d1c39d81bb1fefb8998b"
+        },
+        {
+          "path": "types/test/tsconfig.json",
+          "sha256": "3cd6ffe173639becbbfbffddcf7ebe01caead3addfb7f60069e191d5b524100f"
+        },
+        {
+          "path": "types/test/typescriptTest.ts",
+          "sha256": "ca93612d6126ae5c1df17a6b096e23556d1460eef55addddaff90de6b2fce792"
+        }
+      ]
+    },
+    {
+      "name": "@prisma/client",
+      "directory": "/workspace/axiom-privacy-controls/node_modules/@prisma/client",
+      "owner": "@prisma/client",
+      "version": "5.22.0",
+      "integrity": "sha512-M0SVXfyHnQREBKxCgyo7sffrKttwE6R8PMq330MIUF0pTwjUhLbW84pFDlf06B27XyCR++VtjugEnIHdr07SVA==",
+      "files": [
+        {
+          "path": "LICENSE",
+          "sha256": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4"
+        },
+        {
+          "path": "README.md",
+          "sha256": "8962ebaf0fc70382ac40759fecc178cd96ace15221c7debb309a38761b116b90"
+        },
+        {
+          "path": "default.d.ts",
+          "sha256": "51ebca098538b252953b1ef83c165f25b52271bfb6049cd09d197dddd4cd43c5"
+        },
+        {
+          "path": "default.js",
+          "sha256": "0cfff057c91fcb7559bd1a3bb4891404e455829ced5b18a87c9393ee1721ace4"
+        },
+        {
+          "path": "edge.d.ts",
+          "sha256": "317483ac49e6e3592ae08c55aeca9e9cc252749ef3a10841229f01422720ed2a"
+        },
+        {
+          "path": "edge.js",
+          "sha256": "7bf087246c937e84453cb6ec8235c106c9f1808b3400d74601dd503f14e49643"
+        },
+        {
+          "path": "extension.d.ts",
+          "sha256": "2479ba0bddab019eaacf32578d5c3af99999cee581bc10d49946469b06ee2426"
+        },
+        {
+          "path": "extension.js",
+          "sha256": "116e87c8b1e477b2b0f80b08f32c1752976d6909f9e6e38a1c4a92f97b9251f3"
+        },
+        {
+          "path": "generator-build/index.js",
+          "sha256": "1697ccccd6b9ef9bfe00277ab8347d656080854d12680568940546e1ef4602ee"
+        },
+        {
+          "path": "index-browser.js",
+          "sha256": "3d3124ae428b3514dbeb60a4270b904a063451cb82de1d96f0b16d69fd1860c6"
+        },
+        {
+          "path": "index.d.ts",
+          "sha256": "51ebca098538b252953b1ef83c165f25b52271bfb6049cd09d197dddd4cd43c5"
+        },
+        {
+          "path": "index.js",
+          "sha256": "98ebb7453444d223cacae7a3d8ad655f29997523d9a1646d383f852b10ba70fa"
+        },
+        {
+          "path": "package.json",
+          "sha256": "2efa3f7c0f05cf2bd4b681b71dd0e7a197006a3c29f2acdb5f88d5e7bc9bb2e3"
+        },
+        {
+          "path": "react-native.d.ts",
+          "sha256": "cb44a22537d7c1b1b2e427e70a2e15a6b6659271b484a98eee18199dff3fdeb7"
+        },
+        {
+          "path": "react-native.js",
+          "sha256": "18194ed433c5d4b588d5f7bbfe43fdabcedec2a6a7891e8d06fb5224f546fcc3"
+        },
+        {
+          "path": "runtime/binary.d.ts",
+          "sha256": "8edadeb551395cad9fde0272dcc52341e2728b7d835dd61d51fb795b714ce37c"
+        },
+        {
+          "path": "runtime/binary.js",
+          "sha256": "df18294def856b0c913615d7d77b14473d8a4bf5a9ccfaf6dfca1cacb2c10adf"
+        },
+        {
+          "path": "runtime/edge-esm.js",
+          "sha256": "bad30b145b6994c8c862fbe42a5e7fc0b85c7b655b245fdfe5df9e635ab72fe8"
+        },
+        {
+          "path": "runtime/edge.js",
+          "sha256": "c43b46015a75a52e283616ce63927baa0299a22166cbfbcc9b86ac03a50c42b2"
+        },
+        {
+          "path": "runtime/index-browser.d.ts",
+          "sha256": "0def2ed9fde3a822fccc92f6b2d42cd933b2fba5f421140cc0076d1661b2d862"
+        },
+        {
+          "path": "runtime/index-browser.js",
+          "sha256": "b8e7ecc96d6a1824365eea35c638da6746ef1d17db54cf0d276e31f576cf1120"
+        },
+        {
+          "path": "runtime/library.d.ts",
+          "sha256": "21247c958d397091ec30e63b27294baa1d1434c333da4fda697743190311dc62"
+        },
+        {
+          "path": "runtime/library.js",
+          "sha256": "9ab29d2d4f29cfc3bef4d09eb4008edc80dac07266ca81d1e21a602a8e039050"
+        },
+        {
+          "path": "runtime/query_engine_bg.mysql.js",
+          "sha256": "8ba900fdcf270bf7c68930336f53c821c1686d74041f802a5a29e89f2da7f2b8"
+        },
+        {
+          "path": "runtime/query_engine_bg.mysql.wasm",
+          "sha256": "10c3f1282a79ee74dc15e3746fe717a9e7a91ed642d7f694b32097fd4107d7f3"
+        },
+        {
+          "path": "runtime/query_engine_bg.postgresql.js",
+          "sha256": "d5600a198dd8e2a132011a1401fb94e25662ffdccec27e7b920c13a8f4afbb4d"
+        },
+        {
+          "path": "runtime/query_engine_bg.postgresql.wasm",
+          "sha256": "b8c2cab13e50491cec4ca2d16a20cd549f09449736ab2361ad53c0254a08bf91"
+        },
+        {
+          "path": "runtime/query_engine_bg.sqlite.js",
+          "sha256": "9e61075ea88cb6e7363b09a2cc5fcd836121fe417329e8131bfe18eedf6c03e1"
+        },
+        {
+          "path": "runtime/query_engine_bg.sqlite.wasm",
+          "sha256": "40800054ecc6145eb5228015c8c12e8781203e24702520657f0ccc3b90a05f25"
+        },
+        {
+          "path": "runtime/react-native.d.ts",
+          "sha256": "21247c958d397091ec30e63b27294baa1d1434c333da4fda697743190311dc62"
+        },
+        {
+          "path": "runtime/react-native.js",
+          "sha256": "f95142fd9db2606a061e1361603f1832a674152a71571f5c4526302e08ffe611"
+        },
+        {
+          "path": "runtime/wasm.js",
+          "sha256": "5bbb124f65b744d8a5fa910ad83750aa848e2a7ca10be5e4e29bf3eab0a0a9ab"
+        },
+        {
+          "path": "scripts/colors.js",
+          "sha256": "08eb6a703f1f8acb8c3cdd69f5c15ba958c3df657a35c7d4e30436a799847a9f"
+        },
+        {
+          "path": "scripts/default-deno-edge.ts",
+          "sha256": "2c477a207046eb53c996f4a7eed2ae894cb021393d58cc5c0310456ce21a6c47"
+        },
+        {
+          "path": "scripts/default-index.d.ts",
+          "sha256": "71df692065d79c5b044002f8a68eba33e934859859094bab2f334f64a467f428"
+        },
+        {
+          "path": "scripts/default-index.js",
+          "sha256": "8ddaed338be85a42d43f41a14079be84b6b5c3e6efb5a505137d9f96c652c508"
+        },
+        {
+          "path": "scripts/postinstall.d.ts",
+          "sha256": "3bf65a90eb02f4bdf76d64569983b3770d6d54c27428682a38d836c487bc7bfd"
+        },
+        {
+          "path": "scripts/postinstall.js",
+          "sha256": "d74f4d6b63eb274012518b87504b47e0be2e13d946527723770009ccb29dd804"
+        },
+        {
+          "path": "sql.d.ts",
+          "sha256": "79609bf6f382209078a578e71ed2ecb81829f1b8bebae3c7948a02090ead8e3e"
+        },
+        {
+          "path": "sql.js",
+          "sha256": "1eaca014b3d83401e69545a43e2b2bb8ee95c9238703428a084a6479a49b66d1"
+        },
+        {
+          "path": "sql.mjs",
+          "sha256": "a9a785844488c0ae9da9890d625df4c61d8033e93914d213b4456aefc87b4487"
+        },
+        {
+          "path": "wasm.d.ts",
+          "sha256": "f75e7af8dfb25831cba7b68df867d8b859af1a3ac7c5a31b2e0649d6c95b4363"
+        },
+        {
+          "path": "wasm.js",
+          "sha256": "ac22ecbb19be6d4cb11f98f0b7bec4966d45e0c07445d0ad61e4cc9b74379837"
+        }
+      ]
+    },
+    {
+      "name": ".prisma/client",
+      "directory": "/workspace/axiom-privacy-controls/node_modules/.prisma/client",
+      "owner": "@prisma/client",
+      "version": "5.22.0",
+      "integrity": "sha512-M0SVXfyHnQREBKxCgyo7sffrKttwE6R8PMq330MIUF0pTwjUhLbW84pFDlf06B27XyCR++VtjugEnIHdr07SVA==",
+      "files": [
+        {
+          "path": "default.d.ts",
+          "sha256": "d5eb5865d4cbaa9985cc3cfb920b230cdcf3363f1e70903a08dc4baab80b0ce1"
+        },
+        {
+          "path": "default.js",
+          "sha256": "61419abcd0ff0f9127dd52fee7bd236d49917050317e1cc87067c1f18f86e412"
+        },
+        {
+          "path": "deno/edge.d.ts",
+          "sha256": "2c477a207046eb53c996f4a7eed2ae894cb021393d58cc5c0310456ce21a6c47"
+        },
+        {
+          "path": "edge.d.ts",
+          "sha256": "7378dd41401ba1acff435b9c317a5b919a3d38479ed3dbd4a25c8b4fd623a224"
+        },
+        {
+          "path": "edge.js",
+          "sha256": "c080b9fdaf3c363afefabb55dd215035be71306c6e87c0a86029f5164746bfa6"
+        },
+        {
+          "path": "index-browser.js",
+          "sha256": "f21144b0c11bd22c59b985b84d392d65badc3c3e5f12ff68feb6df4b21f3403f"
+        },
+        {
+          "path": "index.d.ts",
+          "sha256": "a1d41c07261ef0bbf3a77538f197e92880f506899f82a9705e135d07631fefde"
+        },
+        {
+          "path": "index.js",
+          "sha256": "198cfe2ba3e779152091acf7a01b52d13c2816d77df1a26284d88058e074c453"
+        },
+        {
+          "path": "libquery_engine-debian-openssl-3.0.x.so.node",
+          "sha256": "35860a5c0fb2f79e7b38c40747c4d212318d97e1910ca528b133c802716de0b8"
+        },
+        {
+          "path": "package.json",
+          "sha256": "1d8ac6c0a3d7362fb158e63637dd165c875095caa621980e0f2b1f85ea0291ee"
+        },
+        {
+          "path": "schema.prisma",
+          "sha256": "af7f25f286534e7ce73c9fe094bc0d0da15b5172881974f135a2d14deae8334b"
+        },
+        {
+          "path": "wasm.d.ts",
+          "sha256": "d5eb5865d4cbaa9985cc3cfb920b230cdcf3363f1e70903a08dc4baab80b0ce1"
+        },
+        {
+          "path": "wasm.js",
+          "sha256": "f21144b0c11bd22c59b985b84d392d65badc3c3e5f12ff68feb6df4b21f3403f"
+        }
+      ]
+    },
+    {
+      "name": "server-only",
+      "directory": "/workspace/axiom-privacy-controls/node_modules/next/dist/compiled/server-only",
+      "owner": "next",
+      "version": "16.3.8",
+      "integrity": "sha512-U7QEZaTini6wKrb8A8hqLLqYQyCetegKjCpJOyxk642vWoMoU1x5PyZCJFvgYgiptA8xc5j/9xYlZFO7w9Sjmw==",
+      "files": [
+        {
+          "path": "empty.js",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "index.js",
+          "sha256": "2c4720b71eb03e5f75a83d43e6fd83c0446aa172a58a4d6ffbd74ecad72ba7b5"
+        },
+        {
+          "path": "package.json",
+          "sha256": "e4b0cc01e2e0349c51c694fa97d8a642eb8322521ca1444b20bd1842594b4339"
+        }
+      ]
+    }
+  ]
+}

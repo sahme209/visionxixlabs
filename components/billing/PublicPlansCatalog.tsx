@@ -13,8 +13,9 @@ export type PublicCheckoutWorkspace =
   | { status: "unavailable" }
   | { status: "ready"; organizationId: string; label: string };
 
-export function PublicPlansCatalog({ checkoutEnabled, initialSelection = null, workspace = { status: "unavailable" } }: {
+export function PublicPlansCatalog({ checkoutEnabled, initialSelection = null, workspace = { status: "unavailable" }, ownedTestCheckout = false }: {
   checkoutEnabled: boolean;
+  ownedTestCheckout?: boolean;
   initialSelection?: PublicPlanSelection | null;
   workspace?: PublicCheckoutWorkspace;
 }) {
@@ -25,7 +26,8 @@ export function PublicPlansCatalog({ checkoutEnabled, initialSelection = null, w
 
   const mounted = useRef(true);
   const pending = useRef(false);
-  const scope = `${checkoutEnabled}:${workspace.status}:${workspace.status === "ready" ? workspace.organizationId : ""}`;
+  const ownedKeys = useRef(new Map<string, string>());
+  const scope = `${ownedTestCheckout}:${checkoutEnabled}:${workspace.status}:${workspace.status === "ready" ? workspace.organizationId : ""}`;
   const latestScope = useRef(scope);
   latestScope.current = scope;
   useEffect(() => { mounted.current = true; return () => { mounted.current = false; }; }, []);
@@ -42,11 +44,18 @@ export function PublicPlansCatalog({ checkoutEnabled, initialSelection = null, w
     setBusyPlan(planId);
     setError(null);
     try {
+      let clientIntentKey: string | undefined;
+      if (ownedTestCheckout) {
+        const name = `axiom:owned-checkout:v1:${workspace.organizationId}:${planId}:${interval}`;
+        clientIntentKey = ownedKeys.current.get(name) ?? window.sessionStorage.getItem(name) ?? undefined;
+        if (!clientIntentKey) { clientIntentKey = crypto.randomUUID().replaceAll("-", ""); window.sessionStorage.setItem(name, clientIntentKey); }
+        ownedKeys.current.set(name, clientIntentKey);
+      }
       const response = await fetch("/api/billing/checkout-session", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "same-origin",
-        body: JSON.stringify({ planId, billingInterval: interval, expectedOrganizationId: workspace.organizationId }),
+        body: JSON.stringify({ planId, billingInterval: interval, expectedOrganizationId: workspace.organizationId, ...(ownedTestCheckout ? { clientIntentKey } : {}) }),
       });
       if (!isCurrent()) return;
       if (response.status === 401) {
