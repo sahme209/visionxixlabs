@@ -44,6 +44,9 @@ jobs:
 
       # Validate production compilation in GitHub without deploying or loading
       # Vercel production credentials. Git-triggered Vercel builds are disabled.
+      - name: Run offline auth recovery evidence tests
+        run: python3 -m unittest discover -s scripts/tests -p 'test_auth_recovery_evidence.py' -v
+
       - name: Build production website (no deployment)
         env:
           NODE_OPTIONS: --max-old-space-size=6144
