@@ -1,0 +1,240 @@
+{
+  "version": 1,
+  "stage": "final_combined_source_validation",
+  "validatedSource": "8817693ad0516ebe4f9c648a7a28702edaf452b8",
+  "mainAncestor": "5c76ad4442aadfd5e470a9a3601348307b5903a4",
+  "docsOnlyAfterValidatedSource": true,
+  "gates": [
+    {
+      "stage": "web-types",
+      "exitCode": 0,
+      "sourceBefore": "8817693ad0516ebe4f9c648a7a28702edaf452b8",
+      "sourceAfter": "8817693ad0516ebe4f9c648a7a28702edaf452b8",
+      "sourceCleanImmediatelyAfter": true,
+      "durationSeconds": 61.89,
+      "log": {
+        "path": "/workspace/.axiom-validation/billing-combined-ysufv3li/web-types.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      "result": {
+        "path": "/workspace/.axiom-validation/billing-combined-ysufv3li/web-types-result.json",
+        "sha256": "39019d52a8cdbe8287f260d937fb1e9c06aa05451636377084d728bdf53dd112",
+        "bytes": 1680
+      }
+    },
+    {
+      "stage": "default-suite",
+      "exitCode": 0,
+      "sourceBefore": "8817693ad0516ebe4f9c648a7a28702edaf452b8",
+      "sourceAfter": "8817693ad0516ebe4f9c648a7a28702edaf452b8",
+      "sourceCleanImmediatelyAfter": true,
+      "durationSeconds": 93.16,
+      "log": {
+        "path": "/workspace/.axiom-validation/billing-combined-ysufv3li/default-suite.log",
+        "sha256": "278fdc92fccfc2d7e8ffd722cc3cd3d2ea03159be541e427136ec326f3e69262",
+        "bytes": 48852
+      },
+      "result": {
+        "path": "/workspace/.axiom-validation/billing-combined-ysufv3li/default-suite-result.json",
+        "sha256": "b3e589a7be12346f4896dbe3ca6e57b3462eea24c08e40f9dea6f4147f2d93fa",
+        "bytes": 1692
+      }
+    },
+    {
+      "stage": "desktop-types",
+      "exitCode": 0,
+      "sourceBefore": "8817693ad0516ebe4f9c648a7a28702edaf452b8",
+      "sourceAfter": "8817693ad0516ebe4f9c648a7a28702edaf452b8",
+      "sourceCleanImmediatelyAfter": true,
+      "durationSeconds": 7.54,
+      "log": {
+        "path": "/workspace/.axiom-validation/billing-combined-ysufv3li/desktop-types.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      "result": {
+        "path": "/workspace/.axiom-validation/billing-combined-ysufv3li/desktop-types-result.json",
+        "sha256": "3765f180f25ef3f1524bbfa9acac888b0ed2357ebd9e2dd194a4701b9a93e56e",
+        "bytes": 1687
+      }
+    },
+    {
+      "stage": "desktop-build",
+      "exitCode": 0,
+      "sourceBefore": "8817693ad0516ebe4f9c648a7a28702edaf452b8",
+      "sourceAfter": "8817693ad0516ebe4f9c648a7a28702edaf452b8",
+      "sourceCleanImmediatelyAfter": true,
+      "durationSeconds": 11.75,
+      "log": {
+        "path": "/workspace/.axiom-validation/billing-combined-ysufv3li/desktop-build.log",
+        "sha256": "2d1d370e635267756451e7d8c64e5463a535f2056c1b39d8f9afeb7aac1f0d35",
+        "bytes": 1551
+      },
+      "result": {
+        "path": "/workspace/.axiom-validation/billing-combined-ysufv3li/desktop-build-result.json",
+        "sha256": "0635cc171446a0bf40692f52407d4e400ece11a282792956691ab982ee782a84",
+        "bytes": 1691
+      }
+    },
+    {
+      "stage": "python",
+      "exitCode": 0,
+      "sourceBefore": "8817693ad0516ebe4f9c648a7a28702edaf452b8",
+      "sourceAfter": "8817693ad0516ebe4f9c648a7a28702edaf452b8",
+      "sourceCleanImmediatelyAfter": false,
+      "durationSeconds": 0.27,
+      "log": {
+        "path": "/workspace/.axiom-validation/billing-combined-ysufv3li/python.log",
+        "sha256": "5ab1440ce1ae8111979aef3b96a08d8951284615cfaf9bb6830dbd6649d6cac9",
+        "bytes": 1104
+      },
+      "result": {
+        "path": "/workspace/.axiom-validation/billing-combined-ysufv3li/python-result.json",
+        "sha256": "360aa2e57e2f3ee16e27b7bf6da2314ae97d8bc0c79b91934263388cb353150b",
+        "bytes": 1751
+      }
+    },
+    {
+      "stage": "offline",
+      "exitCode": 0,
+      "sourceBefore": "8817693ad0516ebe4f9c648a7a28702edaf452b8",
+      "sourceAfter": "8817693ad0516ebe4f9c648a7a28702edaf452b8",
+      "sourceCleanImmediatelyAfter": false,
+      "durationSeconds": 0.11,
+      "log": {
+        "path": "/workspace/.axiom-validation/billing-combined-ysufv3li/offline.log",
+        "sha256": "3f09618bcb7f4529edf92cad99220beffb40aff60e4c3c58a1ff64673fd08f6a",
+        "bytes": 2169
+      },
+      "result": {
+        "path": "/workspace/.axiom-validation/billing-combined-ysufv3li/offline-result.json",
+        "sha256": "c03b5443c3ffaa72e443c3880ea7c76505170e17fd104aad42e985bd914759a8",
+        "bytes": 1743
+      }
+    },
+    {
+      "stage": "buildguard",
+      "exitCode": 0,
+      "sourceBefore": "8817693ad0516ebe4f9c648a7a28702edaf452b8",
+      "sourceAfter": "8817693ad0516ebe4f9c648a7a28702edaf452b8",
+      "sourceCleanImmediatelyAfter": true,
+      "durationSeconds": 0.08,
+      "log": {
+        "path": "/workspace/.axiom-validation/billing-combined-ysufv3li/buildguard.log",
+        "sha256": "c14444c23a9aabbbcc3d975d3788080d47288101d53e6286ecfb3413f8cdcd14",
+        "bytes": 185
+      },
+      "result": {
+        "path": "/workspace/.axiom-validation/billing-combined-ysufv3li/buildguard-result.json",
+        "sha256": "ca367f0992119acb49f8ca537eb2766e0159fde188ab2b4cc2e3b0728f915bb3",
+        "bytes": 1683
+      }
+    },
+    {
+      "stage": "tracker",
+      "exitCode": 0,
+      "sourceBefore": "8817693ad0516ebe4f9c648a7a28702edaf452b8",
+      "sourceAfter": "8817693ad0516ebe4f9c648a7a28702edaf452b8",
+      "sourceCleanImmediatelyAfter": true,
+      "durationSeconds": 0.23,
+      "log": {
+        "path": "/workspace/.axiom-validation/billing-combined-ysufv3li/tracker.log",
+        "sha256": "f22fc39d301a5d3b9b8c225fa2f7e8866e57256b998cd93fe0aaf43faf4c108c",
+        "bytes": 266
+      },
+      "result": {
+        "path": "/workspace/.axiom-validation/billing-combined-ysufv3li/tracker-result.json",
+        "sha256": "5f0162548ac5c9916ff0209c09de291e94961d6d0bc6e542285df75d99b0dc2b",
+        "bytes": 1677
+      }
+    },
+    {
+      "stage": "lint",
+      "exitCode": 0,
+      "sourceBefore": "8817693ad0516ebe4f9c648a7a28702edaf452b8",
+      "sourceAfter": "8817693ad0516ebe4f9c648a7a28702edaf452b8",
+      "sourceCleanImmediatelyAfter": true,
+      "durationSeconds": 4.64,
+      "log": {
+        "path": "/workspace/.axiom-validation/billing-combined-ysufv3li/lint.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      "result": {
+        "path": "/workspace/.axiom-validation/billing-combined-ysufv3li/lint-result.json",
+        "sha256": "719763f9420e55ffec3f1797d50f9532edb7ef63832b2a011a923f493c35acff",
+        "bytes": 1669
+      }
+    }
+  ],
+  "counts": {
+    "defaultTestsPassed": 8067,
+    "defaultFilesPassed": 719,
+    "defaultTestsSkipped": 28,
+    "defaultFilesSkipped": 1,
+    "defaultRunnerSeconds": 92.19,
+    "pythonCli": 30,
+    "offlineAuthEvidence": 16,
+    "trackerSources": 22,
+    "trackerRows": 2154
+  },
+  "actualHttpAcceptance": {
+    "executedSource": "89e408dcb10bea72d844560ee137331bc50fc2ec",
+    "receipt": "docs/mission/owned-checkout-89e-http-acceptance.json",
+    "receiptSha256": "0ead4802111d6a1071d5bd50b8a9969ad5669c4eade8aa1cc416deef9b15ca99",
+    "runnerSeconds": 39.05,
+    "passed": 1,
+    "skipped": 27,
+    "syntheticOnly": true,
+    "hostedPayment": false,
+    "repeatedDuringCombinedGates": false,
+    "sourceRows": 123,
+    "sourceRowTableSha256": "b28cd0a573956f3e42c62040db476f2572deee150717551bc1a3a6f72185428f",
+    "sourceRowTableArtifact": {
+      "path": "/workspace/.axiom-validation/billing-checkout-projection-krpy6fas/owned-http-binding.json",
+      "sha256": "776557a547540ed267191f1688f67e7bb58e0438ec6fe9ca4572446263cece74",
+      "bytes": 389400
+    },
+    "currentRowsByteEqual": true,
+    "qualification": "All123 executed billing/auth/SDK/config rows equal final881; source semantics/types/default regression separately validated on881, without relabeling89e runtime as a new run."
+  },
+  "dependencies": {
+    "rootPrivateOverlay": "/workspace/.axiom-validation/billing-checkout-projection-krpy6fas/node_modules",
+    "rootCanonicalLeafCount": 809,
+    "desktopPrivateOverlay": "/workspace/.axiom-validation/billing-combined-ysufv3li/desktop-node_modules",
+    "desktopCanonicalLeafCount": 147,
+    "desktopCachesPrivate0700": true,
+    "desktopSharedDirectLinkUsed": false,
+    "sharedInstallOrGeneration": false,
+    "qualification": "Reused cached package graphs; not a fresh local npm install. Previously qualified cached Prisma whole-schema mismatch remains; nine complete used models match. No shared Prisma generation or schema migration."
+  },
+  "cleanup": {
+    "sourceCleanAfterAllCleanup": true,
+    "desktopProjectLinkRemoved": true,
+    "ownNodeOrEsbuildProcessesRemaining": 0,
+    "nextAbsent": true,
+    "ownDesktopDistBytesFreed": 606313,
+    "ownDesktopDistRemovedOnlyAfterAbsentBeforeProof": true,
+    "privateCachesAndLogsRetained": true,
+    "noSharedCacheDeletionOrPrune": true
+  },
+  "transientArtifactQualification": {
+    "pythonAndOfflineInitialCleanFalse": true,
+    "onlyGeneratedUntrackedBytecode": true,
+    "retainedOutsideSourceThenClean": true,
+    "otherGateTreesClean": true,
+    "preflightRefusalBeforeAnyCompiler": true,
+    "preflightSelectorName": "OPENAI_CLUSTER",
+    "exactOpaqueMetadataPreservationApproved": true,
+    "actualWebCompilerInvocationsAfterCorrection": 1,
+    "noSourceOrTestPolicyWaiver": true
+  },
+  "qualification": [
+    "Source881 is the actual type/default/desktop/Python/offline/guard/tracker/lint validation point. This paired receipt is a later docs-only freeze.",
+    "The actual owned HTTP proof stays89e with onePASS/27SKIP, locally signed synthetic provider fixtures and separate verified cleanup. No second owned28 or original27 rerun occurred.",
+    "Expected controlled test stderr and existing Vite config warning remain in the default log; no suppression or blanket pristine-output claim. Scoped lint exit0 is observed.",
+    "No real Stripe API/provider mutation, hosted checkout/payment/delivery, native execution/installer, production migration, public/live billing activation or deployment occurred.",
+    "Future real TEST worker factory must reuse the existing authoritative service/provider/proof store; secure binding and supported managed transport/proxy/trust plus genuine collection/delivery remain separate unfinished gates."
+  ]
+}
