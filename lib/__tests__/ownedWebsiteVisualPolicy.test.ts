@@ -52,7 +52,7 @@ it("rejects reused process identities during cleanup", () => {
 
 it("pins the real source/dependency framework and refuses Agent-context reuse", () => {
   const identity = framework.captureOwnedWebsiteFramework(root);
-  expect(identity.sourceHashes["next.config.ts"]).toBe("2548092481546cca521731e629e81702c9df19dd5195607edba0eca95f8cba30");
+  expect(identity.sourceHashes["next.config.ts"]).toBe("e29e0ed18407a18820a2047e41e52272a80dc7cd1f69dbb221ad9e9977f1a040");
   expect(() => framework.installOwnedWebsiteFramework({ root, role: "server", environment: { AXIOM_NEXT_AGENT_MODE: "owned-scripted-core", NODE_ENV: "development" }, identity })).toThrow("owned_framework_context");
 });
 
