@@ -7,7 +7,7 @@ const transport = require("../../scripts/fixtures/ownedWebsiteSession.cjs");
 const policy = require("../../scripts/fixtures/ownedWebsitePolicy.cjs");
 const paths = { directory: "/tmp/axiom-website-test", configPath: "/tmp/axiom-website-test/config.json" };
 const owner = { pid: 42, group: 42, start: "100", executable: "/owned/node", state: "S" };
-function child() { return Object.assign(new EventEmitter(), { pid: 42, exitCode: null, signalCode: null }); }
+function child() { return Object.assign(new EventEmitter(), { pid: 42, exitCode: null as number | null, signalCode: null as string | null }); }
 
 describe("spawn ledger covers failures before ownership registration", () => {
   it("retains an unregistered live handle without signalling or certifying empty", async () => {
@@ -202,4 +202,53 @@ it("a signal during otherwise successful cleanup prevents a success report", asy
     expect(control.report()).toMatchObject({ interrupted: true, failure: "website_coordinator_SIGTERM" });
     expect(() => control.check()).toThrow("website_coordinator_SIGTERM");
   } finally { control.dispose(); }
+});
+
+it("persists pending, registered and exited driver identity before launch progresses", async () => {
+  const handle = child(); const writes: Array<Array<{ state: string; role: string; owner: unknown }>> = [];
+  const ledger = lifecycle.createLedger({ spawn: () => handle, snapshot: () => owner, canonical: (v: string) => v, stopGroup: async () => {}, groupMembers: () => [], waitExit: async () => {}, onChange: (rows: typeof writes[number]) => writes.push(rows) });
+  const launch = ledger.launch("/owned/node", [], {}, () => {}, "capture");
+  expect(writes[0][0]).toMatchObject({ role: "capture", state: "pending", pid: 42, owner: null });
+  handle.emit("spawn"); await launch; expect(writes[1][0]).toMatchObject({ state: "registered", owner });
+  handle.emit("exit", 0, null); expect(writes[2][0]).toMatchObject({ state: "exited", exitCode: 0, owner });
+});
+it.each(["pending", "registered", "exited"])("journal failure in %s retains cleanup failure without losing the child", async state => {
+  const handle = child(); const failure = vi.fn();
+  const ledger = lifecycle.createLedger({ spawn: () => handle, snapshot: () => owner, canonical: (v: string) => v, stopGroup: async () => { handle.emit("exit", 0, null); }, groupMembers: () => [], waitExit: async () => {}, onFailure: failure, onChange: (rows: Array<{ state: string }>) => { if (rows[0].state === state) throw Error("disk"); } });
+  const launch = ledger.launch("/owned/node", [], {});
+  const result = launch.catch((error: Error) => error.message); handle.emit("spawn"); await result;
+  if (state === "exited") handle.emit("exit", 0, null);
+  expect(await ledger.cleanup()).toContain("website_ledger_persistence_failed"); expect(ledger.records).toHaveLength(1); expect(failure).toHaveBeenCalled();
+});
+it("supervisor cancels driver wait on proxy crash and cleans all directly owned children", async () => {
+  const control = lifecycle.createCoordinator({ signals: new EventEmitter() }); let cleaning = false;
+  const handles = [42, 43, 44, 45].map(pid => Object.assign(child(), { pid })); let next = 0;
+  const stop = vi.fn(async (row: { pid: number }) => { const h = handles.find(item => item.pid === row.pid)!; if (h.exitCode === null) { h.exitCode = 0; h.emit("exit", 0, null); } });
+  const ledger = lifecycle.createLedger({ spawn: () => handles[next++], snapshot: (pid: number) => ({ ...owner, pid, group: pid }), canonical: (v: string) => v, stopGroup: stop, groupMembers: () => [], waitExit: async () => {} });
+  try {
+    for (const [index, role] of ["server", "proxy", "browser", "capture"].entries()) {
+      const launch = ledger.launch("/owned/node", [], {}, (h: EventEmitter) => lifecycle.observeOwnedChild(h, { critical: role !== "capture", isCleaning: () => cleaning, onFailure: control.cancel, onData: () => {} }), role);
+      handles[index].emit("spawn"); await launch;
+    }
+    const wait = control.run(() => new Promise(() => {})); const rejected = expect(wait).rejects.toThrow("website_critical_child_exited");
+    handles[1].emit("exit", 1, null); await rejected; cleaning = true;
+    expect(await ledger.cleanup()).toEqual([]); expect(stop).toHaveBeenCalledTimes(4);
+  } finally { control.dispose(); }
+});
+it("owned child pipe errors cancel instead of becoming unhandled supervisor socket errors", () => {
+  const handle = Object.assign(child(), { stdout: new EventEmitter(), stderr: new EventEmitter() }); const cancel = vi.fn();
+  lifecycle.observeOwnedChild(handle, { critical: true, isCleaning: () => false, onFailure: cancel, onData: () => {} });
+  expect(() => handle.stdout.emit("error", Error("ECONNRESET"))).not.toThrow(); expect(() => handle.stderr.emit("error", Error("ECONNRESET"))).not.toThrow(); expect(cancel).toHaveBeenCalledTimes(2);
+});
+
+it("persists a bounded nonce-bound journal by flushed temporary write before atomic rename", () => {
+  const calls: string[] = []; let content = "";
+  const io = { writeFileSync: (path: string, value: string, options: object) => { calls.push(path); content = value; expect(options).toEqual({ mode: 0o600, flush: true }); }, renameSync: (from: string, to: string) => { calls.push(`${from}->${to}`); } };
+  lifecycle.persistLedger("/tmp/axiom-website-test", "a".repeat(32), [{ role: "capture", pid: 42, state: "pending" }], io);
+  expect(JSON.parse(content)).toMatchObject({ nonce: "a".repeat(32), children: [{ role: "capture", pid: 42, state: "pending" }] });
+  expect(calls).toEqual(["/tmp/axiom-website-test/ledger.pending.json", "/tmp/axiom-website-test/ledger.pending.json->/tmp/axiom-website-test/ledger.json"]);
+});
+it("journal write failure never replaces the preceding durable ledger", () => {
+  const renameSync = vi.fn();
+  expect(() => lifecycle.persistLedger("/tmp/axiom-website-test", "a".repeat(32), [], { writeFileSync: () => { throw Error("disk"); }, renameSync })).toThrow("disk"); expect(renameSync).not.toHaveBeenCalled();
 });
