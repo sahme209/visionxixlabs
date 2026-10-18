@@ -1,0 +1,69 @@
+{
+  "sourceCommit": "8e08bcd9db5f9a1f60f329ef227b85fa39deb267",
+  "reviewedChangeCommit": "6cc017bffb199114ac5274a038d6c83919f05bbc",
+  "integratedMain": "31d7f3a9562c25e0db77a0f0d83f62d78176f8d4",
+  "date": "2026-10-18",
+  "sourceHashes": {
+    "desktop/src/views/AgentChatView.tsx": "2ab93fcc5018fc84ba4f8ecaf422b223fac5d79f53db83108925e3c3e1ef2814",
+    "lib/desktop/__tests__/agentConnectedContext.test.ts": "81c5b9105cff2eccf4b02d1ff1fa7f0b373ffbfa5a2d0ac7c5bf7cf3e2935696",
+    "lib/demo/demoScenarios.ts": "b84d45c4876b311489ed5fd95f786a86130f394d7a75669030b10a281f15f03a"
+  },
+  "acceptanceScope": "actual React component rendering and clicks with mocked client transport; local compiler and regression checks",
+  "focused": {
+    "files": 4,
+    "tests": 46,
+    "result": "passed",
+    "regressions": [
+      "saved foreign target cannot trigger branch/file reads before current catalog verification",
+      "exact clicked repository, default branch and environment sent",
+      "independent catalog failure and retry",
+      "explicit manual repository recovery remains catalog-unverified",
+      "credential changes ignore old catalog responses",
+      "explicit no-environment survives retry",
+      "selected and manual branch survives same-repository revalidation",
+      "branch changes invalidate dependent files"
+    ]
+  },
+  "gates": {
+    "wholeWebTypeScript": {
+      "result": "passed",
+      "heapMiB": 8192,
+      "incremental": false,
+      "dependencyResolution": "root-only overlay; own desktop node_modules symlink absent"
+    },
+    "defaultVitest": {
+      "result": "passed",
+      "filesPassed": 642,
+      "filesSkipped": 1,
+      "testsPassed": 6914,
+      "testsSkipped": 6,
+      "seconds": 70.69,
+      "timeoutOverride": false
+    },
+    "desktopTypeScript": "passed fresh separately",
+    "desktopReleaseAlignmentAndViteBuild": "passed",
+    "pythonCli": {
+      "result": "passed",
+      "tests": 30
+    },
+    "offlineAuthEvidence": {
+      "result": "passed",
+      "tests": 16
+    },
+    "scopedEslint": "passed",
+    "missionTracker": {
+      "result": "passed",
+      "sources": 18,
+      "rows": 2112
+    }
+  },
+  "dependencyQualification": "Existing reviewed root validation overlay; no npm install or Prisma generation. Sigstore verify4.1.2/bundle5.0.0/protobuf0.5.0 resolved. Clean exact-head CI remains the authoritative merge gate.",
+  "notVerified": [
+    "actual native UI/keyboard/installer/vault acceptance",
+    "React-to-live-HTTP repository selection",
+    "real GitHub/cloud provider access or execution",
+    "production login/database binding or recovery",
+    "commercial entitlement or live billing",
+    "production deployment or routing"
+  ]
+}

@@ -117,3 +117,29 @@ invalidate dependent file selection until the current branch catalog returns.
 Independent review reproduced both retry regressions before the fix; actual
 component tests now cover explicit empty environment, nondefault/manual branch
 continuity and dependent-file invalidation in addition to the initial flows.
+
+## Connected desktop Agent context — reviewed local acceptance (2026-10-18)
+
+The reviewed change `6cc017bf` was normally integrated with main #167
+`31d7f3a9`, producing clean validation source `8e08bcd9`. Existing connected
+repository/environment controls now support labeled search, current-context
+summary and scoped catalog retry. Saved preferences never become active before
+current catalogs validate them. Explicit manual repository recovery remains
+unverified by the catalog and still requires server authorization. Independent
+review reproduced and closed retry regressions involving an explicit empty
+environment and a selected/manual branch; branch changes clear dependent files.
+
+All 46 focused component/model/receipt/demo tests passed. On the integrated
+source, fresh whole web TypeScript (8192 MiB, incremental disabled, root-only
+dependency resolution), default Vitest (642 files / 6,914 tests; one file/six
+tests skipped), separate desktop TypeScript/release-alignment/Vite build,
+30 Python CLI tests, 16 offline auth-evidence tests, scoped lint and the
+18-source/2,112-row mission check passed. No dependency install, Prisma
+generation, Next build, server, provider operation or production change ran.
+See [the source-bound local receipt](mission/desktop-connected-context-local-acceptance.json).
+
+Component transport remains mocked. These checks do not establish native
+installer/keyboard/vault, real GitHub selection, production authentication, paid
+entitlement or provider deployment/rollback acceptance. Required clean exact-head
+CI and production compilation remain merge gates; existing production blockers
+and every other workstream remain active.
