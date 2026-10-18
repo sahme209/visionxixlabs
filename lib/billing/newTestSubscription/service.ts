@@ -1,12 +1,16 @@
+import { ANNIVERSARY_POLICY_V2, resolveAllowanceWindowV2 } from "./anniversaryWindow";
+import { originalCreateProofDigest, paidBasisForOriginalCollection, type VerifiedEnrollmentV2 } from "./fixtureAllocation";
 import { paidIdentity, paidAccess, validateEvidence, validateObservation, type CoverageObservation, type PaidInvoiceEvidence } from "./paidCoverage";
 import { matchNewTestTerms, NEW_TEST_CATALOG_VERSION, decideRecurringIntentRecovery, type FrozenRecurringIntent, type NewTestTerms } from "../newTestSubscriptionContract";
 import { hasOriginalCreateProof, isLifecycleEventType, isCollectionEventType, type SubscriptionObservation } from "./lifecycle";
 export type Scope = { organizationId: string; userId: string };
 export type OriginalCreateProof = { runtimeId: string; accountId: string; sessionId: string; outboundRequestKey: string; outboundRequestDigest: string; requestId: string; statusCode: number; observedIdempotencyKey?: string; observedAccountId?: string; apiVersion?: string };
-export type Intent = FrozenRecurringIntent & { originalCreateProof?: OriginalCreateProof; livemode: false; id: string; terms: NewTestTerms; email: string; runtimeId: string; accountId: string; sessionId: string | null; customerId: string | null; subscriptionId: string | null; revision: number };
+export type Intent = FrozenRecurringIntent & { allowanceV2?: { policy: "axiom_test_anniversary_v2"; enrollmentDigest: string }; originalCreateProof?: OriginalCreateProof; livemode: false; id: string; terms: NewTestTerms; email: string; runtimeId: string; accountId: string; sessionId: string | null; customerId: string | null; subscriptionId: string | null; revision: number };
 export type Contract = { livemode: false; planId: "pro" | "enterprise"; organizationId: string; originatingIntentId: string; catalogVersion: string; runtimeId: string; accountId: string; sessionId: string; customerId: string; subscriptionId: string; eventToken: string; status: string; seatQuantity: number };
 export interface Transaction {
   currentTime(): Promise<Date>;
+  allowance?(org: string): Promise<VerifiedEnrollmentV2 | null>;
+  allowanceCredits?(org: string): Promise<{ remainingCents: number; month: string }>;
   eligible(scope: Scope): Promise<boolean>;
   acceptedSeats(org: string): Promise<number>;
   intent(id: string): Promise<Intent | null>;
@@ -51,12 +55,16 @@ export function createNewTestSubscriptionService(options: {
 }) {
   const { store, provider } = options;
   function mode() { const m = provider.mode(); if (m.livemode !== false || !m.accountId || !store.runtimeId) deny("test_runtime_unavailable"); return m; }
+  function allowanceScope(state: VerifiedEnrollmentV2 | null | undefined, org: string, accountId: string) {
+    if (state && (state.enrollment.runtimeId !== store.runtimeId || state.enrollment.accountId !== accountId || state.enrollment.organizationId !== org || state.enrollment.policy !== ANNIVERSARY_POLICY_V2)) deny("allowance_provenance_unavailable");
+  }
   async function manager(tx: Transaction, scope: Scope) { if (!await tx.eligible(scope)) deny("test_manager_required"); }
   return {
     async prepare(scope: Scope, input: { clientIntentKey: string; planId: "pro" | "enterprise"; interval: "monthly" | "annual"; seatQuantity: number; email: string; successUrl: string; cancelUrl: string }) {
       const account = mode();
       if (!/^[A-Za-z0-9_-]{16,200}$/.test(input.clientIntentKey)) deny("intent_key_invalid");
-      const existing = await store.transaction(async tx => { await manager(tx, scope); return { intent: await tx.activeIntent(scope.organizationId), seats: await tx.acceptedSeats(scope.organizationId) }; }); // no unauthorized provider read
+      const existing = await store.transaction(async tx => { await manager(tx, scope); return { intent: await tx.activeIntent(scope.organizationId), seats: await tx.acceptedSeats(scope.organizationId), allowance: await tx.allowance?.(scope.organizationId) ?? null }; }); // no unauthorized provider read
+      allowanceScope(existing.allowance, scope.organizationId, account.accountId);
       if (existing.seats !== input.seatQuantity || existing.seats < 1) deny("seat_snapshot_changed");
       const intentId = existing.intent?.clientIntentKey === input.clientIntentKey ? existing.intent.id : options.id();
       const snapshot = await provider.price(input.planId, input.interval);
@@ -64,22 +72,27 @@ export function createNewTestSubscriptionService(options: {
       if (matched.kind !== "supported_terms") deny("test_price_mismatch");
       if (mode().accountId !== account.accountId) deny("test_runtime_changed");
       const terms = matched.terms;
+      const allowanceV2 = existing.allowance ? { policy: ANNIVERSARY_POLICY_V2, enrollmentDigest: existing.allowance.enrollment.digest } : undefined;
+      const allowanceMetadata = allowanceV2 ? { allowancePolicy: allowanceV2.policy, allowanceEnrollmentDigest: allowanceV2.enrollmentDigest } : {};
       const request = JSON.stringify({ mode: "subscription", line_items: [{ price: terms.priceId, quantity: terms.seatQuantity }], customer_email: input.email,
         success_url: input.successUrl, cancel_url: input.cancelUrl,
-        metadata: { organizationId: scope.organizationId, catalogVersion: NEW_TEST_CATALOG_VERSION, intentId },
-        subscription_data: { metadata: { organizationId: scope.organizationId, catalogVersion: NEW_TEST_CATALOG_VERSION, intentId, planId: input.planId, billingInterval: input.interval } } });
+        metadata: { organizationId: scope.organizationId, catalogVersion: NEW_TEST_CATALOG_VERSION, intentId, ...allowanceMetadata },
+        subscription_data: { metadata: { organizationId: scope.organizationId, catalogVersion: NEW_TEST_CATALOG_VERSION, intentId, planId: input.planId, billingInterval: input.interval, ...allowanceMetadata } } });
       const digest = options.digest(request);
       return store.transaction(async tx => {
         await manager(tx, scope);
         if (await tx.acceptedSeats(scope.organizationId) !== terms.seatQuantity) deny("seat_snapshot_changed");
         if (await tx.legacyBinding(scope.organizationId) || await tx.contract(scope.organizationId)) deny("existing_customer_unchanged");
+        const enrollment = await tx.allowance?.(scope.organizationId) ?? null;
+        allowanceScope(enrollment, scope.organizationId, account.accountId);
+        if ((enrollment?.enrollment.digest ?? null) !== (existing.allowance?.enrollment.digest ?? null) || (enrollment?.revision ?? null) !== (existing.allowance?.revision ?? null)) deny("allowance_snapshot_changed");
         const active = await tx.activeIntent(scope.organizationId);
         if (active) {
           if (active.clientIntentKey !== input.clientIntentKey || active.requestDigest !== digest) deny("unresolved_purchase_exists");
           return active;
         }
         const now = options.now();
-        const intent: Intent = { livemode: false, id: intentId, organizationId: scope.organizationId, clientIntentKey: input.clientIntentKey, requestDigest: digest,
+        const intent: Intent = { ...(allowanceV2 ? { allowanceV2 } : {}), livemode: false, id: intentId, organizationId: scope.organizationId, clientIntentKey: input.clientIntentKey, requestDigest: digest,
           providerIdempotencyKey: options.id(), canonicalRequest: request, createdAtMs: now, retryNotAfterMs: now + 23 * 3600000,
           state: "prepared", terms, email: input.email, runtimeId: store.runtimeId, accountId: account.accountId, sessionId: null, customerId: null, subscriptionId: null, revision: 0 };
         await tx.insertIntent(intent); return intent;
@@ -135,14 +148,22 @@ export function createNewTestSubscriptionService(options: {
     },
     async reconcile(rawBody: string, signature: string, organizationId: string) {
       const account = mode();
-      const captured = await store.transaction(async tx => ({ contract: await tx.contract(organizationId), coverageRevision: (await tx.coverage(organizationId))?.revision ?? null }));
+      const captured = await store.transaction(async tx => ({ contract: await tx.contract(organizationId), coverageRevision: (await tx.coverage(organizationId))?.revision ?? null, allowance: await tx.allowance?.(organizationId) ?? null }));
+      allowanceScope(captured.allowance, organizationId, account.accountId);
       const before = captured.contract;
+      async function currentAllowance(tx: Transaction) {
+        const state = await tx.allowance?.(organizationId) ?? null;
+        allowanceScope(state, organizationId, account.accountId);
+        if ((state?.enrollment.digest ?? null) !== (captured.allowance?.enrollment.digest ?? null) || (state?.revision ?? null) !== (captured.allowance?.revision ?? null)) deny("allowance_snapshot_changed");
+        return state;
+      }
       const observed = await provider.verifyAndRetrieve(rawBody, signature, organizationId);
       if (observed.kind === "unsupported_bound_terms") {
         if (mode().accountId !== account.accountId || !before || !observed.signedTriggerEventId || !sameBinding(observed.binding, before)
           || observed.binding.organizationId !== organizationId || observed.binding.runtimeId !== store.runtimeId || observed.binding.accountId !== account.accountId
           || observed.binding.originatingIntentId !== before.originatingIntentId || observed.binding.sessionId !== before.sessionId || observed.binding.catalogVersion !== NEW_TEST_CATALOG_VERSION || observed.binding.planId !== before.planId || observed.binding.livemode !== false) deny("signed_binding_mismatch");
         return store.transaction(async tx => {
+          await currentAllowance(tx);
           const current = await tx.contract(organizationId);
           if (!current || !sameBinding(current, before)) deny("subscription_snapshot_changed");
           const intent = await tx.intent(current.originatingIntentId);
@@ -166,6 +187,7 @@ export function createNewTestSubscriptionService(options: {
       const currentMode = mode();
       if (currentMode.accountId !== account.accountId) deny("test_runtime_changed");
       return store.transaction(async tx => {
+        const allowance = await currentAllowance(tx);
         const historicalReceipt = await tx.eventExists(observed.eventId);
         const current = await tx.contract(organizationId);
         if (!sameBinding(current, before)) deny("subscription_snapshot_changed");
@@ -192,6 +214,15 @@ export function createNewTestSubscriptionService(options: {
         if (observed.currentPeriodEndsAt !== observed.coverage.currentPeriodEnd) deny("subscription_snapshot_invalid");
         const prior = current ? await tx.coverage(organizationId) : null;
         if ((prior?.revision ?? null) !== captured.coverageRevision) deny("coverage_snapshot_changed");
+        if (intent.allowanceV2) {
+          if (!allowance || intent.allowanceV2.policy !== ANNIVERSARY_POLICY_V2 || allowance.enrollment.digest !== intent.allowanceV2.enrollmentDigest || current && !allowance.paidBasis) deny("allowance_provenance_unavailable");
+          if (observed.coverage.collection.kind === "collected") {
+            const e = observed.coverage.collection.evidence;
+            if (e.version !== 2 || e.enrollmentDigest !== allowance.enrollment.digest || e.originalCreateProofDigest !== originalCreateProofDigest(intent)
+              || allowance.paidBasis && e.originalAnchor !== allowance.paidBasis.anchor) deny("allowance_provenance_unavailable");
+            if (!current) paidBasisForOriginalCollection(allowance.enrollment, intent, e);
+          }
+        } else if (allowance || observed.coverage.collection.kind === "collected" && observed.coverage.collection.evidence.version !== 1) deny("allowance_provenance_unavailable");
         if (current) { if (!prior) deny("paid_coverage_unavailable"); validateEvidence(identity, prior.originalEvidence); }
         else if (observed.coverage.collection.kind !== "collected") deny("initial_collection_required");
         if (historicalReceipt) {
@@ -200,7 +231,13 @@ export function createNewTestSubscriptionService(options: {
             || observed.coverage.currentPeriodStart !== prior.observation.currentPeriodStart || observed.coverage.currentPeriodEnd !== prior.observation.currentPeriodEnd;
           if (!deprivilege && observed.status === "active") {
             const now = await tx.currentTime();
-            try { paidAccess(identity, observed.status, observed.eventId, observed.coverage, true, now); }
+            try {
+              if (allowance?.paidBasis) {
+                const collection = observed.coverage.collection;
+                const result = resolveAllowanceWindowV2(allowance.paidBasis, collection.kind === "collected" ? { ...collection.evidence, kind: "collected", version: 2, policy: ANNIVERSARY_POLICY_V2, status: observed.status, basisDigest: allowance.paidBasis.digest, evidenceDigest: collection.evidence.digest } : { kind: "unavailable" }, now);
+                if (result.kind !== "available") deny("paid_coverage_unavailable");
+              } else paidAccess(identity, observed.status, observed.eventId, observed.coverage, true, now);
+            }
             catch { deprivilege = true; }
           }
           if (deprivilege) await tx.invalidateCoverage(current, observed.eventId, "replay_unavailable");
@@ -216,6 +253,13 @@ export function createNewTestSubscriptionService(options: {
       const account = mode();
       return store.transaction(async tx => {
         await manager(tx, scope);
+        const enrollment = await tx.allowance?.(scope.organizationId);
+        if (enrollment) {
+          allowanceScope(enrollment, scope.organizationId, account.accountId);
+          if (enrollment.enrollment.runtimeId !== store.runtimeId || enrollment.enrollment.accountId !== account.accountId || !tx.allowanceCredits) deny("allowance_provenance_unavailable");
+          const result = await tx.allowanceCredits(scope.organizationId);
+          return { kind: "isolated_test_preview" as const, ...result, operationalPermit: false as const, invoiceSubmissionEnabled: false as const };
+        }
         const contract = await tx.contract(scope.organizationId);
         if (!contract || contract.catalogVersion !== NEW_TEST_CATALOG_VERSION || contract.livemode !== false || contract.runtimeId !== store.runtimeId || contract.accountId !== account.accountId) deny("new_test_contract_unavailable");
         const intent = await tx.intent(contract.originatingIntentId);

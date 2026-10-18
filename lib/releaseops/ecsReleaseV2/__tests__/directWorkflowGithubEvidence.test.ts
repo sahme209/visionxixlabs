@@ -1,6 +1,6 @@
 import { createHash } from "node:crypto";
 import { afterEach, expect, it, vi } from "vitest";
-import { createGithubBuildEvidenceReader, type GithubBuildRequest, type GithubBuildSnapshot } from "../githubBuildEvidence";
+import { createGithubBuildEvidenceReader, githubBuildSnapshotDigest, type GithubBuildRequest, type GithubBuildSnapshot } from "../githubBuildEvidence";
 import { directBinding, directBytes, directNow, directProfile, directWorkflow } from "./fixtures/directWorkflowFixture";
 const { organizationId, sourceRef, ...expected } = directBinding;
 const scope = { organizationId, userId: "direct-fixture-admin" };
@@ -50,6 +50,7 @@ it.each([undefined, []])("composes actual bounded reader and genuine crypto with
   const f = fixture(); f.run.referenced_workflows = references;
   const result = await f.reader.inspectBuild(scope, request);
   expect(result).toMatchObject({ kind: "verified_build_provenance", repositoryId: directBinding.repositoryId, subjects: directBinding.subjects });
+  expect(result).toHaveProperty("checkedBinding", { schema: "axiom.github.checked-build.v1", sourceRef: directBinding.sourceRef, workflowPath: directBinding.workflowPath, contextDigest: githubBuildSnapshotDigest(f.state) });
   expect(result).not.toHaveProperty("facts"); expect(result).not.toHaveProperty("executionEnabled");
   expect(f.fetched).toHaveLength(9); expect(f.fetched.filter(url => url === bundleUrl)).toHaveLength(1);
   expect(f.fetched.filter(url => url.endsWith("/attempts/1"))).toHaveLength(2);
@@ -70,8 +71,9 @@ it.each(["repository", "source", "ref", "workflow", "attempt", "event", "blob"])
   if (kind === "blob") f.workflow.sha = "f".repeat(40);
   expect(await f.reader.inspectBuild(scope, request)).toMatchObject({ kind: "unavailable" }); expect(f.fetched).not.toContain(bundleUrl);
 });
-it.each(["membership", "repository", "installation", "policy", "branchPolicy", "environment", "profile", "downloadPolicy", "runAttempt"])("withholds direct evidence after %s changes during simulated bundle IO", async kind => {
+it.each(["providerScopes", "membership", "repository", "installation", "policy", "branchPolicy", "environment", "profile", "downloadPolicy", "runAttempt"])("withholds direct evidence after %s changes during simulated bundle IO", async kind => {
   const f = fixture(); f.onRead(url => { if (url !== bundleUrl) return;
+    if (kind === "providerScopes") f.state.membership.providerScopes = ["gcp"];
     if (kind === "membership") f.state.membership.role = "read_only";
     if (kind === "repository") f.state.repository.updatedAt = "2026-10-16T01:00:00Z";
     if (kind === "installation") f.state.installation.revokedAt = date;
@@ -105,4 +107,17 @@ it("cancels an unresponsive direct credential resolver before remote reads", asy
   const pending = createGithubBuildEvidenceReader({ ...f.options, token: async () => { started(); return new Promise<{ ok: true; token: string }>(() => {}); } }).inspectBuild(scope, request);
   await waiting; await vi.advanceTimersByTimeAsync(30_001);
   expect(await pending).toMatchObject({ kind: "unavailable" }); expect(f.fetcher).not.toHaveBeenCalled();
+});
+
+it("honors parent cancellation before credential or provider IO", async () => {
+  const f = fixture(), parent = new AbortController(); parent.abort();
+  expect(await f.reader.inspectBuild(scope, request, parent.signal)).toMatchObject({ kind: "unavailable" });
+  expect(f.options.token).not.toHaveBeenCalled(); expect(f.fetcher).not.toHaveBeenCalled();
+});
+
+it("preserves existing reader acceptance for injected snapshots lacking additive V1 context metadata", async () => {
+  const f = fixture();
+  expect(f.state.membership.providerScopes).toBeUndefined(); expect(f.state.environment.tier).toBeUndefined();
+  expect(f.state.installation.accountType).toBeUndefined(); expect(f.state.installation.repositorySelection).toBeUndefined();
+  expect(await f.reader.inspectBuild(scope, request)).toMatchObject({ kind: "verified_build_provenance", checkedBinding: { schema: "axiom.github.checked-build.v1" } });
 });

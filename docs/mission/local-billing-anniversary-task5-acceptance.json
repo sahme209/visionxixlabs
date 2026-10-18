@@ -1,0 +1,1241 @@
+{
+  "schemaVersion": 1,
+  "kind": "owned_new_test_anniversary_v2_acceptance",
+  "sourceCommit": "dc1814f54cdf366fa8006370d0f24dc9036507c7",
+  "sourceCleanBeforeAfter": true,
+  "lastIntegratedMain": "10882dc2",
+  "sourceHashBinding": {
+    "productFiles": [
+      {
+        "path": "app/api/ai/generate/route.ts",
+        "sha256": "765eeb50e995e6b6c896231a0f518d4c3779fcc53204c50bc519144f62d31569",
+        "unchangedFromProductBase": true
+      },
+      {
+        "path": "lib/billing/aiCreditReservation.ts",
+        "sha256": "5107e0c7039aa66d08117985507549a681df3ee39a987c6c5f053fb5f9cbf69c",
+        "unchangedFromProductBase": true
+      },
+      {
+        "path": "lib/billing/currentAIAllowance.ts",
+        "sha256": "770cea486a3a39aee2fd5d51dfdc7274d4fd93af42f7321193a2ba9796ce333a",
+        "unchangedFromProductBase": true
+      },
+      {
+        "path": "lib/billing/isolatedApplication/plan.ts",
+        "sha256": "643f5afd9b7971c5f6a23446fda981a021804028e5f9fb2d8d675be4163efdf1",
+        "unchangedFromProductBase": true
+      },
+      {
+        "path": "lib/billing/newTestSubscription/allocationPlan.ts",
+        "sha256": "bbf78b1e9b0f5684086dbd3a7a717af502025ef44916c75edf445ee87e3a207d",
+        "unchangedFromProductBase": false,
+        "authorizedDifference": "Use existing complete predicate in actual lock statement; all16 args and later postlock/final fences unchanged.",
+        "productBaseSha256": "6d63702a2bbfdbfa5d07a5431ab636ab6a375bb1373a11dff3aa0fcb78325897"
+      },
+      {
+        "path": "lib/billing/newTestSubscription/allocationV2.ts",
+        "sha256": "07483577291e15d7b23eb505baa7e1653d13b76e618bfb1646040d3a5a730a2d",
+        "unchangedFromProductBase": true
+      },
+      {
+        "path": "lib/billing/newTestSubscription/anniversaryWindow.ts",
+        "sha256": "9996a150880c2f91e1618f81382362a99132f991f7d398880eb0e6ded431b298",
+        "unchangedFromProductBase": true
+      },
+      {
+        "path": "lib/billing/newTestSubscription/fixtureAllocation.ts",
+        "sha256": "226a04f6431bf0cc748a5026d808161aeabb2b0158b3a9540d40909c22d78c74",
+        "unchangedFromProductBase": false,
+        "productBaseSha256": "4b00376e5a20ba6a13820e34a04c1c52fd7777d3aa01d40719527ac8b9136a53",
+        "authorizedDifference": "Parenthesize existing SQL CASE expression in fixture DDL; no predicate/amount/raise/trigger change."
+      },
+      {
+        "path": "lib/billing/newTestSubscription/fixtureUsageGuards.ts",
+        "sha256": "d52e698765f732bac7812453451fced9e257411d3020db53e4699188e2def5b5",
+        "unchangedFromProductBase": true
+      },
+      {
+        "path": "lib/billing/newTestSubscription/paidCoverage.ts",
+        "sha256": "a19ae9ba35aa7de6a4dd7d96137a27c6f73451c1396c3c48049f1905795807a9",
+        "unchangedFromProductBase": true
+      },
+      {
+        "path": "lib/billing/newTestSubscription/paidPlan.ts",
+        "sha256": "e6cb89868ca3ce0eaf6198da3e6426cb84e3295327f580392aa1da9133288d83",
+        "unchangedFromProductBase": true
+      },
+      {
+        "path": "lib/billing/newTestSubscription/postgresFixtureStore.ts",
+        "sha256": "ad3425428f9b41598dfd9add76963a80c6311a25f1f65387811f2ef874568ebb",
+        "unchangedFromProductBase": true
+      },
+      {
+        "path": "lib/billing/newTestSubscription/service.ts",
+        "sha256": "da116e4690c17319eb811903de2381fdda9685a5d7a49efcea49fdb7236ed354",
+        "unchangedFromProductBase": true
+      },
+      {
+        "path": "lib/billing/newTestSubscription/stripePaidCoverage.ts",
+        "sha256": "8385ddaaf42f5d42e8f15a78e4f7084a611217a53f998f414a08bb7664908193",
+        "unchangedFromProductBase": true
+      },
+      {
+        "path": "lib/billing/newTestSubscription/stripeTestProvider.ts",
+        "sha256": "7081360821a265f72c1520b1e4259317b6974f9d6a51eb873ca27e3566a9cbdd",
+        "unchangedFromProductBase": true
+      },
+      {
+        "path": "lib/billing/newTestSubscription/usageAllocationIO.ts",
+        "sha256": "aa8a93877533d73ab3369c56b6ad2ba3447319ce10fe5abbd067b7bcddfa8928",
+        "unchangedFromProductBase": true
+      },
+      {
+        "path": "lib/billing/newTestSubscription/verifiedContract.ts",
+        "sha256": "f9238dff5852cf45945a8319aa2e1cb00e0d5011923d6bf6b820915c43a08675",
+        "unchangedFromProductBase": true
+      },
+      {
+        "path": "lib/billing/planRegistry.ts",
+        "sha256": "cbf68c8187937e358314506fec8b30a7c1dfff43073b9def6bc1211abe6c8171",
+        "unchangedFromProductBase": true
+      },
+      {
+        "path": "lib/billing/reconcileGatewayUsage.ts",
+        "sha256": "65efff13fdf74685a843489f85361d75ebce21944a1071be1c2f5244eacb4568",
+        "unchangedFromProductBase": true
+      },
+      {
+        "path": "lib/billing/recordAIUsageEvent.ts",
+        "sha256": "a70f6c3969a90a0af967f6e991495799bd4dbba0562740d1d53a9edb6b12549a",
+        "unchangedFromProductBase": true
+      },
+      {
+        "path": "lib/demo/demoScenarios.ts",
+        "sha256": "7673c06c13d14fa54bf3cbfb15e1569763915be733f808a1a463987113045e1a",
+        "unchangedFromProductBase": true
+      }
+    ],
+    "protectedFiles": [
+      {
+        "path": "prisma/schema.prisma",
+        "sha256": "3abed3e94c18cd2554f18b847d27ab505e3e8fa9fde968a0a7c72fdb6e787c9c",
+        "unchangedFromProductBase": true
+      },
+      {
+        "path": "package-lock.json",
+        "sha256": "4923306fbdd3e436cbb2466d611716d94133797e64fb29298e4a36298c9a2049",
+        "unchangedFromProductBase": true
+      },
+      {
+        "path": "lib/billing/aiCreditFulfillment.ts",
+        "sha256": "e2ea638f918f26e17f7a308ec421f517c0cc840764c4b648b38b783e10ebeb36",
+        "unchangedFromProductBase": true
+      },
+      {
+        "path": "lib/billing/isolatedApplication/runtime.ts",
+        "sha256": "57496e9ecf84351a32211450f7d19ec062779bec9c328d1cbdeee9b1bf4a59a8",
+        "unchangedFromProductBase": true
+      },
+      {
+        "path": "lib/billing/isolatedApplication/scope.ts",
+        "sha256": "bb27edac701bfb9c7812a77aeb17266b1effa7c95ab472f0b70c5d4d2a72d539",
+        "unchangedFromProductBase": true
+      },
+      {
+        "path": "app/api/billing/checkout-session/route.ts",
+        "sha256": "43f7a66dc68bf6cf1584473110aa85f9aeac5587bdb3c793265bd02f7ea68674",
+        "unchangedFromProductBase": true
+      },
+      {
+        "path": "app/api/billing/stripe-webhook/route.ts",
+        "sha256": "fc0832c7df1659cbe01e72386bad207d766e55406ac000a5cfeed567ffe7052b",
+        "unchangedFromProductBase": true
+      }
+    ],
+    "fixtureFiles": [
+      {
+        "path": "lib/billing/__tests__/fixtures/newTestAnniversaryFixture.ts",
+        "sha256": "376b82d82cde877154c338817a328890449ccb9686c4bca6d8eea4cdf4b259ed"
+      },
+      {
+        "path": "lib/billing/__tests__/fixtures/newTestAnniversaryAcceptance.ts",
+        "sha256": "896d04936d133dbff4789bfba3ca64a8d83c89cc3e9a12d776c16ea9df99e575"
+      },
+      {
+        "path": "lib/billing/__tests__/fixtures/newTestAnniversaryHttp.ts",
+        "sha256": "b9de0c22ba1c3abfe37d3172afb4b37163d728ef8ee7eb110c69815be4e4c68b"
+      },
+      {
+        "path": "lib/billing/__tests__/fixtures/newTestChildEnvironment.ts",
+        "sha256": "3bec9efa59f74176884354ed133307df37c374b923b266d95a83c512e9ac82b0"
+      },
+      {
+        "path": "lib/billing/__tests__/newTestChildEnvironment.test.ts",
+        "sha256": "4b2b6425a3d82a0e37fa1306d5e7a85572b9501c88f9d2c4df2617df7ccc5fb2"
+      },
+      {
+        "path": "lib/billing/__tests__/newTestSubscriptionService.postgres.test.ts",
+        "sha256": "f5198ea494b6960da561262340fc82311acca09e03258ad5a5f39a61500c524a"
+      },
+      {
+        "path": "lib/billing/__tests__/anniversaryWindow.test.ts",
+        "sha256": "7422745db63ea370d6f92dc29100262fa28d1497278a60553d0e64baf50024ff"
+      },
+      {
+        "path": "lib/billing/__tests__/newTestAllocationStore.test.ts",
+        "sha256": "5224d86264aea09ab07527eb5d1a2594d0a9ad03ad243493da43b2ceea3f4c99"
+      },
+      {
+        "path": "lib/billing/__tests__/newTestAllocationAdmission.test.ts",
+        "sha256": "e92468966898e07afc392a1c20f22e7c94548acab91b145f8fba918935e3b93e"
+      }
+    ]
+  },
+  "runtimeGraph": {
+    "sourceCommit": "dc1814f54cdf366fa8006370d0f24dc9036507c7",
+    "scope": "Conservative source superset: tracked local module paths found in actual owned Next dev output plus complete billing/auth/provider/API source trees and explicit config/lock/schema/guard seeds. Compiled module presence is not a statement-level execution trace.",
+    "compiledLocalModulePaths": [
+      "app/api/ai/generate/route.ts",
+      "app/api/auth/[...nextauth]/route.ts",
+      "app/control/layout.tsx",
+      "app/control/usage-billing/page.tsx",
+      "app/globals.css",
+      "app/layout.tsx",
+      "app/not-found.tsx",
+      "components/AIChatWidget.tsx",
+      "components/CommandPalette.tsx",
+      "components/Footer.tsx",
+      "components/JsonLd.tsx",
+      "components/Navigation.tsx",
+      "components/PrivacyConsent.tsx",
+      "components/Providers.tsx",
+      "components/a11y/RouteAnnouncer.tsx",
+      "components/auth/AccountBillingPanel.tsx",
+      "components/motion/ScrollProgress.tsx",
+      "lib/ai/AIFallbackHandler.ts",
+      "lib/ai/AIModelRegistry.ts",
+      "lib/ai/AIProvider.ts",
+      "lib/ai/AIProviderManager.ts",
+      "lib/ai/AIUsageLogger.ts",
+      "lib/ai/gatewayModelCatalog.ts",
+      "lib/ai/providers/VercelGatewayProvider.ts",
+      "lib/ai/workspaceProviderPolicy.ts",
+      "lib/api/apiEnvelope.ts",
+      "lib/api/correlation.ts",
+      "lib/api/dtoMappers.ts",
+      "lib/api/index.ts",
+      "lib/api/redaction.ts",
+      "lib/api/safetyContracts.ts",
+      "lib/api/sourceMode.ts",
+      "lib/audit/auditStore.prisma.ts",
+      "lib/audit/secureAudit.ts",
+      "lib/auth.ts",
+      "lib/auth/currentContext.ts",
+      "lib/auth/ensurePersonalWorkspaceMembership.ts",
+      "lib/auth/platformAdmin.ts",
+      "lib/auth/workspaceId.ts",
+      "lib/axiom/agent/rbacEngine.ts",
+      "lib/billing/aiBillingMargin.ts",
+      "lib/billing/aiCreditReservation.ts",
+      "lib/billing/applyAddOnsToEntitlements.ts",
+      "lib/billing/checkWorkspaceAICredits.ts",
+      "lib/billing/computeInvocationCost.ts",
+      "lib/billing/currentAIAllowance.ts",
+      "lib/billing/deploymentQuota.ts",
+      "lib/billing/effectiveEntitlements.ts",
+      "lib/billing/ensureProviderRate.ts",
+      "lib/billing/isolatedApplication/databaseTarget.ts",
+      "lib/billing/isolatedApplication/plan.ts",
+      "lib/billing/isolatedApplication/runtime.ts",
+      "lib/billing/isolatedApplication/scope.ts",
+      "lib/billing/newTestSubscription/allocationPlan.ts",
+      "lib/billing/newTestSubscription/allocationV2.ts",
+      "lib/billing/newTestSubscription/anniversaryWindow.ts",
+      "lib/billing/newTestSubscription/chargeSource.ts",
+      "lib/billing/newTestSubscription/fixtureAllocation.ts",
+      "lib/billing/newTestSubscription/fixtureCoverage.ts",
+      "lib/billing/newTestSubscription/fixtureUsageGuards.ts",
+      "lib/billing/newTestSubscription/lifecycle.ts",
+      "lib/billing/newTestSubscription/paidCoverage.ts",
+      "lib/billing/newTestSubscription/paidPlan.ts",
+      "lib/billing/newTestSubscription/usageAllocationIO.ts",
+      "lib/billing/newTestSubscription/verifiedContract.ts",
+      "lib/billing/newTestSubscriptionContract.ts",
+      "lib/billing/organizationSeatClaim.ts",
+      "lib/billing/planRegistry.ts",
+      "lib/billing/preflightAICreditCheck.ts",
+      "lib/billing/providerRateSeeds.ts",
+      "lib/billing/publicPlanCatalog.ts",
+      "lib/billing/recordAIUsageEvent.ts",
+      "lib/billing/stripeHelper.ts",
+      "lib/billing/tenantBillingStore.ts",
+      "lib/billing/tierCatalog.ts",
+      "lib/constants/company.ts",
+      "lib/contexts/AxiomPanelContext.tsx",
+      "lib/db.ts",
+      "lib/desktop/desktopSession.ts",
+      "lib/desktop/desktopSessionStore.prisma.ts",
+      "lib/domain/ids.ts",
+      "lib/errors/axiomErrors.ts",
+      "lib/identity/decodeIdTokenClaims.ts",
+      "lib/identity/enterpriseIdentityContract.ts",
+      "lib/identity/identityProviderResponder.ts",
+      "lib/identity/ssoSignInGate.ts",
+      "lib/memory/memoryStore.prisma.ts",
+      "lib/memory/operationalMemory.ts",
+      "lib/observability/events.ts",
+      "lib/observability/logger.ts",
+      "lib/platform/storeFactory.ts",
+      "lib/privacy/browserConsent.ts",
+      "lib/rateLimit.ts",
+      "lib/releaseops/releaseListResponder.ts",
+      "lib/releaseops/releaseRepo.ts",
+      "lib/security/auditLog.ts",
+      "lib/security/redaction.ts",
+      "lib/security/secretRedaction.ts",
+      "lib/security/tenantIsolation.ts",
+      "lib/seo.ts",
+      "lib/workforce/domains/inviteLinks.ts",
+      "styles/axiom-theme.css"
+    ],
+    "nextBundleCountScanned": 61,
+    "runtimeScopeHashes": [
+      {
+        "path": "app/api/ai/generate/route.ts",
+        "sha256": "765eeb50e995e6b6c896231a0f518d4c3779fcc53204c50bc519144f62d31569"
+      },
+      {
+        "path": "app/api/auth/[...nextauth]/route.ts",
+        "sha256": "f2950ed375ed9221d9ad7aeadbb1c7c4ee5d1aadcc5325c68326a6a61cbf71e0"
+      },
+      {
+        "path": "app/api/auth/resend-verification/route.ts",
+        "sha256": "b3f0c7a890472e6275cb98e2ce5f64dc17caff8c8eb8d2343912b28018f4eec0"
+      },
+      {
+        "path": "app/api/auth/signup/route.ts",
+        "sha256": "a689a3f9ac092e5f4f6b37cf7510b8a2eb145e1c66dfd6d45c881eb4814a6d0b"
+      },
+      {
+        "path": "app/api/auth/verify-email/route.ts",
+        "sha256": "b9cefbf383a69dc705f0986952714553fe6c98f81e8b64ad310febf682966bd7"
+      },
+      {
+        "path": "app/api/axiom/chat/route.ts",
+        "sha256": "0c9c90c356cf8cf65d8dde9f40eebf361f6728cba490c6948dfe65156cc660ce"
+      },
+      {
+        "path": "app/api/billing/add-ons/purchase/route.ts",
+        "sha256": "9c87d13603965dfcda3715c2c0c4449ce9b417abaf6c9976d93275d130463029"
+      },
+      {
+        "path": "app/api/billing/add-ons/route.ts",
+        "sha256": "b4cbe20a1748a920169515fb6f4eb7193b56b7c3fe71972744663776e2e012ed"
+      },
+      {
+        "path": "app/api/billing/anomaly-explainer/route.ts",
+        "sha256": "6de8c4fb8e5f4a73d5a7eaa1ffc2940f7a89149be3f7ae2f56cba084a8430a45"
+      },
+      {
+        "path": "app/api/billing/checkout-session/route.ts",
+        "sha256": "43f7a66dc68bf6cf1584473110aa85f9aeac5587bdb3c793265bd02f7ea68674"
+      },
+      {
+        "path": "app/api/billing/create-checkout-session/route.ts",
+        "sha256": "44486b488c8583989f48f8d3ae528a9ab652a289eca3d9936ecb157da245d7c5"
+      },
+      {
+        "path": "app/api/billing/create-portal-session/route.ts",
+        "sha256": "6c60ea1182e63557025e4a8e3d77c6288e435749b9a1978ec5c8f4f8fa62b6cc"
+      },
+      {
+        "path": "app/api/billing/plan/route.ts",
+        "sha256": "5b956b38bf03af60ad8a47347833adbe1d15abca884c490560ae6a9eb76c7bda"
+      },
+      {
+        "path": "app/api/billing/portal-session/route.ts",
+        "sha256": "b643bf0ab44a68898a731713f662b1d8f81e75024952a551a60f83f519e293f7"
+      },
+      {
+        "path": "app/api/billing/route.ts",
+        "sha256": "e1692eee5d98aa16fe78f83976a7d1d834ee0d4d4b70ca56ed0671913513bdc9"
+      },
+      {
+        "path": "app/api/billing/stripe-webhook/route.ts",
+        "sha256": "fc0832c7df1659cbe01e72386bad207d766e55406ac000a5cfeed567ffe7052b"
+      },
+      {
+        "path": "app/api/cron/settle-ai-usage/route.ts",
+        "sha256": "36c9fddc22c5553c58e16f0fc241057ee5b8b88b4439e46285abd9e91d5ccd01"
+      },
+      {
+        "path": "app/api/support/badge/[purchaseId]/route.ts",
+        "sha256": "e309fdcfa224ef9eb37757aba5f08790041b27c1d8da1fe9817d174853073fd2"
+      },
+      {
+        "path": "app/api/support/checkout-session/route.ts",
+        "sha256": "c02158f3f15d9515cb5887af17c13ed5f08a1aa1b92f1ecdab7796b1206e667d"
+      },
+      {
+        "path": "app/api/support/sponsorship/route.ts",
+        "sha256": "39a01203b22ab97c52111455eb842276f35e5a12e8c1107c16376ecb92233c06"
+      },
+      {
+        "path": "app/api/support/stripe-webhook/route.ts",
+        "sha256": "add56174205f8bf502e8750f9530d173c3b20b7ad3ac0212b2027b3e66aecc86"
+      },
+      {
+        "path": "app/api/webhooks/stripe/route.ts",
+        "sha256": "b745690b1a1162a4c56e46883f05b1ddc9cea271b27270287253f89287bdca67"
+      },
+      {
+        "path": "app/control/layout.tsx",
+        "sha256": "7d4292e920bad33917659a2cde10554cd338e2ea503852181a8ed925564f9166"
+      },
+      {
+        "path": "app/control/usage-billing/page.tsx",
+        "sha256": "f53505a411e3c6d481e6f86439bb9295a91ff343190c4a7762c591a712ffc3cb"
+      },
+      {
+        "path": "app/globals.css",
+        "sha256": "a62bcfe2a7de7b8029c5a45e4633cb1c36f3e2d392bd9567bd3a8f8ed97ae209"
+      },
+      {
+        "path": "app/layout.tsx",
+        "sha256": "6bd3d836f782581bbd1a2745a0947c7f95c43b47ca81ec5edd021dcda574cac7"
+      },
+      {
+        "path": "app/not-found.tsx",
+        "sha256": "d023497b2589044953ca8df4ab7ecd57f1a2a3f4a6daa823ed95afb58de9071e"
+      },
+      {
+        "path": "components/AIChatWidget.tsx",
+        "sha256": "fc257850b853b4419b194990c84ca9b201f73b30ece567e07856142e464842e0"
+      },
+      {
+        "path": "components/CommandPalette.tsx",
+        "sha256": "0bddbe4336f52ddcb1c71a0e037a77e2cdd4bd4a6ddee901e3b5eb44b352535c"
+      },
+      {
+        "path": "components/Footer.tsx",
+        "sha256": "ca52ad4372782c6281ecc578a87fa85cc56d84c81d7652e5a62ceb5c22bf2718"
+      },
+      {
+        "path": "components/JsonLd.tsx",
+        "sha256": "db9df388ab5637fec09b304a5bfaddbad4855fb3082f1a3cb6d5e92e24737133"
+      },
+      {
+        "path": "components/Navigation.tsx",
+        "sha256": "4e81da6c0bb718bb5ee5f132ae39af0c523d423c5444d01410472763b5c3f58c"
+      },
+      {
+        "path": "components/PrivacyConsent.tsx",
+        "sha256": "22696a967967625ff05ec4c2be70c1b3f0f4e06be0d9d36f50fd46da09fc9c02"
+      },
+      {
+        "path": "components/Providers.tsx",
+        "sha256": "cb71ee614762bea0e2a45416d193a9b8fa37f50d6a2a31641985b77a05d52508"
+      },
+      {
+        "path": "components/a11y/RouteAnnouncer.tsx",
+        "sha256": "2f6a32aed33efa1ea5c6c29c4199ce3dcfa22905c9510f7cd6cd0d4c9c877d15"
+      },
+      {
+        "path": "components/auth/AccountBillingPanel.tsx",
+        "sha256": "c0cfae1323fc841cb69c3e4e4358275324e70a53256bd1aeaa0a0bf06e633d37"
+      },
+      {
+        "path": "components/motion/ScrollProgress.tsx",
+        "sha256": "c4421b6e9c83c4748e7beee677820d9197dc96f165adce25203cb29046254b14"
+      },
+      {
+        "path": "lib/ai/AIFallbackHandler.ts",
+        "sha256": "afdeab0e8088c83c0c05425a378333ae4348dfb8173f2f379867d78ad742e922"
+      },
+      {
+        "path": "lib/ai/AIModelRegistry.ts",
+        "sha256": "fe1addf77024cd62a9e8dea1878fcbe1d928be5e6c15b6406fe8763da481a79d"
+      },
+      {
+        "path": "lib/ai/AIProvider.ts",
+        "sha256": "b4f3072ee260f37521b743370f778608c9c95377d8a4280d42979a8d564dfc17"
+      },
+      {
+        "path": "lib/ai/AIProviderManager.ts",
+        "sha256": "1552a716202b98bbceec0fe0634126b32087c2bbb182bb6aa6b80d3ec6ec8fbd"
+      },
+      {
+        "path": "lib/ai/AIUsageLogger.ts",
+        "sha256": "977b306bce917783e28c889d8093389f124d8af0b8df58dd7089e634757362d0"
+      },
+      {
+        "path": "lib/ai/__smoke__/liveSmoke.smoke.ts",
+        "sha256": "41d722fa1e03d0059f0ddfc9faafd0955d6cfe4a7c848b61d95ca9b478c7de71"
+      },
+      {
+        "path": "lib/ai/aiExplainer.ts",
+        "sha256": "aea1207c79c5f3ed908bc3a2ccf191a912552d2d9ed63b93c637c9ff570cbeed"
+      },
+      {
+        "path": "lib/ai/aiFetch.ts",
+        "sha256": "13e019a0794439dcc748991b3d587cbee867086e6a46d759ee34a9347f93267e"
+      },
+      {
+        "path": "lib/ai/aiTokenBudget.ts",
+        "sha256": "f48c00c8ef17b90c3226204205b55f69b3ab1b8efd488c957f2841b7efc75e65"
+      },
+      {
+        "path": "lib/ai/desktopProviderAvailability.ts",
+        "sha256": "98aff8011792752c09fe4178d0110fc1b8cf41008245299c69c2b7d375efed35"
+      },
+      {
+        "path": "lib/ai/directProviderCall.ts",
+        "sha256": "dcc4a7ba22b0acacaa951250489a7d539e807da1ad986745d1ebd174cb486739"
+      },
+      {
+        "path": "lib/ai/gatewayModelCatalog.ts",
+        "sha256": "c07cac9469b774b29731163d7290e564c2d6f15598a13cd6b68f3920d396166b"
+      },
+      {
+        "path": "lib/ai/instrumentation.ts",
+        "sha256": "2c597e9f5025bcb6c9ee42e8df36cdbbc32bedeea9d1051202f2803ecf75ca01"
+      },
+      {
+        "path": "lib/ai/localModelInvocation.ts",
+        "sha256": "2e13a13e79990f1d7ee82aa921ff91275c9b0242bad8cfcb760677717bafa257"
+      },
+      {
+        "path": "lib/ai/orchestrator.ts",
+        "sha256": "54b1aaa850c8bd6a6a46a9d461b05f1f61ca0e5fdc54982b3bb763bf6f4967da"
+      },
+      {
+        "path": "lib/ai/pickCostAwareModel.ts",
+        "sha256": "6d542e4de9cd9e40b058952afc53487d1fde55ce8dd0adc63667d1f6349ed3b2"
+      },
+      {
+        "path": "lib/ai/provider.ts",
+        "sha256": "4c8619382ea482307374333d864ec1ae12de22f942acdb65580d772c47f2cef4"
+      },
+      {
+        "path": "lib/ai/providerRouter.ts",
+        "sha256": "5d962744ea6386a58b21632190467a74f81490a4b62801afb7f93c87b35ae1c3"
+      },
+      {
+        "path": "lib/ai/providers/AnthropicProvider.ts",
+        "sha256": "5bc4b19511e4dba3d890d86ee4e3826e0c0bcd0eb4defebb8c02918f8596ef71"
+      },
+      {
+        "path": "lib/ai/providers/CloudflareAIProvider.ts",
+        "sha256": "1a9bf0def149521d0df9e0c860230e8c4249d4784f1b1400cefd2712df96d9e5"
+      },
+      {
+        "path": "lib/ai/providers/GeminiProvider.ts",
+        "sha256": "c26db9d2a88f1a605ebd9740105f953eb28a673f198640547b7fc3c3b709a313"
+      },
+      {
+        "path": "lib/ai/providers/GitHubModelsProvider.ts",
+        "sha256": "d17874cfe6a344cc2b1b15d873fe50bd01de51f9de31e43aacbce2b72d748309"
+      },
+      {
+        "path": "lib/ai/providers/GroqProvider.ts",
+        "sha256": "b2e5c1d0e7bd568f29e75089dff28ec6d2528196ce5d976b0e5191209e758b0b"
+      },
+      {
+        "path": "lib/ai/providers/HuggingFaceProvider.ts",
+        "sha256": "7b4fcd1a4570627f1c17b809f0ecb236f7b3621e379b759073ecb3a667d1d85d"
+      },
+      {
+        "path": "lib/ai/providers/LMStudioProvider.ts",
+        "sha256": "68145f8d36c10ff5a915b2b2e4578cbaaafa847c66a3ecbdec742b9202756dab"
+      },
+      {
+        "path": "lib/ai/providers/MockAIProvider.ts",
+        "sha256": "094e9173a01420aeaa6add9683308d7e6f4c69ef34e1f5e61e5a256e8acfb321"
+      },
+      {
+        "path": "lib/ai/providers/OllamaProvider.ts",
+        "sha256": "c027d8c50af0b94219106ccd70a0da1db524a5404c584eca8dbb0897404d3563"
+      },
+      {
+        "path": "lib/ai/providers/OpenAIProvider.ts",
+        "sha256": "b80c6ba1d85f33af37983c9c99dbd99eff372630339bf560eb2a30d719cf9d55"
+      },
+      {
+        "path": "lib/ai/providers/OpenRouterProvider.ts",
+        "sha256": "d4db209df5be4b4e782f3c2567e19fa2e6ae1370c9ba745fd371bd00dc4c4981"
+      },
+      {
+        "path": "lib/ai/providers/VercelGatewayProvider.ts",
+        "sha256": "b27f371362c795730634c4574ccca095c135163ea1b269e372494cc28c6f8cb9"
+      },
+      {
+        "path": "lib/ai/providers/XAIProvider.ts",
+        "sha256": "59090094592744cb66006a8a563048170ec9388db09d309793325a3f692017e8"
+      },
+      {
+        "path": "lib/ai/providers/anthropic.ts",
+        "sha256": "50516d8cfc4540a36593f29ef132797d64fff474eea4a1f551c110b240774ed1"
+      },
+      {
+        "path": "lib/ai/providers/gemini.ts",
+        "sha256": "887ef45e27c0d0e8b6c23297aea8ffe74a68c80572a418c3b765867931f223ae"
+      },
+      {
+        "path": "lib/ai/providers/index.ts",
+        "sha256": "284cfa58f6443449571bad470f537dade16198b1175ccbde90286d094d9fbde4"
+      },
+      {
+        "path": "lib/ai/providers/openai.ts",
+        "sha256": "96133a18ee1f0f0a1f036e9451fd0f95954d7f919ebebb9a5896d20c2241ea83"
+      },
+      {
+        "path": "lib/ai/providers/openaiCompat.ts",
+        "sha256": "76224675a3f1c29a0c5600cdab841081bfa3424d275c75fcd0d03d62e1b23825"
+      },
+      {
+        "path": "lib/ai/providers/types.ts",
+        "sha256": "c478d32103fa188b816622edfacc45385ae77d06248560970bf1b20a7ff85030"
+      },
+      {
+        "path": "lib/ai/workspaceProviderPolicy.ts",
+        "sha256": "cb39007d6490db7bdc96bfd7c7c13d905e9c63e7ded66abb0a67707da4c39bc3"
+      },
+      {
+        "path": "lib/api/apiEnvelope.ts",
+        "sha256": "11f71cc63c7af4b13336bc85c27e380ed9460a2b7d0dc1600fad4ccfdf016919"
+      },
+      {
+        "path": "lib/api/correlation.ts",
+        "sha256": "24801e593e200b2dfb4342523f8632a7372f1dd240a28eee22649405a4e1e49c"
+      },
+      {
+        "path": "lib/api/dtoMappers.ts",
+        "sha256": "e6b75af0be3218085580cd22dbd9d4a8b8f0b4a888fc844e7a736368e0bba15b"
+      },
+      {
+        "path": "lib/api/idempotencyKeyStore.ts",
+        "sha256": "dfb5213ea8472eb13c2cc77c8d7a7a02415dbcd4fa0610f60a17639994aa164f"
+      },
+      {
+        "path": "lib/api/index.ts",
+        "sha256": "d686a7951423efd5bdc1a757ec581beb2742057785a573a04878f5faee1fb460"
+      },
+      {
+        "path": "lib/api/rateLimitBudget.ts",
+        "sha256": "c33cee68ff03598d252674346b065860e320f89ca25258e84c74933a950fb1c8"
+      },
+      {
+        "path": "lib/api/rateLimiter.ts",
+        "sha256": "905d9367a81ca31f5fc0852b91e235e6ff1f56eacb3ad44f724f1c627c433472"
+      },
+      {
+        "path": "lib/api/redaction.ts",
+        "sha256": "dc81d62f7ef8fabab44f1143d32fdc7463487d38cd827895ba306dc1a961171d"
+      },
+      {
+        "path": "lib/api/safetyContracts.ts",
+        "sha256": "f2a70f3a9d752db029e08357057076550f11912e81d2b68f05d8b630a7daec0f"
+      },
+      {
+        "path": "lib/api/sourceMode.ts",
+        "sha256": "72c2a1b1b93f2ea94e835263b92cfa5c7cf9e58c618bbce0920aecd152c72aae"
+      },
+      {
+        "path": "lib/audit/auditStore.prisma.ts",
+        "sha256": "106ea7ee13546a04e702a900ee96ddc2f2ad8378da163cf02fc60574e1273b4f"
+      },
+      {
+        "path": "lib/audit/secureAudit.ts",
+        "sha256": "efc29edd65ea5a8117879bea7115705cf2261ddeb3eb8373161a713e8dca4904"
+      },
+      {
+        "path": "lib/auth.ts",
+        "sha256": "64c3894c6d97d525367890d8b95f3df556a5574f23700125e2ad901e07d60c78"
+      },
+      {
+        "path": "lib/auth/currentContext.ts",
+        "sha256": "f477cacc20e59f99230e0ad41a13af4827497a17575ccd8329da9055ee52d78b"
+      },
+      {
+        "path": "lib/auth/emailVerification.ts",
+        "sha256": "4750c03ac9a2a2baab37dd57a94ca9980103267eb36a37dc05a8c9a155a31522"
+      },
+      {
+        "path": "lib/auth/ensurePersonalWorkspaceMembership.ts",
+        "sha256": "c244260a49b6bc33c2c9bca3258f8aaaa2fa9ecce32f5c11b1ed5dce0b859edf"
+      },
+      {
+        "path": "lib/auth/platformAdmin.ts",
+        "sha256": "fbcd20110e9bf602dc018a159c2ba496bbc41a275c17a39d741b497d09d16f16"
+      },
+      {
+        "path": "lib/auth/requestOrigin.ts",
+        "sha256": "3f017a62ba6717b63a751b459e76f1c6460a0c63dfcf0336ea41a9ba573d49fa"
+      },
+      {
+        "path": "lib/auth/verificationCallback.ts",
+        "sha256": "b73fe56f40af921b65ba568af8aa180c8ab8da9164bbb487198e0e24e6c4c230"
+      },
+      {
+        "path": "lib/auth/workspaceId.ts",
+        "sha256": "e491b26714185ac45f3be53e02174077a39ca67d12590233aa715e365d868589"
+      },
+      {
+        "path": "lib/axiom/agent/rbacEngine.ts",
+        "sha256": "2fd58d01a8b230cddda62af831f3b5d26f86bfbbfc6778fbc9795dbc160a0c79"
+      },
+      {
+        "path": "lib/billing/addOnCatalog.ts",
+        "sha256": "4dfba282d226e608c118502650b190875bccdb82ebe1557cf210abb6dfe2b149"
+      },
+      {
+        "path": "lib/billing/aiBillingMargin.ts",
+        "sha256": "3549ac55c37ffa191632a43df6181d08b6c602133f5b2a41fb381fbbcf6592ba"
+      },
+      {
+        "path": "lib/billing/aiCallCostAttribution.ts",
+        "sha256": "77ee3de1d3a9d96b75681d1bfef9328a6e250338ce964b7573562441b64ee969"
+      },
+      {
+        "path": "lib/billing/aiCreditFulfillment.ts",
+        "sha256": "e2ea638f918f26e17f7a308ec421f517c0cc840764c4b648b38b783e10ebeb36"
+      },
+      {
+        "path": "lib/billing/aiCreditReservation.ts",
+        "sha256": "5107e0c7039aa66d08117985507549a681df3ee39a987c6c5f053fb5f9cbf69c"
+      },
+      {
+        "path": "lib/billing/aiUsageSettlementBinding.ts",
+        "sha256": "89671082a9ff10e645d0f7a2abd5b6b1e47f45adb1459602f2f61d97803c5bd6"
+      },
+      {
+        "path": "lib/billing/aiUsageSettlementCandidates.ts",
+        "sha256": "3e8cd97a7c54be034b773a6fa6b4aff947f421736786a4375f4ef320385cabf9"
+      },
+      {
+        "path": "lib/billing/aiUsageSettlementRetryPolicy.ts",
+        "sha256": "2fabf47c0b53c3057a654889b8df28b5745222fdabf97033859dcf8d1a5d618b"
+      },
+      {
+        "path": "lib/billing/applyAddOnsToEntitlements.ts",
+        "sha256": "0e01a67dc5185ad4a57a6c16db77110d5338a49fa32a4fc9513ec3f3897d0b31"
+      },
+      {
+        "path": "lib/billing/awsCostExplorerExtractor.ts",
+        "sha256": "23f57dcf63338ca7f319fad8178b5f2ff976656ebbdfc2043aa06d47e375e13a"
+      },
+      {
+        "path": "lib/billing/azureCostManagementExtractor.ts",
+        "sha256": "d4af6a6c05bacd324f899494d3a42c0e0dc605ddac2f4640df2957b614577684"
+      },
+      {
+        "path": "lib/billing/billingConnectorsBuilder.ts",
+        "sha256": "ab0bd05654c1339ae658026263b1e6d1cfe58a39afb3a9b6268d79d6514cf96e"
+      },
+      {
+        "path": "lib/billing/billingConnectorsModel.ts",
+        "sha256": "4aeb55fc0dfaf2c239c999c5488ce32203c233745ec15f756c7b68dc0f7306d7"
+      },
+      {
+        "path": "lib/billing/checkEntitlement.ts",
+        "sha256": "359c7ae7bea33acb25bf49af8d629b293504096a00026f1c6587dda3c6b079eb"
+      },
+      {
+        "path": "lib/billing/checkWorkspaceAICredits.ts",
+        "sha256": "f254d17a43318c92cb8c86478c85ef6383bce20a76695deafaa7f5a475e206b0"
+      },
+      {
+        "path": "lib/billing/computeInvocationCost.ts",
+        "sha256": "685532f2198aea93c911d6702f2de2c7f0faf71e6fbecae1d09fbc23dbf58367"
+      },
+      {
+        "path": "lib/billing/computeOverageRevenue.ts",
+        "sha256": "010c39d2936cd535ad377b743f6c3aa17a4ed54fff830d707d1cbc8b04adebf9"
+      },
+      {
+        "path": "lib/billing/computePlanMargin.ts",
+        "sha256": "bb857ec8716cf03e955b71abdbad1fb93fdcb63dced675d10dfa2b199d7386bd"
+      },
+      {
+        "path": "lib/billing/consumeSubscriptionEvent.ts",
+        "sha256": "b703d235ee3559daef5b1becec0cfa7615e542a1468425beb0a86a7408f746fd"
+      },
+      {
+        "path": "lib/billing/costAnomalyAttributor.ts",
+        "sha256": "7403e333eb99a080f87167ef95abdcd9c69f165c9ea352b0e7be0a8af8bc1570"
+      },
+      {
+        "path": "lib/billing/costAnomalyExplainer.ts",
+        "sha256": "8c6da40767222fe99ef562a17f2afc1b226b8dddaef69c7d4a7885907499e09c"
+      },
+      {
+        "path": "lib/billing/costForecaster.ts",
+        "sha256": "04ff92a0c733da17a34ec803b1b9a2d78d66259c9db3bd1325279551f30bb9a4"
+      },
+      {
+        "path": "lib/billing/currentAIAllowance.ts",
+        "sha256": "770cea486a3a39aee2fd5d51dfdc7274d4fd93af42f7321193a2ba9796ce333a"
+      },
+      {
+        "path": "lib/billing/deploymentDispatchReservation.ts",
+        "sha256": "890d7f3dfa64d0fd58f06e1222f67625dd22a95b1bf0e86301544ac33140ee73"
+      },
+      {
+        "path": "lib/billing/deploymentQuota.ts",
+        "sha256": "aaea52e10a8df324a36c4a608d143b6d857a81c0f5145cf9d36d629c7a3f2c96"
+      },
+      {
+        "path": "lib/billing/effectiveEntitlements.ts",
+        "sha256": "0e13141cfb995d7c68ebe36d8093257c3bac716a53624acdea14a97e2f0d506b"
+      },
+      {
+        "path": "lib/billing/enforceEntitlement.ts",
+        "sha256": "ab72e7cf1292c42e575938161a1e0d8b7e2d078b8da0a64bfa5e5ab40c139d5b"
+      },
+      {
+        "path": "lib/billing/ensureProviderRate.ts",
+        "sha256": "6e8d1f964abf42e62088b89aa5db3abda84ddc50de96bb530ef2d86eda7b8f46"
+      },
+      {
+        "path": "lib/billing/isolatedApplication/databaseTarget.ts",
+        "sha256": "906be3530e34e133b0b2265d37090588ae55683c5517ef69dedfd6ef4cad69d8"
+      },
+      {
+        "path": "lib/billing/isolatedApplication/plan.ts",
+        "sha256": "643f5afd9b7971c5f6a23446fda981a021804028e5f9fb2d8d675be4163efdf1"
+      },
+      {
+        "path": "lib/billing/isolatedApplication/runtime.ts",
+        "sha256": "57496e9ecf84351a32211450f7d19ec062779bec9c328d1cbdeee9b1bf4a59a8"
+      },
+      {
+        "path": "lib/billing/isolatedApplication/scope.ts",
+        "sha256": "bb27edac701bfb9c7812a77aeb17266b1effa7c95ab472f0b70c5d4d2a72d539"
+      },
+      {
+        "path": "lib/billing/multiCloudCostNormalizer.ts",
+        "sha256": "5173aa55e80cd4dbf904ed0091c74ad864e79763fba6453e7e22e8786d42f5b0"
+      },
+      {
+        "path": "lib/billing/newTestSubscription/allocationPlan.ts",
+        "sha256": "bbf78b1e9b0f5684086dbd3a7a717af502025ef44916c75edf445ee87e3a207d"
+      },
+      {
+        "path": "lib/billing/newTestSubscription/allocationV2.ts",
+        "sha256": "07483577291e15d7b23eb505baa7e1653d13b76e618bfb1646040d3a5a730a2d"
+      },
+      {
+        "path": "lib/billing/newTestSubscription/anniversaryWindow.ts",
+        "sha256": "9996a150880c2f91e1618f81382362a99132f991f7d398880eb0e6ded431b298"
+      },
+      {
+        "path": "lib/billing/newTestSubscription/chargeSource.ts",
+        "sha256": "b3d300c917e6253d9ed70870e952efa68941c05006221880bd02433129b7bd80"
+      },
+      {
+        "path": "lib/billing/newTestSubscription/fixtureAllocation.ts",
+        "sha256": "226a04f6431bf0cc748a5026d808161aeabb2b0158b3a9540d40909c22d78c74"
+      },
+      {
+        "path": "lib/billing/newTestSubscription/fixtureCoverage.ts",
+        "sha256": "c436aa287c861e98f56709b90f45d500fb628cbb8e8ca13066c78554b1c3cefb"
+      },
+      {
+        "path": "lib/billing/newTestSubscription/fixtureUsageGuards.ts",
+        "sha256": "d52e698765f732bac7812453451fced9e257411d3020db53e4699188e2def5b5"
+      },
+      {
+        "path": "lib/billing/newTestSubscription/lifecycle.ts",
+        "sha256": "735a67cc8b2cbfc3c291c70604e007249a0aebe0bc90fd05b5a348cc4ccf7d38"
+      },
+      {
+        "path": "lib/billing/newTestSubscription/paidCoverage.ts",
+        "sha256": "a19ae9ba35aa7de6a4dd7d96137a27c6f73451c1396c3c48049f1905795807a9"
+      },
+      {
+        "path": "lib/billing/newTestSubscription/paidPlan.ts",
+        "sha256": "e6cb89868ca3ce0eaf6198da3e6426cb84e3295327f580392aa1da9133288d83"
+      },
+      {
+        "path": "lib/billing/newTestSubscription/postgresFixtureStore.ts",
+        "sha256": "ad3425428f9b41598dfd9add76963a80c6311a25f1f65387811f2ef874568ebb"
+      },
+      {
+        "path": "lib/billing/newTestSubscription/service.ts",
+        "sha256": "da116e4690c17319eb811903de2381fdda9685a5d7a49efcea49fdb7236ed354"
+      },
+      {
+        "path": "lib/billing/newTestSubscription/stripeDeadline.ts",
+        "sha256": "c951e5ac7848ae315321a99c7e4d09d9f78d27a6dc5ff6244dae3c758ccb6ee6"
+      },
+      {
+        "path": "lib/billing/newTestSubscription/stripeHttpClient.ts",
+        "sha256": "4a2bae0de8e041fe16b0bb5e61075505ae3eb9373ef7c75fe5f928b8b3b930e5"
+      },
+      {
+        "path": "lib/billing/newTestSubscription/stripePaidCoverage.ts",
+        "sha256": "8385ddaaf42f5d42e8f15a78e4f7084a611217a53f998f414a08bb7664908193"
+      },
+      {
+        "path": "lib/billing/newTestSubscription/stripeTestProvider.ts",
+        "sha256": "7081360821a265f72c1520b1e4259317b6974f9d6a51eb873ca27e3566a9cbdd"
+      },
+      {
+        "path": "lib/billing/newTestSubscription/usageAllocationIO.ts",
+        "sha256": "aa8a93877533d73ab3369c56b6ad2ba3447319ce10fe5abbd067b7bcddfa8928"
+      },
+      {
+        "path": "lib/billing/newTestSubscription/verifiedContract.ts",
+        "sha256": "f9238dff5852cf45945a8319aa2e1cb00e0d5011923d6bf6b820915c43a08675"
+      },
+      {
+        "path": "lib/billing/newTestSubscriptionContract.ts",
+        "sha256": "93cd286a0ba6b2a78c1126114df03bad678542c678c3e31d01167e0425a8df3e"
+      },
+      {
+        "path": "lib/billing/organizationSeatClaim.ts",
+        "sha256": "083f678bb6f1ffd676f1aa65558ae45090f9010dd6a420f2cc8b1675c201d795"
+      },
+      {
+        "path": "lib/billing/planRegistry.ts",
+        "sha256": "cbf68c8187937e358314506fec8b30a7c1dfff43073b9def6bc1211abe6c8171"
+      },
+      {
+        "path": "lib/billing/planSelection.ts",
+        "sha256": "7e95e6bd1c8c8d76cdd04829471902d58a5851bbf452b99285ba6d976470bcfc"
+      },
+      {
+        "path": "lib/billing/preflightAICreditCheck.ts",
+        "sha256": "766a10d5832ce74c87207d098a5f7407d523252df4f85487d6e15a39fd7f0c3e"
+      },
+      {
+        "path": "lib/billing/providerRateSeeds.ts",
+        "sha256": "2203252a710104bd3555f364e72dae6bb071726040ebc3929f4d2991b11ff374"
+      },
+      {
+        "path": "lib/billing/publicPlanCatalog.ts",
+        "sha256": "3c46f92b4f2f66a4b904ea81ba0903402fa35d3731c1ebfd3779aaeeb561b14f"
+      },
+      {
+        "path": "lib/billing/rebuildUsageSummary.ts",
+        "sha256": "2d7da3a89a4c67b49620a4612e5d2ea63c4349534f5c953405fe656765a4b6d8"
+      },
+      {
+        "path": "lib/billing/reconcileGatewayUsage.ts",
+        "sha256": "65efff13fdf74685a843489f85361d75ebce21944a1071be1c2f5244eacb4568"
+      },
+      {
+        "path": "lib/billing/reconcileSubscriptionEvent.ts",
+        "sha256": "04c00f56d65727b3d19a19055d52d4a64aa92f23ff95bf6fe9b8872b2894fd4e"
+      },
+      {
+        "path": "lib/billing/recordAIUsageEvent.ts",
+        "sha256": "a70f6c3969a90a0af967f6e991495799bd4dbba0562740d1d53a9edb6b12549a"
+      },
+      {
+        "path": "lib/billing/scanBillingAlerts.ts",
+        "sha256": "ecda7ea1c0020875e3593c51c02b2f2c699fe6e04660483491080c073e3eb9ca"
+      },
+      {
+        "path": "lib/billing/settleAIUsageToStripe.ts",
+        "sha256": "2789c620f2eeef756147bc6cb7dd3aba54cac5958f3f2ae5ba19f17a392efb72"
+      },
+      {
+        "path": "lib/billing/stripeHelper.ts",
+        "sha256": "5e41b880258df6cbafb80682f39e701ebab75abf7204138614a3afbf181b2d62"
+      },
+      {
+        "path": "lib/billing/tenantBillingStore.ts",
+        "sha256": "cc32f04f38ff28dd0d2536b0c1fc5190ac9ae6f227dc11465ec9d27f07941a8c"
+      },
+      {
+        "path": "lib/billing/tierCapEnforcer.ts",
+        "sha256": "f903ea573bc2c408b696fad3f7df87d3ec39a22ac25820db0059b8a77cfa341e"
+      },
+      {
+        "path": "lib/billing/tierCatalog.ts",
+        "sha256": "43b6efe7fb15685751b8bfeeebb21bb6048304fe1352e9e63e5bf82bf6d28bb2"
+      },
+      {
+        "path": "lib/billing/tierGate.ts",
+        "sha256": "6cd0fa3c93a6d8289a9fa47af7b0716500420119226bf5c8caaf71c2e9fcbcfb"
+      },
+      {
+        "path": "lib/billing/usageCounterStore.ts",
+        "sha256": "85a5cfa550c731dcaaafc7d245daaec71c424c1a9613cd764a4d4ce1f9463db0"
+      },
+      {
+        "path": "lib/billing/usageSummaryResponder.ts",
+        "sha256": "dff3b9f868bfb0c418fab17668917e3b528561d950aa1239257ddc92c1d4a383"
+      },
+      {
+        "path": "lib/billing/whichAlertsToFire.ts",
+        "sha256": "c576e43e98b753804cc8bdfc7d2ef0c3d8ea20d71fc84a1543b308ac8a7942a3"
+      },
+      {
+        "path": "lib/constants/company.ts",
+        "sha256": "70b1bc535726872b0c86065e7a6a158153438803b04b0e9ef1de690ccd082699"
+      },
+      {
+        "path": "lib/contexts/AxiomPanelContext.tsx",
+        "sha256": "c86ea2ce9b0a163440b05b1ce904654b9d5890e993d2becaa08277a7a672f01e"
+      },
+      {
+        "path": "lib/db.ts",
+        "sha256": "c03c925e7154dadcef4b1e6ea8e29fdb257fa02b95768f23e3cb7c6be5671bf4"
+      },
+      {
+        "path": "lib/desktop/desktopSession.ts",
+        "sha256": "a3caa67a1ed1c8737e067a5a1918ea0d10bb0a2d24f4903bdc2236d53fa64fa8"
+      },
+      {
+        "path": "lib/desktop/desktopSessionStore.prisma.ts",
+        "sha256": "5490ac9aa797ee97fd91c4f8f0e76c12a2410f4ab811ea346495efc7b436f31d"
+      },
+      {
+        "path": "lib/domain/ids.ts",
+        "sha256": "bbb0710f5bd758f1370722013ea7af666591f3aad92dfd148c1e894e8ddbe077"
+      },
+      {
+        "path": "lib/errors/axiomErrors.ts",
+        "sha256": "db701a4d3456f5d2c61444f20137888137f450ba67c2f0cce01d83b3edc19c22"
+      },
+      {
+        "path": "lib/identity/decodeIdTokenClaims.ts",
+        "sha256": "58eb04f7845801f95ecbdc3780c89255d896b2692ee4fc6ff4af31a46531e7c2"
+      },
+      {
+        "path": "lib/identity/enterpriseIdentityContract.ts",
+        "sha256": "782373cc49f465ffec95d52b948066711515578d9422aece21fd12198e41e297"
+      },
+      {
+        "path": "lib/identity/identityProviderResponder.ts",
+        "sha256": "502ccfce4d5b2f1c1bb1017fcb42d87649aa92352801d3353fc1b558d4125291"
+      },
+      {
+        "path": "lib/identity/ssoSignInGate.ts",
+        "sha256": "e1539bca0a95ff490715d6d747ab6a1147660b492f8d23c40cfd48184e9510b0"
+      },
+      {
+        "path": "lib/memory/memoryStore.prisma.ts",
+        "sha256": "a67370f676f320c477988db3d8304b85cc472375dc027e8ba9a8929265858139"
+      },
+      {
+        "path": "lib/memory/operationalMemory.ts",
+        "sha256": "3f638898b8b3f37c064adb77b499d47512ba08199931e62ccdb78a984e5dd193"
+      },
+      {
+        "path": "lib/observability/events.ts",
+        "sha256": "80421c5b732bdf94f9dfc3c61a19379b52108b23b63661e9d54e633c9d03a6a9"
+      },
+      {
+        "path": "lib/observability/logger.ts",
+        "sha256": "155d1adc21024cee40f811ef070274fd0683327c28ebf05c2695f5b34d710447"
+      },
+      {
+        "path": "lib/platform/storeFactory.ts",
+        "sha256": "0c156390c70fabb183df83c009b87379db981fc6073ae0007d75a67b3daa59e1"
+      },
+      {
+        "path": "lib/privacy/browserConsent.ts",
+        "sha256": "e959656358044964dfc5f5e836444cfb1fc67686faacf63d765b48dace5d768a"
+      },
+      {
+        "path": "lib/rateLimit.ts",
+        "sha256": "2163af8ff0ea888f7bf201130d49668455e91b121d1b0783aebf484946ae42a2"
+      },
+      {
+        "path": "lib/releaseops/releaseListResponder.ts",
+        "sha256": "6225de15743f538b62ef8089ee9434eaad52551f863cc57f61b276c3a11ad952"
+      },
+      {
+        "path": "lib/releaseops/releaseRepo.ts",
+        "sha256": "217ec4a5321430f6a72d98130251dcdf126dca3c3565886429acfb744d229c17"
+      },
+      {
+        "path": "lib/security/auditLog.ts",
+        "sha256": "70bde91df56f221d361804ead742a24efc357707e7fbb4cbd2b564a79d70172b"
+      },
+      {
+        "path": "lib/security/redaction.ts",
+        "sha256": "b1d4d1d38e61c1baf93a13ae36736b789096a58a3254919a484161a0c168741c"
+      },
+      {
+        "path": "lib/security/secretRedaction.ts",
+        "sha256": "a223c389f750230d0bd4c58a3cc05f9ff71457f73cf79082b6dc90ccedea04b4"
+      },
+      {
+        "path": "lib/security/tenantIsolation.ts",
+        "sha256": "d5ff7d01f66be9ee7ed03e7d6d31ba6b906f15814df43d36748dc05e81c43cc6"
+      },
+      {
+        "path": "lib/seo.ts",
+        "sha256": "219229747ad5642054757dd952a9bea90bb302ba0ae4a2617d5401ce1994b3e2"
+      },
+      {
+        "path": "lib/workforce/domains/inviteLinks.ts",
+        "sha256": "09001e25408ef80fdd7168d7741b6c51fc61f9344c597a378d413c1b79a32174"
+      },
+      {
+        "path": "next.config.ts",
+        "sha256": "2548092481546cca521731e629e81702c9df19dd5195607edba0eca95f8cba30"
+      },
+      {
+        "path": "package-lock.json",
+        "sha256": "4923306fbdd3e436cbb2466d611716d94133797e64fb29298e4a36298c9a2049"
+      },
+      {
+        "path": "package.json",
+        "sha256": "810a5faf66cb1853aedc5797b18cba258380cf98c74d7896eb5cd85866df658e"
+      },
+      {
+        "path": "prisma/schema.prisma",
+        "sha256": "3abed3e94c18cd2554f18b847d27ab505e3e8fa9fde968a0a7c72fdb6e787c9c"
+      },
+      {
+        "path": "styles/axiom-theme.css",
+        "sha256": "7c5c4558df740eeea3b89320afc9e772dc4448be777a1cb4bb5a75ed017e3b0a"
+      },
+      {
+        "path": "test/serverOnlyStub.ts",
+        "sha256": "565d7404ea6a060544232f61e24a0feeffa723e58d7f5a3e725902ab63e4ad40"
+      },
+      {
+        "path": "tsconfig.json",
+        "sha256": "49995c2a39f9d8442187af48c2070474181bee8eca5812ca44075db407ece5d1"
+      },
+      {
+        "path": "vitest.config.ts",
+        "sha256": "48d5d1bb920398b20264209a5b01693763df73b27c472267a3dc30915443cb23"
+      }
+    ]
+  },
+  "invocation": {
+    "path": "/tmp/axiom-anniversary-task5-dc1-run.py",
+    "sha256": "fc3d70e85bd10dc2809747ff982ab86cfca4b755801c00936172838462263ffc"
+  },
+  "compiler": {
+    "startedUtc": "2026-10-18T06:14:26Z",
+    "heapMiB": 8192,
+    "incremental": false,
+    "exit": 0,
+    "elapsedSeconds": 59.76,
+    "log": {
+      "path": "/tmp/axiom-anniversary-task5-dc1-types.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "observation": "Actual runner return observed via execution tool; successful compiler log is empty, not standalone success proof."
+  },
+  "ownedAcceptance": {
+    "startedUtc": "2026-10-18T06:15:49Z",
+    "attemptsOnSource": 1,
+    "runnerExit": 0,
+    "runnerElapsedSeconds": 309.52,
+    "vitestDurationSeconds": 308.56,
+    "passedCases": 27,
+    "failedCases": 0,
+    "skippedCases": 0,
+    "passedCaseLabels": [
+      "binds captured original collection once, protects financial/tenant state and models monthly remaining pool 415ms",
+      "fences concurrent provider snapshots with opaque local token equality, not event ordering 90ms",
+      "actual separate-client Serializable purchase race retains only one unresolved organization intent 86ms",
+      "original response proof captures once in real intent CAS and cannot be rewritten 83ms",
+      "inactive SDK lifecycle preserves immutable origin and financial evidence through actual durable PG consumer 1288ms",
+      "response loss retains unknown intent and cannot bind even a synthetic paid observation 102ms",
+      "missing new provenance fails closed only for explicit lane; legacy reservation remains independent 19ms",
+      "actual local Next HTTP authenticates, reads versioned allowance, denies unsupported operations and releases provider-disabled hold 28061ms",
+      "V2 real SQL parses read/reserve/claim with empty and purchase selections (monthly) 859ms",
+      "V2 real SQL parses read/reserve/claim with empty and purchase selections (annual) 1047ms",
+      "V2 original Free preflight loses the real paid consumer revision and leaves no partial hold 685ms",
+      "V2 original Free hold survives paid activation and late80 without regrant (purchase=false) 1114ms",
+      "V2 original Free hold survives paid activation and late80 without regrant (purchase=true) 867ms",
+      "V2 commit constraints reject orphan/cross-scope/rewritten attribution and sealed usage 192ms",
+      "V2 initial consumer and actual usage writes roll back joined evidence/plan/hold on injected failures 1300ms",
+      "V2 real member demoted commits before final lock and cannot dispatch 113ms",
+      "V2 real member unaccepted commits before final lock and cannot dispatch 107ms",
+      "V2 claimed member share lock blocks real demotion until commit, then prevents future dispatch 144ms",
+      "V2 actual refund wins after reserve preflight and stale purchase authority refuses 135ms",
+      "V2 actual refund wins after claim preflight and stale purchase authority refuses 160ms",
+      "V2 reserve purchase row lock blocks the actual unchanged refund writer until commit 177ms",
+      "V2 claim purchase row lock blocks the actual unchanged refund writer until commit 236ms",
+      "V2 paid included reserved1000 loses new dispatch on inactiveFree200 but unknown late cost survives 722ms",
+      "V2 canonical synthetic expired full monthly period cannot grant current allowance 783ms",
+      "V2 canonical synthetic expired full annual period cannot grant current allowance 992ms",
+      "V2 real clock after a real row-lock wait crosses a non-authoritative canary deadline 1344ms",
+      "V2 actual claimed unknown remains held after its genuine five-minute TTL without a usage link 259131ms"
+    ],
+    "log": {
+      "path": "/tmp/axiom-anniversary-task5-dc1-owned.log",
+      "sha256": "f8c1c06440490e74fb5452e32004d65a9354aab253b7f641a93a6e3e20c2db7d"
+    },
+    "nextChildLog": {
+      "path": "/tmp/axiom-anniversary-task5-dc1-next-http.log",
+      "sha256": "4ff128da638ed71aa23c7db8e8efd664b4ba4d22b60f2df6c56b41774c97f124"
+    },
+    "realUnknownExpiryCaseMilliseconds": 259131,
+    "realUnknownExpiryQualification": "Five-minute stored hold initialized before all cases; final case waits remaining actual DB time then asserts retention/refusal and late80\u2192420. Local360s timeout only.",
+    "actualOwnedSql": [
+      "complete fixture DDL installation",
+      "empty/purchase read-reserve-claim statement parsing",
+      "immutable/fk/deferred constraints and injected transaction rollbacks",
+      "member row-share before/after demotion orders verified using pg_blocking_pids",
+      "actual unchanged refund writer before/after reserve and claim row locks verified using pg_blocking_pids",
+      "initial Free/purchased attribution through paid activation and late costs",
+      "same settled replay, each model/token and consistent cost contradictions with no mutation",
+      "paid-included reserved permission loss under inactiveFree; unknown latecost retention",
+      "real SQL clock after row-lock wait canary; expired full-period negative"
+    ],
+    "actualOwnedNext": [
+      "known-org credentials auth/session and unchanged oldV1 tests",
+      "Free2 read; provider denial before durable claim and no usage",
+      "synthetic parent collected original subscription changes current pool35/remaining34",
+      "prior Free purchased late80 produces34.20, same-window recovery preserves34.20",
+      "active open invoice Unavailable/nohold; inactive paid included claim denied/purchase420 retained",
+      "unsupported Checkout/webhook/cron/chat remain503"
+    ],
+    "providerQualification": "Stripe signatures, original SDK responses, cash-collection chain, checkout/session/subscription facts and usage costs are synthetic provider fixtures through unchanged services/validators. Actual local Next HTTP reads/admission and owned PostgreSQL are real. No external Stripe/Gateway/provider call, hosted payment or HTTP webhook activation occurred.",
+    "clockQualification": "Real current DB clock and full original monthly/yearly service periods; canonical synthetic past expired inputs use unchanged validators. Canary is non-authoritative; no injected permission clock or shortened billing period."
+  },
+  "cleanup": {
+    "ownerObserved": true,
+    "awaitedHarnessAfterAll": true,
+    "matchingOwnedDockerContainerPrefix": 0,
+    "ownedNextNodeProcessesByExactWorktreeCwd": 0,
+    "fontTemporaryDirectories": 0,
+    "cleanupFailure": false,
+    "sourceStillClean": true,
+    "windowReleased": true
+  },
+  "historicalFailureReceipts": [
+    {
+      "path": "docs/mission/local-billing-anniversary-task5-first-runtime.json",
+      "sha256": "15cccd863d0dd664cf7b6f1dc2f175ea7179d1eba764f5de238254ac42a2cd34"
+    },
+    {
+      "path": "docs/mission/local-billing-anniversary-task5-second-runtime.json",
+      "sha256": "0488f23581b34c5d5de53000d213ed161eca8cab710b60724f0ea33f9c1b9137"
+    },
+    {
+      "path": "docs/mission/local-billing-anniversary-task5-third-runtime.json",
+      "sha256": "eb5202bfdaf6da654a5a11faabf9fb8457506eb2565cc61c379f8aa4b2c7640b"
+    }
+  ],
+  "dependencyQualification": {
+    "readOnlyRootGraph": "/workspace/.axiom-validation/ecs-direct-root/node_modules",
+    "node": "24.19.0",
+    "sharedGenerationOrInstall": false,
+    "desktopDependencyLinkAbsentDuringWebProgram": true,
+    "approvedManagedProxyCASelectorsPreserved": true,
+    "ambientProviderDbCredentialsCopied": false,
+    "prismaCheckpointDisabled": true,
+    "cachedImage": "postgres:17-alpine --pull=never"
+  },
+  "limits": [
+    "No natural anniversary or literal UTC-month rollover lock race observed",
+    "Month-end/leap/exact12 annual subwindows retain pure-kernel table evidence; actual annual runtime observes current first window",
+    "No genuine hosted Stripe TEST payment, real payment account/prices/secrets or managed proxy compatibility proof",
+    "No public Checkout/webhook/store activation, production migration, legacy/support semantics change or deployment",
+    "Named-source acceptance does not replace upcoming integrated full/type/desktop/Python/offline/tracker gates"
+  ]
+}

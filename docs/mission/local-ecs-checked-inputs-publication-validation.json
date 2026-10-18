@@ -1,0 +1,140 @@
+{
+  "scope": "inactive_checked_provider_context_input_prerequisite_not_admission_or_executor",
+  "executedSourceCommit": "9c60bff04ce7f8d3b6a3512ddf0c8cdd27f49384",
+  "mergedRootCheckpoint": "e4e9627708905bde584b07937b69e007a9bd68d4",
+  "rootMainAncestor": "bd44b180fafcd8429e31c74fa83c8967e28a218c",
+  "ownedReceipt": {
+    "path": "docs/mission/local-ecs-checked-inputs-owned-acceptance-9c60bff0.json",
+    "sha256": "8c0209ddb9012afe1337cc11b19da37b90587c0d932e3bd8cbca2a449bcec4ef",
+    "groups": 22,
+    "mappedWireRequests": 218,
+    "guardDenials": 0,
+    "violations": false,
+    "pendingResponses": 0,
+    "actualSourceGraphHashes": 59,
+    "sourceManifestFiles": 2034,
+    "sourceManifestSha256": "cd3ef960a344f5a3445d384f535e4939d963cce57382792049dd1c35cefce678",
+    "sourceOutcome": "checked_subject_mismatch_not_usable_for_admission",
+    "cleanup": {
+      "ownedLabelContainerCount": 0,
+      "fixedLauncherProbeProcessCount": 0
+    },
+    "ownedChildWireContainerAndDatabaseCleanupVerified": true
+  },
+  "gates": {
+    "wholeWebTypes": {
+      "pass": true,
+      "heapMiB": 8192,
+      "incremental": false,
+      "executedSourceCommit": "9c60bff04ce7f8d3b6a3512ddf0c8cdd27f49384"
+    },
+    "defaultFullSuite": {
+      "pass": true,
+      "passedTests": 7346,
+      "passedFiles": 668,
+      "skippedTests": 8,
+      "skippedFiles": 1,
+      "totalTests": 7354,
+      "totalFiles": 669,
+      "durationSeconds": 73.37,
+      "unhandledErrors": 0,
+      "environment": "PATH_TMPDIR_locale_fixed_heap_only_no_provider_credentials",
+      "unchangedPermissionRerunAfterClassifiedSandboxFailure": true
+    },
+    "desktop": {
+      "types": {
+        "exitCode": 0,
+        "durationSeconds": 6.827
+      },
+      "build": {
+        "exitCode": 0,
+        "durationSeconds": 10.769
+      },
+      "ownDesktopLinkRemoved": true
+    },
+    "pythonCli": {
+      "pass": true,
+      "tests": 30
+    },
+    "offlineAuthEvidence": {
+      "pass": true,
+      "tests": 16
+    },
+    "demoContractAfterWordingRefresh": {
+      "pass": true,
+      "tests": 15
+    },
+    "scopedLint": {
+      "pass": true,
+      "files": 25,
+      "warnings": 0
+    },
+    "tracker": {
+      "pass": true,
+      "sources": 22,
+      "rows": 2154,
+      "canonicalFilesIdenticalToRootCheckpoint": true
+    },
+    "diffCheck": true
+  },
+  "initialRestrictedFullSuite": {
+    "pass": false,
+    "durationSeconds": 127.63,
+    "failedTests": 53,
+    "failedFiles": 9,
+    "passedTests": 7259,
+    "skippedTests": 42,
+    "unhandledErrors": 29,
+    "classificationEntries": 54,
+    "classificationArtifact": "docs/mission/local-ecs-checked-inputs-suite-restrictions.json",
+    "logSha256": "c8172293bf81d179e0d11ce8745b95f1166dc8ed6b95352957a8b24890ef2ea5",
+    "unchangedTwoFilePermissionClassification": {
+      "pass": true,
+      "tests": 51,
+      "files": 2,
+      "newOwnedTempPathsRemaining": []
+    }
+  },
+  "postExecutionChanges": {
+    "existingManifestFilesChanged": [
+      "lib/demo/demoScenarios.ts"
+    ],
+    "scope": "approved_demo_string_only_plus_evidence_documentation",
+    "all59ProductHashesUnchanged": true,
+    "guardFramingWireProbeRunnerUnchanged": true,
+    "finalExactHeadFullSuiteNotClaimed": "executed_source_is_9c60bff0_final_docs_demo_commit_requires_exact_head_CI"
+  },
+  "qualifications": {
+    "dependencyOverlay": "existing_cache_clean_lockfile_CI_authoritative_no_install_or_generation",
+    "overlay": "Next_bundled_server_only_declared_lock_integrity_not_independently_verified_tarball_not_standalone_lock_install",
+    "overlayManifestSha256": "eda91d382c42af3ef20ab31c685a20bbc6b4913f2d84ef997ec89a0cb22c75c2",
+    "prisma": {
+      "installedAndLockVersion": "5.22.0",
+      "generatedSchemaSha256": "af7f25f286534e7ce73c9fe094bc0d0da15b5172881974f135a2d14deae8334b",
+      "sourceSchemaSha256": "3abed3e94c18cd2554f18b847d27ab505e3e8fa9fde968a0a7c72fdb6e787c9c",
+      "missingGeneratedModelAPIs": [
+        "EcsReleaseReviewPacket",
+        "EcsReleaseReviewCheckpoint",
+        "EcsReleaseReviewDecision"
+      ],
+      "generationPerformed": false,
+      "currentSchemaGeneratedClientAcceptance": false
+    },
+    "sandbox": "trusted_fixed_preload_captured_before_preload_functions_not_revocable_not_OS_or_NAPI_sandbox_Prismas_owned_constructor_URL_not_universal_Node_network_guard",
+    "authentication": "actual_hmac_and_current_durable_resolver_synthetic_session_not_browser_pairing",
+    "githubApp": "synthetic_env_app_key_real_RS256_and_scoped_mint",
+    "notVerified": [
+      "real_aws_or_github",
+      "genuine_ecr_proof",
+      "matched_admission",
+      "public_route_or_browser_pairing",
+      "aws_enrollment_or_disconnect_service",
+      "runtime_executor_quota_oidc_voters_health_rollback",
+      "expiry_inside_final_context_transaction",
+      "os_or_arbitrary_native_code_sandbox"
+    ],
+    "historicalAttempts1through4NotUpgraded": true,
+    "fifthAb59ReceiptPreserved": true,
+    "noProductionProviderMutationDeploymentOrNativeCustomerAcceptance": true
+  }
+}

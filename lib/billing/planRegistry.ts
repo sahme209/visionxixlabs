@@ -12,6 +12,9 @@
  * webhook plumbing — it does not replace it. The Stripe `tier` field
  * still maps to a `PlanTier` via planForStripeTier() so we keep one
  * billing source of truth.
+ * The unactivated, explicitly enrolled NEW TEST anniversary V2 fixture policy
+ * uses public catalog terms and existing financial rows separately; it does
+ * not change these legacy tiers, allocations or calendar accounting.
  */
 
 export type PlanTier = "starter" | "growth" | "business" | "enterprise";

@@ -11,24 +11,52 @@ PR #161 source integration is complete at main `608efe0fd70623aaf71cb80f799d3b82
 
 ## Resumed execution checkpoint — latest owner order
 
-Current main is `1cd5bc23417049ad7c29da884ed9591cb5b205a4` (merged PR #170, following #168 and #167).
-The verbatim [resume order](AXIOM_RESUME_ENGINEERING_ORDER.md) adds 131 units
-without replacing any prior requirement: **2,112 rows across 18 available sources**.
-All available original Codex and former Claude responsibilities remain mapped;
-the absent original 36-section specification and scenarios A–L remain unresolved.
-Historical counts and dated observations below retain their original scope.
+Current main is `291a4c579f12671a3f0c086417ac118570c75a47`, including validated
+merges #169–174. These source merges are not production releases.
 
-PR #167 passed both exact-head CI runs, code review and its 293-page build, then merged normally. Billing PR #168 and desktop context PR #170 have merged after their exact-head checks passed; Airflow owned application acceptance and combined regression have passed with source-bound evidence and its updated PR #169 still requires final CI. Neither result establishes production recovery or a release.
+The additive orders remain represented by **2,154 rows across 22 available sources**.
+All earlier 2,112 requirement objects remain preserved. Every available original Codex
+and former Claude responsibility remains mapped; the unavailable original 36-section
+source and scenarios A–L remain explicitly unresolved. Coverage is not completion.
 
-Existing parallel packages continue: billing collected-payment lifecycle and
-owned application acceptance; Agent guarded real-application cloud continuation;
-Airflow immutable destination review; desktop verified connected-context recovery;
-and ECS immutable-executor admission prerequisites. PR #167's offline evidence
-gate now requires three-way database identity and separate password/Google/GitHub/
-founder-workspace attestations. It validates format, not the truth of evidence.
-Actual production binding, usable recovery point, isolated restore and production
-login remain unverified. No final-release readiness or completion percentage is
-claimed. See the execution ledger for frozen hashes, reviews and validation limits.
+Billing anniversary source `dc1814f5` passed all 27 owned PostgreSQL17/Next cases,
+including real five-minute expiry and concurrent financial fences. Integrated source
+`ea579cca` preserves all202 runtime graph hashes and passed fresh web types,
+7,445 default tests/676files, desktop types/build, Python30 and offline16. Hosted
+Stripe checkout/webhooks, natural anniversary rollover and public activation remain
+unverified. PR174 is merged after both exact-head Test/production builds and code review passed.
+Existing public Checkout/webhook still do not invoke the reviewed TEST service.
+Owned-only HTTP composition is being implemented; matching Axiom TEST prices,
+secure SDK/signing bindings and supported managed egress remain external gates.
+
+ECS checked-input source merged in #173 after required CI and review. Its synthetic
+provider artifact mismatch grants no admission or execution authority. Connected
+claim/worker/recovery implementation is underway but inactive. Terraform customer
+producer/import composition continues; no actual Terraform CLI/cloud execution is
+claimed. Desktop catalog recovery passed independent source and receipt review, fresh web/desktop
+types,7,458 default tests and desktop frontend build on main291. Exact-head CI
+precedes merge; native/provider/customer acceptance remains separate.
+
+Agent's fourth application attempt remains failed closed at `aws.identity_entry_missing`.
+A subsequent fixed metadata-only probe preserved real process identity through the
+reviewed virtual-title helper, with exact descriptor restoration and owned cleanup.
+It loaded no Next/TypeScript consumers and proves no application continuation.
+Premium demos closed source/content/guard review. Actual browser attempts failed
+before screenshots, first on dependency-root refusal and then an unhandled proxy
+socket reset. Owned live processes/listeners were cleared, with unreaped zombies
+and incomplete crash-time driver identity explicitly retained. A bounded fixture
+correction is source-only; visual/browser acceptance remains unverified. Azure CLI is installed, but initial
+sign-in remains blocked by managed network policy. No identity, role or sandbox was
+created; exact owner approvals remain required. Neither additive capability replaces
+other engineering priorities.
+
+Production deployment/preflight/Neon database equality, a usable recovery point,
+verified isolated restore and actual password/Google/GitHub/founder-workspace login
+remain unverified. The offline evidence gate validates attestation format, not truth.
+No production change, desktop release, live payment activation or Vercel deployment
+is authorized. One final exact-commit release report and explicit deployment approval
+remain required. No product completion percentage or customer end-to-end success is
+claimed. See the execution ledger for source hashes, reviews and evidence limits.
 
 ## Additional deferred workstream — support and partnerships
 

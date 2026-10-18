@@ -1,3 +1,4 @@
+import { recordAttributedUsageV2 } from "./newTestSubscription/usageAllocationIO";
 /**
  * AI usage event producer — Phase 382.
  *
@@ -44,7 +45,7 @@ export interface RecordAIUsageResult {
   cost: CostBreakdown | null;
   pendingSettlement?: boolean;
   /** Reason when recorded === false. */
-  reason?: "no_rate_row" | "missing_external_usage_id" | "persist_failed";
+  reason?: "no_rate_row" | "missing_external_usage_id" | "persist_failed" | "reserved_metadata";
 }
 
 type UsageEventWriter = Pick<typeof prisma, "usageEvent">;
@@ -53,6 +54,7 @@ export async function recordAIUsageEvent(
   input: RecordAIUsageInput,
   repository: UsageEventWriter = prisma,
 ): Promise<RecordAIUsageResult> {
+  if (input.metadata && Object.hasOwn(input.metadata, "axiomTestAllocationV2")) return { recorded: false, usageEventId: null, cost: null, reason: "reserved_metadata" };
   if (input.provider === "vercel_gateway") {
     if (!input.externalUsageId) {
       return { recorded: false, usageEventId: null, cost: null, reason: "missing_external_usage_id" };
@@ -122,4 +124,18 @@ export async function recordAIUsageEvent(
   } catch {
     return { recorded: false, usageEventId: null, cost, reason: "persist_failed" };
   }
+}
+
+/** Server-selected V2 reservation only. The transaction joins actual UsageEvent
+ * creation and the existing hold; failures retain unknown capacity. */
+export async function recordReservedAIUsageEventV2(input: RecordAIUsageInput, reservationId: string, repository: Pick<typeof prisma, "$transaction"> = prisma): Promise<RecordAIUsageResult> {
+  if (input.metadata && Object.hasOwn(input.metadata, "axiomTestAllocationV2")) return { recorded: false, usageEventId: null, cost: null, reason: "reserved_metadata" };
+  let cost: CostBreakdown | null = null;
+  if (input.provider !== "vercel_gateway") {
+    const rate = await ensureProviderRate(input.provider, input.model);
+    if (!rate) return { recorded: false, usageEventId: null, cost: null, reason: "no_rate_row" };
+    cost = computeInvocationCost({ inputTokens: input.inputTokens, outputTokens: input.outputTokens, cachedReadTokens: input.cachedReadTokens ?? 0 }, rate);
+  }
+  try { return await repository.$transaction(tx => recordAttributedUsageV2(tx, reservationId, input, cost), { isolationLevel: "Serializable" }); }
+  catch { return { recorded: false, usageEventId: null, cost, reason: "persist_failed" }; }
 }

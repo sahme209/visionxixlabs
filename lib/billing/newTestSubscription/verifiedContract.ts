@@ -1,3 +1,4 @@
+import { originalCreateProofDigest, readFixtureEnrollment } from "./fixtureAllocation";
 import "server-only";
 import type { Prisma } from "@prisma/client";
 import type { Contract, Intent } from "./service";
@@ -23,5 +24,9 @@ export async function readVerifiedNewTestContract(tx: Prisma.TransactionClient, 
     validateEvidence(paidIdentity(contract, intent), coverage.originalEvidence);
     if (!(row.periodEnd instanceof Date) || !Number.isFinite(row.periodEnd.getTime()) || row.periodEnd.toISOString() !== coverage.observation.currentPeriodEnd) throw new Error("paid_coverage_unavailable");
   }
-  return { contract, intent, coverage };
+  if (!intent.allowanceV2 && coverage && (coverage.originalEvidence.version !== 1 || coverage.observation.collection.kind === "collected" && coverage.observation.collection.evidence.version !== 1)) throw new Error("allowance_provenance_unavailable");
+  const allowance = intent.allowanceV2 ? await readFixtureEnrollment(tx, { ...identity, organizationId: org }) : null;
+  if (intent.allowanceV2 && (!allowance?.paidBasis || allowance.enrollment.digest !== intent.allowanceV2.enrollmentDigest || allowance.paidBasis.origin.intentId !== intent.id || allowance.paidBasis.origin.createProofDigest !== originalCreateProofDigest(intent)
+    || coverage?.originalEvidence.version !== 2 || coverage.originalEvidence.digest !== allowance.paidBasis.origin.firstCollectionDigest || coverage.originalEvidence.originalAnchor !== allowance.paidBasis.anchor)) throw new Error("allowance_provenance_unavailable");
+  return { contract, intent, coverage, allowance };
 }
