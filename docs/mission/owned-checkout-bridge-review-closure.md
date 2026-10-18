@@ -1,4 +1,6 @@
-# Owned TEST bridge — source-review correction freeze
+# Owned TEST bridge — historical c1df source-review correction freeze
+
+This receipt is bound to c1df0ce05c3ed96584fa7a476f7fde19ddc04132. The residual selector-snapshot closure is recorded in `owned-checkout-selector-snapshot-closure.md`; evaluate historical hashes against c1df, not the current worker manifest.
 
 This source-only correction round follows independent financial/security review of `b4f9b069a0dc74e5e29dc7e06fad06a085ce49f4`. The coordinator approved the bounded lifecycle/launch-policy and HTTP/UI fixes. No worker packaging, process/socket, PG/Next, compiler or provider runtime was granted or run. The earlier b4 receipt remains historical and is evaluated against that commit; the current worker/tooling receipt is replaced with current hashes.
 

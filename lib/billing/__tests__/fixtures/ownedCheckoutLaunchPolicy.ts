@@ -25,21 +25,31 @@ export function captureOwnedNodePath(value: string | undefined, io = system) {
     return { valueSha256: reviewedPathHash, realpath: value, ancestors };
   } catch { return unsupported(); }
 }
+const managedSelectorKeys = [
+  "PATH", "HOME", "TMPDIR", "TMP", "TEMP", "LANG", "LC_ALL",
+  "HTTP_PROXY", "HTTPS_PROXY", "ALL_PROXY", "NO_PROXY", "http_proxy", "https_proxy", "all_proxy", "no_proxy", "NODE_USE_ENV_PROXY",
+  "NODE_EXTRA_CA_CERTS", "SSL_CERT_FILE", "SSL_CERT_DIR", "CODEX_PROXY_CERT", "REQUESTS_CA_BUNDLE", "CURL_CA_BUNDLE", "AWS_CA_BUNDLE",
+  "NODE_ENV", "NODE_OPTIONS", "NODE_PATH", "VERCEL", "VERCEL_ENV",
+] as const;
+function checkedDeployment(value: Readonly<Record<string, string | undefined>>) {
+  if (value.NODE_ENV === "production" || value.VERCEL !== undefined || value.VERCEL_ENV !== undefined) unsupported();
+}
 function checkedControls(value: Readonly<Record<string, string | undefined>>) {
   for (const key of Object.keys(value)) if (/^(LD_|DYLD_|OPENSSL_)/.test(key) || key.startsWith("NODE_") && !["NODE_OPTIONS", "NODE_ENV", "NODE_EXTRA_CA_CERTS", "NODE_USE_ENV_PROXY", "NODE_PATH"].includes(key)) unsupported();
 }
 export function ownedCheckoutLaunchPolicy(inherited: Readonly<Record<string, string | undefined>>, execArgv: readonly string[]) {
   try {
-    if (inherited.NODE_ENV === "production" || inherited.VERCEL !== undefined) unsupported();
+    checkedDeployment(inherited);
     checkedControls(inherited);
     const managedNodePath = captureOwnedNodePath(inherited.NODE_PATH);
     const env = { ...checkedChildEnvironment(inherited, execArgv), ...(inherited.NODE_PATH === undefined ? {} : { NODE_PATH: inherited.NODE_PATH }) };
-    const keys = [...new Set([...Object.keys(env), "NODE_PATH", "NODE_OPTIONS"])].sort();
-    const signature = (value: Readonly<Record<string, string | undefined>>) => JSON.stringify(keys.map(key => [key, value[key] ?? null]));
+    // Fixed complete key universe: absence is part of the identity. A selector
+    // first appearing after capture must not disappear from the comparison.
+    const signature = (value: Readonly<Record<string, string | undefined>>) => JSON.stringify(managedSelectorKeys.map(key => [key, Object.prototype.hasOwnProperty.call(value, key), value[key] ?? null]));
     const inheritedSignature = signature(inherited), childSignature = signature(env);
-    return { env, managedNodePath, revalidate(current: Readonly<Record<string, string | undefined>>) {
-      checkedControls(current);
-      if (![inheritedSignature, childSignature].includes(signature(current)) || JSON.stringify(captureOwnedNodePath(current.NODE_PATH)) !== JSON.stringify(managedNodePath)) unsupported();
+    return { env, managedNodePath, revalidate(current: Readonly<Record<string, string | undefined>>, scope: "parent" | "child" = "parent") {
+      checkedDeployment(current); checkedControls(current);
+      if (signature(current) !== (scope === "child" ? childSignature : inheritedSignature) || JSON.stringify(captureOwnedNodePath(current.NODE_PATH)) !== JSON.stringify(managedNodePath)) unsupported();
     } };
   } catch { return unsupported(); }
 }

@@ -140,11 +140,11 @@
     },
     {
       "path": "lib/billing/__tests__/fixtures/ownedCheckoutHttpAcceptance.ts",
-      "sha256": "28c74be4a460de1ebe40ec4fcfbe042367a0c24003572271f84aa15bcc71791f"
+      "sha256": "0f3fcfdbd3b4d9a6f7d1b2ace6e30731cdb0023e5ae792cee980deacb7707291"
     },
     {
       "path": "lib/billing/__tests__/fixtures/ownedCheckoutLaunchPolicy.ts",
-      "sha256": "beb69d5023814e5766280f0cacb1afafe678f29100b928af333d16153359190c"
+      "sha256": "0f1eada9035f9543b037274f7e81d220df7d2f63291d5182abfee716d78d030a"
     },
     {
       "path": "lib/billing/__tests__/fixtures/ownedCheckoutProcess.ts",
@@ -156,7 +156,7 @@
     },
     {
       "path": "lib/billing/__tests__/fixtures/ownedCheckoutWorkerSupervisor.ts",
-      "sha256": "54343f92e7fb3df47c296f972d4e6290e1d25d0df906d54ff1cae6597657a4e1"
+      "sha256": "1738ed45b06ff7a1dc019917b5115e5a4b862523530ad32702a5b1ba87b87317"
     }
   ],
   "configuration": [

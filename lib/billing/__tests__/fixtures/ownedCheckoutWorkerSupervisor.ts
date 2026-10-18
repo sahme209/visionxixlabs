@@ -40,7 +40,7 @@ export async function startOwnedCheckoutWorker(input: { db: PrismaClient; databa
     verifyOwnedOutputTree(build.output, build.receipt.outputs); control.check();
     mkdirSync(resolve(directory, "node_modules"), { mode: 0o700 });
     for (const graph of input.reviewed.externalGraphs) { const parts = graph.name.split("/"); if (parts.length === 2) mkdirSync(resolve(directory, "node_modules", parts[0]), { mode: 0o700, recursive: true }); symlinkSync(graph.directory, resolve(directory, "node_modules", graph.name)); }
-    policy.revalidate(process.env); policy.revalidate(policy.env); control.check();
+    policy.revalidate(process.env); policy.revalidate(policy.env, "child"); control.check();
     const env = { ...policy.env, AWS_CONFIG_FILE: "/dev/null", AWS_SHARED_CREDENTIALS_FILE: "/dev/null", AWS_EC2_METADATA_DISABLED: "true" };
     processOwner = ownedCheckoutChild("worker", directory, () => fork(build.entry, [], { env, detached: true, execArgv: ["--conditions=react-server"], stdio: ["ignore", "pipe", "pipe", "ipc"] }), control);
     const child = processOwner.child; await control.run(() => processOwner!.ready); if (!child) throw new Error("unavailable");
