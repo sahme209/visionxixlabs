@@ -4,17 +4,16 @@ import { fork } from "node:child_process";
 import { randomBytes } from "node:crypto";
 import { mkdirSync, readFileSync, symlinkSync, rmSync, lstatSync, realpathSync } from "node:fs";
 import { resolve } from "node:path";
-import type { PrismaClient } from "@prisma/client";
 import { newTestPrismaEnvironment } from "./newTestChildEnvironment";
 import { ownedCheckoutLaunchPolicy } from "./ownedCheckoutLaunchPolicy";
 import { ownedCheckoutChild, ownedCheckoutControl } from "./ownedCheckoutProcess";
 import { assertSyntheticSupervisor, buildOwnedWorker, verifyOwnedBytes, verifyOwnedOutputTree } from "./ownedCheckoutWorkerBundle";
 export type OwnedWorkerReview = Parameters<typeof buildOwnedWorker>[1];
-export async function startOwnedCheckoutWorker(input: { db: Pick<PrismaClient, "$queryRawUnsafe">; databaseUrl: string; runtimeId: string; organizationId: string; origin: string; reviewed: OwnedWorkerReview; control?: ReturnType<typeof ownedCheckoutControl> }) {
+export async function startOwnedCheckoutWorker(input: { db: { $queryRawUnsafe: (query: string, ...values: unknown[]) => Promise<Array<{ id: string }>> }; databaseUrl: string; runtimeId: string; organizationId: string; origin: string; reviewed: OwnedWorkerReview; control?: ReturnType<typeof ownedCheckoutControl> }) {
   assertSyntheticSupervisor(process.env); const policy = ownedCheckoutLaunchPolicy(process.env, process.execArgv); newTestPrismaEnvironment(process.env, process.execArgv, input.databaseUrl);
   const control = input.control ?? ownedCheckoutControl();
   let rows: Array<{ id: string }>;
-  try { rows = await control.run(() => input.db.$queryRawUnsafe<Array<{ id: string }>>('SELECT id FROM "IsolatedTestRuntime" WHERE id=$1 AND account=$2', input.runtimeId, "acct-test")); }
+  try { rows = await control.run(() => input.db.$queryRawUnsafe('SELECT id FROM "IsolatedTestRuntime" WHERE id=$1 AND account=$2', input.runtimeId, "acct-test")); }
   catch { if (!input.control) control.dispose(); throw new Error("owned_checkout_supervisor_scope_required"); }
   if (rows.length !== 1) { if (!input.control) control.dispose(); throw new Error("owned_checkout_supervisor_scope_required"); }
   const directory = "/tmp/axiom-owned-checkout-" + randomBytes(16).toString("hex"), session = randomBytes(16).toString("hex"), capability = randomBytes(32).toString("hex");
