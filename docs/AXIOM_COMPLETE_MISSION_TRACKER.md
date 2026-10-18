@@ -9,6 +9,25 @@ checkpoint status; previous observations are retained as evidence history.
 
 PR #161 source integration is complete at main `608efe0fd70623aaf71cb80f799d3b822b9855cd` after both exact-head Test runs and review passed. This is not a production release.
 
+## Resumed execution checkpoint — latest owner order
+
+Current main is `761546b4602eb8a77984b935cb59b13876404295` (merged PR #165).
+The verbatim [resume order](AXIOM_RESUME_ENGINEERING_ORDER.md) adds 131 units
+without replacing any prior requirement: **2,112 rows across 18 available sources**.
+All available original Codex and former Claude responsibilities remain mapped;
+the absent original 36-section specification and scenarios A–L remain unresolved.
+Historical counts and dated observations below retain their original scope.
+
+Existing parallel packages continue: billing collected-payment lifecycle and
+owned application acceptance; Agent guarded real-application cloud continuation;
+Airflow immutable destination review; desktop verified connected-context recovery;
+and ECS immutable-executor admission prerequisites. PR #167's offline evidence
+gate now requires three-way database identity and separate password/Google/GitHub/
+founder-workspace attestations. It validates format, not the truth of evidence.
+Actual production binding, usable recovery point, isolated restore and production
+login remain unverified. No final-release readiness or completion percentage is
+claimed. See the execution ledger for frozen hashes, reviews and validation limits.
+
 ## Additional deferred workstream — support and partnerships
 
 The new support/strategic-partnerships directive is preserved verbatim in
@@ -115,8 +134,8 @@ not substituted for missing source. Recovering that text is a source blocker,
 not a reason to stop independent engineering.
 
 The [editable register](mission/requirements.json) and
-[complete row table](AXIOM_MISSION_REQUIREMENTS.md) contain **1,981 source units
-and placeholders across 17 available sources**. Each has a status, source
+[complete row table](AXIOM_MISSION_REQUIREMENTS.md) contain **2,112 source units
+and placeholders across 18 available sources**. Each has a status, source
 location, domain, scope, evidence, verification limit, owner and next action.
 The register includes process controls and historical proposals as well as
 product requirements. Related source files are **not** acceptance proof.
@@ -1539,3 +1558,29 @@ Fresh-main159 `3343e219` was normally merged as `17998bd1`, preserving desktop r
 Initial PR #160 CI at `8c017012` did not pass. Push run38853196876 passed6628 tests but the production build contract rejected missing ECR SDK externalization. PR run38853215196 passed TypeScript but reported one existing AWS disconnect stale-response UI race (6627passed/onefailed/sixskipped); the native push run38853196885 passed10 Rust tests and Clippy. [Sanitized failure evidence](mission/ecs-observation-initial-ci-failure.json) preserves exact run/job identities. Commit `a10f81bf` adds the ECR package to the existing serverExternalPackages list; the existing generic build contract, config lint and web TypeScript pass. The UI race is being addressed independently before one combined full-suite rerun and fresh exact-head CI. No test suppression, timeout increase, deployment or production change is authorized by these fixes.
 
 The real disconnect race is now fixed in `48bc2ef8`: a synchronous parent snapshot/version fence rejects an old version2 completion after version3 refresh, before stale state or success-notice mutation. A deterministic same-batch regression was red before the fix and green after; existing timing-dependent tests were not suppressed. Independent source review closed the fix. Combined final product source passed the default suite:622 files/6629 tests (one file/six tests skipped),75.94seconds; web TypeScript, desktop0.1.20 release/types/Vite build,30 Python tests, scoped lint, generic37-SDK build contract and tracker consistency also passed sequentially. Initial failed CI excerpts are preserved alongside the recovery evidence rather than replaced. Fresh exact-head CI/clean-lock production builds remain required; no actual cloud, native device or production authentication acceptance is inferred.
+
+## Connected desktop Agent context — reviewed local acceptance (2026-10-18)
+
+The reviewed change `6cc017bf` was normally integrated with main #167
+`31d7f3a9`, producing clean validation source `8e08bcd9`. Existing connected
+repository/environment controls now support labeled search, current-context
+summary and scoped catalog retry. Saved preferences never become active before
+current catalogs validate them. Explicit manual repository recovery remains
+unverified by the catalog and still requires server authorization. Independent
+review reproduced and closed retry regressions involving an explicit empty
+environment and a selected/manual branch; branch changes clear dependent files.
+
+All 46 focused component/model/receipt/demo tests passed. On the integrated
+source, fresh whole web TypeScript (8192 MiB, incremental disabled, root-only
+dependency resolution), default Vitest (642 files / 6,914 tests; one file/six
+tests skipped), separate desktop TypeScript/release-alignment/Vite build,
+30 Python CLI tests, 16 offline auth-evidence tests, scoped lint and the
+18-source/2,112-row mission check passed. No dependency install, Prisma
+generation, Next build, server, provider operation or production change ran.
+See [the source-bound local receipt](mission/desktop-connected-context-local-acceptance.json).
+
+Component transport remains mocked. These checks do not establish native
+installer/keyboard/vault, real GitHub selection, production authentication, paid
+entitlement or provider deployment/rollback acceptance. Required clean exact-head
+CI and production compilation remain merge gates; existing production blockers
+and every other workstream remain active.
