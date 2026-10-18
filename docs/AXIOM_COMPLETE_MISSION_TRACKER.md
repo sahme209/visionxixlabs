@@ -9,6 +9,14 @@ checkpoint status; previous observations are retained as evidence history.
 
 PR #161 source integration is complete at main `608efe0fd70623aaf71cb80f799d3b822b9855cd` after both exact-head Test runs and review passed. This is not a production release.
 
+## Controller checkpoint — October 18, 2026, combined customer Terraform source
+
+Verified main remains `c123b9c38540ce72e8fc5671fe64ef1e468b3828`, including PRs #174–176. The connected customer Terraform profile/producer/import milestone is integrated on source `a7ceea330f6807b0421e7773390f219ad1ab81fc`; receipt-only head `6ad590ef` preserves its product bytes. Fresh web types, 7,834 default tests across 699 files (27 tests and one PostgreSQL file skipped), desktop types/build, Python30, offline16, buildguard38 and tracker22/2154 passed. The combined receipt records dependency-overlay/cache qualifications and independent cleanup. This is source validation, not a genuine customer artifact or provider deployment. Proposed storage SQL remains unapplied; no migration or workflow installation is authorized.
+
+Agent source `392679e5` passes web types, but its single application diagnostic attempt failed closed at a denied server fetch. The exact operation remains unknown; no permissions were broadened and no end-to-end success is claimed. Billing financial/status closure at `c1df0ce0` passed independent review; worker security closure and owned runtime remain pending. Premium demos preserve main at `644acc82`; all three historical browser attempts remain failed with zero images. Azure access remains blocked by the existing managed network policy.
+
+All 22 available sources and 2,154 requirement rows remain represented without changing earlier requirement objects. The absent original 36-section source/scenarios A–L remain missing. Production database binding, usable PITR/verified restore and actual password/Google/GitHub/founder-workspace login remain unverified. Preserve one final explicitly approved Vercel release and separate database, live-payment and installer approval gates. No production changes or deployments were made.
+
 ## Resumed execution checkpoint — latest owner order
 
 Current main is `89aac954a146bdbfe23b0c0605e0e44f07895dde`, including validated

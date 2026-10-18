@@ -124,6 +124,27 @@ export async function readGithubProvenanceResource(input: {
   return gh(path, input.installationToken, { apiVersion: "2026-03-10", bounded: { signal: input.signal, maxBytes: 256 * 1024, budget: input.budget } });
 }
 
+/** Terraform producer source reads: immutable commit/tree/file selectors only.
+ * No branch resolution, archive, caller URL, write or unbounded legacy fetch. */
+export type GithubTerraformSourceResource = {kind:"commit";sha:string}|{kind:"tree";sha:string}|{kind:"file";path:string;commitSha:string};
+export async function readGithubTerraformSource(input:{owner:string;repo:string;installationToken:string;signal:AbortSignal;resource:GithubTerraformSourceResource;budget:GithubReadBudget}):Promise<GithubWriteResult<unknown>> {
+ const unavailable:GithubWriteResult<unknown>={ok:false,error:"github_terraform_source_unavailable"};
+ const name=/^[A-Za-z0-9][A-Za-z0-9_.-]{0,99}$/;
+ if(!name.test(input.owner)||!name.test(input.repo)||!input.installationToken)return unavailable;
+ const r=input.resource;if(!r||typeof r!=="object")return unavailable;
+ const keys=Object.keys(r),expected=r.kind==="file"?["kind","path","commitSha"]:["kind","sha"];
+ if(keys.length!==expected.length||!expected.every(k=>Object.hasOwn(r,k)))return unavailable;
+ let path=`/repos/${encodeURIComponent(input.owner)}/${encodeURIComponent(input.repo)}`;
+ if(r.kind==="file"){
+  if(!isSafeRepositoryPath(r.path)||!/^[A-Za-z0-9_.\/-]{1,512}$/.test(r.path)||!/^[a-f0-9]{40}$/.test(r.commitSha))return unavailable;
+  path+=`/contents/${r.path.split("/").map(encodeURIComponent).join("/")}?ref=${r.commitSha}`;
+ }else if(r.kind==="commit"||r.kind==="tree"){
+  if(!/^[a-f0-9]{40}$/.test(r.sha))return unavailable;
+  path+=`/git/${r.kind==="commit"?"commits":"trees"}/${r.sha}${r.kind==="tree"?"?recursive=1":""}`;
+ }else return unavailable;
+ return gh(path,input.installationToken,{apiVersion:"2026-03-10",bounded:{signal:input.signal,maxBytes:256*1024,budget:input.budget}});
+}
+
 export interface GithubBundleDownloadRule { origin: string; pathPrefix: string }
 
 /** API-returned URL plus server-reviewed origin/path policy; never accepts public caller URLs. */
