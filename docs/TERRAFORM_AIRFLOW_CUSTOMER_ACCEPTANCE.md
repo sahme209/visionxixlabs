@@ -23,6 +23,42 @@ Reviewed 2026-10-15. This is implementation evidence, not evidence of a complete
 
 ## Airflow readiness and governed execution
 
+The 2026-10-16 destination-integrity source milestone adds immutable scheduler
+review evidence, an authenticated paired review read, digest-bound approval and
+the actual native Batch automation approval card. It reuses the existing target
+snapshot, execution CAS, policy and stable allowance reservation. The final local
+target/connection/approver fence follows reservation and precedes durable intent;
+dispatch receives reviewed fields. No provider-wide lock after commit is claimed.
+
+Optional restart-review storage remains proposal-only under
+`docs/proposals/airflow-execution-review-v1.sql`. Absent/partial/drift/unavailable
+catalog evidence blocks restart proposals and approvals without new ordinary
+Prisma columns. Historical executions cannot recapture today's target; rejection
+remains available. A stale final target releases only a new confirmed hold and
+restores a rejectable pending action with no retry. Release uncertainty retains
+reconciliation; a failed pending-state write reports local state uncertainty.
+Existing unknown holds and receipt replay retain their prior stable key.
+
+Focused tests include scheduler execution/sidecar atomic composition, preclaim
+and final-fence refusals, digest/body requirements, release and state-write
+failures, unchanged non-restart behavior and actual native-panel stale-context
+isolation. They use recording providers and bounded in-memory repositories.
+[Owned acceptance evidence](mission/local-airflow-restart-review-acceptance.json)
+at clean `2c9fd78e` records exact real-catalog readiness, actual paired Next HTTP,
+two-client PostgreSQL target/membership lock waits and verified cleanup. The
+synthetic Airflow3 fixture served only GETs; no provider write, GitHub dispatch,
+real Airflow/timetable, packaged native UI or production installation is claimed.
+Fresh web/desktop TypeScript, desktop build, 6,964 default tests and 30 Python
+tests passed. See `AIRFLOW_RESTART_REVIEW_PROPOSAL.md` for commands and limits.
+
+The separate [combined-source observation](mission/local-airflow-billing-combined-acceptance.json)
+records another actual owned Airflow Next/PG pass and 7,117 default tests at
+billing-integrated `f5aedfac`. After the desktop-only main merge, final
+`6247b784` passed fresh web/desktop types, 51 focused component/demo tests,
+desktop build, Python30, offline16 and tracker checks. These are distinct
+source scopes; the earlier receipts remain unchanged. No real provider or
+production acceptance follows, and exact-final-head full CI remains required.
+
 The Airflow 3 client uses `/api/v2`, tenant-encrypted connection credentials, bounded requests, and redirect refusal. Scheduled DAG triggers use the existing deterministic occurrence identifier and reconcile a 409 against the exact run; that idempotency implementation is retained.
 
 Dependency-gated proposals require successful dependency runs whose valid logical timestamps are at least as recent as the source's valid logical timestamp. Missing or malformed timestamps cannot establish freshness and block proposal/dispatch. In particular, an Airflow 3 manual run with `logical_date: null` must not inherit permission from an unrelated historical success. Rules without dependencies retain manual-run support. This is a freshness gate, not proof that upstream and downstream share a business partition: exact data-interval correlation is still missing. A null-date dependency workflow needs an explicit reviewed correlation policy before enabling execution; do not invent a timestamp or disable dependencies to bypass the gate.
