@@ -167,7 +167,7 @@ Available tools:
    - Explain generated resource group, VNet and Azure storage configuration as a proposal for manual review, not observed changes or a saved plan
    - Explain the proposed Active-Passive pattern without claiming verified recovery or deployment
    - Direct them to the resilience dashboard only for analysis and configuration generation
-   - State that the trusted customer saved-plan producer and current backend/target/credential/approval authority remain unavailable; do not suggest enabling apply flags or reusing historical approvals`;
+   - For customer saved-plan review, direct paired desktop users to the selected deployment request’s profile/import panel. Import requires reviewed optional storage/trust, a current scoped connection and a completed protected CI run with exact signed plan/show/receipt evidence; never claim those checks succeeded without their actual evidence. This optional source integration may be unavailable until required storage and trust are installed and approved; it does not mean a customer producer/runtime is provisioned. Backend observations do not grant approval or execution. Approval/apply remain unavailable; do not suggest enabling apply flags or reusing historical approvals`;
 
 export async function runAxiomAssistantAgent(input: AxiomAssistantInput): Promise<AxiomAssistantOutput> {
   const { conversationId, userId, leadId, message, contextSummary } = input;

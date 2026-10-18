@@ -1,0 +1,1247 @@
+{
+  "schema": "axiom.terraform.customer-plan-combined-core-validation.v1",
+  "status": "combined_local_core_gates_passed; genuine_customer_producer_and_application_acceptance_open",
+  "date": "2026-10-18",
+  "validatedSourceCommit": "a7ceea330f6807b0421e7773390f219ad1ab81fc",
+  "integrationParents": [
+    "9f59b006ecad88b2ceec2d308f78f4e2f9f4a276",
+    "c123b9c38540ce72e8fc5671fe64ef1e468b3828"
+  ],
+  "mergeBase": "89aac954a146bdbfe23b0c0605e0e44f07895dde",
+  "publication": "No author push/PR/deployment; root owns exact-head clean-install/full-build/full-test CI and publication after evidence review.",
+  "sourceBinding": {
+    "allGatesSameTrackedSourceCommit": true,
+    "cleanBeforeAndAfterGates": true,
+    "trackedSourceTestsConfigurationUnchangedDuringGates": true,
+    "sourceHashRows": [
+      {
+        "group": "featurePreservation",
+        "path": "app/api/desktop/deployments/[id]/terraform-plan-profile/__tests__/route.test.ts",
+        "sha256": "b277c1893652043b51907ed52d8dbee64cc0a6eb0bb0011c9b0b9c5075de84a4"
+      },
+      {
+        "group": "featurePreservation",
+        "path": "app/api/desktop/deployments/[id]/terraform-plan-profile/route.ts",
+        "sha256": "a76d069ec2b09cff547d7ded85c380ce3ce532419365d8b9b74d811812a4c1e3"
+      },
+      {
+        "group": "featurePreservation",
+        "path": "app/api/desktop/deployments/[id]/terraform-plans/[artifactId]/route.ts",
+        "sha256": "98e5e2bc64148849a3511158d0c90361d3440c2f970db19d819b1e3620d37d49"
+      },
+      {
+        "group": "featurePreservation",
+        "path": "app/api/desktop/deployments/[id]/terraform-plans/__tests__/route.test.ts",
+        "sha256": "a3b0f8006d071dc38487a4d26e4b5e2959d9e5795420326ce7d9d3451e7cc961"
+      },
+      {
+        "group": "featurePreservation",
+        "path": "app/api/desktop/deployments/[id]/terraform-plans/import/route.ts",
+        "sha256": "763b682279037bf6727dc200f0c019861eb631c997146cdad9ab40616855bd6b"
+      },
+      {
+        "group": "featurePreservation",
+        "path": "app/api/desktop/deployments/[id]/terraform-plans/route.ts",
+        "sha256": "e003875637d444408357e849fc21ac49c1c7a1581d78982bb76d1dc368865816"
+      },
+      {
+        "group": "featurePreservation",
+        "path": "app/dashboard/resilience/page.tsx",
+        "sha256": "9494162515e18e3607d52118aab4a54aa60fcd729995a81bc5d7ade95ba32a16"
+      },
+      {
+        "group": "featurePreservation",
+        "path": "desktop/src/components/TerraformCustomerPlanProfile.tsx",
+        "sha256": "74d897adfb7f607bc6e2e55c7a6dc6865ffbeebaa139ce8379f6a19a36cf01d7"
+      },
+      {
+        "group": "featurePreservation",
+        "path": "desktop/src/components/TerraformPlanReview.tsx",
+        "sha256": "5bdb3a285867e3bb0bc1a894ea9481cd2ac8996b6e56e11eb4914778bf68fc04"
+      },
+      {
+        "group": "featurePreservation",
+        "path": "desktop/src/lib/terraformCustomerPlanContract.ts",
+        "sha256": "eb07c3f5b4335377b89ce03adeecd3b447b97fce89d3d633fc04ebb4d085ad80"
+      },
+      {
+        "group": "featurePreservation",
+        "path": "docs/TERRAFORM_CUSTOMER_PLAN_PRODUCER.md",
+        "sha256": "7f12418615f58a3d8e740962a43b221832583afb22bcd9ed0198de8f23bac8bd"
+      },
+      {
+        "group": "featurePreservation",
+        "path": "docs/mission/local-terraform-customer-plan-core-validation.json",
+        "sha256": "01d3ff0e744c506e203ff3679c75d9e3e2be882601edb61f22a017c88c282421"
+      },
+      {
+        "group": "featurePreservation",
+        "path": "docs/proposals/terraform-customer-plan-producer-v2.sql",
+        "sha256": "887efd506bc3af13d2725784f94811f33c7e1a3e372ae3c95b35682e1990240b"
+      },
+      {
+        "group": "featurePreservation",
+        "path": "docs/templates/customer-terraform-plan.yml.disabled",
+        "sha256": "4077ba05a4f8eeca3d3a42fee0cee7aff5b0324c95c4f5268bbaa52572b03990"
+      },
+      {
+        "group": "featurePreservation",
+        "path": "lib/agents/__tests__/legacyTerraformGuidance.test.ts",
+        "sha256": "831213bc5843ad063ebde96cce11f35d1b4622eaf6de87fa952b0364dc317415"
+      },
+      {
+        "group": "featurePreservation",
+        "path": "lib/agents/axiomAssistantAgent.ts",
+        "sha256": "200d9f4e8f37c2949c0ae0f4fe0f334e1b86119cefb19c6609f3650ac5997c2b"
+      },
+      {
+        "group": "featurePreservation",
+        "path": "lib/cloud/aws/ecsObservation/boundedAwsHandler.ts",
+        "sha256": "575bfa790fd87d5cfb17f0aee6cb891e503aa1f9d267969d9f0542de37dada78"
+      },
+      {
+        "group": "featurePreservation",
+        "path": "lib/cloud/aws/enrollment/stsValidation.ts",
+        "sha256": "9e2b1c0fc129836948ee1930a64058aaba35afc9b324bb3463fb0a8975d09b9a"
+      },
+      {
+        "group": "featurePreservation",
+        "path": "lib/connectors/github/githubWriteClient.ts",
+        "sha256": "5dd3c44b67afda55e284dd756078b17fd6412a80be9037d97171488aa57103eb"
+      },
+      {
+        "group": "featurePreservation",
+        "path": "lib/desktop/__tests__/terraformCustomerPlanClient.test.ts",
+        "sha256": "453ceab04142e14a424989748219dc119e5c73c71841bf914f83e63f73b86e4e"
+      },
+      {
+        "group": "featurePreservation",
+        "path": "lib/desktop/__tests__/terraformCustomerPlanIntegration.test.ts",
+        "sha256": "d39e036059cc3bff62fdfc0446b9e47881641787251545df2ef89b384980f728"
+      },
+      {
+        "group": "featurePreservation",
+        "path": "lib/desktop/__tests__/terraformCustomerPlanProfile.test.ts",
+        "sha256": "fffc42bd83906ab71e1a6815b68c76a70a6c5b25956c97e533d75e8d476278a8"
+      },
+      {
+        "group": "featurePreservation",
+        "path": "lib/terraform/__tests__/customerPlanAuthority.test.ts",
+        "sha256": "ed3331bf52d35a78596763748af14a39aadfec535d90c0c03c2bd3f8c88c99be"
+      },
+      {
+        "group": "featurePreservation",
+        "path": "lib/terraform/__tests__/customerPlanAuthorityFixtures.ts",
+        "sha256": "c75bc748ab594316364c158f3e96d51f5c023b28fcabd6f16e2add781d1ef147"
+      },
+      {
+        "group": "featurePreservation",
+        "path": "lib/terraform/__tests__/customerPlanAwsBodyDelivery.test.ts",
+        "sha256": "c23cd84b2469978894986cafbc9c248aa54b6ec3ef6b2c0c4d6da9bade9ab0e1"
+      },
+      {
+        "group": "featurePreservation",
+        "path": "lib/terraform/__tests__/customerPlanAwsHeadBudget.test.ts",
+        "sha256": "0733330f697b9d09080a80dd1082e888700b64b9ae48794b548983009149bdb3"
+      },
+      {
+        "group": "featurePreservation",
+        "path": "lib/terraform/__tests__/customerPlanAwsRead.test.ts",
+        "sha256": "17008410ffa50700febadb0046ff0116548cb5056bec0d20687f73a16a8c0200"
+      },
+      {
+        "group": "featurePreservation",
+        "path": "lib/terraform/__tests__/customerPlanCatalog.synthetic.json",
+        "sha256": "dde618fc218b401df7b092223505f8c401144767ec09ace6e3f15d8cf47e8b33"
+      },
+      {
+        "group": "featurePreservation",
+        "path": "lib/terraform/__tests__/customerPlanContract.test.ts",
+        "sha256": "cc1653486174a4c27e4e19a7f550f470a2d3d4bd729494e7f5a230b71bf72956"
+      },
+      {
+        "group": "featurePreservation",
+        "path": "lib/terraform/__tests__/customerPlanFixtures.ts",
+        "sha256": "9516754fe4c098b9449d8248407b5bb95e5d4ee14f1c7b2f04d26d7f188f70ca"
+      },
+      {
+        "group": "featurePreservation",
+        "path": "lib/terraform/__tests__/customerPlanGithubRead.test.ts",
+        "sha256": "870f0eabc839bcfbc8a566ae538484600243066928027739289b755485e83701"
+      },
+      {
+        "group": "featurePreservation",
+        "path": "lib/terraform/__tests__/customerPlanGithubSource.test.ts",
+        "sha256": "f5153ccf3a2d129e4f5b7913fe1342c1117e3dc050cf737d6851a7abd68a2cc2"
+      },
+      {
+        "group": "featurePreservation",
+        "path": "lib/terraform/__tests__/customerPlanProducer.test.ts",
+        "sha256": "b9932f783394262ed3187c6bcb01d37a85c797b374c99f65e831039c2dba7923"
+      },
+      {
+        "group": "featurePreservation",
+        "path": "lib/terraform/__tests__/customerPlanProfileService.test.ts",
+        "sha256": "0094288c47aa4806d858eeb2a11c2bb4ce9bd09103bc2dded721e3f2220cdff6"
+      },
+      {
+        "group": "featurePreservation",
+        "path": "lib/terraform/__tests__/customerPlanProvenance.test.ts",
+        "sha256": "08e663105d93edb3e4e71e19fcb003db1c97d103aa0a5af70bb7d96d566986ec"
+      },
+      {
+        "group": "featurePreservation",
+        "path": "lib/terraform/__tests__/customerPlanProvenanceCrypto.test.ts",
+        "sha256": "b94352519c405ad86beb10ffa5473a748f91718bc3112cc91d318852901d9003"
+      },
+      {
+        "group": "featurePreservation",
+        "path": "lib/terraform/__tests__/customerPlanRead.test.ts",
+        "sha256": "859915a01236ce5617cf6b765774e3e0f98a9704c1b41d4f8545fffd1d28c0bd"
+      },
+      {
+        "group": "featurePreservation",
+        "path": "lib/terraform/__tests__/customerPlanRepository.test.ts",
+        "sha256": "74fb04830f0700e3e5fd9b17aee0ee6a58f8a20602c6b21fb9601c7436f32b55"
+      },
+      {
+        "group": "featurePreservation",
+        "path": "lib/terraform/__tests__/customerPlanRuntime.test.ts",
+        "sha256": "91ea72f646d1a085ca60ecda3b867fab250592468180509a8e7c0987712ce3d2"
+      },
+      {
+        "group": "featurePreservation",
+        "path": "lib/terraform/__tests__/customerPlanStore.test.ts",
+        "sha256": "6ae1ac0f95104d8e5baa8192594207415e2332ecc1a80ff6489ccb143464304d"
+      },
+      {
+        "group": "featurePreservation",
+        "path": "lib/terraform/__tests__/customerPlanStsRead.test.ts",
+        "sha256": "5ef1ce7e3f1567fd1452a870558c861850647e54f0360f53c2975edc2ff56d72"
+      },
+      {
+        "group": "featurePreservation",
+        "path": "lib/terraform/__tests__/customerPlanTrust.test.ts",
+        "sha256": "c4ee538c171de5cafbc1dda42a6ffb99ab622e24270482a31dafa00374ed6bd8"
+      },
+      {
+        "group": "featurePreservation",
+        "path": "lib/terraform/__tests__/customerPlanWorkflow.test.ts",
+        "sha256": "3932dd770b352129be68d0d824b000e1e6627c37eafb38c0df29bc8dfab76252"
+      },
+      {
+        "group": "featurePreservation",
+        "path": "lib/terraform/customerPlanAuthority.ts",
+        "sha256": "40585adce2387a092f57392f75a228af15aa2885c13371ed30f0f2d8e8d2e02d"
+      },
+      {
+        "group": "featurePreservation",
+        "path": "lib/terraform/customerPlanAwsRead.ts",
+        "sha256": "f3d725da2e1bf001f3b8ac81447e38de9bdb13de46c3368594b2f7dcc26726f5"
+      },
+      {
+        "group": "featurePreservation",
+        "path": "lib/terraform/customerPlanContract.ts",
+        "sha256": "d76d17d660708a5ba46a6e5d25e59dc9cc11fc855fbb8ad4c53ab3e111ec987e"
+      },
+      {
+        "group": "featurePreservation",
+        "path": "lib/terraform/customerPlanDto.ts",
+        "sha256": "a3d957f781ec4167147b2537d481c6c830bcd360c18b8e3c1b99e4ccfc0f87be"
+      },
+      {
+        "group": "featurePreservation",
+        "path": "lib/terraform/customerPlanGithubRead.ts",
+        "sha256": "c989a1cb45df9f402cca3b6143bc4431e0c3c1c57d96cb15d02820a03f0a94fe"
+      },
+      {
+        "group": "featurePreservation",
+        "path": "lib/terraform/customerPlanHttp.ts",
+        "sha256": "8327b5cebc5f542acf3bacf15f3db3de04e89fd7b90cc17f4492560511f27f41"
+      },
+      {
+        "group": "featurePreservation",
+        "path": "lib/terraform/customerPlanProvenance.ts",
+        "sha256": "00b4ad34d737946eff8d0570035ee769061ad01d78ba9cfd0ca6eb6c4e6f0824"
+      },
+      {
+        "group": "featurePreservation",
+        "path": "lib/terraform/customerPlanRead.ts",
+        "sha256": "65fcc929ef54244717f6d79aae9d2c1a48858f42266c47729060341f52adabe4"
+      },
+      {
+        "group": "featurePreservation",
+        "path": "lib/terraform/customerPlanRepository.ts",
+        "sha256": "5a9cb0f18ffc06cb7d0ba6044f76bb760b9d000e2ca50936b5be4371bb49bd4d"
+      },
+      {
+        "group": "featurePreservation",
+        "path": "lib/terraform/customerPlanRuntime.ts",
+        "sha256": "32baf3630a5add45b6c635bd3da0e0d702b15a0b2ad04986d99d87160c13197c"
+      },
+      {
+        "group": "featurePreservation",
+        "path": "lib/terraform/customerPlanService.ts",
+        "sha256": "dbc63d354bb7a94016e02644fde0fedaf9ba86f31478bae82077c3a48b6ada21"
+      },
+      {
+        "group": "featurePreservation",
+        "path": "lib/terraform/customerPlanStore.ts",
+        "sha256": "bc5816fb75b2f00533b31136e205490c9044aab30cfa3421e6ce470c864107d8"
+      },
+      {
+        "group": "featurePreservation",
+        "path": "lib/terraform/customerPlanTrust.ts",
+        "sha256": "16257a848e00ab9073d6c6ed44269048bb66ef9bd6eceda5328ef36e6e98f04b"
+      },
+      {
+        "group": "featurePreservation",
+        "path": "lib/terraform/customerPlanTypes.ts",
+        "sha256": "063649f2dbead7d9156efd61c028ef100440346757c71ea570f2ce04c5748470"
+      },
+      {
+        "group": "featurePreservation",
+        "path": "next.config.ts",
+        "sha256": "e29e0ed18407a18820a2047e41e52272a80dc7cd1f69dbb221ad9e9977f1a040"
+      },
+      {
+        "group": "featurePreservation",
+        "path": "package-lock.json",
+        "sha256": "24228d15d056785f239f77107cd9ed1f8161beed53e1edc128826e4ce4298fd7"
+      },
+      {
+        "group": "featurePreservation",
+        "path": "package.json",
+        "sha256": "6201717595cfb27706f75883b10a6bee501048a085ec64a5eec9446c6a193ba5"
+      },
+      {
+        "group": "featurePreservation",
+        "path": "scripts/terraform/customer-plan-producer.mjs",
+        "sha256": "80291599f5fb641269cfcdaccddc6cb6aad60a25845cf367e2ce73cfbe3ea846"
+      },
+      {
+        "group": "incomingPreservation",
+        "path": "desktop/src/App.tsx",
+        "sha256": "1f739c6303c306bd1eca2d42b10335e1e637bc899cb72d6573413990bd72ba7f"
+      },
+      {
+        "group": "incomingPreservation",
+        "path": "desktop/src/lib/activeDesktopCredential.ts",
+        "sha256": "dd2cc53825f02bef901ece36cecd139a4b3a04ebe773ccc13fe600f4c8c271e3"
+      },
+      {
+        "group": "incomingPreservation",
+        "path": "desktop/src/lib/credentialVerificationCoordinator.ts",
+        "sha256": "686b23af528b7c56875ed41f46ef920279ca193f9ebc58749ea3ebc80995ac30"
+      },
+      {
+        "group": "incomingPreservation",
+        "path": "desktop/src/views/DesktopSignInView.tsx",
+        "sha256": "fd423b80a5921712e95908abdea538bed979f3d2ca3f08c82ef2ebf9912114f9"
+      },
+      {
+        "group": "incomingPreservation",
+        "path": "docs/AXIOM_COMPLETE_MISSION_TRACKER.md",
+        "sha256": "952166f44893a2bb77fb9ffd843546402ab16d019022d22dc06765f89842ce9f"
+      },
+      {
+        "group": "incomingPreservation",
+        "path": "docs/AXIOM_MISSION_REQUIREMENTS.md",
+        "sha256": "1f3380415c5b78baff89d5f4c7f5711dba589c4a5ac66230acb1af1377ff0f74"
+      },
+      {
+        "group": "incomingPreservation",
+        "path": "docs/desktop/saved-signin-recovery.md",
+        "sha256": "e8171e137e4a9c20b9bc0ec7bc6c5d573179c41bd59a6c038166dc1eba5b481e"
+      },
+      {
+        "group": "incomingPreservation",
+        "path": "docs/mission/desktop-saved-signin-local-acceptance.json",
+        "sha256": "37fb8178ba24df14ca6f9ff669915a29c35a8bb76653abf9f6a295cb572d66ef"
+      },
+      {
+        "group": "incomingPreservation",
+        "path": "docs/mission/execution-2026-10-16.md",
+        "sha256": "08bb4ea39abff6d6a6c1f4027526f24ff7a6ce0a7a12bcbab13a870d1d1a37bc"
+      },
+      {
+        "group": "incomingPreservation",
+        "path": "docs/mission/requirements.json",
+        "sha256": "7962bbed43a666baf6029122de19af37f452a7b5803cc97675dcca68f2e0d600"
+      },
+      {
+        "group": "incomingPreservation",
+        "path": "lib/__tests__/desktopFirstRunContract.test.ts",
+        "sha256": "88ed1380dbc666a4819ad997c3046096685b452d751724668d958935b9032b63"
+      },
+      {
+        "group": "incomingPreservation",
+        "path": "lib/desktop/__tests__/credentialVerificationCoordinator.test.ts",
+        "sha256": "05ddde9cf3f4618b517a81fff619ce856093f9113ad77ab46c0968f12ea37c66"
+      },
+      {
+        "group": "incomingPreservation",
+        "path": "lib/desktop/__tests__/desktopClientError.test.ts",
+        "sha256": "bf6e8688ab52cf7aeaf3375a128ffced7b7b4ada19d7ba8dce22c517fc0f9087"
+      },
+      {
+        "group": "incomingPreservation",
+        "path": "lib/desktop/__tests__/desktopCredentialCandidate.test.ts",
+        "sha256": "25aa6f1f0c09ee43937497af2fd8b28e063d63ca2e0f09df34b257475d95c7c4"
+      },
+      {
+        "group": "incomingPreservation",
+        "path": "lib/desktop/__tests__/savedSignInRecovery.test.ts",
+        "sha256": "e79d9b3392b909968ff09b60cafc8e5d2c17861fb9480a636cb120c0748b7278"
+      },
+      {
+        "group": "protected",
+        "path": "lib/terraform/savedPlanArtifact.ts",
+        "ref": "bd44b180fafcd8429e31c74fa83c8967e28a218c",
+        "sha256": "1fc434015d580a5f7615442064c850e5a9336a69fea66ac69f188060797796ae"
+      },
+      {
+        "group": "protected",
+        "path": "lib/terraform/savedPlanArtifactIO.ts",
+        "ref": "bd44b180fafcd8429e31c74fa83c8967e28a218c",
+        "sha256": "e8f7cdff2dfa20c389a94625ef464ce08642ed363bf481b0efdd23193b5a5081"
+      },
+      {
+        "group": "protected",
+        "path": "lib/terraform/savedPlanStore.ts",
+        "ref": "bd44b180fafcd8429e31c74fa83c8967e28a218c",
+        "sha256": "1f7a77e59aade589362f74aabb5cb16783d44b0b25507a8df45af8339485ae8d"
+      },
+      {
+        "group": "protected",
+        "path": "lib/terraform/savedPlanRead.ts",
+        "ref": "bd44b180fafcd8429e31c74fa83c8967e28a218c",
+        "sha256": "b3b26e2fdfd94944f7bcf7f9d9b88cef85f8677c42462653b45f26f49fecbf14"
+      },
+      {
+        "group": "protected",
+        "path": "lib/terraform/savedPlanDto.ts",
+        "ref": "bd44b180fafcd8429e31c74fa83c8967e28a218c",
+        "sha256": "e444bdf4b5a7612660c8ce9f6d2244dd55f6e51d3a89357516330b82d3d36fed"
+      },
+      {
+        "group": "protected",
+        "path": "docs/proposals/terraform-saved-plan-storage-v1.sql",
+        "ref": "bd44b180fafcd8429e31c74fa83c8967e28a218c",
+        "sha256": "127737f89aff3d46265fa52a431c6dea43d60ee2d06be376b98800e3e2e2b0a0"
+      },
+      {
+        "group": "protected",
+        "path": "package.json",
+        "ref": "4720c6c5bb8463d890c8957a27c0829c4de2e729",
+        "sha256": "6201717595cfb27706f75883b10a6bee501048a085ec64a5eec9446c6a193ba5"
+      },
+      {
+        "group": "protected",
+        "path": "package-lock.json",
+        "ref": "4720c6c5bb8463d890c8957a27c0829c4de2e729",
+        "sha256": "24228d15d056785f239f77107cd9ed1f8161beed53e1edc128826e4ce4298fd7"
+      },
+      {
+        "group": "protected",
+        "path": "scripts/terraform/customer-plan-producer.mjs",
+        "ref": "4720c6c5bb8463d890c8957a27c0829c4de2e729",
+        "sha256": "80291599f5fb641269cfcdaccddc6cb6aad60a25845cf367e2ce73cfbe3ea846"
+      },
+      {
+        "group": "protected",
+        "path": "docs/templates/customer-terraform-plan.yml.disabled",
+        "ref": "4720c6c5bb8463d890c8957a27c0829c4de2e729",
+        "sha256": "4077ba05a4f8eeca3d3a42fee0cee7aff5b0324c95c4f5268bbaa52572b03990"
+      },
+      {
+        "group": "protected",
+        "path": "lib/terraform/customerPlanAwsRead.ts",
+        "ref": "4720c6c5bb8463d890c8957a27c0829c4de2e729",
+        "sha256": "f3d725da2e1bf001f3b8ac81447e38de9bdb13de46c3368594b2f7dcc26726f5"
+      },
+      {
+        "group": "protected",
+        "path": "lib/terraform/customerPlanGithubRead.ts",
+        "ref": "4720c6c5bb8463d890c8957a27c0829c4de2e729",
+        "sha256": "c989a1cb45df9f402cca3b6143bc4431e0c3c1c57d96cb15d02820a03f0a94fe"
+      },
+      {
+        "group": "protected",
+        "path": "lib/cloud/aws/enrollment/stsValidation.ts",
+        "ref": "4720c6c5bb8463d890c8957a27c0829c4de2e729",
+        "sha256": "9e2b1c0fc129836948ee1930a64058aaba35afc9b324bb3463fb0a8975d09b9a"
+      },
+      {
+        "group": "protected",
+        "path": "lib/terraform/customerPlanProvenance.ts",
+        "ref": "4720c6c5bb8463d890c8957a27c0829c4de2e729",
+        "sha256": "00b4ad34d737946eff8d0570035ee769061ad01d78ba9cfd0ca6eb6c4e6f0824"
+      },
+      {
+        "group": "protected",
+        "path": "lib/terraform/customerPlanTrust.ts",
+        "ref": "4720c6c5bb8463d890c8957a27c0829c4de2e729",
+        "sha256": "16257a848e00ab9073d6c6ed44269048bb66ef9bd6eceda5328ef36e6e98f04b"
+      },
+      {
+        "group": "protected",
+        "path": "lib/cloud/aws/ecsObservation/boundedAwsHandler.ts",
+        "ref": "4720c6c5bb8463d890c8957a27c0829c4de2e729",
+        "sha256": "575bfa790fd87d5cfb17f0aee6cb891e503aa1f9d267969d9f0542de37dada78"
+      },
+      {
+        "group": "protected",
+        "path": "docs/proposals/terraform-customer-plan-producer-v2.sql",
+        "ref": "4720c6c5bb8463d890c8957a27c0829c4de2e729",
+        "sha256": "887efd506bc3af13d2725784f94811f33c7e1a3e372ae3c95b35682e1990240b"
+      },
+      {
+        "group": "bothParentSharedFile",
+        "path": "desktop/src/lib/desktopClient.ts",
+        "sha256": "8804e8a06a10100ba1be3383bbcf2106daebe72fd85641591b5c2c2deff05761"
+      },
+      {
+        "group": "bothParentSharedFile",
+        "path": "lib/demo/demoScenarios.ts",
+        "sha256": "a1de154db18d909b065fc990cce612a3cba97f58d1c250bd984493f0c2ab3d71"
+      },
+      {
+        "group": "historicalCoreReceipt",
+        "path": "docs/mission/local-terraform-customer-plan-core-validation.json",
+        "sha256": "01d3ff0e744c506e203ff3679c75d9e3e2be882601edb61f22a017c88c282421"
+      }
+    ],
+    "hashRows": 96,
+    "uniquePaths": 84,
+    "all17ProtectedPathsUnchanged": true,
+    "bothParentDesktopClientAndDemoEditPayloads": {
+      "desktop/src/lib/desktopClient.ts": {
+        "sha256": "8804e8a06a10100ba1be3383bbcf2106daebe72fd85641591b5c2c2deff05761",
+        "exactOursPatchPayloadPreserved": true,
+        "exactMainPatchPayloadPreserved": true,
+        "oursPatchPayloadSha256": "bfe809989e3161832841f17fb5d7225f8e17475f976ad6c09f4e751c5f561d8e",
+        "mainPatchPayloadSha256": "5bad5f34201d978834f3d925a1db972ef9b000841d34868811e6cdfebc1aa237"
+      },
+      "lib/demo/demoScenarios.ts": {
+        "sha256": "a1de154db18d909b065fc990cce612a3cba97f58d1c250bd984493f0c2ab3d71",
+        "exactOursPatchPayloadPreserved": true,
+        "exactMainPatchPayloadPreserved": true,
+        "oursPatchPayloadSha256": "c1d3059a65c876d17091fa3d75cf148f523d8b5b3d1b450d60932efdcb9ad1be",
+        "mainPatchPayloadSha256": "bb9570bb2519742f2f97210483905bb85fbabc6493658c68ef0e8bfff390209d"
+      }
+    },
+    "canonicalExactMain": {
+      "sources": 22,
+      "rows": 2154,
+      "files": [
+        {
+          "path": "docs/mission/requirements.json",
+          "sha256": "7962bbed43a666baf6029122de19af37f452a7b5803cc97675dcca68f2e0d600",
+          "exactMain": true
+        },
+        {
+          "path": "docs/AXIOM_MISSION_REQUIREMENTS.md",
+          "sha256": "1f3380415c5b78baff89d5f4c7f5711dba589c4a5ac66230acb1af1377ff0f74",
+          "exactMain": true
+        },
+        {
+          "path": "docs/AXIOM_COMPLETE_MISSION_TRACKER.md",
+          "sha256": "952166f44893a2bb77fb9ffd843546402ab16d019022d22dc06765f89842ce9f",
+          "exactMain": true
+        }
+      ]
+    },
+    "historicalNamed4cbReceipt": {
+      "path": "docs/mission/local-terraform-customer-plan-core-validation.json",
+      "sha256": "01d3ff0e744c506e203ff3679c75d9e3e2be882601edb61f22a017c88c282421",
+      "unchanged": true,
+      "scope": "full7809 at6e, finaltypes/focus470 at4cb only; not combinednewhead gates"
+    },
+    "postValidationDocumentation": "Only this new named receipt and the feature validation explanation are added after gates; no product/test/config/canonical edits.",
+    "postValidationDocumentationException": {
+      "path": "docs/TERRAFORM_CUSTOMER_PLAN_PRODUCER.md",
+      "validatedA7Sha256": "7f12418615f58a3d8e740962a43b221832583afb22bcd9ed0198de8f23bac8bd",
+      "receiptCommitSha256": "55f0c8002aa1ebc7bfeddc410cde03cb41cd7ecef52fa8d006683c6eceedfd5b",
+      "qualification": "Append-only validation explanation after gates; all other96-row paths remain validated source, with duplicate rows counted explicitly."
+    }
+  },
+  "gates": {
+    "wholeWebTypes": {
+      "sourceCommit": "a7ceea330f6807b0421e7773390f219ad1ab81fc",
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/node",
+        "/workspace/axiom-terraform-customer-producer/node_modules/typescript/bin/tsc",
+        "--noEmit",
+        "--incremental",
+        "false"
+      ],
+      "cwd": "/workspace/axiom-terraform-customer-producer",
+      "envKeys": [
+        "HTTPS_PROXY",
+        "HTTP_PROXY",
+        "LANG",
+        "LC_ALL",
+        "NODE_EXTRA_CA_CERTS",
+        "NODE_OPTIONS",
+        "NO_PROXY",
+        "PATH",
+        "PYTHONDONTWRITEBYTECODE",
+        "REQUESTS_CA_BUNDLE",
+        "SSL_CERT_FILE",
+        "TMPDIR",
+        "http_proxy",
+        "https_proxy",
+        "no_proxy"
+      ],
+      "exitCode": 0,
+      "durationSeconds": 61.56,
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "heapMiB": 8192,
+      "incremental": false
+    },
+    "unfilteredDefaultFullSuite": {
+      "sourceCommit": "a7ceea330f6807b0421e7773390f219ad1ab81fc",
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/node",
+        "/workspace/axiom-terraform-customer-producer/node_modules/vitest/vitest.mjs",
+        "run"
+      ],
+      "cwd": "/workspace/axiom-terraform-customer-producer",
+      "envKeys": [
+        "HTTPS_PROXY",
+        "HTTP_PROXY",
+        "LANG",
+        "LC_ALL",
+        "NODE_EXTRA_CA_CERTS",
+        "NODE_OPTIONS",
+        "NO_PROXY",
+        "PATH",
+        "PYTHONDONTWRITEBYTECODE",
+        "REQUESTS_CA_BUNDLE",
+        "SSL_CERT_FILE",
+        "TMPDIR",
+        "http_proxy",
+        "https_proxy",
+        "no_proxy"
+      ],
+      "exitCode": 0,
+      "durationSeconds": 89.094,
+      "logSha256": "b39768a578dce904283d657882ce7514bacf5fbe2ec558bd6fbe4f910bd3803e",
+      "passedTests": 7834,
+      "passedFiles": 699,
+      "skippedTests": 27,
+      "skippedFiles": 1,
+      "totalTests": 7861,
+      "totalFiles": 700,
+      "vitestDurationSeconds": 88.27,
+      "unhandledErrors": 0,
+      "unfiltered": true,
+      "timeoutOverride": false,
+      "retainedActualSdkLoopback": {
+        "passedTests": 24,
+        "row": "\u2713 lib/cloud/aws/ecsObservation/__tests__/wire.test.ts (24 tests) 445ms",
+        "qualification": "Existing ECS SDK local HTTP/parser ordinary-response regression through shared bounded handler; not independent Terraform S3 HEAD/Web-body parser acceptance."
+      }
+    },
+    "desktopTypes": {
+      "sourceCommit": "a7ceea330f6807b0421e7773390f219ad1ab81fc",
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/node",
+        "/workspace/axiom-terraform-customer-producer/desktop/node_modules/typescript/bin/tsc",
+        "--noEmit",
+        "--incremental",
+        "false",
+        "-p",
+        "/workspace/axiom-terraform-customer-producer/desktop/tsconfig.json"
+      ],
+      "cwd": "/workspace/axiom-terraform-customer-producer",
+      "envKeys": [
+        "HTTPS_PROXY",
+        "HTTP_PROXY",
+        "LANG",
+        "LC_ALL",
+        "NODE_EXTRA_CA_CERTS",
+        "NODE_OPTIONS",
+        "NO_PROXY",
+        "PATH",
+        "PYTHONDONTWRITEBYTECODE",
+        "REQUESTS_CA_BUNDLE",
+        "SSL_CERT_FILE",
+        "TMPDIR",
+        "http_proxy",
+        "https_proxy",
+        "no_proxy"
+      ],
+      "exitCode": 0,
+      "durationSeconds": 6.546,
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "desktopReleaseGuard": {
+      "sourceCommit": "a7ceea330f6807b0421e7773390f219ad1ab81fc",
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/node",
+        "/workspace/axiom-terraform-customer-producer/scripts/check-desktop-release.mjs"
+      ],
+      "cwd": "/workspace/axiom-terraform-customer-producer/desktop",
+      "envKeys": [
+        "HTTPS_PROXY",
+        "HTTP_PROXY",
+        "LANG",
+        "LC_ALL",
+        "NODE_EXTRA_CA_CERTS",
+        "NODE_OPTIONS",
+        "NO_PROXY",
+        "PATH",
+        "PYTHONDONTWRITEBYTECODE",
+        "REQUESTS_CA_BUNDLE",
+        "SSL_CERT_FILE",
+        "TMPDIR",
+        "http_proxy",
+        "https_proxy",
+        "no_proxy"
+      ],
+      "exitCode": 0,
+      "durationSeconds": 0.06,
+      "logSha256": "4e4062f137d895d34cd605ad447d8dd10c6e0e2b984a94bb4097b31065135b94"
+    },
+    "desktopFrontendBuild": {
+      "sourceCommit": "a7ceea330f6807b0421e7773390f219ad1ab81fc",
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/node",
+        "/workspace/axiom-terraform-customer-producer/desktop/node_modules/vite/bin/vite.js",
+        "build"
+      ],
+      "cwd": "/workspace/axiom-terraform-customer-producer/desktop",
+      "envKeys": [
+        "HTTPS_PROXY",
+        "HTTP_PROXY",
+        "LANG",
+        "LC_ALL",
+        "NODE_EXTRA_CA_CERTS",
+        "NODE_OPTIONS",
+        "NO_PROXY",
+        "PATH",
+        "PYTHONDONTWRITEBYTECODE",
+        "REQUESTS_CA_BUNDLE",
+        "SSL_CERT_FILE",
+        "TMPDIR",
+        "http_proxy",
+        "https_proxy",
+        "no_proxy"
+      ],
+      "exitCode": 0,
+      "durationSeconds": 3.729,
+      "logSha256": "6d41e412bf22462aacc18efc06ad89a97c69e6a8d8fbc15fe011665355722564",
+      "nativeTauriOrInstallerBuild": false
+    },
+    "pythonCli": {
+      "sourceCommit": "a7ceea330f6807b0421e7773390f219ad1ab81fc",
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "sdk.python.__tests__.test_vxl_cli"
+      ],
+      "cwd": "/workspace/axiom-terraform-customer-producer",
+      "envKeys": [
+        "HTTPS_PROXY",
+        "HTTP_PROXY",
+        "LANG",
+        "LC_ALL",
+        "NODE_EXTRA_CA_CERTS",
+        "NODE_OPTIONS",
+        "NO_PROXY",
+        "PATH",
+        "PYTHONDONTWRITEBYTECODE",
+        "REQUESTS_CA_BUNDLE",
+        "SSL_CERT_FILE",
+        "TMPDIR",
+        "http_proxy",
+        "https_proxy",
+        "no_proxy"
+      ],
+      "exitCode": 0,
+      "durationSeconds": 0.153,
+      "logSha256": "ff04685cf8f165986edb171f41998029bc46acfccf08a2404d1db8722913183e",
+      "passedTests": 30
+    },
+    "offlineAuthEvidence": {
+      "sourceCommit": "a7ceea330f6807b0421e7773390f219ad1ab81fc",
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "scripts/tests",
+        "-p",
+        "test_auth_recovery_evidence.py"
+      ],
+      "cwd": "/workspace/axiom-terraform-customer-producer",
+      "envKeys": [
+        "HTTPS_PROXY",
+        "HTTP_PROXY",
+        "LANG",
+        "LC_ALL",
+        "NODE_EXTRA_CA_CERTS",
+        "NODE_OPTIONS",
+        "NO_PROXY",
+        "PATH",
+        "PYTHONDONTWRITEBYTECODE",
+        "REQUESTS_CA_BUNDLE",
+        "SSL_CERT_FILE",
+        "TMPDIR",
+        "http_proxy",
+        "https_proxy",
+        "no_proxy"
+      ],
+      "exitCode": 0,
+      "durationSeconds": 0.064,
+      "logSha256": "f70474bb9d3d4b78369d133e47904bb1ef43bd0a69dec6649003a49c7b092484",
+      "passedTests": 16
+    },
+    "tracker": {
+      "sourceCommit": "a7ceea330f6807b0421e7773390f219ad1ab81fc",
+      "command": [
+        "python3",
+        "scripts/axiom-mission-tracker.py",
+        "--check"
+      ],
+      "cwd": "/workspace/axiom-terraform-customer-producer",
+      "envKeys": [
+        "HTTPS_PROXY",
+        "HTTP_PROXY",
+        "LANG",
+        "LC_ALL",
+        "NODE_EXTRA_CA_CERTS",
+        "NODE_OPTIONS",
+        "NO_PROXY",
+        "PATH",
+        "PYTHONDONTWRITEBYTECODE",
+        "REQUESTS_CA_BUNDLE",
+        "SSL_CERT_FILE",
+        "TMPDIR",
+        "http_proxy",
+        "https_proxy",
+        "no_proxy"
+      ],
+      "exitCode": 0,
+      "durationSeconds": 0.153,
+      "logSha256": "f22fc39d301a5d3b9b8c225fa2f7e8866e57256b998cd93fe0aaf43faf4c108c",
+      "sources": 22,
+      "requirements": 2154
+    },
+    "buildGuard": {
+      "sourceCommit": "a7ceea330f6807b0421e7773390f219ad1ab81fc",
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/node",
+        "scripts/check-vercel-build.mjs"
+      ],
+      "cwd": "/workspace/axiom-terraform-customer-producer",
+      "envKeys": [
+        "HTTPS_PROXY",
+        "HTTP_PROXY",
+        "LANG",
+        "LC_ALL",
+        "NODE_EXTRA_CA_CERTS",
+        "NODE_OPTIONS",
+        "NO_PROXY",
+        "PATH",
+        "PYTHONDONTWRITEBYTECODE",
+        "REQUESTS_CA_BUNDLE",
+        "SSL_CERT_FILE",
+        "TMPDIR",
+        "http_proxy",
+        "https_proxy",
+        "no_proxy"
+      ],
+      "exitCode": 0,
+      "durationSeconds": 0.037,
+      "logSha256": "c14444c23a9aabbbcc3d975d3788080d47288101d53e6286ecfb3413f8cdcd14",
+      "externalizedCloudSdkPackages": 38
+    },
+    "scopedLint": {
+      "sourceCommit": "a7ceea330f6807b0421e7773390f219ad1ab81fc",
+      "cwd": "/workspace/axiom-terraform-customer-producer",
+      "envKeys": [
+        "HTTPS_PROXY",
+        "HTTP_PROXY",
+        "LANG",
+        "LC_ALL",
+        "NODE_EXTRA_CA_CERTS",
+        "NODE_OPTIONS",
+        "NO_PROXY",
+        "PATH",
+        "PYTHONDONTWRITEBYTECODE",
+        "REQUESTS_CA_BUNDLE",
+        "SSL_CERT_FILE",
+        "TMPDIR",
+        "http_proxy",
+        "https_proxy",
+        "no_proxy"
+      ],
+      "exitCode": 0,
+      "durationSeconds": 5.445,
+      "logSha256": "782963894ef7a94363af64c04c5b21e4f73e4b247dda57c24ef4ecfc484fdfe4",
+      "files": 56,
+      "errors": 0,
+      "warnings": 2,
+      "completeArgvInCommandsArtifact": true,
+      "warningQualification": "Only existing Assistant unused e/requiresApproval warnings; already reproduced against reviewed parent."
+    },
+    "diffCheck": {
+      "sourceCommit": "a7ceea330f6807b0421e7773390f219ad1ab81fc",
+      "command": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "cwd": "/workspace/axiom-terraform-customer-producer",
+      "envKeys": [
+        "HTTPS_PROXY",
+        "HTTP_PROXY",
+        "LANG",
+        "LC_ALL",
+        "NODE_EXTRA_CA_CERTS",
+        "NODE_OPTIONS",
+        "NO_PROXY",
+        "PATH",
+        "PYTHONDONTWRITEBYTECODE",
+        "REQUESTS_CA_BUNDLE",
+        "SSL_CERT_FILE",
+        "TMPDIR",
+        "http_proxy",
+        "https_proxy",
+        "no_proxy"
+      ],
+      "exitCode": 0,
+      "durationSeconds": 0.011,
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "environment": {
+    "node": "/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/node",
+    "nodeVersion": "v24.19.0",
+    "compilerRealpath": "/workspace/axiom-privacy-controls/node_modules/typescript/bin/tsc",
+    "rootOverlay": "/workspace/.axiom-validation/terraform-customer-plan-ddb-lm16jurp/node_modules",
+    "dependencyQualification": "Existing reviewed overlay plus6 exact verified packages, NOT a fresh lockfile install",
+    "sixDependencyArchivePackageAndLockProof": {
+      "lockSha256": "24228d15d056785f239f77107cd9ed1f8161beed53e1edc128826e4ce4298fd7",
+      "identities": [
+        {
+          "name": "@aws-sdk/client-dynamodb",
+          "version": "3.1001.0",
+          "archiveSha256": "a3a0f8ce7e94bb69e3712eb1bd47992ff4b52450c3efd6f3816ef3b1d6751a81",
+          "archiveSha512Verified": true,
+          "packageJsonSha256": "83baf51c8b9259d4123fb16bd67d7f394f8a65afff257950a2e890ad087058d9"
+        },
+        {
+          "name": "@aws-sdk/dynamodb-codec",
+          "version": "3.972.17",
+          "archiveSha256": "01125b5f756b235e366c09881b2860630e0ad0e1398fbf272bbeff528588101f",
+          "archiveSha512Verified": true,
+          "packageJsonSha256": "bde175b2011cc846da1181f0f98c368fa84c419bdd03a28cdd6764ebeb86405b"
+        },
+        {
+          "name": "@aws-sdk/endpoint-cache",
+          "version": "3.972.11",
+          "archiveSha256": "2e3b022fb01c2eb7312f05a58206534fae912e025b77d3fc62abca2309e2324b",
+          "archiveSha512Verified": true,
+          "packageJsonSha256": "35a59d208ec5a988a459eac203b993f9c8b44c36a35c76d68a58eb1b4b731447"
+        },
+        {
+          "name": "@aws-sdk/middleware-endpoint-discovery",
+          "version": "3.972.6",
+          "archiveSha256": "0842f642a93ed4df519bc4aa70dfd41e7411503146d506952c4501678fa99bab",
+          "archiveSha512Verified": true,
+          "packageJsonSha256": "41c2f02b8742d3eedfbc6dab2679e5c5508927314d7f8aa92d036436be5100d7"
+        },
+        {
+          "name": "mnemonist",
+          "version": "0.38.3",
+          "archiveSha256": "9b192c2c37d9d44fc01b433bb5b13c1876280aac5007c55e6106fe7f27d5a1e8",
+          "archiveSha512Verified": true,
+          "packageJsonSha256": "ec6a27483b13c614fcaf903734b2d9083f14ed142425fb6e394b5f51f23052a8"
+        },
+        {
+          "name": "obliterator",
+          "version": "1.6.1",
+          "archiveSha256": "20cd9a5a9d569a43b92fa1530cbce44259eb3cf60fd5d4cb8a6c31fbba9fbaa6",
+          "archiveSha512Verified": true,
+          "packageJsonSha256": "9ad53463bcc7cbf25ddd9dab36cb88c728fa1eae344991af9c4b1556b2cbb128"
+        }
+      ],
+      "sha512ArchivesVerifiedBeforeRun": true,
+      "packageIdentitiesReverifiedAfterRun": true
+    },
+    "baseEnv": {
+      "PATH": "/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin:/usr/local/bin:/usr/bin:/bin",
+      "TMPDIR": "/tmp/tf-XAskDT",
+      "LANG": "C.UTF-8",
+      "LC_ALL": "C.UTF-8",
+      "NODE_OPTIONS": "--max-old-space-size=8192",
+      "PYTHONDONTWRITEBYTECODE": "1"
+    },
+    "managedTransportKeyNamesPreservedWithoutPublishingValues": [
+      "HTTP_PROXY",
+      "HTTPS_PROXY",
+      "NO_PROXY",
+      "http_proxy",
+      "https_proxy",
+      "no_proxy",
+      "NODE_EXTRA_CA_CERTS",
+      "SSL_CERT_FILE",
+      "REQUESTS_CA_BUNDLE"
+    ],
+    "credentialQualification": "Fixed clean child environment, no ambient provider/GitHub/Stripe/database credentials; no HOME or runner GNUPGHOME override. Existing fixture code uses owned synthetic GPG homes only.",
+    "rootPrivateCache": {
+      "path": "/workspace/.axiom-validation/terraform-customer-plan-ddb-lm16jurp/node_modules/.vite",
+      "mode": "0700",
+      "isSymlink": false,
+      "files": [
+        {
+          "path": "/workspace/.axiom-validation/terraform-customer-plan-ddb-lm16jurp/node_modules/.vite/vitest/da39a3ee5e6b4b0d3255bfef95601890afd80709/results.json",
+          "sha256": "4ed19af3794a261f6acd90ab7d2b0c4df11be0d9f0e7753dca75f99b721b5e43",
+          "bytes": 72913
+        }
+      ]
+    },
+    "desktopCacheOnlyOverlay": {
+      "source": "/workspace/visionxixlabs/desktop/node_modules",
+      "ownedRoot": "/workspace/.axiom-validation/terraform-customer-desktop-8gd6n_is",
+      "ownedNodeModules": "/workspace/.axiom-validation/terraform-customer-desktop-8gd6n_is/node_modules",
+      "mode": "0700",
+      "entryRows": 157,
+      "leafPackageAndMetadataLinks": 147,
+      "resolutionSelectorsCompared": 290,
+      "all290ResolutionResultsIdentical": true,
+      "allPackageAndScopedPackageRealpathsAndManifestHashesIdentical": true,
+      "excludedSharedCachePaths": [
+        ".vite",
+        ".vite-temp"
+      ],
+      "privateCachesMode": "0700",
+      "noPackageCopiesInstallsVersionsEnvironmentOrFlagsChanged": true,
+      "defaultViteConfigLoaderRetained": true,
+      "sourceCacheMetadataBefore": {
+        ".vite-temp": {
+          "exists": true,
+          "isSymlink": false,
+          "realpath": "/workspace/visionxixlabs/desktop/node_modules/.vite-temp",
+          "inode": 1057771,
+          "mtimeNs": 1792308654534726358,
+          "entries": []
+        },
+        ".vite": {
+          "exists": true,
+          "isSymlink": false,
+          "realpath": "/workspace/visionxixlabs/desktop/node_modules/.vite",
+          "inode": 1213564,
+          "mtimeNs": 1792079822874371342,
+          "entries": [
+            "deps"
+          ]
+        }
+      },
+      "sourceCacheMetadataAfter": {
+        ".vite-temp": {
+          "exists": true,
+          "isSymlink": false,
+          "realpath": "/workspace/visionxixlabs/desktop/node_modules/.vite-temp",
+          "inode": 1057771,
+          "mtimeNs": 1792308654534726358,
+          "entries": []
+        },
+        ".vite": {
+          "exists": true,
+          "isSymlink": false,
+          "realpath": "/workspace/visionxixlabs/desktop/node_modules/.vite",
+          "inode": 1213564,
+          "mtimeNs": 1792079822874371342,
+          "entries": [
+            "deps"
+          ]
+        }
+      },
+      "sourceCacheMetadataExactlyEqual": true,
+      "completeInventoryAndResolutionInHashedArtifact": true
+    },
+    "desktopGraphVersions": {
+      "react": "19.2.6",
+      "react-dom": "19.2.6",
+      "react-router-dom": "7.18.4",
+      "typescript": "5.9.3",
+      "vite": "6.4.2",
+      "@types/react": "19.2.14",
+      "@types/react-dom": "19.2.3",
+      "@tauri-apps/plugin-store": "2.4.3"
+    }
+  },
+  "historicalEvidencePreserved": {
+    "named4cbReceipt": "docs/mission/local-terraform-customer-plan-core-validation.json",
+    "named4cbReceiptUnchanged": true,
+    "named4cbScopes": "full7809/desktop/Python at6e; finalweb/focus470 at4cb; initial1353 test-only TS2345, six long-TMPDIR synthetic GPG import failures and packaging guard failure remain recorded.",
+    "historicalSharedMetadataQualification": "Named4cb receipt preserves old automatic shared Vitest results write; prior desktop Vite loader also created/unlinked transient shared .vite-temp metadata, so its broad no-target-mutation wording means no package/source/install mutation, not zero metadata writes. This combined run isolates both cache locations.",
+    "noSharedCacheDeleteRestoreOrHistoryRewrite": true,
+    "thisCombinedRunCacheIsolation": "RootSDK .vite is owned0700; desktop overlay owns .vite/.vite-temp and preserves all package realpaths/290resolution selectors. Original desktop cache metadata exactly matches before/after. This does not erase historical automatic shared metadata writes."
+  },
+  "cleanup": {
+    "sourceCommit": "a7ceea330f6807b0421e7773390f219ad1ab81fc",
+    "matchingLiveOwnedCompilerTestGpgProcesses": [],
+    "ownDesktopLinkRemoved": true,
+    "shortOwnedTMPDIR": {
+      "path": "/tmp/tf-XAskDT",
+      "entriesBeforeRemoval": [
+        "node-compile-cache"
+      ],
+      "removed": true
+    },
+    "privateRootCache": {
+      "path": "/workspace/.axiom-validation/terraform-customer-plan-ddb-lm16jurp/node_modules/.vite",
+      "mode": "0700",
+      "isSymlink": false,
+      "files": [
+        {
+          "path": "/workspace/.axiom-validation/terraform-customer-plan-ddb-lm16jurp/node_modules/.vite/vitest/da39a3ee5e6b4b0d3255bfef95601890afd80709/results.json",
+          "sha256": "4ed19af3794a261f6acd90ab7d2b0c4df11be0d9f0e7753dca75f99b721b5e43",
+          "bytes": 72913
+        }
+      ]
+    },
+    "privateDesktopOverlay": {
+      "path": "/workspace/.axiom-validation/terraform-customer-desktop-8gd6n_is/node_modules",
+      "allPackageAndScopedPackageLinkRealpathsUnchanged": true,
+      "privateCachePaths": [
+        "/workspace/.axiom-validation/terraform-customer-desktop-8gd6n_is/node_modules/.vite",
+        "/workspace/.axiom-validation/terraform-customer-desktop-8gd6n_is/node_modules/.vite-temp"
+      ]
+    },
+    "sharedDesktopCacheMetadataBeforeAfterExactlyEqual": true,
+    "sharedDesktopCacheMetadataAfter": {
+      ".vite-temp": {
+        "exists": true,
+        "isSymlink": false,
+        "realpath": "/workspace/visionxixlabs/desktop/node_modules/.vite-temp",
+        "inode": 1057771,
+        "mtimeNs": 1792308654534726358,
+        "entries": []
+      },
+      ".vite": {
+        "exists": true,
+        "isSymlink": false,
+        "realpath": "/workspace/visionxixlabs/desktop/node_modules/.vite",
+        "inode": 1213564,
+        "mtimeNs": 1792079822874371342,
+        "entries": [
+          "deps"
+        ]
+      }
+    },
+    "historicalCacheQualification": "Named4cb receipt preserves old automatic shared Vitest results write; prior desktop Vite loader also created/unlinked transient shared .vite-temp metadata, so its broad no-target-mutation wording means no package/source/install mutation, not zero metadata writes. This combined run isolates both cache locations.",
+    "sixPackageIdentitiesUnchanged": true,
+    "sourceClean": true,
+    "noNextPgContainerTerraformProviderWorkflowOrInstallerStarted": true,
+    "globalAgentOrKeyOperation": false,
+    "zombieQualification": "No matching live owned processes remained; global/unattributed exited zombies are not claimed removed."
+  },
+  "warnings": [
+    "Existing Vite native-config compatibility warning remains unsuppressed in default suite.",
+    "Desktop Vite dynamic/static plugin-shell import and >500kB chunk warnings remain; no chunk/config/timeouts were relaxed.",
+    "Intentional resolver-denial/self-heal fixture logs and Python argparse-negative logs are test evidence, not live service failures.",
+    "Existing two Assistant unused-variable lint warnings retained."
+  ],
+  "artifacts": {
+    "logs": {
+      "web-types.log": {
+        "path": "/tmp/axiom-tf-combined-ntu3rxr5/web-types.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      "default-vitest.log": {
+        "path": "/tmp/axiom-tf-combined-ntu3rxr5/default-vitest.log",
+        "sha256": "b39768a578dce904283d657882ce7514bacf5fbe2ec558bd6fbe4f910bd3803e",
+        "bytes": 129302
+      },
+      "desktop-types.log": {
+        "path": "/tmp/axiom-tf-combined-ntu3rxr5/desktop-types.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      "desktop-release.log": {
+        "path": "/tmp/axiom-tf-combined-ntu3rxr5/desktop-release.log",
+        "sha256": "4e4062f137d895d34cd605ad447d8dd10c6e0e2b984a94bb4097b31065135b94",
+        "bytes": 54
+      },
+      "desktop-build.log": {
+        "path": "/tmp/axiom-tf-combined-ntu3rxr5/desktop-build.log",
+        "sha256": "6d41e412bf22462aacc18efc06ad89a97c69e6a8d8fbc15fe011665355722564",
+        "bytes": 1378
+      },
+      "python-cli.log": {
+        "path": "/tmp/axiom-tf-combined-ntu3rxr5/python-cli.log",
+        "sha256": "ff04685cf8f165986edb171f41998029bc46acfccf08a2404d1db8722913183e",
+        "bytes": 1104
+      },
+      "offline-auth.log": {
+        "path": "/tmp/axiom-tf-combined-ntu3rxr5/offline-auth.log",
+        "sha256": "f70474bb9d3d4b78369d133e47904bb1ef43bd0a69dec6649003a49c7b092484",
+        "bytes": 115
+      },
+      "tracker.log": {
+        "path": "/tmp/axiom-tf-combined-ntu3rxr5/tracker.log",
+        "sha256": "f22fc39d301a5d3b9b8c225fa2f7e8866e57256b998cd93fe0aaf43faf4c108c",
+        "bytes": 266
+      },
+      "build-guard.log": {
+        "path": "/tmp/axiom-tf-combined-ntu3rxr5/build-guard.log",
+        "sha256": "c14444c23a9aabbbcc3d975d3788080d47288101d53e6286ecfb3413f8cdcd14",
+        "bytes": 185
+      },
+      "scoped-lint.log": {
+        "path": "/tmp/axiom-tf-combined-ntu3rxr5/scoped-lint.log",
+        "sha256": "782963894ef7a94363af64c04c5b21e4f73e4b247dda57c24ef4ecfc484fdfe4",
+        "bytes": 336
+      },
+      "diff-check.log": {
+        "path": "/tmp/axiom-tf-combined-ntu3rxr5/diff-check.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      }
+    },
+    "commands": {
+      "path": "/tmp/axiom-tf-combined-ntu3rxr5/commands.json",
+      "sha256": "9e055dea5266e91dc8a27e6d263378cc30458377b7d31a96c1d91f7cae36ad3c",
+      "bytes": 20942
+    },
+    "cleanup": {
+      "path": "/tmp/axiom-tf-combined-ntu3rxr5/cleanup.json",
+      "sha256": "d538fab1f8ffdc327e59a873d6e36d66fbf043030cd7740247e3816563dc7418",
+      "bytes": 2429
+    },
+    "desktopOverlayInventoryAndResolution": {
+      "path": "/tmp/axiom-tf-combined-ntu3rxr5/desktop-overlay-proof.json",
+      "sha256": "cd44240678c7451481b70aee88d66506b754b9e94574a5776178ddbf759b1502",
+      "bytes": 129592
+    },
+    "integration": {
+      "path": "/tmp/axiom-customer-plan-mainc123-integration.json",
+      "sha256": "61ef7004e1b21af610e7e1ac452827247798d159327cf78dca7db9457796b0d2",
+      "bytes": 19485
+    },
+    "ownedRootCacheIsolation": {
+      "path": "/tmp/axiom-customer-plan-private-vite-cache-isolation.json",
+      "sha256": "b52cde25912dc5780d6772a51b74ff7217920f349ff384f9eec089232afd79a4",
+      "bytes": 3172
+    }
+  },
+  "openGates": [
+    "No genuine signed Terraform exact binary/show/receipt tuple acquired; positive production-verifier customer import is not established by unit-local synthetic crypto/DB adapters.",
+    "Optional SQL/trust configuration remains uninstalled; no production schema, Prisma generation, PostgreSQL/container or Next server runtime was run. 27 opt-in PostgreSQL tests remain skipped.",
+    "No Terraform CLI/init/plan/apply, OIDC/customer CI/workflow dispatch, live S3/DynamoDB/STS/GitHub/provider operation, state lock acquisition, storage installation or arbitrary upload ran. Pure SDK wire tests target owned loopback only.",
+    "Customer IAM/resources/manual protected public GitHub CI and reviewed executable/toolchain capabilities remain external prerequisites; read-role/plan-role ARN separation is not IAM least-privilege proof.",
+    "Historical authentic producer evidence and current read-only backend observation confer no approval/apply/execution/signing authority. Existing kill switches remain.",
+    "Actual customer catalog/two-client/paired HTTP/genuine-verifier/CLI, independent Terraform S3 HEAD/Web-body HTTP parser and packaged native UI acceptance require separate reviewed guards/windows and genuine evidence.",
+    "Existing package graphs are reused; no fresh lock install is claimed. Exact-head clean-install/full-build/full-test remote CI remains required before merge."
+  ]
+}

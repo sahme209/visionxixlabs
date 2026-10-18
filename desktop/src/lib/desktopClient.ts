@@ -8,8 +8,9 @@ import { isAwsEnrollmentChallenge, isDesktopAwsAccount, isDesktopAwsInventory, t
  * data. UI surfaces show preview state accordingly.
  */
 
+import {isCustomerPlanProfileView,isCustomerPlanImported} from "./terraformCustomerPlanContract";
 import { setDesktopTransportCredential } from "./desktopTransport";
-import type { SavedPlanReadData } from "../../../lib/terraform/savedPlanDto";
+import type { TerraformPlanReadData,CustomerPlanProfileView,CustomerPlanConfigurationInput,CustomerPlanImportInput,CustomerPlanImported } from "../../../lib/terraform/customerPlanDto";
 import type { AirflowRestartReviewDto } from "../../../lib/integrations/airflow/restartReviewDto";
 import { parseDesktopIdentityResponse } from "./desktopIdentityResponse";
 
@@ -395,12 +396,38 @@ export class DesktopClient {
     if (changed) this.invalidateContext();
   }
 
-  listDeploymentTerraformPlans(id: string): Promise<ApiResult<SavedPlanReadData>> {
+  listDeploymentTerraformPlans(id: string): Promise<ApiResult<TerraformPlanReadData>> {
     return this.get(`/api/desktop/deployments/${encodeURIComponent(id)}/terraform-plans`);
   }
 
-  getDeploymentTerraformPlan(id: string, artifactId: string): Promise<ApiResult<SavedPlanReadData>> {
+  getDeploymentTerraformPlan(id: string, artifactId: string): Promise<ApiResult<TerraformPlanReadData>> {
     return this.get(`/api/desktop/deployments/${encodeURIComponent(id)}/terraform-plans/${encodeURIComponent(artifactId)}`);
+  }
+
+  async getDeploymentTerraformProfile(id:string):Promise<ApiResult<CustomerPlanProfileView>> {
+    const result=await this.terraformPlanRequest<unknown>("GET",`/api/desktop/deployments/${encodeURIComponent(id)}/terraform-plan-profile`);
+    if(!result.ok)return result;return isCustomerPlanProfileView(result.data,id)?{ok:true,data:result.data}:{ok:false,error:"Customer plan profile response is unavailable."};
+  }
+  async configureDeploymentTerraformProfile(id:string,input:{requestVersion:number;expectedRevision:number;profileInput:CustomerPlanConfigurationInput}):Promise<ApiResult<CustomerPlanProfileView>> {
+    const result=await this.terraformPlanRequest<unknown>("POST",`/api/desktop/deployments/${encodeURIComponent(id)}/terraform-plan-profile`,{operation:input.expectedRevision===0?"configure":"revise",...input});
+    if(!result.ok)return result;return isCustomerPlanProfileView(result.data,id)&&result.data.status==="active"&&result.data.profile?.revision===input.expectedRevision+1&&result.data.profile.requestVersion===input.requestVersion?{ok:true,data:result.data}:{ok:false,error:"Customer plan profile changed. Refresh and review again."};
+  }
+  async revokeDeploymentTerraformProfile(id:string,input:{requestVersion:number;profileId:string;expectedRevision:number}):Promise<ApiResult<CustomerPlanProfileView>> {
+    const result=await this.terraformPlanRequest<unknown>("POST",`/api/desktop/deployments/${encodeURIComponent(id)}/terraform-plan-profile`,{operation:"revoke",...input});
+    if(!result.ok)return result;return isCustomerPlanProfileView(result.data,id)&&result.data.status==="revoked"&&result.data.profile?.id===input.profileId&&result.data.profile.revision===input.expectedRevision+1?{ok:true,data:result.data}:{ok:false,error:"Customer plan revocation changed. Refresh and review again."};
+  }
+  async importDeploymentTerraformPlan(id:string,input:CustomerPlanImportInput):Promise<ApiResult<CustomerPlanImported>> {
+    const result=await this.terraformPlanRequest<unknown>("POST",`/api/desktop/deployments/${encodeURIComponent(id)}/terraform-plans/import`,input);
+    if(!result.ok)return result;return isCustomerPlanImported(result.data)?{ok:true,data:result.data}:{ok:false,error:"Customer plan evidence response is unavailable."};
+  }
+  private async terraformPlanRequest<T>(method:"GET"|"POST",path:string,body?:unknown):Promise<ApiResult<T>> {
+    if(!this.config.sessionToken?.startsWith("axm.desk."))return {ok:false,error:"A currently paired desktop session is required for customer plan evidence."};
+    try{
+      const response=await fetch(`${this.config.apiBase}${path}`,{method,credentials:"omit",headers:{...this.headers(),...(method==="POST"?{"Content-Type":"application/json"}:{})},...(method==="POST"?{body:JSON.stringify(body)}:{})});
+      const value=await response.json().catch(()=>null) as {ok?:boolean;data?:T;error?:unknown}|null;
+      if(response.ok&&value?.ok===true&&value.data!==undefined)return {ok:true,data:value.data};
+      return {ok:false,error:value?.error==="customer_plan_environment_immutable_new_request"?"customer_plan_environment_immutable_new_request":response.status===503?"customer_plan_storage_or_producer_unavailable":"customer_plan_refresh_and_review_required"};
+    }catch{return {ok:false,error:"customer_plan_service_unavailable"};}
   }
 
   /** True when the desktop is not connected to an authenticated workspace. */

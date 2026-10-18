@@ -41,3 +41,7 @@ it.each([{ message: "Disable the unused key", apply: false }, { message: "CONFIR
   if (!apply) expect(m.plugin.mock.calls[0][1].dryRun).toBe(true);
   expect(m.generate.mock.calls[0][0].systemPrompt).toContain('Destructive actions (apply=true) require "CONFIRM APPLY"');
 });
+it("describes conditional paired customer evidence import without claiming a provisioned producer or successful checks",async()=>{
+ await runAxiomAssistantAgent({conversationId:"owned-conversation",leadId:"owned-lead",message:"Where do I review a customer CI Terraform plan?"});const system=m.generate.mock.calls[0][0].systemPrompt as string;
+ expect(system).toMatch(/selected deployment request.*profile\/import panel/i);expect(system).toMatch(/optional source integration may be unavailable until.*storage.*trust.*installed.*approved/i);expect(system).toMatch(/never claim those checks succeeded without their actual evidence/i);expect(system).toMatch(/Backend observations do not grant approval or execution/i);expect(m.plugin).not.toHaveBeenCalled();expect(m.workflow).not.toHaveBeenCalled();
+});
