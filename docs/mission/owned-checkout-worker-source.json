@@ -140,7 +140,7 @@
     },
     {
       "path": "lib/billing/__tests__/fixtures/ownedCheckoutHttpAcceptance.ts",
-      "sha256": "19f5072418314770a6b477b9f1e906cd583062da92f5a695727d04efff00b214"
+      "sha256": "9fcbdfdaa332f6926165cca9cfcb95b846e3c8d676a95ea93c14877bcb93a5fc"
     },
     {
       "path": "lib/billing/__tests__/fixtures/ownedCheckoutLaunchPolicy.ts",
