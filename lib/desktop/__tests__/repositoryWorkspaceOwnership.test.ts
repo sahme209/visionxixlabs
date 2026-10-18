@@ -2,7 +2,7 @@
 import { createElement } from "react";
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import { act, cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
-const m = vi.hoisted(() => ({ invoke: vi.fn(), client: { config: {} as { sessionToken?: string }, listGithubRepositories: vi.fn(), mintGithubCloneToken: vi.fn(), subscribeContext: (listener: () => void) => { void listener; return () => {}; }, getContextRevision: () => 0, setSession: (token: string | undefined) => { void token; } } }));
+const m = vi.hoisted(() => ({ invoke: vi.fn(), client: { config: {} as { sessionToken?: string }, listGithubRepositories: vi.fn(), mintGithubCloneToken: vi.fn(), subscribeContext: (listener: () => void) => { void listener; return () => {}; }, getContextRevision: (): number => 0, setSession: (token: string | undefined) => { void token; } } }));
 vi.mock("@tauri-apps/api/core", () => ({ invoke: m.invoke }));
 vi.mock("../../../desktop/src/lib/desktopClient", async original => {
   const actual = await original<typeof import("../../../desktop/src/lib/desktopClient")>();
