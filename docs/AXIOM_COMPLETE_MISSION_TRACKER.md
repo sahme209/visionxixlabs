@@ -11,12 +11,14 @@ PR #161 source integration is complete at main `608efe0fd70623aaf71cb80f799d3b82
 
 ## Resumed execution checkpoint — latest owner order
 
-Current main is `761546b4602eb8a77984b935cb59b13876404295` (merged PR #165).
+Current main is `31d7f3a9562c25e0db77a0f0d83f62d78176f8d4` (merged PR #167).
 The verbatim [resume order](AXIOM_RESUME_ENGINEERING_ORDER.md) adds 131 units
 without replacing any prior requirement: **2,112 rows across 18 available sources**.
 All available original Codex and former Claude responsibilities remain mapped;
 the absent original 36-section specification and scenarios A–L remain unresolved.
 Historical counts and dated observations below retain their original scope.
+
+PR #167 passed both exact-head CI runs, code review and its 293-page build, then merged normally. Billing PR #168 is in CI; Airflow owned application acceptance and full regression have passed with source-bound evidence. Neither result establishes production recovery or a release.
 
 Existing parallel packages continue: billing collected-payment lifecycle and
 owned application acceptance; Agent guarded real-application cloud continuation;
