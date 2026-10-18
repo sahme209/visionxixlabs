@@ -1,14 +1,14 @@
 /**
  * POST /api/terraform/plan
- * Run terraform init + validate + plan on a generated job.
- * Requires starter token. Plan runs automatically (no approval needed).
+ * Legacy lead-owned text jobs cannot authorize a live Terraform plan.
+ * Keep ownership/input isolation; no trusted tenant producer exists here.
  */
 
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { verifyStarterToken } from "@/lib/starterToken";
 import { checkRateLimit } from "@/lib/rateLimit";
-import { terraformPlan } from "@/lib/terraform/runner";
+import { LEGACY_TERRAFORM_AUTHORITY_CODE, LEGACY_TERRAFORM_AUTHORITY_MESSAGE } from "@/lib/terraform/runner";
 
 export async function POST(req: NextRequest) {
   const token = req.nextUrl.searchParams.get("token");
@@ -41,14 +41,14 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Job not found" }, { status: 404 });
     }
 
-    const planResult = await terraformPlan(jobId);
-
     return NextResponse.json({
-      success: planResult.success,
-      output: planResult.output,
-      summary: planResult.summary,
-      status: planResult.success ? "planned" : "failed",
-    });
+      success: false,
+      status: "blocked",
+      code: LEGACY_TERRAFORM_AUTHORITY_CODE,
+      error: LEGACY_TERRAFORM_AUTHORITY_MESSAGE,
+      approval: "unavailable",
+      executionEnabled: false,
+    }, { status: 403 });
   } catch (e) {
     const msg = e instanceof Error ? e.message : "Plan failed";
     console.error("[terraform/plan]", msg);

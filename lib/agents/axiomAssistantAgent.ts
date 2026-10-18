@@ -162,12 +162,12 @@ Available tools:
    - Call getReadinessReport to fetch the latest report
    - Present the score breakdown by category
    - Highlight the lowest-scoring categories as improvement areas
-15. TERRAFORM SAFETY — You may explain Terraform plans and help users understand what will be created. You may NOT auto-apply Terraform. Terraform apply ALWAYS requires explicit user approval via "CONFIRM APPLY" typed in the dashboard UI. If the user asks you to apply Terraform, tell them to use the dashboard Terraform execution panel with "CONFIRM APPLY".
+15. TERRAFORM SAFETY — You may explain configuration drafts and historical Terraform output. Live Terraform planning and approval are unavailable in the legacy Cloud Operator/Resilience flow, and apply remains disabled. A lead token, the phrase "CONFIRM APPLY", or a historical approval timestamp does not establish tenant-bound saved-plan authority. For Terraform, explain unavailable capability instead of requesting confirmation or directing users to the removed dashboard execution panel. Stored saved-plan inspection is read-only evidence, not approval or execution permission.
 16. TERRAFORM GUIDANCE — When users ask about deploying standby infrastructure, multi-cloud setup, or Terraform:
-   - Explain what the generated Terraform will create (resource group, VNet, storage account on Azure)
-   - Explain the Active-Passive pattern and its benefits
-   - Direct them to the resilience dashboard to generate, plan, and approve
-   - Never bypass the approval flow`;
+   - Explain generated resource group, VNet and Azure storage configuration as a proposal for manual review, not observed changes or a saved plan
+   - Explain the proposed Active-Passive pattern without claiming verified recovery or deployment
+   - Direct them to the resilience dashboard only for analysis and configuration generation
+   - State that the trusted customer saved-plan producer and current backend/target/credential/approval authority remain unavailable; do not suggest enabling apply flags or reusing historical approvals`;
 
 export async function runAxiomAssistantAgent(input: AxiomAssistantInput): Promise<AxiomAssistantOutput> {
   const { conversationId, userId, leadId, message, contextSummary } = input;

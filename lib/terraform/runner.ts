@@ -1,11 +1,9 @@
 /**
- * Terraform Runner — executes terraform CLI commands safely.
- * Phase 4: init, validate, plan, apply with strict safety controls.
- * - plan runs automatically; apply requires prior approval
- * - all output captured and saved to TerraformExecutionJob
+ * Legacy Terraform planning refusal and historical apply boundary.
+ * Legacy init/validate/plan refuse until a trusted tenant producer exists.
+ * The historical apply path keeps its independent default-off kill switch.
  * - sensitive values redacted from stored output
  * - timeout protection on every command
- * - graceful failure if terraform CLI not installed
  */
 
 import { prisma } from "@/lib/db";
@@ -40,15 +38,6 @@ function redactSensitive(text: string): string {
     });
   }
   return result;
-}
-
-async function isTerraformInstalled(): Promise<boolean> {
-  try {
-    await execAsync("terraform version", { timeout: 10_000 });
-    return true;
-  } catch {
-    return false;
-  }
 }
 
 interface RunCommandResult {
@@ -86,124 +75,32 @@ async function runTerraformCommand(
   }
 }
 
-function parsePlanSummary(planOutput: string): { add: number; change: number; destroy: number } {
-  const match = planOutput.match(
-    /Plan:\s*(\d+)\s*to add,\s*(\d+)\s*to change,\s*(\d+)\s*to destroy/
-  );
-  if (match) {
-    return { add: parseInt(match[1]), change: parseInt(match[2]), destroy: parseInt(match[3]) };
-  }
-  if (planOutput.includes("No changes.") || planOutput.includes("Your infrastructure matches")) {
-    return { add: 0, change: 0, destroy: 0 };
-  }
-  return { add: -1, change: -1, destroy: -1 };
-}
+/** Historical lead/text jobs have no tenant-bound saved-plan producer.
+ * These exported helpers deliberately refuse before CLI detection or DB IO.
+ * Apply's existing independent kill switch remains below, unchanged. */
+export const LEGACY_TERRAFORM_AUTHORITY_CODE = "legacy_terraform_authority_unavailable";
+export const LEGACY_TERRAFORM_AUTHORITY_MESSAGE = "Live Terraform planning and approval are unavailable. Generated configuration and historical text output are not a tenant-bound saved plan.";
 
-// --- Public API ---
-
-export async function terraformInit(jobId: string): Promise<{ success: boolean; output: string }> {
-  const job = await prisma.terraformExecutionJob.findUnique({ where: { id: jobId } });
-  if (!job) throw new Error("Job not found");
-  if (!job.workingDirectory) throw new Error("Job has no working directory");
-
-  if (!(await isTerraformInstalled())) {
-    await prisma.terraformExecutionJob.update({
-      where: { id: jobId },
-      data: {
-        status: "failed",
-        errorMessage:
-          "Terraform CLI not found. Install from https://developer.hashicorp.com/terraform/downloads",
-      },
-    });
-    return {
-      success: false,
-      output: "Terraform CLI is not installed. Install it and retry.",
-    };
-  }
-
-  const result = await runTerraformCommand("terraform init -no-color", job.workingDirectory);
-  const output = redactSensitive(result.stdout + "\n" + result.stderr);
-
-  if (result.exitCode !== 0) {
-    await prisma.terraformExecutionJob.update({
-      where: { id: jobId },
-      data: { status: "failed", errorMessage: output.slice(0, 2000) },
-    });
-    return { success: false, output };
-  }
-
-  return { success: true, output };
-}
-
-export async function terraformValidate(jobId: string): Promise<{ success: boolean; output: string }> {
-  const job = await prisma.terraformExecutionJob.findUnique({ where: { id: jobId } });
-  if (!job) throw new Error("Job not found");
-  if (!job.workingDirectory) throw new Error("Job has no working directory");
-
-  await prisma.terraformExecutionJob.update({
-    where: { id: jobId },
-    data: { status: "validating" },
-  });
-
-  const result = await runTerraformCommand("terraform validate -no-color", job.workingDirectory);
-  const output = redactSensitive(result.stdout + "\n" + result.stderr);
-
-  if (result.exitCode !== 0) {
-    await prisma.terraformExecutionJob.update({
-      where: { id: jobId },
-      data: { status: "failed", errorMessage: output.slice(0, 2000) },
-    });
-    return { success: false, output };
-  }
-
-  return { success: true, output };
-}
-
-export async function terraformPlan(jobId: string): Promise<{
-  success: boolean;
+interface LegacyPlanningRefusal {
+  success: false;
+  blockedByAuthority: true;
+  code: typeof LEGACY_TERRAFORM_AUTHORITY_CODE;
   output: string;
-  summary: { add: number; change: number; destroy: number } | null;
-}> {
-  const job = await prisma.terraformExecutionJob.findUnique({ where: { id: jobId } });
-  if (!job) throw new Error("Job not found");
-  if (!job.workingDirectory) throw new Error("Job has no working directory");
-
-  // Init first
-  const initResult = await terraformInit(jobId);
-  if (!initResult.success) {
-    return { success: false, output: initResult.output, summary: null };
-  }
-
-  // Validate
-  const validateResult = await terraformValidate(jobId);
-  if (!validateResult.success) {
-    return { success: false, output: validateResult.output, summary: null };
-  }
-
-  // Plan
-  const result = await runTerraformCommand("terraform plan -no-color", job.workingDirectory);
-  const output = redactSensitive(result.stdout + "\n" + result.stderr);
-
-  if (result.exitCode !== 0) {
-    await prisma.terraformExecutionJob.update({
-      where: { id: jobId },
-      data: { status: "failed", planOutput: output.slice(0, 50000), errorMessage: output.slice(0, 2000) },
-    });
-    return { success: false, output, summary: null };
-  }
-
-  const summary = parsePlanSummary(output);
-
-  await prisma.terraformExecutionJob.update({
-    where: { id: jobId },
-    data: {
-      status: "planned",
-      planOutput: output.slice(0, 50000),
-      planSummary: summary as object,
-    },
-  });
-
-  return { success: true, output, summary };
+}
+function legacyPlanningRefusal(): LegacyPlanningRefusal {
+  return { success: false, blockedByAuthority: true, code: LEGACY_TERRAFORM_AUTHORITY_CODE, output: LEGACY_TERRAFORM_AUTHORITY_MESSAGE };
+}
+export async function terraformInit(jobId: string): Promise<LegacyPlanningRefusal> {
+  void jobId;
+  return legacyPlanningRefusal();
+}
+export async function terraformValidate(jobId: string): Promise<LegacyPlanningRefusal> {
+  void jobId;
+  return legacyPlanningRefusal();
+}
+export async function terraformPlan(jobId: string): Promise<LegacyPlanningRefusal & { summary: null }> {
+  void jobId;
+  return { ...legacyPlanningRefusal(), summary: null };
 }
 
 export interface TerraformApplyResult {
@@ -227,8 +124,8 @@ export interface TerraformApplyResult {
  * customer's connected cloud account. Live apply stays OFF
  * (TERRAFORM_LEGACY_APPLY_ENABLED unset/not exactly "true") until it is
  * rebuilt on the canonical tenant/role model and the terraformBoundary.ts
- * safety boundary the rest of the platform already uses. `terraform plan`
- * (read-only, no mutation) is unaffected by this flag.
+ * safety boundary the rest of the platform already uses. Legacy planning
+ * has a separate unconditional authority refusal above, regardless of this flag.
  */
 export function legacyApplyEnabled(): boolean {
   return process.env.TERRAFORM_LEGACY_APPLY_ENABLED === "true";
@@ -297,6 +194,10 @@ export async function getJobStatus(jobId: string) {
 
   return {
     id: job.id,
+    // Preserve history without turning old lead/text approval fields into authority.
+    evidenceKind: "legacy_text_only" as const,
+    approval: "unavailable" as const,
+    executionEnabled: false as const,
     status: job.status,
     mode: job.mode,
     primaryCloud: job.primaryCloud,
