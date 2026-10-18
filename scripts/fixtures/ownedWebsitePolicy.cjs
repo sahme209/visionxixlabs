@@ -6,7 +6,7 @@ const { join, relative } = require('node:path');
 const { createHash } = require('node:crypto');
 const managedNodePath = require('./ownedWebsiteManagedNodePath.cjs');
 const pages = new Set(['/', '/product', '/docs/approval-workflow']);
-const inherited = ['PATH', 'TMPDIR', 'LANG', 'LC_ALL', 'HTTP_PROXY', 'HTTPS_PROXY', 'ALL_PROXY', 'NO_PROXY', 'http_proxy', 'https_proxy', 'all_proxy', 'no_proxy', 'NODE_EXTRA_CA_CERTS', 'SSL_CERT_FILE', 'SSL_CERT_DIR', 'CODEX_PROXY_CERT', 'NODE_USE_ENV_PROXY', 'REQUESTS_CA_BUNDLE', 'CURL_CA_BUNDLE', 'AWS_CA_BUNDLE', 'NODE_PATH'];
+const inherited = ['PATH', 'HOME', 'TMPDIR', 'LANG', 'LC_ALL', 'HTTP_PROXY', 'HTTPS_PROXY', 'ALL_PROXY', 'NO_PROXY', 'http_proxy', 'https_proxy', 'all_proxy', 'no_proxy', 'NODE_EXTRA_CA_CERTS', 'SSL_CERT_FILE', 'SSL_CERT_DIR', 'CODEX_PROXY_CERT', 'NODE_USE_ENV_PROXY', 'REQUESTS_CA_BUNDLE', 'CURL_CA_BUNDLE', 'AWS_CA_BUNDLE', 'NODE_PATH'];
 const sha256 = path => createHash('sha256').update(readFileSync(path)).digest('hex');
 function endpoint(port) { assert.ok(Number.isInteger(port) && port >= 20000 && port <= 60000, 'website_port'); return `http://127.0.0.1:${port}`; }
 function publicAssets(root) {
@@ -48,7 +48,7 @@ function checkedEnvironment(env, execArgv) {
 function childEnvironment(env, { directory, configPath }, execArgv = process.execArgv) {
   assert.ok(directory.startsWith('/tmp/axiom-website-') && configPath === join(directory, 'config.json'), 'website_private_paths');
   const base = checkedEnvironment(env, execArgv);
-  return { ...base, TMPDIR: join(directory, 'tmp'), HOME: join(directory, 'home'), XDG_CONFIG_HOME: join(directory, 'config'), XDG_CACHE_HOME: join(directory, 'cache'), NODE_ENV: 'development', NEXT_TELEMETRY_DISABLED: '1', AXIOM_WEBSITE_VISUAL_MODE: 'owned-website-visual', AXIOM_WEBSITE_CONFIG: configPath, AWS_CONFIG_FILE: '/dev/null', AWS_SHARED_CREDENTIALS_FILE: '/dev/null', AWS_EC2_METADATA_DISABLED: 'true' };
+  return { ...base, TMPDIR: join(directory, 'tmp'), XDG_CONFIG_HOME: join(directory, 'config'), XDG_CACHE_HOME: join(directory, 'cache'), NODE_ENV: 'development', NEXT_TELEMETRY_DISABLED: '1', AXIOM_WEBSITE_VISUAL_MODE: 'owned-website-visual', AXIOM_WEBSITE_CONFIG: configPath, AWS_CONFIG_FILE: '/dev/null', AWS_SHARED_CREDENTIALS_FILE: '/dev/null', AWS_EC2_METADATA_DISABLED: 'true' };
 }
 function chromiumArgs({ profile, proxyPort, cdpPort }) {
   assert.ok(profile.startsWith('/tmp/axiom-website-') && profile.endsWith('/chromium'), 'website_browser_profile');

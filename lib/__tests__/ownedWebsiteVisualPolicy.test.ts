@@ -22,9 +22,18 @@ describe("owned website request boundary", () => {
 it("strips ambient credentials while retaining managed proxy/CA configuration", () => {
   const env = policy.childEnvironment({ PATH: "/bin", HTTPS_PROXY: "managed-proxy", NODE_EXTRA_CA_CERTS: "/managed-ca", AWS_SECRET_ACCESS_KEY: "private", DATABASE_URL: "private", HOME: "/ambient-home", GITHUB_TOKEN: "private", NEXT_PUBLIC_API_URL: "external" }, { directory: "/tmp/axiom-website-test", configPath: "/tmp/axiom-website-test/config.json" }, []);
   expect(env.HTTPS_PROXY).toBe("managed-proxy"); expect(env.NODE_EXTRA_CA_CERTS).toBe("/managed-ca");
-  expect(env.HOME).toBe("/tmp/axiom-website-test/home"); expect(env.TMPDIR).toBe("/tmp/axiom-website-test/tmp");
+  expect(env.HOME).toBe("/ambient-home"); expect(env.TMPDIR).toBe("/tmp/axiom-website-test/tmp");
   for (const key of ["AWS_SECRET_ACCESS_KEY", "DATABASE_URL", "LD_PRELOAD", "GITHUB_TOKEN", "NEXT_PUBLIC_API_URL"]) expect(env[key]).toBeUndefined();
   expect(env.AWS_SHARED_CREDENTIALS_FILE).toBe("/dev/null");
+});
+
+it.each(["/operator/home", "", undefined])("preserves supplied, empty or absent HOME without mutating its parent (%s)", home => {
+  const parent = Object.freeze({ PATH: "/bin", ...(home === undefined ? {} : { HOME: home }) });
+  const before = { ...parent };
+  const child = policy.childEnvironment(parent, { directory: "/tmp/axiom-website-test", configPath: "/tmp/axiom-website-test/config.json" }, []);
+  expect(child.HOME).toBe(home); expect(Object.hasOwn(child, "HOME")).toBe(home !== undefined);
+  expect(parent).toEqual(before); expect(child).not.toBe(parent);
+  expect(child).toMatchObject({ XDG_CONFIG_HOME: "/tmp/axiom-website-test/config", XDG_CACHE_HOME: "/tmp/axiom-website-test/cache", TMPDIR: "/tmp/axiom-website-test/tmp", AWS_CONFIG_FILE: "/dev/null", AWS_SHARED_CREDENTIALS_FILE: "/dev/null" });
 });
 
 it("forces the isolated browser through its loopback proxy without a loopback bypass", () => {
