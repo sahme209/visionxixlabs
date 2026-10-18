@@ -665,11 +665,11 @@
   "compilerPreparation": {
     "launcher": {
       "path": "/workspace/.axiom-validation/billing-checkout-root-dhwve79m/run-web-compiler.py",
-      "sha256": "ec92c5a070819b6212f087d68c320132c182e7db8d8f4cbc2fd15ad51cfa7eb5"
+      "sha256": "1db4657e0f2181385838628e945e723d9e5d09e7532ac7a5a1878e27afe93cc4"
     },
     "bindingTemplate": {
       "path": "/workspace/.axiom-validation/billing-checkout-root-dhwve79m/compiler-binding-template.json",
-      "sha256": "1dfe63f7841d39c464853cece21493be034ecb3e0ad49943b0d93a8f13e98c52"
+      "sha256": "1ac4145043da29961503a662bd82bddddad46a88b01b26b2d7de7e4086415b7f"
     },
     "bindingFinalPath": "/workspace/.axiom-validation/billing-checkout-root-dhwve79m/compiler-binding.json",
     "finalBindingRule": "After this metadata commit, replace only PENDING_METADATA_COMMIT with exact resulting HEAD; report final raw digest separately before grant.",
@@ -683,10 +683,51 @@
       "--incremental",
       "false"
     ],
-    "managedPolicy": "Fixed complete28-key selector preservation including HOME/proxy/CA/Node controls; unknown/unsupported controls or production markers refuse before child, never stripped; exact managed NODE_PATH ancestry excludes current UID; immediately revalidate full present/absent identity. No values logged.",
-    "syntaxParsedOnly": true,
+    "managedPolicy": "Original fixed28 selectors plus GNUPGHOME and ALL CODEX_* keys/values preserved exactly; full dynamic prefix key/presence/value snapshot and fixed absent states revalidate before exec. HOME unchanged. Existing unsupported NODE_/LD_/DYLD_/OPENSSL_/loader/deployment refusals remain. Application/provider credentials outside managed namespaces excluded; no values logged.",
+    "syntaxParsedOnly": false,
     "executed": false,
-    "startAndLogFilesAbsent": true
+    "startAndLogFilesAbsent": true,
+    "coordinatorManagedControlCorrection": {
+      "priorPreparationCommit": "2989954d1e4e94954a08527fc793bf24e21541bf",
+      "unchangedAll35BillingSources": true,
+      "unchangedAll86IntegratedProtectedFiles": true,
+      "proof": {
+        "source": {
+          "path": "/workspace/.axiom-validation/billing-checkout-root-dhwve79m/prove-managed-compiler-selectors.py",
+          "sha256": "95aeed8413a49748457fbab93d712c6622b91983124c7682a17587133f8b52fc"
+        },
+        "red": {
+          "path": "/tmp/axiom-owned-checkout-compiler-managed-prefix-red.log",
+          "sha256": "9a578287bf37195eacb4b1317ced4c878117e039fe9391069fc2f6137b3bb6da"
+        },
+        "green": {
+          "path": "/tmp/axiom-owned-checkout-compiler-managed-prefix-green.log",
+          "sha256": "e3b71542140e8c3d7a3f5659b42124ab88fd8c566397feb4d3976741522638a1"
+        },
+        "passed": 4,
+        "osExecveCalls": 0,
+        "subprocessRunCalls": 0,
+        "syntheticMapsOnly": true
+      },
+      "historicalPrivateArtifacts": [
+        {
+          "path": "/workspace/.axiom-validation/billing-checkout-root-dhwve79m/run-web-compiler-2989954d.py",
+          "sha256": "ec92c5a070819b6212f087d68c320132c182e7db8d8f4cbc2fd15ad51cfa7eb5"
+        },
+        {
+          "path": "/workspace/.axiom-validation/billing-checkout-root-dhwve79m/compiler-binding-2989954d.json",
+          "sha256": "e847920269a75466e486082bc546a1567db6ba4aeefbb3abd35cc4bac87008f0"
+        },
+        {
+          "path": "/workspace/.axiom-validation/billing-checkout-root-dhwve79m/compiler-binding-template-2989954d.json",
+          "sha256": "1dfe63f7841d39c464853cece21493be034ecb3e0ad49943b0d93a8f13e98c52"
+        }
+      ],
+      "workerManifestUnchanged": "c695af32e1b853bb610474e4e843609bbec313f03d0847d7c23c7a467b3bbcff",
+      "noRuntimeGate": true
+    },
+    "definitionsOnlyPureProof": true,
+    "mainInvoked": false
   },
   "metadataCaptureSources": [
     {
