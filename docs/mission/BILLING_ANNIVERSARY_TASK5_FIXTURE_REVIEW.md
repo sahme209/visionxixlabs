@@ -1,6 +1,6 @@
 # Anniversary V2 Task5 fixture source review
 
-This source-only candidate extends product source02c3861ea8fcc1c04c05493cfb90c25b29f2a0d9. The enclosing commit and parent handoff bind its final SHA. No main after10882dc2 is integrated. The companion `local-billing-anniversary-task5-source.json` pins every changed product file against02c and the six fixture/test files. Product code, production Prisma schema/migrations, locks, public routes, runtime flags and provider permits have no Task5 diff.
+This source-only candidate extends product source02c3861ea8fcc1c04c05493cfb90c25b29f2a0d9. The enclosing commit and parent handoff bind its final SHA. No main after10882dc2 is integrated. The companion `local-billing-anniversary-task5-source.json` pins every changed product file against02c and the eight fixture/test files. Product code, production Prisma schema/migrations, locks, public routes, runtime flags and provider permits have no Task5 diff.
 
 The earlier source review's no-installer/no-enrollment-caller statements describe02c. This candidate adds callers only inside the existing opt-in owned test file and its test-only helpers. Declaring/importing them installs nothing. Both flags absent yields27 skipped cases (the eight existing V1 cases plus19 V2 cases); no DB/server hook runs. There is no public enrollment selector, installer, clock hook or API route.
 
@@ -30,7 +30,7 @@ The earlier source review's no-installer/no-enrollment-caller statements describ
 
 ## Evidence and limits
 
-Only light source checks have run. New Prisma-launcher tests first produced four failures against the stub; shared launcher implementation is26/26 GREEN (`/tmp/axiom-anniversary-prisma-env-{red,green}.log`). Literal inert local Node child checks needed process-sandbox escalation; they performed no DB, provider, compiler or server work. Scoped ESLint and diff checks are recorded with this candidate. Default opt-in-file loading reports27 skipped, not27 passed.
+Before the first compiler-window grant, only light source checks had run. New Prisma-launcher tests first produced four failures against the stub; shared launcher implementation is26/26 GREEN (`/tmp/axiom-anniversary-prisma-env-{red,green}.log`). Literal inert local Node child checks needed process-sandbox escalation; they performed no DB, provider, compiler or server work. Scoped ESLint and diff checks are recorded with this candidate. Default opt-in-file loading reports27 skipped, not27 passed.
 
 Whole-web compiler, actual PG parser/DDL/constraints/rollback/lock waiters, five-minute TTL, Next UI and cleanup are **pending** independent source review and an exclusive grant. Earlier233 focused source tests and old V1 runtime receipts remain historical qualifications; they are not fresh Task5 runtime proof.
 
@@ -41,3 +41,11 @@ The canary is not an actual billing expiry race. Concurrent natural anniversary 
 The ef005956 review found one material issue: application provider guards do not cover the installed Prisma CLI's checkpoint request after db push. The bounded fixture-only correction forces `CHECKPOINT_DISABLE=1` in `newTestPrismaEnvironment`, after selecting inherited managed selectors, regardless of absence or an inherited false value. No cosmetic flag, product behavior or provider permit changes.
 
 Installed and locked Prisma versions are both5.22.0. Read-only bundle inspection found `(process.env.CHECKPOINT_DISABLE||a.disable)&&!a.force` returns disabled before `Config.new(a)`/checkpoint cache work. No CLI was executed for this inspection. Two new absent/false inherited regression cases failed before the fix and passed afterward. The complete launcher suite is now28/28 PASS, including the existing inert local child roundtrips; scoped ESLint/diff checks pass. Logs are `/tmp/axiom-anniversary-prisma-checkpoint-{red,green,focused,lint}.log`. The companion manifest binds the updated environment/test hashes and these light receipts. All ef005956 acceptance helpers and product02c code remain unchanged. Runtime gates remain pending exact scoped source closure and root's exclusive grant.
+
+## First compiler attempt and bounded typing correction
+
+The exclusive window ran fresh whole-web TypeScript at exact clean9aa7b68d with8192MiB heap and no incremental state. It exited2 after52.11s with exactly three diagnostics, bound in `/tmp/axiom-anniversary-task5-9aa-types.log`. Execution stopped before Docker/PG/DDL/Next; no owned runtime resource was created, no27-case acceptance ran, and the window was released.
+
+The authorized correction is test/helper-only: narrow the collected coverage discriminant before changing a replacement evidence digest; explicitly return the existing development NODE_ENV from the checked environment helper, preserving its selectors/guards; and construct a complete frozen, typed Intent fixture with canonical request/hash, original capture, state/revision, retry window and customer/subscription fields instead of asserting a partial object. A new full-intent regression failed first. Window/storage tests now28/28 PASS and launcher28/28 PASS, with scoped ESLint/diff PASS. Production/financial code and other owned acceptance helpers remain byte-identical to02c/9aa as applicable. The source manifest now also pins these two earlier test files (eight fixture/test files total).
+
+These focused passes do not establish compiler success. Exact independent source closure, fresh whole-web compiler and the one authorized owned acceptance attempt remain pending; no compiler retry or runtime was performed during this correction. The companion receipt binds `/tmp/axiom-anniversary-type-{fixture-red,fixture-green,launcher-green,fixture-lint}.log` separately from the failed9aa compiler attempt.

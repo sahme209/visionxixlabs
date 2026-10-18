@@ -56,7 +56,9 @@ describe("pure NEW TEST V2 anniversary window candidates (no permission or IO)",
   it("does not change a bucket for same-window replacement collection or later recovery", () => {
     const basis = paid(), start = basis.anchor!, end = "2026-11-18T14:15:16.000Z", now = new Date("2026-10-24T00:00:00Z");
     const first = resolveAllowanceWindowV2(basis, coverage(basis, start, end), now);
-    const replacement = resolveAllowanceWindowV2(basis, { ...coverage(basis, start, end, "2026-10-23T00:00:00.000Z"), evidenceDigest: "c".repeat(64) }, now);
+    const replacementCoverage = coverage(basis, start, end, "2026-10-23T00:00:00.000Z");
+    if (replacementCoverage.kind !== "collected") throw new Error("expected_collected_fixture");
+    const replacement = resolveAllowanceWindowV2(basis, { ...replacementCoverage, evidenceDigest: "c".repeat(64) }, now);
     expect(first).toEqual(replacement);
     expect(result(basis, start, end, "2026-10-22T00:00:00Z", "2026-10-23T00:00:00.000Z").kind).toBe("unavailable");
   });

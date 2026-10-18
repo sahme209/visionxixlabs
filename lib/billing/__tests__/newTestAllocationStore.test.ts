@@ -1,3 +1,4 @@
+import { createHash } from "node:crypto";
 import { describe, expect, it, vi } from "vitest";
 import { createEnrollmentV2, originalCreateProofDigest, paidBasisForOriginalCollection, fixtureAllocationDDL, readFixtureEnrollment } from "../newTestSubscription/fixtureAllocation";
 import { ANNIVERSARY_POLICY_V2 } from "../newTestSubscription/anniversaryWindow";
@@ -8,13 +9,30 @@ import type { Prisma } from "@prisma/client";
 const scope = { runtimeId: "runtime", accountId: "acct_test", organizationId: "org" };
 function prepared() {
   const enrollment = createEnrollmentV2(scope);
-  const proof = { ...scope, sessionId: "cs_test", outboundRequestKey: "key", outboundRequestDigest: "d".repeat(64), requestId: "req", statusCode: 200 };
-  const intent = { id: "intent", ...scope, livemode: false, terms: { catalogVersion: "axiom_public_test_v1", planId: "pro", interval: "monthly", seatQuantity: 3, priceId: "price_test", unitAmountCents: 2900, monthlyAICreditsCents: 3000, monthlyDeployments: 100 }, sessionId: "cs_test", originalCreateProof: proof, providerIdempotencyKey: "key", requestDigest: proof.outboundRequestDigest, allowanceV2: { policy: ANNIVERSARY_POLICY_V2, enrollmentDigest: enrollment.digest } } as Intent;
+  const terms: Intent["terms"] = { catalogVersion: "axiom_public_test_v1", planId: "pro", interval: "monthly", seatQuantity: 3, priceId: "price_test", unitAmountCents: 2900, monthlyAICreditsCents: 3000, monthlyDeployments: 100 };
+  const allowanceV2: NonNullable<Intent["allowanceV2"]> = { policy: ANNIVERSARY_POLICY_V2, enrollmentDigest: enrollment.digest };
+  const canonicalRequest = JSON.stringify({ mode: "subscription", line_items: [{ price: terms.priceId, quantity: terms.seatQuantity }], customer_email: "fixture@example.invalid", success_url: "https://isolated.invalid/success", cancel_url: "https://isolated.invalid/cancel",
+    metadata: { organizationId: scope.organizationId, catalogVersion: terms.catalogVersion, intentId: "intent", allowancePolicy: allowanceV2.policy, allowanceEnrollmentDigest: enrollment.digest },
+    subscription_data: { metadata: { organizationId: scope.organizationId, catalogVersion: terms.catalogVersion, intentId: "intent", planId: terms.planId, billingInterval: terms.interval, allowancePolicy: allowanceV2.policy, allowanceEnrollmentDigest: enrollment.digest } } });
+  const requestDigest = createHash("sha256").update(canonicalRequest).digest("hex"), createdAtMs = Date.parse("2026-10-18T14:15:15.000Z");
+  const proof = { ...scope, sessionId: "cs_test", outboundRequestKey: "key", outboundRequestDigest: requestDigest, requestId: "req", statusCode: 200 };
+  const intent: Intent = Object.freeze({ id: "intent", ...scope, livemode: false, terms, sessionId: "cs_test", originalCreateProof: proof, providerIdempotencyKey: "key", requestDigest, allowanceV2,
+    clientIntentKey: "fixture-intent-12345678", canonicalRequest, createdAtMs, retryNotAfterMs: createdAtMs + 23 * 3600000, state: "session_confirmed", email: "fixture@example.invalid", customerId: null, subscriptionId: null, revision: 2 });
   const input = { ...evidenceInput(), serviceStart: "2026-10-18T14:15:16.000Z", serviceEnd: "2026-11-18T14:15:16.000Z" };
   const evidence = collectedEvidenceV2(input, { policy: ANNIVERSARY_POLICY_V2, enrollmentDigest: enrollment.digest, originalAnchor: input.serviceStart, originalCreateProofDigest: originalCreateProofDigest(intent) });
   return { enrollment, intent, evidence };
 }
 describe("owned V2 enrollment and original anchor storage contract", () => {
+  it("constructs a complete frozen original intent with a canonical request digest", () => {
+    const { intent } = prepared();
+    expect(intent).toMatchObject({ state: "session_confirmed", revision: 2, clientIntentKey: "fixture-intent-12345678", email: "fixture@example.invalid", customerId: null, subscriptionId: null });
+    expect(intent.createdAtMs).toBe(Date.parse("2026-10-18T14:15:15.000Z"));
+    expect(intent.retryNotAfterMs).toBe(intent.createdAtMs + 23 * 3600000);
+    expect(intent.canonicalRequest).toBeTypeOf("string");
+    expect(intent.requestDigest).toBe(createHash("sha256").update(intent.canonicalRequest!).digest("hex"));
+    expect(intent.originalCreateProof?.outboundRequestDigest).toBe(intent.requestDigest);
+    expect(Object.isFrozen(intent)).toBe(true);
+  });
   it("freezes exact scope and canonical original-attempt identity; extra caller fields confer no provenance", () => {
     const f = prepared();
     expect(createEnrollmentV2({ ...scope, ignored: "x" } as typeof scope)).toEqual(f.enrollment);

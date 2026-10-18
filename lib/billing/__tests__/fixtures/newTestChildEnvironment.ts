@@ -46,7 +46,7 @@ function checkedChildEnvironment(inherited: Readonly<Record<string, string | und
   const inheritedSelectors = Object.fromEntries(passthrough.filter(key => typeof inherited[key] === "string").map(key => [key, inherited[key]]));
   const heapOptions = [nodeOptions, ...cliHeap].filter(value => value !== undefined && value !== "").join(" ");
   const preservedOptions = [heapOptions.trim() ? heapOptions : "--max-old-space-size=3072", ...framework].join(" ");
-  return { ...inheritedSelectors, NODE_OPTIONS: preservedOptions };
+  return { ...inheritedSelectors, NODE_ENV: "development", NODE_OPTIONS: preservedOptions };
 }
 function ownedDatabase(databaseUrl: string): void {
   try {
