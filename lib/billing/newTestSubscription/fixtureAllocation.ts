@@ -70,7 +70,7 @@ export const fixtureAllocationDDL = [
         IF a-ARRAY['source','purchaseId','maxCents']<>'{}'::jsonb OR NOT EXISTS(SELECT 1 FROM "AddOnPurchase" WHERE id=a->>'purchaseId' AND "organizationId"=NEW.org) THEN RAISE EXCEPTION 'attribution_purchase_scope'; END IF;
       ELSIF a->>'source'='included' THEN
         IF a-ARRAY['source','bucketId','maxCents']<>'{}'::jsonb OR cardinality(seen)<>1 OR a->>'bucketId' IS DISTINCT FROM NEW.body->>'bucketId'
-          OR (a->>'maxCents')::bigint>CASE WHEN b.kind='free' THEN 200 ELSE (b.body->'terms'->>'monthlyAICreditsCents')::bigint END THEN RAISE EXCEPTION 'attribution_bucket'; END IF;
+          OR (a->>'maxCents')::bigint>(CASE WHEN b.kind='free' THEN 200 ELSE (b.body->'terms'->>'monthlyAICreditsCents')::bigint END) THEN RAISE EXCEPTION 'attribution_bucket'; END IF;
       ELSE RAISE EXCEPTION 'attribution_source'; END IF;
     END LOOP;
     IF total<>h."reservedCents" OR date_trunc('milliseconds',h."createdAt") IS DISTINCT FROM (NEW.body->>'admittedAt')::timestamp

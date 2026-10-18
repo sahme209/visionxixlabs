@@ -80,7 +80,12 @@ suite("owned PG17 new TEST subscription service, synthetic provider only", () =>
       'CREATE TABLE "OrganizationTestSubscriptionContract" (org text PRIMARY KEY,intent text UNIQUE NOT NULL,customer text UNIQUE NOT NULL,subscription text UNIQUE NOT NULL,body jsonb NOT NULL,FOREIGN KEY(intent,org) REFERENCES "RecurringSubscriptionIntent"(id,org))',
     ];
     // Expression uniqueness is created as a separate index in PostgreSQL.
-    for (const statement of [...sql, ...fixtureCoverageDDL, ...fixtureAllocationDDL]) await db.$executeRawUnsafe(statement);
+    for (const [stage, statements] of [["base", sql], ["coverage", fixtureCoverageDDL], ["allocation", fixtureAllocationDDL]] as const) {
+      for (let index = 0; index < statements.length; index++) {
+        try { await db.$executeRawUnsafe(statements[index]); }
+        catch { throw new Error(`owned_fixture_ddl_failed_${stage}_${index}`); } // Fixed stage/index only; no raw SQL, URL or error dump.
+      }
+    }
     await db.$executeRawUnsafe('CREATE UNIQUE INDEX intent_client_key ON "RecurringSubscriptionIntent" (org,(body->>\'clientIntentKey\'))');
     await db.$executeRawUnsafe(`CREATE FUNCTION freeze_test_intent() RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN
       IF OLD.id IS DISTINCT FROM NEW.id OR OLD.org IS DISTINCT FROM NEW.org THEN RAISE EXCEPTION 'immutable_intent_identity'; END IF;

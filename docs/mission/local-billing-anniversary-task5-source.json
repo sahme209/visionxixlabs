@@ -42,8 +42,10 @@
     },
     {
       "path": "lib/billing/newTestSubscription/fixtureAllocation.ts",
-      "sha256": "4b00376e5a20ba6a13820e34a04c1c52fd7777d3aa01d40719527ac8b9136a53",
-      "unchangedFromProductBase": true
+      "sha256": "226a04f6431bf0cc748a5026d808161aeabb2b0158b3a9540d40909c22d78c74",
+      "unchangedFromProductBase": false,
+      "productBaseSha256": "4b00376e5a20ba6a13820e34a04c1c52fd7777d3aa01d40719527ac8b9136a53",
+      "authorizedDifference": "Parenthesize existing SQL CASE expression in fixture DDL; no predicate/amount/raise/trigger change."
     },
     {
       "path": "lib/billing/newTestSubscription/fixtureUsageGuards.ts",
@@ -134,7 +136,7 @@
     },
     {
       "path": "lib/billing/__tests__/newTestSubscriptionService.postgres.test.ts",
-      "sha256": "99e1563734b885f8fcd84191bf8d53b743c776fc888fd4c9ddf010abb7dd7a7e"
+      "sha256": "f5198ea494b6960da561262340fc82311acca09e03258ad5a5f39a61500c524a"
     },
     {
       "path": "lib/billing/__tests__/anniversaryWindow.test.ts",
@@ -193,6 +195,14 @@
     {
       "path": "/tmp/axiom-anniversary-type-fixture-lint.log",
       "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/tmp/axiom-anniversary-ddl-source-focused.log",
+      "sha256": "47093884195037d32e1c1626e422a22020c5e7a3de651e447ce84aa2589b5618"
+    },
+    {
+      "path": "/tmp/axiom-anniversary-ddl-source-lint.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
     }
   ],
   "ownedCases": {
@@ -202,9 +212,9 @@
     "defaultSkipped": 27
   },
   "pending": [
-    "independent exact typing-source closure",
+    "independent exact DDL syntax source closure",
     "fresh whole-web compiler after grant",
-    "one actual owned PG/Next acceptance and cleanup",
+    "actual owned PG parser/financial/Next acceptance after exclusive grant",
     "full coordinated gates"
   ],
   "unproved": [
@@ -290,5 +300,17 @@
     "launcherFocusedGreen": 28,
     "compilerRetried": false,
     "ownedRuntimeStarted": false
+  },
+  "fixtureSyntaxCorrection": {
+    "sourceBase": "fb7b203216def75bfeb1cda3ace3dcf4de81340a",
+    "changedProductFiles": [
+      "lib/billing/newTestSubscription/fixtureAllocation.ts"
+    ],
+    "syntaxOnly": "Parenthesize SQL CASE at fixtureAllocation.ts73; every financial predicate retained.",
+    "diagnosticOnly": "Fixed base/coverage/allocation stage and statement index; original statements forwarded; no raw SQL/URLs/caught errors emitted.",
+    "focusedStorageTestsPassed": 5,
+    "postgresParserGreen": false,
+    "compilerRetried": false,
+    "ownedRuntimeRetried": false
   }
 }
