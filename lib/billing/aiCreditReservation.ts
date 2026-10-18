@@ -1,3 +1,4 @@
+import { fenceNewTestAdmission, newTestPlanGuard } from "./newTestSubscription/paidPlan";
 import { isolatedRuntimeRequested } from "./isolatedApplication/runtime";
 import { resolveIsolatedApplicationPlan } from "./isolatedApplication/plan";
 import "server-only";
@@ -40,25 +41,29 @@ export async function reserveAICredits(
     return await repo.$transaction(async (tx: any) => {
       // A reused hold is not proof that an isolated contract remains valid.
       const isolatedPlan = isolatedRuntimeRequested() ? await resolveIsolatedApplicationPlan(tx, input.organizationId, "admission") : isolatedVerifiedPlan ? await isolatedVerifiedPlan(tx, input.organizationId, await tx.tenantBillingPlan.findUnique({ where: { organizationId: input.organizationId } })) : undefined;
+      const guard = newTestPlanGuard(isolatedPlan);
+      const decisionNow = guard?.clock ?? now;
+      if ((isolatedRuntimeRequested() || isolatedVerifiedPlan) && !guard) throw new Error("isolated_plan_unavailable");
       if (isolatedRuntimeRequested() && !isolatedPlan) throw new Error("isolated_plan_unavailable");
       const existing = await tx.aIUsageReservation.findUnique({ where: { organizationId_idempotencyKey: { organizationId: input.organizationId, idempotencyKey: input.idempotencyKey } } });
       if (existing) {
         if (existing.reservedCents !== input.reservedCents) return { ok: false as const, error: "idempotency_key_conflict" as const };
+        if (guard) await fenceNewTestAdmission(tx, isolatedPlan!, input, false);
         return { ok: true as const, reservation: existing, reused: true };
       }
       await tx.aIUsageReservation.updateMany({
-        where: { organizationId: input.organizationId, status: "reserved", usageEventId: null, expiresAt: { lte: now } },
-        data: { status: "expired", releasedAt: now },
+        where: { organizationId: input.organizationId, status: "reserved", usageEventId: null, expiresAt: { lte: decisionNow } },
+        data: { status: "expired", releasedAt: decisionNow },
       });
       const [billing, purchases, usage, active] = await Promise.all([
         tx.tenantBillingPlan.findUnique({ where: { organizationId: input.organizationId } }),
-        tx.addOnPurchase.findMany({ where: { organizationId: input.organizationId, status: { in: ["paid", "partially_refunded"] }, OR: [{ validFor: "current_month", periodMonth: monthKey(now) }, { validFor: "permanent", refundedAt: null }] } }),
-        tx.usageEvent.aggregate({ where: { organizationId: input.organizationId, eventKind: "ai_invocation", createdAt: { gte: monthStart(now) } }, _sum: { billedCents: true } }),
+        tx.addOnPurchase.findMany({ where: { organizationId: input.organizationId, status: { in: ["paid", "partially_refunded"] }, OR: [{ validFor: "current_month", periodMonth: monthKey(decisionNow) }, { validFor: "permanent", refundedAt: null }] } }),
+        tx.usageEvent.aggregate({ where: { organizationId: input.organizationId, eventKind: "ai_invocation", createdAt: { gte: monthStart(decisionNow) } }, _sum: { billedCents: true } }),
         tx.aIUsageReservation.aggregate({
           where: {
             organizationId: input.organizationId,
             OR: [
-              { status: "reserved", usageEventId: null, expiresAt: { gt: now } },
+              { status: "reserved", usageEventId: null, expiresAt: { gt: decisionNow } },
               // Older linked Gateway holds predate pending_settlement and must
               // continue consuming capacity until their usage is reconciled.
               { status: "reserved", usageEventId: { not: null } },
@@ -75,7 +80,7 @@ export async function reserveAICredits(
       if (plan.entitlements.overagePolicy === "hard_stop" && pool - used - held < input.reservedCents) {
         return { ok: false as const, error: "ai_credit_pool_exhausted" as const };
       }
-      const reservation = await tx.aIUsageReservation.create({ data: { ...input, status: "reserved", expiresAt: new Date(now.getTime() + RESERVATION_TTL_MS) } });
+      const reservation = guard ? (await fenceNewTestAdmission(tx, isolatedPlan!, input, true))! : await tx.aIUsageReservation.create({ data: { ...input, status: "reserved", expiresAt: new Date(now.getTime() + RESERVATION_TTL_MS) } });
       return { ok: true as const, reservation, reused: false };
     }, { isolationLevel: "Serializable" });
   } catch {
