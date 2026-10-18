@@ -9,6 +9,12 @@ checkpoint status; previous observations are retained as evidence history.
 
 PR #161 source integration is complete at main `608efe0fd70623aaf71cb80f799d3b822b9855cd` after both exact-head Test runs and review passed. This is not a production release.
 
+## Controller continuation — billing source publication gates, October 18, 2026
+
+Combined source `8817693a` passed fresh web types,8,067 default tests across719 files (28 opt-in tests/one file skipped), separate desktop types/release-check/frontend build, Python30/offline16/buildguard/tracker22/2154/scopedlint/diff. Root verified all nine gate-log hashes and123 actual89e source/config rows; receipt-only `9ad890e4` changes no executable source. The actual local synthetic checkout proof remains scoped to `89e408dc` (one passed,27 other cases filtered); it was not rerun or relabeled as hosted payment/native/full-feature acceptance. Exact-head remote checks remain required before merge. The private validation precheck initially misclassified opaque OPENAI_CLUSTER metadata and refused before any compiler started; that exact selector is preserved unchanged. Owned caches, Python bytecode and desktop output cleanup are separately recorded, without shared-cache deletion or installer publication.
+
+Agent compiler `6a836bd5` passed. Docs-only `bb0944c2` preserves every existing instruction and appends the exact installed framework guidance block to avoid deterministic next-dev source mutation. Its one application attempt failed closed19.17s at a verified-server fork-policy check, with no successful Agent/counter receipt. Current relevant process/container/known-listener absence is verified within stated visibility limits; the exact rejected operation and historical failure-time identities remain unknown. Read-only diagnosis continues; no generic fork/network permission was added. ECS independent terminal reconciliation continues after reviewed recovery04f8e485. No production changes or deployment occurred.
+
 ## Controller continuation — local billing application acceptance, October 18, 2026
 
 Main `5c76ad4442aadfd5e470a9a3601348307b5903a4` includes PR177 (all five required checks) and PR178 (all four observed required checks), merged normally without deployments. Terraform customer profile/producer/import and explicitly scripted website stories are source-integrated; genuine hosted Terraform, browser, native and production acceptance remain open.
