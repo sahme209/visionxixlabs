@@ -71,3 +71,20 @@ it("rejects routing/TLS overrides with otherwise valid signed headers", () => no
  const a=new https.Agent();a.createConnection=()=>{throw Error('must_not_run')};assert.throws(()=>https.request({...signed,agent:a}),/owned_ecs_egress_denied/);
  assert.equal(sends,0);require('node:fs').writeSync(1,'no_send_pass');
 `));
+it("denies captured synchronous child-process functions before the lower spawn canary", () => noSend(`
+ const child=require('node:child_process'),captured=[child.spawnSync,child.execSync,child.execFileSync];let delegates=0;
+ process.binding('spawn_sync').spawn=()=>{delegates++;throw Error('no_process_must_start')};
+ installOwnedEcsCheckedInputGuard({origin:'http://127.0.0.1:34567',proof:'a'.repeat(32)});
+ for(const spawn of [child.spawnSync,...captured])assert.throws(()=>spawn(process.execPath,['-e','0']),/owned_ecs_egress_denied/);
+ assert.equal(delegates,0);assert.equal(sends,0);require('node:fs').writeSync(1,'no_send_pass');
+`));
+it("denies Worker constructors acquired after preload including ESM without starting a thread", () => noSend(`
+ const threads=require('node:worker_threads');let delegates=0;
+ threads.Worker=class{constructor(){delegates++;throw Error('no_worker_must_start')}};
+ installOwnedEcsCheckedInputGuard({origin:'http://127.0.0.1:34567',proof:'a'.repeat(32)});
+ (async()=>{
+ const esm=await import('node:worker_threads'),captured=threads.Worker;
+ for(const Worker of [threads.Worker,captured,esm.Worker])assert.throws(()=>new Worker('0',{eval:true,execArgv:[],env:{}}),/owned_ecs_egress_denied/);
+ assert.equal(delegates,0);assert.equal(sends,0);require('node:fs').writeSync(1,'no_send_pass');
+ })().catch(()=>{process.exitCode=1});
+`));

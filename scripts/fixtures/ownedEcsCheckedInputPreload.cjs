@@ -3,7 +3,7 @@
 const assert = require('node:assert/strict');
 const http = require('node:http'), https = require('node:https'), net = require('node:net');
 const dns = require('node:dns'), dgram = require('node:dgram'), tls = require('node:tls'), http2 = require('node:http2');
-const childProcess = require('node:child_process');
+const childProcess = require('node:child_process'), workerThreads = require('node:worker_threads');
 const { syncBuiltinESMExports } = require('node:module');
 const { urlToHttpOptions } = require('node:url');
 const API = 'api.github.com', BUNDLE = 'owned-ecs-bundle.invalid';
@@ -49,6 +49,8 @@ function installOwnedEcsCheckedInputGuard({ origin, proof, announce = false }) {
   patch(tls, ['connect']); patch(http2, ['connect']); patch(net, ['createServer']);
   patch(childProcess, ['spawn', 'spawnSync', 'exec', 'execSync', 'execFile', 'execFileSync', 'fork']);
   patch(process.binding('process_wrap').Process.prototype, ['spawn']);
+  patch(process.binding('spawn_sync'), ['spawn']);
+  patch(workerThreads, ['Worker']);
   function headers(value) {
     const result = new Headers(value);
     for (const name of result.keys()) if (name.startsWith('x-axiom-') || ['cookie', 'proxy-authorization', 'proxy-connection'].includes(name)) return reject();
