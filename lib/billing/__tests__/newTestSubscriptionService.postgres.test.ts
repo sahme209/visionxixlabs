@@ -491,9 +491,10 @@ suite("owned PG17 new TEST subscription service, synthetic provider only", () =>
     observeRefund(listener) { if (refundBinding.observer) throw new Error("owned_refund_observer_busy"); refundBinding.observer = listener; return () => { refundBinding.observer = null; }; } });
 
   it.runIf(process.env.AXIOM_RUN_OWNED_CHECKOUT_HTTP === "1")("actual owned pricing HTTP checkout and signed webhook compose existing TEST service in a separate synthetic worker", async () => {
-    const { exerciseOwnedCheckoutHttp } = await import("./fixtures/ownedCheckoutHttpAcceptance");
+    const { exerciseOwnedCheckoutHttp, ownedCheckoutEvidenceLine } = await import("./fixtures/ownedCheckoutHttpAcceptance");
     const receipt = await exerciseOwnedCheckoutHttp({ db, url, runtime });
     expect(receipt.syntheticProviderOnly).toBe(true); expect(receipt.actualHostedPayment).toBe(false);
+    console.info(ownedCheckoutEvidenceLine(receipt));
   }, 180000);
 
 });

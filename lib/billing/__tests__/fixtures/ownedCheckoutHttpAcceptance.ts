@@ -80,3 +80,12 @@ export async function exerciseOwnedCheckoutHttp(input: { db: PrismaClient; url: 
     ]); } finally { control.dispose(); }
   }
 }
+/** Existing owned28 metadata only; emit through the already-private runner log.
+ * Root fields are selected explicitly, never request/cookie/error/environment data. */
+export function ownedCheckoutEvidenceLine(result: Awaited<ReturnType<typeof exerciseOwnedCheckoutHttp>>): string {
+  try {
+    const json = JSON.stringify({ observations: result.observations, workerOutputDigest: result.workerOutputDigest, workerBuildReceipt: result.workerBuildReceipt, syntheticProviderOnly: result.syntheticProviderOnly, actualHostedPayment: result.actualHostedPayment });
+    if (Buffer.byteLength(json, "utf8") > 262144) throw new Error("limit");
+    return "AXIOM_OWNED_CHECKOUT_RECEIPT_V1 " + json;
+  } catch { throw new Error("owned_checkout_evidence_unavailable"); }
+}
