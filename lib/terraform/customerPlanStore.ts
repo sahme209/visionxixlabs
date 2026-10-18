@@ -104,8 +104,8 @@ export async function readCustomerPlanStorageReadiness(db: SavedPlanDatabase): P
 }
 export interface CurrentCustomerProfile { profile:CustomerPlanProfile; status:"active"|"revoked" }
 /** Internal read; caller must prove readiness first. No profile mutation. */
-export async function readCurrentCustomerProfile(db:SavedPlanDatabase,scope:{organizationId:string;requestId:string}):Promise<CurrentCustomerProfile|null> {
- const rows=await db.$queryRawUnsafe<Array<{id:string;revision:number;status:string;profileJson:unknown;profileDigest:string}>>(`SELECT c."id",c."revision",c."status",p."profileJson",p."profileDigest" FROM public."TerraformCustomerPlanCurrent" c JOIN public."TerraformCustomerPlanProfile" p ON p."id"=c."id" AND p."revision"=c."revision" AND p."organizationId"=c."organizationId" AND p."deploymentRequestId"=c."deploymentRequestId" WHERE c."organizationId"=$1 AND c."deploymentRequestId"=$2 LIMIT 2`,scope.organizationId,scope.requestId);
+export async function readCurrentCustomerProfile(db:SavedPlanDatabase,scope:{organizationId:string;requestId:string},lock=false):Promise<CurrentCustomerProfile|null> {
+ const rows=await db.$queryRawUnsafe<Array<{id:string;revision:number;status:string;profileJson:unknown;profileDigest:string}>>(`SELECT c."id",c."revision",c."status",p."profileJson",p."profileDigest" FROM public."TerraformCustomerPlanCurrent" c JOIN public."TerraformCustomerPlanProfile" p ON p."id"=c."id" AND p."revision"=c."revision" AND p."organizationId"=c."organizationId" AND p."deploymentRequestId"=c."deploymentRequestId" WHERE c."organizationId"=$1 AND c."deploymentRequestId"=$2 LIMIT 2${lock?" FOR UPDATE OF c,p":""}`,scope.organizationId,scope.requestId);
  if (rows.length===0) return null;
  if (rows.length!==1) throw new Error("customer_plan_profile_unavailable");
  const row=rows[0],profile=parseCustomerPlanProfile(row.profileJson);

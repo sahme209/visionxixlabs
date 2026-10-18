@@ -4,24 +4,8 @@ export const CUSTOMER_PLAN_TTL_MS = 15 * 60_000;
 export const CUSTOMER_RECEIPT_MAX_BYTES = 64 * 1024;
 export const CUSTOMER_STATE_MAX_BYTES = 16 * 1024 * 1024;
 export const CUSTOMER_RESPONSE_BUDGET_BYTES = 96 * 1024 * 1024;
-export interface CustomerPlanProfile {
- schema: "axiom.terraform.customer-profile.v2";
- id: string; organizationId: string; deploymentRequestId: string; requestVersion: number; environmentId: string; revision: number;
- repository: { recordId: string; remoteId: string; fullName: string; sourceRef: string; sourceSha: string };
- producer: { workflowPath: string; workflowSha: string; workflowDigest: string; scriptPath: string; scriptDigest: string; trustProfileId: string; toolchainProfileId: string; planRoleArn: string };
- configuration: { root: string; treeDigest: string; providerLockDigest: string };
- backend: { kind: "s3_dynamodb"; accountId: string; region: string; bucket: string; key: string; workspace: "default"; lockTable: string; lockKey: string };
- artifacts: { bucket: string; region: string; prefix: string; kmsKeyArn: string };
- connection: { id: string; version: number };
-}
-export interface CustomerBackendState { versionId: string; digest: string; lineage: string; serial: number }
-export interface CustomerSavedPlanBinding {
- schema: "axiom.terraform.saved-plan.v2"; evidenceScope: "customer_ci_attested";
- profile: CustomerPlanProfile; profileDigest: string; requestContentHash: string; targetDigest: string; backendState: CustomerBackendState;
- producer: { repositoryId: string; runId: string; runAttempt: number; attestationDigest: string; trustDigest: string; receiptDigest: string };
- configurationDigest: string; providerLockDigest: string; terraformVersion: string; executableDigest: string; binaryDigest: string; showDigest: string;
- createdAt: string; expiresAt: string;
-}
+import type {CustomerPlanProfile,CustomerBackendState,CustomerSavedPlanBinding} from "./customerPlanTypes";
+export type {CustomerPlanProfile,CustomerBackendState,CustomerSavedPlanBinding} from "./customerPlanTypes";
 const hex64 = /^[a-f0-9]{64}$/;
 const hex40 = /^[a-f0-9]{40}$/;
 const numeric = /^[1-9]\d{0,31}$/;
