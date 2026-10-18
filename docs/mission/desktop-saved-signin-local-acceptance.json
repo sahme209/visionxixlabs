@@ -1,0 +1,173 @@
+{
+  "baseCommit": "291a4c579f12671a3f0c086417ac118570c75a47",
+  "status": "local_gates_passed_pending_independent_review",
+  "sourceHashes": {
+    "desktop/src/App.tsx": "1f739c6303c306bd1eca2d42b10335e1e637bc899cb72d6573413990bd72ba7f",
+    "desktop/src/lib/activeDesktopCredential.ts": "dd2cc53825f02bef901ece36cecd139a4b3a04ebe773ccc13fe600f4c8c271e3",
+    "desktop/src/lib/credentialVerificationCoordinator.ts": "686b23af528b7c56875ed41f46ef920279ca193f9ebc58749ea3ebc80995ac30",
+    "desktop/src/lib/desktopClient.ts": "d121661b04544434ea597797987d20ccef04e416d0868f172a33ad813112f9cd",
+    "desktop/src/views/DesktopSignInView.tsx": "fd423b80a5921712e95908abdea538bed979f3d2ca3f08c82ef2ebf9912114f9",
+    "docs/desktop/saved-signin-recovery.md": "e8171e137e4a9c20b9bc0ec7bc6c5d573179c41bd59a6c038166dc1eba5b481e",
+    "lib/__tests__/desktopFirstRunContract.test.ts": "88ed1380dbc666a4819ad997c3046096685b452d751724668d958935b9032b63",
+    "lib/demo/demoScenarios.ts": "ad04041002b57fdf850d8e9d7012f641a6b0449552f9bb743cc7ed7015bc13ce",
+    "lib/desktop/__tests__/credentialVerificationCoordinator.test.ts": "05ddde9cf3f4618b517a81fff619ce856093f9113ad77ab46c0968f12ea37c66",
+    "lib/desktop/__tests__/desktopClientError.test.ts": "bf6e8688ab52cf7aeaf3375a128ffced7b7b4ada19d7ba8dce22c517fc0f9087",
+    "lib/desktop/__tests__/desktopCredentialCandidate.test.ts": "25aa6f1f0c09ee43937497af2fd8b28e063d63ca2e0f09df34b257475d95c7c4",
+    "lib/desktop/__tests__/savedSignInRecovery.test.ts": "e79d9b3392b909968ff09b60cafc8e5d2c17861fb9480a636cb120c0748b7278"
+  },
+  "red": {
+    "baseCommit": "291a4c579f12671a3f0c086417ac118570c75a47",
+    "actualMountedAppTest": "recovers a transient saved sign-in failure through the mounted App without writing the vault",
+    "failure": "Retry saved sign-in button absent",
+    "log": "/tmp/saved-signin-baseline-red.log"
+  },
+  "heavyGates": "completed_at_validatedSourceCommit",
+  "boundaries": [
+    "Actual mounted App and DesktopSignInView; feature children stubbed",
+    "Vault mocked; does not prove native persistence or operating-system access",
+    "Transport mocked; does not prove production login, entitlement, provider, browser or native acceptance"
+  ],
+  "securityProperties": [
+    "No automatic retries",
+    "Only typed unavailable failure offers saved retry",
+    "Canceled/rejected/invalid remain locked without implicit vault deletion",
+    "Shared selector preserves tombstone/explicit/legacy precedence",
+    "Candidate read does not activate transport",
+    "Config identity+context revision+local selection generation and re-read durable snapshot fence activation",
+    "No vault writes by retry",
+    "Fixed errors exclude raw response and thrown payloads",
+    "Identity and entitlement remain separate"
+  ],
+  "reviewedSourceCommit": "f0f468323dff2fb962d0536f116fd74b10776b3a",
+  "integratedSourceCommit": "1517165533b07b14c568094d11be3f84b2509822",
+  "integrationBaseCommit": "89aac954a146bdbfe23b0c0605e0e44f07895dde",
+  "reviewedByteIdentity": {
+    "desktop/src/App.tsx": true,
+    "desktop/src/lib/activeDesktopCredential.ts": true,
+    "desktop/src/lib/credentialVerificationCoordinator.ts": true,
+    "desktop/src/lib/desktopClient.ts": true,
+    "desktop/src/views/DesktopSignInView.tsx": true,
+    "lib/desktop/__tests__/savedSignInRecovery.test.ts": true,
+    "lib/desktop/__tests__/desktopCredentialCandidate.test.ts": true,
+    "lib/desktop/__tests__/credentialVerificationCoordinator.test.ts": true,
+    "docs/desktop/saved-signin-recovery.md": true
+  },
+  "demoConflictResolution": "Retained current-main catalog-recovery demo text; added reviewed saved-sign-in recovery sentence at existing verification-failure sentence. No auth product conflict.",
+  "validatedSourceCommit": "766136bca3251670305be8d99b548978c1be6e98",
+  "testsOnlyCorrectionCommit": "766136bca3251670305be8d99b548978c1be6e98",
+  "testsOnlyCorrection": "Exact classified unavailable/invalid error expectations retained all malformed cases; removed obsolete source-syntax generic-get assertion and added actual endpoint/candidate Authorization/parser-rejection/config-identity behavioral test.",
+  "initialFullSuiteFailure": {
+    "sourceCommit": "1517165533b07b14c568094d11be3f84b2509822",
+    "failedFiles": 2,
+    "failedTests": 20,
+    "passedTests": 7462,
+    "reason": "Historical unclassified error exact expectations and obsolete generic-get source syntax assertion; fixed tests only after independent root review",
+    "log": "/tmp/saved-signin-gates/default-vitest.log",
+    "logSha256": "e6d5fcf3258c76a9c3d02ec3919b3c14b881df7bed31b6b366f734a402f8682f"
+  },
+  "gates": {
+    "focused": {
+      "result": "passed",
+      "sourceCommit": "766136bca3251670305be8d99b548978c1be6e98",
+      "log": "/tmp/saved-signin-gates/focused-final.log",
+      "logSha256": "98d2989287f1cb0e50825a5d364a99ca017cd12e778ef02cb4ca3308cd3779da",
+      "files": 9,
+      "tests": 142
+    },
+    "wholeWebTypes": {
+      "result": "passed",
+      "sourceCommit": "766136bca3251670305be8d99b548978c1be6e98",
+      "log": "/tmp/saved-signin-gates/web-types-final.log",
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "heapMiB": 8192,
+      "incremental": false,
+      "exitCode": 0
+    },
+    "defaultFullSuite": {
+      "result": "passed",
+      "sourceCommit": "766136bca3251670305be8d99b548978c1be6e98",
+      "log": "/tmp/saved-signin-gates/default-vitest-final.log",
+      "logSha256": "5a3da0e299068f1609d91d7a7b9b0cb0716ed7cf9ad5496924fffed104da0bf6",
+      "filesPassed": 677,
+      "filesSkipped": 1,
+      "testsPassed": 7483,
+      "testsSkipped": 27,
+      "durationSeconds": 78.59,
+      "unfiltered": true,
+      "timeoutOverride": false,
+      "exitCode": 0,
+      "ownedProcessLoopbackTempGitPermission": true
+    },
+    "desktopTypes": {
+      "result": "passed",
+      "sourceCommit": "766136bca3251670305be8d99b548978c1be6e98",
+      "log": "/tmp/saved-signin-gates/desktop-types.log",
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "exitCode": 0
+    },
+    "desktopBuild": {
+      "result": "passed",
+      "sourceCommit": "766136bca3251670305be8d99b548978c1be6e98",
+      "log": "/tmp/saved-signin-gates/desktop-build.log",
+      "logSha256": "95c8405a49bb6c10f599734c2fb80076e4d4bb65ca289626946989b983cd460a",
+      "exitCode": 0
+    },
+    "pythonCli": {
+      "result": "passed",
+      "sourceCommit": "766136bca3251670305be8d99b548978c1be6e98",
+      "log": "/tmp/saved-signin-gates/python-cli.log",
+      "logSha256": "f73e245196a13371db566fa9a27a16d9f90442d60ef266187998dd7195d1fe67",
+      "tests": 30
+    },
+    "offlineAuth": {
+      "result": "passed",
+      "sourceCommit": "766136bca3251670305be8d99b548978c1be6e98",
+      "log": "/tmp/saved-signin-gates/offline-auth.log",
+      "logSha256": "f70474bb9d3d4b78369d133e47904bb1ef43bd0a69dec6649003a49c7b092484",
+      "tests": 16
+    },
+    "missionTracker": {
+      "result": "passed",
+      "sourceCommit": "766136bca3251670305be8d99b548978c1be6e98",
+      "log": "/tmp/saved-signin-gates/mission-tracker.log",
+      "logSha256": "f22fc39d301a5d3b9b8c225fa2f7e8866e57256b998cd93fe0aaf43faf4c108c",
+      "sources": 22,
+      "rows": 2154
+    },
+    "scopedEslint": {
+      "result": "passed",
+      "sourceCommit": "766136bca3251670305be8d99b548978c1be6e98",
+      "log": "/tmp/saved-signin-gates/scoped-eslint.log",
+      "logSha256": "ca8c42a6c073e49fd4dd563f602347596331e3689b238bf8f3b526d46865e865",
+      "exitCode": 0,
+      "warnings": [
+        "Two pre-existing no-unused-vars warnings for _input/_init at desktopClientError.test.ts:33; no product lint errors."
+      ]
+    },
+    "diffCheck": {
+      "result": "passed"
+    }
+  },
+  "dependencyQualification": {
+    "root": "/workspace/.axiom-validation/ecs-direct-root/node_modules",
+    "desktop": "/workspace/visionxixlabs/desktop/node_modules",
+    "noInstallOrGeneration": true,
+    "ownDesktopLinkAbsentDuringWebAndRemovedAfterDesktop": true
+  },
+  "cleanup": {
+    "gateSessionsCompleted": true,
+    "appOrDatabaseServerStarted": false,
+    "nativeProviderInstallerActions": false,
+    "ownDesktopNodeModulesRemoved": true,
+    "heavyWindowReleased": true,
+    "zombieQualification": "Process inspection recorded only PPID1 exited esbuild zombies; they remain unreaped, not active runtime, and are not claimed removed."
+  },
+  "historicalFocused": {
+    "files": 7,
+    "tests": 91,
+    "result": "passed",
+    "log": "/tmp/saved-signin-focused-final.log",
+    "sourceCommit": "f0f468323dff2fb962d0536f116fd74b10776b3a",
+    "qualification": "Original reviewed isolated-source evidence; final integrated gates listed separately."
+  }
+}
