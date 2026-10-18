@@ -162,15 +162,15 @@
   "configuration": [
     {
       "path": "next.config.ts",
-      "sha256": "2548092481546cca521731e629e81702c9df19dd5195607edba0eca95f8cba30"
+      "sha256": "e29e0ed18407a18820a2047e41e52272a80dc7cd1f69dbb221ad9e9977f1a040"
     },
     {
       "path": "package-lock.json",
-      "sha256": "4923306fbdd3e436cbb2466d611716d94133797e64fb29298e4a36298c9a2049"
+      "sha256": "24228d15d056785f239f77107cd9ed1f8161beed53e1edc128826e4ce4298fd7"
     },
     {
       "path": "package.json",
-      "sha256": "810a5faf66cb1853aedc5797b18cba258380cf98c74d7896eb5cd85866df658e"
+      "sha256": "6201717595cfb27706f75883b10a6bee501048a085ec64a5eec9446c6a193ba5"
     },
     {
       "path": "prisma/schema.prisma",

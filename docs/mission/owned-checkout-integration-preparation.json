@@ -1,0 +1,711 @@
+{
+  "version": 1,
+  "stage": "integrated_metadata_and_compiler_preparation_only",
+  "reviewedBillingSource": "379df4e4f3a825191711b4269ad4bfa495b8fb95",
+  "mergedMain": "d52f29fb623effce8999958fb1ffcf6c4a84c813",
+  "integrationSource": "aa5288d73f4579bd162df7dc579abc79856e5600",
+  "normalMergeConflicts": false,
+  "sourcePreservation": {
+    "sameSource": [
+      {
+        "path": "app/(marketing)/plans/page.tsx",
+        "sha256": "1ff2f4a04811d7d5083002848c6fc73d9b9ac4fa562cff186dc151b1bda98af6"
+      },
+      {
+        "path": "app/api/billing/checkout-session/route.ts",
+        "sha256": "f3d200a4508fd3852136072aabd577b3b23b5ed543fc3c851fcdf0982e3602b0"
+      },
+      {
+        "path": "app/api/billing/stripe-webhook/route.ts",
+        "sha256": "e2f6ba7e13a5012b0429fdad7f58f1a70b22aff13477986a463c03b727fdfa5e"
+      },
+      {
+        "path": "components/billing/PublicPlansCatalog.tsx",
+        "sha256": "6f1170479177548d3f9bbbae735a0592d824d47fd745dc295958ae1d9edb9752"
+      },
+      {
+        "path": "lib/billing/__tests__/fixtures/newTestChildEnvironment.ts",
+        "sha256": "1ea5d274bdf4e0fdf22661e3a306bffdc8f7c3cd0410f4c9c340eee8bbf7d78e"
+      },
+      {
+        "path": "lib/billing/__tests__/fixtures/ownedCheckoutHttpAcceptance.ts",
+        "sha256": "0f3fcfdbd3b4d9a6f7d1b2ace6e30731cdb0023e5ae792cee980deacb7707291"
+      },
+      {
+        "path": "lib/billing/__tests__/fixtures/ownedCheckoutLaunchPolicy.ts",
+        "sha256": "0f1eada9035f9543b037274f7e81d220df7d2f63291d5182abfee716d78d030a"
+      },
+      {
+        "path": "lib/billing/__tests__/fixtures/ownedCheckoutProcess.ts",
+        "sha256": "d7bf779e101049ea8f44678ee2a514779e7b5277ddc75ad6c031c126a1eb41e3"
+      },
+      {
+        "path": "lib/billing/__tests__/fixtures/ownedCheckoutSyntheticProvider.ts",
+        "sha256": "95101b7845d7532b37d80964827ae5fa2e3a5beb3e2b4ce507ebc32d9db98f9d"
+      },
+      {
+        "path": "lib/billing/__tests__/fixtures/ownedCheckoutWorkerBundle.ts",
+        "sha256": "ebe721ef445d6a56a21b1fc5e9d99b8aab0dec693ad97fa961fec1a82601207c"
+      },
+      {
+        "path": "lib/billing/__tests__/fixtures/ownedCheckoutWorkerEntry.ts",
+        "sha256": "bbdffad1b4c3a68d1098c31ad7ac716056cc19077d5c570f7f8066ce04c32ccd"
+      },
+      {
+        "path": "lib/billing/__tests__/fixtures/ownedCheckoutWorkerSupervisor.ts",
+        "sha256": "1738ed45b06ff7a1dc019917b5115e5a4b862523530ad32702a5b1ba87b87317"
+      },
+      {
+        "path": "lib/billing/__tests__/newTestSubscriptionService.postgres.test.ts",
+        "sha256": "00ceecf5acb05e0a8b4b0719cc9c67b1b8a804d70562eb3b06157c9ad9ea19f9"
+      },
+      {
+        "path": "lib/billing/__tests__/ownedCheckoutBundleRecipe.test.ts",
+        "sha256": "e03b750bf237c1bef515d7303214b6dac64bd772ac13fd8261842d0ed5fa3a06"
+      },
+      {
+        "path": "lib/billing/__tests__/ownedCheckoutConfiguration.test.ts",
+        "sha256": "3ef4934c2ffce8b8da1d6704866132ec796a65638ae3277625a60f33fec8e7c1"
+      },
+      {
+        "path": "lib/billing/__tests__/ownedCheckoutConversation.test.ts",
+        "sha256": "3efbf895f0993f33549a3363a3dac8b0664139b8249926a14ac26310545b251b"
+      },
+      {
+        "path": "lib/billing/__tests__/ownedCheckoutHttp.test.ts",
+        "sha256": "15e41d425ac0002e275e10088a62e6b002db0055f1103249ffb0892696f2be7a"
+      },
+      {
+        "path": "lib/billing/__tests__/ownedCheckoutLaunchPolicy.test.ts",
+        "sha256": "f501376d9b284dedd9506348b42690fa30f2f394a0d6a8cff4d6eddddd2b7781"
+      },
+      {
+        "path": "lib/billing/__tests__/ownedCheckoutLifecycle.test.ts",
+        "sha256": "b158da3eac3c01e960e4e865decbcc606c4cacc91c7402e953968b05144ba3a9"
+      },
+      {
+        "path": "lib/billing/__tests__/ownedCheckoutPricing.test.ts",
+        "sha256": "d5b0ceb94cdf1f083e68655c5b28e9875e8a9b959ff53f0ed57d1f5c62a1411b"
+      },
+      {
+        "path": "lib/billing/__tests__/ownedCheckoutProtocol.test.ts",
+        "sha256": "a3b2f31f5c8cbb7abc022e10f67fba6bcd504a7b5098b47de3c1360b56b619be"
+      },
+      {
+        "path": "lib/billing/__tests__/ownedCheckoutRouteWiring.test.ts",
+        "sha256": "e3152e2f096dba906e63545e73a5aa1a39e9120abdc59abe8ecca4aeef7e6408"
+      },
+      {
+        "path": "lib/billing/__tests__/ownedCheckoutSchemaQualification.test.ts",
+        "sha256": "4abf95915e8914d4bd0aadab53b3c851822e62e75557a9b4af851e17366bf051"
+      },
+      {
+        "path": "lib/billing/__tests__/ownedCheckoutSupervisor.test.ts",
+        "sha256": "0d7ed95fafea555a0e1e690e56face5550f0197ad2fcf5b2f8a188cf8ef483a8"
+      },
+      {
+        "path": "lib/billing/__tests__/ownedCheckoutSyntheticFactory.test.ts",
+        "sha256": "000c88f6dab9918af46f98325dcf56c328479f96f9f40801e8476c04d9285d7b"
+      },
+      {
+        "path": "lib/billing/__tests__/ownedCheckoutWorker.test.ts",
+        "sha256": "60317484df1b3fde84614593e4d8f623aa62fd36e3ee216390ff9f99b0014df7"
+      },
+      {
+        "path": "lib/billing/isolatedApplication/runtime.ts",
+        "sha256": "6c77e7ebba72de82977f59014c6c93fd30c13d0ebcbead4f4835a8c9f2890126"
+      },
+      {
+        "path": "lib/billing/ownedCheckoutBridge/client.ts",
+        "sha256": "daf0589fc969ee5df48af4885ea17e2bb1a793080994f8b61f3f9008062f16c5"
+      },
+      {
+        "path": "lib/billing/ownedCheckoutBridge/configuration.ts",
+        "sha256": "e9ae25697d38875fc666831557b3664c5f28fcc49eb0f8a6da60ea15fbdcdfb7"
+      },
+      {
+        "path": "lib/billing/ownedCheckoutBridge/conversation.ts",
+        "sha256": "b04fb8de68cf27afeb135c7a92eac201aa521e19184c179c23dcaf2da3e175d5"
+      },
+      {
+        "path": "lib/billing/ownedCheckoutBridge/http.ts",
+        "sha256": "9e4469b1ef009523420032f6f1ca3a25ce642f3c7da8ad1321cbe7f4f2a6377b"
+      },
+      {
+        "path": "lib/billing/ownedCheckoutBridge/operations.ts",
+        "sha256": "4f6ffb509dad61dc2cdc5074e73b50146c764cef92908ee238db0aea511e5f3a"
+      },
+      {
+        "path": "lib/billing/ownedCheckoutBridge/protocol.ts",
+        "sha256": "ad924c12c4fc48e0a1419bceca3b884114c176ea8204630cdacc15bed4bb910e"
+      },
+      {
+        "path": "lib/billing/planRegistry.ts",
+        "sha256": "d02ad9b6b3ed7981ae07e71ff1882287514918a12d95f60694f198b3d856f097"
+      }
+    ],
+    "composedDemo": [
+      {
+        "path": "lib/demo/demoScenarios.ts",
+        "beforeSha256": "c34243c756d2c63d5b6f4d32ac9571ca03fcb83ce6eae7ce195c618f522de7c8",
+        "sha256": "eda011f03c355ca40e2e2487060c6477a8fc8056f6f00340f46f8334cebb5e06"
+      }
+    ],
+    "demoComposition": {
+      "billingPricingExactlyPrior": true,
+      "allOtherBytesExactlyMain": true
+    },
+    "sameProtected": [
+      {
+        "path": "lib/auth.ts",
+        "sha256": "64c3894c6d97d525367890d8b95f3df556a5574f23700125e2ad901e07d60c78"
+      },
+      {
+        "path": "lib/auth/currentContext.ts",
+        "sha256": "f477cacc20e59f99230e0ad41a13af4827497a17575ccd8329da9055ee52d78b"
+      },
+      {
+        "path": "lib/auth/emailVerification.ts",
+        "sha256": "4750c03ac9a2a2baab37dd57a94ca9980103267eb36a37dc05a8c9a155a31522"
+      },
+      {
+        "path": "lib/auth/ensurePersonalWorkspaceMembership.ts",
+        "sha256": "c244260a49b6bc33c2c9bca3258f8aaaa2fa9ecce32f5c11b1ed5dce0b859edf"
+      },
+      {
+        "path": "lib/auth/platformAdmin.ts",
+        "sha256": "fbcd20110e9bf602dc018a159c2ba496bbc41a275c17a39d741b497d09d16f16"
+      },
+      {
+        "path": "lib/auth/requestOrigin.ts",
+        "sha256": "3f017a62ba6717b63a751b459e76f1c6460a0c63dfcf0336ea41a9ba573d49fa"
+      },
+      {
+        "path": "lib/auth/verificationCallback.ts",
+        "sha256": "b73fe56f40af921b65ba568af8aa180c8ab8da9164bbb487198e0e24e6c4c230"
+      },
+      {
+        "path": "lib/auth/workspaceId.ts",
+        "sha256": "e491b26714185ac45f3be53e02174077a39ca67d12590233aa715e365d868589"
+      },
+      {
+        "path": "lib/billing/addOnCatalog.ts",
+        "sha256": "4dfba282d226e608c118502650b190875bccdb82ebe1557cf210abb6dfe2b149"
+      },
+      {
+        "path": "lib/billing/aiBillingMargin.ts",
+        "sha256": "3549ac55c37ffa191632a43df6181d08b6c602133f5b2a41fb381fbbcf6592ba"
+      },
+      {
+        "path": "lib/billing/aiCallCostAttribution.ts",
+        "sha256": "77ee3de1d3a9d96b75681d1bfef9328a6e250338ce964b7573562441b64ee969"
+      },
+      {
+        "path": "lib/billing/aiCreditFulfillment.ts",
+        "sha256": "e2ea638f918f26e17f7a308ec421f517c0cc840764c4b648b38b783e10ebeb36"
+      },
+      {
+        "path": "lib/billing/aiCreditReservation.ts",
+        "sha256": "5107e0c7039aa66d08117985507549a681df3ee39a987c6c5f053fb5f9cbf69c"
+      },
+      {
+        "path": "lib/billing/aiUsageSettlementBinding.ts",
+        "sha256": "89671082a9ff10e645d0f7a2abd5b6b1e47f45adb1459602f2f61d97803c5bd6"
+      },
+      {
+        "path": "lib/billing/aiUsageSettlementCandidates.ts",
+        "sha256": "3e8cd97a7c54be034b773a6fa6b4aff947f421736786a4375f4ef320385cabf9"
+      },
+      {
+        "path": "lib/billing/aiUsageSettlementRetryPolicy.ts",
+        "sha256": "2fabf47c0b53c3057a654889b8df28b5745222fdabf97033859dcf8d1a5d618b"
+      },
+      {
+        "path": "lib/billing/applyAddOnsToEntitlements.ts",
+        "sha256": "0e01a67dc5185ad4a57a6c16db77110d5338a49fa32a4fc9513ec3f3897d0b31"
+      },
+      {
+        "path": "lib/billing/awsCostExplorerExtractor.ts",
+        "sha256": "23f57dcf63338ca7f319fad8178b5f2ff976656ebbdfc2043aa06d47e375e13a"
+      },
+      {
+        "path": "lib/billing/azureCostManagementExtractor.ts",
+        "sha256": "d4af6a6c05bacd324f899494d3a42c0e0dc605ddac2f4640df2957b614577684"
+      },
+      {
+        "path": "lib/billing/billingConnectorsBuilder.ts",
+        "sha256": "ab0bd05654c1339ae658026263b1e6d1cfe58a39afb3a9b6268d79d6514cf96e"
+      },
+      {
+        "path": "lib/billing/billingConnectorsModel.ts",
+        "sha256": "4aeb55fc0dfaf2c239c999c5488ce32203c233745ec15f756c7b68dc0f7306d7"
+      },
+      {
+        "path": "lib/billing/checkEntitlement.ts",
+        "sha256": "359c7ae7bea33acb25bf49af8d629b293504096a00026f1c6587dda3c6b079eb"
+      },
+      {
+        "path": "lib/billing/checkWorkspaceAICredits.ts",
+        "sha256": "f254d17a43318c92cb8c86478c85ef6383bce20a76695deafaa7f5a475e206b0"
+      },
+      {
+        "path": "lib/billing/computeInvocationCost.ts",
+        "sha256": "685532f2198aea93c911d6702f2de2c7f0faf71e6fbecae1d09fbc23dbf58367"
+      },
+      {
+        "path": "lib/billing/computeOverageRevenue.ts",
+        "sha256": "010c39d2936cd535ad377b743f6c3aa17a4ed54fff830d707d1cbc8b04adebf9"
+      },
+      {
+        "path": "lib/billing/computePlanMargin.ts",
+        "sha256": "bb857ec8716cf03e955b71abdbad1fb93fdcb63dced675d10dfa2b199d7386bd"
+      },
+      {
+        "path": "lib/billing/consumeSubscriptionEvent.ts",
+        "sha256": "b703d235ee3559daef5b1becec0cfa7615e542a1468425beb0a86a7408f746fd"
+      },
+      {
+        "path": "lib/billing/costAnomalyAttributor.ts",
+        "sha256": "7403e333eb99a080f87167ef95abdcd9c69f165c9ea352b0e7be0a8af8bc1570"
+      },
+      {
+        "path": "lib/billing/costAnomalyExplainer.ts",
+        "sha256": "8c6da40767222fe99ef562a17f2afc1b226b8dddaef69c7d4a7885907499e09c"
+      },
+      {
+        "path": "lib/billing/costForecaster.ts",
+        "sha256": "04ff92a0c733da17a34ec803b1b9a2d78d66259c9db3bd1325279551f30bb9a4"
+      },
+      {
+        "path": "lib/billing/currentAIAllowance.ts",
+        "sha256": "770cea486a3a39aee2fd5d51dfdc7274d4fd93af42f7321193a2ba9796ce333a"
+      },
+      {
+        "path": "lib/billing/deploymentDispatchReservation.ts",
+        "sha256": "890d7f3dfa64d0fd58f06e1222f67625dd22a95b1bf0e86301544ac33140ee73"
+      },
+      {
+        "path": "lib/billing/deploymentQuota.ts",
+        "sha256": "aaea52e10a8df324a36c4a608d143b6d857a81c0f5145cf9d36d629c7a3f2c96"
+      },
+      {
+        "path": "lib/billing/effectiveEntitlements.ts",
+        "sha256": "0e13141cfb995d7c68ebe36d8093257c3bac716a53624acdea14a97e2f0d506b"
+      },
+      {
+        "path": "lib/billing/enforceEntitlement.ts",
+        "sha256": "ab72e7cf1292c42e575938161a1e0d8b7e2d078b8da0a64bfa5e5ab40c139d5b"
+      },
+      {
+        "path": "lib/billing/ensureProviderRate.ts",
+        "sha256": "6e8d1f964abf42e62088b89aa5db3abda84ddc50de96bb530ef2d86eda7b8f46"
+      },
+      {
+        "path": "lib/billing/isolatedApplication/databaseTarget.ts",
+        "sha256": "906be3530e34e133b0b2265d37090588ae55683c5517ef69dedfd6ef4cad69d8"
+      },
+      {
+        "path": "lib/billing/isolatedApplication/plan.ts",
+        "sha256": "643f5afd9b7971c5f6a23446fda981a021804028e5f9fb2d8d675be4163efdf1"
+      },
+      {
+        "path": "lib/billing/isolatedApplication/scope.ts",
+        "sha256": "bb27edac701bfb9c7812a77aeb17266b1effa7c95ab472f0b70c5d4d2a72d539"
+      },
+      {
+        "path": "lib/billing/multiCloudCostNormalizer.ts",
+        "sha256": "5173aa55e80cd4dbf904ed0091c74ad864e79763fba6453e7e22e8786d42f5b0"
+      },
+      {
+        "path": "lib/billing/newTestSubscription/allocationPlan.ts",
+        "sha256": "bbf78b1e9b0f5684086dbd3a7a717af502025ef44916c75edf445ee87e3a207d"
+      },
+      {
+        "path": "lib/billing/newTestSubscription/allocationV2.ts",
+        "sha256": "07483577291e15d7b23eb505baa7e1653d13b76e618bfb1646040d3a5a730a2d"
+      },
+      {
+        "path": "lib/billing/newTestSubscription/anniversaryWindow.ts",
+        "sha256": "9996a150880c2f91e1618f81382362a99132f991f7d398880eb0e6ded431b298"
+      },
+      {
+        "path": "lib/billing/newTestSubscription/chargeSource.ts",
+        "sha256": "b3d300c917e6253d9ed70870e952efa68941c05006221880bd02433129b7bd80"
+      },
+      {
+        "path": "lib/billing/newTestSubscription/fixtureAllocation.ts",
+        "sha256": "226a04f6431bf0cc748a5026d808161aeabb2b0158b3a9540d40909c22d78c74"
+      },
+      {
+        "path": "lib/billing/newTestSubscription/fixtureCoverage.ts",
+        "sha256": "c436aa287c861e98f56709b90f45d500fb628cbb8e8ca13066c78554b1c3cefb"
+      },
+      {
+        "path": "lib/billing/newTestSubscription/fixtureUsageGuards.ts",
+        "sha256": "d52e698765f732bac7812453451fced9e257411d3020db53e4699188e2def5b5"
+      },
+      {
+        "path": "lib/billing/newTestSubscription/lifecycle.ts",
+        "sha256": "735a67cc8b2cbfc3c291c70604e007249a0aebe0bc90fd05b5a348cc4ccf7d38"
+      },
+      {
+        "path": "lib/billing/newTestSubscription/paidCoverage.ts",
+        "sha256": "a19ae9ba35aa7de6a4dd7d96137a27c6f73451c1396c3c48049f1905795807a9"
+      },
+      {
+        "path": "lib/billing/newTestSubscription/paidPlan.ts",
+        "sha256": "e6cb89868ca3ce0eaf6198da3e6426cb84e3295327f580392aa1da9133288d83"
+      },
+      {
+        "path": "lib/billing/newTestSubscription/postgresFixtureStore.ts",
+        "sha256": "ad3425428f9b41598dfd9add76963a80c6311a25f1f65387811f2ef874568ebb"
+      },
+      {
+        "path": "lib/billing/newTestSubscription/service.ts",
+        "sha256": "da116e4690c17319eb811903de2381fdda9685a5d7a49efcea49fdb7236ed354"
+      },
+      {
+        "path": "lib/billing/newTestSubscription/stripeDeadline.ts",
+        "sha256": "c951e5ac7848ae315321a99c7e4d09d9f78d27a6dc5ff6244dae3c758ccb6ee6"
+      },
+      {
+        "path": "lib/billing/newTestSubscription/stripeHttpClient.ts",
+        "sha256": "4a2bae0de8e041fe16b0bb5e61075505ae3eb9373ef7c75fe5f928b8b3b930e5"
+      },
+      {
+        "path": "lib/billing/newTestSubscription/stripePaidCoverage.ts",
+        "sha256": "8385ddaaf42f5d42e8f15a78e4f7084a611217a53f998f414a08bb7664908193"
+      },
+      {
+        "path": "lib/billing/newTestSubscription/stripeTestProvider.ts",
+        "sha256": "7081360821a265f72c1520b1e4259317b6974f9d6a51eb873ca27e3566a9cbdd"
+      },
+      {
+        "path": "lib/billing/newTestSubscription/usageAllocationIO.ts",
+        "sha256": "aa8a93877533d73ab3369c56b6ad2ba3447319ce10fe5abbd067b7bcddfa8928"
+      },
+      {
+        "path": "lib/billing/newTestSubscription/verifiedContract.ts",
+        "sha256": "f9238dff5852cf45945a8319aa2e1cb00e0d5011923d6bf6b820915c43a08675"
+      },
+      {
+        "path": "lib/billing/newTestSubscriptionContract.ts",
+        "sha256": "93cd286a0ba6b2a78c1126114df03bad678542c678c3e31d01167e0425a8df3e"
+      },
+      {
+        "path": "lib/billing/organizationSeatClaim.ts",
+        "sha256": "083f678bb6f1ffd676f1aa65558ae45090f9010dd6a420f2cc8b1675c201d795"
+      },
+      {
+        "path": "lib/billing/planSelection.ts",
+        "sha256": "7e95e6bd1c8c8d76cdd04829471902d58a5851bbf452b99285ba6d976470bcfc"
+      },
+      {
+        "path": "lib/billing/preflightAICreditCheck.ts",
+        "sha256": "766a10d5832ce74c87207d098a5f7407d523252df4f85487d6e15a39fd7f0c3e"
+      },
+      {
+        "path": "lib/billing/providerRateSeeds.ts",
+        "sha256": "2203252a710104bd3555f364e72dae6bb071726040ebc3929f4d2991b11ff374"
+      },
+      {
+        "path": "lib/billing/publicPlanCatalog.ts",
+        "sha256": "3c46f92b4f2f66a4b904ea81ba0903402fa35d3731c1ebfd3779aaeeb561b14f"
+      },
+      {
+        "path": "lib/billing/rebuildUsageSummary.ts",
+        "sha256": "2d7da3a89a4c67b49620a4612e5d2ea63c4349534f5c953405fe656765a4b6d8"
+      },
+      {
+        "path": "lib/billing/reconcileGatewayUsage.ts",
+        "sha256": "65efff13fdf74685a843489f85361d75ebce21944a1071be1c2f5244eacb4568"
+      },
+      {
+        "path": "lib/billing/reconcileSubscriptionEvent.ts",
+        "sha256": "04c00f56d65727b3d19a19055d52d4a64aa92f23ff95bf6fe9b8872b2894fd4e"
+      },
+      {
+        "path": "lib/billing/recordAIUsageEvent.ts",
+        "sha256": "a70f6c3969a90a0af967f6e991495799bd4dbba0562740d1d53a9edb6b12549a"
+      },
+      {
+        "path": "lib/billing/scanBillingAlerts.ts",
+        "sha256": "ecda7ea1c0020875e3593c51c02b2f2c699fe6e04660483491080c073e3eb9ca"
+      },
+      {
+        "path": "lib/billing/settleAIUsageToStripe.ts",
+        "sha256": "2789c620f2eeef756147bc6cb7dd3aba54cac5958f3f2ae5ba19f17a392efb72"
+      },
+      {
+        "path": "lib/billing/stripeHelper.ts",
+        "sha256": "5e41b880258df6cbafb80682f39e701ebab75abf7204138614a3afbf181b2d62"
+      },
+      {
+        "path": "lib/billing/tenantBillingStore.ts",
+        "sha256": "cc32f04f38ff28dd0d2536b0c1fc5190ac9ae6f227dc11465ec9d27f07941a8c"
+      },
+      {
+        "path": "lib/billing/tierCapEnforcer.ts",
+        "sha256": "f903ea573bc2c408b696fad3f7df87d3ec39a22ac25820db0059b8a77cfa341e"
+      },
+      {
+        "path": "lib/billing/tierCatalog.ts",
+        "sha256": "43b6efe7fb15685751b8bfeeebb21bb6048304fe1352e9e63e5bf82bf6d28bb2"
+      },
+      {
+        "path": "lib/billing/tierGate.ts",
+        "sha256": "6cd0fa3c93a6d8289a9fa47af7b0716500420119226bf5c8caaf71c2e9fcbcfb"
+      },
+      {
+        "path": "lib/billing/usageCounterStore.ts",
+        "sha256": "85a5cfa550c731dcaaafc7d245daaec71c424c1a9613cd764a4d4ce1f9463db0"
+      },
+      {
+        "path": "lib/billing/usageSummaryResponder.ts",
+        "sha256": "dff3b9f868bfb0c418fab17668917e3b528561d950aa1239257ddc92c1d4a383"
+      },
+      {
+        "path": "lib/billing/whichAlertsToFire.ts",
+        "sha256": "c576e43e98b753804cc8bdfc7d2ef0c3d8ea20d71fc84a1543b308ac8a7942a3"
+      },
+      {
+        "path": "lib/db.ts",
+        "sha256": "c03c925e7154dadcef4b1e6ea8e29fdb257fa02b95768f23e3cb7c6be5671bf4"
+      },
+      {
+        "path": "prisma/schema.prisma",
+        "sha256": "3abed3e94c18cd2554f18b847d27ab505e3e8fa9fde968a0a7c72fdb6e787c9c"
+      },
+      {
+        "path": "proxy.ts",
+        "sha256": "29d87b508614d14a2e562301fa46958ee10eac22b475bcb9098f362275b4a606"
+      },
+      {
+        "path": "tsconfig.json",
+        "sha256": "49995c2a39f9d8442187af48c2070474181bee8eca5812ca44075db407ece5d1"
+      },
+      {
+        "path": "tsconfig.next.json",
+        "sha256": "1b7acd54eea2b33af5e4c8601132f9244687ed14ebbbb3f330a295d199fdac41"
+      }
+    ],
+    "mainConfigChanges": [
+      {
+        "path": "next.config.ts",
+        "beforeSha256": "2548092481546cca521731e629e81702c9df19dd5195607edba0eca95f8cba30",
+        "sha256": "e29e0ed18407a18820a2047e41e52272a80dc7cd1f69dbb221ad9e9977f1a040"
+      },
+      {
+        "path": "package-lock.json",
+        "beforeSha256": "4923306fbdd3e436cbb2466d611716d94133797e64fb29298e4a36298c9a2049",
+        "sha256": "24228d15d056785f239f77107cd9ed1f8161beed53e1edc128826e4ce4298fd7"
+      },
+      {
+        "path": "package.json",
+        "beforeSha256": "810a5faf66cb1853aedc5797b18cba258380cf98c74d7896eb5cd85866df658e",
+        "sha256": "6201717595cfb27706f75883b10a6bee501048a085ec64a5eec9446c6a193ba5"
+      }
+    ],
+    "schemaSameReviewedAndMain": true
+  },
+  "historicalWorkerManifest": {
+    "path": "/workspace/axiom-owned-test-checkout/docs/mission/owned-checkout-worker-source-379df4e4.json",
+    "sha256": "d9195eecfb9379040258b7f3dcdbd397f53f61349ca30b04e695f08aa5c98a3d"
+  },
+  "currentWorkerManifest": {
+    "path": "/workspace/axiom-owned-test-checkout/docs/mission/owned-checkout-worker-source.json",
+    "sha256": "c695af32e1b853bb610474e4e843609bbec313f03d0847d7c23c7a467b3bbcff"
+  },
+  "workerPinQualifications": {
+    "sourcesUnchanged": 33,
+    "toolsUnchanged": 6,
+    "configsUnchanged": 4,
+    "configsMainRebound": 3,
+    "compilerUnchanged": {
+      "sha256": "3ae902c92cc44dace175c0e69e13a4b0899f6983c6121d76b9ab8dd5795e7675",
+      "version": "5.9.3",
+      "integrity": "sha512-jl1vZzPDinLr9eUt3J/t7V6FgNEw9QjvBPdysz9KfQDD41fQrC2Y4vKQdiaUpFT4bXlb1RHhLpp8wtm6M5TgSw=="
+    },
+    "externalGraphsUnchanged": 4,
+    "externalFilesUnchanged": 705,
+    "noOutputsOrTranspile": true
+  },
+  "usedModels": {
+    "sourceSchemaSha256": "3abed3e94c18cd2554f18b847d27ab505e3e8fa9fde968a0a7c72fdb6e787c9c",
+    "generatedSchemaSha256": "af7f25f286534e7ce73c9fe094bc0d0da15b5172881974f135a2d14deae8334b",
+    "wholeSchemaEqual": false,
+    "method": "Frozen ownedGeneratedModelFacts: complete fields/defaults/index definitions; preserve quoted values and column order; normalize only nonquoted whitespace/comment text and definition line order.",
+    "modelFacts": [
+      {
+        "name": "User",
+        "sha256": "558c5b23627037555bfa7860c1153bee7e200662e7634838621b128d0a82bfdc",
+        "lines": 17
+      },
+      {
+        "name": "OrgMembership",
+        "sha256": "3fab4669cdaf5f90aaaf832d945f10b702873bfab0eb273dbd8ea78c1be9e323",
+        "lines": 14
+      },
+      {
+        "name": "TenantBillingPlan",
+        "sha256": "86afa19fce4c9c83ae77e0ba2383b2790484e7217fc409530653762a6f1c4039",
+        "lines": 16
+      },
+      {
+        "name": "StripeBillingEvent",
+        "sha256": "4a561220b0e169bbc4f1a8a6d36bf130a3a642c240e4ec8b2230cbbc763b7f37",
+        "lines": 6
+      },
+      {
+        "name": "UsageEvent",
+        "sha256": "aedfcf5d4ebfbbb38bdab867388a8dea09cfc758ccafc72a1ecfd300b3ca8601",
+        "lines": 23
+      },
+      {
+        "name": "AIUsageReservation",
+        "sha256": "488748a87bb0e334e58405df04b0f957574b122a21c6aaa638554fc07e153dc5",
+        "lines": 18
+      },
+      {
+        "name": "AddOnPurchase",
+        "sha256": "69bde77a5c468df91501b32081deedc4704cc0d2cbee4896f2dc83393fef8c41",
+        "lines": 27
+      },
+      {
+        "name": "OrganizationAIProviderPolicy",
+        "sha256": "eaddb54af2b142e692e2dd6696886d91d1ff21a69f425b31d79f7f98d7aeb596",
+        "lines": 10
+      },
+      {
+        "name": "SecureAuditRecord",
+        "sha256": "4b8c642d332c6ad47da79ab4cf0dfe51359a67cd2090c449b9280d6bc05dcd84",
+        "lines": 18
+      }
+    ],
+    "noGeneration": true,
+    "noDDL": true
+  },
+  "overlay": {
+    "receipt": {
+      "path": "/workspace/.axiom-validation/billing-checkout-root-dhwve79m/overlay-receipt.json",
+      "sha256": "cbaf562fb6f42be81931d92c52895c6bfdfa49fa1717865eebedf4d84218a0d7"
+    },
+    "source": "/workspace/.axiom-validation/terraform-customer-plan-ddb-lm16jurp/node_modules",
+    "ownedBase": "/workspace/.axiom-validation/billing-checkout-root-dhwve79m",
+    "ownedNodeModules": "/workspace/.axiom-validation/billing-checkout-root-dhwve79m/node_modules",
+    "leafLinks": 809,
+    "exactCanonicalPackageIdentitiesRetained": true,
+    "privateCaches": [
+      {
+        "path": "/workspace/.axiom-validation/billing-checkout-root-dhwve79m/node_modules/.vite",
+        "mode": "0o700",
+        "empty": true,
+        "symlink": false
+      },
+      {
+        "path": "/workspace/.axiom-validation/billing-checkout-root-dhwve79m/node_modules/.vite-temp",
+        "mode": "0o700",
+        "empty": true,
+        "symlink": false
+      }
+    ],
+    "sixMainPackageProvenance": [
+      {
+        "name": "@aws-sdk/client-dynamodb",
+        "version": "3.1001.0",
+        "packageJsonSha256": "83baf51c8b9259d4123fb16bd67d7f394f8a65afff257950a2e890ad087058d9",
+        "mainLockIntegrity": "sha512-mPmib0VFBnPR3s9Yz+e5HFd2HIbRlLrlnAbD+aEmPKB7Wqm4MOfWp7xMYyxpms+/CdDFnB1dk3vQyD5x6l4abw==",
+        "realpath": "/workspace/.axiom-validation/terraform-customer-plan-ddb-lm16jurp/node_modules/@aws-sdk/client-dynamodb",
+        "archiveIntegrityQualification": "Prior independently reviewed main TF receipt verified SHA512 archive/lock; this read-only pass rechecked package identity/hash against that receipt, not a fresh archive fetch."
+      },
+      {
+        "name": "@aws-sdk/dynamodb-codec",
+        "version": "3.972.17",
+        "packageJsonSha256": "bde175b2011cc846da1181f0f98c368fa84c419bdd03a28cdd6764ebeb86405b",
+        "mainLockIntegrity": "sha512-Q2sff1qeHbFSsmRXAhzCl6KM1FVUPvk4njNWvGkBcbbLwTc+i3AxErv1SWhE1SQP0ETMPbcJOEDgc+Ycw1htQg==",
+        "realpath": "/workspace/.axiom-validation/terraform-customer-plan-ddb-lm16jurp/node_modules/@aws-sdk/dynamodb-codec",
+        "archiveIntegrityQualification": "Prior independently reviewed main TF receipt verified SHA512 archive/lock; this read-only pass rechecked package identity/hash against that receipt, not a fresh archive fetch."
+      },
+      {
+        "name": "@aws-sdk/endpoint-cache",
+        "version": "3.972.11",
+        "packageJsonSha256": "35a59d208ec5a988a459eac203b993f9c8b44c36a35c76d68a58eb1b4b731447",
+        "mainLockIntegrity": "sha512-8q1ICxcDjHId3bBryuu/j+1L9y5/3uQnwzLDt5j2ElcjZSoWmFtymdJy7OjLrluSMe0Z4mq5bcH4fxBXvlEHfw==",
+        "realpath": "/workspace/.axiom-validation/terraform-customer-plan-ddb-lm16jurp/node_modules/@aws-sdk/endpoint-cache",
+        "archiveIntegrityQualification": "Prior independently reviewed main TF receipt verified SHA512 archive/lock; this read-only pass rechecked package identity/hash against that receipt, not a fresh archive fetch."
+      },
+      {
+        "name": "@aws-sdk/middleware-endpoint-discovery",
+        "version": "3.972.6",
+        "packageJsonSha256": "41c2f02b8742d3eedfbc6dab2679e5c5508927314d7f8aa92d036436be5100d7",
+        "mainLockIntegrity": "sha512-p5DYw2cpnsuT/bFA4DEBxucY/wn3TVGDZ7wonEds6EEox35I5DThCsw6aWDIN/fTpG0FMLO3q7s1PUKozWl3CQ==",
+        "realpath": "/workspace/.axiom-validation/terraform-customer-plan-ddb-lm16jurp/node_modules/@aws-sdk/middleware-endpoint-discovery",
+        "archiveIntegrityQualification": "Prior independently reviewed main TF receipt verified SHA512 archive/lock; this read-only pass rechecked package identity/hash against that receipt, not a fresh archive fetch."
+      },
+      {
+        "name": "mnemonist",
+        "version": "0.38.3",
+        "packageJsonSha256": "ec6a27483b13c614fcaf903734b2d9083f14ed142425fb6e394b5f51f23052a8",
+        "mainLockIntegrity": "sha512-2K9QYubXx/NAjv4VLq1d1Ly8pWNC5L3BrixtdkyTegXWJIqY+zLNDhhX/A+ZwWt70tB1S8H4BE8FLYEFyNoOBw==",
+        "realpath": "/workspace/.axiom-validation/terraform-customer-plan-ddb-lm16jurp/node_modules/mnemonist",
+        "archiveIntegrityQualification": "Prior independently reviewed main TF receipt verified SHA512 archive/lock; this read-only pass rechecked package identity/hash against that receipt, not a fresh archive fetch."
+      },
+      {
+        "name": "obliterator",
+        "version": "1.6.1",
+        "packageJsonSha256": "9ad53463bcc7cbf25ddd9dab36cb88c728fa1eae344991af9c4b1556b2cbb128",
+        "mainLockIntegrity": "sha512-9WXswnqINnnhOG/5SLimUlzuU1hFJUc8zkwyD59Sd+dPOMf05PmnYG/d6Q7HZ+KmgkZJa1PxRso6QdM3sTNHig==",
+        "realpath": "/workspace/.axiom-validation/terraform-customer-plan-ddb-lm16jurp/node_modules/obliterator",
+        "archiveIntegrityQualification": "Prior independently reviewed main TF receipt verified SHA512 archive/lock; this read-only pass rechecked package identity/hash against that receipt, not a fresh archive fetch."
+      }
+    ],
+    "qualification": "Main reviewed Terraform graph; six main additions retain prior archive proof and newly verified package identities. Other cache packages are existing qualified cache, not a fresh CI install.",
+    "noInstallGenerationSharedTargetWrites": true
+  },
+  "compilerPreparation": {
+    "launcher": {
+      "path": "/workspace/.axiom-validation/billing-checkout-root-dhwve79m/run-web-compiler.py",
+      "sha256": "ec92c5a070819b6212f087d68c320132c182e7db8d8f4cbc2fd15ad51cfa7eb5"
+    },
+    "bindingTemplate": {
+      "path": "/workspace/.axiom-validation/billing-checkout-root-dhwve79m/compiler-binding-template.json",
+      "sha256": "1dfe63f7841d39c464853cece21493be034ecb3e0ad49943b0d93a8f13e98c52"
+    },
+    "bindingFinalPath": "/workspace/.axiom-validation/billing-checkout-root-dhwve79m/compiler-binding.json",
+    "finalBindingRule": "After this metadata commit, replace only PENDING_METADATA_COMMIT with exact resulting HEAD; report final raw digest separately before grant.",
+    "sourceFiles": 122,
+    "fullTypeScriptPackageFiles": 132,
+    "nodeExecutableSha256": "bc17c508ffeed0ec622934f9b7fa72f8e78da65350e63c3eceb56fa688aa5e12",
+    "fixedArguments": [
+      "--max-old-space-size=8192",
+      "/workspace/axiom-privacy-controls/node_modules/typescript/bin/tsc",
+      "--noEmit",
+      "--incremental",
+      "false"
+    ],
+    "managedPolicy": "Fixed complete28-key selector preservation including HOME/proxy/CA/Node controls; unknown/unsupported controls or production markers refuse before child, never stripped; exact managed NODE_PATH ancestry excludes current UID; immediately revalidate full present/absent identity. No values logged.",
+    "syntaxParsedOnly": true,
+    "executed": false,
+    "startAndLogFilesAbsent": true
+  },
+  "metadataCaptureSources": [
+    {
+      "path": "/workspace/.axiom-validation/billing-checkout-root-dhwve79m/capture-source-metadata.cjs",
+      "sha256": "40232183413ab2fab3d55b7cd4c48825bd1cef0a84c2353dd7aed9116908e9fc"
+    },
+    {
+      "path": "/workspace/.axiom-validation/billing-checkout-root-dhwve79m/capture-model-qualification.cjs",
+      "sha256": "2796abe97c4783040e269f8ff5f8272ebe4832f9ed5cd0b1f3314a4e039952be"
+    }
+  ],
+  "execution": {
+    "wholeWebCompiler": false,
+    "workerTranspile": false,
+    "workerProcessOrSocket": false,
+    "PGNext": false,
+    "providerIO": false,
+    "DDLOrGeneration": false,
+    "defaultOrDesktopGates": false
+  },
+  "nextGate": "Exact preparation/launcher binding review then renewed coordinator-exclusive compiler grant; runtime only after compiler PASS and final bundle-manifest review. Existing28th direction synthetic_only, no27rerun or added OS fault apparatus."
+}
