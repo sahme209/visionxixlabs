@@ -2,9 +2,18 @@
 import { createElement } from "react";
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import { act, cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
-const m = vi.hoisted(() => ({ invoke: vi.fn(), client: { config: {} as { sessionToken?: string }, listGithubRepositories: vi.fn(), mintGithubCloneToken: vi.fn() } }));
+const m = vi.hoisted(() => ({ invoke: vi.fn(), client: { config: {} as { sessionToken?: string }, listGithubRepositories: vi.fn(), mintGithubCloneToken: vi.fn(), subscribeContext: (listener: () => void) => { void listener; return () => {}; }, getContextRevision: () => 0, setSession: (token: string | undefined) => { void token; } } }));
 vi.mock("@tauri-apps/api/core", () => ({ invoke: m.invoke }));
-vi.mock("../../../desktop/src/lib/desktopClient", () => ({ desktopClient: m.client }));
+vi.mock("../../../desktop/src/lib/desktopClient", async original => {
+  const actual = await original<typeof import("../../../desktop/src/lib/desktopClient")>();
+  // Real DesktopClient context notifications; only provider methods are mocked.
+  const contextClient = new actual.DesktopClient({ apiBase: "http://127.0.0.1:1" });
+  Object.defineProperty(m.client, "config", { get: () => contextClient.config });
+  m.client.getContextRevision = contextClient.getContextRevision;
+  m.client.subscribeContext = contextClient.subscribeContext;
+  m.client.setSession = contextClient.setSession.bind(contextClient);
+  return { desktopClient: m.client };
+});
 import { RepositoryWorkspaceView } from "../../../desktop/src/views/RepositoryWorkspaceView";
 function deferred<T>() { let resolve!: (value: T) => void; const promise = new Promise<T>(done => { resolve = done; }); return { promise, resolve }; }
 const status = (path: string) => ({ rootPath: path, repositoryFullName: path === "/owned/A" ? "fixture/a" : "fixture/b", branch: "feature", ahead: 0, behind: 0, changedFiles: [] });
@@ -15,7 +24,7 @@ let writes: (args: Record<string, string>) => unknown;
 let verification: () => unknown;
 let localRepositories: string[];
 beforeEach(() => {
-  vi.resetAllMocks(); window.localStorage.clear(); m.client.config = { sessionToken: "paired" };
+  vi.resetAllMocks(); window.localStorage.clear(); m.client.setSession("paired");
   m.client.listGithubRepositories.mockResolvedValue({ ok: true, data: { repositories: [], truncated: false } });
   localRepositories = ["/owned/A", "/owned/B"];
   m.client.mintGithubCloneToken.mockResolvedValue({ ok: true, data: { cloneUrl: "https://example.invalid/fixture/a.git" } });
@@ -74,8 +83,8 @@ it("ignores a pending A save completion after B is opened and edited", async () 
 });
 it("discards previous-credential editor content and late native reads", async () => {
   const old = deferred<string>(); reads = () => old.promise;
-  const view = render(createElement(RepositoryWorkspaceView)); fireEvent.click(await screen.findByRole("button", { name: "same.ts" }));
-  m.client.config = { sessionToken: "replacement" }; view.rerender(createElement(RepositoryWorkspaceView));
+  render(createElement(RepositoryWorkspaceView)); fireEvent.click(await screen.findByRole("button", { name: "same.ts" }));
+  await act(async () => { m.client.setSession("replacement"); });
   await act(async () => { old.resolve("prior credential content"); });
   expect(screen.queryByDisplayValue("prior credential content")).toBeNull();
 });
@@ -128,4 +137,20 @@ it("preserves first-clone selection and success when the refreshed list starts e
   await screen.findByText("Cloned fixture/a without storing its access token.");
   expect(m.invoke).toHaveBeenCalledWith("clone_repository", { cloneUrl: "https://example.invalid/fixture/a.git", destinationPath: "/owned/a" });
   expect(screen.getByRole("button", { name: "a" })).toBeTruthy();
+});
+
+it("reacts to context notifications without parent rerender and refuses immediate stale editor writes", async () => {
+  await start(); fireEvent.click(screen.getByRole("button", { name: "same.ts" }));
+  const oldEditor = await screen.findByRole("textbox", { name: "Editing same.ts" });
+  expect((oldEditor as HTMLTextAreaElement).value).toBe("/owned/A:same.ts");
+  await act(async () => {
+    m.client.setSession("replacement-without-parent-render");
+    // Real context mutation precedes React's queued parent render. Events
+    // against the old editor must not rebind its loaded file to new credentials.
+    fireEvent.change(oldEditor, { target: { value: "old-context edit" } });
+    fireEvent.keyDown(oldEditor, { key: "s", ctrlKey: true });
+  });
+  expect(m.invoke.mock.calls.filter(([name]) => name === "write_repository_file")).toEqual([]);
+  expect(screen.queryByDisplayValue("old-context edit")).toBeNull();
+  expect(screen.queryByDisplayValue("/owned/A:same.ts")).toBeNull();
 });

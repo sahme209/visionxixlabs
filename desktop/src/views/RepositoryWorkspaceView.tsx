@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState, type KeyboardEvent } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore, type KeyboardEvent } from "react";
 import { invoke } from "@tauri-apps/api/core";
 import { ExternalLink } from "../components/Primitives";
 import { desktopClient } from "../lib/desktopClient";
@@ -58,16 +58,11 @@ function isProjectMetadata(path: string): boolean {
 }
 
 export function RepositoryWorkspaceView() {
-  const context = desktopClient.config;
-  const [scope, setScope] = useState(() => ({ context, generation: 0 }));
-  if (scope.context !== context) {
-    setScope({ context, generation: scope.generation + 1 });
-    return <RepositoryWorkspaceSession key={scope.generation + 1} />;
-  }
-  return <RepositoryWorkspaceSession key={scope.generation} />;
+  const revision = useSyncExternalStore(desktopClient.subscribeContext, desktopClient.getContextRevision, desktopClient.getContextRevision);
+  return <RepositoryWorkspaceSession key={revision} revision={revision} />;
 }
 
-function RepositoryWorkspaceSession() {
+function RepositoryWorkspaceSession({ revision }: { revision: number }) {
   const [parentPath, setParentPath] = useState("");
   const [repositories, setRepositories] = useState<string[]>([]);
   const [selectedRepository, setSelectedRepositoryState] = useState<string | null>(null);
@@ -96,7 +91,7 @@ function RepositoryWorkspaceSession() {
   const [verificationResult, setVerificationResult] = useState<RepositoryCheckResult | null>(null);
   const [showVerification, setShowVerification] = useState(false);
 
-  const context = desktopClient.config;
+  const [context] = useState(() => desktopClient.config);
   const mounted = useRef(false);
   const owner = useRef({ repository: null as string | null, generation: 0 });
   const fileRequest = useRef(0);
@@ -105,8 +100,8 @@ function RepositoryWorkspaceSession() {
   const operationRequest = useRef(0);
   const activeBusy = useRef<string | null>(null);
   const loadedFile = useRef<{ repository: string; path: string; content: string; saved: string } | null>(null);
-  const owns = useCallback((captured: typeof owner.current) => mounted.current && desktopClient.config === context
-    && captured.generation === owner.current.generation && captured.repository === owner.current.repository, [context]);
+  const owns = useCallback((captured: typeof owner.current) => mounted.current && desktopClient.config === context && desktopClient.getContextRevision() === revision
+    && captured.generation === owner.current.generation && captured.repository === owner.current.repository, [context, revision]);
 
   useEffect(() => {
     const lifecycle = mounted, selection = owner, activeOperation = operationRequest;
@@ -130,7 +125,7 @@ function RepositoryWorkspaceSession() {
   }
 
   function editContent(next: string) {
-    if (!loadedFile.current || loadedFile.current.repository !== owner.current.repository) return;
+    if (!owns(owner.current) || !loadedFile.current || loadedFile.current.repository !== owner.current.repository) return;
     loadedFile.current.content = next; setContent(next);
   }
 
@@ -146,27 +141,27 @@ function RepositoryWorkspaceSession() {
   }, [owns]);
 
   const refreshList = useCallback(async (directory: string, selectRepository = true) => {
-    if (!mounted.current || desktopClient.config !== context) return;
+    if (!mounted.current || desktopClient.config !== context || desktopClient.getContextRevision() !== revision) return;
     const request = ++listRequest.current;
     const next = await invoke<string[]>("list_local_repositories", { parentPath: directory });
-    if (!mounted.current || desktopClient.config !== context || request !== listRequest.current) return;
+    if (!mounted.current || desktopClient.config !== context || desktopClient.getContextRevision() !== revision || request !== listRequest.current) return;
     setRepositories(next);
     if (selectRepository) setSelectedRepository(current => current && next.includes(current) ? current : (next[0] ?? null));
-  }, [context, setSelectedRepository]);
+  }, [context, revision, setSelectedRepository]);
 
   useEffect(() => {
     let cancelled = false;
     void invoke<string>("default_repos_directory").then(directory => {
-      if (cancelled || desktopClient.config !== context) return;
+      if (cancelled || desktopClient.config !== context || desktopClient.getContextRevision() !== revision) return;
       setParentPath(directory); return refreshList(directory);
-    }).catch(cause => { if (!cancelled && desktopClient.config === context) setError(String(cause)); });
+    }).catch(cause => { if (!cancelled && desktopClient.config === context && desktopClient.getContextRevision() === revision) setError(String(cause)); });
     return () => { cancelled = true; };
-  }, [context, refreshList]);
+  }, [context, revision, refreshList]);
 
   useEffect(() => {
     let cancelled = false;
     void desktopClient.listGithubRepositories().then(repositoriesResult => {
-      if (cancelled || desktopClient.config !== context) return;
+      if (cancelled || desktopClient.config !== context || desktopClient.getContextRevision() !== revision) return;
       if (!repositoriesResult.ok) setRepositoryCatalogError(repositoriesResult.error);
       else {
         setRemoteRepositories(repositoriesResult.data.repositories);
@@ -175,9 +170,9 @@ function RepositoryWorkspaceSession() {
         setCloneRepository(current => current || selected?.fullName || "");
         setRepositoryCatalogTruncated(repositoriesResult.data.truncated); setRepositoryCatalogError(null);
       }
-    }).catch(() => { if (!cancelled && desktopClient.config === context) setRepositoryCatalogError("Connected repositories could not be loaded."); });
+    }).catch(() => { if (!cancelled && desktopClient.config === context && desktopClient.getContextRevision() === revision) setRepositoryCatalogError("Connected repositories could not be loaded."); });
     return () => { cancelled = true; };
-  }, [context]);
+  }, [context, revision]);
 
   useEffect(() => {
     if (!selectedRepository) return;

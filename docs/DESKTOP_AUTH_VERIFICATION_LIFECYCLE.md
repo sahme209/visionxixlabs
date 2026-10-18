@@ -173,3 +173,11 @@ B, before passing with the ownership fix. Existing unsaved-confirmation behavior
 remains covered. These tests perform no real file writes, Git operations, checks,
 provider calls or native runtime operations. Full compilers/regression and actual
 OS installation/filesystem acceptance remain distinct scheduled gates.
+
+The workspace subscribes to the existing DesktopClient context revision, so a
+credential/origin change invalidates it without a parent render. Each keyed
+session captures its initial configuration immutably and checks both the live
+revision and configuration immediately before acting. A queued old-editor event
+cannot recapture new credentials and revive an old loaded file. Regression uses
+the actual DesktopClient.setSession notification implementation, without an
+explicit view rerender; provider methods and native transport remain mocked.
