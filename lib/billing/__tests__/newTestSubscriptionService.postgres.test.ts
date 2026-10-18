@@ -2,12 +2,12 @@ import { createServer } from "node:net";
 import { tmpdir } from "node:os";
 import { hash } from "bcryptjs";
 import { deriveWorkspaceIdFromEmail } from "../../auth/workspaceId";
-import { afterAll, beforeAll, describe, expect, it } from "vitest";
+import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
 import { spawn, execFileSync } from "node:child_process";
 import { existsSync, mkdtempSync, writeFileSync, rmSync } from "node:fs";
 import { resolve } from "node:path";
 import { randomBytes, createHash } from "node:crypto";
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient, type Prisma } from "@prisma/client";
 import { createNewTestSubscriptionService, type ProviderBoundary } from "../newTestSubscription/service";
 import { reserveAICredits, settleAICreditReservation } from "../aiCreditReservation";
 import { applyMargin } from "../aiBillingMargin";
@@ -16,8 +16,28 @@ import Stripe from "stripe";
 import { fixtureCoverageDDL } from "../newTestSubscription/fixtureCoverage";
 import { collectedEvidence, type CoverageObservation } from "../newTestSubscription/paidCoverage";
 import { paidFixture } from "./fixtures/newTestPaidFixture";
-import { newTestChildEnvironment } from "./fixtures/newTestChildEnvironment";
+import { newTestChildEnvironment, newTestPrismaEnvironment } from "./fixtures/newTestChildEnvironment";
 import { createStripeTestProvider } from "../newTestSubscription/stripeTestProvider";
+
+import { fixtureAllocationDDL } from "../newTestSubscription/fixtureAllocation";
+import { registerAnniversaryAcceptance } from "./fixtures/newTestAnniversaryAcceptance";
+import { prepareAnniversaryHttp, exerciseAnniversaryHttp } from "./fixtures/newTestAnniversaryHttp";
+import { reverseAICreditRefund } from "../aiCreditFulfillment";
+
+// File-isolated Vitest binding. The production refund writer is unchanged; its
+// actual transaction/queries execute only on this explicitly owned client.
+// No ambient lib/db import or fallback is possible, even when this suite skips.
+const refundBinding = vi.hoisted(() => ({ client: null as PrismaClient | null, url: "", observer: null as ((pid: number) => void) | null }));
+vi.mock("@/lib/db", () => ({ prisma: new Proxy({}, { get(_target, key) {
+  const client = refundBinding.client;
+  if (!client) throw new Error("owned_refund_client_unbound");
+  newTestPrismaEnvironment({}, [], refundBinding.url);
+  if (key === "$transaction") return async <T>(operation: (tx: Prisma.TransactionClient) => Promise<T>, options?: Parameters<PrismaClient["$transaction"]>[1]) => client.$transaction(async tx => {
+    const [{ pid }] = await tx.$queryRawUnsafe<Array<{ pid: number }>>('SELECT pg_backend_pid() AS pid');
+    refundBinding.observer?.(pid); return operation(tx);
+  }, options);
+  const value: unknown = Reflect.get(client, key); return typeof value === "function" ? value.bind(client) : value;
+} }) }));
 
 const enabled = process.env.AXIOM_RUN_OWNED_COMMERCIAL_FIXTURE === "1";
 const suite = enabled ? describe : describe.skip;
@@ -46,11 +66,13 @@ suite("owned PG17 new TEST subscription service, synthetic provider only", () =>
     execFileSync("docker", ["run", "--pull=never", "-d", "--name", name, "-e", `POSTGRES_PASSWORD=${password}`, "-e", "POSTGRES_DB=axiom_new_test_contract_rehearsal", "-p", "127.0.0.1::5432", "postgres:17-alpine"], { stdio: "pipe" }); started = true;
     const port = execFileSync("docker", ["port", name, "5432/tcp"], { encoding: "utf8" }).trim().split(":").pop();
     url = `postgresql://postgres:${password}@127.0.0.1:${port}/axiom_new_test_contract_rehearsal`;
+    newTestPrismaEnvironment(process.env, process.execArgv, url);
     db = new PrismaClient({ datasources: { db: { url } } });
+    refundBinding.client = db; refundBinding.url = url;
     for (let attempt = 0; ; attempt++) { try { await db.$queryRawUnsafe("SELECT 1"); break; } catch { if (attempt > 40) throw new Error("owned_fixture_not_ready"); await new Promise(resolve => setTimeout(resolve, 100)); } }
     const tables = await db.$queryRawUnsafe<Array<{ count: number }>>("SELECT count(*)::int AS count FROM pg_tables WHERE schemaname='public'"); expect(tables[0].count).toBe(0);
     for (const envName of [".env", ".env.local", ".env.production", "prisma/.env"]) if (existsSync(resolve(envName))) throw new Error("fixture_refuses_env_files");
-    execFileSync(process.execPath, [resolve("node_modules/prisma/build/index.js"), "db", "push", "--skip-generate", "--schema", resolve("prisma/schema.prisma")], { cwd: process.cwd(), env: { ...process.env, DATABASE_URL: url, DIRECT_URL: url, SHADOW_DATABASE_URL: url }, stdio: "pipe" });
+    execFileSync(process.execPath, [resolve("node_modules/prisma/build/index.js"), "db", "push", "--skip-generate", "--schema", resolve("prisma/schema.prisma")], { cwd: process.cwd(), env: newTestPrismaEnvironment(process.env, process.execArgv, url), stdio: "pipe" });
     const sql = [
       'CREATE TABLE "IsolatedTestRuntime" (id text PRIMARY KEY,account text NOT NULL)',
       'CREATE TABLE "RecurringSubscriptionIntent" (id text PRIMARY KEY,org text NOT NULL,body jsonb NOT NULL,UNIQUE(id,org))',
@@ -58,7 +80,7 @@ suite("owned PG17 new TEST subscription service, synthetic provider only", () =>
       'CREATE TABLE "OrganizationTestSubscriptionContract" (org text PRIMARY KEY,intent text UNIQUE NOT NULL,customer text UNIQUE NOT NULL,subscription text UNIQUE NOT NULL,body jsonb NOT NULL,FOREIGN KEY(intent,org) REFERENCES "RecurringSubscriptionIntent"(id,org))',
     ];
     // Expression uniqueness is created as a separate index in PostgreSQL.
-    for (const statement of [...sql, ...fixtureCoverageDDL]) await db.$executeRawUnsafe(statement);
+    for (const statement of [...sql, ...fixtureCoverageDDL, ...fixtureAllocationDDL]) await db.$executeRawUnsafe(statement);
     await db.$executeRawUnsafe('CREATE UNIQUE INDEX intent_client_key ON "RecurringSubscriptionIntent" (org,(body->>\'clientIntentKey\'))');
     await db.$executeRawUnsafe(`CREATE FUNCTION freeze_test_intent() RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN
       IF OLD.id IS DISTINCT FROM NEW.id OR OLD.org IS DISTINCT FROM NEW.org THEN RAISE EXCEPTION 'immutable_intent_identity'; END IF;
@@ -102,7 +124,14 @@ suite("owned PG17 new TEST subscription service, synthetic provider only", () =>
     await db.addOnPurchase.create({ data: { organizationId: scope.organizationId, sku: "ai_credits_small", pricePaidCents: 500, deliveredAICreditsCents: 500, validFor: "current_month", periodMonth: "2026-10", status: "paid", idempotencyKey: "synthetic_topup", purchasedBy: "owner", correlationId: "fixture" } });
 
   }, 30000);
-  afterAll(async () => { await Promise.all(stores.map(store => store.disconnect())); if (db) await db.$disconnect(); if (started) execFileSync("docker", ["rm", "-f", name], { stdio: "pipe" }); });
+  afterAll(async () => {
+    refundBinding.client = null; refundBinding.url = ""; refundBinding.observer = null;
+    const outcomes = await Promise.allSettled(stores.map(store => store.disconnect()));
+    if (db) outcomes.push(...await Promise.allSettled([db.$disconnect()]));
+    if (started) { try { execFileSync("docker", ["rm", "-f", name], { stdio: "pipe" }); } catch (error) { outcomes.push({ status: "rejected", reason: error }); } }
+    const failed = outcomes.filter((result): result is PromiseRejectedResult => result.status === "rejected");
+    if (failed.length) throw new AggregateError(failed.map(result => result.reason), "owned_fixture_cleanup_failed");
+  });
   it("binds captured original collection once, protects financial/tenant state and models monthly remaining pool", async () => {
     expect(applyMargin(2)).toBe(3); // reuse established actual-cost ledger arithmetic; no new pricing formula
     const service = core();
@@ -351,10 +380,11 @@ suite("owned PG17 new TEST subscription service, synthetic provider only", () =>
       verifyAndRetrieve: async (raw, signature) => ({ ...await provider.verifyAndRetrieve(raw, signature), eventId: httpEvent, organizationId: org, sessionId: "cs-http", customerId: "cus-http", subscriptionId: "sub-http", status: httpStatus, seatQuantity: httpSeats,
         eventType: httpType, currentPeriodEndsAt: httpCoverage().currentPeriodEnd, cancelAtPeriodEnd: httpCancel, coverage: httpCoverage() }),
     };
-    const setup = core(httpProvider); const intent = await setup.prepare(actor, { ...request, email }); await setup.attempt(actor, intent.id);
+    const setup = core(httpProvider); const httpStore = stores[stores.length - 1]; const intent = await setup.prepare(actor, { ...request, email }); await setup.attempt(actor, intent.id);
     await setup.reconcile("synthetic-provider-evidence", "synthetic-verified-signature", org);
     await db.organizationAIProviderPolicy.create({ data: { organizationId: org, enabled: true, allowedProviders: ["vercel_gateway"], modelSelections: { vercel_gateway: "openai/gpt-4o-mini" }, fallbackOrder: ["vercel_gateway"], updatedBy: user.id } });
     await db.aIUsageReservation.create({ data: { organizationId: org, idempotencyKey: "http_pending_hold_123", reservedCents: 250, status: "pending_settlement", expiresAt: new Date(0) } });
+    const anniversaryHttp = await prepareAnniversaryHttp({ db, url, runtime, stores });
     const listener = createServer(); await new Promise<void>(resolve => listener.listen(0, "127.0.0.1", resolve));
     const address = listener.address(); if (!address || typeof address === "string") throw new Error("fixture_port_unavailable"); const port = address.port;
     await new Promise<void>(resolve => listener.close(() => resolve()));
@@ -365,7 +395,7 @@ suite("owned PG17 new TEST subscription service, synthetic provider only", () =>
 
     let childEnv: NodeJS.ProcessEnv;
     try { childEnv = newTestChildEnvironment(process.env, process.execArgv, { databaseUrl: url, appOrigin: base, fontResponses: fonts,
-      runtimeId: runtime, accountId: "acct-test", organizationId: org, authSecret: randomBytes(32).toString("hex") }); }
+      runtimeId: runtime, accountId: "acct-test", organizationId: `${org},${anniversaryHttp.fixture.actor.organizationId}`, authSecret: randomBytes(32).toString("hex") }); }
     catch (error) { rmSync(temporary, { recursive: true, force: true }); throw error; }
     const child = spawn(process.execPath, [resolve("node_modules/next/dist/bin/next"), "dev", "--webpack", "--hostname", "127.0.0.1", "--port", String(port)], { cwd: process.cwd(), detached: true, stdio: "pipe", env: childEnv });
     let output = ""; child.stdout?.on("data", chunk => { output += chunk; }); child.stderr?.on("data", chunk => { output += chunk; });
@@ -394,7 +424,7 @@ suite("owned PG17 new TEST subscription service, synthetic provider only", () =>
       expect(generation.status).toBeGreaterThanOrEqual(400);
       const hold = await db.aIUsageReservation.findUnique({ where: { organizationId_idempotencyKey: { organizationId: org, idempotencyKey: "http_actual_hold_123456" } } });
       expect(hold?.status).toBe("released"); expect(await db.usageEvent.count({ where: { organizationId: org } })).toBe(0);
-      const originalIntent = await stores[stores.length - 1].transaction(tx => tx.intent(intent.id));
+      const originalIntent = await httpStore.transaction(tx => tx.intent(intent.id));
       const financialBeforeLifecycle = { usage: await db.usageEvent.findMany({ where: { organizationId: org } }), holds: await db.aIUsageReservation.findMany({ where: { organizationId: org } }), purchases: await db.addOnPurchase.findMany({ where: { organizationId: org } }) };
       for (const phase of [
         { event: "evt-http-scheduled", status: "active", collection: "collected" as const, unavailable: false, seats: 3, cancel: true, pool: "$30.00", remaining: "$27.50", exhausted: false },
@@ -425,7 +455,7 @@ suite("owned PG17 new TEST subscription service, synthetic provider only", () =>
       }
       expect(await db.usageEvent.findMany({ where: { organizationId: org } })).toEqual(financialBeforeLifecycle.usage); expect(await db.addOnPurchase.findMany({ where: { organizationId: org } })).toEqual(financialBeforeLifecycle.purchases);
       expect(await db.aIUsageReservation.findMany({ where: { id: { in: financialBeforeLifecycle.holds.map(row => row.id) } } })).toEqual(financialBeforeLifecycle.holds);
-      const currentIntent = await stores[stores.length - 1].transaction(tx => tx.intent(intent.id)); expect(currentIntent?.terms).toEqual(originalIntent?.terms); expect(currentIntent?.originalCreateProof).toEqual(originalIntent?.originalCreateProof);
+      const currentIntent = await httpStore.transaction(tx => tx.intent(intent.id)); expect(currentIntent?.terms).toEqual(originalIntent?.terms); expect(currentIntent?.originalCreateProof).toEqual(originalIntent?.originalCreateProof);
       await db.orgMembership.update({ where: { userId_organizationId: { userId: user.id, organizationId: org } }, data: { role: "read_only" } });
       expect((await http("/api/ai/generate", { method: "POST", headers: { "content-type": "application/json", "idempotency-key": "http_denied_role_12345" }, body: JSON.stringify({ prompt: "Denied" }) })).status).toBeGreaterThanOrEqual(400);
       expect(await db.aIUsageReservation.count({ where: { organizationId: org, idempotencyKey: "http_denied_role_12345" } })).toBe(0);
@@ -435,10 +465,21 @@ suite("owned PG17 new TEST subscription service, synthetic provider only", () =>
         expect(unavailableHtml).toContain("Unavailable"); expect(unavailableHtml).toContain("Plan unavailable"); expect(unavailableHtml).not.toContain("$200.00");
       } finally { await db.$executeRawUnsafe('ALTER TABLE "UnavailableHttpContract" RENAME TO "OrganizationTestSubscriptionContract"'); }
 
+      await exerciseAnniversaryHttp(anniversaryHttp, base);
     } finally {
-      if (child.pid) { try { process.kill(-child.pid, "SIGTERM"); } catch { /* already exited */ } await Promise.race([new Promise(resolve => child.once("exit", resolve)), new Promise(resolve => setTimeout(resolve, 3000))]); try { process.kill(-child.pid, "SIGKILL"); } catch { /* only owned process group */ } }
-      writeFileSync("/tmp/axiom-isolated-next-http.log", output); rmSync(temporary, { recursive: true, force: true });
+      if (child.pid) {
+        const exited = new Promise<void>(resolve => { if (child.exitCode !== null || child.signalCode !== null) resolve(); else child.once("exit", () => resolve()); });
+        try { process.kill(-child.pid, "SIGTERM"); } catch { /* already exited */ }
+        let timer: ReturnType<typeof setTimeout> | undefined;
+        try { await Promise.race([exited, new Promise<void>(resolve => { timer = setTimeout(resolve, 3000); })]); } finally { clearTimeout(timer); }
+        try { process.kill(-child.pid, "SIGKILL"); } catch { /* only owned process group */ }
+        await exited;
+      }
+      try { writeFileSync("/tmp/axiom-isolated-next-http.log", output); } finally { rmSync(temporary, { recursive: true, force: true }); }
     }
   }, 180000);
+
+  registerAnniversaryAcceptance({ context: () => ({ db, url, runtime, stores }), refund: reverseAICreditRefund,
+    observeRefund(listener) { if (refundBinding.observer) throw new Error("owned_refund_observer_busy"); refundBinding.observer = listener; return () => { refundBinding.observer = null; }; } });
 
 });
