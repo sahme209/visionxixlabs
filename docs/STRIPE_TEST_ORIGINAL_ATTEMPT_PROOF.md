@@ -91,3 +91,31 @@ across 617 files (six skipped, 78.43s); web TypeScript, desktop release/types/bu
 30 Python tests and focused lint passed. Exact-head CI remains the coordinator
 integration gate. These counts do not represent hosted
 customer workflows.
+
+## Established lifecycle follow-up (local evidence only)
+
+The inactive adapter now additionally accepts signed subscription created,
+updated and deleted notifications only for an already bound exact original-proof
+TEST contract. Notifications trigger current exact subscription retrieval;
+historical status, event IDs and timestamps never order application state.
+Licensed quantity must match the exact bound contract and original proved
+paid terms; active state alone is not collection evidence for a change. Original
+request/terms/proof remain immutable. Frozen price, plan and interval must still
+match; seat/price/interval upgrades, downgrades and replacement remain unsupported.
+
+Current status, period end and scheduled cancellation reach the existing
+Serializable durable event consumer without a new event or financial ledger.
+SDK lifecycle regressions use real local signature verification with synthetic
+secrets and mocked remote responses. The owned PG fixture composes the inactive
+SDK adapter with actual intent/contract/event storage, including delayed current
+state, replay, existing top-up/usage/hold preservation and rollback. This remains
+local evidence: no actual Stripe account, request, payment or delivery is claimed.
+The separate application process still prohibits every provider IO boundary.
+See `ISOLATED_TEST_SUBSCRIPTION_LIFECYCLE_PLAN.md` for exact scope and validation.
+
+Scoped-reviewed clean runtime source `21769547` passed 40 lifecycle SDK/service
+cases (138 focused tests including existing proof/consumer regressions), 15 demo
+checks, focused lint, and final web TypeScript. Its final owned PostgreSQL/actual
+Next fixture passed all 7 tests in 32.66s, preserving the original three-seat
+terms and rejecting quantity changes without event/plan/financial mutation.
+These are local results with mocked Stripe IO, not provider-attempt acceptance.

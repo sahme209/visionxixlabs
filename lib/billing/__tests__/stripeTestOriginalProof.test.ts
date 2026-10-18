@@ -1,7 +1,13 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
+import { paidFixture } from "./fixtures/newTestPaidFixture";
 import { createHash } from "node:crypto";
 import { createNewTestSubscriptionService, type Intent, type Store, type Transaction, type Contract } from "../newTestSubscription/service";
 import Stripe from "stripe";
+import { EventEmitter } from "node:events";
+import { PassThrough } from "node:stream";
+import type { ClientRequest, IncomingMessage } from "node:http";
+import type { RequestOptions } from "node:https";
+import { createBoundedStripeHttpClient } from "../newTestSubscription/stripeHttpClient";
 import { createStripeTestProvider } from "../newTestSubscription/stripeTestProvider";
 afterEach(() => vi.unstubAllEnvs());
 const price = { id: "price_pro", livemode: false, active: true, currency: "usd", type: "recurring", billing_scheme: "per_unit", unit_amount: 2900, recurring: { interval: "month", interval_count: 1, usage_type: "licensed" }, product: { id: "prod_pro", active: true, livemode: false, deleted: false } };
@@ -39,7 +45,7 @@ describe("inactive original Stripe TEST proof adapter", () => {
     const f = fixture(); const provider = createStripeTestProvider(f.options);
     f.options.expectedAccountId = "acct_mutated"; f.options.configuredPrices["pro:monthly"] = "price_mutated";
     expect(await provider.price("pro", "monthly")).toMatchObject({ id: "price_pro" });
-    expect(f.client.prices.retrieve).toHaveBeenCalledWith("price_pro", { expand: ["product"] });
+    expect(f.client.prices.retrieve).toHaveBeenCalledWith("price_pro", { expand: ["product"] }, expect.objectContaining({ timeout: 10000, maxNetworkRetries: 0 }));
     f.options.store.runtimeId = "runtime_mutated";
     expect(() => provider.mode()).toThrow("test_runtime_changed");
   });
@@ -50,7 +56,41 @@ describe("inactive original Stripe TEST proof adapter", () => {
     const result = await p.create(body, "durable_key", { organizationId: "org", userId: "owner" });
     expect(result.originalCreateProof).toMatchObject({ sessionId: "cs_test", outboundRequestKey: "durable_key", requestId: "req_original", accountId: "acct_test", runtimeId: "runtime" });
     expect(result.originalCreateProof?.observedIdempotencyKey).toBeUndefined();
-    expect(client.checkout.sessions.create).toHaveBeenCalledWith(JSON.parse(body), { idempotencyKey: "durable_key" });
+    expect(client.checkout.sessions.create).toHaveBeenCalledWith(JSON.parse(body), expect.objectContaining({ idempotencyKey: "durable_key", timeout: 10000, maxNetworkRetries: 0 }));
+  });
+  it("actual installed SDK retains the original key and body on repeated create with the deadline owner stripped", async () => {
+    const f = fixture();
+    const body = JSON.stringify({ mode: "subscription", metadata: { intentId: "intent", organizationId: "org", catalogVersion: "axiom_public_test_v1" }, line_items: [{ price: "price_pro", quantity: 1 }] });
+    const row = { revision: 1, id: "intent", organizationId: "org", terms: { priceId: "price_pro", seatQuantity: 1, planId: "pro", interval: "monthly", catalogVersion: "axiom_public_test_v1" }, runtimeId: "runtime", accountId: "acct_test", livemode: false, state: "attempted", canonicalRequest: body, requestDigest: createHash("sha256").update(body).digest("hex"), providerIdempotencyKey: "durable_key", sessionId: null };
+    const original = structuredClone(row);
+    f.transaction.mockImplementation(async fn => fn({ contract: async () => null, legacyBinding: async () => false, eligible: async () => true, acceptedSeats: async () => 1, intent: async () => row } as unknown as Transaction));
+    const outbound: Array<{ options: RequestOptions; body: unknown }> = [];
+    const syntheticRequest = (options: RequestOptions, callback: (response: IncomingMessage) => void) => {
+      const response = Object.assign(new PassThrough(), { statusCode: 200, headers: { "content-type": "application/json", "request-id": "req_original", ...(options.method === "POST" ? { "idempotency-key": "durable_key" } : {}) } });
+      response.on("error", () => {});
+      const request = new EventEmitter() as EventEmitter & { end: (value: unknown) => void; destroy: (error?: Error) => void };
+      request.destroy = (error?: Error) => { response.destroy(error); queueMicrotask(() => { if (error) request.emit("error", error); request.emit("close"); }); };
+      request.end = value => { outbound.push({ options, body: value }); queueMicrotask(() => { callback(response as unknown as IncomingMessage); response.end(JSON.stringify(options.path === "/v1/account" ? { id: "acct_test" } : options.path?.startsWith("/v1/prices/") ? price : { id: "cs_test", url: "https://checkout.stripe.com/c/pay", livemode: false })); }); };
+      return request as unknown as ClientRequest;
+    };
+    const sdk = new Stripe("sk_test_synthetic", { httpClient: createBoundedStripeHttpClient({ syntheticRequest, configuredTransportKeys: [] }), maxNetworkRetries: 0 });
+    const provider = createStripeTestProvider({ ...f.options, sdkFactory: () => sdk });
+    // Low-level repeat of the same attempted request, not service authorization
+    // to retry an unknown attempt (the service separately rejects that retry).
+    const first = await provider.create(body, "durable_key", { organizationId: "org", userId: "owner" });
+    const second = await provider.create(body, "durable_key", { organizationId: "org", userId: "owner" });
+    const creates = outbound.filter(call => call.options.method === "POST");
+    expect(creates).toHaveLength(2);
+    for (const call of creates) {
+      expect(call.options.path).toBe("/v1/checkout/sessions");
+      expect(call.options.headers).toHaveProperty("Idempotency-Key", "durable_key");
+      expect(Object.keys(call.options.headers!).some(key => key.toLowerCase() === "x-axiom-internal-deadline")).toBe(false);
+      expect(new URLSearchParams(String(call.body)).get("metadata[intentId]")).toBe("intent");
+    }
+    expect(creates[0].body).toBe(creates[1].body);
+    expect(second.originalCreateProof).toEqual(first.originalCreateProof);
+    expect(first.originalCreateProof).toMatchObject({ outboundRequestKey: "durable_key", observedIdempotencyKey: "durable_key", outboundRequestDigest: row.requestDigest, requestId: "req_original" });
+    expect(row).toEqual(original);
   });
   it("denies account mismatch before session creation", async () => {
     const { options, client } = fixture(); client.accounts.retrieve.mockResolvedValue({ id: "acct_other" });
@@ -67,8 +107,8 @@ describe("inactive original Stripe TEST proof adapter", () => {
 
 describe("original proof composed with existing intent CAS", () => {
   function composed(failConfirmation = false) {
-    const f = fixture(); let row: Intent | null = null; let consumed = false; let ownContract: Contract | null = null; let bindOnCapture = false; let legacyBound = false; let authorized = true; let failOnce = failConfirmation;
-    const tx: Transaction = {
+    const f = fixture(); let row: Intent | null = null; let consumed = false; let ownContract: Contract | null = null; let bindOnCapture = false; let legacyBound = false; let authorized = true; let failOnce = failConfirmation; let coverage: Awaited<ReturnType<Transaction["coverage"]>> = null;
+    const tx: Transaction = { invalidateCoverage: async () => { throw new Error("unexpected"); }, currentTime: async () => new Date(), coverage: async () => structuredClone(coverage),
       eligible: async () => authorized, acceptedSeats: async () => 1, intent: async () => row,
       activeIntent: async () => row, insertIntent: async i => { row = structuredClone(i); },
       saveIntent: async (i, revision) => {
@@ -76,10 +116,10 @@ describe("original proof composed with existing intent CAS", () => {
         if (failOnce && i.state === "session_confirmed") { failOnce = false; throw new Error("storage unavailable"); }
         row = structuredClone(i);
       }, contract: async () => ownContract, legacyBinding: async () => legacyBound, eventExists: async () => consumed,
-      bind: async () => { consumed = true; }, creditEvidence: async () => ({ usedCents: 0, heldCents: 0, paidTopUpsCents: 0 }),
+      bind: async (contract, _event, _observation, next) => { if (next.collection.kind !== "collected") throw new Error("fixture_initial_collection"); ownContract = structuredClone(contract); coverage = { originalEvidence: coverage?.originalEvidence ?? next.collection.evidence, observation: structuredClone(next), revision: (coverage?.revision ?? 0) + 1 }; legacyBound = true; consumed = true; }, creditEvidence: async () => ({ usedCents: 0, heldCents: 0, paidTopUpsCents: 0 }),
     };
     const store: Store = { runtimeId: "runtime", async transaction<T>(fn: (tx: Transaction) => Promise<T>) {
-      const before = structuredClone(row); const prior = consumed;
+      const before = structuredClone(row); const prior = consumed; const previousContract = structuredClone(ownContract); const previousCoverage = structuredClone(coverage);
       try { const result = await fn(tx);
         if (bindOnCapture && row?.state === "session_confirmed") {
           bindOnCapture = false; legacyBound = true;
@@ -87,7 +127,7 @@ describe("original proof composed with existing intent CAS", () => {
           ownContract = { livemode: false, planId: row.terms.planId, organizationId: row.organizationId, originatingIntentId: row.id,
             catalogVersion: row.terms.catalogVersion, runtimeId: row.runtimeId, accountId: row.accountId, sessionId: row.sessionId!, customerId: "cus_test", subscriptionId: "sub_test", eventToken: "evt_simulated_binding_race", status: "active", seatQuantity: row.terms.seatQuantity };
         }
-        return result; } catch (e) { row = before; consumed = prior; throw e; }
+        return result; } catch (e) { row = before; consumed = prior; ownContract = previousContract; coverage = previousCoverage; throw e; }
     } };
     const provider = createStripeTestProvider({ ...f.options, store }); let id = 0;
     const service = createNewTestSubscriptionService({ store, provider, configuredPrices: f.options.configuredPrices,
@@ -157,11 +197,12 @@ describe("original proof composed with existing intent CAS", () => {
   it("actual local signature plus captured original response binds exactly once", async () => {
     const f = composed(); const i = await f.service.prepare(scope, selection);
     await f.service.attempt(scope, i.id);
-    const metadata = { intentId: i.id, organizationId: "org", catalogVersion: "axiom_public_test_v1" };
-    const session = { id: "cs_test", livemode: false, mode: "subscription", status: "complete", payment_status: "paid", metadata,
-      customer: "cus_test", subscription: "sub_test", line_items: { has_more: false, data: [{ price, quantity: 1 }] } };
+    const metadata = { intentId: i.id, organizationId: "org", catalogVersion: "axiom_public_test_v1", planId: "pro", billingInterval: "monthly" };
+    const paid = paidFixture({ originatingIntentId: i.id, seatQuantity: 1, priceId: "price_pro" }); paid.line.pricing.price_details.product = "prod_pro"; Object.assign(f.client, paid.client);
+    const session = { invoice: "in_test", id: "cs_test", livemode: false, mode: "subscription", status: "complete", payment_status: "paid", metadata,
+      customer: "cus_test", subscription: "sub_test", line_items: { has_more: false, data: [{ id: "si_test", price, quantity: 1, current_period_start: paid.line.period.start, current_period_end: paid.line.period.end }] } };
     f.client.checkout.sessions.retrieve.mockResolvedValue(session);
-    f.client.subscriptions.retrieve.mockResolvedValue({ id: "sub_test", livemode: false, customer: "cus_test", status: "active", metadata, items: { has_more: false, data: [{ price, quantity: 1 }] } });
+    f.client.subscriptions.retrieve.mockResolvedValue({ id: "sub_test", livemode: false, customer: "cus_test", status: "active", metadata, latest_invoice: "in_test", cancel_at_period_end: false, items: { has_more: false, data: [{ id: "si_test", price, quantity: 1, current_period_start: paid.line.period.start, current_period_end: paid.line.period.end }] } });
     const sdk = new Stripe("sk_test_synthetic");
     f.client.webhooks.constructEvent.mockImplementation((raw, signature, secret) => sdk.webhooks.constructEvent(raw as string, signature as string, secret as string));
     const raw = JSON.stringify({ id: "evt_real_local_signature", livemode: false, type: "checkout.session.completed", data: { object: session } });
@@ -182,7 +223,7 @@ describe("original proof composed with existing intent CAS", () => {
     f.client.webhooks.constructEvent.mockImplementation((raw, signature, secret) => sdk.webhooks.constructEvent(raw as string, signature as string, secret as string));
     const raw = JSON.stringify({ id: "evt_real_local_signature", livemode: false, type: "checkout.session.completed", data: { object: session } });
     const signature = sdk.webhooks.generateTestHeaderString({ payload: raw, secret: "whsec_synthetic" });
-    await expect(f.service.reconcile(raw, signature, "org")).rejects.toThrow("signed_terms_mismatch");
+    await expect(f.service.reconcile(raw, signature, "org")).rejects.toThrow("signed_binding_mismatch");
     expect(f.row().state).toBe("session_confirmed"); expect(f.consumed()).toBe(false);
   });
   it("malformed persisted response status is not accepted as proof", async () => {
