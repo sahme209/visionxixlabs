@@ -1,0 +1,153 @@
+{
+  "status": "local_gates_and_independent_receipt_review_passed_pending_exact_head_ci",
+  "reviewedSourceCommit": "685c7a39089457dce75f5532a5ebaa6b38b383b6",
+  "reviewedChangeCommits": [
+    "aec6e1126b1eba6cfdb6b241e6001975cb26c793",
+    "685c7a39089457dce75f5532a5ebaa6b38b383b6"
+  ],
+  "baseCommit": "224852b2",
+  "integrationPrerequisite": "Wait for billing PR174 merge; integrate atop current main only after root grants next window.",
+  "integratedSourceCommit": "5e49877c240c7c5093f18f09cc0a638d7b591e80",
+  "sourceHashes": {
+    "desktop/src/views/RepositoryWorkspaceView.tsx": "a550bf96fb37ca2b866787533f3f3c96890cc404a23f293e61064da6e1e40835",
+    "lib/desktop/__tests__/repositoryWorkspaceOwnership.test.ts": "dbec237653de8058c5912170fb6acbbb6319312debcec748122665d9bc40f9bf",
+    "lib/demo/demoScenarios.ts": "a530cf0e6ec303833dab815d259f8b8f35de446c816a037b165320a0e36d52e0",
+    "docs/desktop/repository-catalog-recovery.md": "08605a20419461ce7f06ba5c4a97c5c6e6858a1ffc63f186baa6b6e520244694"
+  },
+  "focusedHistoricalEvidence": {
+    "result": "passed",
+    "files": 2,
+    "tests": 40,
+    "scope": "Mocked actual React component and demo contract tests at reviewedSourceCommit; not fresh integrated-head evidence"
+  },
+  "regressions": [
+    "initial catalog failure recovered without remount",
+    "blank/populated manual entry and unsaved local draft preserved",
+    "superseded and prior-credential success/service-error/rejection ignored",
+    "old success cannot clear latest failure",
+    "local folder Refresh does not read GitHub catalog",
+    "removed nonmanual selection visibly replaced; clone mints visible target",
+    "empty catalog clears selection and disables Clone",
+    "still-present explicit selection preserved"
+  ],
+  "gates": {
+    "focusedIntegrated": {
+      "status": "passed",
+      "sourceCommit": "5e49877c240c7c5093f18f09cc0a638d7b591e80",
+      "exitCode": 0,
+      "log": "/tmp/desktop-catalog-gates/focused-final.log",
+      "logSha256": "b89c048d20db9cafbaa7a5928a2dc6c12ab183d6378889ba017384d9cbe7e83e",
+      "files": 2,
+      "tests": 40
+    },
+    "wholeWebTypeScript": {
+      "status": "passed",
+      "sourceCommit": "5e49877c240c7c5093f18f09cc0a638d7b591e80",
+      "exitCode": 0,
+      "log": "/tmp/desktop-catalog-gates/web-types-final.log",
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "heapMiB": 8192,
+      "incremental": false
+    },
+    "defaultFullVitest": {
+      "status": "passed",
+      "sourceCommit": "5e49877c240c7c5093f18f09cc0a638d7b591e80",
+      "exitCode": 0,
+      "log": "/tmp/desktop-catalog-gates/default-vitest.log",
+      "logSha256": "cc7a188d76b631ad56d95f48b38a74bb4eecbad42197316cbdb4c3985669f6e0",
+      "filesPassed": 676,
+      "filesSkipped": 1,
+      "testsPassed": 7458,
+      "testsSkipped": 27,
+      "durationSeconds": 79.87,
+      "unfiltered": true,
+      "timeoutOverride": false,
+      "ownedProcessLoopbackTempGitPermissions": true
+    },
+    "desktopTypeScript": {
+      "status": "passed",
+      "sourceCommit": "5e49877c240c7c5093f18f09cc0a638d7b591e80",
+      "exitCode": 0,
+      "log": "/tmp/desktop-catalog-gates/desktop-types.log",
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "desktopFrontendBuild": {
+      "status": "passed",
+      "sourceCommit": "5e49877c240c7c5093f18f09cc0a638d7b591e80",
+      "exitCode": 0,
+      "log": "/tmp/desktop-catalog-gates/desktop-build.log",
+      "logSha256": "6e729ca095ef27ffa8f7e6ed8d0029b06f3447cfaa5ce54c2116553e04f374c6"
+    },
+    "pythonCli": {
+      "status": "passed",
+      "sourceCommit": "5e49877c240c7c5093f18f09cc0a638d7b591e80",
+      "exitCode": 0,
+      "log": "/tmp/desktop-catalog-gates/python-cli.log",
+      "logSha256": "8f2548262d8adfeb47bfd6e4b48bc9b6b6673b9fb3c9b30bbe551d82879c4978",
+      "tests": 30
+    },
+    "scopedEslint": {
+      "status": "passed",
+      "sourceCommit": "5e49877c240c7c5093f18f09cc0a638d7b591e80",
+      "exitCode": 0,
+      "log": "/tmp/desktop-catalog-gates/scoped-eslint.log",
+      "logSha256": "ec88c3d52b49469d96a307e92bddb9e8cd6b435cb4486ab15cc160d2a2f6865b",
+      "warnings": [
+        {
+          "rule": "react-hooks/exhaustive-deps",
+          "line": 185,
+          "reason": "cleanup increments numeric catalogRequest.current; ref object remains stable; no errors"
+        }
+      ]
+    },
+    "diffCheck": {
+      "status": "passed",
+      "sourceCommit": "5e49877c240c7c5093f18f09cc0a638d7b591e80",
+      "exitCode": 0
+    }
+  },
+  "limitations": [
+    "No production login or authenticated customer acceptance proved",
+    "No native filesystem/Git command acceptance proved",
+    "No installer/publication/macOS acceptance proved",
+    "No real GitHub/AWS/Azure provider acceptance proved",
+    "No server, database or provider calls authorized by this receipt"
+  ],
+  "integrationBaseCommit": "291a4c579f12671a3f0c086417ac118570c75a47",
+  "productByteIdentity": {
+    "reviewedCommit": "685c7a39089457dce75f5532a5ebaa6b38b383b6",
+    "path": "desktop/src/views/RepositoryWorkspaceView.tsx",
+    "identical": true
+  },
+  "initialCompilerFailure": {
+    "sourceCommit": "f590f5bbe14cd115d75f7d1e1391de3c8534ca31",
+    "exitCode": 2,
+    "reason": "four unsupported exact:true role query options; removed in 5e49877c; role name string matching remains exact",
+    "log": "/tmp/desktop-catalog-gates/web-types.log"
+  },
+  "dependencyQualification": {
+    "root": "/workspace/.axiom-validation/ecs-direct-root/node_modules",
+    "desktop": "/workspace/visionxixlabs/desktop/node_modules",
+    "noInstallOrGeneration": true,
+    "ownDesktopLinkAbsentBeforeWebAndAfterDesktop": true
+  },
+  "cleanup": {
+    "allGateProcessesCompleted": true,
+    "ownDesktopNodeModulesLinkRemoved": true,
+    "appOrDatabaseServerStarted": false,
+    "providerCallsMade": false,
+    "processInspection": "No live vitest/tsc/vite/esbuild processes in final process inspection. PPID1 defunct esbuild entries remain, including final build child PID174548; zombies are exited, unreaped, and not claimed removed.",
+    "heavyWindowReleased": true
+  },
+  "independentRootReview": {
+    "reviewedReceiptCommit": "a2006605daefcba1ff41d9eefe61076334519bf3",
+    "sourceHashesVerified": 4,
+    "gateLogHashesVerified": 7,
+    "reviewedProductBytesIdentical": true,
+    "main291AncestryVerified": true,
+    "additionalOfflineEvidenceFormatTests": 16,
+    "trackerSources": 22,
+    "trackerRows": 2154,
+    "productionOrNativeAcceptance": false
+  }
+}
