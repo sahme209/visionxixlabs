@@ -17,7 +17,7 @@ it.each(["exact", "missing_permissions", "write_permission", "all_repositories",
   const proof = "a".repeat(32), wire = await startOwnedEcsCheckedInputWire({ proof, publicKey: keys.publicKey }); wire.bindProcess(9001);
   const deliver = (url: string, headers: Record<string, string>, body: string) => new Promise<Response>((resolve, reject) => {
     let status = 0, responseHeaders: Record<string, string> = {};
-    const response: FixtureResponse = { destroyed: false, writeHead(code, values = {}) { status = code; responseHeaders = values; return this; }, end(bytes = "") { resolve(new Response(bytes, { status, headers: responseHeaders })); } };
+    const response: FixtureResponse = { destroyed: false, writeHead(code, values = {}) { status = code; responseHeaders = values; return this; }, end(bytes = "") { resolve(new Response(typeof bytes === "string" ? bytes : new Uint8Array(bytes), { status, headers: responseHeaders })); } };
     const request: FixtureRequest = { method: "POST", url, headers: { "x-axiom-fixture-guard": proof, "x-axiom-fixture-process": "9001", ...headers }, async *[Symbol.asyncIterator]() { yield Buffer.from(body); } };
     if (!seam.handler) { reject(new Error("fixture_callback_missing")); return; } void seam.handler(request, response).catch(reject);
   });
