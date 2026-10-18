@@ -15,7 +15,7 @@ vi.mock("../../../desktop/src/lib/desktopClient", async original => {
   return { desktopClient: m.client };
 });
 import { RepositoryWorkspaceView } from "../../../desktop/src/views/RepositoryWorkspaceView";
-function deferred<T>() { let resolve!: (value: T) => void; const promise = new Promise<T>(done => { resolve = done; }); return { promise, resolve }; }
+function deferred<T>() { let resolve!: (value: T) => void; let reject!: (reason: Error) => void; const promise = new Promise<T>((done, fail) => { resolve = done; reject = fail; }); return { promise, resolve, reject }; }
 const status = (path: string) => ({ rootPath: path, repositoryFullName: path === "/owned/A" ? "fixture/a" : "fixture/b", branch: "feature", ahead: 0, behind: 0, changedFiles: [] });
 let reads: (path: string, file: string) => unknown;
 let statuses: (path: string) => unknown;
@@ -173,4 +173,61 @@ it("does not bind a pending A selection effect to B ownership", async () => {
   expect(switched).toBe(true);
   expect(screen.queryByRole("button", { name: "A stale check" })).toBeNull();
   expect(screen.getByRole("button", { name: "B check" })).toBeTruthy();
+});
+
+const catalog = (name: string) => ({ ok: true, data: { repositories: [{ id: name, fullName: `fixture/${name}`, defaultBranch: "main", visibility: "private" }], truncated: false } });
+it.each(["", "fixture/manual"])("retries the connected catalog preserving a local draft and manual entry %s", async manual => {
+  m.client.listGithubRepositories.mockResolvedValueOnce({ ok: false, error: "unavailable" });
+  await start();
+  fireEvent.click(screen.getByRole("button", { name: "same.ts" }));
+  fireEvent.change(await screen.findByRole("textbox", { name: "Editing same.ts" }), { target: { value: "unsaved draft" } });
+  fireEvent.change(screen.getByRole("combobox", { name: "Connected GitHub repository" }), { target: { value: "__manual__" } });
+  fireEvent.change(screen.getByRole("textbox", { name: "Repository owner and name" }), { target: { value: manual } });
+  m.client.listGithubRepositories.mockResolvedValue(catalog("recovered"));
+  fireEvent.click(screen.getByRole("button", { name: "Refresh connected repositories" }));
+  await screen.findByRole("option", { name: "fixture/recovered · private" });
+  expect(screen.getByDisplayValue("unsaved draft")).toBeTruthy();
+  expect((screen.getByRole("textbox", { name: "Repository owner and name" }) as HTMLInputElement).value).toBe(manual);
+  expect((screen.getByRole("button", { name: "Save ⌘S" }) as HTMLButtonElement).disabled).toBe(false);
+  expect(m.client.mintGithubCloneToken).not.toHaveBeenCalled();
+  expect(m.invoke.mock.calls.filter(([name]) => name === "write_repository_file")).toEqual([]);
+});
+it.each(["success", "error", "rejection"])("ignores a superseded catalog %s after a newer refresh", async outcome => {
+  const old = deferred<unknown>();
+  m.client.listGithubRepositories.mockReturnValueOnce(old.promise).mockResolvedValue(catalog("current"));
+  await start();
+  fireEvent.click(screen.getByRole("button", { name: "Refresh connected repositories" }));
+  await screen.findByRole("option", { name: "fixture/current · private" });
+  await act(async () => { if (outcome === "rejection") old.reject(new Error("stale rejection")); else old.resolve(outcome === "success" ? catalog("stale") : { ok: false, error: "stale failure" }); });
+  expect(screen.queryByRole("option", { name: "fixture/stale · private" })).toBeNull();
+  expect(screen.queryByText(/temporarily unavailable/)).toBeNull();
+  expect(screen.getByRole("option", { name: "fixture/current · private" })).toBeTruthy();
+});
+it.each(["success", "error", "rejection"])("ignores a prior credential catalog %s", async outcome => {
+  const old = deferred<unknown>();
+  m.client.listGithubRepositories.mockReturnValueOnce(old.promise).mockResolvedValue(catalog("replacement"));
+  await start();
+  await act(async () => { m.client.setSession("replacement-catalog-context"); });
+  await screen.findByRole("option", { name: "fixture/replacement · private" });
+  await act(async () => { if (outcome === "rejection") old.reject(new Error("old context rejection")); else old.resolve(outcome === "success" ? catalog("private-old") : { ok: false, error: "old credential failure" }); });
+  expect(screen.queryByRole("option", { name: "fixture/private-old · private" })).toBeNull();
+  expect(screen.queryByText(/temporarily unavailable/)).toBeNull();
+  expect(screen.getByRole("option", { name: "fixture/replacement · private" })).toBeTruthy();
+});
+it("keeps local Refresh independent of the connected GitHub catalog", async () => {
+  await start();
+  expect(m.client.listGithubRepositories).toHaveBeenCalledTimes(1);
+  fireEvent.click(screen.getByRole("button", { name: "Refresh", exact: true }));
+  await waitFor(() => expect(m.invoke.mock.calls.filter(([name]) => name === "list_local_repositories")).toHaveLength(2));
+  expect(m.client.listGithubRepositories).toHaveBeenCalledTimes(1);
+});
+it("does not let a superseded success clear the latest catalog failure", async () => {
+  const old = deferred<unknown>();
+  m.client.listGithubRepositories.mockReturnValueOnce(old.promise).mockResolvedValue({ ok: false, error: "latest failure" });
+  await start();
+  fireEvent.click(screen.getByRole("button", { name: "Refresh connected repositories" }));
+  await screen.findByText(/temporarily unavailable/);
+  await act(async () => { old.resolve(catalog("stale")); });
+  expect(screen.getByText(/temporarily unavailable/)).toBeTruthy();
+  expect(screen.queryByRole("option", { name: "fixture/stale · private" })).toBeNull();
 });

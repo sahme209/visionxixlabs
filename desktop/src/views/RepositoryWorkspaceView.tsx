@@ -97,6 +97,8 @@ function RepositoryWorkspaceSession({ revision }: { revision: number }) {
   const fileRequest = useRef(0);
   const statusRequest = useRef(0);
   const listRequest = useRef(0);
+  const catalogRequest = useRef(0);
+  const manualClone = useRef(false);
   const operationRequest = useRef(0);
   const activeBusy = useRef<string | null>(null);
   const loadedFile = useRef<{ repository: string; path: string; content: string; saved: string } | null>(null);
@@ -158,21 +160,29 @@ function RepositoryWorkspaceSession({ revision }: { revision: number }) {
     return () => { cancelled = true; };
   }, [context, revision, refreshList]);
 
-  useEffect(() => {
-    let cancelled = false;
-    void desktopClient.listGithubRepositories().then(repositoriesResult => {
-      if (cancelled || desktopClient.config !== context || desktopClient.getContextRevision() !== revision) return;
-      if (!repositoriesResult.ok) setRepositoryCatalogError(repositoriesResult.error);
-      else {
-        setRemoteRepositories(repositoriesResult.data.repositories);
-        const preferred = window.localStorage.getItem("axiom.workspace.repository.v1");
-        const selected = repositoriesResult.data.repositories.find(repository => repository.fullName === preferred) ?? repositoriesResult.data.repositories[0];
-        setCloneRepository(current => current || selected?.fullName || "");
-        setRepositoryCatalogTruncated(repositoriesResult.data.truncated); setRepositoryCatalogError(null);
-      }
-    }).catch(() => { if (!cancelled && desktopClient.config === context && desktopClient.getContextRevision() === revision) setRepositoryCatalogError("Connected repositories could not be loaded."); });
-    return () => { cancelled = true; };
+  const refreshCatalog = useCallback(async () => {
+    const request = ++catalogRequest.current;
+    const current = () => mounted.current && desktopClient.config === context
+      && desktopClient.getContextRevision() === revision && request === catalogRequest.current;
+    if (!current()) return;
+    try {
+      const result = await desktopClient.listGithubRepositories();
+      if (!current()) return;
+      if (!result.ok) { setRepositoryCatalogError(result.error); return; }
+      setRemoteRepositories(result.data.repositories);
+      const preferred = window.localStorage.getItem("axiom.workspace.repository.v1");
+      const selected = result.data.repositories.find(repository => repository.fullName === preferred) ?? result.data.repositories[0];
+      if (!manualClone.current) setCloneRepository(value => value || selected?.fullName || "");
+      setRepositoryCatalogTruncated(result.data.truncated); setRepositoryCatalogError(null);
+    } catch {
+      if (current()) setRepositoryCatalogError("Connected repositories could not be loaded.");
+    }
   }, [context, revision]);
+
+  useEffect(() => {
+    void refreshCatalog();
+    return () => { catalogRequest.current++; };
+  }, [refreshCatalog]);
 
   useEffect(() => {
     if (!selectedRepository) return;
@@ -429,9 +439,11 @@ function RepositoryWorkspaceSession({ revision }: { revision: number }) {
       <div className="w-72">
         <select value={manualCloneRepository ? "__manual__" : cloneRepository} onChange={(event) => {
           if (event.target.value === "__manual__") {
+            manualClone.current = true;
             setManualCloneRepository(true);
             setCloneRepository("");
           } else {
+            manualClone.current = false;
             setManualCloneRepository(false);
             setCloneRepository(event.target.value);
             window.localStorage.setItem("axiom.workspace.repository.v1", event.target.value);
@@ -443,6 +455,7 @@ function RepositoryWorkspaceSession({ revision }: { revision: number }) {
         </select>
         {manualCloneRepository && <input autoFocus value={cloneRepository} onChange={(event) => setCloneRepository(event.target.value)} placeholder="owner/repository" aria-label="Repository owner and name" className="mt-2 w-full rounded-md border border-white/10 bg-black/25 px-3 py-2 text-xs text-zinc-200 outline-none placeholder:text-zinc-600 focus:border-violet-400/50" />}
       </div>
+      <button type="button" onClick={() => void refreshCatalog()} className="btn-secondary">Refresh connected repositories</button>
       <input value={parentPath} onChange={(event) => setParentPath(event.target.value)} aria-label="Local repositories folder" className="min-w-0 flex-1 rounded-md border border-white/10 bg-black/25 px-3 py-2 text-xs text-zinc-400 outline-none focus:border-violet-400/50" />
       <button type="button" disabled={Boolean(busy) || !cloneRepository.trim().includes("/")} onClick={() => void clone()} className="btn-primary disabled:opacity-40">{busy === "clone" ? "Cloning…" : "Clone"}</button>
       <button type="button" disabled={Boolean(busy) || !parentPath} onClick={() => void refreshList(parentPath)} className="btn-secondary disabled:opacity-40">Refresh</button>
