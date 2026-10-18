@@ -1,0 +1,1056 @@
+{
+  "schemaVersion": 1,
+  "recordedAtUtc": "2026-10-18",
+  "scope": "Additive combined-source observation. Actual owned Airflow Next/PostgreSQL and full default Vitest ran on billing-integrated f5aedfac. After separately validated desktop-main integration, fresh compiler/focused desktop/demo/build/Python/offline/tracker checks ran on 6247b784. No final-head full-suite or real-provider acceptance is claimed.",
+  "ownedApplicationAndFullDefaultSuiteCommit": "f5aedfacc863807475cf6207e0677d211e843a83",
+  "finalIntegrationCommit": "6247b784b3b5474fb4811f531400f20f49d720e5",
+  "cleanCheckpoints": [
+    "f5aedfacc863807475cf6207e0677d211e843a83",
+    "6247b784b3b5474fb4811f531400f20f49d720e5"
+  ],
+  "sourceSha256": [
+    {
+      "path": "app/api/desktop/airflow/executions/[id]/approve/route.ts",
+      "sha256": "7aa01bed69aff72be38951607651078a805688d696cadeffaf703331b0ccaa5c"
+    },
+    {
+      "path": "app/api/desktop/airflow/executions/[id]/review/__tests__/route.test.ts",
+      "sha256": "eeda7a8ad1a086e9d715615725b8a5bd1562878d0fbabbe060545e3f93b1f601"
+    },
+    {
+      "path": "app/api/desktop/airflow/executions/[id]/review/route.ts",
+      "sha256": "e605f3cc1bb96d0045445ca9202086d46b68782375b8d8c45fa6cb338079e533"
+    },
+    {
+      "path": "desktop/package-lock.json",
+      "sha256": "ce2341025523253a5e2b1b762418086492bf9d137481b073a7bc366677663225"
+    },
+    {
+      "path": "desktop/src/components/AirflowRestartReviewCard.tsx",
+      "sha256": "da08981ff21245e5697476dee7392037f3b6cc92b17d0846ec908f1426b802b1"
+    },
+    {
+      "path": "desktop/src/lib/desktopClient.ts",
+      "sha256": "5e4c597124100f4b77f29d621fb01d5d059a5e843fcd0f35784b4b081f4f3d20"
+    },
+    {
+      "path": "desktop/src/views/AgentChatView.tsx",
+      "sha256": "2ab93fcc5018fc84ba4f8ecaf422b223fac5d79f53db83108925e3c3e1ef2814"
+    },
+    {
+      "path": "desktop/src/views/AirflowAutomationView.tsx",
+      "sha256": "f13802424e3a02b4e7e8a3f98bc590347f5433b76f6ef45c29edb6a4afe0572a"
+    },
+    {
+      "path": "docs/proposals/airflow-execution-review-v1.sql",
+      "sha256": "4c251a03fa186aa03c8b16d6071307c3daa79290ff0d0547bf6444eaebf9b8a3"
+    },
+    {
+      "path": "lib/__tests__/localAirflowDnsUdpGuard.test.ts",
+      "sha256": "6a58c50df6217d904100fb1a7a042cc36c091981b7712ef8838852149e30bf15"
+    },
+    {
+      "path": "lib/__tests__/localAirflowFixtureGuard.test.ts",
+      "sha256": "a1fe2908a29f077c1158419fb61554a29f106f095ff3c7990ff40bed5c350eb7"
+    },
+    {
+      "path": "lib/__tests__/ownedLocalAuthHttpLauncher.test.ts",
+      "sha256": "417fffca4b924e5203366f4a4b35cf1ce14c9150ec6979476dfed81c76a2dd63"
+    },
+    {
+      "path": "lib/axiom/agentRuntime/restartTargetReview.ts",
+      "sha256": "79ea621c7b00ee8ae769779ea9d2b3eca66080163898f3dccde6cc4e4ea490b5"
+    },
+    {
+      "path": "lib/billing/__tests__/fixtures/newTestChildEnvironment.ts",
+      "sha256": "14fc33278030a9799a45fff304b915f571ca573d874e63ba0fc2e69c3311438a"
+    },
+    {
+      "path": "lib/billing/__tests__/fixtures/newTestPaidFixture.ts",
+      "sha256": "1fc7ab45a7bbbab193cbb96678e2de28499d9afeb6e194f554357f0dcae78dee"
+    },
+    {
+      "path": "lib/billing/__tests__/isolatedAllowance.test.ts",
+      "sha256": "3ec9160d5952937259e72251fe29468500478fb771d069ae0003a21eaf208d65"
+    },
+    {
+      "path": "lib/billing/__tests__/newTestChildEnvironment.test.ts",
+      "sha256": "93b77c45ab592329ec6a0fd48956bbec0d69670e62a5fc6e9862363094bd8c3a"
+    },
+    {
+      "path": "lib/billing/__tests__/newTestPaidCoverage.test.ts",
+      "sha256": "76280f253997bacf840e75d2724c60f8a27742b733dbad7b7ff98fbee8df6495"
+    },
+    {
+      "path": "lib/billing/__tests__/newTestSubscriptionService.postgres.test.ts",
+      "sha256": "027ea728176f3809095dce7b594795636386a31ae96cf7e0ec525fec6518e73f"
+    },
+    {
+      "path": "lib/billing/__tests__/stripeTestHttpClient.test.ts",
+      "sha256": "874c14feee4c719f07164dcf23267aaf3b8ac835033c51074ca85154c09b3120"
+    },
+    {
+      "path": "lib/billing/__tests__/stripeTestLifecycle.test.ts",
+      "sha256": "e887508419ad424ad1d2f394c8dc57d9df07157430a22bfd4aef07b95e9c7dcc"
+    },
+    {
+      "path": "lib/billing/__tests__/stripeTestOriginalProof.test.ts",
+      "sha256": "3f4c9fa87e87c4026c12d88aa03dd1021634fd1369393a19c1fe7c8f6812c878"
+    },
+    {
+      "path": "lib/billing/__tests__/stripeTestPaidCoverage.test.ts",
+      "sha256": "9ee64f8c3554d5514044faa0d252ae1edc50f34f0958f120ea53a5d5164bedbc"
+    },
+    {
+      "path": "lib/billing/aiCreditReservation.ts",
+      "sha256": "75d2faf493b0350c1e5f827832069f1c0dfc47aaa85b1af4a8436a38b7d07046"
+    },
+    {
+      "path": "lib/billing/currentAIAllowance.ts",
+      "sha256": "4d965e1f2a454867b63e1e4785f33037f2a36bceb73da178fbfd0344031f1a32"
+    },
+    {
+      "path": "lib/billing/deploymentDispatchReservation.ts",
+      "sha256": "890d7f3dfa64d0fd58f06e1222f67625dd22a95b1bf0e86301544ac33140ee73"
+    },
+    {
+      "path": "lib/billing/isolatedApplication/plan.ts",
+      "sha256": "ee7f6d9d5f18c9e62f12df509d4cd3b25b79e723f6eb06c0ef81b3070caf298d"
+    },
+    {
+      "path": "lib/billing/newTestSubscription/chargeSource.ts",
+      "sha256": "b3d300c917e6253d9ed70870e952efa68941c05006221880bd02433129b7bd80"
+    },
+    {
+      "path": "lib/billing/newTestSubscription/fixtureCoverage.ts",
+      "sha256": "c436aa287c861e98f56709b90f45d500fb628cbb8e8ca13066c78554b1c3cefb"
+    },
+    {
+      "path": "lib/billing/newTestSubscription/lifecycle.ts",
+      "sha256": "735a67cc8b2cbfc3c291c70604e007249a0aebe0bc90fd05b5a348cc4ccf7d38"
+    },
+    {
+      "path": "lib/billing/newTestSubscription/paidCoverage.ts",
+      "sha256": "ebc74f82d61368a8cfbacfed4d6483cca1272c7eddd035a3875d9b1188ef3e25"
+    },
+    {
+      "path": "lib/billing/newTestSubscription/paidPlan.ts",
+      "sha256": "402fdc2f66c592d210801dc01da677bd8ecd7e531622a41d5bec620c23fb45ab"
+    },
+    {
+      "path": "lib/billing/newTestSubscription/postgresFixtureStore.ts",
+      "sha256": "c7729a6e5fe7e16d9042f05fe4d21fcbe32d7bedc4acf33dd293664b8834715f"
+    },
+    {
+      "path": "lib/billing/newTestSubscription/service.ts",
+      "sha256": "63a91b35064f8b6daa32870c9e036bf2c55b2be177c26bcd0194e1daa4de72bd"
+    },
+    {
+      "path": "lib/billing/newTestSubscription/stripeDeadline.ts",
+      "sha256": "c951e5ac7848ae315321a99c7e4d09d9f78d27a6dc5ff6244dae3c758ccb6ee6"
+    },
+    {
+      "path": "lib/billing/newTestSubscription/stripeHttpClient.ts",
+      "sha256": "4a2bae0de8e041fe16b0bb5e61075505ae3eb9373ef7c75fe5f928b8b3b930e5"
+    },
+    {
+      "path": "lib/billing/newTestSubscription/stripePaidCoverage.ts",
+      "sha256": "abd64290a57a31da34b6ae48788675f76667b77c5dd80458181afaef75fe8e5a"
+    },
+    {
+      "path": "lib/billing/newTestSubscription/stripeTestProvider.ts",
+      "sha256": "c455e5aa03ccc4efd3c816c48439440ad52728226b0a43095f40e376d04ee148"
+    },
+    {
+      "path": "lib/billing/newTestSubscription/verifiedContract.ts",
+      "sha256": "270b98a3cb9e6680dedb8872be8f4dcdc809b7071e8e30ba99a77111f3f73ca7"
+    },
+    {
+      "path": "lib/demo/demoScenarios.ts",
+      "sha256": "20e1249661d2deae9211c7b58398674167ef2865b1975b3fd1bf0cb5befcd90d"
+    },
+    {
+      "path": "lib/desktop/__tests__/agentConnectedContext.test.ts",
+      "sha256": "81c5b9105cff2eccf4b02d1ff1fa7f0b373ffbfa5a2d0ac7c5bf7cf3e2935696"
+    },
+    {
+      "path": "lib/desktop/__tests__/airflowRestartReviewView.test.ts",
+      "sha256": "d5e4b890fc6f137813f0bac00f3b68dfdb7401c16a6829c5aae7190f98479506"
+    },
+    {
+      "path": "lib/integrations/airflow/__tests__/automationExecutorClaim.test.ts",
+      "sha256": "6449e9116d2676ea270e8cce7c5446df4192a04f42593f05fb4daa1605ff52f7"
+    },
+    {
+      "path": "lib/integrations/airflow/__tests__/restartReview.test.ts",
+      "sha256": "7f644f7802adb316b928e8666e2feed27ed11ebdd13c7fa2d916bfe40ad2a4d0"
+    },
+    {
+      "path": "lib/integrations/airflow/__tests__/restartReviewIO.test.ts",
+      "sha256": "74d89bbf76a09ae1460e0419a53aad33e329e40553e0cf62915c0b01ed2b059b"
+    },
+    {
+      "path": "lib/integrations/airflow/__tests__/restartReviewScheduler.test.ts",
+      "sha256": "00861eec35dbcb6900721f0bb4847ef47f2dcad4e08ecd9197e1a2d7e473f868"
+    },
+    {
+      "path": "lib/integrations/airflow/__tests__/restartReviewStore.test.ts",
+      "sha256": "5e523fb73de5aa38bef4efc06c30f0dc1f0c50c2c348618c2b52987d3676ce34"
+    },
+    {
+      "path": "lib/integrations/airflow/automationExecutor.ts",
+      "sha256": "114992d9cbdfbe04209d64fa461be0ed1cc88dce5a4fc29fd15cd6e5da6d8bb8"
+    },
+    {
+      "path": "lib/integrations/airflow/automationTick.ts",
+      "sha256": "643c22f46277e3833c06c723d8490ca90bc43fb7dcb4033507815f3d82f667c8"
+    },
+    {
+      "path": "lib/integrations/airflow/restartReview.ts",
+      "sha256": "b60f0c1b14c22cf3792f628d532a1fedc6d949875be6394b04db09e999cb222e"
+    },
+    {
+      "path": "lib/integrations/airflow/restartReviewDto.ts",
+      "sha256": "2f5d50b64f21af6773f69eef11995ef9c5cf5b4d38569b52fbe32382f98ce218"
+    },
+    {
+      "path": "lib/integrations/airflow/restartReviewIO.ts",
+      "sha256": "5c9b2bc413e801f64a46df51fe62a55e9b290af8dc01f00311ad484471515fcc"
+    },
+    {
+      "path": "lib/integrations/airflow/restartReviewStore.ts",
+      "sha256": "036f54dd4e43f79011550bcc09acc5a464f9fa7a4c6aaa80686f26e7caa39d4a"
+    },
+    {
+      "path": "package-lock.json",
+      "sha256": "4923306fbdd3e436cbb2466d611716d94133797e64fb29298e4a36298c9a2049"
+    },
+    {
+      "path": "scripts/fixtures/airflowReviewHarness.mjs",
+      "sha256": "af99ca668f5f4288d4d37d69c7f39e44a373ba8f13e017af4cb8fd5ee47cb0d0"
+    },
+    {
+      "path": "scripts/fixtures/airflowReviewPgAcceptance.mjs",
+      "sha256": "085682931d2171b792a4045d56e7a278618b4d8f739b3944d275396ac9edca64"
+    },
+    {
+      "path": "scripts/fixtures/localAirflowChildEnvironment.mjs",
+      "sha256": "4df17999ddd4d105ff08c69c77d8b3f4b1b6356e3bd14b5ca2ef2430067993da"
+    },
+    {
+      "path": "scripts/fixtures/ownedAirflowHttpPreload.cjs",
+      "sha256": "552b37ea519ebd00767595e2441f77a7e9bd54d09ea91878fdffaafbf4c89b24"
+    },
+    {
+      "path": "scripts/fixtures/ownedAirflowWireFixture.mjs",
+      "sha256": "ab89a50f1c05dfca2a0c62b4b5fec6562c0ef7486fd2701567fef1093a82662c"
+    },
+    {
+      "path": "scripts/fixtures/ownedAwsHttpPreload.cjs",
+      "sha256": "72fbaf235dd4ec263f73c161637933f21f89349b59aab40cfef08781638a2a91"
+    },
+    {
+      "path": "scripts/rehearse-local-airflow-http.mjs",
+      "sha256": "0bd28f05ef8a21f4f37f38f560d9f46d1c94ce56c8b78506980e15db6b05467e"
+    },
+    {
+      "path": "scripts/rehearse-local-auth-http.mjs",
+      "sha256": "49dabe0a1ca233bdfff706e46d738e47e8331964f2c41834862a8b7c8d44f012"
+    },
+    {
+      "path": "scripts/run-owned-local-auth-http.mjs",
+      "sha256": "0bb4f351c32a4b9ece9df5a77ba72fa5c4a6f294de5e042b49b0507883a141f8"
+    }
+  ],
+  "ownedRunAndFullDefaultSuiteSourceSha256": [
+    {
+      "path": "app/api/desktop/airflow/executions/[id]/approve/route.ts",
+      "sha256": "7aa01bed69aff72be38951607651078a805688d696cadeffaf703331b0ccaa5c"
+    },
+    {
+      "path": "app/api/desktop/airflow/executions/[id]/review/__tests__/route.test.ts",
+      "sha256": "eeda7a8ad1a086e9d715615725b8a5bd1562878d0fbabbe060545e3f93b1f601"
+    },
+    {
+      "path": "app/api/desktop/airflow/executions/[id]/review/route.ts",
+      "sha256": "e605f3cc1bb96d0045445ca9202086d46b68782375b8d8c45fa6cb338079e533"
+    },
+    {
+      "path": "desktop/package-lock.json",
+      "sha256": "ce2341025523253a5e2b1b762418086492bf9d137481b073a7bc366677663225"
+    },
+    {
+      "path": "desktop/src/components/AirflowRestartReviewCard.tsx",
+      "sha256": "da08981ff21245e5697476dee7392037f3b6cc92b17d0846ec908f1426b802b1"
+    },
+    {
+      "path": "desktop/src/lib/desktopClient.ts",
+      "sha256": "5e4c597124100f4b77f29d621fb01d5d059a5e843fcd0f35784b4b081f4f3d20"
+    },
+    {
+      "path": "desktop/src/views/AirflowAutomationView.tsx",
+      "sha256": "f13802424e3a02b4e7e8a3f98bc590347f5433b76f6ef45c29edb6a4afe0572a"
+    },
+    {
+      "path": "docs/proposals/airflow-execution-review-v1.sql",
+      "sha256": "4c251a03fa186aa03c8b16d6071307c3daa79290ff0d0547bf6444eaebf9b8a3"
+    },
+    {
+      "path": "lib/__tests__/localAirflowDnsUdpGuard.test.ts",
+      "sha256": "6a58c50df6217d904100fb1a7a042cc36c091981b7712ef8838852149e30bf15"
+    },
+    {
+      "path": "lib/__tests__/localAirflowFixtureGuard.test.ts",
+      "sha256": "a1fe2908a29f077c1158419fb61554a29f106f095ff3c7990ff40bed5c350eb7"
+    },
+    {
+      "path": "lib/__tests__/ownedLocalAuthHttpLauncher.test.ts",
+      "sha256": "417fffca4b924e5203366f4a4b35cf1ce14c9150ec6979476dfed81c76a2dd63"
+    },
+    {
+      "path": "lib/axiom/agentRuntime/restartTargetReview.ts",
+      "sha256": "79ea621c7b00ee8ae769779ea9d2b3eca66080163898f3dccde6cc4e4ea490b5"
+    },
+    {
+      "path": "lib/billing/__tests__/fixtures/newTestChildEnvironment.ts",
+      "sha256": "14fc33278030a9799a45fff304b915f571ca573d874e63ba0fc2e69c3311438a"
+    },
+    {
+      "path": "lib/billing/__tests__/fixtures/newTestPaidFixture.ts",
+      "sha256": "1fc7ab45a7bbbab193cbb96678e2de28499d9afeb6e194f554357f0dcae78dee"
+    },
+    {
+      "path": "lib/billing/__tests__/isolatedAllowance.test.ts",
+      "sha256": "3ec9160d5952937259e72251fe29468500478fb771d069ae0003a21eaf208d65"
+    },
+    {
+      "path": "lib/billing/__tests__/newTestChildEnvironment.test.ts",
+      "sha256": "93b77c45ab592329ec6a0fd48956bbec0d69670e62a5fc6e9862363094bd8c3a"
+    },
+    {
+      "path": "lib/billing/__tests__/newTestPaidCoverage.test.ts",
+      "sha256": "76280f253997bacf840e75d2724c60f8a27742b733dbad7b7ff98fbee8df6495"
+    },
+    {
+      "path": "lib/billing/__tests__/newTestSubscriptionService.postgres.test.ts",
+      "sha256": "027ea728176f3809095dce7b594795636386a31ae96cf7e0ec525fec6518e73f"
+    },
+    {
+      "path": "lib/billing/__tests__/stripeTestHttpClient.test.ts",
+      "sha256": "874c14feee4c719f07164dcf23267aaf3b8ac835033c51074ca85154c09b3120"
+    },
+    {
+      "path": "lib/billing/__tests__/stripeTestLifecycle.test.ts",
+      "sha256": "e887508419ad424ad1d2f394c8dc57d9df07157430a22bfd4aef07b95e9c7dcc"
+    },
+    {
+      "path": "lib/billing/__tests__/stripeTestOriginalProof.test.ts",
+      "sha256": "3f4c9fa87e87c4026c12d88aa03dd1021634fd1369393a19c1fe7c8f6812c878"
+    },
+    {
+      "path": "lib/billing/__tests__/stripeTestPaidCoverage.test.ts",
+      "sha256": "9ee64f8c3554d5514044faa0d252ae1edc50f34f0958f120ea53a5d5164bedbc"
+    },
+    {
+      "path": "lib/billing/aiCreditReservation.ts",
+      "sha256": "75d2faf493b0350c1e5f827832069f1c0dfc47aaa85b1af4a8436a38b7d07046"
+    },
+    {
+      "path": "lib/billing/currentAIAllowance.ts",
+      "sha256": "4d965e1f2a454867b63e1e4785f33037f2a36bceb73da178fbfd0344031f1a32"
+    },
+    {
+      "path": "lib/billing/deploymentDispatchReservation.ts",
+      "sha256": "890d7f3dfa64d0fd58f06e1222f67625dd22a95b1bf0e86301544ac33140ee73"
+    },
+    {
+      "path": "lib/billing/isolatedApplication/plan.ts",
+      "sha256": "ee7f6d9d5f18c9e62f12df509d4cd3b25b79e723f6eb06c0ef81b3070caf298d"
+    },
+    {
+      "path": "lib/billing/newTestSubscription/chargeSource.ts",
+      "sha256": "b3d300c917e6253d9ed70870e952efa68941c05006221880bd02433129b7bd80"
+    },
+    {
+      "path": "lib/billing/newTestSubscription/fixtureCoverage.ts",
+      "sha256": "c436aa287c861e98f56709b90f45d500fb628cbb8e8ca13066c78554b1c3cefb"
+    },
+    {
+      "path": "lib/billing/newTestSubscription/lifecycle.ts",
+      "sha256": "735a67cc8b2cbfc3c291c70604e007249a0aebe0bc90fd05b5a348cc4ccf7d38"
+    },
+    {
+      "path": "lib/billing/newTestSubscription/paidCoverage.ts",
+      "sha256": "ebc74f82d61368a8cfbacfed4d6483cca1272c7eddd035a3875d9b1188ef3e25"
+    },
+    {
+      "path": "lib/billing/newTestSubscription/paidPlan.ts",
+      "sha256": "402fdc2f66c592d210801dc01da677bd8ecd7e531622a41d5bec620c23fb45ab"
+    },
+    {
+      "path": "lib/billing/newTestSubscription/postgresFixtureStore.ts",
+      "sha256": "c7729a6e5fe7e16d9042f05fe4d21fcbe32d7bedc4acf33dd293664b8834715f"
+    },
+    {
+      "path": "lib/billing/newTestSubscription/service.ts",
+      "sha256": "63a91b35064f8b6daa32870c9e036bf2c55b2be177c26bcd0194e1daa4de72bd"
+    },
+    {
+      "path": "lib/billing/newTestSubscription/stripeDeadline.ts",
+      "sha256": "c951e5ac7848ae315321a99c7e4d09d9f78d27a6dc5ff6244dae3c758ccb6ee6"
+    },
+    {
+      "path": "lib/billing/newTestSubscription/stripeHttpClient.ts",
+      "sha256": "4a2bae0de8e041fe16b0bb5e61075505ae3eb9373ef7c75fe5f928b8b3b930e5"
+    },
+    {
+      "path": "lib/billing/newTestSubscription/stripePaidCoverage.ts",
+      "sha256": "abd64290a57a31da34b6ae48788675f76667b77c5dd80458181afaef75fe8e5a"
+    },
+    {
+      "path": "lib/billing/newTestSubscription/stripeTestProvider.ts",
+      "sha256": "c455e5aa03ccc4efd3c816c48439440ad52728226b0a43095f40e376d04ee148"
+    },
+    {
+      "path": "lib/billing/newTestSubscription/verifiedContract.ts",
+      "sha256": "270b98a3cb9e6680dedb8872be8f4dcdc809b7071e8e30ba99a77111f3f73ca7"
+    },
+    {
+      "path": "lib/demo/demoScenarios.ts",
+      "sha256": "c0b4c9365e367feea7d929cccace4cb8301d9c33e3b73efff2c824daa0697df9"
+    },
+    {
+      "path": "lib/desktop/__tests__/airflowRestartReviewView.test.ts",
+      "sha256": "d5e4b890fc6f137813f0bac00f3b68dfdb7401c16a6829c5aae7190f98479506"
+    },
+    {
+      "path": "lib/integrations/airflow/__tests__/automationExecutorClaim.test.ts",
+      "sha256": "6449e9116d2676ea270e8cce7c5446df4192a04f42593f05fb4daa1605ff52f7"
+    },
+    {
+      "path": "lib/integrations/airflow/__tests__/restartReview.test.ts",
+      "sha256": "7f644f7802adb316b928e8666e2feed27ed11ebdd13c7fa2d916bfe40ad2a4d0"
+    },
+    {
+      "path": "lib/integrations/airflow/__tests__/restartReviewIO.test.ts",
+      "sha256": "74d89bbf76a09ae1460e0419a53aad33e329e40553e0cf62915c0b01ed2b059b"
+    },
+    {
+      "path": "lib/integrations/airflow/__tests__/restartReviewScheduler.test.ts",
+      "sha256": "00861eec35dbcb6900721f0bb4847ef47f2dcad4e08ecd9197e1a2d7e473f868"
+    },
+    {
+      "path": "lib/integrations/airflow/__tests__/restartReviewStore.test.ts",
+      "sha256": "5e523fb73de5aa38bef4efc06c30f0dc1f0c50c2c348618c2b52987d3676ce34"
+    },
+    {
+      "path": "lib/integrations/airflow/automationExecutor.ts",
+      "sha256": "114992d9cbdfbe04209d64fa461be0ed1cc88dce5a4fc29fd15cd6e5da6d8bb8"
+    },
+    {
+      "path": "lib/integrations/airflow/automationTick.ts",
+      "sha256": "643c22f46277e3833c06c723d8490ca90bc43fb7dcb4033507815f3d82f667c8"
+    },
+    {
+      "path": "lib/integrations/airflow/restartReview.ts",
+      "sha256": "b60f0c1b14c22cf3792f628d532a1fedc6d949875be6394b04db09e999cb222e"
+    },
+    {
+      "path": "lib/integrations/airflow/restartReviewDto.ts",
+      "sha256": "2f5d50b64f21af6773f69eef11995ef9c5cf5b4d38569b52fbe32382f98ce218"
+    },
+    {
+      "path": "lib/integrations/airflow/restartReviewIO.ts",
+      "sha256": "5c9b2bc413e801f64a46df51fe62a55e9b290af8dc01f00311ad484471515fcc"
+    },
+    {
+      "path": "lib/integrations/airflow/restartReviewStore.ts",
+      "sha256": "036f54dd4e43f79011550bcc09acc5a464f9fa7a4c6aaa80686f26e7caa39d4a"
+    },
+    {
+      "path": "package-lock.json",
+      "sha256": "4923306fbdd3e436cbb2466d611716d94133797e64fb29298e4a36298c9a2049"
+    },
+    {
+      "path": "scripts/fixtures/airflowReviewHarness.mjs",
+      "sha256": "af99ca668f5f4288d4d37d69c7f39e44a373ba8f13e017af4cb8fd5ee47cb0d0"
+    },
+    {
+      "path": "scripts/fixtures/airflowReviewPgAcceptance.mjs",
+      "sha256": "085682931d2171b792a4045d56e7a278618b4d8f739b3944d275396ac9edca64"
+    },
+    {
+      "path": "scripts/fixtures/localAirflowChildEnvironment.mjs",
+      "sha256": "4df17999ddd4d105ff08c69c77d8b3f4b1b6356e3bd14b5ca2ef2430067993da"
+    },
+    {
+      "path": "scripts/fixtures/ownedAirflowHttpPreload.cjs",
+      "sha256": "552b37ea519ebd00767595e2441f77a7e9bd54d09ea91878fdffaafbf4c89b24"
+    },
+    {
+      "path": "scripts/fixtures/ownedAirflowWireFixture.mjs",
+      "sha256": "ab89a50f1c05dfca2a0c62b4b5fec6562c0ef7486fd2701567fef1093a82662c"
+    },
+    {
+      "path": "scripts/fixtures/ownedAwsHttpPreload.cjs",
+      "sha256": "72fbaf235dd4ec263f73c161637933f21f89349b59aab40cfef08781638a2a91"
+    },
+    {
+      "path": "scripts/rehearse-local-airflow-http.mjs",
+      "sha256": "0bd28f05ef8a21f4f37f38f560d9f46d1c94ce56c8b78506980e15db6b05467e"
+    },
+    {
+      "path": "scripts/rehearse-local-auth-http.mjs",
+      "sha256": "49dabe0a1ca233bdfff706e46d738e47e8331964f2c41834862a8b7c8d44f012"
+    },
+    {
+      "path": "scripts/run-owned-local-auth-http.mjs",
+      "sha256": "0bb4f351c32a4b9ece9df5a77ba72fa5c4a6f294de5e042b49b0507883a141f8"
+    }
+  ],
+  "historicalReceiptSha256": [
+    {
+      "path": "docs/mission/local-airflow-restart-review-acceptance.json",
+      "sha256": "5345aa2aee775741241e5547c748ff8d43855addd27dfda157638ccf9582aadd"
+    },
+    {
+      "path": "docs/mission/local-billing-paid-coverage-acceptance.json",
+      "sha256": "decb450c7fabc8fa392cb2a1745d1a9645667c4690da6f73ae76098590fabefe"
+    }
+  ],
+  "integration": {
+    "billingMain": "3002d0a3f0031e110989bb65f449f27b684b294b",
+    "billingIntegration": "f5aedfacc863807475cf6207e0677d211e843a83",
+    "billingMergeConflicts": false,
+    "desktopMain": "1cd5bc23417049ad7c29da884ed9591cb5b205a4",
+    "desktopIntegration": "6247b784b3b5474fb4811f531400f20f49d720e5",
+    "desktopMergeConflict": "rendered canonical requirement table only; coordinator deterministically regenerated from auto-merged canonical JSON before merge commit",
+    "canonicalSources": 18,
+    "canonicalRows": 2112,
+    "coordinatorCanonicalResolution": "all requirement objects/sources preserved; ours auth/billing/deployment/Airflow and incoming desktop/testing workstream evidence retained",
+    "sourceBridge": {
+      "unchangedF5ManifestEntries": 60,
+      "onlyChangedF5ManifestEntry": "lib/demo/demoScenarios.ts",
+      "newFinalManifestFiles": [
+        "desktop/src/views/AgentChatView.tsx",
+        "lib/desktop/__tests__/agentConnectedContext.test.ts"
+      ],
+      "airflowAndBillingProductGuardsAndOptionalSql": "unchanged",
+      "historicalReceipts": "unchanged bytes; original scoped observations retained"
+    }
+  },
+  "ownedAndFullSuiteObservation": {
+    "sourceCommit": "f5aedfacc863807475cf6207e0677d211e843a83",
+    "cleanBeforeAfter": true,
+    "freshWebTypeScript": {
+      "sourceCommit": "f5aedfacc863807475cf6207e0677d211e843a83",
+      "command": "node --max-old-space-size=8192 node_modules/typescript/bin/tsc --noEmit --incremental false",
+      "freshProgram": true,
+      "incremental": false,
+      "heapLimitMiB": 8192,
+      "elapsedSeconds": 54.62,
+      "maxRssKiB": 4057136,
+      "exitCode": 0,
+      "desktopLinkWasPresent": false,
+      "ownedRootOverlay": "/workspace/.axiom-validation/ecs-direct-root/node_modules",
+      "log": "/tmp/axiom-airflow-combined-web-tsc-f5aedfac.log",
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "ownedApplication": {
+      "sourceCommit": "f5aedfacc863807475cf6207e0677d211e843a83",
+      "command": "AXIOM_RUN_LOCAL_AUTH_HTTP=1 AXIOM_RUN_LOCAL_AIRFLOW_HTTP=1 node scripts/run-owned-local-auth-http.mjs",
+      "elapsedSeconds": 35.69,
+      "exitCode": 0,
+      "environment": "explicit inherited PATH/locale/temp/proxy/CA only; no HOME; two fixture flags",
+      "cachedPostgresImageId": "sha256:79bd7c99e923138f136f8009d6bffa66e21e9d4fda5c0c561b00fc9c90cfe537",
+      "log": "/tmp/axiom-airflow-combined-owned-http-f5aedfac.log",
+      "logSha256": "e8220b1f0c0dfde7eb10b2ffe24cf6c4fab429d9d07f2e00facdc839d709c43e",
+      "result": "passed",
+      "postgresImage": "postgres:17-alpine",
+      "imagePull": false,
+      "dockerEndpoint": "unix:///var/run/docker.sock",
+      "schema": "Current-schema db push --skip-generate into a new empty owned loopback database; proposal SQL installed only there; no production migration or shared generation",
+      "observed": {
+        "sourceCommit": "f5aedfacc863807475cf6207e0677d211e843a83",
+        "desktopPairing": {
+          "verified": [
+            "authenticated_consent_metadata",
+            "device_bound_pending_poll",
+            "wrong_device_denied",
+            "legacy_unbound_poll_denied",
+            "web_session_pairing_approval",
+            "cookie_free_pairing_consume",
+            "single_use_pairing_replay_denied",
+            "paired_identity_current_workspace_membership",
+            "owner_pairing_listing",
+            "owner_revocation_invalidates_bearer"
+          ],
+          "commercialAccessObservation": {
+            "allowed": true,
+            "code": "active",
+            "billingStatus": "no_plan",
+            "enforcement": "not_verified_policy_decision_required"
+          },
+          "notVerified": [
+            "native_browser_or_vault",
+            "production_pairing",
+            "billing_enforcement",
+            "cloud_or_deployment_authority",
+            "provider_execution"
+          ]
+        },
+        "approvalDecisions": {
+          "transport": "real_local_next_http",
+          "requestMetadata": "next_request_normalized_loopback_headers_not_browser",
+          "persistence": "real_disposable_postgresql",
+          "verified": [
+            "cross_origin_decision_denied",
+            "parallel_decisions_one303_one409",
+            "persisted_authenticated_actor_and_time",
+            "terminal_decision_retained"
+          ],
+          "notVerified": [
+            "provider_execution",
+            "saved_terraform_plan_authority",
+            "production_approval_or_login",
+            "deterministic_simultaneous_database_snapshots"
+          ]
+        },
+        "airflow": {
+          "proposal": "review_only_installed_in_owned_fixture",
+          "exactCatalog": "ready",
+          "proposalRollback": "passed",
+          "absentPartialUnmarkedRemovedMarker": "fail_closed",
+          "actualPairedConnection": "encrypted",
+          "source": "synthetic_Airflow3_HTTP_GET_contract",
+          "scheduler": "single_execution_and_immutable_review",
+          "forcedSidecarFailure": "parent_rolled_back",
+          "pairedReview": "exact_destination_and_digest",
+          "validStoredApiKey": "paired_read_and_approval_refused",
+          "historicalReview": "blocked_and_rejectable",
+          "wrongMissingDigest": "409_before_claim",
+          "targetAndRevisionChange": "409_before_claim_or_allowance",
+          "immutableUpdateDelete": "refused",
+          "pg": {
+            "targetConflict": "actual_row_lock_wait_then_refusal",
+            "membershipConflict": "actual_row_lock_wait_then_refusal",
+            "refusedIntent": "transaction_rolled_back",
+            "newPreDispatchHolds": "confirmed_release",
+            "priorUnknownHold": "retained",
+            "matchedFence": "durable_review_digest_and_exact_target",
+            "source": "actual_checked_in_IO_two_PG_clients",
+            "providerCalls": 0,
+            "quotaEntitlement": "not_seeded_or_attested",
+            "orchestration": "recording_executor_tests_separate"
+          },
+          "wire": {
+            "requests": [
+              {
+                "method": "GET",
+                "path": "/api/v2/version"
+              },
+              {
+                "method": "GET",
+                "path": "/api/v2/dags"
+              },
+              {
+                "method": "GET",
+                "path": "/api/v2/dags"
+              },
+              {
+                "method": "GET",
+                "path": "/api/v2/dags/axiom_fixture_batch/dagRuns"
+              },
+              {
+                "method": "GET",
+                "path": "/api/v2/dags/axiom_fixture_batch/dagRuns"
+              },
+              {
+                "method": "GET",
+                "path": "/api/v2/dags/axiom_fixture_upstream/dagRuns"
+              },
+              {
+                "method": "GET",
+                "path": "/api/v2/dags/axiom_fixture_batch/dagRuns"
+              },
+              {
+                "method": "GET",
+                "path": "/api/v2/dags/axiom_fixture_batch/dagRuns"
+              },
+              {
+                "method": "GET",
+                "path": "/api/v2/dags/axiom_fixture_upstream/dagRuns"
+              },
+              {
+                "method": "GET",
+                "path": "/api/v2/dags/axiom_fixture_upstream/dagRuns"
+              },
+              {
+                "method": "GET",
+                "path": "/api/v2/dags/axiom_fixture_batch/dagRuns"
+              },
+              {
+                "method": "GET",
+                "path": "/api/v2/dags/axiom_fixture_upstream/dagRuns"
+              },
+              {
+                "method": "GET",
+                "path": "/api/v2/dags/axiom_fixture_batch/dagRuns"
+              },
+              {
+                "method": "GET",
+                "path": "/api/v2/dags/axiom_fixture_upstream/dagRuns"
+              },
+              {
+                "method": "GET",
+                "path": "/api/v2/dags/axiom_fixture_batch/dagRuns"
+              },
+              {
+                "method": "GET",
+                "path": "/api/v2/dags/axiom_fixture_upstream/dagRuns"
+              },
+              {
+                "method": "GET",
+                "path": "/api/v2/dags/axiom_fixture_batch/dagRuns"
+              },
+              {
+                "method": "GET",
+                "path": "/api/v2/dags/axiom_fixture_upstream/dagRuns"
+              },
+              {
+                "method": "GET",
+                "path": "/api/v2/dags/axiom_fixture_batch/dagRuns"
+              },
+              {
+                "method": "GET",
+                "path": "/api/v2/dags/axiom_fixture_upstream/dagRuns"
+              }
+            ],
+            "guardedProcesses": 14,
+            "contract": "synthetic_Airflow3_GET_only",
+            "providerWrites": 0,
+            "realAirflow": false,
+            "universalNetworkIsolation": false
+          },
+          "transport": "actual_owned_Next_HTTP",
+          "persistence": "owned_disposable_PostgreSQL",
+          "providerWrites": 0,
+          "notVerified": [
+            "real_Airflow_or_timetable",
+            "exact_cross_DAG_partition_correlation",
+            "GitHub_policy_and_dispatch_HTTP",
+            "AWS_restart_or_health",
+            "native_packaged_UI",
+            "production_storage_installation",
+            "billing_entitlement"
+          ]
+        },
+        "schemaFixture": "current_schema_not_migration_recovery",
+        "transport": "real_local_next_http",
+        "database": "disposable_synthetic_postgresql",
+        "mail": "loopback_capture_not_provider_delivery",
+        "verified": [
+          "desktop_origin_challenge",
+          "signup_requires_email_proof",
+          "actual_sdk_mail_capture",
+          "unverified_password_denied",
+          "expired_proof_denied",
+          "actual_resend_replacement",
+          "single_use_proof_and_callback",
+          "incorrect_password_denied",
+          "verified_credentials_csrf_cookie_session",
+          "accepted_personal_workspace_only",
+          "no_billing_plan_created"
+        ],
+        "notVerified": [
+          "browser_render_or_interaction",
+          "production_recovery_or_login",
+          "google_github_oauth",
+          "native_pairing_or_vault",
+          "external_mail_delivery",
+          "cloud_execution_or_billing"
+        ],
+        "fixtureCleanup": "owned_disposable_container_removed"
+      }
+    },
+    "fullDefaultVitest": {
+      "sourceCommit": "f5aedfacc863807475cf6207e0677d211e843a83",
+      "command": "node node_modules/vitest/vitest.mjs run --reporter=dot",
+      "elapsedSeconds": 67.51,
+      "maxRssKiB": 624972,
+      "exitCode": 0,
+      "log": "/tmp/axiom-airflow-combined-full-vitest-f5aedfac.log",
+      "logSha256": "75dbf9c4088a3a8cc3eab6c966de6ae7425c8643dadcf63ad824db60ca9edc13",
+      "result": "passed",
+      "filesPassed": 654,
+      "filesSkipped": 1,
+      "testsPassed": 7117,
+      "testsSkipped": 8,
+      "ownedCommercialFixture": "disabled; opt-in PostgreSQL billing suite skipped, not rerun as part of this observation"
+    },
+    "cleanup": {
+      "sourceCommit": "f5aedfacc863807475cf6207e0677d211e843a83",
+      "clean": true,
+      "ownedContainerId": "86bc1fbeedf5ce181c881ba998f6a3df3552cbdb85ee9ed3327300af07b6676b",
+      "exactContainerInspect": {
+        "exitCode": 1,
+        "stdout": "",
+        "stderr": "Error: No such object: 86bc1fbeedf5ce181c881ba998f6a3df3552cbdb85ee9ed3327300af07b6676b"
+      },
+      "labelledContainers": {
+        "exitCode": 0,
+        "stdout": "",
+        "stderr": ""
+      },
+      "ownedWorktreeProcessIds": [],
+      "fixtureReportCleanup": "owned_disposable_container_removed",
+      "artifactSha256": "7d109977aaf7c539ebb7d710c12985c8930c2cc828dd8ffac06f8ea24d7ef4cc"
+    }
+  },
+  "finalIntegrationObservation": {
+    "sourceCommit": "6247b784b3b5474fb4811f531400f20f49d720e5",
+    "cleanBeforeAfter": true,
+    "freshWebTypeScript": {
+      "sourceCommit": "6247b784b3b5474fb4811f531400f20f49d720e5",
+      "command": "node --max-old-space-size=8192 node_modules/typescript/bin/tsc --noEmit --incremental false",
+      "freshProgram": true,
+      "incremental": false,
+      "heapLimitMiB": 8192,
+      "elapsedSeconds": 57.27,
+      "maxRssKiB": 4047048,
+      "exitCode": 0,
+      "desktopLinkWasPresent": false,
+      "ownedRootOverlay": "/workspace/.axiom-validation/ecs-direct-root/node_modules",
+      "log": "/tmp/axiom-airflow-combined-web-tsc-6247b784.log",
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "gates": [
+      {
+        "sourceCommit": "6247b784b3b5474fb4811f531400f20f49d720e5",
+        "label": "desktop-demo-focused",
+        "workingDirectory": "/workspace/axiom-airflow-next-milestone",
+        "command": [
+          "node",
+          "node_modules/vitest/vitest.mjs",
+          "run",
+          "lib/desktop/__tests__/agentConnectedContext.test.ts",
+          "lib/desktop/__tests__/agentModelReadiness.test.ts",
+          "lib/desktop/__tests__/agentRestartReceipts.test.ts",
+          "lib/desktop/__tests__/agentRestartObservationJourney.test.ts",
+          "lib/demo/__tests__/demoScenarios.test.ts",
+          "--reporter=dot"
+        ],
+        "elapsedSeconds": 4.85,
+        "exitCode": 0,
+        "log": "/tmp/axiom-airflow-combined-desktop-demo-focused-6247b784.log",
+        "logSha256": "d108afc61e05276947a8acbf3006769b4df518498519b23f54d90fb57a831a3d",
+        "result": "passed"
+      },
+      {
+        "sourceCommit": "6247b784b3b5474fb4811f531400f20f49d720e5",
+        "label": "desktop-tsc",
+        "workingDirectory": "/workspace/axiom-airflow-next-milestone/desktop",
+        "command": [
+          "node",
+          "node_modules/typescript/bin/tsc",
+          "--noEmit"
+        ],
+        "elapsedSeconds": 5.95,
+        "exitCode": 0,
+        "log": "/tmp/axiom-airflow-combined-desktop-tsc-6247b784.log",
+        "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "result": "passed"
+      },
+      {
+        "sourceCommit": "6247b784b3b5474fb4811f531400f20f49d720e5",
+        "label": "desktop-build",
+        "workingDirectory": "/workspace/axiom-airflow-next-milestone/desktop",
+        "command": [
+          "npm",
+          "run",
+          "build"
+        ],
+        "elapsedSeconds": 9.82,
+        "exitCode": 0,
+        "log": "/tmp/axiom-airflow-combined-desktop-build-6247b784.log",
+        "logSha256": "6e61f9c4efb4f4ed9f209d5498fc7a846c8332c734d4420f4bb42b4254107b70",
+        "result": "passed"
+      },
+      {
+        "sourceCommit": "6247b784b3b5474fb4811f531400f20f49d720e5",
+        "label": "python-cli",
+        "workingDirectory": "/workspace/axiom-airflow-next-milestone",
+        "command": [
+          "python3",
+          "-m",
+          "unittest",
+          "sdk.python.__tests__.test_vxl_cli"
+        ],
+        "elapsedSeconds": 0.13,
+        "exitCode": 0,
+        "log": "/tmp/axiom-airflow-combined-python-cli-6247b784.log",
+        "logSha256": "5eecaf14413267840c081d5898324aa076c01a9ce65e50fafd7600b8c053abb6",
+        "result": "passed"
+      },
+      {
+        "sourceCommit": "6247b784b3b5474fb4811f531400f20f49d720e5",
+        "label": "offline-evidence",
+        "workingDirectory": "/workspace/axiom-airflow-next-milestone",
+        "command": [
+          "python3",
+          "-m",
+          "unittest",
+          "discover",
+          "-s",
+          "scripts/tests",
+          "-p",
+          "test_auth_recovery_evidence.py",
+          "-v"
+        ],
+        "elapsedSeconds": 0.07,
+        "exitCode": 0,
+        "log": "/tmp/axiom-airflow-combined-offline-evidence-6247b784.log",
+        "logSha256": "3f09618bcb7f4529edf92cad99220beffb40aff60e4c3c58a1ff64673fd08f6a",
+        "result": "passed"
+      },
+      {
+        "sourceCommit": "6247b784b3b5474fb4811f531400f20f49d720e5",
+        "label": "tracker",
+        "workingDirectory": "/workspace/axiom-airflow-next-milestone",
+        "command": [
+          "python3",
+          "scripts/axiom-mission-tracker.py",
+          "--check"
+        ],
+        "elapsedSeconds": 0.12,
+        "exitCode": 0,
+        "log": "/tmp/axiom-airflow-combined-tracker-6247b784.log",
+        "logSha256": "b0a637ed960bcb3fbc0d8ac6e1c144aba72fcf1aaefb67e38a5ccb0c551d02de",
+        "result": "passed"
+      },
+      {
+        "sourceCommit": "6247b784b3b5474fb4811f531400f20f49d720e5",
+        "label": "diff",
+        "workingDirectory": "/workspace/axiom-airflow-next-milestone",
+        "command": [
+          "git",
+          "diff",
+          "--check"
+        ],
+        "elapsedSeconds": 0.01,
+        "exitCode": 0,
+        "log": "/tmp/axiom-airflow-combined-diff-6247b784.log",
+        "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "result": "passed"
+      }
+    ],
+    "focusedDesktopAndDemo": {
+      "filesPassed": 5,
+      "testsPassed": 51,
+      "scope": "Original46 connected context/model/readiness/observation/demo cases plus5 receipt component cases; actual React rendering/clicks with mocked client transport"
+    },
+    "pythonCliTestsPassed": 30,
+    "offlineAuthEvidenceTestsPassed": 16,
+    "desktopBuild": "TypeScript, release-alignment guard and Vite build passed; existing minified >500kB chunk advisory only; no native packaging or installer acceptance",
+    "fullDefaultVitest": "Not repeated locally after desktop-only main integration, per coordinator schedule. The7117 result belongs to f5aedfac; exact-final-head full suite/production compile remain CI merge gates.",
+    "dependencyQualification": "Existing owned root-only validation overlay; own ignored desktop dependency link absent for fresh web types, temporarily added for desktop types/build and removed in finally. No install, shared dependency/cache mutation or Prisma generation.",
+    "cleanup": {
+      "sourceCommit": "6247b784b3b5474fb4811f531400f20f49d720e5",
+      "sourceClean": true,
+      "ownedLabelledContainerCount": 0,
+      "ownedWorktreeProcessIds": [],
+      "desktopDependencyLinkPresent": false,
+      "runtimeAndFullSuiteSourceCommit": "f5aedfacc863807475cf6207e0677d211e843a83",
+      "runtimeManifestEntries": 61,
+      "finalManifestEntries": 63,
+      "allManifestEntriesVerifiedAgainstBoundGitBlobs": true,
+      "historicalReceiptHashesUnchanged": true,
+      "canonicalSources": 18,
+      "canonicalRows": 2112,
+      "pythonBytecode": "PYTHONDONTWRITEBYTECODE=1; no source directory cleanup needed",
+      "artifactSha256": "e71b1c3613df8815299283aee3331458f8c3248088435d67b152bc4aadde2eb5"
+    }
+  },
+  "authorityAndTransportLimits": {
+    "environment": "Explicit inherited PATH/locale/temp and managed proxy/CA only; HOME omitted; only local auth and Airflow fixture flags; generated synthetic credentials; no mixed authority fixture flags.",
+    "productionTransport": "No URL/localhost/private-address exception added; reviewed test-only fixed synthetic HTTPS origin maps to owned literal-loopback GET fixture; unmatched JS fetch/DNS/HTTP/socket and native DNS/UDP entrypoints fail closed.",
+    "universalNativeOrOsNetworkIsolation": false,
+    "providerWrites": 0,
+    "realAirflow": false,
+    "reservationEvidence": "Actual PG helper uses synthetic deployment-hold rows, not billed entitlement. It proved only new confirmed hold release and prior unknown hold retention; provider orchestration remains recording-test evidence.",
+    "residualRemoteRace": "Final database row fence ends at transaction commit and does not lock remote provider state.",
+    "dependencySemantics": "latest-run freshness; exact cross-DAG business-partition correlation is unimplemented.",
+    "optionalStorage": "SQL remains a proposal outside automatic migrations; fixture-only installation does not authorize production installation."
+  },
+  "notVerified": [
+    "real_Airflow_or_timetable",
+    "exact_cross_DAG_partition_correlation",
+    "GitHub_policy_and_dispatch_HTTP",
+    "AWS_restart_or_health",
+    "native_packaged_UI",
+    "production_storage_installation",
+    "billing_entitlement",
+    "hosted auth/email or billing/Stripe lifecycle acceptance",
+    "billing owned PostgreSQL/HTTP repeated on combined head",
+    "final6247 entire default Vitest locally; exact final-head CI remains required",
+    "universal native-addon or operating-system egress isolation",
+    "successful immutable source/artifact release, application health or image recovery"
+  ],
+  "logArtifacts": [
+    {
+      "path": "/tmp/axiom-airflow-combined-web-tsc-f5aedfac.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceCommit": "f5aedfacc863807475cf6207e0677d211e843a83"
+    },
+    {
+      "path": "/tmp/axiom-airflow-combined-owned-http-f5aedfac.log",
+      "sha256": "e8220b1f0c0dfde7eb10b2ffe24cf6c4fab429d9d07f2e00facdc839d709c43e",
+      "sourceCommit": "f5aedfacc863807475cf6207e0677d211e843a83"
+    },
+    {
+      "path": "/tmp/axiom-airflow-combined-full-vitest-f5aedfac.log",
+      "sha256": "75dbf9c4088a3a8cc3eab6c966de6ae7425c8643dadcf63ad824db60ca9edc13",
+      "sourceCommit": "f5aedfacc863807475cf6207e0677d211e843a83"
+    },
+    {
+      "path": "/tmp/axiom-airflow-combined-web-tsc-6247b784.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceCommit": "6247b784b3b5474fb4811f531400f20f49d720e5"
+    },
+    {
+      "path": "/tmp/axiom-airflow-combined-desktop-demo-focused-6247b784.log",
+      "sha256": "d108afc61e05276947a8acbf3006769b4df518498519b23f54d90fb57a831a3d",
+      "sourceCommit": "6247b784b3b5474fb4811f531400f20f49d720e5"
+    },
+    {
+      "path": "/tmp/axiom-airflow-combined-desktop-tsc-6247b784.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceCommit": "6247b784b3b5474fb4811f531400f20f49d720e5"
+    },
+    {
+      "path": "/tmp/axiom-airflow-combined-desktop-build-6247b784.log",
+      "sha256": "6e61f9c4efb4f4ed9f209d5498fc7a846c8332c734d4420f4bb42b4254107b70",
+      "sourceCommit": "6247b784b3b5474fb4811f531400f20f49d720e5"
+    },
+    {
+      "path": "/tmp/axiom-airflow-combined-python-cli-6247b784.log",
+      "sha256": "5eecaf14413267840c081d5898324aa076c01a9ce65e50fafd7600b8c053abb6",
+      "sourceCommit": "6247b784b3b5474fb4811f531400f20f49d720e5"
+    },
+    {
+      "path": "/tmp/axiom-airflow-combined-offline-evidence-6247b784.log",
+      "sha256": "3f09618bcb7f4529edf92cad99220beffb40aff60e4c3c58a1ff64673fd08f6a",
+      "sourceCommit": "6247b784b3b5474fb4811f531400f20f49d720e5"
+    },
+    {
+      "path": "/tmp/axiom-airflow-combined-tracker-6247b784.log",
+      "sha256": "b0a637ed960bcb3fbc0d8ac6e1c144aba72fcf1aaefb67e38a5ccb0c551d02de",
+      "sourceCommit": "6247b784b3b5474fb4811f531400f20f49d720e5"
+    },
+    {
+      "path": "/tmp/axiom-airflow-combined-diff-6247b784.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceCommit": "6247b784b3b5474fb4811f531400f20f49d720e5"
+    }
+  ]
+}

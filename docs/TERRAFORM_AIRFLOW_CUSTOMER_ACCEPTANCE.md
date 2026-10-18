@@ -51,6 +51,14 @@ real Airflow/timetable, packaged native UI or production installation is claimed
 Fresh web/desktop TypeScript, desktop build, 6,964 default tests and 30 Python
 tests passed. See `AIRFLOW_RESTART_REVIEW_PROPOSAL.md` for commands and limits.
 
+The separate [combined-source observation](mission/local-airflow-billing-combined-acceptance.json)
+records another actual owned Airflow Next/PG pass and 7,117 default tests at
+billing-integrated `f5aedfac`. After the desktop-only main merge, final
+`6247b784` passed fresh web/desktop types, 51 focused component/demo tests,
+desktop build, Python30, offline16 and tracker checks. These are distinct
+source scopes; the earlier receipts remain unchanged. No real provider or
+production acceptance follows, and exact-final-head full CI remains required.
+
 The Airflow 3 client uses `/api/v2`, tenant-encrypted connection credentials, bounded requests, and redirect refusal. Scheduled DAG triggers use the existing deterministic occurrence identifier and reconcile a 409 against the exact run; that idempotency implementation is retained.
 
 Dependency-gated proposals require successful dependency runs whose valid logical timestamps are at least as recent as the source's valid logical timestamp. Missing or malformed timestamps cannot establish freshness and block proposal/dispatch. In particular, an Airflow 3 manual run with `logical_date: null` must not inherit permission from an unrelated historical success. Rules without dependencies retain manual-run support. This is a freshness gate, not proof that upstream and downstream share a business partition: exact data-interval correlation is still missing. A null-date dependency workflow needs an explicit reviewed correlation policy before enabling execution; do not invent a timestamp or disable dependencies to bypass the gate.

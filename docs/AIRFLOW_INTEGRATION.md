@@ -84,6 +84,11 @@ at clean `2c9fd78e` separately records actual PostgreSQL catalog/two-client fenc
 and paired Next HTTP checks with verified cleanup. Its Airflow3 GET data is
 synthetic; provider dispatch, real Airflow and packaged native acceptance remain
 unverified. Optional SQL was installed only in that disposable owned fixture.
+An [additive combined-source receipt](mission/local-airflow-billing-combined-acceptance.json)
+records the repeated owned Airflow run and full default suite at `f5aedfac`, then
+fresh types/focused desktop/build checks after desktop-main integration at
+`6247b784`. It retains the historical receipt and explicitly distinguishes the
+commits tested; provider/native/production limits are unchanged.
 
 ## Failure and recovery
 
