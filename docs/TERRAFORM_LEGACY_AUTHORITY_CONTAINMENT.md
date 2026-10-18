@@ -1,0 +1,62 @@
+# Legacy Terraform authority containment
+
+Source milestone approved 2026-10-18 from main `1cd5bc23`. This closes an older
+lead-token execution path; it does not implement customer saved-plan production,
+approval, apply, backend/state locking or recovery.
+
+The actual `/dashboard/resilience` flow previously generated a text job, invoked
+live init/validate/plan through the Next request, accepted `CONFIRM APPLY`, wrote
+`approvedAt`/`approvedBy=leadId` and displayed Ready to deploy. It did not resolve
+the completed tenant/request/version-bound saved-plan artifact contract. A signed
+lead token is ownership of that legacy job, not current workspace authority.
+
+Current behavior:
+
+- `/api/terraform/plan` preserves token/input/rate/foreign-job isolation, then
+  returns HTTP403 `legacy_terraform_authority_unavailable` without invoking the
+  runner or changing the job.
+- `/api/terraform/approve` preserves token/input/foreign-job isolation and refuses
+  approval with the same bounded unavailable result. It never records approval or
+  emits `terraform.apply_approved`; refusal audit is best-effort.
+- Exported `terraformInit`, `terraformValidate` and `terraformPlan` refuse before
+  even CLI detection, database IO or provider initialization. Changing the legacy
+  apply flag cannot enable these helpers. No new enabling flag exists.
+- Legacy job reads retain historical fields, but explicitly return
+  `evidenceKind: legacy_text_only`, `approval: unavailable`, and
+  `executionEnabled: false`. Old timestamps/status are history, not authority.
+- Resilience still supports analysis and configuration generation. It identifies
+  the output as a configuration draft, explains unavailable planning/approval and
+  offers no live plan, typed-confirmation or apply control. It does not infer
+  deployment readiness from a generation response or historical status.
+
+HCL generation/export, approved tenant downloads, unsigned previews, exact saved
+binary capture/encryption, optional storage and paired/native saved-plan reads
+are unchanged. The existing independent apply kill switch and signed-handoff
+refusal remain intact. No tenant is inferred from a lead; no schema, producer,
+approval engine, ledger, signature or deployment capability is added.
+
+## Focused evidence and limits
+
+Baseline: three existing apply/read files / 17 tests passed. Actual-handler,
+direct-runner and actual-page regressions then failed RED: 14 expected failures
+with five existing input/auth/isolation passes. Approval returned200/wrote state;
+planning reached a harmless no-send subprocess sentinel; historical reads lacked
+the unavailable projection; the actual page displayed the live planning control.
+Sentinels refused before any real subprocess/provider operation. The corrected
+two files / 19 tests passed GREEN, including both legacy apply flag values,
+all three planning helper exports, audit failure and actual React clicks with
+mocked transport. This is source/component evidence, not owned HTTP/PG or native
+provider acceptance.
+
+The focused regression set passed 11 files / 93 tests, covering those cases,
+existing apply gates, saved-plan artifact/read/paired/native behavior, signed
+handoff refusal, approved HCL/unsigned preview boundaries and demo contracts.
+This focused count does not substitute for the deferred full suite or runtime.
+
+Full compiler/default-suite/desktop/Python/CI and any actual owned application
+continuation remain separately scheduled after source freeze and independent
+review. Existing genuine CLI/PG/paired evidence in the saved-plan receipt stays
+bound to its original commit. No real Terraform init/plan/apply, provider/network,
+production DB/schema, native installer or deployment operation is part of this
+source milestone. Customer producer/current backend/target/credential authority,
+fenced approval consumption, exact saved-binary apply and recovery remain missing.

@@ -1,6 +1,14 @@
-# Phase 4: Controlled Terraform Execution — Implementation Summary
+# Phase 4: Historical Terraform execution design
 
-## What Was Built
+**Current status — 2026-10-18:** this is a historical implementation record, not
+a runnable acceptance recipe. Legacy live planning and apply approval are now
+refused at the actual routes and exported planning helpers. Resilience offers
+configuration generation only; old lead/text jobs cannot establish tenant-bound
+saved-plan authority. Apply remains default kill-switched, and signed handoff
+issuance is unavailable. See [current containment](docs/TERRAFORM_LEGACY_AUTHORITY_CONTAINMENT.md)
+and [saved-plan evidence limits](docs/TERRAFORM_SAVED_PLAN_REVIEW_PLAN.md).
+
+## Original implementation (superseded)
 
 Turn the Phase 3 multi-cloud recommendation into a safe Terraform workflow: Generate → Plan → Approve → Apply.
 
@@ -136,7 +144,13 @@ Added rules 15-16 to the Axiom assistant system prompt:
 
 ---
 
-## How to Test
+## Historical test instructions — do not execute
+
+These steps describe the old path and are superseded. Do not run Terraform or
+enable apply to reproduce them. Use the source/no-send regression tests described
+in the current containment document. Owned application checks require a separate
+coordinator window and synthetic loopback-only fixtures.
+
 
 1. Start dev server: `npm run dev`
 2. Visit `/dashboard/resilience?token=YOUR_TOKEN`

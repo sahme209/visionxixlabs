@@ -1,13 +1,14 @@
 /**
  * POST /api/terraform/approve
- * Approve a planned Terraform job for apply.
- * Requires "CONFIRM APPLY" confirmation phrase.
+ * Legacy text jobs cannot supply saved-plan/tenant approval authority.
+ * A confirmation phrase proves neither current authority nor artifact identity.
  */
 
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { verifyStarterToken } from "@/lib/starterToken";
 import { logAudit } from "@/lib/security/auditLog";
+import { LEGACY_TERRAFORM_AUTHORITY_CODE, LEGACY_TERRAFORM_AUTHORITY_MESSAGE } from "@/lib/terraform/runner";
 
 export async function POST(req: NextRequest) {
   const token = req.nextUrl.searchParams.get("token");
@@ -50,28 +51,24 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    await prisma.terraformExecutionJob.update({
-      where: { id: jobId },
-      data: {
-        status: "awaiting_approval",
-        approvedAt: new Date(),
-        approvedBy: result.leadId,
-      },
-    });
-
-    await logAudit({
-      leadId: result.leadId,
-      action: "terraform.apply_approved",
-      actor: "user",
-      metadata: { jobId },
-    });
+    try {
+      await logAudit({
+        leadId: result.leadId,
+        action: "terraform.approval_unavailable",
+        actor: "user",
+        metadata: { jobId, reasonCode: LEGACY_TERRAFORM_AUTHORITY_CODE },
+      });
+    } catch { /* Best-effort refusal audit never changes the authority result. */ }
 
     return NextResponse.json({
-      success: true,
+      success: false,
       jobId,
-      status: "awaiting_approval",
-      message: "Job approved. You may now run apply.",
-    });
+      status: "blocked",
+      code: LEGACY_TERRAFORM_AUTHORITY_CODE,
+      error: LEGACY_TERRAFORM_AUTHORITY_MESSAGE,
+      approval: "unavailable",
+      executionEnabled: false,
+    }, { status: 403 });
   } catch (e) {
     const msg = e instanceof Error ? e.message : "Approval failed";
     console.error("[terraform/approve]", msg);

@@ -4,16 +4,9 @@ import { useState, useEffect, useCallback } from "react";
 import { useSession } from "next-auth/react";
 import { Reveal } from "@/components/motion/Reveal";
 import { Stagger } from "@/components/motion/Stagger";
+import { ModuleIntro } from "@/components/portal/ModuleIntro";
 
-type TerraformJob = {
-  jobId: string;
-  status: string;
-  planSummary: { add: number; change: number; destroy: number } | null;
-  planOutput: string | null;
-  applyOutput: string | null;
-  errorMessage: string | null;
-  approvedAt: string | null;
-};
+type TerraformJob = { jobId: string };
 
 type ResilienceReport = {
   reportId: string;
@@ -86,13 +79,6 @@ function severityLabel(severity: string): string {
   return "Low";
 }
 
-function providerLabel(p: string): string {
-  if (p === "aws") return "AWS";
-  if (p === "azure") return "Azure";
-  if (p === "gcp") return "GCP";
-  return p.toUpperCase();
-}
-
 function providerFullName(p: string): string {
   if (p === "aws") return "Amazon Web Services";
   if (p === "azure") return "Microsoft Azure";
@@ -155,7 +141,7 @@ function CategoryBar({ label, score, maxScore }: { label: string; score: number;
 }
 
 export default function ResilienceDashboard() {
-  const { data: session } = useSession();
+  useSession();
   const [connectors, setConnectors] = useState<ConnectorStatus | null>(null);
   const [report, setReport] = useState<ResilienceReport | null>(null);
   const [analyzing, setAnalyzing] = useState(false);
@@ -164,8 +150,6 @@ export default function ResilienceDashboard() {
   const [tfJob, setTfJob] = useState<TerraformJob | null>(null);
   const [tfLoading, setTfLoading] = useState(false);
   const [tfError, setTfError] = useState<string | null>(null);
-  const [confirmInput, setConfirmInput] = useState("");
-  const [planOutput, setPlanOutput] = useState<string | null>(null);
 
   const token = typeof window !== "undefined" ? new URLSearchParams(window.location.search).get("token") : null;
 
@@ -210,58 +194,9 @@ export default function ResilienceDashboard() {
       });
       const data = await res.json();
       if (!res.ok) { setTfError(data.error ?? "Generation failed"); return; }
-      setTfJob({ jobId: data.jobId, status: "generating", planSummary: null, planOutput: null, applyOutput: null, errorMessage: null, approvedAt: null });
+      setTfJob({ jobId: data.jobId });
     } catch { setTfError("Network error"); } finally { setTfLoading(false); }
   }, [token, report]);
-
-  const runPlan = useCallback(async () => {
-    if (!token || !tfJob) return;
-    setTfLoading(true);
-    setTfError(null);
-    try {
-      const res = await fetch(`/api/terraform/plan?token=${token}`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ jobId: tfJob.jobId }),
-      });
-      const data = await res.json();
-      if (!res.ok) { setTfError(data.error ?? "Plan failed"); return; }
-      setPlanOutput(data.output ?? null);
-      setTfJob((prev) => prev ? { ...prev, status: data.status, planSummary: data.summary } : null);
-    } catch { setTfError("Network error"); } finally { setTfLoading(false); }
-  }, [token, tfJob]);
-
-  const approvePlan = useCallback(async () => {
-    if (!token || !tfJob || confirmInput !== "CONFIRM APPLY") return;
-    setTfLoading(true);
-    setTfError(null);
-    try {
-      const res = await fetch(`/api/terraform/approve?token=${token}`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ jobId: tfJob.jobId, confirmation: "CONFIRM APPLY" }),
-      });
-      const data = await res.json();
-      if (!res.ok) { setTfError(data.error ?? "Approval failed"); return; }
-      setTfJob((prev) => prev ? { ...prev, status: "awaiting_approval", approvedAt: new Date().toISOString() } : null);
-    } catch { setTfError("Network error"); } finally { setTfLoading(false); }
-  }, [token, tfJob, confirmInput]);
-
-  const runApply = useCallback(async () => {
-    if (!token || !tfJob) return;
-    setTfLoading(true);
-    setTfError(null);
-    try {
-      const res = await fetch(`/api/terraform/apply?token=${token}`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ jobId: tfJob.jobId }),
-      });
-      const data = await res.json();
-      if (!res.ok) { setTfError(data.error ?? "Apply failed"); return; }
-      setTfJob((prev) => prev ? { ...prev, status: data.status, applyOutput: data.output } : null);
-    } catch { setTfError("Network error"); } finally { setTfLoading(false); }
-  }, [token, tfJob]);
 
   const linkedProviders = connectors
     ? Object.entries(connectors).filter(([k, v]) => ["aws", "azure", "gcp"].includes(k) && v.status === "linked")
@@ -269,6 +204,12 @@ export default function ResilienceDashboard() {
 
   return (
     <div className="max-w-[1000px] mx-auto py-8 px-5 text-zinc-200">
+      <ModuleIntro storageKey="resilience" title="Cloud resilience"
+        explanation="Review resilience analysis and generate a Terraform configuration draft."
+        helpsYouDo={["Review provider and recovery risks", "Generate configuration for manual review"]}
+        connectFirst={["Connect a cloud account for analysis"]} aiEngineers={["Cloud Engineer"]}
+        approval={{ severity: "read_only", note: "Live Terraform planning and approval are unavailable. Apply remains disabled; a configuration draft or historical approval cannot authorize deployment." }}
+        demoHref="/demo/cloud_operations" docsHref="/docs/terraform-export" lastReviewed="2026-10-18" />
 
       {/* Header */}
       <Reveal direction="up" blur delay={0.05}>
@@ -277,7 +218,7 @@ export default function ResilienceDashboard() {
             Resilience <span className="text-gradient">Dashboard</span>
           </h1>
           <p className="text-sm text-zinc-500 mt-1">
-            Your cloud resilience score, risk analysis, and deployment controls.
+            Your cloud resilience score, risk analysis, and configuration drafts.
           </p>
         </div>
       </Reveal>
@@ -498,162 +439,30 @@ export default function ResilienceDashboard() {
               ))}
             </div>
 
-            {/* Deploy Standby Infrastructure */}
             <div className="glass-card animated-border card-inner-glow rounded-2xl p-6">
-              <h2 className="text-[15px] font-semibold text-white mb-1 tracking-[-0.04em]">Deploy Standby Infrastructure</h2>
+              <h2 className="text-[15px] font-semibold text-white mb-1 tracking-[-0.04em]">Terraform configuration draft</h2>
               <p className="text-sm text-zinc-400 mb-4">
-                Create an {report.recommendedArchitecture.pattern} standby on {providerLabel(report.recommendedArchitecture.secondaryProvider)}. We generate the infrastructure code, show you exactly what will be created, and only deploy after your explicit approval.
+                Generate a starting configuration for manual review. This does not run Terraform or establish a saved plan, current target authority, approval or deployment.
               </p>
-
-              {/* Safety notice */}
-              <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-white/[0.02] border border-white/[0.06] mb-4 text-xs text-zinc-500">
-                <span className="text-sm">&#x1F512;</span>
-                Nothing is created until you type <strong className="text-orange-400">CONFIRM APPLY</strong> and approve.
-              </div>
-
-              {tfError && (
-                <div className="px-3.5 py-2.5 bg-red-500/10 border border-red-500/20 rounded-lg mb-4 text-sm text-red-400">
-                  {tfError}
-                </div>
-              )}
-
-              {!tfJob && (
-                <button onClick={generateTerraform} disabled={tfLoading} className={`btn-axiom cta-glow px-6 py-2.5 text-sm font-semibold text-white rounded-lg transition-all ${
-                  tfLoading ? "bg-zinc-700 cursor-wait" : "bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-500 hover:to-amber-500"
-                }`}>
-                  {tfLoading ? "Generating infrastructure plan..." : "Generate Deployment Plan"}
-                </button>
-              )}
-
-              {tfJob && tfJob.status === "generating" && (
-                <div>
-                  <div className="flex items-center gap-2 mb-3">
-                    <span className="w-2 h-2 rounded-full bg-emerald-500" />
-                    <span className="text-sm text-emerald-400">Infrastructure plan generated</span>
-                  </div>
-                  <button onClick={runPlan} disabled={tfLoading} className={`btn-axiom px-6 py-2.5 text-sm font-semibold text-white rounded-lg transition-all ${
-                    tfLoading ? "bg-zinc-700 cursor-wait" : "bg-blue-600 hover:bg-blue-500"
-                  }`}>
-                    {tfLoading ? "Validating plan..." : "Preview Changes"}
-                  </button>
-                </div>
-              )}
-
-              {tfJob && tfJob.status === "planned" && (
-                <div>
-                  {tfJob.planSummary && (
-                    <div className="flex gap-3 mb-4">
-                      <div className="glass-card rounded-lg px-3.5 py-2 text-center border-emerald-500/20">
-                        <div className="text-2xl font-bold text-emerald-400">{tfJob.planSummary.add}</div>
-                        <div className="text-[10px] text-zinc-500 font-semibold uppercase">create</div>
-                      </div>
-                      <div className="glass-card rounded-lg px-3.5 py-2 text-center border-yellow-500/20">
-                        <div className="text-2xl font-bold text-yellow-400">{tfJob.planSummary.change}</div>
-                        <div className="text-[10px] text-zinc-500 font-semibold uppercase">modify</div>
-                      </div>
-                      <div className="glass-card rounded-lg px-3.5 py-2 text-center border-red-500/20">
-                        <div className="text-2xl font-bold text-red-400">{tfJob.planSummary.destroy}</div>
-                        <div className="text-[10px] text-zinc-500 font-semibold uppercase">remove</div>
-                      </div>
-                    </div>
-                  )}
-
-                  {planOutput && (
-                    <details className="mb-4">
-                      <summary className="text-xs text-zinc-500 cursor-pointer font-medium hover:text-zinc-400 transition-colors">
-                        View detailed plan output
-                      </summary>
-                      <pre className="text-[11px] text-zinc-400 bg-[#09090b] border border-white/[0.06] p-3.5 rounded-lg mt-2 overflow-auto max-h-72 font-mono">
-                        {planOutput}
-                      </pre>
-                    </details>
-                  )}
-
-                  <div className="px-4 py-3 rounded-lg bg-orange-500/5 border border-orange-500/15 mb-3.5">
-                    <p className="text-sm text-orange-400 font-semibold mb-1">
-                      Approval required
-                    </p>
-                    <p className="text-xs text-zinc-400">
-                      Review the plan above. Type <strong className="text-white">CONFIRM APPLY</strong> to authorize deployment.
-                    </p>
-                  </div>
-
-                  <div className="flex gap-2">
-                    <input
-                      type="text"
-                      aria-label="Type CONFIRM APPLY to authorize deployment"
-                      value={confirmInput}
-                      onChange={(e) => setConfirmInput(e.target.value)}
-                      placeholder="Type CONFIRM APPLY"
-                      className="flex-1 px-3.5 py-2.5 text-sm bg-white/[0.02] text-white border border-white/[0.08] rounded-lg font-mono focus:outline-none focus:ring-2 focus:ring-orange-500"
-                    />
-                    <button
-                      onClick={approvePlan}
-                      disabled={tfLoading || confirmInput !== "CONFIRM APPLY"}
-                      className={`btn-axiom px-5 py-2.5 text-sm font-semibold text-white rounded-lg border transition-all ${
-                        confirmInput === "CONFIRM APPLY"
-                          ? "bg-orange-600 border-orange-600 hover:bg-orange-500 cursor-pointer"
-                          : "bg-white/[0.02] border-white/[0.06] opacity-40 cursor-not-allowed"
-                      }`}
-                    >
-                      Approve & Deploy
-                    </button>
-                  </div>
-                </div>
-              )}
-
-              {tfJob && tfJob.status === "awaiting_approval" && (
-                <div>
-                  <div className="flex items-center gap-2 mb-3">
-                    <span className="w-2 h-2 rounded-full bg-emerald-500" />
-                    <span className="text-sm text-emerald-400">Plan approved. Ready to deploy.</span>
-                  </div>
-                  <button onClick={runApply} disabled={tfLoading} className={`btn-axiom cta-glow px-6 py-2.5 text-sm font-semibold text-white rounded-lg transition-all ${
-                    tfLoading ? "bg-zinc-700 cursor-wait" : "bg-emerald-600 hover:bg-emerald-500"
-                  }`}>
-                    {tfLoading ? "Deploying infrastructure..." : "Deploy Standby Infrastructure"}
-                  </button>
-                </div>
-              )}
-
-              {tfJob && tfJob.status === "succeeded" && (
-                <div className="px-4 py-3.5 bg-emerald-500/8 border border-emerald-500/20 rounded-xl">
-                  <div className="flex items-center gap-2 mb-1">
-                    <span className="w-2 h-2 rounded-full bg-emerald-500" />
-                    <span className="text-sm font-semibold text-emerald-400">Standby infrastructure deployed</span>
-                  </div>
-                  <p className="text-xs text-zinc-500 ml-4">
-                    Your {report.recommendedArchitecture.pattern} setup on {providerLabel(report.recommendedArchitecture.secondaryProvider)} is now active.
-                  </p>
-                  {tfJob.applyOutput && (
-                    <details className="mt-2.5 ml-4">
-                      <summary className="text-[11px] text-zinc-500 cursor-pointer hover:text-zinc-400">View deployment details</summary>
-                      <pre className="text-[10px] text-zinc-400 bg-[#09090b] border border-white/[0.06] p-3 rounded-lg mt-2 overflow-auto max-h-52 font-mono">
-                        {tfJob.applyOutput}
-                      </pre>
-                    </details>
-                  )}
-                </div>
-              )}
-
-              {tfJob && tfJob.status === "failed" && (
-                <div className="px-4 py-3.5 bg-red-500/8 border border-red-500/20 rounded-xl">
-                  <div className="flex items-center gap-2 mb-1">
-                    <span className="w-2 h-2 rounded-full bg-red-500" />
-                    <span className="text-sm font-semibold text-red-400">Deployment failed</span>
-                  </div>
-                  <p className="text-xs text-zinc-400 ml-4">
-                    {tfJob.errorMessage ?? "An unexpected error occurred. No infrastructure was modified."}
-                  </p>
-                </div>
-              )}
+              <p className="text-xs text-orange-300 mb-4">
+                Live Terraform planning and approval are unavailable. Your workspace needs a trusted tenant-bound saved-plan producer before these actions can be offered. Apply stays disabled.
+              </p>
+              {tfError && <p role="alert" className="text-sm text-red-400 mb-4">{tfError}</p>}
+              {!tfJob && <button onClick={generateTerraform} disabled={tfLoading} className="btn-axiom px-6 py-2.5 text-sm font-semibold text-white rounded-lg bg-blue-600 disabled:opacity-50">
+                {tfLoading ? "Generating configuration..." : "Generate Terraform configuration"}
+              </button>}
+              {tfJob && <div role="status" className="text-sm text-zinc-300">
+                <p>Configuration draft generated</p>
+                <p className="mt-1 text-xs text-zinc-500 break-all">Draft record: {tfJob.jobId}</p>
+                <p className="mt-2 text-xs text-zinc-400">This draft is not saved-plan evidence. Historical text plans or recorded lead approvals cannot authorize an action. Existing saved-plan inspection in desktop remains read-only.</p>
+              </div>}
             </div>
           </Stagger>
 
           {/* Re-analyze */}
           <div className="text-center pt-2 pb-5">
             <button
-              onClick={() => { setReport(null); setTfJob(null); setTfError(null); setPlanOutput(null); setConfirmInput(""); runAnalysis(); }}
+              onClick={() => { setReport(null); setTfJob(null); setTfError(null); runAnalysis(); }}
               disabled={analyzing}
               className="btn-axiom px-5 py-2 text-sm font-medium text-zinc-500 bg-transparent border border-white/[0.06] rounded-lg hover:text-zinc-500 hover:border-white/[0.08] transition-colors"
             >
