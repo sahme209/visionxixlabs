@@ -9,6 +9,16 @@ checkpoint status; previous observations are retained as evidence history.
 
 PR #161 source integration is complete at main `608efe0fd70623aaf71cb80f799d3b822b9855cd` after both exact-head Test runs and review passed. This is not a production release.
 
+## Controller continuation — scripted workflow stories, October 18, 2026
+
+Main `d52f29fb623effce8999958fb1ffcf6c4a84c813` includes normally merged PR177 after all five required GitHub checks passed, including the production website build, native checks and code review. This did not deploy the website or apply storage SQL.
+
+The existing cinematic surfaces now include three explicitly scripted engineering stories with accessible playback, visibility/reduced-motion handling and honest unavailable-workflow limits. Reviewed product source is preserved from c5; final combined source `dd0430ed` passed 7,965 default tests/705 files (27 tests/one PostgreSQL file skipped), desktop types/build, Python30, offline16, buildguard38, tracker22/2154 and scoped lint. Web types passed at parent2072; the only later executable-source difference is one expected-hash test literal. Failed2072 and historical644 evidence remain intact. Receipt-only head45506f99 changes no product bytes. Browser acceptance remains blocked after three failed attempts with zero images; source tests do not prove the live demo works. Exact-head remote CI is required before merge.
+
+Billing financial/security source review passed, but actual HTTP checkout is still gated on compilation, complete managed-control propagation and runtime review. The Agent callsite classifier passed independent review without changing denial/authority; historical server fetch attribution remains unresolved. ECS connects its approved V2 current-authority/health/one-shot permit path in source; no provider execution, migration or activation is enabled.
+
+All 22 available mission sources and 2,154 unchanged requirement objects remain represented. Production login, deployment/preflight/Neon binding, usable PITR/restore, hosted TEST payment and native customer acceptance remain unverified. No production database, secrets, billing, infrastructure, routing, installer release or Vercel deployment changes were made. One final explicitly approved Vercel release and the separate approval gates remain mandatory.
+
 ## Controller checkpoint — October 18, 2026, combined customer Terraform source
 
 Verified main remains `c123b9c38540ce72e8fc5671fe64ef1e468b3828`, including PRs #174–176. The connected customer Terraform profile/producer/import milestone is integrated on source `a7ceea330f6807b0421e7773390f219ad1ab81fc`; receipt-only head `6ad590ef` preserves its product bytes. Fresh web types, 7,834 default tests across 699 files (27 tests and one PostgreSQL file skipped), desktop types/build, Python30, offline16, buildguard38 and tracker22/2154 passed. The combined receipt records dependency-overlay/cache qualifications and independent cleanup. This is source validation, not a genuine customer artifact or provider deployment. Proposed storage SQL remains unapplied; no migration or workflow installation is authorized.

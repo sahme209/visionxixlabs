@@ -1,0 +1,241 @@
+{
+  "schema": 1,
+  "sourceHead": "644acc82f5e8932f65b11b310e311d1414a50503",
+  "mainParent": "c123b9c38540ce72e8fc5671fe64ef1e468b3828",
+  "recordedDate": "2026-10-18",
+  "status": "local_source_publication_gates_passed_browser_acceptance_blocked",
+  "stages": [
+    {
+      "stage": "web-types",
+      "argv": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/node",
+        "--max-old-space-size=8192",
+        "node_modules/typescript/bin/tsc",
+        "--noEmit",
+        "--incremental",
+        "false"
+      ],
+      "cwd": "/workspace/axiom-premium-workflow-stories",
+      "exitCode": 0,
+      "seconds": 57.583,
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "logPath": "/tmp/axiom-premium-gates-644acc82/web-types.log",
+      "receiptPath": "/tmp/axiom-premium-gates-644acc82/web-types.json",
+      "receiptSha256": "7b8926dccdbbf4ece8266c943bbe3194dad1188b54e8a59ba084e4881405d622"
+    },
+    {
+      "stage": "full-tests",
+      "argv": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/node",
+        "--max-old-space-size=8192",
+        "node_modules/vitest/vitest.mjs",
+        "run",
+        "--reporter=dot"
+      ],
+      "cwd": "/workspace/axiom-premium-workflow-stories",
+      "exitCode": 0,
+      "seconds": 79.227,
+      "logSha256": "b791d0e5e4ff3cbba9b71cf834aa48954d553a10d6115d71cfa5395c5d6e905f",
+      "logPath": "/tmp/axiom-premium-gates-644acc82/full-tests.log",
+      "receiptPath": "/tmp/axiom-premium-gates-644acc82/full-tests.json",
+      "receiptSha256": "01758306bdf37fe62d4314a93a445a0d8f78244c698629dbea255323573b2e1e"
+    },
+    {
+      "stage": "desktop-types",
+      "argv": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/node",
+        "node_modules/typescript/bin/tsc",
+        "--noEmit"
+      ],
+      "cwd": "/workspace/axiom-premium-workflow-stories/desktop",
+      "exitCode": 0,
+      "seconds": 6.287,
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "logPath": "/tmp/axiom-premium-gates-644acc82/desktop-types.log",
+      "receiptPath": "/tmp/axiom-premium-gates-644acc82/desktop-types.json",
+      "receiptSha256": "a960ad379651b4500fc3a6a560edc9b8dffd86d46765f7713c607f422e2856cd"
+    },
+    {
+      "stage": "desktop-build",
+      "argv": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/node",
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/node/lib/node_modules/npm/bin/npm-cli.js",
+        "run",
+        "build"
+      ],
+      "cwd": "/workspace/axiom-premium-workflow-stories/desktop",
+      "exitCode": 0,
+      "seconds": 10.795,
+      "logSha256": "61255a3f5c65e0bcf12e84039d675d1af77cf052a3b83a78fd6dbb5c9bdd2e0a",
+      "logPath": "/tmp/axiom-premium-gates-644acc82/desktop-build.log",
+      "receiptPath": "/tmp/axiom-premium-gates-644acc82/desktop-build.json",
+      "receiptSha256": "3835e2df702c7cd42f37b0be8dad6d5baa58fc2dae6a3439cc045c1a17fa7fc2"
+    },
+    {
+      "stage": "python-cli",
+      "argv": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3.12",
+        "-m",
+        "unittest",
+        "sdk.python.__tests__.test_vxl_cli"
+      ],
+      "cwd": "/workspace/axiom-premium-workflow-stories",
+      "exitCode": 0,
+      "seconds": 0.21,
+      "logSha256": "9d839469280db0f314a679a7c6a412cdd972a8b0eebc246a711c72d84b1af4cc",
+      "logPath": "/tmp/axiom-premium-gates-644acc82/python-cli.log",
+      "receiptPath": "/tmp/axiom-premium-gates-644acc82/python-cli.json",
+      "receiptSha256": "ca63ccb820f8d7668d3e301ecd149bbc602a7494b75c30fa6ed010b2b4bd42c8"
+    },
+    {
+      "stage": "offline-auth",
+      "argv": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3.12",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "scripts/tests",
+        "-p",
+        "test_auth_recovery_evidence.py",
+        "-v"
+      ],
+      "cwd": "/workspace/axiom-premium-workflow-stories",
+      "exitCode": 0,
+      "seconds": 0.065,
+      "logSha256": "3f09618bcb7f4529edf92cad99220beffb40aff60e4c3c58a1ff64673fd08f6a",
+      "logPath": "/tmp/axiom-premium-gates-644acc82/offline-auth.log",
+      "receiptPath": "/tmp/axiom-premium-gates-644acc82/offline-auth.json",
+      "receiptSha256": "14a8779a16f3291de7a8e5850c28505766f2abae09b42158373c8d3fada46d09"
+    },
+    {
+      "stage": "tracker",
+      "argv": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3.12",
+        "scripts/axiom-mission-tracker.py",
+        "--check"
+      ],
+      "cwd": "/workspace/axiom-premium-workflow-stories",
+      "exitCode": 0,
+      "seconds": 0.156,
+      "logSha256": "f22fc39d301a5d3b9b8c225fa2f7e8866e57256b998cd93fe0aaf43faf4c108c",
+      "logPath": "/tmp/axiom-premium-gates-644acc82/tracker.log",
+      "receiptPath": "/tmp/axiom-premium-gates-644acc82/tracker.json",
+      "receiptSha256": "33e36b62af64ed9e05f47f961e082e470ddc97ad0a40bbf914ff81bd19d87290"
+    },
+    {
+      "stage": "build-guard",
+      "argv": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/node",
+        "scripts/check-vercel-build.mjs"
+      ],
+      "cwd": "/workspace/axiom-premium-workflow-stories",
+      "exitCode": 0,
+      "seconds": 0.034,
+      "logSha256": "55c27a1ce0f07faf1051c0ff83c6dcf74e1f5279bcb41407792fa2c40657227d",
+      "logPath": "/tmp/axiom-premium-gates-644acc82/build-guard.log",
+      "receiptPath": "/tmp/axiom-premium-gates-644acc82/build-guard.json",
+      "receiptSha256": "1a8f75fb14716a52deb328f088dad4b509ac412f9432b852c7d202bfd5c2b5e8"
+    },
+    {
+      "stage": "lint",
+      "argv": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/node",
+        "node_modules/eslint/bin/eslint.js",
+        "app/docs/approval-workflow/page.tsx",
+        "components/marketing/CinematicAxiomDemo.tsx",
+        "components/marketing/WorkflowStoryScene.tsx",
+        "components/marketing/__tests__/HomepageInteractiveDemo.test.ts",
+        "components/marketing/__tests__/WorkflowStories.test.ts",
+        "components/marketing/useStoryPlayback.ts",
+        "components/marketing/workflowStories.ts",
+        "lib/__tests__/ownedWebsiteLifecycle.test.ts",
+        "lib/__tests__/ownedWebsiteManagedNodePath.test.ts",
+        "lib/__tests__/ownedWebsiteProcessInventory.test.ts",
+        "lib/__tests__/ownedWebsiteProxy.test.ts",
+        "lib/__tests__/ownedWebsiteVisualPolicy.test.ts",
+        "lib/demo/demoScenarios.ts",
+        "scripts/capture-owned-website.mjs",
+        "scripts/fixtures/ownedWebsiteChild.cjs",
+        "scripts/fixtures/ownedWebsiteFramework.cjs",
+        "scripts/fixtures/ownedWebsiteGuard.cjs",
+        "scripts/fixtures/ownedWebsiteLifecycle.cjs",
+        "scripts/fixtures/ownedWebsiteManagedNodePath.cjs",
+        "scripts/fixtures/ownedWebsitePolicy.cjs",
+        "scripts/fixtures/ownedWebsiteProxy.cjs",
+        "scripts/fixtures/ownedWebsiteProxyTransport.cjs",
+        "scripts/fixtures/ownedWebsiteSession.cjs",
+        "scripts/run-owned-website-visual.mjs"
+      ],
+      "cwd": "/workspace/axiom-premium-workflow-stories",
+      "exitCode": 0,
+      "seconds": 3.967,
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "logPath": "/tmp/axiom-premium-gates-644acc82/lint.log",
+      "receiptPath": "/tmp/axiom-premium-gates-644acc82/lint.json",
+      "receiptSha256": "1684c2ffe524de0d63a29d34645f7067c5e9c2a88e1fa0547c3535a8fad51cc5"
+    }
+  ],
+  "counts": {
+    "vitest": {
+      "passedFiles": 683,
+      "skippedFiles": 1,
+      "passedTests": 7614,
+      "skippedTests": 27,
+      "filtersOrExclusionsAdded": false,
+      "timeoutsChanged": false,
+      "retries": 0
+    },
+    "pythonCli": 30,
+    "offlineAuth": 16,
+    "trackerSources": 22,
+    "trackerRows": 2154,
+    "buildGuardSdkExternals": 37
+  },
+  "dependencyGraph": {
+    "mode": "reused canonical cached packages with private link overlays; not fresh lockfile install",
+    "rootPackageMetadataRecords": 800,
+    "desktopPackageMetadataRecords": 145,
+    "packagesAndToolTargetsUnchanged": true,
+    "privateViteAndViteTemp": true,
+    "desktopLinkAbsentDuringWebAndFullSuite": true,
+    "proofPath": "/tmp/axiom-premium-private-graphs-644acc82.json",
+    "proofSha256": "0cb62706d1863c4a0e714ce7cb3e4259bc2f05643b0889efaa553b22868e9643",
+    "environmentKeyOnlyReportPath": "/tmp/axiom-premium-publication-env-644acc82.json",
+    "environmentKeyOnlyReportSha256": "af3d28c38272f243945c5f94f0c0a3806e9c187076cbfe03ed2350858e858bbd",
+    "HOMEAndManagedSelectorsPreserved": true,
+    "sharedCacheObservation": {
+      "changedSincePreparation": true,
+      "sharedResultMtime": "2026-10-18T08:00:37.225318+00:00",
+      "firstGateLogMtime": "2026-10-18T08:01:03.612270+00:00",
+      "privateFullSuiteResultMtime": "2026-10-18T08:03:28.480206+00:00",
+      "sharedMtimePrecedesFirstGate": true,
+      "qualification": "The shared cache differs from the earlier preparation snapshot. Its observed mtime precedes this gate window; this suite produced its own private cache. No shared cache was modified or restored by our cleanup; timestamps alone are not a universal mutation audit."
+    }
+  },
+  "cleanup": {
+    "desktopDependencyLinkRemoved": true,
+    "originalRootDependencyLinkRestored": {
+      "target": "/workspace/.axiom-validation/ecs-direct-root/node_modules",
+      "matchesOriginal": true
+    },
+    "sourceAndHistoricalNineArtifactsUnchanged": true,
+    "original1fBranchUnchanged": true,
+    "privateCachesAndOwnedDesktopBuildOutputRetained": true,
+    "desktopDistAbsentBeforeBuild": true,
+    "preservationPath": "/tmp/axiom-premium-gates-644acc82/preservation-after.json",
+    "preservationSha256": "ec78799fc2daa96029454a37cf200dc2e10fb826cee2ddaa012088a04fec536a"
+  },
+  "warnings": [
+    "Desktop Vite reported its existing large chunk warning; no threshold was changed."
+  ],
+  "acceptance": {
+    "browser": "blocked",
+    "nativeDesktop": "unverified",
+    "provider": "unverified",
+    "production": "not_deployed",
+    "websiteBuild": "not_run_locally; exact-head remote CI required",
+    "qualification": "Compiler/tests/desktop frontend build are source gates, not screenshots, browser hydration/control/mobile/accessibility, native vault/installer or provider acceptance. Historical three failed browser attempts remain failed. No further browser retry is authorized."
+  },
+  "integrationLimit": "Named-source gates apply only to 644acc82. Receipt-only documentation does not transfer them to later executable source changes or a moving-main merge."
+}
