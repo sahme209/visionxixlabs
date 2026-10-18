@@ -15,21 +15,35 @@ IDENTIFIERS = (
     "deployment_id", "deployment_commit", "vercel_project_id",
     "effective_database_project_id", "effective_database_branch_id",
     "neon_project_id", "neon_branch_id",
+    "effective_database_name", "neon_database_name",
+    "preflight_database_project_id", "preflight_database_branch_id",
+    "preflight_database_name",
 )
 GATES = (
     "migration_history_verified", "schema_drift_checked",
     "restore_point_verified", "isolated_restore_verified",
     "production_login_verified",
+    "email_password_verified", "google_oauth_verified", "github_oauth_verified",
+    "founder_workspace_access_verified",
 )
 # These observations must have separate evidence, not merely a self-asserted true.
 EVIDENCE_GATES = ("effective_database_binding_verified",) + GATES
 
 
 def valid_reference(value):
-    if not isinstance(value, str) or not value.strip():
+    if (not isinstance(value, str) or not value or len(value) > 2048
+            or any(character.isspace() or ord(character) < 32 or ord(character) == 127
+                   for character in value)):
         return False
-    parsed = urlparse(value)
-    return (parsed.scheme == "https" and bool(parsed.hostname)
+    try:
+        parsed = urlparse(value)
+        host = parsed.hostname
+        port = parsed.port
+    except ValueError:
+        # Do not propagate parser exceptions containing supplied URL details.
+        return False
+    return (parsed.scheme == "https" and bool(host)
+            and (port is None or 1 <= port <= 65535)
             and not parsed.username and not parsed.password
             and not parsed.query and not parsed.fragment)
 
@@ -58,6 +72,11 @@ def check(evidence):
         problems.append("Effective deployment/Neon project mismatch")
     if evidence.get("effective_database_branch_id") != evidence.get("neon_branch_id"):
         problems.append("Effective deployment/Neon branch mismatch")
+    if evidence.get("effective_database_name") != evidence.get("neon_database_name"):
+        problems.append("Effective deployment/Neon database mismatch")
+    for field in ("project_id", "branch_id", "name"):
+        if evidence.get(f"preflight_database_{field}") != evidence.get(f"effective_database_{field}"):
+            problems.append(f"Protected preflight/effective deployment database {field} mismatch")
     return problems
 
 

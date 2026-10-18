@@ -19,12 +19,21 @@ class EvidenceGateTests(unittest.TestCase):
             "effective_database_branch_id": "branch_example",
             "neon_project_id": "project_example",
             "neon_branch_id": "branch_example",
+            "effective_database_name": "neondb",
+            "neon_database_name": "neondb",
+            "preflight_database_project_id": "project_example",
+            "preflight_database_branch_id": "branch_example",
+            "preflight_database_name": "neondb",
             "effective_database_binding_verified": True,
             "migration_history_verified": True,
             "schema_drift_checked": True,
             "restore_point_verified": True,
             "isolated_restore_verified": True,
             "production_login_verified": True,
+            "email_password_verified": True,
+            "google_oauth_verified": True,
+            "github_oauth_verified": True,
+            "founder_workspace_access_verified": True,
             "evidence": {
                 gate: f"https://example.org/evidence/{gate}"
                 for gate in module.EVIDENCE_GATES
@@ -80,6 +89,30 @@ class EvidenceGateTests(unittest.TestCase):
     def test_invalid_commit_fails(self):
         data = dict(self.valid, deployment_commit="short")
         self.assertIn("deployment_commit: full lowercase Git commit SHA required", module.check(data))
+
+    def test_each_production_login_method_requires_its_own_evidence(self):
+        for gate in ("email_password_verified", "google_oauth_verified", "github_oauth_verified", "founder_workspace_access_verified"):
+            with self.subTest(gate=gate):
+                self.assertTrue(module.check(dict(self.valid, **{gate: False})))
+
+    def test_database_name_and_protected_preflight_target_must_match(self):
+        for key in ("neon_database_name", "preflight_database_project_id", "preflight_database_branch_id", "preflight_database_name"):
+            with self.subTest(key=key):
+                self.assertTrue(module.check(dict(self.valid, **{key: "different"})))
+
+    def test_missing_preflight_target_fails(self):
+        data = dict(self.valid)
+        data.pop("preflight_database_name")
+        self.assertTrue(module.check(data))
+
+    def test_malformed_and_noncanonical_references_fail_without_exception(self):
+        for value in ("https://[invalid", "https://example.org:invalid/evidence", "https://example.org:0/evidence", " https://example.org/evidence", "https://example.org/\nsecret", "https://example.org/" + "a" * 2048):
+            with self.subTest(value=value[:35]):
+                try:
+                    result = module.valid_reference(value)
+                except ValueError:
+                    self.fail("Malformed reference must be rejected without propagating parser details")
+                self.assertFalse(result)
 
 
 if __name__ == "__main__":

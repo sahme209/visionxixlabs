@@ -53,6 +53,9 @@
     },
     {
       "path": "docs/SUPPORT_STRATEGIC_PARTNERSHIPS_DIRECTIVE.md"
+    },
+    {
+      "path": "docs/AXIOM_RESUME_ENGINEERING_ORDER.md"
     }
   ],
   "requirements": [
@@ -46129,6 +46132,2364 @@
       "nextAction": "Preserve critical engineering priorities and approval boundaries; review the isolated proposal with the founder when spare capacity exists, then implement only specifically approved work.",
       "owner": "Codex deferred support/partnerships; founder approves implementation and every outbound message",
       "auditDepth": "Exact available source unit mapped; read-only audit and proposal only"
+    },
+    {
+      "id": "R18-001",
+      "source": "docs/AXIOM_RESUME_ENGINEERING_ORDER.md",
+      "line": 3,
+      "section": "AXIOM AGENT — RESUME FULL DEVELOPMENT & COMPLETE THE MASTER PLAN",
+      "requirement": "You are the lead autonomous software engineer for **Axiom Agent**, developed by **Vision XIX Labs LLC**.",
+      "domain": "governance",
+      "scope": "process",
+      "status": "Partially implemented",
+      "verification": "Latest directive imported without replacing earlier requirements. Existing source and ongoing work are preserved; this row is not acceptance evidence, production authentication proof, or permission to deploy. Capability-specific validation remains required.",
+      "evidence": [
+        "docs/mission/execution-2026-10-16.md"
+      ],
+      "prs": [],
+      "nextAction": "Continue existing source implementation and independent application acceptance, preserving production and release approval gates.",
+      "owner": "Codex; founder approves separately gated production operations",
+      "auditDepth": "Exact available source mapped; capability-specific acceptance audit pending"
+    },
+    {
+      "id": "R18-002",
+      "source": "docs/AXIOM_RESUME_ENGINEERING_ORDER.md",
+      "line": 5,
+      "section": "AXIOM AGENT — RESUME FULL DEVELOPMENT & COMPLETE THE MASTER PLAN",
+      "requirement": "**Repository:** `sahme209/visionxixlabs` **Website:** `visionxixlabs.com`",
+      "domain": "governance",
+      "scope": "process",
+      "status": "Partially implemented",
+      "verification": "Latest directive imported without replacing earlier requirements. Existing source and ongoing work are preserved; this row is not acceptance evidence, production authentication proof, or permission to deploy. Capability-specific validation remains required.",
+      "evidence": [
+        "docs/mission/execution-2026-10-16.md"
+      ],
+      "prs": [],
+      "nextAction": "Continue existing source implementation and independent application acceptance, preserving production and release approval gates.",
+      "owner": "Codex; founder approves separately gated production operations",
+      "auditDepth": "Exact available source mapped; capability-specific acceptance audit pending"
+    },
+    {
+      "id": "R18-003",
+      "source": "docs/AXIOM_RESUME_ENGINEERING_ORDER.md",
+      "line": 10,
+      "section": "PRIMARY INSTRUCTION / RESUME THE EXISTING CODING SESSION AND MASTER EXECUTION PLAN FROM WHERE WORK STOPPED WHEN CODEX CREDITS RAN OUT.",
+      "requirement": "**RESUME THE EXISTING CODING SESSION AND MASTER EXECUTION PLAN FROM WHERE WORK STOPPED WHEN CODEX CREDITS RAN OUT.**",
+      "domain": "governance",
+      "scope": "process",
+      "status": "Partially implemented",
+      "verification": "Latest directive imported without replacing earlier requirements. Existing source and ongoing work are preserved; this row is not acceptance evidence, production authentication proof, or permission to deploy. Capability-specific validation remains required.",
+      "evidence": [
+        "docs/mission/execution-2026-10-16.md"
+      ],
+      "prs": [],
+      "nextAction": "Continue existing source implementation and independent application acceptance, preserving production and release approval gates.",
+      "owner": "Codex; founder approves separately gated production operations",
+      "auditDepth": "Exact available source mapped; capability-specific acceptance audit pending"
+    },
+    {
+      "id": "R18-004",
+      "source": "docs/AXIOM_RESUME_ENGINEERING_ORDER.md",
+      "line": 12,
+      "section": "PRIMARY INSTRUCTION / RESUME THE EXISTING CODING SESSION AND MASTER EXECUTION PLAN FROM WHERE WORK STOPPED WHEN CODEX CREDITS RAN OUT.",
+      "requirement": "Do not restart the project, rebuild existing features unnecessarily, or replace completed work.",
+      "domain": "governance",
+      "scope": "process",
+      "status": "Partially implemented",
+      "verification": "Latest directive imported without replacing earlier requirements. Existing source and ongoing work are preserved; this row is not acceptance evidence, production authentication proof, or permission to deploy. Capability-specific validation remains required.",
+      "evidence": [
+        "docs/mission/execution-2026-10-16.md"
+      ],
+      "prs": [],
+      "nextAction": "Continue existing source implementation and independent application acceptance, preserving production and release approval gates.",
+      "owner": "Codex; founder approves separately gated production operations",
+      "auditDepth": "Exact available source mapped; capability-specific acceptance audit pending"
+    },
+    {
+      "id": "R18-005",
+      "source": "docs/AXIOM_RESUME_ENGINEERING_ORDER.md",
+      "line": 14,
+      "section": "PRIMARY INSTRUCTION / RESUME THE EXISTING CODING SESSION AND MASTER EXECUTION PLAN FROM WHERE WORK STOPPED WHEN CODEX CREDITS RAN OUT.",
+      "requirement": "This is an **IMPLEMENTATION TASK, NOT A REVIEW OR PLANNING TASK**.",
+      "domain": "governance",
+      "scope": "process",
+      "status": "Partially implemented",
+      "verification": "Latest directive imported without replacing earlier requirements. Existing source and ongoing work are preserved; this row is not acceptance evidence, production authentication proof, or permission to deploy. Capability-specific validation remains required.",
+      "evidence": [
+        "docs/mission/execution-2026-10-16.md"
+      ],
+      "prs": [],
+      "nextAction": "Continue existing source implementation and independent application acceptance, preserving production and release approval gates.",
+      "owner": "Codex; founder approves separately gated production operations",
+      "auditDepth": "Exact available source mapped; capability-specific acceptance audit pending"
+    },
+    {
+      "id": "R18-006",
+      "source": "docs/AXIOM_RESUME_ENGINEERING_ORDER.md",
+      "line": 16,
+      "section": "PRIMARY INSTRUCTION / RESUME THE EXISTING CODING SESSION AND MASTER EXECUTION PLAN FROM WHERE WORK STOPPED WHEN CODEX CREDITS RAN OUT.",
+      "requirement": "Immediately inspect the repository, existing branches, commits, open PRs, issues, previous Codex execution logs, and these documents where available:",
+      "domain": "governance",
+      "scope": "process",
+      "status": "Partially implemented",
+      "verification": "Latest directive imported without replacing earlier requirements. Existing source and ongoing work are preserved; this row is not acceptance evidence, production authentication proof, or permission to deploy. Capability-specific validation remains required.",
+      "evidence": [
+        "docs/mission/execution-2026-10-16.md"
+      ],
+      "prs": [],
+      "nextAction": "Continue existing source implementation and independent application acceptance, preserving production and release approval gates.",
+      "owner": "Codex; founder approves separately gated production operations",
+      "auditDepth": "Exact available source mapped; capability-specific acceptance audit pending"
+    },
+    {
+      "id": "R18-007",
+      "source": "docs/AXIOM_RESUME_ENGINEERING_ORDER.md",
+      "line": 18,
+      "section": "PRIMARY INSTRUCTION / RESUME THE EXISTING CODING SESSION AND MASTER EXECUTION PLAN FROM WHERE WORK STOPPED WHEN CODEX CREDITS RAN OUT.",
+      "requirement": "- `docs/AXIOM_COMPLETE_PROJECT_EXECUTION_ORDER.md`",
+      "domain": "governance",
+      "scope": "process",
+      "status": "Partially implemented",
+      "verification": "Latest directive imported without replacing earlier requirements. Existing source and ongoing work are preserved; this row is not acceptance evidence, production authentication proof, or permission to deploy. Capability-specific validation remains required.",
+      "evidence": [
+        "docs/mission/execution-2026-10-16.md"
+      ],
+      "prs": [],
+      "nextAction": "Continue existing source implementation and independent application acceptance, preserving production and release approval gates.",
+      "owner": "Codex; founder approves separately gated production operations",
+      "auditDepth": "Exact available source mapped; capability-specific acceptance audit pending"
+    },
+    {
+      "id": "R18-008",
+      "source": "docs/AXIOM_RESUME_ENGINEERING_ORDER.md",
+      "line": 19,
+      "section": "PRIMARY INSTRUCTION / RESUME THE EXISTING CODING SESSION AND MASTER EXECUTION PLAN FROM WHERE WORK STOPPED WHEN CODEX CREDITS RAN OUT.",
+      "requirement": "- `docs/mission/execution-2026-10-16.md`",
+      "domain": "governance",
+      "scope": "process",
+      "status": "Partially implemented",
+      "verification": "Latest directive imported without replacing earlier requirements. Existing source and ongoing work are preserved; this row is not acceptance evidence, production authentication proof, or permission to deploy. Capability-specific validation remains required.",
+      "evidence": [
+        "docs/mission/execution-2026-10-16.md"
+      ],
+      "prs": [],
+      "nextAction": "Continue existing source implementation and independent application acceptance, preserving production and release approval gates.",
+      "owner": "Codex; founder approves separately gated production operations",
+      "auditDepth": "Exact available source mapped; capability-specific acceptance audit pending"
+    },
+    {
+      "id": "R18-009",
+      "source": "docs/AXIOM_RESUME_ENGINEERING_ORDER.md",
+      "line": 21,
+      "section": "PRIMARY INSTRUCTION / RESUME THE EXISTING CODING SESSION AND MASTER EXECUTION PLAN FROM WHERE WORK STOPPED WHEN CODEX CREDITS RAN OUT.",
+      "requirement": "Identify completed work, partially implemented features, broken functionality, and remaining tasks.",
+      "domain": "governance",
+      "scope": "process",
+      "status": "Partially implemented",
+      "verification": "Latest directive imported without replacing earlier requirements. Existing source and ongoing work are preserved; this row is not acceptance evidence, production authentication proof, or permission to deploy. Capability-specific validation remains required.",
+      "evidence": [
+        "docs/mission/execution-2026-10-16.md"
+      ],
+      "prs": [],
+      "nextAction": "Continue existing source implementation and independent application acceptance, preserving production and release approval gates.",
+      "owner": "Codex; founder approves separately gated production operations",
+      "auditDepth": "Exact available source mapped; capability-specific acceptance audit pending"
+    },
+    {
+      "id": "R18-010",
+      "source": "docs/AXIOM_RESUME_ENGINEERING_ORDER.md",
+      "line": 23,
+      "section": "PRIMARY INSTRUCTION / RESUME THE EXISTING CODING SESSION AND MASTER EXECUTION PLAN FROM WHERE WORK STOPPED WHEN CODEX CREDITS RAN OUT.",
+      "requirement": "Continue the existing master plan while incorporating the requirements below.",
+      "domain": "governance",
+      "scope": "process",
+      "status": "Partially implemented",
+      "verification": "Latest directive imported without replacing earlier requirements. Existing source and ongoing work are preserved; this row is not acceptance evidence, production authentication proof, or permission to deploy. Capability-specific validation remains required.",
+      "evidence": [
+        "docs/mission/execution-2026-10-16.md"
+      ],
+      "prs": [],
+      "nextAction": "Continue existing source implementation and independent application acceptance, preserving production and release approval gates.",
+      "owner": "Codex; founder approves separately gated production operations",
+      "auditDepth": "Exact available source mapped; capability-specific acceptance audit pending"
+    },
+    {
+      "id": "R18-011",
+      "source": "docs/AXIOM_RESUME_ENGINEERING_ORDER.md",
+      "line": 27,
+      "section": "1. FINISH EXISTING CODEX WORK FIRST",
+      "requirement": "Prioritize the incomplete work already underway:",
+      "domain": "auth_database",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "Latest directive imported without replacing earlier requirements. Existing source and ongoing work are preserved; this row is not acceptance evidence, production authentication proof, or permission to deploy. Capability-specific validation remains required.",
+      "evidence": [
+        "docs/AUTH_RECOVERY_OPERATOR_EVIDENCE.md"
+      ],
+      "prs": [],
+      "nextAction": "Complete PR167 offline evidence validation; independently verify serving/preflight/Neon binding and usable restore readiness before proposing exact production changes.",
+      "owner": "Codex; founder approves separately gated production operations",
+      "auditDepth": "Exact available source mapped; capability-specific acceptance audit pending"
+    },
+    {
+      "id": "R18-012",
+      "source": "docs/AXIOM_RESUME_ENGINEERING_ORDER.md",
+      "line": 29,
+      "section": "1. FINISH EXISTING CODEX WORK FIRST",
+      "requirement": "1. Fix and verify Google, GitHub, and email authentication.",
+      "domain": "auth_database",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "Latest directive imported without replacing earlier requirements. Existing source and ongoing work are preserved; this row is not acceptance evidence, production authentication proof, or permission to deploy. Capability-specific validation remains required.",
+      "evidence": [
+        "docs/AUTH_RECOVERY_OPERATOR_EVIDENCE.md"
+      ],
+      "prs": [],
+      "nextAction": "Complete PR167 offline evidence validation; independently verify serving/preflight/Neon binding and usable restore readiness before proposing exact production changes.",
+      "owner": "Codex; founder approves separately gated production operations",
+      "auditDepth": "Exact available source mapped; capability-specific acceptance audit pending"
+    },
+    {
+      "id": "R18-013",
+      "source": "docs/AXIOM_RESUME_ENGINEERING_ORDER.md",
+      "line": 30,
+      "section": "1. FINISH EXISTING CODEX WORK FIRST",
+      "requirement": "2. Verify production Vercel-to-Neon database binding and recovery readiness.",
+      "domain": "auth_database",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "Latest directive imported without replacing earlier requirements. Existing source and ongoing work are preserved; this row is not acceptance evidence, production authentication proof, or permission to deploy. Capability-specific validation remains required.",
+      "evidence": [
+        "docs/AUTH_RECOVERY_OPERATOR_EVIDENCE.md"
+      ],
+      "prs": [],
+      "nextAction": "Complete PR167 offline evidence validation; independently verify serving/preflight/Neon binding and usable restore readiness before proposing exact production changes.",
+      "owner": "Codex; founder approves separately gated production operations",
+      "auditDepth": "Exact available source mapped; capability-specific acceptance audit pending"
+    },
+    {
+      "id": "R18-014",
+      "source": "docs/AXIOM_RESUME_ENGINEERING_ORDER.md",
+      "line": 31,
+      "section": "1. FINISH EXISTING CODEX WORK FIRST",
+      "requirement": "3. Complete existing authentication and security work, including PR #167, without assuming that passing tests proves production functionality.",
+      "domain": "auth_database",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "Latest directive imported without replacing earlier requirements. Existing source and ongoing work are preserved; this row is not acceptance evidence, production authentication proof, or permission to deploy. Capability-specific validation remains required.",
+      "evidence": [
+        "docs/AUTH_RECOVERY_OPERATOR_EVIDENCE.md"
+      ],
+      "prs": [],
+      "nextAction": "Complete PR167 offline evidence validation; independently verify serving/preflight/Neon binding and usable restore readiness before proposing exact production changes.",
+      "owner": "Codex; founder approves separately gated production operations",
+      "auditDepth": "Exact available source mapped; capability-specific acceptance audit pending"
+    },
+    {
+      "id": "R18-015",
+      "source": "docs/AXIOM_RESUME_ENGINEERING_ORDER.md",
+      "line": 32,
+      "section": "1. FINISH EXISTING CODEX WORK FIRST",
+      "requirement": "4. Restore broken or incomplete desktop functionality.",
+      "domain": "auth_database",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "Latest directive imported without replacing earlier requirements. Existing source and ongoing work are preserved; this row is not acceptance evidence, production authentication proof, or permission to deploy. Capability-specific validation remains required.",
+      "evidence": [
+        "docs/AUTH_RECOVERY_OPERATOR_EVIDENCE.md"
+      ],
+      "prs": [],
+      "nextAction": "Complete PR167 offline evidence validation; independently verify serving/preflight/Neon binding and usable restore readiness before proposing exact production changes.",
+      "owner": "Codex; founder approves separately gated production operations",
+      "auditDepth": "Exact available source mapped; capability-specific acceptance audit pending"
+    },
+    {
+      "id": "R18-016",
+      "source": "docs/AXIOM_RESUME_ENGINEERING_ORDER.md",
+      "line": 33,
+      "section": "1. FINISH EXISTING CODEX WORK FIRST",
+      "requirement": "5. Complete billing, subscriptions, entitlement enforcement, and Stripe TEST-mode validation.",
+      "domain": "auth_database",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "Latest directive imported without replacing earlier requirements. Existing source and ongoing work are preserved; this row is not acceptance evidence, production authentication proof, or permission to deploy. Capability-specific validation remains required.",
+      "evidence": [
+        "docs/AUTH_RECOVERY_OPERATOR_EVIDENCE.md"
+      ],
+      "prs": [],
+      "nextAction": "Complete PR167 offline evidence validation; independently verify serving/preflight/Neon binding and usable restore readiness before proposing exact production changes.",
+      "owner": "Codex; founder approves separately gated production operations",
+      "auditDepth": "Exact available source mapped; capability-specific acceptance audit pending"
+    },
+    {
+      "id": "R18-017",
+      "source": "docs/AXIOM_RESUME_ENGINEERING_ORDER.md",
+      "line": 34,
+      "section": "1. FINISH EXISTING CODEX WORK FIRST",
+      "requirement": "6. Continue the existing AWS, Azure, GCP, Terraform, GitHub, Airflow, and deployment integrations.",
+      "domain": "auth_database",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "Latest directive imported without replacing earlier requirements. Existing source and ongoing work are preserved; this row is not acceptance evidence, production authentication proof, or permission to deploy. Capability-specific validation remains required.",
+      "evidence": [
+        "docs/AUTH_RECOVERY_OPERATOR_EVIDENCE.md"
+      ],
+      "prs": [],
+      "nextAction": "Complete PR167 offline evidence validation; independently verify serving/preflight/Neon binding and usable restore readiness before proposing exact production changes.",
+      "owner": "Codex; founder approves separately gated production operations",
+      "auditDepth": "Exact available source mapped; capability-specific acceptance audit pending"
+    },
+    {
+      "id": "R18-018",
+      "source": "docs/AXIOM_RESUME_ENGINEERING_ORDER.md",
+      "line": 35,
+      "section": "1. FINISH EXISTING CODEX WORK FIRST",
+      "requirement": "7. Complete all unfinished tasks from the canonical execution plan.",
+      "domain": "auth_database",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "Latest directive imported without replacing earlier requirements. Existing source and ongoing work are preserved; this row is not acceptance evidence, production authentication proof, or permission to deploy. Capability-specific validation remains required.",
+      "evidence": [
+        "docs/AUTH_RECOVERY_OPERATOR_EVIDENCE.md"
+      ],
+      "prs": [],
+      "nextAction": "Complete PR167 offline evidence validation; independently verify serving/preflight/Neon binding and usable restore readiness before proposing exact production changes.",
+      "owner": "Codex; founder approves separately gated production operations",
+      "auditDepth": "Exact available source mapped; capability-specific acceptance audit pending"
+    },
+    {
+      "id": "R18-019",
+      "source": "docs/AXIOM_RESUME_ENGINEERING_ORDER.md",
+      "line": 37,
+      "section": "1. FINISH EXISTING CODEX WORK FIRST",
+      "requirement": "Preserve completed work and existing architecture.",
+      "domain": "auth_database",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "Latest directive imported without replacing earlier requirements. Existing source and ongoing work are preserved; this row is not acceptance evidence, production authentication proof, or permission to deploy. Capability-specific validation remains required.",
+      "evidence": [
+        "docs/AUTH_RECOVERY_OPERATOR_EVIDENCE.md"
+      ],
+      "prs": [],
+      "nextAction": "Complete PR167 offline evidence validation; independently verify serving/preflight/Neon binding and usable restore readiness before proposing exact production changes.",
+      "owner": "Codex; founder approves separately gated production operations",
+      "auditDepth": "Exact available source mapped; capability-specific acceptance audit pending"
+    },
+    {
+      "id": "R18-020",
+      "source": "docs/AXIOM_RESUME_ENGINEERING_ORDER.md",
+      "line": 41,
+      "section": "2. BUILD A FULL CURSOR-LIKE AI ENGINEERING AGENT",
+      "requirement": "Axiom Agent must evolve into a genuinely capable AI engineering environment, not merely a chatbot or deployment dashboard.",
+      "domain": "ai_agent",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "Latest directive imported without replacing earlier requirements. Existing source and ongoing work are preserved; this row is not acceptance evidence, production authentication proof, or permission to deploy. Capability-specific validation remains required.",
+      "evidence": [
+        "docs/mission/execution-2026-10-16.md"
+      ],
+      "prs": [],
+      "nextAction": "Audit existing workspace tools against this exact capability; implement missing execution-layer permissions and real tool paths, then verify inside the application.",
+      "owner": "Codex; founder approves separately gated production operations",
+      "auditDepth": "Exact available source mapped; capability-specific acceptance audit pending"
+    },
+    {
+      "id": "R18-021",
+      "source": "docs/AXIOM_RESUME_ENGINEERING_ORDER.md",
+      "line": 43,
+      "section": "2. BUILD A FULL CURSOR-LIKE AI ENGINEERING AGENT",
+      "requirement": "Implement an AI agent that can:",
+      "domain": "ai_agent",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "Latest directive imported without replacing earlier requirements. Existing source and ongoing work are preserved; this row is not acceptance evidence, production authentication proof, or permission to deploy. Capability-specific validation remains required.",
+      "evidence": [
+        "docs/mission/execution-2026-10-16.md"
+      ],
+      "prs": [],
+      "nextAction": "Audit existing workspace tools against this exact capability; implement missing execution-layer permissions and real tool paths, then verify inside the application.",
+      "owner": "Codex; founder approves separately gated production operations",
+      "auditDepth": "Exact available source mapped; capability-specific acceptance audit pending"
+    },
+    {
+      "id": "R18-022",
+      "source": "docs/AXIOM_RESUME_ENGINEERING_ORDER.md",
+      "line": 45,
+      "section": "2. BUILD A FULL CURSOR-LIKE AI ENGINEERING AGENT",
+      "requirement": "- Understand entire repositories and application architecture.",
+      "domain": "ai_agent",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "Latest directive imported without replacing earlier requirements. Existing source and ongoing work are preserved; this row is not acceptance evidence, production authentication proof, or permission to deploy. Capability-specific validation remains required.",
+      "evidence": [
+        "docs/mission/execution-2026-10-16.md"
+      ],
+      "prs": [],
+      "nextAction": "Audit existing workspace tools against this exact capability; implement missing execution-layer permissions and real tool paths, then verify inside the application.",
+      "owner": "Codex; founder approves separately gated production operations",
+      "auditDepth": "Exact available source mapped; capability-specific acceptance audit pending"
+    },
+    {
+      "id": "R18-023",
+      "source": "docs/AXIOM_RESUME_ENGINEERING_ORDER.md",
+      "line": 46,
+      "section": "2. BUILD A FULL CURSOR-LIKE AI ENGINEERING AGENT",
+      "requirement": "- Read, create, modify, refactor, and delete code with appropriate safeguards.",
+      "domain": "ai_agent",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "Latest directive imported without replacing earlier requirements. Existing source and ongoing work are preserved; this row is not acceptance evidence, production authentication proof, or permission to deploy. Capability-specific validation remains required.",
+      "evidence": [
+        "docs/mission/execution-2026-10-16.md"
+      ],
+      "prs": [],
+      "nextAction": "Audit existing workspace tools against this exact capability; implement missing execution-layer permissions and real tool paths, then verify inside the application.",
+      "owner": "Codex; founder approves separately gated production operations",
+      "auditDepth": "Exact available source mapped; capability-specific acceptance audit pending"
+    },
+    {
+      "id": "R18-024",
+      "source": "docs/AXIOM_RESUME_ENGINEERING_ORDER.md",
+      "line": 47,
+      "section": "2. BUILD A FULL CURSOR-LIKE AI ENGINEERING AGENT",
+      "requirement": "- Search project files and documentation.",
+      "domain": "ai_agent",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "Latest directive imported without replacing earlier requirements. Existing source and ongoing work are preserved; this row is not acceptance evidence, production authentication proof, or permission to deploy. Capability-specific validation remains required.",
+      "evidence": [
+        "docs/mission/execution-2026-10-16.md"
+      ],
+      "prs": [],
+      "nextAction": "Audit existing workspace tools against this exact capability; implement missing execution-layer permissions and real tool paths, then verify inside the application.",
+      "owner": "Codex; founder approves separately gated production operations",
+      "auditDepth": "Exact available source mapped; capability-specific acceptance audit pending"
+    },
+    {
+      "id": "R18-025",
+      "source": "docs/AXIOM_RESUME_ENGINEERING_ORDER.md",
+      "line": 48,
+      "section": "2. BUILD A FULL CURSOR-LIKE AI ENGINEERING AGENT",
+      "requirement": "- Read online technical documentation when needed.",
+      "domain": "ai_agent",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "Latest directive imported without replacing earlier requirements. Existing source and ongoing work are preserved; this row is not acceptance evidence, production authentication proof, or permission to deploy. Capability-specific validation remains required.",
+      "evidence": [
+        "docs/mission/execution-2026-10-16.md"
+      ],
+      "prs": [],
+      "nextAction": "Audit existing workspace tools against this exact capability; implement missing execution-layer permissions and real tool paths, then verify inside the application.",
+      "owner": "Codex; founder approves separately gated production operations",
+      "auditDepth": "Exact available source mapped; capability-specific acceptance audit pending"
+    },
+    {
+      "id": "R18-026",
+      "source": "docs/AXIOM_RESUME_ENGINEERING_ORDER.md",
+      "line": 49,
+      "section": "2. BUILD A FULL CURSOR-LIKE AI ENGINEERING AGENT",
+      "requirement": "- Execute terminal commands and development tools.",
+      "domain": "ai_agent",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "Latest directive imported without replacing earlier requirements. Existing source and ongoing work are preserved; this row is not acceptance evidence, production authentication proof, or permission to deploy. Capability-specific validation remains required.",
+      "evidence": [
+        "docs/mission/execution-2026-10-16.md"
+      ],
+      "prs": [],
+      "nextAction": "Audit existing workspace tools against this exact capability; implement missing execution-layer permissions and real tool paths, then verify inside the application.",
+      "owner": "Codex; founder approves separately gated production operations",
+      "auditDepth": "Exact available source mapped; capability-specific acceptance audit pending"
+    },
+    {
+      "id": "R18-027",
+      "source": "docs/AXIOM_RESUME_ENGINEERING_ORDER.md",
+      "line": 50,
+      "section": "2. BUILD A FULL CURSOR-LIKE AI ENGINEERING AGENT",
+      "requirement": "- Install dependencies safely.",
+      "domain": "ai_agent",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "Latest directive imported without replacing earlier requirements. Existing source and ongoing work are preserved; this row is not acceptance evidence, production authentication proof, or permission to deploy. Capability-specific validation remains required.",
+      "evidence": [
+        "docs/mission/execution-2026-10-16.md"
+      ],
+      "prs": [],
+      "nextAction": "Audit existing workspace tools against this exact capability; implement missing execution-layer permissions and real tool paths, then verify inside the application.",
+      "owner": "Codex; founder approves separately gated production operations",
+      "auditDepth": "Exact available source mapped; capability-specific acceptance audit pending"
+    },
+    {
+      "id": "R18-028",
+      "source": "docs/AXIOM_RESUME_ENGINEERING_ORDER.md",
+      "line": 51,
+      "section": "2. BUILD A FULL CURSOR-LIKE AI ENGINEERING AGENT",
+      "requirement": "- Run builds, tests, linters, and type checks.",
+      "domain": "ai_agent",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "Latest directive imported without replacing earlier requirements. Existing source and ongoing work are preserved; this row is not acceptance evidence, production authentication proof, or permission to deploy. Capability-specific validation remains required.",
+      "evidence": [
+        "docs/mission/execution-2026-10-16.md"
+      ],
+      "prs": [],
+      "nextAction": "Audit existing workspace tools against this exact capability; implement missing execution-layer permissions and real tool paths, then verify inside the application.",
+      "owner": "Codex; founder approves separately gated production operations",
+      "auditDepth": "Exact available source mapped; capability-specific acceptance audit pending"
+    },
+    {
+      "id": "R18-029",
+      "source": "docs/AXIOM_RESUME_ENGINEERING_ORDER.md",
+      "line": 52,
+      "section": "2. BUILD A FULL CURSOR-LIKE AI ENGINEERING AGENT",
+      "requirement": "- Diagnose errors and automatically implement fixes.",
+      "domain": "ai_agent",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "Latest directive imported without replacing earlier requirements. Existing source and ongoing work are preserved; this row is not acceptance evidence, production authentication proof, or permission to deploy. Capability-specific validation remains required.",
+      "evidence": [
+        "docs/mission/execution-2026-10-16.md"
+      ],
+      "prs": [],
+      "nextAction": "Audit existing workspace tools against this exact capability; implement missing execution-layer permissions and real tool paths, then verify inside the application.",
+      "owner": "Codex; founder approves separately gated production operations",
+      "auditDepth": "Exact available source mapped; capability-specific acceptance audit pending"
+    },
+    {
+      "id": "R18-030",
+      "source": "docs/AXIOM_RESUME_ENGINEERING_ORDER.md",
+      "line": 53,
+      "section": "2. BUILD A FULL CURSOR-LIKE AI ENGINEERING AGENT",
+      "requirement": "- Create branches, commits, and pull requests.",
+      "domain": "ai_agent",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "Latest directive imported without replacing earlier requirements. Existing source and ongoing work are preserved; this row is not acceptance evidence, production authentication proof, or permission to deploy. Capability-specific validation remains required.",
+      "evidence": [
+        "docs/mission/execution-2026-10-16.md"
+      ],
+      "prs": [],
+      "nextAction": "Audit existing workspace tools against this exact capability; implement missing execution-layer permissions and real tool paths, then verify inside the application.",
+      "owner": "Codex; founder approves separately gated production operations",
+      "auditDepth": "Exact available source mapped; capability-specific acceptance audit pending"
+    },
+    {
+      "id": "R18-031",
+      "source": "docs/AXIOM_RESUME_ENGINEERING_ORDER.md",
+      "line": 54,
+      "section": "2. BUILD A FULL CURSOR-LIKE AI ENGINEERING AGENT",
+      "requirement": "- Understand cloud infrastructure and deployment configuration.",
+      "domain": "ai_agent",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "Latest directive imported without replacing earlier requirements. Existing source and ongoing work are preserved; this row is not acceptance evidence, production authentication proof, or permission to deploy. Capability-specific validation remains required.",
+      "evidence": [
+        "docs/mission/execution-2026-10-16.md"
+      ],
+      "prs": [],
+      "nextAction": "Audit existing workspace tools against this exact capability; implement missing execution-layer permissions and real tool paths, then verify inside the application.",
+      "owner": "Codex; founder approves separately gated production operations",
+      "auditDepth": "Exact available source mapped; capability-specific acceptance audit pending"
+    },
+    {
+      "id": "R18-032",
+      "source": "docs/AXIOM_RESUME_ENGINEERING_ORDER.md",
+      "line": 55,
+      "section": "2. BUILD A FULL CURSOR-LIKE AI ENGINEERING AGENT",
+      "requirement": "- Generate and modify Terraform and infrastructure-as-code.",
+      "domain": "ai_agent",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "Latest directive imported without replacing earlier requirements. Existing source and ongoing work are preserved; this row is not acceptance evidence, production authentication proof, or permission to deploy. Capability-specific validation remains required.",
+      "evidence": [
+        "docs/mission/execution-2026-10-16.md"
+      ],
+      "prs": [],
+      "nextAction": "Audit existing workspace tools against this exact capability; implement missing execution-layer permissions and real tool paths, then verify inside the application.",
+      "owner": "Codex; founder approves separately gated production operations",
+      "auditDepth": "Exact available source mapped; capability-specific acceptance audit pending"
+    },
+    {
+      "id": "R18-033",
+      "source": "docs/AXIOM_RESUME_ENGINEERING_ORDER.md",
+      "line": 56,
+      "section": "2. BUILD A FULL CURSOR-LIKE AI ENGINEERING AGENT",
+      "requirement": "- Configure cloud integrations and request necessary permissions.",
+      "domain": "ai_agent",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "Latest directive imported without replacing earlier requirements. Existing source and ongoing work are preserved; this row is not acceptance evidence, production authentication proof, or permission to deploy. Capability-specific validation remains required.",
+      "evidence": [
+        "docs/mission/execution-2026-10-16.md"
+      ],
+      "prs": [],
+      "nextAction": "Audit existing workspace tools against this exact capability; implement missing execution-layer permissions and real tool paths, then verify inside the application.",
+      "owner": "Codex; founder approves separately gated production operations",
+      "auditDepth": "Exact available source mapped; capability-specific acceptance audit pending"
+    },
+    {
+      "id": "R18-034",
+      "source": "docs/AXIOM_RESUME_ENGINEERING_ORDER.md",
+      "line": 57,
+      "section": "2. BUILD A FULL CURSOR-LIKE AI ENGINEERING AGENT",
+      "requirement": "- Explain changes and show readable code diffs.",
+      "domain": "ai_agent",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "Latest directive imported without replacing earlier requirements. Existing source and ongoing work are preserved; this row is not acceptance evidence, production authentication proof, or permission to deploy. Capability-specific validation remains required.",
+      "evidence": [
+        "docs/mission/execution-2026-10-16.md"
+      ],
+      "prs": [],
+      "nextAction": "Audit existing workspace tools against this exact capability; implement missing execution-layer permissions and real tool paths, then verify inside the application.",
+      "owner": "Codex; founder approves separately gated production operations",
+      "auditDepth": "Exact available source mapped; capability-specific acceptance audit pending"
+    },
+    {
+      "id": "R18-035",
+      "source": "docs/AXIOM_RESUME_ENGINEERING_ORDER.md",
+      "line": 58,
+      "section": "2. BUILD A FULL CURSOR-LIKE AI ENGINEERING AGENT",
+      "requirement": "- Continue multi-step engineering tasks until completion.",
+      "domain": "ai_agent",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "Latest directive imported without replacing earlier requirements. Existing source and ongoing work are preserved; this row is not acceptance evidence, production authentication proof, or permission to deploy. Capability-specific validation remains required.",
+      "evidence": [
+        "docs/mission/execution-2026-10-16.md"
+      ],
+      "prs": [],
+      "nextAction": "Audit existing workspace tools against this exact capability; implement missing execution-layer permissions and real tool paths, then verify inside the application.",
+      "owner": "Codex; founder approves separately gated production operations",
+      "auditDepth": "Exact available source mapped; capability-specific acceptance audit pending"
+    },
+    {
+      "id": "R18-036",
+      "source": "docs/AXIOM_RESUME_ENGINEERING_ORDER.md",
+      "line": 60,
+      "section": "2. BUILD A FULL CURSOR-LIKE AI ENGINEERING AGENT",
+      "requirement": "Implement real tool execution, workspace context, permission controls, and error recovery. Do not substitute simulated output for working integrations.",
+      "domain": "ai_agent",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "Latest directive imported without replacing earlier requirements. Existing source and ongoing work are preserved; this row is not acceptance evidence, production authentication proof, or permission to deploy. Capability-specific validation remains required.",
+      "evidence": [
+        "docs/mission/execution-2026-10-16.md"
+      ],
+      "prs": [],
+      "nextAction": "Audit existing workspace tools against this exact capability; implement missing execution-layer permissions and real tool paths, then verify inside the application.",
+      "owner": "Codex; founder approves separately gated production operations",
+      "auditDepth": "Exact available source mapped; capability-specific acceptance audit pending"
+    },
+    {
+      "id": "R18-037",
+      "source": "docs/AXIOM_RESUME_ENGINEERING_ORDER.md",
+      "line": 64,
+      "section": "3. ENVIRONMENT-AWARE AI PERMISSIONS / Development and staging:",
+      "requirement": "**Development and staging:**",
+      "domain": "security",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "Latest directive imported without replacing earlier requirements. Existing source and ongoing work are preserved; this row is not acceptance evidence, production authentication proof, or permission to deploy. Capability-specific validation remains required.",
+      "evidence": [
+        "docs/mission/execution-2026-10-16.md"
+      ],
+      "prs": [],
+      "nextAction": "Verify server-side selected-environment authority and least-privilege checks on actual tool execution; reject production mutation without explicit approval.",
+      "owner": "Codex; founder approves separately gated production operations",
+      "auditDepth": "Exact available source mapped; capability-specific acceptance audit pending"
+    },
+    {
+      "id": "R18-038",
+      "source": "docs/AXIOM_RESUME_ENGINEERING_ORDER.md",
+      "line": 66,
+      "section": "3. ENVIRONMENT-AWARE AI PERMISSIONS / Development and staging:",
+      "requirement": "Allow users to grant the AI broad autonomy to edit code, execute commands, run tests, manage development resources, and deploy to authorized nonproduction environments.",
+      "domain": "security",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "Latest directive imported without replacing earlier requirements. Existing source and ongoing work are preserved; this row is not acceptance evidence, production authentication proof, or permission to deploy. Capability-specific validation remains required.",
+      "evidence": [
+        "docs/mission/execution-2026-10-16.md"
+      ],
+      "prs": [],
+      "nextAction": "Verify server-side selected-environment authority and least-privilege checks on actual tool execution; reject production mutation without explicit approval.",
+      "owner": "Codex; founder approves separately gated production operations",
+      "auditDepth": "Exact available source mapped; capability-specific acceptance audit pending"
+    },
+    {
+      "id": "R18-039",
+      "source": "docs/AXIOM_RESUME_ENGINEERING_ORDER.md",
+      "line": 68,
+      "section": "3. ENVIRONMENT-AWARE AI PERMISSIONS / Production:",
+      "requirement": "**Production:**",
+      "domain": "security",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "Latest directive imported without replacing earlier requirements. Existing source and ongoing work are preserved; this row is not acceptance evidence, production authentication proof, or permission to deploy. Capability-specific validation remains required.",
+      "evidence": [
+        "docs/mission/execution-2026-10-16.md"
+      ],
+      "prs": [],
+      "nextAction": "Verify server-side selected-environment authority and least-privilege checks on actual tool execution; reject production mutation without explicit approval.",
+      "owner": "Codex; founder approves separately gated production operations",
+      "auditDepth": "Exact available source mapped; capability-specific acceptance audit pending"
+    },
+    {
+      "id": "R18-040",
+      "source": "docs/AXIOM_RESUME_ENGINEERING_ORDER.md",
+      "line": 70,
+      "section": "3. ENVIRONMENT-AWARE AI PERMISSIONS / Production:",
+      "requirement": "Apply strict governance:",
+      "domain": "security",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "Latest directive imported without replacing earlier requirements. Existing source and ongoing work are preserved; this row is not acceptance evidence, production authentication proof, or permission to deploy. Capability-specific validation remains required.",
+      "evidence": [
+        "docs/mission/execution-2026-10-16.md"
+      ],
+      "prs": [],
+      "nextAction": "Verify server-side selected-environment authority and least-privilege checks on actual tool execution; reject production mutation without explicit approval.",
+      "owner": "Codex; founder approves separately gated production operations",
+      "auditDepth": "Exact available source mapped; capability-specific acceptance audit pending"
+    },
+    {
+      "id": "R18-041",
+      "source": "docs/AXIOM_RESUME_ENGINEERING_ORDER.md",
+      "line": 72,
+      "section": "3. ENVIRONMENT-AWARE AI PERMISSIONS / Production:",
+      "requirement": "- Read-only inspection by default.",
+      "domain": "security",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "Latest directive imported without replacing earlier requirements. Existing source and ongoing work are preserved; this row is not acceptance evidence, production authentication proof, or permission to deploy. Capability-specific validation remains required.",
+      "evidence": [
+        "docs/mission/execution-2026-10-16.md"
+      ],
+      "prs": [],
+      "nextAction": "Verify server-side selected-environment authority and least-privilege checks on actual tool execution; reject production mutation without explicit approval.",
+      "owner": "Codex; founder approves separately gated production operations",
+      "auditDepth": "Exact available source mapped; capability-specific acceptance audit pending"
+    },
+    {
+      "id": "R18-042",
+      "source": "docs/AXIOM_RESUME_ENGINEERING_ORDER.md",
+      "line": 73,
+      "section": "3. ENVIRONMENT-AWARE AI PERMISSIONS / Production:",
+      "requirement": "- Explicit authorization for sensitive operations.",
+      "domain": "security",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "Latest directive imported without replacing earlier requirements. Existing source and ongoing work are preserved; this row is not acceptance evidence, production authentication proof, or permission to deploy. Capability-specific validation remains required.",
+      "evidence": [
+        "docs/mission/execution-2026-10-16.md"
+      ],
+      "prs": [],
+      "nextAction": "Verify server-side selected-environment authority and least-privilege checks on actual tool execution; reject production mutation without explicit approval.",
+      "owner": "Codex; founder approves separately gated production operations",
+      "auditDepth": "Exact available source mapped; capability-specific acceptance audit pending"
+    },
+    {
+      "id": "R18-043",
+      "source": "docs/AXIOM_RESUME_ENGINEERING_ORDER.md",
+      "line": 74,
+      "section": "3. ENVIRONMENT-AWARE AI PERMISSIONS / Production:",
+      "requirement": "- Approval gates for production deployments.",
+      "domain": "security",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "Latest directive imported without replacing earlier requirements. Existing source and ongoing work are preserved; this row is not acceptance evidence, production authentication proof, or permission to deploy. Capability-specific validation remains required.",
+      "evidence": [
+        "docs/mission/execution-2026-10-16.md"
+      ],
+      "prs": [],
+      "nextAction": "Verify server-side selected-environment authority and least-privilege checks on actual tool execution; reject production mutation without explicit approval.",
+      "owner": "Codex; founder approves separately gated production operations",
+      "auditDepth": "Exact available source mapped; capability-specific acceptance audit pending"
+    },
+    {
+      "id": "R18-044",
+      "source": "docs/AXIOM_RESUME_ENGINEERING_ORDER.md",
+      "line": 75,
+      "section": "3. ENVIRONMENT-AWARE AI PERMISSIONS / Production:",
+      "requirement": "- Infrastructure and database change previews.",
+      "domain": "security",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "Latest directive imported without replacing earlier requirements. Existing source and ongoing work are preserved; this row is not acceptance evidence, production authentication proof, or permission to deploy. Capability-specific validation remains required.",
+      "evidence": [
+        "docs/mission/execution-2026-10-16.md"
+      ],
+      "prs": [],
+      "nextAction": "Verify server-side selected-environment authority and least-privilege checks on actual tool execution; reject production mutation without explicit approval.",
+      "owner": "Codex; founder approves separately gated production operations",
+      "auditDepth": "Exact available source mapped; capability-specific acceptance audit pending"
+    },
+    {
+      "id": "R18-045",
+      "source": "docs/AXIOM_RESUME_ENGINEERING_ORDER.md",
+      "line": 76,
+      "section": "3. ENVIRONMENT-AWARE AI PERMISSIONS / Production:",
+      "requirement": "- Risk analysis and rollback plans.",
+      "domain": "security",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "Latest directive imported without replacing earlier requirements. Existing source and ongoing work are preserved; this row is not acceptance evidence, production authentication proof, or permission to deploy. Capability-specific validation remains required.",
+      "evidence": [
+        "docs/mission/execution-2026-10-16.md"
+      ],
+      "prs": [],
+      "nextAction": "Verify server-side selected-environment authority and least-privilege checks on actual tool execution; reject production mutation without explicit approval.",
+      "owner": "Codex; founder approves separately gated production operations",
+      "auditDepth": "Exact available source mapped; capability-specific acceptance audit pending"
+    },
+    {
+      "id": "R18-046",
+      "source": "docs/AXIOM_RESUME_ENGINEERING_ORDER.md",
+      "line": 77,
+      "section": "3. ENVIRONMENT-AWARE AI PERMISSIONS / Production:",
+      "requirement": "- Audit logs and execution history.",
+      "domain": "security",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "Latest directive imported without replacing earlier requirements. Existing source and ongoing work are preserved; this row is not acceptance evidence, production authentication proof, or permission to deploy. Capability-specific validation remains required.",
+      "evidence": [
+        "docs/mission/execution-2026-10-16.md"
+      ],
+      "prs": [],
+      "nextAction": "Verify server-side selected-environment authority and least-privilege checks on actual tool execution; reject production mutation without explicit approval.",
+      "owner": "Codex; founder approves separately gated production operations",
+      "auditDepth": "Exact available source mapped; capability-specific acceptance audit pending"
+    },
+    {
+      "id": "R18-047",
+      "source": "docs/AXIOM_RESUME_ENGINEERING_ORDER.md",
+      "line": 78,
+      "section": "3. ENVIRONMENT-AWARE AI PERMISSIONS / Production:",
+      "requirement": "- Least-privilege credentials and scoped access.",
+      "domain": "security",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "Latest directive imported without replacing earlier requirements. Existing source and ongoing work are preserved; this row is not acceptance evidence, production authentication proof, or permission to deploy. Capability-specific validation remains required.",
+      "evidence": [
+        "docs/mission/execution-2026-10-16.md"
+      ],
+      "prs": [],
+      "nextAction": "Verify server-side selected-environment authority and least-privilege checks on actual tool execution; reject production mutation without explicit approval.",
+      "owner": "Codex; founder approves separately gated production operations",
+      "auditDepth": "Exact available source mapped; capability-specific acceptance audit pending"
+    },
+    {
+      "id": "R18-048",
+      "source": "docs/AXIOM_RESUME_ENGINEERING_ORDER.md",
+      "line": 79,
+      "section": "3. ENVIRONMENT-AWARE AI PERMISSIONS / Production:",
+      "requirement": "- No bypass of approval or security policies.",
+      "domain": "security",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "Latest directive imported without replacing earlier requirements. Existing source and ongoing work are preserved; this row is not acceptance evidence, production authentication proof, or permission to deploy. Capability-specific validation remains required.",
+      "evidence": [
+        "docs/mission/execution-2026-10-16.md"
+      ],
+      "prs": [],
+      "nextAction": "Verify server-side selected-environment authority and least-privilege checks on actual tool execution; reject production mutation without explicit approval.",
+      "owner": "Codex; founder approves separately gated production operations",
+      "auditDepth": "Exact available source mapped; capability-specific acceptance audit pending"
+    },
+    {
+      "id": "R18-049",
+      "source": "docs/AXIOM_RESUME_ENGINEERING_ORDER.md",
+      "line": 80,
+      "section": "3. ENVIRONMENT-AWARE AI PERMISSIONS / Production:",
+      "requirement": "- Never assume that a successful CI build authorizes production deployment.",
+      "domain": "security",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "Latest directive imported without replacing earlier requirements. Existing source and ongoing work are preserved; this row is not acceptance evidence, production authentication proof, or permission to deploy. Capability-specific validation remains required.",
+      "evidence": [
+        "docs/mission/execution-2026-10-16.md"
+      ],
+      "prs": [],
+      "nextAction": "Verify server-side selected-environment authority and least-privilege checks on actual tool execution; reject production mutation without explicit approval.",
+      "owner": "Codex; founder approves separately gated production operations",
+      "auditDepth": "Exact available source mapped; capability-specific acceptance audit pending"
+    },
+    {
+      "id": "R18-050",
+      "source": "docs/AXIOM_RESUME_ENGINEERING_ORDER.md",
+      "line": 82,
+      "section": "3. ENVIRONMENT-AWARE AI PERMISSIONS / Production:",
+      "requirement": "The AI should understand the selected environment and enforce these restrictions at the execution layer, not only through prompts.",
+      "domain": "security",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "Latest directive imported without replacing earlier requirements. Existing source and ongoing work are preserved; this row is not acceptance evidence, production authentication proof, or permission to deploy. Capability-specific validation remains required.",
+      "evidence": [
+        "docs/mission/execution-2026-10-16.md"
+      ],
+      "prs": [],
+      "nextAction": "Verify server-side selected-environment authority and least-privilege checks on actual tool execution; reject production mutation without explicit approval.",
+      "owner": "Codex; founder approves separately gated production operations",
+      "auditDepth": "Exact available source mapped; capability-specific acceptance audit pending"
+    },
+    {
+      "id": "R18-051",
+      "source": "docs/AXIOM_RESUME_ENGINEERING_ORDER.md",
+      "line": 86,
+      "section": "4. BUILD A CURSOR-QUALITY DESKTOP EXPERIENCE",
+      "requirement": "Complete the existing native desktop application.",
+      "domain": "desktop",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "Latest directive imported without replacing earlier requirements. Existing source and ongoing work are preserved; this row is not acceptance evidence, production authentication proof, or permission to deploy. Capability-specific validation remains required.",
+      "evidence": [
+        "docs/mission/execution-2026-10-16.md"
+      ],
+      "prs": [],
+      "nextAction": "Complete and independently review the active connected-context desktop changes, then run desktop build and actual application acceptance; retain native-installation blocker.",
+      "owner": "Codex; founder approves separately gated production operations",
+      "auditDepth": "Exact available source mapped; capability-specific acceptance audit pending"
+    },
+    {
+      "id": "R18-052",
+      "source": "docs/AXIOM_RESUME_ENGINEERING_ORDER.md",
+      "line": 88,
+      "section": "4. BUILD A CURSOR-QUALITY DESKTOP EXPERIENCE",
+      "requirement": "Provide:",
+      "domain": "desktop",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "Latest directive imported without replacing earlier requirements. Existing source and ongoing work are preserved; this row is not acceptance evidence, production authentication proof, or permission to deploy. Capability-specific validation remains required.",
+      "evidence": [
+        "docs/mission/execution-2026-10-16.md"
+      ],
+      "prs": [],
+      "nextAction": "Complete and independently review the active connected-context desktop changes, then run desktop build and actual application acceptance; retain native-installation blocker.",
+      "owner": "Codex; founder approves separately gated production operations",
+      "auditDepth": "Exact available source mapped; capability-specific acceptance audit pending"
+    },
+    {
+      "id": "R18-053",
+      "source": "docs/AXIOM_RESUME_ENGINEERING_ORDER.md",
+      "line": 90,
+      "section": "4. BUILD A CURSOR-QUALITY DESKTOP EXPERIENCE",
+      "requirement": "- Integrated AI chat and code editor.",
+      "domain": "desktop",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "Latest directive imported without replacing earlier requirements. Existing source and ongoing work are preserved; this row is not acceptance evidence, production authentication proof, or permission to deploy. Capability-specific validation remains required.",
+      "evidence": [
+        "docs/mission/execution-2026-10-16.md"
+      ],
+      "prs": [],
+      "nextAction": "Complete and independently review the active connected-context desktop changes, then run desktop build and actual application acceptance; retain native-installation blocker.",
+      "owner": "Codex; founder approves separately gated production operations",
+      "auditDepth": "Exact available source mapped; capability-specific acceptance audit pending"
+    },
+    {
+      "id": "R18-054",
+      "source": "docs/AXIOM_RESUME_ENGINEERING_ORDER.md",
+      "line": 91,
+      "section": "4. BUILD A CURSOR-QUALITY DESKTOP EXPERIENCE",
+      "requirement": "- File explorer and repository workspace.",
+      "domain": "desktop",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "Latest directive imported without replacing earlier requirements. Existing source and ongoing work are preserved; this row is not acceptance evidence, production authentication proof, or permission to deploy. Capability-specific validation remains required.",
+      "evidence": [
+        "docs/mission/execution-2026-10-16.md"
+      ],
+      "prs": [],
+      "nextAction": "Complete and independently review the active connected-context desktop changes, then run desktop build and actual application acceptance; retain native-installation blocker.",
+      "owner": "Codex; founder approves separately gated production operations",
+      "auditDepth": "Exact available source mapped; capability-specific acceptance audit pending"
+    },
+    {
+      "id": "R18-055",
+      "source": "docs/AXIOM_RESUME_ENGINEERING_ORDER.md",
+      "line": 92,
+      "section": "4. BUILD A CURSOR-QUALITY DESKTOP EXPERIENCE",
+      "requirement": "- Terminal and command execution.",
+      "domain": "desktop",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "Latest directive imported without replacing earlier requirements. Existing source and ongoing work are preserved; this row is not acceptance evidence, production authentication proof, or permission to deploy. Capability-specific validation remains required.",
+      "evidence": [
+        "docs/mission/execution-2026-10-16.md"
+      ],
+      "prs": [],
+      "nextAction": "Complete and independently review the active connected-context desktop changes, then run desktop build and actual application acceptance; retain native-installation blocker.",
+      "owner": "Codex; founder approves separately gated production operations",
+      "auditDepth": "Exact available source mapped; capability-specific acceptance audit pending"
+    },
+    {
+      "id": "R18-056",
+      "source": "docs/AXIOM_RESUME_ENGINEERING_ORDER.md",
+      "line": 93,
+      "section": "4. BUILD A CURSOR-QUALITY DESKTOP EXPERIENCE",
+      "requirement": "- Readable code diffs and change previews.",
+      "domain": "desktop",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "Latest directive imported without replacing earlier requirements. Existing source and ongoing work are preserved; this row is not acceptance evidence, production authentication proof, or permission to deploy. Capability-specific validation remains required.",
+      "evidence": [
+        "docs/mission/execution-2026-10-16.md"
+      ],
+      "prs": [],
+      "nextAction": "Complete and independently review the active connected-context desktop changes, then run desktop build and actual application acceptance; retain native-installation blocker.",
+      "owner": "Codex; founder approves separately gated production operations",
+      "auditDepth": "Exact available source mapped; capability-specific acceptance audit pending"
+    },
+    {
+      "id": "R18-057",
+      "source": "docs/AXIOM_RESUME_ENGINEERING_ORDER.md",
+      "line": 94,
+      "section": "4. BUILD A CURSOR-QUALITY DESKTOP EXPERIENCE",
+      "requirement": "- Model selection and model configuration.",
+      "domain": "desktop",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "Latest directive imported without replacing earlier requirements. Existing source and ongoing work are preserved; this row is not acceptance evidence, production authentication proof, or permission to deploy. Capability-specific validation remains required.",
+      "evidence": [
+        "docs/mission/execution-2026-10-16.md"
+      ],
+      "prs": [],
+      "nextAction": "Complete and independently review the active connected-context desktop changes, then run desktop build and actual application acceptance; retain native-installation blocker.",
+      "owner": "Codex; founder approves separately gated production operations",
+      "auditDepth": "Exact available source mapped; capability-specific acceptance audit pending"
+    },
+    {
+      "id": "R18-058",
+      "source": "docs/AXIOM_RESUME_ENGINEERING_ORDER.md",
+      "line": 95,
+      "section": "4. BUILD A CURSOR-QUALITY DESKTOP EXPERIENCE",
+      "requirement": "- Task execution history and progress.",
+      "domain": "desktop",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "Latest directive imported without replacing earlier requirements. Existing source and ongoing work are preserved; this row is not acceptance evidence, production authentication proof, or permission to deploy. Capability-specific validation remains required.",
+      "evidence": [
+        "docs/mission/execution-2026-10-16.md"
+      ],
+      "prs": [],
+      "nextAction": "Complete and independently review the active connected-context desktop changes, then run desktop build and actual application acceptance; retain native-installation blocker.",
+      "owner": "Codex; founder approves separately gated production operations",
+      "auditDepth": "Exact available source mapped; capability-specific acceptance audit pending"
+    },
+    {
+      "id": "R18-059",
+      "source": "docs/AXIOM_RESUME_ENGINEERING_ORDER.md",
+      "line": 96,
+      "section": "4. BUILD A CURSOR-QUALITY DESKTOP EXPERIENCE",
+      "requirement": "- GitHub integration.",
+      "domain": "desktop",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "Latest directive imported without replacing earlier requirements. Existing source and ongoing work are preserved; this row is not acceptance evidence, production authentication proof, or permission to deploy. Capability-specific validation remains required.",
+      "evidence": [
+        "docs/mission/execution-2026-10-16.md"
+      ],
+      "prs": [],
+      "nextAction": "Complete and independently review the active connected-context desktop changes, then run desktop build and actual application acceptance; retain native-installation blocker.",
+      "owner": "Codex; founder approves separately gated production operations",
+      "auditDepth": "Exact available source mapped; capability-specific acceptance audit pending"
+    },
+    {
+      "id": "R18-060",
+      "source": "docs/AXIOM_RESUME_ENGINEERING_ORDER.md",
+      "line": 97,
+      "section": "4. BUILD A CURSOR-QUALITY DESKTOP EXPERIENCE",
+      "requirement": "- Cloud environment controls.",
+      "domain": "desktop",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "Latest directive imported without replacing earlier requirements. Existing source and ongoing work are preserved; this row is not acceptance evidence, production authentication proof, or permission to deploy. Capability-specific validation remains required.",
+      "evidence": [
+        "docs/mission/execution-2026-10-16.md"
+      ],
+      "prs": [],
+      "nextAction": "Complete and independently review the active connected-context desktop changes, then run desktop build and actual application acceptance; retain native-installation blocker.",
+      "owner": "Codex; founder approves separately gated production operations",
+      "auditDepth": "Exact available source mapped; capability-specific acceptance audit pending"
+    },
+    {
+      "id": "R18-061",
+      "source": "docs/AXIOM_RESUME_ENGINEERING_ORDER.md",
+      "line": 98,
+      "section": "4. BUILD A CURSOR-QUALITY DESKTOP EXPERIENCE",
+      "requirement": "- Clear approval prompts.",
+      "domain": "desktop",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "Latest directive imported without replacing earlier requirements. Existing source and ongoing work are preserved; this row is not acceptance evidence, production authentication proof, or permission to deploy. Capability-specific validation remains required.",
+      "evidence": [
+        "docs/mission/execution-2026-10-16.md"
+      ],
+      "prs": [],
+      "nextAction": "Complete and independently review the active connected-context desktop changes, then run desktop build and actual application acceptance; retain native-installation blocker.",
+      "owner": "Codex; founder approves separately gated production operations",
+      "auditDepth": "Exact available source mapped; capability-specific acceptance audit pending"
+    },
+    {
+      "id": "R18-062",
+      "source": "docs/AXIOM_RESUME_ENGINEERING_ORDER.md",
+      "line": 99,
+      "section": "4. BUILD A CURSOR-QUALITY DESKTOP EXPERIENCE",
+      "requirement": "- Responsive, polished desktop interactions.",
+      "domain": "desktop",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "Latest directive imported without replacing earlier requirements. Existing source and ongoing work are preserved; this row is not acceptance evidence, production authentication proof, or permission to deploy. Capability-specific validation remains required.",
+      "evidence": [
+        "docs/mission/execution-2026-10-16.md"
+      ],
+      "prs": [],
+      "nextAction": "Complete and independently review the active connected-context desktop changes, then run desktop build and actual application acceptance; retain native-installation blocker.",
+      "owner": "Codex; founder approves separately gated production operations",
+      "auditDepth": "Exact available source mapped; capability-specific acceptance audit pending"
+    },
+    {
+      "id": "R18-063",
+      "source": "docs/AXIOM_RESUME_ENGINEERING_ORDER.md",
+      "line": 101,
+      "section": "4. BUILD A CURSOR-QUALITY DESKTOP EXPERIENCE",
+      "requirement": "Fix existing issues, including broken settings navigation, blank model screens, missing chat/editor functionality, and macOS app icon appearance.",
+      "domain": "desktop",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "Latest directive imported without replacing earlier requirements. Existing source and ongoing work are preserved; this row is not acceptance evidence, production authentication proof, or permission to deploy. Capability-specific validation remains required.",
+      "evidence": [
+        "docs/mission/execution-2026-10-16.md"
+      ],
+      "prs": [],
+      "nextAction": "Complete and independently review the active connected-context desktop changes, then run desktop build and actual application acceptance; retain native-installation blocker.",
+      "owner": "Codex; founder approves separately gated production operations",
+      "auditDepth": "Exact available source mapped; capability-specific acceptance audit pending"
+    },
+    {
+      "id": "R18-064",
+      "source": "docs/AXIOM_RESUME_ENGINEERING_ORDER.md",
+      "line": 103,
+      "section": "4. BUILD A CURSOR-QUALITY DESKTOP EXPERIENCE",
+      "requirement": "Do not merely add UI elements. Wire every feature to working backend functionality.",
+      "domain": "desktop",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "Latest directive imported without replacing earlier requirements. Existing source and ongoing work are preserved; this row is not acceptance evidence, production authentication proof, or permission to deploy. Capability-specific validation remains required.",
+      "evidence": [
+        "docs/mission/execution-2026-10-16.md"
+      ],
+      "prs": [],
+      "nextAction": "Complete and independently review the active connected-context desktop changes, then run desktop build and actual application acceptance; retain native-installation blocker.",
+      "owner": "Codex; founder approves separately gated production operations",
+      "auditDepth": "Exact available source mapped; capability-specific acceptance audit pending"
+    },
+    {
+      "id": "R18-065",
+      "source": "docs/AXIOM_RESUME_ENGINEERING_ORDER.md",
+      "line": 107,
+      "section": "5. CLICK-FIRST REPOSITORY AND ENVIRONMENT SELECTION",
+      "requirement": "Once GitHub is connected:",
+      "domain": "desktop",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "Latest directive imported without replacing earlier requirements. Existing source and ongoing work are preserved; this row is not acceptance evidence, production authentication proof, or permission to deploy. Capability-specific validation remains required.",
+      "evidence": [
+        "docs/mission/execution-2026-10-16.md"
+      ],
+      "prs": [],
+      "nextAction": "Complete and independently review the active connected-context desktop changes, then run desktop build and actual application acceptance; retain native-installation blocker.",
+      "owner": "Codex; founder approves separately gated production operations",
+      "auditDepth": "Exact available source mapped; capability-specific acceptance audit pending"
+    },
+    {
+      "id": "R18-066",
+      "source": "docs/AXIOM_RESUME_ENGINEERING_ORDER.md",
+      "line": 109,
+      "section": "5. CLICK-FIRST REPOSITORY AND ENVIRONMENT SELECTION",
+      "requirement": "- Automatically retrieve accessible repositories.",
+      "domain": "desktop",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "Latest directive imported without replacing earlier requirements. Existing source and ongoing work are preserved; this row is not acceptance evidence, production authentication proof, or permission to deploy. Capability-specific validation remains required.",
+      "evidence": [
+        "docs/mission/execution-2026-10-16.md"
+      ],
+      "prs": [],
+      "nextAction": "Complete and independently review the active connected-context desktop changes, then run desktop build and actual application acceptance; retain native-installation blocker.",
+      "owner": "Codex; founder approves separately gated production operations",
+      "auditDepth": "Exact available source mapped; capability-specific acceptance audit pending"
+    },
+    {
+      "id": "R18-067",
+      "source": "docs/AXIOM_RESUME_ENGINEERING_ORDER.md",
+      "line": 110,
+      "section": "5. CLICK-FIRST REPOSITORY AND ENVIRONMENT SELECTION",
+      "requirement": "- Display repositories in a searchable dropdown.",
+      "domain": "desktop",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "Latest directive imported without replacing earlier requirements. Existing source and ongoing work are preserved; this row is not acceptance evidence, production authentication proof, or permission to deploy. Capability-specific validation remains required.",
+      "evidence": [
+        "docs/mission/execution-2026-10-16.md"
+      ],
+      "prs": [],
+      "nextAction": "Complete and independently review the active connected-context desktop changes, then run desktop build and actual application acceptance; retain native-installation blocker.",
+      "owner": "Codex; founder approves separately gated production operations",
+      "auditDepth": "Exact available source mapped; capability-specific acceptance audit pending"
+    },
+    {
+      "id": "R18-068",
+      "source": "docs/AXIOM_RESUME_ENGINEERING_ORDER.md",
+      "line": 111,
+      "section": "5. CLICK-FIRST REPOSITORY AND ENVIRONMENT SELECTION",
+      "requirement": "- Allow users to select repositories directly from the chat area.",
+      "domain": "desktop",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "Latest directive imported without replacing earlier requirements. Existing source and ongoing work are preserved; this row is not acceptance evidence, production authentication proof, or permission to deploy. Capability-specific validation remains required.",
+      "evidence": [
+        "docs/mission/execution-2026-10-16.md"
+      ],
+      "prs": [],
+      "nextAction": "Complete and independently review the active connected-context desktop changes, then run desktop build and actual application acceptance; retain native-installation blocker.",
+      "owner": "Codex; founder approves separately gated production operations",
+      "auditDepth": "Exact available source mapped; capability-specific acceptance audit pending"
+    },
+    {
+      "id": "R18-069",
+      "source": "docs/AXIOM_RESUME_ENGINEERING_ORDER.md",
+      "line": 112,
+      "section": "5. CLICK-FIRST REPOSITORY AND ENVIRONMENT SELECTION",
+      "requirement": "- Provide an environment selector for development, staging, and production.",
+      "domain": "desktop",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "Latest directive imported without replacing earlier requirements. Existing source and ongoing work are preserved; this row is not acceptance evidence, production authentication proof, or permission to deploy. Capability-specific validation remains required.",
+      "evidence": [
+        "docs/mission/execution-2026-10-16.md"
+      ],
+      "prs": [],
+      "nextAction": "Complete and independently review the active connected-context desktop changes, then run desktop build and actual application acceptance; retain native-installation blocker.",
+      "owner": "Codex; founder approves separately gated production operations",
+      "auditDepth": "Exact available source mapped; capability-specific acceptance audit pending"
+    },
+    {
+      "id": "R18-070",
+      "source": "docs/AXIOM_RESUME_ENGINEERING_ORDER.md",
+      "line": 113,
+      "section": "5. CLICK-FIRST REPOSITORY AND ENVIRONMENT SELECTION",
+      "requirement": "- Make the selected repository and environment visible throughout the workflow.",
+      "domain": "desktop",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "Latest directive imported without replacing earlier requirements. Existing source and ongoing work are preserved; this row is not acceptance evidence, production authentication proof, or permission to deploy. Capability-specific validation remains required.",
+      "evidence": [
+        "docs/mission/execution-2026-10-16.md"
+      ],
+      "prs": [],
+      "nextAction": "Complete and independently review the active connected-context desktop changes, then run desktop build and actual application acceptance; retain native-installation blocker.",
+      "owner": "Codex; founder approves separately gated production operations",
+      "auditDepth": "Exact available source mapped; capability-specific acceptance audit pending"
+    },
+    {
+      "id": "R18-071",
+      "source": "docs/AXIOM_RESUME_ENGINEERING_ORDER.md",
+      "line": 114,
+      "section": "5. CLICK-FIRST REPOSITORY AND ENVIRONMENT SELECTION",
+      "requirement": "- Support optional manual text entry, but never require users to type repository names when connected data is available.",
+      "domain": "desktop",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "Latest directive imported without replacing earlier requirements. Existing source and ongoing work are preserved; this row is not acceptance evidence, production authentication proof, or permission to deploy. Capability-specific validation remains required.",
+      "evidence": [
+        "docs/mission/execution-2026-10-16.md"
+      ],
+      "prs": [],
+      "nextAction": "Complete and independently review the active connected-context desktop changes, then run desktop build and actual application acceptance; retain native-installation blocker.",
+      "owner": "Codex; founder approves separately gated production operations",
+      "auditDepth": "Exact available source mapped; capability-specific acceptance audit pending"
+    },
+    {
+      "id": "R18-072",
+      "source": "docs/AXIOM_RESUME_ENGINEERING_ORDER.md",
+      "line": 116,
+      "section": "5. CLICK-FIRST REPOSITORY AND ENVIRONMENT SELECTION",
+      "requirement": "The primary experience should be easy to use without sacrificing engineering capability.",
+      "domain": "desktop",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "Latest directive imported without replacing earlier requirements. Existing source and ongoing work are preserved; this row is not acceptance evidence, production authentication proof, or permission to deploy. Capability-specific validation remains required.",
+      "evidence": [
+        "docs/mission/execution-2026-10-16.md"
+      ],
+      "prs": [],
+      "nextAction": "Complete and independently review the active connected-context desktop changes, then run desktop build and actual application acceptance; retain native-installation blocker.",
+      "owner": "Codex; founder approves separately gated production operations",
+      "auditDepth": "Exact available source mapped; capability-specific acceptance audit pending"
+    },
+    {
+      "id": "R18-073",
+      "source": "docs/AXIOM_RESUME_ENGINEERING_ORDER.md",
+      "line": 120,
+      "section": "6. COMPLETE AIRFLOW AND DEPLOYMENT AUTOMATION",
+      "requirement": "Build fully functional Apache Airflow integration.",
+      "domain": "airflow",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "Latest directive imported without replacing earlier requirements. Existing source and ongoing work are preserved; this row is not acceptance evidence, production authentication proof, or permission to deploy. Capability-specific validation remains required.",
+      "evidence": [
+        "docs/mission/execution-2026-10-16.md"
+      ],
+      "prs": [],
+      "nextAction": "Close independent acceptance-guard review and run owned local Airflow application/database validation before claiming scheduler-to-deployment acceptance.",
+      "owner": "Codex; founder approves separately gated production operations",
+      "auditDepth": "Exact available source mapped; capability-specific acceptance audit pending"
+    },
+    {
+      "id": "R18-074",
+      "source": "docs/AXIOM_RESUME_ENGINEERING_ORDER.md",
+      "line": 122,
+      "section": "6. COMPLETE AIRFLOW AND DEPLOYMENT AUTOMATION",
+      "requirement": "Users must be able to:",
+      "domain": "airflow",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "Latest directive imported without replacing earlier requirements. Existing source and ongoing work are preserved; this row is not acceptance evidence, production authentication proof, or permission to deploy. Capability-specific validation remains required.",
+      "evidence": [
+        "docs/mission/execution-2026-10-16.md"
+      ],
+      "prs": [],
+      "nextAction": "Close independent acceptance-guard review and run owned local Airflow application/database validation before claiming scheduler-to-deployment acceptance.",
+      "owner": "Codex; founder approves separately gated production operations",
+      "auditDepth": "Exact available source mapped; capability-specific acceptance audit pending"
+    },
+    {
+      "id": "R18-075",
+      "source": "docs/AXIOM_RESUME_ENGINEERING_ORDER.md",
+      "line": 124,
+      "section": "6. COMPLETE AIRFLOW AND DEPLOYMENT AUTOMATION",
+      "requirement": "- Connect authorized Airflow environments.",
+      "domain": "airflow",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "Latest directive imported without replacing earlier requirements. Existing source and ongoing work are preserved; this row is not acceptance evidence, production authentication proof, or permission to deploy. Capability-specific validation remains required.",
+      "evidence": [
+        "docs/mission/execution-2026-10-16.md"
+      ],
+      "prs": [],
+      "nextAction": "Close independent acceptance-guard review and run owned local Airflow application/database validation before claiming scheduler-to-deployment acceptance.",
+      "owner": "Codex; founder approves separately gated production operations",
+      "auditDepth": "Exact available source mapped; capability-specific acceptance audit pending"
+    },
+    {
+      "id": "R18-076",
+      "source": "docs/AXIOM_RESUME_ENGINEERING_ORDER.md",
+      "line": 125,
+      "section": "6. COMPLETE AIRFLOW AND DEPLOYMENT AUTOMATION",
+      "requirement": "- View DAGs, runs, and task status.",
+      "domain": "airflow",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "Latest directive imported without replacing earlier requirements. Existing source and ongoing work are preserved; this row is not acceptance evidence, production authentication proof, or permission to deploy. Capability-specific validation remains required.",
+      "evidence": [
+        "docs/mission/execution-2026-10-16.md"
+      ],
+      "prs": [],
+      "nextAction": "Close independent acceptance-guard review and run owned local Airflow application/database validation before claiming scheduler-to-deployment acceptance.",
+      "owner": "Codex; founder approves separately gated production operations",
+      "auditDepth": "Exact available source mapped; capability-specific acceptance audit pending"
+    },
+    {
+      "id": "R18-077",
+      "source": "docs/AXIOM_RESUME_ENGINEERING_ORDER.md",
+      "line": 126,
+      "section": "6. COMPLETE AIRFLOW AND DEPLOYMENT AUTOMATION",
+      "requirement": "- Schedule deployments.",
+      "domain": "airflow",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "Latest directive imported without replacing earlier requirements. Existing source and ongoing work are preserved; this row is not acceptance evidence, production authentication proof, or permission to deploy. Capability-specific validation remains required.",
+      "evidence": [
+        "docs/mission/execution-2026-10-16.md"
+      ],
+      "prs": [],
+      "nextAction": "Close independent acceptance-guard review and run owned local Airflow application/database validation before claiming scheduler-to-deployment acceptance.",
+      "owner": "Codex; founder approves separately gated production operations",
+      "auditDepth": "Exact available source mapped; capability-specific acceptance audit pending"
+    },
+    {
+      "id": "R18-078",
+      "source": "docs/AXIOM_RESUME_ENGINEERING_ORDER.md",
+      "line": 127,
+      "section": "6. COMPLETE AIRFLOW AND DEPLOYMENT AUTOMATION",
+      "requirement": "- Define conditions based on completed Airflow batches.",
+      "domain": "airflow",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "Latest directive imported without replacing earlier requirements. Existing source and ongoing work are preserved; this row is not acceptance evidence, production authentication proof, or permission to deploy. Capability-specific validation remains required.",
+      "evidence": [
+        "docs/mission/execution-2026-10-16.md"
+      ],
+      "prs": [],
+      "nextAction": "Close independent acceptance-guard review and run owned local Airflow application/database validation before claiming scheduler-to-deployment acceptance.",
+      "owner": "Codex; founder approves separately gated production operations",
+      "auditDepth": "Exact available source mapped; capability-specific acceptance audit pending"
+    },
+    {
+      "id": "R18-079",
+      "source": "docs/AXIOM_RESUME_ENGINEERING_ORDER.md",
+      "line": 128,
+      "section": "6. COMPLETE AIRFLOW AND DEPLOYMENT AUTOMATION",
+      "requirement": "- Trigger approved deployments when prerequisites succeed.",
+      "domain": "airflow",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "Latest directive imported without replacing earlier requirements. Existing source and ongoing work are preserved; this row is not acceptance evidence, production authentication proof, or permission to deploy. Capability-specific validation remains required.",
+      "evidence": [
+        "docs/mission/execution-2026-10-16.md"
+      ],
+      "prs": [],
+      "nextAction": "Close independent acceptance-guard review and run owned local Airflow application/database validation before claiming scheduler-to-deployment acceptance.",
+      "owner": "Codex; founder approves separately gated production operations",
+      "auditDepth": "Exact available source mapped; capability-specific acceptance audit pending"
+    },
+    {
+      "id": "R18-080",
+      "source": "docs/AXIOM_RESUME_ENGINEERING_ORDER.md",
+      "line": 129,
+      "section": "6. COMPLETE AIRFLOW AND DEPLOYMENT AUTOMATION",
+      "requirement": "- Automate permitted GitHub PR and deployment workflows.",
+      "domain": "airflow",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "Latest directive imported without replacing earlier requirements. Existing source and ongoing work are preserved; this row is not acceptance evidence, production authentication proof, or permission to deploy. Capability-specific validation remains required.",
+      "evidence": [
+        "docs/mission/execution-2026-10-16.md"
+      ],
+      "prs": [],
+      "nextAction": "Close independent acceptance-guard review and run owned local Airflow application/database validation before claiming scheduler-to-deployment acceptance.",
+      "owner": "Codex; founder approves separately gated production operations",
+      "auditDepth": "Exact available source mapped; capability-specific acceptance audit pending"
+    },
+    {
+      "id": "R18-081",
+      "source": "docs/AXIOM_RESUME_ENGINEERING_ORDER.md",
+      "line": 130,
+      "section": "6. COMPLETE AIRFLOW AND DEPLOYMENT AUTOMATION",
+      "requirement": "- View automation execution history.",
+      "domain": "airflow",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "Latest directive imported without replacing earlier requirements. Existing source and ongoing work are preserved; this row is not acceptance evidence, production authentication proof, or permission to deploy. Capability-specific validation remains required.",
+      "evidence": [
+        "docs/mission/execution-2026-10-16.md"
+      ],
+      "prs": [],
+      "nextAction": "Close independent acceptance-guard review and run owned local Airflow application/database validation before claiming scheduler-to-deployment acceptance.",
+      "owner": "Codex; founder approves separately gated production operations",
+      "auditDepth": "Exact available source mapped; capability-specific acceptance audit pending"
+    },
+    {
+      "id": "R18-082",
+      "source": "docs/AXIOM_RESUME_ENGINEERING_ORDER.md",
+      "line": 131,
+      "section": "6. COMPLETE AIRFLOW AND DEPLOYMENT AUTOMATION",
+      "requirement": "- Receive meaningful failure notifications.",
+      "domain": "airflow",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "Latest directive imported without replacing earlier requirements. Existing source and ongoing work are preserved; this row is not acceptance evidence, production authentication proof, or permission to deploy. Capability-specific validation remains required.",
+      "evidence": [
+        "docs/mission/execution-2026-10-16.md"
+      ],
+      "prs": [],
+      "nextAction": "Close independent acceptance-guard review and run owned local Airflow application/database validation before claiming scheduler-to-deployment acceptance.",
+      "owner": "Codex; founder approves separately gated production operations",
+      "auditDepth": "Exact available source mapped; capability-specific acceptance audit pending"
+    },
+    {
+      "id": "R18-083",
+      "source": "docs/AXIOM_RESUME_ENGINEERING_ORDER.md",
+      "line": 132,
+      "section": "6. COMPLETE AIRFLOW AND DEPLOYMENT AUTOMATION",
+      "requirement": "- Retry safely without duplicate deployments.",
+      "domain": "airflow",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "Latest directive imported without replacing earlier requirements. Existing source and ongoing work are preserved; this row is not acceptance evidence, production authentication proof, or permission to deploy. Capability-specific validation remains required.",
+      "evidence": [
+        "docs/mission/execution-2026-10-16.md"
+      ],
+      "prs": [],
+      "nextAction": "Close independent acceptance-guard review and run owned local Airflow application/database validation before claiming scheduler-to-deployment acceptance.",
+      "owner": "Codex; founder approves separately gated production operations",
+      "auditDepth": "Exact available source mapped; capability-specific acceptance audit pending"
+    },
+    {
+      "id": "R18-084",
+      "source": "docs/AXIOM_RESUME_ENGINEERING_ORDER.md",
+      "line": 134,
+      "section": "6. COMPLETE AIRFLOW AND DEPLOYMENT AUTOMATION",
+      "requirement": "Production automation must still respect approvals, security restrictions, and deployment policies.",
+      "domain": "airflow",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "Latest directive imported without replacing earlier requirements. Existing source and ongoing work are preserved; this row is not acceptance evidence, production authentication proof, or permission to deploy. Capability-specific validation remains required.",
+      "evidence": [
+        "docs/mission/execution-2026-10-16.md"
+      ],
+      "prs": [],
+      "nextAction": "Close independent acceptance-guard review and run owned local Airflow application/database validation before claiming scheduler-to-deployment acceptance.",
+      "owner": "Codex; founder approves separately gated production operations",
+      "auditDepth": "Exact available source mapped; capability-specific acceptance audit pending"
+    },
+    {
+      "id": "R18-085",
+      "source": "docs/AXIOM_RESUME_ENGINEERING_ORDER.md",
+      "line": 138,
+      "section": "7. COMPLETE MULTICLOUD ENGINEERING",
+      "requirement": "Continue implementing and validating:",
+      "domain": "cloud",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "Latest directive imported without replacing earlier requirements. Existing source and ongoing work are preserved; this row is not acceptance evidence, production authentication proof, or permission to deploy. Capability-specific validation remains required.",
+      "evidence": [
+        "docs/mission/execution-2026-10-16.md"
+      ],
+      "prs": [],
+      "nextAction": "Reuse existing provider implementations and validate real authorized provider workflows separately from scripted SDK evidence.",
+      "owner": "Codex; founder approves separately gated production operations",
+      "auditDepth": "Exact available source mapped; capability-specific acceptance audit pending"
+    },
+    {
+      "id": "R18-086",
+      "source": "docs/AXIOM_RESUME_ENGINEERING_ORDER.md",
+      "line": 140,
+      "section": "7. COMPLETE MULTICLOUD ENGINEERING",
+      "requirement": "- AWS",
+      "domain": "cloud",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "Latest directive imported without replacing earlier requirements. Existing source and ongoing work are preserved; this row is not acceptance evidence, production authentication proof, or permission to deploy. Capability-specific validation remains required.",
+      "evidence": [
+        "docs/mission/execution-2026-10-16.md"
+      ],
+      "prs": [],
+      "nextAction": "Reuse existing provider implementations and validate real authorized provider workflows separately from scripted SDK evidence.",
+      "owner": "Codex; founder approves separately gated production operations",
+      "auditDepth": "Exact available source mapped; capability-specific acceptance audit pending"
+    },
+    {
+      "id": "R18-087",
+      "source": "docs/AXIOM_RESUME_ENGINEERING_ORDER.md",
+      "line": 141,
+      "section": "7. COMPLETE MULTICLOUD ENGINEERING",
+      "requirement": "- Azure",
+      "domain": "cloud",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "Latest directive imported without replacing earlier requirements. Existing source and ongoing work are preserved; this row is not acceptance evidence, production authentication proof, or permission to deploy. Capability-specific validation remains required.",
+      "evidence": [
+        "docs/mission/execution-2026-10-16.md"
+      ],
+      "prs": [],
+      "nextAction": "Reuse existing provider implementations and validate real authorized provider workflows separately from scripted SDK evidence.",
+      "owner": "Codex; founder approves separately gated production operations",
+      "auditDepth": "Exact available source mapped; capability-specific acceptance audit pending"
+    },
+    {
+      "id": "R18-088",
+      "source": "docs/AXIOM_RESUME_ENGINEERING_ORDER.md",
+      "line": 142,
+      "section": "7. COMPLETE MULTICLOUD ENGINEERING",
+      "requirement": "- Google Cloud",
+      "domain": "cloud",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "Latest directive imported without replacing earlier requirements. Existing source and ongoing work are preserved; this row is not acceptance evidence, production authentication proof, or permission to deploy. Capability-specific validation remains required.",
+      "evidence": [
+        "docs/mission/execution-2026-10-16.md"
+      ],
+      "prs": [],
+      "nextAction": "Reuse existing provider implementations and validate real authorized provider workflows separately from scripted SDK evidence.",
+      "owner": "Codex; founder approves separately gated production operations",
+      "auditDepth": "Exact available source mapped; capability-specific acceptance audit pending"
+    },
+    {
+      "id": "R18-089",
+      "source": "docs/AXIOM_RESUME_ENGINEERING_ORDER.md",
+      "line": 143,
+      "section": "7. COMPLETE MULTICLOUD ENGINEERING",
+      "requirement": "- GitHub",
+      "domain": "cloud",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "Latest directive imported without replacing earlier requirements. Existing source and ongoing work are preserved; this row is not acceptance evidence, production authentication proof, or permission to deploy. Capability-specific validation remains required.",
+      "evidence": [
+        "docs/mission/execution-2026-10-16.md"
+      ],
+      "prs": [],
+      "nextAction": "Reuse existing provider implementations and validate real authorized provider workflows separately from scripted SDK evidence.",
+      "owner": "Codex; founder approves separately gated production operations",
+      "auditDepth": "Exact available source mapped; capability-specific acceptance audit pending"
+    },
+    {
+      "id": "R18-090",
+      "source": "docs/AXIOM_RESUME_ENGINEERING_ORDER.md",
+      "line": 144,
+      "section": "7. COMPLETE MULTICLOUD ENGINEERING",
+      "requirement": "- Terraform",
+      "domain": "cloud",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "Latest directive imported without replacing earlier requirements. Existing source and ongoing work are preserved; this row is not acceptance evidence, production authentication proof, or permission to deploy. Capability-specific validation remains required.",
+      "evidence": [
+        "docs/mission/execution-2026-10-16.md"
+      ],
+      "prs": [],
+      "nextAction": "Reuse existing provider implementations and validate real authorized provider workflows separately from scripted SDK evidence.",
+      "owner": "Codex; founder approves separately gated production operations",
+      "auditDepth": "Exact available source mapped; capability-specific acceptance audit pending"
+    },
+    {
+      "id": "R18-091",
+      "source": "docs/AXIOM_RESUME_ENGINEERING_ORDER.md",
+      "line": 145,
+      "section": "7. COMPLETE MULTICLOUD ENGINEERING",
+      "requirement": "- Vercel",
+      "domain": "cloud",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "Latest directive imported without replacing earlier requirements. Existing source and ongoing work are preserved; this row is not acceptance evidence, production authentication proof, or permission to deploy. Capability-specific validation remains required.",
+      "evidence": [
+        "docs/mission/execution-2026-10-16.md"
+      ],
+      "prs": [],
+      "nextAction": "Reuse existing provider implementations and validate real authorized provider workflows separately from scripted SDK evidence.",
+      "owner": "Codex; founder approves separately gated production operations",
+      "auditDepth": "Exact available source mapped; capability-specific acceptance audit pending"
+    },
+    {
+      "id": "R18-092",
+      "source": "docs/AXIOM_RESUME_ENGINEERING_ORDER.md",
+      "line": 146,
+      "section": "7. COMPLETE MULTICLOUD ENGINEERING",
+      "requirement": "- Neon",
+      "domain": "cloud",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "Latest directive imported without replacing earlier requirements. Existing source and ongoing work are preserved; this row is not acceptance evidence, production authentication proof, or permission to deploy. Capability-specific validation remains required.",
+      "evidence": [
+        "docs/mission/execution-2026-10-16.md"
+      ],
+      "prs": [],
+      "nextAction": "Reuse existing provider implementations and validate real authorized provider workflows separately from scripted SDK evidence.",
+      "owner": "Codex; founder approves separately gated production operations",
+      "auditDepth": "Exact available source mapped; capability-specific acceptance audit pending"
+    },
+    {
+      "id": "R18-093",
+      "source": "docs/AXIOM_RESUME_ENGINEERING_ORDER.md",
+      "line": 147,
+      "section": "7. COMPLETE MULTICLOUD ENGINEERING",
+      "requirement": "- Airflow",
+      "domain": "cloud",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "Latest directive imported without replacing earlier requirements. Existing source and ongoing work are preserved; this row is not acceptance evidence, production authentication proof, or permission to deploy. Capability-specific validation remains required.",
+      "evidence": [
+        "docs/mission/execution-2026-10-16.md"
+      ],
+      "prs": [],
+      "nextAction": "Reuse existing provider implementations and validate real authorized provider workflows separately from scripted SDK evidence.",
+      "owner": "Codex; founder approves separately gated production operations",
+      "auditDepth": "Exact available source mapped; capability-specific acceptance audit pending"
+    },
+    {
+      "id": "R18-094",
+      "source": "docs/AXIOM_RESUME_ENGINEERING_ORDER.md",
+      "line": 148,
+      "section": "7. COMPLETE MULTICLOUD ENGINEERING",
+      "requirement": "- Container and deployment workflows",
+      "domain": "cloud",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "Latest directive imported without replacing earlier requirements. Existing source and ongoing work are preserved; this row is not acceptance evidence, production authentication proof, or permission to deploy. Capability-specific validation remains required.",
+      "evidence": [
+        "docs/mission/execution-2026-10-16.md"
+      ],
+      "prs": [],
+      "nextAction": "Reuse existing provider implementations and validate real authorized provider workflows separately from scripted SDK evidence.",
+      "owner": "Codex; founder approves separately gated production operations",
+      "auditDepth": "Exact available source mapped; capability-specific acceptance audit pending"
+    },
+    {
+      "id": "R18-095",
+      "source": "docs/AXIOM_RESUME_ENGINEERING_ORDER.md",
+      "line": 150,
+      "section": "7. COMPLETE MULTICLOUD ENGINEERING",
+      "requirement": "Use real provider integrations and validated execution paths.",
+      "domain": "cloud",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "Latest directive imported without replacing earlier requirements. Existing source and ongoing work are preserved; this row is not acceptance evidence, production authentication proof, or permission to deploy. Capability-specific validation remains required.",
+      "evidence": [
+        "docs/mission/execution-2026-10-16.md"
+      ],
+      "prs": [],
+      "nextAction": "Reuse existing provider implementations and validate real authorized provider workflows separately from scripted SDK evidence.",
+      "owner": "Codex; founder approves separately gated production operations",
+      "auditDepth": "Exact available source mapped; capability-specific acceptance audit pending"
+    },
+    {
+      "id": "R18-096",
+      "source": "docs/AXIOM_RESUME_ENGINEERING_ORDER.md",
+      "line": 152,
+      "section": "7. COMPLETE MULTICLOUD ENGINEERING",
+      "requirement": "Ensure the AI can inspect resources, prepare changes, execute authorized actions, verify results, and explain failures.",
+      "domain": "cloud",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "Latest directive imported without replacing earlier requirements. Existing source and ongoing work are preserved; this row is not acceptance evidence, production authentication proof, or permission to deploy. Capability-specific validation remains required.",
+      "evidence": [
+        "docs/mission/execution-2026-10-16.md"
+      ],
+      "prs": [],
+      "nextAction": "Reuse existing provider implementations and validate real authorized provider workflows separately from scripted SDK evidence.",
+      "owner": "Codex; founder approves separately gated production operations",
+      "auditDepth": "Exact available source mapped; capability-specific acceptance audit pending"
+    },
+    {
+      "id": "R18-097",
+      "source": "docs/AXIOM_RESUME_ENGINEERING_ORDER.md",
+      "line": 156,
+      "section": "8. FINISH PRODUCT, BILLING, AND WEBSITE",
+      "requirement": "Complete the existing Stripe subscription and entitlement implementation, keeping all financial testing in TEST mode.",
+      "domain": "billing",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "Latest directive imported without replacing earlier requirements. Existing source and ongoing work are preserved; this row is not acceptance evidence, production authentication proof, or permission to deploy. Capability-specific validation remains required.",
+      "evidence": [
+        "docs/mission/execution-2026-10-16.md"
+      ],
+      "prs": [],
+      "nextAction": "Complete isolated billing application acceptance and subscription lifecycle checks; preserve support checkout and live-billing approval gate.",
+      "owner": "Codex; founder approves separately gated production operations",
+      "auditDepth": "Exact available source mapped; capability-specific acceptance audit pending"
+    },
+    {
+      "id": "R18-098",
+      "source": "docs/AXIOM_RESUME_ENGINEERING_ORDER.md",
+      "line": 158,
+      "section": "8. FINISH PRODUCT, BILLING, AND WEBSITE",
+      "requirement": "Finish the Axiom website with a polished, minimal, dark-and-orange design.",
+      "domain": "billing",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "Latest directive imported without replacing earlier requirements. Existing source and ongoing work are preserved; this row is not acceptance evidence, production authentication proof, or permission to deploy. Capability-specific validation remains required.",
+      "evidence": [
+        "docs/mission/execution-2026-10-16.md"
+      ],
+      "prs": [],
+      "nextAction": "Complete isolated billing application acceptance and subscription lifecycle checks; preserve support checkout and live-billing approval gate.",
+      "owner": "Codex; founder approves separately gated production operations",
+      "auditDepth": "Exact available source mapped; capability-specific acceptance audit pending"
+    },
+    {
+      "id": "R18-099",
+      "source": "docs/AXIOM_RESUME_ENGINEERING_ORDER.md",
+      "line": 160,
+      "section": "8. FINISH PRODUCT, BILLING, AND WEBSITE",
+      "requirement": "The website should communicate Axiom's capabilities through clear, interactive product demonstrations based on the real application.",
+      "domain": "billing",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "Latest directive imported without replacing earlier requirements. Existing source and ongoing work are preserved; this row is not acceptance evidence, production authentication proof, or permission to deploy. Capability-specific validation remains required.",
+      "evidence": [
+        "docs/mission/execution-2026-10-16.md"
+      ],
+      "prs": [],
+      "nextAction": "Complete isolated billing application acceptance and subscription lifecycle checks; preserve support checkout and live-billing approval gate.",
+      "owner": "Codex; founder approves separately gated production operations",
+      "auditDepth": "Exact available source mapped; capability-specific acceptance audit pending"
+    },
+    {
+      "id": "R18-100",
+      "source": "docs/AXIOM_RESUME_ENGINEERING_ORDER.md",
+      "line": 162,
+      "section": "8. FINISH PRODUCT, BILLING, AND WEBSITE",
+      "requirement": "Support a self-service journey:",
+      "domain": "billing",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "Latest directive imported without replacing earlier requirements. Existing source and ongoing work are preserved; this row is not acceptance evidence, production authentication proof, or permission to deploy. Capability-specific validation remains required.",
+      "evidence": [
+        "docs/mission/execution-2026-10-16.md"
+      ],
+      "prs": [],
+      "nextAction": "Complete isolated billing application acceptance and subscription lifecycle checks; preserve support checkout and live-billing approval gate.",
+      "owner": "Codex; founder approves separately gated production operations",
+      "auditDepth": "Exact available source mapped; capability-specific acceptance audit pending"
+    },
+    {
+      "id": "R18-101",
+      "source": "docs/AXIOM_RESUME_ENGINEERING_ORDER.md",
+      "line": 164,
+      "section": "8. FINISH PRODUCT, BILLING, AND WEBSITE / Discover → Understand → Try → Download → Connect → Build → Deploy",
+      "requirement": "**Discover → Understand → Try → Download → Connect → Build → Deploy**",
+      "domain": "billing",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "Latest directive imported without replacing earlier requirements. Existing source and ongoing work are preserved; this row is not acceptance evidence, production authentication proof, or permission to deploy. Capability-specific validation remains required.",
+      "evidence": [
+        "docs/mission/execution-2026-10-16.md"
+      ],
+      "prs": [],
+      "nextAction": "Complete isolated billing application acceptance and subscription lifecycle checks; preserve support checkout and live-billing approval gate.",
+      "owner": "Codex; founder approves separately gated production operations",
+      "auditDepth": "Exact available source mapped; capability-specific acceptance audit pending"
+    },
+    {
+      "id": "R18-102",
+      "source": "docs/AXIOM_RESUME_ENGINEERING_ORDER.md",
+      "line": 166,
+      "section": "8. FINISH PRODUCT, BILLING, AND WEBSITE / Discover → Understand → Try → Download → Connect → Build → Deploy",
+      "requirement": "Avoid making a sales call the primary onboarding path.",
+      "domain": "billing",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "Latest directive imported without replacing earlier requirements. Existing source and ongoing work are preserved; this row is not acceptance evidence, production authentication proof, or permission to deploy. Capability-specific validation remains required.",
+      "evidence": [
+        "docs/mission/execution-2026-10-16.md"
+      ],
+      "prs": [],
+      "nextAction": "Complete isolated billing application acceptance and subscription lifecycle checks; preserve support checkout and live-billing approval gate.",
+      "owner": "Codex; founder approves separately gated production operations",
+      "auditDepth": "Exact available source mapped; capability-specific acceptance audit pending"
+    },
+    {
+      "id": "R18-103",
+      "source": "docs/AXIOM_RESUME_ENGINEERING_ORDER.md",
+      "line": 170,
+      "section": "9. EXECUTION REQUIREMENTS",
+      "requirement": "Follow this loop continuously during the active Codex session:",
+      "domain": "governance",
+      "scope": "process",
+      "status": "Partially implemented",
+      "verification": "Latest directive imported without replacing earlier requirements. Existing source and ongoing work are preserved; this row is not acceptance evidence, production authentication proof, or permission to deploy. Capability-specific validation remains required.",
+      "evidence": [
+        "docs/mission/execution-2026-10-16.md"
+      ],
+      "prs": [],
+      "nextAction": "Continue existing source implementation and independent application acceptance, preserving production and release approval gates.",
+      "owner": "Codex; founder approves separately gated production operations",
+      "auditDepth": "Exact available source mapped; capability-specific acceptance audit pending"
+    },
+    {
+      "id": "R18-104",
+      "source": "docs/AXIOM_RESUME_ENGINEERING_ORDER.md",
+      "line": 172,
+      "section": "9. EXECUTION REQUIREMENTS / Inspect → Implement → Test → Verify → Fix → Commit → Continue",
+      "requirement": "**Inspect → Implement → Test → Verify → Fix → Commit → Continue**",
+      "domain": "governance",
+      "scope": "process",
+      "status": "Partially implemented",
+      "verification": "Latest directive imported without replacing earlier requirements. Existing source and ongoing work are preserved; this row is not acceptance evidence, production authentication proof, or permission to deploy. Capability-specific validation remains required.",
+      "evidence": [
+        "docs/mission/execution-2026-10-16.md"
+      ],
+      "prs": [],
+      "nextAction": "Continue existing source implementation and independent application acceptance, preserving production and release approval gates.",
+      "owner": "Codex; founder approves separately gated production operations",
+      "auditDepth": "Exact available source mapped; capability-specific acceptance audit pending"
+    },
+    {
+      "id": "R18-105",
+      "source": "docs/AXIOM_RESUME_ENGINEERING_ORDER.md",
+      "line": 174,
+      "section": "9. EXECUTION REQUIREMENTS / Inspect → Implement → Test → Verify → Fix → Commit → Continue",
+      "requirement": "For every task:",
+      "domain": "governance",
+      "scope": "process",
+      "status": "Partially implemented",
+      "verification": "Latest directive imported without replacing earlier requirements. Existing source and ongoing work are preserved; this row is not acceptance evidence, production authentication proof, or permission to deploy. Capability-specific validation remains required.",
+      "evidence": [
+        "docs/mission/execution-2026-10-16.md"
+      ],
+      "prs": [],
+      "nextAction": "Continue existing source implementation and independent application acceptance, preserving production and release approval gates.",
+      "owner": "Codex; founder approves separately gated production operations",
+      "auditDepth": "Exact available source mapped; capability-specific acceptance audit pending"
+    },
+    {
+      "id": "R18-106",
+      "source": "docs/AXIOM_RESUME_ENGINEERING_ORDER.md",
+      "line": 176,
+      "section": "9. EXECUTION REQUIREMENTS / Inspect → Implement → Test → Verify → Fix → Commit → Continue",
+      "requirement": "1. Inspect existing implementation before changing it.",
+      "domain": "governance",
+      "scope": "process",
+      "status": "Partially implemented",
+      "verification": "Latest directive imported without replacing earlier requirements. Existing source and ongoing work are preserved; this row is not acceptance evidence, production authentication proof, or permission to deploy. Capability-specific validation remains required.",
+      "evidence": [
+        "docs/mission/execution-2026-10-16.md"
+      ],
+      "prs": [],
+      "nextAction": "Continue existing source implementation and independent application acceptance, preserving production and release approval gates.",
+      "owner": "Codex; founder approves separately gated production operations",
+      "auditDepth": "Exact available source mapped; capability-specific acceptance audit pending"
+    },
+    {
+      "id": "R18-107",
+      "source": "docs/AXIOM_RESUME_ENGINEERING_ORDER.md",
+      "line": 177,
+      "section": "9. EXECUTION REQUIREMENTS / Inspect → Implement → Test → Verify → Fix → Commit → Continue",
+      "requirement": "2. Implement working code, not placeholders.",
+      "domain": "governance",
+      "scope": "process",
+      "status": "Partially implemented",
+      "verification": "Latest directive imported without replacing earlier requirements. Existing source and ongoing work are preserved; this row is not acceptance evidence, production authentication proof, or permission to deploy. Capability-specific validation remains required.",
+      "evidence": [
+        "docs/mission/execution-2026-10-16.md"
+      ],
+      "prs": [],
+      "nextAction": "Continue existing source implementation and independent application acceptance, preserving production and release approval gates.",
+      "owner": "Codex; founder approves separately gated production operations",
+      "auditDepth": "Exact available source mapped; capability-specific acceptance audit pending"
+    },
+    {
+      "id": "R18-108",
+      "source": "docs/AXIOM_RESUME_ENGINEERING_ORDER.md",
+      "line": 178,
+      "section": "9. EXECUTION REQUIREMENTS / Inspect → Implement → Test → Verify → Fix → Commit → Continue",
+      "requirement": "3. Add or update appropriate automated tests.",
+      "domain": "governance",
+      "scope": "process",
+      "status": "Partially implemented",
+      "verification": "Latest directive imported without replacing earlier requirements. Existing source and ongoing work are preserved; this row is not acceptance evidence, production authentication proof, or permission to deploy. Capability-specific validation remains required.",
+      "evidence": [
+        "docs/mission/execution-2026-10-16.md"
+      ],
+      "prs": [],
+      "nextAction": "Continue existing source implementation and independent application acceptance, preserving production and release approval gates.",
+      "owner": "Codex; founder approves separately gated production operations",
+      "auditDepth": "Exact available source mapped; capability-specific acceptance audit pending"
+    },
+    {
+      "id": "R18-109",
+      "source": "docs/AXIOM_RESUME_ENGINEERING_ORDER.md",
+      "line": 179,
+      "section": "9. EXECUTION REQUIREMENTS / Inspect → Implement → Test → Verify → Fix → Commit → Continue",
+      "requirement": "4. Execute tests and fix failures.",
+      "domain": "governance",
+      "scope": "process",
+      "status": "Partially implemented",
+      "verification": "Latest directive imported without replacing earlier requirements. Existing source and ongoing work are preserved; this row is not acceptance evidence, production authentication proof, or permission to deploy. Capability-specific validation remains required.",
+      "evidence": [
+        "docs/mission/execution-2026-10-16.md"
+      ],
+      "prs": [],
+      "nextAction": "Continue existing source implementation and independent application acceptance, preserving production and release approval gates.",
+      "owner": "Codex; founder approves separately gated production operations",
+      "auditDepth": "Exact available source mapped; capability-specific acceptance audit pending"
+    },
+    {
+      "id": "R18-110",
+      "source": "docs/AXIOM_RESUME_ENGINEERING_ORDER.md",
+      "line": 180,
+      "section": "9. EXECUTION REQUIREMENTS / Inspect → Implement → Test → Verify → Fix → Commit → Continue",
+      "requirement": "5. Validate relevant integrations where access exists.",
+      "domain": "governance",
+      "scope": "process",
+      "status": "Partially implemented",
+      "verification": "Latest directive imported without replacing earlier requirements. Existing source and ongoing work are preserved; this row is not acceptance evidence, production authentication proof, or permission to deploy. Capability-specific validation remains required.",
+      "evidence": [
+        "docs/mission/execution-2026-10-16.md"
+      ],
+      "prs": [],
+      "nextAction": "Continue existing source implementation and independent application acceptance, preserving production and release approval gates.",
+      "owner": "Codex; founder approves separately gated production operations",
+      "auditDepth": "Exact available source mapped; capability-specific acceptance audit pending"
+    },
+    {
+      "id": "R18-111",
+      "source": "docs/AXIOM_RESUME_ENGINEERING_ORDER.md",
+      "line": 181,
+      "section": "9. EXECUTION REQUIREMENTS / Inspect → Implement → Test → Verify → Fix → Commit → Continue",
+      "requirement": "6. Commit completed work on an appropriate feature branch.",
+      "domain": "governance",
+      "scope": "process",
+      "status": "Partially implemented",
+      "verification": "Latest directive imported without replacing earlier requirements. Existing source and ongoing work are preserved; this row is not acceptance evidence, production authentication proof, or permission to deploy. Capability-specific validation remains required.",
+      "evidence": [
+        "docs/mission/execution-2026-10-16.md"
+      ],
+      "prs": [],
+      "nextAction": "Continue existing source implementation and independent application acceptance, preserving production and release approval gates.",
+      "owner": "Codex; founder approves separately gated production operations",
+      "auditDepth": "Exact available source mapped; capability-specific acceptance audit pending"
+    },
+    {
+      "id": "R18-112",
+      "source": "docs/AXIOM_RESUME_ENGINEERING_ORDER.md",
+      "line": 182,
+      "section": "9. EXECUTION REQUIREMENTS / Inspect → Implement → Test → Verify → Fix → Commit → Continue",
+      "requirement": "7. Open or update pull requests.",
+      "domain": "governance",
+      "scope": "process",
+      "status": "Partially implemented",
+      "verification": "Latest directive imported without replacing earlier requirements. Existing source and ongoing work are preserved; this row is not acceptance evidence, production authentication proof, or permission to deploy. Capability-specific validation remains required.",
+      "evidence": [
+        "docs/mission/execution-2026-10-16.md"
+      ],
+      "prs": [],
+      "nextAction": "Continue existing source implementation and independent application acceptance, preserving production and release approval gates.",
+      "owner": "Codex; founder approves separately gated production operations",
+      "auditDepth": "Exact available source mapped; capability-specific acceptance audit pending"
+    },
+    {
+      "id": "R18-113",
+      "source": "docs/AXIOM_RESUME_ENGINEERING_ORDER.md",
+      "line": 183,
+      "section": "9. EXECUTION REQUIREMENTS / Inspect → Implement → Test → Verify → Fix → Commit → Continue",
+      "requirement": "8. Continue to the next unfinished task.",
+      "domain": "governance",
+      "scope": "process",
+      "status": "Partially implemented",
+      "verification": "Latest directive imported without replacing earlier requirements. Existing source and ongoing work are preserved; this row is not acceptance evidence, production authentication proof, or permission to deploy. Capability-specific validation remains required.",
+      "evidence": [
+        "docs/mission/execution-2026-10-16.md"
+      ],
+      "prs": [],
+      "nextAction": "Continue existing source implementation and independent application acceptance, preserving production and release approval gates.",
+      "owner": "Codex; founder approves separately gated production operations",
+      "auditDepth": "Exact available source mapped; capability-specific acceptance audit pending"
+    },
+    {
+      "id": "R18-114",
+      "source": "docs/AXIOM_RESUME_ENGINEERING_ORDER.md",
+      "line": 185,
+      "section": "9. EXECUTION REQUIREMENTS / Inspect → Implement → Test → Verify → Fix → Commit → Continue",
+      "requirement": "Use connected development tools and plugins where they materially help.",
+      "domain": "governance",
+      "scope": "process",
+      "status": "Partially implemented",
+      "verification": "Latest directive imported without replacing earlier requirements. Existing source and ongoing work are preserved; this row is not acceptance evidence, production authentication proof, or permission to deploy. Capability-specific validation remains required.",
+      "evidence": [
+        "docs/mission/execution-2026-10-16.md"
+      ],
+      "prs": [],
+      "nextAction": "Continue existing source implementation and independent application acceptance, preserving production and release approval gates.",
+      "owner": "Codex; founder approves separately gated production operations",
+      "auditDepth": "Exact available source mapped; capability-specific acceptance audit pending"
+    },
+    {
+      "id": "R18-115",
+      "source": "docs/AXIOM_RESUME_ENGINEERING_ORDER.md",
+      "line": 187,
+      "section": "9. EXECUTION REQUIREMENTS / Inspect → Implement → Test → Verify → Fix → Commit → Continue",
+      "requirement": "Do not spend the session repeatedly producing status reports, plans, or GitHub issues instead of coding.",
+      "domain": "governance",
+      "scope": "process",
+      "status": "Partially implemented",
+      "verification": "Latest directive imported without replacing earlier requirements. Existing source and ongoing work are preserved; this row is not acceptance evidence, production authentication proof, or permission to deploy. Capability-specific validation remains required.",
+      "evidence": [
+        "docs/mission/execution-2026-10-16.md"
+      ],
+      "prs": [],
+      "nextAction": "Continue existing source implementation and independent application acceptance, preserving production and release approval gates.",
+      "owner": "Codex; founder approves separately gated production operations",
+      "auditDepth": "Exact available source mapped; capability-specific acceptance audit pending"
+    },
+    {
+      "id": "R18-116",
+      "source": "docs/AXIOM_RESUME_ENGINEERING_ORDER.md",
+      "line": 189,
+      "section": "9. EXECUTION REQUIREMENTS / Inspect → Implement → Test → Verify → Fix → Commit → Continue",
+      "requirement": "Do not invent completion percentages, successful tests, provider access, or deployed functionality.",
+      "domain": "governance",
+      "scope": "process",
+      "status": "Partially implemented",
+      "verification": "Latest directive imported without replacing earlier requirements. Existing source and ongoing work are preserved; this row is not acceptance evidence, production authentication proof, or permission to deploy. Capability-specific validation remains required.",
+      "evidence": [
+        "docs/mission/execution-2026-10-16.md"
+      ],
+      "prs": [],
+      "nextAction": "Continue existing source implementation and independent application acceptance, preserving production and release approval gates.",
+      "owner": "Codex; founder approves separately gated production operations",
+      "auditDepth": "Exact available source mapped; capability-specific acceptance audit pending"
+    },
+    {
+      "id": "R18-117",
+      "source": "docs/AXIOM_RESUME_ENGINEERING_ORDER.md",
+      "line": 193,
+      "section": "10. IMPORTANT SAFETY AND RELEASE RULES",
+      "requirement": "Do not:",
+      "domain": "governance",
+      "scope": "process",
+      "status": "Partially implemented",
+      "verification": "Latest directive imported without replacing earlier requirements. Existing source and ongoing work are preserved; this row is not acceptance evidence, production authentication proof, or permission to deploy. Capability-specific validation remains required.",
+      "evidence": [
+        "docs/mission/execution-2026-10-16.md"
+      ],
+      "prs": [],
+      "nextAction": "Continue existing source implementation and independent application acceptance, preserving production and release approval gates.",
+      "owner": "Codex; founder approves separately gated production operations",
+      "auditDepth": "Exact available source mapped; capability-specific acceptance audit pending"
+    },
+    {
+      "id": "R18-118",
+      "source": "docs/AXIOM_RESUME_ENGINEERING_ORDER.md",
+      "line": 195,
+      "section": "10. IMPORTANT SAFETY AND RELEASE RULES",
+      "requirement": "- Merge PRs without required approval.",
+      "domain": "governance",
+      "scope": "process",
+      "status": "Partially implemented",
+      "verification": "Latest directive imported without replacing earlier requirements. Existing source and ongoing work are preserved; this row is not acceptance evidence, production authentication proof, or permission to deploy. Capability-specific validation remains required.",
+      "evidence": [
+        "docs/mission/execution-2026-10-16.md"
+      ],
+      "prs": [],
+      "nextAction": "Continue existing source implementation and independent application acceptance, preserving production and release approval gates.",
+      "owner": "Codex; founder approves separately gated production operations",
+      "auditDepth": "Exact available source mapped; capability-specific acceptance audit pending"
+    },
+    {
+      "id": "R18-119",
+      "source": "docs/AXIOM_RESUME_ENGINEERING_ORDER.md",
+      "line": 196,
+      "section": "10. IMPORTANT SAFETY AND RELEASE RULES",
+      "requirement": "- Deploy to production without explicit authorization.",
+      "domain": "governance",
+      "scope": "process",
+      "status": "Partially implemented",
+      "verification": "Latest directive imported without replacing earlier requirements. Existing source and ongoing work are preserved; this row is not acceptance evidence, production authentication proof, or permission to deploy. Capability-specific validation remains required.",
+      "evidence": [
+        "docs/mission/execution-2026-10-16.md"
+      ],
+      "prs": [],
+      "nextAction": "Continue existing source implementation and independent application acceptance, preserving production and release approval gates.",
+      "owner": "Codex; founder approves separately gated production operations",
+      "auditDepth": "Exact available source mapped; capability-specific acceptance audit pending"
+    },
+    {
+      "id": "R18-120",
+      "source": "docs/AXIOM_RESUME_ENGINEERING_ORDER.md",
+      "line": 197,
+      "section": "10. IMPORTANT SAFETY AND RELEASE RULES",
+      "requirement": "- Modify live Stripe billing or activate charges.",
+      "domain": "governance",
+      "scope": "process",
+      "status": "Partially implemented",
+      "verification": "Latest directive imported without replacing earlier requirements. Existing source and ongoing work are preserved; this row is not acceptance evidence, production authentication proof, or permission to deploy. Capability-specific validation remains required.",
+      "evidence": [
+        "docs/mission/execution-2026-10-16.md"
+      ],
+      "prs": [],
+      "nextAction": "Continue existing source implementation and independent application acceptance, preserving production and release approval gates.",
+      "owner": "Codex; founder approves separately gated production operations",
+      "auditDepth": "Exact available source mapped; capability-specific acceptance audit pending"
+    },
+    {
+      "id": "R18-121",
+      "source": "docs/AXIOM_RESUME_ENGINEERING_ORDER.md",
+      "line": 198,
+      "section": "10. IMPORTANT SAFETY AND RELEASE RULES",
+      "requirement": "- Run destructive database migrations without approval.",
+      "domain": "governance",
+      "scope": "process",
+      "status": "Partially implemented",
+      "verification": "Latest directive imported without replacing earlier requirements. Existing source and ongoing work are preserved; this row is not acceptance evidence, production authentication proof, or permission to deploy. Capability-specific validation remains required.",
+      "evidence": [
+        "docs/mission/execution-2026-10-16.md"
+      ],
+      "prs": [],
+      "nextAction": "Continue existing source implementation and independent application acceptance, preserving production and release approval gates.",
+      "owner": "Codex; founder approves separately gated production operations",
+      "auditDepth": "Exact available source mapped; capability-specific acceptance audit pending"
+    },
+    {
+      "id": "R18-122",
+      "source": "docs/AXIOM_RESUME_ENGINEERING_ORDER.md",
+      "line": 199,
+      "section": "10. IMPORTANT SAFETY AND RELEASE RULES",
+      "requirement": "- Change production cloud permissions without authorization.",
+      "domain": "governance",
+      "scope": "process",
+      "status": "Partially implemented",
+      "verification": "Latest directive imported without replacing earlier requirements. Existing source and ongoing work are preserved; this row is not acceptance evidence, production authentication proof, or permission to deploy. Capability-specific validation remains required.",
+      "evidence": [
+        "docs/mission/execution-2026-10-16.md"
+      ],
+      "prs": [],
+      "nextAction": "Continue existing source implementation and independent application acceptance, preserving production and release approval gates.",
+      "owner": "Codex; founder approves separately gated production operations",
+      "auditDepth": "Exact available source mapped; capability-specific acceptance audit pending"
+    },
+    {
+      "id": "R18-123",
+      "source": "docs/AXIOM_RESUME_ENGINEERING_ORDER.md",
+      "line": 200,
+      "section": "10. IMPORTANT SAFETY AND RELEASE RULES",
+      "requirement": "- Overwrite previous Codex work.",
+      "domain": "governance",
+      "scope": "process",
+      "status": "Partially implemented",
+      "verification": "Latest directive imported without replacing earlier requirements. Existing source and ongoing work are preserved; this row is not acceptance evidence, production authentication proof, or permission to deploy. Capability-specific validation remains required.",
+      "evidence": [
+        "docs/mission/execution-2026-10-16.md"
+      ],
+      "prs": [],
+      "nextAction": "Continue existing source implementation and independent application acceptance, preserving production and release approval gates.",
+      "owner": "Codex; founder approves separately gated production operations",
+      "auditDepth": "Exact available source mapped; capability-specific acceptance audit pending"
+    },
+    {
+      "id": "R18-124",
+      "source": "docs/AXIOM_RESUME_ENGINEERING_ORDER.md",
+      "line": 201,
+      "section": "10. IMPORTANT SAFETY AND RELEASE RULES",
+      "requirement": "- Claim a feature works merely because its code exists.",
+      "domain": "governance",
+      "scope": "process",
+      "status": "Partially implemented",
+      "verification": "Latest directive imported without replacing earlier requirements. Existing source and ongoing work are preserved; this row is not acceptance evidence, production authentication proof, or permission to deploy. Capability-specific validation remains required.",
+      "evidence": [
+        "docs/mission/execution-2026-10-16.md"
+      ],
+      "prs": [],
+      "nextAction": "Continue existing source implementation and independent application acceptance, preserving production and release approval gates.",
+      "owner": "Codex; founder approves separately gated production operations",
+      "auditDepth": "Exact available source mapped; capability-specific acceptance audit pending"
+    },
+    {
+      "id": "R18-125",
+      "source": "docs/AXIOM_RESUME_ENGINEERING_ORDER.md",
+      "line": 203,
+      "section": "10. IMPORTANT SAFETY AND RELEASE RULES",
+      "requirement": "Continue using development branches, automated CI, and nonproduction validation wherever possible.",
+      "domain": "governance",
+      "scope": "process",
+      "status": "Partially implemented",
+      "verification": "Latest directive imported without replacing earlier requirements. Existing source and ongoing work are preserved; this row is not acceptance evidence, production authentication proof, or permission to deploy. Capability-specific validation remains required.",
+      "evidence": [
+        "docs/mission/execution-2026-10-16.md"
+      ],
+      "prs": [],
+      "nextAction": "Continue existing source implementation and independent application acceptance, preserving production and release approval gates.",
+      "owner": "Codex; founder approves separately gated production operations",
+      "auditDepth": "Exact available source mapped; capability-specific acceptance audit pending"
+    },
+    {
+      "id": "R18-126",
+      "source": "docs/AXIOM_RESUME_ENGINEERING_ORDER.md",
+      "line": 207,
+      "section": "FINAL DIRECTIVE / START CODING IMMEDIATELY.",
+      "requirement": "**START CODING IMMEDIATELY.**",
+      "domain": "governance",
+      "scope": "process",
+      "status": "Partially implemented",
+      "verification": "Latest directive imported without replacing earlier requirements. Existing source and ongoing work are preserved; this row is not acceptance evidence, production authentication proof, or permission to deploy. Capability-specific validation remains required.",
+      "evidence": [
+        "docs/mission/execution-2026-10-16.md"
+      ],
+      "prs": [],
+      "nextAction": "Continue existing source implementation and independent application acceptance, preserving production and release approval gates.",
+      "owner": "Codex; founder approves separately gated production operations",
+      "auditDepth": "Exact available source mapped; capability-specific acceptance audit pending"
+    },
+    {
+      "id": "R18-127",
+      "source": "docs/AXIOM_RESUME_ENGINEERING_ORDER.md",
+      "line": 209,
+      "section": "FINAL DIRECTIVE / START CODING IMMEDIATELY.",
+      "requirement": "Recover the last unfinished Codex task, resume its implementation, and continue through the canonical master plan.",
+      "domain": "governance",
+      "scope": "process",
+      "status": "Partially implemented",
+      "verification": "Latest directive imported without replacing earlier requirements. Existing source and ongoing work are preserved; this row is not acceptance evidence, production authentication proof, or permission to deploy. Capability-specific validation remains required.",
+      "evidence": [
+        "docs/mission/execution-2026-10-16.md"
+      ],
+      "prs": [],
+      "nextAction": "Continue existing source implementation and independent application acceptance, preserving production and release approval gates.",
+      "owner": "Codex; founder approves separately gated production operations",
+      "auditDepth": "Exact available source mapped; capability-specific acceptance audit pending"
+    },
+    {
+      "id": "R18-128",
+      "source": "docs/AXIOM_RESUME_ENGINEERING_ORDER.md",
+      "line": 211,
+      "section": "FINAL DIRECTIVE / START CODING IMMEDIATELY.",
+      "requirement": "Incorporate the new Cursor-like AI engineering capabilities, repository selectors, environment-aware permissions, Airflow automation, and desktop improvements into the existing product.",
+      "domain": "governance",
+      "scope": "process",
+      "status": "Partially implemented",
+      "verification": "Latest directive imported without replacing earlier requirements. Existing source and ongoing work are preserved; this row is not acceptance evidence, production authentication proof, or permission to deploy. Capability-specific validation remains required.",
+      "evidence": [
+        "docs/mission/execution-2026-10-16.md"
+      ],
+      "prs": [],
+      "nextAction": "Continue existing source implementation and independent application acceptance, preserving production and release approval gates.",
+      "owner": "Codex; founder approves separately gated production operations",
+      "auditDepth": "Exact available source mapped; capability-specific acceptance audit pending"
+    },
+    {
+      "id": "R18-129",
+      "source": "docs/AXIOM_RESUME_ENGINEERING_ORDER.md",
+      "line": 213,
+      "section": "FINAL DIRECTIVE / START CODING IMMEDIATELY.",
+      "requirement": "Prioritize actual functionality, production-grade engineering, complete testing, and working integrations.",
+      "domain": "governance",
+      "scope": "process",
+      "status": "Partially implemented",
+      "verification": "Latest directive imported without replacing earlier requirements. Existing source and ongoing work are preserved; this row is not acceptance evidence, production authentication proof, or permission to deploy. Capability-specific validation remains required.",
+      "evidence": [
+        "docs/mission/execution-2026-10-16.md"
+      ],
+      "prs": [],
+      "nextAction": "Continue existing source implementation and independent application acceptance, preserving production and release approval gates.",
+      "owner": "Codex; founder approves separately gated production operations",
+      "auditDepth": "Exact available source mapped; capability-specific acceptance audit pending"
+    },
+    {
+      "id": "R18-130",
+      "source": "docs/AXIOM_RESUME_ENGINEERING_ORDER.md",
+      "line": 215,
+      "section": "FINAL DIRECTIVE / START CODING IMMEDIATELY.",
+      "requirement": "Do not stop after writing a plan or completing one small task. Continue autonomously through the next available tasks while the execution session remains active.",
+      "domain": "governance",
+      "scope": "process",
+      "status": "Partially implemented",
+      "verification": "Latest directive imported without replacing earlier requirements. Existing source and ongoing work are preserved; this row is not acceptance evidence, production authentication proof, or permission to deploy. Capability-specific validation remains required.",
+      "evidence": [
+        "docs/mission/execution-2026-10-16.md"
+      ],
+      "prs": [],
+      "nextAction": "Continue existing source implementation and independent application acceptance, preserving production and release approval gates.",
+      "owner": "Codex; founder approves separately gated production operations",
+      "auditDepth": "Exact available source mapped; capability-specific acceptance audit pending"
+    },
+    {
+      "id": "R18-131",
+      "source": "docs/AXIOM_RESUME_ENGINEERING_ORDER.md",
+      "line": 217,
+      "section": "FINAL DIRECTIVE / START CODING IMMEDIATELY.",
+      "requirement": "The goal is to deliver a fully functional, production-ready Axiom Agent that combines **Cursor-level AI engineering capabilities with governed cloud infrastructure and deployment automation**.",
+      "domain": "governance",
+      "scope": "process",
+      "status": "Partially implemented",
+      "verification": "Latest directive imported without replacing earlier requirements. Existing source and ongoing work are preserved; this row is not acceptance evidence, production authentication proof, or permission to deploy. Capability-specific validation remains required.",
+      "evidence": [
+        "docs/mission/execution-2026-10-16.md"
+      ],
+      "prs": [],
+      "nextAction": "Continue existing source implementation and independent application acceptance, preserving production and release approval gates.",
+      "owner": "Codex; founder approves separately gated production operations",
+      "auditDepth": "Exact available source mapped; capability-specific acceptance audit pending"
     }
   ],
   "workstreams": [
