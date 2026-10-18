@@ -80,8 +80,14 @@ cleanup and the unchanged lint/build advisories:
 [`local-terraform-legacy-authority-source-validation.json`](mission/local-terraform-legacy-authority-source-validation.json).
 An unpublished intermediate demo merge error was corrected additively before
 these gates; exact reviewed Terraform and incoming Airflow demo steps were
-independently verified. CI remains a separate exact-head merge gate. No actual
-owned application continuation ran for this containment milestone. Existing
+independently verified. After source-only main `037eacb6` integration,
+`7c14b0a3` passed another fresh whole-web type check and 16 focused files /
+132 tests, including incoming desktop editor ownership. Feature/incoming source
+hashes and exact demo step preservation were checked; only coordinator-owned
+checkpoint documentation changed during that window. No second full suite or
+desktop build is attributed to the combined head. Final exact-head CI remains a
+separate merge gate. No actual owned application continuation ran for this
+containment milestone. Existing
 genuine CLI/PG/paired evidence in the saved-plan receipt stays bound to its
 original commit. No real Terraform init/plan/apply, provider/network,
 production DB/schema, native installer or deployment operation is part of this

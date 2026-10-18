@@ -345,5 +345,180 @@
   ],
   "executionEnabled": false,
   "approval": "unavailable",
-  "ci": "Final exact-head remote checks remain a separate merge gate."
+  "ci": "Final exact-head remote checks remain a separate merge gate.",
+  "subsequentIntegration": {
+    "sourceCommit": "7c14b0a3c1fd29069623cc28354f9c5fb3328296",
+    "integratedMain": "037eacb6fdbb5e4261d755754240400ed328ed94",
+    "parents": [
+      "ed1c5d162c6d2a8ab874f199bca5d1568b96b702",
+      "037eacb6fdbb5e4261d755754240400ed328ed94"
+    ],
+    "scope": "Source-only normal PR171/main integration, then fresh whole-web types and focused combined source/component checks. No repeated full default suite, desktop build or runtime acceptance. The earlier62f full/default/desktop/Python observations remain unchanged above.",
+    "sourceCleanBeforeTypeCheck": true,
+    "coordinatorDocumentationDuringChecks": "Only three canonical checkpoint documents changed during the type/focused window. They are coordinator-owned metadata; product/test bytes remained bound to this sourceCommit. No fresh full-suite result is attributed to this combined head.",
+    "preservation": {
+      "integrationHead": "7c14b0a3c1fd29069623cc28354f9c5fb3328296",
+      "parents": [
+        "ed1c5d162c6d2a8ab874f199bca5d1568b96b702",
+        "037eacb6fdbb5e4261d755754240400ed328ed94"
+      ],
+      "conflicts": false,
+      "ownedFeatureFiles": 13,
+      "ownedUnchangedExceptIncomingDemoStep3": true,
+      "receiptUnchanged": true,
+      "incomingFiles": 8,
+      "incomingUnchangedExceptPreservedTerraformAirflowDemoSteps": true,
+      "canonicalFilesByteEqualMain": true,
+      "demo": "Exact premerge source with only incoming native repository step3 replacement; Terraform24 and Airflow25 unchanged; zero conflict markers",
+      "sourceClean": true
+    },
+    "sourceSha256": [
+      {
+        "path": "PHASE4-CONTROLLED-EXECUTION.md",
+        "sha256": "c68825830920ee05941b85ffa01d93ff1ff74e9aeb2664c3e079d5f501f483c5"
+      },
+      {
+        "path": "app/api/terraform/approve/route.ts",
+        "sha256": "ac4cc09db5798be8cd3eab5e14eaa5643285eec471b790eebaa8600dcdcf53be"
+      },
+      {
+        "path": "app/api/terraform/plan/route.ts",
+        "sha256": "997d03935ffef234c665bad95b33072e25cb1b7e6d98c4027a248b81d2d70eea"
+      },
+      {
+        "path": "app/dashboard/resilience/page.tsx",
+        "sha256": "e2395b1252f92cd8fe1d6410ab466f52ee7b1171373b4d4f8d90a1c0e263e8ab"
+      },
+      {
+        "path": "components/__tests__/resilienceTerraformAuthority.test.ts",
+        "sha256": "89cb1c7dd541124009605a57598e3f53952f606bd43a8b71329c46f715ab5a1c"
+      },
+      {
+        "path": "docs/TERRAFORM_AIRFLOW_CUSTOMER_ACCEPTANCE.md",
+        "sha256": "378ffb159e3977027c1185a64e2e90a0809b2e9a8684850c77e647dcabefcfe4"
+      },
+      {
+        "path": "docs/TERRAFORM_LEGACY_AUTHORITY_CONTAINMENT.md",
+        "sha256": "4e3756b2948ca9b6fcbe439196d67370890307122fd9250a989353f14682ce8b"
+      },
+      {
+        "path": "docs/TERRAFORM_SAVED_PLAN_REVIEW_PLAN.md",
+        "sha256": "289098d9cb91945c44ba3e71836f7161ee437d09cd9407dda4b4a78c17a7e245"
+      },
+      {
+        "path": "lib/agents/__tests__/legacyTerraformGuidance.test.ts",
+        "sha256": "f974bb662cfa6589406ad542310b2df13257cb73d8112148b42e649cb0f7de41"
+      },
+      {
+        "path": "lib/agents/axiomAssistantAgent.ts",
+        "sha256": "7ecd70f6990828e04d417a914d3b1782b6f995cbe7e07b03fbc4e5388a1f1006"
+      },
+      {
+        "path": "lib/demo/demoScenarios.ts",
+        "sha256": "b0140abdb1cd7ef29caae55c2fd909ba2cb4f7ce579420482d34e0a561c06f9b"
+      },
+      {
+        "path": "lib/terraform/__tests__/legacyTerraformAuthority.test.ts",
+        "sha256": "0ddf5b47232ddd3fbbbf23f632fb7b60154860ef1bf1517dba0f8cc7bc2793ec"
+      },
+      {
+        "path": "lib/terraform/runner.ts",
+        "sha256": "717d1f0ebca278460f4073e816d891b2cd79b3de1b6cf3769b65de429f357435"
+      },
+      {
+        "path": "desktop/src/views/RepositoryWorkspaceView.tsx",
+        "sha256": "66865cc1ea88a520a1476dfe24461fb252fdf6691a85a2f8e2cf1324fe3c3bf2"
+      },
+      {
+        "path": "lib/desktop/__tests__/repositoryWorkspaceOwnership.test.ts",
+        "sha256": "43d9e7f2b1edc9ff3338c32b3f048111446d5e05aaaf524f46b863013e0bef2f"
+      }
+    ],
+    "gates": [
+      {
+        "sourceCommit": "7c14b0a3c1fd29069623cc28354f9c5fb3328296",
+        "command": [
+          "node",
+          "--max-old-space-size=8192",
+          "node_modules/typescript/bin/tsc",
+          "--noEmit",
+          "--incremental",
+          "false"
+        ],
+        "freshProgram": true,
+        "incremental": false,
+        "heapLimitMiB": 8192,
+        "elapsedSeconds": 56.89,
+        "maxRssKiB": 4024292,
+        "exitCode": 0,
+        "desktopLinkWasPresent": false,
+        "ownedRootOverlay": "/workspace/.axiom-validation/ecs-direct-root/node_modules",
+        "log": "/tmp/axiom-terraform-legacy-integrated-web-tsc-7c14b0a3.log"
+      },
+      {
+        "sourceCommit": "7c14b0a3c1fd29069623cc28354f9c5fb3328296",
+        "command": [
+          "node",
+          "node_modules/vitest/vitest.mjs",
+          "run",
+          "lib/terraform/__tests__/legacyTerraformAuthority.test.ts",
+          "lib/terraform/__tests__/savedPlanArtifact.test.ts",
+          "lib/terraform/__tests__/savedPlanArtifactIO.test.ts",
+          "lib/terraform/__tests__/savedPlanFixtureTarget.test.ts",
+          "lib/terraform/__tests__/savedPlanRead.test.ts",
+          "lib/terraform/__tests__/savedPlanStore.test.ts",
+          "lib/terraform/__tests__/terraformApplyKillSwitch.test.ts",
+          "lib/agents/__tests__/legacyTerraformGuidance.test.ts",
+          "components/__tests__/resilienceTerraformAuthority.test.ts",
+          "app/api/terraform/apply/__tests__/route.test.ts",
+          "app/api/desktop/deployments/[id]/terraform-plans/__tests__/route.test.ts",
+          "app/api/desktop/handoff/__tests__/route.test.ts",
+          "lib/desktop/__tests__/terraformPlanReview.test.ts",
+          "lib/desktop/__tests__/repositoryWorkspaceOwnership.test.ts",
+          "lib/demo/__tests__/demoScenarios.test.ts",
+          "lib/iac/__tests__/terraformPlanSummarizer.test.ts",
+          "--reporter=verbose"
+        ],
+        "elapsedSeconds": 4.11,
+        "exitCode": 0,
+        "log": "/tmp/axiom-terraform-legacy-integrated-focused-7c14b0a3.log",
+        "scope": "Actual handler/runner/component/prompt plus saved-plan contracts, paired/native mocked reads, apply/signing gates, demo and incoming desktop ownership. Synthetic IO; no real Terraform/provider/native operation.",
+        "passedFiles": 16,
+        "passedTests": 132
+      }
+    ],
+    "logArtifacts": [
+      {
+        "path": "/tmp/axiom-terraform-legacy-integrated-web-tsc-7c14b0a3.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "/tmp/axiom-terraform-legacy-integrated-focused-7c14b0a3.log",
+        "bytes": 20452,
+        "sha256": "63e05c379dfef02946e48356e9e0656cf1f0eee45dbee0d84c3692197c51e79a"
+      },
+      {
+        "path": "/tmp/axiom-terraform-legacy-integration-037-proof.json",
+        "bytes": 612,
+        "sha256": "64cec7f245d061470b905617a7f9bc8b1cadf705658af85180e1205d8fc7ad23"
+      },
+      {
+        "path": "/tmp/axiom-terraform-legacy-integration-037-cleanup.json",
+        "bytes": 371,
+        "sha256": "bdc0de23552f4b07206331c3373a209a394ab7d30a6e9b199bd23aea8c39c23b"
+      }
+    ],
+    "cleanup": {
+      "sourceCommit": "7c14b0a3c1fd29069623cc28354f9c5fb3328296",
+      "sourceHashesPreserved": true,
+      "ownedWorktreeProcesses": [],
+      "desktopLinkPresent": false,
+      "nextDirectoryPresent": false,
+      "runtimeResourcesStarted": false,
+      "heavyWindowReleased": true,
+      "dirtyFiles": "Only coordinator-authored canonical checkpoint documentation; product and tests unchanged."
+    },
+    "remainingGate": "Final exact-head remote CI clean-install/full production build and required review, managed by root."
+  }
 }
