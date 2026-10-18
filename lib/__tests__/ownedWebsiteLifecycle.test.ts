@@ -240,6 +240,22 @@ it("owned child pipe errors cancel instead of becoming unhandled supervisor sock
   lifecycle.observeOwnedChild(handle, { critical: true, isCleaning: () => false, onFailure: cancel, onData: () => {} });
   expect(() => handle.stdout.emit("error", Error("ECONNRESET"))).not.toThrow(); expect(() => handle.stderr.emit("error", Error("ECONNRESET"))).not.toThrow(); expect(cancel).toHaveBeenCalledTimes(2);
 });
+it.each(["server", "proxy", "browser", "capture"])("post-registration %s handle errors cancel without certifying exit", async role => {
+  const control = lifecycle.createCoordinator({ signals: new EventEmitter() }); const handle = child();
+  const stop = vi.fn(async () => { handle.emit("exit", 0, null); });
+  const ledger = lifecycle.createLedger({ spawn: () => handle, snapshot: () => owner, canonical: (v: string) => v, stopGroup: stop, groupMembers: () => [], waitExit: async () => {}, onFailure: control.cancel });
+  try {
+    const launch = ledger.launch("/owned/node", [], {}, () => {}, role); handle.emit("spawn"); await launch;
+    const pending = control.run(() => new Promise(() => {})).catch((error: Error) => error.message);
+    handle.emit("error", Error("post_spawn_failure"));
+    expect(control.report().failure).toBe("website_owned_child_handle_error");
+    expect(await pending).toBe("website_owned_child_handle_error");
+    expect(ledger.report()[0]).toMatchObject({ state: "registered", exited: false, neverSpawned: false, owner });
+    expect(() => control.check()).toThrow("website_owned_child_handle_error");
+    expect(await ledger.cleanup()).toEqual([]); expect(stop).toHaveBeenCalledWith(owner);
+    expect(ledger.report()[0].state).toBe("exited");
+  } finally { control.cancel(Error("test_finished")); control.dispose(); }
+});
 
 it("persists a bounded nonce-bound journal by flushed temporary write before atomic rename", () => {
   const calls: string[] = []; let content = "";

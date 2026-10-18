@@ -24,7 +24,13 @@ function createLedger({ spawn, snapshot, canonical, stopGroup, groupMembers, onC
     handle.on('exit', (code, signal) => { record.exited = true; record.exitCode = code; record.signal = signal; publishEvent(); });
     const spawned = new Promise((resolve, reject) => {
       handle.once('spawn', resolve);
-      handle.on('error', error => { if (!Number.isInteger(handle.pid)) record.neverSpawned = true; publishEvent(); reject(error); });
+      handle.on('error', error => {
+        if (!Number.isInteger(handle.pid)) record.neverSpawned = true;
+        // A handle error remains fatal after the spawn promise has already resolved.
+        // It is never proof of exit and does not discard registered ownership.
+        onFailure(Error('website_owned_child_handle_error'));
+        publishEvent(); reject(error);
+      });
     });
     record.registration = spawned.then(() => {
       assert.ok(!record.registrationClosed, 'website_registration_window_closed');
