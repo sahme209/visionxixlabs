@@ -1,0 +1,53 @@
+{
+  "sourceBefore": "177979697026b95896a14f2ea49f85a3f0beebef",
+  "sourceAfter": "177979697026b95896a14f2ea49f85a3f0beebef",
+  "sourceCleanAfter": true,
+  "invocations": 1,
+  "nativePermission": true,
+  "exitCode": 2,
+  "observedCompleteUtc": "2026-10-18T08:40:16.450500+00:00",
+  "elapsedSecondsUpperBoundAtObservation": 79.9,
+  "heapMiB": 8192,
+  "incremental": false,
+  "sourceBindingFilesVerifiedAfter": 122,
+  "sourceBindingMismatches": [],
+  "runtimeAfter": {
+    "nextOutputAbsent": true,
+    "desktopLinkAbsent": true,
+    "workerPackagingOrServerStarted": false,
+    "databaseOrProviderStarted": false,
+    "privateViteCachesEmpty": true
+  },
+  "qualification": "Elapsed is completion-observation upper bound, not measured process-only runtime/CPU/peak. No retry.",
+  "start": {
+    "path": "/workspace/.axiom-validation/billing-checkout-typed-815_g61p/compiler-start.json",
+    "sha256": "b166706f3636ee17f939b35cc9d48561530ddbeebcc5bb60263b5de143d3ce3d",
+    "bytes": 1250
+  },
+  "log": {
+    "path": "/workspace/.axiom-validation/billing-checkout-typed-815_g61p/compiler.log",
+    "sha256": "71e887619cead7f7524fb1b1177734ea2c18ebe7439ba5d453c962706b1212c1",
+    "bytes": 476
+  },
+  "launcher": {
+    "path": "/workspace/.axiom-validation/billing-checkout-typed-815_g61p/run-web-compiler.py",
+    "sha256": "2dfcde94ade634deee954ea3d05fc363ea4ca622f128788f186b73fbc56361f8",
+    "bytes": 5488
+  },
+  "binding": {
+    "path": "/workspace/.axiom-validation/billing-checkout-typed-815_g61p/compiler-binding.json",
+    "sha256": "7464f1c71a17b4f4cf2bab8f23f5e22e13be998bae36538668682e2c13debb04",
+    "bytes": 222325
+  },
+  "diagnostics": [
+    {
+      "path": "lib/billing/__tests__/ownedCheckoutSupervisor.test.ts",
+      "line": 24,
+      "column": 75,
+      "code": "TS2322",
+      "headline": "Vitest generic function mock returns PrismaPromise<unknown> and cannot fulfill the per-call generic PrismaPromise<T> method contract."
+    }
+  ],
+  "runtimeGrant": false,
+  "attempts": 1
+}
