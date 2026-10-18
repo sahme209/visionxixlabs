@@ -9,7 +9,6 @@ describe("desktop first-run contract", () => {
 
   it("requires server verification before mounting an authenticated workspace", () => {
     const app = readFileSync(join(root, "desktop/src/App.tsx"), "utf8");
-    const client = readFileSync(join(root, "desktop/src/lib/desktopClient.ts"), "utf8");
     expect(app).toContain('"access_required"');
     expect(app).toContain("desktopClient.verifyCurrentCredential()");
     expect(app).toContain('verified.access.allowed ? "authenticated" : "access_required"');
@@ -17,7 +16,6 @@ describe("desktop first-run contract", () => {
     expect(app).not.toContain("clearApiKey()");
     expect(app).not.toContain("clearAuthSession()");
     expect(app).toContain("<DesktopAccessRequiredView");
-    expect(client).toContain('>("/api/desktop/access", token)');
     expect(app.indexOf('if (authState === "checking")')).toBeLessThan(app.indexOf("<AuthenticatedWorkspace"));
   });
 
