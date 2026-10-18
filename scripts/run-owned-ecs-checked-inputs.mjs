@@ -1,0 +1,80 @@
+import assert from "node:assert/strict";
+import { generateKeyPairSync, randomBytes } from "node:crypto";
+import { spawn, spawnSync } from "node:child_process";
+import { dirname, join } from "node:path";
+import { fileURLToPath, pathToFileURL } from "node:url";
+import { runOwnedLocalAuthHttp } from "./run-owned-local-auth-http.mjs";
+import { validateLocalAuthHttpTarget, assertNoRuntimeDotenv, assertCommittedApplicationSource } from "./rehearse-local-auth-http.mjs";
+import { startOwnedEcsCheckedInputWire, ECS_WIRE } from "./fixtures/ownedEcsCheckedInputWire.mjs";
+const root = dirname(dirname(fileURLToPath(import.meta.url)));
+const opaqueEnvironment = ["PATH", "TMPDIR", "LANG", "LC_ALL", "HTTP_PROXY", "HTTPS_PROXY", "ALL_PROXY", "NO_PROXY", "http_proxy", "https_proxy", "all_proxy", "no_proxy", "NODE_EXTRA_CA_CERTS", "SSL_CERT_FILE", "SSL_CERT_DIR", "CODEX_PROXY_CERT"];
+export function ownedEcsBaseEnvironment(env) {
+  assert.equal(env.AXIOM_RUN_OWNED_ECS_CHECKED_INPUTS, "1", "owned_ecs_explicit_opt_in_required");
+  assert.ok(!Object.keys(env).some(key => !opaqueEnvironment.includes(key) && key !== "AXIOM_RUN_OWNED_ECS_CHECKED_INPUTS" && (/^(DATABASE_URL|DIRECT_URL|PG|DOCKER_|NODE_OPTIONS|NODE_TLS_|NODE_USE_ENV_PROXY|NEXTAUTH_|DESKTOP_SESSION_|CREDENTIAL_|STARTER_TOKEN_|POSTGRES_|AWS_|AZURE_|ARM_|GOOGLE_|GCP_|GITHUB_|GH_|STRIPE_|VERCEL_|AXIOM_)/.test(key))), "owned_ecs_inherited_binding_forbidden");
+  return Object.fromEntries(opaqueEnvironment.filter(key => typeof env[key] === "string").map(key => [key, env[key]]));
+}
+export function ownedEcsChildEnvironment(base, { databaseUrl, origin, proof, sourceCommit, privateKey, encryptionKey, desktopKey }) {
+  assert.ok(Object.keys(base).every(key => opaqueEnvironment.includes(key)), "owned_ecs_child_base_required");
+  const target = validateLocalAuthHttpTarget(databaseUrl), url = new URL(origin);
+  assert.ok(url.protocol === "http:" && url.hostname === "127.0.0.1" && url.port && url.pathname === "/" && !url.username && !url.password && !url.search && !url.hash);
+  assert.match(proof, /^[a-f0-9]{32}$/); assert.match(sourceCommit, /^[a-f0-9]{40}$/);
+  assert.ok(privateKey.startsWith("-----BEGIN PRIVATE KEY-----") && encryptionKey.length >= 32 && desktopKey.length >= 32);
+  const preload = fileURLToPath(new URL("./fixtures/ownedEcsCheckedInputPreload.cjs", import.meta.url)); assert.ok(!/\s/.test(preload));
+  return { ...base, DATABASE_URL: target, DIRECT_URL: target, NODE_ENV: "test", NODE_OPTIONS: `--require=${preload}`, PRISMA_HIDE_UPDATE_MESSAGE: "true", CHECKPOINT_DISABLE: "1",
+    AXIOM_OWNED_ECS_CHECKED_INPUTS: "1", AXIOM_OWNED_ECS_ORIGIN: url.origin, AXIOM_OWNED_ECS_PROOF: proof, AXIOM_OWNED_ECS_SOURCE_COMMIT: sourceCommit,
+    CREDENTIAL_ENCRYPTION_KEY: encryptionKey, DESKTOP_SESSION_SIGNING_KEY: desktopKey, GITHUB_APP_ID: String(ECS_WIRE.appId), GITHUB_PRIVATE_KEY: privateKey,
+    AWS_CONFIG_FILE: "/dev/null", AWS_SHARED_CREDENTIALS_FILE: "/dev/null", AWS_EC2_METADATA_DISABLED: "true", AWS_SCAN_MODE: "live", AWS_CONNECTOR_BROKER_ACCESS_KEY_ID: ECS_WIRE.brokerKey, AWS_CONNECTOR_BROKER_SECRET_ACCESS_KEY: ECS_WIRE.secret };
+}
+/** Fixed synthetic continuation only; no caller module/URL/adapter or shared runner flag. */
+export async function runOwnedEcsCheckedInputs(env) {
+  const base = ownedEcsBaseEnvironment(env); assertNoRuntimeDotenv(root); const sourceCommit = assertCommittedApplicationSource(root);
+  const controller = new AbortController(), deadline = setTimeout(() => controller.abort(), 240_000);
+  const interrupt = () => controller.abort(); process.once("SIGINT", interrupt); process.once("SIGTERM", interrupt);
+  try {
+    return await runOwnedLocalAuthHttp({ ...base, AXIOM_RUN_LOCAL_AUTH_HTTP: "1" }, { signal: controller.signal, rehearse: async databaseUrl => {
+      validateLocalAuthHttpTarget(databaseUrl);
+      const keys = generateKeyPairSync("rsa", { modulusLength: 2048, publicKeyEncoding: { type: "spki", format: "pem" }, privateKeyEncoding: { type: "pkcs8", format: "pem" } });
+      const proof = randomBytes(16).toString("hex"), wire = await startOwnedEcsCheckedInputWire({ proof, publicKey: keys.publicKey });
+      let child, exited = false, childClosed, report, output = "", bytes = 0, lastControlId = 0;
+      try {
+        // No query/reset against an arbitrary target: parent created this URL/container just above.
+        const schemaEnvironment = { ...base, DATABASE_URL: databaseUrl, DIRECT_URL: databaseUrl, PRISMA_HIDE_UPDATE_MESSAGE: "true", CHECKPOINT_DISABLE: "1" };
+        const emptyProof = `DO $$ BEGIN IF current_database() <> '${new URL(databaseUrl).pathname.slice(1)}' OR EXISTS(SELECT 1 FROM pg_tables WHERE schemaname='public') THEN RAISE EXCEPTION 'owned_ecs_empty_database_required'; END IF; END $$;`;
+        const preflight = spawnSync(process.execPath, [join(root, "node_modules/prisma/build/index.js"), "db", "execute", "--stdin", "--schema", join(root, "prisma/schema.prisma")], { cwd: root, env: schemaEnvironment, input: emptyProof, timeout: 30_000, encoding: "utf8", maxBuffer: 128 * 1024 });
+        assert.equal(preflight.status, 0, "owned_ecs_empty_database_preflight_failed");
+        const bootstrap = spawnSync(process.execPath, [join(root, "node_modules/prisma/build/index.js"), "db", "push", "--skip-generate", "--schema", join(root, "prisma/schema.prisma")], { cwd: root, env: schemaEnvironment, timeout: 120_000, encoding: "utf8", maxBuffer: 1024 * 1024 });
+        assert.equal(bootstrap.status, 0, "owned_ecs_schema_bootstrap_failed"); controller.signal.throwIfAborted();
+        const childEnv = ownedEcsChildEnvironment(base, { databaseUrl, origin: wire.origin, proof, sourceCommit, privateKey: keys.privateKey, encryptionKey: randomBytes(32).toString("hex"), desktopKey: randomBytes(32).toString("hex") });
+        const probe = fileURLToPath(new URL("./fixtures/ecsCheckedInputSourceProbe.cjs", import.meta.url));
+        child = spawn(process.execPath, ["--conditions=react-server", probe], { cwd: root, env: childEnv, detached: true, stdio: ["ignore", "pipe", "pipe", "ipc"] });
+        childClosed = new Promise(resolve => child.once("close", () => { exited = true; resolve(); }));
+        wire.bindProcess(child.pid);
+        const stop = () => { if (child && !exited) { try { process.kill(-child.pid, "SIGKILL"); } catch (error) { if (error.code !== "ESRCH") throw new Error("owned_ecs_child_cleanup_failed"); } } };
+        controller.signal.addEventListener("abort", stop, { once: true });
+        child.stdout.on("data", chunk => { bytes += chunk.length; if (bytes > 128 * 1024) { controller.abort(); return; } output += chunk; });
+        child.stderr.on("data", chunk => { bytes += chunk.length; if (bytes > 128 * 1024) controller.abort(); }); // Never echo raw child/provider errors.
+        child.on("message", async message => {
+          if (!message || message.kind !== "owned_ecs_control" || message.proof !== proof || !Number.isSafeInteger(message.id) || message.id !== lastControlId + 1) { controller.abort(); return; }
+          lastControlId = message.id;
+          try { const result = await wire.control(message); if (child.connected) child.send({ kind: "owned_ecs_control_reply", id: message.id, ok: true, result }, () => {}); }
+          catch { if (child.connected) child.send({ kind: "owned_ecs_control_reply", id: message.id, ok: false }, () => {}); }
+        });
+        try { const status = await new Promise((resolve, reject) => { child.once("error", reject); child.once("exit", code => { exited = true; resolve(code); }); }); assert.equal(status, 0, "owned_ecs_source_probe_failed"); controller.signal.throwIfAborted(); }
+        finally { controller.signal.removeEventListener("abort", stop); stop(); }
+        report = JSON.parse(output); assert.equal(report.kind, "owned_ecs_checked_inputs"); assert.equal(report.sourceCommit, sourceCommit);
+        assert.equal(assertCommittedApplicationSource(root), sourceCommit, "owned_ecs_source_changed");
+        const transport = wire.summary(); assert.equal(transport.violation, false); assert.equal(transport.pendingResponses, 0); assert.equal(transport.guardProcesses, 1);
+        return { ...report, transport, productionProviderCalls: false, schema: "owned_current_schema_not_migration_acceptance" };
+      } finally {
+        try {
+          if (child && !exited) { try { process.kill(-child.pid, "SIGKILL"); } catch (error) { if (error.code !== "ESRCH") throw new Error("owned_ecs_child_cleanup_unverified"); } }
+          if (childClosed) { let timer; try { await Promise.race([childClosed, new Promise((_, reject) => { timer = setTimeout(() => reject(new Error("owned_ecs_child_cleanup_unverified")), 3000); })]); } finally { clearTimeout(timer); } }
+        } finally { await wire.close(); }
+      }
+    } });
+  } finally { clearTimeout(deadline); process.removeListener("SIGINT", interrupt); process.removeListener("SIGTERM", interrupt); }
+}
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
+  try { console.log(JSON.stringify(await runOwnedEcsCheckedInputs(process.env), null, 2)); }
+  catch { console.error("owned_ecs_checked_inputs_failed"); process.exitCode = 1; }
+}
