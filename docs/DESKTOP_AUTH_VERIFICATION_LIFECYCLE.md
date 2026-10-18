@@ -181,3 +181,13 @@ revision and configuration immediately before acting. A queued old-editor event
 cannot recapture new credentials and revive an old loaded file. Regression uses
 the actual DesktopClient.setSession notification implementation, without an
 explicit view rerender; provider methods and native transport remain mocked.
+
+Final integrated local validation passed: 36 focused checks, fresh whole-web and
+desktop TypeScript, the default suite (7,138 passing tests; eight skipped), desktop
+release/Vite build, 30 Python SDK tests and 16 offline authentication-gate tests.
+The mission tracker retains 18 sources and 2,112 requirement rows. An initial
+test-only mock return-type inference error was corrected without changing product
+behavior or compiler options. See the [source-bound editor receipt](mission/desktop-editor-ownership-local-acceptance.json)
+for exact source hashes, validation environment and acceptance limits. These local
+checks use mocked native/provider transport; clean exact-head CI and actual native
+filesystem/customer acceptance remain separate gates.
