@@ -51,7 +51,7 @@ provider acceptance.
 The focused regression set passed 11 files / 93 tests, covering those cases,
 existing apply gates, saved-plan artifact/read/paired/native behavior, signed
 handoff refusal, approved HCL/unsigned preview boundaries and demo contracts.
-This focused count does not substitute for the deferred full suite or runtime.
+This focused count is separate from the full-suite results below and does not establish runtime acceptance.
 
 Independent source review passed the route/runner/page implementation and found
 one adjacent P2: the live Assistant system prompt still recommended the removed
@@ -71,10 +71,19 @@ still reports its two pre-existing unused-variable warnings (`e` at237 and
 comparison confirmed identical diagnostics. No unrelated runtime cleanup or
 rule suppression was included to hide this baseline limitation.
 
-Full compiler/default-suite/desktop/Python/CI and any actual owned application
-continuation remain separately scheduled after source freeze and independent
-review. Existing genuine CLI/PG/paired evidence in the saved-plan receipt stays
-bound to its original commit. No real Terraform init/plan/apply, provider/network,
+After independent source review and normal main `10882dc2` integration, clean
+`62f21552` passed fresh whole-web types (8192 MiB, incremental disabled), the
+default suite (7150 tests / 658 files; eight tests / one optional file skipped),
+desktop types/build, Python CLI30, offline evidence16 and tracker18 sources /
+2112 rows. The source-validation receipt records commands, exact hashes, logs,
+cleanup and the unchanged lint/build advisories:
+[`local-terraform-legacy-authority-source-validation.json`](mission/local-terraform-legacy-authority-source-validation.json).
+An unpublished intermediate demo merge error was corrected additively before
+these gates; exact reviewed Terraform and incoming Airflow demo steps were
+independently verified. CI remains a separate exact-head merge gate. No actual
+owned application continuation ran for this containment milestone. Existing
+genuine CLI/PG/paired evidence in the saved-plan receipt stays bound to its
+original commit. No real Terraform init/plan/apply, provider/network,
 production DB/schema, native installer or deployment operation is part of this
 source milestone. Customer producer/current backend/target/credential authority,
 fenced approval consumption, exact saved-binary apply and recovery remain missing.
