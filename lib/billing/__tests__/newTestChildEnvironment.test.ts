@@ -66,6 +66,12 @@ describe("owned new TEST Next child environment", () => {
 });
 
 describe("owned Prisma setup child environment", () => {
+  it.each([undefined, "false"])("forces checkpoint network refusal when inherited CHECKPOINT_DISABLE is %s", value => {
+    const inherited = value === undefined ? {} : { CHECKPOINT_DISABLE: value };
+    const before = { ...inherited };
+    expect(newTestPrismaEnvironment(inherited, [], fixture.databaseUrl).CHECKPOINT_DISABLE).toBe("1");
+    expect(inherited).toEqual(before);
+  });
   it("preserves reviewed transport/framework options but excludes every ambient provider/database credential", () => {
     const selectors = { HTTPS_PROXY: "opaque-managed-proxy", NODE_EXTRA_CA_CERTS: "opaque-managed-ca", AWS_CA_BUNDLE: "opaque-managed-aws-ca" };
     const inherited = { ...selectors, STRIPE_SECRET_KEY: "forbidden", AWS_ACCESS_KEY_ID: "forbidden", AI_GATEWAY_API_KEY: "forbidden", DATABASE_URL: "forbidden", DIRECT_URL: "forbidden", SHADOW_DATABASE_URL: "forbidden", VERCEL: "forbidden", NEXTAUTH_SECRET: "forbidden" };

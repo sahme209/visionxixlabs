@@ -82,6 +82,6 @@ export function newTestChildEnvironment(inherited: Readonly<Record<string, strin
  * only the explicit new owned database. No Next/provider credential is copied. */
 export function newTestPrismaEnvironment(inherited: Readonly<Record<string, string | undefined>>, execArgv: readonly string[], databaseUrl: string): NodeJS.ProcessEnv {
   const inheritedEnvironment = checkedChildEnvironment(inherited, execArgv); ownedDatabase(databaseUrl);
-  return { ...inheritedEnvironment, NODE_ENV: "development", DATABASE_URL: databaseUrl, DIRECT_URL: databaseUrl, SHADOW_DATABASE_URL: databaseUrl,
+  return { ...inheritedEnvironment, NODE_ENV: "development", DATABASE_URL: databaseUrl, DIRECT_URL: databaseUrl, SHADOW_DATABASE_URL: databaseUrl, CHECKPOINT_DISABLE: "1",
     AXIOM_ISOLATED_PUBLIC_TEST_RUNTIME: "true", AWS_CONFIG_FILE: "/dev/null", AWS_SHARED_CREDENTIALS_FILE: "/dev/null", AWS_EC2_METADATA_DISABLED: "true" };
 }

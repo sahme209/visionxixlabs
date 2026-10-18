@@ -126,11 +126,11 @@
     },
     {
       "path": "lib/billing/__tests__/fixtures/newTestChildEnvironment.ts",
-      "sha256": "0276b0734953b70bcf3f4d44d453ab7f50c67a6a7076735c447da387a6cff973"
+      "sha256": "4681f380ca51e5cc34808da84a22e3049a8f19a6e66391146624e12c93f9969c"
     },
     {
       "path": "lib/billing/__tests__/newTestChildEnvironment.test.ts",
-      "sha256": "d5267b4e05b692f998302844bfe24b43e13fa8ff9e9b8dc44b4608c4dfc7dbe5"
+      "sha256": "50f0f57b7e62083a8e843726154ee3a5e80d299e539f32bdbf1a4c22bff821af"
     },
     {
       "path": "lib/billing/__tests__/newTestSubscriptionService.postgres.test.ts",
@@ -152,6 +152,22 @@
     },
     {
       "path": "/tmp/axiom-anniversary-task5-lint.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/tmp/axiom-anniversary-prisma-checkpoint-red.log",
+      "sha256": "557c140dfe68876ccb04cd407f5a62935809a3663a546f2f07741dc37c4977a1"
+    },
+    {
+      "path": "/tmp/axiom-anniversary-prisma-checkpoint-green.log",
+      "sha256": "f6eaf0873ef3264ee891532fb71d9a9f2a02f16663456860db87758c031db04b"
+    },
+    {
+      "path": "/tmp/axiom-anniversary-prisma-checkpoint-focused.log",
+      "sha256": "eb7f1cecad6d1a35f0b41a0069d4527e93c9d29db8138d8dc02930e3b3d40c12"
+    },
+    {
+      "path": "/tmp/axiom-anniversary-prisma-checkpoint-lint.log",
       "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
     }
   ],
@@ -210,5 +226,17 @@
       "sha256": "fc0832c7df1659cbe01e72386bad207d766e55406ac000a5cfeed567ffe7052b",
       "unchangedFromProductBase": true
     }
-  ]
+  ],
+  "fixtureReviewClosure": {
+    "reviewedBaseCommit": "ef0059569856be8c59e93837e98b93ec5e4355a7",
+    "materialFindings": 1,
+    "correction": "force owned Prisma CHECKPOINT_DISABLE=1 even if absent/false inherited",
+    "regressionRed": 2,
+    "regressionGreen": 2,
+    "completeLauncherGreen": 28,
+    "installedPrismaVersion": "5.22.0",
+    "lockedPrismaVersion": "5.22.0",
+    "cliExecuted": false,
+    "runtimeExecuted": false
+  }
 }
