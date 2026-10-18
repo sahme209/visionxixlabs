@@ -106,7 +106,7 @@ class EvidenceGateTests(unittest.TestCase):
         self.assertTrue(module.check(data))
 
     def test_malformed_and_noncanonical_references_fail_without_exception(self):
-        for value in ("https://[invalid", "https://example.org:invalid/evidence", "https://example.org:0/evidence", " https://example.org/evidence", "https://example.org/\nsecret", "https://example.org/" + "a" * 2048):
+        for value in ("https://@example.org/evidence", "https://:@example.org/evidence", "https://example.org\\other/evidence", "https://%zz/evidence", "https://[invalid", "https://example.org:invalid/evidence", "https://example.org:0/evidence", " https://example.org/evidence", "https://example.org/\nsecret", "https://example.org/" + "a" * 2048):
             with self.subTest(value=value[:35]):
                 try:
                     result = module.valid_reference(value)

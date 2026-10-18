@@ -32,6 +32,7 @@ EVIDENCE_GATES = ("effective_database_binding_verified",) + GATES
 
 def valid_reference(value):
     if (not isinstance(value, str) or not value or len(value) > 2048
+            or "\\" in value
             or any(character.isspace() or ord(character) < 32 or ord(character) == 127
                    for character in value)):
         return False
@@ -44,7 +45,8 @@ def valid_reference(value):
         return False
     return (parsed.scheme == "https" and bool(host)
             and (port is None or 1 <= port <= 65535)
-            and not parsed.username and not parsed.password
+            and parsed.username is None and parsed.password is None
+            and "%" not in parsed.netloc
             and not parsed.query and not parsed.fragment)
 
 
