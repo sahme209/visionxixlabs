@@ -140,11 +140,11 @@
     },
     {
       "path": "lib/billing/__tests__/fixtures/ownedCheckoutHttpAcceptance.ts",
-      "sha256": "0f3fcfdbd3b4d9a6f7d1b2ace6e30731cdb0023e5ae792cee980deacb7707291"
+      "sha256": "19f5072418314770a6b477b9f1e906cd583062da92f5a695727d04efff00b214"
     },
     {
       "path": "lib/billing/__tests__/fixtures/ownedCheckoutLaunchPolicy.ts",
-      "sha256": "0f1eada9035f9543b037274f7e81d220df7d2f63291d5182abfee716d78d030a"
+      "sha256": "e38f87b05f39ac3298d027ff89255eb496b04357bbe16314de8a922f6b8eabaf"
     },
     {
       "path": "lib/billing/__tests__/fixtures/ownedCheckoutProcess.ts",
@@ -152,11 +152,11 @@
     },
     {
       "path": "lib/billing/__tests__/fixtures/ownedCheckoutWorkerBundle.ts",
-      "sha256": "ebe721ef445d6a56a21b1fc5e9d99b8aab0dec693ad97fa961fec1a82601207c"
+      "sha256": "4fe9cc077a62c366ce0acd438e6dae13e87069d1c2f963c3a4fdce516b2afe38"
     },
     {
       "path": "lib/billing/__tests__/fixtures/ownedCheckoutWorkerSupervisor.ts",
-      "sha256": "1738ed45b06ff7a1dc019917b5115e5a4b862523530ad32702a5b1ba87b87317"
+      "sha256": "5e4c14f0aeba1b19658e148f957ca8d5566501d94b7911e2c968ad106ce69a74"
     }
   ],
   "configuration": [
