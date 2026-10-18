@@ -172,7 +172,8 @@ function RepositoryWorkspaceSession({ revision }: { revision: number }) {
       setRemoteRepositories(result.data.repositories);
       const preferred = window.localStorage.getItem("axiom.workspace.repository.v1");
       const selected = result.data.repositories.find(repository => repository.fullName === preferred) ?? result.data.repositories[0];
-      if (!manualClone.current) setCloneRepository(value => value || selected?.fullName || "");
+      if (!manualClone.current) setCloneRepository(value =>
+        result.data.repositories.some(repository => repository.fullName === value) ? value : selected?.fullName || "");
       setRepositoryCatalogTruncated(result.data.truncated); setRepositoryCatalogError(null);
     } catch {
       if (current()) setRepositoryCatalogError("Connected repositories could not be loaded.");
@@ -287,7 +288,8 @@ function RepositoryWorkspaceSession({ revision }: { revision: number }) {
 
   async function clone() {
     const repositoryFullName = cloneRepository.trim();
-    if (!repositoryFullName.includes("/") || !parentPath) return;
+    if (!repositoryFullName.includes("/") || !parentPath
+      || (!manualCloneRepository && !remoteRepositories.some(repository => repository.fullName === repositoryFullName))) return;
     await run("clone", async current => {
       const credential = await desktopClient.mintGithubCloneToken({ repositoryFullName, purpose: "clone" });
       if (!current()) return;
@@ -457,7 +459,7 @@ function RepositoryWorkspaceSession({ revision }: { revision: number }) {
       </div>
       <button type="button" onClick={() => void refreshCatalog()} className="btn-secondary">Refresh connected repositories</button>
       <input value={parentPath} onChange={(event) => setParentPath(event.target.value)} aria-label="Local repositories folder" className="min-w-0 flex-1 rounded-md border border-white/10 bg-black/25 px-3 py-2 text-xs text-zinc-400 outline-none focus:border-violet-400/50" />
-      <button type="button" disabled={Boolean(busy) || !cloneRepository.trim().includes("/")} onClick={() => void clone()} className="btn-primary disabled:opacity-40">{busy === "clone" ? "Cloning…" : "Clone"}</button>
+      <button type="button" disabled={Boolean(busy) || !cloneRepository.trim().includes("/") || (!manualCloneRepository && !remoteRepositories.some(repository => repository.fullName === cloneRepository))} onClick={() => void clone()} className="btn-primary disabled:opacity-40">{busy === "clone" ? "Cloning…" : "Clone"}</button>
       <button type="button" disabled={Boolean(busy) || !parentPath} onClick={() => void refreshList(parentPath)} className="btn-secondary disabled:opacity-40">Refresh</button>
     </div>
     {repositoryCatalogError && <div role="status" className="border-b border-white/[0.08] bg-white/[0.03] px-4 py-2 text-xs text-zinc-300">Connected repositories are temporarily unavailable. Validate GitHub under Settings → Integrations, then retry. Manual entry remains available for an authorized repository.</div>}

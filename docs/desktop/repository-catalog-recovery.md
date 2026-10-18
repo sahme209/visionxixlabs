@@ -8,7 +8,10 @@ separate from **Refresh**, which only reads repositories in the local folder.
 Use this action after a temporary catalog failure or after validating GitHub in
 Settings → Integrations. It preserves the selected local repository, unsaved
 editor draft and manual clone entry. It does not clone, mint a token, save files,
-or grant repository access. Clone authorization remains checked by the service.
+or grant repository access. A connected selection is retained only while present
+in the refreshed catalog; otherwise the selector and clone target both fall back
+to a returned repository, or clear with Clone disabled when none remain. Manual
+entry is unaffected. Clone authorization remains checked by the service.
 
 Initial loading and retries share one loader. A mounted-session, config identity,
 context revision and request generation fence prevents superseded reads and late

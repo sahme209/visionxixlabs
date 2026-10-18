@@ -231,3 +231,41 @@ it("does not let a superseded success clear the latest catalog failure", async (
   expect(screen.getByText(/temporarily unavailable/)).toBeTruthy();
   expect(screen.queryByRole("option", { name: "fixture/stale · private" })).toBeNull();
 });
+it("reconciles a removed connected selection to the visible replacement before cloning", async () => {
+  m.client.listGithubRepositories.mockResolvedValueOnce(catalog("original")).mockResolvedValue(catalog("replacement"));
+  await start();
+  const selection = screen.getByRole("combobox", { name: "Connected GitHub repository" }) as HTMLSelectElement;
+  await waitFor(() => expect(selection.value).toBe("fixture/original"));
+  fireEvent.click(screen.getByRole("button", { name: "Refresh connected repositories" }));
+  await screen.findByRole("option", { name: "fixture/replacement · private" });
+  expect(selection.value).toBe("fixture/replacement");
+  fireEvent.click(screen.getByRole("button", { name: "Clone", exact: true }));
+  await waitFor(() => expect(m.client.mintGithubCloneToken).toHaveBeenCalledWith({ repositoryFullName: selection.value, purpose: "clone" }));
+  expect(m.client.mintGithubCloneToken).toHaveBeenCalledWith({ repositoryFullName: "fixture/replacement", purpose: "clone" });
+});
+it("clears a removed connected selection and disables Clone when the refreshed catalog is empty", async () => {
+  m.client.listGithubRepositories.mockResolvedValueOnce(catalog("original")).mockResolvedValue({ ok: true, data: { repositories: [], truncated: false } });
+  await start();
+  const selection = screen.getByRole("combobox", { name: "Connected GitHub repository" }) as HTMLSelectElement;
+  await waitFor(() => expect(selection.value).toBe("fixture/original"));
+  fireEvent.click(screen.getByRole("button", { name: "Refresh connected repositories" }));
+  await screen.findByRole("option", { name: "No connected repositories" });
+  expect(selection.value).toBe("");
+  const clone = screen.getByRole("button", { name: "Clone", exact: true }) as HTMLButtonElement;
+  expect(clone.disabled).toBe(true);
+  fireEvent.click(clone);
+  expect(m.client.mintGithubCloneToken).not.toHaveBeenCalled();
+});
+it("retains an explicitly selected repository that remains in the refreshed catalog", async () => {
+  const repositories = [...catalog("first").data.repositories, ...catalog("kept").data.repositories];
+  m.client.listGithubRepositories.mockResolvedValue({ ok: true, data: { repositories, truncated: false } });
+  await start();
+  const selection = screen.getByRole("combobox", { name: "Connected GitHub repository" }) as HTMLSelectElement;
+  await screen.findByRole("option", { name: "fixture/kept · private" });
+  fireEvent.change(selection, { target: { value: "fixture/kept" } });
+  fireEvent.click(screen.getByRole("button", { name: "Refresh connected repositories" }));
+  await waitFor(() => expect(m.client.listGithubRepositories).toHaveBeenCalledTimes(2));
+  expect(selection.value).toBe("fixture/kept");
+  fireEvent.click(screen.getByRole("button", { name: "Clone", exact: true }));
+  await waitFor(() => expect(m.client.mintGithubCloneToken).toHaveBeenCalledWith({ repositoryFullName: "fixture/kept", purpose: "clone" }));
+});
