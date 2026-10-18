@@ -68,6 +68,6 @@ describe("desktop saved-credential verification lifecycle", () => {
     const h = harness(); const request = h.coordinator.verify();
     h.first.reject(new Error("private provider details")); await request;
     expect(h.options.onVerified).not.toHaveBeenCalled();
-    expect(h.options.onRejected).toHaveBeenCalledExactlyOnceWith("The workspace service could not be reached. Try signing in again.");
+    expect(h.options.onRejected).toHaveBeenCalledExactlyOnceWith("The workspace service could not be reached. Try signing in again.", "unavailable");
   });
 });

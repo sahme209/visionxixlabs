@@ -1,4 +1,5 @@
-type VerificationResult<T> = { ok: true; data: T } | { ok: false; error: string };
+import type { CredentialFailureKind } from "./desktopClient";
+type VerificationResult<T> = { ok: true; data: T } | { ok: false; error: string; failureKind?: CredentialFailureKind };
 
 export interface CredentialVerificationCoordinator {
   verify(): Promise<void>;
@@ -12,7 +13,7 @@ export function createCredentialVerificationCoordinator<T>(options: {
   readContext: () => { version: unknown; present: boolean };
   verify: () => Promise<VerificationResult<T>>;
   onVerified: (identity: T) => void;
-  onRejected: (error: string) => void;
+  onRejected: (error: string, failureKind?: CredentialFailureKind) => void;
   onMissing: () => void;
 }): CredentialVerificationCoordinator {
   let generation = 0;
@@ -27,11 +28,14 @@ export function createCredentialVerificationCoordinator<T>(options: {
       if (!context.present) { options.onMissing(); return; }
       let result: VerificationResult<T>;
       try { result = await options.verify(); }
-      catch { result = { ok: false, error: "The workspace service could not be reached. Try signing in again." }; }
+      catch { result = { ok: false, error: "The workspace service could not be reached. Try signing in again.", failureKind: "unavailable" }; }
       const current = options.readContext();
       if (disposed || request !== generation || current.version !== context.version || !current.present) return;
       if (result.ok) options.onVerified(result.data);
-      else options.onRejected(result.error);
+      else if (result.failureKind !== "canceled") {
+        if (result.failureKind) options.onRejected(result.error, result.failureKind);
+        else options.onRejected(result.error);
+      }
     },
   };
 }
