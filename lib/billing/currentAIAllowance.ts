@@ -1,3 +1,4 @@
+import { newTestAllocationGuard, readAllocationAllowanceV2 } from "./newTestSubscription/allocationPlan";
 import { newTestPlanGuard } from "./newTestSubscription/paidPlan";
 import { isolatedRuntimeRequested } from "./isolatedApplication/runtime";
 import { resolveIsolatedApplicationPlan } from "./isolatedApplication/plan";
@@ -20,6 +21,7 @@ export async function readCurrentAIAllowance(repo: Pick<PrismaClient, "$transact
   try {
     return await repo.$transaction(async (tx) => {
       const isolatedPlan = isolatedRuntimeRequested() ? await resolveIsolatedApplicationPlan(tx, organizationId, "read") : undefined;
+      if (newTestAllocationGuard(isolatedPlan)) return readAllocationAllowanceV2(tx, isolatedPlan!);
       const decisionNow = newTestPlanGuard(isolatedPlan)?.clock ?? now;
       const decisionMonth = decisionNow.toISOString().slice(0, 7);
       const [billing, purchases, usage, active] = await Promise.all([

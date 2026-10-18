@@ -1,7 +1,7 @@
 import { stripeDeadlineOptions } from "./stripeDeadline";
 import { identifiedChargeSource } from "./chargeSource";
 import type Stripe from "stripe";
-import { collectedEvidence, type PaidIdentity, type CollectionResult } from "./paidCoverage";
+import { collectedEvidence, collectedEvidenceV2, type AnniversaryCollectionContext, type PaidIdentity, type CollectionResult } from "./paidCoverage";
 
 export type BoundedRead = <T>(operation: (timeout: number) => Promise<T>) => Promise<T>;
 function fail(code: string): never { throw new Error(code); }
@@ -12,12 +12,13 @@ const timestamp = (seconds: unknown) => typeof seconds === "number" && Number.is
 const iso = (seconds: number) => new Date(seconds * 1000).toISOString();
 /** Installed SDK 20 collection shape only. Every remote call is owned by the
  * enclosing bounded, runtime-guarded reader; no pagination or ambient auth. */
-export async function retrieveCollectedCoverage(stripe: Stripe, identity: PaidIdentity, sub: Stripe.Subscription, read: BoundedRead): Promise<{ latestInvoiceId: string | null; currentPeriodStart: string; currentPeriodEnd: string; collection: CollectionResult }> {
+export async function retrieveCollectedCoverage(stripe: Stripe, identity: PaidIdentity, sub: Stripe.Subscription, read: BoundedRead, anniversary?: AnniversaryCollectionContext): Promise<{ latestInvoiceId: string | null; currentPeriodStart: string; currentPeriodEnd: string; collection: CollectionResult }> {
   const item = sub.items.data[0];
   if (!item || !timestamp(item.current_period_start) || !timestamp(item.current_period_end) || item.current_period_start >= item.current_period_end) fail("subscription_snapshot_invalid");
   const invoiceId = id(sub.latest_invoice);
   const base = { latestInvoiceId: invoiceId ?? null, currentPeriodStart: iso(item.current_period_start), currentPeriodEnd: iso(item.current_period_end) };
   const negative = (reason: "not_collected" | "unsupported_collection" | "refunded_or_disputed") => ({ ...base, collection: { kind: "unavailable" as const, reason } });
+  if (anniversary && (sub.billing_cycle_anchor !== Date.parse(anniversary.originalAnchor) / 1000 || sub.start_date !== Date.parse(anniversary.originalAnchor) / 1000 || sub.billing_cycle_anchor_config !== null || sub.trial_start !== null || sub.trial_end !== null)) return negative("unsupported_collection");
   if (!invoiceId) return negative("not_collected");
   const invoice = await read(timeout => stripe.invoices.retrieve(invoiceId, {}, stripeDeadlineOptions(timeout)));
   if (invoice.id !== invoiceId || invoice.livemode !== false || id(invoice.customer) !== identity.customerId || invoice.parent?.type !== "subscription_details" || id(invoice.parent.subscription_details?.subscription) !== identity.subscriptionId) fail("collection_identity_mismatch");
@@ -48,7 +49,8 @@ export async function retrieveCollectedCoverage(stripe: Stripe, identity: PaidId
   const finalCharge = await read(timeout => stripe.charges.retrieve(chargeId, {}, stripeDeadlineOptions(timeout)));
   if (JSON.stringify(finalInvoice) !== JSON.stringify(invoice) || JSON.stringify(finalCharge) !== JSON.stringify(charge)) fail("collection_snapshot_changed");
   try {
-    const evidence = collectedEvidence({ ...identity, invoiceId, lineId: line.id, subscriptionItemId: item.id, paymentId: payment.id, paymentIntentId, chargeId, paymentMethodType, currency: "usd", amountCents: amount, collectedAt: iso(Math.max(invoice.status_transitions.paid_at!, payment.status_transitions.paid_at!)), serviceStart: iso(line.period.start), serviceEnd: iso(line.period.end) });
+    const input = { ...identity, invoiceId, lineId: line.id, subscriptionItemId: item.id, paymentId: payment.id, paymentIntentId, chargeId, paymentMethodType, currency: "usd", amountCents: amount, collectedAt: iso(Math.max(invoice.status_transitions.paid_at!, payment.status_transitions.paid_at!)), serviceStart: iso(line.period.start), serviceEnd: iso(line.period.end) } as const;
+    const evidence = anniversary ? collectedEvidenceV2(input, anniversary) : collectedEvidence(input);
     return { ...base, collection: { kind: "collected", evidence } };
   } catch { return negative("unsupported_collection"); }
 }

@@ -1,0 +1,272 @@
+{
+  "schemaVersion": 1,
+  "kind": "failed_owned_setup_receipt_not_acceptance",
+  "sourceCommit": "78107a205887d612b96cd75a1a09ddbc6d18b543",
+  "sourceCleanBeforeAfter": true,
+  "sourceHashBinding": {
+    "productFiles": [
+      {
+        "path": "app/api/ai/generate/route.ts",
+        "sha256": "765eeb50e995e6b6c896231a0f518d4c3779fcc53204c50bc519144f62d31569",
+        "unchangedFromProductBase": true
+      },
+      {
+        "path": "lib/billing/aiCreditReservation.ts",
+        "sha256": "5107e0c7039aa66d08117985507549a681df3ee39a987c6c5f053fb5f9cbf69c",
+        "unchangedFromProductBase": true
+      },
+      {
+        "path": "lib/billing/currentAIAllowance.ts",
+        "sha256": "770cea486a3a39aee2fd5d51dfdc7274d4fd93af42f7321193a2ba9796ce333a",
+        "unchangedFromProductBase": true
+      },
+      {
+        "path": "lib/billing/isolatedApplication/plan.ts",
+        "sha256": "643f5afd9b7971c5f6a23446fda981a021804028e5f9fb2d8d675be4163efdf1",
+        "unchangedFromProductBase": true
+      },
+      {
+        "path": "lib/billing/newTestSubscription/allocationPlan.ts",
+        "sha256": "6d63702a2bbfdbfa5d07a5431ab636ab6a375bb1373a11dff3aa0fcb78325897",
+        "unchangedFromProductBase": true
+      },
+      {
+        "path": "lib/billing/newTestSubscription/allocationV2.ts",
+        "sha256": "07483577291e15d7b23eb505baa7e1653d13b76e618bfb1646040d3a5a730a2d",
+        "unchangedFromProductBase": true
+      },
+      {
+        "path": "lib/billing/newTestSubscription/anniversaryWindow.ts",
+        "sha256": "9996a150880c2f91e1618f81382362a99132f991f7d398880eb0e6ded431b298",
+        "unchangedFromProductBase": true
+      },
+      {
+        "path": "lib/billing/newTestSubscription/fixtureAllocation.ts",
+        "sha256": "4b00376e5a20ba6a13820e34a04c1c52fd7777d3aa01d40719527ac8b9136a53",
+        "unchangedFromProductBase": true
+      },
+      {
+        "path": "lib/billing/newTestSubscription/fixtureUsageGuards.ts",
+        "sha256": "d52e698765f732bac7812453451fced9e257411d3020db53e4699188e2def5b5",
+        "unchangedFromProductBase": true
+      },
+      {
+        "path": "lib/billing/newTestSubscription/paidCoverage.ts",
+        "sha256": "a19ae9ba35aa7de6a4dd7d96137a27c6f73451c1396c3c48049f1905795807a9",
+        "unchangedFromProductBase": true
+      },
+      {
+        "path": "lib/billing/newTestSubscription/paidPlan.ts",
+        "sha256": "e6cb89868ca3ce0eaf6198da3e6426cb84e3295327f580392aa1da9133288d83",
+        "unchangedFromProductBase": true
+      },
+      {
+        "path": "lib/billing/newTestSubscription/postgresFixtureStore.ts",
+        "sha256": "ad3425428f9b41598dfd9add76963a80c6311a25f1f65387811f2ef874568ebb",
+        "unchangedFromProductBase": true
+      },
+      {
+        "path": "lib/billing/newTestSubscription/service.ts",
+        "sha256": "da116e4690c17319eb811903de2381fdda9685a5d7a49efcea49fdb7236ed354",
+        "unchangedFromProductBase": true
+      },
+      {
+        "path": "lib/billing/newTestSubscription/stripePaidCoverage.ts",
+        "sha256": "8385ddaaf42f5d42e8f15a78e4f7084a611217a53f998f414a08bb7664908193",
+        "unchangedFromProductBase": true
+      },
+      {
+        "path": "lib/billing/newTestSubscription/stripeTestProvider.ts",
+        "sha256": "7081360821a265f72c1520b1e4259317b6974f9d6a51eb873ca27e3566a9cbdd",
+        "unchangedFromProductBase": true
+      },
+      {
+        "path": "lib/billing/newTestSubscription/usageAllocationIO.ts",
+        "sha256": "aa8a93877533d73ab3369c56b6ad2ba3447319ce10fe5abbd067b7bcddfa8928",
+        "unchangedFromProductBase": true
+      },
+      {
+        "path": "lib/billing/newTestSubscription/verifiedContract.ts",
+        "sha256": "f9238dff5852cf45945a8319aa2e1cb00e0d5011923d6bf6b820915c43a08675",
+        "unchangedFromProductBase": true
+      },
+      {
+        "path": "lib/billing/planRegistry.ts",
+        "sha256": "cbf68c8187937e358314506fec8b30a7c1dfff43073b9def6bc1211abe6c8171",
+        "unchangedFromProductBase": true
+      },
+      {
+        "path": "lib/billing/reconcileGatewayUsage.ts",
+        "sha256": "65efff13fdf74685a843489f85361d75ebce21944a1071be1c2f5244eacb4568",
+        "unchangedFromProductBase": true
+      },
+      {
+        "path": "lib/billing/recordAIUsageEvent.ts",
+        "sha256": "a70f6c3969a90a0af967f6e991495799bd4dbba0562740d1d53a9edb6b12549a",
+        "unchangedFromProductBase": true
+      },
+      {
+        "path": "lib/demo/demoScenarios.ts",
+        "sha256": "7673c06c13d14fa54bf3cbfb15e1569763915be733f808a1a463987113045e1a",
+        "unchangedFromProductBase": true
+      }
+    ],
+    "protectedFiles": [
+      {
+        "path": "prisma/schema.prisma",
+        "sha256": "3abed3e94c18cd2554f18b847d27ab505e3e8fa9fde968a0a7c72fdb6e787c9c",
+        "unchangedFromProductBase": true
+      },
+      {
+        "path": "package-lock.json",
+        "sha256": "4923306fbdd3e436cbb2466d611716d94133797e64fb29298e4a36298c9a2049",
+        "unchangedFromProductBase": true
+      },
+      {
+        "path": "lib/billing/aiCreditFulfillment.ts",
+        "sha256": "e2ea638f918f26e17f7a308ec421f517c0cc840764c4b648b38b783e10ebeb36",
+        "unchangedFromProductBase": true
+      },
+      {
+        "path": "lib/billing/isolatedApplication/runtime.ts",
+        "sha256": "57496e9ecf84351a32211450f7d19ec062779bec9c328d1cbdeee9b1bf4a59a8",
+        "unchangedFromProductBase": true
+      },
+      {
+        "path": "lib/billing/isolatedApplication/scope.ts",
+        "sha256": "bb27edac701bfb9c7812a77aeb17266b1effa7c95ab472f0b70c5d4d2a72d539",
+        "unchangedFromProductBase": true
+      },
+      {
+        "path": "app/api/billing/checkout-session/route.ts",
+        "sha256": "43f7a66dc68bf6cf1584473110aa85f9aeac5587bdb3c793265bd02f7ea68674",
+        "unchangedFromProductBase": true
+      },
+      {
+        "path": "app/api/billing/stripe-webhook/route.ts",
+        "sha256": "fc0832c7df1659cbe01e72386bad207d766e55406ac000a5cfeed567ffe7052b",
+        "unchangedFromProductBase": true
+      }
+    ],
+    "fixtureFiles": [
+      {
+        "path": "lib/billing/__tests__/fixtures/newTestAnniversaryFixture.ts",
+        "sha256": "376b82d82cde877154c338817a328890449ccb9686c4bca6d8eea4cdf4b259ed"
+      },
+      {
+        "path": "lib/billing/__tests__/fixtures/newTestAnniversaryAcceptance.ts",
+        "sha256": "f56c38ab9e9d3c0baa940ac3db9f9378b29a5fc80916914f194dc3fa29ef1322"
+      },
+      {
+        "path": "lib/billing/__tests__/fixtures/newTestAnniversaryHttp.ts",
+        "sha256": "b9de0c22ba1c3abfe37d3172afb4b37163d728ef8ee7eb110c69815be4e4c68b"
+      },
+      {
+        "path": "lib/billing/__tests__/fixtures/newTestChildEnvironment.ts",
+        "sha256": "3bec9efa59f74176884354ed133307df37c374b923b266d95a83c512e9ac82b0"
+      },
+      {
+        "path": "lib/billing/__tests__/newTestChildEnvironment.test.ts",
+        "sha256": "4b2b6425a3d82a0e37fa1306d5e7a85572b9501c88f9d2c4df2617df7ccc5fb2"
+      },
+      {
+        "path": "lib/billing/__tests__/newTestSubscriptionService.postgres.test.ts",
+        "sha256": "99e1563734b885f8fcd84191bf8d53b743c776fc888fd4c9ddf010abb7dd7a7e"
+      },
+      {
+        "path": "lib/billing/__tests__/anniversaryWindow.test.ts",
+        "sha256": "7422745db63ea370d6f92dc29100262fa28d1497278a60553d0e64baf50024ff"
+      },
+      {
+        "path": "lib/billing/__tests__/newTestAllocationStore.test.ts",
+        "sha256": "5224d86264aea09ab07527eb5d1a2594d0a9ad03ad243493da43b2ceea3f4c99"
+      }
+    ]
+  },
+  "invocation": {
+    "path": "/tmp/axiom-anniversary-task5-run.py",
+    "sha256": "813574bf3b906ae2c1e323e7cced76d6a1a34d266a236b84e579d2fc495572b7"
+  },
+  "environment": {
+    "nodeVersion": "24.19.0",
+    "rootOnlyDependencyOverlay": "/workspace/.axiom-validation/ecs-direct-root/node_modules",
+    "desktopDependencyLinkAbsent": true,
+    "ambientProviderDatabaseCredentialsCopied": false,
+    "inheritedManagedProxyCASelectorsPreserved": true,
+    "unsupportedNodeGuardTrustDockerSelectorsRefused": true,
+    "checkpointDisabled": true,
+    "prismaGenerate": false,
+    "providerIO": false
+  },
+  "compiler": {
+    "sourceCommit": "78107a205887d612b96cd75a1a09ddbc6d18b543",
+    "startedUtc": "2026-10-18T05:46:14Z",
+    "heapMiB": 8192,
+    "incremental": false,
+    "exit": 0,
+    "elapsedSeconds": 57.6,
+    "log": {
+      "path": "/tmp/axiom-anniversary-task5-781-types.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "exitObservation": "Observed runner subprocess return via execution tool; successful compiler log is empty."
+  },
+  "ownedAttempt": {
+    "sourceCommit": "78107a205887d612b96cd75a1a09ddbc6d18b543",
+    "startedUtc": "2026-10-18T05:47:21Z",
+    "attempts": 1,
+    "runnerExit": 1,
+    "runnerElapsedSeconds": 8.3,
+    "vitestDurationSeconds": 7.61,
+    "testCasesPassed": 0,
+    "testCasesSkipped": 27,
+    "failedSuites": 1,
+    "stage": "beforeAll DDL installation loop, before TTL fixture hook or test bodies",
+    "sqlState": "42601",
+    "message": "syntax error at end of input",
+    "prismaCode": "P2010",
+    "prismaClientVersion": "5.22.0",
+    "log": {
+      "path": "/tmp/axiom-anniversary-task5-781-owned.log",
+      "sha256": "3c859b15cca1f210b68decc19bd84c123b5448aac565459d48b0a1598eee2c55"
+    },
+    "actualNextStarted": false,
+    "actualProviderCalls": false
+  },
+  "cleanup": {
+    "observation": "Owner-observed after awaited harness afterAll, prior to window release; not a new independent runtime review.",
+    "containerPrefixReadOnlyListing": "docker ps -a --filter name=axiom-commercial-test- --format ID/Names",
+    "matchingContainers": 0,
+    "nextStarted": false,
+    "fontTemporaryDirectoryCreated": false,
+    "cleanupFailureReported": false,
+    "sourceStillClean": true,
+    "windowReleased": true
+  },
+  "staticDiagnosis": {
+    "path": "lib/billing/newTestSubscription/fixtureAllocation.ts",
+    "function": "check_test_attribution",
+    "line": 73,
+    "fixtureAllocationDDLZeroBasedIndex": 7,
+    "anticipatedCombinedLoopZeroBasedIndex": 17,
+    "statementSha256": "7af1778cc23a02c57a4e4e10a87fb1d88172bd26e4834c92f9a87f0e3a405f9c",
+    "fault": "Unparenthesized SQL CASE inside PL/pgSQL IF condition exposes its first THEN at top expression nesting level, terminating IF condition input before SQL CASE is complete.",
+    "proposedCorrection": "Parenthesize only CASE WHEN ... END in the ceiling comparison; retain every condition, exception, trigger and transaction.",
+    "qualification": "Runtime log labels only array loop83; statement identity follows static source/grammar/order diagnosis, not a per-statement instrumented parser receipt. No new parser/PG/DDL/CLI/runtime executed."
+  },
+  "pending": [
+    "Root approval of bounded syntax proposal",
+    "source correction and independent exact review",
+    "fresh type/owned grant as directed",
+    "actual SQL/constraints/rollback/member/refund/TTL/Next cases",
+    "full coordinated gates"
+  ],
+  "unproved": [
+    "actual owned financial acceptance",
+    "natural anniversary or UTC-month rollover lock race",
+    "hosted Stripe payment",
+    "real provider work",
+    "managed proxy compatibility",
+    "production/public activation"
+  ]
+}

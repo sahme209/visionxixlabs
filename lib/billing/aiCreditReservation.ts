@@ -1,3 +1,4 @@
+import { newTestAllocationGuard, reserveAllocationV2 } from "./newTestSubscription/allocationPlan";
 import { fenceNewTestAdmission, newTestPlanGuard } from "./newTestSubscription/paidPlan";
 import { isolatedRuntimeRequested } from "./isolatedApplication/runtime";
 import { resolveIsolatedApplicationPlan } from "./isolatedApplication/plan";
@@ -16,7 +17,7 @@ type ReservationRow = {
 };
 
 export type AICreditReservationResult =
-  | { ok: true; reservation: ReservationRow; reused: boolean }
+  | { ok: true; reservation: ReservationRow; reused: boolean; allocationPolicy?: "axiom_test_anniversary_v2" }
   | { ok: false; error: "ai_credit_pool_exhausted" | "ai_credit_reservation_unavailable" | "idempotency_key_conflict" };
 
 /**
@@ -42,14 +43,20 @@ export async function reserveAICredits(
       // A reused hold is not proof that an isolated contract remains valid.
       const isolatedPlan = isolatedRuntimeRequested() ? await resolveIsolatedApplicationPlan(tx, input.organizationId, "admission") : isolatedVerifiedPlan ? await isolatedVerifiedPlan(tx, input.organizationId, await tx.tenantBillingPlan.findUnique({ where: { organizationId: input.organizationId } })) : undefined;
       const guard = newTestPlanGuard(isolatedPlan);
-      const decisionNow = guard?.clock ?? now;
-      if ((isolatedRuntimeRequested() || isolatedVerifiedPlan) && !guard) throw new Error("isolated_plan_unavailable");
+      const allocationGuard = newTestAllocationGuard(isolatedPlan);
+      const decisionNow = allocationGuard?.clock ?? guard?.clock ?? now;
+      if ((isolatedRuntimeRequested() || isolatedVerifiedPlan) && !guard && !allocationGuard) throw new Error("isolated_plan_unavailable");
       if (isolatedRuntimeRequested() && !isolatedPlan) throw new Error("isolated_plan_unavailable");
       const existing = await tx.aIUsageReservation.findUnique({ where: { organizationId_idempotencyKey: { organizationId: input.organizationId, idempotencyKey: input.idempotencyKey } } });
       if (existing) {
         if (existing.reservedCents !== input.reservedCents) return { ok: false as const, error: "idempotency_key_conflict" as const };
+        if (allocationGuard) await reserveAllocationV2(tx, isolatedPlan!, input, true);
         if (guard) await fenceNewTestAdmission(tx, isolatedPlan!, input, false);
-        return { ok: true as const, reservation: existing, reused: true };
+        return { ok: true as const, reservation: existing, reused: true, ...(allocationGuard ? { allocationPolicy: "axiom_test_anniversary_v2" as const } : {}) };
+      }
+      if (allocationGuard) {
+        const reservation = (await reserveAllocationV2(tx, isolatedPlan!, input, false))!;
+        return { ok: true as const, reservation, reused: false, allocationPolicy: "axiom_test_anniversary_v2" as const };
       }
       await tx.aIUsageReservation.updateMany({
         where: { organizationId: input.organizationId, status: "reserved", usageEventId: null, expiresAt: { lte: decisionNow } },

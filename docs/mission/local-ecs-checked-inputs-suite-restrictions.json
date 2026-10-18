@@ -1,0 +1,296 @@
+{
+  "sourceCommit": "9c60bff04ce7f8d3b6a3512ddf0c8cdd27f49384",
+  "failedInitialDefaultRun": {
+    "files": 9,
+    "testFailures": 53,
+    "testPassed": 7259,
+    "skipped": 42,
+    "unhandledErrors": 29,
+    "durationSeconds": 127.63,
+    "logSha256": "c8172293bf81d179e0d11ce8745b95f1166dc8ed6b95352957a8b24890ef2ea5"
+  },
+  "classificationEntries": [
+    {
+      "entry": "lib/desktop/__tests__/nativeReleaseCandidateGuards.test.ts [ lib/desktop/__tests__/nativeReleaseCandidateGuards.test.ts ]",
+      "classification": "synthetic_GPG_beforeAll_environment_restriction",
+      "evidence": "unchanged_permission_two_file_run_passed"
+    },
+    {
+      "entry": "lib/__tests__/localAuthHttpRehearsal.test.ts > HTTP evidence source and private diagnostics > accepts only a complete clean checkout and reports its actual commit",
+      "classification": "spawnSync_git_EPERM",
+      "evidence": "exact_logged_EPERM"
+    },
+    {
+      "entry": "lib/__tests__/localAuthHttpRehearsal.test.ts > HTTP evidence source and private diagnostics > rejects dirty runtime dependency lib/db.ts",
+      "classification": "spawnSync_git_EPERM",
+      "evidence": "exact_logged_EPERM"
+    },
+    {
+      "entry": "lib/__tests__/localAuthHttpRehearsal.test.ts > HTTP evidence source and private diagnostics > rejects dirty runtime dependency lib/auth/workspaceId.ts",
+      "classification": "spawnSync_git_EPERM",
+      "evidence": "exact_logged_EPERM"
+    },
+    {
+      "entry": "lib/__tests__/localAuthHttpRehearsal.test.ts > HTTP evidence source and private diagnostics > rejects dirty runtime dependency components/auth/Example.tsx",
+      "classification": "spawnSync_git_EPERM",
+      "evidence": "exact_logged_EPERM"
+    },
+    {
+      "entry": "lib/__tests__/localAuthHttpRehearsal.test.ts > HTTP evidence source and private diagnostics > rejects dirty runtime dependency package-lock.json",
+      "classification": "spawnSync_git_EPERM",
+      "evidence": "exact_logged_EPERM"
+    },
+    {
+      "entry": "lib/__tests__/localAuthHttpRehearsal.test.ts > HTTP evidence source and private diagnostics > rejects dirty runtime dependency next.config.ts",
+      "classification": "spawnSync_git_EPERM",
+      "evidence": "exact_logged_EPERM"
+    },
+    {
+      "entry": "lib/__tests__/localAuthHttpRehearsal.test.ts > HTTP evidence source and private diagnostics > rejects dirty runtime dependency instrumentation.ts",
+      "classification": "spawnSync_git_EPERM",
+      "evidence": "exact_logged_EPERM"
+    },
+    {
+      "entry": "lib/__tests__/localAuthHttpRehearsal.test.ts > HTTP evidence source and private diagnostics > rejects staged changes and new runtime source outside the former auth-only guard",
+      "classification": "spawnSync_git_EPERM",
+      "evidence": "exact_logged_EPERM"
+    },
+    {
+      "entry": "lib/__tests__/localDesktopPairingHttpRehearsal.test.ts > local pairing HTTP harness protocol and safety > uses real loopback HTTP with separate web-cookie and bearer channels and reports observations honestly",
+      "classification": "loopback_listen_EPERM_caused_timeout",
+      "evidence": "matching_unhandled_listen_EPERM_127"
+    },
+    {
+      "entry": "lib/__tests__/localDesktopPairingHttpRehearsal.test.ts > local pairing HTTP harness protocol and safety > detects protocol failure workspace rather than reporting acceptance",
+      "classification": "loopback_listen_EPERM_caused_timeout",
+      "evidence": "matching_unhandled_listen_EPERM_127"
+    },
+    {
+      "entry": "lib/__tests__/localDesktopPairingHttpRehearsal.test.ts > local pairing HTTP harness protocol and safety > detects protocol failure replay rather than reporting acceptance",
+      "classification": "loopback_listen_EPERM_caused_timeout",
+      "evidence": "matching_unhandled_listen_EPERM_127"
+    },
+    {
+      "entry": "lib/__tests__/localDesktopPairingHttpRehearsal.test.ts > local pairing HTTP harness protocol and safety > detects protocol failure revoked rather than reporting acceptance",
+      "classification": "loopback_listen_EPERM_caused_timeout",
+      "evidence": "matching_unhandled_listen_EPERM_127"
+    },
+    {
+      "entry": "lib/__tests__/localDesktopPairingHttpRehearsal.test.ts > runs an explicit lifecycle callback while bearer is active, then retains original revocation checks",
+      "classification": "loopback_listen_EPERM_caused_timeout",
+      "evidence": "matching_unhandled_listen_EPERM_127"
+    },
+    {
+      "entry": "lib/__tests__/ownedAwsWireFixtureCleanup.test.ts > closes its active incomplete HTTP connection without waiting for the client",
+      "classification": "loopback_listen_EPERM",
+      "evidence": "exact_logged_EPERM"
+    },
+    {
+      "entry": "lib/billing/__tests__/aiUsageSettlementCandidates.test.ts > AI settlement candidate selection > admits another workspace before a backlog consumes the two-row batch",
+      "classification": "spawnSync_python_EPERM",
+      "evidence": "exact_logged_EPERM"
+    },
+    {
+      "entry": "lib/billing/__tests__/aiUsageSettlementCandidates.test.ts > AI settlement candidate selection > interleaves tenant positions while preserving each tenant's waiting order",
+      "classification": "spawnSync_python_EPERM",
+      "evidence": "exact_logged_EPERM"
+    },
+    {
+      "entry": "lib/billing/__tests__/aiUsageSettlementCandidates.test.ts > AI settlement candidate selection > lets a recent retry into a one-row batch despite an older submitted event",
+      "classification": "spawnSync_python_EPERM",
+      "evidence": "exact_logged_EPERM"
+    },
+    {
+      "entry": "lib/billing/__tests__/aiUsageSettlementCandidates.test.ts > AI settlement candidate selection > includes new events and retries while excluding pending and zero-cost usage",
+      "classification": "spawnSync_python_EPERM",
+      "evidence": "exact_logged_EPERM"
+    },
+    {
+      "entry": "lib/billing/__tests__/aiUsageSettlementCandidates.test.ts > AI settlement candidate selection > allows a new reservation exactly at remaining capacity",
+      "classification": "spawnSync_python_EPERM",
+      "evidence": "exact_logged_EPERM"
+    },
+    {
+      "entry": "lib/billing/__tests__/aiUsageSettlementCandidates.test.ts > AI settlement candidate selection > does not select new usage above remaining capacity",
+      "classification": "spawnSync_python_EPERM",
+      "evidence": "exact_logged_EPERM"
+    },
+    {
+      "entry": "lib/billing/__tests__/aiUsageSettlementCandidates.test.ts > AI settlement candidate selection > ignores a previous month's reservation counter",
+      "classification": "spawnSync_python_EPERM",
+      "evidence": "exact_logged_EPERM"
+    },
+    {
+      "entry": "lib/billing/__tests__/aiUsageSettlementCandidates.test.ts > AI settlement candidate selection > excludes missing opt-in configuration and missing billing plans",
+      "classification": "spawnSync_python_EPERM",
+      "evidence": "exact_logged_EPERM"
+    },
+    {
+      "entry": "lib/billing/__tests__/aiUsageSettlementCandidates.test.ts > AI settlement candidate selection > keeps already-reserved retries eligible despite a spent cap",
+      "classification": "spawnSync_python_EPERM",
+      "evidence": "exact_logged_EPERM"
+    },
+    {
+      "entry": "lib/billing/__tests__/aiUsageSettlementCandidates.test.ts > AI settlement candidate selection > rotates a recently attempted retry behind waiting new usage in a one-row batch",
+      "classification": "spawnSync_python_EPERM",
+      "evidence": "exact_logged_EPERM"
+    },
+    {
+      "entry": "lib/billing/__tests__/newTestChildEnvironment.test.ts > owned new TEST Next child environment > retains actual installed Vitest worker options through a literal child stub without a server",
+      "classification": "spawnSync_node_EPERM",
+      "evidence": "received_Error_code_EPERM"
+    },
+    {
+      "entry": "lib/desktop/__tests__/desktopReleaseVersions.test.ts > actual release-check command > refuses a stale source fixture in desktop/src-tauri/Cargo.toml",
+      "classification": "local_child_empty_output_environment_restriction",
+      "evidence": "unchanged_permission_two_file_run_passed"
+    },
+    {
+      "entry": "lib/desktop/__tests__/desktopReleaseVersions.test.ts > actual release-check command > refuses a stale source fixture in desktop/src-tauri/Cargo.lock",
+      "classification": "local_child_empty_output_environment_restriction",
+      "evidence": "unchanged_permission_two_file_run_passed"
+    },
+    {
+      "entry": "lib/desktop/__tests__/desktopReleaseVersions.test.ts > actual release-check command > refuses a stale source fixture in desktop/package-lock.json",
+      "classification": "local_child_empty_output_environment_restriction",
+      "evidence": "unchanged_permission_two_file_run_passed"
+    },
+    {
+      "entry": "lib/cloud/aws/ecsObservation/__tests__/taskDefinition.test.ts > pins every recursively reachable registration field to the installed SDK declaration snapshot",
+      "classification": "spawnSync_node_EPERM",
+      "evidence": "exact_logged_EPERM"
+    },
+    {
+      "entry": "lib/cloud/aws/ecsObservation/__tests__/wire.test.ts > composes actual STS/XML and ECS/ECR/JSON SDK deserialization with native owned wire and no credential output",
+      "classification": "loopback_listen_EPERM_caused_timeout",
+      "evidence": "matching_unhandled_listen_EPERM_127"
+    },
+    {
+      "entry": "lib/cloud/aws/ecsObservation/__tests__/wire.test.ts > fails closed on actual SDK wire sts_error without retrying",
+      "classification": "loopback_listen_EPERM_caused_timeout",
+      "evidence": "matching_unhandled_listen_EPERM_127"
+    },
+    {
+      "entry": "lib/cloud/aws/ecsObservation/__tests__/wire.test.ts > fails closed on actual SDK wire ecs_error without retrying",
+      "classification": "loopback_listen_EPERM_caused_timeout",
+      "evidence": "matching_unhandled_listen_EPERM_127"
+    },
+    {
+      "entry": "lib/cloud/aws/ecsObservation/__tests__/wire.test.ts > fails closed on actual SDK wire ecr_error without retrying",
+      "classification": "loopback_listen_EPERM_caused_timeout",
+      "evidence": "matching_unhandled_listen_EPERM_127"
+    },
+    {
+      "entry": "lib/cloud/aws/ecsObservation/__tests__/wire.test.ts > fails closed on actual SDK wire overflow without retrying",
+      "classification": "loopback_listen_EPERM_caused_timeout",
+      "evidence": "matching_unhandled_listen_EPERM_127"
+    },
+    {
+      "entry": "lib/cloud/aws/ecsObservation/__tests__/wire.test.ts > fails closed on actual SDK wire slow without retrying",
+      "classification": "loopback_listen_EPERM_caused_timeout",
+      "evidence": "matching_unhandled_listen_EPERM_127"
+    },
+    {
+      "entry": "lib/cloud/aws/ecsObservation/__tests__/wire.test.ts > fails closed on actual SDK wire redirect without retrying",
+      "classification": "loopback_listen_EPERM_caused_timeout",
+      "evidence": "matching_unhandled_listen_EPERM_127"
+    },
+    {
+      "entry": "lib/cloud/aws/ecsObservation/__tests__/wire.test.ts > fails closed on actual SDK wire compression without retrying",
+      "classification": "loopback_listen_EPERM_caused_timeout",
+      "evidence": "matching_unhandled_listen_EPERM_127"
+    },
+    {
+      "entry": "lib/cloud/aws/ecsObservation/__tests__/wire.test.ts > fails closed on actual SDK wire early_close without retrying",
+      "classification": "loopback_listen_EPERM_caused_timeout",
+      "evidence": "matching_unhandled_listen_EPERM_127"
+    },
+    {
+      "entry": "lib/cloud/aws/ecsObservation/__tests__/wire.test.ts > fails closed on actual SDK wire declared_overflow without retrying",
+      "classification": "loopback_listen_EPERM_caused_timeout",
+      "evidence": "matching_unhandled_listen_EPERM_127"
+    },
+    {
+      "entry": "lib/cloud/aws/ecsObservation/__tests__/wire.test.ts > fails closed on actual SDK wire error_overflow without retrying",
+      "classification": "loopback_listen_EPERM_caused_timeout",
+      "evidence": "matching_unhandled_listen_EPERM_127"
+    },
+    {
+      "entry": "lib/cloud/aws/ecsObservation/__tests__/wire.test.ts > exhausts the shared body budget across separate successful SDK calls before later reads",
+      "classification": "loopback_listen_EPERM_caused_timeout",
+      "evidence": "matching_unhandled_listen_EPERM_127"
+    },
+    {
+      "entry": "lib/cloud/aws/ecsObservation/__tests__/wire.test.ts > rejects real deserialized binding mismatch mixed",
+      "classification": "loopback_listen_EPERM_caused_timeout",
+      "evidence": "matching_unhandled_listen_EPERM_127"
+    },
+    {
+      "entry": "lib/cloud/aws/ecsObservation/__tests__/wire.test.ts > rejects real deserialized binding mismatch task_arn",
+      "classification": "loopback_listen_EPERM_caused_timeout",
+      "evidence": "matching_unhandled_listen_EPERM_127"
+    },
+    {
+      "entry": "lib/cloud/aws/ecsObservation/__tests__/wire.test.ts > rejects real deserialized binding mismatch mutable",
+      "classification": "loopback_listen_EPERM_caused_timeout",
+      "evidence": "matching_unhandled_listen_EPERM_127"
+    },
+    {
+      "entry": "lib/cloud/aws/ecsObservation/__tests__/wire.test.ts > rejects real deserialized binding mismatch foreign_image",
+      "classification": "loopback_listen_EPERM_caused_timeout",
+      "evidence": "matching_unhandled_listen_EPERM_127"
+    },
+    {
+      "entry": "lib/cloud/aws/ecsObservation/__tests__/wire.test.ts > rejects real deserialized binding mismatch duplicate_container",
+      "classification": "loopback_listen_EPERM_caused_timeout",
+      "evidence": "matching_unhandled_listen_EPERM_127"
+    },
+    {
+      "entry": "lib/cloud/aws/ecsObservation/__tests__/wire.test.ts > rejects real deserialized binding mismatch ecr_digest",
+      "classification": "loopback_listen_EPERM_caused_timeout",
+      "evidence": "matching_unhandled_listen_EPERM_127"
+    },
+    {
+      "entry": "lib/cloud/aws/ecsObservation/__tests__/wire.test.ts > rejects real deserialized binding mismatch ecr_account",
+      "classification": "loopback_listen_EPERM_caused_timeout",
+      "evidence": "matching_unhandled_listen_EPERM_127"
+    },
+    {
+      "entry": "lib/cloud/aws/ecsObservation/__tests__/wire.test.ts > rejects real deserialized binding mismatch ecr_archived",
+      "classification": "loopback_listen_EPERM_caused_timeout",
+      "evidence": "matching_unhandled_listen_EPERM_127"
+    },
+    {
+      "entry": "lib/cloud/aws/ecsObservation/__tests__/wire.test.ts > rejects real deserialized binding mismatch ecr_status_missing",
+      "classification": "loopback_listen_EPERM_caused_timeout",
+      "evidence": "matching_unhandled_listen_EPERM_127"
+    },
+    {
+      "entry": "lib/cloud/aws/ecsObservation/__tests__/wire.test.ts > rejects real deserialized binding mismatch ecr_duplicate",
+      "classification": "loopback_listen_EPERM_caused_timeout",
+      "evidence": "matching_unhandled_listen_EPERM_127"
+    },
+    {
+      "entry": "lib/cloud/aws/ecsObservation/__tests__/wire.test.ts > rejects real deserialized binding mismatch ecr_missing",
+      "classification": "loopback_listen_EPERM_caused_timeout",
+      "evidence": "matching_unhandled_listen_EPERM_127"
+    },
+    {
+      "entry": "lib/cloud/aws/ecsObservation/__tests__/wire.test.ts > rejects real deserialized binding mismatch late_service",
+      "classification": "loopback_listen_EPERM_caused_timeout",
+      "evidence": "matching_unhandled_listen_EPERM_127"
+    }
+  ],
+  "allFilesClassified": true,
+  "permissionTwoFileRun": {
+    "sourceCommit": "9c60bff04ce7f8d3b6a3512ddf0c8cdd27f49384",
+    "exitCode": 0,
+    "durationSeconds": 8.037,
+    "newOwnedTempPathsRemaining": [],
+    "sourceUnchanged": true,
+    "environment": "PATH_TMPDIR_locale_fixed_heap_only_no_provider_credentials",
+    "purpose": "classify_two_unchanged_local_subprocess_assertion_groups_not_product_acceptance"
+  },
+  "unchangedFullSuitePermissionRepeatAuthorizedByRoot": true,
+  "initialRunIsPass": false
+}

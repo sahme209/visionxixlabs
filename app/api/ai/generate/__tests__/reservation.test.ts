@@ -3,14 +3,15 @@ import { NextRequest } from "next/server";
 
 const mocks = vi.hoisted(() => ({
   currentContext: vi.fn(), status: vi.fn(), generateText: vi.fn(), loadPolicy: vi.fn(), resolvePolicy: vi.fn(), checkCredits: vi.fn(),
-  reserve: vi.fn(), release: vi.fn(), settle: vi.fn(), attach: vi.fn(), recordUsage: vi.fn(), transaction: vi.fn(),
+  reserve: vi.fn(), release: vi.fn(), settle: vi.fn(), attach: vi.fn(), recordUsage: vi.fn(), transaction: vi.fn(), claim: vi.fn(), recordReserved: vi.fn(),
 }));
 vi.mock("@/lib/auth/currentContext", () => ({ currentContext: mocks.currentContext }));
 vi.mock("@/lib/ai/AIProviderManager", () => ({ getAIProviderManager: () => ({ status: mocks.status, generateText: mocks.generateText }) }));
 vi.mock("@/lib/ai/workspaceProviderPolicy", () => ({ loadWorkspaceAIProviderPolicyWithState: mocks.loadPolicy, resolveWorkspaceAIProviderPolicy: mocks.resolvePolicy }));
 vi.mock("@/lib/billing/checkWorkspaceAICredits", () => ({ checkWorkspaceAICredits: mocks.checkCredits }));
 vi.mock("@/lib/billing/aiCreditReservation", () => ({ reserveAICredits: mocks.reserve, releaseAICreditReservation: mocks.release, settleAICreditReservation: mocks.settle, attachAICreditReservationUsage: mocks.attach }));
-vi.mock("@/lib/billing/recordAIUsageEvent", () => ({ recordAIUsageEvent: mocks.recordUsage }));
+vi.mock("@/lib/billing/recordAIUsageEvent", () => ({ recordAIUsageEvent: mocks.recordUsage, recordReservedAIUsageEventV2: mocks.recordReserved }));
+vi.mock("@/lib/billing/newTestSubscription/usageAllocationIO", () => ({ claimNewTestBillableDispatch: mocks.claim }));
 vi.mock("@/lib/db", () => ({ prisma: { $transaction: mocks.transaction } }));
 
 function request(key = "request_abcdefghijkl", body: Record<string, unknown> = { prompt: "Summarize this", maxTokens: 20 }) {
@@ -29,6 +30,8 @@ describe("POST /api/ai/generate reservation boundary", () => {
     mocks.generateText.mockResolvedValue({ text: "ok", provider: "other", model: "model", usage: { promptTokens: 1, completionTokens: 1 } });
     mocks.recordUsage.mockResolvedValue({ recorded: true, usageEventId: "usage-1", cost: { totalCents: 10 } });
     mocks.settle.mockResolvedValue(true);
+    mocks.claim.mockResolvedValue(true);
+    mocks.recordReserved.mockResolvedValue({ recorded: true, usageEventId: "usage-1", cost: { totalCents: 10 } });
     mocks.attach.mockResolvedValue(true);
     mocks.transaction.mockImplementation(async (callback) => callback({}));
   });
@@ -88,6 +91,26 @@ describe("POST /api/ai/generate reservation boundary", () => {
     expect(mocks.release).toHaveBeenCalledWith(expect.anything(), "org-1", "hold-1");
   });
 
+  it("awaits the durable V2 claim transaction before provider work and uses only the attributed writer", async () => {
+    mocks.reserve.mockResolvedValue({ ok: true, reused: false, allocationPolicy: "axiom_test_anniversary_v2", reservation: { id: "hold-1" } });
+    let committed = false;
+    mocks.transaction.mockImplementation(async callback => { const result = await callback({}); committed = true; return result; });
+    mocks.generateText.mockImplementation(async () => { expect(committed).toBe(true); return { text: "ok", provider: "other", model: "model", usage: { promptTokens: 1, completionTokens: 1 } }; });
+    const { POST } = await import("../route"); expect((await POST(request())).status).toBe(200);
+    expect(mocks.claim).toHaveBeenCalledOnce(); expect(mocks.recordReserved).toHaveBeenCalledWith(expect.objectContaining({ organizationId: "org-1" }), "hold-1");
+    expect(mocks.recordUsage).not.toHaveBeenCalled(); expect(mocks.settle).not.toHaveBeenCalled(); expect(mocks.attach).not.toHaveBeenCalled();
+  });
+  it("denies dispatch when the V2 final claim cannot commit", async () => {
+    mocks.reserve.mockResolvedValue({ ok: true, reused: false, allocationPolicy: "axiom_test_anniversary_v2", reservation: { id: "hold-1" } }); mocks.claim.mockResolvedValue(false);
+    const { POST } = await import("../route"); expect((await POST(request())).status).toBeGreaterThanOrEqual(400);
+    expect(mocks.generateText).not.toHaveBeenCalled(); expect(mocks.recordReserved).not.toHaveBeenCalled();
+  });
+  it("does not turn unknown direct usage counts into a zero-cost V2 settlement", async () => {
+    mocks.reserve.mockResolvedValue({ ok: true, reused: false, allocationPolicy: "axiom_test_anniversary_v2", reservation: { id: "hold-1" } });
+    mocks.generateText.mockResolvedValue({ text: "ok", provider: "other", model: "model", usage: {} });
+    const { POST } = await import("../route"); expect((await POST(request())).status).toBeGreaterThanOrEqual(400);
+    expect(mocks.recordReserved).not.toHaveBeenCalled(); expect(mocks.release).not.toHaveBeenCalled();
+  });
   it("requires a stable request key before a provider call", async () => {
     const { POST } = await import("../route");
     expect((await POST(request("short"))).status).toBe(400);

@@ -71,3 +71,8 @@ it('rejects recreation of the target row during provider IO even with identical 
     x.read.mockImplementation(async () => { x.target.id = 'replacement-target'; return value; });
     await expect(readTenantEcsObservation(x.repo, principal, x.request, x.dependencies)).rejects.toThrow('ecs_observation_unavailable');
 });
+it('honors an already cancelled parent before opening the scoped connection', async () => {
+    const x = await ready(), parent = new AbortController(); parent.abort();
+    await expect(readTenantEcsObservation(x.repo, principal, x.request, { ...x.dependencies, signal: parent.signal })).rejects.toThrow('ecs_observation_unavailable');
+    expect(x.dependencies.open).not.toHaveBeenCalled(); expect(x.read).not.toHaveBeenCalled();
+});

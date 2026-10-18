@@ -1,0 +1,101 @@
+{
+  "validatedSourceCommit": "fffa357a661086cd6660590dd64fd9f45f55a196",
+  "scope": "PR173 desktop repository-owner dispatch race correction",
+  "genuineOriginalCIProductFailure": {
+    "pr": 173,
+    "runId": "39101587460",
+    "jobId": "117598791534",
+    "jobUrl": "https://github.com/sahme209/visionxixlabs/actions/runs/39101587460/job/117598791534",
+    "syntheticMergeCommit": "1421b17332d0bac71328bb74097e2190e6dbd6f8",
+    "headCommit": "b2b64c48e32589549a2729e31f2e54822e8d5db8",
+    "testFile": "lib/desktop/__tests__/repositoryWorkspaceOwnership.test.ts",
+    "historicalTestLine": 72,
+    "passedTests": 7345,
+    "failedTests": 1,
+    "skippedTests": 8,
+    "passedFiles": 667,
+    "failedFiles": 1,
+    "skippedFiles": 1,
+    "durationSeconds": 50.88,
+    "classification": "real_pending_A_effect_repository_owner_race_not_environment_or_flaky_retry",
+    "deterministicRedToGreenSourceCorrection": true
+  },
+  "correction": {
+    "commit": "fffa357a661086cd6660590dd64fd9f45f55a196",
+    "behavior": "before dispatching queued detection require captured.repository===selectedRepository AND current ownership; B selection may advance ownership before the old passive effect runs",
+    "productFiles": [
+      "desktop/src/views/RepositoryWorkspaceView.tsx"
+    ],
+    "regressionTest": "lib/desktop/__tests__/repositoryWorkspaceOwnership.test.ts"
+  },
+  "gates": {
+    "wholeWebTypes": {
+      "pass": true,
+      "heapMiB": 8192,
+      "incremental": false
+    },
+    "defaultFullSuite": {
+      "pass": true,
+      "passedTests": 7347,
+      "passedFiles": 668,
+      "skippedTests": 8,
+      "skippedFiles": 1,
+      "totalTests": 7355,
+      "totalFiles": 669,
+      "unhandledErrors": 0,
+      "durationSeconds": 73.23,
+      "unfiltered": true,
+      "properLocalProcessAndLoopbackPermissionFromStart": true,
+      "sourceAndTimeoutsUnchangedDuringRun": true,
+      "environment": "PATH_TMPDIR_locale_fixed_heap_no_provider_credentials_PythonNoBytecode"
+    },
+    "desktop": {
+      "sourceCommit": "fffa357a661086cd6660590dd64fd9f45f55a196",
+      "types": {
+        "exitCode": 0,
+        "durationSeconds": 6.699
+      },
+      "build": {
+        "exitCode": 0,
+        "durationSeconds": 9.678
+      },
+      "ownDesktopLinkRemoved": true
+    },
+    "pythonCli": {
+      "pass": true,
+      "tests": 30
+    },
+    "offlineAuthEvidence": {
+      "pass": true,
+      "tests": 16
+    },
+    "scopedLint": {
+      "pass": true,
+      "files": 2,
+      "warnings": 0
+    },
+    "tracker": {
+      "pass": true,
+      "sources": 22,
+      "rows": 2154
+    },
+    "diffCheck": true
+  },
+  "sourceManifest": {
+    "fileCount": 2143,
+    "sha256": "49b385a4d0b00f31abec6a26457f8eb8baecb3337d83a7ac35f5cb78b4bc8241",
+    "allFilesAtValidatedCommit": true
+  },
+  "priorOwnedEcsReceipt": {
+    "path": "docs/mission/local-ecs-checked-inputs-owned-acceptance-9c60bff0.json",
+    "executedSourceCommit": "9c60bff04ce7f8d3b6a3512ddf0c8cdd27f49384",
+    "sha256": "8c0209ddb9012afe1337cc11b19da37b90587c0d932e3bd8cbca2a449bcec4ef",
+    "kernelHashCount": 59,
+    "all59KernelHashesStillExact": true,
+    "ownedRuntimeRepeated": false,
+    "scopeRemains": "checked_subject_mismatch_not_usable_for_admission",
+    "existingOverlayPrismaTrustedPreloadAndSyntheticProviderQualifiersPreserved": true
+  },
+  "finalization": "subsequent commit contains this evidence documentation only; exact final-head PR CI remains required",
+  "noProviderOperationNativeInstallerDependencyInstallGenerationOrDeployment": true
+}

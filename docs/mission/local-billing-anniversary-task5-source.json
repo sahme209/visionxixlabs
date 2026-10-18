@@ -1,0 +1,383 @@
+{
+  "schemaVersion": 1,
+  "kind": "fixture_source_review_not_runtime_acceptance",
+  "productBaseCommit": "02c3861ea8fcc1c04c05493cfb90c25b29f2a0d9",
+  "lastIntegratedMain": "10882dc2",
+  "freezeCommitBinding": "enclosing Git commit / parent handoff; no self-referential hash",
+  "productFiles": [
+    {
+      "path": "app/api/ai/generate/route.ts",
+      "sha256": "765eeb50e995e6b6c896231a0f518d4c3779fcc53204c50bc519144f62d31569",
+      "unchangedFromProductBase": true
+    },
+    {
+      "path": "lib/billing/aiCreditReservation.ts",
+      "sha256": "5107e0c7039aa66d08117985507549a681df3ee39a987c6c5f053fb5f9cbf69c",
+      "unchangedFromProductBase": true
+    },
+    {
+      "path": "lib/billing/currentAIAllowance.ts",
+      "sha256": "770cea486a3a39aee2fd5d51dfdc7274d4fd93af42f7321193a2ba9796ce333a",
+      "unchangedFromProductBase": true
+    },
+    {
+      "path": "lib/billing/isolatedApplication/plan.ts",
+      "sha256": "643f5afd9b7971c5f6a23446fda981a021804028e5f9fb2d8d675be4163efdf1",
+      "unchangedFromProductBase": true
+    },
+    {
+      "path": "lib/billing/newTestSubscription/allocationPlan.ts",
+      "sha256": "bbf78b1e9b0f5684086dbd3a7a717af502025ef44916c75edf445ee87e3a207d",
+      "unchangedFromProductBase": false,
+      "authorizedDifference": "Use existing complete predicate in actual lock statement; all16 args and later postlock/final fences unchanged.",
+      "productBaseSha256": "6d63702a2bbfdbfa5d07a5431ab636ab6a375bb1373a11dff3aa0fcb78325897"
+    },
+    {
+      "path": "lib/billing/newTestSubscription/allocationV2.ts",
+      "sha256": "07483577291e15d7b23eb505baa7e1653d13b76e618bfb1646040d3a5a730a2d",
+      "unchangedFromProductBase": true
+    },
+    {
+      "path": "lib/billing/newTestSubscription/anniversaryWindow.ts",
+      "sha256": "9996a150880c2f91e1618f81382362a99132f991f7d398880eb0e6ded431b298",
+      "unchangedFromProductBase": true
+    },
+    {
+      "path": "lib/billing/newTestSubscription/fixtureAllocation.ts",
+      "sha256": "226a04f6431bf0cc748a5026d808161aeabb2b0158b3a9540d40909c22d78c74",
+      "unchangedFromProductBase": false,
+      "productBaseSha256": "4b00376e5a20ba6a13820e34a04c1c52fd7777d3aa01d40719527ac8b9136a53",
+      "authorizedDifference": "Parenthesize existing SQL CASE expression in fixture DDL; no predicate/amount/raise/trigger change."
+    },
+    {
+      "path": "lib/billing/newTestSubscription/fixtureUsageGuards.ts",
+      "sha256": "d52e698765f732bac7812453451fced9e257411d3020db53e4699188e2def5b5",
+      "unchangedFromProductBase": true
+    },
+    {
+      "path": "lib/billing/newTestSubscription/paidCoverage.ts",
+      "sha256": "a19ae9ba35aa7de6a4dd7d96137a27c6f73451c1396c3c48049f1905795807a9",
+      "unchangedFromProductBase": true
+    },
+    {
+      "path": "lib/billing/newTestSubscription/paidPlan.ts",
+      "sha256": "e6cb89868ca3ce0eaf6198da3e6426cb84e3295327f580392aa1da9133288d83",
+      "unchangedFromProductBase": true
+    },
+    {
+      "path": "lib/billing/newTestSubscription/postgresFixtureStore.ts",
+      "sha256": "ad3425428f9b41598dfd9add76963a80c6311a25f1f65387811f2ef874568ebb",
+      "unchangedFromProductBase": true
+    },
+    {
+      "path": "lib/billing/newTestSubscription/service.ts",
+      "sha256": "da116e4690c17319eb811903de2381fdda9685a5d7a49efcea49fdb7236ed354",
+      "unchangedFromProductBase": true
+    },
+    {
+      "path": "lib/billing/newTestSubscription/stripePaidCoverage.ts",
+      "sha256": "8385ddaaf42f5d42e8f15a78e4f7084a611217a53f998f414a08bb7664908193",
+      "unchangedFromProductBase": true
+    },
+    {
+      "path": "lib/billing/newTestSubscription/stripeTestProvider.ts",
+      "sha256": "7081360821a265f72c1520b1e4259317b6974f9d6a51eb873ca27e3566a9cbdd",
+      "unchangedFromProductBase": true
+    },
+    {
+      "path": "lib/billing/newTestSubscription/usageAllocationIO.ts",
+      "sha256": "aa8a93877533d73ab3369c56b6ad2ba3447319ce10fe5abbd067b7bcddfa8928",
+      "unchangedFromProductBase": true
+    },
+    {
+      "path": "lib/billing/newTestSubscription/verifiedContract.ts",
+      "sha256": "f9238dff5852cf45945a8319aa2e1cb00e0d5011923d6bf6b820915c43a08675",
+      "unchangedFromProductBase": true
+    },
+    {
+      "path": "lib/billing/planRegistry.ts",
+      "sha256": "cbf68c8187937e358314506fec8b30a7c1dfff43073b9def6bc1211abe6c8171",
+      "unchangedFromProductBase": true
+    },
+    {
+      "path": "lib/billing/reconcileGatewayUsage.ts",
+      "sha256": "65efff13fdf74685a843489f85361d75ebce21944a1071be1c2f5244eacb4568",
+      "unchangedFromProductBase": true
+    },
+    {
+      "path": "lib/billing/recordAIUsageEvent.ts",
+      "sha256": "a70f6c3969a90a0af967f6e991495799bd4dbba0562740d1d53a9edb6b12549a",
+      "unchangedFromProductBase": true
+    },
+    {
+      "path": "lib/demo/demoScenarios.ts",
+      "sha256": "7673c06c13d14fa54bf3cbfb15e1569763915be733f808a1a463987113045e1a",
+      "unchangedFromProductBase": true
+    }
+  ],
+  "fixtureFiles": [
+    {
+      "path": "lib/billing/__tests__/fixtures/newTestAnniversaryFixture.ts",
+      "sha256": "376b82d82cde877154c338817a328890449ccb9686c4bca6d8eea4cdf4b259ed"
+    },
+    {
+      "path": "lib/billing/__tests__/fixtures/newTestAnniversaryAcceptance.ts",
+      "sha256": "896d04936d133dbff4789bfba3ca64a8d83c89cc3e9a12d776c16ea9df99e575"
+    },
+    {
+      "path": "lib/billing/__tests__/fixtures/newTestAnniversaryHttp.ts",
+      "sha256": "b9de0c22ba1c3abfe37d3172afb4b37163d728ef8ee7eb110c69815be4e4c68b"
+    },
+    {
+      "path": "lib/billing/__tests__/fixtures/newTestChildEnvironment.ts",
+      "sha256": "3bec9efa59f74176884354ed133307df37c374b923b266d95a83c512e9ac82b0"
+    },
+    {
+      "path": "lib/billing/__tests__/newTestChildEnvironment.test.ts",
+      "sha256": "4b2b6425a3d82a0e37fa1306d5e7a85572b9501c88f9d2c4df2617df7ccc5fb2"
+    },
+    {
+      "path": "lib/billing/__tests__/newTestSubscriptionService.postgres.test.ts",
+      "sha256": "f5198ea494b6960da561262340fc82311acca09e03258ad5a5f39a61500c524a"
+    },
+    {
+      "path": "lib/billing/__tests__/anniversaryWindow.test.ts",
+      "sha256": "7422745db63ea370d6f92dc29100262fa28d1497278a60553d0e64baf50024ff"
+    },
+    {
+      "path": "lib/billing/__tests__/newTestAllocationStore.test.ts",
+      "sha256": "5224d86264aea09ab07527eb5d1a2594d0a9ad03ad243493da43b2ceea3f4c99"
+    },
+    {
+      "path": "lib/billing/__tests__/newTestAllocationAdmission.test.ts",
+      "sha256": "e92468966898e07afc392a1c20f22e7c94548acab91b145f8fba918935e3b93e"
+    }
+  ],
+  "lightCheckLogs": [
+    {
+      "path": "/tmp/axiom-anniversary-prisma-env-red.log",
+      "sha256": "d8e0dd5f442756635c9398c91790ee1243f189dc55150d8760e562d2f4d1b6e5"
+    },
+    {
+      "path": "/tmp/axiom-anniversary-prisma-env-green.log",
+      "sha256": "af4e8998b93f5eafbce4f0f38dbb582d95d2b64820efe1968670466773e5226e"
+    },
+    {
+      "path": "/tmp/axiom-anniversary-task5-default-skip.log",
+      "sha256": "669990210d5e43646a74259aa6e6a68f809e6fa33cdca82de59097bbcd48b12e"
+    },
+    {
+      "path": "/tmp/axiom-anniversary-task5-lint.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/tmp/axiom-anniversary-prisma-checkpoint-red.log",
+      "sha256": "557c140dfe68876ccb04cd407f5a62935809a3663a546f2f07741dc37c4977a1"
+    },
+    {
+      "path": "/tmp/axiom-anniversary-prisma-checkpoint-green.log",
+      "sha256": "f6eaf0873ef3264ee891532fb71d9a9f2a02f16663456860db87758c031db04b"
+    },
+    {
+      "path": "/tmp/axiom-anniversary-prisma-checkpoint-focused.log",
+      "sha256": "eb7f1cecad6d1a35f0b41a0069d4527e93c9d29db8138d8dc02930e3b3d40c12"
+    },
+    {
+      "path": "/tmp/axiom-anniversary-prisma-checkpoint-lint.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/tmp/axiom-anniversary-type-fixture-red.log",
+      "sha256": "655a100bb353b77a1ee8487a5e5b3a396a3d2d751a1a6b838b57fcdbe403c7ed"
+    },
+    {
+      "path": "/tmp/axiom-anniversary-type-fixture-green.log",
+      "sha256": "7d86cb35756e266e64f517af6d7ef1e972d793aa42a92dd4c2af242439317bf2"
+    },
+    {
+      "path": "/tmp/axiom-anniversary-type-launcher-green.log",
+      "sha256": "78b53b226061e4c27508e3795bcb6d5d2edbf953026ac1508f3110a34375f07c"
+    },
+    {
+      "path": "/tmp/axiom-anniversary-type-fixture-lint.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/tmp/axiom-anniversary-ddl-source-focused.log",
+      "sha256": "47093884195037d32e1c1626e422a22020c5e7a3de651e447ce84aa2589b5618"
+    },
+    {
+      "path": "/tmp/axiom-anniversary-ddl-source-lint.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/tmp/axiom-anniversary-lock-binding-red.log",
+      "sha256": "c73f1a5d0630882d81924971716065a7b4ae5f1f3e0d6ae4f273b9d393bb48ed"
+    },
+    {
+      "path": "/tmp/axiom-anniversary-lock-binding-green.log",
+      "sha256": "e82a5de2bf341adc38b7f06a88ffb0ada50036aa21ff5660738374e85a70badb"
+    },
+    {
+      "path": "/tmp/axiom-anniversary-lock-binding-lint.log",
+      "sha256": "7f5d647a31d5535ae8a569cfaa1b2756e28e428a1404b3f2d2108878acdf1ebc"
+    },
+    {
+      "path": "/tmp/axiom-anniversary-lock-binding-default-skip.log",
+      "sha256": "03fb8af7568a2d7051d9ddd8c25824d304db8accb7d36d95fe326f24ce8c25e1"
+    },
+    {
+      "path": "/tmp/axiom-anniversary-replay-source-focused.log",
+      "sha256": "f0bcebb0f7c70e0ef12d888ed13d764d6ea80afb6a6be39b973bfae0b905ac03"
+    },
+    {
+      "path": "/tmp/axiom-anniversary-replay-source-lint.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "ownedCases": {
+    "legacyV1": 8,
+    "newV2": 19,
+    "executed": 0,
+    "defaultSkipped": 27
+  },
+  "pending": [
+    "independent exact fixture replay source closure",
+    "fresh whole-web compiler after grant",
+    "actual owned PG financial/Next/TTL27case acceptance after exclusive grant",
+    "full coordinated gates"
+  ],
+  "unproved": [
+    "natural anniversary/UTC-month lock-wait financial boundary",
+    "hosted Stripe payment",
+    "real provider work",
+    "managed proxy compatibility",
+    "production/public composition"
+  ],
+  "protectedFiles": [
+    {
+      "path": "prisma/schema.prisma",
+      "sha256": "3abed3e94c18cd2554f18b847d27ab505e3e8fa9fde968a0a7c72fdb6e787c9c",
+      "unchangedFromProductBase": true
+    },
+    {
+      "path": "package-lock.json",
+      "sha256": "4923306fbdd3e436cbb2466d611716d94133797e64fb29298e4a36298c9a2049",
+      "unchangedFromProductBase": true
+    },
+    {
+      "path": "lib/billing/aiCreditFulfillment.ts",
+      "sha256": "e2ea638f918f26e17f7a308ec421f517c0cc840764c4b648b38b783e10ebeb36",
+      "unchangedFromProductBase": true
+    },
+    {
+      "path": "lib/billing/isolatedApplication/runtime.ts",
+      "sha256": "57496e9ecf84351a32211450f7d19ec062779bec9c328d1cbdeee9b1bf4a59a8",
+      "unchangedFromProductBase": true
+    },
+    {
+      "path": "lib/billing/isolatedApplication/scope.ts",
+      "sha256": "bb27edac701bfb9c7812a77aeb17266b1effa7c95ab472f0b70c5d4d2a72d539",
+      "unchangedFromProductBase": true
+    },
+    {
+      "path": "app/api/billing/checkout-session/route.ts",
+      "sha256": "43f7a66dc68bf6cf1584473110aa85f9aeac5587bdb3c793265bd02f7ea68674",
+      "unchangedFromProductBase": true
+    },
+    {
+      "path": "app/api/billing/stripe-webhook/route.ts",
+      "sha256": "fc0832c7df1659cbe01e72386bad207d766e55406ac000a5cfeed567ffe7052b",
+      "unchangedFromProductBase": true
+    }
+  ],
+  "fixtureReviewClosure": {
+    "reviewedBaseCommit": "ef0059569856be8c59e93837e98b93ec5e4355a7",
+    "materialFindings": 1,
+    "correction": "force owned Prisma CHECKPOINT_DISABLE=1 even if absent/false inherited",
+    "regressionRed": 2,
+    "regressionGreen": 2,
+    "completeLauncherGreen": 28,
+    "installedPrismaVersion": "5.22.0",
+    "lockedPrismaVersion": "5.22.0",
+    "cliExecuted": false,
+    "runtimeExecuted": false
+  },
+  "compilerAttempt": {
+    "sourceCommit": "9aa7b68d1617478b22f808258989783c83e5012c",
+    "heapMiB": 8192,
+    "incremental": false,
+    "exit": 2,
+    "elapsedSeconds": 52.11,
+    "diagnostics": 3,
+    "ownedRuntimeStarted": false,
+    "resourcesCreated": false,
+    "windowReleased": true,
+    "logReceipt": {
+      "path": "/tmp/axiom-anniversary-task5-9aa-types.log",
+      "sha256": "cfe57ce4fe8da8434d47a358b2048f96b36c010268ecc0d83743696fd2f54095"
+    }
+  },
+  "typingCorrection": {
+    "sourceBase": "9aa7b68d1617478b22f808258989783c83e5012c",
+    "corrections": [
+      "collected coverage discriminant before replacement digest spread",
+      "explicit existing development NODE_ENV in checked child environment",
+      "complete frozen typed Intent fixture without partial assertion"
+    ],
+    "regressionRed": 1,
+    "windowStorageFocusedGreen": 28,
+    "launcherFocusedGreen": 28,
+    "compilerRetried": false,
+    "ownedRuntimeStarted": false
+  },
+  "fixtureSyntaxCorrection": {
+    "sourceBase": "fb7b203216def75bfeb1cda3ace3dcf4de81340a",
+    "changedProductFiles": [
+      "lib/billing/newTestSubscription/fixtureAllocation.ts"
+    ],
+    "syntaxOnly": "Parenthesize SQL CASE at fixtureAllocation.ts73; every financial predicate retained.",
+    "diagnosticOnly": "Fixed base/coverage/allocation stage and statement index; original statements forwarded; no raw SQL/URLs/caught errors emitted.",
+    "focusedStorageTestsPassed": 5,
+    "postgresParserGreen": false,
+    "compilerRetried": false,
+    "ownedRuntimeRetried": false
+  },
+  "lockBindingCorrection": {
+    "sourceBase": "ead037e17d32a2ac0049412e35ab62b127bd3ace",
+    "productPath": "lib/billing/newTestSubscription/allocationPlan.ts",
+    "correction": "Existing full predicate replaces identity-only fragment in lock query; same16 args.",
+    "noSendRegressionRed": 1,
+    "focusedGreen": 72,
+    "underlyingRuntimeCauseObserved": false,
+    "postgresAcceptance": false,
+    "compilerRetried": false,
+    "ownedRuntimeRetried": false,
+    "optionalQueryObserverAdded": false,
+    "testOnlyTtlExpectation": {
+      "expectedClosedResult": {
+        "ok": false,
+        "error": "ai_credit_reservation_unavailable"
+      },
+      "existingCurrent400UnknownExpiryAssertionsRetained": true,
+      "explicitNoFinancialMutationNoNewHoldAssertions": true,
+      "runtimeExecuted": false,
+      "genericRefusalProvesSpecificCause": false
+    }
+  },
+  "replayFixtureCorrection": {
+    "sourceBase": "50ac13b3fceb2b266f3aa925a24b4fd1c03692b1",
+    "actualProductUnchangedFrom": "9b60227c2a82a63214d21ec7195d3cbc3ae3ada8",
+    "testPath": "lib/billing/__tests__/fixtures/newTestAnniversaryAcceptance.ts",
+    "firstComposerSettlementUnchanged": true,
+    "exactClosedComposerReplayRejection": true,
+    "actualSealedReplayAndFiveContradictionsDeclared": true,
+    "fullFinancialNonmutationAnd420Declared": true,
+    "catchIgnore": false,
+    "focusedExistingSyntheticTestsPassed": 28,
+    "defaultOwnedCasesSkipped": 27,
+    "newOwnedAssertionsExecuted": false,
+    "compilerRetried": false,
+    "ownedRuntimeRetried": false
+  }
+}
