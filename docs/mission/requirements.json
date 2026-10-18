@@ -56,6 +56,18 @@
     },
     {
       "path": "docs/AXIOM_RESUME_ENGINEERING_ORDER.md"
+    },
+    {
+      "path": "docs/AXIOM_AZURE_TESTING_ACCESS_ORDER.md"
+    },
+    {
+      "path": "docs/AXIOM_PREMIUM_VISUAL_DEMOS_ORDER.md"
+    },
+    {
+      "path": "docs/AXIOM_ADDITIVE_CONTINUITY_ORDER.md"
+    },
+    {
+      "path": "docs/AXIOM_TEST_CREDIT_POLICY_DECISIONS.md"
     }
   ],
   "requirements": [
@@ -48490,6 +48502,804 @@
       "nextAction": "Continue existing source implementation and independent application acceptance, preserving production and release approval gates.",
       "owner": "Codex; founder approves separately gated production operations",
       "auditDepth": "Exact available source mapped; capability-specific acceptance audit pending"
+    },
+    {
+      "id": "R19-001",
+      "source": "docs/AXIOM_AZURE_TESTING_ACCESS_ORDER.md",
+      "line": 1,
+      "section": "Introduction / ADDITIONAL INSTRUCTION — AZURE TESTING ACCESS",
+      "requirement": "**ADDITIONAL INSTRUCTION — AZURE TESTING ACCESS**",
+      "domain": "cloud",
+      "scope": "product",
+      "status": "Blocked by external access",
+      "verification": "Azure CLI2.91.0 installed in an owned venv with149 version/hash-pinned wheels,332.3MiB. Existing local Azure configuration/identities absent; directory identities remain uninspected. Interactive login stopped before challenge: current enforced network allowlist excludes Microsoft login/ARM/Graph; no outbound identity binding exists. No service principal, role grant or cloud resource was created.",
+      "evidence": [
+        "docs/AXIOM_AZURE_TESTING_ACCESS_ORDER.md",
+        "docs/mission/execution-2026-10-16.md"
+      ],
+      "prs": [],
+      "nextAction": "Enable only login.microsoftonline.com, management.azure.com and graph.microsoft.com in managed environment network settings, complete owner Microsoft sign-in privately, inspect existing tenant identities/subscriptions/resource groups, then present exact sandbox/SP/role/cost approval plan.",
+      "owner": "Codex; founder approves separately gated production and Azure sandbox operations",
+      "auditDepth": "Exact additive source mapped; application-specific acceptance pending"
+    },
+    {
+      "id": "R19-002",
+      "source": "docs/AXIOM_AZURE_TESTING_ACCESS_ORDER.md",
+      "line": 3,
+      "section": "Introduction / ADDITIONAL INSTRUCTION — AZURE TESTING ACCESS",
+      "requirement": "Continue the existing Axiom Agent master plan exactly where you left off. Do not change priorities, restart tasks, or deviate from current development.",
+      "domain": "cloud",
+      "scope": "process",
+      "status": "Partially implemented",
+      "verification": "Azure CLI2.91.0 installed in an owned venv with149 version/hash-pinned wheels,332.3MiB. Existing local Azure configuration/identities absent; directory identities remain uninspected. Interactive login stopped before challenge: current enforced network allowlist excludes Microsoft login/ARM/Graph; no outbound identity binding exists. No service principal, role grant or cloud resource was created.",
+      "evidence": [
+        "docs/AXIOM_AZURE_TESTING_ACCESS_ORDER.md",
+        "docs/mission/execution-2026-10-16.md"
+      ],
+      "prs": [],
+      "nextAction": "Enable only login.microsoftonline.com, management.azure.com and graph.microsoft.com in managed environment network settings, complete owner Microsoft sign-in privately, inspect existing tenant identities/subscriptions/resource groups, then present exact sandbox/SP/role/cost approval plan.",
+      "owner": "Codex; founder approves separately gated production and Azure sandbox operations",
+      "auditDepth": "Exact additive source mapped; application-specific acceptance pending"
+    },
+    {
+      "id": "R19-003",
+      "source": "docs/AXIOM_AZURE_TESTING_ACCESS_ORDER.md",
+      "line": 5,
+      "section": "Introduction / ADDITIONAL INSTRUCTION — AZURE TESTING ACCESS",
+      "requirement": "As an additional capability, set up Azure access so you can independently perform real end-to-end testing of Axiom Agent's Azure integrations.",
+      "domain": "cloud",
+      "scope": "product",
+      "status": "Blocked by external access",
+      "verification": "Azure CLI2.91.0 installed in an owned venv with149 version/hash-pinned wheels,332.3MiB. Existing local Azure configuration/identities absent; directory identities remain uninspected. Interactive login stopped before challenge: current enforced network allowlist excludes Microsoft login/ARM/Graph; no outbound identity binding exists. No service principal, role grant or cloud resource was created.",
+      "evidence": [
+        "docs/AXIOM_AZURE_TESTING_ACCESS_ORDER.md",
+        "docs/mission/execution-2026-10-16.md"
+      ],
+      "prs": [],
+      "nextAction": "Enable only login.microsoftonline.com, management.azure.com and graph.microsoft.com in managed environment network settings, complete owner Microsoft sign-in privately, inspect existing tenant identities/subscriptions/resource groups, then present exact sandbox/SP/role/cost approval plan.",
+      "owner": "Codex; founder approves separately gated production and Azure sandbox operations",
+      "auditDepth": "Exact additive source mapped; application-specific acceptance pending"
+    },
+    {
+      "id": "R19-004",
+      "source": "docs/AXIOM_AZURE_TESTING_ACCESS_ORDER.md",
+      "line": 7,
+      "section": "Introduction / ADDITIONAL INSTRUCTION — AZURE TESTING ACCESS",
+      "requirement": "- Use Azure CLI and my interactive Microsoft login to establish initial access.",
+      "domain": "cloud",
+      "scope": "product",
+      "status": "Blocked by external access",
+      "verification": "Azure CLI2.91.0 installed in an owned venv with149 version/hash-pinned wheels,332.3MiB. Existing local Azure configuration/identities absent; directory identities remain uninspected. Interactive login stopped before challenge: current enforced network allowlist excludes Microsoft login/ARM/Graph; no outbound identity binding exists. No service principal, role grant or cloud resource was created.",
+      "evidence": [
+        "docs/AXIOM_AZURE_TESTING_ACCESS_ORDER.md",
+        "docs/mission/execution-2026-10-16.md"
+      ],
+      "prs": [],
+      "nextAction": "Enable only login.microsoftonline.com, management.azure.com and graph.microsoft.com in managed environment network settings, complete owner Microsoft sign-in privately, inspect existing tenant identities/subscriptions/resource groups, then present exact sandbox/SP/role/cost approval plan.",
+      "owner": "Codex; founder approves separately gated production and Azure sandbox operations",
+      "auditDepth": "Exact additive source mapped; application-specific acceptance pending"
+    },
+    {
+      "id": "R19-005",
+      "source": "docs/AXIOM_AZURE_TESTING_ACCESS_ORDER.md",
+      "line": 8,
+      "section": "Introduction / ADDITIONAL INSTRUCTION — AZURE TESTING ACCESS",
+      "requirement": "- Check for existing Azure identities and configurations before creating anything.",
+      "domain": "cloud",
+      "scope": "product",
+      "status": "Blocked by external access",
+      "verification": "Azure CLI2.91.0 installed in an owned venv with149 version/hash-pinned wheels,332.3MiB. Existing local Azure configuration/identities absent; directory identities remain uninspected. Interactive login stopped before challenge: current enforced network allowlist excludes Microsoft login/ARM/Graph; no outbound identity binding exists. No service principal, role grant or cloud resource was created.",
+      "evidence": [
+        "docs/AXIOM_AZURE_TESTING_ACCESS_ORDER.md",
+        "docs/mission/execution-2026-10-16.md"
+      ],
+      "prs": [],
+      "nextAction": "Enable only login.microsoftonline.com, management.azure.com and graph.microsoft.com in managed environment network settings, complete owner Microsoft sign-in privately, inspect existing tenant identities/subscriptions/resource groups, then present exact sandbox/SP/role/cost approval plan.",
+      "owner": "Codex; founder approves separately gated production and Azure sandbox operations",
+      "auditDepth": "Exact additive source mapped; application-specific acceptance pending"
+    },
+    {
+      "id": "R19-006",
+      "source": "docs/AXIOM_AZURE_TESTING_ACCESS_ORDER.md",
+      "line": 9,
+      "section": "Introduction / ADDITIONAL INSTRUCTION — AZURE TESTING ACCESS",
+      "requirement": "- With my approval, create a dedicated `axiom-codex-dev-agent` service principal and configure secure authentication.",
+      "domain": "cloud",
+      "scope": "process",
+      "status": "Partially implemented",
+      "verification": "Azure CLI2.91.0 installed in an owned venv with149 version/hash-pinned wheels,332.3MiB. Existing local Azure configuration/identities absent; directory identities remain uninspected. Interactive login stopped before challenge: current enforced network allowlist excludes Microsoft login/ARM/Graph; no outbound identity binding exists. No service principal, role grant or cloud resource was created.",
+      "evidence": [
+        "docs/AXIOM_AZURE_TESTING_ACCESS_ORDER.md",
+        "docs/mission/execution-2026-10-16.md"
+      ],
+      "prs": [],
+      "nextAction": "Enable only login.microsoftonline.com, management.azure.com and graph.microsoft.com in managed environment network settings, complete owner Microsoft sign-in privately, inspect existing tenant identities/subscriptions/resource groups, then present exact sandbox/SP/role/cost approval plan.",
+      "owner": "Codex; founder approves separately gated production and Azure sandbox operations",
+      "auditDepth": "Exact additive source mapped; application-specific acceptance pending"
+    },
+    {
+      "id": "R19-007",
+      "source": "docs/AXIOM_AZURE_TESTING_ACCESS_ORDER.md",
+      "line": 10,
+      "section": "Introduction / ADDITIONAL INSTRUCTION — AZURE TESTING ACCESS",
+      "requirement": "- With my approval, grant Contributor access to an isolated Azure development/testing resource group.",
+      "domain": "cloud",
+      "scope": "process",
+      "status": "Partially implemented",
+      "verification": "Azure CLI2.91.0 installed in an owned venv with149 version/hash-pinned wheels,332.3MiB. Existing local Azure configuration/identities absent; directory identities remain uninspected. Interactive login stopped before challenge: current enforced network allowlist excludes Microsoft login/ARM/Graph; no outbound identity binding exists. No service principal, role grant or cloud resource was created.",
+      "evidence": [
+        "docs/AXIOM_AZURE_TESTING_ACCESS_ORDER.md",
+        "docs/mission/execution-2026-10-16.md"
+      ],
+      "prs": [],
+      "nextAction": "Enable only login.microsoftonline.com, management.azure.com and graph.microsoft.com in managed environment network settings, complete owner Microsoft sign-in privately, inspect existing tenant identities/subscriptions/resource groups, then present exact sandbox/SP/role/cost approval plan.",
+      "owner": "Codex; founder approves separately gated production and Azure sandbox operations",
+      "auditDepth": "Exact additive source mapped; application-specific acceptance pending"
+    },
+    {
+      "id": "R19-008",
+      "source": "docs/AXIOM_AZURE_TESTING_ACCESS_ORDER.md",
+      "line": 11,
+      "section": "Introduction / ADDITIONAL INSTRUCTION — AZURE TESTING ACCESS",
+      "requirement": "- Once configured, freely create, configure, deploy, test, troubleshoot, and clean up authorized sandbox resources as needed.",
+      "domain": "cloud",
+      "scope": "product",
+      "status": "Blocked by external access",
+      "verification": "Azure CLI2.91.0 installed in an owned venv with149 version/hash-pinned wheels,332.3MiB. Existing local Azure configuration/identities absent; directory identities remain uninspected. Interactive login stopped before challenge: current enforced network allowlist excludes Microsoft login/ARM/Graph; no outbound identity binding exists. No service principal, role grant or cloud resource was created.",
+      "evidence": [
+        "docs/AXIOM_AZURE_TESTING_ACCESS_ORDER.md",
+        "docs/mission/execution-2026-10-16.md"
+      ],
+      "prs": [],
+      "nextAction": "Enable only login.microsoftonline.com, management.azure.com and graph.microsoft.com in managed environment network settings, complete owner Microsoft sign-in privately, inspect existing tenant identities/subscriptions/resource groups, then present exact sandbox/SP/role/cost approval plan.",
+      "owner": "Codex; founder approves separately gated production and Azure sandbox operations",
+      "auditDepth": "Exact additive source mapped; application-specific acceptance pending"
+    },
+    {
+      "id": "R19-009",
+      "source": "docs/AXIOM_AZURE_TESTING_ACCESS_ORDER.md",
+      "line": 12,
+      "section": "Introduction / ADDITIONAL INSTRUCTION — AZURE TESTING ACCESS",
+      "requirement": "- Test actual Azure functionality, Terraform workflows, cloud deployments, and Axiom's AI-driven operations.",
+      "domain": "cloud",
+      "scope": "product",
+      "status": "Blocked by external access",
+      "verification": "Azure CLI2.91.0 installed in an owned venv with149 version/hash-pinned wheels,332.3MiB. Existing local Azure configuration/identities absent; directory identities remain uninspected. Interactive login stopped before challenge: current enforced network allowlist excludes Microsoft login/ARM/Graph; no outbound identity binding exists. No service principal, role grant or cloud resource was created.",
+      "evidence": [
+        "docs/AXIOM_AZURE_TESTING_ACCESS_ORDER.md",
+        "docs/mission/execution-2026-10-16.md"
+      ],
+      "prs": [],
+      "nextAction": "Enable only login.microsoftonline.com, management.azure.com and graph.microsoft.com in managed environment network settings, complete owner Microsoft sign-in privately, inspect existing tenant identities/subscriptions/resource groups, then present exact sandbox/SP/role/cost approval plan.",
+      "owner": "Codex; founder approves separately gated production and Azure sandbox operations",
+      "auditDepth": "Exact additive source mapped; application-specific acceptance pending"
+    },
+    {
+      "id": "R19-010",
+      "source": "docs/AXIOM_AZURE_TESTING_ACCESS_ORDER.md",
+      "line": 13,
+      "section": "Introduction / ADDITIONAL INSTRUCTION — AZURE TESTING ACCESS",
+      "requirement": "- Request my approval for permissions, costs, or actions outside the authorized sandbox.",
+      "domain": "cloud",
+      "scope": "process",
+      "status": "Partially implemented",
+      "verification": "Azure CLI2.91.0 installed in an owned venv with149 version/hash-pinned wheels,332.3MiB. Existing local Azure configuration/identities absent; directory identities remain uninspected. Interactive login stopped before challenge: current enforced network allowlist excludes Microsoft login/ARM/Graph; no outbound identity binding exists. No service principal, role grant or cloud resource was created.",
+      "evidence": [
+        "docs/AXIOM_AZURE_TESTING_ACCESS_ORDER.md",
+        "docs/mission/execution-2026-10-16.md"
+      ],
+      "prs": [],
+      "nextAction": "Enable only login.microsoftonline.com, management.azure.com and graph.microsoft.com in managed environment network settings, complete owner Microsoft sign-in privately, inspect existing tenant identities/subscriptions/resource groups, then present exact sandbox/SP/role/cost approval plan.",
+      "owner": "Codex; founder approves separately gated production and Azure sandbox operations",
+      "auditDepth": "Exact additive source mapped; application-specific acceptance pending"
+    },
+    {
+      "id": "R19-011",
+      "source": "docs/AXIOM_AZURE_TESTING_ACCESS_ORDER.md",
+      "line": 14,
+      "section": "Introduction / ADDITIONAL INSTRUCTION — AZURE TESTING ACCESS",
+      "requirement": "- Never modify production resources without separate explicit approval.",
+      "domain": "cloud",
+      "scope": "process",
+      "status": "Partially implemented",
+      "verification": "Azure CLI2.91.0 installed in an owned venv with149 version/hash-pinned wheels,332.3MiB. Existing local Azure configuration/identities absent; directory identities remain uninspected. Interactive login stopped before challenge: current enforced network allowlist excludes Microsoft login/ARM/Graph; no outbound identity binding exists. No service principal, role grant or cloud resource was created.",
+      "evidence": [
+        "docs/AXIOM_AZURE_TESTING_ACCESS_ORDER.md",
+        "docs/mission/execution-2026-10-16.md"
+      ],
+      "prs": [],
+      "nextAction": "Enable only login.microsoftonline.com, management.azure.com and graph.microsoft.com in managed environment network settings, complete owner Microsoft sign-in privately, inspect existing tenant identities/subscriptions/resource groups, then present exact sandbox/SP/role/cost approval plan.",
+      "owner": "Codex; founder approves separately gated production and Azure sandbox operations",
+      "auditDepth": "Exact additive source mapped; application-specific acceptance pending"
+    },
+    {
+      "id": "R19-012",
+      "source": "docs/AXIOM_AZURE_TESTING_ACCESS_ORDER.md",
+      "line": 15,
+      "section": "Introduction / ADDITIONAL INSTRUCTION — AZURE TESTING ACCESS",
+      "requirement": "- Securely store credentials; never expose them in logs or source code.",
+      "domain": "cloud",
+      "scope": "process",
+      "status": "Partially implemented",
+      "verification": "Azure CLI2.91.0 installed in an owned venv with149 version/hash-pinned wheels,332.3MiB. Existing local Azure configuration/identities absent; directory identities remain uninspected. Interactive login stopped before challenge: current enforced network allowlist excludes Microsoft login/ARM/Graph; no outbound identity binding exists. No service principal, role grant or cloud resource was created.",
+      "evidence": [
+        "docs/AXIOM_AZURE_TESTING_ACCESS_ORDER.md",
+        "docs/mission/execution-2026-10-16.md"
+      ],
+      "prs": [],
+      "nextAction": "Enable only login.microsoftonline.com, management.azure.com and graph.microsoft.com in managed environment network settings, complete owner Microsoft sign-in privately, inspect existing tenant identities/subscriptions/resource groups, then present exact sandbox/SP/role/cost approval plan.",
+      "owner": "Codex; founder approves separately gated production and Azure sandbox operations",
+      "auditDepth": "Exact additive source mapped; application-specific acceptance pending"
+    },
+    {
+      "id": "R19-013",
+      "source": "docs/AXIOM_AZURE_TESTING_ACCESS_ORDER.md",
+      "line": 17,
+      "section": "Introduction / ADDITIONAL INSTRUCTION — AZURE TESTING ACCESS",
+      "requirement": "**IMPORTANT:** This is not a new project or a change in priorities. Integrate Azure testing naturally into the existing development workflow whenever needed.",
+      "domain": "cloud",
+      "scope": "process",
+      "status": "Partially implemented",
+      "verification": "Azure CLI2.91.0 installed in an owned venv with149 version/hash-pinned wheels,332.3MiB. Existing local Azure configuration/identities absent; directory identities remain uninspected. Interactive login stopped before challenge: current enforced network allowlist excludes Microsoft login/ARM/Graph; no outbound identity binding exists. No service principal, role grant or cloud resource was created.",
+      "evidence": [
+        "docs/AXIOM_AZURE_TESTING_ACCESS_ORDER.md",
+        "docs/mission/execution-2026-10-16.md"
+      ],
+      "prs": [],
+      "nextAction": "Enable only login.microsoftonline.com, management.azure.com and graph.microsoft.com in managed environment network settings, complete owner Microsoft sign-in privately, inspect existing tenant identities/subscriptions/resource groups, then present exact sandbox/SP/role/cost approval plan.",
+      "owner": "Codex; founder approves separately gated production and Azure sandbox operations",
+      "auditDepth": "Exact additive source mapped; application-specific acceptance pending"
+    },
+    {
+      "id": "R19-014",
+      "source": "docs/AXIOM_AZURE_TESTING_ACCESS_ORDER.md",
+      "line": 19,
+      "section": "Introduction / ADDITIONAL INSTRUCTION — AZURE TESTING ACCESS",
+      "requirement": "Continue coding, testing, fixing, and completing the original master plan without stopping for unnecessary status reports.",
+      "domain": "cloud",
+      "scope": "process",
+      "status": "Partially implemented",
+      "verification": "Azure CLI2.91.0 installed in an owned venv with149 version/hash-pinned wheels,332.3MiB. Existing local Azure configuration/identities absent; directory identities remain uninspected. Interactive login stopped before challenge: current enforced network allowlist excludes Microsoft login/ARM/Graph; no outbound identity binding exists. No service principal, role grant or cloud resource was created.",
+      "evidence": [
+        "docs/AXIOM_AZURE_TESTING_ACCESS_ORDER.md",
+        "docs/mission/execution-2026-10-16.md"
+      ],
+      "prs": [],
+      "nextAction": "Enable only login.microsoftonline.com, management.azure.com and graph.microsoft.com in managed environment network settings, complete owner Microsoft sign-in privately, inspect existing tenant identities/subscriptions/resource groups, then present exact sandbox/SP/role/cost approval plan.",
+      "owner": "Codex; founder approves separately gated production and Azure sandbox operations",
+      "auditDepth": "Exact additive source mapped; application-specific acceptance pending"
+    },
+    {
+      "id": "R20-001",
+      "source": "docs/AXIOM_PREMIUM_VISUAL_DEMOS_ORDER.md",
+      "line": 1,
+      "section": "Introduction / ADDITIONAL INSTRUCTION — PREMIUM VISUAL DEMOS",
+      "requirement": "**ADDITIONAL INSTRUCTION — PREMIUM VISUAL DEMOS**",
+      "domain": "website",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "Astra source candidateaa18f7aa reuses existing cinematic component across its existing surfaces, with three explicitly scripted stories, real sample controls and motion/visibility safeguards.34 focused tests/lint pass; independent source review, actual integrated Next/Chromium captures, responsive/reduced-motion validation and publication gates remain pending. Actual PTY/general local Agent execution and production cloud success are not established.",
+      "evidence": [
+        "docs/AXIOM_PREMIUM_VISUAL_DEMOS_ORDER.md",
+        "docs/mission/execution-2026-10-16.md"
+      ],
+      "prs": [],
+      "nextAction": "Finish independent review, inspect fresh local integrated-site captures at mobile/desktop/reduced-motion, validate real demo controls and source claims, then run required source CI before merging; no deployment.",
+      "owner": "Codex; founder approves separately gated production and Azure sandbox operations",
+      "auditDepth": "Exact additive source mapped; application-specific acceptance pending"
+    },
+    {
+      "id": "R20-002",
+      "source": "docs/AXIOM_PREMIUM_VISUAL_DEMOS_ORDER.md",
+      "line": 3,
+      "section": "Introduction / ADDITIONAL INSTRUCTION — PREMIUM VISUAL DEMOS",
+      "requirement": "Continue executing the existing Axiom Agent master plan exactly where you left off. Do not restart, change priorities, abandon current tasks, or deviate from ongoing engineering work.",
+      "domain": "website",
+      "scope": "process",
+      "status": "Partially implemented",
+      "verification": "Astra source candidateaa18f7aa reuses existing cinematic component across its existing surfaces, with three explicitly scripted stories, real sample controls and motion/visibility safeguards.34 focused tests/lint pass; independent source review, actual integrated Next/Chromium captures, responsive/reduced-motion validation and publication gates remain pending. Actual PTY/general local Agent execution and production cloud success are not established.",
+      "evidence": [
+        "docs/AXIOM_PREMIUM_VISUAL_DEMOS_ORDER.md",
+        "docs/mission/execution-2026-10-16.md"
+      ],
+      "prs": [],
+      "nextAction": "Finish independent review, inspect fresh local integrated-site captures at mobile/desktop/reduced-motion, validate real demo controls and source claims, then run required source CI before merging; no deployment.",
+      "owner": "Codex; founder approves separately gated production and Azure sandbox operations",
+      "auditDepth": "Exact additive source mapped; application-specific acceptance pending"
+    },
+    {
+      "id": "R20-003",
+      "source": "docs/AXIOM_PREMIUM_VISUAL_DEMOS_ORDER.md",
+      "line": 5,
+      "section": "Introduction / ADDITIONAL INSTRUCTION — PREMIUM VISUAL DEMOS",
+      "requirement": "This is an additional enhancement to the existing website and product experience.",
+      "domain": "website",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "Astra source candidateaa18f7aa reuses existing cinematic component across its existing surfaces, with three explicitly scripted stories, real sample controls and motion/visibility safeguards.34 focused tests/lint pass; independent source review, actual integrated Next/Chromium captures, responsive/reduced-motion validation and publication gates remain pending. Actual PTY/general local Agent execution and production cloud success are not established.",
+      "evidence": [
+        "docs/AXIOM_PREMIUM_VISUAL_DEMOS_ORDER.md",
+        "docs/mission/execution-2026-10-16.md"
+      ],
+      "prs": [],
+      "nextAction": "Finish independent review, inspect fresh local integrated-site captures at mobile/desktop/reduced-motion, validate real demo controls and source claims, then run required source CI before merging; no deployment.",
+      "owner": "Codex; founder approves separately gated production and Azure sandbox operations",
+      "auditDepth": "Exact additive source mapped; application-specific acceptance pending"
+    },
+    {
+      "id": "R20-004",
+      "source": "docs/AXIOM_PREMIUM_VISUAL_DEMOS_ORDER.md",
+      "line": 7,
+      "section": "Introduction / ADDITIONAL INSTRUCTION — PREMIUM VISUAL DEMOS",
+      "requirement": "Improve Axiom Agent's visual demonstrations to achieve the polish, clarity, and interactive feel of Cursor's website.",
+      "domain": "website",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "Astra source candidateaa18f7aa reuses existing cinematic component across its existing surfaces, with three explicitly scripted stories, real sample controls and motion/visibility safeguards.34 focused tests/lint pass; independent source review, actual integrated Next/Chromium captures, responsive/reduced-motion validation and publication gates remain pending. Actual PTY/general local Agent execution and production cloud success are not established.",
+      "evidence": [
+        "docs/AXIOM_PREMIUM_VISUAL_DEMOS_ORDER.md",
+        "docs/mission/execution-2026-10-16.md"
+      ],
+      "prs": [],
+      "nextAction": "Finish independent review, inspect fresh local integrated-site captures at mobile/desktop/reduced-motion, validate real demo controls and source claims, then run required source CI before merging; no deployment.",
+      "owner": "Codex; founder approves separately gated production and Azure sandbox operations",
+      "auditDepth": "Exact additive source mapped; application-specific acceptance pending"
+    },
+    {
+      "id": "R20-005",
+      "source": "docs/AXIOM_PREMIUM_VISUAL_DEMOS_ORDER.md",
+      "line": 9,
+      "section": "Introduction / Requirements:",
+      "requirement": "**Requirements:**",
+      "domain": "website",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "Astra source candidateaa18f7aa reuses existing cinematic component across its existing surfaces, with three explicitly scripted stories, real sample controls and motion/visibility safeguards.34 focused tests/lint pass; independent source review, actual integrated Next/Chromium captures, responsive/reduced-motion validation and publication gates remain pending. Actual PTY/general local Agent execution and production cloud success are not established.",
+      "evidence": [
+        "docs/AXIOM_PREMIUM_VISUAL_DEMOS_ORDER.md",
+        "docs/mission/execution-2026-10-16.md"
+      ],
+      "prs": [],
+      "nextAction": "Finish independent review, inspect fresh local integrated-site captures at mobile/desktop/reduced-motion, validate real demo controls and source claims, then run required source CI before merging; no deployment.",
+      "owner": "Codex; founder approves separately gated production and Azure sandbox operations",
+      "auditDepth": "Exact additive source mapped; application-specific acceptance pending"
+    },
+    {
+      "id": "R20-006",
+      "source": "docs/AXIOM_PREMIUM_VISUAL_DEMOS_ORDER.md",
+      "line": 11,
+      "section": "Introduction / Requirements:",
+      "requirement": "- Create premium, animated product demos showing Axiom Agent performing real engineering tasks.",
+      "domain": "website",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "Astra source candidateaa18f7aa reuses existing cinematic component across its existing surfaces, with three explicitly scripted stories, real sample controls and motion/visibility safeguards.34 focused tests/lint pass; independent source review, actual integrated Next/Chromium captures, responsive/reduced-motion validation and publication gates remain pending. Actual PTY/general local Agent execution and production cloud success are not established.",
+      "evidence": [
+        "docs/AXIOM_PREMIUM_VISUAL_DEMOS_ORDER.md",
+        "docs/mission/execution-2026-10-16.md"
+      ],
+      "prs": [],
+      "nextAction": "Finish independent review, inspect fresh local integrated-site captures at mobile/desktop/reduced-motion, validate real demo controls and source claims, then run required source CI before merging; no deployment.",
+      "owner": "Codex; founder approves separately gated production and Azure sandbox operations",
+      "auditDepth": "Exact additive source mapped; application-specific acceptance pending"
+    },
+    {
+      "id": "R20-007",
+      "source": "docs/AXIOM_PREMIUM_VISUAL_DEMOS_ORDER.md",
+      "line": 12,
+      "section": "Introduction / Requirements:",
+      "requirement": "- Use the actual Axiom Agent interface, workflows, and screenshots as the foundation rather than generic mockups.",
+      "domain": "website",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "Astra source candidateaa18f7aa reuses existing cinematic component across its existing surfaces, with three explicitly scripted stories, real sample controls and motion/visibility safeguards.34 focused tests/lint pass; independent source review, actual integrated Next/Chromium captures, responsive/reduced-motion validation and publication gates remain pending. Actual PTY/general local Agent execution and production cloud success are not established.",
+      "evidence": [
+        "docs/AXIOM_PREMIUM_VISUAL_DEMOS_ORDER.md",
+        "docs/mission/execution-2026-10-16.md"
+      ],
+      "prs": [],
+      "nextAction": "Finish independent review, inspect fresh local integrated-site captures at mobile/desktop/reduced-motion, validate real demo controls and source claims, then run required source CI before merging; no deployment.",
+      "owner": "Codex; founder approves separately gated production and Azure sandbox operations",
+      "auditDepth": "Exact additive source mapped; application-specific acceptance pending"
+    },
+    {
+      "id": "R20-008",
+      "source": "docs/AXIOM_PREMIUM_VISUAL_DEMOS_ORDER.md",
+      "line": 13,
+      "section": "Introduction / Requirements:",
+      "requirement": "- Demonstrate AI coding, file editing, terminal execution, GitHub integration, Terraform, cloud deployments, approvals, and production guardrails.",
+      "domain": "website",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "Astra source candidateaa18f7aa reuses existing cinematic component across its existing surfaces, with three explicitly scripted stories, real sample controls and motion/visibility safeguards.34 focused tests/lint pass; independent source review, actual integrated Next/Chromium captures, responsive/reduced-motion validation and publication gates remain pending. Actual PTY/general local Agent execution and production cloud success are not established.",
+      "evidence": [
+        "docs/AXIOM_PREMIUM_VISUAL_DEMOS_ORDER.md",
+        "docs/mission/execution-2026-10-16.md"
+      ],
+      "prs": [],
+      "nextAction": "Finish independent review, inspect fresh local integrated-site captures at mobile/desktop/reduced-motion, validate real demo controls and source claims, then run required source CI before merging; no deployment.",
+      "owner": "Codex; founder approves separately gated production and Azure sandbox operations",
+      "auditDepth": "Exact additive source mapped; application-specific acceptance pending"
+    },
+    {
+      "id": "R20-009",
+      "source": "docs/AXIOM_PREMIUM_VISUAL_DEMOS_ORDER.md",
+      "line": 14,
+      "section": "Introduction / Requirements:",
+      "requirement": "- Include realistic cursor movements, typing animations, dropdown selections, terminal output, deployment progress, and approval interactions.",
+      "domain": "website",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "Astra source candidateaa18f7aa reuses existing cinematic component across its existing surfaces, with three explicitly scripted stories, real sample controls and motion/visibility safeguards.34 focused tests/lint pass; independent source review, actual integrated Next/Chromium captures, responsive/reduced-motion validation and publication gates remain pending. Actual PTY/general local Agent execution and production cloud success are not established.",
+      "evidence": [
+        "docs/AXIOM_PREMIUM_VISUAL_DEMOS_ORDER.md",
+        "docs/mission/execution-2026-10-16.md"
+      ],
+      "prs": [],
+      "nextAction": "Finish independent review, inspect fresh local integrated-site captures at mobile/desktop/reduced-motion, validate real demo controls and source claims, then run required source CI before merging; no deployment.",
+      "owner": "Codex; founder approves separately gated production and Azure sandbox operations",
+      "auditDepth": "Exact additive source mapped; application-specific acceptance pending"
+    },
+    {
+      "id": "R20-010",
+      "source": "docs/AXIOM_PREMIUM_VISUAL_DEMOS_ORDER.md",
+      "line": 15,
+      "section": "Introduction / Requirements:",
+      "requirement": "- Create guided visual stories that help visitors understand Axiom's capabilities without scheduling a sales call.",
+      "domain": "website",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "Astra source candidateaa18f7aa reuses existing cinematic component across its existing surfaces, with three explicitly scripted stories, real sample controls and motion/visibility safeguards.34 focused tests/lint pass; independent source review, actual integrated Next/Chromium captures, responsive/reduced-motion validation and publication gates remain pending. Actual PTY/general local Agent execution and production cloud success are not established.",
+      "evidence": [
+        "docs/AXIOM_PREMIUM_VISUAL_DEMOS_ORDER.md",
+        "docs/mission/execution-2026-10-16.md"
+      ],
+      "prs": [],
+      "nextAction": "Finish independent review, inspect fresh local integrated-site captures at mobile/desktop/reduced-motion, validate real demo controls and source claims, then run required source CI before merging; no deployment.",
+      "owner": "Codex; founder approves separately gated production and Azure sandbox operations",
+      "auditDepth": "Exact additive source mapped; application-specific acceptance pending"
+    },
+    {
+      "id": "R20-011",
+      "source": "docs/AXIOM_PREMIUM_VISUAL_DEMOS_ORDER.md",
+      "line": 16,
+      "section": "Introduction / Requirements:",
+      "requirement": "- Use Astra, available AI capabilities, design tools, animation frameworks, and connected plugins where supported to produce high-quality visual assets and demos.",
+      "domain": "website",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "Astra source candidateaa18f7aa reuses existing cinematic component across its existing surfaces, with three explicitly scripted stories, real sample controls and motion/visibility safeguards.34 focused tests/lint pass; independent source review, actual integrated Next/Chromium captures, responsive/reduced-motion validation and publication gates remain pending. Actual PTY/general local Agent execution and production cloud success are not established.",
+      "evidence": [
+        "docs/AXIOM_PREMIUM_VISUAL_DEMOS_ORDER.md",
+        "docs/mission/execution-2026-10-16.md"
+      ],
+      "prs": [],
+      "nextAction": "Finish independent review, inspect fresh local integrated-site captures at mobile/desktop/reduced-motion, validate real demo controls and source claims, then run required source CI before merging; no deployment.",
+      "owner": "Codex; founder approves separately gated production and Azure sandbox operations",
+      "auditDepth": "Exact additive source mapped; application-specific acceptance pending"
+    },
+    {
+      "id": "R20-012",
+      "source": "docs/AXIOM_PREMIUM_VISUAL_DEMOS_ORDER.md",
+      "line": 17,
+      "section": "Introduction / Requirements:",
+      "requirement": "- Prefer polished interactive animations over static screenshots or generic promotional videos.",
+      "domain": "website",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "Astra source candidateaa18f7aa reuses existing cinematic component across its existing surfaces, with three explicitly scripted stories, real sample controls and motion/visibility safeguards.34 focused tests/lint pass; independent source review, actual integrated Next/Chromium captures, responsive/reduced-motion validation and publication gates remain pending. Actual PTY/general local Agent execution and production cloud success are not established.",
+      "evidence": [
+        "docs/AXIOM_PREMIUM_VISUAL_DEMOS_ORDER.md",
+        "docs/mission/execution-2026-10-16.md"
+      ],
+      "prs": [],
+      "nextAction": "Finish independent review, inspect fresh local integrated-site captures at mobile/desktop/reduced-motion, validate real demo controls and source claims, then run required source CI before merging; no deployment.",
+      "owner": "Codex; founder approves separately gated production and Azure sandbox operations",
+      "auditDepth": "Exact additive source mapped; application-specific acceptance pending"
+    },
+    {
+      "id": "R20-013",
+      "source": "docs/AXIOM_PREMIUM_VISUAL_DEMOS_ORDER.md",
+      "line": 18,
+      "section": "Introduction / Requirements:",
+      "requirement": "- Maintain Axiom's existing premium dark theme, orange accents, and established design language.",
+      "domain": "website",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "Astra source candidateaa18f7aa reuses existing cinematic component across its existing surfaces, with three explicitly scripted stories, real sample controls and motion/visibility safeguards.34 focused tests/lint pass; independent source review, actual integrated Next/Chromium captures, responsive/reduced-motion validation and publication gates remain pending. Actual PTY/general local Agent execution and production cloud success are not established.",
+      "evidence": [
+        "docs/AXIOM_PREMIUM_VISUAL_DEMOS_ORDER.md",
+        "docs/mission/execution-2026-10-16.md"
+      ],
+      "prs": [],
+      "nextAction": "Finish independent review, inspect fresh local integrated-site captures at mobile/desktop/reduced-motion, validate real demo controls and source claims, then run required source CI before merging; no deployment.",
+      "owner": "Codex; founder approves separately gated production and Azure sandbox operations",
+      "auditDepth": "Exact additive source mapped; application-specific acceptance pending"
+    },
+    {
+      "id": "R20-014",
+      "source": "docs/AXIOM_PREMIUM_VISUAL_DEMOS_ORDER.md",
+      "line": 19,
+      "section": "Introduction / Requirements:",
+      "requirement": "- Optimize animations for performance, mobile responsiveness, and accessibility.",
+      "domain": "website",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "Astra source candidateaa18f7aa reuses existing cinematic component across its existing surfaces, with three explicitly scripted stories, real sample controls and motion/visibility safeguards.34 focused tests/lint pass; independent source review, actual integrated Next/Chromium captures, responsive/reduced-motion validation and publication gates remain pending. Actual PTY/general local Agent execution and production cloud success are not established.",
+      "evidence": [
+        "docs/AXIOM_PREMIUM_VISUAL_DEMOS_ORDER.md",
+        "docs/mission/execution-2026-10-16.md"
+      ],
+      "prs": [],
+      "nextAction": "Finish independent review, inspect fresh local integrated-site captures at mobile/desktop/reduced-motion, validate real demo controls and source claims, then run required source CI before merging; no deployment.",
+      "owner": "Codex; founder approves separately gated production and Azure sandbox operations",
+      "auditDepth": "Exact additive source mapped; application-specific acceptance pending"
+    },
+    {
+      "id": "R20-015",
+      "source": "docs/AXIOM_PREMIUM_VISUAL_DEMOS_ORDER.md",
+      "line": 20,
+      "section": "Introduction / Requirements:",
+      "requirement": "- Clearly distinguish simulated demonstrations from verified live product functionality.",
+      "domain": "website",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "Astra source candidateaa18f7aa reuses existing cinematic component across its existing surfaces, with three explicitly scripted stories, real sample controls and motion/visibility safeguards.34 focused tests/lint pass; independent source review, actual integrated Next/Chromium captures, responsive/reduced-motion validation and publication gates remain pending. Actual PTY/general local Agent execution and production cloud success are not established.",
+      "evidence": [
+        "docs/AXIOM_PREMIUM_VISUAL_DEMOS_ORDER.md",
+        "docs/mission/execution-2026-10-16.md"
+      ],
+      "prs": [],
+      "nextAction": "Finish independent review, inspect fresh local integrated-site captures at mobile/desktop/reduced-motion, validate real demo controls and source claims, then run required source CI before merging; no deployment.",
+      "owner": "Codex; founder approves separately gated production and Azure sandbox operations",
+      "auditDepth": "Exact additive source mapped; application-specific acceptance pending"
+    },
+    {
+      "id": "R20-016",
+      "source": "docs/AXIOM_PREMIUM_VISUAL_DEMOS_ORDER.md",
+      "line": 22,
+      "section": "Introduction / Execution:",
+      "requirement": "**Execution:**",
+      "domain": "website",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "Astra source candidateaa18f7aa reuses existing cinematic component across its existing surfaces, with three explicitly scripted stories, real sample controls and motion/visibility safeguards.34 focused tests/lint pass; independent source review, actual integrated Next/Chromium captures, responsive/reduced-motion validation and publication gates remain pending. Actual PTY/general local Agent execution and production cloud success are not established.",
+      "evidence": [
+        "docs/AXIOM_PREMIUM_VISUAL_DEMOS_ORDER.md",
+        "docs/mission/execution-2026-10-16.md"
+      ],
+      "prs": [],
+      "nextAction": "Finish independent review, inspect fresh local integrated-site captures at mobile/desktop/reduced-motion, validate real demo controls and source claims, then run required source CI before merging; no deployment.",
+      "owner": "Codex; founder approves separately gated production and Azure sandbox operations",
+      "auditDepth": "Exact additive source mapped; application-specific acceptance pending"
+    },
+    {
+      "id": "R20-017",
+      "source": "docs/AXIOM_PREMIUM_VISUAL_DEMOS_ORDER.md",
+      "line": 24,
+      "section": "Introduction / Execution:",
+      "requirement": "1. Review existing website demos and available assets.",
+      "domain": "website",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "Astra source candidateaa18f7aa reuses existing cinematic component across its existing surfaces, with three explicitly scripted stories, real sample controls and motion/visibility safeguards.34 focused tests/lint pass; independent source review, actual integrated Next/Chromium captures, responsive/reduced-motion validation and publication gates remain pending. Actual PTY/general local Agent execution and production cloud success are not established.",
+      "evidence": [
+        "docs/AXIOM_PREMIUM_VISUAL_DEMOS_ORDER.md",
+        "docs/mission/execution-2026-10-16.md"
+      ],
+      "prs": [],
+      "nextAction": "Finish independent review, inspect fresh local integrated-site captures at mobile/desktop/reduced-motion, validate real demo controls and source claims, then run required source CI before merging; no deployment.",
+      "owner": "Codex; founder approves separately gated production and Azure sandbox operations",
+      "auditDepth": "Exact additive source mapped; application-specific acceptance pending"
+    },
+    {
+      "id": "R20-018",
+      "source": "docs/AXIOM_PREMIUM_VISUAL_DEMOS_ORDER.md",
+      "line": 25,
+      "section": "Introduction / Execution:",
+      "requirement": "2. Improve and reuse existing components rather than duplicating them.",
+      "domain": "website",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "Astra source candidateaa18f7aa reuses existing cinematic component across its existing surfaces, with three explicitly scripted stories, real sample controls and motion/visibility safeguards.34 focused tests/lint pass; independent source review, actual integrated Next/Chromium captures, responsive/reduced-motion validation and publication gates remain pending. Actual PTY/general local Agent execution and production cloud success are not established.",
+      "evidence": [
+        "docs/AXIOM_PREMIUM_VISUAL_DEMOS_ORDER.md",
+        "docs/mission/execution-2026-10-16.md"
+      ],
+      "prs": [],
+      "nextAction": "Finish independent review, inspect fresh local integrated-site captures at mobile/desktop/reduced-motion, validate real demo controls and source claims, then run required source CI before merging; no deployment.",
+      "owner": "Codex; founder approves separately gated production and Azure sandbox operations",
+      "auditDepth": "Exact additive source mapped; application-specific acceptance pending"
+    },
+    {
+      "id": "R20-019",
+      "source": "docs/AXIOM_PREMIUM_VISUAL_DEMOS_ORDER.md",
+      "line": 26,
+      "section": "Introduction / Execution:",
+      "requirement": "3. Build and integrate polished demonstrations directly into the website.",
+      "domain": "website",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "Astra source candidateaa18f7aa reuses existing cinematic component across its existing surfaces, with three explicitly scripted stories, real sample controls and motion/visibility safeguards.34 focused tests/lint pass; independent source review, actual integrated Next/Chromium captures, responsive/reduced-motion validation and publication gates remain pending. Actual PTY/general local Agent execution and production cloud success are not established.",
+      "evidence": [
+        "docs/AXIOM_PREMIUM_VISUAL_DEMOS_ORDER.md",
+        "docs/mission/execution-2026-10-16.md"
+      ],
+      "prs": [],
+      "nextAction": "Finish independent review, inspect fresh local integrated-site captures at mobile/desktop/reduced-motion, validate real demo controls and source claims, then run required source CI before merging; no deployment.",
+      "owner": "Codex; founder approves separately gated production and Azure sandbox operations",
+      "auditDepth": "Exact additive source mapped; application-specific acceptance pending"
+    },
+    {
+      "id": "R20-020",
+      "source": "docs/AXIOM_PREMIUM_VISUAL_DEMOS_ORDER.md",
+      "line": 27,
+      "section": "Introduction / Execution:",
+      "requirement": "4. Test animations, responsiveness, and functionality.",
+      "domain": "website",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "Astra source candidateaa18f7aa reuses existing cinematic component across its existing surfaces, with three explicitly scripted stories, real sample controls and motion/visibility safeguards.34 focused tests/lint pass; independent source review, actual integrated Next/Chromium captures, responsive/reduced-motion validation and publication gates remain pending. Actual PTY/general local Agent execution and production cloud success are not established.",
+      "evidence": [
+        "docs/AXIOM_PREMIUM_VISUAL_DEMOS_ORDER.md",
+        "docs/mission/execution-2026-10-16.md"
+      ],
+      "prs": [],
+      "nextAction": "Finish independent review, inspect fresh local integrated-site captures at mobile/desktop/reduced-motion, validate real demo controls and source claims, then run required source CI before merging; no deployment.",
+      "owner": "Codex; founder approves separately gated production and Azure sandbox operations",
+      "auditDepth": "Exact additive source mapped; application-specific acceptance pending"
+    },
+    {
+      "id": "R20-021",
+      "source": "docs/AXIOM_PREMIUM_VISUAL_DEMOS_ORDER.md",
+      "line": 28,
+      "section": "Introduction / Execution:",
+      "requirement": "5. Continue the existing development plan alongside this enhancement.",
+      "domain": "website",
+      "scope": "process",
+      "status": "Partially implemented",
+      "verification": "Astra source candidateaa18f7aa reuses existing cinematic component across its existing surfaces, with three explicitly scripted stories, real sample controls and motion/visibility safeguards.34 focused tests/lint pass; independent source review, actual integrated Next/Chromium captures, responsive/reduced-motion validation and publication gates remain pending. Actual PTY/general local Agent execution and production cloud success are not established.",
+      "evidence": [
+        "docs/AXIOM_PREMIUM_VISUAL_DEMOS_ORDER.md",
+        "docs/mission/execution-2026-10-16.md"
+      ],
+      "prs": [],
+      "nextAction": "Finish independent review, inspect fresh local integrated-site captures at mobile/desktop/reduced-motion, validate real demo controls and source claims, then run required source CI before merging; no deployment.",
+      "owner": "Codex; founder approves separately gated production and Azure sandbox operations",
+      "auditDepth": "Exact additive source mapped; application-specific acceptance pending"
+    },
+    {
+      "id": "R20-022",
+      "source": "docs/AXIOM_PREMIUM_VISUAL_DEMOS_ORDER.md",
+      "line": 30,
+      "section": "Introduction / Execution:",
+      "requirement": "**CRITICAL:** Do not treat this as a new project or stop other engineering work. Use available tools and plugins when helpful, but prioritize actual implementation, working code, and verified results.",
+      "domain": "website",
+      "scope": "process",
+      "status": "Partially implemented",
+      "verification": "Astra source candidateaa18f7aa reuses existing cinematic component across its existing surfaces, with three explicitly scripted stories, real sample controls and motion/visibility safeguards.34 focused tests/lint pass; independent source review, actual integrated Next/Chromium captures, responsive/reduced-motion validation and publication gates remain pending. Actual PTY/general local Agent execution and production cloud success are not established.",
+      "evidence": [
+        "docs/AXIOM_PREMIUM_VISUAL_DEMOS_ORDER.md",
+        "docs/mission/execution-2026-10-16.md"
+      ],
+      "prs": [],
+      "nextAction": "Finish independent review, inspect fresh local integrated-site captures at mobile/desktop/reduced-motion, validate real demo controls and source claims, then run required source CI before merging; no deployment.",
+      "owner": "Codex; founder approves separately gated production and Azure sandbox operations",
+      "auditDepth": "Exact additive source mapped; application-specific acceptance pending"
+    },
+    {
+      "id": "R20-023",
+      "source": "docs/AXIOM_PREMIUM_VISUAL_DEMOS_ORDER.md",
+      "line": 32,
+      "section": "Introduction / Execution:",
+      "requirement": "Continue coding and executing the original master plan without unnecessary interruptions.",
+      "domain": "website",
+      "scope": "process",
+      "status": "Partially implemented",
+      "verification": "Astra source candidateaa18f7aa reuses existing cinematic component across its existing surfaces, with three explicitly scripted stories, real sample controls and motion/visibility safeguards.34 focused tests/lint pass; independent source review, actual integrated Next/Chromium captures, responsive/reduced-motion validation and publication gates remain pending. Actual PTY/general local Agent execution and production cloud success are not established.",
+      "evidence": [
+        "docs/AXIOM_PREMIUM_VISUAL_DEMOS_ORDER.md",
+        "docs/mission/execution-2026-10-16.md"
+      ],
+      "prs": [],
+      "nextAction": "Finish independent review, inspect fresh local integrated-site captures at mobile/desktop/reduced-motion, validate real demo controls and source claims, then run required source CI before merging; no deployment.",
+      "owner": "Codex; founder approves separately gated production and Azure sandbox operations",
+      "auditDepth": "Exact additive source mapped; application-specific acceptance pending"
+    },
+    {
+      "id": "R21-001",
+      "source": "docs/AXIOM_ADDITIVE_CONTINUITY_ORDER.md",
+      "line": 1,
+      "section": "Introduction",
+      "requirement": "Continue the existing Axiom Agent master execution plan without deviation, restarting, or unnecessary interruptions. Treat Azure testing access and premium visual demos as additive capabilities, not replacements for current priorities. Keep implementing and validating the active Agent, ECS, Terraform, billing, desktop, and website work. Prioritize actual working code, independent testing, and real application-level acceptance. Do not mistake passing unit tests or completed internal tasks for successful end-to-end functionality. Preserve production guardrails and request my approval whenever required. Continue from your current checkpoint.",
+      "domain": "governance",
+      "scope": "process",
+      "status": "Partially implemented",
+      "verification": "Additive directive preserved alongside all prior requirements. Existing functionality/source remains intact; capability-specific source review and actual acceptance are separate.",
+      "evidence": [
+        "docs/AXIOM_ADDITIVE_CONTINUITY_ORDER.md",
+        "docs/mission/execution-2026-10-16.md"
+      ],
+      "prs": [],
+      "nextAction": "Continue the assigned independent workstream and collect source-bound application evidence; preserve production and release approval gates.",
+      "owner": "Codex; founder approves separately gated production and Azure sandbox operations",
+      "auditDepth": "Exact additive source mapped; application-specific acceptance pending"
+    },
+    {
+      "id": "R22-001",
+      "source": "docs/AXIOM_TEST_CREDIT_POLICY_DECISIONS.md",
+      "line": 3,
+      "section": "New TEST credit policy decisions",
+      "requirement": "For newly created TEST subscriptions only, when should included AI credits reset? This does not authorize live billing or change existing customers.",
+      "domain": "billing",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "Owner policy is NEW TEST only: monthly subscription-anniversary windows/no rollover and full paid allowance on Free-to-paid, keeping prior Free usage in its original bucket and purchased balances intact. Source02c3861e closes four independent financial findings;233 focused tests pass. Real PostgreSQL/Next/hosted payment acceptance remains pending; V1/legacy/support flows remain unchanged.",
+      "evidence": [
+        "docs/AXIOM_TEST_CREDIT_POLICY_DECISIONS.md",
+        "docs/mission/execution-2026-10-16.md"
+      ],
+      "prs": [],
+      "nextAction": "Build and independently review bounded owned acceptance fixtures, then verify actual SQL parsing, row locks, rollback, unknown holds, allocation conservation and application rendering before publication. No live activation or legacy migration.",
+      "owner": "Codex; founder approves separately gated production and Azure sandbox operations",
+      "auditDepth": "Exact additive source mapped; application-specific acceptance pending"
+    },
+    {
+      "id": "R22-002",
+      "source": "docs/AXIOM_TEST_CREDIT_POLICY_DECISIONS.md",
+      "line": 5,
+      "section": "New TEST credit policy decisions",
+      "requirement": "Answer: Subscription anniversary each month; no rollover (Recommended)",
+      "domain": "billing",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "Owner policy is NEW TEST only: monthly subscription-anniversary windows/no rollover and full paid allowance on Free-to-paid, keeping prior Free usage in its original bucket and purchased balances intact. Source02c3861e closes four independent financial findings;233 focused tests pass. Real PostgreSQL/Next/hosted payment acceptance remains pending; V1/legacy/support flows remain unchanged.",
+      "evidence": [
+        "docs/AXIOM_TEST_CREDIT_POLICY_DECISIONS.md",
+        "docs/mission/execution-2026-10-16.md"
+      ],
+      "prs": [],
+      "nextAction": "Build and independently review bounded owned acceptance fixtures, then verify actual SQL parsing, row locks, rollback, unknown holds, allocation conservation and application rendering before publication. No live activation or legacy migration.",
+      "owner": "Codex; founder approves separately gated production and Azure sandbox operations",
+      "auditDepth": "Exact additive source mapped; application-specific acceptance pending"
+    },
+    {
+      "id": "R22-003",
+      "source": "docs/AXIOM_TEST_CREDIT_POLICY_DECISIONS.md",
+      "line": 7,
+      "section": "New TEST credit policy decisions",
+      "requirement": "For a new TEST customer upgrading from Free, how should prior Free usage affect the first paid allowance? Purchased credits must retain their existing balance in either case.",
+      "domain": "billing",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "Owner policy is NEW TEST only: monthly subscription-anniversary windows/no rollover and full paid allowance on Free-to-paid, keeping prior Free usage in its original bucket and purchased balances intact. Source02c3861e closes four independent financial findings;233 focused tests pass. Real PostgreSQL/Next/hosted payment acceptance remains pending; V1/legacy/support flows remain unchanged.",
+      "evidence": [
+        "docs/AXIOM_TEST_CREDIT_POLICY_DECISIONS.md",
+        "docs/mission/execution-2026-10-16.md"
+      ],
+      "prs": [],
+      "nextAction": "Build and independently review bounded owned acceptance fixtures, then verify actual SQL parsing, row locks, rollback, unknown holds, allocation conservation and application rendering before publication. No live activation or legacy migration.",
+      "owner": "Codex; founder approves separately gated production and Azure sandbox operations",
+      "auditDepth": "Exact additive source mapped; application-specific acceptance pending"
+    },
+    {
+      "id": "R22-004",
+      "source": "docs/AXIOM_TEST_CREDIT_POLICY_DECISIONS.md",
+      "line": 9,
+      "section": "New TEST credit policy decisions",
+      "requirement": "Answer: Full paid allowance; prior Free usage stays in its original bucket (Recommended)",
+      "domain": "billing",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "Owner policy is NEW TEST only: monthly subscription-anniversary windows/no rollover and full paid allowance on Free-to-paid, keeping prior Free usage in its original bucket and purchased balances intact. Source02c3861e closes four independent financial findings;233 focused tests pass. Real PostgreSQL/Next/hosted payment acceptance remains pending; V1/legacy/support flows remain unchanged.",
+      "evidence": [
+        "docs/AXIOM_TEST_CREDIT_POLICY_DECISIONS.md",
+        "docs/mission/execution-2026-10-16.md"
+      ],
+      "prs": [],
+      "nextAction": "Build and independently review bounded owned acceptance fixtures, then verify actual SQL parsing, row locks, rollback, unknown holds, allocation conservation and application rendering before publication. No live activation or legacy migration.",
+      "owner": "Codex; founder approves separately gated production and Azure sandbox operations",
+      "auditDepth": "Exact additive source mapped; application-specific acceptance pending"
     }
   ],
   "workstreams": [
@@ -48526,7 +49336,7 @@
       "engineeringActivity": "active",
       "owner": "Codex integrated parallel workstreams",
       "activeMilestone": "Close independent Next-specific guard review before actual owned application continuation.",
-      "verification": "Explicitly allowlisted tools reuse tenant-scoped inventory with current paired authority, connection-version and revocation checks. Same-request writes are refused after a bounded read; later independently governed requests remain available. Actual model/provider/customer acceptance remains unverified. Frozen fa5f9b02 passed independent review, 14 model-readiness React tests and 30 owned Next/PostgreSQL check groups including five disabled-Agent groups. Disabled models persist a safe explanation without inference, provider/tool dispatch, usage, reservation, deployment or billing writes. Successful inference, browser interaction and native/provider acceptance remain unverified. Resumed checkpoint: Frozen Stage2cf828227 has108 focused checks but no actual Next/PG continuation. Independent review found two guard P2s: non-sticky invalid bind/DNS denial and direct dispatcher HTTP-intent bypass. Corrections are underway; no runtime approval or provider capability is inferred. Full Cursor-like workspace/terminal capability remains an explicit separate requirement. Stage2 guard findings closed independently at5d691268; fixture typing corrected/reviewed and whole-web passedfcd6f866. First actual owned attempt failed8.58s during startup and cleaned up; Next default TS configuration subprocess was denied. An explicit owned-only in-process framework parser helper is being tested/reviewed; actual model/tool continuation remains unverified. Reviewed owned-typescript-api helper preserves process denials and explicitly declares productionEquivalent:false. Second actual owned Next/PG attempt b5010440 failed after159 seconds with local_http_startup_timeout and registry rejection; cleanup confirmed zero residual owned containers/processes. First rejection cause and model/AWS counters remain unverified; fresh whole-web types passed. No third runtime attempt is authorized pending diagnosis and bounded correction review.",
+      "verification": "Explicitly allowlisted tools reuse tenant-scoped inventory with current paired authority, connection-version and revocation checks. Same-request writes are refused after a bounded read; later independently governed requests remain available. Actual model/provider/customer acceptance remains unverified. Frozen fa5f9b02 passed independent review, 14 model-readiness React tests and 30 owned Next/PostgreSQL check groups including five disabled-Agent groups. Disabled models persist a safe explanation without inference, provider/tool dispatch, usage, reservation, deployment or billing writes. Successful inference, browser interaction and native/provider acceptance remain unverified. Resumed checkpoint: Frozen Stage2cf828227 has108 focused checks but no actual Next/PG continuation. Independent review found two guard P2s: non-sticky invalid bind/DNS denial and direct dispatcher HTTP-intent bypass. Corrections are underway; no runtime approval or provider capability is inferred. Full Cursor-like workspace/terminal capability remains an explicit separate requirement. Stage2 guard findings closed independently at5d691268; fixture typing corrected/reviewed and whole-web passedfcd6f866. First actual owned attempt failed8.58s during startup and cleaned up; Next default TS configuration subprocess was denied. An explicit owned-only in-process framework parser helper is being tested/reviewed; actual model/tool continuation remains unverified. Reviewed owned-typescript-api helper preserves process denials and explicitly declares productionEquivalent:false. Second actual owned Next/PG attempt b5010440 failed after159 seconds with local_http_startup_timeout and registry rejection; cleanup confirmed zero residual owned containers/processes. First rejection cause and model/AWS counters remain unverified; fresh whole-web types passed. No third runtime attempt is authorized pending diagnosis and bounded correction review. Third owned run5d7429 timed out after159.35s; fixed AWS-ready rejection labels and violated:true/firstFailure:null exposed notice-only diagnostic coverage gap. Source39cc40b9 now covers every existing violation setter/fail-fast; separate93c8a935 denies public execve. Body-health7f4273da buffers bounded owned responses under the same signal for web and paired paths;280 focused checks pass. Independent final closures and another bounded actual application attempt remain pending, with productionEquivalent:false qualification.",
       "evidence": [
         "docs/AGENT_GOVERNED_ACTION_ACCEPTANCE.md",
         "docs/AGENT_AWS_OBSERVATIONS.md",
@@ -48570,8 +49380,8 @@
       "status": "Partially implemented",
       "engineeringActivity": "active",
       "owner": "Codex integrated parallel workstreams",
-      "activeMilestone": "Integrate reviewed Azure read-only enrollment, scoped credential recovery, bounded inventory and desktop Settings access; retain separate governed ECS execution gates.",
-      "verification": "Existing paired AWS enrollment, encrypted scoped vault, disconnect/version invalidation and bounded EC2 inventory remain intact. PR #157 added actual local application/PostgreSQL/SDK-wire acceptance using synthetic AWS replies, not a customer account. The next inactive internal ECS/ECR observation slice reuses scoped authority/AEAD and exact broker identity, binds selected target/service/task definitions and complete digest-pinned container sets, and checks ACTIVE ECR metadata. A pinned 57-model registration projection and pre-deserialization wire byte/deadline limits are covered by 72 focused tests, including 24 actual SDK/native-wire cases. No public route, enablement, schema migration, ReviewFacts, approval, health, pullability or execution authority is added. Independent source reviews closed identified canonicalization/identity issues. Fresh-main159 local gates passed: 622 Vitest files/6629 tests (six skipped), web/desktop TypeScript, desktop build/release alignment, Python30, scoped lint and tracker consistency. The check-only generator moved to ESM after lint; its unchanged 57-model snapshot and 12 focused tests passed again. Exact-head CI/production build remain pending; cached protobuf-specs0.5.2 versus locked0.5.0 is qualified. CI exposed a real same-batch stale disconnect race; an authoritative parent account/version fence now refuses an older response before state or success notice mutation. The deterministic regression failed before the fix and passed after; ECR externalization now passes the generic37-SDK build contract. Azure runtime 4478efb0 passed independent review, installed SDK compiler checks, 116 focused tests, and owned application/PostgreSQL acceptance with 38 check groups and 20 synthetic SDK wire observations. Current integrated regression passed 6836 tests across 639 files (six tests and one optional file skipped); web and desktop TypeScript and desktop build passed. Azure logging is silenced through typed identity logger and removal of only the owned ARM pipeline log policy. Enrollment, resource-group inventory, tenant authority, revocation/version fences and cleanup were checked against owned fixtures; no real Azure account, mutation, production login, native interaction or paid-entitlement claim. Final lifecycle source 1dd8c242 independently reviewed: stable request ownership and StrictMode/stale-workspace/catalog regressions preserve authority and secret clearing; final regression 6840 tests/639 files and whole web/desktop TypeScript passed. Historical owned HTTP receipt stays pinned to4478efb0; later component and no-op logger signature hashes are explicitly qualified, not relabeled as exact final HTTP evidence. Azure PR164 merged normally as1383f369 after exact-head web/native push+PR CI and automated review passed; no deployment or production operation followed.",
+      "activeMilestone": "Continue integrations while enabling read-only Azure identity inspection; dedicated sandbox identity/Contributor grant/cost scope require exact owner approval.",
+      "verification": "Existing paired AWS enrollment, encrypted scoped vault, disconnect/version invalidation and bounded EC2 inventory remain intact. PR #157 added actual local application/PostgreSQL/SDK-wire acceptance using synthetic AWS replies, not a customer account. The next inactive internal ECS/ECR observation slice reuses scoped authority/AEAD and exact broker identity, binds selected target/service/task definitions and complete digest-pinned container sets, and checks ACTIVE ECR metadata. A pinned 57-model registration projection and pre-deserialization wire byte/deadline limits are covered by 72 focused tests, including 24 actual SDK/native-wire cases. No public route, enablement, schema migration, ReviewFacts, approval, health, pullability or execution authority is added. Independent source reviews closed identified canonicalization/identity issues. Fresh-main159 local gates passed: 622 Vitest files/6629 tests (six skipped), web/desktop TypeScript, desktop build/release alignment, Python30, scoped lint and tracker consistency. The check-only generator moved to ESM after lint; its unchanged 57-model snapshot and 12 focused tests passed again. Exact-head CI/production build remain pending; cached protobuf-specs0.5.2 versus locked0.5.0 is qualified. CI exposed a real same-batch stale disconnect race; an authoritative parent account/version fence now refuses an older response before state or success notice mutation. The deterministic regression failed before the fix and passed after; ECR externalization now passes the generic37-SDK build contract. Azure runtime 4478efb0 passed independent review, installed SDK compiler checks, 116 focused tests, and owned application/PostgreSQL acceptance with 38 check groups and 20 synthetic SDK wire observations. Current integrated regression passed 6836 tests across 639 files (six tests and one optional file skipped); web and desktop TypeScript and desktop build passed. Azure logging is silenced through typed identity logger and removal of only the owned ARM pipeline log policy. Enrollment, resource-group inventory, tenant authority, revocation/version fences and cleanup were checked against owned fixtures; no real Azure account, mutation, production login, native interaction or paid-entitlement claim. Final lifecycle source 1dd8c242 independently reviewed: stable request ownership and StrictMode/stale-workspace/catalog regressions preserve authority and secret clearing; final regression 6840 tests/639 files and whole web/desktop TypeScript passed. Historical owned HTTP receipt stays pinned to4478efb0; later component and no-op logger signature hashes are explicitly qualified, not relabeled as exact final HTTP evidence. Azure PR164 merged normally as1383f369 after exact-head web/native push+PR CI and automated review passed; no deployment or production operation followed. Additive Azure setup: owned Azure CLI2.91.0 installed and verified with149 hashed wheel versions, private0700 configuration and no global install. No existing local CLI/config/identity binding found; actual Azure directory identities/subscriptions remain unknown. Microsoft login failed before challenge and current enforced network policy omits login.microsoftonline.com,management.azure.com,graph.microsoft.com. Access request is pending; no SP/role/RG/resource change or credential exposure occurred.",
       "evidence": [
         "docs/ECS_CUSTOMER_JOURNEY_VALIDATION.md",
         "docs/LEGACY_WEBSITE_DEPLOYMENT_BOUNDARIES.md",
@@ -48605,8 +49415,8 @@
       "status": "Partially implemented",
       "engineeringActivity": "active",
       "owner": "Codex integrated parallel workstreams",
-      "activeMilestone": "Publish reviewed legacy Terraform authority containment after combined-main types/focused checks, source-bound receipt and exact-head CI.",
-      "verification": "Caller-asserted signed handoff issuance now refused for every operation; boundary tests preserve approved tenant HCL export and unsigned remediation preview. Exact approved Terraform artifact delivery/execution remains missing. Integrated source closes concurrent approval overwrite and public bulk/snooze sibling bypasses with tenant/revision/role/origin checks; final combined gates and actual local HTTP decision acceptance are pending. Runtime62e47d94 passed genuine Terraform1.9.8 builtin-resource CLI plan/show, owned PostgreSQL catalog/immutability/tenant checks and actual paired Next list/detail HTTP, with verified cleanup. Exact source binary→own-show sealing, domain AAD, metadata-only lists, drift denial, context invalidation and explicit unavailable target/backend/credential/approval were independently reviewed. Current scope has no customer upload/producer or apply/approval route and no active migration. Legacy text-job containment source980b9003 independently reviewed: plan/approve refuse without CLI or authority writes, direct init/validate/plan refuse before CLI/database access, historical reads explicitly lack authority, Resilience preserves configuration generation without false execution controls, and actual Assistant guidance no longer advertises CONFIRM APPLY as authority. Original apply kill switch, signing and saved-plan boundary remain unchanged. Source62f21552 passed fresh web types,7150 tests/658files (eight tests/one optional file skipped), desktop types/build,Python30/offline16/tracker. Strict Assistant-file lint retains two independently confirmed baseline warnings; no new lint finding or suppression. Final current-main integration7c14b0a3 preserves owned sources except incoming desktop demo step; final types/focused/CI remain pending. This containment does not implement a customer saved-plan producer or actual Terraform/provider execution. Final current-main7c14b0a3 then passed fresh whole-web types and132 focused checks/16files, including actual Terraform handlers/runner/UI/prompt and incoming desktop regressions. No second full local suite/runtime is claimed; remote exact-head CI is still required.",
+      "activeMilestone": "Implement customer-v2 trusted saved-plan producer/import/current-backend evidence without enabling planning dispatch, approval or apply.",
+      "verification": "Caller-asserted signed handoff issuance now refused for every operation; boundary tests preserve approved tenant HCL export and unsigned remediation preview. Exact approved Terraform artifact delivery/execution remains missing. Integrated source closes concurrent approval overwrite and public bulk/snooze sibling bypasses with tenant/revision/role/origin checks; final combined gates and actual local HTTP decision acceptance are pending. Runtime62e47d94 passed genuine Terraform1.9.8 builtin-resource CLI plan/show, owned PostgreSQL catalog/immutability/tenant checks and actual paired Next list/detail HTTP, with verified cleanup. Exact source binary→own-show sealing, domain AAD, metadata-only lists, drift denial, context invalidation and explicit unavailable target/backend/credential/approval were independently reviewed. Current scope has no customer upload/producer or apply/approval route and no active migration. Legacy text-job containment source980b9003 independently reviewed: plan/approve refuse without CLI or authority writes, direct init/validate/plan refuse before CLI/database access, historical reads explicitly lack authority, Resilience preserves configuration generation without false execution controls, and actual Assistant guidance no longer advertises CONFIRM APPLY as authority. Original apply kill switch, signing and saved-plan boundary remain unchanged. Source62f21552 passed fresh web types,7150 tests/658files (eight tests/one optional file skipped), desktop types/build,Python30/offline16/tracker. Strict Assistant-file lint retains two independently confirmed baseline warnings; no new lint finding or suppression. Final current-main integration7c14b0a3 preserves owned sources except incoming desktop demo step; final types/focused/CI remain pending. This containment does not implement a customer saved-plan producer or actual Terraform/provider execution. Final current-main7c14b0a3 then passed fresh whole-web types and132 focused checks/16files, including actual Terraform handlers/runner/UI/prompt and incoming desktop regressions. No second full local suite/runtime is claimed; remote exact-head CI is still required. PR #172 head9ab6d65d passed all triggered exact-head CI/remote review and merged normally atbd44b180 with no inline findings. Subsequent customer-v2 producer source work is separate: fixture-v1 unchanged, trusted manual CI plan/own-show provenance and read-only current backend observation are being implemented; genuine signed Terraform tuple and live provider acceptance remain gated.",
       "evidence": [
         "docs/TERRAFORM_AIRFLOW_CUSTOMER_ACCEPTANCE.md",
         "app/api/desktop/handoff/__tests__/route.test.ts",
@@ -48621,7 +49431,7 @@
         "governance"
       ],
       "blockers": "Engineering contracts incomplete; real apply is not verified.",
-      "nextAction": "Finish current-main source validation and focused PR; subsequently implement the missing tenant-bound saved-plan producer separately from read-only evidence and execution authority."
+      "nextAction": "Review customer-v2 source/strict read transports and inactive producer, then owned CLI/PG/negative HTTP evidence; obtain separately approved genuine signed Terraform tuple before positive customer import acceptance."
     },
     {
       "id": "airflow",
@@ -48655,7 +49465,7 @@
       "engineeringActivity": "active",
       "owner": "Codex integrated parallel workstreams",
       "activeMilestone": "Implement bounded checked provider/context inputs before the inactive immutable ECS executor.",
-      "verification": "Merged PR #147 passed exact-head CI (591 files / 6,176 tests and 293-page production build). Dashboard restart uses shared quota/idempotency, current authority/policy/installation snapshots and a pre-dispatch lifecycle claim; unknown outcomes remain held. Actual synthetic Next/PostgreSQL HTTP acceptance covers authentication, desktop pairing/revocation and competing approval decisions on source f7de88f0. The new internal ECS review core passes 80 contract/service tests; producer-reported isolated PostgreSQL17 lifecycle and independent-client Serializable revision tests passed and fixtures were removed. Independent source review found no material blocker in the execution-disabled storage boundary. Integrated TypeScript and schema validation pass. Missing verifier persists no packets; no public route, provider execution, quota consumption or production migration is enabled. Full integrated local regression passed 595 files / 6,251 tests after integrating merged main #148; desktop TypeScript/build, 30 Python tests, scoped lint and tracker checks pass. PR #149 exact-head CI/build, Desktop CI and isolated auth-recovery rehearsal passed and merged as 7fd354e1; no runtime route is connected. The next inactive tenant ECS/ECR reader returns only current scoped observations, never full ReviewFacts or approval/execution authority; focused synthetic actual-SDK-wire tests and fresh-main159 local integration pass (6629 tests plus web/desktop types/build, Python30, lint and tracker); exact-head CI and real AWS acceptance remain pending. Target id+updatedAt does not certify the existing manifest integer revision. The direct-workflow OCI prerequisite now has genuine offline signature acceptance plus bounded synthetic reader metadata. It does not supply an immutable executor or execution claim. A separate concrete executor/claim/owned-health/guarded-recovery design is underway; legacy restart and historical review packets retain their review-only limits. Resumed checkpoint: PR #165 genuine direct-workflow OCI proof is merged at main761546b4. Its cryptographic proof is distinct from ECR subject coverage, approved executor, application health and immutable rollback. Existing restart workflow does not release source artifacts. Checked provider/context-input prerequisite323999ff passed independent scoped review and223 focused checks; it exposes no admission or execution authority. A separately reviewed owned acceptance fixture is being prepared; genuine GHCR/ECR mismatch remains unusable for admission. ECS owned-fixture process/Worker guard finding closed independently atbc57b9b2 under the trusted-preload assumption. Fresh compiler and one controlled owned source/SDK acceptance attempt are authorized locally, but have not succeeded yet; no admission/production execution authority is implied. ECS checked-input owned fixture attempt2 at81470a13 stopped at prisma_import/module_unavailable before cases; a scoped owned dependency overlay preserved the actual Next-bundled server-only conditional exports. Attempt3 reached source case1 but failed an assertion: zero cases completed, one synthetic GitHub token request, no AWS requests/guard denials. Exact sources/overlay hashes unchanged and external checks found zero residual owned containers/processes. No provider/crypto/checked-mismatch/admission/executor success inferred; source-only diagnosis continues.",
+      "verification": "Merged PR #147 passed exact-head CI (591 files / 6,176 tests and 293-page production build). Dashboard restart uses shared quota/idempotency, current authority/policy/installation snapshots and a pre-dispatch lifecycle claim; unknown outcomes remain held. Actual synthetic Next/PostgreSQL HTTP acceptance covers authentication, desktop pairing/revocation and competing approval decisions on source f7de88f0. The new internal ECS review core passes 80 contract/service tests; producer-reported isolated PostgreSQL17 lifecycle and independent-client Serializable revision tests passed and fixtures were removed. Independent source review found no material blocker in the execution-disabled storage boundary. Integrated TypeScript and schema validation pass. Missing verifier persists no packets; no public route, provider execution, quota consumption or production migration is enabled. Full integrated local regression passed 595 files / 6,251 tests after integrating merged main #148; desktop TypeScript/build, 30 Python tests, scoped lint and tracker checks pass. PR #149 exact-head CI/build, Desktop CI and isolated auth-recovery rehearsal passed and merged as 7fd354e1; no runtime route is connected. The next inactive tenant ECS/ECR reader returns only current scoped observations, never full ReviewFacts or approval/execution authority; focused synthetic actual-SDK-wire tests and fresh-main159 local integration pass (6629 tests plus web/desktop types/build, Python30, lint and tracker); exact-head CI and real AWS acceptance remain pending. Target id+updatedAt does not certify the existing manifest integer revision. The direct-workflow OCI prerequisite now has genuine offline signature acceptance plus bounded synthetic reader metadata. It does not supply an immutable executor or execution claim. A separate concrete executor/claim/owned-health/guarded-recovery design is underway; legacy restart and historical review packets retain their review-only limits. Resumed checkpoint: PR #165 genuine direct-workflow OCI proof is merged at main761546b4. Its cryptographic proof is distinct from ECR subject coverage, approved executor, application health and immutable rollback. Existing restart workflow does not release source artifacts. Checked provider/context-input prerequisite323999ff passed independent scoped review and223 focused checks; it exposes no admission or execution authority. A separately reviewed owned acceptance fixture is being prepared; genuine GHCR/ECR mismatch remains unusable for admission. ECS owned-fixture process/Worker guard finding closed independently atbc57b9b2 under the trusted-preload assumption. Fresh compiler and one controlled owned source/SDK acceptance attempt are authorized locally, but have not succeeded yet; no admission/production execution authority is implied. ECS checked-input owned fixture attempt2 at81470a13 stopped at prisma_import/module_unavailable before cases; a scoped owned dependency overlay preserved the actual Next-bundled server-only conditional exports. Attempt3 reached source case1 but failed an assertion: zero cases completed, one synthetic GitHub token request, no AWS requests/guard denials. Exact sources/overlay hashes unchanged and external checks found zero residual owned containers/processes. No provider/crypto/checked-mismatch/admission/executor success inferred; source-only diagnosis continues. ECS owned sourceab59eed7 fifth attempt is now PARENT-validated:22 source cases,218 owned wire requests, zero guard denials/violations/pending responses; DB/child/wire/container cleanup confirmed. Genuine crypto composes with synthetic provider facts and concludes checked subject mismatch NOT usable for admission. No matching ECR authority/executor/provider/customer proof. Earlier failed attempts remain failed, not retroactively upgraded.",
       "evidence": [
         "docs/ECS_CUSTOMER_JOURNEY_VALIDATION.md",
         "docs/WEBSITE_DEPLOYMENT_READINESS.md",
@@ -48754,7 +49564,7 @@
       "engineeringActivity": "active",
       "owner": "Codex integrated parallel workstreams",
       "activeMilestone": "Close remaining real-customer Stripe TEST checkout and ordinary subscription lifecycle acceptance without changing legacy customers.",
-      "verification": "PR #155 merged after exact-head push/PR CI passed 6447 tests and both 293-page production builds. The default-off owned-loopback application lane reuses verified public TEST provenance for actual NextAuth, allowance, preflight and reservations; separate five-case HTTP/PostgreSQL acceptance covers display, cap denial, role changes, missing proof and provider-disabled hold release. Unsupported deployment limits are unavailable; existing customers and support payment source are unchanged. This is not hosted Stripe checkout or positive AI generation. Distinct subscription events retrieve current provider state and use an equality-only binding/event-token fence before atomic consumption. Exact configured licensed per-seat terms are required; ambiguous snapshots and unexpected replacement fail closed. Local composed tests are not actual Stripe delivery or collection. Inactive original-attempt adapter source captures trusted SDK response proof through the existing intent JSON CAS before URL release, rechecks current authority/binding and rejects proofless late events. Local SDK/signature/kernel fixtures passed 51 tests; owned PostgreSQL passed five proof/storage cases, with the optional HTTP case skipped. Final local TypeScript and focused lint passed. No hosted Stripe call, live activation, public route, new financial ledger or production schema change is established by these fixtures. After normal integration of main157, the full default suite passed 6565 tests across 617 files (six skipped) in 78.43s; web TypeScript, desktop release/types/build, Python 30 tests and focused lint passed. Required exact-head CI remains the integration gate; no provider/customer acceptance is inferred. New isolated TEST lifecycle candidate passed 7 owned HTTP/PG groups and fixed seat-change proof gaps, but further independent review found status alone can restore/extend allowance without paid-through invoice evidence. Existing calendar-month resolver also ignores expiry; financial acceptance and merge are held pending NEWTEST-only paid-coverage enforcement. This is not a live billing change. Resumed checkpoint: Resumed source29a395be passed fresh whole-web compilation plus eight owned PG17/local Next cases, including authenticated allowance/refusals and provider-disabled hold release, with cleanup verified. Provider financial evidence is synthetic; hosted Checkout/webhooks/payment collection are not established. Historical status-only coverage hold led to these safeguards, not a production billing activation. Final isolated paid-coverage candidate passed7057 default tests/646files, desktop types/build and Python30; PR #168 is open after normal main integration with all26 accepted source hashes unchanged. Hosted Stripe remains unverified. PR #168 merged normally as3002d0a3 after push/PR builds, native checks and code review passed; this activates no live or public payment flow. Owner explicitly selected monthly subscription-anniversary included-credit windows with no rollover for newly created TEST subscriptions only, and full paid allowance on Free-to-paid with prior Free usage remaining in its original bucket. Purchased credits retain their balance. Source-grounded versioned window/allocation-provenance design is underway; this policy is not yet implemented or activated and does not change legacy customers or live billing.",
+      "verification": "PR #155 merged after exact-head push/PR CI passed 6447 tests and both 293-page production builds. The default-off owned-loopback application lane reuses verified public TEST provenance for actual NextAuth, allowance, preflight and reservations; separate five-case HTTP/PostgreSQL acceptance covers display, cap denial, role changes, missing proof and provider-disabled hold release. Unsupported deployment limits are unavailable; existing customers and support payment source are unchanged. This is not hosted Stripe checkout or positive AI generation. Distinct subscription events retrieve current provider state and use an equality-only binding/event-token fence before atomic consumption. Exact configured licensed per-seat terms are required; ambiguous snapshots and unexpected replacement fail closed. Local composed tests are not actual Stripe delivery or collection. Inactive original-attempt adapter source captures trusted SDK response proof through the existing intent JSON CAS before URL release, rechecks current authority/binding and rejects proofless late events. Local SDK/signature/kernel fixtures passed 51 tests; owned PostgreSQL passed five proof/storage cases, with the optional HTTP case skipped. Final local TypeScript and focused lint passed. No hosted Stripe call, live activation, public route, new financial ledger or production schema change is established by these fixtures. After normal integration of main157, the full default suite passed 6565 tests across 617 files (six skipped) in 78.43s; web TypeScript, desktop release/types/build, Python 30 tests and focused lint passed. Required exact-head CI remains the integration gate; no provider/customer acceptance is inferred. New isolated TEST lifecycle candidate passed 7 owned HTTP/PG groups and fixed seat-change proof gaps, but further independent review found status alone can restore/extend allowance without paid-through invoice evidence. Existing calendar-month resolver also ignores expiry; financial acceptance and merge are held pending NEWTEST-only paid-coverage enforcement. This is not a live billing change. Resumed checkpoint: Resumed source29a395be passed fresh whole-web compilation plus eight owned PG17/local Next cases, including authenticated allowance/refusals and provider-disabled hold release, with cleanup verified. Provider financial evidence is synthetic; hosted Checkout/webhooks/payment collection are not established. Historical status-only coverage hold led to these safeguards, not a production billing activation. Final isolated paid-coverage candidate passed7057 default tests/646files, desktop types/build and Python30; PR #168 is open after normal main integration with all26 accepted source hashes unchanged. Hosted Stripe remains unverified. PR #168 merged normally as3002d0a3 after push/PR builds, native checks and code review passed; this activates no live or public payment flow. Owner explicitly selected monthly subscription-anniversary included-credit windows with no rollover for newly created TEST subscriptions only, and full paid allowance on Free-to-paid with prior Free usage remaining in its original bucket. Purchased credits retain their balance. Source-grounded versioned window/allocation-provenance design is underway; this policy is not yet implemented or activated and does not change legacy customers or live billing. Financial source02c3861e closes independently confirmed stale paid dispatch, final actor fence, invalid SQL alias and contradictory Gateway replay facts;233 focused tests pass. Actual PostgreSQL SQL parsing/row locks/constraints/rollback and Next acceptance are not yet established. Task5 fixture protocol approved for source only, with no production activation.",
       "evidence": [
         "docs/BILLING_CUSTOMER_JOURNEY_ACCEPTANCE.md",
         "docs/SUBSCRIPTION_EVENT_CONSUMPTION.md",
@@ -48782,8 +49592,8 @@
       "status": "Partially implemented",
       "engineeringActivity": "active",
       "owner": "Codex integrated parallel workstreams",
-      "activeMilestone": "Add explicit wrong-browser-account recovery preserving the pending desktop challenge and requiring fresh signin and consent.",
-      "verification": "Proof-required signup handoff tested in DOM; sanitized callback preserved. Email proof and user verification share a transaction; modeled failure/replay regressions cover recovery, not live SQL acceptance. Admin lead deployment APIs enforce existing admin authority; unsupported providers reject without side effects. Shared resend UI, strict navigation-only callback and account-neutral failure regressions added. Provider readiness follows exact saved receipt with conditional observation commit; internal admin refresh is being validated. Reachable credit purchase component now sends a workspace-scoped stable intent key and reads the actual URL response; unsupported add-on checkout is labeled honestly.",
+      "activeMilestone": "Validate and integrate scoped animated product stories alongside existing website engineering; preserve dark/orange design and all payment integrations.",
+      "verification": "Proof-required signup handoff tested in DOM; sanitized callback preserved. Email proof and user verification share a transaction; modeled failure/replay regressions cover recovery, not live SQL acceptance. Admin lead deployment APIs enforce existing admin authority; unsupported providers reject without side effects. Shared resend UI, strict navigation-only callback and account-neutral failure regressions added. Provider readiness follows exact saved receipt with conditional observation commit; internal admin refresh is being validated. Reachable credit purchase component now sends a workspace-scoped stable intent key and reads the actual URL response; unsupported add-on checkout is labeled honestly. Additive premium demos are active in Astra branchaa18f7aa: existing cinematic surfaces reused,34 focused tests/lint pass, public scenario links only, explicit scripted labels and blocked unavailable workflows. Fresh integrated local Next/Chromium visual/interaction acceptance is still pending; source-only tests are not a screenshot audit.",
       "evidence": [
         "docs/WEBSITE_EMAIL_VERIFICATION_HANDOFF.md",
         "docs/EMAIL_PROOF_ATOMIC_RECOVERY.md",
