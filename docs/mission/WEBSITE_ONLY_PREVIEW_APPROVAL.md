@@ -140,3 +140,45 @@ creation/protection, exact source/artifact, Preview-only target, one upload/buil
 count, expected incremental charge and permitted budget. Do not provision to
 resolve these unknowns without that approval. No final deployment approval is
 being requested now.
+
+## Superseding owner spend update — deployment remains held
+
+Owner confirms team budget$5, Pause ON, Webhook OFF, displayed spend$181.05 /
+Over Budget, and automatic Agent Code Reviews OFF. No increase, unpause, billing
+change or workaround is authorized or proposed. Earlier requests for an incremental
+budget are superseded by this hold. No final deployment approval requested.
+
+Read-only inspection of team metadata exposes name/slug/id/SAML only, not an
+account build restriction, enforcement timestamp, budget action or scope. Project
+metadata reports live=false and latest deployment READY; these projected fields
+cannot prove Spend Management enforcement. READY is historical deployment build
+state, not current serving status or permission to start a new build. Latest
+returned deployments are the existing hotfix/older releases; no fresh rejection
+record proves what a new build would do. No deploy/build was submitted as a probe.
+
+Accessible official docs establish that project pausing stops production traffic
+and paused deployment access can return503 DEPLOYMENT_PAUSED. They do not prove
+that this team's over-budget Pause currently rejects new builds/deployments or
+covers every Preview, in-flight build, provider or separately billed service.
+Do not conflate a project pause endpoint with an account-wide monetary hard cap.
+Exact platform build restriction/code is UNVERIFIED with available access.
+Operational decision: treat new hosted work as BLOCKED while over budget/Pause ON;
+uncertainty is not permission to test or bypass enforcement.
+
+Charges: a pause cannot reverse accrued usage or prevent prior usage appearing in
+later metering/invoices. It is not subscription cancellation; recurring Pro/seat
+charges or other contractual commitments are not proven stopped. Coverage of
+in-flight builds, previews, storage/Marketplace and manual Agent/provider use
+remains unverified here. Never promise total bill=$5 or zero additional invoices.
+Webhook OFF means no configured budget webhook action; it does not establish that
+the built-in Pause is ineffective. Automatic review OFF blocks that configured
+review trigger, not all platform billing.
+
+Safest next action: leave controls untouched and keep the static candidate offline.
+Owner may inspect the team's/project's paused/restriction banners or ask Vercel
+Support for read-only confirmation of (1) whether new build/deployment requests
+are currently rejected and the restriction code, (2) whether Preview and in-flight
+builds are covered, (3) what usage/subscriptions can still accrue and metering lag,
+and (4) current pause scope. Do not submit a trial deployment, create a project,
+unpause, change limits, migrate to another team or bypass protection to diagnose.
+Website-only source4db11e37, all later local commits and existing PRs preserved.

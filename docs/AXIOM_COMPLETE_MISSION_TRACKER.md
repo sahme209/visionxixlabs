@@ -3386,3 +3386,18 @@ final approved action. Expected marginal cost remainsunknown and potentially
 billable; credit exhaustion does not establish that every SKU is exhausted, nor
 that the Preview can befree. No final deployment approval requested prematurely.
 Existing source/PRs/production settings unchanged; no paid provider call made.
+
+### Spend pause read-only investigation — no execution probe
+
+Accepted owner facts:$5 team budget, Pause ON, Webhook OFF,$181.05 Over Budget,
+automatic Agent reviews OFF. Deployment/provisioning/billing changes forbidden;
+no budget increase or bypass proposed. Available team/project metadata does not
+expose actual account build-block enforcement. Existing latest deployment READY
+is historical and cannot certify serving/build permission. Official accessible
+pause docs cover production traffic/503, not a verified account-wide spending
+cap. Exact new-build/deployment restriction is unverified; keep hosted work held
+rather than test with an operation. Prior accrued usage and recurring subscriptions
+are not canceled by a pause; coverage of pending builds/Preview/separate services
+remains unknown. Added exact read-only owner/support questions to website-only
+approval plan. No new project, build, deploy, API mutation, provider call or GitHub
+change occurred. Preservecheckpoint4db11e37 and all blocked PRs/local commits.
