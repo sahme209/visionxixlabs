@@ -21,7 +21,8 @@ describe("actual desktop client to HTTP streaming response", () => {
     });
     await firstDraft;
     expect(drafts).toEqual(["", "In progress"]);
-    expect(fetcher.mock.calls[0][1]).toMatchObject({ method: "POST", headers: { Authorization: "Bearer synthetic-desktop-session", accept: "application/x-ndjson" } });
+    expect(fetcher.mock.calls[0][1]).toMatchObject({ method: "POST", headers: { Authorization: "Bearer synthetic-desktop-session" } });
+    expect(new Headers(fetcher.mock.calls[0][1]!.headers).get("accept")).toBe("application/x-ndjson");
     expect(JSON.parse(fetcher.mock.calls[0][1]!.body as string)).toMatchObject({ preferredModel: "vendor/approved", workspaceContext: { mode: "code", filePath: "src/app.ts" } });
     finish(); expect(await pending).toEqual({ ok: true, data: answer }); expect(fetcher).toHaveBeenCalledOnce();
   });

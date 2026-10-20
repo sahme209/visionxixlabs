@@ -1051,7 +1051,7 @@ export class DesktopClient {
       assertOwned();
       const response = await fetch(`${context.apiBase}${path}`, {
         method: "POST", credentials: "include", redirect: "error", signal,
-        headers: { ...this.headers(), "content-type": "application/json", accept: AGENT_STREAM_CONTENT_TYPE },
+        headers: { ...this.headers(), "content-type": "application/json", Accept: AGENT_STREAM_CONTENT_TYPE },
         body: JSON.stringify(body),
       });
       assertOwned();

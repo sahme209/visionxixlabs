@@ -9,6 +9,7 @@ vi.mock("@tauri-apps/api/core", () => ({
   },
 }));
 import { desktopFetch, setDesktopTransportCredential } from "../../../desktop/src/lib/desktopTransport";
+import { DesktopClient } from "../../../desktop/src/lib/desktopClient";
 const path = "/api/desktop/agent/conversations/conv_123/messages";
 const headers = { accept: "application/x-ndjson", "content-type": "application/json" };
 const emit = (event: unknown) => native.channel!.onmessage(event);
@@ -25,6 +26,27 @@ beforeEach(() => {
 afterEach(() => { vi.unstubAllGlobals(); });
 
 describe("native Agent byte-stream transport", () => {
+  it("routes the real DesktopClient through the streaming bridge and decodes its incremental result", async () => {
+    vi.stubGlobal("fetch", desktopFetch);
+    const client = new DesktopClient({ sessionToken: "synthetic-desktop-token" });
+    const drafts: string[] = [];
+    const pending = client.sendAgentMessage("conv_123", "Review code", "vercel_gateway", { mode: "code", filePath: "src/app.ts" }, "fixture/model", {
+      signal: new AbortController().signal, onDraft: text => drafts.push(text),
+    });
+    expect(native.invoke).toHaveBeenCalledWith("desktop_http_stream", expect.objectContaining({ request: expect.objectContaining({
+      path, headers: expect.objectContaining({ accept: "application/x-ndjson", authorization: "Bearer synthetic-desktop-token" }),
+    }) }));
+    expect(native.invoke.mock.calls.some(([name]) => name === "desktop_http_request")).toBe(false);
+    responseHeaders();
+    emit({ kind: "chunk", sequence: 0, bytes: [...new TextEncoder().encode('{"type":"draft_delta","text":"Real incremental draft"}\n')] });
+    await vi.waitFor(() => expect(drafts).toEqual(["Real incremental draft"]));
+    const data = { reply: "Verified terminal reply", proposal: null, usage: null };
+    emit({ kind: "chunk", sequence: 1, bytes: [...new TextEncoder().encode(JSON.stringify({ type: "result", data }) + "\n")] });
+    await vi.waitFor(() => expect(native.invoke).toHaveBeenCalledWith("desktop_http_stream_ack", expect.objectContaining({ sequence: 1 })));
+    emit({ kind: "end" });
+    expect(await pending).toEqual({ ok: true, data });
+    expect(native.invoke.mock.calls.filter(([name]) => name === "desktop_http_stream")).toHaveLength(1);
+  });
   it("resolves headers before completion and streams bytes with demand acknowledgements", async () => {
     const pending = open();
     responseHeaders();

@@ -2333,3 +2333,39 @@ approving. UI/context/demo family45 checks, final UI20 checks, scoped types,
 frontend/release build and lint pass (overlapping sets, not customer completion).
 Production transport origin, credentials, timeouts, limits and approvals remain
 unchanged. This source follow-up still requires its own native/full/browser CI.
+
+
+### 2026-10-20 — connected application streaming acceptance
+
+Exact e9d79d6a Desktop CI39481771154 passes frontend build,18 Rust tests
+(including six real reqwest/TCP/Tauri-channel fixtures), and Clippy. Browser
+39481771049 passes all12 checks with unchanged source and empty cleanup. All six
+captured desktop/mobile/reduced-motion/documentation screenshots were reviewed;
+simulation and unavailable authority remain explicit. Floating edge widgets still
+overlap some content; no overlay-free visual claim. Artifact SHA256:
+667f378bc1fb4f5683378b587765f33499bd73b2998cbbca2675bb37e48fc23e.
+Earlier browser failures and unknown root cause remain recorded; a newer pass
+does not explain them. Full CI39481771192 subsequently passed types,8642 tests (34 skipped),
+offline auth and the production website build without deployment. This known
+header defect still requires a corrected head; no merge waiver follows.
+
+Research found a missing acceptance seam: rendered composer tests stubbed the
+client; client/wire tests did not normalize HTTP header casing. A connected
+composer/client/HTTP fixture reproduced a real defect: headers spread Accept:
+application/json and added lowercase accept: application/x-ndjson. Headers
+normalization combined both values. The native bridge requires exact NDJSON, so
+this selected buffered IPC instead of incremental transport. Minimal fix: replace
+the existing capitalized Accept key. No relaxation of native admission is needed.
+
+Plan/acceptance: join actual composer, DesktopClient, HTTP framing and decoder
+for chat and repository-edit modes; verify drafts arrive before completion with
+no approval controls, terminal proposals require completion, and interruption
+recovery uses GET without a second POST or approval. Separately join actual client
+and native JS bridge with synthetic Tauri events to verify streaming command,
+incremental bytes/ACK and validated completion, never buffered IPC. Use only
+synthetic HTTP/native boundaries: this is not SQL, provider or macOS acceptance.
+
+The initial connected tests fail on the combined Accept value; after the one-key
+fix, all46 affected application/client/bridge/composer checks pass. Four are new
+connected acceptance cases. Credential/origin, usage holds, proposal authority,
+CI and production gates remain unchanged. New exact-head CI is still required.
