@@ -3290,3 +3290,67 @@ line rejection. Actual desktop ES2021 TypeScript passes; lint zero errors/one
 existing catalog cleanup warning. These are independently verified renderer
 results only, not substitutes for any native acceptance above. Local-only source
 continuation; no push/merge/deploy/release/billing or paid-provider operation.
+
+### Preview visibility priority — read-only isolation/cost gate, 2026-10-20
+
+Owner explicitly reprioritized Preview planning over feature development. No
+feature work, resource provisioning, environment writes or deployment performed.
+Remote development checkpoint freshly confirmed at exact4db11e37775ff0f50646f85afabaa54f02ffd5ca;
+localf58a7772 and earlier commits remain preserved and unpublished. Current team
+inventory lists only the existing visionxixlabs production-connected project;
+there is no separate acceptance project to reuse. Inventory pagination fits
+within the returned20-project limit.
+
+Fresh environment metadata inspection used decrypt=false and did not retrieve,
+print or copy plaintext secrets. Existing project's Preview targets still include
+production-shared AWS broker, Azure, GCP service-account, GitHub PAT and AI Gateway
+credential records. Therefore reject deploying there, even with deployment-level
+overrides: a denylist/blanking a few variables does not establish isolation.
+Existing git.deploymentEnabled=false remains intact. Team listing exposes no
+remaining build credit or enforceable no-overage budget. Prior billable Agent
+review evidence remains relevant; available tools do not expose its automatic
+review configuration. Eve agent-run observability is not platform Code Review
+configuration and must not be used to falsely certify automatic reviews disabled.
+Historical billed usage cannot predict the marginal cost of a future build.
+Expected incremental cost is UNKNOWN, not$0. No cost-safe deployment approval is
+requested while these gates remain unresolved.
+
+Additional source evidence: lib/ai/AIProviderManager.ts treats VERCEL_OIDC_TOKEN
+as AI Gateway authority. Omitting AI_GATEWAY_API_KEY alone does not guarantee no
+paid calls. The root layout includes AI chat, and the repo contains authenticated
+API/payment/cloud paths; simply omitting database credentials is not a complete
+safe public preview configuration. No production database may be attached.
+
+Smallest proposed scope, pending verified readiness and later explicit approval:
+1. Freeze exact approved4db11e37 (later local changes require a separately reviewed
+   snapshot). Separate protected project, no Git import or PR, no inherited
+   project/shared env/integration attachment, no domains/aliases/cron activation.
+   Preserve source Git deployment suppression. Create nothing until costs verified.
+2. Public-website-only acceptance initially: homepage/product/pricing/download
+   messaging/navigation and explicitly simulated demo assets. No authenticated
+   cockpit/login success, billing or cloud/AI acceptance claims. Require reviewed
+   request allowlisting or a static-only artifact that excludes API/functions;
+   verify all browser/background/widget paths cannot invoke payment, provider,
+   cloud or production endpoints. This safeguard is not yet implemented/accepted
+   for hosted use; do not deploy the unguarded full application.
+3. Minimal allowlisted test-only configuration, fresh session secret if required,
+   isolated Preview origin and no database, OAuth, email, Stripe, cloud/GitHub or
+   AI credentials. No Vercel OIDC provider fallback may remain reachable. Inspect
+   both build-time and runtime bindings without printing values. Build without
+   production env or migration commands; retain TypeScript/security checks.
+4. One manual Preview build/deployment only, no new PR, GitHub workflow, platform
+   Agent invocation or automatic subsequent deployments. Keep protection enabled;
+   do not mint bypass URLs. Test permitted routes/mobile/navigation and rejection
+   of prohibited API/protected routes. Preserve production configuration unchanged.
+5. Record exact SHA/artifact digest, target project and cost ceiling; obtain owner
+   approval for that concrete candidate only after isolation, paid-review controls
+   and remaining included usage/cost bounds are verified. No automatic retry.
+
+Required owner evidence/action: sanitized team Billing Usage/remaining included
+build allowance and approved incremental limit (if any); actual Agent Code Review
+automatic-trigger status/manual-only control for this repository; confirm separate
+protected project is available under those entitlements without inherited secrets.
+Never request credential values or share connection strings. Need explicit
+provisioning and Preview deployment approval after these facts and isolation tests
+are complete. Existing production, DB, billing and installer gates stay separate.
+No changes were made to any external setting, GitHub PR, production or billing.
