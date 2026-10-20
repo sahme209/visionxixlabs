@@ -66,3 +66,38 @@ native-config-loader compatibility warning remained visible.
 
 No full compiler, server/browser run, production request, deployment, package
 installation or cleanup of the retained failed-window artifacts was performed.
+
+## Follow-up: interception ordering regression
+
+The later retained capture at integrated source
+`35d1592b2c8c54b200f9a1ce3009314c74ee9e1a` identifies
+`timedOutOperation: cdp.Page.navigate`, again before a DOM wait or image.
+Its retained Next development log contains font-denial retries but no finished
+homepage request. Those server-relative timestamps are not an elapsed CDP
+navigation clock. The 14.3-second completed GET above belongs to the earlier
+window; it must not be attributed to this later attempt. Supervisor loss and
+subsequent exact-group recovery are separate cleanup evidence, not success.
+
+The new test-only regression extracts the **actual driver event callback** and
+uses the **actual channel** with synthetic in-process socket messages. It
+demonstrates synchronous and queued request-paused events during pending
+navigation, continuation acknowledgement before navigation acknowledgement,
+continued refusal of external/API requests, and cancellation of navigation when
+either interception command fails. A continued main request can still reach the
+existing navigation timeout. There is no inherent JavaScript command-serialization
+deadlock in the represented order; this is not live-browser protocol proof.
+
+All existing bounds remain unchanged:
+
+- CDP commands and WebSocket opening: 15 seconds per operation.
+- HTTP target enumeration: 2 seconds.
+- Initial DOM readiness: 45 seconds, starting **after** navigation responds.
+- Absolute driver session: 120 seconds, including config and transport setup.
+- Parent capture wait: 125 seconds; overall coordinator: 300 seconds.
+
+No navigation-budget, warmup, proxy-header, request-policy, permission or runtime
+change is justified by these regressions alone. A separately reviewed warmup
+experiment must retain the same ownership, allowlist, cancellation and absolute
+limits; it is not a proven correction. Rendered acceptance remains outstanding.
+The affected interception/operation diagnostic tests passed 17 cases across two
+files without a server, browser, network request or production interaction.
