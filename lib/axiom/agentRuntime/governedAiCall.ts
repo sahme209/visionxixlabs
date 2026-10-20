@@ -17,6 +17,7 @@ import { admitGovernedExtract } from "@/lib/billing/governedExtractAdmission";
 import { AI_REQUEST_MAX_OUTPUT_TOKENS } from "@/lib/billing/requestReservationCents";
 import { isConcreteGatewayModelId, loadGatewayModelCatalog } from "@/lib/ai/gatewayModelCatalog";
 import { GovernedAiCallRefusal } from "./governedAiCallRefusal";
+import { AgentStreamInterrupted } from "@/lib/ai/streamedDecisionMessage";
 
 export type GovernedAiCallError =
   | "workspace_ai_disabled"
@@ -74,7 +75,7 @@ async function currentDispatch(organizationId: string, preferredProvider?: strin
   return { ok: true as const, manager, policy, only };
 }
 
-export async function resolveGovernedAiCall(organizationId: string, preferredProvider: string | undefined, userId: string, preferredModel?: string): Promise<GovernedAiCallResult> {
+export async function resolveGovernedAiCall(organizationId: string, preferredProvider: string | undefined, userId: string, preferredModel?: string, streaming?: { abortSignal: AbortSignal; onDraft: (message: string) => void }): Promise<GovernedAiCallResult> {
   if (!userId) return { ok: false, error: "workspace_ai_credit_meter_unavailable" };
   const creditDecision = await checkWorkspaceAICredits(organizationId, 0, { failClosedOnUsageReadError: true }).catch(() => null);
   if (!creditDecision) return { ok: false, error: "workspace_ai_credit_meter_unavailable" };
@@ -84,12 +85,17 @@ export async function resolveGovernedAiCall(organizationId: string, preferredPro
   return {
     ok: true,
     extract: async <T>(text: string, schemaHint: string, correlationId: string) => {
+      streaming?.abortSignal.throwIfAborted();
       // A loop's initial opt-in is not lasting authority: reread before EACH
       // actual extract, including repair, and before creating its budget hold.
       const current = await currentDispatch(organizationId, preferredProvider, preferredModel);
       if (!current.ok) throw new GovernedAiCallRefusal(current.error);
-      const admission = await admitGovernedExtract({ organizationId, userId, correlationId });
-      const result = await current.manager.extractStructuredDataWithAdmission<T>(text, schemaHint, {
+      streaming?.abortSignal.throwIfAborted();
+      const admission = await admitGovernedExtract({ organizationId, userId, correlationId }).catch(error => {
+        if (streaming) throw new AgentStreamInterrupted();
+        throw error;
+      });
+      const options = {
         organizationId,
         allowedProviders: current.policy.allowedProviders,
         modelSelections: current.policy.modelSelections,
@@ -99,7 +105,10 @@ export async function resolveGovernedAiCall(organizationId: string, preferredPro
         temperature: 0.1,
         maxTokens: AI_REQUEST_MAX_OUTPUT_TOKENS,
         only: current.only,
-      }, admission);
+      };
+      const result = streaming
+        ? await current.manager.extractStructuredDataStreamingWithAdmission<T>(text, schemaHint, { ...options, abortSignal: streaming.abortSignal }, admission, streaming.onDraft)
+        : await current.manager.extractStructuredDataWithAdmission<T>(text, schemaHint, options, admission);
       return { data: result.data, usage: result.usage };
     },
   };

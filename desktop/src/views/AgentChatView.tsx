@@ -176,10 +176,15 @@ function AgentChatSession({ onOpenSettings, identity }: { onOpenSettings?: (dest
   const decisionEpoch = useRef(0);
   const conversationEpoch = useRef(0);
   const activeConversation = useRef<string | null>(null);
+  const messageAbort = useRef<AbortController | null>(null);
+  const [streamingDraft, setStreamingDraft] = useState("");
   const transportContext = desktopClient.config;
   useEffect(() => {
+    messageAbort.current?.abort();
+    setStreamingDraft("");
+    setSending(false);
     decisionEpoch.current += 1; conversationEpoch.current += 1; activeConversation.current = null;
-    return () => { decisionEpoch.current += 1; conversationEpoch.current += 1; activeConversation.current = null; };
+    return () => { messageAbort.current?.abort(); decisionEpoch.current += 1; conversationEpoch.current += 1; activeConversation.current = null; };
   }, [transportContext]);
   const [pendingProposal, setPendingProposal] = useState<Proposal | null>(null);
   const [evidenceActions, setEvidenceActions] = useState<Proposal[]>([]);
@@ -459,8 +464,8 @@ function AgentChatSession({ onOpenSettings, identity }: { onOpenSettings?: (dest
     setCatalogAttempt(attempt => attempt + 1);
   }
 
-  async function openConversation(id: string) {
-    if (sending || (id === conversationId && !loadingConversation)) return;
+  async function openConversation(id: string, reload = false) {
+    if (sending || (!reload && id === conversationId && !loadingConversation)) return;
     const generation = ++conversationEpoch.current, context = desktopClient.config;
     decisionEpoch.current += 1; activeConversation.current = null; setDecidingId(null);
     setLoadingConversation(true); setError(null);
@@ -474,6 +479,8 @@ function AgentChatSession({ onOpenSettings, identity }: { onOpenSettings?: (dest
       setPendingProposal([...result.data.actions].reverse().find((action) => action.status === "proposed") ?? null);
       setEvidenceActions(result.data.actions.filter((action) => action.riskLevel === "low"));
       setRestartActions(result.data.actions.filter((action) => action.toolName === "trigger_aws_deploy"));
+      setLatestUsage(null);
+      setStreamingDraft("");
     } catch {
       if (generation === conversationEpoch.current && context === desktopClient.config) { activeConversation.current = conversationId; setError("The selected conversation could not be loaded."); }
     } finally { if (generation === conversationEpoch.current && context === desktopClient.config) setLoadingConversation(false); }
@@ -499,8 +506,8 @@ function AgentChatSession({ onOpenSettings, identity }: { onOpenSettings?: (dest
   }
 
   useEffect(() => {
-    scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
-  }, [turns, pendingProposal]);
+    scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: sending ? "auto" : "smooth" });
+  }, [turns, pendingProposal, streamingDraft, sending]);
 
   async function send() {
     const instruction = input.trim();
@@ -513,6 +520,9 @@ function AgentChatSession({ onOpenSettings, identity }: { onOpenSettings?: (dest
     setError(null);
     setTurns((prev) => [...prev, { id: `local_${Date.now()}`, role: "user", content: instruction }]);
     setSending(true);
+    setStreamingDraft("");
+    const controller = new AbortController();
+    messageAbort.current = controller;
     try {
       const result = await desktopClient.sendAgentMessage(conversationId, instruction, choice.provider, {
         ...(repositoryFullName.trim() ? { repositoryFullName: repositoryFullName.trim() } : {}),
@@ -521,7 +531,7 @@ function AgentChatSession({ onOpenSettings, identity }: { onOpenSettings?: (dest
         ...(composerMode === "code" && filePath.trim() ? { filePath: filePath.trim() } : {}),
         mode: composerMode,
         operationMode,
-      }, choice.preferredModel);
+      }, choice.preferredModel, { signal: controller.signal, onDraft: text => { if (owned() && !controller.signal.aborted) setStreamingDraft(text); } });
       if (!owned()) return;
       if (!result.ok) {
         setError(result.error);
@@ -550,7 +560,8 @@ function AgentChatSession({ onOpenSettings, identity }: { onOpenSettings?: (dest
     } catch {
       if (owned()) setError("The Agent response could not be read. Reopen this conversation to inspect its saved state.");
     } finally {
-      if (owned()) setSending(false);
+      if (messageAbort.current === controller) messageAbort.current = null;
+      if (owned()) { setSending(false); setStreamingDraft(""); }
     }
   }
 
@@ -736,6 +747,11 @@ function AgentChatSession({ onOpenSettings, identity }: { onOpenSettings?: (dest
             </div>
           )}
           {turns.map((turn) => <ChatBubble key={turn.id} turn={turn.role === "tool_result" && restartActions.some(action => action.id === turn.actionProposalId && action.status === "executed") ? { ...turn, content: "ECS restart workflow request recorded. Service outcome and application health remain unverified." } : turn} />)}
+          {sending && <div className="rounded-xl border border-orange-400/15 bg-orange-400/[0.03] px-4 py-3" aria-label="Agent response in progress">
+            <div className="flex items-center justify-between gap-4"><p className="text-xs text-orange-200" role="status">Draft · decision and usage verification pending</p><button type="button" onClick={() => messageAbort.current?.abort()} className="rounded border border-white/15 px-2 py-1 text-xs text-zinc-300">Stop response</button></div>
+            {streamingDraft && <p className="mt-3 whitespace-pre-wrap break-words text-sm text-zinc-300">{streamingDraft}</p>}
+            <p className="mt-2 text-[11px] text-zinc-500">Draft text does not approve or execute changes. Completed work remains recorded if you stop.</p>
+          </div>}
           <AgentRestartReceipts key={conversationId} conversationId={conversationId} actions={restartActions} />
           {evidenceActions.length > 0 && <EvidencePanel actions={evidenceActions.slice(-8)} />}
           {latestUsage && <UsageReceipt usage={latestUsage} />}
@@ -746,6 +762,7 @@ function AgentChatSession({ onOpenSettings, identity }: { onOpenSettings?: (dest
             <div role="alert" className="flex items-center justify-between gap-4 rounded-xl border border-rose-400/20 bg-rose-400/[0.05] px-4 py-3">
               <p className="text-xs text-rose-300">{error}</p>
               {!conversationId && <button type="button" onClick={() => setStartupAttempt((attempt) => attempt + 1)} className="shrink-0 rounded-lg border border-white/10 px-3 py-1.5 text-xs text-zinc-200 hover:bg-white/[0.06]">Retry</button>}
+              {conversationId && <button type="button" disabled={sending || loadingConversation} onClick={() => void openConversation(conversationId, true)} className="shrink-0 rounded-lg border border-white/10 px-3 py-1.5 text-xs text-zinc-200 hover:bg-white/[0.06] disabled:opacity-40">Reload saved conversation</button>}
             </div>
           )}
         </div>

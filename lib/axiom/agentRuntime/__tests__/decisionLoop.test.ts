@@ -485,3 +485,42 @@ describe("runDecisionLoop", () => {
   });
 
 });
+
+
+describe("streaming cancellation does not grant a paid repair or tool execution", () => {
+  it("stops on stream uncertainty without a second extraction", async () => {
+    const { AgentStreamInterrupted } = await import("@/lib/ai/streamedDecisionMessage");
+    mocks.readWorkspaceAgentIdentity.mockResolvedValue({ enabled: true, allowedTools: ["list_environments"] });
+    const extract = vi.fn(async () => { throw new AgentStreamInterrupted(); });
+    mocks.resolveGovernedAiCall.mockResolvedValue({ ok: true, extract });
+    const tool = vi.fn();
+    await expect(runDecisionLoop({ organizationId: "o", userId: "actor", correlationId: "c", transcript: [], executeReadOnlyTool: tool, isProdEnvironmentTarget: noopProdCheck,
+      streaming: { abortSignal: new AbortController().signal, onDraft: () => undefined },
+    })).rejects.toMatchObject({ name: "AgentStreamInterrupted" });
+    expect(extract).toHaveBeenCalledOnce(); expect(tool).not.toHaveBeenCalled();
+  });
+  it("refuses a returned tool decision if cancellation occurred during inference", async () => {
+    mocks.readWorkspaceAgentIdentity.mockResolvedValue({ enabled: true, allowedTools: ["list_environments"] });
+    const abort = new AbortController();
+    mocks.resolveGovernedAiCall.mockResolvedValue(governed(async () => { abort.abort(); return { action: "call_tool", message: "Inspect", toolName: "list_environments", args: {} }; }));
+    const tool = vi.fn();
+    await expect(runDecisionLoop({ organizationId: "o", userId: "actor", correlationId: "c", transcript: [], executeReadOnlyTool: tool, isProdEnvironmentTarget: noopProdCheck,
+      streaming: { abortSignal: abort.signal, onDraft: () => undefined },
+    })).rejects.toMatchObject({ name: "AbortError" });
+    expect(tool).not.toHaveBeenCalled();
+  });
+});
+
+
+it("does not start a tool when cancellation arrives during its authority reread", async () => {
+  const abort = new AbortController();
+  let entered!: () => void, finish!: (value: unknown) => void;
+  const pending = new Promise<unknown>(resolve => { finish = resolve; });
+  const started = new Promise<void>(resolve => { entered = resolve; });
+  mocks.readWorkspaceAgentIdentity.mockReset().mockResolvedValueOnce({ enabled: true, allowedTools: ["list_environments"] }).mockImplementationOnce(() => { entered(); return pending; });
+  mocks.resolveGovernedAiCall.mockResolvedValue(governed(async () => ({ action: "call_tool", message: "Inspect", toolName: "list_environments", args: {} })));
+  const tool = vi.fn();
+  const operation = runDecisionLoop({ organizationId: "o", userId: "actor", correlationId: "c", transcript: [], executeReadOnlyTool: tool, isProdEnvironmentTarget: noopProdCheck, streaming: { abortSignal: abort.signal, onDraft: () => undefined } });
+  await started; abort.abort(); finish({ enabled: true, allowedTools: ["list_environments"] });
+  await expect(operation).rejects.toMatchObject({ name: "AbortError" }); expect(tool).not.toHaveBeenCalled();
+});

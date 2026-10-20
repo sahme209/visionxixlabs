@@ -1,0 +1,74 @@
+{
+  "schema": 1,
+  "sourceHead": "ed1877452b697e468a15eda3ab3da8ecf6bae8e2",
+  "runUrl": "https://github.com/sahme209/visionxixlabs/actions/runs/39479507648",
+  "jobId": 118824080758,
+  "outcome": "failed",
+  "captureFailure": "website_driver_deadline",
+  "completedChecks": 11,
+  "documentationTiming": {
+    "startedMs": 83268,
+    "clickCompletedMs": 83385,
+    "preWaitCompletedMs": 83405,
+    "lastPollMs": 119927,
+    "pollCount": 323,
+    "observedMs": 120000
+  },
+  "preWaitSnapshot": {
+    "pathnameIsDocs": false,
+    "executionPresent": false,
+    "tourPresent": true
+  },
+  "documentationProxy": {
+    "rsc_navigation": {
+      "accepted": 0,
+      "response": 0,
+      "complete": 0,
+      "cancelled": 0,
+      "status_2xx": 0,
+      "status_3xx": 0,
+      "status_4xx": 0,
+      "status_5xx": 0,
+      "status_other": 0,
+      "mime_rsc": 0,
+      "mime_html": 0,
+      "mime_other": 0,
+      "upstream_timeout": 0
+    },
+    "rsc_prefetch": {
+      "accepted": 0,
+      "response": 0,
+      "complete": 0,
+      "cancelled": 0,
+      "status_2xx": 0,
+      "status_3xx": 0,
+      "status_4xx": 0,
+      "status_5xx": 0,
+      "status_other": 0,
+      "mime_rsc": 0,
+      "mime_html": 0,
+      "mime_other": 0,
+      "upstream_timeout": 0
+    },
+    "document": {
+      "accepted": 0,
+      "response": 0,
+      "complete": 0,
+      "cancelled": 0,
+      "status_2xx": 0,
+      "status_3xx": 0,
+      "status_4xx": 0,
+      "status_5xx": 0,
+      "status_other": 0,
+      "mime_rsc": 0,
+      "mime_html": 0,
+      "mime_other": 0,
+      "upstream_timeout": 0
+    },
+    "denied": 0
+  },
+  "cleanup": "owned_groups_empty",
+  "sourceUnchanged": true,
+  "qualification": "Isolated public website fixture only; not production, authentication, native desktop, or customer deployment acceptance.",
+  "conclusion": "Same bounded documentation-navigation failure pattern as 7410a095; root cause unconfirmed. No documentation request reached the proxy; this does not prove absence of a browser/driver attempt. No same-head retry, timeout change, forced navigation or gate waiver."
+}

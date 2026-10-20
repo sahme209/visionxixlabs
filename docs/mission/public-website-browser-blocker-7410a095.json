@@ -1,0 +1,76 @@
+{
+  "schema": 1,
+  "sourceHead": "7410a095920af58f606337a286c5de28798da934",
+  "runUrl": "https://github.com/sahme209/visionxixlabs/actions/runs/39470466278",
+  "jobId": 118792860075,
+  "outcome": "failed",
+  "failure": "website_driver_deadline",
+  "completedCheckCount": 11,
+  "timing": {
+    "startedMs": 83456,
+    "clickCompletedMs": 83587,
+    "preWaitCompletedMs": 83606,
+    "lastPollMs": 119933,
+    "pollCount": 321,
+    "observedMs": 120000
+  },
+  "documentationPreWaitSnapshot": {
+    "pathnameIsDocs": false,
+    "executionPresent": false,
+    "tourPresent": true
+  },
+  "documentationProxyCounts": {
+    "rsc_navigation": {
+      "accepted": 0,
+      "response": 0,
+      "complete": 0,
+      "cancelled": 0,
+      "status_2xx": 0,
+      "status_3xx": 0,
+      "status_4xx": 0,
+      "status_5xx": 0,
+      "status_other": 0,
+      "mime_rsc": 0,
+      "mime_html": 0,
+      "mime_other": 0,
+      "upstream_timeout": 0
+    },
+    "rsc_prefetch": {
+      "accepted": 0,
+      "response": 0,
+      "complete": 0,
+      "cancelled": 0,
+      "status_2xx": 0,
+      "status_3xx": 0,
+      "status_4xx": 0,
+      "status_5xx": 0,
+      "status_other": 0,
+      "mime_rsc": 0,
+      "mime_html": 0,
+      "mime_other": 0,
+      "upstream_timeout": 0
+    },
+    "document": {
+      "accepted": 0,
+      "response": 0,
+      "complete": 0,
+      "cancelled": 0,
+      "status_2xx": 0,
+      "status_3xx": 0,
+      "status_4xx": 0,
+      "status_5xx": 0,
+      "status_other": 0,
+      "mime_rsc": 0,
+      "mime_html": 0,
+      "mime_other": 0,
+      "upstream_timeout": 0
+    },
+    "denied": 0
+  },
+  "sourceUnchanged": true,
+  "cleanup": "owned_groups_empty",
+  "rootCause": "unconfirmed",
+  "boundedConclusion": "Click completed at83.587s, then321 completed evaluations observed the page until119.933s. The browser remained responsive for roughly36seconds; this is not a click arriving only at the absolute deadline or an unresponsive CDP evaluation. No docs request reached the proxy. Driver-frontier denial and actual event-target evidence are not established by proxy counts. Timing alone does not identify navigation cause.",
+  "acceptance": "Browser gate remains failed. No deadline extension, same-head retry, forced navigation or permission relaxation. Continue independent planned work.",
+  "qualification": "Isolated public website fixture only; not production, authentication, native desktop, or customer deployment acceptance."
+}

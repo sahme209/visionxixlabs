@@ -2161,3 +2161,211 @@ process checks were denied EPERM by current native execution controls. Those
 controls and tests are preserved for GitHub CI, with no local bypass or retry.
 Focused imported types/lint pass. A corrected exact-head CI is required before
 merge; the passing browser receipt is not a waiver of the full-suite failure.
+
+Corrected7410a095 full CI passed typecheck, Vitest and offline auth steps; the
+production-build step continues without deployment. Browser39470466278 failed
+after11 checks: click completed at83.587seconds, followed by321 responsive polls
+until119.933seconds, with no docs request reaching the proxy. This rules out a
+click arriving only at deadline or a hanging evaluation; it does not identify
+navigation cause or prove absence of a driver-frontier denial. Exact timing and
+limits: mission/public-website-browser-blocker-7410a095.json. No repeated run,
+longer deadline, forced navigation or gate waiver follows. PR184/185 source and
+the research-first rule remain preserved; current merge stays blocked while
+independent planned work and real-provider/native/database prerequisites remain
+explicitly unfinished.
+
+Final observed gate state for7410a095: fullCI39470466444 passed typecheck, full
+tests, offline auth evidence and production website build without deployment;
+nativeCI39470466387 passed frontend build/release checks, native tests and lint.
+Browser39470466278 remains failed with the recorded321-poll timing evidence.
+No PR merge, production deployment or approval-dependent operation was performed.
+The next independent streaming stage retains its researched native-buffering,
+durable-metering and real-environment prerequisites; the full mission is not
+declared complete from these source/component checks.
+
+### 2026-10-20 — independent admitted streaming implementation
+
+Focused research: installed AI SDK6.0.182 documentation/source confirms
+fullStream text-delta/error/abort/finish events and terminal usage/metadata.
+The current Gateway adapter and native HTTP bridge both buffer; replacing the
+adapter alone cannot establish desktop streaming. Existing one-use text admission
+and transactional usage linkage are reused rather than adding a second ledger.
+
+Execution slice: implement a bounded single-attempt SDK stream, compose it with
+the existing text admission, then validate SDK/cancellation/accounting before
+designing the authenticated HTTP/native bridge. No public route is activated in
+this slice. The existing ordinary provider/manager contract remains unchanged.
+Acceptance: incremental delivery before finish, maxRetries0, output <=4096,
+credential redaction, no terminal success without Gateway generation/token
+evidence and durable writer success, no fallback/redispatch after interruption.
+
+Implemented on codex/gateway-real-streaming: streamTextOnce yields SDK deltas
+without accumulating response text, validates terminal evidence, and aborts before
+closing its upstream iterator. streamTextWithAdmission consumes the existing
+opaque text capability and links usage before publishing completion. Provider,
+usage or writer failures and early consumer exit retain dispatch_unknown.
+Transport cancellation must abort the external signal immediately; return()
+alone queues behind a pending next(). An independent security/billing review
+found no admission bypass and requested installed-SDK and in-flight cancellation
+coverage. Its initial cleanup-deadlock hypothesis was not reproduced and is not
+recorded as a confirmed bug.
+
+Targeted provider/manager tests pass, including installed-SDK MockLanguageModelV3
+contracts (isolated provider, not hosted acceptance). An initially stalled
+synthetic source ignored abort; installed SDK source awaits provider reads, so
+the fixture now honors the forwarded abort as a provider must. No timeout was
+raised. Scoped imported TypeScript passes. HTTP/native transport, actual chat and
+editor rendering, real Gateway billing/provider acceptance and native customer
+acceptance remain unfinished. The browser blocker and all required merge gates
+remain preserved; no production/provider calls, deployment or migration occurred.
+
+Validation checkpoint: all27 affected AI/demo suites pass275 tests; the updated
+demo contract passes15 checks separately (overlapping evidence, not extra product
+coverage). Scoped TypeScript, ESLint, diff whitespace and mission coverage checks
+pass. No full CI was redundantly rerun or merge gate waived for this local slice.
+
+### 2026-10-20 — authenticated Agent HTTP/native/chat streaming integration
+
+Research/plan: reuse the existing paired-session message endpoint, conversation
+tenant+actor lookup, per-inference live model policy, extraction admission,
+decision validation, read-tool audit and persisted approval proposals. Preserve
+ordinary JSON clients. Stream only top-level message drafts, never raw decision
+JSON/tool arguments; publish a final result only after accounting and existing
+persistence. Add bounded UTF-8 NDJSON, disconnect cancellation, native IPC demand
+acknowledgements, and shared chat/repository-edit rendering. Acceptance requires
+isolated route/client/component contracts, native compilation, then actual macOS
+and hosted-provider workflows; none substitutes for another.
+
+Implemented: explicit Accept application/x-ndjson on the same authenticated
+desktop message endpoint. Invalid sessions, other-tenant/other-user conversations,
+invalid model or context refuse before streaming. Existing JSON requests retain
+their response. The admitted extraction streams incremental display-only message
+drafts; complete envelopes are durably linked before parsing. Stream/admission/
+setup/write uncertainty is non-repairable. Only fully accounted malformed JSON
+may use the existing separately admitted repair. Cancellation rechecks after
+awaited authority lookups and before tools/persistence prevent subsequent work;
+already-started read/audit operations are not promised reversible.
+
+Native transport: exact product origin and canonical message path, explicit
+bearer POST, no redirects, window-bound request identities, bounded concurrency,
+16KiB chunks with one outstanding acknowledgement, 8MiB total and a 120-second
+native lifetime. Abort reaches the native worker immediately, including pending
+registration and credential changes. Locked Tauri2.11.6/reqwest0.12.28 official
+source confirms Channel.send/Response.chunk without dependency changes. No Rust
+toolchain is installed here: native compilation and real macOS execution remain
+required gates, not inferred from TypeScript.
+
+The actual shared Agent chat/repository-edit composer renders labeled unverified
+drafts and Stop; proposal controls appear only from the final persisted result.
+Workspace/context change aborts stalled reads and rejects late draft/results.
+Older serving releases' JSON is consumed from the same response without another
+paid request. Independent review identified and verified corrections for
+cancel-during-authority-read, setup/claim uncertainty entering repair, and stalled
+reads after context changes. Targeted tests exercise those regressions, real
+ReadableStream HTTP/client composition and actual React composer interactions.
+These use isolated providers/DB/native fixtures and do not establish hosted
+provider, SQL or customer acceptance. The desktop frontend/release build passes.
+PR184's browser gate and production DB/provider/installer approvals remain intact;
+no production deployment, provider charge, database or credential change occurred.
+
+Validation checkpoint: full TypeScript passes; desktop release/frontend build,
+scoped lint, demo contract and30 Python checks pass. The affected AI/desktop/Agent
+family records1001 passing checks,34 skipped, three release subprocess assertion
+failures and a GPG setup failure. One full local Vitest run records8549 passing,
+57 failing and68 skipped tests across747 passing/11 failing suites, plus29 errors.
+Failure evidence includes spawnSync git/python/node EPERM, loopback listen EPERM
+and consequent HTTP fixture timeouts, missing child diagnostics and GPG status2.
+These are retained for exact-head CI; no native control, fixture gate or timeout
+was weakened. Native compilation remains unavailable here. These local results
+are not an all-green suite or permission to merge. Small reviewed compatibility
+edits during the run also mean it is not an exact final-head acceptance receipt.
+
+
+Post-commit review found and reproduced a cooperative cancellation race during
+proposal preparation: Stop while workspace memory awaited could begin a new
+assistant/proposal write afterward. A gated-memory regression failed on1600fb60;
+checks after skills, review, memory and assistant awaits now prevent starting the
+next write. Already-started operations may finish and remain recorded. The final
+route diff received independent review, and80 related checks pass. This follow-up
+still requires exact-head CI; earlier1600fb60 checks do not grant it merge proof.
+
+
+PR186 stacks streaming on PR184 without rewriting either branch. Exact ed187745
+browser run39479507648 failed after11 checks at the same documentation boundary:
+click83.385s,323 responsive polls,120s deadline, no docs request at the proxy.
+Cleanup is empty and source unchanged. Sanitized receipt is
+mission/public-website-browser-blocker-ed187745.json. Cause remains unconfirmed;
+no same-head retry or acceptance waiver follows. Initial1600fb60 full/native CI
+passed, including12 Rust tests and Clippy; final-head source checks remain separate.
+
+Next independent native acceptance slice (codex/native-stream-wire-acceptance):
+exercise actual reqwest bytes/ACK/cancel/redirect/byte limits with synthetic
+loopback servers and locked Tauri Channel callbacks. A private cfg(test)-only
+Loopback endpoint variant must validate loopback; production commands retain the
+fixed product origin, no renderer URL flag, unchanged credentials/vault and
+existing bounds. No dependency, proxy or runtime-control change. Rust/loopback
+execution remains CI-gated here; these tests cannot establish a real macOS GUI
+or hosted-provider/customer journey.
+
+
+Exact ed187745 verification: PR186 Test39479508623 passes758 suites/8641 tests
+(34 skipped), typecheck, offline auth evidence and production website build with
+no deployment. DesktopCI39479507749 passes frontend build, all12 Rust tests and
+Clippy. Browser39479507648 remains failed; PR186 was updated and remains unmerged.
+This is source/native-Linux evidence, not actual macOS or hosted AI/customer
+acceptance. PR184's head and unresolved gate remain unchanged.
+
+
+Interrupted-response recovery research found the composer instructed a reload but
+openConversation rejected the already-selected chat and the error had no reload
+action. Add explicit read-only Reload saved conversation through the existing
+owner/context-fenced GET, clear the stale draft/usage receipt on success, and
+preserve explicit approval. The regression must retrieve saved messages/proposals
+without another send, credit dispatch, automatic approval or new conversation.
+
+Native wire/recovery checkpoint: six actual-TCP fixture cases are prepared and
+independently source-reviewed, not compiled locally. The byte-cap test must first
+deliver the entire permitted amount before releasing its excess byte, so an
+unrelated early error cannot count as a cap pass. UTF-8 reconstruction allows
+arbitrary network fragmentation. The actual composer recovery test preserves an
+unsent follow-up while reading saved messages/proposals, without resending or
+approving. UI/context/demo family45 checks, final UI20 checks, scoped types,
+frontend/release build and lint pass (overlapping sets, not customer completion).
+Production transport origin, credentials, timeouts, limits and approvals remain
+unchanged. This source follow-up still requires its own native/full/browser CI.
+
+
+### 2026-10-20 — connected application streaming acceptance
+
+Exact e9d79d6a Desktop CI39481771154 passes frontend build,18 Rust tests
+(including six real reqwest/TCP/Tauri-channel fixtures), and Clippy. Browser
+39481771049 passes all12 checks with unchanged source and empty cleanup. All six
+captured desktop/mobile/reduced-motion/documentation screenshots were reviewed;
+simulation and unavailable authority remain explicit. Floating edge widgets still
+overlap some content; no overlay-free visual claim. Artifact SHA256:
+667f378bc1fb4f5683378b587765f33499bd73b2998cbbca2675bb37e48fc23e.
+Earlier browser failures and unknown root cause remain recorded; a newer pass
+does not explain them. Full CI39481771192 subsequently passed types,8642 tests (34 skipped),
+offline auth and the production website build without deployment. This known
+header defect still requires a corrected head; no merge waiver follows.
+
+Research found a missing acceptance seam: rendered composer tests stubbed the
+client; client/wire tests did not normalize HTTP header casing. A connected
+composer/client/HTTP fixture reproduced a real defect: headers spread Accept:
+application/json and added lowercase accept: application/x-ndjson. Headers
+normalization combined both values. The native bridge requires exact NDJSON, so
+this selected buffered IPC instead of incremental transport. Minimal fix: replace
+the existing capitalized Accept key. No relaxation of native admission is needed.
+
+Plan/acceptance: join actual composer, DesktopClient, HTTP framing and decoder
+for chat and repository-edit modes; verify drafts arrive before completion with
+no approval controls, terminal proposals require completion, and interruption
+recovery uses GET without a second POST or approval. Separately join actual client
+and native JS bridge with synthetic Tauri events to verify streaming command,
+incremental bytes/ACK and validated completion, never buffered IPC. Use only
+synthetic HTTP/native boundaries: this is not SQL, provider or macOS acceptance.
+
+The initial connected tests fail on the combined Accept value; after the one-key
+fix, all46 affected application/client/bridge/composer checks pass. Four are new
+connected acceptance cases. Credential/origin, usage holds, proposal authority,
+CI and production gates remain unchanged. New exact-head CI is still required.

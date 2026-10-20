@@ -119,12 +119,71 @@ it.each([{ ok: false, error: "provider_policy_unavailable" }, { ok: true, data: 
 });
 it("sends an approved alternate Gateway choice as the optional fifth argument in both composer modes",async()=>{
  m.client.listGithubFiles.mockResolvedValue({ok:true,data:{files:[{path:"src/verified.ts",size:12}],truncated:false}});
- const data={...ready.data,providers:[{provider:"vercel_gateway",models:[...ready.data.providers[0].models,{id:"xai/grok-4",label:"Grok",tier:"standard"}]}],policy:{...ready.data.policy,gatewaySelection:{version:1,defaultModelId:"fixture/model",approvedModelIds:["fixture/model","xai/grok-4"]}}};m.client.aiProviderStatus.mockResolvedValue({ok:true,data});render(createElement(AgentChatView));await screen.findByRole("option",{name:"Grok"});fireEvent.change(screen.getByRole("combobox",{name:"Agent model"}),{target:{value:JSON.stringify(["vercel_gateway","xai/grok-4"])}});await draft();fireEvent.click(screen.getByRole("button",{name:"Send"}));await waitFor(()=>expect(m.client.sendAgentMessage).toHaveBeenCalledWith("conversation-1","Keep this unsent request","vercel_gateway",expect.objectContaining({mode:"chat"}),"xai/grok-4"));fireEvent.click(screen.getByRole("button",{name:"Edit repository file"}));expect((screen.getByRole("combobox",{name:"Agent model"})as HTMLSelectElement).value).toBe(JSON.stringify(["vercel_gateway","xai/grok-4"]));
- await screen.findByRole("option",{name:"src/verified.ts"});fireEvent.change(screen.getByRole("combobox",{name:"Repository file"}),{target:{value:"src/verified.ts"}});fireEvent.change(screen.getByRole("textbox"),{target:{value:"Review this file"}});await waitFor(()=>expect((screen.getByRole("button",{name:"Send"})as HTMLButtonElement).disabled).toBe(false));fireEvent.click(screen.getByRole("button",{name:"Send"}));await waitFor(()=>expect(m.client.sendAgentMessage).toHaveBeenLastCalledWith("conversation-1","Review this file","vercel_gateway",expect.objectContaining({mode:"code",filePath:"src/verified.ts"}),"xai/grok-4"));
+ const data={...ready.data,providers:[{provider:"vercel_gateway",models:[...ready.data.providers[0].models,{id:"xai/grok-4",label:"Grok",tier:"standard"}]}],policy:{...ready.data.policy,gatewaySelection:{version:1,defaultModelId:"fixture/model",approvedModelIds:["fixture/model","xai/grok-4"]}}};m.client.aiProviderStatus.mockResolvedValue({ok:true,data});render(createElement(AgentChatView));await screen.findByRole("option",{name:"Grok"});fireEvent.change(screen.getByRole("combobox",{name:"Agent model"}),{target:{value:JSON.stringify(["vercel_gateway","xai/grok-4"])}});await draft();fireEvent.click(screen.getByRole("button",{name:"Send"}));await waitFor(()=>expect(m.client.sendAgentMessage).toHaveBeenCalledWith("conversation-1","Keep this unsent request","vercel_gateway",expect.objectContaining({mode:"chat"}),"xai/grok-4",expect.objectContaining({signal:expect.anything(),onDraft:expect.any(Function)})));fireEvent.click(screen.getByRole("button",{name:"Edit repository file"}));expect((screen.getByRole("combobox",{name:"Agent model"})as HTMLSelectElement).value).toBe(JSON.stringify(["vercel_gateway","xai/grok-4"]));
+ await screen.findByRole("option",{name:"src/verified.ts"});fireEvent.change(screen.getByRole("combobox",{name:"Repository file"}),{target:{value:"src/verified.ts"}});fireEvent.change(screen.getByRole("textbox"),{target:{value:"Review this file"}});await waitFor(()=>expect((screen.getByRole("button",{name:"Send"})as HTMLButtonElement).disabled).toBe(false));fireEvent.click(screen.getByRole("button",{name:"Send"}));await waitFor(()=>expect(m.client.sendAgentMessage).toHaveBeenLastCalledWith("conversation-1","Review this file","vercel_gateway",expect.objectContaining({mode:"code",filePath:"src/verified.ts"}),"xai/grok-4",expect.objectContaining({signal:expect.anything(),onDraft:expect.any(Function)})));
 });
 it("remembers only a still-approved choice within its verified workspace",async()=>{
  Object.assign(m.client.config,{apiBase:"https://visionxixlabs.com"});const identity={organizationId:"verified-one"} as never;
  m.client.aiProviderStatus.mockResolvedValue({ok:true,data:{...ready.data,providers:[{provider:"vercel_gateway",models:[...ready.data.providers[0].models,{id:"xai/grok-4",label:"Grok",tier:"standard"}]}],policy:{...ready.data.policy,gatewaySelection:{version:1,defaultModelId:"fixture/model",approvedModelIds:["fixture/model","xai/grok-4"]}}}});
  const view=render(createElement(AgentChatView,{identity}));await screen.findByRole("option",{name:"Grok"});const chosen=JSON.stringify(["vercel_gateway","xai/grok-4"]);fireEvent.change(screen.getByRole("combobox",{name:"Agent model"}),{target:{value:chosen}});view.unmount();render(createElement(AgentChatView,{identity}));await waitFor(()=>expect((screen.getByRole("combobox",{name:"Agent model"})as HTMLSelectElement).value).toBe(chosen));
  m.client.aiProviderStatus.mockResolvedValue(ready);fireEvent(window,new Event("focus"));await waitFor(()=>expect((screen.getByRole("combobox",{name:"Agent model"})as HTMLSelectElement).value).toBe(JSON.stringify(["vercel_gateway","fixture/model"])));expect(screen.getByText(/Your previous model is no longer available/)).toBeTruthy();
+});
+
+
+it.each(["chat", "code"])("shows real-time %s drafts without granting approval authority", async mode => {
+  const completion = deferred<unknown>();
+  m.client.sendAgentMessage.mockImplementation((...args) => { args[5].onDraft("Reviewing the selected code"); return completion.promise; });
+  m.client.listGithubFiles.mockResolvedValue({ ok: true, data: { files: [{ path: "src/app.ts", size: 10 }], truncated: false } });
+  render(createElement(AgentChatView)); await draft();
+  if (mode === "code") {
+    fireEvent.click(screen.getByRole("button", { name: "Edit repository file" }));
+    await waitFor(() => expect((screen.getByRole("combobox", { name: "Repository file" }) as HTMLSelectElement).disabled).toBe(false));
+    await screen.findByRole("option", { name: "src/app.ts" });
+    fireEvent.change(screen.getByRole("combobox", { name: "Repository file" }), { target: { value: "src/app.ts" } });
+  }
+  fireEvent.click(screen.getByRole("button", { name: "Send" }));
+  await screen.findByText("Reviewing the selected code");
+  expect(screen.getByText(/verification pending/)).toBeTruthy();
+  expect(screen.queryByRole("button", { name: "Approve & run" })).toBeNull();
+  expect(m.client.sendAgentMessage.mock.calls[0][3]).toMatchObject({ mode, ...(mode === "code" ? { filePath: "src/app.ts" } : {}) });
+  await act(async () => { completion.resolve({ ok: true, data: { reply: "Reviewed change ready", proposal: { id: "p", toolName: "commit_github_file", argsJson: { repositoryFullName: "fixture/repository", branch: "main", path: "src/app.ts", content: "new code" }, riskLevel: "medium", status: "proposed" }, usage: null } }); });
+  await screen.findByText("Reviewed change ready");
+  expect(screen.queryByText("Reviewing the selected code")).toBeNull();
+  expect(screen.getByRole("button", { name: "Approve & run" })).toBeTruthy();
+  expect(m.client.approveAgentAction).not.toHaveBeenCalled();
+});
+it("stops an in-flight draft and ignores later text without retrying or presenting success", async () => {
+  const completion = deferred<unknown>();
+  let streaming!: { signal: AbortSignal; onDraft: (text: string) => void };
+  m.client.sendAgentMessage.mockImplementation((...args) => { streaming = args[5]; streaming.onDraft("Partial explanation"); return completion.promise; });
+  render(createElement(AgentChatView)); await draft();
+  fireEvent.click(screen.getByRole("button", { name: "Send" }));
+  await screen.findByText("Partial explanation");
+  fireEvent.click(screen.getByRole("button", { name: "Stop response" }));
+  expect(streaming.signal.aborted).toBe(true);
+  await act(async () => { streaming.onDraft("Late stale draft"); completion.resolve({ ok: false, error: "Request stopped" }); });
+  expect(screen.queryByText("Late stale draft")).toBeNull();
+  expect(screen.queryByText("Partial explanation")).toBeNull();
+  expect(m.client.sendAgentMessage).toHaveBeenCalledOnce(); expect(m.client.approveAgentAction).not.toHaveBeenCalled();
+});
+
+
+it("reloads the saved conversation after interruption without resending or approving", async () => {
+  m.client.sendAgentMessage.mockResolvedValue({ ok: false, error: "Response interrupted. Reload the conversation." });
+  render(createElement(AgentChatView)); await draft();
+  fireEvent.click(screen.getByRole("button", { name: "Send" }));
+  const reload = await screen.findByRole("button", { name: "Reload saved conversation" });
+  m.client.getAgentConversation.mockResolvedValue({ ok: true, data: { ...summary,
+    turns: [{ id: "saved-reply", role: "assistant", content: "Saved server explanation", actionProposalId: null, createdAt: "2026-10-20T00:00:00Z" }],
+    actions: [{ id: "saved-proposal", toolName: "commit_github_file", argsJson: { path: "src/app.ts" }, riskLevel: "medium", status: "proposed", resultJson: null, errorMessage: null, createdAt: "2026-10-20T00:00:00Z" }],
+  } });
+  fireEvent.change(screen.getByRole("textbox"), { target: { value: "Keep my unsent follow-up" } });
+  fireEvent.click(reload);
+  await screen.findByText("Saved server explanation");
+  expect((screen.getByRole("textbox") as HTMLTextAreaElement).value).toBe("Keep my unsent follow-up");
+  expect(screen.queryByText("Response interrupted. Reload the conversation.")).toBeNull();
+  expect(screen.getByRole("button", { name: "Approve & run" })).toBeTruthy();
+  expect(m.client.getAgentConversation).toHaveBeenCalledTimes(2);
+  expect(m.client.sendAgentMessage).toHaveBeenCalledOnce();
+  expect(m.client.approveAgentAction).not.toHaveBeenCalled(); expect(m.client.createAgentConversation).not.toHaveBeenCalled();
 });

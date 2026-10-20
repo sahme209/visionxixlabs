@@ -1,11 +1,12 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-const m = vi.hoisted(() => ({ credit: vi.fn(), load: vi.fn(), policy: vi.fn(), admission: vi.fn(), extract: vi.fn(), catalog: vi.fn() }));
-vi.mock("@/lib/ai/AIProviderManager", () => ({ getAIProviderManager: () => ({ status: () => [{ configured: true, provider: "vercel_gateway" }], isServiceProviderAvailable: (provider: string) => provider === "vercel_gateway", extractStructuredDataWithAdmission: m.extract }) }));
+const m = vi.hoisted(() => ({ credit: vi.fn(), load: vi.fn(), policy: vi.fn(), admission: vi.fn(), extract: vi.fn(), stream: vi.fn(), catalog: vi.fn() }));
+vi.mock("@/lib/ai/AIProviderManager", () => ({ getAIProviderManager: () => ({ status: () => [{ configured: true, provider: "vercel_gateway" }], isServiceProviderAvailable: (provider: string) => provider === "vercel_gateway", extractStructuredDataWithAdmission: m.extract, extractStructuredDataStreamingWithAdmission: m.stream }) }));
 vi.mock("@/lib/ai/workspaceProviderPolicy", () => ({ loadWorkspaceAIProviderPolicyWithState: m.load, resolveWorkspaceAIProviderPolicy: m.policy }));
 vi.mock("@/lib/billing/checkWorkspaceAICredits", () => ({ checkWorkspaceAICredits: m.credit }));
 vi.mock("@/lib/billing/governedExtractAdmission", () => ({ admitGovernedExtract: m.admission }));
 vi.mock("@/lib/ai/gatewayModelCatalog", async original => ({ ...await original<typeof import("@/lib/ai/gatewayModelCatalog")>(), loadGatewayModelCatalog: m.catalog }));
+vi.mock("../agentIdentityPolicy", () => ({ readWorkspaceAgentIdentity: async () => ({ enabled: true, allowedTools: ["list_environments"] }) }));
 import { resolveGovernedAiCall } from "../governedAiCall";
 
 describe("governed extraction per-call admission", () => {
@@ -36,4 +37,32 @@ describe("governed extraction per-call admission", () => {
     await expect(governed.extract("prompt", "schema", "request:0")).rejects.toThrow();
     expect(m.extract).not.toHaveBeenCalled();
   });
+  it("uses the same policy-bound extraction admission for the streaming manager", async () => {
+    const streaming = { abortSignal: new AbortController().signal, onDraft: vi.fn() };
+    const governed = await resolveGovernedAiCall("org", undefined, "trusted-actor", undefined, streaming);
+    if (!governed.ok) throw new Error("fixture unavailable");
+    m.stream.mockResolvedValue({ data: { action: "respond" }, usage: {} });
+    await governed.extract("prompt", "schema", "request:0");
+    expect(m.stream).toHaveBeenCalledWith("prompt", "schema", expect.objectContaining({ organizationId: "org", maxTokens: 4096, abortSignal: streaming.abortSignal }), expect.anything(), streaming.onDraft);
+    expect(m.extract).not.toHaveBeenCalled();
+  });
+  it("classifies uncertain or denied streaming admission as non-repairable", async () => {
+    const governed = await resolveGovernedAiCall("org", undefined, "trusted-actor", undefined, { abortSignal: new AbortController().signal, onDraft: () => undefined });
+    if (!governed.ok) throw new Error("fixture unavailable");
+    m.admission.mockRejectedValue(new Error("claim response lost"));
+    await expect(governed.extract("prompt", "schema", "request:0")).rejects.toMatchObject({ name: "AgentStreamInterrupted" });
+    expect(m.admission).toHaveBeenCalledOnce(); expect(m.stream).not.toHaveBeenCalled();
+  });
+
+  it("actual decision loop makes no paid repair after uncertain streaming claim", async () => {
+    const { runDecisionLoop } = await import("../decisionLoop");
+    m.admission.mockRejectedValue(new Error("claim response lost"));
+    const execute = vi.fn();
+    await expect(runDecisionLoop({ organizationId: "org", userId: "trusted-actor", correlationId: "request", transcript: [{ role: "user", content: "Inspect" }],
+      executeReadOnlyTool: execute, isProdEnvironmentTarget: async () => false,
+      streaming: { abortSignal: new AbortController().signal, onDraft: () => undefined },
+    })).rejects.toMatchObject({ name: "AgentStreamInterrupted" });
+    expect(m.admission).toHaveBeenCalledOnce(); expect(m.stream).not.toHaveBeenCalled(); expect(execute).not.toHaveBeenCalled();
+  });
+
 });
