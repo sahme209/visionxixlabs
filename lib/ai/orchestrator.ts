@@ -6,6 +6,7 @@
 
 import { logAIInvocation } from "@/lib/ai/instrumentation";
 import { getAIProviderManager } from "@/lib/ai/AIProviderManager";
+import { redact } from "@/lib/security/redaction";
 
 export type TaskType =
   | "CHAT_FAST"
@@ -109,7 +110,7 @@ export async function generate(opts: GenerateOptions): Promise<GenerateResponse>
     ? `${baseSystem}\nReturn valid JSON only, with no Markdown fence or commentary.`
     : baseSystem;
   const prompt = opts.userPrompt ?? opts.messages?.filter((m) => m.role === "user").pop()?.content ?? "";
-  const promptPreview = prompt || system ? `${system.slice(0, 100)}...${prompt.slice(0, 80)}` : undefined;
+  const promptPreview = prompt || system ? `${redact(system).slice(0, 100)}...${redact(prompt).slice(0, 80)}` : undefined;
 
   const requestId = `ai_${Date.now()}_${Math.random().toString(36).slice(2, 10)}`;
   const start = Date.now();

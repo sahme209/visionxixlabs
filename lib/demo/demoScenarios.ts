@@ -284,13 +284,13 @@ export const DEMO_SCENARIOS: Readonly<Record<DemoScenarioId, DemoScenario>> = {
     description: "What every engineer is allowed to do + what they've actually done.",
     estimatedMinutes: 5,
     audience: "client",
-    lastReviewed: "2026-10-15",
+    lastReviewed: "2026-10-20",
     steps: [
       { id: "1", title: "Engineer registry",          description: "List of all available engineers (Cloud, DevOps, Security, Monitoring, Incident, Database, etc.).", route: "/dashboard/workforce", approval: "none", expectedResult: "Per-engineer status + scope." },
       { id: "2", title: "Tool access",                description: "Which tools each engineer can call.", route: "/dashboard/agent-tools", approval: "none", expectedResult: "Per-engineer scope list. The runtime rechecks current workspace Agent policy before each read or action proposal; a revoked tool cannot inherit authority from an earlier inference snapshot. Writes retain their separate approval gate." },
       { id: "3", title: "Approval rules",             description: "Closed-union policies that gate each action class.", route: "/dashboard/policies", approval: "none", expectedResult: "Per-action approval tier visible." },
       { id: "4", title: "Activity",                   description: "Recent action attempts (approved, denied, executed).", route: "/dashboard/agent-activity", approval: "none", expectedResult: "Timeline of attempts with outcome." },
-      { id: "5", title: "Audit trail",                description: "Every action's full audit row.", route: "/dashboard/audit", approval: "none", expectedResult: "Audit log per actor / per organization." },
+      { id: "5", title: "Audit trail",                description: "Every action's full audit row.", route: "/dashboard/audit", approval: "none", expectedResult: "Audit log per actor / per organization. AI invocation logging applies canonical known-credential redaction before preview truncation and stored errors; logger failures emit a fixed diagnostic label rather than raw database exceptions. This is not general PII removal or a security guarantee for arbitrary content." },
     ],
   },
   pricing_and_usage: {

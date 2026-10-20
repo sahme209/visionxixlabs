@@ -2008,3 +2008,12 @@ failed one of8453 executed tests: current allowance omitted uncertain holds.
 The reader now includes dispatch_unknown to match admission authority; strict
 query-parity regression is retained. Focused checks precede a new exact-head CI.
 No failed check is waived, and no production deployment or database change occurs.
+
+Independent security work reproduced partial credential prefixes in AI invocation
+previews and raw database exceptions in logging failure output. Canonical known-
+credential redaction now precedes BOTH preview truncation boundaries, stored
+errors are scrubbed, failure logging uses a fixed label, and supplied fingerprint
+text must match a bounded digest encoding. Four suites/23 checks, focused types,
+lint and independent source review pass. Exact-head CI remains required; no
+historical rows/logs, provider behavior, payments or production systems change.
+Evidence and limits: mission/ai-invocation-log-redaction-source.md.
