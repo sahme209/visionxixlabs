@@ -3,7 +3,7 @@ import { chmodSync, mkdirSync, mkdtempSync, readFileSync, realpathSync, rmSync, 
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 // Builtins-only adapter: importing it never starts the owned fixture.
-import { collect, collectForUpload, pngDimensions, privateFile, publicCounts, publicServerGuard, publicDomSnapshot, publicSummary, reviewManifest, screenshotNames } from '../../scripts/owned-website-ci.mjs';
+import { collect, collectForUpload, pngDimensions, privateFile, publicCounts, publicServerGuard, publicDomSnapshot, publicProxyDelivery, publicSummary, reviewManifest, screenshotNames } from '../../scripts/owned-website-ci.mjs';
 
 const directories: string[] = [];
 afterEach(() => { for (const path of directories.splice(0)) rmSync(path, { recursive: true, force: true }); });
@@ -59,6 +59,26 @@ it('publishes only bounded exception counts, closed classes and structured clean
   expect(summary.cleanupDiagnostics).toEqual([{ role: 'browser', stage: 'stop_group', errorCode: 'ENOENT' }, { role: 'other', stage: 'other', errorCode: 'other' }]);
   expect(JSON.stringify(summary)).not.toContain('PRIVATE');
   expect(publicSummary(sha, result, { runtimeExceptionCount: 129, evaluationExceptionClass: 'PRIVATE', homeCapturePhase: 'PRIVATE' }, undefined, undefined)).toMatchObject({ runtimeExceptionCount: null, evaluationExceptionClass: 'other', homeCapturePhase: null });
+});
+it('exports only closed proxy counters bound to an exited registered proxy and matching nonce', () => {
+  const result = { children: [{ role: 'proxy', pid: 42, owner: { pid: 42 }, exited: true }], proxyReceipt: { pid: 42, nonce: 'n' } };
+  const proxy = { pid: 42, nonce: 'n', stage: 'stopped', productionEquivalent: false, counts: { script_accepted: 6, script_response: 4, script_complete: 3, privateUrl: 'PRIVATE' }, privatePath: 'PRIVATE' };
+  const summary = publicProxyDelivery(proxy, result, 'n');
+  expect(summary).toEqual({ stage: 'stopped', counts: { script_accepted: 6, script_response: 4, script_complete: 3, script_cancelled: 0, script_upstream_timeout: 0, upstream_timeout: 0 } });
+  expect(JSON.stringify(summary)).not.toContain('PRIVATE');
+  expect(publicProxyDelivery({ ...proxy, nonce: 'wrong' }, result, 'n')).toBeNull();
+  expect(publicProxyDelivery(proxy, { ...result, children: [{ ...result.children[0], exited: false }] }, 'n')).toBeNull();
+  expect(publicProxyDelivery({ ...proxy, counts: { script_accepted: 1000001 } }, result, 'n')).toBeNull();
+  expect(publicProxyDelivery({ ...proxy, counts: { script_accepted: 'PRIVATE' } }, result, 'n')).toBeNull();
+});
+
+it('reads proxy delivery only through private receipt validation during collection', () => {
+  const f = fixture(); const pid = 42;
+  f.put('result.json', { sourceHead: sha, children: [{ role: 'proxy', pid, owner: { pid }, exited: true }], proxyReceipt: { pid, nonce: f.config.nonce } });
+  f.put('proxy.json', { pid, nonce: f.config.nonce, stage: 'stopped', productionEquivalent: false, counts: { upstream_timeout: 1 } });
+  expect(f.run().proxyDelivery?.counts.upstream_timeout).toBe(1);
+  rmSync(f.destination, { recursive: true }); chmodSync(join(f.directory, 'proxy.json'), 0o644);
+  expect(() => f.run()).toThrow('website_ci_private_file');
 });
 it('collects a failed window as closed public fields without config, logs or profile data', () => {
   const f = fixture(); f.put('result.json', { sourceHead: sha, status: 'failed', cleanup: 'owned_groups_empty', sourceUnchanged: true, error: 'PRIVATE' });

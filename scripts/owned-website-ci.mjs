@@ -28,6 +28,19 @@ export function privateFile(path, limit = 1024 * 1024) {
   } finally { closeSync(fd); }
 }
 function json(path) { return JSON.parse(privateFile(path).toString('utf8')); }
+export function publicProxyDelivery(proxy, result, nonce) {
+  const children = Array.isArray(result?.children) ? result.children.filter(row => row?.role === 'proxy') : [];
+  if (children.length !== 1 || children[0].exited !== true || !Number.isInteger(proxy?.pid) || proxy.pid <= 0 || proxy.pid !== children[0].pid || proxy.pid !== children[0].owner?.pid || proxy.pid !== result?.proxyReceipt?.pid || proxy.nonce !== nonce || result.proxyReceipt.nonce !== nonce) return null;
+  if (!['stopped', 'interrupted', 'expired', 'failed', 'close_timeout'].includes(proxy.stage) || proxy.productionEquivalent !== false || !proxy.counts || typeof proxy.counts !== 'object' || Object.getPrototypeOf(proxy.counts) !== Object.prototype) return null;
+  const counts = {};
+  for (const key of ['script_accepted', 'script_response', 'script_complete', 'script_cancelled', 'script_upstream_timeout', 'upstream_timeout']) {
+    const descriptor = Object.getOwnPropertyDescriptor(proxy.counts, key);
+    if (!descriptor) { counts[key] = 0; continue; }
+    if (!descriptor.enumerable || !Object.hasOwn(descriptor, 'value') || !Number.isInteger(descriptor.value) || descriptor.value < 0 || descriptor.value > 1000000) return null;
+    counts[key] = descriptor.value;
+  }
+  return { stage: proxy.stage, counts };
+}
 const captureFailures = new Set(['website_dom_timeout', 'website_driver_failed', 'website_driver_deadline', 'website_driver_operation_timeout', 'website_driver_interrupted', 'website_driver_closed', 'website_browser_evaluation_failed', 'website_capture_browser_not_registered', 'website_capture_owner_changed', 'website_capture_source_changed', 'website_cdp_response_bound', 'website_cdp_closed', 'website_cdp_error', 'website_cdp_invalid_message', 'website_cdp_not_open', 'website_cdp_protocol', 'website_dom_diagnostic_phase', 'website_framebuffer_bound', 'website_image_bound', 'website_initial_blank_target', 'website_mobile_overflow', 'website_owned_capture_directory']);
 const cleanupCodes = new Set(['website_cleanup_foreign_group_member', 'website_cleanup_leader_changed', 'website_cleanup_incomplete', 'website_pending_child_unresolved', 'website_child_group_not_empty', 'website_ledger_persistence_failed', 'website_cleanup_metadata_unverified']);
 export function publicDomSnapshot(value) {
@@ -104,16 +117,17 @@ export function collect({ manifest, expected, temporary = '/tmp', destination })
     matches.push({ directory, config });
   }
   assert.ok(matches.length <= 1, 'website_ci_ambiguous_window');
-  let result; let capture; let done; let nonce; let server; const screenshots = [];
+  let result; let capture; let done; let nonce; let server; let proxy; const screenshots = [];
   if (matches.length) {
     const { directory, config } = matches[0]; nonce = config.nonce;
-    for (const name of ['result.json', 'capture.json', 'done.json', 'server.json']) {
+    for (const name of ['result.json', 'capture.json', 'done.json', 'server.json', 'proxy.json']) {
       if (!existsSync(join(directory, name))) continue;
       const value = json(join(directory, name));
       if (name === 'result.json') result = value;
       if (name === 'capture.json') capture = value;
       if (name === 'done.json') done = value;
       if (name === 'server.json') server = value;
+      if (name === 'proxy.json') proxy = value;
     }
     const screenshotDirectory = join(directory, 'screenshots');
     if (existsSync(screenshotDirectory)) {
@@ -132,7 +146,7 @@ export function collect({ manifest, expected, temporary = '/tmp', destination })
       for (const image of screenshots) assert.equal(reported.filter(row => row.path === join(screenshotDirectory, image.name) && Number.isFinite(row.width) && row.width > 0 && row.width <= 1440 && Number.isFinite(row.height) && row.height > 0 && row.height <= 2400 && Math.abs(row.width - image.width) <= 1 && Math.abs(row.height - image.height) <= 1).length, 1, 'website_ci_image_receipt');
     }
   }
-  const summary = { ...publicSummary(expected, result, capture, done, nonce), serverGuard: publicServerGuard(server, result, nonce) };
+  const summary = { ...publicSummary(expected, result, capture, done, nonce), serverGuard: publicServerGuard(server, result, nonce), proxyDelivery: publicProxyDelivery(proxy, result, nonce) };
   if (summary.outcome === 'passed') assert.equal(screenshots.length, screenshotNames.length, 'website_ci_complete_images');
   // Validate all inputs before creating a fresh upload directory. Never reuse or remove one.
   assert.equal(existsSync(destination), false, 'website_ci_existing_destination');

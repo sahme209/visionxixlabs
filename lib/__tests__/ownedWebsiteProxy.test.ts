@@ -6,7 +6,7 @@ const proxy = require("../../scripts/fixtures/ownedWebsiteProxyTransport.cjs");
 class Stream extends EventEmitter {
   destroyed = false; writableEnded = false; complete = true; aborted = false;
   writeHead = vi.fn(() => this); end = vi.fn(() => { this.writableEnded = true; return this; });
-  pipe = vi.fn(); setTimeout = vi.fn();
+  pipe = vi.fn(); setTimeout = vi.fn((duration: number, callback: () => void) => { void duration; void callback; });
   destroy = vi.fn(() => { if (!this.destroyed) { this.destroyed = true; this.emit("close"); } return this; });
 }
 function fixture(isStopping = () => false) {
@@ -67,4 +67,29 @@ it("forwards only the fixed app endpoint with no client credential headers", () 
 it("cancels premature upstream close whether before or after response headers", () => {
   const f = fixture(); f.handler.request(f.req, f.res); f.upstream.emit("close"); expect(f.res.destroy).toHaveBeenCalledOnce();
   const second = fixture(); second.handler.request(second.req, second.res); const response = Object.assign(new Stream(), { complete: false, statusCode: 200, headers: {} }); second.reply(response); response.emit("close"); expect(second.res.destroy).toHaveBeenCalledOnce();
+});
+
+it("counts accepted static JavaScript delivery without persisting request identity", () => {
+  const f = fixture(); f.req.url = 'http://127.0.0.1:38001/_next/static/chunks/main-app.js?v=private';
+  f.handler.request(f.req, f.res); const response = Object.assign(new Stream(), { statusCode: 200, headers: {} }); f.reply(response);
+  f.res.writableEnded = true; f.res.emit('finish'); f.res.emit('finish'); f.res.emit('close');
+  expect(f.events).toEqual(['script_accepted', 'script_response', 'script_complete']);
+  expect(JSON.stringify(f.events)).not.toContain('private');
+  expect(f.upstream.setTimeout.mock.calls[0][0]).toBe(30000);
+});
+
+it("counts upstream timeout and cancellation once and distinguishes it from reset", () => {
+  const f = fixture(); f.req.url = 'http://127.0.0.1:38001/_next/static/chunks/main-app.js'; f.handler.request(f.req, f.res);
+  const timeout = f.upstream.setTimeout.mock.calls[0][1] as () => void; timeout(); timeout(); f.req.emit('error', Error('private'));
+  expect(f.events).toEqual(['script_accepted', 'upstream_timeout', 'script_upstream_timeout', 'request_cancelled', 'script_cancelled']);
+  expect(f.upstream.destroy).toHaveBeenCalledOnce();
+  const g = fixture(); g.req.url = f.req.url; g.handler.request(g.req, g.res); g.req.emit('aborted');
+  expect(g.events).toEqual(['script_accepted', 'request_cancelled', 'script_cancelled']);
+});
+
+it("does not classify CSS, pages or denied scripts as accepted JavaScript", () => {
+  for (const path of ['/product', '/_next/static/css/app.css', '/_next/static/chunks/app.js?unsupported=1']) {
+    const f = fixture(); f.req.url = `http://127.0.0.1:38001${path}`; f.handler.request(f.req, f.res);
+    expect(f.events).not.toContain('script_accepted');
+  }
 });

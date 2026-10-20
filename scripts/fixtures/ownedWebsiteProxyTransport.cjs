@@ -17,15 +17,17 @@ function createProxyTransport({ origin, appPort, assets, request, isStopping = (
     catch { onEvent('socket_write_error'); destroy(socket); }
   }
   function handle(req, res) {
-    let closed = false, upstream, response;
+    let closed = false, upstream, response, script = false, scriptComplete = false;
     function cancel() {
       if (closed) return; closed = true; onEvent('request_cancelled');
+      if (script) onEvent('script_cancelled');
       for (const stream of [upstream, response, req, res]) destroy(stream);
     }
     for (const stream of [req, res]) stream.on('error', cancel);
     req.on('aborted', cancel);
     req.on('close', () => { if (req.aborted || !req.complete) cancel(); });
     res.on('close', () => { if (!res.writableEnded) cancel(); });
+    res.on('finish', () => { if (script && !closed && !scriptComplete) { scriptComplete = true; onEvent('script_complete'); } });
     let url;
     try { url = new URL(req.url); } catch { /* denied below */ }
     if (isStopping() || !url || url.origin !== origin || url.username || url.password || url.hash || !allowedRequest({ method: req.method, raw: `${url.pathname}${url.search}`, origin, assets })) {
@@ -35,8 +37,11 @@ function createProxyTransport({ origin, appPort, assets, request, isStopping = (
     }
     try {
       if (closed || req.destroyed || res.destroyed) { cancel(); return; }
+      script = url.pathname.startsWith('/_next/static/') && url.pathname.endsWith('.js');
+      if (script) onEvent('script_accepted');
       upstream = request({ hostname: '127.0.0.1', port: appPort, path: `${url.pathname}${url.search}`, method: req.method, agent: false, headers: { host: `127.0.0.1:${appPort}`, accept: req.headers.accept ?? '*/*', ...(req.headers.rsc === '1' ? { rsc: '1' } : {}) } }, reply => {
         response = reply;
+        if (script) onEvent('script_response');
         reply.on('error', cancel); reply.on('aborted', cancel);
         reply.on('close', () => { if (!reply.complete) cancel(); });
         if (closed || res.destroyed) { destroy(reply); return; }
@@ -44,7 +49,7 @@ function createProxyTransport({ origin, appPort, assets, request, isStopping = (
       });
       upstream.on('error', cancel);
       upstream.on('close', () => { if (!response) cancel(); });
-      upstream.setTimeout(30_000, cancel);
+      upstream.setTimeout(30_000, () => { if (!closed) { onEvent('upstream_timeout'); if (script) onEvent('script_upstream_timeout'); } cancel(); });
       if (closed) destroy(upstream); else upstream.end();
     } catch { cancel(); }
   }
