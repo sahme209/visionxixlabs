@@ -200,3 +200,17 @@ Combined follow-up validation passes104 tests across six files, covering release
 response recovery, collector/transport integration, managed controls, operation
 diagnostics and request-interception ordering. Scoped lint, syntax and tracker
 validation pass. These are source-level checks, not a browser success receipt.
+
+Checkout return context now has bounded informational notices: canonical billing
+accepts only scalar `billing=success`, after its existing authentication guard;
+plans accepts only scalar `checkout=canceled`. Both explicitly treat the URL as
+untrusted context, never payment, cancellation or entitlement evidence. Existing
+subscription/allowance reads and checkout handlers remain authoritative and
+unchanged; the pricing notice links to the existing workspace billing view.
+Targeted rendered tests first failed exactly the two missing notices while 37
+other cases passed. Final validation results are recorded with this follow-up;
+no hosted checkout, financial mutation or production acceptance is implied.
+Final direct-executable validation passed 39 rendered tests across the two existing
+page suites, plus scoped ESLint and whitespace checks. An intervening npm-exec
+run suffered seven 5-second harness timeouts under environment contention; the
+unchanged tests passed with direct Node invocation and no deadline relaxation.

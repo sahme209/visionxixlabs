@@ -89,3 +89,17 @@ describe("pricing navigation and explicit plan selection", () => {
     expect(screen.queryByRole("button",{name:"Choose Pro"})).toBeNull();
   });
 });
+
+it("explains cancellation return context without asserting a payment or subscription outcome", async () => {
+  vi.stubEnv("AXIOM_SELF_SERVICE_BILLING_ENABLED", "false");
+  render(await PlansPage({ searchParams: Promise.resolve({ checkout: "canceled" }) }));
+  expect(screen.getByRole("status").textContent).toContain("This page makes no subscription changes");
+  expect(screen.getByRole("link", { name: "Review workspace billing" }).getAttribute("href")).toBe("/control/usage-billing");
+  expect(io.fetch).not.toHaveBeenCalled();
+});
+it.each([undefined, "success", ["canceled"]])("ignores unrecognized checkout return context %j", async checkout => {
+  vi.stubEnv("AXIOM_SELF_SERVICE_BILLING_ENABLED", "false");
+  render(await PlansPage({ searchParams: Promise.resolve({ checkout }) }));
+  expect(screen.queryByText(/This page makes no subscription changes/)).toBeNull();
+  expect(io.fetch).not.toHaveBeenCalled();
+});

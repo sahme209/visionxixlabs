@@ -33,9 +33,10 @@ function planIdFor(tier: string, status: string) {
   return "free" as const;
 }
 
-export default async function ControlUsageBillingPage() {
+export default async function ControlUsageBillingPage({ searchParams }: { searchParams?: Promise<{ billing?: string | string[] }> } = {}) {
   const context = await currentContext();
   if (!context.isAuthenticated || !context.organizationId || !context.email) redirect("/auth/signin?callbackUrl=/control/usage-billing");
+  const returnedFromCheckout = (await searchParams)?.billing === "success";
   const organizationId = String(context.organizationId);
   const canManage = isAdminOrOwner({ email: context.email, roles: context.roles });
   const now = new Date();
@@ -77,6 +78,8 @@ export default async function ControlUsageBillingPage() {
       <p className="text-[11px] uppercase tracking-[0.2em] text-[#ff783d]">Organization authority</p>
       <h1 className="mt-3 text-3xl font-semibold tracking-[-0.045em] sm:text-4xl">Usage & billing</h1>
       <p className="mt-3 max-w-2xl text-sm leading-6 text-zinc-400">Subscription state, seats, deployments, and Gateway usage come from the organization backend. Checkout return pages never grant entitlements.</p>
+
+      {returnedFromCheckout && <p role="status" className="mt-6 rounded-xl border border-white/[0.08] p-4 text-sm leading-6 text-zinc-400">Returned from checkout. The URL does not confirm payment or grant access. Review the authoritative subscription and usage records below; verified billing events may still be processing.</p>}
 
       {anyUnavailable && <div role="alert" className="mt-8 border-y border-white/[0.08] py-5 text-sm text-zinc-400">Some authoritative billing or usage records are unavailable. Missing values are not estimated.</div>}
 

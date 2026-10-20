@@ -176,3 +176,17 @@ describe("isolated billing page refuses unsupported or unverified claims", () =>
     expect(screen.getByRole("heading", { name: "Plan unavailable" })).toBeTruthy();
   });
 });
+
+it("treats a spoofed success return as context without changing verified plan or allowance", async () => {
+  render(await Page({ searchParams: Promise.resolve({ billing: "success" }) }));
+  expect(screen.getByRole("status").textContent).toContain("The URL does not confirm payment");
+  expect(screen.getByRole("heading", { name: "Pro" })).toBeDefined();
+  expect(value("Included AI allowance remaining")).toBe("$204.70");
+  expect(value("Applied paid top-ups")).toBe("$5.00");
+  expect(io.plan).toHaveBeenCalled();
+});
+it.each([undefined, "unknown", ["success"]])("ignores unrecognized billing return context %j", async billing => {
+  render(await Page({ searchParams: Promise.resolve({ billing }) }));
+  expect(screen.queryByText(/The URL does not confirm payment/)).toBeNull();
+  expect(value("Included AI allowance remaining")).toBe("$204.70");
+});

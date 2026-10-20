@@ -1766,3 +1766,13 @@ recovery for unusable manifest envelopes is also under regression validation.
 Exact-head full CI remains mandatory before PR182 merges. No deployment,
 production database, payment, credential or installer operation is authorized
 by these checks; all24 source mappings and2,239 requirement rows are preserved.
+
+Follow-up source4715327c passed local production-source web types and104 focused
+tests, but exact-head CI exposed a newly imported diagnostic return-type error
+in a test. Explicit fixed counter keys correct the inference;17 collector
+tests and direct imported-test TypeScript pass. Browser run39439277682 proves
+empty owned groups and no upstream timeouts. After capturing the homepage,
+the same-poll playback check encountered a loading document with no control
+and threw TypeError. That concrete readiness race is being corrected; earlier
+disabled-control timeouts remain unresolved rather than relabeled as fixed.
+No successful browser or full customer acceptance is claimed.

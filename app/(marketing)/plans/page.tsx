@@ -15,11 +15,13 @@ export const metadata: Metadata = {
     "Transparent Free, Pro, and Enterprise plans for governed deployments, with activation protected until billing authority and quota enforcement are validated.",
 };
 
-export default async function PlansPage({ searchParams }: { searchParams?: Promise<{ plan?: string | string[]; interval?: string | string[] }> }) {
+export default async function PlansPage({ searchParams }: { searchParams?: Promise<{ plan?: string | string[]; interval?: string | string[]; checkout?: string | string[] }> }) {
   const ownedBinding = isolatedRuntimeRequested() ? await ownedPlansBinding() : null;
   const ownedTestCheckout = !!ownedBinding;
   const checkoutEnabled = isolatedRuntimeRequested() ? ownedTestCheckout : isSelfServiceBillingEnabled();
-  const initialSelection = parsePublicPlanSelection(await searchParams ?? {});
+  const params = await searchParams ?? {};
+  const initialSelection = parsePublicPlanSelection(params);
+  const cancellationReturnContext = params.checkout === "canceled";
   let ownedIntentState: OwnedCheckoutIntentState = "unavailable";
   let workspace: PublicCheckoutWorkspace = { status: "unavailable" };
   if (checkoutEnabled) {
@@ -33,6 +35,7 @@ export default async function PlansPage({ searchParams }: { searchParams?: Promi
   }
   return (
     <main className="public-pricing-page relative isolate overflow-hidden [&_article]:min-h-0 [&_article]:rounded-xl [&_article]:p-6 [&_article]:shadow-none">
+      {cancellationReturnContext && <p role="status" className="mx-auto mt-6 max-w-[1280px] px-5 text-sm leading-6 text-zinc-400 sm:px-8 lg:px-12">Back from checkout. This page makes no subscription changes and the URL does not confirm a payment outcome. Review your selection to try again, or <Link href="/control/usage-billing" className="text-orange-300 underline underline-offset-4">Review workspace billing</Link>.</p>}
       <section className="mx-auto max-w-[1280px] px-5 pb-12 pt-16 sm:px-8 sm:pt-24 lg:px-12 lg:pb-16">
         <p className="text-[11px] font-medium uppercase tracking-[0.16em] text-zinc-500">Pricing</p>
         <div className="mt-5 grid gap-6 lg:grid-cols-[1fr_0.9fr] lg:items-end lg:gap-16">
