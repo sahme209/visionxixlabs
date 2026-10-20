@@ -599,3 +599,18 @@ it("rejects check-output consent after source changes and labels bounded excerpt
   await screen.findByText(/verification context changed/);
   expect(onAskAgent).not.toHaveBeenCalled();
 });
+it("replaces a selected literal match only in memory and preserves undo", async () => {
+  reads = () => "alpha beta alpha";
+  await start(); fireEvent.click(screen.getByRole("button", {name: "same.ts"}));
+  const editor = await screen.findByRole("textbox", {name: "Editing same.ts"});
+  fireEvent.click(screen.getByRole("button", {name: "Find in file"}));
+  fireEvent.change(await screen.findByRole("searchbox", {name: "Find literal text"}), {target: {value: "alpha"}});
+  fireEvent.change(screen.getByRole("textbox", {name: "Replacement literal text"}), {target: {value: "$&"}});
+  expect((screen.getByRole("button", {name: "Replace selected match"}) as HTMLButtonElement).disabled).toBe(true);
+  fireEvent.click(screen.getByRole("button", {name: "Next match"}));
+  fireEvent.click(screen.getByRole("button", {name: "Replace selected match"}));
+  await waitFor(() => expect((editor as HTMLTextAreaElement).value).toBe("$& beta alpha"));
+  expect(m.invoke.mock.calls.filter(([command]) => command === "write_repository_file" || command === "run_repository_check")).toHaveLength(0);
+  fireEvent.click(screen.getByRole("button", {name: "Undo edit"}));
+  expect((editor as HTMLTextAreaElement).value).toBe("alpha beta alpha");
+});

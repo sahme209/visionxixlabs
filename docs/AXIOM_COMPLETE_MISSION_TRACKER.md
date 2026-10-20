@@ -3210,3 +3210,34 @@ or @vercel mention will be created to avoid the known paid review path. Hosted
 changes, paid operations and existing production/installer gates remain blocked.
 Rust compilation, process-tree/user cancellation, native Mac and real-provider
 acceptance remain unverified. No push-only approval has been received.
+
+### Approved push-only snapshot completed — 2026-10-20
+
+Owner explicitly approved exact4db11e37775ff0f50646f85afabaa54f02ffd5ca to
+`refs/heads/codex/desktop-agent-next-local`. Immediately before push, target ref
+was absent, no PR referenced it, all10 exact-snapshot workflow definitions matched
+no branch-push trigger, and snapshot Vercel Git deployment control wasfalse.
+PR193/192/191/187 heads were recorded. Initial shell attempt failed at the sandbox
+proxy before reaching GitHub; the same exact approved command succeeded with
+network permission. No force, tags, PR, merge, dispatch or release was performed.
+GitHub readback confirms the remote SHA exactly matches approval. Immediate and
+later follow-up GETs report zero Actions runs and zero Vercel deployments for
+that SHA. Existing blocked PR heads remain unchanged. Local24367e4e and subsequent
+work were deliberately excluded. Actions account usage/startup readiness remain
+unverified; this backup is not CI/native/customer acceptance.
+
+### Independent desktop continuation: literal replacement
+
+Research: bounded literal search/navigation and undo exist; replacement was
+missing. Reuse editor history/invalidation and explicit Save gates. Implement
+single selected-match replacement only, no regex substitution or Replace All,
+max8000 replacement characters and final1MB UTF-8 limit matching native Save.
+Validate the current literal offset/clean operation context at click; update only
+the buffer, reset match selection and preserve undo. File switches clear replace
+text. No native invocation, command execution or automatic save is introduced.
+Focused evidence:19 distinct parser/editor/demo cases pass (overlapping targeted
+runs excluded), including literal `$&`, Unicode offsets, invalid offsets, bounded
+replacement and UTF-8 overflow, explicit UI selection, undo and no writes/checks.
+Actual desktop ES2021 types pass; lint zero errors/one existing cleanup warning.
+Rust compilation, installed-Mac and real-provider acceptance remain unverified.
+This follow-on is local only; remote approved snapshot remains4db11e37.

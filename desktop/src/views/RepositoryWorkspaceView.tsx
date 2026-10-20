@@ -2,7 +2,7 @@ import { verificationReceipt, type VerificationReceipt } from "../lib/verificati
 import { localEditBlocker, type LocalEditRequest } from "../lib/localEditReview";
 import { localCodeContextPrompt, type LocalCodeSelection } from "../lib/localCodeContext";
 import { FileDiff } from "../components/FileDiff";
-import { editorMatches } from "../lib/editorSearch";
+import { editorMatches, replaceEditorMatch } from "../lib/editorSearch";
 import { newEditorHistory, editHistory, moveHistory } from "../lib/editorHistory";
 import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore, type KeyboardEvent } from "react";
 import { invoke } from "@tauri-apps/api/core";
@@ -81,9 +81,10 @@ function RepositoryWorkspaceSession({ revision, active, onAskAgent, editRequest,
   const [reviewOpen, setReviewOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [matchIndex, setMatchIndex] = useState(-1);
+  const [replacement, setReplacement] = useState("");
   const matches = useMemo(() => editorMatches(content, searchQuery), [content, searchQuery]);
   useEffect(() => { setMatchIndex(-1); }, [content, searchQuery]);
-  useEffect(() => { setSearchQuery(""); setSearchOpen(false); setReviewOpen(false); setSelectionLength(0); }, [selectedFile]);
+  useEffect(() => { setSearchQuery(""); setReplacement(""); setSearchOpen(false); setReviewOpen(false); setSelectionLength(0); }, [selectedFile]);
   const [savedContent, setSavedContent] = useState("");
   const [busy, setBusy] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -530,6 +531,16 @@ function RepositoryWorkspaceSession({ revision, active, onAskAgent, editRequest,
     requestAnimationFrame(() => { searchRef.current?.focus(); searchRef.current?.select(); });
   }
 
+  function replaceMatch() {
+    const file = loadedFile.current;
+    if (!active || activeBusy.current || !owns(owner.current) || !file || file.content !== content || matchIndex < 0) return;
+    const next = replaceEditorMatch(file.content, searchQuery, replacement, matches.offsets[matchIndex]);
+    if (next === null) { setError("The match changed or replacement exceeds the editor limit. Find the match again."); return; }
+    editContent(next);
+    setMatchIndex(-1);
+    setNotice("Replaced one literal match in the unsaved buffer. Review and Save explicitly.");
+  }
+
   function navigateMatch(direction: 1 | -1) {
     if (!matches.offsets.length || !editorRef.current) return;
     const index = matchIndex < 0 ? (direction === 1 ? 0 : matches.offsets.length - 1)
@@ -663,6 +674,8 @@ function RepositoryWorkspaceSession({ revision, active, onAskAgent, editRequest,
               if (event.key === "Enter") { event.preventDefault(); navigateMatch(event.shiftKey ? -1 : 1); }
               if (event.key === "Escape") { setSearchOpen(false); editorRef.current?.focus(); }
             }} className="rounded border border-white/10 bg-black/20 px-2 py-1" />
+            <input aria-label="Replacement literal text" placeholder="Replace with (literal)" maxLength={8000} value={replacement} onChange={event => setReplacement(event.target.value)} className="rounded border border-white/10 bg-black/20 px-2 py-1" />
+            <button type="button" disabled={Boolean(busy) || matchIndex < 0 || !matches.offsets.length} onClick={replaceMatch} className="btn-secondary disabled:opacity-40">Replace selected match</button>
             <span role="status">{!searchQuery ? "Enter text to find" : !matches.offsets.length ? "No matches" : `${matchIndex < 0 ? 0 : matchIndex + 1} of ${matches.offsets.length}${matches.limited ? "+ (display limit)" : ""}`}</span>
             <button type="button" aria-label="Previous match" disabled={!matches.offsets.length} onClick={() => navigateMatch(-1)} className="btn-secondary disabled:opacity-40">Previous</button>
             <button type="button" aria-label="Next match" disabled={!matches.offsets.length} onClick={() => navigateMatch(1)} className="btn-secondary disabled:opacity-40">Next</button>

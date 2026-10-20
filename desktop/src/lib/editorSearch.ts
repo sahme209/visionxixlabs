@@ -11,3 +11,10 @@ export function editorMatches(content: string, query: string): { offsets: number
   }
   return { offsets, limited: false };
 }
+/** Single occurrence, literal replacement, no regex or automatic persistence. */
+export function replaceEditorMatch(content: string, query: string, replacement: string, offset: number): string | null {
+  if (!query || query.length > 256 || replacement.length > 8000 || !Number.isSafeInteger(offset) || offset < 0
+    || content.slice(offset, offset + query.length) !== query) return null;
+  const next = content.slice(0, offset) + replacement + content.slice(offset + query.length);
+  return new TextEncoder().encode(next).length <= 1_000_000 ? next : null;
+}
