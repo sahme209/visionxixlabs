@@ -1,3 +1,4 @@
+import { assertDesktopNotAborted } from "./abortSignal";
 import { AGENT_STREAM_CONTENT_TYPE, MAX_AGENT_STREAM_BYTES, MAX_AGENT_STREAM_FRAME_BYTES, isAgentMessageReply, type AgentMessageReply } from "../../../lib/desktop/agentMessageStreamProtocol";
 
 /** Decode bounded UTF-8 NDJSON; only a validated terminal event grants a reply.
@@ -8,9 +9,9 @@ export async function readAgentMessageStream(response: Response, onDraft: (text:
   let buffer = "", draft = "", bytes = 0, events = 0, terminal: AgentMessageReply | undefined;
   try {
     while (true) {
-      signal.throwIfAborted();
+      assertDesktopNotAborted(signal);
       const next = await reader.read();
-      signal.throwIfAborted();
+      assertDesktopNotAborted(signal);
       if (next.done) { buffer += decoder.decode(); break; }
       bytes += next.value.byteLength;
       if (bytes > MAX_AGENT_STREAM_BYTES) throw new Error("agent_stream_limit");

@@ -210,7 +210,7 @@ export const DEMO_SCENARIOS: Readonly<Record<DemoScenarioId, DemoScenario>> = {
     id: "desktop_app_pairing",
     title: "Desktop pairing and integration concept (not available)",
     pitch: "Internal product flow for browser pairing and governed release-tool connections.",
-    description: "Internal-only record retained for product planning. It documents the secure browser handoff and the Integration Center without representing an unsupported customer workflow as available.",
+    description: "Internal-only record retained for product planning. It documents the secure browser handoff and the Integration Center without representing an unsupported customer workflow as available. Credential activation and streamed replies use an aborted-state check that does not require newer WKWebView abort-helper methods; cancellation remains enforced. Installed native acceptance remains separate.",
     estimatedMinutes: 6,
     audience: "internal_only",
     lastReviewed: "2026-10-20",

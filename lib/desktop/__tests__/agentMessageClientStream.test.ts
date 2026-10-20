@@ -52,3 +52,15 @@ describe("actual desktop client to HTTP streaming response", () => {
     expect(drafts).not.toContain("Persisted explanation");
   });
 });
+
+it("streams when the WebView lacks AbortSignal.throwIfAborted", async () => {
+  const descriptor = Object.getOwnPropertyDescriptor(AbortSignal.prototype, "throwIfAborted")!;
+  Object.defineProperty(AbortSignal.prototype, "throwIfAborted", { configurable: true, value: undefined });
+  try {
+    const fetcher = vi.fn(async () => new Response(JSON.stringify({ type: "result", data: answer }) + "\n", { headers: { "content-type": "application/x-ndjson" } }));
+    vi.stubGlobal("fetch", fetcher);
+    const client = new DesktopClient({ sessionToken: "synthetic-session" });
+    expect(await client.sendAgentMessage("conversation", "hello", undefined, undefined, undefined, { signal: new AbortController().signal, onDraft: vi.fn() })).toEqual({ ok: true, data: answer });
+    expect(fetcher).toHaveBeenCalledOnce();
+  } finally { Object.defineProperty(AbortSignal.prototype, "throwIfAborted", descriptor); }
+});
