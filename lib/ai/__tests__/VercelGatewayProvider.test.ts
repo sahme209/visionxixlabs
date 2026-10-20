@@ -37,6 +37,20 @@ describe("VercelGatewayProvider", () => {
     expect(response.gatewayGenerationId).toBe("gen_structured");
   });
 
+  it("disables SDK retries only for the admitted single-attempt envelope lane", async () => {
+    generate.mockResolvedValue({ text: "invalid JSON", finishReason: "stop", usage: { inputTokens: 4, outputTokens: 2, totalTokens: 6 }, providerMetadata: { gateway: { generationId: "gen_admitted" } } });
+    const provider = new VercelGatewayProvider("provider/model");
+    await expect(provider.generateStructuredTextOnce("decide", "{action:string}")).resolves.toMatchObject({ text: "invalid JSON", gatewayGenerationId: "gen_admitted" });
+    expect(generate).toHaveBeenLastCalledWith(expect.objectContaining({ maxRetries: 0, maxOutputTokens: 4096 }));
+    await provider.generateText("ordinary");
+    expect(generate.mock.calls[1][0]).not.toHaveProperty("maxRetries");
+  });
+
+  it.each([0, -1, 4097, Infinity, 1.5])("refuses an admitted output bound of %s before SDK dispatch", value => {
+    expect(() => new VercelGatewayProvider("provider/model").generateStructuredTextOnce("decide", "{}", { maxTokens: value })).toThrow();
+    expect(generate).not.toHaveBeenCalled();
+  });
+
   it("fails closed when Gateway omits the authoritative metering id", async () => {
     generate.mockResolvedValue({ text: "response", finishReason: "stop", usage: { inputTokens: 4, outputTokens: 2, totalTokens: 6 } });
     await expect(new VercelGatewayProvider("provider/model").generateText("hello")).rejects.toMatchObject({ kind: "bad_response" });

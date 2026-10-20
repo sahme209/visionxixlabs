@@ -1981,3 +1981,19 @@ provider acceptance. Member model selection/streaming is not advertised complete
 The latest3a837260 browser job failed before browser startup on bounded git
 ETIMEDOUT; this is distinct from the recorded documentation navigation flake.
 Required checks remain gates; no timeout increase or silent rerun was made.
+
+
+Governed Agent extraction now implements source-level durable admission using the
+existing ledger: trusted actor, domain-separated invocation keys, serializable
+claim, one-use opaque dispatch authority, retained uncertain holds afterTTL,
+single SDK attempt,4096-token output bound and accounting before JSON parsing.
+A pre-existing generation cannot be acquired by another hold; v2 uses its existing
+attributed writer. Author151 focused checks plus types/lint and root26 independent
+authority tests pass. Details/limits: mission/governed-agent-credit-admission-source.md.
+No live DB/concurrency/provider evidence is implied. Generic generation legacy
+uncertainty, actual provider-cost coverage and native/customer acceptance remain
+open. TEST Free200-cent allowance cannot cover the unchanged1000-cent default
+reservation; no pricing/configuration change is made to force acceptance.
+Final desktop95cb3747 nativeCI39458777269 passed; full typecheck/test steps passed.
+Browser39458777306 failed after11 checks at docs with zero docs requests; no
+acceptance waiver or speculative production fix. These gates remain in PR183.

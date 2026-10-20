@@ -13,6 +13,8 @@ import { getAIProviderManager } from "@/lib/ai/AIProviderManager";
 import { loadWorkspaceAIProviderPolicyWithState, resolveWorkspaceAIProviderPolicy } from "@/lib/ai/workspaceProviderPolicy";
 import { checkWorkspaceAICredits } from "@/lib/billing/checkWorkspaceAICredits";
 import { isAIProviderName, type AIProviderName, type AITextResponse } from "@/lib/ai/AIProvider";
+import { admitGovernedExtract } from "@/lib/billing/governedExtractAdmission";
+import { AI_REQUEST_MAX_OUTPUT_TOKENS } from "@/lib/billing/requestReservationCents";
 
 export type GovernedAiCallError =
   | "workspace_ai_disabled"
@@ -37,7 +39,8 @@ export type GovernedAiCallResult =
   }
   | { ok: false; error: GovernedAiCallError };
 
-export async function resolveGovernedAiCall(organizationId: string, preferredProvider?: string): Promise<GovernedAiCallResult> {
+export async function resolveGovernedAiCall(organizationId: string, preferredProvider: string | undefined, userId: string): Promise<GovernedAiCallResult> {
+  if (!userId) return { ok: false, error: "workspace_ai_credit_meter_unavailable" };
   const creditDecision = await checkWorkspaceAICredits(organizationId, 0, { failClosedOnUsageReadError: true }).catch(() => null);
   if (!creditDecision) return { ok: false, error: "workspace_ai_credit_meter_unavailable" };
   if (creditDecision.kind === "block") return { ok: false, error: "workspace_ai_credit_pool_exhausted" };
@@ -60,15 +63,17 @@ export async function resolveGovernedAiCall(organizationId: string, preferredPro
   return {
     ok: true,
     extract: async <T>(text: string, schemaHint: string, correlationId: string) => {
-      const result = await manager.extractStructuredData<T>(text, schemaHint, {
+      const admission = await admitGovernedExtract({ organizationId, userId, correlationId });
+      const result = await manager.extractStructuredDataWithAdmission<T>(text, schemaHint, {
         organizationId,
         allowedProviders: policy.allowedProviders,
         modelSelections: policy.modelSelections,
         fallbackOrder: policy.fallbackOrder,
         correlationId,
         temperature: 0.1,
+        maxTokens: AI_REQUEST_MAX_OUTPUT_TOKENS,
         only,
-      });
+      }, admission);
       return { data: result.data, usage: result.usage };
     },
   };

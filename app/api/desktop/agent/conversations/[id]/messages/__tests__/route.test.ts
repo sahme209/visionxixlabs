@@ -108,6 +108,14 @@ describe("POST /api/desktop/agent/conversations/[id]/messages", () => {
     }));
   });
 
+  it("uses the authenticated actor rather than body-supplied billing identity", async () => {
+    mocks.runDecisionLoop.mockResolvedValue({ kind: "final", message: "Ready." });
+    const { POST } = await import("../route");
+    const res = await POST(request({ message: "hello", userId: "forged-actor", organizationId: "foreign-org" }), params);
+    expect(res.status).toBe(200);
+    expect(mocks.runDecisionLoop).toHaveBeenCalledWith(expect.objectContaining({ organizationId: "org-1", userId: "user-1" }));
+  });
+
   it("maps Inspect mode to the governed read-only operation mode", async () => {
     mocks.runDecisionLoop.mockResolvedValue({ kind: "final", message: "Ready." });
     const { POST } = await import("../route");

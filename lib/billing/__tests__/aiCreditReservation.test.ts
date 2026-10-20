@@ -1,11 +1,12 @@
 import { describe, expect, it, vi } from "vitest";
-import { attachAICreditReservationUsage, reserveAICredits, settleAICreditReservation } from "../aiCreditReservation";
+import type { Prisma } from "@prisma/client";
+import { attachAICreditReservationUsage, claimLegacyAICreditDispatch, releaseAICreditReservation, reserveAICredits, settleAICreditReservation } from "../aiCreditReservation";
 
 function reservationRepo(overrides: { used?: number; held?: number; existing?: any; tier?: string } = {}) {
   const reservations: any[] = [];
   const aIUsageReservation = {
     findUnique: vi.fn(async () => overrides.existing ?? null),
-    updateMany: vi.fn(async () => ({ count: 0 })),
+    updateMany: vi.fn(async (args: unknown) => { void args; return { count: 0 }; }),
     aggregate: vi.fn(async () => ({ _sum: { reservedCents: overrides.held ?? 0 } })),
     create: vi.fn(async ({ data }: any) => ({ id: "hold-1", ...data })),
   };
@@ -52,10 +53,44 @@ describe("AI credit reservations", () => {
       where: expect.objectContaining({
         OR: expect.arrayContaining([
           { status: "pending_settlement" },
+          { status: "dispatch_unknown" },
           { status: "reserved", usageEventId: { not: null } },
         ]),
       }),
     }));
+  });
+
+  it("does not expire or release claimed uncertainty even after its original TTL", async () => {
+    const { repo, aIUsageReservation } = reservationRepo({ held: 2450 });
+    const now = new Date("2030-01-01T00:00:00Z");
+    await expect(reserveAICredits(repo, input, now)).resolves.toEqual({ ok: false, error: "ai_credit_pool_exhausted" });
+    const expiration = aIUsageReservation.updateMany.mock.calls[0]?.[0];
+    expect(expiration).toMatchObject({ where: { status: "reserved", usageEventId: null, expiresAt: { lte: now } } });
+    const updateMany = vi.fn(async ({ where }: { where: { status: string } }) => ({ count: where.status === "dispatch_unknown" ? 1 : 0 }));
+    await expect(releaseAICreditReservation({ aIUsageReservation: { updateMany } }, "org-1", "claimed")).resolves.toBe(false);
+    expect(updateMany).toHaveBeenCalledWith(expect.objectContaining({ where: expect.objectContaining({ status: "reserved" }) }));
+  });
+
+  it("claims only an unexpired, unattached reserved hold under locked current member authority", async () => {
+    const query = vi.fn().mockResolvedValueOnce([{ userId: "member", organizationId: "org-1", acceptedAt: new Date() }]).mockResolvedValueOnce([{ id: "hold-1" }]);
+    await expect(claimLegacyAICreditDispatch({ $queryRawUnsafe: query } as unknown as Prisma.TransactionClient, { organizationId: "org-1", userId: "member" }, "hold-1")).resolves.toBe(true);
+    expect(query.mock.calls[0]).toEqual([expect.stringContaining("FOR SHARE"), "member", "org-1"]);
+    const [sql, ...args] = query.mock.calls[1];
+    expect(sql).toContain("status='dispatch_unknown'"); expect(sql).toContain("h.status='reserved'");
+    expect(sql).toContain('h."usageEventId" IS NULL'); expect(sql).toContain('>clock_timestamp()');
+    expect(sql).toContain('m."acceptedAt" IS NOT NULL'); expect(sql).not.toContain("'admin'");
+    expect(args).toEqual(["hold-1", "org-1", "member"]);
+  });
+
+  it.each([{ members: [] }, { members: [{ userId: "foreign", organizationId: "org-1", acceptedAt: new Date() }] }, { members: [{ userId: "member", organizationId: "org-1", acceptedAt: null }] }])("denies absent/foreign/unaccepted membership before claim", async ({ members }) => {
+    const query = vi.fn().mockResolvedValue(members);
+    await expect(claimLegacyAICreditDispatch({ $queryRawUnsafe: query } as unknown as Prisma.TransactionClient, { organizationId: "org-1", userId: "member" }, "hold-1")).resolves.toBe(false);
+    expect(query).toHaveBeenCalledTimes(1);
+  });
+
+  it("denies an atomic claim that was already taken, expired, or revoked", async () => {
+    const query = vi.fn().mockResolvedValueOnce([{ userId: "member", organizationId: "org-1", acceptedAt: new Date() }]).mockResolvedValueOnce([]);
+    await expect(claimLegacyAICreditDispatch({ $queryRawUnsafe: query } as unknown as Prisma.TransactionClient, { organizationId: "org-1", userId: "member" }, "hold-1")).resolves.toBe(false);
   });
 
   it("returns the original reservation for an idempotent retry", async () => {

@@ -25,6 +25,7 @@ import { checkWorkspaceAICredits } from "@/lib/billing/checkWorkspaceAICredits";
 import { recordAIUsageEvent, recordReservedAIUsageEventV2 } from "@/lib/billing/recordAIUsageEvent";
 import { attachAICreditReservationUsage, releaseAICreditReservation, reserveAICredits, settleAICreditReservation } from "@/lib/billing/aiCreditReservation";
 import { prisma } from "@/lib/db";
+import { AI_REQUEST_MAX_OUTPUT_TOKENS as MAX_OUTPUT_TOKENS, requestReservationCents } from "@/lib/billing/requestReservationCents";
 import { apiOk, apiErr, asApiSourceMode, resolveCorrelationId } from "@/lib/api";
 import { AxiomErrors } from "@/lib/errors/axiomErrors";
 
@@ -32,15 +33,6 @@ export const dynamic = "force-dynamic";
 
 const MAX_PROMPT_CHARS = 8000;
 const MAX_SYSTEM_CHARS = 8000;
-const MAX_OUTPUT_TOKENS = 4096;
-const DEFAULT_REQUEST_RESERVATION_CENTS = 1000;
-
-function requestReservationCents(): number {
-  const configured = Number(process.env.AXIOM_AI_MAX_REQUEST_CREDITS_CENTS);
-  return Number.isSafeInteger(configured) && configured >= 1 && configured <= 10_000
-    ? configured
-    : DEFAULT_REQUEST_RESERVATION_CENTS;
-}
 
 interface PostBody {
   prompt?: string;

@@ -199,3 +199,11 @@ switches. This is actual component behavior with isolated transport mocks, not
 installed desktop, live inference or a real customer/provider acceptance claim.
 The member chat/editor selector and streaming remain open behind durable billing
 admission and provider/native acceptance gates.
+
+The scoped governed-extraction admission correction is now implemented in source:
+see `mission/governed-agent-credit-admission-source.md`. It uses the existing
+ledger and attributed writers, retains uncertain holds, enforces one SDK attempt
+and accounts for a returned generation before parsing. Targeted evidence is
+recorded there; actual database concurrency, model-specific provider cost coverage,
+other AI lanes and real-provider/native acceptance remain required. This does not
+authorize alternate member-model dispatch or claim all billing paths are fixed.

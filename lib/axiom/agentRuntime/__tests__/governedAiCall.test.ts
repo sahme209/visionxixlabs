@@ -1,0 +1,37 @@
+import { beforeEach, describe, expect, it, vi } from "vitest";
+
+const m = vi.hoisted(() => ({ credit: vi.fn(), load: vi.fn(), policy: vi.fn(), admission: vi.fn(), extract: vi.fn() }));
+vi.mock("@/lib/ai/AIProviderManager", () => ({ getAIProviderManager: () => ({ status: () => [{ configured: true, provider: "vercel_gateway" }], extractStructuredDataWithAdmission: m.extract }) }));
+vi.mock("@/lib/ai/workspaceProviderPolicy", () => ({ loadWorkspaceAIProviderPolicyWithState: m.load, resolveWorkspaceAIProviderPolicy: m.policy }));
+vi.mock("@/lib/billing/checkWorkspaceAICredits", () => ({ checkWorkspaceAICredits: m.credit }));
+vi.mock("@/lib/billing/governedExtractAdmission", () => ({ admitGovernedExtract: m.admission }));
+import { resolveGovernedAiCall } from "../governedAiCall";
+
+describe("governed extraction per-call admission", () => {
+  beforeEach(() => {
+    vi.resetAllMocks();
+    m.credit.mockResolvedValue({ kind: "allow" }); m.load.mockResolvedValue({ storageState: "ready", policy: {} });
+    m.policy.mockReturnValue({ enabled: true, allowedProviders: ["vercel_gateway"], modelSelections: { vercel_gateway: "vendor/model" }, fallbackOrder: ["vercel_gateway"] });
+    m.admission.mockImplementation(async scope => ({ scope }));
+    m.extract.mockResolvedValue({ data: { action: "respond" }, usage: { promptTokens: 1, completionTokens: 1 } });
+  });
+  it("requires the trusted actor and reserves each iteration and repair independently", async () => {
+    const governed = await resolveGovernedAiCall("org", undefined, "trusted-actor");
+    if (!governed.ok) throw new Error("fixture unavailable");
+    await governed.extract("prompt", "schema", "request:0");
+    await governed.extract("repair", "schema", "request:0:repair");
+    expect(m.admission.mock.calls).toEqual([[{ organizationId: "org", userId: "trusted-actor", correlationId: "request:0" }], [{ organizationId: "org", userId: "trusted-actor", correlationId: "request:0:repair" }]]);
+    expect(m.extract).toHaveBeenCalledTimes(2);
+    expect(m.extract.mock.calls.every(call => call[2].maxTokens === 4096)).toBe(true);
+    expect(m.admission.mock.invocationCallOrder[0]).toBeLessThan(m.extract.mock.invocationCallOrder[0]);
+  });
+  it("denied admission and a missing actor never dispatch", async () => {
+    await expect(resolveGovernedAiCall("org", undefined, "")).resolves.toMatchObject({ ok: false });
+    expect(m.credit).not.toHaveBeenCalled();
+    const governed = await resolveGovernedAiCall("org", undefined, "trusted-actor");
+    if (!governed.ok) throw new Error("fixture unavailable");
+    m.admission.mockRejectedValue(new Error("reused or uncertain"));
+    await expect(governed.extract("prompt", "schema", "request:0")).rejects.toThrow();
+    expect(m.extract).not.toHaveBeenCalled();
+  });
+});
