@@ -2804,3 +2804,27 @@ existing draft unchanged. Follow-up review found no remaining concrete blocker.
 scoped TypeScript and changed-file lint pass. No hosted Preview, installed-Mac,
 real OAuth, cloud or payment acceptance claimed. PR193 has not been updated/pushed
 and retains its required CI blockers; no Actions rerun, deployment or env change.
+
+### Conditional isolated provisioning approval — entitlement gate
+
+Owner authorizes a separate protected Preview project and empty disposable test
+DB only on verified free/already-included resources, with no imported production
+configuration/data/credentials, test-only auth and no paid/provider operations.
+Read-only pre-provision inspection: Neon org-red-meadow-81475018 is plan free,
+managed by Vercel; one existing production project found. No child/clone branch
+created and no production database connection requested. Vercel auth-user record
+reports personal plan hobby, active. Target team_j0CEiAAorasdEVQyeAJjpNfm get_team
+and list_teams expose only name/slug/id/SAML, not team plan, included usage,
+remaining allocation or charge limits. Personal Hobby is not evidence of team
+entitlement. Available billing-charge history cannot prove future usage is free.
+
+STOPPED before provisioning: cannot verify owner's no-additional-charge gate for
+the target team. No Vercel project/Neon database/env/session secret created, no
+plan/billing/production changes, no deployment or workflow rerun. Need read-only
+team entitlement/remaining-usage evidence or a sanitized owner attestation of
+those facts; no credentials, billing changes or broader spending authorization
+requested. Do not create orphan database while hosting entitlement is blocked.
+PR193 remains a96367fc; neither isolated Preview browser/auth acceptance nor
+installed-Mac acceptance has run. Existing separate-project isolation plan and
+all production/merge/provider gates remain intact. Source continuation stays on
+codex/desktop-agent-next-local; no further source push is authorized here.
