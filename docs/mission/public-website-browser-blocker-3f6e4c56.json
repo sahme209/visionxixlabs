@@ -1,0 +1,25 @@
+{
+  "schema": 1,
+  "sourceHead": "3f6e4c56662df84041f4a14784af55464bc28d59",
+  "runUrl": "https://github.com/sahme209/visionxixlabs/actions/runs/39463927943",
+  "jobId": 118770225639,
+  "outcome": "failed",
+  "completedCheckCount": 11,
+  "lastInteraction": "documentation_control",
+  "currentInteraction": "documentation_check",
+  "failure": "website_driver_deadline",
+  "documentationRequestCounts": {
+    "navigationAccepted": 0,
+    "prefetchAccepted": 0,
+    "documentAccepted": 0,
+    "denied": 0
+  },
+  "runtimeExceptionCount": 0,
+  "consoleErrorCount": 6,
+  "sourceUnchanged": true,
+  "cleanup": "owned_groups_empty",
+  "rootCause": "unconfirmed",
+  "boundedReview": "Same observed documentation timeout as the preserved d732ac5a receipt. No documentation request reached the fixture; canceled layout JavaScript is an aggregate observation, not an established cause. Existing exact-head successful receipts do not satisfy this failed head's gate.",
+  "nextAction": "Preserve the failed gate, continue independent model integration, and require evidence for a fixture or application correction before retry. No blind rerun, extended deadline, forced navigation, or relaxed transport boundary.",
+  "qualification": "Isolated public website fixture only; not production, native desktop, provider, database, or customer workflow acceptance."
+}

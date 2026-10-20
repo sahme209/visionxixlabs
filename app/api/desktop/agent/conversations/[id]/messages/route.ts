@@ -13,6 +13,9 @@
 import { NextResponse, type NextRequest } from "next/server";
 import type { Prisma } from "@prisma/client";
 import { resolveRequestDesktopSession } from "@/lib/desktop/resolveRequestDesktopSession";
+import { agentMessageHttpStream } from "@/lib/desktop/agentMessageHttpStream";
+import { AGENT_STREAM_CONTENT_TYPE } from "@/lib/desktop/agentMessageStreamProtocol";
+import { isConcreteGatewayModelId } from "@/lib/ai/gatewayModelCatalog";
 import { prisma } from "@/lib/db";
 import { agentActionDigest, approvalExpiry } from "@/lib/axiom/agentRuntime/proposalIntegrity";
 import { runDecisionLoop, type ConversationTurnInput } from "@/lib/axiom/agentRuntime/decisionLoop";
@@ -79,18 +82,22 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     return NextResponse.json({ ok: false, error: "desktop_session_required" }, { status: 401 });
   }
 
+  const actor = session;
   const { id: conversationId } = await params;
   const organizationId = String(session.organizationId);
   const conversation = await prisma.agentConversation.findFirst({
-    where: { id: conversationId, organizationId, userId: String(session.userId) },
+    where: { id: conversationId, organizationId, userId: String(actor.userId) },
   });
   if (!conversation) {
     return NextResponse.json({ ok: false, error: "not_found" }, { status: 404 });
   }
 
+  const ownedConversation = conversation;
+
   const body = (await request.json().catch(() => null)) as {
     message?: unknown;
     preferredProvider?: unknown;
+    preferredModel?: unknown;
     workspaceContext?: {
       repositoryFullName?: unknown;
       branch?: unknown;
@@ -102,10 +109,15 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
   } | null;
   const message = typeof body?.message === "string" ? body.message.trim() : "";
   const preferredProvider = typeof body?.preferredProvider === "string" ? body.preferredProvider : undefined;
+  const preferredModel = body?.preferredModel;
+  if (preferredModel !== undefined && (!isConcreteGatewayModelId(preferredModel) || preferredProvider !== "vercel_gateway")) {
+    return NextResponse.json({ ok: false, error: "invalid_preferred_model" }, { status: 400 });
+  }
   if (!message) {
     return NextResponse.json({ ok: false, error: "invalid_payload" }, { status: 400 });
   }
 
+  const selectedModel = typeof preferredModel === "string" ? preferredModel : undefined;
   const rawContext = body?.workspaceContext;
   const repositoryFullName = typeof rawContext?.repositoryFullName === "string" ? rawContext.repositoryFullName.trim() : "";
   const branch = typeof rawContext?.branch === "string" ? rawContext.branch.trim() : "";
@@ -132,132 +144,147 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     return NextResponse.json({ ok: false, error: "invalid_workspace_context" }, { status: 400 });
   }
 
-  await prisma.$transaction([
-    prisma.agentConversationTurn.create({ data: { conversationId, role: "user", content: message } }),
-    prisma.agentConversation.update({
-      where: { id: conversationId },
-      data: {
-        title: conversation.title ?? message.replace(/\s+/g, " ").slice(0, 80),
-        updatedAt: new Date(),
-      },
-    }),
-  ]);
-
-  const invokedSkillId = parseSkillInvocation(message);
-  let skillContext: string;
-  try {
-    const resolvedSkills = await resolveInstalledSkillContext(prisma as unknown as AgentSkillRepo, organizationId, invokedSkillId);
-    if (!resolvedSkills.ok) {
-      const reply = resolvedSkills.error === "unknown_skill"
-        ? `/${resolvedSkills.skillId} is not a reviewed Axiom skill.`
-        : `/${resolvedSkills.skillId} is not enabled for this workspace. Add or enable it under Plugins & Skills first.`;
-      await prisma.agentConversationTurn.create({ data: { conversationId, role: "assistant", content: reply } });
-      return NextResponse.json({ ok: true, data: { reply, proposal: null } });
-    }
-    skillContext = resolvedSkills.prompt;
-  } catch {
-    if (invokedSkillId) {
-      const reply = "I couldn't verify that skill's workspace installation, so I did not send this request to an AI provider. Try again shortly.";
-      await prisma.agentConversationTurn.create({ data: { conversationId, role: "assistant", content: reply } });
-      return NextResponse.json({ ok: true, data: { reply, proposal: null } });
-    }
-    skillContext = "Skills are temporarily unavailable; continue using the fixed governed tool registry only.";
-  }
-
-  const priorTurns = await prisma.agentConversationTurn.findMany({ where: { conversationId }, orderBy: { createdAt: "asc" } });
-  const transcript: ConversationTurnInput[] = priorTurns.map((t) => ({ role: t.role as ConversationTurnInput["role"], content: t.content }));
-  const selectedContext = [
-    repositoryFullName ? `Repository: ${repositoryFullName}` : null,
-    branch ? `Branch: ${branch}` : null,
-    selectedEnvironment ? `Environment: ${selectedEnvironment.name} (${selectedEnvironment.tier}, ID ${selectedEnvironment.id})` : null,
-    filePath ? `File: ${filePath}` : null,
-    `Operation mode: ${operationMode}`,
-  ].filter((value): value is string => Boolean(value));
-  let currentRequestContext: string | undefined;
-  if (selectedContext.length > 0 && transcript.length > 0) {
-    const instruction = mode === "code"
-      ? "The user selected Edit repository file mode. Read the selected file first. If a change is needed, propose commit_github_file with the complete updated content and a clear commit message. Never claim the write completed before approval."
-      : "Use these selections for this request. Do not ask the user to repeat identifiers already selected.";
-    currentRequestContext = `${selectedContext.join("\n")}\n${instruction}`;
-  }
-
-  const correlationId = idFactory.correlation(`agent_msg_${Date.now().toString(36)}`);
-  const memoryRepo = prisma as unknown as WorkspaceMemoryRepo;
-  const workspaceContext = workspaceMemoryPrompt(await loadWorkspaceMemory(memoryRepo, organizationId));
-  const outcome = await runDecisionLoop({
-    organizationId,
-      userId: String(session.userId),
-    correlationId: String(correlationId),
-    transcript,
-    workspaceContext,
-    currentRequestContext,
-    skillContext,
-    preferredProvider,
-    operationMode,
-    initialToolCall: initialRepositoryGrounding({ message, mode, repositoryFullName, branch, filePath }),
-    executeReadOnlyTool: async (toolName, args) => {
-      const result = await executeReadOnlyTool(prisma as unknown as ToolExecutionRepo, organizationId, toolName, args, {
-        principal: { organizationId, userId: String(session.userId), sessionId: session.id },
-        repo: prisma as unknown as EnrollmentRepo,
-      });
-      if (result.ok) await rememberToolContext(memoryRepo, organizationId, args).catch(() => undefined);
-      // Every tool call — including read-only ones — gets its own audit
-      // row, immediately marked executed, so "what did the agent look
-      // at" is as visible in the trail as "what did it change."
-      await prisma.agentActionProposal.create({
+  async function execute(streaming?: { abortSignal: AbortSignal; onDraft: (text: string) => void }): Promise<Response> {
+    streaming?.abortSignal.throwIfAborted();
+    await prisma.$transaction([
+      prisma.agentConversationTurn.create({ data: { conversationId, role: "user", content: message } }),
+      prisma.agentConversation.update({
+        where: { id: conversationId },
         data: {
-          organizationId, conversationId, proposedByUserId: String(session.userId),
-          toolName, argsJson: args as Prisma.InputJsonValue, riskLevel: "low",
-          status: result.ok ? "executed" : "failed",
-          resultJson: result.ok ? (result.result as Prisma.InputJsonValue) : undefined,
-          errorMessage: result.ok ? null : result.error,
-          executedAt: new Date(),
+          title: ownedConversation.title ?? message.replace(/\s+/g, " ").slice(0, 80),
+          updatedAt: new Date(),
+        },
+      }),
+    ]);
+
+    const invokedSkillId = parseSkillInvocation(message);
+    let skillContext: string;
+    try {
+      const resolvedSkills = await resolveInstalledSkillContext(prisma as unknown as AgentSkillRepo, organizationId, invokedSkillId);
+      streaming?.abortSignal.throwIfAborted();
+      if (!resolvedSkills.ok) {
+        const reply = resolvedSkills.error === "unknown_skill"
+          ? `/${resolvedSkills.skillId} is not a reviewed Axiom skill.`
+          : `/${resolvedSkills.skillId} is not enabled for this workspace. Add or enable it under Plugins & Skills first.`;
+        await prisma.agentConversationTurn.create({ data: { conversationId, role: "assistant", content: reply } });
+        return NextResponse.json({ ok: true, data: { reply, proposal: null } });
+      }
+      skillContext = resolvedSkills.prompt;
+    } catch {
+      streaming?.abortSignal.throwIfAborted();
+      if (invokedSkillId) {
+        const reply = "I couldn't verify that skill's workspace installation, so I did not send this request to an AI provider. Try again shortly.";
+        await prisma.agentConversationTurn.create({ data: { conversationId, role: "assistant", content: reply } });
+        return NextResponse.json({ ok: true, data: { reply, proposal: null } });
+      }
+      skillContext = "Skills are temporarily unavailable; continue using the fixed governed tool registry only.";
+    }
+
+    const priorTurns = await prisma.agentConversationTurn.findMany({ where: { conversationId }, orderBy: { createdAt: "asc" } });
+    const transcript: ConversationTurnInput[] = priorTurns.map((t) => ({ role: t.role as ConversationTurnInput["role"], content: t.content }));
+    const selectedContext = [
+      repositoryFullName ? `Repository: ${repositoryFullName}` : null,
+      branch ? `Branch: ${branch}` : null,
+      selectedEnvironment ? `Environment: ${selectedEnvironment.name} (${selectedEnvironment.tier}, ID ${selectedEnvironment.id})` : null,
+      filePath ? `File: ${filePath}` : null,
+      `Operation mode: ${operationMode}`,
+    ].filter((value): value is string => Boolean(value));
+    let currentRequestContext: string | undefined;
+    if (selectedContext.length > 0 && transcript.length > 0) {
+      const instruction = mode === "code"
+        ? "The user selected Edit repository file mode. Read the selected file first. If a change is needed, propose commit_github_file with the complete updated content and a clear commit message. Never claim the write completed before approval."
+        : "Use these selections for this request. Do not ask the user to repeat identifiers already selected.";
+      currentRequestContext = `${selectedContext.join("\n")}\n${instruction}`;
+    }
+
+    const correlationId = idFactory.correlation(`agent_msg_${Date.now().toString(36)}`);
+    const memoryRepo = prisma as unknown as WorkspaceMemoryRepo;
+    const workspaceContext = workspaceMemoryPrompt(await loadWorkspaceMemory(memoryRepo, organizationId));
+    const outcome = await runDecisionLoop({
+      organizationId,
+      streaming,
+      userId: String(actor.userId),
+      correlationId: String(correlationId),
+      transcript,
+      workspaceContext,
+      currentRequestContext,
+      skillContext,
+      preferredProvider,
+      preferredModel: selectedModel,
+      operationMode,
+      initialToolCall: initialRepositoryGrounding({ message, mode, repositoryFullName, branch, filePath }),
+      executeReadOnlyTool: async (toolName, args) => {
+        const result = await executeReadOnlyTool(prisma as unknown as ToolExecutionRepo, organizationId, toolName, args, {
+          principal: { organizationId, userId: String(actor.userId), sessionId: actor.id },
+          repo: prisma as unknown as EnrollmentRepo,
+        });
+        if (result.ok) await rememberToolContext(memoryRepo, organizationId, args).catch(() => undefined);
+        // Every tool call — including read-only ones — gets its own audit
+        // row, immediately marked executed, so "what did the agent look
+        // at" is as visible in the trail as "what did it change."
+        await prisma.agentActionProposal.create({
+          data: {
+            organizationId, conversationId, proposedByUserId: String(actor.userId),
+            toolName, argsJson: args as Prisma.InputJsonValue, riskLevel: "low",
+            status: result.ok ? "executed" : "failed",
+            resultJson: result.ok ? (result.result as Prisma.InputJsonValue) : undefined,
+            errorMessage: result.ok ? null : result.error,
+            executedAt: new Date(),
+          },
+        });
+        if (toolName === "read_aws_inventory" && result.ok && isBoundedAwsObservation(result.result)) {
+          await prisma.agentConversationTurn.create({ data: {
+            conversationId, role: "tool_result",
+            content: JSON.stringify({ ...result.result, provenance: "Incomplete observation at observedAt; not snapshot, approval, plan or execution evidence. Historical observations do not establish current connection access." }),
+          } });
+        }
+        return result;
+      },
+      isProdEnvironmentTarget: (toolName, args) => isProdEnvironmentTarget(prisma as unknown as ProdEnvironmentCheckRepo, organizationId, args),
+    });
+
+    streaming?.abortSignal.throwIfAborted();
+    if (outcome.kind === "final") {
+      await prisma.agentConversationTurn.create({ data: { conversationId, role: "assistant", content: outcome.message } });
+      return NextResponse.json({ ok: true, data: { reply: outcome.message, proposal: null, usage: outcome.usage ?? null } });
+    }
+
+    if (outcome.kind === "proposal") {
+      const reviewed = await prepareProposalArgsForReview(organizationId, outcome.toolName, outcome.args, prisma);
+      if (!reviewed.ok) {
+        streaming?.abortSignal.throwIfAborted();
+        const reply = `I couldn't prepare a trustworthy approval preview, so no action was proposed. ${reviewed.error}`;
+        await prisma.agentConversationTurn.create({ data: { conversationId, role: "assistant", content: reply } });
+        return NextResponse.json({ ok: true, data: { reply, proposal: null, usage: outcome.usage ?? null } });
+      }
+      streaming?.abortSignal.throwIfAborted();
+      await rememberToolContext(memoryRepo, organizationId, reviewed.args).catch(() => undefined);
+      streaming?.abortSignal.throwIfAborted();
+      await prisma.agentConversationTurn.create({ data: { conversationId, role: "assistant", content: outcome.message } });
+      streaming?.abortSignal.throwIfAborted();
+      const proposal = await prisma.agentActionProposal.create({
+        data: {
+          organizationId, conversationId, proposedByUserId: String(actor.userId),
+          toolName: outcome.toolName, argsJson: reviewed.args as Prisma.InputJsonValue, riskLevel: outcome.riskLevel, status: "proposed",
+          approvalExpiresAt: approvalExpiry(),
+          actionDigest: agentActionDigest({ organizationId, conversationId, proposedByUserId: String(actor.userId), toolName: outcome.toolName, args: reviewed.args }),
         },
       });
-      if (toolName === "read_aws_inventory" && result.ok && isBoundedAwsObservation(result.result)) {
-        await prisma.agentConversationTurn.create({ data: {
-          conversationId, role: "tool_result",
-          content: JSON.stringify({ ...result.result, provenance: "Incomplete observation at observedAt; not snapshot, approval, plan or execution evidence. Historical observations do not establish current connection access." }),
-        } });
-      }
-      return result;
-    },
-    isProdEnvironmentTarget: (toolName, args) => isProdEnvironmentTarget(prisma as unknown as ProdEnvironmentCheckRepo, organizationId, args),
-  });
-
-  if (outcome.kind === "final") {
-    await prisma.agentConversationTurn.create({ data: { conversationId, role: "assistant", content: outcome.message } });
-    return NextResponse.json({ ok: true, data: { reply: outcome.message, proposal: null, usage: outcome.usage ?? null } });
-  }
-
-  if (outcome.kind === "proposal") {
-    const reviewed = await prepareProposalArgsForReview(organizationId, outcome.toolName, outcome.args, prisma);
-    if (!reviewed.ok) {
-      const reply = `I couldn't prepare a trustworthy approval preview, so no action was proposed. ${reviewed.error}`;
-      await prisma.agentConversationTurn.create({ data: { conversationId, role: "assistant", content: reply } });
-      return NextResponse.json({ ok: true, data: { reply, proposal: null, usage: outcome.usage ?? null } });
+      return NextResponse.json({
+        ok: true,
+        data: {
+          reply: outcome.message,
+          proposal: { id: proposal.id, toolName: proposal.toolName, argsJson: proposal.argsJson, riskLevel: proposal.riskLevel, status: proposal.status },
+          usage: outcome.usage ?? null,
+        },
+      });
     }
-    await rememberToolContext(memoryRepo, organizationId, reviewed.args).catch(() => undefined);
-    await prisma.agentConversationTurn.create({ data: { conversationId, role: "assistant", content: outcome.message } });
-    const proposal = await prisma.agentActionProposal.create({
-      data: {
-        organizationId, conversationId, proposedByUserId: String(session.userId),
-        toolName: outcome.toolName, argsJson: reviewed.args as Prisma.InputJsonValue, riskLevel: outcome.riskLevel, status: "proposed",
-        approvalExpiresAt: approvalExpiry(),
-        actionDigest: agentActionDigest({ organizationId, conversationId, proposedByUserId: String(session.userId), toolName: outcome.toolName, args: reviewed.args }),
-      },
-    });
-    return NextResponse.json({
-      ok: true,
-      data: {
-        reply: outcome.message,
-        proposal: { id: proposal.id, toolName: proposal.toolName, argsJson: proposal.argsJson, riskLevel: proposal.riskLevel, status: proposal.status },
-        usage: outcome.usage ?? null,
-      },
-    });
-  }
 
-  const reply = AI_ERROR_MESSAGES[outcome.error] ?? "Something went wrong processing that request.";
-  await prisma.agentConversationTurn.create({ data: { conversationId, role: "assistant", content: reply } });
-  return NextResponse.json({ ok: true, data: { reply, proposal: null, usage: outcome.usage ?? null } });
+    const reply = AI_ERROR_MESSAGES[outcome.error] ?? "Something went wrong processing that request.";
+    await prisma.agentConversationTurn.create({ data: { conversationId, role: "assistant", content: reply } });
+    return NextResponse.json({ ok: true, data: { reply, proposal: null, usage: outcome.usage ?? null } });
+  }
+  return request.headers.get("accept")?.split(",").some(type => type.trim() === AGENT_STREAM_CONTENT_TYPE)
+    ? agentMessageHttpStream(request.signal, stream => execute(stream))
+    : execute();
 }

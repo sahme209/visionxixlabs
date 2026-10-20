@@ -1,7 +1,7 @@
 import { denyIsolatedExternalIO } from "@/lib/billing/isolatedApplication/runtime";
 import "server-only";
 
-import { generateText } from "ai";
+import { generateText, streamText, type TextStreamPart, type ToolSet } from "ai";
 import { AI_REQUEST_MAX_OUTPUT_TOKENS } from "@/lib/billing/requestReservationCents";
 import { redact } from "@/lib/security/redaction";
 import {
@@ -16,6 +16,12 @@ import {
 } from "../AIProvider";
 
 const SERVICE_DEFAULT = "service-default";
+
+/** Internal stream envelope. A terminal event is accounting evidence, not an
+ * admission grant. Text is display-only and never an executable Agent action. */
+export type GatewayAdmittedStreamChunk =
+  | { text: string; done: false }
+  | { text: ""; done: true; response: AITextResponse };
 
 function jsonText(value: string): string {
   return value.trim().replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/, "");
@@ -136,6 +142,86 @@ export class VercelGatewayProvider implements AIProvider {
     yield { text: "", done: true, finishReason: result.finishReason };
   }
 
+  /** Single SDK attempt for the future admitted streaming lane. Keep the
+   * ordinary manager contract unchanged until its durable admission is wired.
+   * Never buffer text or turn an interrupted response into terminal success. */
+  async *streamTextOnce(
+    prompt: string,
+    options?: AIRequestOptions & { abortSignal?: AbortSignal },
+  ): AsyncGenerator<GatewayAdmittedStreamChunk, void, unknown> {
+    denyIsolatedExternalIO();
+    if (!this.isConfigured()) {
+      throw new AIProviderError({ provider: this.name, kind: "not_configured", message: "AI Gateway is not configured" });
+    }
+    const maxTokens = options?.maxTokens ?? AI_REQUEST_MAX_OUTPUT_TOKENS;
+    if (!Number.isSafeInteger(maxTokens) || maxTokens < 1 || maxTokens > AI_REQUEST_MAX_OUTPUT_TOKENS) {
+      throw new AIProviderError({ provider: this.name, kind: "bad_response", message: "governed output token bound is invalid" });
+    }
+    const model = this.model(options);
+    const startedAt = Date.now();
+    const controller = new AbortController();
+    const signal = AbortSignal.any([
+      controller.signal,
+      ...(options?.abortSignal ? [options.abortSignal] : []),
+      AbortSignal.timeout(options?.timeoutMs ?? 30_000),
+    ]);
+    let upstream: AsyncIterator<TextStreamPart<ToolSet>> | undefined;
+    try {
+      signal.throwIfAborted();
+      const result = streamText({
+        model,
+        prompt: redact(prompt),
+        system: options?.system === undefined ? undefined : redact(options.system),
+        temperature: options?.temperature,
+        maxOutputTokens: maxTokens,
+        maxRetries: 0,
+        abortSignal: signal,
+        providerOptions: { gateway: {
+          user: options?.organizationId,
+          tags: ["product:axiom-agent", options?.correlationId ? `correlation:${options.correlationId}`.slice(0, 64) : "request:unattributed"],
+        } },
+      });
+      let finishReason: AITextResponse["finishReason"] | undefined;
+      upstream = result.fullStream[Symbol.asyncIterator]();
+      while (true) {
+        const next = await upstream.next();
+        if (next.done) break;
+        const part = next.value;
+        signal.throwIfAborted();
+        if (part.type === "error" || part.type === "abort") {
+          throw new AIProviderError({ provider: this.name, kind: part.type === "abort" ? "timeout" : "network", message: "AI Gateway stream interrupted" });
+        }
+        if (part.type === "text-delta" && part.text) yield { text: part.text, done: false };
+        if (part.type === "finish") {
+          if (!["stop", "length", "content-filter"].includes(part.finishReason)) {
+            throw new AIProviderError({ provider: this.name, kind: "bad_response", message: "AI Gateway stream did not finish successfully" });
+          }
+          finishReason = part.finishReason === "content-filter" ? "filter" : part.finishReason as "stop" | "length";
+        }
+      }
+      signal.throwIfAborted();
+      if (!finishReason) throw new AIProviderError({ provider: this.name, kind: "bad_response", message: "AI Gateway stream ended without completion" });
+      const [usage, metadata] = await Promise.all([result.totalUsage, result.providerMetadata]);
+      signal.throwIfAborted();
+      const generationId = (metadata?.gateway as { generationId?: unknown } | undefined)?.generationId;
+      if (typeof generationId !== "string" || !generationId || ![usage.inputTokens, usage.outputTokens].every(n => Number.isSafeInteger(n) && n! >= 0)) {
+        throw new AIProviderError({ provider: this.name, kind: "bad_response", message: "AI Gateway stream is missing metering evidence" });
+      }
+      yield { text: "", done: true, response: {
+        text: "", provider: this.name, model, latencyMs: Date.now() - startedAt, finishReason,
+        gatewayGenerationId: generationId,
+        usage: { promptTokens: usage.inputTokens, completionTokens: usage.outputTokens, totalTokens: usage.totalTokens },
+      } };
+    } catch (error) {
+      if (error instanceof AIProviderError) throw error;
+      throw new AIProviderError({ provider: this.name, kind: signal.aborted ? "timeout" : "network", message: "AI Gateway stream failed", latencyMs: Date.now() - startedAt });
+    } finally {
+      // Includes return()/break from a consumer after any partial text.
+      controller.abort();
+      await upstream?.return?.();
+    }
+  }
+
   summarize(text: string, options?: AIRequestOptions): Promise<AITextResponse> {
     return this.generateText(text, { ...options, system: options?.system ?? "Summarize accurately and concisely." });
   }
@@ -163,17 +249,23 @@ export class VercelGatewayProvider implements AIProvider {
 
   /** Internal single-attempt lane: returns the paid envelope before parsing.
    * This is a retry restriction, never a public metering/authorization switch. */
-  generateStructuredTextOnce(text: string, schemaHint: string, options?: AIRequestOptions): Promise<AITextResponse> {
+  generateTextOnce(prompt: string, options?: AIRequestOptions): Promise<AITextResponse> {
     const maxTokens = options?.maxTokens ?? AI_REQUEST_MAX_OUTPUT_TOKENS;
     if (!Number.isSafeInteger(maxTokens) || maxTokens < 1 || maxTokens > AI_REQUEST_MAX_OUTPUT_TOKENS) {
       throw new AIProviderError({ provider: this.name, kind: "bad_response", message: "governed output token bound is invalid" });
     }
-    return this.generateTextWithRetries(text, {
+    return this.generateTextWithRetries(prompt, {
       ...options,
       maxTokens,
+    }, 0);
+  }
+
+  generateStructuredTextOnce(text: string, schemaHint: string, options?: AIRequestOptions): Promise<AITextResponse> {
+    return this.generateTextOnce(text, {
+      ...options,
       temperature: options?.temperature ?? 0,
       system: `Return valid JSON only. The required shape is: ${schemaHint}`,
-    }, 0);
+    });
   }
 
   async healthCheck(options?: AIRequestOptions): Promise<AIHealthCheck> {

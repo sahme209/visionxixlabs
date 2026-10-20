@@ -21,8 +21,9 @@ import { runWithFallback } from "./AIFallbackHandler";
 import { recordUsage } from "./AIUsageLogger";
 import { redact } from "@/lib/security/redaction";
 import { recordAIUsageEvent } from "@/lib/billing/recordAIUsageEvent";
-import { consumeGovernedExtractAdmission, type GovernedExtractAdmission } from "@/lib/billing/governedExtractAdmission";
+import { consumeGovernedExtractAdmission, consumeGovernedTextAdmission, type GovernedAIAdmission, type GovernedExtractAdmission } from "@/lib/billing/governedExtractAdmission";
 import { parseGatewayStructuredResponse, VercelGatewayProvider } from "./providers/VercelGatewayProvider";
+import { AgentStreamInterrupted, streamedDecisionMessage } from "./streamedDecisionMessage";
 
 let SINGLETON: AIProviderManager | null = null;
 
@@ -183,6 +184,58 @@ export class AIProviderManager {
     return out.result;
   }
 
+  /** Shared single-attempt provider selection; unknown cost never permits a
+   * second provider/fallback under an already consumed admission. */
+  private admittedGateway(options: AIRequestOptions & { only?: AIProviderName }): VercelGatewayProvider {
+    const chain = this.chain({ only: options.only, allowedProviders: options.allowedProviders, fallbackOrder: options.fallbackOrder });
+    const gateway = chain[0];
+    if (chain.length !== 1 || !(gateway instanceof VercelGatewayProvider) || gateway.name !== "vercel_gateway") {
+      throw new AIProviderError({ provider: "vercel_gateway", kind: "not_configured", message: "governed generation requires one admitted Gateway attempt" });
+    }
+    return gateway;
+  }
+
+  async generateTextWithAdmission(
+    prompt: string,
+    options: AIRequestOptions & { only?: AIProviderName },
+    admission: GovernedAIAdmission,
+  ): Promise<AITextResponse> {
+    const authority = consumeGovernedTextAdmission(admission, options);
+    const gateway = this.admittedGateway(options);
+    const out = await runWithFallback<AITextResponse>(
+      [gateway],
+      () => gateway.generateTextOnce(redact(prompt), this.optionsForProvider(gateway, options)),
+      { task: "generate_text", correlationId: options.correlationId, organizationId: options.organizationId },
+    );
+    await authority.record(out.result);
+    return out.result;
+  }
+
+  /** Internal display-text stream using the same one-use text admission.
+   * Completion is exposed only after the existing durable usage writer links
+   * the hold. Partial output, disconnects and write failures retain uncertainty;
+   * there is no eager writer, provider fallback or second SDK attempt.
+   * Transport disconnect must abort options.abortSignal immediately: generator
+   * return() alone queues behind any pending next() and cannot interrupt it. */
+  async *streamTextWithAdmission(
+    prompt: string,
+    options: AIRequestOptions & { only?: AIProviderName; abortSignal?: AbortSignal },
+    admission: GovernedAIAdmission,
+  ): AsyncGenerator<AIStreamChunk, void, unknown> {
+    const authority = consumeGovernedTextAdmission(admission, options);
+    const gateway = this.admittedGateway(options);
+    for await (const chunk of gateway.streamTextOnce(redact(prompt), {
+      ...this.optionsForProvider(gateway, options), abortSignal: options.abortSignal,
+    })) {
+      if (!chunk.done) {
+        yield chunk;
+      } else {
+        await authority.record(chunk.response);
+        yield { text: "", done: true, finishReason: chunk.response.finishReason };
+      }
+    }
+  }
+
   /** Server-internal governed path. The opaque, one-use authority is minted
    * after a committed ledger claim, never sent to the provider or a client.
    * Exactly one provider attempt can consume this hold; uncertainty is not a
@@ -194,11 +247,7 @@ export class AIProviderManager {
     admission: GovernedExtractAdmission,
   ): Promise<AIStructuredResponse<T>> {
     const authority = consumeGovernedExtractAdmission(admission, options);
-    const chain = this.chain({ only: options.only, allowedProviders: options.allowedProviders, fallbackOrder: options.fallbackOrder });
-    const gateway = chain[0];
-    if (chain.length !== 1 || !(gateway instanceof VercelGatewayProvider) || gateway.name !== "vercel_gateway") {
-      throw new AIProviderError({ provider: "vercel_gateway", kind: "not_configured", message: "governed extraction requires one admitted Gateway attempt" });
-    }
+    const gateway = this.admittedGateway(options);
     const out = await runWithFallback<AITextResponse>(
       [gateway],
       () => gateway.generateStructuredTextOnce(redact(text), schemaHint, this.optionsForProvider(gateway, options)),
@@ -206,6 +255,41 @@ export class AIProviderManager {
     );
     await authority.record(out.result);
     return parseGatewayStructuredResponse<T>(out.result);
+  }
+
+  /** Streaming Agent decisions stay display-only until the complete envelope
+   * is accounted, parsed and checked by the existing decision loop. */
+  async extractStructuredDataStreamingWithAdmission<T = unknown>(
+    text: string, schemaHint: string,
+    options: AIRequestOptions & { only?: AIProviderName; abortSignal?: AbortSignal },
+    admission: GovernedExtractAdmission,
+    onDraft: (message: string) => void,
+  ): Promise<AIStructuredResponse<T>> {
+    let raw = "", draft = "", response: AITextResponse | undefined;
+    try {
+      const authority = consumeGovernedExtractAdmission(admission, options);
+      const gateway = this.admittedGateway(options);
+      onDraft("");
+      for await (const chunk of gateway.streamTextOnce(redact(text), {
+        ...this.optionsForProvider(gateway, options), abortSignal: options.abortSignal,
+        system: `Return valid JSON only. The required shape is: ${schemaHint}`,
+      })) {
+        if (chunk.done) {
+          await authority.record(chunk.response);
+          response = { ...chunk.response, text: raw };
+        } else {
+          raw += chunk.text;
+          if (raw.length > 131_072) throw new AgentStreamInterrupted();
+          const next = streamedDecisionMessage(raw);
+          if (next !== draft && next.startsWith(draft)) { draft = next; onDraft(draft); }
+        }
+      }
+      options.abortSignal?.throwIfAborted();
+      if (!response) throw new AgentStreamInterrupted();
+    } catch { throw new AgentStreamInterrupted(); }
+    // Only a fully accounted malformed JSON envelope can receive the existing
+    // separately admitted repair. Stream/write uncertainty above never can.
+    return parseGatewayStructuredResponse<T>(response);
   }
 
   async *streamText(prompt: string, options?: AIRequestOptions & { only?: AIProviderName }): AsyncIterable<AIStreamChunk> {

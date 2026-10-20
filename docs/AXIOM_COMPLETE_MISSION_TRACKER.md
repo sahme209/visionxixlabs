@@ -2008,3 +2008,364 @@ failed one of8453 executed tests: current allowance omitted uncertain holds.
 The reader now includes dispatch_unknown to match admission authority; strict
 query-parity regression is retained. Focused checks precede a new exact-head CI.
 No failed check is waived, and no production deployment or database change occurs.
+
+
+Generic generation source now reuses the same durable admission/usage kernel as
+Agent extraction: existing header/idempotency and response/error contracts,
+trusted actor, closed server task, one provider attempt and singular attribution.
+Only isolated denial before claim may release an unclaimed hold. SDK/missingusage/
+writer/commit uncertainty retains capacity. Author95 focused checks and imported
+types/lint pass; root independently52 targeted route/kernel/manager checks pass.
+Details: mission/generic-ai-credit-admission-source.md. Other ordinary manager
+callers, actual provider-cost coverage and real customer acceptance remain open.
+Prepared PGc4883f99 acceptance is reused in this batch: six actual-SQL callbacks
+in the existing owned fixture, nine inert registration/classifier checks passed.
+Actual SQL/concurrency is NOT EXECUTED; ownership/native runtime gates unchanged.
+Corrected0f24 browser39461979743 passed12 checks with safe cleanup; exact receipt
+and source-based reuse of e4's six reviewed screenshots are preserved in
+mission/public-website-browser-acceptance-0f24f083.json. Historical causal limit
+remains; no hidden retry/deadline or production routing change is introduced.
+
+
+PR183 merged normally as32989ecf199aae97bc78802204b1bf6e5e028552 after
+exact0f24f083 fullCI39461979386 (types, full tests, auth evidence and build),
+desktopCI39461979388 and browser39461979743 passed. No deployment was requested.
+The next focused source batch closes generic text generation's uncertainty path
+with the same ledger and includes the preserved prepared SQL cases. Live SQL,
+provider, pricing/cost coverage and production activation are still not verified.
+
+Desktop member selection now extends the existing administrator policy in the
+shared chat/repository composer: searchable vendor groups, current approved model
+intersection, optional verified-workspace preference and explicit Gateway model
+transport. Root independently passed31 component/transport checks, including both
+chat and code submission. Server dispatch revalidation is being integrated with
+the existing durable admission kernel; no real provider/native acceptance is
+claimed. Details: mission/desktop-approved-model-selection-source.md.
+
+PR184 exact3f6e4c56 browser39463927943 failed at documentation navigation after11
+checks, with zero accepted/denied documentation requests and safe cleanup. Its
+cause remains unconfirmed, and the merge gate stays closed. The receipt is
+mission/public-website-browser-blocker-3f6e4c56.json. Independent model integration
+continues without rerunning the same failed head or relaxing acceptance. The
+existing final-deployment, database, payment and desktop-release gates remain.
+
+Model dispatch root review additionally passed62 actual resolver/catalog/handler
+checks with inert IO; the backend author passed118 focused checks. The actual
+desktop transport suite passed33, desktop frontend build/typecheck passed, and
+walkthrough15/PythonCLI30 checks passed. Implicit legacy vmc routing is preserved;
+explicit virtual preferences and unsupported direct-provider lanes refuse before
+credit admission. PR184 parent3f6e4c56 fullCI39463927956 passed including website
+build without deployment; the failed browser gate remains, and new combined
+source requires its own CI. No real provider, native session or settled payment
+is claimed from component and handler tests.
+
+PR184 now includes the reviewed member selector and server policy revalidation
+atb7fd03a0505a769eafdaa036e1e192a2d0e2acc4. Root combined imported types passed;
+the desktop frontend build and targeted source checks passed. Its browser run
+39466223434 failed BEFORE browser startup: the fixed five-second clean-source
+git status command timed out. This is distinct from documentation navigation;
+no new interaction acceptance is claimed and no blind retry/deadline increase
+is made. Receipt: mission/public-website-browser-preflight-b7fd03a0.json.
+Full CI and native CI continue; merge remains blocked on required acceptance.
+
+Exactb7fd03a0 fullCI39466223463 passed typecheck, full Vitest, offline auth evidence
+and production website build without deployment. NativeCI39466223513 passed
+frontend release/type/build, native command tests and native lint. Browser's
+prepare failure still blocks PR184; these passing checks do not waive it.
+Independent known-credential logging correction is in PR185 atf2602e87: three
+pre-fix leaks reproduced, four suites/23 checks and imported types/lint passed,
+independent review accepted the bounded fingerprint correction. Its required CI
+is running; no source or production success beyond that scope is asserted.
+
+### Permanent execution rule: research first, then staged acceptance
+
+Before a significant change, reuse the code, decisions, related PRs and failure
+receipts already inspected; consult official API/dependency guidance where
+needed. Record a concise plan here: established cause or explicitly unconfirmed
+hypothesis, affected frontend/backend/storage boundaries, compatibility/security/
+cost risks, implementation order, targeted and integrated checks, and actual
+customer acceptance criteria. Validate assumptions before dependent work and
+obtain independent review for security, billing and architecture changes.
+Run targeted checks first, broader CI at meaningful source checkpoints, and real
+environment acceptance separately. Classify application, fixture, CI and host
+failures from evidence; do not retry without a reason, inflate deadlines or
+weaken gates. Unknown causes remain blockers while independent work continues.
+This rule preserves every existing product workstream and approval restriction;
+it does not authorize paid probes, production changes or mock-based completion.
+
+Current next stage: finish PR185's exact-head checks, merge only if all required
+gates pass, then integrate its main changes into PR184 normally, preserving the
+reviewed model/admission source and both tracker histories. Review any actual
+merge differences, run affected checks, and require fresh combined-head CI.
+PR184's existing git-status preparation timeout is a host/preflight failure with
+unknown underlying delay; it is not evidence for a speculative application fix.
+Real selected-model/provider/native/financial acceptance remains a separate gate.
+
+Next bounded browser investigation: PR185 f2602e87 also completed11 checks before
+the same documentation deadline, with zero documentation requests and safe
+cleanup. The shared120-second clock may leave insufficient time at that final
+step; this is a leading hypothesis, not an application root cause. Add six fixed
+bounded timing/count observations around the existing click/poll/receipt path,
+with descriptor-safe public sanitization. Preserve every clock, route, request,
+assertion and cleanup rule. Test malformed/accessor inputs and actual capture
+field propagation; independently review the receipt boundary before one combined
+functional-head CI. No same-head rerun or speculative application fix is planned.
+
+Timing source passed48 focused checks before the final own-descriptor hardening;
+the affected three suites then passed36, including the added top-level accessor
+case and actual driver receipt-construction propagation. Focused imported types,
+lint and independent review passed. Counts represent completed evaluations, not
+proof that no evaluation was attempted. Phase attempt completion is paired with
+the existing DOM snapshot; timings alone cannot establish navigation root cause.
+Since both PR184 and PR185 are blocked on this shared browser gate, preserve
+PR185's reviewed commit ancestry in the existing PR184 integration branch and
+validate one combined source checkpoint. No red PR is merged or gate waived.
+
+Independent security work reproduced partial credential prefixes in AI invocation
+previews and raw database exceptions in logging failure output. Canonical known-
+credential redaction now precedes BOTH preview truncation boundaries, stored
+errors are scrubbed, failure logging uses a fixed label, and supplied fingerprint
+text must match a bounded digest encoding. Four suites/23 checks, focused types,
+lint and independent source review pass. Exact-head CI remains required; no
+historical rows/logs, provider behavior, payments or production systems change.
+Evidence and limits: mission/ai-invocation-log-redaction-source.md.
+
+Next desktop streaming stage, research checkpoint (no implementation yet): the
+installed AI SDK exposes fullStream, terminal usage/provider metadata and abort
+hooks, but GatewayProvider.streamText currently buffers generation and native
+src-tauri/src/http.rs also awaits response.text(). An SDK-only change cannot
+satisfy desktop streaming. Reuse the current policy/credit kernel, then design a
+server-owned admitted stream with one attempt and terminal generation evidence;
+add a bounded, cancellable, origin/path-restricted native channel before sharing
+incremental rendering across chat/editor. Preserve unknown holds after partial
+failure or cancellation; do not pretend raw deltas are approved tool execution.
+Review native capability, tenant/actor, backpressure, cost and abort boundaries
+before implementation. Acceptance requires actual pre-completion desktop chunks,
+revocation/cancellation/restart behavior, singular usage and separately authorized
+real-provider/native checks. No paid probe, endpoint activation or installer is
+authorized by this plan; current PR184/browser gates remain first.
+
+Combined fbf65b84 browser run39469175795 passed all12 checks; root independently
+viewed all six current screenshots. Receipt/hashes and visual limitations are in
+mission/public-website-browser-acceptance-fbf65b84.json. Historical navigation
+cause remains unconfirmed; success does not establish the remaining-budget
+hypothesis. The successful terminal phase projected timing as null; the existing
+closed approval-documentation phase now also retains those six bounded numbers.
+
+Full CI39469175827 passed types and8551 tests but failed five isolated polling
+tests: the diagnostic had introduced globals into their pure VM boundary. The
+waiter now accepts an optional no-argument observer; only the documentation caller
+supplies timing updates. Predicate, poll count, intervals and deadlines remain
+unchanged. The entire fixture family passed290 checks locally; three actual child-
+process checks were denied EPERM by current native execution controls. Those
+controls and tests are preserved for GitHub CI, with no local bypass or retry.
+Focused imported types/lint pass. A corrected exact-head CI is required before
+merge; the passing browser receipt is not a waiver of the full-suite failure.
+
+Corrected7410a095 full CI passed typecheck, Vitest and offline auth steps; the
+production-build step continues without deployment. Browser39470466278 failed
+after11 checks: click completed at83.587seconds, followed by321 responsive polls
+until119.933seconds, with no docs request reaching the proxy. This rules out a
+click arriving only at deadline or a hanging evaluation; it does not identify
+navigation cause or prove absence of a driver-frontier denial. Exact timing and
+limits: mission/public-website-browser-blocker-7410a095.json. No repeated run,
+longer deadline, forced navigation or gate waiver follows. PR184/185 source and
+the research-first rule remain preserved; current merge stays blocked while
+independent planned work and real-provider/native/database prerequisites remain
+explicitly unfinished.
+
+Final observed gate state for7410a095: fullCI39470466444 passed typecheck, full
+tests, offline auth evidence and production website build without deployment;
+nativeCI39470466387 passed frontend build/release checks, native tests and lint.
+Browser39470466278 remains failed with the recorded321-poll timing evidence.
+No PR merge, production deployment or approval-dependent operation was performed.
+The next independent streaming stage retains its researched native-buffering,
+durable-metering and real-environment prerequisites; the full mission is not
+declared complete from these source/component checks.
+
+### 2026-10-20 — independent admitted streaming implementation
+
+Focused research: installed AI SDK6.0.182 documentation/source confirms
+fullStream text-delta/error/abort/finish events and terminal usage/metadata.
+The current Gateway adapter and native HTTP bridge both buffer; replacing the
+adapter alone cannot establish desktop streaming. Existing one-use text admission
+and transactional usage linkage are reused rather than adding a second ledger.
+
+Execution slice: implement a bounded single-attempt SDK stream, compose it with
+the existing text admission, then validate SDK/cancellation/accounting before
+designing the authenticated HTTP/native bridge. No public route is activated in
+this slice. The existing ordinary provider/manager contract remains unchanged.
+Acceptance: incremental delivery before finish, maxRetries0, output <=4096,
+credential redaction, no terminal success without Gateway generation/token
+evidence and durable writer success, no fallback/redispatch after interruption.
+
+Implemented on codex/gateway-real-streaming: streamTextOnce yields SDK deltas
+without accumulating response text, validates terminal evidence, and aborts before
+closing its upstream iterator. streamTextWithAdmission consumes the existing
+opaque text capability and links usage before publishing completion. Provider,
+usage or writer failures and early consumer exit retain dispatch_unknown.
+Transport cancellation must abort the external signal immediately; return()
+alone queues behind a pending next(). An independent security/billing review
+found no admission bypass and requested installed-SDK and in-flight cancellation
+coverage. Its initial cleanup-deadlock hypothesis was not reproduced and is not
+recorded as a confirmed bug.
+
+Targeted provider/manager tests pass, including installed-SDK MockLanguageModelV3
+contracts (isolated provider, not hosted acceptance). An initially stalled
+synthetic source ignored abort; installed SDK source awaits provider reads, so
+the fixture now honors the forwarded abort as a provider must. No timeout was
+raised. Scoped imported TypeScript passes. HTTP/native transport, actual chat and
+editor rendering, real Gateway billing/provider acceptance and native customer
+acceptance remain unfinished. The browser blocker and all required merge gates
+remain preserved; no production/provider calls, deployment or migration occurred.
+
+Validation checkpoint: all27 affected AI/demo suites pass275 tests; the updated
+demo contract passes15 checks separately (overlapping evidence, not extra product
+coverage). Scoped TypeScript, ESLint, diff whitespace and mission coverage checks
+pass. No full CI was redundantly rerun or merge gate waived for this local slice.
+
+### 2026-10-20 — authenticated Agent HTTP/native/chat streaming integration
+
+Research/plan: reuse the existing paired-session message endpoint, conversation
+tenant+actor lookup, per-inference live model policy, extraction admission,
+decision validation, read-tool audit and persisted approval proposals. Preserve
+ordinary JSON clients. Stream only top-level message drafts, never raw decision
+JSON/tool arguments; publish a final result only after accounting and existing
+persistence. Add bounded UTF-8 NDJSON, disconnect cancellation, native IPC demand
+acknowledgements, and shared chat/repository-edit rendering. Acceptance requires
+isolated route/client/component contracts, native compilation, then actual macOS
+and hosted-provider workflows; none substitutes for another.
+
+Implemented: explicit Accept application/x-ndjson on the same authenticated
+desktop message endpoint. Invalid sessions, other-tenant/other-user conversations,
+invalid model or context refuse before streaming. Existing JSON requests retain
+their response. The admitted extraction streams incremental display-only message
+drafts; complete envelopes are durably linked before parsing. Stream/admission/
+setup/write uncertainty is non-repairable. Only fully accounted malformed JSON
+may use the existing separately admitted repair. Cancellation rechecks after
+awaited authority lookups and before tools/persistence prevent subsequent work;
+already-started read/audit operations are not promised reversible.
+
+Native transport: exact product origin and canonical message path, explicit
+bearer POST, no redirects, window-bound request identities, bounded concurrency,
+16KiB chunks with one outstanding acknowledgement, 8MiB total and a 120-second
+native lifetime. Abort reaches the native worker immediately, including pending
+registration and credential changes. Locked Tauri2.11.6/reqwest0.12.28 official
+source confirms Channel.send/Response.chunk without dependency changes. No Rust
+toolchain is installed here: native compilation and real macOS execution remain
+required gates, not inferred from TypeScript.
+
+The actual shared Agent chat/repository-edit composer renders labeled unverified
+drafts and Stop; proposal controls appear only from the final persisted result.
+Workspace/context change aborts stalled reads and rejects late draft/results.
+Older serving releases' JSON is consumed from the same response without another
+paid request. Independent review identified and verified corrections for
+cancel-during-authority-read, setup/claim uncertainty entering repair, and stalled
+reads after context changes. Targeted tests exercise those regressions, real
+ReadableStream HTTP/client composition and actual React composer interactions.
+These use isolated providers/DB/native fixtures and do not establish hosted
+provider, SQL or customer acceptance. The desktop frontend/release build passes.
+PR184's browser gate and production DB/provider/installer approvals remain intact;
+no production deployment, provider charge, database or credential change occurred.
+
+Validation checkpoint: full TypeScript passes; desktop release/frontend build,
+scoped lint, demo contract and30 Python checks pass. The affected AI/desktop/Agent
+family records1001 passing checks,34 skipped, three release subprocess assertion
+failures and a GPG setup failure. One full local Vitest run records8549 passing,
+57 failing and68 skipped tests across747 passing/11 failing suites, plus29 errors.
+Failure evidence includes spawnSync git/python/node EPERM, loopback listen EPERM
+and consequent HTTP fixture timeouts, missing child diagnostics and GPG status2.
+These are retained for exact-head CI; no native control, fixture gate or timeout
+was weakened. Native compilation remains unavailable here. These local results
+are not an all-green suite or permission to merge. Small reviewed compatibility
+edits during the run also mean it is not an exact final-head acceptance receipt.
+
+
+Post-commit review found and reproduced a cooperative cancellation race during
+proposal preparation: Stop while workspace memory awaited could begin a new
+assistant/proposal write afterward. A gated-memory regression failed on1600fb60;
+checks after skills, review, memory and assistant awaits now prevent starting the
+next write. Already-started operations may finish and remain recorded. The final
+route diff received independent review, and80 related checks pass. This follow-up
+still requires exact-head CI; earlier1600fb60 checks do not grant it merge proof.
+
+
+PR186 stacks streaming on PR184 without rewriting either branch. Exact ed187745
+browser run39479507648 failed after11 checks at the same documentation boundary:
+click83.385s,323 responsive polls,120s deadline, no docs request at the proxy.
+Cleanup is empty and source unchanged. Sanitized receipt is
+mission/public-website-browser-blocker-ed187745.json. Cause remains unconfirmed;
+no same-head retry or acceptance waiver follows. Initial1600fb60 full/native CI
+passed, including12 Rust tests and Clippy; final-head source checks remain separate.
+
+Next independent native acceptance slice (codex/native-stream-wire-acceptance):
+exercise actual reqwest bytes/ACK/cancel/redirect/byte limits with synthetic
+loopback servers and locked Tauri Channel callbacks. A private cfg(test)-only
+Loopback endpoint variant must validate loopback; production commands retain the
+fixed product origin, no renderer URL flag, unchanged credentials/vault and
+existing bounds. No dependency, proxy or runtime-control change. Rust/loopback
+execution remains CI-gated here; these tests cannot establish a real macOS GUI
+or hosted-provider/customer journey.
+
+
+Exact ed187745 verification: PR186 Test39479508623 passes758 suites/8641 tests
+(34 skipped), typecheck, offline auth evidence and production website build with
+no deployment. DesktopCI39479507749 passes frontend build, all12 Rust tests and
+Clippy. Browser39479507648 remains failed; PR186 was updated and remains unmerged.
+This is source/native-Linux evidence, not actual macOS or hosted AI/customer
+acceptance. PR184's head and unresolved gate remain unchanged.
+
+
+Interrupted-response recovery research found the composer instructed a reload but
+openConversation rejected the already-selected chat and the error had no reload
+action. Add explicit read-only Reload saved conversation through the existing
+owner/context-fenced GET, clear the stale draft/usage receipt on success, and
+preserve explicit approval. The regression must retrieve saved messages/proposals
+without another send, credit dispatch, automatic approval or new conversation.
+
+Native wire/recovery checkpoint: six actual-TCP fixture cases are prepared and
+independently source-reviewed, not compiled locally. The byte-cap test must first
+deliver the entire permitted amount before releasing its excess byte, so an
+unrelated early error cannot count as a cap pass. UTF-8 reconstruction allows
+arbitrary network fragmentation. The actual composer recovery test preserves an
+unsent follow-up while reading saved messages/proposals, without resending or
+approving. UI/context/demo family45 checks, final UI20 checks, scoped types,
+frontend/release build and lint pass (overlapping sets, not customer completion).
+Production transport origin, credentials, timeouts, limits and approvals remain
+unchanged. This source follow-up still requires its own native/full/browser CI.
+
+
+### 2026-10-20 — connected application streaming acceptance
+
+Exact e9d79d6a Desktop CI39481771154 passes frontend build,18 Rust tests
+(including six real reqwest/TCP/Tauri-channel fixtures), and Clippy. Browser
+39481771049 passes all12 checks with unchanged source and empty cleanup. All six
+captured desktop/mobile/reduced-motion/documentation screenshots were reviewed;
+simulation and unavailable authority remain explicit. Floating edge widgets still
+overlap some content; no overlay-free visual claim. Artifact SHA256:
+667f378bc1fb4f5683378b587765f33499bd73b2998cbbca2675bb37e48fc23e.
+Earlier browser failures and unknown root cause remain recorded; a newer pass
+does not explain them. Full CI39481771192 subsequently passed types,8642 tests (34 skipped),
+offline auth and the production website build without deployment. This known
+header defect still requires a corrected head; no merge waiver follows.
+
+Research found a missing acceptance seam: rendered composer tests stubbed the
+client; client/wire tests did not normalize HTTP header casing. A connected
+composer/client/HTTP fixture reproduced a real defect: headers spread Accept:
+application/json and added lowercase accept: application/x-ndjson. Headers
+normalization combined both values. The native bridge requires exact NDJSON, so
+this selected buffered IPC instead of incremental transport. Minimal fix: replace
+the existing capitalized Accept key. No relaxation of native admission is needed.
+
+Plan/acceptance: join actual composer, DesktopClient, HTTP framing and decoder
+for chat and repository-edit modes; verify drafts arrive before completion with
+no approval controls, terminal proposals require completion, and interruption
+recovery uses GET without a second POST or approval. Separately join actual client
+and native JS bridge with synthetic Tauri events to verify streaming command,
+incremental bytes/ACK and validated completion, never buffered IPC. Use only
+synthetic HTTP/native boundaries: this is not SQL, provider or macOS acceptance.
+
+The initial connected tests fail on the combined Accept value; after the one-key
+fix, all46 affected application/client/bridge/composer checks pass. Four are new
+connected acceptance cases. Credential/origin, usage holds, proposal authority,
+CI and production gates remain unchanged. New exact-head CI is still required.

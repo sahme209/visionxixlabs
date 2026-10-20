@@ -76,10 +76,10 @@ bounded output; successful envelope accounting before parse; exclusive v2 writer
 foreign/prior generation refusal; and fail-closed missing usage/write outcomes.
 SQL-boundary tests use controlled fakes, not a live database or concurrency proof.
 
-Follow-on: the generic generation route's legacy lane still has its historical
-release-on-uncertain handling and ordinary SDK retry behavior. Only its existing
-reservation/output constants are shared here; its accounting is not refactored.
-This checkpoint must not be reported as fixing admission for every AI lane.
+The original extraction checkpoint left the generic generation route's legacy
+release-on-uncertain handling and ordinary SDK retries as a follow-on. Its source
+integration is now described in `generic-ai-credit-admission-source.md`; neither
+checkpoint proves every AI lane or actual provider/SQL acceptance is complete.
 
 
 Full CI identified a read/write authority mismatch: the read-only current allowance
@@ -87,3 +87,27 @@ query omitted newly retained `dispatch_unknown` holds. The reader now counts the
 same uncertain capacity as reservation admission, without mutating or releasing
 rows; the existing cross-query parity regression remains strict. This prevents
 customer-facing available credits from overstating capacity after uncertain calls.
+
+## Prepared PostgreSQL acceptance extension — NOT EXECUTED
+
+`legacyAgentAdmissionAcceptance.ts` registers six additional cases inside the
+existing opt-in `newTestSubscriptionService.postgres.test.ts` fixture. It reuses
+that suite's owned PG17 client, schema/DDL, local URL validation and runtime
+marker, and existing transaction gates, lock observation, and DB-clock helpers.
+It creates no separate database launcher, authority, receipt, or provider permit.
+
+Prepared checks cover one-winner concurrent real SQL claims with observed row
+blocking; expired/unaccepted membership; revocation before the membership lock;
+an owned hold with a deliberately shortened pre-claim TTL crossing the actual
+database clock, then retained capacity/release refusal; fresh synthetic Gateway
+envelope linkage via the actual capability/usage producer; and a fixture trigger
+forcing hold-link failure so usage creation must roll back atomically. PostgreSQL
+Serializable conflict is distinguished from arbitrary database/permission errors.
+
+No real provider is called. These are prepared SQL tests, **not passing SQL
+evidence**. Only inert declaration/classification tests and imported type checks
+have been run for this extension. The existing owned fixture must not be enabled
+until its managed environment controls, ownership checks, cached PG17 image and
+local resource capacity are compatible. No controls are removed or allowances
+widened to make it run; no image pull, installation, database, worker, server, or
+container execution is authorized or performed by this source preparation.

@@ -104,8 +104,10 @@ it("includes the closed timeout label in the actual driver's final receipt", asy
   const start = source.lastIndexOf("    const result = { success, failure,");
   const end = source.indexOf("\n    writeFileSync", start);
   expect(start).toBeGreaterThan(0); expect(end).toBeGreaterThan(start);
-  const receipt = vm.compileFunction(`${source.slice(start, end)}; return result;`, ["success", "failure", "session", "preImageWait", "evidence", "images", "denied", "consoleErrors", "evaluationExceptionClass", "homeCapturePhase", "scriptRequests", "currentInteraction", "lastInteraction", "documentationTimeoutSnapshot", "documentationPreWaitSnapshot"])(false, "website_driver_operation_timeout", state.session, null, [], [], 0, [], null, null, { allowed: 0, denied: 0 }, "setup", null, null, null);
+  const timing = { startedMs: 1, clickCompletedMs: 2, preWaitCompletedMs: 3, lastPollMs: 4, pollCount: 1, observedMs: 15000 };
+  const receipt = vm.compileFunction(`${source.slice(start, end)}; return result;`, ["success", "failure", "session", "preImageWait", "evidence", "images", "denied", "consoleErrors", "evaluationExceptionClass", "homeCapturePhase", "scriptRequests", "currentInteraction", "lastInteraction", "documentationTimeoutSnapshot", "documentationPreWaitSnapshot", "documentationTiming"])(false, "website_driver_operation_timeout", state.session, null, [], [], 0, [], null, null, { allowed: 0, denied: 0 }, "setup", null, null, null, timing);
   expect(receipt.timedOutOperation).toBe("cdp.Page.navigate");
+  expect(receipt.documentationTiming).toEqual(timing);
   expect(receipt.preImageWait).toBeNull();
   expect(receipt.evaluationExceptionClass).toBeNull();
   expect(receipt.homeCapturePhase).toBeNull();

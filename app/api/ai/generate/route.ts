@@ -1,18 +1,15 @@
-import { denyIsolatedExternalIO } from "@/lib/billing/isolatedApplication/runtime";
-import { claimNewTestBillableDispatch } from "@/lib/billing/newTestSubscription/usageAllocationIO";
 import { withIsolatedWorkspaceScope } from "@/lib/billing/isolatedApplication/scope";
 /**
  * POST /api/ai/generate
  *
- * Generic text generation through the fallback chain. Operators call
+ * Generic text generation through the configured service Gateway. Operators call
  * this from the settings page "Try it" affordance, but the same route
  * is reusable by feature code.
  *
  * Body: { prompt: string; system?: string; maxTokens?: number;
  *         temperature?: number; only?: AIProviderName; model?: string }
  *
- * Response: AITextResponse + the set of attempted providers (so the
- * UI can show "GitHub Models tried, fell back to Ollama").
+ * Response: the existing AITextResponse envelope, after durable usage linkage.
  */
 
 import type { NextRequest } from "next/server";
@@ -22,10 +19,8 @@ import { isAIProviderName, type AIProviderName } from "@/lib/ai/AIProvider";
 import { isKnownModel } from "@/lib/ai/AIModelRegistry";
 import { loadWorkspaceAIProviderPolicyWithState, resolveWorkspaceAIProviderPolicy } from "@/lib/ai/workspaceProviderPolicy";
 import { checkWorkspaceAICredits } from "@/lib/billing/checkWorkspaceAICredits";
-import { recordAIUsageEvent, recordReservedAIUsageEventV2 } from "@/lib/billing/recordAIUsageEvent";
-import { attachAICreditReservationUsage, releaseAICreditReservation, reserveAICredits, settleAICreditReservation } from "@/lib/billing/aiCreditReservation";
-import { prisma } from "@/lib/db";
-import { AI_REQUEST_MAX_OUTPUT_TOKENS as MAX_OUTPUT_TOKENS, requestReservationCents } from "@/lib/billing/requestReservationCents";
+import { admitAIText } from "@/lib/billing/governedExtractAdmission";
+import { AI_REQUEST_MAX_OUTPUT_TOKENS as MAX_OUTPUT_TOKENS } from "@/lib/billing/requestReservationCents";
 import { apiOk, apiErr, asApiSourceMode, resolveCorrelationId } from "@/lib/api";
 import { AxiomErrors } from "@/lib/errors/axiomErrors";
 
@@ -46,7 +41,7 @@ interface PostBody {
 async function handlePost(req: NextRequest, ctx: Awaited<ReturnType<typeof currentContext>>) {
   const correlationId = resolveCorrelationId(req.headers);
   try {
-    if (!ctx.isAuthenticated || !ctx.organizationId) {
+    if (!ctx.isAuthenticated || !ctx.organizationId || !ctx.userId) {
       throw AxiomErrors.validation("auth.required", "Sign in required.");
     }
     const organizationId = ctx.organizationId;
@@ -124,106 +119,31 @@ async function handlePost(req: NextRequest, ctx: Awaited<ReturnType<typeof curre
     if (body.model !== undefined && body.only && policy.modelSelections[body.only] !== body.model) {
       throw AxiomErrors.validation("ai.model_not_approved", "That model is not approved for this workspace provider.");
     }
-    const reservation = await reserveAICredits(prisma, {
-      organizationId: ctx.organizationId,
-      idempotencyKey,
-      reservedCents: requestReservationCents(),
-      correlationId,
-    });
+    const reservation = await admitAIText({ organizationId, userId: ctx.userId, idempotencyKey, correlationId });
     if (!reservation.ok) {
+      if (reservation.error === "request_already_reserved") {
+        throw AxiomErrors.policy("ai.request_already_in_progress", "This request key is already reserved. Wait for the existing request to finish before retrying.");
+      }
       if (reservation.error === "ai_credit_pool_exhausted") {
         throw AxiomErrors.policy("ai.credit_pool_exhausted", "This workspace does not have enough available AI credit for this request.");
       }
       throw AxiomErrors.external("ai.credit_reservation_unavailable", "AI budget controls are temporarily unavailable. No generation was run.");
     }
-    if (reservation.reused) {
-      throw AxiomErrors.policy("ai.request_already_in_progress", "This request key is already reserved. Wait for the existing request to finish before retrying.");
-    }
-    let result;
-    try {
-      // Local TEST provider denial is checked before a durable dispatch claim.
-      denyIsolatedExternalIO();
-      if (reservation.allocationPolicy === "axiom_test_anniversary_v2") {
-        const claimed = await prisma.$transaction(tx => claimNewTestBillableDispatch(tx, { organizationId, userId: ctx.userId! }, reservation.reservation.id), { isolationLevel: "Serializable" });
-        if (!claimed) throw new Error("ai_dispatch_claim_unavailable");
-      }
-      result = await mgr.generateText(body.prompt, {
+    // The one-use admission was durably claimed before the manager can hand
+    // off to the SDK. It records one attributed envelope before returning data;
+    // uncertain/missing-usage/write failures cannot release claimed capacity.
+    const result = await mgr.generateTextWithAdmission(body.prompt, {
       system: body.system,
-      maxTokens: typeof body.maxTokens === "number" ? body.maxTokens : undefined,
+      maxTokens: body.maxTokens ?? MAX_OUTPUT_TOKENS,
       temperature: typeof body.temperature === "number" ? body.temperature : undefined,
       model: body.model,
       only: body.only,
       correlationId,
-      organizationId: ctx.organizationId,
+      organizationId,
       allowedProviders: policy.allowedProviders,
       modelSelections: policy.modelSelections,
       fallbackOrder: policy.fallbackOrder,
-      });
-    } catch (error) {
-      await releaseAICreditReservation(prisma, ctx.organizationId, reservation.reservation.id);
-      throw error;
-    }
-    // Persist only provider-reported usage. Prompts, system instructions,
-    // credentials, and provider account data never enter the usage event.
-    if (result.usage) {
-      if (reservation.allocationPolicy === "axiom_test_anniversary_v2" && result.provider !== "vercel_gateway"
-        && ![result.usage.promptTokens, result.usage.completionTokens].every(n => typeof n === "number" && Number.isSafeInteger(n) && n >= 0)) throw new Error("ai_usage_meter_unavailable");
-      const usageInput = {
-        organizationId: ctx.organizationId,
-        provider: result.provider,
-        model: result.model,
-        inputTokens: result.usage.promptTokens ?? 0,
-        outputTokens: result.usage.completionTokens ?? 0,
-        externalUsageId: result.gatewayGenerationId,
-        triggeredBy: ctx.userId,
-        correlationId,
-        metadata: { route: "api/ai/generate" },
-      };
-      if (reservation.allocationPolicy === "axiom_test_anniversary_v2") {
-        const attributed = await recordReservedAIUsageEventV2(usageInput, reservation.reservation.id);
-        if (!attributed.recorded) throw new Error("ai_usage_meter_unavailable");
-      } else {
-        let usageWrite;
-        let gatewayUsageAttached = false;
-        if (result.provider === "vercel_gateway") {
-          try {
-            usageWrite = await prisma.$transaction(async (tx) => {
-              const pendingUsage = await recordAIUsageEvent(usageInput, tx);
-              if (!pendingUsage.recorded || pendingUsage.cost) return pendingUsage;
-              if (!pendingUsage.usageEventId || !await attachAICreditReservationUsage(tx, organizationId, reservation.reservation.id, pendingUsage.usageEventId)) {
-                // Throwing rolls back the just-created pending UsageEvent as
-                // well as any attachment, leaving the original hold releasable.
-                throw new Error("ai_usage_reservation_attach_failed");
-              }
-              return pendingUsage;
-            });
-            gatewayUsageAttached = usageWrite.recorded && !usageWrite.cost;
-          } catch (error) {
-            await releaseAICreditReservation(prisma, ctx.organizationId, reservation.reservation.id);
-            throw error;
-          }
-        } else {
-          usageWrite = await recordAIUsageEvent(usageInput);
-        }
-        if (!usageWrite.recorded) {
-          await releaseAICreditReservation(prisma, ctx.organizationId, reservation.reservation.id);
-          throw new Error("ai_usage_meter_unavailable");
-        }
-        // Gateway settlement is authoritative but asynchronous. Keep the hold
-        // active until that reconciler supplies a real cost; direct-provider
-        // calls settle immediately against their measured amount.
-        if (usageWrite.cost && !await settleAICreditReservation(prisma, ctx.organizationId, reservation.reservation.id, usageWrite.cost.totalCents, usageWrite.usageEventId)) {
-          await releaseAICreditReservation(prisma, ctx.organizationId, reservation.reservation.id);
-          throw new Error("ai_usage_meter_unavailable");
-        }
-        if (!usageWrite.cost && !gatewayUsageAttached && !await attachAICreditReservationUsage(prisma, ctx.organizationId, reservation.reservation.id, usageWrite.usageEventId!)) {
-          await releaseAICreditReservation(prisma, ctx.organizationId, reservation.reservation.id);
-          throw new Error("ai_usage_meter_unavailable");
-        }
-      }
-    } else {
-      await releaseAICreditReservation(prisma, ctx.organizationId, reservation.reservation.id);
-    }
+    }, reservation.admission);
     return apiOk(result, {
       correlationId,
       safetyContract: "audit_read_only",

@@ -14,6 +14,7 @@ const mocks = vi.hoisted(() => ({
   prepareProposalArgsForReview: vi.fn(),
   findManySkills: vi.fn(async (): Promise<Array<{ skillId: string; status: string }>> => []),
   findFirstEnvironment: vi.fn(),
+  rememberToolContext: vi.fn(async () => undefined),
 }));
 
 vi.mock("@/lib/desktop/resolveRequestDesktopSession", () => ({ resolveRequestDesktopSession: mocks.resolveRequestDesktopSession }));
@@ -30,6 +31,8 @@ vi.mock("@/lib/db", () => ({
 vi.mock("@/lib/axiom/agentRuntime/decisionLoop", () => ({ runDecisionLoop: mocks.runDecisionLoop }));
 vi.mock("@/lib/axiom/agentRuntime/toolExecution", () => ({ executeReadOnlyTool: mocks.executeReadOnlyTool, isProdEnvironmentTarget: vi.fn() }));
 vi.mock("@/lib/axiom/agentRuntime/proposalReview", () => ({ prepareProposalArgsForReview: mocks.prepareProposalArgsForReview }));
+
+vi.mock("@/lib/axiom/agentRuntime/workspaceMemory", async original => ({ ...await original<typeof import("@/lib/axiom/agentRuntime/workspaceMemory")>(), rememberToolContext: mocks.rememberToolContext }));
 
 function request(body: object) {
   return new NextRequest("https://visionxixlabs.com/api/desktop/agent/conversations/conv_1/messages", {
@@ -106,6 +109,27 @@ describe("POST /api/desktop/agent/conversations/[id]/messages", () => {
       organizationId: "org-1",
       preferredProvider: "anthropic",
     }));
+  });
+
+  it("forwards an explicitly chosen Gateway model without changing trusted identity", async () => {
+    mocks.runDecisionLoop.mockResolvedValue({ kind: "final", message: "Ready." });
+    const { POST } = await import("../route");
+    const res = await POST(request({ message: "hello", preferredProvider: "vercel_gateway", preferredModel: "vendor/approved", userId: "forged" }), params);
+    expect(res.status).toBe(200);
+    expect(mocks.runDecisionLoop).toHaveBeenCalledWith(expect.objectContaining({ organizationId: "org-1", userId: "user-1", preferredProvider: "vercel_gateway", preferredModel: "vendor/approved" }));
+  });
+
+  it.each([null, false, {}, [], "", "service-default", "vmc/private", "vendor/with space", "vendor/" + "x".repeat(200)])("rejects invalid model preference before persisting a turn: %j", async preferredModel => {
+    const { POST } = await import("../route");
+    const res = await POST(request({ message: "hello", preferredProvider: "vercel_gateway", preferredModel }), params);
+    expect(res.status).toBe(400); expect(await res.json()).toEqual({ ok: false, error: "invalid_preferred_model" });
+    expect(mocks.createTurn).not.toHaveBeenCalled(); expect(mocks.transaction).not.toHaveBeenCalled(); expect(mocks.runDecisionLoop).not.toHaveBeenCalled();
+  });
+
+  it.each([undefined, "openai"])("rejects an explicit model without matching Gateway provider before persistence (%s)", async preferredProvider => {
+    const { POST } = await import("../route");
+    const res = await POST(request({ message: "hello", preferredProvider, preferredModel: "vendor/approved" }), params);
+    expect(res.status).toBe(400); expect(mocks.createTurn).not.toHaveBeenCalled(); expect(mocks.runDecisionLoop).not.toHaveBeenCalled();
   });
 
   it("uses the authenticated actor rather than body-supplied billing identity", async () => {
@@ -308,4 +332,63 @@ describe("POST /api/desktop/agent/conversations/[id]/messages", () => {
     expect(JSON.parse(toolTurn!.data.content)).toMatchObject({ kind: "aws_bounded_observation", connection: { version: 2 } });
   });
 
+});
+
+
+describe("authenticated Agent NDJSON endpoint", () => {
+  function streamingRequest() {
+    return new NextRequest("https://visionxixlabs.com/api/desktop/agent/conversations/conv_1/messages", { method: "POST", headers: { "content-type": "application/json", accept: "application/x-ndjson" }, body: JSON.stringify({ message: "Inspect the file" }) });
+  }
+  beforeEach(() => {
+    vi.clearAllMocks();
+    mocks.resolveRequestDesktopSession.mockResolvedValue(session);
+    mocks.findFirstConversation.mockResolvedValue({ id: "conv_1", organizationId: "org-1", userId: "user-1", title: null });
+  });
+  it("rejects unauthenticated and foreign-owned conversations before a stream is created", async () => {
+    const { POST } = await import("../route");
+    mocks.resolveRequestDesktopSession.mockResolvedValue(undefined);
+    expect((await POST(streamingRequest(), params)).status).toBe(401);
+    mocks.resolveRequestDesktopSession.mockResolvedValue(session);
+    mocks.findFirstConversation.mockResolvedValue(null);
+    expect((await POST(streamingRequest(), params)).status).toBe(404);
+    expect(mocks.runDecisionLoop).not.toHaveBeenCalled(); expect(mocks.createTurn).not.toHaveBeenCalled();
+  });
+  it("streams a draft and returns only a persisted, final response", async () => {
+    let finish!: () => void;
+    const gate = new Promise<void>(resolve => { finish = resolve; });
+    mocks.runDecisionLoop.mockImplementation(async input => { input.streaming.onDraft("Draft explanation"); await gate; return { kind: "final", message: "Verified explanation" }; });
+    const { POST } = await import("../route");
+    const response = await POST(streamingRequest(), params);
+    expect(response.headers.get("content-type")).toContain("application/x-ndjson");
+    const reader = response.body!.getReader();
+    const initial = new TextDecoder().decode((await reader.read()).value);
+    expect(initial).toContain('"draft_delta"'); expect(initial).not.toContain('"result"');
+    finish();
+    let rest = "";
+    while (true) { const next = await reader.read(); if (next.done) break; rest += new TextDecoder().decode(next.value); }
+    expect(rest).toContain('"result"'); expect(rest).toContain("Verified explanation");
+    expect(mocks.createTurn).toHaveBeenCalledWith({ data: { conversationId: "conv_1", role: "assistant", content: "Verified explanation" } });
+    expect(mocks.resolveRequestDesktopSession).toHaveBeenCalledWith(expect.anything(), expect.objectContaining({ allowApiKey: false }));
+  });
+});
+
+
+it("does not begin proposal persistence after cancellation during workspace memory", async () => {
+  vi.clearAllMocks();
+  mocks.resolveRequestDesktopSession.mockResolvedValue(session);
+  mocks.findFirstConversation.mockResolvedValue({ id: "conv_1", organizationId: "org-1", userId: "user-1", title: null });
+  mocks.runDecisionLoop.mockResolvedValue({ kind: "proposal", toolName: "open_github_pull_request", args: {}, riskLevel: "medium", message: "Review before action" });
+  mocks.prepareProposalArgsForReview.mockResolvedValue({ ok: true, args: {} });
+  let entered!: () => void, finish!: () => void;
+  const started = new Promise<void>(resolve => { entered = resolve; });
+  const gate = new Promise<void>(resolve => { finish = resolve; });
+  mocks.rememberToolContext.mockImplementationOnce(async () => { entered(); await gate; });
+  const controller = new AbortController();
+  const request = new NextRequest("https://visionxixlabs.com/api/desktop/agent/conversations/conv_1/messages", { method: "POST", signal: controller.signal, headers: { "content-type": "application/json", accept: "application/x-ndjson" }, body: JSON.stringify({ message: "Prepare review" }) });
+  const { POST } = await import("../route");
+  const response = await POST(request, params);
+  await started; controller.abort(); finish();
+  expect(await response.text()).not.toContain('"result"');
+  expect(mocks.createProposal).not.toHaveBeenCalled();
+  expect(mocks.createTurn).not.toHaveBeenCalledWith(expect.objectContaining({ data: expect.objectContaining({ role: "assistant" }) }));
 });

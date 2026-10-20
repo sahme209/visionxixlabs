@@ -130,3 +130,12 @@ it("observes only the three pinned bootstrap boundaries without retaining Flight
   let reads = 0; const untrusted = Object.defineProperty({}, 'next', { get() { reads++; return 'PRIVATE'; } });
   expect(read(untrusted).bootstrapRegistered).toBe(false); expect(reads).toBe(0);
 });
+
+it("observes completed polls without global capture state, extra evaluations or longer deadlines", async () => {
+  const f = fixture(); let polls = 0;
+  await expect(f.waitFor(() => false, undefined, 300, undefined, () => { polls++; })).rejects.toThrow("website_dom_timeout");
+  expect(polls).toBe(3);
+  expect(f.evaluations()).toBe(3);
+  expect(f.elapsed()).toBe(300);
+  expect(f.diagnostic()).toBeNull();
+});
