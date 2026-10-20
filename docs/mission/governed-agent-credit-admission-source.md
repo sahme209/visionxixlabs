@@ -81,3 +81,9 @@ release-on-uncertain handling and ordinary SDK retry behavior. Only its existing
 reservation/output constants are shared here; its accounting is not refactored.
 This checkpoint must not be reported as fixing admission for every AI lane.
 
+
+Full CI identified a read/write authority mismatch: the read-only current allowance
+query omitted newly retained `dispatch_unknown` holds. The reader now counts the
+same uncertain capacity as reservation admission, without mutating or releasing
+rows; the existing cross-query parity regression remains strict. This prevents
+customer-facing available credits from overstating capacity after uncertain calls.

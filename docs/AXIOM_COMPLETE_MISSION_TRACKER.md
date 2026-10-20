@@ -1997,3 +1997,14 @@ reservation; no pricing/configuration change is made to force acceptance.
 Final desktop95cb3747 nativeCI39458777269 passed; full typecheck/test steps passed.
 Browser39458777306 failed after11 checks at docs with zero docs requests; no
 acceptance waiver or speculative production fix. These gates remain in PR183.
+
+
+Combined e4df013f browser39460604823 passed all12 checks; root inspected six
+screenshots. Exact sanitized receipt/hashes are preserved in
+mission/public-website-browser-acceptance-e4df013f.json. Historical navigation
+intermittency remains causally unconfirmed; this is not attributed to billing
+source changes. NativeCI39460604879 passed. Full CI39460604860 passed types but
+failed one of8453 executed tests: current allowance omitted uncertain holds.
+The reader now includes dispatch_unknown to match admission authority; strict
+query-parity regression is retained. Focused checks precede a new exact-head CI.
+No failed check is waived, and no production deployment or database change occurs.

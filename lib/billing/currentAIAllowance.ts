@@ -15,7 +15,8 @@ const cents = (value: unknown): value is number => Number.isSafeInteger(value) &
 
 /** Read-only snapshot of reserveAICredits' current authority, not an admission
  * decision. Expired unlinked holds are excluded without modifying their rows.
- * Linked/pending holds remain included regardless of age or month. */
+ * Linked/pending and uncertain-dispatch holds remain included regardless of age
+ * or month; a missing provider response is not proof of zero cost. */
 export async function readCurrentAIAllowance(repo: Pick<PrismaClient, "$transaction">, organizationId: string, now = new Date()): Promise<CurrentAIAllowance> {
   if (!organizationId || !Number.isFinite(now.getTime())) return { available: false };
   try {
@@ -32,6 +33,7 @@ export async function readCurrentAIAllowance(repo: Pick<PrismaClient, "$transact
           { status: "reserved", usageEventId: null, expiresAt: { gt: decisionNow } },
           { status: "reserved", usageEventId: { not: null } },
           { status: "pending_settlement" },
+          { status: "dispatch_unknown" },
         ] }, _sum: { reservedCents: true } }),
       ]);
       if (billing !== null && (!billing || typeof billing.tier !== "string" || !billing.tier.trim() || !["trialing", "active", "past_due", "canceled", "no_plan"].includes(billing.status))) return { available: false };
