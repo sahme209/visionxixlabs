@@ -47,6 +47,6 @@ describe("stat-first owned group inventory", () => {
 it("selects supported custom-server Webpack without widening config roots or worker settings", () => {
   const actual = { turbopack: { root: "/workspace/owned" }, experimental: { cpus: 1, webpackBuildWorker: true }, typescript: { tsconfigPath: "tsconfig.next.json" }, serverExternalPackages: ["provider-sdk"] };
   const options = policy.ownedNextOptions({ root: "/workspace/owned", dist: "/workspace/owned/.next/visual-fixture", appPort: 38001, actual });
-  expect(options).toEqual({ dev: true, webpack: true, dir: "/workspace/owned", hostname: "127.0.0.1", port: 38001, conf: { ...actual, distDir: ".next/visual-fixture", typescript: { tsconfigPath: ".next/visual-fixture/tsconfig.json" } } });
-  expect(options.conf.turbopack).toBe(actual.turbopack); expect(options.conf.experimental).toBe(actual.experimental); expect(options.conf.serverExternalPackages).toBe(actual.serverExternalPackages);
+  expect(options).toEqual({ dev: true, webpack: true, dir: "/workspace/owned", hostname: "127.0.0.1", port: 38001, conf: { ...actual, experimental: { ...actual.experimental, reactDebugChannel: false }, distDir: ".next/visual-fixture", typescript: { tsconfigPath: ".next/visual-fixture/tsconfig.json" } } });
+  expect(options.conf.turbopack).toBe(actual.turbopack); expect(options.conf.experimental).toEqual({ ...actual.experimental, reactDebugChannel: false }); expect(actual.experimental).not.toHaveProperty("reactDebugChannel"); expect(options.conf.serverExternalPackages).toBe(actual.serverExternalPackages);
 });

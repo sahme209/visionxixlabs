@@ -89,11 +89,11 @@ it("refuses a symlinked tsconfig", () => {
   expect(() => applyOwnedWebsiteConfig("phase-development-server", {})).toThrow();
 });
 
-it("changes only the owned output paths while preserving actual configuration", () => {
+it("changes only owned paths and disables fixture debug channel while preserving actual configuration", () => {
   const { dist } = fixture();
-  const actual = { turbopack: { root }, experimental: { cpus: 1 }, typescript: { tsconfigPath: "tsconfig.next.json", ignoreBuildErrors: false }, serverExternalPackages: ["provider-sdk"] };
-  expect(applyOwnedWebsiteConfig("phase-development-server", actual)).toEqual({ ...actual, distDir: dist.slice(root.length + 1), typescript: { ...actual.typescript, tsconfigPath: `${dist.slice(root.length + 1)}/tsconfig.json` } });
-  expect(actual.typescript.tsconfigPath).toBe("tsconfig.next.json");
+  const actual = { turbopack: { root }, experimental: { cpus: 1, reactDebugChannel: true }, typescript: { tsconfigPath: "tsconfig.next.json", ignoreBuildErrors: false }, serverExternalPackages: ["provider-sdk"] };
+  expect(applyOwnedWebsiteConfig("phase-development-server", actual)).toEqual({ ...actual, experimental: { ...actual.experimental, reactDebugChannel: false }, distDir: dist.slice(root.length + 1), typescript: { ...actual.typescript, tsconfigPath: `${dist.slice(root.length + 1)}/tsconfig.json` } });
+  expect(actual.typescript.tsconfigPath).toBe("tsconfig.next.json"); expect(actual.experimental.reactDebugChannel).toBe(true);
 });
 
 it("includes the nested dev directory in the existing owned-root byte accounting", () => {

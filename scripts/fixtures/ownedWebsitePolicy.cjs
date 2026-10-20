@@ -111,7 +111,10 @@ function groupMembers(group, io = { pids: () => readdirSync('/proc').filter(name
 function ownedNextOptions({ root, dist, appPort, actual }) {
   endpoint(appPort);
   assert.ok(dist.startsWith(`${root}/.next/visual-`), 'website_owned_dist');
-  return { dev: true, webpack: true, dir: root, hostname: '127.0.0.1', port: appPort, conf: { ...actual, distDir: relative(root, dist), typescript: { ...actual.typescript, tsconfigPath: relative(root, join(dist, 'tsconfig.json')) } } };
+  // Owned fixture intentionally denies HMR; its Flight decoder must not require
+  // the WebSocket-backed development debug stream. The config-file reload path
+  // applies the same override after validating its private owner context.
+  return { dev: true, webpack: true, dir: root, hostname: '127.0.0.1', port: appPort, conf: { ...actual, experimental: { ...actual.experimental, reactDebugChannel: false }, distDir: relative(root, dist), typescript: { ...actual.typescript, tsconfigPath: relative(root, join(dist, 'tsconfig.json')) } } };
 }
 function sameOwner(original, current) { return original.pid === current.pid && original.start === current.start && original.group === original.pid && current.group === original.group && current.executable === original.executable; }
 function listeners() {

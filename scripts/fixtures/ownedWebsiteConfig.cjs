@@ -33,7 +33,8 @@ function readPrivateConfig(path) {
 }
 
 /** Custom-server prepare reloads next.config.ts without options.conf. Put only
- * the reviewed fixture's output paths in that supported config-file path. */
+ * the reviewed fixture's output paths and disabled WebSocket-backed debug channel
+ * in that supported config-file path. No production/default config is mutated. */
 function applyOwnedWebsiteConfig(phase, actual) {
   const mode = process.env.AXIOM_WEBSITE_VISUAL_MODE;
   const configPath = process.env.AXIOM_WEBSITE_CONFIG;
@@ -53,6 +54,6 @@ function applyOwnedWebsiteConfig(phase, actual) {
   assert.equal(config.hashes?.[self], digest(self), 'website_config_source_pin');
   const tsconfig = join(config.dist, 'tsconfig.json');
   assert.deepEqual(readPrivateConfig(tsconfig), { extends: join(root, 'tsconfig.next.json') }, 'website_config_tsconfig_content');
-  return { ...actual, distDir: relative(root, config.dist), typescript: { ...actual.typescript, tsconfigPath: relative(root, tsconfig) } };
+  return { ...actual, experimental: { ...actual.experimental, reactDebugChannel: false }, distDir: relative(root, config.dist), typescript: { ...actual.typescript, tsconfigPath: relative(root, tsconfig) } };
 }
 module.exports = { applyOwnedWebsiteConfig };
