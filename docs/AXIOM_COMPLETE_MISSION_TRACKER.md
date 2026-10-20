@@ -3401,3 +3401,38 @@ are not canceled by a pause; coverage of pending builds/Preview/separate service
 remains unknown. Added exact read-only owner/support questions to website-only
 approval plan. No new project, build, deploy, API mutation, provider call or GitHub
 change occurred. Preservecheckpoint4db11e37 and all blocked PRs/local commits.
+
+### Local visual review without Vercel — checkpoint4db11e37
+
+Owner requested actual local website or rendered screenshot fallback; no billing
+investigation or hosted provisioning. Prepared detached exact-source worktree
+`/tmp/axiom-preview-4db11e37` without altering current branches or existing work.
+Reused installed dependencies through a symlink; no install/build or paid call.
+Reviewed existing owned visual fixture, which allowlists homepage/product/approval
+docs GETs, denies external/API transport, strips usable integration credentials,
+and retains managed proxy/CA/process controls. Its --prepare failed at its first
+Git child: spawnSync git EPERM. No Next server/browser started, no fresh page
+render or live preview URL is available. No guard was removed, subprocess denial
+bypassed, or sandbox escalation used to evade it. Current exposed environment
+tools offer no verified owner browser-port forwarding route.
+
+Fallback delivered: read-only downloaded existing Actions artifact12287220263
+from the already completed isolated website run atfbf65b84a538349c9e466ca5c0706896f7a028fb.
+No workflow ran. Extracted only six expected PNGs, verified every SHA256 against
+`docs/mission/public-website-browser-acceptance-fbf65b84.json`. Screenshots are real
+Next/browser renders, not invented/mockup images. They show the homepage tour
+section, Agent review/held Terraform stories, mobile/reduced-motion product tour,
+and approval documentation, NOT the complete homepage or all pricing/signup pages.
+Compared4db11e37 against captured source: no differences in app/page, app/product,
+app/docs/approval-workflow, marketing/nav/footer/layout/styles/public assets.
+Shared demo metadata has changed, so retained images are explicitly not a fresh
+exact-checkpoint acceptance claim. Current key-page rendering remains unverified.
+
+Owner-review files outside Git: `/workspace/artifacts/axiom-website-review/` has
+index.html, six images, provenance.json and axiom-website-screenshots.zip. Gallery
+is script-free, self-only images, no credentials or external integration. Open
+index.html (or unzip locally and double-click it); click an image for full size.
+Requested opening gallery in app panel; tool reports queued, not proof owner saw
+it. Home/product-mobile/docs PNGs were also visually inspected via image tool.
+Existing rendered samples remain labeled simulated; no auth/native/payment/cloud
+or real provider acceptance. No push/merge/deployment/production change occurred.
