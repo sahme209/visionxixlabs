@@ -2129,3 +2129,18 @@ text must match a bounded digest encoding. Four suites/23 checks, focused types,
 lint and independent source review pass. Exact-head CI remains required; no
 historical rows/logs, provider behavior, payments or production systems change.
 Evidence and limits: mission/ai-invocation-log-redaction-source.md.
+
+Next desktop streaming stage, research checkpoint (no implementation yet): the
+installed AI SDK exposes fullStream, terminal usage/provider metadata and abort
+hooks, but GatewayProvider.streamText currently buffers generation and native
+src-tauri/src/http.rs also awaits response.text(). An SDK-only change cannot
+satisfy desktop streaming. Reuse the current policy/credit kernel, then design a
+server-owned admitted stream with one attempt and terminal generation evidence;
+add a bounded, cancellable, origin/path-restricted native channel before sharing
+incremental rendering across chat/editor. Preserve unknown holds after partial
+failure or cancellation; do not pretend raw deltas are approved tool execution.
+Review native capability, tenant/actor, backpressure, cost and abort boundaries
+before implementation. Acceptance requires actual pre-completion desktop chunks,
+revocation/cancellation/restart behavior, singular usage and separately authorized
+real-provider/native checks. No paid probe, endpoint activation or installer is
+authorized by this plan; current PR184/browser gates remain first.
