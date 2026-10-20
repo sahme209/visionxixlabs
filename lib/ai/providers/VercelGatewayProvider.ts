@@ -163,17 +163,23 @@ export class VercelGatewayProvider implements AIProvider {
 
   /** Internal single-attempt lane: returns the paid envelope before parsing.
    * This is a retry restriction, never a public metering/authorization switch. */
-  generateStructuredTextOnce(text: string, schemaHint: string, options?: AIRequestOptions): Promise<AITextResponse> {
+  generateTextOnce(prompt: string, options?: AIRequestOptions): Promise<AITextResponse> {
     const maxTokens = options?.maxTokens ?? AI_REQUEST_MAX_OUTPUT_TOKENS;
     if (!Number.isSafeInteger(maxTokens) || maxTokens < 1 || maxTokens > AI_REQUEST_MAX_OUTPUT_TOKENS) {
       throw new AIProviderError({ provider: this.name, kind: "bad_response", message: "governed output token bound is invalid" });
     }
-    return this.generateTextWithRetries(text, {
+    return this.generateTextWithRetries(prompt, {
       ...options,
       maxTokens,
+    }, 0);
+  }
+
+  generateStructuredTextOnce(text: string, schemaHint: string, options?: AIRequestOptions): Promise<AITextResponse> {
+    return this.generateTextOnce(text, {
+      ...options,
       temperature: options?.temperature ?? 0,
       system: `Return valid JSON only. The required shape is: ${schemaHint}`,
-    }, 0);
+    });
   }
 
   async healthCheck(options?: AIRequestOptions): Promise<AIHealthCheck> {

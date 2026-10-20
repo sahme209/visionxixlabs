@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-const m = vi.hoisted(() => ({ reserve: vi.fn(), claim: vi.fn(), write: vi.fn(), transaction: vi.fn(), extract: vi.fn(), ordinaryExtract: vi.fn() }));
+const m = vi.hoisted(() => ({ reserve: vi.fn(), claim: vi.fn(), write: vi.fn(), transaction: vi.fn(), extract: vi.fn(), ordinaryExtract: vi.fn(), text: vi.fn(), ordinaryText: vi.fn() }));
 vi.mock("@/lib/db", () => ({ prisma: { $transaction: m.transaction } }));
 vi.mock("@/lib/billing/aiCreditReservation", () => ({ reserveAICredits: m.reserve, claimLegacyAICreditDispatch: m.claim }));
 vi.mock("@/lib/billing/recordAIUsageEvent", () => ({ recordAIUsageEvent: m.write, recordReservedAIUsageEventV2: vi.fn() }));
@@ -10,10 +10,12 @@ vi.mock("../providers/VercelGatewayProvider", async importOriginal => ({ ...awai
   isConfigured() { return true; }
   generateStructuredTextOnce = m.extract;
   extractStructuredData = m.ordinaryExtract;
+  generateTextOnce = m.text;
+  generateText = m.ordinaryText;
 } }));
 
 import { AIProviderManager } from "../AIProviderManager";
-import { admitGovernedExtract } from "@/lib/billing/governedExtractAdmission";
+import { admitAIText, admitGovernedExtract } from "@/lib/billing/governedExtractAdmission";
 
 const scope = { organizationId: "org", userId: "member", correlationId: "request:0" };
 const response = { provider: "vercel_gateway", model: "vendor/model", gatewayGenerationId: "generation", latencyMs: 1, text: '{"action":"respond"}', usage: { promptTokens: 2, completionTokens: 3, totalTokens: 5 } };
@@ -31,6 +33,7 @@ describe("actual manager admitted extraction boundary", () => {
     m.write.mockResolvedValue({ recorded: true, usageEventId: "usage", pendingSettlement: true });
     m.extract.mockResolvedValue(response);
     m.ordinaryExtract.mockResolvedValue(structured);
+    m.text.mockResolvedValue(response); m.ordinaryText.mockResolvedValue(response);
   });
   it("dispatches once only after durable claim, with one ledger writer and no capability in SDK options", async () => {
     const mgr = new AIProviderManager();
@@ -85,5 +88,30 @@ describe("actual manager admitted extraction boundary", () => {
     await expect(new AIProviderManager().extractStructuredData("prompt", "schema", scope)).resolves.toEqual(structured);
     expect(m.reserve).not.toHaveBeenCalled(); expect(m.claim).not.toHaveBeenCalled();
     expect(m.write).toHaveBeenCalledTimes(1); expect(m.write.mock.calls[0]).toHaveLength(1);
+  });
+  it("the generic admitted text lane dispatches once and writes once before returning data", async () => {
+    const mgr = new AIProviderManager(), admitted = await admitAIText({ ...scope, idempotencyKey: "generic_request_123456" });
+    if (!admitted.ok) throw new Error("expected admission");
+    await expect(mgr.generateTextWithAdmission("prompt", scope, admitted.admission)).resolves.toEqual(response);
+    expect(m.text).toHaveBeenCalledOnce(); expect(m.write).toHaveBeenCalledOnce();
+    expect(m.write).toHaveBeenCalledWith(expect.objectContaining({ metadata: { route: "api/ai/generate" } }), expect.anything());
+    expect(m.ordinaryText).not.toHaveBeenCalled(); expect(m.extract).not.toHaveBeenCalled();
+    await expect(mgr.generateTextWithAdmission("prompt", scope, admitted.admission)).rejects.toThrow();
+    expect(m.text).toHaveBeenCalledOnce();
+  });
+  it.each(["sdk", "usage", "writer"])("generic admitted text %s failure does not allow redispatch", async kind => {
+    const mgr = new AIProviderManager(), admitted = await admitAIText({ ...scope, idempotencyKey: "generic_request_123456" });
+    if (!admitted.ok) throw new Error("expected admission");
+    if (kind === "sdk") m.text.mockRejectedValue(new Error("unknown outcome"));
+    if (kind === "usage") m.text.mockResolvedValue({ ...response, usage: undefined });
+    if (kind === "writer") m.write.mockResolvedValue({ recorded: false });
+    await expect(mgr.generateTextWithAdmission("prompt", scope, admitted.admission)).rejects.toThrow();
+    await expect(mgr.generateTextWithAdmission("prompt", scope, admitted.admission)).rejects.toThrow();
+    expect(m.text).toHaveBeenCalledOnce();
+  });
+  it("ordinary text generation remains unrelated to the admitted route's accounting", async () => {
+    await expect(new AIProviderManager().generateText("prompt", scope)).resolves.toEqual(response);
+    expect(m.reserve).not.toHaveBeenCalled(); expect(m.claim).not.toHaveBeenCalled(); expect(m.write).not.toHaveBeenCalled();
+    expect(m.ordinaryText).toHaveBeenCalledOnce(); expect(m.text).not.toHaveBeenCalled();
   });
 });

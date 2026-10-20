@@ -46,6 +46,14 @@ describe("VercelGatewayProvider", () => {
     expect(generate.mock.calls[1][0]).not.toHaveProperty("maxRetries");
   });
 
+  it("generic single-attempt text preserves system/temperature and validated output bound with SDK retries disabled", async () => {
+    generate.mockResolvedValue({ text: "answer", finishReason: "stop", usage: { inputTokens: 4, outputTokens: 2, totalTokens: 6 }, providerMetadata: { gateway: { generationId: "gen_text_once" } } });
+    const provider = new VercelGatewayProvider("provider/model");
+    await expect(provider.generateTextOnce("prompt", { system: "Keep it concise", temperature: 0.4, maxTokens: 20, organizationId: "org" })).resolves.toMatchObject({ text: "answer", gatewayGenerationId: "gen_text_once" });
+    expect(generate).toHaveBeenCalledOnce();
+    expect(generate).toHaveBeenCalledWith(expect.objectContaining({ maxRetries: 0, maxOutputTokens: 20, temperature: 0.4, system: "Keep it concise", providerOptions: { gateway: expect.objectContaining({ user: "org" }) } }));
+  });
+
   it.each([0, -1, 4097, Infinity, 1.5])("refuses an admitted output bound of %s before SDK dispatch", value => {
     expect(() => new VercelGatewayProvider("provider/model").generateStructuredTextOnce("decide", "{}", { maxTokens: value })).toThrow();
     expect(generate).not.toHaveBeenCalled();

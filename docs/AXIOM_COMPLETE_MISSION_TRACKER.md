@@ -2008,3 +2008,28 @@ failed one of8453 executed tests: current allowance omitted uncertain holds.
 The reader now includes dispatch_unknown to match admission authority; strict
 query-parity regression is retained. Focused checks precede a new exact-head CI.
 No failed check is waived, and no production deployment or database change occurs.
+
+
+Generic generation source now reuses the same durable admission/usage kernel as
+Agent extraction: existing header/idempotency and response/error contracts,
+trusted actor, closed server task, one provider attempt and singular attribution.
+Only isolated denial before claim may release an unclaimed hold. SDK/missingusage/
+writer/commit uncertainty retains capacity. Author95 focused checks and imported
+types/lint pass; root independently52 targeted route/kernel/manager checks pass.
+Details: mission/generic-ai-credit-admission-source.md. Other ordinary manager
+callers, actual provider-cost coverage and real customer acceptance remain open.
+Prepared PGc4883f99 acceptance is reused in this batch: six actual-SQL callbacks
+in the existing owned fixture, nine inert registration/classifier checks passed.
+Actual SQL/concurrency is NOT EXECUTED; ownership/native runtime gates unchanged.
+Corrected0f24 browser39461979743 passed12 checks with safe cleanup; exact receipt
+and source-based reuse of e4's six reviewed screenshots are preserved in
+mission/public-website-browser-acceptance-0f24f083.json. Historical causal limit
+remains; no hidden retry/deadline or production routing change is introduced.
+
+
+PR183 merged normally as32989ecf199aae97bc78802204b1bf6e5e028552 after
+exact0f24f083 fullCI39461979386 (types, full tests, auth evidence and build),
+desktopCI39461979388 and browser39461979743 passed. No deployment was requested.
+The next focused source batch closes generic text generation's uncertainty path
+with the same ledger and includes the preserved prepared SQL cases. Live SQL,
+provider, pricing/cost coverage and production activation are still not verified.

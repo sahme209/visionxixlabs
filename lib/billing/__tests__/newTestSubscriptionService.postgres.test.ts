@@ -21,6 +21,7 @@ import { createStripeTestProvider } from "../newTestSubscription/stripeTestProvi
 
 import { fixtureAllocationDDL } from "../newTestSubscription/fixtureAllocation";
 import { registerAnniversaryAcceptance } from "./fixtures/newTestAnniversaryAcceptance";
+import { registerLegacyAgentAdmissionAcceptance } from "./fixtures/legacyAgentAdmissionAcceptance";
 import { prepareAnniversaryHttp, exerciseAnniversaryHttp } from "./fixtures/newTestAnniversaryHttp";
 import { reverseAICreditRefund } from "../aiCreditFulfillment";
 
@@ -487,6 +488,7 @@ suite("owned PG17 new TEST subscription service, synthetic provider only", () =>
     }
   }, 180000);
 
+  registerLegacyAgentAdmissionAcceptance({ context: () => ({ db, url, runtime, stores }) });
   registerAnniversaryAcceptance({ context: () => ({ db, url, runtime, stores }), refund: reverseAICreditRefund,
     observeRefund(listener) { if (refundBinding.observer) throw new Error("owned_refund_observer_busy"); refundBinding.observer = listener; return () => { refundBinding.observer = null; }; } });
 
