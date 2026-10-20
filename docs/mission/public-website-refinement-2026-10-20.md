@@ -279,3 +279,33 @@ types, scoped lint and syntax checks pass after preserving all newer diagnostic
 fields during integration. No proxy, header, permission or deadline change.
 Desktop CI39446921397 also passes on53f66063. New exact-head full CI/browser
 acceptance and clean screenshot inspection remain required before merge.
+
+
+Exact40f25fa6 browser39449126737 passes actual Essential-only consent and
+all ten preceding demo interaction checks, then reaches the existing absolute
+120-second driver limit during documentation navigation. Owned groups are empty;
+no completed navigation is claimed. Its timeout-only DOM observation is null
+because the absolute limit precedes that local wait's timeout. Full CI catches
+one stale fixture-order assertion (734 files/8287 tests pass,1test fails); the
+assertion now verifies the documented readiness→real consent→dismissal→capture
+order, retains all six screenshot names and exception-redaction checks, and the
+three focused suites pass34 cases. This is an expected contract update to the
+reviewed capture sequence, not suppression of failed product behavior.
+
+Installed Next helpers disprove an earlier untested redirect-count hypothesis:
+fully stripped routing headers yield2fake fetches/1redirect, not21. Preserving
+all hash inputs yields1/0; partially preserving only Next-Url yields21/21 up to
+the actual client's bounded replay limit. This is protocol compatibility proof,
+not yet the recorded browser timeout's cause. Any fixture correction must retain
+all relevant bounded headers together and preserve existing public-only I/O.
+
+
+Reviewed proxy correction8e07bbd9 preserves only bounded framework hash inputs,
+with exact scalar own-data validation, prefetch1/2/3 and the existing three
+public Next-Url paths. Invalid sets refuse atomically; cookies, authorization
+and arbitrary headers remain unforwarded. All route/origin/method/process and
+time bounds remain. Root84 cases across seven suites pass, with strict imported
+types/lint; additional invalid-prefetch0 regression passes in37 focused cases.
+Independent root-union review accepts preserved phases, script counters, cleanup
+metadata and distinct documentation pre-wait/timeout observations. Actual
+integrated browser acceptance remains required; no production fix is inferred.

@@ -62,14 +62,17 @@ it("fails immediately on a missing playback control while retaining the same-pol
   expect(f.diagnostic()).toEqual({ phase: "homepage_playback", predicateExceptionClass: "TypeError", nextMarkers: { bootstrapRegistered: false, flightArrayPresent: false, flightConsumerInstalled: false }, lastDomSnapshot: { ...snapshot, readyState: "complete", playPresent: false, playDisabled: null } });
 });
 
-it("redacts unknown predicate exception names and keeps document-state screenshot before mandatory playback checks", async () => {
+it("redacts unknown predicate exception names and captures after mandatory playback readiness and real consent dismissal", async () => {
   const f = fixture();
   await expect(f.waitFor(() => { throw { name: "PRIVATE_URL", message: "PRIVATE_SECRET" }; }, undefined, 45000, "homepage_playback")).rejects.toThrow("website_browser_evaluation_failed");
   expect(f.diagnostic().predicateExceptionClass).toBe("other"); expect(JSON.stringify(f.diagnostic())).not.toContain("PRIVATE");
   const documentReady = source.indexOf("await navigate('/', 'homepage_document')");
   const screenshot = source.indexOf("await frame('home-desktop')");
   const playback = source.indexOf("undefined, 45000, 'homepage_playback'");
-  expect(documentReady).toBeGreaterThan(0); expect(screenshot).toBeGreaterThan(documentReady); expect(playback).toBeGreaterThan(screenshot);
+  const consent = source.indexOf("await click('Essential only')");
+  const dismissed = source.indexOf("await waitFor(() => !document.querySelector('[role=\"dialog\"][aria-labelledby=\"privacy-consent-title\"]'))");
+  expect(documentReady).toBeGreaterThan(0); expect(playback).toBeGreaterThan(documentReady);
+  expect(consent).toBeGreaterThan(playback); expect(dismissed).toBeGreaterThan(consent); expect(screenshot).toBeGreaterThan(dismissed);
   expect(source.match(/await frame\('/g)).toHaveLength(6);
 });
 
