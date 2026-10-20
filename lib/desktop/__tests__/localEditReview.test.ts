@@ -33,3 +33,18 @@ it("accepts a coordinated existing-file proposal set without changing order", as
     {...multi.argsJson, files: [{path: "a.ts", content: "a"}, {path: "A.ts", content: "b"}], _review: {kind: "github_files", files: [{path: "a.ts", baseContent: "a", baseSha: "a"}, {path: "A.ts", baseContent: "b", baseSha: "b"}]}},
   ]) expect(localEditProposals({...multi, argsJson: bad})).toEqual([]);
 });
+it("classifies creation snapshots separately without weakening the existing Save parser", async () => {
+  const {localCreationProposals} = await import("../../../desktop/src/lib/localEditReview");
+  const creation = {...proposal, argsJson: {...proposal.argsJson, _review: {...proposal.argsJson._review, baseSha: null, baseContent: ""}}};
+  expect(localEditProposal(creation)).toBeNull();
+  expect(localCreationProposals(creation)).toMatchObject([{kind: "create", path: "src/app.ts", baseContent: ""}]);
+  expect(localCreationProposals({...creation, argsJson: {...creation.argsJson, _review: {...creation.argsJson._review, baseContent: "not empty"}}})).toEqual([]);
+  expect(localCreationProposals({...creation, argsJson: {...creation.argsJson, path: "ID_RSA"}})).toEqual([]);
+  expect(localCreationProposals({...creation, argsJson: {...creation.argsJson, content: "😀".repeat(30000)}})).toEqual([]);
+});
+it("preserves a mixed update/create set and rejects malformed absence evidence as a whole", async () => {
+  const {localCodingProposals} = await import("../../../desktop/src/lib/localEditReview");
+  const args = {repositoryFullName: "fixture/repo", branch: "feature", files: [{path: "a.ts", content: "next"}, {path: "tests/a.test.ts", content: "test"}], _review: {kind: "github_files", files: [{path: "a.ts", baseSha: "blob", baseContent: "old"}, {path: "tests/a.test.ts", baseSha: null, baseContent: ""}]}};
+  expect(localCodingProposals({id: "p", toolName: "commit_github_files", argsJson: args}).map(e=>e.kind ?? "existing")).toEqual(["existing", "create"]);
+  expect(localCodingProposals({id: "p", toolName: "commit_github_files", argsJson: {...args, _review: {...args._review, files: args._review.files.map(e=>({...e, baseContent:"not empty"}))}}})).toEqual([]);
+});

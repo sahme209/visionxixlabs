@@ -475,11 +475,11 @@ it("connects confirmed local selection to the actual App Agent while retaining t
   expect((screen.getByRole("textbox", {name: "Editing main.ts"}) as HTMLTextAreaElement).value).toBe("unsaved selected code");
   expect(m.invoke.mock.calls.filter(([name]) => name === "write_repository_file")).toHaveLength(0);
 });
-it.each([false, true])("connects a saved AI file proposal to local review and explicit Save without approving GitHub (multi=%s)", async multi => {
+it.each([false, true, "with-new-file"])("connects a saved AI file proposal to local review and explicit Save without approving GitHub (multi=%s)", async multi => {
   m.client.hasAuth.mockReturnValue(true);
   m.client.verifyCurrentCredential.mockResolvedValue({ok: true, data: {kind: "desktop_session", organizationId: "fixture-workspace", role: "owner", capabilities: [], access: {allowed: true, code: "active", title: "Access active", message: "Fixture", billingStatus: "no_plan", planTier: "trial"}}});
   const proposal = {id: "file-proposal", toolName: "commit_github_file", status: "proposed", riskLevel: "medium", argsJson: {repositoryFullName: "fixture/repository", branch: "feature", path: "main.ts", content: "proposed local change", _review: {kind: "github_file", baseSha: "blob-sha", baseContent: "original"}}};
-  const action = multi ? {...proposal, toolName: "commit_github_files", argsJson: {repositoryFullName: "fixture/repository", branch: "feature", files: [{path: "main.ts", content: "proposed local change"}, {path: "other.ts", content: "second change"}], _review: {kind: "github_files", files: [{path: "main.ts", baseSha: "a", baseContent: "original"}, {path: "other.ts", baseSha: "b", baseContent: "second original"}]}}} : proposal;
+  const action = multi ? {...proposal, toolName: "commit_github_files", argsJson: {repositoryFullName: "fixture/repository", branch: "feature", files: [{path: "main.ts", content: "proposed local change"}, {path: "other.ts", content: "second change"}], _review: {kind: "github_files", files: [{path: "main.ts", baseSha: "a", baseContent: "original"}, {path: "other.ts", baseSha: multi === "with-new-file" ? null : "b", baseContent: multi === "with-new-file" ? "" : "second original"}]}}} : proposal;
   m.client.getAgentConversation.mockResolvedValue({ok: true, data: {...summary, turns: [], actions: [action]}});
   m.invoke.mockImplementation(async (command: string) => {
     if (command === "default_repos_directory") return "/owned";

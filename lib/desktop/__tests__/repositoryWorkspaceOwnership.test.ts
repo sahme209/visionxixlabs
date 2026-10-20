@@ -628,3 +628,33 @@ it("navigates an unsaved source line without writes or checks and rejects invali
   expect(editor.value).toBe("first\nchanged second\nlast");
   expect(m.invoke.mock.calls.filter(([command]) => command === "write_repository_file" || command === "run_repository_check")).toHaveLength(0);
 });
+it("requires explicit consent for creation and never uses the existing-file writer", async () => {
+  const existing = m.invoke.getMockImplementation()!;
+  m.invoke.mockImplementation(async (command: string, args: Record<string,string>) => command === "create_repository_file" ? undefined : existing(command,args));
+  const edit = {kind: "create" as const, proposalId: "new", repositoryFullName: "fixture/a", branch: "feature", path: "new.ts", baseContent: "", content: "new code"};
+  render(createElement(RepositoryWorkspaceView, {editRequest:{context:m.client.config,edit}}));
+  await screen.findByRole("button", {name:"same.ts"});
+  fireEvent.click(screen.getByRole("button", {name:"Create new.ts locally"}));
+  expect(screen.getByLabelText("New file content to create").textContent).toBe("new code");
+  expect(m.invoke.mock.calls.filter(([name])=>name==="create_repository_file")).toHaveLength(0);
+  fireEvent.click(screen.getByRole("button", {name:"Create local file"}));
+  await waitFor(()=>expect(m.invoke).toHaveBeenCalledWith("create_repository_file",{repositoryPath:"/owned/A",relativePath:"new.ts",content:"new code",repositoryFullName:"fixture/a",branch:"feature"}));
+  expect(m.invoke.mock.calls.filter(([name])=>name==="write_repository_file"||name==="run_repository_check")).toHaveLength(0);
+});
+it.each(["cancel", "wrong-branch", "occupied"])("keeps creation fail-closed for %s", async outcome => {
+  const existing = m.invoke.getMockImplementation()!;
+  m.invoke.mockImplementation(async (command: string,args: Record<string,string>) => {
+    if (command === "create_repository_file") throw Error("Target already exists; nothing was overwritten.");
+    return existing(command,args);
+  });
+  if (outcome === "wrong-branch") statuses = path=>({...status(path),branch:"different"});
+  const edit = {kind:"create" as const,proposalId:"p",repositoryFullName:"fixture/a",branch:"feature",path:"new.ts",baseContent:"",content:"proposed"};
+  render(createElement(RepositoryWorkspaceView,{editRequest:{context:m.client.config,edit}}));
+  await screen.findByRole("button",{name:"same.ts"});
+  fireEvent.click(screen.getByRole("button",{name:"Create new.ts locally"}));
+  fireEvent.click(screen.getByRole("button",{name:outcome === "cancel" ? "Cancel" : "Create local file"}));
+  if(outcome === "wrong-branch") await screen.findByText(/proposal's repository and branch/);
+  if(outcome === "occupied") await screen.findByText(/Target already exists/);
+  expect(m.invoke.mock.calls.filter(([name])=>name==="create_repository_file")).toHaveLength(outcome === "occupied" ? 1 : 0);
+  expect(m.invoke.mock.calls.filter(([name])=>name==="write_repository_file"||name==="run_repository_check")).toHaveLength(0);
+});

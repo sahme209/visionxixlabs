@@ -1,5 +1,5 @@
 import { verificationReceipt, type VerificationReceipt } from "../lib/verificationReceipt";
-import { localEditBlocker, type LocalEditRequest } from "../lib/localEditReview";
+import { localEditBlocker, type LocalEditRequest, type LocalCreationProposal } from "../lib/localEditReview";
 import { localCodeContextPrompt, type LocalCodeSelection } from "../lib/localCodeContext";
 import { FileDiff } from "../components/FileDiff";
 import { editorMatches, replaceEditorMatch, editorLineRange } from "../lib/editorSearch";
@@ -42,6 +42,7 @@ interface Confirmation {
   confirmLabel: string;
   destructive?: boolean;
   preview?: string;
+  previewLabel?: string;
   onConfirm: () => void | Promise<void>;
 }
 
@@ -257,7 +258,7 @@ function RepositoryWorkspaceSession({ revision, active, onAskAgent, editRequest,
     if (!owns(captured)) return;
     const request = ++operationRequest.current;
     const current = () => owns(captured) && request === operationRequest.current;
-    if (["save", "pull", "branch", "commit", "pr", "clone"].includes(label)) invalidateVerification();
+    if (["save", "create", "pull", "branch", "commit", "pr", "clone"].includes(label)) invalidateVerification();
     activeBusy.current = label; setBusy(label); setError(null); setNotice(null);
     try { await operation(current); } catch (cause) { if (current()) setError(cause instanceof Error ? cause.message : String(cause)); }
     finally { if (current()) { activeBusy.current = null; setBusy(null); } }
@@ -476,6 +477,7 @@ function RepositoryWorkspaceSession({ revision, active, onAskAgent, editRequest,
     if (!active || activeBusy.current || !request || !file || !owns(owner.current)) return;
     const edit = request.edits?.find(candidate => candidate.path === file.path) ?? request.edit;
     if (request.context !== desktopClient.config || request.workspace !== workspace) { setError("Agent draft belongs to a different sign-in or workspace."); return; }
+    if (edit.kind === "create") { setError("New-file proposals require explicit Create, never loading over an existing file."); return; }
     const snapshot = file.content;
     await run("load-agent-draft", async current => {
       const live = await invoke<RepositoryStatus>("repository_status", {repositoryPath: file.repository});
@@ -487,6 +489,28 @@ function RepositoryWorkspaceSession({ revision, active, onAskAgent, editRequest,
       if (appliedEdit.current?.request !== request) appliedEdit.current = {request, paths: new Set()};
       appliedEdit.current.paths.add(edit.path);
       setNotice("Agent draft loaded locally. Review changes, then explicitly Save and run verification. GitHub approval is unchanged.");
+    });
+  }
+
+  function createAgentFile(edit: LocalCreationProposal) {
+    const request = editRequest, repository = owner.current.repository;
+    if (!active || activeBusy.current || !request || !repository || request.context !== desktopClient.config || request.workspace !== workspace) return;
+    if (loadedFile.current && loadedFile.current.content !== loadedFile.current.saved) { setError("Save or discard existing edits before creating a proposed file."); return; }
+    setConfirmation({title: `Create ${edit.path}?`, description: "Create only this new local file. Existing files and symlinks must be refused. Parent folders must already exist. This does not approve GitHub or run checks. If writing fails, inspect the potentially partial new file before retrying. Other files are separate operations.", confirmLabel: "Create local file", preview: edit.content, previewLabel: "New file content to create",
+      onConfirm: async () => {
+        if (activeBusy.current || request.context !== desktopClient.config || request.workspace !== workspace) return;
+        if (loadedFile.current && loadedFile.current.content !== loadedFile.current.saved) { setError("Save or discard existing edits before creating a proposed file."); return; }
+        await run("create", async current => {
+          const live = await invoke<RepositoryStatus>("repository_status", {repositoryPath: repository});
+          if (!current()) return;
+          if (live.rootPath !== repository || live.repositoryFullName?.toLowerCase() !== edit.repositoryFullName.toLowerCase() || live.branch !== edit.branch) { setError("Open the proposal's repository and branch before creating this file."); return; }
+          if (loadedFile.current && loadedFile.current.content !== loadedFile.current.saved) { setError("Existing edits changed during creation review. Review them before creating the file."); return; }
+          await invoke("create_repository_file", {repositoryPath: repository, relativePath: edit.path, content: edit.content, repositoryFullName: edit.repositoryFullName, branch: edit.branch});
+          if (!current()) return;
+          await refreshRepository(repository);
+          if (current()) setNotice(`Created ${edit.path} locally. Open it to inspect; verification and GitHub approval remain separate.`);
+        });
+      },
     });
   }
 
@@ -618,10 +642,11 @@ function RepositoryWorkspaceSession({ revision, active, onAskAgent, editRequest,
         <p>{appliedEdit.current?.request === editRequest ? appliedEdit.current.paths.size : 0} of {editRequest.edits.length} drafts loaded during this review. This is not saved or verified status; local writes are per file.</p>
         {editRequest.edits.map(edit => <details key={edit.path} className="rounded border border-white/10 p-2">
           <summary className="cursor-pointer">{edit.path}</summary>
-          <button type="button" disabled={Boolean(busy) || !selectedRepository || status?.repositoryFullName?.toLowerCase() !== edit.repositoryFullName.toLowerCase() || status?.branch !== edit.branch || !files.includes(edit.path)} onClick={() => selectFile(edit.path)} className="btn-secondary my-2 disabled:opacity-40">Open {edit.path} for local review</button>
+          {edit.kind === "create" ? <button type="button" disabled={Boolean(busy) || !selectedRepository} onClick={() => createAgentFile(edit)} className="btn-secondary my-2 disabled:opacity-40">Create {edit.path} locally</button> : <button type="button" disabled={Boolean(busy) || !selectedRepository || status?.repositoryFullName?.toLowerCase() !== edit.repositoryFullName.toLowerCase() || status?.branch !== edit.branch || !files.includes(edit.path)} onClick={() => selectFile(edit.path)} className="btn-secondary my-2 disabled:opacity-40">Open {edit.path} for local review</button>}
           <FileDiff before={edit.baseContent} after={edit.content} label={`Agent proposed diff for ${edit.path}`} />
         </details>)}
       </div> : <FileDiff before={editRequest.edit.baseContent} after={editRequest.edit.content} label="Agent proposed local diff" />}
+      {editRequest.edit.kind === "create" && !editRequest.edits?.length && <button type="button" disabled={Boolean(busy) || !selectedRepository} onClick={() => { if (editRequest.edit.kind === "create") createAgentFile(editRequest.edit); }} className="btn-secondary mt-2">Create {editRequest.edit.path} locally</button>}
       <button type="button" disabled={Boolean(busy) || !selectedFile || editRequest.context !== desktopClient.config || editRequest.workspace !== workspace} onClick={() => void loadAgentDraft()} className="btn-secondary mt-2 disabled:opacity-40">Load editor draft</button>
     </section>}
     {(error || notice) && <div role={error ? "alert" : "status"} className={`border-b px-4 py-2 text-xs ${error ? "border-rose-500/20 bg-rose-500/5 text-rose-300" : "border-emerald-500/20 bg-emerald-500/5 text-emerald-300"}`}>{error ?? notice}</div>}
@@ -711,7 +736,7 @@ function RepositoryWorkspaceSession({ revision, active, onAskAgent, editRequest,
       <div role="alertdialog" aria-modal="true" aria-labelledby="repository-confirmation-title" onMouseDown={(event) => event.stopPropagation()} className="w-full max-w-md rounded-xl border border-white/10 bg-[#181a1d] p-5 shadow-2xl">
         <h2 id="repository-confirmation-title" className="text-base font-semibold text-white">{confirmation.title}</h2>
         <p className="mt-2 text-sm leading-6 text-zinc-400">{confirmation.description}</p>
-        {confirmation.preview && <pre aria-label="Check output excerpt to prepare" className="mt-3 max-h-48 overflow-auto whitespace-pre-wrap break-words text-xs text-zinc-300">{confirmation.preview}</pre>}
+        {confirmation.preview && <pre aria-label={confirmation.previewLabel ?? "Check output excerpt to prepare"} className="mt-3 max-h-48 overflow-auto whitespace-pre-wrap break-words text-xs text-zinc-300">{confirmation.preview}</pre>}
         <div className="mt-5 flex justify-end gap-2">
           <button type="button" autoFocus className="btn-secondary" onClick={() => setConfirmation(null)}>Cancel</button>
           <button type="button" className={confirmation.destructive ? "rounded-md bg-rose-500/90 px-3 py-2 text-xs font-medium text-white hover:bg-rose-400" : "btn-primary"} onClick={() => void confirmAction()}>{confirmation.confirmLabel}</button>

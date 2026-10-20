@@ -1,4 +1,4 @@
-import { localEditProposals, type LocalEditProposal } from "../lib/localEditReview";
+import { localCodingProposals, type LocalCodingProposal } from "../lib/localEditReview";
 import { localCodeContextPrompt, type LocalCodeSelection } from "../lib/localCodeContext";
 import { selectSkillInvocation } from "../lib/skillInvocation";
 import { rememberConversationDraft } from "../lib/conversationDrafts";
@@ -165,7 +165,7 @@ export type AgentSettingsDestination = "models" | "agents";
 export type AgentLocalCodeRequest = LocalCodeSelection & { context: object; workspace?: string };
 export interface AgentSkillRequest { skillId: string; context: object; workspace?: string }
 
-export function AgentChatView({ onOpenSettings, identity, active = true, requestedSkill, requestedLocalCode, onReviewLocalEdit }: { onOpenSettings?: (destination: AgentSettingsDestination) => void; identity?: VerifiedDesktopIdentity; active?: boolean; requestedSkill?: AgentSkillRequest; requestedLocalCode?: AgentLocalCodeRequest; onReviewLocalEdit?: (edit: LocalEditProposal, edits?: LocalEditProposal[]) => void }) {
+export function AgentChatView({ onOpenSettings, identity, active = true, requestedSkill, requestedLocalCode, onReviewLocalEdit }: { onOpenSettings?: (destination: AgentSettingsDestination) => void; identity?: VerifiedDesktopIdentity; active?: boolean; requestedSkill?: AgentSkillRequest; requestedLocalCode?: AgentLocalCodeRequest; onReviewLocalEdit?: (edit: LocalCodingProposal, edits?: LocalCodingProposal[]) => void }) {
   const context = desktopClient.config;
   const workspace = identity?.organizationId;
   const [scope, setScope] = useState(() => ({ context, workspace, generation: 0 }));
@@ -176,7 +176,7 @@ export function AgentChatView({ onOpenSettings, identity, active = true, request
   return <AgentChatSession key={scope.generation} onOpenSettings={onOpenSettings} identity={identity} active={active} requestedSkill={requestedSkill} requestedLocalCode={requestedLocalCode} onReviewLocalEdit={onReviewLocalEdit} />;
 }
 
-function AgentChatSession({ onOpenSettings, identity, active, requestedSkill, requestedLocalCode, onReviewLocalEdit }: { onOpenSettings?: (destination: AgentSettingsDestination) => void; identity?: VerifiedDesktopIdentity; active: boolean; requestedSkill?: AgentSkillRequest; requestedLocalCode?: AgentLocalCodeRequest; onReviewLocalEdit?: (edit: LocalEditProposal, edits?: LocalEditProposal[]) => void }) {
+function AgentChatSession({ onOpenSettings, identity, active, requestedSkill, requestedLocalCode, onReviewLocalEdit }: { onOpenSettings?: (destination: AgentSettingsDestination) => void; identity?: VerifiedDesktopIdentity; active: boolean; requestedSkill?: AgentSkillRequest; requestedLocalCode?: AgentLocalCodeRequest; onReviewLocalEdit?: (edit: LocalCodingProposal, edits?: LocalCodingProposal[]) => void }) {
   const [conversationId, setConversationId] = useState<string | null>(null);
   const [conversations, setConversations] = useState<ConversationSummary[]>([]);
   const [turns, setTurns] = useState<ChatTurn[]>([]);
@@ -1083,9 +1083,9 @@ function RepositoryEvidenceDetails({ action }: { action: Proposal }) {
   </details>;
 }
 
-export function ProposalCard({ proposal, deciding, onApprove, onReject, onReviewLocally }: { onReviewLocally?: (edit: LocalEditProposal, edits?: LocalEditProposal[]) => void; proposal: Proposal; deciding: boolean; onApprove: () => void; onReject: () => void }) {
+export function ProposalCard({ proposal, deciding, onApprove, onReject, onReviewLocally }: { onReviewLocally?: (edit: LocalCodingProposal, edits?: LocalCodingProposal[]) => void; proposal: Proposal; deciding: boolean; onApprove: () => void; onReject: () => void }) {
   const [showDetails, setShowDetails] = useState(false);
-  const localEdits = localEditProposals(proposal);
+  const localEdits = localCodingProposals(proposal);
   const localEdit = localEdits[0];
   const args = typeof proposal.argsJson === "object" && proposal.argsJson !== null
     ? proposal.argsJson as Record<string, unknown>
