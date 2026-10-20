@@ -2429,3 +2429,33 @@ report gate and cleanup at e3a472df. PR187's browser39486872669 still fails the
 unchanged documentation boundary after11 checks: click79.824s,388 polls to120s,
 no documentation request at proxy, source unchanged and cleanup empty. This
 blocker remains; no same-head retry, source shortcut or production release.
+
+### Joined native renderer acceptance and platform evidence
+
+Research: existing acceptance joined the real composer/client/server framing over
+HTTP, and separately joined client/native bridge. The remaining JS seam was the
+actual rendered chat/editor through that bridge. Reuse the same application
+fixture with a synthetic Rust IPC peer and demand acknowledgements, rather than
+adding another app implementation or invoking any provider. Acceptance: draft
+before completion, no draft authority, persisted terminal proposal, GET-only
+interruption recovery, Stop cancellation and no late proposal or second POST.
+Both chat and repository editor now run over HTTP and native JS paths; seven
+joined application cases pass. The IPC peer is synthetic; this does not prove
+WKWebView GUI, native pairing, hosted models or actual SQL persistence.
+
+PR189 merged as41f1d5db after exact fb96e817 checks: Desktop CI39488172098 passed
+Linux and macOS source builds,20 native tests on macOS and Clippy; full
+39488172109 passed8687 tests, types, offline authentication and website build.
+No packaging, installer, signing or production deployment was performed.
+
+Independent owned HTTP job118859068996 in run39489639807 passed the exact seeded
+Next/Auth.js/billing journey and receipt gate at e356c036, with33 other cases
+explicitly skipped; cleanup passed. Its separate32-case SQL job remains required.
+This is isolated synthetic-provider application evidence, not signup or hosted
+Stripe acceptance. Prior browser-navigation failures remain documented; no waiver.
+
+Independent review found no blocker in the joined harness. Synthetic ACKs do not
+validate native request isolation; Stop tests server-suppressed late completion,
+not direct late IPC injection. Teardown releases fixture gates even on assertion
+failure. All56 affected application/client/bridge/decoder checks and scoped types
+and lint pass. No product implementation or approval boundary changed.

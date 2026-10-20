@@ -2,6 +2,12 @@
 import { createElement } from "react";
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import { act, cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
+const native = vi.hoisted(() => ({ invoke: vi.fn() }));
+vi.mock("@tauri-apps/api/core", () => ({
+  invoke: native.invoke,
+  Channel: class { constructor(public onmessage: (event: unknown) => void) {} },
+}));
+import { desktopFetch } from "../../../desktop/src/lib/desktopTransport";
 import { desktopClient } from "../../../desktop/src/lib/desktopClient";
 import { AgentChatView } from "../../../desktop/src/views/AgentChatView";
 import { agentMessageHttpStream } from "../agentMessageHttpStream";
@@ -12,16 +18,18 @@ const summary = { id: "wire-conversation", title: "Wire acceptance", createdAt: 
 const proposal = { id: "saved-proposal", toolName: "commit_github_file", argsJson: { repositoryFullName: "fixture/repository", branch: "main", path: "src/app.ts", content: "reviewed change" }, riskLevel: "medium", status: "proposed" };
 const data = { reply: "Persisted reviewed change", proposal, usage: { decisionSteps: 1, inputTokens: 12, outputTokens: 8, totalTokens: 20 } };
 const ok = (data: unknown) => Response.json({ ok: true, data });
+const fixtureDisposals = new Set<() => void>();
 function gate() { let release!: () => void; const promise = new Promise<void>(resolve => { release = resolve; }); return { promise, release }; }
 
 beforeEach(() => {
   window.localStorage.clear(); Element.prototype.scrollTo = vi.fn();
   desktopClient.setApiBase("https://visionxixlabs.com"); desktopClient.setSession("synthetic-wire-session");
 });
-afterEach(() => { cleanup(); desktopClient.setSession(undefined); vi.unstubAllGlobals(); });
+afterEach(() => { cleanup(); desktopClient.setSession(undefined); for (const dispose of fixtureDisposals) dispose(); fixtureDisposals.clear(); delete (window as unknown as Record<string, unknown>).__TAURI_INTERNALS__; vi.unstubAllGlobals(); });
 
-function fixture(interrupted = false) {
+function fixture(interrupted = false, transport: "http" | "native" = "http") {
   const completion = gate();
+  fixtureDisposals.add(completion.release);
   let saved = false;
   let signal: AbortSignal | undefined;
   const fetcher = vi.fn(async (url: string | URL | Request, init?: RequestInit) => {
@@ -49,7 +57,39 @@ function fixture(interrupted = false) {
     if (path === "/api/desktop/environments") return ok({ environments: [] });
     throw new Error(`Unexpected request: ${init?.method ?? "GET"} ${path}`);
   });
-  vi.stubGlobal("fetch", fetcher);
+  if (transport === "native") {
+    // Only the Rust IPC peer is synthetic. Exercise real renderer, client,
+    // native JS transport, server framing and decoder together, with demand ACK.
+    Object.defineProperty(window, "__TAURI_INTERNALS__", { configurable: true, value: {} });
+    let stop: (() => void) | undefined;
+    let acknowledge: (() => void) | undefined;
+    native.invoke.mockReset().mockImplementation(async (command: string, payload: { request: { path: string; method: string; headers: Record<string, string>; body?: string }; onEvent: { onmessage(event: unknown): void } }) => {
+      if (command === "desktop_http_stream_ack") { acknowledge?.(); return; }
+      if (command === "desktop_http_stream_cancel") { stop?.(); acknowledge?.(); return; }
+      if (command === "desktop_http_request") {
+        const response = await fetcher("https://visionxixlabs.com" + payload.request.path, payload.request);
+        return { status: response.status, headers: Object.fromEntries(response.headers), body: await response.text() };
+      }
+      if (command !== "desktop_http_stream") throw new Error("unexpected_native_command");
+      const abort = new AbortController(); stop = () => abort.abort();
+      void (async () => {
+        const response = await fetcher("https://visionxixlabs.com" + payload.request.path, { ...payload.request, signal: abort.signal });
+        const reader = response.body!.getReader();
+        payload.onEvent.onmessage({ kind: "headers", status: response.status, headers: Object.fromEntries(response.headers) });
+        let sequence = 0;
+        try {
+          while (!abort.signal.aborted) {
+            const next = await reader.read();
+            if (next.done) { payload.onEvent.onmessage({ kind: "end" }); return; }
+            const demand = new Promise<void>(resolve => { acknowledge = resolve; });
+            payload.onEvent.onmessage({ kind: "chunk", sequence: sequence++, bytes: [...next.value] });
+            await demand;
+          }
+        } finally { await reader.cancel(); reader.releaseLock(); }
+      })().catch(() => payload.onEvent.onmessage({ kind: "error" }));
+    });
+    vi.stubGlobal("fetch", desktopFetch);
+  } else vi.stubGlobal("fetch", fetcher);
   return { fetcher, completion, signal: () => signal, messages: () => fetcher.mock.calls.filter(([url]) => new URL(String(url)).pathname.endsWith("/messages")) };
 }
 
@@ -68,8 +108,8 @@ async function compose(mode: "chat" | "code") {
   await screen.findByText("Review draft before persistence");
 }
 
-it.each(["chat", "code"] as const)("connects the actual %s composer and HTTP stream without granting draft authority", async mode => {
-  const wire = fixture(); await compose(mode);
+it.each([ ["chat", "http"], ["code", "http"], ["chat", "native"], ["code", "native"] ] as const)("connects the actual %s composer over %s without granting draft authority", async (mode, transport) => {
+  const wire = fixture(false, transport); await compose(mode);
   expect(screen.getByText(/verification pending/)).toBeTruthy();
   expect(screen.queryByRole("button", { name: "Approve & run" })).toBeNull();
   expect(wire.messages()).toHaveLength(1);
@@ -82,8 +122,8 @@ it.each(["chat", "code"] as const)("connects the actual %s composer and HTTP str
   expect(wire.fetcher.mock.calls.filter(([, init]) => init?.method === "POST")).toHaveLength(1);
 });
 
-it("recovers a persisted interrupted response through GET without resending or approving", async () => {
-  const wire = fixture(true); await compose("code");
+it.each(["http", "native"] as const)("recovers a persisted interrupted %s response through GET without resending or approving", async transport => {
+  const wire = fixture(true, transport); await compose("code");
   await act(async () => { wire.completion.release(); });
   const reload = await screen.findByRole("button", { name: "Reload saved conversation" });
   expect(screen.queryByRole("button", { name: "Approve & run" })).toBeNull();
@@ -93,4 +133,16 @@ it("recovers a persisted interrupted response through GET without resending or a
   expect(screen.getByRole("button", { name: "Approve & run" })).toBeTruthy();
   expect(wire.messages()).toHaveLength(1);
   expect(wire.fetcher.mock.calls.filter(([, init]) => init?.method === "POST")).toHaveLength(1);
+});
+
+it("stops a native composer response without accepting late proposal authority or sending again", async () => {
+  const wire = fixture(false, "native"); await compose("code");
+  fireEvent.click(screen.getByRole("button", { name: "Stop response" }));
+  await screen.findByRole("button", { name: "Reload saved conversation" });
+  expect(wire.signal()?.aborted).toBe(true);
+  expect(native.invoke.mock.calls.some(([command]) => command === "desktop_http_stream_cancel")).toBe(true);
+  await act(async () => { wire.completion.release(); });
+  expect(screen.queryByRole("button", { name: "Approve & run" })).toBeNull();
+  expect(screen.queryByText(data.reply)).toBeNull();
+  expect(wire.messages()).toHaveLength(1);
 });
