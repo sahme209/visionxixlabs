@@ -1685,3 +1685,26 @@ All earlier mission requirements and cloud, Agent, ECS, Terraform/Airflow,
 billing, desktop, governance and security workstreams remain active. Production
 database binding, a usable PITR point and verified restore readiness remain
 unresolved; Google success does not clear those gates.
+
+
+## 2026-10-20 — additive Grok and governed specialist-agent scope
+
+The owner’s new instruction is preserved in
+[the source](AXIOM_DESKTOP_GROK_MULTI_AGENT_REQUEST_2026-10-20.md) and represented
+unit-for-unit as source 24 in the requirement register. All previous requirement
+objects remain unchanged. This is scheduled within the existing desktop AI/model
+phase and does not replace authentication, website or any other workstream.
+
+[The source audit and implementation/acceptance plan](DESKTOP_GROK_MODEL_AGENT_INTEGRATION_PLAN.md)
+records existing dormant xAI support, Gateway-only production routing, current
+one-model-per-provider selection, buffered streaming and governed skill/identity
+foundations. The requested real streaming, chat/editor model choice and five
+permission-scoped specialist agents remain incomplete. xAI’s official research
+multi-agent API has explicit custom-tool and visibility restrictions; it is not
+being represented as Axiom engineering orchestration or embedded consumer Grok.
+
+Actual authenticated provider, native application, sandbox tool and billing
+receipts remain required. No key, infrastructure, billing, deployment, database
+or installer configuration was changed. PR #182 remains gated on current CI and
+rendered browser acceptance; the lost local supervisor/navigation timeout is
+retained as a genuine validation blocker rather than waived.

@@ -71,6 +71,9 @@
     },
     {
       "path": "docs/AXIOM_PRIORITY_REFINEMENT_2026-10-20.md"
+    },
+    {
+      "path": "docs/AXIOM_DESKTOP_GROK_MULTI_AGENT_REQUEST_2026-10-20.md"
     }
   ],
   "requirements": [
@@ -50725,6 +50728,138 @@
       "nextAction": "Audit existing implementation against this requirement after priority-0 authentication; implement only uncovered work and retain approval gates.",
       "owner": "Codex; external acceptance/approvals remain founder-owned",
       "auditDepth": "New refinement represented; individual end-to-end acceptance pending"
+    },
+    {
+      "id": "R24-001",
+      "source": "docs/AXIOM_DESKTOP_GROK_MULTI_AGENT_REQUEST_2026-10-20.md",
+      "line": 3,
+      "section": "Desktop AI/model phase — additive owner instruction (2026-10-20)",
+      "requirement": "Continue the existing Axiom Agent master plan exactly where you left off; do not restart, change priorities, or deviate.",
+      "domain": "desktop AI and governance",
+      "scope": "process",
+      "status": "Partially implemented",
+      "verification": "Additive scope audited and scheduled in the existing desktop AI/model phase. Dormant xAI adapter, Gateway catalog, current model selection and governed skills are foundations only; real Grok, incremental streaming, per-model chat/editor selection and specialist multi-agent acceptance are not verified. No implementation or production enablement is claimed.",
+      "evidence": [
+        "docs/DESKTOP_GROK_MODEL_AGENT_INTEGRATION_PLAN.md",
+        "lib/ai/providers/XAIProvider.ts",
+        "lib/ai/gatewayModelCatalog.ts",
+        "desktop/src/views/AgentChatView.tsx",
+        "lib/axiom/agentRuntime/agentIdentityPolicy.ts"
+      ],
+      "prs": [],
+      "nextAction": "Continue current authentication/website priorities; during the established desktop AI phase extend existing Gateway/catalog/policy/runtime, then require actual authenticated isolated inference, native streaming, tool governance and cost acceptance described in the plan.",
+      "owner": "Codex; credentials, paid budget and production approvals remain owner-controlled",
+      "auditDepth": "Read-only source and official API review; scheduled implementation, no provider acceptance"
+    },
+    {
+      "id": "R24-002",
+      "source": "docs/AXIOM_DESKTOP_GROK_MULTI_AGENT_REQUEST_2026-10-20.md",
+      "line": 5,
+      "section": "Desktop AI/model phase — additive owner instruction (2026-10-20)",
+      "requirement": "Add Grok (xAI) as a supported AI provider alongside our existing planned models. Integrate it through the official xAI API or a verified compatible model gateway, with real authentication, model discovery, streaming responses, tool calling where supported, and secure credential management.",
+      "domain": "desktop AI and governance",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "Additive scope audited and scheduled in the existing desktop AI/model phase. Dormant xAI adapter, Gateway catalog, current model selection and governed skills are foundations only; real Grok, incremental streaming, per-model chat/editor selection and specialist multi-agent acceptance are not verified. No implementation or production enablement is claimed.",
+      "evidence": [
+        "docs/DESKTOP_GROK_MODEL_AGENT_INTEGRATION_PLAN.md",
+        "lib/ai/providers/XAIProvider.ts",
+        "lib/ai/gatewayModelCatalog.ts",
+        "desktop/src/views/AgentChatView.tsx",
+        "lib/axiom/agentRuntime/agentIdentityPolicy.ts"
+      ],
+      "prs": [],
+      "nextAction": "Continue current authentication/website priorities; during the established desktop AI phase extend existing Gateway/catalog/policy/runtime, then require actual authenticated isolated inference, native streaming, tool governance and cost acceptance described in the plan.",
+      "owner": "Codex; credentials, paid budget and production approvals remain owner-controlled",
+      "auditDepth": "Read-only source and official API review; scheduled implementation, no provider acceptance"
+    },
+    {
+      "id": "R24-003",
+      "source": "docs/AXIOM_DESKTOP_GROK_MULTI_AGENT_REQUEST_2026-10-20.md",
+      "line": 7,
+      "section": "Desktop AI/model phase — additive owner instruction (2026-10-20)",
+      "requirement": "Build a Cursor-style AI model selector inside the desktop chat and editor. Users should be able to choose between available Grok, OpenAI, Anthropic, and other supported models without complicated setup.",
+      "domain": "desktop AI and governance",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "Additive scope audited and scheduled in the existing desktop AI/model phase. Dormant xAI adapter, Gateway catalog, current model selection and governed skills are foundations only; real Grok, incremental streaming, per-model chat/editor selection and specialist multi-agent acceptance are not verified. No implementation or production enablement is claimed.",
+      "evidence": [
+        "docs/DESKTOP_GROK_MODEL_AGENT_INTEGRATION_PLAN.md",
+        "lib/ai/providers/XAIProvider.ts",
+        "lib/ai/gatewayModelCatalog.ts",
+        "desktop/src/views/AgentChatView.tsx",
+        "lib/axiom/agentRuntime/agentIdentityPolicy.ts"
+      ],
+      "prs": [],
+      "nextAction": "Continue current authentication/website priorities; during the established desktop AI phase extend existing Gateway/catalog/policy/runtime, then require actual authenticated isolated inference, native streaming, tool governance and cost acceptance described in the plan.",
+      "owner": "Codex; credentials, paid budget and production approvals remain owner-controlled",
+      "auditDepth": "Read-only source and official API review; scheduled implementation, no provider acceptance"
+    },
+    {
+      "id": "R24-004",
+      "source": "docs/AXIOM_DESKTOP_GROK_MULTI_AGENT_REQUEST_2026-10-20.md",
+      "line": 9,
+      "section": "Desktop AI/model phase — additive owner instruction (2026-10-20)",
+      "requirement": "Also add a multi-agent experience with specialized coding, debugging, code-review, Terraform, and cloud-deployment agents. Support agent selection, clear permissions, and enterprise admin controls. Investigate which Grok agent capabilities are actually exposed through official APIs rather than assuming all consumer Grok features can be embedded.",
+      "domain": "desktop AI and governance",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "Additive scope audited and scheduled in the existing desktop AI/model phase. Dormant xAI adapter, Gateway catalog, current model selection and governed skills are foundations only; real Grok, incremental streaming, per-model chat/editor selection and specialist multi-agent acceptance are not verified. No implementation or production enablement is claimed.",
+      "evidence": [
+        "docs/DESKTOP_GROK_MODEL_AGENT_INTEGRATION_PLAN.md",
+        "lib/ai/providers/XAIProvider.ts",
+        "lib/ai/gatewayModelCatalog.ts",
+        "desktop/src/views/AgentChatView.tsx",
+        "lib/axiom/agentRuntime/agentIdentityPolicy.ts"
+      ],
+      "prs": [],
+      "nextAction": "Continue current authentication/website priorities; during the established desktop AI phase extend existing Gateway/catalog/policy/runtime, then require actual authenticated isolated inference, native streaming, tool governance and cost acceptance described in the plan.",
+      "owner": "Codex; credentials, paid budget and production approvals remain owner-controlled",
+      "auditDepth": "Read-only source and official API review; scheduled implementation, no provider acceptance"
+    },
+    {
+      "id": "R24-005",
+      "source": "docs/AXIOM_DESKTOP_GROK_MULTI_AGENT_REQUEST_2026-10-20.md",
+      "line": 11,
+      "section": "Desktop AI/model phase — additive owner instruction (2026-10-20)",
+      "requirement": "These must be real functional integrations, not mockups. Preserve approval gates, audit logs, cost controls, and production restrictions.",
+      "domain": "desktop AI and governance",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "Additive scope audited and scheduled in the existing desktop AI/model phase. Dormant xAI adapter, Gateway catalog, current model selection and governed skills are foundations only; real Grok, incremental streaming, per-model chat/editor selection and specialist multi-agent acceptance are not verified. No implementation or production enablement is claimed.",
+      "evidence": [
+        "docs/DESKTOP_GROK_MODEL_AGENT_INTEGRATION_PLAN.md",
+        "lib/ai/providers/XAIProvider.ts",
+        "lib/ai/gatewayModelCatalog.ts",
+        "desktop/src/views/AgentChatView.tsx",
+        "lib/axiom/agentRuntime/agentIdentityPolicy.ts"
+      ],
+      "prs": [],
+      "nextAction": "Continue current authentication/website priorities; during the established desktop AI phase extend existing Gateway/catalog/policy/runtime, then require actual authenticated isolated inference, native streaming, tool governance and cost acceptance described in the plan.",
+      "owner": "Codex; credentials, paid budget and production approvals remain owner-controlled",
+      "auditDepth": "Read-only source and official API review; scheduled implementation, no provider acceptance"
+    },
+    {
+      "id": "R24-006",
+      "source": "docs/AXIOM_DESKTOP_GROK_MULTI_AGENT_REQUEST_2026-10-20.md",
+      "line": 13,
+      "section": "Desktop AI/model phase — additive owner instruction (2026-10-20)",
+      "requirement": "Do not interrupt the current Priority 0 authentication hotfix or Priority 1 website redesign. Schedule this work within the existing desktop AI/model integration phase. Continue all other master-plan tasks in their established order.",
+      "domain": "desktop AI and governance",
+      "scope": "process",
+      "status": "Partially implemented",
+      "verification": "Additive scope audited and scheduled in the existing desktop AI/model phase. Dormant xAI adapter, Gateway catalog, current model selection and governed skills are foundations only; real Grok, incremental streaming, per-model chat/editor selection and specialist multi-agent acceptance are not verified. No implementation or production enablement is claimed.",
+      "evidence": [
+        "docs/DESKTOP_GROK_MODEL_AGENT_INTEGRATION_PLAN.md",
+        "lib/ai/providers/XAIProvider.ts",
+        "lib/ai/gatewayModelCatalog.ts",
+        "desktop/src/views/AgentChatView.tsx",
+        "lib/axiom/agentRuntime/agentIdentityPolicy.ts"
+      ],
+      "prs": [],
+      "nextAction": "Continue current authentication/website priorities; during the established desktop AI phase extend existing Gateway/catalog/policy/runtime, then require actual authenticated isolated inference, native streaming, tool governance and cost acceptance described in the plan.",
+      "owner": "Codex; credentials, paid budget and production approvals remain owner-controlled",
+      "auditDepth": "Read-only source and official API review; scheduled implementation, no provider acceptance"
     }
   ],
   "workstreams": [
@@ -50766,14 +50901,21 @@
         "docs/AGENT_GOVERNED_ACTION_ACCEPTANCE.md",
         "docs/AGENT_AWS_OBSERVATIONS.md",
         "docs/mission/local-agent-readiness-http-acceptance.json",
-        "docs/mission/execution-2026-10-16.md"
+        "docs/mission/execution-2026-10-16.md",
+        "docs/DESKTOP_GROK_MODEL_AGENT_INTEGRATION_PLAN.md"
       ],
       "customerAcceptance": "Not verified",
       "acceptanceDependencies": [
         "auth_database"
       ],
       "blockers": "Actual provider and production identity schema acceptance pending.",
-      "nextAction": "Correlate the exact pinned framework fork with existing guard predicates read-only; preserve failed evidence and review any narrow source correction before another application attempt."
+      "nextAction": "Correlate the exact pinned framework fork with existing guard predicates read-only; preserve failed evidence and review any narrow source correction before another application attempt. Scheduled within the existing desktop AI/model phase: complete the Grok/model-selector/specialist-agent extension in docs/DESKTOP_GROK_MODEL_AGENT_INTEGRATION_PLAN.md without preempting current priorities.",
+      "scheduledExtension": {
+        "phase": "Existing desktop AI/model integration phase; preserve authentication and website priorities",
+        "scope": "Grok via verified Gateway or official API; real streaming; shared chat/editor per-model selector; governed coding/debugging/review/Terraform/cloud specialists",
+        "status": "Scheduled; implementation and provider/native acceptance pending",
+        "plan": "docs/DESKTOP_GROK_MODEL_AGENT_INTEGRATION_PLAN.md"
+      }
     },
     {
       "id": "github",
@@ -50979,14 +51121,21 @@
         "lib/desktop/__tests__/agentConnectedContext.test.ts",
         "docs/DESKTOP_AUTH_VERIFICATION_LIFECYCLE.md",
         "docs/mission/desktop-repository-catalog-local-acceptance.json",
-        "docs/mission/desktop-saved-signin-local-acceptance.json"
+        "docs/mission/desktop-saved-signin-local-acceptance.json",
+        "docs/DESKTOP_GROK_MODEL_AGENT_INTEGRATION_PLAN.md"
       ],
       "customerAcceptance": "Not verified",
       "acceptanceDependencies": [
         "auth_database"
       ],
       "blockers": "Actual signed-package persistence, legacy upgrade and denied-vault recovery require native hosts and approved account; prior mock builds may have lost legacy credentials, requiring authorized re-pairing.",
-      "nextAction": "Continue native customer-journey readiness without publishing installers or inferring native acceptance from React transport mocks."
+      "nextAction": "Continue native customer-journey readiness without publishing installers or inferring native acceptance from React transport mocks. Scheduled within the existing desktop AI/model phase: complete the Grok/model-selector/specialist-agent extension in docs/DESKTOP_GROK_MODEL_AGENT_INTEGRATION_PLAN.md without preempting current priorities.",
+      "scheduledExtension": {
+        "phase": "Existing desktop AI/model integration phase; preserve authentication and website priorities",
+        "scope": "Grok via verified Gateway or official API; real streaming; shared chat/editor per-model selector; governed coding/debugging/review/Terraform/cloud specialists",
+        "status": "Scheduled; implementation and provider/native acceptance pending",
+        "plan": "docs/DESKTOP_GROK_MODEL_AGENT_INTEGRATION_PLAN.md"
+      }
     },
     {
       "id": "billing",
