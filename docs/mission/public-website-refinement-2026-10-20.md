@@ -61,3 +61,11 @@ local dual-cache React declaration conflict was not a clean CI failure. The
 automated Vercel Agent review passed with zero suggestions; that is a source
 review, not a deployment or product acceptance result. Full CI and rendered
 acceptance remain required before merge.
+
+The first full CI suite at `786a990a` passed 8,179 tests and failed three
+source-text assertions in the two older public-presentation contracts. They
+still expected the retired headline, 1400px grid and lg navigation breakpoint.
+Those assertions now follow the approved shared 1280px/xl design and single
+scripted hero; all 11 tests in the affected files pass locally. This is a
+correction to stale presentation expectations, not a waiver of browser or CI
+acceptance. Final exact-head CI must rerun after the batched follow-up.
