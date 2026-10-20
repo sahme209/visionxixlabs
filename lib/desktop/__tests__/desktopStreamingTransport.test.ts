@@ -26,6 +26,34 @@ beforeEach(() => {
 afterEach(() => { vi.unstubAllGlobals(); });
 
 describe("native Agent byte-stream transport", () => {
+  it.each([
+    { path: "/api/desktop/workspace-members", body: { userId: "other-member", role: "operator" } },
+    { path: "/api/desktop/airflow/automations/automation_1", body: { enabled: false } },
+  ])("preserves existing authenticated client PATCH operation $path", async expected => {
+    vi.stubGlobal("fetch", desktopFetch);
+    native.invoke.mockResolvedValue({ status: 200, body: '{"ok":true,"data":{}}', headers: { "content-type": "application/json" } });
+    const client = new DesktopClient({ sessionToken: "synthetic-desktop-token" });
+    const result = expected.path.endsWith("workspace-members")
+      ? await client.updateWorkspaceMemberRole("other-member", "operator")
+      : await client.setAirflowAutomationEnabled("automation_1", false);
+    expect(result.ok).toBe(true);
+    expect(native.invoke).toHaveBeenCalledWith("desktop_http_request", { request: expect.objectContaining({ method: "PATCH", path: expected.path,
+      body: JSON.stringify(expected.body), headers: expect.objectContaining({ authorization: "Bearer synthetic-desktop-token" }) }) });
+  });
+  it.each([
+    "/api/desktop/workspace-members/", "/api/desktop/workspace-members?role=owner", "/api/desktop/workspace-members#fragment",
+    "/api/desktop/workspace-members\n", "/api/desktop/airflow/automations/a\n",
+    "/api/desktop/airflow/automations/", "/api/desktop/airflow/automations/" + "a".repeat(201),
+    "/api/desktop/airflow/automations/a/extra", "/api/desktop/airflow/automations/a%2fb", "/api/desktop/airflow/automations/é",
+    "/api/desktop/airflow/automations/a b", "/api/desktop/airflow/automations/a\\b", "/api/desktop/airflow/automations/a\nb",
+    "/api/desktop/agent/conversations/a/messages", "/api/desktop/other/../workspace-members",
+    "https://visionxixlabs.com/api/desktop/other/../workspace-members",
+    "https://visionxixlabs.com/api/desktop/workspace-members?query=1", "https://elsewhere.invalid/api/desktop/workspace-members",
+  ])("refuses unsupported raw PATCH target before native invocation: %s", async target => {
+    native.invoke.mockResolvedValue({ status: 200, body: "{}", headers: {} });
+    await expect(desktopFetch(target, { method: "PATCH", body: "{}" })).rejects.toThrow();
+    expect(native.invoke).not.toHaveBeenCalled();
+  });
   it("routes the real DesktopClient through the streaming bridge and decodes its incremental result", async () => {
     vi.stubGlobal("fetch", desktopFetch);
     const client = new DesktopClient({ sessionToken: "synthetic-desktop-token" });
