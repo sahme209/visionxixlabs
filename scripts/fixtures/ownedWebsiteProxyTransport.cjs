@@ -1,6 +1,22 @@
 /* eslint-disable @typescript-eslint/no-require-imports -- Fixed loopback proxy policy; transport is injected for tests. */
 'use strict';
 const { allowedRequest, endpoint } = require('./ownedWebsitePolicy.cjs');
+/** Preserve every present hash input, or refuse the whole request. No partial
+ * fallback, credentials, arbitrary headers or destination selectors. */
+function frameworkHeaders(headers) {
+  const limits = { rsc: 1, 'next-router-state-tree': 40000, 'next-router-prefetch': 1, 'next-router-segment-prefetch': 4096, 'next-url': 128 };
+  const result = {};
+  for (const [key, limit] of Object.entries(limits)) {
+    const descriptor = Object.getOwnPropertyDescriptor(headers, key);
+    if (!descriptor) { if (key in headers) throw Error('website_proxy_framework_header'); continue; }
+    const value = descriptor.value;
+    if (!descriptor.enumerable || !Object.hasOwn(descriptor, 'value') || typeof value !== 'string' || value.length === 0 || value.length > limit || /[\x00-\x1f\x7f]/.test(value)) throw Error('website_proxy_framework_header');
+    if (key === 'rsc' && value !== '1' || key === 'next-router-prefetch' && !['1', '2', '3'].includes(value) || key === 'next-url' && !['/', '/product', '/docs/approval-workflow'].includes(value)) throw Error('website_proxy_framework_header');
+    Object.defineProperty(result, key, { value, enumerable: true });
+  }
+  if (Object.keys(result).length && result.rsc !== '1') throw Error('website_proxy_framework_header');
+  return result;
+}
 function createProxyTransport({ origin, appPort, assets, request, isStopping = () => false, onEvent = () => {} }) {
   if (origin !== endpoint(appPort)) throw Error('website_proxy_origin');
   const watched = new WeakSet();
@@ -29,9 +45,9 @@ function createProxyTransport({ origin, appPort, assets, request, isStopping = (
     req.on('close', () => { if (req.aborted || !req.complete) cancel(); });
     res.on('close', () => { if (!res.writableEnded) cancel(); });
     res.on('finish', () => { if (script && !closed && !scriptComplete) { scriptComplete = true; onEvent('script_complete'); scriptEvent('complete'); } });
-    let url;
-    try { url = new URL(req.url); } catch { /* denied below */ }
-    if (isStopping() || !url || url.origin !== origin || url.username || url.password || url.hash || !allowedRequest({ method: req.method, raw: `${url.pathname}${url.search}`, origin, assets })) {
+    let url, framework;
+    try { url = new URL(req.url); framework = frameworkHeaders(req.headers); } catch { /* denied below */ }
+    if (isStopping() || !framework || !url || url.origin !== origin || url.username || url.password || url.hash || !allowedRequest({ method: req.method, raw: `${url.pathname}${url.search}`, origin, assets })) {
       onEvent('denied');
       if (!closed && !res.destroyed) { try { res.writeHead(403).end(); } catch { cancel(); } }
       return;
@@ -43,7 +59,7 @@ function createProxyTransport({ origin, appPort, assets, request, isStopping = (
         scriptCategory = ({ '/_next/static/chunks/webpack.js': 'webpack', '/_next/static/chunks/main-app.js': 'main_app', '/_next/static/chunks/app/page.js': 'app_page', '/_next/static/chunks/app/layout.js': 'app_layout' })[url.pathname] ?? 'other';
         onEvent('script_accepted'); scriptEvent('accepted');
       }
-      upstream = request({ hostname: '127.0.0.1', port: appPort, path: `${url.pathname}${url.search}`, method: req.method, agent: false, headers: { host: `127.0.0.1:${appPort}`, accept: req.headers.accept ?? '*/*', ...(req.headers.rsc === '1' ? { rsc: '1' } : {}) } }, reply => {
+      upstream = request({ hostname: '127.0.0.1', port: appPort, path: `${url.pathname}${url.search}`, method: req.method, agent: false, headers: { host: `127.0.0.1:${appPort}`, accept: req.headers.accept ?? '*/*', ...framework } }, reply => {
         response = reply;
         if (script) {
           onEvent('script_response'); scriptEvent('response');
@@ -66,4 +82,4 @@ function createProxyTransport({ origin, appPort, assets, request, isStopping = (
   }
   return { request: handle, connection, connect: (_req, socket) => refuseSocket(socket, true), upgrade: (_req, socket) => refuseSocket(socket, false), clientError: (_error, socket) => { onEvent('client_parse_error'); refuseSocket(socket, false); } };
 }
-module.exports = { createProxyTransport };
+module.exports = { createProxyTransport, frameworkHeaders };

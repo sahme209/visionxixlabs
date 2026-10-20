@@ -108,6 +108,7 @@ let homeCapturePhase = null;
 let currentInteraction = 'setup';
 let lastInteraction = null;
 let documentationTimeoutSnapshot = null;
+let documentationPreWaitSnapshot = null;
 const consoleErrors = [], evidence = [], images = [];
 const interrupted = () => session.stop(Error('website_driver_interrupted'));
 process.once('SIGTERM', interrupted); process.once('SIGINT', interrupted);
@@ -229,7 +230,7 @@ try {
   currentInteraction = 'mobile_overflow_check'; assert.ok(await evaluate(() => document.documentElement.scrollWidth <= innerWidth), 'website_mobile_overflow'); await frame('product-mobile'); evidence.push('mobile_360_no_horizontal_overflow');
   await click('Next step'); currentInteraction = 'keyboard_previous_check'; await send('Input.dispatchKeyEvent', { type: 'keyDown', key: 'ArrowLeft', code: 'ArrowLeft' }); await send('Input.dispatchKeyEvent', { type: 'keyUp', key: 'ArrowLeft', code: 'ArrowLeft' }); assert.equal((await state()).title, 'Make a small, reviewable edit.'); evidence.push('keyboard_previous');
   await viewport(360, true); await navigate('/product'); await waitFor(() => document.querySelector('[aria-label="Play story"]').disabled); await click('Next step'); await frame('product-reduced-motion-mobile'); evidence.push('reduced_motion_static_manual_step');
-  await viewport(1440); await click('Read approval workflow'); currentInteraction = 'documentation_check'; try { await waitFor(() => location.pathname === '/docs/approval-workflow' && Boolean(document.querySelector('#execution'))); }
+  await viewport(1440); await click('Read approval workflow'); currentInteraction = 'documentation_check'; try { documentationPreWaitSnapshot = await evaluate(() => ({ pathnameIsDocs: location.pathname === '/docs/approval-workflow', executionPresent: Boolean(document.querySelector('#execution')), tourPresent: Boolean(document.querySelector('#product-tour')) })); } catch { /* unknown observation does not replace the navigation assertion */ } try { await waitFor(() => location.pathname === '/docs/approval-workflow' && Boolean(document.querySelector('#execution'))); }
   catch (error) {
     if (error.message === 'website_dom_timeout') {
       try { documentationTimeoutSnapshot = await evaluate(() => ({ pathnameIsDocs: location.pathname === '/docs/approval-workflow', executionPresent: Boolean(document.querySelector('#execution')), tourPresent: Boolean(document.querySelector('#product-tour')) })); } catch { /* unknown observation must not replace the original failure */ }
@@ -246,7 +247,7 @@ try {
   // The only post-stop writes are this single final evidence/nonce receipt. Parent waits
   // for this owned driver's positive exit before touching its profile/dist artifacts.
   if (config) {
-    const result = { success, failure, scriptRequests, timedOutOperation: session.report().timedOutOperation, preImageWait, evaluationExceptionClass, homeCapturePhase, currentInteraction, lastInteraction, documentationTimeoutSnapshot, runtimeExceptionCount: consoleErrors.filter(category => category === 'runtime_exception').length, consoleErrorCount: consoleErrors.filter(category => category === 'console_error').length, bundler: 'webpack', productionEquivalent: false, evidence, images, deniedRequests: denied, consoleErrorCategories: consoleErrors, qualification: 'Actual local integrated Next pages; API requests denied; external fonts may fall back; screenshots require human inspection. No provider/native acceptance.' };
+    const result = { success, failure, scriptRequests, timedOutOperation: session.report().timedOutOperation, preImageWait, evaluationExceptionClass, homeCapturePhase, currentInteraction, lastInteraction, documentationTimeoutSnapshot, documentationPreWaitSnapshot, runtimeExceptionCount: consoleErrors.filter(category => category === 'runtime_exception').length, consoleErrorCount: consoleErrors.filter(category => category === 'console_error').length, bundler: 'webpack', productionEquivalent: false, evidence, images, deniedRequests: denied, consoleErrorCategories: consoleErrors, qualification: 'Actual local integrated Next pages; API requests denied; external fonts may fall back; screenshots require human inspection. No provider/native acceptance.' };
     writeFileSync(join(directory, 'capture.json'), JSON.stringify(result, null, 2), { mode: 0o600 });
     writeFileSync(join(directory, 'done.json'), JSON.stringify({ success, nonce: config.nonce }), { mode: 0o600 });
     process.stdout.write(`${join(directory, 'capture.json')}\n`);

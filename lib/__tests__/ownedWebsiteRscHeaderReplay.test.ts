@@ -7,6 +7,7 @@ const headers = require('next/dist/client/components/app-router-headers');
 const hashing = require('next/dist/shared/lib/router/utils/cache-busting-search-param');
 const setter = require('next/dist/client/components/router-reducer/set-cache-busting-search-param');
 const defaults = require('next/dist/server/config-shared').defaultConfig;
+const { frameworkHeaders } = require('../../scripts/fixtures/ownedWebsiteProxyTransport.cjs');
 const server = readFileSync(require.resolve('next/dist/server/base-server'), 'utf8');
 const client = readFileSync(require.resolve('next/dist/client/components/router-reducer/fetch-server-response'), 'utf8');
 const serverStart = server.indexOf('        if (!this.minimalMode && this.nextConfig.experimental.validateRSCRequestHeaders && isRSCRequest &&');
@@ -22,7 +23,7 @@ async function exercise(mode: "all" | "none" | "next-url-only") {
   requests++; const current = new URL(input); let redirected = false;
   const values = current.searchParams.getAll(headers.NEXT_RSC_UNION_QUERY);
   bareAndHashedReplay ||= values.length > 1 && values.includes('');
-  const forwarded = mode === 'all' ? options.headers : { [headers.RSC_HEADER]: '1', ...(mode === 'next-url-only' ? { [headers.NEXT_URL]: options.headers[headers.NEXT_URL] } : {}) };
+  const forwarded = mode === 'all' ? frameworkHeaders(options.headers) : { [headers.RSC_HEADER]: '1', ...(mode === 'next-url-only' ? { [headers.NEXT_URL]: options.headers[headers.NEXT_URL] } : {}) };
   // Model only browser automatic redirect following; the server's actual pinned
   // hash-validation branch above decides whether and where to redirect.
   for (let i = 0; i < 2; i++) {

@@ -113,3 +113,22 @@ it.each([[302, 'text/html', '3xx'], [404, 'text/html', '4xx'], [500, 'applicatio
   expect(f.events).toContain(`script_main_app_status_${statusClass}`); expect(f.events).toContain('script_main_app_mime_other');
   expect(f.events).toContain('script_main_app_cancelled_other'); expect(f.events).not.toContain('script_main_app_cancelled_successful_js');
 });
+
+it('preserves the complete bounded RSC cache-hash header set and no credential headers', () => {
+ const f = fixture(); Object.assign(f.req.headers, { rsc: '1', 'next-router-state-tree': '%5B%22%22%2C%7B%7D%5D', 'next-router-prefetch': '1', 'next-router-segment-prefetch': '/_tree', 'next-url': '/product', cookie: 'PRIVATE', authorization: 'PRIVATE', host: 'foreign.invalid' });
+ f.handler.request(f.req, f.res);
+ const forwarded = f.request.mock.calls[0][0].headers;
+ expect(forwarded).toEqual({ host: '127.0.0.1:38001', accept: '*/*', rsc: '1', 'next-router-state-tree': '%5B%22%22%2C%7B%7D%5D', 'next-router-prefetch': '1', 'next-router-segment-prefetch': '/_tree', 'next-url': '/product' });
+ expect(JSON.stringify(forwarded)).not.toContain('PRIVATE');
+});
+it.each([
+ ['next-router-state-tree', ['duplicate']], ['next-router-state-tree', 'x'.repeat(40001)], ['next-router-state-tree', 'bad\nvalue'],
+ ['next-router-prefetch', '9'], ['next-router-prefetch', '0'], ['next-router-segment-prefetch', 'x'.repeat(4097)], ['next-url', '/account'], ['next-url', 'https://foreign.invalid/product'], ['next-url', '/product?secret=private'],
+])('refuses malformed framework header %s before upstream delegation', (key, value) => {
+ const f = fixture(); Object.assign(f.req.headers, { rsc: '1', 'next-url': '/product' }); Object.assign(f.req.headers, { [key]: value });
+ f.handler.request(f.req, f.res); expect(f.request).not.toHaveBeenCalled(); expect(f.res.writeHead).toHaveBeenCalledWith(403);
+});
+it('refuses framework header accessors without evaluating them', () => {
+ const f = fixture(); let reads = 0; Object.assign(f.req.headers, { rsc: '1' }); Object.defineProperty(f.req.headers, 'next-url', { enumerable: true, get() { reads++; return '/product'; } });
+ f.handler.request(f.req, f.res); expect(reads).toBe(0); expect(f.request).not.toHaveBeenCalled();
+});
