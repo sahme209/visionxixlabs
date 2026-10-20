@@ -2120,3 +2120,12 @@ the existing DOM snapshot; timings alone cannot establish navigation root cause.
 Since both PR184 and PR185 are blocked on this shared browser gate, preserve
 PR185's reviewed commit ancestry in the existing PR184 integration branch and
 validate one combined source checkpoint. No red PR is merged or gate waived.
+
+Independent security work reproduced partial credential prefixes in AI invocation
+previews and raw database exceptions in logging failure output. Canonical known-
+credential redaction now precedes BOTH preview truncation boundaries, stored
+errors are scrubbed, failure logging uses a fixed label, and supplied fingerprint
+text must match a bounded digest encoding. Four suites/23 checks, focused types,
+lint and independent source review pass. Exact-head CI remains required; no
+historical rows/logs, provider behavior, payments or production systems change.
+Evidence and limits: mission/ai-invocation-log-redaction-source.md.

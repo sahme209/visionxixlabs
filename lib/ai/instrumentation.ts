@@ -1,9 +1,11 @@
 /**
- * PII-safe AI invocation logging.
+ * AI invocation logging with canonical known-credential redaction.
  * No full prompts — store promptHash + truncated preview (max 200 chars).
+ * Pattern redaction does not establish general PII removal.
  */
 
 import { prisma } from "@/lib/db";
+import { redact } from "@/lib/security/redaction";
 
 function hashPrompt(s: string): string {
   let h = 0;
@@ -38,10 +40,18 @@ export interface LogInvocationParams {
 
 export async function logAIInvocation(params: LogInvocationParams): Promise<void> {
   try {
-    const preview = params.promptPreview != null
-      ? truncatePreview(params.promptPreview)
+    // Redact before truncation: cutting a token first can make its remaining
+    // prefix too short for the canonical credential pattern to recognize.
+    const safePrompt = params.promptPreview == null ? null : redact(params.promptPreview);
+    const preview = safePrompt != null
+      ? truncatePreview(safePrompt)
       : null;
-    const hash = params.promptHash ?? (params.promptPreview ? hashPrompt(params.promptPreview) : null);
+    // Optional supplied fingerprints are not a free-form logging field.
+    // Preserve legacy h/base36 and common hexadecimal digest encodings.
+    const suppliedHash = params.promptHash;
+    const hash = typeof suppliedHash === "string" && /^(?:h[a-z0-9]{1,7}|[a-fA-F0-9]{32,128})$/.test(suppliedHash)
+      ? suppliedHash
+      : safePrompt ? hashPrompt(safePrompt) : null;
 
     await prisma.aIInvocation.create({
       data: {
@@ -51,7 +61,7 @@ export async function logAIInvocation(params: LogInvocationParams): Promise<void
         model: params.model,
         latencyMs: params.latencyMs ?? undefined,
         success: params.success,
-        errorMessage: params.errorMessage ?? undefined,
+        errorMessage: params.errorMessage == null ? undefined : redact(params.errorMessage),
         tokensIn: params.tokensIn ?? undefined,
         tokensOut: params.tokensOut ?? undefined,
         promptHash: hash ?? undefined,
@@ -59,7 +69,9 @@ export async function logAIInvocation(params: LogInvocationParams): Promise<void
         requestId: params.requestId ?? undefined,
       },
     });
-  } catch (e) {
-    console.error("[AI instrumentation] log failed:", e);
+  } catch {
+    // Prisma errors can repeat supplied row values. A diagnostic label is
+    // sufficient here; logging the error object would bypass this boundary.
+    console.error("[AI instrumentation] log failed");
   }
 }
