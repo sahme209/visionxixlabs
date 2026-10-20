@@ -1,0 +1,7 @@
+# Deterministic owned pointer geometry
+
+The application deliberately uses `html { scroll-behavior: smooth }`. The driver previously called `scrollIntoView` without specifying behavior and immediately measured the target. CSS smooth scrolling can leave the target moving when its pointer coordinates are measured or dispatched. This is a concrete fixture precondition defect; it does not prove the cause of the latest later-interaction failure.
+
+Only fixture-owned scrolling now explicitly uses `behavior: 'instant'`: pointer targeting, frame positioning, offscreen checks and return to the tour. The pointer helper measures after that scroll and requires finite viewport coordinates, positive size and an actual hit on the intended control or its descendant. An obscured or absent target fails rather than dispatching to an unrelated element. Real CDP mouse press/release events remain; there is no DOM `.click()`, retry, extra sleep, timeout increase or permission change. Pure injected geometry tests model the smooth-scroll race and hit-target refusals.
+
+The public summary adds only fixed `currentInteraction` and `lastInteraction` tokens and an allowlist of the driver's existing completed-evidence tokens. Current means the most recently attempted control, capture or named check; last means the most recently completed pointer dispatch or capture. Neither is proof a product action succeeded. Completed evidence is recorded only by existing assertions; no arbitrary label, page text, URL, error or DOM content is emitted. Actual integrated acceptance remains required.

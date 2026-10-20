@@ -9,8 +9,8 @@ describe("desktop homepage presentation contract", () => {
   it("uses a direct, stable headline without character-level animation", () => {
     const page = source("app/page.tsx");
 
-    expect(page).toContain("Engineering intent,");
-    expect(page).toContain("under control.");
+    expect(page).toContain("Engineering work.");
+    expect(page).toContain("With you in control.");
     expect(page).not.toContain("SplitText");
     expect(page).not.toContain('splitBy="char"');
   });
@@ -19,10 +19,10 @@ describe("desktop homepage presentation contract", () => {
     const page = source("app/page.tsx");
     const navigation = source("components/Navigation.tsx");
 
-    expect(page).toContain('max-w-[1400px]');
-    expect(navigation).toContain('max-w-[1400px]');
-    expect(navigation).toContain('lg:flex');
-    expect(navigation).toContain('lg:hidden');
+    expect(page).toContain('max-w-[1280px]');
+    expect(navigation).toContain('max-w-[1280px]');
+    expect(navigation).toContain('xl:flex');
+    expect(navigation).toContain('xl:hidden');
   });
 
   it("keeps the hero atmosphere calm and removes the split-screen beam", () => {

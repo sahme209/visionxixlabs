@@ -124,4 +124,10 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default nextConfig;
+export default function configuration(phase: string): NextConfig {
+  if (process.env.AXIOM_WEBSITE_VISUAL_MODE === undefined && process.env.AXIOM_WEBSITE_CONFIG === undefined) return nextConfig;
+  // Fixture-only output containment. Ordinary builds and serving configuration
+  // retain the same object; malformed fixture contexts fail closed.
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  return require("./scripts/fixtures/ownedWebsiteConfig.cjs").applyOwnedWebsiteConfig(phase, nextConfig);
+}

@@ -1660,3 +1660,248 @@ installer/keyboard/vault, real GitHub selection, production authentication, paid
 entitlement or provider deployment/rollback acceptance. Required clean exact-head
 CI and production compilation remain merge gates; existing production blockers
 and every other workstream remain active.
+
+
+## 2026-10-20 — production Google login confirmed; public refinement active
+
+Owner confirmed Google sign-in works at visionxixlabs.com after the explicitly
+approved login-only release of main `30d6363a01e04c35871025c161f69480244d7d17`
+(PR #181). Serving deployment: `dpl_HSdq3iKuvFhKk3KR5S9J8zLpGPne`; retained
+rollback: `dpl_5Kdgq8YPSjysSQqk8rNLbrjAVVeH`. This is real owner-reported
+production authentication evidence, not an inference from unit tests or logs.
+Account/workspace identity, password recovery, GitHub OAuth and native pairing
+remain separately unverified. No database, secret, payment or installer changed.
+
+Website refinement is active locally: shared navigation/footer, homepage,
+product, plans and Support XCM surfaces; existing scripted demos now use the
+actual desktop customer navigation as their foundation. Simulation disclosures
+and unavailable provider operations remain explicit. Checkout components,
+support payments and authentication are outside these presentation changes.
+Rendered desktop/mobile acceptance and required CI remain pending. No website
+release is authorized: the ONE FINAL production deployment approval gate stays
+in force, with database recovery, live payments and installers separately gated.
+
+All earlier mission requirements and cloud, Agent, ECS, Terraform/Airflow,
+billing, desktop, governance and security workstreams remain active. Production
+database binding, a usable PITR point and verified restore readiness remain
+unresolved; Google success does not clear those gates.
+
+
+## 2026-10-20 — additive Grok and governed specialist-agent scope
+
+The owner’s new instruction is preserved in
+[the source](AXIOM_DESKTOP_GROK_MULTI_AGENT_REQUEST_2026-10-20.md) and represented
+unit-for-unit as source 24 in the requirement register. All previous requirement
+objects remain unchanged. This is scheduled within the existing desktop AI/model
+phase and does not replace authentication, website or any other workstream.
+
+[The source audit and implementation/acceptance plan](DESKTOP_GROK_MODEL_AGENT_INTEGRATION_PLAN.md)
+records existing dormant xAI support, Gateway-only production routing, current
+one-model-per-provider selection, buffered streaming and governed skill/identity
+foundations. The requested real streaming, chat/editor model choice and five
+permission-scoped specialist agents remain incomplete. xAI’s official research
+multi-agent API has explicit custom-tool and visibility restrictions; it is not
+being represented as Axiom engineering orchestration or embedded consumer Grok.
+
+Actual authenticated provider, native application, sandbox tool and billing
+receipts remain required. No key, infrastructure, billing, deployment, database
+or installer configuration was changed. PR #182 remains gated on current CI and
+rendered browser acceptance; the lost local supervisor/navigation timeout is
+retained as a genuine validation blocker rather than waived.
+
+
+## 2026-10-20 — implementation resumed: downloads and responsive navigation
+
+Download presentation now uses the shared compact public design, with signing
+and notarization sourced per installer from explicit manifest flags instead of
+an unconditional green claim. Runtime/download gating is preserved. A real
+React navigation regression also caught and fixed scroll-lock retention when
+an open mobile menu becomes hidden at desktop width. See
+[implementation evidence](mission/public-website-refinement-2026-10-20.md).
+These are local application-component checks, not native installer or rendered
+browser acceptance. Required CI and the known local navigation/supervisor
+blocker remain merge gates. Production Google login remains owner-confirmed;
+other auth and database recovery gates are unchanged.
+
+
+## 2026-10-20 — website acceptance continuation
+
+The download follow-up now requires explicit Mac architecture selection instead
+of treating a browser `MacIntel` string as CPU evidence. Both installer resolver
+links remain available. The latest six-file component/contract run passes 43
+tests, scoped lint passes, and web production-source TypeScript passes. These
+checks do not prove native installer or full browser acceptance.
+
+A source-reviewed PR-only CI harness is being integrated to run the existing
+bounded public website fixture independently of the unreliable local tool
+supervisor. It preserves request restrictions and deadlines, checks out the
+immutable PR head, uses no production credentials, and retains only sanitized
+summary fields and six approved screenshots. Browser results and visual review
+remain required before PR #182 merges. The approved Google-login deployment
+remains serving; no additional release or production operation is authorized.
+All existing independent engineering workstreams and recovery gates remain
+represented; tracker coverage remains 24 sources and 2,239 requirement rows.
+
+The independent browser run on `6ff58f59` reached the actual owned runtime but
+failed capture, produced no screenshots and did not verify owned cleanup. Its
+sanitized evidence is retained in run 39431463848; ephemeral job teardown is not
+UI or owned-cleanup acceptance. Closed diagnostics are being integrated before
+the next bounded run. The signed-in companion now links to existing billing
+information without asserting every customer has a free pilot or inferring
+workspace authority from an authenticated identity. All production gates remain.
+
+The dashboard now distinguishes a connected cloud from completed scan evidence
+and clears stale scan summaries on refresh failure. Eight rendered regressions
+pass with mocked transport; cloud execution remains unverified. CI on faa49d5b
+passed one full source/build job, security checks and review, but its browser
+run failed during playback readiness with unverified cleanup. The retained DOM
+snapshot precedes the throwing evaluation and is not hydration-root-cause proof.
+
+Browser run39436295361 on95e653f8 now proves owned process groups empty and
+retains a visually reviewed homepage document screenshot. Playback remains
+failed; a static image is not interactive acceptance. Script interception
+allowed10/denied0, so request-policy widening is unsupported. Bounded delivery
+diagnostics are being prepared at the unresolved boundary. Download-page
+recovery for unusable manifest envelopes is also under regression validation.
+Exact-head full CI remains mandatory before PR182 merges. No deployment,
+production database, payment, credential or installer operation is authorized
+by these checks; all24 source mappings and2,239 requirement rows are preserved.
+
+Follow-up source4715327c passed local production-source web types and104 focused
+tests, but exact-head CI exposed a newly imported diagnostic return-type error
+in a test. Explicit fixed counter keys correct the inference;17 collector
+tests and direct imported-test TypeScript pass. Browser run39439277682 proves
+empty owned groups and no upstream timeouts. After capturing the homepage,
+the same-poll playback check encountered a loading document with no control
+and threw TypeError. That concrete readiness race is being corrected; earlier
+disabled-control timeouts remain unresolved rather than relabeled as fixed.
+No successful browser or full customer acceptance is claimed.
+
+The next browser run39440799840 on9f677016 has no predicate exception and
+observes Next bootstrap, inline Flight presence and client consumer setup.
+Playback still times out; these markers do not prove hydration or working
+controls. Full CI passed types/tests but its generated Next page contract
+rejected an optional/default billing-page props argument; the normal required
+props contract and39 page regressions correct this separately.
+
+Independent ECS checkpoint87c795d7 preserves the previous dirty hardening,
+99 reviewed source-closure entries and426 installed-runtime pins. Both inert
+suites independently pass14/14. Actual FINAL-store/provider acceptance remains
+unverified: native inherited bindings conflict with this older fixture policy.
+No environment sanitization, credential stripping, NODE_PATH replacement or
+runtime launch is authorized by this source checkpoint. Earlier ECS product
+work, all other mission sources and production approval gates remain intact.
+
+Website continuation now has a concrete framework-fixture compatibility fix:
+the installed Flight decoder can wait for debug references delivered through
+the HMR WebSocket deliberately denied by this fixture. Controlled actual
+decoder tests reproduce that dependency. Both private-context config paths
+disable only the developer debug channel; real config-loader checks prove
+normal config retains its original default.36 tests plus the exact config
+subprocess regression pass, with independent review and imported-test types.
+This changes no production config or permissions and does not yet establish
+successful browser playback. All earlier failure receipts remain preserved.
+
+Run39444422507 onf312968a advances beyond homepage playback readiness: the
+pre-image wait clears, then a later control interaction fails evaluation.
+Owned groups are empty. This supports the framework compatibility correction
+without claiming complete interactions. Driver smooth-scroll/pointer geometry
+is under review; every remaining assertion is retained. Precedingb7075d4d full
+CI, including production website build, passes after the Next props correction.
+
+Existing real TEST checkout Task3 resumes in its original preserved worktree:
+a separate authority/bootstrap-gated worker entry is being implemented with
+inert lifecycle tests, reusing existing provider/conversation/reservation
+primitives. No synthetic/public/support checkout path is replaced and no
+construction, compilation, SDK/Stripe, database or worker runtime is enabled.
+Hosted TEST, native, production database and release gates remain unchanged.
+
+
+Browser continuation checkpoint: exact-head f312968a CI run39444422532 now
+passes types, the full test suite, offline authentication recovery checks and
+the production website build. Its separate browser job remains failed after
+hydration; no merge or release is claimed. Reviewed correction424735a1 uses
+instant fixture-only scrolling, finite viewport coordinates and an exact
+hit-target check while retaining real CDP mouse events and every acceptance
+assertion. Root verification passes45 tests across four files, imported-test
+types and scoped lint. The first type invocation used the wrong standalone
+module mode and was corrected to ESNext/Bundler; no source relaxation was
+needed. Fresh exact-head browser acceptance is required. No deployment ran.
+
+
+Continuation checkpoint53f66063: full GitHub CI39446921975 passes types,
+tests, auth evidence and production website compilation, without deployment.
+Browser39446921490 first attempt timed out at initial Page.navigate; one
+unchanged failed-job retry passes10of11 closed interaction checks and retains
+five desktop/mobile/reduced-motion PNGs. Only documentation_check remains
+failed (DOM timeout); no runtime exceptions, source unchanged, owned groups
+empty. No repeated retry or merge is authorized by this result. Human image
+inspection finds the real first-visit privacy dialog obscures portions of the
+preview; future capture must exercise Essential only through real controls,
+never hide it or fabricate consent. Documentation navigation remains under
+source review; all assertion/deadline/network gates remain.
+
+Billing separate checkpoint871e0cea preserves the complete reviewed Task3
+entry/authority/provider/build/shared-helper package plus pure supervisor
+receipt kernel. Root passes75 focused checks across seven suites. Independent
+security review accepts the corrected own-property preservation and finds no
+further material source findings. This is not runtime readiness: real supervisor,
+secure private handoff, managed-environment compatibility, reviewed package
+closure and hosted TEST checkout remain open. No compiler/package/worker,
+Stripe request or production operation was performed by this checkpoint.
+
+
+Reviewed first-visit continuation exercises Essential only through the real named
+dialog and CDP pointer controls, then waits for actual dismissal before capture.
+New screenshot phase is playback_ready_after_essential_consent; the prior enum
+remains historical only. Documentation timeout records exactly three sanitized
+booleans and rethrows its original failure. Root35 focused cases, imported-test
+types, scoped lint and syntax checks pass after preserving all newer diagnostic
+fields during integration. No proxy, header, permission or deadline change.
+Desktop CI39446921397 also passes on53f66063. New exact-head full CI/browser
+acceptance and clean screenshot inspection remain required before merge.
+
+
+Exact40f25fa6 browser39449126737 passes actual Essential-only consent and
+all ten preceding demo interaction checks, then reaches the existing absolute
+120-second driver limit during documentation navigation. Owned groups are empty;
+no completed navigation is claimed. Its timeout-only DOM observation is null
+because the absolute limit precedes that local wait's timeout. Full CI catches
+one stale fixture-order assertion (734 files/8287 tests pass,1test fails); the
+assertion now verifies the documented readiness→real consent→dismissal→capture
+order, retains all six screenshot names and exception-redaction checks, and the
+three focused suites pass34 cases. This is an expected contract update to the
+reviewed capture sequence, not suppression of failed product behavior.
+
+Installed Next helpers disprove an earlier untested redirect-count hypothesis:
+fully stripped routing headers yield2fake fetches/1redirect, not21. Preserving
+all hash inputs yields1/0; partially preserving only Next-Url yields21/21 up to
+the actual client's bounded replay limit. This is protocol compatibility proof,
+not yet the recorded browser timeout's cause. Any fixture correction must retain
+all relevant bounded headers together and preserve existing public-only I/O.
+
+
+Reviewed proxy correction8e07bbd9 preserves only bounded framework hash inputs,
+with exact scalar own-data validation, prefetch1/2/3 and the existing three
+public Next-Url paths. Invalid sets refuse atomically; cookies, authorization
+and arbitrary headers remain unforwarded. All route/origin/method/process and
+time bounds remain. Root84 cases across seven suites pass, with strict imported
+types/lint; additional invalid-prefetch0 regression passes in37 focused cases.
+Independent root-union review accepts preserved phases, script counters, cleanup
+metadata and distinct documentation pre-wait/timeout observations. Actual
+integrated browser acceptance remains required; no production fix is inferred.
+
+
+2ebb292f full CI39450954399 passes all source/test/auth-evidence/build steps.
+Its browser39450954502 retains11 preceding successful interactions but fails
+actual documentation arrival: both pre-wait and timeout observations show the
+product tour still present, docs pathname false, execution section absent.
+This establishes the unchanged-page boundary, not its cause; corrected RSC hash
+forwarding alone did not restore it. Root-reviewed closed transport categories
+now distinguish navigation-shaped RSC, prefetch RSC and document responses,
+including bounded status/MIME/completion/cancel/timeout counters and refusals.
+No URLs, header values, response bodies or credentials are retained. Root81
+focused cases pass plus strict imported-source types with the project's allowJs
+semantics and scoped lint; an initial standalone invocation omitted allowJs and
+was corrected without relaxing the source contract. A fresh browser run is
+required; no production deployment or authorization change is included.

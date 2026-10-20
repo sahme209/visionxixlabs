@@ -1,0 +1,7 @@
+# Bounded owned-process cleanup metadata races
+
+CI reported a browser `stop_group` cleanup failure with `ENOENT`. A disappearing `/proc` entry is unknown identity/membership, not proof that the owned group is empty. This source correction does not reinterpret that historical cleanup result as successful.
+
+The launcher retries only `ENOENT`/`ESRCH` metadata reads within the existing total cleanup budget: five seconds for preflight and TERM grace, followed by at most two additional seconds for escalation/final proof. Preflight retries consume the five-second grace instead of extending it. Every signal requires known owned membership and a fresh exact original leader identity, followed by another known-member check. A missing or replaced leader grants no new signaling authority. Foreign identities fail immediately. Persistent unknown metadata fails closed without SIGKILL; only a positively observed empty group succeeds. Private artifacts remain retained when the existing ledger reports cleanup failure.
+
+Pure tests execute the actual extracted launcher function using injected clock, metadata and signal spies. They cover missing preflight membership/leader, transient post-TERM disappearance followed by known emptiness, persistent unknown metadata, leader replacement/disappearance, normal known-owner escalation, and foreign membership. No real process, signal, browser, server, CI execution or production action was used to prepare this correction. All request rules, runtime permissions and other deadlines remain unchanged.

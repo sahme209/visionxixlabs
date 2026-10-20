@@ -5,8 +5,31 @@ const { realpathSync, readFileSync, readdirSync, readlinkSync } = require('node:
 const { join, relative } = require('node:path');
 const { createHash } = require('node:crypto');
 const managedNodePath = require('./ownedWebsiteManagedNodePath.cjs');
+const managedEnvironment = require('./ownedManagedEnvironment.cjs');
 const pages = new Set(['/', '/product', '/docs/approval-workflow']);
-const inherited = ['PATH', 'HOME', 'TMPDIR', 'LANG', 'LC_ALL', 'HTTP_PROXY', 'HTTPS_PROXY', 'ALL_PROXY', 'NO_PROXY', 'http_proxy', 'https_proxy', 'all_proxy', 'no_proxy', 'NODE_EXTRA_CA_CERTS', 'SSL_CERT_FILE', 'SSL_CERT_DIR', 'CODEX_PROXY_CERT', 'NODE_USE_ENV_PROXY', 'REQUESTS_CA_BUNDLE', 'CURL_CA_BUNDLE', 'AWS_CA_BUNDLE', 'NODE_PATH'];
+const inherited = ['PATH', 'HOME', 'TMPDIR', 'LANG', 'LC_ALL', 'HTTP_PROXY', 'HTTPS_PROXY', 'ALL_PROXY', 'NO_PROXY', 'http_proxy', 'https_proxy', 'all_proxy', 'no_proxy', 'NODE_EXTRA_CA_CERTS', 'SSL_CERT_FILE', 'SSL_CERT_DIR', 'CODEX_PROXY_CERT', 'NODE_USE_ENV_PROXY', 'REQUESTS_CA_BUNDLE', 'CURL_CA_BUNDLE', 'AWS_CA_BUNDLE', 'NODE_PATH', 'NODE_VERSION'];
+const selectors = inherited.filter(key => !['PATH', 'TMPDIR', 'LANG', 'LC_ALL'].includes(key));
+function captureManagedEnvironment(env) {
+  const controls = managedEnvironment.captureManagedControls(env);
+  const reject = () => { throw Error('website_managed_selectors_unsupported'); };
+  for (const key in env) if (selectors.includes(key) && !Object.hasOwn(env, key)) reject();
+  const selected = Object.create(null);
+  for (const key of selectors) {
+    const descriptor = Object.getOwnPropertyDescriptor(env, key);
+    if (!descriptor) continue;
+    if (!descriptor.enumerable || !Object.hasOwn(descriptor, 'value') || typeof descriptor.value !== 'string') reject();
+    selected[key] = descriptor.value;
+  }
+  return Object.freeze({ controls, selectors: Object.freeze(selected) });
+}
+function revalidateManagedEnvironment(env, snapshot) {
+  managedEnvironment.revalidateManagedControls(env, snapshot.controls);
+  const current = captureManagedEnvironment(env).selectors;
+  if (Object.keys(current).length !== Object.keys(snapshot.selectors).length || Object.keys(snapshot.selectors).some(key => !Object.hasOwn(current, key) || current[key] !== snapshot.selectors[key])) throw Error('website_managed_selectors_changed');
+}
+function managedSelectorIdentity(snapshot) {
+  return Object.fromEntries(selectors.map(key => [key, Object.hasOwn(snapshot.selectors, key) ? { present: true, sha256: createHash('sha256').update(snapshot.selectors[key]).digest('hex') } : { present: false }]));
+}
 const sha256 = path => createHash('sha256').update(readFileSync(path)).digest('hex');
 function endpoint(port) { assert.ok(Number.isInteger(port) && port >= 20000 && port <= 60000, 'website_port'); return `http://127.0.0.1:${port}`; }
 function publicAssets(root) {
@@ -33,17 +56,21 @@ function allowedRequest({ method, raw, origin, assets }) {
 // 3bec9efa59f74176884354ed133307df37c374b923b266d95a83c512e9ac82b0.
 // Website has no Vitest subprocess purpose: all preload/loader CLI options are unsupported.
 function checkedEnvironment(env, execArgv) {
-  managedNodePath.capture(env.NODE_PATH);
+  const managed = captureManagedEnvironment(env);
+  managedNodePath.capture(managed.selectors.NODE_PATH);
   const unsupported = () => { throw Error('website_child_options_unsupported'); };
   const heap = /^--max[-_]old[-_]space[-_]size=[1-9][0-9]*$/;
+  // Official Node images export version metadata; it cannot select another runtime.
+  if (Object.hasOwn(env, 'NODE_VERSION') && env.NODE_VERSION !== process.versions.node) unsupported();
   for (const key of Object.keys(env)) {
-    if (/^(LD_|DYLD_|OPENSSL_)/.test(key) || (key.startsWith('NODE_') && !['NODE_OPTIONS', 'NODE_ENV', 'NODE_EXTRA_CA_CERTS', 'NODE_USE_ENV_PROXY', 'NODE_PATH'].includes(key))) unsupported();
+    if (/^(LD_|DYLD_|OPENSSL_)/.test(key) || (key.startsWith('NODE_') && !['NODE_OPTIONS', 'NODE_ENV', 'NODE_EXTRA_CA_CERTS', 'NODE_USE_ENV_PROXY', 'NODE_PATH', 'NODE_VERSION'].includes(key))) unsupported();
   }
   if (env.NODE_OPTIONS?.trim() && !heap.test(env.NODE_OPTIONS.trim())) unsupported();
   if (execArgv.some(option => !heap.test(option))) unsupported();
   const base = Object.fromEntries(inherited.filter(key => typeof env[key] === 'string').map(key => [key, env[key]]));
   const options = [env.NODE_OPTIONS, ...execArgv].filter(value => value !== undefined && value !== '').join(' ');
-  return { ...base, NODE_OPTIONS: options.trim() ? options : '--max-old-space-size=3072' };
+  revalidateManagedEnvironment(env, managed);
+  return { ...base, ...managed.controls, NODE_OPTIONS: options.trim() ? options : '--max-old-space-size=3072' };
 }
 function childEnvironment(env, { directory, configPath }, execArgv = process.execArgv) {
   assert.ok(directory.startsWith('/tmp/axiom-website-') && configPath === join(directory, 'config.json'), 'website_private_paths');
@@ -84,7 +111,10 @@ function groupMembers(group, io = { pids: () => readdirSync('/proc').filter(name
 function ownedNextOptions({ root, dist, appPort, actual }) {
   endpoint(appPort);
   assert.ok(dist.startsWith(`${root}/.next/visual-`), 'website_owned_dist');
-  return { dev: true, webpack: true, dir: root, hostname: '127.0.0.1', port: appPort, conf: { ...actual, distDir: relative(root, dist), typescript: { ...actual.typescript, tsconfigPath: relative(root, join(dist, 'tsconfig.json')) } } };
+  // Owned fixture intentionally denies HMR; its Flight decoder must not require
+  // the WebSocket-backed development debug stream. The config-file reload path
+  // applies the same override after validating its private owner context.
+  return { dev: true, webpack: true, dir: root, hostname: '127.0.0.1', port: appPort, conf: { ...actual, experimental: { ...actual.experimental, reactDebugChannel: false }, distDir: relative(root, dist), typescript: { ...actual.typescript, tsconfigPath: relative(root, join(dist, 'tsconfig.json')) } } };
 }
 function sameOwner(original, current) { return original.pid === current.pid && original.start === current.start && original.group === original.pid && current.group === original.group && current.executable === original.executable; }
 function listeners() {
@@ -110,4 +140,4 @@ function proveListener(owner, port, io = { snapshot, listeners, descriptors }) {
   assert.deepEqual(io.listeners().filter(candidate => candidate.port === port), rows, 'website_listener_changed');
   return { inode: row.inode, owner };
 }
-module.exports = { groupMembers, ownedNextOptions, checkedEnvironment, proveListener, sha256, endpoint, publicAssets, allowedRequest, childEnvironment, chromiumArgs, snapshot, sameOwner };
+module.exports = { captureManagedEnvironment, revalidateManagedEnvironment, managedSelectorIdentity, groupMembers, ownedNextOptions, checkedEnvironment, proveListener, sha256, endpoint, publicAssets, allowedRequest, childEnvironment, chromiumArgs, snapshot, sameOwner };

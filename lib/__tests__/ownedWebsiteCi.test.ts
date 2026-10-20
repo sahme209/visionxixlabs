@@ -1,0 +1,228 @@
+import { afterEach, expect, it } from 'vitest';
+import { chmodSync, mkdirSync, mkdtempSync, readFileSync, realpathSync, rmSync, symlinkSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+// Builtins-only adapter: importing it never starts the owned fixture.
+import { collect, collectForUpload, pngDimensions, privateFile, publicCounts, publicServerGuard, publicDomSnapshot, publicInteractions, publicNextMarkers, publicProxyDelivery, publicSummary, reviewManifest, screenshotNames } from '../../scripts/owned-website-ci.mjs';
+
+const directories: string[] = [];
+afterEach(() => { for (const path of directories.splice(0)) rmSync(path, { recursive: true, force: true }); });
+const sha = 'a'.repeat(40);
+const root = realpathSync(process.cwd());
+const manifest = { schema: 1, root, sourceHead: sha, productionEquivalent: false, hashes: Object.fromEntries(Array.from({ length: 16 }, (_, i) => [String(i), sha])), framework: { version: 'test' } };
+function fixture() {
+  const temporary = mkdtempSync(join(tmpdir(), 'website-ci-test-')); directories.push(temporary);
+  const directory = join(temporary, 'axiom-website-Ab1234'); mkdirSync(directory, { mode: 0o700 });
+  const config = { root, directory, nonce: 'b'.repeat(32), hashes: manifest.hashes, framework: manifest.framework };
+  const put = (name: string, data: unknown) => writeFileSync(join(directory, name), JSON.stringify(data), { mode: 0o600 });
+  put('config.json', config);
+  const destination = join(temporary, 'public');
+  return { temporary, directory, config, put, destination, run: () => collect({ manifest, expected: sha, temporary, destination }) };
+}
+it('binds actual checkout and clean source to supplied PR head, never synthetic GITHUB_SHA', () => {
+  expect(reviewManifest(manifest, sha, root, sha, '')).toEqual(manifest);
+  expect(() => reviewManifest(manifest, 'z'.repeat(40), root, sha, '')).toThrow();
+  expect(() => reviewManifest(manifest, sha, root, 'c'.repeat(40), '')).toThrow();
+  expect(() => reviewManifest(manifest, sha, root, sha, ' M app/page.tsx')).toThrow();
+});
+it('does not label capture-only or unfinished cleanup a successful application acceptance', () => {
+  const result = { sourceHead: sha, status: 'driver_finished', sourceUnchanged: true, cleanup: 'failed', error: 'PRIVATE_URL' };
+  const summary = publicSummary(sha, result, { success: true, timedOutOperation: 'PRIVATE_URL' }, { success: true, nonce: 'n' }, 'n');
+  expect(summary.outcome).toBe('failed'); expect(summary.timedOutOperation).toBe('unclassified');
+  expect(JSON.stringify(summary)).not.toContain('PRIVATE_URL');
+  expect(publicSummary(sha, { ...result, cleanup: 'owned_groups_empty' }, { success: true }, { success: true, nonce: 'n' }, 'n').outcome).toBe('passed');
+  expect(() => publicSummary(sha, result, {}, { nonce: 'other' }, 'n')).toThrow();
+});
+it('retains only allowlisted failure, DOM phase, six primitives and cleanup codes', () => {
+  const snapshot = { readyState: 'complete', tourPresent: true, playPresent: true, playDisabled: true, reducedMotion: false, visibility: 'visible' };
+  const summary = publicSummary(sha, { sourceHead: sha, cleanupErrors: ['website_cleanup_incomplete', 'PRIVATE_URL?token=secret', 'PRIVATE_URL?token=secret'] }, { failure: 'website_dom_timeout', preImageWait: { phase: 'homepage_playback', lastDomSnapshot: snapshot } }, undefined, undefined);
+  expect(summary.captureFailure).toBe('website_dom_timeout'); expect(summary.preImagePhase).toBe('homepage_playback');
+  expect(summary.preImageDomSnapshot).toEqual(snapshot);
+  expect(summary.cleanupErrors).toEqual(['website_cleanup_incomplete', 'unclassified']);
+  expect(JSON.stringify(summary)).not.toContain('PRIVATE_URL');
+  const refused = publicSummary(sha, { sourceHead: sha }, { failure: 'website_secret_token', preImageWait: { phase: 'PRIVATE_URL', lastDomSnapshot: { ...snapshot, readyState: 'PRIVATE_URL' } } }, undefined, undefined);
+  expect(refused.captureFailure).toBe('unclassified'); expect(refused.preImagePhase).toBeNull(); expect(refused.preImageDomSnapshot).toBeNull();
+  expect(JSON.stringify(refused)).not.toMatch(/PRIVATE_URL|website_secret_token/);
+});
+it('does not leak unknown DOM fields or malformed primitive observations', () => {
+  const snapshot = { readyState: 'interactive', tourPresent: true, playPresent: false, playDisabled: null, reducedMotion: false, visibility: 'hidden' };
+  expect(publicDomSnapshot(snapshot)).toEqual(snapshot);
+  for (const malformed of [{ ...snapshot, url: 'PRIVATE_URL' }, { ...snapshot, readyState: 'PRIVATE_URL' }, { ...snapshot, reducedMotion: 'PRIVATE_URL' }, { ...snapshot, playDisabled: true }]) expect(publicDomSnapshot(malformed)).toBeNull();
+  let reads = 0; const accessor = { ...snapshot }; Object.defineProperty(accessor, 'visibility', { enumerable: true, get() { reads++; return 'PRIVATE_URL'; } });
+  expect(publicDomSnapshot(accessor)).toBeNull(); expect(reads).toBe(0);
+});
+it('publishes only bounded exception counts, closed classes and structured cleanup metadata', () => {
+  const result = { sourceHead: sha, cleanupDiagnostics: [{ role: 'browser', stage: 'stop_group', errorCode: 'ENOENT', path: 'PRIVATE' }, { role: 'PRIVATE', stage: 'PRIVATE', errorCode: 'PRIVATE' }] };
+  const capture = { evaluationExceptionClass: 'TypeError', runtimeExceptionCount: 2, homeCapturePhase: 'playback_ready_after_essential_consent', preImageWait: { phase: 'homepage_playback', predicateExceptionClass: 'PRIVATE' } };
+  const summary = publicSummary(sha, result, capture, undefined, undefined);
+  expect(summary.homeCapturePhase).toBe('playback_ready_after_essential_consent');
+  expect(publicSummary(sha, result, { homeCapturePhase: 'document_ready_before_playback' }, undefined, undefined).homeCapturePhase).toBe('document_ready_before_playback');
+  expect(summary.evaluationExceptionClass).toBe('TypeError'); expect(summary.predicateExceptionClass).toBe('other'); expect(summary.runtimeExceptionCount).toBe(2);
+  expect(summary.cleanupDiagnostics).toEqual([{ role: 'browser', stage: 'stop_group', errorCode: 'ENOENT' }, { role: 'other', stage: 'other', errorCode: 'other' }]);
+  expect(JSON.stringify(summary)).not.toContain('PRIVATE');
+  expect(publicSummary(sha, result, { runtimeExceptionCount: 129, evaluationExceptionClass: 'PRIVATE', homeCapturePhase: 'PRIVATE' }, undefined, undefined)).toMatchObject({ runtimeExceptionCount: null, evaluationExceptionClass: 'other', homeCapturePhase: null });
+});
+it('exports only closed proxy counters bound to an exited registered proxy and matching nonce', () => {
+  const result = { children: [{ role: 'proxy', pid: 42, owner: { pid: 42 }, exited: true }], proxyReceipt: { pid: 42, nonce: 'n' } };
+  const proxy = { pid: 42, nonce: 'n', stage: 'stopped', productionEquivalent: false, counts: { script_accepted: 6, script_response: 4, script_complete: 3, privateUrl: 'PRIVATE' }, privatePath: 'PRIVATE' };
+  const summary = publicProxyDelivery(proxy, result, 'n');
+  expect(summary).toMatchObject({ stage: 'stopped', counts: { script_accepted: 6, script_response: 4, script_complete: 3, script_cancelled: 0, script_upstream_timeout: 0, upstream_timeout: 0 } });
+  expect(JSON.stringify(summary)).not.toContain('PRIVATE');
+  expect(publicProxyDelivery({ ...proxy, nonce: 'wrong' }, result, 'n')).toBeNull();
+  expect(publicProxyDelivery(proxy, { ...result, children: [{ ...result.children[0], exited: false }] }, 'n')).toBeNull();
+  expect(publicProxyDelivery({ ...proxy, counts: { script_accepted: 1000001 } }, result, 'n')).toBeNull();
+  expect(publicProxyDelivery({ ...proxy, counts: { script_accepted: 'PRIVATE' } }, result, 'n')).toBeNull();
+});
+
+it('publishes exactly three boolean bootstrap markers without payload or unknown fields', () => {
+  const markers = { bootstrapRegistered: true, flightArrayPresent: true, flightConsumerInstalled: false };
+  const summary = publicSummary(sha, { sourceHead: sha }, { preImageWait: { phase: 'homepage_playback', nextMarkers: markers } }, undefined, undefined);
+  expect(summary.nextMarkers).toEqual(markers);
+  for (const value of [{ ...markers, payload: 'PRIVATE' }, { ...markers, bootstrapRegistered: 'PRIVATE' }, Object.create(markers)]) expect(publicNextMarkers(value)).toBeNull();
+  let reads = 0; const accessor = { ...markers }; Object.defineProperty(accessor, 'bootstrapRegistered', { enumerable: true, get() { reads++; return 'PRIVATE'; } });
+  expect(publicNextMarkers(accessor)).toBeNull(); expect(reads).toBe(0);
+});
+
+it('keeps chunk categories, response classes and cancellation success closed and bounded', () => {
+  const result = { children: [{ role: 'proxy', pid: 42, owner: { pid: 42 }, exited: true }], proxyReceipt: { pid: 42, nonce: 'n' } };
+  const proxy = { pid: 42, nonce: 'n', stage: 'stopped', productionEquivalent: false, counts: { script_main_app_accepted: 1, script_main_app_response: 1, script_main_app_status_2xx: 1, script_main_app_mime_js: 1, script_main_app_cancelled: 1, script_main_app_cancelled_successful_js: 1, script_PRIVATE_accepted: 'PRIVATE' } };
+  const summary = publicProxyDelivery(proxy, result, 'n');
+  expect(summary?.categories.main_app).toMatchObject({ accepted: 1, response: 1, complete: 0, cancelled: 1, status_2xx: 1, mime_js: 1, cancelled_successful_js: 1 });
+  expect(summary?.counts.upstream_timeout).toBe(0); expect(JSON.stringify(summary)).not.toContain('PRIVATE');
+  expect(publicProxyDelivery({ ...proxy, counts: { script_main_app_accepted: 1000001 } }, result, 'n')).toBeNull();
+  expect(publicSummary(sha, { sourceHead: sha }, { consoleErrorCount: 128 }, undefined, undefined).consoleErrorCount).toBe(128);
+  expect(publicSummary(sha, { sourceHead: sha }, { consoleErrorCount: 'PRIVATE' }, undefined, undefined).consoleErrorCount).toBeNull();
+});
+
+it('projects only bounded documentation delivery counters under existing proxy ownership checks', () => {
+  const result = { children: [{ role: 'proxy', pid: 42, owner: { pid: 42 }, exited: true }], proxyReceipt: { pid: 42, nonce: 'n' } };
+  const proxy = { pid: 42, nonce: 'n', stage: 'stopped', productionEquivalent: false, counts: { docs_rsc_navigation_accepted: 1, docs_rsc_navigation_response: 1, docs_rsc_navigation_status_2xx: 1, docs_rsc_navigation_mime_rsc: 1, docs_rsc_navigation_complete: 1, docs_rsc_prefetch_accepted: 2, docs_rsc_prefetch_complete: 2, docs_denied: 0, docs_PRIVATE: 'PRIVATE' } };
+  const summary = publicProxyDelivery(proxy, result, 'n');
+  expect(summary?.documentation.rsc_navigation).toMatchObject({ accepted: 1, response: 1, complete: 1, cancelled: 0, status_2xx: 1, mime_rsc: 1 });
+  expect(summary?.documentation.rsc_prefetch).toMatchObject({ accepted: 2, complete: 2 });
+  expect(summary?.documentation.document?.accepted).toBe(0); expect(summary?.documentation.denied).toBe(0); expect(JSON.stringify(summary)).not.toContain('PRIVATE');
+  expect(publicProxyDelivery({ ...proxy, nonce: 'foreign' }, result, 'n')).toBeNull();
+  for (const value of ['PRIVATE', -1, 1000001]) expect(publicProxyDelivery({ ...proxy, counts: { docs_rsc_navigation_accepted: value } }, result, 'n')).toBeNull();
+  expect(publicProxyDelivery({ ...proxy, counts: { docs_denied: 1000001 } }, result, 'n')).toBeNull();
+  let reads = 0; const counts = Object.defineProperty({}, 'docs_rsc_navigation_accepted', { enumerable: true, get() { reads++; return 1; } });
+  expect(publicProxyDelivery({ ...proxy, counts }, result, 'n')).toBeNull(); expect(reads).toBe(0);
+});
+
+it('retains fixed attempted/dispatched interactions and only already completed evidence tokens', () => {
+  expect(publicInteractions({ currentInteraction: 'pause', lastInteraction: 'play', evidence: ['play_pause_preserves_typed_output', 'PRIVATE_URL', 'play_pause_preserves_typed_output'] })).toEqual({ currentInteraction: 'pause', lastInteraction: 'play', completedEvidence: ['play_pause_preserves_typed_output'] });
+  const summary = publicSummary(sha, { sourceHead: sha }, { currentInteraction: 'PRIVATE_URL', lastInteraction: 'PRIVATE_SECRET', evidence: ['PRIVATE_URL', 'sample_approve_reject'] }, undefined, undefined);
+  expect(summary.currentInteraction).toBe('unclassified'); expect(summary.lastInteraction).toBe('unclassified'); expect(summary.completedEvidence).toEqual(['sample_approve_reject']); expect(JSON.stringify(summary)).not.toContain('PRIVATE');
+});
+
+it('reads proxy delivery only through private receipt validation during collection', () => {
+  const f = fixture(); const pid = 42;
+  f.put('result.json', { sourceHead: sha, children: [{ role: 'proxy', pid, owner: { pid }, exited: true }], proxyReceipt: { pid, nonce: f.config.nonce } });
+  f.put('proxy.json', { pid, nonce: f.config.nonce, stage: 'stopped', productionEquivalent: false, counts: { upstream_timeout: 1 } });
+  expect(f.run().proxyDelivery?.counts.upstream_timeout).toBe(1);
+  rmSync(f.destination, { recursive: true }); chmodSync(join(f.directory, 'proxy.json'), 0o644);
+  expect(() => f.run()).toThrow('website_ci_private_file');
+});
+it('collects a failed window as closed public fields without config, logs or profile data', () => {
+  const f = fixture(); f.put('result.json', { sourceHead: sha, status: 'failed', cleanup: 'owned_groups_empty', sourceUnchanged: true, error: 'PRIVATE' });
+  f.put('capture.json', { success: false, timedOutOperation: 'cdp.Page.navigate' });
+  f.put('done.json', { success: false, nonce: f.config.nonce });
+  writeFileSync(join(f.directory, 'bounded-runtime.log'), 'PRIVATE');
+  expect(f.run().outcome).toBe('failed');
+  const output = readFileSync(join(f.destination, 'summary.json'), 'utf8');
+  expect(output).toContain('cdp.Page.navigate'); expect(output).not.toContain('PRIVATE'); expect(output).not.toContain(f.directory);
+});
+it('refuses symlink inputs, nonprivate files and preexisting upload destinations', () => {
+  const f = fixture(); const target = join(f.directory, 'target'); writeFileSync(target, '{}', { mode: 0o600 });
+  symlinkSync(target, join(f.directory, 'result.json')); expect(() => f.run()).toThrow();
+  chmodSync(target, 0o644); expect(() => privateFile(target)).toThrow();
+  rmSync(join(f.directory, 'result.json')); mkdirSync(f.destination);
+  expect(() => f.run()).toThrow('website_ci_existing_destination');
+});
+it('rejects source drift, ambiguous ownership and unknown screenshot files', () => {
+  const f = fixture(); f.put('config.json', { ...f.config, hashes: {} }); expect(() => f.run()).toThrow();
+  f.put('config.json', f.config); mkdirSync(join(f.directory, 'screenshots'), { mode: 0o700 });
+  writeFileSync(join(f.directory, 'screenshots', 'secret.txt'), 'private', { mode: 0o600 });
+  expect(() => f.run()).toThrow('website_ci_unknown_image');
+  rmSync(join(f.directory, 'screenshots'), { recursive: true });
+  const second = join(f.temporary, 'axiom-website-Zz1234'); mkdirSync(second, { mode: 0o700 });
+  writeFileSync(join(second, 'config.json'), JSON.stringify({ ...f.config, directory: second }), { mode: 0o600 });
+  expect(() => f.run()).toThrow('website_ci_ambiguous_window');
+});
+it('rejects malformed and oversized PNG dimensions', () => {
+  expect(() => pngDimensions(Buffer.from('not png'))).toThrow();
+  const png = Buffer.alloc(33); Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]).copy(png); png.writeUInt32BE(13, 8); png.write('IHDR', 12); png.writeUInt32BE(1441, 16); png.writeUInt32BE(900, 20);
+  expect(() => pngDimensions(png)).toThrow('website_ci_png_dimensions');
+});
+it('refuses malformed ownership nonces and conflicting source receipts', () => {
+  const f = fixture(); f.put('config.json', { ...f.config, nonce: 'not-an-owner-nonce' });
+  expect(() => f.run()).toThrow();
+  f.put('config.json', f.config); f.put('result.json', { sourceHead: 'c'.repeat(40), status: 'failed' });
+  expect(() => f.run()).toThrow('website_ci_result_source');
+});
+it('publishes only the complete named image set with successful matching receipts, allowing CSS fractional clips', () => {
+  const f = fixture(); const images = join(f.directory, 'screenshots'); mkdirSync(images, { mode: 0o700 });
+  const png = Buffer.alloc(33); Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]).copy(png); png.writeUInt32BE(13, 8); png.write('IHDR', 12); png.writeUInt32BE(360, 16); png.writeUInt32BE(900, 20);
+  for (const name of screenshotNames) writeFileSync(join(images, name), png, { mode: 0o600 });
+  f.put('result.json', { sourceHead: sha, status: 'driver_finished', cleanup: 'owned_groups_empty', sourceUnchanged: true });
+  f.put('done.json', { success: true, nonce: f.config.nonce });
+  f.put('capture.json', { success: true, images: screenshotNames.map(name => ({ path: join(images, name), width: 359.5, height: 899.5 })) });
+  expect(f.run().outcome).toBe('passed');
+  expect(JSON.parse(readFileSync(join(f.destination, 'summary.json'), 'utf8')).images).toHaveLength(6);
+  rmSync(f.destination, { recursive: true });
+  f.put('capture.json', { success: true, images: screenshotNames.map(name => ({ path: join(images, name), width: 300, height: 899.5 })) });
+  expect(() => f.run()).toThrow('website_ci_image_receipt');
+});
+it('keeps CI isolated, PR-head bound and source-pins the adapter without altering guards', () => {
+  const workflow = readFileSync(join(root, '.github/workflows/website-visual.yml'), 'utf8');
+  expect(workflow).toContain('ref: ${{ github.event.pull_request.head.sha }}');
+  expect(workflow).toContain('AXIOM_WEBSITE_CI_SOURCE_SHA: ${{ github.event.pull_request.head.sha }}');
+  expect(workflow).toContain('path: website-source');
+  expect(workflow).toContain('working-directory: website-source');
+  expect(workflow).not.toMatch(/safe\.directory|chown/);
+  expect(workflow).toContain('persist-credentials: false'); expect(workflow).toContain('contents: read');
+  expect(workflow).toContain('timeout-minutes: 20'); expect(workflow).toContain('npm ci --ignore-scripts');
+  expect(workflow).not.toMatch(/pull_request_target|workflow_run|secrets\.|DATABASE_URL|vercel|docker.sock|GITHUB_SHA:|NODE_OPTIONS:/);
+  expect(workflow).toContain("steps.collect.outputs.ready == 'true'");
+  expect(readFileSync(join(root, 'scripts/run-owned-website-visual.mjs'), 'utf8')).toContain("'scripts/owned-website-ci.mjs'");
+});
+
+it('exports one sanitized upload directory only after complete collection, never partial eligibility', () => {
+  const f = fixture(); const output = join(f.temporary, 'github-output');
+  writeFileSync(output, '');
+  f.put('result.json', { sourceHead: sha, status: 'failed', cleanup: 'owned_groups_empty' });
+  expect(collectForUpload({ manifest, expected: sha, temporary: f.temporary, destination: f.destination, output }).outcome).toBe('failed');
+  expect(readFileSync(output, 'utf8')).toBe(`artifactPath=${f.destination}\nready=true\n`);
+  expect(readFileSync(join(f.destination, 'summary.json'), 'utf8')).not.toContain(f.directory);
+  const workflow = readFileSync(join(root, '.github/workflows/website-visual.yml'), 'utf8');
+  expect(workflow).toContain('path: ${{ steps.collect.outputs.artifactPath }}');
+  expect(workflow).not.toContain('${{ runner.temp }}/axiom-website-public');
+  writeFileSync(output, '');
+  expect(() => collectForUpload({ manifest, expected: sha, temporary: f.temporary, destination: f.destination, output })).toThrow('website_ci_existing_destination');
+  expect(readFileSync(output, 'utf8')).toBe('');
+  expect(() => collectForUpload({ manifest, expected: sha, temporary: f.temporary, destination: `${f.destination}\nready=true`, output })).toThrow('website_ci_artifact_path');
+  expect(readFileSync(output, 'utf8')).toBe('');
+});
+
+it('exports only bounded script counts and final guard observations with matching server ownership', () => {
+  const scriptCounts = { elements: 4, external: 3, inline: 1, resourceSuccess: 2, resourceFailure: 0, resourceUnknown: 1 };
+  const summary = publicSummary(sha, { sourceHead: sha }, { scriptRequests: { allowed: 3, denied: 1 }, preImageWait: { scriptCounts } }, undefined, undefined);
+  expect(summary.scriptCounts).toEqual(scriptCounts); expect(summary.scriptRequests).toEqual({ allowed: 3, denied: 1 });
+  expect(publicCounts({ allowed: 4097, denied: 0 }, ['allowed', 'denied'])).toBeNull();
+  expect(publicCounts({ allowed: 1, denied: 0, url: 'PRIVATE' }, ['allowed', 'denied'])).toBeNull();
+  let reads = 0; const access = { denied: 0 }; Object.defineProperty(access, 'allowed', { enumerable: true, get() { reads++; return 1; } });
+  expect(publicCounts(access, ['allowed', 'denied'])).toBeNull(); expect(reads).toBe(0);
+  const server = { pid: 123, nonce: 'nonce', stage: 'stopping', origin: 'PRIVATE', guard: { transport: 2, process: 0, worker: 0, listener: 1, policy: 'deny-all-outbound-and-new-processes', productionEquivalent: false } };
+  const result = { receipt: { pid: 123, nonce: 'nonce' }, children: [{ role: 'server', pid: 123, owner: { pid: 123 }, exited: true }] };
+  expect(publicServerGuard(server, result, 'nonce')).toEqual({ stage: 'stopping', counts: { transport: 2, process: 0, worker: 0, listener: 1 } });
+  for (const value of [undefined, { ...server, pid: 124 }, { ...server, nonce: 'wrong' }, { ...server, stage: 'ready' }, { ...server, guard: { ...server.guard, process: -1 } }]) expect(publicServerGuard(value, result, 'nonce')).toBeNull();
+  expect(publicServerGuard(server, { ...result, children: [{ ...result.children[0], exited: false }] }, 'nonce')).toBeNull();
+  expect(JSON.stringify(publicServerGuard(server, result, 'nonce'))).not.toContain('PRIVATE');
+});
+it('privately collects the final server receipt without publishing its identity or raw fields', () => {
+ const f = fixture();
+ f.put('result.json', { sourceHead: sha, receipt: { pid: 123, nonce: f.config.nonce }, children: [{ role: 'server', pid: 123, owner: { pid: 123 }, exited: true }], cleanupErrors: ['website_cleanup_metadata_unverified'] });
+ f.put('server.json', { pid: 123, nonce: f.config.nonce, stage: 'stopping', origin: 'PRIVATE', guard: { transport: 1, process: 0, worker: 0, listener: 0, policy: 'deny-all-outbound-and-new-processes', productionEquivalent: false } });
+ f.run(); const summary = JSON.parse(readFileSync(join(f.destination, 'summary.json'), 'utf8'));
+ expect(summary.serverGuard.counts.transport).toBe(1); expect(summary.cleanupErrors).toEqual(['website_cleanup_metadata_unverified']);
+ expect(JSON.stringify(summary)).not.toContain('PRIVATE'); expect(summary.serverGuard).not.toHaveProperty('pid');
+});

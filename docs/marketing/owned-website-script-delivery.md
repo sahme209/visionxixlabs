@@ -1,0 +1,9 @@
+# Closed proxy script-delivery diagnostics
+
+CI showed ten allowed Script interceptions, zero denied Script interceptions, six external script elements and four successful resource-timing entries. These are different measurements and do not establish a missing chunk or a hydration root cause. New proxy counters measure a narrower boundary without changing requests or timing.
+
+Only already-accepted `/_next/static/` paths ending in `.js` count as static JavaScript. Fixed events count acceptance, upstream response headers, completed downstream response (`finish`, once), cancellation (once), and upstream timeout separately. The existing 30-second upstream inactivity timeout and cancellation/destruction decisions remain unchanged. `script_complete` proves the proxy response finished, not that JavaScript executed or React hydrated. Response status is not inferred from this count. An upstream response arriving after cancellation can still count as a response; it cannot become completed delivery.
+
+The collector reads the existing private `proxy.json` with the normal owned-file checks, requires the final allowed lifecycle stage, matching nonce and PID against the exited registered proxy and initial receipt, and exports only six fixed integer counters bounded by the proxy's existing one-million cap. Missing event keys are zero; malformed counters or ownership yield unknown (`null`). No paths, URLs, request IDs, raw proxy receipt or arbitrary fields are published. Fresh private receipt ownership and a fresh source-bound manifest are required; historical counts are not acceptance evidence.
+
+Pure injected transport and collector tests verify the counters, duplicate cancellation/finish suppression, timeout distinction, unchanged timeout value, excluded/denied request classification, private-file validation and ownership failures. No actual network, server, browser, CI or production operation was used to prepare this diagnostic.

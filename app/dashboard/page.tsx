@@ -30,14 +30,11 @@ import {
   ArrowPathIcon,
   SparklesIcon,
   DocumentTextIcon,
-  ServerStackIcon,
-  ChartBarSquareIcon,
   KeyIcon,
   ShieldCheckIcon,
   BoltIcon,
 } from "@heroicons/react/24/outline";
 import { resolveNextAction } from "@/lib/product/nextAction";
-import { assessOnboarding } from "@/lib/onboarding/onboardingState";
 import { computeHonestyCounts } from "@/lib/actions/actionRegistry";
 import { RunScanButton } from "./RunScanButton";
 import { DisconnectButton } from "./DisconnectButton";
@@ -87,6 +84,7 @@ export default function DashboardPage() {
   const [connectors, setConnectors] = useState<ConnectorStatus[]>([]);
   const [summary, setSummary] = useState<DashboardSummary | null>(null);
   const [loading, setLoading] = useState(true);
+  const [summaryUnavailable, setSummaryUnavailable] = useState(false);
 
   async function refresh() {
     await Promise.all([
@@ -95,11 +93,16 @@ export default function DashboardPage() {
         .then((data) => setConnectors(Array.isArray(data?.connectors) ? data.connectors : []))
         .catch(() => {}),
       fetch("/api/dashboard/summary")
-        .then((r) => r.json())
-        .then((data) => {
-          if (data?.ok) setSummary(data as DashboardSummary);
+        .then(async (response) => {
+          if (!response.ok) throw new Error("Summary unavailable");
+          const data = await response.json();
+          if (data?.ok !== true || data.migrationPending === true) throw new Error("Summary unavailable");
+          const lastScanIso = typeof data.lastScanIso === "string" && Number.isFinite(Date.parse(data.lastScanIso))
+            ? data.lastScanIso : null;
+          setSummary({ ...data, lastScanIso } as DashboardSummary);
+          setSummaryUnavailable(false);
         })
-        .catch(() => {}),
+        .catch(() => { setSummary(null); setSummaryUnavailable(true); }),
     ]);
   }
 
@@ -116,19 +119,7 @@ export default function DashboardPage() {
   }
 
   const connected = connectors.filter((c) => c.status === "connected" || c.status === "linked");
-  const onboarding = assessOnboarding({
-    hasAccount: true,
-    providerSelected: connected.length > 0,
-    credentialsSubmitted: connected.length > 0,
-    credentialsValidated: connected.length > 0,
-    scansStarted: connected.length > 0 ? 1 : 0,
-    snapshotsPersisted: connected.length > 0 ? 1 : 0,
-    recommendationsViewed: 0,
-    plansBuilt: 0,
-    approvalsGranted: 0,
-    plansExecutedOrExported: 0,
-    auditBundlesExported: 0,
-  });
+  const hasCompletedScan = Boolean(summary?.lastScanIso);
 
   const nextAction = resolveNextAction({
     connectedClouds: connected.length,
@@ -138,7 +129,7 @@ export default function DashboardPage() {
     releaseopsConnected: false,
     releaseopsServicesAtRisk: 0,
     desktopAvailable: false,
-    hasRunScan: connected.length > 0,
+    hasRunScan: hasCompletedScan,
     isAuthenticated: true,
   });
 
@@ -220,8 +211,8 @@ export default function DashboardPage() {
             if (summary.lastScanIso) {
               return {
                 href: "/dashboard/scans",
-                label: "Clean — review the scan history",
-                reason: "Nothing actionable in the latest scan. The cron keeps re-running daily; history is on /dashboard/scans.",
+                label: "Review recorded scan history",
+                reason: "A completed scan is recorded. Review its results and saved evidence before deciding what to do next.",
               };
             }
             return null;
@@ -252,11 +243,11 @@ export default function DashboardPage() {
             </Link>
           );
         })()}
-        {onboarding.nextStep && !summary?.findingCount && (
-          <p className="mt-3 text-[11px] text-zinc-600 leading-relaxed pl-1 font-mono">
-            <span className="text-zinc-700">$</span> {onboarding.nextStep.label} · {onboarding.nextStep.detail}
-          </p>
-        )}
+        <p role="status" className="mt-3 text-[11px] text-zinc-400 leading-relaxed pl-1 font-mono">
+          {summaryUnavailable ? "Scan status unavailable. Refresh before using these results." : hasCompletedScan
+            ? "Completed scan recorded. Review connection checks and saved results separately."
+            : "No completed scan is recorded. Validate your connection and run a scan to continue."}
+        </p>
         {summary && summary.lastScanIso && (
           <Link
             href="/dashboard/briefing"
@@ -454,7 +445,7 @@ function SectionKicker({
   );
   return (
     <p className={`font-mono text-[10px] uppercase tracking-[0.24em] text-zinc-500 mb-3 inline-flex items-center gap-2 ${inline ? "" : "block"}`}>
-      <span className="text-zinc-700">//</span>
+      <span className="text-zinc-700">{"//"}</span>
       <span className={statusTone[status]}>{label}</span>
       {count !== undefined && (
         <>
@@ -489,7 +480,7 @@ function ActionSurfaceChip() {
         className="block rounded-md border border-emerald-500/20 bg-emerald-500/[0.025] px-4 py-3 hover:border-emerald-500/40 hover:bg-emerald-500/[0.05] transition-colors group"
       >
         <p className="font-mono text-[10px] uppercase tracking-[0.24em] text-emerald-300 mb-1.5 inline-flex items-center gap-2">
-          <span className="text-zinc-700">//</span>
+          <span className="text-zinc-700">{"//"}</span>
           <span>action-surface</span>
           <span className="text-zinc-700">::</span>
           <span className="text-zinc-500">{counts.total} typed actions</span>
@@ -552,7 +543,7 @@ function JourneyChecklist({
   return (
     <section className="mb-10">
       <p className="font-mono text-[10px] uppercase tracking-[0.24em] text-zinc-500 mb-3 inline-flex items-center gap-2">
-        <span className="text-zinc-700">//</span>
+        <span className="text-zinc-700">{"//"}</span>
         <span className="text-emerald-300">first-run</span>
         <span className="text-zinc-700">::</span>
         <span className="text-zinc-500">setup-sequence</span>

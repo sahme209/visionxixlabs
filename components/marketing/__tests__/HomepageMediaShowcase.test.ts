@@ -45,9 +45,9 @@ describe("HomepageMediaShowcase — honesty contract", () => {
     const page = source("app/page.tsx");
     expect(page).toContain('import { HomepageMediaShowcase } from "@/components/marketing/HomepageMediaShowcase";');
     expect(page).toContain("<HomepageMediaShowcase");
-    // The existing illustrative demo must be passed as the fallback, so
-    // the homepage renders identically to today until real media exists.
-    expect(page).toMatch(/fallback=\{[\s\S]*<DeploymentLifecycleDemo \/>[\s\S]*\}/);
+    // Missing capture assets must retain an explicitly simulated interactive
+    // fallback rather than a broken media element or invented screenshot.
+    expect(page).toMatch(/fallback=\{[\s\S]*<CinematicAxiomDemo variant="hero" \/>[\s\S]*\}/);
   });
 
   it("the capture script writes to public/media by default, matching where this component looks", () => {

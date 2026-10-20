@@ -15,11 +15,13 @@ export const metadata: Metadata = {
     "Transparent Free, Pro, and Enterprise plans for governed deployments, with activation protected until billing authority and quota enforcement are validated.",
 };
 
-export default async function PlansPage({ searchParams }: { searchParams?: Promise<{ plan?: string | string[]; interval?: string | string[] }> }) {
+export default async function PlansPage({ searchParams }: { searchParams?: Promise<{ plan?: string | string[]; interval?: string | string[]; checkout?: string | string[] }> }) {
   const ownedBinding = isolatedRuntimeRequested() ? await ownedPlansBinding() : null;
   const ownedTestCheckout = !!ownedBinding;
   const checkoutEnabled = isolatedRuntimeRequested() ? ownedTestCheckout : isSelfServiceBillingEnabled();
-  const initialSelection = parsePublicPlanSelection(await searchParams ?? {});
+  const params = await searchParams ?? {};
+  const initialSelection = parsePublicPlanSelection(params);
+  const cancellationReturnContext = params.checkout === "canceled";
   let ownedIntentState: OwnedCheckoutIntentState = "unavailable";
   let workspace: PublicCheckoutWorkspace = { status: "unavailable" };
   if (checkoutEnabled) {
@@ -32,54 +34,50 @@ export default async function PlansPage({ searchParams }: { searchParams?: Promi
     } catch { /* A public price page remains readable without billing authority. */ }
   }
   return (
-    <main className="relative isolate overflow-hidden">
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[620px] bg-[radial-gradient(circle_at_50%_0%,rgba(245,78,0,0.10),transparent_62%)]"
-      />
-
-      <section className="mx-auto max-w-[1400px] px-5 pb-16 pt-20 text-center sm:px-8 sm:pt-28 lg:px-12 lg:pb-20">
-        <p className="text-[11px] font-medium uppercase tracking-[0.2em] text-[#ff783d]">
-          Simple, organization-first pricing
-        </p>
-        <h1 className="mx-auto mt-5 max-w-4xl text-4xl font-medium leading-[0.98] tracking-[-0.055em] text-zinc-100 sm:text-6xl lg:text-7xl">
-          Start useful. Upgrade when the workflow earns it.
-        </h1>
-        <p className="mx-auto mt-6 max-w-2xl text-base leading-7 text-zinc-400 sm:text-lg">
-          Security, approval gates, and audit protection stay in every plan. Choose monthly or annual billing; activation remains locked until organization billing and quotas complete review.
-        </p>
-        <div className="mx-auto mt-8 inline-flex rounded-full border border-[#f54e00]/25 bg-[#f54e00]/[0.07] px-4 py-2 text-xs text-[#ff9a72]">
+    <main className="public-pricing-page relative isolate overflow-hidden [&_article]:min-h-0 [&_article]:rounded-xl [&_article]:p-6 [&_article]:shadow-none">
+      {cancellationReturnContext && <p role="status" className="mx-auto mt-6 max-w-[1280px] px-5 text-sm leading-6 text-zinc-400 sm:px-8 lg:px-12">Back from checkout. This page makes no subscription changes and the URL does not confirm a payment outcome. Review your selection to try again, or <Link href="/control/usage-billing" className="text-orange-300 underline underline-offset-4">Review workspace billing</Link>.</p>}
+      <section className="mx-auto max-w-[1280px] px-5 pb-12 pt-16 sm:px-8 sm:pt-24 lg:px-12 lg:pb-16">
+        <p className="text-[11px] font-medium uppercase tracking-[0.16em] text-zinc-500">Pricing</p>
+        <div className="mt-5 grid gap-6 lg:grid-cols-[1fr_0.9fr] lg:items-end lg:gap-16">
+          <h1 className="max-w-2xl text-[clamp(2.5rem,5vw,4.5rem)] font-medium leading-[1.04] tracking-[-0.05em] text-zinc-100">
+            Start useful.<br /><span className="text-zinc-400">Grow deliberately.</span>
+          </h1>
+          <p className="max-w-xl text-base leading-7 text-zinc-400">
+            Security, approval gates, and audit protection stay in every plan. Choose monthly or annual billing; activation remains locked until organization billing and quotas complete review.
+          </p>
+        </div>
+        <div className="mt-8 inline-flex items-start gap-2 border-l-2 border-orange-400/70 pl-3 text-xs leading-5 text-zinc-400">
           {ownedTestCheckout ? "Owned TEST checkout rehearsal · no live billing" : checkoutEnabled ? "Secure self-service checkout available" : "Pricing preview · no charges can be started from this page"}
         </div>
       </section>
 
-      <PublicPlansCatalog ownedIntentState={ownedIntentState} ownedTestCheckout={ownedTestCheckout} checkoutEnabled={checkoutEnabled} initialSelection={initialSelection} workspace={workspace} />
+      <div className="mx-auto max-w-[1280px] [&>section]:pb-12 lg:[&>section]:pb-16">
+        <PublicPlansCatalog ownedIntentState={ownedIntentState} ownedTestCheckout={ownedTestCheckout} checkoutEnabled={checkoutEnabled} initialSelection={initialSelection} workspace={workspace} />
+      </div>
 
-      <section className="border-y border-white/[0.07] bg-[#171717] px-5 py-16 sm:px-8 lg:px-12">
-        <div className="mx-auto grid max-w-[1400px] gap-8 lg:grid-cols-[0.75fr_1.25fr] lg:items-start">
+      <section className="border-y border-white/[0.07] px-5 py-12 sm:px-8 lg:px-12 lg:py-16">
+        <div className="mx-auto grid max-w-[1184px] gap-6 lg:grid-cols-[0.75fr_1.25fr] lg:gap-16">
           <div>
-            <p className="text-[11px] uppercase tracking-[0.18em] text-[#ff783d]">Clear usage accounting</p>
-            <h2 className="mt-4 text-3xl font-medium tracking-[-0.045em] text-zinc-100">What counts as a deployment?</h2>
+            <p className="text-[11px] uppercase tracking-[0.16em] text-zinc-500">Clear usage accounting</p>
+            <h2 className="mt-3 max-w-sm text-2xl font-medium leading-tight tracking-[-0.035em] text-zinc-100 sm:text-3xl">What counts as a deployment?</h2>
           </div>
-          <div className="rounded-2xl border border-white/[0.09] bg-[#1a1a1a] p-6 sm:p-8">
+          <div>
             <p className="text-base leading-7 text-zinc-200">{COUNTED_DEPLOYMENT_DEFINITION}</p>
-            <p className="mt-4 text-sm leading-6 text-zinc-500">
+            <p className="mt-4 max-w-2xl text-sm leading-6 text-zinc-400">
               Validation retries, polling, and automatic rollback for the same dispatch do not count again. Rejected, canceled, or failed-to-dispatch proposals do not count at all.
             </p>
           </div>
         </div>
       </section>
 
-      <section className="mx-auto max-w-[1400px] px-5 py-20 sm:px-8 lg:px-12 lg:py-28">
-        <div className="rounded-3xl border border-white/[0.09] bg-[#1a1a1a] p-7 sm:p-10 lg:flex lg:items-end lg:justify-between lg:gap-12">
-          <div>
-            <p className="text-[11px] uppercase tracking-[0.18em] text-zinc-500">No billing decision required</p>
-            <h2 className="mt-4 max-w-2xl text-3xl font-medium tracking-[-0.045em] text-zinc-100 sm:text-5xl">See the workflow before choosing a plan.</h2>
-          </div>
-          <Link href="/demo" className="mt-8 inline-flex min-h-12 shrink-0 items-center justify-center rounded-full bg-zinc-100 px-6 text-sm font-semibold text-zinc-950 hover:bg-white lg:mt-0">
-            Explore the interactive demo
-          </Link>
+      <section className="mx-auto flex max-w-[1280px] flex-col gap-6 px-5 py-14 sm:px-8 lg:flex-row lg:items-center lg:justify-between lg:px-12 lg:py-20">
+        <div>
+          <p className="text-[11px] uppercase tracking-[0.16em] text-zinc-500">No billing decision required</p>
+          <h2 className="mt-3 max-w-2xl text-2xl font-medium tracking-[-0.035em] text-zinc-100 sm:text-3xl">See the workflow before choosing a plan.</h2>
         </div>
+        <Link href="/demo" className="inline-flex min-h-11 shrink-0 items-center justify-center self-start rounded-lg border border-white/15 px-5 text-sm font-medium text-zinc-200 transition hover:bg-white/[0.04] lg:self-auto">
+          Explore the interactive demo
+        </Link>
       </section>
     </main>
   );

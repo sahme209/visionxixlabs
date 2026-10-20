@@ -67,14 +67,22 @@ export function Navigation() {
       }
     };
 
+    // Match xl navigation visibility: a hidden dialog must not retain focus
+    // trapping or scroll locks after a tablet/desktop resize.
+    const onResize = () => {
+      if (window.innerWidth >= 1280) setMobileMenuOpen(false);
+    };
     document.body.style.overflow = "hidden";
     document.documentElement.style.overflow = "hidden";
+    window.addEventListener("resize", onResize);
+    onResize();
     document.addEventListener("keydown", onKeyDown);
     requestAnimationFrame(() => menuRef.current?.querySelector<HTMLElement>("a[href]")?.focus());
     return () => {
       document.body.style.overflow = previousOverflow;
       document.documentElement.style.overflow = previousRootOverflow;
       document.removeEventListener("keydown", onKeyDown);
+      window.removeEventListener("resize", onResize);
     };
   }, [mobileMenuOpen]);
 
@@ -83,15 +91,15 @@ export function Navigation() {
   return (
     <nav
       aria-label="Primary navigation"
-      className={`site-navigation fixed inset-x-0 top-0 z-50 backdrop-blur-2xl transition-[background-color,border-color,box-shadow] duration-300 ${
+      className={`site-navigation fixed inset-x-0 top-0 z-50 backdrop-blur-xl transition-[background-color,border-color] duration-300 ${
         scrolled
-          ? "border-b border-white/[0.09] bg-[#090a08]/88 shadow-[0_1px_0_rgba(255,255,255,0.03),0_18px_50px_-28px_rgba(0,0,0,0.95)]"
+          ? "border-b border-white/[0.09] bg-[#090a08]/88"
           : "border-b border-transparent bg-[#090a08]/62"
       }`}
     >
       <div
-        className={`mx-auto flex max-w-[1400px] items-center justify-between px-5 transition-[height] duration-300 sm:px-8 lg:px-12 ${
-          scrolled ? "h-14 lg:h-16" : "h-16 lg:h-[72px]"
+        className={`mx-auto flex max-w-[1280px] items-center justify-between px-5 transition-[height] duration-300 sm:px-8 lg:px-10 ${
+          scrolled ? "h-14 xl:h-16" : "h-16 xl:h-[72px]"
         }`}
       >
         <Link href="/" className="flex items-center gap-2.5 text-sm font-semibold tracking-[-0.02em] text-zinc-100" aria-label="Vision XIX Labs home">
@@ -99,7 +107,7 @@ export function Navigation() {
           <span>Vision XIX Labs</span>
         </Link>
 
-        <div className="hidden items-center gap-7 lg:flex">
+        <div className="hidden items-center gap-7 xl:flex">
           {primaryLinks.map((item) => (
             <Link key={item.href} href={item.href} className="text-sm text-zinc-400 transition-colors hover:text-white">
               {item.label}
@@ -107,10 +115,10 @@ export function Navigation() {
           ))}
         </div>
 
-        <div className="hidden items-center gap-3 lg:flex">
+        <div className="hidden items-center gap-3 xl:flex">
           <Link href="/support" className="px-2 py-2 text-sm text-zinc-400 transition-colors hover:text-orange-200">Support Axiom</Link>
           <Link href="/auth/signin" className="px-2 py-2 text-sm text-zinc-300 transition-colors hover:text-white">Sign in</Link>
-          <Link href="/download" className="rounded-full bg-[#f0f0eb] px-4 py-2 text-sm font-semibold text-[#11120f] transition hover:bg-white hover:shadow-[0_8px_30px_-12px_rgba(255,255,255,.45)]">Download</Link>
+          <Link href="/download" className="rounded-lg bg-[#f0f0eb] px-4 py-2 text-sm font-semibold text-[#11120f] transition hover:bg-white">Download</Link>
         </div>
 
         <button
@@ -120,7 +128,7 @@ export function Navigation() {
           aria-controls="mobile-navigation"
           aria-label={mobileMenuOpen ? "Close navigation menu" : "Open navigation menu"}
           onClick={() => setMobileMenuOpen((open) => !open)}
-          className="flex h-11 w-11 items-center justify-center rounded-lg text-zinc-300 hover:bg-white/[0.06] lg:hidden"
+          className="flex h-11 w-11 items-center justify-center rounded-lg text-zinc-300 hover:bg-white/[0.06] xl:hidden"
         >
           {mobileMenuOpen ? <XMarkIcon className="h-6 w-6" /> : <Bars3Icon className="h-6 w-6" />}
         </button>
@@ -137,7 +145,7 @@ export function Navigation() {
           // the "docked chrome" effect above — this must track that exactly,
           // or the overlay starts a few pixels below the bar's real bottom
           // edge and leaves a sliver of page content visible at the top.
-          className={`fixed inset-x-0 bottom-0 overflow-y-auto border-t border-white/[0.06] bg-[#090a08]/[0.98] px-5 py-6 lg:hidden ${scrolled ? "top-14" : "top-16"}`}
+          className={`fixed inset-x-0 bottom-0 overflow-y-auto border-t border-white/[0.06] bg-[#090a08]/[0.98] px-5 py-6 xl:hidden ${scrolled ? "top-14" : "top-16"}`}
         >
           <div className="mx-auto flex max-w-lg flex-col">
             <p className="text-[10px] uppercase tracking-[0.18em] text-zinc-500">Explore Axiom</p>

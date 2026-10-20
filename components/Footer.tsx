@@ -33,16 +33,16 @@ const columns = [
 
 export function Footer() {
   return (
-    <footer className="site-footer border-t border-white/[0.07] bg-[#090a08] px-5 pb-8 sm:px-8 lg:px-12">
-      <div className="mx-auto max-w-[1400px]">
-        <section className="flex flex-col gap-8 border-b border-white/[0.07] py-16 md:flex-row md:items-end md:justify-between lg:py-20" aria-labelledby="footer-cta-heading">
+    <footer className="site-footer border-t border-white/[0.07] bg-[#090a08] px-5 pb-8 sm:px-8 lg:px-10">
+      <div className="mx-auto max-w-[1280px]">
+        <section className="flex flex-col gap-8 border-b border-white/[0.07] py-12 md:flex-row md:items-end md:justify-between lg:py-16" aria-labelledby="footer-cta-heading">
           <div>
-            <p className="text-[10px] font-medium uppercase tracking-[0.22em] text-orange-300">Axiom Agent</p>
+            <p className="text-[10px] font-medium uppercase tracking-[0.22em] text-zinc-400">Axiom Agent</p>
             <h2 id="footer-cta-heading" className="mt-4 max-w-3xl text-3xl font-medium leading-tight tracking-[-0.045em] text-zinc-100 sm:text-5xl">Engineering intent, under control.</h2>
           </div>
           <div className="flex flex-wrap gap-3">
-            <Link href="/product" className="rounded-full bg-zinc-100 px-5 py-3 text-sm font-semibold text-zinc-950 hover:bg-white">Explore Axiom</Link>
-            <Link href="/support" className="rounded-full border border-orange-300/30 px-5 py-3 text-sm font-medium text-orange-200 transition hover:border-orange-300/60 hover:bg-orange-300/[0.06]">Support Axiom</Link>
+            <Link href="/product" className="rounded-lg bg-zinc-100 px-5 py-3 text-sm font-semibold text-zinc-950 hover:bg-white">Explore Axiom</Link>
+            <Link href="/support" className="rounded-lg border border-orange-300/30 px-5 py-3 text-sm font-medium text-orange-200 transition hover:border-orange-300/60 hover:bg-orange-300/[0.06]">Support Axiom</Link>
           </div>
         </section>
 

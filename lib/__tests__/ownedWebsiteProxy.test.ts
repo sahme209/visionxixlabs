@@ -6,7 +6,7 @@ const proxy = require("../../scripts/fixtures/ownedWebsiteProxyTransport.cjs");
 class Stream extends EventEmitter {
   destroyed = false; writableEnded = false; complete = true; aborted = false;
   writeHead = vi.fn(() => this); end = vi.fn(() => { this.writableEnded = true; return this; });
-  pipe = vi.fn(); setTimeout = vi.fn();
+  pipe = vi.fn(); setTimeout = vi.fn((duration: number, callback: () => void) => { void duration; void callback; });
   destroy = vi.fn(() => { if (!this.destroyed) { this.destroyed = true; this.emit("close"); } return this; });
 }
 function fixture(isStopping = () => false) {
@@ -67,4 +67,98 @@ it("forwards only the fixed app endpoint with no client credential headers", () 
 it("cancels premature upstream close whether before or after response headers", () => {
   const f = fixture(); f.handler.request(f.req, f.res); f.upstream.emit("close"); expect(f.res.destroy).toHaveBeenCalledOnce();
   const second = fixture(); second.handler.request(second.req, second.res); const response = Object.assign(new Stream(), { complete: false, statusCode: 200, headers: {} }); second.reply(response); response.emit("close"); expect(second.res.destroy).toHaveBeenCalledOnce();
+});
+
+it("counts accepted static JavaScript delivery without persisting request identity", () => {
+  const f = fixture(); f.req.url = 'http://127.0.0.1:38001/_next/static/chunks/main-app.js?v=private';
+  f.handler.request(f.req, f.res); const response = Object.assign(new Stream(), { statusCode: 200, headers: {} }); f.reply(response);
+  f.res.writableEnded = true; f.res.emit('finish'); f.res.emit('finish'); f.res.emit('close');
+  expect(f.events.filter(event => !event.startsWith('script_main_app_'))).toEqual(['script_accepted', 'script_response', 'script_complete']);
+  expect(JSON.stringify(f.events)).not.toContain('private');
+  expect(f.upstream.setTimeout.mock.calls[0][0]).toBe(30000);
+  f.res.emit('error', Error('late-error'));
+  expect(f.events).toContain('script_cancelled'); // Existing cancellation behavior is unchanged.
+  expect(f.events).not.toContain('script_main_app_cancelled'); // Completed delivery is not an incomplete chunk.
+});
+
+it("counts upstream timeout and cancellation once and distinguishes it from reset", () => {
+  const f = fixture(); f.req.url = 'http://127.0.0.1:38001/_next/static/chunks/main-app.js'; f.handler.request(f.req, f.res);
+  const timeout = f.upstream.setTimeout.mock.calls[0][1] as () => void; timeout(); timeout(); f.req.emit('error', Error('private'));
+  expect(f.events.filter(event => !event.startsWith('script_main_app_'))).toEqual(['script_accepted', 'upstream_timeout', 'script_upstream_timeout', 'request_cancelled', 'script_cancelled']);
+  expect(f.upstream.destroy).toHaveBeenCalledOnce();
+  const g = fixture(); g.req.url = f.req.url; g.handler.request(g.req, g.res); g.req.emit('aborted');
+  expect(g.events.filter(event => !event.startsWith('script_main_app_'))).toEqual(['script_accepted', 'request_cancelled', 'script_cancelled']);
+});
+
+it("does not classify CSS, pages or denied scripts as accepted JavaScript", () => {
+  for (const path of ['/product', '/_next/static/css/app.css', '/_next/static/chunks/app.js?unsupported=1']) {
+    const f = fixture(); f.req.url = `http://127.0.0.1:38001${path}`; f.handler.request(f.req, f.res);
+    expect(f.events).not.toContain('script_accepted');
+  }
+});
+
+it.each([['webpack.js', 'webpack'], ['main-app.js', 'main_app'], ['app/page.js', 'app_page'], ['app/layout.js', 'app_layout'], ['private-name.js', 'other']])('classifies only fixed chunk shape %s without retaining its name', (path, category) => {
+  const f = fixture(); f.req.url = `http://127.0.0.1:38001/_next/static/chunks/${path}?v=PRIVATE`; f.handler.request(f.req, f.res);
+  const response = Object.assign(new Stream(), { statusCode: 200, headers: { 'content-type': 'text/javascript; charset=utf-8' } }); f.reply(response);
+  f.res.emit('error', Error('PRIVATE')); f.res.emit('error', Error('PRIVATE'));
+  expect(f.events).toContain(`script_${category}_accepted`); expect(f.events).toContain(`script_${category}_response`);
+  expect(f.events).toContain(`script_${category}_status_2xx`); expect(f.events).toContain(`script_${category}_mime_js`);
+  expect(f.events.filter(value => value === `script_${category}_cancelled_successful_js`)).toHaveLength(1);
+  expect(f.events).not.toContain(`script_${category}_complete`); expect(JSON.stringify(f.events)).not.toMatch(/PRIVATE|private-name/);
+});
+
+it.each([[302, 'text/html', '3xx'], [404, 'text/html', '4xx'], [500, 'application/json', '5xx'], [undefined, undefined, 'other']])('classifies non-success response %s using closed values', (statusCode, contentType, statusClass) => {
+  const f = fixture(); f.req.url = 'http://127.0.0.1:38001/_next/static/chunks/main-app.js'; f.handler.request(f.req, f.res);
+  f.reply(Object.assign(new Stream(), { statusCode, headers: { 'content-type': contentType } })); f.req.emit('aborted');
+  expect(f.events).toContain(`script_main_app_status_${statusClass}`); expect(f.events).toContain('script_main_app_mime_other');
+  expect(f.events).toContain('script_main_app_cancelled_other'); expect(f.events).not.toContain('script_main_app_cancelled_successful_js');
+});
+
+it('preserves the complete bounded RSC cache-hash header set and no credential headers', () => {
+ const f = fixture(); Object.assign(f.req.headers, { rsc: '1', 'next-router-state-tree': '%5B%22%22%2C%7B%7D%5D', 'next-router-prefetch': '1', 'next-router-segment-prefetch': '/_tree', 'next-url': '/product', cookie: 'PRIVATE', authorization: 'PRIVATE', host: 'foreign.invalid' });
+ f.handler.request(f.req, f.res);
+ const forwarded = f.request.mock.calls[0][0].headers;
+ expect(forwarded).toEqual({ host: '127.0.0.1:38001', accept: '*/*', rsc: '1', 'next-router-state-tree': '%5B%22%22%2C%7B%7D%5D', 'next-router-prefetch': '1', 'next-router-segment-prefetch': '/_tree', 'next-url': '/product' });
+ expect(JSON.stringify(forwarded)).not.toContain('PRIVATE');
+});
+it.each([
+ ['next-router-state-tree', ['duplicate']], ['next-router-state-tree', 'x'.repeat(40001)], ['next-router-state-tree', 'bad\nvalue'],
+ ['next-router-prefetch', '9'], ['next-router-prefetch', '0'], ['next-router-segment-prefetch', 'x'.repeat(4097)], ['next-url', '/account'], ['next-url', 'https://foreign.invalid/product'], ['next-url', '/product?secret=private'],
+])('refuses malformed framework header %s before upstream delegation', (key, value) => {
+ const f = fixture(); Object.assign(f.req.headers, { rsc: '1', 'next-url': '/product' }); Object.assign(f.req.headers, { [key]: value });
+ f.handler.request(f.req, f.res); expect(f.request).not.toHaveBeenCalled(); expect(f.res.writeHead).toHaveBeenCalledWith(403);
+});
+it('refuses framework header accessors without evaluating them', () => {
+ const f = fixture(); let reads = 0; Object.assign(f.req.headers, { rsc: '1' }); Object.defineProperty(f.req.headers, 'next-url', { enumerable: true, get() { reads++; return '/product'; } });
+ f.handler.request(f.req, f.res); expect(reads).toBe(0); expect(f.request).not.toHaveBeenCalled();
+});
+
+it.each([['rsc_navigation', 'text/x-component; charset=utf-8'], ['rsc_prefetch', 'text/x-component; charset=utf-8'], ['document', 'text/html; charset=utf-8']])('counts fixed documentation %s delivery without recording headers or URL', (kind, mime) => {
+  const f = fixture(); f.req.url = 'http://127.0.0.1:38001/docs/approval-workflow?_rsc=PRIVATE';
+  if (kind.startsWith('rsc_')) Object.assign(f.req.headers, { rsc: '1' });
+  if (kind === 'rsc_prefetch') Object.assign(f.req.headers, { 'next-router-prefetch': '1' });
+  f.handler.request(f.req, f.res); f.reply(Object.assign(new Stream(), { statusCode: 200, headers: { 'content-type': mime, 'x-private': 'PRIVATE' } }));
+  f.res.writableEnded = true; f.res.emit('finish'); f.res.emit('finish'); f.res.emit('error', Error('PRIVATE'));
+  const events = f.events.filter(event => event.startsWith('docs_'));
+  expect(events).toEqual([`docs_${kind}_accepted`, `docs_${kind}_response`, `docs_${kind}_status_2xx`, `docs_${kind}_mime_${kind.startsWith('rsc_') ? 'rsc' : 'html'}`, `docs_${kind}_complete`]);
+  expect(JSON.stringify(events)).not.toMatch(/PRIVATE|approval-workflow/); expect(f.upstream.setTimeout.mock.calls[0][0]).toBe(30000);
+});
+
+it('distinguishes a failed documentation response from timeout and counts cancellation once', () => {
+  const f = fixture(); f.req.url = 'http://127.0.0.1:38001/docs/approval-workflow'; Object.assign(f.req.headers, { rsc: '1' });
+  f.handler.request(f.req, f.res); f.reply(Object.assign(new Stream(), { statusCode: 500, headers: { 'content-type': 'text/html' } })); f.req.emit('aborted'); f.res.emit('error', Error('PRIVATE'));
+  expect(f.events.filter(event => event.startsWith('docs_'))).toEqual(['docs_rsc_navigation_accepted', 'docs_rsc_navigation_response', 'docs_rsc_navigation_status_5xx', 'docs_rsc_navigation_mime_html', 'docs_rsc_navigation_cancelled']);
+  const g = fixture(); g.req.url = f.req.url; g.handler.request(g.req, g.res);
+  const timeout = g.upstream.setTimeout.mock.calls[0][1]; timeout(); timeout();
+  expect(g.events.filter(event => event.startsWith('docs_'))).toEqual(['docs_document_accepted', 'docs_document_upstream_timeout', 'docs_document_cancelled']);
+});
+
+it('counts denied documentation separately and never assigns other destinations documentation counters', () => {
+  const f = fixture(); f.req.url = 'http://127.0.0.1:38001/docs/approval-workflow'; Object.assign(f.req.headers, { rsc: '1', 'next-url': '/account' });
+  f.handler.request(f.req, f.res); expect(f.events.filter(event => event.startsWith('docs_'))).toEqual(['docs_denied']); expect(f.request).not.toHaveBeenCalled();
+  const g = fixture(); g.handler.request(g.req, g.res); expect(g.events.some(event => event.startsWith('docs_'))).toBe(false);
+});
+it.each(['1', '2', '3'])('distinguishes validated documentation prefetch %s from navigation-shaped RSC', prefetch => {
+  const f = fixture(); f.req.url = 'http://127.0.0.1:38001/docs/approval-workflow'; Object.assign(f.req.headers, { rsc: '1', 'next-router-prefetch': prefetch });
+  f.handler.request(f.req, f.res); expect(f.events).toContain('docs_rsc_prefetch_accepted'); expect(f.events).not.toContain('docs_rsc_navigation_accepted');
 });

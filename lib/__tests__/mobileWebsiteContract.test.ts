@@ -9,11 +9,11 @@ describe("mobile website contract", () => {
   it("uses one responsive homepage with phone-first spacing and actions", () => {
     const page = source("app/page.tsx");
 
-    expect(page).toContain("Engineering intent,");
-    expect(page).toContain("under control.");
-    expect(page).toContain("flex flex-col justify-center gap-3 sm:flex-row");
-    expect(page).toContain("relative grid overflow-hidden rounded-2xl");
-    expect(page).toContain("lg:grid-cols-[0.72fr_1.28fr]");
+    expect(page).toContain("Engineering work.");
+    expect(page).toContain("With you in control.");
+    expect(page).toContain("flex flex-col gap-3 sm:flex-row");
+    expect(page).toContain('<CinematicAxiomDemo variant="hero" />');
+    expect(source("components/marketing/CinematicAxiomDemo.tsx")).toContain("lg:grid-cols-[230px_minmax(0,1fr)]");
   });
 
   it("keeps primary mobile actions large and full width", () => {

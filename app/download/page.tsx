@@ -1,12 +1,10 @@
 "use client";
 
 import { useEffect, useMemo, useState, useSyncExternalStore } from "react";
-import Image from "next/image";
 import Link from "next/link";
 import {
   ArrowDownTrayIcon,
   ArrowRightIcon,
-  CheckCircleIcon,
   CommandLineIcon,
   ComputerDesktopIcon,
   GlobeAltIcon,
@@ -16,6 +14,8 @@ import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/Footer";
 
 type PlatformId = "mac-arm" | "mac-intel" | "windows" | "linux";
+type PlatformDetection = PlatformId | "choose";
+
 type ManifestPlatform = "macos-arm" | "macos-intel" | "windows-x64" | "linux-x64";
 
 interface ManifestAsset {
@@ -62,12 +62,13 @@ const resolverHref: Record<PlatformId, string> = {
 
 const subscribe = () => () => undefined;
 
-function detectPlatform(): PlatformId {
+function detectPlatform(): PlatformDetection {
   const userAgent = navigator.userAgent.toLowerCase();
   if (userAgent.includes("win")) return "windows";
   if (userAgent.includes("linux")) return "linux";
-  const platform = navigator.platform?.toLowerCase() ?? "";
-  return platform.includes("intel") ? "mac-intel" : "mac-arm";
+  // Browser platform strings are not reliable CPU architecture evidence.
+  // Keep both Mac installers explicit instead of guessing from "MacIntel".
+  return "choose";
 }
 
 function formatSize(bytes: number) {
@@ -75,7 +76,7 @@ function formatSize(bytes: number) {
 }
 
 export default function DownloadPage() {
-  const detectedPlatform = useSyncExternalStore<PlatformId>(subscribe, detectPlatform, () => "mac-arm");
+  const detectedPlatform = useSyncExternalStore<PlatformDetection>(subscribe, detectPlatform, () => "choose");
   const [manifest, setManifest] = useState<ReleaseManifest | null>(null);
   const [manifestError, setManifestError] = useState(false);
 
@@ -87,7 +88,11 @@ export default function DownloadPage() {
         return response.json();
       })
       .then((body) => {
-        if (!cancelled && body?.ok && body.data) setManifest(body.data as ReleaseManifest);
+        if (body?.ok !== true || !body.data || typeof body.data !== "object"
+          || !body.data.assets || typeof body.data.assets !== "object" || Array.isArray(body.data.assets)) {
+          throw new Error("Release manifest unavailable");
+        }
+        if (!cancelled) setManifest(body.data as ReleaseManifest);
       })
       .catch(() => {
         if (!cancelled) setManifestError(true);
@@ -95,62 +100,61 @@ export default function DownloadPage() {
     return () => { cancelled = true; };
   }, []);
 
-  const detectedAsset = manifest?.assets[platformKey[detectedPlatform]] ?? null;
-  const downloadReady = Boolean(manifest?.runtimeReady && detectedAsset);
-  const primaryHref = downloadReady && detectedAsset
+  const detectedAsset = detectedPlatform === "choose" ? null : manifest?.assets[platformKey[detectedPlatform]] ?? null;
+  const downloadReady = Boolean(manifest?.runtimeReady === true && detectedAsset);
+  const primaryHref = detectedPlatform === "choose" ? "#downloads" : downloadReady && detectedAsset
     ? detectedAsset.downloadUrl
     : resolverHref[detectedPlatform];
 
   const releaseStatus = useMemo(() => {
     if (manifestError) return "Release status unavailable";
     if (!manifest) return "Checking the latest release…";
-    if (!manifest.runtimeReady) return manifest.runtimeMessage ?? "Desktop sign-in is temporarily unavailable.";
+    if (manifest.runtimeReady !== true) return manifest.runtimeMessage ?? "Desktop sign-in is temporarily unavailable.";
     return manifest.tag ? `Latest release · ${manifest.tag.replace("desktop-v", "v")}` : "Latest release";
   }, [manifest, manifestError]);
 
   return (
-    <div className="min-h-screen bg-[#0d0e0c] text-zinc-100">
+    <div className="min-h-screen bg-[#101010] text-zinc-100">
       <Navigation />
 
       <main>
-        <section className="mx-auto max-w-[1400px] px-5 pb-14 pt-32 sm:px-8 sm:pb-20 sm:pt-40 lg:px-12">
+        <section className="mx-auto max-w-[1280px] px-5 pb-10 pt-28 sm:px-8 sm:pb-14 lg:pt-36 lg:px-10">
           <div className="max-w-3xl">
             <p className="text-[11px] font-medium uppercase tracking-[0.2em] text-orange-300">Axiom Agent for desktop</p>
-            <h1 className="mt-6 text-[clamp(3.4rem,7vw,7.4rem)] font-medium leading-[0.9] tracking-[-0.065em] text-white">
+            <h1 className="mt-5 text-[clamp(2.5rem,5vw,4.5rem)] font-medium leading-[1.05] tracking-[-0.05em] text-white">
               Work where<br />engineering happens.
             </h1>
-            <p className="mt-7 max-w-2xl text-lg leading-8 text-zinc-400 sm:text-xl">
+            <p className="mt-5 max-w-2xl text-base leading-7 text-zinc-400 sm:text-lg">
               A focused desktop workspace for governed engineering operations, approvals, execution, and evidence.
             </p>
-            <div className="mt-9 flex flex-col gap-3 sm:flex-row sm:items-center">
+            <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:items-center">
               <a
                 href={primaryHref}
                 download={downloadReady && detectedAsset ? detectedAsset.fileName : undefined}
                 className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl sm:rounded-full bg-[#f2f2ed] px-6 text-sm font-semibold text-[#11120f] transition hover:bg-white"
               >
                 <ArrowDownTrayIcon className="h-4 w-4" />
-                Download for {platformLabel[detectedPlatform]}
+                {detectedPlatform === "choose" ? "Choose your installer" : `Download for ${platformLabel[detectedPlatform]}`}
               </a>
-              <Link href="/demo" className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full border border-white/12 px-6 text-sm font-medium text-zinc-200 transition hover:border-white/25 hover:bg-white/[0.04]">
+              <Link href="/demo" className="inline-flex min-h-12 items-center justify-center gap-2 rounded-lg border border-white/12 px-6 text-sm font-medium text-zinc-200 transition hover:border-white/25 hover:bg-white/[0.04]">
                 Explore the web demo <ArrowRightIcon className="h-4 w-4" />
               </Link>
             </div>
-            <p className="mt-4 text-xs text-zinc-600">{releaseStatus}{detectedAsset ? ` · ${formatSize(detectedAsset.sizeBytes)}` : ""}</p>
+            <p className="mt-4 text-xs text-zinc-400">{releaseStatus}{detectedAsset ? ` · ${formatSize(detectedAsset.sizeBytes)}` : ""}</p>
           </div>
         </section>
 
-        <section id="downloads" className="mx-auto max-w-[1400px] px-5 pb-24 sm:px-8 lg:px-12">
-          <div className="mb-8 border-t border-white/[0.08] pt-10">
-            <h2 className="text-3xl font-medium tracking-[-0.04em] text-zinc-100 sm:text-4xl">Use Axiom on your workstation.</h2>
-            <p className="mt-2 text-lg text-zinc-500">One governed workspace across macOS, Windows, and Linux.</p>
+        <section id="downloads" className="mx-auto max-w-[1280px] px-5 pb-16 sm:px-8 lg:px-10">
+          <div className="mb-6 border-t border-white/[0.08] pt-8">
+            <h2 className="text-2xl font-medium tracking-[-0.035em] text-zinc-100 sm:text-3xl">Use Axiom on your workstation.</h2>
+            <p className="mt-2 text-base text-zinc-400">One governed workspace across macOS, Windows, and Linux.</p>
           </div>
 
           <div className="grid gap-3 lg:grid-cols-3">
             <DownloadCard
               title="macOS"
-              copy="Signed and notarized builds for Apple Silicon and Intel Macs."
+              copy="Installers for Apple Silicon and Intel Macs. Review signing details in the release record."
               icon={ComputerDesktopIcon}
-              image="/images/axiom-intake-landscape-v1.png"
               assets={[
                 { id: "mac-arm", asset: manifest?.assets["macos-arm"] ?? null },
                 { id: "mac-intel", asset: manifest?.assets["macos-intel"] ?? null },
@@ -161,7 +165,6 @@ export default function DownloadPage() {
               title="Windows"
               copy="The Axiom desktop workspace for Windows engineering teams."
               icon={CommandLineIcon}
-              image="/images/axiom-validation-landscape-v1.png"
               assets={[{ id: "windows", asset: manifest?.assets["windows-x64"] ?? null }]}
               runtimeReady={manifest?.runtimeReady === true}
             />
@@ -169,23 +172,22 @@ export default function DownloadPage() {
               title="Linux"
               copy="A portable AppImage for Linux workstations and engineering environments."
               icon={GlobeAltIcon}
-              image="/images/axiom-history-landscape-v1.png"
               assets={[{ id: "linux", asset: manifest?.assets["linux-x64"] ?? null }]}
               runtimeReady={manifest?.runtimeReady === true}
             />
           </div>
         </section>
 
-        <section className="border-y border-white/[0.07] bg-[#10110f]">
-          <div className="mx-auto grid max-w-[1400px] gap-10 px-5 py-16 sm:px-8 md:grid-cols-[1fr_auto] md:items-center lg:px-12">
+        <section className="border-y border-white/[0.07] bg-[#131313]">
+          <div className="mx-auto grid max-w-[1280px] gap-8 px-5 py-12 sm:px-8 md:grid-cols-[1fr_auto] md:items-center lg:px-10">
             <div>
               <p className="text-[11px] uppercase tracking-[0.2em] text-orange-300">Release integrity</p>
-              <h2 className="mt-4 text-3xl font-medium tracking-[-0.04em] text-white sm:text-4xl">Every download resolves from the live release manifest.</h2>
-              <p className="mt-4 max-w-2xl leading-7 text-zinc-500">Checksums and detached signatures are published with each available installer. Platform signing status is stated directly—never inferred.</p>
+              <h2 className="mt-4 text-2xl font-medium tracking-[-0.035em] text-white sm:text-3xl">Every download resolves from the live release manifest.</h2>
+              <p className="mt-4 max-w-2xl leading-7 text-zinc-400">Review checksums and detached signatures in the release record where provided. Installer signing and notarization labels report the current manifest; they do not replace local verification.</p>
             </div>
             <div className="space-y-3 text-sm text-zinc-400">
-              <p className="flex items-center gap-3"><CheckCircleIcon className="h-5 w-5 text-emerald-400" /> macOS signed and notarized</p>
-              <p className="flex items-center gap-3"><ShieldCheckIcon className="h-5 w-5 text-orange-300" /> SHA-256 digest per artifact</p>
+              <p className="flex items-center gap-3"><ShieldCheckIcon className="h-5 w-5 text-zinc-400" /> Review signing and notarization per installer</p>
+              <p className="flex items-center gap-3"><ShieldCheckIcon className="h-5 w-5 text-orange-300" /> Review published SHA-256 digests</p>
               {manifest?.htmlUrl ? <a href={manifest.htmlUrl} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 text-zinc-200 hover:text-white">View release record <ArrowRightIcon className="h-4 w-4" /></a> : null}
             </div>
           </div>
@@ -201,55 +203,47 @@ function DownloadCard({
   title,
   copy,
   icon: Icon,
-  image,
   assets,
   runtimeReady,
 }: {
   title: string;
   copy: string;
   icon: typeof ComputerDesktopIcon;
-  image: string;
   assets: Array<{ id: PlatformId; asset: ManifestAsset | null }>;
   runtimeReady: boolean;
 }) {
   return (
-    <article className="overflow-hidden rounded-2xl border border-white/[0.08] bg-[#171814]">
-      <div className="relative aspect-[1.24/1] overflow-hidden border-b border-white/[0.07] bg-[#20211d] p-5">
-        <Image src={image} alt="" fill sizes="(min-width: 1024px) 33vw, 100vw" className="object-cover opacity-55" />
-        <div className="absolute inset-5 overflow-hidden rounded-xl border border-white/10 bg-[#0d0e0c]/90 shadow-2xl shadow-black/50 backdrop-blur-sm">
-          <div className="flex h-10 items-center gap-2 border-b border-white/[0.08] px-4">
-            <span className="h-2 w-2 rounded-full bg-zinc-600" /><span className="h-2 w-2 rounded-full bg-zinc-700" /><span className="h-2 w-2 rounded-full bg-zinc-800" />
-            <span className="ml-auto text-[10px] tracking-wide text-zinc-600">AXIOM AGENT</span>
-          </div>
-          <div className="p-5 font-mono text-[11px] leading-6 text-zinc-500">
-            <p className="text-zinc-300">Governed execution workspace</p>
-            <p className="mt-3"><span className="text-emerald-400">●</span> Context verified</p>
-            <p><span className="text-orange-300">◆</span> Approval required</p>
-            <p><span className="text-zinc-300">✓</span> Evidence retained</p>
-          </div>
-        </div>
+    <article className="overflow-hidden rounded-xl border border-white/[0.08] bg-[#151515]">
+      <div className="flex items-center justify-between border-b border-white/[0.07] px-5 py-4">
+        <span className="text-[10px] font-medium uppercase tracking-[0.18em] text-zinc-400">Desktop installer</span>
+        <Icon aria-hidden="true" className="h-5 w-5 text-zinc-400" />
       </div>
-      <div className="p-6">
-        <Icon className="h-5 w-5 text-zinc-400" />
-        <h3 className="mt-5 text-xl font-medium text-white">{title}</h3>
-        <p className="mt-2 min-h-12 text-sm leading-6 text-zinc-500">{copy}</p>
+      <div className="p-5">
+        <h3 className="text-xl font-medium text-white">{title}</h3>
+        <p className="mt-2 min-h-12 text-sm leading-6 text-zinc-400">{copy}</p>
         <div className="mt-6 flex flex-col gap-2">
           {assets.map(({ id, asset }) => {
             const available = runtimeReady && Boolean(asset);
             return (
+              <div key={id}>
               <a
-                key={id}
                 href={available && asset ? asset.downloadUrl : resolverHref[id]}
                 download={available && asset ? asset.fileName : undefined}
-                className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full bg-[#efefea] px-4 text-sm font-medium text-[#11120f] transition hover:bg-white"
+                className="inline-flex w-full min-h-11 items-center justify-center gap-2 rounded-lg bg-[#efefea] px-4 text-sm font-medium text-[#11120f] transition hover:bg-white"
               >
                 <ArrowDownTrayIcon className="h-4 w-4" />
                 Download for {platformLabel[id]}
               </a>
+              {asset ? <p className="mt-2 text-[11px] leading-5 text-zinc-400">{platformLabel[id]} · {asset.signed === true
+                ? ((id === "mac-arm" || id === "mac-intel")
+                  ? (asset.notarized === true ? "Manifest reports signed and notarized" : "Manifest reports signed; notarization not confirmed")
+                  : "Manifest reports signed")
+                : "Signing not confirmed"}</p> : null}
+              {asset?.installFriction ? <p className="mt-1 text-[11px] leading-5 text-zinc-400">{asset.installFriction}</p> : null}
+              </div>
             );
           })}
         </div>
-        {assets[0]?.asset ? <p className="mt-4 text-[11px] leading-5 text-zinc-600">{assets[0].asset.installFriction}</p> : null}
       </div>
     </article>
   );

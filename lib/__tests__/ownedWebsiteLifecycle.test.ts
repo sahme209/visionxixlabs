@@ -10,6 +10,14 @@ const owner = { pid: 42, group: 42, start: "100", executable: "/owned/node", sta
 function child() { return Object.assign(new EventEmitter(), { pid: 42, exitCode: null as number | null, signalCode: null as string | null }); }
 
 describe("spawn ledger covers failures before ownership registration", () => {
+  it("records closed cleanup metadata without changing the failed stop or leaking its raw message", async () => {
+    const handle = child(); const stop = vi.fn(async () => { throw Object.assign(Error("PRIVATE /proc/42/exe"), { code: "ENOENT" }); });
+    const ledger = lifecycle.createLedger({ spawn: () => handle, snapshot: () => owner, canonical: (v: string) => v, stopGroup: stop, groupMembers: () => [owner], waitExit: async () => {} });
+    const launch = ledger.launch("/owned/node", [], {}, () => {}, "browser"); handle.emit("spawn"); await launch;
+    expect(await ledger.cleanup()).toEqual(["PRIVATE /proc/42/exe"]); expect(stop).toHaveBeenCalledOnce();
+    expect(ledger.cleanupDiagnostics()).toEqual([{ role: "browser", stage: "stop_group", errorCode: "ENOENT" }]);
+    expect(JSON.stringify(ledger.cleanupDiagnostics())).not.toContain("PRIVATE");
+  });
   it("retains an unregistered live handle without signalling or certifying empty", async () => {
     const handle = child(); const stop = vi.fn();
     const ledger = lifecycle.createLedger({ spawn: () => handle, snapshot: () => { throw Error("denied"); }, canonical: (v: string) => v, stopGroup: stop, groupMembers: () => [], waitExit: async () => {} });

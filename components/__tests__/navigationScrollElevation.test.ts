@@ -19,12 +19,12 @@ describe("Navigation — scroll elevation", () => {
 
   it("deepens the border/shadow and shrinks the bar height once scrolled", () => {
     expect(src).toMatch(/scrolled\s*\n?\s*\?\s*"border-b border-white\/\[0\.09\]/);
-    expect(src).toContain('h-14 lg:h-16');
+    expect(src).toContain('h-14 xl:h-16');
   });
 
   it("still renders the non-scrolled state as the initial default", () => {
     expect(src).toContain("useState(false)");
-    expect(src).toContain('h-16 lg:h-[72px]');
+    expect(src).toContain('h-16 xl:h-[72px]');
   });
 
   it("tracks the mobile menu overlay's top offset to the bar's real current height", () => {

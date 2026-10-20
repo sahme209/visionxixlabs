@@ -34,11 +34,19 @@ describe("stat-first owned group inventory", () => {
   it("does not inspect executable metadata for zombies", () => {
     const executable = vi.fn(); expect(policy.groupMembers(42, { pids: () => [42], stat: () => ({ ...row, state: "Z" }), executable })).toEqual([]); expect(executable).not.toHaveBeenCalled();
   });
+  it("accepts a confirmed zombie transition after executable metadata vanishes", () => {
+    let reads = 0;
+    expect(policy.groupMembers(42, { pids: () => [42], stat: () => ++reads === 1 ? row : { ...row, state: "Z" }, executable: () => { throw gone(); } })).toEqual([]);
+  });
+  it("retains an unreadable relevant member even if its later state is not a confirmed zombie", () => {
+    let reads = 0;
+    expect(() => policy.groupMembers(42, { pids: () => [42], stat: () => ++reads === 1 ? row : { ...row, state: "X" }, executable: () => { throw gone(); } })).toThrow("gone");
+  });
 });
 
 it("selects supported custom-server Webpack without widening config roots or worker settings", () => {
   const actual = { turbopack: { root: "/workspace/owned" }, experimental: { cpus: 1, webpackBuildWorker: true }, typescript: { tsconfigPath: "tsconfig.next.json" }, serverExternalPackages: ["provider-sdk"] };
   const options = policy.ownedNextOptions({ root: "/workspace/owned", dist: "/workspace/owned/.next/visual-fixture", appPort: 38001, actual });
-  expect(options).toEqual({ dev: true, webpack: true, dir: "/workspace/owned", hostname: "127.0.0.1", port: 38001, conf: { ...actual, distDir: ".next/visual-fixture", typescript: { tsconfigPath: ".next/visual-fixture/tsconfig.json" } } });
-  expect(options.conf.turbopack).toBe(actual.turbopack); expect(options.conf.experimental).toBe(actual.experimental); expect(options.conf.serverExternalPackages).toBe(actual.serverExternalPackages);
+  expect(options).toEqual({ dev: true, webpack: true, dir: "/workspace/owned", hostname: "127.0.0.1", port: 38001, conf: { ...actual, experimental: { ...actual.experimental, reactDebugChannel: false }, distDir: ".next/visual-fixture", typescript: { tsconfigPath: ".next/visual-fixture/tsconfig.json" } } });
+  expect(options.conf.turbopack).toBe(actual.turbopack); expect(options.conf.experimental).toEqual({ ...actual.experimental, reactDebugChannel: false }); expect(actual.experimental).not.toHaveProperty("reactDebugChannel"); expect(options.conf.serverExternalPackages).toBe(actual.serverExternalPackages);
 });
