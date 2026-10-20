@@ -370,3 +370,27 @@ it("requires explicit consent and warns that repository checks are not sandboxed
   expect(screen.getByText(/not sandboxed/)).toBeTruthy();
   expect(m.invoke.mock.calls.filter(([command]) => command === "run_repository_check")).toHaveLength(0);
 });
+it("requires confirmation before handing selected local code to Agent without saving", async () => {
+  const onAskAgent = vi.fn(); reads = () => "const value = 1;";
+  render(createElement(RepositoryWorkspaceView, {onAskAgent}));
+  fireEvent.click(await screen.findByRole("button", {name: "same.ts"}));
+  const editor = await screen.findByRole("textbox", {name: "Editing same.ts"}) as HTMLTextAreaElement;
+  editor.setSelectionRange(0, 5); fireEvent.select(editor);
+  fireEvent.click(screen.getByRole("button", {name: "Ask Agent about selection"}));
+  expect(onAskAgent).not.toHaveBeenCalled();
+  fireEvent.click(screen.getByRole("button", {name: "Prepare Agent draft"}));
+  expect(onAskAgent).toHaveBeenCalledWith({path: "same.ts", excerpt: "const"});
+  expect(m.invoke.mock.calls.filter(([command]) => command === "write_repository_file")).toHaveLength(0);
+});
+it("rejects a reviewed local selection when the file content changes before confirmation", async () => {
+  const onAskAgent = vi.fn(); reads = () => "original code";
+  render(createElement(RepositoryWorkspaceView, {onAskAgent}));
+  fireEvent.click(await screen.findByRole("button", {name: "same.ts"}));
+  const editor = await screen.findByRole("textbox", {name: "Editing same.ts"}) as HTMLTextAreaElement;
+  editor.setSelectionRange(0, 8); fireEvent.select(editor);
+  fireEvent.click(screen.getByRole("button", {name: "Ask Agent about selection"}));
+  fireEvent.change(editor, {target: {value: "changed code"}});
+  fireEvent.click(screen.getByRole("button", {name: "Prepare Agent draft"}));
+  expect(screen.getByText(/file changed while reviewing this selection/)).toBeTruthy();
+  expect(onAskAgent).not.toHaveBeenCalled();
+});

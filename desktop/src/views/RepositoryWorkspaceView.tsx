@@ -1,3 +1,4 @@
+import { localCodeContextPrompt, type LocalCodeSelection } from "../lib/localCodeContext";
 import { FileDiff } from "../components/FileDiff";
 import { editorMatches } from "../lib/editorSearch";
 import { newEditorHistory, editHistory, moveHistory } from "../lib/editorHistory";
@@ -60,12 +61,12 @@ function isProjectMetadata(path: string): boolean {
   return path.endsWith(".pbxproj") || path.includes(".xcodeproj/") || path.includes(".xcworkspace/");
 }
 
-export function RepositoryWorkspaceView({ active = true }: { active?: boolean }) {
+export function RepositoryWorkspaceView({ active = true, onAskAgent }: { active?: boolean; onAskAgent?: (selection: LocalCodeSelection) => void }) {
   const revision = useSyncExternalStore(desktopClient.subscribeContext, desktopClient.getContextRevision, desktopClient.getContextRevision);
-  return <RepositoryWorkspaceSession key={revision} revision={revision} active={active} />;
+  return <RepositoryWorkspaceSession key={revision} revision={revision} active={active} onAskAgent={onAskAgent} />;
 }
 
-function RepositoryWorkspaceSession({ revision, active }: { revision: number; active: boolean }) {
+function RepositoryWorkspaceSession({ revision, active, onAskAgent }: { revision: number; active: boolean; onAskAgent?: (selection: LocalCodeSelection) => void }) {
   const [parentPath, setParentPath] = useState("");
   const [repositories, setRepositories] = useState<string[]>([]);
   const [selectedRepository, setSelectedRepositoryState] = useState<string | null>(null);
@@ -77,6 +78,7 @@ function RepositoryWorkspaceSession({ revision, active }: { revision: number; ac
   const [content, setContent] = useState("");
   const history = useRef(newEditorHistory(""));
   const editorRef = useRef<HTMLTextAreaElement>(null);
+  const [selectionLength, setSelectionLength] = useState(0);
   const searchRef = useRef<HTMLInputElement>(null);
   const [searchOpen, setSearchOpen] = useState(false);
   const [reviewOpen, setReviewOpen] = useState(false);
@@ -84,7 +86,7 @@ function RepositoryWorkspaceSession({ revision, active }: { revision: number; ac
   const [matchIndex, setMatchIndex] = useState(-1);
   const matches = useMemo(() => editorMatches(content, searchQuery), [content, searchQuery]);
   useEffect(() => { setMatchIndex(-1); }, [content, searchQuery]);
-  useEffect(() => { setSearchQuery(""); setSearchOpen(false); setReviewOpen(false); }, [selectedFile]);
+  useEffect(() => { setSearchQuery(""); setSearchOpen(false); setReviewOpen(false); setSelectionLength(0); }, [selectedFile]);
   const [savedContent, setSavedContent] = useState("");
   const [busy, setBusy] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -446,6 +448,23 @@ function RepositoryWorkspaceSession({ revision, active }: { revision: number; ac
     });
   }
 
+  function askAboutSelection() {
+    const file = loadedFile.current, editor = editorRef.current;
+    if (!active || !onAskAgent || activeBusy.current || !owns(owner.current) || !file || !editor) return;
+    const snapshot = file.content;
+    const selection = {path: file.path, excerpt: snapshot.slice(editor.selectionStart, editor.selectionEnd)};
+    if (!localCodeContextPrompt(selection)) { setError("Select up to 8,000 characters from a non-sensitive source file."); return; }
+    setConfirmation({
+      title: "Prepare selected code for Agent?",
+      description: `The selection from ${file.path} will be placed in an unsent Agent prompt in Inspect / Code Review mode. Preparing it does not save files or send code to a model. Choosing Send later shares the prompt with your approved provider; review it for credentials and private data first.`,
+      confirmLabel: "Prepare Agent draft",
+      onConfirm: () => {
+        if (!activeBusy.current && loadedFile.current === file && file.content === snapshot) onAskAgent(selection);
+        else setError("The file changed while reviewing this selection. Select and review it again.");
+      },
+    });
+  }
+
   function openSearch() {
     setSearchOpen(true);
     requestAnimationFrame(() => { searchRef.current?.focus(); searchRef.current?.select(); });
@@ -551,6 +570,7 @@ function RepositoryWorkspaceSession({ revision, active }: { revision: number; ac
         {selectedFile ? <>
           <div className="flex items-center gap-2 border-b border-white/[0.06] px-3 py-2">
             <span className="mr-auto truncate font-mono text-[11px] text-zinc-400">{selectedFile}{content !== savedContent ? " · unsaved" : ""}</span>
+            {onAskAgent && <button type="button" aria-label="Ask Agent about selection" disabled={Boolean(busy) || selectionLength === 0 || selectionLength > 8000 || !localCodeContextPrompt({path: selectedFile, excerpt: "selection"})} onClick={askAboutSelection} className="btn-secondary disabled:opacity-40">Ask Agent</button>}
             <button type="button" aria-label="Review local changes" aria-expanded={reviewOpen} onClick={() => setReviewOpen(value => !value)} className="btn-secondary">Review changes</button>
             <button type="button" aria-label="Find in file" onClick={openSearch} className="btn-secondary">Find</button>
             <button type="button" aria-label="Undo edit" disabled={Boolean(busy) || !history.current.past.length} onClick={() => travelHistory("undo")} className="btn-secondary disabled:opacity-40">Undo</button>
@@ -573,7 +593,7 @@ function RepositoryWorkspaceSession({ revision, active }: { revision: number; ac
             <button type="button" aria-label="Close file search" onClick={() => { setSearchOpen(false); editorRef.current?.focus(); }} className="btn-secondary">Close</button>
           </div>}
           {isProjectMetadata(selectedFile) && <div role="status" className="border-b border-white/[0.08] bg-white/[0.025] px-4 py-2 text-xs text-zinc-400">This is generated project metadata. Edit it only when you understand the project format; source files are safer for normal changes.</div>}
-          <textarea ref={editorRef} value={content} onChange={(event) => editContent(event.target.value)} onKeyDown={editorKeyDown} spellCheck={false} aria-label={`Editing ${selectedFile}`} className="min-h-0 flex-1 resize-none bg-[#0b0c0e] p-4 font-mono text-[13px] leading-6 text-zinc-200 outline-none selection:bg-violet-500/30" />
+          <textarea ref={editorRef} value={content} onSelect={event => setSelectionLength(event.currentTarget.selectionEnd - event.currentTarget.selectionStart)} onChange={(event) => editContent(event.target.value)} onKeyDown={editorKeyDown} spellCheck={false} aria-label={`Editing ${selectedFile}`} className="min-h-0 flex-1 resize-none bg-[#0b0c0e] p-4 font-mono text-[13px] leading-6 text-zinc-200 outline-none selection:bg-violet-500/30" />
           <div className="grid grid-cols-[minmax(220px,1fr)_auto_minmax(180px,0.7fr)_120px_auto] items-center gap-2 border-t border-white/[0.07] bg-[#111315] p-3">
             <input value={commitMessage} onChange={(event) => setCommitMessage(event.target.value)} placeholder="Commit message for this file" className="rounded-md border border-white/10 bg-black/25 px-3 py-2 text-xs outline-none" />
             <button type="button" disabled={Boolean(busy) || !commitMessage.trim() || onDefaultBranch} title={onDefaultBranch ? "Create a branch before committing." : undefined} onClick={() => void commit()} className="btn-primary disabled:opacity-40">{busy === "commit" ? "Committing…" : "Commit file"}</button>

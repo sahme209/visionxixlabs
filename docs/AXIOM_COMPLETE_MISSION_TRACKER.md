@@ -2909,3 +2909,62 @@ upgrade or security-policy weakening.23 sensitive-path/redaction/inspector tests
 pass;15 demo contracts and changed-file lint pass. Review's stale-skills finding
 already fixed locally; PR193 stays unchanged/unmerged. Temporary dependency link
 reuses existing packages and is removed after checks; no dependency installation.
+
+### Selected local code to Agent — focused execution plan
+
+Existing editor owns UTF-8 content/selection and native save baseline; Agent can
+read GitHub but has no explicit local-selection handoff. Reuse scoped handoff
+pattern and existing confirmation modal. Offer selected text only, max8,000 chars,
+relative nonsensitive source path, explicit confirmation before preparing draft.
+Recheck file snapshot/ownership on confirmation. Append serialized untrusted
+local evidence to existing unsent prompt, use Inspect+Code Review, preserve target
+selections and native draft/save baseline. No automatic send, save, tool call,
+file upload, new executor or authority. Credential/workspace mismatch rejects
+intent and pending approval/send defers it. Test selection snapshot, sensitive
+paths, bounds, actual editor/Agent handling and unchanged prompt/write/request
+counts. Installed Mac/provider acceptance stays separate.
+
+### Vercel manual-only Agent reviews — configuration boundary
+
+Confirmed service/control: Vercel dashboard Agent (top-right) → Code Review,
+scoped to sahme209/visionxixlabs; platform automatic PR/push analysis is separate
+from git.deploymentEnabled and GitHub Actions. Official installed vercel-agent
+skill describes on-demand @vercel mention and automatic PR analysis; sources:
+https://vercel.com/docs/agent and https://vercel.com/docs/agent/pricing.
+Exact current automatic-review toggle name/value is NOT verified: connector
+exposes no Agent Code Review configuration endpoint/UI, documentation search
+returned unrelated snippets, and direct public docs fetch was denied403. Stop
+repetitive searches; no guessed UI label or undocumented API write.
+
+Proposed owner-reviewed procedure, not executed:
+1. Open the team's Agent → Code Review repository configuration and record the
+   current visionxixlabs automatic-review setting and manual-trigger availability.
+2. Identify the dedicated automatic PR/push review control. Disable only automatic
+   triggers if manual invocation remains available. If no separate control exists,
+   stop; do not disconnect GitHub, remove the repository, disable the GitHub App,
+   turn off required security checks or assume disabling Code Review preserves it.
+3. Preserve Test/Desktop/website workflows, required review gates and independent
+   security reviews. No changes to project deployment, env, routing or billing.
+4. Future manual platform review is an explicitly owner-approved paid action;
+   never post @vercel as a test during the cost hold. After separately approved
+   settings change, verify saved state read-only; verify trigger behavior only at
+   an already-approved source/CI checkpoint, with no extra throwaway PR or rerun.
+5. Rollback only restores recorded automatic-review value after owner approval;
+   re-enabling can incur charges. Do not alter plan-wide limits that pause website.
+Until exact control is visible and approved, all settings and source pushes stay
+blocked. Static metadata cannot prove manual-only enforcement. Owner may supply
+a sanitized view/labels of this pane if essential; never secrets or billing keys.
+
+Selected local-code handoff implemented. Confirmation rechecks file identity and
+content; known sensitive/absolute/traversal paths and oversized excerpts reject.
+Agent checks credential/workspace and processes once, defers during proposals/
+sends/decisions, appends to unsent prompt in Inspect/CodeReview, preserves targets.
+100 focused editor/actual-App/Agent streaming tests passed; final helper/demo
+checks include Windows drive rejection. Independent read-only security review
+found no blocker. Source content in ordinary files can still contain private
+values: explicit consent warns user to inspect before any later Send. No native
+save/provider request occurs during preparation. No hosted/installed-Mac proof.
+Actual desktop ES2021 TypeScript compilation passes. Final helper/demo run24
+checks passes; changed-file lint0errors/1pre-existing catalogRequest warning.
+Temporary existing-dependency symlink removed. No installations, source pushes,
+GitHub Actions, settings changes, paid reviews/provider calls or hosted resources.

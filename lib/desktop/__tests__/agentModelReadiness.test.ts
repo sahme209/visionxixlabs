@@ -428,3 +428,50 @@ it("waits for the fresh activation catalog before applying a marketplace handoff
   expect((screen.getByRole("textbox") as HTMLTextAreaElement).value).toBe("Keep this unsent request");
   expect(m.client.sendAgentMessage).not.toHaveBeenCalled();
 });
+it("prepares local selected code once in read-only mode without sending or replacing the existing prompt", async () => {
+  const view = render(createElement(AgentChatView)); await draft();
+  const request = {context: m.client.config, path: "src/main.ts", excerpt: "const answer = 42;"};
+  view.rerender(createElement(AgentChatView, {requestedLocalCode: request}));
+  await waitFor(() => expect((screen.getByRole("textbox") as HTMLTextAreaElement).value).toContain('"excerpt":"const answer = 42;"'));
+  expect((screen.getByRole("textbox") as HTMLTextAreaElement).value).toMatch(/^Keep this unsent request\n\n/);
+  expect((screen.getByRole("combobox", {name: "Specialized Agent"}) as HTMLSelectElement).value).toBe("code_review");
+  fireEvent.change(screen.getByRole("textbox"), {target: {value: "Later draft"}});
+  view.rerender(createElement(AgentChatView, {requestedLocalCode: request}));
+  expect((screen.getByRole("textbox") as HTMLTextAreaElement).value).toBe("Later draft");
+  expect(m.client.sendAgentMessage).not.toHaveBeenCalled();
+  expect(m.client.approveAgentAction).not.toHaveBeenCalled();
+});
+it("rejects a selected-code intent from a previous sign-in", async () => {
+  const view = render(createElement(AgentChatView)); await draft();
+  view.rerender(createElement(AgentChatView, {requestedLocalCode: {context: {}, path: "src/main.ts", excerpt: "PRIVATE SENTINEL"}}));
+  await screen.findByText(/Local selection belongs to a different sign-in/);
+  expect((screen.getByRole("textbox") as HTMLTextAreaElement).value).toBe("Keep this unsent request");
+  expect(m.client.sendAgentMessage).not.toHaveBeenCalled();
+});
+it("connects confirmed local selection to the actual App Agent while retaining the local draft", async () => {
+  m.client.hasAuth.mockReturnValue(true);
+  m.client.verifyCurrentCredential.mockResolvedValue({ok: true, data: {kind: "desktop_session", organizationId: "fixture-workspace", role: "owner", capabilities: [], access: {allowed: true, code: "active", title: "Access active", message: "Fixture", billingStatus: "no_plan", planTier: "trial"}}});
+  m.invoke.mockImplementation(async (command: string) => {
+    if (command === "default_repos_directory") return "/owned";
+    if (command === "list_local_repositories") return ["/owned/A"];
+    if (command === "repository_status") return {rootPath: "/owned/A", repositoryFullName: "fixture/repository", branch: "feature", ahead: 0, behind: 0, changedFiles: []};
+    if (command === "list_repository_files") return ["main.ts"];
+    if (command === "detect_repository_checks") return [];
+    if (command === "read_repository_file") return "original code";
+    throw new Error(`Unexpected command ${command}`);
+  });
+  render(createElement(App)); await draft();
+  fireEvent.click(screen.getByRole("button", {name: "GitHub repositories"}));
+  fireEvent.click(await screen.findByRole("button", {name: "main.ts"}));
+  const editor = await screen.findByRole("textbox", {name: "Editing main.ts"}) as HTMLTextAreaElement;
+  fireEvent.change(editor, {target: {value: "unsaved selected code"}});
+  editor.setSelectionRange(0, 7); fireEvent.select(editor);
+  fireEvent.click(screen.getByRole("button", {name: "Ask Agent about selection"}));
+  fireEvent.click(screen.getByRole("button", {name: "Prepare Agent draft"}));
+  await waitFor(() => expect((screen.getByRole("textbox") as HTMLTextAreaElement).value).toContain('"excerpt":"unsaved"'));
+  expect((screen.getByRole("textbox") as HTMLTextAreaElement).value).toMatch(/^Keep this unsent request/);
+  expect(m.client.sendAgentMessage).not.toHaveBeenCalled();
+  fireEvent.click(screen.getByRole("button", {name: "GitHub repositories"}));
+  expect((screen.getByRole("textbox", {name: "Editing main.ts"}) as HTMLTextAreaElement).value).toBe("unsaved selected code");
+  expect(m.invoke.mock.calls.filter(([name]) => name === "write_repository_file")).toHaveLength(0);
+});

@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { Sidebar } from "./components/Sidebar";
 import { TopBar } from "./components/TopBar";
 import { WorkspaceViewBoundary } from "./components/WorkspaceViewBoundary";
-import { AgentChatView, type AgentSettingsDestination, type AgentSkillRequest } from "./views/AgentChatView";
+import { AgentChatView, type AgentSettingsDestination, type AgentSkillRequest, type AgentLocalCodeRequest } from "./views/AgentChatView";
 import { DeploymentRequestsView } from "./views/DeploymentRequestsView";
 import { DocsView } from "./views/DocsView";
 import { SettingsView } from "./views/SettingsView";
@@ -123,6 +123,7 @@ function AuthenticatedWorkspace({ identity }: { identity: VerifiedDesktopIdentit
   const [booted, setBooted] = useState(false);
   const [repositoryVisited, setRepositoryVisited] = useState(false);
   const [requestedSkill, setRequestedSkill] = useState<AgentSkillRequest>();
+  const [requestedLocalCode, setRequestedLocalCode] = useState<AgentLocalCodeRequest>();
   const [settingsDestination, setSettingsDestination] = useState<AgentSettingsDestination | undefined>();
   const navigate = useCallback((view: CustomerView) => { if (view === "repository-workspace") setRepositoryVisited(true); setSettingsDestination(undefined); setActiveView(view); }, []);
   useNativeMenuActions(navigate);
@@ -141,12 +142,12 @@ function AuthenticatedWorkspace({ identity }: { identity: VerifiedDesktopIdentit
         <TopBar activeView={activeView} identity={identity} />
         <div hidden={activeView !== "agent"} style={{ display: activeView === "agent" ? "flex" : "none" }} className="min-h-0 flex-1 flex-col">
           <WorkspaceViewBoundary onReturnToAgent={() => setActiveView("agent")}>
-            <AgentChatView requestedSkill={requestedSkill} active={activeView === "agent"} identity={identity} onOpenSettings={(destination) => { setSettingsDestination(destination); setActiveView("settings"); }} />
+            <AgentChatView requestedLocalCode={requestedLocalCode} requestedSkill={requestedSkill} active={activeView === "agent"} identity={identity} onOpenSettings={(destination) => { setSettingsDestination(destination); setActiveView("settings"); }} />
           </WorkspaceViewBoundary>
         </div>
         {repositoryVisited && <div hidden={activeView !== "repository-workspace"} style={{ display: activeView === "repository-workspace" ? "flex" : "none" }} className="min-h-0 flex-1 flex-col">
           <WorkspaceViewBoundary onReturnToAgent={() => setActiveView("agent")}>
-            <RepositoryWorkspaceView active={activeView === "repository-workspace"} />
+            <RepositoryWorkspaceView active={activeView === "repository-workspace"} onAskAgent={selection => { setRequestedLocalCode({ ...selection, context: desktopClient.config, workspace: identity.organizationId }); setActiveView("agent"); }} />
           </WorkspaceViewBoundary>
         </div>}
         {activeView !== "agent" && activeView !== "repository-workspace" && <WorkspaceViewBoundary key={activeView} onReturnToAgent={() => setActiveView("agent")}>

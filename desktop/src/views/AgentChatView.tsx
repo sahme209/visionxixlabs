@@ -1,3 +1,4 @@
+import { localCodeContextPrompt, type LocalCodeSelection } from "../lib/localCodeContext";
 import { selectSkillInvocation } from "../lib/skillInvocation";
 import { rememberConversationDraft } from "../lib/conversationDrafts";
 import { isSensitiveRepositoryEvidencePath } from "../../../lib/axiom/agentRuntime/repositoryEvidencePolicy";
@@ -160,20 +161,21 @@ function describeEvidenceResult(action: Proposal): string {
 }
 
 export type AgentSettingsDestination = "models" | "agents";
+export interface AgentLocalCodeRequest extends LocalCodeSelection { context: object; workspace?: string }
 export interface AgentSkillRequest { skillId: string; context: object; workspace?: string }
 
-export function AgentChatView({ onOpenSettings, identity, active = true, requestedSkill }: { onOpenSettings?: (destination: AgentSettingsDestination) => void; identity?: VerifiedDesktopIdentity; active?: boolean; requestedSkill?: AgentSkillRequest }) {
+export function AgentChatView({ onOpenSettings, identity, active = true, requestedSkill, requestedLocalCode }: { onOpenSettings?: (destination: AgentSettingsDestination) => void; identity?: VerifiedDesktopIdentity; active?: boolean; requestedSkill?: AgentSkillRequest; requestedLocalCode?: AgentLocalCodeRequest }) {
   const context = desktopClient.config;
   const workspace = identity?.organizationId;
   const [scope, setScope] = useState(() => ({ context, workspace, generation: 0 }));
   if (scope.context !== context || scope.workspace !== workspace) {
     setScope({ context, workspace, generation: scope.generation + 1 });
-    return <AgentChatSession key={scope.generation + 1} onOpenSettings={onOpenSettings} identity={identity} active={active} requestedSkill={requestedSkill} />;
+    return <AgentChatSession key={scope.generation + 1} onOpenSettings={onOpenSettings} identity={identity} active={active} requestedSkill={requestedSkill} requestedLocalCode={requestedLocalCode} />;
   }
-  return <AgentChatSession key={scope.generation} onOpenSettings={onOpenSettings} identity={identity} active={active} requestedSkill={requestedSkill} />;
+  return <AgentChatSession key={scope.generation} onOpenSettings={onOpenSettings} identity={identity} active={active} requestedSkill={requestedSkill} requestedLocalCode={requestedLocalCode} />;
 }
 
-function AgentChatSession({ onOpenSettings, identity, active, requestedSkill }: { onOpenSettings?: (destination: AgentSettingsDestination) => void; identity?: VerifiedDesktopIdentity; active: boolean; requestedSkill?: AgentSkillRequest }) {
+function AgentChatSession({ onOpenSettings, identity, active, requestedSkill, requestedLocalCode }: { onOpenSettings?: (destination: AgentSettingsDestination) => void; identity?: VerifiedDesktopIdentity; active: boolean; requestedSkill?: AgentSkillRequest; requestedLocalCode?: AgentLocalCodeRequest }) {
   const [conversationId, setConversationId] = useState<string | null>(null);
   const [conversations, setConversations] = useState<ConversationSummary[]>([]);
   const [turns, setTurns] = useState<ChatTurn[]>([]);
@@ -196,6 +198,7 @@ function AgentChatSession({ onOpenSettings, identity, active, requestedSkill }: 
   const [input, setInput] = useState("");
   const conversationDrafts = useRef(new Map<string, string>());
   const processedSkillRequest = useRef<AgentSkillRequest | undefined>(undefined);
+  const processedLocalCode = useRef<AgentLocalCodeRequest | undefined>(undefined);
   const [sending, setSending] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [decidingId, setDecidingId] = useState<string | null>(null);
@@ -411,6 +414,24 @@ function AgentChatSession({ onOpenSettings, identity, active, requestedSkill }: 
     });
     return () => { cancelled = true; };
   }, [active, requestedSkill, conversationId, loadingConversation, sending, pendingProposal, decidingId, skillState, enabledSkills, identity?.organizationId]);
+
+  useEffect(() => {
+    if (!active || !requestedLocalCode || !conversationId || loadingConversation || sending || pendingProposal || decidingId) return;
+    let cancelled = false;
+    const context = desktopClient.config;
+    void Promise.resolve().then(() => {
+      if (cancelled || desktopClient.config !== context || processedLocalCode.current === requestedLocalCode) return;
+      processedLocalCode.current = requestedLocalCode;
+      if (requestedLocalCode.context !== context || requestedLocalCode.workspace !== identity?.organizationId) {
+        setError("Local selection belongs to a different sign-in or workspace. Select it again in the editor."); return;
+      }
+      const prompt = localCodeContextPrompt(requestedLocalCode);
+      if (!prompt) { setError("Local selection is restricted or exceeds the context limit. Select it again in the editor."); return; }
+      setInput(current => current + (current ? "\n\n" : "") + prompt);
+      setOperationMode("inspect"); setAgentProfile("code_review"); setComposerMode("chat");
+    });
+    return () => { cancelled = true; };
+  }, [active, requestedLocalCode, conversationId, loadingConversation, sending, pendingProposal, decidingId, identity?.organizationId]);
 
   useEffect(() => {
     let cancelled = false;
