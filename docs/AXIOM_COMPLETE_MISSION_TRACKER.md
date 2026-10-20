@@ -1749,3 +1749,10 @@ UI or owned-cleanup acceptance. Closed diagnostics are being integrated before
 the next bounded run. The signed-in companion now links to existing billing
 information without asserting every customer has a free pilot or inferring
 workspace authority from an authenticated identity. All production gates remain.
+
+The dashboard now distinguishes a connected cloud from completed scan evidence
+and clears stale scan summaries on refresh failure. Eight rendered regressions
+pass with mocked transport; cloud execution remains unverified. CI on faa49d5b
+passed one full source/build job, security checks and review, but its browser
+run failed during playback readiness with unverified cleanup. The retained DOM
+snapshot precedes the throwing evaluation and is not hydration-root-cause proof.

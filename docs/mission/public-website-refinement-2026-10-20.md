@@ -150,3 +150,19 @@ identity from workspace/action permission, links to the existing authoritative
 usage/billing page and labels the download destination accurately. No additional
 database read, subscription mapping, entitlement mutation or checkout path was
 introduced. Existing authentication guards and integration notices are preserved.
+
+The next CI run (`faa49d5b`, run 39432735364) reports a browser evaluation
+failure during homepage playback readiness. Its last successful DOM observation
+was complete/visible with the tour and disabled Play button present, while the
+browser reported reduced motion off. This is a previous-poll observation, not a
+same-poll exception explanation or proof of a hydration defect. Cleanup remained
+unverified with an unclassified error. Browser acceptance remains failed.
+
+The dashboard continuation removes fabricated onboarding milestones previously
+inferred from a linked cloud. Completed-scan hints now require a valid summary
+scan timestamp, never connection presence; they do not assert clean results or
+saved snapshots. HTTP, envelope, migration-pending and network failures clear
+old summary data and show unavailable status. Eight actual rendered-component
+regressions pass using mocked transport; backend schema, connector behavior,
+authentication and cloud execution are unchanged. This is not a connected-cloud
+or full customer journey acceptance receipt.
