@@ -1020,13 +1020,13 @@ export class DesktopClient {
     filePath?: string;
     mode?: "chat" | "code";
     operationMode?: "inspect" | "engineer" | "deepops";
-  }): Promise<ApiResult<{
+  }, preferredModel?: string): Promise<ApiResult<{
     reply: string;
     proposal: { id: string; toolName: string; argsJson: unknown; riskLevel: string; status: string } | null;
     /** Provider-reported token evidence, not a settled customer credit charge. */
     usage: { decisionSteps: number; inputTokens: number | null; outputTokens: number | null; totalTokens: number | null } | null;
   }>> {
-    return this.post(`/api/desktop/agent/conversations/${encodeURIComponent(conversationId)}/messages`, { message, preferredProvider, workspaceContext });
+    return this.post(`/api/desktop/agent/conversations/${encodeURIComponent(conversationId)}/messages`, { message, preferredProvider, workspaceContext, ...(preferredModel ? { preferredModel } : {}) });
   }
 
   approveAgentAction(actionId: string): Promise<ApiResult<{ id: string; status: string; errorMessage: string | null }>> {

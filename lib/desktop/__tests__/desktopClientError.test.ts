@@ -93,6 +93,22 @@ function respond(data: unknown, status = 200) {
   return fetch;
 }
 
+describe("Agent model preference transport", () => {
+  it.each([undefined, "xai/grok-4"])("preserves workspace context with optional model %s", async preferredModel => {
+    const fetch = respond({ reply: "Recorded", proposal: null, usage: null });
+    const workspaceContext = { repositoryFullName: "owner/repository", branch: "review", filePath: "src/app.ts", mode: "code" as const };
+    await client().sendAgentMessage("conversation/one", "Review selected file", "vercel_gateway", workspaceContext, preferredModel);
+    expect(fetch).toHaveBeenCalledOnce();
+    const [url, init] = fetch.mock.calls[0] as unknown as [string, RequestInit];
+    expect(url).toBe("https://service.example.test/api/desktop/agent/conversations/conversation%2Fone/messages");
+    const body = JSON.parse(String(init.body));
+    expect(body).toMatchObject({ message: "Review selected file", preferredProvider: "vercel_gateway", workspaceContext });
+    if (preferredModel) expect(body.preferredModel).toBe(preferredModel);
+    else expect(body).not.toHaveProperty("preferredModel");
+    expect(init.headers).toEqual(expect.objectContaining({ Authorization: "Bearer axm.desk.fixture" }));
+  });
+});
+
 describe("desktop startup identity response boundary", () => {
   it("requests the access endpoint with only the candidate bearer and rejects malformed identity", async () => {
     const fetch = respond({ identity: { ...identity, organizationId: "" }, access });

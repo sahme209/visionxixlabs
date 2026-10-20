@@ -2033,3 +2033,28 @@ desktopCI39461979388 and browser39461979743 passed. No deployment was requested.
 The next focused source batch closes generic text generation's uncertainty path
 with the same ledger and includes the preserved prepared SQL cases. Live SQL,
 provider, pricing/cost coverage and production activation are still not verified.
+
+Desktop member selection now extends the existing administrator policy in the
+shared chat/repository composer: searchable vendor groups, current approved model
+intersection, optional verified-workspace preference and explicit Gateway model
+transport. Root independently passed31 component/transport checks, including both
+chat and code submission. Server dispatch revalidation is being integrated with
+the existing durable admission kernel; no real provider/native acceptance is
+claimed. Details: mission/desktop-approved-model-selection-source.md.
+
+PR184 exact3f6e4c56 browser39463927943 failed at documentation navigation after11
+checks, with zero accepted/denied documentation requests and safe cleanup. Its
+cause remains unconfirmed, and the merge gate stays closed. The receipt is
+mission/public-website-browser-blocker-3f6e4c56.json. Independent model integration
+continues without rerunning the same failed head or relaxing acceptance. The
+existing final-deployment, database, payment and desktop-release gates remain.
+
+Model dispatch root review additionally passed62 actual resolver/catalog/handler
+checks with inert IO; the backend author passed118 focused checks. The actual
+desktop transport suite passed33, desktop frontend build/typecheck passed, and
+walkthrough15/PythonCLI30 checks passed. Implicit legacy vmc routing is preserved;
+explicit virtual preferences and unsupported direct-provider lanes refuse before
+credit admission. PR184 parent3f6e4c56 fullCI39463927956 passed including website
+build without deployment; the failed browser gate remains, and new combined
+source requires its own CI. No real provider, native session or settled payment
+is claimed from component and handler tests.

@@ -1,7 +1,9 @@
+import { AgentModelSelector } from "../components/AgentModelSelector";
+import { agentModelChoices, modelPreferenceKey, type AgentModelChoice } from "../lib/agentModelSelection";
 import { AgentRestartReceipts } from "../components/AgentRestartReceipts";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Badge, riskToneFor } from "../components/Primitives";
-import { desktopClient, type AgentSkillCatalogItem } from "../lib/desktopClient";
+import { desktopClient, type AgentSkillCatalogItem, type VerifiedDesktopIdentity } from "../lib/desktopClient";
 import { normalizeAiProviderStatus } from "../lib/aiProviderStatus";
 import { createLineDiff, type DiffLine } from "../lib/lineDiff";
 
@@ -155,17 +157,18 @@ function describeEvidenceResult(action: Proposal): string {
 
 export type AgentSettingsDestination = "models";
 
-export function AgentChatView({ onOpenSettings }: { onOpenSettings?: (destination: AgentSettingsDestination) => void }) {
+export function AgentChatView({ onOpenSettings, identity }: { onOpenSettings?: (destination: AgentSettingsDestination) => void; identity?: VerifiedDesktopIdentity }) {
   const context = desktopClient.config;
-  const [scope, setScope] = useState(() => ({ context, generation: 0 }));
-  if (scope.context !== context) {
-    setScope({ context, generation: scope.generation + 1 });
-    return <AgentChatSession key={scope.generation + 1} onOpenSettings={onOpenSettings} />;
+  const workspace = identity?.organizationId;
+  const [scope, setScope] = useState(() => ({ context, workspace, generation: 0 }));
+  if (scope.context !== context || scope.workspace !== workspace) {
+    setScope({ context, workspace, generation: scope.generation + 1 });
+    return <AgentChatSession key={scope.generation + 1} onOpenSettings={onOpenSettings} identity={identity} />;
   }
-  return <AgentChatSession key={scope.generation} onOpenSettings={onOpenSettings} />;
+  return <AgentChatSession key={scope.generation} onOpenSettings={onOpenSettings} identity={identity} />;
 }
 
-function AgentChatSession({ onOpenSettings }: { onOpenSettings?: (destination: AgentSettingsDestination) => void }) {
+function AgentChatSession({ onOpenSettings, identity }: { onOpenSettings?: (destination: AgentSettingsDestination) => void; identity?: VerifiedDesktopIdentity }) {
   const [conversationId, setConversationId] = useState<string | null>(null);
   const [conversations, setConversations] = useState<ConversationSummary[]>([]);
   const [turns, setTurns] = useState<ChatTurn[]>([]);
@@ -215,13 +218,16 @@ function AgentChatSession({ onOpenSettings }: { onOpenSettings?: (destination: A
   const [fileCatalogError, setFileCatalogError] = useState<string | null>(null);
   const [environmentId, setEnvironmentId] = useState("");
   const [environmentOptions, setEnvironmentOptions] = useState<EnvironmentOption[]>([]);
-  const [selectedProvider, setSelectedProvider] = useState("");
-  const [modelOptions, setModelOptions] = useState<Array<{ provider: string; label: string }>>([]);
+  const [selectedModel, setSelectedModel] = useState("");
+  const selectedChoice = useRef("");
+  const [modelOptions, setModelOptions] = useState<AgentModelChoice[]>([]);
   const [enabledSkills, setEnabledSkills] = useState<AgentSkillCatalogItem[]>([]);
   const [latestUsage, setLatestUsage] = useState<{ decisionSteps: number; inputTokens: number | null; outputTokens: number | null; totalTokens: number | null } | null>(null);
   const [startupAttempt, setStartupAttempt] = useState(0);
   const [modelAttempt, setModelAttempt] = useState(0);
   const [modelState, setModelState] = useState<"loading" | "ready" | "disabled" | "empty" | "unavailable">("loading");
+  const preferenceKey = identity && desktopClient.config ? modelPreferenceKey(desktopClient.config.apiBase, identity.organizationId) : null;
+  const [modelNotice, setModelNotice] = useState<string | null>(null);
   const [modelError, setModelError] = useState<string | null>(null);
   const [loadingConversation, setLoadingConversation] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -284,24 +290,33 @@ function AgentChatSession({ onOpenSettings }: { onOpenSettings?: (destination: A
       const status = result.ok ? normalizeAiProviderStatus(result.data) : null;
       if (!status) {
         setModelOptions([]);
-        setSelectedProvider("");
+        setSelectedModel("");
         setModelState("unavailable");
         setModelError(result.ok
           ? "The service returned an unsupported model configuration. Update the app or retry."
           : "Workspace models could not be verified. Retry or review Model settings.");
         return;
       }
-      const options = status.policy.allowedProviders.flatMap((provider) => {
-        const catalog = status.providers.find((item) => item.provider === provider);
-        if (!catalog) return [];
-        const selected = status.policy.modelSelections[provider];
-        const model = catalog.models.find((item) => item.id === selected);
-        if (selected && selected !== "service-default" && !model) return [];
-        return [{ provider, label: model?.label ?? "Service-managed default" }];
-      });
-      setModelOptions(status.policy.enabled ? options : []);
-      setSelectedProvider((current) => options.some((option) => option.provider === current) ? current
-        : status.policy.fallbackOrder.find((provider) => options.some((option) => option.provider === provider)) ?? options[0]?.provider ?? "");
+      const options = agentModelChoices(status);
+      setModelOptions(options);
+      let saved: string | null = null;
+      try {
+        saved = preferenceKey ? window.localStorage.getItem(preferenceKey) : null;
+        if (saved && saved.length > 600) saved = null;
+      } catch { /* preference storage is optional */ }
+      const preferred = selectedChoice.current || saved;
+      let next = preferred && options.some(option => option.key === preferred) ? preferred : "";
+      if (!next) {
+        if (preferred) {
+          setModelNotice("Your previous model is no longer available. Review the current selection before sending.");
+          try { if (preferenceKey) window.localStorage.removeItem(preferenceKey); } catch { /* no authority resides in preferences */ }
+        }
+        const provider = status.policy.fallbackOrder.find(provider => options.some(option => option.provider === provider)) ?? options[0]?.provider;
+        next = provider ? options.find(option => option.provider === provider && option.modelId === status.policy.modelSelections[provider])?.key ?? options.find(option => option.provider === provider)?.key ?? "" : "";
+      }
+      selectedChoice.current = next;
+      setSelectedModel(next);
+
       setModelState(!status.policy.enabled ? "disabled" : status.providers.length === 0 ? "empty" : options.length > 0 ? "ready" : "unavailable");
       if (status.policy.enabled && status.providers.length > 0 && options.length === 0) {
         setModelError("No approved model is currently available. Review Model settings or ask a workspace administrator.");
@@ -309,12 +324,17 @@ function AgentChatSession({ onOpenSettings }: { onOpenSettings?: (destination: A
     }).catch(() => {
       if (!owned()) return;
       setModelOptions([]);
-      setSelectedProvider("");
+      setSelectedModel("");
       setModelState("unavailable");
       setModelError("Workspace models could not be verified. Check your connection and retry.");
     });
     return () => { cancelled = true; };
-  }, [modelAttempt]);
+  }, [modelAttempt, preferenceKey]);
+  useEffect(() => {
+    const refresh = () => setModelAttempt(attempt => attempt + 1);
+    window.addEventListener("focus", refresh);
+    return () => window.removeEventListener("focus", refresh);
+  }, []);
 
   useEffect(() => {
     let cancelled = false;
@@ -484,7 +504,9 @@ function AgentChatSession({ onOpenSettings }: { onOpenSettings?: (destination: A
 
   async function send() {
     const instruction = input.trim();
-    if (modelState !== "ready" || !selectedProvider || !instruction || !conversationId || activeConversation.current !== conversationId || loadingConversation || sending || (composerMode === "code" && (!repositoryFullName.includes("/") || !branch.trim() || !filePath.trim()))) return;
+    if (modelState !== "ready" || !selectedModel || !instruction || !conversationId || activeConversation.current !== conversationId || loadingConversation || sending || (composerMode === "code" && (!repositoryFullName.includes("/") || !branch.trim() || !filePath.trim()))) return;
+    const choice = modelOptions.find(option => option.key === selectedModel);
+    if (!choice) return;
     const context = desktopClient.config, ownerConversation = conversationId, generation = conversationEpoch.current;
     const owned = () => context === desktopClient.config && activeConversation.current === ownerConversation && generation === conversationEpoch.current;
     setInput("");
@@ -492,14 +514,14 @@ function AgentChatSession({ onOpenSettings }: { onOpenSettings?: (destination: A
     setTurns((prev) => [...prev, { id: `local_${Date.now()}`, role: "user", content: instruction }]);
     setSending(true);
     try {
-      const result = await desktopClient.sendAgentMessage(conversationId, instruction, selectedProvider || undefined, {
+      const result = await desktopClient.sendAgentMessage(conversationId, instruction, choice.provider, {
         ...(repositoryFullName.trim() ? { repositoryFullName: repositoryFullName.trim() } : {}),
         ...(branch.trim() ? { branch: branch.trim() } : {}),
         ...(environmentId ? { environmentId } : {}),
         ...(composerMode === "code" && filePath.trim() ? { filePath: filePath.trim() } : {}),
         mode: composerMode,
         operationMode,
-      });
+      }, choice.preferredModel);
       if (!owned()) return;
       if (!result.ok) {
         setError(result.error);
@@ -738,14 +760,16 @@ function AgentChatSession({ onOpenSettings }: { onOpenSettings?: (destination: A
             <span aria-hidden="true" className="mx-1 h-4 w-px bg-white/10" />
             <button type="button" aria-pressed={composerMode === "chat"} onClick={() => setComposerMode("chat")} className={`rounded-md px-3 py-1.5 text-xs ${composerMode === "chat" ? "bg-white/[0.09] text-white" : "text-zinc-500 hover:text-zinc-300"}`}>Chat</button>
             <button type="button" aria-pressed={composerMode === "code"} onClick={() => setComposerMode("code")} className={`rounded-md px-3 py-1.5 text-xs ${composerMode === "code" ? "bg-white/[0.09] text-white" : "text-zinc-500 hover:text-zinc-300"}`}>Edit repository file</button>
-            <label className="ml-auto flex items-center gap-2 text-[11px] text-zinc-500">
-              <span>Model</span>
-              <select aria-label="Agent model" value={selectedProvider} onChange={(event) => setSelectedProvider(event.target.value)} disabled={sending || modelState !== "ready" || modelOptions.length === 0} className="max-w-52 rounded-md border border-white/10 bg-[#151719] px-2 py-1.5 text-xs text-zinc-300 outline-none focus:border-white/25 disabled:opacity-50">
-                {modelOptions.length === 0 && <option value="">No model enabled</option>}
-                {modelOptions.map((model) => <option key={model.provider} value={model.provider}>{model.label}</option>)}
-              </select>
-            </label>
+            <AgentModelSelector options={modelOptions} value={selectedModel} disabled={sending || modelState !== "ready"} onChange={key => {
+              if (!modelOptions.some(option => option.key === key)) return;
+              selectedChoice.current = key;
+              setSelectedModel(key);
+              setModelNotice(null);
+              try { if (preferenceKey) window.localStorage.setItem(preferenceKey, key); }
+              catch { setModelNotice("This model choice applies to the current session. Local preferences could not be saved."); }
+            }} />
           </div>
+          {modelNotice && <p role="status" className="mb-2 text-[11px] text-amber-300">{modelNotice}</p>}
           {modelState !== "ready" && <div role="status" className="mb-3 flex flex-wrap items-center justify-between gap-2 rounded-lg border border-white/10 bg-white/[0.025] px-3 py-2 text-[11px] text-zinc-400">
             <p>{modelState === "loading" ? "Checking workspace models…" : modelState === "disabled" ? "AI is disabled for this workspace. A workspace administrator can enable an approved model in Model settings." : modelState === "empty" ? "No service-configured AI model is available. Ask a workspace administrator to review service setup." : modelError} New requests wait for a verified enabled model; saved approvals and receipts remain available.</p>
             <div className="flex shrink-0 gap-3">
@@ -795,7 +819,7 @@ function AgentChatSession({ onOpenSettings }: { onOpenSettings?: (destination: A
           <button
             type="button"
             onClick={() => void send()}
-            disabled={modelState !== "ready" || !selectedProvider || sending || !input.trim() || !conversationId || Boolean(pendingProposal) || (composerMode === "code" && (!repositoryFullName.includes("/") || !branch.trim() || !filePath.trim()))}
+            disabled={modelState !== "ready" || !selectedModel || sending || !input.trim() || !conversationId || Boolean(pendingProposal) || (composerMode === "code" && (!repositoryFullName.includes("/") || !branch.trim() || !filePath.trim()))}
             className="rounded-xl bg-white px-5 py-3 text-sm font-semibold text-black disabled:opacity-40"
           >
             {sending ? "Thinking…" : "Send"}

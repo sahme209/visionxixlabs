@@ -138,7 +138,7 @@ function AuthenticatedWorkspace({ identity }: { identity: VerifiedDesktopIdentit
       <main className="flex-1 flex flex-col min-w-0 min-h-0">
         <TopBar activeView={activeView} identity={identity} />
         <WorkspaceViewBoundary key={activeView} onReturnToAgent={() => setActiveView("agent")}>
-          {activeView === "agent" && <AgentChatView onOpenSettings={(destination) => { setSettingsDestination(destination); setActiveView("settings"); }} />}
+          {activeView === "agent" && <AgentChatView identity={identity} onOpenSettings={(destination) => { setSettingsDestination(destination); setActiveView("settings"); }} />}
           {activeView === "deployment-requests" && <DeploymentRequestsView />}
           {activeView === "airflow-automation" && <AirflowAutomationView />}
           {activeView === "repository-workspace" && <RepositoryWorkspaceView />}
