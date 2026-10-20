@@ -2745,3 +2745,62 @@ prompt body. No sends, provider calls, additional permissions or persistence.
 scoped TypeScript and changed-file lint pass. Independent security review found
 no blocker. This follow-up is local only; PR193 remains at a96367fc with its
 failed startup gates. Installed Mac and real provider acceptance remain open.
+
+### Requested PR193 isolated Preview — read-only configuration gate
+
+Exact approved source a96367fc719dd6b94eebf3b812008cc659f7aaf5 remains fixed.
+Read-only Vercel metadata: visionxixlabs project prj_BwKc7V1daPJ938ZW2QKYxZsTkZnp,
+team_j0CEiAAorasdEVQyeAJjpNfm; deployment protection enabled for noncustom domains.
+Environment listing requested decrypt=false; no plaintext credentials retrieved
+or copied. Multiple individual credential records target both preview and
+production, including AWS broker, Azure, GCP service account, GitHub PAT and AI
+Gateway credentials. This is positive evidence Preview can inherit shared access;
+labels alone cannot establish isolated data/payments/cloud authority. Metadata
+response is truncated; database and Stripe bindings remain unverified.
+
+Deployment not executed: owner's condition of isolation is not satisfied. No
+project env, credentials, routing, Git integration or production setting changed.
+Safe proposed scope for owner review: a separate acceptance project with no
+imported/global/shared credentials and Git auto-deploy disabled; protected
+Preview-only exact Git SHA; separate empty disposable test database with test-only
+auth/session secrets and dedicated OAuth test application if OAuth is required;
+no cloud/GitHub PAT, live Stripe, Gateway or email-send credentials. Do not copy
+production data or assume a Neon child branch is empty. Enforce provider/payment
+capabilities disabled and build/runtime secret allowlist. Retain existing project
+and production aliases untouched. Dedicated resource creation/cost and test-auth
+configuration require a concrete owner-approved setup before provisioning.
+Static/public route acceptance and auth failure-closed behavior can then run;
+actual signup/OAuth/onboarding require verified disposable dependencies. No hosted
+Preview/browser acceptance was performed or claimed here.
+
+Actions startup investigation: all four jobs have zero steps and zero reported
+billable milliseconds, logs absent, annotations endpoint unsupported by connector
+and CLI denied. No new evidence supports a source fix or rerun; exact startup
+reason remains external-access blocked. Do not assert exhausted quota as fact.
+Continue local product engineering on separate branch; PR193 stays unmerged.
+
+### Enabled marketplace skill handoff to Agent
+
+Next authorized independent workflow: installed skills can be managed and
+shortcuts refreshed, but marketplace has no direct handoff to the Agent.
+Add an explicit Use in Agent action for verified enabled skills. Bind the intent
+to current credential context/workspace and apply once only after the Agent
+independently refreshes and confirms enabled status. Preserve draft, do not send,
+restore targets or expand permissions. Members may select available guidance;
+only existing owner/admin controls manage installation. Unknown/unverified skills
+fail visibly. Test connected UI intent, context mismatch, one-time application,
+existing draft preservation and no inference/approval side effects.
+
+Marketplace handoff implemented locally. Use in Agent preserves member read-only
+installation controls and sends only a current-config/workspace-bound selection
+intent. Agent independently confirms enabled installation before applying once;
+unknown or cross-context intents do not alter draft. Pending send/proposal/
+decision defers application; no implicit approval, targeting change or inference.
+Independent review found a real stale-ready-catalog activation race, reproduced
+with deferred fresh lookup. Synchronous refresh-epoch invalidation and completed
+current-epoch verification now gate intent consumption; revoked skill leaves
+existing draft unchanged. Follow-up review found no remaining concrete blocker.
+70 focused marketplace/actual App/Agent streaming tests and15 demo contracts pass;
+scoped TypeScript and changed-file lint pass. No hosted Preview, installed-Mac,
+real OAuth, cloud or payment acceptance claimed. PR193 has not been updated/pushed
+and retains its required CI blockers; no Actions rerun, deployment or env change.

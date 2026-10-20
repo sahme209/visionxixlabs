@@ -99,3 +99,11 @@ it("keeps the skill catalog usable while an independent Airflow lookup is pendin
   await screen.findByText("Safe change");
   await act(async () => {airflow.resolve(ok({status: "not_connected"}));});
 });
+it("hands an enabled skill to the Agent without installation mutation", async () => {
+  const onUseSkill = vi.fn();
+  m.client.listAgentSkills.mockResolvedValue(ok({skills: [{...skill, status: "enabled"}], storageAvailable: true}));
+  render(createElement(PluginsSkillsView, {canManage: false, onOpenSettings() {}, onOpenAirflow() {}, onUseSkill}));
+  fireEvent.click(await screen.findByRole("button", {name: "Use in Agent"}));
+  expect(onUseSkill).toHaveBeenCalledWith(skill.id);
+  expect(m.client.updateAgentSkill).not.toHaveBeenCalled();
+});

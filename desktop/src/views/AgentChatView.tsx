@@ -160,19 +160,20 @@ function describeEvidenceResult(action: Proposal): string {
 }
 
 export type AgentSettingsDestination = "models" | "agents";
+export interface AgentSkillRequest { skillId: string; context: object; workspace?: string }
 
-export function AgentChatView({ onOpenSettings, identity, active = true }: { onOpenSettings?: (destination: AgentSettingsDestination) => void; identity?: VerifiedDesktopIdentity; active?: boolean }) {
+export function AgentChatView({ onOpenSettings, identity, active = true, requestedSkill }: { onOpenSettings?: (destination: AgentSettingsDestination) => void; identity?: VerifiedDesktopIdentity; active?: boolean; requestedSkill?: AgentSkillRequest }) {
   const context = desktopClient.config;
   const workspace = identity?.organizationId;
   const [scope, setScope] = useState(() => ({ context, workspace, generation: 0 }));
   if (scope.context !== context || scope.workspace !== workspace) {
     setScope({ context, workspace, generation: scope.generation + 1 });
-    return <AgentChatSession key={scope.generation + 1} onOpenSettings={onOpenSettings} identity={identity} active={active} />;
+    return <AgentChatSession key={scope.generation + 1} onOpenSettings={onOpenSettings} identity={identity} active={active} requestedSkill={requestedSkill} />;
   }
-  return <AgentChatSession key={scope.generation} onOpenSettings={onOpenSettings} identity={identity} active={active} />;
+  return <AgentChatSession key={scope.generation} onOpenSettings={onOpenSettings} identity={identity} active={active} requestedSkill={requestedSkill} />;
 }
 
-function AgentChatSession({ onOpenSettings, identity, active }: { onOpenSettings?: (destination: AgentSettingsDestination) => void; identity?: VerifiedDesktopIdentity; active: boolean }) {
+function AgentChatSession({ onOpenSettings, identity, active, requestedSkill }: { onOpenSettings?: (destination: AgentSettingsDestination) => void; identity?: VerifiedDesktopIdentity; active: boolean; requestedSkill?: AgentSkillRequest }) {
   const [conversationId, setConversationId] = useState<string | null>(null);
   const [conversations, setConversations] = useState<ConversationSummary[]>([]);
   const [turns, setTurns] = useState<ChatTurn[]>([]);
@@ -194,6 +195,7 @@ function AgentChatSession({ onOpenSettings, identity, active }: { onOpenSettings
   const [evidenceActions, setEvidenceActions] = useState<Proposal[]>([]);
   const [input, setInput] = useState("");
   const conversationDrafts = useRef(new Map<string, string>());
+  const processedSkillRequest = useRef<AgentSkillRequest | undefined>(undefined);
   const [sending, setSending] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [decidingId, setDecidingId] = useState<string | null>(null);
@@ -234,6 +236,8 @@ function AgentChatSession({ onOpenSettings, identity, active }: { onOpenSettings
   const [modelOptions, setModelOptions] = useState<AgentModelChoice[]>([]);
   const [enabledSkills, setEnabledSkills] = useState<AgentSkillCatalogItem[]>([]);
   const [skillAttempt, setSkillAttempt] = useState(0);
+  const skillRefreshEpoch = useRef(0);
+  const verifiedSkillEpoch = useRef<number | null>(null);
   const [skillState, setSkillState] = useState<"checking" | "ready" | "unavailable">("checking");
   const [latestUsage, setLatestUsage] = useState<{ decisionSteps: number; inputTokens: number | null; outputTokens: number | null; totalTokens: number | null } | null>(null);
   const [startupAttempt, setStartupAttempt] = useState(0);
@@ -367,6 +371,8 @@ function AgentChatSession({ onOpenSettings, identity, active }: { onOpenSettings
 
   useEffect(() => {
     if (!active) return;
+    const refreshEpoch = ++skillRefreshEpoch.current;
+    verifiedSkillEpoch.current = null;
     let cancelled = false;
     const context = desktopClient.config;
     const owned = () => !cancelled && context === desktopClient.config;
@@ -377,14 +383,34 @@ function AgentChatSession({ onOpenSettings, identity, active }: { onOpenSettings
         const result = await desktopClient.listAgentSkills();
         if (!owned()) return;
         if (!result.ok || result.data.storageAvailable === false) { setSkillState("unavailable"); return; }
+        verifiedSkillEpoch.current = refreshEpoch;
         setEnabledSkills(result.data.skills.filter(skill => skill.status === "enabled"));
         setSkillState("ready");
       } catch { if (owned()) setSkillState("unavailable"); }
     });
     const refresh = () => setSkillAttempt(attempt => attempt + 1);
     window.addEventListener("focus", refresh);
-    return () => { cancelled = true; window.removeEventListener("focus", refresh); };
+    return () => { cancelled = true; verifiedSkillEpoch.current = null; window.removeEventListener("focus", refresh); };
   }, [active, skillAttempt]);
+
+  useEffect(() => {
+    if (!active || !requestedSkill || !conversationId || loadingConversation || sending || pendingProposal || decidingId || skillState !== "ready") return;
+    let cancelled = false;
+    const context = desktopClient.config;
+    void Promise.resolve().then(() => {
+      if (cancelled || desktopClient.config !== context || processedSkillRequest.current === requestedSkill
+        || verifiedSkillEpoch.current === null || verifiedSkillEpoch.current !== skillRefreshEpoch.current) return;
+      processedSkillRequest.current = requestedSkill;
+      if (requestedSkill.context !== context || requestedSkill.workspace !== identity?.organizationId) {
+        setError("Skill selection belongs to a different sign-in or workspace. Select it again from Plugins & Skills."); return;
+      }
+      if (!enabledSkills.some(skill => skill.id === requestedSkill.skillId)) {
+        setError("The selected skill is not verified as enabled. Refresh Plugins & Skills before selecting it again."); return;
+      }
+      setInput(current => selectSkillInvocation(current, requestedSkill.skillId));
+    });
+    return () => { cancelled = true; };
+  }, [active, requestedSkill, conversationId, loadingConversation, sending, pendingProposal, decidingId, skillState, enabledSkills, identity?.organizationId]);
 
   useEffect(() => {
     let cancelled = false;

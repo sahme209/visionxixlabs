@@ -376,3 +376,55 @@ it("hides previously enabled shortcuts when focus refresh cannot verify installa
   expect(screen.queryByRole("button", {name: "/safe-repository-change"})).toBeNull();
   expect(m.client.sendAgentMessage).not.toHaveBeenCalled();
 });
+it("applies a context-bound marketplace skill once after verifying enabled installation without sending", async () => {
+  m.client.listAgentSkills.mockResolvedValue({ok: true, data: {skills: [{id: "safe-repository-change", status: "enabled"}]}});
+  const view = render(createElement(AgentChatView)); await draft();
+  const request = {skillId: "safe-repository-change", context: m.client.config};
+  view.rerender(createElement(AgentChatView, {requestedSkill: request}));
+  await waitFor(() => expect((screen.getByRole("textbox") as HTMLTextAreaElement).value).toBe("/safe-repository-change Keep this unsent request"));
+  fireEvent.change(screen.getByRole("textbox"), {target: {value: "Later unsent edits"}});
+  view.rerender(createElement(AgentChatView, {requestedSkill: request}));
+  expect((screen.getByRole("textbox") as HTMLTextAreaElement).value).toBe("Later unsent edits");
+  expect(m.client.sendAgentMessage).not.toHaveBeenCalled();
+});
+it("rejects a marketplace intent from a different credential context", async () => {
+  m.client.listAgentSkills.mockResolvedValue({ok: true, data: {skills: [{id: "safe-repository-change", status: "enabled"}]}});
+  const view = render(createElement(AgentChatView)); await draft();
+  view.rerender(createElement(AgentChatView, {requestedSkill: {skillId: "safe-repository-change", context: {}}}));
+  await screen.findByText(/Skill selection belongs to a different sign-in/);
+  expect((screen.getByRole("textbox") as HTMLTextAreaElement).value).toBe("Keep this unsent request");
+  expect(m.client.sendAgentMessage).not.toHaveBeenCalled();
+});
+it("connects an enabled marketplace skill to the actual App's retained Agent draft", async () => {
+  m.client.hasAuth.mockReturnValue(true);
+  m.client.verifyCurrentCredential.mockResolvedValue({ok: true, data: {kind: "desktop_session", organizationId: "fixture-workspace", role: "owner", capabilities: [], access: {allowed: true, code: "active", title: "Access active", message: "Fixture", billingStatus: "no_plan", planTier: "trial"}}});
+  m.client.listAgentSkills.mockResolvedValue({ok: true, data: {skills: [{id: "safe-repository-change", name: "Safe repository change", description: "Existing workflow", category: "GitHub", toolNames: ["read_github_file"], status: "enabled"}]}});
+  render(createElement(App)); await draft();
+  fireEvent.click(screen.getByRole("button", {name: "Plugins & Skills"}));
+  fireEvent.click(await screen.findByRole("button", {name: "Use in Agent"}));
+  await waitFor(() => expect((screen.getByRole("textbox") as HTMLTextAreaElement).value).toBe("/safe-repository-change Keep this unsent request"));
+  expect(m.client.sendAgentMessage).not.toHaveBeenCalled();
+  expect(m.client.approveAgentAction).not.toHaveBeenCalled();
+});
+it("rejects an unverified marketplace skill without modifying the draft", async () => {
+  const view = render(createElement(AgentChatView)); await draft();
+  view.rerender(createElement(AgentChatView, {requestedSkill: {skillId: "missing-skill", context: m.client.config}}));
+  await screen.findByText(/selected skill is not verified as enabled/);
+  expect((screen.getByRole("textbox") as HTMLTextAreaElement).value).toBe("Keep this unsent request");
+  expect(m.client.sendAgentMessage).not.toHaveBeenCalled();
+});
+it("waits for the fresh activation catalog before applying a marketplace handoff", async () => {
+  const skill = {id: "safe-repository-change", status: "enabled"};
+  const fresh = deferred<{ok: true; data: {skills: unknown[]}}>();
+  m.client.listAgentSkills.mockResolvedValueOnce({ok: true, data: {skills: [skill]}}).mockReturnValueOnce(fresh.promise);
+  const view = render(createElement(AgentChatView, {active: true})); await draft();
+  await screen.findByRole("button", {name: "/safe-repository-change"});
+  view.rerender(createElement(AgentChatView, {active: false}));
+  view.rerender(createElement(AgentChatView, {active: true, requestedSkill: {skillId: skill.id, context: m.client.config}}));
+  await waitFor(() => expect(m.client.listAgentSkills).toHaveBeenCalledTimes(2));
+  expect((screen.getByRole("textbox") as HTMLTextAreaElement).value).toBe("Keep this unsent request");
+  await act(async () => {fresh.resolve({ok: true, data: {skills: []}});});
+  await screen.findByText(/selected skill is not verified as enabled/);
+  expect((screen.getByRole("textbox") as HTMLTextAreaElement).value).toBe("Keep this unsent request");
+  expect(m.client.sendAgentMessage).not.toHaveBeenCalled();
+});
