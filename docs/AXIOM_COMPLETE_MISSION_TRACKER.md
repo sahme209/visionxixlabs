@@ -2100,3 +2100,23 @@ merge differences, run affected checks, and require fresh combined-head CI.
 PR184's existing git-status preparation timeout is a host/preflight failure with
 unknown underlying delay; it is not evidence for a speculative application fix.
 Real selected-model/provider/native/financial acceptance remains a separate gate.
+
+Next bounded browser investigation: PR185 f2602e87 also completed11 checks before
+the same documentation deadline, with zero documentation requests and safe
+cleanup. The shared120-second clock may leave insufficient time at that final
+step; this is a leading hypothesis, not an application root cause. Add six fixed
+bounded timing/count observations around the existing click/poll/receipt path,
+with descriptor-safe public sanitization. Preserve every clock, route, request,
+assertion and cleanup rule. Test malformed/accessor inputs and actual capture
+field propagation; independently review the receipt boundary before one combined
+functional-head CI. No same-head rerun or speculative application fix is planned.
+
+Timing source passed48 focused checks before the final own-descriptor hardening;
+the affected three suites then passed36, including the added top-level accessor
+case and actual driver receipt-construction propagation. Focused imported types,
+lint and independent review passed. Counts represent completed evaluations, not
+proof that no evaluation was attempted. Phase attempt completion is paired with
+the existing DOM snapshot; timings alone cannot establish navigation root cause.
+Since both PR184 and PR185 are blocked on this shared browser gate, preserve
+PR185's reviewed commit ancestry in the existing PR184 integration branch and
+validate one combined source checkpoint. No red PR is merged or gate waived.
