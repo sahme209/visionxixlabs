@@ -139,12 +139,15 @@ it("loads owned output paths through the real config-file path without customCon
           assert.equal(first.distDir,path.join(path.relative(root,dist),'dev'));
           assert.equal(first.typescript.tsconfigPath,path.relative(root,path.join(dist,'tsconfig.json')));
           assert.equal(second.distDir,first.distDir);
+          assert.equal(first.experimental.reactDebugChannel,false);
+          assert.equal(second.experimental.reactDebugChannel,false);
           delete process.env.AXIOM_WEBSITE_VISUAL_MODE;
           delete process.env.AXIOM_WEBSITE_CONFIG;
           const ordinary = await loadConfig('phase-production-build',root);
           assert.equal(ordinary.distDirRoot,'.next');
           assert.equal(ordinary.distDir,'.next');
           assert.equal(ordinary.typescript.tsconfigPath,'tsconfig.next.json');
+          assert.equal(ordinary.experimental.reactDebugChannel,true);
           assert.deepEqual(guard.report(),{transport:0,process:0,worker:0,listener:0,policy:'deny-all-outbound-and-new-processes',productionEquivalent:false});
           mode.report();
           console.log('real_config_file_owned_paths');

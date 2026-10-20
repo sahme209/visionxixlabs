@@ -226,3 +226,20 @@ was corrected while leaving the later hydration/playback failure unresolved.
 There were no upstream timeouts and owned groups were empty. No policy or
 deadline is widened; the next observation distinguishes actual chunk delivery
 and React-caught console errors using existing event surfaces only.
+
+Run39442869941 onb7075d4d records completed2xxJavaScript delivery in every
+fixed required chunk category and zero console errors; the earlier layout
+response cancellation cannot by itself establish a current missing chunk.
+The pinned development framework enables a WebSocket-backed Flight debug
+channel, while this fixture intentionally denies HMR. The actual installed
+decoder regression demonstrates a root waiting for an unresolved debug
+reference until that stream provides data. Both verified fixture config paths
+now disable only that unsupported debug channel; ordinary production config
+and all network/process/ownership/deadline controls remain unchanged.
+
+Root validation passes36 tests, with the existing real config-loader test
+initially blocked by subprocess EPERM. Its exact local-only rerun passes and
+now explicitly verifies both fixture reloads set false while ordinary config
+retains the original true default. Imported-test types, scoped lint and
+independent source review pass. This is controlled mechanism/config evidence;
+fresh integrated browser acceptance is still required.

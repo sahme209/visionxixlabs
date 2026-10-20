@@ -1791,3 +1791,13 @@ unverified: native inherited bindings conflict with this older fixture policy.
 No environment sanitization, credential stripping, NODE_PATH replacement or
 runtime launch is authorized by this source checkpoint. Earlier ECS product
 work, all other mission sources and production approval gates remain intact.
+
+Website continuation now has a concrete framework-fixture compatibility fix:
+the installed Flight decoder can wait for debug references delivered through
+the HMR WebSocket deliberately denied by this fixture. Controlled actual
+decoder tests reproduce that dependency. Both private-context config paths
+disable only the developer debug channel; real config-loader checks prove
+normal config retains its original default.36 tests plus the exact config
+subprocess regression pass, with independent review and imported-test types.
+This changes no production config or permissions and does not yet establish
+successful browser playback. All earlier failure receipts remain preserved.
