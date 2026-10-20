@@ -2828,3 +2828,84 @@ PR193 remains a96367fc; neither isolated Preview browser/auth acceptance nor
 installed-Mac acceptance has run. Existing separate-project isolation plan and
 all production/merge/provider gates remain intact. Source continuation stays on
 codex/desktop-agent-next-local; no further source push is authorized here.
+
+### Cost hold and verified desktop compatibility correction
+
+Owner dashboard attests Pro and$201.03 shown ($143.49 Vercel Agent AI tokens,
+$50.54 build CPU). Supersedes earlier unknown team-plan status, but does not
+establish unused allocation or authorize spending. All hosted provisioning and
+deployments explicitly remain blocked; no billing/production settings changes.
+Read-only automatic PR193 Agent review completed and identified two findings.
+Stale shortcut finding is already corrected by528dcecf/b24b178b. ES2021 helper
+finding reproduced with actual desktop tsconfig: TS2550 repositoryEvidencePolicy
+Array.at unsupported. Root scoped typechecks were not desktop-target evidence.
+Plan: use equivalent ES2021-compatible last-segment lookup, retain security
+semantics/targets, test sensitive and ordinary paths plus real desktop compiler.
+Reuse installed desktop dependencies through temporary symlink; no install,
+network/provider call or lockfile change. No source push or new paid review.
+
+### Read-only Vercel cost audit — hosted work remains blocked
+
+Owner reports dashboard$201.03 total, including$143.49 Vercel Agent tokens and
+$50.54 build CPU. No provisioning, deployment, review invocation, push, billing
+or production settings change is authorized/performed. Pro plan confirmed by
+owner and subscription charge records; earlier personal Hobby metadata never
+represented the team's plan. Do not use account plan labels as free usage proof.
+
+Billing read: initial2026-10-01..21 export exceeded4MiB. Corrected to7 adjacent
+three-day UTC request windows2026-09-30..2026-10-21; every window succeeded,
+18,207 records, full per-window summaries. Returned charge periods span
+2026-10-01T07:00Z..2026-10-20T07:00Z. USD total billed176.173793924081,
+effective191.258120738965. Returned Vercel Agent billed/effective122.12770585;
+Build CPU billed38.332/effective50.40. These are NOT the user's current dashboard
+period/totals. Credits and lag differ; no fabricated reconciliation. Service
+lists capped50 groups: billed group sums reconcile the billed total, effective
+groups omit2.580645161289; summary is authoritative for full effective total.
+Samples only100/window, truncated: exact project/per-PR dollar allocation cannot
+be derived. Do not equate app AI Gateway usage with platform Vercel Agent tokens.
+
+Current team project inventory: one project visionxixlabs. Latest deployment page
+contains100 records,2026-10-15T02:11:37Z..2026-10-20T12:05:29Z:45 production READY,
+2 preview READY,51 preview ERROR,2 production ERROR; pagination has older rows.
+This is a partial historical count, not CPU billing evidence for every failed
+attempt. Read-only sample dpl_BQ3AMcWkaxGT31k3obcaWwBqxYmZ is source=git,
+BUILD_FAILED/Resource provisioning failed (may never consume build CPU).
+Preview dpl_Et7PsW4ExedkbKAcRq8JLewib3VL reached READY for0099adfa; production
+record at same commit exists. Latest approved hotfix30d6363a remains a production
+record. No new deployment created during audit; manual promotion/routing untouched.
+
+Independent paid trigger: PR193 exact a96367fc has Vercel Agent Review, completed
+neutral, review36322a3b765d964e59861e3cc615638f, analysis4m13s,2 suggestions.
+GitHub Actions zero-step failure did NOT prevent this separate platform review.
+Official Vercel Agent skill documents automatic PR/push reviews and @vercel
+triggers. Repo workflows contain no Vercel deploy command; git.deploymentEnabled
+remainsfalse. Thus Git build suppression does not suppress Agent review spend.
+This proves activity for this repo, not that PR193 caused the entire token bill.
+No new PR/open-PR push or @vercel mention while paid auto-review remains enabled.
+
+Proposed reductions, NOT applied: owner-reviewed switch from automatic Vercel
+Agent Code Review to explicitly approved/manual use for this repository, preserving
+required CI and independent security reviews; no plan-wide service pause or new
+spend cap that could suspend the live site. Keep manual-only Git deployments,
+no per-PR previews, one meaningful milestone build if later approved. Do not alter
+required tests, branch protection, live payment settings or production routing.
+Investigate/reuse build outputs and cache only after isolation and source-bound
+acceptance; do not assume removing old deployments refunds historical charges.
+
+Lowest-cost acceptance strategy: continue targeted local product/compiler tests;
+use an isolated local/approved nonproduction runtime with disposable empty SQL
+and test-only auth for browser acceptance when process/network support exists.
+No production env/data copy, no OAuth/Stripe/cloud/GitHub PAT/Gateway credentials,
+no paid review integration. Hosted option remains deferred: one protected,
+separate acceptance project, automatic Git and Agent reviews disabled, exact
+approved SHA, one basic build then reuse same deployment for focused journeys.
+Verify explicit cost/usage allowance and isolation before provisioning; no hosted
+approval requested now. CI startup and installed Mac/provider acceptance remain
+independent blockers. No claim that local fixtures prove real customer journeys.
+
+Local engineering correction: actual desktop ES2021 compiler passed after
+replacing Array.at with equivalent indexed last-segment lookup. No target/lib
+upgrade or security-policy weakening.23 sensitive-path/redaction/inspector tests
+pass;15 demo contracts and changed-file lint pass. Review's stale-skills finding
+already fixed locally; PR193 stays unchanged/unmerged. Temporary dependency link
+reuses existing packages and is removed after checks; no dependency installation.

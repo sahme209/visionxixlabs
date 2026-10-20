@@ -1,7 +1,8 @@
 /** Known sensitive repository paths are excluded from Agent evidence and writes. */
 export function isSensitiveRepositoryEvidencePath(path: string): boolean {
   const normalized = path.toLowerCase();
-  const fileName = normalized.split("/").at(-1) ?? normalized;
+  const segments = normalized.split("/");
+  const fileName = segments[segments.length - 1];
   return fileName.startsWith(".env") || [".npmrc", ".pypirc", ".netrc"].includes(fileName)
     || normalized.split("/").some((segment) => [".git", ".aws", ".ssh", ".kube", "secrets", "credentials"].includes(segment))
     || /(^|[._-])(secret|secrets|credential|credentials)([._-]|$)/.test(fileName)
