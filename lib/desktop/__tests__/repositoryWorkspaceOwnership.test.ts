@@ -614,3 +614,17 @@ it("replaces a selected literal match only in memory and preserves undo", async 
   fireEvent.click(screen.getByRole("button", {name: "Undo edit"}));
   expect((editor as HTMLTextAreaElement).value).toBe("alpha beta alpha");
 });
+it("navigates an unsaved source line without writes or checks and rejects invalid lines", async () => {
+  reads = () => "first\noriginal";
+  await start(); fireEvent.click(screen.getByRole("button", {name: "same.ts"}));
+  const editor = await screen.findByRole("textbox", {name: "Editing same.ts"}) as HTMLTextAreaElement;
+  fireEvent.change(editor, {target: {value: "first\nchanged second\nlast"}});
+  fireEvent.change(screen.getByRole("textbox", {name: "Line number"}), {target: {value: "2"}});
+  fireEvent.click(screen.getByRole("button", {name: "Go to line"}));
+  expect(editor.value.slice(editor.selectionStart, editor.selectionEnd)).toBe("changed second");
+  fireEvent.change(screen.getByRole("textbox", {name: "Line number"}), {target: {value: "999"}});
+  fireEvent.click(screen.getByRole("button", {name: "Go to line"}));
+  expect(screen.getByText(/existing one-based line number/)).toBeTruthy();
+  expect(editor.value).toBe("first\nchanged second\nlast");
+  expect(m.invoke.mock.calls.filter(([command]) => command === "write_repository_file" || command === "run_repository_check")).toHaveLength(0);
+});

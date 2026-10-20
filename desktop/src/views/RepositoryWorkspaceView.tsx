@@ -2,7 +2,7 @@ import { verificationReceipt, type VerificationReceipt } from "../lib/verificati
 import { localEditBlocker, type LocalEditRequest } from "../lib/localEditReview";
 import { localCodeContextPrompt, type LocalCodeSelection } from "../lib/localCodeContext";
 import { FileDiff } from "../components/FileDiff";
-import { editorMatches, replaceEditorMatch } from "../lib/editorSearch";
+import { editorMatches, replaceEditorMatch, editorLineRange } from "../lib/editorSearch";
 import { newEditorHistory, editHistory, moveHistory } from "../lib/editorHistory";
 import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore, type KeyboardEvent } from "react";
 import { invoke } from "@tauri-apps/api/core";
@@ -82,9 +82,10 @@ function RepositoryWorkspaceSession({ revision, active, onAskAgent, editRequest,
   const [searchQuery, setSearchQuery] = useState("");
   const [matchIndex, setMatchIndex] = useState(-1);
   const [replacement, setReplacement] = useState("");
+  const [lineTarget, setLineTarget] = useState("");
   const matches = useMemo(() => editorMatches(content, searchQuery), [content, searchQuery]);
   useEffect(() => { setMatchIndex(-1); }, [content, searchQuery]);
-  useEffect(() => { setSearchQuery(""); setReplacement(""); setSearchOpen(false); setReviewOpen(false); setSelectionLength(0); }, [selectedFile]);
+  useEffect(() => { setSearchQuery(""); setReplacement(""); setLineTarget(""); setSearchOpen(false); setReviewOpen(false); setSelectionLength(0); }, [selectedFile]);
   const [savedContent, setSavedContent] = useState("");
   const [busy, setBusy] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -526,6 +527,15 @@ function RepositoryWorkspaceSession({ revision, active, onAskAgent, editRequest,
     });
   }
 
+  function goToLine() {
+    const file = loadedFile.current, editor = editorRef.current;
+    if (!active || activeBusy.current || !owns(owner.current) || !file || !editor || file.content !== content) return;
+    const range = /^[1-9][0-9]{0,6}$/.test(lineTarget) ? editorLineRange(file.content, Number(lineTarget)) : null;
+    if (!range) { setError("Enter an existing one-based line number in the current file."); return; }
+    setError(null); setMatchIndex(-1); editor.focus(); editor.setSelectionRange(range.start, range.end);
+    setSelectionLength(range.end - range.start);
+  }
+
   function openSearch() {
     setSearchOpen(true);
     requestAnimationFrame(() => { searchRef.current?.focus(); searchRef.current?.select(); });
@@ -655,10 +665,14 @@ function RepositoryWorkspaceSession({ revision, active, onAskAgent, editRequest,
           <button type="button" disabled={Boolean(busy) || !status?.repositoryFullName || onDefaultBranch} title={onDefaultBranch ? "Create a branch; direct pushes to the default branch are blocked." : undefined} onClick={() => sync("push")} className="btn-secondary disabled:opacity-40">{busy === "push" ? "Pushing…" : "Push"}</button>
         </div>
         {selectedFile ? <>
-          <div className="flex items-center gap-2 border-b border-white/[0.06] px-3 py-2">
+          <div className="flex flex-wrap items-center gap-2 border-b border-white/[0.06] px-3 py-2">
             <span className="mr-auto truncate font-mono text-[11px] text-zinc-400">{selectedFile}{content !== savedContent ? " · unsaved" : ""}</span>
             {onAskAgent && <button type="button" aria-label="Ask Agent about selection" disabled={Boolean(busy) || selectionLength === 0 || selectionLength > 8000 || !localCodeContextPrompt({path: selectedFile, excerpt: "selection"})} onClick={askAboutSelection} className="btn-secondary disabled:opacity-40">Ask Agent</button>}
             <button type="button" aria-label="Review local changes" aria-expanded={reviewOpen} onClick={() => setReviewOpen(value => !value)} className="btn-secondary">Review changes</button>
+            <input aria-label="Line number" inputMode="numeric" maxLength={7} placeholder="Line" value={lineTarget} onChange={event => setLineTarget(event.target.value)} onKeyDown={event => {
+              if (event.key === "Enter" && !event.nativeEvent.isComposing && event.nativeEvent.keyCode !== 229) { event.preventDefault(); goToLine(); }
+            }} className="w-16 rounded border border-white/10 bg-black/20 px-2 py-1 text-xs" />
+            <button type="button" disabled={Boolean(busy) || !lineTarget} onClick={goToLine} className="btn-secondary disabled:opacity-40">Go to line</button>
             <button type="button" aria-label="Find in file" onClick={openSearch} className="btn-secondary">Find</button>
             <button type="button" aria-label="Undo edit" disabled={Boolean(busy) || !history.current.past.length} onClick={() => travelHistory("undo")} className="btn-secondary disabled:opacity-40">Undo</button>
             <button type="button" aria-label="Redo edit" disabled={Boolean(busy) || !history.current.future.length} onClick={() => travelHistory("redo")} className="btn-secondary disabled:opacity-40">Redo</button>

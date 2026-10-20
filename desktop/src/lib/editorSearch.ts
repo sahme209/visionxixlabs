@@ -18,3 +18,17 @@ export function replaceEditorMatch(content: string, query: string, replacement: 
   const next = content.slice(0, offset) + replacement + content.slice(offset + query.length);
   return new TextEncoder().encode(next).length <= 1_000_000 ? next : null;
 }
+/** UTF-16 textarea offsets for a one-based LF/CRLF line; never guesses a path. */
+export function editorLineRange(content: string, line: number): {start: number; end: number} | null {
+  if (!Number.isSafeInteger(line) || line < 1) return null;
+  let start = 0;
+  for (let current = 1; current < line; current++) {
+    const newline = content.indexOf("\n", start);
+    if (newline < 0) return null;
+    start = newline + 1;
+  }
+  const newline = content.indexOf("\n", start);
+  let end = newline < 0 ? content.length : newline;
+  if (end > start && content[end - 1] === "\r") end--;
+  return {start, end};
+}

@@ -3241,3 +3241,52 @@ replacement and UTF-8 overflow, explicit UI selection, undo and no writes/checks
 Actual desktop ES2021 types pass; lint zero errors/one existing cleanup warning.
 Rust compilation, installed-Mac and real-provider acceptance remain unverified.
 This follow-on is local only; remote approved snapshot remains4db11e37.
+
+### Native/macOS validation availability — 2026-10-20 continuation
+
+Priority native investigation from22944980: environment is Linux6.18.55 x86_64,
+not macOS; cargo/rustc/rustup/xcodebuild are absent from PATH and checked common
+installation locations. No DISPLAY/WAYLAND display is configured. pkg-config
+cannot find GTK3, WebKit2GTK4.1, JavaScriptCoreGTK4.1 or libsoup3. Workspace disk
+is99% used with547MiB available. Installing a complete toolchain, Linux Tauri
+dependencies and compilation outputs is not a safe route here; it would still
+not provide macOS/WKWebView/Keychain acceptance. No packages, toolchains, hosted
+runners or paid infrastructure were provisioned; no existing data was removed.
+No native compilation or native tests ran. Four prepared verification Rust tests
+remain unexecuted. Required environment: supported desktop development host with
+Rust/Cargo, Tauri OS dependencies, adequate build storage and an actual macOS GUI
+for installed-app acceptance. Existing CI already has Linux/macOS native tests
+and clippy; it remains blocked and was not dispatched as a workaround.
+
+Actual acceptance remains:
+- Native application compilation/tests: unverified, missing environment.
+- Terminal user cancellation: missing API/control, not falsely represented by
+  abandoning a view or dropping a renderer request.
+- Direct-child cleanup, collector abort, timeout/inherited-pipe behavior: source
+  implemented, uncompiled and runtime unverified; descendant termination not
+  guaranteed. Process-tree containment remains missing.
+- Multi-file native editing: unverified; local UI is explicitly per-file, not an
+  atomic multi-file write. Existing fixture evidence is not native acceptance.
+- Installed Mac Agent/real provider workflows: unverified; no paid calls.
+
+Fresh read-only Actions evidence: latest three runs are still39501751841,
+39501751771 and39501751770, failure/attempt1. Desktop jobs118900707579 and
+118900707805 expose no steps or log URL. The annotations endpoint family is
+rejected by the connector; exact startup cause and account usage remain unknown.
+No retries, pushes, workflow dispatches or additional Actions minutes initiated.
+Approved remote checkpoint4db11e37 and PR193/other blocked PRs remain preserved.
+
+### Independent debugging capability: source line navigation
+
+Research found no existing go-to-line implementation. Reuse current textarea
+and ownership/busy guards; never interpret terminal output as an instruction to
+open a path. Added explicit one-based line selection for the current buffer,
+validated LF/CRLF and UTF-16 offsets, rejection rather than clamping invalid
+lines, IME-safe Enter handling, and reset on file changes. Navigation preserves
+unsaved text, clears old find-match selection and triggers no writes/checks.
+Toolbar wraps to retain controls at narrower desktop widths.19 distinct targeted
+kernel/renderer/demo cases pass, including unsaved-source navigation and invalid
+line rejection. Actual desktop ES2021 TypeScript passes; lint zero errors/one
+existing catalog cleanup warning. These are independently verified renderer
+results only, not substitutes for any native acceptance above. Local-only source
+continuation; no push/merge/deploy/release/billing or paid-provider operation.

@@ -18,3 +18,10 @@ it("replaces only a validated literal occurrence without replacement-string expa
   expect(replaceEditorMatch("abc", "a", "x".repeat(8001), 0)).toBeNull();
   expect(replaceEditorMatch("x".repeat(999999), "x", "😀", 0)).toBeNull();
 });
+it("locates exact one-based lines without clamping invalid positions", async () => {
+  const {editorLineRange} = await import("../../../desktop/src/lib/editorSearch");
+  expect(editorLineRange("first\r\nsecond\n", 2)).toEqual({start: 7, end: 13});
+  expect(editorLineRange("first\r\nsecond\n", 3)).toEqual({start: 14, end: 14});
+  expect(editorLineRange("😀\ncode", 2)).toEqual({start: 3, end: 7});
+  for (const line of [0, -1, 1.5, NaN, Infinity, 4]) expect(editorLineRange("a\nb", line)).toBeNull();
+});
