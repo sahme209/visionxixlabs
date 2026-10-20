@@ -1,3 +1,4 @@
+import { verificationReceipt, type VerificationReceipt } from "../lib/verificationReceipt";
 import { localEditBlocker, type LocalEditRequest } from "../lib/localEditReview";
 import { localCodeContextPrompt, type LocalCodeSelection } from "../lib/localCodeContext";
 import { FileDiff } from "../components/FileDiff";
@@ -33,13 +34,7 @@ interface RepositoryCheck {
   description: string;
 }
 
-interface RepositoryCheckResult {
-  checkId: string;
-  success: boolean;
-  exitCode: number | null;
-  output: string;
-  durationMs: number;
-}
+type RepositoryCheckResult = VerificationReceipt;
 
 interface Confirmation {
   title: string;
@@ -443,18 +438,23 @@ function RepositoryWorkspaceSession({ revision, active, onAskAgent, editRequest,
     if (loadedFile.current && loadedFile.current.content !== loadedFile.current.saved) {
       setError("Save or discard unsaved editor changes before verification; checks run against files on disk."); return;
     }
+    const consentEpoch = sourceEpoch.current;
     setConfirmation({
       title: `Run ${check.label}?`,
-      description: `${check.command} will run inside this repository with a minimal process environment. Scripts are not sandboxed: they can access files and network resources available to your user, including stored credentials. Native timeout/output limits do not establish process-tree isolation. Run only repositories you trust.`,
+      description: `${check.command} will run inside this repository with a minimal process environment. Scripts are not sandboxed: they can access files and network resources available to your user, including stored credentials. Native timeout/output limits do not establish process-tree isolation. Run only repositories you trust. Closing or switching views does not cancel a running check; user cancellation is not available yet.`,
       confirmLabel: "Run check",
       onConfirm: async () => {
+        if (activeBusy.current) return;
         await run(`verify:${check.id}`, async current => {
           if (loadedFile.current && loadedFile.current.content !== loadedFile.current.saved) {
             setError("Save or discard unsaved editor changes before verification; checks run against files on disk."); return;
           }
+          if (consentEpoch !== sourceEpoch.current) { setError("The source changed after check consent was requested. Review and request the check again."); return; }
           const checkedEpoch = sourceEpoch.current;
-          const result = await invoke<RepositoryCheckResult>("run_repository_check", { repositoryPath: selectedRepository, checkId: check.id });
+          setVerificationStale(true);
+          const raw = await invoke<unknown>("run_repository_check", { repositoryPath: selectedRepository, checkId: check.id });
           if (!current()) return;
+          const result = verificationReceipt(raw, check.id);
           const stale = checkedEpoch !== sourceEpoch.current;
           setVerificationResult(result); setVerificationStale(stale);
           setShowVerification(true);
@@ -586,7 +586,7 @@ function RepositoryWorkspaceSession({ revision, active, onAskAgent, editRequest,
       {checks.length === 0 ? <span className="text-xs text-zinc-600">No supported checks detected.</span> : checks.map((check) => <button key={check.id} type="button" disabled={Boolean(busy)} onClick={() => verify(check)} title={`${check.description} Runs: ${check.command}`} className="rounded-md border border-white/[0.08] bg-white/[0.03] px-2.5 py-1.5 text-xs text-zinc-300 hover:bg-white/[0.07] disabled:opacity-40">{busy === `verify:${check.id}` ? `Running ${check.label}…` : check.label}</button>)}
       {verificationResult && <button type="button" onClick={() => setShowVerification((current) => !current)} className={`ml-auto rounded-md px-2.5 py-1.5 text-xs ${verificationStale ? "bg-amber-500/10 text-amber-200" : verificationResult.success ? "bg-emerald-500/10 text-emerald-300" : "bg-rose-500/10 text-rose-300"}`}>{verificationStale ? "Previous check result (stale)" : verificationResult.success ? "Last check passed" : "Last check failed"} · {showVerification ? "hide output" : "show output"}</button>}
     </div>}
-    {verificationResult && verificationStale && <p role="status" className="border-b border-amber-300/20 px-4 py-2 text-xs text-amber-200">Verification is stale after local changes. Save and run checks again; historical output remains available.</p>}
+    {verificationResult && verificationStale && <p role="status" className="border-b border-amber-300/20 px-4 py-2 text-xs text-amber-200">Verification is stale or superseded by a newer attempt. Save and run checks again; historical output remains available.</p>}
     {showVerification && verificationResult && <div className="max-h-56 overflow-auto border-b border-white/[0.07] bg-black/30 p-3">
       <p className="mb-2 text-xs text-zinc-500">Recorded process result only. It does not certify the current working tree or changes made outside Axiom.</p>
       <div className="mb-2 flex items-center justify-between text-[10px] text-zinc-500"><span>{verificationResult.checkId}</span><span>{(verificationResult.durationMs / 1000).toFixed(1)}s · exit {verificationResult.exitCode ?? "none"}</span></div>

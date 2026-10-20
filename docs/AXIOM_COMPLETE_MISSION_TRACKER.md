@@ -3061,3 +3061,37 @@ Local implementation checkpoint57af620d preserves9f0878e7 and earlier commits;
 remote branch/blocked PRs remain untouched. Next real terminal acceptance still
 requires the recorded supported native validation environment; no toolchain
 reinstallation or speculative process-control changes were attempted.
+
+### Terminal verification lifecycle continuation — 2026-10-20
+
+Research: `verification.rs` limits only `child.wait`, then awaits readers without
+any deadline. Descendants inheriting pipes can therefore hold the UI indefinitely;
+read errors were discarded, and 1 MB applied independently to each stream. There
+is no cancellation registry/IPC or supported process-tree termination API. Do not
+add a misleading Stop button or treat view/context abandonment as cancellation.
+Plan: bound exit plus drain together, abort reader tasks on every exit, reject
+read errors/combined overflow, bound direct-child cleanup. Preserve allowlisted
+check IDs, native re-detection, minimal environment, null stdin and explicit
+consent. Native source changes are implemented but NOT compiled or runtime
+validated: Cargo/Rust remain absent. Four Unix-native test cases are prepared
+for mixed output/nonzero exit, combined overflow, child timeout and inherited-pipe
+timeout. Required gate: `cargo test --manifest-path desktop/src-tauri/Cargo.toml
+verification::tests` in a supported native environment, followed by installed-Mac
+lifecycle acceptance. Process-tree cancellation and user cancellation remain
+missing; direct-child kill/drop is not descendant termination or a sandbox.
+
+Independently verified: IPC receipts validate requested check identity, bounded
+text, finite timing and success/exit consistency. New attempts retire old success;
+malformed results do not display untrusted output. Source epochs bind consent,
+including edit-and-undo, and stale-result handling remains intact. External disk
+changes are not covered by renderer epochs. Consent now says navigation does not
+cancel a check. Parser/editor/demo focused tests pass71 cases; actual desktop
+ES2021 TypeScript passes. An existing selection test raced a still-disabled Ask
+Agent button; it now waits for the actionable control rather than sleeps/retries.
+Independent source review found no remaining blocker after an intermediate stale
+Rust tail was corrected; this is not compiler/native acceptance. No remote CI,
+push, merge, deployment, resource, billing or paid-provider operation.
+A synchronous pending-operation guard additionally prevents duplicate consent
+clicks from dispatching concurrent checks; its targeted connected regression
+passes. Lint has zero errors/one existing catalog cleanup warning. No user-level
+native cancellation is implemented or claimed.

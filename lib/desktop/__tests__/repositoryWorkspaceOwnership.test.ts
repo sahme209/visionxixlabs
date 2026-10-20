@@ -376,6 +376,7 @@ it("requires confirmation before handing selected local code to Agent without sa
   fireEvent.click(await screen.findByRole("button", {name: "same.ts"}));
   const editor = await screen.findByRole("textbox", {name: "Editing same.ts"}) as HTMLTextAreaElement;
   editor.setSelectionRange(0, 5); fireEvent.select(editor);
+  await waitFor(() => expect((screen.getByRole("button", {name: "Ask Agent about selection"}) as HTMLButtonElement).disabled).toBe(false));
   fireEvent.click(screen.getByRole("button", {name: "Ask Agent about selection"}));
   expect(onAskAgent).not.toHaveBeenCalled();
   fireEvent.click(await screen.findByRole("button", {name: "Prepare Agent draft"}));
@@ -388,6 +389,7 @@ it("rejects a reviewed local selection when the file content changes before conf
   fireEvent.click(await screen.findByRole("button", {name: "same.ts"}));
   const editor = await screen.findByRole("textbox", {name: "Editing same.ts"}) as HTMLTextAreaElement;
   editor.setSelectionRange(0, 8); fireEvent.select(editor);
+  await waitFor(() => expect((screen.getByRole("button", {name: "Ask Agent about selection"}) as HTMLButtonElement).disabled).toBe(false));
   fireEvent.click(screen.getByRole("button", {name: "Ask Agent about selection"}));
   fireEvent.change(editor, {target: {value: "changed code"}});
   fireEvent.click(await screen.findByRole("button", {name: "Prepare Agent draft"}));
@@ -527,4 +529,40 @@ it("requires discard consent when moving between proposed files with an unsaved 
   fireEvent.click(screen.getByRole("button", {name: "Discard and open"}));
   await screen.findByDisplayValue("original other.ts");
   expect(screen.queryByDisplayValue("changed other.ts")).toBeNull();
+});
+it("requires renewed verification consent after source changes even when undone", async () => {
+  checks = () => [{id: "a", label: "A check", command: "npm test", description: "fixture"}];
+  await start(); fireEvent.click(screen.getByRole("button", {name: "same.ts"}));
+  const editor = await screen.findByRole("textbox", {name: "Editing same.ts"});
+  fireEvent.click(screen.getByRole("button", {name: "A check"}));
+  await screen.findByRole("button", {name: "Run check"});
+  fireEvent.change(editor, {target: {value: "temporary change"}});
+  fireEvent.click(screen.getByRole("button", {name: "Undo edit"}));
+  fireEvent.click(screen.getByRole("button", {name: "Run check"}));
+  await screen.findByText(/source changed after check consent/);
+  expect(m.invoke.mock.calls.filter(([name]) => name === "run_repository_check")).toHaveLength(0);
+});
+it("rejects a mismatched native receipt and retires an earlier success", async () => {
+  checks = () => [{id: "a", label: "A check", command: "npm test", description: "fixture"}];
+  await start();
+  fireEvent.click(screen.getByRole("button", {name: "A check"}));
+  fireEvent.click(await screen.findByRole("button", {name: "Run check"}));
+  await screen.findByText("fixture output");
+  verification = () => ({checkId: "other", success: true, exitCode: 0, output: "untrusted receipt", durationMs: 1});
+  fireEvent.click(screen.getByRole("button", {name: "A check"}));
+  fireEvent.click(await screen.findByRole("button", {name: "Run check"}));
+  await screen.findByText(/Invalid verification receipt/);
+  expect(screen.queryByText("untrusted receipt")).toBeNull();
+  expect(screen.queryByRole("button", {name: /Last check passed/})).toBeNull();
+  expect(screen.getByRole("button", {name: /Previous check result/})).toBeTruthy();
+});
+it("dispatches a consented check once while a native run is pending", async () => {
+  const pending = deferred<unknown>(); verification = () => pending.promise;
+  checks = () => [{id: "a", label: "A check", command: "npm test", description: "fixture"}];
+  await start(); fireEvent.click(screen.getByRole("button", {name: "A check"}));
+  const consent = await screen.findByRole("button", {name: "Run check"});
+  act(() => { consent.click(); consent.click(); });
+  expect(m.invoke.mock.calls.filter(([name]) => name === "run_repository_check")).toHaveLength(1);
+  await act(async () => {pending.resolve({checkId: "a", success: true, exitCode: 0, output: "one run", durationMs: 1});});
+  await screen.findByText("one run");
 });
