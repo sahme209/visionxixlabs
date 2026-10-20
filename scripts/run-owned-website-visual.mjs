@@ -10,15 +10,24 @@ import lifecycle from './fixtures/ownedWebsiteLifecycle.cjs';
 import managedNodePath from './fixtures/ownedWebsiteManagedNodePath.cjs';
 const root = realpathSync(join(dirname(fileURLToPath(import.meta.url)), '..'));
 const browser = '/usr/lib/chromium/chromium';
-const sourceFiles = ['scripts/run-owned-website-visual.mjs', 'scripts/fixtures/ownedWebsitePolicy.cjs', 'scripts/fixtures/ownedWebsiteGuard.cjs', 'scripts/fixtures/ownedWebsiteFramework.cjs', 'scripts/fixtures/ownedWebsiteChild.cjs', 'scripts/fixtures/ownedWebsiteProxy.cjs', 'scripts/fixtures/ownedWebsiteProxyTransport.cjs', 'scripts/fixtures/ownedWebsiteLifecycle.cjs', 'scripts/fixtures/ownedWebsiteSession.cjs', 'scripts/fixtures/ownedWebsiteManagedNodePath.cjs', 'scripts/capture-owned-website.mjs'];
+const sourceFiles = ['scripts/run-owned-website-visual.mjs', 'scripts/fixtures/ownedWebsiteConfig.cjs', 'scripts/fixtures/ownedWebsitePolicy.cjs', 'scripts/fixtures/ownedWebsiteGuard.cjs', 'scripts/fixtures/ownedWebsiteFramework.cjs', 'scripts/fixtures/ownedWebsiteChild.cjs', 'scripts/fixtures/ownedWebsiteProxy.cjs', 'scripts/fixtures/ownedWebsiteProxyTransport.cjs', 'scripts/fixtures/ownedWebsiteLifecycle.cjs', 'scripts/fixtures/ownedWebsiteSession.cjs', 'scripts/fixtures/ownedWebsiteManagedNodePath.cjs', 'scripts/fixtures/ownedManagedEnvironment.cjs', 'scripts/capture-owned-website.mjs'];
 const pause = ms => new Promise(resolve => setTimeout(resolve, ms));
-function git(args, managedIdentity) { managedNodePath.revalidate(process.env.NODE_PATH, managedIdentity); return execFileSync('git', args, { cwd: root, encoding: 'utf8', env: { PATH: process.env.PATH, NODE_PATH: process.env.NODE_PATH, GIT_CONFIG_NOSYSTEM: '1', GIT_CONFIG_GLOBAL: '/dev/null' }, timeout: 5000 }).trim(); }
-function capture() {
-  policy.checkedEnvironment(process.env, process.execArgv); // Refuse inherited guard/trust changes before even a git child.
-  const managedIdentity = managedNodePath.capture(process.env.NODE_PATH);
-  assert.equal(git(['status', '--porcelain', '--untracked-files=no'], managedIdentity), '', 'website_clean_source_required');
+function captureEnvironment() {
+  const managed = policy.captureManagedEnvironment(process.env);
+  const base = policy.checkedEnvironment(process.env, process.execArgv); // Refuse inherited guard/trust changes before even a git child.
+  policy.revalidateManagedEnvironment(process.env, managed);
+  return Object.freeze({ managed, nodePath: managedNodePath.capture(base.NODE_PATH), gitEnv: Object.freeze({ ...base, GIT_CONFIG_NOSYSTEM: '1', GIT_CONFIG_GLOBAL: '/dev/null' }) });
+}
+function git(args, environment, checkLive = true) {
+  if (checkLive) { policy.checkedEnvironment(process.env, process.execArgv); policy.revalidateManagedEnvironment(process.env, environment.managed); }
+  policy.revalidateManagedEnvironment(environment.gitEnv, environment.managed);
+  managedNodePath.revalidate(environment.gitEnv.NODE_PATH, environment.nodePath);
+  return execFileSync('git', args, { cwd: root, encoding: 'utf8', env: environment.gitEnv, timeout: 5000 }).trim();
+}
+function capture(environment = captureEnvironment()) {
+  assert.equal(git(['status', '--porcelain', '--untracked-files=no'], environment), '', 'website_clean_source_required');
   for (const name of ['.env', '.env.local', '.env.development', '.env.development.local']) assert.equal(existsSync(join(root, name)), false, 'website_ambient_env_file');
-  return { schema: 1, root, sourceHead: git(['rev-parse', 'HEAD'], managedIdentity), managedNodePath: managedIdentity, framework: framework.captureOwnedWebsiteFramework(root), hashes: Object.fromEntries([...sourceFiles.map(path => join(root, path)), realpathSync(process.execPath), realpathSync(browser)].map(path => [path, policy.sha256(path)])), productionEquivalent: false };
+  return { schema: 1, root, sourceHead: git(['rev-parse', 'HEAD'], environment), managedNodePath: environment.nodePath, managedSelectors: policy.managedSelectorIdentity(environment.managed), framework: framework.captureOwnedWebsiteFramework(root), hashes: Object.fromEntries([...sourceFiles.map(path => join(root, path)), realpathSync(process.execPath), realpathSync(browser)].map(path => [path, policy.sha256(path)])), productionEquivalent: false };
 }
 const groupMembers = policy.groupMembers;
 async function stopGroup(owner) {
@@ -38,7 +47,8 @@ async function execute(manifest) {
   const outputError = () => control.cancel(Error('website_supervisor_output_error'));
   process.stdout.on('error', outputError); process.stderr.on('error', outputError);
   try {
-  assert.deepEqual(capture(), manifest, 'website_reviewed_manifest_changed');
+  const environment = captureEnvironment();
+  assert.deepEqual(capture(environment), manifest, 'website_reviewed_manifest_changed');
   const directory = mkdtempSync('/tmp/axiom-website-');
   const nonce = randomBytes(16).toString('hex');
   const ports = new Set(); while (ports.size < 3) ports.add(randomInt(20000, 60001));
@@ -59,6 +69,9 @@ async function execute(manifest) {
   const ledger = lifecycle.createLedger({ spawn, snapshot: policy.snapshot, canonical: realpathSync, stopGroup, groupMembers, onFailure: control.cancel, onChange: records => lifecycle.persistLedger(directory, nonce, records) });
   const disk = setInterval(() => { try { if (directoryBytes(directory) + directoryBytes(dist) > 400 * 1024 * 1024) control.cancel(Error('website_resource_limit')); } catch { control.cancel(Error('website_resource_limit')); } }, 5000);
   function launch(role, executable, args, childEnv) {
+    policy.checkedEnvironment(process.env, process.execArgv);
+    policy.revalidateManagedEnvironment(process.env, environment.managed);
+    policy.revalidateManagedEnvironment(childEnv, environment.managed);
     managedNodePath.revalidate(process.env.NODE_PATH, manifest.managedNodePath);
     managedNodePath.revalidate(childEnv.NODE_PATH, manifest.managedNodePath);
     return control.run(() => ledger.launch(executable, args, { cwd: root, env: childEnv, detached: true, stdio: ['ignore', 'pipe', 'pipe'] }, child => {
@@ -102,6 +115,8 @@ async function execute(manifest) {
     assert.ok(existsSync(join(directory, 'done.json')), 'website_driver_receipt_missing');
     const completed = JSON.parse(readFileSync(join(directory, 'done.json'), 'utf8'));
     assert.equal(completed.nonce, nonce); assert.equal(completed.success, true, 'website_capture_failed');
+    policy.checkedEnvironment(process.env, process.execArgv);
+    policy.revalidateManagedEnvironment(process.env, environment.managed);
     control.check();
     result = { ...result, status: 'driver_finished' };
   } catch (error) { control.cancel(error instanceof Error ? error : Error('website_fixture_failed')); result = { ...result, error: control.report().failure }; }
@@ -117,7 +132,8 @@ async function execute(manifest) {
       rmSync(join(directory, 'chromium'), { recursive: true });
     }
     writeFileSync(join(directory, 'bounded-runtime.log'), logs.join(''), { mode: 0o600 });
-    const sourceUnchanged = git(['rev-parse', 'HEAD'], manifest.managedNodePath) === manifest.sourceHead && git(['status', '--porcelain', '--untracked-files=no'], manifest.managedNodePath) === '';
+    // Cleanup uses the captured validated controls, independently of later live metadata drift.
+    const sourceUnchanged = git(['rev-parse', 'HEAD'], environment, false) === manifest.sourceHead && git(['status', '--porcelain', '--untracked-files=no'], environment, false) === '';
     if (cleanupErrors.length || !sourceUnchanged || control.report().failure) result.status = 'failed';
     if (control.report().failure && !result.error) result.error = control.report().failure;
     writeFileSync(join(directory, 'result.json'), JSON.stringify({ ...result, coordinator: control.report(), cleanup: cleanupErrors.length ? 'failed' : 'owned_groups_empty', cleanupErrors, children: ledger.report(), finalProxyReceipt, fontRendering: 'external-font-fetch-denied; inspect fallback rendering', sourceUnchanged }), { mode: 0o600 });

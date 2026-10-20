@@ -1,0 +1,395 @@
+{
+  "schema": 1,
+  "scope": "source-only-preparation; fourth browser attempt remains held",
+  "base": "0099adfab5ccc22342f1637c1eaeea8e1cd50ac2",
+  "baseTree": "e329ad13a8532481b9accd8eea33a0b9e046fcfe",
+  "modifiedTrackedPaths": [
+    "docs/marketing/owned-website-visual-protocol.md",
+    "scripts/fixtures/ownedWebsitePolicy.cjs",
+    "scripts/run-owned-website-visual.mjs"
+  ],
+  "protectedTrackedCount": 3996,
+  "protectedTreeEntriesSha256": "7893302520d361fab10fdf69c1345f3e141e9fcdbd8244cc9f5d04a1adf01591",
+  "protectedComparison": "All other base tracked mode/content objects unchanged; aggregate encodes sorted git ls-tree rows as {path,mode,oid}.",
+  "sourceHashes": [
+    {
+      "path": "/workspace/axiom-website-fourth-diagnostic-proposal/scripts/run-owned-website-visual.mjs",
+      "sha256": "1dbd42e7d90c34c57dcf653f9644632deddec875adc49de1978913a02928375a"
+    },
+    {
+      "path": "/workspace/axiom-website-fourth-diagnostic-proposal/scripts/fixtures/ownedWebsitePolicy.cjs",
+      "sha256": "a172663a1b42311cf9fdc33522bb7e7d8f324dbd0b1d4e18ea364f4d1c964e90"
+    },
+    {
+      "path": "/workspace/axiom-website-fourth-diagnostic-proposal/scripts/fixtures/ownedManagedEnvironment.cjs",
+      "sha256": "76b56578dfe709ad9694f560f41054342226a5850c7fc9c68744cc7a7a257715"
+    },
+    {
+      "path": "/workspace/axiom-website-fourth-diagnostic-proposal/scripts/fixtures/ownedWebsiteGuard.cjs",
+      "sha256": "7717ab88be545b7f04066b852667ab895144aa1bf77c1ef3d543b336dc80ed3b"
+    },
+    {
+      "path": "/workspace/axiom-website-fourth-diagnostic-proposal/scripts/fixtures/ownedWebsiteFramework.cjs",
+      "sha256": "fe8390dd6e9c7f2fdcb1e7998efa5a0290ff0767928c18eb85fea523d388cb19"
+    },
+    {
+      "path": "/workspace/axiom-website-fourth-diagnostic-proposal/scripts/fixtures/ownedWebsiteChild.cjs",
+      "sha256": "421859af0af4a9d9086e6f83f53fa3d4005bfb07ea6b902b1f428d9bf62535ee"
+    },
+    {
+      "path": "/workspace/axiom-website-fourth-diagnostic-proposal/scripts/fixtures/ownedWebsiteProxy.cjs",
+      "sha256": "e3a91de391bd5aefbef43a2b7f54a13022da20e1a55d1cda571d17abac7e8e4e"
+    },
+    {
+      "path": "/workspace/axiom-website-fourth-diagnostic-proposal/scripts/fixtures/ownedWebsiteProxyTransport.cjs",
+      "sha256": "0a5e6f4be2013dc1f9b13b7617905ab478eda19ec8002bb1eeb08d228d2de6fc"
+    },
+    {
+      "path": "/workspace/axiom-website-fourth-diagnostic-proposal/scripts/fixtures/ownedWebsiteLifecycle.cjs",
+      "sha256": "47eb7c0b7cb8c8d3e77dc5e41612c4e0ba7078e1cdf3dd23247baa671bbc79ac"
+    },
+    {
+      "path": "/workspace/axiom-website-fourth-diagnostic-proposal/scripts/fixtures/ownedWebsiteSession.cjs",
+      "sha256": "70e3a6dc14a6b705c9dba19587da6e78ee5799f0c709bf08aea2333ab10a58cc"
+    },
+    {
+      "path": "/workspace/axiom-website-fourth-diagnostic-proposal/scripts/fixtures/ownedWebsiteManagedNodePath.cjs",
+      "sha256": "64e19a8629bdc92110dd4e23f3b6316f4cbd47d2df80749ef0e0370fcce08346"
+    },
+    {
+      "path": "/workspace/axiom-website-fourth-diagnostic-proposal/scripts/capture-owned-website.mjs",
+      "sha256": "0dd3e9caf343df2dd0d6d47bbdf39c036aeef9e36c8fda50e7136315b937922b"
+    },
+    {
+      "path": "/workspace/axiom-website-fourth-diagnostic-proposal/lib/__tests__/ownedWebsiteManagedControls.test.ts",
+      "sha256": "597b21b58f014bd59d53d626a0c1e06c6e6f53e8347538f15820c8227366eebc"
+    },
+    {
+      "path": "/workspace/axiom-website-fourth-diagnostic-proposal/lib/__tests__/ownedWebsiteDomDiagnostics.test.ts",
+      "sha256": "42c1f08aee2215bc28dbd454fb08afa91b422e127661abb0725102ccb6b26260"
+    },
+    {
+      "path": "/workspace/axiom-website-fourth-diagnostic-proposal/CLAUDE.md",
+      "sha256": "fbffa939e267f17aabbd06fad23dca9937ff640a09258ccc54d16c6228829059"
+    },
+    {
+      "path": "/workspace/axiom-website-fourth-diagnostic-proposal/package.json",
+      "sha256": "6201717595cfb27706f75883b10a6bee501048a085ec64a5eec9446c6a193ba5"
+    },
+    {
+      "path": "/workspace/axiom-website-fourth-diagnostic-proposal/package-lock.json",
+      "sha256": "24228d15d056785f239f77107cd9ed1f8161beed53e1edc128826e4ce4298fd7"
+    },
+    {
+      "path": "/workspace/axiom-website-fourth-diagnostic-proposal/next.config.ts",
+      "sha256": "e29e0ed18407a18820a2047e41e52272a80dc7cd1f69dbb221ad9e9977f1a040"
+    },
+    {
+      "path": "/workspace/axiom-website-fourth-diagnostic-proposal/tsconfig.json",
+      "sha256": "49995c2a39f9d8442187af48c2070474181bee8eca5812ca44075db407ece5d1"
+    },
+    {
+      "path": "/workspace/axiom-website-fourth-diagnostic-proposal/tsconfig.next.json",
+      "sha256": "1b7acd54eea2b33af5e4c8601132f9244687ed14ebbbb3f330a295d199fdac41"
+    }
+  ],
+  "helperReuse": {
+    "sourceCommit": "566dc4b7e5545db2e198e2760c04199d03857d81",
+    "path": "scripts/fixtures/ownedManagedEnvironment.cjs",
+    "sha256": "76b56578dfe709ad9694f560f41054342226a5850c7fc9c68744cc7a7a257715",
+    "exactBytes": true,
+    "usedExports": [
+      "captureManagedControls",
+      "revalidateManagedControls"
+    ]
+  },
+  "oldManifest": {
+    "path": "/tmp/axiom-website-review-1f21b4e3.json",
+    "sha256": "a86eeb80b0760d8b6469a17bec63f9f8692761e2d5fe3be6414247d899bed3f3"
+  },
+  "oldManifestSourceComparison": [
+    {
+      "path": "scripts/run-owned-website-visual.mjs",
+      "historicalSha256": "adba25374f4040d9c7341972755c2b1c404435be8d0813c8b010cdb1b910d4ad",
+      "currentSha256": "1dbd42e7d90c34c57dcf653f9644632deddec875adc49de1978913a02928375a",
+      "equal": false
+    },
+    {
+      "path": "scripts/fixtures/ownedWebsitePolicy.cjs",
+      "historicalSha256": "53faf1b92af39ab2a6993ad6f18d1a92e0cfd6b59ed7c4cd0dd1e8994b7a05ab",
+      "currentSha256": "a172663a1b42311cf9fdc33522bb7e7d8f324dbd0b1d4e18ea364f4d1c964e90",
+      "equal": false
+    },
+    {
+      "path": "scripts/fixtures/ownedWebsiteGuard.cjs",
+      "historicalSha256": "7717ab88be545b7f04066b852667ab895144aa1bf77c1ef3d543b336dc80ed3b",
+      "currentSha256": "7717ab88be545b7f04066b852667ab895144aa1bf77c1ef3d543b336dc80ed3b",
+      "equal": true
+    },
+    {
+      "path": "scripts/fixtures/ownedWebsiteFramework.cjs",
+      "historicalSha256": "315a16b5b484e7d727d0b7e075e15497d7dcae1d7186a3c8a61a01a659f5b105",
+      "currentSha256": "fe8390dd6e9c7f2fdcb1e7998efa5a0290ff0767928c18eb85fea523d388cb19",
+      "equal": false
+    },
+    {
+      "path": "scripts/fixtures/ownedWebsiteChild.cjs",
+      "historicalSha256": "421859af0af4a9d9086e6f83f53fa3d4005bfb07ea6b902b1f428d9bf62535ee",
+      "currentSha256": "421859af0af4a9d9086e6f83f53fa3d4005bfb07ea6b902b1f428d9bf62535ee",
+      "equal": true
+    },
+    {
+      "path": "scripts/fixtures/ownedWebsiteProxy.cjs",
+      "historicalSha256": "e3a91de391bd5aefbef43a2b7f54a13022da20e1a55d1cda571d17abac7e8e4e",
+      "currentSha256": "e3a91de391bd5aefbef43a2b7f54a13022da20e1a55d1cda571d17abac7e8e4e",
+      "equal": true
+    },
+    {
+      "path": "scripts/fixtures/ownedWebsiteProxyTransport.cjs",
+      "historicalSha256": "0a5e6f4be2013dc1f9b13b7617905ab478eda19ec8002bb1eeb08d228d2de6fc",
+      "currentSha256": "0a5e6f4be2013dc1f9b13b7617905ab478eda19ec8002bb1eeb08d228d2de6fc",
+      "equal": true
+    },
+    {
+      "path": "scripts/fixtures/ownedWebsiteLifecycle.cjs",
+      "historicalSha256": "47eb7c0b7cb8c8d3e77dc5e41612c4e0ba7078e1cdf3dd23247baa671bbc79ac",
+      "currentSha256": "47eb7c0b7cb8c8d3e77dc5e41612c4e0ba7078e1cdf3dd23247baa671bbc79ac",
+      "equal": true
+    },
+    {
+      "path": "scripts/fixtures/ownedWebsiteSession.cjs",
+      "historicalSha256": "70e3a6dc14a6b705c9dba19587da6e78ee5799f0c709bf08aea2333ab10a58cc",
+      "currentSha256": "70e3a6dc14a6b705c9dba19587da6e78ee5799f0c709bf08aea2333ab10a58cc",
+      "equal": true
+    },
+    {
+      "path": "scripts/fixtures/ownedWebsiteManagedNodePath.cjs",
+      "historicalSha256": "64e19a8629bdc92110dd4e23f3b6316f4cbd47d2df80749ef0e0370fcce08346",
+      "currentSha256": "64e19a8629bdc92110dd4e23f3b6316f4cbd47d2df80749ef0e0370fcce08346",
+      "equal": true
+    },
+    {
+      "path": "scripts/capture-owned-website.mjs",
+      "historicalSha256": "77fa17724ee8e7d00c9c6681c37d76a844ea055518ede49a6218e78a62b2dca8",
+      "currentSha256": "0dd3e9caf343df2dd0d6d47bbdf39c036aeef9e36c8fda50e7136315b937922b",
+      "equal": false
+    }
+  ],
+  "staticFrameworkHashes": [
+    {
+      "path": "/workspace/axiom-privacy-controls/node_modules/next/package.json",
+      "sha256": "6da8fc4823b66b8f2906d150002618e3f3e0d2446ebf3823b2a2f7efe73a46a4"
+    },
+    {
+      "path": "/workspace/axiom-privacy-controls/node_modules/next/dist/server/next.js",
+      "sha256": "7f5e6d550be3bfb73ca7f0668bf82dcf1130f63202c15e4d282ee5f130f75bc6"
+    },
+    {
+      "path": "/workspace/axiom-privacy-controls/node_modules/next/dist/server/lib/start-server.js",
+      "sha256": "cc5f6a3a50024e5f8afe403ca49c1fa72ef7d1596c4236d07b64f88f8ea1f248"
+    },
+    {
+      "path": "/workspace/axiom-privacy-controls/node_modules/next/dist/server/lib/router-server.js",
+      "sha256": "3b07e8ff37540617545d46fb48963b5ceda9197ea0f7025f6d980e37ec2e7b52"
+    },
+    {
+      "path": "/workspace/axiom-privacy-controls/node_modules/next/dist/server/lib/app-info-log.js",
+      "sha256": "8b9bff4c96dcc7ea568e7b8c4bb7562b7a13884125d420ac44ba1a13393766e8"
+    },
+    {
+      "path": "/workspace/axiom-privacy-controls/node_modules/next/dist/server/lib/generate-agent-files.js",
+      "sha256": "2b9149fa71f1e6feec027c92ce33357e71a4926d1d3c4a881d97621ac3ef97da"
+    },
+    {
+      "path": "/workspace/axiom-privacy-controls/node_modules/next/dist/telemetry/agent-name.js",
+      "sha256": "500d003429eeeed6288246b76be7bb4aba221d1743d08029bf34aea59a01ceb3"
+    },
+    {
+      "path": "/workspace/axiom-privacy-controls/node_modules/next/dist/compiled/@vercel/detect-agent/index.js",
+      "sha256": "f42d7f128d8e335942ae1ba79dbb74ddcdc1e9c60138fcb88b82c4298837297f"
+    },
+    {
+      "path": "/workspace/axiom-privacy-controls/node_modules/next/dist/server/config-shared.js",
+      "sha256": "2c15353ce27ba7ea7322b53f3194c6d39593936f2c73e303cbd2dd7d37d88f0a"
+    },
+    {
+      "path": "/workspace/axiom-privacy-controls/node_modules/next/dist/build/load-jsconfig.js",
+      "sha256": "419d124c1708f6cff3bcd4ad63f379f9e45912c392a8e462bfaf6ef571a222ef"
+    },
+    {
+      "path": "/workspace/axiom-privacy-controls/node_modules/next/dist/lib/typescript/runTypeScriptCli.js",
+      "sha256": "7dbbcc8190d3fd835c339cc6feed9e70bd3191f8af6fe5441c06b441626c5f58"
+    },
+    {
+      "path": "/workspace/axiom-privacy-controls/node_modules/typescript/package.json",
+      "sha256": "822ef7ca6452205657b6288b066481ecf508bfbf43455d715cf7d3ec457561e6"
+    },
+    {
+      "path": "/workspace/axiom-privacy-controls/node_modules/typescript/lib/typescript.js",
+      "sha256": "3ae902c92cc44dace175c0e69e13a4b0899f6983c6121d76b9ab8dd5795e7675"
+    }
+  ],
+  "frameworkPinnedSourcesAndDependenciesMatch": true,
+  "runtimeAndBrowserReadOnlyHashes": [
+    {
+      "path": "/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/node",
+      "sha256": "bc17c508ffeed0ec622934f9b7fa72f8e78da65350e63c3eceb56fa688aa5e12"
+    },
+    {
+      "path": "/usr/lib/chromium/chromium",
+      "sha256": "4dc9f9f9b20e9bd95bf201f43d2d643f48938f36a70ddcb6fce3dd611a178180"
+    }
+  ],
+  "runtimeVersionQualification": "No executable/version probe; prior manifest observed Node 24.19.0 linux x64 and bytes still match.",
+  "customServerGuidanceClosure": {
+    "entry": "ownedWebsiteChild.cjs -> next(ownedNextOptions) -> default customServer true -> NextCustomServer.prepare -> getRequestHandlers -> router.initialize",
+    "writerEntry": "startServer -> ensureAgentRulesForDev -> writeAgentFiles",
+    "ipcHookRequires": [
+      "NEXT_PRIVATE_WORKER",
+      "process.send"
+    ],
+    "ownedLaunchHasNeither": true,
+    "claudeChanged": false,
+    "qualification": "No guidance write trigger in the reviewed fixed custom-server startup closure; not a claim about arbitrary code or retrospective DOM failure attribution."
+  },
+  "historicalNineArtifacts": [
+    {
+      "path": "/tmp/axiom-website-lYTxL1/result.json",
+      "sha256": "c134d68249c1cc07d1423de800b8e6e38bc9f9ef759f5fdee5bc5dc80764e85d"
+    },
+    {
+      "path": "/tmp/axiom-website-lYTxL1/capture.json",
+      "sha256": "ed2664ddc48310fae3731718deecfe260b618369a0427e51b0b5c2966a7beab7"
+    },
+    {
+      "path": "/tmp/axiom-website-lYTxL1/done.json",
+      "sha256": "df8a012603c8218fc4e9c186f0c3e1d4abd94eea629c5477fbf228c232e234ab"
+    },
+    {
+      "path": "/tmp/axiom-website-lYTxL1/ledger.json",
+      "sha256": "2392b60df3ce0a0de7c9d9ce943bb905405a62d2103bd3e149c833b62ddde849"
+    },
+    {
+      "path": "/tmp/axiom-website-lYTxL1/server.json",
+      "sha256": "fe831b2efc382914046137dfd7d6034708d1c551b2d004f2dbacab6a2a821a9f"
+    },
+    {
+      "path": "/tmp/axiom-website-lYTxL1/proxy.json",
+      "sha256": "d6688aed69677c714e3a29e50f76843676734441e719e5cfa5efec75ea180dba"
+    },
+    {
+      "path": "/tmp/axiom-website-lYTxL1/window.json",
+      "sha256": "882e8edcb93fd955a9dab0aec4bc703fd0cb3420a1d426aa33d95153779dce4f"
+    },
+    {
+      "path": "/tmp/axiom-website-lYTxL1/bounded-runtime.log",
+      "sha256": "f3ee5688e4cd5b6744086d15709a28e78042bc2fb17bd87ea00ef095a8648745"
+    },
+    {
+      "path": "/tmp/axiom-website-lYTxL1/post-cleanup-readonly-inventory.json",
+      "sha256": "672b392f7e5b7f22d2cb745c2674a74736db31ebffe6669f4bbe16dc79b6ff34"
+    }
+  ],
+  "frozenWorktrees": [
+    {
+      "path": "/workspace/axiom-website-dom-diagnostics",
+      "head": "beec8c1090c75fa02bc5a3cf8ef974d7f2fbc7f3"
+    },
+    {
+      "path": "/workspace/axiom-premium-workflow-stories",
+      "head": "6b9264f45e8a86f72df5b94ae7aceea7b2182128"
+    }
+  ],
+  "frozenBranches": [
+    {
+      "branch": "codex/website-dom-wait-diagnostics",
+      "head": "beec8c1090c75fa02bc5a3cf8ef974d7f2fbc7f3"
+    },
+    {
+      "branch": "codex/premium-workflow-stories-main-integration",
+      "head": "6b9264f45e8a86f72df5b94ae7aceea7b2182128"
+    },
+    {
+      "branch": "codex/premium-workflow-stories",
+      "head": "1f21b4e32d9e610f32c29342715aa3a02abed159"
+    }
+  ],
+  "pureChecks": {
+    "final": {
+      "filesPassed": 6,
+      "testsPassed": 133,
+      "newControlTests": 39,
+      "domTestsUnchanged": 5
+    },
+    "redStages": [
+      {
+        "originalPolicy": {
+          "failed": 30,
+          "passed": 4
+        }
+      },
+      {
+        "oldLauncherAfterSelectionFix": {
+          "failed": 7,
+          "passed": 27
+        }
+      },
+      {
+        "lateUnsupportedParentOptions": {
+          "failed": 5,
+          "passed": 34
+        }
+      }
+    ],
+    "lint": "pass, no diagnostics",
+    "syntax": "all three fixture source files pass node --check",
+    "diff": "pass",
+    "logs": [
+      {
+        "path": "/tmp/axiom-website-managed-controls-red.log",
+        "sha256": "b71cab554c23d92c3cb4b786d35206b15366c5ab4c08f1c81bc94933caf761ea"
+      },
+      {
+        "path": "/tmp/axiom-website-managed-launch-red.log",
+        "sha256": "a9fba4881af7d90044cf38267b2d0217f4c5370b535ed76394bf2c28ded803b4"
+      },
+      {
+        "path": "/tmp/axiom-website-managed-controls-green.log",
+        "sha256": "3d80f7ea991384e9188d9fffadc391c9139edf0f5006369e659d665351c0f970"
+      },
+      {
+        "path": "/tmp/axiom-website-managed-options-red.log",
+        "sha256": "22949b03da7c873eab784af0d845223a8d20840f046c5f6181f4788708f0fabe"
+      },
+      {
+        "path": "/tmp/axiom-website-managed-controls-final-pure.log",
+        "sha256": "d1e7e12ac31cf4939b00b515de9bacc309200ae0b54dde25f90b697b4a88605e"
+      },
+      {
+        "path": "/tmp/axiom-website-managed-controls-lint.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    ]
+  },
+  "executionNotPerformed": [
+    "manifest preparation",
+    "Next/server",
+    "Chromium/browser",
+    "compiler/build/full suite",
+    "isolated native guard probe",
+    "provider or SDK requests"
+  ],
+  "dependencyUse": {
+    "overlay": "/workspace/.axiom-validation/website-dom-diagnostics-6bt11a09/node_modules",
+    "existingPrivateOverlay": true,
+    "newOverlayOrInstallation": false,
+    "worktreeNodeModulesLinkRemoved": true
+  },
+  "claimLimits": [
+    "No images or browser acceptance",
+    "No attribution of historical DOM timeout",
+    "No fourth runtime authorization",
+    "Current live-member cleanup is not zombie absence or universal OS/native containment",
+    "Dynamic CODEX metadata recaptured per invocation; stable selectors hashed, no raw values published"
+  ]
+}
