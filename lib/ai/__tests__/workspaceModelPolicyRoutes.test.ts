@@ -72,3 +72,13 @@ it("account discovery fails closed when the Gateway catalog is unavailable", asy
   mocks.catalog.mockRejectedValue(new Error("unavailable"));
   expect((await accountGet()).status).toBe(503);
 });
+it("account audit retains the full bounded approval list as a scalar", async () => {
+  const ids = Array.from({ length: 32 }, (_, index) => `xai/m${index}-${"a".repeat(170)}`);
+  mocks.catalog.mockResolvedValue(ids.map(id => ({ id })));
+  const payload = body(); payload.modelSelections.vercel_gateway = { version: 1, defaultModelId: ids[0], approvedModelIds: ids };
+  const response = await account(new NextRequest("https://visionxixlabs.com/api/account/ai-policy", { method: "PUT", headers: { origin: "https://visionxixlabs.com", "content-type": "application/json" }, body: JSON.stringify(payload) }));
+  expect(response.status).toBe(200);
+  const recorded = mocks.audit.mock.calls[0][0].detail.approvedGatewayModels;
+  expect(typeof recorded).toBe("string"); expect(recorded.length).toBeGreaterThan(512);
+  expect(recorded.split(",")).toEqual(ids);
+});

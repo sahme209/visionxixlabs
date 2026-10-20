@@ -168,3 +168,34 @@ The admin boundary accepts the normalized GET form (default string plus validate
 `gatewaySelection`) as well as the nested stored v1 form. Conflicting defaults,
 malformed metadata and simultaneous representations refuse; GET → edit → save
 regressions preserve the approved list rather than silently flattening it.
+
+Before expanding Agent model dispatch or streaming, close the existing durable
+admission gap in `lib/axiom/agentRuntime/governedAiCall.ts`: it prechecks credits,
+while `AIProviderManager.extractStructuredData` records Gateway usage after the
+provider call. This path does not yet use the transactional hold/dispatch/usage
+attachment sequence in `app/api/ai/generate/route.ts`. Source inspection establishes
+the missing admission step; no paid concurrency experiment was run. Reuse existing
+reservation/settlement primitives and prove retries, concurrent calls and uncertain
+provider outcomes retain holds before allowing alternate-model dispatch. Do not
+introduce another meter or treat the current precheck as concurrent spend proof.
+
+## Desktop policy controls wired to the application
+
+Existing Settings Models now preserves versioned metadata, supports multiple
+Gateway approvals and an explicit Make default action, promotes a remaining
+approval when the default is removed, and disables Gateway when the last is
+removed. Unavailable concrete IDs remain visible for removal; explicit batch
+cleanup removes multiple stale approvals in one save. Legacy `service-default`
+and `vmc/` routing remain readable/disablable and are excluded from stale cleanup.
+Unrelated direct-provider edits preserve Gateway metadata. Loaded-policy context
+is bound to the desktop client configuration; workspace drift refuses a save or
+ignores an outdated response. Backend authority and current catalog checks remain
+mandatory; no credential enters the renderer.
+
+Evidence: 38 focused decoder/transition/rendered Settings tests and desktop
+no-emit types/lint pass. Root independently exercised all 12 rendered cases,
+including save refusal, default/approval transitions, stale cleanup and workspace
+switches. This is actual component behavior with isolated transport mocks, not
+installed desktop, live inference or a real customer/provider acceptance claim.
+The member chat/editor selector and streaming remain open behind durable billing
+admission and provider/native acceptance gates.

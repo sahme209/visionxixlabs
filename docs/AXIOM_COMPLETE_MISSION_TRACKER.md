@@ -1938,3 +1938,46 @@ shared desktop selector and real provider/native acceptance remain unverified.
 Billing current-main source qualification60be2ab3 is committed separately; root
 actual closure suite passes4 checks. This is source-only evidence, not compiled
 output, environment/DB ownership, real Stripe checkout or runtime authority.
+
+
+Automatic PR183 browser39456134947 atd732ac5a reproduced the documentation
+navigation flake after11 accepted interactions: no docs navigation/prefetch/document
+request reached the proxy, no denial, runtime exceptions0, deadline120s; owned
+cleanup/source integrity passed. Source-only follow-up found no precise additional
+cause. Its safe receipt is mission/public-website-browser-blocker-2026-10-20.json.
+The prior PR182 pass remains evidence for its exact head, not a waiver of this
+failed check. No deadline, I/O boundary or acceptance requirement is weakened;
+no blind diagnostic rerun is planned. Independent model/catalog work continues.
+
+
+Agent billing source audit found an actionable admission gap: governed structured
+extraction prechecks credits and eagerly writes usage after the provider call,
+but does not use the browser generation route's durable hold. Legacy holds also
+lack a durable uncertain-dispatch fence; simple retention until TTL is inadequate.
+An isolated existing Agent worktree is preparing a narrow extension of the same
+ledger plus trusted actor propagation and singular usage binding. Alternate-model
+dispatch/streaming remains gated on this correction and its regression evidence;
+no provider call, paid inference, schema or production change is authorized.
+
+
+Owner continuation preserves these acceptance targets within existing phases:
+Cursor-level repository understanding/coding/editing/terminal/debugging/testing/
+diffs with approval enforcement; real Grok/OpenAI/Anthropic model discovery,
+selection, streaming and metering; functional marketplace/extensions; minimalist
+website with header direct Mac download from a verified approved release; and
+professional Support XCM progress/partner storytelling. Cursor public workflows
+are reference evidence only, implemented with Axiom code. None is declared done
+from appearance or fixtures alone. Current desktop policy, Settings, reservation
+and browser gates retain priority. Download readiness/signing, separate installer
+approval, truthful support claims and unchanged support Stripe flow remain gates.
+
+
+Desktop Settings source now connects the versioned admin model policy to actual
+controls: multiple approvals, explicit default, stale-ID removal/batch cleanup,
+legacy managed-route preservation and workspace-bound saves. Author38 focused
+checks/types/lint pass; root independently passes12 rendered interaction cases.
+This remains isolated component acceptance with mocked transport, not native or
+provider acceptance. Member model selection/streaming is not advertised complete.
+The latest3a837260 browser job failed before browser startup on bounded git
+ETIMEDOUT; this is distinct from the recorded documentation navigation flake.
+Required checks remain gates; no timeout increase or silent rerun was made.

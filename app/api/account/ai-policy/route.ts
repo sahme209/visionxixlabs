@@ -94,7 +94,7 @@ export async function PUT(request: NextRequest): Promise<NextResponse> {
         // change" answerable from the audit record alone.
         allowedProviders: policy.allowedProviders,
         selectedModels: policy.modelSelections,
-        approvedGatewayModels: gatewayPolicyModelIds(policy),
+        approvedGatewayModels: gatewayPolicyModelIds(policy).join(","),
         fallbackOrder: policy.fallbackOrder,
       },
     });
