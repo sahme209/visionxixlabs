@@ -1,0 +1,23 @@
+# Ephemeral website acceptance job
+
+This is source prepared for independent review, not a successful browser acceptance result. No browser, server, image build, dependency installation, workflow dispatch, or production operation was run while preparing this harness.
+
+The PR-only job checks out the immutable PR **head SHA**, not GitHub's synthetic merge SHA. `AXIOM_WEBSITE_CI_SOURCE_SHA` binds the private manifest and clean actual checkout to that head; `GITHUB_SHA` is not rewritten. Before execution the existing launcher independently recaptures and compares the complete manifest, including the added CI adapter, fixture sources, framework/configuration pins, Node executable, Chromium executable and managed environment identity. Runtime manifests must be newly generated; historical manifests are not reusable.
+
+The existing public custom Next server, private owned output configuration, exact public GET/HEAD allowlist, denied API/external requests and full managed environment controls are unchanged. The existing limits remain: 300-second coordinator, 120-second capture session, 15-second CDP operation deadlines, 45-second DOM waits, 400 MiB owned-disk budget, and existing process ownership/cleanup checks. This job isolates local tool supervisor loss; it does not prove the cause of earlier `Page.navigate` timeouts or remedy cold compilation. A timeout remains a failed acceptance result.
+
+The disposable GitHub-hosted job has read-only repository permission and no deployment, environment, database, billing or cloud credentials. Checkout does not persist its read token. `npm ci --ignore-scripts` uses the existing lockfile; explicit Prisma client generation is local code generation only, not a migration. No push trigger duplicates the PR job. Existing production CI/build validation and Vercel Git controls remain intact.
+
+## Runtime provenance limitation
+
+Official Docker image metadata was inspected read-only and lists `node:24.22.0-bookworm` (docker-node source commit `f27125230b3c367dcf63043ea3fe286fb3d0914c`). Anonymous registry digest lookup was unavailable from this environment. The fixed version tag remains mutable, and Debian Chromium packages are selected at CI execution time. These are explicitly not immutable supply-chain pins. Actual executable hashes and the actual runtime version enter each fresh private manifest. Checkout and upload-artifact actions use reviewed immutable action commit SHAs. No image was pulled or built during preparation.
+
+## Evidence handling
+
+The always-run collector revalidates clean actual source and the private manifest, matches at most one private owned window by exact hashes/framework/root, and refuses mismatched nonce/source, ambiguous ownership, symlinks, nonprivate files, unexpected filenames, malformed PNG headers, excessive dimensions or byte budgets. Only a newly created artifact directory becomes eligible after every input and copy succeeds. A failure never publishes a partial directory. No raw manifest, config, log, browser profile, environment, private path or process ledger is uploaded.
+
+Artifacts contain only a closed public summary and these six approved PNG names when available: `home-desktop.png`, `agent-review-desktop.png`, `terraform-held-desktop.png`, `product-mobile.png`, `product-reduced-motion-mobile.png`, `approval-documentation.png`. Retention is seven days. Failure before manifest creation, hard runner loss or job timeout can prevent collection; infrastructure teardown is not a successful owned cleanup receipt.
+
+`passed` requires a completed driver, unchanged source, owned groups proven empty, matching successful completion nonce, successful capture, and all six screenshots. That means isolated public website fixture acceptance only. It does not certify production login, payments, cloud execution, desktop installation or a real customer deployment. Screenshots still require visual review for presentation quality.
+
+Before first execution: root must independently review this source change and integrate it with the intended application commit. Normal authorized PR CI may then run it. Do not dispatch or deploy as part of this source review.

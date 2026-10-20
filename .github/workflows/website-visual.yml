@@ -1,0 +1,71 @@
+name: Isolated website acceptance
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+    paths:
+      - 'app/**'
+      - 'components/**'
+      - 'public/**'
+      - 'lib/**'
+      - 'scripts/**'
+      - 'desktop/**'
+      - 'package.json'
+      - 'package-lock.json'
+      - 'next.config.ts'
+      - 'tsconfig*.json'
+      - '.github/workflows/website-visual.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: website-visual-${{ github.event.pull_request.number }}
+  cancel-in-progress: false
+
+jobs:
+  isolated-website:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    container:
+      image: node:24.22.0-bookworm
+    env:
+      AXIOM_WEBSITE_CI_SOURCE_SHA: ${{ github.event.pull_request.head.sha }}
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+          fetch-depth: 1
+      - name: Install ephemeral browser dependency
+        run: |
+          apt-get update
+          apt-get install --no-install-recommends -y chromium ca-certificates git
+          test -x /usr/lib/chromium/chromium
+      - name: Install locked project dependencies without lifecycle hooks
+        run: npm ci --ignore-scripts
+      - name: Generate local Prisma client only
+        run: node node_modules/prisma/build/index.js generate --schema prisma/schema.prisma
+      - name: Prepare fresh source and runtime manifest
+        run: node scripts/run-owned-website-visual.mjs --prepare /tmp/axiom-website-review-ci.json
+      - name: Bind review to immutable PR head
+        id: review
+        run: node scripts/owned-website-ci.mjs review
+      - name: Run existing bounded owned fixture
+        env:
+          AXIOM_WEBSITE_MANIFEST_SHA256: ${{ steps.review.outputs.digest }}
+        run: node scripts/run-owned-website-visual.mjs --execute-reviewed /tmp/axiom-website-review-ci.json "$AXIOM_WEBSITE_MANIFEST_SHA256"
+      - name: Collect only sanitized receipts and approved PNGs
+        id: collect
+        if: always()
+        run: node scripts/owned-website-ci.mjs collect
+      - name: Retain sanitized acceptance evidence
+        if: ${{ always() && steps.collect.outputs.ready == 'true' }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: website-visual-${{ github.event.pull_request.head.sha }}
+          path: |
+            ${{ runner.temp }}/axiom-website-public/summary.json
+            ${{ runner.temp }}/axiom-website-public/screenshots/*.png
+          if-no-files-found: error
+          retention-days: 7
