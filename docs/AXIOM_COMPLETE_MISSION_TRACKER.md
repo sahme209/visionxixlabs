@@ -3167,3 +3167,46 @@ Continued independent boundary hardening: receipt exit codes now match native i3
 range, and elapsed timing must be a nonnegative safe integer rather than merely
 finite. This rejects fractional/unsafe timing and impossible native exit values.
 All13 targeted receipt cases pass; no native or provider execution is implied.
+
+### Push-only snapshot proposal — frozen at4db11e37, awaiting owner approval
+
+Fresh read-only evidence: latest3 run IDs/status/attempts are unchanged PR193
+startup failures. No workflows dispatched or minutes spent by this investigation.
+Account usage remains unavailable through the connector; the previously observed
+CLI network block is reused, not repeatedly probed. Startup cause, current Actions
+allowance and any account spending authorization remain unverified. This proposal
+therefore does NOT authorize or attempt a CI checkpoint.
+
+Target: existing local `codex/desktop-agent-next-local`, new remote ref of exactly
+the same name. GitHub GET for that remote ref returns404; the current open PR
+inventory contains only193/192/191/187, with none on this branch. PR193 remains
+at a96367fc719dd6b94eebf3b812008cc659f7aaf5. Snapshot:
+`4db11e37775ff0f50646f85afabaa54f02ffd5ca`, containing21 commits beyond recorded
+main and11 beyond PR193. This includes all previously approved/preserved local
+milestones throughc6b94693/5b9775b0 plus4db11e37. Later local preparation work
+is excluded by using an explicit immutable SHA rather than HEAD.
+
+Proposed command, NOT executed:
+`git -c push.followTags=false push origin 4db11e37775ff0f50646f85afabaa54f02ffd5ca:refs/heads/codex/desktop-agent-next-local`
+No force, tags, main ref, PR creation/update, upstream changes or workflow dispatch.
+Immediately before any approved push, recheck remote branch absence and no PR for
+that branch; stop and re-evaluate if either changes. Local hooksPath/mirror/followTags/
+submodule-recursion configs are unset, no pre-push hook exists and no .gitmodules
+is tracked. No local pre-push test command is configured.
+
+All10 workflow definitions parsed read-only: Test/Desktop CI/auth-rehearsal push
+triggers match main only; desktop-release push trigger matches desktop-v* tags
+only; website acceptance is PR-only; auth preflight, DB migration and ECS workflows
+are manual-only; release-gate is workflow_call-only. Consequently this exact new
+branch push matches ZERO repository-defined workflows and creates no PR synchronize
+event. CI is expected not to start. A later new PR would start Test, Desktop CI
+Linux/macOS and website acceptance, and requires separate approval plus verified
+usage/startup readiness. No security gate is waived: the snapshot is unvalidated
+and unmergeable by our acceptance policy until required checks succeed.
+
+Vercel git.deploymentEnabled remainsfalse. This proves repository CI trigger
+behavior, not the absence of every possible external service integration. No PR
+or @vercel mention will be created to avoid the known paid review path. Hosted
+changes, paid operations and existing production/installer gates remain blocked.
+Rust compilation, process-tree/user cancellation, native Mac and real-provider
+acceptance remain unverified. No push-only approval has been received.
