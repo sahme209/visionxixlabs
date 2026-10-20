@@ -137,7 +137,8 @@ try {
       void send(allowed ? 'Fetch.continueRequest' : 'Fetch.failRequest', allowed ? { requestId: data.params.requestId } : { requestId: data.params.requestId, errorReason: 'BlockedByClient' }).catch(error => session.stop(error));
     }
     if (data.method === 'Runtime.exceptionThrown' && consoleErrors.length < 128) consoleErrors.push('runtime_exception');
-    if (data.method === 'Log.entryAdded' && data.params.entry.level === 'error' && consoleErrors.length < 128) consoleErrors.push(String(data.params.entry.source));
+    if (data.method === 'Runtime.consoleAPICalled' && data.params.type === 'error' && consoleErrors.length < 128) consoleErrors.push('console_error');
+    if (data.method === 'Log.entryAdded' && data.params.entry.level === 'error' && consoleErrors.length < 128) consoleErrors.push(['javascript', 'network', 'security'].includes(data.params.entry.source) ? data.params.entry.source : 'other');
   } });
   async function evaluate(fn, argument) { const result = await send('Runtime.evaluate', { expression: `(${fn})(${JSON.stringify(argument)})`, returnByValue: true, awaitPromise: true }); if (result.exceptionDetails) { const name = result.exceptionDetails.exception?.className; evaluationExceptionClass = ['TypeError', 'ReferenceError', 'SyntaxError', 'RangeError', 'Error'].includes(name) ? name : 'other'; } assert.ok(!result.exceptionDetails, 'website_browser_evaluation_failed'); return result.result.value; }
   /** @param {string} [preImagePhase] */
@@ -212,7 +213,7 @@ try {
   // The only post-stop writes are this single final evidence/nonce receipt. Parent waits
   // for this owned driver's positive exit before touching its profile/dist artifacts.
   if (config) {
-    const result = { success, failure, scriptRequests, timedOutOperation: session.report().timedOutOperation, preImageWait, evaluationExceptionClass, homeCapturePhase, runtimeExceptionCount: consoleErrors.filter(category => category === 'runtime_exception').length, bundler: 'webpack', productionEquivalent: false, evidence, images, deniedRequests: denied, consoleErrorCategories: consoleErrors, qualification: 'Actual local integrated Next pages; API requests denied; external fonts may fall back; screenshots require human inspection. No provider/native acceptance.' };
+    const result = { success, failure, scriptRequests, timedOutOperation: session.report().timedOutOperation, preImageWait, evaluationExceptionClass, homeCapturePhase, runtimeExceptionCount: consoleErrors.filter(category => category === 'runtime_exception').length, consoleErrorCount: consoleErrors.filter(category => category === 'console_error').length, bundler: 'webpack', productionEquivalent: false, evidence, images, deniedRequests: denied, consoleErrorCategories: consoleErrors, qualification: 'Actual local integrated Next pages; API requests denied; external fonts may fall back; screenshots require human inspection. No provider/native acceptance.' };
     writeFileSync(join(directory, 'capture.json'), JSON.stringify(result, null, 2), { mode: 0o600 });
     writeFileSync(join(directory, 'done.json'), JSON.stringify({ success, nonce: config.nonce }), { mode: 0o600 });
     process.stdout.write(`${join(directory, 'capture.json')}\n`);

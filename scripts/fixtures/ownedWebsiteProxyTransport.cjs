@@ -17,17 +17,18 @@ function createProxyTransport({ origin, appPort, assets, request, isStopping = (
     catch { onEvent('socket_write_error'); destroy(socket); }
   }
   function handle(req, res) {
-    let closed = false, upstream, response, script = false, scriptComplete = false;
+    let closed = false, upstream, response, script = false, scriptComplete = false, scriptCategory = 'other', successfulJavaScript = false;
+    const scriptEvent = name => { if (script) onEvent(`script_${scriptCategory}_${name}`); };
     function cancel() {
       if (closed) return; closed = true; onEvent('request_cancelled');
-      if (script) onEvent('script_cancelled');
+      if (script) { onEvent('script_cancelled'); if (!scriptComplete) { scriptEvent('cancelled'); scriptEvent(successfulJavaScript ? 'cancelled_successful_js' : 'cancelled_other'); } }
       for (const stream of [upstream, response, req, res]) destroy(stream);
     }
     for (const stream of [req, res]) stream.on('error', cancel);
     req.on('aborted', cancel);
     req.on('close', () => { if (req.aborted || !req.complete) cancel(); });
     res.on('close', () => { if (!res.writableEnded) cancel(); });
-    res.on('finish', () => { if (script && !closed && !scriptComplete) { scriptComplete = true; onEvent('script_complete'); } });
+    res.on('finish', () => { if (script && !closed && !scriptComplete) { scriptComplete = true; onEvent('script_complete'); scriptEvent('complete'); } });
     let url;
     try { url = new URL(req.url); } catch { /* denied below */ }
     if (isStopping() || !url || url.origin !== origin || url.username || url.password || url.hash || !allowedRequest({ method: req.method, raw: `${url.pathname}${url.search}`, origin, assets })) {
@@ -38,10 +39,20 @@ function createProxyTransport({ origin, appPort, assets, request, isStopping = (
     try {
       if (closed || req.destroyed || res.destroyed) { cancel(); return; }
       script = url.pathname.startsWith('/_next/static/') && url.pathname.endsWith('.js');
-      if (script) onEvent('script_accepted');
+      if (script) {
+        scriptCategory = ({ '/_next/static/chunks/webpack.js': 'webpack', '/_next/static/chunks/main-app.js': 'main_app', '/_next/static/chunks/app/page.js': 'app_page', '/_next/static/chunks/app/layout.js': 'app_layout' })[url.pathname] ?? 'other';
+        onEvent('script_accepted'); scriptEvent('accepted');
+      }
       upstream = request({ hostname: '127.0.0.1', port: appPort, path: `${url.pathname}${url.search}`, method: req.method, agent: false, headers: { host: `127.0.0.1:${appPort}`, accept: req.headers.accept ?? '*/*', ...(req.headers.rsc === '1' ? { rsc: '1' } : {}) } }, reply => {
         response = reply;
-        if (script) onEvent('script_response');
+        if (script) {
+          onEvent('script_response'); scriptEvent('response');
+          const statusClass = Number.isInteger(reply.statusCode) && reply.statusCode >= 200 && reply.statusCode <= 599 ? `${Math.floor(reply.statusCode / 100)}xx` : 'other';
+          const contentType = reply.headers?.['content-type'];
+          const javascript = typeof contentType === 'string' && ['application/javascript', 'text/javascript', 'application/ecmascript', 'text/ecmascript'].includes(contentType.split(';')[0].trim().toLowerCase());
+          successfulJavaScript = statusClass === '2xx' && javascript;
+          scriptEvent(`status_${statusClass}`); scriptEvent(javascript ? 'mime_js' : 'mime_other');
+        }
         reply.on('error', cancel); reply.on('aborted', cancel);
         reply.on('close', () => { if (!reply.complete) cancel(); });
         if (closed || res.destroyed) { destroy(reply); return; }

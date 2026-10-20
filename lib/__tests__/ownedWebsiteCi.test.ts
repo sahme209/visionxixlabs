@@ -64,7 +64,7 @@ it('exports only closed proxy counters bound to an exited registered proxy and m
   const result = { children: [{ role: 'proxy', pid: 42, owner: { pid: 42 }, exited: true }], proxyReceipt: { pid: 42, nonce: 'n' } };
   const proxy = { pid: 42, nonce: 'n', stage: 'stopped', productionEquivalent: false, counts: { script_accepted: 6, script_response: 4, script_complete: 3, privateUrl: 'PRIVATE' }, privatePath: 'PRIVATE' };
   const summary = publicProxyDelivery(proxy, result, 'n');
-  expect(summary).toEqual({ stage: 'stopped', counts: { script_accepted: 6, script_response: 4, script_complete: 3, script_cancelled: 0, script_upstream_timeout: 0, upstream_timeout: 0 } });
+  expect(summary).toMatchObject({ stage: 'stopped', counts: { script_accepted: 6, script_response: 4, script_complete: 3, script_cancelled: 0, script_upstream_timeout: 0, upstream_timeout: 0 } });
   expect(JSON.stringify(summary)).not.toContain('PRIVATE');
   expect(publicProxyDelivery({ ...proxy, nonce: 'wrong' }, result, 'n')).toBeNull();
   expect(publicProxyDelivery(proxy, { ...result, children: [{ ...result.children[0], exited: false }] }, 'n')).toBeNull();
@@ -79,6 +79,17 @@ it('publishes exactly three boolean bootstrap markers without payload or unknown
   for (const value of [{ ...markers, payload: 'PRIVATE' }, { ...markers, bootstrapRegistered: 'PRIVATE' }, Object.create(markers)]) expect(publicNextMarkers(value)).toBeNull();
   let reads = 0; const accessor = { ...markers }; Object.defineProperty(accessor, 'bootstrapRegistered', { enumerable: true, get() { reads++; return 'PRIVATE'; } });
   expect(publicNextMarkers(accessor)).toBeNull(); expect(reads).toBe(0);
+});
+
+it('keeps chunk categories, response classes and cancellation success closed and bounded', () => {
+  const result = { children: [{ role: 'proxy', pid: 42, owner: { pid: 42 }, exited: true }], proxyReceipt: { pid: 42, nonce: 'n' } };
+  const proxy = { pid: 42, nonce: 'n', stage: 'stopped', productionEquivalent: false, counts: { script_main_app_accepted: 1, script_main_app_response: 1, script_main_app_status_2xx: 1, script_main_app_mime_js: 1, script_main_app_cancelled: 1, script_main_app_cancelled_successful_js: 1, script_PRIVATE_accepted: 'PRIVATE' } };
+  const summary = publicProxyDelivery(proxy, result, 'n');
+  expect(summary?.categories.main_app).toMatchObject({ accepted: 1, response: 1, complete: 0, cancelled: 1, status_2xx: 1, mime_js: 1, cancelled_successful_js: 1 });
+  expect(summary?.counts.upstream_timeout).toBe(0); expect(JSON.stringify(summary)).not.toContain('PRIVATE');
+  expect(publicProxyDelivery({ ...proxy, counts: { script_main_app_accepted: 1000001 } }, result, 'n')).toBeNull();
+  expect(publicSummary(sha, { sourceHead: sha }, { consoleErrorCount: 128 }, undefined, undefined).consoleErrorCount).toBe(128);
+  expect(publicSummary(sha, { sourceHead: sha }, { consoleErrorCount: 'PRIVATE' }, undefined, undefined).consoleErrorCount).toBeNull();
 });
 
 it('reads proxy delivery only through private receipt validation during collection', () => {

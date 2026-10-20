@@ -14,6 +14,17 @@ if (start < 0 || end < start) throw Error("website_interception_callback_missing
 // actual callback body and actual channel with in-process synthetic messages.
 const callback = source.slice(start + "onEvent: ".length, end + 4);
 const origin = "http://127.0.0.1:38001";
+it("counts console errors without reading arguments and maps Log sources to closed categories", () => {
+  const state = vm.compileFunction(`const consoleErrors = []; return { callback: ${callback}, categories: consoleErrors };`, [])();
+  let reads = 0;
+  const params = Object.defineProperty({ type: 'error' }, 'args', { get() { reads++; throw Error('PRIVATE'); } });
+  state.callback({ method: 'Runtime.consoleAPICalled', params }, () => {});
+  state.callback({ method: 'Runtime.consoleAPICalled', params: { type: 'log', args: ['PRIVATE'] } }, () => {});
+  state.callback({ method: 'Log.entryAdded', params: { entry: { level: 'error', source: 'PRIVATE', text: 'PRIVATE' } } }, () => {});
+  expect(state.categories).toEqual(['console_error', 'other']); expect(reads).toBe(0);
+  for (let i = 0; i < 150; i++) state.callback({ method: 'Runtime.consoleAPICalled', params }, () => {});
+  expect(state.categories).toHaveLength(128); expect(JSON.stringify(state.categories)).not.toContain('PRIVATE');
+});
 type Command = { id: number; method: string; params: Record<string, unknown> };
 const sessions: Array<{ stop: () => void }> = [];
 afterEach(() => { for (const session of sessions.splice(0)) session.stop(); vi.useRealTimers(); });

@@ -73,18 +73,21 @@ it("counts accepted static JavaScript delivery without persisting request identi
   const f = fixture(); f.req.url = 'http://127.0.0.1:38001/_next/static/chunks/main-app.js?v=private';
   f.handler.request(f.req, f.res); const response = Object.assign(new Stream(), { statusCode: 200, headers: {} }); f.reply(response);
   f.res.writableEnded = true; f.res.emit('finish'); f.res.emit('finish'); f.res.emit('close');
-  expect(f.events).toEqual(['script_accepted', 'script_response', 'script_complete']);
+  expect(f.events.filter(event => !event.startsWith('script_main_app_'))).toEqual(['script_accepted', 'script_response', 'script_complete']);
   expect(JSON.stringify(f.events)).not.toContain('private');
   expect(f.upstream.setTimeout.mock.calls[0][0]).toBe(30000);
+  f.res.emit('error', Error('late-error'));
+  expect(f.events).toContain('script_cancelled'); // Existing cancellation behavior is unchanged.
+  expect(f.events).not.toContain('script_main_app_cancelled'); // Completed delivery is not an incomplete chunk.
 });
 
 it("counts upstream timeout and cancellation once and distinguishes it from reset", () => {
   const f = fixture(); f.req.url = 'http://127.0.0.1:38001/_next/static/chunks/main-app.js'; f.handler.request(f.req, f.res);
   const timeout = f.upstream.setTimeout.mock.calls[0][1] as () => void; timeout(); timeout(); f.req.emit('error', Error('private'));
-  expect(f.events).toEqual(['script_accepted', 'upstream_timeout', 'script_upstream_timeout', 'request_cancelled', 'script_cancelled']);
+  expect(f.events.filter(event => !event.startsWith('script_main_app_'))).toEqual(['script_accepted', 'upstream_timeout', 'script_upstream_timeout', 'request_cancelled', 'script_cancelled']);
   expect(f.upstream.destroy).toHaveBeenCalledOnce();
   const g = fixture(); g.req.url = f.req.url; g.handler.request(g.req, g.res); g.req.emit('aborted');
-  expect(g.events).toEqual(['script_accepted', 'request_cancelled', 'script_cancelled']);
+  expect(g.events.filter(event => !event.startsWith('script_main_app_'))).toEqual(['script_accepted', 'request_cancelled', 'script_cancelled']);
 });
 
 it("does not classify CSS, pages or denied scripts as accepted JavaScript", () => {
@@ -92,4 +95,21 @@ it("does not classify CSS, pages or denied scripts as accepted JavaScript", () =
     const f = fixture(); f.req.url = `http://127.0.0.1:38001${path}`; f.handler.request(f.req, f.res);
     expect(f.events).not.toContain('script_accepted');
   }
+});
+
+it.each([['webpack.js', 'webpack'], ['main-app.js', 'main_app'], ['app/page.js', 'app_page'], ['app/layout.js', 'app_layout'], ['private-name.js', 'other']])('classifies only fixed chunk shape %s without retaining its name', (path, category) => {
+  const f = fixture(); f.req.url = `http://127.0.0.1:38001/_next/static/chunks/${path}?v=PRIVATE`; f.handler.request(f.req, f.res);
+  const response = Object.assign(new Stream(), { statusCode: 200, headers: { 'content-type': 'text/javascript; charset=utf-8' } }); f.reply(response);
+  f.res.emit('error', Error('PRIVATE')); f.res.emit('error', Error('PRIVATE'));
+  expect(f.events).toContain(`script_${category}_accepted`); expect(f.events).toContain(`script_${category}_response`);
+  expect(f.events).toContain(`script_${category}_status_2xx`); expect(f.events).toContain(`script_${category}_mime_js`);
+  expect(f.events.filter(value => value === `script_${category}_cancelled_successful_js`)).toHaveLength(1);
+  expect(f.events).not.toContain(`script_${category}_complete`); expect(JSON.stringify(f.events)).not.toMatch(/PRIVATE|private-name/);
+});
+
+it.each([[302, 'text/html', '3xx'], [404, 'text/html', '4xx'], [500, 'application/json', '5xx'], [undefined, undefined, 'other']])('classifies non-success response %s using closed values', (statusCode, contentType, statusClass) => {
+  const f = fixture(); f.req.url = 'http://127.0.0.1:38001/_next/static/chunks/main-app.js'; f.handler.request(f.req, f.res);
+  f.reply(Object.assign(new Stream(), { statusCode, headers: { 'content-type': contentType } })); f.req.emit('aborted');
+  expect(f.events).toContain(`script_main_app_status_${statusClass}`); expect(f.events).toContain('script_main_app_mime_other');
+  expect(f.events).toContain('script_main_app_cancelled_other'); expect(f.events).not.toContain('script_main_app_cancelled_successful_js');
 });
