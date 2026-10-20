@@ -6,7 +6,7 @@ const mocks = vi.hoisted(() => ({ switchAccount: "1", callback: "/desktop/connec
 vi.mock("next/navigation", () => ({ useRouter: () => ({ push: mocks.push, refresh: vi.fn() }), useSearchParams: () => new URLSearchParams({ switchAccount: mocks.switchAccount, callbackUrl: mocks.callback }) }));
 vi.mock("next-auth/react", () => ({ signIn: mocks.signIn, getProviders: async () => ({ google: {}, github: {} }) }));
 vi.mock("next/image", () => ({ default: "img" }));
-import SignInPage from "../page";
+import SignInPage from "../AuthFormClient";
 beforeEach(() => { vi.clearAllMocks(); mocks.switchAccount = "1"; mocks.callback = "/desktop/connect?challenge=pair_123&intent=sign_in"; });
 afterEach(() => cleanup());
 it("requests Google account selection only for the explicit switching flow", async () => {

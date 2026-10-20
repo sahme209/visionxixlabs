@@ -1,0 +1,69 @@
+{
+  "baselineMain": "0099adfab5ccc22342f1637c1eaeea8e1cd50ac2",
+  "date": "2026-10-20",
+  "sourceSha256": {
+    "app/api/auth/[...nextauth]/route.ts": "89985549d497e6104dddb109aa16ff2112527dd98ed1eb2d1b3cc25e654675c4",
+    "app/auth/signin/__tests__/accountSwitchProviders.test.ts": "12f82509f83e102d1f916dcb77565c3c6bf34b5d11d79f7b3b0d42752bc0e680",
+    "app/auth/signin/__tests__/verifiedConfirmation.test.ts": "e755aa8b243e5ad2fcdd006802011ba6335e7e17f00c2b20470fd78711a33f95",
+    "app/auth/signin/page.tsx": "db3cc1f97a2c2c23e32c33004c3c08171d1970298edbd994dcfad44604ef47d3",
+    "app/auth/signup/__tests__/verificationHandoff.test.ts": "a77ff830e03bcf31489ba344cd4b5d9f159cfd3ea67c1a25b356dd13b26fb906",
+    "app/auth/signup/page.tsx": "7f4d08bb06dc59c01f55e7ec6f915acb9edd73681205de10908213fd3be016c1",
+    "lib/__tests__/authLoginRecovery.test.ts": "9f9ad4bb2ce1b2aeb5787473e3379719f57a7006a59e916ec62bc87e2d42f824",
+    "lib/__tests__/desktopFirstRunContract.test.ts": "22ec76b1d9794a0f79a5460af856e3483218480feba7840a26a3cf8ed3c6c4fc",
+    "lib/auth.ts": "e1bc7aa3b9143459e6c3e6d41cbedf3ce69d71d1a7303645d0d30202c3c2fe91",
+    "scripts/axiom-mission-tracker.py": "965ebd07e362ff0f9e93d100bee42a8d1030dc76eedc6f8aa8450cf64ad42c1f",
+    "app/api/auth/[...nextauth]/__tests__/canonicalOrigin.test.ts": "3d2cb7dba3a0d24cd8d2ffbc8783f3e3618cbfd5b541d9db27cc45debcb5d526",
+    "app/auth/signin/AuthFormClient.tsx": "8bb1c453b8c178e4a2ea8c7223d635c1189c5f95ef420211cfaaa34f061bc9d5",
+    "app/auth/signup/AuthFormClient.tsx": "b076827097517d3c0ea36db053e1692a0a0b7030d484ecb9e781e50a7257b066",
+    "lib/auth/__tests__/canonicalAuthOrigin.test.ts": "f857b6576fea4672a2af51065aea98ade159a1906c802f77f943742e23345799",
+    "lib/auth/__tests__/canonicalAuthPage.test.ts": "df47744916f52b941492abde44497d4996f6e84537ae28072358e6c7ca59e221",
+    "lib/auth/canonicalAuthOrigin.ts": "1d494874578894f781f155d79c3d5209ae92c7242b7fb523bd7c6bb9c3eb754b",
+    "lib/auth/canonicalAuthPage.ts": "3d6e9b1eb8e37ee9cd1ce6db5c2514a744ba9c9d676673263544da11f2dad75f",
+    "scripts/rehearse-oauth-user-projection.mjs": "1bd73bd599326b2d955fd08e06dd86d02c1e6568c9200a4870e1b97d80be2219"
+  },
+  "gates": {
+    "defaultNative": {
+      "sha256": "08eb2fd78ed65d75ce46496650da667b644d63f3bcea6c77709740306d3c980d",
+      "bytes": 48882,
+      "exit": 0
+    },
+    "webTypes": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "exit": 0
+    },
+    "desktopFrontend": {
+      "sha256": "07d9222f04e2ffc538d4057f528413a63ce9b66f89a2f9dd3d05f5dc5e9daa93",
+      "bytes": 1526,
+      "exit": 0
+    },
+    "pythonCli": {
+      "sha256": "47815cb2c67887f1c5e86402536c52e830264406707939d0b18a8f9a4fe318ec",
+      "bytes": 1104,
+      "exit": 0
+    },
+    "scopedLint": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "exit": 0
+    },
+    "vercelBuildGuard": {
+      "sha256": "c14444c23a9aabbbcc3d975d3788080d47288101d53e6286ecfb3413f8cdcd14",
+      "bytes": 185,
+      "exit": 0
+    }
+  },
+  "defaultTests": {
+    "passed": 8119,
+    "filesPassed": 723,
+    "skippedOptIn": 28,
+    "filesSkipped": 1
+  },
+  "priorFailure": "Sandbox default run: 58 failed, 8025 passed, 62 skipped,29 unhandled errors; native subprocess/listener denials plus two moved-source contract paths. Preserved privately; corrected paths and native rerun passed.",
+  "qualifications": [
+    "Reused installed dependency caches; not a fresh dependency installation.",
+    "Actual local Prisma regression is separate from browser/NextAuth/production acceptance.",
+    "No production deployment, database changes, migration, billing changes or installer publication.",
+    "Production login and founder workspace acceptance remain unverified."
+  ]
+}

@@ -73,7 +73,7 @@ def render(data):
     out += [f"| {state} | {counts[state]} |" for state in sorted(STATES)]
     out += ["", "Process, historical proposals, source gaps and product acceptance rows are distinct in JSON. "
             "Do not interpret this distribution as a product completion percentage.", ""]
-    out += ["## Active product workstreams", "", "Dependencies below gate customer acceptance, not independent engineering. Core engineering streams remain active; support/partnerships is deferred pending capacity and founder approval. Major visual redesign is deferred.", "", "| Workstream | Engineering / customer acceptance | Verified evidence scope | Acceptance dependencies / blockers | Next action |", "| --- | --- | --- | --- | --- |"]
+    out += ["## Active product workstreams", "", "Dependencies below gate customer acceptance, not independent engineering. Core engineering streams remain active; support/partnerships is deferred pending capacity and founder approval. The October 20 refinement schedules website redesign after priority-0 authentication; other acceptance gates remain intact.", "", "| Workstream | Engineering / customer acceptance | Verified evidence scope | Acceptance dependencies / blockers | Next action |", "| --- | --- | --- | --- | --- |"]
     for stream in data.get("workstreams", []):
         evidence = "; ".join(f"[{p}](../{p})" for p in stream["evidence"])
         cells = [stream["name"], stream["engineeringActivity"] + " / " + stream["customerAcceptance"], stream["verification"] + " " + evidence, ", ".join(stream["acceptanceDependencies"]) + ": " + stream["blockers"], stream["nextAction"]]

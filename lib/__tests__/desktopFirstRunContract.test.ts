@@ -47,7 +47,7 @@ describe("desktop first-run contract", () => {
 
   it("binds account creation to a live desktop request without granting a free plan", () => {
     const signupRoute = readFileSync(join(root, "app/api/auth/signup/route.ts"), "utf8");
-    const signupPage = readFileSync(join(root, "app/auth/signup/page.tsx"), "utf8");
+    const signupPage = readFileSync(join(root, "app/auth/signup/AuthFormClient.tsx"), "utf8");
     expect(signupRoute).toContain("desktopPairingChallengeRecord.findUnique");
     expect(signupRoute).toContain("acceptedTerms !== true");
     expect(signupRoute).toContain("password.length < 12");
@@ -116,7 +116,7 @@ describe("desktop first-run contract", () => {
   });
 
   it("shows account providers only when the identity service actually configures them", () => {
-    const signupPage = readFileSync(join(root, "app/auth/signup/page.tsx"), "utf8");
+    const signupPage = readFileSync(join(root, "app/auth/signup/AuthFormClient.tsx"), "utf8");
     expect(signupPage).toContain("getProviders()");
     expect(signupPage).toContain("enabledProviders.google");
     expect(signupPage).toContain("enabledProviders.github");

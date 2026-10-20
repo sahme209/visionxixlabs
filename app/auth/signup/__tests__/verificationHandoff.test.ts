@@ -6,7 +6,7 @@ const mocks = vi.hoisted(() => ({ push: vi.fn(), refresh: vi.fn(), signIn: vi.fn
 vi.mock("next/navigation", () => ({ useRouter: () => ({ push: mocks.push, refresh: mocks.refresh }), useSearchParams: () => new URLSearchParams({ redirect: mocks.redirect }) }));
 vi.mock("next-auth/react", () => ({ signIn: mocks.signIn, getProviders: async () => ({}) }));
 vi.mock("next/image", () => ({ default: "img" }));
-import SignUpPage from "../page";
+import SignUpPage from "../AuthFormClient";
 beforeEach(() => { vi.clearAllMocks(); mocks.redirect = "/desktop/connect?challenge=pairing-123"; });
 afterEach(() => { cleanup(); vi.unstubAllGlobals(); });
 async function submit() {

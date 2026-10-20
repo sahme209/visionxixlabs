@@ -6,7 +6,7 @@ const mocks = vi.hoisted(() => ({ verified: "1", signIn: vi.fn(), push: vi.fn() 
 vi.mock("next/navigation", () => ({ useRouter: () => ({ push: mocks.push, refresh: vi.fn() }), useSearchParams: () => new URLSearchParams({ verified: mocks.verified, callbackUrl: "/desktop/connect?challenge=pair_123" }) }));
 vi.mock("next-auth/react", () => ({ signIn: mocks.signIn, getProviders: async () => ({}) }));
 vi.mock("next/image", () => ({ default: "img" }));
-import SignInPage from "../page";
+import SignInPage from "../AuthFormClient";
 afterEach(() => { cleanup(); vi.clearAllMocks(); });
 it("explains verification is separate from authentication and pairing consent", async () => {
   mocks.verified = "1";

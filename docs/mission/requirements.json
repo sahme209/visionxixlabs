@@ -68,6 +68,9 @@
     },
     {
       "path": "docs/AXIOM_TEST_CREDIT_POLICY_DECISIONS.md"
+    },
+    {
+      "path": "docs/AXIOM_PRIORITY_REFINEMENT_2026-10-20.md"
     }
   ],
   "requirements": [
@@ -49300,6 +49303,1428 @@
       "nextAction": "Build and independently review bounded owned acceptance fixtures, then verify actual SQL parsing, row locks, rollback, unknown holds, allocation conservation and application rendering before publication. No live activation or legacy migration.",
       "owner": "Codex; founder approves separately gated production and Azure sandbox operations",
       "auditDepth": "Exact additive source mapped; application-specific acceptance pending"
+    },
+    {
+      "id": "R23-001",
+      "source": "docs/AXIOM_PRIORITY_REFINEMENT_2026-10-20.md",
+      "line": 3,
+      "section": "Axiom Agent — Master Plan Continuation & Priority Refinement",
+      "requirement": "Continue the existing Axiom Agent master plan exactly where you left off; do not restart, change priorities outside the refinements below, or deviate. Preserve the existing execution order, mission tracker, completed work, security boundaries, tests, and ongoing engineering streams.",
+      "domain": "product",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "New priority refinement represented; existing foundations do not establish individual deployed/native acceptance. Implementation and acceptance remain subject to the refined priority order after authentication.",
+      "evidence": [
+        "docs/AUTH_ORIGIN_RECOVERY_2026-10-20.md"
+      ],
+      "prs": [],
+      "nextAction": "Audit existing implementation against this requirement after priority-0 authentication; implement only uncovered work and retain approval gates.",
+      "owner": "Codex; external acceptance/approvals remain founder-owned",
+      "auditDepth": "New refinement represented; individual end-to-end acceptance pending"
+    },
+    {
+      "id": "R23-002",
+      "source": "docs/AXIOM_PRIORITY_REFINEMENT_2026-10-20.md",
+      "line": 5,
+      "section": "Axiom Agent — Master Plan Continuation & Priority Refinement / This is a priority refinement, not a new project. Continue implementing and testing real working functionality, not just producing plans or status reports.",
+      "requirement": "**This is a priority refinement, not a new project. Continue implementing and testing real working functionality, not just producing plans or status reports.**",
+      "domain": "product",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "New priority refinement represented; existing foundations do not establish individual deployed/native acceptance. Implementation and acceptance remain subject to the refined priority order after authentication.",
+      "evidence": [
+        "docs/AUTH_ORIGIN_RECOVERY_2026-10-20.md"
+      ],
+      "prs": [],
+      "nextAction": "Audit existing implementation against this requirement after priority-0 authentication; implement only uncovered work and retain approval gates.",
+      "owner": "Codex; external acceptance/approvals remain founder-owned",
+      "auditDepth": "New refinement represented; individual end-to-end acceptance pending"
+    },
+    {
+      "id": "R23-003",
+      "source": "docs/AXIOM_PRIORITY_REFINEMENT_2026-10-20.md",
+      "line": 9,
+      "section": "Priority 0 — Fix website login and access denied / This is the immediate blocker. Investigate and fix it before starting new feature development.",
+      "requirement": "**This is the immediate blocker. Investigate and fix it before starting new feature development.**",
+      "domain": "security",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "New priority refinement represented; existing foundations do not establish individual deployed/native acceptance. Fresh Google retry confirms preview-to-production state-cookie loss; source correction under validation.",
+      "evidence": [
+        "docs/AUTH_ORIGIN_RECOVERY_2026-10-20.md"
+      ],
+      "prs": [],
+      "nextAction": "Verify canonical-host OAuth, then separately resolve approved database recovery and actual founder access.",
+      "owner": "Codex; external acceptance/approvals remain founder-owned",
+      "auditDepth": "New refinement represented; individual end-to-end acceptance pending"
+    },
+    {
+      "id": "R23-004",
+      "source": "docs/AXIOM_PRIORITY_REFINEMENT_2026-10-20.md",
+      "line": 11,
+      "section": "Priority 0 — Fix website login and access denied / This is the immediate blocker. Investigate and fix it before starting new feature development.",
+      "requirement": "Website authentication worked approximately 2–3 weeks ago but now returns \"Access denied.\"",
+      "domain": "security",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "New priority refinement represented; existing foundations do not establish individual deployed/native acceptance. Fresh Google retry confirms preview-to-production state-cookie loss; source correction under validation.",
+      "evidence": [
+        "docs/AUTH_ORIGIN_RECOVERY_2026-10-20.md"
+      ],
+      "prs": [],
+      "nextAction": "Verify canonical-host OAuth, then separately resolve approved database recovery and actual founder access.",
+      "owner": "Codex; external acceptance/approvals remain founder-owned",
+      "auditDepth": "New refinement represented; individual end-to-end acceptance pending"
+    },
+    {
+      "id": "R23-005",
+      "source": "docs/AXIOM_PRIORITY_REFINEMENT_2026-10-20.md",
+      "line": 13,
+      "section": "Priority 0 — Fix website login and access denied / This is the immediate blocker. Investigate and fix it before starting new feature development.",
+      "requirement": "1. Reproduce the failure using the actual deployed website and current authentication flow.",
+      "domain": "security",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "New priority refinement represented; existing foundations do not establish individual deployed/native acceptance. Fresh Google retry confirms preview-to-production state-cookie loss; source correction under validation.",
+      "evidence": [
+        "docs/AUTH_ORIGIN_RECOVERY_2026-10-20.md"
+      ],
+      "prs": [],
+      "nextAction": "Verify canonical-host OAuth, then separately resolve approved database recovery and actual founder access.",
+      "owner": "Codex; external acceptance/approvals remain founder-owned",
+      "auditDepth": "New refinement represented; individual end-to-end acceptance pending"
+    },
+    {
+      "id": "R23-006",
+      "source": "docs/AXIOM_PRIORITY_REFINEMENT_2026-10-20.md",
+      "line": 14,
+      "section": "Priority 0 — Fix website login and access denied / This is the immediate blocker. Investigate and fix it before starting new feature development.",
+      "requirement": "2. Trace the entire authentication chain: identity provider, OAuth callbacks, redirect URLs, cookies, sessions, middleware, environment variables, domain configuration, deployment settings, database access, and authorization policies.",
+      "domain": "security",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "New priority refinement represented; existing foundations do not establish individual deployed/native acceptance. Fresh Google retry confirms preview-to-production state-cookie loss; source correction under validation.",
+      "evidence": [
+        "docs/AUTH_ORIGIN_RECOVERY_2026-10-20.md"
+      ],
+      "prs": [],
+      "nextAction": "Verify canonical-host OAuth, then separately resolve approved database recovery and actual founder access.",
+      "owner": "Codex; external acceptance/approvals remain founder-owned",
+      "auditDepth": "New refinement represented; individual end-to-end acceptance pending"
+    },
+    {
+      "id": "R23-007",
+      "source": "docs/AXIOM_PRIORITY_REFINEMENT_2026-10-20.md",
+      "line": 15,
+      "section": "Priority 0 — Fix website login and access denied / This is the immediate blocker. Investigate and fix it before starting new feature development.",
+      "requirement": "3. Compare the last known working authentication configuration with the current implementation using Git history and deployment evidence.",
+      "domain": "security",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "New priority refinement represented; existing foundations do not establish individual deployed/native acceptance. Fresh Google retry confirms preview-to-production state-cookie loss; source correction under validation.",
+      "evidence": [
+        "docs/AUTH_ORIGIN_RECOVERY_2026-10-20.md"
+      ],
+      "prs": [],
+      "nextAction": "Verify canonical-host OAuth, then separately resolve approved database recovery and actual founder access.",
+      "owner": "Codex; external acceptance/approvals remain founder-owned",
+      "auditDepth": "New refinement represented; individual end-to-end acceptance pending"
+    },
+    {
+      "id": "R23-008",
+      "source": "docs/AXIOM_PRIORITY_REFINEMENT_2026-10-20.md",
+      "line": 16,
+      "section": "Priority 0 — Fix website login and access denied / This is the immediate blocker. Investigate and fix it before starting new feature development.",
+      "requirement": "4. Identify the actual root cause. Do not simply suppress the error or bypass authentication.",
+      "domain": "security",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "New priority refinement represented; existing foundations do not establish individual deployed/native acceptance. Fresh Google retry confirms preview-to-production state-cookie loss; source correction under validation.",
+      "evidence": [
+        "docs/AUTH_ORIGIN_RECOVERY_2026-10-20.md"
+      ],
+      "prs": [],
+      "nextAction": "Verify canonical-host OAuth, then separately resolve approved database recovery and actual founder access.",
+      "owner": "Codex; external acceptance/approvals remain founder-owned",
+      "auditDepth": "New refinement represented; individual end-to-end acceptance pending"
+    },
+    {
+      "id": "R23-009",
+      "source": "docs/AXIOM_PRIORITY_REFINEMENT_2026-10-20.md",
+      "line": 17,
+      "section": "Priority 0 — Fix website login and access denied / This is the immediate blocker. Investigate and fix it before starting new feature development.",
+      "requirement": "5. Restore secure sign-in and correct post-login navigation to the **latest polished Axiom cockpit**, not the older unfinished interface.",
+      "domain": "security",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "New priority refinement represented; existing foundations do not establish individual deployed/native acceptance. Fresh Google retry confirms preview-to-production state-cookie loss; source correction under validation.",
+      "evidence": [
+        "docs/AUTH_ORIGIN_RECOVERY_2026-10-20.md"
+      ],
+      "prs": [],
+      "nextAction": "Verify canonical-host OAuth, then separately resolve approved database recovery and actual founder access.",
+      "owner": "Codex; external acceptance/approvals remain founder-owned",
+      "auditDepth": "New refinement represented; individual end-to-end acceptance pending"
+    },
+    {
+      "id": "R23-010",
+      "source": "docs/AXIOM_PRIORITY_REFINEMENT_2026-10-20.md",
+      "line": 18,
+      "section": "Priority 0 — Fix website login and access denied / This is the immediate blocker. Investigate and fix it before starting new feature development.",
+      "requirement": "6. Verify the website, desktop sign-in, session persistence, logout, and authorization boundaries wherever applicable.",
+      "domain": "security",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "New priority refinement represented; existing foundations do not establish individual deployed/native acceptance. Fresh Google retry confirms preview-to-production state-cookie loss; source correction under validation.",
+      "evidence": [
+        "docs/AUTH_ORIGIN_RECOVERY_2026-10-20.md"
+      ],
+      "prs": [],
+      "nextAction": "Verify canonical-host OAuth, then separately resolve approved database recovery and actual founder access.",
+      "owner": "Codex; external acceptance/approvals remain founder-owned",
+      "auditDepth": "New refinement represented; individual end-to-end acceptance pending"
+    },
+    {
+      "id": "R23-011",
+      "source": "docs/AXIOM_PRIORITY_REFINEMENT_2026-10-20.md",
+      "line": 19,
+      "section": "Priority 0 — Fix website login and access denied / This is the immediate blocker. Investigate and fix it before starting new feature development.",
+      "requirement": "7. Test authenticated and unauthenticated users, expired sessions, denied permissions, and recovery behavior.",
+      "domain": "security",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "New priority refinement represented; existing foundations do not establish individual deployed/native acceptance. Fresh Google retry confirms preview-to-production state-cookie loss; source correction under validation.",
+      "evidence": [
+        "docs/AUTH_ORIGIN_RECOVERY_2026-10-20.md"
+      ],
+      "prs": [],
+      "nextAction": "Verify canonical-host OAuth, then separately resolve approved database recovery and actual founder access.",
+      "owner": "Codex; external acceptance/approvals remain founder-owned",
+      "auditDepth": "New refinement represented; individual end-to-end acceptance pending"
+    },
+    {
+      "id": "R23-012",
+      "source": "docs/AXIOM_PRIORITY_REFINEMENT_2026-10-20.md",
+      "line": 21,
+      "section": "Priority 0 — Fix website login and access denied / This is the immediate blocker. Investigate and fix it before starting new feature development.",
+      "requirement": "Do not report success until the real deployed authentication flow is verified. If credentials or an interactive sign-in are required, request the minimum necessary user assistance.",
+      "domain": "security",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "New priority refinement represented; existing foundations do not establish individual deployed/native acceptance. Fresh Google retry confirms preview-to-production state-cookie loss; source correction under validation.",
+      "evidence": [
+        "docs/AUTH_ORIGIN_RECOVERY_2026-10-20.md"
+      ],
+      "prs": [],
+      "nextAction": "Verify canonical-host OAuth, then separately resolve approved database recovery and actual founder access.",
+      "owner": "Codex; external acceptance/approvals remain founder-owned",
+      "auditDepth": "New refinement represented; individual end-to-end acceptance pending"
+    },
+    {
+      "id": "R23-013",
+      "source": "docs/AXIOM_PRIORITY_REFINEMENT_2026-10-20.md",
+      "line": 25,
+      "section": "Priority 1 — Cursor-quality website redesign",
+      "requirement": "Research the current Cursor website deeply, including its homepage, product presentation, navigation, interactive demonstrations, pricing, and visual hierarchy.",
+      "domain": "product",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "New priority refinement represented; existing foundations do not establish individual deployed/native acceptance. Implementation and acceptance remain subject to the refined priority order after authentication.",
+      "evidence": [
+        "docs/AUTH_ORIGIN_RECOVERY_2026-10-20.md"
+      ],
+      "prs": [],
+      "nextAction": "Audit existing implementation against this requirement after priority-0 authentication; implement only uncovered work and retain approval gates.",
+      "owner": "Codex; external acceptance/approvals remain founder-owned",
+      "auditDepth": "New refinement represented; individual end-to-end acceptance pending"
+    },
+    {
+      "id": "R23-014",
+      "source": "docs/AXIOM_PRIORITY_REFINEMENT_2026-10-20.md",
+      "line": 27,
+      "section": "Priority 1 — Cursor-quality website redesign",
+      "requirement": "Our goal is to match Cursor's **level of polish, simplicity, spacing, typography, visual balance, and professional credibility**, while preserving Axiom's independent identity.",
+      "domain": "product",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "New priority refinement represented; existing foundations do not establish individual deployed/native acceptance. Implementation and acceptance remain subject to the refined priority order after authentication.",
+      "evidence": [
+        "docs/AUTH_ORIGIN_RECOVERY_2026-10-20.md"
+      ],
+      "prs": [],
+      "nextAction": "Audit existing implementation against this requirement after priority-0 authentication; implement only uncovered work and retain approval gates.",
+      "owner": "Codex; external acceptance/approvals remain founder-owned",
+      "auditDepth": "New refinement represented; individual end-to-end acceptance pending"
+    },
+    {
+      "id": "R23-015",
+      "source": "docs/AXIOM_PRIORITY_REFINEMENT_2026-10-20.md",
+      "line": 31,
+      "section": "Design direction",
+      "requirement": "- Remove excessive orange glows, gradients, borders, shadows, and distracting accents.",
+      "domain": "product",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "New priority refinement represented; existing foundations do not establish individual deployed/native acceptance. Implementation and acceptance remain subject to the refined priority order after authentication.",
+      "evidence": [
+        "docs/AUTH_ORIGIN_RECOVERY_2026-10-20.md"
+      ],
+      "prs": [],
+      "nextAction": "Audit existing implementation against this requirement after priority-0 authentication; implement only uncovered work and retain approval gates.",
+      "owner": "Codex; external acceptance/approvals remain founder-owned",
+      "auditDepth": "New refinement represented; individual end-to-end acceptance pending"
+    },
+    {
+      "id": "R23-016",
+      "source": "docs/AXIOM_PRIORITY_REFINEMENT_2026-10-20.md",
+      "line": 32,
+      "section": "Design direction",
+      "requirement": "- Replace the cheap-looking orange treatment in the homepage application preview with a clean, restrained, realistic product presentation.",
+      "domain": "product",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "New priority refinement represented; existing foundations do not establish individual deployed/native acceptance. Implementation and acceptance remain subject to the refined priority order after authentication.",
+      "evidence": [
+        "docs/AUTH_ORIGIN_RECOVERY_2026-10-20.md"
+      ],
+      "prs": [],
+      "nextAction": "Audit existing implementation against this requirement after priority-0 authentication; implement only uncovered work and retain approval gates.",
+      "owner": "Codex; external acceptance/approvals remain founder-owned",
+      "auditDepth": "New refinement represented; individual end-to-end acceptance pending"
+    },
+    {
+      "id": "R23-017",
+      "source": "docs/AXIOM_PRIORITY_REFINEMENT_2026-10-20.md",
+      "line": 33,
+      "section": "Design direction",
+      "requirement": "- Use sophisticated charcoal, black, white, and neutral-gray surfaces.",
+      "domain": "product",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "New priority refinement represented; existing foundations do not establish individual deployed/native acceptance. Implementation and acceptance remain subject to the refined priority order after authentication.",
+      "evidence": [
+        "docs/AUTH_ORIGIN_RECOVERY_2026-10-20.md"
+      ],
+      "prs": [],
+      "nextAction": "Audit existing implementation against this requirement after priority-0 authentication; implement only uncovered work and retain approval gates.",
+      "owner": "Codex; external acceptance/approvals remain founder-owned",
+      "auditDepth": "New refinement represented; individual end-to-end acceptance pending"
+    },
+    {
+      "id": "R23-018",
+      "source": "docs/AXIOM_PRIORITY_REFINEMENT_2026-10-20.md",
+      "line": 34,
+      "section": "Design direction",
+      "requirement": "- Retain orange only as a subtle, intentional brand accent where it genuinely improves the design.",
+      "domain": "product",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "New priority refinement represented; existing foundations do not establish individual deployed/native acceptance. Implementation and acceptance remain subject to the refined priority order after authentication.",
+      "evidence": [
+        "docs/AUTH_ORIGIN_RECOVERY_2026-10-20.md"
+      ],
+      "prs": [],
+      "nextAction": "Audit existing implementation against this requirement after priority-0 authentication; implement only uncovered work and retain approval gates.",
+      "owner": "Codex; external acceptance/approvals remain founder-owned",
+      "auditDepth": "New refinement represented; individual end-to-end acceptance pending"
+    },
+    {
+      "id": "R23-019",
+      "source": "docs/AXIOM_PRIORITY_REFINEMENT_2026-10-20.md",
+      "line": 35,
+      "section": "Design direction",
+      "requirement": "- Adopt Cursor-like typography, restrained animations, consistent spacing, clear hierarchy, and premium editorial composition.",
+      "domain": "product",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "New priority refinement represented; existing foundations do not establish individual deployed/native acceptance. Implementation and acceptance remain subject to the refined priority order after authentication.",
+      "evidence": [
+        "docs/AUTH_ORIGIN_RECOVERY_2026-10-20.md"
+      ],
+      "prs": [],
+      "nextAction": "Audit existing implementation against this requirement after priority-0 authentication; implement only uncovered work and retain approval gates.",
+      "owner": "Codex; external acceptance/approvals remain founder-owned",
+      "auditDepth": "New refinement represented; individual end-to-end acceptance pending"
+    },
+    {
+      "id": "R23-020",
+      "source": "docs/AXIOM_PRIORITY_REFINEMENT_2026-10-20.md",
+      "line": 36,
+      "section": "Design direction",
+      "requirement": "- Avoid oversized cards, crowded sections, repeated marketing statements, and excessive decorative effects.",
+      "domain": "product",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "New priority refinement represented; existing foundations do not establish individual deployed/native acceptance. Implementation and acceptance remain subject to the refined priority order after authentication.",
+      "evidence": [
+        "docs/AUTH_ORIGIN_RECOVERY_2026-10-20.md"
+      ],
+      "prs": [],
+      "nextAction": "Audit existing implementation against this requirement after priority-0 authentication; implement only uncovered work and retain approval gates.",
+      "owner": "Codex; external acceptance/approvals remain founder-owned",
+      "auditDepth": "New refinement represented; individual end-to-end acceptance pending"
+    },
+    {
+      "id": "R23-021",
+      "source": "docs/AXIOM_PRIORITY_REFINEMENT_2026-10-20.md",
+      "line": 37,
+      "section": "Design direction",
+      "requirement": "- Make navigation between pages visually consistent and effortless.",
+      "domain": "product",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "New priority refinement represented; existing foundations do not establish individual deployed/native acceptance. Implementation and acceptance remain subject to the refined priority order after authentication.",
+      "evidence": [
+        "docs/AUTH_ORIGIN_RECOVERY_2026-10-20.md"
+      ],
+      "prs": [],
+      "nextAction": "Audit existing implementation against this requirement after priority-0 authentication; implement only uncovered work and retain approval gates.",
+      "owner": "Codex; external acceptance/approvals remain founder-owned",
+      "auditDepth": "New refinement represented; individual end-to-end acceptance pending"
+    },
+    {
+      "id": "R23-022",
+      "source": "docs/AXIOM_PRIORITY_REFINEMENT_2026-10-20.md",
+      "line": 38,
+      "section": "Design direction",
+      "requirement": "- Ensure desktop, tablet, and mobile layouts feel equally considered.",
+      "domain": "product",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "New priority refinement represented; existing foundations do not establish individual deployed/native acceptance. Implementation and acceptance remain subject to the refined priority order after authentication.",
+      "evidence": [
+        "docs/AUTH_ORIGIN_RECOVERY_2026-10-20.md"
+      ],
+      "prs": [],
+      "nextAction": "Audit existing implementation against this requirement after priority-0 authentication; implement only uncovered work and retain approval gates.",
+      "owner": "Codex; external acceptance/approvals remain founder-owned",
+      "auditDepth": "New refinement represented; individual end-to-end acceptance pending"
+    },
+    {
+      "id": "R23-023",
+      "source": "docs/AXIOM_PRIORITY_REFINEMENT_2026-10-20.md",
+      "line": 39,
+      "section": "Design direction",
+      "requirement": "- Preserve accessibility, keyboard navigation, reduced-motion support, and performance.",
+      "domain": "product",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "New priority refinement represented; existing foundations do not establish individual deployed/native acceptance. Implementation and acceptance remain subject to the refined priority order after authentication.",
+      "evidence": [
+        "docs/AUTH_ORIGIN_RECOVERY_2026-10-20.md"
+      ],
+      "prs": [],
+      "nextAction": "Audit existing implementation against this requirement after priority-0 authentication; implement only uncovered work and retain approval gates.",
+      "owner": "Codex; external acceptance/approvals remain founder-owned",
+      "auditDepth": "New refinement represented; individual end-to-end acceptance pending"
+    },
+    {
+      "id": "R23-024",
+      "source": "docs/AXIOM_PRIORITY_REFINEMENT_2026-10-20.md",
+      "line": 41,
+      "section": "Design direction / Do not copy Cursor's logos, proprietary assets, source code, or distinctive branded content. Reproduce the quality and interaction principles through an original Axiom design.",
+      "requirement": "**Do not copy Cursor's logos, proprietary assets, source code, or distinctive branded content. Reproduce the quality and interaction principles through an original Axiom design.**",
+      "domain": "product",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "New priority refinement represented; existing foundations do not establish individual deployed/native acceptance. Implementation and acceptance remain subject to the refined priority order after authentication.",
+      "evidence": [
+        "docs/AUTH_ORIGIN_RECOVERY_2026-10-20.md"
+      ],
+      "prs": [],
+      "nextAction": "Audit existing implementation against this requirement after priority-0 authentication; implement only uncovered work and retain approval gates.",
+      "owner": "Codex; external acceptance/approvals remain founder-owned",
+      "auditDepth": "New refinement represented; individual end-to-end acceptance pending"
+    },
+    {
+      "id": "R23-025",
+      "source": "docs/AXIOM_PRIORITY_REFINEMENT_2026-10-20.md",
+      "line": 45,
+      "section": "Pages requiring attention",
+      "requirement": "**Homepage:** Rebuild the hero composition and application preview into a convincing, beautifully presented product experience. The interface must resemble the latest actual Axiom application, not an invented or obsolete cockpit.",
+      "domain": "product",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "New priority refinement represented; existing foundations do not establish individual deployed/native acceptance. Implementation and acceptance remain subject to the refined priority order after authentication.",
+      "evidence": [
+        "docs/AUTH_ORIGIN_RECOVERY_2026-10-20.md"
+      ],
+      "prs": [],
+      "nextAction": "Audit existing implementation against this requirement after priority-0 authentication; implement only uncovered work and retain approval gates.",
+      "owner": "Codex; external acceptance/approvals remain founder-owned",
+      "auditDepth": "New refinement represented; individual end-to-end acceptance pending"
+    },
+    {
+      "id": "R23-026",
+      "source": "docs/AXIOM_PRIORITY_REFINEMENT_2026-10-20.md",
+      "line": 47,
+      "section": "Pages requiring attention",
+      "requirement": "**Product tours:** Reduce oversized cards and improve the proportions, transitions, demonstrations, and layout. Show realistic coding, Agent, GitHub, Terraform, cloud, and approval workflows. Make the demos visually impressive without misrepresenting simulated actions as real executions.",
+      "domain": "product",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "New priority refinement represented; existing foundations do not establish individual deployed/native acceptance. Implementation and acceptance remain subject to the refined priority order after authentication.",
+      "evidence": [
+        "docs/AUTH_ORIGIN_RECOVERY_2026-10-20.md"
+      ],
+      "prs": [],
+      "nextAction": "Audit existing implementation against this requirement after priority-0 authentication; implement only uncovered work and retain approval gates.",
+      "owner": "Codex; external acceptance/approvals remain founder-owned",
+      "auditDepth": "New refinement represented; individual end-to-end acceptance pending"
+    },
+    {
+      "id": "R23-027",
+      "source": "docs/AXIOM_PRIORITY_REFINEMENT_2026-10-20.md",
+      "line": 49,
+      "section": "Pages requiring attention",
+      "requirement": "**Pricing:** Create a premium, straightforward pricing experience with clear plan comparisons, credible typography, restrained card sizes, and honest descriptions of available versus planned capabilities.",
+      "domain": "product",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "New priority refinement represented; existing foundations do not establish individual deployed/native acceptance. Implementation and acceptance remain subject to the refined priority order after authentication.",
+      "evidence": [
+        "docs/AUTH_ORIGIN_RECOVERY_2026-10-20.md"
+      ],
+      "prs": [],
+      "nextAction": "Audit existing implementation against this requirement after priority-0 authentication; implement only uncovered work and retain approval gates.",
+      "owner": "Codex; external acceptance/approvals remain founder-owned",
+      "auditDepth": "New refinement represented; individual end-to-end acceptance pending"
+    },
+    {
+      "id": "R23-028",
+      "source": "docs/AXIOM_PRIORITY_REFINEMENT_2026-10-20.md",
+      "line": 51,
+      "section": "Pages requiring attention",
+      "requirement": "**Support XCM:** Give this page special editorial attention. It is intended for outreach to major philanthropists, technology leaders, AI companies, and potential supporters. Make it exceptionally credible, elegant, transparent, and professional. Clearly explain the mission, why support matters, how funds would be used, and what supporters can expect. Do not invent endorsements, partnerships, impact metrics, or charitable status.",
+      "domain": "product",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "New priority refinement represented; existing foundations do not establish individual deployed/native acceptance. Implementation and acceptance remain subject to the refined priority order after authentication.",
+      "evidence": [
+        "docs/AUTH_ORIGIN_RECOVERY_2026-10-20.md"
+      ],
+      "prs": [],
+      "nextAction": "Audit existing implementation against this requirement after priority-0 authentication; implement only uncovered work and retain approval gates.",
+      "owner": "Codex; external acceptance/approvals remain founder-owned",
+      "auditDepth": "New refinement represented; individual end-to-end acceptance pending"
+    },
+    {
+      "id": "R23-029",
+      "source": "docs/AXIOM_PRIORITY_REFINEMENT_2026-10-20.md",
+      "line": 53,
+      "section": "Pages requiring attention",
+      "requirement": "**All remaining public pages:** Apply one coherent design system instead of polishing only the homepage.",
+      "domain": "product",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "New priority refinement represented; existing foundations do not establish individual deployed/native acceptance. Implementation and acceptance remain subject to the refined priority order after authentication.",
+      "evidence": [
+        "docs/AUTH_ORIGIN_RECOVERY_2026-10-20.md"
+      ],
+      "prs": [],
+      "nextAction": "Audit existing implementation against this requirement after priority-0 authentication; implement only uncovered work and retain approval gates.",
+      "owner": "Codex; external acceptance/approvals remain founder-owned",
+      "auditDepth": "New refinement represented; individual end-to-end acceptance pending"
+    },
+    {
+      "id": "R23-030",
+      "source": "docs/AXIOM_PRIORITY_REFINEMENT_2026-10-20.md",
+      "line": 55,
+      "section": "Pages requiring attention",
+      "requirement": "Use real product screenshots and implementation evidence wherever available. Use animations and illustrative walkthroughs only where they improve clarity.",
+      "domain": "product",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "New priority refinement represented; existing foundations do not establish individual deployed/native acceptance. Implementation and acceptance remain subject to the refined priority order after authentication.",
+      "evidence": [
+        "docs/AUTH_ORIGIN_RECOVERY_2026-10-20.md"
+      ],
+      "prs": [],
+      "nextAction": "Audit existing implementation against this requirement after priority-0 authentication; implement only uncovered work and retain approval gates.",
+      "owner": "Codex; external acceptance/approvals remain founder-owned",
+      "auditDepth": "New refinement represented; individual end-to-end acceptance pending"
+    },
+    {
+      "id": "R23-031",
+      "source": "docs/AXIOM_PRIORITY_REFINEMENT_2026-10-20.md",
+      "line": 59,
+      "section": "Priority 2 — Desktop application and real AI experience",
+      "requirement": "After the authentication blocker and priority website improvements, continue the existing desktop engineering work.",
+      "domain": "product",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "New priority refinement represented; existing foundations do not establish individual deployed/native acceptance. Implementation and acceptance remain subject to the refined priority order after authentication.",
+      "evidence": [
+        "docs/AUTH_ORIGIN_RECOVERY_2026-10-20.md"
+      ],
+      "prs": [],
+      "nextAction": "Audit existing implementation against this requirement after priority-0 authentication; implement only uncovered work and retain approval gates.",
+      "owner": "Codex; external acceptance/approvals remain founder-owned",
+      "auditDepth": "New refinement represented; individual end-to-end acceptance pending"
+    },
+    {
+      "id": "R23-032",
+      "source": "docs/AXIOM_PRIORITY_REFINEMENT_2026-10-20.md",
+      "line": 61,
+      "section": "Priority 2 — Desktop application and real AI experience",
+      "requirement": "The downloadable macOS application must visibly deliver a modern Cursor-class experience, not merely have implementation code merged into GitHub.",
+      "domain": "product",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "New priority refinement represented; existing foundations do not establish individual deployed/native acceptance. Implementation and acceptance remain subject to the refined priority order after authentication.",
+      "evidence": [
+        "docs/AUTH_ORIGIN_RECOVERY_2026-10-20.md"
+      ],
+      "prs": [],
+      "nextAction": "Audit existing implementation against this requirement after priority-0 authentication; implement only uncovered work and retain approval gates.",
+      "owner": "Codex; external acceptance/approvals remain founder-owned",
+      "auditDepth": "New refinement represented; individual end-to-end acceptance pending"
+    },
+    {
+      "id": "R23-033",
+      "source": "docs/AXIOM_PRIORITY_REFINEMENT_2026-10-20.md",
+      "line": 65,
+      "section": "Desktop requirements",
+      "requirement": "1. Modern, functional chat, code editor, repository explorer, file navigation, integrated terminal, and contextual AI Agent.",
+      "domain": "product",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "New priority refinement represented; existing foundations do not establish individual deployed/native acceptance. Implementation and acceptance remain subject to the refined priority order after authentication.",
+      "evidence": [
+        "docs/AUTH_ORIGIN_RECOVERY_2026-10-20.md"
+      ],
+      "prs": [],
+      "nextAction": "Audit existing implementation against this requirement after priority-0 authentication; implement only uncovered work and retain approval gates.",
+      "owner": "Codex; external acceptance/approvals remain founder-owned",
+      "auditDepth": "New refinement represented; individual end-to-end acceptance pending"
+    },
+    {
+      "id": "R23-034",
+      "source": "docs/AXIOM_PRIORITY_REFINEMENT_2026-10-20.md",
+      "line": 66,
+      "section": "Desktop requirements",
+      "requirement": "2. Click-first GitHub repository, branch, and environment selection, including selection directly from chat.",
+      "domain": "product",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "New priority refinement represented; existing foundations do not establish individual deployed/native acceptance. Implementation and acceptance remain subject to the refined priority order after authentication.",
+      "evidence": [
+        "docs/AUTH_ORIGIN_RECOVERY_2026-10-20.md"
+      ],
+      "prs": [],
+      "nextAction": "Audit existing implementation against this requirement after priority-0 authentication; implement only uncovered work and retain approval gates.",
+      "owner": "Codex; external acceptance/approvals remain founder-owned",
+      "auditDepth": "New refinement represented; individual end-to-end acceptance pending"
+    },
+    {
+      "id": "R23-035",
+      "source": "docs/AXIOM_PRIORITY_REFINEMENT_2026-10-20.md",
+      "line": 67,
+      "section": "Desktop requirements",
+      "requirement": "3. Working AI model selection with clear provider/model availability, authentication, and errors.",
+      "domain": "product",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "New priority refinement represented; existing foundations do not establish individual deployed/native acceptance. Implementation and acceptance remain subject to the refined priority order after authentication.",
+      "evidence": [
+        "docs/AUTH_ORIGIN_RECOVERY_2026-10-20.md"
+      ],
+      "prs": [],
+      "nextAction": "Audit existing implementation against this requirement after priority-0 authentication; implement only uncovered work and retain approval gates.",
+      "owner": "Codex; external acceptance/approvals remain founder-owned",
+      "auditDepth": "New refinement represented; individual end-to-end acceptance pending"
+    },
+    {
+      "id": "R23-036",
+      "source": "docs/AXIOM_PRIORITY_REFINEMENT_2026-10-20.md",
+      "line": 68,
+      "section": "Desktop requirements",
+      "requirement": "4. Investigate the previously discussed Vercel AI Gateway or other appropriate model-routing integration. Verify the actual provider architecture before implementing it.",
+      "domain": "product",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "New priority refinement represented; existing foundations do not establish individual deployed/native acceptance. Implementation and acceptance remain subject to the refined priority order after authentication.",
+      "evidence": [
+        "docs/AUTH_ORIGIN_RECOVERY_2026-10-20.md"
+      ],
+      "prs": [],
+      "nextAction": "Audit existing implementation against this requirement after priority-0 authentication; implement only uncovered work and retain approval gates.",
+      "owner": "Codex; external acceptance/approvals remain founder-owned",
+      "auditDepth": "New refinement represented; individual end-to-end acceptance pending"
+    },
+    {
+      "id": "R23-037",
+      "source": "docs/AXIOM_PRIORITY_REFINEMENT_2026-10-20.md",
+      "line": 69,
+      "section": "Desktop requirements",
+      "requirement": "5. Agent capabilities to inspect repositories, propose and edit code, run authorized commands, execute tests, and explain changes.",
+      "domain": "product",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "New priority refinement represented; existing foundations do not establish individual deployed/native acceptance. Implementation and acceptance remain subject to the refined priority order after authentication.",
+      "evidence": [
+        "docs/AUTH_ORIGIN_RECOVERY_2026-10-20.md"
+      ],
+      "prs": [],
+      "nextAction": "Audit existing implementation against this requirement after priority-0 authentication; implement only uncovered work and retain approval gates.",
+      "owner": "Codex; external acceptance/approvals remain founder-owned",
+      "auditDepth": "New refinement represented; individual end-to-end acceptance pending"
+    },
+    {
+      "id": "R23-038",
+      "source": "docs/AXIOM_PRIORITY_REFINEMENT_2026-10-20.md",
+      "line": 70,
+      "section": "Desktop requirements",
+      "requirement": "6. Preserve the existing dev/staging permissions and production approval boundaries.",
+      "domain": "product",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "New priority refinement represented; existing foundations do not establish individual deployed/native acceptance. Implementation and acceptance remain subject to the refined priority order after authentication.",
+      "evidence": [
+        "docs/AUTH_ORIGIN_RECOVERY_2026-10-20.md"
+      ],
+      "prs": [],
+      "nextAction": "Audit existing implementation against this requirement after priority-0 authentication; implement only uncovered work and retain approval gates.",
+      "owner": "Codex; external acceptance/approvals remain founder-owned",
+      "auditDepth": "New refinement represented; individual end-to-end acceptance pending"
+    },
+    {
+      "id": "R23-039",
+      "source": "docs/AXIOM_PRIORITY_REFINEMENT_2026-10-20.md",
+      "line": 71,
+      "section": "Desktop requirements",
+      "requirement": "7. Verify that improvements appear in the **actual downloadable desktop build**, including clean installation, sign-in, onboarding, and native end-to-end tests.",
+      "domain": "product",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "New priority refinement represented; existing foundations do not establish individual deployed/native acceptance. Implementation and acceptance remain subject to the refined priority order after authentication.",
+      "evidence": [
+        "docs/AUTH_ORIGIN_RECOVERY_2026-10-20.md"
+      ],
+      "prs": [],
+      "nextAction": "Audit existing implementation against this requirement after priority-0 authentication; implement only uncovered work and retain approval gates.",
+      "owner": "Codex; external acceptance/approvals remain founder-owned",
+      "auditDepth": "New refinement represented; individual end-to-end acceptance pending"
+    },
+    {
+      "id": "R23-040",
+      "source": "docs/AXIOM_PRIORITY_REFINEMENT_2026-10-20.md",
+      "line": 73,
+      "section": "Desktop requirements",
+      "requirement": "Do not claim the desktop is working solely because web components, unit tests, or CI builds pass.",
+      "domain": "product",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "New priority refinement represented; existing foundations do not establish individual deployed/native acceptance. Implementation and acceptance remain subject to the refined priority order after authentication.",
+      "evidence": [
+        "docs/AUTH_ORIGIN_RECOVERY_2026-10-20.md"
+      ],
+      "prs": [],
+      "nextAction": "Audit existing implementation against this requirement after priority-0 authentication; implement only uncovered work and retain approval gates.",
+      "owner": "Codex; external acceptance/approvals remain founder-owned",
+      "auditDepth": "New refinement represented; individual end-to-end acceptance pending"
+    },
+    {
+      "id": "R23-041",
+      "source": "docs/AXIOM_PRIORITY_REFINEMENT_2026-10-20.md",
+      "line": 77,
+      "section": "Priority 3 — Plugin marketplace and enterprise administration",
+      "requirement": "Build a practical extension experience inspired by ChatGPT's plugin discovery and Cursor's development ecosystem.",
+      "domain": "product",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "New priority refinement represented; existing foundations do not establish individual deployed/native acceptance. Implementation and acceptance remain subject to the refined priority order after authentication.",
+      "evidence": [
+        "docs/AUTH_ORIGIN_RECOVERY_2026-10-20.md"
+      ],
+      "prs": [],
+      "nextAction": "Audit existing implementation against this requirement after priority-0 authentication; implement only uncovered work and retain approval gates.",
+      "owner": "Codex; external acceptance/approvals remain founder-owned",
+      "auditDepth": "New refinement represented; individual end-to-end acceptance pending"
+    },
+    {
+      "id": "R23-042",
+      "source": "docs/AXIOM_PRIORITY_REFINEMENT_2026-10-20.md",
+      "line": 81,
+      "section": "Plugin marketplace",
+      "requirement": "- Add an obvious **Plugins / Extensions** entry in the desktop navigation.",
+      "domain": "product",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "New priority refinement represented; existing foundations do not establish individual deployed/native acceptance. Implementation and acceptance remain subject to the refined priority order after authentication.",
+      "evidence": [
+        "docs/AUTH_ORIGIN_RECOVERY_2026-10-20.md"
+      ],
+      "prs": [],
+      "nextAction": "Audit existing implementation against this requirement after priority-0 authentication; implement only uncovered work and retain approval gates.",
+      "owner": "Codex; external acceptance/approvals remain founder-owned",
+      "auditDepth": "New refinement represented; individual end-to-end acceptance pending"
+    },
+    {
+      "id": "R23-043",
+      "source": "docs/AXIOM_PRIORITY_REFINEMENT_2026-10-20.md",
+      "line": 82,
+      "section": "Plugin marketplace",
+      "requirement": "- Provide searchable categories, installed extensions, available integrations, connection status, permissions, and management controls.",
+      "domain": "product",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "New priority refinement represented; existing foundations do not establish individual deployed/native acceptance. Implementation and acceptance remain subject to the refined priority order after authentication.",
+      "evidence": [
+        "docs/AUTH_ORIGIN_RECOVERY_2026-10-20.md"
+      ],
+      "prs": [],
+      "nextAction": "Audit existing implementation against this requirement after priority-0 authentication; implement only uncovered work and retain approval gates.",
+      "owner": "Codex; external acceptance/approvals remain founder-owned",
+      "auditDepth": "New refinement represented; individual end-to-end acceptance pending"
+    },
+    {
+      "id": "R23-044",
+      "source": "docs/AXIOM_PRIORITY_REFINEMENT_2026-10-20.md",
+      "line": 83,
+      "section": "Plugin marketplace",
+      "requirement": "- Support appropriate integrations such as GitHub, cloud platforms, Terraform, Airflow, deployment services, and development tools.",
+      "domain": "product",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "New priority refinement represented; existing foundations do not establish individual deployed/native acceptance. Implementation and acceptance remain subject to the refined priority order after authentication.",
+      "evidence": [
+        "docs/AUTH_ORIGIN_RECOVERY_2026-10-20.md"
+      ],
+      "prs": [],
+      "nextAction": "Audit existing implementation against this requirement after priority-0 authentication; implement only uncovered work and retain approval gates.",
+      "owner": "Codex; external acceptance/approvals remain founder-owned",
+      "auditDepth": "New refinement represented; individual end-to-end acceptance pending"
+    },
+    {
+      "id": "R23-045",
+      "source": "docs/AXIOM_PRIORITY_REFINEMENT_2026-10-20.md",
+      "line": 84,
+      "section": "Plugin marketplace",
+      "requirement": "- Explore .NET/C#, Java, Python, JavaScript/TypeScript, and other language tooling through suitable language servers, debuggers, build tools, or extensions.",
+      "domain": "product",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "New priority refinement represented; existing foundations do not establish individual deployed/native acceptance. Implementation and acceptance remain subject to the refined priority order after authentication.",
+      "evidence": [
+        "docs/AUTH_ORIGIN_RECOVERY_2026-10-20.md"
+      ],
+      "prs": [],
+      "nextAction": "Audit existing implementation against this requirement after priority-0 authentication; implement only uncovered work and retain approval gates.",
+      "owner": "Codex; external acceptance/approvals remain founder-owned",
+      "auditDepth": "New refinement represented; individual end-to-end acceptance pending"
+    },
+    {
+      "id": "R23-046",
+      "source": "docs/AXIOM_PRIORITY_REFINEMENT_2026-10-20.md",
+      "line": 85,
+      "section": "Plugin marketplace",
+      "requirement": "- Support secure OAuth or other provider-approved connection flows, with clear permission review.",
+      "domain": "product",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "New priority refinement represented; existing foundations do not establish individual deployed/native acceptance. Implementation and acceptance remain subject to the refined priority order after authentication.",
+      "evidence": [
+        "docs/AUTH_ORIGIN_RECOVERY_2026-10-20.md"
+      ],
+      "prs": [],
+      "nextAction": "Audit existing implementation against this requirement after priority-0 authentication; implement only uncovered work and retain approval gates.",
+      "owner": "Codex; external acceptance/approvals remain founder-owned",
+      "auditDepth": "New refinement represented; individual end-to-end acceptance pending"
+    },
+    {
+      "id": "R23-047",
+      "source": "docs/AXIOM_PRIORITY_REFINEMENT_2026-10-20.md",
+      "line": 86,
+      "section": "Plugin marketplace",
+      "requirement": "- Do not promise one-click installation for integrations that require additional setup, licenses, or administrative authorization.",
+      "domain": "product",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "New priority refinement represented; existing foundations do not establish individual deployed/native acceptance. Implementation and acceptance remain subject to the refined priority order after authentication.",
+      "evidence": [
+        "docs/AUTH_ORIGIN_RECOVERY_2026-10-20.md"
+      ],
+      "prs": [],
+      "nextAction": "Audit existing implementation against this requirement after priority-0 authentication; implement only uncovered work and retain approval gates.",
+      "owner": "Codex; external acceptance/approvals remain founder-owned",
+      "auditDepth": "New refinement represented; individual end-to-end acceptance pending"
+    },
+    {
+      "id": "R23-048",
+      "source": "docs/AXIOM_PRIORITY_REFINEMENT_2026-10-20.md",
+      "line": 90,
+      "section": "Enterprise controls",
+      "requirement": "Introduce organization-level administrative controls:",
+      "domain": "product",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "New priority refinement represented; existing foundations do not establish individual deployed/native acceptance. Implementation and acceptance remain subject to the refined priority order after authentication.",
+      "evidence": [
+        "docs/AUTH_ORIGIN_RECOVERY_2026-10-20.md"
+      ],
+      "prs": [],
+      "nextAction": "Audit existing implementation against this requirement after priority-0 authentication; implement only uncovered work and retain approval gates.",
+      "owner": "Codex; external acceptance/approvals remain founder-owned",
+      "auditDepth": "New refinement represented; individual end-to-end acceptance pending"
+    },
+    {
+      "id": "R23-049",
+      "source": "docs/AXIOM_PRIORITY_REFINEMENT_2026-10-20.md",
+      "line": 92,
+      "section": "Enterprise controls",
+      "requirement": "- Admin-managed plugin allowlists and denylists.",
+      "domain": "product",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "New priority refinement represented; existing foundations do not establish individual deployed/native acceptance. Implementation and acceptance remain subject to the refined priority order after authentication.",
+      "evidence": [
+        "docs/AUTH_ORIGIN_RECOVERY_2026-10-20.md"
+      ],
+      "prs": [],
+      "nextAction": "Audit existing implementation against this requirement after priority-0 authentication; implement only uncovered work and retain approval gates.",
+      "owner": "Codex; external acceptance/approvals remain founder-owned",
+      "auditDepth": "New refinement represented; individual end-to-end acceptance pending"
+    },
+    {
+      "id": "R23-050",
+      "source": "docs/AXIOM_PRIORITY_REFINEMENT_2026-10-20.md",
+      "line": 93,
+      "section": "Enterprise controls",
+      "requirement": "- Approved AI models and providers.",
+      "domain": "product",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "New priority refinement represented; existing foundations do not establish individual deployed/native acceptance. Implementation and acceptance remain subject to the refined priority order after authentication.",
+      "evidence": [
+        "docs/AUTH_ORIGIN_RECOVERY_2026-10-20.md"
+      ],
+      "prs": [],
+      "nextAction": "Audit existing implementation against this requirement after priority-0 authentication; implement only uncovered work and retain approval gates.",
+      "owner": "Codex; external acceptance/approvals remain founder-owned",
+      "auditDepth": "New refinement represented; individual end-to-end acceptance pending"
+    },
+    {
+      "id": "R23-051",
+      "source": "docs/AXIOM_PRIORITY_REFINEMENT_2026-10-20.md",
+      "line": 94,
+      "section": "Enterprise controls",
+      "requirement": "- Role-based permissions and organization policies.",
+      "domain": "product",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "New priority refinement represented; existing foundations do not establish individual deployed/native acceptance. Implementation and acceptance remain subject to the refined priority order after authentication.",
+      "evidence": [
+        "docs/AUTH_ORIGIN_RECOVERY_2026-10-20.md"
+      ],
+      "prs": [],
+      "nextAction": "Audit existing implementation against this requirement after priority-0 authentication; implement only uncovered work and retain approval gates.",
+      "owner": "Codex; external acceptance/approvals remain founder-owned",
+      "auditDepth": "New refinement represented; individual end-to-end acceptance pending"
+    },
+    {
+      "id": "R23-052",
+      "source": "docs/AXIOM_PRIORITY_REFINEMENT_2026-10-20.md",
+      "line": 95,
+      "section": "Enterprise controls",
+      "requirement": "- Restrictions on external integrations, credential access, and production environments.",
+      "domain": "product",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "New priority refinement represented; existing foundations do not establish individual deployed/native acceptance. Implementation and acceptance remain subject to the refined priority order after authentication.",
+      "evidence": [
+        "docs/AUTH_ORIGIN_RECOVERY_2026-10-20.md"
+      ],
+      "prs": [],
+      "nextAction": "Audit existing implementation against this requirement after priority-0 authentication; implement only uncovered work and retain approval gates.",
+      "owner": "Codex; external acceptance/approvals remain founder-owned",
+      "auditDepth": "New refinement represented; individual end-to-end acceptance pending"
+    },
+    {
+      "id": "R23-053",
+      "source": "docs/AXIOM_PRIORITY_REFINEMENT_2026-10-20.md",
+      "line": 96,
+      "section": "Enterprise controls",
+      "requirement": "- Clear user-facing messaging such as **\"This integration is restricted by your organization administrator.\"**",
+      "domain": "product",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "New priority refinement represented; existing foundations do not establish individual deployed/native acceptance. Implementation and acceptance remain subject to the refined priority order after authentication.",
+      "evidence": [
+        "docs/AUTH_ORIGIN_RECOVERY_2026-10-20.md"
+      ],
+      "prs": [],
+      "nextAction": "Audit existing implementation against this requirement after priority-0 authentication; implement only uncovered work and retain approval gates.",
+      "owner": "Codex; external acceptance/approvals remain founder-owned",
+      "auditDepth": "New refinement represented; individual end-to-end acceptance pending"
+    },
+    {
+      "id": "R23-054",
+      "source": "docs/AXIOM_PRIORITY_REFINEMENT_2026-10-20.md",
+      "line": 97,
+      "section": "Enterprise controls",
+      "requirement": "- Audit trails, approval workflows, and policy enforcement on the backend, not merely disabled UI controls.",
+      "domain": "product",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "New priority refinement represented; existing foundations do not establish individual deployed/native acceptance. Implementation and acceptance remain subject to the refined priority order after authentication.",
+      "evidence": [
+        "docs/AUTH_ORIGIN_RECOVERY_2026-10-20.md"
+      ],
+      "prs": [],
+      "nextAction": "Audit existing implementation against this requirement after priority-0 authentication; implement only uncovered work and retain approval gates.",
+      "owner": "Codex; external acceptance/approvals remain founder-owned",
+      "auditDepth": "New refinement represented; individual end-to-end acceptance pending"
+    },
+    {
+      "id": "R23-055",
+      "source": "docs/AXIOM_PRIORITY_REFINEMENT_2026-10-20.md",
+      "line": 99,
+      "section": "Enterprise controls",
+      "requirement": "Keep the architecture extensible, secure, and manageable for both individuals and enterprise customers.",
+      "domain": "product",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "New priority refinement represented; existing foundations do not establish individual deployed/native acceptance. Implementation and acceptance remain subject to the refined priority order after authentication.",
+      "evidence": [
+        "docs/AUTH_ORIGIN_RECOVERY_2026-10-20.md"
+      ],
+      "prs": [],
+      "nextAction": "Audit existing implementation against this requirement after priority-0 authentication; implement only uncovered work and retain approval gates.",
+      "owner": "Codex; external acceptance/approvals remain founder-owned",
+      "auditDepth": "New refinement represented; individual end-to-end acceptance pending"
+    },
+    {
+      "id": "R23-056",
+      "source": "docs/AXIOM_PRIORITY_REFINEMENT_2026-10-20.md",
+      "line": 103,
+      "section": "Engineering execution requirements",
+      "requirement": "- Inspect the current master plan and execution ledger before changing code.",
+      "domain": "product",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "New priority refinement represented; existing foundations do not establish individual deployed/native acceptance. Implementation and acceptance remain subject to the refined priority order after authentication.",
+      "evidence": [
+        "docs/AUTH_ORIGIN_RECOVERY_2026-10-20.md"
+      ],
+      "prs": [],
+      "nextAction": "Audit existing implementation against this requirement after priority-0 authentication; implement only uncovered work and retain approval gates.",
+      "owner": "Codex; external acceptance/approvals remain founder-owned",
+      "auditDepth": "New refinement represented; individual end-to-end acceptance pending"
+    },
+    {
+      "id": "R23-057",
+      "source": "docs/AXIOM_PRIORITY_REFINEMENT_2026-10-20.md",
+      "line": 104,
+      "section": "Engineering execution requirements",
+      "requirement": "- Continue existing workstreams without discarding completed progress.",
+      "domain": "product",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "New priority refinement represented; existing foundations do not establish individual deployed/native acceptance. Implementation and acceptance remain subject to the refined priority order after authentication.",
+      "evidence": [
+        "docs/AUTH_ORIGIN_RECOVERY_2026-10-20.md"
+      ],
+      "prs": [],
+      "nextAction": "Audit existing implementation against this requirement after priority-0 authentication; implement only uncovered work and retain approval gates.",
+      "owner": "Codex; external acceptance/approvals remain founder-owned",
+      "auditDepth": "New refinement represented; individual end-to-end acceptance pending"
+    },
+    {
+      "id": "R23-058",
+      "source": "docs/AXIOM_PRIORITY_REFINEMENT_2026-10-20.md",
+      "line": 105,
+      "section": "Engineering execution requirements",
+      "requirement": "- Investigate root causes rather than applying cosmetic workarounds.",
+      "domain": "product",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "New priority refinement represented; existing foundations do not establish individual deployed/native acceptance. Implementation and acceptance remain subject to the refined priority order after authentication.",
+      "evidence": [
+        "docs/AUTH_ORIGIN_RECOVERY_2026-10-20.md"
+      ],
+      "prs": [],
+      "nextAction": "Audit existing implementation against this requirement after priority-0 authentication; implement only uncovered work and retain approval gates.",
+      "owner": "Codex; external acceptance/approvals remain founder-owned",
+      "auditDepth": "New refinement represented; individual end-to-end acceptance pending"
+    },
+    {
+      "id": "R23-059",
+      "source": "docs/AXIOM_PRIORITY_REFINEMENT_2026-10-20.md",
+      "line": 106,
+      "section": "Engineering execution requirements",
+      "requirement": "- Use small, reviewable PRs with meaningful tests and evidence.",
+      "domain": "product",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "New priority refinement represented; existing foundations do not establish individual deployed/native acceptance. Implementation and acceptance remain subject to the refined priority order after authentication.",
+      "evidence": [
+        "docs/AUTH_ORIGIN_RECOVERY_2026-10-20.md"
+      ],
+      "prs": [],
+      "nextAction": "Audit existing implementation against this requirement after priority-0 authentication; implement only uncovered work and retain approval gates.",
+      "owner": "Codex; external acceptance/approvals remain founder-owned",
+      "auditDepth": "New refinement represented; individual end-to-end acceptance pending"
+    },
+    {
+      "id": "R23-060",
+      "source": "docs/AXIOM_PRIORITY_REFINEMENT_2026-10-20.md",
+      "line": 107,
+      "section": "Engineering execution requirements",
+      "requirement": "- Keep billing in TEST mode until explicitly authorized otherwise.",
+      "domain": "product",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "New priority refinement represented; existing foundations do not establish individual deployed/native acceptance. Implementation and acceptance remain subject to the refined priority order after authentication.",
+      "evidence": [
+        "docs/AUTH_ORIGIN_RECOVERY_2026-10-20.md"
+      ],
+      "prs": [],
+      "nextAction": "Audit existing implementation against this requirement after priority-0 authentication; implement only uncovered work and retain approval gates.",
+      "owner": "Codex; external acceptance/approvals remain founder-owned",
+      "auditDepth": "New refinement represented; individual end-to-end acceptance pending"
+    },
+    {
+      "id": "R23-061",
+      "source": "docs/AXIOM_PRIORITY_REFINEMENT_2026-10-20.md",
+      "line": 108,
+      "section": "Engineering execution requirements",
+      "requirement": "- Preserve cloud isolation, least privilege, production approvals, rollback plans, and auditability.",
+      "domain": "product",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "New priority refinement represented; existing foundations do not establish individual deployed/native acceptance. Implementation and acceptance remain subject to the refined priority order after authentication.",
+      "evidence": [
+        "docs/AUTH_ORIGIN_RECOVERY_2026-10-20.md"
+      ],
+      "prs": [],
+      "nextAction": "Audit existing implementation against this requirement after priority-0 authentication; implement only uncovered work and retain approval gates.",
+      "owner": "Codex; external acceptance/approvals remain founder-owned",
+      "auditDepth": "New refinement represented; individual end-to-end acceptance pending"
+    },
+    {
+      "id": "R23-062",
+      "source": "docs/AXIOM_PRIORITY_REFINEMENT_2026-10-20.md",
+      "line": 109,
+      "section": "Engineering execution requirements",
+      "requirement": "- Do not deploy to production, weaken security, or incur new cloud costs without authorization.",
+      "domain": "product",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "New priority refinement represented; existing foundations do not establish individual deployed/native acceptance. Implementation and acceptance remain subject to the refined priority order after authentication.",
+      "evidence": [
+        "docs/AUTH_ORIGIN_RECOVERY_2026-10-20.md"
+      ],
+      "prs": [],
+      "nextAction": "Audit existing implementation against this requirement after priority-0 authentication; implement only uncovered work and retain approval gates.",
+      "owner": "Codex; external acceptance/approvals remain founder-owned",
+      "auditDepth": "New refinement represented; individual end-to-end acceptance pending"
+    },
+    {
+      "id": "R23-063",
+      "source": "docs/AXIOM_PRIORITY_REFINEMENT_2026-10-20.md",
+      "line": 110,
+      "section": "Engineering execution requirements",
+      "requirement": "- For website changes, use an authorized Vercel Preview and verify rendered behavior, not just source tests.",
+      "domain": "product",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "New priority refinement represented; existing foundations do not establish individual deployed/native acceptance. Implementation and acceptance remain subject to the refined priority order after authentication.",
+      "evidence": [
+        "docs/AUTH_ORIGIN_RECOVERY_2026-10-20.md"
+      ],
+      "prs": [],
+      "nextAction": "Audit existing implementation against this requirement after priority-0 authentication; implement only uncovered work and retain approval gates.",
+      "owner": "Codex; external acceptance/approvals remain founder-owned",
+      "auditDepth": "New refinement represented; individual end-to-end acceptance pending"
+    },
+    {
+      "id": "R23-064",
+      "source": "docs/AXIOM_PRIORITY_REFINEMENT_2026-10-20.md",
+      "line": 111,
+      "section": "Engineering execution requirements",
+      "requirement": "- For desktop changes, verify the actual packaged application.",
+      "domain": "product",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "New priority refinement represented; existing foundations do not establish individual deployed/native acceptance. Implementation and acceptance remain subject to the refined priority order after authentication.",
+      "evidence": [
+        "docs/AUTH_ORIGIN_RECOVERY_2026-10-20.md"
+      ],
+      "prs": [],
+      "nextAction": "Audit existing implementation against this requirement after priority-0 authentication; implement only uncovered work and retain approval gates.",
+      "owner": "Codex; external acceptance/approvals remain founder-owned",
+      "auditDepth": "New refinement represented; individual end-to-end acceptance pending"
+    },
+    {
+      "id": "R23-065",
+      "source": "docs/AXIOM_PRIORITY_REFINEMENT_2026-10-20.md",
+      "line": 112,
+      "section": "Engineering execution requirements",
+      "requirement": "- Keep simulations explicitly labeled.",
+      "domain": "product",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "New priority refinement represented; existing foundations do not establish individual deployed/native acceptance. Implementation and acceptance remain subject to the refined priority order after authentication.",
+      "evidence": [
+        "docs/AUTH_ORIGIN_RECOVERY_2026-10-20.md"
+      ],
+      "prs": [],
+      "nextAction": "Audit existing implementation against this requirement after priority-0 authentication; implement only uncovered work and retain approval gates.",
+      "owner": "Codex; external acceptance/approvals remain founder-owned",
+      "auditDepth": "New refinement represented; individual end-to-end acceptance pending"
+    },
+    {
+      "id": "R23-066",
+      "source": "docs/AXIOM_PRIORITY_REFINEMENT_2026-10-20.md",
+      "line": 113,
+      "section": "Engineering execution requirements",
+      "requirement": "- Avoid excessive status messages, repeated planning, and unnecessary review cycles. Focus on implementation.",
+      "domain": "product",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "New priority refinement represented; existing foundations do not establish individual deployed/native acceptance. Implementation and acceptance remain subject to the refined priority order after authentication.",
+      "evidence": [
+        "docs/AUTH_ORIGIN_RECOVERY_2026-10-20.md"
+      ],
+      "prs": [],
+      "nextAction": "Audit existing implementation against this requirement after priority-0 authentication; implement only uncovered work and retain approval gates.",
+      "owner": "Codex; external acceptance/approvals remain founder-owned",
+      "auditDepth": "New refinement represented; individual end-to-end acceptance pending"
+    },
+    {
+      "id": "R23-067",
+      "source": "docs/AXIOM_PRIORITY_REFINEMENT_2026-10-20.md",
+      "line": 117,
+      "section": "Execution order",
+      "requirement": "**First:** Diagnose and restore real website login, including navigation into the latest cockpit.",
+      "domain": "product",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "New priority refinement represented; existing foundations do not establish individual deployed/native acceptance. Implementation and acceptance remain subject to the refined priority order after authentication.",
+      "evidence": [
+        "docs/AUTH_ORIGIN_RECOVERY_2026-10-20.md"
+      ],
+      "prs": [],
+      "nextAction": "Audit existing implementation against this requirement after priority-0 authentication; implement only uncovered work and retain approval gates.",
+      "owner": "Codex; external acceptance/approvals remain founder-owned",
+      "auditDepth": "New refinement represented; individual end-to-end acceptance pending"
+    },
+    {
+      "id": "R23-068",
+      "source": "docs/AXIOM_PRIORITY_REFINEMENT_2026-10-20.md",
+      "line": 119,
+      "section": "Execution order",
+      "requirement": "**Second:** Upgrade the entire website to Cursor-level visual quality, especially homepage, product tours, pricing, and Support XCM.",
+      "domain": "product",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "New priority refinement represented; existing foundations do not establish individual deployed/native acceptance. Implementation and acceptance remain subject to the refined priority order after authentication.",
+      "evidence": [
+        "docs/AUTH_ORIGIN_RECOVERY_2026-10-20.md"
+      ],
+      "prs": [],
+      "nextAction": "Audit existing implementation against this requirement after priority-0 authentication; implement only uncovered work and retain approval gates.",
+      "owner": "Codex; external acceptance/approvals remain founder-owned",
+      "auditDepth": "New refinement represented; individual end-to-end acceptance pending"
+    },
+    {
+      "id": "R23-069",
+      "source": "docs/AXIOM_PRIORITY_REFINEMENT_2026-10-20.md",
+      "line": 121,
+      "section": "Execution order",
+      "requirement": "**Third:** Continue native desktop AI/model functionality and verify the actual downloadable application.",
+      "domain": "product",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "New priority refinement represented; existing foundations do not establish individual deployed/native acceptance. Implementation and acceptance remain subject to the refined priority order after authentication.",
+      "evidence": [
+        "docs/AUTH_ORIGIN_RECOVERY_2026-10-20.md"
+      ],
+      "prs": [],
+      "nextAction": "Audit existing implementation against this requirement after priority-0 authentication; implement only uncovered work and retain approval gates.",
+      "owner": "Codex; external acceptance/approvals remain founder-owned",
+      "auditDepth": "New refinement represented; individual end-to-end acceptance pending"
+    },
+    {
+      "id": "R23-070",
+      "source": "docs/AXIOM_PRIORITY_REFINEMENT_2026-10-20.md",
+      "line": 123,
+      "section": "Execution order",
+      "requirement": "**Fourth:** Implement the plugin marketplace and enterprise administrative controls in alignment with the existing architecture and master plan.",
+      "domain": "product",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "New priority refinement represented; existing foundations do not establish individual deployed/native acceptance. Implementation and acceptance remain subject to the refined priority order after authentication.",
+      "evidence": [
+        "docs/AUTH_ORIGIN_RECOVERY_2026-10-20.md"
+      ],
+      "prs": [],
+      "nextAction": "Audit existing implementation against this requirement after priority-0 authentication; implement only uncovered work and retain approval gates.",
+      "owner": "Codex; external acceptance/approvals remain founder-owned",
+      "auditDepth": "New refinement represented; individual end-to-end acceptance pending"
+    },
+    {
+      "id": "R23-071",
+      "source": "docs/AXIOM_PRIORITY_REFINEMENT_2026-10-20.md",
+      "line": 125,
+      "section": "Execution order",
+      "requirement": "Continue other established engineering tasks according to their existing dependencies and safety requirements. Do not silently abandon Stripe TEST validation, cloud deployment acceptance, Terraform, Airflow, or other active workstreams.",
+      "domain": "product",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "New priority refinement represented; existing foundations do not establish individual deployed/native acceptance. Implementation and acceptance remain subject to the refined priority order after authentication.",
+      "evidence": [
+        "docs/AUTH_ORIGIN_RECOVERY_2026-10-20.md"
+      ],
+      "prs": [],
+      "nextAction": "Audit existing implementation against this requirement after priority-0 authentication; implement only uncovered work and retain approval gates.",
+      "owner": "Codex; external acceptance/approvals remain founder-owned",
+      "auditDepth": "New refinement represented; individual end-to-end acceptance pending"
+    },
+    {
+      "id": "R23-072",
+      "source": "docs/AXIOM_PRIORITY_REFINEMENT_2026-10-20.md",
+      "line": 129,
+      "section": "Reporting expectations",
+      "requirement": "For each meaningful milestone, report:",
+      "domain": "product",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "New priority refinement represented; existing foundations do not establish individual deployed/native acceptance. Implementation and acceptance remain subject to the refined priority order after authentication.",
+      "evidence": [
+        "docs/AUTH_ORIGIN_RECOVERY_2026-10-20.md"
+      ],
+      "prs": [],
+      "nextAction": "Audit existing implementation against this requirement after priority-0 authentication; implement only uncovered work and retain approval gates.",
+      "owner": "Codex; external acceptance/approvals remain founder-owned",
+      "auditDepth": "New refinement represented; individual end-to-end acceptance pending"
+    },
+    {
+      "id": "R23-073",
+      "source": "docs/AXIOM_PRIORITY_REFINEMENT_2026-10-20.md",
+      "line": 131,
+      "section": "Reporting expectations",
+      "requirement": "- What was actually implemented.",
+      "domain": "product",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "New priority refinement represented; existing foundations do not establish individual deployed/native acceptance. Implementation and acceptance remain subject to the refined priority order after authentication.",
+      "evidence": [
+        "docs/AUTH_ORIGIN_RECOVERY_2026-10-20.md"
+      ],
+      "prs": [],
+      "nextAction": "Audit existing implementation against this requirement after priority-0 authentication; implement only uncovered work and retain approval gates.",
+      "owner": "Codex; external acceptance/approvals remain founder-owned",
+      "auditDepth": "New refinement represented; individual end-to-end acceptance pending"
+    },
+    {
+      "id": "R23-074",
+      "source": "docs/AXIOM_PRIORITY_REFINEMENT_2026-10-20.md",
+      "line": 132,
+      "section": "Reporting expectations",
+      "requirement": "- What was tested and where.",
+      "domain": "product",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "New priority refinement represented; existing foundations do not establish individual deployed/native acceptance. Implementation and acceptance remain subject to the refined priority order after authentication.",
+      "evidence": [
+        "docs/AUTH_ORIGIN_RECOVERY_2026-10-20.md"
+      ],
+      "prs": [],
+      "nextAction": "Audit existing implementation against this requirement after priority-0 authentication; implement only uncovered work and retain approval gates.",
+      "owner": "Codex; external acceptance/approvals remain founder-owned",
+      "auditDepth": "New refinement represented; individual end-to-end acceptance pending"
+    },
+    {
+      "id": "R23-075",
+      "source": "docs/AXIOM_PRIORITY_REFINEMENT_2026-10-20.md",
+      "line": 133,
+      "section": "Reporting expectations",
+      "requirement": "- What is verified working versus still unverified.",
+      "domain": "product",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "New priority refinement represented; existing foundations do not establish individual deployed/native acceptance. Implementation and acceptance remain subject to the refined priority order after authentication.",
+      "evidence": [
+        "docs/AUTH_ORIGIN_RECOVERY_2026-10-20.md"
+      ],
+      "prs": [],
+      "nextAction": "Audit existing implementation against this requirement after priority-0 authentication; implement only uncovered work and retain approval gates.",
+      "owner": "Codex; external acceptance/approvals remain founder-owned",
+      "auditDepth": "New refinement represented; individual end-to-end acceptance pending"
+    },
+    {
+      "id": "R23-076",
+      "source": "docs/AXIOM_PRIORITY_REFINEMENT_2026-10-20.md",
+      "line": 134,
+      "section": "Reporting expectations",
+      "requirement": "- PR and CI evidence.",
+      "domain": "product",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "New priority refinement represented; existing foundations do not establish individual deployed/native acceptance. Implementation and acceptance remain subject to the refined priority order after authentication.",
+      "evidence": [
+        "docs/AUTH_ORIGIN_RECOVERY_2026-10-20.md"
+      ],
+      "prs": [],
+      "nextAction": "Audit existing implementation against this requirement after priority-0 authentication; implement only uncovered work and retain approval gates.",
+      "owner": "Codex; external acceptance/approvals remain founder-owned",
+      "auditDepth": "New refinement represented; individual end-to-end acceptance pending"
+    },
+    {
+      "id": "R23-077",
+      "source": "docs/AXIOM_PRIORITY_REFINEMENT_2026-10-20.md",
+      "line": 135,
+      "section": "Reporting expectations",
+      "requirement": "- Blockers requiring user action.",
+      "domain": "product",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "New priority refinement represented; existing foundations do not establish individual deployed/native acceptance. Implementation and acceptance remain subject to the refined priority order after authentication.",
+      "evidence": [
+        "docs/AUTH_ORIGIN_RECOVERY_2026-10-20.md"
+      ],
+      "prs": [],
+      "nextAction": "Audit existing implementation against this requirement after priority-0 authentication; implement only uncovered work and retain approval gates.",
+      "owner": "Codex; external acceptance/approvals remain founder-owned",
+      "auditDepth": "New refinement represented; individual end-to-end acceptance pending"
+    },
+    {
+      "id": "R23-078",
+      "source": "docs/AXIOM_PRIORITY_REFINEMENT_2026-10-20.md",
+      "line": 136,
+      "section": "Reporting expectations",
+      "requirement": "- The next engineering action.",
+      "domain": "product",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "New priority refinement represented; existing foundations do not establish individual deployed/native acceptance. Implementation and acceptance remain subject to the refined priority order after authentication.",
+      "evidence": [
+        "docs/AUTH_ORIGIN_RECOVERY_2026-10-20.md"
+      ],
+      "prs": [],
+      "nextAction": "Audit existing implementation against this requirement after priority-0 authentication; implement only uncovered work and retain approval gates.",
+      "owner": "Codex; external acceptance/approvals remain founder-owned",
+      "auditDepth": "New refinement represented; individual end-to-end acceptance pending"
+    },
+    {
+      "id": "R23-079",
+      "source": "docs/AXIOM_PRIORITY_REFINEMENT_2026-10-20.md",
+      "line": 138,
+      "section": "Reporting expectations / Start now with the website Access Denied root-cause investigation. Do not spend the first cycle redesigning the website while authentication is broken.",
+      "requirement": "**Start now with the website Access Denied root-cause investigation. Do not spend the first cycle redesigning the website while authentication is broken.**",
+      "domain": "product",
+      "scope": "product",
+      "status": "Partially implemented",
+      "verification": "New priority refinement represented; existing foundations do not establish individual deployed/native acceptance. Implementation and acceptance remain subject to the refined priority order after authentication.",
+      "evidence": [
+        "docs/AUTH_ORIGIN_RECOVERY_2026-10-20.md"
+      ],
+      "prs": [],
+      "nextAction": "Audit existing implementation against this requirement after priority-0 authentication; implement only uncovered work and retain approval gates.",
+      "owner": "Codex; external acceptance/approvals remain founder-owned",
+      "auditDepth": "New refinement represented; individual end-to-end acceptance pending"
     }
   ],
   "workstreams": [

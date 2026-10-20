@@ -171,6 +171,10 @@ export const authOptions: NextAuthOptions = {
         let dbUser;
         try {
           dbUser = await prisma.user.upsert({
+            // OAuth needs the canonical identity only. Do not implicitly read
+            // unrelated User scalars; password verification remains mandatory
+            // in authorize(), and identity-store errors still deny this login.
+            select: { id: true, email: true },
             where: { email: normalizedEmail },
             create: {
               email: normalizedEmail,
