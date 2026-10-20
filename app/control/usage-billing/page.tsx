@@ -33,7 +33,7 @@ function planIdFor(tier: string, status: string) {
   return "free" as const;
 }
 
-export default async function ControlUsageBillingPage({ searchParams }: { searchParams?: Promise<{ billing?: string | string[] }> } = {}) {
+export default async function ControlUsageBillingPage({ searchParams }: { searchParams?: Promise<{ billing?: string | string[] }> }) {
   const context = await currentContext();
   if (!context.isAuthenticated || !context.organizationId || !context.email) redirect("/auth/signin?callbackUrl=/control/usage-billing");
   const returnedFromCheckout = (await searchParams)?.billing === "success";

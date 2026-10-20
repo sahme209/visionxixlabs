@@ -214,3 +214,15 @@ Final direct-executable validation passed 39 rendered tests across the two exist
 page suites, plus scoped ESLint and whitespace checks. An intervening npm-exec
 run suffered seven 5-second harness timeouts under environment contention; the
 unchanged tests passed with direct Node invocation and no deadline relaxation.
+
+Exact-head `9f677016` passed ordinary typechecking and the test suite, but the
+production build's generated Next page-props contract rejected the billing
+page's optional/default argument. The page now uses the normal required props
+argument, and direct component tests pass `{}` explicitly. Both page suites
+pass39 cases after correction; fresh production-build CI remains required.
+Its isolated browser run39440799840 timed out with all three bootstrap markers
+true and no predicate exception, proving the missing-control observation race
+was corrected while leaving the later hydration/playback failure unresolved.
+There were no upstream timeouts and owned groups were empty. No policy or
+deadline is widened; the next observation distinguishes actual chunk delivery
+and React-caught console errors using existing event surfaces only.

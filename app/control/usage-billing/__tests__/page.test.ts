@@ -29,7 +29,7 @@ afterEach(() => { cleanup(); vi.unstubAllEnvs(); });
 
 describe("canonical customer billing evidence", () => {
   it("renders actual available records and scopes every financial query to the current tenant", async () => {
-    render(await Page());
+    render(await Page({}));
     expect(value("Organization seats")).toBe("3 / 3");
     expect(value("Counted deployments")).toBe("2 / 100");
     expect(value("Included AI allowance remaining")).toBe("$204.70");
@@ -42,7 +42,7 @@ describe("canonical customer billing evidence", () => {
 
   it.each(["members", "usage", "pending", "purchases"] as const)("withholds balances and empty-history claims when %s evidence is unavailable", async (boundary) => {
     io[boundary].mockRejectedValue(new Error("fixture database unavailable"));
-    render(await Page());
+    render(await Page({}));
     expect(screen.getByRole("alert")).toBeTruthy();
     expect(value("Organization seats")).toBe("Unavailable");
     expect(value("Included AI allowance remaining")).toBe(["usage", "purchases"].includes(boundary) ? "Unavailable" : "$204.70");
@@ -60,7 +60,7 @@ describe("canonical customer billing evidence", () => {
 
   it("does not turn a failed quota read into unlimited deployments or hide other available evidence", async () => {
     io.quota.mockResolvedValue({ allowed: false, planId: null, used: null, limit: null, remaining: 0, reason: "deployment_quota_unavailable" });
-    render(await Page());
+    render(await Page({}));
     expect(value("Counted deployments")).toBe("Unavailable");
     expect(screen.queryByText(/unlimited/)).toBeNull();
     expect(screen.getByRole("alert")).toBeTruthy();
@@ -70,12 +70,12 @@ describe("canonical customer billing evidence", () => {
 
   it("distinguishes a real absent plan from a plan-only storage failure", async () => {
     io.plan.mockResolvedValue(null);
-    const absent = render(await Page());
+    const absent = render(await Page({}));
     expect(screen.getByRole("heading", { name: "Free" })).toBeTruthy();
     expect(screen.queryByRole("alert")).toBeNull();
     absent.unmount();
     io.plan.mockRejectedValue(new Error("private database URL and credentials must not be rendered"));
-    render(await Page());
+    render(await Page({}));
     expect(screen.getByRole("heading", { name: "Plan unavailable" })).toBeTruthy();
     expect(screen.getByRole("alert")).toBeTruthy();
     expect(value("Included AI allowance remaining")).toBe("Unavailable");
@@ -99,7 +99,7 @@ describe("canonical customer billing evidence", () => {
     io.usage.mockResolvedValue({ _count: { _all: 0 }, _sum: { inputTokens: null, outputTokens: null, billedCents: null } });
     io.pending.mockResolvedValue(0);
     io.purchases.mockResolvedValue([]);
-    render(await Page());
+    render(await Page({}));
     expect(value("Gateway calls")).toBe("0");
     expect(value("Input tokens")).toBe("0");
     expect(value("Applied paid top-ups")).toBe("$0.00");
@@ -110,14 +110,14 @@ describe("canonical customer billing evidence", () => {
 
   it("preserves a known exhausted quota rather than treating denial as missing evidence", async () => {
     io.quota.mockResolvedValue({ allowed: false, planId: "pro", used: 100, limit: 100, remaining: 0, reason: "deployment_quota_exhausted" });
-    render(await Page());
+    render(await Page({}));
     expect(value("Counted deployments")).toBe("100 / 100");
     expect(screen.queryByRole("alert")).toBeNull();
   });
 
   it("renders unlimited only when explicitly established by a successful quota result", async () => {
     io.quota.mockResolvedValue({ allowed: true, planId: "enterprise", used: 3, limit: null, remaining: null });
-    render(await Page());
+    render(await Page({}));
     expect(value("Counted deployments")).toBe("3 / unlimited");
     expect(screen.queryByRole("alert")).toBeNull();
   });
@@ -128,7 +128,7 @@ describe("current enforced AI allowance in the real server page", () => {
   it("shows legacy Growth's flat $200 pool rather than three public $10 seats", async () => {
     io.purchases.mockResolvedValue([]);
     io.holds.mockResolvedValue({ _sum: { reservedCents: 1250 } });
-    render(await Page());
+    render(await Page({}));
     expect(value("Included AI allowance remaining")).toBe("$187.20");
     expect(screen.getByText(/\$200.00 current account allowance/)).toBeTruthy();
     expect(screen.getByText(/\$12.50 held for unresolved requests/)).toBeTruthy();
@@ -137,7 +137,7 @@ describe("current enforced AI allowance in the real server page", () => {
   });
   it("shows the existing no-plan $25 reservation baseline without granting a paid plan", async () => {
     io.plan.mockResolvedValue(null); io.purchases.mockResolvedValue([]);
-    render(await Page());
+    render(await Page({}));
     expect(value("Included AI allowance remaining")).toBe("$24.70");
     expect(screen.getByRole("heading", { name: "Free" })).toBeTruthy();
     expect(screen.getByText(/Current reservation policy: hard stop/)).toBeTruthy();
@@ -147,20 +147,20 @@ describe("current enforced AI allowance in the real server page", () => {
       { sku: "current", status: "partially_refunded", validFor: "current_month", deliveredAICreditsCents: 1000, reversedAICreditsCents: 400, deliveredSeats: 0, deliveredConnectors: 0 },
       { sku: "permanent", status: "paid", validFor: "permanent", deliveredAICreditsCents: 200, reversedAICreditsCents: 0, deliveredSeats: 0, deliveredConnectors: 0 },
     ]);
-    render(await Page());
+    render(await Page({}));
     expect(value("Applied paid top-ups")).toBe("$8.00");
     expect(value("Included AI allowance remaining")).toBe("$207.70");
   });
   it("never turns a missing hold ledger into an available balance", async () => {
     io.holds.mockRejectedValue(new Error("private storage outage"));
-    render(await Page());
+    render(await Page({}));
     expect(value("Included AI allowance remaining")).toBe("Unavailable");
     expect(value("Gateway calls")).toBe("2");
     expect(screen.getByRole("alert")).toBeTruthy();
   });
   it("distinguishes exhausted included allowance from overage authorization", async () => {
     io.holds.mockResolvedValue({ _sum: { reservedCents: 25000 } });
-    render(await Page());
+    render(await Page({}));
     expect(value("Included AI allowance remaining")).toBe("$0.00");
     expect(screen.getByText(/Current reservation policy: metered billing/)).toBeTruthy();
     expect(screen.getByText(/not spend authorization/)).toBeTruthy();
@@ -170,7 +170,7 @@ describe("current enforced AI allowance in the real server page", () => {
 describe("isolated billing page refuses unsupported or unverified claims", () => {
   it("does not query/display legacy deployment quota and hides compatibility plan when proof is unavailable", async () => {
     vi.stubEnv("AXIOM_ISOLATED_PUBLIC_TEST_RUNTIME", "true");
-    render(await Page());
+    render(await Page({}));
     expect(io.quota).not.toHaveBeenCalled();
     expect(value("Counted deployments")).toBe("Unavailable");
     expect(screen.getByRole("heading", { name: "Plan unavailable" })).toBeTruthy();

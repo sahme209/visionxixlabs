@@ -1776,3 +1776,18 @@ the same-poll playback check encountered a loading document with no control
 and threw TypeError. That concrete readiness race is being corrected; earlier
 disabled-control timeouts remain unresolved rather than relabeled as fixed.
 No successful browser or full customer acceptance is claimed.
+
+The next browser run39440799840 on9f677016 has no predicate exception and
+observes Next bootstrap, inline Flight presence and client consumer setup.
+Playback still times out; these markers do not prove hydration or working
+controls. Full CI passed types/tests but its generated Next page contract
+rejected an optional/default billing-page props argument; the normal required
+props contract and39 page regressions correct this separately.
+
+Independent ECS checkpoint87c795d7 preserves the previous dirty hardening,
+99 reviewed source-closure entries and426 installed-runtime pins. Both inert
+suites independently pass14/14. Actual FINAL-store/provider acceptance remains
+unverified: native inherited bindings conflict with this older fixture policy.
+No environment sanitization, credential stripping, NODE_PATH replacement or
+runtime launch is authorized by this source checkpoint. Earlier ECS product
+work, all other mission sources and production approval gates remain intact.
