@@ -97,7 +97,7 @@ async fn run_detected_check(root: &Path, check: CheckCommand, deadline: Duration
     let check_id = check.definition.id.clone();
     let started = std::time::Instant::now();
     let mut command = Command::new(check.executable);
-    command.args(&check.args).current_dir(&root).kill_on_drop(true)
+    command.args(&check.args).current_dir(root).kill_on_drop(true)
         .env_clear().env("PATH", std::env::var_os("PATH").unwrap_or_default())
         .env("HOME", std::env::var_os("HOME").unwrap_or_default())
         .env("CI", "1").env("NO_COLOR", "1")

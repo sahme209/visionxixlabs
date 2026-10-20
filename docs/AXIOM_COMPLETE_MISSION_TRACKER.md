@@ -3121,3 +3121,49 @@ Mac, actual process teardown/cancellation and real-provider debugging remain
 unverified. Native source checkpointc6b94693 requires compilation and its prepared
 Unix lifecycle tests before any native functionality can be accepted. No pushes,
 CI workflows, merges, deployments, paid calls or production changes occurred.
+
+### Controlled checkpoint preparation — 2026-10-20 (no push authorized)
+
+Candidate source: local `codex/desktop-agent-next-local` at5b9775b0 before this
+preparation entry. All12 explicitly named historical checkpoints are ancestors,
+includingfd15d668/5cd00b81/b4872238/61c741b4 and the latestc6b94693/5b9775b0.
+There are20 commits/51 changed files over recorded main eab40ee046be70abe012bd3a7f9108f92652c92d,
+and10 commits/20 changed files after PR193 head a96367fc719dd6b94eebf3b812008cc659f7aaf5.
+Working tree was clean before preparation. Reviewed changed-file inventory,
+workflow diff and accumulated implementation/review evidence. Added-line history
+pattern scan across all20 commits found no private-key, GitHub/provider/Stripe
+live/AWS-key or credential-bearing DB URL pattern matches; artifact-path scan
+found no local logs, dependency/build directories, env files or installer/key
+artifacts. This bounded pattern scan is not a guarantee against all secret forms.
+Diff whitespace check passes. No remote ref/history/PR was modified.
+
+Read-only GitHub refresh confirms PR193 still open at its original a96367fc head,
+and main still eab40ee. The latest six run records contain the same three PR193
+failures (39501751841/39501751770/39501751771, attempt1) and older PR191 runs;
+there is no newer successful startup evidence. Reuse prior zero-step/zero-billed
+startup findings; no failed run was retried. Exact startup cause remains unknown.
+The GitHub connector rejects account billing usage endpoints; local `gh api`
+network access fails with socket operation-not-permitted. No escalation or
+credential workaround attempted. Current allowance, spending cap and runner
+availability therefore CANNOT be verified; push approval is not requested yet.
+
+Proposed future checkpoint, only after readiness/cost evidence and explicit
+owner approval: push the exact approved local SHA to this development branch,
+leaving PR193 and all blocked PR refs unchanged; authorize the PR checkpoint
+separately if needed. Required checks remain Test (full types/tests/offline auth/
+website build), Desktop CI Linux plus macOS (frontend/native tests/clippy), and
+Isolated website acceptance. Feature-only pushes have no heavy push trigger;
+a PR event is required for those checks. No duplicate manual dispatch or rerun.
+No merge, main push, Vercel deployment or installer release. Vercel deployment
+control remains false; automatic paid Agent review is a separate previously
+recorded cost blocker and must be accounted for before any new PR activity.
+
+Independent local review corrected a redundant borrow introduced when native
+runner root became &Path, avoiding an obvious clippy risk. This is not Rust
+compilation evidence. Rust/native lifecycle, installed Mac and real-provider
+execution remain explicitly unverified. Existing130-case renderer/contract
+milestone evidence is reused rather than rerunning unrelated suites.
+Continued independent boundary hardening: receipt exit codes now match native i32
+range, and elapsed timing must be a nonnegative safe integer rather than merely
+finite. This rejects fractional/unsafe timing and impossible native exit values.
+All13 targeted receipt cases pass; no native or provider execution is implied.
