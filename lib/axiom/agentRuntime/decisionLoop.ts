@@ -18,6 +18,7 @@ import { isBoundedAwsObservation } from "./cloudObservationPolicy";
 import { findTool, toolCatalogPrompt, classifyRisk, type ToolRiskLevel } from "./tools";
 import { resolveGovernedAiCall, type GovernedAiCallError } from "./governedAiCall";
 import { GovernedAiCallRefusal } from "./governedAiCallRefusal";
+import { AgentStreamInterrupted } from "@/lib/ai/streamedDecisionMessage";
 import { readWorkspaceAgentIdentity } from "./agentIdentityPolicy";
 import type { AITextResponse } from "@/lib/ai/AIProvider";
 
@@ -169,7 +170,7 @@ async function extractDecision(
       const parsed = parseRawDecision(response.data);
       if (parsed) return parsed;
     } catch (error) {
-      if (error instanceof GovernedAiCallRefusal) throw error;
+      if (error instanceof GovernedAiCallRefusal || error instanceof AgentStreamInterrupted || error instanceof Error && error.name === "AbortError") throw error;
       // One bounded retry handles providers that wrap, truncate, or otherwise
       // miss the structured contract. Writes remain proposals after parsing.
     }
@@ -188,6 +189,7 @@ export async function runDecisionLoop(input: {
   skillContext?: string;
   preferredProvider?: string;
   preferredModel?: string;
+  streaming?: { abortSignal: AbortSignal; onDraft: (message: string) => void };
   operationMode?: AgentOperationMode;
   initialToolCall?: InitialReadOnlyToolCall;
   executeReadOnlyTool: (toolName: string, args: Record<string, unknown>) => Promise<{ ok: true; result: unknown } | { ok: false; error: string }>;
@@ -202,7 +204,10 @@ export async function runDecisionLoop(input: {
   if (!identity?.enabled) return { kind: "error", error: "workspace_agent_disabled" };
   const allowedTools = new Set(identity.allowedTools);
 
-  const governed = await resolveGovernedAiCall(input.organizationId, input.preferredProvider, input.userId, input.preferredModel);
+  input.streaming?.abortSignal.throwIfAborted();
+  const governed = input.streaming
+    ? await resolveGovernedAiCall(input.organizationId, input.preferredProvider, input.userId, input.preferredModel, input.streaming)
+    : await resolveGovernedAiCall(input.organizationId, input.preferredProvider, input.userId, input.preferredModel);
   if (!governed.ok) return { kind: "error", error: governed.error };
 
   const effort = resolveAgentEffortProfile(input.operationMode);
@@ -227,14 +232,17 @@ export async function runDecisionLoop(input: {
   // Inference and provider setup can outlive an operator's permission change.
   // The prompt's allowlist is only a ceiling, never perpetual authority.
   const recheckToolAuthority = async (toolName: string): Promise<Extract<DecisionLoopOutcome, { kind: "error" }> | null> => {
+    input.streaming?.abortSignal.throwIfAborted();
     try {
       const current = await readWorkspaceAgentIdentity(input.organizationId);
+      input.streaming?.abortSignal.throwIfAborted();
       if (!current?.enabled) return { kind: "error", error: "workspace_agent_disabled" };
       if (!current.allowedTools.includes(toolName)) {
         return { kind: "error", error: "agent_tool_not_allowed", detail: `Tool is no longer approved for this agent identity: ${toolName}` };
       }
       return null;
     } catch {
+      input.streaming?.abortSignal.throwIfAborted();
       return { kind: "error", error: "workspace_agent_policy_unavailable" };
     }
   };
@@ -260,6 +268,7 @@ export async function runDecisionLoop(input: {
     }
     const authorityError = await recheckToolAuthority(tool.name);
     if (authorityError) return withUsage(authorityError);
+    input.streaming?.abortSignal.throwIfAborted();
     const executed = await input.executeReadOnlyTool(tool.name, input.initialToolCall.args);
     if (tool.name === "read_aws_inventory" || tool.name === "list_cloud_accounts") {
       const afterReadAuthority = await recheckToolAuthority(tool.name);
@@ -291,6 +300,7 @@ export async function runDecisionLoop(input: {
       throw error;
     }
     if (!decision) return withUsage({ kind: "error", error: "decision_malformed" });
+    input.streaming?.abortSignal.throwIfAborted();
 
     if (decision.action === "respond") {
       return withUsage({ kind: "final", message: boundedObservation ? `Incomplete EC2 observation only: costs, utilization, backups and account-wide coverage are unknown. No change was proposed.\n\n${decision.message}` : decision.message });
@@ -321,6 +331,7 @@ export async function runDecisionLoop(input: {
       return withUsage({ kind: "proposal", message: decision.message, toolName: tool.name, args, riskLevel });
     }
 
+    input.streaming?.abortSignal.throwIfAborted();
     const executed = await input.executeReadOnlyTool(tool.name, args);
     if (tool.name === "read_aws_inventory" || tool.name === "list_cloud_accounts") {
       const afterReadAuthority = await recheckToolAuthority(tool.name);

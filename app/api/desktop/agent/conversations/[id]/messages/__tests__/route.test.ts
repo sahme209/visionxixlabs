@@ -330,3 +330,41 @@ describe("POST /api/desktop/agent/conversations/[id]/messages", () => {
   });
 
 });
+
+
+describe("authenticated Agent NDJSON endpoint", () => {
+  function streamingRequest() {
+    return new NextRequest("https://visionxixlabs.com/api/desktop/agent/conversations/conv_1/messages", { method: "POST", headers: { "content-type": "application/json", accept: "application/x-ndjson" }, body: JSON.stringify({ message: "Inspect the file" }) });
+  }
+  beforeEach(() => {
+    vi.clearAllMocks();
+    mocks.resolveRequestDesktopSession.mockResolvedValue(session);
+    mocks.findFirstConversation.mockResolvedValue({ id: "conv_1", organizationId: "org-1", userId: "user-1", title: null });
+  });
+  it("rejects unauthenticated and foreign-owned conversations before a stream is created", async () => {
+    const { POST } = await import("../route");
+    mocks.resolveRequestDesktopSession.mockResolvedValue(undefined);
+    expect((await POST(streamingRequest(), params)).status).toBe(401);
+    mocks.resolveRequestDesktopSession.mockResolvedValue(session);
+    mocks.findFirstConversation.mockResolvedValue(null);
+    expect((await POST(streamingRequest(), params)).status).toBe(404);
+    expect(mocks.runDecisionLoop).not.toHaveBeenCalled(); expect(mocks.createTurn).not.toHaveBeenCalled();
+  });
+  it("streams a draft and returns only a persisted, final response", async () => {
+    let finish!: () => void;
+    const gate = new Promise<void>(resolve => { finish = resolve; });
+    mocks.runDecisionLoop.mockImplementation(async input => { input.streaming.onDraft("Draft explanation"); await gate; return { kind: "final", message: "Verified explanation" }; });
+    const { POST } = await import("../route");
+    const response = await POST(streamingRequest(), params);
+    expect(response.headers.get("content-type")).toContain("application/x-ndjson");
+    const reader = response.body!.getReader();
+    const initial = new TextDecoder().decode((await reader.read()).value);
+    expect(initial).toContain('"draft_delta"'); expect(initial).not.toContain('"result"');
+    finish();
+    let rest = "";
+    while (true) { const next = await reader.read(); if (next.done) break; rest += new TextDecoder().decode(next.value); }
+    expect(rest).toContain('"result"'); expect(rest).toContain("Verified explanation");
+    expect(mocks.createTurn).toHaveBeenCalledWith({ data: { conversationId: "conv_1", role: "assistant", content: "Verified explanation" } });
+    expect(mocks.resolveRequestDesktopSession).toHaveBeenCalledWith(expect.anything(), expect.objectContaining({ allowApiKey: false }));
+  });
+});

@@ -155,4 +155,49 @@ describe("actual manager admitted extraction boundary", () => {
     if (failure !== "writer") expect(m.write).not.toHaveBeenCalled();
   });
 
+  it("streams only message drafts, then links usage before parsing an executable decision", async () => {
+    const capability = await admitGovernedExtract(scope);
+    const drafts: string[] = [];
+    m.stream.mockImplementation(async function* () {
+      yield { done: false, text: '{"message":"Visible draft","action":"call_tool","args":{"private":"not a draft"},"toolName":"commit_github_file"}' };
+      expect(m.write).not.toHaveBeenCalled();
+      yield { done: true, text: "", response: { ...response, finishReason: "stop" } };
+    });
+    const result = await new AIProviderManager().extractStructuredDataStreamingWithAdmission("prompt", "schema", scope, capability, text => drafts.push(text));
+    expect(drafts).toEqual(["", "Visible draft"]);
+    expect(result.data).toMatchObject({ action: "call_tool", toolName: "commit_github_file" });
+    expect(m.write).toHaveBeenCalledOnce();
+    expect(m.stream.mock.calls[0][1]).toMatchObject({ system: "Return valid JSON only. The required shape is: schema" });
+  });
+  it.each(["stream", "writer"])("streamed extraction %s uncertainty cannot authorize a repair", async failure => {
+    const capability = await admitGovernedExtract(scope);
+    m.stream.mockImplementation(async function* () {
+      yield { done: false, text: '{"message":"partial' };
+      if (failure === "stream") throw new Error("unknown");
+      yield { done: true, text: "", response: { ...response, finishReason: "stop" } };
+    });
+    if (failure === "writer") m.write.mockResolvedValue({ recorded: false });
+    await expect(new AIProviderManager().extractStructuredDataStreamingWithAdmission("prompt", "schema", scope, capability, () => undefined)).rejects.toMatchObject({ name: "AgentStreamInterrupted" });
+    expect(m.stream).toHaveBeenCalledOnce();
+  });
+  it("accounts a complete malformed streamed JSON envelope before allowing separate repair", async () => {
+    const capability = await admitGovernedExtract(scope);
+    m.stream.mockImplementation(async function* () {
+      yield { done: false, text: "not JSON" };
+      yield { done: true, text: "", response: { ...response, finishReason: "stop" } };
+    });
+    await expect(new AIProviderManager().extractStructuredDataStreamingWithAdmission("prompt", "schema", scope, capability, () => undefined)).rejects.toBeInstanceOf(SyntaxError);
+    expect(m.write).toHaveBeenCalledOnce();
+  });
+
+  it("cannot repair or dispatch with a forged streaming capability", async () => {
+    await expect(new AIProviderManager().extractStructuredDataStreamingWithAdmission("prompt", "schema", scope, {} as never, () => undefined)).rejects.toMatchObject({ name: "AgentStreamInterrupted" });
+    expect(m.stream).not.toHaveBeenCalled(); expect(m.write).not.toHaveBeenCalled();
+  });
+  it("a failed draft sink after claim is non-repairable and does not dispatch", async () => {
+    const capability = await admitGovernedExtract(scope);
+    await expect(new AIProviderManager().extractStructuredDataStreamingWithAdmission("prompt", "schema", scope, capability, () => { throw new Error("reader closed"); })).rejects.toMatchObject({ name: "AgentStreamInterrupted" });
+    expect(m.stream).not.toHaveBeenCalled(); expect(m.write).not.toHaveBeenCalled();
+  });
+
 });

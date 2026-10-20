@@ -14,6 +14,8 @@ import { setDesktopTransportCredential } from "./desktopTransport";
 import type { TerraformPlanReadData,CustomerPlanProfileView,CustomerPlanConfigurationInput,CustomerPlanImportInput,CustomerPlanImported } from "../../../lib/terraform/customerPlanDto";
 import type { AirflowRestartReviewDto } from "../../../lib/integrations/airflow/restartReviewDto";
 import { parseDesktopIdentityResponse } from "./desktopIdentityResponse";
+import { readAgentMessageStream } from "./agentMessageStream";
+import { AGENT_STREAM_CONTENT_TYPE, isAgentMessageReply } from "../../../lib/desktop/agentMessageStreamProtocol";
 
 const DEFAULT_API_BASE = "https://visionxixlabs.com";
 
@@ -1020,13 +1022,56 @@ export class DesktopClient {
     filePath?: string;
     mode?: "chat" | "code";
     operationMode?: "inspect" | "engineer" | "deepops";
-  }, preferredModel?: string): Promise<ApiResult<{
+  }, preferredModel?: string, streaming?: { signal: AbortSignal; onDraft: (text: string) => void }): Promise<ApiResult<{
     reply: string;
     proposal: { id: string; toolName: string; argsJson: unknown; riskLevel: string; status: string } | null;
     /** Provider-reported token evidence, not a settled customer credit charge. */
     usage: { decisionSteps: number; inputTokens: number | null; outputTokens: number | null; totalTokens: number | null } | null;
   }>> {
-    return this.post(`/api/desktop/agent/conversations/${encodeURIComponent(conversationId)}/messages`, { message, preferredProvider, workspaceContext, ...(preferredModel ? { preferredModel } : {}) });
+    const path = `/api/desktop/agent/conversations/${encodeURIComponent(conversationId)}/messages`;
+    const body = { message, preferredProvider, workspaceContext, ...(preferredModel ? { preferredModel } : {}) };
+    if (!streaming) return this.post(path, body);
+    return this.sendStreamingAgentMessage(path, body, streaming);
+  }
+
+  private async sendStreamingAgentMessage(path: string, body: unknown, streaming: { signal: AbortSignal; onDraft: (text: string) => void }) {
+    const context = this.config;
+    const controller = new AbortController();
+    // Relay cancellation without depending on newer WKWebView AbortSignal.any.
+    const onAbort = () => controller.abort();
+    streaming.signal.addEventListener("abort", onAbort, { once: true });
+    if (streaming.signal.aborted) controller.abort();
+    const signal = controller.signal;
+    const unsubscribe = this.subscribeContext(() => controller.abort());
+    const assertOwned = () => {
+      if (context !== this.config) controller.abort();
+      signal.throwIfAborted();
+    };
+    try {
+      assertOwned();
+      const response = await fetch(`${context.apiBase}${path}`, {
+        method: "POST", credentials: "include", redirect: "error", signal,
+        headers: { ...this.headers(), "content-type": "application/json", accept: AGENT_STREAM_CONTENT_TYPE },
+        body: JSON.stringify(body),
+      });
+      assertOwned();
+      if (!response.ok) {
+        const json = await response.json().catch(() => ({}));
+        return { ok: false as const, error: legacyApiError(json, response.status) };
+      }
+      // Already-serving older releases may return their ordinary JSON response
+      // to Accept. Consume that SAME response; never dispatch a fallback call.
+      const data = response.headers.get("content-type")?.split(";")[0] === AGENT_STREAM_CONTENT_TYPE
+        ? await readAgentMessageStream(response, text => { assertOwned(); streaming.onDraft(text); }, signal)
+        : await response.json().then(value => {
+          if (value?.ok !== true || !isAgentMessageReply(value.data)) throw new Error("invalid_agent_reply");
+          return value.data;
+        });
+      assertOwned();
+      return { ok: true as const, data: { ...data, usage: data.usage ?? null } };
+    } catch {
+      return { ok: false as const, error: signal.aborted ? "Request stopped. Any completed work remains recorded; reload the conversation before trying again." : "The response was interrupted. No success was assumed. Reload the conversation before trying again." };
+    } finally { unsubscribe(); streaming.signal.removeEventListener("abort", onAbort); controller.abort(); }
   }
 
   approveAgentAction(actionId: string): Promise<ApiResult<{ id: string; status: string; errorMessage: string | null }>> {

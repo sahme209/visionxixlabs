@@ -2223,3 +2223,59 @@ Validation checkpoint: all27 affected AI/demo suites pass275 tests; the updated
 demo contract passes15 checks separately (overlapping evidence, not extra product
 coverage). Scoped TypeScript, ESLint, diff whitespace and mission coverage checks
 pass. No full CI was redundantly rerun or merge gate waived for this local slice.
+
+### 2026-10-20 — authenticated Agent HTTP/native/chat streaming integration
+
+Research/plan: reuse the existing paired-session message endpoint, conversation
+tenant+actor lookup, per-inference live model policy, extraction admission,
+decision validation, read-tool audit and persisted approval proposals. Preserve
+ordinary JSON clients. Stream only top-level message drafts, never raw decision
+JSON/tool arguments; publish a final result only after accounting and existing
+persistence. Add bounded UTF-8 NDJSON, disconnect cancellation, native IPC demand
+acknowledgements, and shared chat/repository-edit rendering. Acceptance requires
+isolated route/client/component contracts, native compilation, then actual macOS
+and hosted-provider workflows; none substitutes for another.
+
+Implemented: explicit Accept application/x-ndjson on the same authenticated
+desktop message endpoint. Invalid sessions, other-tenant/other-user conversations,
+invalid model or context refuse before streaming. Existing JSON requests retain
+their response. The admitted extraction streams incremental display-only message
+drafts; complete envelopes are durably linked before parsing. Stream/admission/
+setup/write uncertainty is non-repairable. Only fully accounted malformed JSON
+may use the existing separately admitted repair. Cancellation rechecks after
+awaited authority lookups and before tools/persistence prevent subsequent work;
+already-started read/audit operations are not promised reversible.
+
+Native transport: exact product origin and canonical message path, explicit
+bearer POST, no redirects, window-bound request identities, bounded concurrency,
+16KiB chunks with one outstanding acknowledgement, 8MiB total and a 120-second
+native lifetime. Abort reaches the native worker immediately, including pending
+registration and credential changes. Locked Tauri2.11.6/reqwest0.12.28 official
+source confirms Channel.send/Response.chunk without dependency changes. No Rust
+toolchain is installed here: native compilation and real macOS execution remain
+required gates, not inferred from TypeScript.
+
+The actual shared Agent chat/repository-edit composer renders labeled unverified
+drafts and Stop; proposal controls appear only from the final persisted result.
+Workspace/context change aborts stalled reads and rejects late draft/results.
+Older serving releases' JSON is consumed from the same response without another
+paid request. Independent review identified and verified corrections for
+cancel-during-authority-read, setup/claim uncertainty entering repair, and stalled
+reads after context changes. Targeted tests exercise those regressions, real
+ReadableStream HTTP/client composition and actual React composer interactions.
+These use isolated providers/DB/native fixtures and do not establish hosted
+provider, SQL or customer acceptance. The desktop frontend/release build passes.
+PR184's browser gate and production DB/provider/installer approvals remain intact;
+no production deployment, provider charge, database or credential change occurred.
+
+Validation checkpoint: full TypeScript passes; desktop release/frontend build,
+scoped lint, demo contract and30 Python checks pass. The affected AI/desktop/Agent
+family records1001 passing checks,34 skipped, three release subprocess assertion
+failures and a GPG setup failure. One full local Vitest run records8549 passing,
+57 failing and68 skipped tests across747 passing/11 failing suites, plus29 errors.
+Failure evidence includes spawnSync git/python/node EPERM, loopback listen EPERM
+and consequent HTTP fixture timeouts, missing child diagnostics and GPG status2.
+These are retained for exact-head CI; no native control, fixture gate or timeout
+was weakened. Native compilation remains unavailable here. These local results
+are not an all-green suite or permission to merge. Small reviewed compatibility
+edits during the run also mean it is not an exact final-head acceptance receipt.

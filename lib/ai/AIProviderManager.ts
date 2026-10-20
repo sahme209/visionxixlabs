@@ -23,6 +23,7 @@ import { redact } from "@/lib/security/redaction";
 import { recordAIUsageEvent } from "@/lib/billing/recordAIUsageEvent";
 import { consumeGovernedExtractAdmission, consumeGovernedTextAdmission, type GovernedAIAdmission, type GovernedExtractAdmission } from "@/lib/billing/governedExtractAdmission";
 import { parseGatewayStructuredResponse, VercelGatewayProvider } from "./providers/VercelGatewayProvider";
+import { AgentStreamInterrupted, streamedDecisionMessage } from "./streamedDecisionMessage";
 
 let SINGLETON: AIProviderManager | null = null;
 
@@ -254,6 +255,41 @@ export class AIProviderManager {
     );
     await authority.record(out.result);
     return parseGatewayStructuredResponse<T>(out.result);
+  }
+
+  /** Streaming Agent decisions stay display-only until the complete envelope
+   * is accounted, parsed and checked by the existing decision loop. */
+  async extractStructuredDataStreamingWithAdmission<T = unknown>(
+    text: string, schemaHint: string,
+    options: AIRequestOptions & { only?: AIProviderName; abortSignal?: AbortSignal },
+    admission: GovernedExtractAdmission,
+    onDraft: (message: string) => void,
+  ): Promise<AIStructuredResponse<T>> {
+    let raw = "", draft = "", response: AITextResponse | undefined;
+    try {
+      const authority = consumeGovernedExtractAdmission(admission, options);
+      const gateway = this.admittedGateway(options);
+      onDraft("");
+      for await (const chunk of gateway.streamTextOnce(redact(text), {
+        ...this.optionsForProvider(gateway, options), abortSignal: options.abortSignal,
+        system: `Return valid JSON only. The required shape is: ${schemaHint}`,
+      })) {
+        if (chunk.done) {
+          await authority.record(chunk.response);
+          response = { ...chunk.response, text: raw };
+        } else {
+          raw += chunk.text;
+          if (raw.length > 131_072) throw new AgentStreamInterrupted();
+          const next = streamedDecisionMessage(raw);
+          if (next !== draft && next.startsWith(draft)) { draft = next; onDraft(draft); }
+        }
+      }
+      options.abortSignal?.throwIfAborted();
+      if (!response) throw new AgentStreamInterrupted();
+    } catch { throw new AgentStreamInterrupted(); }
+    // Only a fully accounted malformed JSON envelope can receive the existing
+    // separately admitted repair. Stream/write uncertainty above never can.
+    return parseGatewayStructuredResponse<T>(response);
   }
 
   async *streamText(prompt: string, options?: AIRequestOptions & { only?: AIProviderName }): AsyncIterable<AIStreamChunk> {

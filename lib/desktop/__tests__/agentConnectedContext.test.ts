@@ -41,7 +41,7 @@ it("searches connected catalogs, keeps selected context visible, and sends the e
   expect((screen.getByLabelText("Active GitHub repository") as HTMLSelectElement).value).toBe(repo2.fullName);
   fireEvent.change(screen.getByRole("textbox"), { target: { value: "Inspect selected context" } });
   fireEvent.click(screen.getByRole("button", { name: "Send" }));
-  await waitFor(() => expect(m.client.sendAgentMessage).toHaveBeenCalledWith("conversation-1", "Inspect selected context", "vercel_gateway", expect.objectContaining({ repositoryFullName: repo2.fullName, branch: "develop", environmentId: "env-2" }), "fixture/model"));
+  await waitFor(() => expect(m.client.sendAgentMessage).toHaveBeenCalledWith("conversation-1", "Inspect selected context", "vercel_gateway", expect.objectContaining({ repositoryFullName: repo2.fullName, branch: "develop", environmentId: "env-2" }), "fixture/model", expect.objectContaining({ signal: expect.anything(), onDraft: expect.any(Function) })));
 });
 it("does not use another workspace's stored target while catalogs are pending or unavailable and recovers by retry", async () => {
   window.localStorage.setItem("axiom.workspace.repository.v1", "foreign/private");
@@ -87,7 +87,7 @@ it("preserves explicit manual repository recovery without claiming connected cat
   fireEvent.change(screen.getByRole("textbox", { name: "Repository owner and name" }), { target: { value: "explicit/recovery" } });
   fireEvent.change(screen.getByRole("textbox", { name: "" }), { target: { value: "Inspect manually entered repository" } });
   fireEvent.click(screen.getByRole("button", { name: "Send" }));
-  await waitFor(() => expect(m.client.sendAgentMessage).toHaveBeenCalledWith("conversation-1", "Inspect manually entered repository", "vercel_gateway", expect.objectContaining({ repositoryFullName: "explicit/recovery" }), "fixture/model"));
+  await waitFor(() => expect(m.client.sendAgentMessage).toHaveBeenCalledWith("conversation-1", "Inspect manually entered repository", "vercel_gateway", expect.objectContaining({ repositoryFullName: "explicit/recovery" }), "fixture/model", expect.objectContaining({ signal: expect.anything(), onDraft: expect.any(Function) })));
 });
 
 it("restores saved preferences only when returned by current catalogs and preserves the saved environment", async () => {
