@@ -30,15 +30,44 @@ function capture(environment = captureEnvironment()) {
   return { schema: 1, root, sourceHead: git(['rev-parse', 'HEAD'], environment), managedNodePath: environment.nodePath, managedSelectors: policy.managedSelectorIdentity(environment.managed), framework: framework.captureOwnedWebsiteFramework(root), hashes: Object.fromEntries([...sourceFiles.map(path => join(root, path)), realpathSync(process.execPath), realpathSync(browser)].map(path => [path, policy.sha256(path)])), productionEquivalent: false };
 }
 const groupMembers = policy.groupMembers;
-async function stopGroup(owner) {
-  function members() { const rows = groupMembers(owner.group); for (const row of rows) assert.ok(Number(row.start) >= Number(owner.start) && row.executable === owner.executable, 'website_cleanup_foreign_group_member'); return rows; }
-  if (!members().length) return;
-  try { const current = policy.snapshot(owner.pid); assert.ok(policy.sameOwner(owner, current), 'website_cleanup_leader_changed'); } catch (error) { if (!['ENOENT', 'ESRCH'].includes(error.code)) throw error; }
-  process.kill(-owner.group, 'SIGTERM');
-  let deadline = Date.now() + 5000; while (members().length && Date.now() < deadline) await pause(25);
-  if (members().length) process.kill(-owner.group, 'SIGKILL');
-  deadline = Date.now() + 2000; while (members().length && Date.now() < deadline) await pause(25);
-  assert.equal(members().length, 0, 'website_cleanup_incomplete');
+async function stopGroup(owner, io = { members: groupMembers, snapshot: policy.snapshot, sameOwner: policy.sameOwner, kill: (group, signal) => process.kill(group, signal), now: Date.now, pause }) {
+  // Registration/preflight retries consume the existing TERM grace, never extend it.
+  const termDeadline = io.now() + 5000;
+  const finalDeadline = termDeadline + 2000;
+  function members() {
+    try {
+      const rows = io.members(owner.group);
+      for (const row of rows) assert.ok(Number(row.start) >= Number(owner.start) && row.executable === owner.executable, 'website_cleanup_foreign_group_member');
+      return rows;
+    } catch (error) { if (['ENOENT', 'ESRCH'].includes(error.code)) return null; throw error; }
+  }
+  function authority() {
+    const rows = members(); if (rows === null || rows.length === 0) return rows;
+    try { assert.ok(io.sameOwner(owner, io.snapshot(owner.pid)), 'website_cleanup_leader_changed'); }
+    catch (error) { if (['ENOENT', 'ESRCH'].includes(error.code)) return null; throw error; }
+    return members(); // Recheck known members after fresh leader identity, before signaling.
+  }
+  async function waitForAuthority(deadline) {
+    while (io.now() < deadline) { const rows = authority(); if (rows !== null) return rows; await io.pause(Math.min(25, deadline - io.now())); }
+    throw Error('website_cleanup_metadata_unverified');
+  }
+  const initial = await waitForAuthority(termDeadline);
+  if (!initial.length) return;
+  io.kill(-owner.group, 'SIGTERM');
+  while (io.now() < termDeadline) {
+    const rows = members(); if (rows !== null && rows.length === 0) return;
+    await io.pause(Math.min(25, termDeadline - io.now()));
+  }
+  const escalation = await waitForAuthority(finalDeadline);
+  if (!escalation.length) return;
+  io.kill(-owner.group, 'SIGKILL');
+  while (io.now() < finalDeadline) {
+    const rows = members(); if (rows !== null && rows.length === 0) return;
+    await io.pause(Math.min(25, finalDeadline - io.now()));
+  }
+  const final = members();
+  assert.ok(final !== null, 'website_cleanup_metadata_unverified');
+  assert.equal(final.length, 0, 'website_cleanup_incomplete');
 }
 function directoryBytes(path) { let total = 0; for (const item of readdirSync(path, { withFileTypes: true })) { if (item.isSymbolicLink()) continue; const next = join(path, item.name); total += item.isDirectory() ? directoryBytes(next) : statSync(next).size; } return total; }
 async function execute(manifest) {
