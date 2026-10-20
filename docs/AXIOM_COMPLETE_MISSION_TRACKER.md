@@ -3436,3 +3436,121 @@ Requested opening gallery in app panel; tool reports queued, not proof owner saw
 it. Home/product-mobile/docs PNGs were also visually inspected via image tool.
 Existing rendered samples remain labeled simulated; no auth/native/payment/cloud
 or real provider acceptance. No push/merge/deployment/production change occurred.
+### 2026-10-20 — execute existing owned commercial SQL acceptance in CI
+
+Research: the default suite deliberately skips all34 owned PG cases. Six prepared
+legacy admission cases and19 allocation/anniversary cases therefore remained
+declarations rather than SQL proof. The existing suite owns a fresh Docker PG17
+container, generated password, empty loopback-only database and constructor-bound
+Prisma clients; it refuses external URLs/env files and retains checked child
+environments. Local Docker info is denied EPERM; no escalation or guard bypass.
+
+Plan: reuse this existing suite in a path-scoped pull-request/main/manual GitHub
+job with read-only repository permissions, no environment/secrets, synthetic
+provider implementations and no HTTP flags. Pre-pull the same PG17 image used by
+the current auth rehearsal; the harness keeps its --pull=never launch and cleanup.
+Require32 executed SQL passes (six legacy,19 allocation,seven service), allowing
+only the two named HTTP cases to remain skipped. The existing genuine five-minute
+TTL test and original deadlines stay unchanged. No production migration or paid
+provider call occurs; this does not establish hosted Stripe/provider/customer
+acceptance. A daemon-query failure or leftover owned container must fail cleanup.
+
+The report gate's valid-run check was red before implementation. All20 gate and
+legacy-declaration checks pass; a real default-suite Vitest JSON report with
+0pass/34pending is correctly rejected. Independent review confirmed isolated
+bindings/report semantics and caught a command-substitution cleanup false pass;
+separate checked Docker capture fixes it. Actual SQL/CI execution remains pending.
+
+Streaming head25cd559a browser39483571041 passes12 checks with unchanged source,
+empty cleanup, six console errors and zero runtime exceptions. ZIP SHA256 is
+235599fff5b0245a4b8315a19154fb0149f097f4c6e9268f6ae62be50c5e0e1f.
+Five captures match reviewed e9d79d6a images exactly; the changed documentation
+image was inspected separately. Floating-widget overlap remains a visual limit;
+historical navigation cause remains unknown. Native39483570885 passes18 tests
+and Clippy. Full39483571044 passed types,8646 tests (34 skipped), offline auth and
+the production website build without deployment. PR186 was normally merged into
+PR184 as06f5b432 only after all exact25cd559a gates passed. Parent/main integration
+still requires its own applicable checks; production approvals remain intact.
+
+
+Owned PG run39485471622 at5955207d executed all32 SQL cases successfully with
+two named HTTP cases skipped, including the genuine five-minute hold and actual
+row-lock/rollback/usage-link cases. Container cleanup also passed. The workflow
+then failed its new report gate: Vitest aggregates numPendingTests but assertion
+rows use skipped, not pending. The captured installed reporter output confirms
+that mapping. A corrected valid fixture was red against the old gate; the parser
+now requires only the two named HTTP rows to be skipped and still demands all32
+SQL passes. An explicit obsolete-pending rejection regression and independent
+review close the format fix. All21 gate/declaration checks, scoped types/lint
+pass. Evidence: mission/owned-commercial-sql-5955207d.json. The workflow remains
+failed for that head; fresh corrected-head CI is required. Its browser failure
+remains separately recorded, with no retry absent this substantive correction.
+No SQL implementation, expiry, financial rule or production state changed.
+
+### Owned application HTTP acceptance — portable isolated rehearsal
+
+Research: the existing first HTTP case already exercises seeded credentials,
+actual Next/Auth.js cookies, versioned billing views, unsupported-operation
+rejection and provider-disabled hold release. Reuse it in a separate CI job,
+filtered to that case; the independent SQL job still requires all32 cases and
+its original five-minute expiry check. The separately bound checkout worker
+stays disabled: its prior evidence is preserved, not treated as portable proof.
+No signup, hosted Stripe checkout, paid provider or production acceptance claim.
+
+The existing launch policy now also protects this HTTP child and its Prisma
+setup; managed selectors are retained and the composed environment revalidated.
+No guard stripping, manifest rebinding, production credentials or financial-rule
+change. Independent read-only review found no blocker. A receipt regression
+exposed an inferred checkout skip; the gate now verifies that exact named row.
+Targeted gate/declaration/launch-policy checks pass69. Required acceptance is a
+fresh owned-container HTTP run, all32 SQL passes, cleanup and applicable PR CI;
+local Docker access remains restricted, with no bypass attempted.
+
+Corrected SQL head e3a472df run39486872996 passed32 cases, the receipt gate and
+cleanup. Its browser run39486872669 failed11 checks at documentation navigation:
+79.824s click,388 responsive polls to120s, no documentation request observed at
+the proxy, unchanged source and empty cleanup. Root cause remains unknown; no
+same-head retry, timeout change or browser gate waiver. Continue independent
+application/native acceptance while retaining this unresolved browser gate.
+
+### GitHub consolidation resumed — all prior work retained
+
+Latest owner direction stops Preview/billing/screenshot work; focus returns to
+product and GitHub consolidation. Read-only PR audit:187=e356c036 (conflicted),
+191=a2b488ff,192=0e418a4b,193=a96367fc. Main remains eab40ee046be70abe012bd3a7f9108f92652c92d.
+Graph proves191/192/193 are already ancestors of both pushed4db11e37 and latest
+local continuation. Do not replay/cherry-pick/reimplement them.187 is missing and
+adds six unique files/changes: owned SQL/HTTP CI workflow, strict evidence gates,
+tests, fixture-launch selector handling and historical receipt/tracker evidence.
+
+Prepared local branch codex/axiom-consolidation-local from3d738ca2 and merged187
+without rewriting histories. Sole conflict was the tracker; retained every source
+line from BOTH parents, verified programmatically. No source conflict or removal
+of either acceptance job/gate. Independent review found no integration/security
+blocker. Historical source receipts are not acceptance of this combined head.
+
+Targeted integration run:86 passed/2 failed across88 cases. Both failures are in
+unchanged child-environment tests that spawn literal Node children: one explicitly
+reports spawnSync Node EPERM; the other parses empty stdout and reports a secondary
+JSON error. No guard removal, skipped assertions, retries or timeout increase.
+This environment cannot establish those subprocess acceptance gates. Commercial
+evidence-gate and owned-launch-policy suites pass. SQL/HTTP Docker/native/installed
+Mac/real-provider acceptance of this merged head remains unverified.
+
+GitHub exact-head checks:187 core Test/SQL/HTTP/native pass, website fails;
+191/192 Test/native pass, website fails;193 Test/native/website fail before steps.
+All remain ineligible for merge under owner-required gates. Main branch API says
+protected=false, but that does NOT waive explicitly required quality gates.
+Read-only CLI request for193 startup annotations returns Forbidden even with
+normal network access; no startup cause verified, no workflow retry dispatched.
+
+Clean sequence: retain all original PR refs and their historical check evidence;
+review one consolidated descendant containing all four heads and later local
+work; use one meaningful CI checkpoint only once startup access is resolved.
+That checkpoint must include Test, Linux/macOS native CI, website acceptance and
+owned SQL/HTTP acceptance. Merge only the exact reviewed/passing eligible head;
+then mark historical PRs superseded only after main ancestry proves preservation.
+Do not land overlapping old PRs individually merely to make the PR list smaller.
+A no-PR/non-main source backup may be pushed if trigger/isolation review proves
+no workflows/deployments/paid operations; no automatic test retries. No production
+or paid operation is authorized by this consolidation.

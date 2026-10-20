@@ -1,0 +1,100 @@
+name: Isolated commercial PostgreSQL acceptance
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'lib/billing/**'
+      - 'lib/ai/AIProviderManager.ts'
+      - 'lib/axiom/agentRuntime/governedAiCall.ts'
+      - 'prisma/schema.prisma'
+      - 'scripts/check-owned-commercial-acceptance.mjs'
+      - 'lib/__tests__/ownedCommercialAcceptanceGate.test.ts'
+      - '.github/workflows/owned-commercial-acceptance.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'lib/billing/**'
+      - 'lib/ai/AIProviderManager.ts'
+      - 'lib/axiom/agentRuntime/governedAiCall.ts'
+      - 'lib/__tests__/ownedCommercialAcceptanceGate.test.ts'
+      - 'prisma/schema.prisma'
+      - 'scripts/check-owned-commercial-acceptance.mjs'
+      - '.github/workflows/owned-commercial-acceptance.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: owned-commercial-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  postgres:
+    name: Owned PG17 reservations and TEST subscription accounting
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '24'
+          cache: npm
+      - run: npm ci --ignore-scripts
+      - run: npx prisma generate --schema prisma/schema.prisma
+      # Existing harness creates its own named container, random password and
+      # empty loopback-only database; it refuses external URLs and env files.
+      # No production environment, secret, Stripe call or provider is loaded.
+      - name: Prepare disposable PostgreSQL image
+        run: docker pull postgres:17-alpine
+      - name: Exercise existing owned SQL suite with synthetic providers only
+        env:
+          AXIOM_RUN_OWNED_COMMERCIAL_FIXTURE: '1'
+        run: >-
+          npx vitest run lib/billing/__tests__/newTestSubscriptionService.postgres.test.ts
+          --reporter=dot --reporter=json --outputFile.json=/tmp/axiom-owned-commercial.json
+      - name: Require actual SQL execution and explicit journey limitations
+        run: node scripts/check-owned-commercial-acceptance.mjs /tmp/axiom-owned-commercial.json
+      - name: Verify fixture container cleanup
+        if: always()
+        run: |
+          set -euo pipefail
+          owned_container_ids=$(docker ps -aq --filter name=axiom-commercial-test-)
+          test -z "$owned_container_ids"
+
+  application-http:
+    name: Owned application authentication and billing HTTP acceptance
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '24'
+          cache: npm
+      - run: npm ci --ignore-scripts
+      - run: npx prisma generate --schema prisma/schema.prisma
+      - run: docker pull postgres:17-alpine
+      # Reuse the portable existing HTTP case, not the separately reviewed
+      # environment-bound checkout worker. No live Stripe/provider credentials.
+      # Filter SQL cases here: the parallel postgres job still requires all32.
+      - name: Exercise actual isolated Next authentication and billing routes
+        env:
+          AXIOM_RUN_OWNED_COMMERCIAL_FIXTURE: '1'
+          AXIOM_RUN_OWNED_COMMERCIAL_HTTP: '1'
+        run: >-
+          npx vitest run lib/billing/__tests__/newTestSubscriptionService.postgres.test.ts
+          --testNamePattern 'actual local Next HTTP authenticates, reads versioned allowance, denies unsupported operations and releases provider-disabled hold'
+          --reporter=dot --reporter=json --outputFile.json=/tmp/axiom-owned-application-http.json
+      - name: Require the selected application HTTP case to execute
+        run: node scripts/check-owned-commercial-acceptance.mjs /tmp/axiom-owned-application-http.json http
+      - name: Verify fixture container cleanup
+        if: always()
+        run: |
+          set -euo pipefail
+          owned_container_ids=$(docker ps -aq --filter name=axiom-commercial-test-)
+          test -z "$owned_container_ids"

@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "sourceHead": "5955207d75d386672cfe47ad8413eb46e9c20a1d",
+  "runUrl": "https://github.com/sahme209/visionxixlabs/actions/runs/39485471622",
+  "jobId": 118844620555,
+  "evidenceScope": "owned_postgres_synthetic_provider",
+  "sqlStep": "passed",
+  "sqlCasesPassed": 32,
+  "legacyAdmissionCases": 6,
+  "allocationAnniversaryCases": 19,
+  "serviceCases": 7,
+  "httpCasesSkipped": 2,
+  "cleanupStep": "passed",
+  "workflowConclusion": "failure",
+  "reportGate": "failed: expected pending assertion rows, but installed Vitest emits skipped",
+  "correction": "Only the two named HTTP rows may be skipped; all 32 SQL rows must pass. Corrected gate and new head still require CI.",
+  "database": "Fresh fixture-owned loopback PG17 container; no production connection",
+  "genuineFiveMinuteHoldExpiry": true,
+  "hostedProviderVerified": false,
+  "hostedPaymentVerified": false,
+  "productionChanges": false,
+  "qualification": "SQL transaction and synthetic-provider accounting evidence only; no hosted checkout, native Mac, or customer-journey acceptance. Raw JSON report was not retained as an artifact; skip-row semantics were independently checked against the installed local reporter output."
+}
