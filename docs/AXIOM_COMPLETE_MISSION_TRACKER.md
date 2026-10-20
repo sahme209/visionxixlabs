@@ -1827,3 +1827,36 @@ assertion. Root verification passes45 tests across four files, imported-test
 types and scoped lint. The first type invocation used the wrong standalone
 module mode and was corrected to ESNext/Bundler; no source relaxation was
 needed. Fresh exact-head browser acceptance is required. No deployment ran.
+
+
+Continuation checkpoint53f66063: full GitHub CI39446921975 passes types,
+tests, auth evidence and production website compilation, without deployment.
+Browser39446921490 first attempt timed out at initial Page.navigate; one
+unchanged failed-job retry passes10of11 closed interaction checks and retains
+five desktop/mobile/reduced-motion PNGs. Only documentation_check remains
+failed (DOM timeout); no runtime exceptions, source unchanged, owned groups
+empty. No repeated retry or merge is authorized by this result. Human image
+inspection finds the real first-visit privacy dialog obscures portions of the
+preview; future capture must exercise Essential only through real controls,
+never hide it or fabricate consent. Documentation navigation remains under
+source review; all assertion/deadline/network gates remain.
+
+Billing separate checkpoint871e0cea preserves the complete reviewed Task3
+entry/authority/provider/build/shared-helper package plus pure supervisor
+receipt kernel. Root passes75 focused checks across seven suites. Independent
+security review accepts the corrected own-property preservation and finds no
+further material source findings. This is not runtime readiness: real supervisor,
+secure private handoff, managed-environment compatibility, reviewed package
+closure and hosted TEST checkout remain open. No compiler/package/worker,
+Stripe request or production operation was performed by this checkpoint.
+
+
+Reviewed first-visit continuation exercises Essential only through the real named
+dialog and CDP pointer controls, then waits for actual dismissal before capture.
+New screenshot phase is playback_ready_after_essential_consent; the prior enum
+remains historical only. Documentation timeout records exactly three sanitized
+booleans and rethrows its original failure. Root35 focused cases, imported-test
+types, scoped lint and syntax checks pass after preserving all newer diagnostic
+fields during integration. No proxy, header, permission or deadline change.
+Desktop CI39446921397 also passes on53f66063. New exact-head full CI/browser
+acceptance and clean screenshot inspection remain required before merge.
