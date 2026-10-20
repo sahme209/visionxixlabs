@@ -112,3 +112,14 @@ describe("verified desktop credential selection survives restart", () => {
     expect(mock.set).toHaveBeenCalledExactlyOnceWith(undefined); expect(mock.clear).not.toHaveBeenCalled();
   });
 });
+
+it("activates a verified credential without modern AbortSignal helpers and still denies cancellation", async () => {
+  const controller = new AbortController();
+  Object.defineProperty(controller.signal, "throwIfAborted", { value: undefined });
+  await expect(verifyAndActivatePairedSession(token, session, controller.signal)).resolves.toEqual(identity);
+  expect(mock.set).toHaveBeenCalledWith(token);
+  mock.write.mockClear(); mock.set.mockClear(); controller.abort();
+  Object.defineProperty(controller.signal, "reason", { value: undefined });
+  await expect(verifyAndActivateApiKey(newKey, controller.signal)).rejects.toMatchObject({ name: "AbortError" });
+  expect(mock.write).not.toHaveBeenCalled(); expect(mock.set).not.toHaveBeenCalled();
+});

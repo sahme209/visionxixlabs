@@ -1,3 +1,4 @@
+import { assertDesktopNotAborted } from "./abortSignal";
 import type { ModelPolicy } from "./aiProviderStatus";
 import { isAwsEnrollmentChallenge, isDesktopAwsAccount, isDesktopAwsInventory, type AwsEnrollmentInput, type AwsEnrollmentChallenge, type DesktopAwsAccount, type DesktopAwsInventory } from "./awsEnrollmentContract";
 /**
@@ -1045,7 +1046,7 @@ export class DesktopClient {
     const unsubscribe = this.subscribeContext(() => controller.abort());
     const assertOwned = () => {
       if (context !== this.config) controller.abort();
-      signal.throwIfAborted();
+      assertDesktopNotAborted(signal);
     };
     try {
       assertOwned();

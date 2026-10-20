@@ -2369,6 +2369,28 @@ Production transport origin, credentials, timeouts, limits and approvals remain
 unchanged. This source follow-up still requires its own native/full/browser CI.
 
 
+### Desktop cancellation API compatibility
+
+Research: desktop avoids AbortSignal.any for older WKWebView, but credential
+activation, client admission and NDJSON decoding still directly call
+throwIfAborted. MDN browser-compat-data/api/AbortSignal.json records Safari15.4
+for both throwIfAborted and reason; desktop config has no explicit OS floor that
+guarantees them. A missing method can fail sign-in/streaming before HTTP dispatch.
+Plan: reproduce missing methods on real AbortSignals, reuse one desktop-only
+aborted-state check with an AbortError fallback, and preserve supplied reasons,
+pre-dispatch cancellation, post-await fences, one-attempt and credit boundaries.
+No global polyfill, server change, OS-support claim or security-gate relaxation.
+Require credential/client/decoder regressions, scoped types and applicable CI.
+
+Three regressions reproduced missing-method failures before implementation. One
+small desktop-only helper now checks aborted state and preserves an available
+reason, falling back to AbortError only when reason is undefined. Every prior
+pre-dispatch/post-await credential and streaming fence remains in place. A
+supplied-reason identity assertion closes the independent review's coverage note.
+All87 affected credential/client/decoder/bridge/composer/demo checks, scoped types
+and lint pass. No global API mutation ships; only test fixtures simulate absence.
+This fixes that capability gap, not every older-WebView compatibility concern.
+
 ### 2026-10-20 — connected application streaming acceptance
 
 Exact e9d79d6a Desktop CI39481771154 passes frontend build,18 Rust tests
