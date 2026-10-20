@@ -5,7 +5,7 @@ import { afterEach, expect, it, vi } from "vitest";
 import DownloadPage from "../page";
 vi.mock("@/components/Navigation", () => ({ Navigation: () => null }));
 vi.mock("@/components/Footer", () => ({ Footer: () => null }));
-afterEach(() => { cleanup(); vi.unstubAllGlobals(); });
+afterEach(() => { cleanup(); vi.unstubAllGlobals(); vi.restoreAllMocks(); });
 
 it("withholds positive signing claims while release evidence is loading", () => {
   vi.stubGlobal("fetch", () => new Promise(() => {}));
@@ -70,4 +70,16 @@ it("keeps every download behind the resolver when runtime readiness is malformed
     expect(link.getAttribute("href")).toMatch(/^\/api\/desktop\/download\?platform=/);
     expect(link.hasAttribute("download")).toBe(false);
   }
+});
+
+it("offers explicit installer choice when a Mac reports ambiguous Intel platform metadata", async () => {
+  vi.spyOn(window.navigator, "userAgent", "get").mockReturnValue("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)");
+  vi.spyOn(window.navigator, "platform", "get").mockReturnValue("MacIntel");
+  vi.stubGlobal("fetch", () => new Promise(() => {}));
+  render(createElement(DownloadPage));
+  const choice = screen.getByRole("link", { name: "Choose your installer" });
+  expect(choice.getAttribute("href")).toBe("#downloads");
+  expect(choice.hasAttribute("download")).toBe(false);
+  expect(screen.getByRole("link", { name: "Download for macOS for Apple Silicon" }).getAttribute("href")).toBe("/api/desktop/download?platform=mac-arm");
+  expect(screen.getByRole("link", { name: "Download for macOS for Intel" }).getAttribute("href")).toBe("/api/desktop/download?platform=mac-intel");
 });

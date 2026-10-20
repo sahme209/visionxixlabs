@@ -14,6 +14,8 @@ import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/Footer";
 
 type PlatformId = "mac-arm" | "mac-intel" | "windows" | "linux";
+type PlatformDetection = PlatformId | "choose";
+
 type ManifestPlatform = "macos-arm" | "macos-intel" | "windows-x64" | "linux-x64";
 
 interface ManifestAsset {
@@ -60,12 +62,13 @@ const resolverHref: Record<PlatformId, string> = {
 
 const subscribe = () => () => undefined;
 
-function detectPlatform(): PlatformId {
+function detectPlatform(): PlatformDetection {
   const userAgent = navigator.userAgent.toLowerCase();
   if (userAgent.includes("win")) return "windows";
   if (userAgent.includes("linux")) return "linux";
-  const platform = navigator.platform?.toLowerCase() ?? "";
-  return platform.includes("intel") ? "mac-intel" : "mac-arm";
+  // Browser platform strings are not reliable CPU architecture evidence.
+  // Keep both Mac installers explicit instead of guessing from "MacIntel".
+  return "choose";
 }
 
 function formatSize(bytes: number) {
@@ -73,7 +76,7 @@ function formatSize(bytes: number) {
 }
 
 export default function DownloadPage() {
-  const detectedPlatform = useSyncExternalStore<PlatformId>(subscribe, detectPlatform, () => "mac-arm");
+  const detectedPlatform = useSyncExternalStore<PlatformDetection>(subscribe, detectPlatform, () => "choose");
   const [manifest, setManifest] = useState<ReleaseManifest | null>(null);
   const [manifestError, setManifestError] = useState(false);
 
@@ -93,9 +96,9 @@ export default function DownloadPage() {
     return () => { cancelled = true; };
   }, []);
 
-  const detectedAsset = manifest?.assets[platformKey[detectedPlatform]] ?? null;
+  const detectedAsset = detectedPlatform === "choose" ? null : manifest?.assets[platformKey[detectedPlatform]] ?? null;
   const downloadReady = Boolean(manifest?.runtimeReady === true && detectedAsset);
-  const primaryHref = downloadReady && detectedAsset
+  const primaryHref = detectedPlatform === "choose" ? "#downloads" : downloadReady && detectedAsset
     ? detectedAsset.downloadUrl
     : resolverHref[detectedPlatform];
 
@@ -127,7 +130,7 @@ export default function DownloadPage() {
                 className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl sm:rounded-full bg-[#f2f2ed] px-6 text-sm font-semibold text-[#11120f] transition hover:bg-white"
               >
                 <ArrowDownTrayIcon className="h-4 w-4" />
-                Download for {platformLabel[detectedPlatform]}
+                {detectedPlatform === "choose" ? "Choose your installer" : `Download for ${platformLabel[detectedPlatform]}`}
               </a>
               <Link href="/demo" className="inline-flex min-h-12 items-center justify-center gap-2 rounded-lg border border-white/12 px-6 text-sm font-medium text-zinc-200 transition hover:border-white/25 hover:bg-white/[0.04]">
                 Explore the web demo <ArrowRightIcon className="h-4 w-4" />

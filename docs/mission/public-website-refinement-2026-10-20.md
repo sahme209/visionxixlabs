@@ -74,8 +74,8 @@ acceptance. Final exact-head CI must rerun after the batched follow-up.
 ## Download and responsive-navigation implementation continuation
 
 The download page now shares the compact charcoal/1280px presentation and removes
-scenic mock operational windows. Manifest retrieval, platform detection, download
-resolver mappings and runtime-readiness gates remain intact. Unconditional macOS
+scenic mock operational windows. Manifest retrieval and download resolver mappings remain intact; runtime-readiness
+gates are strengthened as described below. Unconditional macOS
 signing/notarization and checksum availability claims are removed. Each available
 installer now reports its own manifest signing status; only explicit boolean
 `true` supports a positive label. These are release-record statements, not
@@ -122,3 +122,12 @@ This is source validation for that head; the current follow-up still needs its
 own exact-head CI and rendered browser acceptance. The serving deployment was
 independently re-read as READY, production target and approved commit
 30d6363a01e04c35871025c161f69480244d7d17. No production deployment occurred.
+
+Mac installer selection now asks the visitor to choose rather than inferring
+Intel architecture from `navigator.platform` containing `MacIntel`. Browser
+platform strings are not reliable CPU evidence (see
+https://developer.mozilla.org/en-US/docs/Web/API/Navigator/platform). Both Mac
+resolver links remain available, and Windows/Linux OS selection is unchanged.
+The added rendered-component regression failed before this correction; all 17
+download/mobile/release tests pass afterward. This does not verify an installer
+or native installation.
