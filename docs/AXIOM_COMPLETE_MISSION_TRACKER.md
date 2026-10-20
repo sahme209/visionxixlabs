@@ -2369,6 +2369,28 @@ Production transport origin, credentials, timeouts, limits and approvals remain
 unchanged. This source follow-up still requires its own native/full/browser CI.
 
 
+### Desktop cancellation API compatibility
+
+Research: desktop avoids AbortSignal.any for older WKWebView, but credential
+activation, client admission and NDJSON decoding still directly call
+throwIfAborted. MDN browser-compat-data/api/AbortSignal.json records Safari15.4
+for both throwIfAborted and reason; desktop config has no explicit OS floor that
+guarantees them. A missing method can fail sign-in/streaming before HTTP dispatch.
+Plan: reproduce missing methods on real AbortSignals, reuse one desktop-only
+aborted-state check with an AbortError fallback, and preserve supplied reasons,
+pre-dispatch cancellation, post-await fences, one-attempt and credit boundaries.
+No global polyfill, server change, OS-support claim or security-gate relaxation.
+Require credential/client/decoder regressions, scoped types and applicable CI.
+
+Three regressions reproduced missing-method failures before implementation. One
+small desktop-only helper now checks aborted state and preserves an available
+reason, falling back to AbortError only when reason is undefined. Every prior
+pre-dispatch/post-await credential and streaming fence remains in place. A
+supplied-reason identity assertion closes the independent review's coverage note.
+All87 affected credential/client/decoder/bridge/composer/demo checks, scoped types
+and lint pass. No global API mutation ships; only test fixtures simulate absence.
+This fixes that capability gap, not every older-WebView compatibility concern.
+
 ### 2026-10-20 — connected application streaming acceptance
 
 Exact e9d79d6a Desktop CI39481771154 passes frontend build,18 Rust tests
@@ -2430,24 +2452,32 @@ unchanged documentation boundary after11 checks: click79.824s,388 polls to120s,
 no documentation request at proxy, source unchanged and cleanup empty. This
 blocker remains; no same-head retry, source shortcut or production release.
 
-### Desktop cancellation API compatibility
+### Joined native renderer acceptance and platform evidence
 
-Research: desktop avoids AbortSignal.any for older WKWebView, but credential
-activation, client admission and NDJSON decoding still directly call
-throwIfAborted. MDN browser-compat-data/api/AbortSignal.json records Safari15.4
-for both throwIfAborted and reason; desktop config has no explicit OS floor that
-guarantees them. A missing method can fail sign-in/streaming before HTTP dispatch.
-Plan: reproduce missing methods on real AbortSignals, reuse one desktop-only
-aborted-state check with an AbortError fallback, and preserve supplied reasons,
-pre-dispatch cancellation, post-await fences, one-attempt and credit boundaries.
-No global polyfill, server change, OS-support claim or security-gate relaxation.
-Require credential/client/decoder regressions, scoped types and applicable CI.
+Research: existing acceptance joined the real composer/client/server framing over
+HTTP, and separately joined client/native bridge. The remaining JS seam was the
+actual rendered chat/editor through that bridge. Reuse the same application
+fixture with a synthetic Rust IPC peer and demand acknowledgements, rather than
+adding another app implementation or invoking any provider. Acceptance: draft
+before completion, no draft authority, persisted terminal proposal, GET-only
+interruption recovery, Stop cancellation and no late proposal or second POST.
+Both chat and repository editor now run over HTTP and native JS paths; seven
+joined application cases pass. The IPC peer is synthetic; this does not prove
+WKWebView GUI, native pairing, hosted models or actual SQL persistence.
 
-Three regressions reproduced missing-method failures before implementation. One
-small desktop-only helper now checks aborted state and preserves an available
-reason, falling back to AbortError only when reason is undefined. Every prior
-pre-dispatch/post-await credential and streaming fence remains in place. A
-supplied-reason identity assertion closes the independent review's coverage note.
-All87 affected credential/client/decoder/bridge/composer/demo checks, scoped types
-and lint pass. No global API mutation ships; only test fixtures simulate absence.
-This fixes that capability gap, not every older-WebView compatibility concern.
+PR189 merged as41f1d5db after exact fb96e817 checks: Desktop CI39488172098 passed
+Linux and macOS source builds,20 native tests on macOS and Clippy; full
+39488172109 passed8687 tests, types, offline authentication and website build.
+No packaging, installer, signing or production deployment was performed.
+
+Independent owned HTTP job118859068996 in run39489639807 passed the exact seeded
+Next/Auth.js/billing journey and receipt gate at e356c036, with33 other cases
+explicitly skipped; cleanup passed. Its separate32-case SQL job remains required.
+This is isolated synthetic-provider application evidence, not signup or hosted
+Stripe acceptance. Prior browser-navigation failures remain documented; no waiver.
+
+Independent review found no blocker in the joined harness. Synthetic ACKs do not
+validate native request isolation; Stop tests server-suppressed late completion,
+not direct late IPC injection. Teardown releases fixture gates even on assertion
+failure. All56 affected application/client/bridge/decoder checks and scoped types
+and lint pass. No product implementation or approval boundary changed.
