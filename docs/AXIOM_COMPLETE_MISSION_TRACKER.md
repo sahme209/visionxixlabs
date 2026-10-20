@@ -2224,6 +2224,40 @@ demo contract passes15 checks separately (overlapping evidence, not extra produc
 coverage). Scoped TypeScript, ESLint, diff whitespace and mission coverage checks
 pass. No full CI was redundantly rerun or merge gate waived for this local slice.
 
+### 2026-10-20 — native compatibility for existing privileged PATCH controls
+
+Research/independent review: desktop member-role changes and Airflow enable/pause
+already use PATCH, but Rust allowed_method rejected every PATCH. ADR017 requires
+fixed-origin supported methods, with no separate owner decision reserving these
+existing operations for browser-only clients. Reuse existing APIs, not aliases.
+
+Plan/acceptance: permit exactly the raw /api/desktop/workspace-members path and
+/api/desktop/airflow/automations/<1–200 ASCII alphanumeric/_/->. Reject all other
+PATCH targets before URL normalization. Preserve other methods, origin, headers,
+redirect refusal, timeouts and server current membership/commercial/capability
+checks. Cover encoded/traversal/query/fragment/control/Unicode/overlong aliases,
+actual client payloads, real handler/resolver authorization branches, tenant-bound
+queries, owner protection and audited success. No server mutation implementation
+changes, credentials, scheduler execution or production action.
+
+Fifteen unsupported-target cases fail before the JS boundary correction. Final
+application/transport/handler/resolver family67 passes; types/lint pass. The new
+handler tests use the actual resolver and capability mapping, but token signature,
+session store, commercial access, Prisma and audit persistence are synthetic
+boundaries: not crypto, SQL-concurrency or customer acceptance. A test fixture
+initially targeted an owner in its success case; the real handler correctly409ed,
+and only that test fixture was corrected. Independent review found no blocker.
+Rust tests are prepared, not compiled locally; exact native CI remains required.
+
+Independent acceptance status: PR186 merged into PR184 as06f5b432 after all
+25cd559a gates passed. PR187 adds owned commercial SQL CI but its browser run
+39485471531 failed after11 checks at the known documentation boundary: click
+76.630s,392 responsive polls to120s, no documentation request at the proxy, source
+unchanged and empty cleanup. Receipt: mission/public-website-browser-blocker-5955207d.json.
+Cause remains unconfirmed. No same-head retry or gate waiver; native compatibility
+work is independent and does not include or merge around PR187's blocked source.
+
+
 ### 2026-10-20 — authenticated Agent HTTP/native/chat streaming integration
 
 Research/plan: reuse the existing paired-session message endpoint, conversation

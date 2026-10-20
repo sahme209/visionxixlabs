@@ -1,0 +1,87 @@
+{
+  "schemaVersion": 1,
+  "sourceHead": "5955207d75d386672cfe47ad8413eb46e9c20a1d",
+  "workflowRunId": 39485471531,
+  "jobId": 118844620032,
+  "outcome": "failed",
+  "completedEvidence": [
+    "essential_consent_selected",
+    "play_pause_preserves_typed_output",
+    "offscreen_timer_stopped",
+    "sample_approve_reject",
+    "native_branch_selector_resets_story",
+    "replay",
+    "hidden_document_timer_stopped",
+    "terraform_apply_absent",
+    "mobile_360_no_horizontal_overflow",
+    "keyboard_previous",
+    "reduced_motion_static_manual_step"
+  ],
+  "documentationTiming": {
+    "startedMs": 76539,
+    "clickCompletedMs": 76630,
+    "preWaitCompletedMs": 76644,
+    "lastPollMs": 119960,
+    "pollCount": 392,
+    "observedMs": 120000
+  },
+  "documentationPreWaitSnapshot": {
+    "pathnameIsDocs": false,
+    "executionPresent": false,
+    "tourPresent": true
+  },
+  "proxyDocumentation": {
+    "rsc_navigation": {
+      "accepted": 0,
+      "response": 0,
+      "complete": 0,
+      "cancelled": 0,
+      "status_2xx": 0,
+      "status_3xx": 0,
+      "status_4xx": 0,
+      "status_5xx": 0,
+      "status_other": 0,
+      "mime_rsc": 0,
+      "mime_html": 0,
+      "mime_other": 0,
+      "upstream_timeout": 0
+    },
+    "rsc_prefetch": {
+      "accepted": 0,
+      "response": 0,
+      "complete": 0,
+      "cancelled": 0,
+      "status_2xx": 0,
+      "status_3xx": 0,
+      "status_4xx": 0,
+      "status_5xx": 0,
+      "status_other": 0,
+      "mime_rsc": 0,
+      "mime_html": 0,
+      "mime_other": 0,
+      "upstream_timeout": 0
+    },
+    "document": {
+      "accepted": 0,
+      "response": 0,
+      "complete": 0,
+      "cancelled": 0,
+      "status_2xx": 0,
+      "status_3xx": 0,
+      "status_4xx": 0,
+      "status_5xx": 0,
+      "status_other": 0,
+      "mime_rsc": 0,
+      "mime_html": 0,
+      "mime_other": 0,
+      "upstream_timeout": 0
+    },
+    "denied": 0
+  },
+  "sourceUnchanged": true,
+  "cleanup": "owned_groups_empty",
+  "captureFailure": "website_driver_deadline",
+  "rootCause": "unconfirmed",
+  "acceptanceGate": "retained; no unchanged-head rerun",
+  "qualification": "Isolated public website fixture only; not production, authentication, native desktop, or customer deployment acceptance."
+}
