@@ -279,7 +279,7 @@ function RepositoryWorkspaceSession({ revision }: { revision: number }) {
     const snapshot = file.content;
     await run("save", async current => {
       if (!current() || loadedFile.current !== file || file.content !== snapshot) return;
-      await invoke("write_repository_file", { repositoryPath: file.repository, relativePath: file.path, content: snapshot });
+      await invoke("write_repository_file", { repositoryPath: file.repository, relativePath: file.path, content: snapshot, expectedContent: file.saved });
       if (!current() || loadedFile.current !== file) return;
       file.saved = snapshot; setSavedContent(snapshot); setNotice(`Saved ${file.path}`);
       await refreshRepository(file.repository);
@@ -354,7 +354,7 @@ function RepositoryWorkspaceSession({ revision }: { revision: number }) {
       if (onDefaultBranch) throw new Error("Create a branch before committing. Changes must reach the default branch through a pull request.");
       if (!current() || loadedFile.current !== file || file.content !== snapshot) return;
       if (snapshot !== file.saved) {
-        await invoke("write_repository_file", { repositoryPath: file.repository, relativePath: file.path, content: snapshot });
+        await invoke("write_repository_file", { repositoryPath: file.repository, relativePath: file.path, content: snapshot, expectedContent: file.saved });
         if (!current() || loadedFile.current !== file) return;
         file.saved = snapshot; setSavedContent(snapshot);
       }

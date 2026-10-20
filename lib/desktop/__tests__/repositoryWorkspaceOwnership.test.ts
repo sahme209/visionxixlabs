@@ -56,7 +56,7 @@ it("never allows a delayed A file to populate B or be saved into B", async () =>
   fireEvent.click(screen.getByRole("button", { name: "same.ts" }));
   fireEvent.change(await screen.findByRole("textbox", { name: "Editing same.ts" }), { target: { value: "edited B" } });
   fireEvent.click(screen.getByRole("button", { name: "Save ⌘S" }));
-  await waitFor(() => expect(m.invoke).toHaveBeenCalledWith("write_repository_file", { repositoryPath: "/owned/B", relativePath: "same.ts", content: "edited B" }));
+  await waitFor(() => expect(m.invoke).toHaveBeenCalledWith("write_repository_file", { repositoryPath: "/owned/B", relativePath: "same.ts", content: "edited B", expectedContent: "B content" }));
 });
 it("keeps the latest file when earlier file reads finish in reverse order", async () => {
   const old = deferred<string>(); reads = (_path, file) => file === "same.ts" ? old.promise : "other content";
@@ -268,4 +268,38 @@ it("retains an explicitly selected repository that remains in the refreshed cata
   expect(selection.value).toBe("fixture/kept");
   fireEvent.click(screen.getByRole("button", { name: "Clone" }));
   await waitFor(() => expect(m.client.mintGithubCloneToken).toHaveBeenCalledWith({ repositoryFullName: "fixture/kept", purpose: "clone" }));
+});
+
+it("sends the last saved baseline on each native editor save", async () => {
+  await start(); fireEvent.click(screen.getByRole("button", { name: "same.ts" }));
+  const editor = await screen.findByRole("textbox", { name: "Editing same.ts" });
+  fireEvent.change(editor, { target: { value: "first edit" } });
+  fireEvent.click(screen.getByRole("button", { name: "Save ⌘S" }));
+  await screen.findByText("Saved same.ts");
+  expect(m.invoke).toHaveBeenCalledWith("write_repository_file", { repositoryPath: "/owned/A", relativePath: "same.ts", content: "first edit", expectedContent: "/owned/A:same.ts" });
+  fireEvent.change(editor, { target: { value: "second edit" } });
+  fireEvent.click(screen.getByRole("button", { name: "Save ⌘S" }));
+  await waitFor(() => expect(m.invoke).toHaveBeenCalledWith("write_repository_file", { repositoryPath: "/owned/A", relativePath: "same.ts", content: "second edit", expectedContent: "first edit" }));
+});
+it("preserves the dirty draft and original baseline after a native external-change rejection", async () => {
+  writes = () => { throw new Error("File changed outside Axiom. Reopen it to review before saving."); };
+  await start(); fireEvent.click(screen.getByRole("button", { name: "same.ts" }));
+  fireEvent.change(await screen.findByRole("textbox", { name: "Editing same.ts" }), { target: { value: "unsaved draft" } });
+  fireEvent.click(screen.getByRole("button", { name: "Save ⌘S" }));
+  await screen.findByText(/File changed outside Axiom/);
+  expect(screen.getByDisplayValue("unsaved draft")).toBeTruthy();
+  expect((screen.getByRole("button", { name: "Save ⌘S" }) as HTMLButtonElement).disabled).toBe(false);
+  expect(screen.queryByText("Saved same.ts")).toBeNull();
+  expect(m.invoke).toHaveBeenCalledWith("write_repository_file", expect.objectContaining({ expectedContent: "/owned/A:same.ts" }));
+});
+it("uses the same conflict protection for commit's implicit save and never commits a rejected draft", async () => {
+  writes = () => { throw new Error("File changed outside Axiom. Reopen it to review before saving."); };
+  await start(); fireEvent.click(screen.getByRole("button", { name: "same.ts" }));
+  fireEvent.change(await screen.findByRole("textbox", { name: "Editing same.ts" }), { target: { value: "uncommitted draft" } });
+  fireEvent.change(screen.getByPlaceholderText("Commit message for this file"), { target: { value: "Review local change" } });
+  fireEvent.click(screen.getByRole("button", { name: "Commit file" }));
+  await screen.findByText(/File changed outside Axiom/);
+  expect(m.invoke).toHaveBeenCalledWith("write_repository_file", expect.objectContaining({ expectedContent: "/owned/A:same.ts" }));
+  expect(m.invoke.mock.calls.some(([command]) => command === "commit_repository_file")).toBe(false);
+  expect(screen.getByDisplayValue("uncommitted draft")).toBeTruthy();
 });

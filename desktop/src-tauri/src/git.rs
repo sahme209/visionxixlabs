@@ -8,6 +8,7 @@
 use serde::Serialize;
 use std::ffi::OsStr;
 use std::fs;
+use std::io::Read;
 use std::path::{Component, Path, PathBuf};
 use std::process::{Command, Output};
 
@@ -224,23 +225,35 @@ pub async fn read_repository_file(repository_path: String, relative_path: String
     fs::read_to_string(candidate).map_err(|_| "Only UTF-8 text files can be edited.".to_string())
 }
 
-#[tauri::command]
-pub async fn write_repository_file(repository_path: String, relative_path: String, content: String) -> Result<(), String> {
-    if content.len() as u64 > MAX_TEXT_FILE_BYTES { return Err("Files larger than 1 MB cannot be saved.".to_string()); }
-    let root = repository_root(&repository_path)?;
-    let relative = valid_relative_path(&relative_path)?;
+// Detect changes already present at Save time. This deliberately does not claim
+// an atomic compare-and-swap against unrelated filesystem writers.
+fn write_existing_repository_file(root: &Path, relative_path: &str, content: &str, expected_content: &str) -> Result<(), String> {
+    if content.len() as u64 > MAX_TEXT_FILE_BYTES || expected_content.len() as u64 > MAX_TEXT_FILE_BYTES {
+        return Err("Files larger than 1 MB cannot be saved.".to_string());
+    }
+    let relative = valid_relative_path(relative_path)?;
     let candidate = root.join(&relative);
     let parent = candidate.parent().ok_or_else(|| "Repository file needs a parent folder.".to_string())?;
     let canonical_parent = fs::canonicalize(parent).map_err(|_| "The file's parent folder must already exist.".to_string())?;
-    if !canonical_parent.starts_with(&root) { return Err("Repository file must stay inside the working tree.".to_string()); }
-    if candidate.exists() {
-        if fs::symlink_metadata(&candidate).map_err(|error| error.to_string())?.file_type().is_symlink() {
-            return Err("Symbolic links cannot be edited.".to_string());
-        }
-        let canonical_file = fs::canonicalize(&candidate).map_err(|error| error.to_string())?;
-        if !canonical_file.starts_with(&root) { return Err("Repository file must stay inside the working tree.".to_string()); }
-    }
+    if !canonical_parent.starts_with(root) { return Err("Repository file must stay inside the working tree.".to_string()); }
+    let metadata = fs::symlink_metadata(&candidate).map_err(|_| "File changed or was removed outside Axiom. Reopen it to review before saving.".to_string())?;
+    if metadata.file_type().is_symlink() { return Err("Symbolic links cannot be edited.".to_string()); }
+    let canonical_file = fs::canonicalize(&candidate).map_err(|_| "Repository file was not found.".to_string())?;
+    if !canonical_file.starts_with(root) || !metadata.is_file() { return Err("Repository file must stay inside the working tree.".to_string()); }
+    if metadata.len() > MAX_TEXT_FILE_BYTES { return Err("Files larger than 1 MB cannot be saved.".to_string()); }
+    let mut bytes = Vec::new();
+    fs::File::open(&candidate).map_err(|_| "Repository file could not be checked before saving.".to_string())?
+        .take(MAX_TEXT_FILE_BYTES + 1).read_to_end(&mut bytes).map_err(|_| "Repository file could not be checked before saving.".to_string())?;
+    if bytes.len() as u64 > MAX_TEXT_FILE_BYTES { return Err("Files larger than 1 MB cannot be saved.".to_string()); }
+    let current = String::from_utf8(bytes).map_err(|_| "Only UTF-8 text files can be edited.".to_string())?;
+    if current != expected_content { return Err("File changed outside Axiom. Reopen it to review before saving.".to_string()); }
     fs::write(candidate, content).map_err(|error| format!("Could not save file: {error}"))
+}
+
+#[tauri::command]
+pub async fn write_repository_file(repository_path: String, relative_path: String, content: String, expected_content: String) -> Result<(), String> {
+    let root = repository_root(&repository_path)?;
+    write_existing_repository_file(&root, &relative_path, &content, &expected_content)
 }
 
 #[tauri::command]
@@ -292,6 +305,70 @@ fn dirs_home() -> Result<PathBuf, String> {
 #[cfg(test)]
 mod tests {
     use super::{redact_credential, safe_remote_url, valid_relative_path};
+
+    struct OwnedDirectory(std::path::PathBuf);
+    impl OwnedDirectory {
+        fn new() -> Self {
+            static NEXT: std::sync::atomic::AtomicU64 = std::sync::atomic::AtomicU64::new(0);
+            let nonce = std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).unwrap().as_nanos();
+            let path = std::env::temp_dir().join(format!("axiom-editor-{}-{nonce}-{}", std::process::id(), NEXT.fetch_add(1, std::sync::atomic::Ordering::Relaxed)));
+            std::fs::create_dir(&path).unwrap();
+            Self(std::fs::canonicalize(path).unwrap())
+        }
+    }
+    impl Drop for OwnedDirectory {
+        fn drop(&mut self) { let _ = std::fs::remove_dir_all(&self.0); }
+    }
+
+    #[test]
+    fn editor_save_requires_the_current_loaded_baseline() {
+        let directory = OwnedDirectory::new();
+        let file = directory.0.join("file.txt");
+        std::fs::write(&file, "original").unwrap();
+        assert!(super::write_existing_repository_file(&directory.0, "file.txt", "draft", "original").is_ok());
+        assert_eq!(std::fs::read_to_string(&file).unwrap(), "draft");
+        std::fs::write(&file, "external").unwrap();
+        assert!(super::write_existing_repository_file(&directory.0, "file.txt", "replacement", "draft").is_err());
+        assert_eq!(std::fs::read_to_string(&file).unwrap(), "external");
+        std::fs::remove_file(&file).unwrap();
+        assert!(super::write_existing_repository_file(&directory.0, "file.txt", "recreated", "external").is_err());
+        assert!(!file.exists());
+        std::fs::write(&file, "").unwrap();
+        assert!(super::write_existing_repository_file(&directory.0, "file.txt", "", "").is_ok());
+    }
+
+    #[test]
+    fn editor_save_retains_size_utf8_and_path_guards() {
+        let directory = OwnedDirectory::new();
+        let file = directory.0.join("file.txt");
+        std::fs::write(&file, [255]).unwrap();
+        assert!(super::write_existing_repository_file(&directory.0, "file.txt", "draft", "").is_err());
+        assert_eq!(std::fs::read(&file).unwrap(), vec![255]);
+        let oversized = "a".repeat(super::MAX_TEXT_FILE_BYTES as usize + 1);
+        std::fs::write(&file, &oversized).unwrap();
+        assert!(super::write_existing_repository_file(&directory.0, "file.txt", "draft", "").is_err());
+        assert_eq!(std::fs::metadata(&file).unwrap().len(), oversized.len() as u64);
+        std::fs::write(&file, "original").unwrap();
+        assert!(super::write_existing_repository_file(&directory.0, "file.txt", &oversized, "original").is_err());
+        assert!(super::write_existing_repository_file(&directory.0, "file.txt", "draft", &oversized).is_err());
+        for path in ["../outside", ".git/config", "/outside", ""] {
+            assert!(super::write_existing_repository_file(&directory.0, path, "draft", "original").is_err());
+        }
+        assert_eq!(std::fs::read_to_string(&file).unwrap(), "original");
+    }
+
+    #[cfg(unix)]
+    #[test]
+    fn editor_save_refuses_symlink_targets_and_escaping_parents() {
+        let directory = OwnedDirectory::new();
+        let outside = OwnedDirectory::new();
+        std::fs::write(outside.0.join("file.txt"), "outside").unwrap();
+        std::os::unix::fs::symlink(outside.0.join("file.txt"), directory.0.join("link.txt")).unwrap();
+        std::os::unix::fs::symlink(&outside.0, directory.0.join("escape")).unwrap();
+        assert!(super::write_existing_repository_file(&directory.0, "link.txt", "draft", "outside").is_err());
+        assert!(super::write_existing_repository_file(&directory.0, "escape/file.txt", "draft", "outside").is_err());
+        assert_eq!(std::fs::read_to_string(outside.0.join("file.txt")).unwrap(), "outside");
+    }
 
     #[test]
     fn strips_the_embedded_token_from_error_text() {
