@@ -119,7 +119,7 @@ function RepositoryWorkspaceSession({ revision, active, onAskAgent, editRequest,
   const manualClone = useRef(false);
   const operationRequest = useRef(0);
   const activeBusy = useRef<string | null>(null);
-  const appliedEdit = useRef<LocalEditRequest | undefined>(undefined);
+  const appliedEdit = useRef<{request: LocalEditRequest; paths: Set<string>} | undefined>(undefined);
   const loadedFile = useRef<{ repository: string; path: string; content: string; saved: string } | null>(null);
   const owns = useCallback((captured: typeof owner.current) => mounted.current && desktopClient.config === context && desktopClient.getContextRevision() === revision
     && captured.generation === owner.current.generation && captured.repository === owner.current.repository, [context, revision]);
@@ -468,16 +468,19 @@ function RepositoryWorkspaceSession({ revision, active, onAskAgent, editRequest,
 
   async function loadAgentDraft() {
     const file = loadedFile.current, request = editRequest;
-    if (!active || activeBusy.current || !request || appliedEdit.current === request || !file || !owns(owner.current)) return;
+    if (!active || activeBusy.current || !request || !file || !owns(owner.current)) return;
+    const edit = request.edits?.find(candidate => candidate.path === file.path) ?? request.edit;
     if (request.context !== desktopClient.config || request.workspace !== workspace) { setError("Agent draft belongs to a different sign-in or workspace."); return; }
     const snapshot = file.content;
     await run("load-agent-draft", async current => {
       const live = await invoke<RepositoryStatus>("repository_status", {repositoryPath: file.repository});
       if (!current() || loadedFile.current !== file || file.content !== snapshot) return;
       if (live.rootPath !== file.repository) { setError("The local repository identity could not be verified."); return; }
-      const blocker = localEditBlocker(request.edit, {repositoryFullName: live.repositoryFullName, branch: live.branch, path: file.path, saved: file.saved, content: file.content});
+      const blocker = localEditBlocker(edit, {repositoryFullName: live.repositoryFullName, branch: live.branch, path: file.path, saved: file.saved, content: file.content});
       if (blocker) { setError(blocker); return; }
-      editContent(request.edit.content); setReviewOpen(true); appliedEdit.current = request;
+      editContent(edit.content); setReviewOpen(true);
+      if (appliedEdit.current?.request !== request) appliedEdit.current = {request, paths: new Set()};
+      appliedEdit.current.paths.add(edit.path);
       setNotice("Agent draft loaded locally. Review changes, then explicitly Save and run verification. GitHub approval is unchanged.");
     });
   }
@@ -564,10 +567,17 @@ function RepositoryWorkspaceSession({ revision, active, onAskAgent, editRequest,
     </div>
     {repositoryCatalogError && <div role="status" className="border-b border-white/[0.08] bg-white/[0.03] px-4 py-2 text-xs text-zinc-300">Connected repositories are temporarily unavailable. Validate GitHub under Settings → Integrations, then retry. Manual entry remains available for an authorized repository.</div>}
     {repositoryCatalogTruncated && !repositoryCatalogError && <div className="border-b border-white/[0.06] bg-white/[0.02] px-4 py-2 text-xs text-zinc-500">Showing the first 100 repositories authorized for the GitHub App. You can still enter another authorized owner/repository directly.</div>}
-    {editRequest && editRequest.context === desktopClient.config && editRequest.workspace === workspace && appliedEdit.current !== editRequest && <section aria-label="Agent local draft review" className="max-h-96 shrink-0 overflow-auto border-b border-violet-300/20 p-4 text-xs text-zinc-300">
-      <p>Proposal {editRequest.edit.proposalId}: {editRequest.edit.repositoryFullName} · {editRequest.edit.branch} · {editRequest.edit.path}</p>
+    {editRequest && editRequest.context === desktopClient.config && editRequest.workspace === workspace && (!(appliedEdit.current?.request === editRequest && appliedEdit.current.paths.has(editRequest.edit.path)) || Boolean(editRequest.edits?.length)) && <section aria-label="Agent local draft review" className="max-h-96 shrink-0 overflow-auto border-b border-violet-300/20 p-4 text-xs text-zinc-300">
+      <p>Proposal {editRequest.edit.proposalId}: {editRequest.edit.repositoryFullName} · {editRequest.edit.branch} · {editRequest.edits?.length ? `${editRequest.edits.length} files` : editRequest.edit.path}</p>
       <p className="my-2 text-zinc-400">Open the matching file to load this into a clean editor buffer. No file is saved, GitHub proposal approved, or check run by this action.</p>
-      <FileDiff before={editRequest.edit.baseContent} after={editRequest.edit.content} label="Agent proposed local diff" />
+      {editRequest.edits?.length ? <div className="space-y-2">
+        <p>{appliedEdit.current?.request === editRequest ? appliedEdit.current.paths.size : 0} of {editRequest.edits.length} drafts loaded during this review. This is not saved or verified status; local writes are per file.</p>
+        {editRequest.edits.map(edit => <details key={edit.path} className="rounded border border-white/10 p-2">
+          <summary className="cursor-pointer">{edit.path}</summary>
+          <button type="button" disabled={Boolean(busy) || !selectedRepository || status?.repositoryFullName?.toLowerCase() !== edit.repositoryFullName.toLowerCase() || status?.branch !== edit.branch || !files.includes(edit.path)} onClick={() => selectFile(edit.path)} className="btn-secondary my-2 disabled:opacity-40">Open {edit.path} for local review</button>
+          <FileDiff before={edit.baseContent} after={edit.content} label={`Agent proposed diff for ${edit.path}`} />
+        </details>)}
+      </div> : <FileDiff before={editRequest.edit.baseContent} after={editRequest.edit.content} label="Agent proposed local diff" />}
       <button type="button" disabled={Boolean(busy) || !selectedFile || editRequest.context !== desktopClient.config || editRequest.workspace !== workspace} onClick={() => void loadAgentDraft()} className="btn-secondary mt-2 disabled:opacity-40">Load editor draft</button>
     </section>}
     {(error || notice) && <div role={error ? "alert" : "status"} className={`border-b px-4 py-2 text-xs ${error ? "border-rose-500/20 bg-rose-500/5 text-rose-300" : "border-emerald-500/20 bg-emerald-500/5 text-emerald-300"}`}>{error ?? notice}</div>}

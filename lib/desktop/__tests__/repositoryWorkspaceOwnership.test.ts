@@ -334,7 +334,7 @@ it("finds literal text, wraps selection, and never writes search results", async
   await start(); fireEvent.click(screen.getByRole("button", {name: "same.ts"}));
   const editor = await screen.findByRole("textbox", {name: "Editing same.ts"}) as HTMLTextAreaElement;
   fireEvent.click(screen.getByRole("button", {name: "Find in file"}));
-  fireEvent.change(screen.getByRole("searchbox", {name: "Find literal text"}), {target: {value: "alpha"}});
+  fireEvent.change(await screen.findByRole("searchbox", {name: "Find literal text"}), {target: {value: "alpha"}});
   fireEvent.click(screen.getByRole("button", {name: "Next match"}));
   expect([editor.selectionStart, editor.selectionEnd]).toEqual([0, 5]);
   fireEvent.click(screen.getByRole("button", {name: "Next match"}));
@@ -378,7 +378,7 @@ it("requires confirmation before handing selected local code to Agent without sa
   editor.setSelectionRange(0, 5); fireEvent.select(editor);
   fireEvent.click(screen.getByRole("button", {name: "Ask Agent about selection"}));
   expect(onAskAgent).not.toHaveBeenCalled();
-  fireEvent.click(screen.getByRole("button", {name: "Prepare Agent draft"}));
+  fireEvent.click(await screen.findByRole("button", {name: "Prepare Agent draft"}));
   expect(onAskAgent).toHaveBeenCalledWith({path: "same.ts", excerpt: "const"});
   expect(m.invoke.mock.calls.filter(([command]) => command === "write_repository_file")).toHaveLength(0);
 });
@@ -390,7 +390,7 @@ it("rejects a reviewed local selection when the file content changes before conf
   editor.setSelectionRange(0, 8); fireEvent.select(editor);
   fireEvent.click(screen.getByRole("button", {name: "Ask Agent about selection"}));
   fireEvent.change(editor, {target: {value: "changed code"}});
-  fireEvent.click(screen.getByRole("button", {name: "Prepare Agent draft"}));
+  fireEvent.click(await screen.findByRole("button", {name: "Prepare Agent draft"}));
   expect(screen.getByText(/file changed while reviewing this selection/)).toBeTruthy();
   expect(onAskAgent).not.toHaveBeenCalled();
 });
@@ -466,4 +466,53 @@ it("preserves a local file whose saved baseline differs from the Agent proposal"
   await screen.findByText(/local saved content differs from the proposal baseline/);
   expect(screen.getByDisplayValue("newer local content")).toBeTruthy();
   expect(m.invoke.mock.calls.filter(([name]) => name === "write_repository_file")).toHaveLength(0);
+});
+
+it.each([false, true])("reviews coordinated files with explicit saves and rejects drift (drift=%s)", async drift => {
+  reads = (_repository, path) => drift && path === "other.ts" ? "newer local content" : `original ${path}`;
+  const edits = ["same.ts", "other.ts"].map(path => ({proposalId: "multi", repositoryFullName: "fixture/a", branch: "feature", path, baseContent: `original ${path}`, content: `changed ${path}`}));
+  render(createElement(RepositoryWorkspaceView, {editRequest: {context: m.client.config, edit: edits[0], edits}}));
+  for (const edit of edits) {
+    expect(screen.getByLabelText(`Agent proposed diff for ${edit.path}`)).toBeTruthy();
+    await screen.findByRole("button", {name: edit.path});
+    fireEvent.click(screen.getByText(edit.path, {selector: "summary"}));
+    const open = await screen.findByRole("button", {name: `Open ${edit.path} for local review`});
+    await waitFor(() => expect((open as HTMLButtonElement).disabled).toBe(false));
+    fireEvent.click(open);
+    await screen.findByDisplayValue(drift && edit.path === "other.ts" ? "newer local content" : edit.baseContent);
+    if (drift && edit.path === "other.ts") {
+      fireEvent.click(screen.getByRole("button", {name: "Load editor draft"}));
+      await screen.findByText(/local saved content differs from the proposal baseline/);
+      expect(screen.getByDisplayValue("newer local content")).toBeTruthy();
+      expect(m.invoke.mock.calls.filter(([name]) => name === "write_repository_file")).toHaveLength(1);
+      break;
+    }
+    const previousWrites = m.invoke.mock.calls.filter(([name]) => name === "write_repository_file").length;
+    fireEvent.click(screen.getByRole("button", {name: "Load editor draft"}));
+    await screen.findByDisplayValue(edit.content);
+    expect(m.invoke.mock.calls.filter(([name]) => name === "write_repository_file")).toHaveLength(previousWrites);
+    fireEvent.click(screen.getByRole("button", {name: "Save ⌘S"}));
+    await waitFor(() => expect(m.invoke).toHaveBeenCalledWith("write_repository_file", {repositoryPath: "/owned/A", relativePath: edit.path, content: edit.content, expectedContent: edit.baseContent}));
+    await waitFor(() => expect((screen.getByRole("button", {name: "Save ⌘S"}) as HTMLButtonElement).disabled).toBe(true));
+  }
+  expect(screen.getByText(drift ? /1 of 2 drafts loaded during this review/ : /2 of 2 drafts loaded during this review/)).toBeTruthy();
+  expect(m.invoke.mock.calls.filter(([name]) => name === "run_repository_check")).toHaveLength(0);
+});
+it("requires discard consent when moving between proposed files with an unsaved draft", async () => {
+  reads = (_repository, path) => `original ${path}`;
+  const edits = ["same.ts", "other.ts"].map(path => ({proposalId: "multi", repositoryFullName: "fixture/a", branch: "feature", path, baseContent: `original ${path}`, content: `changed ${path}`}));
+  render(createElement(RepositoryWorkspaceView, {editRequest: {context: m.client.config, edit: edits[0], edits}}));
+  fireEvent.click(await screen.findByRole("button", {name: "same.ts"}));
+  await screen.findByDisplayValue("original same.ts");
+  fireEvent.click(screen.getByRole("button", {name: "Load editor draft"}));
+  await screen.findByDisplayValue("changed same.ts");
+  fireEvent.click(screen.getByText("other.ts", {selector: "summary"}));
+  fireEvent.click(screen.getByRole("button", {name: "Open other.ts for local review"}));
+  await screen.findByRole("button", {name: "Discard and open"});
+  expect(screen.getByDisplayValue("changed same.ts")).toBeTruthy();
+  expect(m.invoke.mock.calls.filter(([name, args]) => name === "read_repository_file" && args.relativePath === "other.ts")).toHaveLength(0);
+  expect(m.invoke.mock.calls.filter(([name]) => name === "write_repository_file" || name === "run_repository_check")).toHaveLength(0);
+  fireEvent.click(screen.getByRole("button", {name: "Discard and open"}));
+  await screen.findByDisplayValue("original other.ts");
+  expect(screen.queryByDisplayValue("changed other.ts")).toBeNull();
 });

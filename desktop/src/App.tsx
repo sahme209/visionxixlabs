@@ -144,7 +144,7 @@ function AuthenticatedWorkspace({ identity }: { identity: VerifiedDesktopIdentit
         <TopBar activeView={activeView} identity={identity} />
         <div hidden={activeView !== "agent"} style={{ display: activeView === "agent" ? "flex" : "none" }} className="min-h-0 flex-1 flex-col">
           <WorkspaceViewBoundary onReturnToAgent={() => setActiveView("agent")}>
-            <AgentChatView onReviewLocalEdit={edit => { setEditRequest({edit, context: desktopClient.config, workspace: identity.organizationId}); setRepositoryVisited(true); setActiveView("repository-workspace"); }} requestedLocalCode={requestedLocalCode} requestedSkill={requestedSkill} active={activeView === "agent"} identity={identity} onOpenSettings={(destination) => { setSettingsDestination(destination); setActiveView("settings"); }} />
+            <AgentChatView onReviewLocalEdit={(edit, edits) => { setEditRequest({edit, edits, context: desktopClient.config, workspace: identity.organizationId}); setRepositoryVisited(true); setActiveView("repository-workspace"); }} requestedLocalCode={requestedLocalCode} requestedSkill={requestedSkill} active={activeView === "agent"} identity={identity} onOpenSettings={(destination) => { setSettingsDestination(destination); setActiveView("settings"); }} />
           </WorkspaceViewBoundary>
         </div>
         {repositoryVisited && <div hidden={activeView !== "repository-workspace"} style={{ display: activeView === "repository-workspace" ? "flex" : "none" }} className="min-h-0 flex-1 flex-col">

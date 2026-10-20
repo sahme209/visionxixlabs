@@ -3015,3 +3015,41 @@ warning. Independent security review found no blocker in handoff or freshness.
 This is local renderer/service/native-IPC fixture evidence, NOT installed Mac,
 actual native process or paid/provider end-to-end acceptance. No push, CI run,
 merge, hosted deployment/provisioning, billing setting or paid call occurred.
+
+### Coordinated multi-file local proposal review
+
+Reuse existing commit_github_files server capture/approval/atomic GitHub commit
+and single-file guarded native editor. No native batch-write API exists; do not
+simulate atomicity with sequential writes. Add bounded all-or-nothing parsing
+for local review set (max10 existing files, total200k proposed chars and200k base),
+index/path-bound server review snapshots, reject duplicate/case-colliding paths,
+sensitive/new/malformed entries. Display whole diff set with progress, open each
+matching file explicitly, load only that clean matching draft after live target
+check, Save separately, verify separately. Loading progress is not saved/verified
+proof; never auto-advance/write/check. Source/account scope preserved. Targeted
+parser/actual editor/Agent/App tests, desktop ES2021 check and security review.
+
+Implementation: complete bounded set now flows through ProposalCard and actual
+App into the retained repository editor. Every member diff is available; explicit
+per-file Load draft preserves live credential/workspace/target, clean-buffer and
+baseline fences. Each Save and check remains separately authorized. No native
+batch writer was introduced and no atomic local application is claimed. Changed
+second-file baselines reject loading without rolling back earlier explicit saves.
+Independent read-only security review found no blocking issue. Actual desktop
+ES2021 TypeScript passes; lint has zero errors and the existing catalog cleanup
+warning. Actual App fixtures pass45 tests; parser/demo contracts pass23 tests.
+Editor regressions include full two-file load/save and second-file drift paths.
+Two pre-existing renderer tests queried asynchronously mounted search/consent
+controls synchronously; tests now await those controls rather than add sleeps or
+change application timing. Native-process termination/pipe-drain acceptance and
+installed-Mac/real-provider acceptance remain unverified, not replaced by fixtures.
+No push, Actions run, merge, hosted operation, billing change or paid call.
+Coordinated review also provides explicit Open-file controls restricted to the
+matching catalog-listed repository/branch. Existing selectFile discard consent
+is reused; navigation never implicitly loads or saves AI text. Editor suite44
+passes after navigation changes, plus the added targeted discard-consent case
+passes independently. Together with45 App and23 parser/demo cases,113 relevant
+cases pass (overlapping earlier runs excluded). Final desktop TypeScript passes;
+independent follow-up navigation review found no blocker. Tracker coverage check
+passes24 available source units/2239 rows; unavailable original specification
+still prevents a claim of complete original-scope coverage.
