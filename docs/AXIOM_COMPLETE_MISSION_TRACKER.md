@@ -1905,3 +1905,26 @@ focused cases pass plus strict imported-source types with the project's allowJs
 semantics and scoped lint; an initial standalone invocation omitted allowJs and
 was corrected without relaxing the source contract. A fresh browser run is
 required; no production deployment or authorization change is included.
+
+
+PR182 merged normally as28ddcc60719e358202b27fa7fda5ac797005c03e after
+exact-head91b0eb69 fullCI39452848638, desktopCI39452848549 and browser
+39452848560 passed. All12 browser checks and six inspected screenshots are
+preserved in mission/public-website-browser-acceptance-2026-10-20.json. The
+navigation-shaped response completed2xx/RSC with no denial or upstream timeout.
+Earlier intermittent navigation failure remains causally unconfirmed; no further
+investigation or redundant browser rerun is scheduled. No production deployment
+occurred. The established desktop AI phase resumes with stored Gateway v1 reader
+compatibility; public object-policy writes, new model dispatch, discovery claims
+and inference remain disabled/unverified. Existing models/customers keep legacy
+normalization, and current service revocation still fails closed.
+
+Billing separate source branch now integrates28ddcc60 and preserves checkpoints
+871e0cea,21d047ef,abf9cd00 and38b4cf40. Its actual worker/source and supervisor
+handoff guards are implemented in source, with90 focused lifecycle/authority
+checks and source no-emit types passing; the new tooling-coverage regression
+passes independently. Source/config/output receipts still need current-main
+qualification, actual environment/DB ownership and hosted TEST acceptance.
+Two local native release-fixture timing failures remain recorded; full readiness
+is not claimed and no deadline was relaxed. Production DB/PITR/binding, live
+payments, installer and final deployment approval gates remain unchanged.

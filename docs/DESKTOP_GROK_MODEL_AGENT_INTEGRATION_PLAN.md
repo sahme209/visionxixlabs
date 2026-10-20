@@ -114,3 +114,35 @@ PR #182 website source validation and its local-browser lifecycle/navigation
 blocker retain their current priority. Existing Agent/ECS/cloud/Terraform/
 Airflow/billing/security work is preserved. The ONE FINAL website deployment,
 database recovery, live billing and installer approval gates are unchanged.
+
+## Read-before-write Gateway policy compatibility checkpoint
+
+October 20 source-only implementation: the existing policy JSON slot can be read
+as either its unchanged legacy model string or a strict stored Gateway v1 value
+`{ version: 1, defaultModelId, approvedModelIds }`. Existing consumers still receive
+`modelSelections.vercel_gateway` as the default string; validated, frozen metadata
+is carried separately as optional `gatewaySelection`. The v1 shape permits 1–32
+unique concrete Gateway model IDs, each at most 200 characters, using the existing
+`isGatewayModelId` syntax. Dynamic `service-default` and virtual `vmc/` routes remain
+valid only under existing legacy semantics, outside this concrete v1 selection.
+Unknown versions/fields, getters, sparse/extended arrays, duplicate IDs or an
+unapproved default fail closed without invoking stored accessors.
+
+Only the stored-row loader uses the new reader. The existing public normalizer
+and admin write boundary still reject object-valued selections; no new API/UI
+write capability, catalog, credentials or model request is enabled. Saving a
+validated loaded policy preserves the v1 JSON value rather than flattening it.
+Service-provider intersection or workspace disable drops revoked Gateway metadata;
+invalid normalized metadata fails closed without inventing a direct fallback.
+Legacy provider strings, service defaults and explicitly configured direct-provider
+semantics remain intact. Mocked repository tests cover compatibility, strict
+validation, save preservation and revocation; these are not live Grok, catalog,
+model-selection UI, inference, billing or installed-desktop acceptance. Remaining
+writer/API/catalog/cost-reservation phases and production gates above still apply.
+Legacy null/primitive/non-array provider and fallback values retain the original
+normalizer's empty-list behavior; actual arrays are descriptor-checked before
+iteration. Regression cases compare stored/public legacy normalization directly.
+
+Root validation: 48 targeted tests across stored/legacy policy, control governance
+and desktop provider routes pass; scoped lint and independent source review pass.
+These checks establish storage compatibility only, not hosted inference acceptance.

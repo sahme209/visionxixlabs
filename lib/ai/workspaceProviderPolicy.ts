@@ -5,13 +5,21 @@ import { isAIProviderName, type AIProviderName } from "./AIProvider";
 import { defaultModelFor, isKnownModel } from "./AIModelRegistry";
 import { isGatewayModelId } from "./gatewayModelCatalog";
 
+export interface GatewayModelSelectionV1 {
+  readonly version: 1;
+  readonly defaultModelId: string;
+  readonly approvedModelIds: readonly string[];
+}
+
 export interface WorkspaceAIProviderPolicy {
   /** False is an explicit workspace-level governed-AI kill switch. */
   enabled: boolean;
   allowedProviders: AIProviderName[];
-  /** One approved model per enabled provider. Never a credential or account ID. */
+  /** Legacy/default model per provider. Never a credential or account ID. */
   modelSelections: Partial<Record<AIProviderName, string>>;
   fallbackOrder: AIProviderName[];
+  /** Stored-reader metadata only; existing callers still use the string default. */
+  gatewaySelection?: GatewayModelSelectionV1;
 }
 
 interface PolicyRow {
@@ -61,6 +69,66 @@ function modelSelections(value: unknown, allowedProviders: readonly AIProviderNa
   return selections;
 }
 
+/** Descriptor-safe JSON records only; never invoke stored getters/toJSON. */
+function storedRecord(value: unknown, maximum: number): Record<string, unknown> | null {
+  if (!value || typeof value !== "object" || ![Object.prototype, null].includes(Object.getPrototypeOf(value))) return null;
+  const keys = Reflect.ownKeys(value); if (keys.length > maximum || keys.some(key => typeof key !== "string")) return null;
+  const out: Record<string, unknown> = Object.create(null);
+  for (const key of keys as string[]) {
+    const descriptor = Object.getOwnPropertyDescriptor(value, key);
+    if (!descriptor?.enumerable || !Object.hasOwn(descriptor, "value")) return null;
+    Object.defineProperty(out, key, { value: descriptor.value, enumerable: true });
+  }
+  return out;
+}
+function storedArray(value: unknown): unknown[] | null {
+  if (!Array.isArray(value) || Object.getPrototypeOf(value) !== Array.prototype) return null;
+  const length = Object.getOwnPropertyDescriptor(value, "length");
+  if (!length || !Object.hasOwn(length, "value") || !Number.isSafeInteger(length.value) || length.value < 0 || length.value > 32 || Reflect.ownKeys(value).length !== length.value + 1) return null;
+  const out: unknown[] = [];
+  for (let i = 0; i < length.value; i++) {
+    const descriptor = Object.getOwnPropertyDescriptor(value, String(i));
+    if (!descriptor?.enumerable || !Object.hasOwn(descriptor, "value")) return null;
+    out.push(descriptor.value);
+  }
+  return out;
+}
+function storedGatewaySelection(value: unknown): GatewayModelSelectionV1 | null {
+  const row = storedRecord(value, 3);
+  if (!row || Object.keys(row).sort().join("|") !== "approvedModelIds|defaultModelId|version" || row.version !== 1) return null;
+  const ids = storedArray(row.approvedModelIds);
+  const concrete = (id: unknown): id is string => typeof id === "string" && id.length <= 200 && id !== "service-default" && !id.startsWith("vmc/") && isGatewayModelId(id);
+  if (!concrete(row.defaultModelId) || !ids?.length || !ids.every(concrete) || new Set(ids).size !== ids.length || !ids.includes(row.defaultModelId)) return null;
+  return Object.freeze({ version: 1, defaultModelId: row.defaultModelId, approvedModelIds: Object.freeze(ids as string[]) });
+}
+/** Storage compatibility only. Public normalization deliberately remains the
+ * string-only write boundary until separate admin/API enablement is reviewed. */
+export function normalizeStoredWorkspaceAIProviderPolicy(value: unknown): WorkspaceAIProviderPolicy | null {
+  const row = storedRecord(value, 4);
+  if (!row || Object.keys(row).some(key => !["enabled", "allowedProviders", "modelSelections", "fallbackOrder"].includes(key))) return null;
+  // Preserve legacy providerList handling for null/primitive/non-array values;
+  // only actual arrays need descriptor validation before normalization iterates.
+  const allowedIsArray = Array.isArray(row.allowedProviders), fallbackIsArray = Array.isArray(row.fallbackOrder);
+  const allowed = allowedIsArray ? storedArray(row.allowedProviders) : row.allowedProviders;
+  const fallback = fallbackIsArray ? storedArray(row.fallbackOrder) : row.fallbackOrder;
+  if (allowedIsArray && allowed === null || fallbackIsArray && fallback === null) return null;
+  const selections = row.modelSelections === undefined || row.modelSelections === null ? {} : storedRecord(row.modelSelections, 32);
+  if (!selections) return null;
+  let gatewaySelection: GatewayModelSelectionV1 | undefined;
+  const normalized: Record<string, unknown> = {};
+  for (const [provider, model] of Object.entries(selections)) {
+    let selected = model;
+    if (provider === "vercel_gateway" && typeof model !== "string") {
+      gatewaySelection = storedGatewaySelection(model) ?? undefined;
+      if (!gatewaySelection) return null;
+      selected = gatewaySelection.defaultModelId;
+    }
+    Object.defineProperty(normalized, provider, { value: selected, enumerable: true });
+  }
+  const policy = normalizeWorkspaceAIProviderPolicy({ enabled: row.enabled, allowedProviders: allowed, modelSelections: normalized, fallbackOrder: fallback });
+  return policy && gatewaySelection ? { ...policy, gatewaySelection } : policy;
+}
+
 export function normalizeWorkspaceAIProviderPolicy(input: {
   enabled?: unknown;
   allowedProviders?: unknown;
@@ -98,6 +166,10 @@ export function resolveWorkspaceAIProviderPolicy(input: {
   if (!input.stored || !input.stored.enabled) {
     return { enabled: false, allowedProviders: [], modelSelections: {}, fallbackOrder: [] };
   }
+  const gatewaySelection = input.stored.gatewaySelection === undefined ? undefined : storedGatewaySelection(input.stored.gatewaySelection);
+  if (input.stored.gatewaySelection !== undefined && (!gatewaySelection || gatewaySelection.defaultModelId !== input.stored.modelSelections.vercel_gateway || !input.stored.allowedProviders.includes("vercel_gateway"))) {
+    return { enabled: false, allowedProviders: [], modelSelections: {}, fallbackOrder: [] };
+  }
   const allowedProviders = input.stored.allowedProviders.filter((provider) => serviceEnabled.includes(provider));
   const fallbackOrder = input.stored.fallbackOrder.filter((provider) => allowedProviders.includes(provider));
   const selected = Object.fromEntries(
@@ -109,6 +181,7 @@ export function resolveWorkspaceAIProviderPolicy(input: {
     allowedProviders,
     modelSelections: selected,
     fallbackOrder: [...fallbackOrder, ...allowedProviders.filter((provider) => !fallbackOrder.includes(provider))],
+    ...(gatewaySelection && allowedProviders.includes("vercel_gateway") ? { gatewaySelection } : {}),
   };
 }
 
@@ -121,7 +194,7 @@ export async function loadWorkspaceAIProviderPolicyWithState(organizationId: str
       where: { organizationId },
       select: { enabled: true, allowedProviders: true, modelSelections: true, fallbackOrder: true },
     });
-    return { policy: row ? normalizeWorkspaceAIProviderPolicy(row) : null, storageState: "ready" };
+    return { policy: row ? normalizeStoredWorkspaceAIProviderPolicy(row) : null, storageState: "ready" };
   } catch (error) {
     return { policy: null, storageState: workspaceAIProviderPolicyStorageState(error) };
   }
@@ -136,20 +209,26 @@ export async function saveWorkspaceAIProviderPolicy(input: {
   policy: WorkspaceAIProviderPolicy;
   updatedBy: string;
 }): Promise<void> {
+  let selections: object = input.policy.modelSelections;
+  if (input.policy.gatewaySelection !== undefined) {
+    const metadata = storedGatewaySelection(input.policy.gatewaySelection);
+    if (!metadata || !input.policy.enabled || !input.policy.allowedProviders.includes("vercel_gateway") || input.policy.modelSelections.vercel_gateway !== metadata.defaultModelId) throw new Error("workspace_gateway_policy_invalid");
+    selections = { ...input.policy.modelSelections, vercel_gateway: metadata };
+  }
   await (prisma as unknown as PolicyRepo).organizationAIProviderPolicy.upsert({
     where: { organizationId: input.organizationId },
     create: {
       organizationId: input.organizationId,
       enabled: input.policy.enabled,
       allowedProviders: input.policy.allowedProviders as unknown as object,
-      modelSelections: input.policy.modelSelections as object,
+      modelSelections: selections,
       fallbackOrder: input.policy.fallbackOrder as unknown as object,
       updatedBy: input.updatedBy,
     },
     update: {
       enabled: input.policy.enabled,
       allowedProviders: input.policy.allowedProviders as unknown as object,
-      modelSelections: input.policy.modelSelections as object,
+      modelSelections: selections,
       fallbackOrder: input.policy.fallbackOrder as unknown as object,
       updatedBy: input.updatedBy,
     },
