@@ -164,7 +164,7 @@ try {
   } });
   async function evaluate(fn, argument) { const result = await send('Runtime.evaluate', { expression: `(${fn})(${JSON.stringify(argument)})`, returnByValue: true, awaitPromise: true }); if (result.exceptionDetails) { const name = result.exceptionDetails.exception?.className; evaluationExceptionClass = ['TypeError', 'ReferenceError', 'SyntaxError', 'RangeError', 'Error'].includes(name) ? name : 'other'; } assert.ok(!result.exceptionDetails, 'website_browser_evaluation_failed'); return result.result.value; }
   /** @param {string} [preImagePhase] */
-  async function waitFor(fn, argument, timeout = 45000, preImagePhase = undefined) {
+  async function waitFor(fn, argument, timeout = 45000, preImagePhase = undefined, onPoll = undefined) {
     const deadline = Date.now() + timeout;
     if (preImagePhase !== undefined) assert.ok(['homepage_document', 'homepage_playback'].includes(preImagePhase), 'website_dom_diagnostic_phase');
     /** @type {{phase: string, lastDomSnapshot: ReturnType<typeof sanitizePreImageDomSnapshot>, nextMarkers?: ReturnType<typeof sanitizeNextBootstrapMarkers>, scriptCounts?: ReturnType<typeof sanitizeScriptCounts>, predicateExceptionClass?: string} | null} */
@@ -173,7 +173,7 @@ try {
     while (Date.now() < deadline) {
       const polled = await evaluate(diagnostic ? `argument => { try { return { satisfied: (${fn})(argument), snapshot: (${readPreImageDomSnapshot})(), scriptCounts: (${readScriptCounts})(), nextMarkers: (${readNextBootstrapMarkers})(), predicateExceptionClass: null }; } catch (error) { return { satisfied: false, snapshot: (${readPreImageDomSnapshot})(), scriptCounts: (${readScriptCounts})(), nextMarkers: (${readNextBootstrapMarkers})(), predicateExceptionClass: ["TypeError", "ReferenceError", "SyntaxError", "RangeError", "Error"].includes(error?.name) ? error.name : "other" }; } }` : fn, argument);
       if (diagnostic) { diagnostic.lastDomSnapshot = sanitizePreImageDomSnapshot(polled.snapshot); diagnostic.nextMarkers = sanitizeNextBootstrapMarkers(polled.nextMarkers); const scripts = sanitizeScriptCounts(polled.scriptCounts); if (scripts) diagnostic.scriptCounts = scripts; if (polled.predicateExceptionClass !== null) { diagnostic.predicateExceptionClass = ['TypeError', 'ReferenceError', 'SyntaxError', 'RangeError', 'Error'].includes(polled.predicateExceptionClass) ? polled.predicateExceptionClass : 'other'; throw Error('website_browser_evaluation_failed'); } }
-      if (currentInteraction === 'documentation_check' && documentationTiming) { documentationTiming.lastPollMs = driverElapsedMs(); documentationTiming.pollCount = Math.min(4096, documentationTiming.pollCount + 1); }
+      if (onPoll) onPoll();
       if (diagnostic ? polled.satisfied : polled) { if (diagnostic) preImageWait = null; return; }
       await sleep(100);
     }
@@ -236,7 +236,7 @@ try {
   await viewport(360, true); await navigate('/product'); await waitFor(() => document.querySelector('[aria-label="Play story"]').disabled); await click('Next step'); await frame('product-reduced-motion-mobile'); evidence.push('reduced_motion_static_manual_step');
   await viewport(1440);
   documentationTiming = { startedMs: driverElapsedMs(), clickCompletedMs: null, preWaitCompletedMs: null, lastPollMs: null, pollCount: 0, observedMs: null };
-  await click('Read approval workflow'); documentationTiming.clickCompletedMs = driverElapsedMs(); currentInteraction = 'documentation_check'; try { documentationPreWaitSnapshot = await evaluate(() => ({ pathnameIsDocs: location.pathname === '/docs/approval-workflow', executionPresent: Boolean(document.querySelector('#execution')), tourPresent: Boolean(document.querySelector('#product-tour')) })); } catch { /* unknown observation does not replace the navigation assertion */ } documentationTiming.preWaitCompletedMs = driverElapsedMs(); try { await waitFor(() => location.pathname === '/docs/approval-workflow' && Boolean(document.querySelector('#execution'))); }
+  await click('Read approval workflow'); documentationTiming.clickCompletedMs = driverElapsedMs(); currentInteraction = 'documentation_check'; try { documentationPreWaitSnapshot = await evaluate(() => ({ pathnameIsDocs: location.pathname === '/docs/approval-workflow', executionPresent: Boolean(document.querySelector('#execution')), tourPresent: Boolean(document.querySelector('#product-tour')) })); } catch { /* unknown observation does not replace the navigation assertion */ } documentationTiming.preWaitCompletedMs = driverElapsedMs(); try { await waitFor(() => location.pathname === '/docs/approval-workflow' && Boolean(document.querySelector('#execution')), undefined, 45000, undefined, () => { documentationTiming.lastPollMs = driverElapsedMs(); documentationTiming.pollCount = Math.min(4096, documentationTiming.pollCount + 1); }); }
   catch (error) {
     if (error.message === 'website_dom_timeout') {
       try { documentationTimeoutSnapshot = await evaluate(() => ({ pathnameIsDocs: location.pathname === '/docs/approval-workflow', executionPresent: Boolean(document.querySelector('#execution')), tourPresent: Boolean(document.querySelector('#product-tour')) })); } catch { /* unknown observation must not replace the original failure */ }

@@ -1,0 +1,280 @@
+{
+  "schema": 1,
+  "sourceHead": "fbf65b84a538349c9e466ca5c0706896f7a028fb",
+  "runUrl": "https://github.com/sahme209/visionxixlabs/actions/runs/39469175795",
+  "jobId": 118788404799,
+  "artifactId": 12287220263,
+  "summary": {
+    "currentInteraction": "approval-documentation",
+    "lastInteraction": "approval-documentation",
+    "completedEvidence": [
+      "essential_consent_selected",
+      "play_pause_preserves_typed_output",
+      "offscreen_timer_stopped",
+      "sample_approve_reject",
+      "native_branch_selector_resets_story",
+      "replay",
+      "hidden_document_timer_stopped",
+      "terraform_apply_absent",
+      "mobile_360_no_horizontal_overflow",
+      "keyboard_previous",
+      "reduced_motion_static_manual_step",
+      "actual_documentation_destination"
+    ],
+    "documentationTiming": null,
+    "documentationPreWaitSnapshot": null,
+    "documentationTimeoutSnapshot": null,
+    "scriptRequests": {
+      "allowed": 22,
+      "denied": 0
+    },
+    "scriptCounts": null,
+    "schema": 1,
+    "sourceHead": "fbf65b84a538349c9e466ca5c0706896f7a028fb",
+    "sourceKind": "pull_request_head",
+    "productionEquivalent": false,
+    "outcome": "passed",
+    "cleanup": "owned_groups_empty",
+    "cleanupErrors": [],
+    "sourceUnchanged": true,
+    "captureSuccess": true,
+    "cleanupDiagnostics": [],
+    "homeCapturePhase": "playback_ready_after_essential_consent",
+    "consoleErrorCount": 6,
+    "runtimeExceptionCount": 0,
+    "evaluationExceptionClass": null,
+    "predicateExceptionClass": null,
+    "captureFailure": null,
+    "preImagePhase": null,
+    "nextMarkers": null,
+    "preImageDomSnapshot": null,
+    "timedOutOperation": null,
+    "qualification": "Isolated public website fixture only; not production, authentication, native desktop, or customer deployment acceptance.",
+    "serverGuard": {
+      "stage": "stopping",
+      "counts": {
+        "transport": 9,
+        "process": 0,
+        "worker": 0,
+        "listener": 0
+      }
+    },
+    "proxyDelivery": {
+      "stage": "stopped",
+      "counts": {
+        "script_accepted": 22,
+        "script_response": 22,
+        "script_complete": 21,
+        "script_cancelled": 1,
+        "script_upstream_timeout": 0,
+        "upstream_timeout": 0
+      },
+      "categories": {
+        "webpack": {
+          "accepted": 4,
+          "response": 4,
+          "complete": 4,
+          "cancelled": 0,
+          "status_2xx": 4,
+          "status_3xx": 0,
+          "status_4xx": 0,
+          "status_5xx": 0,
+          "status_other": 0,
+          "mime_js": 4,
+          "mime_other": 0,
+          "cancelled_successful_js": 0,
+          "cancelled_other": 0
+        },
+        "main_app": {
+          "accepted": 4,
+          "response": 4,
+          "complete": 4,
+          "cancelled": 0,
+          "status_2xx": 4,
+          "status_3xx": 0,
+          "status_4xx": 0,
+          "status_5xx": 0,
+          "status_other": 0,
+          "mime_js": 4,
+          "mime_other": 0,
+          "cancelled_successful_js": 0,
+          "cancelled_other": 0
+        },
+        "app_page": {
+          "accepted": 2,
+          "response": 2,
+          "complete": 2,
+          "cancelled": 0,
+          "status_2xx": 2,
+          "status_3xx": 0,
+          "status_4xx": 0,
+          "status_5xx": 0,
+          "status_other": 0,
+          "mime_js": 2,
+          "mime_other": 0,
+          "cancelled_successful_js": 0,
+          "cancelled_other": 0
+        },
+        "app_layout": {
+          "accepted": 4,
+          "response": 4,
+          "complete": 3,
+          "cancelled": 1,
+          "status_2xx": 4,
+          "status_3xx": 0,
+          "status_4xx": 0,
+          "status_5xx": 0,
+          "status_other": 0,
+          "mime_js": 4,
+          "mime_other": 0,
+          "cancelled_successful_js": 1,
+          "cancelled_other": 0
+        },
+        "other": {
+          "accepted": 8,
+          "response": 8,
+          "complete": 8,
+          "cancelled": 0,
+          "status_2xx": 8,
+          "status_3xx": 0,
+          "status_4xx": 0,
+          "status_5xx": 0,
+          "status_other": 0,
+          "mime_js": 8,
+          "mime_other": 0,
+          "cancelled_successful_js": 0,
+          "cancelled_other": 0
+        }
+      },
+      "documentation": {
+        "rsc_navigation": {
+          "accepted": 1,
+          "response": 1,
+          "complete": 1,
+          "cancelled": 0,
+          "status_2xx": 1,
+          "status_3xx": 0,
+          "status_4xx": 0,
+          "status_5xx": 0,
+          "status_other": 0,
+          "mime_rsc": 1,
+          "mime_html": 0,
+          "mime_other": 0,
+          "upstream_timeout": 0
+        },
+        "rsc_prefetch": {
+          "accepted": 0,
+          "response": 0,
+          "complete": 0,
+          "cancelled": 0,
+          "status_2xx": 0,
+          "status_3xx": 0,
+          "status_4xx": 0,
+          "status_5xx": 0,
+          "status_other": 0,
+          "mime_rsc": 0,
+          "mime_html": 0,
+          "mime_other": 0,
+          "upstream_timeout": 0
+        },
+        "document": {
+          "accepted": 0,
+          "response": 0,
+          "complete": 0,
+          "cancelled": 0,
+          "status_2xx": 0,
+          "status_3xx": 0,
+          "status_4xx": 0,
+          "status_5xx": 0,
+          "status_other": 0,
+          "mime_rsc": 0,
+          "mime_html": 0,
+          "mime_other": 0,
+          "upstream_timeout": 0
+        },
+        "denied": 0
+      }
+    },
+    "images": [
+      {
+        "name": "agent-review-desktop.png",
+        "width": 1200,
+        "height": 883
+      },
+      {
+        "name": "approval-documentation.png",
+        "width": 1078,
+        "height": 1823
+      },
+      {
+        "name": "home-desktop.png",
+        "width": 1200,
+        "height": 943
+      },
+      {
+        "name": "product-mobile.png",
+        "width": 320,
+        "height": 1879
+      },
+      {
+        "name": "product-reduced-motion-mobile.png",
+        "width": 320,
+        "height": 1879
+      },
+      {
+        "name": "terraform-held-desktop.png",
+        "width": 1200,
+        "height": 895
+      }
+    ]
+  },
+  "screenshots": [
+    {
+      "file": "agent-review-desktop.png",
+      "sha256": "f3908dc9c4fbfef6651f2b71c911ceae2f51a0a36bf6f9e821f120771439662b",
+      "rootViewed": true
+    },
+    {
+      "file": "approval-documentation.png",
+      "sha256": "a1976f77924ea36d0177dd2d7671beacc98c50130e79d791ed9ed1063efcd61e",
+      "rootViewed": true
+    },
+    {
+      "file": "home-desktop.png",
+      "sha256": "f5336fcf2c6e91b3a84f4adf5ba254bae8c04e6e2741646ce2e9ba6011984880",
+      "rootViewed": true
+    },
+    {
+      "file": "product-mobile.png",
+      "sha256": "ad7dd9cdd061d02a52f69dd08bf08f26f7cfb4670b4e9bb9bcb1519ea74e9810",
+      "rootViewed": true
+    },
+    {
+      "file": "product-reduced-motion-mobile.png",
+      "sha256": "8df0f609f170e9c4bbf3512a2d083d952ee711f9d4ac7440a684542770b17146",
+      "rootViewed": true
+    },
+    {
+      "file": "terraform-held-desktop.png",
+      "sha256": "f2e0a863fb84f5c36190d9e8eed403c9aa43f5ed8a8fea60e35e6ebf5ebb417b",
+      "rootViewed": true
+    }
+  ],
+  "rootVisualReview": {
+    "reviewedCount": 6,
+    "scope": "Current exact-head desktop/mobile/reduced-motion story and real approval-documentation screenshots, not installed desktop or production.",
+    "observations": [
+      "Scripted/sample labels visible; sample approval is distinguished from execution.",
+      "Terraform remains held with no apply action.",
+      "Mobile story remains readable; bounded interaction checks report no horizontal overflow.",
+      "Reduced-motion story uses static/manual controls.",
+      "Actual approval documentation distinguishes approval from external execution and recovery."
+    ],
+    "limitations": [
+      "Persistent privacy/support widgets are visible and can overlap nearby labels/text at these scroll positions; no pixel-perfect or overlay-free claim.",
+      "Six console errors remain unclassified; runtime exception count is zero.",
+      "Success finishes in approval-documentation, outside the new timing projection phases; documentationTiming is null and does not establish a timing root cause.",
+      "Historical intermittent navigation remains causally unconfirmed; this pass is not a claim that diagnostics or unrelated security code fixed it."
+    ]
+  }
+}

@@ -2144,3 +2144,20 @@ before implementation. Acceptance requires actual pre-completion desktop chunks,
 revocation/cancellation/restart behavior, singular usage and separately authorized
 real-provider/native checks. No paid probe, endpoint activation or installer is
 authorized by this plan; current PR184/browser gates remain first.
+
+Combined fbf65b84 browser run39469175795 passed all12 checks; root independently
+viewed all six current screenshots. Receipt/hashes and visual limitations are in
+mission/public-website-browser-acceptance-fbf65b84.json. Historical navigation
+cause remains unconfirmed; success does not establish the remaining-budget
+hypothesis. The successful terminal phase projected timing as null; the existing
+closed approval-documentation phase now also retains those six bounded numbers.
+
+Full CI39469175827 passed types and8551 tests but failed five isolated polling
+tests: the diagnostic had introduced globals into their pure VM boundary. The
+waiter now accepts an optional no-argument observer; only the documentation caller
+supplies timing updates. Predicate, poll count, intervals and deadlines remain
+unchanged. The entire fixture family passed290 checks locally; three actual child-
+process checks were denied EPERM by current native execution controls. Those
+controls and tests are preserved for GitHub CI, with no local bypass or retry.
+Focused imported types/lint pass. A corrected exact-head CI is required before
+merge; the passing browser receipt is not a waiver of the full-suite failure.

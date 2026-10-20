@@ -46,3 +46,7 @@ it("does not invoke a top-level timing accessor even in the permitted phase", ()
   expect(publicSummary("a".repeat(40), undefined, capture, undefined, undefined).documentationTiming).toBeNull();
   expect(reads).toBe(0);
 });
+
+it("retains timing at the successful documentation screenshot for a comparison baseline", () => {
+  expect(publicSummary("a".repeat(40), undefined, { currentInteraction: "approval-documentation", documentationTiming: timing }, undefined, undefined).documentationTiming).toEqual(timing);
+});
