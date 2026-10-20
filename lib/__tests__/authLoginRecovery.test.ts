@@ -59,6 +59,12 @@ describe.each(["google", "github"])("%s identity-store recovery", (provider) => 
     expect(mocks.upsertUser.mock.calls[0][0].update).not.toHaveProperty("role");
     expect(mocks.membership).toHaveBeenCalledWith({ userId: "user-1", email: "pilot@example.test" });
   });
+  it("requests only the canonical identity needed by the OAuth callback", async () => {
+    mocks.upsertUser.mockResolvedValue({ id: "user-1", email: "pilot@example.test" });
+    expect(await signIn()).toBe(true);
+    expect(mocks.upsertUser.mock.calls[0][0].select).toEqual({ id: true, email: true });
+    expect(mocks.membership).toHaveBeenCalledWith({ userId: "user-1", email: "pilot@example.test" });
+  });
   it("denies a missing identity schema and records the safe server-side reason", async () => {
     mocks.upsertUser.mockRejectedValue(Object.assign(new Error("missing verification column"), { code: "P2022" }));
     expect(await signIn()).toBe(false);

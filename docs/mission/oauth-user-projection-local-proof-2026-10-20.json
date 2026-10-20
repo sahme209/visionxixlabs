@@ -1,0 +1,13 @@
+{
+  "postgres": 17,
+  "prisma": "5.22.0",
+  "unprojectedExistingAndNew": "P2022",
+  "projectedExistingAndNew": "passed",
+  "missingVerificationSchemaStillDetected": true,
+  "scope": "disposable_local_prisma_database_only",
+  "cleanup": "owned_container_removed",
+  "script": "scripts/rehearse-oauth-user-projection.mjs",
+  "scriptSha256": "1bd73bd599326b2d955fd08e06dd86d02c1e6568c9200a4870e1b97d80be2219",
+  "qualification": "Actual local Prisma operations against disposable legacy User DDL, not NextAuth HTTP/browser or production acceptance.",
+  "priorAttempt": "Disk-backed PostgreSQL attempt failed with SQLSTATE 53100; owned container removed and absence checked. Successful retry used a bounded 256 MiB tmpfs data directory."
+}
