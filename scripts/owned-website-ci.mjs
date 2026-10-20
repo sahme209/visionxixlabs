@@ -62,7 +62,21 @@ export function publicProxyDelivery(proxy, result, nonce) {
   }
   const categories = { webpack: category('webpack'), main_app: category('main_app'), app_page: category('app_page'), app_layout: category('app_layout'), other: category('other') };
   if (Object.values(categories).some(value => value === null)) return null;
-  return { stage: proxy.stage, counts, categories };
+  function documentationCategory(name) {
+    const values = { accepted: 0, response: 0, complete: 0, cancelled: 0, status_2xx: 0, status_3xx: 0, status_4xx: 0, status_5xx: 0, status_other: 0, mime_rsc: 0, mime_html: 0, mime_other: 0, upstream_timeout: 0 };
+    for (const key of Object.keys(values)) {
+      const descriptor = Object.getOwnPropertyDescriptor(proxy.counts, `docs_${name}_${key}`);
+      if (!descriptor) continue;
+      if (!descriptor.enumerable || !Object.hasOwn(descriptor, 'value') || !Number.isInteger(descriptor.value) || descriptor.value < 0 || descriptor.value > 1000000) return null;
+      values[key] = descriptor.value;
+    }
+    return values;
+  }
+  const denied = Object.getOwnPropertyDescriptor(proxy.counts, 'docs_denied');
+  if (denied && (!denied.enumerable || !Object.hasOwn(denied, 'value') || !Number.isInteger(denied.value) || denied.value < 0 || denied.value > 1000000)) return null;
+  const documentation = { rsc_navigation: documentationCategory('rsc_navigation'), rsc_prefetch: documentationCategory('rsc_prefetch'), document: documentationCategory('document'), denied: denied?.value ?? 0 };
+  if (!documentation.rsc_navigation || !documentation.rsc_prefetch || !documentation.document) return null;
+  return { stage: proxy.stage, counts, categories, documentation };
 }
 const captureFailures = new Set(['website_dom_timeout', 'website_driver_failed', 'website_driver_deadline', 'website_driver_operation_timeout', 'website_driver_interrupted', 'website_driver_closed', 'website_browser_evaluation_failed', 'website_capture_browser_not_registered', 'website_capture_owner_changed', 'website_capture_source_changed', 'website_cdp_response_bound', 'website_cdp_closed', 'website_cdp_error', 'website_cdp_invalid_message', 'website_cdp_not_open', 'website_cdp_protocol', 'website_dom_diagnostic_phase', 'website_framebuffer_bound', 'website_image_bound', 'website_initial_blank_target', 'website_mobile_overflow', 'website_owned_capture_directory']);
 const cleanupCodes = new Set(['website_cleanup_foreign_group_member', 'website_cleanup_leader_changed', 'website_cleanup_incomplete', 'website_pending_child_unresolved', 'website_child_group_not_empty', 'website_ledger_persistence_failed', 'website_cleanup_metadata_unverified']);

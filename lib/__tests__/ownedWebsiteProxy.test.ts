@@ -132,3 +132,33 @@ it('refuses framework header accessors without evaluating them', () => {
  const f = fixture(); let reads = 0; Object.assign(f.req.headers, { rsc: '1' }); Object.defineProperty(f.req.headers, 'next-url', { enumerable: true, get() { reads++; return '/product'; } });
  f.handler.request(f.req, f.res); expect(reads).toBe(0); expect(f.request).not.toHaveBeenCalled();
 });
+
+it.each([['rsc_navigation', 'text/x-component; charset=utf-8'], ['rsc_prefetch', 'text/x-component; charset=utf-8'], ['document', 'text/html; charset=utf-8']])('counts fixed documentation %s delivery without recording headers or URL', (kind, mime) => {
+  const f = fixture(); f.req.url = 'http://127.0.0.1:38001/docs/approval-workflow?_rsc=PRIVATE';
+  if (kind.startsWith('rsc_')) Object.assign(f.req.headers, { rsc: '1' });
+  if (kind === 'rsc_prefetch') Object.assign(f.req.headers, { 'next-router-prefetch': '1' });
+  f.handler.request(f.req, f.res); f.reply(Object.assign(new Stream(), { statusCode: 200, headers: { 'content-type': mime, 'x-private': 'PRIVATE' } }));
+  f.res.writableEnded = true; f.res.emit('finish'); f.res.emit('finish'); f.res.emit('error', Error('PRIVATE'));
+  const events = f.events.filter(event => event.startsWith('docs_'));
+  expect(events).toEqual([`docs_${kind}_accepted`, `docs_${kind}_response`, `docs_${kind}_status_2xx`, `docs_${kind}_mime_${kind.startsWith('rsc_') ? 'rsc' : 'html'}`, `docs_${kind}_complete`]);
+  expect(JSON.stringify(events)).not.toMatch(/PRIVATE|approval-workflow/); expect(f.upstream.setTimeout.mock.calls[0][0]).toBe(30000);
+});
+
+it('distinguishes a failed documentation response from timeout and counts cancellation once', () => {
+  const f = fixture(); f.req.url = 'http://127.0.0.1:38001/docs/approval-workflow'; Object.assign(f.req.headers, { rsc: '1' });
+  f.handler.request(f.req, f.res); f.reply(Object.assign(new Stream(), { statusCode: 500, headers: { 'content-type': 'text/html' } })); f.req.emit('aborted'); f.res.emit('error', Error('PRIVATE'));
+  expect(f.events.filter(event => event.startsWith('docs_'))).toEqual(['docs_rsc_navigation_accepted', 'docs_rsc_navigation_response', 'docs_rsc_navigation_status_5xx', 'docs_rsc_navigation_mime_html', 'docs_rsc_navigation_cancelled']);
+  const g = fixture(); g.req.url = f.req.url; g.handler.request(g.req, g.res);
+  const timeout = g.upstream.setTimeout.mock.calls[0][1]; timeout(); timeout();
+  expect(g.events.filter(event => event.startsWith('docs_'))).toEqual(['docs_document_accepted', 'docs_document_upstream_timeout', 'docs_document_cancelled']);
+});
+
+it('counts denied documentation separately and never assigns other destinations documentation counters', () => {
+  const f = fixture(); f.req.url = 'http://127.0.0.1:38001/docs/approval-workflow'; Object.assign(f.req.headers, { rsc: '1', 'next-url': '/account' });
+  f.handler.request(f.req, f.res); expect(f.events.filter(event => event.startsWith('docs_'))).toEqual(['docs_denied']); expect(f.request).not.toHaveBeenCalled();
+  const g = fixture(); g.handler.request(g.req, g.res); expect(g.events.some(event => event.startsWith('docs_'))).toBe(false);
+});
+it.each(['1', '2', '3'])('distinguishes validated documentation prefetch %s from navigation-shaped RSC', prefetch => {
+  const f = fixture(); f.req.url = 'http://127.0.0.1:38001/docs/approval-workflow'; Object.assign(f.req.headers, { rsc: '1', 'next-router-prefetch': prefetch });
+  f.handler.request(f.req, f.res); expect(f.events).toContain('docs_rsc_prefetch_accepted'); expect(f.events).not.toContain('docs_rsc_navigation_accepted');
+});

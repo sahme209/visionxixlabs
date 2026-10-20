@@ -33,27 +33,34 @@ function createProxyTransport({ origin, appPort, assets, request, isStopping = (
     catch { onEvent('socket_write_error'); destroy(socket); }
   }
   function handle(req, res) {
-    let closed = false, upstream, response, script = false, scriptComplete = false, scriptCategory = 'other', successfulJavaScript = false;
+    let closed = false, upstream, response, script = false, scriptComplete = false, scriptCategory = 'other', successfulJavaScript = false, documentationKind = null, documentationComplete = false;
     const scriptEvent = name => { if (script) onEvent(`script_${scriptCategory}_${name}`); };
+    const documentationEvent = name => { if (documentationKind) onEvent(`docs_${documentationKind}_${name}`); };
     function cancel() {
       if (closed) return; closed = true; onEvent('request_cancelled');
       if (script) { onEvent('script_cancelled'); if (!scriptComplete) { scriptEvent('cancelled'); scriptEvent(successfulJavaScript ? 'cancelled_successful_js' : 'cancelled_other'); } }
+      if (!documentationComplete) documentationEvent('cancelled');
       for (const stream of [upstream, response, req, res]) destroy(stream);
     }
     for (const stream of [req, res]) stream.on('error', cancel);
     req.on('aborted', cancel);
     req.on('close', () => { if (req.aborted || !req.complete) cancel(); });
     res.on('close', () => { if (!res.writableEnded) cancel(); });
-    res.on('finish', () => { if (script && !closed && !scriptComplete) { scriptComplete = true; onEvent('script_complete'); scriptEvent('complete'); } });
+    res.on('finish', () => {
+      if (script && !closed && !scriptComplete) { scriptComplete = true; onEvent('script_complete'); scriptEvent('complete'); }
+      if (documentationKind && !closed && !documentationComplete) { documentationComplete = true; documentationEvent('complete'); }
+    });
     let url, framework;
     try { url = new URL(req.url); framework = frameworkHeaders(req.headers); } catch { /* denied below */ }
     if (isStopping() || !framework || !url || url.origin !== origin || url.username || url.password || url.hash || !allowedRequest({ method: req.method, raw: `${url.pathname}${url.search}`, origin, assets })) {
       onEvent('denied');
+      if (url?.origin === origin && url.pathname === '/docs/approval-workflow') onEvent('docs_denied');
       if (!closed && !res.destroyed) { try { res.writeHead(403).end(); } catch { cancel(); } }
       return;
     }
     try {
       if (closed || req.destroyed || res.destroyed) { cancel(); return; }
+      if (url.pathname === '/docs/approval-workflow') { documentationKind = framework.rsc === '1' ? (Object.hasOwn(framework, 'next-router-prefetch') ? 'rsc_prefetch' : 'rsc_navigation') : 'document'; documentationEvent('accepted'); }
       script = url.pathname.startsWith('/_next/static/') && url.pathname.endsWith('.js');
       if (script) {
         scriptCategory = ({ '/_next/static/chunks/webpack.js': 'webpack', '/_next/static/chunks/main-app.js': 'main_app', '/_next/static/chunks/app/page.js': 'app_page', '/_next/static/chunks/app/layout.js': 'app_layout' })[url.pathname] ?? 'other';
@@ -61,6 +68,13 @@ function createProxyTransport({ origin, appPort, assets, request, isStopping = (
       }
       upstream = request({ hostname: '127.0.0.1', port: appPort, path: `${url.pathname}${url.search}`, method: req.method, agent: false, headers: { host: `127.0.0.1:${appPort}`, accept: req.headers.accept ?? '*/*', ...framework } }, reply => {
         response = reply;
+        if (documentationKind) {
+          documentationEvent('response');
+          const statusClass = Number.isInteger(reply.statusCode) && reply.statusCode >= 200 && reply.statusCode <= 599 ? `${Math.floor(reply.statusCode / 100)}xx` : 'other';
+          const contentType = reply.headers?.['content-type'];
+          const mime = typeof contentType === 'string' ? contentType.split(';')[0].trim().toLowerCase() : '';
+          documentationEvent(`status_${statusClass}`); documentationEvent(mime === 'text/x-component' ? 'mime_rsc' : mime === 'text/html' ? 'mime_html' : 'mime_other');
+        }
         if (script) {
           onEvent('script_response'); scriptEvent('response');
           const statusClass = Number.isInteger(reply.statusCode) && reply.statusCode >= 200 && reply.statusCode <= 599 ? `${Math.floor(reply.statusCode / 100)}xx` : 'other';
@@ -76,7 +90,7 @@ function createProxyTransport({ origin, appPort, assets, request, isStopping = (
       });
       upstream.on('error', cancel);
       upstream.on('close', () => { if (!response) cancel(); });
-      upstream.setTimeout(30_000, () => { if (!closed) { onEvent('upstream_timeout'); if (script) onEvent('script_upstream_timeout'); } cancel(); });
+      upstream.setTimeout(30_000, () => { if (!closed) { onEvent('upstream_timeout'); if (script) onEvent('script_upstream_timeout'); documentationEvent('upstream_timeout'); } cancel(); });
       if (closed) destroy(upstream); else upstream.end();
     } catch { cancel(); }
   }

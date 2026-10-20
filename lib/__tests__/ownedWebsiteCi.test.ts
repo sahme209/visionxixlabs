@@ -94,6 +94,20 @@ it('keeps chunk categories, response classes and cancellation success closed and
   expect(publicSummary(sha, { sourceHead: sha }, { consoleErrorCount: 'PRIVATE' }, undefined, undefined).consoleErrorCount).toBeNull();
 });
 
+it('projects only bounded documentation delivery counters under existing proxy ownership checks', () => {
+  const result = { children: [{ role: 'proxy', pid: 42, owner: { pid: 42 }, exited: true }], proxyReceipt: { pid: 42, nonce: 'n' } };
+  const proxy = { pid: 42, nonce: 'n', stage: 'stopped', productionEquivalent: false, counts: { docs_rsc_navigation_accepted: 1, docs_rsc_navigation_response: 1, docs_rsc_navigation_status_2xx: 1, docs_rsc_navigation_mime_rsc: 1, docs_rsc_navigation_complete: 1, docs_rsc_prefetch_accepted: 2, docs_rsc_prefetch_complete: 2, docs_denied: 0, docs_PRIVATE: 'PRIVATE' } };
+  const summary = publicProxyDelivery(proxy, result, 'n');
+  expect(summary?.documentation.rsc_navigation).toMatchObject({ accepted: 1, response: 1, complete: 1, cancelled: 0, status_2xx: 1, mime_rsc: 1 });
+  expect(summary?.documentation.rsc_prefetch).toMatchObject({ accepted: 2, complete: 2 });
+  expect(summary?.documentation.document?.accepted).toBe(0); expect(summary?.documentation.denied).toBe(0); expect(JSON.stringify(summary)).not.toContain('PRIVATE');
+  expect(publicProxyDelivery({ ...proxy, nonce: 'foreign' }, result, 'n')).toBeNull();
+  for (const value of ['PRIVATE', -1, 1000001]) expect(publicProxyDelivery({ ...proxy, counts: { docs_rsc_navigation_accepted: value } }, result, 'n')).toBeNull();
+  expect(publicProxyDelivery({ ...proxy, counts: { docs_denied: 1000001 } }, result, 'n')).toBeNull();
+  let reads = 0; const counts = Object.defineProperty({}, 'docs_rsc_navigation_accepted', { enumerable: true, get() { reads++; return 1; } });
+  expect(publicProxyDelivery({ ...proxy, counts }, result, 'n')).toBeNull(); expect(reads).toBe(0);
+});
+
 it('retains fixed attempted/dispatched interactions and only already completed evidence tokens', () => {
   expect(publicInteractions({ currentInteraction: 'pause', lastInteraction: 'play', evidence: ['play_pause_preserves_typed_output', 'PRIVATE_URL', 'play_pause_preserves_typed_output'] })).toEqual({ currentInteraction: 'pause', lastInteraction: 'play', completedEvidence: ['play_pause_preserves_typed_output'] });
   const summary = publicSummary(sha, { sourceHead: sha }, { currentInteraction: 'PRIVATE_URL', lastInteraction: 'PRIVATE_SECRET', evidence: ['PRIVATE_URL', 'sample_approve_reject'] }, undefined, undefined);
