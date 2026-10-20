@@ -68,8 +68,6 @@ jobs:
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: website-visual-${{ github.event.pull_request.head.sha }}
-          path: |
-            ${{ runner.temp }}/axiom-website-public/summary.json
-            ${{ runner.temp }}/axiom-website-public/screenshots/*.png
+          path: ${{ steps.collect.outputs.artifactPath }}
           if-no-files-found: error
           retention-days: 7

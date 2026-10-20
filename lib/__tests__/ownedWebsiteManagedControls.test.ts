@@ -90,7 +90,7 @@ it("uses captured controls for final source checks after cleanup waits, despite 
   let release: () => void = () => {}; const held = new Promise<void>(resolve => { release = resolve; });
   const writes: string[] = [];
   const run = vm.compileFunction(`return (async () => { let cleaning = false; const result = {}; ${source.slice(start, end)}; return result; })();`, ["ledger", "clearInterval", "disk", "readFileSync", "join", "directory", "nonce", "policy", "proxyPort", "writeFileSync", "logs", "git", "manifest", "environment", "control", "process"])(
-    { cleanup: async () => { await held; return ["retained-unknown-owner"]; }, report: () => [] }, () => {}, 0, () => { throw Error("unavailable"); }, (...parts: string[]) => parts.join("/"), "/tmp/owned", "nonce", policy, 38001,
+    { cleanup: async () => { await held; return ["retained-unknown-owner"]; }, report: () => [], cleanupDiagnostics: () => [] }, () => {}, 0, () => { throw Error("unavailable"); }, (...parts: string[]) => parts.join("/"), "/tmp/owned", "nonce", policy, 38001,
     (path: string) => { writes.push(path); }, [], f.git, { sourceHead: "owned", managedNodePath: null }, environment, { report: () => ({ failure: "first-failure" }) }, { stdout: { destroyed: true } },
   );
   parent.CODEX_TOOL_CALL_ID = "later"; parent.HOME = "later"; release();

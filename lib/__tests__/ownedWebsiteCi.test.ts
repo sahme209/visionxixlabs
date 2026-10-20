@@ -3,7 +3,7 @@ import { chmodSync, mkdirSync, mkdtempSync, readFileSync, realpathSync, rmSync, 
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 // Builtins-only adapter: importing it never starts the owned fixture.
-import { collect, pngDimensions, privateFile, publicDomSnapshot, publicSummary, reviewManifest, screenshotNames } from '../../scripts/owned-website-ci.mjs';
+import { collect, collectForUpload, pngDimensions, privateFile, publicCounts, publicServerGuard, publicDomSnapshot, publicSummary, reviewManifest, screenshotNames } from '../../scripts/owned-website-ci.mjs';
 
 const directories: string[] = [];
 afterEach(() => { for (const path of directories.splice(0)) rmSync(path, { recursive: true, force: true }); });
@@ -122,4 +122,45 @@ it('keeps CI isolated, PR-head bound and source-pins the adapter without alterin
   expect(workflow).not.toMatch(/pull_request_target|workflow_run|secrets\.|DATABASE_URL|vercel|docker.sock|GITHUB_SHA:|NODE_OPTIONS:/);
   expect(workflow).toContain("steps.collect.outputs.ready == 'true'");
   expect(readFileSync(join(root, 'scripts/run-owned-website-visual.mjs'), 'utf8')).toContain("'scripts/owned-website-ci.mjs'");
+});
+
+it('exports one sanitized upload directory only after complete collection, never partial eligibility', () => {
+  const f = fixture(); const output = join(f.temporary, 'github-output');
+  writeFileSync(output, '');
+  f.put('result.json', { sourceHead: sha, status: 'failed', cleanup: 'owned_groups_empty' });
+  expect(collectForUpload({ manifest, expected: sha, temporary: f.temporary, destination: f.destination, output }).outcome).toBe('failed');
+  expect(readFileSync(output, 'utf8')).toBe(`artifactPath=${f.destination}\nready=true\n`);
+  expect(readFileSync(join(f.destination, 'summary.json'), 'utf8')).not.toContain(f.directory);
+  const workflow = readFileSync(join(root, '.github/workflows/website-visual.yml'), 'utf8');
+  expect(workflow).toContain('path: ${{ steps.collect.outputs.artifactPath }}');
+  expect(workflow).not.toContain('${{ runner.temp }}/axiom-website-public');
+  writeFileSync(output, '');
+  expect(() => collectForUpload({ manifest, expected: sha, temporary: f.temporary, destination: f.destination, output })).toThrow('website_ci_existing_destination');
+  expect(readFileSync(output, 'utf8')).toBe('');
+  expect(() => collectForUpload({ manifest, expected: sha, temporary: f.temporary, destination: `${f.destination}\nready=true`, output })).toThrow('website_ci_artifact_path');
+  expect(readFileSync(output, 'utf8')).toBe('');
+});
+
+it('exports only bounded script counts and final guard observations with matching server ownership', () => {
+  const scriptCounts = { elements: 4, external: 3, inline: 1, resourceSuccess: 2, resourceFailure: 0, resourceUnknown: 1 };
+  const summary = publicSummary(sha, { sourceHead: sha }, { scriptRequests: { allowed: 3, denied: 1 }, preImageWait: { scriptCounts } }, undefined, undefined);
+  expect(summary.scriptCounts).toEqual(scriptCounts); expect(summary.scriptRequests).toEqual({ allowed: 3, denied: 1 });
+  expect(publicCounts({ allowed: 4097, denied: 0 }, ['allowed', 'denied'])).toBeNull();
+  expect(publicCounts({ allowed: 1, denied: 0, url: 'PRIVATE' }, ['allowed', 'denied'])).toBeNull();
+  let reads = 0; const access = { denied: 0 }; Object.defineProperty(access, 'allowed', { enumerable: true, get() { reads++; return 1; } });
+  expect(publicCounts(access, ['allowed', 'denied'])).toBeNull(); expect(reads).toBe(0);
+  const server = { pid: 123, nonce: 'nonce', stage: 'stopping', origin: 'PRIVATE', guard: { transport: 2, process: 0, worker: 0, listener: 1, policy: 'deny-all-outbound-and-new-processes', productionEquivalent: false } };
+  const result = { receipt: { pid: 123, nonce: 'nonce' }, children: [{ role: 'server', pid: 123, owner: { pid: 123 }, exited: true }] };
+  expect(publicServerGuard(server, result, 'nonce')).toEqual({ stage: 'stopping', counts: { transport: 2, process: 0, worker: 0, listener: 1 } });
+  for (const value of [undefined, { ...server, pid: 124 }, { ...server, nonce: 'wrong' }, { ...server, stage: 'ready' }, { ...server, guard: { ...server.guard, process: -1 } }]) expect(publicServerGuard(value, result, 'nonce')).toBeNull();
+  expect(publicServerGuard(server, { ...result, children: [{ ...result.children[0], exited: false }] }, 'nonce')).toBeNull();
+  expect(JSON.stringify(publicServerGuard(server, result, 'nonce'))).not.toContain('PRIVATE');
+});
+it('privately collects the final server receipt without publishing its identity or raw fields', () => {
+ const f = fixture();
+ f.put('result.json', { sourceHead: sha, receipt: { pid: 123, nonce: f.config.nonce }, children: [{ role: 'server', pid: 123, owner: { pid: 123 }, exited: true }], cleanupErrors: ['website_cleanup_metadata_unverified'] });
+ f.put('server.json', { pid: 123, nonce: f.config.nonce, stage: 'stopping', origin: 'PRIVATE', guard: { transport: 1, process: 0, worker: 0, listener: 0, policy: 'deny-all-outbound-and-new-processes', productionEquivalent: false } });
+ f.run(); const summary = JSON.parse(readFileSync(join(f.destination, 'summary.json'), 'utf8'));
+ expect(summary.serverGuard.counts.transport).toBe(1); expect(summary.cleanupErrors).toEqual(['website_cleanup_metadata_unverified']);
+ expect(JSON.stringify(summary)).not.toContain('PRIVATE'); expect(summary.serverGuard).not.toHaveProperty('pid');
 });

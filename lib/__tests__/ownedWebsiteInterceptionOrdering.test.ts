@@ -31,7 +31,7 @@ class Socket extends EventTarget {
 async function fixture() {
   vi.useFakeTimers();
   const session = transport.createSession({ duration: 120000 }); sessions.push(session);
-  const state = vm.compileFunction(`let denied = 0; const consoleErrors = []; return { callback: ${callback}, denied: () => denied };`, ["windowState", "config", "policy", "session"])({ origin }, { assets: [] }, policy, session);
+  const state = vm.compileFunction(`let denied = 0; const consoleErrors = []; const scriptRequests = { allowed: 0, denied: 0 }; return { scriptRequests, callback: ${callback}, denied: () => denied };`, ["windowState", "config", "policy", "session"])({ origin }, { assets: [] }, policy, session);
   const socket = new Socket();
   const opening = transport.openChannel({ session, endpoint: "unused-synthetic-endpoint", createSocket: () => socket, proveEndpoint: () => {}, onEvent: state.callback });
   socket.dispatchEvent(new Event("open"));
@@ -97,4 +97,15 @@ it("retains the 15-second navigation bound after the main request was already co
   await vi.advanceTimersByTimeAsync(1); await rejected;
   expect(f.session.report()).toEqual({ timedOutOperation: "cdp.Page.navigate" });
   expect(f.socket.commands.map(command => command.method)).toEqual(["Page.navigate", "Fetch.continueRequest"]);
+});
+
+it.each([
+  { url: `${origin}/_next/static/chunks/app.js`, decision: "Fetch.continueRequest", counts: { allowed: 1, denied: 0 } },
+  { url: "https://unapproved.example.test/private.js", decision: "Fetch.failRequest", counts: { allowed: 0, denied: 1 } },
+])("counts script decisions without broadening the request policy ($decision)", async ({ url, decision, counts }) => {
+  const f = await fixture();
+  f.socket.message({ method: "Fetch.requestPaused", params: { resourceType: "Script", requestId: "script", request: { url, method: "GET" } } });
+  expect(f.socket.commands.map(command => command.method)).toEqual([decision]);
+  expect(f.state.scriptRequests).toEqual(counts);
+  f.socket.message({ id: 1, result: {} });
 });

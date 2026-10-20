@@ -12,6 +12,31 @@ function readPreImageDomSnapshot() {
       playDisabled: play instanceof HTMLButtonElement ? play.disabled : null, reducedMotion: window.matchMedia('(prefers-reduced-motion: reduce)').matches, visibility: document.visibilityState };
   } catch { return null; }
 }
+function readScriptCounts() {
+  try {
+    const cap = value => Math.min(value, 4096);
+    const scripts = Array.from(document.scripts);
+    const counts = { elements: cap(scripts.length), external: cap(scripts.filter(script => script.hasAttribute('src')).length), inline: cap(scripts.filter(script => !script.hasAttribute('src')).length), resourceSuccess: 0, resourceFailure: 0, resourceUnknown: 0 };
+    for (const entry of performance.getEntriesByType('resource')) {
+      if (entry.initiatorType !== 'script') continue;
+      const status = entry.responseStatus;
+      const key = Number.isInteger(status) && status >= 200 && status < 400 ? 'resourceSuccess' : Number.isInteger(status) && status >= 400 && status <= 599 ? 'resourceFailure' : 'resourceUnknown';
+      counts[key] = cap(counts[key] + 1);
+    }
+    return counts;
+  } catch { return null; }
+}
+function sanitizeScriptCounts(value) {
+  const keys = ['elements', 'external', 'inline', 'resourceSuccess', 'resourceFailure', 'resourceUnknown'];
+  if (!value || typeof value !== 'object' || Object.getPrototypeOf(value) !== Object.prototype || Reflect.ownKeys(value).length !== keys.length) return null;
+  const result = {};
+  for (const key of keys) {
+    const descriptor = Object.getOwnPropertyDescriptor(value, key);
+    if (!descriptor?.enumerable || !Object.hasOwn(descriptor, 'value') || !Number.isInteger(descriptor.value) || descriptor.value < 0 || descriptor.value > 4096) return null;
+    result[key] = descriptor.value;
+  }
+  return result;
+}
 /** Only fixed primitive observations cross into the private receipt; unknown is not readiness evidence. */
 function sanitizePreImageDomSnapshot(value) {
   try {
@@ -36,6 +61,7 @@ const session = transport.createSession({ duration: 120000 });
 let directory, config, success = false, failure = null, denied = 0, imageBytes = 0;
 /** @type {{phase: string, lastDomSnapshot: ReturnType<typeof sanitizePreImageDomSnapshot>} | null} */
 let preImageWait = null;
+const scriptRequests = { allowed: 0, denied: 0 };
 let evaluationExceptionClass = null;
 let homeCapturePhase = null;
 const consoleErrors = [], evidence = [], images = [];
@@ -81,6 +107,7 @@ try {
     if (data.method === 'Fetch.requestPaused') {
       let allowed = false; try { const url = new URL(data.params.request.url); allowed = url.origin === windowState.origin && !url.username && !url.password && policy.allowedRequest({ method: data.params.request.method, raw: `${url.pathname}${url.search}`, origin: windowState.origin, assets: config.assets }); } catch { /* refuse */ }
       if (!allowed) denied++;
+      if (data.params.resourceType === 'Script') { const key = allowed ? 'allowed' : 'denied'; scriptRequests[key] = Math.min(4096, scriptRequests[key] + 1); }
       void send(allowed ? 'Fetch.continueRequest' : 'Fetch.failRequest', allowed ? { requestId: data.params.requestId } : { requestId: data.params.requestId, errorReason: 'BlockedByClient' }).catch(error => session.stop(error));
     }
     if (data.method === 'Runtime.exceptionThrown' && consoleErrors.length < 128) consoleErrors.push('runtime_exception');
@@ -91,12 +118,12 @@ try {
   async function waitFor(fn, argument, timeout = 45000, preImagePhase = undefined) {
     const deadline = Date.now() + timeout;
     if (preImagePhase !== undefined) assert.ok(['homepage_document', 'homepage_playback'].includes(preImagePhase), 'website_dom_diagnostic_phase');
-    /** @type {{phase: string, lastDomSnapshot: ReturnType<typeof sanitizePreImageDomSnapshot>, predicateExceptionClass?: string} | null} */
+    /** @type {{phase: string, lastDomSnapshot: ReturnType<typeof sanitizePreImageDomSnapshot>, scriptCounts?: ReturnType<typeof sanitizeScriptCounts>, predicateExceptionClass?: string} | null} */
     const diagnostic = preImagePhase === undefined ? null : { phase: preImagePhase, lastDomSnapshot: null };
     if (diagnostic) preImageWait = diagnostic;
     while (Date.now() < deadline) {
-      const polled = await evaluate(diagnostic ? `argument => { try { return { satisfied: (${fn})(argument), snapshot: (${readPreImageDomSnapshot})(), predicateExceptionClass: null }; } catch (error) { return { satisfied: false, snapshot: (${readPreImageDomSnapshot})(), predicateExceptionClass: ["TypeError", "ReferenceError", "SyntaxError", "RangeError", "Error"].includes(error?.name) ? error.name : "other" }; } }` : fn, argument);
-      if (diagnostic) { diagnostic.lastDomSnapshot = sanitizePreImageDomSnapshot(polled.snapshot); if (polled.predicateExceptionClass !== null) { diagnostic.predicateExceptionClass = ['TypeError', 'ReferenceError', 'SyntaxError', 'RangeError', 'Error'].includes(polled.predicateExceptionClass) ? polled.predicateExceptionClass : 'other'; throw Error('website_browser_evaluation_failed'); } }
+      const polled = await evaluate(diagnostic ? `argument => { try { return { satisfied: (${fn})(argument), snapshot: (${readPreImageDomSnapshot})(), scriptCounts: (${readScriptCounts})(), predicateExceptionClass: null }; } catch (error) { return { satisfied: false, snapshot: (${readPreImageDomSnapshot})(), scriptCounts: (${readScriptCounts})(), predicateExceptionClass: ["TypeError", "ReferenceError", "SyntaxError", "RangeError", "Error"].includes(error?.name) ? error.name : "other" }; } }` : fn, argument);
+      if (diagnostic) { diagnostic.lastDomSnapshot = sanitizePreImageDomSnapshot(polled.snapshot); const scripts = sanitizeScriptCounts(polled.scriptCounts); if (scripts) diagnostic.scriptCounts = scripts; if (polled.predicateExceptionClass !== null) { diagnostic.predicateExceptionClass = ['TypeError', 'ReferenceError', 'SyntaxError', 'RangeError', 'Error'].includes(polled.predicateExceptionClass) ? polled.predicateExceptionClass : 'other'; throw Error('website_browser_evaluation_failed'); } }
       if (diagnostic ? polled.satisfied : polled) { if (diagnostic) preImageWait = null; return; }
       await sleep(100);
     }
@@ -159,7 +186,7 @@ try {
   // The only post-stop writes are this single final evidence/nonce receipt. Parent waits
   // for this owned driver's positive exit before touching its profile/dist artifacts.
   if (config) {
-    const result = { success, failure, timedOutOperation: session.report().timedOutOperation, preImageWait, evaluationExceptionClass, homeCapturePhase, runtimeExceptionCount: consoleErrors.filter(category => category === 'runtime_exception').length, bundler: 'webpack', productionEquivalent: false, evidence, images, deniedRequests: denied, consoleErrorCategories: consoleErrors, qualification: 'Actual local integrated Next pages; API requests denied; external fonts may fall back; screenshots require human inspection. No provider/native acceptance.' };
+    const result = { success, failure, scriptRequests, timedOutOperation: session.report().timedOutOperation, preImageWait, evaluationExceptionClass, homeCapturePhase, runtimeExceptionCount: consoleErrors.filter(category => category === 'runtime_exception').length, bundler: 'webpack', productionEquivalent: false, evidence, images, deniedRequests: denied, consoleErrorCategories: consoleErrors, qualification: 'Actual local integrated Next pages; API requests denied; external fonts may fall back; screenshots require human inspection. No provider/native acceptance.' };
     writeFileSync(join(directory, 'capture.json'), JSON.stringify(result, null, 2), { mode: 0o600 });
     writeFileSync(join(directory, 'done.json'), JSON.stringify({ success, nonce: config.nonce }), { mode: 0o600 });
     process.stdout.write(`${join(directory, 'capture.json')}\n`);

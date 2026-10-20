@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { execFileSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import { closeSync, constants, existsSync, fstatSync, lstatSync, mkdirSync, openSync, readSync, readdirSync, realpathSync, writeFileSync, appendFileSync } from 'node:fs';
-import { dirname, join } from 'node:path';
+import { dirname, isAbsolute, join } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import policy from './fixtures/ownedWebsitePolicy.cjs';
 
@@ -29,7 +29,7 @@ export function privateFile(path, limit = 1024 * 1024) {
 }
 function json(path) { return JSON.parse(privateFile(path).toString('utf8')); }
 const captureFailures = new Set(['website_dom_timeout', 'website_driver_failed', 'website_driver_deadline', 'website_driver_operation_timeout', 'website_driver_interrupted', 'website_driver_closed', 'website_browser_evaluation_failed', 'website_capture_browser_not_registered', 'website_capture_owner_changed', 'website_capture_source_changed', 'website_cdp_response_bound', 'website_cdp_closed', 'website_cdp_error', 'website_cdp_invalid_message', 'website_cdp_not_open', 'website_cdp_protocol', 'website_dom_diagnostic_phase', 'website_framebuffer_bound', 'website_image_bound', 'website_initial_blank_target', 'website_mobile_overflow', 'website_owned_capture_directory']);
-const cleanupCodes = new Set(['website_cleanup_foreign_group_member', 'website_cleanup_leader_changed', 'website_cleanup_incomplete', 'website_pending_child_unresolved', 'website_child_group_not_empty', 'website_ledger_persistence_failed']);
+const cleanupCodes = new Set(['website_cleanup_foreign_group_member', 'website_cleanup_leader_changed', 'website_cleanup_incomplete', 'website_pending_child_unresolved', 'website_child_group_not_empty', 'website_ledger_persistence_failed', 'website_cleanup_metadata_unverified']);
 export function publicDomSnapshot(value) {
   const keys = ['readyState', 'tourPresent', 'playPresent', 'playDisabled', 'reducedMotion', 'visibility'];
   if (!value || typeof value !== 'object' || Object.getPrototypeOf(value) !== Object.prototype || Reflect.ownKeys(value).length !== keys.length) return null;
@@ -43,6 +43,24 @@ export function publicDomSnapshot(value) {
     || typeof data.tourPresent !== 'boolean' || typeof data.playPresent !== 'boolean' || typeof data.reducedMotion !== 'boolean'
     || (data.playPresent ? typeof data.playDisabled !== 'boolean' : data.playDisabled !== null)) return null;
   return data;
+}
+export function publicCounts(value, keys) {
+  if (!value || typeof value !== 'object' || Object.getPrototypeOf(value) !== Object.prototype || Reflect.ownKeys(value).length !== keys.length) return null;
+  const result = {};
+  for (const key of keys) {
+    const descriptor = Object.getOwnPropertyDescriptor(value, key);
+    if (!descriptor?.enumerable || !Object.hasOwn(descriptor, 'value') || !Number.isInteger(descriptor.value) || descriptor.value < 0 || descriptor.value > 4096) return null;
+    result[key] = descriptor.value;
+  }
+  return result;
+}
+export function publicServerGuard(server, result, nonce) {
+  const children = Array.isArray(result?.children) ? result.children.filter(row => row?.role === 'server') : [];
+  if (children.length !== 1 || children[0].exited !== true || !Number.isInteger(server?.pid) || server.pid <= 0 || server.pid !== children[0].pid || server.pid !== children[0].owner?.pid || server.pid !== result?.receipt?.pid || server.nonce !== nonce || result.receipt.nonce !== nonce) return null;
+  if (!['stopping', 'expired', 'startup_failed', 'listen_failed'].includes(server.stage) || server.guard?.policy !== 'deny-all-outbound-and-new-processes' || server.guard.productionEquivalent !== false) return null;
+  const guard = server.guard;
+  const counts = publicCounts({ transport: guard.transport, process: guard.process, worker: guard.worker, listener: guard.listener }, ['transport', 'process', 'worker', 'listener']);
+  return counts ? { stage: server.stage, counts } : null;
 }
 export function reviewManifest(manifest, expected, actualRoot, actualHead, clean) {
   assert.match(expected ?? '', /^[a-f0-9]{40}$/, 'website_ci_expected_source');
@@ -63,7 +81,7 @@ export function publicSummary(sourceHead, result, capture, done, nonce) {
   const phase = capture?.preImageWait?.phase;
   const exceptionClass = value => value == null ? null : ['TypeError', 'ReferenceError', 'SyntaxError', 'RangeError', 'Error', 'other'].includes(value) ? value : 'other';
   const cleanupDiagnostics = Array.isArray(result?.cleanupDiagnostics) ? result.cleanupDiagnostics.slice(0, 4).map(row => ({ role: ['server', 'proxy', 'browser', 'capture'].includes(row?.role) ? row.role : 'other', stage: ['registration', 'stop_group', 'wait_exit', 'exited_check', 'group_check'].includes(row?.stage) ? row.stage : 'other', errorCode: ['ENOENT', 'ESRCH', 'EPERM', 'EACCES', 'ERR_ASSERTION'].includes(row?.errorCode) ? row.errorCode : 'other' })) : [];
-  return { schema: 1, sourceHead, sourceKind: 'pull_request_head', productionEquivalent: false, outcome: passed ? 'passed' : result ? 'failed' : 'unavailable', cleanup: result?.cleanup === 'owned_groups_empty' ? 'owned_groups_empty' : result ? 'failed_or_unverified' : 'unavailable', cleanupErrors: Array.isArray(result?.cleanupErrors) ? [...new Set(result.cleanupErrors.map(code => cleanupCodes.has(code) ? code : 'unclassified'))] : [], sourceUnchanged: result?.sourceUnchanged === true, captureSuccess: capture?.success === true, cleanupDiagnostics, homeCapturePhase: capture?.homeCapturePhase === 'document_ready_before_playback' ? 'document_ready_before_playback' : null, runtimeExceptionCount: Number.isInteger(capture?.runtimeExceptionCount) && capture.runtimeExceptionCount >= 0 && capture.runtimeExceptionCount <= 128 ? capture.runtimeExceptionCount : null, evaluationExceptionClass: exceptionClass(capture?.evaluationExceptionClass), predicateExceptionClass: exceptionClass(capture?.preImageWait?.predicateExceptionClass), captureFailure: capture?.failure == null ? null : captureFailures.has(capture.failure) ? capture.failure : 'unclassified', preImagePhase: ['homepage_document', 'homepage_playback'].includes(phase) ? phase : null, preImageDomSnapshot: ['homepage_document', 'homepage_playback'].includes(phase) ? publicDomSnapshot(capture.preImageWait.lastDomSnapshot) : null, timedOutOperation: operation == null ? null : [...methods, 'http.targets', 'websocket.open', 'sleep', 'unclassified'].includes(operation) ? operation : 'unclassified', qualification: 'Isolated public website fixture only; not production, authentication, native desktop, or customer deployment acceptance.' };
+  return { scriptRequests: publicCounts(capture?.scriptRequests, ['allowed', 'denied']), scriptCounts: publicCounts(capture?.preImageWait?.scriptCounts, ['elements', 'external', 'inline', 'resourceSuccess', 'resourceFailure', 'resourceUnknown']), schema: 1, sourceHead, sourceKind: 'pull_request_head', productionEquivalent: false, outcome: passed ? 'passed' : result ? 'failed' : 'unavailable', cleanup: result?.cleanup === 'owned_groups_empty' ? 'owned_groups_empty' : result ? 'failed_or_unverified' : 'unavailable', cleanupErrors: Array.isArray(result?.cleanupErrors) ? [...new Set(result.cleanupErrors.map(code => cleanupCodes.has(code) ? code : 'unclassified'))] : [], sourceUnchanged: result?.sourceUnchanged === true, captureSuccess: capture?.success === true, cleanupDiagnostics, homeCapturePhase: capture?.homeCapturePhase === 'document_ready_before_playback' ? 'document_ready_before_playback' : null, runtimeExceptionCount: Number.isInteger(capture?.runtimeExceptionCount) && capture.runtimeExceptionCount >= 0 && capture.runtimeExceptionCount <= 128 ? capture.runtimeExceptionCount : null, evaluationExceptionClass: exceptionClass(capture?.evaluationExceptionClass), predicateExceptionClass: exceptionClass(capture?.preImageWait?.predicateExceptionClass), captureFailure: capture?.failure == null ? null : captureFailures.has(capture.failure) ? capture.failure : 'unclassified', preImagePhase: ['homepage_document', 'homepage_playback'].includes(phase) ? phase : null, preImageDomSnapshot: ['homepage_document', 'homepage_playback'].includes(phase) ? publicDomSnapshot(capture.preImageWait.lastDomSnapshot) : null, timedOutOperation: operation == null ? null : [...methods, 'http.targets', 'websocket.open', 'sleep', 'unclassified'].includes(operation) ? operation : 'unclassified', qualification: 'Isolated public website fixture only; not production, authentication, native desktop, or customer deployment acceptance.' };
 }
 export function pngDimensions(bytes) {
   assert.ok(bytes.length >= 33 && bytes.subarray(0, 8).equals(Buffer.from([137, 80, 78, 71, 13, 10, 26, 10])) && bytes.readUInt32BE(8) === 13 && bytes.toString('ascii', 12, 16) === 'IHDR', 'website_ci_png');
@@ -86,15 +104,16 @@ export function collect({ manifest, expected, temporary = '/tmp', destination })
     matches.push({ directory, config });
   }
   assert.ok(matches.length <= 1, 'website_ci_ambiguous_window');
-  let result; let capture; let done; let nonce; const screenshots = [];
+  let result; let capture; let done; let nonce; let server; const screenshots = [];
   if (matches.length) {
     const { directory, config } = matches[0]; nonce = config.nonce;
-    for (const name of ['result.json', 'capture.json', 'done.json']) {
+    for (const name of ['result.json', 'capture.json', 'done.json', 'server.json']) {
       if (!existsSync(join(directory, name))) continue;
       const value = json(join(directory, name));
       if (name === 'result.json') result = value;
       if (name === 'capture.json') capture = value;
       if (name === 'done.json') done = value;
+      if (name === 'server.json') server = value;
     }
     const screenshotDirectory = join(directory, 'screenshots');
     if (existsSync(screenshotDirectory)) {
@@ -113,13 +132,21 @@ export function collect({ manifest, expected, temporary = '/tmp', destination })
       for (const image of screenshots) assert.equal(reported.filter(row => row.path === join(screenshotDirectory, image.name) && Number.isFinite(row.width) && row.width > 0 && row.width <= 1440 && Number.isFinite(row.height) && row.height > 0 && row.height <= 2400 && Math.abs(row.width - image.width) <= 1 && Math.abs(row.height - image.height) <= 1).length, 1, 'website_ci_image_receipt');
     }
   }
-  const summary = publicSummary(expected, result, capture, done, nonce);
+  const summary = { ...publicSummary(expected, result, capture, done, nonce), serverGuard: publicServerGuard(server, result, nonce) };
   if (summary.outcome === 'passed') assert.equal(screenshots.length, screenshotNames.length, 'website_ci_complete_images');
   // Validate all inputs before creating a fresh upload directory. Never reuse or remove one.
   assert.equal(existsSync(destination), false, 'website_ci_existing_destination');
   mkdirSync(destination, { mode: 0o700 }); mkdirSync(join(destination, 'screenshots'), { mode: 0o700 });
   for (const image of screenshots) writeFileSync(join(destination, 'screenshots', image.name), image.bytes, { mode: 0o600, flag: 'wx' });
   writeFileSync(join(destination, 'summary.json'), JSON.stringify({ ...summary, images: screenshots.map(({ name, width, height }) => ({ name, width, height })) }, null, 2), { mode: 0o600, flag: 'wx' });
+  return summary;
+}
+export function collectForUpload({ output, ...options }) {
+  assert.ok(isAbsolute(options.destination) && !/[\r\n]/.test(options.destination), 'website_ci_artifact_path');
+  const summary = collect(options);
+  // One directory prevents host/container translation from splitting a multiline path.
+  // No eligibility outputs are written until every input and copied artifact validates.
+  appendFileSync(output, `artifactPath=${options.destination}\nready=true\n`);
   return summary;
 }
 function main() {
@@ -134,9 +161,8 @@ function main() {
   if (process.argv[2] === 'review') appendFileSync(output, `digest=${createHash('sha256').update(bytes).digest('hex')}\n`);
   else if (process.argv[2] === 'collect') {
     const destination = join(process.env.RUNNER_TEMP, 'axiom-website-public');
-    const summary = collect({ manifest, expected, destination });
+    const summary = collectForUpload({ manifest, expected, destination, output });
     process.stdout.write(`${JSON.stringify(summary)}\n`); // Constructed closed fields only, never raw receipts.
-    appendFileSync(output, 'ready=true\n'); // No output eligibility on any validation/copy failure.
   } else throw Error('website_ci_command');
 }
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {

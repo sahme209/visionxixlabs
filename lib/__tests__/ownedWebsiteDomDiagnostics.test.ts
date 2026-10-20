@@ -12,14 +12,14 @@ const helpersAt = source.indexOf("function readPreImageDomSnapshot()");
 const helpers = helpersAt < 0 ? "" : source.slice(helpersAt, source.indexOf("// Start the absolute clock", helpersAt));
 const snapshot = { readyState: "interactive", tourPresent: true, playPresent: true, playDisabled: true, reducedMotion: false, visibility: "visible" };
 
-function fixture(overrides: Record<string, unknown> = {}) {
+function fixture(overrides: Record<string, unknown> = {}, resources: unknown[] = []) {
   let now = 0, evaluations = 0;
   class Button { disabled = true; }
   const document = { readyState: snapshot.readyState, visibilityState: snapshot.visibility, querySelector: (selector: string) => selector === "#product-tour" ? {} : new Button(), ...overrides };
   const window = { matchMedia: () => ({ matches: false }) };
   const evaluate = async (fn: unknown, argument: unknown) => {
     evaluations++;
-    return vm.compileFunction(`return (${String(fn)})(argument);`, ["document", "window", "argument", "HTMLButtonElement"])(document, window, argument, Button);
+    return vm.compileFunction(`return (${String(fn)})(argument);`, ["document", "window", "argument", "HTMLButtonElement", "performance"])(document, window, argument, Button, { getEntriesByType: () => resources });
   };
   const build = vm.compileFunction(`${helpers}\nlet preImageWait = null;\n${source.slice(start, end)}\nreturn { waitFor, diagnostic: () => preImageWait, sanitize: typeof sanitizePreImageDomSnapshot === 'function' ? sanitizePreImageDomSnapshot : undefined };`, ["evaluate", "sleep", "Date", "assert"]);
   return { ...build(evaluate, async (ms: number) => { now += ms; }, { now: () => now }, { ok: (value: unknown) => { if (!value) throw Error("invalid_phase"); } }), evaluations: () => evaluations, elapsed: () => now };
@@ -82,4 +82,23 @@ it("retains only a closed CDP evaluation exception class and still fails immedia
     await expect(f.evaluate(() => true)).rejects.toThrow("website_browser_evaluation_failed");
     expect(f.diagnostic()).toBe(expected);
   }
+});
+
+it("counts script elements and resource statuses without retaining script content or URLs", () => {
+ const read = vm.compileFunction(`${helpers}; return readScriptCounts();`, ["document", "performance"]);
+ const counts = read({ scripts: [{ hasAttribute: () => true, src: "PRIVATE" }, { hasAttribute: () => false, text: "PRIVATE" }] }, { getEntriesByType: () => [
+   { initiatorType: "script", responseStatus: 200, name: "PRIVATE" }, { initiatorType: "script", responseStatus: 404 },
+   { initiatorType: "script" }, { initiatorType: "script", responseStatus: 0 }, { initiatorType: "img", responseStatus: 200 },
+ ] });
+ expect(counts).toEqual({ elements: 2, external: 1, inline: 1, resourceSuccess: 1, resourceFailure: 1, resourceUnknown: 2 });
+ expect(JSON.stringify(counts)).not.toContain("PRIVATE");
+ expect(read({ scripts: [] }, { getEntriesByType: () => Array.from({ length: 4100 }, () => ({ initiatorType: "script", responseStatus: 200 })) }).resourceSuccess).toBe(4096);
+ expect(read({}, {})).toBeNull();
+});
+
+it("keeps script diagnostics separate from the unchanged six-field snapshot in the same poll", async () => {
+ const f = fixture({ scripts: [{ hasAttribute: () => true }] }, [{ initiatorType: "script" }]);
+ await expect(f.waitFor(() => false, undefined, 100, "homepage_playback")).rejects.toThrow("website_dom_timeout");
+ expect(f.evaluations()).toBe(1);
+ expect(f.diagnostic()).toEqual({ phase: "homepage_playback", lastDomSnapshot: snapshot, scriptCounts: { elements: 1, external: 1, inline: 0, resourceSuccess: 0, resourceFailure: 0, resourceUnknown: 1 } });
 });

@@ -63,3 +63,29 @@ An actual CI window reported unchanged source, unsuccessful capture, unverified/
 The next diagnostic adds the same-poll snapshot when a pre-image predicate throws, plus a closed exception class. It immediately preserves the existing `website_browser_evaluation_failed` failure instead of retrying or converting an exception to an unmet predicate. Other CDP evaluation exceptions retain only a closed class; observed runtime exceptions retain only a count bounded by the existing 128-category receipt limit. No exception messages, descriptions, stacks, URLs or page text are published. Cleanup adds parallel fixed role/stage/error-code diagnostics while preserving the original private errors and all ownership, signaling and failure decisions. Missing process metadata remains a failed/unverified cleanup condition.
 
 The existing `home-desktop` capture intentionally moves between successful homepage document readiness and the still-mandatory playback readiness check. `homeCapturePhase=document_ready_before_playback` labels this document-state screenshot. This changes scroll/150ms capture timing; it is not behavior-identical and does not demonstrate hydration or working controls. The same six named captures remain, and playback readiness and every later interaction assertion are still required for acceptance. No deadline, permission, request rule, retry or screenshot budget is increased.
+
+## Screenshot retention and bounded script diagnostics
+
+CI5 (`4af49144`, run 39434335201) recorded a 1200×923 homepage image in its
+sanitized receipt, but the artifact contained only the summary. The upload log
+reported a common ancestor of `/`: container translation applied inconsistently
+to the multiline host paths. The collector now emits one freshly validated
+sanitized-directory path and eligibility together; the uploader uses that single
+path. Input/filename/PNG/byte-budget checks remain mandatory before eligibility.
+
+That run also proved a playback DOM timeout and browser `stop_group` ENOENT,
+with no observed runtime exceptions. It did not establish why client controls
+remained unready. Additional diagnostics count scripts/resources and existing
+Script interception decisions only; URLs, entries, text and raw errors are never
+retained. Missing/zero browser response status remains unknown. Final server
+guard counters are published only from a private terminal receipt whose nonce,
+original server PID, unique child owner and confirmed exit match; unavailable
+or mismatched evidence remains null. No request/CDP/network/process permission
+or application-readiness predicate changes. Cleanup handling is separately
+reviewed in [owned-website-cleanup-races.md](owned-website-cleanup-races.md).
+
+Full CI on `4af49144` passed 8,234 tests and failed two stale injected test
+harnesses: one lacked the new ledger diagnostic method and another lacked new
+receipt bindings. Both harness contracts are updated without weakening runtime
+checks. The combined eight-file follow-up passes 144 focused tests; exact-head
+full CI and actual browser acceptance still must pass before merge.
