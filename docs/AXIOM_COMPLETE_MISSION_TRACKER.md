@@ -2403,3 +2403,29 @@ The initial connected tests fail on the combined Accept value; after the one-key
 fix, all46 affected application/client/bridge/composer checks pass. Four are new
 connected acceptance cases. Credential/origin, usage holds, proposal authority,
 CI and production gates remain unchanged. New exact-head CI is still required.
+
+
+### 2026-10-20 — native macOS platform acceptance without installer release
+
+Research: desktop-ci currently tests only Linux; the existing gated release
+workflow already uses macos-latest. Linux transport fixtures cannot establish
+macOS compilation, the apple-native keyring backend selection, or platform TLS/
+reqwest behavior. Reuse the same macOS runner for source build/tests rather than
+requesting a personal laptop clone or invoking the release workflow.
+
+Plan/acceptance: add a path-scoped Desktop CI job with locked cargo tests, Clippy
+and the existing frontend/release-identity build. Retain the Linux job name and
+commands. No signing keys, production environment, release action, bundle step,
+publication, provider requests or vault reads/writes. Existing native tests check
+backend selection without opening the keychain and use cfg(test) loopback HTTP.
+Require the actual Mac job to pass before claiming platform transport acceptance.
+This does not establish installed GUI, OAuth pairing, hosted-provider behavior,
+notarization, updater or complete customer journeys. No acceptance gate is removed.
+
+PR184/#186 are normally merged into main as5ac1fdb2 after exact06f5b432 full/native/
+browser checks; PR188 prepares independently reviewed scoped PATCH behavior.
+Owned commercial job39486872996 now passes the complete32-case SQL suite, corrected
+report gate and cleanup at e3a472df. PR187's browser39486872669 still fails the
+unchanged documentation boundary after11 checks: click79.824s,388 polls to120s,
+no documentation request at proxy, source unchanged and cleanup empty. This
+blocker remains; no same-head retry, source shortcut or production release.

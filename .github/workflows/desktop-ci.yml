@@ -72,3 +72,38 @@ jobs:
 
       - name: Lint native commands
         run: cargo clippy --manifest-path desktop/src-tauri/Cargo.toml --locked --all-targets -- -D warnings
+
+  macos-native:
+    name: macOS native transport and policy checks
+    runs-on: macos-latest
+    timeout-minutes: 30
+    # Compile/test the actual target platform without packaging installers,
+    # loading signing credentials, publishing, or accessing any live provider.
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '20'
+          cache: npm
+          cache-dependency-path: desktop/package-lock.json
+
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: clippy
+
+      - name: Install desktop dependencies
+        working-directory: desktop
+        run: npm ci
+
+      - name: Validate release identity and build frontend only
+        working-directory: desktop
+        run: npm run build
+
+      - name: Test native macOS commands and synthetic transport fixtures
+        run: cargo test --manifest-path desktop/src-tauri/Cargo.toml --locked
+
+      - name: Lint native macOS commands
+        run: cargo clippy --manifest-path desktop/src-tauri/Cargo.toml --locked --all-targets -- -D warnings
