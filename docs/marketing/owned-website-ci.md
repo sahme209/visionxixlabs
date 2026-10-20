@@ -43,3 +43,15 @@ OpenSSL, proxy or CA changes. No environment controls are stripped, request or
 process permissions broadened, or deadline increased. The 73-test focused
 policy/collector/managed-path run passes; a fresh exact-head CI result remains
 required. This correction is not browser acceptance.
+
+
+The next run, [39430988104](https://github.com/sahme209/visionxixlabs/actions/runs/39430988104),
+passed environment validation but Git rejected the runner-owned top-level mount
+as dubious ownership. The fixture intentionally ignores ambient global Git
+configuration, including checkout's global safe-directory entry. No application
+or browser ran. CI now checks out into a fresh `website-source` child directory
+created by checkout under the container identity; all run steps use that same
+directory. This avoids trusting the differently owned parent mount. It does not
+add any safe-directory exception, change ownership recursively, or alter the
+fixture's Git/environment checks. Actual CI must confirm the resulting ownership
+and complete fresh manifest validation before browser acceptance is possible.

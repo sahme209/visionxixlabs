@@ -87,6 +87,9 @@ it('keeps CI isolated, PR-head bound and source-pins the adapter without alterin
   const workflow = readFileSync(join(root, '.github/workflows/website-visual.yml'), 'utf8');
   expect(workflow).toContain('ref: ${{ github.event.pull_request.head.sha }}');
   expect(workflow).toContain('AXIOM_WEBSITE_CI_SOURCE_SHA: ${{ github.event.pull_request.head.sha }}');
+  expect(workflow).toContain('path: website-source');
+  expect(workflow).toContain('working-directory: website-source');
+  expect(workflow).not.toMatch(/safe\.directory|chown/);
   expect(workflow).toContain('persist-credentials: false'); expect(workflow).toContain('contents: read');
   expect(workflow).toContain('timeout-minutes: 20'); expect(workflow).toContain('npm ci --ignore-scripts');
   expect(workflow).not.toMatch(/pull_request_target|workflow_run|secrets\.|DATABASE_URL|vercel|docker.sock|GITHUB_SHA:|NODE_OPTIONS:/);
