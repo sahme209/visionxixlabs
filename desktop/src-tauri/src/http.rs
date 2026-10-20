@@ -31,11 +31,20 @@ fn validated_url(path: &str) -> Result<String, String> {
     Ok(format!("{API_ORIGIN}{path}"))
 }
 
-fn allowed_method(method: &reqwest::Method) -> bool {
+fn patch_path(path: &str) -> bool {
+    if path == "/api/desktop/workspace-members" { return true; }
+    let Some(id) = path.strip_prefix("/api/desktop/airflow/automations/") else { return false; };
+    !id.is_empty() && id.len() <= 200 && id.bytes().all(|b| b.is_ascii_alphanumeric() || b == b'-' || b == b'_')
+}
+
+fn allowed_method(method: &reqwest::Method, path: &str) -> bool {
     method == reqwest::Method::GET
         || method == reqwest::Method::POST
         || method == reqwest::Method::PUT
         || method == reqwest::Method::DELETE
+        // Existing paired-session operations only. Validate the raw path before
+        // reqwest normalizes the URL; this is not server mutation authority.
+        || method == reqwest::Method::PATCH && patch_path(path)
 }
 
 #[tauri::command]
@@ -43,8 +52,8 @@ pub async fn desktop_http_request(request: DesktopHttpRequest) -> Result<Desktop
     let url = validated_url(&request.path)?;
     let method = reqwest::Method::from_bytes(request.method.as_bytes())
         .map_err(|_| "Unsupported HTTP method.".to_string())?;
-    if !allowed_method(&method) {
-        return Err("Only GET, POST, PUT, and DELETE requests are allowed.".to_string());
+    if !allowed_method(&method, &request.path) {
+        return Err("Only approved API methods and targets are allowed.".to_string());
     }
 
     let client = reqwest::Client::builder()
@@ -259,9 +268,26 @@ mod tests {
     }
 
     #[test]
-    fn permits_put_for_desktop_policy_and_revision_updates() {
-        assert!(allowed_method(&reqwest::Method::PUT));
-        assert!(!allowed_method(&reqwest::Method::PATCH));
+    fn retains_existing_buffered_method_policy() {
+        for method in [reqwest::Method::GET, reqwest::Method::POST, reqwest::Method::PUT, reqwest::Method::DELETE] {
+            assert!(allowed_method(&method, "/api/v1/whoami"));
+        }
+        for method in [reqwest::Method::HEAD, reqwest::Method::OPTIONS, reqwest::Method::CONNECT, reqwest::Method::TRACE] {
+            assert!(!allowed_method(&method, "/api/desktop/workspace-members"));
+        }
+    }
+    #[test]
+    fn permits_patch_only_for_existing_canonical_member_and_automation_operations() {
+        for path in ["/api/desktop/workspace-members".to_string(), "/api/desktop/airflow/automations/a".to_string(), format!("/api/desktop/airflow/automations/{}", "a".repeat(200)), "/api/desktop/airflow/automations/Az_09-z".to_string()] {
+            assert!(allowed_method(&reqwest::Method::PATCH, &path));
+        }
+    }
+    #[test]
+    fn refuses_patch_aliases_before_url_normalization() {
+        for path in ["/api/desktop/workspace-members/", "/api/desktop/workspace-members?x=1", "/api/desktop/workspace-members#fragment", "/api/desktop/airflow/automations/", "/api/desktop/airflow/automations/a/b", "/api/desktop/airflow/automations/a%2fb", "/api/desktop/airflow/automations/..", "/api/desktop/airflow/automations/é", "/api/desktop/airflow/automations/a b", "/api/desktop/airflow/automations/a\\b", "/api/desktop/airflow/automations/a\nb", "/api/desktop/other/../workspace-members", "/api/desktop/agent/conversations/a/messages", "https://visionxixlabs.com/api/desktop/workspace-members"] {
+            assert!(!allowed_method(&reqwest::Method::PATCH, path));
+        }
+        assert!(!allowed_method(&reqwest::Method::PATCH, &format!("/api/desktop/airflow/automations/{}", "a".repeat(201))));
     }
     #[test]
     fn stream_scope_is_narrow_and_canonical() {

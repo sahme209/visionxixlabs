@@ -36,6 +36,7 @@ type NativeStreamEvent =
   | { kind: "error" };
 const MAX_STREAM_CHUNK_BYTES = 16 * 1024;
 const MESSAGE_STREAM_PATH = /^\/api\/desktop\/agent\/conversations\/[A-Za-z0-9_-]{1,200}\/messages$/;
+const PATCH_PATH = /^(?:\/api\/desktop\/workspace-members|\/api\/desktop\/airflow\/automations\/[A-Za-z0-9_-]{1,200})$/;
 
 /** IPC provides one acknowledged chunk at a time. An acknowledgement is sent
  * only when the ReadableStream has capacity, so an unread response cannot grow
@@ -132,6 +133,16 @@ export async function desktopFetch(input: RequestInfo | URL, init: RequestInit =
   if (!path) {
     throw new TypeError("The desktop app blocked a request outside the approved product API origin.");
   }
+  const method = init.method ?? (input instanceof Request ? input.method : "GET");
+  if (method === "PATCH") {
+    const raw = input instanceof Request ? input.url : String(input);
+    // Do not normalize traversal, encoded IDs, queries or fragments into a
+    // permitted mutation. Server session/capability checks remain authoritative.
+    // Compare the full match: JavaScript's $ can stop before a final newline.
+    if (PATCH_PATH.exec(path)?.[0] !== path || (raw !== path && raw !== `${API_ORIGIN}${path}`)) {
+      throw new TypeError("The desktop app blocked an unsupported PATCH target.");
+    }
+  }
 
   const sourceHeaders = new Headers(input instanceof Request ? input.headers : undefined);
   new Headers(init.headers).forEach((value, key) => sourceHeaders.set(key, value));
@@ -142,7 +153,7 @@ export async function desktopFetch(input: RequestInfo | URL, init: RequestInit =
   }
   const body = typeof init.body === "string" ? init.body : undefined;
   const request = {
-    method: init.method ?? (input instanceof Request ? input.method : "GET"),
+    method,
     path, headers, body,
   };
   if (sourceHeaders.get("accept") === "application/x-ndjson") {
