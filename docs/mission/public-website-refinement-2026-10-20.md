@@ -243,3 +243,15 @@ now explicitly verifies both fixture reloads set false while ordinary config
 retains the original true default. Imported-test types, scoped lint and
 independent source review pass. This is controlled mechanism/config evidence;
 fresh integrated browser acceptance is still required.
+
+
+Browser continuation checkpoint: exact-head f312968a CI run39444422532 now
+passes types, the full test suite, offline authentication recovery checks and
+the production website build. Its separate browser job remains failed after
+hydration; no merge or release is claimed. Reviewed correction424735a1 uses
+instant fixture-only scrolling, finite viewport coordinates and an exact
+hit-target check while retaining real CDP mouse events and every acceptance
+assertion. Root verification passes45 tests across four files, imported-test
+types and scoped lint. The first type invocation used the wrong standalone
+module mode and was corrected to ESNext/Bundler; no source relaxation was
+needed. Fresh exact-head browser acceptance is required. No deployment ran.
