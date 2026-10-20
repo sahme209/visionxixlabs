@@ -3,7 +3,7 @@ import { chmodSync, mkdirSync, mkdtempSync, readFileSync, realpathSync, rmSync, 
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 // Builtins-only adapter: importing it never starts the owned fixture.
-import { collect, pngDimensions, privateFile, publicSummary, reviewManifest, screenshotNames } from '../../scripts/owned-website-ci.mjs';
+import { collect, pngDimensions, privateFile, publicDomSnapshot, publicSummary, reviewManifest, screenshotNames } from '../../scripts/owned-website-ci.mjs';
 
 const directories: string[] = [];
 afterEach(() => { for (const path of directories.splice(0)) rmSync(path, { recursive: true, force: true }); });
@@ -32,6 +32,24 @@ it('does not label capture-only or unfinished cleanup a successful application a
   expect(JSON.stringify(summary)).not.toContain('PRIVATE_URL');
   expect(publicSummary(sha, { ...result, cleanup: 'owned_groups_empty' }, { success: true }, { success: true, nonce: 'n' }, 'n').outcome).toBe('passed');
   expect(() => publicSummary(sha, result, {}, { nonce: 'other' }, 'n')).toThrow();
+});
+it('retains only allowlisted failure, DOM phase, six primitives and cleanup codes', () => {
+  const snapshot = { readyState: 'complete', tourPresent: true, playPresent: true, playDisabled: true, reducedMotion: false, visibility: 'visible' };
+  const summary = publicSummary(sha, { sourceHead: sha, cleanupErrors: ['website_cleanup_incomplete', 'PRIVATE_URL?token=secret', 'PRIVATE_URL?token=secret'] }, { failure: 'website_dom_timeout', preImageWait: { phase: 'homepage_playback', lastDomSnapshot: snapshot } }, undefined, undefined);
+  expect(summary.captureFailure).toBe('website_dom_timeout'); expect(summary.preImagePhase).toBe('homepage_playback');
+  expect(summary.preImageDomSnapshot).toEqual(snapshot);
+  expect(summary.cleanupErrors).toEqual(['website_cleanup_incomplete', 'unclassified']);
+  expect(JSON.stringify(summary)).not.toContain('PRIVATE_URL');
+  const refused = publicSummary(sha, { sourceHead: sha }, { failure: 'website_secret_token', preImageWait: { phase: 'PRIVATE_URL', lastDomSnapshot: { ...snapshot, readyState: 'PRIVATE_URL' } } }, undefined, undefined);
+  expect(refused.captureFailure).toBe('unclassified'); expect(refused.preImagePhase).toBeNull(); expect(refused.preImageDomSnapshot).toBeNull();
+  expect(JSON.stringify(refused)).not.toMatch(/PRIVATE_URL|website_secret_token/);
+});
+it('does not leak unknown DOM fields or malformed primitive observations', () => {
+  const snapshot = { readyState: 'interactive', tourPresent: true, playPresent: false, playDisabled: null, reducedMotion: false, visibility: 'hidden' };
+  expect(publicDomSnapshot(snapshot)).toEqual(snapshot);
+  for (const malformed of [{ ...snapshot, url: 'PRIVATE_URL' }, { ...snapshot, readyState: 'PRIVATE_URL' }, { ...snapshot, reducedMotion: 'PRIVATE_URL' }, { ...snapshot, playDisabled: true }]) expect(publicDomSnapshot(malformed)).toBeNull();
+  let reads = 0; const accessor = { ...snapshot }; Object.defineProperty(accessor, 'visibility', { enumerable: true, get() { reads++; return 'PRIVATE_URL'; } });
+  expect(publicDomSnapshot(accessor)).toBeNull(); expect(reads).toBe(0);
 });
 it('collects a failed window as closed public fields without config, logs or profile data', () => {
   const f = fixture(); f.put('result.json', { sourceHead: sha, status: 'failed', cleanup: 'owned_groups_empty', sourceUnchanged: true, error: 'PRIVATE' });

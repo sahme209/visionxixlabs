@@ -55,3 +55,7 @@ directory. This avoids trusting the differently owned parent mount. It does not
 add any safe-directory exception, change ownership recursively, or alter the
 fixture's Git/environment checks. Actual CI must confirm the resulting ownership
 and complete fresh manifest validation before browser acceptance is possible.
+
+## Closed failure diagnostics
+
+An actual CI window reported unchanged source, unsuccessful capture, unverified/failed cleanup, no images and no operation-timeout label. Those facts do not establish a hydration defect or a runtime root cause. The public summary now retains only explicitly allowlisted capture failure codes, `homepage_document`/`homepage_playback` phase, and the six closed DOM primitives already collected privately: readiness enum, tour presence, play presence, nullable play-disabled boolean, reduced-motion boolean and visibility enum. Malformed snapshots are omitted. Cleanup errors are mapped to a fixed enum; unknown messages become `unclassified`, never raw process paths or error text. The collector prints only this constructed closed summary to CI stdout as well as saving the sanitized artifact. No raw receipts, logs, config, browser profiles or manifests become public. All fixture guards, requests and time limits remain unchanged; a new exact-source run is necessary to establish the next diagnostic facts.

@@ -28,6 +28,22 @@ export function privateFile(path, limit = 1024 * 1024) {
   } finally { closeSync(fd); }
 }
 function json(path) { return JSON.parse(privateFile(path).toString('utf8')); }
+const captureFailures = new Set(['website_dom_timeout', 'website_driver_failed', 'website_driver_deadline', 'website_driver_operation_timeout', 'website_driver_interrupted', 'website_driver_closed', 'website_browser_evaluation_failed', 'website_capture_browser_not_registered', 'website_capture_owner_changed', 'website_capture_source_changed', 'website_cdp_response_bound', 'website_cdp_closed', 'website_cdp_error', 'website_cdp_invalid_message', 'website_cdp_not_open', 'website_cdp_protocol', 'website_dom_diagnostic_phase', 'website_framebuffer_bound', 'website_image_bound', 'website_initial_blank_target', 'website_mobile_overflow', 'website_owned_capture_directory']);
+const cleanupCodes = new Set(['website_cleanup_foreign_group_member', 'website_cleanup_leader_changed', 'website_cleanup_incomplete', 'website_pending_child_unresolved', 'website_child_group_not_empty', 'website_ledger_persistence_failed']);
+export function publicDomSnapshot(value) {
+  const keys = ['readyState', 'tourPresent', 'playPresent', 'playDisabled', 'reducedMotion', 'visibility'];
+  if (!value || typeof value !== 'object' || Object.getPrototypeOf(value) !== Object.prototype || Reflect.ownKeys(value).length !== keys.length) return null;
+  const data = {};
+  for (const key of keys) {
+    const descriptor = Object.getOwnPropertyDescriptor(value, key);
+    if (!descriptor?.enumerable || !Object.hasOwn(descriptor, 'value')) return null;
+    data[key] = descriptor.value;
+  }
+  if (!['loading', 'interactive', 'complete'].includes(data.readyState) || !['hidden', 'visible'].includes(data.visibility)
+    || typeof data.tourPresent !== 'boolean' || typeof data.playPresent !== 'boolean' || typeof data.reducedMotion !== 'boolean'
+    || (data.playPresent ? typeof data.playDisabled !== 'boolean' : data.playDisabled !== null)) return null;
+  return data;
+}
 export function reviewManifest(manifest, expected, actualRoot, actualHead, clean) {
   assert.match(expected ?? '', /^[a-f0-9]{40}$/, 'website_ci_expected_source');
   assert.equal(actualHead, expected, 'website_ci_source_mismatch');
@@ -44,7 +60,8 @@ export function publicSummary(sourceHead, result, capture, done, nonce) {
   const passed = result?.status === 'driver_finished' && result?.sourceUnchanged === true && result?.cleanup === 'owned_groups_empty' && capture?.success === true && done?.success === true;
   const operation = capture?.timedOutOperation;
   const methods = ['Emulation.setDeviceMetricsOverride', 'Emulation.setEmulatedMedia', 'Fetch.enable', 'Fetch.continueRequest', 'Fetch.failRequest', 'Input.dispatchKeyEvent', 'Input.dispatchMouseEvent', 'Log.enable', 'Page.bringToFront', 'Page.captureScreenshot', 'Page.enable', 'Page.navigate', 'Runtime.enable', 'Runtime.evaluate', 'Target.activateTarget', 'Target.closeTarget', 'Target.createTarget'].map(name => `cdp.${name}`);
-  return { schema: 1, sourceHead, sourceKind: 'pull_request_head', productionEquivalent: false, outcome: passed ? 'passed' : result ? 'failed' : 'unavailable', cleanup: result?.cleanup === 'owned_groups_empty' ? 'owned_groups_empty' : result ? 'failed_or_unverified' : 'unavailable', sourceUnchanged: result?.sourceUnchanged === true, captureSuccess: capture?.success === true, timedOutOperation: operation == null ? null : [...methods, 'http.targets', 'websocket.open', 'sleep', 'unclassified'].includes(operation) ? operation : 'unclassified', qualification: 'Isolated public website fixture only; not production, authentication, native desktop, or customer deployment acceptance.' };
+  const phase = capture?.preImageWait?.phase;
+  return { schema: 1, sourceHead, sourceKind: 'pull_request_head', productionEquivalent: false, outcome: passed ? 'passed' : result ? 'failed' : 'unavailable', cleanup: result?.cleanup === 'owned_groups_empty' ? 'owned_groups_empty' : result ? 'failed_or_unverified' : 'unavailable', cleanupErrors: Array.isArray(result?.cleanupErrors) ? [...new Set(result.cleanupErrors.map(code => cleanupCodes.has(code) ? code : 'unclassified'))] : [], sourceUnchanged: result?.sourceUnchanged === true, captureSuccess: capture?.success === true, captureFailure: capture?.failure == null ? null : captureFailures.has(capture.failure) ? capture.failure : 'unclassified', preImagePhase: ['homepage_document', 'homepage_playback'].includes(phase) ? phase : null, preImageDomSnapshot: ['homepage_document', 'homepage_playback'].includes(phase) ? publicDomSnapshot(capture.preImageWait.lastDomSnapshot) : null, timedOutOperation: operation == null ? null : [...methods, 'http.targets', 'websocket.open', 'sleep', 'unclassified'].includes(operation) ? operation : 'unclassified', qualification: 'Isolated public website fixture only; not production, authentication, native desktop, or customer deployment acceptance.' };
 }
 export function pngDimensions(bytes) {
   assert.ok(bytes.length >= 33 && bytes.subarray(0, 8).equals(Buffer.from([137, 80, 78, 71, 13, 10, 26, 10])) && bytes.readUInt32BE(8) === 13 && bytes.toString('ascii', 12, 16) === 'IHDR', 'website_ci_png');
@@ -115,7 +132,8 @@ function main() {
   if (process.argv[2] === 'review') appendFileSync(output, `digest=${createHash('sha256').update(bytes).digest('hex')}\n`);
   else if (process.argv[2] === 'collect') {
     const destination = join(process.env.RUNNER_TEMP, 'axiom-website-public');
-    collect({ manifest, expected, destination });
+    const summary = collect({ manifest, expected, destination });
+    process.stdout.write(`${JSON.stringify(summary)}\n`); // Constructed closed fields only, never raw receipts.
     appendFileSync(output, 'ready=true\n'); // No output eligibility on any validation/copy failure.
   } else throw Error('website_ci_command');
 }
