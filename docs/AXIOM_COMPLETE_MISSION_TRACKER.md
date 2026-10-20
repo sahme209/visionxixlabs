@@ -2405,6 +2405,31 @@ connected acceptance cases. Credential/origin, usage holds, proposal authority,
 CI and production gates remain unchanged. New exact-head CI is still required.
 
 
+### Native editor pre-save external-change protection
+
+Research/root cause: RepositoryWorkspaceView retains the loaded/saved snapshot,
+but saveFile sends only replacement content; native write_repository_file checks
+path containment and symlinks, then unconditionally writes. An external edit
+between Open and Save is silently lost. Reuse the existing loaded snapshot and
+native path guards. Sequence: require saved content at the IPC boundary, verify
+the existing bounded UTF-8 file before saving, reject changed/deleted files,
+preserve the dirty editor draft on failure, and update its baseline only after
+success. Tests must cover original/repeated baselines, external edit/deletion,
+unchanged successful save, size/path/symlink rejection and draft preservation.
+This is a pre-save check, not a filesystem-wide atomic compare-and-swap guarantee;
+an unrelated writer can still race after verification. No automatic reload,
+overwrite override, new file creation, Git commit or remote operation is added.
+
+Both Save and commit's implicit-save caller now require the last saved baseline;
+commit stops if saving rejects. Three new IPC baseline assertions failed before
+the fix. All43 editor/demo checks now pass; scoped types pass and lint reports
+zero errors plus the existing catalogRequest cleanup warning. Independent review
+found no implementation blocker and caught the old exact-argument expectation;
+it was updated to the actual B-content fixture baseline. Three Rust filesystem
+fixtures cover success, external change/deletion, empty content, size/UTF-8/path
+and Unix symlink/escaping-parent rejection. No local Rust toolchain is available;
+Linux/macOS compilation, native fixtures and Clippy remain required CI gates.
+
 ### 2026-10-20 — native macOS platform acceptance without installer release
 
 Research: desktop-ci currently tests only Linux; the existing gated release
@@ -2430,27 +2455,32 @@ unchanged documentation boundary after11 checks: click79.824s,388 polls to120s,
 no documentation request at proxy, source unchanged and cleanup empty. This
 blocker remains; no same-head retry, source shortcut or production release.
 
-### Native editor pre-save external-change protection
+### Joined native renderer acceptance and platform evidence
 
-Research/root cause: RepositoryWorkspaceView retains the loaded/saved snapshot,
-but saveFile sends only replacement content; native write_repository_file checks
-path containment and symlinks, then unconditionally writes. An external edit
-between Open and Save is silently lost. Reuse the existing loaded snapshot and
-native path guards. Sequence: require saved content at the IPC boundary, verify
-the existing bounded UTF-8 file before saving, reject changed/deleted files,
-preserve the dirty editor draft on failure, and update its baseline only after
-success. Tests must cover original/repeated baselines, external edit/deletion,
-unchanged successful save, size/path/symlink rejection and draft preservation.
-This is a pre-save check, not a filesystem-wide atomic compare-and-swap guarantee;
-an unrelated writer can still race after verification. No automatic reload,
-overwrite override, new file creation, Git commit or remote operation is added.
+Research: existing acceptance joined the real composer/client/server framing over
+HTTP, and separately joined client/native bridge. The remaining JS seam was the
+actual rendered chat/editor through that bridge. Reuse the same application
+fixture with a synthetic Rust IPC peer and demand acknowledgements, rather than
+adding another app implementation or invoking any provider. Acceptance: draft
+before completion, no draft authority, persisted terminal proposal, GET-only
+interruption recovery, Stop cancellation and no late proposal or second POST.
+Both chat and repository editor now run over HTTP and native JS paths; seven
+joined application cases pass. The IPC peer is synthetic; this does not prove
+WKWebView GUI, native pairing, hosted models or actual SQL persistence.
 
-Both Save and commit's implicit-save caller now require the last saved baseline;
-commit stops if saving rejects. Three new IPC baseline assertions failed before
-the fix. All43 editor/demo checks now pass; scoped types pass and lint reports
-zero errors plus the existing catalogRequest cleanup warning. Independent review
-found no implementation blocker and caught the old exact-argument expectation;
-it was updated to the actual B-content fixture baseline. Three Rust filesystem
-fixtures cover success, external change/deletion, empty content, size/UTF-8/path
-and Unix symlink/escaping-parent rejection. No local Rust toolchain is available;
-Linux/macOS compilation, native fixtures and Clippy remain required CI gates.
+PR189 merged as41f1d5db after exact fb96e817 checks: Desktop CI39488172098 passed
+Linux and macOS source builds,20 native tests on macOS and Clippy; full
+39488172109 passed8687 tests, types, offline authentication and website build.
+No packaging, installer, signing or production deployment was performed.
+
+Independent owned HTTP job118859068996 in run39489639807 passed the exact seeded
+Next/Auth.js/billing journey and receipt gate at e356c036, with33 other cases
+explicitly skipped; cleanup passed. Its separate32-case SQL job remains required.
+This is isolated synthetic-provider application evidence, not signup or hosted
+Stripe acceptance. Prior browser-navigation failures remain documented; no waiver.
+
+Independent review found no blocker in the joined harness. Synthetic ACKs do not
+validate native request isolation; Stop tests server-suppressed late completion,
+not direct late IPC injection. Teardown releases fixture gates even on assertion
+failure. All56 affected application/client/bridge/decoder checks and scoped types
+and lint pass. No product implementation or approval boundary changed.
