@@ -2076,3 +2076,27 @@ Independent known-credential logging correction is in PR185 atf2602e87: three
 pre-fix leaks reproduced, four suites/23 checks and imported types/lint passed,
 independent review accepted the bounded fingerprint correction. Its required CI
 is running; no source or production success beyond that scope is asserted.
+
+### Permanent execution rule: research first, then staged acceptance
+
+Before a significant change, reuse the code, decisions, related PRs and failure
+receipts already inspected; consult official API/dependency guidance where
+needed. Record a concise plan here: established cause or explicitly unconfirmed
+hypothesis, affected frontend/backend/storage boundaries, compatibility/security/
+cost risks, implementation order, targeted and integrated checks, and actual
+customer acceptance criteria. Validate assumptions before dependent work and
+obtain independent review for security, billing and architecture changes.
+Run targeted checks first, broader CI at meaningful source checkpoints, and real
+environment acceptance separately. Classify application, fixture, CI and host
+failures from evidence; do not retry without a reason, inflate deadlines or
+weaken gates. Unknown causes remain blockers while independent work continues.
+This rule preserves every existing product workstream and approval restriction;
+it does not authorize paid probes, production changes or mock-based completion.
+
+Current next stage: finish PR185's exact-head checks, merge only if all required
+gates pass, then integrate its main changes into PR184 normally, preserving the
+reviewed model/admission source and both tracker histories. Review any actual
+merge differences, run affected checks, and require fresh combined-head CI.
+PR184's existing git-status preparation timeout is a host/preflight failure with
+unknown underlying delay; it is not evidence for a speculative application fix.
+Real selected-model/provider/native/financial acceptance remains a separate gate.
