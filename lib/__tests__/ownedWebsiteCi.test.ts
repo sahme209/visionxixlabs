@@ -3,7 +3,7 @@ import { chmodSync, mkdirSync, mkdtempSync, readFileSync, realpathSync, rmSync, 
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 // Builtins-only adapter: importing it never starts the owned fixture.
-import { collect, collectForUpload, pngDimensions, privateFile, publicCounts, publicServerGuard, publicDomSnapshot, publicNextMarkers, publicProxyDelivery, publicSummary, reviewManifest, screenshotNames } from '../../scripts/owned-website-ci.mjs';
+import { collect, collectForUpload, pngDimensions, privateFile, publicCounts, publicServerGuard, publicDomSnapshot, publicInteractions, publicNextMarkers, publicProxyDelivery, publicSummary, reviewManifest, screenshotNames } from '../../scripts/owned-website-ci.mjs';
 
 const directories: string[] = [];
 afterEach(() => { for (const path of directories.splice(0)) rmSync(path, { recursive: true, force: true }); });
@@ -90,6 +90,12 @@ it('keeps chunk categories, response classes and cancellation success closed and
   expect(publicProxyDelivery({ ...proxy, counts: { script_main_app_accepted: 1000001 } }, result, 'n')).toBeNull();
   expect(publicSummary(sha, { sourceHead: sha }, { consoleErrorCount: 128 }, undefined, undefined).consoleErrorCount).toBe(128);
   expect(publicSummary(sha, { sourceHead: sha }, { consoleErrorCount: 'PRIVATE' }, undefined, undefined).consoleErrorCount).toBeNull();
+});
+
+it('retains fixed attempted/dispatched interactions and only already completed evidence tokens', () => {
+  expect(publicInteractions({ currentInteraction: 'pause', lastInteraction: 'play', evidence: ['play_pause_preserves_typed_output', 'PRIVATE_URL', 'play_pause_preserves_typed_output'] })).toEqual({ currentInteraction: 'pause', lastInteraction: 'play', completedEvidence: ['play_pause_preserves_typed_output'] });
+  const summary = publicSummary(sha, { sourceHead: sha }, { currentInteraction: 'PRIVATE_URL', lastInteraction: 'PRIVATE_SECRET', evidence: ['PRIVATE_URL', 'sample_approve_reject'] }, undefined, undefined);
+  expect(summary.currentInteraction).toBe('unclassified'); expect(summary.lastInteraction).toBe('unclassified'); expect(summary.completedEvidence).toEqual(['sample_approve_reject']); expect(JSON.stringify(summary)).not.toContain('PRIVATE');
 });
 
 it('reads proxy delivery only through private receipt validation during collection', () => {
