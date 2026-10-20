@@ -36,6 +36,8 @@ const session = transport.createSession({ duration: 120000 });
 let directory, config, success = false, failure = null, denied = 0, imageBytes = 0;
 /** @type {{phase: string, lastDomSnapshot: ReturnType<typeof sanitizePreImageDomSnapshot>} | null} */
 let preImageWait = null;
+let evaluationExceptionClass = null;
+let homeCapturePhase = null;
 const consoleErrors = [], evidence = [], images = [];
 const interrupted = () => session.stop(Error('website_driver_interrupted'));
 process.once('SIGTERM', interrupted); process.once('SIGINT', interrupted);
@@ -84,17 +86,17 @@ try {
     if (data.method === 'Runtime.exceptionThrown' && consoleErrors.length < 128) consoleErrors.push('runtime_exception');
     if (data.method === 'Log.entryAdded' && data.params.entry.level === 'error' && consoleErrors.length < 128) consoleErrors.push(String(data.params.entry.source));
   } });
-  async function evaluate(fn, argument) { const result = await send('Runtime.evaluate', { expression: `(${fn})(${JSON.stringify(argument)})`, returnByValue: true, awaitPromise: true }); assert.ok(!result.exceptionDetails, 'website_browser_evaluation_failed'); return result.result.value; }
+  async function evaluate(fn, argument) { const result = await send('Runtime.evaluate', { expression: `(${fn})(${JSON.stringify(argument)})`, returnByValue: true, awaitPromise: true }); if (result.exceptionDetails) { const name = result.exceptionDetails.exception?.className; evaluationExceptionClass = ['TypeError', 'ReferenceError', 'SyntaxError', 'RangeError', 'Error'].includes(name) ? name : 'other'; } assert.ok(!result.exceptionDetails, 'website_browser_evaluation_failed'); return result.result.value; }
   /** @param {string} [preImagePhase] */
   async function waitFor(fn, argument, timeout = 45000, preImagePhase = undefined) {
     const deadline = Date.now() + timeout;
     if (preImagePhase !== undefined) assert.ok(['homepage_document', 'homepage_playback'].includes(preImagePhase), 'website_dom_diagnostic_phase');
-    /** @type {{phase: string, lastDomSnapshot: ReturnType<typeof sanitizePreImageDomSnapshot>} | null} */
+    /** @type {{phase: string, lastDomSnapshot: ReturnType<typeof sanitizePreImageDomSnapshot>, predicateExceptionClass?: string} | null} */
     const diagnostic = preImagePhase === undefined ? null : { phase: preImagePhase, lastDomSnapshot: null };
     if (diagnostic) preImageWait = diagnostic;
     while (Date.now() < deadline) {
-      const polled = await evaluate(diagnostic ? `argument => ({ satisfied: (${fn})(argument), snapshot: (${readPreImageDomSnapshot})() })` : fn, argument);
-      if (diagnostic) diagnostic.lastDomSnapshot = sanitizePreImageDomSnapshot(polled.snapshot);
+      const polled = await evaluate(diagnostic ? `argument => { try { return { satisfied: (${fn})(argument), snapshot: (${readPreImageDomSnapshot})(), predicateExceptionClass: null }; } catch (error) { return { satisfied: false, snapshot: (${readPreImageDomSnapshot})(), predicateExceptionClass: ["TypeError", "ReferenceError", "SyntaxError", "RangeError", "Error"].includes(error?.name) ? error.name : "other" }; } }` : fn, argument);
+      if (diagnostic) { diagnostic.lastDomSnapshot = sanitizePreImageDomSnapshot(polled.snapshot); if (polled.predicateExceptionClass !== null) { diagnostic.predicateExceptionClass = ['TypeError', 'ReferenceError', 'SyntaxError', 'RangeError', 'Error'].includes(polled.predicateExceptionClass) ? polled.predicateExceptionClass : 'other'; throw Error('website_browser_evaluation_failed'); } }
       if (diagnostic ? polled.satisfied : polled) { if (diagnostic) preImageWait = null; return; }
       await sleep(100);
     }
@@ -118,8 +120,9 @@ try {
   }
   const state = () => evaluate(() => ({ title: document.querySelector('#product-tour h2').textContent, code: document.querySelector('#product-tour pre')?.innerText ?? '' }));
   await send('Page.enable'); await send('Runtime.enable'); await send('Log.enable'); await send('Fetch.enable', { patterns: [{ urlPattern: '*', requestStage: 'Request' }] });
-  await viewport(1440); await navigate('/', 'homepage_document'); await waitFor(() => !document.querySelector('[aria-label="Play story"]').disabled, undefined, 45000, 'homepage_playback');
-  await frame('home-desktop');
+  await viewport(1440); await navigate('/', 'homepage_document');
+  homeCapturePhase = 'document_ready_before_playback'; await frame('home-desktop');
+  await waitFor(() => !document.querySelector('[aria-label="Play story"]').disabled, undefined, 45000, 'homepage_playback');
   await click('Step 2: Make a small, reviewable edit.'); await click('Play story'); await sleep(700); await click('Pause story');
   const paused = await state(); await sleep(700); assert.deepEqual(await state(), paused); evidence.push('play_pause_preserves_typed_output');
   await click('Play story'); await evaluate(() => scrollTo(0, document.body.scrollHeight)); await sleep(200); const offscreen = await state(); await sleep(5700); assert.deepEqual(await state(), offscreen); evidence.push('offscreen_timer_stopped');
@@ -156,7 +159,7 @@ try {
   // The only post-stop writes are this single final evidence/nonce receipt. Parent waits
   // for this owned driver's positive exit before touching its profile/dist artifacts.
   if (config) {
-    const result = { success, failure, timedOutOperation: session.report().timedOutOperation, preImageWait, bundler: 'webpack', productionEquivalent: false, evidence, images, deniedRequests: denied, consoleErrorCategories: consoleErrors, qualification: 'Actual local integrated Next pages; API requests denied; external fonts may fall back; screenshots require human inspection. No provider/native acceptance.' };
+    const result = { success, failure, timedOutOperation: session.report().timedOutOperation, preImageWait, evaluationExceptionClass, homeCapturePhase, runtimeExceptionCount: consoleErrors.filter(category => category === 'runtime_exception').length, bundler: 'webpack', productionEquivalent: false, evidence, images, deniedRequests: denied, consoleErrorCategories: consoleErrors, qualification: 'Actual local integrated Next pages; API requests denied; external fonts may fall back; screenshots require human inspection. No provider/native acceptance.' };
     writeFileSync(join(directory, 'capture.json'), JSON.stringify(result, null, 2), { mode: 0o600 });
     writeFileSync(join(directory, 'done.json'), JSON.stringify({ success, nonce: config.nonce }), { mode: 0o600 });
     process.stdout.write(`${join(directory, 'capture.json')}\n`);

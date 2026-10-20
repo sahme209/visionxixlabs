@@ -51,6 +51,15 @@ it('does not leak unknown DOM fields or malformed primitive observations', () =>
   let reads = 0; const accessor = { ...snapshot }; Object.defineProperty(accessor, 'visibility', { enumerable: true, get() { reads++; return 'PRIVATE_URL'; } });
   expect(publicDomSnapshot(accessor)).toBeNull(); expect(reads).toBe(0);
 });
+it('publishes only bounded exception counts, closed classes and structured cleanup metadata', () => {
+  const result = { sourceHead: sha, cleanupDiagnostics: [{ role: 'browser', stage: 'stop_group', errorCode: 'ENOENT', path: 'PRIVATE' }, { role: 'PRIVATE', stage: 'PRIVATE', errorCode: 'PRIVATE' }] };
+  const capture = { evaluationExceptionClass: 'TypeError', runtimeExceptionCount: 2, homeCapturePhase: 'document_ready_before_playback', preImageWait: { phase: 'homepage_playback', predicateExceptionClass: 'PRIVATE' } };
+  const summary = publicSummary(sha, result, capture, undefined, undefined);
+  expect(summary.evaluationExceptionClass).toBe('TypeError'); expect(summary.predicateExceptionClass).toBe('other'); expect(summary.runtimeExceptionCount).toBe(2);
+  expect(summary.cleanupDiagnostics).toEqual([{ role: 'browser', stage: 'stop_group', errorCode: 'ENOENT' }, { role: 'other', stage: 'other', errorCode: 'other' }]);
+  expect(JSON.stringify(summary)).not.toContain('PRIVATE');
+  expect(publicSummary(sha, result, { runtimeExceptionCount: 129, evaluationExceptionClass: 'PRIVATE', homeCapturePhase: 'PRIVATE' }, undefined, undefined)).toMatchObject({ runtimeExceptionCount: null, evaluationExceptionClass: 'other', homeCapturePhase: null });
+});
 it('collects a failed window as closed public fields without config, logs or profile data', () => {
   const f = fixture(); f.put('result.json', { sourceHead: sha, status: 'failed', cleanup: 'owned_groups_empty', sourceUnchanged: true, error: 'PRIVATE' });
   f.put('capture.json', { success: false, timedOutOperation: 'cdp.Page.navigate' });

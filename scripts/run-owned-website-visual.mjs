@@ -136,7 +136,7 @@ async function execute(manifest) {
     const sourceUnchanged = git(['rev-parse', 'HEAD'], environment, false) === manifest.sourceHead && git(['status', '--porcelain', '--untracked-files=no'], environment, false) === '';
     if (cleanupErrors.length || !sourceUnchanged || control.report().failure) result.status = 'failed';
     if (control.report().failure && !result.error) result.error = control.report().failure;
-    writeFileSync(join(directory, 'result.json'), JSON.stringify({ ...result, coordinator: control.report(), cleanup: cleanupErrors.length ? 'failed' : 'owned_groups_empty', cleanupErrors, children: ledger.report(), finalProxyReceipt, fontRendering: 'external-font-fetch-denied; inspect fallback rendering', sourceUnchanged }), { mode: 0o600 });
+    writeFileSync(join(directory, 'result.json'), JSON.stringify({ ...result, coordinator: control.report(), cleanup: cleanupErrors.length ? 'failed' : 'owned_groups_empty', cleanupErrors, cleanupDiagnostics: ledger.cleanupDiagnostics(), children: ledger.report(), finalProxyReceipt, fontRendering: 'external-font-fetch-denied; inspect fallback rendering', sourceUnchanged }), { mode: 0o600 });
     if (!process.stdout.destroyed) process.stdout.write(`${join(directory, 'result.json')}\n`);
   }
   if (result.status !== 'driver_finished') process.exitCode = 1;

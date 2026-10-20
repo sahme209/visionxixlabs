@@ -9,6 +9,7 @@ function createLedger({ spawn, snapshot, canonical, stopGroup, groupMembers, onC
 } }) {
   const records = [];
   let journalFailed = false;
+  const cleanupDiagnostics = [];
   const report = () => records.map(record => ({ role: record.role, pid: record.pid, expected: record.expected, owner: record.owner, state: record.exited ? 'exited' : record.neverSpawned ? 'spawn_failed' : record.owner ? 'registered' : 'pending', exited: record.exited, neverSpawned: record.neverSpawned, exitCode: record.exitCode, signal: record.signal }));
   function publish() {
     try { onChange(report()); }
@@ -53,23 +54,24 @@ function createLedger({ spawn, snapshot, canonical, stopGroup, groupMembers, onC
     const reversed = [...records].reverse();
     const ordered = [...reversed.filter(record => record.role === 'proxy'), ...reversed.filter(record => record.role !== 'proxy')];
     for (const record of ordered) {
+      let stage = 'registration';
       try {
         let timer;
         try {
           await Promise.race([record.registration.catch(() => {}), new Promise(resolve => { timer = setTimeout(resolve, registrationTimeout); })]);
         } finally { clearTimeout(timer); record.registrationClosed = true; }
-        if (record.owner) await stopGroup(record.owner);
-        await waitExit(record);
+        stage = 'stop_group'; if (record.owner) await stopGroup(record.owner);
+        stage = 'wait_exit'; await waitExit(record);
         // A failed /proc registration never grants signalling authority. An exit event alone
         // also cannot prove detached descendants are gone; require the group to be empty.
-        assert.ok(record.neverSpawned || record.exited, 'website_pending_child_unresolved');
-        if (!record.neverSpawned) assert.equal(groupMembers(record.pid).length, 0, 'website_child_group_not_empty');
-      } catch (error) { errors.push(String(error.message)); }
+        stage = 'exited_check'; assert.ok(record.neverSpawned || record.exited, 'website_pending_child_unresolved');
+        stage = 'group_check'; if (!record.neverSpawned) assert.equal(groupMembers(record.pid).length, 0, 'website_child_group_not_empty');
+      } catch (error) { errors.push(String(error.message)); cleanupDiagnostics.push({ role: ['server', 'proxy', 'browser', 'capture'].includes(record.role) ? record.role : 'other', stage, errorCode: ['ENOENT', 'ESRCH', 'EPERM', 'EACCES', 'ERR_ASSERTION'].includes(error.code) ? error.code : 'other' }); }
     }
     if (journalFailed) errors.push('website_ledger_persistence_failed');
     return errors;
   }
-  return { launch, cleanup, records, report, owners: () => records.flatMap(record => record.owner ? [record.owner] : []) };
+  return { launch, cleanup, records, report, cleanupDiagnostics: () => cleanupDiagnostics.map(row => ({ ...row })), owners: () => records.flatMap(record => record.owner ? [record.owner] : []) };
 }
 module.exports = { createLedger };
 

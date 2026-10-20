@@ -54,3 +54,32 @@ it("accepts only six own data fields with closed strings and boolean or absent-c
   for (const value of [accessor, { ...snapshot, rawHtml: "private-page-text" }, { ...snapshot, visibility: "unknown" }, { ...snapshot, playDisabled: null }, { ...snapshot, tourPresent: 1 }, { ...snapshot, reducedMotion: "false" }]) expect(f.sanitize(value)).toBeNull();
   expect(reads).toBe(0);
 });
+
+it("fails immediately on a missing playback control while retaining the same-poll DOM snapshot", async () => {
+  const f = fixture({ readyState: "complete", querySelector: (selector: string) => selector === "#product-tour" ? {} : null });
+  await expect(f.waitFor(() => !document.querySelector<HTMLButtonElement>('[aria-label="Play story"]')!.disabled, undefined, 45000, "homepage_playback")).rejects.toThrow("website_browser_evaluation_failed");
+  expect(f.evaluations()).toBe(1); expect(f.elapsed()).toBe(0);
+  expect(f.diagnostic()).toEqual({ phase: "homepage_playback", predicateExceptionClass: "TypeError", lastDomSnapshot: { ...snapshot, readyState: "complete", playPresent: false, playDisabled: null } });
+});
+
+it("redacts unknown predicate exception names and keeps document-state screenshot before mandatory playback checks", async () => {
+  const f = fixture();
+  await expect(f.waitFor(() => { throw { name: "PRIVATE_URL", message: "PRIVATE_SECRET" }; }, undefined, 45000, "homepage_playback")).rejects.toThrow("website_browser_evaluation_failed");
+  expect(f.diagnostic().predicateExceptionClass).toBe("other"); expect(JSON.stringify(f.diagnostic())).not.toContain("PRIVATE");
+  const documentReady = source.indexOf("await navigate('/', 'homepage_document')");
+  const screenshot = source.indexOf("await frame('home-desktop')");
+  const playback = source.indexOf("undefined, 45000, 'homepage_playback'");
+  expect(documentReady).toBeGreaterThan(0); expect(screenshot).toBeGreaterThan(documentReady); expect(playback).toBeGreaterThan(screenshot);
+  expect(source.match(/await frame\('/g)).toHaveLength(6);
+});
+
+it("retains only a closed CDP evaluation exception class and still fails immediately", async () => {
+  const evaluateStart = source.indexOf("  async function evaluate(");
+  const evaluateEnd = source.indexOf("  /** @param", evaluateStart);
+  const build = vm.compileFunction(`let evaluationExceptionClass = null; ${source.slice(evaluateStart, evaluateEnd)}; return { evaluate, diagnostic: () => evaluationExceptionClass };`, ["send", "assert"]);
+  for (const [name, expected] of [["TypeError", "TypeError"], ["PRIVATE_URL", "other"]]) {
+    const f = build(async () => ({ exceptionDetails: { exception: { className: name, description: "PRIVATE_SECRET" } } }), { ok: (value: unknown, message: string) => { if (!value) throw Error(message); } });
+    await expect(f.evaluate(() => true)).rejects.toThrow("website_browser_evaluation_failed");
+    expect(f.diagnostic()).toBe(expected);
+  }
+});
