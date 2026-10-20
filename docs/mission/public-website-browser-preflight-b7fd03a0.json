@@ -1,0 +1,18 @@
+{
+  "schema": 1,
+  "sourceHead": "b7fd03a0505a769eafdaa036e1e192a2d0e2acc4",
+  "runUrl": "https://github.com/sahme209/visionxixlabs/actions/runs/39466223434",
+  "jobId": 118778216919,
+  "outcome": "failed_before_browser",
+  "stage": "prepare_clean_source",
+  "error": "spawnSync git ETIMEDOUT",
+  "operation": "git status --porcelain --untracked-files=no",
+  "timeoutMilliseconds": 5000,
+  "signal": "SIGTERM",
+  "stdoutEmpty": true,
+  "stderrEmpty": true,
+  "browserStarted": false,
+  "interactionChecksExecuted": false,
+  "causalLimit": "The bounded clean-source Git command timed out. This is distinct from earlier documentation navigation failures and provides no new browser or application acceptance. The underlying host delay remains unconfirmed.",
+  "nextAction": "Retain the failed gate. No blind rerun, timeout inflation, source-integrity bypass or fixture permission change. Continue independent engineering."
+}

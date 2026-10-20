@@ -2058,3 +2058,12 @@ credit admission. PR184 parent3f6e4c56 fullCI39463927956 passed including websit
 build without deployment; the failed browser gate remains, and new combined
 source requires its own CI. No real provider, native session or settled payment
 is claimed from component and handler tests.
+
+PR184 now includes the reviewed member selector and server policy revalidation
+atb7fd03a0505a769eafdaa036e1e192a2d0e2acc4. Root combined imported types passed;
+the desktop frontend build and targeted source checks passed. Its browser run
+39466223434 failed BEFORE browser startup: the fixed five-second clean-source
+git status command timed out. This is distinct from documentation navigation;
+no new interaction acceptance is claimed and no blind retry/deadline increase
+is made. Receipt: mission/public-website-browser-preflight-b7fd03a0.json.
+Full CI and native CI continue; merge remains blocked on required acceptance.
