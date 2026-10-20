@@ -37,6 +37,10 @@ jobs:
         run: npm ci
 
       - name: Type check
+        env:
+          # The generated Prisma/application graph exceeds Node's default heap.
+          # Match the existing build allowance; this step does not deploy.
+          NODE_OPTIONS: --max-old-space-size=6144
         run: npx tsc --noEmit
 
       - name: Run Vitest suite

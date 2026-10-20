@@ -86,7 +86,10 @@ Those paths are updated. The native-permission rerun passed 8,119 tests across
 723 files, with 28 opt-in tests in one file skipped. Python CLI: 30 passed.
 Final web compilation, desktop release consistency/types/frontend build, scoped
 lint and the Vercel build safety contract passed. Exact-head CI remains pending.
-The desktop check did not produce or publish a native installer.
+The desktop check did not produce or publish a native installer. The first
+GitHub typecheck attempt exhausted the default approximately 2 GiB Node heap
+(exit 134) before reporting a type diagnostic. The workflow typecheck now uses
+the existing build's explicit 6 GiB allowance; required fresh CI is pending.
 
 This is source preparation only: no deploy, production environment/secret change, production database
 write, production migration, payment change or installer publication. Actual deployed Google,
