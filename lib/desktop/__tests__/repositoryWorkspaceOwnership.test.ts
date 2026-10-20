@@ -566,3 +566,36 @@ it("dispatches a consented check once while a native run is pending", async () =
   await act(async () => {pending.resolve({checkId: "a", success: true, exitCode: 0, output: "one run", durationMs: 1});});
   await screen.findByText("one run");
 });
+it("prepares check evidence only after output review without rerunning or saving", async () => {
+  const onAskAgent = vi.fn();
+  checks = () => [{id: "a", label: "A check", command: "npm test", description: "fixture"}];
+  verification = () => ({checkId: "a", success: false, exitCode: 1, output: "failure output", durationMs: 1});
+  render(createElement(RepositoryWorkspaceView, {onAskAgent}));
+  fireEvent.click(await screen.findByRole("button", {name: "A check"}));
+  fireEvent.click(await screen.findByRole("button", {name: "Run check"}));
+  await screen.findByText("failure output");
+  fireEvent.click(screen.getByRole("button", {name: "Prepare check output for Agent"}));
+  expect(onAskAgent).not.toHaveBeenCalled();
+  expect(screen.getByLabelText("Check output excerpt to prepare").textContent).toBe("failure output");
+  fireEvent.click(screen.getByRole("button", {name: "Prepare check draft"}));
+  expect(onAskAgent).toHaveBeenCalledWith({kind: "verification", checkId: "a", exitCode: 1, stale: false, excerpt: "failure output"});
+  expect(m.invoke.mock.calls.filter(([name]) => name === "run_repository_check")).toHaveLength(1);
+  expect(m.invoke.mock.calls.filter(([name]) => name === "write_repository_file")).toHaveLength(0);
+});
+it("rejects check-output consent after source changes and labels bounded excerpts", async () => {
+  const onAskAgent = vi.fn();
+  checks = () => [{id: "a", label: "A check", command: "npm test", description: "fixture"}];
+  verification = () => ({checkId: "a", success: false, exitCode: 1, output: "x".repeat(9000), durationMs: 1});
+  render(createElement(RepositoryWorkspaceView, {onAskAgent}));
+  fireEvent.click(await screen.findByRole("button", {name: "same.ts"}));
+  const editor = await screen.findByRole("textbox", {name: "Editing same.ts"});
+  fireEvent.click(screen.getByRole("button", {name: "A check"}));
+  fireEvent.click(await screen.findByRole("button", {name: "Run check"}));
+  fireEvent.click(await screen.findByRole("button", {name: "Prepare check output for Agent"}));
+  expect(screen.getByText(/Only the first 8,000 characters/)).toBeTruthy();
+  expect(screen.getByLabelText("Check output excerpt to prepare").textContent).toHaveLength(8000);
+  fireEvent.change(editor, {target: {value: "changed while reviewing"}});
+  fireEvent.click(screen.getByRole("button", {name: "Prepare check draft"}));
+  await screen.findByText(/verification context changed/);
+  expect(onAskAgent).not.toHaveBeenCalled();
+});

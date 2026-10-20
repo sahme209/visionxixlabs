@@ -162,7 +162,7 @@ function describeEvidenceResult(action: Proposal): string {
 }
 
 export type AgentSettingsDestination = "models" | "agents";
-export interface AgentLocalCodeRequest extends LocalCodeSelection { context: object; workspace?: string }
+export type AgentLocalCodeRequest = LocalCodeSelection & { context: object; workspace?: string };
 export interface AgentSkillRequest { skillId: string; context: object; workspace?: string }
 
 export function AgentChatView({ onOpenSettings, identity, active = true, requestedSkill, requestedLocalCode, onReviewLocalEdit }: { onOpenSettings?: (destination: AgentSettingsDestination) => void; identity?: VerifiedDesktopIdentity; active?: boolean; requestedSkill?: AgentSkillRequest; requestedLocalCode?: AgentLocalCodeRequest; onReviewLocalEdit?: (edit: LocalEditProposal, edits?: LocalEditProposal[]) => void }) {

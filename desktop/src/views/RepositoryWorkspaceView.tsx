@@ -41,6 +41,7 @@ interface Confirmation {
   description: string;
   confirmLabel: string;
   destructive?: boolean;
+  preview?: string;
   onConfirm: () => void | Promise<void>;
 }
 
@@ -103,6 +104,7 @@ function RepositoryWorkspaceSession({ revision, active, onAskAgent, editRequest,
   const [showVerification, setShowVerification] = useState(false);
   const [verificationStale, setVerificationStale] = useState(false);
   const sourceEpoch = useRef(0);
+  const verificationGeneration = useRef(0);
 
   const [context] = useState(() => desktopClient.config);
   const mounted = useRef(false);
@@ -451,6 +453,7 @@ function RepositoryWorkspaceSession({ revision, active, onAskAgent, editRequest,
           }
           if (consentEpoch !== sourceEpoch.current) { setError("The source changed after check consent was requested. Review and request the check again."); return; }
           const checkedEpoch = sourceEpoch.current;
+          verificationGeneration.current++;
           setVerificationStale(true);
           const raw = await invoke<unknown>("run_repository_check", { repositoryPath: selectedRepository, checkId: check.id });
           if (!current()) return;
@@ -482,6 +485,26 @@ function RepositoryWorkspaceSession({ revision, active, onAskAgent, editRequest,
       if (appliedEdit.current?.request !== request) appliedEdit.current = {request, paths: new Set()};
       appliedEdit.current.paths.add(edit.path);
       setNotice("Agent draft loaded locally. Review changes, then explicitly Save and run verification. GitHub approval is unchanged.");
+    });
+  }
+
+  function askAboutVerification() {
+    if (!active || !onAskAgent || activeBusy.current || !verificationResult || !owns(owner.current)) return;
+    const receipt = verificationResult, epoch = sourceEpoch.current, generation = verificationGeneration.current;
+    const selection: LocalCodeSelection = {kind: "verification", checkId: receipt.checkId, exitCode: receipt.exitCode, stale: verificationStale, excerpt: receipt.output.slice(0, 8000)};
+    if (!localCodeContextPrompt(selection)) return;
+    let prepared = false;
+    setConfirmation({
+      title: "Prepare check output for Agent?",
+      description: `${receipt.output.length > 8000 ? "Only the first 8,000 characters are included. " : ""}This output may contain credentials or private data. Review the excerpt below and redact the unsent prompt before Send. Preparing it does not contact a model, run commands or authorize changes.`,
+      confirmLabel: "Prepare check draft",
+      preview: selection.excerpt,
+      onConfirm: () => {
+        if (sourceEpoch.current !== epoch || verificationGeneration.current !== generation || activeBusy.current) { setError("The verification context changed. Review the check output again."); return; }
+        if (prepared) return;
+        prepared = true;
+        onAskAgent(selection);
+      },
     });
   }
 
@@ -591,6 +614,7 @@ function RepositoryWorkspaceSession({ revision, active, onAskAgent, editRequest,
       <p className="mb-2 text-xs text-zinc-500">Recorded process result only. It does not certify the current working tree or changes made outside Axiom.</p>
       <div className="mb-2 flex items-center justify-between text-[10px] text-zinc-500"><span>{verificationResult.checkId}</span><span>{(verificationResult.durationMs / 1000).toFixed(1)}s · exit {verificationResult.exitCode ?? "none"}</span></div>
       <pre tabIndex={0} className="whitespace-pre-wrap break-words font-mono text-[11px] leading-5 text-zinc-300">{verificationResult.output || "The check completed without output."}</pre>
+      {onAskAgent && <button type="button" disabled={Boolean(busy) || !verificationResult.output} onClick={askAboutVerification} className="btn-secondary mt-2 disabled:opacity-40">Prepare check output for Agent</button>}
     </div>}
     <div className="flex min-h-0 flex-1">
       <aside className="flex w-64 shrink-0 flex-col border-r border-white/[0.07] bg-[#111315]">
@@ -660,6 +684,7 @@ function RepositoryWorkspaceSession({ revision, active, onAskAgent, editRequest,
       <div role="alertdialog" aria-modal="true" aria-labelledby="repository-confirmation-title" onMouseDown={(event) => event.stopPropagation()} className="w-full max-w-md rounded-xl border border-white/10 bg-[#181a1d] p-5 shadow-2xl">
         <h2 id="repository-confirmation-title" className="text-base font-semibold text-white">{confirmation.title}</h2>
         <p className="mt-2 text-sm leading-6 text-zinc-400">{confirmation.description}</p>
+        {confirmation.preview && <pre aria-label="Check output excerpt to prepare" className="mt-3 max-h-48 overflow-auto whitespace-pre-wrap break-words text-xs text-zinc-300">{confirmation.preview}</pre>}
         <div className="mt-5 flex justify-end gap-2">
           <button type="button" autoFocus className="btn-secondary" onClick={() => setConfirmation(null)}>Cancel</button>
           <button type="button" className={confirmation.destructive ? "rounded-md bg-rose-500/90 px-3 py-2 text-xs font-medium text-white hover:bg-rose-400" : "btn-primary"} onClick={() => void confirmAction()}>{confirmation.confirmLabel}</button>

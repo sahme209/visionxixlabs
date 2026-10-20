@@ -3095,3 +3095,29 @@ A synchronous pending-operation guard additionally prevents duplicate consent
 clicks from dispatching concurrent checks; its targeted connected regression
 passes. Lint has zero errors/one existing catalog cleanup warning. No user-level
 native cancellation is implemented or claimed.
+
+### Coding loop: reviewed check receipt → unsent Agent debugging context
+
+Research found selected source could return to Agent, but native check output had
+no equivalent handoff. Reuse the existing credential/workspace-scoped request and
+Inspect/Code Review composer; do not create a new execution or provider path.
+Implementation adds a distinct terminal-evidence variant (no synthetic file path),
+explicit privacy confirmation and exact excerpt preview, max8000 characters with
+visible truncation notice, historical/stale metadata and JSON serialization as
+untrusted data. Source epoch, verification generation and owner/context fences
+reject changed consent. Preparing is single-use, unsent, advisory and never
+saves, reruns a command, approves a proposal or contacts an AI provider. Existing
+prompt text is preserved. Output is not automatically redacted: users must review
+and redact before a later explicit Send; no credentials were used in fixtures.
+
+Acceptance: actual App fixture connects failed native receipt → review → existing
+unsent prompt, with no second native invocation and no provider call. Renderer
+tests reject consent after source changes and verify explicit excerpt bounds.
+Combined targeted milestone passes130 cases across5 suites (Agent actual App,
+repository editor, receipt parser, local context and demo contracts). Desktop
+ES2021 TypeScript passes; lint zero errors/one existing cleanup warning; tracker
+coverage check passes. Independent read-only review found no blocker. Installed
+Mac, actual process teardown/cancellation and real-provider debugging remain
+unverified. Native source checkpointc6b94693 requires compilation and its prepared
+Unix lifecycle tests before any native functionality can be accepted. No pushes,
+CI workflows, merges, deployments, paid calls or production changes occurred.

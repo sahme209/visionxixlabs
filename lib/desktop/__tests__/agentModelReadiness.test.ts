@@ -505,3 +505,28 @@ it.each([false, true])("connects a saved AI file proposal to local review and ex
   expect(m.client.approveAgentAction).not.toHaveBeenCalled();
   expect(m.client.sendAgentMessage).not.toHaveBeenCalled();
 });
+it("returns a failed native check receipt to an unsent scoped Agent prompt", async () => {
+  m.client.hasAuth.mockReturnValue(true);
+  m.client.verifyCurrentCredential.mockResolvedValue({ok: true, data: {kind: "desktop_session", organizationId: "fixture-workspace", role: "owner", capabilities: [], access: {allowed: true, code: "active", title: "Access active", message: "Fixture", billingStatus: "no_plan", planTier: "trial"}}});
+  m.invoke.mockImplementation(async (command: string) => {
+    if (command === "default_repos_directory") return "/owned";
+    if (command === "list_local_repositories") return ["/owned/A"];
+    if (command === "repository_status") return {rootPath: "/owned/A", repositoryFullName: "fixture/repository", branch: "feature", ahead: 0, behind: 0, changedFiles: []};
+    if (command === "list_repository_files") return ["main.ts"];
+    if (command === "detect_repository_checks") return [{id: "npm:test", label: "Tests", command: "npm test", description: "fixture"}];
+    if (command === "run_repository_check") return {checkId: "npm:test", success: false, exitCode: 1, output: "test assertion failed", durationMs: 1};
+    throw Error(`Unexpected command ${command}`);
+  });
+  render(createElement(App)); await draft();
+  fireEvent.click(screen.getByRole("button", {name: "GitHub repositories"}));
+  fireEvent.click(await screen.findByRole("button", {name: "Tests"}));
+  fireEvent.click(await screen.findByRole("button", {name: "Run check"}));
+  await screen.findByText("test assertion failed");
+  fireEvent.click(screen.getByRole("button", {name: "Prepare check output for Agent"}));
+  fireEvent.click(await screen.findByRole("button", {name: "Prepare check draft"}));
+  await waitFor(() => expect((screen.getByRole("textbox") as HTMLTextAreaElement).value).toContain('"excerpt":"test assertion failed"'));
+  expect((screen.getByRole("textbox") as HTMLTextAreaElement).value).toMatch(/^Keep this unsent request/);
+  expect(m.client.sendAgentMessage).not.toHaveBeenCalled();
+  expect(m.client.approveAgentAction).not.toHaveBeenCalled();
+  expect(m.invoke.mock.calls.filter(([command]) => command === "run_repository_check")).toHaveLength(1);
+});
