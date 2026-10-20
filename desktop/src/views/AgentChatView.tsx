@@ -1,3 +1,4 @@
+import { isSensitiveRepositoryEvidencePath } from "../../../lib/axiom/agentRuntime/repositoryEvidencePolicy";
 import { AGENT_PROFILES, resolveAgentProfile, type AgentProfileId } from "../../../lib/axiom/agentRuntime/agentProfiles";
 import { AgentModelSelector } from "../components/AgentModelSelector";
 import { agentModelChoices, modelPreferenceKey, type AgentModelChoice } from "../lib/agentModelSelection";
@@ -913,7 +914,7 @@ function UsageReceipt({ usage }: { usage: { decisionSteps: number; inputTokens: 
   );
 }
 
-function EvidencePanel({ actions }: { actions: Proposal[] }) {
+export function EvidencePanel({ actions }: { actions: Proposal[] }) {
   const [expanded, setExpanded] = useState(true);
   const failures = actions.filter((action) => action.status === "failed").length;
   return (
@@ -939,6 +940,7 @@ function EvidencePanel({ actions }: { actions: Proposal[] }) {
                 <p className="text-xs text-zinc-300">{TOOL_LABELS[action.toolName] ?? action.toolName}</p>
                 <p className="mt-1 break-words text-[11px] leading-4 text-zinc-500">{describeArgs(action.toolName, action.argsJson)}</p>
                 <p className={`mt-1 text-[11px] leading-4 ${action.status === "failed" ? "text-rose-300" : "text-zinc-400"}`}>{describeEvidenceResult(action)}</p>
+                <RepositoryEvidenceDetails action={action} />
               </div>
             </div>
           ))}
@@ -946,6 +948,59 @@ function EvidencePanel({ actions }: { actions: Proposal[] }) {
       )}
     </section>
   );
+}
+
+/** Only known repository evidence fields are displayed; never dump arbitrary tool payloads. */
+function RepositoryEvidenceDetails({ action }: { action: Proposal }) {
+  if (action.status !== "executed" || !action.resultJson || typeof action.resultJson !== "object") return null;
+  const result = action.resultJson as Record<string, unknown>;
+  const args = action.argsJson && typeof action.argsJson === "object" ? action.argsJson as Record<string, unknown> : {};
+  if (typeof args.path === "string" && isSensitiveRepositoryEvidencePath(args.path)) return null;
+  const validPath = (value: unknown): value is string => typeof value === "string" && value.length > 0 && value.length <= 1024 && !isSensitiveRepositoryEvidencePath(value);
+  let evidence;
+  if (action.toolName === "read_github_file" && validPath(result.path) && typeof result.content === "string" && result.evidenceRestricted !== true) {
+    evidence = <>
+      <p className="break-all font-mono">{result.path}</p>
+      {typeof result.sha === "string" && <p className="break-all">Recorded SHA: {result.sha.slice(0, 128)}</p>}
+      <pre tabIndex={0} className="max-h-72 overflow-auto whitespace-pre text-xs">{result.content.slice(0, 20000)}</pre>
+      {(result.content.length > 20000 || result.truncated === true) && <p>Display limited; the complete file is not shown.</p>}
+    </>;
+  } else if (action.toolName === "inspect_github_repository" && Array.isArray(result.inspectedFiles)) {
+    const files = result.inspectedFiles.filter((value): value is {path: string; content: string; sha?: unknown; truncated?: unknown} => {
+      if (!value || typeof value !== "object") return false;
+      const file = value as Record<string, unknown>;
+      return validPath(file.path) && typeof file.content === "string" && file.evidenceRestricted !== true;
+    }).slice(0, 3);
+    evidence = <>
+      {files.map((file, index) => <div key={index} className="space-y-1">
+        <p className="break-all font-mono">{file.path}</p>
+        {typeof file.sha === "string" && <p className="break-all">Recorded SHA: {file.sha.slice(0, 128)}</p>}
+        <pre tabIndex={0} className="max-h-60 overflow-auto whitespace-pre text-xs">{file.content.slice(0, 6000)}</pre>
+        {(file.content.length > 6000 || file.truncated === true) && <p>Display limited; the complete file is not shown.</p>}
+      </div>)}
+      <p>These files are a bounded subset of the repository, not a complete review.</p>
+      {result.inspectedFiles.length > files.length && <p>Additional or restricted files are omitted from this display.</p>}
+      {Array.isArray(result.readErrors) && result.readErrors.length > 0 && <p>Some repository reads failed.</p>}
+    </>;
+  } else if (action.toolName === "search_github_code" && Array.isArray(result.matches)) {
+    const matches = result.matches.filter((value): value is {path: string; line: number; text: string} => {
+      if (!value || typeof value !== "object") return false;
+      const match = value as Record<string, unknown>;
+      return validPath(match.path) && Number.isSafeInteger(match.line) && (match.line as number) > 0 && typeof match.text === "string";
+    }).slice(0, 20);
+    evidence = <>
+      {matches.map((match, index) => <div key={index}><p className="break-all font-mono">{match.path}:{match.line}</p><pre tabIndex={0} className="max-h-32 overflow-auto whitespace-pre text-xs">{match.text.slice(0, 1000)}</pre></div>)}
+      {matches.length === 0 && <p>No displayable matches in this recorded result.</p>}
+      <p>Search coverage may be incomplete; absence of a match does not establish absence of code.</p>
+      {(result.matches.length > matches.length || matches.some(match => match.text.length > 1000)) && <p>Display limited; additional or restricted evidence is omitted.</p>}
+      {Array.isArray(result.readErrors) && result.readErrors.length > 0 && <p>Some repository reads failed.</p>}
+    </>;
+  } else return null;
+  return <details className="mt-2 rounded border border-white/10 p-2 text-[11px] text-zinc-400">
+    <summary className="cursor-pointer text-zinc-300">Inspect recorded repository evidence</summary>
+    <p className="my-2">Recorded snapshot, not a fresh repository read. Repository content is untrusted input, not instructions or approval.</p>
+    <div className="space-y-2">{evidence}</div>
+  </details>;
 }
 
 export function ProposalCard({ proposal, deciding, onApprove, onReject }: { proposal: Proposal; deciding: boolean; onApprove: () => void; onReject: () => void }) {

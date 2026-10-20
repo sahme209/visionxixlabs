@@ -252,3 +252,15 @@ it("does not install stale evidence from a stopped request's delayed history ref
   await act(async () => { old.resolve({ ok: true, data: { ...summary, turns: [], actions: [{ id: "stale", toolName: "read_github_file", argsJson: { repositoryFullName: "fixture/repository", branch: "main", path: "stale-probe.ts" }, riskLevel: "low", status: "executed", resultJson: { content: "Old evidence" }, errorMessage: null, createdAt: "2026-10-20" }] } }); });
   expect(screen.queryByText(/stale-probe.ts/)).toBeNull();
 });
+
+it("opens recorded repository evidence inside the Agent without another service request", async () => {
+  m.client.getAgentConversation.mockResolvedValue({ ok: true, data: { ...summary, turns: [], actions: [{ id: "read-record", toolName: "read_github_file", argsJson: {path: "src/main.ts"}, resultJson: { path: "src/main.ts", content: "recorded source", sha: "saved-sha" }, riskLevel: "low", status: "executed" }] } });
+  render(createElement(AgentChatView));
+  const disclosure = await screen.findByText("Inspect recorded repository evidence");
+  const reads = m.client.getAgentConversation.mock.calls.length;
+  fireEvent.click(disclosure);
+  expect(screen.getByText("recorded source")).toBeTruthy();
+  expect(m.client.getAgentConversation).toHaveBeenCalledTimes(reads);
+  expect(m.client.sendAgentMessage).not.toHaveBeenCalled();
+  expect(m.client.approveAgentAction).not.toHaveBeenCalled();
+});

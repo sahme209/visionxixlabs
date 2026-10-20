@@ -2573,3 +2573,29 @@ Implemented composition fence after reproducing both failures. All14 connected
 streaming application cases pass locally, including zero accidental composition
 submissions and exactly one subsequent explicit submission. Reused prior299-case
 milestone evidence; no full CI, browser run, push or deployment was triggered.
+
+### Recorded repository evidence inspector — local desktop milestone
+
+Research: read_github_file already returns a recorded path/content/SHA; bounded
+search returns path/line/text matches. Desktop EvidencePanel currently exposes
+only counts. Reuse those saved records rather than fetching again or adding an
+executor. Implement an accessible disclosure for escaped file/search evidence,
+with explicit size/item limits, truncated-result notice and recorded-snapshot
+warning. Reuse sensitive repository path policy, reject malformed/failed results,
+and never render arbitrary result JSON, HTML, links or credentials. Acceptance:
+connected evidence rendering, no request/approval side effects, sensitive-path
+and hostile-text fixtures, bounds and incomplete-search notice. This is source
+implementation; installed Mac and real repository acceptance stay separate.
+
+Implemented file/search/initial-grounding disclosures. Limits: file20,000 chars;
+search20 matches x1,000 chars; grounding3 files x6,000 chars; SHA128 chars.
+No arbitrary JSON/HTML rendering, new fetch, write action or approval callback.
+Sensitive request/result paths and restricted snapshots are hidden. Coverage,
+truncation, read failure and snapshot warnings avoid fresh/complete claims.
+Validation:52 focused tests across inspector, connected Agent, streaming,
+redaction and diff suites;15 demo contracts; scoped TypeScript and changed-file
+lint pass. Red/green reproduced missing file/search/grounding displays. Connected
+Agent opening confirms no extra conversation read, message or approval call.
+Independent read-only security review found no blocker, including grounding.
+No GitHub Actions runs/pushes/merges or paid/production/native-release changes.
+Installed Mac, hosted repository/provider and full merge acceptance remain open.
