@@ -2369,3 +2369,40 @@ The initial connected tests fail on the combined Accept value; after the one-key
 fix, all46 affected application/client/bridge/composer checks pass. Four are new
 connected acceptance cases. Credential/origin, usage holds, proposal authority,
 CI and production gates remain unchanged. New exact-head CI is still required.
+
+
+### 2026-10-20 — execute existing owned commercial SQL acceptance in CI
+
+Research: the default suite deliberately skips all34 owned PG cases. Six prepared
+legacy admission cases and19 allocation/anniversary cases therefore remained
+declarations rather than SQL proof. The existing suite owns a fresh Docker PG17
+container, generated password, empty loopback-only database and constructor-bound
+Prisma clients; it refuses external URLs/env files and retains checked child
+environments. Local Docker info is denied EPERM; no escalation or guard bypass.
+
+Plan: reuse this existing suite in a path-scoped pull-request/main/manual GitHub
+job with read-only repository permissions, no environment/secrets, synthetic
+provider implementations and no HTTP flags. Pre-pull the same PG17 image used by
+the current auth rehearsal; the harness keeps its --pull=never launch and cleanup.
+Require32 executed SQL passes (six legacy,19 allocation,seven service), allowing
+only the two named HTTP cases to remain skipped. The existing genuine five-minute
+TTL test and original deadlines stay unchanged. No production migration or paid
+provider call occurs; this does not establish hosted Stripe/provider/customer
+acceptance. A daemon-query failure or leftover owned container must fail cleanup.
+
+The report gate's valid-run check was red before implementation. All20 gate and
+legacy-declaration checks pass; a real default-suite Vitest JSON report with
+0pass/34pending is correctly rejected. Independent review confirmed isolated
+bindings/report semantics and caught a command-substitution cleanup false pass;
+separate checked Docker capture fixes it. Actual SQL/CI execution remains pending.
+
+Streaming head25cd559a browser39483571041 passes12 checks with unchanged source,
+empty cleanup, six console errors and zero runtime exceptions. ZIP SHA256 is
+235599fff5b0245a4b8315a19154fb0149f097f4c6e9268f6ae62be50c5e0e1f.
+Five captures match reviewed e9d79d6a images exactly; the changed documentation
+image was inspected separately. Floating-widget overlap remains a visual limit;
+historical navigation cause remains unknown. Native39483570885 passes18 tests
+and Clippy. Full39483571044 passed types,8646 tests (34 skipped), offline auth and
+the production website build without deployment. PR186 was normally merged into
+PR184 as06f5b432 only after all exact25cd559a gates passed. Parent/main integration
+still requires its own applicable checks; production approvals remain intact.
