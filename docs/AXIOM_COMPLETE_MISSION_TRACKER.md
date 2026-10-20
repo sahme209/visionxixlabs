@@ -2161,3 +2161,15 @@ process checks were denied EPERM by current native execution controls. Those
 controls and tests are preserved for GitHub CI, with no local bypass or retry.
 Focused imported types/lint pass. A corrected exact-head CI is required before
 merge; the passing browser receipt is not a waiver of the full-suite failure.
+
+Corrected7410a095 full CI passed typecheck, Vitest and offline auth steps; the
+production-build step continues without deployment. Browser39470466278 failed
+after11 checks: click completed at83.587seconds, followed by321 responsive polls
+until119.933seconds, with no docs request reaching the proxy. This rules out a
+click arriving only at deadline or a hanging evaluation; it does not identify
+navigation cause or prove absence of a driver-frontier denial. Exact timing and
+limits: mission/public-website-browser-blocker-7410a095.json. No repeated run,
+longer deadline, forced navigation or gate waiver follows. PR184/185 source and
+the research-first rule remain preserved; current merge stays blocked while
+independent planned work and real-provider/native/database prerequisites remain
+explicitly unfinished.
