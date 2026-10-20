@@ -21,3 +21,25 @@ Artifacts contain only a closed public summary and these six approved PNG names 
 `passed` requires a completed driver, unchanged source, owned groups proven empty, matching successful completion nonce, successful capture, and all six screenshots. That means isolated public website fixture acceptance only. It does not certify production login, payments, cloud execution, desktop installation or a real customer deployment. Screenshots still require visual review for presentation quality.
 
 Before first execution: root must independently review this source change and integrate it with the intended application commit. Normal authorized PR CI may then run it. Do not dispatch or deploy as part of this source review.
+
+## First CI refusal and bounded metadata correction
+
+Run [39430262263](https://github.com/sahme209/visionxixlabs/actions/runs/39430262263)
+on source `45155d78` installed dependencies and generated the local Prisma
+client, then refused during manifest preparation at the unknown `NODE_*`
+variable check. No application server or browser ran and no images were made.
+The official image Dockerfile at
+[`f27125230b3c367dcf63043ea3fe286fb3d0914c`](https://github.com/nodejs/docker-node/blob/f27125230b3c367dcf63043ea3fe286fb3d0914c/24/bookworm/Dockerfile)
+exports `NODE_VERSION=24.22.0`; the job log reports that exact running binary
+version. The original policy rejects this metadata, reproduced by a failing
+regression before correction.
+
+The policy now preserves this one metadata selector only when its value exactly
+matches `process.versions.node`; it cannot select a runtime or load code. It is
+included in the existing descriptor validation and captured-selector identity.
+Absent metadata stays absent. Mismatched, empty, hidden, inherited, accessor and
+nonstrings are refused, as are unknown `NODE_*` variables and unsupported loader,
+OpenSSL, proxy or CA changes. No environment controls are stripped, request or
+process permissions broadened, or deadline increased. The 73-test focused
+policy/collector/managed-path run passes; a fresh exact-head CI result remains
+required. This correction is not browser acceptance.

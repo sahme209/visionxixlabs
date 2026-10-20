@@ -7,7 +7,7 @@ const { createHash } = require('node:crypto');
 const managedNodePath = require('./ownedWebsiteManagedNodePath.cjs');
 const managedEnvironment = require('./ownedManagedEnvironment.cjs');
 const pages = new Set(['/', '/product', '/docs/approval-workflow']);
-const inherited = ['PATH', 'HOME', 'TMPDIR', 'LANG', 'LC_ALL', 'HTTP_PROXY', 'HTTPS_PROXY', 'ALL_PROXY', 'NO_PROXY', 'http_proxy', 'https_proxy', 'all_proxy', 'no_proxy', 'NODE_EXTRA_CA_CERTS', 'SSL_CERT_FILE', 'SSL_CERT_DIR', 'CODEX_PROXY_CERT', 'NODE_USE_ENV_PROXY', 'REQUESTS_CA_BUNDLE', 'CURL_CA_BUNDLE', 'AWS_CA_BUNDLE', 'NODE_PATH'];
+const inherited = ['PATH', 'HOME', 'TMPDIR', 'LANG', 'LC_ALL', 'HTTP_PROXY', 'HTTPS_PROXY', 'ALL_PROXY', 'NO_PROXY', 'http_proxy', 'https_proxy', 'all_proxy', 'no_proxy', 'NODE_EXTRA_CA_CERTS', 'SSL_CERT_FILE', 'SSL_CERT_DIR', 'CODEX_PROXY_CERT', 'NODE_USE_ENV_PROXY', 'REQUESTS_CA_BUNDLE', 'CURL_CA_BUNDLE', 'AWS_CA_BUNDLE', 'NODE_PATH', 'NODE_VERSION'];
 const selectors = inherited.filter(key => !['PATH', 'TMPDIR', 'LANG', 'LC_ALL'].includes(key));
 function captureManagedEnvironment(env) {
   const controls = managedEnvironment.captureManagedControls(env);
@@ -60,8 +60,10 @@ function checkedEnvironment(env, execArgv) {
   managedNodePath.capture(managed.selectors.NODE_PATH);
   const unsupported = () => { throw Error('website_child_options_unsupported'); };
   const heap = /^--max[-_]old[-_]space[-_]size=[1-9][0-9]*$/;
+  // Official Node images export version metadata; it cannot select another runtime.
+  if (Object.hasOwn(env, 'NODE_VERSION') && env.NODE_VERSION !== process.versions.node) unsupported();
   for (const key of Object.keys(env)) {
-    if (/^(LD_|DYLD_|OPENSSL_)/.test(key) || (key.startsWith('NODE_') && !['NODE_OPTIONS', 'NODE_ENV', 'NODE_EXTRA_CA_CERTS', 'NODE_USE_ENV_PROXY', 'NODE_PATH'].includes(key))) unsupported();
+    if (/^(LD_|DYLD_|OPENSSL_)/.test(key) || (key.startsWith('NODE_') && !['NODE_OPTIONS', 'NODE_ENV', 'NODE_EXTRA_CA_CERTS', 'NODE_USE_ENV_PROXY', 'NODE_PATH', 'NODE_VERSION'].includes(key))) unsupported();
   }
   if (env.NODE_OPTIONS?.trim() && !heap.test(env.NODE_OPTIONS.trim())) unsupported();
   if (execArgv.some(option => !heap.test(option))) unsupported();

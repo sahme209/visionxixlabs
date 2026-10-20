@@ -103,3 +103,20 @@ it.each(["--require /guard.cjs", "--loader /guard.mjs", "--use-openssl-ca"])("co
   expect(() => policy.checkedEnvironment({ ...managed, NODE_OPTIONS: option }, [])).toThrow("website_child_options_unsupported");
   expect(() => policy.checkedEnvironment(managed, [option])).toThrow("website_child_options_unsupported");
 });
+
+it("preserves official container NODE_VERSION metadata only when it matches the running binary", () => {
+  const input = Object.freeze({ ...managed, NODE_VERSION: process.versions.node });
+  expect(policy.childEnvironment(input, paths, [])).toMatchObject(input);
+  for (const value of ["0.0.0", `${process.versions.node} --require /private.cjs`, ""]) {
+    expect(() => policy.checkedEnvironment({ ...managed, NODE_VERSION: value }, [])).toThrow();
+  }
+  expect(() => policy.checkedEnvironment({ ...managed, NODE_UNREVIEWED: "enabled" }, [])).toThrow();
+});
+
+it("refuses inherited, hidden, accessor or malformed version metadata before invoking getters", () => {
+  let reads = 0;
+  const accessor = Object.defineProperty({}, "NODE_VERSION", { enumerable: true, get() { reads++; return process.versions.node; } });
+  const hidden = Object.defineProperty({}, "NODE_VERSION", { value: process.versions.node });
+  for (const input of [accessor, hidden, { NODE_VERSION: 7 }, { NODE_VERSION: undefined }, Object.create({ NODE_VERSION: process.versions.node })]) expect(() => policy.checkedEnvironment(input, [])).toThrow();
+  expect(reads).toBe(0);
+});
