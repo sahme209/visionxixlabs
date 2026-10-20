@@ -186,3 +186,17 @@ correction. Existing resolver fallbacks and explicit runtime-readiness gates
 remain in place; no release, payment, authentication or production changes are
 included. Independent source review found no material issues. Test results are
 recorded separately from browser/native acceptance.
+
+The twelve download presentation tests pass after correction (an initial
+concurrent validation attempt exceeded two existing test timeouts; sequential
+verification passes without changing timeout values). The integrated proxy
+delivery/collector tests pass32 cases, with scoped lint and independent source
+review. They preserve all request policies and existing limits. Exact-head
+`95e653f8` CI has now passed the full types/tests/auth-evidence/production-build
+job and desktop checks. Its browser failure remains a merge gate; later source
+requires fresh exact-head CI rather than inheriting those results.
+
+Combined follow-up validation passes104 tests across six files, covering release
+response recovery, collector/transport integration, managed controls, operation
+diagnostics and request-interception ordering. Scoped lint, syntax and tracker
+validation pass. These are source-level checks, not a browser success receipt.
