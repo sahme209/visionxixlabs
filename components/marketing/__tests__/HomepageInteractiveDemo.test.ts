@@ -47,6 +47,7 @@ describe("CinematicAxiomDemo — honesty contract", () => {
   it("is actually wired into the homepage, not dead code", () => {
     const page = source("app/page.tsx");
     expect(page).toContain('import { CinematicAxiomDemo } from "@/components/marketing/CinematicAxiomDemo";');
-    expect(page).toContain("<CinematicAxiomDemo />");
+    expect(page).toContain('<CinematicAxiomDemo variant="hero" />');
+    expect(page.match(/<CinematicAxiomDemo\b/g)).toHaveLength(1);
   });
 });

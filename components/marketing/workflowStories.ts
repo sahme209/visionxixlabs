@@ -28,7 +28,7 @@ export const WORKFLOW_STORIES: readonly WorkflowStory[] = [
   },
   {
     id: "agent", label: "Agent & approval", eyebrow: "Context first. Permission before change.",
-    limitation: "Implementation preview: governed GitHub proposals. This sample uses no model or repository. Production sign-in and cloud end-to-end acceptance are unresolved.",
+    limitation: "Implementation preview: governed GitHub proposals. This sample uses no model or repository. Installed-app and cloud end-to-end acceptance remain in progress.",
     source: { scenario: "devops_pipeline", step: "5" },
     steps: [
       { title: "Attach context to the request.", caption: "The Agent carries the selected repository, branch and environment into a governed conversation.", scene: "context" },

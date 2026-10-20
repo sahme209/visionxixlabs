@@ -132,3 +132,17 @@ it("rejects a sample, resets when switching stories, and stops on the final scen
   expect(screen.getByRole("heading", { name: "Keep the outcome honest." })).toBeDefined();
   expect((screen.getByRole("button", { name: "Next step" }) as HTMLButtonElement).disabled).toBe(true);
 });
+
+
+it("grounds the scripted frame in customer navigation without exposing operational controls", () => {
+  mount();
+  const navigation = screen.getByRole("complementary", { name: "Navigation illustrated from the desktop application" });
+  expect(navigation.textContent).toContain("No connected account.");
+  expect(navigation.querySelectorAll("button, a, input")).toHaveLength(0);
+  expect(screen.getByText("Axiom Agent · GitHub repositories")).toBeDefined();
+  fireEvent.click(screen.getByRole("button", { name: "Agent & approval" }));
+  expect(screen.getByText("Axiom Agent · Agent")).toBeDefined();
+  fireEvent.click(screen.getByRole("button", { name: "Terraform & cloud" }));
+  expect(screen.getByText("Axiom Agent · Release workspace")).toBeDefined();
+  expect(screen.getByText("Scripted preview")).toBeDefined();
+});

@@ -1660,3 +1660,28 @@ installer/keyboard/vault, real GitHub selection, production authentication, paid
 entitlement or provider deployment/rollback acceptance. Required clean exact-head
 CI and production compilation remain merge gates; existing production blockers
 and every other workstream remain active.
+
+
+## 2026-10-20 — production Google login confirmed; public refinement active
+
+Owner confirmed Google sign-in works at visionxixlabs.com after the explicitly
+approved login-only release of main `30d6363a01e04c35871025c161f69480244d7d17`
+(PR #181). Serving deployment: `dpl_HSdq3iKuvFhKk3KR5S9J8zLpGPne`; retained
+rollback: `dpl_5Kdgq8YPSjysSQqk8rNLbrjAVVeH`. This is real owner-reported
+production authentication evidence, not an inference from unit tests or logs.
+Account/workspace identity, password recovery, GitHub OAuth and native pairing
+remain separately unverified. No database, secret, payment or installer changed.
+
+Website refinement is active locally: shared navigation/footer, homepage,
+product, plans and Support XCM surfaces; existing scripted demos now use the
+actual desktop customer navigation as their foundation. Simulation disclosures
+and unavailable provider operations remain explicit. Checkout components,
+support payments and authentication are outside these presentation changes.
+Rendered desktop/mobile acceptance and required CI remain pending. No website
+release is authorized: the ONE FINAL production deployment approval gate stays
+in force, with database recovery, live payments and installers separately gated.
+
+All earlier mission requirements and cloud, Agent, ECS, Terraform/Airflow,
+billing, desktop, governance and security workstreams remain active. Production
+database binding, a usable PITR point and verified restore readiness remain
+unresolved; Google success does not clear those gates.

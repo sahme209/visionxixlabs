@@ -1,5 +1,6 @@
 import { useState, type ComponentType, type SVGProps } from "react";
 import type { CustomerView } from "../App";
+import { CUSTOMER_NAVIGATION } from "../lib/customerNavigation";
 import { DESKTOP_VERSION } from "../lib/desktopMetadata";
 
 interface NavItem {
@@ -42,27 +43,13 @@ const IconAirflow = icon(<><circle cx="6" cy="6" r="2"/><circle cx="18" cy="6" r
  * approval-gated, auditable action) — the Release workspace remains the
  * direct/manual path alongside it, not replaced by it.
  */
-export const CUSTOMER_NAV_GROUPS: NavGroup[] = [
-  {
-    kind: "deployment",
-    label: "Deployment",
-    items: [
-      { id: "agent", label: "Agent", Icon: IconAgent },
-      { id: "deployment-requests", label: "Release workspace", Icon: IconRequest },
-      { id: "airflow-automation", label: "Batch automation", Icon: IconAirflow },
-    ],
-  },
-  {
-    kind: "workspace",
-    label: "Workspace",
-    items: [
-      { id: "repository-workspace", label: "GitHub repositories", Icon: IconRepository },
-      { id: "plugins-skills", label: "Plugins & Skills", Icon: IconPlugins },
-      { id: "docs", label: "Documentation", Icon: IconDocs },
-      { id: "settings", label: "Settings", Icon: IconSettings },
-    ],
-  },
-];
+const customerIcons: Record<(typeof CUSTOMER_NAVIGATION)[number]["items"][number]["id"], ComponentType<SVGProps<SVGSVGElement>>> = {
+  agent: IconAgent, "deployment-requests": IconRequest, "airflow-automation": IconAirflow,
+  "repository-workspace": IconRepository, "plugins-skills": IconPlugins, docs: IconDocs, settings: IconSettings,
+};
+export const CUSTOMER_NAV_GROUPS: NavGroup[] = CUSTOMER_NAVIGATION.map(group => ({
+  ...group, items: group.items.map(item => ({ ...item, Icon: customerIcons[item.id] })),
+}));
 
 export function Sidebar({ activeView, onNavigate }: { activeView: CustomerView; onNavigate: (view: CustomerView) => void }) {
   const [openGroups, setOpenGroups] = useState<Record<string, boolean>>(() =>
