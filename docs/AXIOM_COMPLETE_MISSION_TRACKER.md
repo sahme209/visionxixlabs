@@ -1722,3 +1722,22 @@ These are local application-component checks, not native installer or rendered
 browser acceptance. Required CI and the known local navigation/supervisor
 blocker remain merge gates. Production Google login remains owner-confirmed;
 other auth and database recovery gates are unchanged.
+
+
+## 2026-10-20 — website acceptance continuation
+
+The download follow-up now requires explicit Mac architecture selection instead
+of treating a browser `MacIntel` string as CPU evidence. Both installer resolver
+links remain available. The latest six-file component/contract run passes 43
+tests, scoped lint passes, and web production-source TypeScript passes. These
+checks do not prove native installer or full browser acceptance.
+
+A source-reviewed PR-only CI harness is being integrated to run the existing
+bounded public website fixture independently of the unreliable local tool
+supervisor. It preserves request restrictions and deadlines, checks out the
+immutable PR head, uses no production credentials, and retains only sanitized
+summary fields and six approved screenshots. Browser results and visual review
+remain required before PR #182 merges. The approved Google-login deployment
+remains serving; no additional release or production operation is authorized.
+All existing independent engineering workstreams and recovery gates remain
+represented; tracker coverage remains 24 sources and 2,239 requirement rows.
