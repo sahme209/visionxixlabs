@@ -2067,3 +2067,12 @@ git status command timed out. This is distinct from documentation navigation;
 no new interaction acceptance is claimed and no blind retry/deadline increase
 is made. Receipt: mission/public-website-browser-preflight-b7fd03a0.json.
 Full CI and native CI continue; merge remains blocked on required acceptance.
+
+Exactb7fd03a0 fullCI39466223463 passed typecheck, full Vitest, offline auth evidence
+and production website build without deployment. NativeCI39466223513 passed
+frontend release/type/build, native command tests and native lint. Browser's
+prepare failure still blocks PR184; these passing checks do not waive it.
+Independent known-credential logging correction is in PR185 atf2602e87: three
+pre-fix leaks reproduced, four suites/23 checks and imported types/lint passed,
+independent review accepted the bounded fingerprint correction. Its required CI
+is running; no source or production success beyond that scope is asserted.
