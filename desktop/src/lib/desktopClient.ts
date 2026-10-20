@@ -1,3 +1,4 @@
+import type { AgentProfileId } from "../../../lib/axiom/agentRuntime/agentProfiles";
 import { assertDesktopNotAborted } from "./abortSignal";
 import type { ModelPolicy } from "./aiProviderStatus";
 import { isAwsEnrollmentChallenge, isDesktopAwsAccount, isDesktopAwsInventory, type AwsEnrollmentInput, type AwsEnrollmentChallenge, type DesktopAwsAccount, type DesktopAwsInventory } from "./awsEnrollmentContract";
@@ -1023,6 +1024,7 @@ export class DesktopClient {
     filePath?: string;
     mode?: "chat" | "code";
     operationMode?: "inspect" | "engineer" | "deepops";
+    agentProfile?: AgentProfileId;
   }, preferredModel?: string, streaming?: { signal: AbortSignal; onDraft: (text: string) => void }): Promise<ApiResult<{
     reply: string;
     proposal: { id: string; toolName: string; argsJson: unknown; riskLevel: string; status: string } | null;

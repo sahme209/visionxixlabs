@@ -187,3 +187,68 @@ it("reloads the saved conversation after interruption without resending or appro
   expect(m.client.sendAgentMessage).toHaveBeenCalledOnce();
   expect(m.client.approveAgentAction).not.toHaveBeenCalled(); expect(m.client.createAgentConversation).not.toHaveBeenCalled();
 });
+it("opens Agent permissions in Settings without resending or discarding the current draft", async () => {
+  const open = vi.fn(); render(createElement(AgentChatView, { onOpenSettings: open })); await draft();
+  fireEvent.click(screen.getByRole("button", { name: "Agent permissions" }));
+  expect(open).toHaveBeenCalledExactlyOnceWith("agents");
+  expect((screen.getByRole("textbox") as HTMLTextAreaElement).value).toBe("Keep this unsent request");
+  expect(m.client.sendAgentMessage).not.toHaveBeenCalled();
+});
+it("preserves the actual App composer, profile and environment across an in-app Settings visit", async () => {
+  m.client.hasAuth.mockReturnValue(true);
+  m.client.verifyCurrentCredential.mockResolvedValue({ ok: true, data: { kind: "desktop_session", organizationId: "fixture-workspace", role: "owner", capabilities: [], access: { allowed: true, code: "active", title: "Access active", message: "Fixture", billingStatus: "no_plan", planTier: "trial" } } });
+  render(createElement(App)); await draft();
+  fireEvent.change(screen.getByRole("combobox", { name: "Specialized Agent" }), { target: { value: "code_review" } });
+  fireEvent.change(screen.getByRole("combobox", { name: "Active deployment environment" }), { target: { value: "env-1" } });
+  fireEvent.click(screen.getByRole("button", { name: "Agent permissions" }));
+  await screen.findByRole("heading", { name: "Agents" });
+  fireEvent.click(screen.getByRole("button", { name: "Agent" }));
+  await screen.findByRole("option", { name: "Fixture model" });
+  expect((screen.getByRole("textbox") as HTMLTextAreaElement).value).toBe("Keep this unsent request");
+  expect((screen.getByRole("combobox", { name: "Specialized Agent" }) as HTMLSelectElement).value).toBe("code_review");
+  expect((screen.getByRole("combobox", { name: "Active deployment environment" }) as HTMLSelectElement).value).toBe("env-1");
+  expect(m.client.sendAgentMessage).not.toHaveBeenCalled();
+});
+it("deactivation aborts streaming and never accepts a late success while retaining an unsent follow-up", async () => {
+  const completion = deferred<unknown>(); let signal!: AbortSignal;
+  m.client.sendAgentMessage.mockImplementation((...args) => { signal = args[5].signal; args[5].onDraft("Partial"); return completion.promise; });
+  const view = render(createElement(AgentChatView, { active: true })); await draft();
+  fireEvent.click(screen.getByRole("button", { name: "Send" })); await screen.findByText("Partial");
+  fireEvent.change(screen.getByRole("textbox"), { target: { value: "Unsent follow-up" } });
+  view.rerender(createElement(AgentChatView, { active: false }));
+  expect(signal.aborted).toBe(true);
+  await act(async () => { completion.resolve({ ok: true, data: { reply: "Late success", proposal: { id: "late", toolName: "commit_github_file", argsJson: {}, riskLevel: "medium", status: "proposed" } } }); });
+  view.rerender(createElement(AgentChatView, { active: true }));
+  await waitFor(() => expect(m.client.aiProviderStatus.mock.calls.length).toBeGreaterThan(1));
+  expect(screen.queryByText("Late success")).toBeNull(); expect(screen.queryByRole("button", { name: "Approve & run" })).toBeNull();
+  expect((screen.getByRole("textbox") as HTMLTextAreaElement).value).toBe("Unsent follow-up");
+  expect(m.client.sendAgentMessage).toHaveBeenCalledOnce();
+});
+it("does not replace a newer request error with a stopped request's late rejection", async () => {
+  let rejectOld!: (reason: Error) => void;
+  const old = new Promise<never>((_resolve, reject) => { rejectOld = reject; });
+  m.client.sendAgentMessage.mockImplementationOnce((...args) => { args[5].onDraft("Old pending response"); return old; });
+  const view = render(createElement(AgentChatView, { active: true })); await draft();
+  fireEvent.click(screen.getByRole("button", { name: "Send" })); await screen.findByText("Old pending response");
+  view.rerender(createElement(AgentChatView, { active: false })); view.rerender(createElement(AgentChatView, { active: true }));
+  m.client.sendAgentMessage.mockResolvedValue({ ok: false, error: "Current request budget refusal" });
+  fireEvent.change(screen.getByRole("textbox"), { target: { value: "New request" } });
+  await waitFor(() => expect((screen.getByRole("button", { name: "Send" }) as HTMLButtonElement).disabled).toBe(false));
+  fireEvent.click(screen.getByRole("button", { name: "Send" })); await screen.findByText("Current request budget refusal");
+  await act(async () => { rejectOld(new Error("Old transport failed")); });
+  expect(screen.getByText("Current request budget refusal")).toBeTruthy();
+});
+it("does not install stale evidence from a stopped request's delayed history refresh", async () => {
+  const old = deferred<unknown>();
+  const view = render(createElement(AgentChatView, { active: true })); await draft();
+  m.client.getAgentConversation.mockReturnValueOnce(old.promise);
+  m.client.sendAgentMessage.mockResolvedValue({ ok: true, data: { reply: "First accepted reply", proposal: null, usage: null } });
+  fireEvent.click(screen.getByRole("button", { name: "Send" })); await screen.findByText("First accepted reply");
+  view.rerender(createElement(AgentChatView, { active: false })); view.rerender(createElement(AgentChatView, { active: true }));
+  m.client.sendAgentMessage.mockResolvedValue({ ok: false, error: "Current request budget refusal" });
+  fireEvent.change(screen.getByRole("textbox"), { target: { value: "New request" } });
+  await waitFor(() => expect((screen.getByRole("button", { name: "Send" }) as HTMLButtonElement).disabled).toBe(false));
+  fireEvent.click(screen.getByRole("button", { name: "Send" })); await screen.findByText("Current request budget refusal");
+  await act(async () => { old.resolve({ ok: true, data: { ...summary, turns: [], actions: [{ id: "stale", toolName: "read_github_file", argsJson: { repositoryFullName: "fixture/repository", branch: "main", path: "stale-probe.ts" }, riskLevel: "low", status: "executed", resultJson: { content: "Old evidence" }, errorMessage: null, createdAt: "2026-10-20" }] } }); });
+  expect(screen.queryByText(/stale-probe.ts/)).toBeNull();
+});

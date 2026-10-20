@@ -8,6 +8,7 @@ const mocks = vi.hoisted(() => ({
   transaction: vi.fn(async (operations: Array<Promise<unknown>>) => Promise.all(operations)),
   createTurn: vi.fn<(args?: unknown) => Promise<object>>(async () => ({})),
   findManyTurns: vi.fn(async (): Promise<Array<{ role: string; content: string }>> => []),
+  createAudit: vi.fn(async () => ({ id: "audit-profile" })),
   createProposal: vi.fn(async () => ({ id: "ap_1", toolName: "open_github_pull_request", argsJson: {}, riskLevel: "medium", status: "proposed" })),
   runDecisionLoop: vi.fn(),
   executeReadOnlyTool: vi.fn(),
@@ -25,6 +26,7 @@ vi.mock("@/lib/db", () => ({
     agentActionProposal: { create: mocks.createProposal },
     agentSkillInstallation: { findMany: mocks.findManySkills },
     environment: { findFirst: mocks.findFirstEnvironment },
+    auditEvent: { create: mocks.createAudit },
     $transaction: mocks.transaction,
   },
 }));
@@ -51,6 +53,22 @@ describe("POST /api/desktop/agent/conversations/[id]/messages", () => {
     mocks.resolveRequestDesktopSession.mockResolvedValue(session);
     mocks.findFirstConversation.mockResolvedValue({ id: "conv_1", organizationId: "org-1", userId: "user-1", title: null });
     mocks.prepareProposalArgsForReview.mockImplementation(async (_organizationId: string, _toolName: string, args: Record<string, unknown>) => ({ ok: true, args }));
+  });
+
+  it.each(["__proto__", "arbitrary-agent", null, 123, { id: "coding" }])("rejects invalid Agent profile %j before any turn or inference", async agentProfile => {
+    const { POST } = await import("../route");
+    const response = await POST(request({ message: "hi", workspaceContext: { agentProfile } }), params);
+    expect(response.status).toBe(400); expect(await response.json()).toMatchObject({ error: "invalid_agent_profile" });
+    expect(mocks.createTurn).not.toHaveBeenCalled(); expect(mocks.runDecisionLoop).not.toHaveBeenCalled();
+  });
+  it("passes a validated profile into the real dispatch boundary and audits only non-sensitive selection fields", async () => {
+    mocks.runDecisionLoop.mockResolvedValue({ kind: "final", message: "Reviewed" });
+    const { POST } = await import("../route");
+    const response = await POST(request({ message: "private request text", workspaceContext: { agentProfile: "code_review", operationMode: "deepops" } }), params);
+    expect(response.status).toBe(200);
+    expect(mocks.runDecisionLoop).toHaveBeenCalledWith(expect.objectContaining({ agentProfile: "code_review", operationMode: "deepops" }));
+    expect(mocks.createAudit).toHaveBeenCalledWith({ data: expect.objectContaining({ organizationId: "org-1", actorUserId: "user-1", subjectId: "conv_1", kind: "agent.profile_selected", detailJson: { agentProfile: "code_review", operationMode: "deepops" } }) });
+    expect(JSON.stringify(mocks.createAudit.mock.calls)).not.toContain("private request text");
   });
 
   it("requires a desktop session", async () => {
@@ -391,4 +409,25 @@ it("does not begin proposal persistence after cancellation during workspace memo
   expect(await response.text()).not.toContain('"result"');
   expect(mocks.createProposal).not.toHaveBeenCalled();
   expect(mocks.createTurn).not.toHaveBeenCalledWith(expect.objectContaining({ data: expect.objectContaining({ role: "assistant" }) }));
+});
+
+it("does not start inference after cancellation during profile audit persistence", async () => {
+  vi.clearAllMocks();
+  mocks.resolveRequestDesktopSession.mockResolvedValue(session);
+  mocks.findFirstConversation.mockResolvedValue({ id: "conv_1", organizationId: "org-1", userId: "user-1", title: null });
+  let entered!: () => void, finish!: () => void;
+  const started = new Promise<void>(resolve => { entered = resolve; });
+  const gate = new Promise<void>(resolve => { finish = resolve; });
+  mocks.createAudit.mockImplementationOnce(async () => { entered(); await gate; return { id: "audit-profile" }; });
+  const controller = new AbortController();
+  const input = new NextRequest("https://visionxixlabs.com/api/desktop/agent/conversations/conv_1/messages", {
+    method: "POST", signal: controller.signal, headers: { "content-type": "application/json", accept: "application/x-ndjson" },
+    body: JSON.stringify({ message: "Review", workspaceContext: { agentProfile: "code_review" } }),
+  });
+  const { POST } = await import("../route");
+  const response = await POST(input, params);
+  try { await started; controller.abort(); }
+  finally { finish(); }
+  expect(await response.text()).not.toContain('"result"');
+  expect(mocks.runDecisionLoop).not.toHaveBeenCalled(); expect(mocks.createProposal).not.toHaveBeenCalled();
 });

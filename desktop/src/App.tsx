@@ -137,15 +137,19 @@ function AuthenticatedWorkspace({ identity }: { identity: VerifiedDesktopIdentit
       <Sidebar activeView={activeView} onNavigate={navigate} />
       <main className="flex-1 flex flex-col min-w-0 min-h-0">
         <TopBar activeView={activeView} identity={identity} />
-        <WorkspaceViewBoundary key={activeView} onReturnToAgent={() => setActiveView("agent")}>
-          {activeView === "agent" && <AgentChatView identity={identity} onOpenSettings={(destination) => { setSettingsDestination(destination); setActiveView("settings"); }} />}
+        <div hidden={activeView !== "agent"} style={{ display: activeView === "agent" ? "flex" : "none" }} className="min-h-0 flex-1 flex-col">
+          <WorkspaceViewBoundary onReturnToAgent={() => setActiveView("agent")}>
+            <AgentChatView active={activeView === "agent"} identity={identity} onOpenSettings={(destination) => { setSettingsDestination(destination); setActiveView("settings"); }} />
+          </WorkspaceViewBoundary>
+        </div>
+        {activeView !== "agent" && <WorkspaceViewBoundary key={activeView} onReturnToAgent={() => setActiveView("agent")}>
           {activeView === "deployment-requests" && <DeploymentRequestsView />}
           {activeView === "airflow-automation" && <AirflowAutomationView />}
           {activeView === "repository-workspace" && <RepositoryWorkspaceView />}
           {activeView === "plugins-skills" && <PluginsSkillsView onOpenSettings={() => setActiveView("settings")} onOpenAirflow={() => setActiveView("airflow-automation")} />}
           {activeView === "docs" && <DocsView />}
           {activeView === "settings" && <SettingsView identity={identity} initialSection={settingsDestination} />}
-        </WorkspaceViewBoundary>
+        </WorkspaceViewBoundary>}
       </main>
     </div>
   );

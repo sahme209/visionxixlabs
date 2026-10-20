@@ -1,3 +1,4 @@
+import { AGENT_PROFILES, resolveAgentProfile, type AgentProfileId } from "../../../lib/axiom/agentRuntime/agentProfiles";
 import { AgentModelSelector } from "../components/AgentModelSelector";
 import { agentModelChoices, modelPreferenceKey, type AgentModelChoice } from "../lib/agentModelSelection";
 import { AgentRestartReceipts } from "../components/AgentRestartReceipts";
@@ -155,20 +156,20 @@ function describeEvidenceResult(action: Proposal): string {
   return "Verified by the service.";
 }
 
-export type AgentSettingsDestination = "models";
+export type AgentSettingsDestination = "models" | "agents";
 
-export function AgentChatView({ onOpenSettings, identity }: { onOpenSettings?: (destination: AgentSettingsDestination) => void; identity?: VerifiedDesktopIdentity }) {
+export function AgentChatView({ onOpenSettings, identity, active = true }: { onOpenSettings?: (destination: AgentSettingsDestination) => void; identity?: VerifiedDesktopIdentity; active?: boolean }) {
   const context = desktopClient.config;
   const workspace = identity?.organizationId;
   const [scope, setScope] = useState(() => ({ context, workspace, generation: 0 }));
   if (scope.context !== context || scope.workspace !== workspace) {
     setScope({ context, workspace, generation: scope.generation + 1 });
-    return <AgentChatSession key={scope.generation + 1} onOpenSettings={onOpenSettings} identity={identity} />;
+    return <AgentChatSession key={scope.generation + 1} onOpenSettings={onOpenSettings} identity={identity} active={active} />;
   }
-  return <AgentChatSession key={scope.generation} onOpenSettings={onOpenSettings} identity={identity} />;
+  return <AgentChatSession key={scope.generation} onOpenSettings={onOpenSettings} identity={identity} active={active} />;
 }
 
-function AgentChatSession({ onOpenSettings, identity }: { onOpenSettings?: (destination: AgentSettingsDestination) => void; identity?: VerifiedDesktopIdentity }) {
+function AgentChatSession({ onOpenSettings, identity, active }: { onOpenSettings?: (destination: AgentSettingsDestination) => void; identity?: VerifiedDesktopIdentity; active: boolean }) {
   const [conversationId, setConversationId] = useState<string | null>(null);
   const [conversations, setConversations] = useState<ConversationSummary[]>([]);
   const [turns, setTurns] = useState<ChatTurn[]>([]);
@@ -192,6 +193,7 @@ function AgentChatSession({ onOpenSettings, identity }: { onOpenSettings?: (dest
   const [sending, setSending] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [decidingId, setDecidingId] = useState<string | null>(null);
+  const [agentProfile, setAgentProfile] = useState<AgentProfileId>("general");
   const [composerMode, setComposerMode] = useState<"chat" | "code">("chat");
   const [operationMode, setOperationMode] = useState<"inspect" | "engineer" | "deepops">("engineer");
   const [savedContext] = useState(() => ({ repository: window.localStorage.getItem(ACTIVE_REPOSITORY_KEY) ?? "", environment: window.localStorage.getItem(ACTIVE_ENVIRONMENT_KEY) ?? "" }));
@@ -231,6 +233,21 @@ function AgentChatSession({ onOpenSettings, identity }: { onOpenSettings?: (dest
   const [startupAttempt, setStartupAttempt] = useState(0);
   const [modelAttempt, setModelAttempt] = useState(0);
   const [modelState, setModelState] = useState<"loading" | "ready" | "disabled" | "empty" | "unavailable">("loading");
+  const previousActive = useRef(active);
+  useEffect(() => {
+    const resumed = active && !previousActive.current;
+    previousActive.current = active;
+    if (!active) {
+      const current = messageAbort.current;
+      if (current) {
+        current.abort();
+        setSending(false); setStreamingDraft("");
+        setError("Request stopped. Completed work remains recorded; reload this conversation before trying again.");
+      }
+    } else if (resumed) {
+      setModelAttempt(attempt => attempt + 1);
+    }
+  }, [active]);
   const preferenceKey = identity && desktopClient.config ? modelPreferenceKey(desktopClient.config.apiBase, identity.organizationId) : null;
   const [modelNotice, setModelNotice] = useState<string | null>(null);
   const [modelError, setModelError] = useState<string | null>(null);
@@ -336,10 +353,11 @@ function AgentChatSession({ onOpenSettings, identity }: { onOpenSettings?: (dest
     return () => { cancelled = true; };
   }, [modelAttempt, preferenceKey]);
   useEffect(() => {
+    if (!active) return;
     const refresh = () => setModelAttempt(attempt => attempt + 1);
     window.addEventListener("focus", refresh);
     return () => window.removeEventListener("focus", refresh);
-  }, []);
+  }, [active]);
 
   useEffect(() => {
     let cancelled = false;
@@ -511,7 +529,7 @@ function AgentChatSession({ onOpenSettings, identity }: { onOpenSettings?: (dest
 
   async function send() {
     const instruction = input.trim();
-    if (modelState !== "ready" || !selectedModel || !instruction || !conversationId || activeConversation.current !== conversationId || loadingConversation || sending || (composerMode === "code" && (!repositoryFullName.includes("/") || !branch.trim() || !filePath.trim()))) return;
+    if (!active || modelState !== "ready" || !selectedModel || !instruction || !conversationId || activeConversation.current !== conversationId || loadingConversation || sending || (composerMode === "code" && (!repositoryFullName.includes("/") || !branch.trim() || !filePath.trim()))) return;
     const choice = modelOptions.find(option => option.key === selectedModel);
     if (!choice) return;
     const context = desktopClient.config, ownerConversation = conversationId, generation = conversationEpoch.current;
@@ -523,6 +541,7 @@ function AgentChatSession({ onOpenSettings, identity }: { onOpenSettings?: (dest
     setStreamingDraft("");
     const controller = new AbortController();
     messageAbort.current = controller;
+    const currentRequest = () => owned() && messageAbort.current === controller && !controller.signal.aborted;
     try {
       const result = await desktopClient.sendAgentMessage(conversationId, instruction, choice.provider, {
         ...(repositoryFullName.trim() ? { repositoryFullName: repositoryFullName.trim() } : {}),
@@ -531,8 +550,13 @@ function AgentChatSession({ onOpenSettings, identity }: { onOpenSettings?: (dest
         ...(composerMode === "code" && filePath.trim() ? { filePath: filePath.trim() } : {}),
         mode: composerMode,
         operationMode,
+        agentProfile,
       }, choice.preferredModel, { signal: controller.signal, onDraft: text => { if (owned() && !controller.signal.aborted) setStreamingDraft(text); } });
-      if (!owned()) return;
+      if (!owned() || messageAbort.current !== controller) return;
+      if (controller.signal.aborted) {
+        setError("Request stopped. Completed work remains recorded; reload this conversation before trying again.");
+        return;
+      }
       if (!result.ok) {
         setError(result.error);
         return;
@@ -541,7 +565,7 @@ function AgentChatSession({ onOpenSettings, identity }: { onOpenSettings?: (dest
       setPendingProposal(result.data.proposal && result.data.proposal.status === "proposed" ? result.data.proposal : null);
       setLatestUsage(result.data.usage);
       const refreshed = await desktopClient.getAgentConversation(conversationId);
-      if (!owned()) return;
+      if (!currentRequest()) return;
       if (refreshed.ok && refreshed.data.id === ownerConversation) {
         setEvidenceActions(refreshed.data.actions.filter((action) => action.riskLevel === "low"));
         setRestartActions(refreshed.data.actions.filter((action) => action.toolName === "trigger_aws_deploy"));
@@ -558,10 +582,12 @@ function AgentChatSession({ onOpenSettings, identity }: { onOpenSettings?: (dest
         return [updated, ...current.filter((conversation) => conversation.id !== conversationId)];
       });
     } catch {
-      if (owned()) setError("The Agent response could not be read. Reopen this conversation to inspect its saved state.");
+      if (currentRequest()) setError("The Agent response could not be read. Reopen this conversation to inspect its saved state.");
     } finally {
-      if (messageAbort.current === controller) messageAbort.current = null;
-      if (owned()) { setSending(false); setStreamingDraft(""); }
+      if (messageAbort.current === controller) {
+        messageAbort.current = null;
+        if (owned()) { setSending(false); setStreamingDraft(""); }
+      }
     }
   }
 
@@ -770,6 +796,18 @@ function AgentChatSession({ onOpenSettings, identity }: { onOpenSettings?: (dest
       <div className="border-t border-white/[0.06] px-8 py-5">
         <div className="max-w-3xl mx-auto">
           {enabledSkills.length > 0 && <div className="mb-3 flex items-center gap-2 overflow-x-auto pb-1"><span className="shrink-0 text-[10px] uppercase tracking-[0.12em] text-zinc-600">Skills</span>{enabledSkills.map((skill) => <button key={skill.id} type="button" disabled={sending || Boolean(pendingProposal)} onClick={() => setInput((current) => current || `/${skill.id} `)} className="shrink-0 rounded-full border border-violet-300/[0.12] bg-violet-300/[0.04] px-2.5 py-1 text-[10px] text-violet-200 hover:bg-violet-300/[0.08] disabled:opacity-40">/{skill.id}</button>)}</div>}
+          <div className="mb-3 flex flex-wrap items-center gap-3">
+            <label className="text-xs text-zinc-400">Agent
+              <select aria-label="Specialized Agent" value={agentProfile} disabled={sending || loadingConversation || Boolean(pendingProposal)} onChange={event => {
+                const profile = resolveAgentProfile(event.target.value);
+                if (profile) setAgentProfile(profile.id);
+              }} className="ml-2 rounded-md border border-white/10 bg-[#151519] px-2 py-1.5 text-xs text-zinc-200 disabled:opacity-40">
+                {AGENT_PROFILES.map(profile => <option key={profile.id} value={profile.id}>{profile.label}</option>)}
+              </select>
+            </label>
+            <p role="status" className="text-[11px] text-zinc-500">{resolveAgentProfile(agentProfile)?.description} Workspace tool policy and approvals still apply.</p>
+            {onOpenSettings && <button type="button" onClick={() => onOpenSettings("agents")} className="text-xs text-zinc-400 underline underline-offset-2">Agent permissions</button>}
+          </div>
           <div className="mb-3 flex items-center gap-1" role="group" aria-label="Agent controls">
             {OPERATION_MODES.map((mode) => (
               <button key={mode.id} type="button" title={mode.description} aria-pressed={operationMode === mode.id} onClick={() => setOperationMode(mode.id)} className={`rounded-md px-3 py-1.5 text-xs ${operationMode === mode.id ? "bg-violet-400/15 text-violet-100 ring-1 ring-violet-300/20" : "text-zinc-500 hover:text-zinc-300"}`}>{mode.label}</button>

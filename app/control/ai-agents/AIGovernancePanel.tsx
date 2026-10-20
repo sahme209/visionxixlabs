@@ -1,5 +1,6 @@
 "use client";
 
+import { AGENT_PROFILES, profileToolNames } from "@/lib/axiom/agentRuntime/agentProfiles";
 import { useCallback, useEffect, useState } from "react";
 
 type Tool = { name: string; description: string; riskLevel: "low" | "medium" | "high" };
@@ -95,6 +96,17 @@ export function AIGovernancePanel() {
       <section className="border-t border-white/[0.08] pt-7">
         <h2 className="text-xl font-medium tracking-[-0.025em]">Agent identity &amp; tool permissions</h2>
         <p className="mt-2 max-w-2xl text-sm leading-6 text-zinc-500">The model can see and request only selected tools. Write tools still require backend approval regardless of this allowlist.</p>
+        <section aria-label="Effective specialized Agent permissions" className="mt-5 space-y-2">
+          <p className="text-xs text-zinc-500">Saved policy below is the maximum available scope; operation modes, current authorization and approvals can restrict it further. Unsaved checkbox edits do not change these permissions.</p>
+          {AGENT_PROFILES.map(profile => {
+            const tools = identity.enabled ? profileToolNames(profile, identity.allowedTools) : [];
+            return <details key={profile.id} className="rounded-lg border border-white/[0.08] px-3 py-2 text-xs text-zinc-400">
+              <summary className="cursor-pointer text-zinc-200"><span>{profile.label}</span> · {tools.length} tools in saved policy</summary>
+              <p className="mt-2">{profile.description}</p>
+              <div className="mt-2 flex flex-wrap gap-2">{tools.length ? tools.map(tool => <code key={tool}>{tool}</code>) : <span>No tools currently enabled.</span>}</div>
+            </details>;
+          })}
+        </section>
         <div className="mt-5 flex flex-wrap gap-3">
           {data.tools.map((tool) => (
             <label key={tool.name} title={tool.description} className="flex items-center gap-2 rounded-lg border border-white/[0.08] bg-[#191919] px-3 py-2 text-xs text-zinc-300">

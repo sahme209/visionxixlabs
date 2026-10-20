@@ -523,4 +523,64 @@ it("does not start a tool when cancellation arrives during its authority reread"
   const operation = runDecisionLoop({ organizationId: "o", userId: "actor", correlationId: "c", transcript: [], executeReadOnlyTool: tool, isProdEnvironmentTarget: noopProdCheck, streaming: { abortSignal: abort.signal, onDraft: () => undefined } });
   await started; abort.abort(); finish({ enabled: true, allowedTools: ["list_environments"] });
   await expect(operation).rejects.toMatchObject({ name: "AbortError" }); expect(tool).not.toHaveBeenCalled();
+
+});
+
+
+describe("specialized Agent permission ceilings", () => {
+  beforeEach(() => {
+    vi.resetAllMocks();
+    mocks.readWorkspaceAgentIdentity.mockResolvedValue({ enabled: true, allowedTools: ["read_github_file", "commit_github_file", "trigger_aws_deploy"] });
+  });
+  it.each([
+    ["code_review", "commit_github_file"], ["coding", "trigger_aws_deploy"],
+    ["debugging", "trigger_aws_deploy"], ["terraform", "configure_deployment_target"],
+    ["cloud_deployment", "commit_github_file"],
+  ] as const)("enforces %s tool scope even in DeepOps mode against %s", async (agentProfile, toolName) => {
+    mocks.readWorkspaceAgentIdentity.mockResolvedValue({ enabled: true, allowedTools: [toolName] });
+    mocks.resolveGovernedAiCall.mockResolvedValue(governed(async () => ({ action: "call_tool", message: "Do it", toolName, args: {} })));
+    const executeReadOnlyTool = vi.fn();
+    const outcome = await runDecisionLoop({ organizationId: "o", userId: "actor", correlationId: "c", transcript: [],
+      agentProfile, operationMode: "deepops", executeReadOnlyTool, isProdEnvironmentTarget: noopProdCheck });
+    expect(outcome).toMatchObject({ kind: "error", error: "agent_tool_not_allowed" });
+    expect(executeReadOnlyTool).not.toHaveBeenCalled();
+  });
+  it("lets the coding profile propose an approved file edit without executing it", async () => {
+    mocks.resolveGovernedAiCall.mockResolvedValue(governed(async (prompt) => {
+      expect(prompt).toContain("Coding Agent"); expect(prompt).not.toContain('"trigger_aws_deploy"');
+      return { action: "call_tool", message: "Review the edit", toolName: "commit_github_file", args: { path: "src/app.ts" } };
+    }));
+    const executeReadOnlyTool = vi.fn();
+    const result = await runDecisionLoop({ organizationId: "o", userId: "actor", correlationId: "c", transcript: [],
+      agentProfile: "coding", operationMode: "engineer", executeReadOnlyTool, isProdEnvironmentTarget: noopProdCheck });
+    expect(result).toMatchObject({ kind: "proposal", toolName: "commit_github_file" }); expect(executeReadOnlyTool).not.toHaveBeenCalled();
+  });
+  it("does not expand the current administrator tool allowlist for a selected profile", async () => {
+    mocks.readWorkspaceAgentIdentity.mockResolvedValue({ enabled: true, allowedTools: ["read_github_file"] });
+    mocks.resolveGovernedAiCall.mockResolvedValue(governed(async () => ({ action: "call_tool", message: "Change it", toolName: "commit_github_file", args: {} })));
+    expect(await runDecisionLoop({ organizationId: "o", userId: "actor", correlationId: "c", transcript: [], agentProfile: "coding",
+      executeReadOnlyTool: noopReadOnly, isProdEnvironmentTarget: noopProdCheck })).toMatchObject({ kind: "error", error: "agent_tool_not_allowed" });
+  });
+  it("refuses an unknown profile before opening the governed AI boundary", async () => {
+    expect(await runDecisionLoop({ organizationId: "o", userId: "actor", correlationId: "c", transcript: [], agentProfile: "__proto__" as never,
+      executeReadOnlyTool: noopReadOnly, isProdEnvironmentTarget: noopProdCheck })).toMatchObject({ kind: "error", error: "agent_tool_not_allowed" });
+    expect(mocks.resolveGovernedAiCall).not.toHaveBeenCalled();
+  });
+
+  it("refuses initial grounding outside the profile before any tool executes", async () => {
+    mocks.readWorkspaceAgentIdentity.mockResolvedValue({ enabled: true, allowedTools: ["list_environments", "read_github_file"] });
+    const extract = vi.fn(async () => ({ action: "respond", message: "Done" }));
+    mocks.resolveGovernedAiCall.mockResolvedValue(governed(extract));
+    const executeReadOnlyTool = vi.fn();
+    const result = await runDecisionLoop({ organizationId: "o", userId: "actor", correlationId: "c", transcript: [], agentProfile: "code_review",
+      initialToolCall: { toolName: "list_environments", args: {}, message: "Grounding" }, executeReadOnlyTool, isProdEnvironmentTarget: noopProdCheck });
+    expect(result).toMatchObject({ kind: "error", error: "decision_malformed" });
+    expect(executeReadOnlyTool).not.toHaveBeenCalled(); expect(extract).not.toHaveBeenCalled();
+  });
+  it("retains Engineer mode's operational-write restriction for the cloud profile", async () => {
+    mocks.resolveGovernedAiCall.mockResolvedValue(governed(async () => ({ action: "call_tool", message: "Restart", toolName: "trigger_aws_deploy", args: {} })));
+    expect(await runDecisionLoop({ organizationId: "o", userId: "actor", correlationId: "c", transcript: [], agentProfile: "cloud_deployment", operationMode: "engineer",
+      executeReadOnlyTool: noopReadOnly, isProdEnvironmentTarget: noopProdCheck })).toMatchObject({ kind: "final", message: expect.stringContaining("No operational action was proposed") });
+  });
+
 });

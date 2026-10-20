@@ -1,3 +1,4 @@
+import { AGENT_PROFILES } from "../../../lib/axiom/agentRuntime/agentProfiles";
 import { DeploymentWorkflowEvidence } from "../components/DeploymentWorkflowEvidence";
 import { AwsReadOnlyEnrollment } from "../components/AwsReadOnlyEnrollment";
 import { AzureReadOnlyEnrollment } from "../components/AzureReadOnlyEnrollment";
@@ -80,7 +81,7 @@ const sections: Array<{ id: Section; label: string; icon: typeof CircleUserRound
   { id: "integrations", label: "Integrations", icon: Link2 },
 ];
 
-export function SettingsView({ identity, initialSection }: { identity: VerifiedDesktopIdentity; initialSection?: "models" }) {
+export function SettingsView({ identity, initialSection }: { identity: VerifiedDesktopIdentity; initialSection?: "models" | "agents" }) {
   const [active, setActive] = useState<Section>(initialSection ?? "general");
   const [prefs, setPrefs] = useState<DesktopPreferences | null>(null);
   const [saved, setSaved] = useState(false);
@@ -315,6 +316,11 @@ function AgentsSection({ prefs, onSave }: PreferenceSectionProps) {
       <LockedRow title="Confirm consequential actions" detail="Merge, release, workflow dispatch, environment approval, rollback, and closure require policy checks." />
       <LockedRow title="External-file protection" detail="The customer workspace cannot write outside its approved application scope." />
     </Group>
+    <Group label="Specialized Agent profiles">
+      {AGENT_PROFILES.map(profile => <div key={profile.id} className="border-b border-white/[0.05] px-4 py-3 last:border-0"><p className="text-xs text-zinc-200">{profile.label}</p><p className="mt-1 text-xs text-zinc-500">{profile.description}</p></div>)}
+    </Group>
+    <p className="mb-3 text-xs text-zinc-500">Profiles narrow the current workspace tool policy. They do not grant credentials, bypass approval or start independent background workers.</p>
+    <WebButton href="/control/ai-agents" label="Manage workspace tool permissions" standalone />
     <Notice title="Execution controls are organization policy" detail="Run mode, allowlists, connector permissions, and approval thresholds are managed by the service. The desktop app does not offer local switches that could weaken them." />
   </div>;
 }

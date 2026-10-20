@@ -2369,6 +2369,55 @@ Production transport origin, credentials, timeouts, limits and approvals remain
 unchanged. This source follow-up still requires its own native/full/browser CI.
 
 
+### Development batching and specialized Agent milestone
+
+Owner refinement2026-10-20: finish remaining functionality in meaningful local
+batches; use targeted development tests/security reviews. Avoid repeated pushes,
+full CI/browser/cross-platform runs while Actions allowance is near90%. Required
+merge checks and all approval gates remain mandatory. Track implemented source
+separately from actual installed/provider/cloud/payment acceptance. PR187/191/192
+retain their browser failures and stay unmerged; do not retry unchanged heads.
+
+Local continuation branch combines191 editor protection and192 cancellation
+compatibility without rewriting either PR. Next bounded feature: specialized
+coding/debugging/code-review/Terraform/cloud profiles in the existing composer
+and decision loop. Shared pure profiles narrow the current admin tool allowlist;
+server validation precedes inference, and every tool/proposal keeps existing
+mode, live-policy, tenant, billing and approval checks. Review is read-only;
+Terraform covers source engineering, not unavailable plan/apply execution. Cloud
+uses existing tools only. Preserve general/legacy behavior and existing audit
+records, add non-sensitive selection audit metadata. No schema change or paid
+call. Acceptance: role/mode/admin-policy intersection, invalid profile rejection,
+actual composer-to-client dispatch and streaming compatibility. Hosted/native
+customer acceptance and per-profile enterprise administration remain separate.
+
+Implementation checkpoint (local branch; not merged or deployed):
+
+| Capability | Source implementation | Development evidence | Real-world acceptance |
+| --- | --- | --- | --- |
+| Specialized Agent selection | Implemented in composer/client/HTTP/decision loop | Profile/admin/mode intersection; invalid input; audited selection; connected streaming dispatch | Hosted inference and installed Mac remain unverified |
+| Governance visibility | Implemented using saved workspace policy | Read-only effective scope, disabled Agent, fixed authenticated Control link | Actual admin/customer browser session remains unverified |
+| Navigation continuity | Implemented for in-app views | Actual App draft/profile/environment preservation; hidden abort; late success/rejection/history fences | Installed Mac and account-switch journey remains separate |
+| CI minute conservation | Prepared repository trigger change | Existing jobs/commands/permissions/concurrency retained; PR/main coverage retained and shared profile coverage added | Not active on main until required merge checks pass |
+
+The local milestone passes299 targeted tests across16 suites. The typed route
+capture correction and demo update subsequently pass59 route/demo checks; scoped
+TypeScript passes. Lint has zero errors and four pre-existing unused-parameter
+warnings. Independent security/lifecycle review found no remaining blocker after
+two red/green stale-callback regressions. The actual App draft-loss regression
+also failed against the original unmounting App and passes with retained scoped
+state. Authentication re-verification still clears workspace state; no claim of
+persistence across sign-out, credential replacement or browser-focus verification.
+
+Heavy Test/Desktop CI runs are prepared for PR and main merge checkpoints only,
+removing duplicate feature-push runs. Required job names/steps stay unchanged;
+no branch protections, production settings or browser acceptance rules change.
+Do not push or open a PR merely to record this milestone: batch further related
+implementation first, then run all applicable merge gates once. Final product
+acceptance remains a separate phase covering installed Mac, real coding/provider
+workflows, GitHub/cloud/Airflow, approvals/rollback, billing, security and release.
+No new paid calls, native installer publication or production changes authorized.
+
 ### Desktop cancellation API compatibility
 
 Research: desktop avoids AbortSignal.any for older WKWebView, but credential
