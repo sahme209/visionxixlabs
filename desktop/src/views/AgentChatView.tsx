@@ -3,11 +3,11 @@ import { AGENT_PROFILES, resolveAgentProfile, type AgentProfileId } from "../../
 import { AgentModelSelector } from "../components/AgentModelSelector";
 import { agentModelChoices, modelPreferenceKey, type AgentModelChoice } from "../lib/agentModelSelection";
 import { AgentRestartReceipts } from "../components/AgentRestartReceipts";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Badge, riskToneFor } from "../components/Primitives";
 import { desktopClient, type AgentSkillCatalogItem, type VerifiedDesktopIdentity } from "../lib/desktopClient";
 import { normalizeAiProviderStatus } from "../lib/aiProviderStatus";
-import { createLineDiff, type DiffLine } from "../lib/lineDiff";
+import { FileDiff } from "../components/FileDiff";
 
 /**
  * The flagship surface: a plain-English request becomes a risk-checked,
@@ -1091,41 +1091,6 @@ export function ProposalCard({ proposal, deciding, onApprove, onReject }: { prop
           {deciding ? "Working…" : "Approve & run"}
         </button>
       </div>
-    </div>
-  );
-}
-
-function FileDiff({ before, after }: { before: string; after: string }) {
-  const lines = useMemo(() => createLineDiff(before, after), [before, after]);
-  const additions = lines.filter((line) => line.kind === "add").length;
-  const removals = lines.filter((line) => line.kind === "remove").length;
-  if (additions === 0 && removals === 0) {
-    return <p className="rounded-lg border border-amber-400/20 bg-amber-400/[0.06] px-3 py-2 text-xs text-amber-200">No content changes detected. Reject this proposal unless an unchanged commit is intentional.</p>;
-  }
-  return (
-    <div>
-      <p className="mb-2 text-[11px]"><span className="text-emerald-400">+{additions}</span><span className="ml-2 text-rose-400">−{removals}</span></p>
-      <div tabIndex={0} aria-label="Proposed file diff" className="max-h-80 overflow-auto rounded-lg border border-white/[0.06] bg-black/30 font-mono text-[11px] leading-5">
-        {lines.map((line, index) => <DiffRow key={`${index}:${line.kind}:${line.oldLine ?? ""}:${line.newLine ?? ""}`} line={line} />)}
-      </div>
-    </div>
-  );
-}
-
-function DiffRow({ line }: { line: DiffLine }) {
-  if (line.kind === "omitted") return <div className="px-3 py-1 text-center text-zinc-600">{line.text}</div>;
-  const marker = line.kind === "add" ? "+" : line.kind === "remove" ? "−" : " ";
-  const tone = line.kind === "add"
-    ? "bg-emerald-400/[0.08] text-emerald-100"
-    : line.kind === "remove"
-      ? "bg-rose-400/[0.08] text-rose-100"
-      : "text-zinc-400";
-  return (
-    <div className={`grid min-w-max grid-cols-[2.5rem_2.5rem_1.25rem_minmax(0,1fr)] ${tone}`}>
-      <span className="select-none border-r border-white/[0.04] px-2 text-right text-zinc-600">{line.oldLine ?? ""}</span>
-      <span className="select-none border-r border-white/[0.04] px-2 text-right text-zinc-600">{line.newLine ?? ""}</span>
-      <span className="select-none text-center">{marker}</span>
-      <span className="whitespace-pre pr-3">{line.text || " "}</span>
     </div>
   );
 }

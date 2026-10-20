@@ -121,8 +121,9 @@ export default function App() {
 function AuthenticatedWorkspace({ identity }: { identity: VerifiedDesktopIdentity }) {
   const [activeView, setActiveView] = useState<CustomerView>("agent");
   const [booted, setBooted] = useState(false);
+  const [repositoryVisited, setRepositoryVisited] = useState(false);
   const [settingsDestination, setSettingsDestination] = useState<AgentSettingsDestination | undefined>();
-  const navigate = useCallback((view: CustomerView) => { setSettingsDestination(undefined); setActiveView(view); }, []);
+  const navigate = useCallback((view: CustomerView) => { if (view === "repository-workspace") setRepositoryVisited(true); setSettingsDestination(undefined); setActiveView(view); }, []);
   useNativeMenuActions(navigate);
 
   useEffect(() => {
@@ -142,10 +143,14 @@ function AuthenticatedWorkspace({ identity }: { identity: VerifiedDesktopIdentit
             <AgentChatView active={activeView === "agent"} identity={identity} onOpenSettings={(destination) => { setSettingsDestination(destination); setActiveView("settings"); }} />
           </WorkspaceViewBoundary>
         </div>
-        {activeView !== "agent" && <WorkspaceViewBoundary key={activeView} onReturnToAgent={() => setActiveView("agent")}>
+        {repositoryVisited && <div hidden={activeView !== "repository-workspace"} style={{ display: activeView === "repository-workspace" ? "flex" : "none" }} className="min-h-0 flex-1 flex-col">
+          <WorkspaceViewBoundary onReturnToAgent={() => setActiveView("agent")}>
+            <RepositoryWorkspaceView active={activeView === "repository-workspace"} />
+          </WorkspaceViewBoundary>
+        </div>}
+        {activeView !== "agent" && activeView !== "repository-workspace" && <WorkspaceViewBoundary key={activeView} onReturnToAgent={() => setActiveView("agent")}>
           {activeView === "deployment-requests" && <DeploymentRequestsView />}
           {activeView === "airflow-automation" && <AirflowAutomationView />}
-          {activeView === "repository-workspace" && <RepositoryWorkspaceView />}
           {activeView === "plugins-skills" && <PluginsSkillsView onOpenSettings={() => setActiveView("settings")} onOpenAirflow={() => setActiveView("airflow-automation")} />}
           {activeView === "docs" && <DocsView />}
           {activeView === "settings" && <SettingsView identity={identity} initialSection={settingsDestination} />}

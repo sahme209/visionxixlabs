@@ -2,7 +2,8 @@
 import { createElement } from "react";
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import { act, cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
-const m = vi.hoisted(() => ({ client: { config: {} as { sessionToken?: string }, hasAuth: vi.fn(), verifyCurrentCredential: vi.fn(), listAgentConversations: vi.fn(), getAgentConversation: vi.fn(), aiProviderStatus: vi.fn(), listAgentSkills: vi.fn(), listGithubRepositories: vi.fn(), listGithubBranches: vi.fn(), listGithubFiles: vi.fn(), listEnvironments: vi.fn(), sendAgentMessage: vi.fn(), createAgentConversation: vi.fn(), approveAgentAction: vi.fn(), rejectAgentAction: vi.fn() } }));
+const m = vi.hoisted(() => ({ invoke: vi.fn(), client: { subscribeContext: () => () => {}, getContextRevision: () => 0, config: {} as { sessionToken?: string }, hasAuth: vi.fn(), verifyCurrentCredential: vi.fn(), listAgentConversations: vi.fn(), getAgentConversation: vi.fn(), aiProviderStatus: vi.fn(), listAgentSkills: vi.fn(), listGithubRepositories: vi.fn(), listGithubBranches: vi.fn(), listGithubFiles: vi.fn(), listEnvironments: vi.fn(), sendAgentMessage: vi.fn(), createAgentConversation: vi.fn(), approveAgentAction: vi.fn(), rejectAgentAction: vi.fn() } }));
+vi.mock("@tauri-apps/api/core", () => ({ invoke: m.invoke }));
 vi.mock("../../../desktop/src/lib/desktopClient", () => ({ desktopClient: m.client }));
 vi.mock("../../../desktop/src/lib/useNativeMenuActions", () => ({ useNativeMenuActions: vi.fn() }));
 vi.mock("../../../desktop/src/lib/preferences", () => ({ readDesktopPreferences: async () => null, writeDesktopPreferences: vi.fn() }));
@@ -263,4 +264,28 @@ it("opens recorded repository evidence inside the Agent without another service 
   expect(m.client.getAgentConversation).toHaveBeenCalledTimes(reads);
   expect(m.client.sendAgentMessage).not.toHaveBeenCalled();
   expect(m.client.approveAgentAction).not.toHaveBeenCalled();
+});
+
+it("retains an unsaved local file across actual App navigation without another file read", async () => {
+  m.client.hasAuth.mockReturnValue(true);
+  m.client.verifyCurrentCredential.mockResolvedValue({ ok: true, data: { kind: "desktop_session", organizationId: "fixture-workspace", role: "owner", capabilities: [], access: { allowed: true, code: "active", title: "Access active", message: "Fixture", billingStatus: "no_plan", planTier: "trial" } } });
+  m.invoke.mockImplementation(async (command: string) => {
+    if (command === "default_repos_directory") return "/owned";
+    if (command === "list_local_repositories") return ["/owned/A"];
+    if (command === "repository_status") return {rootPath: "/owned/A", repositoryFullName: "fixture/repository", branch: "feature", ahead: 0, behind: 0, changedFiles: []};
+    if (command === "list_repository_files") return ["main.ts"];
+    if (command === "detect_repository_checks") return [];
+    if (command === "read_repository_file") return "saved local content";
+    throw new Error(`Unexpected command ${command}`);
+  });
+  render(createElement(App));
+  await screen.findByRole("button", {name: "Agent permissions"});
+  fireEvent.click(screen.getByRole("button", {name: "GitHub repositories"}));
+  fireEvent.click(await screen.findByRole("button", {name: "main.ts"}));
+  fireEvent.change(await screen.findByRole("textbox", {name: "Editing main.ts"}), {target: {value: "unsaved local draft"}});
+  fireEvent.click(screen.getByRole("button", {name: "Agent"}));
+  fireEvent.click(screen.getByRole("button", {name: "GitHub repositories"}));
+  expect((await screen.findByRole("textbox", {name: "Editing main.ts"}) as HTMLTextAreaElement).value).toBe("unsaved local draft");
+  expect(m.invoke.mock.calls.filter(([command]) => command === "read_repository_file")).toHaveLength(1);
+  expect(m.invoke.mock.calls.filter(([command]) => command === "write_repository_file")).toHaveLength(0);
 });

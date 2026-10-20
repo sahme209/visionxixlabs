@@ -1,3 +1,6 @@
+import { FileDiff } from "../components/FileDiff";
+import { editorMatches } from "../lib/editorSearch";
+import { newEditorHistory, editHistory, moveHistory } from "../lib/editorHistory";
 import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore, type KeyboardEvent } from "react";
 import { invoke } from "@tauri-apps/api/core";
 import { ExternalLink } from "../components/Primitives";
@@ -57,12 +60,12 @@ function isProjectMetadata(path: string): boolean {
   return path.endsWith(".pbxproj") || path.includes(".xcodeproj/") || path.includes(".xcworkspace/");
 }
 
-export function RepositoryWorkspaceView() {
+export function RepositoryWorkspaceView({ active = true }: { active?: boolean }) {
   const revision = useSyncExternalStore(desktopClient.subscribeContext, desktopClient.getContextRevision, desktopClient.getContextRevision);
-  return <RepositoryWorkspaceSession key={revision} revision={revision} />;
+  return <RepositoryWorkspaceSession key={revision} revision={revision} active={active} />;
 }
 
-function RepositoryWorkspaceSession({ revision }: { revision: number }) {
+function RepositoryWorkspaceSession({ revision, active }: { revision: number; active: boolean }) {
   const [parentPath, setParentPath] = useState("");
   const [repositories, setRepositories] = useState<string[]>([]);
   const [selectedRepository, setSelectedRepositoryState] = useState<string | null>(null);
@@ -72,6 +75,16 @@ function RepositoryWorkspaceSession({ revision }: { revision: number }) {
   const [showAllFiles, setShowAllFiles] = useState(false);
   const [selectedFile, setSelectedFile] = useState<string | null>(null);
   const [content, setContent] = useState("");
+  const history = useRef(newEditorHistory(""));
+  const editorRef = useRef<HTMLTextAreaElement>(null);
+  const searchRef = useRef<HTMLInputElement>(null);
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [reviewOpen, setReviewOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [matchIndex, setMatchIndex] = useState(-1);
+  const matches = useMemo(() => editorMatches(content, searchQuery), [content, searchQuery]);
+  useEffect(() => { setMatchIndex(-1); }, [content, searchQuery]);
+  useEffect(() => { setSearchQuery(""); setSearchOpen(false); setReviewOpen(false); }, [selectedFile]);
   const [savedContent, setSavedContent] = useState("");
   const [busy, setBusy] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -115,7 +128,7 @@ function RepositoryWorkspaceSession({ revision }: { revision: number }) {
     const repository = typeof next === "function" ? next(owner.current.repository) : next;
     if (repository === owner.current.repository) return;
     owner.current = { repository, generation: owner.current.generation + 1 };
-    fileRequest.current++; operationRequest.current++; activeBusy.current = null; loadedFile.current = null;
+    fileRequest.current++; operationRequest.current++; activeBusy.current = null; loadedFile.current = null; history.current = newEditorHistory("");
     setSelectedRepositoryState(repository); setStatus(null); setFiles([]); setChecks([]);
     setSelectedFile(null); setContent(""); setSavedContent(""); setBusy(null);
     setError(null); setNotice(null); setPrUrl(null); setVerificationResult(null); setConfirmationState(null);
@@ -128,7 +141,15 @@ function RepositoryWorkspaceSession({ revision }: { revision: number }) {
 
   function editContent(next: string) {
     if (!owns(owner.current) || !loadedFile.current || loadedFile.current.repository !== owner.current.repository) return;
+    history.current = editHistory(history.current, next);
     loadedFile.current.content = next; setContent(next);
+  }
+
+  function travelHistory(direction: "undo" | "redo") {
+    const file = loadedFile.current;
+    if (activeBusy.current || !owns(owner.current) || !file || file.repository !== owner.current.repository) return;
+    history.current = moveHistory(history.current, direction);
+    file.content = history.current.present; setContent(history.current.present);
   }
 
   const refreshRepository = useCallback(async (repositoryPath: string) => {
@@ -213,13 +234,13 @@ function RepositoryWorkspaceSession({ revision }: { revision: number }) {
   }, [remoteRepositories, status?.repositoryFullName]);
 
   useEffect(() => {
-    if (!confirmation) return;
+    if (!confirmation || !active) return;
     const dismiss = (event: globalThis.KeyboardEvent) => {
       if (event.key === "Escape") setConfirmationState(null);
     };
     window.addEventListener("keydown", dismiss);
     return () => window.removeEventListener("keydown", dismiss);
-  }, [confirmation]);
+  }, [active, confirmation]);
 
   async function run(label: string, operation: (current: () => boolean) => Promise<void>) {
     const captured = owner.current;
@@ -235,10 +256,11 @@ function RepositoryWorkspaceSession({ revision }: { revision: number }) {
     const repository = owner.current.repository;
     if (!repository) return;
     const request = ++fileRequest.current;
-    loadedFile.current = null; setSelectedFile(null); setContent(""); setSavedContent("");
+    loadedFile.current = null; history.current = newEditorHistory(""); setSelectedFile(null); setContent(""); setSavedContent("");
     await run("open", async current => {
       const next = await invoke<string>("read_repository_file", { repositoryPath: repository, relativePath: path });
       if (!current() || request !== fileRequest.current) return;
+      history.current = newEditorHistory(next);
       loadedFile.current = { repository, path, content: next, saved: next };
       setSelectedFile(path); setContent(next); setSavedContent(next); setCommitMessage("");
     });
@@ -408,7 +430,7 @@ function RepositoryWorkspaceSession({ revision }: { revision: number }) {
     if (!selectedRepository || selectedRepository !== owner.current.repository) return;
     setConfirmation({
       title: `Run ${check.label}?`,
-      description: `${check.command} will run inside this repository with credentials removed, a 5 minute timeout, and a 1 MB output limit. Repository scripts are code; run only repositories you trust.`,
+      description: `${check.command} will run inside this repository with a minimal process environment. Scripts are not sandboxed: they can access files and network resources available to your user, including stored credentials. Native timeout/output limits do not establish process-tree isolation. Run only repositories you trust.`,
       confirmLabel: "Run check",
       onConfirm: async () => {
         await run(`verify:${check.id}`, async current => {
@@ -424,7 +446,32 @@ function RepositoryWorkspaceSession({ revision }: { revision: number }) {
     });
   }
 
+  function openSearch() {
+    setSearchOpen(true);
+    requestAnimationFrame(() => { searchRef.current?.focus(); searchRef.current?.select(); });
+  }
+
+  function navigateMatch(direction: 1 | -1) {
+    if (!matches.offsets.length || !editorRef.current) return;
+    const index = matchIndex < 0 ? (direction === 1 ? 0 : matches.offsets.length - 1)
+      : (matchIndex + direction + matches.offsets.length) % matches.offsets.length;
+    setMatchIndex(index);
+    const offset = matches.offsets[index];
+    editorRef.current.focus(); editorRef.current.setSelectionRange(offset, offset + searchQuery.length);
+  }
+
   function editorKeyDown(event: KeyboardEvent<HTMLTextAreaElement>) {
+    if (event.nativeEvent.isComposing || event.nativeEvent.keyCode === 229) return;
+    if ((event.metaKey || event.ctrlKey) && !event.altKey && event.key.toLowerCase() === "f") {
+      event.preventDefault(); openSearch(); return;
+    }
+    if (event.key === "Escape" && searchOpen) { event.preventDefault(); setSearchOpen(false); return; }
+    if ((event.metaKey || event.ctrlKey) && !event.altKey && event.key.toLowerCase() === "z") {
+      event.preventDefault(); travelHistory(event.shiftKey ? "redo" : "undo"); return;
+    }
+    if (event.ctrlKey && !event.metaKey && !event.altKey && event.key.toLowerCase() === "y") {
+      event.preventDefault(); travelHistory("redo"); return;
+    }
     if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "s") { event.preventDefault(); void saveFile(); return; }
     if (event.key === "Tab") {
       event.preventDefault();
@@ -504,10 +551,29 @@ function RepositoryWorkspaceSession({ revision }: { revision: number }) {
         {selectedFile ? <>
           <div className="flex items-center gap-2 border-b border-white/[0.06] px-3 py-2">
             <span className="mr-auto truncate font-mono text-[11px] text-zinc-400">{selectedFile}{content !== savedContent ? " · unsaved" : ""}</span>
+            <button type="button" aria-label="Review local changes" aria-expanded={reviewOpen} onClick={() => setReviewOpen(value => !value)} className="btn-secondary">Review changes</button>
+            <button type="button" aria-label="Find in file" onClick={openSearch} className="btn-secondary">Find</button>
+            <button type="button" aria-label="Undo edit" disabled={Boolean(busy) || !history.current.past.length} onClick={() => travelHistory("undo")} className="btn-secondary disabled:opacity-40">Undo</button>
+            <button type="button" aria-label="Redo edit" disabled={Boolean(busy) || !history.current.future.length} onClick={() => travelHistory("redo")} className="btn-secondary disabled:opacity-40">Redo</button>
             <button type="button" disabled={Boolean(busy) || content === savedContent} onClick={() => void saveFile()} className="btn-secondary disabled:opacity-40">Save ⌘S</button>
           </div>
+          {reviewOpen && <section aria-label="Review unsaved file changes" className="max-h-96 shrink-0 overflow-auto border-b border-white/10 p-3">
+            <p className="mb-2 text-xs text-zinc-400">Draft compared with the last loaded or saved content. This does not save, stage, commit or approve changes.</p>
+            <FileDiff before={savedContent} after={content} label="Local unsaved file diff" unchangedMessage="No unsaved content changes." />
+          </section>}
+          {searchOpen && <div role="search" aria-label="Search current file" className="flex flex-wrap items-center gap-2 border-b border-white/10 p-2 text-xs">
+            <input ref={searchRef} type="search" aria-label="Find literal text" placeholder="Case-sensitive literal text" maxLength={256} value={searchQuery} onChange={event => setSearchQuery(event.target.value)} onKeyDown={event => {
+              if (event.nativeEvent.isComposing || event.nativeEvent.keyCode === 229) return;
+              if (event.key === "Enter") { event.preventDefault(); navigateMatch(event.shiftKey ? -1 : 1); }
+              if (event.key === "Escape") { setSearchOpen(false); editorRef.current?.focus(); }
+            }} className="rounded border border-white/10 bg-black/20 px-2 py-1" />
+            <span role="status">{!searchQuery ? "Enter text to find" : !matches.offsets.length ? "No matches" : `${matchIndex < 0 ? 0 : matchIndex + 1} of ${matches.offsets.length}${matches.limited ? "+ (display limit)" : ""}`}</span>
+            <button type="button" aria-label="Previous match" disabled={!matches.offsets.length} onClick={() => navigateMatch(-1)} className="btn-secondary disabled:opacity-40">Previous</button>
+            <button type="button" aria-label="Next match" disabled={!matches.offsets.length} onClick={() => navigateMatch(1)} className="btn-secondary disabled:opacity-40">Next</button>
+            <button type="button" aria-label="Close file search" onClick={() => { setSearchOpen(false); editorRef.current?.focus(); }} className="btn-secondary">Close</button>
+          </div>}
           {isProjectMetadata(selectedFile) && <div role="status" className="border-b border-white/[0.08] bg-white/[0.025] px-4 py-2 text-xs text-zinc-400">This is generated project metadata. Edit it only when you understand the project format; source files are safer for normal changes.</div>}
-          <textarea value={content} onChange={(event) => editContent(event.target.value)} onKeyDown={editorKeyDown} spellCheck={false} aria-label={`Editing ${selectedFile}`} className="min-h-0 flex-1 resize-none bg-[#0b0c0e] p-4 font-mono text-[13px] leading-6 text-zinc-200 outline-none selection:bg-violet-500/30" />
+          <textarea ref={editorRef} value={content} onChange={(event) => editContent(event.target.value)} onKeyDown={editorKeyDown} spellCheck={false} aria-label={`Editing ${selectedFile}`} className="min-h-0 flex-1 resize-none bg-[#0b0c0e] p-4 font-mono text-[13px] leading-6 text-zinc-200 outline-none selection:bg-violet-500/30" />
           <div className="grid grid-cols-[minmax(220px,1fr)_auto_minmax(180px,0.7fr)_120px_auto] items-center gap-2 border-t border-white/[0.07] bg-[#111315] p-3">
             <input value={commitMessage} onChange={(event) => setCommitMessage(event.target.value)} placeholder="Commit message for this file" className="rounded-md border border-white/10 bg-black/25 px-3 py-2 text-xs outline-none" />
             <button type="button" disabled={Boolean(busy) || !commitMessage.trim() || onDefaultBranch} title={onDefaultBranch ? "Create a branch before committing." : undefined} onClick={() => void commit()} className="btn-primary disabled:opacity-40">{busy === "commit" ? "Committing…" : "Commit file"}</button>

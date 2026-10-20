@@ -1,7 +1,7 @@
 /** @vitest-environment jsdom */
 import { createElement, Profiler } from "react";
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
-import { act, cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { act, cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 const m = vi.hoisted(() => ({ invoke: vi.fn(), client: { config: {} as { sessionToken?: string }, listGithubRepositories: vi.fn(), mintGithubCloneToken: vi.fn(), subscribeContext: (listener: () => void) => { void listener; return () => {}; }, getContextRevision: (): number => 0, setSession: (token: string | undefined) => { void token; } } }));
 vi.mock("@tauri-apps/api/core", () => ({ invoke: m.invoke }));
 vi.mock("../../../desktop/src/lib/desktopClient", async original => {
@@ -302,4 +302,71 @@ it("uses the same conflict protection for commit's implicit save and never commi
   expect(m.invoke).toHaveBeenCalledWith("write_repository_file", expect.objectContaining({ expectedContent: "/owned/A:same.ts" }));
   expect(m.invoke.mock.calls.some(([command]) => command === "commit_repository_file")).toBe(false);
   expect(screen.getByDisplayValue("uncommitted draft")).toBeTruthy();
+});
+
+it("undoes and redoes editor changes without writing, then saves against the original baseline", async () => {
+  await start(); fireEvent.click(screen.getByRole("button", {name: "same.ts"}));
+  const editor = await screen.findByRole("textbox", {name: "Editing same.ts"});
+  const original = (editor as HTMLTextAreaElement).value;
+  fireEvent.change(editor, {target: {value: "first edit"}});
+  fireEvent.change(editor, {target: {value: "second edit"}});
+  fireEvent.keyDown(editor, {key: "z", metaKey: true});
+  expect((editor as HTMLTextAreaElement).value).toBe("first edit");
+  fireEvent.click(screen.getByRole("button", {name: "Redo edit"}));
+  expect((editor as HTMLTextAreaElement).value).toBe("second edit");
+  expect(m.invoke.mock.calls.filter(([name]) => name === "write_repository_file")).toHaveLength(0);
+  fireEvent.click(screen.getByRole("button", {name: "Save ⌘S"}));
+  await waitFor(() => expect(m.invoke).toHaveBeenCalledWith("write_repository_file", {repositoryPath: "/owned/A", relativePath: "same.ts", content: "second edit", expectedContent: original}));
+});
+it("clears edit history when a different file is opened", async () => {
+  await start(); fireEvent.click(screen.getByRole("button", {name: "same.ts"}));
+  fireEvent.change(await screen.findByRole("textbox", {name: "Editing same.ts"}), {target: {value: "discard me"}});
+  fireEvent.click(screen.getByRole("button", {name: "other.ts"}));
+  fireEvent.click(screen.getByRole("button", {name: "Discard and open"}));
+  const editor = await screen.findByRole("textbox", {name: "Editing other.ts"});
+  fireEvent.keyDown(editor, {key: "z", ctrlKey: true});
+  expect((editor as HTMLTextAreaElement).value).toBe("/owned/A:other.ts");
+  expect((screen.getByRole("button", {name: "Undo edit"}) as HTMLButtonElement).disabled).toBe(true);
+});
+
+it("finds literal text, wraps selection, and never writes search results", async () => {
+  reads = () => "alpha beta alpha";
+  await start(); fireEvent.click(screen.getByRole("button", {name: "same.ts"}));
+  const editor = await screen.findByRole("textbox", {name: "Editing same.ts"}) as HTMLTextAreaElement;
+  fireEvent.click(screen.getByRole("button", {name: "Find in file"}));
+  fireEvent.change(screen.getByRole("searchbox", {name: "Find literal text"}), {target: {value: "alpha"}});
+  fireEvent.click(screen.getByRole("button", {name: "Next match"}));
+  expect([editor.selectionStart, editor.selectionEnd]).toEqual([0, 5]);
+  fireEvent.click(screen.getByRole("button", {name: "Next match"}));
+  expect([editor.selectionStart, editor.selectionEnd]).toEqual([11, 16]);
+  fireEvent.click(screen.getByRole("button", {name: "Next match"}));
+  expect(editor.selectionStart).toBe(0);
+  fireEvent.click(screen.getByRole("button", {name: "Previous match"}));
+  expect(editor.selectionStart).toBe(11);
+  fireEvent.change(screen.getByRole("searchbox", {name: "Find literal text"}), {target: {value: ".*"}});
+  expect(screen.getByText("No matches")).toBeTruthy();
+  expect((screen.getByRole("button", {name: "Next match"}) as HTMLButtonElement).disabled).toBe(true);
+  expect(editor.value).toBe("alpha beta alpha");
+  expect(m.invoke.mock.calls.filter(([name]) => name === "write_repository_file")).toHaveLength(0);
+});
+
+it("reviews unsaved changes against the loaded baseline without saving or approving", async () => {
+  reads = () => "original line";
+  await start(); fireEvent.click(screen.getByRole("button", {name: "same.ts"}));
+  fireEvent.change(await screen.findByRole("textbox", {name: "Editing same.ts"}), {target: {value: "edited line"}});
+  fireEvent.click(screen.getByRole("button", {name: "Review local changes"}));
+  expect(screen.getByLabelText("Local unsaved file diff")).toBeTruthy();
+  expect(screen.getByText("original line")).toBeTruthy();
+  expect(within(screen.getByLabelText("Local unsaved file diff")).getByText("edited line")).toBeTruthy();
+  expect(m.invoke.mock.calls.filter(([name]) => name === "write_repository_file")).toHaveLength(0);
+  expect(screen.queryByRole("button", {name: "Approve & run"})).toBeNull();
+  fireEvent.click(screen.getByRole("button", {name: "Undo edit"}));
+  expect(screen.getByText("No unsaved content changes.")).toBeTruthy();
+});
+
+it("requires explicit consent and warns that repository checks are not sandboxed", async () => {
+  checks = () => [{id: "a", label: "A check", command: "npm test", description: "fixture"}];
+  await start(); fireEvent.click(await screen.findByRole("button", {name: "A check"}));
+  expect(screen.getByText(/not sandboxed/)).toBeTruthy();
+  expect(m.invoke.mock.calls.filter(([command]) => command === "run_repository_check")).toHaveLength(0);
 });

@@ -2599,3 +2599,57 @@ Agent opening confirms no extra conversation read, message or approval call.
 Independent read-only security review found no blocker, including grounding.
 No GitHub Actions runs/pushes/merges or paid/production/native-release changes.
 Installed Mac, hosted repository/provider and full merge acceptance remain open.
+
+### Local editor productivity batch — research and execution contract
+
+Existing controlled textarea has guarded native save/commit and repository/file
+ownership fences, but no application-level undo/redo for programmatic Tab edits
+or deterministic cross-file history reset. Add a pure bounded history kernel,
+wire toolbar and macOS/Control keyboard actions, retain current unsaved/save
+baseline semantics, and clear history on file/repository/session changes. Then
+add literal in-file search with bounded match traversal, explicit no-match state,
+and selection-only navigation. Neither feature writes until existing Save/commit.
+Use focused kernel and actual RepositoryWorkspaceView regressions; no native,
+provider, paid or production execution. Installed Mac acceptance remains open.
+
+Native verification research blocker: verification.rs stops timing once child.wait
+returns, then awaits output readers without a deadline. Descendants retaining
+pipes may keep collection waiting. No cargo/rustc available here. Preserve this
+as an unvalidated native correctness/security issue requiring compiled process
+fixtures and process-tree cleanup design; do not invent a passing Rust fix.
+
+Next related milestone: actual App navigation currently unmounts the repository
+workspace, losing unsaved content. Reproduce with the actual App/native IPC
+fixture, then retain the lazily visited repository view within the authenticated
+workspace, hidden while inactive. Preserve existing root credential/session
+unmounts and revision/file ownership fences. No persistence to disk/browser,
+background agent or new native action. Already approved operations may finish;
+hiding the view is not a claim of native cancellation. Disable hidden modal
+Escape listeners. Acceptance: draft retained across Agent navigation, one file
+read, zero writes, existing credential-loss and repository ownership regressions.
+
+Implemented local editor batch: bounded history (40 snapshots per direction,
+500,000 retained UTF-16 characters excluding current content), Cmd/Ctrl-Z redo
+variants, literal case-sensitive search (256-char query/1,000 match bound), and
+read-only draft diff against the loaded/saved baseline. Shared FileDiff extraction
+preserves proposal defaults and adds navigable2,000-row pages with total counts.
+Pagination source reset uses render-time scoped state after lint rejected an
+effect reset; two focused paging/reset regressions pass. No approval bypass.
+
+Actual App regression reproduced draft loss after correcting fixture navigation
+label/context subscription. Lazily retained repository view now preserves draft,
+history and search during in-app navigation without another native file read or
+write. Existing credential/session remounts clear private state. Hidden modal
+Escape listener is inactive; already approved operations may finish while hidden.
+Native verification confirmation accurately warns scripts can access user files,
+network and stored credentials; minimal env is not a sandbox. No execution before
+explicit confirmation is verified. Native descendant-pipe issue remains blocked.
+
+Evidence:128 focused editor/App/auth/ownership/streaming/demo tests passed at the
+combined checkpoint;50 affected diff/editor/streaming tests passed after paging;
+2 paging/source-reset tests and explicit-consent test pass after final deltas;
+15 demo contracts pass. Scoped TypeScript passes; lint has no new errors and
+retains the existing catalogRequest cleanup warning. Independent security review
+found no isolation, baseline, approval or paging blocker. These are local JS/IPC
+fixtures, not installed Mac, native process execution or real customer acceptance.
+All source remains local; no push/merge/Actions/deploy/provider/payment changes.
