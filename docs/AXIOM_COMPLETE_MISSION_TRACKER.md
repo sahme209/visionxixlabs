@@ -1741,3 +1741,11 @@ remain required before PR #182 merges. The approved Google-login deployment
 remains serving; no additional release or production operation is authorized.
 All existing independent engineering workstreams and recovery gates remain
 represented; tracker coverage remains 24 sources and 2,239 requirement rows.
+
+The independent browser run on `6ff58f59` reached the actual owned runtime but
+failed capture, produced no screenshots and did not verify owned cleanup. Its
+sanitized evidence is retained in run 39431463848; ephemeral job teardown is not
+UI or owned-cleanup acceptance. Closed diagnostics are being integrated before
+the next bounded run. The signed-in companion now links to existing billing
+information without asserting every customer has a free pilot or inferring
+workspace authority from an authenticated identity. All production gates remain.

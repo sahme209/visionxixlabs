@@ -66,17 +66,17 @@ export default async function AuthSuccessPage({ searchParams }: { searchParams: 
             <h1 className="mt-4 max-w-xl text-3xl font-semibold tracking-[-0.045em] sm:text-4xl">A clear home for your release workspace.</h1>
             <p className="mt-5 max-w-xl text-sm leading-7 text-zinc-400 sm:text-base">Review account context, connection posture, and guidance here. The installed Axiom Agent remains the focused environment for governed release records, approvals, and operations.</p>
             <div className="mt-8 flex flex-wrap gap-3">
-              <Link href="/download" className="inline-flex min-h-11 items-center rounded-xl bg-zinc-100 px-4 text-sm font-semibold text-zinc-950 transition hover:bg-white">Open Axiom Agent</Link>
+              <Link href="/download" className="inline-flex min-h-11 items-center rounded-xl bg-zinc-100 px-4 text-sm font-semibold text-zinc-950 transition hover:bg-white">Download Axiom Agent</Link>
               <Link href="/account/integrations" className="inline-flex min-h-11 items-center rounded-xl border border-white/[0.1] px-4 text-sm font-medium text-zinc-200 transition hover:bg-white/[0.06]">Review connections</Link>
             </div>
           </div>
           <aside className="rounded-3xl border border-emerald-400/15 bg-emerald-400/[0.045] p-6 sm:p-7">
-            <p className="text-[10px] uppercase tracking-[0.18em] text-emerald-200">Current access</p>
-            <h2 className="mt-3 text-xl font-semibold tracking-[-0.035em] text-zinc-100">Pilot workspace</h2>
-            <p className="mt-3 text-sm leading-6 text-zinc-400">Your browser session is verified and access is scoped to the workspace provisioned for you.</p>
+            <p className="text-[10px] uppercase tracking-[0.18em] text-emerald-200">Browser session</p>
+            <h2 className="mt-3 text-xl font-semibold tracking-[-0.035em] text-zinc-100">You’re signed in.</h2>
+            <p className="mt-3 text-sm leading-6 text-zinc-400">Your browser identity is authenticated. Workspace permissions and release approvals are checked separately for each protected action.</p>
             <dl className="mt-7 space-y-3 border-t border-emerald-200/10 pt-5 text-sm">
-              <div className="flex items-center justify-between gap-4"><dt className="text-zinc-500">Billing</dt><dd className="text-zinc-200">No-charge pilot</dd></div>
-              <div className="flex items-center justify-between gap-4"><dt className="text-zinc-500">Release authority</dt><dd className="text-zinc-200">In Axiom Agent</dd></div>
+              <div><dt className="text-zinc-500">Plan and usage</dt><dd className="mt-2"><Link href="/control/usage-billing" className="inline-flex min-h-11 items-center text-orange-300 hover:text-orange-200">Review workspace billing →</Link></dd></div>
+              <div className="flex items-center justify-between gap-4"><dt className="text-zinc-500">Release actions</dt><dd className="text-zinc-200">Subject to workspace policy</dd></div>
             </dl>
           </aside>
         </section>

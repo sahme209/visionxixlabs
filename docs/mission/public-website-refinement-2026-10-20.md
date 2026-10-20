@@ -131,3 +131,22 @@ resolver links remain available, and Windows/Linux OS selection is unchanged.
 The added rendered-component regression failed before this correction; all 17
 download/mobile/release tests pass afterward. This does not verify an installer
 or native installation.
+
+## Browser CI and signed-in companion continuation
+
+The isolated job now passes runtime metadata and clean immutable-source binding.
+Its first actual CI window on `6ff58f59` failed capture, retained zero images and
+reported failed/unverified owned cleanup despite unchanged source. See run
+[39431463848](https://github.com/sahme209/visionxixlabs/actions/runs/39431463848).
+The job stopped its ephemeral container; that is not a successful owned cleanup
+receipt. The root cause remains unknown. A closed-field diagnostic extension
+retains failure/cleanup enums and existing bounded DOM readiness observations,
+without exposing raw logs or changing request rules, limits or cleanup authority.
+No merge, UI acceptance or production release is claimed from that run.
+
+Independent website work removed the signed-in overview's unconditional
+“Pilot workspace” and “No-charge pilot” claims. It now distinguishes authenticated
+identity from workspace/action permission, links to the existing authoritative
+usage/billing page and labels the download destination accurately. No additional
+database read, subscription mapping, entitlement mutation or checkout path was
+introduced. Existing authentication guards and integration notices are preserved.
