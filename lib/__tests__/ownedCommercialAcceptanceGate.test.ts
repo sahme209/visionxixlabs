@@ -1,5 +1,5 @@
 import { expect, it } from "vitest";
-import { checkOwnedCommercialAcceptance } from "../../scripts/check-owned-commercial-acceptance.mjs";
+import { checkOwnedApplicationHttpAcceptance, checkOwnedCommercialAcceptance } from "../../scripts/check-owned-commercial-acceptance.mjs";
 
 const httpTitles = [
   "actual local Next HTTP authenticates, reads versioned allowance, denies unsupported operations and releases provider-disabled hold",
@@ -15,6 +15,23 @@ function report() {
   return { success: true, numTotalTests: 34, numPassedTests: 32, numFailedTests: 0, numPendingTests: 2, numFailedTestSuites: 0,
     testResults: [{ name: "/fixture/lib/billing/__tests__/newTestSubscriptionService.postgres.test.ts", status: "passed", assertionResults }] };
 }
+function httpReport() {
+  const value = report(); value.numPassedTests = 1; value.numPendingTests = 33;
+  value.testResults[0].assertionResults.forEach(row => { row.status = row.title === httpTitles[0] ? "passed" : "skipped"; });
+  return value;
+}
+it("requires the actual isolated application HTTP journey independently of the SQL job", () => {
+  expect(checkOwnedApplicationHttpAcceptance(httpReport())).toEqual({ schemaVersion: 1, evidenceScope: "owned_application_http_synthetic_provider", applicationHttpCasesPassed: 1, sqlCasesSkipped: 32, checkoutWorkerCaseSkipped: true, hostedPaymentVerified: false, productionChanges: false });
+});
+it("never substitutes SQL-only success for application HTTP success or vice versa", () => {
+  expect(() => checkOwnedApplicationHttpAcceptance(report())).toThrow("owned_pg_evidence_incomplete");
+  expect(() => checkOwnedCommercialAcceptance(httpReport())).toThrow("owned_pg_evidence_incomplete");
+});
+it.each([0, 33])("refuses a different sole passed case at index %s", index => {
+  const value = httpReport(); value.testResults[0].assertionResults[32].status = "skipped";
+  value.testResults[0].assertionResults[index].status = "passed";
+  expect(() => checkOwnedApplicationHttpAcceptance(value)).toThrow("owned_pg_evidence_incomplete");
+});
 it("accepts completed SQL cases with explicitly separate unexecuted HTTP journeys", () => {
   expect(checkOwnedCommercialAcceptance(report())).toEqual({ schemaVersion: 1, evidenceScope: "owned_postgres_synthetic_provider", sqlCasesPassed: 32, legacyAdmissionCasesPassed: 6, allocationCasesPassed: 19, httpCasesSkipped: 2, hostedPaymentVerified: false, productionChanges: false });
 });
@@ -38,4 +55,9 @@ it("uses actual Vitest skipped-row semantics rather than aggregate pending termi
 });
 it.each([null, {}, { success: false }, { ...report(), numFailedTestSuites: 1 }, { ...report(), numPassedTests: 0 }])("refuses missing or unsuccessful execution evidence %j", value => {
   expect(() => checkOwnedCommercialAcceptance(value)).toThrow("owned_pg_evidence_incomplete");
+});
+
+it("verifies the named checkout worker is skipped before attesting that fact", () => {
+  const value = httpReport(); value.testResults[0].assertionResults[33].title = "unrelated skipped case";
+  expect(() => checkOwnedApplicationHttpAcceptance(value)).toThrow("owned_pg_evidence_incomplete");
 });

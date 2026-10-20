@@ -2421,3 +2421,29 @@ pass. Evidence: mission/owned-commercial-sql-5955207d.json. The workflow remains
 failed for that head; fresh corrected-head CI is required. Its browser failure
 remains separately recorded, with no retry absent this substantive correction.
 No SQL implementation, expiry, financial rule or production state changed.
+
+### Owned application HTTP acceptance — portable isolated rehearsal
+
+Research: the existing first HTTP case already exercises seeded credentials,
+actual Next/Auth.js cookies, versioned billing views, unsupported-operation
+rejection and provider-disabled hold release. Reuse it in a separate CI job,
+filtered to that case; the independent SQL job still requires all32 cases and
+its original five-minute expiry check. The separately bound checkout worker
+stays disabled: its prior evidence is preserved, not treated as portable proof.
+No signup, hosted Stripe checkout, paid provider or production acceptance claim.
+
+The existing launch policy now also protects this HTTP child and its Prisma
+setup; managed selectors are retained and the composed environment revalidated.
+No guard stripping, manifest rebinding, production credentials or financial-rule
+change. Independent read-only review found no blocker. A receipt regression
+exposed an inferred checkout skip; the gate now verifies that exact named row.
+Targeted gate/declaration/launch-policy checks pass69. Required acceptance is a
+fresh owned-container HTTP run, all32 SQL passes, cleanup and applicable PR CI;
+local Docker access remains restricted, with no bypass attempted.
+
+Corrected SQL head e3a472df run39486872996 passed32 cases, the receipt gate and
+cleanup. Its browser run39486872669 failed11 checks at documentation navigation:
+79.824s click,388 responsive polls to120s, no documentation request observed at
+the proxy, unchanged source and empty cleanup. Root cause remains unknown; no
+same-head retry, timeout change or browser gate waiver. Continue independent
+application/native acceptance while retaining this unresolved browser gate.
