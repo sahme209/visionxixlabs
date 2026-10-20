@@ -14,6 +14,7 @@ const mocks = vi.hoisted(() => ({
   prepareProposalArgsForReview: vi.fn(),
   findManySkills: vi.fn(async (): Promise<Array<{ skillId: string; status: string }>> => []),
   findFirstEnvironment: vi.fn(),
+  rememberToolContext: vi.fn(async () => undefined),
 }));
 
 vi.mock("@/lib/desktop/resolveRequestDesktopSession", () => ({ resolveRequestDesktopSession: mocks.resolveRequestDesktopSession }));
@@ -30,6 +31,8 @@ vi.mock("@/lib/db", () => ({
 vi.mock("@/lib/axiom/agentRuntime/decisionLoop", () => ({ runDecisionLoop: mocks.runDecisionLoop }));
 vi.mock("@/lib/axiom/agentRuntime/toolExecution", () => ({ executeReadOnlyTool: mocks.executeReadOnlyTool, isProdEnvironmentTarget: vi.fn() }));
 vi.mock("@/lib/axiom/agentRuntime/proposalReview", () => ({ prepareProposalArgsForReview: mocks.prepareProposalArgsForReview }));
+
+vi.mock("@/lib/axiom/agentRuntime/workspaceMemory", async original => ({ ...await original<typeof import("@/lib/axiom/agentRuntime/workspaceMemory")>(), rememberToolContext: mocks.rememberToolContext }));
 
 function request(body: object) {
   return new NextRequest("https://visionxixlabs.com/api/desktop/agent/conversations/conv_1/messages", {
@@ -367,4 +370,25 @@ describe("authenticated Agent NDJSON endpoint", () => {
     expect(mocks.createTurn).toHaveBeenCalledWith({ data: { conversationId: "conv_1", role: "assistant", content: "Verified explanation" } });
     expect(mocks.resolveRequestDesktopSession).toHaveBeenCalledWith(expect.anything(), expect.objectContaining({ allowApiKey: false }));
   });
+});
+
+
+it("does not begin proposal persistence after cancellation during workspace memory", async () => {
+  vi.clearAllMocks();
+  mocks.resolveRequestDesktopSession.mockResolvedValue(session);
+  mocks.findFirstConversation.mockResolvedValue({ id: "conv_1", organizationId: "org-1", userId: "user-1", title: null });
+  mocks.runDecisionLoop.mockResolvedValue({ kind: "proposal", toolName: "open_github_pull_request", args: {}, riskLevel: "medium", message: "Review before action" });
+  mocks.prepareProposalArgsForReview.mockResolvedValue({ ok: true, args: {} });
+  let entered!: () => void, finish!: () => void;
+  const started = new Promise<void>(resolve => { entered = resolve; });
+  const gate = new Promise<void>(resolve => { finish = resolve; });
+  mocks.rememberToolContext.mockImplementationOnce(async () => { entered(); await gate; });
+  const controller = new AbortController();
+  const request = new NextRequest("https://visionxixlabs.com/api/desktop/agent/conversations/conv_1/messages", { method: "POST", signal: controller.signal, headers: { "content-type": "application/json", accept: "application/x-ndjson" }, body: JSON.stringify({ message: "Prepare review" }) });
+  const { POST } = await import("../route");
+  const response = await POST(request, params);
+  await started; controller.abort(); finish();
+  expect(await response.text()).not.toContain('"result"');
+  expect(mocks.createProposal).not.toHaveBeenCalled();
+  expect(mocks.createTurn).not.toHaveBeenCalledWith(expect.objectContaining({ data: expect.objectContaining({ role: "assistant" }) }));
 });

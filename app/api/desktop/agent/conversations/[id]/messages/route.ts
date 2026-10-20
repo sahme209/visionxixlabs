@@ -161,6 +161,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     let skillContext: string;
     try {
       const resolvedSkills = await resolveInstalledSkillContext(prisma as unknown as AgentSkillRepo, organizationId, invokedSkillId);
+      streaming?.abortSignal.throwIfAborted();
       if (!resolvedSkills.ok) {
         const reply = resolvedSkills.error === "unknown_skill"
           ? `/${resolvedSkills.skillId} is not a reviewed Axiom skill.`
@@ -170,6 +171,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
       }
       skillContext = resolvedSkills.prompt;
     } catch {
+      streaming?.abortSignal.throwIfAborted();
       if (invokedSkillId) {
         const reply = "I couldn't verify that skill's workspace installation, so I did not send this request to an AI provider. Try again shortly.";
         await prisma.agentConversationTurn.create({ data: { conversationId, role: "assistant", content: reply } });
@@ -250,13 +252,16 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     if (outcome.kind === "proposal") {
       const reviewed = await prepareProposalArgsForReview(organizationId, outcome.toolName, outcome.args, prisma);
       if (!reviewed.ok) {
+        streaming?.abortSignal.throwIfAborted();
         const reply = `I couldn't prepare a trustworthy approval preview, so no action was proposed. ${reviewed.error}`;
         await prisma.agentConversationTurn.create({ data: { conversationId, role: "assistant", content: reply } });
         return NextResponse.json({ ok: true, data: { reply, proposal: null, usage: outcome.usage ?? null } });
       }
       streaming?.abortSignal.throwIfAborted();
       await rememberToolContext(memoryRepo, organizationId, reviewed.args).catch(() => undefined);
+      streaming?.abortSignal.throwIfAborted();
       await prisma.agentConversationTurn.create({ data: { conversationId, role: "assistant", content: outcome.message } });
+      streaming?.abortSignal.throwIfAborted();
       const proposal = await prisma.agentActionProposal.create({
         data: {
           organizationId, conversationId, proposedByUserId: String(actor.userId),

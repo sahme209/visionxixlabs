@@ -2279,3 +2279,12 @@ These are retained for exact-head CI; no native control, fixture gate or timeout
 was weakened. Native compilation remains unavailable here. These local results
 are not an all-green suite or permission to merge. Small reviewed compatibility
 edits during the run also mean it is not an exact final-head acceptance receipt.
+
+
+Post-commit review found and reproduced a cooperative cancellation race during
+proposal preparation: Stop while workspace memory awaited could begin a new
+assistant/proposal write afterward. A gated-memory regression failed on1600fb60;
+checks after skills, review, memory and assistant awaits now prevent starting the
+next write. Already-started operations may finish and remain recorded. The final
+route diff received independent review, and80 related checks pass. This follow-up
+still requires exact-head CI; earlier1600fb60 checks do not grant it merge proof.
