@@ -1,10 +1,11 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-const m = vi.hoisted(() => ({ credit: vi.fn(), load: vi.fn(), policy: vi.fn(), admission: vi.fn(), extract: vi.fn() }));
-vi.mock("@/lib/ai/AIProviderManager", () => ({ getAIProviderManager: () => ({ status: () => [{ configured: true, provider: "vercel_gateway" }], extractStructuredDataWithAdmission: m.extract }) }));
+const m = vi.hoisted(() => ({ credit: vi.fn(), load: vi.fn(), policy: vi.fn(), admission: vi.fn(), extract: vi.fn(), catalog: vi.fn() }));
+vi.mock("@/lib/ai/AIProviderManager", () => ({ getAIProviderManager: () => ({ status: () => [{ configured: true, provider: "vercel_gateway" }], isServiceProviderAvailable: (provider: string) => provider === "vercel_gateway", extractStructuredDataWithAdmission: m.extract }) }));
 vi.mock("@/lib/ai/workspaceProviderPolicy", () => ({ loadWorkspaceAIProviderPolicyWithState: m.load, resolveWorkspaceAIProviderPolicy: m.policy }));
 vi.mock("@/lib/billing/checkWorkspaceAICredits", () => ({ checkWorkspaceAICredits: m.credit }));
 vi.mock("@/lib/billing/governedExtractAdmission", () => ({ admitGovernedExtract: m.admission }));
+vi.mock("@/lib/ai/gatewayModelCatalog", async original => ({ ...await original<typeof import("@/lib/ai/gatewayModelCatalog")>(), loadGatewayModelCatalog: m.catalog }));
 import { resolveGovernedAiCall } from "../governedAiCall";
 
 describe("governed extraction per-call admission", () => {
@@ -13,6 +14,7 @@ describe("governed extraction per-call admission", () => {
     m.credit.mockResolvedValue({ kind: "allow" }); m.load.mockResolvedValue({ storageState: "ready", policy: {} });
     m.policy.mockReturnValue({ enabled: true, allowedProviders: ["vercel_gateway"], modelSelections: { vercel_gateway: "vendor/model" }, fallbackOrder: ["vercel_gateway"] });
     m.admission.mockImplementation(async scope => ({ scope }));
+    m.catalog.mockResolvedValue([{ id: "vendor/model" }]);
     m.extract.mockResolvedValue({ data: { action: "respond" }, usage: { promptTokens: 1, completionTokens: 1 } });
   });
   it("requires the trusted actor and reserves each iteration and repair independently", async () => {

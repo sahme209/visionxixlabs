@@ -13,6 +13,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import type { Prisma } from "@prisma/client";
 import { resolveRequestDesktopSession } from "@/lib/desktop/resolveRequestDesktopSession";
+import { isConcreteGatewayModelId } from "@/lib/ai/gatewayModelCatalog";
 import { prisma } from "@/lib/db";
 import { agentActionDigest, approvalExpiry } from "@/lib/axiom/agentRuntime/proposalIntegrity";
 import { runDecisionLoop, type ConversationTurnInput } from "@/lib/axiom/agentRuntime/decisionLoop";
@@ -91,6 +92,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
   const body = (await request.json().catch(() => null)) as {
     message?: unknown;
     preferredProvider?: unknown;
+    preferredModel?: unknown;
     workspaceContext?: {
       repositoryFullName?: unknown;
       branch?: unknown;
@@ -102,6 +104,10 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
   } | null;
   const message = typeof body?.message === "string" ? body.message.trim() : "";
   const preferredProvider = typeof body?.preferredProvider === "string" ? body.preferredProvider : undefined;
+  const preferredModel = body?.preferredModel;
+  if (preferredModel !== undefined && (!isConcreteGatewayModelId(preferredModel) || preferredProvider !== "vercel_gateway")) {
+    return NextResponse.json({ ok: false, error: "invalid_preferred_model" }, { status: 400 });
+  }
   if (!message) {
     return NextResponse.json({ ok: false, error: "invalid_payload" }, { status: 400 });
   }
@@ -186,13 +192,14 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
   const workspaceContext = workspaceMemoryPrompt(await loadWorkspaceMemory(memoryRepo, organizationId));
   const outcome = await runDecisionLoop({
     organizationId,
-      userId: String(session.userId),
+    userId: String(session.userId),
     correlationId: String(correlationId),
     transcript,
     workspaceContext,
     currentRequestContext,
     skillContext,
     preferredProvider,
+    preferredModel,
     operationMode,
     initialToolCall: initialRepositoryGrounding({ message, mode, repositoryFullName, branch, filePath }),
     executeReadOnlyTool: async (toolName, args) => {

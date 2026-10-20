@@ -79,7 +79,13 @@ describe("runDecisionLoop", () => {
       preferredProvider: "anthropic",
       executeReadOnlyTool: noopReadOnly, isProdEnvironmentTarget: noopProdCheck,
     });
-    expect(mocks.resolveGovernedAiCall).toHaveBeenCalledWith("o", "anthropic", "actor");
+    expect(mocks.resolveGovernedAiCall).toHaveBeenCalledWith("o", "anthropic", "actor", undefined);
+  });
+
+  it("preserves actor as the third authority argument and carries an optional model as fourth", async () => {
+    mocks.resolveGovernedAiCall.mockResolvedValue(governed(async () => ({ action: "respond", message: "Ready." })));
+    await runDecisionLoop({ organizationId: "o", userId: "actor", correlationId: "c", transcript: [{ role: "user", content: "hello" }], preferredProvider: "vercel_gateway", preferredModel: "vendor/approved", executeReadOnlyTool: noopReadOnly, isProdEnvironmentTarget: noopProdCheck });
+    expect(mocks.resolveGovernedAiCall).toHaveBeenCalledWith("o", "vercel_gateway", "actor", "vendor/approved");
   });
 
   it("loads installed skill guidance below immutable Agent guardrails", async () => {
@@ -227,7 +233,7 @@ describe("runDecisionLoop", () => {
     });
     expect(deepops).toEqual({ kind: "error", error: "max_iterations_exceeded" });
     expect(extract).toHaveBeenCalledTimes(6);
-    expect(mocks.resolveGovernedAiCall).toHaveBeenCalledWith("o", undefined, "actor");
+    expect(mocks.resolveGovernedAiCall).toHaveBeenCalledWith("o", undefined, "actor", undefined);
   });
 
   it("maps legacy modes to conservative effort budgets", () => {

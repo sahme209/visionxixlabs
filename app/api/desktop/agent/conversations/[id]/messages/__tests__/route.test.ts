@@ -108,6 +108,27 @@ describe("POST /api/desktop/agent/conversations/[id]/messages", () => {
     }));
   });
 
+  it("forwards an explicitly chosen Gateway model without changing trusted identity", async () => {
+    mocks.runDecisionLoop.mockResolvedValue({ kind: "final", message: "Ready." });
+    const { POST } = await import("../route");
+    const res = await POST(request({ message: "hello", preferredProvider: "vercel_gateway", preferredModel: "vendor/approved", userId: "forged" }), params);
+    expect(res.status).toBe(200);
+    expect(mocks.runDecisionLoop).toHaveBeenCalledWith(expect.objectContaining({ organizationId: "org-1", userId: "user-1", preferredProvider: "vercel_gateway", preferredModel: "vendor/approved" }));
+  });
+
+  it.each([null, false, {}, [], "", "service-default", "vmc/private", "vendor/with space", "vendor/" + "x".repeat(200)])("rejects invalid model preference before persisting a turn: %j", async preferredModel => {
+    const { POST } = await import("../route");
+    const res = await POST(request({ message: "hello", preferredProvider: "vercel_gateway", preferredModel }), params);
+    expect(res.status).toBe(400); expect(await res.json()).toEqual({ ok: false, error: "invalid_preferred_model" });
+    expect(mocks.createTurn).not.toHaveBeenCalled(); expect(mocks.transaction).not.toHaveBeenCalled(); expect(mocks.runDecisionLoop).not.toHaveBeenCalled();
+  });
+
+  it.each([undefined, "openai"])("rejects an explicit model without matching Gateway provider before persistence (%s)", async preferredProvider => {
+    const { POST } = await import("../route");
+    const res = await POST(request({ message: "hello", preferredProvider, preferredModel: "vendor/approved" }), params);
+    expect(res.status).toBe(400); expect(mocks.createTurn).not.toHaveBeenCalled(); expect(mocks.runDecisionLoop).not.toHaveBeenCalled();
+  });
+
   it("uses the authenticated actor rather than body-supplied billing identity", async () => {
     mocks.runDecisionLoop.mockResolvedValue({ kind: "final", message: "Ready." });
     const { POST } = await import("../route");

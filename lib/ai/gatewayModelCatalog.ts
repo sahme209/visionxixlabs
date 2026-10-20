@@ -11,10 +11,15 @@ export function isGatewayModelId(value: string): boolean {
   return value === "service-default" || /^([a-z0-9][a-z0-9._-]*\/[A-Za-z0-9][A-Za-z0-9._:-]*|vmc\/[A-Za-z0-9][A-Za-z0-9._-]*)$/.test(value);
 }
 
+/** Explicit per-message preference cannot select a managed or virtual route. */
+export function isConcreteGatewayModelId(value: unknown): value is string {
+  return typeof value === "string" && value.length <= 200 && value !== "service-default" && !value.startsWith("vmc/") && isGatewayModelId(value);
+}
+
 /** Live, server-side catalog. Failure returns no choices instead of stale fabricated models. */
-export async function loadGatewayModelCatalog(): Promise<GatewayModelOption[]> {
+export async function loadGatewayModelCatalog(options?: { freshness: "current" }): Promise<GatewayModelOption[]> {
   denyIsolatedExternalIO();
-  const response = await fetch("https://ai-gateway.vercel.sh/v1/models", { next: { revalidate: 900 } });
+  const response = await fetch("https://ai-gateway.vercel.sh/v1/models", options?.freshness === "current" ? { cache: "no-store" } : { next: { revalidate: 900 } });
   if (!response.ok) throw new Error("gateway_model_catalog_unavailable");
   const body = await response.json() as { data?: Array<{ id?: unknown; name?: unknown; type?: unknown; tags?: unknown }> };
   const configuredAllowlist = new Set((process.env.AI_GATEWAY_MODEL_ALLOWLIST ?? "").split(",").map((item) => item.trim()).filter(Boolean));
