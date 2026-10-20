@@ -7,6 +7,21 @@ vi.mock("@/components/Navigation", () => ({ Navigation: () => null }));
 vi.mock("@/components/Footer", () => ({ Footer: () => null }));
 afterEach(() => { cleanup(); vi.unstubAllGlobals(); vi.restoreAllMocks(); });
 
+it.each([
+  { ok: false, error: { message: "Unavailable" } },
+  { ok: true, data: { runtimeReady: true } },
+  { ok: true, data: { runtimeReady: true, assets: null } },
+  { ok: true, data: { runtimeReady: true, assets: [] } },
+])("shows a recoverable status for an unusable manifest envelope", async (body) => {
+  vi.stubGlobal("fetch", async () => ({ ok: true, json: async () => body }));
+  render(createElement(DownloadPage));
+  expect(await screen.findByText("Release status unavailable")).toBeDefined();
+  for (const link of screen.getAllByRole("link", { name: /^Download for/ })) {
+    expect(link.getAttribute("href")).toMatch(/^\/api\/desktop\/download\?platform=/);
+    expect(link.hasAttribute("download")).toBe(false);
+  }
+});
+
 it("withholds positive signing claims while release evidence is loading", () => {
   vi.stubGlobal("fetch", () => new Promise(() => {}));
   render(createElement(DownloadPage));

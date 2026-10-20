@@ -1756,3 +1756,13 @@ pass with mocked transport; cloud execution remains unverified. CI on faa49d5b
 passed one full source/build job, security checks and review, but its browser
 run failed during playback readiness with unverified cleanup. The retained DOM
 snapshot precedes the throwing evaluation and is not hydration-root-cause proof.
+
+Browser run39436295361 on95e653f8 now proves owned process groups empty and
+retains a visually reviewed homepage document screenshot. Playback remains
+failed; a static image is not interactive acceptance. Script interception
+allowed10/denied0, so request-policy widening is unsupported. Bounded delivery
+diagnostics are being prepared at the unresolved boundary. Download-page
+recovery for unusable manifest envelopes is also under regression validation.
+Exact-head full CI remains mandatory before PR182 merges. No deployment,
+production database, payment, credential or installer operation is authorized
+by these checks; all24 source mappings and2,239 requirement rows are preserved.

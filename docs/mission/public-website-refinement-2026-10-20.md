@@ -166,3 +166,23 @@ old summary data and show unavailable status. Eight actual rendered-component
 regressions pass using mocked transport; backend schema, connector behavior,
 authentication and cloud execution are unchanged. This is not a connected-cloud
 or full customer journey acceptance receipt.
+
+## Retained browser evidence and download recovery continuation
+
+Run [39436295361](https://github.com/sahme209/visionxixlabs/actions/runs/39436295361)
+on `95e653f8` retains the actual 1200×923 homepage document screenshot and
+proves owned process groups empty after cleanup. Human inspection confirms the
+styled preview renders, with scripted/sample labels. Playback still times out:
+the complete, visible document has a disabled Play control despite reduced
+motion being off. Ten Script requests were allowed, none denied, with zero
+observed runtime exceptions. These facts do not establish the cause or prove
+interactive acceptance. Script-resource timing counts are not a one-to-one
+delivery ledger; no request permissions or timeouts are widened on that basis.
+
+Download response handling now rejects unusable success/error envelopes rather
+than leaving an indefinite loading state or rendering without an assets map.
+Four rendered regressions reproduced the old loading/crash behavior before the
+correction. Existing resolver fallbacks and explicit runtime-readiness gates
+remain in place; no release, payment, authentication or production changes are
+included. Independent source review found no material issues. Test results are
+recorded separately from browser/native acceptance.

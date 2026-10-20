@@ -88,7 +88,11 @@ export default function DownloadPage() {
         return response.json();
       })
       .then((body) => {
-        if (!cancelled && body?.ok && body.data) setManifest(body.data as ReleaseManifest);
+        if (body?.ok !== true || !body.data || typeof body.data !== "object"
+          || !body.data.assets || typeof body.data.assets !== "object" || Array.isArray(body.data.assets)) {
+          throw new Error("Release manifest unavailable");
+        }
+        if (!cancelled) setManifest(body.data as ReleaseManifest);
       })
       .catch(() => {
         if (!cancelled) setManifestError(true);
