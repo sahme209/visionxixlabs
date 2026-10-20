@@ -1801,3 +1801,17 @@ normal config retains its original default.36 tests plus the exact config
 subprocess regression pass, with independent review and imported-test types.
 This changes no production config or permissions and does not yet establish
 successful browser playback. All earlier failure receipts remain preserved.
+
+Run39444422507 onf312968a advances beyond homepage playback readiness: the
+pre-image wait clears, then a later control interaction fails evaluation.
+Owned groups are empty. This supports the framework compatibility correction
+without claiming complete interactions. Driver smooth-scroll/pointer geometry
+is under review; every remaining assertion is retained. Precedingb7075d4d full
+CI, including production website build, passes after the Next props correction.
+
+Existing real TEST checkout Task3 resumes in its original preserved worktree:
+a separate authority/bootstrap-gated worker entry is being implemented with
+inert lifecycle tests, reusing existing provider/conversation/reservation
+primitives. No synthetic/public/support checkout path is replaced and no
+construction, compilation, SDK/Stripe, database or worker runtime is enabled.
+Hosted TEST, native, production database and release gates remain unchanged.
