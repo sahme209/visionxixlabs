@@ -2707,3 +2707,41 @@ changed-file lint pass. Independent read-only security review found no blocker
 for either milestone and independently applied refresh results. Real provider
 consent, installed Mac marketplace and hosted customer acceptance remain open.
 No push, merge, Actions run, provider charge, deployment or production change.
+
+### Owner-approved controlled CI checkpoint — PR193
+
+Inspected40-file accumulated diff, ancestor receipts for fd15d668/5cd00b81/
+b4872238/61c741b4/a96367fc and preserved191/192 source; focused added-line
+credential-pattern and artifact-path scan found no hits. This is not an absolute
+secret-absence guarantee. Push only codex/desktop-agent-functionality-batch at
+ a96367fc719dd6b94eebf3b812008cc659f7aaf5; no main push or merge.
+PR193 created and attached. Exactly three pull_request workflows, attempt1:
+Test39501751841, Desktop39501751770, website39501751771. All four jobs failed
+before any steps (steps=[]); timing endpoints report0 billable milliseconds for
+Ubuntu and macOS. Test3s/Desktop12s/website4s elapsed are not billed runner minutes.
+Job log fetch returns BlobNotFound. Failure annotations unavailable through
+connector (unsupported endpoint); direct CLI read denied. Exact startup cause
+unverified; do not assert quota exhaustion or an application/browser regression.
+No rerun, browser retry, gate waiver or billing change. Monthly allowance not
+available. All required merge acceptance remains blocked.
+
+Further source work isolated on local codex/desktop-agent-next-local, so PR193
+stays fixed and cannot trigger another Actions run. Next functionality gap:
+Agent skill shortcuts load once while Agent view now persists; installation
+changes in Plugins do not reach the composer on return. Refresh on activation/
+focus with context and request ownership; show unavailable/retry explicitly.
+Reuse server skill invocation parser contract; selecting a skill should prepend
+or replace its explicit slash command without discarding an existing prompt.
+No automatic sends, no new tool authority, and no provider calls. Focused tests
+must cover returning from plugin changes, stale refreshes, failure and prompt
+preservation. Installed Mac/provider acceptance remains separate.
+
+Local continuation implemented: retained Agent skill shortcuts refresh on
+activation/focus/retry, reject late catalog results after deactivation/context
+change, and hide unverified installation state. Selecting a skill prepends or
+replaces its slash command using the server parser contract while preserving
+prompt body. No sends, provider calls, additional permissions or persistence.
+74 focused connected-Agent/streaming/skill-parser/skills-API/demo tests pass;
+scoped TypeScript and changed-file lint pass. Independent security review found
+no blocker. This follow-up is local only; PR193 remains at a96367fc with its
+failed startup gates. Installed Mac and real provider acceptance remain open.

@@ -1,3 +1,4 @@
+import { selectSkillInvocation } from "../lib/skillInvocation";
 import { rememberConversationDraft } from "../lib/conversationDrafts";
 import { isSensitiveRepositoryEvidencePath } from "../../../lib/axiom/agentRuntime/repositoryEvidencePolicy";
 import { AGENT_PROFILES, resolveAgentProfile, type AgentProfileId } from "../../../lib/axiom/agentRuntime/agentProfiles";
@@ -232,6 +233,8 @@ function AgentChatSession({ onOpenSettings, identity, active }: { onOpenSettings
   const selectedChoice = useRef("");
   const [modelOptions, setModelOptions] = useState<AgentModelChoice[]>([]);
   const [enabledSkills, setEnabledSkills] = useState<AgentSkillCatalogItem[]>([]);
+  const [skillAttempt, setSkillAttempt] = useState(0);
+  const [skillState, setSkillState] = useState<"checking" | "ready" | "unavailable">("checking");
   const [latestUsage, setLatestUsage] = useState<{ decisionSteps: number; inputTokens: number | null; outputTokens: number | null; totalTokens: number | null } | null>(null);
   const [startupAttempt, setStartupAttempt] = useState(0);
   const [modelAttempt, setModelAttempt] = useState(0);
@@ -363,14 +366,25 @@ function AgentChatSession({ onOpenSettings, identity, active }: { onOpenSettings
   }, [active]);
 
   useEffect(() => {
+    if (!active) return;
     let cancelled = false;
     const context = desktopClient.config;
     const owned = () => !cancelled && context === desktopClient.config;
-    void desktopClient.listAgentSkills().then((result) => {
-      if (owned() && result.ok) setEnabledSkills(result.data.skills.filter((skill) => skill.status === "enabled"));
-    }).catch(() => undefined);
-    return () => { cancelled = true; };
-  }, []);
+    void Promise.resolve().then(async () => {
+      if (!owned()) return;
+      setEnabledSkills([]); setSkillState("checking");
+      try {
+        const result = await desktopClient.listAgentSkills();
+        if (!owned()) return;
+        if (!result.ok || result.data.storageAvailable === false) { setSkillState("unavailable"); return; }
+        setEnabledSkills(result.data.skills.filter(skill => skill.status === "enabled"));
+        setSkillState("ready");
+      } catch { if (owned()) setSkillState("unavailable"); }
+    });
+    const refresh = () => setSkillAttempt(attempt => attempt + 1);
+    window.addEventListener("focus", refresh);
+    return () => { cancelled = true; window.removeEventListener("focus", refresh); };
+  }, [active, skillAttempt]);
 
   useEffect(() => {
     let cancelled = false;
@@ -811,7 +825,8 @@ function AgentChatSession({ onOpenSettings, identity, active }: { onOpenSettings
       </div>
       <div className="border-t border-white/[0.06] px-8 py-5">
         <div className="max-w-3xl mx-auto">
-          {enabledSkills.length > 0 && <div className="mb-3 flex items-center gap-2 overflow-x-auto pb-1"><span className="shrink-0 text-[10px] uppercase tracking-[0.12em] text-zinc-600">Skills</span>{enabledSkills.map((skill) => <button key={skill.id} type="button" disabled={sending || loadingConversation || Boolean(pendingProposal)} onClick={() => setInput((current) => current || `/${skill.id} `)} className="shrink-0 rounded-full border border-violet-300/[0.12] bg-violet-300/[0.04] px-2.5 py-1 text-[10px] text-violet-200 hover:bg-violet-300/[0.08] disabled:opacity-40">/{skill.id}</button>)}</div>}
+          {active && skillState === "unavailable" && <p role="status" className="mb-2 text-xs text-zinc-400">Skill shortcuts could not be verified. Existing workspace permissions remain enforced. <button type="button" disabled={sending || loadingConversation} onClick={() => setSkillAttempt(attempt => attempt + 1)} className="underline">Retry skills</button></p>}
+          {active && skillState === "ready" && enabledSkills.length > 0 && <div className="mb-3 flex items-center gap-2 overflow-x-auto pb-1"><span className="shrink-0 text-[10px] uppercase tracking-[0.12em] text-zinc-600">Skills</span>{enabledSkills.map((skill) => <button key={skill.id} type="button" disabled={sending || loadingConversation || Boolean(pendingProposal)} onClick={() => setInput((current) => selectSkillInvocation(current, skill.id))} className="shrink-0 rounded-full border border-violet-300/[0.12] bg-violet-300/[0.04] px-2.5 py-1 text-[10px] text-violet-200 hover:bg-violet-300/[0.08] disabled:opacity-40">/{skill.id}</button>)}</div>}
           <div className="mb-3 flex flex-wrap items-center gap-3">
             <label className="text-xs text-zinc-400">Agent
               <select aria-label="Specialized Agent" value={agentProfile} disabled={sending || loadingConversation || Boolean(pendingProposal)} onChange={event => {

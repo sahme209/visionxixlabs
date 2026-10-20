@@ -336,3 +336,43 @@ it("preserves the current prompt after a failed conversation switch", async () =
   expect((screen.getByRole("combobox", {name: "Agent conversation"}) as HTMLSelectElement).value).toBe(summary.id);
   expect(m.client.sendAgentMessage).not.toHaveBeenCalled();
 });
+
+it("refreshes enabled skill shortcuts after returning to the Agent and preserves the prompt when selecting one", async () => {
+  const skill = {id: "safe-repository-change", name: "Safe repository change", description: "Existing workflow", category: "GitHub", toolNames: ["read_github_file"], status: "enabled", installedAt: null, updatedAt: null};
+  const view = render(createElement(AgentChatView, {active: true})); await draft();
+  view.rerender(createElement(AgentChatView, {active: false}));
+  m.client.listAgentSkills.mockResolvedValue({ok: true, data: {skills: [skill]}});
+  view.rerender(createElement(AgentChatView, {active: true}));
+  fireEvent.click(await screen.findByRole("button", {name: "/safe-repository-change"}));
+  expect((screen.getByRole("textbox") as HTMLTextAreaElement).value).toBe("/safe-repository-change Keep this unsent request");
+  expect(m.client.sendAgentMessage).not.toHaveBeenCalled();
+});
+it("shows a failed skill lookup and retries it without sending the prompt", async () => {
+  m.client.listAgentSkills.mockResolvedValueOnce({ok: false, error: "unavailable"}).mockResolvedValue({ok: true, data: {skills: []}});
+  render(createElement(AgentChatView)); await draft();
+  fireEvent.click(await screen.findByRole("button", {name: "Retry skills"}));
+  await waitFor(() => expect(m.client.listAgentSkills).toHaveBeenCalledTimes(2));
+  expect((screen.getByRole("textbox") as HTMLTextAreaElement).value).toBe("Keep this unsent request");
+  expect(m.client.sendAgentMessage).not.toHaveBeenCalled();
+});
+it("rejects late enabled-skill shortcuts after leaving and returning with a newer catalog", async () => {
+  const old = deferred<{ok: true; data: {skills: unknown[]}}>();
+  m.client.listAgentSkills.mockReturnValueOnce(old.promise).mockResolvedValue({ok: true, data: {skills: []}});
+  const view = render(createElement(AgentChatView, {active: true})); await draft();
+  view.rerender(createElement(AgentChatView, {active: false}));
+  view.rerender(createElement(AgentChatView, {active: true}));
+  await waitFor(() => expect(m.client.listAgentSkills).toHaveBeenCalledTimes(2));
+  await act(async () => {old.resolve({ok: true, data: {skills: [{id: "stale-skill", status: "enabled"}]}});});
+  expect(screen.queryByRole("button", {name: "/stale-skill"})).toBeNull();
+  expect(m.client.sendAgentMessage).not.toHaveBeenCalled();
+});
+it("hides previously enabled shortcuts when focus refresh cannot verify installation storage", async () => {
+  const skill = {id: "safe-repository-change", name: "Safe repository change", status: "enabled"};
+  m.client.listAgentSkills.mockResolvedValueOnce({ok: true, data: {skills: [skill]}}).mockResolvedValue({ok: true, data: {skills: [skill], storageAvailable: false}});
+  render(createElement(AgentChatView));
+  await screen.findByRole("button", {name: "/safe-repository-change"});
+  fireEvent(window, new Event("focus"));
+  await screen.findByRole("button", {name: "Retry skills"});
+  expect(screen.queryByRole("button", {name: "/safe-repository-change"})).toBeNull();
+  expect(m.client.sendAgentMessage).not.toHaveBeenCalled();
+});
