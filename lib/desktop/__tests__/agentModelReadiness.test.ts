@@ -289,3 +289,50 @@ it("retains an unsaved local file across actual App navigation without another f
   expect(m.invoke.mock.calls.filter(([command]) => command === "read_repository_file")).toHaveLength(1);
   expect(m.invoke.mock.calls.filter(([command]) => command === "write_repository_file")).toHaveLength(0);
 });
+
+it("keeps unsent prompts separate when switching conversations", async () => {
+  const second = {...summary, id: "conversation-2", title: "Second task"};
+  m.client.listAgentConversations.mockResolvedValue({ok: true, data: {conversations: [summary, second]}});
+  m.client.getAgentConversation.mockImplementation(async (id: string) => ({ok: true, data: {...summary, id, turns: [], actions: []}}));
+  render(createElement(AgentChatView)); await draft();
+  fireEvent.change(screen.getByRole("combobox", {name: "Agent conversation"}), {target: {value: second.id}});
+  await waitFor(() => expect((screen.getByRole("combobox", {name: "Agent conversation"}) as HTMLSelectElement).value).toBe(second.id));
+  expect((screen.getByRole("textbox") as HTMLTextAreaElement).value).toBe("");
+  fireEvent.change(screen.getByRole("textbox"), {target: {value: "Second unsent task"}});
+  fireEvent.change(screen.getByRole("combobox", {name: "Agent conversation"}), {target: {value: summary.id}});
+  await waitFor(() => expect((screen.getByRole("textbox") as HTMLTextAreaElement).value).toBe("Keep this unsent request"));
+  fireEvent.change(screen.getByRole("combobox", {name: "Agent conversation"}), {target: {value: second.id}});
+  await waitFor(() => expect((screen.getByRole("textbox") as HTMLTextAreaElement).value).toBe("Second unsent task"));
+  expect(m.client.sendAgentMessage).not.toHaveBeenCalled();
+});
+it("preserves the previous unsent prompt when starting a new chat", async () => {
+  m.client.createAgentConversation.mockResolvedValue({ok: true, data: {...summary, id: "new-chat"}});
+  m.client.getAgentConversation.mockImplementation(async (id: string) => ({ok: true, data: {...summary, id, turns: [], actions: []}}));
+  render(createElement(AgentChatView)); await draft();
+  fireEvent.click(screen.getByRole("button", {name: "New chat"}));
+  await waitFor(() => expect((screen.getByRole("combobox", {name: "Agent conversation"}) as HTMLSelectElement).value).toBe("new-chat"));
+  expect((screen.getByRole("textbox") as HTMLTextAreaElement).value).toBe("");
+  fireEvent.change(screen.getByRole("combobox", {name: "Agent conversation"}), {target: {value: summary.id}});
+  await waitFor(() => expect((screen.getByRole("textbox") as HTMLTextAreaElement).value).toBe("Keep this unsent request"));
+  expect(m.client.sendAgentMessage).not.toHaveBeenCalled();
+});
+it("blocks overflowing draft navigation without discarding or creating a chat", async () => {
+  render(createElement(AgentChatView)); await draft();
+  const prompt = "x".repeat(500001);
+  fireEvent.change(screen.getByRole("textbox"), {target: {value: prompt}});
+  fireEvent.click(screen.getByRole("button", {name: "New chat"}));
+  expect(screen.getByText(/Local draft capacity reached/)).toBeTruthy();
+  expect((screen.getByRole("textbox") as HTMLTextAreaElement).value).toBe(prompt);
+  expect(m.client.createAgentConversation).not.toHaveBeenCalled();
+  expect(m.client.sendAgentMessage).not.toHaveBeenCalled();
+});
+it("preserves the current prompt after a failed conversation switch", async () => {
+  m.client.listAgentConversations.mockResolvedValue({ok: true, data: {conversations: [summary, {...summary, id: "other"}]}});
+  render(createElement(AgentChatView)); await draft();
+  m.client.getAgentConversation.mockResolvedValueOnce({ok: false, error: "fixture_failure"});
+  fireEvent.change(screen.getByRole("combobox", {name: "Agent conversation"}), {target: {value: "other"}});
+  await screen.findByText("The selected conversation could not be verified.");
+  expect((screen.getByRole("textbox") as HTMLTextAreaElement).value).toBe("Keep this unsent request");
+  expect((screen.getByRole("combobox", {name: "Agent conversation"}) as HTMLSelectElement).value).toBe(summary.id);
+  expect(m.client.sendAgentMessage).not.toHaveBeenCalled();
+});

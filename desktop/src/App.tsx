@@ -151,7 +151,7 @@ function AuthenticatedWorkspace({ identity }: { identity: VerifiedDesktopIdentit
         {activeView !== "agent" && activeView !== "repository-workspace" && <WorkspaceViewBoundary key={activeView} onReturnToAgent={() => setActiveView("agent")}>
           {activeView === "deployment-requests" && <DeploymentRequestsView />}
           {activeView === "airflow-automation" && <AirflowAutomationView />}
-          {activeView === "plugins-skills" && <PluginsSkillsView onOpenSettings={() => setActiveView("settings")} onOpenAirflow={() => setActiveView("airflow-automation")} />}
+          {activeView === "plugins-skills" && <PluginsSkillsView canManage={identity.role === "owner" || identity.role === "admin"} onOpenSettings={() => setActiveView("settings")} onOpenAirflow={() => setActiveView("airflow-automation")} />}
           {activeView === "docs" && <DocsView />}
           {activeView === "settings" && <SettingsView identity={identity} initialSection={settingsDestination} />}
         </WorkspaceViewBoundary>}

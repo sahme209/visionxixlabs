@@ -1,3 +1,4 @@
+import { rememberConversationDraft } from "../lib/conversationDrafts";
 import { isSensitiveRepositoryEvidencePath } from "../../../lib/axiom/agentRuntime/repositoryEvidencePolicy";
 import { AGENT_PROFILES, resolveAgentProfile, type AgentProfileId } from "../../../lib/axiom/agentRuntime/agentProfiles";
 import { AgentModelSelector } from "../components/AgentModelSelector";
@@ -191,6 +192,7 @@ function AgentChatSession({ onOpenSettings, identity, active }: { onOpenSettings
   const [pendingProposal, setPendingProposal] = useState<Proposal | null>(null);
   const [evidenceActions, setEvidenceActions] = useState<Proposal[]>([]);
   const [input, setInput] = useState("");
+  const conversationDrafts = useRef(new Map<string, string>());
   const [sending, setSending] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [decidingId, setDecidingId] = useState<string | null>(null);
@@ -483,8 +485,19 @@ function AgentChatSession({ onOpenSettings, identity, active }: { onOpenSettings
     setCatalogAttempt(attempt => attempt + 1);
   }
 
+  function rememberCurrentDraft(): boolean {
+    if (!conversationId) return true;
+    const next = rememberConversationDraft(conversationDrafts.current, conversationId, input);
+    if (!next) {
+      setError("Local draft capacity reached. Send or clear this prompt before switching. No draft was discarded.");
+      return false;
+    }
+    conversationDrafts.current = next; return true;
+  }
+
   async function openConversation(id: string, reload = false) {
-    if (sending || (!reload && id === conversationId && !loadingConversation)) return;
+    if (sending || loadingConversation || (!reload && id === conversationId)) return;
+    if (!reload && !rememberCurrentDraft()) return;
     const generation = ++conversationEpoch.current, context = desktopClient.config;
     decisionEpoch.current += 1; activeConversation.current = null; setDecidingId(null);
     setLoadingConversation(true); setError(null);
@@ -494,6 +507,7 @@ function AgentChatSession({ onOpenSettings, identity, active }: { onOpenSettings
       if (!result.ok || result.data.id !== id) { activeConversation.current = conversationId; setError("The selected conversation could not be verified."); return; }
       activeConversation.current = result.data.id;
       setConversationId(result.data.id);
+      if (!reload) setInput(conversationDrafts.current.get(result.data.id) ?? "");
       setTurns(result.data.turns.filter((turn): turn is typeof turn & { role: ChatTurn["role"] } => turn.role === "user" || turn.role === "assistant" || turn.role === "tool_result"));
       setPendingProposal([...result.data.actions].reverse().find((action) => action.status === "proposed") ?? null);
       setEvidenceActions(result.data.actions.filter((action) => action.riskLevel === "low"));
@@ -506,7 +520,7 @@ function AgentChatSession({ onOpenSettings, identity, active }: { onOpenSettings
   }
 
   async function newConversation() {
-    if (sending || loadingConversation) return;
+    if (sending || loadingConversation || !rememberCurrentDraft()) return;
     const generation = ++conversationEpoch.current, context = desktopClient.config;
     decisionEpoch.current += 1; activeConversation.current = null; setDecidingId(null);
     setLoadingConversation(true); setError(null);
@@ -535,6 +549,7 @@ function AgentChatSession({ onOpenSettings, identity, active }: { onOpenSettings
     if (!choice) return;
     const context = desktopClient.config, ownerConversation = conversationId, generation = conversationEpoch.current;
     const owned = () => context === desktopClient.config && activeConversation.current === ownerConversation && generation === conversationEpoch.current;
+    conversationDrafts.current.delete(conversationId);
     setInput("");
     setError(null);
     setTurns((prev) => [...prev, { id: `local_${Date.now()}`, role: "user", content: instruction }]);
@@ -650,7 +665,7 @@ function AgentChatSession({ onOpenSettings, identity, active }: { onOpenSettings
             aria-label="Agent conversation"
             value={conversationId ?? ""}
             onChange={(event) => void openConversation(event.target.value)}
-            disabled={sending || conversations.length === 0}
+            disabled={sending || loadingConversation || conversations.length === 0}
             className="min-w-0 max-w-md flex-1 truncate rounded-md border border-white/10 bg-[#151719] px-2.5 py-1.5 text-xs text-zinc-300 outline-none focus:border-white/25 disabled:opacity-50"
           >
             {conversations.length === 0 && <option value="">No conversations yet</option>}
@@ -767,9 +782,9 @@ function AgentChatSession({ onOpenSettings, identity, active }: { onOpenSettings
                 Use the selected repository and environment above. I&apos;ll inspect live read-only evidence first and ask for approval before anything changes GitHub or cloud infrastructure.
               </p>
               <div className="mt-5 flex flex-wrap justify-center gap-2" aria-label="Suggested Agent requests">
-                <button type="button" disabled={!repositoryFullName || sending} onClick={() => { setComposerMode("chat"); setInput("Review this repository and tell me the highest-impact improvements."); }} className="rounded-full border border-white/10 bg-white/[0.035] px-3 py-2 text-xs text-zinc-300 hover:bg-white/[0.07] disabled:cursor-not-allowed disabled:opacity-35">Review repository</button>
-                <button type="button" disabled={!repositoryFullName || !environmentId || sending} onClick={() => { setComposerMode("chat"); setInput("Check whether the selected repository is ready to deploy to the selected environment."); }} className="rounded-full border border-white/10 bg-white/[0.035] px-3 py-2 text-xs text-zinc-300 hover:bg-white/[0.07] disabled:cursor-not-allowed disabled:opacity-35">Check deploy readiness</button>
-                <button type="button" disabled={sending} onClick={() => { setComposerMode("chat"); setInput("Show me which systems are connected and what needs attention."); }} className="rounded-full border border-white/10 bg-white/[0.035] px-3 py-2 text-xs text-zinc-300 hover:bg-white/[0.07] disabled:cursor-not-allowed disabled:opacity-35">Check connections</button>
+                <button type="button" disabled={!repositoryFullName || sending || loadingConversation} onClick={() => { setComposerMode("chat"); setInput("Review this repository and tell me the highest-impact improvements."); }} className="rounded-full border border-white/10 bg-white/[0.035] px-3 py-2 text-xs text-zinc-300 hover:bg-white/[0.07] disabled:cursor-not-allowed disabled:opacity-35">Review repository</button>
+                <button type="button" disabled={!repositoryFullName || !environmentId || sending || loadingConversation} onClick={() => { setComposerMode("chat"); setInput("Check whether the selected repository is ready to deploy to the selected environment."); }} className="rounded-full border border-white/10 bg-white/[0.035] px-3 py-2 text-xs text-zinc-300 hover:bg-white/[0.07] disabled:cursor-not-allowed disabled:opacity-35">Check deploy readiness</button>
+                <button type="button" disabled={sending || loadingConversation} onClick={() => { setComposerMode("chat"); setInput("Show me which systems are connected and what needs attention."); }} className="rounded-full border border-white/10 bg-white/[0.035] px-3 py-2 text-xs text-zinc-300 hover:bg-white/[0.07] disabled:cursor-not-allowed disabled:opacity-35">Check connections</button>
               </div>
             </div>
           )}
@@ -796,7 +811,7 @@ function AgentChatSession({ onOpenSettings, identity, active }: { onOpenSettings
       </div>
       <div className="border-t border-white/[0.06] px-8 py-5">
         <div className="max-w-3xl mx-auto">
-          {enabledSkills.length > 0 && <div className="mb-3 flex items-center gap-2 overflow-x-auto pb-1"><span className="shrink-0 text-[10px] uppercase tracking-[0.12em] text-zinc-600">Skills</span>{enabledSkills.map((skill) => <button key={skill.id} type="button" disabled={sending || Boolean(pendingProposal)} onClick={() => setInput((current) => current || `/${skill.id} `)} className="shrink-0 rounded-full border border-violet-300/[0.12] bg-violet-300/[0.04] px-2.5 py-1 text-[10px] text-violet-200 hover:bg-violet-300/[0.08] disabled:opacity-40">/{skill.id}</button>)}</div>}
+          {enabledSkills.length > 0 && <div className="mb-3 flex items-center gap-2 overflow-x-auto pb-1"><span className="shrink-0 text-[10px] uppercase tracking-[0.12em] text-zinc-600">Skills</span>{enabledSkills.map((skill) => <button key={skill.id} type="button" disabled={sending || loadingConversation || Boolean(pendingProposal)} onClick={() => setInput((current) => current || `/${skill.id} `)} className="shrink-0 rounded-full border border-violet-300/[0.12] bg-violet-300/[0.04] px-2.5 py-1 text-[10px] text-violet-200 hover:bg-violet-300/[0.08] disabled:opacity-40">/{skill.id}</button>)}</div>}
           <div className="mb-3 flex flex-wrap items-center gap-3">
             <label className="text-xs text-zinc-400">Agent
               <select aria-label="Specialized Agent" value={agentProfile} disabled={sending || loadingConversation || Boolean(pendingProposal)} onChange={event => {
@@ -862,13 +877,14 @@ function AgentChatSession({ onOpenSettings, identity, active }: { onOpenSettings
             {fileCatalogError && <p role="status" className="text-[11px] text-zinc-400">{fileCatalogError}</p>}
             {!fileCatalogError && fileCatalogTruncated && <p role="status" className="text-[11px] text-zinc-500">Showing editable files returned by GitHub. Use “Enter another file path” for a file outside this list.</p>}
           </div>}
+          <p className="mb-2 text-[10px] text-zinc-500">Unsent prompts stay with each conversation in this session only. Sign-out or credential verification may clear them; targets and permissions remain workspace-controlled.</p>
           <div className="flex items-end gap-3">
           <textarea
             value={input}
             onChange={(event) => setInput(event.target.value)}
             onKeyDown={(event) => { if (event.key === "Enter" && !event.shiftKey && !event.nativeEvent.isComposing && event.nativeEvent.keyCode !== 229) { event.preventDefault(); void send(); } }}
             placeholder={pendingProposal ? "Approve or reject the proposed action above to continue…" : operationMode === "inspect" ? "Ask about the selected repository or environment…" : operationMode === "engineer" && composerMode === "code" ? "Describe the change you want in this file…" : operationMode === "engineer" ? "Describe the engineering change you want proposed…" : "Describe the operational outcome you want proposed…"}
-            disabled={sending || !conversationId || Boolean(pendingProposal)}
+            disabled={sending || loadingConversation || !conversationId || Boolean(pendingProposal)}
             rows={2}
             className="min-h-[48px] flex-1 resize-none rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm text-zinc-100 placeholder:text-zinc-600 outline-none focus:border-white/25 disabled:opacity-50"
           />

@@ -2653,3 +2653,57 @@ retains the existing catalogRequest cleanup warning. Independent security review
 found no isolation, baseline, approval or paging blocker. These are local JS/IPC
 fixtures, not installed Mac, native process execution or real customer acceptance.
 All source remains local; no push/merge/Actions/deploy/provider/payment changes.
+
+### Desktop skills and integrations lifecycle batch
+
+Research: existing curated skills API already persists installs/enables/removals
+and requires live workspace admin authorization; integration consent/validation
+APIs already exist. Desktop view has no context/revision or late-response fence,
+no synchronous mutation lock, and rejected refreshes can escape or retain stale
+connection status. Reuse existing APIs, add revision-keyed view ownership and
+request sequencing, best-effort independent refresh outcomes with explicit
+unavailable states, guarded mutations/consent opening and strict HTTPS consent
+URLs. Expose declared tool names for inspection and verified-role admin UI gates;
+server remains authoritative. No new plugin executor or provider calls here.
+Acceptance: real view with deferred client fixtures, stale workspace/focus loads,
+late consent, mutation rejection/retry, member read-only and inspectable tools.
+Installed marketplace/provider acceptance remains separate.
+
+### Conversation-local unsent prompt continuity
+
+Research: openConversation retains the previous conversation's prompt, while
+New chat clears it. This can mix unrelated coding tasks or lose unsent work.
+Add an in-memory per-session prompt cache only; no persistence, automatic resend,
+model/profile/target or permission restoration. Bound to20 nonempty drafts and
+500,000 UTF-16 characters, blocking navigation with an explanation rather than
+silently evicting a draft. Save current draft before switching/creating, restore
+target draft only after verified conversation ownership, preserve same-chat GET
+reload input, and disable composer while switching. Credential/session remount
+clears cache. Acceptance: distinct drafts, new-chat preservation, failed-load
+retention, no submission, bounds and existing late-response/auth regressions.
+
+Implemented both local milestones. Marketplace refresh applies each independent
+result without waiting for unrelated pending lookups; newest-request fences win.
+Credential revision remount clears prior catalogs, receipts and notices. Only
+verified owner/admin UI enables skill mutations and consent/validation; unchanged
+server authorization remains authoritative. Synchronous mutation lock prevents
+overlap. Uncertain errors never expose raw exceptions, claim unchanged mutation
+state, auto-retry or leave controls permanently busy. Exact HTTPS consent hosts
+reject userinfo/nondefault ports. Tool disclosures explain guidance is not new
+authority. Unavailable integrations are excluded from installed filter.
+
+Conversation prompts are cached only in session memory, separately by verified
+conversation ID; failed navigation retains the draft and successful new chats
+preserve the previous draft. Reload remains GET-only and retains current input.
+Bound overflow blocks navigation without a network request or silent eviction.
+Switching disables the composer/suggestion edits; no target, model, profile or
+permission restoration and no automatic submission. Credential/session remount
+clears cache. No native/runtime persistence or independent multi-agent workers.
+
+Evidence:82 focused tests at combined marketplace/Agent/streaming/skills-API/demo
+checkpoint. After final independent-load, failure, bounds and navigation deltas,
+48 affected marketplace/draft/connected-Agent tests pass. Scoped TypeScript and
+changed-file lint pass. Independent read-only security review found no blocker
+for either milestone and independently applied refresh results. Real provider
+consent, installed Mac marketplace and hosted customer acceptance remain open.
+No push, merge, Actions run, provider charge, deployment or production change.
