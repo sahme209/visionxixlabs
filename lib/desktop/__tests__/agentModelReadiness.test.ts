@@ -166,3 +166,24 @@ it("stops an in-flight draft and ignores later text without retrying or presenti
   expect(screen.queryByText("Partial explanation")).toBeNull();
   expect(m.client.sendAgentMessage).toHaveBeenCalledOnce(); expect(m.client.approveAgentAction).not.toHaveBeenCalled();
 });
+
+
+it("reloads the saved conversation after interruption without resending or approving", async () => {
+  m.client.sendAgentMessage.mockResolvedValue({ ok: false, error: "Response interrupted. Reload the conversation." });
+  render(createElement(AgentChatView)); await draft();
+  fireEvent.click(screen.getByRole("button", { name: "Send" }));
+  const reload = await screen.findByRole("button", { name: "Reload saved conversation" });
+  m.client.getAgentConversation.mockResolvedValue({ ok: true, data: { ...summary,
+    turns: [{ id: "saved-reply", role: "assistant", content: "Saved server explanation", actionProposalId: null, createdAt: "2026-10-20T00:00:00Z" }],
+    actions: [{ id: "saved-proposal", toolName: "commit_github_file", argsJson: { path: "src/app.ts" }, riskLevel: "medium", status: "proposed", resultJson: null, errorMessage: null, createdAt: "2026-10-20T00:00:00Z" }],
+  } });
+  fireEvent.change(screen.getByRole("textbox"), { target: { value: "Keep my unsent follow-up" } });
+  fireEvent.click(reload);
+  await screen.findByText("Saved server explanation");
+  expect((screen.getByRole("textbox") as HTMLTextAreaElement).value).toBe("Keep my unsent follow-up");
+  expect(screen.queryByText("Response interrupted. Reload the conversation.")).toBeNull();
+  expect(screen.getByRole("button", { name: "Approve & run" })).toBeTruthy();
+  expect(m.client.getAgentConversation).toHaveBeenCalledTimes(2);
+  expect(m.client.sendAgentMessage).toHaveBeenCalledOnce();
+  expect(m.client.approveAgentAction).not.toHaveBeenCalled(); expect(m.client.createAgentConversation).not.toHaveBeenCalled();
+});

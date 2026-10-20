@@ -154,13 +154,7 @@ pub fn desktop_http_stream(
     }
     // Explicitly detach; cancellation is owned by the bounded registry above.
     std::mem::drop(tauri::async_runtime::spawn(async move {
-        let work = pump_stream(request, &on_event, ack_rx);
-        tokio::pin!(work);
-        let result = tokio::select! {
-            result = &mut work => result,
-            _ = cancel_rx => Err(()),
-            _ = tokio::time::sleep(Duration::from_secs(120)) => Err(()),
-        };
+        let result = until_cancelled(pump_stream(request, &on_event, ack_rx), cancel_rx).await;
         // Drop of the losing HTTP future closes the body and socket. Channel
         // errors are fixed labels: never expose reqwest errors or credentials.
         let _ = on_event.send(if result.is_ok() { DesktopStreamEvent::End } else { DesktopStreamEvent::Error });
@@ -185,13 +179,46 @@ pub fn desktop_http_stream_ack(window: tauri::WebviewWindow, request_id: String,
     control.acknowledge.try_send(sequence).map_err(|_| "Stream acknowledgement refused.".to_string())
 }
 
-async fn pump_stream(request: DesktopHttpRequest, channel: &Channel<DesktopStreamEvent>, mut acknowledge: mpsc::Receiver<u64>) -> Result<(), ()> {
+/// No caller can configure an origin in a production build. The only alternate
+/// endpoint is compiled into unit tests and accepts a loopback SocketAddr.
+#[derive(Clone, Copy)]
+enum StreamEndpoint {
+    Product,
+    #[cfg(test)]
+    Loopback(std::net::SocketAddr),
+}
+impl StreamEndpoint {
+    fn url(self, path: &str) -> Result<String, ()> {
+        match self {
+            Self::Product => validated_url(path).map_err(|_| ()),
+            #[cfg(test)]
+            Self::Loopback(address) if address.ip().is_loopback() && stream_path(path) => Ok(format!("http://{address}{path}")),
+            #[cfg(test)]
+            Self::Loopback(_) => Err(()),
+        }
+    }
+}
+
+async fn until_cancelled(work: impl std::future::Future<Output = Result<(), ()>>, cancel: oneshot::Receiver<()>) -> Result<(), ()> {
+    tokio::pin!(work);
+    tokio::select! {
+        result = &mut work => result,
+        _ = cancel => Err(()),
+        _ = tokio::time::sleep(Duration::from_secs(120)) => Err(()),
+    }
+}
+
+async fn pump_stream(request: DesktopHttpRequest, channel: &Channel<DesktopStreamEvent>, acknowledge: mpsc::Receiver<u64>) -> Result<(), ()> {
+    pump_stream_at(request, channel, acknowledge, StreamEndpoint::Product).await
+}
+
+async fn pump_stream_at(request: DesktopHttpRequest, channel: &Channel<DesktopStreamEvent>, mut acknowledge: mpsc::Receiver<u64>, endpoint: StreamEndpoint) -> Result<(), ()> {
     let client = reqwest::Client::builder()
         .connect_timeout(Duration::from_secs(10))
         .timeout(Duration::from_secs(120))
         .redirect(reqwest::redirect::Policy::none())
         .build().map_err(|_| ())?;
-    let mut builder = client.post(validated_url(&request.path).map_err(|_| ())?);
+    let mut builder = client.post(endpoint.url(&request.path)?);
     for (name, value) in request.headers {
         if matches!(name.to_ascii_lowercase().as_str(), "accept" | "authorization" | "content-type" | "idempotency-key") {
             builder = builder.header(name, value);
@@ -252,3 +279,7 @@ mod tests {
     }
 
 }
+
+#[cfg(test)]
+#[path = "http_stream_wire_tests.rs"]
+mod stream_wire_tests;

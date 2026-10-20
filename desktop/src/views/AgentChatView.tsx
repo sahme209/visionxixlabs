@@ -464,8 +464,8 @@ function AgentChatSession({ onOpenSettings, identity }: { onOpenSettings?: (dest
     setCatalogAttempt(attempt => attempt + 1);
   }
 
-  async function openConversation(id: string) {
-    if (sending || (id === conversationId && !loadingConversation)) return;
+  async function openConversation(id: string, reload = false) {
+    if (sending || (!reload && id === conversationId && !loadingConversation)) return;
     const generation = ++conversationEpoch.current, context = desktopClient.config;
     decisionEpoch.current += 1; activeConversation.current = null; setDecidingId(null);
     setLoadingConversation(true); setError(null);
@@ -479,6 +479,8 @@ function AgentChatSession({ onOpenSettings, identity }: { onOpenSettings?: (dest
       setPendingProposal([...result.data.actions].reverse().find((action) => action.status === "proposed") ?? null);
       setEvidenceActions(result.data.actions.filter((action) => action.riskLevel === "low"));
       setRestartActions(result.data.actions.filter((action) => action.toolName === "trigger_aws_deploy"));
+      setLatestUsage(null);
+      setStreamingDraft("");
     } catch {
       if (generation === conversationEpoch.current && context === desktopClient.config) { activeConversation.current = conversationId; setError("The selected conversation could not be loaded."); }
     } finally { if (generation === conversationEpoch.current && context === desktopClient.config) setLoadingConversation(false); }
@@ -760,6 +762,7 @@ function AgentChatSession({ onOpenSettings, identity }: { onOpenSettings?: (dest
             <div role="alert" className="flex items-center justify-between gap-4 rounded-xl border border-rose-400/20 bg-rose-400/[0.05] px-4 py-3">
               <p className="text-xs text-rose-300">{error}</p>
               {!conversationId && <button type="button" onClick={() => setStartupAttempt((attempt) => attempt + 1)} className="shrink-0 rounded-lg border border-white/10 px-3 py-1.5 text-xs text-zinc-200 hover:bg-white/[0.06]">Retry</button>}
+              {conversationId && <button type="button" disabled={sending || loadingConversation} onClick={() => void openConversation(conversationId, true)} className="shrink-0 rounded-lg border border-white/10 px-3 py-1.5 text-xs text-zinc-200 hover:bg-white/[0.06] disabled:opacity-40">Reload saved conversation</button>}
             </div>
           )}
         </div>

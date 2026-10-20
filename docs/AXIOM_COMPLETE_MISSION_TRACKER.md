@@ -2288,3 +2288,48 @@ checks after skills, review, memory and assistant awaits now prevent starting th
 next write. Already-started operations may finish and remain recorded. The final
 route diff received independent review, and80 related checks pass. This follow-up
 still requires exact-head CI; earlier1600fb60 checks do not grant it merge proof.
+
+
+PR186 stacks streaming on PR184 without rewriting either branch. Exact ed187745
+browser run39479507648 failed after11 checks at the same documentation boundary:
+click83.385s,323 responsive polls,120s deadline, no docs request at the proxy.
+Cleanup is empty and source unchanged. Sanitized receipt is
+mission/public-website-browser-blocker-ed187745.json. Cause remains unconfirmed;
+no same-head retry or acceptance waiver follows. Initial1600fb60 full/native CI
+passed, including12 Rust tests and Clippy; final-head source checks remain separate.
+
+Next independent native acceptance slice (codex/native-stream-wire-acceptance):
+exercise actual reqwest bytes/ACK/cancel/redirect/byte limits with synthetic
+loopback servers and locked Tauri Channel callbacks. A private cfg(test)-only
+Loopback endpoint variant must validate loopback; production commands retain the
+fixed product origin, no renderer URL flag, unchanged credentials/vault and
+existing bounds. No dependency, proxy or runtime-control change. Rust/loopback
+execution remains CI-gated here; these tests cannot establish a real macOS GUI
+or hosted-provider/customer journey.
+
+
+Exact ed187745 verification: PR186 Test39479508623 passes758 suites/8641 tests
+(34 skipped), typecheck, offline auth evidence and production website build with
+no deployment. DesktopCI39479507749 passes frontend build, all12 Rust tests and
+Clippy. Browser39479507648 remains failed; PR186 was updated and remains unmerged.
+This is source/native-Linux evidence, not actual macOS or hosted AI/customer
+acceptance. PR184's head and unresolved gate remain unchanged.
+
+
+Interrupted-response recovery research found the composer instructed a reload but
+openConversation rejected the already-selected chat and the error had no reload
+action. Add explicit read-only Reload saved conversation through the existing
+owner/context-fenced GET, clear the stale draft/usage receipt on success, and
+preserve explicit approval. The regression must retrieve saved messages/proposals
+without another send, credit dispatch, automatic approval or new conversation.
+
+Native wire/recovery checkpoint: six actual-TCP fixture cases are prepared and
+independently source-reviewed, not compiled locally. The byte-cap test must first
+deliver the entire permitted amount before releasing its excess byte, so an
+unrelated early error cannot count as a cap pass. UTF-8 reconstruction allows
+arbitrary network fragmentation. The actual composer recovery test preserves an
+unsent follow-up while reading saved messages/proposals, without resending or
+approving. UI/context/demo family45 checks, final UI20 checks, scoped types,
+frontend/release build and lint pass (overlapping sets, not customer completion).
+Production transport origin, credentials, timeouts, limits and approvals remain
+unchanged. This source follow-up still requires its own native/full/browser CI.
