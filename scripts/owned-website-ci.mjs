@@ -32,7 +32,7 @@ export function publicProxyDelivery(proxy, result, nonce) {
   const children = Array.isArray(result?.children) ? result.children.filter(row => row?.role === 'proxy') : [];
   if (children.length !== 1 || children[0].exited !== true || !Number.isInteger(proxy?.pid) || proxy.pid <= 0 || proxy.pid !== children[0].pid || proxy.pid !== children[0].owner?.pid || proxy.pid !== result?.proxyReceipt?.pid || proxy.nonce !== nonce || result.proxyReceipt.nonce !== nonce) return null;
   if (!['stopped', 'interrupted', 'expired', 'failed', 'close_timeout'].includes(proxy.stage) || proxy.productionEquivalent !== false || !proxy.counts || typeof proxy.counts !== 'object' || Object.getPrototypeOf(proxy.counts) !== Object.prototype) return null;
-  const counts = {};
+  const counts = { script_accepted: 0, script_response: 0, script_complete: 0, script_cancelled: 0, script_upstream_timeout: 0, upstream_timeout: 0 };
   for (const key of ['script_accepted', 'script_response', 'script_complete', 'script_cancelled', 'script_upstream_timeout', 'upstream_timeout']) {
     const descriptor = Object.getOwnPropertyDescriptor(proxy.counts, key);
     if (!descriptor) { counts[key] = 0; continue; }
