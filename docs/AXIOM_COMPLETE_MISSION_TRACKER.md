@@ -2379,7 +2379,7 @@ separately from actual installed/provider/cloud/payment acceptance. PR187/191/19
 retain their browser failures and stay unmerged; do not retry unchanged heads.
 
 Local continuation branch combines191 editor protection and192 cancellation
-compatibility without rewriting either PR. Next bounded feature: specialized
+compatibility without rewriting either PR. Implemented bounded feature: specialized
 coding/debugging/code-review/Terraform/cloud profiles in the existing composer
 and decision loop. Shared pure profiles narrow the current admin tool allowlist;
 server validation precedes inference, and every tool/proposal keeps existing
@@ -2555,3 +2555,21 @@ validate native request isolation; Stop tests server-suppressed late completion,
 not direct late IPC injection. Teardown releases fixture gates even on assertion
 failure. All56 affected application/client/bridge/decoder checks and scoped types
 and lint pass. No product implementation or approval boundary changed.
+
+
+### Composer input-method submission boundary
+
+Focused research: the existing Agent textarea treats every unshifted Enter as
+submission, including native composition confirmation. Two connected renderer /
+HTTP-client regressions reproduce unintended message dispatch for isComposing
+and the WebKit-compatible keyCode229 composition indicator. Plan: retain both
+composition events as local editing, preserve Shift+Enter, and dispatch only a
+subsequent ordinary Enter through the unchanged authenticated streaming path.
+No provider calls or server/billing/approval changes. Acceptance: zero message
+POSTs for composition, unchanged draft, then exactly one explicit submission.
+Installed macOS input-method acceptance remains part of final post-validation.
+
+Implemented composition fence after reproducing both failures. All14 connected
+streaming application cases pass locally, including zero accidental composition
+submissions and exactly one subsequent explicit submission. Reused prior299-case
+milestone evidence; no full CI, browser run, push or deployment was triggered.

@@ -155,3 +155,23 @@ it.each(["coding", "debugging", "code_review", "terraform", "cloud_deployment"])
   await act(async () => { wire.completion.release(); }); await screen.findByText(data.reply);
   expect(wire.messages()).toHaveLength(1);
 });
+
+// Composition confirmation must never become a paid Agent submission.
+it.each([{ isComposing: true }, { keyCode: 229 }])("retains an IME draft on Enter (%j), then sends once on explicit Enter", async composition => {
+  const wire = fixture();
+  render(createElement(AgentChatView));
+  await screen.findByRole("option", { name: "Fixture model" });
+  await waitFor(() => expect((screen.getByRole("combobox", { name: "Agent conversation" }) as HTMLSelectElement).value).toBe(summary.id));
+  const composer = screen.getByRole("textbox");
+  fireEvent.change(composer, { target: { value: "未完成の入力" } });
+  fireEvent.keyDown(composer, { key: "Enter", ...composition });
+  expect(wire.messages()).toHaveLength(0);
+  expect((composer as HTMLTextAreaElement).value).toBe("未完成の入力");
+  fireEvent.keyDown(composer, { key: "Enter", shiftKey: true });
+  expect(wire.messages()).toHaveLength(0);
+  fireEvent.keyDown(composer, { key: "Enter" });
+  await screen.findByText("Review draft before persistence");
+  expect(wire.messages()).toHaveLength(1);
+  await act(async () => { wire.completion.release(); });
+  await screen.findByText(data.reply);
+});

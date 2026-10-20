@@ -865,7 +865,7 @@ function AgentChatSession({ onOpenSettings, identity, active }: { onOpenSettings
           <textarea
             value={input}
             onChange={(event) => setInput(event.target.value)}
-            onKeyDown={(event) => { if (event.key === "Enter" && !event.shiftKey) { event.preventDefault(); void send(); } }}
+            onKeyDown={(event) => { if (event.key === "Enter" && !event.shiftKey && !event.nativeEvent.isComposing && event.nativeEvent.keyCode !== 229) { event.preventDefault(); void send(); } }}
             placeholder={pendingProposal ? "Approve or reject the proposed action above to continue…" : operationMode === "inspect" ? "Ask about the selected repository or environment…" : operationMode === "engineer" && composerMode === "code" ? "Describe the change you want in this file…" : operationMode === "engineer" ? "Describe the engineering change you want proposed…" : "Describe the operational outcome you want proposed…"}
             disabled={sending || !conversationId || Boolean(pendingProposal)}
             rows={2}
