@@ -1,3 +1,4 @@
+import type { ModelPolicy } from "./aiProviderStatus";
 import { isAwsEnrollmentChallenge, isDesktopAwsAccount, isDesktopAwsInventory, type AwsEnrollmentInput, type AwsEnrollmentChallenge, type DesktopAwsAccount, type DesktopAwsInventory } from "./awsEnrollmentContract";
 /**
  * Desktop app's web client.
@@ -1087,13 +1088,13 @@ export class DesktopClient {
   }
 
   aiProviderStatus(): Promise<ApiResult<{
-    policy: { enabled: boolean; allowedProviders: string[]; modelSelections: Record<string, string>; fallbackOrder: string[] };
+    policy: ModelPolicy;
     providers: Array<{ provider: string; models: Array<{ id: string; label: string; tier: string }> }>;
   }>> {
     return this.get("/api/desktop/ai-providers");
   }
 
-  updateAiProviderPolicy(policy: { enabled: boolean; allowedProviders: string[]; modelSelections: Record<string, string>; fallbackOrder: string[] }): Promise<ApiResult<{ policy: typeof policy }>> {
+  updateAiProviderPolicy(policy: ModelPolicy): Promise<ApiResult<{ policy: typeof policy }>> {
     return this.put("/api/desktop/ai-providers", policy);
   }
 

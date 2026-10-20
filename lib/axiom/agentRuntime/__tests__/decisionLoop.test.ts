@@ -35,7 +35,7 @@ describe("runDecisionLoop", () => {
   it("fails closed before inference when the workspace Agent is disabled", async () => {
     mocks.readWorkspaceAgentIdentity.mockResolvedValue({ enabled: false, allowedTools: [] });
     const result = await runDecisionLoop({
-      organizationId: "o", correlationId: "c", transcript: [{ role: "user", content: "deploy it" }],
+      organizationId: "o", userId: "actor", correlationId: "c", transcript: [{ role: "user", content: "deploy it" }],
       executeReadOnlyTool: noopReadOnly, isProdEnvironmentTarget: noopProdCheck,
     });
     expect(result).toEqual({ kind: "error", error: "workspace_agent_disabled" });
@@ -48,7 +48,7 @@ describe("runDecisionLoop", () => {
       action: "call_tool", message: "Commit it.", toolName: "commit_github_file", args: {},
     })));
     const result = await runDecisionLoop({
-      organizationId: "o", correlationId: "c", transcript: [{ role: "user", content: "commit it" }],
+      organizationId: "o", userId: "actor", correlationId: "c", transcript: [{ role: "user", content: "commit it" }],
       executeReadOnlyTool: noopReadOnly, isProdEnvironmentTarget: noopProdCheck,
     });
     expect(result).toEqual(expect.objectContaining({ kind: "error", error: "agent_tool_not_allowed" }));
@@ -57,7 +57,7 @@ describe("runDecisionLoop", () => {
   it("returns the governed-AI error directly when the workspace hasn't enabled AI", async () => {
     mocks.resolveGovernedAiCall.mockResolvedValue({ ok: false, error: "workspace_ai_disabled" });
     const result = await runDecisionLoop({
-      organizationId: "o", correlationId: "c", transcript: [{ role: "user", content: "deploy it" }],
+      organizationId: "o", userId: "actor", correlationId: "c", transcript: [{ role: "user", content: "deploy it" }],
       executeReadOnlyTool: noopReadOnly, isProdEnvironmentTarget: noopProdCheck,
     });
     expect(result).toEqual({ kind: "error", error: "workspace_ai_disabled" });
@@ -66,7 +66,7 @@ describe("runDecisionLoop", () => {
   it("returns a final message when the model decides to respond", async () => {
     mocks.resolveGovernedAiCall.mockResolvedValue(governed(async () => ({ action: "respond", message: "Which repository do you mean?" })));
     const result = await runDecisionLoop({
-      organizationId: "o", correlationId: "c", transcript: [{ role: "user", content: "deploy it" }],
+      organizationId: "o", userId: "actor", correlationId: "c", transcript: [{ role: "user", content: "deploy it" }],
       executeReadOnlyTool: noopReadOnly, isProdEnvironmentTarget: noopProdCheck,
     });
     expect(result).toEqual({ kind: "final", message: "Which repository do you mean?" });
@@ -75,11 +75,11 @@ describe("runDecisionLoop", () => {
   it("passes the user's enabled provider selection into the governed AI boundary", async () => {
     mocks.resolveGovernedAiCall.mockResolvedValue(governed(async () => ({ action: "respond", message: "Ready." })));
     await runDecisionLoop({
-      organizationId: "o", correlationId: "c", transcript: [{ role: "user", content: "hello" }],
+      organizationId: "o", userId: "actor", correlationId: "c", transcript: [{ role: "user", content: "hello" }],
       preferredProvider: "anthropic",
       executeReadOnlyTool: noopReadOnly, isProdEnvironmentTarget: noopProdCheck,
     });
-    expect(mocks.resolveGovernedAiCall).toHaveBeenCalledWith("o", "anthropic");
+    expect(mocks.resolveGovernedAiCall).toHaveBeenCalledWith("o", "anthropic", "actor");
   });
 
   it("loads installed skill guidance below immutable Agent guardrails", async () => {
@@ -89,7 +89,7 @@ describe("runDecisionLoop", () => {
     });
     mocks.resolveGovernedAiCall.mockResolvedValue(governed(extract));
     await runDecisionLoop({
-      organizationId: "o", correlationId: "c", transcript: [{ role: "user", content: "check readiness" }],
+      organizationId: "o", userId: "actor", correlationId: "c", transcript: [{ role: "user", content: "check readiness" }],
       skillContext: "Skill: Release readiness check\nCollect live evidence first.",
       executeReadOnlyTool: noopReadOnly, isProdEnvironmentTarget: noopProdCheck,
     });
@@ -103,7 +103,7 @@ describe("runDecisionLoop", () => {
     const extract = vi.fn(async (_text: string) => ({ action: "respond", message: "I will use the selected repository." }));
     mocks.resolveGovernedAiCall.mockResolvedValue(governed(extract));
     await runDecisionLoop({
-      organizationId: "o", correlationId: "c", transcript: [{ role: "user", content: "review this repository" }],
+      organizationId: "o", userId: "actor", correlationId: "c", transcript: [{ role: "user", content: "review this repository" }],
       workspaceContext: "Recently used repository: acme/old-service",
       currentRequestContext: "Repository: acme/new-service\nBranch: main",
       executeReadOnlyTool: noopReadOnly, isProdEnvironmentTarget: noopProdCheck,
@@ -121,7 +121,7 @@ describe("runDecisionLoop", () => {
     })));
     const executeReadOnlyTool = vi.fn();
     const result = await runDecisionLoop({
-      organizationId: "o", correlationId: "c", transcript: [{ role: "user", content: "open a PR" }],
+      organizationId: "o", userId: "actor", correlationId: "c", transcript: [{ role: "user", content: "open a PR" }],
       executeReadOnlyTool, isProdEnvironmentTarget: noopProdCheck,
     });
     expect(result.kind).toBe("proposal");
@@ -136,7 +136,7 @@ describe("runDecisionLoop", () => {
       args: { repositoryFullName: "acme/widgets", environmentId: "env_prod" },
     })));
     const result = await runDecisionLoop({
-      organizationId: "o", correlationId: "c", transcript: [{ role: "user", content: "deploy to prod" }],
+      organizationId: "o", userId: "actor", correlationId: "c", transcript: [{ role: "user", content: "deploy to prod" }],
       executeReadOnlyTool: noopReadOnly, isProdEnvironmentTarget: async () => true,
     });
     expect(result.kind).toBe("proposal");
@@ -153,7 +153,7 @@ describe("runDecisionLoop", () => {
     }));
     const executeReadOnlyTool = vi.fn(async () => ({ ok: true as const, result: [{ slug: "dev" }, { slug: "test" }, { slug: "prod" }] }));
     const result = await runDecisionLoop({
-      organizationId: "o", correlationId: "c", transcript: [{ role: "user", content: "what environments do I have?" }],
+      organizationId: "o", userId: "actor", correlationId: "c", transcript: [{ role: "user", content: "what environments do I have?" }],
       executeReadOnlyTool, isProdEnvironmentTarget: noopProdCheck,
     });
     expect(executeReadOnlyTool).toHaveBeenCalledWith("list_environments", {});
@@ -167,7 +167,7 @@ describe("runDecisionLoop", () => {
     mocks.resolveGovernedAiCall.mockResolvedValue(governed(extract));
     const executeReadOnlyTool = vi.fn(async () => ({ ok: true as const, result: { content: "export const config = {};" } }));
     const result = await runDecisionLoop({
-      organizationId: "o", correlationId: "c", transcript: [{ role: "user", content: "explain this file" }],
+      organizationId: "o", userId: "actor", correlationId: "c", transcript: [{ role: "user", content: "explain this file" }],
       initialToolCall: {
         toolName: "read_github_file",
         args: { repositoryFullName: "acme/widgets", branch: "main", path: "src/config.ts" },
@@ -187,7 +187,7 @@ describe("runDecisionLoop", () => {
     mocks.resolveGovernedAiCall.mockResolvedValue(governed(async () => ({ action: "respond", message: "Done." })));
     const executeReadOnlyTool = vi.fn();
     const result = await runDecisionLoop({
-      organizationId: "o", correlationId: "c", transcript: [{ role: "user", content: "change it" }],
+      organizationId: "o", userId: "actor", correlationId: "c", transcript: [{ role: "user", content: "change it" }],
       initialToolCall: {
         toolName: "commit_github_file",
         args: { repositoryFullName: "acme/widgets", branch: "main", path: "README.md", content: "changed", message: "Change" },
@@ -204,7 +204,7 @@ describe("runDecisionLoop", () => {
       action: "call_tool", message: "Checking again.", toolName: "list_environments", args: {},
     })));
     const result = await runDecisionLoop({
-      organizationId: "o", correlationId: "c", transcript: [{ role: "user", content: "loop forever" }],
+      organizationId: "o", userId: "actor", correlationId: "c", transcript: [{ role: "user", content: "loop forever" }],
       executeReadOnlyTool: noopReadOnly, isProdEnvironmentTarget: noopProdCheck,
     });
     expect(result).toEqual({ kind: "error", error: "max_iterations_exceeded" });
@@ -214,7 +214,7 @@ describe("runDecisionLoop", () => {
     const extract = vi.fn(async () => ({ action: "call_tool", message: "Checking again.", toolName: "list_environments", args: {} }));
     mocks.resolveGovernedAiCall.mockResolvedValue(governed(extract));
     const inspect = await runDecisionLoop({
-      organizationId: "o", correlationId: "inspect", transcript: [{ role: "user", content: "inspect" }], operationMode: "inspect",
+      organizationId: "o", userId: "actor", correlationId: "inspect", transcript: [{ role: "user", content: "inspect" }], operationMode: "inspect",
       executeReadOnlyTool: noopReadOnly, isProdEnvironmentTarget: noopProdCheck,
     });
     expect(inspect).toEqual({ kind: "error", error: "max_iterations_exceeded" });
@@ -222,12 +222,12 @@ describe("runDecisionLoop", () => {
 
     extract.mockClear();
     const deepops = await runDecisionLoop({
-      organizationId: "o", correlationId: "deepops", transcript: [{ role: "user", content: "investigate" }], operationMode: "deepops",
+      organizationId: "o", userId: "actor", correlationId: "deepops", transcript: [{ role: "user", content: "investigate" }], operationMode: "deepops",
       executeReadOnlyTool: noopReadOnly, isProdEnvironmentTarget: noopProdCheck,
     });
     expect(deepops).toEqual({ kind: "error", error: "max_iterations_exceeded" });
     expect(extract).toHaveBeenCalledTimes(6);
-    expect(mocks.resolveGovernedAiCall).toHaveBeenCalledWith("o", undefined);
+    expect(mocks.resolveGovernedAiCall).toHaveBeenCalledWith("o", undefined, "actor");
   });
 
   it("maps legacy modes to conservative effort budgets", () => {
@@ -245,7 +245,7 @@ describe("runDecisionLoop", () => {
       }),
     });
     const result = await runDecisionLoop({
-      organizationId: "o", correlationId: "usage", transcript: [{ role: "user", content: "hello" }],
+      organizationId: "o", userId: "actor", correlationId: "usage", transcript: [{ role: "user", content: "hello" }],
       executeReadOnlyTool: noopReadOnly, isProdEnvironmentTarget: noopProdCheck,
     });
     expect(result).toEqual({
@@ -259,7 +259,7 @@ describe("runDecisionLoop", () => {
       action: "call_tool", message: "Doing something.", toolName: "delete_production_database", args: {},
     })));
     const result = await runDecisionLoop({
-      organizationId: "o", correlationId: "c", transcript: [{ role: "user", content: "x" }],
+      organizationId: "o", userId: "actor", correlationId: "c", transcript: [{ role: "user", content: "x" }],
       executeReadOnlyTool: noopReadOnly, isProdEnvironmentTarget: noopProdCheck,
     });
     expect(result.kind).toBe("error");
@@ -270,7 +270,7 @@ describe("runDecisionLoop", () => {
   it("treats a response missing required fields as malformed", async () => {
     mocks.resolveGovernedAiCall.mockResolvedValue(governed(async () => ({ not: "a decision" })));
     const result = await runDecisionLoop({
-      organizationId: "o", correlationId: "c", transcript: [{ role: "user", content: "x" }],
+      organizationId: "o", userId: "actor", correlationId: "c", transcript: [{ role: "user", content: "x" }],
       executeReadOnlyTool: noopReadOnly, isProdEnvironmentTarget: noopProdCheck,
     });
     expect(result).toEqual({ kind: "error", error: "decision_malformed" });
@@ -282,7 +282,7 @@ describe("runDecisionLoop", () => {
       .mockResolvedValueOnce({ action: "respond", message: "What should the file say?" });
     mocks.resolveGovernedAiCall.mockResolvedValue(governed(extract));
     const result = await runDecisionLoop({
-      organizationId: "o", correlationId: "c", transcript: [{ role: "user", content: "edit it" }],
+      organizationId: "o", userId: "actor", correlationId: "c", transcript: [{ role: "user", content: "edit it" }],
       executeReadOnlyTool: noopReadOnly, isProdEnvironmentTarget: noopProdCheck,
     });
     expect(result).toEqual({ kind: "final", message: "What should the file say?" });
@@ -300,7 +300,7 @@ describe("runDecisionLoop", () => {
       },
     })));
     const result = await runDecisionLoop({
-      organizationId: "o", correlationId: "c", transcript: [{ role: "user", content: "add how are you" }],
+      organizationId: "o", userId: "actor", correlationId: "c", transcript: [{ role: "user", content: "add how are you" }],
       executeReadOnlyTool: noopReadOnly, isProdEnvironmentTarget: noopProdCheck,
     });
     expect(result.kind).toBe("proposal");
@@ -317,7 +317,7 @@ describe("runDecisionLoop", () => {
       args: { repositoryFullName: "acme/widgets", branch: "feature/docs", path: "README.md", content: "updated", message: "Update docs" },
     })));
     const result = await runDecisionLoop({
-      organizationId: "o", correlationId: "c", transcript: [{ role: "user", content: "change it" }],
+      organizationId: "o", userId: "actor", correlationId: "c", transcript: [{ role: "user", content: "change it" }],
       operationMode: "ask", executeReadOnlyTool: noopReadOnly, isProdEnvironmentTarget: noopProdCheck,
     });
     expect(result).toEqual({
@@ -334,7 +334,7 @@ describe("runDecisionLoop", () => {
       args: { repositoryFullName: "acme/widgets", branch: "feature/docs", path: "README.md", content: "updated", message: "Update docs" },
     })));
     const result = await runDecisionLoop({
-      organizationId: "o", correlationId: "c", transcript: [{ role: "user", content: "change it" }],
+      organizationId: "o", userId: "actor", correlationId: "c", transcript: [{ role: "user", content: "change it" }],
       operationMode: "inspect", executeReadOnlyTool: noopReadOnly, isProdEnvironmentTarget: noopProdCheck,
     });
     expect(result).toEqual({
@@ -351,7 +351,7 @@ describe("runDecisionLoop", () => {
       args: { repositoryFullName: "acme/widgets", environmentId: "env_prod" },
     })));
     const result = await runDecisionLoop({
-      organizationId: "o", correlationId: "c", transcript: [{ role: "user", content: "deploy it" }],
+      organizationId: "o", userId: "actor", correlationId: "c", transcript: [{ role: "user", content: "deploy it" }],
       operationMode: "engineer", executeReadOnlyTool: noopReadOnly, isProdEnvironmentTarget: noopProdCheck,
     });
     expect(result).toEqual({
@@ -368,7 +368,7 @@ describe("runDecisionLoop", () => {
       args: { repositoryFullName: "acme/widgets", environmentId: "env_staging" },
     })));
     const result = await runDecisionLoop({
-      organizationId: "o", correlationId: "c", transcript: [{ role: "user", content: "deploy it" }],
+      organizationId: "o", userId: "actor", correlationId: "c", transcript: [{ role: "user", content: "deploy it" }],
       operationMode: "deepops", executeReadOnlyTool: noopReadOnly, isProdEnvironmentTarget: noopProdCheck,
     });
     expect(result).toEqual(expect.objectContaining({
@@ -386,7 +386,7 @@ describe("runDecisionLoop", () => {
         return { action: "call_tool", message: "Inspect the selected file.", toolName: "read_github_file", args: { repositoryFullName: "acme/widgets", branch: "main", path: "README.md" } };
       }));
       const result = await runDecisionLoop({
-        organizationId: "o", correlationId: "c", transcript: [{ role: "user", content: "review README" }],
+        organizationId: "o", userId: "actor", correlationId: "c", transcript: [{ role: "user", content: "review README" }],
         executeReadOnlyTool: read, isProdEnvironmentTarget: noopProdCheck,
       });
       expect(result).toMatchObject({ kind: "error", error: change === "disabled" ? "workspace_agent_disabled" : change === "removed" ? "agent_tool_not_allowed" : "workspace_agent_policy_unavailable" });
@@ -401,7 +401,7 @@ describe("runDecisionLoop", () => {
     });
     const read = vi.fn(noopReadOnly);
     const result = await runDecisionLoop({
-      organizationId: "o", correlationId: "c", transcript: [],
+      organizationId: "o", userId: "actor", correlationId: "c", transcript: [],
       initialToolCall: { toolName: "read_github_file", args: {}, message: "Inspect" },
       executeReadOnlyTool: read, isProdEnvironmentTarget: noopProdCheck,
     });
@@ -415,7 +415,7 @@ describe("runDecisionLoop", () => {
       return { action: "call_tool", message: "Deploy staging", toolName: "trigger_aws_deploy", args: { environmentId: "stage" } };
     }));
     const result = await runDecisionLoop({
-      organizationId: "o", correlationId: "c", transcript: [], operationMode: "deepops",
+      organizationId: "o", userId: "actor", correlationId: "c", transcript: [], operationMode: "deepops",
       executeReadOnlyTool: noopReadOnly, isProdEnvironmentTarget: noopProdCheck,
     });
     expect(result).toMatchObject({ kind: "error", error: "agent_tool_not_allowed" });
@@ -430,7 +430,7 @@ describe("runDecisionLoop", () => {
   it("requires explicit Agent tool permission before reading cloud inventory", async () => {
     mocks.resolveGovernedAiCall.mockResolvedValue(governed(async () => ({ action: "call_tool", message: "Inspect", toolName: "read_aws_inventory", args: { accountId: "connection" } })));
     const read = vi.fn(noopReadOnly);
-    const result = await runDecisionLoop({ organizationId: "o", correlationId: "c", transcript: [], executeReadOnlyTool: read, isProdEnvironmentTarget: noopProdCheck });
+    const result = await runDecisionLoop({ organizationId: "o", userId: "actor", correlationId: "c", transcript: [], executeReadOnlyTool: read, isProdEnvironmentTarget: noopProdCheck });
     expect(result).toMatchObject({ kind: "error", error: "agent_tool_not_allowed" }); expect(read).not.toHaveBeenCalled();
   });
   it("reports bounded facts with unknown coverage and never proposes a same-request write", async () => {
@@ -439,7 +439,7 @@ describe("runDecisionLoop", () => {
       .mockResolvedValueOnce({ action: "call_tool", message: "Deploy", toolName: "trigger_aws_deploy", args: { environmentId: "prod" } });
     mocks.resolveGovernedAiCall.mockResolvedValue(governed(extract));
     const read = vi.fn(async () => ({ ok: true as const, result: awsObservation }));
-    const result = await runDecisionLoop({ organizationId: "o", correlationId: "c", transcript: [], operationMode: "deepops", executeReadOnlyTool: read, isProdEnvironmentTarget: noopProdCheck });
+    const result = await runDecisionLoop({ organizationId: "o", userId: "actor", correlationId: "c", transcript: [], operationMode: "deepops", executeReadOnlyTool: read, isProdEnvironmentTarget: noopProdCheck });
     expect(result).toMatchObject({ kind: "final", message: expect.stringContaining("No change was proposed") });
     expect(read).toHaveBeenCalledTimes(1);
     expect(extract.mock.calls[1][0]).toContain("REPORT-ONLY AWS OBSERVATION");
@@ -448,7 +448,7 @@ describe("runDecisionLoop", () => {
   it("keeps initial UI grounding observations report-only and prefixes unknowns", async () => {
     allowCloudRead();
     mocks.resolveGovernedAiCall.mockResolvedValue(governed(async () => ({ action: "respond", message: "No instances were returned in this page." })));
-    const result = await runDecisionLoop({ organizationId: "o", correlationId: "c", transcript: [],
+    const result = await runDecisionLoop({ organizationId: "o", userId: "actor", correlationId: "c", transcript: [],
       initialToolCall: { toolName: "read_aws_inventory", args: { accountId: "connection" }, message: "Inspect selected account" },
       executeReadOnlyTool: async () => ({ ok: true, result: awsObservation }), isProdEnvironmentTarget: noopProdCheck });
     expect(result).toMatchObject({ kind: "final", message: expect.stringContaining("account-wide coverage are unknown") });
@@ -456,13 +456,13 @@ describe("runDecisionLoop", () => {
   it("rejects malformed bounded evidence rather than interpreting it as a snapshot", async () => {
     allowCloudRead();
     mocks.resolveGovernedAiCall.mockResolvedValue(governed(async () => ({ action: "call_tool", message: "Inspect", toolName: "read_aws_inventory", args: { accountId: "connection" } })));
-    const result = await runDecisionLoop({ organizationId: "o", correlationId: "c", transcript: [], executeReadOnlyTool: async () => ({ ok: true, result: { ...awsObservation, coverage: { complete: true } } }), isProdEnvironmentTarget: noopProdCheck });
+    const result = await runDecisionLoop({ organizationId: "o", userId: "actor", correlationId: "c", transcript: [], executeReadOnlyTool: async () => ({ ok: true, result: { ...awsObservation, coverage: { complete: true } } }), isProdEnvironmentTarget: noopProdCheck });
     expect(result).toMatchObject({ kind: "error", error: "tool_execution_failed" });
   });
   it("does not permanently restrict later independently governed operational requests", async () => {
     allowCloudRead();
     mocks.resolveGovernedAiCall.mockResolvedValue(governed(async () => ({ action: "call_tool", message: "Propose the independently selected target", toolName: "trigger_aws_deploy", args: { environmentId: "stage", sourceRef: "reviewed-release" } })));
-    const result = await runDecisionLoop({ organizationId: "o", correlationId: "c", transcript: [{ role: "tool_result", content: JSON.stringify({ ...awsObservation, provenance: "Historical observation, not execution evidence" }) }, { role: "user", content: "Propose the separately configured release target" }], operationMode: "deepops", executeReadOnlyTool: noopReadOnly, isProdEnvironmentTarget: noopProdCheck });
+    const result = await runDecisionLoop({ organizationId: "o", userId: "actor", correlationId: "c", transcript: [{ role: "tool_result", content: JSON.stringify({ ...awsObservation, provenance: "Historical observation, not execution evidence" }) }, { role: "user", content: "Propose the separately configured release target" }], operationMode: "deepops", executeReadOnlyTool: noopReadOnly, isProdEnvironmentTarget: noopProdCheck });
     expect(result).toMatchObject({ kind: "proposal", toolName: "trigger_aws_deploy" });
   });
 
@@ -470,7 +470,7 @@ describe("runDecisionLoop", () => {
     allowCloudRead();
     const extract = vi.fn(async () => ({ action: "call_tool", message: "Inspect", toolName: "read_aws_inventory", args: { accountId: "connection" } }));
     mocks.resolveGovernedAiCall.mockResolvedValue(governed(extract));
-    const result = await runDecisionLoop({ organizationId: "o", correlationId: "c", transcript: [], executeReadOnlyTool: async () => {
+    const result = await runDecisionLoop({ organizationId: "o", userId: "actor", correlationId: "c", transcript: [], executeReadOnlyTool: async () => {
       mocks.readWorkspaceAgentIdentity.mockResolvedValue({ enabled: false, allowedTools: [] });
       return { ok: true, result: awsObservation };
     }, isProdEnvironmentTarget: noopProdCheck });

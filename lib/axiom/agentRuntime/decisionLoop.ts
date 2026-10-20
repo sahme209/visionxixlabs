@@ -177,6 +177,8 @@ async function extractDecision(
 
 export async function runDecisionLoop(input: {
   organizationId: string;
+  /** Trusted authenticated actor, supplied by the desktop session boundary. */
+  userId: string;
   correlationId: string;
   transcript: ConversationTurnInput[];
   workspaceContext?: string;
@@ -197,7 +199,7 @@ export async function runDecisionLoop(input: {
   if (!identity?.enabled) return { kind: "error", error: "workspace_agent_disabled" };
   const allowedTools = new Set(identity.allowedTools);
 
-  const governed = await resolveGovernedAiCall(input.organizationId, input.preferredProvider);
+  const governed = await resolveGovernedAiCall(input.organizationId, input.preferredProvider, input.userId);
   if (!governed.ok) return { kind: "error", error: governed.error };
 
   const effort = resolveAgentEffortProfile(input.operationMode);

@@ -114,3 +114,96 @@ PR #182 website source validation and its local-browser lifecycle/navigation
 blocker retain their current priority. Existing Agent/ECS/cloud/Terraform/
 Airflow/billing/security work is preserved. The ONE FINAL website deployment,
 database recovery, live billing and installer approval gates are unchanged.
+
+## Read-before-write Gateway policy compatibility checkpoint
+
+October 20 source-only implementation: the existing policy JSON slot can be read
+as either its unchanged legacy model string or a strict stored Gateway v1 value
+`{ version: 1, defaultModelId, approvedModelIds }`. Existing consumers still receive
+`modelSelections.vercel_gateway` as the default string; validated, frozen metadata
+is carried separately as optional `gatewaySelection`. The v1 shape permits 1–32
+unique concrete Gateway model IDs, each at most 200 characters, using the existing
+`isGatewayModelId` syntax. Dynamic `service-default` and virtual `vmc/` routes remain
+valid only under existing legacy semantics, outside this concrete v1 selection.
+Unknown versions/fields, getters, sparse/extended arrays, duplicate IDs or an
+unapproved default fail closed without invoking stored accessors.
+
+Only the stored-row loader uses the new reader. The existing public normalizer
+and admin write boundary still reject object-valued selections; no new API/UI
+write capability, catalog, credentials or model request is enabled. Saving a
+validated loaded policy preserves the v1 JSON value rather than flattening it.
+Service-provider intersection or workspace disable drops revoked Gateway metadata;
+invalid normalized metadata fails closed without inventing a direct fallback.
+Legacy provider strings, service defaults and explicitly configured direct-provider
+semantics remain intact. Mocked repository tests cover compatibility, strict
+validation, save preservation and revocation; these are not live Grok, catalog,
+model-selection UI, inference, billing or installed-desktop acceptance. Remaining
+writer/API/catalog/cost-reservation phases and production gates above still apply.
+Legacy null/primitive/non-array provider and fallback values retain the original
+normalizer's empty-list behavior; actual arrays are descriptor-checked before
+iteration. Regression cases compare stored/public legacy normalization directly.
+
+Root validation: 48 targeted tests across stored/legacy policy, control governance
+and desktop provider routes pass; scoped lint and independent source review pass.
+These checks establish storage compatibility only, not hosted inference acceptance.
+
+## Admin catalog integration checkpoint
+
+The dependent source phase adds a separate reviewed admin-update normalizer;
+the legacy normalizer remains string-only. Existing account, control and desktop
+owner/admin routes can validate the bounded v1 object in the existing Gateway
+JSON slot. Every approved ID, including non-default choices, must exist in the
+current service-filtered catalog before persistence. Catalog failure refuses the
+write. Session-derived tenant IDs, same-origin web mutations, desktop admin
+checks, existing audit mechanisms and service provider restrictions remain.
+Account model discovery now uses the existing live Gateway catalog rather than
+static registry guesses. No keys or endpoint configuration are returned.
+
+This enables policy administration in source only. Existing inference continues
+using its approved default string: alternate selection, shared chat/editor UI,
+streaming/tool support and real-provider/native acceptance remain subsequent
+steps. No paid inference, credentials, schema change or deployment is included.
+
+The admin boundary accepts the normalized GET form (default string plus validated
+`gatewaySelection`) as well as the nested stored v1 form. Conflicting defaults,
+malformed metadata and simultaneous representations refuse; GET → edit → save
+regressions preserve the approved list rather than silently flattening it.
+
+Before expanding Agent model dispatch or streaming, close the existing durable
+admission gap in `lib/axiom/agentRuntime/governedAiCall.ts`: it prechecks credits,
+while `AIProviderManager.extractStructuredData` records Gateway usage after the
+provider call. This path does not yet use the transactional hold/dispatch/usage
+attachment sequence in `app/api/ai/generate/route.ts`. Source inspection establishes
+the missing admission step; no paid concurrency experiment was run. Reuse existing
+reservation/settlement primitives and prove retries, concurrent calls and uncertain
+provider outcomes retain holds before allowing alternate-model dispatch. Do not
+introduce another meter or treat the current precheck as concurrent spend proof.
+
+## Desktop policy controls wired to the application
+
+Existing Settings Models now preserves versioned metadata, supports multiple
+Gateway approvals and an explicit Make default action, promotes a remaining
+approval when the default is removed, and disables Gateway when the last is
+removed. Unavailable concrete IDs remain visible for removal; explicit batch
+cleanup removes multiple stale approvals in one save. Legacy `service-default`
+and `vmc/` routing remain readable/disablable and are excluded from stale cleanup.
+Unrelated direct-provider edits preserve Gateway metadata. Loaded-policy context
+is bound to the desktop client configuration; workspace drift refuses a save or
+ignores an outdated response. Backend authority and current catalog checks remain
+mandatory; no credential enters the renderer.
+
+Evidence: 38 focused decoder/transition/rendered Settings tests and desktop
+no-emit types/lint pass. Root independently exercised all 12 rendered cases,
+including save refusal, default/approval transitions, stale cleanup and workspace
+switches. This is actual component behavior with isolated transport mocks, not
+installed desktop, live inference or a real customer/provider acceptance claim.
+The member chat/editor selector and streaming remain open behind durable billing
+admission and provider/native acceptance gates.
+
+The scoped governed-extraction admission correction is now implemented in source:
+see `mission/governed-agent-credit-admission-source.md`. It uses the existing
+ledger and attributed writers, retains uncertain holds, enforces one SDK attempt
+and accounts for a returned generation before parsing. Targeted evidence is
+recorded there; actual database concurrency, model-specific provider cost coverage,
+other AI lanes and real-provider/native acceptance remain required. This does not
+authorize alternate member-model dispatch or claim all billing paths are fixed.

@@ -1,0 +1,239 @@
+{
+  "currentInteraction": "approval-documentation",
+  "lastInteraction": "approval-documentation",
+  "completedEvidence": [
+    "essential_consent_selected",
+    "play_pause_preserves_typed_output",
+    "offscreen_timer_stopped",
+    "sample_approve_reject",
+    "native_branch_selector_resets_story",
+    "replay",
+    "hidden_document_timer_stopped",
+    "terraform_apply_absent",
+    "mobile_360_no_horizontal_overflow",
+    "keyboard_previous",
+    "reduced_motion_static_manual_step",
+    "actual_documentation_destination"
+  ],
+  "documentationPreWaitSnapshot": null,
+  "documentationTimeoutSnapshot": null,
+  "scriptRequests": {
+    "allowed": 22,
+    "denied": 0
+  },
+  "scriptCounts": null,
+  "schema": 1,
+  "sourceHead": "e4df013fe56e2d85c53dd98a021a1fe52c24a8a1",
+  "sourceKind": "pull_request_head",
+  "productionEquivalent": false,
+  "outcome": "passed",
+  "cleanup": "owned_groups_empty",
+  "cleanupErrors": [],
+  "sourceUnchanged": true,
+  "captureSuccess": true,
+  "cleanupDiagnostics": [],
+  "homeCapturePhase": "playback_ready_after_essential_consent",
+  "consoleErrorCount": 6,
+  "runtimeExceptionCount": 0,
+  "evaluationExceptionClass": null,
+  "predicateExceptionClass": null,
+  "captureFailure": null,
+  "preImagePhase": null,
+  "nextMarkers": null,
+  "preImageDomSnapshot": null,
+  "timedOutOperation": null,
+  "qualification": "Isolated public website fixture only; not production, authentication, native desktop, or customer deployment acceptance.",
+  "serverGuard": {
+    "stage": "stopping",
+    "counts": {
+      "transport": 9,
+      "process": 0,
+      "worker": 0,
+      "listener": 0
+    }
+  },
+  "proxyDelivery": {
+    "stage": "stopped",
+    "counts": {
+      "script_accepted": 22,
+      "script_response": 22,
+      "script_complete": 21,
+      "script_cancelled": 1,
+      "script_upstream_timeout": 0,
+      "upstream_timeout": 0
+    },
+    "categories": {
+      "webpack": {
+        "accepted": 4,
+        "response": 4,
+        "complete": 4,
+        "cancelled": 0,
+        "status_2xx": 4,
+        "status_3xx": 0,
+        "status_4xx": 0,
+        "status_5xx": 0,
+        "status_other": 0,
+        "mime_js": 4,
+        "mime_other": 0,
+        "cancelled_successful_js": 0,
+        "cancelled_other": 0
+      },
+      "main_app": {
+        "accepted": 4,
+        "response": 4,
+        "complete": 4,
+        "cancelled": 0,
+        "status_2xx": 4,
+        "status_3xx": 0,
+        "status_4xx": 0,
+        "status_5xx": 0,
+        "status_other": 0,
+        "mime_js": 4,
+        "mime_other": 0,
+        "cancelled_successful_js": 0,
+        "cancelled_other": 0
+      },
+      "app_page": {
+        "accepted": 2,
+        "response": 2,
+        "complete": 2,
+        "cancelled": 0,
+        "status_2xx": 2,
+        "status_3xx": 0,
+        "status_4xx": 0,
+        "status_5xx": 0,
+        "status_other": 0,
+        "mime_js": 2,
+        "mime_other": 0,
+        "cancelled_successful_js": 0,
+        "cancelled_other": 0
+      },
+      "app_layout": {
+        "accepted": 4,
+        "response": 4,
+        "complete": 3,
+        "cancelled": 1,
+        "status_2xx": 4,
+        "status_3xx": 0,
+        "status_4xx": 0,
+        "status_5xx": 0,
+        "status_other": 0,
+        "mime_js": 4,
+        "mime_other": 0,
+        "cancelled_successful_js": 1,
+        "cancelled_other": 0
+      },
+      "other": {
+        "accepted": 8,
+        "response": 8,
+        "complete": 8,
+        "cancelled": 0,
+        "status_2xx": 8,
+        "status_3xx": 0,
+        "status_4xx": 0,
+        "status_5xx": 0,
+        "status_other": 0,
+        "mime_js": 8,
+        "mime_other": 0,
+        "cancelled_successful_js": 0,
+        "cancelled_other": 0
+      }
+    },
+    "documentation": {
+      "rsc_navigation": {
+        "accepted": 1,
+        "response": 1,
+        "complete": 1,
+        "cancelled": 0,
+        "status_2xx": 1,
+        "status_3xx": 0,
+        "status_4xx": 0,
+        "status_5xx": 0,
+        "status_other": 0,
+        "mime_rsc": 1,
+        "mime_html": 0,
+        "mime_other": 0,
+        "upstream_timeout": 0
+      },
+      "rsc_prefetch": {
+        "accepted": 0,
+        "response": 0,
+        "complete": 0,
+        "cancelled": 0,
+        "status_2xx": 0,
+        "status_3xx": 0,
+        "status_4xx": 0,
+        "status_5xx": 0,
+        "status_other": 0,
+        "mime_rsc": 0,
+        "mime_html": 0,
+        "mime_other": 0,
+        "upstream_timeout": 0
+      },
+      "document": {
+        "accepted": 0,
+        "response": 0,
+        "complete": 0,
+        "cancelled": 0,
+        "status_2xx": 0,
+        "status_3xx": 0,
+        "status_4xx": 0,
+        "status_5xx": 0,
+        "status_other": 0,
+        "mime_rsc": 0,
+        "mime_html": 0,
+        "mime_other": 0,
+        "upstream_timeout": 0
+      },
+      "denied": 0
+    }
+  },
+  "images": [
+    {
+      "name": "agent-review-desktop.png",
+      "width": 1200,
+      "height": 883
+    },
+    {
+      "name": "approval-documentation.png",
+      "width": 1078,
+      "height": 1823
+    },
+    {
+      "name": "home-desktop.png",
+      "width": 1200,
+      "height": 943
+    },
+    {
+      "name": "product-mobile.png",
+      "width": 320,
+      "height": 1879
+    },
+    {
+      "name": "product-reduced-motion-mobile.png",
+      "width": 320,
+      "height": 1879
+    },
+    {
+      "name": "terraform-held-desktop.png",
+      "width": 1200,
+      "height": 895
+    }
+  ],
+  "runUrl": "https://github.com/sahme209/visionxixlabs/actions/runs/39460604823",
+  "artifactId": 12282147972,
+  "humanReview": {
+    "reviewed": true,
+    "screenshots": {
+      "agent-review-desktop.png": "f3908dc9c4fbfef6651f2b71c911ceae2f51a0a36bf6f9e821f120771439662b",
+      "approval-documentation.png": "2046f599faaae8b86edd427cfc819828f6dbed32baee49ba9ec72f91bfe26fa2",
+      "home-desktop.png": "f5336fcf2c6e91b3a84f4adf5ba254bae8c04e6e2741646ce2e9ba6011984880",
+      "product-mobile.png": "ad7dd9cdd061d02a52f69dd08bf08f26f7cfb4670b4e9bb9bcb1519ea74e9810",
+      "product-reduced-motion-mobile.png": "8df0f609f170e9c4bbf3512a2d083d952ee711f9d4ac7440a684542770b17146",
+      "terraform-held-desktop.png": "f2e0a863fb84f5c36190d9e8eed403c9aa43f5ed8a8fea60e35e6ebf5ebb417b"
+    },
+    "observations": "All six screenshots inspected. Readable dark layouts, explicit scripted/sample labels, sample approval and Terraform hold states, mobile/reduced-motion layout and real documentation destination."
+  },
+  "causalLimit": "Earlier intermittent documentation-navigation failures remain causally unconfirmed. This exact-head pass does not attribute a fix to unrelated model/billing changes or waive future checks.",
+  "eventQualification": "Six console error events remain unclassified; zero runtime exceptions does not mean an error-free console."
+}

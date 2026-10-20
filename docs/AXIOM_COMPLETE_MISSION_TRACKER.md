@@ -1905,3 +1905,106 @@ focused cases pass plus strict imported-source types with the project's allowJs
 semantics and scoped lint; an initial standalone invocation omitted allowJs and
 was corrected without relaxing the source contract. A fresh browser run is
 required; no production deployment or authorization change is included.
+
+
+PR182 merged normally as28ddcc60719e358202b27fa7fda5ac797005c03e after
+exact-head91b0eb69 fullCI39452848638, desktopCI39452848549 and browser
+39452848560 passed. All12 browser checks and six inspected screenshots are
+preserved in mission/public-website-browser-acceptance-2026-10-20.json. The
+navigation-shaped response completed2xx/RSC with no denial or upstream timeout.
+Earlier intermittent navigation failure remains causally unconfirmed; no further
+investigation or redundant browser rerun is scheduled. No production deployment
+occurred. The established desktop AI phase resumes with stored Gateway v1 reader
+compatibility; public object-policy writes, new model dispatch, discovery claims
+and inference remain disabled/unverified. Existing models/customers keep legacy
+normalization, and current service revocation still fails closed.
+
+Billing separate source branch now integrates28ddcc60 and preserves checkpoints
+871e0cea,21d047ef,abf9cd00 and38b4cf40. Its actual worker/source and supervisor
+handoff guards are implemented in source, with90 focused lifecycle/authority
+checks and source no-emit types passing; the new tooling-coverage regression
+passes independently. Source/config/output receipts still need current-main
+qualification, actual environment/DB ownership and hosted TEST acceptance.
+Two local native release-fixture timing failures remain recorded; full readiness
+is not claimed and no deadline was relaxed. Production DB/PITR/binding, live
+payments, installer and final deployment approval gates remain unchanged.
+
+
+Desktop policy reader PR183 is under required CI after48 focused tests, full web
+source types, lint and independent review passed. Dependent admin catalog source
+now validates all approved Gateway IDs in the three existing policy APIs and
+uses live catalog discovery on the account endpoint. Alternate-model dispatch,
+shared desktop selector and real provider/native acceptance remain unverified.
+Billing current-main source qualification60be2ab3 is committed separately; root
+actual closure suite passes4 checks. This is source-only evidence, not compiled
+output, environment/DB ownership, real Stripe checkout or runtime authority.
+
+
+Automatic PR183 browser39456134947 atd732ac5a reproduced the documentation
+navigation flake after11 accepted interactions: no docs navigation/prefetch/document
+request reached the proxy, no denial, runtime exceptions0, deadline120s; owned
+cleanup/source integrity passed. Source-only follow-up found no precise additional
+cause. Its safe receipt is mission/public-website-browser-blocker-2026-10-20.json.
+The prior PR182 pass remains evidence for its exact head, not a waiver of this
+failed check. No deadline, I/O boundary or acceptance requirement is weakened;
+no blind diagnostic rerun is planned. Independent model/catalog work continues.
+
+
+Agent billing source audit found an actionable admission gap: governed structured
+extraction prechecks credits and eagerly writes usage after the provider call,
+but does not use the browser generation route's durable hold. Legacy holds also
+lack a durable uncertain-dispatch fence; simple retention until TTL is inadequate.
+An isolated existing Agent worktree is preparing a narrow extension of the same
+ledger plus trusted actor propagation and singular usage binding. Alternate-model
+dispatch/streaming remains gated on this correction and its regression evidence;
+no provider call, paid inference, schema or production change is authorized.
+
+
+Owner continuation preserves these acceptance targets within existing phases:
+Cursor-level repository understanding/coding/editing/terminal/debugging/testing/
+diffs with approval enforcement; real Grok/OpenAI/Anthropic model discovery,
+selection, streaming and metering; functional marketplace/extensions; minimalist
+website with header direct Mac download from a verified approved release; and
+professional Support XCM progress/partner storytelling. Cursor public workflows
+are reference evidence only, implemented with Axiom code. None is declared done
+from appearance or fixtures alone. Current desktop policy, Settings, reservation
+and browser gates retain priority. Download readiness/signing, separate installer
+approval, truthful support claims and unchanged support Stripe flow remain gates.
+
+
+Desktop Settings source now connects the versioned admin model policy to actual
+controls: multiple approvals, explicit default, stale-ID removal/batch cleanup,
+legacy managed-route preservation and workspace-bound saves. Author38 focused
+checks/types/lint pass; root independently passes12 rendered interaction cases.
+This remains isolated component acceptance with mocked transport, not native or
+provider acceptance. Member model selection/streaming is not advertised complete.
+The latest3a837260 browser job failed before browser startup on bounded git
+ETIMEDOUT; this is distinct from the recorded documentation navigation flake.
+Required checks remain gates; no timeout increase or silent rerun was made.
+
+
+Governed Agent extraction now implements source-level durable admission using the
+existing ledger: trusted actor, domain-separated invocation keys, serializable
+claim, one-use opaque dispatch authority, retained uncertain holds afterTTL,
+single SDK attempt,4096-token output bound and accounting before JSON parsing.
+A pre-existing generation cannot be acquired by another hold; v2 uses its existing
+attributed writer. Author151 focused checks plus types/lint and root26 independent
+authority tests pass. Details/limits: mission/governed-agent-credit-admission-source.md.
+No live DB/concurrency/provider evidence is implied. Generic generation legacy
+uncertainty, actual provider-cost coverage and native/customer acceptance remain
+open. TEST Free200-cent allowance cannot cover the unchanged1000-cent default
+reservation; no pricing/configuration change is made to force acceptance.
+Final desktop95cb3747 nativeCI39458777269 passed; full typecheck/test steps passed.
+Browser39458777306 failed after11 checks at docs with zero docs requests; no
+acceptance waiver or speculative production fix. These gates remain in PR183.
+
+
+Combined e4df013f browser39460604823 passed all12 checks; root inspected six
+screenshots. Exact sanitized receipt/hashes are preserved in
+mission/public-website-browser-acceptance-e4df013f.json. Historical navigation
+intermittency remains causally unconfirmed; this is not attributed to billing
+source changes. NativeCI39460604879 passed. Full CI39460604860 passed types but
+failed one of8453 executed tests: current allowance omitted uncertain holds.
+The reader now includes dispatch_unknown to match admission authority; strict
+query-parity regression is retained. Focused checks precede a new exact-head CI.
+No failed check is waived, and no production deployment or database change occurs.

@@ -1,0 +1,36 @@
+{
+  "schema": 1,
+  "sourceHead": "d732ac5a8b2fa55a70ac0d2500ea89ab08d7c5ba",
+  "runUrl": "https://github.com/sahme209/visionxixlabs/actions/runs/39456134947",
+  "outcome": "failed",
+  "completedCheckCount": 11,
+  "lastInteraction": "documentation_control",
+  "currentInteraction": "documentation_check",
+  "failure": "website_driver_deadline",
+  "documentationPreWaitSnapshot": {
+    "pathnameIsDocs": false,
+    "executionPresent": false,
+    "tourPresent": true
+  },
+  "documentationRequestCounts": {
+    "navigationAccepted": 0,
+    "prefetchAccepted": 0,
+    "documentAccepted": 0,
+    "denied": 0
+  },
+  "scriptDelivery": {
+    "accepted": 20,
+    "response": 20,
+    "complete": 19,
+    "cancelled": 1,
+    "cancelledSuccessfulLayoutJavascript": 1
+  },
+  "runtimeExceptionCount": 0,
+  "consoleErrorCount": 6,
+  "sourceUnchanged": true,
+  "cleanup": "owned_groups_empty",
+  "rootCause": "unconfirmed",
+  "boundedReview": "Pointer press/release is awaited; interception continues during evaluations; no documentation request reached proxy. Existing RSC header correction does not explain this receipt. No source fix justified by current evidence.",
+  "acceptance": "Gate remains open. Earlier exact-head PR182 receipt remains preserved; no retry, deadline increase or broader I/O is authorized by this record.",
+  "qualification": "Isolated fixture only; no production, native desktop, real provider or customer workflow acceptance."
+}

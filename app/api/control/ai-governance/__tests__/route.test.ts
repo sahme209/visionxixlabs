@@ -20,7 +20,7 @@ vi.mock("@/lib/auth/currentContext", () => ({ currentContext: mocks.currentConte
 vi.mock("@/lib/auth/platformAdmin", () => ({ isAdminOrOwner: mocks.isAdminOrOwner }));
 vi.mock("@/lib/audit/secureAudit", () => ({ record: mocks.recordAudit }));
 vi.mock("@/lib/ai/AIProviderManager", () => ({ getAIProviderManager: () => ({ status: () => [{ provider: "vercel_gateway", configured: true }] }) }));
-vi.mock("@/lib/ai/gatewayModelCatalog", () => ({ loadGatewayModelCatalog: mocks.loadModels }));
+vi.mock("@/lib/ai/gatewayModelCatalog", async (original) => ({ ...await original<typeof import("@/lib/ai/gatewayModelCatalog")>(), loadGatewayModelCatalog: mocks.loadModels }));
 vi.mock("@/lib/ai/workspaceProviderPolicy", async (original) => {
   const actual = await original<typeof import("@/lib/ai/workspaceProviderPolicy")>();
   return { ...actual, loadWorkspaceAIProviderPolicyWithState: mocks.loadPolicy, saveWorkspaceAIProviderPolicy: mocks.savePolicy };

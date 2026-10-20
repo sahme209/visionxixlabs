@@ -9,7 +9,8 @@ import { getAIProviderManager } from "@/lib/ai/AIProviderManager";
 import { loadGatewayModelCatalog } from "@/lib/ai/gatewayModelCatalog";
 import {
   loadWorkspaceAIProviderPolicyWithState,
-  normalizeWorkspaceAIProviderPolicy,
+  normalizeWorkspaceAIProviderPolicyUpdate,
+  gatewayPolicyModelIds,
   resolveWorkspaceAIProviderPolicy,
   saveWorkspaceAIProviderPolicy,
 } from "@/lib/ai/workspaceProviderPolicy";
@@ -95,16 +96,16 @@ export async function PATCH(request: NextRequest) {
   const correlationId = idFactory.correlation(request.headers.get("x-correlation-id") ?? `ai_governance_${Date.now().toString(36)}`);
 
   if (section === "provider_policy") {
-    const policy = normalizeWorkspaceAIProviderPolicy(body ?? {});
+    const policy = normalizeWorkspaceAIProviderPolicyUpdate(body ?? {});
     if (!policy) return NextResponse.json({ ok: false, error: "invalid_provider_policy" }, { status: 422 });
     const available = serviceProviders();
     if (policy.allowedProviders.some((provider) => !available.includes(provider))) {
       return NextResponse.json({ ok: false, error: "provider_unavailable" }, { status: 422 });
     }
-    if (policy.enabled && policy.modelSelections.vercel_gateway && policy.modelSelections.vercel_gateway !== "service-default") {
+    if (gatewayPolicyModelIds(policy).length) {
       const models = await loadGatewayModelCatalog().catch(() => null);
       if (!models) return NextResponse.json({ ok: false, error: "gateway_catalog_unavailable" }, { status: 503 });
-      if (!models.some((model) => model.id === policy.modelSelections.vercel_gateway)) {
+      if (gatewayPolicyModelIds(policy).some(id => !models.some(model => model.id === id))) {
         return NextResponse.json({ ok: false, error: "gateway_model_unavailable" }, { status: 422 });
       }
     }
@@ -112,7 +113,7 @@ export async function PATCH(request: NextRequest) {
     await recordAudit({
       organizationId: idFactory.organization(ctx.organizationId), actorUserId: idFactory.user(ctx.userId), actorKind: "user",
       action: "policy.update", outcome: "success", entityRef: "ai_provider_policy:workspace", correlationId, source: "live",
-      detail: { enabled: policy.enabled, providers: policy.allowedProviders.join(","), models: Object.values(policy.modelSelections).join(",") },
+      detail: { enabled: policy.enabled, providers: policy.allowedProviders.join(","), models: Object.values(policy.modelSelections).join(","), approvedGatewayModels: gatewayPolicyModelIds(policy).join(",") },
     });
     return NextResponse.json({ ok: true, data: { providerPolicy: policy } });
   }

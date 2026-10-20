@@ -2,6 +2,7 @@ import { denyIsolatedExternalIO } from "@/lib/billing/isolatedApplication/runtim
 import "server-only";
 
 import { generateText } from "ai";
+import { AI_REQUEST_MAX_OUTPUT_TOKENS } from "@/lib/billing/requestReservationCents";
 import { redact } from "@/lib/security/redaction";
 import {
   AIProviderError,
@@ -18,6 +19,20 @@ const SERVICE_DEFAULT = "service-default";
 
 function jsonText(value: string): string {
   return value.trim().replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/, "");
+}
+
+/** Parsing is separate so admitted callers durably account for a returned
+ * paid envelope even when its JSON requires a separately admitted repair. */
+export function parseGatewayStructuredResponse<T>(response: AITextResponse): AIStructuredResponse<T> {
+  return {
+    data: JSON.parse(jsonText(response.text)) as T,
+    raw: response.text,
+    provider: response.provider,
+    model: response.model,
+    latencyMs: response.latencyMs,
+    usage: response.usage,
+    gatewayGenerationId: response.gatewayGenerationId,
+  };
 }
 
 export class VercelGatewayProvider implements AIProvider {
@@ -42,6 +57,10 @@ export class VercelGatewayProvider implements AIProvider {
   }
 
   async generateText(prompt: string, options?: AIRequestOptions): Promise<AITextResponse> {
+    return this.generateTextWithRetries(prompt, options);
+  }
+
+  private async generateTextWithRetries(prompt: string, options?: AIRequestOptions, maxRetries?: 0): Promise<AITextResponse> {
     denyIsolatedExternalIO();
     if (!this.isConfigured()) {
       throw new AIProviderError({ provider: this.name, kind: "not_configured", message: "AI Gateway is not configured" });
@@ -60,6 +79,7 @@ export class VercelGatewayProvider implements AIProvider {
         system: options?.system === undefined ? undefined : redact(options.system),
         temperature: options?.temperature,
         maxOutputTokens: options?.maxTokens,
+        ...(maxRetries === 0 ? { maxRetries: 0 } : {}),
         abortSignal: options?.timeoutMs ? AbortSignal.timeout(options.timeoutMs) : undefined,
         providerOptions: {
           gateway: {
@@ -138,15 +158,22 @@ export class VercelGatewayProvider implements AIProvider {
       temperature: options?.temperature ?? 0,
       system: `Return valid JSON only. The required shape is: ${schemaHint}`,
     });
-    return {
-      data: JSON.parse(jsonText(response.text)) as T,
-      raw: response.text,
-      provider: this.name,
-      model: response.model,
-      latencyMs: response.latencyMs,
-      usage: response.usage,
-      gatewayGenerationId: response.gatewayGenerationId,
-    };
+    return parseGatewayStructuredResponse<T>(response);
+  }
+
+  /** Internal single-attempt lane: returns the paid envelope before parsing.
+   * This is a retry restriction, never a public metering/authorization switch. */
+  generateStructuredTextOnce(text: string, schemaHint: string, options?: AIRequestOptions): Promise<AITextResponse> {
+    const maxTokens = options?.maxTokens ?? AI_REQUEST_MAX_OUTPUT_TOKENS;
+    if (!Number.isSafeInteger(maxTokens) || maxTokens < 1 || maxTokens > AI_REQUEST_MAX_OUTPUT_TOKENS) {
+      throw new AIProviderError({ provider: this.name, kind: "bad_response", message: "governed output token bound is invalid" });
+    }
+    return this.generateTextWithRetries(text, {
+      ...options,
+      maxTokens,
+      temperature: options?.temperature ?? 0,
+      system: `Return valid JSON only. The required shape is: ${schemaHint}`,
+    }, 0);
   }
 
   async healthCheck(options?: AIRequestOptions): Promise<AIHealthCheck> {

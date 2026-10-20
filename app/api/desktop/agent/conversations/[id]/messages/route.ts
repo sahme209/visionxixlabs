@@ -186,6 +186,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
   const workspaceContext = workspaceMemoryPrompt(await loadWorkspaceMemory(memoryRepo, organizationId));
   const outcome = await runDecisionLoop({
     organizationId,
+      userId: String(session.userId),
     correlationId: String(correlationId),
     transcript,
     workspaceContext,

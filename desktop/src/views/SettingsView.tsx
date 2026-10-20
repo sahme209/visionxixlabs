@@ -26,7 +26,7 @@ import { ViewShell } from "../components/Primitives";
 import { desktopClient, type DeploymentExecution, type VerifiedDesktopIdentity, type WorkspaceMember } from "../lib/desktopClient";
 import { deploymentObservationState } from "../lib/deploymentObservationState";
 import { signOutDesktopCredentials } from "../lib/activeDesktopCredential";
-import { normalizeAiProviderStatus, type ModelPolicy, type ProviderModels } from "../lib/aiProviderStatus";
+import { normalizeAiProviderStatus, toggleApprovedModel, setApprovedGatewayDefault, removeUnavailableGatewayApprovals, isModelApproved, isConcreteGatewayModelId, type ModelPolicy, type ProviderModels } from "../lib/aiProviderStatus";
 import { markNotificationPrefDirty, notifyResult } from "../lib/notifications";
 import {
   readDesktopPreferences,
@@ -416,9 +416,12 @@ function ModelsSection() {
   const [savingModel, setSavingModel] = useState<string | null>(null);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [attempt, setAttempt] = useState(0);
+  const policyContext = useRef<typeof desktopClient.config | null>(null);
 
   useEffect(() => {
     let cancelled = false;
+    policyContext.current = null;
+    setSavingModel(null);
     setLoadError(null);
     setProviders(null);
     setPolicy(null);
@@ -433,6 +436,7 @@ function ModelsSection() {
             setLoadError("The service returned an unsupported model configuration. Update the app or try again later.");
             return;
           }
+          policyContext.current = context;
           setProviders(status.providers);
           setPolicy(status.policy);
           setLoadError(null);
@@ -447,37 +451,54 @@ function ModelsSection() {
       .catch(() => {
         if (!cancelled && context === desktopClient.config) setLoadError("Could not load provider availability. Try again later.");
       });
-    return () => { cancelled = true; };
+    return () => { cancelled = true; policyContext.current = null; };
   }, [attempt]);
 
-  const rows = useMemo(() => (providers ?? [])
-    .flatMap((provider) => provider.models.map((model) => ({ ...model, provider: provider.provider })))
-    .filter((model) => {
+  const rows = useMemo(() => {
+    const listed = (providers ?? []).flatMap(provider => provider.models.map(model => ({ ...model, provider: provider.provider, available: true, managed: provider.provider === "vercel_gateway" && !isConcreteGatewayModelId(model.id) })));
+    const approved = policy?.enabled && policy.allowedProviders.includes("vercel_gateway")
+      ? policy.gatewaySelection?.approvedModelIds ?? (policy.modelSelections.vercel_gateway ? [policy.modelSelections.vercel_gateway] : []) : [];
+    for (const id of approved) {
+      if (!listed.some(model => model.provider === "vercel_gateway" && model.id === id)) listed.push({ id, label: id, tier: isConcreteGatewayModelId(id) ? "Unavailable in current catalog · removal only" : "Service-managed legacy route", provider: "vercel_gateway", available: false, managed: !isConcreteGatewayModelId(id) });
+    }
+    return listed.filter(model => {
       const needle = query.trim().toLowerCase();
       return !needle || model.label.toLowerCase().includes(needle) || (PROVIDER_LABELS[model.provider] ?? model.provider).toLowerCase().includes(needle);
-    }), [providers, query]);
+    });
+  }, [providers, query, policy]);
+
+  const gatewayCatalog = providers?.find(provider => provider.provider === "vercel_gateway")?.models.map(model => model.id) ?? [];
+  const gatewayApprovals = policy?.gatewaySelection?.approvedModelIds ?? (policy?.enabled && policy.allowedProviders.includes("vercel_gateway") && policy.modelSelections.vercel_gateway ? [policy.modelSelections.vercel_gateway] : []);
+  const unavailableApprovalCount = gatewayApprovals.filter(id => isConcreteGatewayModelId(id) && !gatewayCatalog.includes(id)).length;
+  async function removeUnavailable() {
+    if (!policy || savingModel || providers === null || loadError !== null) return;
+    const nextPolicy = removeUnavailableGatewayApprovals(policy, gatewayCatalog);
+    if (nextPolicy) await saveModelPolicy(nextPolicy, "vercel_gateway:remove-unavailable");
+  }
 
   async function toggleModel(provider: string, modelId: string) {
     if (!policy || savingModel) return;
-    const selected = policy.enabled && policy.modelSelections[provider] === modelId;
-    const nextAllowed = selected
-      ? policy.allowedProviders.filter((item) => item !== provider)
-      : [...policy.allowedProviders.filter((item) => item !== provider), provider];
-    const nextSelections = { ...policy.modelSelections };
-    if (selected) delete nextSelections[provider];
-    else nextSelections[provider] = modelId;
-    const nextPolicy: ModelPolicy = nextAllowed.length === 0
-      ? { enabled: false, allowedProviders: [], modelSelections: {}, fallbackOrder: [] }
-      : {
-          enabled: true,
-          allowedProviders: nextAllowed,
-          modelSelections: nextSelections,
-          fallbackOrder: [...policy.fallbackOrder.filter((item) => nextAllowed.includes(item)), ...nextAllowed.filter((item) => !policy.fallbackOrder.includes(item))],
-        };
-    setSavingModel(`${provider}:${modelId}`);
+    const nextPolicy = toggleApprovedModel(policy, provider, modelId);
+    if (!nextPolicy) { setLoadError("Approve up to 32 concrete Gateway models. Your previous policy is unchanged."); return; }
+    await saveModelPolicy(nextPolicy, `${provider}:${modelId}`);
+  }
+  async function makeDefault(modelId: string) {
+    if (!policy || savingModel) return;
+    const nextPolicy = setApprovedGatewayDefault(policy, modelId);
+    if (nextPolicy) await saveModelPolicy(nextPolicy, `vercel_gateway:${modelId}`);
+  }
+  async function saveModelPolicy(nextPolicy: ModelPolicy, key: string) {
+    const context = policyContext.current;
+    const clearStalePolicy = () => { policyContext.current = null; setPolicy(null); setProviders([]); setSavingModel(null); setLoadError("Your workspace changed. Reload model settings before saving."); };
+    if (!context || context !== desktopClient.config) { clearStalePolicy(); return; }
+    setSavingModel(key);
     setLoadError(null);
     try {
       const result = await desktopClient.updateAiProviderPolicy(nextPolicy);
+      if (context !== desktopClient.config || policyContext.current !== context) {
+        if (policyContext.current === context) clearStalePolicy();
+        return;
+      }
       if (result.ok) {
         const status = normalizeAiProviderStatus({ providers: providers ?? [], policy: result.data.policy });
         if (status) setPolicy(status.policy);
@@ -486,9 +507,13 @@ function ModelsSection() {
         setLoadError(result.error === "workspace_admin_required" ? "Only a workspace administrator can change model availability." : result.error);
       }
     } catch {
+      if (context !== desktopClient.config || policyContext.current !== context) {
+        if (policyContext.current === context) clearStalePolicy();
+        return;
+      }
       setLoadError("Could not save model availability. Try again later.");
     } finally {
-      setSavingModel(null);
+      if (policyContext.current === context) setSavingModel(null);
     }
   }
 
@@ -498,23 +523,28 @@ function ModelsSection() {
       <div className="border-b border-white/[0.06] p-4">
         <label htmlFor="model-search" className="sr-only">Search models</label>
         <input id="model-search" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Add or search model" className="w-full rounded-lg border border-white/10 bg-black/30 px-3 py-2.5 text-sm text-zinc-100 outline-none placeholder:text-zinc-600 focus:border-white/25" />
-        <p className="mt-2 text-[11px] text-zinc-600">One active model per provider. Multiple providers can be enabled and are used in fallback order.</p>
+        <p className="mt-2 text-[11px] text-zinc-600">Gateway supports up to 32 approved models. Agent chat uses the workspace default. Other providers retain one active model.</p>
       </div>
+      {providers !== null && loadError === null && unavailableApprovalCount > 0 && <div className="flex items-center justify-between gap-3 border-b border-white/[0.06] p-4 text-xs text-zinc-400"><p>{unavailableApprovalCount} approved Gateway model{unavailableApprovalCount === 1 ? " is" : "s are"} unavailable in the current catalog.</p><button type="button" disabled={Boolean(savingModel)} onClick={() => void removeUnavailable()} className="shrink-0 text-zinc-200 underline underline-offset-2 disabled:opacity-45">Remove unavailable approvals</button></div>}
       {providers === null && loadError === null && <p className="p-4 text-sm text-zinc-500">Checking service-configured models…</p>}
       {loadError !== null && <div role="alert" className="flex items-center justify-between gap-4 p-4 text-sm text-rose-300"><p>{loadError}</p><button type="button" onClick={() => setAttempt((current) => current + 1)} className="shrink-0 text-xs text-zinc-300 underline underline-offset-2">Retry models</button></div>}
       {providers !== null && loadError === null && rows.length === 0 && <p className="p-4 text-sm text-zinc-500">{providers.every((provider) => provider.models.length === 0) ? "No service-configured models are available. Ask a workspace administrator to review service setup." : "No configured model matches this search."}</p>}
       {rows.map((model) => {
-        const enabled = Boolean(policy?.enabled && policy.modelSelections[model.provider] === model.id);
+        const enabled = Boolean(policy && isModelApproved(policy, model.provider, model.id));
+        const gatewayDefault = model.provider === "vercel_gateway" && policy?.enabled && policy.modelSelections.vercel_gateway === model.id;
         const key = `${model.provider}:${model.id}`;
         return <div key={key} className="flex items-center justify-between gap-4 border-b border-white/[0.055] px-4 py-3.5 last:border-b-0">
-          <div className="min-w-0"><p className="text-sm text-zinc-200">{model.label}</p><p className="mt-0.5 text-[11px] text-zinc-600">{PROVIDER_LABELS[model.provider] ?? model.provider} · {model.tier}</p></div>
-          <button type="button" role="switch" aria-checked={enabled} aria-label={`${enabled ? "Disable" : "Enable"} ${model.label}`} disabled={!policy || Boolean(savingModel)} onClick={() => void toggleModel(model.provider, model.id)} className={`relative h-6 w-11 shrink-0 rounded-full transition-colors disabled:opacity-45 ${enabled ? "bg-emerald-500" : "bg-zinc-700"}`}>
+          <div className="min-w-0"><p className="text-sm text-zinc-200">{model.label}{gatewayDefault && <span className="ml-2 text-[10px] text-orange-300">Workspace default</span>}</p><p className="mt-0.5 text-[11px] text-zinc-600">{PROVIDER_LABELS[model.provider] ?? model.provider} · {model.managed ? "Service-managed legacy route" : model.tier}</p></div>
+          <div className="flex shrink-0 items-center gap-3">
+            {model.provider === "vercel_gateway" && model.available && enabled && !gatewayDefault && <button type="button" aria-label={`Make ${model.label} workspace default`} disabled={Boolean(savingModel)} onClick={() => void makeDefault(model.id)} className="text-xs text-zinc-300 underline underline-offset-2 disabled:opacity-45">Make default</button>}
+          <button type="button" role="switch" aria-checked={enabled} aria-label={model.available || model.managed ? `${enabled ? "Disable" : "Enable"} ${model.label}` : `Remove unavailable approval ${model.id}`} disabled={!policy || Boolean(savingModel) || model.provider === "vercel_gateway" && !isConcreteGatewayModelId(model.id) && !enabled} onClick={() => void toggleModel(model.provider, model.id)} className={`relative h-6 w-11 shrink-0 rounded-full transition-colors disabled:opacity-45 ${enabled ? "bg-emerald-500" : "bg-zinc-700"}`}>
             <span aria-hidden className={`absolute left-0 top-0.5 h-5 w-5 rounded-full bg-white shadow transition-transform ${enabled ? "translate-x-5" : "translate-x-0.5"}`} />
           </button>
+          </div>
         </div>;
       })}
     </div>
-    <p className="mt-4 text-[11px] leading-5 text-zinc-600">Credentials remain server-managed and never reach this device. Write actions remain approval-gated regardless of model choice.</p>
+    <p className="mt-4 text-[11px] leading-5 text-zinc-600">Removing the Gateway default promotes the first remaining approval; removing its last approval disables Gateway. Credentials remain server-managed and never reach this device. Write actions remain approval-gated regardless of model choice.</p>
   </div>;
 }
 

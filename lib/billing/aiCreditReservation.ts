@@ -75,6 +75,9 @@ export async function reserveAICredits(
               // continue consuming capacity until their usage is reconciled.
               { status: "reserved", usageEventId: { not: null } },
               { status: "pending_settlement" },
+              // A dispatch can be billable even if no SDK response was received.
+              // TTL only expires work that was never durably claimed.
+              { status: "dispatch_unknown" },
             ],
           },
           _sum: { reservedCents: true },
@@ -93,6 +96,28 @@ export async function reserveAICredits(
   } catch {
     return { ok: false, error: "ai_credit_reservation_unavailable" };
   }
+}
+
+/** Legacy dispatch admission. Retains the existing accepted-member policy (not
+ * the isolated v2 owner/admin policy). Commit before handing control to an SDK.
+ * A membership row lock and database-clock conditional transition close both
+ * revocation and expiry races. A prior claim never grants retry authority. */
+export async function claimLegacyAICreditDispatch(
+  tx: Prisma.TransactionClient,
+  scope: { organizationId: string; userId: string },
+  reservationId: string,
+): Promise<boolean> {
+  if (!scope.organizationId || !scope.userId || !reservationId) return false;
+  const members = await tx.$queryRawUnsafe<Array<{ userId: string; organizationId: string; acceptedAt: Date | null }>>(
+    'SELECT "userId","organizationId","acceptedAt" FROM "OrgMembership" WHERE "userId"=$1 AND "organizationId"=$2 FOR SHARE', scope.userId, scope.organizationId,
+  );
+  const member = members[0];
+  if (members.length !== 1 || !member || member.userId !== scope.userId || member.organizationId !== scope.organizationId || !(member.acceptedAt instanceof Date) || !Number.isFinite(member.acceptedAt.getTime())) return false;
+  const changed = await tx.$queryRawUnsafe<Array<{ id: string }>>(
+    `UPDATE "AIUsageReservation" h SET status='dispatch_unknown',"updatedAt"=clock_timestamp() AT TIME ZONE 'UTC' WHERE h.id=$1 AND h."organizationId"=$2 AND h.status='reserved' AND h."usageEventId" IS NULL AND h."expiresAt" AT TIME ZONE 'UTC'>clock_timestamp() AND EXISTS(SELECT 1 FROM "OrgMembership" m WHERE m."userId"=$3 AND m."organizationId"=$2 AND m."acceptedAt" IS NOT NULL) RETURNING h.id`,
+    reservationId, scope.organizationId, scope.userId,
+  );
+  return changed.length === 1 && changed[0]?.id === reservationId;
 }
 
 export async function releaseAICreditReservation(repo: any, organizationId: string, reservationId: string, now = new Date()): Promise<boolean> {

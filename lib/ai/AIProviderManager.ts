@@ -21,7 +21,8 @@ import { runWithFallback } from "./AIFallbackHandler";
 import { recordUsage } from "./AIUsageLogger";
 import { redact } from "@/lib/security/redaction";
 import { recordAIUsageEvent } from "@/lib/billing/recordAIUsageEvent";
-import { VercelGatewayProvider } from "./providers/VercelGatewayProvider";
+import { consumeGovernedExtractAdmission, type GovernedExtractAdmission } from "@/lib/billing/governedExtractAdmission";
+import { parseGatewayStructuredResponse, VercelGatewayProvider } from "./providers/VercelGatewayProvider";
 
 let SINGLETON: AIProviderManager | null = null;
 
@@ -180,6 +181,31 @@ export class AIProviderManager {
       }
     }
     return out.result;
+  }
+
+  /** Server-internal governed path. The opaque, one-use authority is minted
+   * after a committed ledger claim, never sent to the provider or a client.
+   * Exactly one provider attempt can consume this hold; uncertainty is not a
+   * fallback/retry grant. Ordinary extraction above keeps its eager writer. */
+  async extractStructuredDataWithAdmission<T = unknown>(
+    text: string,
+    schemaHint: string,
+    options: AIRequestOptions & { only?: AIProviderName },
+    admission: GovernedExtractAdmission,
+  ): Promise<AIStructuredResponse<T>> {
+    const authority = consumeGovernedExtractAdmission(admission, options);
+    const chain = this.chain({ only: options.only, allowedProviders: options.allowedProviders, fallbackOrder: options.fallbackOrder });
+    const gateway = chain[0];
+    if (chain.length !== 1 || !(gateway instanceof VercelGatewayProvider) || gateway.name !== "vercel_gateway") {
+      throw new AIProviderError({ provider: "vercel_gateway", kind: "not_configured", message: "governed extraction requires one admitted Gateway attempt" });
+    }
+    const out = await runWithFallback<AITextResponse>(
+      [gateway],
+      () => gateway.generateStructuredTextOnce(redact(text), schemaHint, this.optionsForProvider(gateway, options)),
+      { task: "extract_structured_data", correlationId: options.correlationId, organizationId: options.organizationId },
+    );
+    await authority.record(out.result);
+    return parseGatewayStructuredResponse<T>(out.result);
   }
 
   async *streamText(prompt: string, options?: AIRequestOptions & { only?: AIProviderName }): AsyncIterable<AIStreamChunk> {
