@@ -24,9 +24,11 @@ export function checkOwnedCommercialAcceptance(report) {
   const rows = suite.assertionResults;
   if (rows.some(row => !row || typeof row.title !== "string")) return fail();
   const passed = rows.filter(row => row.status === "passed");
-  const pending = rows.filter(row => row.status === "pending");
-  if (passed.length !== 32 || pending.length !== 2 || new Set(rows.map(row => row.title)).size !== 34
-    || pending.some(row => !HTTP_CASES.has(row.title))
+  // Vitest aggregates skips under numPendingTests but its assertion rows use
+  // "skipped". Only these two named HTTP journeys may have that row status.
+  const skipped = rows.filter(row => row.status === "skipped");
+  if (passed.length !== 32 || skipped.length !== 2 || new Set(rows.map(row => row.title)).size !== 34
+    || skipped.some(row => !HTTP_CASES.has(row.title))
     || passed.filter(row => row.title.startsWith("legacy real PG ")).length !== 6
     || passed.filter(row => row.title.startsWith("V2 ")).length !== 19) return fail();
   return { schemaVersion: 1, evidenceScope: "owned_postgres_synthetic_provider", sqlCasesPassed: 32,

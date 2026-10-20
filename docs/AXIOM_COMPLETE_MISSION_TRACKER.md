@@ -2406,3 +2406,18 @@ and Clippy. Full39483571044 passed types,8646 tests (34 skipped), offline auth a
 the production website build without deployment. PR186 was normally merged into
 PR184 as06f5b432 only after all exact25cd559a gates passed. Parent/main integration
 still requires its own applicable checks; production approvals remain intact.
+
+
+Owned PG run39485471622 at5955207d executed all32 SQL cases successfully with
+two named HTTP cases skipped, including the genuine five-minute hold and actual
+row-lock/rollback/usage-link cases. Container cleanup also passed. The workflow
+then failed its new report gate: Vitest aggregates numPendingTests but assertion
+rows use skipped, not pending. The captured installed reporter output confirms
+that mapping. A corrected valid fixture was red against the old gate; the parser
+now requires only the two named HTTP rows to be skipped and still demands all32
+SQL passes. An explicit obsolete-pending rejection regression and independent
+review close the format fix. All21 gate/declaration checks, scoped types/lint
+pass. Evidence: mission/owned-commercial-sql-5955207d.json. The workflow remains
+failed for that head; fresh corrected-head CI is required. Its browser failure
+remains separately recorded, with no retry absent this substantive correction.
+No SQL implementation, expiry, financial rule or production state changed.
