@@ -67,14 +67,22 @@ export function Navigation() {
       }
     };
 
+    // Match xl navigation visibility: a hidden dialog must not retain focus
+    // trapping or scroll locks after a tablet/desktop resize.
+    const onResize = () => {
+      if (window.innerWidth >= 1280) setMobileMenuOpen(false);
+    };
     document.body.style.overflow = "hidden";
     document.documentElement.style.overflow = "hidden";
+    window.addEventListener("resize", onResize);
+    onResize();
     document.addEventListener("keydown", onKeyDown);
     requestAnimationFrame(() => menuRef.current?.querySelector<HTMLElement>("a[href]")?.focus());
     return () => {
       document.body.style.overflow = previousOverflow;
       document.documentElement.style.overflow = previousRootOverflow;
       document.removeEventListener("keydown", onKeyDown);
+      window.removeEventListener("resize", onResize);
     };
   }, [mobileMenuOpen]);
 

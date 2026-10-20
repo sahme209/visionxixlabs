@@ -69,3 +69,56 @@ Those assertions now follow the approved shared 1280px/xl design and single
 scripted hero; all 11 tests in the affected files pass locally. This is a
 correction to stale presentation expectations, not a waiver of browser or CI
 acceptance. Final exact-head CI must rerun after the batched follow-up.
+
+
+## Download and responsive-navigation implementation continuation
+
+The download page now shares the compact charcoal/1280px presentation and removes
+scenic mock operational windows. Manifest retrieval, platform detection, download
+resolver mappings and runtime-readiness gates remain intact. Unconditional macOS
+signing/notarization and checksum availability claims are removed. Each available
+installer now reports its own manifest signing status; only explicit boolean
+`true` supports a positive label. These are release-record statements, not
+independent cryptographic/signing acceptance. No installer was published.
+
+New rendered-component regressions reproduced the unconditional claim and
+truthy malformed metadata before correction. Loading, failed manifest, mixed
+platform signing, missing notarization and runtime-disabled resolver behavior
+now pass. Focused download/mobile/release/desktop first-run checks passed 35
+tests. The responsive navigation regression reproduced a hidden open dialog
+retaining both scroll locks after crossing 1280px. The fix closes the dialog at
+the same xl breakpoint and restores both prior overflow values; the 1279px
+case remains open. Combined navigation/download presentation checks pass 22
+tests. Scoped lint and web production-source TypeScript passed during this
+continuation; final exact-source CI remains required.
+
+Read-only production checks confirm visionxixlabs.com still serves the approved
+Google-login hotfix. The latest-hour grouped P2022 log query returned no groups;
+that is not proof of successful authentication. Anonymous endpoint checks from
+this environment failed DNS resolution (EAI_AGAIN) without reaching production.
+Google remains owner-confirmed; password/GitHub/account-workspace/native pairing
+and database recovery remain separate unverified gates. No protected account or
+desktop-session GET was used as a purported read-only probe: those routes can
+bootstrap membership or update last-seen records.
+
+The local browser blocker remains the known Page.navigate operation timeout,
+with no screenshots. A bounded no-server executor probe completed normally, but
+does not establish reliable long-lived supervisor/browser acceptance. No new
+application runtime window, guard widening or deployment is part of this
+continuation.
+
+Additional download regressions reproduced two real integration defects before
+correction: a malformed string readiness value allowed the primary button to
+use a direct artifact URL, and Intel installation guidance was omitted while
+the card showed only the first Apple Silicon asset's notice. Readiness now
+requires explicit boolean true for the primary action and status; every
+installer displays its own installation notice. Malformed/unready responses
+retain resolver links and no download attributes. The seven-file focused
+acceptance run passes 46 tests.
+
+All four checks on e9e8a60a completed successfully, including both full test and
+production-build jobs, native/frontend security checks and automated review.
+This is source validation for that head; the current follow-up still needs its
+own exact-head CI and rendered browser acceptance. The serving deployment was
+independently re-read as READY, production target and approved commit
+30d6363a01e04c35871025c161f69480244d7d17. No production deployment occurred.

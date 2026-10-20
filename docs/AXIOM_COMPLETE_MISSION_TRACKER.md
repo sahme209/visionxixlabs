@@ -1708,3 +1708,17 @@ receipts remain required. No key, infrastructure, billing, deployment, database
 or installer configuration was changed. PR #182 remains gated on current CI and
 rendered browser acceptance; the lost local supervisor/navigation timeout is
 retained as a genuine validation blocker rather than waived.
+
+
+## 2026-10-20 — implementation resumed: downloads and responsive navigation
+
+Download presentation now uses the shared compact public design, with signing
+and notarization sourced per installer from explicit manifest flags instead of
+an unconditional green claim. Runtime/download gating is preserved. A real
+React navigation regression also caught and fixed scroll-lock retention when
+an open mobile menu becomes hidden at desktop width. See
+[implementation evidence](mission/public-website-refinement-2026-10-20.md).
+These are local application-component checks, not native installer or rendered
+browser acceptance. Required CI and the known local navigation/supervisor
+blocker remain merge gates. Production Google login remains owner-confirmed;
+other auth and database recovery gates are unchanged.
