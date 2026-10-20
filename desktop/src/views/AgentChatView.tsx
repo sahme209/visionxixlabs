@@ -1,3 +1,4 @@
+import { localEditProposal, type LocalEditProposal } from "../lib/localEditReview";
 import { localCodeContextPrompt, type LocalCodeSelection } from "../lib/localCodeContext";
 import { selectSkillInvocation } from "../lib/skillInvocation";
 import { rememberConversationDraft } from "../lib/conversationDrafts";
@@ -164,18 +165,18 @@ export type AgentSettingsDestination = "models" | "agents";
 export interface AgentLocalCodeRequest extends LocalCodeSelection { context: object; workspace?: string }
 export interface AgentSkillRequest { skillId: string; context: object; workspace?: string }
 
-export function AgentChatView({ onOpenSettings, identity, active = true, requestedSkill, requestedLocalCode }: { onOpenSettings?: (destination: AgentSettingsDestination) => void; identity?: VerifiedDesktopIdentity; active?: boolean; requestedSkill?: AgentSkillRequest; requestedLocalCode?: AgentLocalCodeRequest }) {
+export function AgentChatView({ onOpenSettings, identity, active = true, requestedSkill, requestedLocalCode, onReviewLocalEdit }: { onOpenSettings?: (destination: AgentSettingsDestination) => void; identity?: VerifiedDesktopIdentity; active?: boolean; requestedSkill?: AgentSkillRequest; requestedLocalCode?: AgentLocalCodeRequest; onReviewLocalEdit?: (edit: LocalEditProposal) => void }) {
   const context = desktopClient.config;
   const workspace = identity?.organizationId;
   const [scope, setScope] = useState(() => ({ context, workspace, generation: 0 }));
   if (scope.context !== context || scope.workspace !== workspace) {
     setScope({ context, workspace, generation: scope.generation + 1 });
-    return <AgentChatSession key={scope.generation + 1} onOpenSettings={onOpenSettings} identity={identity} active={active} requestedSkill={requestedSkill} requestedLocalCode={requestedLocalCode} />;
+    return <AgentChatSession key={scope.generation + 1} onOpenSettings={onOpenSettings} identity={identity} active={active} requestedSkill={requestedSkill} requestedLocalCode={requestedLocalCode} onReviewLocalEdit={onReviewLocalEdit} />;
   }
-  return <AgentChatSession key={scope.generation} onOpenSettings={onOpenSettings} identity={identity} active={active} requestedSkill={requestedSkill} requestedLocalCode={requestedLocalCode} />;
+  return <AgentChatSession key={scope.generation} onOpenSettings={onOpenSettings} identity={identity} active={active} requestedSkill={requestedSkill} requestedLocalCode={requestedLocalCode} onReviewLocalEdit={onReviewLocalEdit} />;
 }
 
-function AgentChatSession({ onOpenSettings, identity, active, requestedSkill, requestedLocalCode }: { onOpenSettings?: (destination: AgentSettingsDestination) => void; identity?: VerifiedDesktopIdentity; active: boolean; requestedSkill?: AgentSkillRequest; requestedLocalCode?: AgentLocalCodeRequest }) {
+function AgentChatSession({ onOpenSettings, identity, active, requestedSkill, requestedLocalCode, onReviewLocalEdit }: { onOpenSettings?: (destination: AgentSettingsDestination) => void; identity?: VerifiedDesktopIdentity; active: boolean; requestedSkill?: AgentSkillRequest; requestedLocalCode?: AgentLocalCodeRequest; onReviewLocalEdit?: (edit: LocalEditProposal) => void }) {
   const [conversationId, setConversationId] = useState<string | null>(null);
   const [conversations, setConversations] = useState<ConversationSummary[]>([]);
   const [turns, setTurns] = useState<ChatTurn[]>([]);
@@ -859,7 +860,7 @@ function AgentChatSession({ onOpenSettings, identity, active, requestedSkill, re
           {evidenceActions.length > 0 && <EvidencePanel actions={evidenceActions.slice(-8)} />}
           {latestUsage && <UsageReceipt usage={latestUsage} />}
           {pendingProposal && (
-            <ProposalCard proposal={pendingProposal} deciding={loadingConversation || decidingId === pendingProposal.id} onApprove={() => void decide(true)} onReject={() => void decide(false)} />
+            <ProposalCard onReviewLocally={onReviewLocalEdit} proposal={pendingProposal} deciding={loadingConversation || decidingId === pendingProposal.id} onApprove={() => void decide(true)} onReject={() => void decide(false)} />
           )}
           {error && (
             <div role="alert" className="flex items-center justify-between gap-4 rounded-xl border border-rose-400/20 bg-rose-400/[0.05] px-4 py-3">
@@ -1081,8 +1082,9 @@ function RepositoryEvidenceDetails({ action }: { action: Proposal }) {
   </details>;
 }
 
-export function ProposalCard({ proposal, deciding, onApprove, onReject }: { proposal: Proposal; deciding: boolean; onApprove: () => void; onReject: () => void }) {
+export function ProposalCard({ proposal, deciding, onApprove, onReject, onReviewLocally }: { onReviewLocally?: (edit: LocalEditProposal) => void; proposal: Proposal; deciding: boolean; onApprove: () => void; onReject: () => void }) {
   const [showDetails, setShowDetails] = useState(false);
+  const localEdit = localEditProposal(proposal);
   const args = typeof proposal.argsJson === "object" && proposal.argsJson !== null
     ? proposal.argsJson as Record<string, unknown>
     : {};
@@ -1151,6 +1153,10 @@ export function ProposalCard({ proposal, deciding, onApprove, onReject }: { prop
           )}
         </div>
       )}
+      {localEdit && onReviewLocally && <div className="mb-4 text-xs text-zinc-400">
+        <button type="button" disabled={deciding} onClick={() => onReviewLocally(localEdit)} className="underline disabled:opacity-50">Review in local editor</button>
+        <p className="mt-1">Local draft only. This does not approve the GitHub proposal, save files or run checks.</p>
+      </div>}
       <div className="flex items-center gap-3">
         <button
           type="button"

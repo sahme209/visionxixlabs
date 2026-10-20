@@ -1,3 +1,4 @@
+import { localEditBlocker, type LocalEditRequest } from "../lib/localEditReview";
 import { localCodeContextPrompt, type LocalCodeSelection } from "../lib/localCodeContext";
 import { FileDiff } from "../components/FileDiff";
 import { editorMatches } from "../lib/editorSearch";
@@ -61,12 +62,12 @@ function isProjectMetadata(path: string): boolean {
   return path.endsWith(".pbxproj") || path.includes(".xcodeproj/") || path.includes(".xcworkspace/");
 }
 
-export function RepositoryWorkspaceView({ active = true, onAskAgent }: { active?: boolean; onAskAgent?: (selection: LocalCodeSelection) => void }) {
+export function RepositoryWorkspaceView({ active = true, onAskAgent, editRequest, workspace }: { editRequest?: LocalEditRequest; workspace?: string; active?: boolean; onAskAgent?: (selection: LocalCodeSelection) => void }) {
   const revision = useSyncExternalStore(desktopClient.subscribeContext, desktopClient.getContextRevision, desktopClient.getContextRevision);
-  return <RepositoryWorkspaceSession key={revision} revision={revision} active={active} onAskAgent={onAskAgent} />;
+  return <RepositoryWorkspaceSession key={revision} revision={revision} active={active} onAskAgent={onAskAgent} editRequest={editRequest} workspace={workspace} />;
 }
 
-function RepositoryWorkspaceSession({ revision, active, onAskAgent }: { revision: number; active: boolean; onAskAgent?: (selection: LocalCodeSelection) => void }) {
+function RepositoryWorkspaceSession({ revision, active, onAskAgent, editRequest, workspace }: { editRequest?: LocalEditRequest; workspace?: string; revision: number; active: boolean; onAskAgent?: (selection: LocalCodeSelection) => void }) {
   const [parentPath, setParentPath] = useState("");
   const [repositories, setRepositories] = useState<string[]>([]);
   const [selectedRepository, setSelectedRepositoryState] = useState<string | null>(null);
@@ -105,6 +106,8 @@ function RepositoryWorkspaceSession({ revision, active, onAskAgent }: { revision
   const [checks, setChecks] = useState<RepositoryCheck[]>([]);
   const [verificationResult, setVerificationResult] = useState<RepositoryCheckResult | null>(null);
   const [showVerification, setShowVerification] = useState(false);
+  const [verificationStale, setVerificationStale] = useState(false);
+  const sourceEpoch = useRef(0);
 
   const [context] = useState(() => desktopClient.config);
   const mounted = useRef(false);
@@ -116,6 +119,7 @@ function RepositoryWorkspaceSession({ revision, active, onAskAgent }: { revision
   const manualClone = useRef(false);
   const operationRequest = useRef(0);
   const activeBusy = useRef<string | null>(null);
+  const appliedEdit = useRef<LocalEditRequest | undefined>(undefined);
   const loadedFile = useRef<{ repository: string; path: string; content: string; saved: string } | null>(null);
   const owns = useCallback((captured: typeof owner.current) => mounted.current && desktopClient.config === context && desktopClient.getContextRevision() === revision
     && captured.generation === owner.current.generation && captured.repository === owner.current.repository, [context, revision]);
@@ -133,7 +137,7 @@ function RepositoryWorkspaceSession({ revision, active, onAskAgent }: { revision
     fileRequest.current++; operationRequest.current++; activeBusy.current = null; loadedFile.current = null; history.current = newEditorHistory("");
     setSelectedRepositoryState(repository); setStatus(null); setFiles([]); setChecks([]);
     setSelectedFile(null); setContent(""); setSavedContent(""); setBusy(null);
-    setError(null); setNotice(null); setPrUrl(null); setVerificationResult(null); setConfirmationState(null);
+    setError(null); setNotice(null); setPrUrl(null); setVerificationResult(null); setVerificationStale(false); sourceEpoch.current++; setConfirmationState(null);
   }, []);
 
   function setConfirmation(next: Confirmation | null) {
@@ -141,8 +145,11 @@ function RepositoryWorkspaceSession({ revision, active, onAskAgent }: { revision
     setConfirmationState(next ? { ...next, onConfirm: async () => { if (owns(captured)) await next.onConfirm(); } } : null);
   }
 
+  function invalidateVerification() { sourceEpoch.current++; setVerificationStale(true); }
+
   function editContent(next: string) {
     if (!owns(owner.current) || !loadedFile.current || loadedFile.current.repository !== owner.current.repository) return;
+    if (loadedFile.current.content !== next) invalidateVerification();
     history.current = editHistory(history.current, next);
     loadedFile.current.content = next; setContent(next);
   }
@@ -150,7 +157,9 @@ function RepositoryWorkspaceSession({ revision, active, onAskAgent }: { revision
   function travelHistory(direction: "undo" | "redo") {
     const file = loadedFile.current;
     if (activeBusy.current || !owns(owner.current) || !file || file.repository !== owner.current.repository) return;
+    const previous = history.current.present;
     history.current = moveHistory(history.current, direction);
+    if (history.current.present !== previous) invalidateVerification();
     file.content = history.current.present; setContent(history.current.present);
   }
 
@@ -249,6 +258,7 @@ function RepositoryWorkspaceSession({ revision, active, onAskAgent }: { revision
     if (!owns(captured)) return;
     const request = ++operationRequest.current;
     const current = () => owns(captured) && request === operationRequest.current;
+    if (["save", "pull", "branch", "commit", "pr", "clone"].includes(label)) invalidateVerification();
     activeBusy.current = label; setBusy(label); setError(null); setNotice(null);
     try { await operation(current); } catch (cause) { if (current()) setError(cause instanceof Error ? cause.message : String(cause)); }
     finally { if (current()) { activeBusy.current = null; setBusy(null); } }
@@ -430,21 +440,45 @@ function RepositoryWorkspaceSession({ revision, active, onAskAgent }: { revision
 
   function verify(check: RepositoryCheck) {
     if (!selectedRepository || selectedRepository !== owner.current.repository) return;
+    if (loadedFile.current && loadedFile.current.content !== loadedFile.current.saved) {
+      setError("Save or discard unsaved editor changes before verification; checks run against files on disk."); return;
+    }
     setConfirmation({
       title: `Run ${check.label}?`,
       description: `${check.command} will run inside this repository with a minimal process environment. Scripts are not sandboxed: they can access files and network resources available to your user, including stored credentials. Native timeout/output limits do not establish process-tree isolation. Run only repositories you trust.`,
       confirmLabel: "Run check",
       onConfirm: async () => {
         await run(`verify:${check.id}`, async current => {
+          if (loadedFile.current && loadedFile.current.content !== loadedFile.current.saved) {
+            setError("Save or discard unsaved editor changes before verification; checks run against files on disk."); return;
+          }
+          const checkedEpoch = sourceEpoch.current;
           const result = await invoke<RepositoryCheckResult>("run_repository_check", { repositoryPath: selectedRepository, checkId: check.id });
           if (!current()) return;
-          setVerificationResult(result);
+          const stale = checkedEpoch !== sourceEpoch.current;
+          setVerificationResult(result); setVerificationStale(stale);
           setShowVerification(true);
           await refreshRepository(selectedRepository);
           if (!current()) return;
-          setNotice(result.success ? `${check.label} passed.` : `${check.label} failed with exit code ${result.exitCode ?? "unknown"}.`);
+          setNotice(checkedEpoch !== sourceEpoch.current ? "Check completed, but local edits changed during or after the run. Save and rerun before relying on this result." : result.success ? `${check.label} passed.` : `${check.label} failed with exit code ${result.exitCode ?? "unknown"}.`);
         });
       },
+    });
+  }
+
+  async function loadAgentDraft() {
+    const file = loadedFile.current, request = editRequest;
+    if (!active || activeBusy.current || !request || appliedEdit.current === request || !file || !owns(owner.current)) return;
+    if (request.context !== desktopClient.config || request.workspace !== workspace) { setError("Agent draft belongs to a different sign-in or workspace."); return; }
+    const snapshot = file.content;
+    await run("load-agent-draft", async current => {
+      const live = await invoke<RepositoryStatus>("repository_status", {repositoryPath: file.repository});
+      if (!current() || loadedFile.current !== file || file.content !== snapshot) return;
+      if (live.rootPath !== file.repository) { setError("The local repository identity could not be verified."); return; }
+      const blocker = localEditBlocker(request.edit, {repositoryFullName: live.repositoryFullName, branch: live.branch, path: file.path, saved: file.saved, content: file.content});
+      if (blocker) { setError(blocker); return; }
+      editContent(request.edit.content); setReviewOpen(true); appliedEdit.current = request;
+      setNotice("Agent draft loaded locally. Review changes, then explicitly Save and run verification. GitHub approval is unchanged.");
     });
   }
 
@@ -530,13 +564,21 @@ function RepositoryWorkspaceSession({ revision, active, onAskAgent }: { revision
     </div>
     {repositoryCatalogError && <div role="status" className="border-b border-white/[0.08] bg-white/[0.03] px-4 py-2 text-xs text-zinc-300">Connected repositories are temporarily unavailable. Validate GitHub under Settings → Integrations, then retry. Manual entry remains available for an authorized repository.</div>}
     {repositoryCatalogTruncated && !repositoryCatalogError && <div className="border-b border-white/[0.06] bg-white/[0.02] px-4 py-2 text-xs text-zinc-500">Showing the first 100 repositories authorized for the GitHub App. You can still enter another authorized owner/repository directly.</div>}
+    {editRequest && editRequest.context === desktopClient.config && editRequest.workspace === workspace && appliedEdit.current !== editRequest && <section aria-label="Agent local draft review" className="max-h-96 shrink-0 overflow-auto border-b border-violet-300/20 p-4 text-xs text-zinc-300">
+      <p>Proposal {editRequest.edit.proposalId}: {editRequest.edit.repositoryFullName} · {editRequest.edit.branch} · {editRequest.edit.path}</p>
+      <p className="my-2 text-zinc-400">Open the matching file to load this into a clean editor buffer. No file is saved, GitHub proposal approved, or check run by this action.</p>
+      <FileDiff before={editRequest.edit.baseContent} after={editRequest.edit.content} label="Agent proposed local diff" />
+      <button type="button" disabled={Boolean(busy) || !selectedFile || editRequest.context !== desktopClient.config || editRequest.workspace !== workspace} onClick={() => void loadAgentDraft()} className="btn-secondary mt-2 disabled:opacity-40">Load editor draft</button>
+    </section>}
     {(error || notice) && <div role={error ? "alert" : "status"} className={`border-b px-4 py-2 text-xs ${error ? "border-rose-500/20 bg-rose-500/5 text-rose-300" : "border-emerald-500/20 bg-emerald-500/5 text-emerald-300"}`}>{error ?? notice}</div>}
     {selectedRepository && <div className="flex flex-wrap items-center gap-2 border-b border-white/[0.06] bg-white/[0.015] px-4 py-2">
       <span className="mr-1 text-[10px] font-mono uppercase tracking-wider text-zinc-600">Verify changes</span>
       {checks.length === 0 ? <span className="text-xs text-zinc-600">No supported checks detected.</span> : checks.map((check) => <button key={check.id} type="button" disabled={Boolean(busy)} onClick={() => verify(check)} title={`${check.description} Runs: ${check.command}`} className="rounded-md border border-white/[0.08] bg-white/[0.03] px-2.5 py-1.5 text-xs text-zinc-300 hover:bg-white/[0.07] disabled:opacity-40">{busy === `verify:${check.id}` ? `Running ${check.label}…` : check.label}</button>)}
-      {verificationResult && <button type="button" onClick={() => setShowVerification((current) => !current)} className={`ml-auto rounded-md px-2.5 py-1.5 text-xs ${verificationResult.success ? "bg-emerald-500/10 text-emerald-300" : "bg-rose-500/10 text-rose-300"}`}>{verificationResult.success ? "Last check passed" : "Last check failed"} · {showVerification ? "hide output" : "show output"}</button>}
+      {verificationResult && <button type="button" onClick={() => setShowVerification((current) => !current)} className={`ml-auto rounded-md px-2.5 py-1.5 text-xs ${verificationStale ? "bg-amber-500/10 text-amber-200" : verificationResult.success ? "bg-emerald-500/10 text-emerald-300" : "bg-rose-500/10 text-rose-300"}`}>{verificationStale ? "Previous check result (stale)" : verificationResult.success ? "Last check passed" : "Last check failed"} · {showVerification ? "hide output" : "show output"}</button>}
     </div>}
+    {verificationResult && verificationStale && <p role="status" className="border-b border-amber-300/20 px-4 py-2 text-xs text-amber-200">Verification is stale after local changes. Save and run checks again; historical output remains available.</p>}
     {showVerification && verificationResult && <div className="max-h-56 overflow-auto border-b border-white/[0.07] bg-black/30 p-3">
+      <p className="mb-2 text-xs text-zinc-500">Recorded process result only. It does not certify the current working tree or changes made outside Axiom.</p>
       <div className="mb-2 flex items-center justify-between text-[10px] text-zinc-500"><span>{verificationResult.checkId}</span><span>{(verificationResult.durationMs / 1000).toFixed(1)}s · exit {verificationResult.exitCode ?? "none"}</span></div>
       <pre tabIndex={0} className="whitespace-pre-wrap break-words font-mono text-[11px] leading-5 text-zinc-300">{verificationResult.output || "The check completed without output."}</pre>
     </div>}

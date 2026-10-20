@@ -2968,3 +2968,50 @@ Actual desktop ES2021 TypeScript compilation passes. Final helper/demo run24
 checks passes; changed-file lint0errors/1pre-existing catalogRequest warning.
 Temporary existing-dependency symlink removed. No installations, source pushes,
 GitHub Actions, settings changes, paid reviews/provider calls or hosted resources.
+
+### Proposal → local editor draft → verification connection
+
+Research: GitHub planning/proposal review/approval/application already exist;
+local editor has guarded Save, diff, branch/commit and explicit verification.
+Missing connection is previewing a trusted single-file proposal in local editor.
+Implement explicit Review in local editor intent only for bounded existing-file
+review snapshots. Receiver requires same credential/workspace, repository, branch,
+path and exact saved base, plus no unsaved edits. User opens matching file, reviews
+local diff and confirms Load editor draft; no automatic native write/Git commit,
+remote approval or verification. Existing Save rechecks filesystem baseline.
+Reject absent/new-file review, sensitive paths, mismatch, stale base and dirty
+buffers. Keep proposal ID/source target visible, label local draft separate from
+GitHub approval. Targeted pure/connected UI/security checks; no provider calls.
+
+### Verification freshness connection
+
+Following local proposal application, existing Last check passed persists after
+editor edits and checks can run with unsaved buffer (native reads disk). Add
+local observed-change epoch, retain historical output but label stale after
+edits/undo/native source mutations. Refuse check dispatch with unsaved content.
+Capture epoch before verification; completion after concurrent editor changes is
+historical, not current validation. No automatic rerun or process cancellation
+claim; external filesystem mutations still require independent verification.
+Targeted rendered regressions cover unsaved denial, stale prior receipt and
+edits while verification is in flight. Native process execution remains untested.
+
+Both connections implemented locally. Existing-file proposal handoff displays
+source proposal/repo/branch/path and reviewed diff, requires explicit Load editor
+draft, rechecks live native repository identity/branch and clean saved baseline,
+and changes only editor state. Old credential payload is hidden, not merely
+disabled. Save/commit/GitHub approval/verification retain separate existing gates.
+No new-file/multi-file local executor added; existing GitHub paths remain usable.
+Target check occurs at load time, not an atomic filesystem/Git lock; Save retains
+its pre-write baseline guard and does not claim atomic CAS against outside writers.
+
+Verification now refuses unsaved buffers both before consent and at dispatch;
+observed edits/history/native source operations invalidate historical results.
+In-flight or post-run edits retain output as stale; no automatic rerun. UI states
+process receipt does not certify current tree or external changes. Pure kernels,
+actual App proposal→editor→explicit Save and editor→explicit native check fixtures,
+server review and action-approval regressions pass:162 tests across7 focused suites.
+Actual desktop ES2021 TypeScript passes; lint0errors/1pre-existing catalog cleanup
+warning. Independent security review found no blocker in handoff or freshness.
+This is local renderer/service/native-IPC fixture evidence, NOT installed Mac,
+actual native process or paid/provider end-to-end acceptance. No push, CI run,
+merge, hosted deployment/provisioning, billing setting or paid call occurred.

@@ -475,3 +475,31 @@ it("connects confirmed local selection to the actual App Agent while retaining t
   expect((screen.getByRole("textbox", {name: "Editing main.ts"}) as HTMLTextAreaElement).value).toBe("unsaved selected code");
   expect(m.invoke.mock.calls.filter(([name]) => name === "write_repository_file")).toHaveLength(0);
 });
+it("connects a saved AI file proposal to local review and explicit Save without approving GitHub", async () => {
+  m.client.hasAuth.mockReturnValue(true);
+  m.client.verifyCurrentCredential.mockResolvedValue({ok: true, data: {kind: "desktop_session", organizationId: "fixture-workspace", role: "owner", capabilities: [], access: {allowed: true, code: "active", title: "Access active", message: "Fixture", billingStatus: "no_plan", planTier: "trial"}}});
+  const proposal = {id: "file-proposal", toolName: "commit_github_file", status: "proposed", riskLevel: "medium", argsJson: {repositoryFullName: "fixture/repository", branch: "feature", path: "main.ts", content: "proposed local change", _review: {kind: "github_file", baseSha: "blob-sha", baseContent: "original"}}};
+  m.client.getAgentConversation.mockResolvedValue({ok: true, data: {...summary, turns: [], actions: [proposal]}});
+  m.invoke.mockImplementation(async (command: string) => {
+    if (command === "default_repos_directory") return "/owned";
+    if (command === "list_local_repositories") return ["/owned/A"];
+    if (command === "repository_status") return {rootPath: "/owned/A", repositoryFullName: "fixture/repository", branch: "feature", ahead: 0, behind: 0, changedFiles: []};
+    if (command === "list_repository_files") return ["main.ts"];
+    if (command === "detect_repository_checks") return [];
+    if (command === "read_repository_file") return "original";
+    if (command === "write_repository_file") return;
+    throw new Error(`Unexpected command ${command}`);
+  });
+  render(createElement(App));
+  fireEvent.click(await screen.findByRole("button", {name: "Review in local editor"}));
+  expect(screen.getByLabelText("Agent proposed local diff")).toBeTruthy();
+  fireEvent.click(await screen.findByRole("button", {name: "main.ts"}));
+  await screen.findByDisplayValue("original");
+  fireEvent.click(screen.getByRole("button", {name: "Load editor draft"}));
+  await screen.findByDisplayValue("proposed local change");
+  expect(m.invoke.mock.calls.filter(([name]) => name === "write_repository_file")).toHaveLength(0);
+  fireEvent.click(screen.getByRole("button", {name: "Save ⌘S"}));
+  await waitFor(() => expect(m.invoke).toHaveBeenCalledWith("write_repository_file", {repositoryPath: "/owned/A", relativePath: "main.ts", content: "proposed local change", expectedContent: "original"}));
+  expect(m.client.approveAgentAction).not.toHaveBeenCalled();
+  expect(m.client.sendAgentMessage).not.toHaveBeenCalled();
+});
