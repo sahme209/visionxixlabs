@@ -34,6 +34,14 @@ describe("stat-first owned group inventory", () => {
   it("does not inspect executable metadata for zombies", () => {
     const executable = vi.fn(); expect(policy.groupMembers(42, { pids: () => [42], stat: () => ({ ...row, state: "Z" }), executable })).toEqual([]); expect(executable).not.toHaveBeenCalled();
   });
+  it("accepts a confirmed zombie transition after executable metadata vanishes", () => {
+    let reads = 0;
+    expect(policy.groupMembers(42, { pids: () => [42], stat: () => ++reads === 1 ? row : { ...row, state: "Z" }, executable: () => { throw gone(); } })).toEqual([]);
+  });
+  it("retains an unreadable relevant member even if its later state is not a confirmed zombie", () => {
+    let reads = 0;
+    expect(() => policy.groupMembers(42, { pids: () => [42], stat: () => ++reads === 1 ? row : { ...row, state: "X" }, executable: () => { throw gone(); } })).toThrow("gone");
+  });
 });
 
 it("selects supported custom-server Webpack without widening config roots or worker settings", () => {

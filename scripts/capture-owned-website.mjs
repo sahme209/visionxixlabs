@@ -69,7 +69,7 @@ try {
         res.on('end', () => { try { proveEndpoint(); assert.equal(res.statusCode, 200); resolve(JSON.parse(text)); } catch (error) { reject(error); } });
       });
       req.on('error', reject); onCancel(() => req.destroy()); req.end();
-    }, 2000);
+    }, 2000, 'http.targets');
   }
   const targets = await getTargets();
   const target = targets.find(row => row.type === 'page' && row.url === 'about:blank'); assert.ok(target, 'website_initial_blank_target');
@@ -156,7 +156,7 @@ try {
   // The only post-stop writes are this single final evidence/nonce receipt. Parent waits
   // for this owned driver's positive exit before touching its profile/dist artifacts.
   if (config) {
-    const result = { success, failure, preImageWait, bundler: 'webpack', productionEquivalent: false, evidence, images, deniedRequests: denied, consoleErrorCategories: consoleErrors, qualification: 'Actual local integrated Next pages; API requests denied; external fonts may fall back; screenshots require human inspection. No provider/native acceptance.' };
+    const result = { success, failure, timedOutOperation: session.report().timedOutOperation, preImageWait, bundler: 'webpack', productionEquivalent: false, evidence, images, deniedRequests: denied, consoleErrorCategories: consoleErrors, qualification: 'Actual local integrated Next pages; API requests denied; external fonts may fall back; screenshots require human inspection. No provider/native acceptance.' };
     writeFileSync(join(directory, 'capture.json'), JSON.stringify(result, null, 2), { mode: 0o600 });
     writeFileSync(join(directory, 'done.json'), JSON.stringify({ success, nonce: config.nonce }), { mode: 0o600 });
     process.stdout.write(`${join(directory, 'capture.json')}\n`);
