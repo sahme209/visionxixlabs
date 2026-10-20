@@ -3554,3 +3554,12 @@ Do not land overlapping old PRs individually merely to make the PR list smaller.
 A no-PR/non-main source backup may be pushed if trigger/isolation review proves
 no workflows/deployments/paid operations; no automatic test retries. No production
 or paid operation is authorized by this consolidation.
+Consolidated Agent/profile/editor/receipt regression milestone passes129 cases
+across6 targeted suites. Detailed immutable-head overlap/landing plan is in
+`docs/mission/GITHUB_CONSOLIDATION.md`. Follow-on test diagnostic now asserts a
+subprocess spawn error before parsing stdout, exposing EPERM rather than a
+misleading JSON exception; it does not change admission/fixture guards or claim
+that the blocked process ran. Existing failure evidence remains retained; no
+pointless repeat of those subprocess tests. Source/history/artifact scan found
+no matching added secret patterns or tracked local artifacts. All four PR heads
+and remote4db11e37 remain ancestors of the new local consolidated branch.
