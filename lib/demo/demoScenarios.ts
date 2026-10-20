@@ -281,7 +281,7 @@ export const DEMO_SCENARIOS: Readonly<Record<DemoScenarioId, DemoScenario>> = {
     id: "ai_workforce_overview",
     title: "AI Workforce Overview",
     pitch: "See engineers · tool access · approval rules · activity · audit.",
-    description: "What every engineer is allowed to do + what they've actually done.",
+    description: "What every engineer is allowed to do + what they've actually done. Backend streaming preparation retains one-use AI credit admission and accounts before completion; HTTP/native chat streaming and hosted-provider acceptance are not yet verified.",
     estimatedMinutes: 5,
     audience: "client",
     lastReviewed: "2026-10-20",

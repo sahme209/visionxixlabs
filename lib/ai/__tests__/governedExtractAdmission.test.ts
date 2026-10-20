@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-const m = vi.hoisted(() => ({ reserve: vi.fn(), claim: vi.fn(), write: vi.fn(), transaction: vi.fn(), extract: vi.fn(), ordinaryExtract: vi.fn(), text: vi.fn(), ordinaryText: vi.fn() }));
+const m = vi.hoisted(() => ({ reserve: vi.fn(), claim: vi.fn(), write: vi.fn(), transaction: vi.fn(), extract: vi.fn(), ordinaryExtract: vi.fn(), text: vi.fn(), ordinaryText: vi.fn(), stream: vi.fn() }));
 vi.mock("@/lib/db", () => ({ prisma: { $transaction: m.transaction } }));
 vi.mock("@/lib/billing/aiCreditReservation", () => ({ reserveAICredits: m.reserve, claimLegacyAICreditDispatch: m.claim }));
 vi.mock("@/lib/billing/recordAIUsageEvent", () => ({ recordAIUsageEvent: m.write, recordReservedAIUsageEventV2: vi.fn() }));
@@ -12,6 +12,7 @@ vi.mock("../providers/VercelGatewayProvider", async importOriginal => ({ ...awai
   extractStructuredData = m.ordinaryExtract;
   generateTextOnce = m.text;
   generateText = m.ordinaryText;
+  streamTextOnce = m.stream;
 } }));
 
 import { AIProviderManager } from "../AIProviderManager";
@@ -114,4 +115,44 @@ describe("actual manager admitted extraction boundary", () => {
     expect(m.reserve).not.toHaveBeenCalled(); expect(m.claim).not.toHaveBeenCalled(); expect(m.write).not.toHaveBeenCalled();
     expect(m.ordinaryText).toHaveBeenCalledOnce(); expect(m.text).not.toHaveBeenCalled();
   });
+  it("streams partial display text but awaits durable accounting before completion", async () => {
+    const admitted = await admitAIText({ ...scope, idempotencyKey: "stream_request_123456" });
+    if (!admitted.ok) throw new Error("expected admission");
+    m.stream.mockImplementation(async function* () {
+      yield { text: "partial", done: false };
+      yield { text: "", done: true, response: { ...response, finishReason: "stop" } };
+    });
+    const manager = new AIProviderManager();
+    const stream = manager.streamTextWithAdmission("prompt", scope, admitted.admission);
+    expect((await stream.next()).value).toEqual({ text: "partial", done: false });
+    expect(m.write).not.toHaveBeenCalled();
+    expect((await stream.next()).value).toEqual({ text: "", done: true, finishReason: "stop" });
+    expect(m.write).toHaveBeenCalledOnce();
+    await expect(manager.streamTextWithAdmission("prompt", scope, admitted.admission).next()).rejects.toThrow();
+    expect(m.stream).toHaveBeenCalledOnce();
+    expect(m.ordinaryText).not.toHaveBeenCalled();
+  });
+  it.each(["disconnect", "writer", "provider"])("stream %s retains the consumed claim without success or redispatch", async failure => {
+    const admitted = await admitAIText({ ...scope, idempotencyKey: "stream_request_123456" });
+    if (!admitted.ok) throw new Error("expected admission");
+    const closed = vi.fn();
+    m.stream.mockImplementation(async function* () {
+      try {
+        yield { text: "partial", done: false };
+        if (failure === "provider") throw new Error("uncertain stream");
+        yield { text: "", done: true, response: { ...response, finishReason: "stop" } };
+      } finally { closed(); }
+    });
+    if (failure === "writer") m.write.mockResolvedValue({ recorded: false });
+    const manager = new AIProviderManager();
+    const stream = manager.streamTextWithAdmission("prompt", scope, admitted.admission);
+    await stream.next();
+    if (failure === "disconnect") await stream.return(undefined);
+    else await expect(stream.next()).rejects.toThrow();
+    expect(closed).toHaveBeenCalledOnce();
+    await expect(manager.streamTextWithAdmission("prompt", scope, admitted.admission).next()).rejects.toThrow();
+    expect(m.stream).toHaveBeenCalledOnce();
+    if (failure !== "writer") expect(m.write).not.toHaveBeenCalled();
+  });
+
 });

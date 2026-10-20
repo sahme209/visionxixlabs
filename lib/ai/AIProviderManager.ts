@@ -210,6 +210,31 @@ export class AIProviderManager {
     return out.result;
   }
 
+  /** Internal display-text stream using the same one-use text admission.
+   * Completion is exposed only after the existing durable usage writer links
+   * the hold. Partial output, disconnects and write failures retain uncertainty;
+   * there is no eager writer, provider fallback or second SDK attempt.
+   * Transport disconnect must abort options.abortSignal immediately: generator
+   * return() alone queues behind any pending next() and cannot interrupt it. */
+  async *streamTextWithAdmission(
+    prompt: string,
+    options: AIRequestOptions & { only?: AIProviderName; abortSignal?: AbortSignal },
+    admission: GovernedAIAdmission,
+  ): AsyncGenerator<AIStreamChunk, void, unknown> {
+    const authority = consumeGovernedTextAdmission(admission, options);
+    const gateway = this.admittedGateway(options);
+    for await (const chunk of gateway.streamTextOnce(redact(prompt), {
+      ...this.optionsForProvider(gateway, options), abortSignal: options.abortSignal,
+    })) {
+      if (!chunk.done) {
+        yield chunk;
+      } else {
+        await authority.record(chunk.response);
+        yield { text: "", done: true, finishReason: chunk.response.finishReason };
+      }
+    }
+  }
+
   /** Server-internal governed path. The opaque, one-use authority is minted
    * after a committed ledger claim, never sent to the provider or a client.
    * Exactly one provider attempt can consume this hold; uncertainty is not a

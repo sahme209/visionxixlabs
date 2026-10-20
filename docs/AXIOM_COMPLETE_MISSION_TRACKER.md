@@ -2182,3 +2182,44 @@ No PR merge, production deployment or approval-dependent operation was performed
 The next independent streaming stage retains its researched native-buffering,
 durable-metering and real-environment prerequisites; the full mission is not
 declared complete from these source/component checks.
+
+### 2026-10-20 — independent admitted streaming implementation
+
+Focused research: installed AI SDK6.0.182 documentation/source confirms
+fullStream text-delta/error/abort/finish events and terminal usage/metadata.
+The current Gateway adapter and native HTTP bridge both buffer; replacing the
+adapter alone cannot establish desktop streaming. Existing one-use text admission
+and transactional usage linkage are reused rather than adding a second ledger.
+
+Execution slice: implement a bounded single-attempt SDK stream, compose it with
+the existing text admission, then validate SDK/cancellation/accounting before
+designing the authenticated HTTP/native bridge. No public route is activated in
+this slice. The existing ordinary provider/manager contract remains unchanged.
+Acceptance: incremental delivery before finish, maxRetries0, output <=4096,
+credential redaction, no terminal success without Gateway generation/token
+evidence and durable writer success, no fallback/redispatch after interruption.
+
+Implemented on codex/gateway-real-streaming: streamTextOnce yields SDK deltas
+without accumulating response text, validates terminal evidence, and aborts before
+closing its upstream iterator. streamTextWithAdmission consumes the existing
+opaque text capability and links usage before publishing completion. Provider,
+usage or writer failures and early consumer exit retain dispatch_unknown.
+Transport cancellation must abort the external signal immediately; return()
+alone queues behind a pending next(). An independent security/billing review
+found no admission bypass and requested installed-SDK and in-flight cancellation
+coverage. Its initial cleanup-deadlock hypothesis was not reproduced and is not
+recorded as a confirmed bug.
+
+Targeted provider/manager tests pass, including installed-SDK MockLanguageModelV3
+contracts (isolated provider, not hosted acceptance). An initially stalled
+synthetic source ignored abort; installed SDK source awaits provider reads, so
+the fixture now honors the forwarded abort as a provider must. No timeout was
+raised. Scoped imported TypeScript passes. HTTP/native transport, actual chat and
+editor rendering, real Gateway billing/provider acceptance and native customer
+acceptance remain unfinished. The browser blocker and all required merge gates
+remain preserved; no production/provider calls, deployment or migration occurred.
+
+Validation checkpoint: all27 affected AI/demo suites pass275 tests; the updated
+demo contract passes15 checks separately (overlapping evidence, not extra product
+coverage). Scoped TypeScript, ESLint, diff whitespace and mission coverage checks
+pass. No full CI was redundantly rerun or merge gate waived for this local slice.
