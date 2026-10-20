@@ -3354,3 +3354,19 @@ Never request credential values or share connection strings. Need explicit
 provisioning and Preview deployment approval after these facts and isolation tests
 are complete. Existing production, DB, billing and installer gates stay separate.
 No changes were made to any external setting, GitHub PR, production or billing.
+
+### Website-only Preview preparation — feature work paused
+
+Owner clarified immediate scope: public site visibility only, no auth/database/
+payment/AI/cloud dependency, no provisioning/deployment yet. Consolidated the
+minimal static-package boundary and exact owner confirmation fields in
+`docs/mission/WEBSITE_ONLY_PREVIEW_APPROVAL.md`. Reuse4db11e37 public design/assets
+through a separate static entry; exclude session/chat/backend/transaction paths,
+not merely their secrets. No static entry was built or hosted. Expectation remains
+unknown marginal cost, not assumedfree. Current platform automatic-review toggle
+label/value is not verified; exact pane is Agent→Code Review→repository. Billing
+checks must distinguish remaining team entitlement from old invoices and alerts
+from hard limits. No new owner permission is requested before these confirmations;
+once readiness/artifact checks pass, present ONE final scoped provisioning/Preview
+approval request. All source/PRs/production settings remain preserved. No further
+feature development, build, workflow, provider call or external mutation occurred.
