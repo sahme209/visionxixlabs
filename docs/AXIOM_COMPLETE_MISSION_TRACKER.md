@@ -1890,3 +1890,18 @@ types/lint; additional invalid-prefetch0 regression passes in37 focused cases.
 Independent root-union review accepts preserved phases, script counters, cleanup
 metadata and distinct documentation pre-wait/timeout observations. Actual
 integrated browser acceptance remains required; no production fix is inferred.
+
+
+2ebb292f full CI39450954399 passes all source/test/auth-evidence/build steps.
+Its browser39450954502 retains11 preceding successful interactions but fails
+actual documentation arrival: both pre-wait and timeout observations show the
+product tour still present, docs pathname false, execution section absent.
+This establishes the unchanged-page boundary, not its cause; corrected RSC hash
+forwarding alone did not restore it. Root-reviewed closed transport categories
+now distinguish navigation-shaped RSC, prefetch RSC and document responses,
+including bounded status/MIME/completion/cancel/timeout counters and refusals.
+No URLs, header values, response bodies or credentials are retained. Root81
+focused cases pass plus strict imported-source types with the project's allowJs
+semantics and scoped lint; an initial standalone invocation omitted allowJs and
+was corrected without relaxing the source contract. A fresh browser run is
+required; no production deployment or authorization change is included.
