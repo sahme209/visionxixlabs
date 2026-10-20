@@ -3053,3 +3053,11 @@ cases pass (overlapping earlier runs excluded). Final desktop TypeScript passes;
 independent follow-up navigation review found no blocker. Tracker coverage check
 passes24 available source units/2239 rows; unavailable original specification
 still prevents a claim of complete original-scope coverage.
+Follow-on connected acceptance regression passes both coordinated paths: complete
+explicit two-file Save then separate check consent/receipt, and rejection of a
+drifted second baseline. Editing after the check marks its result stale without
+automatic rerun. These are renderer/native-IPC fixtures, not native execution.
+Local implementation checkpoint57af620d preserves9f0878e7 and earlier commits;
+remote branch/blocked PRs remain untouched. Next real terminal acceptance still
+requires the recorded supported native validation environment; no toolchain
+reinstallation or speculative process-control changes were attempted.

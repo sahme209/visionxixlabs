@@ -469,6 +469,7 @@ it("preserves a local file whose saved baseline differs from the Agent proposal"
 });
 
 it.each([false, true])("reviews coordinated files with explicit saves and rejects drift (drift=%s)", async drift => {
+  checks = () => [{id: "a", label: "A check", command: "npm test", description: "fixture"}];
   reads = (_repository, path) => drift && path === "other.ts" ? "newer local content" : `original ${path}`;
   const edits = ["same.ts", "other.ts"].map(path => ({proposalId: "multi", repositoryFullName: "fixture/a", branch: "feature", path, baseContent: `original ${path}`, content: `changed ${path}`}));
   render(createElement(RepositoryWorkspaceView, {editRequest: {context: m.client.config, edit: edits[0], edits}}));
@@ -497,6 +498,17 @@ it.each([false, true])("reviews coordinated files with explicit saves and reject
   }
   expect(screen.getByText(drift ? /1 of 2 drafts loaded during this review/ : /2 of 2 drafts loaded during this review/)).toBeTruthy();
   expect(m.invoke.mock.calls.filter(([name]) => name === "run_repository_check")).toHaveLength(0);
+  if (!drift) {
+    fireEvent.click(screen.getByRole("button", {name: "A check"}));
+    const consent = await screen.findByRole("button", {name: "Run check"});
+    expect(m.invoke.mock.calls.filter(([name]) => name === "run_repository_check")).toHaveLength(0);
+    fireEvent.click(consent);
+    await screen.findByText("fixture output");
+    expect(m.invoke).toHaveBeenCalledWith("run_repository_check", {repositoryPath: "/owned/A", checkId: "a"});
+    fireEvent.change(screen.getByRole("textbox", {name: "Editing other.ts"}), {target: {value: "changed after check"}});
+    await screen.findByRole("button", {name: /Previous check result \(stale\)/});
+    expect(m.invoke.mock.calls.filter(([name]) => name === "run_repository_check")).toHaveLength(1);
+  }
 });
 it("requires discard consent when moving between proposed files with an unsaved draft", async () => {
   reads = (_repository, path) => `original ${path}`;
