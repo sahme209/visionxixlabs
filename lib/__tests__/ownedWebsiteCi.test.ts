@@ -53,8 +53,10 @@ it('does not leak unknown DOM fields or malformed primitive observations', () =>
 });
 it('publishes only bounded exception counts, closed classes and structured cleanup metadata', () => {
   const result = { sourceHead: sha, cleanupDiagnostics: [{ role: 'browser', stage: 'stop_group', errorCode: 'ENOENT', path: 'PRIVATE' }, { role: 'PRIVATE', stage: 'PRIVATE', errorCode: 'PRIVATE' }] };
-  const capture = { evaluationExceptionClass: 'TypeError', runtimeExceptionCount: 2, homeCapturePhase: 'document_ready_before_playback', preImageWait: { phase: 'homepage_playback', predicateExceptionClass: 'PRIVATE' } };
+  const capture = { evaluationExceptionClass: 'TypeError', runtimeExceptionCount: 2, homeCapturePhase: 'playback_ready_after_essential_consent', preImageWait: { phase: 'homepage_playback', predicateExceptionClass: 'PRIVATE' } };
   const summary = publicSummary(sha, result, capture, undefined, undefined);
+  expect(summary.homeCapturePhase).toBe('playback_ready_after_essential_consent');
+  expect(publicSummary(sha, result, { homeCapturePhase: 'document_ready_before_playback' }, undefined, undefined).homeCapturePhase).toBe('document_ready_before_playback');
   expect(summary.evaluationExceptionClass).toBe('TypeError'); expect(summary.predicateExceptionClass).toBe('other'); expect(summary.runtimeExceptionCount).toBe(2);
   expect(summary.cleanupDiagnostics).toEqual([{ role: 'browser', stage: 'stop_group', errorCode: 'ENOENT' }, { role: 'other', stage: 'other', errorCode: 'other' }]);
   expect(JSON.stringify(summary)).not.toContain('PRIVATE');

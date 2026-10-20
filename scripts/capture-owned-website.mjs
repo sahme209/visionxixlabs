@@ -6,7 +6,8 @@ import policy from './fixtures/ownedWebsitePolicy.cjs';
 import transport from './fixtures/ownedWebsiteSession.cjs';
 import managedNodePath from './fixtures/ownedWebsiteManagedNodePath.cjs';
 function pointerForControl(label) {
-  const element = [...document.querySelectorAll('#product-tour button, #product-tour a')].find(el => (el.getAttribute('aria-label') ?? el.textContent.trim()) === label);
+  const controls = label === 'Essential only' ? document.querySelector('[role="dialog"][aria-labelledby="privacy-consent-title"]')?.querySelectorAll('button') ?? [] : document.querySelectorAll('#product-tour button, #product-tour a');
+  const element = [...controls].find(el => (el.getAttribute('aria-label') ?? el.textContent.trim()) === label);
   if (!element || element.disabled) throw Error('missing_control');
   element.scrollIntoView({ block: 'center', behavior: 'instant' });
   const box = element.getBoundingClientRect();
@@ -17,7 +18,7 @@ function pointerForControl(label) {
   return { x, y };
 }
 function controlToken(label) {
-  return ({ 'Step 2: Make a small, reviewable edit.': 'edit_step', 'Play story': 'play', 'Pause story': 'pause', 'Step 3: Review the bounded check.': 'review_step', 'Simulate approval': 'sample_approve', 'Reject sample': 'sample_reject', 'Replay story': 'replay_control', 'Agent & approval': 'agent_story', 'Step 3: Decide on the exact action.': 'agent_decide', 'Terraform & cloud': 'terraform_story', 'Step 3: Keep the release on hold.': 'terraform_hold', 'Next step': 'next_control', 'Read approval workflow': 'documentation_control' })[label] ?? 'unclassified';
+  return ({ 'Step 2: Make a small, reviewable edit.': 'edit_step', 'Play story': 'play', 'Pause story': 'pause', 'Step 3: Review the bounded check.': 'review_step', 'Simulate approval': 'sample_approve', 'Reject sample': 'sample_reject', 'Replay story': 'replay_control', 'Agent & approval': 'agent_story', 'Step 3: Decide on the exact action.': 'agent_decide', 'Terraform & cloud': 'terraform_story', 'Step 3: Keep the release on hold.': 'terraform_hold', 'Next step': 'next_control', 'Read approval workflow': 'documentation_control', 'Essential only': 'essential_consent_control' })[label] ?? 'unclassified';
 }
 function isHomepagePlaybackReady() {
   const play = document.querySelector('[aria-label="Play story"]');
@@ -106,6 +107,7 @@ let evaluationExceptionClass = null;
 let homeCapturePhase = null;
 let currentInteraction = 'setup';
 let lastInteraction = null;
+let documentationTimeoutSnapshot = null;
 const consoleErrors = [], evidence = [], images = [];
 const interrupted = () => session.stop(Error('website_driver_interrupted'));
 process.once('SIGTERM', interrupted); process.once('SIGINT', interrupted);
@@ -195,8 +197,13 @@ try {
   const state = () => evaluate(() => ({ title: document.querySelector('#product-tour h2').textContent, code: document.querySelector('#product-tour pre')?.innerText ?? '' }));
   await send('Page.enable'); await send('Runtime.enable'); await send('Log.enable'); await send('Fetch.enable', { patterns: [{ urlPattern: '*', requestStage: 'Request' }] });
   await viewport(1440); await navigate('/', 'homepage_document');
-  homeCapturePhase = 'document_ready_before_playback'; await frame('home-desktop');
   await waitFor(isHomepagePlaybackReady, undefined, 45000, 'homepage_playback');
+  currentInteraction = 'essential_consent_control';
+  await waitFor(() => Boolean(document.querySelector('[role="dialog"][aria-labelledby="privacy-consent-title"]')));
+  await click('Essential only');
+  await waitFor(() => !document.querySelector('[role="dialog"][aria-labelledby="privacy-consent-title"]'));
+  evidence.push('essential_consent_selected');
+  homeCapturePhase = 'playback_ready_after_essential_consent'; await frame('home-desktop');
   await click('Step 2: Make a small, reviewable edit.'); await click('Play story'); await sleep(700); await click('Pause story');
   currentInteraction = 'play_pause_check'; const paused = await state(); await sleep(700); assert.deepEqual(await state(), paused); evidence.push('play_pause_preserves_typed_output');
   await click('Play story'); currentInteraction = 'offscreen_check'; await evaluate(() => scrollTo({ top: document.body.scrollHeight, left: 0, behavior: 'instant' })); await sleep(200); const offscreen = await state(); await sleep(5700); assert.deepEqual(await state(), offscreen); evidence.push('offscreen_timer_stopped');
@@ -222,7 +229,13 @@ try {
   currentInteraction = 'mobile_overflow_check'; assert.ok(await evaluate(() => document.documentElement.scrollWidth <= innerWidth), 'website_mobile_overflow'); await frame('product-mobile'); evidence.push('mobile_360_no_horizontal_overflow');
   await click('Next step'); currentInteraction = 'keyboard_previous_check'; await send('Input.dispatchKeyEvent', { type: 'keyDown', key: 'ArrowLeft', code: 'ArrowLeft' }); await send('Input.dispatchKeyEvent', { type: 'keyUp', key: 'ArrowLeft', code: 'ArrowLeft' }); assert.equal((await state()).title, 'Make a small, reviewable edit.'); evidence.push('keyboard_previous');
   await viewport(360, true); await navigate('/product'); await waitFor(() => document.querySelector('[aria-label="Play story"]').disabled); await click('Next step'); await frame('product-reduced-motion-mobile'); evidence.push('reduced_motion_static_manual_step');
-  await viewport(1440); await click('Read approval workflow'); currentInteraction = 'documentation_check'; await waitFor(() => location.pathname === '/docs/approval-workflow' && Boolean(document.querySelector('#execution'))); assert.ok(await evaluate(() => document.querySelector('#execution').innerText.includes('does not verify ECS execution'))); await frame('approval-documentation', 'main'); evidence.push('actual_documentation_destination');
+  await viewport(1440); await click('Read approval workflow'); currentInteraction = 'documentation_check'; try { await waitFor(() => location.pathname === '/docs/approval-workflow' && Boolean(document.querySelector('#execution'))); }
+  catch (error) {
+    if (error.message === 'website_dom_timeout') {
+      try { documentationTimeoutSnapshot = await evaluate(() => ({ pathnameIsDocs: location.pathname === '/docs/approval-workflow', executionPresent: Boolean(document.querySelector('#execution')), tourPresent: Boolean(document.querySelector('#product-tour')) })); } catch { /* unknown observation must not replace the original failure */ }
+    }
+    throw error;
+  } assert.ok(await evaluate(() => document.querySelector('#execution').innerText.includes('does not verify ECS execution'))); await frame('approval-documentation', 'main'); evidence.push('actual_documentation_destination');
   session.assertActive(); success = true;
 } catch (error) {
   failure = /^website_[a-z_]+$/.test(error.message ?? '') ? error.message : 'website_driver_failed';
@@ -233,7 +246,7 @@ try {
   // The only post-stop writes are this single final evidence/nonce receipt. Parent waits
   // for this owned driver's positive exit before touching its profile/dist artifacts.
   if (config) {
-    const result = { success, failure, scriptRequests, timedOutOperation: session.report().timedOutOperation, preImageWait, evaluationExceptionClass, homeCapturePhase, currentInteraction, lastInteraction, runtimeExceptionCount: consoleErrors.filter(category => category === 'runtime_exception').length, consoleErrorCount: consoleErrors.filter(category => category === 'console_error').length, bundler: 'webpack', productionEquivalent: false, evidence, images, deniedRequests: denied, consoleErrorCategories: consoleErrors, qualification: 'Actual local integrated Next pages; API requests denied; external fonts may fall back; screenshots require human inspection. No provider/native acceptance.' };
+    const result = { success, failure, scriptRequests, timedOutOperation: session.report().timedOutOperation, preImageWait, evaluationExceptionClass, homeCapturePhase, currentInteraction, lastInteraction, documentationTimeoutSnapshot, runtimeExceptionCount: consoleErrors.filter(category => category === 'runtime_exception').length, consoleErrorCount: consoleErrors.filter(category => category === 'console_error').length, bundler: 'webpack', productionEquivalent: false, evidence, images, deniedRequests: denied, consoleErrorCategories: consoleErrors, qualification: 'Actual local integrated Next pages; API requests denied; external fonts may fall back; screenshots require human inspection. No provider/native acceptance.' };
     writeFileSync(join(directory, 'capture.json'), JSON.stringify(result, null, 2), { mode: 0o600 });
     writeFileSync(join(directory, 'done.json'), JSON.stringify({ success, nonce: config.nonce }), { mode: 0o600 });
     process.stdout.write(`${join(directory, 'capture.json')}\n`);

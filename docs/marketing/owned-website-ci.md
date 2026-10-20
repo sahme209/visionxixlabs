@@ -89,3 +89,6 @@ harnesses: one lacked the new ledger diagnostic method and another lacked new
 receipt bindings. Both harness contracts are updated without weakening runtime
 checks. The combined eight-file follow-up passes 144 focused tests; exact-head
 full CI and actual browser acceptance still must pass before merge.
+
+
+First-visit continuation supersedes the screenshot ordering above: after actual playback readiness, the fixture selects Essential only through the real consent control and waits for dismissal before capture. New receipts report `homeCapturePhase=playback_ready_after_essential_consent`; earlier document-state receipts keep their original meaning. This does not establish successful later interactions or production acceptance.

@@ -104,7 +104,7 @@ it("includes the closed timeout label in the actual driver's final receipt", asy
   const start = source.lastIndexOf("    const result = { success, failure,");
   const end = source.indexOf("\n    writeFileSync", start);
   expect(start).toBeGreaterThan(0); expect(end).toBeGreaterThan(start);
-  const receipt = vm.compileFunction(`${source.slice(start, end)}; return result;`, ["success", "failure", "session", "preImageWait", "evidence", "images", "denied", "consoleErrors", "evaluationExceptionClass", "homeCapturePhase", "scriptRequests", "currentInteraction", "lastInteraction"])(false, "website_driver_operation_timeout", state.session, null, [], [], 0, [], null, null, { allowed: 0, denied: 0 }, "setup", null);
+  const receipt = vm.compileFunction(`${source.slice(start, end)}; return result;`, ["success", "failure", "session", "preImageWait", "evidence", "images", "denied", "consoleErrors", "evaluationExceptionClass", "homeCapturePhase", "scriptRequests", "currentInteraction", "lastInteraction", "documentationTimeoutSnapshot"])(false, "website_driver_operation_timeout", state.session, null, [], [], 0, [], null, null, { allowed: 0, denied: 0 }, "setup", null, null);
   expect(receipt.timedOutOperation).toBe("cdp.Page.navigate");
   expect(receipt.preImageWait).toBeNull();
   expect(receipt.evaluationExceptionClass).toBeNull();
