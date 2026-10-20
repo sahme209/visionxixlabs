@@ -3,7 +3,7 @@ import { chmodSync, mkdirSync, mkdtempSync, readFileSync, realpathSync, rmSync, 
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 // Builtins-only adapter: importing it never starts the owned fixture.
-import { collect, collectForUpload, pngDimensions, privateFile, publicCounts, publicServerGuard, publicDomSnapshot, publicProxyDelivery, publicSummary, reviewManifest, screenshotNames } from '../../scripts/owned-website-ci.mjs';
+import { collect, collectForUpload, pngDimensions, privateFile, publicCounts, publicServerGuard, publicDomSnapshot, publicNextMarkers, publicProxyDelivery, publicSummary, reviewManifest, screenshotNames } from '../../scripts/owned-website-ci.mjs';
 
 const directories: string[] = [];
 afterEach(() => { for (const path of directories.splice(0)) rmSync(path, { recursive: true, force: true }); });
@@ -70,6 +70,15 @@ it('exports only closed proxy counters bound to an exited registered proxy and m
   expect(publicProxyDelivery(proxy, { ...result, children: [{ ...result.children[0], exited: false }] }, 'n')).toBeNull();
   expect(publicProxyDelivery({ ...proxy, counts: { script_accepted: 1000001 } }, result, 'n')).toBeNull();
   expect(publicProxyDelivery({ ...proxy, counts: { script_accepted: 'PRIVATE' } }, result, 'n')).toBeNull();
+});
+
+it('publishes exactly three boolean bootstrap markers without payload or unknown fields', () => {
+  const markers = { bootstrapRegistered: true, flightArrayPresent: true, flightConsumerInstalled: false };
+  const summary = publicSummary(sha, { sourceHead: sha }, { preImageWait: { phase: 'homepage_playback', nextMarkers: markers } }, undefined, undefined);
+  expect(summary.nextMarkers).toEqual(markers);
+  for (const value of [{ ...markers, payload: 'PRIVATE' }, { ...markers, bootstrapRegistered: 'PRIVATE' }, Object.create(markers)]) expect(publicNextMarkers(value)).toBeNull();
+  let reads = 0; const accessor = { ...markers }; Object.defineProperty(accessor, 'bootstrapRegistered', { enumerable: true, get() { reads++; return 'PRIVATE'; } });
+  expect(publicNextMarkers(accessor)).toBeNull(); expect(reads).toBe(0);
 });
 
 it('reads proxy delivery only through private receipt validation during collection', () => {

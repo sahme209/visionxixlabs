@@ -5,6 +5,32 @@ import { request } from 'node:http';
 import policy from './fixtures/ownedWebsitePolicy.cjs';
 import transport from './fixtures/ownedWebsiteSession.cjs';
 import managedNodePath from './fixtures/ownedWebsiteManagedNodePath.cjs';
+function isHomepagePlaybackReady() {
+  const play = document.querySelector('[aria-label="Play story"]');
+  return document.readyState === 'complete' && play instanceof HTMLButtonElement && play.disabled === false;
+}
+function readNextBootstrapMarkers() {
+  try {
+    const next = Object.getOwnPropertyDescriptor(window, 'next');
+    const appDir = next && Object.hasOwn(next, 'value') && next.value && Object.getOwnPropertyDescriptor(next.value, 'appDir');
+    const version = next && Object.hasOwn(next, 'value') && next.value && Object.getOwnPropertyDescriptor(next.value, 'version');
+    const flightDescriptor = Object.getOwnPropertyDescriptor(window, '__next_f');
+    const flight = flightDescriptor && Object.hasOwn(flightDescriptor, 'value') ? flightDescriptor.value : undefined;
+    const push = Array.isArray(flight) ? Object.getOwnPropertyDescriptor(flight, 'push') : undefined;
+    return { bootstrapRegistered: Boolean(appDir && Object.hasOwn(appDir, 'value') && appDir.value === true && version && Object.hasOwn(version, 'value') && version.value === '16.3.8'), flightArrayPresent: Array.isArray(flight), flightConsumerInstalled: Boolean(push && Object.hasOwn(push, 'value') && typeof push.value === 'function' && push.value !== Array.prototype.push) };
+  } catch { return null; }
+}
+function sanitizeNextBootstrapMarkers(value) {
+  const keys = ['bootstrapRegistered', 'flightArrayPresent', 'flightConsumerInstalled'];
+  if (!value || typeof value !== 'object' || Object.getPrototypeOf(value) !== Object.prototype || Reflect.ownKeys(value).length !== keys.length) return null;
+  const result = {};
+  for (const key of keys) {
+    const descriptor = Object.getOwnPropertyDescriptor(value, key);
+    if (!descriptor?.enumerable || !Object.hasOwn(descriptor, 'value') || typeof descriptor.value !== 'boolean') return null;
+    result[key] = descriptor.value;
+  }
+  return result;
+}
 function readPreImageDomSnapshot() {
   try {
     const play = document.querySelector('[aria-label="Play story"]');
@@ -118,12 +144,12 @@ try {
   async function waitFor(fn, argument, timeout = 45000, preImagePhase = undefined) {
     const deadline = Date.now() + timeout;
     if (preImagePhase !== undefined) assert.ok(['homepage_document', 'homepage_playback'].includes(preImagePhase), 'website_dom_diagnostic_phase');
-    /** @type {{phase: string, lastDomSnapshot: ReturnType<typeof sanitizePreImageDomSnapshot>, scriptCounts?: ReturnType<typeof sanitizeScriptCounts>, predicateExceptionClass?: string} | null} */
+    /** @type {{phase: string, lastDomSnapshot: ReturnType<typeof sanitizePreImageDomSnapshot>, nextMarkers?: ReturnType<typeof sanitizeNextBootstrapMarkers>, scriptCounts?: ReturnType<typeof sanitizeScriptCounts>, predicateExceptionClass?: string} | null} */
     const diagnostic = preImagePhase === undefined ? null : { phase: preImagePhase, lastDomSnapshot: null };
     if (diagnostic) preImageWait = diagnostic;
     while (Date.now() < deadline) {
-      const polled = await evaluate(diagnostic ? `argument => { try { return { satisfied: (${fn})(argument), snapshot: (${readPreImageDomSnapshot})(), scriptCounts: (${readScriptCounts})(), predicateExceptionClass: null }; } catch (error) { return { satisfied: false, snapshot: (${readPreImageDomSnapshot})(), scriptCounts: (${readScriptCounts})(), predicateExceptionClass: ["TypeError", "ReferenceError", "SyntaxError", "RangeError", "Error"].includes(error?.name) ? error.name : "other" }; } }` : fn, argument);
-      if (diagnostic) { diagnostic.lastDomSnapshot = sanitizePreImageDomSnapshot(polled.snapshot); const scripts = sanitizeScriptCounts(polled.scriptCounts); if (scripts) diagnostic.scriptCounts = scripts; if (polled.predicateExceptionClass !== null) { diagnostic.predicateExceptionClass = ['TypeError', 'ReferenceError', 'SyntaxError', 'RangeError', 'Error'].includes(polled.predicateExceptionClass) ? polled.predicateExceptionClass : 'other'; throw Error('website_browser_evaluation_failed'); } }
+      const polled = await evaluate(diagnostic ? `argument => { try { return { satisfied: (${fn})(argument), snapshot: (${readPreImageDomSnapshot})(), scriptCounts: (${readScriptCounts})(), nextMarkers: (${readNextBootstrapMarkers})(), predicateExceptionClass: null }; } catch (error) { return { satisfied: false, snapshot: (${readPreImageDomSnapshot})(), scriptCounts: (${readScriptCounts})(), nextMarkers: (${readNextBootstrapMarkers})(), predicateExceptionClass: ["TypeError", "ReferenceError", "SyntaxError", "RangeError", "Error"].includes(error?.name) ? error.name : "other" }; } }` : fn, argument);
+      if (diagnostic) { diagnostic.lastDomSnapshot = sanitizePreImageDomSnapshot(polled.snapshot); diagnostic.nextMarkers = sanitizeNextBootstrapMarkers(polled.nextMarkers); const scripts = sanitizeScriptCounts(polled.scriptCounts); if (scripts) diagnostic.scriptCounts = scripts; if (polled.predicateExceptionClass !== null) { diagnostic.predicateExceptionClass = ['TypeError', 'ReferenceError', 'SyntaxError', 'RangeError', 'Error'].includes(polled.predicateExceptionClass) ? polled.predicateExceptionClass : 'other'; throw Error('website_browser_evaluation_failed'); } }
       if (diagnostic ? polled.satisfied : polled) { if (diagnostic) preImageWait = null; return; }
       await sleep(100);
     }
@@ -149,7 +175,7 @@ try {
   await send('Page.enable'); await send('Runtime.enable'); await send('Log.enable'); await send('Fetch.enable', { patterns: [{ urlPattern: '*', requestStage: 'Request' }] });
   await viewport(1440); await navigate('/', 'homepage_document');
   homeCapturePhase = 'document_ready_before_playback'; await frame('home-desktop');
-  await waitFor(() => !document.querySelector('[aria-label="Play story"]').disabled, undefined, 45000, 'homepage_playback');
+  await waitFor(isHomepagePlaybackReady, undefined, 45000, 'homepage_playback');
   await click('Step 2: Make a small, reviewable edit.'); await click('Play story'); await sleep(700); await click('Pause story');
   const paused = await state(); await sleep(700); assert.deepEqual(await state(), paused); evidence.push('play_pause_preserves_typed_output');
   await click('Play story'); await evaluate(() => scrollTo(0, document.body.scrollHeight)); await sleep(200); const offscreen = await state(); await sleep(5700); assert.deepEqual(await state(), offscreen); evidence.push('offscreen_timer_stopped');

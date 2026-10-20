@@ -1,0 +1,9 @@
+# Playback readiness and closed bootstrap boundaries
+
+CI observed a complete styled document, then a later same-poll loading document with absent controls and a TypeError. The homepage playback predicate previously dereferenced a possibly absent Play button. It now requires a complete document, an actual Play button and `disabled === false`; loading, absent and disabled states remain unmet until the existing 45-second deadline. Real predicate exceptions still fail immediately. This corrects readiness observation, not the underlying cause of a document transition or incomplete hydration.
+
+The existing pre-image poll now observes exactly three additional booleans from pinned Next 16.3.8: `bootstrapRegistered` (own `window.next.appDir === true` and exact version), `flightArrayPresent` (own Flight value is an array), and `flightConsumerInstalled` (own function-valued replacement of the Flight array's `push`). It reads no Flight contents, lengths, function source, errors, URLs or text; accessor values are not invoked. Driver and collector accept only the three exact own boolean fields. Malformed observations remain unknown.
+
+Pinned source establishes bootstrap registration in `next/dist/client/app-bootstrap.js:18`, inline Flight array presence in `next/dist/server/app-render/use-flight-response.js:185`, and client Flight consumer installation in `next/dist/client/app-index.js:136`. The hydration entry subsequently awaits initial server response at line 253. These locate module boundaries; none establishes that React committed or that controls work. `__NEXT_HYDRATED` is test-mode gated and is neither enabled nor treated as mandatory here. Playback and all later customer-interface assertions remain mandatory.
+
+No extra CDP call, network access, environment setting, timeout, retry, permission or capture is added. Pure extracted-source tests cover readiness states and bootstrap markers; actual fresh application acceptance remains required.
