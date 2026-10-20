@@ -17,7 +17,8 @@ vi.mock("@/lib/db", () => ({ prisma: {} }));
 vi.mock("@/lib/releaseops/auditEventResponder", () => ({ appendAuditEvent: mocks.audit }));
 vi.mock("@/lib/ai/workspaceProviderPolicy", () => ({
   loadWorkspaceAIProviderPolicyWithState: mocks.load,
-  normalizeWorkspaceAIProviderPolicy: mocks.normalize,
+  normalizeWorkspaceAIProviderPolicyUpdate: mocks.normalize,
+  gatewayPolicyModelIds: (policy: { gatewaySelection?: { approvedModelIds: string[] } }) => policy.gatewaySelection?.approvedModelIds ?? [],
   resolveWorkspaceAIProviderPolicy: mocks.resolve,
   saveWorkspaceAIProviderPolicy: mocks.save,
   workspaceAIProviderPolicyStorageState: () => "unavailable",

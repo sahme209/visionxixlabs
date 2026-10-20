@@ -7,7 +7,8 @@ import { prisma } from "@/lib/db";
 import { appendAuditEvent, type AuditEventRepo } from "@/lib/releaseops/auditEventResponder";
 import {
   loadWorkspaceAIProviderPolicyWithState,
-  normalizeWorkspaceAIProviderPolicy,
+  normalizeWorkspaceAIProviderPolicyUpdate,
+  gatewayPolicyModelIds,
   resolveWorkspaceAIProviderPolicy,
   saveWorkspaceAIProviderPolicy,
   workspaceAIProviderPolicyStorageState,
@@ -58,7 +59,7 @@ export async function PUT(request: NextRequest): Promise<NextResponse> {
   const session = await sessionFor(request, true);
   if (!session) return NextResponse.json({ ok: false, error: "workspace_admin_required" }, { status: 403 });
   const body = await request.json().catch(() => null) as { enabled?: unknown; allowedProviders?: unknown; modelSelections?: unknown; fallbackOrder?: unknown } | null;
-  const policy = body ? normalizeWorkspaceAIProviderPolicy(body) : null;
+  const policy = body ? normalizeWorkspaceAIProviderPolicyUpdate(body) : null;
   if (!policy) return NextResponse.json({ ok: false, error: "invalid_provider_policy" }, { status: 422 });
   const availableProviders = serviceEnabledProviders();
   if (policy.allowedProviders.some((provider) => !availableProviders.includes(provider))) {
@@ -67,8 +68,7 @@ export async function PUT(request: NextRequest): Promise<NextResponse> {
   if (policy.enabled && policy.allowedProviders.includes("vercel_gateway")) {
     try {
       const availableModels = new Set((await loadGatewayModelCatalog()).map((model) => model.id));
-      const selected = policy.modelSelections.vercel_gateway;
-      if (selected && selected !== "service-default" && !availableModels.has(selected)) {
+      if (gatewayPolicyModelIds(policy).some(id => !availableModels.has(id))) {
         return NextResponse.json({ ok: false, error: "gateway_model_unavailable" }, { status: 422 });
       }
     } catch {
@@ -87,7 +87,7 @@ export async function PUT(request: NextRequest): Promise<NextResponse> {
       subjectKind: "workspace_ai_policy",
       subjectId: String(session.organizationId),
       summary: policy.enabled
-        ? `Enabled Agent models: ${Object.entries(policy.modelSelections).map(([provider, model]) => `${provider}/${model}`).join(", ")}`
+        ? `Enabled Agent models: ${Object.entries(policy.modelSelections).map(([provider, model]) => `${provider}/${model}`).join(", ") + (policy.gatewaySelection ? `; approved Gateway models: ${policy.gatewaySelection.approvedModelIds.join(", ")}` : "")}`
         : "Disabled workspace Agent models",
       actorUserId: String(session.userId),
     }).catch(() => undefined);

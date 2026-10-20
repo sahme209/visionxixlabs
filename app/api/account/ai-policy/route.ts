@@ -5,10 +5,12 @@ import { isSameOriginRequest } from "@/lib/auth/requestOrigin";
 import { record as recordAudit } from "@/lib/audit/secureAudit";
 import { id as idFactory } from "@/lib/domain/ids";
 import { getAIProviderManager } from "@/lib/ai/AIProviderManager";
+import { loadGatewayModelCatalog } from "@/lib/ai/gatewayModelCatalog";
 import { listModels } from "@/lib/ai/AIModelRegistry";
 import {
   loadWorkspaceAIProviderPolicyWithState,
-  normalizeWorkspaceAIProviderPolicy,
+  normalizeWorkspaceAIProviderPolicyUpdate,
+  gatewayPolicyModelIds,
   resolveWorkspaceAIProviderPolicy,
   saveWorkspaceAIProviderPolicy,
   workspaceAIProviderPolicyStorageState,
@@ -42,8 +44,16 @@ export async function GET(): Promise<NextResponse> {
   });
   // Provider family names are safe to expose to an owner. Configuration,
   // credentials, account identifiers, and usage remain server-side.
-  const availableModels = Object.fromEntries(availableProviders.map((provider) => [provider, listModels(provider).map((model) => ({ id: model.id, label: model.label }))]));
-  return NextResponse.json({ ok: true, data: { policy, availableProviders, availableModels } });
+  try {
+    const availableModels = Object.fromEntries(await Promise.all(availableProviders.map(async provider => [
+      provider,
+      provider === "vercel_gateway" ? await loadGatewayModelCatalog()
+        : listModels(provider).map(model => ({ id: model.id, label: model.label })),
+    ])));
+    return NextResponse.json({ ok: true, data: { policy, availableProviders, availableModels } });
+  } catch {
+    return NextResponse.json({ ok: false, error: "gateway_model_catalog_unavailable" }, { status: 503 });
+  }
 }
 
 export async function PUT(request: NextRequest): Promise<NextResponse> {
@@ -51,11 +61,18 @@ export async function PUT(request: NextRequest): Promise<NextResponse> {
   const ctx = await ownerContext();
   if (!ctx) return NextResponse.json({ ok: false, error: "workspace_owner_required" }, { status: 403 });
   const body = await request.json().catch(() => null) as { enabled?: unknown; allowedProviders?: unknown; modelSelections?: unknown; fallbackOrder?: unknown } | null;
-  const policy = body ? normalizeWorkspaceAIProviderPolicy(body) : null;
+  const policy = body ? normalizeWorkspaceAIProviderPolicyUpdate(body) : null;
   if (!policy) return NextResponse.json({ ok: false, error: "invalid_provider_policy" }, { status: 422 });
   const serviceEnabled = serviceEnabledProviders();
   if (policy.enabled && policy.allowedProviders.some((provider) => !serviceEnabled.includes(provider))) {
     return NextResponse.json({ ok: false, error: "provider_unavailable" }, { status: 422 });
+  }
+  if (gatewayPolicyModelIds(policy).length) {
+    const catalog = await loadGatewayModelCatalog().catch(() => null);
+    if (!catalog) return NextResponse.json({ ok: false, error: "gateway_model_catalog_unavailable" }, { status: 503 });
+    if (gatewayPolicyModelIds(policy).some(id => !catalog.some(model => model.id === id))) {
+      return NextResponse.json({ ok: false, error: "gateway_model_unavailable" }, { status: 422 });
+    }
   }
   try {
     await saveWorkspaceAIProviderPolicy({ organizationId: ctx.organizationId, policy, updatedBy: ctx.userId });
@@ -77,6 +94,7 @@ export async function PUT(request: NextRequest): Promise<NextResponse> {
         // change" answerable from the audit record alone.
         allowedProviders: policy.allowedProviders,
         selectedModels: policy.modelSelections,
+        approvedGatewayModels: gatewayPolicyModelIds(policy),
         fallbackOrder: policy.fallbackOrder,
       },
     });

@@ -129,6 +129,38 @@ export function normalizeStoredWorkspaceAIProviderPolicy(value: unknown): Worksp
   return policy && gatewaySelection ? { ...policy, gatewaySelection } : policy;
 }
 
+/** Reviewed admin write boundary for versioned selections. Legacy callers may
+ * continue sending string models; routing still uses only the default string. */
+export function normalizeWorkspaceAIProviderPolicyUpdate(input: unknown): WorkspaceAIProviderPolicy | null {
+  const row = storedRecord(input, 32);
+  if (!row) return null;
+  const policy = normalizeStoredWorkspaceAIProviderPolicy({
+    enabled: row.enabled, allowedProviders: row.allowedProviders,
+    modelSelections: row.modelSelections, fallbackOrder: row.fallbackOrder,
+  });
+  if (!policy) return null;
+  // GET responses expose the default string plus separate metadata. Preserve
+  // that canonical API shape on edits; refuse ambiguous dual representations.
+  if (row.gatewaySelection !== undefined) {
+    const metadata = storedGatewaySelection(row.gatewaySelection);
+    if (!metadata || policy.gatewaySelection || !policy.enabled
+      || !policy.allowedProviders.includes("vercel_gateway")
+      || policy.modelSelections.vercel_gateway !== metadata.defaultModelId) return null;
+    return { ...policy, gatewaySelection: metadata };
+  }
+  if (policy.gatewaySelection && (!policy.enabled || !policy.allowedProviders.includes("vercel_gateway"))) return null;
+  return policy;
+}
+
+/** Every explicitly approved Gateway ID must pass the current service catalog.
+ * The legacy service-managed default remains a server-owned routing decision. */
+export function gatewayPolicyModelIds(policy: WorkspaceAIProviderPolicy): readonly string[] {
+  if (!policy.enabled || !policy.allowedProviders.includes("vercel_gateway")) return [];
+  if (policy.gatewaySelection) return policy.gatewaySelection.approvedModelIds;
+  const selected = policy.modelSelections.vercel_gateway;
+  return selected && selected !== "service-default" ? [selected] : [];
+}
+
 export function normalizeWorkspaceAIProviderPolicy(input: {
   enabled?: unknown;
   allowedProviders?: unknown;

@@ -1928,3 +1928,13 @@ qualification, actual environment/DB ownership and hosted TEST acceptance.
 Two local native release-fixture timing failures remain recorded; full readiness
 is not claimed and no deadline was relaxed. Production DB/PITR/binding, live
 payments, installer and final deployment approval gates remain unchanged.
+
+
+Desktop policy reader PR183 is under required CI after48 focused tests, full web
+source types, lint and independent review passed. Dependent admin catalog source
+now validates all approved Gateway IDs in the three existing policy APIs and
+uses live catalog discovery on the account endpoint. Alternate-model dispatch,
+shared desktop selector and real provider/native acceptance remain unverified.
+Billing current-main source qualification60be2ab3 is committed separately; root
+actual closure suite passes4 checks. This is source-only evidence, not compiled
+output, environment/DB ownership, real Stripe checkout or runtime authority.

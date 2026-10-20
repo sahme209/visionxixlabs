@@ -146,3 +146,25 @@ iteration. Regression cases compare stored/public legacy normalization directly.
 Root validation: 48 targeted tests across stored/legacy policy, control governance
 and desktop provider routes pass; scoped lint and independent source review pass.
 These checks establish storage compatibility only, not hosted inference acceptance.
+
+## Admin catalog integration checkpoint
+
+The dependent source phase adds a separate reviewed admin-update normalizer;
+the legacy normalizer remains string-only. Existing account, control and desktop
+owner/admin routes can validate the bounded v1 object in the existing Gateway
+JSON slot. Every approved ID, including non-default choices, must exist in the
+current service-filtered catalog before persistence. Catalog failure refuses the
+write. Session-derived tenant IDs, same-origin web mutations, desktop admin
+checks, existing audit mechanisms and service provider restrictions remain.
+Account model discovery now uses the existing live Gateway catalog rather than
+static registry guesses. No keys or endpoint configuration are returned.
+
+This enables policy administration in source only. Existing inference continues
+using its approved default string: alternate selection, shared chat/editor UI,
+streaming/tool support and real-provider/native acceptance remain subsequent
+steps. No paid inference, credentials, schema change or deployment is included.
+
+The admin boundary accepts the normalized GET form (default string plus validated
+`gatewaySelection`) as well as the nested stored v1 form. Conflicting defaults,
+malformed metadata and simultaneous representations refuse; GET → edit → save
+regressions preserve the approved list rather than silently flattening it.

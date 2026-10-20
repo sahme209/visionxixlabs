@@ -1,7 +1,7 @@
 import {beforeEach,expect,it,vi} from "vitest";
 const db=vi.hoisted(()=>({findUnique:vi.fn(),upsert:vi.fn()}));
 vi.mock("@/lib/db",()=>({prisma:{organizationAIProviderPolicy:db}}));
-import {normalizeStoredWorkspaceAIProviderPolicy,normalizeWorkspaceAIProviderPolicy,loadWorkspaceAIProviderPolicyWithState,saveWorkspaceAIProviderPolicy,resolveWorkspaceAIProviderPolicy} from "../workspaceProviderPolicy";
+import {normalizeStoredWorkspaceAIProviderPolicy,normalizeWorkspaceAIProviderPolicyUpdate,normalizeWorkspaceAIProviderPolicy,loadWorkspaceAIProviderPolicyWithState,saveWorkspaceAIProviderPolicy,resolveWorkspaceAIProviderPolicy} from "../workspaceProviderPolicy";
 const selection=()=>({version:1,defaultModelId:"xai/grok-4",approvedModelIds:["xai/grok-4","openai/gpt-4o"]});
 const row=(model:unknown=selection())=>({enabled:true,allowedProviders:["vercel_gateway"],modelSelections:{vercel_gateway:model},fallbackOrder:["vercel_gateway"]});
 beforeEach(()=>{vi.resetAllMocks();db.upsert.mockResolvedValue({});});
@@ -69,4 +69,14 @@ it.each([null,"legacy-non-array",3,false,{}])("preserves stored/public parity fo
 });
 it.each([null,"legacy-non-array",3,false,{}])("preserves primitive/null provider-list normalization for disabled legacy rows %#",allowedProviders=>{
  const value={enabled:false,allowedProviders,fallbackOrder:null,modelSelections:{}};expect(normalizeStoredWorkspaceAIProviderPolicy(value)).toEqual(normalizeWorkspaceAIProviderPolicy(value));
+});
+
+it("preserves approved IDs through load, GET resolution, public edit and stored save", async () => {
+ db.findUnique.mockResolvedValue(row());
+ const loaded=await loadWorkspaceAIProviderPolicyWithState("org");
+ const response=resolveWorkspaceAIProviderPolicy({stored:loaded.policy,serviceEnabled:["vercel_gateway"]});
+ const edited=normalizeWorkspaceAIProviderPolicyUpdate(JSON.parse(JSON.stringify(response)))!;
+ expect(edited.gatewaySelection).toEqual(selection());
+ await saveWorkspaceAIProviderPolicy({organizationId:"org",updatedBy:"admin",policy:edited});
+ expect(db.upsert.mock.calls[0][0].update.modelSelections).toEqual({vercel_gateway:selection()});
 });
