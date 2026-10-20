@@ -52,7 +52,7 @@ it("rejects reused process identities during cleanup", () => {
 
 it("pins the real source/dependency framework and refuses Agent-context reuse", () => {
   const identity = framework.captureOwnedWebsiteFramework(root);
-  expect(identity.sourceHashes["next.config.ts"]).toBe("e29e0ed18407a18820a2047e41e52272a80dc7cd1f69dbb221ad9e9977f1a040");
+  expect(identity.sourceHashes["next.config.ts"]).toBe("0e92d9076a0fde2e5523d86ff9024b727fdb5a272cb2d55e0159f7d693f1ab7d");
   expect(() => framework.installOwnedWebsiteFramework({ root, role: "server", environment: { AXIOM_NEXT_AGENT_MODE: "owned-scripted-core", NODE_ENV: "development" }, identity })).toThrow("owned_framework_context");
 });
 
@@ -102,7 +102,7 @@ it("uses the pinned in-process TS API with no new process and restores the preci
       mode.restore();assert.deepEqual(Object.getOwnPropertyDescriptor(defaults.experimental,'useTypeScriptCli'),before);
       console.log('pinned_api_without_process');
     })().catch(error=>{console.error(String(error));process.exitCode=1});`;
-  expect(execFileSync(process.execPath, ["-e", script], { cwd: root, env: { PATH: process.env.PATH, NODE_ENV: "test" }, encoding: "utf8", timeout: 10000 }).trim()).toContain("pinned_api_without_process");
+  expect(execFileSync(process.execPath, ["-e", script], { cwd: root, env: { ...process.env, NODE_ENV: "test" }, encoding: "utf8", timeout: 10000 }).trim()).toContain("pinned_api_without_process");
 });
 
 it("preserves reviewed managed NODE_PATH without printing or substituting its value", () => {

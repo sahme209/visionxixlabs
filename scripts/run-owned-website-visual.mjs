@@ -10,7 +10,7 @@ import lifecycle from './fixtures/ownedWebsiteLifecycle.cjs';
 import managedNodePath from './fixtures/ownedWebsiteManagedNodePath.cjs';
 const root = realpathSync(join(dirname(fileURLToPath(import.meta.url)), '..'));
 const browser = '/usr/lib/chromium/chromium';
-const sourceFiles = ['scripts/run-owned-website-visual.mjs', 'scripts/fixtures/ownedWebsitePolicy.cjs', 'scripts/fixtures/ownedWebsiteGuard.cjs', 'scripts/fixtures/ownedWebsiteFramework.cjs', 'scripts/fixtures/ownedWebsiteChild.cjs', 'scripts/fixtures/ownedWebsiteProxy.cjs', 'scripts/fixtures/ownedWebsiteProxyTransport.cjs', 'scripts/fixtures/ownedWebsiteLifecycle.cjs', 'scripts/fixtures/ownedWebsiteSession.cjs', 'scripts/fixtures/ownedWebsiteManagedNodePath.cjs', 'scripts/fixtures/ownedManagedEnvironment.cjs', 'scripts/capture-owned-website.mjs'];
+const sourceFiles = ['scripts/run-owned-website-visual.mjs', 'scripts/fixtures/ownedWebsiteConfig.cjs', 'scripts/fixtures/ownedWebsitePolicy.cjs', 'scripts/fixtures/ownedWebsiteGuard.cjs', 'scripts/fixtures/ownedWebsiteFramework.cjs', 'scripts/fixtures/ownedWebsiteChild.cjs', 'scripts/fixtures/ownedWebsiteProxy.cjs', 'scripts/fixtures/ownedWebsiteProxyTransport.cjs', 'scripts/fixtures/ownedWebsiteLifecycle.cjs', 'scripts/fixtures/ownedWebsiteSession.cjs', 'scripts/fixtures/ownedWebsiteManagedNodePath.cjs', 'scripts/fixtures/ownedManagedEnvironment.cjs', 'scripts/capture-owned-website.mjs'];
 const pause = ms => new Promise(resolve => setTimeout(resolve, ms));
 function captureEnvironment() {
   const managed = policy.captureManagedEnvironment(process.env);
