@@ -3370,3 +3370,19 @@ from hard limits. No new owner permission is requested before these confirmation
 once readiness/artifact checks pass, present ONE final scoped provisioning/Preview
 approval request. All source/PRs/production settings remain preserved. No further
 feature development, build, workflow, provider call or external mutation occurred.
+
+### Website Preview: owner cost facts accepted, enforcement still blocked
+
+Owner confirms automatic platform code reviews OFF, team Pro and$20 credit
+exhausted. Recorded without re-requesting confirmation. Updated website-only
+approval document with concrete static artifact/project configuration and distinct
+infrastructure protection. No feature development, build, provisioning or upload.
+Spend docs show threshold notifications, not evidence this team's budget is a
+hard cap; team metadata does not expose effective pause action/scope. Need
+sanitized owner view of Spend Management and an acceptable incremental Preview
+budget; do not alter team-wide controls that could pause production. Protection
+must be verified on the separate project before upload and included in the one
+final approved action. Expected marginal cost remainsunknown and potentially
+billable; credit exhaustion does not establish that every SKU is exhausted, nor
+that the Preview can befree. No final deployment approval requested prematurely.
+Existing source/PRs/production settings unchanged; no paid provider call made.
