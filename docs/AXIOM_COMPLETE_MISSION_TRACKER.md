@@ -3611,3 +3611,8 @@ Automated approval review rejected publishing the new repair, citing earlier exa
 ### PR194 website intermittent-navigation diagnostics — local only
 
 Approved6e23fab7 is published; all four workflows initially passed (8,880 Vitest passes,16 offline-auth tests,293-page production build, native Desktop CI, SQL/HTTP and12 browser gates). Ready-for-review website39520883805 then failed at documentation navigation with no destination request. Preserve that failed gate,194 and187/191/192/193; no same-head retry or merge. Root cause unconfirmed. Prepare bounded passive click/default-prevention, Next Link intent, delayed-replay polling and main-frame transition diagnostics; existing destination request/DOM acceptance, deadlines and isolation remain unchanged. Pure focused tests are implementation evidence only, not actual browser acceptance. Local supervisor and three subprocess cases remain EPERM-blocked; no guard bypass. Owner requires final independent review, test results and exact diagnostic commit before push authorization. Vercel/production operations remain prohibited.
+
+
+### Local pointer diagnostics integration
+
+Event-time pointer observations now integrate with existing documentation polls, source hashing and strict public projection. 46 focused tests across five files; independent review22 tests passed; no independent review blocker. Application/input behavior, deadlines and isolation unchanged. No new browser evidence: click-target root cause remains unresolved. Local only; no push/CI. #197 Git timeout evidence retained without further diagnostics; #195 unchanged.

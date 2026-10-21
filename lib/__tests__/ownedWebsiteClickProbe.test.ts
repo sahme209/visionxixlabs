@@ -59,7 +59,7 @@ it('refreshes router-intent observation during each documentation poll, includin
     reads++;
     return vm.compileFunction(`return (${String(fn)})();`, ['reads'])(reads);
   };
-  const run = vm.compileFunction(`let documentationClick = null; ${source.slice(start, end)}; return { waitFor, read: () => documentationClick };`, ['evaluate', 'sleep', 'Date', 'assert', 'readDocumentationClickProbe'])(evaluate, async () => { now += 100; }, { now: () => now }, { ok: (value: unknown) => { if (!value) throw Error('assertion'); } }, () => ({ routerIntentSeen: reads > 1 }));
+  const run = vm.compileFunction(`let documentationClick = null, documentationPointer = null; ${source.slice(start, end)}; return { waitFor, read: () => documentationClick };`, ['evaluate', 'sleep', 'Date', 'assert', 'readDocumentationClickProbe', 'pointerObservation'])(evaluate, async () => { now += 100; }, { now: () => now }, { ok: (value: unknown) => { if (!value) throw Error('assertion'); } }, () => ({ routerIntentSeen: reads > 1 }), { readPointerObservation: () => null });
   await expect(run.waitFor(() => false, undefined, 250, undefined, undefined, true)).rejects.toThrow('website_dom_timeout');
   expect(reads).toBe(3); expect(run.read()).toEqual({ routerIntentSeen: true });
 });
