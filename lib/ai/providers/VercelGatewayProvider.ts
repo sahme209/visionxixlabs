@@ -1,7 +1,7 @@
 import { denyIsolatedExternalIO } from "@/lib/billing/isolatedApplication/runtime";
 import "server-only";
 
-import { generateText, streamText, type TextStreamPart, type ToolSet } from "ai";
+import { generateText, streamText, Output, type TextStreamPart, type ToolSet } from "ai";
 import { AI_REQUEST_MAX_OUTPUT_TOKENS } from "@/lib/billing/requestReservationCents";
 import { redact } from "@/lib/security/redaction";
 import {
@@ -155,12 +155,13 @@ export class VercelGatewayProvider implements AIProvider {
     yield { text: "", done: true, finishReason: result.finishReason };
   }
 
-  /** Single SDK attempt for the future admitted streaming lane. Keep the
-   * ordinary manager contract unchanged until its durable admission is wired.
+  /** Single SDK attempt for admitted streaming. JSON output is an internal
+   * formatting request, never permission or a substitute for final validation.
    * Never buffer text or turn an interrupted response into terminal success. */
   async *streamTextOnce(
     prompt: string,
     options?: AIRequestOptions & { abortSignal?: AbortSignal },
+    format?: "json",
   ): AsyncGenerator<GatewayAdmittedStreamChunk, void, unknown> {
     denyIsolatedExternalIO();
     if (!this.isConfigured()) {
@@ -182,6 +183,7 @@ export class VercelGatewayProvider implements AIProvider {
     try {
       signal.throwIfAborted();
       const result = streamText({
+        ...(format === "json" ? {output: Output.json()} : {}),
         // fullStream below returns a fixed safe error. The SDK default handler
         // logs raw upstream payloads, which may contain prompts or account data.
         onError: () => {},

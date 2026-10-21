@@ -270,10 +270,17 @@ export class AIProviderManager {
       const authority = consumeGovernedExtractAdmission(admission, options);
       const gateway = this.admittedGateway(options);
       onDraft("");
+      const gatewayOptions = this.optionsForProvider(gateway, options);
+      const selectedModel = gatewayOptions?.model;
+      const model = selectedModel && selectedModel !== "service-default" ? selectedModel : gateway.defaultModel;
+      // Formatting compatibility only: never grants dispatch authority or relaxes parsing.
+      // Exact, bounded server-side opt-in preserves unverified model routes by default.
+      const jsonModels = process.env.AXIOM_GATEWAY_STRUCTURED_JSON_MODELS ?? "";
+      const jsonMode = jsonModels.length <= 4096 && jsonModels.split(",").some(id => id.trim() === model);
       for await (const chunk of gateway.streamTextOnce(redact(text), {
-        ...this.optionsForProvider(gateway, options), abortSignal: options.abortSignal,
+        ...gatewayOptions, abortSignal: options.abortSignal,
         system: `Return valid JSON only. The required shape is: ${schemaHint}`,
-      })) {
+      }, jsonMode ? "json" : undefined)) {
         if (chunk.done) {
           await authority.record(chunk.response);
           response = { ...chunk.response, text: raw };
