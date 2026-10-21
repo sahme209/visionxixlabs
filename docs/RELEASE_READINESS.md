@@ -2,6 +2,14 @@
 
 Status: **not ready for customer release**. This separates implementation and isolated acceptance from installed-app/live-provider evidence. No deployment, release publication, billing change or production action is authorized.
 
+## Current consolidated baseline — October 21, 2026
+
+Main `568110c239684dcca9bbd18a082ac8c3a45988cf` merged #199, including #195/#196/#198 and the previously merged #197. Post-merge Test39607098765 and Desktop39607098847 passed. Integration Test39603073511 passed 8,959 tests (34 skipped), offline authentication and production website build; Desktop39603073537 passed 32 native tests on each Linux/macOS plus clippy; website39603073564 and ready-transition39605832551 passed 12 gates. No repeat CI is needed for this baseline. The historical baseline below is retained as provenance, not the current source state.
+
+Consented new-file creation, direct OpenAI/xAI streaming, verification cancellation, optional-storage crash recovery and Airflow selection/recovery changes are now incorporated. Their inclusion does not establish installed-Mac, actual-provider, Stripe TEST or cloud acceptance. Historical navigation/pointer/preflight intermittency remains unresolved; retain receipts without speculative fixes.
+
+The active complete remaining execution plan is in `AXIOM_COMPLETE_MISSION_TRACKER.md`; GitHub issue #200 is the shared status. Preview is blocked by incomplete environment metadata and unverified current spending/Pause state. Visible Production/Preview shared credentials include GitHub, AI and cloud integrations; no safe isolation or zero-cost claim can yet be made. No deployment or settings change has occurred.
+
 ## Source and acceptance baseline
 
 Consolidated main: `0c32b6fdab8de2e4a72c10f22b45cf2fbc5d8e4c`; tested PR194 head: `755b9189ae760ee113440acbf05c3cf554c38c14`. Their trees match. Original187/191/192/193 histories are included. Latest inspected published distribution: `desktop-v0.1.20`; an installed build of current main has not been verified.
