@@ -1,5 +1,15 @@
 # Axiom Agent release readiness
 
+## Native acceptance progress — October 21, 2026
+
+- Current local source now binds OS credential storage to the configured app identifier. Production retains its exact existing identifier; development reads, writes, deletion and legacy migration use a separate namespace. Actual production config compatibility is covered by a native regression.
+- Validation: 39 default native Mac tests passed; one additional explicitly invoked real macOS Keychain test passed, recreating and deleting a unique nonproduction sentinel entry. The Keychain test is opt-in to avoid unattended vault writes in CI. No production credentials were queried.
+- Real local Git commands published the reviewed refspec to an owned bare repository and fetched/fast-forwarded its update. Native guards rejected a rewritten origin and unreviewed branch. HTTPS transport is prohibited in this fixture and assertions check the specific guard errors. This does not establish live GitHub acceptance.
+- A separate local ad-hoc-signed Axiom Acceptance app was built and launched with a different app identifier, deep-link scheme and restrictive webview connection policy. An actual 1280×800 native window was observed. Its owned process was then stopped. Production app-data root metadata remained unchanged; this is not a comprehensive audit of all filesystem or credential activity.
+- Screen Recording is denied and UI automation is not authorized for the remote agent. Therefore rendered content, clicks, authenticated workspaces and installed-customer journeys remain unverified. No security permission was bypassed, production sign-in initiated, installer published or installed app replaced.
+- Independent review found no blocking findings. Remaining limits: namespace separation is not a same-user security sandbox; vault round-trip does not prove Tauri IPC or migration; local Git mechanisms do not prove remote GitHub; native window creation is not GUI acceptance.
+- Next acceptance gate: authorize the Mac inspection/automation permissions or provide an operator-observed current-app test, plus isolated account/provider/Stripe/cloud test access for the respective real journeys. Production recovery and all paid/release operations keep their existing approval gates.
+
 ## Verified execution update — October 21, 2026
 
 This update supersedes older runtime/deployment availability statements below; historical evidence is retained.

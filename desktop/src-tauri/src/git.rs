@@ -385,6 +385,56 @@ mod tests {
         assert_eq!(super::reviewed_push_refspec("feature/reviewed"), "refs/heads/feature/reviewed:refs/heads/feature/reviewed");
     }
 
+    #[tokio::test]
+    async fn reviewed_refspec_round_trip_preserves_branch_selection_on_an_owned_local_remote() {
+        // Git alone rewrites this synthetic GitHub URL to an owned local bare
+        // repository. No credentials or external network access are involved.
+        let directory = sync_fixture();
+        let remote = OwnedDirectory::new();
+        let peer = OwnedDirectory::new();
+        let run = |root: &std::path::Path, args: &[&str]| {
+            super::output_text(super::git(Some(root), args.iter().copied()).unwrap(), None).unwrap()
+        };
+        run(&remote.0, &["init", "--bare"]);
+        // Even a future guard regression must never reach the network in this fixture.
+        run(&directory.0, &["config", "protocol.https.allow", "never"]);
+        run(&directory.0, &["config", "user.name", "Axiom Local Acceptance"]);
+        run(&directory.0, &["config", "user.email", "acceptance@example.invalid"]);
+        std::fs::write(directory.0.join("workflow.txt"), "initial").unwrap();
+        run(&directory.0, &["add", "workflow.txt"]);
+        run(&directory.0, &["commit", "-m", "initial fixture"]);
+        let local_remote = format!("file://{}", remote.0.display());
+        let rewrite = format!("url.{}.insteadOf", local_remote);
+        let synthetic_url = "https://github.com/owner/repository.git";
+        run(&directory.0, &["config", &rewrite, synthetic_url]);
+        // URL rewriting changes get-url's effective origin; the native command
+        // correctly refuses this substituted target rather than treating it as GitHub.
+        assert!(super::push_repository(directory.0.to_string_lossy().into_owned(), synthetic_url.into(), "owner/repository".into(), "feature".into()).await.unwrap_err().contains("origin or credential target changed"));
+        run(&directory.0, &["push", &local_remote, &super::reviewed_push_refspec("feature")]);
+        let first_head = run(&directory.0, &["rev-parse", "HEAD"]);
+        assert_eq!(run(&remote.0, &["rev-parse", "refs/heads/feature"]), first_head);
+        assert!(super::git(Some(&remote.0), ["show-ref", "--verify", "refs/heads/main"]).unwrap().status.code() != Some(0));
+
+        run(&peer.0, &["clone", "--branch", "feature", &local_remote, "."]);
+        run(&peer.0, &["config", "user.name", "Axiom Local Acceptance"]);
+        run(&peer.0, &["config", "user.email", "acceptance@example.invalid"]);
+        std::fs::write(peer.0.join("workflow.txt"), "remote update").unwrap();
+        run(&peer.0, &["add", "workflow.txt"]);
+        run(&peer.0, &["commit", "-m", "remote fixture update"]);
+        run(&peer.0, &["push", "origin", "feature"]);
+        // Exercise the real local Git fetch/fast-forward mechanism separately;
+        // this does not claim native GitHub network acceptance.
+        run(&directory.0, &["fetch", &local_remote, "+refs/heads/feature:refs/remotes/origin/feature"]);
+        run(&directory.0, &["merge", "--ff-only", "refs/remotes/origin/feature"]);
+        assert_eq!(std::fs::read_to_string(directory.0.join("workflow.txt")).unwrap(), "remote update");
+        assert_eq!(run(&directory.0, &["rev-parse", "HEAD"]), run(&peer.0, &["rev-parse", "HEAD"]));
+
+        run(&directory.0, &["config", "--unset", &rewrite]);
+        run(&directory.0, &["switch", "-c", "unreviewed"]);
+        assert!(super::push_repository(directory.0.to_string_lossy().into_owned(), synthetic_url.into(), "owner/repository".into(), "feature".into()).await.unwrap_err().contains("branch changed"));
+        assert!(super::git(Some(&remote.0), ["show-ref", "--verify", "refs/heads/unreviewed"]).unwrap().status.code() != Some(0));
+    }
+
     #[test]
     fn editor_save_requires_the_current_loaded_baseline() {
         let directory = OwnedDirectory::new();
