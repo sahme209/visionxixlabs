@@ -1,8 +1,8 @@
 /** @vitest-environment jsdom */
 import { createElement, type ReactNode } from "react";
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
-import { act, cleanup, fireEvent, render, screen } from "@testing-library/react";
-const mock = vi.hoisted(() => ({ revision: 0, listeners: new Set<() => void>(), review: vi.fn(), approve: vi.fn(), reject: vi.fn(), connection: vi.fn(), automations: vi.fn() }));
+import { act, cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
+const mock = vi.hoisted(() => ({ revision: 0, listeners: new Set<() => void>(), review: vi.fn(), approve: vi.fn(), reject: vi.fn(), connection: vi.fn(), automations: vi.fn(), repositories: vi.fn(), environments: vi.fn(), dags: vi.fn(), runs: vi.fn(), branches: vi.fn(), create: vi.fn(), trigger: vi.fn(), saveConnection: vi.fn() }));
 // Presentation shell alone depends on native notification plumbing; retain the
 // actual Airflow view, client calls, review card, buttons and state transitions.
 vi.mock("../../../desktop/src/components/Primitives", () => ({ ViewShell: ({ children }: { children: ReactNode }) => createElement("div", null, children) }));
@@ -11,7 +11,9 @@ vi.mock("../../../desktop/src/lib/desktopClient", () => ({ desktopClient: {
   subscribeContext: (listener: () => void) => { mock.listeners.add(listener); return () => mock.listeners.delete(listener); },
   getAirflowExecutionReview: mock.review, approveAirflowExecution: mock.approve, rejectAirflowExecution: mock.reject,
   airflowConnection: mock.connection, listAirflowAutomations: mock.automations,
-  listGithubRepositories: async () => ({ ok: true, data: { repositories: [] } }), listEnvironments: async () => ({ ok: true, data: { environments: [] } }),
+  listGithubRepositories: mock.repositories, listEnvironments: mock.environments,
+  listAirflowDags: mock.dags, listAirflowDagRuns: mock.runs,
+  listGithubBranches: mock.branches, createAirflowAutomation: mock.create, triggerAirflowDag: mock.trigger, saveAirflowConnection: mock.saveConnection,
 } }));
 import { AirflowRestartReviewCard } from "../../../desktop/src/components/AirflowRestartReviewCard";
 import { AirflowAutomationView } from "../../../desktop/src/views/AirflowAutomationView";
@@ -20,6 +22,9 @@ const onRun = vi.fn(async (work: () => Promise<unknown>) => { await work(); });
 const props = { executionId: "execution", busy: false, onRun };
 function deferred() { let resolve!: (value: unknown) => void; const promise = new Promise(done => { resolve = done; }); return { resolve, promise }; }
 beforeEach(() => { vi.resetAllMocks(); mock.revision = 0; mock.listeners.clear(); mock.review.mockResolvedValue({ ok: true, data }); mock.approve.mockResolvedValue({ ok: true }); mock.reject.mockResolvedValue({ ok: true });
+  mock.branches.mockResolvedValue({ ok: true, data: { branches: [{ name: "main", protected: true }] } }); mock.create.mockResolvedValue({ ok: true });
+  mock.dags.mockResolvedValue({ ok: true, data: { dags: [{ dagId: "batch-dag", displayName: "Batch DAG", paused: false }] } }); mock.runs.mockResolvedValue({ ok: true, data: { runs: [] } });
+  mock.repositories.mockResolvedValue({ ok: true, data: { repositories: [] } }); mock.environments.mockResolvedValue({ ok: true, data: { environments: [] } });
   mock.connection.mockResolvedValue({ ok: true, data: { connected: false, status: "disconnected" } });
   mock.automations.mockResolvedValue({ ok: true, data: { automations: [{ id: "rule", name: "Synthetic restart", actionType: "deploy" }], executions: [{ id: "execution", automationId: "rule", sourceDagId: "dag", sourceDagRunId: "run-1", sourceDagState: "success", status: "pending_approval" }] } });
 });
@@ -81,4 +86,207 @@ it("the actual view ignores an approval result after its paired context changes"
   await act(async () => { mock.revision++; mock.listeners.forEach(listener => listener()); pending.resolve({ ok: true }); });
   expect(screen.queryByText("Service restart processed. Review the recorded outcome.")).toBeNull();
   expect(screen.queryByText("service-A")).toBeNull();
+});
+
+it.each(["repositories", "environments"] as const)("shows available approvals while the independent %s catalog is pending", async (catalog) => {
+  const pending = deferred(); mock[catalog].mockReturnValue(pending.promise);
+  render(createElement(AirflowAutomationView));
+  await screen.findByText("Connect Airflow first");
+  fireEvent.click(screen.getByRole("button", { name: "approvals" }));
+  await screen.findByText("Synthetic restart");
+  expect(mock.approve).not.toHaveBeenCalled();
+  await act(async () => pending.resolve({ ok: true, data: catalog === "repositories" ? { repositories: [] } : { environments: [] } }));
+});
+
+it("loads connected DAGs while approval history is delayed", async () => {
+  const pending = deferred(); mock.automations.mockReturnValue(pending.promise);
+  mock.connection.mockResolvedValue({ ok: true, data: { connected: true, status: "connected" } });
+  render(createElement(AirflowAutomationView));
+  await screen.findByRole("option", { name: "Batch DAG" });
+  expect((screen.getByRole("button", { name: "Run now" }) as HTMLButtonElement).disabled).toBe(false);
+  await act(async () => pending.resolve({ ok: true, data: { automations: [], executions: [] } }));
+});
+it("contains an unexpected catalog rejection without hiding available approval evidence", async () => {
+  mock.repositories.mockRejectedValue(new Error("private transport detail"));
+  render(createElement(AirflowAutomationView));
+  await screen.findByText(/Some Airflow workspace data could not be loaded/);
+  fireEvent.click(screen.getByRole("button", { name: "approvals" }));
+  await screen.findByText("Synthetic restart");
+  expect(screen.queryByText("private transport detail")).toBeNull();
+  expect(mock.approve).not.toHaveBeenCalled();
+});
+
+it("never displays the previous DAG's runs while a newly selected DAG is loading", async () => {
+  const pending = deferred();
+  mock.connection.mockResolvedValue({ ok: true, data: { connected: true, status: "connected" } });
+  mock.dags.mockResolvedValue({ ok: true, data: { dags: [{ dagId: "a", displayName: "DAG A" }, { dagId: "b", displayName: "DAG B" }] } });
+  mock.runs.mockResolvedValueOnce({ ok: true, data: { runs: [{ dagRunId: "run-A", state: "success" }] } }).mockReturnValueOnce(pending.promise);
+  render(createElement(AirflowAutomationView)); await screen.findByText("run-A");
+  fireEvent.change(screen.getByRole("combobox"), { target: { value: "b" } });
+  expect(screen.queryByText("run-A")).toBeNull();
+  await act(async () => pending.resolve({ ok: true, data: { runs: [{ dagRunId: "run-B", state: "running" }] } }));
+  await screen.findByText("run-B");
+});
+it("ignores a manual run-history refresh returned after the DAG selection changes", async () => {
+  const pending = deferred();
+  mock.connection.mockResolvedValue({ ok: true, data: { connected: true, status: "connected" } });
+  mock.dags.mockResolvedValue({ ok: true, data: { dags: [{ dagId: "a", displayName: "DAG A" }, { dagId: "b", displayName: "DAG B" }] } });
+  mock.runs.mockResolvedValueOnce({ ok: true, data: { runs: [{ dagRunId: "run-A", state: "success" }] } }).mockReturnValueOnce(pending.promise).mockResolvedValueOnce({ ok: true, data: { runs: [{ dagRunId: "run-B", state: "running" }] } });
+  render(createElement(AirflowAutomationView)); await screen.findByText("run-A");
+  fireEvent.click(screen.getByRole("button", { name: "Refresh run history" }));
+  fireEvent.change(screen.getByRole("combobox"), { target: { value: "b" } });
+  await screen.findByText("run-B");
+  await act(async () => pending.resolve({ ok: true, data: { runs: [{ dagRunId: "old-refresh-A", state: "success" }] } }));
+  expect(screen.queryByText("old-refresh-A")).toBeNull(); expect(screen.getByText("run-B")).toBeTruthy();
+});
+
+it("releases action busy state after Airflow refresh even when a repository catalog stays pending", async () => {
+  mock.repositories.mockReturnValue(deferred().promise);
+  render(createElement(AirflowAutomationView));
+  fireEvent.click(screen.getByRole("button", { name: "approvals" }));
+  await screen.findByText("Synthetic restart");
+  fireEvent.click(screen.getByRole("button", { name: "Reject" }));
+  await screen.findByText("Action rejected and recorded.");
+  await waitFor(() => expect((screen.getByRole("button", { name: "Reject" }) as HTMLButtonElement).disabled).toBe(false));
+});
+it("does not replace newer DAG catalogs with an older workspace load", async () => {
+  const pending = deferred();
+  mock.connection.mockResolvedValue({ ok: true, data: { connected: true, status: "connected" } });
+  mock.dags.mockReturnValueOnce(pending.promise).mockResolvedValue({ ok: true, data: { dags: [{ dagId: "new-dag", displayName: "Current DAG" }] } });
+  render(createElement(AirflowAutomationView));
+  fireEvent.click(screen.getByRole("button", { name: "approvals" }));
+  await screen.findByText("Synthetic restart");
+  fireEvent.click(screen.getByRole("button", { name: "Reject" }));
+  await screen.findByText("Action rejected and recorded.");
+  fireEvent.click(screen.getByRole("button", { name: "dags" }));
+  await screen.findByRole("option", { name: "Current DAG" });
+  await act(async () => pending.resolve({ ok: true, data: { dags: [{ dagId: "old-dag", displayName: "Obsolete DAG" }] } }));
+  expect(screen.queryByRole("option", { name: "Obsolete DAG" })).toBeNull();
+  expect(screen.getByRole("option", { name: "Current DAG" })).toBeTruthy();
+});
+
+it("holds GitHub automation creation until the selected source branch is verified", async () => {
+  const pending = deferred(); mock.branches.mockReturnValue(pending.promise);
+  mock.connection.mockResolvedValue({ ok: true, data: { connected: true, status: "connected" } });
+  mock.repositories.mockResolvedValue({ ok: true, data: { repositories: [{ fullName: "fixture/repo", defaultBranch: "main" }] } });
+  render(createElement(AirflowAutomationView)); await screen.findByRole("option", { name: "Batch DAG" });
+  fireEvent.click(screen.getByRole("button", { name: "automations" }));
+  fireEvent.change(screen.getByLabelText("Name"), { target: { value: "Reviewed batch" } });
+  fireEvent.change(screen.getByLabelText("Then"), { target: { value: "open_pull_request" } });
+  expect((screen.getByRole("button", { name: "Create automation" }) as HTMLButtonElement).disabled).toBe(true);
+  await act(async () => pending.resolve({ ok: true, data: { branches: [{ name: "main", protected: true }] } }));
+  fireEvent.click(screen.getByRole("button", { name: "Create automation" }));
+  await waitFor(() => expect(mock.create).toHaveBeenCalledWith(expect.objectContaining({ repositoryFullName: "fixture/repo", sourceRef: "main", approvalRequired: true })));
+});
+it("does not treat a failed branch lookup as a verified default branch", async () => {
+  mock.branches.mockResolvedValue({ ok: false, error: "github_unavailable" });
+  mock.connection.mockResolvedValue({ ok: true, data: { connected: true, status: "connected" } });
+  mock.repositories.mockResolvedValue({ ok: true, data: { repositories: [{ fullName: "fixture/repo", defaultBranch: "main" }] } });
+  render(createElement(AirflowAutomationView)); await screen.findByRole("option", { name: "Batch DAG" });
+  fireEvent.click(screen.getByRole("button", { name: "automations" }));
+  fireEvent.change(screen.getByLabelText("Name"), { target: { value: "Reviewed batch" } });
+  fireEvent.change(screen.getByLabelText("Then"), { target: { value: "open_pull_request" } });
+  await screen.findByText(/Source branches could not be verified/);
+  expect((screen.getByRole("button", { name: "Create automation" }) as HTMLButtonElement).disabled).toBe(true);
+  expect(mock.create).not.toHaveBeenCalled();
+  mock.branches.mockResolvedValue({ ok: true, data: { branches: [{ name: "main", protected: true }] } });
+  fireEvent.click(screen.getByRole("button", { name: "Retry source branches" }));
+  await waitFor(() => expect((screen.getByRole("button", { name: "Create automation" }) as HTMLButtonElement).disabled).toBe(false));
+  expect(mock.create).not.toHaveBeenCalled();
+});
+it("makes a late repository catalog an explicit choice instead of a misleading selected first option", async () => {
+  const pending = deferred(); mock.repositories.mockReturnValue(pending.promise);
+  mock.connection.mockResolvedValue({ ok: true, data: { connected: true, status: "connected" } });
+  render(createElement(AirflowAutomationView)); await screen.findByRole("option", { name: "Batch DAG" });
+  fireEvent.click(screen.getByRole("button", { name: "automations" }));
+  fireEvent.change(screen.getByLabelText("Then"), { target: { value: "open_pull_request" } });
+  await act(async () => pending.resolve({ ok: true, data: { repositories: [{ fullName: "fixture/repo", defaultBranch: "main" }] } }));
+  expect((screen.getByLabelText("Repository") as HTMLSelectElement).value).toBe("");
+  fireEvent.change(screen.getByLabelText("Repository"), { target: { value: "fixture/repo" } });
+  fireEvent.change(screen.getByLabelText("Name"), { target: { value: "Reviewed batch" } });
+  await waitFor(() => expect((screen.getByRole("button", { name: "Create automation" }) as HTMLButtonElement).disabled).toBe(false));
+});
+
+it("keeps a late branch response from changing the newly selected repository's proposal", async () => {
+  const old = deferred();
+  mock.connection.mockResolvedValue({ ok: true, data: { connected: true, status: "connected" } });
+  mock.repositories.mockResolvedValue({ ok: true, data: { repositories: [{ fullName: "fixture/old", defaultBranch: "main" }, { fullName: "fixture/current", defaultBranch: "release" }] } });
+  mock.branches.mockReturnValueOnce(old.promise).mockResolvedValue({ ok: true, data: { branches: [{ name: "release", protected: true }] } });
+  render(createElement(AirflowAutomationView)); await screen.findByRole("option", { name: "Batch DAG" });
+  fireEvent.click(screen.getByRole("button", { name: "automations" }));
+  fireEvent.change(screen.getByLabelText("Name"), { target: { value: "Reviewed batch" } });
+  fireEvent.change(screen.getByLabelText("Then"), { target: { value: "open_pull_request" } });
+  fireEvent.change(screen.getByLabelText("Repository"), { target: { value: "fixture/current" } });
+  await screen.findByRole("option", { name: "release · protected" });
+  await act(async () => old.resolve({ ok: true, data: { branches: [{ name: "main", protected: false }] } }));
+  expect((screen.getByLabelText("Source branch") as HTMLSelectElement).value).toBe("release");
+  fireEvent.click(screen.getByRole("button", { name: "Create automation" }));
+  await waitFor(() => expect(mock.create).toHaveBeenCalledWith(expect.objectContaining({ repositoryFullName: "fixture/current", sourceRef: "release", approvalRequired: true })));
+});
+it("disables another restart proposal when its environment disappears from refreshed catalogs", async () => {
+  mock.connection.mockResolvedValue({ ok: true, data: { connected: true, status: "connected" } });
+  mock.repositories.mockResolvedValue({ ok: true, data: { repositories: [{ fullName: "fixture/repo", defaultBranch: "main" }] } });
+  mock.environments.mockResolvedValue({ ok: true, data: { environments: [{ id: "dev", name: "Development", tier: "dev" }] } });
+  render(createElement(AirflowAutomationView)); await screen.findByRole("option", { name: "Batch DAG" });
+  fireEvent.click(screen.getByRole("button", { name: "automations" }));
+  fireEvent.change(screen.getByLabelText("Name"), { target: { value: "Reviewed batch" } });
+  fireEvent.change(screen.getByLabelText("Then"), { target: { value: "deploy" } });
+  await waitFor(() => expect((screen.getByRole("button", { name: "Create automation" }) as HTMLButtonElement).disabled).toBe(false));
+  mock.environments.mockResolvedValue({ ok: true, data: { environments: [] } });
+  fireEvent.click(screen.getByRole("button", { name: "Create automation" }));
+  await waitFor(() => expect(screen.queryByRole("option", { name: "Development · dev" })).toBeNull());
+  expect((screen.getByLabelText("Target environment") as HTMLSelectElement).value).toBe("");
+  expect((screen.getByRole("button", { name: "Create automation" }) as HTMLButtonElement).disabled).toBe(true);
+  expect(mock.create).toHaveBeenCalledTimes(1);
+});
+
+it("refuses running or refreshing history for a DAG removed by the refreshed catalog", async () => {
+  mock.connection.mockResolvedValue({ ok: true, data: { connected: true, status: "connected" } });
+  mock.runs.mockResolvedValue({ ok: true, data: { runs: [{ dagRunId: "old-run", state: "success" }] } });
+  render(createElement(AirflowAutomationView)); await screen.findByText("old-run");
+  fireEvent.click(screen.getByRole("button", { name: "approvals" }));
+  await screen.findByText("Synthetic restart");
+  mock.dags.mockResolvedValue({ ok: true, data: { dags: [] } });
+  fireEvent.click(screen.getByRole("button", { name: "Reject" }));
+  await screen.findByText("Action rejected and recorded.");
+  fireEvent.click(screen.getByRole("button", { name: "dags" }));
+  await waitFor(() => expect(screen.queryByRole("option", { name: "Batch DAG" })).toBeNull());
+  expect((screen.getByRole("button", { name: "Run now" }) as HTMLButtonElement).disabled).toBe(true);
+  expect(screen.queryByText("old-run")).toBeNull();
+  const reads = mock.runs.mock.calls.length;
+  fireEvent.click(screen.getByRole("button", { name: "Run now" }));
+  fireEvent.click(screen.getByRole("button", { name: "Refresh run history" }));
+  await act(async () => {});
+  expect(mock.trigger).not.toHaveBeenCalled(); expect(mock.runs).toHaveBeenCalledTimes(reads);
+});
+
+it.each(["password", "token"] as const)("clears the submitted %s after a confirmed connection save", async (mode) => {
+  mock.saveConnection.mockResolvedValue({ ok: true });
+  render(createElement(AirflowAutomationView));
+  fireEvent.click(screen.getByRole("button", { name: "connection" }));
+  if (mode === "token") fireEvent.change(screen.getByLabelText("Authentication"), { target: { value: "token" } });
+  const field = screen.getByLabelText(mode === "token" ? "Bearer token" : "Password") as HTMLInputElement;
+  fireEvent.change(field, { target: { value: "synthetic-only-secret" } });
+  fireEvent.click(screen.getByRole("button", { name: "Validate & connect" }));
+  await screen.findByText("Airflow connection validated and saved.");
+  expect(field.value).toBe("");
+});
+it("retains a corrected credential typed while an older connection save is pending", async () => {
+  const pending = deferred(); mock.saveConnection.mockReturnValue(pending.promise);
+  render(createElement(AirflowAutomationView)); fireEvent.click(screen.getByRole("button", { name: "connection" }));
+  const field = screen.getByLabelText("Password") as HTMLInputElement;
+  fireEvent.change(field, { target: { value: "synthetic-old" } });
+  fireEvent.click(screen.getByRole("button", { name: "Validate & connect" }));
+  fireEvent.change(field, { target: { value: "synthetic-corrected" } });
+  await act(async () => pending.resolve({ ok: true }));
+  expect(field.value).toBe("synthetic-corrected");
+});
+it("retains the editable credential when connection validation fails without replaying the save", async () => {
+  mock.saveConnection.mockResolvedValue({ ok: false, error: "connection_validation_failed" });
+  render(createElement(AirflowAutomationView)); fireEvent.click(screen.getByRole("button", { name: "connection" }));
+  const field = screen.getByLabelText("Password") as HTMLInputElement;
+  fireEvent.change(field, { target: { value: "synthetic-correctable" } });
+  fireEvent.click(screen.getByRole("button", { name: "Validate & connect" }));
+  await screen.findByText("connection_validation_failed");
+  expect(field.value).toBe("synthetic-correctable"); expect(mock.saveConnection).toHaveBeenCalledTimes(1);
 });

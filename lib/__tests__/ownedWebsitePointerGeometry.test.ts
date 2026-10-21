@@ -31,3 +31,13 @@ it('allows a descendant hit and keeps every fixture scroll explicit and instant'
   const scrollCalls = source.split('\n').filter(line => /scrollIntoView\(|scrollTo\(/.test(line));
   expect(scrollCalls).toHaveLength(4); for (const line of scrollCalls) expect(line).toContain("behavior: 'instant'");
 });
+
+it('measures documentation around the original scroll and retains the original coordinates', () => {
+ const calls: string[] = [];
+ const target = { disabled: false, getAttribute: () => 'Read approval workflow', scrollIntoView: () => { calls.push('scroll'); }, getBoundingClientRect: () => ({ x: 10, y: 20, width: 30, height: 20 }), contains: () => false };
+ const window = Object.defineProperty({}, '__axiomPointerMeasure', { value: (phase: string, point?: unknown) => { calls.push(phase); if (phase === 'after_scroll_call') expect(point).toEqual({ x: 25, y: 30 }); } });
+ const document = { querySelectorAll: () => [target], elementFromPoint: () => target };
+ const point = vm.compileFunction(`${source.slice(start, end)}; return pointerForControl('Read approval workflow');`, ['document', 'window', 'innerWidth', 'innerHeight'])(document, window, 100, 100);
+ expect(point).toEqual({ x: 25, y: 30 });
+ expect(calls).toEqual(['selection', 'scroll', 'after_scroll_call']);
+});

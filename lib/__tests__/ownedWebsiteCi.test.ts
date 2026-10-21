@@ -3,7 +3,7 @@ import { chmodSync, mkdirSync, mkdtempSync, readFileSync, realpathSync, rmSync, 
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 // Builtins-only adapter: importing it never starts the owned fixture.
-import { collect, collectForUpload, pngDimensions, privateFile, publicCounts, publicServerGuard, publicDomSnapshot, publicInteractions, publicNextMarkers, publicProxyDelivery, publicSummary, reviewManifest, screenshotNames } from '../../scripts/owned-website-ci.mjs';
+import { collect, collectForUpload, pngDimensions, privateFile, publicInitialNavigation, publicCounts, publicServerGuard, publicDomSnapshot, publicInteractions, publicNextMarkers, publicProxyDelivery, publicSummary, reviewManifest, screenshotNames } from '../../scripts/owned-website-ci.mjs';
 
 const directories: string[] = [];
 afterEach(() => { for (const path of directories.splice(0)) rmSync(path, { recursive: true, force: true }); });
@@ -226,3 +226,11 @@ it('privately collects the final server receipt without publishing its identity 
  expect(summary.serverGuard.counts.transport).toBe(1); expect(summary.cleanupErrors).toEqual(['website_cleanup_metadata_unverified']);
  expect(JSON.stringify(summary)).not.toContain('PRIVATE'); expect(summary.serverGuard).not.toHaveProperty('pid');
 });
+
+ it("exports only fixed boolean initial-navigation observations", () => {
+ const value = { issued: true, requestPaused: false, requestContinued: false, requestDenied: false, navigationAcknowledged: false, mainFrameCommitted: false };
+ expect(publicInitialNavigation(value)).toEqual(value);
+ expect(publicInitialNavigation({ ...value, url: 'PRIVATE' })).toBeNull();
+ let reads = 0; Object.defineProperty(value, 'issued', { enumerable: true, get() { reads++; throw Error('PRIVATE'); } });
+ expect(publicInitialNavigation(value)).toBeNull(); expect(reads).toBe(0);
+ });

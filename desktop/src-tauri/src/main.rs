@@ -3,6 +3,7 @@
 mod cloud;
 mod config;
 mod git;
+mod repository_create;
 mod http;
 mod menu;
 mod secure;
@@ -66,6 +67,7 @@ fn main() {
             git::list_repository_files,
             git::read_repository_file,
             git::write_repository_file,
+            git::create_repository_file,
             git::commit_repository_file,
             git::create_repository_branch,
             git::pull_repository,

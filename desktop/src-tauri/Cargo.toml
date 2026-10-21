@@ -31,3 +31,7 @@ keyring = { version = "3", default-features = false, features = ["windows-native
 # Secret Service persists across application restarts. Vendor libdbus so builds
 # do not depend on a separate libdbus development package; never use mock fallback.
 keyring = { version = "3", default-features = false, features = ["sync-secret-service", "crypto-rust", "vendored"] }
+
+# Descriptor-relative no-symlink, no-overwrite source creation on macOS/Linux.
+[target.'cfg(unix)'.dependencies]
+libc = "=0.2.189"

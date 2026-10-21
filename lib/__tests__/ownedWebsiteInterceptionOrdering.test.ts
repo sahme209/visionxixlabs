@@ -42,7 +42,7 @@ class Socket extends EventTarget {
 async function fixture() {
   vi.useFakeTimers();
   const session = transport.createSession({ duration: 120000 }); sessions.push(session);
-  const state = vm.compileFunction(`let denied = 0; const consoleErrors = []; const scriptRequests = { allowed: 0, denied: 0 }; return { scriptRequests, callback: ${callback}, denied: () => denied };`, ["windowState", "config", "policy", "session"])({ origin }, { assets: [] }, policy, session);
+  const state = vm.compileFunction(`let denied = 0; const consoleErrors = []; const scriptRequests = { allowed: 0, denied: 0 }; const initialNavigation = { issued: true, requestPaused: false, requestContinued: false, requestDenied: false, navigationAcknowledged: false, mainFrameCommitted: false }; return { initialNavigation, scriptRequests, callback: ${callback}, denied: () => denied };`, ["windowState", "config", "policy", "session"])({ origin }, { assets: [] }, policy, session);
   const socket = new Socket();
   const opening = transport.openChannel({ session, endpoint: "unused-synthetic-endpoint", createSocket: () => socket, proveEndpoint: () => {}, onEvent: state.callback });
   socket.dispatchEvent(new Event("open"));
@@ -119,4 +119,24 @@ it.each([
   expect(f.socket.commands.map(command => command.method)).toEqual([decision]);
   expect(f.state.scriptRequests).toEqual(counts);
   f.socket.message({ id: 1, result: {} });
+});
+
+it("records initial document interception only after the continue acknowledgment", async () => {
+ const f = await fixture();
+ f.socket.message({ method: "Fetch.requestPaused", params: { resourceType: "Document", requestId: "home", request: { url: `${origin}/`, method: "GET" } } });
+ expect(f.state.initialNavigation.requestPaused).toBe(true);
+ expect(f.state.initialNavigation.requestContinued).toBe(false);
+ f.socket.message({ id: 1, result: {} }); await Promise.resolve(); await Promise.resolve();
+ expect(f.state.initialNavigation.requestContinued).toBe(true);
+ expect(f.state.initialNavigation.requestDenied).toBe(false);
+});
+
+it("retains initial navigation intent when CDP navigation never acknowledges", async () => {
+ const begin = source.indexOf('async function navigate(path, preImagePhase = undefined)');
+ const finish = source.indexOf('\n', begin);
+ expect(begin).toBeGreaterThan(0);
+ const initialNavigation = { issued: false, navigationAcknowledged: false };
+ const navigate = vm.compileFunction(`${source.slice(begin, finish)}; return navigate;`, ['assert', 'send', 'waitFor', 'windowState', 'initialNavigation'])({ ok: (ok: boolean) => { if (!ok) throw Error('bad path'); } }, async () => { throw Error('website_driver_operation_timeout'); }, () => { throw Error('unexpected DOM wait'); }, { origin }, initialNavigation);
+ await expect(navigate('/')).rejects.toThrow('website_driver_operation_timeout');
+ expect(initialNavigation).toEqual({ issued: true, navigationAcknowledged: false });
 });

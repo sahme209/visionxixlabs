@@ -64,6 +64,8 @@ export interface AIRequestOptions {
   temperature?: number;
   /** Hard timeout in ms (default 30_000). */
   timeoutMs?: number;
+  /** Caller cancellation for streaming transports. */
+  abortSignal?: AbortSignal;
   /** Optional system prompt. */
   system?: string;
   /** Optional correlation id, surfaced in logs. */
@@ -112,7 +114,7 @@ export interface AIHealthCheck {
   reason?: string;
 }
 
-export type AIStreamChunk = { text: string; done: false } | { text: ""; done: true; finishReason: AITextResponse["finishReason"] };
+export type AIStreamChunk = { text: string; done: false } | { text: ""; done: true; finishReason: AITextResponse["finishReason"]; usage?: AITextResponse["usage"] };
 
 /**
  * The contract.

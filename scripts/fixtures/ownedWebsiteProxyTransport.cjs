@@ -33,9 +33,9 @@ function createProxyTransport({ origin, appPort, assets, request, isStopping = (
     catch { onEvent('socket_write_error'); destroy(socket); }
   }
   function handle(req, res) {
-    let closed = false, upstream, response, script = false, scriptComplete = false, scriptCategory = 'other', successfulJavaScript = false, documentationKind = null, documentationComplete = false;
+    let closed = false, upstream, response, script = false, scriptComplete = false, scriptCategory = 'other', successfulJavaScript = false, documentationKind = null, documentationComplete = false, homeDocument = false;
     const scriptEvent = name => { if (script) onEvent(`script_${scriptCategory}_${name}`); };
-    const documentationEvent = name => { if (documentationKind) onEvent(`docs_${documentationKind}_${name}`); };
+    const documentationEvent = name => { if (homeDocument) onEvent(`home_document_${name}`); if (documentationKind) onEvent(`docs_${documentationKind}_${name}`); };
     function cancel() {
       if (closed) return; closed = true; onEvent('request_cancelled');
       if (script) { onEvent('script_cancelled'); if (!scriptComplete) { scriptEvent('cancelled'); scriptEvent(successfulJavaScript ? 'cancelled_successful_js' : 'cancelled_other'); } }
@@ -48,7 +48,7 @@ function createProxyTransport({ origin, appPort, assets, request, isStopping = (
     res.on('close', () => { if (!res.writableEnded) cancel(); });
     res.on('finish', () => {
       if (script && !closed && !scriptComplete) { scriptComplete = true; onEvent('script_complete'); scriptEvent('complete'); }
-      if (documentationKind && !closed && !documentationComplete) { documentationComplete = true; documentationEvent('complete'); }
+      if ((documentationKind || homeDocument) && !closed && !documentationComplete) { documentationComplete = true; documentationEvent('complete'); }
     });
     let url, framework;
     try { url = new URL(req.url); framework = frameworkHeaders(req.headers); } catch { /* denied below */ }
@@ -60,6 +60,7 @@ function createProxyTransport({ origin, appPort, assets, request, isStopping = (
     }
     try {
       if (closed || req.destroyed || res.destroyed) { cancel(); return; }
+      if (url.pathname === '/' && framework.rsc !== '1') { homeDocument = true; onEvent('home_document_accepted'); }
       if (url.pathname === '/docs/approval-workflow') { documentationKind = framework.rsc === '1' ? (Object.hasOwn(framework, 'next-router-prefetch') ? 'rsc_prefetch' : 'rsc_navigation') : 'document'; documentationEvent('accepted'); }
       script = url.pathname.startsWith('/_next/static/') && url.pathname.endsWith('.js');
       if (script) {
@@ -68,7 +69,7 @@ function createProxyTransport({ origin, appPort, assets, request, isStopping = (
       }
       upstream = request({ hostname: '127.0.0.1', port: appPort, path: `${url.pathname}${url.search}`, method: req.method, agent: false, headers: { host: `127.0.0.1:${appPort}`, accept: req.headers.accept ?? '*/*', ...framework } }, reply => {
         response = reply;
-        if (documentationKind) {
+        if (documentationKind || homeDocument) {
           documentationEvent('response');
           const statusClass = Number.isInteger(reply.statusCode) && reply.statusCode >= 200 && reply.statusCode <= 599 ? `${Math.floor(reply.statusCode / 100)}xx` : 'other';
           const contentType = reply.headers?.['content-type'];

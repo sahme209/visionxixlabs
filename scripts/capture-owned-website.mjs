@@ -3,18 +3,23 @@ import { readFileSync, writeFileSync, realpathSync } from 'node:fs';
 import { join } from 'node:path';
 import { request } from 'node:http';
 import policy from './fixtures/ownedWebsitePolicy.cjs';
+import pointerObservation from './fixtures/ownedWebsitePointerObservation.cjs';
 import transport from './fixtures/ownedWebsiteSession.cjs';
 import managedNodePath from './fixtures/ownedWebsiteManagedNodePath.cjs';
 function pointerForControl(label) {
   const controls = label === 'Essential only' ? document.querySelector('[role="dialog"][aria-labelledby="privacy-consent-title"]')?.querySelectorAll('button') ?? [] : document.querySelectorAll('#product-tour button, #product-tour a');
   const element = [...controls].find(el => (el.getAttribute('aria-label') ?? el.textContent.trim()) === label);
   if (!element || element.disabled) throw Error('missing_control');
+  const measurement = label === 'Read approval workflow' ? Object.getOwnPropertyDescriptor(window, '__axiomPointerMeasure') : null;
+  const observe = measurement && Object.hasOwn(measurement, 'value') && typeof measurement.value === 'function' ? measurement.value : null;
+  if (observe) observe('selection');
   element.scrollIntoView({ block: 'center', behavior: 'instant' });
   const box = element.getBoundingClientRect();
   const x = box.x + box.width / 2; const y = box.y + box.height / 2;
   if (!Number.isFinite(x) || !Number.isFinite(y) || box.width <= 0 || box.height <= 0 || x < 0 || x >= innerWidth || y < 0 || y >= innerHeight) throw Error('control_geometry_invalid');
   const hit = document.elementFromPoint(x, y);
   if (!hit || (hit !== element && !element.contains(hit))) throw Error('control_target_obscured');
+  if (observe) observe('after_scroll_call', { x, y });
   return { x, y };
 }
 // Observation only: no event cancellation, navigation calls, source text or credentials.
@@ -122,6 +127,7 @@ let directory, config, success = false, failure = null, denied = 0, imageBytes =
 /** @type {{phase: string, lastDomSnapshot: ReturnType<typeof sanitizePreImageDomSnapshot>} | null} */
 let preImageWait = null;
 const scriptRequests = { allowed: 0, denied: 0 };
+const initialNavigation = { issued: false, requestPaused: false, requestContinued: false, requestDenied: false, navigationAcknowledged: false, mainFrameCommitted: false };
 let evaluationExceptionClass = null;
 let homeCapturePhase = null;
 let currentInteraction = 'setup';
@@ -130,6 +136,7 @@ let documentationTimeoutSnapshot = null;
 let documentationPreWaitSnapshot = null;
 let documentationTiming = null;
 let documentationClick = null;
+let documentationPointer = null;
 let documentationTransitionSeen = false;
 let mainFrameId = null;
 const consoleErrors = [], evidence = [], images = [];
@@ -173,11 +180,14 @@ try {
   assert.equal(endpoint.protocol, 'ws:'); assert.equal(endpoint.host, cdpOrigin.host); assert.match(endpoint.pathname, /^\/devtools\/page\/[A-Fa-f0-9-]+$/);
   const { send } = await transport.openChannel({ session, endpoint, createSocket: value => new WebSocket(value), proveEndpoint, onEvent: (data, send) => {
     if (data.method === 'Fetch.requestPaused') {
-      let allowed = false; try { const url = new URL(data.params.request.url); allowed = url.origin === windowState.origin && !url.username && !url.password && policy.allowedRequest({ method: data.params.request.method, raw: `${url.pathname}${url.search}`, origin: windowState.origin, assets: config.assets }); } catch { /* refuse */ }
+      let initialDocument = false;
+      let allowed = false; try { const url = new URL(data.params.request.url); initialDocument = data.params.resourceType === 'Document' && url.origin === windowState.origin && url.pathname === '/' && !url.search && !url.username && !url.password; allowed = url.origin === windowState.origin && !url.username && !url.password && policy.allowedRequest({ method: data.params.request.method, raw: `${url.pathname}${url.search}`, origin: windowState.origin, assets: config.assets }); } catch { /* refuse */ }
+      if (initialDocument) { initialNavigation.requestPaused = true; if (!allowed) initialNavigation.requestDenied = true; }
       if (!allowed) denied++;
       if (data.params.resourceType === 'Script') { const key = allowed ? 'allowed' : 'denied'; scriptRequests[key] = Math.min(4096, scriptRequests[key] + 1); }
-      void send(allowed ? 'Fetch.continueRequest' : 'Fetch.failRequest', allowed ? { requestId: data.params.requestId } : { requestId: data.params.requestId, errorReason: 'BlockedByClient' }).catch(error => session.stop(error));
+      void send(allowed ? 'Fetch.continueRequest' : 'Fetch.failRequest', allowed ? { requestId: data.params.requestId } : { requestId: data.params.requestId, errorReason: 'BlockedByClient' }).then(() => { if (initialDocument && allowed) initialNavigation.requestContinued = true; }).catch(error => session.stop(error));
     }
+    if (data.method === 'Page.frameNavigated' && !data.params.frame?.parentId) { try { const url = new URL(data.params.frame?.url); if (url.origin === windowState.origin && url.pathname === '/' && !url.search) initialNavigation.mainFrameCommitted = true; } catch { /* retain no URLs */ } }
     if (data.method === 'Page.frameNavigated' && !data.params.frame?.parentId && typeof data.params.frame?.id === 'string') mainFrameId = data.params.frame.id;
     if (((data.method === 'Page.frameNavigated' && !data.params.frame?.parentId && data.params.frame?.id === mainFrameId) || (data.method === 'Page.navigatedWithinDocument' && mainFrameId !== null && data.params.frameId === mainFrameId)) && ['documentation_control', 'documentation_check', 'approval-documentation'].includes(currentInteraction)) {
       try { const url = new URL(data.params.frame?.url ?? data.params.url); if (url.origin === windowState.origin && url.pathname === '/docs/approval-workflow') documentationTransitionSeen = true; } catch { /* no arbitrary URL is retained */ }
@@ -195,9 +205,10 @@ try {
     const diagnostic = preImagePhase === undefined ? null : { phase: preImagePhase, lastDomSnapshot: null };
     if (diagnostic) preImageWait = diagnostic;
     while (Date.now() < deadline) {
-      const polled = await evaluate(diagnostic ? `argument => { try { return { satisfied: (${fn})(argument), snapshot: (${readPreImageDomSnapshot})(), scriptCounts: (${readScriptCounts})(), nextMarkers: (${readNextBootstrapMarkers})(), predicateExceptionClass: null }; } catch (error) { return { satisfied: false, snapshot: (${readPreImageDomSnapshot})(), scriptCounts: (${readScriptCounts})(), nextMarkers: (${readNextBootstrapMarkers})(), predicateExceptionClass: ["TypeError", "ReferenceError", "SyntaxError", "RangeError", "Error"].includes(error?.name) ? error.name : "other" }; } }` : observeDocumentation ? `argument => ({ satisfied: (${fn})(argument), click: (${readDocumentationClickProbe})() })` : fn, argument);
+      const polled = await evaluate(diagnostic ? `argument => { try { return { satisfied: (${fn})(argument), snapshot: (${readPreImageDomSnapshot})(), scriptCounts: (${readScriptCounts})(), nextMarkers: (${readNextBootstrapMarkers})(), predicateExceptionClass: null }; } catch (error) { return { satisfied: false, snapshot: (${readPreImageDomSnapshot})(), scriptCounts: (${readScriptCounts})(), nextMarkers: (${readNextBootstrapMarkers})(), predicateExceptionClass: ["TypeError", "ReferenceError", "SyntaxError", "RangeError", "Error"].includes(error?.name) ? error.name : "other" }; } }` : observeDocumentation ? `argument => ({ satisfied: (${fn})(argument), click: (${readDocumentationClickProbe})(), pointer: (${pointerObservation.readPointerObservation})() })` : fn, argument);
       if (diagnostic) { diagnostic.lastDomSnapshot = sanitizePreImageDomSnapshot(polled.snapshot); diagnostic.nextMarkers = sanitizeNextBootstrapMarkers(polled.nextMarkers); const scripts = sanitizeScriptCounts(polled.scriptCounts); if (scripts) diagnostic.scriptCounts = scripts; if (polled.predicateExceptionClass !== null) { diagnostic.predicateExceptionClass = ['TypeError', 'ReferenceError', 'SyntaxError', 'RangeError', 'Error'].includes(polled.predicateExceptionClass) ? polled.predicateExceptionClass : 'other'; throw Error('website_browser_evaluation_failed'); } }
       if (observeDocumentation && polled.click !== null) documentationClick = polled.click;
+      if (observeDocumentation && polled.pointer != null) documentationPointer = polled.pointer;
       if (onPoll) onPoll();
       if ((diagnostic || observeDocumentation) ? polled.satisfied : polled) { if (diagnostic) preImageWait = null; return; }
       await sleep(100);
@@ -206,7 +217,7 @@ try {
   }
   async function viewport(width, reduced = false) { await send('Emulation.setDeviceMetricsOverride', { width, height: 1000, deviceScaleFactor: 1, mobile: width === 360 }); await send('Emulation.setEmulatedMedia', { features: [{ name: 'prefers-reduced-motion', value: reduced ? 'reduce' : 'no-preference' }] }); }
   /** @param {string} [preImagePhase] */
-  async function navigate(path, preImagePhase = undefined) { assert.ok(['/', '/product', '/docs/approval-workflow'].includes(path)); await send('Page.navigate', { url: `${windowState.origin}${path}` }); await waitFor(path => document.readyState === 'complete' && Boolean(document.querySelector(path === '/docs/approval-workflow' ? '#execution' : '#product-tour')), path, 45000, preImagePhase); }
+  async function navigate(path, preImagePhase = undefined) { assert.ok(['/', '/product', '/docs/approval-workflow'].includes(path)); if (path === '/') initialNavigation.issued = true; await send('Page.navigate', { url: `${windowState.origin}${path}` }); if (path === '/') initialNavigation.navigationAcknowledged = true; await waitFor(path => document.readyState === 'complete' && Boolean(document.querySelector(path === '/docs/approval-workflow' ? '#execution' : '#product-tour')), path, 45000, preImagePhase); }
   async function click(label) {
     currentInteraction = controlToken(label);
     const point = await evaluate(pointerForControl, label);
@@ -262,7 +273,8 @@ try {
   await viewport(1440);
   documentationTiming = { startedMs: driverElapsedMs(), clickCompletedMs: null, preWaitCompletedMs: null, lastPollMs: null, pollCount: 0, observedMs: null };
   await evaluate(installDocumentationClickProbe);
-  await click('Read approval workflow'); documentationTiming.clickCompletedMs = driverElapsedMs(); try { documentationClick = await evaluate(readDocumentationClickProbe); } catch { /* navigation can replace the probe's document */ } currentInteraction = 'documentation_check'; try { documentationPreWaitSnapshot = await evaluate(() => ({ pathnameIsDocs: location.pathname === '/docs/approval-workflow', executionPresent: Boolean(document.querySelector('#execution')), tourPresent: Boolean(document.querySelector('#product-tour')) })); } catch { /* unknown observation does not replace the navigation assertion */ } documentationTiming.preWaitCompletedMs = driverElapsedMs(); try { await waitFor(() => location.pathname === '/docs/approval-workflow' && Boolean(document.querySelector('#execution')), undefined, 45000, undefined, () => { documentationTiming.lastPollMs = driverElapsedMs(); documentationTiming.pollCount = Math.min(4096, documentationTiming.pollCount + 1); }, true); }
+  await evaluate(pointerObservation.installPointerObservation);
+  await click('Read approval workflow'); documentationTiming.clickCompletedMs = driverElapsedMs(); try { const observation = await evaluate(`() => ({ click: (${readDocumentationClickProbe})(), pointer: (${pointerObservation.readPointerObservation})() })`); documentationClick = observation.click; documentationPointer = observation.pointer; } catch { /* navigation can replace the probe's document */ } currentInteraction = 'documentation_check'; try { documentationPreWaitSnapshot = await evaluate(() => ({ pathnameIsDocs: location.pathname === '/docs/approval-workflow', executionPresent: Boolean(document.querySelector('#execution')), tourPresent: Boolean(document.querySelector('#product-tour')) })); } catch { /* unknown observation does not replace the navigation assertion */ } documentationTiming.preWaitCompletedMs = driverElapsedMs(); try { await waitFor(() => location.pathname === '/docs/approval-workflow' && Boolean(document.querySelector('#execution')), undefined, 45000, undefined, () => { documentationTiming.lastPollMs = driverElapsedMs(); documentationTiming.pollCount = Math.min(4096, documentationTiming.pollCount + 1); }, true); }
   catch (error) {
     if (error.message === 'website_dom_timeout') {
       try { documentationTimeoutSnapshot = await evaluate(() => ({ pathnameIsDocs: location.pathname === '/docs/approval-workflow', executionPresent: Boolean(document.querySelector('#execution')), tourPresent: Boolean(document.querySelector('#product-tour')) })); } catch { /* unknown observation must not replace the original failure */ }
@@ -280,7 +292,7 @@ try {
   // for this owned driver's positive exit before touching its profile/dist artifacts.
   if (config) {
     if (documentationTiming) documentationTiming.observedMs = driverElapsedMs();
-    const result = { success, failure, documentationTiming, documentationClick, documentationTransitionSeen, scriptRequests, timedOutOperation: session.report().timedOutOperation, preImageWait, evaluationExceptionClass, homeCapturePhase, currentInteraction, lastInteraction, documentationTimeoutSnapshot, documentationPreWaitSnapshot, runtimeExceptionCount: consoleErrors.filter(category => category === 'runtime_exception').length, consoleErrorCount: consoleErrors.filter(category => category === 'console_error').length, bundler: 'webpack', productionEquivalent: false, evidence, images, deniedRequests: denied, consoleErrorCategories: consoleErrors, qualification: 'Actual local integrated Next pages; API requests denied; external fonts may fall back; screenshots require human inspection. No provider/native acceptance.' };
+    const result = { success, failure, initialNavigation, documentationTiming, documentationClick, documentationPointer, documentationTransitionSeen, scriptRequests, timedOutOperation: session.report().timedOutOperation, preImageWait, evaluationExceptionClass, homeCapturePhase, currentInteraction, lastInteraction, documentationTimeoutSnapshot, documentationPreWaitSnapshot, runtimeExceptionCount: consoleErrors.filter(category => category === 'runtime_exception').length, consoleErrorCount: consoleErrors.filter(category => category === 'console_error').length, bundler: 'webpack', productionEquivalent: false, evidence, images, deniedRequests: denied, consoleErrorCategories: consoleErrors, qualification: 'Actual local integrated Next pages; API requests denied; external fonts may fall back; screenshots require human inspection. No provider/native acceptance.' };
     writeFileSync(join(directory, 'capture.json'), JSON.stringify(result, null, 2), { mode: 0o600 });
     writeFileSync(join(directory, 'done.json'), JSON.stringify({ success, nonce: config.nonce }), { mode: 0o600 });
     process.stdout.write(`${join(directory, 'capture.json')}\n`);

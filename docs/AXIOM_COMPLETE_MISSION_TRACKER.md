@@ -16,6 +16,41 @@ Separate local branch `codex/verification-cancellation-local`, based exactly on 
 Implemented prepare/run/stop registry with one-shot execution, bounded pending registrations (32 entries, 60-second preparation expiry), cancellation before spawn and during process/pipe waiting, completion/cancel serialization, and existing two-second direct-child cleanup bound. Stop accepts an owned run identity and repository, never a PID or supplied command. No process group or descendant signaling is attempted. The UI latches cancellation before IPC and refuses late successful receipts even if cancellation cannot be confirmed; repository/context ownership and newer-attempt generation checks fence late notices. Switching or closing views still does not stop running processes; stale preparations are retired before launch when observed. Abrupt renderer loss can leave a pending registration until expiry/pruning; process-tree containment is not established.
 
 Local evidence: four focused receipt/editor ownership/Agent readiness/demo files passed 128 tests; desktop frontend TypeScript passed. Added native cancellation-before-spawn and during-wait tests remain **unrun** because this environment lacks the required Rust/native toolchain. Desktop release alignment, frontend production build and `git diff --check` passed; Vite retained its existing chunk/import warnings. Installed macOS/native stop timing, process reaping, simultaneous completion/cancel and descendant behavior remain acceptance gaps; source tests and frontend compilation do not establish them. No push, PR, hosted CI, provider/cloud/paid call, deployment, production mutation or security/financial gate change was performed.
+## Local direct OpenAI/xAI transport review — October 21, 2026
+
+Plan: isolate the two fixed-origin server adapters, replace their buffered stream
+with bounded incremental Chat Completions SSE, and prove cancellation and terminal
+evidence using synthetic transports. Base: `0c32b6fd`; local branch
+`codex/direct-provider-streaming-local`. No external provider request, credential,
+production operation, push or PR is authorized by this checkpoint.
+
+Implemented: only OpenAI/xAI opt into the new transport. Other compatible,
+free/local and mock adapters retain their existing behavior. Requests reject
+redirects, keep authorization at the fixed vendor origin, and retain isolated-I/O
+denial. Parsing caps total bytes (8 MiB), SSE event/line size (64 KiB), and display
+output (1 MiB characters). Caller abort and timeout remain active through body
+reads; consumer return cancels the reader. Only a finish event followed by DONE
+emits success, with validated optional provider usage; truncated/error responses
+never fabricate terminal success. No midstream retry/fallback is added.
+
+Evidence: 86 targeted synthetic tests passed across direct streaming, xAI,
+manager, aiFetch, Gateway streaming and demo contracts. They prove incremental delivery
+before later body bytes, fragmented UTF-8/CRLF, body-read abort/timeout, consumer
+return cleanup, HTTP/error/malformed/truncated/oversized rejection and terminal
+usage. Independent review found that abort during a suspended text yield could
+otherwise allow already buffered SSE events to continue. Explicit abort checks
+at each buffered parsing iteration and around text/terminal yields now reject
+that continuation. Four additional cases cover both vendors with a second
+buffered delta and with only buffered finish/DONE remaining.
+Full web `npx tsc --noEmit --pretty false` passed; no paid integration
+or full default suite was run.
+
+Acceptance gaps: actual OpenAI/xAI model/API behavior and credentials are untested;
+no paid calls occurred. This adapter work neither enables a direct desktop lane
+nor supplies metered admission, settlement or billing acceptance. Governed manager
+requests still require their one-use admission and single Gateway attempt; their
+reservation, policy, durable usage and fallback boundaries are unchanged. Actual
+application/native desktop/provider/billing acceptance remains open.
 
 ## Controller continuation — canonical-host authentication, October 20, 2026
 
@@ -3584,6 +3619,243 @@ Automated approval review rejected publishing the new repair, citing earlier exa
 
 Approved6e23fab7 is published; all four workflows initially passed (8,880 Vitest passes,16 offline-auth tests,293-page production build, native Desktop CI, SQL/HTTP and12 browser gates). Ready-for-review website39520883805 then failed at documentation navigation with no destination request. Preserve that failed gate,194 and187/191/192/193; no same-head retry or merge. Root cause unconfirmed. Prepare bounded passive click/default-prevention, Next Link intent, delayed-replay polling and main-frame transition diagnostics; existing destination request/DOM acceptance, deadlines and isolation remain unchanged. Pure focused tests are implementation evidence only, not actual browser acceptance. Local supervisor and three subprocess cases remain EPERM-blocked; no guard bypass. Owner requires final independent review, test results and exact diagnostic commit before push authorization. Vercel/production operations remain prohibited.
 
+### Release validation follow-up (local, not published)
+
+PR #195 remains isolated, draft and unmerged. Initial homepage CDP navigation timed out before documentation interactions; root cause remains unknown. Bounded browser/proxy diagnostics are prepared without changing acceptance deadlines, isolation or request policy (96 focused tests passed). Separate cancellation candidate dad338bb passed independent review; separate OpenAI/xAI streaming candidate ecce129e fixes the review-discovered buffered-abort defect, independent re-review passed with no remaining code blocker. Installed-Mac checklist and evidence/Stripe TEST distinctions: [release readiness](release/READINESS_LOCAL.md), [Mac acceptance](release/INSTALLED_MAC_ACCEPTANCE.md). Runtime/provider/payment/native acceptance remains unverified. No pushes, CI retries, Stripe writes, Vercel operations or releases authorized/performed in this batch.
+
+
+### Local pointer diagnostics integration
+
+Event-time pointer observations now integrate with existing documentation polls, source hashing and strict public projection. 107 focused tests across eight files; independent review44 tests passed; no independent review blocker. Application/input behavior, deadlines and isolation unchanged. No new browser evidence: click-target root cause remains unresolved. Local only; no push/CI. #197 Git timeout evidence retained without further diagnostics; #195 unchanged.
 ### PR #197 native test lifetime repair — local only
 
 CI macOS/Linux both reported E0716 in cancellation_during_wait_never_returns_success: the stored future borrowed a temporary temp_dir before tokio::join!. Bind the path to a local root spanning the join; runtime behavior/assertions unchanged. Independent review found no blocker. 100 focused repository tests and desktop TypeScript passed. Native compilation/test execution is BLOCKED: local Linux has no cargo/rustc; connected Mac is offline. No unchanged CI rerun, push or native-pass claim. A new exact-commit authorization is required before publication.
+
+
+### PR196 reconciliation after PR197 merge (local, not pushed)
+
+Merged exact main49cd7dc559bd196a9a91e8e695ef748ed4cc8a1e into the existing196 branch without rewriting history. The only conflict was this mission tracker: retained both196 diagnostic evidence and197 cancellation/lifetime-fix history. All196 diagnostics/tests remain intact; cancellation source matches approved merged main. Native macOS/Linux29-test and lint evidence already passed on197; installed-Mac acceptance remains unverified. Historical Git timeout and stale-coordinate failures remain intermittent/unresolved; receipts preserved, no new diagnostic runs. Updated integration head needs focused tests, independent review and exact owner push approval.198 waits for196 integration;195 unchanged/blocked.
+
+Reconciliation validation:222 focused cases across11 browser/ownership/model/demo suites passed; repository and desktop TypeScript passed. Independent staged-tree review found no blocker. Blob identity checks preserved14 non-tracker files from196 and6 from197 exactly. Post-merge main CI is monitored separately; new196 exact-head CI and owner push authorization remain pending. No installed-Mac/provider acceptance inferred.
+
+### Local pointer diagnostics integration
+
+Event-time pointer observations now integrate with existing documentation polls, source hashing and strict public projection. 46 focused tests across five files; independent review22 tests passed; no independent review blocker. Application/input behavior, deadlines and isolation unchanged. No new browser evidence: click-target root cause remains unresolved. Local only; no push/CI. #197 Git timeout evidence retained without further diagnostics; #195 unchanged.
+
+
+### #198 measurement-to-dispatch investigation (local only)
+
+Event-time document rectangle matches across preserved passing/failing receipts; scrollY differs167px and failing x is20px off-center. Selection-time evidence was absent, so exact mechanism remains unproven. Add selection/post-scroll-call snapshots and bounded elapsed times to existing event observations without changing coordinates, waits, deadlines or acceptance. Two new regression tests failed before implementation and pass after it; independent review27 tests passed. No behavior fix claimed, no push/CI, and #195–#197 untouched. Next dependency is authorized browser evidence before a repair.
+
+### Zero-additional-spend local consolidation
+
+Owner's latest master plan is additive: no new pushes/merges/paid CI/provider calls/deployments. Separate local integration worktree starts at reconciled196 e43e4a0b (including merged197/main49cd7dc5), then merges198 exact58a64bfb without rewriting any PR branch. Seven conflicts reconciled by intent:196 initialNavigation/homepage delivery plus198 five-stage pointer schema and strict sanitizer, both receipt VM dependencies, both tracker histories. Streaming/cancellation authority unchanged.254 focused tests across12 suites passed; independent combined-tree review found no blocker. Browser/root-cause, installed-Mac and real-provider acceptance remain unverified. Existing authorized196 CI passed Test+website; no new CI initiated. Public PRs are not merged or superseded.
+### Product release validation after PR194 — execution plan
+
+Base0c32b6fd, production remains untouched. Monitor post-merge CI without retries. Host is Linux x86_64; cargo/rustc/Xcode and provider/Stripe/database runtime keys are absent. Actual installed-Mac and live-provider acceptance are blocked, not satisfied by renderer or native CI. Published release remainsdesktop-v0.1.20 and does not represent consolidated main. GitHub installation start/callback and token resolution source contains no billing/metering/Stripe call; verify security and no-charge behavior without changing financial policy.
+
+Confirmed unfinished functionality: main's local proposal parser requires existing-file baseSha and has no create_repository_file command. Reuse already-prepared6c348cfc (do not reimplement). Sequence: integrate on isolated main-based branch; preserve subsequent conversation-supersession and navigation-diagnostic changes; inspect no-overwrite/path/identity/consent boundaries; run targeted renderer/authorization tests and TypeScript; obtain independent native/security review; prepare unmerged candidate PR for required native CI. Native compilation and installed-Mac workflows remain distinct. No production operations, release publication, provider charges, billing-setting changes or candidate merge. Keep publication to a coherent checkpoint, not repeated small pushes.
+Parallel core-product audit found next distinct missing coding capability:
+GitHub review capture supports new files (null SHA/empty baseline), but desktop
+local proposal validation correctly rejects them because native Save only writes
+existing files. Thus mixed update+new regression-test proposals currently have
+no local editor handoff. Do NOT simply relax that parser. Smallest complete slice:
+explicit existing/create DTO, bounded all-or-nothing snapshot validation, new-file
+diff review and explicit Create consent; separate native atomic create_new(true)
+writer with repository/branch binding, parent/no-symlink/path validation and no
+existing-file overwrite. Test occupied empty/nonempty file, races, symlink and
+wrong context/target denial; cancellation invokes nothing; subsequent Save/check
+uses existing freshness logic. Native Rust/installed-Mac validation is required
+and remains unavailable. Preview-only creation UI is partial visibility, not a
+completed coding workflow. Reuse existing remote creation approval path meanwhile;
+no server tool authority, credential or billing protection changes are proposed.
+
+### Explicit consolidation push approved and completed
+
+Owner granted exact750bb17cf54c0e9546bd2cf3528eaed2ea39462b →
+codex/axiom-consolidation-local, superseding the earlier auto-review refusal.
+Preflight confirmed exact commit/repository, remote branch absent, no PR on that
+branch, feature push matching none of11 workflows and Vercel Git deploymentfalse.
+Normal no-force/no-tag push succeeded with network permission; GitHub readback
+matches exact approved SHA. Zero Actions runs and zero Vercel deployments were
+observed for it. No PR, merge, retry, production or paid operation. Original four
+PR refs/checks and4db11e37 checkpoint preserved. Later local work is not approved
+for publication by this exact authorization and remains local.
+
+### Native new-file creation: local implementation, native acceptance pending
+
+Research reused server-reviewed null-SHA/empty-baseline creation and existing
+editor/consent/target checks. Existing-file parser remains strict. Added distinct
+creation DTO and whole mixed update/create review without dropping malformed
+members. Creation has explicit content preview/consent, context/workspace/owner
+and clean-buffer fences, live root/repository/branch check and a separate native
+create_repository_file command. It never calls existing-file Save as a fallback,
+opens another buffer automatically, approves GitHub or runs verification. Creation
+invalidates older verification. File catalog refresh is advisory, not execution
+proof. Create failure remains visible and never triggers automatic retry.
+
+Native Unix implementation rechecks Git target, validates bounded nonsensitive
+relative paths, walks existing parents with descriptor-relative O_DIRECTORY/
+O_NOFOLLOW and exclusively opens the leaf O_CREAT|O_EXCL|O_NOFOLLOW mode0600.
+Every existing leaf, including empty files/symlinks, must fail. No new directories
+or dependency downloads. Direct libc=0.2.189 reuses the existing locked version;
+manifest/lock relationship checked by static TOML parse, NOT Cargo. Non-Unix
+platforms fail closed. Atomic name reservation is NOT atomic content publication,
+Git/filesystem transaction or coordinated multi-file write: write/sync failure
+may leave a partial NEW file for inspection, never deletion/retry. Pinned parent
+FDs reject symlinks, but do not freeze adversarial directory renames or branch
+changes after checks. No process-sandbox claim. Independent review identified
+uppercase SSH-key path policy mismatch; normalized it and added native cases.
+
+128 targeted cases across4 suites pass: existing flows, mixed set retention,
+malformed absence metadata, content byte bound, actual App handoff, explicit
+Create consent, cancellation, wrong branch and occupied error, no existing writer
+or check fallback. Desktop ES2021 TypeScript passes; lint zero errors/one existing
+cleanup warning. Three native Rust cases prepared (unsafe paths, occupied empty/
+nonempty/symlink/no-parent cases, concurrent exclusive creation) are UNRUN.
+Cargo/Rust and installed Mac remain unavailable; no native acceptance or real
+provider execution claimed. The two earlier EPERM subprocess tests remain failed/
+unverified and were not rerun or weakened. No full CI or paid calls were used.
+
+Native source review found a macOS-specific compile hazard before publication: the creation openat variadic argument casts0600 to libc::mode_t. Official rust-lang/libc Apple source defines mode_t=u16; Rust E0617 rejects unpromoted small integers in C variadic arguments. Promote the fixed permission argument to c_uint, preserving0600/no-overwrite flags. This is verified source/type evidence, not a claimed local compiler reproduction. Required macOS CI compilation remains the actual regression gate.
+
+Post-merge main validation completed: Test39523642029, Desktop39523641970 and SQL/HTTP39523642003 all passed without retries. Main remains0c32b6fd. Candidate local checks135 renderer/regression cases and53 GitHub/billing/download cases passed; desktop ES2021 TypeScript passed; independent source/security review passed80 cases and found no blocker, with Apple C-varargs promotion separately reviewed. See docs/RELEASE_READINESS.md for explicit installed-Mac/provider/Stripe and intermittent-browser gaps. No live/provider request or production operation was attempted.
+
+Candidate full repository TypeScript also passed. Native compilation remains pending required CI. Release report and candidate preserve the existing Vercel Git deployment restriction, all financial/production gates and main's conversation/navigation fixes. Publish one draft candidate checkpoint for native validation; do not merge or publish an installer.
+
+### Local safe-creation incorporation, public195 still blocked
+
+195's prior browser failure occurred in initial CDP navigation before native creation can run; this isolates the harness blocker from the already reviewed no-overwrite writer but does not resolve acceptance. Local integration merges exact195 head6a89410d, preserving Unix descriptor/ABI fences, explicit creation consent,197 cancellation tests and198 streaming/diagnostics. Tracker and pairing demo retain both intents; repository tests retain cancellation plus creation cases.130 focused cases across4 suites passed; independent incorporation review found no blocker. First root TypeScript attempt exposed two cached React type identities from a new dependency link; local link aligned with existing root dependencies and revalidation is recorded separately. No application workaround for that environment issue. Actual installed-Mac/combined native and browser acceptance remain unverified; no push/CI/public PR supersession.
+
+Combined creation-stage repository TypeScript passed after aligning local dependency lookup; source was not changed to bypass the cached-type mismatch. The local merge is an implementation checkpoint only, not installed/native/browser acceptance.
+
+
+### Agent context persistence failure — focused local product batch
+
+Research found unguarded optional localStorage reads during Agent mount and writes/removals in selection effects. Three actual component cases reproduce startup/effect failures for denied getItem/setItem/removeItem. Plan: contain optional preference failures and retain live in-memory selections, without changing catalog verification, credential identity, send target or action consent. Acceptance: connected repository/environment selectors and explicit mocked send remain functional for all three storage failures; no automatic provider call or authority fallback. Update pairing demo; run focused context/security tests and TypeScript. Native/real-provider acceptance remains separate.
+
+Preference recovery validation:75 focused component/model/demo cases passed after3 red regressions; root+desktop TypeScript and desktop frontend build passed using existing cached dependencies. Independent review found no authority/target regression. Connected in-memory context and explicit mocked send remain usable when optional preference get/set/remove is denied. No native or real-provider acceptance claimed. Separate local Airflow/Terraform/deployment/tenant/billing/rollback fixture boundary batch passed42 cases; these are not cloud or Stripe customer acceptance.
+
+### Consolidated zero-additional-spend checkpoint
+
+See [local integration checkpoint](release/LOCAL_INTEGRATION_CHECKPOINT.md) for
+preserved PR heads/history, actual product fix, workstream acceptance matrix,
+324 passing targeted cases, local frontend/type/lint results, independent reviews,
+historical unresolved failures and next release gates. The local Test workflow
+supersedes obsolete PR runs while keeping every main run distinct; required jobs,
+triggers, permissions and timeouts are unchanged. No publication, new CI, hosted
+deployment, paid provider operation or production change is authorized by this
+checkpoint. Native/installed/customer acceptance remains separate from code.
+
+
+### Local Airflow desktop reliability follow-on
+
+Concise plan: reproduce catalog publication coupling and stale run-history
+ownership in the actual component; isolate independent reads, bind history to
+DAG/request generation, retain context/approval fences, and validate related
+coding/Airflow/security boundaries locally. Completed: delayed GitHub/environment
+catalogs no longer hide Airflow approvals or keep completed actions busy; older
+workspace loads and manual history refreshes cannot replace newer selection
+results. Eight new component cases added; six failed before their fixes.
+340 cases/22 suites passed including all previous checkpoint suites. Independent
+review found no blocker. See the follow-on section of
+[checkpoint](release/LOCAL_INTEGRATION_CHECKPOINT.md) for evidence and release
+gaps. GitHub billing access is unavailable; remaining allowance stays unknown.
+No push, CI trigger, merge, deployment, paid call or billing change performed.
+
+Final local checks: root and desktop TypeScript passed; targeted ESLint passed with zero warnings/errors; desktop frontend build passed. Existing ~603 KB bundle warning remains, with no threshold suppression. Native compilation, installed-Mac and real Airflow/provider acceptance remain unverified. All work stays on the single consolidated local branch.
+
+### Consolidated draft PR / existing-project Preview preparation
+
+See [prepared integration PR and Preview decision](release/CONSOLIDATED_PR_PREPARATION.md).
+Fetched main and all three PR heads; required ancestors remain preserved and
+integration remote ref is absent. Re-read195's failed job: initial CDP navigation
+timeout, no scripts or interaction evidence, source unchanged and cleanup empty;
+not fixed or retried. Fresh340-case checkpoint passed and independent review
+found no new source blocker. Combined website build failed at empty Next child
+TypeScript configuration output; direct TypeScript emits valid JSON. Browser
+preparation remains blocked by managed spawnSync Git EPERM. These are acceptance
+gaps, not green checks. Changed-source lint has zero errors/one warning already
+in main. Existing Vercel Preview has production-shared cloud/GitHub/AI/OAuth
+credentials; encrypted inventory is truncated and current budget/pause is not
+exposed. No safe/free Preview is certified. Exactly one draft PR text is prepared
+locally, with no push/PR creation, CI trigger or deployment. Owner approval and
+cost/isolation readiness remain gates.
+
+Consolidated checkpoint revalidation: root TypeScript, desktop TypeScript and frontend build passed;340 tests/22 suites passed. Source lint zero errors/one pre-existing main warning. Combined website production build and browser acceptance remain blocked as recorded; no release-readiness claim. Core cached dependency versions match package-lock.
+
+
+### Final local refinement: verified clickable Airflow setup
+
+Research/plan: reproduce default-branch fallback and delayed-catalog visual/state
+mismatch; require verified catalog membership without changing server authority;
+add explicit branch retry, test stale selection/revocation, and preserve existing
+340 cases. Three actual view regressions failed first. Five cases now cover
+pending/failed branch lookup, late repository choice, late old branch results and
+removed environment.345 cases/22 suites pass. Root/desktop TypeScript, targeted
+lint, frontend build and independent security/integration review pass. No live
+Airflow, native app, provider or Stripe acceptance claimed.
+
+Generic subprocess probes outside Axiom independently reproduce empty child
+stdout and synchronous Git/Node EPERM. Next build/browser preflight are therefore
+reproducible environment blockers; underlying runtime repair is unavailable.
+Historical195 navigation remains unresolved, not retried. The existing
+[consolidated PR preparation](release/CONSOLIDATED_PR_PREPARATION.md) records the
+classification, safety design, draft PR text and exact-publication conditions.
+All seven earlier source/integration checkpoints remain ancestors. No new branch,
+push, PR, CI, deployment, settings change or paid operation occurred. GitHub
+allowance unknown; Vercel inherits shared credentials and budget/pause cannot be
+certified. Next external checkpoint requires exact authorization and budget
+readiness; production/installer/billing gates remain separate.
+
+
+### Accepted baseline follow-on: bounded cost audit and retired-DAG guard
+
+Preserved8f337583 and prior345-case evidence. One existing CLI billing usage GET
+returned Forbidden; current connector exposes no allowance endpoint. Remaining
+balance is unknown, not assumed exhausted or available. Stop access probes until
+permissions/evidence changes. Draft PR still triggers three workflows/four jobs;
+hold for verified capacity, or separately authorize a push-only backup without PR.
+No native/macOS gate was reduced and no new workflow change was applied. See
+[publication decision](release/CONSOLIDATED_PR_PREPARATION.md) for exact scope,
+cache-review proposals and bounded runner exposure.
+
+Local product research found removed DAG IDs still actionable after a catalog
+refresh. Actual component regression failed first. Current-catalog trigger and
+history guards plus an explicit missing selection now prevent that stale path.
+37 focused Airflow/demo cases, desktop TypeScript, lint and independent source/
+security review passed. Full345 cases/builds and known subprocess failures were
+not repeated; prior evidence remains historical at the accepted baseline. All
+branches/history and production, billing, release and paid-provider gates remain.
+
+
+### Approved push-only backup completed; local continuation retained
+
+Exact9e8f0203b5450a61a0a50759318f047500184927 created remote
+codex/zero-spend-integration-local after absence/clean-tree checks. Remote matches.
+No PR/tags/force/CI dispatch/merge/deployment. Post-push Actions and check-runs0;
+Vercel exact-SHA/branch deployments0. GitHub deployment-history read unsupported;
+account billing remains unavailable, so no invoice-level zero-charge guarantee.
+
+New local product batch clears unchanged submitted Airflow password/token fields
+only after confirmed save. Pending corrections and failed editable drafts survive;
+no resend or backend credential change. Two regressions red first;41 focused
+Airflow/demo cases, desktop TypeScript/lint and independent review passed. Original
+345-case evidence not rerun. New local commit is NOT included in push approval or
+remote backup. See consolidated PR preparation for detailed evidence and gates.
+
+### Final consolidated integration pass
+
+See [final integration decision](release/FINAL_CONSOLIDATED_INTEGRATION.md) for
+the one prepared PR, complete inclusion proof, final checkpoint and safest merge
+sequence (consolidated only, then verify and close overlapping195/196/198).
+Main49cd7dc, original heads and remote backup9e8f0203 rechecked unchanged. No
+duplicate source merge or new feature expansion. One final local checkpoint350
+cases/22 suites passed; desktop TypeScript/build, source lint (zero errors/one
+existing warning) and independent integration/security review passed. Root
+TypeScript also passed. Proven website build/browser environment failures
+and195 receipts were reused, not rerun. Installed Mac, actual AI/accounting/cloud
+journeys and full immutable-artifact rollout/recovery readiness remain gates;
+this is not complete-product certification. Vercel SSO protection rechecked;
+shared Preview credentials and unavailable budget remain blockers. No push, PR,
+CI trigger, configuration change, merge or deployment in this pass.
