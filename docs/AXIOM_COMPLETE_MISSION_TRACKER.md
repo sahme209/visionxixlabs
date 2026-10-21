@@ -9,6 +9,37 @@ checkpoint status; previous observations are retained as evidence history.
 
 PR #161 source integration is complete at main `608efe0fd70623aaf71cb80f799d3b822b9855cd` after both exact-head Test runs and review passed. This is not a production release.
 
+## Local direct OpenAI/xAI transport review — October 21, 2026
+
+Plan: isolate the two fixed-origin server adapters, replace their buffered stream
+with bounded incremental Chat Completions SSE, and prove cancellation and terminal
+evidence using synthetic transports. Base: `0c32b6fd`; local branch
+`codex/direct-provider-streaming-local`. No external provider request, credential,
+production operation, push or PR is authorized by this checkpoint.
+
+Implemented: only OpenAI/xAI opt into the new transport. Other compatible,
+free/local and mock adapters retain their existing behavior. Requests reject
+redirects, keep authorization at the fixed vendor origin, and retain isolated-I/O
+denial. Parsing caps total bytes (8 MiB), SSE event/line size (64 KiB), and display
+output (1 MiB characters). Caller abort and timeout remain active through body
+reads; consumer return cancels the reader. Only a finish event followed by DONE
+emits success, with validated optional provider usage; truncated/error responses
+never fabricate terminal success. No midstream retry/fallback is added.
+
+Evidence: 82 targeted synthetic tests passed across direct streaming, xAI,
+manager, aiFetch, Gateway streaming and demo contracts. They prove incremental delivery
+before later body bytes, fragmented UTF-8/CRLF, body-read abort/timeout, consumer
+return cleanup, HTTP/error/malformed/truncated/oversized rejection and terminal
+usage. Full web `npx tsc --noEmit --pretty false` passed; no paid integration
+or full default suite was run.
+
+Acceptance gaps: actual OpenAI/xAI model/API behavior and credentials are untested;
+no paid calls occurred. This adapter work neither enables a direct desktop lane
+nor supplies metered admission, settlement or billing acceptance. Governed manager
+requests still require their one-use admission and single Gateway attempt; their
+reservation, policy, durable usage and fallback boundaries are unchanged. Actual
+application/native desktop/provider/billing acceptance remains open.
+
 ## Controller continuation — canonical-host authentication, October 20, 2026
 
 The new priority refinement is preserved verbatim in `docs/AXIOM_PRIORITY_REFINEMENT_2026-10-20.md` and added as source R23 without changing previous requirement objects. Priority 0 is actual deployed login; website redesign follows it, with desktop/plugins and all earlier engineering work retained.
