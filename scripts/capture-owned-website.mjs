@@ -122,6 +122,7 @@ let directory, config, success = false, failure = null, denied = 0, imageBytes =
 /** @type {{phase: string, lastDomSnapshot: ReturnType<typeof sanitizePreImageDomSnapshot>} | null} */
 let preImageWait = null;
 const scriptRequests = { allowed: 0, denied: 0 };
+const initialNavigation = { issued: false, requestPaused: false, requestContinued: false, requestDenied: false, navigationAcknowledged: false, mainFrameCommitted: false };
 let evaluationExceptionClass = null;
 let homeCapturePhase = null;
 let currentInteraction = 'setup';
@@ -173,11 +174,14 @@ try {
   assert.equal(endpoint.protocol, 'ws:'); assert.equal(endpoint.host, cdpOrigin.host); assert.match(endpoint.pathname, /^\/devtools\/page\/[A-Fa-f0-9-]+$/);
   const { send } = await transport.openChannel({ session, endpoint, createSocket: value => new WebSocket(value), proveEndpoint, onEvent: (data, send) => {
     if (data.method === 'Fetch.requestPaused') {
-      let allowed = false; try { const url = new URL(data.params.request.url); allowed = url.origin === windowState.origin && !url.username && !url.password && policy.allowedRequest({ method: data.params.request.method, raw: `${url.pathname}${url.search}`, origin: windowState.origin, assets: config.assets }); } catch { /* refuse */ }
+      let initialDocument = false;
+      let allowed = false; try { const url = new URL(data.params.request.url); initialDocument = data.params.resourceType === 'Document' && url.origin === windowState.origin && url.pathname === '/' && !url.search && !url.username && !url.password; allowed = url.origin === windowState.origin && !url.username && !url.password && policy.allowedRequest({ method: data.params.request.method, raw: `${url.pathname}${url.search}`, origin: windowState.origin, assets: config.assets }); } catch { /* refuse */ }
+      if (initialDocument) { initialNavigation.requestPaused = true; if (!allowed) initialNavigation.requestDenied = true; }
       if (!allowed) denied++;
       if (data.params.resourceType === 'Script') { const key = allowed ? 'allowed' : 'denied'; scriptRequests[key] = Math.min(4096, scriptRequests[key] + 1); }
-      void send(allowed ? 'Fetch.continueRequest' : 'Fetch.failRequest', allowed ? { requestId: data.params.requestId } : { requestId: data.params.requestId, errorReason: 'BlockedByClient' }).catch(error => session.stop(error));
+      void send(allowed ? 'Fetch.continueRequest' : 'Fetch.failRequest', allowed ? { requestId: data.params.requestId } : { requestId: data.params.requestId, errorReason: 'BlockedByClient' }).then(() => { if (initialDocument && allowed) initialNavigation.requestContinued = true; }).catch(error => session.stop(error));
     }
+    if (data.method === 'Page.frameNavigated' && !data.params.frame?.parentId) { try { const url = new URL(data.params.frame?.url); if (url.origin === windowState.origin && url.pathname === '/' && !url.search) initialNavigation.mainFrameCommitted = true; } catch { /* retain no URLs */ } }
     if (data.method === 'Page.frameNavigated' && !data.params.frame?.parentId && typeof data.params.frame?.id === 'string') mainFrameId = data.params.frame.id;
     if (((data.method === 'Page.frameNavigated' && !data.params.frame?.parentId && data.params.frame?.id === mainFrameId) || (data.method === 'Page.navigatedWithinDocument' && mainFrameId !== null && data.params.frameId === mainFrameId)) && ['documentation_control', 'documentation_check', 'approval-documentation'].includes(currentInteraction)) {
       try { const url = new URL(data.params.frame?.url ?? data.params.url); if (url.origin === windowState.origin && url.pathname === '/docs/approval-workflow') documentationTransitionSeen = true; } catch { /* no arbitrary URL is retained */ }
@@ -206,7 +210,7 @@ try {
   }
   async function viewport(width, reduced = false) { await send('Emulation.setDeviceMetricsOverride', { width, height: 1000, deviceScaleFactor: 1, mobile: width === 360 }); await send('Emulation.setEmulatedMedia', { features: [{ name: 'prefers-reduced-motion', value: reduced ? 'reduce' : 'no-preference' }] }); }
   /** @param {string} [preImagePhase] */
-  async function navigate(path, preImagePhase = undefined) { assert.ok(['/', '/product', '/docs/approval-workflow'].includes(path)); await send('Page.navigate', { url: `${windowState.origin}${path}` }); await waitFor(path => document.readyState === 'complete' && Boolean(document.querySelector(path === '/docs/approval-workflow' ? '#execution' : '#product-tour')), path, 45000, preImagePhase); }
+  async function navigate(path, preImagePhase = undefined) { assert.ok(['/', '/product', '/docs/approval-workflow'].includes(path)); if (path === '/') initialNavigation.issued = true; await send('Page.navigate', { url: `${windowState.origin}${path}` }); if (path === '/') initialNavigation.navigationAcknowledged = true; await waitFor(path => document.readyState === 'complete' && Boolean(document.querySelector(path === '/docs/approval-workflow' ? '#execution' : '#product-tour')), path, 45000, preImagePhase); }
   async function click(label) {
     currentInteraction = controlToken(label);
     const point = await evaluate(pointerForControl, label);
@@ -280,7 +284,7 @@ try {
   // for this owned driver's positive exit before touching its profile/dist artifacts.
   if (config) {
     if (documentationTiming) documentationTiming.observedMs = driverElapsedMs();
-    const result = { success, failure, documentationTiming, documentationClick, documentationTransitionSeen, scriptRequests, timedOutOperation: session.report().timedOutOperation, preImageWait, evaluationExceptionClass, homeCapturePhase, currentInteraction, lastInteraction, documentationTimeoutSnapshot, documentationPreWaitSnapshot, runtimeExceptionCount: consoleErrors.filter(category => category === 'runtime_exception').length, consoleErrorCount: consoleErrors.filter(category => category === 'console_error').length, bundler: 'webpack', productionEquivalent: false, evidence, images, deniedRequests: denied, consoleErrorCategories: consoleErrors, qualification: 'Actual local integrated Next pages; API requests denied; external fonts may fall back; screenshots require human inspection. No provider/native acceptance.' };
+    const result = { success, failure, initialNavigation, documentationTiming, documentationClick, documentationTransitionSeen, scriptRequests, timedOutOperation: session.report().timedOutOperation, preImageWait, evaluationExceptionClass, homeCapturePhase, currentInteraction, lastInteraction, documentationTimeoutSnapshot, documentationPreWaitSnapshot, runtimeExceptionCount: consoleErrors.filter(category => category === 'runtime_exception').length, consoleErrorCount: consoleErrors.filter(category => category === 'console_error').length, bundler: 'webpack', productionEquivalent: false, evidence, images, deniedRequests: denied, consoleErrorCategories: consoleErrors, qualification: 'Actual local integrated Next pages; API requests denied; external fonts may fall back; screenshots require human inspection. No provider/native acceptance.' };
     writeFileSync(join(directory, 'capture.json'), JSON.stringify(result, null, 2), { mode: 0o600 });
     writeFileSync(join(directory, 'done.json'), JSON.stringify({ success, nonce: config.nonce }), { mode: 0o600 });
     process.stdout.write(`${join(directory, 'capture.json')}\n`);

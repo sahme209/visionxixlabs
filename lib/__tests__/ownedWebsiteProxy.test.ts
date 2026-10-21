@@ -162,3 +162,18 @@ it.each(['1', '2', '3'])('distinguishes validated documentation prefetch %s from
   const f = fixture(); f.req.url = 'http://127.0.0.1:38001/docs/approval-workflow'; Object.assign(f.req.headers, { rsc: '1', 'next-router-prefetch': prefetch });
   f.handler.request(f.req, f.res); expect(f.events).toContain('docs_rsc_prefetch_accepted'); expect(f.events).not.toContain('docs_rsc_navigation_accepted');
 });
+
+it('distinguishes initial HTML forwarding, headers and completion without weakening deadlines', () => {
+  const f = fixture(); f.req.url = 'http://127.0.0.1:38001/'; f.handler.request(f.req, f.res);
+  expect(f.events).toContain('home_document_accepted'); expect(f.events).not.toContain('home_document_response');
+  f.reply(Object.assign(new Stream(), { statusCode: 200, headers: { 'content-type': 'text/html' } }));
+  expect(f.events).toContain('home_document_response'); expect(f.events).toContain('home_document_status_2xx');
+  expect(f.events).not.toContain('home_document_complete');
+  f.res.writableEnded = true; f.res.emit('finish');
+  expect(f.events).toContain('home_document_complete'); expect(f.upstream.setTimeout.mock.calls[0][0]).toBe(30000);
+});
+it('records an initial document stall/cancellation without claiming an application response', () => {
+  const f = fixture(); f.req.url = 'http://127.0.0.1:38001/'; f.handler.request(f.req, f.res);
+  f.res.emit('close'); expect(f.events).toContain('home_document_cancelled');
+  expect(f.events).not.toContain('home_document_response'); expect(f.events).not.toContain('home_document_complete');
+});
