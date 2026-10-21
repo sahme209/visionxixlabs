@@ -93,7 +93,7 @@ function fixture(interrupted = false, transport: "http" | "native" = "http") {
   return { fetcher, completion, signal: () => signal, messages: () => fetcher.mock.calls.filter(([url]) => new URL(String(url)).pathname.endsWith("/messages")) };
 }
 
-async function compose(mode: "chat" | "code") {
+async function compose(mode: "chat" | "code", agentProfile?: string) {
   render(createElement(AgentChatView));
   await screen.findByRole("option", { name: "Fixture model" });
   await waitFor(() => expect((screen.getByRole("combobox", { name: "Agent conversation" }) as HTMLSelectElement).value).toBe(summary.id));
@@ -102,6 +102,7 @@ async function compose(mode: "chat" | "code") {
     await screen.findByRole("option", { name: "src/app.ts" });
     fireEvent.change(screen.getByRole("combobox", { name: "Repository file" }), { target: { value: "src/app.ts" } });
   }
+  if (agentProfile) fireEvent.change(screen.getByRole("combobox", { name: "Specialized Agent" }), { target: { value: agentProfile } });
   fireEvent.change(screen.getByRole("textbox"), { target: { value: "Review this change" } });
   await waitFor(() => expect((screen.getByRole("button", { name: "Send" }) as HTMLButtonElement).disabled).toBe(false));
   fireEvent.click(screen.getByRole("button", { name: "Send" }));
@@ -145,4 +146,32 @@ it("stops a native composer response without accepting late proposal authority o
   expect(screen.queryByRole("button", { name: "Approve & run" })).toBeNull();
   expect(screen.queryByText(data.reply)).toBeNull();
   expect(wire.messages()).toHaveLength(1);
+});
+
+it.each(["coding", "debugging", "code_review", "terraform", "cloud_deployment"])("sends selected %s profile through the rendered composer and streaming client", async agentProfile => {
+  const wire = fixture(); await compose("chat", agentProfile);
+  expect(JSON.parse(wire.messages()[0][1]!.body as string)).toMatchObject({ workspaceContext: { agentProfile } });
+  expect((screen.getByRole("combobox", { name: "Specialized Agent" }) as HTMLSelectElement).disabled).toBe(true);
+  await act(async () => { wire.completion.release(); }); await screen.findByText(data.reply);
+  expect(wire.messages()).toHaveLength(1);
+});
+
+// Composition confirmation must never become a paid Agent submission.
+it.each([{ isComposing: true }, { keyCode: 229 }])("retains an IME draft on Enter (%j), then sends once on explicit Enter", async composition => {
+  const wire = fixture();
+  render(createElement(AgentChatView));
+  await screen.findByRole("option", { name: "Fixture model" });
+  await waitFor(() => expect((screen.getByRole("combobox", { name: "Agent conversation" }) as HTMLSelectElement).value).toBe(summary.id));
+  const composer = screen.getByRole("textbox");
+  fireEvent.change(composer, { target: { value: "未完成の入力" } });
+  fireEvent.keyDown(composer, { key: "Enter", ...composition });
+  expect(wire.messages()).toHaveLength(0);
+  expect((composer as HTMLTextAreaElement).value).toBe("未完成の入力");
+  fireEvent.keyDown(composer, { key: "Enter", shiftKey: true });
+  expect(wire.messages()).toHaveLength(0);
+  fireEvent.keyDown(composer, { key: "Enter" });
+  await screen.findByText("Review draft before persistence");
+  expect(wire.messages()).toHaveLength(1);
+  await act(async () => { wire.completion.release(); });
+  await screen.findByText(data.reply);
 });

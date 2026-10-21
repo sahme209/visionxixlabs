@@ -1,11 +1,17 @@
+import { localEditProposals, type LocalEditProposal } from "../lib/localEditReview";
+import { localCodeContextPrompt, type LocalCodeSelection } from "../lib/localCodeContext";
+import { selectSkillInvocation } from "../lib/skillInvocation";
+import { rememberConversationDraft } from "../lib/conversationDrafts";
+import { isSensitiveRepositoryEvidencePath } from "../../../lib/axiom/agentRuntime/repositoryEvidencePolicy";
+import { AGENT_PROFILES, resolveAgentProfile, type AgentProfileId } from "../../../lib/axiom/agentRuntime/agentProfiles";
 import { AgentModelSelector } from "../components/AgentModelSelector";
 import { agentModelChoices, modelPreferenceKey, type AgentModelChoice } from "../lib/agentModelSelection";
 import { AgentRestartReceipts } from "../components/AgentRestartReceipts";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Badge, riskToneFor } from "../components/Primitives";
 import { desktopClient, type AgentSkillCatalogItem, type VerifiedDesktopIdentity } from "../lib/desktopClient";
 import { normalizeAiProviderStatus } from "../lib/aiProviderStatus";
-import { createLineDiff, type DiffLine } from "../lib/lineDiff";
+import { FileDiff } from "../components/FileDiff";
 
 /**
  * The flagship surface: a plain-English request becomes a risk-checked,
@@ -155,20 +161,22 @@ function describeEvidenceResult(action: Proposal): string {
   return "Verified by the service.";
 }
 
-export type AgentSettingsDestination = "models";
+export type AgentSettingsDestination = "models" | "agents";
+export type AgentLocalCodeRequest = LocalCodeSelection & { context: object; workspace?: string };
+export interface AgentSkillRequest { skillId: string; context: object; workspace?: string }
 
-export function AgentChatView({ onOpenSettings, identity }: { onOpenSettings?: (destination: AgentSettingsDestination) => void; identity?: VerifiedDesktopIdentity }) {
+export function AgentChatView({ onOpenSettings, identity, active = true, requestedSkill, requestedLocalCode, onReviewLocalEdit }: { onOpenSettings?: (destination: AgentSettingsDestination) => void; identity?: VerifiedDesktopIdentity; active?: boolean; requestedSkill?: AgentSkillRequest; requestedLocalCode?: AgentLocalCodeRequest; onReviewLocalEdit?: (edit: LocalEditProposal, edits?: LocalEditProposal[]) => void }) {
   const context = desktopClient.config;
   const workspace = identity?.organizationId;
   const [scope, setScope] = useState(() => ({ context, workspace, generation: 0 }));
   if (scope.context !== context || scope.workspace !== workspace) {
     setScope({ context, workspace, generation: scope.generation + 1 });
-    return <AgentChatSession key={scope.generation + 1} onOpenSettings={onOpenSettings} identity={identity} />;
+    return <AgentChatSession key={scope.generation + 1} onOpenSettings={onOpenSettings} identity={identity} active={active} requestedSkill={requestedSkill} requestedLocalCode={requestedLocalCode} onReviewLocalEdit={onReviewLocalEdit} />;
   }
-  return <AgentChatSession key={scope.generation} onOpenSettings={onOpenSettings} identity={identity} />;
+  return <AgentChatSession key={scope.generation} onOpenSettings={onOpenSettings} identity={identity} active={active} requestedSkill={requestedSkill} requestedLocalCode={requestedLocalCode} onReviewLocalEdit={onReviewLocalEdit} />;
 }
 
-function AgentChatSession({ onOpenSettings, identity }: { onOpenSettings?: (destination: AgentSettingsDestination) => void; identity?: VerifiedDesktopIdentity }) {
+function AgentChatSession({ onOpenSettings, identity, active, requestedSkill, requestedLocalCode, onReviewLocalEdit }: { onOpenSettings?: (destination: AgentSettingsDestination) => void; identity?: VerifiedDesktopIdentity; active: boolean; requestedSkill?: AgentSkillRequest; requestedLocalCode?: AgentLocalCodeRequest; onReviewLocalEdit?: (edit: LocalEditProposal, edits?: LocalEditProposal[]) => void }) {
   const [conversationId, setConversationId] = useState<string | null>(null);
   const [conversations, setConversations] = useState<ConversationSummary[]>([]);
   const [turns, setTurns] = useState<ChatTurn[]>([]);
@@ -189,9 +197,13 @@ function AgentChatSession({ onOpenSettings, identity }: { onOpenSettings?: (dest
   const [pendingProposal, setPendingProposal] = useState<Proposal | null>(null);
   const [evidenceActions, setEvidenceActions] = useState<Proposal[]>([]);
   const [input, setInput] = useState("");
+  const conversationDrafts = useRef(new Map<string, string>());
+  const processedSkillRequest = useRef<AgentSkillRequest | undefined>(undefined);
+  const processedLocalCode = useRef<AgentLocalCodeRequest | undefined>(undefined);
   const [sending, setSending] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [decidingId, setDecidingId] = useState<string | null>(null);
+  const [agentProfile, setAgentProfile] = useState<AgentProfileId>("general");
   const [composerMode, setComposerMode] = useState<"chat" | "code">("chat");
   const [operationMode, setOperationMode] = useState<"inspect" | "engineer" | "deepops">("engineer");
   const [savedContext] = useState(() => ({ repository: window.localStorage.getItem(ACTIVE_REPOSITORY_KEY) ?? "", environment: window.localStorage.getItem(ACTIVE_ENVIRONMENT_KEY) ?? "" }));
@@ -227,10 +239,29 @@ function AgentChatSession({ onOpenSettings, identity }: { onOpenSettings?: (dest
   const selectedChoice = useRef("");
   const [modelOptions, setModelOptions] = useState<AgentModelChoice[]>([]);
   const [enabledSkills, setEnabledSkills] = useState<AgentSkillCatalogItem[]>([]);
+  const [skillAttempt, setSkillAttempt] = useState(0);
+  const skillRefreshEpoch = useRef(0);
+  const verifiedSkillEpoch = useRef<number | null>(null);
+  const [skillState, setSkillState] = useState<"checking" | "ready" | "unavailable">("checking");
   const [latestUsage, setLatestUsage] = useState<{ decisionSteps: number; inputTokens: number | null; outputTokens: number | null; totalTokens: number | null } | null>(null);
   const [startupAttempt, setStartupAttempt] = useState(0);
   const [modelAttempt, setModelAttempt] = useState(0);
   const [modelState, setModelState] = useState<"loading" | "ready" | "disabled" | "empty" | "unavailable">("loading");
+  const previousActive = useRef(active);
+  useEffect(() => {
+    const resumed = active && !previousActive.current;
+    previousActive.current = active;
+    if (!active) {
+      const current = messageAbort.current;
+      if (current) {
+        current.abort();
+        setSending(false); setStreamingDraft("");
+        setError("Request stopped. Completed work remains recorded; reload this conversation before trying again.");
+      }
+    } else if (resumed) {
+      setModelAttempt(attempt => attempt + 1);
+    }
+  }, [active]);
   const preferenceKey = identity && desktopClient.config ? modelPreferenceKey(desktopClient.config.apiBase, identity.organizationId) : null;
   const [modelNotice, setModelNotice] = useState<string | null>(null);
   const [modelError, setModelError] = useState<string | null>(null);
@@ -336,20 +367,72 @@ function AgentChatSession({ onOpenSettings, identity }: { onOpenSettings?: (dest
     return () => { cancelled = true; };
   }, [modelAttempt, preferenceKey]);
   useEffect(() => {
+    if (!active) return;
     const refresh = () => setModelAttempt(attempt => attempt + 1);
     window.addEventListener("focus", refresh);
     return () => window.removeEventListener("focus", refresh);
-  }, []);
+  }, [active]);
 
   useEffect(() => {
+    if (!active) return;
+    const refreshEpoch = ++skillRefreshEpoch.current;
+    verifiedSkillEpoch.current = null;
     let cancelled = false;
     const context = desktopClient.config;
     const owned = () => !cancelled && context === desktopClient.config;
-    void desktopClient.listAgentSkills().then((result) => {
-      if (owned() && result.ok) setEnabledSkills(result.data.skills.filter((skill) => skill.status === "enabled"));
-    }).catch(() => undefined);
+    void Promise.resolve().then(async () => {
+      if (!owned()) return;
+      setEnabledSkills([]); setSkillState("checking");
+      try {
+        const result = await desktopClient.listAgentSkills();
+        if (!owned()) return;
+        if (!result.ok || result.data.storageAvailable === false) { setSkillState("unavailable"); return; }
+        verifiedSkillEpoch.current = refreshEpoch;
+        setEnabledSkills(result.data.skills.filter(skill => skill.status === "enabled"));
+        setSkillState("ready");
+      } catch { if (owned()) setSkillState("unavailable"); }
+    });
+    const refresh = () => setSkillAttempt(attempt => attempt + 1);
+    window.addEventListener("focus", refresh);
+    return () => { cancelled = true; verifiedSkillEpoch.current = null; window.removeEventListener("focus", refresh); };
+  }, [active, skillAttempt]);
+
+  useEffect(() => {
+    if (!active || !requestedSkill || !conversationId || loadingConversation || sending || pendingProposal || decidingId || skillState !== "ready") return;
+    let cancelled = false;
+    const context = desktopClient.config;
+    void Promise.resolve().then(() => {
+      if (cancelled || desktopClient.config !== context || processedSkillRequest.current === requestedSkill
+        || verifiedSkillEpoch.current === null || verifiedSkillEpoch.current !== skillRefreshEpoch.current) return;
+      processedSkillRequest.current = requestedSkill;
+      if (requestedSkill.context !== context || requestedSkill.workspace !== identity?.organizationId) {
+        setError("Skill selection belongs to a different sign-in or workspace. Select it again from Plugins & Skills."); return;
+      }
+      if (!enabledSkills.some(skill => skill.id === requestedSkill.skillId)) {
+        setError("The selected skill is not verified as enabled. Refresh Plugins & Skills before selecting it again."); return;
+      }
+      setInput(current => selectSkillInvocation(current, requestedSkill.skillId));
+    });
     return () => { cancelled = true; };
-  }, []);
+  }, [active, requestedSkill, conversationId, loadingConversation, sending, pendingProposal, decidingId, skillState, enabledSkills, identity?.organizationId]);
+
+  useEffect(() => {
+    if (!active || !requestedLocalCode || !conversationId || loadingConversation || sending || pendingProposal || decidingId) return;
+    let cancelled = false;
+    const context = desktopClient.config;
+    void Promise.resolve().then(() => {
+      if (cancelled || desktopClient.config !== context || processedLocalCode.current === requestedLocalCode) return;
+      processedLocalCode.current = requestedLocalCode;
+      if (requestedLocalCode.context !== context || requestedLocalCode.workspace !== identity?.organizationId) {
+        setError("Local selection belongs to a different sign-in or workspace. Select it again in the editor."); return;
+      }
+      const prompt = localCodeContextPrompt(requestedLocalCode);
+      if (!prompt) { setError("Local selection is restricted or exceeds the context limit. Select it again in the editor."); return; }
+      setInput(current => current + (current ? "\n\n" : "") + prompt);
+      setOperationMode("inspect"); setAgentProfile("code_review"); setComposerMode("chat");
+    });
+    return () => { cancelled = true; };
+  }, [active, requestedLocalCode, conversationId, loadingConversation, sending, pendingProposal, decidingId, identity?.organizationId]);
 
   useEffect(() => {
     let cancelled = false;
@@ -464,8 +547,20 @@ function AgentChatSession({ onOpenSettings, identity }: { onOpenSettings?: (dest
     setCatalogAttempt(attempt => attempt + 1);
   }
 
+  function rememberCurrentDraft(): boolean {
+    if (!conversationId) return true;
+    const next = rememberConversationDraft(conversationDrafts.current, conversationId, input);
+    if (!next) {
+      setError("Local draft capacity reached. Send or clear this prompt before switching. No draft was discarded.");
+      return false;
+    }
+    conversationDrafts.current = next; return true;
+  }
+
   async function openConversation(id: string, reload = false) {
-    if (sending || (!reload && id === conversationId && !loadingConversation)) return;
+    // A newer selection supersedes an in-flight read; the epoch below rejects late results.
+    if (sending || (reload && loadingConversation) || (!reload && id === conversationId && !loadingConversation)) return;
+    if (!reload && !rememberCurrentDraft()) return;
     const generation = ++conversationEpoch.current, context = desktopClient.config;
     decisionEpoch.current += 1; activeConversation.current = null; setDecidingId(null);
     setLoadingConversation(true); setError(null);
@@ -475,6 +570,7 @@ function AgentChatSession({ onOpenSettings, identity }: { onOpenSettings?: (dest
       if (!result.ok || result.data.id !== id) { activeConversation.current = conversationId; setError("The selected conversation could not be verified."); return; }
       activeConversation.current = result.data.id;
       setConversationId(result.data.id);
+      if (!reload) setInput(conversationDrafts.current.get(result.data.id) ?? "");
       setTurns(result.data.turns.filter((turn): turn is typeof turn & { role: ChatTurn["role"] } => turn.role === "user" || turn.role === "assistant" || turn.role === "tool_result"));
       setPendingProposal([...result.data.actions].reverse().find((action) => action.status === "proposed") ?? null);
       setEvidenceActions(result.data.actions.filter((action) => action.riskLevel === "low"));
@@ -487,7 +583,7 @@ function AgentChatSession({ onOpenSettings, identity }: { onOpenSettings?: (dest
   }
 
   async function newConversation() {
-    if (sending || loadingConversation) return;
+    if (sending || loadingConversation || !rememberCurrentDraft()) return;
     const generation = ++conversationEpoch.current, context = desktopClient.config;
     decisionEpoch.current += 1; activeConversation.current = null; setDecidingId(null);
     setLoadingConversation(true); setError(null);
@@ -511,11 +607,12 @@ function AgentChatSession({ onOpenSettings, identity }: { onOpenSettings?: (dest
 
   async function send() {
     const instruction = input.trim();
-    if (modelState !== "ready" || !selectedModel || !instruction || !conversationId || activeConversation.current !== conversationId || loadingConversation || sending || (composerMode === "code" && (!repositoryFullName.includes("/") || !branch.trim() || !filePath.trim()))) return;
+    if (!active || modelState !== "ready" || !selectedModel || !instruction || !conversationId || activeConversation.current !== conversationId || loadingConversation || sending || (composerMode === "code" && (!repositoryFullName.includes("/") || !branch.trim() || !filePath.trim()))) return;
     const choice = modelOptions.find(option => option.key === selectedModel);
     if (!choice) return;
     const context = desktopClient.config, ownerConversation = conversationId, generation = conversationEpoch.current;
     const owned = () => context === desktopClient.config && activeConversation.current === ownerConversation && generation === conversationEpoch.current;
+    conversationDrafts.current.delete(conversationId);
     setInput("");
     setError(null);
     setTurns((prev) => [...prev, { id: `local_${Date.now()}`, role: "user", content: instruction }]);
@@ -523,6 +620,7 @@ function AgentChatSession({ onOpenSettings, identity }: { onOpenSettings?: (dest
     setStreamingDraft("");
     const controller = new AbortController();
     messageAbort.current = controller;
+    const currentRequest = () => owned() && messageAbort.current === controller && !controller.signal.aborted;
     try {
       const result = await desktopClient.sendAgentMessage(conversationId, instruction, choice.provider, {
         ...(repositoryFullName.trim() ? { repositoryFullName: repositoryFullName.trim() } : {}),
@@ -531,8 +629,13 @@ function AgentChatSession({ onOpenSettings, identity }: { onOpenSettings?: (dest
         ...(composerMode === "code" && filePath.trim() ? { filePath: filePath.trim() } : {}),
         mode: composerMode,
         operationMode,
+        agentProfile,
       }, choice.preferredModel, { signal: controller.signal, onDraft: text => { if (owned() && !controller.signal.aborted) setStreamingDraft(text); } });
-      if (!owned()) return;
+      if (!owned() || messageAbort.current !== controller) return;
+      if (controller.signal.aborted) {
+        setError("Request stopped. Completed work remains recorded; reload this conversation before trying again.");
+        return;
+      }
       if (!result.ok) {
         setError(result.error);
         return;
@@ -541,7 +644,7 @@ function AgentChatSession({ onOpenSettings, identity }: { onOpenSettings?: (dest
       setPendingProposal(result.data.proposal && result.data.proposal.status === "proposed" ? result.data.proposal : null);
       setLatestUsage(result.data.usage);
       const refreshed = await desktopClient.getAgentConversation(conversationId);
-      if (!owned()) return;
+      if (!currentRequest()) return;
       if (refreshed.ok && refreshed.data.id === ownerConversation) {
         setEvidenceActions(refreshed.data.actions.filter((action) => action.riskLevel === "low"));
         setRestartActions(refreshed.data.actions.filter((action) => action.toolName === "trigger_aws_deploy"));
@@ -558,10 +661,12 @@ function AgentChatSession({ onOpenSettings, identity }: { onOpenSettings?: (dest
         return [updated, ...current.filter((conversation) => conversation.id !== conversationId)];
       });
     } catch {
-      if (owned()) setError("The Agent response could not be read. Reopen this conversation to inspect its saved state.");
+      if (currentRequest()) setError("The Agent response could not be read. Reopen this conversation to inspect its saved state.");
     } finally {
-      if (messageAbort.current === controller) messageAbort.current = null;
-      if (owned()) { setSending(false); setStreamingDraft(""); }
+      if (messageAbort.current === controller) {
+        messageAbort.current = null;
+        if (owned()) { setSending(false); setStreamingDraft(""); }
+      }
     }
   }
 
@@ -740,9 +845,9 @@ function AgentChatSession({ onOpenSettings, identity }: { onOpenSettings?: (dest
                 Use the selected repository and environment above. I&apos;ll inspect live read-only evidence first and ask for approval before anything changes GitHub or cloud infrastructure.
               </p>
               <div className="mt-5 flex flex-wrap justify-center gap-2" aria-label="Suggested Agent requests">
-                <button type="button" disabled={!repositoryFullName || sending} onClick={() => { setComposerMode("chat"); setInput("Review this repository and tell me the highest-impact improvements."); }} className="rounded-full border border-white/10 bg-white/[0.035] px-3 py-2 text-xs text-zinc-300 hover:bg-white/[0.07] disabled:cursor-not-allowed disabled:opacity-35">Review repository</button>
-                <button type="button" disabled={!repositoryFullName || !environmentId || sending} onClick={() => { setComposerMode("chat"); setInput("Check whether the selected repository is ready to deploy to the selected environment."); }} className="rounded-full border border-white/10 bg-white/[0.035] px-3 py-2 text-xs text-zinc-300 hover:bg-white/[0.07] disabled:cursor-not-allowed disabled:opacity-35">Check deploy readiness</button>
-                <button type="button" disabled={sending} onClick={() => { setComposerMode("chat"); setInput("Show me which systems are connected and what needs attention."); }} className="rounded-full border border-white/10 bg-white/[0.035] px-3 py-2 text-xs text-zinc-300 hover:bg-white/[0.07] disabled:cursor-not-allowed disabled:opacity-35">Check connections</button>
+                <button type="button" disabled={!repositoryFullName || sending || loadingConversation} onClick={() => { setComposerMode("chat"); setInput("Review this repository and tell me the highest-impact improvements."); }} className="rounded-full border border-white/10 bg-white/[0.035] px-3 py-2 text-xs text-zinc-300 hover:bg-white/[0.07] disabled:cursor-not-allowed disabled:opacity-35">Review repository</button>
+                <button type="button" disabled={!repositoryFullName || !environmentId || sending || loadingConversation} onClick={() => { setComposerMode("chat"); setInput("Check whether the selected repository is ready to deploy to the selected environment."); }} className="rounded-full border border-white/10 bg-white/[0.035] px-3 py-2 text-xs text-zinc-300 hover:bg-white/[0.07] disabled:cursor-not-allowed disabled:opacity-35">Check deploy readiness</button>
+                <button type="button" disabled={sending || loadingConversation} onClick={() => { setComposerMode("chat"); setInput("Show me which systems are connected and what needs attention."); }} className="rounded-full border border-white/10 bg-white/[0.035] px-3 py-2 text-xs text-zinc-300 hover:bg-white/[0.07] disabled:cursor-not-allowed disabled:opacity-35">Check connections</button>
               </div>
             </div>
           )}
@@ -756,7 +861,7 @@ function AgentChatSession({ onOpenSettings, identity }: { onOpenSettings?: (dest
           {evidenceActions.length > 0 && <EvidencePanel actions={evidenceActions.slice(-8)} />}
           {latestUsage && <UsageReceipt usage={latestUsage} />}
           {pendingProposal && (
-            <ProposalCard proposal={pendingProposal} deciding={loadingConversation || decidingId === pendingProposal.id} onApprove={() => void decide(true)} onReject={() => void decide(false)} />
+            <ProposalCard onReviewLocally={onReviewLocalEdit} proposal={pendingProposal} deciding={loadingConversation || decidingId === pendingProposal.id} onApprove={() => void decide(true)} onReject={() => void decide(false)} />
           )}
           {error && (
             <div role="alert" className="flex items-center justify-between gap-4 rounded-xl border border-rose-400/20 bg-rose-400/[0.05] px-4 py-3">
@@ -769,7 +874,20 @@ function AgentChatSession({ onOpenSettings, identity }: { onOpenSettings?: (dest
       </div>
       <div className="border-t border-white/[0.06] px-8 py-5">
         <div className="max-w-3xl mx-auto">
-          {enabledSkills.length > 0 && <div className="mb-3 flex items-center gap-2 overflow-x-auto pb-1"><span className="shrink-0 text-[10px] uppercase tracking-[0.12em] text-zinc-600">Skills</span>{enabledSkills.map((skill) => <button key={skill.id} type="button" disabled={sending || Boolean(pendingProposal)} onClick={() => setInput((current) => current || `/${skill.id} `)} className="shrink-0 rounded-full border border-violet-300/[0.12] bg-violet-300/[0.04] px-2.5 py-1 text-[10px] text-violet-200 hover:bg-violet-300/[0.08] disabled:opacity-40">/{skill.id}</button>)}</div>}
+          {active && skillState === "unavailable" && <p role="status" className="mb-2 text-xs text-zinc-400">Skill shortcuts could not be verified. Existing workspace permissions remain enforced. <button type="button" disabled={sending || loadingConversation} onClick={() => setSkillAttempt(attempt => attempt + 1)} className="underline">Retry skills</button></p>}
+          {active && skillState === "ready" && enabledSkills.length > 0 && <div className="mb-3 flex items-center gap-2 overflow-x-auto pb-1"><span className="shrink-0 text-[10px] uppercase tracking-[0.12em] text-zinc-600">Skills</span>{enabledSkills.map((skill) => <button key={skill.id} type="button" disabled={sending || loadingConversation || Boolean(pendingProposal)} onClick={() => setInput((current) => selectSkillInvocation(current, skill.id))} className="shrink-0 rounded-full border border-violet-300/[0.12] bg-violet-300/[0.04] px-2.5 py-1 text-[10px] text-violet-200 hover:bg-violet-300/[0.08] disabled:opacity-40">/{skill.id}</button>)}</div>}
+          <div className="mb-3 flex flex-wrap items-center gap-3">
+            <label className="text-xs text-zinc-400">Agent
+              <select aria-label="Specialized Agent" value={agentProfile} disabled={sending || loadingConversation || Boolean(pendingProposal)} onChange={event => {
+                const profile = resolveAgentProfile(event.target.value);
+                if (profile) setAgentProfile(profile.id);
+              }} className="ml-2 rounded-md border border-white/10 bg-[#151519] px-2 py-1.5 text-xs text-zinc-200 disabled:opacity-40">
+                {AGENT_PROFILES.map(profile => <option key={profile.id} value={profile.id}>{profile.label}</option>)}
+              </select>
+            </label>
+            <p role="status" className="text-[11px] text-zinc-500">{resolveAgentProfile(agentProfile)?.description} Workspace tool policy and approvals still apply.</p>
+            {onOpenSettings && <button type="button" onClick={() => onOpenSettings("agents")} className="text-xs text-zinc-400 underline underline-offset-2">Agent permissions</button>}
+          </div>
           <div className="mb-3 flex items-center gap-1" role="group" aria-label="Agent controls">
             {OPERATION_MODES.map((mode) => (
               <button key={mode.id} type="button" title={mode.description} aria-pressed={operationMode === mode.id} onClick={() => setOperationMode(mode.id)} className={`rounded-md px-3 py-1.5 text-xs ${operationMode === mode.id ? "bg-violet-400/15 text-violet-100 ring-1 ring-violet-300/20" : "text-zinc-500 hover:text-zinc-300"}`}>{mode.label}</button>
@@ -823,13 +941,14 @@ function AgentChatSession({ onOpenSettings, identity }: { onOpenSettings?: (dest
             {fileCatalogError && <p role="status" className="text-[11px] text-zinc-400">{fileCatalogError}</p>}
             {!fileCatalogError && fileCatalogTruncated && <p role="status" className="text-[11px] text-zinc-500">Showing editable files returned by GitHub. Use “Enter another file path” for a file outside this list.</p>}
           </div>}
+          <p className="mb-2 text-[10px] text-zinc-500">Unsent prompts stay with each conversation in this session only. Sign-out or credential verification may clear them; targets and permissions remain workspace-controlled.</p>
           <div className="flex items-end gap-3">
           <textarea
             value={input}
             onChange={(event) => setInput(event.target.value)}
-            onKeyDown={(event) => { if (event.key === "Enter" && !event.shiftKey) { event.preventDefault(); void send(); } }}
+            onKeyDown={(event) => { if (event.key === "Enter" && !event.shiftKey && !event.nativeEvent.isComposing && event.nativeEvent.keyCode !== 229) { event.preventDefault(); void send(); } }}
             placeholder={pendingProposal ? "Approve or reject the proposed action above to continue…" : operationMode === "inspect" ? "Ask about the selected repository or environment…" : operationMode === "engineer" && composerMode === "code" ? "Describe the change you want in this file…" : operationMode === "engineer" ? "Describe the engineering change you want proposed…" : "Describe the operational outcome you want proposed…"}
-            disabled={sending || !conversationId || Boolean(pendingProposal)}
+            disabled={sending || loadingConversation || !conversationId || Boolean(pendingProposal)}
             rows={2}
             className="min-h-[48px] flex-1 resize-none rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm text-zinc-100 placeholder:text-zinc-600 outline-none focus:border-white/25 disabled:opacity-50"
           />
@@ -875,7 +994,7 @@ function UsageReceipt({ usage }: { usage: { decisionSteps: number; inputTokens: 
   );
 }
 
-function EvidencePanel({ actions }: { actions: Proposal[] }) {
+export function EvidencePanel({ actions }: { actions: Proposal[] }) {
   const [expanded, setExpanded] = useState(true);
   const failures = actions.filter((action) => action.status === "failed").length;
   return (
@@ -901,6 +1020,7 @@ function EvidencePanel({ actions }: { actions: Proposal[] }) {
                 <p className="text-xs text-zinc-300">{TOOL_LABELS[action.toolName] ?? action.toolName}</p>
                 <p className="mt-1 break-words text-[11px] leading-4 text-zinc-500">{describeArgs(action.toolName, action.argsJson)}</p>
                 <p className={`mt-1 text-[11px] leading-4 ${action.status === "failed" ? "text-rose-300" : "text-zinc-400"}`}>{describeEvidenceResult(action)}</p>
+                <RepositoryEvidenceDetails action={action} />
               </div>
             </div>
           ))}
@@ -910,8 +1030,63 @@ function EvidencePanel({ actions }: { actions: Proposal[] }) {
   );
 }
 
-export function ProposalCard({ proposal, deciding, onApprove, onReject }: { proposal: Proposal; deciding: boolean; onApprove: () => void; onReject: () => void }) {
+/** Only known repository evidence fields are displayed; never dump arbitrary tool payloads. */
+function RepositoryEvidenceDetails({ action }: { action: Proposal }) {
+  if (action.status !== "executed" || !action.resultJson || typeof action.resultJson !== "object") return null;
+  const result = action.resultJson as Record<string, unknown>;
+  const args = action.argsJson && typeof action.argsJson === "object" ? action.argsJson as Record<string, unknown> : {};
+  if (typeof args.path === "string" && isSensitiveRepositoryEvidencePath(args.path)) return null;
+  const validPath = (value: unknown): value is string => typeof value === "string" && value.length > 0 && value.length <= 1024 && !isSensitiveRepositoryEvidencePath(value);
+  let evidence;
+  if (action.toolName === "read_github_file" && validPath(result.path) && typeof result.content === "string" && result.evidenceRestricted !== true) {
+    evidence = <>
+      <p className="break-all font-mono">{result.path}</p>
+      {typeof result.sha === "string" && <p className="break-all">Recorded SHA: {result.sha.slice(0, 128)}</p>}
+      <pre tabIndex={0} className="max-h-72 overflow-auto whitespace-pre text-xs">{result.content.slice(0, 20000)}</pre>
+      {(result.content.length > 20000 || result.truncated === true) && <p>Display limited; the complete file is not shown.</p>}
+    </>;
+  } else if (action.toolName === "inspect_github_repository" && Array.isArray(result.inspectedFiles)) {
+    const files = result.inspectedFiles.filter((value): value is {path: string; content: string; sha?: unknown; truncated?: unknown} => {
+      if (!value || typeof value !== "object") return false;
+      const file = value as Record<string, unknown>;
+      return validPath(file.path) && typeof file.content === "string" && file.evidenceRestricted !== true;
+    }).slice(0, 3);
+    evidence = <>
+      {files.map((file, index) => <div key={index} className="space-y-1">
+        <p className="break-all font-mono">{file.path}</p>
+        {typeof file.sha === "string" && <p className="break-all">Recorded SHA: {file.sha.slice(0, 128)}</p>}
+        <pre tabIndex={0} className="max-h-60 overflow-auto whitespace-pre text-xs">{file.content.slice(0, 6000)}</pre>
+        {(file.content.length > 6000 || file.truncated === true) && <p>Display limited; the complete file is not shown.</p>}
+      </div>)}
+      <p>These files are a bounded subset of the repository, not a complete review.</p>
+      {result.inspectedFiles.length > files.length && <p>Additional or restricted files are omitted from this display.</p>}
+      {Array.isArray(result.readErrors) && result.readErrors.length > 0 && <p>Some repository reads failed.</p>}
+    </>;
+  } else if (action.toolName === "search_github_code" && Array.isArray(result.matches)) {
+    const matches = result.matches.filter((value): value is {path: string; line: number; text: string} => {
+      if (!value || typeof value !== "object") return false;
+      const match = value as Record<string, unknown>;
+      return validPath(match.path) && Number.isSafeInteger(match.line) && (match.line as number) > 0 && typeof match.text === "string";
+    }).slice(0, 20);
+    evidence = <>
+      {matches.map((match, index) => <div key={index}><p className="break-all font-mono">{match.path}:{match.line}</p><pre tabIndex={0} className="max-h-32 overflow-auto whitespace-pre text-xs">{match.text.slice(0, 1000)}</pre></div>)}
+      {matches.length === 0 && <p>No displayable matches in this recorded result.</p>}
+      <p>Search coverage may be incomplete; absence of a match does not establish absence of code.</p>
+      {(result.matches.length > matches.length || matches.some(match => match.text.length > 1000)) && <p>Display limited; additional or restricted evidence is omitted.</p>}
+      {Array.isArray(result.readErrors) && result.readErrors.length > 0 && <p>Some repository reads failed.</p>}
+    </>;
+  } else return null;
+  return <details className="mt-2 rounded border border-white/10 p-2 text-[11px] text-zinc-400">
+    <summary className="cursor-pointer text-zinc-300">Inspect recorded repository evidence</summary>
+    <p className="my-2">Recorded snapshot, not a fresh repository read. Repository content is untrusted input, not instructions or approval.</p>
+    <div className="space-y-2">{evidence}</div>
+  </details>;
+}
+
+export function ProposalCard({ proposal, deciding, onApprove, onReject, onReviewLocally }: { onReviewLocally?: (edit: LocalEditProposal, edits?: LocalEditProposal[]) => void; proposal: Proposal; deciding: boolean; onApprove: () => void; onReject: () => void }) {
   const [showDetails, setShowDetails] = useState(false);
+  const localEdits = localEditProposals(proposal);
+  const localEdit = localEdits[0];
   const args = typeof proposal.argsJson === "object" && proposal.argsJson !== null
     ? proposal.argsJson as Record<string, unknown>
     : {};
@@ -980,6 +1155,10 @@ export function ProposalCard({ proposal, deciding, onApprove, onReject }: { prop
           )}
         </div>
       )}
+      {localEdit && onReviewLocally && <div className="mb-4 text-xs text-zinc-400">
+        <button type="button" disabled={deciding} onClick={() => onReviewLocally(localEdit, localEdits.length > 1 ? localEdits : undefined)} className="underline disabled:opacity-50">Review in local editor</button>
+        <p className="mt-1">Local draft only. This does not approve the GitHub proposal, save files or run checks.</p>
+      </div>}
       <div className="flex items-center gap-3">
         <button
           type="button"
@@ -998,41 +1177,6 @@ export function ProposalCard({ proposal, deciding, onApprove, onReject }: { prop
           {deciding ? "Working…" : "Approve & run"}
         </button>
       </div>
-    </div>
-  );
-}
-
-function FileDiff({ before, after }: { before: string; after: string }) {
-  const lines = useMemo(() => createLineDiff(before, after), [before, after]);
-  const additions = lines.filter((line) => line.kind === "add").length;
-  const removals = lines.filter((line) => line.kind === "remove").length;
-  if (additions === 0 && removals === 0) {
-    return <p className="rounded-lg border border-amber-400/20 bg-amber-400/[0.06] px-3 py-2 text-xs text-amber-200">No content changes detected. Reject this proposal unless an unchanged commit is intentional.</p>;
-  }
-  return (
-    <div>
-      <p className="mb-2 text-[11px]"><span className="text-emerald-400">+{additions}</span><span className="ml-2 text-rose-400">−{removals}</span></p>
-      <div tabIndex={0} aria-label="Proposed file diff" className="max-h-80 overflow-auto rounded-lg border border-white/[0.06] bg-black/30 font-mono text-[11px] leading-5">
-        {lines.map((line, index) => <DiffRow key={`${index}:${line.kind}:${line.oldLine ?? ""}:${line.newLine ?? ""}`} line={line} />)}
-      </div>
-    </div>
-  );
-}
-
-function DiffRow({ line }: { line: DiffLine }) {
-  if (line.kind === "omitted") return <div className="px-3 py-1 text-center text-zinc-600">{line.text}</div>;
-  const marker = line.kind === "add" ? "+" : line.kind === "remove" ? "−" : " ";
-  const tone = line.kind === "add"
-    ? "bg-emerald-400/[0.08] text-emerald-100"
-    : line.kind === "remove"
-      ? "bg-rose-400/[0.08] text-rose-100"
-      : "text-zinc-400";
-  return (
-    <div className={`grid min-w-max grid-cols-[2.5rem_2.5rem_1.25rem_minmax(0,1fr)] ${tone}`}>
-      <span className="select-none border-r border-white/[0.04] px-2 text-right text-zinc-600">{line.oldLine ?? ""}</span>
-      <span className="select-none border-r border-white/[0.04] px-2 text-right text-zinc-600">{line.newLine ?? ""}</span>
-      <span className="select-none text-center">{marker}</span>
-      <span className="whitespace-pre pr-3">{line.text || " "}</span>
     </div>
   );
 }

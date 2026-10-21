@@ -17,6 +17,23 @@ function pointerForControl(label) {
   if (!hit || (hit !== element && !element.contains(hit))) throw Error('control_target_obscured');
   return { x, y };
 }
+// Observation only: no event cancellation, navigation calls, source text or credentials.
+function installDocumentationClickProbe() {
+  const anchor = document.querySelector('#product-tour a[href="/docs/approval-workflow"]');
+  const state = { captureSeen: false, bubbleSeen: false, targetIsDocumentation: null, trusted: null, primaryButton: null, defaultPrevented: null, routerIntentSeen: false };
+  let captured;
+  Object.defineProperty(window, '__axiomDocumentationClickProbe', { value: state, configurable: true });
+  document.addEventListener('click', event => {
+    captured = event; state.captureSeen = true; state.targetIsDocumentation = Boolean(anchor && (event.target === anchor || anchor.contains(event.target)));
+    state.trusted = event.isTrusted === true; state.primaryButton = event.button === 0;
+  }, { capture: true, once: true, passive: true });
+  window.addEventListener('click', event => { if (event === captured) { state.bubbleSeen = true; state.defaultPrevented = event.defaultPrevented === true; } }, { once: true, passive: true });
+  window.addEventListener('axiom:documentation-navigation-intent', () => { state.routerIntentSeen = true; }, { once: true, passive: true });
+}
+function readDocumentationClickProbe() {
+  const descriptor = Object.getOwnPropertyDescriptor(window, '__axiomDocumentationClickProbe');
+  return descriptor && Object.hasOwn(descriptor, 'value') ? descriptor.value : null;
+}
 function controlToken(label) {
   return ({ 'Step 2: Make a small, reviewable edit.': 'edit_step', 'Play story': 'play', 'Pause story': 'pause', 'Step 3: Review the bounded check.': 'review_step', 'Simulate approval': 'sample_approve', 'Reject sample': 'sample_reject', 'Replay story': 'replay_control', 'Agent & approval': 'agent_story', 'Step 3: Decide on the exact action.': 'agent_decide', 'Terraform & cloud': 'terraform_story', 'Step 3: Keep the release on hold.': 'terraform_hold', 'Next step': 'next_control', 'Read approval workflow': 'documentation_control', 'Essential only': 'essential_consent_control' })[label] ?? 'unclassified';
 }
@@ -112,6 +129,9 @@ let lastInteraction = null;
 let documentationTimeoutSnapshot = null;
 let documentationPreWaitSnapshot = null;
 let documentationTiming = null;
+let documentationClick = null;
+let documentationTransitionSeen = false;
+let mainFrameId = null;
 const consoleErrors = [], evidence = [], images = [];
 const interrupted = () => session.stop(Error('website_driver_interrupted'));
 process.once('SIGTERM', interrupted); process.once('SIGINT', interrupted);
@@ -158,23 +178,28 @@ try {
       if (data.params.resourceType === 'Script') { const key = allowed ? 'allowed' : 'denied'; scriptRequests[key] = Math.min(4096, scriptRequests[key] + 1); }
       void send(allowed ? 'Fetch.continueRequest' : 'Fetch.failRequest', allowed ? { requestId: data.params.requestId } : { requestId: data.params.requestId, errorReason: 'BlockedByClient' }).catch(error => session.stop(error));
     }
+    if (data.method === 'Page.frameNavigated' && !data.params.frame?.parentId && typeof data.params.frame?.id === 'string') mainFrameId = data.params.frame.id;
+    if (((data.method === 'Page.frameNavigated' && !data.params.frame?.parentId && data.params.frame?.id === mainFrameId) || (data.method === 'Page.navigatedWithinDocument' && mainFrameId !== null && data.params.frameId === mainFrameId)) && ['documentation_control', 'documentation_check', 'approval-documentation'].includes(currentInteraction)) {
+      try { const url = new URL(data.params.frame?.url ?? data.params.url); if (url.origin === windowState.origin && url.pathname === '/docs/approval-workflow') documentationTransitionSeen = true; } catch { /* no arbitrary URL is retained */ }
+    }
     if (data.method === 'Runtime.exceptionThrown' && consoleErrors.length < 128) consoleErrors.push('runtime_exception');
     if (data.method === 'Runtime.consoleAPICalled' && data.params.type === 'error' && consoleErrors.length < 128) consoleErrors.push('console_error');
     if (data.method === 'Log.entryAdded' && data.params.entry.level === 'error' && consoleErrors.length < 128) consoleErrors.push(['javascript', 'network', 'security'].includes(data.params.entry.source) ? data.params.entry.source : 'other');
   } });
   async function evaluate(fn, argument) { const result = await send('Runtime.evaluate', { expression: `(${fn})(${JSON.stringify(argument)})`, returnByValue: true, awaitPromise: true }); if (result.exceptionDetails) { const name = result.exceptionDetails.exception?.className; evaluationExceptionClass = ['TypeError', 'ReferenceError', 'SyntaxError', 'RangeError', 'Error'].includes(name) ? name : 'other'; } assert.ok(!result.exceptionDetails, 'website_browser_evaluation_failed'); return result.result.value; }
   /** @param {string} [preImagePhase] */
-  async function waitFor(fn, argument, timeout = 45000, preImagePhase = undefined, onPoll = undefined) {
+  async function waitFor(fn, argument, timeout = 45000, preImagePhase = undefined, onPoll = undefined, observeDocumentation = false) {
     const deadline = Date.now() + timeout;
     if (preImagePhase !== undefined) assert.ok(['homepage_document', 'homepage_playback'].includes(preImagePhase), 'website_dom_diagnostic_phase');
     /** @type {{phase: string, lastDomSnapshot: ReturnType<typeof sanitizePreImageDomSnapshot>, nextMarkers?: ReturnType<typeof sanitizeNextBootstrapMarkers>, scriptCounts?: ReturnType<typeof sanitizeScriptCounts>, predicateExceptionClass?: string} | null} */
     const diagnostic = preImagePhase === undefined ? null : { phase: preImagePhase, lastDomSnapshot: null };
     if (diagnostic) preImageWait = diagnostic;
     while (Date.now() < deadline) {
-      const polled = await evaluate(diagnostic ? `argument => { try { return { satisfied: (${fn})(argument), snapshot: (${readPreImageDomSnapshot})(), scriptCounts: (${readScriptCounts})(), nextMarkers: (${readNextBootstrapMarkers})(), predicateExceptionClass: null }; } catch (error) { return { satisfied: false, snapshot: (${readPreImageDomSnapshot})(), scriptCounts: (${readScriptCounts})(), nextMarkers: (${readNextBootstrapMarkers})(), predicateExceptionClass: ["TypeError", "ReferenceError", "SyntaxError", "RangeError", "Error"].includes(error?.name) ? error.name : "other" }; } }` : fn, argument);
+      const polled = await evaluate(diagnostic ? `argument => { try { return { satisfied: (${fn})(argument), snapshot: (${readPreImageDomSnapshot})(), scriptCounts: (${readScriptCounts})(), nextMarkers: (${readNextBootstrapMarkers})(), predicateExceptionClass: null }; } catch (error) { return { satisfied: false, snapshot: (${readPreImageDomSnapshot})(), scriptCounts: (${readScriptCounts})(), nextMarkers: (${readNextBootstrapMarkers})(), predicateExceptionClass: ["TypeError", "ReferenceError", "SyntaxError", "RangeError", "Error"].includes(error?.name) ? error.name : "other" }; } }` : observeDocumentation ? `argument => ({ satisfied: (${fn})(argument), click: (${readDocumentationClickProbe})() })` : fn, argument);
       if (diagnostic) { diagnostic.lastDomSnapshot = sanitizePreImageDomSnapshot(polled.snapshot); diagnostic.nextMarkers = sanitizeNextBootstrapMarkers(polled.nextMarkers); const scripts = sanitizeScriptCounts(polled.scriptCounts); if (scripts) diagnostic.scriptCounts = scripts; if (polled.predicateExceptionClass !== null) { diagnostic.predicateExceptionClass = ['TypeError', 'ReferenceError', 'SyntaxError', 'RangeError', 'Error'].includes(polled.predicateExceptionClass) ? polled.predicateExceptionClass : 'other'; throw Error('website_browser_evaluation_failed'); } }
+      if (observeDocumentation && polled.click !== null) documentationClick = polled.click;
       if (onPoll) onPoll();
-      if (diagnostic ? polled.satisfied : polled) { if (diagnostic) preImageWait = null; return; }
+      if ((diagnostic || observeDocumentation) ? polled.satisfied : polled) { if (diagnostic) preImageWait = null; return; }
       await sleep(100);
     }
     throw Error('website_dom_timeout');
@@ -236,7 +261,8 @@ try {
   await viewport(360, true); await navigate('/product'); await waitFor(() => document.querySelector('[aria-label="Play story"]').disabled); await click('Next step'); await frame('product-reduced-motion-mobile'); evidence.push('reduced_motion_static_manual_step');
   await viewport(1440);
   documentationTiming = { startedMs: driverElapsedMs(), clickCompletedMs: null, preWaitCompletedMs: null, lastPollMs: null, pollCount: 0, observedMs: null };
-  await click('Read approval workflow'); documentationTiming.clickCompletedMs = driverElapsedMs(); currentInteraction = 'documentation_check'; try { documentationPreWaitSnapshot = await evaluate(() => ({ pathnameIsDocs: location.pathname === '/docs/approval-workflow', executionPresent: Boolean(document.querySelector('#execution')), tourPresent: Boolean(document.querySelector('#product-tour')) })); } catch { /* unknown observation does not replace the navigation assertion */ } documentationTiming.preWaitCompletedMs = driverElapsedMs(); try { await waitFor(() => location.pathname === '/docs/approval-workflow' && Boolean(document.querySelector('#execution')), undefined, 45000, undefined, () => { documentationTiming.lastPollMs = driverElapsedMs(); documentationTiming.pollCount = Math.min(4096, documentationTiming.pollCount + 1); }); }
+  await evaluate(installDocumentationClickProbe);
+  await click('Read approval workflow'); documentationTiming.clickCompletedMs = driverElapsedMs(); try { documentationClick = await evaluate(readDocumentationClickProbe); } catch { /* navigation can replace the probe's document */ } currentInteraction = 'documentation_check'; try { documentationPreWaitSnapshot = await evaluate(() => ({ pathnameIsDocs: location.pathname === '/docs/approval-workflow', executionPresent: Boolean(document.querySelector('#execution')), tourPresent: Boolean(document.querySelector('#product-tour')) })); } catch { /* unknown observation does not replace the navigation assertion */ } documentationTiming.preWaitCompletedMs = driverElapsedMs(); try { await waitFor(() => location.pathname === '/docs/approval-workflow' && Boolean(document.querySelector('#execution')), undefined, 45000, undefined, () => { documentationTiming.lastPollMs = driverElapsedMs(); documentationTiming.pollCount = Math.min(4096, documentationTiming.pollCount + 1); }, true); }
   catch (error) {
     if (error.message === 'website_dom_timeout') {
       try { documentationTimeoutSnapshot = await evaluate(() => ({ pathnameIsDocs: location.pathname === '/docs/approval-workflow', executionPresent: Boolean(document.querySelector('#execution')), tourPresent: Boolean(document.querySelector('#product-tour')) })); } catch { /* unknown observation must not replace the original failure */ }
@@ -254,7 +280,7 @@ try {
   // for this owned driver's positive exit before touching its profile/dist artifacts.
   if (config) {
     if (documentationTiming) documentationTiming.observedMs = driverElapsedMs();
-    const result = { success, failure, documentationTiming, scriptRequests, timedOutOperation: session.report().timedOutOperation, preImageWait, evaluationExceptionClass, homeCapturePhase, currentInteraction, lastInteraction, documentationTimeoutSnapshot, documentationPreWaitSnapshot, runtimeExceptionCount: consoleErrors.filter(category => category === 'runtime_exception').length, consoleErrorCount: consoleErrors.filter(category => category === 'console_error').length, bundler: 'webpack', productionEquivalent: false, evidence, images, deniedRequests: denied, consoleErrorCategories: consoleErrors, qualification: 'Actual local integrated Next pages; API requests denied; external fonts may fall back; screenshots require human inspection. No provider/native acceptance.' };
+    const result = { success, failure, documentationTiming, documentationClick, documentationTransitionSeen, scriptRequests, timedOutOperation: session.report().timedOutOperation, preImageWait, evaluationExceptionClass, homeCapturePhase, currentInteraction, lastInteraction, documentationTimeoutSnapshot, documentationPreWaitSnapshot, runtimeExceptionCount: consoleErrors.filter(category => category === 'runtime_exception').length, consoleErrorCount: consoleErrors.filter(category => category === 'console_error').length, bundler: 'webpack', productionEquivalent: false, evidence, images, deniedRequests: denied, consoleErrorCategories: consoleErrors, qualification: 'Actual local integrated Next pages; API requests denied; external fonts may fall back; screenshots require human inspection. No provider/native acceptance.' };
     writeFileSync(join(directory, 'capture.json'), JSON.stringify(result, null, 2), { mode: 0o600 });
     writeFileSync(join(directory, 'done.json'), JSON.stringify({ success, nonce: config.nonce }), { mode: 0o600 });
     process.stdout.write(`${join(directory, 'capture.json')}\n`);

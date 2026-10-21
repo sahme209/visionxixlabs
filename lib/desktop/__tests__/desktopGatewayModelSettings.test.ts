@@ -7,6 +7,7 @@ vi.mock("@tauri-apps/plugin-shell",()=>({open:vi.fn()}));
 vi.mock("@tauri-apps/api/core",()=>({invoke:vi.fn()}));
 vi.mock("../../../desktop/src/lib/preferences",()=>({readDesktopPreferences:mocks.preferences,writeDesktopPreferences:vi.fn()}));
 vi.mock("../../../desktop/src/lib/desktopClient",()=>({desktopClient:{get config(){return mocks.config;},aiProviderStatus:mocks.status,updateAiProviderPolicy:mocks.update}}));
+import {open} from "@tauri-apps/plugin-shell";
 import {SettingsView} from "../../../desktop/src/views/SettingsView";
 const metadata=()=>({version:1,defaultModelId:"xai/grok-4",approvedModelIds:["xai/grok-4","openai/gpt-4o"]});
 beforeEach(()=>{vi.clearAllMocks();mocks.config={workspace:"inert"};mocks.preferences.mockResolvedValue(null);mocks.status.mockResolvedValue({ok:true,data:{providers:[{provider:"vercel_gateway",models:[{id:"xai/grok-4",label:"Grok",tier:"balanced"},{id:"openai/gpt-4o",label:"GPT",tier:"balanced"},{id:"anthropic/claude-sonnet-4",label:"Claude",tier:"balanced"}]},{provider:"groq",models:[{id:"llama-3.1-70b-versatile",label:"Llama",tier:"fast"}]}],policy:{enabled:true,allowedProviders:["vercel_gateway"],modelSelections:{vercel_gateway:"xai/grok-4"},fallbackOrder:["vercel_gateway"],gatewaySelection:metadata()}}});mocks.update.mockImplementation(async policy=>({ok:true,data:{policy}}));});
@@ -49,4 +50,20 @@ it("refuses dispatch when the loaded policy belongs to the previous configuratio
 
 it.each(["service-default","vmc/legacy-route"])("renders %s as a managed legacy route rather than a stale approval",async model=>{
  const value=await mocks.status();const{gatewaySelection:metadata,...legacy}=value.data.policy;expect(metadata).toBeTruthy();value.data.policy={...legacy,modelSelections:{vercel_gateway:model}};value.data.providers[0].models=[];mocks.status.mockResolvedValue(value);render(createElement(SettingsView,{identity:{} as never,initialSection:"models"}));await screen.findByRole("switch",{name:`Disable ${model}`});expect(screen.getByText(/Service-managed legacy route/)).toBeTruthy();expect(screen.queryByRole("button",{name:"Remove unavailable approvals"})).toBeNull();expect(screen.queryByText(/Unavailable in current catalog · removal only/)).toBeNull();expect(mocks.update).not.toHaveBeenCalled();
+});
+
+it("Agents settings explains real profile limits and opens the existing authenticated governance page",async()=>{
+ render(createElement(SettingsView,{identity:{} as never}));
+ fireEvent.click(screen.getByRole("button",{name:"Agents"}));
+ expect(screen.getByText("Code Review Agent")).toBeTruthy();
+ expect(screen.getByText(/no plan\/apply executor/)).toBeTruthy();
+ fireEvent.click(screen.getByRole("button",{name:/Manage workspace tool permissions/}));
+ expect(open).toHaveBeenCalledWith("https://visionxixlabs.com/control/ai-agents");
+ expect(mocks.update).not.toHaveBeenCalled();
+});
+it("opens the exact Agents section directly without loading or mutating model policy",async()=>{
+ render(createElement(SettingsView,{identity:{} as never,initialSection:"agents"}));
+ expect(screen.getByRole("heading",{name:"Agents"})).toBeTruthy();
+ expect(screen.getByText("Coding Agent")).toBeTruthy();
+ expect(mocks.status).not.toHaveBeenCalled();expect(mocks.update).not.toHaveBeenCalled();
 });

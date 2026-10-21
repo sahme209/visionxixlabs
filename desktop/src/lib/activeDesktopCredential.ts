@@ -1,3 +1,4 @@
+import { assertDesktopNotAborted } from "./abortSignal";
 import { desktopClient, type CredentialVerificationResult, type VerifiedDesktopIdentity } from "./desktopClient";
 import { validateAuthSession, type PairedSession } from "./authSession";
 import { clearSecret, readSecret, writeSecret } from "./secureStorage";
@@ -39,7 +40,7 @@ async function saveVerifiedSelection(next: { apiKey: string } | { pairedSession:
     : { ...previous, ...next, active: "paired_session" };
   // One vault value commits credential + selection together. There is no
   // intermediate state with a new credential and an old preference.
-  signal?.throwIfAborted();
+  assertDesktopNotAborted(signal);
   onCommitting?.();
   await writeSecret(ACTIVE_KEY, selection);
 }
@@ -48,12 +49,12 @@ export async function verifyAndActivateApiKey(value: string, signal?: AbortSigna
   selectionGeneration++;
   const candidate = value.trim();
   if (!isWellFormedApiKey(candidate)) throw new Error("API key format invalid. Expected vxlk_live_… or vxlk_test_… as shown by the admin panel.");
-  signal?.throwIfAborted();
+  assertDesktopNotAborted(signal);
   const verified = await desktopClient.verifyCredentialCandidate(candidate);
-  signal?.throwIfAborted();
+  assertDesktopNotAborted(signal);
   if (!verified.ok) throw new Error(verified.error);
   await saveVerifiedSelection({ apiKey: candidate }, signal, onCommitting);
-  signal?.throwIfAborted();
+  assertDesktopNotAborted(signal);
   desktopClient.setSession(candidate);
   return verified.data;
 }
@@ -62,12 +63,12 @@ export async function verifyAndActivatePairedSession(token: string, session: Pai
   selectionGeneration++;
   const invalid = validateAuthSession(token, session);
   if (invalid) throw new Error(invalid);
-  signal?.throwIfAborted();
+  assertDesktopNotAborted(signal);
   const verified = await desktopClient.verifyCredentialCandidate(token);
-  signal?.throwIfAborted();
+  assertDesktopNotAborted(signal);
   if (!verified.ok) throw new Error(`The approved desktop session could not be verified. ${verified.error}`);
   await saveVerifiedSelection({ pairedSession: { token, session } }, signal, onCommitting);
-  signal?.throwIfAborted();
+  assertDesktopNotAborted(signal);
   desktopClient.setSession(token);
   return verified.data;
 }

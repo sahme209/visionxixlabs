@@ -10,6 +10,8 @@
  * this returns, for a complete audit trail even for read-only actions.
  */
 
+import { resolveAgentProfile } from "@/lib/axiom/agentRuntime/agentProfiles";
+import { appendAuditEvent, type AuditEventRepo } from "@/lib/releaseops/auditEventResponder";
 import { NextResponse, type NextRequest } from "next/server";
 import type { Prisma } from "@prisma/client";
 import { resolveRequestDesktopSession } from "@/lib/desktop/resolveRequestDesktopSession";
@@ -105,8 +107,12 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
       filePath?: unknown;
       mode?: unknown;
       operationMode?: unknown;
+      agentProfile?: unknown;
     };
   } | null;
+  const validatedProfile = resolveAgentProfile(body?.workspaceContext?.agentProfile);
+  if (!validatedProfile) return NextResponse.json({ ok: false, error: "invalid_agent_profile" }, { status: 400 });
+  const profile = validatedProfile;
   const message = typeof body?.message === "string" ? body.message.trim() : "";
   const preferredProvider = typeof body?.preferredProvider === "string" ? body.preferredProvider : undefined;
   const preferredModel = body?.preferredModel;
@@ -146,6 +152,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
 
   async function execute(streaming?: { abortSignal: AbortSignal; onDraft: (text: string) => void }): Promise<Response> {
     streaming?.abortSignal.throwIfAborted();
+    const correlationId = idFactory.correlation(`agent_msg_${Date.now().toString(36)}`);
     await prisma.$transaction([
       prisma.agentConversationTurn.create({ data: { conversationId, role: "user", content: message } }),
       prisma.agentConversation.update({
@@ -157,6 +164,14 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
       }),
     ]);
 
+    streaming?.abortSignal.throwIfAborted();
+    await appendAuditEvent(prisma as unknown as AuditEventRepo, {
+      organizationId, actorUserId: String(actor.userId), correlationId: String(correlationId),
+      kind: "agent.profile_selected", subjectKind: "agent_conversation", subjectId: conversationId,
+      summary: `Selected ${profile.label}`,
+      detailJson: { agentProfile: profile.id, operationMode },
+    });
+    streaming?.abortSignal.throwIfAborted();
     const invokedSkillId = parseSkillInvocation(message);
     let skillContext: string;
     try {
@@ -188,6 +203,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
       selectedEnvironment ? `Environment: ${selectedEnvironment.name} (${selectedEnvironment.tier}, ID ${selectedEnvironment.id})` : null,
       filePath ? `File: ${filePath}` : null,
       `Operation mode: ${operationMode}`,
+      `Agent profile: ${profile.label}`,
     ].filter((value): value is string => Boolean(value));
     let currentRequestContext: string | undefined;
     if (selectedContext.length > 0 && transcript.length > 0) {
@@ -197,7 +213,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
       currentRequestContext = `${selectedContext.join("\n")}\n${instruction}`;
     }
 
-    const correlationId = idFactory.correlation(`agent_msg_${Date.now().toString(36)}`);
+
     const memoryRepo = prisma as unknown as WorkspaceMemoryRepo;
     const workspaceContext = workspaceMemoryPrompt(await loadWorkspaceMemory(memoryRepo, organizationId));
     const outcome = await runDecisionLoop({
@@ -212,6 +228,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
       preferredProvider,
       preferredModel: selectedModel,
       operationMode,
+      agentProfile: profile.id,
       initialToolCall: initialRepositoryGrounding({ message, mode, repositoryFullName, branch, filePath }),
       executeReadOnlyTool: async (toolName, args) => {
         const result = await executeReadOnlyTool(prisma as unknown as ToolExecutionRepo, organizationId, toolName, args, {

@@ -13,6 +13,7 @@
  */
 
 import "server-only";
+import { resolveAgentProfile, profileToolNames, type AgentProfileId } from "./agentProfiles";
 import { isBoundedAwsObservation } from "./cloudObservationPolicy";
 
 import { findTool, toolCatalogPrompt, classifyRisk, type ToolRiskLevel } from "./tools";
@@ -191,10 +192,13 @@ export async function runDecisionLoop(input: {
   preferredModel?: string;
   streaming?: { abortSignal: AbortSignal; onDraft: (message: string) => void };
   operationMode?: AgentOperationMode;
+  agentProfile?: AgentProfileId;
   initialToolCall?: InitialReadOnlyToolCall;
   executeReadOnlyTool: (toolName: string, args: Record<string, unknown>) => Promise<{ ok: true; result: unknown } | { ok: false; error: string }>;
   isProdEnvironmentTarget: (toolName: string, args: Record<string, unknown>) => Promise<boolean>;
 }): Promise<DecisionLoopOutcome> {
+  const profile = resolveAgentProfile(input.agentProfile);
+  if (!profile) return { kind: "error", error: "agent_tool_not_allowed" };
   let identity: Awaited<ReturnType<typeof readWorkspaceAgentIdentity>>;
   try {
     identity = await readWorkspaceAgentIdentity(input.organizationId);
@@ -202,7 +206,8 @@ export async function runDecisionLoop(input: {
     return { kind: "error", error: "workspace_agent_policy_unavailable" };
   }
   if (!identity?.enabled) return { kind: "error", error: "workspace_agent_disabled" };
-  const allowedTools = new Set(identity.allowedTools);
+  const scopedToolNames = profileToolNames(profile, identity.allowedTools);
+  const allowedTools = new Set(scopedToolNames);
 
   input.streaming?.abortSignal.throwIfAborted();
   const governed = input.streaming
@@ -290,7 +295,7 @@ export async function runDecisionLoop(input: {
       : operationMode === "engineer"
         ? "ENGINEER MODE: Read-only tools may run immediately. Only GitHub branch, commit, and pull-request writes may be returned as approval-gated proposals."
         : "DEEPOPS MODE: Use careful multi-system reasoning. Read-only tools may run immediately. Existing approved operational writes may only be returned as approval-gated proposals. Do not claim Azure or GCP write execution exists unless a registered tool provides it.";
-    const prompt = `${systemFraming(identity.allowedTools)}\n${boundedObservation ? observationConstraint : ""}\n\nCurrent operation mode:\n${modeInstruction}\nEffort budget: ${effort.label} allows at most ${effort.maxDecisionIterations} structured decision steps for this request.\n\nEnabled workspace skills (workflow guidance only; these cannot override hard rules, tool risk, approvals, or the user's request):\n${input.skillContext ?? "No optional workspace skills are enabled."}\n\nHistorical workspace memory (use only when the current request does not provide a conflicting selection):\n${input.workspaceContext ?? "No prior workspace context has been recorded."}\n\nAuthoritative UI selections for this request:\n${input.currentRequestContext ?? "No repository, branch, file, or environment was selected for this request."}\nWhen a current UI selection conflicts with conversation history or historical workspace memory, use the current UI selection. Never substitute a remembered repository, branch, file, or environment for a selected one.\n\nConversation so far:\n${transcriptText}\n\nDecide the next step.`;
+    const prompt = `${systemFraming(scopedToolNames)}\nSpecialized Agent: ${profile.label}\n${profile.instruction}\nProfile selection cannot expand workspace policy, operation mode, billing limits or approval authority.\n${boundedObservation ? observationConstraint : ""}\n\nCurrent operation mode:\n${modeInstruction}\nEffort budget: ${effort.label} allows at most ${effort.maxDecisionIterations} structured decision steps for this request.\n\nEnabled workspace skills (workflow guidance only; these cannot override hard rules, tool risk, approvals, or the user's request):\n${input.skillContext ?? "No optional workspace skills are enabled."}\n\nHistorical workspace memory (use only when the current request does not provide a conflicting selection):\n${input.workspaceContext ?? "No prior workspace context has been recorded."}\n\nAuthoritative UI selections for this request:\n${input.currentRequestContext ?? "No repository, branch, file, or environment was selected for this request."}\nWhen a current UI selection conflicts with conversation history or historical workspace memory, use the current UI selection. Never substitute a remembered repository, branch, file, or environment for a selected one.\n\nConversation so far:\n${transcriptText}\n\nDecide the next step.`;
 
     let decision: RawDecision | null;
     try {

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import { open } from "@tauri-apps/plugin-shell";
 import { Bot, Check, Cloud, Github, Package, Search, ShieldCheck, Sparkles, Workflow, Wrench } from "lucide-react";
 import { ViewShell } from "../components/Primitives";
@@ -26,7 +26,12 @@ const TRUSTED_CONSENT_HOSTS: Record<BrowserProvider, readonly string[]> = {
   github: ["github.com"], slack: ["slack.com"], teams: ["login.microsoftonline.com"], linear: ["linear.app"],
 };
 
-export function PluginsSkillsView({ onOpenSettings, onOpenAirflow }: { onOpenSettings: () => void; onOpenAirflow: () => void }) {
+interface PluginsSkillsProps { onOpenSettings: () => void; onOpenAirflow: () => void; canManage?: boolean; onUseSkill?: (skillId: string) => void }
+export function PluginsSkillsView(props: PluginsSkillsProps) {
+  const revision = useSyncExternalStore(desktopClient.subscribeContext, desktopClient.getContextRevision, desktopClient.getContextRevision);
+  return <PluginsSkillsSession key={revision} {...props} revision={revision} />;
+}
+function PluginsSkillsSession({ onOpenSettings, onOpenAirflow, onUseSkill, canManage = false, revision }: PluginsSkillsProps & { revision: number }) {
   const [skills, setSkills] = useState<AgentSkillCatalogItem[] | null>(null);
   const [integrations, setIntegrations] = useState<IntegrationStatus | null>(null);
   const [airflowStatus, setAirflowStatus] = useState<string | null>(null);
@@ -35,78 +40,96 @@ export function PluginsSkillsView({ onOpenSettings, onOpenAirflow }: { onOpenSet
   const [working, setWorking] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
   const [catalogIssue, setCatalogIssue] = useState<string | null>(null);
-  const [skillChangesAvailable, setSkillChangesAvailable] = useState(true);
+  const [integrationIssue, setIntegrationIssue] = useState<string | null>(null);
+  const [skillChangesAvailable, setSkillChangesAvailable] = useState(false);
+  const [context] = useState(() => desktopClient.config);
+  const mounted = useRef(false), loadRequest = useRef(0), mutation = useRef(false);
+  const owns = useCallback(() => mounted.current && desktopClient.config === context && desktopClient.getContextRevision() === revision, [context, revision]);
 
   const load = useCallback(async () => {
-    const [skillResult, integrationResult, airflowResult] = await Promise.all([desktopClient.listAgentSkills(), desktopClient.integrationStatus(), desktopClient.airflowConnection()]);
-    if (skillResult.ok) {
-      setSkills(skillResult.data.skills);
-      setSkillChangesAvailable(skillResult.data.storageAvailable !== false);
-      setCatalogIssue(skillResult.data.storageAvailable === false
-        ? "Skills are visible, but installation changes are temporarily unavailable while workspace storage is being prepared."
-        : null);
-    } else {
-      setSkills([]);
-      setSkillChangesAvailable(false);
-      setCatalogIssue("Skills could not be loaded right now. Your existing Agent permissions and integrations are unchanged.");
-    }
-    if (integrationResult.ok) setIntegrations(integrationResult.data);
-    setAirflowStatus(airflowResult.ok ? airflowResult.data.status : "unavailable");
-  }, []);
+    const request = ++loadRequest.current;
+    const current = () => owns() && request === loadRequest.current;
+    const loadSkills = async () => {
+      const result = await Promise.resolve().then(() => desktopClient.listAgentSkills()).catch(() => null);
+      if (!current()) return;
+      if (result?.ok) {
+        setSkills(result.data.skills); setSkillChangesAvailable(result.data.storageAvailable !== false);
+        setCatalogIssue(result.data.storageAvailable === false
+          ? "Skills are visible, but installation changes are temporarily unavailable while workspace storage is being prepared." : null);
+      } else {
+        setSkills([]); setSkillChangesAvailable(false);
+        setCatalogIssue("Skills could not be loaded right now. Your existing Agent permissions and integrations are unchanged.");
+      }
+    };
+    const loadIntegrations = async () => {
+      const result = await Promise.resolve().then(() => desktopClient.integrationStatus()).catch(() => null);
+      if (!current()) return;
+      setIntegrations(result?.ok ? result.data : null);
+      setIntegrationIssue(result?.ok ? null : "Integration status is unavailable. Existing connections are unchanged; retry to verify them.");
+    };
+    const loadAirflow = async () => {
+      const result = await Promise.resolve().then(() => desktopClient.airflowConnection()).catch(() => null);
+      if (current()) setAirflowStatus(result?.ok ? result.data.status : "unavailable");
+    };
+    await Promise.allSettled([loadSkills(), loadIntegrations(), loadAirflow()]);
+  }, [owns]);
 
   useEffect(() => {
+    mounted.current = true;
     void load();
-    window.addEventListener("focus", load);
-    return () => window.removeEventListener("focus", load);
+    const refresh = () => { void load(); };
+    window.addEventListener("focus", refresh);
+    return () => { mounted.current = false; window.removeEventListener("focus", refresh); };
   }, [load]);
 
   async function updateSkill(skill: AgentSkillCatalogItem, action: "install" | "enable" | "disable" | "remove") {
-    setWorking(skill.id); setNotice(null);
-    const result = await desktopClient.updateAgentSkill(skill.id, action);
-    if (result.ok) {
+    if (!owns() || !canManage || !skillChangesAvailable || mutation.current) return;
+    mutation.current = true; setWorking(skill.id); setNotice(null);
+    try {
+      const result = await desktopClient.updateAgentSkill(skill.id, action);
+      if (!owns()) return;
+      if (!result.ok) throw new Error("skill_update_failed");
       setNotice(`${skill.name} is now ${result.data.status.replaceAll("_", " ")}. Agent workflow guidance updates on the next message.`);
-      await load();
-    } else {
-      setNotice(`Could not update ${skill.name}. ${result.error}`);
-    }
-    setWorking(null);
+      void load();
+    } catch {
+      if (owns()) setNotice(`Could not update ${skill.name}. The outcome is unverified. Refresh capabilities before deciding whether to retry.`);
+    } finally { if (owns()) { mutation.current = false; setWorking(null); } }
   }
 
   async function connectProvider(provider: BrowserProvider) {
-    setWorking(`provider:${provider}`); setNotice(null);
+    if (!owns() || !canManage || mutation.current) return;
+    mutation.current = true; setWorking(`provider:${provider}`); setNotice(null);
     try {
       const result = await desktopClient.startIntegrationConnection(provider);
-      if (!result.ok) throw new Error(result.error);
+      if (!owns()) return;
+      if (!result.ok) throw new Error("consent_unavailable");
       const destination = new URL(result.data.consentUrl);
-      if (destination.protocol !== "https:" || !TRUSTED_CONSENT_HOSTS[provider].includes(destination.hostname)) throw new Error("untrusted consent destination");
+      if (destination.protocol !== "https:" || destination.username || destination.password || destination.port || !TRUSTED_CONSENT_HOSTS[provider].includes(destination.hostname)) throw new Error("untrusted consent destination");
       await open(destination.toString());
-      setNotice("Secure provider consent opened in your browser. Return here when finished.");
+      if (owns()) setNotice("Secure provider consent opened in your browser. Return here when finished.");
     } catch {
-      setNotice(`The ${PROVIDERS.find((item) => item.id === provider)?.name ?? provider} connection could not be opened. Ask a workspace administrator to verify the provider setup, then try again.`);
-    }
-    setWorking(null);
+      if (owns()) setNotice(`The ${PROVIDERS.find((item) => item.id === provider)?.name ?? provider} connection could not be opened. Ask a workspace administrator to verify the provider setup, then try again.`);
+    } finally { if (owns()) { mutation.current = false; setWorking(null); } }
   }
 
   async function validateProvider(provider: BrowserProvider) {
-    setWorking(`provider:${provider}`); setNotice(null);
-    const result = provider === "github"
-      ? await desktopClient.validateGitHubReadOnly()
-      : provider === "slack"
-        ? await desktopClient.validateSlackConnection()
-        : provider === "teams"
-          ? await desktopClient.validateTeamsConnection()
-          : await desktopClient.validateLinearConnection();
-    if (result.ok) {
+    if (!owns() || !canManage || mutation.current) return;
+    mutation.current = true; setWorking(`provider:${provider}`); setNotice(null);
+    try {
+      const result = provider === "github" ? await desktopClient.validateGitHubReadOnly()
+        : provider === "slack" ? await desktopClient.validateSlackConnection()
+        : provider === "teams" ? await desktopClient.validateTeamsConnection() : await desktopClient.validateLinearConnection();
+      if (!owns()) return;
+      if (!result.ok) throw new Error("validation_failed");
       setNotice(`${PROVIDERS.find((item) => item.id === provider)?.name ?? provider} access is verified for this workspace.`);
-      await load();
-    } else {
-      setNotice(`The ${PROVIDERS.find((item) => item.id === provider)?.name ?? provider} connection could not be verified. Review its consent in Connection settings and try again.`);
-    }
-    setWorking(null);
+      void load();
+    } catch {
+      if (owns()) setNotice(`The ${PROVIDERS.find((item) => item.id === provider)?.name ?? provider} connection could not be verified. Review its consent in Connection settings and try again.`);
+    } finally { if (owns()) { mutation.current = false; setWorking(null); } }
   }
 
   const providerState = (provider: (typeof PROVIDERS)[number]["id"]) => {
-    if (!integrations) return "checking";
+    if (!integrations) return integrationIssue ? "unavailable" : "checking";
     if (provider === "github") return integrations.github.status;
     if (provider === "aws") return integrations.cloud.find((item) => item.provider === "aws")?.status ?? "not_connected";
     if (provider === "airflow") return airflowStatus ?? "checking";
@@ -120,7 +143,7 @@ export function PluginsSkillsView({ onOpenSettings, onOpenAirflow }: { onOpenSet
   const visibleProviders = PROVIDERS.filter((provider) => {
     const matches = !normalizedQuery || `${provider.name} ${provider.detail} ${provider.category}`.toLowerCase().includes(normalizedQuery);
     const state = providerState(provider.id);
-    return matches && filter !== "skills" && (filter !== "installed" || !["not_connected", "checking"].includes(state));
+    return matches && filter !== "skills" && (filter !== "installed" || !["not_connected", "checking", "unavailable"].includes(state));
   });
 
   return (
@@ -131,6 +154,9 @@ export function PluginsSkillsView({ onOpenSettings, onOpenAirflow }: { onOpenSet
           <div className="flex items-center gap-2 rounded-lg border border-emerald-400/15 bg-emerald-400/[0.05] px-3 py-2 text-[11px] text-emerald-200"><ShieldCheck className="h-3.5 w-3.5" />Guardrails always on</div>
         </div>
 
+        {!canManage && <p role="status" className="mt-4 text-xs text-zinc-400">A workspace administrator manages skill installation and provider consent. You can inspect available capabilities.</p>}
+        {integrationIssue && <p role="status" className="mt-4 text-xs text-amber-300">{integrationIssue}</p>}
+        <button type="button" onClick={() => void load()} className="mt-3 text-xs text-zinc-400 underline">Refresh capabilities</button>
         <div className="mt-7 flex gap-3">
           <label className="flex min-h-10 flex-1 items-center gap-2 rounded-xl border border-white/[0.1] bg-white/[0.025] px-3 text-zinc-500 focus-within:border-white/20"><Search className="h-4 w-4" /><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search plugins and skills" className="w-full bg-transparent text-sm text-zinc-200 outline-none placeholder:text-zinc-600" /></label>
           <button type="button" onClick={onOpenSettings} className="rounded-xl border border-white/[0.1] px-4 text-xs text-zinc-300 hover:bg-white/[0.06]">Connection settings</button>
@@ -144,15 +170,15 @@ export function PluginsSkillsView({ onOpenSettings, onOpenAirflow }: { onOpenSet
           const needsValidation = ["installation_recorded", "validation_overdue", "awaiting_validation", "needs_attention"].includes(state);
           const configured = provider.id === "aws" || provider.id === "airflow" || integrations?.configuration?.[provider.id] !== false;
           const displayState = !configured ? "admin setup required" : state.replaceAll("_", " ");
-          let action = <button type="button" disabled={working !== null} onClick={() => void connectProvider(provider.id as BrowserProvider)} className="rounded-lg bg-white px-3 py-2 text-xs font-semibold text-black disabled:opacity-50">{working === `provider:${provider.id}` ? "Opening…" : "Connect ↗"}</button>;
+          let action = <button type="button" disabled={!canManage || working !== null} onClick={() => void connectProvider(provider.id as BrowserProvider)} className="rounded-lg bg-white px-3 py-2 text-xs font-semibold text-black disabled:opacity-50">{working === `provider:${provider.id}` ? "Opening…" : "Connect ↗"}</button>;
           if (provider.id === "airflow") action = <button type="button" onClick={onOpenAirflow} className="rounded-lg bg-white px-3 py-2 text-xs font-semibold text-black">Open</button>;
           else if (!configured) action = <button type="button" onClick={() => void open("https://visionxixlabs.com/docs/integration-setup")} className="rounded-lg border border-white/[0.1] px-3 py-2 text-xs text-zinc-300 hover:bg-white/[0.06]">Setup guide ↗</button>;
           else if (provider.id === "aws" || connected) action = <button type="button" onClick={onOpenSettings} className="rounded-lg border border-white/[0.1] px-3 py-2 text-xs text-zinc-300 hover:bg-white/[0.06]">{connected ? "Manage" : "Configure"}</button>;
-          else if (needsValidation) action = <button type="button" disabled={working !== null} onClick={() => void validateProvider(provider.id as BrowserProvider)} className="rounded-lg bg-white px-3 py-2 text-xs font-semibold text-black disabled:opacity-50">{working === `provider:${provider.id}` ? "Verifying…" : "Verify access"}</button>;
+          else if (needsValidation) action = <button type="button" disabled={!canManage || working !== null} onClick={() => void validateProvider(provider.id as BrowserProvider)} className="rounded-lg bg-white px-3 py-2 text-xs font-semibold text-black disabled:opacity-50">{working === `provider:${provider.id}` ? "Verifying…" : "Verify access"}</button>;
           return <div key={provider.id} className="flex min-h-[78px] items-center gap-4 px-5 py-3"><span className="grid h-9 w-9 place-items-center rounded-lg border border-white/[0.08] bg-white/[0.035]"><provider.Icon className="h-4 w-4 text-zinc-300" /></span><div className="min-w-0 flex-1"><div className="flex items-center gap-2"><p className="text-sm text-zinc-100">{provider.name}</p><span className={`rounded-full border px-2 py-0.5 text-[9px] uppercase tracking-wider ${connected ? "border-emerald-400/15 text-emerald-200" : "border-white/[0.08] text-zinc-500"}`}>{displayState}</span></div><p className="mt-1 text-xs leading-5 text-zinc-500">{provider.detail}</p></div>{action}</div>;
         })}</div></section>}
 
-        {visibleSkills.length > 0 && <section className="mt-8"><div className="mb-3 flex items-center gap-2 text-xs text-zinc-400"><Wrench className="h-4 w-4" />Skills</div><div className="grid gap-3 sm:grid-cols-2">{visibleSkills.map((skill) => <div key={skill.id} className="flex min-h-[178px] flex-col rounded-2xl border border-white/[0.07] bg-white/[0.018] p-5"><div className="flex items-start justify-between gap-3"><span className="grid h-9 w-9 place-items-center rounded-lg bg-violet-300/[0.08]"><Sparkles className="h-4 w-4 text-violet-200" /></span><span className="text-[10px] uppercase tracking-[0.12em] text-zinc-600">{skill.category}</span></div><h2 className="mt-4 text-sm font-medium text-zinc-100">{skill.name}</h2><p className="mt-1 flex-1 text-xs leading-5 text-zinc-500">{skill.description}</p><div className="mt-4 flex items-center justify-between"><span className="text-[10px] text-zinc-600">{skill.toolNames.length} governed tools</span>{skill.status === "not_installed" ? <button type="button" disabled={working !== null || !skillChangesAvailable} onClick={() => void updateSkill(skill, "install")} className="rounded-lg bg-white px-3 py-2 text-xs font-semibold text-black disabled:opacity-50">{working === skill.id ? "Adding…" : "Add"}</button> : <div className="flex items-center gap-2"><span className="inline-flex items-center gap-1 text-[10px] text-emerald-300"><Check className="h-3 w-3" />Installed</span><button type="button" disabled={working !== null || !skillChangesAvailable} onClick={() => void updateSkill(skill, skill.status === "enabled" ? "disable" : "enable")} className="rounded-lg border border-white/[0.1] px-3 py-2 text-xs text-zinc-300 disabled:opacity-50">{skill.status === "enabled" ? "Disable" : "Enable"}</button><button type="button" disabled={working !== null || !skillChangesAvailable} onClick={() => void updateSkill(skill, "remove")} className="rounded-lg px-2 py-2 text-[11px] text-zinc-600 hover:bg-rose-400/[0.06] hover:text-rose-300 disabled:opacity-50">Remove</button></div>}</div></div>)}</div></section>}
+        {visibleSkills.length > 0 && <section className="mt-8"><div className="mb-3 flex items-center gap-2 text-xs text-zinc-400"><Wrench className="h-4 w-4" />Skills</div><div className="grid gap-3 sm:grid-cols-2">{visibleSkills.map((skill) => <div key={skill.id} className="flex min-h-[178px] flex-col rounded-2xl border border-white/[0.07] bg-white/[0.018] p-5"><div className="flex items-start justify-between gap-3"><span className="grid h-9 w-9 place-items-center rounded-lg bg-violet-300/[0.08]"><Sparkles className="h-4 w-4 text-violet-200" /></span><span className="text-[10px] uppercase tracking-[0.12em] text-zinc-600">{skill.category}</span></div><h2 className="mt-4 text-sm font-medium text-zinc-100">{skill.name}</h2><p className="mt-1 flex-1 text-xs leading-5 text-zinc-500">{skill.description}</p>{skill.status === "enabled" && onUseSkill && <button type="button" disabled={!skillChangesAvailable || working !== null} onClick={() => { if (owns() && skillChangesAvailable && !mutation.current) onUseSkill(skill.id); }} className="mt-3 rounded-lg border border-violet-300/20 px-3 py-2 text-xs text-violet-200 disabled:opacity-50">Use in Agent</button>}<details className="mt-3 text-xs text-zinc-400"><summary className="cursor-pointer">Review skill tools</summary><p className="mt-2">Workflow guidance only. Installing does not grant tools, execution permissions or approval.</p><ul className="mt-2 space-y-1 font-mono">{skill.toolNames.map(tool => <li key={tool}>{tool}</li>)}</ul></details><div className="mt-4 flex items-center justify-between"><span className="text-[10px] text-zinc-600">{skill.toolNames.length} governed tools</span>{skill.status === "not_installed" ? <button type="button" disabled={!canManage || working !== null || !skillChangesAvailable} onClick={() => void updateSkill(skill, "install")} className="rounded-lg bg-white px-3 py-2 text-xs font-semibold text-black disabled:opacity-50">{working === skill.id ? "Adding…" : "Add"}</button> : <div className="flex items-center gap-2"><span className="inline-flex items-center gap-1 text-[10px] text-emerald-300"><Check className="h-3 w-3" />Installed</span><button type="button" disabled={!canManage || working !== null || !skillChangesAvailable} onClick={() => void updateSkill(skill, skill.status === "enabled" ? "disable" : "enable")} className="rounded-lg border border-white/[0.1] px-3 py-2 text-xs text-zinc-300 disabled:opacity-50">{skill.status === "enabled" ? "Disable" : "Enable"}</button><button type="button" disabled={!canManage || working !== null || !skillChangesAvailable} onClick={() => void updateSkill(skill, "remove")} className="rounded-lg px-2 py-2 text-[11px] text-zinc-600 hover:bg-rose-400/[0.06] hover:text-rose-300 disabled:opacity-50">Remove</button></div>}</div></div>)}</div></section>}
 
         {visibleProviders.length === 0 && visibleSkills.length === 0 && <div className="mt-10 rounded-2xl border border-white/[0.07] p-10 text-center"><p className="text-sm text-zinc-300">No matching capabilities</p><p className="mt-2 text-xs text-zinc-600">Try a different search or filter.</p></div>}
       </div>

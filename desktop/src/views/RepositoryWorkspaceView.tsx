@@ -1,3 +1,9 @@
+import { verificationReceipt, type VerificationReceipt } from "../lib/verificationReceipt";
+import { localEditBlocker, type LocalEditRequest } from "../lib/localEditReview";
+import { localCodeContextPrompt, type LocalCodeSelection } from "../lib/localCodeContext";
+import { FileDiff } from "../components/FileDiff";
+import { editorMatches, replaceEditorMatch, editorLineRange } from "../lib/editorSearch";
+import { newEditorHistory, editHistory, moveHistory } from "../lib/editorHistory";
 import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore, type KeyboardEvent } from "react";
 import { invoke } from "@tauri-apps/api/core";
 import { ExternalLink } from "../components/Primitives";
@@ -28,19 +34,14 @@ interface RepositoryCheck {
   description: string;
 }
 
-interface RepositoryCheckResult {
-  checkId: string;
-  success: boolean;
-  exitCode: number | null;
-  output: string;
-  durationMs: number;
-}
+type RepositoryCheckResult = VerificationReceipt;
 
 interface Confirmation {
   title: string;
   description: string;
   confirmLabel: string;
   destructive?: boolean;
+  preview?: string;
   onConfirm: () => void | Promise<void>;
 }
 
@@ -57,12 +58,12 @@ function isProjectMetadata(path: string): boolean {
   return path.endsWith(".pbxproj") || path.includes(".xcodeproj/") || path.includes(".xcworkspace/");
 }
 
-export function RepositoryWorkspaceView() {
+export function RepositoryWorkspaceView({ active = true, onAskAgent, editRequest, workspace }: { editRequest?: LocalEditRequest; workspace?: string; active?: boolean; onAskAgent?: (selection: LocalCodeSelection) => void }) {
   const revision = useSyncExternalStore(desktopClient.subscribeContext, desktopClient.getContextRevision, desktopClient.getContextRevision);
-  return <RepositoryWorkspaceSession key={revision} revision={revision} />;
+  return <RepositoryWorkspaceSession key={revision} revision={revision} active={active} onAskAgent={onAskAgent} editRequest={editRequest} workspace={workspace} />;
 }
 
-function RepositoryWorkspaceSession({ revision }: { revision: number }) {
+function RepositoryWorkspaceSession({ revision, active, onAskAgent, editRequest, workspace }: { editRequest?: LocalEditRequest; workspace?: string; revision: number; active: boolean; onAskAgent?: (selection: LocalCodeSelection) => void }) {
   const [parentPath, setParentPath] = useState("");
   const [repositories, setRepositories] = useState<string[]>([]);
   const [selectedRepository, setSelectedRepositoryState] = useState<string | null>(null);
@@ -72,6 +73,19 @@ function RepositoryWorkspaceSession({ revision }: { revision: number }) {
   const [showAllFiles, setShowAllFiles] = useState(false);
   const [selectedFile, setSelectedFile] = useState<string | null>(null);
   const [content, setContent] = useState("");
+  const history = useRef(newEditorHistory(""));
+  const editorRef = useRef<HTMLTextAreaElement>(null);
+  const [selectionLength, setSelectionLength] = useState(0);
+  const searchRef = useRef<HTMLInputElement>(null);
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [reviewOpen, setReviewOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [matchIndex, setMatchIndex] = useState(-1);
+  const [replacement, setReplacement] = useState("");
+  const [lineTarget, setLineTarget] = useState("");
+  const matches = useMemo(() => editorMatches(content, searchQuery), [content, searchQuery]);
+  useEffect(() => { setMatchIndex(-1); }, [content, searchQuery]);
+  useEffect(() => { setSearchQuery(""); setReplacement(""); setLineTarget(""); setSearchOpen(false); setReviewOpen(false); setSelectionLength(0); }, [selectedFile]);
   const [savedContent, setSavedContent] = useState("");
   const [busy, setBusy] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -90,6 +104,9 @@ function RepositoryWorkspaceSession({ revision }: { revision: number }) {
   const [checks, setChecks] = useState<RepositoryCheck[]>([]);
   const [verificationResult, setVerificationResult] = useState<RepositoryCheckResult | null>(null);
   const [showVerification, setShowVerification] = useState(false);
+  const [verificationStale, setVerificationStale] = useState(false);
+  const sourceEpoch = useRef(0);
+  const verificationGeneration = useRef(0);
 
   const [context] = useState(() => desktopClient.config);
   const mounted = useRef(false);
@@ -101,6 +118,7 @@ function RepositoryWorkspaceSession({ revision }: { revision: number }) {
   const manualClone = useRef(false);
   const operationRequest = useRef(0);
   const activeBusy = useRef<string | null>(null);
+  const appliedEdit = useRef<{request: LocalEditRequest; paths: Set<string>} | undefined>(undefined);
   const loadedFile = useRef<{ repository: string; path: string; content: string; saved: string } | null>(null);
   const owns = useCallback((captured: typeof owner.current) => mounted.current && desktopClient.config === context && desktopClient.getContextRevision() === revision
     && captured.generation === owner.current.generation && captured.repository === owner.current.repository, [context, revision]);
@@ -115,10 +133,10 @@ function RepositoryWorkspaceSession({ revision }: { revision: number }) {
     const repository = typeof next === "function" ? next(owner.current.repository) : next;
     if (repository === owner.current.repository) return;
     owner.current = { repository, generation: owner.current.generation + 1 };
-    fileRequest.current++; operationRequest.current++; activeBusy.current = null; loadedFile.current = null;
+    fileRequest.current++; operationRequest.current++; activeBusy.current = null; loadedFile.current = null; history.current = newEditorHistory("");
     setSelectedRepositoryState(repository); setStatus(null); setFiles([]); setChecks([]);
     setSelectedFile(null); setContent(""); setSavedContent(""); setBusy(null);
-    setError(null); setNotice(null); setPrUrl(null); setVerificationResult(null); setConfirmationState(null);
+    setError(null); setNotice(null); setPrUrl(null); setVerificationResult(null); setVerificationStale(false); sourceEpoch.current++; setConfirmationState(null);
   }, []);
 
   function setConfirmation(next: Confirmation | null) {
@@ -126,9 +144,22 @@ function RepositoryWorkspaceSession({ revision }: { revision: number }) {
     setConfirmationState(next ? { ...next, onConfirm: async () => { if (owns(captured)) await next.onConfirm(); } } : null);
   }
 
+  function invalidateVerification() { sourceEpoch.current++; setVerificationStale(true); }
+
   function editContent(next: string) {
     if (!owns(owner.current) || !loadedFile.current || loadedFile.current.repository !== owner.current.repository) return;
+    if (loadedFile.current.content !== next) invalidateVerification();
+    history.current = editHistory(history.current, next);
     loadedFile.current.content = next; setContent(next);
+  }
+
+  function travelHistory(direction: "undo" | "redo") {
+    const file = loadedFile.current;
+    if (activeBusy.current || !owns(owner.current) || !file || file.repository !== owner.current.repository) return;
+    const previous = history.current.present;
+    history.current = moveHistory(history.current, direction);
+    if (history.current.present !== previous) invalidateVerification();
+    file.content = history.current.present; setContent(history.current.present);
   }
 
   const refreshRepository = useCallback(async (repositoryPath: string) => {
@@ -213,19 +244,20 @@ function RepositoryWorkspaceSession({ revision }: { revision: number }) {
   }, [remoteRepositories, status?.repositoryFullName]);
 
   useEffect(() => {
-    if (!confirmation) return;
+    if (!confirmation || !active) return;
     const dismiss = (event: globalThis.KeyboardEvent) => {
       if (event.key === "Escape") setConfirmationState(null);
     };
     window.addEventListener("keydown", dismiss);
     return () => window.removeEventListener("keydown", dismiss);
-  }, [confirmation]);
+  }, [active, confirmation]);
 
   async function run(label: string, operation: (current: () => boolean) => Promise<void>) {
     const captured = owner.current;
     if (!owns(captured)) return;
     const request = ++operationRequest.current;
     const current = () => owns(captured) && request === operationRequest.current;
+    if (["save", "pull", "branch", "commit", "pr", "clone"].includes(label)) invalidateVerification();
     activeBusy.current = label; setBusy(label); setError(null); setNotice(null);
     try { await operation(current); } catch (cause) { if (current()) setError(cause instanceof Error ? cause.message : String(cause)); }
     finally { if (current()) { activeBusy.current = null; setBusy(null); } }
@@ -235,10 +267,11 @@ function RepositoryWorkspaceSession({ revision }: { revision: number }) {
     const repository = owner.current.repository;
     if (!repository) return;
     const request = ++fileRequest.current;
-    loadedFile.current = null; setSelectedFile(null); setContent(""); setSavedContent("");
+    loadedFile.current = null; history.current = newEditorHistory(""); setSelectedFile(null); setContent(""); setSavedContent("");
     await run("open", async current => {
       const next = await invoke<string>("read_repository_file", { repositoryPath: repository, relativePath: path });
       if (!current() || request !== fileRequest.current) return;
+      history.current = newEditorHistory(next);
       loadedFile.current = { repository, path, content: next, saved: next };
       setSelectedFile(path); setContent(next); setSavedContent(next); setCommitMessage("");
     });
@@ -279,7 +312,7 @@ function RepositoryWorkspaceSession({ revision }: { revision: number }) {
     const snapshot = file.content;
     await run("save", async current => {
       if (!current() || loadedFile.current !== file || file.content !== snapshot) return;
-      await invoke("write_repository_file", { repositoryPath: file.repository, relativePath: file.path, content: snapshot });
+      await invoke("write_repository_file", { repositoryPath: file.repository, relativePath: file.path, content: snapshot, expectedContent: file.saved });
       if (!current() || loadedFile.current !== file) return;
       file.saved = snapshot; setSavedContent(snapshot); setNotice(`Saved ${file.path}`);
       await refreshRepository(file.repository);
@@ -354,7 +387,7 @@ function RepositoryWorkspaceSession({ revision }: { revision: number }) {
       if (onDefaultBranch) throw new Error("Create a branch before committing. Changes must reach the default branch through a pull request.");
       if (!current() || loadedFile.current !== file || file.content !== snapshot) return;
       if (snapshot !== file.saved) {
-        await invoke("write_repository_file", { repositoryPath: file.repository, relativePath: file.path, content: snapshot });
+        await invoke("write_repository_file", { repositoryPath: file.repository, relativePath: file.path, content: snapshot, expectedContent: file.saved });
         if (!current() || loadedFile.current !== file) return;
         file.saved = snapshot; setSavedContent(snapshot);
       }
@@ -406,25 +439,139 @@ function RepositoryWorkspaceSession({ revision }: { revision: number }) {
 
   function verify(check: RepositoryCheck) {
     if (!selectedRepository || selectedRepository !== owner.current.repository) return;
+    if (loadedFile.current && loadedFile.current.content !== loadedFile.current.saved) {
+      setError("Save or discard unsaved editor changes before verification; checks run against files on disk."); return;
+    }
+    const consentEpoch = sourceEpoch.current;
     setConfirmation({
       title: `Run ${check.label}?`,
-      description: `${check.command} will run inside this repository with credentials removed, a 5 minute timeout, and a 1 MB output limit. Repository scripts are code; run only repositories you trust.`,
+      description: `${check.command} will run inside this repository with a minimal process environment. Scripts are not sandboxed: they can access files and network resources available to your user, including stored credentials. Native timeout/output limits do not establish process-tree isolation. Run only repositories you trust. Closing or switching views does not cancel a running check; user cancellation is not available yet.`,
       confirmLabel: "Run check",
       onConfirm: async () => {
+        if (activeBusy.current) return;
         await run(`verify:${check.id}`, async current => {
-          const result = await invoke<RepositoryCheckResult>("run_repository_check", { repositoryPath: selectedRepository, checkId: check.id });
+          if (loadedFile.current && loadedFile.current.content !== loadedFile.current.saved) {
+            setError("Save or discard unsaved editor changes before verification; checks run against files on disk."); return;
+          }
+          if (consentEpoch !== sourceEpoch.current) { setError("The source changed after check consent was requested. Review and request the check again."); return; }
+          const checkedEpoch = sourceEpoch.current;
+          verificationGeneration.current++;
+          setVerificationStale(true);
+          const raw = await invoke<unknown>("run_repository_check", { repositoryPath: selectedRepository, checkId: check.id });
           if (!current()) return;
-          setVerificationResult(result);
+          const result = verificationReceipt(raw, check.id);
+          const stale = checkedEpoch !== sourceEpoch.current;
+          setVerificationResult(result); setVerificationStale(stale);
           setShowVerification(true);
           await refreshRepository(selectedRepository);
           if (!current()) return;
-          setNotice(result.success ? `${check.label} passed.` : `${check.label} failed with exit code ${result.exitCode ?? "unknown"}.`);
+          setNotice(checkedEpoch !== sourceEpoch.current ? "Check completed, but local edits changed during or after the run. Save and rerun before relying on this result." : result.success ? `${check.label} passed.` : `${check.label} failed with exit code ${result.exitCode ?? "unknown"}.`);
         });
       },
     });
   }
 
+  async function loadAgentDraft() {
+    const file = loadedFile.current, request = editRequest;
+    if (!active || activeBusy.current || !request || !file || !owns(owner.current)) return;
+    const edit = request.edits?.find(candidate => candidate.path === file.path) ?? request.edit;
+    if (request.context !== desktopClient.config || request.workspace !== workspace) { setError("Agent draft belongs to a different sign-in or workspace."); return; }
+    const snapshot = file.content;
+    await run("load-agent-draft", async current => {
+      const live = await invoke<RepositoryStatus>("repository_status", {repositoryPath: file.repository});
+      if (!current() || loadedFile.current !== file || file.content !== snapshot) return;
+      if (live.rootPath !== file.repository) { setError("The local repository identity could not be verified."); return; }
+      const blocker = localEditBlocker(edit, {repositoryFullName: live.repositoryFullName, branch: live.branch, path: file.path, saved: file.saved, content: file.content});
+      if (blocker) { setError(blocker); return; }
+      editContent(edit.content); setReviewOpen(true);
+      if (appliedEdit.current?.request !== request) appliedEdit.current = {request, paths: new Set()};
+      appliedEdit.current.paths.add(edit.path);
+      setNotice("Agent draft loaded locally. Review changes, then explicitly Save and run verification. GitHub approval is unchanged.");
+    });
+  }
+
+  function askAboutVerification() {
+    if (!active || !onAskAgent || activeBusy.current || !verificationResult || !owns(owner.current)) return;
+    const receipt = verificationResult, epoch = sourceEpoch.current, generation = verificationGeneration.current;
+    const selection: LocalCodeSelection = {kind: "verification", checkId: receipt.checkId, exitCode: receipt.exitCode, stale: verificationStale, excerpt: receipt.output.slice(0, 8000)};
+    if (!localCodeContextPrompt(selection)) return;
+    let prepared = false;
+    setConfirmation({
+      title: "Prepare check output for Agent?",
+      description: `${receipt.output.length > 8000 ? "Only the first 8,000 characters are included. " : ""}This output may contain credentials or private data. Review the excerpt below and redact the unsent prompt before Send. Preparing it does not contact a model, run commands or authorize changes.`,
+      confirmLabel: "Prepare check draft",
+      preview: selection.excerpt,
+      onConfirm: () => {
+        if (sourceEpoch.current !== epoch || verificationGeneration.current !== generation || activeBusy.current) { setError("The verification context changed. Review the check output again."); return; }
+        if (prepared) return;
+        prepared = true;
+        onAskAgent(selection);
+      },
+    });
+  }
+
+  function askAboutSelection() {
+    const file = loadedFile.current, editor = editorRef.current;
+    if (!active || !onAskAgent || activeBusy.current || !owns(owner.current) || !file || !editor) return;
+    const snapshot = file.content;
+    const selection = {path: file.path, excerpt: snapshot.slice(editor.selectionStart, editor.selectionEnd)};
+    if (!localCodeContextPrompt(selection)) { setError("Select up to 8,000 characters from a non-sensitive source file."); return; }
+    setConfirmation({
+      title: "Prepare selected code for Agent?",
+      description: `The selection from ${file.path} will be placed in an unsent Agent prompt in Inspect / Code Review mode. Preparing it does not save files or send code to a model. Choosing Send later shares the prompt with your approved provider; review it for credentials and private data first.`,
+      confirmLabel: "Prepare Agent draft",
+      onConfirm: () => {
+        if (!activeBusy.current && loadedFile.current === file && file.content === snapshot) onAskAgent(selection);
+        else setError("The file changed while reviewing this selection. Select and review it again.");
+      },
+    });
+  }
+
+  function goToLine() {
+    const file = loadedFile.current, editor = editorRef.current;
+    if (!active || activeBusy.current || !owns(owner.current) || !file || !editor || file.content !== content) return;
+    const range = /^[1-9][0-9]{0,6}$/.test(lineTarget) ? editorLineRange(file.content, Number(lineTarget)) : null;
+    if (!range) { setError("Enter an existing one-based line number in the current file."); return; }
+    setError(null); setMatchIndex(-1); editor.focus(); editor.setSelectionRange(range.start, range.end);
+    setSelectionLength(range.end - range.start);
+  }
+
+  function openSearch() {
+    setSearchOpen(true);
+    requestAnimationFrame(() => { searchRef.current?.focus(); searchRef.current?.select(); });
+  }
+
+  function replaceMatch() {
+    const file = loadedFile.current;
+    if (!active || activeBusy.current || !owns(owner.current) || !file || file.content !== content || matchIndex < 0) return;
+    const next = replaceEditorMatch(file.content, searchQuery, replacement, matches.offsets[matchIndex]);
+    if (next === null) { setError("The match changed or replacement exceeds the editor limit. Find the match again."); return; }
+    editContent(next);
+    setMatchIndex(-1);
+    setNotice("Replaced one literal match in the unsaved buffer. Review and Save explicitly.");
+  }
+
+  function navigateMatch(direction: 1 | -1) {
+    if (!matches.offsets.length || !editorRef.current) return;
+    const index = matchIndex < 0 ? (direction === 1 ? 0 : matches.offsets.length - 1)
+      : (matchIndex + direction + matches.offsets.length) % matches.offsets.length;
+    setMatchIndex(index);
+    const offset = matches.offsets[index];
+    editorRef.current.focus(); editorRef.current.setSelectionRange(offset, offset + searchQuery.length);
+  }
+
   function editorKeyDown(event: KeyboardEvent<HTMLTextAreaElement>) {
+    if (event.nativeEvent.isComposing || event.nativeEvent.keyCode === 229) return;
+    if ((event.metaKey || event.ctrlKey) && !event.altKey && event.key.toLowerCase() === "f") {
+      event.preventDefault(); openSearch(); return;
+    }
+    if (event.key === "Escape" && searchOpen) { event.preventDefault(); setSearchOpen(false); return; }
+    if ((event.metaKey || event.ctrlKey) && !event.altKey && event.key.toLowerCase() === "z") {
+      event.preventDefault(); travelHistory(event.shiftKey ? "redo" : "undo"); return;
+    }
+    if (event.ctrlKey && !event.metaKey && !event.altKey && event.key.toLowerCase() === "y") {
+      event.preventDefault(); travelHistory("redo"); return;
+    }
     if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "s") { event.preventDefault(); void saveFile(); return; }
     if (event.key === "Tab") {
       event.preventDefault();
@@ -464,15 +611,31 @@ function RepositoryWorkspaceSession({ revision }: { revision: number }) {
     </div>
     {repositoryCatalogError && <div role="status" className="border-b border-white/[0.08] bg-white/[0.03] px-4 py-2 text-xs text-zinc-300">Connected repositories are temporarily unavailable. Validate GitHub under Settings → Integrations, then retry. Manual entry remains available for an authorized repository.</div>}
     {repositoryCatalogTruncated && !repositoryCatalogError && <div className="border-b border-white/[0.06] bg-white/[0.02] px-4 py-2 text-xs text-zinc-500">Showing the first 100 repositories authorized for the GitHub App. You can still enter another authorized owner/repository directly.</div>}
+    {editRequest && editRequest.context === desktopClient.config && editRequest.workspace === workspace && (!(appliedEdit.current?.request === editRequest && appliedEdit.current.paths.has(editRequest.edit.path)) || Boolean(editRequest.edits?.length)) && <section aria-label="Agent local draft review" className="max-h-96 shrink-0 overflow-auto border-b border-violet-300/20 p-4 text-xs text-zinc-300">
+      <p>Proposal {editRequest.edit.proposalId}: {editRequest.edit.repositoryFullName} · {editRequest.edit.branch} · {editRequest.edits?.length ? `${editRequest.edits.length} files` : editRequest.edit.path}</p>
+      <p className="my-2 text-zinc-400">Open the matching file to load this into a clean editor buffer. No file is saved, GitHub proposal approved, or check run by this action.</p>
+      {editRequest.edits?.length ? <div className="space-y-2">
+        <p>{appliedEdit.current?.request === editRequest ? appliedEdit.current.paths.size : 0} of {editRequest.edits.length} drafts loaded during this review. This is not saved or verified status; local writes are per file.</p>
+        {editRequest.edits.map(edit => <details key={edit.path} className="rounded border border-white/10 p-2">
+          <summary className="cursor-pointer">{edit.path}</summary>
+          <button type="button" disabled={Boolean(busy) || !selectedRepository || status?.repositoryFullName?.toLowerCase() !== edit.repositoryFullName.toLowerCase() || status?.branch !== edit.branch || !files.includes(edit.path)} onClick={() => selectFile(edit.path)} className="btn-secondary my-2 disabled:opacity-40">Open {edit.path} for local review</button>
+          <FileDiff before={edit.baseContent} after={edit.content} label={`Agent proposed diff for ${edit.path}`} />
+        </details>)}
+      </div> : <FileDiff before={editRequest.edit.baseContent} after={editRequest.edit.content} label="Agent proposed local diff" />}
+      <button type="button" disabled={Boolean(busy) || !selectedFile || editRequest.context !== desktopClient.config || editRequest.workspace !== workspace} onClick={() => void loadAgentDraft()} className="btn-secondary mt-2 disabled:opacity-40">Load editor draft</button>
+    </section>}
     {(error || notice) && <div role={error ? "alert" : "status"} className={`border-b px-4 py-2 text-xs ${error ? "border-rose-500/20 bg-rose-500/5 text-rose-300" : "border-emerald-500/20 bg-emerald-500/5 text-emerald-300"}`}>{error ?? notice}</div>}
     {selectedRepository && <div className="flex flex-wrap items-center gap-2 border-b border-white/[0.06] bg-white/[0.015] px-4 py-2">
       <span className="mr-1 text-[10px] font-mono uppercase tracking-wider text-zinc-600">Verify changes</span>
       {checks.length === 0 ? <span className="text-xs text-zinc-600">No supported checks detected.</span> : checks.map((check) => <button key={check.id} type="button" disabled={Boolean(busy)} onClick={() => verify(check)} title={`${check.description} Runs: ${check.command}`} className="rounded-md border border-white/[0.08] bg-white/[0.03] px-2.5 py-1.5 text-xs text-zinc-300 hover:bg-white/[0.07] disabled:opacity-40">{busy === `verify:${check.id}` ? `Running ${check.label}…` : check.label}</button>)}
-      {verificationResult && <button type="button" onClick={() => setShowVerification((current) => !current)} className={`ml-auto rounded-md px-2.5 py-1.5 text-xs ${verificationResult.success ? "bg-emerald-500/10 text-emerald-300" : "bg-rose-500/10 text-rose-300"}`}>{verificationResult.success ? "Last check passed" : "Last check failed"} · {showVerification ? "hide output" : "show output"}</button>}
+      {verificationResult && <button type="button" onClick={() => setShowVerification((current) => !current)} className={`ml-auto rounded-md px-2.5 py-1.5 text-xs ${verificationStale ? "bg-amber-500/10 text-amber-200" : verificationResult.success ? "bg-emerald-500/10 text-emerald-300" : "bg-rose-500/10 text-rose-300"}`}>{verificationStale ? "Previous check result (stale)" : verificationResult.success ? "Last check passed" : "Last check failed"} · {showVerification ? "hide output" : "show output"}</button>}
     </div>}
+    {verificationResult && verificationStale && <p role="status" className="border-b border-amber-300/20 px-4 py-2 text-xs text-amber-200">Verification is stale or superseded by a newer attempt. Save and run checks again; historical output remains available.</p>}
     {showVerification && verificationResult && <div className="max-h-56 overflow-auto border-b border-white/[0.07] bg-black/30 p-3">
+      <p className="mb-2 text-xs text-zinc-500">Recorded process result only. It does not certify the current working tree or changes made outside Axiom.</p>
       <div className="mb-2 flex items-center justify-between text-[10px] text-zinc-500"><span>{verificationResult.checkId}</span><span>{(verificationResult.durationMs / 1000).toFixed(1)}s · exit {verificationResult.exitCode ?? "none"}</span></div>
       <pre tabIndex={0} className="whitespace-pre-wrap break-words font-mono text-[11px] leading-5 text-zinc-300">{verificationResult.output || "The check completed without output."}</pre>
+      {onAskAgent && <button type="button" disabled={Boolean(busy) || !verificationResult.output} onClick={askAboutVerification} className="btn-secondary mt-2 disabled:opacity-40">Prepare check output for Agent</button>}
     </div>}
     <div className="flex min-h-0 flex-1">
       <aside className="flex w-64 shrink-0 flex-col border-r border-white/[0.07] bg-[#111315]">
@@ -502,12 +665,38 @@ function RepositoryWorkspaceSession({ revision }: { revision: number }) {
           <button type="button" disabled={Boolean(busy) || !status?.repositoryFullName || onDefaultBranch} title={onDefaultBranch ? "Create a branch; direct pushes to the default branch are blocked." : undefined} onClick={() => sync("push")} className="btn-secondary disabled:opacity-40">{busy === "push" ? "Pushing…" : "Push"}</button>
         </div>
         {selectedFile ? <>
-          <div className="flex items-center gap-2 border-b border-white/[0.06] px-3 py-2">
+          <div className="flex flex-wrap items-center gap-2 border-b border-white/[0.06] px-3 py-2">
             <span className="mr-auto truncate font-mono text-[11px] text-zinc-400">{selectedFile}{content !== savedContent ? " · unsaved" : ""}</span>
+            {onAskAgent && <button type="button" aria-label="Ask Agent about selection" disabled={Boolean(busy) || selectionLength === 0 || selectionLength > 8000 || !localCodeContextPrompt({path: selectedFile, excerpt: "selection"})} onClick={askAboutSelection} className="btn-secondary disabled:opacity-40">Ask Agent</button>}
+            <button type="button" aria-label="Review local changes" aria-expanded={reviewOpen} onClick={() => setReviewOpen(value => !value)} className="btn-secondary">Review changes</button>
+            <input aria-label="Line number" inputMode="numeric" maxLength={7} placeholder="Line" value={lineTarget} onChange={event => setLineTarget(event.target.value)} onKeyDown={event => {
+              if (event.key === "Enter" && !event.nativeEvent.isComposing && event.nativeEvent.keyCode !== 229) { event.preventDefault(); goToLine(); }
+            }} className="w-16 rounded border border-white/10 bg-black/20 px-2 py-1 text-xs" />
+            <button type="button" disabled={Boolean(busy) || !lineTarget} onClick={goToLine} className="btn-secondary disabled:opacity-40">Go to line</button>
+            <button type="button" aria-label="Find in file" onClick={openSearch} className="btn-secondary">Find</button>
+            <button type="button" aria-label="Undo edit" disabled={Boolean(busy) || !history.current.past.length} onClick={() => travelHistory("undo")} className="btn-secondary disabled:opacity-40">Undo</button>
+            <button type="button" aria-label="Redo edit" disabled={Boolean(busy) || !history.current.future.length} onClick={() => travelHistory("redo")} className="btn-secondary disabled:opacity-40">Redo</button>
             <button type="button" disabled={Boolean(busy) || content === savedContent} onClick={() => void saveFile()} className="btn-secondary disabled:opacity-40">Save ⌘S</button>
           </div>
+          {reviewOpen && <section aria-label="Review unsaved file changes" className="max-h-96 shrink-0 overflow-auto border-b border-white/10 p-3">
+            <p className="mb-2 text-xs text-zinc-400">Draft compared with the last loaded or saved content. This does not save, stage, commit or approve changes.</p>
+            <FileDiff before={savedContent} after={content} label="Local unsaved file diff" unchangedMessage="No unsaved content changes." />
+          </section>}
+          {searchOpen && <div role="search" aria-label="Search current file" className="flex flex-wrap items-center gap-2 border-b border-white/10 p-2 text-xs">
+            <input ref={searchRef} type="search" aria-label="Find literal text" placeholder="Case-sensitive literal text" maxLength={256} value={searchQuery} onChange={event => setSearchQuery(event.target.value)} onKeyDown={event => {
+              if (event.nativeEvent.isComposing || event.nativeEvent.keyCode === 229) return;
+              if (event.key === "Enter") { event.preventDefault(); navigateMatch(event.shiftKey ? -1 : 1); }
+              if (event.key === "Escape") { setSearchOpen(false); editorRef.current?.focus(); }
+            }} className="rounded border border-white/10 bg-black/20 px-2 py-1" />
+            <input aria-label="Replacement literal text" placeholder="Replace with (literal)" maxLength={8000} value={replacement} onChange={event => setReplacement(event.target.value)} className="rounded border border-white/10 bg-black/20 px-2 py-1" />
+            <button type="button" disabled={Boolean(busy) || matchIndex < 0 || !matches.offsets.length} onClick={replaceMatch} className="btn-secondary disabled:opacity-40">Replace selected match</button>
+            <span role="status">{!searchQuery ? "Enter text to find" : !matches.offsets.length ? "No matches" : `${matchIndex < 0 ? 0 : matchIndex + 1} of ${matches.offsets.length}${matches.limited ? "+ (display limit)" : ""}`}</span>
+            <button type="button" aria-label="Previous match" disabled={!matches.offsets.length} onClick={() => navigateMatch(-1)} className="btn-secondary disabled:opacity-40">Previous</button>
+            <button type="button" aria-label="Next match" disabled={!matches.offsets.length} onClick={() => navigateMatch(1)} className="btn-secondary disabled:opacity-40">Next</button>
+            <button type="button" aria-label="Close file search" onClick={() => { setSearchOpen(false); editorRef.current?.focus(); }} className="btn-secondary">Close</button>
+          </div>}
           {isProjectMetadata(selectedFile) && <div role="status" className="border-b border-white/[0.08] bg-white/[0.025] px-4 py-2 text-xs text-zinc-400">This is generated project metadata. Edit it only when you understand the project format; source files are safer for normal changes.</div>}
-          <textarea value={content} onChange={(event) => editContent(event.target.value)} onKeyDown={editorKeyDown} spellCheck={false} aria-label={`Editing ${selectedFile}`} className="min-h-0 flex-1 resize-none bg-[#0b0c0e] p-4 font-mono text-[13px] leading-6 text-zinc-200 outline-none selection:bg-violet-500/30" />
+          <textarea ref={editorRef} value={content} onSelect={event => setSelectionLength(event.currentTarget.selectionEnd - event.currentTarget.selectionStart)} onChange={(event) => editContent(event.target.value)} onKeyDown={editorKeyDown} spellCheck={false} aria-label={`Editing ${selectedFile}`} className="min-h-0 flex-1 resize-none bg-[#0b0c0e] p-4 font-mono text-[13px] leading-6 text-zinc-200 outline-none selection:bg-violet-500/30" />
           <div className="grid grid-cols-[minmax(220px,1fr)_auto_minmax(180px,0.7fr)_120px_auto] items-center gap-2 border-t border-white/[0.07] bg-[#111315] p-3">
             <input value={commitMessage} onChange={(event) => setCommitMessage(event.target.value)} placeholder="Commit message for this file" className="rounded-md border border-white/10 bg-black/25 px-3 py-2 text-xs outline-none" />
             <button type="button" disabled={Boolean(busy) || !commitMessage.trim() || onDefaultBranch} title={onDefaultBranch ? "Create a branch before committing." : undefined} onClick={() => void commit()} className="btn-primary disabled:opacity-40">{busy === "commit" ? "Committing…" : "Commit file"}</button>
@@ -522,6 +711,7 @@ function RepositoryWorkspaceSession({ revision }: { revision: number }) {
       <div role="alertdialog" aria-modal="true" aria-labelledby="repository-confirmation-title" onMouseDown={(event) => event.stopPropagation()} className="w-full max-w-md rounded-xl border border-white/10 bg-[#181a1d] p-5 shadow-2xl">
         <h2 id="repository-confirmation-title" className="text-base font-semibold text-white">{confirmation.title}</h2>
         <p className="mt-2 text-sm leading-6 text-zinc-400">{confirmation.description}</p>
+        {confirmation.preview && <pre aria-label="Check output excerpt to prepare" className="mt-3 max-h-48 overflow-auto whitespace-pre-wrap break-words text-xs text-zinc-300">{confirmation.preview}</pre>}
         <div className="mt-5 flex justify-end gap-2">
           <button type="button" autoFocus className="btn-secondary" onClick={() => setConfirmation(null)}>Cancel</button>
           <button type="button" className={confirmation.destructive ? "rounded-md bg-rose-500/90 px-3 py-2 text-xs font-medium text-white hover:bg-rose-400" : "btn-primary"} onClick={() => void confirmAction()}>{confirmation.confirmLabel}</button>

@@ -2369,6 +2369,77 @@ Production transport origin, credentials, timeouts, limits and approvals remain
 unchanged. This source follow-up still requires its own native/full/browser CI.
 
 
+### Development batching and specialized Agent milestone
+
+Owner refinement2026-10-20: finish remaining functionality in meaningful local
+batches; use targeted development tests/security reviews. Avoid repeated pushes,
+full CI/browser/cross-platform runs while Actions allowance is near90%. Required
+merge checks and all approval gates remain mandatory. Track implemented source
+separately from actual installed/provider/cloud/payment acceptance. PR187/191/192
+retain their browser failures and stay unmerged; do not retry unchanged heads.
+
+Local continuation branch combines191 editor protection and192 cancellation
+compatibility without rewriting either PR. Implemented bounded feature: specialized
+coding/debugging/code-review/Terraform/cloud profiles in the existing composer
+and decision loop. Shared pure profiles narrow the current admin tool allowlist;
+server validation precedes inference, and every tool/proposal keeps existing
+mode, live-policy, tenant, billing and approval checks. Review is read-only;
+Terraform covers source engineering, not unavailable plan/apply execution. Cloud
+uses existing tools only. Preserve general/legacy behavior and existing audit
+records, add non-sensitive selection audit metadata. No schema change or paid
+call. Acceptance: role/mode/admin-policy intersection, invalid profile rejection,
+actual composer-to-client dispatch and streaming compatibility. Hosted/native
+customer acceptance and per-profile enterprise administration remain separate.
+
+Implementation checkpoint (local branch; not merged or deployed):
+
+| Capability | Source implementation | Development evidence | Real-world acceptance |
+| --- | --- | --- | --- |
+| Specialized Agent selection | Implemented in composer/client/HTTP/decision loop | Profile/admin/mode intersection; invalid input; audited selection; connected streaming dispatch | Hosted inference and installed Mac remain unverified |
+| Governance visibility | Implemented using saved workspace policy | Read-only effective scope, disabled Agent, fixed authenticated Control link | Actual admin/customer browser session remains unverified |
+| Navigation continuity | Implemented for in-app views | Actual App draft/profile/environment preservation; hidden abort; late success/rejection/history fences | Installed Mac and account-switch journey remains separate |
+| CI minute conservation | Prepared repository trigger change | Existing jobs/commands/permissions/concurrency retained; PR/main coverage retained and shared profile coverage added | Not active on main until required merge checks pass |
+
+The local milestone passes299 targeted tests across16 suites. The typed route
+capture correction and demo update subsequently pass59 route/demo checks; scoped
+TypeScript passes. Lint has zero errors and four pre-existing unused-parameter
+warnings. Independent security/lifecycle review found no remaining blocker after
+two red/green stale-callback regressions. The actual App draft-loss regression
+also failed against the original unmounting App and passes with retained scoped
+state. Authentication re-verification still clears workspace state; no claim of
+persistence across sign-out, credential replacement or browser-focus verification.
+
+Heavy Test/Desktop CI runs are prepared for PR and main merge checkpoints only,
+removing duplicate feature-push runs. Required job names/steps stay unchanged;
+no branch protections, production settings or browser acceptance rules change.
+Do not push or open a PR merely to record this milestone: batch further related
+implementation first, then run all applicable merge gates once. Final product
+acceptance remains a separate phase covering installed Mac, real coding/provider
+workflows, GitHub/cloud/Airflow, approvals/rollback, billing, security and release.
+No new paid calls, native installer publication or production changes authorized.
+
+### Desktop cancellation API compatibility
+
+Research: desktop avoids AbortSignal.any for older WKWebView, but credential
+activation, client admission and NDJSON decoding still directly call
+throwIfAborted. MDN browser-compat-data/api/AbortSignal.json records Safari15.4
+for both throwIfAborted and reason; desktop config has no explicit OS floor that
+guarantees them. A missing method can fail sign-in/streaming before HTTP dispatch.
+Plan: reproduce missing methods on real AbortSignals, reuse one desktop-only
+aborted-state check with an AbortError fallback, and preserve supplied reasons,
+pre-dispatch cancellation, post-await fences, one-attempt and credit boundaries.
+No global polyfill, server change, OS-support claim or security-gate relaxation.
+Require credential/client/decoder regressions, scoped types and applicable CI.
+
+Three regressions reproduced missing-method failures before implementation. One
+small desktop-only helper now checks aborted state and preserves an available
+reason, falling back to AbortError only when reason is undefined. Every prior
+pre-dispatch/post-await credential and streaming fence remains in place. A
+supplied-reason identity assertion closes the independent review's coverage note.
+All87 affected credential/client/decoder/bridge/composer/demo checks, scoped types
+and lint pass. No global API mutation ships; only test fixtures simulate absence.
+This fixes that capability gap, not every older-WebView compatibility concern.
+
 ### 2026-10-20 — connected application streaming acceptance
 
 Exact e9d79d6a Desktop CI39481771154 passes frontend build,18 Rust tests
@@ -2404,6 +2475,31 @@ fix, all46 affected application/client/bridge/composer checks pass. Four are new
 connected acceptance cases. Credential/origin, usage holds, proposal authority,
 CI and production gates remain unchanged. New exact-head CI is still required.
 
+
+### Native editor pre-save external-change protection
+
+Research/root cause: RepositoryWorkspaceView retains the loaded/saved snapshot,
+but saveFile sends only replacement content; native write_repository_file checks
+path containment and symlinks, then unconditionally writes. An external edit
+between Open and Save is silently lost. Reuse the existing loaded snapshot and
+native path guards. Sequence: require saved content at the IPC boundary, verify
+the existing bounded UTF-8 file before saving, reject changed/deleted files,
+preserve the dirty editor draft on failure, and update its baseline only after
+success. Tests must cover original/repeated baselines, external edit/deletion,
+unchanged successful save, size/path/symlink rejection and draft preservation.
+This is a pre-save check, not a filesystem-wide atomic compare-and-swap guarantee;
+an unrelated writer can still race after verification. No automatic reload,
+overwrite override, new file creation, Git commit or remote operation is added.
+
+Both Save and commit's implicit-save caller now require the last saved baseline;
+commit stops if saving rejects. Three new IPC baseline assertions failed before
+the fix. All43 editor/demo checks now pass; scoped types pass and lint reports
+zero errors plus the existing catalogRequest cleanup warning. Independent review
+found no implementation blocker and caught the old exact-argument expectation;
+it was updated to the actual B-content fixture baseline. Three Rust filesystem
+fixtures cover success, external change/deletion, empty content, size/UTF-8/path
+and Unix symlink/escaping-parent rejection. No local Rust toolchain is available;
+Linux/macOS compilation, native fixtures and Clippy remain required CI gates.
 
 ### 2026-10-20 — native macOS platform acceptance without installer release
 
@@ -2459,3 +2555,1023 @@ validate native request isolation; Stop tests server-suppressed late completion,
 not direct late IPC injection. Teardown releases fixture gates even on assertion
 failure. All56 affected application/client/bridge/decoder checks and scoped types
 and lint pass. No product implementation or approval boundary changed.
+
+
+### Composer input-method submission boundary
+
+Focused research: the existing Agent textarea treats every unshifted Enter as
+submission, including native composition confirmation. Two connected renderer /
+HTTP-client regressions reproduce unintended message dispatch for isComposing
+and the WebKit-compatible keyCode229 composition indicator. Plan: retain both
+composition events as local editing, preserve Shift+Enter, and dispatch only a
+subsequent ordinary Enter through the unchanged authenticated streaming path.
+No provider calls or server/billing/approval changes. Acceptance: zero message
+POSTs for composition, unchanged draft, then exactly one explicit submission.
+Installed macOS input-method acceptance remains part of final post-validation.
+
+Implemented composition fence after reproducing both failures. All14 connected
+streaming application cases pass locally, including zero accidental composition
+submissions and exactly one subsequent explicit submission. Reused prior299-case
+milestone evidence; no full CI, browser run, push or deployment was triggered.
+
+### Recorded repository evidence inspector — local desktop milestone
+
+Research: read_github_file already returns a recorded path/content/SHA; bounded
+search returns path/line/text matches. Desktop EvidencePanel currently exposes
+only counts. Reuse those saved records rather than fetching again or adding an
+executor. Implement an accessible disclosure for escaped file/search evidence,
+with explicit size/item limits, truncated-result notice and recorded-snapshot
+warning. Reuse sensitive repository path policy, reject malformed/failed results,
+and never render arbitrary result JSON, HTML, links or credentials. Acceptance:
+connected evidence rendering, no request/approval side effects, sensitive-path
+and hostile-text fixtures, bounds and incomplete-search notice. This is source
+implementation; installed Mac and real repository acceptance stay separate.
+
+Implemented file/search/initial-grounding disclosures. Limits: file20,000 chars;
+search20 matches x1,000 chars; grounding3 files x6,000 chars; SHA128 chars.
+No arbitrary JSON/HTML rendering, new fetch, write action or approval callback.
+Sensitive request/result paths and restricted snapshots are hidden. Coverage,
+truncation, read failure and snapshot warnings avoid fresh/complete claims.
+Validation:52 focused tests across inspector, connected Agent, streaming,
+redaction and diff suites;15 demo contracts; scoped TypeScript and changed-file
+lint pass. Red/green reproduced missing file/search/grounding displays. Connected
+Agent opening confirms no extra conversation read, message or approval call.
+Independent read-only security review found no blocker, including grounding.
+No GitHub Actions runs/pushes/merges or paid/production/native-release changes.
+Installed Mac, hosted repository/provider and full merge acceptance remain open.
+
+### Local editor productivity batch — research and execution contract
+
+Existing controlled textarea has guarded native save/commit and repository/file
+ownership fences, but no application-level undo/redo for programmatic Tab edits
+or deterministic cross-file history reset. Add a pure bounded history kernel,
+wire toolbar and macOS/Control keyboard actions, retain current unsaved/save
+baseline semantics, and clear history on file/repository/session changes. Then
+add literal in-file search with bounded match traversal, explicit no-match state,
+and selection-only navigation. Neither feature writes until existing Save/commit.
+Use focused kernel and actual RepositoryWorkspaceView regressions; no native,
+provider, paid or production execution. Installed Mac acceptance remains open.
+
+Native verification research blocker: verification.rs stops timing once child.wait
+returns, then awaits output readers without a deadline. Descendants retaining
+pipes may keep collection waiting. No cargo/rustc available here. Preserve this
+as an unvalidated native correctness/security issue requiring compiled process
+fixtures and process-tree cleanup design; do not invent a passing Rust fix.
+
+Next related milestone: actual App navigation currently unmounts the repository
+workspace, losing unsaved content. Reproduce with the actual App/native IPC
+fixture, then retain the lazily visited repository view within the authenticated
+workspace, hidden while inactive. Preserve existing root credential/session
+unmounts and revision/file ownership fences. No persistence to disk/browser,
+background agent or new native action. Already approved operations may finish;
+hiding the view is not a claim of native cancellation. Disable hidden modal
+Escape listeners. Acceptance: draft retained across Agent navigation, one file
+read, zero writes, existing credential-loss and repository ownership regressions.
+
+Implemented local editor batch: bounded history (40 snapshots per direction,
+500,000 retained UTF-16 characters excluding current content), Cmd/Ctrl-Z redo
+variants, literal case-sensitive search (256-char query/1,000 match bound), and
+read-only draft diff against the loaded/saved baseline. Shared FileDiff extraction
+preserves proposal defaults and adds navigable2,000-row pages with total counts.
+Pagination source reset uses render-time scoped state after lint rejected an
+effect reset; two focused paging/reset regressions pass. No approval bypass.
+
+Actual App regression reproduced draft loss after correcting fixture navigation
+label/context subscription. Lazily retained repository view now preserves draft,
+history and search during in-app navigation without another native file read or
+write. Existing credential/session remounts clear private state. Hidden modal
+Escape listener is inactive; already approved operations may finish while hidden.
+Native verification confirmation accurately warns scripts can access user files,
+network and stored credentials; minimal env is not a sandbox. No execution before
+explicit confirmation is verified. Native descendant-pipe issue remains blocked.
+
+Evidence:128 focused editor/App/auth/ownership/streaming/demo tests passed at the
+combined checkpoint;50 affected diff/editor/streaming tests passed after paging;
+2 paging/source-reset tests and explicit-consent test pass after final deltas;
+15 demo contracts pass. Scoped TypeScript passes; lint has no new errors and
+retains the existing catalogRequest cleanup warning. Independent security review
+found no isolation, baseline, approval or paging blocker. These are local JS/IPC
+fixtures, not installed Mac, native process execution or real customer acceptance.
+All source remains local; no push/merge/Actions/deploy/provider/payment changes.
+
+### Desktop skills and integrations lifecycle batch
+
+Research: existing curated skills API already persists installs/enables/removals
+and requires live workspace admin authorization; integration consent/validation
+APIs already exist. Desktop view has no context/revision or late-response fence,
+no synchronous mutation lock, and rejected refreshes can escape or retain stale
+connection status. Reuse existing APIs, add revision-keyed view ownership and
+request sequencing, best-effort independent refresh outcomes with explicit
+unavailable states, guarded mutations/consent opening and strict HTTPS consent
+URLs. Expose declared tool names for inspection and verified-role admin UI gates;
+server remains authoritative. No new plugin executor or provider calls here.
+Acceptance: real view with deferred client fixtures, stale workspace/focus loads,
+late consent, mutation rejection/retry, member read-only and inspectable tools.
+Installed marketplace/provider acceptance remains separate.
+
+### Conversation-local unsent prompt continuity
+
+Research: openConversation retains the previous conversation's prompt, while
+New chat clears it. This can mix unrelated coding tasks or lose unsent work.
+Add an in-memory per-session prompt cache only; no persistence, automatic resend,
+model/profile/target or permission restoration. Bound to20 nonempty drafts and
+500,000 UTF-16 characters, blocking navigation with an explanation rather than
+silently evicting a draft. Save current draft before switching/creating, restore
+target draft only after verified conversation ownership, preserve same-chat GET
+reload input, and disable composer while switching. Credential/session remount
+clears cache. Acceptance: distinct drafts, new-chat preservation, failed-load
+retention, no submission, bounds and existing late-response/auth regressions.
+
+Implemented both local milestones. Marketplace refresh applies each independent
+result without waiting for unrelated pending lookups; newest-request fences win.
+Credential revision remount clears prior catalogs, receipts and notices. Only
+verified owner/admin UI enables skill mutations and consent/validation; unchanged
+server authorization remains authoritative. Synchronous mutation lock prevents
+overlap. Uncertain errors never expose raw exceptions, claim unchanged mutation
+state, auto-retry or leave controls permanently busy. Exact HTTPS consent hosts
+reject userinfo/nondefault ports. Tool disclosures explain guidance is not new
+authority. Unavailable integrations are excluded from installed filter.
+
+Conversation prompts are cached only in session memory, separately by verified
+conversation ID; failed navigation retains the draft and successful new chats
+preserve the previous draft. Reload remains GET-only and retains current input.
+Bound overflow blocks navigation without a network request or silent eviction.
+Switching disables the composer/suggestion edits; no target, model, profile or
+permission restoration and no automatic submission. Credential/session remount
+clears cache. No native/runtime persistence or independent multi-agent workers.
+
+Evidence:82 focused tests at combined marketplace/Agent/streaming/skills-API/demo
+checkpoint. After final independent-load, failure, bounds and navigation deltas,
+48 affected marketplace/draft/connected-Agent tests pass. Scoped TypeScript and
+changed-file lint pass. Independent read-only security review found no blocker
+for either milestone and independently applied refresh results. Real provider
+consent, installed Mac marketplace and hosted customer acceptance remain open.
+No push, merge, Actions run, provider charge, deployment or production change.
+
+### Owner-approved controlled CI checkpoint — PR193
+
+Inspected40-file accumulated diff, ancestor receipts for fd15d668/5cd00b81/
+b4872238/61c741b4/a96367fc and preserved191/192 source; focused added-line
+credential-pattern and artifact-path scan found no hits. This is not an absolute
+secret-absence guarantee. Push only codex/desktop-agent-functionality-batch at
+ a96367fc719dd6b94eebf3b812008cc659f7aaf5; no main push or merge.
+PR193 created and attached. Exactly three pull_request workflows, attempt1:
+Test39501751841, Desktop39501751770, website39501751771. All four jobs failed
+before any steps (steps=[]); timing endpoints report0 billable milliseconds for
+Ubuntu and macOS. Test3s/Desktop12s/website4s elapsed are not billed runner minutes.
+Job log fetch returns BlobNotFound. Failure annotations unavailable through
+connector (unsupported endpoint); direct CLI read denied. Exact startup cause
+unverified; do not assert quota exhaustion or an application/browser regression.
+No rerun, browser retry, gate waiver or billing change. Monthly allowance not
+available. All required merge acceptance remains blocked.
+
+Further source work isolated on local codex/desktop-agent-next-local, so PR193
+stays fixed and cannot trigger another Actions run. Next functionality gap:
+Agent skill shortcuts load once while Agent view now persists; installation
+changes in Plugins do not reach the composer on return. Refresh on activation/
+focus with context and request ownership; show unavailable/retry explicitly.
+Reuse server skill invocation parser contract; selecting a skill should prepend
+or replace its explicit slash command without discarding an existing prompt.
+No automatic sends, no new tool authority, and no provider calls. Focused tests
+must cover returning from plugin changes, stale refreshes, failure and prompt
+preservation. Installed Mac/provider acceptance remains separate.
+
+Local continuation implemented: retained Agent skill shortcuts refresh on
+activation/focus/retry, reject late catalog results after deactivation/context
+change, and hide unverified installation state. Selecting a skill prepends or
+replaces its slash command using the server parser contract while preserving
+prompt body. No sends, provider calls, additional permissions or persistence.
+74 focused connected-Agent/streaming/skill-parser/skills-API/demo tests pass;
+scoped TypeScript and changed-file lint pass. Independent security review found
+no blocker. This follow-up is local only; PR193 remains at a96367fc with its
+failed startup gates. Installed Mac and real provider acceptance remain open.
+
+### Requested PR193 isolated Preview — read-only configuration gate
+
+Exact approved source a96367fc719dd6b94eebf3b812008cc659f7aaf5 remains fixed.
+Read-only Vercel metadata: visionxixlabs project prj_BwKc7V1daPJ938ZW2QKYxZsTkZnp,
+team_j0CEiAAorasdEVQyeAJjpNfm; deployment protection enabled for noncustom domains.
+Environment listing requested decrypt=false; no plaintext credentials retrieved
+or copied. Multiple individual credential records target both preview and
+production, including AWS broker, Azure, GCP service account, GitHub PAT and AI
+Gateway credentials. This is positive evidence Preview can inherit shared access;
+labels alone cannot establish isolated data/payments/cloud authority. Metadata
+response is truncated; database and Stripe bindings remain unverified.
+
+Deployment not executed: owner's condition of isolation is not satisfied. No
+project env, credentials, routing, Git integration or production setting changed.
+Safe proposed scope for owner review: a separate acceptance project with no
+imported/global/shared credentials and Git auto-deploy disabled; protected
+Preview-only exact Git SHA; separate empty disposable test database with test-only
+auth/session secrets and dedicated OAuth test application if OAuth is required;
+no cloud/GitHub PAT, live Stripe, Gateway or email-send credentials. Do not copy
+production data or assume a Neon child branch is empty. Enforce provider/payment
+capabilities disabled and build/runtime secret allowlist. Retain existing project
+and production aliases untouched. Dedicated resource creation/cost and test-auth
+configuration require a concrete owner-approved setup before provisioning.
+Static/public route acceptance and auth failure-closed behavior can then run;
+actual signup/OAuth/onboarding require verified disposable dependencies. No hosted
+Preview/browser acceptance was performed or claimed here.
+
+Actions startup investigation: all four jobs have zero steps and zero reported
+billable milliseconds, logs absent, annotations endpoint unsupported by connector
+and CLI denied. No new evidence supports a source fix or rerun; exact startup
+reason remains external-access blocked. Do not assert exhausted quota as fact.
+Continue local product engineering on separate branch; PR193 stays unmerged.
+
+### Enabled marketplace skill handoff to Agent
+
+Next authorized independent workflow: installed skills can be managed and
+shortcuts refreshed, but marketplace has no direct handoff to the Agent.
+Add an explicit Use in Agent action for verified enabled skills. Bind the intent
+to current credential context/workspace and apply once only after the Agent
+independently refreshes and confirms enabled status. Preserve draft, do not send,
+restore targets or expand permissions. Members may select available guidance;
+only existing owner/admin controls manage installation. Unknown/unverified skills
+fail visibly. Test connected UI intent, context mismatch, one-time application,
+existing draft preservation and no inference/approval side effects.
+
+Marketplace handoff implemented locally. Use in Agent preserves member read-only
+installation controls and sends only a current-config/workspace-bound selection
+intent. Agent independently confirms enabled installation before applying once;
+unknown or cross-context intents do not alter draft. Pending send/proposal/
+decision defers application; no implicit approval, targeting change or inference.
+Independent review found a real stale-ready-catalog activation race, reproduced
+with deferred fresh lookup. Synchronous refresh-epoch invalidation and completed
+current-epoch verification now gate intent consumption; revoked skill leaves
+existing draft unchanged. Follow-up review found no remaining concrete blocker.
+70 focused marketplace/actual App/Agent streaming tests and15 demo contracts pass;
+scoped TypeScript and changed-file lint pass. No hosted Preview, installed-Mac,
+real OAuth, cloud or payment acceptance claimed. PR193 has not been updated/pushed
+and retains its required CI blockers; no Actions rerun, deployment or env change.
+
+### Conditional isolated provisioning approval — entitlement gate
+
+Owner authorizes a separate protected Preview project and empty disposable test
+DB only on verified free/already-included resources, with no imported production
+configuration/data/credentials, test-only auth and no paid/provider operations.
+Read-only pre-provision inspection: Neon org-red-meadow-81475018 is plan free,
+managed by Vercel; one existing production project found. No child/clone branch
+created and no production database connection requested. Vercel auth-user record
+reports personal plan hobby, active. Target team_j0CEiAAorasdEVQyeAJjpNfm get_team
+and list_teams expose only name/slug/id/SAML, not team plan, included usage,
+remaining allocation or charge limits. Personal Hobby is not evidence of team
+entitlement. Available billing-charge history cannot prove future usage is free.
+
+STOPPED before provisioning: cannot verify owner's no-additional-charge gate for
+the target team. No Vercel project/Neon database/env/session secret created, no
+plan/billing/production changes, no deployment or workflow rerun. Need read-only
+team entitlement/remaining-usage evidence or a sanitized owner attestation of
+those facts; no credentials, billing changes or broader spending authorization
+requested. Do not create orphan database while hosting entitlement is blocked.
+PR193 remains a96367fc; neither isolated Preview browser/auth acceptance nor
+installed-Mac acceptance has run. Existing separate-project isolation plan and
+all production/merge/provider gates remain intact. Source continuation stays on
+codex/desktop-agent-next-local; no further source push is authorized here.
+
+### Cost hold and verified desktop compatibility correction
+
+Owner dashboard attests Pro and$201.03 shown ($143.49 Vercel Agent AI tokens,
+$50.54 build CPU). Supersedes earlier unknown team-plan status, but does not
+establish unused allocation or authorize spending. All hosted provisioning and
+deployments explicitly remain blocked; no billing/production settings changes.
+Read-only automatic PR193 Agent review completed and identified two findings.
+Stale shortcut finding is already corrected by528dcecf/b24b178b. ES2021 helper
+finding reproduced with actual desktop tsconfig: TS2550 repositoryEvidencePolicy
+Array.at unsupported. Root scoped typechecks were not desktop-target evidence.
+Plan: use equivalent ES2021-compatible last-segment lookup, retain security
+semantics/targets, test sensitive and ordinary paths plus real desktop compiler.
+Reuse installed desktop dependencies through temporary symlink; no install,
+network/provider call or lockfile change. No source push or new paid review.
+
+### Read-only Vercel cost audit — hosted work remains blocked
+
+Owner reports dashboard$201.03 total, including$143.49 Vercel Agent tokens and
+$50.54 build CPU. No provisioning, deployment, review invocation, push, billing
+or production settings change is authorized/performed. Pro plan confirmed by
+owner and subscription charge records; earlier personal Hobby metadata never
+represented the team's plan. Do not use account plan labels as free usage proof.
+
+Billing read: initial2026-10-01..21 export exceeded4MiB. Corrected to7 adjacent
+three-day UTC request windows2026-09-30..2026-10-21; every window succeeded,
+18,207 records, full per-window summaries. Returned charge periods span
+2026-10-01T07:00Z..2026-10-20T07:00Z. USD total billed176.173793924081,
+effective191.258120738965. Returned Vercel Agent billed/effective122.12770585;
+Build CPU billed38.332/effective50.40. These are NOT the user's current dashboard
+period/totals. Credits and lag differ; no fabricated reconciliation. Service
+lists capped50 groups: billed group sums reconcile the billed total, effective
+groups omit2.580645161289; summary is authoritative for full effective total.
+Samples only100/window, truncated: exact project/per-PR dollar allocation cannot
+be derived. Do not equate app AI Gateway usage with platform Vercel Agent tokens.
+
+Current team project inventory: one project visionxixlabs. Latest deployment page
+contains100 records,2026-10-15T02:11:37Z..2026-10-20T12:05:29Z:45 production READY,
+2 preview READY,51 preview ERROR,2 production ERROR; pagination has older rows.
+This is a partial historical count, not CPU billing evidence for every failed
+attempt. Read-only sample dpl_BQ3AMcWkaxGT31k3obcaWwBqxYmZ is source=git,
+BUILD_FAILED/Resource provisioning failed (may never consume build CPU).
+Preview dpl_Et7PsW4ExedkbKAcRq8JLewib3VL reached READY for0099adfa; production
+record at same commit exists. Latest approved hotfix30d6363a remains a production
+record. No new deployment created during audit; manual promotion/routing untouched.
+
+Independent paid trigger: PR193 exact a96367fc has Vercel Agent Review, completed
+neutral, review36322a3b765d964e59861e3cc615638f, analysis4m13s,2 suggestions.
+GitHub Actions zero-step failure did NOT prevent this separate platform review.
+Official Vercel Agent skill documents automatic PR/push reviews and @vercel
+triggers. Repo workflows contain no Vercel deploy command; git.deploymentEnabled
+remainsfalse. Thus Git build suppression does not suppress Agent review spend.
+This proves activity for this repo, not that PR193 caused the entire token bill.
+No new PR/open-PR push or @vercel mention while paid auto-review remains enabled.
+
+Proposed reductions, NOT applied: owner-reviewed switch from automatic Vercel
+Agent Code Review to explicitly approved/manual use for this repository, preserving
+required CI and independent security reviews; no plan-wide service pause or new
+spend cap that could suspend the live site. Keep manual-only Git deployments,
+no per-PR previews, one meaningful milestone build if later approved. Do not alter
+required tests, branch protection, live payment settings or production routing.
+Investigate/reuse build outputs and cache only after isolation and source-bound
+acceptance; do not assume removing old deployments refunds historical charges.
+
+Lowest-cost acceptance strategy: continue targeted local product/compiler tests;
+use an isolated local/approved nonproduction runtime with disposable empty SQL
+and test-only auth for browser acceptance when process/network support exists.
+No production env/data copy, no OAuth/Stripe/cloud/GitHub PAT/Gateway credentials,
+no paid review integration. Hosted option remains deferred: one protected,
+separate acceptance project, automatic Git and Agent reviews disabled, exact
+approved SHA, one basic build then reuse same deployment for focused journeys.
+Verify explicit cost/usage allowance and isolation before provisioning; no hosted
+approval requested now. CI startup and installed Mac/provider acceptance remain
+independent blockers. No claim that local fixtures prove real customer journeys.
+
+Local engineering correction: actual desktop ES2021 compiler passed after
+replacing Array.at with equivalent indexed last-segment lookup. No target/lib
+upgrade or security-policy weakening.23 sensitive-path/redaction/inspector tests
+pass;15 demo contracts and changed-file lint pass. Review's stale-skills finding
+already fixed locally; PR193 stays unchanged/unmerged. Temporary dependency link
+reuses existing packages and is removed after checks; no dependency installation.
+
+### Selected local code to Agent — focused execution plan
+
+Existing editor owns UTF-8 content/selection and native save baseline; Agent can
+read GitHub but has no explicit local-selection handoff. Reuse scoped handoff
+pattern and existing confirmation modal. Offer selected text only, max8,000 chars,
+relative nonsensitive source path, explicit confirmation before preparing draft.
+Recheck file snapshot/ownership on confirmation. Append serialized untrusted
+local evidence to existing unsent prompt, use Inspect+Code Review, preserve target
+selections and native draft/save baseline. No automatic send, save, tool call,
+file upload, new executor or authority. Credential/workspace mismatch rejects
+intent and pending approval/send defers it. Test selection snapshot, sensitive
+paths, bounds, actual editor/Agent handling and unchanged prompt/write/request
+counts. Installed Mac/provider acceptance stays separate.
+
+### Vercel manual-only Agent reviews — configuration boundary
+
+Confirmed service/control: Vercel dashboard Agent (top-right) → Code Review,
+scoped to sahme209/visionxixlabs; platform automatic PR/push analysis is separate
+from git.deploymentEnabled and GitHub Actions. Official installed vercel-agent
+skill describes on-demand @vercel mention and automatic PR analysis; sources:
+https://vercel.com/docs/agent and https://vercel.com/docs/agent/pricing.
+Exact current automatic-review toggle name/value is NOT verified: connector
+exposes no Agent Code Review configuration endpoint/UI, documentation search
+returned unrelated snippets, and direct public docs fetch was denied403. Stop
+repetitive searches; no guessed UI label or undocumented API write.
+
+Proposed owner-reviewed procedure, not executed:
+1. Open the team's Agent → Code Review repository configuration and record the
+   current visionxixlabs automatic-review setting and manual-trigger availability.
+2. Identify the dedicated automatic PR/push review control. Disable only automatic
+   triggers if manual invocation remains available. If no separate control exists,
+   stop; do not disconnect GitHub, remove the repository, disable the GitHub App,
+   turn off required security checks or assume disabling Code Review preserves it.
+3. Preserve Test/Desktop/website workflows, required review gates and independent
+   security reviews. No changes to project deployment, env, routing or billing.
+4. Future manual platform review is an explicitly owner-approved paid action;
+   never post @vercel as a test during the cost hold. After separately approved
+   settings change, verify saved state read-only; verify trigger behavior only at
+   an already-approved source/CI checkpoint, with no extra throwaway PR or rerun.
+5. Rollback only restores recorded automatic-review value after owner approval;
+   re-enabling can incur charges. Do not alter plan-wide limits that pause website.
+Until exact control is visible and approved, all settings and source pushes stay
+blocked. Static metadata cannot prove manual-only enforcement. Owner may supply
+a sanitized view/labels of this pane if essential; never secrets or billing keys.
+
+Selected local-code handoff implemented. Confirmation rechecks file identity and
+content; known sensitive/absolute/traversal paths and oversized excerpts reject.
+Agent checks credential/workspace and processes once, defers during proposals/
+sends/decisions, appends to unsent prompt in Inspect/CodeReview, preserves targets.
+100 focused editor/actual-App/Agent streaming tests passed; final helper/demo
+checks include Windows drive rejection. Independent read-only security review
+found no blocker. Source content in ordinary files can still contain private
+values: explicit consent warns user to inspect before any later Send. No native
+save/provider request occurs during preparation. No hosted/installed-Mac proof.
+Actual desktop ES2021 TypeScript compilation passes. Final helper/demo run24
+checks passes; changed-file lint0errors/1pre-existing catalogRequest warning.
+Temporary existing-dependency symlink removed. No installations, source pushes,
+GitHub Actions, settings changes, paid reviews/provider calls or hosted resources.
+
+### Proposal → local editor draft → verification connection
+
+Research: GitHub planning/proposal review/approval/application already exist;
+local editor has guarded Save, diff, branch/commit and explicit verification.
+Missing connection is previewing a trusted single-file proposal in local editor.
+Implement explicit Review in local editor intent only for bounded existing-file
+review snapshots. Receiver requires same credential/workspace, repository, branch,
+path and exact saved base, plus no unsaved edits. User opens matching file, reviews
+local diff and confirms Load editor draft; no automatic native write/Git commit,
+remote approval or verification. Existing Save rechecks filesystem baseline.
+Reject absent/new-file review, sensitive paths, mismatch, stale base and dirty
+buffers. Keep proposal ID/source target visible, label local draft separate from
+GitHub approval. Targeted pure/connected UI/security checks; no provider calls.
+
+### Verification freshness connection
+
+Following local proposal application, existing Last check passed persists after
+editor edits and checks can run with unsaved buffer (native reads disk). Add
+local observed-change epoch, retain historical output but label stale after
+edits/undo/native source mutations. Refuse check dispatch with unsaved content.
+Capture epoch before verification; completion after concurrent editor changes is
+historical, not current validation. No automatic rerun or process cancellation
+claim; external filesystem mutations still require independent verification.
+Targeted rendered regressions cover unsaved denial, stale prior receipt and
+edits while verification is in flight. Native process execution remains untested.
+
+Both connections implemented locally. Existing-file proposal handoff displays
+source proposal/repo/branch/path and reviewed diff, requires explicit Load editor
+draft, rechecks live native repository identity/branch and clean saved baseline,
+and changes only editor state. Old credential payload is hidden, not merely
+disabled. Save/commit/GitHub approval/verification retain separate existing gates.
+No new-file/multi-file local executor added; existing GitHub paths remain usable.
+Target check occurs at load time, not an atomic filesystem/Git lock; Save retains
+its pre-write baseline guard and does not claim atomic CAS against outside writers.
+
+Verification now refuses unsaved buffers both before consent and at dispatch;
+observed edits/history/native source operations invalidate historical results.
+In-flight or post-run edits retain output as stale; no automatic rerun. UI states
+process receipt does not certify current tree or external changes. Pure kernels,
+actual App proposal→editor→explicit Save and editor→explicit native check fixtures,
+server review and action-approval regressions pass:162 tests across7 focused suites.
+Actual desktop ES2021 TypeScript passes; lint0errors/1pre-existing catalog cleanup
+warning. Independent security review found no blocker in handoff or freshness.
+This is local renderer/service/native-IPC fixture evidence, NOT installed Mac,
+actual native process or paid/provider end-to-end acceptance. No push, CI run,
+merge, hosted deployment/provisioning, billing setting or paid call occurred.
+
+### Coordinated multi-file local proposal review
+
+Reuse existing commit_github_files server capture/approval/atomic GitHub commit
+and single-file guarded native editor. No native batch-write API exists; do not
+simulate atomicity with sequential writes. Add bounded all-or-nothing parsing
+for local review set (max10 existing files, total200k proposed chars and200k base),
+index/path-bound server review snapshots, reject duplicate/case-colliding paths,
+sensitive/new/malformed entries. Display whole diff set with progress, open each
+matching file explicitly, load only that clean matching draft after live target
+check, Save separately, verify separately. Loading progress is not saved/verified
+proof; never auto-advance/write/check. Source/account scope preserved. Targeted
+parser/actual editor/Agent/App tests, desktop ES2021 check and security review.
+
+Implementation: complete bounded set now flows through ProposalCard and actual
+App into the retained repository editor. Every member diff is available; explicit
+per-file Load draft preserves live credential/workspace/target, clean-buffer and
+baseline fences. Each Save and check remains separately authorized. No native
+batch writer was introduced and no atomic local application is claimed. Changed
+second-file baselines reject loading without rolling back earlier explicit saves.
+Independent read-only security review found no blocking issue. Actual desktop
+ES2021 TypeScript passes; lint has zero errors and the existing catalog cleanup
+warning. Actual App fixtures pass45 tests; parser/demo contracts pass23 tests.
+Editor regressions include full two-file load/save and second-file drift paths.
+Two pre-existing renderer tests queried asynchronously mounted search/consent
+controls synchronously; tests now await those controls rather than add sleeps or
+change application timing. Native-process termination/pipe-drain acceptance and
+installed-Mac/real-provider acceptance remain unverified, not replaced by fixtures.
+No push, Actions run, merge, hosted operation, billing change or paid call.
+Coordinated review also provides explicit Open-file controls restricted to the
+matching catalog-listed repository/branch. Existing selectFile discard consent
+is reused; navigation never implicitly loads or saves AI text. Editor suite44
+passes after navigation changes, plus the added targeted discard-consent case
+passes independently. Together with45 App and23 parser/demo cases,113 relevant
+cases pass (overlapping earlier runs excluded). Final desktop TypeScript passes;
+independent follow-up navigation review found no blocker. Tracker coverage check
+passes24 available source units/2239 rows; unavailable original specification
+still prevents a claim of complete original-scope coverage.
+Follow-on connected acceptance regression passes both coordinated paths: complete
+explicit two-file Save then separate check consent/receipt, and rejection of a
+drifted second baseline. Editing after the check marks its result stale without
+automatic rerun. These are renderer/native-IPC fixtures, not native execution.
+Local implementation checkpoint57af620d preserves9f0878e7 and earlier commits;
+remote branch/blocked PRs remain untouched. Next real terminal acceptance still
+requires the recorded supported native validation environment; no toolchain
+reinstallation or speculative process-control changes were attempted.
+
+### Terminal verification lifecycle continuation — 2026-10-20
+
+Research: `verification.rs` limits only `child.wait`, then awaits readers without
+any deadline. Descendants inheriting pipes can therefore hold the UI indefinitely;
+read errors were discarded, and 1 MB applied independently to each stream. There
+is no cancellation registry/IPC or supported process-tree termination API. Do not
+add a misleading Stop button or treat view/context abandonment as cancellation.
+Plan: bound exit plus drain together, abort reader tasks on every exit, reject
+read errors/combined overflow, bound direct-child cleanup. Preserve allowlisted
+check IDs, native re-detection, minimal environment, null stdin and explicit
+consent. Native source changes are implemented but NOT compiled or runtime
+validated: Cargo/Rust remain absent. Four Unix-native test cases are prepared
+for mixed output/nonzero exit, combined overflow, child timeout and inherited-pipe
+timeout. Required gate: `cargo test --manifest-path desktop/src-tauri/Cargo.toml
+verification::tests` in a supported native environment, followed by installed-Mac
+lifecycle acceptance. Process-tree cancellation and user cancellation remain
+missing; direct-child kill/drop is not descendant termination or a sandbox.
+
+Independently verified: IPC receipts validate requested check identity, bounded
+text, finite timing and success/exit consistency. New attempts retire old success;
+malformed results do not display untrusted output. Source epochs bind consent,
+including edit-and-undo, and stale-result handling remains intact. External disk
+changes are not covered by renderer epochs. Consent now says navigation does not
+cancel a check. Parser/editor/demo focused tests pass71 cases; actual desktop
+ES2021 TypeScript passes. An existing selection test raced a still-disabled Ask
+Agent button; it now waits for the actionable control rather than sleeps/retries.
+Independent source review found no remaining blocker after an intermediate stale
+Rust tail was corrected; this is not compiler/native acceptance. No remote CI,
+push, merge, deployment, resource, billing or paid-provider operation.
+A synchronous pending-operation guard additionally prevents duplicate consent
+clicks from dispatching concurrent checks; its targeted connected regression
+passes. Lint has zero errors/one existing catalog cleanup warning. No user-level
+native cancellation is implemented or claimed.
+
+### Coding loop: reviewed check receipt → unsent Agent debugging context
+
+Research found selected source could return to Agent, but native check output had
+no equivalent handoff. Reuse the existing credential/workspace-scoped request and
+Inspect/Code Review composer; do not create a new execution or provider path.
+Implementation adds a distinct terminal-evidence variant (no synthetic file path),
+explicit privacy confirmation and exact excerpt preview, max8000 characters with
+visible truncation notice, historical/stale metadata and JSON serialization as
+untrusted data. Source epoch, verification generation and owner/context fences
+reject changed consent. Preparing is single-use, unsent, advisory and never
+saves, reruns a command, approves a proposal or contacts an AI provider. Existing
+prompt text is preserved. Output is not automatically redacted: users must review
+and redact before a later explicit Send; no credentials were used in fixtures.
+
+Acceptance: actual App fixture connects failed native receipt → review → existing
+unsent prompt, with no second native invocation and no provider call. Renderer
+tests reject consent after source changes and verify explicit excerpt bounds.
+Combined targeted milestone passes130 cases across5 suites (Agent actual App,
+repository editor, receipt parser, local context and demo contracts). Desktop
+ES2021 TypeScript passes; lint zero errors/one existing cleanup warning; tracker
+coverage check passes. Independent read-only review found no blocker. Installed
+Mac, actual process teardown/cancellation and real-provider debugging remain
+unverified. Native source checkpointc6b94693 requires compilation and its prepared
+Unix lifecycle tests before any native functionality can be accepted. No pushes,
+CI workflows, merges, deployments, paid calls or production changes occurred.
+
+### Controlled checkpoint preparation — 2026-10-20 (no push authorized)
+
+Candidate source: local `codex/desktop-agent-next-local` at5b9775b0 before this
+preparation entry. All12 explicitly named historical checkpoints are ancestors,
+includingfd15d668/5cd00b81/b4872238/61c741b4 and the latestc6b94693/5b9775b0.
+There are20 commits/51 changed files over recorded main eab40ee046be70abe012bd3a7f9108f92652c92d,
+and10 commits/20 changed files after PR193 head a96367fc719dd6b94eebf3b812008cc659f7aaf5.
+Working tree was clean before preparation. Reviewed changed-file inventory,
+workflow diff and accumulated implementation/review evidence. Added-line history
+pattern scan across all20 commits found no private-key, GitHub/provider/Stripe
+live/AWS-key or credential-bearing DB URL pattern matches; artifact-path scan
+found no local logs, dependency/build directories, env files or installer/key
+artifacts. This bounded pattern scan is not a guarantee against all secret forms.
+Diff whitespace check passes. No remote ref/history/PR was modified.
+
+Read-only GitHub refresh confirms PR193 still open at its original a96367fc head,
+and main still eab40ee. The latest six run records contain the same three PR193
+failures (39501751841/39501751770/39501751771, attempt1) and older PR191 runs;
+there is no newer successful startup evidence. Reuse prior zero-step/zero-billed
+startup findings; no failed run was retried. Exact startup cause remains unknown.
+The GitHub connector rejects account billing usage endpoints; local `gh api`
+network access fails with socket operation-not-permitted. No escalation or
+credential workaround attempted. Current allowance, spending cap and runner
+availability therefore CANNOT be verified; push approval is not requested yet.
+
+Proposed future checkpoint, only after readiness/cost evidence and explicit
+owner approval: push the exact approved local SHA to this development branch,
+leaving PR193 and all blocked PR refs unchanged; authorize the PR checkpoint
+separately if needed. Required checks remain Test (full types/tests/offline auth/
+website build), Desktop CI Linux plus macOS (frontend/native tests/clippy), and
+Isolated website acceptance. Feature-only pushes have no heavy push trigger;
+a PR event is required for those checks. No duplicate manual dispatch or rerun.
+No merge, main push, Vercel deployment or installer release. Vercel deployment
+control remains false; automatic paid Agent review is a separate previously
+recorded cost blocker and must be accounted for before any new PR activity.
+
+Independent local review corrected a redundant borrow introduced when native
+runner root became &Path, avoiding an obvious clippy risk. This is not Rust
+compilation evidence. Rust/native lifecycle, installed Mac and real-provider
+execution remain explicitly unverified. Existing130-case renderer/contract
+milestone evidence is reused rather than rerunning unrelated suites.
+Continued independent boundary hardening: receipt exit codes now match native i32
+range, and elapsed timing must be a nonnegative safe integer rather than merely
+finite. This rejects fractional/unsafe timing and impossible native exit values.
+All13 targeted receipt cases pass; no native or provider execution is implied.
+
+### Push-only snapshot proposal — frozen at4db11e37, awaiting owner approval
+
+Fresh read-only evidence: latest3 run IDs/status/attempts are unchanged PR193
+startup failures. No workflows dispatched or minutes spent by this investigation.
+Account usage remains unavailable through the connector; the previously observed
+CLI network block is reused, not repeatedly probed. Startup cause, current Actions
+allowance and any account spending authorization remain unverified. This proposal
+therefore does NOT authorize or attempt a CI checkpoint.
+
+Target: existing local `codex/desktop-agent-next-local`, new remote ref of exactly
+the same name. GitHub GET for that remote ref returns404; the current open PR
+inventory contains only193/192/191/187, with none on this branch. PR193 remains
+at a96367fc719dd6b94eebf3b812008cc659f7aaf5. Snapshot:
+`4db11e37775ff0f50646f85afabaa54f02ffd5ca`, containing21 commits beyond recorded
+main and11 beyond PR193. This includes all previously approved/preserved local
+milestones throughc6b94693/5b9775b0 plus4db11e37. Later local preparation work
+is excluded by using an explicit immutable SHA rather than HEAD.
+
+Proposed command, NOT executed:
+`git -c push.followTags=false push origin 4db11e37775ff0f50646f85afabaa54f02ffd5ca:refs/heads/codex/desktop-agent-next-local`
+No force, tags, main ref, PR creation/update, upstream changes or workflow dispatch.
+Immediately before any approved push, recheck remote branch absence and no PR for
+that branch; stop and re-evaluate if either changes. Local hooksPath/mirror/followTags/
+submodule-recursion configs are unset, no pre-push hook exists and no .gitmodules
+is tracked. No local pre-push test command is configured.
+
+All10 workflow definitions parsed read-only: Test/Desktop CI/auth-rehearsal push
+triggers match main only; desktop-release push trigger matches desktop-v* tags
+only; website acceptance is PR-only; auth preflight, DB migration and ECS workflows
+are manual-only; release-gate is workflow_call-only. Consequently this exact new
+branch push matches ZERO repository-defined workflows and creates no PR synchronize
+event. CI is expected not to start. A later new PR would start Test, Desktop CI
+Linux/macOS and website acceptance, and requires separate approval plus verified
+usage/startup readiness. No security gate is waived: the snapshot is unvalidated
+and unmergeable by our acceptance policy until required checks succeed.
+
+Vercel git.deploymentEnabled remainsfalse. This proves repository CI trigger
+behavior, not the absence of every possible external service integration. No PR
+or @vercel mention will be created to avoid the known paid review path. Hosted
+changes, paid operations and existing production/installer gates remain blocked.
+Rust compilation, process-tree/user cancellation, native Mac and real-provider
+acceptance remain unverified. No push-only approval has been received.
+
+### Approved push-only snapshot completed — 2026-10-20
+
+Owner explicitly approved exact4db11e37775ff0f50646f85afabaa54f02ffd5ca to
+`refs/heads/codex/desktop-agent-next-local`. Immediately before push, target ref
+was absent, no PR referenced it, all10 exact-snapshot workflow definitions matched
+no branch-push trigger, and snapshot Vercel Git deployment control wasfalse.
+PR193/192/191/187 heads were recorded. Initial shell attempt failed at the sandbox
+proxy before reaching GitHub; the same exact approved command succeeded with
+network permission. No force, tags, PR, merge, dispatch or release was performed.
+GitHub readback confirms the remote SHA exactly matches approval. Immediate and
+later follow-up GETs report zero Actions runs and zero Vercel deployments for
+that SHA. Existing blocked PR heads remain unchanged. Local24367e4e and subsequent
+work were deliberately excluded. Actions account usage/startup readiness remain
+unverified; this backup is not CI/native/customer acceptance.
+
+### Independent desktop continuation: literal replacement
+
+Research: bounded literal search/navigation and undo exist; replacement was
+missing. Reuse editor history/invalidation and explicit Save gates. Implement
+single selected-match replacement only, no regex substitution or Replace All,
+max8000 replacement characters and final1MB UTF-8 limit matching native Save.
+Validate the current literal offset/clean operation context at click; update only
+the buffer, reset match selection and preserve undo. File switches clear replace
+text. No native invocation, command execution or automatic save is introduced.
+Focused evidence:19 distinct parser/editor/demo cases pass (overlapping targeted
+runs excluded), including literal `$&`, Unicode offsets, invalid offsets, bounded
+replacement and UTF-8 overflow, explicit UI selection, undo and no writes/checks.
+Actual desktop ES2021 types pass; lint zero errors/one existing cleanup warning.
+Rust compilation, installed-Mac and real-provider acceptance remain unverified.
+This follow-on is local only; remote approved snapshot remains4db11e37.
+
+### Native/macOS validation availability — 2026-10-20 continuation
+
+Priority native investigation from22944980: environment is Linux6.18.55 x86_64,
+not macOS; cargo/rustc/rustup/xcodebuild are absent from PATH and checked common
+installation locations. No DISPLAY/WAYLAND display is configured. pkg-config
+cannot find GTK3, WebKit2GTK4.1, JavaScriptCoreGTK4.1 or libsoup3. Workspace disk
+is99% used with547MiB available. Installing a complete toolchain, Linux Tauri
+dependencies and compilation outputs is not a safe route here; it would still
+not provide macOS/WKWebView/Keychain acceptance. No packages, toolchains, hosted
+runners or paid infrastructure were provisioned; no existing data was removed.
+No native compilation or native tests ran. Four prepared verification Rust tests
+remain unexecuted. Required environment: supported desktop development host with
+Rust/Cargo, Tauri OS dependencies, adequate build storage and an actual macOS GUI
+for installed-app acceptance. Existing CI already has Linux/macOS native tests
+and clippy; it remains blocked and was not dispatched as a workaround.
+
+Actual acceptance remains:
+- Native application compilation/tests: unverified, missing environment.
+- Terminal user cancellation: missing API/control, not falsely represented by
+  abandoning a view or dropping a renderer request.
+- Direct-child cleanup, collector abort, timeout/inherited-pipe behavior: source
+  implemented, uncompiled and runtime unverified; descendant termination not
+  guaranteed. Process-tree containment remains missing.
+- Multi-file native editing: unverified; local UI is explicitly per-file, not an
+  atomic multi-file write. Existing fixture evidence is not native acceptance.
+- Installed Mac Agent/real provider workflows: unverified; no paid calls.
+
+Fresh read-only Actions evidence: latest three runs are still39501751841,
+39501751771 and39501751770, failure/attempt1. Desktop jobs118900707579 and
+118900707805 expose no steps or log URL. The annotations endpoint family is
+rejected by the connector; exact startup cause and account usage remain unknown.
+No retries, pushes, workflow dispatches or additional Actions minutes initiated.
+Approved remote checkpoint4db11e37 and PR193/other blocked PRs remain preserved.
+
+### Independent debugging capability: source line navigation
+
+Research found no existing go-to-line implementation. Reuse current textarea
+and ownership/busy guards; never interpret terminal output as an instruction to
+open a path. Added explicit one-based line selection for the current buffer,
+validated LF/CRLF and UTF-16 offsets, rejection rather than clamping invalid
+lines, IME-safe Enter handling, and reset on file changes. Navigation preserves
+unsaved text, clears old find-match selection and triggers no writes/checks.
+Toolbar wraps to retain controls at narrower desktop widths.19 distinct targeted
+kernel/renderer/demo cases pass, including unsaved-source navigation and invalid
+line rejection. Actual desktop ES2021 TypeScript passes; lint zero errors/one
+existing catalog cleanup warning. These are independently verified renderer
+results only, not substitutes for any native acceptance above. Local-only source
+continuation; no push/merge/deploy/release/billing or paid-provider operation.
+
+### Preview visibility priority — read-only isolation/cost gate, 2026-10-20
+
+Owner explicitly reprioritized Preview planning over feature development. No
+feature work, resource provisioning, environment writes or deployment performed.
+Remote development checkpoint freshly confirmed at exact4db11e37775ff0f50646f85afabaa54f02ffd5ca;
+localf58a7772 and earlier commits remain preserved and unpublished. Current team
+inventory lists only the existing visionxixlabs production-connected project;
+there is no separate acceptance project to reuse. Inventory pagination fits
+within the returned20-project limit.
+
+Fresh environment metadata inspection used decrypt=false and did not retrieve,
+print or copy plaintext secrets. Existing project's Preview targets still include
+production-shared AWS broker, Azure, GCP service-account, GitHub PAT and AI Gateway
+credential records. Therefore reject deploying there, even with deployment-level
+overrides: a denylist/blanking a few variables does not establish isolation.
+Existing git.deploymentEnabled=false remains intact. Team listing exposes no
+remaining build credit or enforceable no-overage budget. Prior billable Agent
+review evidence remains relevant; available tools do not expose its automatic
+review configuration. Eve agent-run observability is not platform Code Review
+configuration and must not be used to falsely certify automatic reviews disabled.
+Historical billed usage cannot predict the marginal cost of a future build.
+Expected incremental cost is UNKNOWN, not$0. No cost-safe deployment approval is
+requested while these gates remain unresolved.
+
+Additional source evidence: lib/ai/AIProviderManager.ts treats VERCEL_OIDC_TOKEN
+as AI Gateway authority. Omitting AI_GATEWAY_API_KEY alone does not guarantee no
+paid calls. The root layout includes AI chat, and the repo contains authenticated
+API/payment/cloud paths; simply omitting database credentials is not a complete
+safe public preview configuration. No production database may be attached.
+
+Smallest proposed scope, pending verified readiness and later explicit approval:
+1. Freeze exact approved4db11e37 (later local changes require a separately reviewed
+   snapshot). Separate protected project, no Git import or PR, no inherited
+   project/shared env/integration attachment, no domains/aliases/cron activation.
+   Preserve source Git deployment suppression. Create nothing until costs verified.
+2. Public-website-only acceptance initially: homepage/product/pricing/download
+   messaging/navigation and explicitly simulated demo assets. No authenticated
+   cockpit/login success, billing or cloud/AI acceptance claims. Require reviewed
+   request allowlisting or a static-only artifact that excludes API/functions;
+   verify all browser/background/widget paths cannot invoke payment, provider,
+   cloud or production endpoints. This safeguard is not yet implemented/accepted
+   for hosted use; do not deploy the unguarded full application.
+3. Minimal allowlisted test-only configuration, fresh session secret if required,
+   isolated Preview origin and no database, OAuth, email, Stripe, cloud/GitHub or
+   AI credentials. No Vercel OIDC provider fallback may remain reachable. Inspect
+   both build-time and runtime bindings without printing values. Build without
+   production env or migration commands; retain TypeScript/security checks.
+4. One manual Preview build/deployment only, no new PR, GitHub workflow, platform
+   Agent invocation or automatic subsequent deployments. Keep protection enabled;
+   do not mint bypass URLs. Test permitted routes/mobile/navigation and rejection
+   of prohibited API/protected routes. Preserve production configuration unchanged.
+5. Record exact SHA/artifact digest, target project and cost ceiling; obtain owner
+   approval for that concrete candidate only after isolation, paid-review controls
+   and remaining included usage/cost bounds are verified. No automatic retry.
+
+Required owner evidence/action: sanitized team Billing Usage/remaining included
+build allowance and approved incremental limit (if any); actual Agent Code Review
+automatic-trigger status/manual-only control for this repository; confirm separate
+protected project is available under those entitlements without inherited secrets.
+Never request credential values or share connection strings. Need explicit
+provisioning and Preview deployment approval after these facts and isolation tests
+are complete. Existing production, DB, billing and installer gates stay separate.
+No changes were made to any external setting, GitHub PR, production or billing.
+
+### Website-only Preview preparation — feature work paused
+
+Owner clarified immediate scope: public site visibility only, no auth/database/
+payment/AI/cloud dependency, no provisioning/deployment yet. Consolidated the
+minimal static-package boundary and exact owner confirmation fields in
+`docs/mission/WEBSITE_ONLY_PREVIEW_APPROVAL.md`. Reuse4db11e37 public design/assets
+through a separate static entry; exclude session/chat/backend/transaction paths,
+not merely their secrets. No static entry was built or hosted. Expectation remains
+unknown marginal cost, not assumedfree. Current platform automatic-review toggle
+label/value is not verified; exact pane is Agent→Code Review→repository. Billing
+checks must distinguish remaining team entitlement from old invoices and alerts
+from hard limits. No new owner permission is requested before these confirmations;
+once readiness/artifact checks pass, present ONE final scoped provisioning/Preview
+approval request. All source/PRs/production settings remain preserved. No further
+feature development, build, workflow, provider call or external mutation occurred.
+
+### Website Preview: owner cost facts accepted, enforcement still blocked
+
+Owner confirms automatic platform code reviews OFF, team Pro and$20 credit
+exhausted. Recorded without re-requesting confirmation. Updated website-only
+approval document with concrete static artifact/project configuration and distinct
+infrastructure protection. No feature development, build, provisioning or upload.
+Spend docs show threshold notifications, not evidence this team's budget is a
+hard cap; team metadata does not expose effective pause action/scope. Need
+sanitized owner view of Spend Management and an acceptable incremental Preview
+budget; do not alter team-wide controls that could pause production. Protection
+must be verified on the separate project before upload and included in the one
+final approved action. Expected marginal cost remainsunknown and potentially
+billable; credit exhaustion does not establish that every SKU is exhausted, nor
+that the Preview can befree. No final deployment approval requested prematurely.
+Existing source/PRs/production settings unchanged; no paid provider call made.
+
+### Spend pause read-only investigation — no execution probe
+
+Accepted owner facts:$5 team budget, Pause ON, Webhook OFF,$181.05 Over Budget,
+automatic Agent reviews OFF. Deployment/provisioning/billing changes forbidden;
+no budget increase or bypass proposed. Available team/project metadata does not
+expose actual account build-block enforcement. Existing latest deployment READY
+is historical and cannot certify serving/build permission. Official accessible
+pause docs cover production traffic/503, not a verified account-wide spending
+cap. Exact new-build/deployment restriction is unverified; keep hosted work held
+rather than test with an operation. Prior accrued usage and recurring subscriptions
+are not canceled by a pause; coverage of pending builds/Preview/separate services
+remains unknown. Added exact read-only owner/support questions to website-only
+approval plan. No new project, build, deploy, API mutation, provider call or GitHub
+change occurred. Preservecheckpoint4db11e37 and all blocked PRs/local commits.
+
+### Local visual review without Vercel — checkpoint4db11e37
+
+Owner requested actual local website or rendered screenshot fallback; no billing
+investigation or hosted provisioning. Prepared detached exact-source worktree
+`/tmp/axiom-preview-4db11e37` without altering current branches or existing work.
+Reused installed dependencies through a symlink; no install/build or paid call.
+Reviewed existing owned visual fixture, which allowlists homepage/product/approval
+docs GETs, denies external/API transport, strips usable integration credentials,
+and retains managed proxy/CA/process controls. Its --prepare failed at its first
+Git child: spawnSync git EPERM. No Next server/browser started, no fresh page
+render or live preview URL is available. No guard was removed, subprocess denial
+bypassed, or sandbox escalation used to evade it. Current exposed environment
+tools offer no verified owner browser-port forwarding route.
+
+Fallback delivered: read-only downloaded existing Actions artifact12287220263
+from the already completed isolated website run atfbf65b84a538349c9e466ca5c0706896f7a028fb.
+No workflow ran. Extracted only six expected PNGs, verified every SHA256 against
+`docs/mission/public-website-browser-acceptance-fbf65b84.json`. Screenshots are real
+Next/browser renders, not invented/mockup images. They show the homepage tour
+section, Agent review/held Terraform stories, mobile/reduced-motion product tour,
+and approval documentation, NOT the complete homepage or all pricing/signup pages.
+Compared4db11e37 against captured source: no differences in app/page, app/product,
+app/docs/approval-workflow, marketing/nav/footer/layout/styles/public assets.
+Shared demo metadata has changed, so retained images are explicitly not a fresh
+exact-checkpoint acceptance claim. Current key-page rendering remains unverified.
+
+Owner-review files outside Git: `/workspace/artifacts/axiom-website-review/` has
+index.html, six images, provenance.json and axiom-website-screenshots.zip. Gallery
+is script-free, self-only images, no credentials or external integration. Open
+index.html (or unzip locally and double-click it); click an image for full size.
+Requested opening gallery in app panel; tool reports queued, not proof owner saw
+it. Home/product-mobile/docs PNGs were also visually inspected via image tool.
+Existing rendered samples remain labeled simulated; no auth/native/payment/cloud
+or real provider acceptance. No push/merge/deployment/production change occurred.
+### 2026-10-20 — execute existing owned commercial SQL acceptance in CI
+
+Research: the default suite deliberately skips all34 owned PG cases. Six prepared
+legacy admission cases and19 allocation/anniversary cases therefore remained
+declarations rather than SQL proof. The existing suite owns a fresh Docker PG17
+container, generated password, empty loopback-only database and constructor-bound
+Prisma clients; it refuses external URLs/env files and retains checked child
+environments. Local Docker info is denied EPERM; no escalation or guard bypass.
+
+Plan: reuse this existing suite in a path-scoped pull-request/main/manual GitHub
+job with read-only repository permissions, no environment/secrets, synthetic
+provider implementations and no HTTP flags. Pre-pull the same PG17 image used by
+the current auth rehearsal; the harness keeps its --pull=never launch and cleanup.
+Require32 executed SQL passes (six legacy,19 allocation,seven service), allowing
+only the two named HTTP cases to remain skipped. The existing genuine five-minute
+TTL test and original deadlines stay unchanged. No production migration or paid
+provider call occurs; this does not establish hosted Stripe/provider/customer
+acceptance. A daemon-query failure or leftover owned container must fail cleanup.
+
+The report gate's valid-run check was red before implementation. All20 gate and
+legacy-declaration checks pass; a real default-suite Vitest JSON report with
+0pass/34pending is correctly rejected. Independent review confirmed isolated
+bindings/report semantics and caught a command-substitution cleanup false pass;
+separate checked Docker capture fixes it. Actual SQL/CI execution remains pending.
+
+Streaming head25cd559a browser39483571041 passes12 checks with unchanged source,
+empty cleanup, six console errors and zero runtime exceptions. ZIP SHA256 is
+235599fff5b0245a4b8315a19154fb0149f097f4c6e9268f6ae62be50c5e0e1f.
+Five captures match reviewed e9d79d6a images exactly; the changed documentation
+image was inspected separately. Floating-widget overlap remains a visual limit;
+historical navigation cause remains unknown. Native39483570885 passes18 tests
+and Clippy. Full39483571044 passed types,8646 tests (34 skipped), offline auth and
+the production website build without deployment. PR186 was normally merged into
+PR184 as06f5b432 only after all exact25cd559a gates passed. Parent/main integration
+still requires its own applicable checks; production approvals remain intact.
+
+
+Owned PG run39485471622 at5955207d executed all32 SQL cases successfully with
+two named HTTP cases skipped, including the genuine five-minute hold and actual
+row-lock/rollback/usage-link cases. Container cleanup also passed. The workflow
+then failed its new report gate: Vitest aggregates numPendingTests but assertion
+rows use skipped, not pending. The captured installed reporter output confirms
+that mapping. A corrected valid fixture was red against the old gate; the parser
+now requires only the two named HTTP rows to be skipped and still demands all32
+SQL passes. An explicit obsolete-pending rejection regression and independent
+review close the format fix. All21 gate/declaration checks, scoped types/lint
+pass. Evidence: mission/owned-commercial-sql-5955207d.json. The workflow remains
+failed for that head; fresh corrected-head CI is required. Its browser failure
+remains separately recorded, with no retry absent this substantive correction.
+No SQL implementation, expiry, financial rule or production state changed.
+
+### Owned application HTTP acceptance — portable isolated rehearsal
+
+Research: the existing first HTTP case already exercises seeded credentials,
+actual Next/Auth.js cookies, versioned billing views, unsupported-operation
+rejection and provider-disabled hold release. Reuse it in a separate CI job,
+filtered to that case; the independent SQL job still requires all32 cases and
+its original five-minute expiry check. The separately bound checkout worker
+stays disabled: its prior evidence is preserved, not treated as portable proof.
+No signup, hosted Stripe checkout, paid provider or production acceptance claim.
+
+The existing launch policy now also protects this HTTP child and its Prisma
+setup; managed selectors are retained and the composed environment revalidated.
+No guard stripping, manifest rebinding, production credentials or financial-rule
+change. Independent read-only review found no blocker. A receipt regression
+exposed an inferred checkout skip; the gate now verifies that exact named row.
+Targeted gate/declaration/launch-policy checks pass69. Required acceptance is a
+fresh owned-container HTTP run, all32 SQL passes, cleanup and applicable PR CI;
+local Docker access remains restricted, with no bypass attempted.
+
+Corrected SQL head e3a472df run39486872996 passed32 cases, the receipt gate and
+cleanup. Its browser run39486872669 failed11 checks at documentation navigation:
+79.824s click,388 responsive polls to120s, no documentation request observed at
+the proxy, unchanged source and empty cleanup. Root cause remains unknown; no
+same-head retry, timeout change or browser gate waiver. Continue independent
+application/native acceptance while retaining this unresolved browser gate.
+
+### GitHub consolidation resumed — all prior work retained
+
+Latest owner direction stops Preview/billing/screenshot work; focus returns to
+product and GitHub consolidation. Read-only PR audit:187=e356c036 (conflicted),
+191=a2b488ff,192=0e418a4b,193=a96367fc. Main remains eab40ee046be70abe012bd3a7f9108f92652c92d.
+Graph proves191/192/193 are already ancestors of both pushed4db11e37 and latest
+local continuation. Do not replay/cherry-pick/reimplement them.187 is missing and
+adds six unique files/changes: owned SQL/HTTP CI workflow, strict evidence gates,
+tests, fixture-launch selector handling and historical receipt/tracker evidence.
+
+Prepared local branch codex/axiom-consolidation-local from3d738ca2 and merged187
+without rewriting histories. Sole conflict was the tracker; retained every source
+line from BOTH parents, verified programmatically. No source conflict or removal
+of either acceptance job/gate. Independent review found no integration/security
+blocker. Historical source receipts are not acceptance of this combined head.
+
+Targeted integration run:86 passed/2 failed across88 cases. Both failures are in
+unchanged child-environment tests that spawn literal Node children: one explicitly
+reports spawnSync Node EPERM; the other parses empty stdout and reports a secondary
+JSON error. No guard removal, skipped assertions, retries or timeout increase.
+This environment cannot establish those subprocess acceptance gates. Commercial
+evidence-gate and owned-launch-policy suites pass. SQL/HTTP Docker/native/installed
+Mac/real-provider acceptance of this merged head remains unverified.
+
+GitHub exact-head checks:187 core Test/SQL/HTTP/native pass, website fails;
+191/192 Test/native pass, website fails;193 Test/native/website fail before steps.
+All remain ineligible for merge under owner-required gates. Main branch API says
+protected=false, but that does NOT waive explicitly required quality gates.
+Read-only CLI request for193 startup annotations returns Forbidden even with
+normal network access; no startup cause verified, no workflow retry dispatched.
+
+Clean sequence: retain all original PR refs and their historical check evidence;
+review one consolidated descendant containing all four heads and later local
+work; use one meaningful CI checkpoint only once startup access is resolved.
+That checkpoint must include Test, Linux/macOS native CI, website acceptance and
+owned SQL/HTTP acceptance. Merge only the exact reviewed/passing eligible head;
+then mark historical PRs superseded only after main ancestry proves preservation.
+Do not land overlapping old PRs individually merely to make the PR list smaller.
+A no-PR/non-main source backup may be pushed if trigger/isolation review proves
+no workflows/deployments/paid operations; no automatic test retries. No production
+or paid operation is authorized by this consolidation.
+Consolidated Agent/profile/editor/receipt regression milestone passes129 cases
+across6 targeted suites. Detailed immutable-head overlap/landing plan is in
+`docs/mission/GITHUB_CONSOLIDATION.md`. Follow-on test diagnostic now asserts a
+subprocess spawn error before parsing stdout, exposing EPERM rather than a
+misleading JSON exception; it does not change admission/fixture guards or claim
+that the blocked process ran. Existing failure evidence remains retained; no
+pointless repeat of those subprocess tests. Source/history/artifact scan found
+no matching added secret patterns or tracked local artifacts. All four PR heads
+and remote4db11e37 remain ancestors of the new local consolidated branch.
+
+### PR194 executed CI and controlled local repair
+
+Attempt2 at750bb17c: both Desktop CI jobs and both PostgreSQL/commercial HTTP acceptance jobs passed. Test typecheck passed; Vitest reported8,879 passes,34 skips and one reverse-order conversation-selection failure. Reproduced locally before repair. New selections now supersede pending reads; existing epochs/credential fences reject stale results and send/approval/new-chat gates remain intact. Five affected suites pass51 cases; desktop ES2021 TypeScript passes. Installed-Mac and real-provider acceptance remain separate.
+
+Website remains failed after11 interaction gates: documentation click generated no destination document/RSC request. Local fixture preflight fails at managed spawnSync git EPERM before browser startup. No guard removal, timeout increase, synthetic navigation success or unchanged-head retry. Root cause remains unverified. KeepPR194 draft, preserve187/191/192/193 and all unpublished native-file-creation work. Vercel remains paused.
+
+Automated approval review rejected publishing the new repair, citing earlier exact750bb17c authorization and billing hold despite the newer instruction to push verified fixes. Remote remains750bb17c; no workflow retry or new CI run. Exact repair publication requires renewed approval through the review gate; do not work around it.
+
+### PR194 website intermittent-navigation diagnostics — local only
+
+Approved6e23fab7 is published; all four workflows initially passed (8,880 Vitest passes,16 offline-auth tests,293-page production build, native Desktop CI, SQL/HTTP and12 browser gates). Ready-for-review website39520883805 then failed at documentation navigation with no destination request. Preserve that failed gate,194 and187/191/192/193; no same-head retry or merge. Root cause unconfirmed. Prepare bounded passive click/default-prevention, Next Link intent, delayed-replay polling and main-frame transition diagnostics; existing destination request/DOM acceptance, deadlines and isolation remain unchanged. Pure focused tests are implementation evidence only, not actual browser acceptance. Local supervisor and three subprocess cases remain EPERM-blocked; no guard bypass. Owner requires final independent review, test results and exact diagnostic commit before push authorization. Vercel/production operations remain prohibited.

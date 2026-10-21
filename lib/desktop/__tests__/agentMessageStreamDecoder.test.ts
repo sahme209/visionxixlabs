@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { readAgentMessageStream } from "../../../desktop/src/lib/agentMessageStream";
 import { AGENT_STREAM_CONTENT_TYPE } from "../agentMessageStreamProtocol";
 
@@ -29,4 +29,18 @@ describe("desktop Agent stream decoder", () => {
   ].map(events => ({ events })))("refuses missing, duplicate or invalid completion %#", async ({ events }) => {
     await expect(readAgentMessageStream(response(events), () => undefined, new AbortController().signal)).rejects.toThrow();
   });
+});
+
+it("decodes without a native abort-check method and refuses aborted signals without a reason", async () => {
+  const controller = new AbortController();
+  Object.defineProperty(controller.signal, "throwIfAborted", { value: undefined });
+  expect(await readAgentMessageStream(response([terminal]), vi.fn(), controller.signal)).toEqual(terminal.data);
+  controller.abort(); Object.defineProperty(controller.signal, "reason", { value: undefined });
+  await expect(readAgentMessageStream(response([terminal]), vi.fn(), controller.signal)).rejects.toMatchObject({ name: "AbortError" });
+});
+it("preserves a supplied cancellation reason instead of replacing it with the compatibility fallback", async () => {
+  const controller = new AbortController(), reason = { code: "synthetic-user-cancellation" };
+  Object.defineProperty(controller.signal, "throwIfAborted", { value: undefined });
+  controller.abort(reason);
+  await expect(readAgentMessageStream(response([terminal]), vi.fn(), controller.signal)).rejects.toBe(reason);
 });

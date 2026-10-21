@@ -83,6 +83,7 @@ describe("owned Prisma setup child environment", () => {
   it("roundtrips the checked framework preload through a literal child without a database/CLI/server", () => {
     const child = newTestPrismaEnvironment({ HTTPS_PROXY: "opaque-managed-proxy", STRIPE_SECRET_KEY: "forbidden" }, process.execArgv, fixture.databaseUrl);
     const result = spawnSync(process.execPath, ["-e", 'console.log(JSON.stringify({ owned: new URL(process.env.DATABASE_URL).hostname === "127.0.0.1" && process.env.DATABASE_URL === process.env.DIRECT_URL && process.env.DATABASE_URL === process.env.SHADOW_DATABASE_URL, managed: process.env.HTTPS_PROXY === "opaque-managed-proxy", noProvider: process.env.STRIPE_SECRET_KEY === undefined && process.env.AI_GATEWAY_API_KEY === undefined, preload: process.env.NODE_OPTIONS.includes("suppress-warnings.cjs") }))'], { env: child, encoding: "utf8", timeout: 10000 });
+    expect(result.error).toBeUndefined();
     expect(result.status).toBe(0); expect(JSON.parse(result.stdout)).toEqual({ owned: true, managed: true, noProvider: true, preload: true });
   });
   it.each(["postgresql://postgres:synthetic@remote.invalid:5432/axiom_new_test_contract_rehearsal", "postgresql://postgres:synthetic@127.0.0.1:5432/production"])("refuses a non-owned Prisma target", database => {

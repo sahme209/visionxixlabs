@@ -37,6 +37,7 @@ export const AUDIT_SUBJECT_KINDS = [
   "integration",
   "automation",
   "airflow_dag_run",
+  "agent_conversation",
 ] as const;
 export type AuditSubjectKind = (typeof AUDIT_SUBJECT_KINDS)[number];
 

@@ -90,9 +90,14 @@ pub async fn run_repository_check(repository_path: String, check_id: String) -> 
     let root = crate::git::repository_root(&repository_path)?;
     let check = detected_checks(&root)?.into_iter().find(|check| check.definition.id == check_id)
         .ok_or_else(|| "That verification check is not available for this repository.".to_string())?;
+    run_detected_check(&root, check, TIMEOUT).await
+}
+
+async fn run_detected_check(root: &Path, check: CheckCommand, deadline: Duration) -> Result<RepositoryCheckResult, String> {
+    let check_id = check.definition.id.clone();
     let started = std::time::Instant::now();
     let mut command = Command::new(check.executable);
-    command.args(&check.args).current_dir(&root).kill_on_drop(true)
+    command.args(&check.args).current_dir(root).kill_on_drop(true)
         .env_clear().env("PATH", std::env::var_os("PATH").unwrap_or_default())
         .env("HOME", std::env::var_os("HOME").unwrap_or_default())
         .env("CI", "1").env("NO_COLOR", "1")
@@ -104,24 +109,48 @@ pub async fn run_repository_check(repository_path: String, check_id: String) -> 
     let read_stream = |stream: tokio::process::ChildStdout, signal: mpsc::Sender<()>| tokio::spawn(async move {
         let mut output = Vec::new();
         let read = stream.take(MAX_OUTPUT_BYTES + 1).read_to_end(&mut output).await;
-        if output.len() as u64 > MAX_OUTPUT_BYTES { let _ = signal.send(()).await; output.truncate(MAX_OUTPUT_BYTES as usize); }
+        if output.len() as u64 > MAX_OUTPUT_BYTES { let _ = signal.send(()).await; }
         (read, output)
     });
-    let stdout_task = read_stream(stdout, overflow_tx.clone());
-    let stderr_task = tokio::spawn(async move {
-        let stream = stderr;
-        let mut output = Vec::new();
-        let read = stream.take(MAX_OUTPUT_BYTES + 1).read_to_end(&mut output).await;
-        if output.len() as u64 > MAX_OUTPUT_BYTES { let _ = overflow_tx.send(()).await; output.truncate(MAX_OUTPUT_BYTES as usize); }
-        (read, output)
-    });
-    let status = tokio::select! {
-        result = child.wait() => result.map_err(|error| format!("Verification process failed: {error}"))?,
-        _ = overflow_rx.recv() => { let _ = child.kill().await; return Err("Verification stopped because output exceeded 1 MB.".to_string()); },
-        _ = tokio::time::sleep(TIMEOUT) => { let _ = child.kill().await; return Err("Verification stopped after the 5 minute safety limit.".to_string()); },
+    // Aborting collectors on every exit also releases inherited pipes when a
+    // descendant outlives the direct child. This does not terminate that descendant.
+    struct Readers {
+        stdout: tokio::task::JoinHandle<(std::io::Result<usize>, Vec<u8>)>,
+        stderr: tokio::task::JoinHandle<(std::io::Result<usize>, Vec<u8>)>,
+    }
+    impl Drop for Readers {
+        fn drop(&mut self) { self.stdout.abort(); self.stderr.abort(); }
+    }
+    let mut readers = Readers {
+        stdout: read_stream(stdout, overflow_tx.clone()),
+        stderr: tokio::spawn(async move {
+            let mut output = Vec::new();
+            let read = stderr.take(MAX_OUTPUT_BYTES + 1).read_to_end(&mut output).await;
+            if output.len() as u64 > MAX_OUTPUT_BYTES { let _ = overflow_tx.send(()).await; }
+            (read, output)
+        }),
     };
-    let (_, stdout_bytes) = stdout_task.await.map_err(|_| "Could not collect verification output.".to_string())?;
-    let (_, stderr_bytes) = stderr_task.await.map_err(|_| "Could not collect verification errors.".to_string())?;
+    // The deadline covers BOTH process exit and pipe drain. Waiting for the
+    // direct child alone does not bound output collection from inherited pipes.
+    let completion = async {
+        let status = child.wait().await.map_err(|error| format!("Verification process failed: {error}"))?;
+        let (stdout_read, stdout_bytes) = (&mut readers.stdout).await.map_err(|_| "Could not collect verification output.".to_string())?;
+        let (stderr_read, stderr_bytes) = (&mut readers.stderr).await.map_err(|_| "Could not collect verification errors.".to_string())?;
+        stdout_read.map_err(|_| "Could not read verification output.".to_string())?;
+        stderr_read.map_err(|_| "Could not read verification errors.".to_string())?;
+        if stdout_bytes.len() + stderr_bytes.len() > MAX_OUTPUT_BYTES as usize {
+            return Err("Verification stopped because combined output exceeded 1 MB.".to_string());
+        }
+        Ok((status, stdout_bytes, stderr_bytes))
+    };
+    let completed = tokio::select! {
+        result = completion => result,
+        Some(()) = overflow_rx.recv() => Err("Verification stopped because output exceeded 1 MB.".to_string()),
+        _ = tokio::time::sleep(deadline) => Err("Verification stopped after the 5 minute process/output safety limit.".to_string()),
+    };
+    // Bound cleanup as well; kill_on_drop remains a direct-child fallback.
+    if completed.is_err() { let _ = tokio::time::timeout(Duration::from_secs(2), child.kill()).await; }
+    let (status, stdout_bytes, stderr_bytes) = completed?;
     let mut output = String::from_utf8_lossy(&stdout_bytes).to_string();
     if !stderr_bytes.is_empty() {
         if !output.is_empty() { output.push('\n'); }
@@ -134,4 +163,39 @@ pub async fn run_repository_check(repository_path: String, check_id: String) -> 
         output: output.trim().to_string(),
         duration_ms: started.elapsed().as_millis(),
     })
+}
+
+
+#[cfg(all(test, unix))]
+mod tests {
+    use super::*;
+    fn shell(script: &str) -> CheckCommand {
+        CheckCommand {
+            definition: RepositoryCheck { id: "fixture".into(), label: "Fixture".into(), command: "fixture shell".into(), description: "Isolated native test".into() },
+            executable: "/bin/sh", args: vec!["-c".into(), script.into()],
+        }
+    }
+    #[tokio::test]
+    async fn captures_both_streams_and_nonzero_exit() {
+        let result = run_detected_check(&std::env::temp_dir(), shell("printf stdout; printf stderr >&2; exit 7"), Duration::from_secs(2)).await.unwrap();
+        assert!(!result.success);
+        assert_eq!(result.exit_code, Some(7));
+        assert_eq!(result.output, "stdout\nstderr");
+    }
+    #[tokio::test]
+    async fn rejects_combined_output_even_when_each_stream_is_under_limit() {
+        let result = run_detected_check(&std::env::temp_dir(), shell("printf '%600000s' ''; printf '%600000s' '' >&2"), Duration::from_secs(2)).await;
+        assert!(result.unwrap_err().contains("combined output"));
+    }
+    #[tokio::test]
+    async fn deadline_includes_pipes_retained_after_direct_child_exit() {
+        // The short-lived descendant is intentionally not claimed as canceled.
+        let result = run_detected_check(&std::env::temp_dir(), shell("sleep 0.3 & exit 0"), Duration::from_millis(40)).await;
+        assert!(result.unwrap_err().contains("safety limit"));
+    }
+    #[tokio::test]
+    async fn deadline_bounds_direct_child_and_collectors() {
+        let result = run_detected_check(&std::env::temp_dir(), shell("sleep 0.3"), Duration::from_millis(40)).await;
+        assert!(result.unwrap_err().contains("safety limit"));
+    }
 }

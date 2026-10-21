@@ -2,7 +2,8 @@
 import { createElement } from "react";
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import { act, cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
-const m = vi.hoisted(() => ({ client: { config: {} as { sessionToken?: string }, hasAuth: vi.fn(), verifyCurrentCredential: vi.fn(), listAgentConversations: vi.fn(), getAgentConversation: vi.fn(), aiProviderStatus: vi.fn(), listAgentSkills: vi.fn(), listGithubRepositories: vi.fn(), listGithubBranches: vi.fn(), listGithubFiles: vi.fn(), listEnvironments: vi.fn(), sendAgentMessage: vi.fn(), createAgentConversation: vi.fn(), approveAgentAction: vi.fn(), rejectAgentAction: vi.fn() } }));
+const m = vi.hoisted(() => ({ invoke: vi.fn(), client: { subscribeContext: () => () => {}, getContextRevision: () => 0, config: {} as { sessionToken?: string }, hasAuth: vi.fn(), verifyCurrentCredential: vi.fn(), listAgentConversations: vi.fn(), getAgentConversation: vi.fn(), aiProviderStatus: vi.fn(), listAgentSkills: vi.fn(), listGithubRepositories: vi.fn(), listGithubBranches: vi.fn(), listGithubFiles: vi.fn(), listEnvironments: vi.fn(), sendAgentMessage: vi.fn(), createAgentConversation: vi.fn(), approveAgentAction: vi.fn(), rejectAgentAction: vi.fn() } }));
+vi.mock("@tauri-apps/api/core", () => ({ invoke: m.invoke }));
 vi.mock("../../../desktop/src/lib/desktopClient", () => ({ desktopClient: m.client }));
 vi.mock("../../../desktop/src/lib/useNativeMenuActions", () => ({ useNativeMenuActions: vi.fn() }));
 vi.mock("../../../desktop/src/lib/preferences", () => ({ readDesktopPreferences: async () => null, writeDesktopPreferences: vi.fn() }));
@@ -186,4 +187,346 @@ it("reloads the saved conversation after interruption without resending or appro
   expect(m.client.getAgentConversation).toHaveBeenCalledTimes(2);
   expect(m.client.sendAgentMessage).toHaveBeenCalledOnce();
   expect(m.client.approveAgentAction).not.toHaveBeenCalled(); expect(m.client.createAgentConversation).not.toHaveBeenCalled();
+});
+it("opens Agent permissions in Settings without resending or discarding the current draft", async () => {
+  const open = vi.fn(); render(createElement(AgentChatView, { onOpenSettings: open })); await draft();
+  fireEvent.click(screen.getByRole("button", { name: "Agent permissions" }));
+  expect(open).toHaveBeenCalledExactlyOnceWith("agents");
+  expect((screen.getByRole("textbox") as HTMLTextAreaElement).value).toBe("Keep this unsent request");
+  expect(m.client.sendAgentMessage).not.toHaveBeenCalled();
+});
+it("preserves the actual App composer, profile and environment across an in-app Settings visit", async () => {
+  m.client.hasAuth.mockReturnValue(true);
+  m.client.verifyCurrentCredential.mockResolvedValue({ ok: true, data: { kind: "desktop_session", organizationId: "fixture-workspace", role: "owner", capabilities: [], access: { allowed: true, code: "active", title: "Access active", message: "Fixture", billingStatus: "no_plan", planTier: "trial" } } });
+  render(createElement(App)); await draft();
+  fireEvent.change(screen.getByRole("combobox", { name: "Specialized Agent" }), { target: { value: "code_review" } });
+  fireEvent.change(screen.getByRole("combobox", { name: "Active deployment environment" }), { target: { value: "env-1" } });
+  fireEvent.click(screen.getByRole("button", { name: "Agent permissions" }));
+  await screen.findByRole("heading", { name: "Agents" });
+  fireEvent.click(screen.getByRole("button", { name: "Agent" }));
+  await screen.findByRole("option", { name: "Fixture model" });
+  expect((screen.getByRole("textbox") as HTMLTextAreaElement).value).toBe("Keep this unsent request");
+  expect((screen.getByRole("combobox", { name: "Specialized Agent" }) as HTMLSelectElement).value).toBe("code_review");
+  expect((screen.getByRole("combobox", { name: "Active deployment environment" }) as HTMLSelectElement).value).toBe("env-1");
+  expect(m.client.sendAgentMessage).not.toHaveBeenCalled();
+});
+it("deactivation aborts streaming and never accepts a late success while retaining an unsent follow-up", async () => {
+  const completion = deferred<unknown>(); let signal!: AbortSignal;
+  m.client.sendAgentMessage.mockImplementation((...args) => { signal = args[5].signal; args[5].onDraft("Partial"); return completion.promise; });
+  const view = render(createElement(AgentChatView, { active: true })); await draft();
+  fireEvent.click(screen.getByRole("button", { name: "Send" })); await screen.findByText("Partial");
+  fireEvent.change(screen.getByRole("textbox"), { target: { value: "Unsent follow-up" } });
+  view.rerender(createElement(AgentChatView, { active: false }));
+  expect(signal.aborted).toBe(true);
+  await act(async () => { completion.resolve({ ok: true, data: { reply: "Late success", proposal: { id: "late", toolName: "commit_github_file", argsJson: {}, riskLevel: "medium", status: "proposed" } } }); });
+  view.rerender(createElement(AgentChatView, { active: true }));
+  await waitFor(() => expect(m.client.aiProviderStatus.mock.calls.length).toBeGreaterThan(1));
+  expect(screen.queryByText("Late success")).toBeNull(); expect(screen.queryByRole("button", { name: "Approve & run" })).toBeNull();
+  expect((screen.getByRole("textbox") as HTMLTextAreaElement).value).toBe("Unsent follow-up");
+  expect(m.client.sendAgentMessage).toHaveBeenCalledOnce();
+});
+it("does not replace a newer request error with a stopped request's late rejection", async () => {
+  let rejectOld!: (reason: Error) => void;
+  const old = new Promise<never>((_resolve, reject) => { rejectOld = reject; });
+  m.client.sendAgentMessage.mockImplementationOnce((...args) => { args[5].onDraft("Old pending response"); return old; });
+  const view = render(createElement(AgentChatView, { active: true })); await draft();
+  fireEvent.click(screen.getByRole("button", { name: "Send" })); await screen.findByText("Old pending response");
+  view.rerender(createElement(AgentChatView, { active: false })); view.rerender(createElement(AgentChatView, { active: true }));
+  m.client.sendAgentMessage.mockResolvedValue({ ok: false, error: "Current request budget refusal" });
+  fireEvent.change(screen.getByRole("textbox"), { target: { value: "New request" } });
+  await waitFor(() => expect((screen.getByRole("button", { name: "Send" }) as HTMLButtonElement).disabled).toBe(false));
+  fireEvent.click(screen.getByRole("button", { name: "Send" })); await screen.findByText("Current request budget refusal");
+  await act(async () => { rejectOld(new Error("Old transport failed")); });
+  expect(screen.getByText("Current request budget refusal")).toBeTruthy();
+});
+it("does not install stale evidence from a stopped request's delayed history refresh", async () => {
+  const old = deferred<unknown>();
+  const view = render(createElement(AgentChatView, { active: true })); await draft();
+  m.client.getAgentConversation.mockReturnValueOnce(old.promise);
+  m.client.sendAgentMessage.mockResolvedValue({ ok: true, data: { reply: "First accepted reply", proposal: null, usage: null } });
+  fireEvent.click(screen.getByRole("button", { name: "Send" })); await screen.findByText("First accepted reply");
+  view.rerender(createElement(AgentChatView, { active: false })); view.rerender(createElement(AgentChatView, { active: true }));
+  m.client.sendAgentMessage.mockResolvedValue({ ok: false, error: "Current request budget refusal" });
+  fireEvent.change(screen.getByRole("textbox"), { target: { value: "New request" } });
+  await waitFor(() => expect((screen.getByRole("button", { name: "Send" }) as HTMLButtonElement).disabled).toBe(false));
+  fireEvent.click(screen.getByRole("button", { name: "Send" })); await screen.findByText("Current request budget refusal");
+  await act(async () => { old.resolve({ ok: true, data: { ...summary, turns: [], actions: [{ id: "stale", toolName: "read_github_file", argsJson: { repositoryFullName: "fixture/repository", branch: "main", path: "stale-probe.ts" }, riskLevel: "low", status: "executed", resultJson: { content: "Old evidence" }, errorMessage: null, createdAt: "2026-10-20" }] } }); });
+  expect(screen.queryByText(/stale-probe.ts/)).toBeNull();
+});
+
+it("opens recorded repository evidence inside the Agent without another service request", async () => {
+  m.client.getAgentConversation.mockResolvedValue({ ok: true, data: { ...summary, turns: [], actions: [{ id: "read-record", toolName: "read_github_file", argsJson: {path: "src/main.ts"}, resultJson: { path: "src/main.ts", content: "recorded source", sha: "saved-sha" }, riskLevel: "low", status: "executed" }] } });
+  render(createElement(AgentChatView));
+  const disclosure = await screen.findByText("Inspect recorded repository evidence");
+  const reads = m.client.getAgentConversation.mock.calls.length;
+  fireEvent.click(disclosure);
+  expect(screen.getByText("recorded source")).toBeTruthy();
+  expect(m.client.getAgentConversation).toHaveBeenCalledTimes(reads);
+  expect(m.client.sendAgentMessage).not.toHaveBeenCalled();
+  expect(m.client.approveAgentAction).not.toHaveBeenCalled();
+});
+
+it("retains an unsaved local file across actual App navigation without another file read", async () => {
+  m.client.hasAuth.mockReturnValue(true);
+  m.client.verifyCurrentCredential.mockResolvedValue({ ok: true, data: { kind: "desktop_session", organizationId: "fixture-workspace", role: "owner", capabilities: [], access: { allowed: true, code: "active", title: "Access active", message: "Fixture", billingStatus: "no_plan", planTier: "trial" } } });
+  m.invoke.mockImplementation(async (command: string) => {
+    if (command === "default_repos_directory") return "/owned";
+    if (command === "list_local_repositories") return ["/owned/A"];
+    if (command === "repository_status") return {rootPath: "/owned/A", repositoryFullName: "fixture/repository", branch: "feature", ahead: 0, behind: 0, changedFiles: []};
+    if (command === "list_repository_files") return ["main.ts"];
+    if (command === "detect_repository_checks") return [];
+    if (command === "read_repository_file") return "saved local content";
+    throw new Error(`Unexpected command ${command}`);
+  });
+  render(createElement(App));
+  await screen.findByRole("button", {name: "Agent permissions"});
+  fireEvent.click(screen.getByRole("button", {name: "GitHub repositories"}));
+  fireEvent.click(await screen.findByRole("button", {name: "main.ts"}));
+  fireEvent.change(await screen.findByRole("textbox", {name: "Editing main.ts"}), {target: {value: "unsaved local draft"}});
+  fireEvent.click(screen.getByRole("button", {name: "Agent"}));
+  fireEvent.click(screen.getByRole("button", {name: "GitHub repositories"}));
+  expect((await screen.findByRole("textbox", {name: "Editing main.ts"}) as HTMLTextAreaElement).value).toBe("unsaved local draft");
+  expect(m.invoke.mock.calls.filter(([command]) => command === "read_repository_file")).toHaveLength(1);
+  expect(m.invoke.mock.calls.filter(([command]) => command === "write_repository_file")).toHaveLength(0);
+});
+
+it("keeps unsent prompts separate when switching conversations", async () => {
+  const second = {...summary, id: "conversation-2", title: "Second task"};
+  m.client.listAgentConversations.mockResolvedValue({ok: true, data: {conversations: [summary, second]}});
+  m.client.getAgentConversation.mockImplementation(async (id: string) => ({ok: true, data: {...summary, id, turns: [], actions: []}}));
+  render(createElement(AgentChatView)); await draft();
+  fireEvent.change(screen.getByRole("combobox", {name: "Agent conversation"}), {target: {value: second.id}});
+  await waitFor(() => expect((screen.getByRole("combobox", {name: "Agent conversation"}) as HTMLSelectElement).value).toBe(second.id));
+  expect((screen.getByRole("textbox") as HTMLTextAreaElement).value).toBe("");
+  fireEvent.change(screen.getByRole("textbox"), {target: {value: "Second unsent task"}});
+  fireEvent.change(screen.getByRole("combobox", {name: "Agent conversation"}), {target: {value: summary.id}});
+  await waitFor(() => expect((screen.getByRole("textbox") as HTMLTextAreaElement).value).toBe("Keep this unsent request"));
+  fireEvent.change(screen.getByRole("combobox", {name: "Agent conversation"}), {target: {value: second.id}});
+  await waitFor(() => expect((screen.getByRole("textbox") as HTMLTextAreaElement).value).toBe("Second unsent task"));
+  expect(m.client.sendAgentMessage).not.toHaveBeenCalled();
+});
+it("preserves the previous unsent prompt when starting a new chat", async () => {
+  m.client.createAgentConversation.mockResolvedValue({ok: true, data: {...summary, id: "new-chat"}});
+  m.client.getAgentConversation.mockImplementation(async (id: string) => ({ok: true, data: {...summary, id, turns: [], actions: []}}));
+  render(createElement(AgentChatView)); await draft();
+  fireEvent.click(screen.getByRole("button", {name: "New chat"}));
+  await waitFor(() => expect((screen.getByRole("combobox", {name: "Agent conversation"}) as HTMLSelectElement).value).toBe("new-chat"));
+  expect((screen.getByRole("textbox") as HTMLTextAreaElement).value).toBe("");
+  fireEvent.change(screen.getByRole("combobox", {name: "Agent conversation"}), {target: {value: summary.id}});
+  await waitFor(() => expect((screen.getByRole("textbox") as HTMLTextAreaElement).value).toBe("Keep this unsent request"));
+  expect(m.client.sendAgentMessage).not.toHaveBeenCalled();
+});
+it("blocks overflowing draft navigation without discarding or creating a chat", async () => {
+  render(createElement(AgentChatView)); await draft();
+  const prompt = "x".repeat(500001);
+  fireEvent.change(screen.getByRole("textbox"), {target: {value: prompt}});
+  fireEvent.click(screen.getByRole("button", {name: "New chat"}));
+  expect(screen.getByText(/Local draft capacity reached/)).toBeTruthy();
+  expect((screen.getByRole("textbox") as HTMLTextAreaElement).value).toBe(prompt);
+  expect(m.client.createAgentConversation).not.toHaveBeenCalled();
+  expect(m.client.sendAgentMessage).not.toHaveBeenCalled();
+});
+it("preserves the current prompt after a failed conversation switch", async () => {
+  m.client.listAgentConversations.mockResolvedValue({ok: true, data: {conversations: [summary, {...summary, id: "other"}]}});
+  render(createElement(AgentChatView)); await draft();
+  m.client.getAgentConversation.mockResolvedValueOnce({ok: false, error: "fixture_failure"});
+  fireEvent.change(screen.getByRole("combobox", {name: "Agent conversation"}), {target: {value: "other"}});
+  await screen.findByText("The selected conversation could not be verified.");
+  expect((screen.getByRole("textbox") as HTMLTextAreaElement).value).toBe("Keep this unsent request");
+  expect((screen.getByRole("combobox", {name: "Agent conversation"}) as HTMLSelectElement).value).toBe(summary.id);
+  expect(m.client.sendAgentMessage).not.toHaveBeenCalled();
+});
+
+it("refreshes enabled skill shortcuts after returning to the Agent and preserves the prompt when selecting one", async () => {
+  const skill = {id: "safe-repository-change", name: "Safe repository change", description: "Existing workflow", category: "GitHub", toolNames: ["read_github_file"], status: "enabled", installedAt: null, updatedAt: null};
+  const view = render(createElement(AgentChatView, {active: true})); await draft();
+  view.rerender(createElement(AgentChatView, {active: false}));
+  m.client.listAgentSkills.mockResolvedValue({ok: true, data: {skills: [skill]}});
+  view.rerender(createElement(AgentChatView, {active: true}));
+  fireEvent.click(await screen.findByRole("button", {name: "/safe-repository-change"}));
+  expect((screen.getByRole("textbox") as HTMLTextAreaElement).value).toBe("/safe-repository-change Keep this unsent request");
+  expect(m.client.sendAgentMessage).not.toHaveBeenCalled();
+});
+it("shows a failed skill lookup and retries it without sending the prompt", async () => {
+  m.client.listAgentSkills.mockResolvedValueOnce({ok: false, error: "unavailable"}).mockResolvedValue({ok: true, data: {skills: []}});
+  render(createElement(AgentChatView)); await draft();
+  fireEvent.click(await screen.findByRole("button", {name: "Retry skills"}));
+  await waitFor(() => expect(m.client.listAgentSkills).toHaveBeenCalledTimes(2));
+  expect((screen.getByRole("textbox") as HTMLTextAreaElement).value).toBe("Keep this unsent request");
+  expect(m.client.sendAgentMessage).not.toHaveBeenCalled();
+});
+it("rejects late enabled-skill shortcuts after leaving and returning with a newer catalog", async () => {
+  const old = deferred<{ok: true; data: {skills: unknown[]}}>();
+  m.client.listAgentSkills.mockReturnValueOnce(old.promise).mockResolvedValue({ok: true, data: {skills: []}});
+  const view = render(createElement(AgentChatView, {active: true})); await draft();
+  view.rerender(createElement(AgentChatView, {active: false}));
+  view.rerender(createElement(AgentChatView, {active: true}));
+  await waitFor(() => expect(m.client.listAgentSkills).toHaveBeenCalledTimes(2));
+  await act(async () => {old.resolve({ok: true, data: {skills: [{id: "stale-skill", status: "enabled"}]}});});
+  expect(screen.queryByRole("button", {name: "/stale-skill"})).toBeNull();
+  expect(m.client.sendAgentMessage).not.toHaveBeenCalled();
+});
+it("hides previously enabled shortcuts when focus refresh cannot verify installation storage", async () => {
+  const skill = {id: "safe-repository-change", name: "Safe repository change", status: "enabled"};
+  m.client.listAgentSkills.mockResolvedValueOnce({ok: true, data: {skills: [skill]}}).mockResolvedValue({ok: true, data: {skills: [skill], storageAvailable: false}});
+  render(createElement(AgentChatView));
+  await screen.findByRole("button", {name: "/safe-repository-change"});
+  fireEvent(window, new Event("focus"));
+  await screen.findByRole("button", {name: "Retry skills"});
+  expect(screen.queryByRole("button", {name: "/safe-repository-change"})).toBeNull();
+  expect(m.client.sendAgentMessage).not.toHaveBeenCalled();
+});
+it("applies a context-bound marketplace skill once after verifying enabled installation without sending", async () => {
+  m.client.listAgentSkills.mockResolvedValue({ok: true, data: {skills: [{id: "safe-repository-change", status: "enabled"}]}});
+  const view = render(createElement(AgentChatView)); await draft();
+  const request = {skillId: "safe-repository-change", context: m.client.config};
+  view.rerender(createElement(AgentChatView, {requestedSkill: request}));
+  await waitFor(() => expect((screen.getByRole("textbox") as HTMLTextAreaElement).value).toBe("/safe-repository-change Keep this unsent request"));
+  fireEvent.change(screen.getByRole("textbox"), {target: {value: "Later unsent edits"}});
+  view.rerender(createElement(AgentChatView, {requestedSkill: request}));
+  expect((screen.getByRole("textbox") as HTMLTextAreaElement).value).toBe("Later unsent edits");
+  expect(m.client.sendAgentMessage).not.toHaveBeenCalled();
+});
+it("rejects a marketplace intent from a different credential context", async () => {
+  m.client.listAgentSkills.mockResolvedValue({ok: true, data: {skills: [{id: "safe-repository-change", status: "enabled"}]}});
+  const view = render(createElement(AgentChatView)); await draft();
+  view.rerender(createElement(AgentChatView, {requestedSkill: {skillId: "safe-repository-change", context: {}}}));
+  await screen.findByText(/Skill selection belongs to a different sign-in/);
+  expect((screen.getByRole("textbox") as HTMLTextAreaElement).value).toBe("Keep this unsent request");
+  expect(m.client.sendAgentMessage).not.toHaveBeenCalled();
+});
+it("connects an enabled marketplace skill to the actual App's retained Agent draft", async () => {
+  m.client.hasAuth.mockReturnValue(true);
+  m.client.verifyCurrentCredential.mockResolvedValue({ok: true, data: {kind: "desktop_session", organizationId: "fixture-workspace", role: "owner", capabilities: [], access: {allowed: true, code: "active", title: "Access active", message: "Fixture", billingStatus: "no_plan", planTier: "trial"}}});
+  m.client.listAgentSkills.mockResolvedValue({ok: true, data: {skills: [{id: "safe-repository-change", name: "Safe repository change", description: "Existing workflow", category: "GitHub", toolNames: ["read_github_file"], status: "enabled"}]}});
+  render(createElement(App)); await draft();
+  fireEvent.click(screen.getByRole("button", {name: "Plugins & Skills"}));
+  fireEvent.click(await screen.findByRole("button", {name: "Use in Agent"}));
+  await waitFor(() => expect((screen.getByRole("textbox") as HTMLTextAreaElement).value).toBe("/safe-repository-change Keep this unsent request"));
+  expect(m.client.sendAgentMessage).not.toHaveBeenCalled();
+  expect(m.client.approveAgentAction).not.toHaveBeenCalled();
+});
+it("rejects an unverified marketplace skill without modifying the draft", async () => {
+  const view = render(createElement(AgentChatView)); await draft();
+  view.rerender(createElement(AgentChatView, {requestedSkill: {skillId: "missing-skill", context: m.client.config}}));
+  await screen.findByText(/selected skill is not verified as enabled/);
+  expect((screen.getByRole("textbox") as HTMLTextAreaElement).value).toBe("Keep this unsent request");
+  expect(m.client.sendAgentMessage).not.toHaveBeenCalled();
+});
+it("waits for the fresh activation catalog before applying a marketplace handoff", async () => {
+  const skill = {id: "safe-repository-change", status: "enabled"};
+  const fresh = deferred<{ok: true; data: {skills: unknown[]}}>();
+  m.client.listAgentSkills.mockResolvedValueOnce({ok: true, data: {skills: [skill]}}).mockReturnValueOnce(fresh.promise);
+  const view = render(createElement(AgentChatView, {active: true})); await draft();
+  await screen.findByRole("button", {name: "/safe-repository-change"});
+  view.rerender(createElement(AgentChatView, {active: false}));
+  view.rerender(createElement(AgentChatView, {active: true, requestedSkill: {skillId: skill.id, context: m.client.config}}));
+  await waitFor(() => expect(m.client.listAgentSkills).toHaveBeenCalledTimes(2));
+  expect((screen.getByRole("textbox") as HTMLTextAreaElement).value).toBe("Keep this unsent request");
+  await act(async () => {fresh.resolve({ok: true, data: {skills: []}});});
+  await screen.findByText(/selected skill is not verified as enabled/);
+  expect((screen.getByRole("textbox") as HTMLTextAreaElement).value).toBe("Keep this unsent request");
+  expect(m.client.sendAgentMessage).not.toHaveBeenCalled();
+});
+it("prepares local selected code once in read-only mode without sending or replacing the existing prompt", async () => {
+  const view = render(createElement(AgentChatView)); await draft();
+  const request = {context: m.client.config, path: "src/main.ts", excerpt: "const answer = 42;"};
+  view.rerender(createElement(AgentChatView, {requestedLocalCode: request}));
+  await waitFor(() => expect((screen.getByRole("textbox") as HTMLTextAreaElement).value).toContain('"excerpt":"const answer = 42;"'));
+  expect((screen.getByRole("textbox") as HTMLTextAreaElement).value).toMatch(/^Keep this unsent request\n\n/);
+  expect((screen.getByRole("combobox", {name: "Specialized Agent"}) as HTMLSelectElement).value).toBe("code_review");
+  fireEvent.change(screen.getByRole("textbox"), {target: {value: "Later draft"}});
+  view.rerender(createElement(AgentChatView, {requestedLocalCode: request}));
+  expect((screen.getByRole("textbox") as HTMLTextAreaElement).value).toBe("Later draft");
+  expect(m.client.sendAgentMessage).not.toHaveBeenCalled();
+  expect(m.client.approveAgentAction).not.toHaveBeenCalled();
+});
+it("rejects a selected-code intent from a previous sign-in", async () => {
+  const view = render(createElement(AgentChatView)); await draft();
+  view.rerender(createElement(AgentChatView, {requestedLocalCode: {context: {}, path: "src/main.ts", excerpt: "PRIVATE SENTINEL"}}));
+  await screen.findByText(/Local selection belongs to a different sign-in/);
+  expect((screen.getByRole("textbox") as HTMLTextAreaElement).value).toBe("Keep this unsent request");
+  expect(m.client.sendAgentMessage).not.toHaveBeenCalled();
+});
+it("connects confirmed local selection to the actual App Agent while retaining the local draft", async () => {
+  m.client.hasAuth.mockReturnValue(true);
+  m.client.verifyCurrentCredential.mockResolvedValue({ok: true, data: {kind: "desktop_session", organizationId: "fixture-workspace", role: "owner", capabilities: [], access: {allowed: true, code: "active", title: "Access active", message: "Fixture", billingStatus: "no_plan", planTier: "trial"}}});
+  m.invoke.mockImplementation(async (command: string) => {
+    if (command === "default_repos_directory") return "/owned";
+    if (command === "list_local_repositories") return ["/owned/A"];
+    if (command === "repository_status") return {rootPath: "/owned/A", repositoryFullName: "fixture/repository", branch: "feature", ahead: 0, behind: 0, changedFiles: []};
+    if (command === "list_repository_files") return ["main.ts"];
+    if (command === "detect_repository_checks") return [];
+    if (command === "read_repository_file") return "original code";
+    throw new Error(`Unexpected command ${command}`);
+  });
+  render(createElement(App)); await draft();
+  fireEvent.click(screen.getByRole("button", {name: "GitHub repositories"}));
+  fireEvent.click(await screen.findByRole("button", {name: "main.ts"}));
+  const editor = await screen.findByRole("textbox", {name: "Editing main.ts"}) as HTMLTextAreaElement;
+  fireEvent.change(editor, {target: {value: "unsaved selected code"}});
+  editor.setSelectionRange(0, 7); fireEvent.select(editor);
+  fireEvent.click(screen.getByRole("button", {name: "Ask Agent about selection"}));
+  fireEvent.click(screen.getByRole("button", {name: "Prepare Agent draft"}));
+  await waitFor(() => expect((screen.getByRole("textbox") as HTMLTextAreaElement).value).toContain('"excerpt":"unsaved"'));
+  expect((screen.getByRole("textbox") as HTMLTextAreaElement).value).toMatch(/^Keep this unsent request/);
+  expect(m.client.sendAgentMessage).not.toHaveBeenCalled();
+  fireEvent.click(screen.getByRole("button", {name: "GitHub repositories"}));
+  expect((screen.getByRole("textbox", {name: "Editing main.ts"}) as HTMLTextAreaElement).value).toBe("unsaved selected code");
+  expect(m.invoke.mock.calls.filter(([name]) => name === "write_repository_file")).toHaveLength(0);
+});
+it.each([false, true])("connects a saved AI file proposal to local review and explicit Save without approving GitHub (multi=%s)", async multi => {
+  m.client.hasAuth.mockReturnValue(true);
+  m.client.verifyCurrentCredential.mockResolvedValue({ok: true, data: {kind: "desktop_session", organizationId: "fixture-workspace", role: "owner", capabilities: [], access: {allowed: true, code: "active", title: "Access active", message: "Fixture", billingStatus: "no_plan", planTier: "trial"}}});
+  const proposal = {id: "file-proposal", toolName: "commit_github_file", status: "proposed", riskLevel: "medium", argsJson: {repositoryFullName: "fixture/repository", branch: "feature", path: "main.ts", content: "proposed local change", _review: {kind: "github_file", baseSha: "blob-sha", baseContent: "original"}}};
+  const action = multi ? {...proposal, toolName: "commit_github_files", argsJson: {repositoryFullName: "fixture/repository", branch: "feature", files: [{path: "main.ts", content: "proposed local change"}, {path: "other.ts", content: "second change"}], _review: {kind: "github_files", files: [{path: "main.ts", baseSha: "a", baseContent: "original"}, {path: "other.ts", baseSha: "b", baseContent: "second original"}]}}} : proposal;
+  m.client.getAgentConversation.mockResolvedValue({ok: true, data: {...summary, turns: [], actions: [action]}});
+  m.invoke.mockImplementation(async (command: string) => {
+    if (command === "default_repos_directory") return "/owned";
+    if (command === "list_local_repositories") return ["/owned/A"];
+    if (command === "repository_status") return {rootPath: "/owned/A", repositoryFullName: "fixture/repository", branch: "feature", ahead: 0, behind: 0, changedFiles: []};
+    if (command === "list_repository_files") return ["main.ts"];
+    if (command === "detect_repository_checks") return [];
+    if (command === "read_repository_file") return "original";
+    if (command === "write_repository_file") return;
+    throw new Error(`Unexpected command ${command}`);
+  });
+  render(createElement(App));
+  fireEvent.click(await screen.findByRole("button", {name: "Review in local editor"}));
+  expect(screen.getByLabelText(multi ? "Agent proposed diff for main.ts" : "Agent proposed local diff")).toBeTruthy();
+  if (multi) expect(screen.getByLabelText("Agent proposed diff for other.ts")).toBeTruthy();
+  fireEvent.click(await screen.findByRole("button", {name: "main.ts"}));
+  await screen.findByDisplayValue("original");
+  fireEvent.click(screen.getByRole("button", {name: "Load editor draft"}));
+  await screen.findByDisplayValue("proposed local change");
+  expect(m.invoke.mock.calls.filter(([name]) => name === "write_repository_file")).toHaveLength(0);
+  fireEvent.click(screen.getByRole("button", {name: "Save ⌘S"}));
+  await waitFor(() => expect(m.invoke).toHaveBeenCalledWith("write_repository_file", {repositoryPath: "/owned/A", relativePath: "main.ts", content: "proposed local change", expectedContent: "original"}));
+  expect(m.client.approveAgentAction).not.toHaveBeenCalled();
+  expect(m.client.sendAgentMessage).not.toHaveBeenCalled();
+});
+it("returns a failed native check receipt to an unsent scoped Agent prompt", async () => {
+  m.client.hasAuth.mockReturnValue(true);
+  m.client.verifyCurrentCredential.mockResolvedValue({ok: true, data: {kind: "desktop_session", organizationId: "fixture-workspace", role: "owner", capabilities: [], access: {allowed: true, code: "active", title: "Access active", message: "Fixture", billingStatus: "no_plan", planTier: "trial"}}});
+  m.invoke.mockImplementation(async (command: string) => {
+    if (command === "default_repos_directory") return "/owned";
+    if (command === "list_local_repositories") return ["/owned/A"];
+    if (command === "repository_status") return {rootPath: "/owned/A", repositoryFullName: "fixture/repository", branch: "feature", ahead: 0, behind: 0, changedFiles: []};
+    if (command === "list_repository_files") return ["main.ts"];
+    if (command === "detect_repository_checks") return [{id: "npm:test", label: "Tests", command: "npm test", description: "fixture"}];
+    if (command === "run_repository_check") return {checkId: "npm:test", success: false, exitCode: 1, output: "test assertion failed", durationMs: 1};
+    throw Error(`Unexpected command ${command}`);
+  });
+  render(createElement(App)); await draft();
+  fireEvent.click(screen.getByRole("button", {name: "GitHub repositories"}));
+  fireEvent.click(await screen.findByRole("button", {name: "Tests"}));
+  fireEvent.click(await screen.findByRole("button", {name: "Run check"}));
+  await screen.findByText("test assertion failed");
+  fireEvent.click(screen.getByRole("button", {name: "Prepare check output for Agent"}));
+  fireEvent.click(await screen.findByRole("button", {name: "Prepare check draft"}));
+  await waitFor(() => expect((screen.getByRole("textbox") as HTMLTextAreaElement).value).toContain('"excerpt":"test assertion failed"'));
+  expect((screen.getByRole("textbox") as HTMLTextAreaElement).value).toMatch(/^Keep this unsent request/);
+  expect(m.client.sendAgentMessage).not.toHaveBeenCalled();
+  expect(m.client.approveAgentAction).not.toHaveBeenCalled();
+  expect(m.invoke.mock.calls.filter(([command]) => command === "run_repository_check")).toHaveLength(1);
 });

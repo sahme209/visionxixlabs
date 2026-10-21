@@ -23,6 +23,7 @@ import { fixtureAllocationDDL } from "../newTestSubscription/fixtureAllocation";
 import { registerAnniversaryAcceptance } from "./fixtures/newTestAnniversaryAcceptance";
 import { registerLegacyAgentAdmissionAcceptance } from "./fixtures/legacyAgentAdmissionAcceptance";
 import { prepareAnniversaryHttp, exerciseAnniversaryHttp } from "./fixtures/newTestAnniversaryHttp";
+import { ownedCheckoutLaunchPolicy } from "./fixtures/ownedCheckoutLaunchPolicy";
 import { reverseAICreditRefund } from "../aiCreditFulfillment";
 
 // File-isolated Vitest binding. The production refund writer is unchanged; its
@@ -73,7 +74,7 @@ suite("owned PG17 new TEST subscription service, synthetic provider only", () =>
     for (let attempt = 0; ; attempt++) { try { await db.$queryRawUnsafe("SELECT 1"); break; } catch { if (attempt > 40) throw new Error("owned_fixture_not_ready"); await new Promise(resolve => setTimeout(resolve, 100)); } }
     const tables = await db.$queryRawUnsafe<Array<{ count: number }>>("SELECT count(*)::int AS count FROM pg_tables WHERE schemaname='public'"); expect(tables[0].count).toBe(0);
     for (const envName of [".env", ".env.local", ".env.production", "prisma/.env"]) if (existsSync(resolve(envName))) throw new Error("fixture_refuses_env_files");
-    const schemaEnvironment = process.env.AXIOM_RUN_OWNED_CHECKOUT_HTTP === "1"
+    const schemaEnvironment = process.env.AXIOM_RUN_OWNED_CHECKOUT_HTTP === "1" || process.env.AXIOM_RUN_OWNED_COMMERCIAL_HTTP === "1"
       ? (await import("./fixtures/ownedCheckoutLaunchPolicy")).ownedCheckoutPrismaEnvironment(process.env, process.execArgv, url)
       : newTestPrismaEnvironment(process.env, process.execArgv, url);
     execFileSync(process.execPath, [resolve("node_modules/prisma/build/index.js"), "db", "push", "--skip-generate", "--schema", resolve("prisma/schema.prisma")], { cwd: process.cwd(), env: schemaEnvironment, stdio: "pipe" });
@@ -403,8 +404,12 @@ suite("owned PG17 new TEST subscription service, synthetic provider only", () =>
     writeFileSync(fonts, `module.exports = new Proxy({}, { get: () => ${JSON.stringify(fontCss)} });`);
 
     let childEnv: NodeJS.ProcessEnv;
-    try { childEnv = newTestChildEnvironment(process.env, process.execArgv, { databaseUrl: url, appOrigin: base, fontResponses: fonts,
-      runtimeId: runtime, accountId: "acct-test", organizationId: `${org},${anniversaryHttp.fixture.actor.organizationId}`, authSecret: randomBytes(32).toString("hex") }); }
+    try {
+      const launch = ownedCheckoutLaunchPolicy(process.env, process.execArgv);
+      childEnv = { ...launch.env, ...newTestChildEnvironment(process.env, process.execArgv, { databaseUrl: url, appOrigin: base, fontResponses: fonts,
+        runtimeId: runtime, accountId: "acct-test", organizationId: `${org},${anniversaryHttp.fixture.actor.organizationId}`, authSecret: randomBytes(32).toString("hex") }) };
+      launch.revalidate(process.env); launch.revalidate(childEnv, "child");
+    }
     catch (error) { rmSync(temporary, { recursive: true, force: true }); throw error; }
     const child = spawn(process.execPath, [resolve("node_modules/next/dist/bin/next"), "dev", "--webpack", "--hostname", "127.0.0.1", "--port", String(port)], { cwd: process.cwd(), detached: true, stdio: "pipe", env: childEnv });
     let output = ""; child.stdout?.on("data", chunk => { output += chunk; }); child.stderr?.on("data", chunk => { output += chunk; });
