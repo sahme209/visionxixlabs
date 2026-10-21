@@ -126,3 +126,17 @@ Remaining real acceptance: secure test model/Gateway credentials (approved cumul
 Interrupted or canceled Agent responses now require an identity-verified saved-conversation review before Send/Enter can submit again. Failed reloads keep the guard and unsent draft; no automatic AI retry. 20 application-composition tests, desktop TypeScript, affected lint and frontend build passed; independent review found no blocker. Session-local guard does not prove server completion or idempotency. Installed release and real-provider acceptance remain unverified; $0 of the approved $5 AI test cap spent.
 
 Combined Agent proposal/local workspace UI journey now covered with mixed update/create review, separate baseline-bound Save, explicit Create and separately consented verification;76 affected tests, TypeScript and lint passed with independent review. Native peer remains synthetic in this integration coverage; no new installed/provider acceptance claim.
+
+## Shared disposable customer coding repository — October 21
+
+Owner requested a test repository and confirmed Windows/Linux are full product targets, not Mac-only. Created a dependency-free, local-only repository at /tmp/axiom-native-validation/customer-coding-sandbox on the Mac, with no remote, credentials or package install. Baseline contains calculator.js and a real node:test assertion. Branch acceptance/subtraction is reserved for the coding task: propose subtract(a,b), create its test, review both diffs, explicitly save/create, and consent to npm test. The task is not already implemented or claimed AI-generated.
+
+Portable acceptance/report.mjs records platform, architecture, actual subprocess result and diff; ignores its generated receipt in Git. Installed Axiom, real-provider and native cancellation fields remain unverified rather than inherited from CLI results.
+
+| Platform | Fixture test evidence | Installed-app / provider status |
+| --- | --- | --- |
+| macOS ARM64 | npm test and report runner passed, one baseline assertion | Current shared fixture not yet exercised through installed UI/provider |
+| Linux x64 | All seven fixture source hashes match Mac. Direct execution of the exact node:test file passed one assertion. Report runner subprocess failed EPERM, retained as failed CLI-runner acceptance | Native app, terminal and provider unverified; no substitution of direct assertion for process acceptance |
+| Windows | No Windows execution environment available in this session | Unverified, same fixture/checklist required |
+
+Existing native/WebView and renderer test receipts remain separate. No hosted repo, push, CI, installer, deployment or paid request was initiated.
