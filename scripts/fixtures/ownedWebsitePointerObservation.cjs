@@ -4,24 +4,32 @@ function installPointerObservation() {
   const selector = '#product-tour a[href="/docs/approval-workflow"]';
   const original = document.querySelector(selector);
   const samples = [];
+  const seen = new Set();
+  const started = window.performance?.now();
   const bounded = (value, limit) => typeof value === 'number' && Number.isFinite(value) && Math.abs(value) <= limit ? Math.round(value * 100) / 100 : null;
   const category = (anchor, target) => !target ? 'none' : target === anchor ? 'link' : anchor && anchor.contains(target) ? 'descendant' : 'other';
-  for (const type of ['pointerdown', 'pointerup', 'click']) {
-    document.addEventListener(type, event => {
+  function observe(type, event) {
+      if (seen.has(type) || samples.length >= 5) return;
+      seen.add(type);
       const anchor = document.querySelector(selector);
       const rect = anchor?.getBoundingClientRect();
       const x = bounded(event.clientX, 32768), y = bounded(event.clientY, 32768);
       const hit = x === null || y === null ? null : document.elementFromPoint(event.clientX, event.clientY);
       const viewport = window.visualViewport;
-      samples.push({ type, trusted: event.isTrusted === true, primary: event.button === 0,
+      const now = window.performance?.now();
+      const elapsedMs = typeof started === 'number' && typeof now === 'number' ? bounded(now - started, 120000) : null;
+      samples.push({ type, elapsedMs, trusted: event.isTrusted === true, primary: event.button === 0,
         anchorPresent: Boolean(anchor), anchorReplaced: Boolean(anchor && original && anchor !== original),
         target: category(anchor, event.target), hit: category(anchor, hit),
         x, y, rect: rect ? [rect.x, rect.y, rect.width, rect.height].map(value => bounded(value, 32768)) : null,
         scroll: [bounded(window.scrollX, 10000000), bounded(window.scrollY, 10000000)],
         layout: [bounded(window.innerWidth, 32768), bounded(window.innerHeight, 32768)],
         visual: viewport ? [bounded(viewport.offsetLeft, 32768), bounded(viewport.offsetTop, 32768), bounded(viewport.width, 32768), bounded(viewport.height, 32768), bounded(viewport.scale, 64)] : null });
-    }, { capture: true, passive: true, once: true });
   }
+  for (const type of ['pointerdown', 'pointerup', 'click']) document.addEventListener(type, event => observe(type, event), { capture: true, passive: true, once: true });
+  Object.defineProperty(window, '__axiomPointerMeasure', { value: (type, point) => {
+    if (type === 'selection' || type === 'after_scroll_call') observe(type, { clientX: point?.x, clientY: point?.y, target: null, button: -1, isTrusted: false });
+  }, configurable: true });
   Object.defineProperty(window, '__axiomPointerObservation', { value: samples, configurable: true });
 }
 module.exports = { installPointerObservation };
@@ -30,7 +38,7 @@ function readPointerObservation() {
   return descriptor && Object.hasOwn(descriptor, 'value') ? descriptor.value : null;
 }
 function sanitizePointerObservation(value) {
-  const fields = ['type', 'trusted', 'primary', 'anchorPresent', 'anchorReplaced', 'target', 'hit', 'x', 'y', 'rect', 'scroll', 'layout', 'visual'];
+  const fields = ['type', 'elapsedMs', 'trusted', 'primary', 'anchorPresent', 'anchorReplaced', 'target', 'hit', 'x', 'y', 'rect', 'scroll', 'layout', 'visual'];
   function array(data, max) {
     if (!Array.isArray(data) || Object.getPrototypeOf(data) !== Array.prototype) return null;
     const length = Object.getOwnPropertyDescriptor(data, 'length');
@@ -43,7 +51,7 @@ function sanitizePointerObservation(value) {
     }
     return result;
   }
-  const entries = array(value, 3); if (!entries) return null;
+  const entries = array(value, 5); if (!entries) return null;
   const result = []; let last = -1;
   const number = (x, limit) => x === null || typeof x === 'number' && Number.isFinite(x) && Math.abs(x) <= limit;
   for (const entry of entries) {
@@ -54,10 +62,11 @@ function sanitizePointerObservation(value) {
       if (!descriptor?.enumerable || !Object.hasOwn(descriptor, 'value')) return null;
       sample[key] = descriptor.value;
     }
-    const order = ['pointerdown', 'pointerup', 'click'].indexOf(sample.type);
+    const order = ['selection', 'after_scroll_call', 'pointerdown', 'pointerup', 'click'].indexOf(sample.type);
     if (order <= last || order < 0) return null; last = order;
     if (['trusted', 'primary', 'anchorPresent', 'anchorReplaced'].some(key => typeof sample[key] !== 'boolean')) return null;
     if (['target', 'hit'].some(key => !['none', 'link', 'descendant', 'other'].includes(sample[key]))) return null;
+    if (!number(sample.elapsedMs, 120000) || typeof sample.elapsedMs === 'number' && sample.elapsedMs < 0) return null;
     if (!number(sample.x, 32768) || !number(sample.y, 32768)) return null;
     for (const [key, length, limit, nullable] of [['rect', 4, 32768, true], ['scroll', 2, 10000000, false], ['layout', 2, 32768, false], ['visual', 5, 32768, true]]) {
       if (sample[key] === null && nullable) continue;

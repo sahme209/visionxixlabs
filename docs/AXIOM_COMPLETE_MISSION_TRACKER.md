@@ -3616,3 +3616,8 @@ Approved6e23fab7 is published; all four workflows initially passed (8,880 Vitest
 ### Local pointer diagnostics integration
 
 Event-time pointer observations now integrate with existing documentation polls, source hashing and strict public projection. 46 focused tests across five files; independent review22 tests passed; no independent review blocker. Application/input behavior, deadlines and isolation unchanged. No new browser evidence: click-target root cause remains unresolved. Local only; no push/CI. #197 Git timeout evidence retained without further diagnostics; #195 unchanged.
+
+
+### #198 measurement-to-dispatch investigation (local only)
+
+Event-time document rectangle matches across preserved passing/failing receipts; scrollY differs167px and failing x is20px off-center. Selection-time evidence was absent, so exact mechanism remains unproven. Add selection/post-scroll-call snapshots and bounded elapsed times to existing event observations without changing coordinates, waits, deadlines or acceptance. Two new regression tests failed before implementation and pass after it; independent review27 tests passed. No behavior fix claimed, no push/CI, and #195–#197 untouched. Next dependency is authorized browser evidence before a repair.
