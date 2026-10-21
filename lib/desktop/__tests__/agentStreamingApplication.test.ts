@@ -245,3 +245,42 @@ it("does not clear recovery from a different conversation response", async () =>
   fireEvent.keyDown(screen.getByRole("textbox"), {key: "Enter"});
   expect(wire.messages()).toHaveLength(1);
 });
+
+it.each([
+  {kind: "code" as const, path: "src/local.ts", excerpt: "export const local = 1;"},
+  {kind: "verification" as const, checkId: "npm:test", exitCode: 1, stale: true, excerpt: "Expected 2, received 1"},
+])("hands reviewed $kind evidence to the real Agent composer only after explicit Send", async selection => {
+  const wire = fixture(false, "http", false);
+  const view = render(createElement(AgentChatView));
+  await screen.findByRole("option", {name: "Fixture model"});
+  await waitFor(() => expect((screen.getByRole("combobox", {name: "Agent conversation"}) as HTMLSelectElement).value).toBe(summary.id));
+  fireEvent.change(screen.getByRole("textbox"), {target: {value: "Help me understand this"}});
+  const request = {...selection, context: desktopClient.config};
+  view.rerender(createElement(AgentChatView, {requestedLocalCode: request}));
+  await waitFor(() => expect((screen.getByRole("textbox") as HTMLTextAreaElement).value).toContain(selection.excerpt));
+  expect((screen.getByRole("textbox") as HTMLTextAreaElement).value).toContain("Help me understand this");
+  expect((screen.getByRole("textbox") as HTMLTextAreaElement).value).toContain("untrusted");
+  expect(wire.messages()).toHaveLength(0);
+  expect((screen.getByRole("combobox", {name: "Specialized Agent"}) as HTMLSelectElement).value).toBe("code_review");
+  fireEvent.click(screen.getByRole("button", {name: "Send"}));
+  await screen.findByText("Review draft before persistence");
+  const body = JSON.parse(String(wire.messages()[0][1]?.body));
+  expect(body).toMatchObject({workspaceContext: {mode: "chat", operationMode: "inspect", agentProfile: "code_review"}});
+  expect(body.message).toContain(selection.excerpt);
+  expect(body.workspaceContext.filePath).toBeUndefined();
+  expect(wire.messages()).toHaveLength(1);
+  await act(async () => { wire.completion.release(); });
+  await screen.findByText(data.reply);
+});
+
+it("rejects an editor handoff owned by a different sign-in without losing the draft", async () => {
+  const wire = fixture();
+  const view = render(createElement(AgentChatView));
+  await screen.findByRole("option", {name: "Fixture model"});
+  await waitFor(() => expect((screen.getByRole("combobox", {name: "Agent conversation"}) as HTMLSelectElement).value).toBe(summary.id));
+  fireEvent.change(screen.getByRole("textbox"), {target: {value: "Retain this draft"}});
+  view.rerender(createElement(AgentChatView, {requestedLocalCode: {path: "src/local.ts", excerpt: "unshared code", context: {}}}));
+  await screen.findByText("Local selection belongs to a different sign-in or workspace. Select it again in the editor.");
+  expect((screen.getByRole("textbox") as HTMLTextAreaElement).value).toBe("Retain this draft");
+  expect(wire.messages()).toHaveLength(0);
+});
