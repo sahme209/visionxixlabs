@@ -45,6 +45,9 @@ fn redact_credential(text: &str, clone_url: &str) -> String {
             if let Some((_, password)) = credential_part.split_once(':') {
                 if !password.is_empty() {
                     redacted = redacted.replace(password, "***");
+                    if let Ok(decoded) = percent_encoding::percent_decode_str(password).decode_utf8() {
+                        if !decoded.is_empty() { redacted = redacted.replace(decoded.as_ref(), "***"); }
+                    }
                 }
             }
         }
@@ -73,6 +76,89 @@ where
         command.arg("-C").arg(root);
     }
     command.args(args).output().map_err(|error| format!("Could not run git: {error}. Is git installed and on PATH?"))
+}
+
+struct ScopedGitCommand {
+    command: Command,
+    authorization: Option<String>,
+}
+
+fn scoped_git_command(root: Option<&Path>, args: &[&str], authenticated_url: &str) -> Result<ScopedGitCommand, String> {
+    let clean = safe_remote_url(authenticated_url)?;
+    // Building a request performs no network operation. Reuse reqwest's URL
+    // userinfo decoding and Basic encoding rather than implementing auth codecs.
+    let request = reqwest::Client::builder().build()
+        .and_then(|client| client.get(authenticated_url).build())
+        .map_err(|_| "Scoped Git authentication could not be prepared.".to_string())?;
+    if request.url().as_str() != clean || request.url().query().is_some() || request.url().fragment().is_some() {
+        return Err("Repository URL must be canonical and contain no query or fragment.".into());
+    }
+    let authorization = request.headers().get(reqwest::header::AUTHORIZATION)
+        .map(|value| value.to_str().map(ToOwned::to_owned))
+        .transpose().map_err(|_| "Scoped Git authentication is invalid.".to_string())?;
+    let mut command = Command::new("git");
+    if let Some(root) = root { command.arg("-C").arg(root); }
+    for arg in args {
+        command.arg(if *arg == authenticated_url { clean.as_str() } else { arg });
+    }
+    // All configuration is child-process-only: no -c secret, credential helper
+    // cache, .git/config write or global user setting mutation.
+    command.env("GIT_TERMINAL_PROMPT", "0").env_remove("GIT_CONFIG_PARAMETERS")
+        .env_remove("GIT_ASKPASS").env_remove("SSH_ASKPASS");
+    let header_key = format!("http.{clean}.extraHeader");
+    let mut config = vec![
+        ("credential.helper".to_string(), String::new()),
+        (header_key.clone(), String::new()),
+        (format!("http.{clean}.followRedirects"), "false".to_string()),
+    ];
+    if let Some(value) = &authorization {
+        config.push((header_key, format!("Authorization: {value}")));
+    }
+    // Disable config-selected trace sinks as well as inherited trace variables.
+    // Otherwise trace2 can record our child-only GIT_CONFIG_VALUE_* secret.
+    config.extend([
+        ("core.askPass".to_string(), String::new()),
+        ("trace2.normalTarget".to_string(), "0".to_string()),
+        ("trace2.eventTarget".to_string(), "0".to_string()),
+        ("trace2.perfTarget".to_string(), "0".to_string()),
+        ("trace2.envVars".to_string(), String::new()),
+        ("trace2.configParams".to_string(), String::new()),
+    ]);
+    command.env("GIT_CONFIG_COUNT", config.len().to_string());
+    for (index, (key, value)) in config.into_iter().enumerate() {
+        command.env(format!("GIT_CONFIG_KEY_{index}"), key)
+            .env(format!("GIT_CONFIG_VALUE_{index}"), value);
+    }
+    for key in ["GIT_TRACE", "GIT_TRACE_CURL", "GIT_CURL_VERBOSE", "GIT_TRACE2",
+        "GIT_TRACE2_EVENT", "GIT_TRACE2_PERF", "GIT_TRACE_PACK_ACCESS",
+        "GIT_TRACE_PACKET", "GIT_TRACE_PERFORMANCE", "GIT_TRACE_SETUP", "GIT_TRACE_SHALLOW"] {
+        command.env_remove(key);
+    }
+    // Trace2 initializes before command-scope Git config. Explicit false
+    // environment targets must override preexisting global trace destinations.
+    command.env("GIT_TRACE2", "0").env("GIT_TRACE2_EVENT", "0")
+        .env("GIT_TRACE2_PERF", "0").env("GIT_TRACE_REDACT", "1");
+    Ok(ScopedGitCommand { command, authorization })
+}
+
+fn redact_scoped_output(mut output: Output, authorization: Option<&str>) -> Output {
+    if let Some(value) = authorization {
+        for bytes in [&mut output.stdout, &mut output.stderr] {
+            let mut text = String::from_utf8_lossy(bytes).replace(value, "***");
+            if let Some(payload) = value.strip_prefix("Basic ") {
+                if !payload.is_empty() { text = text.replace(payload, "***"); }
+            }
+            *bytes = text.into_bytes();
+        }
+    }
+    output
+}
+
+fn run_scoped_git(root: Option<&Path>, args: &[&str], authenticated_url: &str) -> Result<Output, String> {
+    let mut scoped = scoped_git_command(root, args, authenticated_url)?;
+    let output = scoped.command.output()
+        .map_err(|error| format!("Could not run git: {error}. Is git installed and on PATH?"))?;
+    Ok(redact_scoped_output(output, scoped.authorization.as_deref()))
 }
 
 fn output_text(output: Output, credential: Option<&str>) -> Result<String, String> {
@@ -146,7 +232,7 @@ pub async fn clone_repository(clone_url: String, destination_path: String) -> Re
         fs::create_dir_all(parent).map_err(|error| format!("Could not create {}: {error}", parent.display()))?;
     }
     let clone_result = output_text(
-        git(None, ["clone", "--", clone_url.as_str(), destination_path.as_str()])?,
+        run_scoped_git(None, &["clone", "--", clone_url.as_str(), destination_path.as_str()], &clone_url)?,
         Some(&clone_url),
     );
     if let Err(error) = clone_result {
@@ -157,12 +243,12 @@ pub async fn clone_repository(clone_url: String, destination_path: String) -> Re
         }
         return Err(error);
     }
-    // git clone records its source as origin. Replace the credential-bearing
-    // URL before returning success, including on a best-effort cleanup path.
+    // Clone receives a credential-free URL from the start. Retain explicit
+    // origin canonicalization and fail closed if it cannot be maintained.
     let sanitized = output_text(git(Some(&destination), ["remote", "set-url", "origin", &safe_origin])?, Some(&clone_url));
     if let Err(error) = sanitized {
         let _ = fs::remove_dir_all(&destination);
-        return Err(format!("Clone was removed because its credential could not be scrubbed: {error}"));
+        return Err(format!("Clone was removed because its origin could not be maintained: {error}"));
     }
     Ok(destination_path)
 }
@@ -328,7 +414,7 @@ pub async fn pull_repository(repository_path: String, authenticated_url: String,
     let root = reviewed_sync_root(&repository_path, &authenticated_url, &repository_full_name, &branch)?;
     if !working_tree_is_clean(&root)? { return Err("Commit or discard local changes before pulling.".to_string()); }
     let refspec = format!("+refs/heads/{branch}:refs/remotes/origin/{branch}");
-    output_text(git(Some(&root), ["fetch", "--prune", &authenticated_url, &refspec])?, Some(&authenticated_url))?;
+    output_text(run_scoped_git(Some(&root), &["fetch", "--prune", &authenticated_url, &refspec], &authenticated_url)?, Some(&authenticated_url))?;
     // Fetch can outlive an external checkout or origin change. Recheck before
     // touching the working tree. This is not a lock against unrelated Git writers.
     reviewed_sync_root(&repository_path, &authenticated_url, &repository_full_name, &branch)?;
@@ -339,7 +425,7 @@ pub async fn pull_repository(repository_path: String, authenticated_url: String,
 #[tauri::command]
 pub async fn push_repository(repository_path: String, authenticated_url: String, repository_full_name: String, branch: String) -> Result<String, String> {
     let root = reviewed_sync_root(&repository_path, &authenticated_url, &repository_full_name, &branch)?;
-    output_text(git(Some(&root), ["push", &authenticated_url, &reviewed_push_refspec(&branch)])?, Some(&authenticated_url))
+    output_text(run_scoped_git(Some(&root), &["push", &authenticated_url, &reviewed_push_refspec(&branch)], &authenticated_url)?, Some(&authenticated_url))
 }
 
 fn dirs_home() -> Result<PathBuf, String> {
@@ -493,6 +579,145 @@ mod tests {
         assert!(super::write_existing_repository_file(&directory.0, "link.txt", "draft", "outside").is_err());
         assert!(super::write_existing_repository_file(&directory.0, "escape/file.txt", "draft", "outside").is_err());
         assert_eq!(std::fs::read_to_string(outside.0.join("file.txt")).unwrap(), "outside");
+    }
+
+    #[test]
+    fn scoped_git_credentials_never_appear_in_command_arguments() {
+        let url = "https://x-access-token:ghs_SYNTHETIC_ONLY@github.com/owner/repository.git";
+        let scoped = super::scoped_git_command(None, &["clone", "--", url, "owned-destination"], url).unwrap();
+        let arguments = scoped.command.get_args().map(|value| value.to_string_lossy()).collect::<Vec<_>>().join(" ");
+        assert!(!arguments.contains("ghs_SYNTHETIC_ONLY"));
+        assert!(!arguments.contains("x-access-token:"));
+        assert!(arguments.contains("https://github.com/owner/repository.git"));
+    }
+
+    #[test]
+    fn scoped_git_uses_ephemeral_url_scoped_authentication_without_writing_config() {
+        let directory = OwnedDirectory::new();
+        let url = "https://x-access-token:ghs_SYNTHETIC_ONLY@github.com/owner/repository.git";
+        let clean = "https://github.com/owner/repository.git";
+        let mut scoped = super::scoped_git_command(Some(&directory.0), &["config", "--get-urlmatch", "http.extraHeader", clean], url).unwrap();
+        // This fixture must not inspect the operator's global Git configuration.
+        scoped.command.env("GIT_CONFIG_NOSYSTEM", "1").env("GIT_CONFIG_GLOBAL", if cfg!(windows) { "NUL" } else { "/dev/null" });
+        let output = scoped.command.output().unwrap();
+        assert!(output.status.success());
+        let header = scoped.authorization.as_ref().expect("Missing scoped authorization");
+        assert!(String::from_utf8_lossy(&output.stdout).contains(header));
+        assert!(!directory.0.join(".gitconfig").exists());
+    }
+
+    #[test]
+    fn scoped_git_scoped_redirect_policy_defeats_an_existing_specific_override() {
+        let directory = OwnedDirectory::new();
+        let global = directory.0.join("owned-config");
+        std::fs::write(&global, "[http \"https://github.com/owner/repository.git\"]\n followRedirects = true\n").unwrap();
+        let url = "https://x-access-token:synthetic@github.com/owner/repository.git";
+        let mut scoped = super::scoped_git_command(Some(&directory.0),
+            &["config", "--get-urlmatch", "http.followRedirects", "https://github.com/owner/repository.git"], url).unwrap();
+        scoped.command.env("GIT_CONFIG_NOSYSTEM", "1").env("GIT_CONFIG_GLOBAL", &global);
+        let output = scoped.command.output().unwrap();
+        assert!(output.status.success());
+        assert_eq!(String::from_utf8_lossy(&output.stdout).trim(), "false");
+    }
+
+    #[test]
+    fn scoped_git_explicitly_removes_inherited_askpass_programs() {
+        let url = "https://x-access-token:synthetic@github.com/owner/repository.git";
+        let scoped = super::scoped_git_command(None, &["fetch", url], url).unwrap();
+        for key in ["GIT_ASKPASS", "SSH_ASKPASS"] {
+            let setting = scoped.command.get_envs().find(|(name, _)| *name == std::ffi::OsStr::new(key));
+            assert!(matches!(setting, Some((_, None))), "An inherited askpass program was not disabled");
+        }
+    }
+
+    #[cfg(unix)]
+    #[test]
+    fn scoped_git_does_not_execute_a_configured_askpass_program() {
+        use std::os::unix::fs::PermissionsExt;
+        use std::io::Write;
+        let directory = OwnedDirectory::new();
+        let askpass = directory.0.join("owned-askpass");
+        let marker = directory.0.join("asked");
+        let global = directory.0.join("owned-config");
+        std::fs::write(&askpass, format!("#!/bin/sh\nprintf invoked > '{}'\nprintf synthetic\n", marker.display())).unwrap();
+        std::fs::set_permissions(&askpass, std::fs::Permissions::from_mode(0o700)).unwrap();
+        std::fs::write(&global, format!("[core]\n askPass = {}\n", askpass.display())).unwrap();
+        let url = "https://x-access-token:synthetic@github.com/owner/repository.git";
+        let mut scoped = super::scoped_git_command(Some(&directory.0), &["credential", "fill"], url).unwrap();
+        scoped.command.env("GIT_CONFIG_NOSYSTEM", "1").env("GIT_CONFIG_GLOBAL", &global)
+            .stdin(std::process::Stdio::piped()).stdout(std::process::Stdio::piped()).stderr(std::process::Stdio::piped());
+        let mut child = scoped.command.spawn().unwrap();
+        child.stdin.take().unwrap().write_all(b"protocol=https\nhost=github.com\npath=owner/repository.git\n\n").unwrap();
+        let output = child.wait_with_output().unwrap();
+        assert!(!output.status.success());
+        assert!(!marker.exists(), "Configured askpass executed during scoped authentication");
+    }
+
+    #[test]
+    fn scoped_git_clone_records_only_the_credential_free_origin() {
+        let remote = OwnedDirectory::new();
+        let parent = OwnedDirectory::new();
+        assert!(super::git(Some(&remote.0), ["init", "--bare"]).unwrap().status.success());
+        let destination = parent.0.join("clone");
+        let global = parent.0.join("owned-config");
+        std::fs::write(&global, format!("[url \"file://{}\"]\n insteadOf = https://github.com/owner/repository.git\n[protocol \"https\"]\n allow = never\n", remote.0.display())).unwrap();
+        let url = "https://x-access-token:ghs_SYNTHETIC_ONLY@github.com/owner/repository.git";
+        let mut scoped = super::scoped_git_command(None,
+            &["clone", "--", url, destination.to_str().unwrap()], url).unwrap();
+        scoped.command.env("GIT_CONFIG_NOSYSTEM", "1").env("GIT_CONFIG_GLOBAL", &global);
+        assert!(scoped.command.output().unwrap().status.success());
+        let stored = std::fs::read_to_string(destination.join(".git/config")).unwrap();
+        assert!(!stored.contains("ghs_SYNTHETIC_ONLY"));
+        assert!(!stored.contains("x-access-token:"));
+        assert!(stored.contains("https://github.com/owner/repository.git"));
+    }
+
+    #[test]
+    fn strips_url_decoded_password_diagnostics() {
+        let redacted = redact_credential("remote: synthetic-secret rejected",
+            "https://x-access-token:synthetic%2Dsecret@github.com/owner/repository.git");
+        assert!(!redacted.contains("synthetic-secret"));
+    }
+
+    #[cfg(unix)]
+    #[test]
+    fn scoped_git_filters_encoded_authorization_from_both_output_streams() {
+        use std::os::unix::process::ExitStatusExt;
+        let header = "Basic eDpzeW50aGV0aWM=";
+        let output = std::process::Output {
+            status: std::process::ExitStatus::from_raw(0),
+            stdout: format!("Authorization: {header}").into_bytes(),
+            stderr: b"encoded credential eDpzeW50aGV0aWM=".to_vec(),
+        };
+        let output = super::redact_scoped_output(output, Some(header));
+        assert!(!String::from_utf8_lossy(&output.stdout).contains("eDpzeW50aGV0aWM="));
+        assert!(!String::from_utf8_lossy(&output.stderr).contains("eDpzeW50aGV0aWM="));
+    }
+
+    #[test]
+    fn scoped_git_disables_configured_trace_destinations_for_secret_environment() {
+        let directory = OwnedDirectory::new();
+        let trace = directory.0.join("owned-trace.json");
+        let global = directory.0.join("owned-config");
+        std::fs::write(&global, format!("[trace2]\n eventTarget = {}\n envVars = GIT_CONFIG_VALUE_3\n", trace.display())).unwrap();
+        let url = "https://x-access-token:synthetic@github.com/owner/repository.git";
+        let mut scoped = super::scoped_git_command(Some(&directory.0),
+            &["config", "--get-urlmatch", "http.extraHeader", "https://github.com/owner/repository.git"], url).unwrap();
+        scoped.command.env("GIT_CONFIG_NOSYSTEM", "1").env("GIT_CONFIG_GLOBAL", &global);
+        assert!(scoped.command.output().unwrap().status.success());
+        assert!(!trace.exists(), "Credential-bearing invocation enabled a configured trace sink");
+    }
+
+    #[test]
+    fn scoped_git_header_does_not_match_another_repository() {
+        let directory = OwnedDirectory::new();
+        let url = "https://x-access-token:synthetic@github.com/owner/repository.git";
+        let mut scoped = super::scoped_git_command(Some(&directory.0),
+            &["config", "--get-urlmatch", "http.extraHeader", "https://github.com/other/repository.git"], url).unwrap();
+        scoped.command.env("GIT_CONFIG_NOSYSTEM", "1").env("GIT_CONFIG_GLOBAL", if cfg!(windows) { "NUL" } else { "/dev/null" });
+        let output = scoped.command.output().unwrap();
+        assert!(!output.status.success());
+        assert!(output.stdout.is_empty());
     }
 
     #[test]
