@@ -543,3 +543,24 @@ it("returns a failed native check receipt to an unsent scoped Agent prompt", asy
   expect(m.client.approveAgentAction).not.toHaveBeenCalled();
   expect(m.invoke.mock.calls.filter(([command]) => command === "run_repository_check")).toHaveLength(1);
 });
+
+it("opens the repository on its first visit from the shared Documentation journey", async () => {
+  m.client.hasAuth.mockReturnValue(true);
+  m.client.verifyCurrentCredential.mockResolvedValue({ ok: true, data: { kind: "desktop_session", organizationId: "fixture-workspace", role: "owner", capabilities: [], access: { allowed: true, code: "active", title: "Access active", message: "Fixture", billingStatus: "no_plan", planTier: "trial" } } });
+  m.invoke.mockImplementation(async (command: string) => {
+    if (command === "default_repos_directory") return "/owned";
+    if (command === "list_local_repositories") return ["/owned/A"];
+    if (command === "repository_status") return {rootPath: "/owned/A", repositoryFullName: "fixture/repository", branch: "feature", ahead: 0, behind: 0, changedFiles: []};
+    if (command === "list_repository_files") return ["main.ts"];
+    if (command === "detect_repository_checks") return [];
+    if (command === "read_repository_file") return "saved local content";
+    throw new Error(`Unexpected command ${command}`);
+  });
+  render(createElement(App));
+  await screen.findByRole("button", {name: "Agent permissions"});
+  fireEvent.click(screen.getByRole("button", {name: "Documentation"}));
+  fireEvent.click(await screen.findByRole("button", {name: "Open repository"}));
+  expect(await screen.findByRole("button", {name: "main.ts"})).toBeTruthy();
+  expect(m.invoke.mock.calls.filter(([command]) => command === "write_repository_file")).toHaveLength(0);
+  expect(m.client.sendAgentMessage).not.toHaveBeenCalled();
+});

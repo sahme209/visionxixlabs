@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { GOVERNED_JOURNEY, GOVERNED_JOURNEY_AVAILABILITY } from "@/lib/desktop/governedJourney";
 import {
     Callout,
     DocFeedback,
@@ -87,6 +88,13 @@ export default function GettingStartedPage() {
             </DocSection>
 
             <DocSection id="workflow" title="Step 4 — Complete a deployment workflow" kicker="04">
+                <p>{GOVERNED_JOURNEY_AVAILABILITY}</p>
+                {GOVERNED_JOURNEY.map((stage, index) => (
+                    <Step key={stage.id} number={index + 1} title={stage.title}>
+                        <p>{stage.detail}</p>
+                    </Step>
+                ))}
+                <p>In desktop builds containing this guide, Documentation provides buttons to open each of these screens. Missing credentials, policy approval or provider validation remain blockers.</p>
                 <ol className="list-decimal list-inside space-y-2 text-zinc-400">
                     <li>Capture deployment intake and required operational context.</li>
                     <li>Resolve readiness checks, missing permissions, and dependencies.</li>

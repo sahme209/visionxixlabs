@@ -156,7 +156,7 @@ function AuthenticatedWorkspace({ identity }: { identity: VerifiedDesktopIdentit
           {activeView === "deployment-requests" && <DeploymentRequestsView />}
           {activeView === "airflow-automation" && <AirflowAutomationView />}
           {activeView === "plugins-skills" && <PluginsSkillsView onUseSkill={skillId => { setRequestedSkill({ skillId, context: desktopClient.config, workspace: identity.organizationId }); setActiveView("agent"); }} canManage={identity.role === "owner" || identity.role === "admin"} onOpenSettings={() => setActiveView("settings")} onOpenAirflow={() => setActiveView("airflow-automation")} />}
-          {activeView === "docs" && <DocsView />}
+          {activeView === "docs" && <DocsView onNavigate={navigate} />}
           {activeView === "settings" && <SettingsView identity={identity} initialSection={settingsDestination} />}
         </WorkspaceViewBoundary>}
       </main>
