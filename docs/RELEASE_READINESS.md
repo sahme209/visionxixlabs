@@ -1,5 +1,13 @@
 # Axiom Agent release readiness
 
+## Verification cleanup and Git-output milestone — October 21, 2026
+
+- Confirmed and repaired two independent defects locally: scoped tokens appearing alone in Git diagnostics/success output, and canceled native checks leaving an attached descendant running. Synthetic redaction cases and a real descendant marker-write regression failed before their repairs.
+- Unix verification now creates a private process group, observes child exit with waitid WNOWAIT, retains the unreaped leader through output collection, stops the owned group before reaping, and refuses group signaling when child ownership cannot be confirmed. Independent review rejected an earlier numeric-ID-only guard because reaping before pipe drain allowed PID/PGID reuse; that unsafe candidate was not committed. The revised lifecycle passed independent review.
+- Validation: all 43 default native Mac tests passed; the additional real Keychain acceptance test remains opt-in and previously passed explicitly. Native debug compilation passed. Earlier 81 affected frontend cases, TypeScript/lint/frontend build remain valid for unchanged renderer files. No repeated GitHub Actions or deployments.
+- Limits: deliberately detached descendants can escape; failed ownership confirmation/signals remain unverified. No unrelated component may reap the owned child concurrently. Windows retains its previous direct-child behavior; fresh Linux compilation/runtime acceptance for the new Unix lifecycle remains pending. Redaction covers literal credentials, not arbitrary transformed/partial representations; Git argument exposure is unchanged.
+- Next gated acceptance remains rendered desktop inspection (remote Mac Screen Recording/automation permission), isolated provider/Stripe/cloud journeys, approved source publication and required CI. No current installer publication, production DB/secret/billing change, paid request or new deployment occurred.
+
 ## Native acceptance progress — October 21, 2026
 
 - Current local source now binds OS credential storage to the configured app identifier. Production retains its exact existing identifier; development reads, writes, deletion and legacy migration use a separate namespace. Actual production config compatibility is covered by a native regression.

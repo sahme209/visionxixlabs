@@ -147,6 +147,58 @@ async fn run_detected_check(root: &Path, check: CheckCommand, deadline: Duration
     run_detected_check_cancelable(root, check, deadline, receiver).await
 }
 
+// Only a process group created for this invocation may be signaled. A group
+// guard also cleans up if this future is dropped before its normal exit path.
+#[cfg(unix)]
+struct OwnedProcessGroup(Option<u32>);
+
+#[cfg(unix)]
+impl Drop for OwnedProcessGroup {
+    fn drop(&mut self) {
+        let Some(group) = self.0.and_then(|id| i32::try_from(id).ok()) else { return; };
+        // Never signal PID 0/-1 or our caller's process group, even if an
+        // unexpected spawn implementation failed to provide a valid child id.
+        if group <= 1 { return; }
+        // SAFETY: group is the positive PID of our child, which was spawned with
+        // process_group(0). Negative group targets only that owned process group.
+        unsafe {
+            if group != libc::getpgrp()
+                && child_exited_without_reaping(group as u32).is_ok()
+            {
+                let _ = libc::kill(-group, libc::SIGKILL);
+            }
+        }
+    }
+}
+
+// WNOWAIT observes status without releasing the leader's PID/PGID identity.
+// Never poll Child::wait before owned-group cleanup: reaping first permits
+// numeric group-id reuse while a detached descendant still holds output pipes.
+#[cfg(unix)]
+fn child_exited_without_reaping(id: u32) -> std::io::Result<bool> {
+    // SAFETY: siginfo_t is a C output record; zero initialization also lets a
+    // WNOHANG call distinguish "no exit event" from a reported SIGCHLD event.
+    let mut info: libc::siginfo_t = unsafe { std::mem::zeroed() };
+    let result = unsafe {
+        libc::waitid(libc::P_PID, id as libc::id_t, &mut info,
+            libc::WEXITED | libc::WNOWAIT | libc::WNOHANG)
+    };
+    if result == 0 { Ok(info.si_signo == libc::SIGCHLD) }
+    else { Err(std::io::Error::last_os_error()) }
+}
+
+#[cfg(unix)]
+async fn wait_for_unreaped_exit(id: u32) -> Result<(), String> {
+    loop {
+        match child_exited_without_reaping(id) {
+            Ok(true) => return Ok(()),
+            Ok(false) => tokio::time::sleep(Duration::from_millis(10)).await,
+            Err(error) if error.kind() == std::io::ErrorKind::Interrupted => continue,
+            Err(_) => return Err("Verification child ownership could not be confirmed.".into()),
+        }
+    }
+}
+
 async fn run_detected_check_cancelable(root: &Path, check: CheckCommand, deadline: Duration, mut cancel: watch::Receiver<bool>) -> Result<RepositoryCheckResult, String> {
     if *cancel.borrow() { return Err("Verification canceled before spawn; no passing receipt.".into()); }
     let check_id = check.definition.id.clone();
@@ -157,7 +209,11 @@ async fn run_detected_check_cancelable(root: &Path, check: CheckCommand, deadlin
         .env("HOME", std::env::var_os("HOME").unwrap_or_default())
         .env("CI", "1").env("NO_COLOR", "1")
         .stdin(Stdio::null()).stdout(Stdio::piped()).stderr(Stdio::piped());
+    #[cfg(unix)]
+    command.process_group(0);
     let mut child = command.spawn().map_err(|error| format!("Could not start {}: {error}", check.definition.command))?;
+    #[cfg(unix)]
+    let process_group = OwnedProcessGroup(child.id());
     let stdout = child.stdout.take().ok_or_else(|| "Could not capture verification output.".to_string())?;
     let stderr = child.stderr.take().ok_or_else(|| "Could not capture verification errors.".to_string())?;
     let (overflow_tx, mut overflow_rx) = mpsc::channel::<()>(2);
@@ -167,8 +223,8 @@ async fn run_detected_check_cancelable(root: &Path, check: CheckCommand, deadlin
         if output.len() as u64 > MAX_OUTPUT_BYTES { let _ = signal.send(()).await; }
         (read, output)
     });
-    // Aborting collectors on every exit also releases inherited pipes when a
-    // descendant outlives the direct child. This does not terminate that descendant.
+    // Aborting collectors releases inherited pipes on every exit. Unix owned
+    // group cleanup handles attached descendants; detached ones remain unverified.
     struct Readers {
         stdout: tokio::task::JoinHandle<(std::io::Result<usize>, Vec<u8>)>,
         stderr: tokio::task::JoinHandle<(std::io::Result<usize>, Vec<u8>)>,
@@ -188,7 +244,14 @@ async fn run_detected_check_cancelable(root: &Path, check: CheckCommand, deadlin
     // The deadline covers BOTH process exit and pipe drain. Waiting for the
     // direct child alone does not bound output collection from inherited pipes.
     let completion = async {
-        let status = child.wait().await.map_err(|error| format!("Verification process failed: {error}"))?;
+        #[cfg(unix)]
+        let status: Option<std::process::ExitStatus> = {
+            let id = child.id().ok_or("Verification child identity is unavailable.")?;
+            wait_for_unreaped_exit(id).await?;
+            None
+        };
+        #[cfg(not(unix))]
+        let status = Some(child.wait().await.map_err(|error| format!("Verification process failed: {error}"))?);
         let (stdout_read, stdout_bytes) = (&mut readers.stdout).await.map_err(|_| "Could not collect verification output.".to_string())?;
         let (stderr_read, stderr_bytes) = (&mut readers.stderr).await.map_err(|_| "Could not collect verification errors.".to_string())?;
         stdout_read.map_err(|_| "Could not read verification output.".to_string())?;
@@ -206,9 +269,19 @@ async fn run_detected_check_cancelable(root: &Path, check: CheckCommand, deadlin
         _ = tokio::time::sleep(deadline) => Err("Verification stopped after the 5 minute process/output safety limit.".to_string()),
     };
     let completed = if *cancel.borrow() { Err("Verification canceled. Direct-child stop requested; descendants are unverified and may still be running. No passing receipt.".to_string()) } else { completed };
+    // Stop owned group members before waiting on the direct-child fallback.
+    // Deliberately detached processes can escape a group; no whole-tree claim.
+    #[cfg(unix)]
+    drop(process_group);
     // Bound cleanup as well; kill_on_drop remains a direct-child fallback.
     if completed.is_err() { let _ = tokio::time::timeout(Duration::from_secs(2), child.kill()).await; }
     let (status, stdout_bytes, stderr_bytes) = completed?;
+    // On Unix the group has now been cleaned while its leader was still ours.
+    // Only now reap the direct child, preserving its original exit status.
+    let status = match status {
+        Some(status) => status,
+        None => child.wait().await.map_err(|error| format!("Verification process failed: {error}"))?,
+    };
     let mut output = String::from_utf8_lossy(&stdout_bytes).to_string();
     if !stderr_bytes.is_empty() {
         if !output.is_empty() { output.push('\n'); }
@@ -234,6 +307,21 @@ mod tests {
         }
     }
     #[tokio::test]
+    async fn exit_observation_reserves_identity_until_group_cleanup_and_reaping() {
+        let mut command = Command::new("/bin/sh");
+        command.args(["-c", "exit 0"]).process_group(0).kill_on_drop(true);
+        let mut child = command.spawn().unwrap();
+        let id = child.id().unwrap();
+        let group = OwnedProcessGroup(Some(id));
+        tokio::time::timeout(Duration::from_secs(2), wait_for_unreaped_exit(id)).await.unwrap().unwrap();
+        assert!(child_exited_without_reaping(id).unwrap());
+        assert!(child_exited_without_reaping(id).unwrap());
+        drop(group);
+        assert!(child.wait().await.unwrap().success());
+        assert!(child_exited_without_reaping(id).is_err());
+    }
+
+    #[tokio::test]
     async fn cancellation_before_spawn_never_runs_script() {
         let (sender, receiver) = watch::channel(true);
         let result = run_detected_check_cancelable(&std::env::temp_dir(), shell("exit 0"), Duration::from_secs(2), receiver).await;
@@ -250,6 +338,33 @@ mod tests {
         assert!(result.unwrap_err().contains("canceled"));
     }
     #[tokio::test]
+    async fn cancellation_stops_an_owned_descendant_before_it_can_write() {
+        let nonce = std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).unwrap().as_nanos();
+        let root = std::env::temp_dir().join(format!("axiom-descendant-{}-{nonce}", std::process::id()));
+        std::fs::create_dir(&root).unwrap();
+        let (sender, receiver) = watch::channel(false);
+        let execution = run_detected_check_cancelable(&root,
+            shell("/bin/sh -c 'printf ready > ready; sleep 0.2; printf leaked > marker' & wait"),
+            Duration::from_secs(2), receiver);
+        let cancel = async {
+            tokio::time::timeout(Duration::from_secs(2), async {
+                while !root.join("ready").exists() {
+                    tokio::time::sleep(Duration::from_millis(5)).await;
+                }
+            }).await.expect("Owned descendant did not signal readiness");
+            sender.send_replace(true);
+        };
+        let (result, _) = tokio::join!(execution, cancel);
+        // This exceeds the fixture's known 0.2s delayed side effect, rather than
+        // adding an arbitrary wait to the application cancellation path.
+        tokio::time::sleep(Duration::from_millis(300)).await;
+        let leaked = root.join("marker").exists();
+        let _ = std::fs::remove_dir_all(root);
+        assert!(result.unwrap_err().contains("canceled"));
+        assert!(!leaked, "The canceled verification left its owned descendant running");
+    }
+
+    #[tokio::test]
     async fn captures_both_streams_and_nonzero_exit() {
         let result = run_detected_check(&std::env::temp_dir(), shell("printf stdout; printf stderr >&2; exit 7"), Duration::from_secs(2)).await.unwrap();
         assert!(!result.success);
@@ -263,7 +378,7 @@ mod tests {
     }
     #[tokio::test]
     async fn deadline_includes_pipes_retained_after_direct_child_exit() {
-        // The short-lived descendant is intentionally not claimed as canceled.
+        // Inherited pipes cannot extend the deadline; owned-group cleanup is best effort.
         let result = run_detected_check(&std::env::temp_dir(), shell("sleep 0.3 & exit 0"), Duration::from_millis(40)).await;
         assert!(result.unwrap_err().contains("safety limit"));
     }
