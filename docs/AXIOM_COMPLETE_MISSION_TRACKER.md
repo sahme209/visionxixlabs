@@ -9,6 +9,14 @@ checkpoint status; previous observations are retained as evidence history.
 
 PR #161 source integration is complete at main `608efe0fd70623aaf71cb80f799d3b822b9855cd` after both exact-head Test runs and review passed. This is not a production release.
 
+## Local verification cancellation review — October 21, 2026
+
+Separate local branch `codex/verification-cancellation-local`, based exactly on main `0c32b6fdab8de2e4a72c10f22b45cf2fbc5d8e4c`; PR195/new-file creation is independent and untouched. Plan: preserve detected-command consent and minimal environment; prepare a native-owned identity; fence prepare/run/stop by canonical repository, check and invoking window; discard canceled or stale callbacks; retain explicit descendant uncertainty.
+
+Implemented prepare/run/stop registry with one-shot execution, bounded pending registrations (32 entries, 60-second preparation expiry), cancellation before spawn and during process/pipe waiting, completion/cancel serialization, and existing two-second direct-child cleanup bound. Stop accepts an owned run identity and repository, never a PID or supplied command. No process group or descendant signaling is attempted. The UI latches cancellation before IPC and refuses late successful receipts even if cancellation cannot be confirmed; repository/context ownership and newer-attempt generation checks fence late notices. Switching or closing views still does not stop running processes; stale preparations are retired before launch when observed. Abrupt renderer loss can leave a pending registration until expiry/pruning; process-tree containment is not established.
+
+Local evidence: four focused receipt/editor ownership/Agent readiness/demo files passed 128 tests; desktop frontend TypeScript passed. Added native cancellation-before-spawn and during-wait tests remain **unrun** because this environment lacks the required Rust/native toolchain. Desktop release alignment, frontend production build and `git diff --check` passed; Vite retained its existing chunk/import warnings. Installed macOS/native stop timing, process reaping, simultaneous completion/cancel and descendant behavior remain acceptance gaps; source tests and frontend compilation do not establish them. No push, PR, hosted CI, provider/cloud/paid call, deployment, production mutation or security/financial gate change was performed.
+
 ## Controller continuation — canonical-host authentication, October 20, 2026
 
 The new priority refinement is preserved verbatim in `docs/AXIOM_PRIORITY_REFINEMENT_2026-10-20.md` and added as source R23 without changing previous requirement objects. Priority 0 is actual deployed login; website redesign follows it, with desktop/plugins and all earlier engineering work retained.
@@ -3584,3 +3592,13 @@ PR #195 remains isolated, draft and unmerged. Initial homepage CDP navigation ti
 ### Local pointer diagnostics integration
 
 Event-time pointer observations now integrate with existing documentation polls, source hashing and strict public projection. 107 focused tests across eight files; independent review44 tests passed; no independent review blocker. Application/input behavior, deadlines and isolation unchanged. No new browser evidence: click-target root cause remains unresolved. Local only; no push/CI. #197 Git timeout evidence retained without further diagnostics; #195 unchanged.
+### PR #197 native test lifetime repair — local only
+
+CI macOS/Linux both reported E0716 in cancellation_during_wait_never_returns_success: the stored future borrowed a temporary temp_dir before tokio::join!. Bind the path to a local root spanning the join; runtime behavior/assertions unchanged. Independent review found no blocker. 100 focused repository tests and desktop TypeScript passed. Native compilation/test execution is BLOCKED: local Linux has no cargo/rustc; connected Mac is offline. No unchanged CI rerun, push or native-pass claim. A new exact-commit authorization is required before publication.
+
+
+### PR196 reconciliation after PR197 merge (local, not pushed)
+
+Merged exact main49cd7dc559bd196a9a91e8e695ef748ed4cc8a1e into the existing196 branch without rewriting history. The only conflict was this mission tracker: retained both196 diagnostic evidence and197 cancellation/lifetime-fix history. All196 diagnostics/tests remain intact; cancellation source matches approved merged main. Native macOS/Linux29-test and lint evidence already passed on197; installed-Mac acceptance remains unverified. Historical Git timeout and stale-coordinate failures remain intermittent/unresolved; receipts preserved, no new diagnostic runs. Updated integration head needs focused tests, independent review and exact owner push approval.198 waits for196 integration;195 unchanged/blocked.
+
+Reconciliation validation:222 focused cases across11 browser/ownership/model/demo suites passed; repository and desktop TypeScript passed. Independent staged-tree review found no blocker. Blob identity checks preserved14 non-tracker files from196 and6 from197 exactly. Post-merge main CI is monitored separately; new196 exact-head CI and owner push authorization remain pending. No installed-Mac/provider acceptance inferred.

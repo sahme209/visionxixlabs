@@ -105,6 +105,8 @@ function RepositoryWorkspaceSession({ revision, active, onAskAgent, editRequest,
   const [verificationResult, setVerificationResult] = useState<RepositoryCheckResult | null>(null);
   const [showVerification, setShowVerification] = useState(false);
   const [verificationStale, setVerificationStale] = useState(false);
+  const [cancelAvailable, setCancelAvailable] = useState(false);
+  const verificationRun = useRef<{ id: string; repositoryPath: string; canceled: boolean } | null>(null);
   const sourceEpoch = useRef(0);
   const verificationGeneration = useRef(0);
 
@@ -136,6 +138,7 @@ function RepositoryWorkspaceSession({ revision, active, onAskAgent, editRequest,
     fileRequest.current++; operationRequest.current++; activeBusy.current = null; loadedFile.current = null; history.current = newEditorHistory("");
     setSelectedRepositoryState(repository); setStatus(null); setFiles([]); setChecks([]);
     setSelectedFile(null); setContent(""); setSavedContent(""); setBusy(null);
+    setCancelAvailable(false);
     setError(null); setNotice(null); setPrUrl(null); setVerificationResult(null); setVerificationStale(false); sourceEpoch.current++; setConfirmationState(null);
   }, []);
 
@@ -437,6 +440,24 @@ function RepositoryWorkspaceSession({ revision, active, onAskAgent, editRequest,
     await action?.onConfirm();
   }
 
+  async function cancelVerification() {
+    const attempt = verificationRun.current;
+    const captured = owner.current;
+    const generation = verificationGeneration.current;
+    if (!attempt || attempt.repositoryPath !== captured.repository || !owns(captured)) return;
+    attempt.canceled = true;
+    setCancelAvailable(false);
+    setVerificationStale(true);
+    try {
+      const accepted = await invoke<boolean>("cancel_repository_check", { repositoryPath: attempt.repositoryPath, runId: attempt.id });
+      if (owns(captured) && verificationGeneration.current === generation) setNotice(accepted
+        ? "Stop requested for the direct child only. Descendants may still run; their status is unverified. This attempt cannot pass."
+        : "The check already completed. This canceled attempt cannot pass; descendant status is unverified.");
+    } catch (cause) {
+      if (owns(captured) && verificationGeneration.current === generation) setError(`Stop could not be confirmed: ${String(cause)}. Descendants are unverified; this attempt cannot pass.`);
+    }
+  }
+
   function verify(check: RepositoryCheck) {
     if (!selectedRepository || selectedRepository !== owner.current.repository) return;
     if (loadedFile.current && loadedFile.current.content !== loadedFile.current.saved) {
@@ -445,7 +466,7 @@ function RepositoryWorkspaceSession({ revision, active, onAskAgent, editRequest,
     const consentEpoch = sourceEpoch.current;
     setConfirmation({
       title: `Run ${check.label}?`,
-      description: `${check.command} will run inside this repository with a minimal process environment. Scripts are not sandboxed: they can access files and network resources available to your user, including stored credentials. Native timeout/output limits do not establish process-tree isolation. Run only repositories you trust. Closing or switching views does not cancel a running check; user cancellation is not available yet.`,
+      description: `${check.command} will run inside this repository with a minimal process environment. Scripts are not sandboxed: they can access files and network resources available to your user, including stored credentials. Native timeout/output limits do not establish process-tree isolation. Run only repositories you trust. Stop check requests a bounded direct-child stop only; descendants may continue and their status is unverified. Closing or switching views does not cancel a running check.`,
       confirmLabel: "Run check",
       onConfirm: async () => {
         if (activeBusy.current) return;
@@ -457,8 +478,24 @@ function RepositoryWorkspaceSession({ revision, active, onAskAgent, editRequest,
           const checkedEpoch = sourceEpoch.current;
           verificationGeneration.current++;
           setVerificationStale(true);
-          const raw = await invoke<unknown>("run_repository_check", { repositoryPath: selectedRepository, checkId: check.id });
-          if (!current()) return;
+          const id = await invoke<string>("prepare_repository_check", { repositoryPath: selectedRepository, checkId: check.id });
+          if (!current()) {
+            await invoke("cancel_repository_check", { repositoryPath: selectedRepository, runId: id });
+            return;
+          }
+          const attempt = { id, repositoryPath: selectedRepository, canceled: false };
+          verificationRun.current = attempt;
+          setCancelAvailable(true);
+          let raw: unknown;
+          try {
+            raw = await invoke<unknown>("run_repository_check", { repositoryPath: selectedRepository, checkId: check.id, runId: id });
+          } finally {
+            if (verificationRun.current === attempt) {
+              verificationRun.current = null;
+              if (current()) setCancelAvailable(false);
+            }
+          }
+          if (!current() || attempt.canceled) return;
           const result = verificationReceipt(raw, check.id);
           const stale = checkedEpoch !== sourceEpoch.current;
           setVerificationResult(result); setVerificationStale(stale);
@@ -628,6 +665,7 @@ function RepositoryWorkspaceSession({ revision, active, onAskAgent, editRequest,
     {selectedRepository && <div className="flex flex-wrap items-center gap-2 border-b border-white/[0.06] bg-white/[0.015] px-4 py-2">
       <span className="mr-1 text-[10px] font-mono uppercase tracking-wider text-zinc-600">Verify changes</span>
       {checks.length === 0 ? <span className="text-xs text-zinc-600">No supported checks detected.</span> : checks.map((check) => <button key={check.id} type="button" disabled={Boolean(busy)} onClick={() => verify(check)} title={`${check.description} Runs: ${check.command}`} className="rounded-md border border-white/[0.08] bg-white/[0.03] px-2.5 py-1.5 text-xs text-zinc-300 hover:bg-white/[0.07] disabled:opacity-40">{busy === `verify:${check.id}` ? `Running ${check.label}…` : check.label}</button>)}
+      {cancelAvailable && busy?.startsWith("verify:") && <button type="button" onClick={cancelVerification} className="btn-secondary">Stop check (direct child only)</button>}
       {verificationResult && <button type="button" onClick={() => setShowVerification((current) => !current)} className={`ml-auto rounded-md px-2.5 py-1.5 text-xs ${verificationStale ? "bg-amber-500/10 text-amber-200" : verificationResult.success ? "bg-emerald-500/10 text-emerald-300" : "bg-rose-500/10 text-rose-300"}`}>{verificationStale ? "Previous check result (stale)" : verificationResult.success ? "Last check passed" : "Last check failed"} · {showVerification ? "hide output" : "show output"}</button>}
     </div>}
     {verificationResult && verificationStale && <p role="status" className="border-b border-amber-300/20 px-4 py-2 text-xs text-amber-200">Verification is stale or superseded by a newer attempt. Save and run checks again; historical output remains available.</p>}

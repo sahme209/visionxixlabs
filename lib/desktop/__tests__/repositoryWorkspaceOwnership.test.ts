@@ -38,6 +38,8 @@ beforeEach(() => {
     if (command === "detect_repository_checks") return checks(args.repositoryPath);
     if (command === "read_repository_file") return reads(args.repositoryPath, args.relativePath);
     if (command === "write_repository_file") return writes(args);
+    if (command === "prepare_repository_check") return "owned-run";
+    if (command === "cancel_repository_check") return true;
     if (command === "run_repository_check") return verification();
     throw Error(`unexpected synthetic command ${command}`);
   });
@@ -413,7 +415,7 @@ it("loads a reviewed Agent change only into the buffer, then explicitly saves an
   expect(m.invoke.mock.calls.filter(([name]) => name === "run_repository_check")).toHaveLength(0);
   fireEvent.click(screen.getByRole("button", {name: "Run check"}));
   await screen.findByText("fixture output");
-  expect(m.invoke).toHaveBeenCalledWith("run_repository_check", {repositoryPath: "/owned/A", checkId: "a"});
+  expect(m.invoke).toHaveBeenCalledWith("run_repository_check", {repositoryPath: "/owned/A", checkId: "a", runId: "owned-run"});
 });
 it("hides a previous credential's proposed code rather than only disabling its load button", async () => {
   render(createElement(RepositoryWorkspaceView, {editRequest: {context: {}, edit: {proposalId: "old", repositoryFullName: "fixture/a", branch: "feature", path: "same.ts", baseContent: "original", content: "PRIVATE OLD DRAFT"}}}));
@@ -506,7 +508,7 @@ it.each([false, true])("reviews coordinated files with explicit saves and reject
     expect(m.invoke.mock.calls.filter(([name]) => name === "run_repository_check")).toHaveLength(0);
     fireEvent.click(consent);
     await screen.findByText("fixture output");
-    expect(m.invoke).toHaveBeenCalledWith("run_repository_check", {repositoryPath: "/owned/A", checkId: "a"});
+    expect(m.invoke).toHaveBeenCalledWith("run_repository_check", {repositoryPath: "/owned/A", checkId: "a", runId: "owned-run"});
     fireEvent.change(screen.getByRole("textbox", {name: "Editing other.ts"}), {target: {value: "changed after check"}});
     await screen.findByRole("button", {name: /Previous check result \(stale\)/});
     expect(m.invoke.mock.calls.filter(([name]) => name === "run_repository_check")).toHaveLength(1);
@@ -562,7 +564,7 @@ it("dispatches a consented check once while a native run is pending", async () =
   await start(); fireEvent.click(screen.getByRole("button", {name: "A check"}));
   const consent = await screen.findByRole("button", {name: "Run check"});
   act(() => { consent.click(); consent.click(); });
-  expect(m.invoke.mock.calls.filter(([name]) => name === "run_repository_check")).toHaveLength(1);
+  await waitFor(() => expect(m.invoke.mock.calls.filter(([name]) => name === "run_repository_check")).toHaveLength(1));
   await act(async () => {pending.resolve({checkId: "a", success: true, exitCode: 0, output: "one run", durationMs: 1});});
   await screen.findByText("one run");
 });
@@ -627,4 +629,32 @@ it("navigates an unsaved source line without writes or checks and rejects invali
   expect(screen.getByText(/existing one-based line number/)).toBeTruthy();
   expect(editor.value).toBe("first\nchanged second\nlast");
   expect(m.invoke.mock.calls.filter(([command]) => command === "write_repository_file" || command === "run_repository_check")).toHaveLength(0);
+});
+
+it("canceled attempts discard late passing completion and use only owned identity", async () => {
+  checks = () => [{id: "a", label: "A check", command: "npm test", description: "fixture"}];
+  const pending = deferred<unknown>(); verification = () => pending.promise;
+  await start();
+  fireEvent.click(await screen.findByRole("button", {name: "A check"}));
+  fireEvent.click(screen.getByRole("button", {name: "Run check"}));
+  fireEvent.click(await screen.findByRole("button", {name: "Stop check (direct child only)"}));
+  await waitFor(() => expect(m.invoke).toHaveBeenCalledWith("cancel_repository_check", {repositoryPath: "/owned/A", runId: "owned-run"}));
+  await act(async () => pending.resolve({checkId: "a", success: true, exitCode: 0, output: "LATE PASS", durationMs: 1}));
+  expect(screen.queryByText("LATE PASS")).toBeNull();
+  expect(screen.queryByText(/Last check passed/)).toBeNull();
+  expect(screen.getByText(/Descendants may still run/)).toBeTruthy();
+});
+
+it("retires a prepared run when the repository changes before preparation returns", async () => {
+  checks = () => [{id: "a", label: "A check", command: "npm test", description: "fixture"}];
+  const preparation = deferred<string>();
+  const original = m.invoke.getMockImplementation()!;
+  m.invoke.mockImplementation((command: string, args: Record<string, string>) => command === "prepare_repository_check" ? preparation.promise : original(command, args));
+  await start();
+  fireEvent.click(await screen.findByRole("button", {name: "A check"}));
+  fireEvent.click(screen.getByRole("button", {name: "Run check"}));
+  await switchToB();
+  await act(async () => preparation.resolve("old-preparation"));
+  expect(m.invoke).toHaveBeenCalledWith("cancel_repository_check", {repositoryPath: "/owned/A", runId: "old-preparation"});
+  expect(m.invoke.mock.calls.filter(([command]) => command === "run_repository_check")).toHaveLength(0);
 });
