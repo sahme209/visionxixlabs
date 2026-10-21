@@ -584,3 +584,74 @@ describe("specialized Agent permission ceilings", () => {
   });
 
 });
+
+describe("actual read-only tool activity", () => {
+  beforeEach(() => {
+    vi.resetAllMocks();
+    mocks.readWorkspaceAgentIdentity.mockResolvedValue({enabled: true, allowedTools: ["read_github_file", "commit_github_file"]});
+  });
+  it.each([true, false])("observes real tool start and returned outcome without arguments (%s)", async ok => {
+    const activity = vi.fn();
+    let decisions = 0;
+    mocks.resolveGovernedAiCall.mockResolvedValue(governed(async () => ++decisions === 1
+      ? {action: "call_tool", message: "Read", toolName: "read_github_file", args: {path: "private.ts"}}
+      : {action: "respond", message: "Reviewed"}));
+    const outcome = await runDecisionLoop({organizationId: "o", userId: "actor", correlationId: "c", transcript: [],
+      streaming: {abortSignal: new AbortController().signal, onDraft: vi.fn(), onActivity: activity},
+      executeReadOnlyTool: async () => {
+        expect(activity).toHaveBeenCalledWith({step: 1, toolName: "read_github_file", state: "running"});
+        return ok ? {ok: true, result: {private: "not in activity"}} : {ok: false, error: "private failure"};
+      }, isProdEnvironmentTarget: noopProdCheck});
+    expect(outcome.kind).toBe("final");
+    expect(activity.mock.calls.map(([event]) => event)).toEqual([
+      {step: 1, toolName: "read_github_file", state: "running"},
+      {step: 1, toolName: "read_github_file", state: ok ? "completed" : "failed"},
+    ]);
+  });
+  it("never represents a proposed write as an executing tool", async () => {
+    const activity = vi.fn(), tool = vi.fn();
+    mocks.resolveGovernedAiCall.mockResolvedValue(governed(async () => ({action: "call_tool", message: "Propose", toolName: "commit_github_file", args: {}})));
+    expect(await runDecisionLoop({organizationId: "o", userId: "actor", correlationId: "c", transcript: [],
+      streaming: {abortSignal: new AbortController().signal, onDraft: vi.fn(), onActivity: activity},
+      executeReadOnlyTool: tool, isProdEnvironmentTarget: noopProdCheck})).toMatchObject({kind: "proposal"});
+    expect(activity).not.toHaveBeenCalled(); expect(tool).not.toHaveBeenCalled();
+  });
+});
+
+it("includes initial repository grounding in tool progress without an extra model step", async () => {
+  vi.resetAllMocks();
+  mocks.readWorkspaceAgentIdentity.mockResolvedValue({enabled: true, allowedTools: ["read_github_file"]});
+  const extract = vi.fn(async () => ({action: "respond", message: "Reviewed"})), activity = vi.fn();
+  mocks.resolveGovernedAiCall.mockResolvedValue(governed(extract));
+  const result = await runDecisionLoop({organizationId: "o", userId: "actor", correlationId: "c", transcript: [],
+    initialToolCall: {toolName: "read_github_file", args: {path: "file.ts"}, message: "Grounding"},
+    streaming: {abortSignal: new AbortController().signal, onDraft: vi.fn(), onActivity: activity},
+    executeReadOnlyTool: noopReadOnly, isProdEnvironmentTarget: noopProdCheck});
+  expect(result.kind).toBe("final");
+  expect(activity.mock.calls.map(([event]) => event.state)).toEqual(["running", "completed"]);
+  expect(extract).toHaveBeenCalledOnce();
+});
+it("does not publish completed tool progress after cancellation during a read", async () => {
+  vi.resetAllMocks();
+  mocks.readWorkspaceAgentIdentity.mockResolvedValue({enabled: true, allowedTools: ["read_github_file"]});
+  const controller = new AbortController(), activity = vi.fn(), extract = vi.fn();
+  mocks.resolveGovernedAiCall.mockResolvedValue(governed(extract));
+  await expect(runDecisionLoop({organizationId: "o", userId: "actor", correlationId: "c", transcript: [],
+    initialToolCall: {toolName: "read_github_file", args: {}, message: "Grounding"},
+    streaming: {abortSignal: controller.signal, onDraft: vi.fn(), onActivity: activity},
+    executeReadOnlyTool: async () => { controller.abort(); return {ok: true, result: {}}; },
+    isProdEnvironmentTarget: noopProdCheck})).rejects.toMatchObject({name: "AbortError"});
+  expect(activity.mock.calls.map(([event]) => event.state)).toEqual(["running"]);
+  expect(extract).not.toHaveBeenCalled();
+});
+
+it("emits no progress for a read tool denied by current workspace policy", async () => {
+  vi.resetAllMocks();
+  mocks.readWorkspaceAgentIdentity.mockResolvedValue({enabled: true, allowedTools: []});
+  mocks.resolveGovernedAiCall.mockResolvedValue(governed(async () => ({action: "call_tool", message: "Read", toolName: "read_github_file", args: {}})));
+  const activity = vi.fn(), execute = vi.fn();
+  expect(await runDecisionLoop({organizationId: "o", userId: "actor", correlationId: "c", transcript: [],
+    streaming: {abortSignal: new AbortController().signal, onDraft: vi.fn(), onActivity: activity},
+    executeReadOnlyTool: execute, isProdEnvironmentTarget: noopProdCheck})).toMatchObject({kind: "error", error: "agent_tool_not_allowed"});
+  expect(activity).not.toHaveBeenCalled(); expect(execute).not.toHaveBeenCalled();
+});

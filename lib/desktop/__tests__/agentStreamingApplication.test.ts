@@ -39,13 +39,15 @@ function fixture(interrupted = false, transport: "http" | "native" = "http") {
       signal = init?.signal ?? undefined;
       expect(new Headers(init?.headers).get("accept")).toBe("application/x-ndjson");
       return agentMessageHttpStream(signal!, async stream => {
+        stream.onActivity?.({step: 1, toolName: "read_github_file", state: "running"});
         stream.onDraft(""); stream.onDraft("Review draft before persistence");
         await completion.promise;
+        if (!stream.abortSignal.aborted) stream.onActivity?.({step: 1, toolName: "read_github_file", state: "completed"});
         // Represents completion of the existing persistence boundary, not SQL proof.
         saved = true;
         if (interrupted) throw new Error("synthetic stream interruption");
         return ok(data);
-      });
+      }, {toolActivity: JSON.parse(String(init?.body)).streamFeatures?.includes("tool_activity_v1") === true});
     }
     if (path === "/api/desktop/ai-providers") return ok({ providers: [{ provider: "vercel_gateway", models: [{ id: "fixture/model", label: "Fixture model", tier: "standard" }] }], policy: { enabled: true, allowedProviders: ["vercel_gateway"], modelSelections: { vercel_gateway: "fixture/model" }, fallbackOrder: ["vercel_gateway"] } });
     if (path === "/api/desktop/agent/conversations") return ok({ conversations: [summary] });
@@ -112,12 +114,15 @@ async function compose(mode: "chat" | "code", agentProfile?: string) {
 it.each([ ["chat", "http"], ["code", "http"], ["chat", "native"], ["code", "native"] ] as const)("connects the actual %s composer over %s without granting draft authority", async (mode, transport) => {
   const wire = fixture(false, transport); await compose(mode);
   expect(screen.getByText(/verification pending/)).toBeTruthy();
+  expect(screen.getByRole("region", {name: "Agent task progress"}).textContent).toContain("Reading repository file · In progress");
+  expect(JSON.parse(String(wire.messages()[0][1]?.body)).streamFeatures).toEqual(["tool_activity_v1"]);
   expect(screen.queryByRole("button", { name: "Approve & run" })).toBeNull();
   expect(wire.messages()).toHaveLength(1);
   expect(JSON.parse(wire.messages()[0][1]!.body as string)).toMatchObject({ preferredProvider: "vercel_gateway", preferredModel: "fixture/model", workspaceContext: { mode, ...(mode === "code" ? { filePath: "src/app.ts" } : {}) } });
   await act(async () => { wire.completion.release(); });
   await screen.findByText(data.reply);
   expect(screen.queryByText("Review draft before persistence")).toBeNull();
+  expect(screen.queryByRole("region", {name: "Agent task progress"})).toBeNull();
   expect(screen.getByRole("button", { name: "Approve & run" })).toBeTruthy();
   expect(wire.messages()).toHaveLength(1);
   expect(wire.fetcher.mock.calls.filter(([, init]) => init?.method === "POST")).toHaveLength(1);
@@ -141,6 +146,7 @@ it("stops a native composer response without accepting late proposal authority o
   fireEvent.click(screen.getByRole("button", { name: "Stop response" }));
   await screen.findByRole("button", { name: "Reload saved conversation" });
   expect(wire.signal()?.aborted).toBe(true);
+  expect(screen.queryByRole("region", {name: "Agent task progress"})).toBeNull();
   expect(native.invoke.mock.calls.some(([command]) => command === "desktop_http_stream_cancel")).toBe(true);
   await act(async () => { wire.completion.release(); });
   expect(screen.queryByRole("button", { name: "Approve & run" })).toBeNull();

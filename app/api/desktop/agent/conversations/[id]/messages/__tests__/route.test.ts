@@ -354,8 +354,8 @@ describe("POST /api/desktop/agent/conversations/[id]/messages", () => {
 
 
 describe("authenticated Agent NDJSON endpoint", () => {
-  function streamingRequest() {
-    return new NextRequest("https://visionxixlabs.com/api/desktop/agent/conversations/conv_1/messages", { method: "POST", headers: { "content-type": "application/json", accept: "application/x-ndjson" }, body: JSON.stringify({ message: "Inspect the file" }) });
+  function streamingRequest(streamFeatures?: unknown) {
+    return new NextRequest("https://visionxixlabs.com/api/desktop/agent/conversations/conv_1/messages", { method: "POST", headers: { "content-type": "application/json", accept: "application/x-ndjson" }, body: JSON.stringify({ message: "Inspect the file", streamFeatures }) });
   }
   beforeEach(() => {
     vi.clearAllMocks();
@@ -370,6 +370,19 @@ describe("authenticated Agent NDJSON endpoint", () => {
     mocks.findFirstConversation.mockResolvedValue(null);
     expect((await POST(streamingRequest(), params)).status).toBe(404);
     expect(mocks.runDecisionLoop).not.toHaveBeenCalled(); expect(mocks.createTurn).not.toHaveBeenCalled();
+  });
+  it.each([undefined, [], ["unknown"], ["tool_activity_v1"]].map(streamFeatures => ({streamFeatures})))("negotiates activity explicitly without changing final persistence (%j)", async ({streamFeatures}) => {
+    mocks.runDecisionLoop.mockImplementation(async input => {
+      input.streaming.onActivity?.({step: 1, toolName: "read_github_file", state: "running"});
+      input.streaming.onActivity?.({step: 1, toolName: "read_github_file", state: "completed"});
+      return {kind: "final", message: "Verified explanation"};
+    });
+    const {POST} = await import("../route");
+    const response = await POST(streamingRequest(streamFeatures), params);
+    const events = (await response.text()).trim().split("\n").map(line => JSON.parse(line));
+    expect(events.filter(event => event.type === "tool_activity")).toHaveLength(streamFeatures?.includes("tool_activity_v1") ? 2 : 0);
+    expect(events.at(-1)).toMatchObject({type: "result", data: {proposal: null}});
+    expect(mocks.createProposal).not.toHaveBeenCalled();
   });
   it("streams a draft and returns only a persisted, final response", async () => {
     let finish!: () => void;

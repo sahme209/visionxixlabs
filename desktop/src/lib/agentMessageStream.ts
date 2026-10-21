@@ -1,12 +1,13 @@
 import { assertDesktopNotAborted } from "./abortSignal";
-import { AGENT_STREAM_CONTENT_TYPE, MAX_AGENT_STREAM_BYTES, MAX_AGENT_STREAM_FRAME_BYTES, isAgentMessageReply, type AgentMessageReply } from "../../../lib/desktop/agentMessageStreamProtocol";
+import { AGENT_STREAM_CONTENT_TYPE, MAX_AGENT_STREAM_BYTES, MAX_AGENT_STREAM_FRAME_BYTES, isAgentMessageReply, isAgentToolActivity, type AgentToolActivity, type AgentMessageReply } from "../../../lib/desktop/agentMessageStreamProtocol";
 
 /** Decode bounded UTF-8 NDJSON; only a validated terminal event grants a reply.
  * No retry or JSON fallback request can duplicate a paid dispatch. */
-export async function readAgentMessageStream(response: Response, onDraft: (text: string) => void, signal: AbortSignal): Promise<AgentMessageReply> {
+export async function readAgentMessageStream(response: Response, onDraft: (text: string) => void, signal: AbortSignal, onActivity?: (activity: AgentToolActivity) => void): Promise<AgentMessageReply> {
   if (response.headers.get("content-type")?.split(";")[0] !== AGENT_STREAM_CONTENT_TYPE || !response.body) throw new Error("agent_stream_unavailable");
   const reader = response.body.getReader(), decoder = new TextDecoder("utf-8", { fatal: true });
   let buffer = "", draft = "", bytes = 0, events = 0, terminal: AgentMessageReply | undefined;
+  let activityStep = 0, activeTool: string | undefined;
   try {
     while (true) {
       assertDesktopNotAborted(signal);
@@ -21,7 +22,17 @@ export async function readAgentMessageStream(response: Response, onDraft: (text:
         const line = buffer.slice(0, newline); buffer = buffer.slice(newline + 1);
         if (new TextEncoder().encode(line).byteLength > MAX_AGENT_STREAM_FRAME_BYTES || ++events > 16_384 || terminal) throw new Error("agent_stream_invalid");
         const event = JSON.parse(line);
-        if (event?.type === "draft_reset") { draft = ""; onDraft(draft); }
+        if (event?.type === "tool_activity" && isAgentToolActivity(event.activity)) {
+          const activity = event.activity;
+          if (activity.state === "running") {
+            if (activeTool !== undefined || activity.step !== activityStep + 1) throw new Error("agent_stream_invalid");
+            activityStep = activity.step; activeTool = activity.toolName;
+          } else {
+            if (activity.step !== activityStep || activeTool !== activity.toolName) throw new Error("agent_stream_invalid");
+            activeTool = undefined;
+          }
+          onActivity?.(activity);
+        } else if (event?.type === "draft_reset") { draft = ""; onDraft(draft); }
         else if (event?.type === "draft_delta" && typeof event.text === "string" && event.text.length > 0) {
           draft += event.text;
           if (draft.length > 131_072) throw new Error("agent_stream_limit");

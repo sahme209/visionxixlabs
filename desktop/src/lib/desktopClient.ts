@@ -1,3 +1,4 @@
+import { AGENT_TOOL_ACTIVITY_FEATURE, type AgentToolActivity } from "../../../lib/desktop/agentMessageStreamProtocol";
 import type { AgentProfileId } from "../../../lib/axiom/agentRuntime/agentProfiles";
 import { assertDesktopNotAborted } from "./abortSignal";
 import type { ModelPolicy } from "./aiProviderStatus";
@@ -1035,19 +1036,19 @@ export class DesktopClient {
     mode?: "chat" | "code";
     operationMode?: "inspect" | "engineer" | "deepops";
     agentProfile?: AgentProfileId;
-  }, preferredModel?: string, streaming?: { signal: AbortSignal; onDraft: (text: string) => void }): Promise<ApiResult<{
+  }, preferredModel?: string, streaming?: { signal: AbortSignal; onDraft: (text: string) => void; onActivity?: (activity: AgentToolActivity) => void }): Promise<ApiResult<{
     reply: string;
     proposal: { id: string; toolName: string; argsJson: unknown; riskLevel: string; status: string } | null;
     /** Provider-reported token evidence, not a settled customer credit charge. */
     usage: { decisionSteps: number; inputTokens: number | null; outputTokens: number | null; totalTokens: number | null } | null;
   }>> {
     const path = `/api/desktop/agent/conversations/${encodeURIComponent(conversationId)}/messages`;
-    const body = { message, preferredProvider, workspaceContext, ...(preferredModel ? { preferredModel } : {}) };
+    const body = { message, preferredProvider, workspaceContext, ...(preferredModel ? { preferredModel } : {}), ...(streaming?.onActivity ? {streamFeatures: [AGENT_TOOL_ACTIVITY_FEATURE]} : {}) };
     if (!streaming) return this.post(path, body);
     return this.sendStreamingAgentMessage(path, body, streaming);
   }
 
-  private async sendStreamingAgentMessage(path: string, body: unknown, streaming: { signal: AbortSignal; onDraft: (text: string) => void }) {
+  private async sendStreamingAgentMessage(path: string, body: unknown, streaming: { signal: AbortSignal; onDraft: (text: string) => void; onActivity?: (activity: AgentToolActivity) => void }) {
     const context = this.config;
     const controller = new AbortController();
     // Relay cancellation without depending on newer WKWebView AbortSignal.any.
@@ -1075,7 +1076,7 @@ export class DesktopClient {
       // Already-serving older releases may return their ordinary JSON response
       // to Accept. Consume that SAME response; never dispatch a fallback call.
       const data = response.headers.get("content-type")?.split(";")[0] === AGENT_STREAM_CONTENT_TYPE
-        ? await readAgentMessageStream(response, text => { assertOwned(); streaming.onDraft(text); }, signal)
+        ? await readAgentMessageStream(response, text => { assertOwned(); streaming.onDraft(text); }, signal, activity => { assertOwned(); streaming.onActivity?.(activity); })
         : await response.json().then(value => {
           if (value?.ok !== true || !isAgentMessageReply(value.data)) throw new Error("invalid_agent_reply");
           return value.data;

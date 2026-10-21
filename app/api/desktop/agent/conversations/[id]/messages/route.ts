@@ -16,7 +16,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import type { Prisma } from "@prisma/client";
 import { resolveRequestDesktopSession } from "@/lib/desktop/resolveRequestDesktopSession";
 import { agentMessageHttpStream } from "@/lib/desktop/agentMessageHttpStream";
-import { AGENT_STREAM_CONTENT_TYPE } from "@/lib/desktop/agentMessageStreamProtocol";
+import { AGENT_STREAM_CONTENT_TYPE, AGENT_TOOL_ACTIVITY_FEATURE, type AgentMessageExecutionStream } from "@/lib/desktop/agentMessageStreamProtocol";
 import { isConcreteGatewayModelId } from "@/lib/ai/gatewayModelCatalog";
 import { prisma } from "@/lib/db";
 import { agentActionDigest, approvalExpiry } from "@/lib/axiom/agentRuntime/proposalIntegrity";
@@ -98,6 +98,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
 
   const body = (await request.json().catch(() => null)) as {
     message?: unknown;
+    streamFeatures?: unknown;
     preferredProvider?: unknown;
     preferredModel?: unknown;
     workspaceContext?: {
@@ -150,7 +151,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     return NextResponse.json({ ok: false, error: "invalid_workspace_context" }, { status: 400 });
   }
 
-  async function execute(streaming?: { abortSignal: AbortSignal; onDraft: (text: string) => void }): Promise<Response> {
+  async function execute(streaming?: AgentMessageExecutionStream): Promise<Response> {
     streaming?.abortSignal.throwIfAborted();
     const correlationId = idFactory.correlation(`agent_msg_${Date.now().toString(36)}`);
     await prisma.$transaction([
@@ -302,6 +303,6 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     return NextResponse.json({ ok: true, data: { reply, proposal: null, usage: outcome.usage ?? null } });
   }
   return request.headers.get("accept")?.split(",").some(type => type.trim() === AGENT_STREAM_CONTENT_TYPE)
-    ? agentMessageHttpStream(request.signal, stream => execute(stream))
+    ? agentMessageHttpStream(request.signal, stream => execute(stream), {toolActivity: Array.isArray(body?.streamFeatures) && body.streamFeatures.includes(AGENT_TOOL_ACTIVITY_FEATURE)})
     : execute();
 }

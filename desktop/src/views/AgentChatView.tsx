@@ -1,3 +1,4 @@
+import { AGENT_TOOL_ACTIVITY_LABELS, type AgentToolActivity } from "../../../lib/desktop/agentMessageStreamProtocol";
 import { localCodingProposals, type LocalCodingProposal } from "../lib/localEditReview";
 import { localCodeContextPrompt, type LocalCodeSelection } from "../lib/localCodeContext";
 import { selectSkillInvocation } from "../lib/skillInvocation";
@@ -201,6 +202,8 @@ function AgentChatSession({ onOpenSettings, identity, active, requestedSkill, re
   const processedSkillRequest = useRef<AgentSkillRequest | undefined>(undefined);
   const processedLocalCode = useRef<AgentLocalCodeRequest | undefined>(undefined);
   const [sending, setSending] = useState(false);
+  const [toolActivity, setToolActivity] = useState<AgentToolActivity[]>([]);
+  useEffect(() => { if (!sending) setToolActivity([]); }, [sending, transportContext]);
   const [error, setError] = useState<string | null>(null);
   const [decidingId, setDecidingId] = useState<string | null>(null);
   const [agentProfile, setAgentProfile] = useState<AgentProfileId>("general");
@@ -622,6 +625,7 @@ function AgentChatSession({ onOpenSettings, identity, active, requestedSkill, re
     setInput("");
     setError(null);
     setTurns((prev) => [...prev, { id: `local_${Date.now()}`, role: "user", content: instruction }]);
+    setToolActivity([]);
     setSending(true);
     setStreamingDraft("");
     const controller = new AbortController();
@@ -636,7 +640,9 @@ function AgentChatSession({ onOpenSettings, identity, active, requestedSkill, re
         mode: composerMode,
         operationMode,
         agentProfile,
-      }, choice.preferredModel, { signal: controller.signal, onDraft: text => { if (owned() && !controller.signal.aborted) setStreamingDraft(text); } });
+      }, choice.preferredModel, { signal: controller.signal, onDraft: text => { if (owned() && !controller.signal.aborted) setStreamingDraft(text); }, onActivity: activity => {
+        if (owned() && !controller.signal.aborted) setToolActivity(current => [...current.filter(item => item.step !== activity.step), activity]);
+      } });
       if (!owned() || messageAbort.current !== controller) return;
       if (controller.signal.aborted) {
         setError("Request stopped. Completed work remains recorded; reload this conversation before trying again.");
@@ -858,6 +864,13 @@ function AgentChatSession({ onOpenSettings, identity, active, requestedSkill, re
             </div>
           )}
           {turns.map((turn) => <ChatBubble key={turn.id} turn={turn.role === "tool_result" && restartActions.some(action => action.id === turn.actionProposalId && action.status === "executed") ? { ...turn, content: "ECS restart workflow request recorded. Service outcome and application health remain unverified." } : turn} />)}
+          {sending && toolActivity.length > 0 && <section aria-label="Agent task progress" className="rounded-xl border border-white/10 px-4 py-3 text-xs text-zinc-400">
+            <p className="mb-2 text-zinc-300">Reading workspace evidence</p>
+            <ol aria-live="polite">{toolActivity.map(activity => <li key={activity.step}>
+              {AGENT_TOOL_ACTIVITY_LABELS[activity.toolName]} · {activity.state === "running" ? "In progress" : activity.state === "completed" ? "Read completed" : "Read failed"}
+            </li>)}</ol>
+            <p className="mt-2 text-[10px] text-zinc-500">Progress only. Changes still require a reviewed proposal and approval.</p>
+          </section>}
           {sending && <div className="rounded-xl border border-orange-400/15 bg-orange-400/[0.03] px-4 py-3" aria-label="Agent response in progress">
             <div className="flex items-center justify-between gap-4"><p className="text-xs text-orange-200" role="status">Draft · decision and usage verification pending</p><button type="button" onClick={() => messageAbort.current?.abort()} className="rounded border border-white/15 px-2 py-1 text-xs text-zinc-300">Stop response</button></div>
             {streamingDraft && <p className="mt-3 whitespace-pre-wrap break-words text-sm text-zinc-300">{streamingDraft}</p>}

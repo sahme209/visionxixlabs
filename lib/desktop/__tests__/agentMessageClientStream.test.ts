@@ -29,7 +29,9 @@ describe("actual desktop client to HTTP streaming response", () => {
   it("accepts the same legacy JSON response without a second paid request", async () => {
     const fetcher = vi.fn(async () => reply()); vi.stubGlobal("fetch", fetcher);
     const client = new DesktopClient({ sessionToken: "synthetic-session" });
-    expect(await client.sendAgentMessage("conversation", "hello", undefined, undefined, undefined, { signal: new AbortController().signal, onDraft: vi.fn() })).toEqual({ ok: true, data: answer });
+    const activity = vi.fn();
+    expect(await client.sendAgentMessage("conversation", "hello", undefined, undefined, undefined, { signal: new AbortController().signal, onDraft: vi.fn(), onActivity: activity })).toEqual({ ok: true, data: answer });
+    expect(activity).not.toHaveBeenCalled();
     expect(fetcher).toHaveBeenCalledOnce();
   });
   it("aborts immediately on workspace context change during a stalled read", async () => {

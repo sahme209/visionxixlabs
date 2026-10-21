@@ -44,3 +44,32 @@ it("preserves a supplied cancellation reason instead of replacing it with the co
   controller.abort(reason);
   await expect(readAgentMessageStream(response([terminal]), vi.fn(), controller.signal)).rejects.toBe(reason);
 });
+
+it("reports ordered tool activity without treating progress as a result or approval", async () => {
+  const seen = vi.fn();
+  const result = await readAgentMessageStream(response([
+    {type: "tool_activity", activity: {step: 1, toolName: "read_github_file", state: "running"}},
+    {type: "tool_activity", activity: {step: 1, toolName: "read_github_file", state: "completed"}},
+    terminal,
+  ]), vi.fn(), new AbortController().signal, seen);
+  expect(seen.mock.calls.map(([event]) => event.state)).toEqual(["running", "completed"]);
+  expect(result).toEqual(terminal.data);
+});
+it.each([
+  [{step: 1, toolName: "read_github_file", state: "completed"}],
+  [{step: 2, toolName: "read_github_file", state: "running"}],
+  [{step: 1, toolName: "read_github_file", state: "running", args: {secret: "must not cross wire"}}],
+  [{step: 1, toolName: "read_github_file", state: "running"}, {step: 1, toolName: "other_tool", state: "completed"}],
+  [{step: 1, toolName: "read_github_file", state: "running"}, {step: 1, toolName: "read_github_file", state: "running"}],
+].map(events => ({events})))("rejects malformed or reordered activity %#", async ({events}) => {
+  await expect(readAgentMessageStream(response([...events.map(activity => ({type: "tool_activity", activity})), terminal]), vi.fn(), new AbortController().signal, vi.fn())).rejects.toThrow();
+});
+
+it("limits activity presentation to the registered read-only surface", async () => {
+  const {AGENT_TOOL_ACTIVITY_LABELS, isAgentToolActivity} = await import("../agentMessageStreamProtocol");
+  const {TOOL_REGISTRY} = await import("../../axiom/agentRuntime/tools");
+  expect(Object.keys(AGENT_TOOL_ACTIVITY_LABELS).sort()).toEqual(TOOL_REGISTRY.filter(tool => tool.riskLevel === "low").map(tool => tool.name).sort());
+  expect(isAgentToolActivity({step: 1, toolName: "trigger_aws_deploy", state: "running"})).toBe(false);
+  expect(isAgentToolActivity({step: 9, toolName: "read_github_file", state: "running"})).toBe(false);
+  expect(isAgentToolActivity({step: 1, toolName: "__proto__", state: "running"})).toBe(false);
+});

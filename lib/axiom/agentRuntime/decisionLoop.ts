@@ -13,6 +13,7 @@
  */
 
 import "server-only";
+import type { AgentMessageExecutionStream, AgentToolActivity } from "@/lib/desktop/agentMessageStreamProtocol";
 import { resolveAgentProfile, profileToolNames, type AgentProfileId } from "./agentProfiles";
 import { isBoundedAwsObservation } from "./cloudObservationPolicy";
 
@@ -190,7 +191,7 @@ export async function runDecisionLoop(input: {
   skillContext?: string;
   preferredProvider?: string;
   preferredModel?: string;
-  streaming?: { abortSignal: AbortSignal; onDraft: (message: string) => void };
+  streaming?: AgentMessageExecutionStream;
   operationMode?: AgentOperationMode;
   agentProfile?: AgentProfileId;
   initialToolCall?: InitialReadOnlyToolCall;
@@ -252,6 +253,17 @@ export async function runDecisionLoop(input: {
     }
   };
 
+  let activityStep = 0;
+  const startActivity = (toolName: string): AgentToolActivity => {
+    const activity: AgentToolActivity = {step: ++activityStep, toolName, state: "running"};
+    input.streaming?.abortSignal.throwIfAborted();
+    input.streaming?.onActivity?.(activity);
+    return activity;
+  };
+  const finishActivity = (activity: AgentToolActivity, ok: boolean) => {
+    input.streaming?.abortSignal.throwIfAborted();
+    input.streaming?.onActivity?.({...activity, state: ok ? "completed" : "failed"});
+  };
   const transcript = [...input.transcript];
   let boundedObservation = false;
   const observationConstraint = "REPORT-ONLY AWS OBSERVATION: This request may explain only observed instance facts. Coverage is incomplete: one EC2 page in one enrolled region, at most five instances. Costs, utilization metrics, backups, other regions and other resource types are unknown. Do not infer absence, resource deletion, drift, savings or readiness. No write proposal may follow this observation in this request.";
@@ -274,12 +286,17 @@ export async function runDecisionLoop(input: {
     const authorityError = await recheckToolAuthority(tool.name);
     if (authorityError) return withUsage(authorityError);
     input.streaming?.abortSignal.throwIfAborted();
+    const activity = startActivity(tool.name);
     const executed = await input.executeReadOnlyTool(tool.name, input.initialToolCall.args);
     if (tool.name === "read_aws_inventory" || tool.name === "list_cloud_accounts") {
       const afterReadAuthority = await recheckToolAuthority(tool.name);
       if (afterReadAuthority) return withUsage(afterReadAuthority);
     }
-    if (!recordObservation(tool.name, executed)) return withUsage({ kind: "error", error: "tool_execution_failed", detail: "Invalid bounded AWS observation." });
+    if (!recordObservation(tool.name, executed)) {
+      finishActivity(activity, false);
+      return withUsage({ kind: "error", error: "tool_execution_failed", detail: "Invalid bounded AWS observation." });
+    }
+    finishActivity(activity, executed.ok);
     transcript.push({ role: "assistant", content: input.initialToolCall.message });
     transcript.push({
       role: "tool_result",
@@ -337,12 +354,17 @@ export async function runDecisionLoop(input: {
     }
 
     input.streaming?.abortSignal.throwIfAborted();
+    const activity = startActivity(tool.name);
     const executed = await input.executeReadOnlyTool(tool.name, args);
     if (tool.name === "read_aws_inventory" || tool.name === "list_cloud_accounts") {
       const afterReadAuthority = await recheckToolAuthority(tool.name);
       if (afterReadAuthority) return withUsage(afterReadAuthority);
     }
-    if (!recordObservation(tool.name, executed)) return withUsage({ kind: "error", error: "tool_execution_failed", detail: "Invalid bounded AWS observation." });
+    if (!recordObservation(tool.name, executed)) {
+      finishActivity(activity, false);
+      return withUsage({ kind: "error", error: "tool_execution_failed", detail: "Invalid bounded AWS observation." });
+    }
+    finishActivity(activity, executed.ok);
     transcript.push({ role: "assistant", content: decision.message });
     transcript.push({
       role: "tool_result",
