@@ -1,5 +1,9 @@
 # Axiom Agent complete mission tracker
 
+## Standing execution rule
+
+The owner has repeatedly directed continuous execution of the whole unified mission. A passing test, saved commit, status report or individual milestone is not a stopping condition. During an active execution session, move directly to the next independently executable authorized task. Scope external blockers to their dependent tasks; do not treat a desktop inspection permission or a provider credential gap as a global engineering blocker. Preserve evidence and approval gates. Stop only when no remaining authorized task can safely proceed, a genuinely essential owner decision is required, or the execution session/platform ends. Never promise indefinite background work after execution has ended. Maintain the current checkpoint and next executable action here and in GitHub issue #200 so a later session can resume without rebuilding plans or repeating completed work.
+
 ## Verification cleanup and Git-output milestone — October 21, 2026
 
 - Confirmed and repaired two independent defects locally: scoped tokens appearing alone in Git diagnostics/success output, and canceled native checks leaving an attached descendant running. Synthetic redaction cases and a real descendant marker-write regression failed before their repairs.
