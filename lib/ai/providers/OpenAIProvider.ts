@@ -2,9 +2,9 @@
 
 import "server-only";
 import { defaultModelFor } from "../AIModelRegistry";
-import { OpenAICompatProvider } from "./openaiCompat";
+import { DirectChatStreamProvider } from "./directChatStream";
 
-export class OpenAIProvider extends OpenAICompatProvider {
+export class OpenAIProvider extends DirectChatStreamProvider {
   constructor(env: { apiKey?: string; modelName?: string }) {
     super({
       provider: "openai",

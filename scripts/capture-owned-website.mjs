@@ -10,12 +10,16 @@ function pointerForControl(label) {
   const controls = label === 'Essential only' ? document.querySelector('[role="dialog"][aria-labelledby="privacy-consent-title"]')?.querySelectorAll('button') ?? [] : document.querySelectorAll('#product-tour button, #product-tour a');
   const element = [...controls].find(el => (el.getAttribute('aria-label') ?? el.textContent.trim()) === label);
   if (!element || element.disabled) throw Error('missing_control');
+  const measurement = label === 'Read approval workflow' ? Object.getOwnPropertyDescriptor(window, '__axiomPointerMeasure') : null;
+  const observe = measurement && Object.hasOwn(measurement, 'value') && typeof measurement.value === 'function' ? measurement.value : null;
+  if (observe) observe('selection');
   element.scrollIntoView({ block: 'center', behavior: 'instant' });
   const box = element.getBoundingClientRect();
   const x = box.x + box.width / 2; const y = box.y + box.height / 2;
   if (!Number.isFinite(x) || !Number.isFinite(y) || box.width <= 0 || box.height <= 0 || x < 0 || x >= innerWidth || y < 0 || y >= innerHeight) throw Error('control_geometry_invalid');
   const hit = document.elementFromPoint(x, y);
   if (!hit || (hit !== element && !element.contains(hit))) throw Error('control_target_obscured');
+  if (observe) observe('after_scroll_call', { x, y });
   return { x, y };
 }
 // Observation only: no event cancellation, navigation calls, source text or credentials.

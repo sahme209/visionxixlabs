@@ -6,11 +6,11 @@
 
 import "server-only";
 import { defaultModelFor } from "../AIModelRegistry";
-import { OpenAICompatProvider } from "./openaiCompat";
+import { DirectChatStreamProvider } from "./directChatStream";
 
 const BASE_URL = "https://api.x.ai/v1";
 
-export class XAIProvider extends OpenAICompatProvider {
+export class XAIProvider extends DirectChatStreamProvider {
   constructor(env: { apiKey?: string; modelName?: string }) {
     super({
       provider: "xai",

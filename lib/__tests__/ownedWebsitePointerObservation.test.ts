@@ -66,3 +66,17 @@ it('binds observation to documentation receipts and hashes the helper source', (
  expect(driver).toContain('pointer: (${pointerObservation.readPointerObservation})()');
  expect(readFileSync('scripts/run-owned-website-visual.mjs', 'utf8')).toContain("'scripts/fixtures/ownedWebsitePointerObservation.cjs'");
 });
+
+it('captures selection and post-scroll measurements without recomputing the sent point', () => {
+ const f = fixture();
+ const descriptor = Object.getOwnPropertyDescriptor(f.window, '__axiomPointerMeasure');
+ expect(descriptor && Object.hasOwn(descriptor, 'value')).toBe(true);
+ descriptor!.value('selection');
+ descriptor!.value('after_scroll_call', { x: 60, y: 40 });
+ f.handlers.pointerdown({ target: f.original, clientX: 60, clientY: 40, button: 0, isTrusted: true });
+ expect(f.read()).toHaveLength(3);
+ expect(f.read()[0]).toMatchObject({ type: 'selection', rect: [10, 20, 100, 40], x: null, y: null });
+ expect(f.read()[1]).toMatchObject({ type: 'after_scroll_call', x: 60, y: 40, scroll: [0, 100] });
+ const { sanitizePointerObservation } = require('../../scripts/fixtures/ownedWebsitePointerObservation.cjs');
+ expect(sanitizePointerObservation(f.read())).toEqual(f.read());
+});

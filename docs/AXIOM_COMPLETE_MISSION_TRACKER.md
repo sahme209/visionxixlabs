@@ -16,6 +16,41 @@ Separate local branch `codex/verification-cancellation-local`, based exactly on 
 Implemented prepare/run/stop registry with one-shot execution, bounded pending registrations (32 entries, 60-second preparation expiry), cancellation before spawn and during process/pipe waiting, completion/cancel serialization, and existing two-second direct-child cleanup bound. Stop accepts an owned run identity and repository, never a PID or supplied command. No process group or descendant signaling is attempted. The UI latches cancellation before IPC and refuses late successful receipts even if cancellation cannot be confirmed; repository/context ownership and newer-attempt generation checks fence late notices. Switching or closing views still does not stop running processes; stale preparations are retired before launch when observed. Abrupt renderer loss can leave a pending registration until expiry/pruning; process-tree containment is not established.
 
 Local evidence: four focused receipt/editor ownership/Agent readiness/demo files passed 128 tests; desktop frontend TypeScript passed. Added native cancellation-before-spawn and during-wait tests remain **unrun** because this environment lacks the required Rust/native toolchain. Desktop release alignment, frontend production build and `git diff --check` passed; Vite retained its existing chunk/import warnings. Installed macOS/native stop timing, process reaping, simultaneous completion/cancel and descendant behavior remain acceptance gaps; source tests and frontend compilation do not establish them. No push, PR, hosted CI, provider/cloud/paid call, deployment, production mutation or security/financial gate change was performed.
+## Local direct OpenAI/xAI transport review — October 21, 2026
+
+Plan: isolate the two fixed-origin server adapters, replace their buffered stream
+with bounded incremental Chat Completions SSE, and prove cancellation and terminal
+evidence using synthetic transports. Base: `0c32b6fd`; local branch
+`codex/direct-provider-streaming-local`. No external provider request, credential,
+production operation, push or PR is authorized by this checkpoint.
+
+Implemented: only OpenAI/xAI opt into the new transport. Other compatible,
+free/local and mock adapters retain their existing behavior. Requests reject
+redirects, keep authorization at the fixed vendor origin, and retain isolated-I/O
+denial. Parsing caps total bytes (8 MiB), SSE event/line size (64 KiB), and display
+output (1 MiB characters). Caller abort and timeout remain active through body
+reads; consumer return cancels the reader. Only a finish event followed by DONE
+emits success, with validated optional provider usage; truncated/error responses
+never fabricate terminal success. No midstream retry/fallback is added.
+
+Evidence: 86 targeted synthetic tests passed across direct streaming, xAI,
+manager, aiFetch, Gateway streaming and demo contracts. They prove incremental delivery
+before later body bytes, fragmented UTF-8/CRLF, body-read abort/timeout, consumer
+return cleanup, HTTP/error/malformed/truncated/oversized rejection and terminal
+usage. Independent review found that abort during a suspended text yield could
+otherwise allow already buffered SSE events to continue. Explicit abort checks
+at each buffered parsing iteration and around text/terminal yields now reject
+that continuation. Four additional cases cover both vendors with a second
+buffered delta and with only buffered finish/DONE remaining.
+Full web `npx tsc --noEmit --pretty false` passed; no paid integration
+or full default suite was run.
+
+Acceptance gaps: actual OpenAI/xAI model/API behavior and credentials are untested;
+no paid calls occurred. This adapter work neither enables a direct desktop lane
+nor supplies metered admission, settlement or billing acceptance. Governed manager
+requests still require their one-use admission and single Gateway attempt; their
+reservation, policy, durable usage and fallback boundaries are unchanged. Actual
+application/native desktop/provider/billing acceptance remains open.
 
 ## Controller continuation — canonical-host authentication, October 20, 2026
 
@@ -3602,3 +3637,16 @@ CI macOS/Linux both reported E0716 in cancellation_during_wait_never_returns_suc
 Merged exact main49cd7dc559bd196a9a91e8e695ef748ed4cc8a1e into the existing196 branch without rewriting history. The only conflict was this mission tracker: retained both196 diagnostic evidence and197 cancellation/lifetime-fix history. All196 diagnostics/tests remain intact; cancellation source matches approved merged main. Native macOS/Linux29-test and lint evidence already passed on197; installed-Mac acceptance remains unverified. Historical Git timeout and stale-coordinate failures remain intermittent/unresolved; receipts preserved, no new diagnostic runs. Updated integration head needs focused tests, independent review and exact owner push approval.198 waits for196 integration;195 unchanged/blocked.
 
 Reconciliation validation:222 focused cases across11 browser/ownership/model/demo suites passed; repository and desktop TypeScript passed. Independent staged-tree review found no blocker. Blob identity checks preserved14 non-tracker files from196 and6 from197 exactly. Post-merge main CI is monitored separately; new196 exact-head CI and owner push authorization remain pending. No installed-Mac/provider acceptance inferred.
+
+### Local pointer diagnostics integration
+
+Event-time pointer observations now integrate with existing documentation polls, source hashing and strict public projection. 46 focused tests across five files; independent review22 tests passed; no independent review blocker. Application/input behavior, deadlines and isolation unchanged. No new browser evidence: click-target root cause remains unresolved. Local only; no push/CI. #197 Git timeout evidence retained without further diagnostics; #195 unchanged.
+
+
+### #198 measurement-to-dispatch investigation (local only)
+
+Event-time document rectangle matches across preserved passing/failing receipts; scrollY differs167px and failing x is20px off-center. Selection-time evidence was absent, so exact mechanism remains unproven. Add selection/post-scroll-call snapshots and bounded elapsed times to existing event observations without changing coordinates, waits, deadlines or acceptance. Two new regression tests failed before implementation and pass after it; independent review27 tests passed. No behavior fix claimed, no push/CI, and #195–#197 untouched. Next dependency is authorized browser evidence before a repair.
+
+### Zero-additional-spend local consolidation
+
+Owner's latest master plan is additive: no new pushes/merges/paid CI/provider calls/deployments. Separate local integration worktree starts at reconciled196 e43e4a0b (including merged197/main49cd7dc5), then merges198 exact58a64bfb without rewriting any PR branch. Seven conflicts reconciled by intent:196 initialNavigation/homepage delivery plus198 five-stage pointer schema and strict sanitizer, both receipt VM dependencies, both tracker histories. Streaming/cancellation authority unchanged.254 focused tests across12 suites passed; independent combined-tree review found no blocker. Browser/root-cause, installed-Mac and real-provider acceptance remain unverified. Existing authorized196 CI passed Test+website; no new CI initiated. Public PRs are not merged or superseded.
