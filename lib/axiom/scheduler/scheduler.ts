@@ -56,9 +56,40 @@ export async function processScheduledRuns(): Promise<SchedulerResult> {
       await incrementFailures(schedule.id);
       continue;
     }
+    // Claim before external work. A lost claim never grants dispatch authority.
+    // Advance once here, never again at completion. A crash after this point
+    // can skip this occurrence; uncertain work must not be automatically replayed.
+    const claimedAt = new Date(Math.max(Date.now(), schedule.updatedAt.getTime() + 1));
+    const nextRunAt = computeNextRun(schedule.frequency as ScheduleFrequency);
+    const claimed = await prisma.axiomScheduledRun.updateMany({
+      where: {
+        id: schedule.id,
+        organizationId: schedule.organizationId,
+        cloudAccountId: schedule.cloudAccountId,
+        nextRunAt: schedule.nextRunAt,
+        updatedAt: schedule.updatedAt,
+        enabled: true,
+        consecutiveFailures: { lt: MAX_CONSECUTIVE_FAILURES },
+        cloudAccount: { is: { organizationId: schedule.organizationId } },
+      },
+      data: { nextRunAt, updatedAt: claimedAt },
+    });
+    if (claimed.count !== 1) {
+      result.skipped++;
+      continue;
+    }
+    // The timestamp is advanced strictly beyond the observed row version.
+    // Admin edits and later claims invalidate this completion predicate.
+    const completionWhere = {
+      id: schedule.id,
+      organizationId: schedule.organizationId,
+      cloudAccountId: schedule.cloudAccountId,
+      nextRunAt,
+      updatedAt: claimedAt,
+      enabled: true,
+    };
     if (!schedule.cloudAccount.enabled) {
       result.skipped++;
-      await advanceSchedule(schedule.id, schedule.frequency as ScheduleFrequency, null);
       continue;
     }
 
@@ -73,9 +104,12 @@ export async function processScheduledRuns(): Promise<SchedulerResult> {
 
       if (runResult.status === "failed") {
         result.failed++;
-        await incrementFailures(schedule.id);
-        await advanceSchedule(schedule.id, schedule.frequency as ScheduleFrequency, runResult.runId);
+        const completed = await prisma.axiomScheduledRun.updateMany({
+          where: completionWhere,
+          data: { lastRunId: runResult.runId, consecutiveFailures: { increment: 1 } },
+        });
 
+        if (completed.count !== 1) continue;
         const failNotification = buildNotifications.scanFailed(
           schedule,
           runResult,
@@ -106,17 +140,20 @@ export async function processScheduledRuns(): Promise<SchedulerResult> {
         }
       }
 
-      await advanceSchedule(schedule.id, schedule.frequency as ScheduleFrequency, runResult.runId);
-      await resetFailures(schedule.id);
-
       const summaryToStore = fullDiffSummary ?? diff?.summary ?? null;
-      if (summaryToStore) {
-        await prisma.axiomScheduledRun.update({
-          where: { id: schedule.id },
-          data: { lastDiffSummary: summaryToStore },
-        });
-      }
+      const completed = await prisma.axiomScheduledRun.updateMany({
+        where: completionWhere,
+        data: {
+          lastRunId: runResult.runId,
+          consecutiveFailures: 0,
+          ...(summaryToStore ? { lastDiffSummary: summaryToStore } : {}),
+        },
+      });
 
+      if (completed.count !== 1) {
+        result.skipped++;
+        continue;
+      }
       // Create notifications for significant changes
       const notifications = buildNotifications.fromDiff(
         schedule,
@@ -137,8 +174,10 @@ export async function processScheduledRuns(): Promise<SchedulerResult> {
       result.succeeded++;
     } catch (e) {
       result.failed++;
-      await incrementFailures(schedule.id);
-      await advanceSchedule(schedule.id, schedule.frequency as ScheduleFrequency, null);
+      await prisma.axiomScheduledRun.updateMany({
+        where: completionWhere,
+        data: { consecutiveFailures: { increment: 1 } },
+      });
       console.error(`[axiom scheduler] Failed schedule ${schedule.id}:`, e);
     }
   }
@@ -173,7 +212,16 @@ export async function updateSchedule(
   organizationId: string,
   updates: { frequency?: ScheduleFrequency; enabled?: boolean; timezone?: string },
 ): Promise<boolean> {
-  const data: Record<string, unknown> = {};
+  const current = await prisma.axiomScheduledRun.findFirst({
+    where: { id: scheduleId, organizationId },
+    select: { updatedAt: true },
+  });
+  if (!current) return false;
+  // Every administrator mutation advances the same optimistic version even
+  // when wall-clock precision would otherwise produce an identical timestamp.
+  const data: Record<string, unknown> = {
+    updatedAt: new Date(Math.max(Date.now(), current.updatedAt.getTime() + 1)),
+  };
 
   if (updates.frequency) {
     data.frequency = updates.frequency;
@@ -188,7 +236,7 @@ export async function updateSchedule(
     data.timezone = updates.timezone;
   }
 
-  const changed = await prisma.axiomScheduledRun.updateMany({ where: { id: scheduleId, organizationId }, data });
+  const changed = await prisma.axiomScheduledRun.updateMany({ where: { id: scheduleId, organizationId, updatedAt: current.updatedAt }, data });
   return changed.count === 1;
 }
 
@@ -233,29 +281,10 @@ function computeNextRun(frequency: ScheduleFrequency): Date {
   }
 }
 
-async function advanceSchedule(
-  scheduleId: string,
-  frequency: ScheduleFrequency,
-  lastRunId: string | null,
-): Promise<void> {
-  const nextRunAt = computeNextRun(frequency);
-  const data: Record<string, unknown> = { nextRunAt };
-  if (lastRunId) data.lastRunId = lastRunId;
-
-  await prisma.axiomScheduledRun.update({ where: { id: scheduleId }, data });
-}
-
 async function incrementFailures(scheduleId: string): Promise<void> {
   await prisma.axiomScheduledRun.update({
     where: { id: scheduleId },
     data: { consecutiveFailures: { increment: 1 } },
-  });
-}
-
-async function resetFailures(scheduleId: string): Promise<void> {
-  await prisma.axiomScheduledRun.update({
-    where: { id: scheduleId },
-    data: { consecutiveFailures: 0 },
   });
 }
 
