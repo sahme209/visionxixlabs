@@ -1,5 +1,5 @@
 /** @vitest-environment jsdom */
-import { createElement, Profiler } from "react";
+import { createElement, Profiler, useState } from "react";
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import { act, cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 const m = vi.hoisted(() => ({ invoke: vi.fn(), client: { config: {} as { sessionToken?: string }, listGithubRepositories: vi.fn(), mintGithubCloneToken: vi.fn(), openGithubPullRequest: vi.fn(), subscribeContext: (listener: () => void) => { void listener; return () => {}; }, getContextRevision: (): number => 0, setSession: (token: string | undefined) => { void token; } } }));
@@ -14,6 +14,8 @@ vi.mock("../../../desktop/src/lib/desktopClient", async original => {
   m.client.setSession = contextClient.setSession.bind(contextClient);
   return { desktopClient: m.client };
 });
+import { ProposalCard } from "../../../desktop/src/views/AgentChatView";
+import type { LocalEditRequest } from "../../../desktop/src/lib/localEditReview";
 import { RepositoryWorkspaceView } from "../../../desktop/src/views/RepositoryWorkspaceView";
 function deferred<T>() { let resolve!: (value: T) => void; let reject!: (reason: Error) => void; const promise = new Promise<T>((done, fail) => { resolve = done; reject = fail; }); return { promise, resolve, reject }; }
 const status = (path: string) => ({ rootPath: path, repositoryFullName: path === "/owned/A" ? "fixture/a" : "fixture/b", branch: "feature", ahead: 0, behind: 0, changedFiles: [] });
@@ -778,4 +780,47 @@ it("keeps an authorized repository selection when optional preference writes fai
     expect((screen.getByRole("button", {name: "Clone"}) as HTMLButtonElement).disabled).toBe(false);
     expect(m.client.mintGithubCloneToken).not.toHaveBeenCalled();
   } finally { window.removeEventListener("error", onError); write.mockRestore(); }
+});
+
+it("connects a mixed Agent proposal card to consented local save, creation and verification", async () => {
+  reads = () => "original";
+  checks = () => [{id: "a", label: "A check", command: "npm test", description: "fixture"}];
+  const original = m.invoke.getMockImplementation()!;
+  m.invoke.mockImplementation(async (command: string, args: Record<string,string>) => command === "create_repository_file" ? undefined : original(command,args));
+  const approve = vi.fn(), reject = vi.fn();
+  const proposal = {id: "combined", toolName: "commit_github_files", riskLevel: "medium", status: "proposed",
+    argsJson: {repositoryFullName: "fixture/a", branch: "feature",
+      files: [{path: "same.ts", content: "reviewed update"}, {path: "new.ts", content: "reviewed new file"}],
+      _review: {kind: "github_files", files: [{path: "same.ts", baseSha: "original-blob", baseContent: "original"}, {path: "new.ts", baseSha: null, baseContent: ""}]}}};
+  function Journey() {
+    const [request, setRequest] = useState<LocalEditRequest>();
+    return request
+      ? createElement(RepositoryWorkspaceView, {editRequest: request})
+      : createElement(ProposalCard, {proposal, deciding: false, onApprove: approve, onReject: reject,
+        onReviewLocally: (edit, edits) => setRequest({edit, edits, context: m.client.config})});
+  }
+  render(createElement(Journey));
+  fireEvent.click(screen.getByRole("button", {name: "Review in local editor"}));
+  const review = await screen.findByRole("region", {name: "Agent local draft review"});
+  expect(review.textContent).toContain("2 files");
+  fireEvent.click(await screen.findByRole("button", {name: "Open same.ts for local review"}));
+  await screen.findByDisplayValue("original");
+  fireEvent.click(screen.getByRole("button", {name: "Load editor draft"}));
+  await screen.findByDisplayValue("reviewed update");
+  expect(m.invoke.mock.calls.filter(([name]) => ["write_repository_file", "create_repository_file", "run_repository_check"].includes(name))).toHaveLength(0);
+  fireEvent.click(screen.getByRole("button", {name: "Save ⌘S"}));
+  await screen.findByText("Saved same.ts");
+  expect(m.invoke).toHaveBeenCalledWith("write_repository_file", {repositoryPath: "/owned/A", relativePath: "same.ts", content: "reviewed update", expectedContent: "original"});
+  fireEvent.click(screen.getByRole("button", {name: "Create new.ts locally"}));
+  expect(screen.getByLabelText("New file content to create").textContent).toBe("reviewed new file");
+  expect(m.invoke.mock.calls.filter(([name]) => name === "create_repository_file")).toHaveLength(0);
+  fireEvent.click(screen.getByRole("button", {name: "Create local file"}));
+  await screen.findByText(/Created new.ts locally/);
+  expect(m.invoke).toHaveBeenCalledWith("create_repository_file", {repositoryPath: "/owned/A", relativePath: "new.ts", content: "reviewed new file", repositoryFullName: "fixture/a", branch: "feature"});
+  fireEvent.click(screen.getByRole("button", {name: "A check"}));
+  expect(m.invoke.mock.calls.filter(([name]) => name === "run_repository_check")).toHaveLength(0);
+  fireEvent.click(screen.getByRole("button", {name: "Run check"}));
+  await screen.findByText("fixture output");
+  expect(m.invoke.mock.calls.filter(([name]) => name === "run_repository_check")).toHaveLength(1);
+  expect(approve).not.toHaveBeenCalled(); expect(reject).not.toHaveBeenCalled();
 });

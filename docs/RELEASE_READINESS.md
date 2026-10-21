@@ -124,3 +124,5 @@ Remaining real acceptance: secure test model/Gateway credentials (approved cumul
 ## October 21 — AI request recovery (local only)
 
 Interrupted or canceled Agent responses now require an identity-verified saved-conversation review before Send/Enter can submit again. Failed reloads keep the guard and unsent draft; no automatic AI retry. 20 application-composition tests, desktop TypeScript, affected lint and frontend build passed; independent review found no blocker. Session-local guard does not prove server completion or idempotency. Installed release and real-provider acceptance remain unverified; $0 of the approved $5 AI test cap spent.
+
+Combined Agent proposal/local workspace UI journey now covered with mixed update/create review, separate baseline-bound Save, explicit Create and separately consented verification;76 affected tests, TypeScript and lint passed with independent review. Native peer remains synthetic in this integration coverage; no new installed/provider acceptance claim.
