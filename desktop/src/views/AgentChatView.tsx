@@ -186,6 +186,17 @@ function AgentChatSession({ onOpenSettings, identity, active, requestedSkill, re
   const conversationEpoch = useRef(0);
   const activeConversation = useRef<string | null>(null);
   const messageAbort = useRef<AbortController | null>(null);
+  const recoveryRef = useRef(new Set<string>());
+  const [recoveryConversations, setRecoveryConversations] = useState<ReadonlySet<string>>(() => new Set());
+  const needsRecovery = Boolean(conversationId && recoveryConversations.has(conversationId));
+
+  function requireRecovery(id: string, required: boolean) {
+    const next = new Set(recoveryRef.current);
+    if (required) next.add(id);
+    else next.delete(id);
+    recoveryRef.current = next;
+    setRecoveryConversations(next);
+  }
   const [streamingDraft, setStreamingDraft] = useState("");
   const transportContext = desktopClient.config;
   useEffect(() => {
@@ -578,6 +589,7 @@ function AgentChatSession({ onOpenSettings, identity, active, requestedSkill, re
       if (generation !== conversationEpoch.current || context !== desktopClient.config) return;
       if (!result.ok || result.data.id !== id) { activeConversation.current = conversationId; setError("The selected conversation could not be verified."); return; }
       activeConversation.current = result.data.id;
+      requireRecovery(id, false);
       setConversationId(result.data.id);
       if (!reload) setInput(conversationDrafts.current.get(result.data.id) ?? "");
       setTurns(result.data.turns.filter((turn): turn is typeof turn & { role: ChatTurn["role"] } => turn.role === "user" || turn.role === "assistant" || turn.role === "tool_result"));
@@ -616,7 +628,7 @@ function AgentChatSession({ onOpenSettings, identity, active, requestedSkill, re
 
   async function send() {
     const instruction = input.trim();
-    if (!active || modelState !== "ready" || !selectedModel || !instruction || !conversationId || activeConversation.current !== conversationId || loadingConversation || sending || (composerMode === "code" && (!repositoryFullName.includes("/") || !branch.trim() || !filePath.trim()))) return;
+    if (!active || modelState !== "ready" || !selectedModel || !instruction || !conversationId || activeConversation.current !== conversationId || loadingConversation || sending || messageAbort.current || recoveryRef.current.has(conversationId) || (composerMode === "code" && (!repositoryFullName.includes("/") || !branch.trim() || !filePath.trim()))) return;
     const choice = modelOptions.find(option => option.key === selectedModel);
     if (!choice) return;
     const context = desktopClient.config, ownerConversation = conversationId, generation = conversationEpoch.current;
@@ -630,6 +642,7 @@ function AgentChatSession({ onOpenSettings, identity, active, requestedSkill, re
     setStreamingDraft("");
     const controller = new AbortController();
     messageAbort.current = controller;
+    requireRecovery(ownerConversation, true);
     const currentRequest = () => owned() && messageAbort.current === controller && !controller.signal.aborted;
     try {
       const result = await desktopClient.sendAgentMessage(conversationId, instruction, choice.provider, {
@@ -652,6 +665,7 @@ function AgentChatSession({ onOpenSettings, identity, active, requestedSkill, re
         setError(result.error);
         return;
       }
+      requireRecovery(ownerConversation, false);
       setTurns((prev) => [...prev, { id: `local_${Date.now()}_r`, role: "assistant", content: result.data.reply }]);
       setPendingProposal(result.data.proposal && result.data.proposal.status === "proposed" ? result.data.proposal : null);
       setLatestUsage(result.data.usage);
@@ -886,13 +900,17 @@ function AgentChatSession({ onOpenSettings, identity, active, requestedSkill, re
             <div role="alert" className="flex items-center justify-between gap-4 rounded-xl border border-rose-400/20 bg-rose-400/[0.05] px-4 py-3">
               <p className="text-xs text-rose-300">{error}</p>
               {!conversationId && <button type="button" onClick={() => setStartupAttempt((attempt) => attempt + 1)} className="shrink-0 rounded-lg border border-white/10 px-3 py-1.5 text-xs text-zinc-200 hover:bg-white/[0.06]">Retry</button>}
-              {conversationId && <button type="button" disabled={sending || loadingConversation} onClick={() => void openConversation(conversationId, true)} className="shrink-0 rounded-lg border border-white/10 px-3 py-1.5 text-xs text-zinc-200 hover:bg-white/[0.06] disabled:opacity-40">Reload saved conversation</button>}
+              {conversationId && !needsRecovery && <button type="button" disabled={sending || loadingConversation} onClick={() => void openConversation(conversationId, true)} className="shrink-0 rounded-lg border border-white/10 px-3 py-1.5 text-xs text-zinc-200 hover:bg-white/[0.06] disabled:opacity-40">Reload saved conversation</button>}
             </div>
           )}
         </div>
       </div>
       <div className="border-t border-white/[0.06] px-8 py-5">
         <div className="max-w-3xl mx-auto">
+          {needsRecovery && !sending && <div role="status" className="mb-3 rounded-lg border border-orange-400/20 bg-orange-400/5 p-3 text-xs text-orange-100">
+            <p>Review the saved conversation before sending another request. Reloading does not retry AI work or confirm that an interrupted operation has finished.</p>
+            <button type="button" disabled={loadingConversation} onClick={() => conversationId && void openConversation(conversationId, true)} className="mt-2 rounded-lg border border-white/10 px-3 py-1.5 text-zinc-200 disabled:opacity-40">Reload saved conversation</button>
+          </div>}
           {active && skillState === "unavailable" && <p role="status" className="mb-2 text-xs text-zinc-400">Skill shortcuts could not be verified. Existing workspace permissions remain enforced. <button type="button" disabled={sending || loadingConversation} onClick={() => setSkillAttempt(attempt => attempt + 1)} className="underline">Retry skills</button></p>}
           {active && skillState === "ready" && enabledSkills.length > 0 && <div className="mb-3 flex items-center gap-2 overflow-x-auto pb-1"><span className="shrink-0 text-[10px] uppercase tracking-[0.12em] text-zinc-600">Skills</span>{enabledSkills.map((skill) => <button key={skill.id} type="button" disabled={sending || loadingConversation || Boolean(pendingProposal)} onClick={() => setInput((current) => selectSkillInvocation(current, skill.id))} className="shrink-0 rounded-full border border-violet-300/[0.12] bg-violet-300/[0.04] px-2.5 py-1 text-[10px] text-violet-200 hover:bg-violet-300/[0.08] disabled:opacity-40">/{skill.id}</button>)}</div>}
           <div className="mb-3 flex flex-wrap items-center gap-3">
@@ -974,7 +992,7 @@ function AgentChatSession({ onOpenSettings, identity, active, requestedSkill, re
           <button
             type="button"
             onClick={() => void send()}
-            disabled={modelState !== "ready" || !selectedModel || sending || !input.trim() || !conversationId || Boolean(pendingProposal) || (composerMode === "code" && (!repositoryFullName.includes("/") || !branch.trim() || !filePath.trim()))}
+            disabled={modelState !== "ready" || !selectedModel || sending || loadingConversation || needsRecovery || !input.trim() || !conversationId || Boolean(pendingProposal) || (composerMode === "code" && (!repositoryFullName.includes("/") || !branch.trim() || !filePath.trim()))}
             className="rounded-xl bg-white px-5 py-3 text-sm font-semibold text-black disabled:opacity-40"
           >
             {sending ? "Thinking…" : "Send"}

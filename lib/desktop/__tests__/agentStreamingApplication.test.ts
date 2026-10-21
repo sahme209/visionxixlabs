@@ -27,7 +27,8 @@ beforeEach(() => {
 });
 afterEach(() => { cleanup(); desktopClient.setSession(undefined); for (const dispose of fixtureDisposals) dispose(); fixtureDisposals.clear(); delete (window as unknown as Record<string, unknown>).__TAURI_INTERNALS__; vi.unstubAllGlobals(); });
 
-function fixture(interrupted = false, transport: "http" | "native" = "http") {
+function fixture(interrupted = false, transport: "http" | "native" = "http", proposes = true) {
+  const outcome = proposes ? data : {...data, proposal: null};
   const completion = gate();
   fixtureDisposals.add(completion.release);
   let saved = false;
@@ -46,12 +47,12 @@ function fixture(interrupted = false, transport: "http" | "native" = "http") {
         // Represents completion of the existing persistence boundary, not SQL proof.
         saved = true;
         if (interrupted) throw new Error("synthetic stream interruption");
-        return ok(data);
+        return ok(outcome);
       }, {toolActivity: JSON.parse(String(init?.body)).streamFeatures?.includes("tool_activity_v1") === true});
     }
     if (path === "/api/desktop/ai-providers") return ok({ providers: [{ provider: "vercel_gateway", models: [{ id: "fixture/model", label: "Fixture model", tier: "standard" }] }], policy: { enabled: true, allowedProviders: ["vercel_gateway"], modelSelections: { vercel_gateway: "fixture/model" }, fallbackOrder: ["vercel_gateway"] } });
     if (path === "/api/desktop/agent/conversations") return ok({ conversations: [summary] });
-    if (path === "/api/desktop/agent/conversations/wire-conversation") return ok({ ...summary, turns: saved ? [{ id: "saved-turn", role: "assistant", content: data.reply, actionProposalId: proposal.id }] : [], actions: saved ? [proposal] : [] });
+    if (path === "/api/desktop/agent/conversations/wire-conversation") return ok({ ...summary, turns: saved ? [{ id: "saved-turn", role: "assistant", content: data.reply, actionProposalId: proposes ? proposal.id : null }] : [], actions: saved && proposes ? [proposal] : [] });
     if (path === "/api/desktop/agent/skills") return ok({ skills: [] });
     if (path === "/api/desktop/github/repositories") return ok({ repositories: [{ id: "repo", fullName: "fixture/repository", defaultBranch: "main", visibility: "private" }], totalCount: 1, truncated: false });
     if (path === "/api/desktop/github/branches") return ok({ branches: [{ name: "main", protected: true }], truncated: false });
@@ -180,4 +181,67 @@ it.each([{ isComposing: true }, { keyCode: 229 }])("retains an IME draft on Ente
   expect(wire.messages()).toHaveLength(1);
   await act(async () => { wire.completion.release(); });
   await screen.findByText(data.reply);
+});
+
+it.each(["http", "native"] as const)("requires saved-state review before another request after %s stream uncertainty", async transport => {
+  const wire = fixture(true, transport, false); await compose("chat");
+  await act(async () => { wire.completion.release(); });
+  const reload = await screen.findByRole("button", {name: "Reload saved conversation"});
+  const composer = screen.getByRole("textbox");
+  fireEvent.change(composer, {target: {value: "Unsent follow-up"}});
+  expect((screen.getByRole("button", {name: "Send"}) as HTMLButtonElement).disabled).toBe(true);
+  fireEvent.keyDown(composer, {key: "Enter"});
+  expect(wire.messages()).toHaveLength(1);
+  fireEvent.click(reload); await screen.findByText(data.reply);
+  await waitFor(() => expect((screen.getByRole("button", {name: "Send"}) as HTMLButtonElement).disabled).toBe(false));
+  expect((composer as HTMLTextAreaElement).value).toBe("Unsent follow-up");
+  expect(wire.messages()).toHaveLength(1);
+});
+it("retains recovery and an unsent draft when saved-state reload fails", async () => {
+  const wire = fixture(true, "http", false); await compose("chat");
+  await act(async () => { wire.completion.release(); });
+  const reload = await screen.findByRole("button", {name: "Reload saved conversation"});
+  fireEvent.change(screen.getByRole("textbox"), {target: {value: "Keep my unsent draft"}});
+  const original = wire.fetcher.getMockImplementation()!;
+  wire.fetcher.mockImplementation(async (url, init) => new URL(String(url)).pathname === "/api/desktop/agent/conversations/wire-conversation"
+    ? Response.json({ok: false, error: "unavailable"}, {status: 503}) : original(url, init));
+  fireEvent.click(reload);
+  await screen.findByText("The selected conversation could not be verified.");
+  expect((screen.getByRole("button", {name: "Send"}) as HTMLButtonElement).disabled).toBe(true);
+  expect((screen.getByRole("textbox") as HTMLTextAreaElement).value).toBe("Keep my unsent draft");
+  fireEvent.keyDown(screen.getByRole("textbox"), {key: "Enter"});
+  expect(wire.messages()).toHaveLength(1);
+  wire.fetcher.mockImplementation(original);
+  fireEvent.click(screen.getByRole("button", {name: "Reload saved conversation"}));
+  await screen.findByText(data.reply);
+  await waitFor(() => expect((screen.getByRole("button", {name: "Send"}) as HTMLButtonElement).disabled).toBe(false));
+  expect(wire.messages()).toHaveLength(1);
+});
+
+it.each(["http", "native"] as const)("blocks another submission after explicit %s cancellation until review", async transport => {
+  const wire = fixture(false, transport, false); await compose("chat");
+  fireEvent.click(screen.getByRole("button", {name: "Stop response"}));
+  // The synthetic in-memory HTTP body is released explicitly; real fetch owns abort teardown.
+  await act(async () => { wire.completion.release(); });
+  await screen.findByRole("button", {name: "Reload saved conversation"});
+  fireEvent.change(screen.getByRole("textbox"), {target: {value: "Do not retry automatically"}});
+  expect((screen.getByRole("button", {name: "Send"}) as HTMLButtonElement).disabled).toBe(true);
+  fireEvent.keyDown(screen.getByRole("textbox"), {key: "Enter"});
+  expect(wire.messages()).toHaveLength(1);
+  await act(async () => { wire.completion.release(); });
+  expect(screen.queryByText(data.reply)).toBeNull();
+  expect(wire.messages()).toHaveLength(1);
+});
+it("does not clear recovery from a different conversation response", async () => {
+  const wire = fixture(true, "http", false); await compose("chat");
+  await act(async () => { wire.completion.release(); });
+  const reload = await screen.findByRole("button", {name: "Reload saved conversation"});
+  fireEvent.change(screen.getByRole("textbox"), {target: {value: "Keep this conversation guarded"}});
+  const original = wire.fetcher.getMockImplementation()!;
+  wire.fetcher.mockImplementation(async (url, init) => new URL(String(url)).pathname === "/api/desktop/agent/conversations/wire-conversation"
+    ? ok({...summary, id: "different-conversation", turns: [], actions: []}) : original(url, init));
+  fireEvent.click(reload); await screen.findByText("The selected conversation could not be verified.");
+  expect((screen.getByRole("button", {name: "Send"}) as HTMLButtonElement).disabled).toBe(true);
+  fireEvent.keyDown(screen.getByRole("textbox"), {key: "Enter"});
+  expect(wire.messages()).toHaveLength(1);
 });
