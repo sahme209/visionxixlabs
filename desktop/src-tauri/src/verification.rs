@@ -243,7 +243,8 @@ mod tests {
     #[tokio::test]
     async fn cancellation_during_wait_never_returns_success() {
         let (sender, receiver) = watch::channel(false);
-        let execution = run_detected_check_cancelable(&std::env::temp_dir(), shell("sleep 0.3; exit 0"), Duration::from_secs(2), receiver);
+        let root = std::env::temp_dir();
+        let execution = run_detected_check_cancelable(&root, shell("sleep 0.3; exit 0"), Duration::from_secs(2), receiver);
         let cancel = async { tokio::task::yield_now().await; sender.send_replace(true); };
         let (result, _) = tokio::join!(execution, cancel);
         assert!(result.unwrap_err().contains("canceled"));
