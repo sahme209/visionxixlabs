@@ -75,3 +75,7 @@ The next real-environment acceptance needs an authorized Mac execution session w
 3. Real-provider and Stripe TEST evidence with tenant/cost/credit reconciliation. No new fee for connecting GitHub.
 4. Resolve critical defects and clearly retain unverified/intermittent risks before selecting the release SHA.
 5. Separate approvals for installer publication, production database work, billing activation and the final Vercel release. Vercel spending restrictions remain intact; create no project or deployment.
+
+Verified release preparation: candidate identities align at 0.1.21 across npm/Tauri/Cargo without dependency changes. Existing version-alignment command and 17 focused release-version tests pass; desktop TypeScript/frontend build and native locked debug build pass. No release tag, remote push, certificate access, installer signing/notarization or publication occurred.
+
+Read-only production download acceptance: manifest and ARM download JSON both returned 200, runtimeReady=true, current public release desktop-v0.1.20, Mac signed/notarized flags true. HEAD of the resolved actual public ARM installer returned 200 with 7,683,804 bytes; no binary was downloaded/installed. This verifies the existing public download path, not that newly developed source has been released or the installer/customer journey has passed. Windows/Linux signing remains unverified by published attestations.

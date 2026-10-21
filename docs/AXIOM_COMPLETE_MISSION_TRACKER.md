@@ -3945,3 +3945,11 @@ Verified scoped Git-output protection: both new regressions failed before implem
 ### Active Unix verification process cleanup
 
 Existing cancellation bounds the direct child but can leave inherited descendants running. Reproduce with an owned child that signals readiness and attempts a delayed file write after cancellation. Reuse Tokio process_group(0) and the existing Unix libc dependency to isolate the child group; only that owned group may be signaled, never the parent group. Preserve current consent, five-minute runtime/output limits and Windows behavior. Independently review native changes and test cancellation/deadline/output cases. Detached processes that deliberately leave the group remain outside this guarantee. No process outside task-owned test fixtures may be touched.
+
+### Next desktop release identity
+
+Read-only public distribution metadata confirms desktop-v0.1.20 was published October 9. Prepare 0.1.21 locally across npm/Tauri/Cargo identities so accumulated fixes cannot be republished under an existing installer/update version. Reuse the existing release-alignment check and focused version tests, preserve all dependency versions, and do not tag, sign/notarize, upload or publish. Public release body reports Mac signing/notarization; Windows/Linux signing attestations are absent. Installed-app acceptance and fresh required CI remain gates before release authorization.
+
+Verified release preparation: candidate identities align at 0.1.21 across npm/Tauri/Cargo without dependency changes. Existing version-alignment command and 17 focused release-version tests pass; desktop TypeScript/frontend build and native locked debug build pass. No release tag, remote push, certificate access, installer signing/notarization or publication occurred.
+
+Read-only production download acceptance: manifest and ARM download JSON both returned 200, runtimeReady=true, current public release desktop-v0.1.20, Mac signed/notarized flags true. HEAD of the resolved actual public ARM installer returned 200 with 7,683,804 bytes; no binary was downloaded/installed. This verifies the existing public download path, not that newly developed source has been released or the installer/customer journey has passed. Windows/Linux signing remains unverified by published attestations.
