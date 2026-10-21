@@ -206,7 +206,10 @@ function AgentChatSession({ onOpenSettings, identity, active, requestedSkill, re
   const [agentProfile, setAgentProfile] = useState<AgentProfileId>("general");
   const [composerMode, setComposerMode] = useState<"chat" | "code">("chat");
   const [operationMode, setOperationMode] = useState<"inspect" | "engineer" | "deepops">("engineer");
-  const [savedContext] = useState(() => ({ repository: window.localStorage.getItem(ACTIVE_REPOSITORY_KEY) ?? "", environment: window.localStorage.getItem(ACTIVE_ENVIRONMENT_KEY) ?? "" }));
+  const [savedContext] = useState(() => {
+    try { return { repository: window.localStorage.getItem(ACTIVE_REPOSITORY_KEY) ?? "", environment: window.localStorage.getItem(ACTIVE_ENVIRONMENT_KEY) ?? "" }; }
+    catch { return { repository: "", environment: "" }; } // Advisory preferences never establish authority.
+  });
   const preferredRepository = useRef(savedContext.repository);
   const preferredEnvironment = useRef(savedContext.environment);
   const retryBranch = useRef<{ repository: string; branch: string; manual: boolean } | null>(null);
@@ -469,13 +472,16 @@ function AgentChatSession({ onOpenSettings, identity, active, requestedSkill, re
   }, [catalogAttempt]);
 
   useEffect(() => {
-    if (repositoryFullName && !manualRepository) window.localStorage.setItem(ACTIVE_REPOSITORY_KEY, repositoryFullName);
+    try { if (repositoryFullName && !manualRepository) window.localStorage.setItem(ACTIVE_REPOSITORY_KEY, repositoryFullName); }
+    catch { /* Optional preference; the verified in-memory selection remains usable. */ }
   }, [manualRepository, repositoryFullName]);
 
   useEffect(() => {
     if (environmentsLoading || environmentError) return;
-    if (environmentId) window.localStorage.setItem(ACTIVE_ENVIRONMENT_KEY, environmentId);
-    else window.localStorage.removeItem(ACTIVE_ENVIRONMENT_KEY);
+    try {
+      if (environmentId) window.localStorage.setItem(ACTIVE_ENVIRONMENT_KEY, environmentId);
+      else window.localStorage.removeItem(ACTIVE_ENVIRONMENT_KEY);
+    } catch { /* Optional preference; catalog and service authorization still apply. */ }
   }, [environmentId, environmentsLoading, environmentError]);
 
   useEffect(() => {

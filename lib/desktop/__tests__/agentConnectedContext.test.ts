@@ -147,3 +147,17 @@ it("invalidates a selected file when the branch changes until the new branch cat
   await act(async () => { nextFiles.resolve({ ok: true, data: { files: [{ path: "new-branch.ts", size: 10 }], truncated: false } }); });
   await screen.findByRole("option", { name: "new-branch.ts" });
 });
+
+it.each(['getItem', 'setItem', 'removeItem'] as const)('keeps connected Agent context usable when preference %s is denied', async method => {
+  const spy = vi.spyOn(Storage.prototype, method).mockImplementation(() => { throw new Error('Preference storage denied'); });
+  try {
+    render(createElement(AgentChatView));
+    await waitFor(() => expect((screen.getByLabelText('Active GitHub repository') as HTMLSelectElement).value).toBe('fixture/repository'));
+    await waitFor(() => expect((screen.getByLabelText('Active deployment environment') as HTMLSelectElement).disabled).toBe(false));
+    fireEvent.change(screen.getByLabelText('Active deployment environment'), { target: { value: 'env-1' } });
+    expect((screen.getByLabelText('Active deployment environment') as HTMLSelectElement).value).toBe('env-1');
+    fireEvent.change(screen.getByRole('textbox'), { target: { value: 'Inspect without preference persistence' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Send' }));
+    await waitFor(() => expect(m.client.sendAgentMessage).toHaveBeenCalledWith('conversation-1', 'Inspect without preference persistence', 'vercel_gateway', expect.objectContaining({ repositoryFullName: 'fixture/repository', environmentId: 'env-1' }), 'fixture/model', expect.objectContaining({ signal: expect.anything(), onDraft: expect.any(Function) })));
+  } finally { spy.mockRestore(); }
+});
