@@ -1,7 +1,11 @@
 /** Display-only preview of the first top-level JSON message string. Never
  * parses tool arguments or provides execution/approval authority. */
 export function streamedDecisionMessage(source: string): string {
-  if (!source.trimStart().startsWith("{")) return "";
+  // Providers may fence valid structured JSON. Match only a complete leading
+  // JSON/plain fence; never search prose or tool arguments for a message.
+  source = source.trimStart();
+  if (source.startsWith("```")) source = source.replace(/^```(?:json)?[ \t]*\r?\n/, "").trimStart();
+  if (!source.startsWith("{")) return "";
   let depth = 0;
   for (let i = 0; i < source.length; i++) {
     const char = source[i];
