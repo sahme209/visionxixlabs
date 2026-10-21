@@ -3807,3 +3807,23 @@ push, PR, CI, deployment, settings change or paid operation occurred. GitHub
 allowance unknown; Vercel inherits shared credentials and budget/pause cannot be
 certified. Next external checkpoint requires exact authorization and budget
 readiness; production/installer/billing gates remain separate.
+
+
+### Accepted baseline follow-on: bounded cost audit and retired-DAG guard
+
+Preserved8f337583 and prior345-case evidence. One existing CLI billing usage GET
+returned Forbidden; current connector exposes no allowance endpoint. Remaining
+balance is unknown, not assumed exhausted or available. Stop access probes until
+permissions/evidence changes. Draft PR still triggers three workflows/four jobs;
+hold for verified capacity, or separately authorize a push-only backup without PR.
+No native/macOS gate was reduced and no new workflow change was applied. See
+[publication decision](release/CONSOLIDATED_PR_PREPARATION.md) for exact scope,
+cache-review proposals and bounded runner exposure.
+
+Local product research found removed DAG IDs still actionable after a catalog
+refresh. Actual component regression failed first. Current-catalog trigger and
+history guards plus an explicit missing selection now prevent that stale path.
+37 focused Airflow/demo cases, desktop TypeScript, lint and independent source/
+security review passed. Full345 cases/builds and known subprocess failures were
+not repeated; prior evidence remains historical at the accepted baseline. All
+branches/history and production, billing, release and paid-provider gates remain.

@@ -2,6 +2,12 @@
 
 Prepared locally on 2026-10-21. **Not pushed, published, merged or deployed.**
 
+Current delta: accepted baseline `8f3375831f4d8acbccbe9d863d188888bdd06881`
+retains its 345-test/type/build evidence. A subsequent stale-DAG guard passed37
+focused Airflow/demo cases, desktop TypeScript, targeted lint and independent
+review. The entire345-case suite, root types and frontend builds were not repeated
+for this small desktop delta; prior passes are not fresh full-head acceptance.
+
 ## Exact branch and ancestry
 
 Use the existing `codex/zero-spend-integration-local` branch. Its remote ref is
@@ -241,3 +247,76 @@ Do not use force, tags, merge or workflow dispatch. Opening the one prepared dra
 PR is a separate external action and starts the three documented workflows;
 include that scope in the eventual exact owner approval and budget decision.
 This preparation does not execute either action. Old PRs remain open/unmodified.
+
+
+## Publication decision and bounded billing investigation
+
+One existing CLI read attempted
+`GET /users/sahme209/settings/billing/usage?year=2026&month=10` and returned
+**Forbidden**. No billing/allowance tools are exposed by the GitHub connector.
+This demonstrates unavailable access, not exhausted allowance, failed payment or
+an exact missing token scope. Do not investigate access again without a change
+in permissions or new evidence. Do not print tokens or change spending limits.
+
+### Safest available routes
+
+1. **Preferred $0 route:** hold both push and PR until an owner-side sanitized
+   allowance/spending attestation or a verified reset establishes capacity. Then
+   obtain exact-SHA approval for one push plus one draft PR and its known check
+   set. No new proof of remaining allowance exists now.
+2. **Optional backup only:** separately approve the exact new-branch push without
+   creating a PR. Current push triggers do not match this development branch.
+   This is not a published draft PR and provides no required CI result. Recheck
+   remote absence, workflow definitions and known third-party review/deployment
+   restrictions immediately before the authorized action.
+
+Draft status does not suppress these workflows. Under the existing gates there
+is no verified CI-free draft-PR publication path. No workflow disabling, skip
+markers, source-history rewrite or relaxed required checks is proposed.
+
+### Review of CI optimizations (no new workflow edits)
+
+- Already implemented: no feature-branch push+PR duplication; Test supersedes old
+  PR runs and preserves distinct main runs; Desktop supersedes obsolete refs;
+  npm dependency caches exist in both desktop jobs. Batch updates and avoid an
+  unnecessary ready transition, which starts website acceptance again.
+- Preserve both Linux and macOS native tests/clippy and frontend build steps.
+  Platform-specific ABI failures previously occurred; TypeScript is no substitute.
+- Consider a reviewed Cargo cache after budget is available: key by OS/target,
+  exact toolchain and lock/config inputs; use trusted, immutable action references
+  and assess PR cache scope before allowing restored executable/build output.
+  Cache absence must fall back to the same locked test/clippy commands. No cache
+  action or dependency was added here; savings are unmeasured.
+- Do not add a Linux-success condition that silently skips the macOS check while
+  policy details are inaccessible. Skipped-job semantics could alter required
+  validation. Do not narrow path filters without dependency evidence.
+- One PR still means three workflows/four jobs: three Ubuntu jobs with configured
+  limits totaling70 minutes, and one macOS job limited to30 minutes. These are
+  timeout exposure bounds, not a cost cap or prediction. Rates, billable rounding,
+  credits and remaining allowance are unverified; no dollar estimate is justified.
+
+### Additional local product progress
+
+A refreshed DAG catalog could remove the selected DAG while Run now stayed
+active and old history remained visible/readable. A failing actual component
+regression reproduced this. The view now derives the actionable DAG from the
+current catalog, shows an explicit placeholder, refuses a missing/paused trigger,
+clears stale history from presentation and stops history reads for retired IDs.
+Request-generation and credential fences are retained.37 focused cases across
+Airflow/demo suites, desktop TypeScript, targeted lint and independent review
+passed. The accepted345-case baseline remains preserved, not needlessly rerun.
+
+### Final publication contract
+
+Target remains `sahme209/visionxixlabs`, existing local branch
+`codex/zero-spend-integration-local`, base main. Expected remote branch: absent at
+last read; verify just before a future authorized push and stop on unexpected
+remote state. Push exactly the approved full checkpoint SHA with no force.
+Prepare one draft PR using the title above and describe baseline345-case evidence
+separately from the focused37-case delta, source reviews and all environment/
+native/provider/billing/Preview limitations. No merge/closure authorization.
+
+Environment-failure evidence and historical195 receipts remain unchanged; no
+build, browser or navigation reprobe was repeated. Current website build/browser,
+installed-Mac/native, real provider/Stripe/cloud, owner Preview access, credential
+isolation and cost readiness remain unverified/blocked as previously recorded.

@@ -2,7 +2,7 @@
 import { createElement, type ReactNode } from "react";
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import { act, cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
-const mock = vi.hoisted(() => ({ revision: 0, listeners: new Set<() => void>(), review: vi.fn(), approve: vi.fn(), reject: vi.fn(), connection: vi.fn(), automations: vi.fn(), repositories: vi.fn(), environments: vi.fn(), dags: vi.fn(), runs: vi.fn(), branches: vi.fn(), create: vi.fn() }));
+const mock = vi.hoisted(() => ({ revision: 0, listeners: new Set<() => void>(), review: vi.fn(), approve: vi.fn(), reject: vi.fn(), connection: vi.fn(), automations: vi.fn(), repositories: vi.fn(), environments: vi.fn(), dags: vi.fn(), runs: vi.fn(), branches: vi.fn(), create: vi.fn(), trigger: vi.fn() }));
 // Presentation shell alone depends on native notification plumbing; retain the
 // actual Airflow view, client calls, review card, buttons and state transitions.
 vi.mock("../../../desktop/src/components/Primitives", () => ({ ViewShell: ({ children }: { children: ReactNode }) => createElement("div", null, children) }));
@@ -13,7 +13,7 @@ vi.mock("../../../desktop/src/lib/desktopClient", () => ({ desktopClient: {
   airflowConnection: mock.connection, listAirflowAutomations: mock.automations,
   listGithubRepositories: mock.repositories, listEnvironments: mock.environments,
   listAirflowDags: mock.dags, listAirflowDagRuns: mock.runs,
-  listGithubBranches: mock.branches, createAirflowAutomation: mock.create,
+  listGithubBranches: mock.branches, createAirflowAutomation: mock.create, triggerAirflowDag: mock.trigger,
 } }));
 import { AirflowRestartReviewCard } from "../../../desktop/src/components/AirflowRestartReviewCard";
 import { AirflowAutomationView } from "../../../desktop/src/views/AirflowAutomationView";
@@ -238,4 +238,24 @@ it("disables another restart proposal when its environment disappears from refre
   expect((screen.getByLabelText("Target environment") as HTMLSelectElement).value).toBe("");
   expect((screen.getByRole("button", { name: "Create automation" }) as HTMLButtonElement).disabled).toBe(true);
   expect(mock.create).toHaveBeenCalledTimes(1);
+});
+
+it("refuses running or refreshing history for a DAG removed by the refreshed catalog", async () => {
+  mock.connection.mockResolvedValue({ ok: true, data: { connected: true, status: "connected" } });
+  mock.runs.mockResolvedValue({ ok: true, data: { runs: [{ dagRunId: "old-run", state: "success" }] } });
+  render(createElement(AirflowAutomationView)); await screen.findByText("old-run");
+  fireEvent.click(screen.getByRole("button", { name: "approvals" }));
+  await screen.findByText("Synthetic restart");
+  mock.dags.mockResolvedValue({ ok: true, data: { dags: [] } });
+  fireEvent.click(screen.getByRole("button", { name: "Reject" }));
+  await screen.findByText("Action rejected and recorded.");
+  fireEvent.click(screen.getByRole("button", { name: "dags" }));
+  await waitFor(() => expect(screen.queryByRole("option", { name: "Batch DAG" })).toBeNull());
+  expect((screen.getByRole("button", { name: "Run now" }) as HTMLButtonElement).disabled).toBe(true);
+  expect(screen.queryByText("old-run")).toBeNull();
+  const reads = mock.runs.mock.calls.length;
+  fireEvent.click(screen.getByRole("button", { name: "Run now" }));
+  fireEvent.click(screen.getByRole("button", { name: "Refresh run history" }));
+  await act(async () => {});
+  expect(mock.trigger).not.toHaveBeenCalled(); expect(mock.runs).toHaveBeenCalledTimes(reads);
 });
