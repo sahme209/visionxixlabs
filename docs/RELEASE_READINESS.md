@@ -140,3 +140,18 @@ Portable acceptance/report.mjs records platform, architecture, actual subprocess
 | Windows | No Windows execution environment available in this session | Unverified, same fixture/checklist required |
 
 Existing native/WebView and renderer test receipts remain separate. No hosted repo, push, CI, installer, deployment or paid request was initiated.
+
+## Actual model acceptance — October 21
+
+Owner authorized creation/use of a dedicated test-only Gateway key within the combined $5 cap. Created using supported pinned CLI65; no production key extraction, environment/billing change, top-up or deployment. Read-back confirmed active $5 nonrenewing quota, BYOK usage included, seven-day expiration, zero initial spend. Secret stored only outside source in a0700 directory/0600 file, never passed in process arguments or printed. Duplicate raw creation capture redacted; scan found no test key in tracked source.
+
+One single-attempt real stream per model,512 maximum output tokens, sequential, using actual VercelGatewayProvider.streamTextOnce in a private opt-in harness with an allowlisted environment and no production DB/Stripe/cloud credentials:
+- OpenAI GPT4.1 mini: passed real streaming (187 text chunks),95 input/188 output/283 total tokens and Gateway generation metadata. Two reviewed complete files added subtraction plus tests in the disposable repository. All3 real Node assertions passed. Execution child had no provider credentials.
+- Grok4.1 fast nonreasoning: failed before text. Gateway routing receipt resolved to vertex and upstream404 Not Found. Model is in fresh public catalog; catalog presence is not usable-provider acceptance. No speculative retry/routing change.
+- Claude Haiku4.5: failed before text with Gateway403 explicitly restricting this model for free-credit users and requiring paid credits. No credit purchase, account restriction bypass or repeated request.
+
+Post-attempt key budget reports $0.0004888 metered usage, BYOK0, quota5/none active. This is a Gateway usage reading, not a complete invoice or application billing/entitlement acceptance.
+
+Real failures exposed two source issues in the streaming adapter: every upstream SDK error became network, and installed SDK default error handling printed raw upstream detail. Four classification regressions and one installed-SDK logging regression failed before repair. Bounded numeric status/cause inspection now returns fixed nonretryable authentication/model-access/route errors; raw error logging disabled only in this lane, with fullStream exceptions retained.42 affected tests passed; TypeScript/lint evidence retained separately. Independent classification review found no blockers; direct-throw, cycle and nonleak assertions added from review. No new inference needed for local repair.
+
+Not verified: authenticated desktop-to-server complete Agent/billing-reservation lifecycle, actual native UI application of the model proposal, real-provider tool execution/cancellation, installed Windows/Linux or native Mac release acceptance. Public/provider account restrictions remain distinct from source test results.

@@ -67,3 +67,17 @@ it("interrupts an in-flight next through the external abort signal", async () =>
   await expect(pending).rejects.toMatchObject({ kind: "timeout" });
   await stream.return(undefined);
 });
+
+it("does not let the installed SDK log raw upstream error details", async () => {
+  injected.model = new MockLanguageModelV3({doStream: async () => ({
+    stream: new ReadableStream({start(controller) {
+      controller.enqueue({type: "error", error: {statusCode: 403, message: "private upstream body"}});
+      controller.close();
+    }}),
+  })});
+  const logging = vi.spyOn(console, "error").mockImplementation(() => {});
+  try {
+    await expect(new VercelGatewayProvider("vendor/model").streamTextOnce("hello").next()).rejects.toMatchObject({kind: "model_unavailable"});
+    expect(logging).not.toHaveBeenCalled();
+  } finally { logging.mockRestore(); }
+});

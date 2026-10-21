@@ -41,6 +41,19 @@ export function parseGatewayStructuredResponse<T>(response: AITextResponse): AIS
   };
 }
 
+/** Inspect only bounded status/cause metadata; never expose upstream text or bodies. */
+function gatewayStreamFailure(error: unknown, latencyMs: number): AIProviderError {
+  let current = error;
+  for (let depth = 0; depth < 4 && current && typeof current === "object"; depth++) {
+    const value = current as {statusCode?: unknown; cause?: unknown};
+    if (value.statusCode === 401) return new AIProviderError({provider: "vercel_gateway", kind: "invalid_key", message: "AI Gateway authentication was rejected.", latencyMs});
+    if (value.statusCode === 403) return new AIProviderError({provider: "vercel_gateway", kind: "model_unavailable", message: "The configured AI Gateway account cannot access this model.", latencyMs});
+    if (value.statusCode === 404) return new AIProviderError({provider: "vercel_gateway", kind: "model_unavailable", message: "The configured AI Gateway model or provider route is unavailable.", latencyMs});
+    current = value.cause;
+  }
+  return new AIProviderError({provider: "vercel_gateway", kind: "network", message: "AI Gateway stream failed", latencyMs});
+}
+
 export class VercelGatewayProvider implements AIProvider {
   readonly name = "vercel_gateway" as const;
   readonly defaultModel: string;
@@ -169,6 +182,9 @@ export class VercelGatewayProvider implements AIProvider {
     try {
       signal.throwIfAborted();
       const result = streamText({
+        // fullStream below returns a fixed safe error. The SDK default handler
+        // logs raw upstream payloads, which may contain prompts or account data.
+        onError: () => {},
         model,
         prompt: redact(prompt),
         system: options?.system === undefined ? undefined : redact(options.system),
@@ -188,9 +204,8 @@ export class VercelGatewayProvider implements AIProvider {
         if (next.done) break;
         const part = next.value;
         signal.throwIfAborted();
-        if (part.type === "error" || part.type === "abort") {
-          throw new AIProviderError({ provider: this.name, kind: part.type === "abort" ? "timeout" : "network", message: "AI Gateway stream interrupted" });
-        }
+        if (part.type === "error") throw gatewayStreamFailure(part.error, Date.now() - startedAt);
+        if (part.type === "abort") throw new AIProviderError({provider: this.name, kind: "timeout", message: "AI Gateway stream interrupted"});
         if (part.type === "text-delta" && part.text) yield { text: part.text, done: false };
         if (part.type === "finish") {
           if (!["stop", "length", "content-filter"].includes(part.finishReason)) {
@@ -214,7 +229,8 @@ export class VercelGatewayProvider implements AIProvider {
       } };
     } catch (error) {
       if (error instanceof AIProviderError) throw error;
-      throw new AIProviderError({ provider: this.name, kind: signal.aborted ? "timeout" : "network", message: "AI Gateway stream failed", latencyMs: Date.now() - startedAt });
+      if (!signal.aborted) throw gatewayStreamFailure(error, Date.now() - startedAt);
+      throw new AIProviderError({ provider: this.name, kind: "timeout", message: "AI Gateway stream failed", latencyMs: Date.now() - startedAt });
     } finally {
       // Includes return()/break from a consumer after any partial text.
       controller.abort();
