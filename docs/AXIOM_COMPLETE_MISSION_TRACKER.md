@@ -3746,3 +3746,21 @@ supersedes obsolete PR runs while keeping every main run distinct; required jobs
 triggers, permissions and timeouts are unchanged. No publication, new CI, hosted
 deployment, paid provider operation or production change is authorized by this
 checkpoint. Native/installed/customer acceptance remains separate from code.
+
+
+### Local Airflow desktop reliability follow-on
+
+Concise plan: reproduce catalog publication coupling and stale run-history
+ownership in the actual component; isolate independent reads, bind history to
+DAG/request generation, retain context/approval fences, and validate related
+coding/Airflow/security boundaries locally. Completed: delayed GitHub/environment
+catalogs no longer hide Airflow approvals or keep completed actions busy; older
+workspace loads and manual history refreshes cannot replace newer selection
+results. Eight new component cases added; six failed before their fixes.
+340 cases/22 suites passed including all previous checkpoint suites. Independent
+review found no blocker. See the follow-on section of
+[checkpoint](release/LOCAL_INTEGRATION_CHECKPOINT.md) for evidence and release
+gaps. GitHub billing access is unavailable; remaining allowance stays unknown.
+No push, CI trigger, merge, deployment, paid call or billing change performed.
+
+Final local checks: root and desktop TypeScript passed; targeted ESLint passed with zero warnings/errors; desktop frontend build passed. Existing ~603 KB bundle warning remains, with no threshold suppression. Native compilation, installed-Mac and real Airflow/provider acceptance remain unverified. All work stays on the single consolidated local branch.

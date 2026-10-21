@@ -134,3 +134,51 @@ Useful preservation checks are `git status --short`, `git rev-parse HEAD`,
 `git merge-base --is-ancestor <expected-parent> HEAD`, and read-only
 `git ls-remote origin <branch>`. Use a separate local `git worktree add` for
 independent changes. Never use reset/clean/force-push to resolve this history.
+
+
+## Follow-on local Airflow reliability batch — 2026-10-21
+
+Research traced available Airflow approvals/status being hidden behind unrelated
+GitHub/environment promises to a shared `Promise.all` publication barrier. Actual
+view regressions failed for each delayed catalog before the fix. Independent
+publication now retains credential-revision checks, catches unexpected failures
+without displaying transport details, and does not hold action completion busy
+for unrelated catalogs. Workspace request generations reject superseded loads
+and unmount invalidates pending results.
+
+Two more red regressions demonstrated old-DAG history remaining visible and a
+late manual refresh replacing the newly selected DAG's history. History now
+carries DAG identity; request generations fence automatic and manual reads.
+The refresh control has an accessible label. No approval, execution, retry,
+credential, timeout or server authorization policy changed. This is a real view
+repair with mocked service boundaries, not live Airflow acceptance.
+
+Validation: **340 cases across 22 suites passed**, preserving the prior 324-case
+checkpoint and adding the 16-case Airflow view suite (eight existing, eight new).
+Six new regressions were observed failing before their corresponding repairs;
+connected-DAG and sanitized-rejection cases also cover the new independent flow.
+Independent review found no blockers after additional busy-state and reload-race
+regressions were addressed. Root and desktop TypeScript, targeted lint (zero warnings/errors), and desktop
+frontend build passed. The existing ~603 KB bundle warning remains; native and
+live-provider gates remain unchecked.
+
+Concurrency was rechecked structurally against its parent: unchanged triggers,
+permissions and complete job definitions; stable PR-number groups cancel obsolete
+PR runs, unique non-PR run IDs preserve independent main runs. Workflow reruns
+share a run ID and must remain explicit, justified checkpoint actions. No policy
+was published or workflow started. A Node subprocess attempt to read Git hit the
+known managed EPERM guard; ordinary read-only shell Git produced the comparison
+input, with no guard or browser-acceptance bypass. YAML comparison then passed.
+
+The available GitHub connector explicitly excludes user/organization billing
+endpoints; no account billing/allowance tool is exposed. Remaining Actions budget
+is **unverified**, not assumed to be $5 or free. No new remote operation occurred.
+Next checkpoint remains one exact-SHA owner-authorized branch push only after
+budget availability is confirmed, with one required check set and evidence-led
+failure investigation. No automatic reruns, PR merges or hosted actions.
+
+Release checklist progress: local independent Airflow loading, selected-history
+ownership, obsolete-refresh rejection and pending-catalog busy recovery are
+implemented/tested. Actual Airflow endpoint connectivity, execution/approval/
+rollback, installed Mac, native Rust and real provider/billing journeys remain
+unchecked. Existing PR heads and approval gates remain intact.

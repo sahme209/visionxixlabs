@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState, useSyncExternalStore } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import { CheckCircle2, Clock3, DatabaseZap, Play, RefreshCw, ShieldCheck, Workflow } from "lucide-react";
 import { ViewShell } from "../components/Primitives";
 import { desktopClient, type AirflowAutomation, type AirflowAutomationExecution, type AirflowDag, type AirflowDagRun } from "../lib/desktopClient";
@@ -30,26 +30,69 @@ function AirflowWorkspaceView() {
   const [contextRevision] = useState(desktopClient.getContextRevision);
   const [tab, setTab] = useState<Tab>("dags");
   const [connection, setConnection] = useState<{ connected: boolean; status: string; baseUrl?: string; version?: string | null; dagCount?: number | null } | null>(null);
-  const [dags, setDags] = useState<AirflowDag[]>([]); const [dagId, setDagId] = useState(""); const [runs, setRuns] = useState<AirflowDagRun[]>([]);
+  const [dags, setDags] = useState<AirflowDag[]>([]); const [dagId, setDagId] = useState(""); const [runHistory, setRunHistory] = useState<{ dagId: string; runs: AirflowDagRun[] } | null>(null);
+  const historyRequest = useRef(0);
+  const workspaceRequest = useRef(0);
+  const runs = runHistory?.dagId === dagId ? runHistory.runs : [];
   const [automations, setAutomations] = useState<AirflowAutomation[]>([]); const [executions, setExecutions] = useState<AirflowAutomationExecution[]>([]);
   const [repositories, setRepositories] = useState<Array<{ fullName: string; defaultBranch: string }>>([]);
   const [environments, setEnvironments] = useState<Array<{ id: string; name: string; tier: string }>>([]);
   const [busy, setBusy] = useState(false); const [notice, setNotice] = useState<string | null>(null);
 
   const load = useCallback(async () => {
-    const [connectionResult, automationResult, repoResult, environmentResult] = await Promise.all([desktopClient.airflowConnection(), desktopClient.listAirflowAutomations(), desktopClient.listGithubRepositories(), desktopClient.listEnvironments()]);
-    if (contextRevision !== desktopClient.getContextRevision()) return;
-    if (connectionResult.ok) setConnection(connectionResult.data);
-    if (automationResult.ok) { setAutomations(automationResult.data.automations); setExecutions(automationResult.data.executions); }
-    if (repoResult.ok) setRepositories(repoResult.data.repositories);
-    if (environmentResult.ok) setEnvironments(environmentResult.data.environments);
-    if (connectionResult.ok && connectionResult.data.connected) {
-      const result = await desktopClient.listAirflowDags();
-      if (contextRevision === desktopClient.getContextRevision() && result.ok) { setDags(result.data.dags); setDagId((current) => current || result.data.dags[0]?.dagId || ""); }
+    const request = ++workspaceRequest.current;
+    const current = () => request === workspaceRequest.current && contextRevision === desktopClient.getContextRevision();
+    // Each read owns its result. GitHub/environment availability must not hide
+    // Airflow status or pending approvals, and no failed read grants authority.
+    async function read(work: () => Promise<void>) {
+      try { await work(); }
+      catch { if (current()) setNotice("Some Airflow workspace data could not be loaded. Refresh before acting on missing information."); }
     }
+    // Optional destination catalogs must not hold action completion busy.
+    void read(async () => {
+      const result = await desktopClient.listGithubRepositories();
+      if (current() && result.ok) setRepositories(result.data.repositories);
+    });
+    void read(async () => {
+      const result = await desktopClient.listEnvironments();
+      if (current() && result.ok) setEnvironments(result.data.environments);
+    });
+    await Promise.all([
+      read(async () => {
+        const result = await desktopClient.airflowConnection();
+        if (!current() || !result.ok) return;
+        setConnection(result.data);
+        if (!result.data.connected) return;
+        const dagResult = await desktopClient.listAirflowDags();
+        if (current() && dagResult.ok) { setDags(dagResult.data.dags); setDagId((selected) => selected || dagResult.data.dags[0]?.dagId || ""); }
+      }),
+      read(async () => {
+        const result = await desktopClient.listAirflowAutomations();
+        if (current() && result.ok) { setAutomations(result.data.automations); setExecutions(result.data.executions); }
+      }),
+    ]);
   }, [contextRevision]);
-  useEffect(() => { const timer = window.setTimeout(() => { void load(); }, 0); return () => window.clearTimeout(timer); }, [load]);
-  useEffect(() => { if (!dagId) return; let active = true; void desktopClient.listAirflowDagRuns(dagId).then((result) => { if (active && contextRevision === desktopClient.getContextRevision() && result.ok) setRuns(result.data.runs); }); return () => { active = false; }; }, [dagId, contextRevision]);
+  useEffect(() => {
+    const requestState = workspaceRequest;
+    const timer = window.setTimeout(() => { void load(); }, 0);
+    return () => { window.clearTimeout(timer); requestState.current++; };
+  }, [load]);
+  const refreshRuns = useCallback(async () => {
+    const request = ++historyRequest.current;
+    if (!dagId || contextRevision !== desktopClient.getContextRevision()) return;
+    const current = () => request === historyRequest.current && contextRevision === desktopClient.getContextRevision();
+    try {
+      const result = await desktopClient.listAirflowDagRuns(dagId);
+      if (current() && result.ok) setRunHistory({ dagId, runs: result.data.runs });
+    } catch {
+      if (current()) setNotice("Run history could not be refreshed. Its displayed state is not execution confirmation.");
+    }
+  }, [dagId, contextRevision]);
+  useEffect(() => {
+    const requestState = historyRequest;
+    void refreshRuns();
+    return () => { requestState.current++; };
+  }, [refreshRuns]);
 
   async function act(work: () => Promise<{ ok: boolean; error?: string }>, success: string) {
     if (contextRevision !== desktopClient.getContextRevision()) return;
@@ -74,7 +117,7 @@ function AirflowWorkspaceView() {
     {notice && <div role="status" className="mt-4 rounded-xl border border-white/[0.08] bg-white/[0.03] px-4 py-3 text-xs text-zinc-300">{notice}</div>}
     {!connection?.connected && tab !== "connection" && <div className="mt-8 rounded-2xl border border-amber-300/15 bg-amber-300/[0.03] p-6"><h2 className="text-sm font-medium">Connect Airflow first</h2><p className="mt-2 text-xs leading-5 text-zinc-500">An administrator connects one HTTPS Airflow 3 endpoint. Credentials remain encrypted on the Axiom service.</p><button onClick={() => setTab("connection")} className={`${button} mt-4 bg-white text-black`}>Open connection setup</button></div>}
     {tab === "connection" && <ConnectionPanel connection={connection} busy={busy} onRun={act} />}
-    {tab === "dags" && connection?.connected && <section className="mt-8 grid gap-5 lg:grid-cols-[340px_1fr]"><div className="rounded-2xl border border-white/[0.07] bg-white/[0.018] p-5"><div className="flex items-center gap-2 text-sm"><Workflow className="h-4 w-4"/>DAG</div><select className={`${input} mt-4`} value={dagId} onChange={(event) => setDagId(event.target.value)}>{dags.map((dag) => <option key={dag.dagId} value={dag.dagId}>{dag.displayName}{dag.paused ? " · paused" : ""}</option>)}</select><p className="mt-3 text-xs leading-5 text-zinc-500">{dags.find((dag) => dag.dagId === dagId)?.description ?? "No DAG description provided."}</p><button disabled={busy || !dagId || dags.find((dag) => dag.dagId === dagId)?.paused} onClick={() => void act(() => desktopClient.triggerAirflowDag(dagId), "DAG run queued in Airflow." )} className={`${button} mt-5 w-full bg-white text-black`}><Play className="mr-2 inline h-3.5 w-3.5"/>Run now</button></div><RunHistory runs={runs} onRefresh={() => void desktopClient.listAirflowDagRuns(dagId).then((result) => { if (result.ok) setRuns(result.data.runs); })}/></section>}
+    {tab === "dags" && connection?.connected && <section className="mt-8 grid gap-5 lg:grid-cols-[340px_1fr]"><div className="rounded-2xl border border-white/[0.07] bg-white/[0.018] p-5"><div className="flex items-center gap-2 text-sm"><Workflow className="h-4 w-4"/>DAG</div><select className={`${input} mt-4`} value={dagId} onChange={(event) => setDagId(event.target.value)}>{dags.map((dag) => <option key={dag.dagId} value={dag.dagId}>{dag.displayName}{dag.paused ? " · paused" : ""}</option>)}</select><p className="mt-3 text-xs leading-5 text-zinc-500">{dags.find((dag) => dag.dagId === dagId)?.description ?? "No DAG description provided."}</p><button disabled={busy || !dagId || dags.find((dag) => dag.dagId === dagId)?.paused} onClick={() => void act(() => desktopClient.triggerAirflowDag(dagId), "DAG run queued in Airflow." )} className={`${button} mt-5 w-full bg-white text-black`}><Play className="mr-2 inline h-3.5 w-3.5"/>Run now</button></div><RunHistory runs={runs} onRefresh={() => void refreshRuns()}/></section>}
     {tab === "automations" && connection?.connected && <AutomationPanel dags={dags} repositories={repositories} environments={environments} automations={automations} busy={busy} onRun={act} />}
     {tab === "approvals" && <ExecutionPanel executions={executions} automations={automations} busy={busy} onRun={act} />}
   </div></ViewShell>;
@@ -85,7 +128,7 @@ function ConnectionPanel({ connection, busy, onRun }: { connection: { connected:
   return <section className="mt-8 rounded-2xl border border-white/[0.07] bg-white/[0.018] p-6"><div className="flex items-center gap-3"><DatabaseZap className="h-5 w-5 text-violet-200"/><div><h2 className="text-base font-medium">Secure Airflow connection</h2><p className="mt-1 text-xs text-zinc-500">Airflow 3 REST API v2 · HTTPS only · private-address and redirect protection</p></div></div>{connection?.connected && <div className="mt-5 rounded-xl border border-emerald-400/15 bg-emerald-400/[0.04] p-4 text-xs text-zinc-300"><CheckCircle2 className="mr-2 inline h-4 w-4 text-emerald-300"/>{connection.baseUrl} · Airflow {connection.version ?? "3.x"} · {connection.dagCount ?? 0} DAGs</div>}<div className="mt-5 grid gap-4 sm:grid-cols-2"><label className="text-xs text-zinc-500 sm:col-span-2">Airflow HTTPS origin<input className={`${input} mt-2`} value={baseUrl} onChange={(event) => setBaseUrl(event.target.value)} placeholder="https://airflow.example.com" /></label><label className="text-xs text-zinc-500">Authentication<select className={`${input} mt-2`} value={authMode} onChange={(event) => setAuthMode(event.target.value as typeof authMode)}><option value="username_password">Airflow username and password</option><option value="token">Managed bearer token (advanced)</option></select></label>{authMode === "username_password" ? <><label className="text-xs text-zinc-500">Username<input className={`${input} mt-2`} value={username} onChange={(event) => setUsername(event.target.value)} /></label><label className="text-xs text-zinc-500 sm:col-span-2">Password<input type="password" className={`${input} mt-2`} value={password} onChange={(event) => setPassword(event.target.value)} /></label></> : <label className="text-xs text-zinc-500">Bearer token<input type="password" className={`${input} mt-2`} value={token} onChange={(event) => setToken(event.target.value)} /></label>}</div><div className="mt-5 flex gap-2"><button disabled={busy} onClick={() => void onRun(() => desktopClient.saveAirflowConnection({ baseUrl, authMode, username, password, token }), "Airflow connection validated and saved." )} className={`${button} bg-white text-black`}>{busy ? "Validating…" : "Validate & connect"}</button>{connection?.connected && <button disabled={busy} onClick={() => void onRun(() => desktopClient.disconnectAirflow(), "Airflow disconnected; its automations are disabled." )} className={button}>Disconnect</button>}</div></section>;
 }
 
-function RunHistory({ runs, onRefresh }: { runs: AirflowDagRun[]; onRefresh: () => void }) { return <div className="rounded-2xl border border-white/[0.07] bg-white/[0.018] p-5"><div className="flex items-center justify-between"><h2 className="text-sm font-medium">Recent runs</h2><button onClick={onRefresh} className={button}><RefreshCw className="h-3.5 w-3.5"/></button></div><div className="mt-4 divide-y divide-white/[0.06]">{runs.length ? runs.map((run) => <div key={run.dagRunId} className="flex items-center justify-between gap-4 py-3"><div className="min-w-0"><p className="truncate text-xs text-zinc-200">{run.dagRunId}</p><p className="mt-1 text-[10px] text-zinc-600">{run.logicalDate ? new Date(run.logicalDate).toLocaleString() : "No logical date"}</p></div><span className={`rounded-full border px-2 py-1 text-[10px] ${run.state === "success" ? "border-emerald-400/20 text-emerald-300" : run.state === "failed" ? "border-rose-400/20 text-rose-300" : "border-white/10 text-zinc-400"}`}>{run.state}</span></div>) : <p className="py-8 text-center text-xs text-zinc-600">No runs returned.</p>}</div></div>; }
+function RunHistory({ runs, onRefresh }: { runs: AirflowDagRun[]; onRefresh: () => void }) { return <div className="rounded-2xl border border-white/[0.07] bg-white/[0.018] p-5"><div className="flex items-center justify-between"><h2 className="text-sm font-medium">Recent runs</h2><button aria-label="Refresh run history" onClick={onRefresh} className={button}><RefreshCw className="h-3.5 w-3.5"/></button></div><div className="mt-4 divide-y divide-white/[0.06]">{runs.length ? runs.map((run) => <div key={run.dagRunId} className="flex items-center justify-between gap-4 py-3"><div className="min-w-0"><p className="truncate text-xs text-zinc-200">{run.dagRunId}</p><p className="mt-1 text-[10px] text-zinc-600">{run.logicalDate ? new Date(run.logicalDate).toLocaleString() : "No logical date"}</p></div><span className={`rounded-full border px-2 py-1 text-[10px] ${run.state === "success" ? "border-emerald-400/20 text-emerald-300" : run.state === "failed" ? "border-rose-400/20 text-rose-300" : "border-white/10 text-zinc-400"}`}>{run.state}</span></div>) : <p className="py-8 text-center text-xs text-zinc-600">No runs returned.</p>}</div></div>; }
 
 function AutomationPanel({ dags, repositories, environments, automations, busy, onRun }: { dags: AirflowDag[]; repositories: Array<{ fullName: string; defaultBranch: string }>; environments: Array<{ id: string; name: string; tier: string }>; automations: AirflowAutomation[]; busy: boolean; onRun: (work: () => Promise<{ ok: boolean; error?: string }>, success: string) => Promise<void> }) {
   const [name, setName] = useState(""); const [dagId, setDagId] = useState(dags[0]?.dagId ?? ""); const [triggerMode, setTriggerMode] = useState("dag_completion"); const [scheduleCron, setScheduleCron] = useState("0 6 * * *"); const [actionType, setActionType] = useState("none"); const [repository, setRepository] = useState(repositories[0]?.fullName ?? ""); const selectedRepo = repositories.find((item) => item.fullName === repository); const [sourceRef, setSourceRef] = useState(selectedRepo?.defaultBranch ?? "main"); const [branches, setBranches] = useState<Array<{ name: string; protected: boolean }>>([]); const [environmentId, setEnvironmentId] = useState(environments[0]?.id ?? ""); const [approvalRequired, setApprovalRequired] = useState(true); const [dependencies, setDependencies] = useState<string[]>([]); const [advanced, setAdvanced] = useState(false);
