@@ -72,6 +72,8 @@ fn main() {
             git::push_repository,
             verification::detect_repository_checks,
             verification::run_repository_check,
+            verification::prepare_repository_check,
+            verification::cancel_repository_check,
             config::get_preferences,
             config::set_preferences,
             config::get_api_endpoint,

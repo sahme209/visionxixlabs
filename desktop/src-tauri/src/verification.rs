@@ -12,7 +12,41 @@ use std::process::Stdio;
 use std::time::Duration;
 use tokio::io::AsyncReadExt;
 use tokio::process::Command;
-use tokio::sync::mpsc;
+use tokio::sync::{mpsc, watch};
+use std::sync::{Mutex, OnceLock};
+use std::sync::atomic::{AtomicU64, Ordering};
+
+struct OwnedRun { prepared_at: std::time::Instant, root: std::path::PathBuf, check_id: String, window: String, sender: watch::Sender<bool>, receiver: Option<watch::Receiver<bool>> }
+static RUNS: OnceLock<Mutex<BTreeMap<String, OwnedRun>>> = OnceLock::new();
+static NEXT_RUN: AtomicU64 = AtomicU64::new(1);
+fn runs() -> &'static Mutex<BTreeMap<String, OwnedRun>> { RUNS.get_or_init(|| Mutex::new(BTreeMap::new())) }
+
+#[tauri::command]
+pub async fn prepare_repository_check(window: tauri::WebviewWindow, repository_path: String, check_id: String) -> Result<String, String> {
+    let root = crate::git::repository_root(&repository_path)?;
+    if !detected_checks(&root)?.iter().any(|check| check.definition.id == check_id) { return Err("Check unavailable.".into()); }
+    let mut registry = runs().lock().map_err(|_| "Verification registry unavailable.")?;
+    registry.retain(|_, run| run.receiver.is_none() || run.prepared_at.elapsed() < Duration::from_secs(60));
+    if registry.len() >= 32 { return Err("Too many pending verification runs.".into()); }
+    let id = NEXT_RUN.fetch_add(1, Ordering::Relaxed).to_string();
+    let (sender, receiver) = watch::channel(false);
+    registry.insert(id.clone(), OwnedRun { prepared_at: std::time::Instant::now(), root, check_id, window: window.label().into(), sender, receiver: Some(receiver) });
+    Ok(id)
+}
+
+#[tauri::command]
+pub async fn cancel_repository_check(window: tauri::WebviewWindow, repository_path: String, run_id: String) -> Result<bool, String> {
+    let root = crate::git::repository_root(&repository_path)?;
+    let mut registry = runs().lock().map_err(|_| "Verification registry unavailable.")?;
+    let Some(run) = registry.get_mut(&run_id) else { return Ok(false); };
+    if run.root != root || run.window != window.label() { return Err("Verification ownership changed.".into()); }
+    run.sender.send_replace(true);
+    if run.receiver.is_some() { registry.remove(&run_id); }
+    Ok(true)
+}
+
+struct RunGuard(String);
+impl Drop for RunGuard { fn drop(&mut self) { if let Ok(mut registry) = runs().lock() { registry.remove(&self.0); } } }
 
 const MAX_OUTPUT_BYTES: u64 = 1_000_000;
 const TIMEOUT: Duration = Duration::from_secs(300);
@@ -86,14 +120,35 @@ pub async fn detect_repository_checks(repository_path: String) -> Result<Vec<Rep
 }
 
 #[tauri::command]
-pub async fn run_repository_check(repository_path: String, check_id: String) -> Result<RepositoryCheckResult, String> {
+pub async fn run_repository_check(window: tauri::WebviewWindow, repository_path: String, check_id: String, run_id: String) -> Result<RepositoryCheckResult, String> {
     let root = crate::git::repository_root(&repository_path)?;
     let check = detected_checks(&root)?.into_iter().find(|check| check.definition.id == check_id)
         .ok_or_else(|| "That verification check is not available for this repository.".to_string())?;
-    run_detected_check(&root, check, TIMEOUT).await
+    let receiver = {
+        let mut registry = runs().lock().map_err(|_| "Verification registry unavailable.")?;
+        let run = registry.get_mut(&run_id).ok_or("Verification run is no longer available.")?;
+        if run.root != root || run.check_id != check_id || run.window != window.label() { return Err("Verification ownership changed.".into()); }
+        if run.prepared_at.elapsed() >= Duration::from_secs(60) { return Err("Verification preparation expired.".into()); }
+        run.receiver.take().ok_or("Verification run already started.")?
+    };
+    let _guard = RunGuard(run_id.clone());
+    let result = run_detected_check_cancelable(&root, check, TIMEOUT, receiver).await;
+    // Linearize completion against cancel under the same registry lock. A cancel
+    // accepted before removal can never become a successful native receipt.
+    let mut registry = runs().lock().map_err(|_| "Verification registry unavailable.")?;
+    let canceled = registry.remove(&run_id).map(|run| { let canceled = *run.sender.borrow(); canceled }).unwrap_or(true);
+    if canceled { return Err("Verification canceled; no passing receipt. Direct-child cleanup is bounded; descendant status remains unverified.".into()); }
+    result
 }
 
+#[cfg(test)]
 async fn run_detected_check(root: &Path, check: CheckCommand, deadline: Duration) -> Result<RepositoryCheckResult, String> {
+    let (_sender, receiver) = watch::channel(false);
+    run_detected_check_cancelable(root, check, deadline, receiver).await
+}
+
+async fn run_detected_check_cancelable(root: &Path, check: CheckCommand, deadline: Duration, mut cancel: watch::Receiver<bool>) -> Result<RepositoryCheckResult, String> {
+    if *cancel.borrow() { return Err("Verification canceled before spawn; no passing receipt.".into()); }
     let check_id = check.definition.id.clone();
     let started = std::time::Instant::now();
     let mut command = Command::new(check.executable);
@@ -144,10 +199,13 @@ async fn run_detected_check(root: &Path, check: CheckCommand, deadline: Duration
         Ok((status, stdout_bytes, stderr_bytes))
     };
     let completed = tokio::select! {
+        biased;
+        _ = cancel.changed() => Err("Verification canceled. Direct-child stop requested; descendants are unverified and may still be running. No passing receipt.".to_string()),
         result = completion => result,
         Some(()) = overflow_rx.recv() => Err("Verification stopped because output exceeded 1 MB.".to_string()),
         _ = tokio::time::sleep(deadline) => Err("Verification stopped after the 5 minute process/output safety limit.".to_string()),
     };
+    let completed = if *cancel.borrow() { Err("Verification canceled. Direct-child stop requested; descendants are unverified and may still be running. No passing receipt.".to_string()) } else { completed };
     // Bound cleanup as well; kill_on_drop remains a direct-child fallback.
     if completed.is_err() { let _ = tokio::time::timeout(Duration::from_secs(2), child.kill()).await; }
     let (status, stdout_bytes, stderr_bytes) = completed?;
@@ -174,6 +232,21 @@ mod tests {
             definition: RepositoryCheck { id: "fixture".into(), label: "Fixture".into(), command: "fixture shell".into(), description: "Isolated native test".into() },
             executable: "/bin/sh", args: vec!["-c".into(), script.into()],
         }
+    }
+    #[tokio::test]
+    async fn cancellation_before_spawn_never_runs_script() {
+        let (sender, receiver) = watch::channel(true);
+        let result = run_detected_check_cancelable(&std::env::temp_dir(), shell("exit 0"), Duration::from_secs(2), receiver).await;
+        assert!(result.unwrap_err().contains("before spawn"));
+        drop(sender);
+    }
+    #[tokio::test]
+    async fn cancellation_during_wait_never_returns_success() {
+        let (sender, receiver) = watch::channel(false);
+        let execution = run_detected_check_cancelable(&std::env::temp_dir(), shell("sleep 0.3; exit 0"), Duration::from_secs(2), receiver);
+        let cancel = async { tokio::task::yield_now().await; sender.send_replace(true); };
+        let (result, _) = tokio::join!(execution, cancel);
+        assert!(result.unwrap_err().contains("canceled"));
     }
     #[tokio::test]
     async fn captures_both_streams_and_nonzero_exit() {
