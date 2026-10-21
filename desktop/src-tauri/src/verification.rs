@@ -199,13 +199,31 @@ async fn wait_for_unreaped_exit(id: u32) -> Result<(), String> {
     }
 }
 
+// Finder-launched macOS apps commonly receive only system directories. Resolve
+// installed package-manager tools without evaluating a login shell or profiles.
+fn verification_path(inherited: Option<std::ffi::OsString>) -> Result<std::ffi::OsString, String> {
+    #[cfg(target_os = "macos")]
+    {
+        let mut paths: Vec<std::path::PathBuf> = inherited.as_deref()
+            .map(std::env::split_paths).into_iter().flatten()
+            .filter(|path| path.is_absolute()).collect();
+        for directory in ["/opt/homebrew/bin", "/usr/local/bin", "/usr/bin", "/bin", "/usr/sbin", "/sbin"] {
+            let path = std::path::PathBuf::from(directory);
+            if !paths.contains(&path) { paths.push(path); }
+        }
+        std::env::join_paths(paths).map_err(|_| "Verification executable search path is invalid.".into())
+    }
+    #[cfg(not(target_os = "macos"))]
+    { Ok(inherited.unwrap_or_default()) }
+}
+
 async fn run_detected_check_cancelable(root: &Path, check: CheckCommand, deadline: Duration, mut cancel: watch::Receiver<bool>) -> Result<RepositoryCheckResult, String> {
     if *cancel.borrow() { return Err("Verification canceled before spawn; no passing receipt.".into()); }
     let check_id = check.definition.id.clone();
     let started = std::time::Instant::now();
     let mut command = Command::new(check.executable);
     command.args(&check.args).current_dir(root).kill_on_drop(true)
-        .env_clear().env("PATH", std::env::var_os("PATH").unwrap_or_default())
+        .env_clear().env("PATH", verification_path(std::env::var_os("PATH"))?)
         .env("HOME", std::env::var_os("HOME").unwrap_or_default())
         .env("CI", "1").env("NO_COLOR", "1")
         .stdin(Stdio::null()).stdout(Stdio::piped()).stderr(Stdio::piped());
@@ -319,6 +337,27 @@ mod tests {
         drop(group);
         assert!(child.wait().await.unwrap().success());
         assert!(child_exited_without_reaping(id).is_err());
+    }
+
+    #[cfg(target_os = "macos")]
+    #[test]
+    fn finder_path_finds_standard_tools_without_changing_explicit_precedence() {
+        let value = super::verification_path(Some("/custom/bin:/usr/bin:/bin".into())).unwrap();
+        let paths: Vec<_> = std::env::split_paths(&value).collect();
+        assert_eq!(paths[0], std::path::PathBuf::from("/custom/bin"));
+        for path in ["/usr/local/bin", "/opt/homebrew/bin", "/usr/bin", "/bin"] {
+            assert_eq!(paths.iter().filter(|item| item.as_path() == std::path::Path::new(path)).count(), 1);
+        }
+    }
+    #[cfg(target_os = "macos")]
+    #[test]
+    fn verification_never_searches_the_repository_for_a_shadow_package_manager() {
+        for inherited in [None, Some(".:relative/bin::/usr/bin:".into())] {
+            let value = super::verification_path(inherited).unwrap();
+            let paths: Vec<_> = std::env::split_paths(&value).collect();
+            assert!(paths.iter().all(|path| path.is_absolute()));
+            assert!(paths.contains(&std::path::PathBuf::from("/usr/local/bin")));
+        }
     }
 
     #[tokio::test]

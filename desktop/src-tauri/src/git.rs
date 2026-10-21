@@ -289,9 +289,8 @@ fn parse_porcelain_status(bytes: &[u8]) -> Result<Vec<RepositoryFileStatus>, Str
         if raw.len() < 4 || raw[2] != b' '
             || !raw[..2].iter().all(|value| b" MADRCUT?!".contains(value))
             || &raw[..2] == b"  " { return Err(invalid()); }
-        if raw[..2].iter().any(|value| *value == b'R' || *value == b'C') {
-            if records.next().filter(|source| !source.is_empty()).is_none() { return Err(invalid()); }
-        }
+        if raw[..2].iter().any(|value| *value == b'R' || *value == b'C')
+            && records.next().filter(|source| !source.is_empty()).is_none() { return Err(invalid()); }
         files.push(RepositoryFileStatus { status: record[..2].trim().to_string(), path: record[3..].to_string() });
     }
     Ok(files)
