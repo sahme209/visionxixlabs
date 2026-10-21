@@ -558,7 +558,8 @@ function AgentChatSession({ onOpenSettings, identity, active, requestedSkill, re
   }
 
   async function openConversation(id: string, reload = false) {
-    if (sending || loadingConversation || (!reload && id === conversationId)) return;
+    // A newer selection supersedes an in-flight read; the epoch below rejects late results.
+    if (sending || (reload && loadingConversation) || (!reload && id === conversationId && !loadingConversation)) return;
     if (!reload && !rememberCurrentDraft()) return;
     const generation = ++conversationEpoch.current, context = desktopClient.config;
     decisionEpoch.current += 1; activeConversation.current = null; setDecidingId(null);
@@ -727,7 +728,7 @@ function AgentChatSession({ onOpenSettings, identity, active, requestedSkill, re
             aria-label="Agent conversation"
             value={conversationId ?? ""}
             onChange={(event) => void openConversation(event.target.value)}
-            disabled={sending || loadingConversation || conversations.length === 0}
+            disabled={sending || conversations.length === 0}
             className="min-w-0 max-w-md flex-1 truncate rounded-md border border-white/10 bg-[#151719] px-2.5 py-1.5 text-xs text-zinc-300 outline-none focus:border-white/25 disabled:opacity-50"
           >
             {conversations.length === 0 && <option value="">No conversations yet</option>}

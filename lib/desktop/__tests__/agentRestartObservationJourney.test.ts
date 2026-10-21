@@ -62,6 +62,8 @@ it("keeps the latest selection when queued conversation loads complete in revers
   m.client.getAgentConversation.mockImplementation(id => id === "conversation-1" ? Promise.resolve(loaded(id, "Initial conversation")) : id === "conversation-2" ? a.promise : b.promise);
   render(createElement(AgentChatView)); await screen.findByText("Initial conversation");
   act(() => { fireEvent.change(screen.getByRole("combobox", { name: "Agent conversation" }), { target: { value: "conversation-2" } }); fireEvent.change(screen.getByRole("combobox", { name: "Agent conversation" }), { target: { value: "conversation-3" } }); });
+  expect(screen.getByRole("combobox", { name: "Agent conversation" }).hasAttribute("disabled")).toBe(false);
+  expect(m.client.getAgentConversation.mock.calls.map(call => call[0])).toEqual(["conversation-1", "conversation-2", "conversation-3"]);
   await act(async () => { b.resolve(loaded("conversation-3", "Newest conversation")); });
   await act(async () => { a.resolve(loaded("conversation-2", "STALE conversation", [{ ...proposal, status: "executed", resultJson: { execution } }])); });
   expect(screen.getByText("Newest conversation")).toBeTruthy(); expect(screen.queryByText("STALE conversation")).toBeNull(); expect(screen.queryByLabelText("ECS restart workflow receipt")).toBeNull();

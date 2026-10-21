@@ -37,3 +37,9 @@ commercial/launch boundary run86 pass/2 subprocess-environment failures; both
 remain mandatory and unwaived. One lacked spawn-error checking and now diagnoses
 that failure before parsing stdout. No repeated blocked subprocess test run.
 No native Rust/compiler/installed-Mac, real provider or cloud acceptance claimed.
+
+## PR194 running-check repair checkpoint
+
+Attempt 2 started successfully: Desktop CI and both commercial PostgreSQL acceptance jobs passed. Test reported 8,879 passes and one failure: a newer conversation selection was ignored while an older read was loading. Reproduced locally before changes (6 pass, 1 fail). Permit superseding selections while retaining request epochs, credential fences, send/decision guards and disabled new-chat creation. Existing reverse-order regression plus explicit request/selector assertions and demo contracts now pass (22 tests).
+
+Website attempt 2 passed eleven interaction gates but failed documentation navigation: no document/RSC request was observed after the pointer click. Root cause remains unverified. Preserve the real navigation assertion, existing deadline and isolation controls. Investigate the pointer-to-navigation boundary before any CI rerun; no speculative application change or timeout increase. Keep local native-file-creation commits separate from this PR repair.
