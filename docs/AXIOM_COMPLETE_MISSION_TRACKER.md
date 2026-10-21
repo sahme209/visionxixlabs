@@ -3843,3 +3843,19 @@ no resend or backend credential change. Two regressions red first;41 focused
 Airflow/demo cases, desktop TypeScript/lint and independent review passed. Original
 345-case evidence not rerun. New local commit is NOT included in push approval or
 remote backup. See consolidated PR preparation for detailed evidence and gates.
+
+### Final consolidated integration pass
+
+See [final integration decision](release/FINAL_CONSOLIDATED_INTEGRATION.md) for
+the one prepared PR, complete inclusion proof, final checkpoint and safest merge
+sequence (consolidated only, then verify and close overlapping195/196/198).
+Main49cd7dc, original heads and remote backup9e8f0203 rechecked unchanged. No
+duplicate source merge or new feature expansion. One final local checkpoint350
+cases/22 suites passed; desktop TypeScript/build, source lint (zero errors/one
+existing warning) and independent integration/security review passed. Root
+TypeScript also passed. Proven website build/browser environment failures
+and195 receipts were reused, not rerun. Installed Mac, actual AI/accounting/cloud
+journeys and full immutable-artifact rollout/recovery readiness remain gates;
+this is not complete-product certification. Vercel SSO protection rechecked;
+shared Preview credentials and unavailable budget remain blockers. No push, PR,
+CI trigger, configuration change, merge or deployment in this pass.
