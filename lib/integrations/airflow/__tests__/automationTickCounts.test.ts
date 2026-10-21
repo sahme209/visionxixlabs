@@ -22,7 +22,7 @@ beforeEach(() => {
 describe("Airflow tick recorded outcomes", () => {
   it.each([false, true])("keeps one provider run for a scheduled occurrence across overlapping/retried ticks (lost response: %s)", async (loseResponse) => {
     mocks.executions.mockResolvedValue([]);
-    mocks.rules.mockResolvedValue([{ id: "rule-1", dagId: "daily", triggerMode: "schedule", scheduleCron: "0 * * * *", nextScheduledAt: new Date("2026-10-15T10:00:00Z"), createdAt: new Date("2026-10-01T00:00:00Z") }]);
+    mocks.rules.mockResolvedValue([{ id: "rule-1", connectionId: "conn-1", dagId: "daily", triggerMode: "schedule", scheduleCron: "0 * * * *", nextScheduledAt: new Date("2026-10-15T10:00:00Z"), createdAt: new Date("2026-10-01T00:00:00Z") }]);
     const accepted = new Set<string>();
     let calls = 0;
     mocks.trigger.mockImplementation(async (dagId, _conf, suppliedRunId) => {
@@ -57,7 +57,7 @@ describe("Airflow tick recorded outcomes", () => {
     ["2026-10-15T10:00:00Z", "2026-10-15T10:00:00Z", 1],
     ["2026-10-15T10:00:00Z", "2026-10-15T11:00:00Z", 1],
   ])("only proposes dependency-gated actions with correlatable freshness (source %s, dependency %s)", async (sourceDate, dependencyDate, proposals) => {
-    mocks.rules.mockResolvedValue([{ id: "rule-1", name: "Fixture", dagId: "dag-1", triggerMode: "completion", dependencyDagIds: ["upstream"], requiredDagState: "success", createdAt: new Date(0), actionType: "open_pull_request", approvalRequired: false }]);
+    mocks.rules.mockResolvedValue([{ id: "rule-1", connectionId: "conn-1", name: "Fixture", dagId: "dag-1", triggerMode: "completion", dependencyDagIds: ["upstream"], requiredDagState: "success", createdAt: new Date(0), actionType: "open_pull_request", approvalRequired: false }]);
     mocks.executions.mockResolvedValue([]);
     mocks.runs.mockImplementation(async (dagId) => [{ dagId, dagRunId: "run-1", state: "success", logicalDate: dagId === "upstream" ? dependencyDate : sourceDate, startedAt: null, endedAt: null }]);
     mocks.execute.mockResolvedValue({ ok: true, result: {} });
@@ -66,10 +66,24 @@ describe("Airflow tick recorded outcomes", () => {
   });
 
   it("does not count a newly proposed action's uncertain outcome as success", async () => {
-    mocks.rules.mockResolvedValue([{ id: "rule-1", name: "Fixture", dagId: "dag-1", triggerMode: "completion", dependencyDagIds: [], requiredDagState: "success", createdAt: new Date(0), actionType: "open_pull_request", approvalRequired: false }]);
+    mocks.rules.mockResolvedValue([{ id: "rule-1", connectionId: "conn-1", name: "Fixture", dagId: "dag-1", triggerMode: "completion", dependencyDagIds: [], requiredDagState: "success", createdAt: new Date(0), actionType: "open_pull_request", approvalRequired: false }]);
     mocks.executions.mockResolvedValue([]);
     mocks.runs.mockResolvedValue([{ dagId: "dag-1", dagRunId: "run-1", state: "success", logicalDate: null, startedAt: null, endedAt: null }]);
     mocks.execute.mockResolvedValue({ ok: false, error: "airflow_provider_outcome_unknown" });
     expect(await runAirflowAutomationTick()).toMatchObject({ proposals: 1, actions: 0, errors: 1 });
   });
+});
+
+it.each(["schedule", "completion"])("refuses a %s rule bound to another Airflow connection before provider IO", async triggerMode => {
+  mocks.executions.mockResolvedValue([]);
+  mocks.rules.mockResolvedValue([{id: "old-rule", connectionId: "retired-connection",
+    dagId: "daily", triggerMode, scheduleCron: "0 * * * *",
+    nextScheduledAt: new Date(0), createdAt: new Date(0),
+    dependencyDagIds: [], requiredDagState: "success",
+    actionType: "none", approvalRequired: false}]);
+  mocks.trigger.mockResolvedValue({dagId: "daily", dagRunId: "wrong-target", state: "queued", logicalDate: null, startedAt: null, endedAt: null});
+  expect(await runAirflowAutomationTick(new Date("2026-10-21T10:00:00Z"))).toMatchObject({proposals: 0, actions: 0, errors: 1});
+  expect(mocks.trigger).not.toHaveBeenCalled();
+  expect(mocks.runs).not.toHaveBeenCalled();
+  expect(mocks.execute).not.toHaveBeenCalled();
 });

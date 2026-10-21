@@ -24,7 +24,7 @@ describe("provider run identity at real client/consumer boundaries", () => {
     expect((await GET(new NextRequest("https://app.example.test/api/desktop/airflow/dags/daily/runs"), params)).status).toBe(502);
   });
   it("never proposes from a foreign-DAG dependency success", async () => {
-    io.rules.mockResolvedValue([{ id: "rule", dagId: "daily", dependencyDagIds: ["dependency"], triggerMode: "completion", requiredDagState: "success", createdAt: new Date(0), actionType: "open_pull_request", approvalRequired: false }]);
+    io.rules.mockResolvedValue([{ id: "rule", connectionId: "fixture", dagId: "daily", dependencyDagIds: ["dependency"], triggerMode: "completion", requiredDagState: "success", createdAt: new Date(0), actionType: "open_pull_request", approvalRequired: false }]);
     vi.stubGlobal("fetch", vi.fn().mockResolvedValueOnce(Response.json({ dag_runs: [run()] })).mockResolvedValueOnce(Response.json({ dag_runs: [run("unrelated")] })));
     expect(await runAirflowAutomationTick()).toMatchObject({ proposals: 0, actions: 0, errors: 1 });
     expect(io.propose).not.toHaveBeenCalled(); expect(io.execute).not.toHaveBeenCalled();
@@ -48,7 +48,7 @@ describe("provider run identity at real client/consumer boundaries", () => {
 });
 
 it("retains an unknown scheduled occurrence identity until exact conflict reconciliation confirms it", async () => {
-  io.rules.mockResolvedValue([{ id: "rule", name: "Fixture", dagId: "daily", dependencyDagIds: [], triggerMode: "schedule", scheduleCron: "0 * * * *", nextScheduledAt: new Date("2026-10-15T10:00:00Z"), createdAt: new Date(0), requiredDagState: "success" }]);
+  io.rules.mockResolvedValue([{ id: "rule", connectionId: "fixture", name: "Fixture", dagId: "daily", dependencyDagIds: [], triggerMode: "schedule", scheduleCron: "0 * * * *", nextScheduledAt: new Date("2026-10-15T10:00:00Z"), createdAt: new Date(0), requiredDagState: "success" }]);
   const submitted: string[] = [];
   const accepted = new Set<string>();
   vi.stubGlobal("fetch", vi.fn().mockImplementation(async (url: string, init: RequestInit) => {

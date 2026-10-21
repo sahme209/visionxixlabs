@@ -41,7 +41,7 @@ describe("approved model dispatch (actual policy/resolver/loop, inert IO ports)"
   it("preserves the current Grok catalog ID through policy admission and revocation", async () => {
     const model = "spacexai/grok-4.1-fast-non-reasoning";
     const value = policy();
-    value.gatewaySelection!.approvedModelIds.push(model);
+    value.gatewaySelection = { ...value.gatewaySelection!, approvedModelIds: [...value.gatewaySelection!.approvedModelIds, model] };
     m.load.mockResolvedValue(ready(value));
     m.catalog.mockResolvedValue([{ id: "vendor/default" }, { id: model }]);
     const governed = await resolved(model);

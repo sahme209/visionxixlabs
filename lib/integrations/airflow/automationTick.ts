@@ -30,6 +30,10 @@ export async function runAirflowAutomationTick(now = new Date()): Promise<{ orga
       totals.rules += rules.length;
       for (const rule of rules) {
         try {
+          // A saved rule is scoped to its enrolled connection, not whichever
+          // connection is currently active for the organization. Check before
+          // scheduling, which precedes the executor's independent authority gate.
+          if (rule.connectionId !== connectionId) { totals.errors += 1; continue; }
           if (rule.triggerMode === "schedule" && rule.scheduleCron && (!rule.nextScheduledAt || rule.nextScheduledAt <= now)) {
             const runId = scheduledDagRunId({ organizationId: group.organizationId, automationId: rule.id, dagId: rule.dagId, scheduledAt: rule.nextScheduledAt ?? rule.createdAt });
             const triggered = await client.triggerDag(rule.dagId, { axiom_automation_id: rule.id }, runId);
