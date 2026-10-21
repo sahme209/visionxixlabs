@@ -16,7 +16,7 @@ use tokio::sync::{mpsc, watch};
 use std::sync::{Mutex, OnceLock};
 use std::sync::atomic::{AtomicU64, Ordering};
 
-struct OwnedRun { prepared_at: std::time::Instant, root: std::path::PathBuf, check_id: String, window: String, sender: watch::Sender<bool>, receiver: Option<watch::Receiver<bool>> }
+struct OwnedRun { prepared_at: std::time::Instant, root: std::path::PathBuf, check_id: String, configuration: Vec<u8>, window: String, sender: watch::Sender<bool>, receiver: Option<watch::Receiver<bool>> }
 static RUNS: OnceLock<Mutex<BTreeMap<String, OwnedRun>>> = OnceLock::new();
 static NEXT_RUN: AtomicU64 = AtomicU64::new(1);
 fn runs() -> &'static Mutex<BTreeMap<String, OwnedRun>> { RUNS.get_or_init(|| Mutex::new(BTreeMap::new())) }
@@ -25,12 +25,13 @@ fn runs() -> &'static Mutex<BTreeMap<String, OwnedRun>> { RUNS.get_or_init(|| Mu
 pub async fn prepare_repository_check(window: tauri::WebviewWindow, repository_path: String, check_id: String) -> Result<String, String> {
     let root = crate::git::repository_root(&repository_path)?;
     if !detected_checks(&root)?.iter().any(|check| check.definition.id == check_id) { return Err("Check unavailable.".into()); }
+    let configuration = check_configuration(&root, &check_id)?;
     let mut registry = runs().lock().map_err(|_| "Verification registry unavailable.")?;
     registry.retain(|_, run| run.receiver.is_none() || run.prepared_at.elapsed() < Duration::from_secs(60));
     if registry.len() >= 32 { return Err("Too many pending verification runs.".into()); }
     let id = NEXT_RUN.fetch_add(1, Ordering::Relaxed).to_string();
     let (sender, receiver) = watch::channel(false);
-    registry.insert(id.clone(), OwnedRun { prepared_at: std::time::Instant::now(), root, check_id, window: window.label().into(), sender, receiver: Some(receiver) });
+    registry.insert(id.clone(), OwnedRun { prepared_at: std::time::Instant::now(), root, check_id, configuration, window: window.label().into(), sender, receiver: Some(receiver) });
     Ok(id)
 }
 
@@ -49,6 +50,41 @@ struct RunGuard(String);
 impl Drop for RunGuard { fn drop(&mut self) { if let Ok(mut registry) = runs().lock() { registry.remove(&self.0); } } }
 
 const MAX_OUTPUT_BYTES: u64 = 1_000_000;
+const MAX_CHECK_CONFIGURATION_BYTES: u64 = 1_000_000;
+
+fn check_configuration(root: &Path, check_id: &str) -> Result<Vec<u8>, String> {
+    let manifest = if check_id.starts_with("npm:") { "package.json" }
+        else if check_id.starts_with("cargo:") { "Cargo.toml" }
+        else if check_id.starts_with("swift:") { "Package.swift" }
+        else { return Err("Unsupported verification definition.".into()); };
+    let mut options = std::fs::OpenOptions::new();
+    options.read(true);
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::OpenOptionsExt;
+        // A replaced FIFO must not block the registry/IPC indefinitely.
+        options.custom_flags(libc::O_NONBLOCK);
+    }
+    let file = options.open(root.join(manifest)).map_err(|_| "Verification definition unavailable.".to_string())?;
+    if !file.metadata().map_err(|_| "Verification definition metadata unavailable.".to_string())?.is_file() {
+        return Err("Verification definition must be a regular file.".into());
+    }
+    let mut limited = std::io::Read::take(file, MAX_CHECK_CONFIGURATION_BYTES + 1);
+    let mut bytes = Vec::new();
+    std::io::Read::read_to_end(&mut limited, &mut bytes).map_err(|_| "Could not read verification definition.".to_string())?;
+    if bytes.len() as u64 > MAX_CHECK_CONFIGURATION_BYTES {
+        return Err("Verification definition exceeds its 1 MB safety limit.".into());
+    }
+    Ok(bytes)
+}
+
+fn verify_check_configuration(root: &Path, check_id: &str, prepared: &[u8]) -> Result<(), String> {
+    if check_configuration(root, check_id)? != prepared {
+        return Err("Verification definition changed. Review and prepare a new check.".into());
+    }
+    Ok(())
+}
+
 const TIMEOUT: Duration = Duration::from_secs(300);
 
 #[derive(Clone, Debug, Serialize)]
@@ -89,10 +125,11 @@ fn detected_checks(root: &Path) -> Result<Vec<CheckCommand>, String> {
     let mut checks = Vec::new();
     let package_json = root.join("package.json");
     if package_json.is_file() {
-        let document: serde_json::Value = serde_json::from_slice(&std::fs::read(package_json).map_err(|error| error.to_string())?)
+        let document: serde_json::Value = serde_json::from_slice(&check_configuration(root, "npm:test")?)
             .map_err(|_| "package.json is not valid JSON.".to_string())?;
         let scripts = document.get("scripts").and_then(|value| value.as_object()).cloned().unwrap_or_default();
         let known: BTreeMap<&str, (&str, &str)> = BTreeMap::from([
+            ("build", ("Build", "Run the configured build script; it may write build artifacts. Repository scripts are not sandboxed.")),
             ("typecheck", ("Type check", "Check static types without changing files.")),
             ("lint", ("Lint", "Check the repository's configured code-quality rules.")),
             ("test", ("Tests", "Run the repository's configured automated tests in CI mode.")),
@@ -124,13 +161,7 @@ pub async fn run_repository_check(window: tauri::WebviewWindow, repository_path:
     let root = crate::git::repository_root(&repository_path)?;
     let check = detected_checks(&root)?.into_iter().find(|check| check.definition.id == check_id)
         .ok_or_else(|| "That verification check is not available for this repository.".to_string())?;
-    let receiver = {
-        let mut registry = runs().lock().map_err(|_| "Verification registry unavailable.")?;
-        let run = registry.get_mut(&run_id).ok_or("Verification run is no longer available.")?;
-        if run.root != root || run.check_id != check_id || run.window != window.label() { return Err("Verification ownership changed.".into()); }
-        if run.prepared_at.elapsed() >= Duration::from_secs(60) { return Err("Verification preparation expired.".into()); }
-        run.receiver.take().ok_or("Verification run already started.")?
-    };
+    let receiver = claim_prepared_run(&root, &check_id, &run_id, window.label())?;
     let _guard = RunGuard(run_id.clone());
     let result = run_detected_check_cancelable(&root, check, TIMEOUT, receiver).await;
     // Linearize completion against cancel under the same registry lock. A cancel
@@ -139,6 +170,15 @@ pub async fn run_repository_check(window: tauri::WebviewWindow, repository_path:
     let canceled = registry.remove(&run_id).map(|run| { let canceled = *run.sender.borrow(); canceled }).unwrap_or(true);
     if canceled { return Err("Verification canceled; no passing receipt. Direct-child cleanup is bounded; descendant status remains unverified.".into()); }
     result
+}
+
+fn claim_prepared_run(root: &Path, check_id: &str, run_id: &str, window: &str) -> Result<watch::Receiver<bool>, String> {
+    let mut registry = runs().lock().map_err(|_| "Verification registry unavailable.")?;
+    let run = registry.get_mut(run_id).ok_or("Verification run is no longer available.")?;
+    if run.root != root || run.check_id != check_id || run.window != window { return Err("Verification ownership changed.".into()); }
+    if run.prepared_at.elapsed() >= Duration::from_secs(60) { return Err("Verification preparation expired.".into()); }
+    verify_check_configuration(root, check_id, &run.configuration)?;
+    run.receiver.take().ok_or_else(|| "Verification run already started.".into())
 }
 
 #[cfg(test)]
@@ -324,6 +364,83 @@ mod tests {
             executable: "/bin/sh", args: vec!["-c".into(), script.into()],
         }
     }
+    #[test]
+    fn detects_build_without_accepting_arbitrary_script_ids() {
+        let root = std::env::temp_dir().join(format!("axiom-build-detection-{}", std::process::id()));
+        std::fs::create_dir_all(&root).unwrap();
+        std::fs::write(root.join("package.json"), r#"{"scripts":{"build":"node build.mjs","deploy":"must not be selected"}}"#).unwrap();
+        let checks = detected_checks(&root).unwrap();
+        assert!(checks.iter().any(|check| check.definition.id == "npm:build" && check.args == ["run", "build"]));
+        assert!(!checks.iter().any(|check| check.definition.id == "npm:deploy"));
+        std::fs::remove_dir_all(root).unwrap();
+    }
+
+    #[tokio::test]
+    async fn runs_an_owned_configured_build_with_a_real_artifact() {
+        let root = std::env::temp_dir().join(format!("axiom-build-execution-{}", std::process::id()));
+        std::fs::create_dir_all(&root).unwrap();
+        std::fs::write(root.join("package.json"), r#"{"private":true,"scripts":{"build":"node build.cjs"}}"#).unwrap();
+        std::fs::write(root.join("build.cjs"), "require('node:fs').writeFileSync('build-result.txt','owned build'); console.log('owned build finished');").unwrap();
+        let check = detected_checks(&root).unwrap().into_iter().find(|check| check.definition.id == "npm:build").unwrap();
+        let result = run_detected_check(&root, check, Duration::from_secs(10)).await.unwrap();
+        assert!(result.success);
+        assert!(result.output.contains("owned build finished"));
+        assert_eq!(std::fs::read_to_string(root.join("build-result.txt")).unwrap(), "owned build");
+        std::fs::remove_dir_all(root).unwrap();
+    }
+
+    #[test]
+    fn refuses_changed_or_oversized_prepared_manifest_without_exposing_contents() {
+        let root = std::env::temp_dir().join(format!("axiom-manifest-guard-{}", std::process::id()));
+        std::fs::create_dir_all(&root).unwrap();
+        let path = root.join("package.json");
+        std::fs::write(&path, r#"{"scripts":{"test":"original"}}"#).unwrap();
+        let prepared = check_configuration(&root, "npm:test").unwrap();
+        assert!(verify_check_configuration(&root, "npm:test", &prepared).is_ok());
+        std::fs::write(&path, r#"{"scripts":{"test":"PRIVATE_REPLACEMENT_SENTINEL"}}"#).unwrap();
+        let error = verify_check_configuration(&root, "npm:test", &prepared).unwrap_err();
+        assert!(error.contains("definition changed"));
+        assert!(!error.contains("PRIVATE_REPLACEMENT_SENTINEL"));
+        std::fs::write(&path, vec![b' '; MAX_CHECK_CONFIGURATION_BYTES as usize + 1]).unwrap();
+        assert!(check_configuration(&root, "npm:test").unwrap_err().contains("safety limit"));
+        assert!(matches!(detected_checks(&root), Err(error) if error.contains("safety limit")));
+        std::fs::remove_dir_all(root).unwrap();
+    }
+
+    #[test]
+    fn refuses_a_replaced_fifo_without_waiting_for_a_writer() {
+        use std::os::unix::ffi::OsStrExt;
+        let root = std::env::temp_dir().join(format!("axiom-manifest-fifo-{}", std::process::id()));
+        std::fs::create_dir_all(&root).unwrap();
+        let path = std::ffi::CString::new(root.join("package.json").as_os_str().as_bytes()).unwrap();
+        // SAFETY: path is a valid NUL-terminated path in this owned test directory.
+        assert_eq!(unsafe { libc::mkfifo(path.as_ptr(), 0o600) }, 0);
+        assert!(check_configuration(&root, "npm:test").unwrap_err().contains("regular file"));
+        std::fs::remove_dir_all(root).unwrap();
+    }
+
+    #[test]
+    fn changed_definitions_cannot_consume_prepared_tickets_for_any_supported_manifest() {
+        for (check_id, manifest) in [("npm:test", "package.json"), ("cargo:check", "Cargo.toml"), ("swift:test", "Package.swift")] {
+            let id = format!("definition-{}", NEXT_RUN.fetch_add(1, Ordering::Relaxed));
+            let root = std::env::temp_dir().join(format!("axiom-manifest-ticket-{}-{id}", std::process::id()));
+            std::fs::create_dir_all(&root).unwrap();
+            std::fs::write(root.join(manifest), b"original definition").unwrap();
+            let configuration = check_configuration(&root, check_id).unwrap();
+            let (sender, receiver) = watch::channel(false);
+            runs().lock().unwrap().insert(id.clone(), OwnedRun {prepared_at: std::time::Instant::now(), root: root.clone(), check_id: check_id.into(), configuration, window: "fixture".into(), sender, receiver: Some(receiver)});
+            let _guard = RunGuard(id.clone());
+            std::fs::write(root.join(manifest), b"changed definition").unwrap();
+            assert!(claim_prepared_run(&root, check_id, &id, "fixture").unwrap_err().contains("definition changed"));
+            assert!(runs().lock().unwrap().get(&id).unwrap().receiver.is_some());
+            std::fs::write(root.join(manifest), b"original definition").unwrap();
+            assert!(claim_prepared_run(&root, check_id, &id, "other-window").unwrap_err().contains("ownership changed"));
+            assert!(claim_prepared_run(&root, check_id, &id, "fixture").is_ok());
+            assert!(claim_prepared_run(&root, check_id, &id, "fixture").unwrap_err().contains("already started"));
+            std::fs::remove_dir_all(root).unwrap();
+        }
+    }
+
     #[tokio::test]
     async fn exit_observation_reserves_identity_until_group_cleanup_and_reaping() {
         let mut command = Command::new("/bin/sh");
