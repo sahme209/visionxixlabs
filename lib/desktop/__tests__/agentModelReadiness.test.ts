@@ -514,6 +514,7 @@ it("returns a failed native check receipt to an unsent scoped Agent prompt", asy
     if (command === "repository_status") return {rootPath: "/owned/A", repositoryFullName: "fixture/repository", branch: "feature", ahead: 0, behind: 0, changedFiles: []};
     if (command === "list_repository_files") return ["main.ts"];
     if (command === "detect_repository_checks") return [{id: "npm:test", label: "Tests", command: "npm test", description: "fixture"}];
+    if (command === "prepare_repository_check") return "owned-run";
     if (command === "run_repository_check") return {checkId: "npm:test", success: false, exitCode: 1, output: "test assertion failed", durationMs: 1};
     throw Error(`Unexpected command ${command}`);
   });
