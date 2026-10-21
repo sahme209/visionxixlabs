@@ -25,6 +25,12 @@ export interface AirflowDagRun {
   endedAt: string | null;
 }
 
+export interface AirflowTaskInstance {
+  taskId: string; mapIndex: number; tryNumber: number; state: string | null;
+  startedAt: string | null; endedAt: string | null;
+}
+export interface AirflowTaskPage { tasks: AirflowTaskInstance[]; totalEntries: number; offset: number }
+
 function unsafeAddress(address: string): boolean {
   if (address === "::" || address === "::1") return true;
   const normalized = address.toLowerCase();
@@ -115,6 +121,22 @@ export class AirflowClient {
     const body = await this.request(`/dags/${encodeURIComponent(dagId)}/dagRuns/${encodeURIComponent(dagRunId)}`);
     if (!isRunForDag(body, dagId) || body.dag_run_id !== dagRunId) throw new Error("airflow_run_response_invalid");
     return toDagRun(body);
+  }
+
+  /** Observation only: never returns XCom, rendered templates, logs or credentials. */
+  async listTaskInstances(dagId: string, dagRunId: string, offset = 0): Promise<AirflowTaskPage> {
+    if ([dagId, dagRunId].some((id) => !id.trim() || id === "~") || !Number.isSafeInteger(offset) || offset < 0) throw new Error("airflow_task_selection_invalid");
+    const body = await this.request(`/dags/${encodeURIComponent(dagId)}/dagRuns/${encodeURIComponent(dagRunId)}/taskInstances?limit=100&offset=${offset}`);
+    if (!isRecord(body) || !Array.isArray(body.task_instances) || body.task_instances.length > 100 || !Number.isSafeInteger(body.total_entries) || (body.total_entries as number) < 0 || (body.task_instances.length > 0 && (body.total_entries as number) < offset + body.task_instances.length)) throw new Error("airflow_task_response_invalid");
+    const identities = new Set<string>();
+    const tasks = body.task_instances.map((task: unknown): AirflowTaskInstance => {
+      if (!isRecord(task) || task.dag_id !== dagId || task.dag_run_id !== dagRunId || typeof task.task_id !== "string" || !task.task_id.trim() || !Number.isSafeInteger(task.map_index) || (task.map_index as number) < -1 || !Number.isSafeInteger(task.try_number) || (task.try_number as number) < 0 || (task.state !== null && typeof task.state !== "string")) throw new Error("airflow_task_response_invalid");
+      const identity = JSON.stringify([task.task_id, task.map_index]);
+      if (identities.has(identity)) throw new Error("airflow_task_response_invalid");
+      identities.add(identity);
+      return { taskId: task.task_id, mapIndex: task.map_index as number, tryNumber: task.try_number as number, state: task.state as string | null, startedAt: typeof task.start_date === "string" ? task.start_date : null, endedAt: typeof task.end_date === "string" ? task.end_date : null };
+    });
+    return { tasks, totalEntries: body.total_entries as number, offset };
   }
 
   async triggerDag(dagId: string, conf: Record<string, unknown> = {}, scheduledRunId?: string): Promise<AirflowDagRun> {

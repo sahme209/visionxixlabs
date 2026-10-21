@@ -79,6 +79,12 @@ export interface AgentSkillCatalogItem {
 
 export interface AirflowDag { dagId: string; displayName: string; description: string | null; paused: boolean; owners: string[]; tags: string[] }
 export interface AirflowDagRun { dagId: string; dagRunId: string; state: string; logicalDate: string | null; startedAt: string | null; endedAt: string | null }
+export interface AirflowTaskInstance {
+  taskId: string; mapIndex: number; tryNumber: number; state: string | null;
+  startedAt: string | null; endedAt: string | null;
+}
+export interface AirflowTaskPage { tasks: AirflowTaskInstance[]; totalEntries: number; offset: number }
+
 export interface AirflowAutomation {
   id: string; name: string; dagId: string; enabled: boolean; triggerMode: string; scheduleCron: string | null;
   requiredDagState: string; dependencyDagIds: string[]; actionType: string; repositoryFullName: string | null;
@@ -907,6 +913,10 @@ export class DesktopClient {
 
   disconnectAirflow(): Promise<ApiResult<{ disconnected: boolean }>> { return this.delete("/api/desktop/airflow/connection"); }
   listAirflowDags(): Promise<ApiResult<{ dags: AirflowDag[] }>> { return this.get("/api/desktop/airflow/dags"); }
+  listAirflowTaskInstances(dagId: string, dagRunId: string, offset = 0): Promise<ApiResult<AirflowTaskPage>> {
+    return this.get(`/api/desktop/airflow/dags/${encodeURIComponent(dagId)}/runs/${encodeURIComponent(dagRunId)}/tasks?offset=${offset}`);
+  }
+
   listAirflowDagRuns(dagId: string): Promise<ApiResult<{ runs: AirflowDagRun[] }>> { return this.get(`/api/desktop/airflow/dags/${encodeURIComponent(dagId)}/runs`); }
   triggerAirflowDag(dagId: string): Promise<ApiResult<{ run: AirflowDagRun }>> { return this.post(`/api/desktop/airflow/dags/${encodeURIComponent(dagId)}/runs`, {}); }
   listAirflowAutomations(): Promise<ApiResult<{ automations: AirflowAutomation[]; executions: AirflowAutomationExecution[] }>> { return this.get("/api/desktop/airflow/automations"); }

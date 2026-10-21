@@ -484,6 +484,13 @@ function RepositoryWorkspaceSession({ revision, active, onAskAgent, editRequest,
             await invoke("cancel_repository_check", { repositoryPath: selectedRepository, runId: id });
             return;
           }
+          // Native preparation is asynchronous. Consent must still describe
+          // the source at the boundary where a process can actually start.
+          if (consentEpoch !== sourceEpoch.current) {
+            await invoke("cancel_repository_check", { repositoryPath: selectedRepository, runId: id });
+            if (current()) setError("The source changed while preparing the check. Save or discard edits, then review and request the check again.");
+            return;
+          }
           const attempt = { id, repositoryPath: selectedRepository, canceled: false };
           verificationRun.current = attempt;
           setCancelAvailable(true);
