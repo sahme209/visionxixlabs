@@ -26,11 +26,16 @@ reads; consumer return cancels the reader. Only a finish event followed by DONE
 emits success, with validated optional provider usage; truncated/error responses
 never fabricate terminal success. No midstream retry/fallback is added.
 
-Evidence: 82 targeted synthetic tests passed across direct streaming, xAI,
+Evidence: 86 targeted synthetic tests passed across direct streaming, xAI,
 manager, aiFetch, Gateway streaming and demo contracts. They prove incremental delivery
 before later body bytes, fragmented UTF-8/CRLF, body-read abort/timeout, consumer
 return cleanup, HTTP/error/malformed/truncated/oversized rejection and terminal
-usage. Full web `npx tsc --noEmit --pretty false` passed; no paid integration
+usage. Independent review found that abort during a suspended text yield could
+otherwise allow already buffered SSE events to continue. Explicit abort checks
+at each buffered parsing iteration and around text/terminal yields now reject
+that continuation. Four additional cases cover both vendors with a second
+buffered delta and with only buffered finish/DONE remaining.
+Full web `npx tsc --noEmit --pretty false` passed; no paid integration
 or full default suite was run.
 
 Acceptance gaps: actual OpenAI/xAI model/API behavior and credentials are untested;

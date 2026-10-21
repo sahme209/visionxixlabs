@@ -47,6 +47,7 @@ export class DirectChatStreamProvider extends OpenAICompatProvider {
         catch { throw fail("invalid stream encoding"); }
         let boundary: number;
         while ((boundary = pending.indexOf("\n")) !== -1) {
+          controller.signal.throwIfAborted();
           const line = pending.slice(0, boundary).replace(/\r$/, "");
           pending = pending.slice(boundary + 1);
           if (line.length > 64 * 1024) throw fail("SSE line too large");
@@ -59,6 +60,7 @@ export class DirectChatStreamProvider extends OpenAICompatProvider {
           const payload = data.join("\n"); data = []; eventSize = 0;
           if (payload === "[DONE]") {
             if (!finish) throw fail("missing stream finish reason");
+            controller.signal.throwIfAborted();
             yield { text: "", done: true, finishReason: finish, usage };
             return;
           }
@@ -79,7 +81,11 @@ export class DirectChatStreamProvider extends OpenAICompatProvider {
             if (text) {
               output += text.length;
               if (output > 1024 * 1024) throw fail("stream output too large");
+              controller.signal.throwIfAborted();
               yield { text, done: false };
+              // next() resumes inside this event; buffered bytes must not
+              // outlive cancellation while the consumer held the delta.
+              controller.signal.throwIfAborted();
             }
             if (choice.finish_reason != null) {
               finish = ({ stop: "stop", length: "length", content_filter: "filter", tool_calls: "stop", function_call: "stop" } as const)[choice.finish_reason as "stop"] ?? "unknown";

@@ -25,6 +25,17 @@ describe.each([OpenAIProvider, XAIProvider])("direct streaming %s", Provider => 
     expect(init[1].redirect).toBe('error');
     expect(JSON.parse(init[1].body as string).stream).toBe(true);
   });
+  it.each([delta('one') + delta('two') + end, delta('one') + end])('does not yield buffered deltas or terminal success after abort', async bytes => {
+    const cancel = vi.fn();
+    vi.stubGlobal('fetch', vi.fn(async () => new Response(new ReadableStream({ start(c) { c.enqueue(packet(bytes)); }, cancel }), { headers: { 'content-type': 'text/event-stream' } })));
+    const controller = new AbortController();
+    const stream = new Provider({ apiKey: 'synthetic' }).streamText('test', { abortSignal: controller.signal })[Symbol.asyncIterator]();
+    expect((await stream.next()).value).toEqual({ text: 'one', done: false });
+    controller.abort();
+    await expect(stream.next()).rejects.toMatchObject({ kind: 'timeout', message: 'provider stream aborted' });
+    expect((await stream.next()).done).toBe(true);
+    expect(cancel).toHaveBeenCalledOnce();
+  });
   it("aborts a pending body read and sanitizes errors", async () => {
     const cancel = vi.fn();
     vi.stubGlobal('fetch', vi.fn(async () => new Response(new ReadableStream({ cancel }), { headers: { 'content-type': 'text/event-stream' } })));
