@@ -11,6 +11,7 @@ export interface AgentModelChoice {
 
 const vendorNames: Record<string, string> = {
   xai: "xAI",
+  spacexai: "xAI",
   openai: "OpenAI",
   anthropic: "Anthropic",
   google: "Google",

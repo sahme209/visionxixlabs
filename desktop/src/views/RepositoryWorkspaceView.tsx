@@ -205,7 +205,9 @@ function RepositoryWorkspaceSession({ revision, active, onAskAgent, editRequest,
       if (!current()) return;
       if (!result.ok) { setRepositoryCatalogError(result.error); return; }
       setRemoteRepositories(result.data.repositories);
-      const preferred = window.localStorage.getItem("axiom.workspace.repository.v1");
+      // Repository preference is optional, never an availability or authorization gate.
+      let preferred: string | null = null;
+      try { preferred = window.localStorage.getItem("axiom.workspace.repository.v1"); } catch { /* Session-only selection remains available. */ }
       const selected = result.data.repositories.find(repository => repository.fullName === preferred) ?? result.data.repositories[0];
       if (!manualClone.current) setCloneRepository(value =>
         result.data.repositories.some(repository => repository.fullName === value) ? value : selected?.fullName || "");
@@ -663,7 +665,7 @@ function RepositoryWorkspaceSession({ revision, active, onAskAgent, editRequest,
             manualClone.current = false;
             setManualCloneRepository(false);
             setCloneRepository(event.target.value);
-            window.localStorage.setItem("axiom.workspace.repository.v1", event.target.value);
+            try { window.localStorage.setItem("axiom.workspace.repository.v1", event.target.value); } catch { /* Keep the selected repository in memory. */ }
           }
         }} aria-label="Connected GitHub repository" className="w-full rounded-md border border-white/10 bg-black/25 px-3 py-2 text-xs text-zinc-200 outline-none focus:border-violet-400/50">
           {remoteRepositories.length === 0 && <option value="">No connected repositories</option>}

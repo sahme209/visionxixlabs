@@ -1,5 +1,23 @@
 # Axiom Agent complete mission tracker
 
+## Current execution sequence — October 21, 2026
+
+Owner refinement: defer GCP; retain completed GCP code. Execute AI coding/repositories, real-model acceptance, billing TEST, Airflow, AWS/Azure, Kubernetes/Terraform and CI/CD without production mutations. External credentials block only their dependent real-environment tests.
+
+1. Model catalog connection: cached public Gateway metadata uses `spacexai/` for Grok. The generic catalog and policy accept it, but desktop vendor grouping displays an internal namespace. Add a failing current-catalog regression, recognize its display name without rewriting model IDs, and verify approved dispatch/revocation with inert IO. Files: desktop agentModelSelection, its desktop tests and approvedModelDispatch tests. Acceptance: only current administrator-approved IDs appear and reach existing cost admission; no extra provider lane or consumer-feature claims.
+2. Coding/repository workflow: inspect existing chat-to-proposal-to-consented-apply-to-terminal paths, fix only confirmed missing connections; test stale repository/branch, cancellation and error recovery. Preserve existing native Git/process evidence; do not repeat unchanged Rust builds.
+3. Airflow/AWS/Azure/Kubernetes/Terraform: reuse local Airflow acceptance; inspect remaining scheduling/dependency-to-approval boundaries and sandbox readiness before any cloud action. Identify missing credentials/permissions separately; no resource creation or production changes.
+4. Billing TEST/customer journey: reuse accounting coverage; validate catalog binding and signed-event-to-entitlement boundaries with isolated inputs. Actual checkout/provider/cloud acceptance requires securely configured test credentials; $5 cumulative AI test cap approved, $0 spent so far.
+
+Validation: targeted tests first, affected TypeScript/lint/build at batch checkpoints, independent review for authority/billing/native changes. No remote pushes, hosted CI, releases or deployments without their approval gates. Update issue #200 at meaningful milestones.
+
+## Current verified connection milestone — October 21, 2026
+
+- Current public Gateway Grok namespace is spacexai/. Desktop display alias repaired; exact IDs, admin approval intersection, revocation and cost admission unchanged. Selection regression failed before the one-line repair; 26 model/policy cases passed. No inference request, credential extraction or paid usage.
+- Connected repository preference storage failure reproduced Clone remaining disabled after a successful catalog response. Local read/write exception boundaries now keep authorized selection in memory. 100 focused cases passed; both additional storage failure paths passed. Desktop TypeScript/lint/frontend build passed with existing warnings. Independent review found no blockers.
+- Isolated native first-run receipt from source67fdf records real sign-in rendering, native0.1.21 and local invalid-key rejection with zero observed fetch calls. Exact test app stopped. Instrumented DOM/IPC only, not trusted pointer, authenticated workspace or installed release acceptance.
+- Owner scope: GCP deferred. Continue coding and AWS/Azure/Kubernetes/Terraform/Airflow/billing readiness; actual provider credentials, sandbox identities and CLI tools are acceptance dependencies, not reasons to stop local development. Keep $5 aggregate AI cap and all publication/production gates.
+
 ## Standing execution rule
 
 The owner has repeatedly directed continuous execution of the whole unified mission. A passing test, saved commit, status report or individual milestone is not a stopping condition. During an active execution session, move directly to the next independently executable authorized task. Scope external blockers to their dependent tasks; do not treat a desktop inspection permission or a provider credential gap as a global engineering blocker. Preserve evidence and approval gates. Stop only when no remaining authorized task can safely proceed, a genuinely essential owner decision is required, or the execution session/platform ends. Never promise indefinite background work after execution has ended. Maintain the current checkpoint and next executable action here and in GitHub issue #200 so a later session can resume without rebuilding plans or repeating completed work.

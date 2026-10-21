@@ -38,6 +38,21 @@ describe("approved model dispatch (actual policy/resolver/loop, inert IO ports)"
     expect(m.catalog).toHaveBeenCalledWith({ freshness: "current" });
     expect(m.catalog).toHaveBeenCalledTimes(2); expect(m.load).toHaveBeenCalledTimes(2); expect(m.status).toHaveBeenCalledTimes(2);
   });
+  it("preserves the current Grok catalog ID through policy admission and revocation", async () => {
+    const model = "spacexai/grok-4.1-fast-non-reasoning";
+    const value = policy();
+    value.gatewaySelection!.approvedModelIds.push(model);
+    m.load.mockResolvedValue(ready(value));
+    m.catalog.mockResolvedValue([{ id: "vendor/default" }, { id: model }]);
+    const governed = await resolved(model);
+    await governed.extract("prompt", "schema", "request:grok");
+    expect(m.extract.mock.calls[0][2]).toMatchObject({ only: "vercel_gateway", model });
+    expect(m.admission).toHaveBeenCalledWith({ organizationId: "tenant", userId: "trusted-actor", correlationId: "request:grok" });
+    m.load.mockResolvedValue(ready(policy()));
+    await expect(governed.extract("next", "schema", "request:grok:next")).rejects.toBeInstanceOf(GovernedAiCallRefusal);
+    expect(m.admission).toHaveBeenCalledOnce();
+    expect(m.extract).toHaveBeenCalledOnce();
+  });
   it.each([undefined, "openai"])("requires explicit Gateway provider for a chosen model (%s)", async provider => {
     await expect(resolveGovernedAiCall("tenant", provider, "actor", "vendor/alternative")).resolves.toMatchObject({ ok: false, error: "workspace_ai_model_not_allowed" });
     expect(m.admission).not.toHaveBeenCalled(); expect(m.extract).not.toHaveBeenCalled();

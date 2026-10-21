@@ -746,3 +746,36 @@ it("binds the publish-and-PR push to the reviewed repository and branch", async 
   fireEvent.click(screen.getByRole("button", {name:"Publish and open PR"}));
   await waitFor(() => expect(m.invoke).toHaveBeenCalledWith("push_repository", {repositoryPath:"/owned/A",authenticatedUrl:"https://example.invalid/fixture/a.git",repositoryFullName:"fixture/a",branch:"feature"}));
 });
+
+it("keeps authorized repository discovery usable when optional preference reads fail", async () => {
+  m.client.listGithubRepositories.mockResolvedValue(catalog("ready"));
+  const read = vi.spyOn(Storage.prototype, "getItem").mockImplementation(() => { throw new DOMException("Storage blocked", "SecurityError"); });
+  try {
+    await start();
+    await screen.findByRole("option", { name: "fixture/ready · private" });
+    await waitFor(() => expect((screen.getByRole("button", { name: "Clone" }) as HTMLButtonElement).disabled).toBe(false));
+    expect(screen.queryByText(/temporarily unavailable/)).toBeNull();
+    expect((screen.getByRole("combobox", { name: "Connected GitHub repository" }) as HTMLSelectElement).value).toBe("fixture/ready");
+    expect(m.client.mintGithubCloneToken).not.toHaveBeenCalled();
+  } finally { read.mockRestore(); }
+});
+
+it("keeps an authorized repository selection when optional preference writes fail", async () => {
+  m.client.listGithubRepositories.mockResolvedValue({ok: true, data: {repositories: [
+    {id: "first", fullName: "fixture/first", defaultBranch: "main", visibility: "private"},
+    {id: "second", fullName: "fixture/second", defaultBranch: "main", visibility: "private"},
+  ], truncated: false}});
+  await start();
+  await screen.findByRole("option", {name: "fixture/second · private"});
+  const write = vi.spyOn(Storage.prototype, "setItem").mockImplementation(() => { throw new DOMException("Storage full", "QuotaExceededError"); });
+  const errors: string[] = [];
+  const onError = (event: ErrorEvent) => { errors.push(event.message); event.preventDefault(); };
+  window.addEventListener("error", onError);
+  try {
+    fireEvent.change(screen.getByRole("combobox", {name: "Connected GitHub repository"}), {target: {value: "fixture/second"}});
+    expect(errors).toEqual([]);
+    expect((screen.getByRole("combobox", {name: "Connected GitHub repository"}) as HTMLSelectElement).value).toBe("fixture/second");
+    expect((screen.getByRole("button", {name: "Clone"}) as HTMLButtonElement).disabled).toBe(false);
+    expect(m.client.mintGithubCloneToken).not.toHaveBeenCalled();
+  } finally { window.removeEventListener("error", onError); write.mockRestore(); }
+});
