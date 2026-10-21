@@ -275,15 +275,35 @@ pub async fn list_local_repositories(parent_path: String) -> Result<Vec<String>,
     Ok(repositories)
 }
 
+// Porcelain columns and path bytes are protocol data: never trim or split on
+// lines. In -z format a rename/copy records destination first, then source.
+fn parse_porcelain_status(bytes: &[u8]) -> Result<Vec<RepositoryFileStatus>, String> {
+    let invalid = || "Repository status could not be decoded; refresh before relying on it.".to_string();
+    if bytes.is_empty() { return Ok(Vec::new()); }
+    if bytes.last() != Some(&0) { return Err(invalid()); }
+    let text = std::str::from_utf8(bytes).map_err(|_| invalid())?;
+    let mut records = text.split_terminator('\0');
+    let mut files = Vec::new();
+    while let Some(record) = records.next() {
+        let raw = record.as_bytes();
+        if raw.len() < 4 || raw[2] != b' '
+            || !raw[..2].iter().all(|value| b" MADRCUT?!".contains(value))
+            || &raw[..2] == b"  " { return Err(invalid()); }
+        if raw[..2].iter().any(|value| *value == b'R' || *value == b'C') {
+            if records.next().filter(|source| !source.is_empty()).is_none() { return Err(invalid()); }
+        }
+        files.push(RepositoryFileStatus { status: record[..2].trim().to_string(), path: record[3..].to_string() });
+    }
+    Ok(files)
+}
+
 #[tauri::command]
 pub async fn repository_status(repository_path: String) -> Result<RepositoryStatus, String> {
     let root = repository_root(&repository_path)?;
     let branch = current_branch(&root)?;
-    let porcelain = output_text(git(Some(&root), ["status", "--porcelain", "--untracked-files=all"] )?, None)?;
-    let changed_files = porcelain.lines().filter_map(|line| {
-        if line.len() < 4 { return None; }
-        Some(RepositoryFileStatus { status: line[..2].trim().to_string(), path: line[3..].to_string() })
-    }).collect();
+    let porcelain = git(Some(&root), ["status", "--porcelain=v1", "--untracked-files=all", "-z"])?;
+    if !porcelain.status.success() { return output_text(porcelain, None).and_then(|_| Err("Repository status is unavailable.".into())); }
+    let changed_files = parse_porcelain_status(&porcelain.stdout)?;
     let counts = output_text(git(Some(&root), ["rev-list", "--left-right", "--count", "HEAD...@{upstream}"] )?, None)
         .unwrap_or_else(|_| "0\t0".to_string());
     let mut parts = counts.split_whitespace().filter_map(|value| value.parse::<u32>().ok());
@@ -449,6 +469,52 @@ mod tests {
     }
     impl Drop for OwnedDirectory {
         fn drop(&mut self) { let _ = std::fs::remove_dir_all(&self.0); }
+    }
+
+    #[test]
+    fn status_parser_refuses_malformed_records_instead_of_reporting_clean() {
+        for bytes in [b" M a".as_slice(), b" M \0", b"  a\0", b"XX a\0", b"R  new\0", b"R  new\0\0", b"?? \xff\0"] {
+            assert!(super::parse_porcelain_status(bytes).is_err());
+        }
+        assert!(super::parse_porcelain_status(b"").unwrap().is_empty());
+        let copied = super::parse_porcelain_status(b"C  new\0old\0 M a\0").unwrap();
+        assert_eq!(copied.len(), 2);
+        assert_eq!(copied[0].path, "new");
+        assert_eq!(copied[1].path, "a");
+    }
+
+    fn status_fixture() -> OwnedDirectory {
+        let directory = sync_fixture();
+        for name in ["a", "old.ts"] { std::fs::write(directory.0.join(name), "baseline").unwrap(); }
+        assert!(super::git(Some(&directory.0), ["add", "--", "a", "old.ts"]).unwrap().status.success());
+        assert!(super::git(Some(&directory.0), ["-c", "user.name=Axiom Fixture", "-c", "user.email=fixture@example.invalid", "-c", "commit.gpgsign=false", "-c", "core.hooksPath=/dev/null", "commit", "-m", "owned status fixture"]).unwrap().status.success());
+        directory
+    }
+
+    #[tokio::test]
+    async fn status_retains_a_modified_single_character_path() {
+        let directory = status_fixture();
+        std::fs::write(directory.0.join("a"), "modified").unwrap();
+        let status = super::repository_status(directory.0.to_string_lossy().into_owned()).await.unwrap();
+        assert_eq!(status.changed_files.len(), 1);
+        assert_eq!(status.changed_files[0].path, "a");
+        assert_eq!(status.changed_files[0].status, "M");
+    }
+
+    #[cfg(unix)]
+    #[tokio::test]
+    async fn status_preserves_renamed_and_unquoted_unicode_paths() {
+        let directory = status_fixture();
+        assert!(super::git(Some(&directory.0), ["mv", "--", "old.ts", "renamed space.ts"]).unwrap().status.success());
+        for name in ["café.ts", "tab\tfile.ts", "quote\"file.ts", "line\nbreak.ts"] {
+            std::fs::write(directory.0.join(name), "untracked").unwrap();
+        }
+        let status = super::repository_status(directory.0.to_string_lossy().into_owned()).await.unwrap();
+        assert_eq!(status.changed_files.len(), 5);
+        assert!(status.changed_files.iter().any(|file| file.path == "renamed space.ts" && file.status == "R"));
+        for name in ["café.ts", "tab\tfile.ts", "quote\"file.ts", "line\nbreak.ts"] {
+            assert!(status.changed_files.iter().any(|file| file.path == name && file.status == "??"), "Missing exact filename: {name:?}");
+        }
     }
 
     fn sync_fixture() -> OwnedDirectory {
