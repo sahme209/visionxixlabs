@@ -268,6 +268,18 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     }
 
     if (outcome.kind === "proposal") {
+      // An AI-proposed target is not a replacement for the operator's current
+      // code selection. Refuse drift rather than rewriting content to a target
+      // the model did not inspect; ordinary approval remains a separate gate.
+      const editsCode = outcome.toolName === "commit_github_file" || outcome.toolName === "commit_github_files";
+      if (mode === "code" && editsCode && (
+        repositoryFullName && outcome.args.repositoryFullName !== repositoryFullName ||
+        branch && outcome.args.branch !== branch
+      )) {
+        const reply = "The code proposal did not match your selected repository and branch, so no action was proposed. Keep the intended target selected and request the change again.";
+        await prisma.agentConversationTurn.create({ data: { conversationId, role: "assistant", content: reply } });
+        return NextResponse.json({ ok: true, data: { reply, proposal: null, usage: outcome.usage ?? null } });
+      }
       const reviewed = await prepareProposalArgsForReview(organizationId, outcome.toolName, outcome.args, prisma);
       if (!reviewed.ok) {
         streaming?.abortSignal.throwIfAborted();

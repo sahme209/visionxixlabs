@@ -363,6 +363,46 @@ describe("POST /api/desktop/agent/conversations/[id]/messages", () => {
     expect(call.agentProfile).toBe("coding");
     expect(call.operationMode).toBe("engineer");
   });
+  it.each([
+    ["commit_github_file", "acme/other", "feature"],
+    ["commit_github_files", "acme/other", "feature"],
+    ["commit_github_file", "acme/widgets", "unselected"],
+    ["commit_github_files", "acme/widgets", "unselected"],
+    ["commit_github_file", "acme/widgets", undefined],
+    ["commit_github_files", undefined, "feature"],
+  ].flatMap(([toolName, repositoryFullName, branch]) => [false, true].map(streamed => ({toolName, repositoryFullName, branch, streamed}))))("refuses $toolName target drift before review IO (stream=$streamed)", async ({toolName, repositoryFullName, branch, streamed}) => {
+    const args = {repositoryFullName, branch, path: "src/app.ts", content: "updated", files: [{path: "src/app.ts", content: "updated"}], message: "Change"};
+    mocks.runDecisionLoop.mockResolvedValue({kind: "proposal", toolName, message: "Proposed change", args, riskLevel: "medium"});
+    const {POST} = await import("../route");
+    const req = request({message: "Update selected code", workspaceContext: {repositoryFullName: "acme/widgets", branch: "feature", filePath: "src/app.ts", mode: "code"}});
+    if (streamed) req.headers.set("accept", "application/x-ndjson");
+    const response = await POST(req, params);
+    let body;
+    if (streamed) {
+      const events = (await response.text()).trim().split("\n").map(line => JSON.parse(line));
+      expect(events.some(event => event.type === "error")).toBe(false);
+      expect(events.at(-1)?.type).toBe("result");
+      body = {data: events.at(-1)?.data};
+    } else body = await response.json();
+    expect(response.status).toBe(200);expect(body.data.proposal).toBeNull();
+    expect(body.data.reply).toContain("selected repository and branch");
+    expect(mocks.prepareProposalArgsForReview).not.toHaveBeenCalled();
+    expect(mocks.createProposal).not.toHaveBeenCalled();
+    expect(mocks.rememberToolContext).not.toHaveBeenCalled();
+  });
+  it.each([
+    ["chat", "commit_github_files", "acme/other", "other"],
+    ["code", "create_github_branch", "acme/widgets", "new-branch"],
+  ])("preserves separately reviewed %s / %s workflows", async (mode, toolName, repositoryFullName, branch) => {
+    const args = {repositoryFullName, branch, fromBranch: "feature", files: [{path: "src/app.ts", content: "updated"}], message: "Change"};
+    mocks.runDecisionLoop.mockResolvedValue({kind: "proposal", toolName, args, message: "Proposed change", riskLevel: "medium"});
+    mocks.prepareProposalArgsForReview.mockResolvedValue({ok: true, args});
+    const {POST} = await import("../route");
+    const response = await POST(request({message: "Prepare requested change", workspaceContext: {repositoryFullName: "acme/widgets", branch: "feature", filePath: "src/app.ts", mode}}), params);
+    expect((await response.json()).data.proposal).not.toBeNull();
+    expect(mocks.prepareProposalArgsForReview).toHaveBeenCalledWith("org-1", toolName, args, expect.anything());
+    expect(mocks.createProposal).toHaveBeenCalledWith(expect.objectContaining({data: expect.objectContaining({status: "proposed", toolName})}));
+  });
   it.each([true, false])("keeps coordinated file snapshots and proposal approval mandatory (snapshot=%s)", async snapshotReady => {
     const args = {repositoryFullName: "acme/widgets", branch: "feature", files: [{path: "src/app.ts", content: "updated"}, {path: "test/app.test.ts", content: "new test"}], message: "Update source and tests"};
     mocks.runDecisionLoop.mockResolvedValue({kind: "proposal", toolName: "commit_github_files", message: "Proposed source and test change", args, riskLevel: "medium"});
