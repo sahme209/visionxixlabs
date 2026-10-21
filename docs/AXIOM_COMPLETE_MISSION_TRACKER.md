@@ -3735,3 +3735,14 @@ Combined creation-stage repository TypeScript passed after aligning local depend
 Research found unguarded optional localStorage reads during Agent mount and writes/removals in selection effects. Three actual component cases reproduce startup/effect failures for denied getItem/setItem/removeItem. Plan: contain optional preference failures and retain live in-memory selections, without changing catalog verification, credential identity, send target or action consent. Acceptance: connected repository/environment selectors and explicit mocked send remain functional for all three storage failures; no automatic provider call or authority fallback. Update pairing demo; run focused context/security tests and TypeScript. Native/real-provider acceptance remains separate.
 
 Preference recovery validation:75 focused component/model/demo cases passed after3 red regressions; root+desktop TypeScript and desktop frontend build passed using existing cached dependencies. Independent review found no authority/target regression. Connected in-memory context and explicit mocked send remain usable when optional preference get/set/remove is denied. No native or real-provider acceptance claimed. Separate local Airflow/Terraform/deployment/tenant/billing/rollback fixture boundary batch passed42 cases; these are not cloud or Stripe customer acceptance.
+
+### Consolidated zero-additional-spend checkpoint
+
+See [local integration checkpoint](release/LOCAL_INTEGRATION_CHECKPOINT.md) for
+preserved PR heads/history, actual product fix, workstream acceptance matrix,
+324 passing targeted cases, local frontend/type/lint results, independent reviews,
+historical unresolved failures and next release gates. The local Test workflow
+supersedes obsolete PR runs while keeping every main run distinct; required jobs,
+triggers, permissions and timeouts are unchanged. No publication, new CI, hosted
+deployment, paid provider operation or production change is authorized by this
+checkpoint. Native/installed/customer acceptance remains separate from code.
