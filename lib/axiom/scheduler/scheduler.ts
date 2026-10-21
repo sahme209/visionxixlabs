@@ -3,7 +3,7 @@ import { runAgent } from "../agent/runAgent";
 import { diffRuns } from "./diffEngine";
 import { compareAgentRuns } from "../diffEngine";
 import { buildNotifications } from "./notifications";
-import type { SchedulerResult, CreateScheduleInput } from "./types";
+import type { SchedulerResult, CreateScheduleInput, ScheduledRunNotification } from "./types";
 import type { ScheduleFrequency } from "../enums";
 
 // ---------------------------------------------------------------------------
@@ -49,6 +49,13 @@ export async function processScheduledRuns(): Promise<SchedulerResult> {
   };
 
   for (const schedule of dueSchedules) {
+    // The relation uses an account ID, not a composite tenant key. Never let
+    // a corrupt/historical cross-tenant link become system execution authority.
+    if (schedule.organizationId !== schedule.cloudAccount.organizationId) {
+      result.skipped++;
+      await incrementFailures(schedule.id);
+      continue;
+    }
     if (!schedule.cloudAccount.enabled) {
       result.skipped++;
       await advanceSchedule(schedule.id, schedule.frequency as ScheduleFrequency, null);
@@ -163,8 +170,9 @@ export async function createSchedule(input: CreateScheduleInput): Promise<string
 
 export async function updateSchedule(
   scheduleId: string,
+  organizationId: string,
   updates: { frequency?: ScheduleFrequency; enabled?: boolean; timezone?: string },
-): Promise<void> {
+): Promise<boolean> {
   const data: Record<string, unknown> = {};
 
   if (updates.frequency) {
@@ -180,16 +188,18 @@ export async function updateSchedule(
     data.timezone = updates.timezone;
   }
 
-  await prisma.axiomScheduledRun.update({ where: { id: scheduleId }, data });
+  const changed = await prisma.axiomScheduledRun.updateMany({ where: { id: scheduleId, organizationId }, data });
+  return changed.count === 1;
 }
 
-export async function deleteSchedule(scheduleId: string): Promise<void> {
-  await prisma.axiomScheduledRun.delete({ where: { id: scheduleId } });
+export async function deleteSchedule(scheduleId: string, organizationId: string): Promise<boolean> {
+  const changed = await prisma.axiomScheduledRun.deleteMany({ where: { id: scheduleId, organizationId } });
+  return changed.count === 1;
 }
 
 export async function listSchedules(organizationId: string) {
   return prisma.axiomScheduledRun.findMany({
-    where: { organizationId },
+    where: { organizationId, cloudAccount: { is: { organizationId } } },
     include: {
       cloudAccount: {
         select: { provider: true, externalAccountId: true, enabled: true },
@@ -249,16 +259,7 @@ async function resetFailures(scheduleId: string): Promise<void> {
   });
 }
 
-async function persistNotification(n: {
-  type: string;
-  organizationId: string;
-  userId: string | null;
-  runId: string;
-  scheduledRunId: string;
-  title: string;
-  body: string;
-  data: unknown;
-}): Promise<void> {
+async function persistNotification(n: ScheduledRunNotification): Promise<void> {
   try {
     await prisma.axiomNotification.create({
       data: {
@@ -266,7 +267,7 @@ async function persistNotification(n: {
         userId: n.userId,
         runId: n.runId,
         scheduledRunId: n.scheduledRunId,
-        type: n.type as any,
+        type: n.type,
         title: n.title,
         body: n.body,
         data: n.data as object,
