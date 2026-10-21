@@ -3927,3 +3927,9 @@ CI trigger, configuration change, merge or deployment in this pass.
 ### Active native acceptance isolation batch
 
 Confirmed blocker: secure.rs hardcodes the production Keychain service even when a separate app identifier is built; opening a development GUI could read or migrate installed credentials. Plan: derive all secure read/write/delete/migration entries from the immutable configured application identifier, preserve the production identifier exactly, fail closed on malformed identifiers, and verify with native regression tests before any launch. Build a separate local acceptance identifier and deep-link scheme, retain OS-vault protection, and avoid production credentials/provider calls. Application-data and webview storage isolation must also be verified before launch. Acceptance is not met by compilation alone.
+
+### Active scoped Git-output protection
+
+Source review confirmed that credential redaction only removes the complete username/password substring and successful stdout bypasses it. First add failing regressions for token-only diagnostics and successful output, then redact the password independently and apply the same redaction to both outcomes. Preserve repository/approval gates, never inspect real tokens, and validate native tests plus independent review before committing. This is local-only credential protection, not real GitHub acceptance.
+
+Verified scoped Git-output protection: both new regressions failed before implementation; 41 default native Mac tests pass afterward, with the OS-Keychain acceptance test deliberately opt-in (previously passed explicitly). Independent review found no blocking findings. Both successful stdout and error diagnostics redact the literal scoped password and full userinfo. Encoded/transformed/partial token disclosure and process-argument exposure remain separate limitations. No push, provider call or deployment.

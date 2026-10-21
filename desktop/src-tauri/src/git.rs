@@ -35,11 +35,17 @@ pub struct RepositoryStatus {
 
 fn redact_credential(text: &str, clone_url: &str) -> String {
     let mut redacted = text.to_string();
-    if let Some(at_pos) = clone_url.find('@') {
-        if let Some(scheme_end) = clone_url.find("://") {
-            let credential_part = &clone_url[scheme_end + 3..at_pos];
+    if let (Some(at_pos), Some(scheme_end)) = (clone_url.rfind('@'), clone_url.find("://")) {
+        if let Some(credential_part) = clone_url.get(scheme_end + 3..at_pos) {
             if !credential_part.is_empty() {
                 redacted = redacted.replace(credential_part, "***");
+            }
+            // Git or a remote helper may report only the password, not the
+            // complete URL/userinfo. Never return that scoped token to the UI.
+            if let Some((_, password)) = credential_part.split_once(':') {
+                if !password.is_empty() {
+                    redacted = redacted.replace(password, "***");
+                }
             }
         }
     }
@@ -71,7 +77,11 @@ where
 
 fn output_text(output: Output, credential: Option<&str>) -> Result<String, String> {
     if output.status.success() {
-        return Ok(String::from_utf8_lossy(&output.stdout).trim().to_string());
+        let stdout = String::from_utf8_lossy(&output.stdout);
+        return Ok(match credential {
+            Some(url) => redact_credential(stdout.trim(), url),
+            None => stdout.trim().to_string(),
+        });
     }
     let stderr = String::from_utf8_lossy(&output.stderr);
     Err(match credential {
@@ -483,6 +493,27 @@ mod tests {
         assert!(super::write_existing_repository_file(&directory.0, "link.txt", "draft", "outside").is_err());
         assert!(super::write_existing_repository_file(&directory.0, "escape/file.txt", "draft", "outside").is_err());
         assert_eq!(std::fs::read_to_string(outside.0.join("file.txt")).unwrap(), "outside");
+    }
+
+    #[test]
+    fn strips_a_password_reported_without_the_username_or_url() {
+        let url = "https://x-access-token:ghs_SYNTHETIC_ONLY@github.com/owner/repository.git";
+        let redacted = redact_credential("remote: credential ghs_SYNTHETIC_ONLY was rejected", url);
+        assert!(!redacted.contains("ghs_SYNTHETIC_ONLY"));
+        assert!(redacted.contains("***"));
+    }
+
+    #[cfg(unix)]
+    #[test]
+    fn successful_git_output_cannot_return_the_scoped_token() {
+        use std::os::unix::process::ExitStatusExt;
+        let output = std::process::Output {
+            status: std::process::ExitStatus::from_raw(0),
+            stdout: b"remote response: ghs_SYNTHETIC_ONLY".to_vec(),
+            stderr: vec![],
+        };
+        let text = super::output_text(output, Some("https://x-access-token:ghs_SYNTHETIC_ONLY@github.com/owner/repository.git")).unwrap();
+        assert!(!text.contains("ghs_SYNTHETIC_ONLY"));
     }
 
     #[test]
