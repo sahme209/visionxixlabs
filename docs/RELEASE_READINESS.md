@@ -179,3 +179,9 @@ Confirmed source gap: messages route code-mode instruction named only commit_git
 One route-context regression failed before the repair; three focused cases passed afterward, including multi-file snapshot success staying proposed and snapshot failure preventing persistence.118affected route/proposal-review/decision-loop/profile tests, root TypeScript and affected lint passed. Independent review found no blocker. Initial test placement/filter and fourth review-function argument mistakes were corrected before the expected source regression; no acceptance or timeout weakened.
 
 Reviewer confirmed lab model explicitly chose action respond; runtime did not drop a proposal. Lab bypasses messages route/context and production admission/accounting, and final harness limit is one model call. This code-mode connection does not claim to repair the independent prose-only model behavior or complete real desktop/provider acceptance. No further inference was used.
+
+## Owner-requested private GitHub acceptance target
+
+Created private sahme209/axiom-agent-acceptance for the requested repository testing, distinct from the Axiom product repository. Verified owner account, unused name, empty remote, private visibility and zero workflow definitions before publishing only the seven-file dependency-free baseline. Remote main exactly934feb5ca99c2947486ef1b03c30f64737ec3faa. No provider key in tracked content; no workflow files. Post-push GitHub returned0Actions runs,0deployments and0check runs. No PR or Vercel project was created.
+
+Local customer fixture now has this credential-free origin and verified fetched baseline. Its reviewed real-model subtraction edits remain local on acceptance/subtraction; they were not silently published. Product branch was not pushed. CLI/owner GitHub access is verified, not Axiom's authenticated GitHub App/repository-selection journey. Connected device inventory contains only the Mac; Windows native environment remains unavailable.
