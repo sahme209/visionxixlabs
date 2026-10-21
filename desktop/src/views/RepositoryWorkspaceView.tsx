@@ -1,6 +1,6 @@
 import { verificationReceipt, type VerificationReceipt } from "../lib/verificationReceipt";
 import { localEditBlocker, type LocalEditRequest, type LocalCreationProposal } from "../lib/localEditReview";
-import { localCodeContextPrompt, type LocalCodeSelection } from "../lib/localCodeContext";
+import { localCodeContextPrompt, type LocalCodeSelection, type LocalRepairSelection } from "../lib/localCodeContext";
 import { FileDiff } from "../components/FileDiff";
 import { editorMatches, replaceEditorMatch, editorLineRange } from "../lib/editorSearch";
 import { newEditorHistory, editHistory, moveHistory } from "../lib/editorHistory";
@@ -106,6 +106,7 @@ function RepositoryWorkspaceSession({ revision, active, onAskAgent, editRequest,
   const [verificationResult, setVerificationResult] = useState<RepositoryCheckResult | null>(null);
   const [showVerification, setShowVerification] = useState(false);
   const [verificationStale, setVerificationStale] = useState(false);
+  const [verificationTarget, setVerificationTarget] = useState<{rootPath: string; repositoryFullName: string; branch: string} | null>(null);
   const [cancelAvailable, setCancelAvailable] = useState(false);
   const verificationRun = useRef<{ id: string; repositoryPath: string; canceled: boolean } | null>(null);
   const sourceEpoch = useRef(0);
@@ -140,7 +141,7 @@ function RepositoryWorkspaceSession({ revision, active, onAskAgent, editRequest,
     setSelectedRepositoryState(repository); setStatus(null); setFiles([]); setChecks([]);
     setSelectedFile(null); setContent(""); setSavedContent(""); setBusy(null);
     setCancelAvailable(false);
-    setError(null); setNotice(null); setPrUrl(null); setVerificationResult(null); setVerificationStale(false); sourceEpoch.current++; setConfirmationState(null);
+    setError(null); setNotice(null); setPrUrl(null); setVerificationResult(null); setVerificationTarget(null); setVerificationStale(false); sourceEpoch.current++; setConfirmationState(null);
   }, []);
 
   function setConfirmation(next: Confirmation | null) {
@@ -467,6 +468,7 @@ function RepositoryWorkspaceSession({ revision, active, onAskAgent, editRequest,
       setError("Save or discard unsaved editor changes before verification; checks run against files on disk."); return;
     }
     const consentEpoch = sourceEpoch.current;
+    const consentRoot = status?.rootPath;
     setConfirmation({
       title: `Run ${check.label}?`,
       description: `${check.command} will run inside this repository with a minimal process environment. Scripts are not sandboxed: they can access files and network resources available to your user, including stored credentials. Native timeout/output limits do not establish process-tree isolation. Run only repositories you trust. Stop check requests a bounded direct-child stop only; descendants may continue and their status is unverified. Closing or switching views does not cancel a running check.`,
@@ -479,7 +481,14 @@ function RepositoryWorkspaceSession({ revision, active, onAskAgent, editRequest,
           }
           if (consentEpoch !== sourceEpoch.current) { setError("The source changed after check consent was requested. Review and request the check again."); return; }
           const checkedEpoch = sourceEpoch.current;
+          const checkedStatus = await invoke<RepositoryStatus>("repository_status", {repositoryPath: selectedRepository});
+          if (!current()) return;
+          if (typeof checkedStatus.rootPath !== "string" || !checkedStatus.rootPath
+            || (consentRoot && checkedStatus.rootPath !== consentRoot) || consentEpoch !== sourceEpoch.current) {
+            setError("The repository or source changed before verification. Review and request the check again."); return;
+          }
           verificationGeneration.current++;
+          setVerificationTarget(null);
           setVerificationStale(true);
           const id = await invoke<string>("prepare_repository_check", { repositoryPath: selectedRepository, checkId: check.id });
           if (!current()) {
@@ -509,6 +518,8 @@ function RepositoryWorkspaceSession({ revision, active, onAskAgent, editRequest,
           const result = verificationReceipt(raw, check.id);
           const stale = checkedEpoch !== sourceEpoch.current;
           setVerificationResult(result); setVerificationStale(stale);
+          setVerificationTarget(!stale && checkedStatus.repositoryFullName && checkedStatus.branch
+            ? {rootPath: checkedStatus.rootPath, repositoryFullName: checkedStatus.repositoryFullName, branch: checkedStatus.branch} : null);
           setShowVerification(true);
           await refreshRepository(selectedRepository);
           if (!current()) return;
@@ -576,6 +587,38 @@ function RepositoryWorkspaceSession({ revision, active, onAskAgent, editRequest,
         if (prepared) return;
         prepared = true;
         onAskAgent(selection);
+      },
+    });
+  }
+
+  function prepareRepair() {
+    const file = loadedFile.current, receipt = verificationResult, target = verificationTarget;
+    if (!active || !onAskAgent || activeBusy.current || !owns(owner.current) || !file || !receipt || !target
+      || verificationStale || receipt.success || receipt.exitCode === null || file.content !== file.saved) return;
+    const selection: LocalRepairSelection = {kind: "repair", repositoryFullName: target.repositoryFullName, branch: target.branch, path: file.path,
+      checkId: receipt.checkId, exitCode: receipt.exitCode, stale: false, excerpt: receipt.output.slice(0, 8000)};
+    if (!localCodeContextPrompt(selection)) return;
+    const epoch = sourceEpoch.current, generation = verificationGeneration.current, snapshot = file.saved;
+    setConfirmation({
+      title: "Prepare a coding repair draft?",
+      description: `Prepare an unsent repair request for ${target.repositoryFullName} · ${target.branch} · ${file.path}. Review the check excerpt for credentials or private data. The receipt is historical evidence, not an exact source snapshot. This does not contact a model, save files, run checks or approve changes.`,
+      confirmLabel: "Prepare repair draft", preview: selection.excerpt,
+      onConfirm: async () => {
+        if (activeBusy.current) return;
+        await run("prepare-agent-repair", async current => {
+          const [live, disk] = await Promise.all([
+            invoke<RepositoryStatus>("repository_status", {repositoryPath: file.repository}),
+            invoke<string>("read_repository_file", {repositoryPath: file.repository, relativePath: file.path}),
+          ]);
+          if (!current()) return;
+          if (sourceEpoch.current !== epoch || verificationGeneration.current !== generation
+            || loadedFile.current !== file || file.content !== snapshot || disk !== snapshot
+            || live.rootPath !== target.rootPath || live.repositoryFullName?.toLowerCase() !== target.repositoryFullName.toLowerCase()
+            || live.branch !== target.branch) {
+            setError("The repair source, target or verification context changed. Refresh and review it again."); return;
+          }
+          onAskAgent(selection);
+        });
       },
     });
   }
@@ -707,7 +750,10 @@ function RepositoryWorkspaceSession({ revision, active, onAskAgent, editRequest,
       <p className="mb-2 text-xs text-zinc-500">Recorded process result only. It does not certify the current working tree or changes made outside Axiom.</p>
       <div className="mb-2 flex items-center justify-between text-[10px] text-zinc-500"><span>{verificationResult.checkId}</span><span>{(verificationResult.durationMs / 1000).toFixed(1)}s · exit {verificationResult.exitCode ?? "none"}</span></div>
       <pre tabIndex={0} className="whitespace-pre-wrap break-words font-mono text-[11px] leading-5 text-zinc-300">{verificationResult.output || "The check completed without output."}</pre>
-      {onAskAgent && <button type="button" disabled={Boolean(busy) || !verificationResult.output} onClick={askAboutVerification} className="btn-secondary mt-2 disabled:opacity-40">Prepare check output for Agent</button>}
+      {onAskAgent && <div className="mt-2 flex flex-wrap gap-2">
+        <button type="button" disabled={Boolean(busy) || !verificationResult.output} onClick={askAboutVerification} className="btn-secondary disabled:opacity-40">Prepare check output for Agent</button>
+        <button type="button" disabled={Boolean(busy) || verificationStale || verificationResult.success || !verificationTarget || !selectedFile || content !== savedContent || !localCodeContextPrompt({kind: "repair", ...verificationTarget, path: selectedFile, checkId: verificationResult.checkId, exitCode: verificationResult.exitCode ?? 0, stale: false, excerpt: verificationResult.output.slice(0, 8000)})} onClick={prepareRepair} className="btn-secondary disabled:opacity-40">Prepare repair with Agent</button>
+      </div>}
     </div>}
     <div className="flex min-h-0 flex-1">
       <aside className="flex w-64 shrink-0 flex-col border-r border-white/[0.07] bg-[#111315]">

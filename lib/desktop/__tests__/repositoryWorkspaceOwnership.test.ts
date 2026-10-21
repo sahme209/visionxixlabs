@@ -658,6 +658,7 @@ it("retires a prepared run when the repository changes before preparation return
   await start();
   fireEvent.click(await screen.findByRole("button", {name: "A check"}));
   fireEvent.click(screen.getByRole("button", {name: "Run check"}));
+  await waitFor(() => expect(m.invoke).toHaveBeenCalledWith("prepare_repository_check", {repositoryPath:"/owned/A",checkId:"a"}));
   await switchToB();
   await act(async () => preparation.resolve("old-preparation"));
   expect(m.invoke).toHaveBeenCalledWith("cancel_repository_check", {repositoryPath: "/owned/A", runId: "old-preparation"});
@@ -803,7 +804,9 @@ it("connects a mixed Agent proposal card to consented local save, creation and v
   fireEvent.click(screen.getByRole("button", {name: "Review in local editor"}));
   const review = await screen.findByRole("region", {name: "Agent local draft review"});
   expect(review.textContent).toContain("2 files");
-  fireEvent.click(await screen.findByRole("button", {name: "Open same.ts for local review"}));
+  const openReviewedFile = await screen.findByRole("button", {name: "Open same.ts for local review"});
+  await waitFor(() => expect((openReviewedFile as HTMLButtonElement).disabled).toBe(false));
+  fireEvent.click(openReviewedFile);
   await screen.findByDisplayValue("original");
   fireEvent.click(screen.getByRole("button", {name: "Load editor draft"}));
   await screen.findByDisplayValue("reviewed update");
@@ -824,3 +827,15 @@ it("connects a mixed Agent proposal card to consented local save, creation and v
   expect(m.invoke.mock.calls.filter(([name]) => name === "run_repository_check")).toHaveLength(1);
   expect(approve).not.toHaveBeenCalled(); expect(reject).not.toHaveBeenCalled();
 });
+
+async function failedRepairFixture(onAskAgent=vi.fn()) {
+ checks=()=>[{id:"a",label:"A check",command:"npm test",description:"fixture"}];
+ verification=()=>({checkId:"a",success:false,exitCode:1,output:"Expected 2, received 1",durationMs:1});
+ render(createElement(RepositoryWorkspaceView,{onAskAgent}));fireEvent.click(await screen.findByRole("button",{name:"same.ts"}));await screen.findByRole("textbox",{name:"Editing same.ts"});
+ fireEvent.click(await screen.findByRole("button",{name:"A check"}));fireEvent.click(screen.getByRole("button",{name:"Run check"}));await screen.findByRole("button",{name:"Prepare repair with Agent"});return onAskAgent;
+}
+it("hands an explicitly consented failed check to a target-bound unsent repair",async()=>{const callback=await failedRepairFixture();fireEvent.click(screen.getByRole("button",{name:"Prepare repair with Agent"}));expect(callback).not.toHaveBeenCalled();fireEvent.click(screen.getByRole("button",{name:"Prepare repair draft"}));await waitFor(()=>expect(callback).toHaveBeenCalledWith({kind:"repair",repositoryFullName:"fixture/a",branch:"feature",path:"same.ts",checkId:"a",exitCode:1,stale:false,excerpt:"Expected 2, received 1"}));expect(m.invoke.mock.calls.filter(([name])=>name==="write_repository_file")).toHaveLength(0);expect(m.invoke.mock.calls.filter(([name])=>name==="run_repository_check")).toHaveLength(1);});
+it.each(["branch","origin","disk"])("refuses repair after external %s drift",async kind=>{const callback=await failedRepairFixture();fireEvent.click(screen.getByRole("button",{name:"Prepare repair with Agent"}));if(kind==="disk")reads=()=>"changed externally";else statuses=path=>({...status(path),...(kind==="branch"?{branch:"other"}:{repositoryFullName:"other/repo"})});fireEvent.click(screen.getByRole("button",{name:"Prepare repair draft"}));await screen.findByText(/repair source, target or verification context changed/);expect(callback).not.toHaveBeenCalled();});
+it("disables repair after source edits while retaining read-only debug preparation",async()=>{await failedRepairFixture();fireEvent.change(screen.getByRole("textbox",{name:"Editing same.ts"}),{target:{value:"unsaved change"}});expect((screen.getByRole("button",{name:"Prepare repair with Agent"}) as HTMLButtonElement).disabled).toBe(true);expect((screen.getByRole("button",{name:"Prepare check output for Agent"}) as HTMLButtonElement).disabled).toBe(false);});
+
+it("preserves verification and repair for an aliased path with a stable canonical root",async()=>{statuses=path=>({...status(path),rootPath:"/canonical"+path});const callback=await failedRepairFixture();fireEvent.click(screen.getByRole("button",{name:"Prepare repair with Agent"}));fireEvent.click(screen.getByRole("button",{name:"Prepare repair draft"}));await waitFor(()=>expect(callback).toHaveBeenCalledOnce());expect(callback.mock.calls[0][0]).not.toHaveProperty("rootPath");});

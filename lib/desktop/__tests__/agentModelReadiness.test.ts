@@ -225,7 +225,7 @@ it("deactivation aborts streaming and never accepts a late success while retaini
   expect((screen.getByRole("textbox") as HTMLTextAreaElement).value).toBe("Unsent follow-up");
   expect(m.client.sendAgentMessage).toHaveBeenCalledOnce();
 });
-it("does not replace a newer request error with a stopped request's late rejection", async () => {
+it("requires recovery and settlement before another send after a stopped request", async () => {
   let rejectOld!: (reason: Error) => void;
   const old = new Promise<never>((_resolve, reject) => { rejectOld = reject; });
   m.client.sendAgentMessage.mockImplementationOnce((...args) => { args[5].onDraft("Old pending response"); return old; });
@@ -234,9 +234,15 @@ it("does not replace a newer request error with a stopped request's late rejecti
   view.rerender(createElement(AgentChatView, { active: false })); view.rerender(createElement(AgentChatView, { active: true }));
   m.client.sendAgentMessage.mockResolvedValue({ ok: false, error: "Current request budget refusal" });
   fireEvent.change(screen.getByRole("textbox"), { target: { value: "New request" } });
+  expect((screen.getByRole("button", { name: "Send" }) as HTMLButtonElement).disabled).toBe(true);
+  fireEvent.click(screen.getByRole("button", {name: "Reload saved conversation"}));
   await waitFor(() => expect((screen.getByRole("button", { name: "Send" }) as HTMLButtonElement).disabled).toBe(false));
-  fireEvent.click(screen.getByRole("button", { name: "Send" })); await screen.findByText("Current request budget refusal");
+  fireEvent.click(screen.getByRole("button", { name: "Send" }));
+  expect(m.client.sendAgentMessage).toHaveBeenCalledTimes(1); // Abort is not settlement.
   await act(async () => { rejectOld(new Error("Old transport failed")); });
+  expect(screen.queryByText("Old transport failed")).toBeNull();
+  expect((screen.getByRole("textbox") as HTMLTextAreaElement).value).toBe("New request");
+  fireEvent.click(screen.getByRole("button", { name: "Send" })); await screen.findByText("Current request budget refusal");
   expect(screen.getByText("Current request budget refusal")).toBeTruthy();
 });
 it("does not install stale evidence from a stopped request's delayed history refresh", async () => {
@@ -249,9 +255,15 @@ it("does not install stale evidence from a stopped request's delayed history ref
   m.client.sendAgentMessage.mockResolvedValue({ ok: false, error: "Current request budget refusal" });
   fireEvent.change(screen.getByRole("textbox"), { target: { value: "New request" } });
   await waitFor(() => expect((screen.getByRole("button", { name: "Send" }) as HTMLButtonElement).disabled).toBe(false));
-  fireEvent.click(screen.getByRole("button", { name: "Send" })); await screen.findByText("Current request budget refusal");
+  fireEvent.click(screen.getByRole("button", {name: "Reload saved conversation"}));
+  await waitFor(() => expect(m.client.getAgentConversation).toHaveBeenCalledTimes(3));
+  await waitFor(() => expect((screen.getByRole("button", {name: "Send"}) as HTMLButtonElement).disabled).toBe(false));
+  fireEvent.click(screen.getByRole("button", { name: "Send" }));
+  expect(m.client.sendAgentMessage).toHaveBeenCalledTimes(1);
   await act(async () => { old.resolve({ ok: true, data: { ...summary, turns: [], actions: [{ id: "stale", toolName: "read_github_file", argsJson: { repositoryFullName: "fixture/repository", branch: "main", path: "stale-probe.ts" }, riskLevel: "low", status: "executed", resultJson: { content: "Old evidence" }, errorMessage: null, createdAt: "2026-10-20" }] } }); });
   expect(screen.queryByText(/stale-probe.ts/)).toBeNull();
+  fireEvent.click(screen.getByRole("button", { name: "Send" })); await screen.findByText("Current request budget refusal");
+  expect(m.client.sendAgentMessage).toHaveBeenCalledTimes(2);
 });
 
 it("opens recorded repository evidence inside the Agent without another service request", async () => {

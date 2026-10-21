@@ -284,3 +284,17 @@ it("rejects an editor handoff owned by a different sign-in without losing the dr
   expect((screen.getByRole("textbox") as HTMLTextAreaElement).value).toBe("Retain this draft");
   expect(wire.messages()).toHaveLength(0);
 });
+
+it("prepares a target-bound repair in Code mode without dispatch until Send",async()=>{
+ const wire=fixture(false,"http",false);const view=render(createElement(AgentChatView));
+ await screen.findByRole("option",{name:"Fixture model"});await waitFor(()=>expect((screen.getByRole("combobox",{name:"Agent conversation"}) as HTMLSelectElement).value).toBe(summary.id));
+ const request={kind:"repair" as const,repositoryFullName:"fixture/repository",branch:"main",path:"src/app.ts",checkId:"npm:test",exitCode:1,stale:false as const,excerpt:"Expected 2, received 1",context:desktopClient.config};
+ view.rerender(createElement(AgentChatView,{requestedLocalCode:request}));
+ await waitFor(()=>expect((screen.getByPlaceholderText("Describe the change you want in this file…") as HTMLTextAreaElement).value).toContain("unexecuted repair proposal"));expect(wire.messages()).toHaveLength(0);
+ expect((screen.getByRole("combobox",{name:"Specialized Agent"}) as HTMLSelectElement).value).toBe("coding");
+ fireEvent.click(screen.getByRole("button",{name:"Send"}));await screen.findByText("Review draft before persistence");
+ const body=JSON.parse(String(wire.messages()[0][1]?.body));expect(body.workspaceContext).toMatchObject({mode:"code",operationMode:"engineer",agentProfile:"coding",repositoryFullName:"fixture/repository",branch:"main",filePath:"src/app.ts"});
+ await act(async()=>{wire.completion.release();});await screen.findByText(data.reply);
+});
+
+it("refuses a repair target outside the verified catalog without changing the draft or dispatching",async()=>{const wire=fixture(false,"http",false);const view=render(createElement(AgentChatView));await screen.findByRole("option",{name:"Fixture model"});await waitFor(()=>expect((screen.getByRole("combobox",{name:"Agent conversation"}) as HTMLSelectElement).value).toBe(summary.id));fireEvent.change(screen.getByRole("textbox"),{target:{value:"Keep this draft"}});view.rerender(createElement(AgentChatView,{requestedLocalCode:{kind:"repair",repositoryFullName:"foreign/repository",branch:"main",path:"src/app.ts",checkId:"npm:test",exitCode:1,stale:false,excerpt:"failure",context:desktopClient.config}}));await screen.findByText(/repair repository is not in the verified connected catalog/);expect((screen.getByRole("textbox") as HTMLTextAreaElement).value).toBe("Keep this draft");expect(wire.messages()).toHaveLength(0);});

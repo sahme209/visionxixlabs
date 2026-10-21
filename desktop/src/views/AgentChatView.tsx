@@ -434,7 +434,8 @@ function AgentChatSession({ onOpenSettings, identity, active, requestedSkill, re
   }, [active, requestedSkill, conversationId, loadingConversation, sending, pendingProposal, decidingId, skillState, enabledSkills, identity?.organizationId]);
 
   useEffect(() => {
-    if (!active || !requestedLocalCode || !conversationId || loadingConversation || sending || pendingProposal || decidingId) return;
+    if (!active || !requestedLocalCode || !conversationId || loadingConversation || sending || pendingProposal || decidingId
+      || (requestedLocalCode.kind === "repair" && repositoriesLoading)) return;
     let cancelled = false;
     const context = desktopClient.config;
     void Promise.resolve().then(() => {
@@ -445,11 +446,27 @@ function AgentChatSession({ onOpenSettings, identity, active, requestedSkill, re
       }
       const prompt = localCodeContextPrompt(requestedLocalCode);
       if (!prompt) { setError("Local selection is restricted or exceeds the context limit. Select it again in the editor."); return; }
+      if (requestedLocalCode.kind === "repair") {
+        const repository = repositoryOptions.find(option => option.fullName.toLowerCase() === requestedLocalCode.repositoryFullName.toLowerCase());
+        if (repositoryError || !repository) {
+          setError("The repair repository is not in the verified connected catalog. Refresh repositories and prepare the repair again."); return;
+        }
+        // These are user-selected context, never execution authority. Code mode
+        // retains the server's selected-target refusal and snapshot review.
+        preferredRepository.current = repository.fullName;
+        manualRepositoryRef.current = false;
+        retryBranch.current = {repository: repository.fullName, branch: requestedLocalCode.branch, manual: true};
+        setManualRepository(false); setRepositoryFullName(repository.fullName);
+        setBranch(requestedLocalCode.branch); setManualBranch(true);
+        setFilePath(requestedLocalCode.path); setManualFilePath(true);
+        setOperationMode("engineer"); setAgentProfile("coding"); setComposerMode("code");
+      } else {
+        setOperationMode("inspect"); setAgentProfile("code_review"); setComposerMode("chat");
+      }
       setInput(current => current + (current ? "\n\n" : "") + prompt);
-      setOperationMode("inspect"); setAgentProfile("code_review"); setComposerMode("chat");
     });
     return () => { cancelled = true; };
-  }, [active, requestedLocalCode, conversationId, loadingConversation, sending, pendingProposal, decidingId, identity?.organizationId]);
+  }, [active, requestedLocalCode, conversationId, loadingConversation, sending, pendingProposal, decidingId, identity?.organizationId, repositoriesLoading, repositoryOptions, repositoryError]);
 
   useEffect(() => {
     let cancelled = false;
