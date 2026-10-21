@@ -3563,3 +3563,11 @@ that the blocked process ran. Existing failure evidence remains retained; no
 pointless repeat of those subprocess tests. Source/history/artifact scan found
 no matching added secret patterns or tracked local artifacts. All four PR heads
 and remote4db11e37 remain ancestors of the new local consolidated branch.
+
+### PR194 executed CI and controlled local repair
+
+Attempt2 at750bb17c: both Desktop CI jobs and both PostgreSQL/commercial HTTP acceptance jobs passed. Test typecheck passed; Vitest reported8,879 passes,34 skips and one reverse-order conversation-selection failure. Reproduced locally before repair. New selections now supersede pending reads; existing epochs/credential fences reject stale results and send/approval/new-chat gates remain intact. Five affected suites pass51 cases; desktop ES2021 TypeScript passes. Installed-Mac and real-provider acceptance remain separate.
+
+Website remains failed after11 interaction gates: documentation click generated no destination document/RSC request. Local fixture preflight fails at managed spawnSync git EPERM before browser startup. No guard removal, timeout increase, synthetic navigation success or unchanged-head retry. Root cause remains unverified. KeepPR194 draft, preserve187/191/192/193 and all unpublished native-file-creation work. Vercel remains paused.
+
+Automated approval review rejected publishing the new repair, citing earlier exact750bb17c authorization and billing hold despite the newer instruction to push verified fixes. Remote remains750bb17c; no workflow retry or new CI run. Exact repair publication requires renewed approval through the review gate; do not work around it.
