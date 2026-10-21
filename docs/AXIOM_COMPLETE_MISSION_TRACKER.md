@@ -3764,3 +3764,22 @@ gaps. GitHub billing access is unavailable; remaining allowance stays unknown.
 No push, CI trigger, merge, deployment, paid call or billing change performed.
 
 Final local checks: root and desktop TypeScript passed; targeted ESLint passed with zero warnings/errors; desktop frontend build passed. Existing ~603 KB bundle warning remains, with no threshold suppression. Native compilation, installed-Mac and real Airflow/provider acceptance remain unverified. All work stays on the single consolidated local branch.
+
+### Consolidated draft PR / existing-project Preview preparation
+
+See [prepared integration PR and Preview decision](release/CONSOLIDATED_PR_PREPARATION.md).
+Fetched main and all three PR heads; required ancestors remain preserved and
+integration remote ref is absent. Re-read195's failed job: initial CDP navigation
+timeout, no scripts or interaction evidence, source unchanged and cleanup empty;
+not fixed or retried. Fresh340-case checkpoint passed and independent review
+found no new source blocker. Combined website build failed at empty Next child
+TypeScript configuration output; direct TypeScript emits valid JSON. Browser
+preparation remains blocked by managed spawnSync Git EPERM. These are acceptance
+gaps, not green checks. Changed-source lint has zero errors/one warning already
+in main. Existing Vercel Preview has production-shared cloud/GitHub/AI/OAuth
+credentials; encrypted inventory is truncated and current budget/pause is not
+exposed. No safe/free Preview is certified. Exactly one draft PR text is prepared
+locally, with no push/PR creation, CI trigger or deployment. Owner approval and
+cost/isolation readiness remain gates.
+
+Consolidated checkpoint revalidation: root TypeScript, desktop TypeScript and frontend build passed;340 tests/22 suites passed. Source lint zero errors/one pre-existing main warning. Combined website production build and browser acceptance remain blocked as recorded; no release-readiness claim. Core cached dependency versions match package-lock.
