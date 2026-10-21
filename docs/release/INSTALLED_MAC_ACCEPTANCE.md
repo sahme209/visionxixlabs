@@ -19,6 +19,8 @@ Use an isolated local fixture repository and test organization. Confirm the buil
 9. For deployments, inspect readiness, immutable artifact identity, approval requirements and audit evidence without executing. Sandbox execution and rollback remain blocked until an explicit sandbox/cost authorization exists.
 10. For billing, only an approved isolated Stripe TEST binding may exercise checkout, verified webhook, subscription, included credits, renewals, cancellation, payment failure and credit exhaustion. No live checkout, product creation or credential changes are authorized. Fixture events alone are not payment acceptance.
 
+11. In an authorized Airflow test workspace, verify DAG/approval loading remains independent of delayed GitHub/environment catalogs. For an automation, pending/failed branch lookup must block creation; explicit branch retry must only reload evidence. Change repository during lookup and remove an environment before another proposal: old branches/targets must not become applicable. Record-only actions still require valid DAG/dependency choices. Actual scheduler/restart execution needs separate sandbox and cost approval.
+
 ## Evidence and cleanup
 
 For each step record PASS, FAIL or BLOCKED; source SHA/bundle, exact action, expected/actual result and sanitized evidence. Keep provider, native-process, installed-app and billing acceptance separate. Remove only the isolated fixture files/resources you created and are authorized to remove. Never delete account records, production resources or credentials as cleanup.

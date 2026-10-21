@@ -3783,3 +3783,27 @@ locally, with no push/PR creation, CI trigger or deployment. Owner approval and
 cost/isolation readiness remain gates.
 
 Consolidated checkpoint revalidation: root TypeScript, desktop TypeScript and frontend build passed;340 tests/22 suites passed. Source lint zero errors/one pre-existing main warning. Combined website production build and browser acceptance remain blocked as recorded; no release-readiness claim. Core cached dependency versions match package-lock.
+
+
+### Final local refinement: verified clickable Airflow setup
+
+Research/plan: reproduce default-branch fallback and delayed-catalog visual/state
+mismatch; require verified catalog membership without changing server authority;
+add explicit branch retry, test stale selection/revocation, and preserve existing
+340 cases. Three actual view regressions failed first. Five cases now cover
+pending/failed branch lookup, late repository choice, late old branch results and
+removed environment.345 cases/22 suites pass. Root/desktop TypeScript, targeted
+lint, frontend build and independent security/integration review pass. No live
+Airflow, native app, provider or Stripe acceptance claimed.
+
+Generic subprocess probes outside Axiom independently reproduce empty child
+stdout and synchronous Git/Node EPERM. Next build/browser preflight are therefore
+reproducible environment blockers; underlying runtime repair is unavailable.
+Historical195 navigation remains unresolved, not retried. The existing
+[consolidated PR preparation](release/CONSOLIDATED_PR_PREPARATION.md) records the
+classification, safety design, draft PR text and exact-publication conditions.
+All seven earlier source/integration checkpoints remain ancestors. No new branch,
+push, PR, CI, deployment, settings change or paid operation occurred. GitHub
+allowance unknown; Vercel inherits shared credentials and budget/pause cannot be
+certified. Next external checkpoint requires exact authorization and budget
+readiness; production/installer/billing gates remain separate.

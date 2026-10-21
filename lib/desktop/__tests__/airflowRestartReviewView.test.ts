@@ -2,7 +2,7 @@
 import { createElement, type ReactNode } from "react";
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import { act, cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
-const mock = vi.hoisted(() => ({ revision: 0, listeners: new Set<() => void>(), review: vi.fn(), approve: vi.fn(), reject: vi.fn(), connection: vi.fn(), automations: vi.fn(), repositories: vi.fn(), environments: vi.fn(), dags: vi.fn(), runs: vi.fn() }));
+const mock = vi.hoisted(() => ({ revision: 0, listeners: new Set<() => void>(), review: vi.fn(), approve: vi.fn(), reject: vi.fn(), connection: vi.fn(), automations: vi.fn(), repositories: vi.fn(), environments: vi.fn(), dags: vi.fn(), runs: vi.fn(), branches: vi.fn(), create: vi.fn() }));
 // Presentation shell alone depends on native notification plumbing; retain the
 // actual Airflow view, client calls, review card, buttons and state transitions.
 vi.mock("../../../desktop/src/components/Primitives", () => ({ ViewShell: ({ children }: { children: ReactNode }) => createElement("div", null, children) }));
@@ -13,6 +13,7 @@ vi.mock("../../../desktop/src/lib/desktopClient", () => ({ desktopClient: {
   airflowConnection: mock.connection, listAirflowAutomations: mock.automations,
   listGithubRepositories: mock.repositories, listEnvironments: mock.environments,
   listAirflowDags: mock.dags, listAirflowDagRuns: mock.runs,
+  listGithubBranches: mock.branches, createAirflowAutomation: mock.create,
 } }));
 import { AirflowRestartReviewCard } from "../../../desktop/src/components/AirflowRestartReviewCard";
 import { AirflowAutomationView } from "../../../desktop/src/views/AirflowAutomationView";
@@ -21,6 +22,7 @@ const onRun = vi.fn(async (work: () => Promise<unknown>) => { await work(); });
 const props = { executionId: "execution", busy: false, onRun };
 function deferred() { let resolve!: (value: unknown) => void; const promise = new Promise(done => { resolve = done; }); return { resolve, promise }; }
 beforeEach(() => { vi.resetAllMocks(); mock.revision = 0; mock.listeners.clear(); mock.review.mockResolvedValue({ ok: true, data }); mock.approve.mockResolvedValue({ ok: true }); mock.reject.mockResolvedValue({ ok: true });
+  mock.branches.mockResolvedValue({ ok: true, data: { branches: [{ name: "main", protected: true }] } }); mock.create.mockResolvedValue({ ok: true });
   mock.dags.mockResolvedValue({ ok: true, data: { dags: [{ dagId: "batch-dag", displayName: "Batch DAG", paused: false }] } }); mock.runs.mockResolvedValue({ ok: true, data: { runs: [] } });
   mock.repositories.mockResolvedValue({ ok: true, data: { repositories: [] } }); mock.environments.mockResolvedValue({ ok: true, data: { environments: [] } });
   mock.connection.mockResolvedValue({ ok: true, data: { connected: false, status: "disconnected" } });
@@ -161,4 +163,79 @@ it("does not replace newer DAG catalogs with an older workspace load", async () 
   await act(async () => pending.resolve({ ok: true, data: { dags: [{ dagId: "old-dag", displayName: "Obsolete DAG" }] } }));
   expect(screen.queryByRole("option", { name: "Obsolete DAG" })).toBeNull();
   expect(screen.getByRole("option", { name: "Current DAG" })).toBeTruthy();
+});
+
+it("holds GitHub automation creation until the selected source branch is verified", async () => {
+  const pending = deferred(); mock.branches.mockReturnValue(pending.promise);
+  mock.connection.mockResolvedValue({ ok: true, data: { connected: true, status: "connected" } });
+  mock.repositories.mockResolvedValue({ ok: true, data: { repositories: [{ fullName: "fixture/repo", defaultBranch: "main" }] } });
+  render(createElement(AirflowAutomationView)); await screen.findByRole("option", { name: "Batch DAG" });
+  fireEvent.click(screen.getByRole("button", { name: "automations" }));
+  fireEvent.change(screen.getByLabelText("Name"), { target: { value: "Reviewed batch" } });
+  fireEvent.change(screen.getByLabelText("Then"), { target: { value: "open_pull_request" } });
+  expect((screen.getByRole("button", { name: "Create automation" }) as HTMLButtonElement).disabled).toBe(true);
+  await act(async () => pending.resolve({ ok: true, data: { branches: [{ name: "main", protected: true }] } }));
+  fireEvent.click(screen.getByRole("button", { name: "Create automation" }));
+  await waitFor(() => expect(mock.create).toHaveBeenCalledWith(expect.objectContaining({ repositoryFullName: "fixture/repo", sourceRef: "main", approvalRequired: true })));
+});
+it("does not treat a failed branch lookup as a verified default branch", async () => {
+  mock.branches.mockResolvedValue({ ok: false, error: "github_unavailable" });
+  mock.connection.mockResolvedValue({ ok: true, data: { connected: true, status: "connected" } });
+  mock.repositories.mockResolvedValue({ ok: true, data: { repositories: [{ fullName: "fixture/repo", defaultBranch: "main" }] } });
+  render(createElement(AirflowAutomationView)); await screen.findByRole("option", { name: "Batch DAG" });
+  fireEvent.click(screen.getByRole("button", { name: "automations" }));
+  fireEvent.change(screen.getByLabelText("Name"), { target: { value: "Reviewed batch" } });
+  fireEvent.change(screen.getByLabelText("Then"), { target: { value: "open_pull_request" } });
+  await screen.findByText(/Source branches could not be verified/);
+  expect((screen.getByRole("button", { name: "Create automation" }) as HTMLButtonElement).disabled).toBe(true);
+  expect(mock.create).not.toHaveBeenCalled();
+  mock.branches.mockResolvedValue({ ok: true, data: { branches: [{ name: "main", protected: true }] } });
+  fireEvent.click(screen.getByRole("button", { name: "Retry source branches" }));
+  await waitFor(() => expect((screen.getByRole("button", { name: "Create automation" }) as HTMLButtonElement).disabled).toBe(false));
+  expect(mock.create).not.toHaveBeenCalled();
+});
+it("makes a late repository catalog an explicit choice instead of a misleading selected first option", async () => {
+  const pending = deferred(); mock.repositories.mockReturnValue(pending.promise);
+  mock.connection.mockResolvedValue({ ok: true, data: { connected: true, status: "connected" } });
+  render(createElement(AirflowAutomationView)); await screen.findByRole("option", { name: "Batch DAG" });
+  fireEvent.click(screen.getByRole("button", { name: "automations" }));
+  fireEvent.change(screen.getByLabelText("Then"), { target: { value: "open_pull_request" } });
+  await act(async () => pending.resolve({ ok: true, data: { repositories: [{ fullName: "fixture/repo", defaultBranch: "main" }] } }));
+  expect((screen.getByLabelText("Repository") as HTMLSelectElement).value).toBe("");
+  fireEvent.change(screen.getByLabelText("Repository"), { target: { value: "fixture/repo" } });
+  fireEvent.change(screen.getByLabelText("Name"), { target: { value: "Reviewed batch" } });
+  await waitFor(() => expect((screen.getByRole("button", { name: "Create automation" }) as HTMLButtonElement).disabled).toBe(false));
+});
+
+it("keeps a late branch response from changing the newly selected repository's proposal", async () => {
+  const old = deferred();
+  mock.connection.mockResolvedValue({ ok: true, data: { connected: true, status: "connected" } });
+  mock.repositories.mockResolvedValue({ ok: true, data: { repositories: [{ fullName: "fixture/old", defaultBranch: "main" }, { fullName: "fixture/current", defaultBranch: "release" }] } });
+  mock.branches.mockReturnValueOnce(old.promise).mockResolvedValue({ ok: true, data: { branches: [{ name: "release", protected: true }] } });
+  render(createElement(AirflowAutomationView)); await screen.findByRole("option", { name: "Batch DAG" });
+  fireEvent.click(screen.getByRole("button", { name: "automations" }));
+  fireEvent.change(screen.getByLabelText("Name"), { target: { value: "Reviewed batch" } });
+  fireEvent.change(screen.getByLabelText("Then"), { target: { value: "open_pull_request" } });
+  fireEvent.change(screen.getByLabelText("Repository"), { target: { value: "fixture/current" } });
+  await screen.findByRole("option", { name: "release · protected" });
+  await act(async () => old.resolve({ ok: true, data: { branches: [{ name: "main", protected: false }] } }));
+  expect((screen.getByLabelText("Source branch") as HTMLSelectElement).value).toBe("release");
+  fireEvent.click(screen.getByRole("button", { name: "Create automation" }));
+  await waitFor(() => expect(mock.create).toHaveBeenCalledWith(expect.objectContaining({ repositoryFullName: "fixture/current", sourceRef: "release", approvalRequired: true })));
+});
+it("disables another restart proposal when its environment disappears from refreshed catalogs", async () => {
+  mock.connection.mockResolvedValue({ ok: true, data: { connected: true, status: "connected" } });
+  mock.repositories.mockResolvedValue({ ok: true, data: { repositories: [{ fullName: "fixture/repo", defaultBranch: "main" }] } });
+  mock.environments.mockResolvedValue({ ok: true, data: { environments: [{ id: "dev", name: "Development", tier: "dev" }] } });
+  render(createElement(AirflowAutomationView)); await screen.findByRole("option", { name: "Batch DAG" });
+  fireEvent.click(screen.getByRole("button", { name: "automations" }));
+  fireEvent.change(screen.getByLabelText("Name"), { target: { value: "Reviewed batch" } });
+  fireEvent.change(screen.getByLabelText("Then"), { target: { value: "deploy" } });
+  await waitFor(() => expect((screen.getByRole("button", { name: "Create automation" }) as HTMLButtonElement).disabled).toBe(false));
+  mock.environments.mockResolvedValue({ ok: true, data: { environments: [] } });
+  fireEvent.click(screen.getByRole("button", { name: "Create automation" }));
+  await waitFor(() => expect(screen.queryByRole("option", { name: "Development · dev" })).toBeNull());
+  expect((screen.getByLabelText("Target environment") as HTMLSelectElement).value).toBe("");
+  expect((screen.getByRole("button", { name: "Create automation" }) as HTMLButtonElement).disabled).toBe(true);
+  expect(mock.create).toHaveBeenCalledTimes(1);
 });

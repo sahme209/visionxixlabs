@@ -28,7 +28,8 @@ No old PR is closed or represented as having passed current combined acceptance.
 
 ## Local validation and review
 
-- Fresh focused checkpoint: **340 tests / 22 suites passed**.
+- Latest focused checkpoint: **345 tests / 22 suites passed**, retaining the
+  original 340 cases and adding five actual Airflow setup regressions.
 - Desktop TypeScript and frontend production build passed. This is not native
   Rust compilation or installed-Mac acceptance. Existing ~603 KB bundle warning
   remains, without threshold suppression.
@@ -141,7 +142,7 @@ direct OpenAI/xAI streaming, both browser diagnostic schemas, Agent storage
 recovery and Airflow loading/history ownership fixes. Preserve billing,
 authorization, approvals and manual-only Vercel deployment restrictions.
 
-Local validation: 340 focused cases, desktop TypeScript/frontend build and source
+Local validation: 345 focused cases, root/desktop TypeScript, frontend build and source
 review passed; lint has zero errors and one main-existing warning. Combined
 website build and local browser acceptance are blocked at the documented runtime
 boundaries. #195 initial CDP navigation failure remains unresolved. Native Mac,
@@ -160,3 +161,83 @@ and unmerged pending fresh required checks, reviews and owner authorization.
 4. Preview remains blocked on isolation, spend/pause verification and explicit
    deployment approval. No production domain, routing, settings, secrets, Stripe,
    infrastructure or installer changes are included.
+
+
+## Final local validation refinement
+
+The next local checkpoint contains a real Airflow automation setup repair. Before
+implementation, three component regressions failed: a pending branch lookup did
+not prevent creation; a failed lookup silently retained a default branch; and a
+late repository catalog visually selected an option absent from form state.
+A repository-scoped branch-result snapshot now distinguishes verified data from
+loading/error, with explicit placeholders and a guarded retry. Creation requires
+current DAG/dependency membership, a verified selected repository/branch for
+GitHub/cloud actions, and a current environment for a restart proposal. Explicit
+retry reloads branch evidence only; it does not send, create or replay an action.
+Two more regressions verify that old branch results cannot change the current
+payload and that a removed environment disables another proposal after refresh.
+Server authorization, required human approvals and mutation boundaries are intact.
+
+Latest evidence:345 cases/22 suites passed; root+desktop TypeScript, targeted
+Airflow source/test lint (zero errors/warnings), desktop frontend build and
+independent source/security review passed. The broader changed-file lint result
+still has one pre-existing main ref-cleanup warning; no new error is hidden.
+An intermediate effect-reset implementation failed lint and was replaced with
+repository-scoped derived state; no rule was disabled. Frontend bundle warning
+is ~603 KB and remains unsuppressed. Neither a native app nor real Airflow was run.
+
+### Validation blocker classification
+
+| Issue | Classification | Focused evidence / disposition |
+| --- | --- | --- |
+| Next production build | Reproducible, environment-blocked | Next child helper receives empty stdout with exit0. A generic Node child outside Axiom writes its file marker but returns zero captured stdout despite explicitly writing stdout. Direct top-level TypeScript emits valid configuration and typechecks. Child-output failure is independent of application code; underlying host implementation is not repaired. |
+| Browser prepare | Reproducible, environment-blocked | Generic synchronous Git and Node probes outside Axiom report EPERM; Git even returns version bytes with status0 alongside that error. Owned fixture refuses preflight. No guard stripping, monkey-patching, timeout change or acceptance bypass. |
+| Historical195 | Unresolved | Preserved initialcdp.Page.navigate receipt; no new failing browser receipt distinguishes startup, transport or proxy. No rerun or speculative fix. |
+
+Supported runtime status is current/running, restricted network policy enforced,
+with no configured credentials, runtime variables or outbound identities. It
+provides no evidence resolving local subprocess semantics. Do not change the
+application or managed trust selectors to compensate. A normal permitted runtime
+is required to validate full build/browser/native boundaries; no free hosted
+runner is assumed or provisioned.
+
+### Preview isolation design — proposal only
+
+The existing project is not safe for a normal full-app Preview: production-shared
+Preview names include GitHub PAT, AI Gateway, AWS broker credentials, Azure/GCP
+credentials, Cognito/Google OAuth and LinkedIn credentials. Values were not read
+or copied. Truncated inventory leaves database/payment bindings unverified.
+
+A future website-only profile must satisfy all these before deployment approval:
+
+- Build locally from the approved checkpoint with no credential input; allowlist
+  public pages/assets only. Do not upload `.env`, `.vercel` credential files,
+  source maps with secrets, database state, functions, middleware or cron entries.
+- Disable auth/payment/cloud/AI actions explicitly in the preview interface;
+  inspect output for backend calls, production API origins and automatic side
+  effects. Label simulations and unavailable actions honestly.
+- Verify a supported existing-project deployment mechanism cannot execute with
+  inherited secrets or provision marketplace/provider resources. Static output
+  alone does not certify project configuration isolation. No clearing shared
+  Preview settings, environment copying or new project is authorized here.
+- Retain protection and Preview target; never assign production/custom domains.
+  Owner needs an authorized Vercel session; current account access is untested.
+- Obtain a fresh sanitized budget/pause attestation and supported charge behavior;
+  upload/requests/bandwidth may cost even with no remote build. Respect the pause;
+  wait for included allowance/reset if necessary, without raising budgets.
+
+No deployable isolated artifact or $0 hosted guarantee is claimed. Preview stays
+blocked. GitHub account allowance remains inaccessible through current tools.
+Existing three PR workflows/four jobs and main histories remain unchanged.
+
+### Exact publication preparation
+
+One consolidated branch only, expected remote ref absent. Recheck with
+`git ls-remote origin refs/heads/codex/zero-spend-integration-local` immediately
+before any authorized publication. The exact commit-specific push command is
+reported alongside the final checkpoint SHA; its form is
+`git push origin APPROVED_FULL_SHA:refs/heads/codex/zero-spend-integration-local`.
+Do not use force, tags, merge or workflow dispatch. Opening the one prepared draft
+PR is a separate external action and starts the three documented workflows;
+include that scope in the eventual exact owner approval and budget decision.
+This preparation does not execute either action. Old PRs remain open/unmodified.
