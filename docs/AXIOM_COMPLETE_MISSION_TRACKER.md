@@ -3650,3 +3650,81 @@ Event-time document rectangle matches across preserved passing/failing receipts;
 ### Zero-additional-spend local consolidation
 
 Owner's latest master plan is additive: no new pushes/merges/paid CI/provider calls/deployments. Separate local integration worktree starts at reconciled196 e43e4a0b (including merged197/main49cd7dc5), then merges198 exact58a64bfb without rewriting any PR branch. Seven conflicts reconciled by intent:196 initialNavigation/homepage delivery plus198 five-stage pointer schema and strict sanitizer, both receipt VM dependencies, both tracker histories. Streaming/cancellation authority unchanged.254 focused tests across12 suites passed; independent combined-tree review found no blocker. Browser/root-cause, installed-Mac and real-provider acceptance remain unverified. Existing authorized196 CI passed Test+website; no new CI initiated. Public PRs are not merged or superseded.
+### Product release validation after PR194 — execution plan
+
+Base0c32b6fd, production remains untouched. Monitor post-merge CI without retries. Host is Linux x86_64; cargo/rustc/Xcode and provider/Stripe/database runtime keys are absent. Actual installed-Mac and live-provider acceptance are blocked, not satisfied by renderer or native CI. Published release remainsdesktop-v0.1.20 and does not represent consolidated main. GitHub installation start/callback and token resolution source contains no billing/metering/Stripe call; verify security and no-charge behavior without changing financial policy.
+
+Confirmed unfinished functionality: main's local proposal parser requires existing-file baseSha and has no create_repository_file command. Reuse already-prepared6c348cfc (do not reimplement). Sequence: integrate on isolated main-based branch; preserve subsequent conversation-supersession and navigation-diagnostic changes; inspect no-overwrite/path/identity/consent boundaries; run targeted renderer/authorization tests and TypeScript; obtain independent native/security review; prepare unmerged candidate PR for required native CI. Native compilation and installed-Mac workflows remain distinct. No production operations, release publication, provider charges, billing-setting changes or candidate merge. Keep publication to a coherent checkpoint, not repeated small pushes.
+Parallel core-product audit found next distinct missing coding capability:
+GitHub review capture supports new files (null SHA/empty baseline), but desktop
+local proposal validation correctly rejects them because native Save only writes
+existing files. Thus mixed update+new regression-test proposals currently have
+no local editor handoff. Do NOT simply relax that parser. Smallest complete slice:
+explicit existing/create DTO, bounded all-or-nothing snapshot validation, new-file
+diff review and explicit Create consent; separate native atomic create_new(true)
+writer with repository/branch binding, parent/no-symlink/path validation and no
+existing-file overwrite. Test occupied empty/nonempty file, races, symlink and
+wrong context/target denial; cancellation invokes nothing; subsequent Save/check
+uses existing freshness logic. Native Rust/installed-Mac validation is required
+and remains unavailable. Preview-only creation UI is partial visibility, not a
+completed coding workflow. Reuse existing remote creation approval path meanwhile;
+no server tool authority, credential or billing protection changes are proposed.
+
+### Explicit consolidation push approved and completed
+
+Owner granted exact750bb17cf54c0e9546bd2cf3528eaed2ea39462b →
+codex/axiom-consolidation-local, superseding the earlier auto-review refusal.
+Preflight confirmed exact commit/repository, remote branch absent, no PR on that
+branch, feature push matching none of11 workflows and Vercel Git deploymentfalse.
+Normal no-force/no-tag push succeeded with network permission; GitHub readback
+matches exact approved SHA. Zero Actions runs and zero Vercel deployments were
+observed for it. No PR, merge, retry, production or paid operation. Original four
+PR refs/checks and4db11e37 checkpoint preserved. Later local work is not approved
+for publication by this exact authorization and remains local.
+
+### Native new-file creation: local implementation, native acceptance pending
+
+Research reused server-reviewed null-SHA/empty-baseline creation and existing
+editor/consent/target checks. Existing-file parser remains strict. Added distinct
+creation DTO and whole mixed update/create review without dropping malformed
+members. Creation has explicit content preview/consent, context/workspace/owner
+and clean-buffer fences, live root/repository/branch check and a separate native
+create_repository_file command. It never calls existing-file Save as a fallback,
+opens another buffer automatically, approves GitHub or runs verification. Creation
+invalidates older verification. File catalog refresh is advisory, not execution
+proof. Create failure remains visible and never triggers automatic retry.
+
+Native Unix implementation rechecks Git target, validates bounded nonsensitive
+relative paths, walks existing parents with descriptor-relative O_DIRECTORY/
+O_NOFOLLOW and exclusively opens the leaf O_CREAT|O_EXCL|O_NOFOLLOW mode0600.
+Every existing leaf, including empty files/symlinks, must fail. No new directories
+or dependency downloads. Direct libc=0.2.189 reuses the existing locked version;
+manifest/lock relationship checked by static TOML parse, NOT Cargo. Non-Unix
+platforms fail closed. Atomic name reservation is NOT atomic content publication,
+Git/filesystem transaction or coordinated multi-file write: write/sync failure
+may leave a partial NEW file for inspection, never deletion/retry. Pinned parent
+FDs reject symlinks, but do not freeze adversarial directory renames or branch
+changes after checks. No process-sandbox claim. Independent review identified
+uppercase SSH-key path policy mismatch; normalized it and added native cases.
+
+128 targeted cases across4 suites pass: existing flows, mixed set retention,
+malformed absence metadata, content byte bound, actual App handoff, explicit
+Create consent, cancellation, wrong branch and occupied error, no existing writer
+or check fallback. Desktop ES2021 TypeScript passes; lint zero errors/one existing
+cleanup warning. Three native Rust cases prepared (unsafe paths, occupied empty/
+nonempty/symlink/no-parent cases, concurrent exclusive creation) are UNRUN.
+Cargo/Rust and installed Mac remain unavailable; no native acceptance or real
+provider execution claimed. The two earlier EPERM subprocess tests remain failed/
+unverified and were not rerun or weakened. No full CI or paid calls were used.
+
+Native source review found a macOS-specific compile hazard before publication: the creation openat variadic argument casts0600 to libc::mode_t. Official rust-lang/libc Apple source defines mode_t=u16; Rust E0617 rejects unpromoted small integers in C variadic arguments. Promote the fixed permission argument to c_uint, preserving0600/no-overwrite flags. This is verified source/type evidence, not a claimed local compiler reproduction. Required macOS CI compilation remains the actual regression gate.
+
+Post-merge main validation completed: Test39523642029, Desktop39523641970 and SQL/HTTP39523642003 all passed without retries. Main remains0c32b6fd. Candidate local checks135 renderer/regression cases and53 GitHub/billing/download cases passed; desktop ES2021 TypeScript passed; independent source/security review passed80 cases and found no blocker, with Apple C-varargs promotion separately reviewed. See docs/RELEASE_READINESS.md for explicit installed-Mac/provider/Stripe and intermittent-browser gaps. No live/provider request or production operation was attempted.
+
+Candidate full repository TypeScript also passed. Native compilation remains pending required CI. Release report and candidate preserve the existing Vercel Git deployment restriction, all financial/production gates and main's conversation/navigation fixes. Publish one draft candidate checkpoint for native validation; do not merge or publish an installer.
+
+### Local safe-creation incorporation, public195 still blocked
+
+195's prior browser failure occurred in initial CDP navigation before native creation can run; this isolates the harness blocker from the already reviewed no-overwrite writer but does not resolve acceptance. Local integration merges exact195 head6a89410d, preserving Unix descriptor/ABI fences, explicit creation consent,197 cancellation tests and198 streaming/diagnostics. Tracker and pairing demo retain both intents; repository tests retain cancellation plus creation cases.130 focused cases across4 suites passed; independent incorporation review found no blocker. First root TypeScript attempt exposed two cached React type identities from a new dependency link; local link aligned with existing root dependencies and revalidation is recorded separately. No application workaround for that environment issue. Actual installed-Mac/combined native and browser acceptance remain unverified; no push/CI/public PR supersession.
+
+Combined creation-stage repository TypeScript passed after aligning local dependency lookup; source was not changed to bypass the cached-type mismatch. The local merge is an implementation checkpoint only, not installed/native/browser acceptance.

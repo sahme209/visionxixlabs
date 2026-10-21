@@ -256,6 +256,16 @@ pub async fn write_repository_file(repository_path: String, relative_path: Strin
     write_existing_repository_file(&root, &relative_path, &content, &expected_content)
 }
 
+/// New files use a distinct command and require the proposal's current Git target.
+#[tauri::command]
+pub async fn create_repository_file(repository_path: String, relative_path: String, content: String, repository_full_name: String, branch: String) -> Result<(), String> {
+    let root = repository_root(&repository_path)?;
+    if github_repository_name(&root).as_deref().map(str::to_lowercase) != Some(repository_full_name.to_lowercase()) || current_branch(&root)? != branch {
+        return Err("Repository or branch changed; review the creation target again.".into());
+    }
+    crate::repository_create::create(&root, &relative_path, &content)
+}
+
 #[tauri::command]
 pub async fn commit_repository_file(repository_path: String, relative_path: String, message: String) -> Result<String, String> {
     if message.trim().is_empty() || message.len() > 500 { return Err("Enter a commit message up to 500 characters.".to_string()); }
