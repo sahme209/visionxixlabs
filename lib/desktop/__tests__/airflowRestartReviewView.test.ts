@@ -2,7 +2,7 @@
 import { createElement, type ReactNode } from "react";
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import { act, cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
-const mock = vi.hoisted(() => ({ revision: 0, listeners: new Set<() => void>(), review: vi.fn(), approve: vi.fn(), reject: vi.fn(), connection: vi.fn(), automations: vi.fn(), repositories: vi.fn(), environments: vi.fn(), dags: vi.fn(), runs: vi.fn(), branches: vi.fn(), create: vi.fn(), trigger: vi.fn() }));
+const mock = vi.hoisted(() => ({ revision: 0, listeners: new Set<() => void>(), review: vi.fn(), approve: vi.fn(), reject: vi.fn(), connection: vi.fn(), automations: vi.fn(), repositories: vi.fn(), environments: vi.fn(), dags: vi.fn(), runs: vi.fn(), branches: vi.fn(), create: vi.fn(), trigger: vi.fn(), saveConnection: vi.fn() }));
 // Presentation shell alone depends on native notification plumbing; retain the
 // actual Airflow view, client calls, review card, buttons and state transitions.
 vi.mock("../../../desktop/src/components/Primitives", () => ({ ViewShell: ({ children }: { children: ReactNode }) => createElement("div", null, children) }));
@@ -13,7 +13,7 @@ vi.mock("../../../desktop/src/lib/desktopClient", () => ({ desktopClient: {
   airflowConnection: mock.connection, listAirflowAutomations: mock.automations,
   listGithubRepositories: mock.repositories, listEnvironments: mock.environments,
   listAirflowDags: mock.dags, listAirflowDagRuns: mock.runs,
-  listGithubBranches: mock.branches, createAirflowAutomation: mock.create, triggerAirflowDag: mock.trigger,
+  listGithubBranches: mock.branches, createAirflowAutomation: mock.create, triggerAirflowDag: mock.trigger, saveAirflowConnection: mock.saveConnection,
 } }));
 import { AirflowRestartReviewCard } from "../../../desktop/src/components/AirflowRestartReviewCard";
 import { AirflowAutomationView } from "../../../desktop/src/views/AirflowAutomationView";
@@ -258,4 +258,35 @@ it("refuses running or refreshing history for a DAG removed by the refreshed cat
   fireEvent.click(screen.getByRole("button", { name: "Refresh run history" }));
   await act(async () => {});
   expect(mock.trigger).not.toHaveBeenCalled(); expect(mock.runs).toHaveBeenCalledTimes(reads);
+});
+
+it.each(["password", "token"] as const)("clears the submitted %s after a confirmed connection save", async (mode) => {
+  mock.saveConnection.mockResolvedValue({ ok: true });
+  render(createElement(AirflowAutomationView));
+  fireEvent.click(screen.getByRole("button", { name: "connection" }));
+  if (mode === "token") fireEvent.change(screen.getByLabelText("Authentication"), { target: { value: "token" } });
+  const field = screen.getByLabelText(mode === "token" ? "Bearer token" : "Password") as HTMLInputElement;
+  fireEvent.change(field, { target: { value: "synthetic-only-secret" } });
+  fireEvent.click(screen.getByRole("button", { name: "Validate & connect" }));
+  await screen.findByText("Airflow connection validated and saved.");
+  expect(field.value).toBe("");
+});
+it("retains a corrected credential typed while an older connection save is pending", async () => {
+  const pending = deferred(); mock.saveConnection.mockReturnValue(pending.promise);
+  render(createElement(AirflowAutomationView)); fireEvent.click(screen.getByRole("button", { name: "connection" }));
+  const field = screen.getByLabelText("Password") as HTMLInputElement;
+  fireEvent.change(field, { target: { value: "synthetic-old" } });
+  fireEvent.click(screen.getByRole("button", { name: "Validate & connect" }));
+  fireEvent.change(field, { target: { value: "synthetic-corrected" } });
+  await act(async () => pending.resolve({ ok: true }));
+  expect(field.value).toBe("synthetic-corrected");
+});
+it("retains the editable credential when connection validation fails without replaying the save", async () => {
+  mock.saveConnection.mockResolvedValue({ ok: false, error: "connection_validation_failed" });
+  render(createElement(AirflowAutomationView)); fireEvent.click(screen.getByRole("button", { name: "connection" }));
+  const field = screen.getByLabelText("Password") as HTMLInputElement;
+  fireEvent.change(field, { target: { value: "synthetic-correctable" } });
+  fireEvent.click(screen.getByRole("button", { name: "Validate & connect" }));
+  await screen.findByText("connection_validation_failed");
+  expect(field.value).toBe("synthetic-correctable"); expect(mock.saveConnection).toHaveBeenCalledTimes(1);
 });

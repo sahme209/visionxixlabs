@@ -1,6 +1,10 @@
 # Consolidated draft PR and Preview decision
 
-Prepared locally on 2026-10-21. **Not pushed, published, merged or deployed.**
+Updated on 2026-10-21. **Push-only backup completed for exact9e8f0203. No PR, merge or deployment.**
+
+The remote `codex/zero-spend-integration-local` branch now points to
+`9e8f0203b5450a61a0a50759318f047500184927`. Earlier absent-ref/publication plans
+below are historical. Later local changes require separate exact push approval.
 
 Current delta: accepted baseline `8f3375831f4d8acbccbe9d863d188888bdd06881`
 retains its 345-test/type/build evidence. A subsequent stale-DAG guard passed37
@@ -320,3 +324,37 @@ Environment-failure evidence and historical195 receipts remain unchanged; no
 build, browser or navigation reprobe was repeated. Current website build/browser,
 installed-Mac/native, real provider/Stripe/cloud, owner Preview access, credential
 isolation and cost readiness remain unverified/blocked as previously recorded.
+
+
+## Authorized push-only backup outcome
+
+Owner approved repository/branch/exact9e8f0203. Immediately before pushing, local
+HEAD and branch matched, tree was clean and remote ref was absent. The pasted
+refspec omitted the colon/refs separator; used the canonical approved target
+`SHA:refs/heads/codex/zero-spend-integration-local`, with followTags=false,
+remote.origin.mirror=false and recurse-submodules=no. One normal push created
+only that branch; remote SHA was then verified exactly. No force, tag, PR,
+workflow dispatch, merge or production action occurred.
+
+Post-push observations: exact-head and branch Actions lists both returned zero;
+exact-head check-runs returned zero. Vercel existing-project lists filtered by
+exact SHA and then branch returned zero deployments. GitHub's separate deployment
+history URL was rejected by the connector allowlist, so that check is unavailable.
+No automatic CI/deployment or related cost exposure was observed; unavailable
+account billing and potential delayed/third-party charges prevent an invoice-level
+$0 guarantee. No new billing access attempt was made.
+
+### Local-only continuation after backup
+
+Research found successful connection saves leave submitted password/token fields
+populated. Two actual view regressions failed first. Confirmed save now clears
+only values still equal to the submitted snapshot; corrections typed while the
+request is pending survive. Failed validation preserves the editable draft and
+never retries automatically. The original save result, backend credential storage,
+context guards and approval behavior are unchanged. Clearing form state is not
+secure erasure of JavaScript memory or a change to stored service credentials.
+
+41 focused Airflow/demo cases, desktop TypeScript, targeted lint and independent
+source/security review passed. The full345-case baseline/builds were not rerun.
+This continuation is local only, one commit after the remote backup. No subsequent
+push is authorized. Preserve the existing native/provider/billing/browser gates.

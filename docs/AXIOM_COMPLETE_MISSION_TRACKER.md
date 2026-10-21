@@ -3827,3 +3827,19 @@ history guards plus an explicit missing selection now prevent that stale path.
 security review passed. Full345 cases/builds and known subprocess failures were
 not repeated; prior evidence remains historical at the accepted baseline. All
 branches/history and production, billing, release and paid-provider gates remain.
+
+
+### Approved push-only backup completed; local continuation retained
+
+Exact9e8f0203b5450a61a0a50759318f047500184927 created remote
+codex/zero-spend-integration-local after absence/clean-tree checks. Remote matches.
+No PR/tags/force/CI dispatch/merge/deployment. Post-push Actions and check-runs0;
+Vercel exact-SHA/branch deployments0. GitHub deployment-history read unsupported;
+account billing remains unavailable, so no invoice-level zero-charge guarantee.
+
+New local product batch clears unchanged submitted Airflow password/token fields
+only after confirmed save. Pending corrections and failed editable drafts survive;
+no resend or backend credential change. Two regressions red first;41 focused
+Airflow/demo cases, desktop TypeScript/lint and independent review passed. Original
+345-case evidence not rerun. New local commit is NOT included in push approval or
+remote backup. See consolidated PR preparation for detailed evidence and gates.
