@@ -44,7 +44,8 @@ pub(crate) fn create(root: &Path, path: &str, content: &str) -> Result<(), Strin
     let leaf = CString::new(parts.last().expect("checked path").as_str()).map_err(|_| "Invalid file name.")?;
     // SAFETY: valid leaf and live directory descriptor; O_EXCL atomically refuses
     // ANY existing leaf (including empty files and symlinks). No path reopening.
-    let fd = unsafe { libc::openat(parent.as_raw_fd(), leaf.as_ptr(), libc::O_WRONLY | libc::O_CREAT | libc::O_EXCL | libc::O_NOFOLLOW | libc::O_CLOEXEC, 0o600 as libc::mode_t) };
+    // C varargs needs integer promotion: macOS mode_t is u16 (Rust E0617).
+    let fd = unsafe { libc::openat(parent.as_raw_fd(), leaf.as_ptr(), libc::O_WRONLY | libc::O_CREAT | libc::O_EXCL | libc::O_NOFOLLOW | libc::O_CLOEXEC, 0o600 as libc::c_uint) };
     if fd < 0 { return Err("Target already exists or cannot be created; nothing was overwritten.".into()); }
     // SAFETY: successful openat returns a uniquely owned new descriptor.
     let mut file = unsafe { File::from_raw_fd(fd) };

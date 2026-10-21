@@ -3642,3 +3642,9 @@ nonempty/symlink/no-parent cases, concurrent exclusive creation) are UNRUN.
 Cargo/Rust and installed Mac remain unavailable; no native acceptance or real
 provider execution claimed. The two earlier EPERM subprocess tests remain failed/
 unverified and were not rerun or weakened. No full CI or paid calls were used.
+
+Native source review found a macOS-specific compile hazard before publication: the creation openat variadic argument casts0600 to libc::mode_t. Official rust-lang/libc Apple source defines mode_t=u16; Rust E0617 rejects unpromoted small integers in C variadic arguments. Promote the fixed permission argument to c_uint, preserving0600/no-overwrite flags. This is verified source/type evidence, not a claimed local compiler reproduction. Required macOS CI compilation remains the actual regression gate.
+
+Post-merge main validation completed: Test39523642029, Desktop39523641970 and SQL/HTTP39523642003 all passed without retries. Main remains0c32b6fd. Candidate local checks135 renderer/regression cases and53 GitHub/billing/download cases passed; desktop ES2021 TypeScript passed; independent source/security review passed80 cases and found no blocker, with Apple C-varargs promotion separately reviewed. See docs/RELEASE_READINESS.md for explicit installed-Mac/provider/Stripe and intermittent-browser gaps. No live/provider request or production operation was attempted.
+
+Candidate full repository TypeScript also passed. Native compilation remains pending required CI. Release report and candidate preserve the existing Vercel Git deployment restriction, all financial/production gates and main's conversation/navigation fixes. Publish one draft candidate checkpoint for native validation; do not merge or publish an installer.
