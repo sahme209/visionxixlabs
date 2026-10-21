@@ -54,6 +54,41 @@ describe("runDecisionLoop", () => {
     expect(result).toEqual(expect.objectContaining({ kind: "error", error: "agent_tool_not_allowed" }));
   });
 
+  it.each([
+    {tools: ["read_github_file", "commit_github_file"], profile: "coding" as const},
+    {tools: ["commit_github_file"], profile: "coding" as const},
+    {tools: ["read_github_file", "trigger_aws_deploy", "list_integrations"], profile: "coding" as const},
+  ])("does not recommend discovery tools excluded by the effective identity/profile ($tools)", async ({tools, profile}) => {
+    mocks.readWorkspaceAgentIdentity.mockResolvedValue({enabled: true, allowedTools: tools});
+    const extract = vi.fn(async (prompt: string) => { expect(prompt).toBeTruthy(); return {action: "respond", message: "I can only use the available tools."}; });
+    mocks.resolveGovernedAiCall.mockResolvedValue(governed(extract));
+    await runDecisionLoop({organizationId: "o", userId: "actor", correlationId: "c", transcript: [{role: "user", content: "Update the selected file"}], agentProfile: profile, executeReadOnlyTool: noopReadOnly, isProdEnvironmentTarget: noopProdCheck});
+    const prompt = String(extract.mock.calls[0]?.[0] ?? "");
+    for (const excluded of ["list_github_files", "inspect_github_repository", "search_github_code", "check_deploy_status"]) expect(prompt).not.toContain(excluded);
+    expect(prompt).not.toContain("Prefer calling list_integrations");
+  });
+  it("retains discovery guidance when those capabilities are actually allowed", async () => {
+    const tools = ["inspect_github_repository", "search_github_code", "list_github_files"];
+    mocks.readWorkspaceAgentIdentity.mockResolvedValue({enabled: true, allowedTools: tools});
+    const extract = vi.fn(async (prompt: string) => { expect(prompt).toBeTruthy(); return {action: "respond", message: "Ready to inspect available evidence."}; });
+    mocks.resolveGovernedAiCall.mockResolvedValue(governed(extract));
+    await runDecisionLoop({organizationId: "o", userId: "actor", correlationId: "c", transcript: [{role: "user", content: "Review this repository"}], agentProfile: "coding", executeReadOnlyTool: noopReadOnly, isProdEnvironmentTarget: noopProdCheck});
+    const prompt = String(extract.mock.calls[0]?.[0] ?? "");
+    for (const enabled of tools) expect(prompt).toContain(`- ${enabled} (risk: low)`);
+    expect(prompt).toContain("call inspect_github_repository");
+    expect(prompt).toContain("call search_github_code");
+    expect(prompt).not.toContain("No discovery tools are available");
+  });
+  it("keeps cloud-only evidence capabilities visible without claiming discovery is unavailable", async () => {
+    mocks.readWorkspaceAgentIdentity.mockResolvedValue({enabled: true, allowedTools: ["list_cloud_accounts", "read_aws_inventory"]});
+    const extract = vi.fn(async (prompt: string) => { expect(prompt).toBeTruthy(); return {action: "respond", message: "Only bounded cloud evidence is available."}; });
+    mocks.resolveGovernedAiCall.mockResolvedValue(governed(extract));
+    await runDecisionLoop({organizationId: "o", userId: "actor", correlationId: "c", transcript: [{role: "user", content: "What cloud evidence is available?"}], agentProfile: "cloud_deployment", executeReadOnlyTool: noopReadOnly, isProdEnvironmentTarget: noopProdCheck});
+    const prompt = String(extract.mock.calls[0]?.[0] ?? "");
+    expect(prompt).toContain("- read_aws_inventory (risk: low)");
+    expect(prompt).toContain("- list_cloud_accounts (risk: low)");
+    expect(prompt).not.toContain("No discovery tools are available");
+  });
   it("returns the governed-AI error directly when the workspace hasn't enabled AI", async () => {
     mocks.resolveGovernedAiCall.mockResolvedValue({ ok: false, error: "workspace_ai_disabled" });
     const result = await runDecisionLoop({

@@ -125,13 +125,25 @@ function parseRawDecision(value: unknown): RawDecision | null {
 }
 
 function systemFraming(allowedTools: readonly string[]): string {
+  const discoveryTools = ["list_integrations", "list_environments", "inspect_github_repository", "search_github_code", "list_github_files", "read_github_file", "check_deploy_status"]
+    .filter(tool => allowedTools.includes(tool));
+  const discoveryGuidance = discoveryTools.length
+    ? `Prefer calling ${discoveryTools.join(", ")} when you need evidence those available tools can obtain, rather than guessing.`
+    : "Use only available tools; if none can obtain the required evidence, explain the limitation instead of inventing tool access or treating an unknown as a fact.";
+  const repositoryGuidance = allowedTools.includes("inspect_github_repository")
+    ? 'When the user asks broadly about a selected repository (for example "review this repo" or "what should I change?"), call inspect_github_repository instead of answering from filenames or asking them to type a path you can discover.'
+    : "For broad repository questions, use only evidence obtainable with the available tools. If those tools cannot establish repository context, explain the limitation.";
+  const searchGuidance = allowedTools.includes("search_github_code")
+    ? "When the user asks about a specific feature, symbol, error, or behavior but has not selected a file, call search_github_code to locate evidence and then read the relevant file before answering or proposing a change."
+    : "If relevant source cannot be located with the available tools, explain the missing evidence rather than guessing a path or requesting an unavailable tool.";
   return `You are Axiom, a governed deployment-operations agent embedded in a desktop app. You help an operator turn a plain-English request into real GitHub and AWS actions.
 
 Hard rules you must always follow:
 - You never execute a write action yourself. You only ever decide whether to call a read-only tool (executes immediately) or propose a write tool (a human must approve it before anything happens).
-- Prefer calling list_integrations, list_environments, inspect_github_repository, search_github_code, list_github_files, or check_deploy_status first when you need information you don't already have, rather than guessing.
-- When the user asks broadly about a selected repository (for example "review this repo" or "what should I change?"), call inspect_github_repository instead of answering from filenames or asking them to type a path you can discover.
-- When the user asks about a specific feature, symbol, error, or behavior but has not selected a file, call search_github_code to locate evidence and then read the relevant file before answering or proposing a change.
+- Use only tools in the Available tools catalog below; workspace policy and the current profile may exclude tools available in other sessions.
+- ${discoveryGuidance}
+- ${repositoryGuidance}
+- ${searchGuidance}
 - Before proposing commit_github_file or commit_github_files, inspect every affected existing file and preserve everything the user did not ask to change. Use commit_github_files when one coherent change spans multiple files.
 - When repository evidence is already present in a tool result, answer from that evidence. Do not ask the user to repeat a repository, branch, file, or environment selected in the UI.
 - Be explicit about what you inspected and what remains unknown. Never present an uninspected repository-wide assumption as a fact.
