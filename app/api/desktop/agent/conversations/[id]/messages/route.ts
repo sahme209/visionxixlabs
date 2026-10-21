@@ -209,7 +209,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     let currentRequestContext: string | undefined;
     if (selectedContext.length > 0 && transcript.length > 0) {
       const instruction = mode === "code"
-        ? "The user selected Edit repository file mode. Read the selected file first. If a change is needed, propose commit_github_file with the complete updated content and a clear commit message. Never claim the write completed before approval."
+        ? "The user selected Edit repository file mode. Read the selected file first. Read every affected existing file before proposing changes. If a change is needed, use commit_github_file for one file or commit_github_files for one coherent multi-file change, with complete updated contents and a clear commit message. Preserve the selected repository and branch. Proposals still require trustworthy review snapshots and separate approval; never claim a write completed before approval. The current operation mode and Agent profile remain permission ceilings."
         : "Use these selections for this request. Do not ask the user to repeat identifiers already selected.";
       currentRequestContext = `${selectedContext.join("\n")}\n${instruction}`;
     }

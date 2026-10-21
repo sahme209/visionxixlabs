@@ -350,6 +350,37 @@ describe("POST /api/desktop/agent/conversations/[id]/messages", () => {
     expect(JSON.parse(toolTurn!.data.content)).toMatchObject({ kind: "aws_bounded_observation", connection: { version: 2 } });
   });
 
+  it("connects code mode to existing coordinated multi-file proposals without granting execution", async () => {
+    mocks.findManyTurns.mockResolvedValue([{role: "user", content: "Update this file and its tests"}]);
+    mocks.runDecisionLoop.mockResolvedValue({kind: "final", message: "Fixture response"});
+    const {POST} = await import("../route");
+    expect((await POST(request({message: "Update this file and its tests", workspaceContext: {repositoryFullName: "acme/widgets", branch: "feature", filePath: "src/app.ts", mode: "code", operationMode: "engineer", agentProfile: "coding"}}), params)).status).toBe(200);
+    const call = mocks.runDecisionLoop.mock.calls[0][0];
+    expect(call.currentRequestContext).toContain("commit_github_files");
+    expect(call.currentRequestContext).toContain("Read every affected existing file");
+    expect(call.currentRequestContext).toContain("approval");
+    expect(call.initialToolCall.args.path).toBe("src/app.ts");
+    expect(call.agentProfile).toBe("coding");
+    expect(call.operationMode).toBe("engineer");
+  });
+  it.each([true, false])("keeps coordinated file snapshots and proposal approval mandatory (snapshot=%s)", async snapshotReady => {
+    const args = {repositoryFullName: "acme/widgets", branch: "feature", files: [{path: "src/app.ts", content: "updated"}, {path: "test/app.test.ts", content: "new test"}], message: "Update source and tests"};
+    mocks.runDecisionLoop.mockResolvedValue({kind: "proposal", toolName: "commit_github_files", message: "Proposed source and test change", args, riskLevel: "medium"});
+    mocks.prepareProposalArgsForReview.mockResolvedValue(snapshotReady ? {ok: true, args} : {ok: false, error: "file_review_unavailable"});
+    mocks.createProposal.mockResolvedValue({id: "mixed", toolName: "commit_github_files", argsJson: args, riskLevel: "medium", status: "proposed"});
+    const {POST} = await import("../route");
+    const response = await POST(request({message: "Update source and tests", workspaceContext: {repositoryFullName: "acme/widgets", branch: "feature", filePath: "src/app.ts", mode: "code"}}), params);
+    const body = await response.json();
+    expect(mocks.prepareProposalArgsForReview).toHaveBeenCalledWith("org-1", "commit_github_files", args, expect.anything());
+    if(snapshotReady) {
+      expect(body.data.proposal.status).toBe("proposed");
+      expect(mocks.createProposal).toHaveBeenCalledWith(expect.objectContaining({data: expect.objectContaining({toolName: "commit_github_files", status: "proposed"})}));
+    } else {
+      expect(body.data.proposal).toBeNull();
+      expect(mocks.createProposal).not.toHaveBeenCalled();
+    }
+  });
+
 });
 
 
@@ -443,4 +474,5 @@ it("does not start inference after cancellation during profile audit persistence
   finally { finish(); }
   expect(await response.text()).not.toContain('"result"');
   expect(mocks.runDecisionLoop).not.toHaveBeenCalled(); expect(mocks.createProposal).not.toHaveBeenCalled();
+
 });

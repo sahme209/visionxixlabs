@@ -171,3 +171,11 @@ Subsequent harness review found the private extract wrapper did not mirror produ
 One separately scoped OpenAI request through current streamTextOnce produced partial text, then external abort was issued. Instrumented real Gateway fetch observed one request and an abort signal; iterator rejected with timeout classification and emitted no terminal-success envelope. This validates actual provider-adapter cancellation propagation, not upstream work cessation, settled cost or installed-app terminal/UI behavior. No metering terminal was fabricated; cancellation cost remains subject to Gateway reporting.
 
 No failed inference was retried in this cancellation check. Private explicit-opt-in harness/receipt retained outside source. Production, billing settings, deployments and releases unchanged.
+
+## Code-mode coordinated proposal connection
+
+Confirmed source gap: messages route code-mode instruction named only commit_github_file although the existing runtime/review/desktop support commit_github_files. Updated only context instruction: read selected file first and all affected existing files, choose single-file versus coherent multi-file proposal, preserve selected repository/branch, require review snapshots/separate approval and retain mode/profile ceilings. No new executor, authority or DTO.
+
+One route-context regression failed before the repair; three focused cases passed afterward, including multi-file snapshot success staying proposed and snapshot failure preventing persistence.118affected route/proposal-review/decision-loop/profile tests, root TypeScript and affected lint passed. Independent review found no blocker. Initial test placement/filter and fourth review-function argument mistakes were corrected before the expected source regression; no acceptance or timeout weakened.
+
+Reviewer confirmed lab model explicitly chose action respond; runtime did not drop a proposal. Lab bypasses messages route/context and production admission/accounting, and final harness limit is one model call. This code-mode connection does not claim to repair the independent prose-only model behavior or complete real desktop/provider acceptance. No further inference was used.
