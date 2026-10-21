@@ -3579,3 +3579,8 @@ Approved6e23fab7 is published; all four workflows initially passed (8,880 Vitest
 ### Release validation follow-up (local, not published)
 
 PR #195 remains isolated, draft and unmerged. Initial homepage CDP navigation timed out before documentation interactions; root cause remains unknown. Bounded browser/proxy diagnostics are prepared without changing acceptance deadlines, isolation or request policy (96 focused tests passed). Separate cancellation candidate dad338bb passed independent review; separate OpenAI/xAI streaming candidate ecce129e fixes the review-discovered buffered-abort defect, independent re-review passed with no remaining code blocker. Installed-Mac checklist and evidence/Stripe TEST distinctions: [release readiness](release/READINESS_LOCAL.md), [Mac acceptance](release/INSTALLED_MAC_ACCEPTANCE.md). Runtime/provider/payment/native acceptance remains unverified. No pushes, CI retries, Stripe writes, Vercel operations or releases authorized/performed in this batch.
+
+
+### Local pointer diagnostics integration
+
+Event-time pointer observations now integrate with existing documentation polls, source hashing and strict public projection. 107 focused tests across eight files; independent review44 tests passed; no independent review blocker. Application/input behavior, deadlines and isolation unchanged. No new browser evidence: click-target root cause remains unresolved. Local only; no push/CI. #197 Git timeout evidence retained without further diagnostics; #195 unchanged.

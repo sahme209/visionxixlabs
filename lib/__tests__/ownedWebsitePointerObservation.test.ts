@@ -1,5 +1,7 @@
 import { createRequire } from 'node:module';
 import vm from 'node:vm';
+import { readFileSync } from 'node:fs';
+import { publicSummary } from '../../scripts/owned-website-ci.mjs';
 import { expect, it, vi } from 'vitest';
 const require = createRequire(import.meta.url);
 const { installPointerObservation } = require('../../scripts/fixtures/ownedWebsitePointerObservation.cjs');
@@ -34,4 +36,33 @@ it('hit-tests original validated coordinates and rounds only stored evidence', (
  f.handlers.click({ target: f.original, clientX: 60.004, clientY: 40.006, button: 0, isTrusted: true });
  expect(f.document.elementFromPoint).toHaveBeenCalledWith(60.004, 40.006);
  expect(f.read()[0]).toMatchObject({ x: 60, y: 40.01 });
+});
+
+it('projects closed event samples and refuses accessors, extra keys and oversized arrays', () => {
+ const { sanitizePointerObservation } = require('../../scripts/fixtures/ownedWebsitePointerObservation.cjs');
+ const f = fixture(); f.handlers.click({ target: f.original, clientX: 60, clientY: 40, button: 0, isTrusted: true });
+ const sample = f.read()[0] as Record<string, unknown>;
+ expect(sanitizePointerObservation([sample])).toEqual([sample]);
+ expect(sanitizePointerObservation([{ ...sample, secret: 'PRIVATE' }])).toBeNull();
+ expect(sanitizePointerObservation([sample, sample])).toBeNull();
+ expect(sanitizePointerObservation([{ ...sample, x: Infinity }])).toBeNull();
+ let reads = 0; const bad = { ...sample }; Object.defineProperty(bad, 'x', { enumerable: true, get() { reads++; throw Error('PRIVATE'); } });
+ expect(sanitizePointerObservation([bad])).toBeNull();
+ const tuple = [0, 0]; Object.defineProperty(tuple, '0', { enumerable: true, get() { reads++; throw Error('PRIVATE'); } });
+ expect(sanitizePointerObservation([{ ...sample, scroll: tuple }])).toBeNull();
+ const entries = [sample]; Object.defineProperty(entries, '0', { enumerable: true, get() { reads++; throw Error('PRIVATE'); } });
+ expect(sanitizePointerObservation(entries)).toBeNull(); expect(reads).toBe(0);
+});
+
+it('binds observation to documentation receipts and hashes the helper source', () => {
+ const f = fixture(); f.handlers.click({ target: f.original, clientX: 60, clientY: 40, button: 0, isTrusted: true });
+ const capture = { currentInteraction: 'documentation_check', documentationPointer: f.read() };
+ expect(publicSummary('a'.repeat(40), undefined, capture, undefined, undefined).documentationPointer).toEqual(f.read());
+ expect(publicSummary('a'.repeat(40), undefined, { ...capture, currentInteraction: 'setup' }, undefined, undefined).documentationPointer).toBeNull();
+ let reads = 0; const bad = { currentInteraction: 'documentation_check', get documentationPointer() { reads++; throw Error('PRIVATE'); } };
+ expect(publicSummary('a'.repeat(40), undefined, bad, undefined, undefined).documentationPointer).toBeNull(); expect(reads).toBe(0);
+ const driver = readFileSync('scripts/capture-owned-website.mjs', 'utf8');
+ expect(driver).toContain('await evaluate(pointerObservation.installPointerObservation)');
+ expect(driver).toContain('pointer: (${pointerObservation.readPointerObservation})()');
+ expect(readFileSync('scripts/run-owned-website-visual.mjs', 'utf8')).toContain("'scripts/fixtures/ownedWebsitePointerObservation.cjs'");
 });
