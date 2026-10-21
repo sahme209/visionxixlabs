@@ -456,6 +456,7 @@ it("marks a completed verification historical when edits occur during its run", 
   checks = () => [{id: "a", label: "A check", command: "npm test", description: "fixture"}];
   await start(); fireEvent.click(screen.getByRole("button", {name: "same.ts"})); await screen.findByRole("textbox", {name: "Editing same.ts"});
   fireEvent.click(screen.getByRole("button", {name: "A check"})); fireEvent.click(screen.getByRole("button", {name: "Run check"}));
+  await waitFor(() => expect(m.invoke).toHaveBeenCalledWith("run_repository_check", {repositoryPath: "/owned/A", checkId: "a", runId: "owned-run"}));
   fireEvent.change(screen.getByRole("textbox", {name: "Editing same.ts"}), {target: {value: "concurrent edit"}});
   await act(async () => {pending.resolve({checkId: "a", success: true, exitCode: 0, output: "prior run", durationMs: 1});});
   await screen.findByText("prior run");
@@ -688,4 +689,38 @@ it.each(["cancel", "wrong-branch", "occupied"])("keeps creation fail-closed for 
   if(outcome === "occupied") await screen.findByText(/Target already exists/);
   expect(m.invoke.mock.calls.filter(([name])=>name==="create_repository_file")).toHaveLength(outcome === "occupied" ? 1 : 0);
   expect(m.invoke.mock.calls.filter(([name])=>name==="write_repository_file"||name==="run_repository_check")).toHaveLength(0);
+});
+
+it("retires a prepared check when source changes while native preparation is pending", async () => {
+  checks = () => [{ id: "a", label: "A check", command: "npm test", description: "fixture" }];
+  const prepared = deferred<string>();
+  const original = m.invoke.getMockImplementation()!;
+  m.invoke.mockImplementation((command: string, args: Record<string, string> = {}) => command === "prepare_repository_check" ? prepared.promise : original(command, args));
+  await start(); fireEvent.click(screen.getByRole("button", { name: "same.ts" }));
+  const editor = await screen.findByRole("textbox", { name: "Editing same.ts" });
+  fireEvent.click(screen.getByRole("button", { name: "A check" }));
+  fireEvent.click(await screen.findByRole("button", { name: "Run check" }));
+  await waitFor(() => expect(m.invoke).toHaveBeenCalledWith("prepare_repository_check", { repositoryPath: "/owned/A", checkId: "a" }));
+  fireEvent.change(editor, { target: { value: "changed after consent during preparation" } });
+  await act(async () => prepared.resolve("prepared-stale"));
+  await screen.findByText(/source changed while preparing/);
+  expect(m.invoke).toHaveBeenCalledWith("cancel_repository_check", { repositoryPath: "/owned/A", runId: "prepared-stale" });
+  expect(m.invoke.mock.calls.filter(([name]) => name === "run_repository_check")).toHaveLength(0);
+});
+
+it("never executes a stale prepared check when retirement cannot be confirmed", async () => {
+  checks = () => [{ id: "a", label: "A check", command: "npm test", description: "fixture" }];
+  const prepared = deferred<string>(); const original = m.invoke.getMockImplementation()!;
+  m.invoke.mockImplementation((command: string, args: Record<string, string> = {}) => {
+    if (command === "prepare_repository_check") return prepared.promise;
+    if (command === "cancel_repository_check") throw new Error("retirement unavailable");
+    return original(command, args);
+  });
+  await start(); fireEvent.click(screen.getByRole("button", { name: "same.ts" }));
+  const editor = await screen.findByRole("textbox", { name: "Editing same.ts" });
+  fireEvent.click(screen.getByRole("button", { name: "A check" })); fireEvent.click(await screen.findByRole("button", { name: "Run check" }));
+  await waitFor(() => expect(m.invoke).toHaveBeenCalledWith("prepare_repository_check", { repositoryPath: "/owned/A", checkId: "a" }));
+  fireEvent.change(editor, { target: { value: "new source" } }); await act(async () => prepared.resolve("prepared-stale"));
+  await screen.findByText("retirement unavailable");
+  expect(m.invoke.mock.calls.filter(([name]) => name === "run_repository_check")).toHaveLength(0);
 });
