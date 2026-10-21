@@ -165,3 +165,9 @@ Baseline: one read and one model decision (1282input/96outputtokens) returned a 
 A local prompt contract regression and66deterministic loop/profile/governance tests passed, and independent source review found no authority expansion. They did not prove model compliance. Both speculative framing changes and their test were withdrawn; source remains the preceding verified checkpoint. Patch/receipts retained privately. Do not claim the actual coding Agent journey is working from the successful standalone provider stream or sandbox tests.
 
 Subsequent harness review found the private extract wrapper did not mirror production's system-role schema and temperature0.1. Corrected only the harness; one original-source check still returned final prose (1291input/94outputtokens), so the lab acceptance remains failed. Initial three prompt experiments are not faithful production-contract evidence. No product prompt change retained. Synthetic policy/evidence and missing real admission/storage/HTTP remain limits; behavior does not establish a universal provider or product root cause. No further inference retries in this investigation.
+
+## Actual provider cancellation acceptance
+
+One separately scoped OpenAI request through current streamTextOnce produced partial text, then external abort was issued. Instrumented real Gateway fetch observed one request and an abort signal; iterator rejected with timeout classification and emitted no terminal-success envelope. This validates actual provider-adapter cancellation propagation, not upstream work cessation, settled cost or installed-app terminal/UI behavior. No metering terminal was fabricated; cancellation cost remains subject to Gateway reporting.
+
+No failed inference was retried in this cancellation check. Private explicit-opt-in harness/receipt retained outside source. Production, billing settings, deployments and releases unchanged.
