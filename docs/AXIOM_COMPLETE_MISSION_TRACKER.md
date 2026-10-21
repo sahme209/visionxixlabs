@@ -1,5 +1,19 @@
 # Axiom Agent complete mission tracker
 
+## Verified execution update — October 21, 2026
+
+This update supersedes older runtime/deployment availability statements below; historical evidence is retained.
+
+- Production website/backend: `a841a7cb6dca2a9bc0939cc923d0a8056066bb62`, deployment `dpl_8XZzbgE3ZwciuLJ9XJuii5eWosWa`, verified at https://visionxixlabs.com. Source is backed up on `codex/website-production-menu-release`; main remains `568110c239684dcca9bbd18a082ac8c3a45988cf`. No claim that the entire mission is complete.
+- New local implementation: repository synchronization requires the reviewed repository and branch, rejects mismatched local origin/credential repository, pins explicit push refs, and revalidates pull context after fetch. Airflow readiness resolves independently of general integration inventory; Azure/GCP cards reuse existing settings and status APIs.
+- Research and sequence: confirmed checkout/credential-wait mismatch in native HEAD-based push; first reproduced two native guard failures and three frontend argument failures, then implemented guards and reviewed all command callers. Independent source review found no blocking findings.
+- Mac validation of this batch: 35 native Rust tests passed on arm64, native debug compilation passed, 81 focused frontend tests passed, desktop TypeScript, affected-file lint and frontend build passed. Existing bundle-size/dynamic-import warnings remain. No repeated hosted CI.
+- Real isolated Airflow 3.3.2 acceptance: actual client authenticated, discovered the local DAG, triggered a run, observed queued → running → success, read both successful tasks and history, and preserved duplicate-trigger identity. Invalid credentials returned 401; production HTTPS validation remained unchanged. All ten owned server processes were stopped. This is local API-contract acceptance, not a tenant/desktop/governed-cloud journey.
+- Installed app is older 0.1.13 and its existing signature/notarization was verified. Current 0.1.20 native source compiles; current installed GUI, keychain/pairing, actual-provider requests, Stripe TEST lifecycle, cloud execution and installer/update acceptance remain unverified. No installer was published.
+- Safety limits: guards do not lock external Git writers or prove an exact commit snapshot. Authenticated Git URL process-argument handling is unchanged. Native tests establish guards/refspecs, not real remote push/fetch. Process tests establish direct-child behavior, not descendant termination.
+- Production recovery remains gated by database binding/PITR/restore readiness and exact migration approval. GitHub webhook configuration lacks GITHUB_WEBHOOK_SECRET and fails closed; coordinated secret/hook changes require approval.
+- This batch is local only. No new push, deployment, paid provider/cloud call, production database/secret/billing change or installer publication occurred.
+
 ## Active remaining execution plan — October 21, 2026
 
 Canonical shared status: GitHub issue #200. Baseline main `568110c239684dcca9bbd18a082ac8c3a45988cf` contains #199 and #195/#196/#198; #197 was already merged. Post-merge Test and Desktop CI passed. Historical entries below retain provenance, not current release certification.

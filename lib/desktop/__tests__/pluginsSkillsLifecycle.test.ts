@@ -1,6 +1,6 @@
 /** @vitest-environment jsdom */
 import {createElement} from "react";
-import {act, cleanup, fireEvent, render, screen, waitFor} from "@testing-library/react";
+import {act, cleanup, fireEvent, render, screen, waitFor, within} from "@testing-library/react";
 import {afterEach, beforeEach, expect, it, vi} from "vitest";
 const m = vi.hoisted(() => ({open: vi.fn(), listeners: new Set<() => void>(), revision: 0, client: {config: {}, subscribeContext: (fn: () => void) => {m.listeners.add(fn); return () => {m.listeners.delete(fn);};}, getContextRevision: () => m.revision, listAgentSkills: vi.fn(), integrationStatus: vi.fn(), airflowConnection: vi.fn(), updateAgentSkill: vi.fn(), startIntegrationConnection: vi.fn(), validateGitHubReadOnly: vi.fn()}}));
 vi.mock("../../../desktop/src/lib/desktopClient", () => ({desktopClient: m.client}));
@@ -106,4 +106,28 @@ it("hands an enabled skill to the Agent without installation mutation", async ()
   fireEvent.click(await screen.findByRole("button", {name: "Use in Agent"}));
   expect(onUseSkill).toHaveBeenCalledWith(skill.id);
   expect(m.client.updateAgentSkill).not.toHaveBeenCalled();
+});
+
+it("publishes Airflow readiness while the independent integration inventory is pending", async () => {
+  const inventory = deferred(); m.client.integrationStatus.mockReturnValueOnce(inventory.promise);
+  m.client.airflowConnection.mockResolvedValue(ok({status: "connected"}));
+  show();
+  await waitFor(() => expect(within(screen.getByText("Apache Airflow").parentElement!).getByText("connected")).toBeTruthy());
+  await act(async () => {inventory.resolve(ok({configuration: {}, github: {status: "not_connected"}, cloud: [], collaboration: []}));});
+});
+it("shows existing Azure and GCP inventory and opens settings without starting provider consent", async () => {
+  const onOpenSettings = vi.fn();
+  m.client.integrationStatus.mockResolvedValue(ok({configuration: {github: true, slack: false, teams: false, linear: false}, github: {status: "not_connected"}, cloud: [{provider: "azure", status: "connected", lastTransitionAt: null}, {provider: "gcp", status: "not_connected", lastTransitionAt: null}], collaboration: []}));
+  render(createElement(PluginsSkillsView, {onOpenSettings, onOpenAirflow() {}, canManage: false}));
+  const azure = await screen.findByText("Microsoft Azure");
+  const gcp = screen.getByText("Google Cloud");
+  await waitFor(() => expect(within(azure.parentElement!).getByText("connected")).toBeTruthy());
+  expect(within(gcp.parentElement!).getByText("not connected")).toBeTruthy();
+  const card = azure.parentElement!.parentElement!.parentElement!;
+  fireEvent.click(within(card).getByRole("button", {name: "Manage"}));
+  expect(onOpenSettings).toHaveBeenCalledTimes(1);
+  expect(m.client.startIntegrationConnection).not.toHaveBeenCalled();
+  fireEvent.click(screen.getByRole("button", {name: "installed"}));
+  expect(screen.getByText("Microsoft Azure")).toBeTruthy();
+  expect(screen.queryByText("Google Cloud")).toBeNull();
 });

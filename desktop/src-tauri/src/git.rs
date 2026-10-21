@@ -288,23 +288,48 @@ pub async fn create_repository_branch(repository_path: String, branch_name: Stri
     Ok(candidate.to_string())
 }
 
+// Shared pre-network validation for a reviewed repository/branch selection.
+fn reviewed_sync_root(repository_path: &str, authenticated_url: &str, repository_full_name: &str, branch: &str) -> Result<PathBuf, String> {
+    let safe_url = safe_remote_url(authenticated_url)?;
+    let parts: Vec<_> = repository_full_name.split('/').collect();
+    if parts.len() != 2 || parts.iter().any(|part| part.is_empty() || *part == "." || *part == ".." || !part.bytes().all(|b| b.is_ascii_alphanumeric() || b"._-".contains(&b))) {
+        return Err("Review a valid GitHub repository before synchronizing.".into());
+    }
+    let root = repository_root(repository_path)?;
+    let expected = repository_full_name.to_lowercase();
+    let authorized = safe_url.strip_prefix("https://github.com/").unwrap_or("").trim_end_matches(".git").to_lowercase();
+    if authorized != expected || github_repository_name(&root).as_deref().map(str::to_lowercase) != Some(expected) {
+        return Err("Repository origin or credential target changed; review synchronization again.".into());
+    }
+    if branch.is_empty() || branch.len() > 240 || branch.starts_with('-') || !git(Some(&root), ["check-ref-format", "--branch", branch])?.status.success() || current_branch(&root)? != branch {
+        return Err("Repository branch changed; review synchronization again.".into());
+    }
+    Ok(root)
+}
+
+fn reviewed_push_refspec(branch: &str) -> String {
+    // Never resolve HEAD after validation: an external checkout must not select
+    // another source or destination branch for an already reviewed push.
+    format!("refs/heads/{branch}:refs/heads/{branch}")
+}
+
 #[tauri::command]
-pub async fn pull_repository(repository_path: String, authenticated_url: String) -> Result<String, String> {
-    safe_remote_url(&authenticated_url)?;
-    let root = repository_root(&repository_path)?;
+pub async fn pull_repository(repository_path: String, authenticated_url: String, repository_full_name: String, branch: String) -> Result<String, String> {
+    let root = reviewed_sync_root(&repository_path, &authenticated_url, &repository_full_name, &branch)?;
     if !working_tree_is_clean(&root)? { return Err("Commit or discard local changes before pulling.".to_string()); }
-    let branch = current_branch(&root)?;
     let refspec = format!("+refs/heads/{branch}:refs/remotes/origin/{branch}");
     output_text(git(Some(&root), ["fetch", "--prune", &authenticated_url, &refspec])?, Some(&authenticated_url))?;
+    // Fetch can outlive an external checkout or origin change. Recheck before
+    // touching the working tree. This is not a lock against unrelated Git writers.
+    reviewed_sync_root(&repository_path, &authenticated_url, &repository_full_name, &branch)?;
+    if !working_tree_is_clean(&root)? { return Err("Working tree changed while fetching; review synchronization again.".into()); }
     output_text(git(Some(&root), ["merge", "--ff-only", &format!("refs/remotes/origin/{branch}")])?, None)
 }
 
 #[tauri::command]
-pub async fn push_repository(repository_path: String, authenticated_url: String) -> Result<String, String> {
-    safe_remote_url(&authenticated_url)?;
-    let root = repository_root(&repository_path)?;
-    let branch = current_branch(&root)?;
-    output_text(git(Some(&root), ["push", &authenticated_url, &format!("HEAD:refs/heads/{branch}")])?, Some(&authenticated_url))
+pub async fn push_repository(repository_path: String, authenticated_url: String, repository_full_name: String, branch: String) -> Result<String, String> {
+    let root = reviewed_sync_root(&repository_path, &authenticated_url, &repository_full_name, &branch)?;
+    output_text(git(Some(&root), ["push", &authenticated_url, &reviewed_push_refspec(&branch)])?, Some(&authenticated_url))
 }
 
 fn dirs_home() -> Result<PathBuf, String> {
@@ -328,6 +353,36 @@ mod tests {
     }
     impl Drop for OwnedDirectory {
         fn drop(&mut self) { let _ = std::fs::remove_dir_all(&self.0); }
+    }
+
+    fn sync_fixture() -> OwnedDirectory {
+        let directory = OwnedDirectory::new();
+        assert!(super::git(Some(&directory.0), ["init", "--initial-branch=feature"]).unwrap().status.success());
+        assert!(super::git(Some(&directory.0), ["remote", "add", "origin", "https://github.com/owner/repository.git"]).unwrap().status.success());
+        directory
+    }
+
+    #[test]
+    fn sync_requires_the_credential_repository_to_match_the_reviewed_local_origin() {
+        let directory = sync_fixture();
+        let root = directory.0.to_str().unwrap();
+        assert!(super::reviewed_sync_root(root, "https://x-access-token:synthetic@github.com/owner/repository.git", "Owner/Repository", "feature").is_ok());
+        assert!(super::reviewed_sync_root(root, "https://x-access-token:synthetic@github.com/other/repository.git", "owner/repository", "feature").is_err());
+        assert!(super::reviewed_sync_root(root, "https://github.com/owner/repository.git", "owner/another", "feature").is_err());
+        assert!(super::git(Some(&directory.0), ["remote", "set-url", "origin", "https://github.com/other/repository.git"]).unwrap().status.success());
+        assert!(super::reviewed_sync_root(root, "https://github.com/owner/repository.git", "owner/repository", "feature").is_err());
+    }
+
+    #[test]
+    fn sync_rejects_an_external_branch_switch_after_review() {
+        let directory = sync_fixture();
+        assert!(super::git(Some(&directory.0), ["symbolic-ref", "HEAD", "refs/heads/main"]).unwrap().status.success());
+        assert!(super::reviewed_sync_root(directory.0.to_str().unwrap(), "https://github.com/owner/repository.git", "owner/repository", "feature").is_err());
+    }
+
+    #[test]
+    fn push_refspec_pins_the_reviewed_branch_without_head_or_force() {
+        assert_eq!(super::reviewed_push_refspec("feature/reviewed"), "refs/heads/feature/reviewed:refs/heads/feature/reviewed");
     }
 
     #[test]

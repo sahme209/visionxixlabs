@@ -2,7 +2,7 @@
 import { createElement, Profiler } from "react";
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import { act, cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
-const m = vi.hoisted(() => ({ invoke: vi.fn(), client: { config: {} as { sessionToken?: string }, listGithubRepositories: vi.fn(), mintGithubCloneToken: vi.fn(), subscribeContext: (listener: () => void) => { void listener; return () => {}; }, getContextRevision: (): number => 0, setSession: (token: string | undefined) => { void token; } } }));
+const m = vi.hoisted(() => ({ invoke: vi.fn(), client: { config: {} as { sessionToken?: string }, listGithubRepositories: vi.fn(), mintGithubCloneToken: vi.fn(), openGithubPullRequest: vi.fn(), subscribeContext: (listener: () => void) => { void listener; return () => {}; }, getContextRevision: (): number => 0, setSession: (token: string | undefined) => { void token; } } }));
 vi.mock("@tauri-apps/api/core", () => ({ invoke: m.invoke }));
 vi.mock("../../../desktop/src/lib/desktopClient", async original => {
   const actual = await original<typeof import("../../../desktop/src/lib/desktopClient")>();
@@ -28,10 +28,12 @@ beforeEach(() => {
   m.client.listGithubRepositories.mockResolvedValue({ ok: true, data: { repositories: [], truncated: false } });
   localRepositories = ["/owned/A", "/owned/B"];
   m.client.mintGithubCloneToken.mockResolvedValue({ ok: true, data: { cloneUrl: "https://example.invalid/fixture/a.git" } });
+  m.client.openGithubPullRequest.mockResolvedValue({ok:true,data:{number:1,htmlUrl:"https://example.invalid/pr/1"}});
   reads = (path, file) => `${path}:${file}`; statuses = path => status(path); checks = () => []; writes = () => undefined; verification = () => ({ checkId: "a", success: true, exitCode: 0, output: "fixture output", durationMs: 1 });
   m.invoke.mockImplementation(async (command: string, args: Record<string, string> = {}) => {
     if (command === "default_repos_directory") return "/owned";
     if (command === "list_local_repositories") return [...localRepositories];
+    if (command === "push_repository" || command === "pull_repository") return "fixture synchronized";
     if (command === "clone_repository") { localRepositories.push(args.destinationPath); return args.destinationPath; }
     if (command === "repository_status") return statuses(args.repositoryPath);
     if (command === "list_repository_files") return ["same.ts", "other.ts"];
@@ -723,4 +725,24 @@ it("never executes a stale prepared check when retirement cannot be confirmed", 
   fireEvent.change(editor, { target: { value: "new source" } }); await act(async () => prepared.resolve("prepared-stale"));
   await screen.findByText("retirement unavailable");
   expect(m.invoke.mock.calls.filter(([name]) => name === "run_repository_check")).toHaveLength(0);
+});
+
+it.each(["push", "pull"] as const)("binds %s to the reviewed repository and branch across a credential wait", async direction => {
+  const credential = deferred<unknown>(); m.client.mintGithubCloneToken.mockReturnValueOnce(credential.promise);
+  await start();
+  fireEvent.click(screen.getByRole("button", {name: direction === "push" ? "Push" : "Pull"}));
+  fireEvent.click(screen.getByRole("button", {name: direction === "push" ? "Push branch" : "Pull changes"}));
+  await waitFor(() => expect(m.client.mintGithubCloneToken).toHaveBeenCalled());
+  statuses = path => ({...status(path), branch:"main"});
+  await act(async () => {credential.resolve({ok:true,data:{cloneUrl:"https://example.invalid/fixture/a.git"}});});
+  expect(m.invoke).toHaveBeenCalledWith(`${direction}_repository`, {repositoryPath:"/owned/A",authenticatedUrl:"https://example.invalid/fixture/a.git",repositoryFullName:"fixture/a",branch:"feature"});
+});
+it("binds the publish-and-PR push to the reviewed repository and branch", async () => {
+  await start();
+  fireEvent.click(screen.getByRole("button", {name:"same.ts"}));
+  await screen.findByRole("textbox", {name:"Editing same.ts"});
+  fireEvent.change(screen.getByPlaceholderText("Pull request title"), {target:{value:"Reviewed update"}});
+  fireEvent.click(screen.getByRole("button", {name:"Publish & open PR"}));
+  fireEvent.click(screen.getByRole("button", {name:"Publish and open PR"}));
+  await waitFor(() => expect(m.invoke).toHaveBeenCalledWith("push_repository", {repositoryPath:"/owned/A",authenticatedUrl:"https://example.invalid/fixture/a.git",repositoryFullName:"fixture/a",branch:"feature"}));
 });

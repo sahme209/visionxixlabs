@@ -351,7 +351,7 @@ function RepositoryWorkspaceSession({ revision, active, onAskAgent, editRequest,
       const credential = await desktopClient.mintGithubCloneToken({ repositoryFullName, purpose: direction, ...(direction === "push" ? { branch: status.branch } : {}) });
       if (!current()) return;
       if (!credential.ok) throw new Error(credential.error);
-      await invoke(`${direction}_repository`, { repositoryPath: selectedRepository, authenticatedUrl: credential.data.cloneUrl });
+      await invoke(`${direction}_repository`, { repositoryPath: selectedRepository, authenticatedUrl: credential.data.cloneUrl, repositoryFullName, branch: status.branch });
       if (!current()) return;
       await refreshRepository(selectedRepository);
       if (!current()) return;
@@ -411,7 +411,7 @@ function RepositoryWorkspaceSession({ revision, active, onAskAgent, editRequest,
       const credential = await desktopClient.mintGithubCloneToken({ repositoryFullName, purpose: "push", branch: status.branch });
       if (!current()) return;
       if (!credential.ok) throw new Error(credential.error);
-      await invoke("push_repository", { repositoryPath: selectedRepository, authenticatedUrl: credential.data.cloneUrl });
+      await invoke("push_repository", { repositoryPath: selectedRepository, authenticatedUrl: credential.data.cloneUrl, repositoryFullName, branch: status.branch });
       if (!current()) return;
       const result = await desktopClient.openGithubPullRequest({
         repositoryFullName, head: status.branch, base: prBase.trim(), title: prTitle.trim(),
