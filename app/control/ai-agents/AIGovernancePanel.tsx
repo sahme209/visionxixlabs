@@ -44,6 +44,7 @@ export function AIGovernancePanel() {
   const [data, setData] = useState<GovernanceData | null>(null);
   const [error, setError] = useState("");
   const [saving, setSaving] = useState("");
+  const [notice, setNotice] = useState("");
 
   const load = useCallback(async () => {
     setError("");
@@ -56,11 +57,16 @@ export function AIGovernancePanel() {
   useEffect(() => { void load().catch((cause) => setError(cause instanceof Error ? cause.message : "governance_unavailable")); }, [load]);
 
   async function save(section: string, body: Record<string, unknown>) {
+    if (saving) return;
+    setNotice("");
     setSaving(section);
     setError("");
     try {
       await patchPolicy({ section, ...body });
       await load();
+      const labels: Record<string, string> = { provider_policy: "Model policy", agent_identity: "Agent identity", autonomy: "Autonomy policy", budget: "Spending limit" };
+      const label = labels[section] ?? "Policy";
+      setNotice(`${label} saved and reloaded.`);
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : "policy_update_failed");
     } finally {
@@ -83,34 +89,35 @@ export function AIGovernancePanel() {
   const budgetCents = data.budget?.defaultMaxCostCents ?? 2500;
 
   return (
-    <div className="mt-10 space-y-10">
+    <div className="mt-6 space-y-6" onChange={() => setNotice("")}>
+      {notice && <p role="status" className="rounded-lg border border-emerald-400/20 bg-emerald-400/[0.04] px-4 py-3 text-xs text-emerald-200">{notice}</p>}
       {error && <div role="alert" className="border-y border-red-400/30 py-4 text-sm text-red-300">{error}</div>}
       {!data.canManage && <p className="border-y border-white/[0.08] py-4 text-sm text-zinc-400">You can inspect this policy. An organization owner or admin must change it.</p>}
 
-      <section className="border-t border-white/[0.08] pt-7">
+      <section className="rounded-xl border border-white/[0.08] bg-white/[0.015] p-5">
         <div className="flex flex-col justify-between gap-5 sm:flex-row sm:items-end">
           <div>
-            <h2 className="text-xl font-medium tracking-[-0.025em]">Approved model routing</h2>
+            <h2 className="text-sm font-medium">Approved model routing</h2>
             <p className="mt-2 max-w-2xl text-sm leading-6 text-zinc-500">Inference is routed through Vercel AI Gateway only. This policy never stores provider keys.</p>
           </div>
           <span className={`text-xs ${data.gatewayCatalogLive ? "text-emerald-400" : "text-amber-300"}`}>{data.gatewayCatalogLive ? "Live catalog verified" : "Catalog unavailable"}</span>
         </div>
         <div className="mt-5 grid gap-4 sm:grid-cols-[1fr_auto] sm:items-end">
           <label className="text-xs text-zinc-500">Gateway model
-            <select id="gateway-model" defaultValue={selectedModel} disabled={!data.canManage || !data.gatewayCatalogLive} className="mt-2 block w-full rounded-lg border border-white/10 bg-[#1a1a1a] px-3 py-2.5 text-sm text-zinc-100">
+            <select id="gateway-model" defaultValue={selectedModel} disabled={!data.canManage || Boolean(saving) || !data.gatewayCatalogLive} className="mt-2 block w-full rounded-lg border border-white/10 bg-[#1a1a1a] h-9 px-3 text-xs text-zinc-100">
               <option value="service-default">Service-managed default</option>
               {data.gatewayModels?.map((model) => <option key={model.id} value={model.id}>{model.label}</option>)}
             </select>
           </label>
-          <button disabled={!data.canManage || saving === "provider_policy"} onClick={() => {
+          <button disabled={!data.canManage || Boolean(saving) || !data.gatewayCatalogLive} onClick={() => {
             const model = (document.getElementById("gateway-model") as HTMLSelectElement).value;
             void save("provider_policy", { enabled: true, allowedProviders: ["vercel_gateway"], modelSelections: { vercel_gateway: model }, fallbackOrder: ["vercel_gateway"] });
-          }} className="rounded-lg bg-[#f54e00] px-4 py-2.5 text-sm font-semibold text-white disabled:opacity-40">Save model policy</button>
+          }} className="rounded-lg bg-zinc-100 h-9 px-3 text-xs font-medium text-zinc-900 hover:bg-white disabled:opacity-40">Save model policy</button>
         </div>
       </section>
 
-      <section className="border-t border-white/[0.08] pt-7">
-        <h2 className="text-xl font-medium tracking-[-0.025em]">Agent identity &amp; tool permissions</h2>
+      <section className="rounded-xl border border-white/[0.08] bg-white/[0.015] p-5">
+        <h2 className="text-sm font-medium">Agent identity &amp; tool permissions</h2>
         <p className="mt-2 max-w-2xl text-sm leading-6 text-zinc-500">The model can see and request only selected tools. Write tools still require backend approval regardless of this allowlist.</p>
         {identityUnavailable && <p role="alert" className="mt-4 text-sm text-amber-300">{data.agentIdentityState === "migration_pending"
           ? "Agent permissions storage needs an administrator-reviewed database update. Enabling and editing permissions is unavailable until storage is ready."
@@ -135,30 +142,30 @@ export function AIGovernancePanel() {
           ))}
         </div>
         <div className="mt-5 flex flex-col gap-4 sm:flex-row sm:items-end">
-          <label className="grow text-xs text-zinc-500">Identity name<input id="agent-name" defaultValue={identity.displayName} disabled={identityReadOnly} className="mt-2 block w-full rounded-lg border border-white/10 bg-[#1a1a1a] px-3 py-2.5 text-sm text-zinc-100" /></label>
+          <label className="grow text-xs text-zinc-500">Identity name<input id="agent-name" defaultValue={identity.displayName} disabled={identityReadOnly} className="mt-2 block w-full rounded-lg border border-white/10 bg-[#1a1a1a] h-9 px-3 text-xs text-zinc-100" /></label>
           <label className="flex h-10 items-center gap-2 text-sm text-zinc-300"><input id="agent-enabled" type="checkbox" defaultChecked={!identityUnavailable && identity.enabled} disabled={identityReadOnly} className="accent-[#f54e00]" /> Enabled</label>
           <button disabled={identityReadOnly} onClick={() => {
             const allowedTools = Array.from(document.querySelectorAll<HTMLInputElement>('input[name="agent-tool"]:checked')).map((input) => input.value);
             void save("agent_identity", { displayName: (document.getElementById("agent-name") as HTMLInputElement).value, enabled: (document.getElementById("agent-enabled") as HTMLInputElement).checked, allowedTools });
-          }} className="rounded-lg border border-white/10 px-4 py-2.5 text-sm font-medium disabled:opacity-40">Save identity</button>
+          }} className="rounded-lg border border-white/10 h-9 px-3 text-xs font-medium disabled:opacity-40">Save identity</button>
         </div>
       </section>
 
-      <section className="grid gap-8 border-t border-white/[0.08] pt-7 md:grid-cols-2">
+      <section className="grid gap-5 rounded-xl border border-white/[0.08] bg-white/[0.015] p-5 md:grid-cols-2">
         <div>
-          <h2 className="text-xl font-medium tracking-[-0.025em]">Bounded autonomy</h2>
+          <h2 className="text-sm font-medium">Bounded autonomy</h2>
           <p className="mt-2 text-sm leading-6 text-zinc-500">Autonomy never overrides approvals, environment policy, or authorization.</p>
-          <select id="autonomy-mode" defaultValue={autonomy.mode} disabled={!data.canManage} className="mt-4 w-full rounded-lg border border-white/10 bg-[#1a1a1a] px-3 py-2.5 text-sm">
+          <select aria-label="Autonomy mode" id="autonomy-mode" defaultValue={autonomy.mode} disabled={!data.canManage || Boolean(saving)} className="mt-4 w-full rounded-lg border border-white/10 bg-[#1a1a1a] h-9 px-3 text-xs">
             <option value="observer">Observe and recommend</option><option value="review">Prepare for review</option><option value="assisted">Execute approved non-production actions</option><option value="autonomous">Execute explicitly authorized workflows</option>
           </select>
-          <label className="mt-4 block text-xs text-zinc-500">Maximum actions per cycle<input id="action-limit" type="number" min={1} max={50} defaultValue={autonomy.perCycleActionLimit} disabled={!data.canManage} className="mt-2 block w-full rounded-lg border border-white/10 bg-[#1a1a1a] px-3 py-2.5 text-sm" /></label>
-          <button disabled={!data.canManage || saving === "autonomy"} onClick={() => void save("autonomy", { mode: (document.getElementById("autonomy-mode") as HTMLSelectElement).value, perCycleActionLimit: Number((document.getElementById("action-limit") as HTMLInputElement).value), rationale: "Configured in Axiom Control" })} className="mt-4 rounded-lg border border-white/10 px-4 py-2.5 text-sm font-medium disabled:opacity-40">Save autonomy</button>
+          <label className="mt-4 block text-xs text-zinc-500">Maximum actions per cycle<input id="action-limit" type="number" min={1} max={50} defaultValue={autonomy.perCycleActionLimit} disabled={!data.canManage || Boolean(saving)} className="mt-2 block w-full rounded-lg border border-white/10 bg-[#1a1a1a] h-9 px-3 text-xs" /></label>
+          <button disabled={!data.canManage || Boolean(saving)} onClick={() => void save("autonomy", { mode: (document.getElementById("autonomy-mode") as HTMLSelectElement).value, perCycleActionLimit: Number((document.getElementById("action-limit") as HTMLInputElement).value), rationale: "Configured in Axiom Control" })} className="mt-4 rounded-lg border border-white/10 h-9 px-3 text-xs font-medium disabled:opacity-40">Save autonomy</button>
         </div>
         <div>
-          <h2 className="text-xl font-medium tracking-[-0.025em]">Organization spending limit</h2>
+          <h2 className="text-sm font-medium">Organization spending limit</h2>
           <p className="mt-2 text-sm leading-6 text-zinc-500">A hard backend cap for an AI workforce run. Prepaid-credit enforcement remains separate and always applies.</p>
-          <label className="mt-4 block text-xs text-zinc-500">Maximum cost per run (USD)<input id="budget-dollars" type="number" min="0.01" max="1000000" step="0.01" defaultValue={(budgetCents / 100).toFixed(2)} disabled={!data.canManage} className="mt-2 block w-full rounded-lg border border-white/10 bg-[#1a1a1a] px-3 py-2.5 text-sm" /></label>
-          <button disabled={!data.canManage || saving === "budget"} onClick={() => void save("budget", { defaultMaxCostCents: Math.round(Number((document.getElementById("budget-dollars") as HTMLInputElement).value) * 100), rationale: "Configured in Axiom Control" })} className="mt-4 rounded-lg border border-white/10 px-4 py-2.5 text-sm font-medium disabled:opacity-40">Save spending limit</button>
+          <label className="mt-4 block text-xs text-zinc-500">Maximum cost per run (USD)<input id="budget-dollars" type="number" min="0.01" max="1000000" step="0.01" defaultValue={(budgetCents / 100).toFixed(2)} disabled={!data.canManage || Boolean(saving)} className="mt-2 block w-full rounded-lg border border-white/10 bg-[#1a1a1a] h-9 px-3 text-xs" /></label>
+          <button disabled={!data.canManage || Boolean(saving)} onClick={() => void save("budget", { defaultMaxCostCents: Math.round(Number((document.getElementById("budget-dollars") as HTMLInputElement).value) * 100), rationale: "Configured in Axiom Control" })} className="mt-4 rounded-lg border border-white/10 h-9 px-3 text-xs font-medium disabled:opacity-40">Save spending limit</button>
         </div>
       </section>
     </div>

@@ -26,3 +26,52 @@ it("explains unconfirmed audit outcomes without displaying raw server details",a
 it("hides unexpected server diagnostics and never automatically replays a failed save",async()=>{
  const fetch=vi.fn().mockResolvedValueOnce(response({ok:true,data:fixture("ready")})).mockResolvedValueOnce(response({ok:false,error:"private database diagnostic"},500));vi.stubGlobal("fetch",fetch);render(createElement(AIGovernancePanel));fireEvent.click(await screen.findByRole("button",{name:"Save identity"}));const alert=await screen.findByRole("alert");expect(alert.textContent).toContain("not confirmed");expect(alert.textContent).not.toContain("private database");expect(fetch).toHaveBeenCalledTimes(2);
 });
+
+it("does not enable model policy changes without a live catalog", async () => {
+  const fetcher = vi.fn().mockResolvedValue(response({ ok: true, data: fixture("ready") }));
+  vi.stubGlobal("fetch", fetcher);
+  render(createElement(AIGovernancePanel));
+  const save = await screen.findByRole("button", { name: "Save model policy" });
+  expect((save as HTMLButtonElement).disabled).toBe(true);
+  fireEvent.click(save);
+  expect(fetcher).toHaveBeenCalledOnce();
+});
+
+it("confirms a saved policy only after reading it back and clears confirmation on new edits", async () => {
+  const fetcher = vi.fn()
+    .mockResolvedValueOnce(response({ ok: true, data: fixture("ready") }))
+    .mockResolvedValueOnce(response({ ok: true }))
+    .mockResolvedValueOnce(response({ ok: true, data: { ...fixture("ready"), autonomy: { mode: "observer", perCycleActionLimit: 2, rationale: "test" } } }));
+  vi.stubGlobal("fetch", fetcher);
+  render(createElement(AIGovernancePanel));
+  fireEvent.change(await screen.findByRole("spinbutton", { name: "Maximum actions per cycle" }), { target: { value: "2" } });
+  fireEvent.click(screen.getByRole("button", { name: "Save autonomy" }));
+  expect((await screen.findByRole("status")).textContent).toBe("Autonomy policy saved and reloaded.");
+  expect(fetcher).toHaveBeenCalledTimes(3);
+  fireEvent.change(screen.getByRole("spinbutton", { name: "Maximum actions per cycle" }), { target: { value: "3" } });
+  expect(screen.queryByRole("status")).toBeNull();
+});
+
+it("prevents overlapping policy writes while a save is in progress", async () => {
+  const fetcher = vi.fn().mockResolvedValueOnce(response({ ok: true, data: fixture("ready") })).mockImplementation(() => new Promise(() => {}));
+  vi.stubGlobal("fetch", fetcher);
+  render(createElement(AIGovernancePanel));
+  fireEvent.click(await screen.findByRole("button", { name: "Save autonomy" }));
+  expect((screen.getByRole("button", { name: "Save spending limit" }) as HTMLButtonElement).disabled).toBe(true);
+  expect((screen.getByRole("spinbutton", { name: "Maximum cost per run (USD)" }) as HTMLInputElement).disabled).toBe(true);
+  fireEvent.click(screen.getByRole("button", { name: "Save spending limit" }));
+  expect(fetcher).toHaveBeenCalledTimes(2);
+});
+
+it("does not report success when the saved policy cannot be read back", async () => {
+  const fetcher = vi.fn()
+    .mockResolvedValueOnce(response({ ok: true, data: fixture("ready") }))
+    .mockResolvedValueOnce(response({ ok: true }))
+    .mockResolvedValueOnce(response({ ok: false, error: "governance_unavailable" }, 503));
+  vi.stubGlobal("fetch", fetcher);
+  render(createElement(AIGovernancePanel));
+  fireEvent.click(await screen.findByRole("button", { name: "Save autonomy" }));
+  await screen.findByRole("alert");
+  expect(screen.queryByRole("status")).toBeNull();
+  expect(fetcher).toHaveBeenCalledTimes(3);
+});
