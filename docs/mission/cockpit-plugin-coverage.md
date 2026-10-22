@@ -4,7 +4,7 @@ The cockpit catalog presents registered Axiom capabilities, not a mirror of a th
 
 ## Current capability boundaries
 
-- GitHub, Slack, Microsoft Teams and Linear have browser authorization start flows. They require service-owned app configuration, a registered callback and valid scopes; provider authorization and backend validation remain separate.
+- GitHub, Slack, Microsoft Teams and Linear have browser authorization start flows. Connect starts the protected authorization endpoint directly. Service-owned app configuration, a registered callback and valid scopes are enforced there; missing configuration produces an unavailable response. Customers are not presented with a service-configuration task. Provider authorization and backend validation remain separate.
 - AWS, Azure and Google Cloud retain the existing paired-Agent enrollment flow. Azure cloud enrollment is not Azure DevOps OAuth; these must not be represented as interchangeable integrations.
 - Airflow exposes bounded monitoring from a validated connection. Configuration and execution approvals retain their existing authority.
 - Execution plugins expose registered AWS, Azure and GitHub operations and their required scopes. Their catalog descriptions do not imply provider execution has been tested.
@@ -14,3 +14,7 @@ The cockpit catalog presents registered Axiom capabilities, not a mirror of a th
 ## Current release limits
 
 Local role, sign-in, sign-out, navigation, skill mutation, policy and UI tests do not establish hosted Google OAuth, paid checkout, live provider consent, or installed desktop synchronization. An isolated staging configuration source has not been established. Configuration discovery must not substitute production credentials or mutate production. Production acceptance remains open.
+
+## Current visual and interaction pass
+
+Integrations use compact two-column cards and locally vendored provider marks. Connection metadata is in small labeled disclosures. Plugins use light provider-grouped rows; selecting an entry opens complete capability details in a keyboard-contained dialog. Built-in execution capabilities are not represented as third-party installations. The catalog does not claim broader marketplace support.

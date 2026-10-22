@@ -1,0 +1,1 @@
+Provider marks from Simple Icons 11.15.0, used to identify supported services. Source: https://github.com/simple-icons/simple-icons/tree/11.15.0 . Original trademark rights remain with their respective owners. No endorsement is implied. See LICENSE.txt.

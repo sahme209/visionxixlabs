@@ -27,18 +27,15 @@ export function IntegrationConnectionAction({
   label,
   connected,
   suspended = false,
-  setupAvailable,
   installationRowId,
 }: {
   provider: Provider;
   label: string;
   connected: boolean;
   suspended?: boolean;
-  setupAvailable: boolean;
   installationRowId?: string | null;
 }) {
   const [menuOpen, setMenuOpen] = useState(false);
-  const [showSetup, setShowSetup] = useState(false);
   const [confirmDisconnect, setConfirmDisconnect] = useState(false);
   const [working, setWorking] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -116,14 +113,12 @@ export function IntegrationConnectionAction({
       <div className="flex flex-col items-end gap-1.5">
         <button
           type="button"
-          onClick={() => setupAvailable ? void connect() : setShowSetup(open => !open)}
-          aria-expanded={!setupAvailable ? showSetup : undefined}
+          onClick={() => void connect()}
           disabled={working !== null}
           className="inline-flex min-h-8 items-center gap-1.5 rounded-full bg-[#f3f3f3] px-3.5 text-[13px] font-normal text-zinc-950 transition hover:bg-white disabled:cursor-not-allowed disabled:bg-white/[0.06] disabled:text-zinc-600"
         >
-          {working === "connect" ? "Connecting…" : setupAvailable ? "Connect ↗" : "View setup"}
+          {working === "connect" ? "Connecting…" : "Connect ↗"}
         </button>
-        {!setupAvailable && showSetup && <p role="status" className="max-w-64 text-right text-xs leading-5 text-zinc-400">{label} needs a service-configured {provider === "github" ? "GitHub App installation" : "OAuth application"}, registered callback, and approved scopes before authorization can start. Ask your service administrator to configure it; no credentials are collected here.</p>}
         {error && <p role="status" className="max-w-56 text-right text-[10px] leading-4 text-rose-300">{error}</p>}
       </div>
     );

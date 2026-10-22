@@ -1,0 +1,12 @@
+'use client';
+import {useEffect,useId,useRef} from 'react';
+import {createPortal} from 'react-dom';
+import type {CatalogEntry} from './Catalog';
+export function CatalogDetailDialog({item,onClose}:{item:CatalogEntry;onClose:()=>void}) {
+ const title=useId();const close=useRef<HTMLButtonElement>(null);const panel=useRef<HTMLDivElement>(null);
+ useEffect(()=>{const previous=document.activeElement instanceof HTMLElement?document.activeElement:null;const overflow=document.body.style.overflow;document.body.style.overflow='hidden';close.current?.focus();return()=>{document.body.style.overflow=overflow;if(previous?.isConnected)previous.focus();};},[]);
+ return createPortal(<div className="fixed inset-0 z-[100] grid place-items-center bg-black/70 p-5 backdrop-blur-sm" onKeyDown={event=>{
+  if(event.key==='Escape'){event.preventDefault();event.stopPropagation();onClose();}
+  if(event.key==='Tab'){const buttons=panel.current?.querySelectorAll<HTMLButtonElement>('button');if(!buttons?.length)return;const first=buttons[0],last=buttons[buttons.length-1];if(event.shiftKey&&document.activeElement===first){event.preventDefault();last.focus();}else if(!event.shiftKey&&document.activeElement===last){event.preventDefault();first.focus();}}
+ }}><div ref={panel} role="dialog" aria-modal="true" aria-labelledby={title} className="max-h-[85vh] w-full max-w-lg overflow-y-auto rounded-2xl border border-white/10 bg-[#171717] p-6 text-zinc-100 shadow-2xl"><div className="flex items-start justify-between gap-4"><h2 id={title} className="text-base font-medium">{item.name}</h2><button ref={close} type="button" aria-label="Close details" onClick={onClose} className="rounded px-2 text-zinc-400 hover:text-white">×</button></div><p className="mt-4 text-[13px] leading-6 text-zinc-400">{item.description}</p><p className="mt-4 text-xs text-zinc-500">{item.status.replaceAll('_',' ')}</p><h3 className="mt-6 text-xs font-medium text-zinc-200">Capabilities & permissions</h3><ul className="mt-3 space-y-2 break-words text-xs leading-5 text-zinc-400">{item.permissions.map(permission=><li key={permission}>{permission}</li>)}</ul><p className="mt-5 border-t border-white/10 pt-4 text-xs leading-5 text-zinc-500">Catalog availability grants no access. Credentials, workspace policy, and approvals are checked for each operation.</p><div className="mt-5 flex justify-end"><button type="button" onClick={onClose} className="h-8 rounded-full bg-white/10 px-4 text-xs hover:bg-white/15">Done</button></div></div></div>,document.body);
+}

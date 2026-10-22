@@ -25,3 +25,9 @@ it.each([{canManage:false,unavailable:false},{canManage:true,unavailable:true}])
 it('treats a failed response as unconfirmed rather than installed',async()=>{
  io.fetch.mockRejectedValue(Error('network'));render(createElement(Catalog,{entries,unavailable:false,canManage:true}));fireEvent.click(screen.getByRole('button',{name:'Skills'}));fireEvent.click(screen.getByRole('button',{name:'Install Integration audit'}));fireEvent.click(screen.getByRole('button',{name:'Install skill'}));await screen.findByRole('alert');expect(screen.getByRole('alert').textContent).toContain('not confirmed');expect(screen.getByText('not installed')).toBeTruthy();
 });
+it('opens complete capability details without installing and restores keyboard focus',()=>{
+ render(createElement(Catalog,{entries,unavailable:false,canManage:true}));fireEvent.click(screen.getByRole('button',{name:'Skills'}));
+ const trigger=screen.getByRole('button',{name:'View Integration audit'});trigger.focus();fireEvent.click(trigger);
+ const dialog=screen.getByRole('dialog',{name:'Integration audit'});expect(dialog.textContent).toContain('list_integrations');expect(io.fetch).not.toHaveBeenCalled();
+ fireEvent.keyDown(dialog,{key:'Escape'});expect(screen.queryByRole('dialog')).toBeNull();expect(document.activeElement).toBe(trigger);
+});
