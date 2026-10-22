@@ -53,7 +53,8 @@ describe("mobile website contract", () => {
   });
 
   it("keeps download and demo actions touch-sized and phone-shaped", () => {
-    const download = source("app/download/page.tsx");
+    const download = source("components/cockpit/DownloadContent.tsx");
+    expect(source("app/download/page.tsx")).toContain("<DownloadContent />");
     const demo = source("app/demo/page.tsx");
 
     expect(download).toContain("min-h-12");

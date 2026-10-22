@@ -7,7 +7,7 @@ function request(path: string, init?: ConstructorParameters<typeof NextRequest>[
 }
 
 describe("website delivery boundary", () => {
-    it.each(["/dashboard", "/dashboard/releases", "/operator", "/operator/onboarding"])(
+    it.each(["/dashboard/releases", "/operator", "/operator/onboarding"])(
         "redirects browser product route %s to the download page",
         (path) => {
             const response = proxy(request(path));
@@ -22,7 +22,8 @@ describe("website delivery boundary", () => {
     it.each([
         ["/dashboard/approvals", "/control/governance"],
         ["/dashboard/governance", "/control/governance"],
-        ["/dashboard/settings", "/account"],
+        ["/dashboard/settings", "/control/settings"],
+        ["/dashboard", "/control"],
     ])("migrates legacy governance route %s to %s", (from, to) => {
         const response = proxy(request(from));
 

@@ -18,7 +18,7 @@ function SignInForm() {
   const [enabledProviders, setEnabledProviders] = useState<{ google: boolean; github: boolean; cognito: boolean } | null>(null);
   const router = useRouter();
   const searchParams = useSearchParams();
-  const callbackUrl = safeInternalPath(searchParams.get("callbackUrl"), "/auth/success");
+  const callbackUrl = safeInternalPath(searchParams.get("callbackUrl"), "/control");
   const switchingAccount = searchParams.get("switchAccount") === "1";
 
   // Surface a clear hint when the OAuth callback errored.
@@ -95,21 +95,21 @@ function SignInForm() {
   };
 
   return (
-    <div className="axiom-canvas relative flex min-h-screen items-center justify-center overflow-hidden px-5 py-20">
-      <div aria-hidden className="absolute inset-0 bg-cover bg-center opacity-20" style={{ backgroundImage: "url('/images/axiom-hero-landscape-v1.png')" }} />
+    <div className="relative flex min-h-screen items-center justify-center bg-[#101010] px-5 py-24 text-zinc-100">
+      <div aria-hidden className="absolute inset-0 bg-cover bg-center opacity-[0.04]" style={{ backgroundImage: "url('/images/axiom-hero-landscape-v1.png')" }} />
       <div aria-hidden className="absolute inset-0 bg-[linear-gradient(180deg,rgba(11,12,11,0.76),rgba(11,12,11,0.96)_72%,#0c0d0c)]" />
       <Link href="/" className="absolute left-6 top-6 z-20 flex items-center gap-2.5 text-sm font-semibold text-zinc-200 transition-colors hover:text-white">
         <Image src="/vision-xix-logo.png" alt="" width={27} height={27} className="rounded-md" />
         Vision XIX Labs
       </Link>
 
-      <div className="relative z-10 w-full max-w-lg rounded-[28px] border border-white/[0.09] bg-black/25 p-6 shadow-[0_28px_100px_rgba(0,0,0,0.26)] backdrop-blur-md sm:p-9">
+      <div className="relative z-10 w-full max-w-[380px]">
         <div className="mb-8 flex h-12 w-12 items-center justify-center rounded-xl border border-white/[0.08] bg-white/[0.045]">
           <Image src="/vision-xix-logo.png" alt="" width={30} height={30} className="rounded-md" />
         </div>
         <h1 className="mb-2 text-3xl font-normal tracking-[-0.045em]">Welcome to Axiom</h1>
-        <p className="mb-2 text-sm text-zinc-400">Sign in to your web companion for account settings, connection context, and release guidance.</p>
-        <p className="mb-8 text-xs leading-5 text-zinc-600">The installed Agent remains the secure place for provider configuration and deployment operations.</p>
+        <p className="mb-2 text-sm text-zinc-400">Your workspace, connected.</p>
+        <p className="mb-8 text-xs leading-5 text-zinc-400">Sign in to manage your account and governed cloud operations.</p>
 
         {switchingAccount && <p role="status" className="mb-5 rounded-lg border border-white/10 p-3 text-sm text-zinc-300">Choose the account you want to pair. Google will ask you to select an account. Signing out here does not sign you out of GitHub: switch to the intended account on GitHub before continuing if needed. You must still review and approve the desktop after signing in.</p>}
 
@@ -130,7 +130,7 @@ function SignInForm() {
               autoComplete="email"
               autoFocus
               placeholder="you@company.com"
-              className="block w-full rounded-lg border border-white/[0.08] bg-white/[0.04] px-3.5 py-2.5 text-sm text-white placeholder:text-zinc-600 outline-none transition focus:border-orange-500/50 focus:bg-white/[0.06] focus:ring-2 focus:ring-orange-500/20"
+              className="block w-full rounded-lg border border-white/[0.08] bg-white/[0.04] px-3.5 py-2.5 text-sm text-white placeholder:text-zinc-400 outline-none transition focus:border-orange-500/50 focus:bg-white/[0.06] focus:ring-2 focus:ring-orange-500/20"
             />
           </div>
           <div>
@@ -147,14 +147,14 @@ function SignInForm() {
                 required
                 autoComplete="current-password"
                 placeholder="••••••••"
-                className="block w-full rounded-lg border border-white/[0.08] bg-white/[0.04] px-3.5 py-2.5 pr-10 text-sm text-white placeholder:text-zinc-600 outline-none transition focus:border-orange-500/50 focus:bg-white/[0.06] focus:ring-2 focus:ring-orange-500/20"
+                className="block w-full rounded-lg border border-white/[0.08] bg-white/[0.04] px-3.5 py-2.5 pr-10 text-sm text-white placeholder:text-zinc-400 outline-none transition focus:border-orange-500/50 focus:bg-white/[0.06] focus:ring-2 focus:ring-orange-500/20"
               />
               <button
                 type="button"
                 onClick={() => setShowPassword((s) => !s)}
                 className="absolute right-2.5 top-1/2 -translate-y-1/2 rounded p-1 text-zinc-500 hover:text-zinc-200 transition-colors"
                 aria-label={showPassword ? "Hide password" : "Show password"}
-                tabIndex={-1}
+
               >
                 {showPassword ? <EyeSlashIcon className="h-4 w-4" /> : <EyeIcon className="h-4 w-4" />}
               </button>
@@ -183,7 +183,7 @@ function SignInForm() {
           <>
             <div className="flex items-center gap-3 my-6">
               <div className="flex-1 h-px bg-white/[0.06]" />
-              <span className="text-xs text-zinc-600">Or</span>
+              <span className="text-xs text-zinc-400">Or</span>
               <div className="flex-1 h-px bg-white/[0.06]" />
             </div>
 
@@ -239,8 +239,8 @@ function SignInForm() {
               Create one
             </Link>
           ) : (
-            <Link href="/plans" className="font-medium text-zinc-200 hover:text-white">
-              Request pilot access
+            <Link href="/download" className="font-medium text-zinc-200 hover:text-white">
+              Set up through Axiom Agent
             </Link>
           )}
         </p>

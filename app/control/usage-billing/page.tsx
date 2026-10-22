@@ -36,6 +36,7 @@ function planIdFor(tier: string, status: string) {
 export default async function ControlUsageBillingPage({ searchParams }: { searchParams?: Promise<{ billing?: string | string[] }> }) {
   const context = await currentContext();
   if (!context.isAuthenticated || !context.organizationId || !context.email) redirect("/auth/signin?callbackUrl=/control/usage-billing");
+  if (!context.roles.length) return <p role="alert" className="text-sm text-zinc-300">A current workspace membership is required. Refresh to verify access.</p>;
   const returnedFromCheckout = (await searchParams)?.billing === "success";
   const organizationId = String(context.organizationId);
   const canManage = isAdminOrOwner({ email: context.email, roles: context.roles });
@@ -111,7 +112,7 @@ export default async function ControlUsageBillingPage({ searchParams }: { search
       </section>
 
       <section className="mt-6" aria-labelledby="transactions-heading">
-        <div className="flex items-end justify-between gap-3"><div><h2 id="transactions-heading" className="text-lg font-medium">Credit transactions</h2><p className="mt-1 text-xs text-zinc-500">Only Stripe-verified paid records increase available credits.</p></div>{canManage && <Link href="/plans" className="text-xs text-[#ff783d] hover:text-[#ff9a6d]">Review plans →</Link>}</div>
+        <div className="flex items-end justify-between gap-3"><div><h2 id="transactions-heading" className="text-lg font-medium">Credit transactions</h2><p className="mt-1 text-xs text-zinc-500">Only Stripe-verified paid records increase available credits.</p></div>{canManage && <Link href="/control/plans" className="text-xs text-[#ff783d] hover:text-[#ff9a6d]">Review plans →</Link>}</div>
         <div className="mt-3 overflow-hidden rounded-xl border border-white/[0.08] bg-[#171717]">
           {unavailable ? <p className="px-5 py-6 text-sm text-zinc-500">Credit transactions are unavailable.</p> : transactions.length === 0 ? <p className="px-5 py-6 text-sm text-zinc-500">No credit transactions recorded.</p> : transactions.map((transaction) => {
             const creditsSettled = transaction.status === "paid" || transaction.status === "partially_refunded";

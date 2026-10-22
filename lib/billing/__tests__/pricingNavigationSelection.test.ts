@@ -85,7 +85,7 @@ describe("pricing navigation and explicit plan selection", () => {
   it("does not read authority or enable billing when the existing preview gate is closed", async () => {
     vi.stubEnv("AXIOM_SELF_SERVICE_BILLING_ENABLED","false"); render(await PlansPage({}));
     expect(io.context).not.toHaveBeenCalled(); expect(io.fetch).not.toHaveBeenCalled();
-    expect(screen.getByRole("link",{name:"Start free"}).getAttribute("href")).toBe("/download");
+    expect(screen.getByRole("link",{name:"Start free"}).getAttribute("href")).toBe("/auth/signin?callbackUrl=%2Fcontrol%3Fplan%3Dfree%26interval%3Dmonthly");
     expect(screen.queryByRole("button",{name:"Choose Pro"})).toBeNull();
   });
 });
@@ -115,4 +115,13 @@ it.each([true, false])("keeps pricing activation copy consistent with the checko
     expect(screen.getByText(/Pricing preview.*no charges/)).toBeTruthy();
     expect(screen.queryByRole("button", {name: "Choose Pro"})).toBeNull();
   }
+});
+
+it("routes every signed-out preview plan to sign-in while checkout is disabled", () => {
+  render(createElement(PublicPlansCatalog, { checkoutEnabled: false, workspace: {status:"signed_out"} }));
+  fireEvent.click(screen.getByRole("button", {name:"Annual · save 20%"}));
+  expect(screen.getByRole("link", {name:"Review Pro"}).getAttribute("href")).toBe(publicPlanSignInPath({planId:"pro",billingInterval:"annual"}));
+  expect(screen.getByRole("link", {name:"Review Enterprise"}).getAttribute("href")).toBe(publicPlanSignInPath({planId:"enterprise",billingInterval:"annual"}));
+  expect(screen.getByRole("link", {name:"Start free"}).getAttribute("href")).toContain("%2Fcontrol%3Fplan%3Dfree%26interval%3Dannual");
+  expect(io.fetch).not.toHaveBeenCalled();
 });

@@ -15,7 +15,7 @@
  */
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import {
   ArrowRightIcon,
   ArrowUpRightIcon,
@@ -106,6 +106,7 @@ function fuzzyScore(query: string, target: string): number {
 
 export function CommandPalette() {
   const router = useRouter();
+  const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [activeIdx, setActiveIdx] = useState(0);
@@ -195,7 +196,7 @@ export function CommandPalette() {
     }
   };
 
-  if (!open) return null;
+  if (!open || ["/control", "/account", "/auth"].some(prefix => pathname?.startsWith(prefix))) return null;
 
   return (
     <div

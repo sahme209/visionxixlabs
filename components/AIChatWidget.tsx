@@ -73,7 +73,7 @@ export default function AIChatWidget() {
   }, [messages]);
 
   if (pathname?.startsWith("/operator/onboarding")) return null;
-  if (pathname?.startsWith("/dashboard")) return null;
+  if (["/dashboard", "/control", "/account", "/auth"].some(prefix => pathname?.startsWith(prefix))) return null;
 
   const sendMessage = async () => {
     const text = input.trim();

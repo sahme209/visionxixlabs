@@ -30,6 +30,7 @@ async function readOverview(organizationId: string): Promise<Overview | null> {
 export default async function ControlOverviewPage() {
   const context = await currentContext();
   if (!context.isAuthenticated || !context.organizationId) redirect("/auth/signin?callbackUrl=/control");
+  if (!context.roles.length) return <p role="alert" className="text-sm text-zinc-300">A current workspace membership is required. Refresh to verify access.</p>;
   const overview = await readOverview(String(context.organizationId));
 
   return (
@@ -82,7 +83,7 @@ export default async function ControlOverviewPage() {
         <div>
           <h2 className="text-base font-medium">Operate in desktop</h2>
           <p className="mt-2 text-sm leading-6 text-zinc-500">Repository editing, diffs, pull requests, deployment requests, Airflow monitoring, and troubleshooting remain in Axiom Agent.</p>
-          <Link href="/download" className="mt-3 inline-flex text-sm text-[#ff783d] hover:text-[#ff9a6d]">Download or update Axiom Agent →</Link>
+          <Link href="/control/desktop" className="mt-3 inline-flex text-sm text-[#ff783d] hover:text-[#ff9a6d]">Download or update Axiom Agent →</Link>
         </div>
       </section>
     </div>

@@ -88,6 +88,7 @@ function IntegrationRow({ icon, name, description, status, details, action }: {
 export default async function ControlIntegrationsPage() {
   const context = await currentContext();
   if (!context.isAuthenticated || !context.organizationId || !context.email) redirect("/auth/signin?callbackUrl=/control/integrations");
+  if (!context.roles.length) return <p role="alert" className="text-sm text-zinc-300">A current workspace membership is required. Refresh to verify access.</p>;
   const organizationId = String(context.organizationId);
   const canManage = isAdminOrOwner({ email: context.email, roles: context.roles });
   const githubConfig = await getGithubConfig();
@@ -132,7 +133,7 @@ export default async function ControlIntegrationsPage() {
       ? github.status
       : !github.lastSeenAt
         ? "installation_recorded"
-        : Date.now() - github.lastSeenAt.getTime() <= GITHUB_VALIDATION_FRESH_FOR_MS ? "validated_read_only" : "validation_overdue";
+        : new Date().getTime() - github.lastSeenAt.getTime() <= GITHUB_VALIDATION_FRESH_FOR_MS ? "validated_read_only" : "validation_overdue";
 
   return (
     <div className="max-w-5xl">
@@ -165,7 +166,7 @@ export default async function ControlIntegrationsPage() {
       <section className="mt-8" aria-labelledby="automation-heading">
         <h2 id="automation-heading" className="mb-3 text-xs font-medium text-zinc-400">Orchestration</h2>
         <div className="rounded-xl border border-white/[0.08] bg-[#171717]">
-          <IntegrationRow icon={ICONS.airflow} name="Apache Airflow" status={airflow?.status ?? "not_connected"} description="DAG discovery, dependency monitoring, governed automation, retries, and approval-gated actions." details={airflow ? `${typeof airflowMetadata.version === "string" ? `Version ${airflowMetadata.version}` : "Version unavailable"} · ${typeof airflowMetadata.dagCount === "number" ? `${airflowMetadata.dagCount} DAGs` : "DAG count unavailable"} · ${formatTime(airflow.lastValidatedAt)}` : "No validated Airflow connection recorded."} action={<Link href="/download" className="inline-flex min-h-9 items-center rounded-lg border border-white/[0.1] px-3 text-xs font-medium text-zinc-300 hover:bg-white/[0.05]">Open operational setup →</Link>} />
+          <IntegrationRow icon={ICONS.airflow} name="Apache Airflow" status={airflow?.status ?? "not_connected"} description="DAG discovery, dependency monitoring, governed automation, retries, and approval-gated actions." details={airflow ? `${typeof airflowMetadata.version === "string" ? `Version ${airflowMetadata.version}` : "Version unavailable"} · ${typeof airflowMetadata.dagCount === "number" ? `${airflowMetadata.dagCount} DAGs` : "DAG count unavailable"} · ${formatTime(airflow.lastValidatedAt)}` : "No validated Airflow connection recorded."} action={<Link href="/control/desktop" className="inline-flex min-h-9 items-center rounded-lg border border-white/[0.1] px-3 text-xs font-medium text-zinc-300 hover:bg-white/[0.05]">Open operational setup →</Link>} />
         </div>
       </section>
 
@@ -174,7 +175,7 @@ export default async function ControlIntegrationsPage() {
         <div className="divide-y divide-white/[0.06] rounded-xl border border-white/[0.08] bg-[#171717]">
           {CLOUD_PROVIDERS.map((provider) => {
             const row = cloud.find((item) => item.provider === provider);
-            return <IntegrationRow key={provider} icon={ICONS.cloud} name={provider === "gcp" ? "Google Cloud" : provider.toUpperCase()} status={row?.status ?? "not_connected"} description={provider === "aws" ? "OIDC-backed deployment authorization; no long-lived AWS access key is stored." : "Provider authorization is shown only after backend validation."} details={row ? `Last lifecycle transition: ${formatTime(row.lastTransitionAt)}` : "No connector lifecycle recorded."} />;
+            return <IntegrationRow key={provider} icon={ICONS.cloud} name={provider === "gcp" ? "Google Cloud" : provider.toUpperCase()} status={row?.status ?? "not_connected"} description={provider === "aws" ? "OIDC-backed deployment authorization; no long-lived AWS access key is stored." : "Provider authorization is shown only after backend validation."} details={row ? `Last lifecycle transition: ${formatTime(row.lastTransitionAt)}` : "Setup required. Configure and validate a scoped cloud connection in Axiom Agent."} action={canManage ? <Link href="/control/desktop" className="inline-flex min-h-9 items-center rounded-lg border border-white/10 px-3 text-xs text-zinc-300 hover:bg-white/5">Setup in Agent →</Link> : undefined} />;
           })}
         </div>
       </section>

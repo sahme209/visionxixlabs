@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { CheckIcon } from "@heroicons/react/24/outline";
 import { PUBLIC_PLAN_CATALOG, isPaidPublicPlanId, type BillingInterval, type PaidPublicPlanId } from "@/lib/billing/publicPlanCatalog";
 
-import { publicPlanSignInPath, type PublicPlanSelection } from "@/lib/billing/planSelection";
+import { publicPlanSignInPath, publicPlanSelectionPath, type PublicPlanSelection } from "@/lib/billing/planSelection";
 
 export type OwnedCheckoutIntentState = "none" | "prepared" | "attempted" | "unknown" | "session_confirmed" | "bound" | "terminal_verified" | "unavailable";
 export type PublicCheckoutWorkspace =
@@ -40,7 +40,7 @@ export function PublicPlansCatalog({ checkoutEnabled, initialSelection = null, w
   async function startCheckout(planId: PaidPublicPlanId) {
     if (!checkoutEnabled || ownedCannotPurchase || pending.current) return;
     const selection = { planId, billingInterval: interval };
-    if (workspace.status === "signed_out") { router.push(publicPlanSignInPath(selection)); return; }
+    if (workspace.status === "signed_out") { router.push(publicPlanSignInPath(selection, ownedTestCheckout)); return; }
     if (workspace.status !== "ready") { setError("Your workspace could not be verified. Refresh this page before choosing a plan."); return; }
     pending.current = true;
     const requestScope = scope;
@@ -63,7 +63,7 @@ export function PublicPlansCatalog({ checkoutEnabled, initialSelection = null, w
       });
       if (!isCurrent()) return;
       if (response.status === 401) {
-        router.push(publicPlanSignInPath(selection));
+        router.push(publicPlanSignInPath(selection, ownedTestCheckout));
         return;
       }
       const payload = await response.json() as {
@@ -136,8 +136,8 @@ export function PublicPlansCatalog({ checkoutEnabled, initialSelection = null, w
               </ul>
               <div className="mt-auto pt-9">
                 {!paidPlanId || !checkoutEnabled ? (
-                  <Link href="/download" className={`flex min-h-12 items-center justify-center rounded-full px-5 text-center text-sm font-semibold transition ${featured ? "bg-[#f54e00] text-white hover:bg-[#ff641f]" : "border border-white/[0.14] bg-white/[0.04] text-zinc-100 hover:bg-white/[0.08]"}`}>
-                    {plan.id === "free" ? "Start free" : "Try Axiom before billing opens"}
+                  <Link href={plan.id === "free" ? (workspace.status === "ready" ? "/control" : `/auth/signin?callbackUrl=${encodeURIComponent(`/control?plan=free&interval=${interval}`)}`) : paidPlanId ? (workspace.status === "ready" ? publicPlanSelectionPath({planId:paidPlanId,billingInterval:interval}) : publicPlanSignInPath({planId:paidPlanId,billingInterval:interval},ownedTestCheckout)) : "/control"} className={`flex min-h-12 items-center justify-center rounded-full px-5 text-center text-sm font-semibold transition ${featured ? "bg-[#f54e00] text-white hover:bg-[#ff641f]" : "border border-white/[0.14] bg-white/[0.04] text-zinc-100 hover:bg-white/[0.08]"}`}>
+                    {plan.id === "free" ? "Start free" : `Review ${plan.name}`}
                   </Link>
                 ) : (
                   <button type="button" disabled={busyPlan !== null || workspace.status === "unavailable" || ownedCannotPurchase} onClick={() => void startCheckout(paidPlanId)} className={`flex min-h-12 w-full items-center justify-center rounded-full px-5 text-sm font-semibold transition disabled:cursor-wait disabled:opacity-60 ${featured ? "bg-[#f54e00] text-white hover:bg-[#ff641f]" : "border border-white/[0.14] bg-white/[0.04] text-zinc-100 hover:bg-white/[0.08]"}`}>

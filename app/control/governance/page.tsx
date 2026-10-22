@@ -8,6 +8,7 @@ import { ApprovalDecisionButtons } from "./ApprovalDecisionButtons";
 export default async function GovernancePage() {
   const context = await currentContext();
   if (!context.isAuthenticated || !context.organizationId) redirect("/auth/signin?callbackUrl=/control/governance");
+  if (!context.roles.length) return <p role="alert" className="text-sm text-zinc-300">A current workspace membership is required. Refresh to verify access.</p>;
   const organizationId = String(context.organizationId);
   const [members, environments, proposals] = await Promise.all([
     prisma.orgMembership.groupBy({ by: ["role"], where: { organizationId, acceptedAt: { not: null } }, _count: { _all: true } }),

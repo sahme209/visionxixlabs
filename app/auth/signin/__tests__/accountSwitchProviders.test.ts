@@ -32,5 +32,5 @@ it("cannot use the switching marker to bypass callback safety or create an authe
   render(createElement(SignInPage));
   expect(mocks.signIn).not.toHaveBeenCalled(); expect(mocks.push).not.toHaveBeenCalled();
   fireEvent.click(await screen.findByRole("button", { name: "Sign in with Google" }));
-  await waitFor(() => expect(mocks.signIn).toHaveBeenCalledWith("google", { callbackUrl: "/auth/success", redirect: true }, { prompt: "select_account" }));
+  await waitFor(() => expect(mocks.signIn).toHaveBeenCalledWith("google", { callbackUrl: "/control", redirect: true }, { prompt: "select_account" }));
 });
