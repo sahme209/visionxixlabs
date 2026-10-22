@@ -1,7 +1,8 @@
 import { desktopClient, type ApiResult } from "./desktopClient";
 import { azureEnrollmentInputError, isDesktopAzureAccount, isDesktopAzureInventory, type AzureEnrollmentInput, type DesktopAzureAccount, type DesktopAzureInventory } from "./azureEnrollmentContract";
 const unavailable = "Azure connection service is unavailable. Refresh connection state before trying again.";
-const messages: Record<string, string> = { connection_authority_required: "Your current workspace role no longer permits this action.", cloud_account_limit_reached: "The workspace cloud account allowance is exhausted.", connection_disconnected: "This Azure connection is disconnected. Reconnect with fresh validation.", enrollment_conflict: "Connection state changed. Refresh before retrying.", azure_identity_unverified: "Azure did not confirm the expected tenant and subscription read identity.", azure_inventory_denied: "Azure denied this bounded resource-group read.", azure_inventory_unavailable: "The bounded inventory could not be observed. No complete inventory is claimed.", invalid_input: "Check the Azure IDs, secret and current connection version." };
+const pairingRequired = "Your paired desktop session could not be authorized. Sign in again to refresh workspace access, then refresh Azure connection state.";
+const messages: Record<string, string> = { desktop_session_required: pairingRequired, enrollment_unavailable: "The Azure connection service or its required storage is unavailable. Refresh connection state before trying again; contact your workspace administrator if this continues.", connection_authority_required: "Your current workspace role no longer permits this action.", cloud_account_limit_reached: "The workspace cloud account allowance is exhausted.", connection_disconnected: "This Azure connection is disconnected. Reconnect with fresh validation.", enrollment_conflict: "Connection state changed. Refresh before retrying.", azure_identity_unverified: "Azure did not confirm the expected tenant and subscription read identity.", azure_inventory_denied: "Azure denied this bounded resource-group read.", azure_inventory_unavailable: "The bounded inventory could not be observed. No complete inventory is claimed.", invalid_input: "Check the Azure IDs, secret and current connection version." };
 async function request(method: "GET" | "POST", path: string, body?: unknown): Promise<ApiResult<unknown>> {
     const config = desktopClient.config;
     if (!config.sessionToken?.startsWith("axm.desk."))
@@ -18,9 +19,13 @@ async function request(method: "GET" | "POST", path: string, body?: unknown): Pr
         } | null;
         if (desktopClient.config !== config)
             return { ok: false, error: "Workspace credentials changed. Refresh the Azure connection view." };
+        // An HTTP 401 is an authorization failure even when a gateway returns
+        // non-JSON or a success-shaped body. Never echo server/provider text.
+        if (response.status === 401)
+            return { ok: false, error: pairingRequired };
         if (response.ok && payload?.ok === true && payload.data !== undefined)
             return { ok: true, data: payload.data };
-        return { ok: false, error: typeof payload?.error === "string" ? messages[payload.error] ?? unavailable : unavailable };
+        return { ok: false, error: typeof payload?.error === "string" && Object.prototype.hasOwnProperty.call(messages, payload.error) ? messages[payload.error] : unavailable };
     }
     catch {
         return { ok: false, error: unavailable };
