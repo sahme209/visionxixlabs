@@ -1,0 +1,67 @@
+{
+  "date": "2026-10-22",
+  "account": "acct_1SpEdeFet66ERY29",
+  "livemode": true,
+  "state": "catalog_prepared_sales_blocked",
+  "free": {
+    "priceCents": 0,
+    "stripeSubscriptionRequired": false,
+    "seats": 2,
+    "monthlyDeployments": 10,
+    "monthlyAICreditsCents": 200
+  },
+  "paid": {
+    "pro": {
+      "product": "axiom_pro_v1",
+      "monthlyPrice": "price_1UTBpKFet66ERY29V4FIAMwo",
+      "monthlyUnitAmountCents": 2900,
+      "annualPrice": "price_1UTBq1Fet66ERY29FCpChCbk",
+      "annualUnitAmountCents": 27840,
+      "monthlyDeployments": 100,
+      "monthlyAICreditsCentsPerSeat": 1000
+    },
+    "enterprise": {
+      "product": "axiom_enterprise_v1",
+      "monthlyPrice": "price_1UTBpPFet66ERY29wy58WfoC",
+      "monthlyUnitAmountCents": 7900,
+      "annualPrice": "price_1UTBq4Fet66ERY29ihnYo6OY",
+      "annualUnitAmountCents": 75840,
+      "monthlyDeployments": 500,
+      "monthlyAICreditsCentsPerSeat": 3000
+    }
+  },
+  "controls": {
+    "bothProductsActive": false,
+    "annualPricesActive": false,
+    "monthlyPricesActive": true,
+    "productionEnvChanged": false,
+    "checkoutEnabledByThisTask": false,
+    "customerOrSubscriptionChanged": false,
+    "chargedCustomers": false,
+    "supportWebhookChanged": false
+  },
+  "blockers": [
+    "Only live webhook is supporter endpoint; subscription lifecycle endpoint and separate secure signing-secret binding absent.",
+    "Production planForStripeTier grants legacy flat AI pools: default 2500c, Growth 20000c, Enterprise 500000c; public promised pools are 200c, 1000c times seats, 3000c times seats.",
+    "Production paid seatQuantity does not determine AI allowance. Anniversary policy/full first paid allowance and original Free bucket separation remain TEST-isolated.",
+    "Must prove purchase -> signed subscription/invoice reconciliation -> paid coverage -> correct seat/AI/deployment enforcement before enabling sales.",
+    "Do not migrate or reprice existing subscriptions or repurpose unrelated VisaNova products/support webhook."
+  ],
+  "validation": {
+    "targetedTestsPassed": 77,
+    "realPaidCheckoutAcceptance": false,
+    "independentReview": "billing_bridge_financial_review confirmed production entitlement mismatch"
+  },
+  "nextSequence": [
+    "Implement versioned opt-in public-plan production contract; preserve legacy existing customers and support.",
+    "Integrate paid coverage, seat-scaled anniversary allowance and Free-to-paid bucket separation with production reservation/admission paths; test subscription update/cancel/refund/replay/concurrency.",
+    "Verify production schema without running blanket migrations; rehearse exact schema changes if needed.",
+    "Configure dedicated subscription webhook + securely bind separate signing secret and four existing price IDs; keep secrets out of chat/source.",
+    "Run isolated end-to-end acceptance, independently review, deploy verified bridge, activate prepared catalog and enable checkout only when fulfillment is verified."
+  ],
+  "desktopVersion": {
+    "liveManifestTag": "desktop-v0.1.20",
+    "source": "https://github.com/sahme209/axiom-releases/releases/tag/desktop-v0.1.20",
+    "explanation": "Website deployment does not publish a new signed desktop installer. Keep actual published version until validated release assets exist."
+  }
+}
