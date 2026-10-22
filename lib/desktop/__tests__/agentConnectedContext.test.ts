@@ -161,3 +161,22 @@ it.each(['getItem', 'setItem', 'removeItem'] as const)('keeps connected Agent co
     await waitFor(() => expect(m.client.sendAgentMessage).toHaveBeenCalledWith('conversation-1', 'Inspect without preference persistence', 'vercel_gateway', expect.objectContaining({ repositoryFullName: 'fixture/repository', environmentId: 'env-1' }), 'fixture/model', expect.objectContaining({ signal: expect.anything(), onDraft: expect.any(Function) })));
   } finally { spy.mockRestore(); }
 });
+
+
+it("keeps compact context discoverable and preserves the draft while opening configuration", async () => {
+  render(createElement(AgentChatView));
+  await waitFor(() => expect((screen.getByLabelText("Active GitHub repository") as HTMLSelectElement).value).toBe("fixture/repository"));
+  const summary = screen.getByText("Workspace context").closest("summary")!;
+  const disclosure = summary.parentElement as HTMLDetailsElement;
+  expect(disclosure.open).toBe(false);
+  expect(summary.textContent).toContain("fixture/repository");
+  const composer = screen.getByRole("textbox") as HTMLTextAreaElement;
+  fireEvent.change(composer, { target: { value: "Keep my unsent work" } });
+  fireEvent.click(summary);
+  expect(disclosure.open).toBe(true);
+  fireEvent.click(summary);
+  expect(disclosure.open).toBe(false);
+  expect(composer.value).toBe("Keep my unsent work");
+  expect(screen.getByLabelText("Agent composer")).toBeTruthy();
+  expect(m.client.sendAgentMessage).not.toHaveBeenCalled();
+});

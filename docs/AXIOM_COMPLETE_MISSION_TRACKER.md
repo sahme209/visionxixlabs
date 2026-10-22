@@ -4234,3 +4234,11 @@ Private receipts: local-user-testing-35334485/authenticated-ui-acceptance-report
 
 Additional exact-source native probe before owner login: source35334485 with frontend tree SHA25633cf5deb1bb82d57cc33f602150306bbb5ede8de2910bdd2ce336c1a743858a2 passed owned instrumented WebView IPC read/edit/stale-save refusal/exclusive-create/overwrite refusal and baseline→4passing original checks. Owned probe PID19498 was stopped and absent. That earlier test bundled the frontend but did not exercise React controls or authentication. Private repair-ipc acceptance and cleanup receipts retained separately.
 Local production website HTTP checks also returned200 for /, /product, /docs/getting-started, /pricing and /download, with the shared guide in actual rendered HTML; temporary server stopped. These are local HTTP checks, not hosted/browser/checkout acceptance.
+
+
+### Desktop layout correction — 2026-10-22 (local, acceptance pending)
+- User reports clutter and incomplete coding workflow. Focused source investigation found workspace configuration and Agent settings permanently competing with the conversation/composer.
+- Implement compact native disclosures for context and specialized Agent configuration, retain selected target/error indicators, wrap the mode/model toolbar, and bound shrinkable scroll regions. Do not change send, billing, approval or credential behavior.
+- Independent review caught and corrected a small-window clipping risk. No remaining source blocker; screenshot/installed layout acceptance is still pending (screen-capture permission unavailable).
+- 86 affected React interaction tests passed on pinned Node 24; new draft/disclosure regression passed (14 context tests total). Root TypeScript, focused ESLint and desktop frontend build passed. Initial default-Node test setup failed before assertions because its localStorage API differed; pinned Node corrected the environment, no test weakened.
+- Next: rebuild exact-source private local app; verify context disclosure, draft retention, model selection, recovery and small-window reachability. Existing authenticated editing/cancellation evidence remains separate; hosted model availability remains blocked.

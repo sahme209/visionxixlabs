@@ -763,7 +763,7 @@ function AgentChatSession({ onOpenSettings, identity, active, requestedSkill, re
   }
 
   return (
-    <div className="flex-1 flex flex-col min-h-0 bg-axiom-bg">
+    <div className="flex-1 flex flex-col min-h-0 min-w-0 overflow-hidden bg-axiom-bg">
       <div className="flex items-center gap-3 border-b border-white/[0.06] px-8 py-3">
         <label className="flex min-w-0 flex-1 items-center gap-2 text-[11px] text-zinc-500">
           <span className="shrink-0">Conversation</span>
@@ -786,8 +786,13 @@ function AgentChatSession({ onOpenSettings, identity, active, requestedSkill, re
           {loadingConversation ? "Loading…" : "New chat"}
         </button>
       </div>
-      <div className="border-b border-white/[0.06] bg-white/[0.015] px-8 py-3">
-        <div className="mx-auto grid max-w-5xl grid-cols-1 gap-2 md:grid-cols-3">
+      <details className="max-h-[30vh] shrink-0 overflow-y-auto border-b border-white/[0.06] bg-white/[0.015] px-5 py-3">
+        <summary className="mx-auto max-w-5xl cursor-pointer text-xs text-zinc-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-orange-300">
+          Workspace context <span className="ml-2 text-zinc-400">{repositoryFullName || "Choose a repository"} · {branch || "No branch"} · {environmentOptions.find(environment => environment.id === environmentId)?.name ?? "No deployment environment"}</span>
+          {(repositoryError || environmentError || contextError) && <span className="ml-2 text-amber-300">Context needs attention — expand to recover</span>}
+        </summary>
+        <div className="mx-auto mt-3 max-w-5xl">
+        <div className="grid grid-cols-1 gap-2 md:grid-cols-3">
           <div className="min-w-0 text-[10px] uppercase tracking-[0.12em] text-zinc-600">
             Repository
             <input type="search" aria-label="Search connected repositories" value={repositorySearch} onChange={event => setRepositorySearch(event.target.value)} placeholder="Find a connected repository" className="mt-1 w-full rounded-lg border border-white/10 bg-[#151719] px-3 py-2 text-xs normal-case tracking-normal text-zinc-200 outline-none focus:border-white/25" />
@@ -878,8 +883,9 @@ function AgentChatSession({ onOpenSettings, identity, active, requestedSkill, re
           </p>;
         })()}
         {contextError && <p role="status" className="mx-auto mt-2 max-w-5xl text-[11px] text-amber-300">{contextError}. Repository and branch can be entered manually.</p>}
-      </div>
-      <div ref={scrollRef} className="flex-1 overflow-y-auto px-8 py-8">
+        </div>
+      </details>
+      <div ref={scrollRef} className="min-h-0 flex-1 overflow-y-auto px-5 py-5">
         <div className="max-w-3xl mx-auto space-y-5">
           {turns.length === 0 && (
             <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-6 text-center">
@@ -922,7 +928,7 @@ function AgentChatSession({ onOpenSettings, identity, active, requestedSkill, re
           )}
         </div>
       </div>
-      <div className="border-t border-white/[0.06] px-8 py-5">
+      <div aria-label="Agent composer" className="min-h-0 max-h-[50vh] shrink overflow-y-auto border-t border-white/[0.06] px-5 py-3">
         <div className="max-w-3xl mx-auto">
           {needsRecovery && !sending && <div role="status" className="mb-3 rounded-lg border border-orange-400/20 bg-orange-400/5 p-3 text-xs text-orange-100">
             <p>Review the saved conversation before sending another request. Reloading does not retry AI work or confirm that an interrupted operation has finished.</p>
@@ -930,7 +936,9 @@ function AgentChatSession({ onOpenSettings, identity, active, requestedSkill, re
           </div>}
           {active && skillState === "unavailable" && <p role="status" className="mb-2 text-xs text-zinc-400">Skill shortcuts could not be verified. Existing workspace permissions remain enforced. <button type="button" disabled={sending || loadingConversation} onClick={() => setSkillAttempt(attempt => attempt + 1)} className="underline">Retry skills</button></p>}
           {active && skillState === "ready" && enabledSkills.length > 0 && <div className="mb-3 flex items-center gap-2 overflow-x-auto pb-1"><span className="shrink-0 text-[10px] uppercase tracking-[0.12em] text-zinc-600">Skills</span>{enabledSkills.map((skill) => <button key={skill.id} type="button" disabled={sending || loadingConversation || Boolean(pendingProposal)} onClick={() => setInput((current) => selectSkillInvocation(current, skill.id))} className="shrink-0 rounded-full border border-violet-300/[0.12] bg-violet-300/[0.04] px-2.5 py-1 text-[10px] text-violet-200 hover:bg-violet-300/[0.08] disabled:opacity-40">/{skill.id}</button>)}</div>}
-          <div className="mb-3 flex flex-wrap items-center gap-3">
+          <details className="mb-3 rounded-lg border border-white/[0.06] px-3 py-2">
+            <summary className="cursor-pointer text-xs text-zinc-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-orange-300">Agent configuration · {resolveAgentProfile(agentProfile)?.label}</summary>
+          <div className="mt-3 flex flex-wrap items-center gap-3">
             <label className="text-xs text-zinc-400">Agent
               <select aria-label="Specialized Agent" value={agentProfile} disabled={sending || loadingConversation || Boolean(pendingProposal)} onChange={event => {
                 const profile = resolveAgentProfile(event.target.value);
@@ -942,7 +950,8 @@ function AgentChatSession({ onOpenSettings, identity, active, requestedSkill, re
             <p role="status" className="text-[11px] text-zinc-500">{resolveAgentProfile(agentProfile)?.description} Workspace tool policy and approvals still apply.</p>
             {onOpenSettings && <button type="button" onClick={() => onOpenSettings("agents")} className="text-xs text-zinc-400 underline underline-offset-2">Agent permissions</button>}
           </div>
-          <div className="mb-3 flex items-center gap-1" role="group" aria-label="Agent controls">
+          </details>
+          <div className="mb-3 flex flex-wrap items-center gap-1" role="group" aria-label="Agent controls">
             {OPERATION_MODES.map((mode) => (
               <button key={mode.id} type="button" title={mode.description} aria-pressed={operationMode === mode.id} onClick={() => setOperationMode(mode.id)} className={`rounded-md px-3 py-1.5 text-xs ${operationMode === mode.id ? "bg-violet-400/15 text-violet-100 ring-1 ring-violet-300/20" : "text-zinc-500 hover:text-zinc-300"}`}>{mode.label}</button>
             ))}
