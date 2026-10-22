@@ -658,51 +658,66 @@ function CreatePullRequestPanel() {
   const canSubmit = [repositoryFullName, baseBranch, newBranchName, filePath, fileContent, commitMessage, prTitle]
     .every((value) => value.trim().length > 0) && repositoryFullName.includes("/");
 
+  const activeRequest = useRef(false);
+  const mounted = useRef(true);
+  useEffect(() => { mounted.current = true; return () => { mounted.current = false; }; }, []);
+
   async function submit() {
+    if (activeRequest.current || !canSubmit) return;
+    activeRequest.current = true;
+    const context = desktopClient.config;
+    const request = { repositoryFullName, baseBranch, newBranchName, filePath, fileContent, commitMessage, prTitle, prBody };
+    let phase: "branch" | "commit" | "pull_request" = "branch";
+    const stillCurrent = () => {
+      if (!mounted.current) return false;
+      if (desktopClient.config === context) return true;
+      setError("Your workspace changed. No further writes were sent. Review the branch, commit and PR state in the original workspace before starting again; the last request may already have completed.");
+      return false;
+    };
+    const failed = () => setError(phase === "branch"
+      ? "Branch creation was not confirmed. Inspect the original repository before retrying; the branch may already exist. No commit or PR request was sent."
+      : phase === "commit"
+        ? "The branch was created, but the commit was not confirmed. Inspect the original branch before retrying; the commit may already exist. No PR request was sent."
+        : "The branch and commit succeeded, but PR creation was not confirmed. Inspect the original repository before retrying; the PR may already exist.");
     setError(null);
     setPrUrl(null);
-
     setStep("branch");
-    const branchResult = await desktopClient.createGithubBranch({ repositoryFullName, baseBranch, newBranchName });
-    if (!branchResult.ok) {
-      setError(`Branch creation failed: ${branchResult.error}. Nothing else was changed.`);
-      setStep("idle");
-      return;
+    try {
+      const branchResult = await desktopClient.createGithubBranch({ repositoryFullName: request.repositoryFullName, baseBranch: request.baseBranch, newBranchName: request.newBranchName });
+      if (!stillCurrent()) return;
+      if (!branchResult.ok) { failed(); return; }
+      phase = "commit";
+      setStep(phase);
+      const commitResult = await desktopClient.commitGithubFile({ repositoryFullName: request.repositoryFullName, branch: request.newBranchName, path: request.filePath, content: request.fileContent, message: request.commitMessage });
+      if (!stillCurrent()) return;
+      if (!commitResult.ok) { failed(); return; }
+      phase = "pull_request";
+      setStep(phase);
+      const prResult = await desktopClient.openGithubPullRequest({ repositoryFullName: request.repositoryFullName, head: request.newBranchName, base: request.baseBranch, title: request.prTitle, body: request.prBody });
+      if (!stillCurrent()) return;
+      if (!prResult.ok) { failed(); return; }
+      setPrUrl(prResult.data.htmlUrl);
+    } catch {
+      if (stillCurrent()) failed();
+    } finally {
+      activeRequest.current = false;
+      if (mounted.current) setStep("idle");
     }
-
-    setStep("commit");
-    const commitResult = await desktopClient.commitGithubFile({ repositoryFullName, branch: newBranchName, path: filePath, content: fileContent, message: commitMessage });
-    if (!commitResult.ok) {
-      setError(`Branch "${newBranchName}" was created, but committing the file failed: ${commitResult.error}. The branch still exists on GitHub — you can finish the commit there, or delete the branch and retry.`);
-      setStep("idle");
-      return;
-    }
-
-    setStep("pull_request");
-    const prResult = await desktopClient.openGithubPullRequest({ repositoryFullName, head: newBranchName, base: baseBranch, title: prTitle, body: prBody });
-    if (!prResult.ok) {
-      setError(`Branch "${newBranchName}" and the commit both succeeded, but opening the pull request failed: ${prResult.error}. You can open the PR directly on GitHub from that branch.`);
-      setStep("idle");
-      return;
-    }
-
-    setPrUrl(prResult.data.htmlUrl);
-    setStep("done");
   }
 
   return (
     <Group label="Create a pull request">
       <div className="px-4 py-3.5 space-y-3">
-        <LabeledInput label="Repository" placeholder="owner/repo" value={repositoryFullName} onChange={setRepositoryFullName} />
+        <LabeledInput disabled={busy} label="Repository" placeholder="owner/repo" value={repositoryFullName} onChange={setRepositoryFullName} />
         <div className="grid grid-cols-2 gap-3">
-          <LabeledInput label="Base branch" placeholder="main" value={baseBranch} onChange={setBaseBranch} />
-          <LabeledInput label="New branch name" placeholder="axiom/my-change" value={newBranchName} onChange={setNewBranchName} />
+          <LabeledInput disabled={busy} label="Base branch" placeholder="main" value={baseBranch} onChange={setBaseBranch} />
+          <LabeledInput disabled={busy} label="New branch name" placeholder="axiom/my-change" value={newBranchName} onChange={setNewBranchName} />
         </div>
-        <LabeledInput label="File path" placeholder="path/to/file.ts" value={filePath} onChange={setFilePath} />
-        <LabeledTextArea label="File content" value={fileContent} onChange={setFileContent} />
-        <LabeledInput label="Commit message" placeholder="Describe the change" value={commitMessage} onChange={setCommitMessage} />
-        <LabeledInput label="Pull request title" placeholder="Short summary" value={prTitle} onChange={setPrTitle} />
-        <LabeledTextArea label="Pull request description" value={prBody} onChange={setPrBody} />
+        <LabeledInput disabled={busy} label="File path" placeholder="path/to/file.ts" value={filePath} onChange={setFilePath} />
+        <LabeledTextArea disabled={busy} label="File content" value={fileContent} onChange={setFileContent} />
+        <LabeledInput disabled={busy} label="Commit message" placeholder="Describe the change" value={commitMessage} onChange={setCommitMessage} />
+        <LabeledInput disabled={busy} label="Pull request title" placeholder="Short summary" value={prTitle} onChange={setPrTitle} />
+        <LabeledTextArea disabled={busy} label="Pull request description" value={prBody} onChange={setPrBody} />
         <div className="flex items-center gap-3">
           <button
             type="button"
@@ -1559,11 +1574,12 @@ function BranchPoliciesPanel() {
   );
 }
 
-function LabeledInput({ label, placeholder, value, onChange }: { label: string; placeholder?: string; value: string; onChange: (value: string) => void }) {
+function LabeledInput({ label, placeholder, value, onChange, disabled = false }: { label: string; placeholder?: string; value: string; onChange: (value: string) => void; disabled?: boolean }) {
   return (
     <label className="block">
       <span className="mb-1 block text-[11px] text-zinc-500">{label}</span>
       <input
+        disabled={disabled}
         value={value}
         placeholder={placeholder}
         onChange={(event) => onChange(event.target.value)}
@@ -1573,11 +1589,12 @@ function LabeledInput({ label, placeholder, value, onChange }: { label: string; 
   );
 }
 
-function LabeledTextArea({ label, value, onChange }: { label: string; value: string; onChange: (value: string) => void }) {
+function LabeledTextArea({ label, value, onChange, disabled = false }: { label: string; value: string; onChange: (value: string) => void; disabled?: boolean }) {
   return (
     <label className="block">
       <span className="mb-1 block text-[11px] text-zinc-500">{label}</span>
       <textarea
+        disabled={disabled}
         value={value}
         rows={4}
         onChange={(event) => onChange(event.target.value)}
