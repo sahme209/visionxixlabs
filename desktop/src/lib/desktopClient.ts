@@ -796,16 +796,46 @@ export class DesktopClient {
   private async cloudEnrollmentRequest<T>(method: "GET" | "POST", path: string, body?: unknown): Promise<ApiResult<T>> {
     // This enrollment requires a paired desktop bearer, never browser-cookie fallback.
     if (!this.config.sessionToken?.startsWith("axm.desk.")) return { ok: false, error: "A browser-paired desktop session is required for cloud enrollment." };
+    const controller = new AbortController();
+    let response: Response | undefined;
+    let timedOut = false;
+    const cancelBody = (value: Response) => {
+      try { void value.body?.cancel().catch(() => {}); } catch { /* Already consumed or locked. */ }
+    };
+    let deadline: ReturnType<typeof setTimeout> | undefined;
+    const timeout = new Promise<never>((_resolve, reject) => {
+      deadline = setTimeout(() => {
+        timedOut = true;
+        reject(new Error("aws_enrollment_timeout"));
+        controller.abort();
+      }, 25000);
+    });
     try {
-      const response = await fetch(`${this.config.apiBase}${path}`, {
-        method, headers: { ...this.headers(), ...(method === "POST" ? { "Content-Type": "application/json" } : {}) },
-        credentials: "omit", ...(method === "POST" ? { body: JSON.stringify(body) } : {}),
-      });
-      const payload = await response.json().catch(() => null) as { ok?: boolean; data?: T; message?: unknown } | null;
-      if (response.ok && payload?.ok === true && payload.data !== undefined) return { ok: true, data: payload.data };
-      return { ok: false, error: typeof payload?.message === "string" ? payload.message : `Cloud enrollment is unavailable (HTTP ${response.status}).` };
+      // Race the complete read as well as aborting fetch: headers alone do not
+      // complete a request, and a stalled body must not keep the UI busy.
+      const operation = (async () => {
+        const received = await fetch(`${this.config.apiBase}${path}`, {
+          method, headers: { ...this.headers(), ...(method === "POST" ? { "Content-Type": "application/json" } : {}) },
+          credentials: "omit", ...(method === "POST" ? { body: JSON.stringify(body) } : {}), signal: controller.signal,
+        });
+        response = received;
+        if (controller.signal.aborted) {
+          cancelBody(received);
+          throw new Error("aws_enrollment_timeout");
+        }
+        const payload = await received.json().catch(() => null) as { ok?: boolean; data?: T; message?: unknown } | null;
+        if (received.ok && payload?.ok === true && payload.data !== undefined) return { ok: true as const, data: payload.data };
+        return { ok: false as const, error: typeof payload?.message === "string" ? payload.message : `Cloud enrollment is unavailable (HTTP ${received.status}).` };
+      })();
+      return await Promise.race([operation, timeout]);
     } catch {
-      return { ok: false, error: "The cloud enrollment service could not be reached. Existing connections are unchanged." };
+      return { ok: false, error: timedOut
+        ? "The AWS connection request timed out. Its outcome is unconfirmed; refresh connection state before trying again."
+        : "The cloud enrollment service could not be reached. Its outcome is unconfirmed; refresh connection state before trying again." };
+    } finally {
+      clearTimeout(deadline);
+      controller.abort();
+      if (response) cancelBody(response);
     }
   }
 

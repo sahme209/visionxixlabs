@@ -264,6 +264,7 @@ it.each(["password", "token"] as const)("clears the submitted %s after a confirm
   mock.saveConnection.mockResolvedValue({ ok: true });
   render(createElement(AirflowAutomationView));
   fireEvent.click(screen.getByRole("button", { name: "connection" }));
+  await screen.findByText("Secure Airflow connection");
   if (mode === "token") fireEvent.change(screen.getByLabelText("Authentication"), { target: { value: "token" } });
   const field = screen.getByLabelText(mode === "token" ? "Bearer token" : "Password") as HTMLInputElement;
   fireEvent.change(field, { target: { value: "synthetic-only-secret" } });
@@ -274,6 +275,7 @@ it.each(["password", "token"] as const)("clears the submitted %s after a confirm
 it("retains a corrected credential typed while an older connection save is pending", async () => {
   const pending = deferred(); mock.saveConnection.mockReturnValue(pending.promise);
   render(createElement(AirflowAutomationView)); fireEvent.click(screen.getByRole("button", { name: "connection" }));
+  await screen.findByText("Secure Airflow connection");
   const field = screen.getByLabelText("Password") as HTMLInputElement;
   fireEvent.change(field, { target: { value: "synthetic-old" } });
   fireEvent.click(screen.getByRole("button", { name: "Validate & connect" }));
@@ -284,9 +286,34 @@ it("retains a corrected credential typed while an older connection save is pendi
 it("retains the editable credential when connection validation fails without replaying the save", async () => {
   mock.saveConnection.mockResolvedValue({ ok: false, error: "connection_validation_failed" });
   render(createElement(AirflowAutomationView)); fireEvent.click(screen.getByRole("button", { name: "connection" }));
+  await screen.findByText("Secure Airflow connection");
   const field = screen.getByLabelText("Password") as HTMLInputElement;
   fireEvent.change(field, { target: { value: "synthetic-correctable" } });
   fireEvent.click(screen.getByRole("button", { name: "Validate & connect" }));
   await screen.findByText("connection_validation_failed");
   expect(field.value).toBe("synthetic-correctable"); expect(mock.saveConnection).toHaveBeenCalledTimes(1);
+});
+
+
+it.each(["http", "network"])("does not mislabel an unavailable %s connection lookup as a disconnected workspace", async failure => {
+  if (failure === "http") mock.connection.mockResolvedValueOnce({ok:false,error:"airflow_storage_unavailable"});
+  else mock.connection.mockRejectedValueOnce(new Error("private upstream failure"));
+  render(createElement(AirflowAutomationView));
+  await screen.findByText("Airflow connection status unavailable");
+  expect(screen.queryByText("Connect Airflow first")).toBeNull();
+  expect(mock.saveConnection).not.toHaveBeenCalled();
+  fireEvent.click(screen.getByRole("button",{name:"Retry connection status"}));
+  await screen.findByText("Connect Airflow first");
+  fireEvent.click(screen.getByRole("button",{name:"Open connection setup"}));
+  await screen.findByText("Secure Airflow connection");
+  expect(mock.saveConnection).not.toHaveBeenCalled();
+  expect(mock.trigger).not.toHaveBeenCalled();
+});
+it("keeps pending connection discovery distinct from not connected", async () => {
+  const pending=deferred();mock.connection.mockReturnValueOnce(pending.promise);
+  render(createElement(AirflowAutomationView));
+  await screen.findByText("Checking Airflow connection…");
+  expect(screen.queryByText("Connect Airflow first")).toBeNull();
+  await act(async()=>pending.resolve({ok:true,data:{connected:false,status:"disconnected"}}));
+  await screen.findByText("Connect Airflow first");
 });

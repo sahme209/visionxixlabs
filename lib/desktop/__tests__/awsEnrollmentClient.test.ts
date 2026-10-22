@@ -5,7 +5,7 @@ const challenge = { ...input, attemptId: "attempt/1", externalId: "server-issued
 const account = { id: "account-1", provider: "aws", accountId: input.expectedAccountId, alias: null, regions: [input.region], connected: true, status: "connected", lastValidatedAt: "2026-10-15T00:00:00Z", connectionVersion: 1, revokedAt: null, inventoryAvailability: "not_checked", enabled: false, agentScanAvailable: false };
 function client(token = "axm.desk.session.signature") { return new DesktopClient({ apiBase: "https://service.example.test", sessionToken: token }); }
 function respond(data: unknown, status = 200) { const fetch = vi.fn().mockResolvedValue(new Response(JSON.stringify({ ok: true, data }), { status })); vi.stubGlobal("fetch", fetch); return fetch; }
-afterEach(() => vi.unstubAllGlobals());
+afterEach(() => { vi.unstubAllGlobals(); vi.useRealTimers(); });
 describe("desktop AWS enrollment request boundary", () => {
   it("starts with only the expected account/role/region and paired bearer, never cookies", async () => {
     const fetch = respond(challenge);
@@ -85,5 +85,67 @@ describe("version-bound AWS disconnect client", () => {
   it("does not expose the paired-only mutation to recovery API keys", async () => {
     const fetch = vi.fn(); vi.stubGlobal("fetch", fetch);
     expect(await client("vxlk_recovery").disconnectDesktopAwsAccount("account-1", 1)).toMatchObject({ ok: false }); expect(fetch).not.toHaveBeenCalled();
+  });
+});
+
+describe("AWS enrollment request deadlines", () => {
+  it.each(["headers", "body"])("bounds stalled %s without retrying or claiming mutation rollback", async stage => {
+    vi.useFakeTimers();
+    let signal: AbortSignal | undefined;
+    const cancel = vi.fn().mockResolvedValue(undefined);
+    const fetch = vi.fn().mockImplementation((_url, options) => {
+      signal = options.signal;
+      return stage === "headers" ? new Promise(() => {}) : Promise.resolve({
+        ok: true, status: 200, json: () => new Promise(() => {}), body: { cancel },
+      });
+    });
+    vi.stubGlobal("fetch", fetch);
+    let settled = false;
+    const pending = client().completeAwsReadOnlyEnrollment("attempt", "external").then(result => { settled = true; return result; });
+    await vi.advanceTimersByTimeAsync(24999);
+    expect(settled).toBe(false);
+    await vi.advanceTimersByTimeAsync(1);
+    expect(settled).toBe(true);
+    expect(await pending).toEqual({ ok: false, error: "The AWS connection request timed out. Its outcome is unconfirmed; refresh connection state before trying again." });
+    expect(signal?.aborted).toBe(true);
+    expect(fetch).toHaveBeenCalledTimes(1);
+    expect(vi.getTimerCount()).toBe(0);
+    if (stage === "body") expect(cancel).toHaveBeenCalledTimes(1);
+  });
+  it("clears its deadline and aborts its owned signal after success", async () => {
+    vi.useFakeTimers();
+    const fetch = respond(challenge);
+    expect(await client().startAwsReadOnlyEnrollment(input)).toEqual({ ok: true, data: challenge });
+    expect(fetch.mock.calls[0][1].signal.aborted).toBe(true);
+    expect(vi.getTimerCount()).toBe(0);
+  });
+});
+
+describe("AWS enrollment timeout cleanup", () => {
+  it("cancels a late response without parsing it or retrying", async () => {
+    vi.useFakeTimers();
+    let deliver!: (response: unknown) => void;
+    const fetch = vi.fn().mockImplementation(() => new Promise(resolve => { deliver = resolve; }));
+    vi.stubGlobal("fetch", fetch);
+    const pending = client().desktopCloudAccounts();
+    await vi.advanceTimersByTimeAsync(25000);
+    expect(await pending).toMatchObject({ ok: false });
+    const cancel = vi.fn().mockResolvedValue(undefined), json = vi.fn();
+    deliver({ body: { cancel }, json });
+    await vi.advanceTimersByTimeAsync(0);
+    expect(cancel).toHaveBeenCalledTimes(1);
+    expect(json).not.toHaveBeenCalled();
+    expect(fetch).toHaveBeenCalledTimes(1);
+    expect(vi.getTimerCount()).toBe(0);
+  });
+  it("cleans up transport failure without echoing exceptions or asserting rollback", async () => {
+    vi.useFakeTimers();
+    const fetch = vi.fn().mockRejectedValue(new Error("private provider exception"));
+    vi.stubGlobal("fetch", fetch);
+    const result = await client().completeAwsReadOnlyEnrollment("attempt", "external");
+    expect(result).toEqual({ ok: false, error: "The cloud enrollment service could not be reached. Its outcome is unconfirmed; refresh connection state before trying again." });
+    expect(fetch.mock.calls[0][1].signal.aborted).toBe(true);
+    expect(fetch).toHaveBeenCalledTimes(1);
+    expect(vi.getTimerCount()).toBe(0);
   });
 });

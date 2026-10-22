@@ -697,9 +697,10 @@ function RepositoryWorkspaceSession({ revision, active, onAskAgent, editRequest,
   }
 
   return <div className="flex min-h-0 flex-1 flex-col bg-[#0b0c0e]">
-    <div className="flex items-center gap-2 border-b border-white/[0.07] px-4 py-3">
-      <div className="w-72">
-        <select value={manualCloneRepository ? "__manual__" : cloneRepository} onChange={(event) => {
+    <div className="flex flex-wrap items-center gap-2 border-b border-white/[0.07] px-4 py-3">
+      <div className="w-72 min-w-0">
+        <label htmlFor="clone-source" className="mb-1 block text-[11px] text-zinc-400">Clone source · GitHub</label>
+        <select id="clone-source" value={manualCloneRepository ? "__manual__" : cloneRepository} onChange={(event) => {
           if (event.target.value === "__manual__") {
             manualClone.current = true;
             setManualCloneRepository(true);
@@ -722,6 +723,7 @@ function RepositoryWorkspaceSession({ revision, active, onAskAgent, editRequest,
       <button type="button" disabled={Boolean(busy) || !cloneRepository.trim().includes("/") || (!manualCloneRepository && !remoteRepositories.some(repository => repository.fullName === cloneRepository))} onClick={() => void clone()} className="btn-primary disabled:opacity-40">{busy === "clone" ? "Cloning…" : "Clone"}</button>
       <button type="button" disabled={Boolean(busy) || !parentPath} onClick={() => void refreshList(parentPath)} className="btn-secondary disabled:opacity-40">Refresh</button>
     </div>
+    <p aria-label="Active local editor repository" className="border-b border-white/[0.06] px-4 py-2 text-[11px] text-zinc-400">Editing locally: {selectedRepository ? selectedRepository.split("/").pop() : "No repository selected"}. The clone source above does not switch the editor. Select a local repository in the file sidebar.</p>
     {repositoryCatalogError && <div role="status" className="border-b border-white/[0.08] bg-white/[0.03] px-4 py-2 text-xs text-zinc-300">Connected repositories are temporarily unavailable. Validate GitHub under Settings → Integrations, then retry. Manual entry remains available for an authorized repository.</div>}
     {repositoryCatalogTruncated && !repositoryCatalogError && <div className="border-b border-white/[0.06] bg-white/[0.02] px-4 py-2 text-xs text-zinc-500">Showing the first 100 repositories authorized for the GitHub App. You can still enter another authorized owner/repository directly.</div>}
     {editRequest && editRequest.context === desktopClient.config && editRequest.workspace === workspace && (!(appliedEdit.current?.request === editRequest && appliedEdit.current.paths.has(editRequest.edit.path)) || Boolean(editRequest.edits?.length)) && <section aria-label="Agent local draft review" className="max-h-96 shrink-0 overflow-auto border-b border-violet-300/20 p-4 text-xs text-zinc-300">

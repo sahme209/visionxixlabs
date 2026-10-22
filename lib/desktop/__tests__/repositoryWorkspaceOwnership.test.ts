@@ -839,3 +839,16 @@ it.each(["branch","origin","disk"])("refuses repair after external %s drift",asy
 it("disables repair after source edits while retaining read-only debug preparation",async()=>{await failedRepairFixture();fireEvent.change(screen.getByRole("textbox",{name:"Editing same.ts"}),{target:{value:"unsaved change"}});expect((screen.getByRole("button",{name:"Prepare repair with Agent"}) as HTMLButtonElement).disabled).toBe(true);expect((screen.getByRole("button",{name:"Prepare check output for Agent"}) as HTMLButtonElement).disabled).toBe(false);});
 
 it("preserves verification and repair for an aliased path with a stable canonical root",async()=>{statuses=path=>({...status(path),rootPath:"/canonical"+path});const callback=await failedRepairFixture();fireEvent.click(screen.getByRole("button",{name:"Prepare repair with Agent"}));fireEvent.click(screen.getByRole("button",{name:"Prepare repair draft"}));await waitFor(()=>expect(callback).toHaveBeenCalledOnce());expect(callback.mock.calls[0][0]).not.toHaveProperty("rootPath");});
+
+
+it("distinguishes the clone source from the active local editing target", async () => {
+  m.client.listGithubRepositories.mockResolvedValue({ok:true,data:{repositories:[{id:"remote",fullName:"fixture/clone-source",defaultBranch:"main",visibility:"private"}],truncated:false}});
+  await start();
+  const target=screen.getByLabelText("Active local editor repository");
+  expect(target.textContent).toContain("Editing locally: A");
+  expect(screen.getByText("Clone source · GitHub")).toBeTruthy();
+  fireEvent.change(screen.getByLabelText("Connected GitHub repository"),{target:{value:"fixture/clone-source"}});
+  expect(target.textContent).toContain("Editing locally: A");
+  expect(m.client.mintGithubCloneToken).not.toHaveBeenCalled();
+  expect(m.invoke.mock.calls.filter(([command])=>command==="clone_repository")).toHaveLength(0);
+});
