@@ -1,0 +1,22 @@
+{
+  "observedAtUtc": "2026-10-22T02:12:34.134084+00:00",
+  "scope": {
+    "projectName": "visionxixlabs",
+    "branchName": "main",
+    "databaseName": "neondb",
+    "schemaName": "public"
+  },
+  "identityTablePresent": false,
+  "unresolvedIdentityMigrationAttempts": 1,
+  "identityMigrationChecksum": "761c693202763e71c7ee25f99e194fe010335cf902b5ed37124351a93d42e3f7",
+  "identityMigrationFinished": false,
+  "identityMigrationRolledBack": false,
+  "configuredHistoryRetentionSeconds": 21600,
+  "listedSnapshots": 0,
+  "snapshotScheduleEntries": 0,
+  "servingDeploymentEffectiveBinding": "unverified",
+  "usableRecoveryTimestamp": "unverified",
+  "restoreRehearsal": "not_run",
+  "productionWrites": 0,
+  "credentialsRetrievedOrPrinted": false
+}
