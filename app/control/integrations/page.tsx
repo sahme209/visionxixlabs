@@ -73,14 +73,14 @@ function IntegrationRow({ icon, name, description, status, details, action }: {
   action?: ReactNode;
 }) {
   return (
-    <article className="flex min-w-0 flex-col gap-3 rounded-xl border border-white/[0.08] bg-[#171717] p-4 sm:flex-row sm:items-start">
+    <article className="grid min-w-0 grid-cols-[32px_minmax(0,1fr)] items-start gap-x-3 gap-y-2 rounded-2xl bg-[#111111] p-[13px]">
       <span aria-hidden className="grid h-8 w-8 shrink-0 place-items-center rounded-lg border border-white/[0.08] bg-white/[0.035] text-zinc-300">{icon}</span>
       <div className="min-w-0 flex-1">
-        <div className="flex flex-wrap items-center gap-2"><h2 className="text-sm font-medium text-zinc-100">{name}</h2><StatusBadge value={status} /></div>
+        <div className="flex flex-wrap items-center gap-2"><h2 className="text-[13px] font-medium text-zinc-100">{name}</h2><StatusBadge value={status} /></div>
         <p className="mt-1 text-xs leading-5 text-zinc-500">{description}</p>
         {details && <details className="mt-2 text-[11px] leading-5 text-zinc-400"><summary className="cursor-pointer text-zinc-300">Details & scopes</summary><p className="mt-2 break-words">{details}</p></details>}
       </div>
-      {action && <div className="shrink-0 self-start">{action}</div>}
+      {action && <div className="col-start-2 justify-self-end">{action}</div>}
     </article>
   );
 }
@@ -139,22 +139,22 @@ export default async function ControlIntegrationsPage() {
     <div className="max-w-5xl">
 
       <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
-        <div><h1 className="text-3xl font-semibold tracking-[-0.045em] sm:text-4xl">Integrations</h1><p className="mt-3 max-w-2xl text-sm leading-6 text-zinc-400">Connect source control, collaboration tools, and cloud services to your workspace.</p></div>
+        <div><h1 className="text-3xl font-semibold tracking-[-0.045em] sm:text-4xl">Integrations</h1><p className="mt-1 max-w-2xl text-[13px] leading-5 text-zinc-400">Connect source control, collaboration tools, and cloud services to your workspace.</p></div>
         <span className="text-xs text-zinc-600">{canManage ? "Administrator controls" : "Read-only access"}</span>
       </div>
 
       {unavailable && <div role="alert" className="mt-8 border-y border-white/[0.08] py-5 text-sm text-zinc-400">Connection records are temporarily unavailable. No cached state is being shown.</div>}
 
       <section className="mt-10" aria-labelledby="source-control-heading">
-        <h2 id="source-control-heading" className="mb-3 text-xs font-medium text-zinc-400">Source control</h2>
-        <div className="grid gap-3 xl:grid-cols-2">
+        <h2 id="source-control-heading" className="mb-4 text-base font-medium text-zinc-100">Source control</h2>
+        <div className="grid gap-4 md:grid-cols-2">
           <IntegrationRow icon={ICONS.github} name="GitHub" status={githubStatus} description="Repository context, reviewed code changes, and release workflows." details={github ? `${titleCase(github.repositorySelection)} repository access · Last read-only validation: ${formatTime(github.lastSeenAt)}` : "No GitHub App installation recorded."} action={canManage ? <IntegrationConnectionAction provider="github" label="GitHub" connected={Boolean(github && github.status !== "revoked")} suspended={github?.status === "suspended"} setupAvailable={setup.github} installationRowId={github?.id} /> : undefined} />
         </div>
       </section>
 
       <section className="mt-8" aria-labelledby="collaboration-heading">
-        <h2 id="collaboration-heading" className="mb-3 text-xs font-medium text-zinc-400">Collaboration and work management</h2>
-        <div className="grid gap-3 xl:grid-cols-2">
+        <h2 id="collaboration-heading" className="mb-4 text-base font-medium text-zinc-100">Collaboration and work management</h2>
+        <div className="grid gap-4 md:grid-cols-2">
           {collaboration.map((connection) => {
             const names = { slack: "Slack", teams: "Microsoft Teams", linear: "Linear" } as const;
             const descriptions = { slack: "Governed release notifications for your workspace.", teams: "Connect your Microsoft tenant for governed collaboration.", linear: "Issue context and approval-governed follow-up." } as const;
@@ -164,15 +164,15 @@ export default async function ControlIntegrationsPage() {
       </section>
 
       <section className="mt-8" aria-labelledby="automation-heading">
-        <h2 id="automation-heading" className="mb-3 text-xs font-medium text-zinc-400">Orchestration</h2>
-        <div className="grid gap-3 xl:grid-cols-2">
+        <h2 id="automation-heading" className="mb-4 text-base font-medium text-zinc-100">Orchestration</h2>
+        <div className="grid gap-4 md:grid-cols-2">
           <IntegrationRow icon={ICONS.airflow} name="Apache Airflow" status={airflow?.status ?? "not_connected"} description="DAG monitoring, dependency checks, and approved automation." details={airflow ? `${typeof airflowMetadata.version === "string" ? `Version ${airflowMetadata.version}` : "Version unavailable"} · ${typeof airflowMetadata.dagCount === "number" ? `${airflowMetadata.dagCount} DAGs` : "DAG count unavailable"} · ${formatTime(airflow.lastValidatedAt)}` : "No validated Airflow connection recorded."} action={<Link href="/control/desktop" className="inline-flex min-h-9 items-center rounded-lg border border-white/[0.1] px-3 text-xs font-medium text-zinc-300 hover:bg-white/[0.05]">Open operational setup →</Link>} />
         </div>
       </section>
 
       <section className="mt-8" aria-labelledby="cloud-heading">
-        <h2 id="cloud-heading" className="mb-3 text-xs font-medium text-zinc-400">Cloud authorization</h2>
-        <div className="grid gap-3 xl:grid-cols-2">
+        <h2 id="cloud-heading" className="mb-4 text-base font-medium text-zinc-100">Cloud authorization</h2>
+        <div className="grid gap-4 md:grid-cols-2">
           {CLOUD_PROVIDERS.map((provider) => {
             const row = cloud.find((item) => item.provider === provider);
             return <IntegrationRow key={provider} icon={ICONS.cloud} name={provider === "gcp" ? "Google Cloud" : provider.toUpperCase()} status={row?.status ?? "not_connected"} description={provider === "aws" ? "OIDC-backed deployment authorization; no long-lived AWS access key is stored." : "Provider authorization is shown only after backend validation."} details={row ? `Last lifecycle transition: ${formatTime(row.lastTransitionAt)}` : "Setup required. Configure and validate a scoped cloud connection in Axiom Agent."} action={canManage ? <Link href="/control/desktop" className="inline-flex min-h-9 items-center rounded-lg border border-white/10 px-3 text-xs text-zinc-300 hover:bg-white/5">Setup in Agent →</Link> : undefined} />;

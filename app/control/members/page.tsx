@@ -105,7 +105,7 @@ export default async function TeamPage({
   const canManage = !membersUnavailable && isAdminRole(currentRole);
 
   return (
-    <div className="max-w-3xl mx-auto px-1 -mt-2">
+    <div className="max-w-5xl">
       <header className="mb-7"><h1>Members</h1><p className="mt-3 text-sm leading-6 text-zinc-400">Invite teammates and manage roles in your workspace.</p></header>
 
       {/* Notices */}

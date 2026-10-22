@@ -117,7 +117,7 @@ export function IntegrationConnectionAction({
           type="button"
           onClick={() => void connect()}
           disabled={!setupAvailable || working !== null}
-          className="inline-flex min-h-9 items-center gap-1.5 rounded-lg bg-zinc-100 px-3.5 text-xs font-semibold text-zinc-950 transition hover:bg-white disabled:cursor-not-allowed disabled:bg-white/[0.06] disabled:text-zinc-600"
+          className="inline-flex min-h-8 items-center gap-1.5 rounded-full bg-[#f3f3f3] px-3.5 text-[13px] font-normal text-zinc-950 transition hover:bg-white disabled:cursor-not-allowed disabled:bg-white/[0.06] disabled:text-zinc-600"
         >
           {working === "connect" ? "Connecting…" : setupAvailable ? "Connect ↗" : "Setup required"}
         </button>
@@ -135,7 +135,7 @@ export function IntegrationConnectionAction({
         aria-expanded={menuOpen}
         onClick={() => setMenuOpen((open) => !open)}
         disabled={working !== null}
-        className="inline-flex min-h-9 items-center gap-2 rounded-lg border border-white/[0.1] bg-white/[0.025] px-3.5 text-xs font-medium text-zinc-200 transition hover:bg-white/[0.07] disabled:opacity-50"
+        className="inline-flex min-h-8 items-center gap-2 rounded-full border border-white/[0.1] bg-white/[0.025] px-3.5 text-xs font-medium text-zinc-200 transition hover:bg-white/[0.07] disabled:opacity-50"
       >
         {working ? "Updating…" : "Manage"}
         <span aria-hidden className={`text-[9px] text-zinc-500 transition ${menuOpen ? "rotate-180" : ""}`}>▼</span>
