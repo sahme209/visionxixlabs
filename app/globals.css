@@ -3336,3 +3336,11 @@ body:has(.site-navigation) h1 {
     background-color: #090a08;
   }
 }
+
+/* Keep privacy access clear of the authenticated sidebar account controls. */
+@media (min-width: 1024px) {
+  body:has(.cockpit-sidebar) .privacy-choices-trigger {
+    left: auto;
+    right: 1.25rem;
+  }
+}

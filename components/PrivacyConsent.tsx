@@ -72,7 +72,7 @@ export function PrivacyConsent() {
         </section>
       )}
       {!open && (
-        <button type="button" onClick={() => setOpen(true)} className="fixed bottom-3 left-3 z-[90] rounded-full border border-white/[0.08] bg-[#111114]/90 px-3 py-2 text-[11px] text-zinc-500 shadow-lg backdrop-blur hover:text-zinc-200 sm:bottom-5 sm:left-5">
+        <button type="button" onClick={() => setOpen(true)} className="privacy-choices-trigger fixed bottom-3 left-3 z-[90] rounded-full border border-white/[0.08] bg-[#111114]/90 px-3 py-2 text-[11px] text-zinc-500 shadow-lg backdrop-blur hover:text-zinc-200 sm:bottom-5 sm:left-5">
           Privacy choices
         </button>
       )}

@@ -15,6 +15,30 @@ export interface AgentSkillDefinition {
 
 export const AGENT_SKILL_CATALOG: readonly AgentSkillDefinition[] = [
   {
+    id: "repository-code-review",
+    name: "Repository code review",
+    description: "Review GitHub changes for correctness, security, and regressions with file-based evidence.",
+    category: "GitHub",
+    toolNames: ["list_integrations", "list_github_files", "inspect_github_repository", "search_github_code", "read_github_file"],
+    instructions: "Verify the GitHub connection and selected repository and branch. Inspect relevant source before reporting findings. Prioritize concrete bugs and security issues, cite exact files and evidence, and distinguish unrun tests from verified results. This skill is read-only: never propose a write or deployment while conducting the review.",
+  },
+  {
+    id: "debugging-investigation",
+    name: "Debugging investigation",
+    description: "Trace a reported bug through repository evidence and identify a focused fix before editing.",
+    category: "GitHub",
+    toolNames: ["list_integrations", "list_github_files", "inspect_github_repository", "search_github_code", "read_github_file"],
+    instructions: "Confirm the reported symptom, repository and branch. Read the relevant implementation and tests, trace the failure path, and separate observed facts from hypotheses. Explain the smallest supported fix and a meaningful verification step. This investigation is read-only: do not commit changes, execute commands, or claim a reproduction without execution evidence.",
+  },
+  {
+    id: "terraform-review",
+    name: "Terraform review",
+    description: "Inspect Terraform source for configuration risks and missing safeguards without applying infrastructure.",
+    category: "Governance",
+    toolNames: ["list_integrations", "list_github_files", "search_github_code", "read_github_file"],
+    instructions: "Locate and read the selected repository's Terraform configuration and related documentation. Review resource exposure, IAM scope, state handling and recovery assumptions. Report file-based findings and unresolved provider context. This is source review only: never claim terraform plan, validation or apply ran, never request state secrets, and never propose infrastructure mutation from this skill.",
+  },
+  {
     id: "safe-repository-change",
     name: "Safe repository change",
     description: "Inspect a GitHub file, preserve unrelated content, commit on a dedicated branch, and open a reviewable pull request.",
