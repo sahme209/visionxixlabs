@@ -4248,3 +4248,6 @@ Local production website HTTP checks also returned200 for /, /product, /docs/get
 - Confirmed hard-coded five-column commit/PR row minimum widths exceed the editor pane at the app minimum window size after sidebar/file-list widths.
 - Reuse existing handlers in a two-column minmax(0,1fr)/auto grid with shrinkable text inputs and explicit accessible labels; no Git execution or approval behavior changes.
 - 72 repository ownership/editing/verification regression tests passed. Focused lint: no errors, one pre-existing catalogRequest cleanup warning. Desktop TypeScript/frontend build passed. Independent source review found no blocker. Native visual width acceptance pending; tests alone do not prove installed appearance.
+
+
+Desktop local runtime follow-up: exact-source `17341477` private, ad-hoc-signed Mac test build launched and retained the normal authenticated localtesting session. Native AX presses expanded both disclosures; subsequent reads confirmed expanded state and repository/branch/environment/Agent controls. Collapsed again afterward. This verifies actual disclosure wiring, not screenshots, small-window geometry, full AI coding or the later `fd4aed6` repository grid. Hosted model catalog remains empty; no paid call or production setting change occurred.
