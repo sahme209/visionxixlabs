@@ -14,10 +14,10 @@
 
 import type { Metadata } from "next";
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import {
   ArrowRightIcon,
   BoltIcon,
-  CheckCircleIcon,
   ExclamationTriangleIcon,
   ChartBarIcon,
   CpuChipIcon,
@@ -46,7 +46,9 @@ export default async function BillingUsagePage() {
 
   // Current plan via Stripe billing record → map to PlanRegistry.
   const billing = await readBillingPlan(orgId).catch(() => null);
-  const plan = planForStripeTier(billing?.tier);
+  // Public anniversary contracts must use the canonical attributed balance view.
+  if (billing?.publicPlanId || billing?.pricingPlanAvailable === false) redirect("/control/usage-billing");
+  const plan = billing?.pricingPlan ?? planForStripeTier(billing?.tier);
 
   // Pull MTD summary. Falls back to zeros when no events yet this month.
   const summary = await prisma.workspaceUsageSummary.findUnique({
@@ -90,7 +92,7 @@ export default async function BillingUsagePage() {
           {plan.displayName} plan · <span className="text-gradient">{period}</span>
         </h1>
         <p className="text-[13px] text-zinc-400 max-w-2xl leading-relaxed">
-          {plan.tagline} You're on {plan.displayName}. AI credits, automation, monitoring, and report quotas all reset on the 1st of each month.
+          {plan.tagline} You are on {plan.displayName}. AI credits, automation, monitoring, and report quotas all reset on the 1st of each month.
         </p>
       </div>
 
@@ -139,7 +141,7 @@ export default async function BillingUsagePage() {
         {usedRatio >= 0.7 && usedRatio < 1 && (
           <p className="mt-4 pt-4 border-t border-white/[0.06] text-[12px] text-zinc-200 leading-relaxed">
             <ExclamationTriangleIcon className="h-4 w-4 inline mr-1.5 -mt-0.5" />
-            Heads up — you've used {usedPct}% of your monthly AI credits. {plan.entitlements.overagePolicy === "hard_stop" ? "Starter plans hard-stop at 100% — upgrade to enable overage." : "Overage will bill automatically at retail markup."}
+            Heads up — you have used {usedPct}% of your monthly AI credits. {plan.entitlements.overagePolicy === "hard_stop" ? "Starter plans hard-stop at 100% — upgrade to enable overage." : "Overage will bill automatically at retail markup."}
           </p>
         )}
       </section>
@@ -169,7 +171,7 @@ export default async function BillingUsagePage() {
 
       {/* Recent activity */}
       <section className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 mb-6">
-        <p className="text-[10px] font-semibold text-zinc-400 uppercase tracking-widest mb-3">// recent activity</p>
+        <p className="text-[10px] font-semibold text-zinc-400 uppercase tracking-widest mb-3">{"// recent activity"}</p>
         {recent.length === 0 ? (
           <div className="text-center py-6">
             <CpuChipIcon className="h-5 w-5 text-zinc-500 mx-auto mb-2" />
@@ -202,7 +204,7 @@ export default async function BillingUsagePage() {
         <section className="rounded-2xl border border-white/[0.08] bg-white/[0.015] p-5 mb-4">
           <div className="flex items-center justify-between gap-3 flex-wrap">
             <div>
-              <p className="text-[12px] font-semibold text-white mb-1">Don't want to upgrade? Buy a top-up.</p>
+              <p className="text-[12px] font-semibold text-white mb-1">Do not want to upgrade? Buy a top-up.</p>
               <p className="text-[11.5px] text-zinc-400 leading-snug">
                 Add-on packs deliver more AI credits or extra seats this month — usually a better fit than jumping to the next tier when you only need a temporary boost.
               </p>

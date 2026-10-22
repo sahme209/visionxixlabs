@@ -1,3 +1,7 @@
+import { publicBillingPolicyEnabled, configuredPublicBillingIdentity } from "./publicBillingConfig";
+import { publicDatabaseNow } from "./publicCreditAuthority";
+import { readPublicEntitlementSnapshot } from "./publicBillingEntitlements";
+import { lockPublicOrganization, type PublicSql } from "./publicBillingStore";
 import { PUBLIC_PLAN_CATALOG, type PublicPlanId } from "./publicPlanCatalog";
 import { billingTierToPublicPlan } from "./deploymentQuota";
 import type { DeploymentExecutionRow } from "@/lib/releaseops/deploymentExecutionResponder";
@@ -86,6 +90,21 @@ export async function reserveDeploymentDispatch(
         return { ok: true as const, reservation: existing, reused: true, planId: null, used: null, limit: null };
       }
 
+      if(publicBillingPolicyEnabled()){
+        const sql=tx as unknown as PublicSql;
+        await lockPublicOrganization(sql,input.organizationId);
+        const decisionNow=await publicDatabaseNow(sql);
+        const publicPlan=await readPublicEntitlementSnapshot(sql,input.organizationId,configuredPublicBillingIdentity(),decisionNow);
+        if(publicPlan){
+          if(!publicPlan.usable)return {ok:false as const,error:"deployment_quota_unavailable" as const};
+          const used=await tx.deploymentExecution.count({where:{organizationId:input.organizationId,createdAt:monthRange(decisionNow)}});
+          if(!Number.isSafeInteger(used)||used<0)throw Error("deployment_count_unavailable");
+          const limit=publicPlan.monthlyDeployments;
+          if(used>=limit)return {ok:false as const,error:"deployment_quota_exhausted" as const,used,limit};
+          const reservation=await tx.deploymentExecution.create({data:{...input,status:"reserved"}});
+          return {ok:true as const,reservation,reused:false,planId:publicPlan.planId,used,limit};
+        }
+      }
       // A stale reservation can represent an accepted provider request whose
       // receipt could not be stored. Never free its quota or idempotency key
       // merely because time elapsed; reconcile the external outcome first.

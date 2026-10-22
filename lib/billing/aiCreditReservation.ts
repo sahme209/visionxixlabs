@@ -1,3 +1,6 @@
+import { publicBillingPolicyEnabled, configuredPublicBillingIdentity } from "./publicBillingConfig";
+import { reservePublicCredits, claimPublicCreditDispatch, publicDatabaseNow } from "./publicCreditAuthority";
+import { readPublicEnrollment } from "./publicBillingStore";
 import { newTestAllocationGuard, reserveAllocationV2 } from "./newTestSubscription/allocationPlan";
 import { fenceNewTestAdmission, newTestPlanGuard } from "./newTestSubscription/paidPlan";
 import { isolatedRuntimeRequested } from "./isolatedApplication/runtime";
@@ -9,6 +12,13 @@ import { applyAddOnsToEntitlements } from "./applyAddOnsToEntitlements";
 import type { PricingPlan } from "./planRegistry";
 import { planForStripeTier } from "./planRegistry";
 
+type ReservationRepository = {
+  $transaction<T>(operation: (tx: Prisma.TransactionClient) => Promise<T>, options: { isolationLevel: "Serializable" }): Promise<T>;
+};
+type ReservationWriter = {
+  aIUsageReservation: { updateMany(args: Prisma.AIUsageReservationUpdateManyArgs): Promise<{ count: number }> };
+};
+
 const RESERVATION_TTL_MS = 5 * 60 * 1000;
 
 type ReservationRow = {
@@ -17,7 +27,7 @@ type ReservationRow = {
 };
 
 export type AICreditReservationResult =
-  | { ok: true; reservation: ReservationRow; reused: boolean; allocationPolicy?: "axiom_test_anniversary_v2" }
+  | { ok: true; reservation: ReservationRow; reused: boolean; allocationPolicy?: "axiom_test_anniversary_v2" | "axiom_public_anniversary_v1" }
   | { ok: false; error: "ai_credit_pool_exhausted" | "ai_credit_reservation_unavailable" | "idempotency_key_conflict" };
 
 /**
@@ -27,7 +37,7 @@ export type AICreditReservationResult =
  * durably linked, so they remain reserved until reconciliation.
  */
 export async function reserveAICredits(
-  repo: any,
+  repo: ReservationRepository,
   input: { organizationId: string; idempotencyKey: string; reservedCents: number; correlationId?: string },
   now = new Date(),
   /** Internal isolated-test composition only; never supplied by a request body.
@@ -39,9 +49,13 @@ export async function reserveAICredits(
     return { ok: false, error: "ai_credit_reservation_unavailable" };
   }
   try {
-    return await repo.$transaction(async (tx: any) => {
+    return await repo.$transaction(async (tx: Prisma.TransactionClient) => {
       // A reused hold is not proof that an isolated contract remains valid.
       const isolatedPlan = isolatedRuntimeRequested() ? await resolveIsolatedApplicationPlan(tx, input.organizationId, "admission") : isolatedVerifiedPlan ? await isolatedVerifiedPlan(tx, input.organizationId, await tx.tenantBillingPlan.findUnique({ where: { organizationId: input.organizationId } })) : undefined;
+      if (!isolatedPlan && publicBillingPolicyEnabled()) {
+        const publicResult = await reservePublicCredits(tx, input, configuredPublicBillingIdentity(), await publicDatabaseNow(tx));
+        if (publicResult !== undefined) return publicResult;
+      }
       const guard = newTestPlanGuard(isolatedPlan);
       const allocationGuard = newTestAllocationGuard(isolatedPlan);
       const decisionNow = allocationGuard?.clock ?? guard?.clock ?? now;
@@ -108,6 +122,9 @@ export async function claimLegacyAICreditDispatch(
   reservationId: string,
 ): Promise<boolean> {
   if (!scope.organizationId || !scope.userId || !reservationId) return false;
+  if (publicBillingPolicyEnabled() && await readPublicEnrollment(tx, scope.organizationId)) {
+    return claimPublicCreditDispatch(tx, scope, reservationId, configuredPublicBillingIdentity(), await publicDatabaseNow(tx));
+  }
   const members = await tx.$queryRawUnsafe<Array<{ userId: string; organizationId: string; acceptedAt: Date | null }>>(
     'SELECT "userId","organizationId","acceptedAt" FROM "OrgMembership" WHERE "userId"=$1 AND "organizationId"=$2 FOR SHARE', scope.userId, scope.organizationId,
   );
@@ -120,7 +137,7 @@ export async function claimLegacyAICreditDispatch(
   return changed.length === 1 && changed[0]?.id === reservationId;
 }
 
-export async function releaseAICreditReservation(repo: any, organizationId: string, reservationId: string, now = new Date()): Promise<boolean> {
+export async function releaseAICreditReservation(repo: ReservationWriter, organizationId: string, reservationId: string, now = new Date()): Promise<boolean> {
   try {
     const result = await repo.aIUsageReservation.updateMany({ where: { id: reservationId, organizationId, status: "reserved" }, data: { status: "released", releasedAt: now } });
     return result.count === 1;
@@ -131,7 +148,7 @@ export async function releaseAICreditReservation(repo: any, organizationId: stri
  * debits more than the pre-authorized maximum; callers must surface a
  * settlement failure rather than silently overrun a customer's budget. */
 export async function settleAICreditReservation(
-  repo: any,
+  repo: ReservationWriter,
   organizationId: string,
   reservationId: string,
   actualCents: number,
@@ -148,7 +165,7 @@ export async function settleAICreditReservation(
   } catch { return false; }
 }
 
-export async function attachAICreditReservationUsage(repo: any, organizationId: string, reservationId: string, usageEventId: string): Promise<boolean> {
+export async function attachAICreditReservationUsage(repo: ReservationWriter, organizationId: string, reservationId: string, usageEventId: string): Promise<boolean> {
   try {
     const result = await repo.aIUsageReservation.updateMany({
       where: { id: reservationId, organizationId, status: "reserved", usageEventId: null },

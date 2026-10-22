@@ -2,7 +2,7 @@
 'use strict';
 const assert = require('node:assert/strict');
 const { constants, openSync, closeSync, fstatSync, readSync, lstatSync, realpathSync, readFileSync } = require('node:fs');
-const { join, relative, dirname } = require('node:path');
+const { join, relative, dirname, basename } = require('node:path');
 const { createHash } = require('node:crypto');
 const framework = require('./ownedWebsiteFramework.cjs');
 const root = realpathSync(join(__dirname, '../..'));
@@ -40,7 +40,7 @@ function applyOwnedWebsiteConfig(phase, actual) {
   const configPath = process.env.AXIOM_WEBSITE_CONFIG;
   if (mode === undefined && configPath === undefined) return actual;
   assert.ok(phase === 'phase-development-server' && process.env.NODE_ENV === 'development' && mode === 'owned-website-visual', 'website_config_context');
-  assert.ok(typeof configPath === 'string' && /^\/tmp\/axiom-website-[A-Za-z0-9]+\/config\.json$/.test(configPath), 'website_config_private_path');
+  assert.ok(typeof configPath === 'string' && dirname(dirname(configPath)) === realpathSync('/tmp') && /^axiom-website-[A-Za-z0-9]+$/.test(basename(dirname(configPath))) && basename(configPath) === 'config.json' && configPath === join(dirname(configPath), 'config.json'), 'website_config_private_path');
   assert.equal(realpathSync(process.cwd()), root, 'website_config_root');
   const config = readPrivateConfig(configPath);
   assert.equal(config.root, root, 'website_config_root');

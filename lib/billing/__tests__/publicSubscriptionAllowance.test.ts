@@ -92,3 +92,10 @@ describe("production public allowance arithmetic candidates (no storage or payme
     expect(publicPaidAllowanceCandidate(b, c, new Date(NaN))).toEqual({ kind: "unavailable" });
   });
 });
+
+it("allows explicit trusted TEST-mode composition without weakening the live default", () => {
+  const b = basis(), c = { ...coverage(), livemode: false };
+  expect(publicPaidAllowanceCandidate(b, c, at())).toEqual({ kind: "unavailable" });
+  expect(publicPaidAllowanceCandidate(b, c, at(), false)).toMatchObject({ kind: "public_allowance_candidate", includedCents: 3000 });
+  expect(publicPaidAllowanceCandidate(b, coverage(), at(), false)).toEqual({ kind: "unavailable" });
+});

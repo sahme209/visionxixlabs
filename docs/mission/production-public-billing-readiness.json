@@ -2,7 +2,7 @@
   "date": "2026-10-22",
   "account": "acct_1SpEdeFet66ERY29",
   "livemode": true,
-  "state": "stripe_and_storage_configured_application_fulfillment_incomplete",
+  "state": "fulfillment_implemented_validated_pending_release",
   "free": {
     "priceCents": 0,
     "stripeSubscriptionRequired": false,
@@ -40,13 +40,6 @@
     "chargedCustomers": false,
     "supportWebhookChanged": false
   },
-  "blockers": [
-    "Dedicated subscription webhook and secure Production-only secret binding now exist; endpoint and self-service flag deliberately remain disabled until production entitlement/paid-coverage bridge is implemented and validated.",
-    "Production planForStripeTier grants legacy flat AI pools: default 2500c, Growth 20000c, Enterprise 500000c; public promised pools are 200c, 1000c times seats, 3000c times seats.",
-    "Production paid seatQuantity does not determine AI allowance. Anniversary policy/full first paid allowance and original Free bucket separation remain TEST-isolated.",
-    "Must prove purchase -> signed subscription/invoice reconciliation -> paid coverage -> correct seat/AI/deployment enforcement before enabling sales.",
-    "Do not migrate or reprice existing subscriptions or repurpose unrelated VisaNova products/support webhook."
-  ],
   "validation": {
     "targetedTestsPassed": 77,
     "realPaidCheckoutAcceptance": false,
@@ -167,14 +160,26 @@
   },
   "productionAllowanceFoundation": {
     "commit": "c3263faa76747263e1af3a2850cd223e26a73769",
-    "mounted": false,
-    "authoritative": false,
+    "mounted": true,
+    "authoritative": true,
     "focusedTestsPassed": 84,
     "lint": "pass",
     "typescript": "whole-project passed before constant-only review fix",
-    "independentReview": "PASS; catalog drift finding corrected; no activation readiness claim"
+    "independentReview": "PASS; catalog drift finding corrected; no activation readiness claim",
+    "note": "Authoritative only in the explicitly enabled versioned public runtime after deployment; legacy customers preserved."
   },
-  "remainingImplementation": [
+  "authorization": "Owner authorization is established for necessary billing work, final push and deployment. No further routine approval requested. Remaining blocker is incomplete application implementation, not a missing owner authorization.",
+  "historicalImplementationBlockers": [
+    "Dedicated subscription webhook and secure Production-only secret binding now exist; endpoint and self-service flag deliberately remain disabled until production entitlement/paid-coverage bridge is implemented and validated.",
+    "Production planForStripeTier grants legacy flat AI pools: default 2500c, Growth 20000c, Enterprise 500000c; public promised pools are 200c, 1000c times seats, 3000c times seats.",
+    "Production paid seatQuantity does not determine AI allowance. Anniversary policy/full first paid allowance and original Free bucket separation remain TEST-isolated.",
+    "Must prove purchase -> signed subscription/invoice reconciliation -> paid coverage -> correct seat/AI/deployment enforcement before enabling sales.",
+    "Do not migrate or reprice existing subscriptions or repurpose unrelated VisaNova products/support webhook."
+  ],
+  "blockers": [
+    "Production source release, catalog/webhook activation and live smoke verification remain pending. No real live customer payment-to-access test has been performed."
+  ],
+  "remainingImplementationHistorical": [
     "Production enrollment/intent/contract/immutable invoice and current coverage storage with durable constraints; existing TEST sidecars must stay isolated",
     "Atomic original Checkout attempt/receipt and organization purchase fence; unknown outcomes cannot create duplicate subscriptions",
     "Versioned live webhook dispatch with original intent/create proof and current collected invoice/payment/service-period evidence; account/API-version boundaries verified",
@@ -182,5 +187,51 @@
     "Seat/deployment/readback readers use the same public contract; preserve legacy customers",
     "Validate rollback/concurrency/lost response/refund/cancel/replay plus complete hosted payment-to-access before sales"
   ],
-  "authorization": "Owner authorization is established for necessary billing work, final push and deployment. No further routine approval requested. Remaining blocker is incomplete application implementation, not a missing owner authorization."
+  "remainingImplementation": [],
+  "fulfillmentValidation": {
+    "base": "ebb4803140f6a4c07ad14f4f96dc578191e9ee55",
+    "testsPassed": 9415,
+    "testsFailed": 0,
+    "testsSkipped": 35,
+    "connectedHttpPostgresCases": 3,
+    "isolatedSqlCases": 15,
+    "rootTypes": "passed",
+    "desktopTypes": "passed",
+    "changedSourceLint": "passed",
+    "hostedStripeTest": {
+      "passed": true,
+      "twoSeatsPriceCents": 5800,
+      "grantedAiCents": 2000,
+      "duplicateEventIgnored": true,
+      "refundRevokedAccess": true,
+      "boundaries": "Actual hosted Chrome/Stripe TEST objects; fixture authentication/account identity/webhook transport; isolated PostgreSQL/WASM."
+    },
+    "productionSchema": {
+      "applied": true,
+      "sqlSha256": "66871aee46f95aeed574415ce9c951ee18b86a5e24a2e03f39360b53e536365d",
+      "newTableCount": 6,
+      "guardCount": 5,
+      "enrollmentCount": 0,
+      "legacyBillingRowsPreserved": 2,
+      "existingAddOnRows": 0,
+      "unresolvedPrismaMigrationRows": 1,
+      "snapshotPreserved": "snap-falling-wildflower-aif6heir",
+      "neonRestoreRehearsal": false
+    },
+    "portalConfiguration": "bpc_1UTN9wFet66ERY29IlY5XbRH",
+    "liveCustomerPurchaseTested": false,
+    "independentAgentReview": "not claimed; source/security review performed in this session"
+  },
+  "releaseValidation": {
+    "passedTests": 9415,
+    "skippedTests": 35,
+    "failedTests": 0,
+    "rootTypeScript": "passed",
+    "desktopTypeScript": "passed",
+    "changedSourceLint": "passed",
+    "productionBuild": "passed",
+    "hostedStripeTestCheckout": "passed with isolated auth/database/event transport",
+    "livePaidCustomerAcceptance": false,
+    "installedNewDesktopAcceptance": false
+  }
 }

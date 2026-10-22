@@ -1,3 +1,4 @@
+import { publicBillingPolicyEnabled } from "@/lib/billing/publicBillingConfig";
 import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
 import { prisma } from "@/lib/db";
@@ -35,7 +36,7 @@ async function recordStripeWebhookEvent(eventId: string, eventType: string): Pro
 }
 
 export async function POST(req: NextRequest): Promise<Response> {
-  if (isSelfServiceBillingEnabled()) {
+  if (isSelfServiceBillingEnabled() || publicBillingPolicyEnabled()) {
     return NextResponse.json(
       { error: "Legacy webhook retired", canonicalEndpoint: "/api/billing/stripe-webhook" },
       { status: 410 },

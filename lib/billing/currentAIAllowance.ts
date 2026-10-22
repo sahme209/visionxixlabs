@@ -1,3 +1,5 @@
+import { publicBillingPolicyEnabled, configuredPublicBillingIdentity } from "./publicBillingConfig";
+import { readPublicCreditAllowance, publicDatabaseNow } from "./publicCreditAuthority";
 import { newTestAllocationGuard, readAllocationAllowanceV2 } from "./newTestSubscription/allocationPlan";
 import { newTestPlanGuard } from "./newTestSubscription/paidPlan";
 import { isolatedRuntimeRequested } from "./isolatedApplication/runtime";
@@ -23,6 +25,10 @@ export async function readCurrentAIAllowance(repo: Pick<PrismaClient, "$transact
     return await repo.$transaction(async (tx) => {
       const isolatedPlan = isolatedRuntimeRequested() ? await resolveIsolatedApplicationPlan(tx, organizationId, "read") : undefined;
       if (newTestAllocationGuard(isolatedPlan)) return readAllocationAllowanceV2(tx, isolatedPlan!);
+      if (!isolatedPlan && publicBillingPolicyEnabled()) {
+        const publicAllowance = await readPublicCreditAllowance(tx, organizationId, configuredPublicBillingIdentity(), await publicDatabaseNow(tx));
+        if (publicAllowance !== undefined) return publicAllowance;
+      }
       const decisionNow = newTestPlanGuard(isolatedPlan)?.clock ?? now;
       const decisionMonth = decisionNow.toISOString().slice(0, 7);
       const [billing, purchases, usage, active] = await Promise.all([

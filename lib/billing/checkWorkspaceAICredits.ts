@@ -1,3 +1,4 @@
+import { publicBillingPolicyEnabled } from "./publicBillingConfig";
 import { isolatedRuntimeRequested } from "./isolatedApplication/runtime";
 import { requireIsolatedWorkspaceScope } from "./isolatedApplication/scope";
 import { readCurrentAIAllowance } from "./currentAIAllowance";
@@ -40,10 +41,19 @@ export async function checkWorkspaceAICredits(
     return preflightAICreditCheck({ plan: { ...base, entitlements: { ...base.entitlements, includedAICreditsCents: allowance.poolCents, overagePolicy: "hard_stop" } }, currentAICostCents: allowance.usedCents + allowance.heldCents, expectedAdditionalCostCents });
   }
   let plan;
+  let publicPlan=false;
   try {
     const billing = await readBillingPlan(organizationId);
-    plan = planForStripeTier(billing.tier);
-  } catch {
+    publicPlan=!!billing.publicPlanId;
+    if (billing.pricingPlanAvailable === false) throw new Error("billing_entitlement_unavailable");
+    plan = billing.pricingPlan ?? planForStripeTier(billing.tier);
+    if (billing.publicPlanId) {
+      const allowance = await readCurrentAIAllowance(prisma,organizationId);
+      if (!allowance.available) throw new Error("ai_credit_meter_unavailable");
+      return preflightAICreditCheck({plan:{...plan,entitlements:{...plan.entitlements,includedAICreditsCents:allowance.poolCents,overagePolicy:"hard_stop"}},currentAICostCents:Math.max(0,allowance.poolCents-allowance.includedRemainingCents),expectedAdditionalCostCents});
+    }
+  } catch (error) {
+    if (publicPlan || publicBillingPolicyEnabled()) throw error;
     // Plan read failed — fall back to Starter (the safest, lowest-trust default).
     plan = planForStripeTier("starter");
   }

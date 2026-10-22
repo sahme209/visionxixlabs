@@ -68,7 +68,8 @@ export function publicFreeAllowanceCandidate(enrollment: unknown, now: Date): Re
 /** Full monthly base only: prior Free spending and purchased-credit balances
  * are intentionally absent from this arithmetic. Attribution/remaining balance
  * must be resolved separately without transferring the old Free bucket. */
-export function publicPaidAllowanceCandidate(basis: unknown, coverage: unknown, now: Date): Result {
+/** expectedLivemode comes only from the server's verified account binding; the default remains live. */
+export function publicPaidAllowanceCandidate(basis: unknown, coverage: unknown, now: Date, expectedLivemode = true): Result {
   try {
     const b = data(basis, ["policy", "enrollmentId", "organizationId", "accountId", "contractId", "subscriptionId", "planId", "interval", "paidSeats", "priceId", "unitAmountCents", "anchor", "originalCreateProofDigest", "firstCollectionDigest"]);
     const c = data(coverage, ["kind", "livemode", "status", "enrollmentId", "organizationId", "accountId", "contractId", "subscriptionId", "priceId", "paidSeats", "originalCreateProofDigest", "invoiceId", "evidenceDigest", "amountCents", "serviceStart", "serviceEnd", "collectedAt"]);
@@ -79,7 +80,7 @@ export function publicPaidAllowanceCandidate(basis: unknown, coverage: unknown, 
       || !identifier(c.invoiceId) || !digest(b.originalCreateProofDigest) || c.originalCreateProofDigest !== b.originalCreateProofDigest || !digest(b.firstCollectionDigest) || !digest(c.evidenceDigest)
       || !["pro", "enterprise"].includes(String(b.planId)) || !["monthly", "annual"].includes(String(b.interval))
       || !Number.isSafeInteger(b.paidSeats) || (b.paidSeats as number) < 1 || c.paidSeats !== b.paidSeats
-      || c.kind !== "collected" || c.livemode !== true || c.status !== "active" || anchor.getUTCMilliseconds() !== 0
+      || typeof expectedLivemode !== "boolean" || c.kind !== "collected" || c.livemode !== expectedLivemode || c.status !== "active" || anchor.getUTCMilliseconds() !== 0
       || start < anchor || at < start || at >= end || collected < start || collected > at
       || c.serviceStart === b.anchor && c.evidenceDigest !== b.firstCollectionDigest
       || !validAnniversaryServicePeriod(b.anchor as string, b.interval as "monthly" | "annual", c.serviceStart as string, c.serviceEnd as string)) return unavailable();

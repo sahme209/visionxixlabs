@@ -1,3 +1,5 @@
+import { publicPricingForStoredRow } from "@/lib/billing/publicBillingEntitlements";
+import type { PublicSql } from "@/lib/billing/publicBillingStore";
 import "server-only";
 import { randomBytes, randomUUID } from "node:crypto";
 import { encryptScopedCredential } from "@/lib/security/credentialVault";
@@ -65,7 +67,7 @@ export function createAwsEnrollmentService(repo: EnrollmentRepo, supplied: Parti
     // read-error sentinel: absent/invalid/trial rows use canonical Starter.
     const validStatus = row && ["trialing", "active", "past_due", "canceled", "no_plan"].includes(row.status);
     const tier = row && isBillingTier(row.tier) && validStatus && row.tier !== "trial" && row.status !== "trialing" ? row.tier : "trial";
-    const decision = checkEntitlement({ plan: planForStripeTier(tier), dimension: "cloud_accounts", currentUsage, attemptedDelta: 1 });
+    const decision = checkEntitlement({ plan: await publicPricingForStoredRow(tx as unknown as PublicSql,organizationId,row) ?? planForStripeTier(tier), dimension: "cloud_accounts", currentUsage, attemptedDelta: 1 });
     if (decision.kind !== "allow") throw new AwsEnrollmentError("cloud_account_limit_reached");
   }
   const accountKey = (organizationId: string, accountId: string) => ({ organizationId_provider_externalAccountId: { organizationId, provider: "aws", externalAccountId: accountId } });
