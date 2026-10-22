@@ -29,6 +29,12 @@ export const runtime = "nodejs";
 
 const AUTONOMY_MODES = new Set<AutonomyMode>(["observer", "review", "assisted", "autonomous"]);
 
+function identityStorageState(error: unknown): "migration_pending" | "unavailable" {
+  const code = typeof error === "object" && error !== null && "code" in error ? error.code : undefined;
+  return code === "P2021" || code === "P2022" ? "migration_pending" : "unavailable";
+}
+
+
 async function context() {
   const value = await currentContext();
   if (!value.isAuthenticated || !value.organizationId || !value.userId) return null;
@@ -53,7 +59,9 @@ export async function GET() {
   const providers = serviceProviders();
   const [loadedPolicy, identity, autonomy, budget, gatewayModels] = await Promise.all([
     loadWorkspaceAIProviderPolicyWithState(ctx.organizationId),
-    readWorkspaceAgentIdentity(ctx.organizationId).catch(() => null),
+    readWorkspaceAgentIdentity(ctx.organizationId)
+      .then(value => ({ value, state: "ready" as const }))
+      .catch(error => ({ value: null, state: identityStorageState(error) })),
     readTenantCharter(ctx.organizationId),
     loadBudgetConfig(ctx.organizationId),
     providers.includes("vercel_gateway") ? loadGatewayModelCatalog().catch(() => null) : Promise.resolve([]),
@@ -70,7 +78,8 @@ export async function GET() {
       availableProviders: providers,
       gatewayModels,
       gatewayCatalogLive: providers.includes("vercel_gateway") && gatewayModels !== null,
-      agentIdentity: identity,
+      agentIdentity: identity.value,
+      agentIdentityState: identity.state,
       autonomy: autonomy ? {
         mode: autonomy.mode,
         perCycleActionLimit: autonomy.perCycleActionLimit ?? autonomy.resolved.perCycleActionLimit,
@@ -121,12 +130,22 @@ export async function PATCH(request: NextRequest) {
   if (section === "agent_identity") {
     const normalized = normalizeAgentIdentityInput(body ?? {});
     if (!normalized) return NextResponse.json({ ok: false, error: "invalid_agent_identity_policy" }, { status: 422 });
-    const identity = await saveWorkspaceAgentIdentity({ organizationId: ctx.organizationId, ...normalized, updatedBy: ctx.userId });
+    let identity;
+    try {
+      identity = await saveWorkspaceAgentIdentity({ organizationId: ctx.organizationId, ...normalized, updatedBy: ctx.userId });
+    } catch (error) {
+      return NextResponse.json({ ok: false, error: identityStorageState(error) === "migration_pending" ? "agent_identity_migration_pending" : "agent_identity_unavailable", correlationId: String(correlationId) }, { status: 503 });
+    }
+    try {
     await recordAudit({
       organizationId: idFactory.organization(ctx.organizationId), actorUserId: idFactory.user(ctx.userId), actorKind: "user",
       action: "policy.update", outcome: "success", entityRef: "agent_identity:workspace", correlationId, source: "live",
       detail: { enabled: identity.enabled, displayName: identity.displayName, allowedTools: identity.allowedTools.join(",") },
     });
+    } catch {
+      // The identity may already be saved. Do not replay or claim an audited success.
+      return NextResponse.json({ ok: false, error: "policy_audit_unconfirmed", correlationId: String(correlationId) }, { status: 503 });
+    }
     return NextResponse.json({ ok: true, data: { agentIdentity: identity } });
   }
 
