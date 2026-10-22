@@ -4242,3 +4242,9 @@ Local production website HTTP checks also returned200 for /, /product, /docs/get
 - Independent review caught and corrected a small-window clipping risk. No remaining source blocker; screenshot/installed layout acceptance is still pending (screen-capture permission unavailable).
 - 86 affected React interaction tests passed on pinned Node 24; new draft/disclosure regression passed (14 context tests total). Root TypeScript, focused ESLint and desktop frontend build passed. Initial default-Node test setup failed before assertions because its localStorage API differed; pinned Node corrected the environment, no test weakened.
 - Next: rebuild exact-source private local app; verify context disclosure, draft retention, model selection, recovery and small-window reachability. Existing authenticated editing/cancellation evidence remains separate; hosted model availability remains blocked.
+
+
+### Repository workspace width correction — 2026-10-22 (local)
+- Confirmed hard-coded five-column commit/PR row minimum widths exceed the editor pane at the app minimum window size after sidebar/file-list widths.
+- Reuse existing handlers in a two-column minmax(0,1fr)/auto grid with shrinkable text inputs and explicit accessible labels; no Git execution or approval behavior changes.
+- 72 repository ownership/editing/verification regression tests passed. Focused lint: no errors, one pre-existing catalogRequest cleanup warning. Desktop TypeScript/frontend build passed. Independent source review found no blocker. Native visual width acceptance pending; tests alone do not prove installed appearance.
