@@ -1,3 +1,4 @@
+import "@/components/cockpit/cockpit.css";
 import type { ReactNode } from "react";
 import { redirect } from "next/navigation";
 import { currentContext } from "@/lib/auth/currentContext";

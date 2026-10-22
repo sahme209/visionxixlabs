@@ -21,7 +21,7 @@ export default async function AuditSecurityPage() {
   if (!canManage) {
     return (
       <div className="max-w-4xl">
-        <p className="text-[11px] uppercase tracking-[0.2em] text-[#ff783d]">Audit &amp; Security</p>
+
         <h1 className="mt-3 text-3xl font-semibold tracking-[-0.045em]">Administrative access required.</h1>
         <p className="mt-4 max-w-2xl text-sm leading-6 text-zinc-400">Organization audit evidence and device revocation are available only to a current owner or administrator. Authority is rechecked by the backend on every request.</p>
       </div>
@@ -29,7 +29,8 @@ export default async function AuditSecurityPage() {
   }
 
   const organizationId = String(context.organizationId);
-  const since = new Date(Date.now() - 24 * 60 * 60 * 1000);
+  const now = new Date();
+  const since = new Date(now.getTime() - 24 * 60 * 60 * 1000);
   const [records, activeSessions, blockedLastDay, failuresLastDay] = await Promise.all([
     prisma.secureAuditRecord.findMany({
       where: { organizationId },
@@ -37,16 +38,16 @@ export default async function AuditSecurityPage() {
       take: 100,
       select: { id: true, action: true, outcome: true, actorKind: true, actorUserId: true, entityRef: true, correlationId: true, source: true, occurredAt: true, errorCode: true },
     }),
-    prisma.desktopSessionRecord.count({ where: { organizationId, revokedAt: null, expiresAt: { gt: new Date() } } }),
+    prisma.desktopSessionRecord.count({ where: { organizationId, revokedAt: null, expiresAt: { gt: now } } }),
     prisma.secureAuditRecord.count({ where: { organizationId, outcome: "blocked", occurredAt: { gte: since } } }),
     prisma.secureAuditRecord.count({ where: { organizationId, outcome: "failure", occurredAt: { gte: since } } }),
   ]);
 
   return (
     <div className="max-w-5xl">
-      <p className="text-[11px] uppercase tracking-[0.2em] text-[#ff783d]">Audit &amp; Security</p>
-      <h1 className="mt-3 text-3xl font-semibold tracking-[-0.045em] sm:text-4xl">Evidence, not estimates.</h1>
-      <p className="mt-4 max-w-2xl text-sm leading-6 text-zinc-400">Real organization-scoped policy decisions, protected operations, and paired-device state. Axiom displays no simulated security scores.</p>
+
+      <h1 className="text-2xl font-medium">Audit &amp; security</h1>
+      <p className="mt-4 max-w-2xl text-sm leading-6 text-zinc-400">Review organization activity, policy decisions, and active desktop sessions.</p>
 
       <dl className="mt-10 grid gap-px overflow-hidden rounded-xl border border-white/[0.08] bg-white/[0.08] sm:grid-cols-3">
         {[["Active desktop sessions", activeSessions], ["Blocked · last 24h", blockedLastDay], ["Failures · last 24h", failuresLastDay]].map(([label, value]) => (

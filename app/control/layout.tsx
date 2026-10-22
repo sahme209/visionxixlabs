@@ -1,3 +1,4 @@
+import "@/components/cockpit/cockpit.css";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { currentContext } from "@/lib/auth/currentContext";

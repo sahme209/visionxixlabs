@@ -32,3 +32,13 @@ Local focused tests, source review and production compilation are distinct from 
 Successful local/staging authentication and checkout, full responsive cockpit acceptance, viewer/admin browser journeys, and actual provider authorization remain release gates. Retain issue #200 as the current verified/blocked evidence record.
 
 Member-read failures render unavailable state instead of a fabricated empty workspace; management controls fail closed. The page independently checks accepted membership before showing management controls. A cockpit-scoped error boundary and loading state preserve navigation when a section cannot load.
+
+## Full cockpit refinement — October 22, 2026
+
+The refinement applies a shared, private-surface stylesheet for compact spacing, readable secondary text, keyboard focus and reduced-motion behavior. Integration rows become responsive provider cards with expandable scope details. Page titles match sidebar destinations. The desktop sidebar remains consistent across all sections, while the narrow layout retains horizontal navigation.
+
+Settings uses keyboard-operable Profile, Security and Sessions tabs. Its panels stay mounted so switching tabs preserves an unsent profile draft. Profile saves prevent duplicate submissions and conflicting edits while pending; network failures remain unconfirmed outcomes. Device revocation requires explicit confirmation and retains the existing authenticated DELETE endpoint. Modal focus stays contained while pending and returns to a surviving sessions heading after successful revocation removes its trigger.
+
+Billing uses Overview, Usage and Invoices sections without changing its data readers, allowance arithmetic or checkout/portal authority. Operational metrics are separate from the compact plan/credit summary. Policy explanations remain available in expandable details. Invoices use the existing secure provider portal, not invented invoice records. AI credit top-up availability is described separately from subscription billing.
+
+The visual-gallery test renders actual cockpit page components using mocked example.test records. Its optional export produces standalone, clearly labeled component previews, never a product route or authentication shortcut. All 16 page/dialog states were inspected in the ordinary browser at the available 1041-pixel viewport with no document or main-content horizontal overflow. A forced viewport-emulation request was declined; fixed-size desktop/mobile acceptance is not claimed from that request. Narrow-screen screenshots were inspected at the available browser size. All previews remain distinct from real authenticated deployed acceptance.

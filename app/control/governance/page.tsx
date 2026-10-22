@@ -19,9 +19,9 @@ export default async function GovernancePage() {
 
   return (
     <div className="max-w-5xl">
-      <p className="text-[11px] uppercase tracking-[0.2em] text-[#ff783d]">Governance</p>
-      <h1 className="mt-3 text-3xl font-semibold tracking-[-0.045em]">Authority before execution.</h1>
-      <p className="mt-4 max-w-2xl text-sm leading-6 text-zinc-400">This view reads the organization’s current roles, environments, and pending Agent actions. Decisions remain backend-enforced and cannot be granted by changing browser state.</p>
+
+      <h1 className="text-2xl font-medium">Governance</h1>
+      <p className="mt-4 max-w-2xl text-sm leading-6 text-zinc-400">Review pending Agent actions, workspace roles, and environment policies.</p>
 
       <section className="mt-10 border-t border-white/[0.08] py-7">
         <h2 className="text-base font-medium">Pending approvals</h2>

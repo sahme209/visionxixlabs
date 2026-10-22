@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { ConfirmDialog } from "@/components/cockpit/ConfirmDialog";
 
 type Provider = "github" | "slack" | "teams" | "linear";
 
@@ -41,6 +42,7 @@ export function IntegrationConnectionAction({
   const [working, setWorking] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const menu = useRef<HTMLDivElement>(null);
+  const manageButton = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     if (!menuOpen) return;
@@ -104,7 +106,7 @@ export function IntegrationConnectionAction({
     } catch {
       setWorking(null);
       setConfirmDisconnect(false);
-      setError(`${label} was not changed. Try again.`);
+      setError(`${label} update was not confirmed. Refresh its status before trying again; the request may have completed.`);
     }
   }
 
@@ -128,6 +130,7 @@ export function IntegrationConnectionAction({
     <div ref={menu} className="relative flex flex-col items-end gap-1.5">
       <button
         type="button"
+        ref={manageButton}
         aria-haspopup="menu"
         aria-expanded={menuOpen}
         onClick={() => setMenuOpen((open) => !open)}
@@ -146,18 +149,7 @@ export function IntegrationConnectionAction({
         </div>
       )}
       {error && <p role="status" className="max-w-56 text-right text-[10px] leading-4 text-rose-300">{error}</p>}
-      {confirmDisconnect && (
-        <div className="fixed inset-0 z-50 grid place-items-center bg-black/70 p-5 backdrop-blur-sm" role="dialog" aria-modal="true" aria-labelledby={`${provider}-disconnect-title`}>
-          <div className="w-full max-w-sm rounded-2xl border border-white/[0.1] bg-[#17181a] p-5 shadow-2xl">
-            <h2 id={`${provider}-disconnect-title`} className="text-base font-semibold text-white">Disconnect {label}?</h2>
-            <p className="mt-2 text-sm leading-6 text-zinc-500">Axiom will stop using this connection. Existing deployment and audit records remain intact.</p>
-            <div className="mt-6 flex justify-end gap-2">
-              <button type="button" onClick={() => setConfirmDisconnect(false)} className="rounded-lg px-3 py-2 text-xs text-zinc-400 hover:bg-white/[0.06] hover:text-white">Cancel</button>
-              <button type="button" onClick={() => void transition("disconnect")} disabled={working !== null} className="rounded-lg bg-rose-400 px-3 py-2 text-xs font-semibold text-rose-950 disabled:opacity-50">{working === "disconnect" ? "Disconnecting…" : "Disconnect"}</button>
-            </div>
-          </div>
-        </div>
-      )}
+      {confirmDisconnect && <ConfirmDialog title={`Disconnect ${label}?`} onCancel={() => setConfirmDisconnect(false)} onConfirm={() => void transition("disconnect")} confirmLabel="Disconnect" returnFocusRef={manageButton} busy={working !== null}>Axiom will stop using this connection. Existing deployment and audit records remain intact.</ConfirmDialog>}
     </div>
   );
 }

@@ -35,9 +35,9 @@ export default async function ControlOverviewPage() {
 
   return (
     <div className="max-w-5xl">
-      <p className="text-[11px] uppercase tracking-[0.2em] text-[#ff783d]">Governance control plane</p>
-      <h1 className="mt-3 text-3xl font-semibold tracking-[-0.045em] sm:text-4xl">Know what needs a decision.</h1>
-      <p className="mt-4 max-w-2xl text-sm leading-6 text-zinc-400">Configure authority here. Engineers perform repository and deployment work in the desktop app; Axiom’s backend enforces every protected action.</p>
+
+      <h1 className="text-2xl font-medium tracking-tight">Overview</h1>
+      <p className="mt-4 max-w-2xl text-sm leading-6 text-zinc-400">Your workspace at a glance. Review approvals, connections, and account activity.</p>
 
       {!overview ? (
         <div role="alert" className="mt-10 border-y border-white/[0.08] py-6">
@@ -53,7 +53,7 @@ export default async function ControlOverviewPage() {
                 <h2 id="decision-heading" className="text-xl font-medium tracking-[-0.025em]">
                   {overview.pendingActions > 0 ? `${overview.pendingActions} agent ${overview.pendingActions === 1 ? "action awaits" : "actions await"} review` : "No agent actions await review"}
                 </h2>
-                <p className="mt-2 text-sm text-zinc-500">Approval never executes from presentation state; the backend revalidates scope, policy, and action identity.</p>
+                <p className="mt-2 text-sm text-zinc-500">Every action follows your workspace policy and approval rules.</p>
               </div>
               {overview.pendingActions > 0 && <Link href="/control/governance" className="shrink-0 rounded-lg bg-[#f54e00] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[#ff6424]">Review approvals</Link>}
             </div>

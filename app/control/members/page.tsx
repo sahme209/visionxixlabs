@@ -13,9 +13,7 @@
  * that was previously "coming soon."
  */
 
-import Link from "next/link";
 import { redirect } from "next/navigation";
-import { UserPlusIcon, ArrowLeftIcon } from "@heroicons/react/24/outline";
 import { currentContext } from "@/lib/auth/currentContext";
 import { prisma } from "@/lib/db";
 import { ROLE_LABEL, ASSIGNABLE_ROLES, type InviteRole } from "@/lib/workforce/domains/inviteLinks";
@@ -108,27 +106,7 @@ export default async function TeamPage({
 
   return (
     <div className="max-w-3xl mx-auto px-1 -mt-2">
-      <Link href="/control/settings" className="inline-flex items-center gap-1.5 text-[12px] text-zinc-500 hover:text-white transition-colors mb-6">
-        <ArrowLeftIcon className="h-3.5 w-3.5" />
-        Settings
-      </Link>
-      <header className="mb-10">
-        <p className="text-[10px] uppercase tracking-[0.24em] text-zinc-500 mb-3 inline-flex items-center gap-2">
-          <span className="text-zinc-700">{"//"}</span>
-          <span className="text-emerald-300">team</span>
-          <span className="text-zinc-700">::</span>
-          <span className="text-zinc-500">workspace members</span>
-        </p>
-        <h1 className="text-[28px] sm:text-[34px] leading-[1.1] font-semibold text-white tracking-[-0.02em] mb-3 inline-flex items-baseline gap-3">
-          <UserPlusIcon className="h-6 w-6 text-emerald-300 shrink-0 self-center" />
-          Team &amp; access
-        </h1>
-        <p className="text-[14px] text-zinc-400 leading-relaxed max-w-xl">
-          Invite teammates, assign roles, and audit who has access to this workspace. Built on the
-          workspace permissions. Every membership change is recorded and
-          reflected in the audit trail.
-        </p>
-      </header>
+      <header className="mb-7"><h1>Members</h1><p className="mt-3 text-sm leading-6 text-zinc-400">Invite teammates and manage roles in your workspace.</p></header>
 
       {/* Notices */}
       {noticeRaw === "invite_sent" && (
@@ -143,17 +121,17 @@ export default async function TeamPage({
       )}
       {noticeRaw === "role_updated" && (
         <section role="status" aria-live="polite" className="mb-6 rounded-md border border-emerald-500/30 bg-emerald-500/[0.06] p-4">
-          <p className="text-[12.5px] text-emerald-200 font-mono">role updated</p>
+          <p className="text-[12.5px] text-emerald-200 ">role updated</p>
         </section>
       )}
       {noticeRaw === "removed" && (
         <section role="status" aria-live="polite" className="mb-6 rounded-md border border-zinc-500/30 bg-zinc-500/[0.06] p-4">
-          <p className="text-[12.5px] text-zinc-300 font-mono">member removed from workspace</p>
+          <p className="text-[12.5px] text-zinc-300 ">member removed from workspace</p>
         </section>
       )}
       {errorRaw && (
         <section role="alert" aria-live="assertive" className="mb-6 rounded-md border border-rose-500/30 bg-rose-500/[0.06] p-4">
-          <p className="text-[12.5px] text-rose-200 font-mono">error: {errorRaw}</p>
+          <p className="text-[12.5px] text-rose-200 ">error: {errorRaw}</p>
         </section>
       )}
 
@@ -169,7 +147,7 @@ export default async function TeamPage({
           {membersUnavailable ? <li role="alert" className="px-5 py-6 text-sm text-zinc-300">Member records are temporarily unavailable. Refresh to retry; no member count or empty workspace is inferred.</li> : members.length === 0 ? (
             <li className="px-5 py-6 text-center">
               <p className="text-[13px] text-zinc-400">No members recorded yet.</p>
-              <p className="text-[11px] text-zinc-500 mt-1 font-mono">Invite a teammate when you are ready.</p>
+              <p className="text-[11px] text-zinc-500 mt-1 ">Invite a teammate when you are ready.</p>
             </li>
           ) : (
             members.map((m) => (
@@ -179,7 +157,7 @@ export default async function TeamPage({
                     {m.email.slice(0, 2).toUpperCase()}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-[13.5px] font-medium text-white font-mono">
+                    <p className="text-[13.5px] font-medium text-white ">
                       {m.email}
                       {m.isSelf && (
                         <span className="ml-2 text-[10px] uppercase tracking-wider text-zinc-500">you</span>
@@ -266,7 +244,7 @@ export default async function TeamPage({
               </div>
             </div>
             <div className="flex items-center justify-between gap-3 flex-wrap pt-1">
-              <p className="text-[10.5px] text-zinc-500 font-mono">invite link expires in 7 days · signed HMAC token</p>
+              <p className="text-[10.5px] text-zinc-500 ">invite link expires in 7 days · signed HMAC token</p>
               <TeamInviteButton />
             </div>
           </form>
