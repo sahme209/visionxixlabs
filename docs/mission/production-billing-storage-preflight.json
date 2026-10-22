@@ -16,8 +16,8 @@
   "unresolvedMigrationRows": 1,
   "repairProposal": "ops/recovery/20261022_billing_storage_repair.sql",
   "repairSha256": "4fd39c5963aeb9988642bcbec0b7a09331d5e33c37b0042310d142a3812b5907",
-  "executed": false,
-  "schemaRehearsal": false,
+  "executed": true,
+  "schemaRehearsal": true,
   "recoverabilityVerified": false,
   "ownerAuthorizationForThisExactDatabaseRepair": true,
   "warning": "Schema repair alone does not activate public billing. Production public-plan credit/seat/coverage contract and dedicated subscription webhook still required. No flags or catalog activation performed.",
@@ -56,5 +56,57 @@
     },
     "deleted": false,
     "decision": "Conditional authorization safety requirements not met. Preserve branch: existing Preview reference and no verified backup. Do not bypass provider restriction or remove branch without recoverability."
-  }
+  },
+  "execution": {
+    "project": "odd-union-57413470",
+    "branch": "br-holy-voice-ai303o8m",
+    "database": "neondb",
+    "sqlSha256": "4fd39c5963aeb9988642bcbec0b7a09331d5e33c37b0042310d142a3812b5907",
+    "transactionStatements": 19,
+    "result": "committed",
+    "readOnlyPostcheck": {
+      "eventLedgerReady": true,
+      "reservationStorageReady": true,
+      "creditColumnsReady": 3,
+      "addonRows": 0,
+      "unresolvedMigrationRows": 1
+    },
+    "branchDeleted": false,
+    "migrationLedgerChanged": false,
+    "salesEnabled": false
+  },
+  "rehearsalAlternative": {
+    "engine": "PostgreSQL via PGlite 0.3.14 (WASM)",
+    "schemaFixture": true,
+    "productionDataCopied": false,
+    "productionConnections": false,
+    "checks": [
+      "exact_repair_applies_and_preserves_unrelated_rows",
+      "duplicate_webhook_event_rejected",
+      "duplicate_reservation_key_rejected",
+      "duplicate_credit_checkout_rejected",
+      "second_application_fails_closed",
+      "nonempty_target_rejected_without_data_or_partial_schema_changes",
+      "partial_existing_schema_rejected_without_partial_writes"
+    ],
+    "passed": 7,
+    "limitations": [
+      "Not a Neon snapshot restore rehearsal",
+      "Does not validate live concurrent lock contention",
+      "Does not verify production subscription fulfillment or entitlements"
+    ]
+  },
+  "productionStripeAccountVerification": {
+    "accountId": "acct_1SpEdeFet66ERY29",
+    "keyMode": "live",
+    "accountMatches": true,
+    "chargesEnabled": true,
+    "payoutsEnabled": true,
+    "detailsSubmitted": true,
+    "credentialsLoggedOrPersisted": false
+  },
+  "nextSequence": [
+    "Connect dedicated subscription webhook and correct production entitlement/paid-coverage policy",
+    "Verify purchase-to-access path before enabling sales"
+  ]
 }
