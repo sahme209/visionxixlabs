@@ -1,3 +1,4 @@
+import { readPublicInvoicePage, type InvoiceStatus, type InvoiceListClient } from "./invoicePage";
 import { assertPublicPortalConfiguration } from "./publicPortalPolicy";
 import "server-only";
 import { randomUUID } from "node:crypto";
@@ -40,5 +41,5 @@ export async function publicBillingRuntime() {
     if(url.protocol!=="https:"||url.hostname!=="billing.stripe.com"||url.username||url.password)throw Error("public_portal_url_invalid");
     return {ok:true as const,url:session.url};
   }
-  return {identity,service,portal,webhook:(event:unknown)=>reconcilePublicWebhook(event,identity,{get},service.reconcile)};
+  return {identity,service,portal,invoices:(customerId:string,filter:{status?:InvoiceStatus;after?:string})=>readPublicInvoicePage(stripe as unknown as InvoiceListClient,identity,customerId,filter),webhook:(event:unknown)=>reconcilePublicWebhook(event,identity,{get},service.reconcile)};
 }

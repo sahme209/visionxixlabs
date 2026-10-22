@@ -15,7 +15,7 @@ vi.mock("@/lib/db",()=>({prisma:{
  environment:{count:async()=>3,findMany:async()=>[]},agentActionProposal:{count:async()=>0,findMany:async()=>[]},
  tenantIntegrationConnection:{count:async()=>0,findMany:async()=>[]},gitHubInstallation:{findFirst:async()=>({id:"installation-1",status:"active",repositorySelection:"selected",lastSeenAt:new Date()})},connectorSetupSession:{findMany:async()=>[]},
  secureAuditRecord:{count:async()=>0,findMany:async()=>[]},desktopSessionRecord:{count:async()=>1},
- usageEvent:{aggregate:async()=>({_count:{_all:0},_sum:{inputTokens:0,outputTokens:0,billedCents:0}}),count:async()=>0},addOnPurchase:{findMany:async()=>[]},
+ usageEvent:{aggregate:async()=>({_count:{_all:1},_sum:{inputTokens:200,outputTokens:50,billedCents:0}}),count:async()=>0},addOnPurchase:{findMany:async()=>[]},
  agentSkillInstallation:{findMany:async()=>[]},
 }}));
 vi.mock("@/lib/connectors/github/githubConfig",()=>({getGithubConfig:async()=>({}),isGithubAppInstallationReady:()=>false}));
@@ -50,7 +50,7 @@ afterEach(()=>{cleanup();vi.unstubAllGlobals();vi.unstubAllEnvs();});
 it("renders the real cockpit pages in one frame with honest fixture state",async()=>{
  vi.stubEnv("AXIOM_SELF_SERVICE_BILLING_ENABLED","true");
  const device={id:"fixture-device",userId:"visual-user",deviceLabel:"Example workstation",platform:"macOS",desktopVersion:"0.1.20",issuedAt:"2026-10-01T12:00:00Z",expiresAt:"2026-11-01T12:00:00Z",lastSeenAt:"2026-10-22T14:00:00Z",status:"active"};
- vi.stubGlobal("fetch",vi.fn(async(url:string)=>new Response(JSON.stringify(url.includes("/api/control/airflow") ? {ok:true,data:{connection:{status:"not_connected"},automations:[],executions:[]}} : url.includes("ai-governance") ? {ok:true,data:{canManage:false,providerPolicy:{enabled:false,allowedProviders:[],modelSelections:{},fallbackOrder:[]},availableProviders:[],gatewayModels:[],gatewayCatalogLive:false,agentIdentityState:"migration_pending",agentIdentity:null,autonomy:null,budget:null,tools:[]}} : {data:{sessions:[device]}}),{status:200})));
+ vi.stubGlobal("fetch",vi.fn(async(url:string)=>new Response(JSON.stringify(url.includes("/api/control/usage-records") ? {ok:true,data:{month:"2026-10",offset:0,hasMore:false,rows:[{id:"fixture-usage",createdAt:"2026-10-22T12:00:00Z",provider:"Gateway",model:"Example model",status:"pending",inputTokens:200,outputTokens:50,settledCents:null}]}} : url.includes("/api/control/invoices") ? {ok:true,data:{state:"no_customer",invoices:[],hasMore:false,nextCursor:null}} : url.includes("/api/control/airflow") ? {ok:true,data:{connection:{status:"not_connected"},automations:[],executions:[]}} : url.includes("ai-governance") ? {ok:true,data:{canManage:false,providerPolicy:{enabled:false,allowedProviders:[],modelSelections:{},fallbackOrder:[]},availableProviders:[],gatewayModels:[],gatewayCatalogLive:false,agentIdentityState:"migration_pending",agentIdentity:null,autonomy:null,budget:null,tools:[]}} : {data:{sessions:[device]}}),{status:200})));
  const pages=[
   {name:"overview",path:"/control",page:()=>Overview(),heading:"Overview"},
   {name:"integrations",path:"/control/integrations",page:()=>Integrations(),heading:"Integrations"},
@@ -79,8 +79,8 @@ it("renders the real cockpit pages in one frame with honest fixture state",async
    fireEvent.click(screen.getByRole("button",{name:"Revoke device"}));save("revoke-dialog");fireEvent.click(screen.getByRole("button",{name:"Cancel"}));
   }
   if(page.name==="billing"){
-   fireEvent.click(screen.getByRole("tab",{name:"Usage"}));save("usage");
-   fireEvent.click(screen.getByRole("tab",{name:"Invoices"}));save("invoices");
+   fireEvent.click(screen.getByRole("tab",{name:"Usage"}));await screen.findByText("Example model");save("usage");
+   fireEvent.click(screen.getByRole("tab",{name:"Invoices"}));await screen.findByText("No billing customer is linked to this workspace.");save("invoices");
    expect(screen.queryByRole("button",{name:"Manage billing"})).toBeNull();
   }
   if(page.name==="integrations"){
