@@ -103,3 +103,16 @@ it.each([undefined, "success", ["canceled"]])("ignores unrecognized checkout ret
   expect(screen.queryByText(/This page makes no subscription changes/)).toBeNull();
   expect(io.fetch).not.toHaveBeenCalled();
 });
+
+it.each([true, false])("keeps pricing activation copy consistent with the checkout gate (%s)", async enabled => {
+  vi.stubEnv("AXIOM_SELF_SERVICE_BILLING_ENABLED", String(enabled));
+  io.context.mockResolvedValue({ isAuthenticated: false });
+  render(await PlansPage({}));
+  if (enabled) {
+    expect(screen.queryByText(/activation remains locked/i)).toBeNull();
+    expect(screen.getByText(/Paid access activates only after Stripe verifies payment/)).toBeTruthy();
+  } else {
+    expect(screen.getByText(/Pricing preview.*no charges/)).toBeTruthy();
+    expect(screen.queryByRole("button", {name: "Choose Pro"})).toBeNull();
+  }
+});
