@@ -14,7 +14,7 @@ export async function POST(request:NextRequest){
   if(!context.roles.some(role=>role==='owner'||role==='admin'))return response({ok:false,error:'workspace_admin_required'},403);
   if(!(await readDesktopCommercialAccess(String(context.organizationId))).allowed)return response({ok:false,error:'workspace_access_required'},403);
   const body=await request.json().catch(()=>null) as {skillId?:unknown;action?:unknown}|null;
-  if(typeof body?.skillId!=='string' || typeof body.action!=='string' || !['install','enable','disable'].includes(body.action))return response({ok:false,error:'invalid_payload'},400);
+  if(typeof body?.skillId!=='string' || typeof body.action!=='string' || !['install','enable','disable','remove'].includes(body.action))return response({ok:false,error:'invalid_payload'},400);
   const result=await updateWorkspaceSkill({organizationId:String(context.organizationId),userId:String(context.userId),skillId:body.skillId,action:body.action});
   const {statusCode,...resultBody}=result;
   return response(resultBody,statusCode);

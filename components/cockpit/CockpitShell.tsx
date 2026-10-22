@@ -42,7 +42,7 @@ export function CockpitShell({ children, email, workspace, roles = [] }: { child
     </aside>
     <div className="lg:pl-[264px]">
       <header className="flex h-12 items-center lg:hidden justify-between border-b border-white/[0.06] px-5 text-xs text-zinc-500 sm:px-8"><span>Workspace <span className="mx-2 text-zinc-700">/</span><span className="text-zinc-300">{groups.flatMap(g=>g.items).find(i=>active(i.href))?.label ?? "Axiom Control"}</span></span><button onClick={() => void signOut({callbackUrl:"/"})} title="Ends this browser session; paired devices remain signed in." className="rounded px-2 py-1.5 text-zinc-400 hover:bg-white/5">Sign out</button></header>
-      <main id="cockpit-content" className="cockpit-content mx-auto w-full max-w-[1250px] px-5 py-8 sm:px-8 lg:px-8 lg:py-8 [&_h1]:text-2xl [&_h1]:font-medium [&_h1]:tracking-[-0.035em] [&_h1]:leading-tight [&_h2]:tracking-tight">{children}</main>
+      <main id="cockpit-content" className="cockpit-content w-full min-w-0 px-5 py-8 sm:px-8 lg:px-8 lg:py-8 [&_h1]:text-2xl [&_h1]:font-medium [&_h1]:tracking-[-0.035em] [&_h1]:leading-tight [&_h2]:tracking-tight">{children}</main>
     </div>
   </div>;
 }

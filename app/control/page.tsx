@@ -47,7 +47,7 @@ export default async function ControlOverviewPage() {
   const money = (cents: number) => new Intl.NumberFormat("en-US", {style:"currency",currency:"USD"}).format(cents / 100);
 
   return (
-    <div className="max-w-5xl">
+    <div className="w-full min-w-0">
 
       <h1 className="text-2xl font-medium tracking-tight">Overview</h1>
       <p className="mt-1 max-w-2xl text-[13px] leading-5 text-zinc-400">Your account, connected services, and governed workspace.</p>

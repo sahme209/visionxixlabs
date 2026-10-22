@@ -8,7 +8,7 @@ describe("TOOL_REGISTRY", () => {
       "check_deploy_status", "commit_github_file", "commit_github_files", "configure_deployment_target",
       "connect_identity_provider", "create_environment", "create_github_branch",
       "inspect_github_repository", "list_cloud_accounts", "list_deployment_executions", "list_environments", "list_github_files", "list_integrations", "open_github_pull_request",
-      "preview_scim_lifecycle", "read_aws_inventory", "read_github_file", "search_github_code", "trigger_aws_deploy",
+      "preview_scim_lifecycle", "read_aws_inventory", "read_github_file", "search_github_code", "search_microsoft_docs", "trigger_aws_deploy",
     ]);
   });
 

@@ -6,6 +6,7 @@ export const AGENT_TOOL_ACTIVITY_FEATURE = "tool_activity_v1";
 export const MAX_AGENT_ACTIVITY_STEPS = 8;
 /** Presentation only: this list never grants tool authority. */
 export const AGENT_TOOL_ACTIVITY_LABELS: Readonly<Record<string, string>> = {
+  search_microsoft_docs: "Searching public Microsoft documentation",
   list_cloud_accounts: "Checking connected cloud accounts",
   read_aws_inventory: "Reading AWS inventory",
   list_environments: "Checking environments",

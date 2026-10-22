@@ -34,3 +34,13 @@ it("cannot use the switching marker to bypass callback safety or create an authe
   fireEvent.click(await screen.findByRole("button", { name: "Sign in with Google" }));
   await waitFor(() => expect(mocks.signIn).toHaveBeenCalledWith("google", { callbackUrl: "/control", redirect: true }, { prompt: "select_account" }));
 });
+
+it('retains a same-origin absolute callback returned by an OAuth error',async()=>{
+ mocks.switchAccount='0';mocks.callback=`${window.location.origin}/control/plans?plan=enterprise&interval=annual`;
+ render(createElement(SignInPage));fireEvent.click(await screen.findByRole('button',{name:'Sign in with Google'}));
+ await waitFor(()=>expect(mocks.signIn).toHaveBeenCalledWith('google',{callbackUrl:'/control/plans?plan=enterprise&interval=annual',redirect:true}));
+});
+it.each(['https://evil.test/control','https://user:pass@localhost:3000/control','/\\evil.test/control','javascript:alert(1)'])('rejects unsafe recovery callback %s',async callback=>{
+ mocks.switchAccount='0';mocks.callback=callback;render(createElement(SignInPage));fireEvent.click(await screen.findByRole('button',{name:'Sign in with Google'}));
+ await waitFor(()=>expect(mocks.signIn).toHaveBeenCalledWith('google',{callbackUrl:'/control',redirect:true}));
+});

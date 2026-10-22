@@ -12,10 +12,9 @@ export function ConfirmDialog({title, children, onCancel, onConfirm, confirmLabe
  useEffect(()=>{
   const previous=document.activeElement instanceof HTMLElement ? document.activeElement : null;
   const overflow=document.body.style.overflow;
-  const fallback=returnFocusRef?.current;
   document.body.style.overflow="hidden";
   cancel.current?.focus();
-  return ()=>{document.body.style.overflow=overflow;if(previous?.isConnected)previous.focus();else fallback?.focus();};
+  return ()=>{document.body.style.overflow=overflow;if(returnFocusRef?.current?.isConnected)returnFocusRef.current.focus();else if(previous?.isConnected)previous.focus();};
  },[returnFocusRef]);
  useEffect(()=>{if(busy)dialog.current?.focus();},[busy]);
  return createPortal(<div className="fixed inset-0 z-[100] grid place-items-center bg-black/75 p-5 backdrop-blur-sm" onKeyDown={event=>{

@@ -116,7 +116,7 @@ export default async function ControlIntegrationsPage() {
         : new Date().getTime() - github.lastSeenAt.getTime() <= GITHUB_VALIDATION_FRESH_FOR_MS ? "validated_read_only" : "validation_overdue";
 
   return (
-    <div className="max-w-5xl">
+    <div className="w-full min-w-0">
 
       <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
         <div><h1 className="text-3xl font-semibold tracking-[-0.045em] sm:text-4xl">Integrations</h1><p className="mt-1 max-w-2xl text-[13px] leading-5 text-zinc-400">Connect source control, collaboration tools, and cloud services to your workspace.</p></div>
@@ -127,14 +127,14 @@ export default async function ControlIntegrationsPage() {
 
       <section className="mt-7" aria-labelledby="source-control-heading">
         <h2 id="source-control-heading" className="mb-3 text-[13px] font-medium text-zinc-100">Source control</h2>
-        <div className="grid gap-4 md:grid-cols-2">
+        <div className="grid gap-4 md:grid-cols-2 2xl:grid-cols-3">
           <IntegrationRow icon={ICONS.github} name="GitHub" status={githubStatus} description="Repository context, reviewed code changes, and release workflows." details={github ? `${titleCase(github.repositorySelection)} repository access · Last read-only validation: ${formatTime(github.lastSeenAt)}` : "No GitHub App installation recorded."} action={canManage ? <IntegrationConnectionAction provider="github" label="GitHub" connected={Boolean(github && github.status !== "revoked")} suspended={github?.status === "suspended"} installationRowId={github?.id} /> : undefined} />
         </div>
       </section>
 
       <section className="mt-8" aria-labelledby="collaboration-heading">
         <h2 id="collaboration-heading" className="mb-3 text-[13px] font-medium text-zinc-100">Collaboration and work management</h2>
-        <div className="grid gap-4 md:grid-cols-2">
+        <div className="grid gap-4 md:grid-cols-2 2xl:grid-cols-3">
           {collaboration.map((connection) => {
             const names = { slack: "Slack", teams: "Microsoft Teams", linear: "Linear" } as const;
             const descriptions = { slack: "Governed release notifications for your workspace.", teams: "Connect your Microsoft tenant for governed collaboration.", linear: "Issue context and approval-governed follow-up." } as const;
@@ -143,16 +143,21 @@ export default async function ControlIntegrationsPage() {
         </div>
       </section>
 
+      <section className="mt-8" aria-labelledby="documentation-heading">
+        <h2 id="documentation-heading" className="mb-3 text-[13px] font-medium text-zinc-100">Documentation & developer tools</h2>
+        <div className="grid gap-4 md:grid-cols-2 2xl:grid-cols-3"><IntegrationRow icon={ICONS.azure} name="Microsoft Learn MCP" status="public_service" description="Search official Azure and Microsoft documentation. No cloud credentials or write access." details="Reviewed public endpoint: learn.microsoft.com/api/mcp. Enable in the workspace MCP catalog; Agent permissions remain separate." action={<Link href="/control/mcp" className="inline-flex min-h-8 items-center rounded-full border border-white/10 px-3.5 text-xs text-zinc-200">Open tools →</Link>}/></div>
+      </section>
+
       <section className="mt-8" aria-labelledby="automation-heading">
         <h2 id="automation-heading" className="mb-3 text-[13px] font-medium text-zinc-100">Orchestration</h2>
-        <div className="grid gap-4 md:grid-cols-2">
+        <div className="grid gap-4 md:grid-cols-2 2xl:grid-cols-3">
           <IntegrationRow icon={ICONS.airflow} name="Apache Airflow" status={airflow?.status ?? "not_connected"} description="DAG monitoring, dependency checks, and approved automation." details={airflow ? `${typeof airflowMetadata.version === "string" ? `Version ${airflowMetadata.version}` : "Version unavailable"} · ${typeof airflowMetadata.dagCount === "number" ? `${airflowMetadata.dagCount} DAGs` : "DAG count unavailable"} · ${formatTime(airflow.lastValidatedAt)}` : "No validated Airflow connection recorded."} action={<Link href="/control/airflow" className="inline-flex min-h-8 items-center rounded-full border border-white/[0.1] px-3.5 text-xs font-medium text-zinc-300 hover:bg-white/[0.05]">Open Airflow →</Link>} />
         </div>
       </section>
 
       <section className="mt-8" aria-labelledby="cloud-heading">
         <h2 id="cloud-heading" className="mb-3 text-[13px] font-medium text-zinc-100">Cloud authorization</h2>
-        <div className="grid gap-4 md:grid-cols-2">
+        <div className="grid gap-4 md:grid-cols-2 2xl:grid-cols-3">
           {CLOUD_PROVIDERS.map((provider) => {
             const row = cloud.find((item) => item.provider === provider);
             return <IntegrationRow key={provider} icon={ICONS[provider]} name={provider === "gcp" ? "Google Cloud" : provider === "azure" ? "Azure" : "AWS"} status={row?.status ?? "not_connected"} description={provider === "aws" ? "OIDC-backed deployment authorization; no long-lived AWS access key is stored." : "Provider authorization is shown only after backend validation."} details={row ? `Last lifecycle transition: ${formatTime(row.lastTransitionAt)}` : "Setup required. Configure and validate a scoped cloud connection in Axiom Agent."} action={canManage ? <Link href="/control/desktop" className="inline-flex min-h-8 items-center rounded-full border border-white/10 px-3.5 text-xs text-zinc-300 hover:bg-white/5">Connect in Agent →</Link> : undefined} />;

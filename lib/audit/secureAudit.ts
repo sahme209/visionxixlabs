@@ -164,6 +164,7 @@ export type AuditAction =
   | "cloud_account.toggle"
   | "connector.pause"
   | "connector.resume"
+  | "mcp.documentation_read"
   | "skill.install"
   | "skill.enable"
   | "skill.disable"

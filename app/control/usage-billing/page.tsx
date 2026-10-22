@@ -97,7 +97,7 @@ export default async function ControlUsageBillingPage({ searchParams }: { search
       </section> </>);
 
   return (
-    <div className="max-w-5xl">
+    <div className="w-full min-w-0">
 
       <h1 className="text-2xl font-medium">Usage & billing</h1>
       <p className="mt-3 max-w-2xl text-sm leading-6 text-zinc-400">Manage your plan, review usage, and access billing records.</p>

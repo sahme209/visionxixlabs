@@ -57,7 +57,7 @@ it("renders the real cockpit pages in one frame with honest fixture state",async
   {name:"settings",path:"/control/settings",page:()=>Settings({}),heading:"Settings"},
   {name:"billing",path:"/control/usage-billing",page:()=>Billing({}),heading:"Usage & billing"},
   {name:"members",path:"/control/members",page:()=>Members({}),heading:"Members"},
-  {name:"plugins",path:"/control/plugins",page:()=>Plugins(),heading:"Plugins & skills"},
+  {name:"plugins",path:"/control/plugins",page:()=>Plugins({}),heading:"Plugins & skills"},
   {name:"plans",path:"/control/plans",page:()=>Plans({}),heading:"Choose your plan"},
   {name:"governance",path:"/control/governance",page:()=>Governance(),heading:"Governance"},
   {name:"ai-agents",path:"/control/ai-agents",page:async()=>createElement(AIAgents),heading:"AI & Agents"},

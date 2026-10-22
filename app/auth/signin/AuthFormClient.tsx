@@ -256,10 +256,11 @@ function SignInForm() {
 }
 
 function safeInternalPath(value: string | null, fallback: string): string {
-  if (!value || !value.startsWith("/") || value.startsWith("//")) return fallback;
+  if (!value || value.startsWith("//") || /[\\\x00-\x20]/.test(value)) return fallback;
   try {
-    const parsed = new URL(value, "https://visionxixlabs.com");
-    return parsed.origin === "https://visionxixlabs.com" ? `${parsed.pathname}${parsed.search}${parsed.hash}` : fallback;
+    const origin = typeof window === "undefined" ? "https://visionxixlabs.com" : window.location.origin;
+    const parsed = new URL(value, origin);
+    return parsed.origin === origin && !parsed.username && !parsed.password ? `${parsed.pathname}${parsed.search}${parsed.hash}` : fallback;
   } catch {
     return fallback;
   }

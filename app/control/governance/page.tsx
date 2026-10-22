@@ -18,7 +18,7 @@ export default async function GovernancePage() {
   const canDecide = canDecideApprovals({ email: context.email, roles: context.roles });
 
   return (
-    <div className="max-w-5xl">
+    <div className="w-full min-w-0">
 
       <h1 className="text-2xl font-medium">Governance</h1>
       <p className="mt-4 max-w-2xl text-sm leading-6 text-zinc-400">Review pending Agent actions, workspace roles, and environment policies.</p>

@@ -15,7 +15,7 @@ export default async function AuditSecurityPage() {
 
   if (!canManage) {
     return (
-      <div className="max-w-4xl">
+      <div className="w-full min-w-0">
 
         <h1 className="mt-3 text-3xl font-semibold tracking-[-0.045em]">Administrative access required.</h1>
         <p className="mt-4 max-w-2xl text-sm leading-6 text-zinc-400">Organization audit evidence and device revocation are available only to a current owner or administrator. Authority is rechecked by the backend on every request.</p>
@@ -39,7 +39,7 @@ export default async function AuditSecurityPage() {
   ]);
 
   return (
-    <div className="max-w-5xl">
+    <div className="w-full min-w-0">
 
       <h1 className="text-2xl font-medium">Audit &amp; security</h1>
       <p className="mt-4 max-w-2xl text-sm leading-6 text-zinc-400">Review organization activity, policy decisions, and active desktop sessions.</p>
