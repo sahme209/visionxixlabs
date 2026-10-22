@@ -34,3 +34,12 @@ No reference payment, team creation, provider consent, plugin installation, prof
 ## Release condition
 
 Production promotion remains conditional on functional and visual verification. Local component previews use mocked test data and are not authenticated end-to-end evidence. Shared hosting preview configuration is not an isolated test environment. Do not label this audit complete feature parity or production acceptance.
+
+
+## Account overview implementation
+
+The overview now reads the same tenant billing plan and current allowance authority as Usage & billing, within the existing isolated read scope. It presents the recorded plan and status, remaining allowance and unresolved holds, and workspace commercial-access status using the desktop access policy. A read failure renders unavailable; it never implies a Free subscription or zero balance. Access status is not a claim that a desktop device is paired.
+
+Product cards connect to Integrations, Plugins, and paired desktop sessions. The session deep link selects the Sessions tab and preserves its allowlisted destination through sign-in. Governed approvals, operational counts, members, governance and downloads remain reachable. Existing billing/permission policy is unchanged.
+
+New coverage checks the authenticated-workspace reader calls, failed reads, canceled paid contract, membership boundaries, session deep linking and invalid section fallback. Component previews still use fixture data. Production acceptance of purchases, desktop synchronization and real provider execution remains pending.

@@ -19,7 +19,7 @@ vi.mock("@/lib/db",()=>({prisma:{
  agentSkillInstallation:{findMany:async()=>[]},
 }}));
 vi.mock("@/lib/connectors/github/githubConfig",()=>({getGithubConfig:async()=>({}),isGithubAppInstallationReady:()=>false}));
-vi.mock("@/lib/billing/tenantBillingStore",()=>({readBillingPlanWithAvailability:async()=>({available:true,plan:{tier:"free",status:"active",publicPlanId:"free",seatQuantity:2}})}));
+vi.mock("@/lib/billing/tenantBillingStore",()=>({readBillingPlanWithAvailability:async()=>({available:true,plan:{tier:"free",status:"active",publicPlanId:"free",pricingPlanAvailable:true,seatQuantity:2}})}));
 vi.mock("@/lib/billing/deploymentQuota",()=>({checkDeploymentQuota:async()=>({allowed:true,used:2,limit:10})}));
 vi.mock("@/lib/billing/currentAIAllowance",()=>({readCurrentAIAllowance:async()=>({available:true,includedRemainingCents:200,poolCents:200,heldCents:0,overagePolicy:"hard_stop",addOnCents:0})}));
 vi.mock("@/lib/billing/stripeHelper",()=>({describeStripeStatus:()=>({mode:"test"})}));
@@ -53,7 +53,7 @@ it("renders the real cockpit pages in one frame with honest fixture state",async
  const pages=[
   {name:"overview",path:"/control",page:()=>Overview(),heading:"Overview"},
   {name:"integrations",path:"/control/integrations",page:()=>Integrations(),heading:"Integrations"},
-  {name:"settings",path:"/control/settings",page:()=>Settings(),heading:"Settings"},
+  {name:"settings",path:"/control/settings",page:()=>Settings({}),heading:"Settings"},
   {name:"billing",path:"/control/usage-billing",page:()=>Billing({}),heading:"Usage & billing"},
   {name:"members",path:"/control/members",page:()=>Members({}),heading:"Members"},
   {name:"plugins",path:"/control/plugins",page:()=>Plugins(),heading:"Plugins & skills"},
