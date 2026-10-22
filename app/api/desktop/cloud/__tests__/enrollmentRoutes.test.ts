@@ -48,11 +48,31 @@ it("composes authorized challenge→completion→safe list→one-page inventory 
   expect(mocks.resolve.mock.calls[0][1]).toMatchObject({ requiredCapability: "connections:manage", allowApiKey: false });
   expect(mocks.resolve.mock.calls.at(-1)![1]).toMatchObject({ requiredCapability: "workspace:read", allowApiKey: false });
 });
-it("fails storage-unavailable before SDK and returns no database error or configuration", async () => {
-  f.repo.cloudAccountCredential.findMany.mockRejectedValue({ code: "P2021", message: "private connection details" });
-  const response = await start(request("aws/enrollment", "POST", input)); expect(response.status).toBe(503);
-  const body = await response.json(); expect(body.error).toBe("enrollment_unavailable"); expect(JSON.stringify(body)).not.toContain("private"); expect(mocks.validate).not.toHaveBeenCalled();
+it.each(["P2021", "P2022"])("reports incompatible storage safely before SDK or writes: %s", async code => {
+  f.repo.cloudAccountCredential.findMany.mockRejectedValue({ code, message: "private connection details", meta: { table: "private_table", column: "private_column" } });
+  for (const response of [await start(request("aws/enrollment", "POST", input)), await list(request("accounts"))]) {
+    expect(response.status).toBe(503);
+    expect(await response.json()).toEqual({ ok: false, error: "enrollment_storage_schema_unavailable", message: "AWS connection storage is not compatible with this service version. A service administrator needs to review deployed database migrations. Refresh connection state before retrying." });
+  }
+  expect(mocks.validate).not.toHaveBeenCalled(); expect(mocks.read).not.toHaveBeenCalled();
+  expect(f.repo.cloudAccountEnrollmentAttempt.create).not.toHaveBeenCalled();
+  expect(f.repo.cloudAccountCredential.updateMany).not.toHaveBeenCalled();
 });
+it.each(["P1001", "P2024", "unknown", 2021, { toString: () => "P2021" }])("keeps other failures generic without coercing a schema code: %s", async code => {
+  f.repo.cloudAccountCredential.findMany.mockRejectedValue({ code, message: "private connection details", meta: { table: "private_table" } });
+  const response = await start(request("aws/enrollment", "POST", input));
+  expect(response.status).toBe(503);
+  const body = await response.json(); expect(body.error).toBe("enrollment_unavailable"); expect(JSON.stringify(body)).not.toContain("private");
+  expect(mocks.validate).not.toHaveBeenCalled(); expect(f.repo.cloudAccountEnrollmentAttempt.create).not.toHaveBeenCalled();
+});
+it.each(["P2002", "P2034"])("preserves explicit storage conflicts: %s", async code => {
+  f.repo.cloudAccountCredential.findMany.mockRejectedValue({ code, message: "private connection details" });
+  const response = await start(request("aws/enrollment", "POST", input));
+  expect(response.status).toBe(409);
+  const body = await response.json(); expect(body.error).toBe("enrollment_conflict"); expect(JSON.stringify(body)).not.toContain("private");
+  expect(mocks.validate).not.toHaveBeenCalled(); expect(f.repo.cloudAccountEnrollmentAttempt.create).not.toHaveBeenCalled();
+});
+
 it("rejects tenant overrides in challenge input and region overrides in inventory", async () => {
   const response = await start(request("aws/enrollment", "POST", { ...input, organizationId: "foreign" })); expect(response.status).toBe(400);
   const result = await inventory(request("accounts/id/inventory?region=elsewhere"), { params: Promise.resolve({ id: "id" }) });
