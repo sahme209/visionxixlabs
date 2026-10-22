@@ -98,3 +98,18 @@ it("offers explicit installer choice when a Mac reports ambiguous Intel platform
   expect(screen.getByRole("link", { name: "Download for macOS for Apple Silicon" }).getAttribute("href")).toBe("/api/desktop/download?platform=mac-arm");
   expect(screen.getByRole("link", { name: "Download for macOS for Intel" }).getAttribute("href")).toBe("/api/desktop/download?platform=mac-intel");
 });
+
+it("keeps the cockpit setup handoff in the authenticated workspace and preserves installer resolution", async () => {
+  vi.stubGlobal("fetch", async () => ({ ok: true, json: async () => ({ ok: true, data: { runtimeReady: false, assets: {} } }) }));
+  const { DownloadContent } = await import("@/components/cockpit/DownloadContent");
+  render(createElement(DownloadContent, { cockpit: true }));
+  expect(screen.getByRole("heading", { name: "Desktop & provider setup" })).toBeDefined();
+  expect(screen.getByRole("link", { name: /Back to integrations/ }).getAttribute("href")).toBe("/control/integrations");
+  expect(screen.queryByRole("link", { name: /Explore the web demo/ })).toBeNull();
+  expect(screen.getByRole("region", { name: "Provider setup requirements" }).textContent).toContain("Cloud enrollment is not available from this web page");
+  await screen.findByText("Desktop sign-in is temporarily unavailable.");
+  for (const link of screen.getAllByRole("link", { name: /^Download for/ })) {
+    expect(link.getAttribute("href")).toMatch(/^\/api\/desktop\/download\?platform=/);
+    expect(link.hasAttribute("download")).toBe(false);
+  }
+});

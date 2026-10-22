@@ -115,40 +115,49 @@ export function DownloadContent({ cockpit = false }: { cockpit?: boolean }) {
   }, [manifest, manifestError]);
 
   return (
-    <div className="min-h-screen bg-[#101010] text-zinc-100">
+    <div className={cockpit ? "text-zinc-100" : "min-h-screen bg-[#101010] text-zinc-100"}>
       {!cockpit && <Navigation />}
 
-      <main>
-        <section className="mx-auto max-w-[1280px] px-5 pb-10 pt-28 sm:px-8 sm:pb-14 lg:pt-36 lg:px-10">
+      <main className={cockpit ? "max-w-5xl" : undefined}>
+        <section className={cockpit ? "mb-6" : "mx-auto max-w-[1280px] px-5 pb-10 pt-28 sm:px-8 sm:pb-14 lg:pt-36 lg:px-10"}>
           <div className="max-w-3xl">
-            <p className="text-[11px] font-medium uppercase tracking-[0.2em] text-orange-300">Axiom Agent for desktop</p>
-            <h1 className="mt-5 text-[clamp(2.5rem,5vw,4.5rem)] font-medium leading-[1.05] tracking-[-0.05em] text-white">
-              Work where<br />engineering happens.
+            {!cockpit && <p className="text-[11px] font-medium uppercase tracking-[0.2em] text-orange-300">Axiom Agent for desktop</p>}
+            <h1 className={cockpit ? "text-white" : "mt-5 text-[clamp(2.5rem,5vw,4.5rem)] font-medium leading-[1.05] tracking-[-0.05em] text-white"}>
+              {cockpit ? "Desktop & provider setup" : <>Work where<br />engineering happens.</>}
             </h1>
-            <p className="mt-5 max-w-2xl text-base leading-7 text-zinc-400 sm:text-lg">
+            <p className={cockpit ? "mt-3 max-w-2xl text-sm leading-6 text-zinc-400" : "mt-5 max-w-2xl text-base leading-7 text-zinc-400 sm:text-lg"}>
               A focused desktop workspace for governed engineering operations, approvals, execution, and evidence.
             </p>
-            <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:items-center">
+            <div className={cockpit ? "mt-4 flex flex-wrap items-center gap-2" : "mt-7 flex flex-col gap-3 sm:flex-row sm:items-center"}>
               <a
                 href={primaryHref}
                 download={downloadReady && detectedAsset ? detectedAsset.fileName : undefined}
-                className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl sm:rounded-full bg-[#f2f2ed] px-6 text-sm font-semibold text-[#11120f] transition hover:bg-white"
+                className={cockpit ? "inline-flex h-8 items-center gap-2 rounded-lg bg-zinc-100 px-3 text-xs font-medium text-zinc-900 hover:bg-white" : "inline-flex min-h-12 items-center justify-center gap-2 rounded-xl sm:rounded-full bg-[#f2f2ed] px-6 text-sm font-semibold text-[#11120f] transition hover:bg-white"}
               >
                 <ArrowDownTrayIcon className="h-4 w-4" />
                 {detectedPlatform === "choose" ? "Choose your installer" : `Download for ${platformLabel[detectedPlatform]}`}
               </a>
-              <Link href={cockpit ? "/control" : "/demo"} className="inline-flex min-h-12 items-center justify-center gap-2 rounded-lg border border-white/12 px-6 text-sm font-medium text-zinc-200 transition hover:border-white/25 hover:bg-white/[0.04]">
-                Explore the web demo <ArrowRightIcon className="h-4 w-4" />
+              <Link href={cockpit ? "/control/integrations" : "/demo"} className={cockpit ? "inline-flex h-8 items-center gap-2 rounded-lg border border-white/10 px-3 text-xs text-zinc-300 hover:bg-white/5" : "inline-flex min-h-12 items-center justify-center gap-2 rounded-lg border border-white/12 px-6 text-sm font-medium text-zinc-200 transition hover:border-white/25 hover:bg-white/[0.04]"}>
+                {cockpit ? "Back to integrations" : "Explore the web demo"} <ArrowRightIcon className="h-4 w-4" />
               </Link>
             </div>
             <p className="mt-4 text-xs text-zinc-400">{releaseStatus}{detectedAsset ? ` · ${formatSize(detectedAsset.sizeBytes)}` : ""}</p>
           </div>
         </section>
 
-        <section id="downloads" className="mx-auto max-w-[1280px] px-5 pb-16 sm:px-8 lg:px-10">
-          <div className="mb-6 border-t border-white/[0.08] pt-8">
-            <h2 className="text-2xl font-medium tracking-[-0.035em] text-zinc-100 sm:text-3xl">Use Axiom on your workstation.</h2>
-            <p className="mt-2 text-base text-zinc-400">One governed workspace across macOS, Windows, and Linux.</p>
+        {cockpit && <section aria-label="Provider setup requirements" className="mb-6 rounded-xl border border-white/[0.08] bg-white/[0.015] p-5">
+          <h2 className="text-sm font-medium text-zinc-100">Connect a provider securely</h2>
+          <ol className="mt-3 list-decimal space-y-2 pl-4 text-xs leading-5 text-zinc-400">
+            <li>Sign in to Axiom Agent using the same account and workspace as this cockpit.</li>
+            <li>Review the provider capabilities available in your installed release. A download does not create a cloud connection.</li>
+            <li>Complete only the supported authorization flow with your administrator. Provider consent, scopes, credentials, and backend validation are required before a connection becomes active.</li>
+          </ol>
+          <p className="mt-3 text-xs leading-5 text-zinc-500">Cloud enrollment is not available from this web page. Azure, AWS, and Google Cloud remain setup-required until their supported flow is configured and validated. Source-code capabilities may differ from published installers.</p>
+        </section>}
+        <section id="downloads" className={cockpit ? "mb-6 scroll-mt-6" : "mx-auto max-w-[1280px] px-5 pb-16 sm:px-8 lg:px-10"}>
+          <div className={cockpit ? "mb-3" : "mb-6 border-t border-white/[0.08] pt-8"}>
+            <h2 className={cockpit ? "text-sm font-medium text-zinc-100" : "text-2xl font-medium tracking-[-0.035em] text-zinc-100 sm:text-3xl"}>{cockpit ? "Desktop installers" : "Use Axiom on your workstation."}</h2>
+            <p className={cockpit ? "mt-1 text-xs text-zinc-500" : "mt-2 text-base text-zinc-400"}>One governed workspace across macOS, Windows, and Linux.</p>
           </div>
 
           <div className="grid gap-3 lg:grid-cols-3">
@@ -160,6 +169,7 @@ export function DownloadContent({ cockpit = false }: { cockpit?: boolean }) {
                 { id: "mac-arm", asset: manifest?.assets["macos-arm"] ?? null },
                 { id: "mac-intel", asset: manifest?.assets["macos-intel"] ?? null },
               ]}
+              compact={cockpit}
               runtimeReady={manifest?.runtimeReady === true}
             />
             <DownloadCard
@@ -167,6 +177,7 @@ export function DownloadContent({ cockpit = false }: { cockpit?: boolean }) {
               copy="The Axiom desktop workspace for Windows engineering teams."
               icon={CommandLineIcon}
               assets={[{ id: "windows", asset: manifest?.assets["windows-x64"] ?? null }]}
+              compact={cockpit}
               runtimeReady={manifest?.runtimeReady === true}
             />
             <DownloadCard
@@ -174,14 +185,15 @@ export function DownloadContent({ cockpit = false }: { cockpit?: boolean }) {
               copy="A portable AppImage for Linux workstations and engineering environments."
               icon={GlobeAltIcon}
               assets={[{ id: "linux", asset: manifest?.assets["linux-x64"] ?? null }]}
+              compact={cockpit}
               runtimeReady={manifest?.runtimeReady === true}
             />
           </div>
         </section>
 
         {manifest?.previousReleases?.length ? (
-          <section aria-labelledby="previous-releases" className="mx-auto max-w-[1280px] px-5 pb-12 sm:px-8 lg:px-10">
-            <h2 id="previous-releases" className="text-xl font-medium text-zinc-100">Previous desktop releases</h2>
+          <section aria-labelledby="previous-releases" className={cockpit ? "mb-6" : "mx-auto max-w-[1280px] px-5 pb-12 sm:px-8 lg:px-10"}>
+            <h2 id="previous-releases" className={cockpit ? "text-sm font-medium text-zinc-100" : "text-xl font-medium text-zinc-100"}>Previous desktop releases</h2>
             <p className="mt-2 text-sm leading-6 text-zinc-400">The newest published installer appears above. Older releases remain available with their original checksums and signing details; local development builds are not published downloads.</p>
             <ul className="mt-5 divide-y divide-white/[0.08] border-y border-white/[0.08]">
               {manifest.previousReleases.map(release => (
@@ -196,12 +208,12 @@ export function DownloadContent({ cockpit = false }: { cockpit?: boolean }) {
           </section>
         ) : null}
 
-        <section className="border-y border-white/[0.07] bg-[#131313]">
-          <div className="mx-auto grid max-w-[1280px] gap-8 px-5 py-12 sm:px-8 md:grid-cols-[1fr_auto] md:items-center lg:px-10">
+        <section className={cockpit ? "rounded-xl border border-white/[0.08] bg-white/[0.015]" : "border-y border-white/[0.07] bg-[#131313]"}>
+          <div className={cockpit ? "grid gap-4 p-5" : "mx-auto grid max-w-[1280px] gap-8 px-5 py-12 sm:px-8 md:grid-cols-[1fr_auto] md:items-center lg:px-10"}>
             <div>
               <p className="text-[11px] uppercase tracking-[0.2em] text-orange-300">Release integrity</p>
-              <h2 className="mt-4 text-2xl font-medium tracking-[-0.035em] text-white sm:text-3xl">Every download resolves from the live release manifest.</h2>
-              <p className="mt-4 max-w-2xl leading-7 text-zinc-400">Review checksums and detached signatures in the release record where provided. Installer signing and notarization labels report the current manifest; they do not replace local verification.</p>
+              <h2 className={cockpit ? "mt-2 text-sm font-medium text-zinc-100" : "mt-4 text-2xl font-medium tracking-[-0.035em] text-white sm:text-3xl"}>Every download resolves from the live release manifest.</h2>
+              <p className={cockpit ? "mt-2 max-w-2xl text-xs leading-5 text-zinc-500" : "mt-4 max-w-2xl leading-7 text-zinc-400"}>Review checksums and detached signatures in the release record where provided. Installer signing and notarization labels report the current manifest; they do not replace local verification.</p>
             </div>
             <div className="space-y-3 text-sm text-zinc-400">
               <p className="flex items-center gap-3"><ShieldCheckIcon className="h-5 w-5 text-zinc-400" /> Review signing and notarization per installer</p>
@@ -223,23 +235,25 @@ function DownloadCard({
   icon: Icon,
   assets,
   runtimeReady,
+  compact = false,
 }: {
   title: string;
   copy: string;
   icon: typeof ComputerDesktopIcon;
   assets: Array<{ id: PlatformId; asset: ManifestAsset | null }>;
   runtimeReady: boolean;
+  compact?: boolean;
 }) {
   return (
     <article className="overflow-hidden rounded-xl border border-white/[0.08] bg-[#151515]">
-      <div className="flex items-center justify-between border-b border-white/[0.07] px-5 py-4">
+      <div className={compact ? "flex items-center justify-between border-b border-white/[0.07] px-4 py-3" : "flex items-center justify-between border-b border-white/[0.07] px-5 py-4"}>
         <span className="text-[10px] font-medium uppercase tracking-[0.18em] text-zinc-400">Desktop installer</span>
         <Icon aria-hidden="true" className="h-5 w-5 text-zinc-400" />
       </div>
-      <div className="p-5">
-        <h3 className="text-xl font-medium text-white">{title}</h3>
-        <p className="mt-2 min-h-12 text-sm leading-6 text-zinc-400">{copy}</p>
-        <div className="mt-6 flex flex-col gap-2">
+      <div className={compact ? "p-4" : "p-5"}>
+        <h3 className={compact ? "text-sm font-medium text-zinc-100" : "text-xl font-medium text-white"}>{title}</h3>
+        <p className={compact ? "mt-2 min-h-12 text-xs leading-5 text-zinc-500" : "mt-2 min-h-12 text-sm leading-6 text-zinc-400"}>{copy}</p>
+        <div className={compact ? "mt-4 flex flex-col gap-2" : "mt-6 flex flex-col gap-2"}>
           {assets.map(({ id, asset }) => {
             const available = runtimeReady && Boolean(asset);
             return (
@@ -247,7 +261,7 @@ function DownloadCard({
               <a
                 href={available && asset ? asset.downloadUrl : resolverHref[id]}
                 download={available && asset ? asset.fileName : undefined}
-                className="inline-flex w-full min-h-11 items-center justify-center gap-2 rounded-lg bg-[#efefea] px-4 text-sm font-medium text-[#11120f] transition hover:bg-white"
+                className={compact ? "inline-flex h-8 w-full items-center justify-center gap-2 rounded-lg bg-zinc-100 px-2 text-xs font-medium text-zinc-900 hover:bg-white" : "inline-flex w-full min-h-11 items-center justify-center gap-2 rounded-lg bg-[#efefea] px-4 text-sm font-medium text-[#11120f] transition hover:bg-white"}
               >
                 <ArrowDownTrayIcon className="h-4 w-4" />
                 Download for {platformLabel[id]}
