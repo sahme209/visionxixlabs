@@ -1,0 +1,26 @@
+{
+  "observedDatabase": "Neon odd-union-57413470 / default branch / neondb / public; serving Vercel binding not yet confirmed",
+  "checked": "2026-10-22",
+  "missingTables": [
+    "StripeBillingEvent",
+    "AIUsageReservation"
+  ],
+  "missingAddOnColumns": [
+    "idempotencyKey",
+    "refundedAmountCents",
+    "reversedAICreditsCents"
+  ],
+  "addonRows": 0,
+  "duplicateCheckoutGroups": 0,
+  "duplicatePaymentGroups": 0,
+  "unresolvedMigrationRows": 1,
+  "repairProposal": "ops/recovery/20261022_billing_storage_repair.sql",
+  "repairSha256": "4fd39c5963aeb9988642bcbec0b7a09331d5e33c37b0042310d142a3812b5907",
+  "executed": false,
+  "schemaRehearsal": false,
+  "recoverabilityVerified": false,
+  "ownerAuthorizationForThisExactDatabaseRepair": false,
+  "warning": "Schema repair alone does not activate public billing. Production public-plan credit/seat/coverage contract and dedicated subscription webhook still required. No flags or catalog activation performed.",
+  "independentSourceReview": "billing_bridge_financial_review: exact proposal SHA and both original migration bodies verified; no blocking source finding; not execution approval",
+  "localPostgresExecutablesAvailable": false
+}
