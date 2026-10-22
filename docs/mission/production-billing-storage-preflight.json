@@ -1,5 +1,5 @@
 {
-  "observedDatabase": "Neon odd-union-57413470 / default branch / neondb / public; serving Vercel binding not yet confirmed",
+  "observedDatabase": "Verified Vercel Production DATABASE_URL host matches Neon ep-small-mountain-ailw0kvt / odd-union-57413470 / br-holy-voice-ai303o8m / neondb; credentials processed only in memory, never logged or persisted",
   "checked": "2026-10-22",
   "missingTables": [
     "StripeBillingEvent",
@@ -19,8 +19,23 @@
   "executed": false,
   "schemaRehearsal": false,
   "recoverabilityVerified": false,
-  "ownerAuthorizationForThisExactDatabaseRepair": false,
+  "ownerAuthorizationForThisExactDatabaseRepair": true,
   "warning": "Schema repair alone does not activate public billing. Production public-plan credit/seat/coverage contract and dedicated subscription webhook still required. No flags or catalog activation performed.",
   "independentSourceReview": "billing_bridge_financial_review: exact proposal SHA and both original migration bodies verified; no blocking source finding; not execution approval",
-  "localPostgresExecutablesAvailable": false
+  "localPostgresExecutablesAvailable": false,
+  "ownerAuthorizationNote": "Owner explicitly instructed whatever it takes to fix production billing; authorization established, technical recovery gates remain",
+  "recoverySnapshot": {
+    "id": "snap-falling-wildflower-aif6heir",
+    "name": "axiom-before-billing-repair-20261022",
+    "sourceBranch": "br-holy-voice-ai303o8m",
+    "created": true
+  },
+  "restoreRehearsal": {
+    "attempts": 1,
+    "result": "HTTP 422: branches limit exceeded",
+    "branchCreated": false,
+    "existingBranches": 10,
+    "retryWithoutChange": false
+  },
+  "nextOwnerDecision": "Free one Neon branch slot: select/approve retirement of an existing preview branch (snapshot first), without deleting main or increasing plan limits. Oldest candidate preview/codex/push-all-changes-20260930, br-flat-bread-ai76upn2; no deletion performed."
 }
