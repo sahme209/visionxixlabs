@@ -2,8 +2,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { prisma } from "@/lib/db";
 import { resolveRequestDesktopSession } from "@/lib/desktop/resolveRequestDesktopSession";
 import { AGENT_SKILL_CATALOG, findAgentSkill } from "@/lib/axiom/agentRuntime/skillCatalog";
-import { record as recordAudit } from "@/lib/audit/secureAudit";
-import { id as idFactory } from "@/lib/domain/ids";
+import { updateWorkspaceSkill } from "@/lib/axiom/agentRuntime/skillManagement";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -60,32 +59,7 @@ export async function POST(request: NextRequest): Promise<Response> {
   if (!findAgentSkill(skillId) || !["install", "enable", "disable", "remove"].includes(String(action))) {
     return NextResponse.json({ ok: false, error: "invalid_payload" }, { status: 400 });
   }
-  const repo = prisma as unknown as SkillRepo;
-  try {
-    let status = "not_installed";
-    if (action === "install" || action === "enable") {
-      await repo.agentSkillInstallation.upsert({
-        where: { organizationId_skillId: { organizationId: session.organizationId, skillId } },
-        create: { organizationId: session.organizationId, skillId, status: "enabled", installedByUserId: session.userId },
-        update: { status: "enabled", installedByUserId: session.userId },
-      });
-      status = "enabled";
-    } else if (action === "disable") {
-      const result = await repo.agentSkillInstallation.updateMany({ where: { organizationId: session.organizationId, skillId }, data: { status: "disabled" } });
-      if (result.count !== 1) return NextResponse.json({ ok: false, error: "skill_not_installed" }, { status: 409 });
-      status = "disabled";
-    } else {
-      const result = await repo.agentSkillInstallation.deleteMany({ where: { organizationId: session.organizationId, skillId } });
-      if (result.count !== 1) return NextResponse.json({ ok: false, error: "skill_not_installed" }, { status: 409 });
-    }
-    await recordAudit({
-      organizationId: idFactory.organization(session.organizationId), actorUserId: idFactory.user(session.userId), actorKind: "user",
-      action: `skill.${action}` as "skill.install" | "skill.enable" | "skill.disable" | "skill.remove", outcome: "success",
-      entityRef: `skill:${skillId}`, correlationId: idFactory.correlation(`skill_${action}_${Date.now().toString(36)}`), source: "live",
-      detail: { skillId, status, authorityChanged: false },
-    });
-    return NextResponse.json({ ok: true, data: { skillId, status } });
-  } catch {
-    return NextResponse.json({ ok: false, error: "skill_update_unavailable" }, { status: 503 });
-  }
+  const result = await updateWorkspaceSkill({organizationId:session.organizationId,userId:session.userId,skillId,action:String(action)});
+  const {statusCode,...bodyResult}=result;
+  return NextResponse.json(bodyResult,{status:statusCode});
 }

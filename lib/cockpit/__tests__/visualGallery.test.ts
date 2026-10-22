@@ -35,6 +35,7 @@ import Plans from "@/app/control/plans/page";
 import Governance from "@/app/control/governance/page";
 import AIAgents from "@/app/control/ai-agents/page";
 import Audit from "@/app/control/audit-security/page";
+import Airflow from "@/app/control/airflow/page";
 
 const previewDir=process.env.AXIOM_COCKPIT_VISUAL_DIRECTORY;
 function save(name:string){
@@ -49,7 +50,7 @@ afterEach(()=>{cleanup();vi.unstubAllGlobals();vi.unstubAllEnvs();});
 it("renders the real cockpit pages in one frame with honest fixture state",async()=>{
  vi.stubEnv("AXIOM_SELF_SERVICE_BILLING_ENABLED","true");
  const device={id:"fixture-device",userId:"visual-user",deviceLabel:"Example workstation",platform:"macOS",desktopVersion:"0.1.20",issuedAt:"2026-10-01T12:00:00Z",expiresAt:"2026-11-01T12:00:00Z",lastSeenAt:"2026-10-22T14:00:00Z",status:"active"};
- vi.stubGlobal("fetch",vi.fn(async(url:string)=>new Response(JSON.stringify(url.includes("ai-governance") ? {ok:true,data:{canManage:false,providerPolicy:{enabled:false,allowedProviders:[],modelSelections:{},fallbackOrder:[]},availableProviders:[],gatewayModels:[],gatewayCatalogLive:false,agentIdentityState:"migration_pending",agentIdentity:null,autonomy:null,budget:null,tools:[]}} : {data:{sessions:[device]}}),{status:200})));
+ vi.stubGlobal("fetch",vi.fn(async(url:string)=>new Response(JSON.stringify(url.includes("/api/control/airflow") ? {ok:true,data:{connection:{status:"not_connected"},automations:[],executions:[]}} : url.includes("ai-governance") ? {ok:true,data:{canManage:false,providerPolicy:{enabled:false,allowedProviders:[],modelSelections:{},fallbackOrder:[]},availableProviders:[],gatewayModels:[],gatewayCatalogLive:false,agentIdentityState:"migration_pending",agentIdentity:null,autonomy:null,budget:null,tools:[]}} : {data:{sessions:[device]}}),{status:200})));
  const pages=[
   {name:"overview",path:"/control",page:()=>Overview(),heading:"Overview"},
   {name:"integrations",path:"/control/integrations",page:()=>Integrations(),heading:"Integrations"},
@@ -61,6 +62,7 @@ it("renders the real cockpit pages in one frame with honest fixture state",async
   {name:"governance",path:"/control/governance",page:()=>Governance(),heading:"Governance"},
   {name:"ai-agents",path:"/control/ai-agents",page:async()=>createElement(AIAgents),heading:"AI & Agents"},
   {name:"audit",path:"/control/audit-security",page:()=>Audit(),heading:"Audit & security"},
+  {name:"airflow",path:"/control/airflow",page:()=>Airflow(),heading:"Airflow"},
  ];
  for(const page of pages){
   fixture.path=page.path;
@@ -69,6 +71,7 @@ it("renders the real cockpit pages in one frame with honest fixture state",async
   expect(screen.getByRole("heading",{name:page.heading})).toBeTruthy();
   if(page.name==="ai-agents")await waitFor(()=>expect(screen.getByText("Approved model routing")).toBeTruthy());
   if(page.name==="audit")await screen.findByText("Example workstation");
+  if(page.name==="airflow")await screen.findByText("Recorded connection: not connected");
   save(page.name);
   if(page.name==="settings"){
    fireEvent.click(screen.getByRole("tab",{name:"Security"}));save("security");

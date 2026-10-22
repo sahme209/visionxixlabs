@@ -3,7 +3,7 @@ import { createElement } from "react";
 import { afterEach, expect, it, vi } from "vitest";
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 const io=vi.hoisted(()=>({out:vi.fn()}));
-vi.mock("next/navigation",()=>({usePathname:()=>"/control/settings"}));
+vi.mock("next/navigation",()=>({usePathname:()=>"/control/settings",useRouter:()=>({refresh:vi.fn()})}));
 vi.mock("next-auth/react",()=>({signOut:io.out}));
 vi.mock("next/image",()=>({default:"img"}));
 import { CockpitShell } from "../CockpitShell";
