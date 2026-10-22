@@ -852,3 +852,51 @@ it("distinguishes the clone source from the active local editing target", async 
   expect(m.client.mintGithubCloneToken).not.toHaveBeenCalled();
   expect(m.invoke.mock.calls.filter(([command])=>command==="clone_repository")).toHaveLength(0);
 });
+
+it("rejects an older proposal load when a replacement arrives during repository verification",async()=>{
+ reads=()=>"original";const pending=deferred<unknown>();
+ const a:LocalEditRequest={context:m.client.config,edit:{proposalId:"A",repositoryFullName:"fixture/a",branch:"feature",path:"same.ts",baseContent:"original",content:"draft A"}};
+ const b:LocalEditRequest={...a,edit:{...a.edit,proposalId:"B",content:"draft B"}};
+ const view=render(createElement(RepositoryWorkspaceView,{editRequest:a}));fireEvent.click(await screen.findByRole("button",{name:"same.ts"}));await screen.findByDisplayValue("original");
+ statuses=()=>pending.promise;fireEvent.click(screen.getByRole("button",{name:"Load editor draft"}));
+ view.rerender(createElement(RepositoryWorkspaceView,{editRequest:b}));await act(async()=>pending.resolve(status("/owned/A")));
+ expect((screen.getByRole("textbox",{name:"Editing same.ts"}) as HTMLTextAreaElement).value).toBe("original");
+ expect(m.invoke.mock.calls.filter(([name])=>name==="write_repository_file")).toHaveLength(0);
+});
+it("rejects a replaced new-file proposal before dispatching creation",async()=>{
+ const a:LocalEditRequest={context:m.client.config,edit:{kind:"create",proposalId:"A",repositoryFullName:"fixture/a",branch:"feature",path:"new.ts",baseContent:"",content:"draft A"}};
+ const b:LocalEditRequest={...a,edit:{...a.edit,proposalId:"B",content:"draft B"}};
+ const view=render(createElement(RepositoryWorkspaceView,{editRequest:a}));await screen.findByRole("button",{name:"same.ts"});
+ fireEvent.click(screen.getByRole("button",{name:"Create new.ts locally"}));view.rerender(createElement(RepositoryWorkspaceView,{editRequest:b}));
+ fireEvent.click(screen.getByRole("button",{name:"Create local file"}));
+ await act(async()=>{});expect(m.invoke.mock.calls.filter(([name])=>name==="create_repository_file")).toHaveLength(0);
+});
+it("rejects replacement while new-file repository verification is pending",async()=>{
+ const pending=deferred<unknown>();
+ const a:LocalEditRequest={context:m.client.config,edit:{kind:"create",proposalId:"A",repositoryFullName:"fixture/a",branch:"feature",path:"new.ts",baseContent:"",content:"draft A"}};
+ const b:LocalEditRequest={...a,edit:{...a.edit,proposalId:"B",content:"draft B"}};
+ const view=render(createElement(RepositoryWorkspaceView,{editRequest:a}));await screen.findByRole("button",{name:"same.ts"});
+ fireEvent.click(screen.getByRole("button",{name:"Create new.ts locally"}));statuses=()=>pending.promise;fireEvent.click(screen.getByRole("button",{name:"Create local file"}));
+ view.rerender(createElement(RepositoryWorkspaceView,{editRequest:b}));await act(async()=>pending.resolve(status("/owned/A")));
+ expect(m.invoke.mock.calls.filter(([name])=>name==="create_repository_file")).toHaveLength(0);
+});
+it.each(["withdrawn","A-B-A"])("does not revive pending editor consent after proposal is %s",async variant=>{
+ reads=()=>"original";const pending=deferred<unknown>();
+ const a:LocalEditRequest={context:m.client.config,edit:{proposalId:"A",repositoryFullName:"fixture/a",branch:"feature",path:"same.ts",baseContent:"original",content:"draft A"}};
+ const b:LocalEditRequest={...a,edit:{...a.edit,proposalId:"B",content:"draft B"}};
+ const view=render(createElement(RepositoryWorkspaceView,{editRequest:a}));fireEvent.click(await screen.findByRole("button",{name:"same.ts"}));await screen.findByDisplayValue("original");
+ statuses=()=>pending.promise;fireEvent.click(screen.getByRole("button",{name:"Load editor draft"}));
+ view.rerender(createElement(RepositoryWorkspaceView,{editRequest:variant==="withdrawn"?undefined:b}));
+ if(variant==="A-B-A")view.rerender(createElement(RepositoryWorkspaceView,{editRequest:a}));
+ await act(async()=>pending.resolve(status("/owned/A")));
+ expect((screen.getByRole("textbox",{name:"Editing same.ts"}) as HTMLTextAreaElement).value).toBe("original");
+});
+it("requires fresh review after a pending old load is rejected",async()=>{
+ reads=()=>"original";const pending=deferred<unknown>();
+ const a:LocalEditRequest={context:m.client.config,edit:{proposalId:"A",repositoryFullName:"fixture/a",branch:"feature",path:"same.ts",baseContent:"original",content:"draft A"}};
+ const b:LocalEditRequest={...a,edit:{...a.edit,proposalId:"B",content:"draft B"}};
+ const view=render(createElement(RepositoryWorkspaceView,{editRequest:a}));fireEvent.click(await screen.findByRole("button",{name:"same.ts"}));await screen.findByDisplayValue("original");
+ statuses=()=>pending.promise;fireEvent.click(screen.getByRole("button",{name:"Load editor draft"}));view.rerender(createElement(RepositoryWorkspaceView,{editRequest:b}));await act(async()=>pending.resolve(status("/owned/A")));
+ statuses=path=>status(path);fireEvent.click(screen.getByRole("button",{name:"Load editor draft"}));await screen.findByDisplayValue("draft B");
+ expect(m.invoke.mock.calls.filter(([name])=>name==="write_repository_file"||name==="create_repository_file")).toHaveLength(0);
+});

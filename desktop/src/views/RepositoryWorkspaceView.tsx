@@ -4,7 +4,7 @@ import { localCodeContextPrompt, type LocalCodeSelection, type LocalRepairSelect
 import { FileDiff } from "../components/FileDiff";
 import { editorMatches, replaceEditorMatch, editorLineRange } from "../lib/editorSearch";
 import { newEditorHistory, editHistory, moveHistory } from "../lib/editorHistory";
-import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore, type KeyboardEvent } from "react";
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, useSyncExternalStore, type KeyboardEvent } from "react";
 import { invoke } from "@tauri-apps/api/core";
 import { ExternalLink } from "../components/Primitives";
 import { desktopClient } from "../lib/desktopClient";
@@ -124,6 +124,13 @@ function RepositoryWorkspaceSession({ revision, active, onAskAgent, editRequest,
   const activeBusy = useRef<string | null>(null);
   const appliedEdit = useRef<{request: LocalEditRequest; paths: Set<string>} | undefined>(undefined);
   const loadedFile = useRef<{ repository: string; path: string; content: string; saved: string } | null>(null);
+  // Only committed request changes retire consent. A -> B -> A must not revive
+  // a pending operation or confirmation captured for the first A generation.
+  const editSelection = useRef({ request: editRequest });
+  useLayoutEffect(() => {
+    if (editSelection.current.request !== editRequest) editSelection.current = { request: editRequest };
+  }, [editRequest]);
+
   const owns = useCallback((captured: typeof owner.current) => mounted.current && desktopClient.config === context && desktopClient.getContextRevision() === revision
     && captured.generation === owner.current.generation && captured.repository === owner.current.repository, [context, revision]);
 
@@ -530,7 +537,7 @@ function RepositoryWorkspaceSession({ revision, active, onAskAgent, editRequest,
   }
 
   async function loadAgentDraft() {
-    const file = loadedFile.current, request = editRequest;
+    const file = loadedFile.current, request = editRequest, selection = editSelection.current;
     if (!active || activeBusy.current || !request || !file || !owns(owner.current)) return;
     const edit = request.edits?.find(candidate => candidate.path === file.path) ?? request.edit;
     if (request.context !== desktopClient.config || request.workspace !== workspace) { setError("Agent draft belongs to a different sign-in or workspace."); return; }
@@ -539,6 +546,7 @@ function RepositoryWorkspaceSession({ revision, active, onAskAgent, editRequest,
     await run("load-agent-draft", async current => {
       const live = await invoke<RepositoryStatus>("repository_status", {repositoryPath: file.repository});
       if (!current() || loadedFile.current !== file || file.content !== snapshot) return;
+      if (selection !== editSelection.current || selection.request !== request) { setError("The Agent proposal changed. Review the current proposal before loading it."); return; }
       if (live.rootPath !== file.repository) { setError("The local repository identity could not be verified."); return; }
       const blocker = localEditBlocker(edit, {repositoryFullName: live.repositoryFullName, branch: live.branch, path: file.path, saved: file.saved, content: file.content});
       if (blocker) { setError(blocker); return; }
@@ -550,16 +558,18 @@ function RepositoryWorkspaceSession({ revision, active, onAskAgent, editRequest,
   }
 
   function createAgentFile(edit: LocalCreationProposal) {
-    const request = editRequest, repository = owner.current.repository;
+    const request = editRequest, repository = owner.current.repository, selection = editSelection.current;
     if (!active || activeBusy.current || !request || !repository || request.context !== desktopClient.config || request.workspace !== workspace) return;
     if (loadedFile.current && loadedFile.current.content !== loadedFile.current.saved) { setError("Save or discard existing edits before creating a proposed file."); return; }
     setConfirmation({title: `Create ${edit.path}?`, description: "Create only this new local file. Existing files and symlinks must be refused. Parent folders must already exist. This does not approve GitHub or run checks. If writing fails, inspect the potentially partial new file before retrying. Other files are separate operations.", confirmLabel: "Create local file", preview: edit.content, previewLabel: "New file content to create",
       onConfirm: async () => {
         if (activeBusy.current || request.context !== desktopClient.config || request.workspace !== workspace) return;
+        if (selection !== editSelection.current || selection.request !== request) { setError("The Agent proposal changed. Review and confirm the current new-file proposal."); return; }
         if (loadedFile.current && loadedFile.current.content !== loadedFile.current.saved) { setError("Save or discard existing edits before creating a proposed file."); return; }
         await run("create", async current => {
           const live = await invoke<RepositoryStatus>("repository_status", {repositoryPath: repository});
           if (!current()) return;
+          if (selection !== editSelection.current || selection.request !== request) { setError("The Agent proposal changed. Review and confirm the current new-file proposal."); return; }
           if (live.rootPath !== repository || live.repositoryFullName?.toLowerCase() !== edit.repositoryFullName.toLowerCase() || live.branch !== edit.branch) { setError("Open the proposal's repository and branch before creating this file."); return; }
           if (loadedFile.current && loadedFile.current.content !== loadedFile.current.saved) { setError("Existing edits changed during creation review. Review them before creating the file."); return; }
           await invoke("create_repository_file", {repositoryPath: repository, relativePath: edit.path, content: edit.content, repositoryFullName: edit.repositoryFullName, branch: edit.branch});
