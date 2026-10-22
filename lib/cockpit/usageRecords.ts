@@ -14,7 +14,7 @@ export interface UsageRecordsRepo { usageEvent: { findMany(query: {
   orderBy: Array<{ createdAt?: 'desc'; id?: 'desc' }>; skip: number; take: number;
   select: { id: true; createdAt: true; provider: true; model: true; billingStatus: true; inputTokens: true; outputTokens: true; billedCents: true };
 }): Promise<LedgerRow[]> } }
-export async function readUsageRecords(repo: UsageRecordsRepo, organizationId: string, query: URLSearchParams, now = new Date()): Promise<UsageRecordsPage> {
+export function usageSelection(query: URLSearchParams, now = new Date()) {
   const currentIndex = now.getUTCFullYear() * 12 + now.getUTCMonth();
   const month = query.get('month') ?? `${now.getUTCFullYear()}-${String(now.getUTCMonth() + 1).padStart(2, '0')}`;
   const status = query.get('status') ?? '';
@@ -24,8 +24,12 @@ export async function readUsageRecords(repo: UsageRecordsRepo, organizationId: s
   const monthNumber = Number(month.slice(5));
   const selectedIndex = year * 12 + monthNumber - 1;
   if (!/^\d{4}-(0[1-9]|1[0-2])$/.test(month) || selectedIndex > currentIndex || selectedIndex < currentIndex - 11 || !['', 'settled', 'pending', 'failed'].includes(status) || !/^\d{1,5}$/.test(rawOffset) || offset > 10000 || offset % 50 !== 0) throw Error('usage_filter_invalid');
+  return { month, status, offset, start: new Date(Date.UTC(year, monthNumber - 1, 1)), end: new Date(Date.UTC(year, monthNumber, 1)) };
+}
+export async function readUsageRecords(repo: UsageRecordsRepo, organizationId: string, query: URLSearchParams, now = new Date()): Promise<UsageRecordsPage> {
+  const { month, status, offset, start, end } = usageSelection(query, now);
   const rows = await repo.usageEvent.findMany({
-    where: { organizationId, eventKind: 'ai_invocation', createdAt: { gte: new Date(Date.UTC(year, monthNumber - 1, 1)), lt: new Date(Date.UTC(year, monthNumber, 1)) }, ...(status ? { billingStatus: status } : {}) },
+    where: { organizationId, eventKind: 'ai_invocation', createdAt: { gte: start, lt: end }, ...(status ? { billingStatus: status } : {}) },
     orderBy: [{ createdAt: 'desc' }, { id: 'desc' }], skip: offset, take: 51,
     select: { id: true, createdAt: true, provider: true, model: true, billingStatus: true, inputTokens: true, outputTokens: true, billedCents: true },
   });

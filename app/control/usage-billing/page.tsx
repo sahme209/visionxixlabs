@@ -59,14 +59,15 @@ export default async function ControlUsageBillingPage({ searchParams }: { search
   const deployment = isolated ? { allowed: false, reason: "deployment_quota_unavailable", planId: null, used: null, limit: null, remaining: 0 } as const : await checkDeploymentQuota(prisma, organizationId);
   const allowance = await withIsolatedWorkspaceScope(context, "read", () => readCurrentAIAllowance(prisma, organizationId, now));
   try {
-    const [memberCount, usageAggregate, pendingCalls, recentTransactions] = await Promise.all([
+    const [memberCount, usageAggregate, settledAggregate, pendingCalls, recentTransactions] = await Promise.all([
       prisma.orgMembership.count({ where: { organizationId, acceptedAt: { not: null } } }),
-      prisma.usageEvent.aggregate({ where: { organizationId, eventKind: "ai_invocation", createdAt: { gte: period.start } }, _count: { _all: true }, _sum: { inputTokens: true, outputTokens: true, billedCents: true } }),
+      prisma.usageEvent.aggregate({ where: { organizationId, eventKind: "ai_invocation", createdAt: { gte: period.start } }, _count: { _all: true }, _sum: { inputTokens: true, outputTokens: true } }),
+      prisma.usageEvent.aggregate({ where: { organizationId, eventKind: "ai_invocation", billingStatus: "settled", createdAt: { gte: period.start } }, _sum: { billedCents: true } }),
       prisma.usageEvent.count({ where: { organizationId, eventKind: "ai_invocation", billingStatus: "pending", createdAt: { gte: period.start } } }),
       prisma.addOnPurchase.findMany({ where: { organizationId }, orderBy: { createdAt: "desc" }, take: 12, select: { id: true, sku: true, pricePaidCents: true, deliveredAICreditsCents: true, reversedAICreditsCents: true, status: true, createdAt: true } }),
     ]);
     members = memberCount;
-    usage = { calls: usageAggregate._count._all, inputTokens: usageAggregate._sum.inputTokens ?? 0, outputTokens: usageAggregate._sum.outputTokens ?? 0, billedCents: usageAggregate._sum.billedCents ?? 0, pendingCalls };
+    usage = { calls: usageAggregate._count._all, inputTokens: usageAggregate._sum.inputTokens ?? 0, outputTokens: usageAggregate._sum.outputTokens ?? 0, billedCents: settledAggregate._sum.billedCents ?? 0, pendingCalls };
     transactions = recentTransactions;
   } catch {
     unavailable = true;

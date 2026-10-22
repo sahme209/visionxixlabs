@@ -2,6 +2,7 @@
 import {createElement} from 'react';
 import {afterEach,expect,it,vi} from 'vitest';
 import {cleanup,fireEvent,render,screen,waitFor} from '@testing-library/react';
+vi.mock('../UsageChart',()=>({UsageChart:()=>null}));
 import {UsageRecords} from '../UsageRecords';
 afterEach(()=>{cleanup();vi.unstubAllGlobals()});
 const row={id:'one',createdAt:'2026-10-22T12:00:00Z',provider:'gateway',model:'example',status:'pending',inputTokens:20,outputTokens:4,settledCents:null};

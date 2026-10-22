@@ -2,14 +2,14 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { cleanup, render, screen } from "@testing-library/react";
 
-const io = vi.hoisted(() => ({ members: vi.fn(), usage: vi.fn(), pending: vi.fn(), purchases: vi.fn(), quota: vi.fn(), plan: vi.fn(), holds: vi.fn() }));
+const io = vi.hoisted(() => ({ members: vi.fn(), usage: vi.fn(), settled: vi.fn(), pending: vi.fn(), purchases: vi.fn(), quota: vi.fn(), plan: vi.fn(), holds: vi.fn() }));
 vi.mock("server-only", () => ({}));
 vi.mock("@/lib/billing/isolatedApplication/scope", () => ({ withIsolatedWorkspaceScope: (_context: unknown, _kind: unknown, operation: () => unknown) => operation() }));
 vi.mock("@/lib/auth/currentContext", () => ({ currentContext: async () => ({ isAuthenticated: true, organizationId: "org_evidence", email: "owner@example.test", roles: ["owner"] }) }));
 vi.mock("@/lib/auth/platformAdmin", () => ({ isAdminOrOwner: () => true }));
 vi.mock("@/lib/billing/stripeHelper", () => ({ describeStripeStatus: () => ({ mode: "test" }) }));
 vi.mock("@/lib/billing/deploymentQuota", () => ({ checkDeploymentQuota: io.quota }));
-vi.mock("@/lib/db", () => ({ prisma: { $transaction: async (fn: (tx: unknown) => unknown) => fn({ tenantBillingPlan: { findUnique: io.plan }, addOnPurchase: { findMany: io.purchases }, usageEvent: { aggregate: io.usage }, aIUsageReservation: { aggregate: io.holds } }), tenantBillingPlan: { findUnique: io.plan }, orgMembership: { count: io.members }, usageEvent: { aggregate: io.usage, count: io.pending }, addOnPurchase: { findMany: io.purchases } } }));
+vi.mock("@/lib/db", () => ({ prisma: { $transaction: async (fn: (tx: unknown) => unknown) => fn({ tenantBillingPlan: { findUnique: io.plan }, addOnPurchase: { findMany: io.purchases }, usageEvent: { aggregate: io.usage }, aIUsageReservation: { aggregate: io.holds } }), tenantBillingPlan: { findUnique: io.plan }, orgMembership: { count: io.members }, usageEvent: { aggregate: (query: {where: {billingStatus?:string}}) => query.where.billingStatus === "settled" ? io.settled(query) : io.usage(query), count: io.pending }, addOnPurchase: { findMany: io.purchases } } }));
 import Page from "../page";
 import { readBillingPlan, readBillingPlanWithAvailability } from "@/lib/billing/tenantBillingStore";
 
@@ -20,6 +20,7 @@ beforeEach(() => {
   io.plan.mockResolvedValue({ organizationId: "org_evidence", tier: "growth", status: "active", seatQuantity: 3, stripeCustomerId: "cus_fixture", cancelAtPeriodEnd: false, trialEndsAt: null, currentPeriodEndsAt: null });
   io.members.mockResolvedValue(3);
   io.usage.mockResolvedValue({ _count: { _all: 2 }, _sum: { inputTokens: 100, outputTokens: 20, billedCents: 30 } });
+  io.settled.mockResolvedValue({ _sum: { billedCents: 30 } });
   io.pending.mockResolvedValue(1);
   io.purchases.mockImplementation(async (query) => query.select?.id ? [] : [{ sku: "credits", status: "paid", validFor: "current_month", deliveredAICreditsCents: 500, reversedAICreditsCents: 0, deliveredSeats: 0, deliveredConnectors: 0 }]);
   io.holds.mockResolvedValue({ _sum: { reservedCents: 0 } });
@@ -37,10 +38,10 @@ describe("canonical customer billing evidence", () => {
     expect(screen.getByText("$0.30 settled")).toBeTruthy();
     expect(screen.queryByRole("alert")).toBeNull();
     expect(io.members).toHaveBeenCalledWith({ where: { organizationId: "org_evidence", acceptedAt: { not: null } } });
-    for (const query of [...io.usage.mock.calls, ...io.pending.mock.calls, ...io.purchases.mock.calls]) expect(query[0].where.organizationId).toBe("org_evidence");
+    for (const query of [...io.usage.mock.calls, ...io.settled.mock.calls, ...io.pending.mock.calls, ...io.purchases.mock.calls]) expect(query[0].where.organizationId).toBe("org_evidence");
   });
 
-  it.each(["members", "usage", "pending", "purchases"] as const)("withholds balances and empty-history claims when %s evidence is unavailable", async (boundary) => {
+  it.each(["members", "usage", "settled", "pending", "purchases"] as const)("withholds balances and empty-history claims when %s evidence is unavailable", async (boundary) => {
     io[boundary].mockRejectedValue(new Error("fixture database unavailable"));
     render(await Page({}));
     expect(screen.getByRole("alert")).toBeTruthy();
@@ -97,6 +98,7 @@ describe("canonical customer billing evidence", () => {
   it("preserves verified true zero and empty transaction history", async () => {
     io.members.mockResolvedValue(0);
     io.usage.mockResolvedValue({ _count: { _all: 0 }, _sum: { inputTokens: null, outputTokens: null, billedCents: null } });
+    io.settled.mockResolvedValue({ _sum: { billedCents: null } });
     io.pending.mockResolvedValue(0);
     io.purchases.mockResolvedValue([]);
     render(await Page({}));
@@ -189,4 +191,15 @@ it.each([undefined, "unknown", ["success"]])("ignores unrecognized billing retur
   render(await Page({ searchParams: Promise.resolve({ billing }) }));
   expect(screen.queryByText(/The URL does not confirm payment/)).toBeNull();
   expect(value("Included AI allowance remaining")).toBe("$204.70");
+});
+
+it("never labels a pending ledger amount as settled debit", async () => {
+  io.usage.mockResolvedValue({ _count: { _all: 2 }, _sum: { inputTokens: 500, outputTokens: 150, billedCents: 1006 } });
+  io.settled.mockResolvedValue({ _sum: { billedCents: 7 } });
+  render(await Page({}));
+  expect(screen.getByText("$0.07 settled")).toBeTruthy();
+  expect(screen.queryByText("$10.06 settled")).toBeNull();
+  expect(value("Gateway calls")).toBe("2");
+  expect(value("Input tokens")).toBe("500");
+  expect(io.settled).toHaveBeenCalledWith({ where: { organizationId: "org_evidence", eventKind: "ai_invocation", billingStatus: "settled", createdAt: { gte: expect.any(Date) } }, _sum: { billedCents: true } });
 });

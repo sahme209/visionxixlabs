@@ -1,5 +1,6 @@
 'use client';
 import { useEffect, useState } from 'react';
+import { UsageChart } from './UsageChart';
 import type { UsageRecordsPage } from '@/lib/cockpit/usageRecords';
 const button = 'inline-flex min-h-8 items-center rounded-full border border-white/15 px-3.5 text-xs text-zinc-200 hover:bg-white/5 disabled:opacity-40';
 const field = 'min-h-8 rounded-lg border border-white/10 bg-[#171717] px-3 text-[13px] text-zinc-200';
@@ -45,6 +46,7 @@ export function UsageRecords() {
     {!month && data && <p className="mt-3 text-xs text-zinc-500">Current month · {data.month}</p>}
     {busy && <p role="status" className="mt-5 text-sm text-zinc-400">Loading usage records…</p>}
     {error && <p role="alert" className="mt-5 rounded-xl border border-amber-400/20 p-4 text-sm text-amber-200">Usage records could not be verified. Check the selected month and refresh.</p>}
+    <UsageChart month={month} status={status} revision={revision}/>
     {data && !busy && <>{data.rows.length === 0 ? <p className="mt-5 text-sm text-zinc-400">No usage records match these filters.</p> : <div className="mt-5 overflow-x-auto rounded-xl border border-white/10"><table className="w-full text-left text-xs"><caption className="sr-only">Workspace AI usage records</caption><thead className="text-zinc-400"><tr>{['Date (UTC)', 'Model / provider', 'Status', 'Tokens in / out', 'Settled debit'].map(label => <th key={label} className="px-3 py-3 font-normal">{label}</th>)}</tr></thead><tbody>{data.rows.map(row => <tr key={row.id} className="border-t border-white/10"><td className="whitespace-nowrap px-3 py-4 text-zinc-400">{row.createdAt.slice(0, 16).replace('T', ' ')}</td><td className="max-w-56 break-words px-3 py-4"><p className="text-zinc-200">{row.model || 'Not recorded'}</p><p className="mt-1 text-zinc-500">{row.provider || 'Not recorded'}</p></td><td className="px-3 py-4 text-zinc-300">{row.status}</td><td className="whitespace-nowrap px-3 py-4 tabular-nums text-zinc-300">{row.inputTokens.toLocaleString()} / {row.outputTokens.toLocaleString()}</td><td className="whitespace-nowrap px-3 py-4 tabular-nums text-zinc-200">{row.settledCents === null ? row.status === 'pending' ? 'Awaiting settlement' : 'Not settled' : new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(row.settledCents / 100)}</td></tr>)}</tbody></table></div>}
       <div className="mt-4 flex items-center justify-between gap-3"><p className="text-xs text-zinc-500">Page {offset / 50 + 1}{offset === 10000 ? ' · Narrow the month or status to browse further.' : ''}</p><div className="flex gap-2"><button className={button} disabled={busy || offset === 0} onClick={() => setOffset(value => Math.max(0, value - 50))}>Newer records</button><button className={button} disabled={busy || !data.hasMore} onClick={() => setOffset(value => value + 50)}>Older records</button></div></div>
     </>}
