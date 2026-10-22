@@ -60,7 +60,7 @@ describe("POST /api/team/invite — organization membership lifecycle", () => {
   });
 
   it("denies a caller who is not owner/admin in this workspace — never mints a token", async () => {
-    mocks.findMembership.mockResolvedValue({ role: "operator" });
+    mocks.findMembership.mockResolvedValue({ role: "operator", acceptedAt: new Date() });
     const { POST } = await import("../route");
     const res = await POST(formRequest({ email: "new@acme.test", role: "operator" }));
 
@@ -69,7 +69,7 @@ describe("POST /api/team/invite — organization membership lifecycle", () => {
   });
 
   it("mints an invite for an owner/admin caller and audits it with a correlation id", async () => {
-    mocks.findMembership.mockResolvedValue({ role: "admin" });
+    mocks.findMembership.mockResolvedValue({ role: "admin", acceptedAt: new Date() });
     const { POST } = await import("../route");
     const res = await POST(formRequest({ email: "new@acme.test", role: "operator" }));
 
@@ -80,5 +80,31 @@ describe("POST /api/team/invite — organization membership lifecycle", () => {
       outcome: "success",
       correlationId: expect.any(String),
     }));
+  });
+
+  it.each(["owner", "admin"])("does not mint invitations for pending %s membership", async (role) => {
+    mocks.findMembership.mockResolvedValue({ role, acceptedAt: null });
+    const { POST } = await import("../route");
+    const res = await POST(formRequest({ email: "new@example.test", role: "read_only" }));
+    expect(locationOf(res).searchParams.get("error")).toBe("insufficient_permission");
+    expect(mocks.createInviteToken).not.toHaveBeenCalled();
+    expect(mocks.recordAudit).not.toHaveBeenCalled();
+  });
+
+  it("does not trust administrative claims after the membership is deleted", async () => {
+    mocks.requireContext.mockResolvedValue({ userId: "user-1", organizationId: "org-1", email: "old@example.test", roles: ["owner"] });
+    mocks.findMembership.mockResolvedValue(null);
+    const { POST } = await import("../route");
+    const res = await POST(formRequest({ email: "new@example.test", role: "read_only" }));
+    expect(locationOf(res).searchParams.get("error")).toBe("insufficient_permission");
+    expect(mocks.createInviteToken).not.toHaveBeenCalled();
+  });
+
+  it("does not mint a token when current membership lookup fails", async () => {
+    mocks.findMembership.mockRejectedValue(Error("unavailable"));
+    const { POST } = await import("../route");
+    const res = await POST(formRequest({ email: "new@example.test", role: "read_only" }));
+    expect(locationOf(res).searchParams.get("error")).toBe("insufficient_permission");
+    expect(mocks.createInviteToken).not.toHaveBeenCalled();
   });
 });

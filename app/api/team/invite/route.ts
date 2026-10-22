@@ -63,9 +63,9 @@ export async function POST(req: Request) {
             organizationId: org,
           },
         },
-        select: { role: true },
+        select: { role: true, acceptedAt: true },
       });
-      canInvite = me?.role === "owner" || me?.role === "admin";
+      canInvite = Boolean(me?.acceptedAt) && (me?.role === "owner" || me?.role === "admin");
     }
   } catch {
     canInvite = false;

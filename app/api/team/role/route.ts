@@ -48,9 +48,9 @@ export async function POST(req: Request) {
             organizationId: org,
           },
         },
-        select: { role: true },
+        select: { role: true, acceptedAt: true },
       });
-      canManage = me?.role === "owner" || me?.role === "admin";
+      canManage = Boolean(me?.acceptedAt) && (me?.role === "owner" || me?.role === "admin");
     }
   } catch {
     canManage = false;

@@ -51,7 +51,7 @@ function locationOf(res: Response): URL {
 function mockMembershipLookups(callerRole: string | null, target: Record<string, unknown> | null) {
   mocks.findMembership.mockImplementation((args: { where: Record<string, unknown> }) => {
     if ("userId_organizationId" in args.where) {
-      return Promise.resolve(callerRole ? { role: callerRole } : null);
+      return Promise.resolve(callerRole ? { role: callerRole, acceptedAt: new Date() } : null);
     }
     return Promise.resolve(target);
   });
@@ -142,5 +142,37 @@ describe("POST /api/team/role — role change and revocation", () => {
       action: "governance.update",
       detail: expect.objectContaining({ priorRole: "operator", newRole: "security_reviewer" }),
     }));
+  });
+
+  it.each(["owner", "admin"])("denies pending %s membership before any target mutation", async (role) => {
+    mocks.requireContext.mockResolvedValue({ userId: "user-1", organizationId: "org-1", email: "pending@example.test", roles: [] });
+    mocks.findMembership.mockImplementation((args: { where: Record<string, unknown> }) => Promise.resolve(
+      "userId_organizationId" in args.where
+        ? { role, acceptedAt: null }
+        : { id: "mem-2", role: "operator", organizationId: "org-1", userId: "user-2" },
+    ));
+    const { POST } = await import("../route");
+    const res = await POST(formRequest({ membershipId: "mem-2", action: "remove" }));
+    expect(locationOf(res).searchParams.get("error")).toBe("insufficient_permission");
+    expect(mocks.deleteMembership).not.toHaveBeenCalled();
+    expect(mocks.updateMembership).not.toHaveBeenCalled();
+    expect(mocks.recordAudit).not.toHaveBeenCalled();
+  });
+
+  it("does not recover stale administrative claims after durable membership is removed", async () => {
+    mocks.requireContext.mockResolvedValue({ userId: "user-1", organizationId: "org-1", email: "old@example.test", roles: ["owner"] });
+    mocks.findMembership.mockResolvedValue(null);
+    const { POST } = await import("../route");
+    const res = await POST(formRequest({ membershipId: "mem-2", action: "remove" }));
+    expect(locationOf(res).searchParams.get("error")).toBe("insufficient_permission");
+    expect(mocks.deleteMembership).not.toHaveBeenCalled();
+  });
+
+  it("fails closed when the current membership lookup is unavailable", async () => {
+    mocks.findMembership.mockRejectedValue(Error("unavailable"));
+    const { POST } = await import("../route");
+    const res = await POST(formRequest({ membershipId: "mem-2", action: "remove" }));
+    expect(locationOf(res).searchParams.get("error")).toBe("insufficient_permission");
+    expect(mocks.deleteMembership).not.toHaveBeenCalled();
   });
 });

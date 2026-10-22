@@ -1,5 +1,5 @@
 /**
- * /dashboard/team — workspace members · Phase 639.
+ * /control/members — workspace members · Phase 639.
  *
  * Reads OrgMembership rows for the current workspace, surfaces them
  * with role + last-activity, and provides:
@@ -111,7 +111,7 @@ export default async function TeamPage({
       {/* Notices */}
       {noticeRaw === "invite_sent" && (
         <section role="status" aria-live="polite" className="mb-6 rounded-md border border-emerald-500/30 bg-emerald-500/[0.06] p-4">
-          <p className="text-[12.5px] text-emerald-200 mb-2">invite link minted · copy and send via your preferred channel · expires in 7 days</p>
+          <p className="text-[12.5px] text-emerald-200 mb-2">Invitation link created. Copy and share it with your teammate. It expires in 7 days.</p>
           {inviteUrlRaw && (
             <div className="mt-2 p-3 rounded border border-emerald-500/20 bg-black/30 break-all">
               <p className="text-[11px] text-emerald-200 select-all">{inviteUrlRaw}</p>
@@ -121,12 +121,12 @@ export default async function TeamPage({
       )}
       {noticeRaw === "role_updated" && (
         <section role="status" aria-live="polite" className="mb-6 rounded-md border border-emerald-500/30 bg-emerald-500/[0.06] p-4">
-          <p className="text-[12.5px] text-emerald-200 ">role updated</p>
+          <p className="text-[12.5px] text-emerald-200 ">Role updated.</p>
         </section>
       )}
       {noticeRaw === "removed" && (
         <section role="status" aria-live="polite" className="mb-6 rounded-md border border-zinc-500/30 bg-zinc-500/[0.06] p-4">
-          <p className="text-[12.5px] text-zinc-300 ">member removed from workspace</p>
+          <p className="text-[12.5px] text-zinc-300 ">Member removed from workspace.</p>
         </section>
       )}
       {errorRaw && (
@@ -136,14 +136,12 @@ export default async function TeamPage({
       )}
 
       {/* Member list */}
-      <section className="mb-10">
-        <p className="text-[10px] uppercase tracking-[0.24em] text-zinc-500 mb-3 inline-flex items-center gap-2">
-          <span className="text-zinc-700">{"//"}</span>
-          <span className="text-emerald-300">members</span>
-          <span className="text-zinc-700">::</span>
-          <span className="text-zinc-400 tabular-nums">{membersUnavailable ? "Unavailable" : members.length}</span>
-        </p>
-        <ul className="rounded-md border border-white/[0.06] bg-white/[0.012] divide-y divide-white/[0.04] overflow-hidden">
+      <section className="mb-6" aria-label="Workspace members">
+        <div className="mb-3 flex items-center justify-between gap-3">
+          <h2 className="text-sm font-medium text-zinc-100">Workspace members</h2>
+          <span className="text-xs tabular-nums text-zinc-500">{membersUnavailable ? "Unavailable" : `${members.length} ${members.length === 1 ? "member" : "members"}`}</span>
+        </div>
+        <ul className="rounded-xl border border-white/[0.08] bg-white/[0.015] divide-y divide-white/[0.06] overflow-hidden">
           {membersUnavailable ? <li role="alert" className="px-5 py-6 text-sm text-zinc-300">Member records are temporarily unavailable. Refresh to retry; no member count or empty workspace is inferred.</li> : members.length === 0 ? (
             <li className="px-5 py-6 text-center">
               <p className="text-[13px] text-zinc-400">No members recorded yet.</p>
@@ -153,32 +151,32 @@ export default async function TeamPage({
             members.map((m) => (
               <li key={m.id} className="px-5 py-3.5">
                 <div className="flex items-center gap-3 flex-wrap">
-                  <div className="w-9 h-9 border border-emerald-500/20 bg-emerald-500/[0.04] flex items-center justify-center shrink-0 rounded-sm text-[11px] font-semibold text-emerald-300">
+                  <div className="w-8 h-8 border border-white/10 bg-white/[0.04] flex items-center justify-center shrink-0 rounded-full text-xs font-medium text-zinc-300">
                     {m.email.slice(0, 2).toUpperCase()}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-[13.5px] font-medium text-white ">
+                    <p className="break-all text-[13px] font-medium text-zinc-100">
                       {m.email}
                       {m.isSelf && (
-                        <span className="ml-2 text-[10px] uppercase tracking-wider text-zinc-500">you</span>
+                        <span className="ml-2 text-xs text-zinc-500">you</span>
                       )}
                     </p>
-                    <p className="text-[10.5px] uppercase tracking-wider text-zinc-500 mt-0.5">
-                      <span className={m.role === "owner" ? "text-emerald-300" : "text-zinc-400"}>{m.role}</span>
+                    <p className="text-xs text-zinc-500 mt-1">
+                      <span className="text-zinc-400">{ROLE_LABEL[m.role as InviteRole]?.label ?? m.role}</span>
                       {m.acceptedAt ? (
                         <>
-                          <span className="text-zinc-700 mx-1.5">::</span>
+                          <span className="text-zinc-700 mx-1.5">·</span>
                           <span>joined {m.acceptedAt.toISOString().slice(0, 10)}</span>
                         </>
                       ) : (
                         <>
-                          <span className="text-zinc-700 mx-1.5">::</span>
+                          <span className="text-zinc-700 mx-1.5">·</span>
                           <span className="text-zinc-300">pending acceptance</span>
                         </>
                       )}
                       {m.providerScopes.length > 0 && (
                         <>
-                          <span className="text-zinc-700 mx-1.5">::</span>
+                          <span className="text-zinc-700 mx-1.5">·</span>
                           <span>scope {m.providerScopes.join(",")}</span>
                         </>
                       )}
@@ -191,22 +189,22 @@ export default async function TeamPage({
                         <select
                           name="role"
                           defaultValue={m.role}
-                          className="text-[11px] px-2 py-1 rounded border border-white/[0.08] bg-white/[0.02] text-zinc-200 focus:outline-none focus:border-emerald-500/40"
-                          aria-label="role"
+                          className="h-8 rounded-lg border border-white/10 bg-[#171717] px-2 text-xs text-zinc-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-zinc-400"
+                          aria-label={`Role for ${m.email}`}
                         >
                           {ASSIGNABLE_ROLES.map((r) => (
-                            <option key={r} value={r}>{r}</option>
+                            <option key={r} value={r}>{ROLE_LABEL[r].label}</option>
                           ))}
                         </select>
-                        <button type="submit" className="text-[10px] uppercase tracking-wider px-2 py-1 rounded border border-emerald-500/30 text-emerald-200 hover:text-white hover:border-emerald-500/60 hover:bg-emerald-500/10 transition-colors">
-                          update
+                        <button type="submit" className="h-8 rounded-lg border border-white/10 px-3 text-xs text-zinc-200 hover:bg-white/[0.06] focus-visible:outline focus-visible:outline-2 focus-visible:outline-zinc-400">
+                          Update
                         </button>
                       </form>
                       <form action="/api/team/role" method="POST">
                         <input type="hidden" name="membershipId" value={m.id} />
                         <input type="hidden" name="action" value="remove" />
-                        <button type="submit" className="text-[10px] uppercase tracking-wider px-2 py-1 rounded border border-rose-500/30 text-rose-200 hover:text-white hover:border-rose-500/60 hover:bg-rose-500/10 transition-colors">
-                          remove
+                        <button type="submit" className="h-8 rounded-lg border border-white/10 px-3 text-xs text-rose-300 hover:bg-rose-500/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-rose-400">
+                          Remove
                         </button>
                       </form>
                     </div>
@@ -220,57 +218,46 @@ export default async function TeamPage({
 
       {/* Invite */}
       {canManage && (
-        <section className="mb-10 rounded-md border border-emerald-500/20 bg-emerald-500/[0.04] p-5">
-          <p className="text-[10px] uppercase tracking-[0.24em] text-emerald-300 mb-3 inline-flex items-center gap-2">
-            <span className="text-zinc-700">{"//"}</span>
-            <span>invite teammate</span>
-          </p>
+        <section className="mb-6 rounded-xl border border-white/[0.08] bg-white/[0.015] p-5">
+          <h2 className="text-sm font-medium text-zinc-100">Invite a teammate</h2>
+          <p className="mb-4 mt-1 text-xs leading-5 text-zinc-500">Create an invitation link with the appropriate workspace role.</p>
           <form action="/api/team/invite" method="POST" className="space-y-3">
             <div className="grid sm:grid-cols-2 gap-3">
               <div>
-                <label htmlFor="email" className="text-[10px] uppercase tracking-[0.18em] text-emerald-300 mb-1.5 block">email</label>
+                <label htmlFor="email" className="text-xs text-zinc-400 mb-1.5 block">Email address</label>
                 <input id="email" name="email" type="email" required maxLength={200}
                   placeholder="teammate@company.com"
                   className="w-full rounded border border-white/[0.06] bg-white/[0.02] px-3 py-2 text-[13px] text-zinc-200 placeholder:text-zinc-600 focus:outline-none focus:border-emerald-500/40 transition-colors" />
               </div>
               <div>
-                <label htmlFor="role" className="text-[10px] uppercase tracking-[0.18em] text-emerald-300 mb-1.5 block">role</label>
+                <label htmlFor="role" className="text-xs text-zinc-400 mb-1.5 block">Workspace role</label>
                 <select id="role" name="role" defaultValue="operator"
                   className="w-full rounded border border-white/[0.06] bg-white/[0.02] px-3 py-2 text-[13px] text-zinc-200 focus:outline-none focus:border-emerald-500/40 transition-colors">
                   {ASSIGNABLE_ROLES.map((r) => (
-                    <option key={r} value={r}>{r}</option>
+                    <option key={r} value={r}>{ROLE_LABEL[r].label}</option>
                   ))}
                 </select>
               </div>
             </div>
             <div className="flex items-center justify-between gap-3 flex-wrap pt-1">
-              <p className="text-[10.5px] text-zinc-500 ">invite link expires in 7 days · signed HMAC token</p>
+              <p className="text-[10.5px] text-zinc-500 ">Invitation links expire after 7 days. Share the link directly with your teammate.</p>
               <TeamInviteButton />
             </div>
           </form>
         </section>
       )}
 
-      {/* Role catalog — operator reference */}
-      <section className="mb-10 rounded-md border border-white/[0.06] bg-white/[0.012] p-5">
-        <p className="text-[10px] uppercase tracking-[0.24em] text-zinc-500 mb-3 inline-flex items-center gap-2">
-          <span className="text-zinc-700">{"//"}</span>
-          <span className="text-emerald-300">role-catalog</span>
-        </p>
-        <dl className="space-y-3">
+      <details className="mb-6 rounded-xl border border-white/[0.08] bg-white/[0.015] p-5">
+        <summary className="cursor-pointer text-sm font-medium text-zinc-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-zinc-400">Role permissions</summary>
+        <dl className="mt-4 space-y-4">
           {(Object.keys(ROLE_LABEL) as InviteRole[]).map((r) => (
-            <div key={r} className="flex gap-3 items-baseline">
-              <dt className="text-[11px] uppercase tracking-wider text-emerald-300 shrink-0 min-w-[130px]">
-                {r}
-              </dt>
-              <dd className="text-[12.5px] text-zinc-300 leading-relaxed">
-                <span className="font-semibold">{ROLE_LABEL[r].label}</span>{" — "}
-                <span className="text-zinc-400">{ROLE_LABEL[r].description}</span>
-              </dd>
+            <div key={r} className="grid gap-1 sm:grid-cols-[150px_1fr] sm:gap-4">
+              <dt className="text-xs font-medium text-zinc-200">{ROLE_LABEL[r].label}</dt>
+              <dd className="text-xs leading-5 text-zinc-500">{ROLE_LABEL[r].description}</dd>
             </div>
           ))}
         </dl>
-      </section>
+      </details>
     </div>
   );
 }
