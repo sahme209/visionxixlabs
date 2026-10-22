@@ -934,8 +934,30 @@ function AgentChatSession({ onOpenSettings, identity, active, requestedSkill, re
             <p>Review the saved conversation before sending another request. Reloading does not retry AI work or confirm that an interrupted operation has finished.</p>
             <button type="button" disabled={loadingConversation} onClick={() => conversationId && void openConversation(conversationId, true)} className="mt-2 rounded-lg border border-white/10 px-3 py-1.5 text-zinc-200 disabled:opacity-40">Reload saved conversation</button>
           </div>}
+          <p aria-label="Request configuration" className="mb-2 break-words text-[11px] text-zinc-400">
+            {OPERATION_MODES.find(mode => mode.id === operationMode)?.label} · {resolveAgentProfile(agentProfile)?.label} · {modelOptions.find(model => model.key === selectedModel)?.label ?? "No approved model"}{composerMode === "code" ? ` · File: ${filePath || "Choose a file below"}` : " · Chat"}
+          </p>
+          <div className="mb-3 flex items-end gap-3">
+          <textarea
+            value={input}
+            onChange={(event) => setInput(event.target.value)}
+            onKeyDown={(event) => { if (event.key === "Enter" && !event.shiftKey && !event.nativeEvent.isComposing && event.nativeEvent.keyCode !== 229) { event.preventDefault(); void send(); } }}
+            placeholder={pendingProposal ? "Approve or reject the proposed action above to continue…" : operationMode === "inspect" ? "Ask about the selected repository or environment…" : operationMode === "engineer" && composerMode === "code" ? "Describe the change you want in this file…" : operationMode === "engineer" ? "Describe the engineering change you want proposed…" : "Describe the operational outcome you want proposed…"}
+            disabled={sending || loadingConversation || !conversationId || Boolean(pendingProposal)}
+            rows={2}
+            className="min-h-[48px] flex-1 resize-none rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm text-zinc-100 placeholder:text-zinc-600 outline-none focus:border-white/25 disabled:opacity-50"
+          />
+          <button
+            type="button"
+            onClick={() => void send()}
+            disabled={modelState !== "ready" || !selectedModel || sending || loadingConversation || needsRecovery || !input.trim() || !conversationId || Boolean(pendingProposal) || (composerMode === "code" && (!repositoryFullName.includes("/") || !branch.trim() || !filePath.trim()))}
+            className="rounded-xl bg-white px-5 py-3 text-sm font-semibold text-black disabled:opacity-40"
+          >
+            {sending ? "Thinking…" : "Send"}
+          </button>
+          </div>
           {active && skillState === "unavailable" && <p role="status" className="mb-2 text-xs text-zinc-400">Skill shortcuts could not be verified. Existing workspace permissions remain enforced. <button type="button" disabled={sending || loadingConversation} onClick={() => setSkillAttempt(attempt => attempt + 1)} className="underline">Retry skills</button></p>}
-          {active && skillState === "ready" && enabledSkills.length > 0 && <div className="mb-3 flex items-center gap-2 overflow-x-auto pb-1"><span className="shrink-0 text-[10px] uppercase tracking-[0.12em] text-zinc-600">Skills</span>{enabledSkills.map((skill) => <button key={skill.id} type="button" disabled={sending || loadingConversation || Boolean(pendingProposal)} onClick={() => setInput((current) => selectSkillInvocation(current, skill.id))} className="shrink-0 rounded-full border border-violet-300/[0.12] bg-violet-300/[0.04] px-2.5 py-1 text-[10px] text-violet-200 hover:bg-violet-300/[0.08] disabled:opacity-40">/{skill.id}</button>)}</div>}
+          {active && skillState === "ready" && enabledSkills.length > 0 && <details className="mb-3 text-xs text-zinc-400"><summary className="cursor-pointer focus-visible:outline focus-visible:outline-2 focus-visible:outline-orange-300">Skill shortcuts</summary><div className="mt-2 flex flex-wrap items-center gap-2">{enabledSkills.map((skill) => <button key={skill.id} type="button" disabled={sending || loadingConversation || Boolean(pendingProposal)} onClick={() => setInput((current) => selectSkillInvocation(current, skill.id))} className="shrink-0 rounded-full border border-violet-300/[0.12] bg-violet-300/[0.04] px-2.5 py-1 text-[10px] text-violet-200 hover:bg-violet-300/[0.08] disabled:opacity-40">/{skill.id}</button>)}</div></details>}
           <details className="mb-3 rounded-lg border border-white/[0.06] px-3 py-2">
             <summary className="cursor-pointer text-xs text-zinc-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-orange-300">Agent configuration · {resolveAgentProfile(agentProfile)?.label}</summary>
           <div className="mt-3 flex flex-wrap items-center gap-3">
@@ -950,6 +972,8 @@ function AgentChatSession({ onOpenSettings, identity, active, requestedSkill, re
             <p role="status" className="text-[11px] text-zinc-500">{resolveAgentProfile(agentProfile)?.description} Workspace tool policy and approvals still apply.</p>
             {onOpenSettings && <button type="button" onClick={() => onOpenSettings("agents")} className="text-xs text-zinc-400 underline underline-offset-2">Agent permissions</button>}
           </div>
+          <p className="mb-3 text-[11px] text-zinc-500">{OPERATION_MODES.find((mode) => mode.id === operationMode)?.description}. Provider selection and customer credit checks remain governed by your workspace policy.</p>
+          <p className="mb-2 text-[10px] text-zinc-500">Unsent prompts stay with each conversation in this session only. Sign-out or credential verification may clear them; targets and permissions remain workspace-controlled.</p>
           </details>
           <div className="mb-3 flex flex-wrap items-center gap-1" role="group" aria-label="Agent controls">
             {OPERATION_MODES.map((mode) => (
@@ -975,7 +999,6 @@ function AgentChatSession({ onOpenSettings, identity, active, requestedSkill, re
               {onOpenSettings && <button type="button" onClick={() => onOpenSettings("models")} className="underline underline-offset-2">Model settings</button>}
             </div>
           </div>}
-          <p className="mb-3 text-[11px] text-zinc-500">{OPERATION_MODES.find((mode) => mode.id === operationMode)?.description}. Provider selection and customer credit checks remain governed by your workspace policy.</p>
           {composerMode === "code" && <div className="mb-3 space-y-2">
             <label className="block text-[10px] uppercase tracking-[0.12em] text-zinc-600">
               File
@@ -1004,26 +1027,7 @@ function AgentChatSession({ onOpenSettings, identity, active, requestedSkill, re
             {fileCatalogError && <p role="status" className="text-[11px] text-zinc-400">{fileCatalogError}</p>}
             {!fileCatalogError && fileCatalogTruncated && <p role="status" className="text-[11px] text-zinc-500">Showing editable files returned by GitHub. Use “Enter another file path” for a file outside this list.</p>}
           </div>}
-          <p className="mb-2 text-[10px] text-zinc-500">Unsent prompts stay with each conversation in this session only. Sign-out or credential verification may clear them; targets and permissions remain workspace-controlled.</p>
-          <div className="flex items-end gap-3">
-          <textarea
-            value={input}
-            onChange={(event) => setInput(event.target.value)}
-            onKeyDown={(event) => { if (event.key === "Enter" && !event.shiftKey && !event.nativeEvent.isComposing && event.nativeEvent.keyCode !== 229) { event.preventDefault(); void send(); } }}
-            placeholder={pendingProposal ? "Approve or reject the proposed action above to continue…" : operationMode === "inspect" ? "Ask about the selected repository or environment…" : operationMode === "engineer" && composerMode === "code" ? "Describe the change you want in this file…" : operationMode === "engineer" ? "Describe the engineering change you want proposed…" : "Describe the operational outcome you want proposed…"}
-            disabled={sending || loadingConversation || !conversationId || Boolean(pendingProposal)}
-            rows={2}
-            className="min-h-[48px] flex-1 resize-none rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm text-zinc-100 placeholder:text-zinc-600 outline-none focus:border-white/25 disabled:opacity-50"
-          />
-          <button
-            type="button"
-            onClick={() => void send()}
-            disabled={modelState !== "ready" || !selectedModel || sending || loadingConversation || needsRecovery || !input.trim() || !conversationId || Boolean(pendingProposal) || (composerMode === "code" && (!repositoryFullName.includes("/") || !branch.trim() || !filePath.trim()))}
-            className="rounded-xl bg-white px-5 py-3 text-sm font-semibold text-black disabled:opacity-40"
-          >
-            {sending ? "Thinking…" : "Send"}
-          </button>
-          </div>
+
         </div>
       </div>
     </div>

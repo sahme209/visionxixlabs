@@ -84,10 +84,8 @@ fn main() {
             tray::set_tray_pending_list,
         ])
         .setup(|app| {
-            #[cfg(debug_assertions)]
-            if let Some(window) = app.get_webview_window("main") {
-                window.open_devtools();
-            }
+            // Keep the normal app viewport intact in local test builds too.
+            // Developers can open the inspector explicitly when needed.
 
             // Tray icon — best-effort. A failed tray build (e.g. on a
             // headless CI machine) should not block the app from starting.

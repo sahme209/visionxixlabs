@@ -178,5 +178,8 @@ it("keeps compact context discoverable and preserves the draft while opening con
   expect(disclosure.open).toBe(false);
   expect(composer.value).toBe("Keep my unsent work");
   expect(screen.getByLabelText("Agent composer")).toBeTruthy();
+  const configuration = screen.getByText(/Agent configuration ·/).closest("summary")!;
+  expect(composer.compareDocumentPosition(configuration) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+
   expect(m.client.sendAgentMessage).not.toHaveBeenCalled();
 });
