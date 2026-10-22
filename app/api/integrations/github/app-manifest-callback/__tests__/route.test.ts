@@ -3,8 +3,8 @@
  * route. Locks in: admin gating, successful exchange -> encrypted upsert
  * -> redirect with ?created=1, and a failed exchange redirecting to a
  * plain-language ?error=manifest_exchange_failed without leaking raw
- * error detail. GitHub's manifest-flow redirect carries only `?code=...`
- * and no state to verify, so the admin's own session is the sole gate.
+ * error detail. The callback requires an administrator-initiated, single-use state
+ * before exchanging any GitHub code.
  */
 
 import { beforeEach, describe, expect, it, vi } from "vitest";
@@ -13,25 +13,30 @@ import type { RecordInput } from "@/lib/audit/secureAudit";
 
 const mocks = vi.hoisted(() => ({
   currentContext: vi.fn(),
-  isAdminOrOwner: vi.fn(),
+  isPlatformAdmin: vi.fn(),
   trustedAxiomUrl: vi.fn((path: string) => `https://visionxixlabs.com${path}`),
   upsertPlatformGithubAppCredential: vi.fn(),
-  recordAudit: vi.fn(async (_input: RecordInput) => {}),
+  recordAudit: vi.fn(async (_input: RecordInput) => { void _input; }),
   fetchMock: vi.fn(),
+  consume: vi.fn(),
 }));
 
 vi.mock("@/lib/auth/currentContext", () => ({ currentContext: mocks.currentContext }));
-vi.mock("@/lib/auth/platformAdmin", () => ({ isAdminOrOwner: mocks.isAdminOrOwner }));
+vi.mock("@/lib/auth/platformAdmin", () => ({ isPlatformAdmin: mocks.isPlatformAdmin }));
 vi.mock("@/lib/integrations/trustedCallbackUrl", () => ({ trustedAxiomUrl: mocks.trustedAxiomUrl }));
 vi.mock("@/lib/connectors/github/platformGithubAppCredential", () => ({
   upsertPlatformGithubAppCredential: mocks.upsertPlatformGithubAppCredential,
 }));
 vi.mock("@/lib/audit/secureAudit", () => ({ record: mocks.recordAudit }));
 
+vi.mock("@/lib/audit/requiredAudit", () => ({ recordRequiredAudit: mocks.recordAudit }));
+vi.mock("@/lib/db", () => ({ prisma: {} }));
+vi.mock("@/lib/integrations/tenantConnectionRepo", () => ({ consumeTenantIntegrationAuthorization: mocks.consume }));
 vi.stubGlobal("fetch", mocks.fetchMock);
 
 function request(query: Record<string, string>) {
   const url = new URL("https://visionxixlabs.com/api/integrations/github/app-manifest-callback");
+  url.searchParams.set("state", "fixture-state");
   for (const [k, v] of Object.entries(query)) url.searchParams.set(k, v);
   return new NextRequest(url);
 }
@@ -48,6 +53,7 @@ const adminCtx = { isAuthenticated: true, organizationId: "org-1", userId: "user
 describe("GET /api/integrations/github/app-manifest-callback", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    mocks.consume.mockResolvedValue({ok:true});
   });
 
   it("rejects an unauthenticated request", async () => {
@@ -62,18 +68,19 @@ describe("GET /api/integrations/github/app-manifest-callback", () => {
 
   it("rejects a non-admin, authenticated user", async () => {
     mocks.currentContext.mockResolvedValue({ ...adminCtx, roles: ["read_only"] });
-    mocks.isAdminOrOwner.mockReturnValue(false);
+    mocks.isPlatformAdmin.mockReturnValue(false);
 
     const { GET } = await import("../route");
     const res = await GET(request({ code: "abc123" }));
 
-    expect(redirectPath(res)).toBe("/dashboard/github-app?error=workspace_owner_required");
+    expect(res.status).toBe(403);
+    expect(await res.json()).toEqual({ ok: false, error: "platform_admin_required" });
     expect(mocks.fetchMock).not.toHaveBeenCalled();
   });
 
   it("redirects with a plain-language error when the code is missing", async () => {
     mocks.currentContext.mockResolvedValue(adminCtx);
-    mocks.isAdminOrOwner.mockReturnValue(true);
+    mocks.isPlatformAdmin.mockReturnValue(true);
 
     const { GET } = await import("../route");
     const res = await GET(request({}));
@@ -84,7 +91,7 @@ describe("GET /api/integrations/github/app-manifest-callback", () => {
 
   it("exchanges the code, encrypts + upserts the credential, audits, and redirects with ?created=1", async () => {
     mocks.currentContext.mockResolvedValue(adminCtx);
-    mocks.isAdminOrOwner.mockReturnValue(true);
+    mocks.isPlatformAdmin.mockReturnValue(true);
     mocks.fetchMock.mockResolvedValue({
       ok: true,
       json: async () => ({
@@ -141,7 +148,7 @@ describe("GET /api/integrations/github/app-manifest-callback", () => {
 
   it("redirects to a plain-language error when GitHub's exchange fails, without leaking raw error detail", async () => {
     mocks.currentContext.mockResolvedValue(adminCtx);
-    mocks.isAdminOrOwner.mockReturnValue(true);
+    mocks.isPlatformAdmin.mockReturnValue(true);
     mocks.fetchMock.mockResolvedValue({ ok: false, status: 404 });
 
     const { GET } = await import("../route");
@@ -153,7 +160,7 @@ describe("GET /api/integrations/github/app-manifest-callback", () => {
 
   it("redirects to the error path when the network call throws", async () => {
     mocks.currentContext.mockResolvedValue(adminCtx);
-    mocks.isAdminOrOwner.mockReturnValue(true);
+    mocks.isPlatformAdmin.mockReturnValue(true);
     mocks.fetchMock.mockRejectedValue(new Error("ECONNRESET"));
 
     const { GET } = await import("../route");
@@ -162,9 +169,9 @@ describe("GET /api/integrations/github/app-manifest-callback", () => {
     expect(redirectPath(res)).toBe("/dashboard/github-app?error=manifest_exchange_failed");
   });
 
-  it("redirects to the error path when the upsert itself throws", async () => {
+  it("reports an unconfirmed save when the upsert itself throws", async () => {
     mocks.currentContext.mockResolvedValue(adminCtx);
-    mocks.isAdminOrOwner.mockReturnValue(true);
+    mocks.isPlatformAdmin.mockReturnValue(true);
     mocks.fetchMock.mockResolvedValue({
       ok: true,
       json: async () => ({
@@ -178,6 +185,25 @@ describe("GET /api/integrations/github/app-manifest-callback", () => {
     const { GET } = await import("../route");
     const res = await GET(request({ code: "one-time-code" }));
 
-    expect(redirectPath(res)).toBe("/dashboard/github-app?error=manifest_exchange_failed");
+    expect(res.status).toBe(503);
+    expect((await res.json()).error).toBe("github_app_save_unconfirmed");
+  });
+  it("rejects a callback with no initiating state before exchange",async()=>{
+    mocks.currentContext.mockResolvedValue(adminCtx);mocks.isPlatformAdmin.mockReturnValue(true);
+    const {GET}=await import("../route");const res=await GET(request({code:"code",state:""}));
+    expect(res.status).toBe(400);expect(mocks.fetchMock).not.toHaveBeenCalled();expect(mocks.upsertPlatformGithubAppCredential).not.toHaveBeenCalled();
+  });
+  it.each(["missing","expired","consumed"])("rejects a %s setup challenge before exchange",async(reason)=>{
+    mocks.currentContext.mockResolvedValue(adminCtx);mocks.isPlatformAdmin.mockReturnValue(true);mocks.consume.mockResolvedValue({ok:false,reason});
+    const {GET}=await import("../route");const res=await GET(request({code:"code"}));
+    expect(res.status).toBe(400);expect(mocks.fetchMock).not.toHaveBeenCalled();expect(mocks.upsertPlatformGithubAppCredential).not.toHaveBeenCalled();
+    expect(mocks.consume).toHaveBeenCalledWith(expect.anything(),expect.objectContaining({expected:{organizationId:"org-1",initiatedByUserId:"user-1",redirectUri:"https://visionxixlabs.com/api/integrations/github/app-manifest-callback"}}));
+  });
+  it("does not claim success when the required audit receipt fails after a credential write",async()=>{
+    mocks.currentContext.mockResolvedValue(adminCtx);mocks.isPlatformAdmin.mockReturnValue(true);
+    mocks.fetchMock.mockResolvedValue({ok:true,json:async()=>({id:42,slug:"axiom-agent",name:"Axiom Agent",client_id:"client",client_secret:"fixture-secret",webhook_secret:"fixture-hook",pem:"fixture-pem",html_url:"https://github.com/apps/axiom-agent"})});
+    mocks.upsertPlatformGithubAppCredential.mockResolvedValue({appId:42,slug:"axiom-agent",name:"Axiom Agent"});mocks.recordAudit.mockRejectedValueOnce(new Error("audit down"));
+    const {GET}=await import("../route");const res=await GET(request({code:"code"}));
+    expect(res.status).toBe(503);expect((await res.json()).error).toBe("github_app_audit_unconfirmed");expect(res.headers.get("location")).toBeNull();
   });
 });

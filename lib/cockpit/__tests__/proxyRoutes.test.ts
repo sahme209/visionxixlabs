@@ -14,3 +14,6 @@ describe("cockpit route compatibility",()=>{
   expect(proxy(new NextRequest("https://visionxixlabs.com/dashboard/azure")).headers.get("location")).toContain("/download?from=");
  });
 });
+it('migrates the old platform App setup URL into the protected admin area with its result notice',()=>{
+ expect(proxy(new NextRequest('https://visionxixlabs.com/dashboard/github-app?created=1')).headers.get('location')).toBe('https://visionxixlabs.com/admin/github-app?created=1');
+});

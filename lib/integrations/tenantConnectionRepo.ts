@@ -87,7 +87,7 @@ export type ConsumeAuthorizationResult =
 
 export async function consumeTenantIntegrationAuthorization(
   repo: TenantConnectionRepo,
-  input: { state: string; provider: TenantIntegrationProvider; now?: Date },
+  input: { state: string; provider: TenantIntegrationProvider; now?: Date; expected?: Pick<AuthorizationAttemptRow, "organizationId" | "initiatedByUserId" | "redirectUri"> },
 ): Promise<ConsumeAuthorizationResult> {
   let stateDigest: string;
   try {
@@ -97,6 +97,7 @@ export async function consumeTenantIntegrationAuthorization(
   }
   const attempt = await repo.tenantIntegrationAuthorizationAttempt.findUnique({ where: { stateDigest } });
   if (!attempt || attempt.provider !== input.provider) return { ok: false, reason: "missing" };
+  if (input.expected && (attempt.organizationId !== input.expected.organizationId || attempt.initiatedByUserId !== input.expected.initiatedByUserId || attempt.redirectUri !== input.expected.redirectUri)) return { ok: false, reason: "missing" };
   const now = input.now ?? new Date();
   if (attempt.consumedAt) return { ok: false, reason: "consumed" };
   if (attempt.expiresAt <= now) return { ok: false, reason: "expired" };

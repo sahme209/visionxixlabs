@@ -32,6 +32,7 @@ export function proxy(request: NextRequest) {
     "/dashboard/governance": "/control/governance",
     "/dashboard/settings": "/control/settings",
     "/dashboard/team": "/control/members",
+    "/dashboard/github-app": "/admin/github-app",
     "/dashboard": "/control",
   };
 
@@ -51,7 +52,7 @@ export function proxy(request: NextRequest) {
   if (migratedGovernanceRoute) {
     const destination = request.nextUrl.clone();
     destination.pathname = migratedGovernanceRoute;
-    if (pathname !== "/dashboard/team") destination.search = "";
+    if (pathname !== "/dashboard/team" && pathname !== "/dashboard/github-app") destination.search = "";
     return applySecurityHeaders(NextResponse.redirect(destination, 307));
   }
 
