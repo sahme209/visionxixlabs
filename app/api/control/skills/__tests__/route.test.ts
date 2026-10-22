@@ -4,7 +4,7 @@ const io=vi.hoisted(()=>({context:vi.fn(),access:vi.fn(),upsert:vi.fn(),disable:
 vi.mock('@/lib/auth/currentContext',()=>({currentContext:io.context}));
 vi.mock('@/lib/desktop/desktopCommercialAccess',()=>({readDesktopCommercialAccess:io.access}));
 vi.mock('@/lib/db',()=>({prisma:{agentSkillInstallation:{upsert:io.upsert,updateMany:io.disable}}}));
-vi.mock('@/lib/audit/secureAudit',()=>({record:io.audit}));
+vi.mock('@/lib/audit/requiredAudit',()=>({recordRequiredAudit:io.audit}));
 import { POST } from '../route';
 const request=(body:unknown={skillId:'integration-audit',action:'install'},origin='https://fixture.test')=>new NextRequest('https://fixture.test/api/control/skills',{method:'POST',headers:{origin,'content-type':'application/json'},body:JSON.stringify(body)});
 beforeEach(()=>{vi.resetAllMocks();io.context.mockResolvedValue({isAuthenticated:true,organizationId:'org-A',userId:'user-A',roles:['owner']});io.access.mockResolvedValue({allowed:true});io.upsert.mockResolvedValue({});io.disable.mockResolvedValue({count:1});io.audit.mockResolvedValue(undefined)});
@@ -24,3 +24,10 @@ it('disables the existing installation and refuses a missing installation',async
  io.disable.mockResolvedValue({count:0});expect((await POST(request({skillId:'integration-audit',action:'disable'}))).status).toBe(409);
 });
 it('does not report success or leak storage errors',async()=>{io.upsert.mockRejectedValue(Error('private-database-message'));const r=await POST(request());expect(r.status).toBe(503);expect(await r.text()).not.toContain('private-database')});
+
+it('discloses an unconfirmed required audit after a skill mutation without replaying it',async()=>{
+ io.audit.mockRejectedValueOnce(Error('private audit diagnostic'));
+ const result=await POST(request());expect(result.status).toBe(503);
+ const body=await result.json();expect(body.error).toBe('skill_audit_unconfirmed');expect(body.data).toBeUndefined();
+ expect(io.upsert).toHaveBeenCalledOnce();expect(io.audit).toHaveBeenCalledOnce();
+});

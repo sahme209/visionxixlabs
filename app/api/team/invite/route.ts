@@ -19,7 +19,7 @@ import {
   ASSIGNABLE_ROLES,
   type InviteRole,
 } from "@/lib/workforce/domains/inviteLinks";
-import { record as auditRecord } from "@/lib/audit/secureAudit";
+import { recordRequiredAudit as auditRecord } from "@/lib/audit/requiredAudit";
 import { id as ids } from "@/lib/domain/ids";
 import type { CorrelationId } from "@/lib/domain/ids";
 
@@ -88,15 +88,19 @@ export async function POST(req: Request) {
   const baseUrl = process.env.NEXTAUTH_URL ?? new URL(req.url).origin;
   const inviteUrl = `${baseUrl.replace(/\/$/, "")}/accept-invite/${token}`;
 
-  void auditRecord({
-    organizationId: ids.organization(org),
-    actorUserId: ctx.userId ? ids.user(String(ctx.userId)) : undefined,
-    action: "members.invite",
-    outcome: "success",
-    entityRef: `invite:${email}:${role}`,
-    correlationId,
-    detail: { action: "team_invite_minted", email, role },
-  });
+  try {
+    await auditRecord({
+      organizationId: ids.organization(org),
+      actorUserId: ctx.userId ? ids.user(String(ctx.userId)) : undefined,
+      action: "members.invite",
+      outcome: "success",
+      entityRef: `invite:${email}:${role}`,
+      correlationId,
+      detail: { action: "team_invite_minted", email, role },
+    });
+  } catch {
+    return NextResponse.redirect(new URL("/dashboard/team?error=audit_unconfirmed", req.url), 303);
+  }
 
   return NextResponse.redirect(
     new URL(`/dashboard/team?notice=invite_sent&inviteUrl=${encodeURIComponent(inviteUrl)}`, req.url),

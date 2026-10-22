@@ -30,7 +30,7 @@ vi.mock("@/lib/db", () => ({
 vi.mock("@/lib/workforce/domains/inviteLinks", () => ({
   ASSIGNABLE_ROLES: ["admin", "operator", "security_reviewer", "finance_viewer", "read_only"],
 }));
-vi.mock("@/lib/audit/secureAudit", () => ({ record: mocks.recordAudit }));
+vi.mock("@/lib/audit/requiredAudit", () => ({ recordRequiredAudit: mocks.recordAudit }));
 
 function formRequest(fields: Record<string, string>) {
   const body = new URLSearchParams(fields);
@@ -175,4 +175,15 @@ describe("POST /api/team/role — role change and revocation", () => {
     expect(locationOf(res).searchParams.get("error")).toBe("insufficient_permission");
     expect(mocks.deleteMembership).not.toHaveBeenCalled();
   });
+  it.each(["remove", "change_role"])("discloses an unconfirmed audit after %s without replaying the mutation", async action => {
+    mockMembershipLookups("owner", { id: "mem-2", role: "read_only", organizationId: "org-1", userId: "user-2" });
+    mocks.recordAudit.mockRejectedValueOnce(Error("private audit diagnostic"));
+    const { POST } = await import("../route");
+    const result = await POST(formRequest({ membershipId: "mem-2", action, role: "operator" }));
+    expect(locationOf(result).searchParams.get("error")).toBe("audit_unconfirmed");
+    expect(locationOf(result).searchParams.has("notice")).toBe(false);
+    expect(action === "remove" ? mocks.deleteMembership : mocks.updateMembership).toHaveBeenCalledOnce();
+    expect(mocks.recordAudit).toHaveBeenCalledOnce();
+  });
+
 });

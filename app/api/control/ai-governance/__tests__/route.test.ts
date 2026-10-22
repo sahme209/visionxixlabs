@@ -18,7 +18,7 @@ const mocks = vi.hoisted(() => ({
 
 vi.mock("@/lib/auth/currentContext", () => ({ currentContext: mocks.currentContext }));
 vi.mock("@/lib/auth/platformAdmin", () => ({ isAdminOrOwner: mocks.isAdminOrOwner }));
-vi.mock("@/lib/audit/secureAudit", () => ({ record: mocks.recordAudit }));
+vi.mock("@/lib/audit/requiredAudit", () => ({ recordRequiredAudit: mocks.recordAudit }));
 vi.mock("@/lib/ai/AIProviderManager", () => ({ getAIProviderManager: () => ({ status: () => [{ provider: "vercel_gateway", configured: true }] }) }));
 vi.mock("@/lib/ai/gatewayModelCatalog", async (original) => ({ ...await original<typeof import("@/lib/ai/gatewayModelCatalog")>(), loadGatewayModelCatalog: mocks.loadModels }));
 vi.mock("@/lib/ai/workspaceProviderPolicy", async (original) => {
@@ -116,6 +116,22 @@ describe("/api/control/ai-governance", () => {
   });
   it("keeps unknown identity write failures generic and does not invoke error-code coercion",async()=>{
     const toString=vi.fn(()=>"P2021");mocks.saveIdentity.mockRejectedValueOnce({code:{toString},message:"private connection diagnostic"});const { PATCH }=await import("../route");const response=await PATCH(request({section:"agent_identity",displayName:"Axiom",enabled:true,allowedTools:["list_environments"]}));const body=await response.json();expect(response.status).toBe(503);expect(body.error).toBe("agent_identity_unavailable");expect(JSON.stringify(body)).not.toContain("private connection");expect(toString).not.toHaveBeenCalled();expect(mocks.recordAudit).not.toHaveBeenCalled();
+  });
+
+  it.each([
+    { section: "provider_policy", enabled: true, allowedProviders: ["vercel_gateway"], modelSelections: { vercel_gateway: "service-default" }, fallbackOrder: ["vercel_gateway"] },
+    { section: "autonomy", mode: "observer", perCycleActionLimit: 1 },
+    { section: "budget", defaultMaxCostCents: 100 },
+  ])("does not confirm $section when its required audit fails after mutation", async body => {
+    mocks.recordAudit.mockRejectedValueOnce(Error("private audit diagnostic"));
+    mocks.upsertCharter.mockResolvedValue({ mode: "observer", resolved: { perCycleActionLimit: 1 } });
+    const { PATCH } = await import("../route");
+    const result = await PATCH(request(body));
+    expect(result.status).toBe(503);
+    const payload = await result.json();
+    expect(payload.error).toBe("policy_audit_unconfirmed");
+    expect(JSON.stringify(payload)).not.toContain("private audit");
+    expect(mocks.recordAudit).toHaveBeenCalledOnce();
   });
 
 });

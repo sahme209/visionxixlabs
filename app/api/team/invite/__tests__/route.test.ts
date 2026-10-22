@@ -20,7 +20,7 @@ vi.mock("@/lib/workforce/domains/inviteLinks", () => ({
   createInviteToken: mocks.createInviteToken,
   ASSIGNABLE_ROLES: ["admin", "operator", "security_reviewer", "finance_viewer", "read_only"],
 }));
-vi.mock("@/lib/audit/secureAudit", () => ({ record: mocks.recordAudit }));
+vi.mock("@/lib/audit/requiredAudit", () => ({ recordRequiredAudit: mocks.recordAudit }));
 
 function formRequest(fields: Record<string, string>) {
   const body = new URLSearchParams(fields);
@@ -107,4 +107,15 @@ describe("POST /api/team/invite — organization membership lifecycle", () => {
     expect(locationOf(res).searchParams.get("error")).toBe("insufficient_permission");
     expect(mocks.createInviteToken).not.toHaveBeenCalled();
   });
+  it("withholds the invitation link when required audit persistence fails", async () => {
+    mocks.findMembership.mockResolvedValue({ role: "admin", acceptedAt: new Date() });
+    mocks.recordAudit.mockRejectedValueOnce(Error("private audit diagnostic"));
+    const { POST } = await import("../route");
+    const result = await POST(formRequest({ email: "disposable@example.test", role: "read_only" }));
+    expect(locationOf(result).searchParams.get("error")).toBe("audit_unconfirmed");
+    expect(locationOf(result).searchParams.has("inviteUrl")).toBe(false);
+    expect(locationOf(result).searchParams.has("notice")).toBe(false);
+    expect(mocks.createInviteToken).toHaveBeenCalledOnce();
+  });
+
 });

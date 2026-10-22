@@ -11,7 +11,7 @@ import { NextResponse } from "next/server";
 import { requireContext } from "@/lib/auth/currentContext";
 import { prisma } from "@/lib/db";
 import { ASSIGNABLE_ROLES, type InviteRole } from "@/lib/workforce/domains/inviteLinks";
-import { record as auditRecord } from "@/lib/audit/secureAudit";
+import { recordRequiredAudit as auditRecord } from "@/lib/audit/requiredAudit";
 import { id as ids } from "@/lib/domain/ids";
 import type { CorrelationId } from "@/lib/domain/ids";
 
@@ -82,15 +82,19 @@ export async function POST(req: Request) {
     } catch {
       return NextResponse.redirect(new URL("/dashboard/team?error=delete_failed", req.url), 303);
     }
-    void auditRecord({
-      organizationId: ids.organization(org),
-      actorUserId: ctx.userId ? ids.user(String(ctx.userId)) : undefined,
-      action: "members.remove",
-      outcome: "success",
-      entityRef: `membership:${membershipId}`,
-      correlationId,
-      detail: { action: "team_member_removed", priorRole: target.role },
-    });
+    try {
+      await auditRecord({
+        organizationId: ids.organization(org),
+        actorUserId: ctx.userId ? ids.user(String(ctx.userId)) : undefined,
+        action: "members.remove",
+        outcome: "success",
+        entityRef: `membership:${membershipId}`,
+        correlationId,
+        detail: { action: "team_member_removed", priorRole: target.role },
+      });
+    } catch {
+      return NextResponse.redirect(new URL("/dashboard/team?error=audit_unconfirmed", req.url), 303);
+    }
     return NextResponse.redirect(new URL("/dashboard/team?notice=removed", req.url), 303);
   }
 
@@ -106,14 +110,18 @@ export async function POST(req: Request) {
   } catch {
     return NextResponse.redirect(new URL("/dashboard/team?error=update_failed", req.url), 303);
   }
-  void auditRecord({
-    organizationId: ids.organization(org),
-    actorUserId: ctx.userId ? ids.user(String(ctx.userId)) : undefined,
-    action: "governance.update",
-    outcome: "success",
-    entityRef: `membership:${membershipId}`,
-    correlationId,
-    detail: { action: "team_role_updated", priorRole: target.role, newRole: role },
-  });
+  try {
+    await auditRecord({
+      organizationId: ids.organization(org),
+      actorUserId: ctx.userId ? ids.user(String(ctx.userId)) : undefined,
+      action: "governance.update",
+      outcome: "success",
+      entityRef: `membership:${membershipId}`,
+      correlationId,
+      detail: { action: "team_role_updated", priorRole: target.role, newRole: role },
+    });
+  } catch {
+    return NextResponse.redirect(new URL("/dashboard/team?error=audit_unconfirmed", req.url), 303);
+  }
   return NextResponse.redirect(new URL("/dashboard/team?notice=role_updated", req.url), 303);
 }

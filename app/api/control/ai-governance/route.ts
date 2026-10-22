@@ -3,7 +3,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { currentContext } from "@/lib/auth/currentContext";
 import { isAdminOrOwner } from "@/lib/auth/platformAdmin";
 import { isSameOriginRequest } from "@/lib/auth/requestOrigin";
-import { record as recordAudit } from "@/lib/audit/secureAudit";
+import { recordRequiredAudit as recordAudit } from "@/lib/audit/requiredAudit";
 import { id as idFactory } from "@/lib/domain/ids";
 import { getAIProviderManager } from "@/lib/ai/AIProviderManager";
 import { loadGatewayModelCatalog } from "@/lib/ai/gatewayModelCatalog";
@@ -119,11 +119,15 @@ export async function PATCH(request: NextRequest) {
       }
     }
     await saveWorkspaceAIProviderPolicy({ organizationId: ctx.organizationId, policy, updatedBy: ctx.userId });
-    await recordAudit({
-      organizationId: idFactory.organization(ctx.organizationId), actorUserId: idFactory.user(ctx.userId), actorKind: "user",
-      action: "policy.update", outcome: "success", entityRef: "ai_provider_policy:workspace", correlationId, source: "live",
-      detail: { enabled: policy.enabled, providers: policy.allowedProviders.join(","), models: Object.values(policy.modelSelections).join(","), approvedGatewayModels: gatewayPolicyModelIds(policy).join(",") },
-    });
+    try {
+      await recordAudit({
+        organizationId: idFactory.organization(ctx.organizationId), actorUserId: idFactory.user(ctx.userId), actorKind: "user",
+        action: "policy.update", outcome: "success", entityRef: "ai_provider_policy:workspace", correlationId, source: "live",
+        detail: { enabled: policy.enabled, providers: policy.allowedProviders.join(","), models: Object.values(policy.modelSelections).join(","), approvedGatewayModels: gatewayPolicyModelIds(policy).join(",") },
+      });
+    } catch {
+      return NextResponse.json({ ok: false, error: "policy_audit_unconfirmed", correlationId: String(correlationId) }, { status: 503 });
+    }
     return NextResponse.json({ ok: true, data: { providerPolicy: policy } });
   }
 
@@ -137,11 +141,11 @@ export async function PATCH(request: NextRequest) {
       return NextResponse.json({ ok: false, error: identityStorageState(error) === "migration_pending" ? "agent_identity_migration_pending" : "agent_identity_unavailable", correlationId: String(correlationId) }, { status: 503 });
     }
     try {
-    await recordAudit({
-      organizationId: idFactory.organization(ctx.organizationId), actorUserId: idFactory.user(ctx.userId), actorKind: "user",
-      action: "policy.update", outcome: "success", entityRef: "agent_identity:workspace", correlationId, source: "live",
-      detail: { enabled: identity.enabled, displayName: identity.displayName, allowedTools: identity.allowedTools.join(",") },
-    });
+      await recordAudit({
+        organizationId: idFactory.organization(ctx.organizationId), actorUserId: idFactory.user(ctx.userId), actorKind: "user",
+        action: "policy.update", outcome: "success", entityRef: "agent_identity:workspace", correlationId, source: "live",
+        detail: { enabled: identity.enabled, displayName: identity.displayName, allowedTools: identity.allowedTools.join(",") },
+      });
     } catch {
       // The identity may already be saved. Do not replay or claim an audited success.
       return NextResponse.json({ ok: false, error: "policy_audit_unconfirmed", correlationId: String(correlationId) }, { status: 503 });
@@ -157,11 +161,15 @@ export async function PATCH(request: NextRequest) {
       return NextResponse.json({ ok: false, error: "invalid_autonomy_policy" }, { status: 422 });
     }
     const autonomy = await upsertTenantCharter({ organizationId: ctx.organizationId, mode: mode as AutonomyMode, perCycleActionLimit: Number(perCycleActionLimit), rationale, updatedBy: ctx.userId });
-    await recordAudit({
-      organizationId: idFactory.organization(ctx.organizationId), actorUserId: idFactory.user(ctx.userId), actorKind: "user",
-      action: "autonomy.change", outcome: "success", entityRef: "autonomy_charter:workspace", correlationId, source: "live",
-      detail: { mode: autonomy.mode, perCycleActionLimit: autonomy.resolved.perCycleActionLimit, rationale },
-    });
+    try {
+      await recordAudit({
+        organizationId: idFactory.organization(ctx.organizationId), actorUserId: idFactory.user(ctx.userId), actorKind: "user",
+        action: "autonomy.change", outcome: "success", entityRef: "autonomy_charter:workspace", correlationId, source: "live",
+        detail: { mode: autonomy.mode, perCycleActionLimit: autonomy.resolved.perCycleActionLimit, rationale },
+      });
+    } catch {
+      return NextResponse.json({ ok: false, error: "policy_audit_unconfirmed", correlationId: String(correlationId) }, { status: 503 });
+    }
     return NextResponse.json({ ok: true, data: { autonomy: { mode: autonomy.mode, perCycleActionLimit: autonomy.resolved.perCycleActionLimit, rationale } } });
   }
 
@@ -175,6 +183,15 @@ export async function PATCH(request: NextRequest) {
     const existingBudget = await loadBudgetConfig(ctx.organizationId);
     const pipelineOverrides = existingBudget?.pipelineOverrides ?? [];
     await upsertBudgetConfig({ organizationId: ctx.organizationId, defaultMaxCostCents, pipelineOverrides, rationale, updatedBy: ctx.userId, correlationId: String(correlationId) });
+    try {
+      await recordAudit({
+        organizationId: idFactory.organization(ctx.organizationId), actorUserId: idFactory.user(ctx.userId), actorKind: "user",
+        action: "policy.update", outcome: "success", entityRef: "budget_config:workspace", correlationId, source: "live",
+        detail: { defaultMaxCostCents: defaultMaxCostCents ?? "unlimited", pipelineOverrideCount: pipelineOverrides.length, rationale },
+      });
+    } catch {
+      return NextResponse.json({ ok: false, error: "policy_audit_unconfirmed", correlationId: String(correlationId) }, { status: 503 });
+    }
     return NextResponse.json({ ok: true, data: { budget: { defaultMaxCostCents, pipelineOverrides } } });
   }
 

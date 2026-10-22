@@ -1,6 +1,6 @@
 import "server-only";
 import { prisma } from "@/lib/db";
-import { record as recordAudit } from "@/lib/audit/secureAudit";
+import { recordRequiredAudit as recordAudit } from "@/lib/audit/requiredAudit";
 import { id as idFactory } from "@/lib/domain/ids";
 import { findAgentSkill } from "./skillCatalog";
 interface InstallationRow { id: string; skillId: string; status: string; installedAt: Date; updatedAt: Date }
@@ -33,12 +33,16 @@ export async function updateWorkspaceSkill({organizationId,userId,skillId,action
       const result = await repo.agentSkillInstallation.deleteMany({ where: { organizationId: organizationId, skillId } });
       if (result.count !== 1) return { ok: false, error: "skill_not_installed", statusCode: 409 };
     }
+    try {
     await recordAudit({
       organizationId: idFactory.organization(organizationId), actorUserId: idFactory.user(userId), actorKind: "user",
       action: `skill.${action}` as "skill.install" | "skill.enable" | "skill.disable" | "skill.remove", outcome: "success",
       entityRef: `skill:${skillId}`, correlationId: idFactory.correlation(`skill_${action}_${Date.now().toString(36)}`), source: "live",
       detail: { skillId, status, authorityChanged: false },
     });
+    } catch {
+      return { ok: false, error: "skill_audit_unconfirmed", statusCode: 503 };
+    }
     return { ok: true, data: { skillId, status }, statusCode: 200 };
   } catch {
     return { ok: false, error: "skill_update_unavailable", statusCode: 503 };

@@ -131,7 +131,7 @@ export default async function TeamPage({
       )}
       {errorRaw && (
         <section role="alert" aria-live="assertive" className="mb-6 rounded-md border border-rose-500/30 bg-rose-500/[0.06] p-4">
-          <p className="text-[12.5px] text-rose-200 ">error: {errorRaw}</p>
+          <p className="text-[12.5px] text-rose-200 ">{errorRaw === "audit_unconfirmed" ? "The request may already have completed, but its audit record was not confirmed. Review current workspace state before retrying. Invitation links are shown only after audit confirmation." : `Error: ${errorRaw}`}</p>
         </section>
       )}
 
