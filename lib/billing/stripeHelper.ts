@@ -24,6 +24,7 @@
 import "server-only";
 
 import { createHmac, timingSafeEqual } from "node:crypto";
+import { matchesPublicStripePrice } from "./publicStripePrice";
 import {
   stripePriceEnvKey,
   type BillingInterval,
@@ -145,6 +146,7 @@ export async function createCheckoutSession(input: CreateCheckoutInput): Promise
   }
 
   type StripeCheckoutCtor = new (key: string, opts?: unknown) => {
+    prices: { retrieve: (id: string, options: { expand: string[] }) => Promise<unknown> };
     checkout: { sessions: { create: (params: unknown) => Promise<{ url?: string | null }> } };
   };
   let StripeCtor: StripeCheckoutCtor;
@@ -159,7 +161,11 @@ export async function createCheckoutSession(input: CreateCheckoutInput): Promise
   }
 
   try {
-    const stripe = new StripeCtor(process.env.STRIPE_SECRET_KEY!.trim(), { apiVersion: "2024-06-20" });
+    const stripe = new StripeCtor(process.env.STRIPE_SECRET_KEY!.trim(), { apiVersion: "2024-06-20", timeout: 10_000, maxNetworkRetries: 0 });
+    const price = await stripe.prices.retrieve(priceId, { expand: ["product"] });
+    if (!matchesPublicStripePrice(price, { planId: input.planId, interval: input.billingInterval, expectedPriceId: priceId, livemode: resolveStripeMode() === "live" }, true)) {
+      return { ok: false, reason: "The configured Stripe price is unavailable or does not match the published plan." };
+    }
     const session = await stripe.checkout.sessions.create({
       mode: "subscription",
       line_items: [{ price: priceId, quantity: input.seatCount }],

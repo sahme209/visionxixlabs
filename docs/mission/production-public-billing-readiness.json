@@ -63,5 +63,18 @@
     "liveManifestTag": "desktop-v0.1.20",
     "source": "https://github.com/sahme209/axiom-releases/releases/tag/desktop-v0.1.20",
     "explanation": "Website deployment does not publish a new signed desktop installer. Keep actual published version until validated release assets exist."
+  },
+  "localFollowup": {
+    "checkoutPriceVerification": "Retrieve exact configured Stripe price+expanded product; require published USD amount, interval, per-unit licensed seats, mode, active price and product before session creation. No sales flag enabled.",
+    "downloadHistory": "Latest desktop installer label plus up to 10 older public stable releases with installers, newest publication first, canonical release links; no unpublished version label.",
+    "tests": {
+      "checkoutAndPriceTestsPassed": 52,
+      "releaseManifestAndFirstRunTestsPassed": 23,
+      "typescript": "pass with standard project 6GiB heap; default 4GiB process exhausted heap",
+      "eslint": "pass",
+      "independentSourceReview": "pass; agent_readiness_review",
+      "nativeReleaseGuardSuite": "blocked before all 34 tests: synthetic gpg key generation exited 2; not waived or claimed passed"
+    },
+    "queuedAfterBilling": "Unify personal settings/profile/paired-device management into first screenshot Axiom Control shell; preserve auth, authorization, API routes and deep links."
   }
 }

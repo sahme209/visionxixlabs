@@ -31,6 +31,7 @@ interface ManifestAsset {
 }
 
 interface ReleaseManifest {
+  previousReleases?: Array<{ tag: string; htmlUrl: string; publishedAt: string }>;
   tag?: string;
   htmlUrl?: string;
   assets: Record<ManifestPlatform, ManifestAsset | null>;
@@ -110,7 +111,7 @@ export default function DownloadPage() {
     if (manifestError) return "Release status unavailable";
     if (!manifest) return "Checking the latest release…";
     if (manifest.runtimeReady !== true) return manifest.runtimeMessage ?? "Desktop sign-in is temporarily unavailable.";
-    return manifest.tag ? `Latest release · ${manifest.tag.replace("desktop-v", "v")}` : "Latest release";
+    return manifest.tag ? `Latest desktop installer · ${manifest.tag.replace("desktop-v", "v")}` : "Latest desktop installer";
   }, [manifest, manifestError]);
 
   return (
@@ -177,6 +178,23 @@ export default function DownloadPage() {
             />
           </div>
         </section>
+
+        {manifest?.previousReleases?.length ? (
+          <section aria-labelledby="previous-releases" className="mx-auto max-w-[1280px] px-5 pb-12 sm:px-8 lg:px-10">
+            <h2 id="previous-releases" className="text-xl font-medium text-zinc-100">Previous desktop releases</h2>
+            <p className="mt-2 text-sm leading-6 text-zinc-400">The newest published installer appears above. Older releases remain available with their original checksums and signing details; local development builds are not published downloads.</p>
+            <ul className="mt-5 divide-y divide-white/[0.08] border-y border-white/[0.08]">
+              {manifest.previousReleases.map(release => (
+                <li key={release.tag}>
+                  <a href={release.htmlUrl} target="_blank" rel="noreferrer" className="flex min-h-12 items-center justify-between gap-4 py-3 text-sm text-zinc-200 hover:text-white">
+                    <span>{release.tag.replace("desktop-v", "v")}</span>
+                    <span className="inline-flex items-center gap-2 text-zinc-400">Release and downloads <ArrowRightIcon aria-hidden="true" className="h-4 w-4" /></span>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </section>
+        ) : null}
 
         <section className="border-y border-white/[0.07] bg-[#131313]">
           <div className="mx-auto grid max-w-[1280px] gap-8 px-5 py-12 sm:px-8 md:grid-cols-[1fr_auto] md:items-center lg:px-10">
