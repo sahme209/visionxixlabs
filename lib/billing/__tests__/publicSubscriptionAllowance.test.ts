@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { PUBLIC_PLAN_CATALOG } from "../publicPlanCatalog";
 import { publicFreeAllowanceCandidate, publicPaidAllowanceCandidate, type PublicPaidAllowanceBasis, type PublicCollectedCoverage } from "../publicSubscriptionAllowance";
 
 const basis = (): PublicPaidAllowanceBasis => ({ policy: "axiom_public_anniversary_v1", enrollmentId: "enrollment-new-public", organizationId: "org-new-public", accountId: "acct_live_public", contractId: "contract-public", subscriptionId: "sub_public", planId: "pro", interval: "monthly", paidSeats: 3, priceId: "price_public", unitAmountCents: 2900, anchor: "2026-01-31T12:34:56.000Z", originalCreateProofDigest: "a".repeat(64), firstCollectionDigest: "b".repeat(64) });
@@ -56,6 +57,18 @@ describe("production public allowance arithmetic candidates (no storage or payme
   });
   it.each([{ unitAmountCents: 2901 }, { paidSeats: 0 }, { paidSeats: Number.MAX_SAFE_INTEGER }, { anchor: "invalid" }, { anchor: "2026-01-31T12:34:56.001Z" }, { originalCreateProofDigest: "bad" }])("rejects malformed basis %#", change => {
     expect(publicPaidAllowanceCandidate({ ...basis(), ...change }, coverage(), at())).toEqual({ kind: "unavailable" });
+  });
+  it.each(["monthlyAiCreditCents", "monthlyDeployments", "monthlyPricePerUserCents", "annualPricePerUserCents"] as const)("refuses paid v1 catalog drift in %s instead of changing an existing bucket", key => {
+    const pro = PUBLIC_PLAN_CATALOG.find(p => p.id === "pro")!;
+    const before = publicPaidAllowanceCandidate(basis(), coverage(), at());
+    expect(before.kind).toBe("public_allowance_candidate");
+    const current = pro[key];
+    const restored = { ...pro };
+    Object.assign(pro, { [key]: (current ?? 0) + 1000 });
+    try {
+      expect(publicPaidAllowanceCandidate(basis(), coverage(), at())).toEqual({ kind: "unavailable" });
+    } finally { Object.assign(pro, restored); }
+    expect(publicPaidAllowanceCandidate(basis(), coverage(), at())).toEqual(before);
   });
   it("keeps Free and paid buckets distinct and does not accept a TEST policy", () => {
     const free = publicFreeAllowanceCandidate({ policy: "axiom_public_anniversary_v1", enrollmentId: basis().enrollmentId, organizationId: basis().organizationId }, at());
