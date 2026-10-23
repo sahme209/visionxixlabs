@@ -68,6 +68,11 @@ export function verifyDesktopToken(token: string): TokenComponents {
   }
   const sessionId = body.slice(0, dot);
   const signature = body.slice(dot + 1);
+  // Buffer's hexadecimal decoder ignores trailing non-hex characters and an
+  // unmatched nibble. Reject those forms before comparing signature bytes.
+  if (signature.length !== 64 || !/^[a-f0-9]{64}$/i.test(signature)) {
+    throw AxiomErrors.validation("desktop.token.bad_signature", "Desktop token signature is malformed.");
+  }
   const expected = sign(sessionId, resolveSigningKey());
   const a = Buffer.from(signature, "hex");
   const b = Buffer.from(expected, "hex");

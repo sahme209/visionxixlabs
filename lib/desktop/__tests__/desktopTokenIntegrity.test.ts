@@ -46,4 +46,16 @@ describe("desktop token mint/verify integrity", () => {
     const { verifyDesktopToken: verifyWithNewKey } = await import("../../desktop/desktopToken");
     expect(() => verifyWithNewKey(token)).toThrow(/signature/i);
   });
+  it.each(["x", ":ignored", "0", " ", "\n", "\r", "\r\n"])("rejects a signature with a discarded decoder suffix %j", async suffix => {
+    const { mintDesktopToken, verifyDesktopToken } = await import("../../desktop/desktopToken");
+    const token = mintDesktopToken("dsk_suffix_fixture");
+    expect(() => verifyDesktopToken(token + suffix)).toThrow(/signature/i);
+  });
+
+  it("preserves compatible exact-length uppercase hexadecimal signatures", async () => {
+    const { mintDesktopToken, verifyDesktopToken } = await import("../../desktop/desktopToken");
+    const token = mintDesktopToken("dsk_hex_fixture"), separator = token.lastIndexOf(".");
+    expect(verifyDesktopToken(token.slice(0, separator + 1) + token.slice(separator + 1).toUpperCase()).sessionId).toBe("dsk_hex_fixture");
+  });
+
 });

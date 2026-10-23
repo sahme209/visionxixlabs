@@ -84,6 +84,11 @@ try:
     http_results = json.loads((output / 'http-route-results.json').read_text())
     if http_route.returncode or http_results['numPassedTests'] != 9 or http_results['numFailedTests'] or http_results['numPendingTests']:
         raise RuntimeError('desktop_agent_http_route_tests_failed_see_private_log')
+    session_authority = subprocess.run([node, 'node_modules/vitest/vitest.mjs', 'run', 'lib/desktop/__tests__/desktopSessionAuthority.postgres.test.ts', '--reporter=json', '--outputFile=' + str(output / 'session-authority-results.json')], cwd=repo, env=test_env, capture_output=True, text=True, timeout=120)
+    (output / 'session-authority-tests.log').write_text(session_authority.stdout + '\n' + session_authority.stderr)
+    session_results = json.loads((output / 'session-authority-results.json').read_text())
+    if session_authority.returncode or session_results['numPassedTests'] != 10 or session_results['numFailedTests'] or session_results['numPendingTests']:
+        raise RuntimeError('desktop_session_authority_tests_failed_see_private_log')
     coding = subprocess.run([node, 'node_modules/vitest/vitest.mjs', 'run', 'lib/workforce/pipelines/__tests__/codeProposeAdmission.postgres.test.ts', '--reporter=json', '--outputFile=' + str(output / 'coding-results.json')], cwd=repo, env=test_env, capture_output=True, text=True, timeout=120)
     (output / 'coding-tests.log').write_text(coding.stdout + '\n' + coding.stderr)
     coding_results = json.loads((output / 'coding-results.json').read_text())
@@ -95,7 +100,7 @@ try:
     if guards.returncode or guard_results['numPassedTests'] != 10 or guard_results['numFailedTests'] or guard_results['numPendingTests']:
         raise RuntimeError('approval_database_guard_tests_failed_see_private_log')
     report = {'testsPassed': results['numPassedTests'], 'testsFailed': results['numFailedTests'], 'verifiedAtUtc': datetime.datetime.now(datetime.timezone.utc).isoformat(), 'actualPrismaPostgres': True,
-              'actualDecisionAdmissionManagerSdkChain': True, 'actualApprovalVoteTransactions': True, 'actualCodingProposalAdmissionChain': True, 'desktopHttpRouteTestsPassed': http_results['numPassedTests'], 'desktopAuthentication': 'synthetic test boundary only', 'codingAdmissionTestsPassed': coding_results['numPassedTests'], 'approvalDatabaseGuardTestsPassed': guard_results['numPassedTests'], 'providerTransport': 'fixed synthetic .invalid transport',
+              'actualDecisionAdmissionManagerSdkChain': True, 'actualApprovalVoteTransactions': True, 'actualCodingProposalAdmissionChain': True, 'desktopHttpRouteTestsPassed': http_results['numPassedTests'], 'desktopAuthentication': 'HTTP inference cases use a synthetic boundary; separate real HMAC/session/membership/billing cases use an isolated signing key', 'desktopSessionAuthorityTestsPassed': session_results['numPassedTests'], 'codingAdmissionTestsPassed': coding_results['numPassedTests'], 'approvalDatabaseGuardTestsPassed': guard_results['numPassedTests'], 'providerTransport': 'fixed synthetic .invalid transport',
               'providerInference': False, 'realCustomerAuthentication': False, 'productionWrites': False,
               'privateProductionBackupUsed': False, 'syntheticGenerationCostReceipts': True}
 finally:
