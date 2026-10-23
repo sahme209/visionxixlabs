@@ -1,11 +1,13 @@
 import { publicBillingPolicyEnabled, configuredPublicBillingIdentity } from "./publicBillingConfig";
-import { reservePublicCredits, claimPublicCreditDispatch, publicDatabaseNow } from "./publicCreditAuthority";
+import { publicBillingWindow, reservePublicCredits, claimPublicCreditDispatch, publicDatabaseNow } from "./publicCreditAuthority";
 import { readPublicEnrollment } from "./publicBillingStore";
 import { newTestAllocationGuard, reserveAllocationV2 } from "./newTestSubscription/allocationPlan";
 import { fenceNewTestAdmission, newTestPlanGuard } from "./newTestSubscription/paidPlan";
 import { isolatedRuntimeRequested } from "./isolatedApplication/runtime";
 import { resolveIsolatedApplicationPlan } from "./isolatedApplication/plan";
 import "server-only";
+import { requestReservationCents } from "./requestReservationCents";
+import { smallSonnetReservation, type SmallSonnetRequest } from "./smallSonnetRequest";
 import type { Prisma, TenantBillingPlan } from "@prisma/client";
 
 import { applyAddOnsToEntitlements } from "./applyAddOnsToEntitlements";
@@ -27,7 +29,7 @@ type ReservationRow = {
 };
 
 export type AICreditReservationResult =
-  | { ok: true; reservation: ReservationRow; reused: boolean; allocationPolicy?: "axiom_test_anniversary_v2" | "axiom_public_anniversary_v1" }
+  | { ok: true; reservation: ReservationRow; reused: boolean; smallRequestApplied?: true; allocationPolicy?: "axiom_test_anniversary_v2" | "axiom_public_anniversary_v1" }
   | { ok: false; error: "ai_credit_pool_exhausted" | "ai_credit_reservation_unavailable" | "idempotency_key_conflict" };
 
 /**
@@ -38,18 +40,33 @@ export type AICreditReservationResult =
  */
 export async function reserveAICredits(
   repo: ReservationRepository,
-  input: { organizationId: string; idempotencyKey: string; reservedCents: number; correlationId?: string },
+  request: { organizationId: string; idempotencyKey: string; reservedCents: number; correlationId?: string; smallAgentRequest?: SmallSonnetRequest },
   now = new Date(),
   /** Internal isolated-test composition only; never supplied by a request body.
    * Resolver must verify durable provenance using this same transaction. Existing
    * production callers omit it and retain their exact legacy path. */
   isolatedVerifiedPlan?: (transaction: Prisma.TransactionClient, organizationId: string, billing: TenantBillingPlan | null) => Promise<PricingPlan>,
 ): Promise<AICreditReservationResult> {
-  if (!input.organizationId || !/^[A-Za-z0-9_-]{16,200}$/.test(input.idempotencyKey) || !Number.isSafeInteger(input.reservedCents) || input.reservedCents < 1) {
+  if (!request.organizationId || !/^[A-Za-z0-9_-]{16,200}$/.test(request.idempotencyKey) || !Number.isSafeInteger(request.reservedCents) || request.reservedCents < 1) {
     return { ok: false, error: "ai_credit_reservation_unavailable" };
   }
   try {
     return await repo.$transaction(async (tx: Prisma.TransactionClient) => {
+      const { smallAgentRequest, ...ordinaryInput } = request;
+      let input = ordinaryInput;
+      if (smallAgentRequest) {
+        if (isolatedRuntimeRequested() || isolatedVerifiedPlan || !publicBillingPolicyEnabled() || smallSonnetReservation(smallAgentRequest, input) !== input.reservedCents) throw Error("small_agent_reservation_unavailable");
+        const identity = configuredPublicBillingIdentity(), decisionNow = await publicDatabaseNow(tx);
+        const state = await publicBillingWindow(tx, input.organizationId, identity, decisionNow);
+        // Only authoritative enrolled Free accounts use the smaller hold. A
+        // paid/legacy account keeps its existing amount and provider behavior.
+        if (state?.available && state.contract === null) {
+          const reserved = await reservePublicCredits(tx, input, identity, decisionNow);
+          if (!reserved) throw Error("small_agent_public_reservation_required");
+          return reserved.ok ? { ...reserved, smallRequestApplied: true as const } : reserved;
+        }
+        input = { ...ordinaryInput, reservedCents: requestReservationCents() };
+      }
       // A reused hold is not proof that an isolated contract remains valid.
       const isolatedPlan = isolatedRuntimeRequested() ? await resolveIsolatedApplicationPlan(tx, input.organizationId, "admission") : isolatedVerifiedPlan ? await isolatedVerifiedPlan(tx, input.organizationId, await tx.tenantBillingPlan.findUnique({ where: { organizationId: input.organizationId } })) : undefined;
       if (!isolatedPlan && publicBillingPolicyEnabled()) {

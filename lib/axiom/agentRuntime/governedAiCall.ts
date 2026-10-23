@@ -17,6 +17,7 @@ import { admitGovernedExtract } from "@/lib/billing/governedExtractAdmission";
 import { AI_REQUEST_MAX_OUTPUT_TOKENS } from "@/lib/billing/requestReservationCents";
 import { isConcreteGatewayModelId, loadGatewayModelCatalog } from "@/lib/ai/gatewayModelCatalog";
 import { GovernedAiCallRefusal } from "./governedAiCallRefusal";
+import { SMALL_SONNET_MODEL } from "@/lib/billing/smallSonnetRequest";
 import { AICreditAdmissionRefusal } from "@/lib/billing/aiCreditAdmissionRefusal";
 import { AgentStreamInterrupted } from "@/lib/ai/streamedDecisionMessage";
 
@@ -92,7 +93,12 @@ export async function resolveGovernedAiCall(organizationId: string, preferredPro
       const current = await currentDispatch(organizationId, preferredProvider, preferredModel);
       if (!current.ok) throw new GovernedAiCallRefusal(current.error);
       streaming?.abortSignal.throwIfAborted();
-      const admission = await admitGovernedExtract({ organizationId, userId, correlationId }).catch((error: unknown) => {
+      const scope = { organizationId, userId, correlationId };
+      const model = preferredModel ?? current.policy.modelSelections.vercel_gateway;
+      const admission = await (model === SMALL_SONNET_MODEL
+        ? admitGovernedExtract(scope, { model, text, schemaHint }, streaming?.abortSignal)
+        : admitGovernedExtract(scope)).catch((error: unknown) => {
+        if (error instanceof Error && error.name === "AbortError") throw error;
         if (error instanceof AICreditAdmissionRefusal) throw new GovernedAiCallRefusal("workspace_ai_credit_pool_exhausted");
         throw new AgentStreamInterrupted();
       });

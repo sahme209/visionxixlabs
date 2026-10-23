@@ -254,11 +254,12 @@ export class AIProviderManager {
   ): Promise<AIStructuredResponse<T>> {
     let response: AITextResponse;
     try {
-      const authority = consumeGovernedExtractAdmission(admission, options);
       const gateway = this.admittedGateway(options);
+      const gatewayOptions = this.optionsForProvider(gateway, options);
+      const authority = consumeGovernedExtractAdmission(admission, { ...options, model: gatewayOptions?.model ?? gateway.defaultModel }, { text, schemaHint });
       const out = await runWithFallback<AITextResponse>(
         [gateway],
-        () => gateway.generateStructuredTextOnce(redact(text), schemaHint, this.optionsForProvider(gateway, options)),
+        () => gateway.generateStructuredTextOnce(redact(text), schemaHint, { ...gatewayOptions, ...(authority.smallAgentDispatch ? { smallAgentDispatch: authority.smallAgentDispatch } : {}) }),
         { task: "extract_structured_data", correlationId: options.correlationId, organizationId: options.organizationId },
       );
       await authority.record(out.result);
@@ -283,20 +284,21 @@ export class AIProviderManager {
   ): Promise<AIStructuredResponse<T>> {
     let raw = "", draft = "", response: AITextResponse | undefined;
     try {
-      const authority = consumeGovernedExtractAdmission(admission, options);
       const gateway = this.admittedGateway(options);
       onDraft("");
       const gatewayOptions = this.optionsForProvider(gateway, options);
       const selectedModel = gatewayOptions?.model;
       const model = selectedModel && selectedModel !== "service-default" ? selectedModel : gateway.defaultModel;
+      const authority = consumeGovernedExtractAdmission(admission, { ...options, model }, { text, schemaHint });
       // Formatting compatibility only: never grants dispatch authority or relaxes parsing.
       // Exact, bounded server-side opt-in preserves unverified model routes by default.
       const jsonModels = process.env.AXIOM_GATEWAY_STRUCTURED_JSON_MODELS ?? "";
       const jsonMode = jsonModels.length <= 4096 && jsonModels.split(",").some(id => id.trim() === model);
       for await (const chunk of gateway.streamTextOnce(redact(text), {
         ...gatewayOptions, abortSignal: options.abortSignal,
+        ...(authority.smallAgentDispatch ? { smallAgentDispatch: authority.smallAgentDispatch } : {}),
         system: `Return valid JSON only. The required shape is: ${schemaHint}`,
-      }, jsonMode ? "json" : undefined)) {
+      }, jsonMode && !authority.smallAgentDispatch ? "json" : undefined)) {
         if (chunk.done) {
           await authority.record(chunk.response);
           response = { ...chunk.response, text: raw };

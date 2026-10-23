@@ -2,6 +2,7 @@ import { denyIsolatedExternalIO } from "@/lib/billing/isolatedApplication/runtim
 import "server-only";
 
 import { generateText, streamText, Output, type TextStreamPart, type ToolSet } from "ai";
+import { consumeSmallSonnetDispatch } from "@/lib/billing/smallSonnetRequest";
 import { AI_REQUEST_MAX_OUTPUT_TOKENS } from "@/lib/billing/requestReservationCents";
 import { redact } from "@/lib/security/redaction";
 import {
@@ -90,6 +91,9 @@ export class VercelGatewayProvider implements AIProvider {
       ? `correlation:${options.correlationId}`.slice(0, 64)
       : "request:unattributed";
     try {
+      const bounded = options?.smallAgentDispatch
+        ? consumeSmallSonnetDispatch(options.smallAgentDispatch, { ...options, model, prompt: redact(prompt), system: options.system === undefined ? undefined : redact(options.system) })
+        : undefined;
       const result = await generateText({
         model,
         // Scrub after composing schema/label instructions, including callers
@@ -98,12 +102,14 @@ export class VercelGatewayProvider implements AIProvider {
         system: options?.system === undefined ? undefined : redact(options.system),
         temperature: options?.temperature,
         maxOutputTokens: options?.maxTokens,
-        ...(maxRetries === 0 ? { maxRetries: 0 } : {}),
+        ...(maxRetries === 0 || bounded ? { maxRetries: 0 } : {}),
         abortSignal: options?.timeoutMs ? AbortSignal.timeout(options.timeoutMs) : undefined,
         providerOptions: {
+          ...(bounded ? { anthropic: bounded.anthropic } : {}),
           gateway: {
             user: options?.organizationId,
             tags: ["product:axiom-agent", correlationTag],
+            ...(bounded?.gateway ?? {}),
           },
         },
       });
@@ -182,8 +188,11 @@ export class VercelGatewayProvider implements AIProvider {
     let upstream: AsyncIterator<TextStreamPart<ToolSet>> | undefined;
     try {
       signal.throwIfAborted();
+      const bounded = options?.smallAgentDispatch
+        ? consumeSmallSonnetDispatch(options.smallAgentDispatch, { ...options, model, prompt: redact(prompt), system: options.system === undefined ? undefined : redact(options.system) })
+        : undefined;
       const result = streamText({
-        ...(format === "json" ? {output: Output.json()} : {}),
+        ...(format === "json" && !bounded ? {output: Output.json()} : {}),
         // fullStream below returns a fixed safe error. The SDK default handler
         // logs raw upstream payloads, which may contain prompts or account data.
         onError: () => {},
@@ -194,7 +203,8 @@ export class VercelGatewayProvider implements AIProvider {
         maxOutputTokens: maxTokens,
         maxRetries: 0,
         abortSignal: signal,
-        providerOptions: { gateway: {
+        providerOptions: { ...(bounded ? { anthropic: bounded.anthropic } : {}), gateway: {
+          ...(bounded?.gateway ?? {}),
           user: options?.organizationId,
           tags: ["product:axiom-agent", options?.correlationId ? `correlation:${options.correlationId}`.slice(0, 64) : "request:unattributed"],
         } },

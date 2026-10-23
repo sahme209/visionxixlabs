@@ -8,6 +8,7 @@ import { denyIsolatedExternalIO } from "./isolatedApplication/runtime";
 import { claimNewTestBillableDispatch } from "./newTestSubscription/usageAllocationIO";
 import { recordAIUsageEvent, recordReservedAIUsageEventV2, type RecordAIUsageInput } from "./recordAIUsageEvent";
 import { AICreditAdmissionRefusal } from "./aiCreditAdmissionRefusal";
+import { prepareSmallSonnetRequest, smallSonnetReservation, smallSonnetReservationEvidence, authorizeSmallSonnetDispatch, type SmallSonnetRequest } from "./smallSonnetRequest";
 import { requestReservationCents } from "./requestReservationCents";
 
 type Scope = Readonly<{ organizationId: string; userId: string; correlationId: string }>;
@@ -17,15 +18,18 @@ export type GovernedExtractAdmission = { readonly [admissionBrand]: true };
 export type GovernedAIAdmission = GovernedExtractAdmission;
 type Task = "generate_text" | "extract_structured_data";
 type AdmissionResult = { ok: true; admission: GovernedAIAdmission } | { ok: false; error: Extract<AICreditReservationResult, { ok: false }>["error"] | "request_already_reserved" };
-const admissions = new WeakMap<object, Readonly<{ scope: Scope; reservationId: string; v2: boolean; task: Task }>>();
+const admissions = new WeakMap<object, Readonly<{ scope: Scope; reservationId: string; v2: boolean; task: Task; small?: SmallSonnetRequest }>>();
 function deny(): never { throw new Error("governed_extract_admission_unavailable"); }
 
 export function governedExtractReservationKey(scope: Scope): string {
   return "agent_extract_" + createHash("sha256").update(JSON.stringify(["axiom-governed-extract-v1", scope.organizationId, scope.userId, scope.correlationId])).digest("hex");
 }
 
-export async function admitGovernedExtract(input: Scope): Promise<GovernedExtractAdmission> {
-  const result = await reserveAndClaim(input, governedExtractReservationKey(input), "extract_structured_data");
+export async function admitGovernedExtract(input: Scope, request?: { model: string; text: string; schemaHint: string }, abortSignal?: AbortSignal): Promise<GovernedExtractAdmission> {
+  abortSignal?.throwIfAborted();
+  const small = request ? await prepareSmallSonnetRequest(input, request, abortSignal) : undefined;
+  abortSignal?.throwIfAborted();
+  const result = await reserveAndClaim(input, governedExtractReservationKey(input), "extract_structured_data", small, abortSignal);
   if (!result.ok) {
     if (result.error === "ai_credit_pool_exhausted") throw new AICreditAdmissionRefusal();
     deny();
@@ -39,15 +43,16 @@ export function admitAIText(input: Scope & { idempotencyKey: string }): Promise<
   return reserveAndClaim(input, input.idempotencyKey, "generate_text");
 }
 
-async function reserveAndClaim(input: Scope, idempotencyKey: string, task: Task): Promise<AdmissionResult> {
+async function reserveAndClaim(input: Scope, idempotencyKey: string, task: Task, small?: SmallSonnetRequest, abortSignal?: AbortSignal): Promise<AdmissionResult> {
   const scope = Object.freeze({ organizationId: input.organizationId, userId: input.userId, correlationId: input.correlationId });
   if (![scope.organizationId, scope.userId, scope.correlationId].every(v => typeof v === "string" && v.length > 0 && v.length <= 1024)) deny();
-  const reserved = await reserveAICredits(prisma, { organizationId: scope.organizationId, idempotencyKey, reservedCents: requestReservationCents(), correlationId: scope.correlationId });
+  const reserved = await reserveAICredits(prisma, { organizationId: scope.organizationId, idempotencyKey, reservedCents: small ? smallSonnetReservation(small, scope) : requestReservationCents(), correlationId: scope.correlationId, ...(small ? { smallAgentRequest: small } : {}) });
   if (!reserved.ok) return reserved;
   if (reserved.reused) return { ok: false, error: "request_already_reserved" };
   try {
     // This denial is before any durable dispatch claim or possible SDK byte.
     // It is the sole safe release path, preserving the isolated app contract.
+    abortSignal?.throwIfAborted();
     denyIsolatedExternalIO();
   } catch (error) {
     await releaseAICreditReservation(prisma, scope.organizationId, reserved.reservation.id);
@@ -59,28 +64,33 @@ async function reserveAndClaim(input: Scope, idempotencyKey: string, task: Task)
     : claimLegacyAICreditDispatch(tx, scope, reserved.reservation.id), { isolationLevel: "Serializable" });
   if (!claimed) deny();
   const capability = Object.freeze({}) as GovernedExtractAdmission;
-  admissions.set(capability, Object.freeze({ scope, reservationId: reserved.reservation.id, v2, task }));
+  admissions.set(capability, Object.freeze({ scope, reservationId: reserved.reservation.id, v2, task, ...(small && reserved.smallRequestApplied ? { small } : {}) }));
   return { ok: true, admission: capability };
 }
 
 type ExtractUsage = Pick<AIStructuredResponse<unknown>, "provider" | "model" | "usage" | "gatewayGenerationId">;
 /** Manager consumes before the first SDK call. Scope mismatch burns authority;
  * a copied/forged/reused handle can never disable its ordinary eager writer. */
-export function consumeGovernedExtractAdmission(capability: GovernedExtractAdmission, binding: { organizationId?: string; correlationId?: string }) {
-  return consumeAdmission(capability, binding, "extract_structured_data");
+export function consumeGovernedExtractAdmission(capability: GovernedExtractAdmission, binding: { organizationId?: string; correlationId?: string; model?: string; maxTokens?: number }, payload?: { text: string; schemaHint: string }) {
+  return consumeAdmission(capability, binding, "extract_structured_data", payload);
 }
 
 export function consumeGovernedTextAdmission(capability: GovernedAIAdmission, binding: { organizationId?: string; correlationId?: string }) {
   return consumeAdmission(capability, binding, "generate_text");
 }
 
-function consumeAdmission(capability: GovernedAIAdmission, binding: { organizationId?: string; correlationId?: string }, task: Task) {
+function consumeAdmission(capability: GovernedAIAdmission, binding: { organizationId?: string; correlationId?: string; model?: string; maxTokens?: number }, task: Task, payload?: { text: string; schemaHint: string }) {
   const admission = admissions.get(capability);
   admissions.delete(capability);
   if (!admission || admission.task !== task || binding.organizationId !== admission.scope.organizationId || binding.correlationId !== admission.scope.correlationId) deny();
   const { scope, reservationId, v2 } = admission;
+  const reservationEvidence = admission.small ? smallSonnetReservationEvidence(admission.small, scope) : undefined;
+  const smallAgentDispatch = admission.small
+    ? authorizeSmallSonnetDispatch(admission.small, { ...scope, model: binding.model, maxTokens: binding.maxTokens, ...(payload ?? deny()) })
+    : undefined;
   let recorded = false;
   return Object.freeze({
+    ...(smallAgentDispatch ? { smallAgentDispatch } : {}),
     async record(result: ExtractUsage): Promise<void> {
       if (recorded) deny();
       recorded = true;
@@ -91,7 +101,7 @@ function consumeAdmission(capability: GovernedAIAdmission, binding: { organizati
       const input: RecordAIUsageInput = {
         organizationId: scope.organizationId, triggeredBy: scope.userId, correlationId: scope.correlationId,
         provider: result.provider, model: result.model, externalUsageId: result.gatewayGenerationId,
-        inputTokens: usage.promptTokens!, outputTokens: usage.completionTokens!, metadata: task === "generate_text" ? { route: "api/ai/generate" } : { task: "extract_structured_data" },
+        inputTokens: usage.promptTokens!, outputTokens: usage.completionTokens!, metadata: { ...(task === "generate_text" ? { route: "api/ai/generate" } : { task: "extract_structured_data" }), ...(reservationEvidence ? { reservationPolicy: reservationEvidence } : {}) },
       };
       if (v2) {
         const saved = await recordReservedAIUsageEventV2(input, reservationId);

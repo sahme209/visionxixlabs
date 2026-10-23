@@ -1,3 +1,5 @@
+import { prepareSmallSonnetRequest } from "../smallSonnetRequest";
+import { smallSonnetPricingFixture } from "./fixtures/smallSonnetPricing";
 import { beforeEach, afterEach, describe, expect, it, vi } from "vitest";
 import { readFileSync } from "node:fs";
 import { pathToFileURL } from "node:url";
@@ -31,7 +33,7 @@ describe.skipIf(!modulePath)("public billing real isolated PostgreSQL storage", 
     db = new databaseModule.PGlite() as Pg;
     await db.exec(baseline); await db.exec(sql);
   });
-  afterEach(async () => { await db?.close(); vi.unstubAllEnvs(); });
+  afterEach(async () => { await db?.close(); vi.unstubAllEnvs(); vi.unstubAllGlobals(); });
   function fixture() {
     const store = createPublicSqlStore({ $transaction: fn => db.transaction(tx => fn(adapter(tx))) });
     let calls = 0, sequence = 0;
@@ -170,6 +172,43 @@ describe.skipIf(!modulePath)("public billing real isolated PostgreSQL storage", 
     await db.exec("ROLLBACK");
     expect((await db.query('SELECT * FROM "OrgMembership"')).rows).toHaveLength(2);
   });
+  it("atomically reserves two complete small Free holds and refuses the third without clipping", async () => {
+    vi.stubEnv("AXIOM_AI_MAX_REQUEST_CREDITS_CENTS", "");
+    vi.stubGlobal("fetch", vi.fn(async () => new Response(JSON.stringify(smallSonnetPricingFixture()))));
+    await db.transaction(tx => enrollNewPublicWorkspace(adapter(tx), "org", { accountId: "acct_fixture", livemode: false }));
+    const repo = { $transaction: vi.fn(<T>(fn: (tx: PublicSql) => Promise<T>) => db.transaction(tx => fn(adapter(tx)))) };
+    const results = [];
+    for (let step = 0; step < 3; step++) {
+      const scope = { organizationId: "org", userId: "owner", correlationId: `request:${step}` };
+      const smallAgentRequest = await prepareSmallSonnetRequest(scope, { model: "anthropic/claude-sonnet-5", text: "List environments", schemaHint: "{}" });
+      expect(smallAgentRequest).toBeDefined();
+      results.push(await reserveAICredits(repo as never, { ...scope, smallAgentRequest, idempotencyKey: `small_request_key_${step}`, reservedCents: 100 }));
+    }
+    expect(results).toMatchObject([{ ok: true, smallRequestApplied: true }, { ok: true, smallRequestApplied: true }, { ok: false, error: "ai_credit_pool_exhausted" }]);
+    expect((await db.query('SELECT "reservedCents" FROM "AIUsageReservation"')).rows).toEqual([{ reservedCents: 100 }, { reservedCents: 100 }]);
+    expect(repo.$transaction).toHaveBeenCalledWith(expect.any(Function), { isolationLevel: "Serializable" });
+  });
+  it.each(["unenrolled", "paid", "forged"])("does not use the smaller policy for %s authority", async kind => {
+    vi.stubEnv("AXIOM_AI_MAX_REQUEST_CREDITS_CENTS", "");
+    vi.stubGlobal("fetch", vi.fn(async () => new Response(JSON.stringify(smallSonnetPricingFixture()))));
+    if (kind === "paid") {
+      const f = fixture(); await f.service.checkout({ organizationId: "org", userId: "owner" }, input);
+      await f.service.reconcile("id_1", { id: "evt_paid", type: "invoice.paid", objectId: "in_fixture" });
+    }
+    const scope = { organizationId: "org", userId: "owner", correlationId: "request" };
+    const smallAgentRequest = kind === "forged" ? {} as never : await prepareSmallSonnetRequest(scope, { model: "anthropic/claude-sonnet-5", text: "List environments", schemaHint: "{}" });
+    const repo = { $transaction: <T>(fn: (tx: PublicSql) => Promise<T>) => db.transaction(tx => fn(adapter(tx))) };
+    const result = await reserveAICredits(repo as never, { ...scope, smallAgentRequest, idempotencyKey: "small_denied_key_123", reservedCents: 100 });
+    if (kind === "paid") {
+      expect(result).toMatchObject({ ok: true, reservation: { reservedCents: 1000 } });
+      expect(result).not.toHaveProperty("smallRequestApplied");
+      expect((await db.query('SELECT "reservedCents" FROM "AIUsageReservation"')).rows).toEqual([{ reservedCents: 1000 }]);
+    } else {
+      expect(result).toEqual({ ok: false, error: "ai_credit_reservation_unavailable" });
+      expect((await db.query('SELECT id FROM "AIUsageReservation"')).rows).toHaveLength(0);
+    }
+  });
+
 });
 
 // Connected collection/credit tests use the same production service and SQL,

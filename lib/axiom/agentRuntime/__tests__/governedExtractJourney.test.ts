@@ -1,3 +1,4 @@
+import { smallSonnetPricingFixture } from "@/lib/billing/__tests__/fixtures/smallSonnetPricing";
 import {beforeEach,expect,it,vi} from 'vitest';
 const m=vi.hoisted(()=>({reserve:vi.fn(),claim:vi.fn(),write:vi.fn(),transaction:vi.fn(),extract:vi.fn(),policy:vi.fn(),catalog:vi.fn(),identity:vi.fn(),credit:vi.fn(),stream:vi.fn()}));
 vi.mock('@/lib/db',()=>({prisma:{$transaction:m.transaction}}));
@@ -66,4 +67,29 @@ it.each([false, true])('reports a credit admission refusal without inference, cl
  await expect(promise).resolves.toMatchObject({kind:'error',error:'workspace_ai_credit_pool_exhausted'});
  expect(m.reserve).toHaveBeenCalledOnce(); expect(m.claim).not.toHaveBeenCalled();
  expect(m.extract).not.toHaveBeenCalled(); expect(m.stream).not.toHaveBeenCalled(); expect(tool).not.toHaveBeenCalled();
+});
+
+it.each([false, true])('completes the actual two-step small Sonnet decision flow within200 synthetic cents (streaming=%s)', async streaming => {
+ vi.stubEnv('AXIOM_PUBLIC_BILLING_POLICY','axiom_public_anniversary_v1'); vi.stubEnv('AXIOM_AI_MAX_REQUEST_CREDITS_CENTS','');
+ vi.stubGlobal('fetch',vi.fn(async()=>new Response(JSON.stringify(smallSonnetPricingFixture()))));
+ const model='anthropic/claude-sonnet-5';
+ m.catalog.mockResolvedValue([{id:model}]);
+ m.policy.mockResolvedValue({storageState:'ready',policy:{enabled:true,allowedProviders:['vercel_gateway'],modelSelections:{vercel_gateway:model},fallbackOrder:['vercel_gateway']}});
+ let held=0;
+ m.reserve.mockImplementation(async(_repo,input)=>{
+  if(held+input.reservedCents>200)return {ok:false,error:'ai_credit_pool_exhausted'};
+  held+=input.reservedCents;
+  return {ok:true,reused:false,smallRequestApplied:true,reservation:{id:'hold-'+input.correlationId},allocationPolicy:'axiom_public_anniversary_v1'};
+ });
+ m.extract.mockResolvedValueOnce({...envelope(JSON.stringify({action:'call_tool',message:'Checking environments',toolName:'list_environments',args:{}}),'synthetic-step1'),model})
+  .mockResolvedValueOnce({...envelope(JSON.stringify({action:'respond',message:'Observed no configured environments'}),'synthetic-step2'),model});
+ const tool=vi.fn(async(_name: string, _args: Record<string, unknown>)=>({ok:true as const,result:{environments:[]}}));
+ try {
+  const result=await runDecisionLoop({organizationId:'org',userId:'member',correlationId:'small-journey',transcript:[{role:'user',content:'List configured environments'}],operationMode:'inspect',preferredProvider:'vercel_gateway',preferredModel:model,
+   ...(streaming?{streaming:{abortSignal:new AbortController().signal,onDraft:vi.fn()}}:{}),executeReadOnlyTool:tool,isProdEnvironmentTarget:async()=>false});
+  expect(result).toMatchObject({kind:'final',message:'Observed no configured environments',usage:{decisionSteps:2}});
+  expect(m.reserve.mock.calls.map(([,input])=>input.reservedCents)).toEqual([100,100]);
+  expect(m.claim).toHaveBeenCalledTimes(2); expect(m.write).toHaveBeenCalledTimes(2); expect(tool).toHaveBeenCalledOnce();
+  expect(tool.mock.calls[0][0]).toBe('list_environments'); expect(held).toBe(200);
+ } finally {vi.unstubAllEnvs();vi.unstubAllGlobals();}
 });

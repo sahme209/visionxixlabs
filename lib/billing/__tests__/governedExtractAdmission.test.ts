@@ -1,8 +1,8 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-const m = vi.hoisted(() => ({ reserve: vi.fn(), claim: vi.fn(), v2Claim: vi.fn(), write: vi.fn(), v2Write: vi.fn(), transaction: vi.fn() }));
+const m = vi.hoisted(() => ({ reserve: vi.fn(), release: vi.fn(), claim: vi.fn(), v2Claim: vi.fn(), write: vi.fn(), v2Write: vi.fn(), transaction: vi.fn() }));
 vi.mock("@/lib/db", () => ({ prisma: { $transaction: m.transaction } }));
-vi.mock("../aiCreditReservation", () => ({ reserveAICredits: m.reserve, claimLegacyAICreditDispatch: m.claim }));
+vi.mock("../aiCreditReservation", () => ({ reserveAICredits: m.reserve, releaseAICreditReservation: m.release, claimLegacyAICreditDispatch: m.claim }));
 vi.mock("../recordAIUsageEvent", () => ({ recordAIUsageEvent: m.write, recordReservedAIUsageEventV2: m.v2Write }));
 vi.mock("../newTestSubscription/usageAllocationIO", () => ({ claimNewTestBillableDispatch: m.v2Claim }));
 
@@ -94,4 +94,40 @@ describe("governed extraction admission authority", () => {
     // No release operation is exposed in this claimed-dispatch path.
     expect(tx.aIUsageReservation.updateMany.mock.calls.every(([call]) => call.data.status === "pending_settlement")).toBe(true);
   });
+
+it("admits a bounded approved Sonnet request with a full 100-cent hold, leaving the legacy default intact", async () => {
+  vi.stubEnv("AXIOM_PUBLIC_BILLING_POLICY", "axiom_public_anniversary_v1");
+  vi.stubEnv("AXIOM_AI_MAX_REQUEST_CREDITS_CENTS", "");
+  vi.stubGlobal("fetch", vi.fn(async () => new Response(JSON.stringify({data:{id:"anthropic/claude-sonnet-5",reasoning:{supports_max_tokens:true,supported_efforts:["none"]},endpoints:[{provider_name:"anthropic",status:0,max_completion_tokens:128000,supported_parameters:["max_tokens"],pricing:{prompt:"0.000002",completion:"0.00001",request:"0",internal_reasoning:"0",input_cache_write:"0.0000025"},inference_regions:[{pricing:{prompt:"0.0000022",completion:"0.000011",input_cache_write:"0.00000275"}}]}]}}), {headers:{"content-type":"application/json"}})));
+  m.reserve.mockImplementation(async (_repo, input) => input.reservedCents > 200 ? {ok:false,error:"ai_credit_pool_exhausted"} : {ok:true,reused:false,reservation:{id:"hold"}});
+  m.claim.mockResolvedValue(true);
+  try {
+    await expect(admitGovernedExtract(scope, {model:"anthropic/claude-sonnet-5",text:"List environments",schemaHint:"{}"})).resolves.toBeDefined();
+    expect(m.reserve).toHaveBeenCalledWith(expect.anything(), expect.objectContaining({reservedCents:100}));
+  } finally { vi.unstubAllEnvs(); vi.unstubAllGlobals(); }
+});
+
+  it("never reserves or claims after cancellation while the public price request is pending", async () => {
+    vi.stubEnv("AXIOM_PUBLIC_BILLING_POLICY", "axiom_public_anniversary_v1"); vi.stubEnv("AXIOM_AI_MAX_REQUEST_CREDITS_CENTS", "");
+    let finish!: (response: Response) => void;
+    vi.stubGlobal("fetch", vi.fn(() => new Promise<Response>(resolve => { finish = resolve; })));
+    const controller = new AbortController();
+    const pending = admitGovernedExtract(scope, { model: "anthropic/claude-sonnet-5", text: "List", schemaHint: "{}" }, controller.signal);
+    controller.abort(); finish(new Response("{}"));
+    try {
+      await expect(pending).rejects.toMatchObject({ name: "AbortError" });
+      expect(m.reserve).not.toHaveBeenCalled(); expect(m.claim).not.toHaveBeenCalled();
+    } finally { vi.unstubAllEnvs(); vi.unstubAllGlobals(); }
+  });
+  it("releases only an unclaimed hold when cancellation arrives during reservation", async () => {
+    let finish!: (result: unknown) => void, started!: () => void;
+    const waiting = new Promise<void>(resolve => { started = resolve; });
+    m.reserve.mockImplementation(() => new Promise(resolve => { finish = resolve; started(); }));
+    const controller = new AbortController();
+    const pending = admitGovernedExtract(scope, undefined, controller.signal);
+    await waiting; controller.abort(); finish({ ok: true, reused: false, reservation: { id: "hold" } });
+    await expect(pending).rejects.toMatchObject({ name: "AbortError" });
+    expect(m.release).toHaveBeenCalledWith(expect.anything(), scope.organizationId, "hold"); expect(m.claim).not.toHaveBeenCalled();
+  });
+
 });
