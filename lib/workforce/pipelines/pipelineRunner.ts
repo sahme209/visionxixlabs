@@ -213,6 +213,21 @@ export async function advancePipelineRun(runId: string): Promise<void> {
         return;
       }
 
+      if (run.pipelineId === "ai_coding" && stage.stageId === "code_gate") {
+        // Capture and store the exact artifact plus approval in one transaction.
+        // Never strand an awaiting_approval row before its bound snapshot exists.
+        if (stage.status !== "queued") return;
+        try {
+          await mintPipelineStageApproval({organizationId:run.organizationId,pipelineId:run.pipelineId,runId:run.id,stageRunId:stage.id,stageId:stage.stageId,stageName:"PR approval",requestedBy:run.triggeredBy,correlationId:run.correlationId});
+          return;
+        } catch {
+          const refused = await prisma.pipelineStageRun.updateMany({where:{id:stage.id,runId:run.id,status:"queued",approvalRequestId:null},data:{status:"failed",completedAt:new Date(),errorMessage:"The exact coding artifact and its validation could not be verified. No repository write was authorized."}});
+          if (refused.count !== 1) return;
+          await emitStageAudit(run,stage,"pipeline.stage_failed","failure",{error:"coding_artifact_approval_unavailable"});
+          continue;
+        }
+      }
+
       // Atomic CAS into awaiting_approval so concurrent advances don't
       // double-mint snapshots.
       const claim = await prisma.pipelineStageRun.updateMany({

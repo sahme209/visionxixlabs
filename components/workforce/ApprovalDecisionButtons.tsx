@@ -23,6 +23,8 @@ interface Props {
   myVote?: "approved" | "rejected" | null;
   approvedCount?: number;
   requiredApprovers?: number;
+  reviewDigest?: string;
+  reviewRequired?: boolean;
 }
 
 type SaveState =
@@ -31,10 +33,11 @@ type SaveState =
   | { kind: "saving"; decision: "approved" | "rejected" }
   | { kind: "error"; message: string };
 
-export function ApprovalDecisionButtons({ approvalId, status, myVote, approvedCount, requiredApprovers }: Props) {
+export function ApprovalDecisionButtons({ approvalId, status, myVote, approvedCount, requiredApprovers, reviewDigest, reviewRequired = false }: Props) {
   const router = useRouter();
   const [state, setState] = useState<SaveState>({ kind: "idle" });
   const [reason, setReason] = useState("");
+  const reviewUnavailable = reviewRequired && !/^[a-f0-9]{64}$/.test(reviewDigest ?? "");
 
   if (status !== "pending") {
     return (
@@ -56,13 +59,14 @@ export function ApprovalDecisionButtons({ approvalId, status, myVote, approvedCo
   }
 
   async function decide(decision: "approved" | "rejected", reasonValue?: string) {
+    if (decision === "approved" && reviewUnavailable) { setState({kind:"error",message:"The exact review is unavailable. Refresh before approving."}); return; }
     setState({ kind: "saving", decision });
     try {
       const res = await fetch(`/api/workforce/approvals/${approvalId}/decide`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
-        body: JSON.stringify({ decision, reason: reasonValue }),
+        body: JSON.stringify({ decision, reason: reasonValue, ...(reviewDigest ? {reviewDigest} : {}) }),
       });
       const json = (await res.json()) as { ok?: boolean; reason?: string; detail?: string };
       if (!res.ok || !json.ok) {
@@ -110,7 +114,7 @@ export function ApprovalDecisionButtons({ approvalId, status, myVote, approvedCo
     <div className="flex items-center gap-1.5">
       <button
         onClick={() => decide("approved")}
-        disabled={state.kind === "saving"}
+        disabled={state.kind === "saving" || reviewUnavailable}
         className="inline-flex items-center gap-1 text-[10.5px] font-medium px-2 py-1 rounded-md bg-emerald-500/15 text-emerald-100 border border-emerald-500/40 hover:bg-emerald-500/25 transition disabled:opacity-50"
       >
         {state.kind === "saving" && state.decision === "approved" ? (
@@ -134,7 +138,7 @@ export function ApprovalDecisionButtons({ approvalId, status, myVote, approvedCo
         Reject
       </button>
       {state.kind === "error" && (
-        <span className="text-[10px] text-rose-300" title={state.message}>error</span>
+        <span role="alert" className="max-w-sm text-[11px] text-rose-300">{state.message}</span>
       )}
     </div>
   );

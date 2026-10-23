@@ -19,6 +19,8 @@ import {
   fetchRepoContext,
   type FetchRepoContextResult,
 } from "./repoContextFetcher";
+import { parseRepoRef } from "./parseRepoRef";
+import { resolveCodingGithubCredential } from "./codingGithubCredential";
 import { summarizeRepoContext } from "./summarizeRepoContext";
 import type { StageExecutorFn, StageExecutorResult } from "./stageExecutorRegistry";
 
@@ -56,9 +58,14 @@ export const codeReadRealExecutor: StageExecutorFn = async (ctx) => {
     return failedReadResult("missing_repo_ref", ctx);
   }
 
+  const repository = parseRepoRef(meta.repoRef);
+  if (!repository) return failedReadResult("invalid_repo_ref", ctx);
+  const credential = await resolveCodingGithubCredential(ctx.organizationId, repository);
+  if (!credential.ok) return failedReadResult(credential.error, ctx);
+
   let result: FetchRepoContextResult;
   try {
-    result = await fetchRepoContext(meta.repoRef, meta.branchHint);
+    result = await fetchRepoContext(meta.repoRef, meta.branchHint, credential.token);
   } catch (err) {
     try {
       await recordAudit({

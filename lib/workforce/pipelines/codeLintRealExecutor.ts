@@ -19,6 +19,8 @@
  */
 
 import "server-only";
+import { createHash } from "node:crypto";
+import { loadCodingReadSnapshot } from "./codingReadSnapshot";
 
 import { prisma } from "@/lib/db";
 import { record as recordAudit } from "@/lib/audit/secureAudit";
@@ -28,7 +30,7 @@ import { parseRepoRef } from "./parseRepoRef";
 import { parseUnifiedDiff } from "./parseUnifiedDiff";
 import { applyDiff } from "./applyUnifiedDiff";
 import { dispatchValidator, type ValidationFailure } from "./staticValidators";
-import { fetchFileContent } from "./githubWriteClient";
+import { readCodingGithubFile } from "./codingGithubCredential";
 import { dispatchWebhookEvent } from "@/lib/webhooks/dispatchWebhookEvent";
 
 interface MetaShape {
@@ -90,6 +92,10 @@ export const codeLintRealExecutor: StageExecutorFn = async (ctx) => {
 
   if (parsed.files.length === 0) return skipResult("diff_had_no_files", ctx);
 
+  const savedBase = await loadCodingReadSnapshot(ctx.organizationId, ctx.runId, coords);
+  if (!savedBase) return skipResult("saved_repository_base_unavailable", ctx);
+  const codingValidation = {schema:1,repositoryFullName:`${coords.owner}/${coords.repo}`,baseBranch:savedBase.branch,baseCommitSha:savedBase.headSha,patchSha256:createHash("sha256").update(proposedPatchText).digest("hex")};
+
   // 3. For each modified/added file: fetch base + apply → virtual content.
   //    Walk file-by-file, collect validator failures, never short-circuit
   //    so the operator sees every issue at once.
@@ -124,7 +130,7 @@ export const codeLintRealExecutor: StageExecutorFn = async (ctx) => {
 
     let baseContent: string | null = null;
     if (fileDiff.changeKind === "modified") {
-      const fc = await fetchFileContent(coords.owner, coords.repo, fileDiff.path, meta.branchHint ?? "HEAD");
+      const fc = await readCodingGithubFile(ctx.organizationId, coords, fileDiff.path, savedBase.headSha);
       if (!fc.ok || fc.content === null) {
         entries.push({
           path: fileDiff.path,
@@ -189,6 +195,7 @@ export const codeLintRealExecutor: StageExecutorFn = async (ctx) => {
       summary: `Structural check · validated ${validatedCount}/${entries.length} file(s); ${entries.length - validatedCount} unvalidated. Repository lint was not executed.`,
       detail: {
         stageId: ctx.stageId,
+        codingValidation,
         lintSkipped: validatedCount === 0,
         lintExecution: "not_run",
         validatedFiles: validatedCount,

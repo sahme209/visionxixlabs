@@ -9,6 +9,8 @@
  * with and the /decide route accepts.
  */
 
+import { CodingArtifactReview } from "@/components/workforce/CodingArtifactReview";
+import { codingApprovalDigest, isCodingApprovalAction, verifyCodingArtifact, type CodingArtifact } from "@/lib/workforce/pipelines/codingArtifact";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -66,7 +68,9 @@ export default async function ApprovalDetailPage({ params }: { params: Promise<{
           id: true,
           stageId: true,
           runId: true,
-          run: { select: { id: true, pipelineId: true } },
+          approvalRequestId: true,
+          outputDetail: true,
+          run: { select: { id: true, pipelineId: true, organizationId: true } },
         },
       },
     },
@@ -85,6 +89,11 @@ export default async function ApprovalDetailPage({ params }: { params: Promise<{
   const pipelineStageDef = pipelineDef && snapshot.pipelineStageRun
     ? pipelineDef.stages.find((s) => s.id === snapshot.pipelineStageRun?.stageId) ?? null
     : null;
+
+  const codingReviewRequired = isCodingApprovalAction(snapshot.action);
+  const codingDigest = codingApprovalDigest(snapshot.action);
+  const codingRecord = snapshot.pipelineStageRun?.outputDetail as {codingArtifact?:unknown;codingArtifactDigest?:unknown}|null;
+  const codingArtifact = codingReviewRequired && codingDigest && snapshot.pipelineStageRun?.run.organizationId === snapshot.organizationId && snapshot.pipelineStageRun.approvalRequestId === snapshot.approvalRequestId && codingRecord?.codingArtifactDigest === codingDigest && verifyCodingArtifact(codingRecord.codingArtifact,codingDigest,{organizationId:snapshot.organizationId,runId:snapshot.pipelineStageRun.runId}) ? codingRecord.codingArtifact as CodingArtifact : null;
 
   const approvedBy = Array.from(
     new Set(snapshot.decisions.filter((d) => d.decision === "approved").map((d) => d.approverUserId)),
@@ -179,6 +188,9 @@ export default async function ApprovalDetailPage({ params }: { params: Promise<{
           {snapshot.attemptId && <Meta label="Attempt id" value={snapshot.attemptId} mono span2 />}
         </dl>
 
+        {codingArtifact && codingDigest && <div className="mt-4"><CodingArtifactReview artifact={codingArtifact} digest={codingDigest} /></div>}
+        {codingReviewRequired && !codingArtifact && <p role="alert" className="mt-4 text-xs leading-5 text-amber-200">The exact coding review is unavailable. Approval is disabled; you can reject this request and start a fresh coding run.</p>}
+
         {snapshot.status === "pending" && (
           <div className="mt-4 pt-4 border-t border-white/[0.06] flex items-center justify-between gap-3 flex-wrap">
             <span className="text-[11px] text-zinc-400">
@@ -193,6 +205,8 @@ export default async function ApprovalDetailPage({ params }: { params: Promise<{
               myVote={myVote}
               approvedCount={approvedCount}
               requiredApprovers={snapshot.requiredApprovers}
+              reviewRequired={codingReviewRequired}
+              reviewDigest={codingArtifact && codingDigest ? codingDigest : undefined}
             />
           </div>
         )}

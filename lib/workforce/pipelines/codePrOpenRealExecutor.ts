@@ -18,7 +18,7 @@
  *     pipeline runner's approval gate blocks otherwise. There is no
  *     autonomous merge path; humans must still review the actual
  *     diff in the PR before merging.
- *   - Missing credentials or repository access stop the stage.
+ *   - Missing workspace-scoped credentials or repository access stop the stage.
  *   - An invalid or inapplicable patch stops before any repository write.
  *   - Write failures remain failures, with uncertain branch outcomes explicit.
  *
@@ -27,17 +27,19 @@
  */
 
 import "server-only";
+import { loadApprovedCodingArtifact } from "./approvedCodingArtifact";
+import { loadCodingReadSnapshot } from "./codingReadSnapshot";
 
 import { prisma } from "@/lib/db";
 import { record as recordAudit } from "@/lib/audit/secureAudit";
 import { id as idFactory } from "@/lib/domain/ids";
 import type { StageExecutorFn, StageExecutorResult } from "./stageExecutorRegistry";
+import { createCodingWriteAuthority, readCodingGithubFile } from "./codingGithubCredential";
 import { parseRepoRef } from "./parseRepoRef";
 import { parseUnifiedDiff } from "./parseUnifiedDiff";
 import { applyDiff } from "./applyUnifiedDiff";
 import {
   openPullRequest,
-  fetchFileContent,
   type FileChange,
   type OpenPRResult,
 } from "./githubWriteClient";
@@ -76,11 +78,6 @@ function failedPRResult(reason: string, ctx: { stageId: string; runId: string; c
 }
 
 export const codePrOpenRealExecutor: StageExecutorFn = async (ctx) => {
-  // 1. No token means this real stage cannot complete.
-  if (!process.env.GITHUB_TOKEN) {
-    return failedPRResult("no_github_token", ctx);
-  }
-
   const meta = readMetadata(ctx.runMetadata);
   if (!meta) {
     return failedPRResult("missing_metadata", ctx);
@@ -90,6 +87,11 @@ export const codePrOpenRealExecutor: StageExecutorFn = async (ctx) => {
   if (!coords) {
     return failedPRResult("invalid_repo_ref", ctx);
   }
+
+  const authority = await createCodingWriteAuthority(ctx.organizationId, coords);
+  if (!authority.ok) return failedPRResult(authority.error, ctx);
+  const credential = await authority.resolveToken();
+  if (!credential.ok) return failedPRResult(credential.error, ctx);
 
   // 2. Pull the propose stage's patch text from outputDetail.
   let proposedPatchText: string | null = null;
@@ -119,20 +121,32 @@ export const codePrOpenRealExecutor: StageExecutorFn = async (ctx) => {
     return failedPRResult("diff_had_no_files", ctx);
   }
 
+  // Every patch base must come from the successful read in this exact run,
+  // never a fresh moving branch or a caller-supplied metadata SHA.
+  const reviewedBase = await loadCodingReadSnapshot(ctx.organizationId, ctx.runId, coords);
+  if (!reviewedBase) return failedPRResult("reviewed_base_unavailable", ctx);
+
+  const scope={organizationId:ctx.organizationId,runId:ctx.runId,actorUserId:ctx.triggeredBy};
+  const approved=await loadApprovedCodingArtifact(scope);
+  if(!approved.ok)return failedPRResult("coding_artifact_approval_unavailable",ctx);
+  const artifact=approved.artifact;
+  if(artifact.repositoryFullName!==`${coords.owner}/${coords.repo}` || artifact.baseBranch!==reviewedBase.branch || artifact.baseCommitSha!==reviewedBase.headSha || artifact.patchText!==proposedPatchText)return failedPRResult("coding_artifact_changed",ctx);
+
   // 4. For each modified file, fetch base + apply.
   const fileChanges: FileChange[] = [];
   for (const fileDiff of parsed.files) {
     let baseContent: string | null = null;
-    if (fileDiff.changeKind === "modified" || fileDiff.changeKind === "deleted") {
-      const fc = await fetchFileContent(coords.owner, coords.repo, fileDiff.path, meta.branchHint ?? "HEAD");
+    if (["modified", "deleted", "added"].includes(fileDiff.changeKind)) {
+      const fc = await readCodingGithubFile(ctx.organizationId, coords, fileDiff.path, reviewedBase.headSha);
       if (!fc.ok) {
         await emitFail(ctx, "base_fetch_failed", fc.reason, `${fileDiff.path}: ${fc.detail}`);
         return failedPRResult("base_fetch_failed", ctx);
       }
+      if (fileDiff.changeKind === "added" && fc.content !== null) return failedPRResult("added_path_already_exists", ctx);
       baseContent = fc.content;
-      if (fileDiff.changeKind === "modified" && baseContent === null) {
+      if ((fileDiff.changeKind === "modified" || fileDiff.changeKind === "deleted") && baseContent === null) {
         await emitFail(ctx, "modified_file_missing_in_base", "404", fileDiff.path);
-        return failedPRResult("modified_file_missing", ctx);
+        return failedPRResult("required_file_missing", ctx);
       }
     }
 
@@ -143,6 +157,9 @@ export const codePrOpenRealExecutor: StageExecutorFn = async (ctx) => {
     }
     fileChanges.push({ path: applied.entry.path, content: applied.entry.newContent });
   }
+
+  const actualFiles=[...fileChanges].sort((a,b)=>a.path<b.path?-1:a.path>b.path?1:0);
+  if(actualFiles.length!==artifact.files.length || actualFiles.some((file,index)=>file.path!==artifact.files[index].path || file.content!==artifact.files[index].after))return failedPRResult("coding_artifact_changed",ctx);
 
   // 5. Push branch + open PR.
   const newBranch = `ai/${ctx.runId.slice(-8)}`;
@@ -158,10 +175,19 @@ export const codePrOpenRealExecutor: StageExecutorFn = async (ctx) => {
     `This change passed the platform's configured approval gate before this branch was pushed. Approval principals may include authenticated API keys; this does not assert two distinct human reviewers. Please review the diff carefully before merging.`,
   ].join("\n");
 
+  // Revalidate the workspace connection immediately before repository writes.
+  const writeCredential = await authority.resolveToken();
+  if (!writeCredential.ok) return failedPRResult(writeCredential.error, ctx);
   const result: OpenPRResult = await openPullRequest({
+    resolveToken: async () => {
+      const current=await loadApprovedCodingArtifact(scope);
+      if(!current.ok || current.digest!==approved.digest)return {ok:false as const,error:"coding_artifact_approval_unavailable"};
+      return authority.resolveToken();
+    },
     owner: coords.owner,
     repo: coords.repo,
-    baseBranch: meta.branchHint ?? "main",
+    baseBranch: reviewedBase.branch,
+    expectedBaseSha: reviewedBase.headSha,
     newBranch,
     files: fileChanges,
     commitMessage,
@@ -171,7 +197,7 @@ export const codePrOpenRealExecutor: StageExecutorFn = async (ctx) => {
 
   if (!result.ok) {
     await emitFail(ctx, "pr_open_failed", result.reason, result.detail);
-    return failedPRResult(`pr_open_${result.reason}`, ctx, true);
+    return failedPRResult(`pr_open_${result.reason}`, ctx, result.writeMayHaveOccurred ?? !["no_token", "base_identity_required", "base_changed", "branch_not_found"].includes(result.reason));
   }
 
   // 6. Success audits.
@@ -187,7 +213,7 @@ export const codePrOpenRealExecutor: StageExecutorFn = async (ctx) => {
       detail: {
         owner: coords.owner,
         repo: coords.repo,
-        baseBranch: meta.branchHint ?? "main",
+        baseBranch: reviewedBase.branch,
         newBranch,
         headSha: result.headSha,
         fileCount: fileChanges.length,
@@ -221,7 +247,7 @@ export const codePrOpenRealExecutor: StageExecutorFn = async (ctx) => {
         repo: coords.repo,
         prNumber: result.prNumber,
         prUrl: result.prUrl,
-        baseBranch: meta.branchHint ?? "main",
+        baseBranch: reviewedBase.branch,
         headBranch: newBranch,
         headSha: result.headSha,
         fileCount: fileChanges.length,
@@ -239,7 +265,7 @@ export const codePrOpenRealExecutor: StageExecutorFn = async (ctx) => {
       pushed: true,
       owner: coords.owner,
       repo: coords.repo,
-      baseBranch: meta.branchHint ?? "main",
+      baseBranch: reviewedBase.branch,
       newBranch,
       headSha: result.headSha,
       prNumber: result.prNumber,

@@ -1,4 +1,5 @@
 import "server-only";
+import { codingApprovalDigest, isCodingApprovalAction, verifyCodingArtifact } from "./pipelines/codingArtifact";
 import { randomUUID } from "node:crypto";
 import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/db";
@@ -28,6 +29,7 @@ export async function persistApprovalVote(input: {
   principal: { kind: "api_key" | "user"; id: string };
   rawDecision: unknown;
   reason?: string;
+  reviewDigest?: unknown;
   engineSourceId: string | null;
 }) {
   if (!input.principal.id.trim()) throw new Error("authenticated_approval_principal_required");
@@ -49,6 +51,14 @@ export async function persistApprovalVote(input: {
       });
       if (plan.kind === "reject") return plan;
       const snap = snapshot!;
+      if (plan.decision === "approved" && isCodingApprovalAction(snap.action)) {
+        const digest = codingApprovalDigest(snap.action);
+        const gate = snap.sourceKind === "pipeline_stage" && snap.pipelineStageRunId ? await tx.pipelineStageRun.findFirst({where:{id:snap.pipelineStageRunId,run:{organizationId:input.organizationId},stageId:"code_gate",stageKind:"approval_gate",status:"awaiting_approval",approvalRequestId:snap.approvalRequestId}}) : null;
+        const record = gate?.outputDetail as {codingArtifact?:unknown;codingArtifactDigest?:unknown}|null;
+        if (!digest || input.reviewDigest !== digest || !gate || gate.approvalRequestId !== snap.approvalRequestId || record?.codingArtifactDigest !== digest || !verifyCodingArtifact(record.codingArtifact,digest,{organizationId:input.organizationId,runId:gate.runId})) {
+          return {kind:"reject" as const,reason:"coding_review_required" as const,detail:"Review the exact coding artifact before approving. Changed or legacy unbound reviews cannot authorize repository writes."};
+        }
+      }
       if (snap.decisions.some(vote => !hasBoundApprovalVoteIdentity(vote))) {
         return { kind: "reject" as const, reason: "approval_actor_provenance_required" as const,
           detail: "This pending approval contains legacy votes whose actor identity cannot be verified. Replace it through the authorized approval flow; retrying cannot repair it." };

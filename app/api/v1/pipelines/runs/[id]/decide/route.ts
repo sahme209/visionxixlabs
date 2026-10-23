@@ -60,9 +60,10 @@ import { dispatchWebhookEvent } from "@/lib/webhooks/dispatchWebhookEvent";
 
 export const dynamic = "force-dynamic";
 
-const REJECT_STATUS_MAP: Record<DecideRejectReason | "already_voted" | "approval_actor_provenance_required", number> = {
+const REJECT_STATUS_MAP: Record<DecideRejectReason | "already_voted" | "approval_actor_provenance_required" | "coding_review_required", number> = {
   already_voted: 409,
   approval_actor_provenance_required: 409,
+  coding_review_required: 409,
   invalid_decision: 400,
   approval_not_found: 404,
   cross_tenant: 403,
@@ -107,7 +108,7 @@ export async function POST(
 
   const { id: runId } = await context.params;
 
-  let body: { decision?: unknown; reason?: unknown; approverUserId?: unknown } = {};
+  let body: { reviewDigest?: unknown; decision?: unknown; reason?: unknown; approverUserId?: unknown } = {};
   try { body = (await req.json()) as typeof body; } catch { /* empty body */ }
   const rawDecision = body.decision;
   const reason = typeof body.reason === "string" ? body.reason : undefined;
@@ -146,7 +147,7 @@ export async function POST(
   try {
     persisted = await persistApprovalVote({ approvalRequestId: stage.approvalRequestId,
       organizationId: auth.organizationId, principal: { kind: "api_key", id: auth.apiKeyId },
-      rawDecision, reason, engineSourceId: null });
+      rawDecision, reason, reviewDigest: body.reviewDigest, engineSourceId: null });
   } catch {
     return NextResponse.json({ ok: false, error: "decision_persist_failed", message: "Vote was not recorded — please retry." }, { status: 500 });
   }

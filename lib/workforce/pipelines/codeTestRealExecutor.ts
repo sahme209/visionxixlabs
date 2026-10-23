@@ -27,6 +27,8 @@
  */
 
 import "server-only";
+import { createHash } from "node:crypto";
+import { loadCodingReadSnapshot } from "./codingReadSnapshot";
 
 import { prisma } from "@/lib/db";
 import { record as recordAudit } from "@/lib/audit/secureAudit";
@@ -36,7 +38,7 @@ import { parseRepoRef } from "./parseRepoRef";
 import { parseUnifiedDiff } from "./parseUnifiedDiff";
 import { applyDiff } from "./applyUnifiedDiff";
 import { analyzeTestChange, isTestFilePath, type TestFinding } from "./testAssertionAnalyzer";
-import { fetchFileContent } from "./githubWriteClient";
+import { readCodingGithubFile } from "./codingGithubCredential";
 import { dispatchWebhookEvent } from "@/lib/webhooks/dispatchWebhookEvent";
 
 interface MetaShape {
@@ -97,6 +99,10 @@ export const codeTestRealExecutor: StageExecutorFn = async (ctx) => {
     return skipResult("diff_parse_failed", ctx, { parseReason: parsed.reason });
   }
 
+  const savedBase = await loadCodingReadSnapshot(ctx.organizationId, ctx.runId, coords);
+  if (!savedBase) return skipResult("saved_repository_base_unavailable", ctx);
+  const codingValidation = {schema:1,repositoryFullName:`${coords.owner}/${coords.repo}`,baseBranch:savedBase.branch,baseCommitSha:savedBase.headSha,patchSha256:createHash("sha256").update(proposedPatchText).digest("hex")};
+
   // 3. Identify modified test files only. Added test files don't have a
   //    base to compare against, so they're informational; deleted test
   //    files are an obvious red flag and surface as a separate finding.
@@ -149,7 +155,7 @@ export const codeTestRealExecutor: StageExecutorFn = async (ctx) => {
       continue;
     }
 
-    const fc = await fetchFileContent(coords.owner, coords.repo, fileDiff.path, meta.branchHint ?? "HEAD");
+    const fc = await readCodingGithubFile(ctx.organizationId, coords, fileDiff.path, savedBase.headSha);
     if (!fc.ok || fc.content === null) {
       entries.push({
         path: fileDiff.path,
@@ -192,7 +198,7 @@ export const codeTestRealExecutor: StageExecutorFn = async (ctx) => {
   }
 
   // No test files touched at all — nothing to do.
-  if (entries.length === 0) return skipResult("no_test_files_in_patch", ctx);
+  if (entries.length === 0) return skipResult("no_test_files_in_patch", ctx, {codingValidation});
 
   const failingEntries = entries.filter((e) => !e.ok);
   const analyzedCount = entries.filter((e) => e.analyzed).length;
@@ -221,6 +227,7 @@ export const codeTestRealExecutor: StageExecutorFn = async (ctx) => {
       summary: `Assertion integrity · analyzed ${analyzedCount}/${entries.length} test file(s), no flagged patterns. Repository tests were not executed.`,
       detail: {
         stageId: ctx.stageId,
+        codingValidation,
         testSkipped: analyzedCount === 0,
         testExecution: "not_run",
         analyzedFiles: analyzedCount,
