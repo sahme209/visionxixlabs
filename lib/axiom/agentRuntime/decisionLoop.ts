@@ -302,32 +302,37 @@ export async function runDecisionLoop(input: {
 
   if (input.initialToolCall) {
     const tool = findTool(input.initialToolCall.toolName);
-    if (!tool || tool.riskLevel !== "low" || !allowedTools.has(tool.name)) {
+    if (!tool || tool.riskLevel !== "low" || profile.allowedTools !== null && !profile.allowedTools.includes(tool.name)) {
       return withUsage({
         kind: "error",
         error: "decision_malformed",
         detail: `Initial grounding tool must be registered and read-only: ${input.initialToolCall.toolName}`,
       });
     }
-    const authorityError = await recheckToolAuthority(tool.name);
-    if (authorityError) return withUsage(authorityError);
-    input.streaming?.abortSignal.throwIfAborted();
-    const activity = startActivity(tool.name);
-    const executed = await input.executeReadOnlyTool(tool.name, input.initialToolCall.args);
-    if (RECHECK_OBSERVATION_TOOLS.has(tool.name)) {
-      const afterReadAuthority = await recheckToolAuthority(tool.name);
-      if (afterReadAuthority) return withUsage(afterReadAuthority);
+    // Grounding is an optional server-selected hint. A narrowed workspace
+    // policy must omit it, not turn an otherwise permitted request into a
+    // malformed-model error. Actual model-selected tools still fail closed.
+    if (allowedTools.has(tool.name)) {
+      const authorityError = await recheckToolAuthority(tool.name);
+      if (authorityError) return withUsage(authorityError);
+      input.streaming?.abortSignal.throwIfAborted();
+      const activity = startActivity(tool.name);
+      const executed = await input.executeReadOnlyTool(tool.name, input.initialToolCall.args);
+      if (RECHECK_OBSERVATION_TOOLS.has(tool.name)) {
+        const afterReadAuthority = await recheckToolAuthority(tool.name);
+        if (afterReadAuthority) return withUsage(afterReadAuthority);
+      }
+      if (!recordObservation(tool.name, executed)) {
+        finishActivity(activity, false);
+        return withUsage({ kind: "error", error: "tool_execution_failed", detail: "Invalid bounded AWS observation." });
+      }
+      finishActivity(activity, executed.ok);
+      transcript.push({ role: "assistant", content: input.initialToolCall.message });
+      transcript.push({
+        role: "tool_result",
+        content: executed.ok ? `${tool.name} result: ${JSON.stringify(executed.result)}` : `${tool.name} failed: ${executed.error}`,
+      });
     }
-    if (!recordObservation(tool.name, executed)) {
-      finishActivity(activity, false);
-      return withUsage({ kind: "error", error: "tool_execution_failed", detail: "Invalid bounded AWS observation." });
-    }
-    finishActivity(activity, executed.ok);
-    transcript.push({ role: "assistant", content: input.initialToolCall.message });
-    transcript.push({
-      role: "tool_result",
-      content: executed.ok ? `${tool.name} result: ${JSON.stringify(executed.result)}` : `${tool.name} failed: ${executed.error}`,
-    });
   }
 
   for (let iteration = 0; iteration < effort.maxDecisionIterations && remainingDecisionAttempts > 0; iteration++) {

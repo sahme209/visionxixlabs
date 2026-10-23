@@ -42,6 +42,24 @@ describe("runDecisionLoop", () => {
     expect(mocks.resolveGovernedAiCall).not.toHaveBeenCalled();
   });
 
+  it("ignores an optional repository grounding hint outside the current allowlist and completes the permitted environment request", async () => {
+    mocks.readWorkspaceAgentIdentity.mockResolvedValue({ enabled: true, allowedTools: ["list_environments"] });
+    let step = 0;
+    mocks.resolveGovernedAiCall.mockResolvedValue(governed(async () => ++step === 1
+      ? { action: "call_tool", message: "Reading environment names.", toolName: "list_environments", args: {} }
+      : { action: "respond", message: "The configured environment is staging." }));
+    const executed: string[] = [];
+    const result = await runDecisionLoop({
+      organizationId: "o", userId: "actor", correlationId: "grounding-policy", operationMode: "inspect",
+      transcript: [{ role: "user", content: "List configured environment names; no changes." }],
+      initialToolCall: { toolName: "inspect_github_repository", args: { repositoryFullName: "fixture/repo", branch: "main" }, message: "Optional repository grounding." },
+      executeReadOnlyTool: async name => { executed.push(name); return { ok: true, result: { environments: [{ name: "staging" }] } }; },
+      isProdEnvironmentTarget: noopProdCheck,
+    });
+    expect(result).toMatchObject({ kind: "final", message: "The configured environment is staging." });
+    expect(executed).toEqual(["list_environments"]);
+  });
+
   it("blocks a registered tool omitted from the Agent identity allowlist", async () => {
     mocks.readWorkspaceAgentIdentity.mockResolvedValue({ enabled: true, allowedTools: ["list_environments"] });
     mocks.resolveGovernedAiCall.mockResolvedValue(governed(async () => ({

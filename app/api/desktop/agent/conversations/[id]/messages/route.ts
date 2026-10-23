@@ -65,7 +65,14 @@ function initialRepositoryGrounding(input: {
     };
   }
 
-  const broadRepositoryIntent = /\b(review|analy[sz]e|audit|inspect|improve|issues?|problems?|changes?|help)\b|what should i|what can i/i.test(input.message);
+  // A selected repository is context, not permission to inspect it for an
+  // unrelated request. Negative instructions such as "do not propose changes"
+  // must not become an affirmative repository-review shortcut.
+  const broadRepositoryIntent = input.message.split(/[.!?;\n]+/).some(clause =>
+    !/\b(?:do not|don['’]t|never|no)\b/i.test(clause)
+    && /\b(?:repo(?:sitory)?|codebase|source code)\b/i.test(clause)
+    && /\b(?:review|analy[sz]e|audit|inspect|improve|issues?|problems?|changes?|help)\b|what should i|what can i/i.test(clause),
+  );
   if (!broadRepositoryIntent) return undefined;
   return {
     toolName: "inspect_github_repository",

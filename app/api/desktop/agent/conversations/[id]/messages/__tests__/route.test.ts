@@ -250,6 +250,19 @@ describe("POST /api/desktop/agent/conversations/[id]/messages", () => {
     }));
   });
 
+  it.each([
+    "Use only list_environments to list configured environment names. Do not read repository files, propose changes, or execute anything.",
+    "Review Airflow task states without changes.",
+    "Review this project’s configured environments.",
+    "What should I improve in my cloud account?",
+  ])("does not seed repository inspection for an unrelated request: %s", async message => {
+    mocks.runDecisionLoop.mockResolvedValue({ kind: "final", message: "Only requested workspace evidence was inspected." });
+    const { POST } = await import("../route");
+    const response = await POST(request({ message, workspaceContext: { repositoryFullName: "acme/widgets", branch: "main", mode: "chat" } }), params);
+    expect(response.status).toBe(200);
+    expect(mocks.runDecisionLoop).toHaveBeenCalledWith(expect.objectContaining({ initialToolCall: undefined }));
+  });
+
   it("does not inspect a repository for unrelated small talk", async () => {
     mocks.findManyTurns.mockResolvedValue([{ role: "user", content: "hello" }]);
     mocks.runDecisionLoop.mockResolvedValue({ kind: "final", message: "Hello." });
