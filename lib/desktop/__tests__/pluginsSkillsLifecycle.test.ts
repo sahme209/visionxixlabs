@@ -33,11 +33,13 @@ it("never opens a late consent URL after credential context changes", async () =
   await act(async () => {old.resolve(ok({consentUrl: "https://github.com/login/oauth/authorize?state=old"}));});
   expect(m.open).not.toHaveBeenCalled();
 });
-it("recovers a rejected mutation and allows a subsequent explicit retry", async () => {
+it("recovers a rejected mutation after an explicit catalog verification", async () => {
   m.client.updateAgentSkill.mockRejectedValueOnce(new Error("PRIVATE_RAW_ERROR")).mockResolvedValueOnce(ok({status: "enabled"})); show();
   fireEvent.click(await screen.findByRole("button", {name: "Add"}));
   await screen.findByText(/Could not update Safe change/);
   expect(screen.queryByText(/PRIVATE_RAW_ERROR/)).toBeNull();
+  expect((screen.getByRole("button", {name: "Add"}) as HTMLButtonElement).disabled).toBe(true);
+  fireEvent.click(screen.getByRole("button", {name: "Refresh capabilities"}));
   await waitFor(() => expect((screen.getByRole("button", {name: "Add"}) as HTMLButtonElement).disabled).toBe(false));
   fireEvent.click(screen.getByRole("button", {name: "Add"}));
   await screen.findByText(/Safe change is now enabled/);
@@ -130,4 +132,30 @@ it("shows existing Azure and GCP inventory and opens settings without starting p
   fireEvent.click(screen.getByRole("button", {name: "installed"}));
   expect(screen.getByText("Microsoft Azure")).toBeTruthy();
   expect(screen.queryByText("Google Cloud")).toBeNull();
+});
+
+it("requires a fresh catalog after an uncertain skill change before allowing another mutation", async () => {
+  const refresh = deferred();
+  m.client.updateAgentSkill.mockRejectedValue(new Error("offline after send"));
+  m.client.listAgentSkills.mockResolvedValueOnce(ok({skills: [skill], storageAvailable: true})).mockReturnValueOnce(refresh.promise);
+  show(); fireEvent.click(await screen.findByRole("button", {name: "Add"}));
+  await screen.findByText(/Could not update Safe change/);
+  expect((screen.getByRole("button", {name: "Add"}) as HTMLButtonElement).disabled).toBe(true);
+  fireEvent.click(screen.getByRole("button", {name: "Refresh capabilities"}));
+  await act(async () => { refresh.resolve(ok({skills: [{...skill, status: "disabled"}], storageAvailable: true})); });
+  await screen.findByRole("button", {name: "Enable"});
+  expect(m.client.updateAgentSkill).toHaveBeenCalledTimes(1);
+  expect((screen.getByRole("button", {name: "Enable"}) as HTMLButtonElement).disabled).toBe(false);
+});
+
+it("filters enabled and disabled skills separately with explicit saved status", async () => {
+  m.client.listAgentSkills.mockResolvedValue(ok({skills: [{...skill, status: "enabled"}, {...skill, id: "second", name: "Release guidance", status: "disabled"}], storageAvailable: true}));
+  show(); await screen.findByText("Release guidance");
+  fireEvent.click(screen.getByRole("button", {name: "Enabled"}));
+  expect(screen.getByText("Safe change")).toBeTruthy();
+  expect(screen.queryByText("Release guidance")).toBeNull();
+  fireEvent.click(screen.getByRole("button", {name: "Disabled"}));
+  expect(screen.queryByText("Safe change")).toBeNull();
+  expect(screen.getByText("Release guidance")).toBeTruthy();
+  expect(screen.getByText("Installed · disabled")).toBeTruthy();
 });

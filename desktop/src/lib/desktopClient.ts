@@ -914,6 +914,10 @@ export class DesktopClient {
     return this.get("/api/desktop/agent/skills");
   }
 
+  microsoftLearn(input: {action: "check"} | {action: "search"; query: string}): Promise<ApiResult<{searchAvailable: true} | {results: Array<{title: string; excerpt: string; url: string}>}>> {
+    return this.post("/api/desktop/mcp/microsoft-learn", input);
+  }
+
   updateAgentSkill(skillId: string, action: "install" | "enable" | "disable" | "remove"): Promise<ApiResult<{ skillId: string; status: string }>> {
     return this.post("/api/desktop/agent/skills", { skillId, action });
   }

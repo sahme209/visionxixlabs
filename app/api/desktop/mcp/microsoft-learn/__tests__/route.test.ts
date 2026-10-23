@@ -1,0 +1,16 @@
+import {beforeEach, expect, it, vi} from 'vitest';
+import {NextRequest} from 'next/server';
+const m=vi.hoisted(()=>({session:vi.fn(),search:vi.fn(),check:vi.fn(),limit:vi.fn(),audit:vi.fn()}));
+vi.mock('@/lib/desktop/resolveRequestDesktopSession',()=>({resolveRequestDesktopSession:m.session}));
+vi.mock('@/lib/db',()=>({prisma:{}}));
+vi.mock('@/lib/integrations/mcp/microsoftLearn',()=>({searchInstalledMicrosoftLearn:m.search,checkMicrosoftLearn:m.check}));
+vi.mock('@/lib/api/rateLimiter',()=>({consumeToken:m.limit}));
+vi.mock('@/lib/audit/requiredAudit',()=>({recordRequiredAudit:m.audit}));
+const request=(body:unknown)=>new NextRequest('https://visionxixlabs.com/api/desktop/mcp/microsoft-learn',{method:'POST',body:JSON.stringify(body)});
+beforeEach(()=>{vi.resetAllMocks();m.session.mockResolvedValue({organizationId:'org-1',userId:'user-1'});m.limit.mockReturnValue({allowed:true});m.audit.mockResolvedValue(undefined);m.search.mockResolvedValue({ok:true,data:{results:[]}});m.check.mockResolvedValue({ok:true,data:{searchAvailable:true}});});
+it('requires a current paired membership before contacting the public server',async()=>{m.session.mockResolvedValue(undefined);const {POST}=await import('../route');expect((await POST(request({action:'check'}))).status).toBe(401);expect(m.check).not.toHaveBeenCalled();expect(m.session).toHaveBeenCalledWith(expect.anything(),expect.objectContaining({allowApiKey:false,requiredScope:'pipeline:read'}));});
+it('uses the authenticated organization and audits no query content',async()=>{const {POST}=await import('../route');expect((await POST(request({action:'search',query:'App Service'}))).status).toBe(200);expect(m.search).toHaveBeenCalledWith(expect.anything(),'org-1','App Service');expect(m.audit).toHaveBeenCalledWith(expect.objectContaining({organizationId:'org-1',actorUserId:'user-1',action:'mcp.documentation_read',detail:{operation:'search',provider:'microsoft_learn',resultCount:0}}));});
+it.each([{action:'search',query:'docs',organizationId:'other'}, {action:'shell'}, {action:'check',query:'not allowed'}, {action:'search',query:'x'.repeat(3000)}])('rejects invalid or oversized payloads',async body=>{const {POST}=await import('../route');expect((await POST(request(body))).status).toBe(400);expect(m.search).not.toHaveBeenCalled();expect(m.check).not.toHaveBeenCalled();});
+it('rate limits before network access',async()=>{m.limit.mockReturnValue({allowed:false});const {POST}=await import('../route');expect((await POST(request({action:'check'}))).status).toBe(429);expect(m.check).not.toHaveBeenCalled();});
+it('requires enabled installation for documentation search',async()=>{m.search.mockResolvedValue({ok:false,error:'mcp_not_enabled'});const {POST}=await import('../route');expect((await POST(request({action:'search',query:'Azure'}))).status).toBe(409);});
+it('withholds success if required audit fails',async()=>{m.audit.mockRejectedValue(new Error('private failure'));const {POST}=await import('../route');const response=await POST(request({action:'check'}));expect(response.status).toBe(503);expect(await response.json()).toEqual({ok:false,error:'documentation_audit_unconfirmed'});});
