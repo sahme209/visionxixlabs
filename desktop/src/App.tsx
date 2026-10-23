@@ -1,5 +1,6 @@
 import type { LocalEditRequest } from "./lib/localEditReview";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { WorkspaceCommands } from "./components/WorkspaceCommands";
 import { Sidebar } from "./components/Sidebar";
 import { TopBar } from "./components/TopBar";
 import { WorkspaceViewBoundary } from "./components/WorkspaceViewBoundary";
@@ -121,6 +122,7 @@ export default function App() {
 
 function AuthenticatedWorkspace({ identity }: { identity: VerifiedDesktopIdentity }) {
   const [activeView, setActiveView] = useState<CustomerView>("agent");
+  const [commandsOpen, setCommandsOpen] = useState(false);
   const [booted, setBooted] = useState(false);
   const settingsReturnView = useRef<CustomerView>("agent");
   const [repositoryVisited, setRepositoryVisited] = useState(false);
@@ -142,7 +144,7 @@ function AuthenticatedWorkspace({ identity }: { identity: VerifiedDesktopIdentit
     <div className="flex h-screen bg-axiom-bg text-white overflow-hidden">
       {activeView !== "settings" && <Sidebar activeView={activeView} onNavigate={navigate} />}
       <main className="flex-1 flex flex-col min-w-0 min-h-0">
-        {activeView !== "settings" && <TopBar activeView={activeView} identity={identity} />}
+        {activeView !== "settings" && <TopBar activeView={activeView} identity={identity} onOpenCommands={() => setCommandsOpen(true)} />}
         <div hidden={activeView !== "agent"} style={{ display: activeView === "agent" ? "flex" : "none" }} className="min-h-0 flex-1 flex-col">
           <WorkspaceViewBoundary onReturnToAgent={() => setActiveView("agent")}>
             <AgentChatView onReviewLocalEdit={(edit, edits) => { setEditRequest({edit, edits, context: desktopClient.config, workspace: identity.organizationId}); setRepositoryVisited(true); setActiveView("repository-workspace"); }} requestedLocalCode={requestedLocalCode} requestedSkill={requestedSkill} active={activeView === "agent"} identity={identity} onOpenSettings={(destination) => { settingsReturnView.current = "agent"; setSettingsDestination(destination); setActiveView("settings"); }} />
@@ -161,6 +163,7 @@ function AuthenticatedWorkspace({ identity }: { identity: VerifiedDesktopIdentit
           {activeView === "settings" && <SettingsView identity={identity} initialSection={settingsDestination} onClose={() => setActiveView(settingsReturnView.current)} />}
         </WorkspaceViewBoundary>}
       </main>
+      <WorkspaceCommands open={commandsOpen} onOpenChange={setCommandsOpen} onNavigate={navigate} />
     </div>
   );
 }
