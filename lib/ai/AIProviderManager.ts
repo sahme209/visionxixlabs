@@ -23,6 +23,7 @@ import { redact } from "@/lib/security/redaction";
 import { recordAIUsageEvent } from "@/lib/billing/recordAIUsageEvent";
 import { consumeGovernedExtractAdmission, consumeGovernedTextAdmission, type GovernedAIAdmission, type GovernedExtractAdmission } from "@/lib/billing/governedExtractAdmission";
 import { parseGatewayStructuredResponse, VercelGatewayProvider } from "./providers/VercelGatewayProvider";
+import { AccountedDecisionMalformed } from "./accountedDecisionMalformed";
 import { AgentStreamInterrupted, streamedDecisionMessage } from "./streamedDecisionMessage";
 
 let SINGLETON: AIProviderManager | null = null;
@@ -50,6 +51,11 @@ export interface ProviderStatusRow {
   defaultModel: string;
   /** Index in the priority list (lower = higher priority). */
   priority: number;
+}
+
+function parseAccountedDecision<T>(response: AITextResponse): AIStructuredResponse<T> {
+  try { return parseGatewayStructuredResponse<T>(response); }
+  catch { throw new AccountedDecisionMalformed(response.usage); }
 }
 
 export class AIProviderManager {
@@ -264,7 +270,7 @@ export class AIProviderManager {
     }
     // A fully accounted malformed envelope may receive a separately admitted
     // repair; keep parsing outside the uncertainty boundary above.
-    return parseGatewayStructuredResponse<T>(response);
+    return parseAccountedDecision<T>(response);
   }
 
   /** Streaming Agent decisions stay display-only until the complete envelope
@@ -306,7 +312,7 @@ export class AIProviderManager {
     } catch { throw new AgentStreamInterrupted(); }
     // Only a fully accounted malformed JSON envelope can receive the existing
     // separately admitted repair. Stream/write uncertainty above never can.
-    return parseGatewayStructuredResponse<T>(response);
+    return parseAccountedDecision<T>(response);
   }
 
   async *streamText(prompt: string, options?: AIRequestOptions & { only?: AIProviderName }): AsyncIterable<AIStreamChunk> {

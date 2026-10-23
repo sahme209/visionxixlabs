@@ -21,6 +21,7 @@ import { findTool, toolCatalogPrompt, classifyRisk, type ToolRiskLevel } from ".
 import { resolveGovernedAiCall, type GovernedAiCallError } from "./governedAiCall";
 import { GovernedAiCallRefusal } from "./governedAiCallRefusal";
 import { AgentStreamInterrupted } from "@/lib/ai/streamedDecisionMessage";
+import { AccountedDecisionMalformed } from "@/lib/ai/accountedDecisionMalformed";
 import { readWorkspaceAgentIdentity } from "./agentIdentityPolicy";
 import type { AITextResponse } from "@/lib/ai/AIProvider";
 
@@ -188,8 +189,10 @@ async function extractDecision(
       if (parsed) return parsed;
     } catch (error) {
       if (error instanceof GovernedAiCallRefusal || error instanceof AgentStreamInterrupted || error instanceof Error && error.name === "AbortError") throw error;
-      // One bounded retry handles providers that wrap, truncate, or otherwise
-      // miss the structured contract. Writes remain proposals after parsing.
+      if (!(error instanceof AccountedDecisionMalformed)) throw error;
+      if (error.usage !== undefined) onUsage(error.usage);
+      // Only a durably accounted malformed envelope grants this bounded repair.
+      // Its numeric usage remains part of the receipt even though parsing failed.
     }
   }
   return null;
@@ -236,8 +239,10 @@ export async function runDecisionLoop(input: {
   const withUsage = <T extends DecisionLoopOutcome>(outcome: T): T => {
     if (observedUsage.length === 0) return outcome;
     const sum = (field: "promptTokens" | "completionTokens" | "totalTokens") => {
-      const values = observedUsage.flatMap((usage) => typeof usage?.[field] === "number" ? [usage[field] as number] : []);
-      return values.length > 0 ? values.reduce((total, value) => total + value, 0) : null;
+      const values = observedUsage.map(usage => usage?.[field]);
+      if (values.some(value => !Number.isSafeInteger(value) || value! < 0)) return null;
+      const total = values.reduce<number>((sum, value) => sum + value!, 0);
+      return Number.isSafeInteger(total) ? total : null;
     };
     return {
       ...outcome,

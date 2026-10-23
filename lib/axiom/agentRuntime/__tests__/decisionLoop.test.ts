@@ -523,6 +523,14 @@ describe("runDecisionLoop", () => {
 
 
 describe("streaming cancellation does not grant a paid repair or tool execution", () => {
+  it("does not mistake an unaccounted parser exception for permission to make a repair call",async()=>{
+    const extract=vi.fn(async()=>{throw new SyntaxError("synthetic unaccounted failure");});
+    mocks.readWorkspaceAgentIdentity.mockResolvedValue({enabled:true,allowedTools:["list_environments"]});
+    mocks.resolveGovernedAiCall.mockResolvedValue({ok:true,extract});
+    const tool=vi.fn();
+    await expect(runDecisionLoop({organizationId:"o",userId:"actor",correlationId:"unaccounted",transcript:[],executeReadOnlyTool:tool,isProdEnvironmentTarget:noopProdCheck})).rejects.toBeInstanceOf(SyntaxError);
+    expect(extract).toHaveBeenCalledOnce();expect(tool).not.toHaveBeenCalled();
+  });
   it.each([false, true])("stops on dispatch uncertainty without a second extraction (streaming=%s)", async streaming => {
     const { AgentStreamInterrupted } = await import("@/lib/ai/streamedDecisionMessage");
     mocks.readWorkspaceAgentIdentity.mockResolvedValue({ enabled: true, allowedTools: ["list_environments"] });
