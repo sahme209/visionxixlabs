@@ -71,6 +71,7 @@ function RepositoryWorkspaceSession({ revision, active, onAskAgent, editRequest,
   const [status, setStatus] = useState<RepositoryStatus | null>(null);
   const [files, setFiles] = useState<string[]>([]);
   const [filter, setFilter] = useState("");
+  const [fileNavigation, setFileNavigation] = useState<"files" | "changes">("files");
   const [showAllFiles, setShowAllFiles] = useState(false);
   const [selectedFile, setSelectedFile] = useState<string | null>(null);
   const [content, setContent] = useState("");
@@ -246,6 +247,7 @@ function RepositoryWorkspaceSession({ revision, active, onAskAgent, editRequest,
     const relevantFiles = showAllFiles ? files : files.filter((file) => !isWorkspaceNoise(file));
     return query ? relevantFiles.filter((file) => file.toLowerCase().includes(query)) : relevantFiles;
   }, [files, filter, showAllFiles]);
+  const visibleChanges = (status?.changedFiles ?? []).filter(change => change.path.toLowerCase().includes(filter.trim().toLowerCase()));
   const connectedRepository = status?.repositoryFullName
     ? remoteRepositories.find((repository) => repository.fullName.toLowerCase() === status.repositoryFullName?.toLowerCase())
     : undefined;
@@ -775,20 +777,31 @@ function RepositoryWorkspaceSession({ revision, active, onAskAgent, editRequest,
           {repositories.map((repository) => <button key={repository} type="button" onClick={() => chooseRepository(repository)} className={`mb-1 w-full truncate rounded px-2 py-2 text-left text-xs ${selectedRepository === repository ? "bg-white/10 text-white" : "text-zinc-400 hover:bg-white/[0.05]"}`} title={repository}>{repository.split("/").pop()}</button>)}
         </div>
         <div className="border-b border-white/[0.06] p-2">
+          <div className="mb-2 flex gap-1" aria-label="Repository file navigation">
+            <button type="button" aria-pressed={fileNavigation === "files"} onClick={() => setFileNavigation("files")} className={`flex-1 rounded px-2 py-1.5 text-xs ${fileNavigation === "files" ? "bg-white/10 text-zinc-100" : "text-zinc-500"}`}>Files</button>
+            <button type="button" aria-pressed={fileNavigation === "changes"} onClick={() => setFileNavigation("changes")} className={`flex-1 rounded px-2 py-1.5 text-xs ${fileNavigation === "changes" ? "bg-white/10 text-zinc-100" : "text-zinc-500"}`}>Changes</button>
+          </div>
           <input value={filter} onChange={(event) => setFilter(event.target.value)} placeholder="Filter files" className="w-full rounded-md border border-white/10 bg-black/20 px-2.5 py-2 text-xs outline-none focus:border-violet-400/50" />
           <div className="mt-2 flex items-center justify-between px-1 text-[10px] text-zinc-600">
-            <span>{visibleFiles.length} files</span>
-            <button type="button" onClick={() => setShowAllFiles((current) => !current)} className="rounded px-1.5 py-1 text-zinc-400 hover:bg-white/[0.05] hover:text-zinc-200">{showAllFiles ? "Source files" : "All files"}</button>
+            <span>{fileNavigation === "changes" ? `${visibleChanges.length} recorded changes` : `${visibleFiles.length} files`}</span>
+            <button type="button" disabled={fileNavigation === "changes"} onClick={() => setShowAllFiles((current) => !current)} className="rounded px-1.5 py-1 text-zinc-400 hover:bg-white/[0.05] hover:text-zinc-200">{showAllFiles ? "Source files" : "All files"}</button>
           </div>
         </div>
         <div className="min-h-0 flex-1 overflow-y-auto px-2 pb-2">
-          {visibleFiles.map((file) => <button key={file} type="button" onClick={() => selectFile(file)} className={`block w-full truncate rounded px-2 py-1.5 text-left font-mono text-[11px] ${selectedFile === file ? "bg-violet-500/15 text-violet-100" : "text-zinc-500 hover:bg-white/[0.04] hover:text-zinc-300"}`} title={file}>{file}</button>)}
+          {fileNavigation === "changes" && <>
+            <button type="button" disabled={Boolean(busy) || !selectedRepository} onClick={() => {if (selectedRepository) void run("refresh-changes", () => refreshRepository(selectedRepository));}} className="mx-2 my-1 rounded border border-white/10 px-2 py-1 text-[10px] text-zinc-400 disabled:opacity-40">Refresh changes</button>
+            <p className="px-2 py-2 text-[10px] leading-4 text-zinc-500">Recorded Git status. Open an available file to inspect its current contents. Deleted or unavailable files cannot be opened.</p>
+            {!status && <p role="status" className="px-2 py-2 text-xs text-zinc-500">Repository status is not verified.</p>}
+            {status && visibleChanges.length === 0 && <p role="status" className="px-2 py-2 text-xs text-zinc-500">{filter.trim() ? "No matching changed files." : "No recorded Git changes."}</p>}
+            {visibleChanges.map(change => <button key={change.path} type="button" aria-label={`${change.status} ${change.path}`} disabled={Boolean(busy) || !files.includes(change.path)} onClick={() => selectFile(change.path)} title={`${change.status} ${change.path}${!files.includes(change.path) ? " · unavailable in the current file list" : ""}`} className={`flex w-full items-center gap-2 rounded px-2 py-1.5 text-left font-mono text-[11px] disabled:opacity-40 ${selectedFile === change.path ? "bg-violet-500/15 text-violet-100" : "text-zinc-400 hover:bg-white/[0.04]"}`}><span className="w-5 shrink-0 text-amber-300">{change.status}</span><span className="truncate">{change.path}</span></button>)}
+          </>}
+          {fileNavigation === "files" && visibleFiles.map((file) => <button key={file} type="button" onClick={() => selectFile(file)} className={`block w-full truncate rounded px-2 py-1.5 text-left font-mono text-[11px] ${selectedFile === file ? "bg-violet-500/15 text-violet-100" : "text-zinc-500 hover:bg-white/[0.04] hover:text-zinc-300"}`} title={file}>{file}</button>)}
         </div>
       </aside>
       <section className="flex min-w-0 flex-1 flex-col">
         <div className="flex flex-wrap items-center gap-2 border-b border-white/[0.07] px-3 py-2">
           <span className="mr-auto truncate text-xs text-zinc-300">{status ? `${status.repositoryFullName ?? "Local repository"} · ${status.branch}` : "Choose a repository"}</span>
-          {status && <span className="text-[10px] text-zinc-600">↑{status.ahead} ↓{status.behind} · {status.changedFiles.length} changed</span>}
+          {status && <button type="button" onClick={() => setFileNavigation("changes")} className="text-[10px] text-zinc-500 hover:text-zinc-200" aria-label={`View ${status.changedFiles.length} changed files`}>↑{status.ahead} ↓{status.behind} · {status.changedFiles.length} changed</button>}
           <input value={branchName} onChange={(event) => setBranchName(event.target.value)} placeholder="new branch" className="w-36 rounded border border-white/10 bg-black/20 px-2 py-1.5 text-xs outline-none" />
           <button type="button" disabled={Boolean(busy) || !selectedRepository || !branchName.trim()} onClick={() => void createBranch()} className="btn-secondary disabled:opacity-40">Branch</button>
           <button type="button" disabled={Boolean(busy) || !status?.repositoryFullName} onClick={() => sync("pull")} className="btn-secondary disabled:opacity-40">{busy === "pull" ? "Pulling…" : "Pull"}</button>

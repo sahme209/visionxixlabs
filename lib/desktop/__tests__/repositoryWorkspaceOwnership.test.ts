@@ -900,3 +900,33 @@ it("requires fresh review after a pending old load is rejected",async()=>{
  statuses=path=>status(path);fireEvent.click(screen.getByRole("button",{name:"Load editor draft"}));await screen.findByDisplayValue("draft B");
  expect(m.invoke.mock.calls.filter(([name])=>name==="write_repository_file"||name==="create_repository_file")).toHaveLength(0);
 });
+
+it("filters changed files and opens an available change without writing or publishing", async () => {
+  statuses = path => ({...status(path), changedFiles: [{path:"other.ts",status:"M"},{path:"deleted.ts",status:"D"}]});
+  await start();
+  fireEvent.click(screen.getByRole("button",{name:"Changes"}));
+  expect(screen.queryByRole("button",{name:"same.ts"})).toBeNull();
+  expect((screen.getByRole("button",{name:"D deleted.ts"}) as HTMLButtonElement).disabled).toBe(true);
+  fireEvent.click(screen.getByRole("button",{name:"M other.ts"}));
+  await screen.findByRole("textbox",{name:"Editing other.ts"});
+  expect(m.invoke.mock.calls.filter(([command])=>["write_repository_file","push_repository","commit_repository_file"].includes(command))).toEqual([]);
+});
+it("keeps draft protection when switching through changed files", async () => {
+  statuses = path => ({...status(path), changedFiles:[{path:"other.ts",status:"M"}]});
+  await start(); fireEvent.click(screen.getByRole("button",{name:"same.ts"}));
+  fireEvent.change(await screen.findByRole("textbox",{name:"Editing same.ts"}),{target:{value:"Unsent local edit"}});
+  fireEvent.click(screen.getByRole("button",{name:"Changes"}));
+  fireEvent.click(screen.getByRole("button",{name:"M other.ts"}));
+  expect(screen.getByRole("alertdialog")).toBeTruthy();
+  fireEvent.click(screen.getByRole("button",{name:"Cancel"}));
+  expect(screen.getByDisplayValue("Unsent local edit")).toBeTruthy();
+});
+it("refreshes recorded changes without replacing the unsaved editor buffer", async () => {
+  await start(); fireEvent.click(screen.getByRole("button", {name:"same.ts"}));
+  fireEvent.change(await screen.findByRole("textbox", {name:"Editing same.ts"}), {target:{value:"Unsaved stays here"}});
+  statuses = path => ({...status(path), changedFiles:[{path:"other.ts",status:"M"}]});
+  fireEvent.click(screen.getByRole("button", {name:"Changes"}));
+  fireEvent.click(screen.getByRole("button", {name:"Refresh changes"}));
+  await screen.findByRole("button", {name:"M other.ts"});
+  expect(screen.getByDisplayValue("Unsaved stays here")).toBeTruthy();
+});
