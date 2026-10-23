@@ -74,6 +74,8 @@ export function resolveAgentEffortProfile(mode: AgentOperationMode | undefined):
   return { label: "Engineer", maxDecisionIterations: 4 };
 }
 
+const RECHECK_OBSERVATION_TOOLS = new Set(["list_cloud_accounts", "read_aws_inventory", "list_airflow_dags", "read_airflow_runs", "read_airflow_tasks"]);
+
 const ENGINEERING_WRITE_TOOLS = new Set([
   "create_github_branch",
   "commit_github_file",
@@ -301,7 +303,7 @@ export async function runDecisionLoop(input: {
     input.streaming?.abortSignal.throwIfAborted();
     const activity = startActivity(tool.name);
     const executed = await input.executeReadOnlyTool(tool.name, input.initialToolCall.args);
-    if (tool.name === "read_aws_inventory" || tool.name === "list_cloud_accounts") {
+    if (RECHECK_OBSERVATION_TOOLS.has(tool.name)) {
       const afterReadAuthority = await recheckToolAuthority(tool.name);
       if (afterReadAuthority) return withUsage(afterReadAuthority);
     }
@@ -369,7 +371,7 @@ export async function runDecisionLoop(input: {
     input.streaming?.abortSignal.throwIfAborted();
     const activity = startActivity(tool.name);
     const executed = await input.executeReadOnlyTool(tool.name, args);
-    if (tool.name === "read_aws_inventory" || tool.name === "list_cloud_accounts") {
+    if (RECHECK_OBSERVATION_TOOLS.has(tool.name)) {
       const afterReadAuthority = await recheckToolAuthority(tool.name);
       if (afterReadAuthority) return withUsage(afterReadAuthority);
     }

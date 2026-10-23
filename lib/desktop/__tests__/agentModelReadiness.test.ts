@@ -735,3 +735,48 @@ it("keeps the editor and Agent drafts mounted across split workspace and Setting
  expect((screen.getByRole("textbox",{name:"Agent request"}) as HTMLTextAreaElement).value).toBe("Keep this unsent request");
  expect(m.invoke.mock.calls.filter(([command])=>command==="read_repository_file")).toHaveLength(1);expect(m.client.sendAgentMessage).not.toHaveBeenCalled();
 });
+
+it("loads older chats without changing the selected conversation or its unsent draft",async()=>{
+  const older={...summary,id:"older-chat",title:"Older investigation"};
+  m.client.listAgentConversations.mockResolvedValueOnce({ok:true,data:{conversations:[summary],nextCursor:"page-two"}}).mockResolvedValueOnce({ok:true,data:{conversations:[older],nextCursor:null}});
+  render(createElement(AgentChatView));await draft();fireEvent.click(screen.getByRole("button",{name:"Search chats"}));
+  fireEvent.click(screen.getByRole("button",{name:"Load older chats"}));
+  await screen.findByRole("button",{name:"Older investigation"});
+  expect(m.client.listAgentConversations).toHaveBeenLastCalledWith({cursor:"page-two"});
+  expect((screen.getByRole("textbox") as HTMLTextAreaElement).value).toBe("Keep this unsent request");
+  expect(m.client.getAgentConversation).toHaveBeenCalledTimes(1);
+});
+it("searches all saved titles only on request and ignores a response for an edited query",async()=>{
+  const pending=deferred<unknown>();m.client.listAgentConversations.mockResolvedValueOnce({ok:true,data:{conversations:[summary]}}).mockReturnValueOnce(pending.promise);
+  render(createElement(AgentChatView));await draft();fireEvent.click(screen.getByRole("button",{name:"Search chats"}));
+  fireEvent.change(screen.getByRole("searchbox",{name:"Search conversations"}),{target:{value:"Airflow"}});
+  expect(m.client.listAgentConversations).toHaveBeenCalledTimes(1);
+  fireEvent.click(screen.getByRole("button",{name:"Search all saved titles"}));
+  expect(m.client.listAgentConversations).toHaveBeenLastCalledWith({query:"Airflow"});
+  fireEvent.change(screen.getByRole("searchbox",{name:"Search conversations"}),{target:{value:"release"}});
+  await act(async()=>{pending.resolve({ok:true,data:{conversations:[{...summary,id:"old-query",title:"Airflow old result"}],nextCursor:null}});});
+  expect(screen.queryByRole("button",{name:"Airflow old result"})).toBeNull();
+  expect((screen.getByRole("textbox") as HTMLTextAreaElement).value).toBe("Keep this unsent request");
+});
+it("shows a bounded retryable history error without replacing current chat",async()=>{
+  m.client.listAgentConversations.mockResolvedValueOnce({ok:true,data:{conversations:[summary],nextCursor:"page-two"}}).mockRejectedValueOnce(new Error("private transport detail"));
+  render(createElement(AgentChatView));await draft();fireEvent.click(screen.getByRole("button",{name:"Search chats"}));fireEvent.click(screen.getByRole("button",{name:"Load older chats"}));
+  await screen.findByText("Saved chats could not be loaded. Try again.");
+  expect(screen.queryByText("private transport detail")).toBeNull();expect(screen.getByRole("button",{name:"Load older chats"})).toBeTruthy();
+});
+
+it("opens a server title match and restores the first chat draft when returning",async()=>{
+  const match={...summary,id:"older-chat",title:"Airflow from last month"};
+  m.client.listAgentConversations.mockResolvedValueOnce({ok:true,data:{conversations:[summary]}}).mockResolvedValueOnce({ok:true,data:{conversations:[match],nextCursor:null,historyQueryVersion:1}});
+  m.client.getAgentConversation.mockImplementation(async id=>({ok:true,data:{...(id===match.id?match:summary),turns:[],actions:[]}}));
+  render(createElement(AgentChatView));await draft();fireEvent.click(screen.getByRole("button",{name:"Search chats"}));fireEvent.change(screen.getByRole("searchbox",{name:"Search conversations"}),{target:{value:"Airflow"}});fireEvent.click(screen.getByRole("button",{name:"Search all saved titles"}));
+  fireEvent.click(await screen.findByRole("button",{name:match.title}));
+  await waitFor(()=>expect((screen.getByRole("combobox",{name:"Agent conversation"}) as HTMLSelectElement).value).toBe(match.id));
+  fireEvent.change(screen.getByRole("combobox",{name:"Agent conversation"}),{target:{value:summary.id}});
+  await waitFor(()=>expect((screen.getByRole("textbox") as HTMLTextAreaElement).value).toBe("Keep this unsent request"));expect(m.client.sendAgentMessage).not.toHaveBeenCalled();
+});
+it("does not label an old service's unfiltered response as saved title matches",async()=>{
+  m.client.listAgentConversations.mockResolvedValue({ok:true,data:{conversations:[summary]}});
+  render(createElement(AgentChatView));await draft();fireEvent.click(screen.getByRole("button",{name:"Search chats"}));fireEvent.change(screen.getByRole("searchbox",{name:"Search conversations"}),{target:{value:"Airflow"}});fireEvent.click(screen.getByRole("button",{name:"Search all saved titles"}));
+  await screen.findByText(/This service needs an update/);expect(screen.queryByText(/Saved title matches for/)).toBeNull();
+});

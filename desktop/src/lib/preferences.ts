@@ -28,14 +28,23 @@ export function applyDesktopPreferences(preferences: DesktopPreferences) {
   root.dataset.highContrast = preferences.high_contrast ? "true" : "false";
 }
 
+// A Settings view can unmount while native storage is settling. Keep ordering
+// here, across views, so a reopened editor cannot read ahead of a pending save.
+let pendingPreferenceWrite: Promise<void> = Promise.resolve();
+
 export async function readDesktopPreferences(): Promise<DesktopPreferences> {
+  await pendingPreferenceWrite.catch(() => undefined);
   const preferences = await invoke<DesktopPreferences>("get_preferences");
   applyDesktopPreferences(preferences);
   return preferences;
 }
 
 export async function writeDesktopPreferences(preferences: DesktopPreferences): Promise<void> {
-  await invoke("set_preferences", { prefs: preferences });
-  applyDesktopPreferences(preferences);
-  window.dispatchEvent(new Event("axiom:preferences-changed"));
+  const write = pendingPreferenceWrite.catch(() => undefined).then(async () => {
+    await invoke("set_preferences", { prefs: preferences });
+    applyDesktopPreferences(preferences);
+    window.dispatchEvent(new Event("axiom:preferences-changed"));
+  });
+  pendingPreferenceWrite = write;
+  await write;
 }

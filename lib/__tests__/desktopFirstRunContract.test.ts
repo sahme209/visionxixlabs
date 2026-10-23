@@ -128,7 +128,7 @@ describe("desktop first-run contract", () => {
     expect(settings).toContain("Account & session");
     expect(settings).toContain("Access & usage");
     expect(settings).toContain("Pilot access is no-charge");
-    expect(settings).toContain("Repositories & triggers");
+    expect(settings).toContain('Group label="Repositories"');
     expect(settings).toContain("A return from Checkout does not grant access by itself");
     expect(settings).not.toContain("Paste desktop pairing JSON");
     expect(settings).not.toContain("Save API key");

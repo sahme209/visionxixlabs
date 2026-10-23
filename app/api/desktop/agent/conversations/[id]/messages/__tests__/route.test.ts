@@ -71,6 +71,13 @@ describe("POST /api/desktop/agent/conversations/[id]/messages", () => {
     expect(JSON.stringify(mocks.createAudit.mock.calls)).not.toContain("private request text");
   });
 
+  it("does not seed a repository tool outside the selected automation profile", async () => {
+    mocks.runDecisionLoop.mockResolvedValue({kind:"final",message:"Observed"});
+    const {POST}=await import("../route");
+    const response=await POST(request({message:"Inspect Airflow tasks",workspaceContext:{agentProfile:"automation",operationMode:"inspect",repositoryFullName:"fixture/repo",branch:"main"}}),params);
+    expect(response.status).toBe(200);
+    expect(mocks.runDecisionLoop).toHaveBeenCalledWith(expect.objectContaining({agentProfile:"automation",initialToolCall:undefined}));
+  });
   it("requires a desktop session", async () => {
     mocks.resolveRequestDesktopSession.mockResolvedValue(undefined);
     const { POST } = await import("../route");

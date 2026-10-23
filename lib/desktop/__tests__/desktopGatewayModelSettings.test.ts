@@ -14,7 +14,7 @@ beforeEach(()=>{vi.clearAllMocks();mocks.config={workspace:"inert"};mocks.prefer
 afterEach(cleanup);
 async function show(){render(createElement(SettingsView,{identity:{} as never,initialSection:"models"}));await screen.findByRole("switch",{name:"Disable Grok"});}
 it("actual Settings adds an approval while retaining the Agent default and honest selection copy",async()=>{
- await show();expect(screen.getByRole("switch",{name:"Disable GPT"}).getAttribute("aria-checked")).toBe("true");fireEvent.click(screen.getByRole("switch",{name:"Enable Claude"}));await screen.findByRole("switch",{name:"Disable Claude"});expect(mocks.update.mock.calls[0][0].gatewaySelection).toEqual({...metadata(),approvedModelIds:[...metadata().approvedModelIds,"anthropic/claude-sonnet-4"]});expect(mocks.update.mock.calls[0][0].modelSelections.vercel_gateway).toBe("xai/grok-4");expect(screen.getByText(/Agent chat uses the workspace default/)).toBeTruthy();
+ await show();expect(screen.getByRole("switch",{name:"Disable GPT"}).getAttribute("aria-checked")).toBe("true");fireEvent.click(screen.getByRole("switch",{name:"Enable Claude"}));await screen.findByRole("switch",{name:"Disable Claude"});expect(mocks.update.mock.calls[0][0].gatewaySelection).toEqual({...metadata(),approvedModelIds:[...metadata().approvedModelIds,"anthropic/claude-sonnet-4"]});expect(mocks.update.mock.calls[0][0].modelSelections.vercel_gateway).toBe("xai/grok-4");expect(screen.getByText(/Agent chat starts with the workspace default/)).toBeTruthy();
 });
 it("actual Settings promotes the remaining default then disables the last Gateway approval",async()=>{
  await show();fireEvent.click(screen.getByRole("switch",{name:"Disable Grok"}));await screen.findByRole("switch",{name:"Enable Grok"});expect(mocks.update.mock.calls[0][0].modelSelections.vercel_gateway).toBe("openai/gpt-4o");expect(screen.getByText("GPT").textContent).toContain("Workspace default");fireEvent.click(screen.getByRole("switch",{name:"Disable GPT"}));await screen.findByRole("switch",{name:"Enable GPT"});expect(mocks.update.mock.calls[1][0]).toEqual({enabled:false,allowedProviders:[],modelSelections:{},fallbackOrder:[]});
@@ -66,4 +66,23 @@ it("opens the exact Agents section directly without loading or mutating model po
  expect(screen.getByRole("heading",{name:"Agents"})).toBeTruthy();
  expect(screen.getByText("Coding Agent")).toBeTruthy();
  expect(mocks.status).not.toHaveBeenCalled();expect(mocks.update).not.toHaveBeenCalled();
+});
+it("finds Grok by its actual Gateway namespace and filters approvals without changing policy",async()=>{
+ const value=await mocks.status();value.data.providers[0].models.push({id:"spacexai/grok-build-0.1",label:"Grok Build 0.1",tier:"preferred"},{id:"spacexai/grok-4.7",label:"Grok 4.7",tier:"preferred"});mocks.status.mockResolvedValue(value);await show();
+ fireEvent.change(screen.getByLabelText("Search models"),{target:{value:"spacexai"}});
+ expect(screen.getByRole("switch",{name:"Enable Grok Build 0.1"})).toBeTruthy();
+ expect(screen.getByRole("switch",{name:"Enable Grok 4.7"})).toBeTruthy();
+ expect(screen.queryByRole("switch",{name:"Disable GPT"})).toBeNull();
+ fireEvent.change(screen.getByLabelText("Search models"),{target:{value:""}});
+ fireEvent.click(screen.getByRole("button",{name:"Approved models"}));
+ expect(screen.getByRole("switch",{name:"Disable GPT"})).toBeTruthy();
+ expect(screen.queryByRole("switch",{name:"Enable Grok Build 0.1"})).toBeNull();
+ expect(mocks.update).not.toHaveBeenCalled();
+});
+it("bounds large catalog rendering while searching the complete catalog without policy writes",async()=>{
+ mocks.status.mockResolvedValue({ok:true,data:{providers:[{provider:"vercel_gateway",models:Array.from({length:125},(_,index)=>({id:`vendor/model-${index}`,label:`Catalog model ${index}`,tier:"standard"}))}],policy:{enabled:false,allowedProviders:[],modelSelections:{},fallbackOrder:[]}}});
+ render(createElement(SettingsView,{identity:{} as never,initialSection:"models"}));await screen.findByRole("switch",{name:"Enable Catalog model 0"});expect(screen.getAllByRole("switch")).toHaveLength(50);
+ fireEvent.click(screen.getByRole("button",{name:"Next models"}));expect(screen.getAllByRole("switch")).toHaveLength(50);expect(screen.getByRole("switch",{name:"Enable Catalog model 50"})).toBeTruthy();expect(screen.queryByRole("switch",{name:"Enable Catalog model 0"})).toBeNull();
+ fireEvent.change(screen.getByRole("textbox",{name:"Search models"}),{target:{value:"vendor/model-124"}});expect(screen.getAllByRole("switch")).toHaveLength(1);expect(screen.getByRole("switch",{name:"Enable Catalog model 124"})).toBeTruthy();
+ fireEvent.change(screen.getByRole("textbox",{name:"Search models"}),{target:{value:""}});expect(screen.getAllByRole("switch")).toHaveLength(50);expect(mocks.update).not.toHaveBeenCalled();
 });

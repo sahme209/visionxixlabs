@@ -217,6 +217,8 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
 
     const memoryRepo = prisma as unknown as WorkspaceMemoryRepo;
     const workspaceContext = workspaceMemoryPrompt(await loadWorkspaceMemory(memoryRepo, organizationId));
+    const repositoryGrounding = initialRepositoryGrounding({ message, mode, repositoryFullName, branch, filePath });
+    const initialToolCall = repositoryGrounding && (profile.allowedTools === null || profile.allowedTools.includes(repositoryGrounding.toolName)) ? repositoryGrounding : undefined;
     const outcome = await runDecisionLoop({
       organizationId,
       streaming,
@@ -230,7 +232,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
       preferredModel: selectedModel,
       operationMode,
       agentProfile: profile.id,
-      initialToolCall: initialRepositoryGrounding({ message, mode, repositoryFullName, branch, filePath }),
+      initialToolCall,
       executeReadOnlyTool: async (toolName, args) => {
         const result = await executeReadOnlyTool(prisma as unknown as ToolExecutionRepo, organizationId, toolName, args, {
           principal: { organizationId, userId: String(actor.userId), sessionId: actor.id },

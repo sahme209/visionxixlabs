@@ -2,7 +2,7 @@
 import { createElement, Profiler, useState } from "react";
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import { act, cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
-const m = vi.hoisted(() => ({ invoke: vi.fn(), client: { config: {} as { sessionToken?: string }, listGithubRepositories: vi.fn(), mintGithubCloneToken: vi.fn(), openGithubPullRequest: vi.fn(), subscribeContext: (listener: () => void) => { void listener; return () => {}; }, getContextRevision: (): number => 0, setSession: (token: string | undefined) => { void token; } } }));
+const m = vi.hoisted(() => ({ invoke: vi.fn(), client: { config: {} as { sessionToken?: string; apiBase?: string }, listGithubRepositories: vi.fn(), mintGithubCloneToken: vi.fn(), openGithubPullRequest: vi.fn(), subscribeContext: (listener: () => void) => { void listener; return () => {}; }, getContextRevision: (): number => 0, setSession: (token: string | undefined) => { void token; } } }));
 vi.mock("@tauri-apps/api/core", () => ({ invoke: m.invoke }));
 vi.mock("../../../desktop/src/lib/desktopClient", async original => {
   const actual = await original<typeof import("../../../desktop/src/lib/desktopClient")>();
@@ -929,4 +929,35 @@ it("refreshes recorded changes without replacing the unsaved editor buffer", asy
   fireEvent.click(screen.getByRole("button", {name:"Refresh changes"}));
   await screen.findByRole("button", {name:"M other.ts"});
   expect(screen.getByDisplayValue("Unsaved stays here")).toBeTruthy();
+});
+it("restores the last verified repository for the same signed-in workspace instead of the first folder",async()=>{
+ const props={workspace:"org",selectionUser:"fixture-user"};
+ const first=render(createElement(RepositoryWorkspaceView,props));await screen.findByRole("button",{name:"same.ts"});
+ fireEvent.click(screen.getByRole("button",{name:"B"}));await waitFor(()=>expect(screen.getByLabelText("Active local editor repository").textContent).toContain("B"));first.unmount();
+ const second=render(createElement(RepositoryWorkspaceView,props));await screen.findByRole("button",{name:"same.ts"});
+ expect(screen.getByLabelText("Active local editor repository").textContent).toContain("B");second.unmount();
+ render(createElement(RepositoryWorkspaceView,{...props,selectionUser:"other-user"}));await screen.findByRole("button",{name:"same.ts"});
+ expect(screen.getByLabelText("Active local editor repository").textContent).toContain("A");
+});
+it("never opens an absent stored repository and ignores storage when user scope is unverified",async()=>{
+ const props={workspace:"org",selectionUser:"fixture-user"};const first=render(createElement(RepositoryWorkspaceView,props));await screen.findByRole("button",{name:"same.ts"});fireEvent.click(screen.getByRole("button",{name:"B"}));first.unmount();
+ localRepositories=["/owned/A"];render(createElement(RepositoryWorkspaceView,props));await screen.findByRole("button",{name:"same.ts"});
+ expect(screen.getByLabelText("Active local editor repository").textContent).toContain("A");expect(m.invoke).not.toHaveBeenCalledWith("repository_status",{repositoryPath:"/foreign/private"});
+});
+it("restores a managed worktree only after Git's fresh inventory confirms that exact path",async()=>{
+ const {localWorkspaceSelectionKey}=await import('../../../desktop/src/lib/localWorkspaceSelection');
+ const key=localWorkspaceSelectionKey(m.client.config.apiBase,"org","fixture-user")!;
+ const checkout='/owned/B.axiom-worktrees/axiom-native';window.localStorage.setItem(key,JSON.stringify({root:'/owned/B',checkout}));
+ const original=m.invoke.getMockImplementation()!;m.invoke.mockImplementation(async(command,args)=>command==='list_repository_worktrees'?[{path:checkout,branch:'axiom/native',bytes:0}]:original(command,args));
+ render(createElement(RepositoryWorkspaceView,{workspace:'org',selectionUser:'fixture-user'}));await screen.findByRole('button',{name:'same.ts'});
+ expect(screen.getByLabelText('Active local editor repository').textContent).toContain('axiom-native');
+ expect(m.invoke).toHaveBeenCalledWith('list_repository_worktrees',{repositoryPath:'/owned/B'});
+ expect(m.invoke).toHaveBeenCalledWith('repository_status',{repositoryPath:checkout});
+});
+it("refuses an unrecorded saved worktree and never probes a saved root outside the local catalog",async()=>{
+ const {localWorkspaceSelectionKey}=await import('../../../desktop/src/lib/localWorkspaceSelection');const key=localWorkspaceSelectionKey(m.client.config.apiBase,'org','fixture-user')!;
+ window.localStorage.setItem(key,JSON.stringify({root:'/foreign/private',checkout:'/foreign/private.axiom-worktrees/axiom-hidden'}));
+ render(createElement(RepositoryWorkspaceView,{workspace:'org',selectionUser:'fixture-user'}));await screen.findByRole('button',{name:'same.ts'});
+ expect(m.invoke.mock.calls.some(([,args])=>args?.repositoryPath?.startsWith('/foreign'))).toBe(false);
+ expect(screen.getByLabelText('Active local editor repository').textContent).toContain('A');
 });

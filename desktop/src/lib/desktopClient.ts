@@ -1048,10 +1048,15 @@ export class DesktopClient {
     return this.post("/api/desktop/agent/conversations", {});
   }
 
-  listAgentConversations(): Promise<ApiResult<{
+  listAgentConversations(options?: { query?: string; cursor?: string }): Promise<ApiResult<{
     conversations: Array<{ id: string; title: string | null; turnCount: number; createdAt: string; updatedAt: string }>;
+    nextCursor?: string | null;
+    historyQueryVersion?: number;
   }>> {
-    return this.get("/api/desktop/agent/conversations");
+    const query = new URLSearchParams();
+    if (options?.query) query.set("q", options.query);
+    if (options?.cursor) query.set("cursor", options.cursor);
+    return this.get(`/api/desktop/agent/conversations${query.size ? `?${query}` : ""}`);
   }
 
   renameAgentConversation(conversationId: string, title: string, expectedTitle: string | null): Promise<ApiResult<{id: string; title: string}>> {

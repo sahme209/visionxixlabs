@@ -1,3 +1,4 @@
+import {localWorkspaceSelectionKey,readLocalWorkspaceSelection,resolveLocalWorkspaceSelection,writeLocalWorkspaceSelection} from "../lib/localWorkspaceSelection";
 import { verificationReceipt, type VerificationReceipt } from "../lib/verificationReceipt";
 import { localEditBlocker, type LocalEditRequest, type LocalCreationProposal } from "../lib/localEditReview";
 import { localCodeContextPrompt, type LocalCodeSelection, type LocalRepairSelection } from "../lib/localCodeContext";
@@ -60,13 +61,16 @@ function isProjectMetadata(path: string): boolean {
   return path.endsWith(".pbxproj") || path.includes(".xcodeproj/") || path.includes(".xcworkspace/");
 }
 
-export function RepositoryWorkspaceView({ compact = false, active = true, onAskAgent, editRequest, workspace }: { editRequest?: LocalEditRequest; workspace?: string; compact?: boolean; active?: boolean; onAskAgent?: (selection: LocalCodeSelection) => void }) {
+export function RepositoryWorkspaceView({ compact = false, active = true, onAskAgent, editRequest, workspace, selectionUser }: { editRequest?: LocalEditRequest; workspace?: string; selectionUser?: string; compact?: boolean; active?: boolean; onAskAgent?: (selection: LocalCodeSelection) => void }) {
   const revision = useSyncExternalStore(desktopClient.subscribeContext, desktopClient.getContextRevision, desktopClient.getContextRevision);
-  return <RepositoryWorkspaceSession compact={compact} key={revision} revision={revision} active={active} onAskAgent={onAskAgent} editRequest={editRequest} workspace={workspace} />;
+  return <RepositoryWorkspaceSession compact={compact} key={`${revision}:${selectionUser ?? ""}:${workspace ?? ""}`} selectionUser={selectionUser} revision={revision} active={active} onAskAgent={onAskAgent} editRequest={editRequest} workspace={workspace} />;
 }
 
-function RepositoryWorkspaceSession({ compact, revision, active, onAskAgent, editRequest, workspace }: { editRequest?: LocalEditRequest; workspace?: string; revision: number; compact: boolean; active: boolean; onAskAgent?: (selection: LocalCodeSelection) => void }) {
+function RepositoryWorkspaceSession({ compact, revision, active, onAskAgent, editRequest, workspace, selectionUser }: { editRequest?: LocalEditRequest; workspace?: string; selectionUser?: string; revision: number; compact: boolean; active: boolean; onAskAgent?: (selection: LocalCodeSelection) => void }) {
   const [parentPath, setParentPath] = useState("");
+  const selectionKey = localWorkspaceSelectionKey(desktopClient.config.apiBase, workspace, selectionUser);
+  const knownRoots = useRef<string[]>([]);
+  const selectionRoot = useRef<string | null>(null);
   const [sourceExpanded, setSourceExpanded] = useState(false);
   const [publishExpanded, setPublishExpanded] = useState(false);
   const [repositories, setRepositories] = useState<string[]>([]);
@@ -147,13 +151,17 @@ function RepositoryWorkspaceSession({ compact, revision, active, onAskAgent, edi
   const setSelectedRepository = useCallback((next: string | null | ((current: string | null) => string | null)) => {
     const repository = typeof next === "function" ? next(owner.current.repository) : next;
     if (repository === owner.current.repository) return;
+    if (repository) {
+      const root = knownRoots.current.includes(repository) ? repository : selectionRoot.current;
+      if (root && knownRoots.current.includes(root)) { selectionRoot.current = root; writeLocalWorkspaceSelection(selectionKey, {root, checkout:repository}); }
+    } else selectionRoot.current = null;
     owner.current = { repository, generation: owner.current.generation + 1 };
     fileRequest.current++; operationRequest.current++; activeBusy.current = null; loadedFile.current = null; history.current = newEditorHistory("");
     setSelectedRepositoryState(repository); setStatus(null); setFiles([]); setChecks([]);
     setSelectedFile(null); setContent(""); setSavedContent(""); setBusy(null);
     setCancelAvailable(false);
     setError(null); setNotice(null); setPrUrl(null); setVerificationResult(null); setVerificationTarget(null); setVerificationStale(false); sourceEpoch.current++; setConfirmationState(null);
-  }, []);
+  }, [selectionKey]);
 
   function setConfirmation(next: Confirmation | null) {
     const captured = owner.current;
@@ -194,9 +202,20 @@ function RepositoryWorkspaceSession({ compact, revision, active, onAskAgent, edi
     const request = ++listRequest.current;
     const next = await invoke<string[]>("list_local_repositories", { parentPath: directory });
     if (!mounted.current || desktopClient.config !== context || desktopClient.getContextRevision() !== revision || request !== listRequest.current) return;
+    knownRoots.current = next;
     setRepositories(next);
-    if (selectRepository) setSelectedRepository(current => current && next.includes(current) ? current : (next[0] ?? null));
-  }, [context, revision, setSelectedRepository]);
+    if (selectRepository) {
+      const captured = owner.current;
+      const current = captured.repository;
+      const preferred = current && selectionRoot.current ? {root:selectionRoot.current, checkout:current} : readLocalWorkspaceSelection(selectionKey);
+      const restored = current && next.includes(current) ? current : await resolveLocalWorkspaceSelection(preferred, next, root => invoke<Array<{path:string}>>("list_repository_worktrees", {repositoryPath:root}));
+      if (!mounted.current || desktopClient.config !== context || desktopClient.getContextRevision() !== revision || request !== listRequest.current || captured !== owner.current) return;
+      // Only a freshly recorded native worktree can restore a non-primary path.
+      selectionRoot.current = preferred && next.includes(preferred.root) ? preferred.root : null;
+      setSelectedRepository(restored ?? next[0] ?? null);
+      if (preferred && restored !== preferred.checkout) setNotice("The saved checkout is unavailable. Opened an available repository; review its name before editing.");
+    }
+  }, [context, revision, selectionKey, setSelectedRepository]);
 
   useEffect(() => {
     let cancelled = false;

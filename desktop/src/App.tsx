@@ -4,7 +4,7 @@ import { WorkspaceCommands } from "./components/WorkspaceCommands";
 import { Sidebar } from "./components/Sidebar";
 import { TopBar } from "./components/TopBar";
 import { WorkspaceViewBoundary } from "./components/WorkspaceViewBoundary";
-import { AgentChatView, type AgentSettingsDestination, type AgentSkillRequest, type AgentLocalCodeRequest } from "./views/AgentChatView";
+import { AgentChatView, type AgentSettingsDestination, type AgentSkillRequest, type AgentLocalCodeRequest, type AgentAirflowRequest } from "./views/AgentChatView";
 import { DeploymentRequestsView } from "./views/DeploymentRequestsView";
 import { DocsView } from "./views/DocsView";
 import { SettingsView } from "./views/SettingsView";
@@ -128,6 +128,7 @@ function AuthenticatedWorkspace({ identity }: { identity: VerifiedDesktopIdentit
   const settingsReturnView = useRef<CustomerView>("agent");
   const [repositoryVisited, setRepositoryVisited] = useState(false);
   const [requestedSkill, setRequestedSkill] = useState<AgentSkillRequest>();
+  const [requestedAirflow, setRequestedAirflow] = useState<AgentAirflowRequest>();
   const [requestedLocalCode, setRequestedLocalCode] = useState<AgentLocalCodeRequest>();
   const [editRequest, setEditRequest] = useState<LocalEditRequest>();
   const [settingsDestination, setSettingsDestination] = useState<AgentSettingsDestination | undefined>();
@@ -152,18 +153,18 @@ function AuthenticatedWorkspace({ identity }: { identity: VerifiedDesktopIdentit
         <div hidden={!workspaceVisible} style={{display: workspaceVisible ? "flex" : "none"}} className={`min-h-0 flex-1 ${splitVisible ? "flex-col xl:flex-row" : "flex-col"}`}>
         <div hidden={!splitVisible && activeView !== "agent"} style={{ display: splitVisible || activeView === "agent" ? "flex" : "none" }} className={`min-h-0 min-w-0 flex-1 flex-col ${splitVisible ? "order-2 xl:flex-[2] xl:border-l xl:border-white/10" : ""}`}>
           <WorkspaceViewBoundary onReturnToAgent={() => setActiveView("agent")}>
-            <AgentChatView onReviewLocalEdit={(edit, edits) => { setEditRequest({edit, edits, context: desktopClient.config, workspace: identity.organizationId}); setRepositoryVisited(true); setActiveView("repository-workspace"); }} requestedLocalCode={requestedLocalCode} requestedSkill={requestedSkill} active={splitVisible || activeView === "agent"} identity={identity} onOpenSettings={(destination) => { settingsReturnView.current = "agent"; setSettingsDestination(destination); setActiveView("settings"); }} />
+            <AgentChatView requestedAirflow={requestedAirflow} onReviewLocalEdit={(edit, edits) => { setEditRequest({edit, edits, context: desktopClient.config, workspace: identity.organizationId}); setRepositoryVisited(true); setActiveView("repository-workspace"); }} requestedLocalCode={requestedLocalCode} requestedSkill={requestedSkill} active={splitVisible || activeView === "agent"} identity={identity} onOpenSettings={(destination) => { settingsReturnView.current = "agent"; setSettingsDestination(destination); setActiveView("settings"); }} />
           </WorkspaceViewBoundary>
         </div>
         {repositoryVisited && <div hidden={!splitVisible && activeView !== "repository-workspace"} style={{ display: splitVisible || activeView === "repository-workspace" ? "flex" : "none" }} className={`min-h-0 min-w-0 flex-1 flex-col ${splitVisible ? "order-1 xl:flex-[3]" : ""}`}>
           <WorkspaceViewBoundary onReturnToAgent={() => setActiveView("agent")}>
-            <RepositoryWorkspaceView compact={splitVisible} editRequest={editRequest} workspace={identity.organizationId} active={splitVisible || activeView === "repository-workspace"} onAskAgent={selection => { setRequestedLocalCode({ ...selection, context: desktopClient.config, workspace: identity.organizationId }); setActiveView("agent"); }} />
+            <RepositoryWorkspaceView selectionUser={identity.kind === "desktop_session" ? identity.email : undefined} compact={splitVisible} editRequest={editRequest} workspace={identity.organizationId} active={splitVisible || activeView === "repository-workspace"} onAskAgent={selection => { setRequestedLocalCode({ ...selection, context: desktopClient.config, workspace: identity.organizationId }); setActiveView("agent"); }} />
           </WorkspaceViewBoundary>
         </div>}
         </div>
         {activeView !== "agent" && activeView !== "repository-workspace" && <WorkspaceViewBoundary key={activeView} onReturnToAgent={() => setActiveView("agent")}>
           {activeView === "deployment-requests" && <DeploymentRequestsView />}
-          {activeView === "airflow-automation" && <AirflowAutomationView />}
+          {activeView === "airflow-automation" && <AirflowAutomationView onInspect={(dagId, runId) => { setRequestedAirflow({dagId, runId, context: desktopClient.config, workspace: identity.organizationId}); setActiveView("agent"); }} />}
           {activeView === "plugins-skills" && <PluginsSkillsView onUseSkill={skillId => { setRequestedSkill({ skillId, context: desktopClient.config, workspace: identity.organizationId }); setActiveView("agent"); }} canManage={identity.role === "owner" || identity.role === "admin"} onOpenSettings={() => navigate("settings")} onOpenAirflow={() => setActiveView("airflow-automation")} />}
           {activeView === "docs" && <DocsView onNavigate={navigate} />}
           {activeView === "settings" && <SettingsView onOpenRepository={() => navigate("repository-workspace")} identity={identity} initialSection={settingsDestination} onClose={() => setActiveView(settingsReturnView.current)} />}

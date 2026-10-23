@@ -102,25 +102,43 @@ export function SettingsView({ identity, initialSection, onClose, onOpenReposito
   const [active, setActive] = useState<Section>(initialSection ?? "general");
   const [prefs, setPrefs] = useState<DesktopPreferences | null>(null);
   const [saved, setSaved] = useState(false);
+  const [savingPreferences, setSavingPreferences] = useState(false);
+  const preferenceWriteInFlight = useRef(false);
+  const [preferenceSaveUnconfirmed, setPreferenceSaveUnconfirmed] = useState(false);
+  const settingsMounted = useRef(true);
+  const savedNoticeTimer = useRef<number | undefined>(undefined);
+  useEffect(() => { settingsMounted.current = true; return () => { settingsMounted.current = false; window.clearTimeout(savedNoticeTimer.current); }; }, []);
   const [error, setError] = useState<string | null>(null);
   const [showSignOut, setShowSignOut] = useState(false);
 
   useEffect(() => {
-    readDesktopPreferences().then(setPrefs).catch((cause) => setError(String(cause)));
+    let current = true;
+    readDesktopPreferences().then(value => { if (current) setPrefs(value); })
+      .catch(() => { if (current) setError("Local preferences could not be loaded. Reopen Settings to try again."); });
+    return () => { current = false; };
   }, []);
 
   async function savePreferences(next: DesktopPreferences) {
+    if (preferenceWriteInFlight.current || preferenceSaveUnconfirmed || !prefs) return;
+    preferenceWriteInFlight.current = true;
     const previous = prefs;
-    setError(null);
-    setPrefs(next);
+    window.clearTimeout(savedNoticeTimer.current);
+    setSavingPreferences(true); setSaved(false); setError(null); setPrefs(next);
     try {
       await writeDesktopPreferences(next);
       markNotificationPrefDirty();
-      setSaved(true);
-      window.setTimeout(() => setSaved(false), 1800);
-    } catch (cause) {
-      if (previous) setPrefs(previous);
-      setError(cause instanceof Error ? cause.message : String(cause));
+      if (settingsMounted.current) {
+        setSaved(true);
+        savedNoticeTimer.current = window.setTimeout(() => setSaved(false), 1800);
+      }
+    } catch {
+      if (settingsMounted.current) {
+        setPrefs(previous); setPreferenceSaveUnconfirmed(true);
+        setError("This preference change could not be confirmed. Reopen Settings to check it before making another change.");
+      }
+    } finally {
+      preferenceWriteInFlight.current = false;
+      if (settingsMounted.current) setSavingPreferences(false);
     }
   }
 
@@ -168,7 +186,10 @@ export function SettingsView({ identity, initialSection, onClose, onOpenReposito
 
         <div className="min-h-0 min-w-0 overflow-y-auto px-5 py-10 lg:px-10"><div className="mx-auto w-full max-w-[760px]">
           {error && <div role="alert" className="mb-5 rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm text-red-200">{error}</div>}
+          {savingPreferences && <p role="status" className="mb-5 text-xs text-zinc-400">Saving on this computer…</p>}
           {saved && <div role="status" className="mb-5 flex items-center gap-2 rounded-xl border border-emerald-500/20 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-200"><Check className="h-4 w-4" />Saved on this computer.</div>}
+          <fieldset disabled={savingPreferences || preferenceSaveUnconfirmed && ["general", "profile", "appearance", "agents"].includes(active)} className="m-0 min-w-0 border-0 p-0">
+          <legend className="sr-only">Settings controls</legend>
           {active === "general" && <GeneralSection prefs={prefs} onSave={savePreferences} />}
           {active === "profile" && <ProfileSection identity={identity} prefs={prefs} onSave={savePreferences} onRequestSignOut={() => setShowSignOut(true)} />}
           {active === "appearance" && <AppearanceSection prefs={prefs} onSave={savePreferences} />}
@@ -181,6 +202,7 @@ export function SettingsView({ identity, initialSection, onClose, onOpenReposito
           {active === "identity" && <IdentitySection />}
           {active === "worktrees" && <WorktreesSection onOpenRepository={onOpenRepository} />}
           {active === "integrations" && <IntegrationsSection identity={identity} />}
+          </fieldset>
         </div></div>
       </div>
 
@@ -440,6 +462,8 @@ function ModelsSection() {
   const [providers, setProviders] = useState<ProviderModels[] | null>(null);
   const [policy, setPolicy] = useState<ModelPolicy | null>(null);
   const [query, setQuery] = useState("");
+  const [approvedOnly, setApprovedOnly] = useState(false);
+  const [catalogPage, setCatalogPage] = useState(0);
   const [savingModel, setSavingModel] = useState<string | null>(null);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [attempt, setAttempt] = useState(0);
@@ -490,10 +514,12 @@ function ModelsSection() {
     }
     return listed.filter(model => {
       const needle = query.trim().toLowerCase();
-      return !needle || model.label.toLowerCase().includes(needle) || (PROVIDER_LABELS[model.provider] ?? model.provider).toLowerCase().includes(needle);
+      return (!approvedOnly || Boolean(policy && isModelApproved(policy, model.provider, model.id))) && (!needle || `${model.label} ${model.id} ${PROVIDER_LABELS[model.provider] ?? model.provider}`.toLowerCase().includes(needle));
     });
-  }, [providers, query, policy]);
+  }, [providers, query, policy, approvedOnly]);
 
+  const safeCatalogPage = Math.min(catalogPage, Math.max(0, Math.ceil(rows.length / 50) - 1));
+  const catalogOffset = safeCatalogPage * 50;
   const gatewayCatalog = providers?.find(provider => provider.provider === "vercel_gateway")?.models.map(model => model.id) ?? [];
   const gatewayApprovals = policy?.gatewaySelection?.approvedModelIds ?? (policy?.enabled && policy.allowedProviders.includes("vercel_gateway") && policy.modelSelections.vercel_gateway ? [policy.modelSelections.vercel_gateway] : []);
   const unavailableApprovalCount = gatewayApprovals.filter(id => isConcreteGatewayModelId(id) && !gatewayCatalog.includes(id)).length;
@@ -549,14 +575,15 @@ function ModelsSection() {
     <div className="mt-6 overflow-hidden rounded-xl border border-white/[0.07] bg-white/[0.02]">
       <div className="border-b border-white/[0.06] p-4">
         <label htmlFor="model-search" className="sr-only">Search models</label>
-        <input id="model-search" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Add or search model" className="w-full rounded-lg border border-white/10 bg-black/30 px-3 py-2.5 text-sm text-zinc-100 outline-none placeholder:text-zinc-600 focus:border-white/25" />
-        <p className="mt-2 text-[11px] text-zinc-600">Gateway supports up to 32 approved models. Agent chat uses the workspace default. Other providers retain one active model.</p>
+        <input id="model-search" maxLength={200} value={query} onChange={(event) => { setQuery(event.target.value); setCatalogPage(0); }} placeholder="Add or search model" className="w-full rounded-lg border border-white/10 bg-black/30 px-3 py-2.5 text-sm text-zinc-100 outline-none placeholder:text-zinc-600 focus:border-white/25" />
+        <div className="mt-3 flex gap-2" role="group" aria-label="Model catalog filters">{[false, true].map(approved => <button key={String(approved)} type="button" aria-pressed={approvedOnly === approved} onClick={() => { setApprovedOnly(approved); setCatalogPage(0); }} className={`rounded-md px-2.5 py-1.5 text-[11px] ${approvedOnly === approved ? "bg-white/10 text-zinc-200" : "text-zinc-500 hover:text-zinc-300"}`}>{approved ? "Approved models" : "All models"}</button>)}</div>
+        <p className="mt-2 text-[11px] text-zinc-600">Gateway supports up to 32 approved models. Agent chat starts with the workspace default; choose another approved model in the composer. Search a model name or catalog ID, including Grok. Other providers retain one active model.</p>
       </div>
       {providers !== null && loadError === null && unavailableApprovalCount > 0 && <div className="flex items-center justify-between gap-3 border-b border-white/[0.06] p-4 text-xs text-zinc-400"><p>{unavailableApprovalCount} approved Gateway model{unavailableApprovalCount === 1 ? " is" : "s are"} unavailable in the current catalog.</p><button type="button" disabled={Boolean(savingModel)} onClick={() => void removeUnavailable()} className="shrink-0 text-zinc-200 underline underline-offset-2 disabled:opacity-45">Remove unavailable approvals</button></div>}
       {providers === null && loadError === null && <p className="p-4 text-sm text-zinc-500">Checking service-configured models…</p>}
       {loadError !== null && <div role="alert" className="flex items-center justify-between gap-4 p-4 text-sm text-rose-300"><p>{loadError}</p><button type="button" onClick={() => setAttempt((current) => current + 1)} className="shrink-0 text-xs text-zinc-300 underline underline-offset-2">Retry models</button></div>}
       {providers !== null && loadError === null && rows.length === 0 && <p className="p-4 text-sm text-zinc-500">{providers.every((provider) => provider.models.length === 0) ? "No service-configured models are available. Ask a workspace administrator to review service setup." : "No configured model matches this search."}</p>}
-      {rows.map((model) => {
+      {rows.slice(catalogOffset, catalogOffset + 50).map((model) => {
         const enabled = Boolean(policy && isModelApproved(policy, model.provider, model.id));
         const gatewayDefault = model.provider === "vercel_gateway" && policy?.enabled && policy.modelSelections.vercel_gateway === model.id;
         const key = `${model.provider}:${model.id}`;
@@ -570,6 +597,13 @@ function ModelsSection() {
           </div>
         </div>;
       })}
+      {rows.length > 50 && <div className="flex flex-wrap items-center justify-between gap-3 border-t border-white/[0.06] px-4 py-3 text-xs text-zinc-400">
+        <p role="status">Showing {catalogOffset + 1}–{Math.min(catalogOffset + 50, rows.length)} of {rows.length} models. Search includes the full catalog.</p>
+        <div className="flex gap-3">
+          <button type="button" disabled={safeCatalogPage === 0} onClick={() => setCatalogPage(safeCatalogPage - 1)} className="rounded-md border border-white/10 px-3 py-1.5 hover:text-white disabled:opacity-40">Previous models</button>
+          <button type="button" disabled={catalogOffset + 50 >= rows.length} onClick={() => setCatalogPage(safeCatalogPage + 1)} className="rounded-md border border-white/10 px-3 py-1.5 hover:text-white disabled:opacity-40">Next models</button>
+        </div>
+      </div>}
     </div>
     <p className="mt-4 text-[11px] leading-5 text-zinc-600">Removing the Gateway default promotes the first remaining approval; removing its last approval disables Gateway. Credentials remain server-managed and never reach this device. Write actions remain approval-gated regardless of model choice.</p>
   </div>;

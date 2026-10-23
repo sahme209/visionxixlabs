@@ -690,3 +690,20 @@ it("emits no progress for a read tool denied by current workspace policy", async
     executeReadOnlyTool: execute, isProdEnvironmentTarget: noopProdCheck})).toMatchObject({kind: "error", error: "agent_tool_not_allowed"});
   expect(activity).not.toHaveBeenCalled(); expect(execute).not.toHaveBeenCalled();
 });
+
+it("rechecks Airflow tool permission after the provider read before sending observation data to another model decision",async()=>{
+ const identity={enabled:true,allowedTools:['read_airflow_tasks']};
+ mocks.readWorkspaceAgentIdentity.mockResolvedValue(identity);
+ const extract=vi.fn().mockResolvedValue({action:'call_tool',message:'Read task state',toolName:'read_airflow_tasks',args:{dagId:'daily',runId:'run'}});
+ mocks.resolveGovernedAiCall.mockResolvedValue(governed(extract));
+ const execute=vi.fn(async()=>{mocks.readWorkspaceAgentIdentity.mockResolvedValue({enabled:true,allowedTools:[]});return {ok:true as const,result:{kind:'airflow_observation',tasks:[{taskId:'private-task'}]}};});
+ const result=await runDecisionLoop({organizationId:'o',userId:'actor',correlationId:'c',agentProfile:'automation',operationMode:'inspect',transcript:[{role:'user',content:'Inspect the selected run'}],executeReadOnlyTool:execute,isProdEnvironmentTarget:noopProdCheck});
+ expect(result).toMatchObject({kind:'error',error:'agent_tool_not_allowed'});expect(extract).toHaveBeenCalledOnce();
+});
+
+it("keeps the Automation profile read-only even with a broadly allowed identity and DeepOps mode",async()=>{
+ mocks.readWorkspaceAgentIdentity.mockResolvedValue({enabled:true,allowedTools:['read_airflow_tasks','trigger_aws_deploy']});
+ mocks.resolveGovernedAiCall.mockResolvedValue(governed(async()=>({action:'call_tool',message:'Run it',toolName:'trigger_aws_deploy',args:{environmentId:'prod'}})));
+ const execute=vi.fn();const result=await runDecisionLoop({organizationId:'o',userId:'actor',correlationId:'c',agentProfile:'automation',operationMode:'deepops',transcript:[{role:'user',content:'Restart production'}],executeReadOnlyTool:execute,isProdEnvironmentTarget:noopProdCheck});
+ expect(result).toMatchObject({kind:'error',error:'agent_tool_not_allowed'});expect(execute).not.toHaveBeenCalled();
+});

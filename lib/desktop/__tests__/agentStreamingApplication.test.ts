@@ -155,7 +155,7 @@ it("stops a native composer response without accepting late proposal authority o
   expect(wire.messages()).toHaveLength(1);
 });
 
-it.each(["coding", "debugging", "code_review", "terraform", "cloud_deployment"])("sends selected %s profile through the rendered composer and streaming client", async agentProfile => {
+it.each(["coding", "debugging", "code_review", "terraform", "cloud_deployment", "automation"])("sends selected %s profile through the rendered composer and streaming client", async agentProfile => {
   const wire = fixture(); await compose("chat", agentProfile);
   expect(JSON.parse(wire.messages()[0][1]!.body as string)).toMatchObject({ workspaceContext: { agentProfile } });
   expect((screen.getByRole("combobox", { name: "Specialized Agent" }) as HTMLSelectElement).disabled).toBe(true);
