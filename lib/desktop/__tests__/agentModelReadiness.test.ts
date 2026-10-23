@@ -955,3 +955,53 @@ it("retains an approved but budget-blocked model and draft until the user explic
   expect((screen.getByRole("textbox") as HTMLTextAreaElement).value).toBe("Keep this unsent request");
   expect(m.client.sendAgentMessage).not.toHaveBeenCalled();
 });
+
+it("refreshes a web-reviewed pending action on focus without executing or sending again", async () => {
+  const proposal = { id: "external-review", status: "proposed", toolName: "create_github_branch", riskLevel: "medium", argsJson: { repositoryFullName: "fixture/repository", baseBranch: "main", newBranchName: "change" } };
+  m.client.getAgentConversation.mockResolvedValue({ ok: true, data: { ...summary, turns: [], actions: [proposal] } });
+  render(createElement(AgentChatView)); await screen.findByRole("button", { name: "Approve & run" });
+  m.client.getAgentConversation.mockResolvedValue({ ok: true, data: { ...summary, turns: [{ id: "external-result", role: "tool_result", actionProposalId: proposal.id, content: "External reviewer executed this branch change." }], actions: [{ ...proposal, status: "executed" }] } });
+  fireEvent(window, new Event("focus"));
+  await screen.findByText("External reviewer executed this branch change.");
+  expect(screen.queryByRole("button", { name: "Approve & run" })).toBeNull();
+  expect((screen.getByRole("textbox") as HTMLTextAreaElement).disabled).toBe(false);
+  expect(m.client.sendAgentMessage).not.toHaveBeenCalled(); expect(m.client.approveAgentAction).not.toHaveBeenCalled();
+});
+
+it("retains pending approval when a focus refresh cannot verify the conversation", async () => {
+  const proposal = { id: "external-review", status: "proposed", toolName: "create_github_branch", riskLevel: "medium", argsJson: { repositoryFullName: "fixture/repository", baseBranch: "main", newBranchName: "change" } };
+  m.client.getAgentConversation.mockResolvedValue({ ok: true, data: { ...summary, turns: [], actions: [proposal] } });
+  render(createElement(AgentChatView)); await screen.findByRole("button", { name: "Approve & run" });
+  const before = m.client.getAgentConversation.mock.calls.length;
+  m.client.getAgentConversation.mockResolvedValue({ ok: false, error: "unavailable" });
+  fireEvent(window, new Event("focus"));
+  await waitFor(() => expect(m.client.getAgentConversation.mock.calls.length).toBeGreaterThan(before));
+  expect(screen.getByRole("button", { name: "Approve & run" })).toBeTruthy();
+  expect(m.client.sendAgentMessage).not.toHaveBeenCalled();
+});
+
+it("observes an external rejection by polling without requiring a focus event", async () => {
+  const proposal = { id: "external-review", status: "proposed", toolName: "create_github_branch", riskLevel: "medium", argsJson: { repositoryFullName: "fixture/repository", baseBranch: "main", newBranchName: "change" } };
+  m.client.getAgentConversation.mockResolvedValue({ ok: true, data: { ...summary, turns: [], actions: [proposal] } });
+  const interval = vi.spyOn(window, "setInterval");
+  render(createElement(AgentChatView)); await screen.findByRole("button", { name: "Approve & run" });
+  m.client.getAgentConversation.mockResolvedValue({ ok: true, data: { ...summary, turns: [{ id: "external-rejection", role: "tool_result", content: "External reviewer rejected this proposal." }], actions: [{ ...proposal, status: "rejected" }] } });
+  const polling = interval.mock.calls.find(([, delay]) => delay === 15_000)?.[0];
+  expect(typeof polling).toBe("function");
+  await act(async () => { (polling as () => void)(); });
+  await screen.findByText("External reviewer rejected this proposal.");
+  expect(m.client.sendAgentMessage).not.toHaveBeenCalled(); expect(m.client.rejectAgentAction).not.toHaveBeenCalled();
+  interval.mockRestore();
+});
+
+it("ignores an external-decision read that finishes after the desktop credential changes", async () => {
+  const proposal = { id: "external-review", status: "proposed", toolName: "create_github_branch", riskLevel: "medium", argsJson: { repositoryFullName: "fixture/repository", baseBranch: "main", newBranchName: "change" } };
+  m.client.getAgentConversation.mockResolvedValue({ ok: true, data: { ...summary, turns: [], actions: [proposal] } });
+  const view = render(createElement(AgentChatView)); await screen.findByRole("button", { name: "Approve & run" });
+  const old = deferred<unknown>(); m.client.getAgentConversation.mockReturnValueOnce(old.promise);
+  fireEvent(window, new Event("focus"));
+  m.client.config = { sessionToken: "replacement" }; view.rerender(createElement(AgentChatView));
+  await act(async () => { old.resolve({ ok: true, data: { ...summary, turns: [{ id: "old-result", role: "tool_result", content: "Must not show an old workspace result." }], actions: [{ ...proposal, status: "executed" }] } }); });
+  expect(screen.queryByText("Must not show an old workspace result.")).toBeNull();
+  expect(m.client.sendAgentMessage).not.toHaveBeenCalled();
+});

@@ -751,6 +751,37 @@ function AgentChatSession({ onOpenSettings, identity, active, requestedSkill, re
     } finally { if (generation === conversationEpoch.current && context === desktopClient.config) setLoadingConversation(false); }
   }
 
+  useEffect(() => {
+    if (!active || !conversationId || !pendingProposal || loadingConversation || sending || decidingId) return;
+    const owner = conversationId, proposalId = pendingProposal.id;
+    const context = desktopClient.config, epoch = conversationEpoch.current, decision = decisionEpoch.current;
+    let disposed = false, inFlight = false;
+    const owned = () => !disposed && context === desktopClient.config && epoch === conversationEpoch.current
+      && decision === decisionEpoch.current && activeConversation.current === owner;
+    const refresh = async () => {
+      if (!owned() || inFlight || document.visibilityState === "hidden") return;
+      inFlight = true;
+      try {
+        const result = await desktopClient.getAgentConversation(owner);
+        if (!owned() || !result.ok || result.data.id !== owner) return;
+        const reviewed = result.data.actions.find(action => action.id === proposalId);
+        if (!reviewed || !["executed", "failed", "rejected", "cancelled"].includes(reviewed.status)) return;
+        // Reconciliation is read-only. Never resume queued work after an external decision.
+        setQueuePaused(true);
+        setTurns(result.data.turns.filter((turn): turn is typeof turn & { role: ChatTurn["role"] } => turn.role === "user" || turn.role === "assistant" || turn.role === "tool_result"));
+        setPendingProposal([...result.data.actions].reverse().find(action => action.status === "proposed") ?? null);
+        setEvidenceActions(result.data.actions.filter(action => action.riskLevel === "low"));
+        setRestartActions(result.data.actions.filter(action => action.toolName === "trigger_aws_deploy"));
+      } catch { /* Retain the pending state until the service can verify the decision. */ }
+      finally { inFlight = false; }
+    };
+    const onFocus = () => { void refresh(); };
+    window.addEventListener("focus", onFocus);
+    document.addEventListener("visibilitychange", onFocus);
+    const interval = window.setInterval(onFocus, 15_000);
+    return () => { disposed = true; window.clearInterval(interval); window.removeEventListener("focus", onFocus); document.removeEventListener("visibilitychange", onFocus); };
+  }, [active, conversationId, pendingProposal?.id, loadingConversation, sending, decidingId]);
+
   async function newConversation() {
     if (renamingBusy || sending || loadingConversation || !rememberCurrentDraft()) return;
     setQueuePaused(true);
