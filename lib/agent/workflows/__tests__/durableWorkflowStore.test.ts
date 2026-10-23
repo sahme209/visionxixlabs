@@ -31,6 +31,7 @@ import {
   claimDurableWorkflow,
   requestDurableWorkflowCancellation,
   resumeDurableWorkflowFromApproval,
+  recoverExpiredDurableWorkflowLeases,
 } from "@/lib/agent/workflows/durableWorkflowStore";
 
 const now = new Date("2026-10-13T19:30:00.000Z");
@@ -131,4 +132,26 @@ describe("durableWorkflowStore", () => {
       actorId: "admin_1",
     }) });
   });
+  it.each([false, true])("finalizes an abandoned cancellation even when exhausted=%s", async (exhausted) => {
+    mocks.durable.findMany.mockResolvedValue([{ id: "run_1", organizationId: "org_1", version: 2,
+      attemptCount: exhausted ? 3 : 1, maxAttempts: 3, cancelRequestedAt: now }]);
+    mocks.durable.updateMany.mockResolvedValue({ count: 1 });
+    expect(await recoverExpiredDurableWorkflowLeases({ now })).toEqual({ inspected: 1, recovered: 1 });
+    expect(mocks.durable.updateMany).toHaveBeenCalledWith(expect.objectContaining({ data: expect.objectContaining({
+      status: "cancelled", failureCode: null, cancelledAt: now, completedAt: now,
+      nextAttemptAt: null, leaseOwner: null, leaseExpiresAt: null,
+    }) }));
+    expect(mocks.event.create).toHaveBeenCalledWith({ data: expect.objectContaining({
+      sequence: 3, eventType: "workflow.cancelled", actorKind: "system",
+    }) });
+  });
+
+  it("does not append recovery evidence after losing the workflow version race", async () => {
+    mocks.durable.findMany.mockResolvedValue([{ id: "run_1", organizationId: "org_1", version: 2,
+      attemptCount: 1, maxAttempts: 3, cancelRequestedAt: now }]);
+    mocks.durable.updateMany.mockResolvedValue({ count: 0 });
+    expect(await recoverExpiredDurableWorkflowLeases({ now })).toEqual({ inspected: 1, recovered: 0 });
+    expect(mocks.event.create).not.toHaveBeenCalled();
+  });
+
 });

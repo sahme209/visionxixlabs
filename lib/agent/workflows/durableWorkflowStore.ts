@@ -369,11 +369,12 @@ export async function recoverExpiredDurableWorkflowLeases(options: { now?: Date;
     where: { status: "running", leaseExpiresAt: { lte: now } },
     orderBy: { leaseExpiresAt: "asc" },
     take: limit,
-    select: { id: true, organizationId: true, version: true, attemptCount: true, maxAttempts: true },
+    select: { id: true, organizationId: true, version: true, attemptCount: true, maxAttempts: true, cancelRequestedAt: true },
   });
 
   let recovered = 0;
   for (const candidate of expired) {
+    const cancelled = candidate.cancelRequestedAt !== null;
     const exhausted = candidate.attemptCount >= candidate.maxAttempts;
     const changed = await prisma.$transaction(async (tx) => {
       const update = await tx.durableAgentWorkflow.updateMany({
@@ -385,10 +386,11 @@ export async function recoverExpiredDurableWorkflowLeases(options: { now?: Date;
           leaseExpiresAt: { lte: now },
         },
         data: {
-          status: exhausted ? "failed" : "retrying",
-          failureCode: exhausted ? "attempts_exhausted" : null,
-          nextAttemptAt: exhausted ? null : now,
-          completedAt: exhausted ? now : null,
+          status: cancelled ? "cancelled" : exhausted ? "failed" : "retrying",
+          failureCode: !cancelled && exhausted ? "attempts_exhausted" : null,
+          nextAttemptAt: cancelled || exhausted ? null : now,
+          completedAt: cancelled || exhausted ? now : null,
+          cancelledAt: cancelled ? now : null,
           leaseOwner: null,
           leaseExpiresAt: null,
           version: { increment: 1 },
@@ -400,7 +402,7 @@ export async function recoverExpiredDurableWorkflowLeases(options: { now?: Date;
           workflowRunId: candidate.id,
           organizationId: candidate.organizationId,
           sequence: candidate.version + 1,
-          eventType: exhausted ? "workflow.recovery_failed" : "workflow.recovery_scheduled",
+          eventType: cancelled ? "workflow.cancelled" : exhausted ? "workflow.recovery_failed" : "workflow.recovery_scheduled",
           actorKind: "system",
           detailJson: { reason: "lease_expired", attemptCount: candidate.attemptCount },
         },
