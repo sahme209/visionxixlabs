@@ -155,40 +155,45 @@ export async function persistScanRun(input: PersistInput): Promise<PersistOutcom
   }
 
   try {
-    const cloudAccount = await prisma.cloudAccount.upsert({
-      where: {
-        organizationId_provider_externalAccountId: {
+    // Missing run storage must not leave a newly enabled orphan account.
+    const { cloudAccount, run } = await prisma.$transaction(async tx => {
+      const cloudAccount = await tx.cloudAccount.upsert({
+        where: {
+          organizationId_provider_externalAccountId: {
+            organizationId: input.organizationId,
+            provider: input.provider,
+            externalAccountId: input.externalAccountId,
+          },
+        },
+        update: {
+          regions: { set: [input.region] },
+          lastScannedAt: new Date(),
+        },
+        create: {
           organizationId: input.organizationId,
           provider: input.provider,
           externalAccountId: input.externalAccountId,
+          regions: [input.region],
+          lastScannedAt: new Date(),
         },
-      },
-      update: {
-        regions: { set: [input.region] },
-        lastScannedAt: new Date(),
-      },
-      create: {
-        organizationId: input.organizationId,
-        provider: input.provider,
-        externalAccountId: input.externalAccountId,
-        regions: [input.region],
-        lastScannedAt: new Date(),
-      },
-    });
+      });
 
-    const now = new Date();
-    const run = await prisma.axiomAgentRun.create({
-      data: {
-        userId: input.userId,
-        organizationId: input.organizationId,
-        cloudAccountId: cloudAccount.id,
-        trigger: input.trigger ?? "manual",
-        status: "completed",
-        startedAt: now,
-        completedAt: now,
-        snapshotData: input.snapshot as object,
-        summary: input.summary ?? `${input.findings.length} finding${input.findings.length === 1 ? "" : "s"} from ${input.provider}/${input.externalAccountId}`,
-      },
+      const now = new Date();
+      const run = await tx.axiomAgentRun.create({
+        data: {
+          userId: input.userId,
+          organizationId: input.organizationId,
+          cloudAccountId: cloudAccount.id,
+          trigger: input.trigger ?? "manual",
+          status: "completed",
+          startedAt: now,
+          completedAt: now,
+          snapshotData: input.snapshot as object,
+          summary: input.summary ?? `${input.findings.length} finding${input.findings.length === 1 ? "" : "s"} from ${input.provider}/${input.externalAccountId}`,
+        },
+      });
+
+      return { cloudAccount, run };
     });
 
     // Per-row create so we can map PreviewFinding.id → AxiomFinding.id.

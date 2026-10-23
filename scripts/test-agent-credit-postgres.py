@@ -125,6 +125,11 @@ try:
     enrollment_results = json.loads((output / 'cloud-enrollment-results.json').read_text())
     if enrollment.returncode or enrollment_results['numPassedTests'] != 13 or enrollment_results['numFailedTests'] or enrollment_results['numPendingTests']:
         raise RuntimeError('cloud_enrollment_transactions_failed_see_private_log')
+    scan_storage = subprocess.run([node, 'node_modules/vitest/vitest.mjs', 'run', 'lib/scan/__tests__/persistScanAtomicity.postgres.test.ts', '--reporter=json', '--outputFile=' + str(output / 'scan-storage-results.json')], cwd=repo, env=test_env, capture_output=True, text=True, timeout=120)
+    (output / 'scan-storage-tests.log').write_text(scan_storage.stdout + '\n' + scan_storage.stderr)
+    scan_results = json.loads((output / 'scan-storage-results.json').read_text())
+    if scan_storage.returncode or scan_results['numPassedTests'] != 3 or scan_results['numFailedTests'] or scan_results['numPendingTests']:
+        raise RuntimeError('scan_storage_atomicity_failed_see_private_log')
     combined_results = None
     if args.airflow_fixture:
         fixture_file = Path(args.airflow_fixture).resolve()
@@ -136,7 +141,7 @@ try:
         combined_results = json.loads((output / 'combined-airflow-results.json').read_text())
         if combined.returncode or combined_results['numPassedTests'] != 1 or combined_results['numFailedTests'] or combined_results['numPendingTests']:
             raise RuntimeError('combined_scheduler_engine_acceptance_failed_see_private_log')
-    report = {'testsPassed': results['numPassedTests'], 'testsFailed': results['numFailedTests'], 'migrationRefusalGateTestsPassed': migration_results['numPassedTests'], 'airflowScheduleFreshnessTestsPassed': airflow_results['numPassedTests'], 'verifiedAtUtc': datetime.datetime.now(datetime.timezone.utc).isoformat(), 'actualPrismaPostgres': True, 'codingArtifactApprovalTestsPassed': artifact_results['numPassedTests'], 'cloudEnrollmentTransactionTestsPassed': enrollment_results['numPassedTests'],
+    report = {'testsPassed': results['numPassedTests'], 'testsFailed': results['numFailedTests'], 'migrationRefusalGateTestsPassed': migration_results['numPassedTests'], 'airflowScheduleFreshnessTestsPassed': airflow_results['numPassedTests'], 'verifiedAtUtc': datetime.datetime.now(datetime.timezone.utc).isoformat(), 'actualPrismaPostgres': True, 'codingArtifactApprovalTestsPassed': artifact_results['numPassedTests'], 'cloudEnrollmentTransactionTestsPassed': enrollment_results['numPassedTests'], 'scanStorageAtomicityTestsPassed': scan_results['numPassedTests'],
               'actualDecisionAdmissionManagerSdkChain': True, 'actualApprovalVoteTransactions': True, 'actualCodingProposalAdmissionChain': True, 'desktopHttpRouteTestsPassed': http_results['numPassedTests'], 'desktopAuthentication': 'HTTP inference cases use a synthetic boundary; separate real HMAC/session/membership/billing cases use an isolated signing key', 'desktopSessionAuthorityTestsPassed': session_results['numPassedTests'], 'codingAdmissionTestsPassed': coding_results['numPassedTests'], 'approvalDatabaseGuardTestsPassed': guard_results['numPassedTests'], 'pipelineBudgetAuthorityTestsPassed': budget_results['numPassedTests'], 'providerTransport': 'fixed synthetic .invalid transport',
               'providerInference': False, 'combinedRealAirflowSchedulerTestsPassed': combined_results['numPassedTests'] if combined_results else 0, 'realCustomerAuthentication': False, 'productionWrites': False,
               'privateProductionBackupUsed': False, 'syntheticGenerationCostReceipts': True}
