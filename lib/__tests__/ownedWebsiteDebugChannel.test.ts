@@ -7,7 +7,7 @@ const policy = require('../../scripts/fixtures/ownedWebsitePolicy.cjs');
 const defaults = require('next/dist/server/config-shared').defaultConfig;
 
 it('disables only the unsupported dev debug channel in owned options without mutating pinned defaults', () => {
-  expect(require('next/package.json').version).toBe('16.3.8');
+  expect(require('next/package.json').version).toBe('16.4.2');
   expect(defaults.experimental.reactDebugChannel).toBe(true);
   const actual = { experimental: { ...defaults.experimental, cpus: 1 }, typescript: { ignoreBuildErrors: false }, serverExternalPackages: ['provider-sdk'] };
   const options = policy.ownedNextOptions({ root: '/workspace/owned', dist: '/workspace/owned/.next/visual-fixture', appPort: 38001, actual });
