@@ -6,8 +6,8 @@
  * pure kernels (resolveRunBudgetCap, validateBudgetConfigInput) so
  * this module stays a single-purpose I/O layer.
  *
- * Loads fail-soft: a Postgres outage returns null instead of
- * throwing, letting the runner fall back to the platform default.
+ * Display callers retain the optional fail-soft read. Execution callers
+ * request a strict read so an outage cannot authorize default spending.
  */
 
 import "server-only";
@@ -43,11 +43,11 @@ function normalizePipelineOverrides(raw: unknown): PipelineOverrideRow[] {
 }
 
 /**
- * Load the per-workspace budget config. Returns null when no row
- * exists OR the lookup failed — both cases fall through to the
- * platform default by design.
+ * Load the per-workspace budget config. A verified absent row returns null.
+ * With failClosedOnReadError, lookup failures propagate to the execution gate;
+ * legacy display callers may still receive null on a failed lookup.
  */
-export async function loadBudgetConfig(organizationId: string): Promise<OrganizationBudgetConfigShape | null> {
+export async function loadBudgetConfig(organizationId: string, options?: { failClosedOnReadError?: boolean }): Promise<OrganizationBudgetConfigShape | null> {
   try {
     const row = await prisma.organizationBudgetConfig.findUnique({
       where: { organizationId },
@@ -58,7 +58,8 @@ export async function loadBudgetConfig(organizationId: string): Promise<Organiza
       defaultMaxCostCents: row.defaultMaxCostCents,
       pipelineOverrides: normalizePipelineOverrides(row.pipelineOverrides),
     };
-  } catch {
+  } catch (error) {
+    if (options?.failClosedOnReadError) throw error;
     return null;
   }
 }
