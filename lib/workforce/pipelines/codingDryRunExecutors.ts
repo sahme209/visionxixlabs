@@ -1,14 +1,7 @@
 /**
- * Coding-loop dry-run executors — Phase 379.
- *
- * The framework defaults every stage kind to a generic dry-run, but
- * the coding stages get richer dry-run copy so the operator-facing
- * timeline reads like a real run. Each one records a plausible
- * shape for the artefact it would produce (files scanned, patch
- * preview, lint counts, test pass/fail, PR URL).
- *
- * When the real Anthropic SDK integration lands, the registrations
- * below get swapped without touching the runner.
+ * Register real coding-stage executors. The historical exported name remains
+ * for entrypoint compatibility; missing capabilities and failed stages must
+ * not be reported as successful dry runs.
  */
 
 import "server-only";
@@ -27,11 +20,9 @@ let registered = false;
 /** Idempotent — call from any entrypoint that may run a coding pipeline. */
 export function registerCodingDryRunExecutors(): void {
   if (registered) return;
-  // Phase 387: real GitHub-backed reader. Falls back to a successful
-  // dry-run on any fetch failure so the pipeline still advances.
+  // Repository read failures stop the run before paid generation.
   registerStageExecutor("code_read",    codeReadRealExecutor);
-  // Phase 380: real Anthropic-backed proposer. Falls back to dry-run when
-  // ANTHROPIC_API_KEY is not configured — see codeProposeRealExecutor.ts.
+  // Governed Gateway proposer requires policy and durable credit admission.
   // Phase 387: now also reads the prior code_read stage's repoContext.
   registerStageExecutor("code_propose", codeProposeRealExecutor);
   // Phase 391: real static-validator lint. Parses the propose stage's patch,
@@ -44,9 +35,7 @@ export function registerCodingDryRunExecutors(): void {
   // against base, and fails the pipeline when the AI tried to "pass" tests
   // by deleting cases, weakening assertions, or removing expect calls.
   registerStageExecutor("code_test",    codeTestRealExecutor);
-  // Phase 388: real GitHub-backed PR opener. Falls back to dry-run when
-  // GITHUB_TOKEN is missing, the patch can't be applied, or the branch /
-  // PR API rejects — pipeline still advances cleanly.
+  // PR completion requires a confirmed response; failed/uncertain writes stop.
   registerStageExecutor("code_pr_open", codePrOpenRealExecutor);
   registered = true;
 }

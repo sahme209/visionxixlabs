@@ -6,12 +6,9 @@
  * and stores the result in the stage's outputDetail JSONB so the
  * downstream code_propose stage can read it.
  *
- * Failure modes are all graceful — the executor returns a successful
- * dry-run-style result with `fetchedFromGitHub: false` and an
- * explanatory reason. The propose stage will see the empty
- * repoContext and prompt Claude to code from operator instruction
- * alone, the same as before. So GitHub flakiness or missing tokens
- * never block the pipeline.
+ * Failed repository reads stop the coding stage. A missing repository context
+ * is never reported as a successful scan or silently replaced by an
+ * instruction-only proposal.
  */
 
 import "server-only";
@@ -39,10 +36,10 @@ function readMetadata(raw: Record<string, unknown>): { repoRef: string; branchHi
   };
 }
 
-function fallbackResult(reason: string, ctx: { stageId: string; runMetadata: Record<string, unknown> }): StageExecutorResult {
+function failedReadResult(reason: string, ctx: { stageId: string; runMetadata: Record<string, unknown> }): StageExecutorResult {
   return {
-    ok: true,
-    summary: `[dry-run · ${reason}] code_read fell back. Propose stage will work from instruction alone.`,
+    ok: false,
+    error: `Repository context could not be read (${reason}). Coding has stopped before generation.`,
     detail: {
       stageId: ctx.stageId,
       fetchedFromGitHub: false,
@@ -56,7 +53,7 @@ function fallbackResult(reason: string, ctx: { stageId: string; runMetadata: Rec
 export const codeReadRealExecutor: StageExecutorFn = async (ctx) => {
   const meta = readMetadata(ctx.runMetadata);
   if (!meta) {
-    return fallbackResult("missing_repo_ref", ctx);
+    return failedReadResult("missing_repo_ref", ctx);
   }
 
   let result: FetchRepoContextResult;
@@ -80,7 +77,7 @@ export const codeReadRealExecutor: StageExecutorFn = async (ctx) => {
         },
       });
     } catch { /* best-effort */ }
-    return fallbackResult("github_fetch_threw", ctx);
+    return failedReadResult("github_fetch_threw", ctx);
   }
 
   if (!result.ok) {
@@ -101,7 +98,7 @@ export const codeReadRealExecutor: StageExecutorFn = async (ctx) => {
         },
       });
     } catch { /* best-effort */ }
-    return fallbackResult(result.reason, ctx);
+    return failedReadResult(result.reason, ctx);
   }
 
   const snapshot = result.snapshot;
