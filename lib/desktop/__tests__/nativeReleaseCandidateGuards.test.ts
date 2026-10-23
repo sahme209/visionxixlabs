@@ -204,7 +204,9 @@ function signCandidate(cwd: string, override: Record<string, string> = {}) {
   put(cwd, "published-public-key.asc", publicKey); mkdirSync(join(cwd, "test-signing-home"), { mode: 0o700 });
   return shellRun(step("publish", "Import GPG key and verify detached signatures").run!, cwd, { ...fakeGitHub(cwd), GNUPGHOME: join(cwd, "test-signing-home"), MOCK_PUBLIC_KEY_FILE: join(cwd, "published-public-key.asc"), GPG_PRIVATE_KEY: privateKey, EXPECTED_GPG_FINGERPRINT: fingerprint, ...override });
 }
-describe("actual intended-public-key verification and immutable publication shell", () => {
+// Signing plus publication each have a bounded 20-second subprocess deadline.
+// The framework default of 5 seconds flakes under full-suite contention.
+describe("actual intended-public-key verification and immutable publication shell", {timeout: 45_000}, () => {
   it("signs unchanged candidate bytes and verifies with the published intended public key", () => {
     const cwd = validCandidate(); const result = signCandidate(cwd); expect(result.stderr).toBe(""); expect(result.status).toBe(0);
     expect(readdirSync(join(cwd, "flat")).filter(name => name.endsWith(".asc"))).toHaveLength(6);
