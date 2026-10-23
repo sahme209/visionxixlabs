@@ -1,3 +1,8 @@
+import { isVerifiedIntegrationStatus } from "../lib/integrationStatusPresentation";
+import githubLogo from "../assets/providers/github.svg";
+import slackLogo from "../assets/providers/slack.svg";
+import teamsLogo from "../assets/providers/teams.svg";
+import linearLogo from "../assets/providers/linear.svg";
 import {parseDesktopUsageSummary,type DesktopUsageSummary} from "../../../lib/desktop/desktopBillingSummary";
 import { AGENT_PROFILES } from "../../../lib/axiom/agentRuntime/agentProfiles";
 import { DeploymentWorkflowEvidence } from "../components/DeploymentWorkflowEvidence";
@@ -48,10 +53,7 @@ const WEB_BASE = "https://visionxixlabs.com";
  * validation, and audit journey for the provider.
  */
 const INTEGRATION_CENTER_ITEMS = [
-  { group: "Source control", name: "GitLab & Azure DevOps", detail: "Adapters and release data foundations exist, but customer activation is not presented as complete until OAuth, permissions, and recovery are verified end to end.", state: "In review" },
-  { group: "Work management", name: "Jira & ServiceNow", detail: "Change-ticket context belongs on each release. Ticket creation or updates must be approval-gated and recorded in the release audit trail.", state: "In review" },
   { group: "Cloud & delivery", name: "AWS, Azure & Google Cloud", detail: "Cloud access is tenant-scoped and least-privilege. A provider is not marked connected until server-side validation succeeds.", state: "Admin setup" },
-  { group: "Observability", name: "Sentry, Datadog & Grafana", detail: "Release-health signals should be inbound and read-only first, with signed delivery and clear source provenance.", state: "Planned" },
 ] as const;
 
 type Section =
@@ -1854,7 +1856,7 @@ function IntegrationsSection({ identity }: { identity: VerifiedDesktopIdentity }
 
   return <div>
     <SectionHeading title="Integration Center" detail="Connect the systems that already run your releases. Every connection is tenant-scoped, least-privilege, and shown as connected only after server-side validation." />
-    <Notice title="Provider-specific secure connections" detail="OAuth connections use browser consent. The Azure read-only candidate accepts an existing service-principal secret transiently and sends it to the backend encrypted vault; it clears after submission and is not persisted in desktop settings. Cloud changes remain unavailable." />
+    <Notice title="Provider-specific secure connections" detail="Review access in your browser, then return here for verified connection status. Cloud connections are read-only; deployment access stays separately governed." />
     <div className="space-y-3">
       <IntegrationRow name="GitHub" group="Source control" detail={githubDetail} state={githubState} tone={github?.status === "validation_overdue" ? "attention" : undefined} action={providerAction("github", github?.status ?? "not_connected", github?.status === "installation_recorded" || github?.status === "validation_overdue", validatingGitHub, validateGitHub)} />
       <IntegrationRow name="Slack" group="Collaboration" detail="Release notifications with channels:read and chat:write. Consent is not active access until Axiom validates the token server-side." state={formatConnectorState(providerStatus("slack"))} action={providerAction("slack", providerStatus("slack"), slackCanValidate, validatingSlack, validateSlack)} />
@@ -1870,22 +1872,24 @@ function IntegrationsSection({ identity }: { identity: VerifiedDesktopIdentity }
         />
       ))}
     </div>
-    <AwsReadOnlyEnrollment identity={identity} />
-    <AzureReadOnlyEnrollment identity={identity} />
+    <details className="mt-4 rounded-lg border border-white/10 bg-white/[0.015] p-4">
+      <summary className="cursor-pointer text-sm font-medium text-zinc-200">Cloud account connections <span className="ml-2 text-xs font-normal text-zinc-500">AWS and Azure · read-only</span></summary>
+      <div className="mt-4"><AwsReadOnlyEnrollment identity={identity} /><AzureReadOnlyEnrollment identity={identity} /></div>
+    </details>
     {connectionNote && <p role="status" className="mt-3 text-xs text-zinc-400">{connectionNote}</p>}
     <div className="mt-5 rounded-xl border border-white/[0.07] bg-white/[0.025] p-4">
       <p className="text-sm text-zinc-200">What happens when you connect</p>
       <p className="mt-1 text-xs leading-5 text-zinc-500">You review the requested access in your browser, approve only the workspace you intend to connect, then return here to see the service-verified status and any required next action.</p>
     </div>
-    <div className="mt-3 rounded-xl border border-white/[0.07] bg-white/[0.025] p-4">
-      <p className="text-sm text-zinc-200">Connected-system health</p>
+    <details className="mt-3 rounded-xl border border-white/[0.07] bg-white/[0.025] p-4">
+      <summary className="cursor-pointer text-sm text-zinc-200">Connection diagnostics</summary>
       <p className="mt-1 text-xs leading-5 text-zinc-500">
         {health
           ? `${health.status.replaceAll("_", " ")} · ${health.summary.healthy} healthy · ${health.summary.degraded} needs attention · ${health.summary.preview} not yet live.`
           : "Checking the read-only health of connected-system foundations."}
       </p>
       <p className="mt-2 text-[11px] text-zinc-600">This is integration health only. Production release observation remains unavailable until an observability connection is verified.</p>
-    </div>
+    </details>
     <div className="mt-5 flex flex-wrap items-center gap-3">
       <WebButton href="/account/integrations" label="Manage connections" />
       <button type="button" onClick={() => void loadCloudConnections()} disabled={refreshing} className="rounded-lg border border-white/10 px-3 py-2 text-xs text-zinc-300 hover:bg-white/[0.06] disabled:opacity-50">
@@ -1913,10 +1917,11 @@ function Notice({ title, detail }: { title: string; detail: string }) { return <
 function SummaryCard({ label, value, detail }: { label: string; value: string; detail: string }) { return <div className="rounded-lg border border-white/[0.05] bg-white/[0.015] p-4"><p className="text-xs text-zinc-500">{label}</p><p className="mt-2 text-2xl font-semibold capitalize">{value}</p><p className="mt-2 text-sm text-zinc-500">{detail}</p></div>; }
 function formatConnectorState(state: string) { return state.replaceAll("_", " ").replace(/\b\w/g, (letter) => letter.toUpperCase()); }
 function IntegrationRow({ name, group, detail, state, action, tone }: { name: string; group: string; detail: string; state: string; action?: ReactNode; tone?: "attention" }) {
-  const connected = /verified|connected/i.test(state) && !/not connected/i.test(state);
+  const connected = isVerifiedIntegrationStatus(state);
   const stateClass = tone === "attention"
     ? "border-amber-500/25 bg-amber-500/10 text-amber-200"
     : connected ? "border-emerald-500/20 bg-emerald-500/10 text-emerald-200" : "border-white/20 bg-white/10 text-zinc-200";
-  return <div className="flex items-center gap-4 rounded-lg border border-white/[0.05] bg-white/[0.015] p-4"><span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-white/[0.05] bg-black/20 text-zinc-300"><Link2 className="h-4 w-4" /></span><div className="min-w-0 flex-1"><p className="text-[10px] uppercase tracking-[0.14em] text-zinc-600">{group}</p><p className="mt-0.5 text-sm text-zinc-200">{name}</p><p className="mt-1 text-xs leading-5 text-zinc-500">{detail}</p></div><div className="flex shrink-0 items-center gap-2"><span className={`rounded-full border px-2 py-1 text-[10px] ${stateClass}`}>{state}</span>{action}</div></div>;
+  const logo = ({GitHub: githubLogo, Slack: slackLogo, "Microsoft Teams": teamsLogo, Linear: linearLogo} as Record<string,string>)[name];
+  return <div className="flex flex-wrap items-center gap-3 rounded-lg border border-white/[0.05] bg-white/[0.015] px-4 py-3"><span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-white/[0.05] bg-black/20 text-zinc-300">{logo ? <img src={logo} width={20} height={20} alt="" aria-hidden /> : <Link2 className="h-4 w-4" />}</span><div className="min-w-[140px] flex-1"><p className="text-[10px] uppercase tracking-[0.14em] text-zinc-600">{group}</p><p className="mt-0.5 text-sm text-zinc-200">{name}</p><p className="mt-1 text-xs leading-5 text-zinc-500">{detail}</p></div><div className="flex flex-wrap items-center gap-2"><span className={`rounded-full border px-2 py-1 text-[10px] ${stateClass}`}>{state}</span>{action}</div></div>;
 }
 function WebButton({ href, label, standalone = false }: { href: string; label: string; standalone?: boolean }) { return <button type="button" onClick={() => void open(`${WEB_BASE}${href}`)} className={`${standalone ? "mt-1" : ""} inline-flex items-center gap-1.5 rounded-lg border border-white/10 px-3 py-2 text-xs text-zinc-300 hover:bg-white/[0.06]`}>{label}<ChevronRight className="h-3.5 w-3.5" /></button>; }
