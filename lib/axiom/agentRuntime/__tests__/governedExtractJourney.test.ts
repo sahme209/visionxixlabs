@@ -23,7 +23,7 @@ beforeEach(()=>{
  m.stream.mockImplementation(async function*(){const response=await m.extract();yield {done:false,text:response.text};yield {done:true,text:'',response:{...response,finishReason:'stop'}};});
  m.extract.mockResolvedValue(envelope(JSON.stringify({action:'respond',message:'Synthetic accounted answer'})));
 });
-function run(streaming=false){const tool=vi.fn();return {tool,promise:runDecisionLoop({organizationId:'org',userId:'member',correlationId:'journey',transcript:[{role:'user',content:'Explain the fixture'}],preferredProvider:'vercel_gateway',preferredModel:'fixture/model',...(streaming?{streaming:{abortSignal:new AbortController().signal,onDraft:vi.fn()}}:{}),executeReadOnlyTool:tool,isProdEnvironmentTarget:async()=>false})};}
+function run(streaming=false,operationMode?:"inspect"|"engineer"|"deepops"){const tool=vi.fn();return {tool,promise:runDecisionLoop({organizationId:'org',userId:'member',correlationId:'journey',transcript:[{role:'user',content:'Explain the fixture'}],operationMode,preferredProvider:'vercel_gateway',preferredModel:'fixture/model',...(streaming?{streaming:{abortSignal:new AbortController().signal,onDraft:vi.fn()}}:{}),executeReadOnlyTool:tool,isProdEnvironmentTarget:async()=>false})};}
 it.each([false,true].flatMap(streaming=>['claim','dispatch','usage','writer'].map(kind=>({streaming,kind}))))('actual decision/admission/manager chain never repairs $kind uncertainty (streaming=$streaming)',async ({streaming,kind})=>{
  if(kind==='claim')m.claim.mockRejectedValue(new Error('synthetic uncertain claim'));
  if(kind==='dispatch')m.extract.mockRejectedValue(new Error('synthetic uncertain provider outcome'));
@@ -50,4 +50,12 @@ it.each([false,true])('includes both accounted malformed attempts in a refused d
 it.each([false,true])('keeps a missing provider total unknown across repair (streaming=%s)',async streaming=>{
  m.extract.mockResolvedValueOnce({...envelope('not JSON','synthetic-malformed'),usage:{promptTokens:2,completionTokens:3}});
  const {promise}=run(streaming);await expect(promise).resolves.toMatchObject({kind:'final',usage:{decisionSteps:2,inputTokens:4,outputTokens:6,totalTokens:null}});
+});
+
+it.each([false,true].flatMap(streaming=>[{mode:'inspect' as const,limit:2},{mode:'engineer' as const,limit:4},{mode:'deepops' as const,limit:6}].map(effort=>({...effort,streaming}))))('counts accounted repairs inside the $mode effort limit (streaming=$streaming)',async ({mode,limit,streaming})=>{
+ let attempts=0;
+ m.extract.mockImplementation(async()=>{attempts++;return envelope(attempts%2===1?'malformed':JSON.stringify({action:'call_tool',message:'Read synthetic environment evidence',toolName:'list_environments',args:{}}),'synthetic-budget-'+attempts);});
+ const {tool,promise}=run(streaming,mode);tool.mockResolvedValue({ok:true,result:{environments:[]}});
+ await expect(promise).resolves.toMatchObject({kind:'error',error:'max_iterations_exceeded',usage:{decisionSteps:limit,inputTokens:limit*2,outputTokens:limit*3,totalTokens:limit*5}});
+ expect(m.extract).toHaveBeenCalledTimes(limit);expect(m.reserve).toHaveBeenCalledTimes(limit);expect(tool).toHaveBeenCalledTimes(limit/2);
 });

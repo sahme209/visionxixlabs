@@ -174,8 +174,10 @@ async function extractDecision(
   prompt: string,
   correlationId: string,
   onUsage: (usage: AITextResponse["usage"]) => void,
+  takeAttempt: () => boolean,
 ): Promise<RawDecision | null> {
   for (let attempt = 0; attempt < 2; attempt++) {
+    if (!takeAttempt()) return null;
     try {
       const response = await extract<unknown>(
         attempt === 0
@@ -235,6 +237,10 @@ export async function runDecisionLoop(input: {
   if (!governed.ok) return { kind: "error", error: governed.error };
 
   const effort = resolveAgentEffortProfile(input.operationMode);
+  // A separately admitted repair is still a model attempt. It shares the
+  // advertised turn budget rather than doubling it behind each decision.
+  let remainingDecisionAttempts = effort.maxDecisionIterations;
+  const takeAttempt = () => remainingDecisionAttempts-- > 0;
   const observedUsage: AITextResponse["usage"][] = [];
   const withUsage = <T extends DecisionLoopOutcome>(outcome: T): T => {
     if (observedUsage.length === 0) return outcome;
@@ -324,7 +330,7 @@ export async function runDecisionLoop(input: {
     });
   }
 
-  for (let iteration = 0; iteration < effort.maxDecisionIterations; iteration++) {
+  for (let iteration = 0; iteration < effort.maxDecisionIterations && remainingDecisionAttempts > 0; iteration++) {
     const transcriptText = transcript.map((t) => `[${t.role}] ${t.content}`).join("\n\n");
     const operationMode = normalizedOperationMode(input.operationMode);
     const modeInstruction = operationMode === "inspect"
@@ -336,7 +342,7 @@ export async function runDecisionLoop(input: {
 
     let decision: RawDecision | null;
     try {
-      decision = await extractDecision(governed.extract, prompt, `${input.correlationId}:${iteration}`, (usage) => observedUsage.push(usage));
+      decision = await extractDecision(governed.extract, prompt, `${input.correlationId}:${iteration}`, (usage) => observedUsage.push(usage), takeAttempt);
     } catch (error) {
       if (error instanceof GovernedAiCallRefusal) return withUsage({ kind: "error", error: error.code });
       throw error;
