@@ -9,6 +9,7 @@ vi.mock("../governedAiCall", () => ({ resolveGovernedAiCall: mocks.resolveGovern
 vi.mock("../agentIdentityPolicy", () => ({ readWorkspaceAgentIdentity: mocks.readWorkspaceAgentIdentity }));
 
 import { resolveAgentEffortProfile, runDecisionLoop } from "../decisionLoop";
+import { AccountedDecisionMalformed } from "@/lib/ai/accountedDecisionMalformed";
 
 function governed(extractImpl: (text: string, schemaHint: string, correlationId: string) => Promise<unknown>) {
   return {
@@ -30,6 +31,32 @@ describe("runDecisionLoop", () => {
       allowedTools: ["list_environments", "read_github_file", "commit_github_file", "open_github_pull_request", "trigger_aws_deploy"],
       updatedAt: "2026-10-13T00:00:00.000Z", updatedBy: "admin",
     });
+  });
+
+  it.each(["disabled", "removed", "unavailable"] as const)("refuses another model decision after Agent policy becomes %s during a tool read", async change => {
+    const extract = vi.fn(async () => ({ action: "call_tool", message: "Inspect", toolName: "list_environments", args: {} }));
+    mocks.resolveGovernedAiCall.mockResolvedValue(governed(extract));
+    const tool = vi.fn(async () => {
+      if (change === "unavailable") mocks.readWorkspaceAgentIdentity.mockRejectedValue(new Error("private storage error"));
+      else mocks.readWorkspaceAgentIdentity.mockResolvedValue({ enabled: change !== "disabled", allowedTools: [] });
+      return { ok: true as const, result: { environments: [] } };
+    });
+    expect(await runDecisionLoop({ organizationId: "o", userId: "actor", correlationId: "c", transcript: [],
+      executeReadOnlyTool: tool, isProdEnvironmentTarget: noopProdCheck }))
+      .toMatchObject({ kind: "error", error: change === "disabled" ? "workspace_agent_disabled" : change === "removed" ? "agent_tool_not_allowed" : "workspace_agent_policy_unavailable" });
+    expect(extract).toHaveBeenCalledOnce(); expect(tool).toHaveBeenCalledOnce();
+  });
+
+  it("does not purchase an accounted JSON repair after the Agent is disabled", async () => {
+    const extract = vi.fn(async () => {
+      mocks.readWorkspaceAgentIdentity.mockResolvedValue({ enabled: false, allowedTools: [] });
+      throw new AccountedDecisionMalformed({ promptTokens: 1, completionTokens: 1, totalTokens: 2 });
+    });
+    mocks.resolveGovernedAiCall.mockResolvedValue(governed(extract));
+    expect(await runDecisionLoop({ organizationId: "o", userId: "actor", correlationId: "c", transcript: [],
+      executeReadOnlyTool: noopReadOnly, isProdEnvironmentTarget: noopProdCheck }))
+      .toMatchObject({ kind: "error", error: "workspace_agent_disabled", usage: { decisionSteps: 1, totalTokens: 2 } });
+    expect(extract).toHaveBeenCalledOnce();
   });
 
   it("fails closed before inference when the workspace Agent is disabled", async () => {

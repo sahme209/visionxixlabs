@@ -95,6 +95,14 @@ export type DecisionLoopOutcome =
   | { kind: "proposal"; message: string; toolName: string; args: Record<string, unknown>; riskLevel: ToolRiskLevel; usage?: AgentUsageReceipt }
   | { kind: "error"; error: GovernedAiCallError | "workspace_agent_disabled" | "workspace_agent_policy_unavailable" | "agent_tool_not_allowed" | "decision_malformed" | "tool_execution_failed" | "max_iterations_exceeded"; detail?: string; usage?: AgentUsageReceipt };
 
+/** Current identity refusal is terminal policy evidence, never a JSON repair. */
+class AgentIdentityCallRefusal extends Error {
+  constructor(readonly outcome: Extract<DecisionLoopOutcome, { kind: "error" }>) {
+    super(outcome.error);
+    this.name = "AgentIdentityCallRefusal";
+  }
+}
+
 interface RawDecision {
   action: "respond" | "call_tool";
   message: string;
@@ -263,20 +271,30 @@ export async function runDecisionLoop(input: {
 
   // Inference and provider setup can outlive an operator's permission change.
   // The prompt's allowlist is only a ceiling, never perpetual authority.
-  const recheckToolAuthority = async (toolName: string): Promise<Extract<DecisionLoopOutcome, { kind: "error" }> | null> => {
+  const recheckToolAuthority = async (toolName?: string): Promise<Extract<DecisionLoopOutcome, { kind: "error" }> | null> => {
     input.streaming?.abortSignal.throwIfAborted();
     try {
       const current = await readWorkspaceAgentIdentity(input.organizationId);
       input.streaming?.abortSignal.throwIfAborted();
       if (!current?.enabled) return { kind: "error", error: "workspace_agent_disabled" };
-      if (!current.allowedTools.includes(toolName)) {
-        return { kind: "error", error: "agent_tool_not_allowed", detail: `Tool is no longer approved for this agent identity: ${toolName}` };
+      const revoked = (toolName ? [toolName] : scopedToolNames).find(name => !current.allowedTools.includes(name));
+      if (revoked) {
+        return { kind: "error", error: "agent_tool_not_allowed", detail: `Tool is no longer approved for this agent identity: ${revoked}` };
       }
       return null;
     } catch {
       input.streaming?.abortSignal.throwIfAborted();
       return { kind: "error", error: "workspace_agent_policy_unavailable" };
     }
+  };
+
+  const extractWithIdentity: typeof governed.extract = async <T>(text: string, schemaHint: string, correlationId: string) => {
+    // The owner can stop the Agent or revoke a prompt scope while a prior
+    // tool/model call is pending. Recheck before every new hold, including
+    // accounted JSON repair; the initial prompt is only an authority ceiling.
+    const identityError = await recheckToolAuthority();
+    if (identityError) throw new AgentIdentityCallRefusal(identityError);
+    return governed.extract<T>(text, schemaHint, correlationId);
   };
 
   let activityStep = 0;
@@ -347,8 +365,9 @@ export async function runDecisionLoop(input: {
 
     let decision: RawDecision | null;
     try {
-      decision = await extractDecision(governed.extract, prompt, `${input.correlationId}:${iteration}`, (usage) => observedUsage.push(usage), takeAttempt);
+      decision = await extractDecision(extractWithIdentity, prompt, `${input.correlationId}:${iteration}`, (usage) => observedUsage.push(usage), takeAttempt);
     } catch (error) {
+      if (error instanceof AgentIdentityCallRefusal) return withUsage(error.outcome);
       if (error instanceof GovernedAiCallRefusal) return withUsage({ kind: "error", error: error.code });
       throw error;
     }
