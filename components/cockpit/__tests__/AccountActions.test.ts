@@ -30,6 +30,6 @@ it("restores focus to the sessions heading after a confirmed device revocation r
  const trigger=await screen.findByRole("button",{name:"Revoke device"});trigger.focus();fireEvent.click(trigger);
  fireEvent.click(screen.getByRole("dialog").querySelector('button.bg-rose-400')!);
  await waitFor(()=>expect(screen.queryByRole("dialog")).toBeNull());
- expect(screen.getByRole("heading",{name:"Paired Axiom Agent devices"})).toBe(document.activeElement);
+ await waitFor(()=>expect(screen.getByRole("heading",{name:"Paired Axiom Agent devices"})).toBe(document.activeElement));
  expect(fetcher).toHaveBeenCalledWith("/api/desktop/session?id=device-1",expect.objectContaining({method:"DELETE"}));
 });
