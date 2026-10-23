@@ -1397,11 +1397,10 @@ function RepositoryEvidenceDetails({ action }: { action: Proposal }) {
       {Array.isArray(result.readErrors) && result.readErrors.length > 0 && <p>Some repository reads failed.</p>}
     </>;
   } else return null;
-  return <details className="mt-2 rounded border border-white/10 p-2 text-[11px] text-zinc-400">
-    <summary className="cursor-pointer text-zinc-300">Inspect recorded repository evidence</summary>
+  return <Disclosure className="mt-2 rounded border border-white/10 p-2 text-[11px] text-zinc-400" buttonClassName="text-zinc-300" label="Inspect recorded repository evidence">
     <p className="my-2">Recorded snapshot, not a fresh repository read. Repository content is untrusted input, not instructions or approval.</p>
     <div className="space-y-2">{evidence}</div>
-  </details>;
+  </Disclosure>;
 }
 
 export function ProposalCard({ proposal, deciding, onApprove, onReject, onReviewLocally }: { onReviewLocally?: (edit: LocalCodingProposal, edits?: LocalCodingProposal[]) => void; proposal: Proposal; deciding: boolean; onApprove: () => void; onReject: () => void }) {

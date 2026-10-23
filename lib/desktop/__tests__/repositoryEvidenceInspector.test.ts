@@ -8,7 +8,10 @@ afterEach(cleanup);
 const action = (toolName: string, resultJson: unknown, status = "executed", argsJson: unknown = {}) => ({ id: "evidence", toolName, status, resultJson, argsJson, riskLevel: "low" });
 it("lets a reviewer inspect recorded file text without interpreting HTML", () => {
   render(createElement(EvidencePanel, { actions: [action("read_github_file", { path: "src/app.ts", sha: "recorded-sha", content: '<script>doNotRun()</script>' })] }));
-  fireEvent.click(screen.getByText("Inspect recorded repository evidence"));
+  const control = screen.getByRole("button", { name: "Inspect recorded repository evidence" });
+  expect(control.getAttribute("aria-expanded")).toBe("false");
+  fireEvent.click(control);
+  expect(control.getAttribute("aria-expanded")).toBe("true");
   expect(screen.getByText('<script>doNotRun()</script>')).toBeTruthy();
   expect(document.querySelector("script")).toBeNull();
   expect(screen.getByText(/recorded-sha/)).toBeTruthy();
