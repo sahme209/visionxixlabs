@@ -82,7 +82,7 @@ try:
     guards = subprocess.run([node, 'node_modules/vitest/vitest.mjs', 'run', 'lib/workforce/__tests__/approvalWriterGuards.postgres.test.ts', '--reporter=json', '--outputFile=' + str(output / 'guard-results.json')], cwd=repo, env=test_env, capture_output=True, text=True, timeout=120)
     (output / 'guard-tests.log').write_text(guards.stdout + '\n' + guards.stderr)
     guard_results = json.loads((output / 'guard-results.json').read_text())
-    if guards.returncode or guard_results['numPassedTests'] != 8 or guard_results['numFailedTests'] or guard_results['numPendingTests']:
+    if guards.returncode or guard_results['numPassedTests'] != 10 or guard_results['numFailedTests'] or guard_results['numPendingTests']:
         raise RuntimeError('approval_database_guard_tests_failed_see_private_log')
     report = {'testsPassed': results['numPassedTests'], 'testsFailed': results['numFailedTests'], 'verifiedAtUtc': datetime.datetime.now(datetime.timezone.utc).isoformat(), 'actualPrismaPostgres': True,
               'actualDecisionAdmissionManagerSdkChain': True, 'actualApprovalVoteTransactions': True, 'approvalDatabaseGuardTestsPassed': guard_results['numPassedTests'], 'providerTransport': 'fixed synthetic .invalid transport',

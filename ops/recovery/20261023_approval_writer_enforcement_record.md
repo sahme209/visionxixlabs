@@ -1,0 +1,13 @@
+# Approval writer enforcement — production record
+
+Applied 2026-10-23 at approximately 10:30 UTC to verified Neon project odd-union-57413470, branch br-holy-voice-ai303o8m, database neondb. The exact sixteen intact SQL statements were executed through one database transaction; the script wrapper BEGIN/COMMIT was omitted because the transaction tool owns that boundary.
+
+SQL SHA-256: ac4b92ccfc2b7d1710a5897d08ee10b1800cc9d5c0b16a414a96d2334b0c6f62. A fresh private logical backup was restored and the complete exact script rehearsed before application. All 137 existing public tables retained identical data fingerprints in that rehearsal. Concurrent migration, running Engineer execution, advanced expired approval gate, terminal callback and repeat-install cases were refused. Independent review found no blocker.
+
+The locked live preconditions passed. Post-application catalog checks confirmed three enabled guards and three security-invoker functions owned by the expected table owner, with no PUBLIC function EXECUTE grants. There were still zero historical votes, 216 expired approvals and 303 running pipeline records. No historical row was rewritten, no account or role was changed, and the original failed migration record/checksum remained unresolved and intact. Existing unrelated coding workflows were not reset or retried.
+
+The matching source 19a35c6add188c5fff61690f8acf4ea6ae148b1d was staged, passed nine checks, explicitly promoted and verified as the exact visionxixlabs.com alias: dpl_2mr1KBy92eirJYFfv6XbNzU7MgUk. Nine public checks passed after promotion. Additional public probes refused missing-origin session mutations (403), unauthenticated same-origin voting (401), and an API vote without a bearer credential (401), using nonexistent fixture identifiers. No real approval, executor or paid provider request was made.
+
+Production source checks: 9,962 passed, 0 failed, 97 skipped, TypeScript and production build passed. Separate actual PostgreSQL acceptance covered thirteen Agent/vote cases and ten database-guard cases, including pending-approval creation, safe expiry and a non-owner application role without PUBLIC function EXECUTE grants. The extra two compatibility tests were added after the immutable release was staged; application and SQL bytes were unchanged.
+
+Keep the enforcement fence in place. Rolling back to an old application version intentionally leaves its approval writes refused. Never remove the fence to make an old caller work, replay unsafe historical migrations, or relabel historical votes as authenticated. Broader migration/schema convergence and real authenticated desktop Agent acceptance remain separate outstanding work.

@@ -59,4 +59,21 @@ describe.skipIf(!socket)('retired approval writers refused by actual PostgreSQL 
   await expect(withBoundApprovalWrite(tx=>tx.engineerApprovalSnapshot.update({where:{id:snapshotId},data:{status:'approved'}}))).rejects.toThrow('approval_actor_provenance_required');
  });
 
+ it('preserves pending approval creation, metadata updates and safe expiry without a decision marker',async()=>{
+  const approval='owned_pending_'+randomUUID();const snap=await f.client.engineerApprovalSnapshot.create({data:{organizationId:'owned_guard_org',approvalRequestId:approval,engineerId:'no_executor',action:'fixture_only',riskLevel:'low',effectiveRule:'two_step_approval',requiredApprovers:2,correlationId:'owned_guard_correlation',requestedBy:'owned_requester'}});snapshots.push(snap.id);
+  expect(snap.status).toBe('pending');expect(await f.client.engineerApprovalSnapshot.update({where:{id:snap.id},data:{attemptId:'owned_metadata_only'}})).toMatchObject({status:'pending',attemptId:'owned_metadata_only'});
+  expect(await f.client.engineerApprovalSnapshot.update({where:{id:snap.id},data:{status:'expired'}})).toMatchObject({status:'expired'});
+ });
+
+ it('enforces the trigger for a non-owner application role without public function execution grants',async()=>{
+  await f.client.$executeRawUnsafe('CREATE ROLE axiom_owned_approval_writer NOLOGIN');
+  try{
+   await f.client.$executeRawUnsafe('GRANT USAGE ON SCHEMA public TO axiom_owned_approval_writer');await f.client.$executeRawUnsafe('GRANT SELECT, INSERT, UPDATE ON "EngineerApprovalDecision", "EngineerApprovalSnapshot" TO axiom_owned_approval_writer');
+   const [privilege]=await f.client.$queryRawUnsafe<Array<{allowed:boolean}>>(`SELECT has_function_privilege('axiom_owned_approval_writer','public.axiom_bound_approval_vote_guard()','EXECUTE') AS allowed`);expect(privilege.allowed).toBe(false);
+   await expect(f.client.$transaction(async tx=>{await tx.$executeRawUnsafe('SET LOCAL ROLE axiom_owned_approval_writer');return tx.engineerApprovalDecision.create({data:{snapshotId,organizationId:'owned_guard_org',approverUserId:'api_key:legacy',decision:'approved'}});})).rejects.toThrow('approval_writer_upgrade_required');
+   await f.client.$transaction(async tx=>{await tx.$executeRawUnsafe('SET LOCAL ROLE axiom_owned_approval_writer');await tx.$executeRawUnsafe(`SELECT set_config('axiom.approval_actor_binding','v1',true)`);await tx.engineerApprovalDecision.create({data:{id:'boundvote_v1_'+randomUUID(),snapshotId,organizationId:'owned_guard_org',approverUserId:'api_key:reviewed',decision:'approved'}});});
+   expect(await f.client.engineerApprovalDecision.count({where:{snapshotId}})).toBe(1);
+  }finally{await f.client.$executeRawUnsafe('REVOKE ALL ON "EngineerApprovalDecision", "EngineerApprovalSnapshot" FROM axiom_owned_approval_writer');await f.client.$executeRawUnsafe('REVOKE ALL ON SCHEMA public FROM axiom_owned_approval_writer');await f.client.$executeRawUnsafe('DROP ROLE axiom_owned_approval_writer');}
+ });
+
 });

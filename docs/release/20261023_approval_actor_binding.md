@@ -27,7 +27,7 @@ The exact SQL takes the Prisma migration fence, locks the historical ledger agai
 
 Validation of the fence:
 
-- Eight actual PostgreSQL guard cases passed alongside the thirteen Agent/vote cases. Old/default-ID writes, old terminal transitions, old execution claims and old pipeline continuations were refused. Reviewed voting, execution and stage transitions worked. Zero-approver rules retain their reviewed behavior while legacy rows cannot be laundered through them. The marker did not remain active after commit.
+- Ten actual PostgreSQL guard cases passed alongside the thirteen Agent/vote cases. Old/default-ID writes, old terminal transitions, old execution claims and old pipeline continuations were refused. Reviewed voting, execution and stage transitions worked. Zero-approver rules retain their reviewed behavior while legacy rows cannot be laundered through them. The marker did not remain active after commit. Pending creation, metadata updates, expiry, and non-owner application-role behavior were also verified.
 - A fresh production logical backup was restored privately on a network-disabled local PostgreSQL 17 server. The complete exact script passed; all 137 existing public tables retained identical data fingerprints. Busy migration, running Engineer, advanced expired-gate continuation, terminal waiting continuation and repeated installation were refused. Trigger ownership, invoker mode and function privileges were checked. The owned test server was stopped and removed.
 - SQL SHA-256: `ac4b92ccfc2b7d1710a5897d08ee10b1800cc9d5c0b16a414a96d2334b0c6f62`. Independent review found no blocker.
 
