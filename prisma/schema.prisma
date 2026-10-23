@@ -588,7 +588,7 @@ model AxiomAgentRun {
   userId         String
   organizationId String
   cloudAccountId String
-  cloudAccount   CloudAccount   @relation(fields: [cloudAccountId], references: [id])
+  cloudAccount   CloudAccount   @relation(fields: [cloudAccountId, organizationId], references: [id, organizationId])
   trigger        AgentTrigger
   status         AgentRunStatus @default(pending)
   snapshotData   Json?
@@ -838,7 +838,7 @@ model AxiomScheduledRun {
   id                  String            @id @default(cuid())
   organizationId      String
   cloudAccountId      String
-  cloudAccount        CloudAccount      @relation(fields: [cloudAccountId], references: [id])
+  cloudAccount        CloudAccount      @relation(fields: [cloudAccountId, organizationId], references: [id, organizationId])
   trigger             AgentTrigger      @default(scheduled)
   frequency           ScheduleFrequency @default(daily)
   cronExpression      String // e.g. "0 9 * * 1" (Monday 9am UTC)
@@ -1470,7 +1470,7 @@ model WorkspaceUsageSummary {
 model AxiomAutopilotEvent {
   id             String             @id @default(cuid())
   cloudAccountId String
-  cloudAccount   CloudAccount       @relation(fields: [cloudAccountId], references: [id])
+  cloudAccount   CloudAccount       @relation(fields: [cloudAccountId, organizationId], references: [id, organizationId])
   organizationId String
   userId         String
   eventType      String // "mode_change" | "auto_applied" | "auto_blocked"
