@@ -2,6 +2,7 @@ import { AGENT_TOOL_ACTIVITY_LABELS, type AgentToolActivity } from "../../../lib
 import { localCodingProposals, type LocalCodingProposal } from "../lib/localEditReview";
 import { localCodeContextPrompt, type LocalCodeSelection } from "../lib/localCodeContext";
 import { selectSkillInvocation } from "../lib/skillInvocation";
+import { readDesktopPreferences } from "../lib/preferences";
 import { rememberConversationDraft } from "../lib/conversationDrafts";
 import { isSensitiveRepositoryEvidencePath } from "../../../lib/axiom/agentRuntime/repositoryEvidencePolicy";
 import { AGENT_PROFILES, resolveAgentProfile, type AgentProfileId } from "../../../lib/axiom/agentRuntime/agentProfiles";
@@ -264,6 +265,20 @@ function AgentChatSession({ onOpenSettings, identity, active, requestedSkill, re
   const [startupAttempt, setStartupAttempt] = useState(0);
   const [modelAttempt, setModelAttempt] = useState(0);
   const [modelState, setModelState] = useState<"loading" | "ready" | "disabled" | "empty" | "unavailable">("loading");
+  const [submitWithCommandEnter, setSubmitWithCommandEnter] = useState(false);
+  useEffect(() => {
+    let disposed = false;
+    let generation = 0;
+    const refresh = () => {
+      const request = ++generation;
+      void readDesktopPreferences().then(prefs => {
+        if (!disposed && request === generation) setSubmitWithCommandEnter(prefs?.submit_with_command_enter === true);
+      }).catch(() => { /* Retain the last verified interaction preference. */ });
+    };
+    refresh();
+    window.addEventListener("axiom:preferences-changed", refresh);
+    return () => { disposed = true; generation++; window.removeEventListener("axiom:preferences-changed", refresh); };
+  }, [active]);
   const previousActive = useRef(active);
   useEffect(() => {
     const resumed = active && !previousActive.current;
@@ -941,7 +956,7 @@ function AgentChatSession({ onOpenSettings, identity, active, requestedSkill, re
           <textarea
             value={input}
             onChange={(event) => setInput(event.target.value)}
-            onKeyDown={(event) => { if (event.key === "Enter" && !event.shiftKey && !event.nativeEvent.isComposing && event.nativeEvent.keyCode !== 229) { event.preventDefault(); void send(); } }}
+            onKeyDown={(event) => { if (event.key === "Enter" && !event.shiftKey && !event.altKey && (!submitWithCommandEnter || event.metaKey || event.ctrlKey) && !event.nativeEvent.isComposing && event.nativeEvent.keyCode !== 229) { event.preventDefault(); void send(); } }}
             placeholder={pendingProposal ? "Approve or reject the proposed action above to continue…" : operationMode === "inspect" ? "Ask about the selected repository or environment…" : operationMode === "engineer" && composerMode === "code" ? "Describe the change you want in this file…" : operationMode === "engineer" ? "Describe the engineering change you want proposed…" : "Describe the operational outcome you want proposed…"}
             disabled={sending || loadingConversation || !conversationId || Boolean(pendingProposal)}
             rows={2}

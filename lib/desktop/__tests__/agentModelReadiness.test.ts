@@ -2,18 +2,18 @@
 import { createElement } from "react";
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import { act, cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
-const m = vi.hoisted(() => ({ invoke: vi.fn(), client: { subscribeContext: () => () => {}, getContextRevision: () => 0, config: {} as { sessionToken?: string }, hasAuth: vi.fn(), verifyCurrentCredential: vi.fn(), listAgentConversations: vi.fn(), getAgentConversation: vi.fn(), aiProviderStatus: vi.fn(), listAgentSkills: vi.fn(), listGithubRepositories: vi.fn(), listGithubBranches: vi.fn(), listGithubFiles: vi.fn(), listEnvironments: vi.fn(), sendAgentMessage: vi.fn(), createAgentConversation: vi.fn(), approveAgentAction: vi.fn(), rejectAgentAction: vi.fn() } }));
+const m = vi.hoisted(() => ({ invoke: vi.fn(), preferences: vi.fn(), client: { subscribeContext: () => () => {}, getContextRevision: () => 0, config: {} as { sessionToken?: string }, hasAuth: vi.fn(), verifyCurrentCredential: vi.fn(), listAgentConversations: vi.fn(), getAgentConversation: vi.fn(), aiProviderStatus: vi.fn(), listAgentSkills: vi.fn(), listGithubRepositories: vi.fn(), listGithubBranches: vi.fn(), listGithubFiles: vi.fn(), listEnvironments: vi.fn(), sendAgentMessage: vi.fn(), createAgentConversation: vi.fn(), approveAgentAction: vi.fn(), rejectAgentAction: vi.fn() } }));
 vi.mock("@tauri-apps/api/core", () => ({ invoke: m.invoke }));
 vi.mock("../../../desktop/src/lib/desktopClient", () => ({ desktopClient: m.client }));
 vi.mock("../../../desktop/src/lib/useNativeMenuActions", () => ({ useNativeMenuActions: vi.fn() }));
-vi.mock("../../../desktop/src/lib/preferences", () => ({ readDesktopPreferences: async () => null, writeDesktopPreferences: vi.fn() }));
+vi.mock("../../../desktop/src/lib/preferences", () => ({ readDesktopPreferences: m.preferences, writeDesktopPreferences: vi.fn() }));
 import { AgentChatView } from "../../../desktop/src/views/AgentChatView";
 import App from "../../../desktop/src/App";
 const ready = { ok: true, data: { providers: [{ provider: "vercel_gateway", models: [{ id: "fixture/model", label: "Fixture model", tier: "standard" }] }], policy: { enabled: true, allowedProviders: ["vercel_gateway"], modelSelections: { vercel_gateway: "fixture/model" }, fallbackOrder: ["vercel_gateway"] } } };
 function deferred<T>() { let resolve!: (value: T) => void; const promise = new Promise<T>(done => { resolve = done; }); return { promise, resolve }; }
 const summary = { id: "conversation-1", title: "Saved chat", createdAt: "2026-10-16T00:00:00Z", updatedAt: "2026-10-16T00:00:00Z", turnCount: 0 };
 beforeEach(() => {
-  vi.resetAllMocks(); window.localStorage.clear(); Element.prototype.scrollTo = vi.fn(); m.client.config = {};
+  vi.resetAllMocks(); m.preferences.mockResolvedValue(null); window.localStorage.clear(); Element.prototype.scrollTo = vi.fn(); m.client.config = {};
   m.client.listAgentConversations.mockResolvedValue({ ok: true, data: { conversations: [summary] } });
   m.client.getAgentConversation.mockResolvedValue({ ok: true, data: { ...summary, turns: [], actions: [] } });
   m.client.aiProviderStatus.mockResolvedValue(ready);
@@ -115,7 +115,7 @@ it.each([{ ok: false, error: "provider_policy_unavailable" }, { ok: true, data: 
   expect(screen.queryByText(/No service-configured models are available/)).toBeNull();
   fireEvent.click(await screen.findByRole("button", { name: "Retry models" }));
   await screen.findByRole("switch", { name: "Disable Fixture model" });
-  fireEvent.click(screen.getByRole("button", { name: "Agent" })); await screen.findByRole("option", { name: "Fixture model" });
+  fireEvent.click(screen.getByRole("button", { name: "Back to workspace" })); await screen.findByRole("option", { name: "Fixture model" });
   expect(m.client.sendAgentMessage).not.toHaveBeenCalled(); expect(m.client.createAgentConversation).not.toHaveBeenCalled();
 });
 it("sends an approved alternate Gateway choice as the optional fifth argument in both composer modes",async()=>{
@@ -203,7 +203,8 @@ it("preserves the actual App composer, profile and environment across an in-app 
   fireEvent.change(screen.getByRole("combobox", { name: "Active deployment environment" }), { target: { value: "env-1" } });
   fireEvent.click(screen.getByRole("button", { name: "Agent permissions" }));
   await screen.findByRole("heading", { name: "Agents" });
-  fireEvent.click(screen.getByRole("button", { name: "Agent" }));
+  expect(screen.queryByRole("navigation", { name: "Deployment workspace" })).toBeNull();
+  fireEvent.click(screen.getByRole("button", { name: "Back to workspace" }));
   await screen.findByRole("option", { name: "Fixture model" });
   expect((screen.getByRole("textbox") as HTMLTextAreaElement).value).toBe("Keep this unsent request");
   expect((screen.getByRole("combobox", { name: "Specialized Agent" }) as HTMLSelectElement).value).toBe("code_review");
@@ -563,4 +564,29 @@ it("opens the repository on its first visit from the shared Documentation journe
   expect(await screen.findByRole("button", {name: "main.ts"})).toBeTruthy();
   expect(m.invoke.mock.calls.filter(([command]) => command === "write_repository_file")).toHaveLength(0);
   expect(m.client.sendAgentMessage).not.toHaveBeenCalled();
+});
+
+it("honors saved command-enter submission and preserves Enter, Shift and IME input", async () => {
+  m.preferences.mockResolvedValue({ submit_with_command_enter: true });
+  render(createElement(AgentChatView)); await draft();
+  await screen.findByRole("option", { name: "Fixture model" });
+  const input = screen.getByRole("textbox");
+  fireEvent.keyDown(input, { key: "Enter" });
+  fireEvent.keyDown(input, { key: "Enter", metaKey: true, shiftKey: true });
+  fireEvent.keyDown(input, { key: "Enter", metaKey: true, isComposing: true });
+  expect(m.client.sendAgentMessage).not.toHaveBeenCalled();
+  fireEvent.keyDown(input, { key: "Enter", metaKey: true });
+  await waitFor(() => expect(m.client.sendAgentMessage).toHaveBeenCalledTimes(1));
+});
+
+it("applies a successfully changed keyboard preference to an already mounted composer", async () => {
+  render(createElement(AgentChatView)); await draft();
+  await screen.findByRole("option", { name: "Fixture model" });
+  m.preferences.mockResolvedValue({ submit_with_command_enter: true });
+  await act(async () => { window.dispatchEvent(new Event("axiom:preferences-changed")); });
+  const input = screen.getByRole("textbox");
+  fireEvent.keyDown(input, { key: "Enter" });
+  expect(m.client.sendAgentMessage).not.toHaveBeenCalled();
+  fireEvent.keyDown(input, { key: "Enter", ctrlKey: true });
+  await waitFor(() => expect(m.client.sendAgentMessage).toHaveBeenCalledTimes(1));
 });

@@ -40,3 +40,10 @@ describe("actual desktop billing status presentation", () => {
     await showPlan(identity("growth", "active")); expect(screen.getByText("growth", { exact: true })).toBeTruthy(); expect(screen.queryByText("Pro", { exact: true })).toBeNull(); expect(screen.getByRole("button", { name: "Open billing" })).toBeTruthy();
   });
 });
+
+it("finds governance sections by capability without changing account state", async () => {
+  render(createElement(SettingsView, { identity: identity("pilot", "active") }));
+  fireEvent.change(screen.getByRole("searchbox", { name: "Search settings" }), { target: { value: "motion" } });
+  fireEvent.click(screen.getByRole("button", { name: "Appearance" }));
+  expect(screen.getByRole("heading", { name: "Appearance" })).toBeTruthy();
+});

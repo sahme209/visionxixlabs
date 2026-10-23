@@ -6,6 +6,7 @@ import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } fro
 import { open } from "@tauri-apps/plugin-shell";
 import { invoke } from "@tauri-apps/api/core";
 import {
+  ArrowLeft,
   Bot,
   Check,
   ChevronRight,
@@ -20,10 +21,10 @@ import {
   Palette,
   Server,
   Settings2,
+  Search,
   ShieldCheck,
   Trees,
 } from "lucide-react";
-import { ViewShell } from "../components/Primitives";
 import { desktopClient, type DeploymentExecution, type VerifiedDesktopIdentity, type WorkspaceMember } from "../lib/desktopClient";
 import { deploymentObservationState } from "../lib/deploymentObservationState";
 import { signOutDesktopCredentials } from "../lib/activeDesktopCredential";
@@ -66,6 +67,21 @@ type Section =
   | "environments"
   | "identity";
 
+const sectionKeywords: Record<Section, string> = {
+  general: "startup notifications account",
+  profile: "name email session sign out logout",
+  appearance: "theme density motion contrast accessibility",
+  plan: "billing subscription tokens cost usage",
+  agents: "chat keyboard enter conversation queue interrupt approvals",
+  models: "AI providers gateway approved models",
+  permissions: "roles members organization access governance",
+  git: "source control branches attribution pull requests",
+  worktrees: "isolated workspace cleanup storage",
+  integrations: "connections connectors providers",
+  environments: "cloud deployment AWS Azure",
+  identity: "OIDC SAML SCIM enterprise authentication",
+};
+
 const sections: Array<{ id: Section; label: string; icon: typeof CircleUserRound }> = [
   { id: "general", label: "General", icon: Settings2 },
   { id: "profile", label: "Profile", icon: CircleUserRound },
@@ -81,7 +97,8 @@ const sections: Array<{ id: Section; label: string; icon: typeof CircleUserRound
   { id: "integrations", label: "Integrations", icon: Link2 },
 ];
 
-export function SettingsView({ identity, initialSection }: { identity: VerifiedDesktopIdentity; initialSection?: "models" | "agents" }) {
+export function SettingsView({ identity, initialSection, onClose }: { identity: VerifiedDesktopIdentity; initialSection?: "models" | "agents"; onClose?: () => void }) {
+  const [search, setSearch] = useState("");
   const [active, setActive] = useState<Section>(initialSection ?? "general");
   const [prefs, setPrefs] = useState<DesktopPreferences | null>(null);
   const [saved, setSaved] = useState(false);
@@ -117,22 +134,24 @@ export function SettingsView({ identity, initialSection }: { identity: VerifiedD
   }
 
   return (
-    <ViewShell>
-      <div>
-        <h1 className="text-2xl font-semibold tracking-[-0.035em]">Settings</h1>
-        <p className="mt-1 text-sm text-zinc-500">Desktop preferences, verified identity, approved access, and governed connections.</p>
-      </div>
-
-      <div className="grid min-h-[620px] grid-cols-[220px_minmax(0,1fr)]">
-        <nav aria-label="Settings sections" className="border-r border-white/[0.06] pr-3">
-          {sections.map(({ id, label, icon: Icon }) => (
+    <div className="relative flex min-h-0 flex-1 bg-axiom-bg">
+      <div className="grid min-h-0 flex-1 grid-cols-[200px_minmax(0,1fr)] lg:grid-cols-[240px_minmax(0,1fr)]">
+        <nav aria-label="Settings sections" className="min-h-0 overflow-y-auto border-r border-white/[0.06] bg-[#18191b] px-3 pb-5 pt-8">
+          {onClose && <button type="button" onClick={onClose} className="mb-6 flex items-center gap-2 rounded-md px-3 py-2 text-[13px] text-zinc-400 hover:bg-white/[0.04] hover:text-white"><ArrowLeft aria-hidden className="h-4 w-4" />Back to workspace</button>}
+          <h1 className="sr-only">Settings</h1>
+          <label className="mb-4 flex items-center gap-2 rounded-lg border border-white/[0.08] bg-white/[0.025] px-2.5 py-2 text-zinc-500">
+            <Search aria-hidden className="h-3.5 w-3.5 shrink-0" />
+            <input type="search" aria-label="Search settings" placeholder="Search settings" value={search} onChange={event => setSearch(event.target.value)} className="min-w-0 w-full bg-transparent text-xs text-zinc-200 outline-none placeholder:text-zinc-600" />
+          </label>
+          {search.trim() && !sections.some(section => `${section.label} ${sectionKeywords[section.id]}`.toLowerCase().includes(search.trim().toLowerCase())) && <p role="status" className="px-3 py-2 text-xs text-zinc-500">No matching settings.</p>}
+          {sections.filter(section => !search.trim() || `${section.label} ${sectionKeywords[section.id]}`.toLowerCase().includes(search.trim().toLowerCase())).map(({ id, label, icon: Icon }) => (
             <button
               key={id}
               type="button"
-              onClick={() => setActive(id)}
+              onClick={() => { setActive(id); setSearch(""); }}
               aria-current={active === id ? "page" : undefined}
               className={`relative flex w-full items-center gap-3 rounded-md py-2 pl-3 pr-2 text-left text-[13px] transition-colors ${
-                active === id ? "text-white" : "text-zinc-500 hover:text-zinc-300"
+                active === id ? "bg-white/[0.06] text-white" : "text-zinc-500 hover:text-zinc-300"
               }`}
             >
               {active === id && <span aria-hidden className="absolute left-0 top-1/2 h-4 w-[2px] -translate-y-1/2 rounded-full bg-white" />}
@@ -147,7 +166,7 @@ export function SettingsView({ identity, initialSection }: { identity: VerifiedD
           </div>
         </nav>
 
-        <div className="min-w-0 pl-8">
+        <div className="min-h-0 min-w-0 overflow-y-auto px-5 py-10 lg:px-10"><div className="mx-auto w-full max-w-[760px]">
           {error && <div role="alert" className="mb-5 rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm text-red-200">{error}</div>}
           {saved && <div role="status" className="mb-5 flex items-center gap-2 rounded-xl border border-emerald-500/20 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-200"><Check className="h-4 w-4" />Saved on this computer.</div>}
           {active === "general" && <GeneralSection prefs={prefs} onSave={savePreferences} />}
@@ -162,7 +181,7 @@ export function SettingsView({ identity, initialSection }: { identity: VerifiedD
           {active === "identity" && <IdentitySection />}
           {active === "worktrees" && <WorktreesSection prefs={prefs} />}
           {active === "integrations" && <IntegrationsSection identity={identity} />}
-        </div>
+        </div></div>
       </div>
 
       {showSignOut && (
@@ -177,7 +196,7 @@ export function SettingsView({ identity, initialSection }: { identity: VerifiedD
           </div>
         </div>
       )}
-    </ViewShell>
+    </div>
   );
 }
 
@@ -312,6 +331,7 @@ function AgentsSection({ prefs, onSave }: PreferenceSectionProps) {
   return <div>
     <SectionHeading title="Agents" detail="Conversation behavior is local. Authorization and production safety remain service enforced." />
     <Group label="Conversation">
+      <ToggleRow title="Submit with ⌘ / Ctrl + Enter" detail="Use Command–Enter on Mac or Ctrl–Enter on Windows/Linux to send. Enter adds a new line; Shift–Enter always adds a new line." enabled={prefs?.submit_with_command_enter ?? false} disabled={!prefs} onToggle={() => prefs && void onSave({ ...prefs, submit_with_command_enter: !prefs.submit_with_command_enter })} />
       <SelectRow title="Messages sent while an agent is working" detail="Queue waits for the current operation; Interrupt asks the agent to stop at the next safe boundary." value={prefs?.new_message_behavior ?? "queue"} disabled={!prefs} options={[{ value: "queue", label: "Queue" }, { value: "interrupt", label: "Interrupt" }]} onChange={(value) => prefs && void onSave({ ...prefs, new_message_behavior: value as DesktopPreferences["new_message_behavior"] })} />
       <LockedRow title="Confirm consequential actions" detail="Merge, release, workflow dispatch, environment approval, rollback, and closure require policy checks." />
       <LockedRow title="External-file protection" detail="The customer workspace cannot write outside its approved application scope." />

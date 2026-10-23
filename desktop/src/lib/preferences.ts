@@ -2,6 +2,7 @@ import { invoke } from "@tauri-apps/api/core";
 
 export interface DesktopPreferences {
   theme: "dark";
+  submit_with_command_enter: boolean;
   notifications_enabled: boolean;
   auto_scan_interval_minutes: number;
   default_provider: string;
@@ -36,4 +37,5 @@ export async function readDesktopPreferences(): Promise<DesktopPreferences> {
 export async function writeDesktopPreferences(preferences: DesktopPreferences): Promise<void> {
   await invoke("set_preferences", { prefs: preferences });
   applyDesktopPreferences(preferences);
+  window.dispatchEvent(new Event("axiom:preferences-changed"));
 }
