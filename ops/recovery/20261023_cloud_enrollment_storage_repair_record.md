@@ -1,0 +1,15 @@
+# Cloud enrollment storage repair record
+
+2026-10-23: project `odd-union-57413470`, branch `br-holy-voice-ai303o8m`, endpoint `ep-small-mountain-ailw0kvt`, database `neondb`.
+
+A read-only catalog audit found the cloud enrollment code's three storage tables and required enums absent. The user had authorized database repair and continuation of the remaining application work. No branch or backup was deleted and no paid plan upgrade was used.
+
+A fresh private PostgreSQL17 custom logical backup was retained with restricted permissions. SHA256: `d24f28bfaabcf492949e097d44453533d90234e7fcc300f888ff9998fc1942d7`. Its contents and credentials are excluded from repository/public evidence. It restored to an owned Unix-socket-only local PG17 instance, omitting ownership/ACL/publication/subscription restoration. This establishes a logical restore rehearsal, not provider snapshot/PITR or infrastructure recovery.
+
+The exact additive SQL, SHA256 `b7608c5dcfc1c694a3bc0be03684dae6b4a7142a792147d87f8d6ac33762dfb0`, passed on the restored copy. Full-row fingerprints for all 137 existing public tables remained unchanged. Tests covered complete transaction rollback, a competing Prisma advisory lock, incompatible enums, changed default ACLs, enabled DDL event triggers, repeat refusal, tenant composite foreign keys, disabled synthetic enrollment and versioned credential revocation. Synthetic rows were rolled back and the owned cluster removed. Independent review found no blocker after requiring live owner/access/concurrency checks.
+
+Fresh live checks confirmed the exact endpoint/baseline, intended application table owner, schema create privilege, absent storage/migration entries, unchanged failed Agent migration checksum, available migration lock, no observed competing schema writers, no applicable default ACLs and no enabled DDL event triggers. The reviewed SQL additionally rechecks owner and access defaults inside its transaction. Its 21 prepared statements were applied through the provider's single-session transaction API.
+
+Postchecks confirmed three tables with the intended application owner and default owner-only table ACLs, correct provider/autopilot enums, observe-only autopilot default, two validated tenant composite foreign keys, nullable revocation time, and zero account/credential/attempt rows at verification. The script itself creates no accounts, stores no credentials, enables no Agent and calls no cloud provider. Application requests can subsequently enroll accounts through the existing authorized flow. Existing enrollment code explicitly creates disabled accounts; the historical table's `enabled: true` default was preserved for schema compatibility.
+
+The failed historical Agent migration and cloud migration ledger remain unchanged. This is narrowly scoped storage recovery, **not migration-history convergence**, broad schema synchronization, a customer cloud connection, cloud deployment, recovery automation or a billing acceptance claim. Other missing legacy/governance storage remains separately tracked. Do not replay the original unsafe Agent backfill or use blanket migration deployment.
