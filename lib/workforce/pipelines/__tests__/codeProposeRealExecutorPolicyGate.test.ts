@@ -16,6 +16,7 @@ const mocks = vi.hoisted(() => ({
 }));
 
 vi.mock("@/lib/billing/checkWorkspaceAICredits", () => ({ checkWorkspaceAICredits: mocks.checkWorkspaceAICredits }));
+vi.mock("@/lib/billing/governedExtractAdmission", () => ({ admitAIText: vi.fn().mockResolvedValue({ ok: true, admission: {} }) }));
 vi.mock("@/lib/billing/recordAIUsageEvent", () => ({ recordAIUsageEvent: vi.fn().mockResolvedValue({ recorded: false, reason: "test" }) }));
 vi.mock("@/lib/audit/secureAudit", () => ({ record: mocks.recordAudit }));
 vi.mock("@/lib/ai/AIProviderManager", () => ({ getAIProviderManager: mocks.getAIProviderManager }));
@@ -59,6 +60,7 @@ describe("codeProposeRealExecutor — workspace AI provider policy gate", () => 
       isServiceProviderAvailable: () => true,
       status: () => [{ provider: "vercel_gateway", configured: true }],
       generateText: mocks.gatewayGenerate,
+      generateTextWithAdmission: mocks.gatewayGenerate,
     });
   });
 

@@ -11,7 +11,7 @@ import { AICreditAdmissionRefusal } from "./aiCreditAdmissionRefusal";
 import { prepareSmallSonnetRequest, smallSonnetReservation, smallSonnetReservationEvidence, authorizeSmallSonnetDispatch, type SmallSonnetRequest } from "./smallSonnetRequest";
 import { requestReservationCents } from "./requestReservationCents";
 
-type Scope = Readonly<{ organizationId: string; userId: string; correlationId: string }>;
+type Scope = Readonly<{ organizationId: string; userId: string; correlationId: string; source?: "coding_proposal" }>;
 declare const admissionBrand: unique symbol;
 /** No serializable flag or constructor. Only a committed durable claim mints it. */
 export type GovernedExtractAdmission = { readonly [admissionBrand]: true };
@@ -44,7 +44,7 @@ export function admitAIText(input: Scope & { idempotencyKey: string }): Promise<
 }
 
 async function reserveAndClaim(input: Scope, idempotencyKey: string, task: Task, small?: SmallSonnetRequest, abortSignal?: AbortSignal): Promise<AdmissionResult> {
-  const scope = Object.freeze({ organizationId: input.organizationId, userId: input.userId, correlationId: input.correlationId });
+  const scope = Object.freeze({ organizationId: input.organizationId, userId: input.userId, correlationId: input.correlationId, ...(input.source === "coding_proposal" ? { source: input.source } : {}) });
   if (![scope.organizationId, scope.userId, scope.correlationId].every(v => typeof v === "string" && v.length > 0 && v.length <= 1024)) deny();
   const reserved = await reserveAICredits(prisma, { organizationId: scope.organizationId, idempotencyKey, reservedCents: small ? smallSonnetReservation(small, scope) : requestReservationCents(), correlationId: scope.correlationId, ...(small ? { smallAgentRequest: small } : {}) });
   if (!reserved.ok) return reserved;
@@ -101,7 +101,7 @@ function consumeAdmission(capability: GovernedAIAdmission, binding: { organizati
       const input: RecordAIUsageInput = {
         organizationId: scope.organizationId, triggeredBy: scope.userId, correlationId: scope.correlationId,
         provider: result.provider, model: result.model, externalUsageId: result.gatewayGenerationId,
-        inputTokens: usage.promptTokens!, outputTokens: usage.completionTokens!, metadata: { ...(task === "generate_text" ? { route: "api/ai/generate" } : { task: "extract_structured_data" }), ...(reservationEvidence ? { reservationPolicy: reservationEvidence } : {}) },
+        inputTokens: usage.promptTokens!, outputTokens: usage.completionTokens!, metadata: { ...(task === "generate_text" ? { route: scope.source === "coding_proposal" ? "pipeline/code_propose" : "api/ai/generate" } : { task: "extract_structured_data" }), ...(reservationEvidence ? { reservationPolicy: reservationEvidence } : {}) },
       };
       if (v2) {
         const saved = await recordReservedAIUsageEventV2(input, reservationId);

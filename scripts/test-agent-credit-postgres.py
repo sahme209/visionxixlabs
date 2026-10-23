@@ -79,13 +79,18 @@ try:
     results = json.loads((output / 'results.json').read_text())
     if results['numPassedTests'] < 13 or results['numFailedTests'] or results['numPendingTests']:
         raise RuntimeError('complete_non_skipped_acceptance_required')
+    coding = subprocess.run([node, 'node_modules/vitest/vitest.mjs', 'run', 'lib/workforce/pipelines/__tests__/codeProposeAdmission.postgres.test.ts', '--reporter=json', '--outputFile=' + str(output / 'coding-results.json')], cwd=repo, env=test_env, capture_output=True, text=True, timeout=120)
+    (output / 'coding-tests.log').write_text(coding.stdout + '\n' + coding.stderr)
+    coding_results = json.loads((output / 'coding-results.json').read_text())
+    if coding.returncode or coding_results['numPassedTests'] != 8 or coding_results['numFailedTests'] or coding_results['numPendingTests']:
+        raise RuntimeError('coding_admission_chain_tests_failed_see_private_log')
     guards = subprocess.run([node, 'node_modules/vitest/vitest.mjs', 'run', 'lib/workforce/__tests__/approvalWriterGuards.postgres.test.ts', '--reporter=json', '--outputFile=' + str(output / 'guard-results.json')], cwd=repo, env=test_env, capture_output=True, text=True, timeout=120)
     (output / 'guard-tests.log').write_text(guards.stdout + '\n' + guards.stderr)
     guard_results = json.loads((output / 'guard-results.json').read_text())
     if guards.returncode or guard_results['numPassedTests'] != 10 or guard_results['numFailedTests'] or guard_results['numPendingTests']:
         raise RuntimeError('approval_database_guard_tests_failed_see_private_log')
     report = {'testsPassed': results['numPassedTests'], 'testsFailed': results['numFailedTests'], 'verifiedAtUtc': datetime.datetime.now(datetime.timezone.utc).isoformat(), 'actualPrismaPostgres': True,
-              'actualDecisionAdmissionManagerSdkChain': True, 'actualApprovalVoteTransactions': True, 'approvalDatabaseGuardTestsPassed': guard_results['numPassedTests'], 'providerTransport': 'fixed synthetic .invalid transport',
+              'actualDecisionAdmissionManagerSdkChain': True, 'actualApprovalVoteTransactions': True, 'actualCodingProposalAdmissionChain': True, 'codingAdmissionTestsPassed': coding_results['numPassedTests'], 'approvalDatabaseGuardTestsPassed': guard_results['numPassedTests'], 'providerTransport': 'fixed synthetic .invalid transport',
               'providerInference': False, 'realCustomerAuthentication': False, 'productionWrites': False,
               'privateProductionBackupUsed': False, 'syntheticGenerationCostReceipts': True}
 finally:
