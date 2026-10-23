@@ -128,7 +128,7 @@ try:
     scan_storage = subprocess.run([node, 'node_modules/vitest/vitest.mjs', 'run', 'lib/scan/__tests__/persistScanAtomicity.postgres.test.ts', '--reporter=json', '--outputFile=' + str(output / 'scan-storage-results.json')], cwd=repo, env=test_env, capture_output=True, text=True, timeout=120)
     (output / 'scan-storage-tests.log').write_text(scan_storage.stdout + '\n' + scan_storage.stderr)
     scan_results = json.loads((output / 'scan-storage-results.json').read_text())
-    if scan_storage.returncode or scan_results['numPassedTests'] != 4 or scan_results['numFailedTests'] or scan_results['numPendingTests']:
+    if scan_storage.returncode or scan_results['numPassedTests'] != 9 or scan_results['numFailedTests'] or scan_results['numPendingTests']:
         raise RuntimeError('scan_storage_atomicity_failed_see_private_log')
     scan_claim = subprocess.run([node, 'node_modules/vitest/vitest.mjs', 'run', 'lib/scan/__tests__/scheduledScanClaim.postgres.test.ts', '--reporter=json', '--outputFile=' + str(output / 'scan-claim-results.json')], cwd=repo, env=test_env, capture_output=True, text=True, timeout=120)
     (output / 'scan-claim-tests.log').write_text(scan_claim.stdout + '\n' + scan_claim.stderr)
