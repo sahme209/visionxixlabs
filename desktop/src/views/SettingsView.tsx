@@ -1,3 +1,4 @@
+import {parseDesktopUsageSummary,type DesktopUsageSummary} from "../../../lib/desktop/desktopBillingSummary";
 import { AGENT_PROFILES } from "../../../lib/axiom/agentRuntime/agentProfiles";
 import { DeploymentWorkflowEvidence } from "../components/DeploymentWorkflowEvidence";
 import { AwsReadOnlyEnrollment } from "../components/AwsReadOnlyEnrollment";
@@ -228,7 +229,7 @@ function GeneralSection({ prefs, onSave }: PreferenceSectionProps) {
     <Group label="Account">
       <ActionRow title="Axiom account" detail="Manage your personal profile in the secure browser." action={<WebButton href="/account" label="Open" />} />
       <ActionRow title="Organization governance" detail="Manage roles, policies, approved integrations, AI authority, and billing in Axiom Control." action={<WebButton href="/control" label="Open control plane" />} />
-      <ActionRow title="Pilot access" detail="Pilot access is no-charge today. The service remains authoritative for approved workspace access." action={<span className="text-xs text-zinc-600">See Access & usage</span>} />
+      <ActionRow title="Workspace access" detail="Review the current plan, verified allowance, and desktop access in Plan & usage." action={<span className="text-xs text-zinc-600">Service verified</span>} />
     </Group>
     <Group label="Notifications">
       <ToggleRow title="System notifications" detail="Notify when an approval or deployment needs attention." enabled={prefs?.notifications_enabled ?? false} disabled={!prefs} onToggle={() => prefs && void onSave({ ...prefs, notifications_enabled: !prefs.notifications_enabled })} action={<button type="button" disabled={!prefs?.notifications_enabled} onClick={() => void notifyResult({ title: "Axiom Agent", body: "Desktop notifications are ready." })} className="rounded-md border border-white/10 px-2.5 py-1 text-[11px] text-zinc-400 hover:text-white disabled:opacity-40">Test</button>} />
@@ -271,6 +272,27 @@ function AppearanceSection({ prefs, onSave }: PreferenceSectionProps) {
 }
 
 function PlanSection({ identity }: { identity: VerifiedDesktopIdentity }) {
+  const context=desktopClient.config;
+  const [attempt,setAttempt]=useState(0);
+  const [read,setRead]=useState<{context:typeof context;organizationId:string;data:DesktopUsageSummary|null;error:string|null}|null>(null);
+  const current=read&&read.context===context&&read.organizationId===identity.organizationId?read:null;
+  const usage=current?.data??null;
+  const snapshot=usage?.billingSnapshot;
+  const legacy=Boolean(usage&&!snapshot);
+  useEffect(()=>{
+    let alive=true;
+    const organizationId=identity.organizationId;
+    setRead({context,organizationId,data:null,error:null});
+    void desktopClient.usageSummary().then(result=>{
+      if(!alive||context!==desktopClient.config)return;
+      const data=result.ok?parseDesktopUsageSummary(result.data):null;
+      setRead({context,organizationId,data,error:data?null:"Plan and usage could not be verified. Refresh or review billing in the cockpit."});
+    }).catch(()=>{if(alive&&context===desktopClient.config)setRead({context,organizationId,data:null,error:"Plan and usage could not be verified. Refresh or review billing in the cockpit."});});
+    const refresh=()=>setAttempt(value=>value+1);
+    window.addEventListener("focus",refresh);
+    const unsubscribe=desktopClient.subscribeContext?.(refresh);
+    return()=>{alive=false;window.removeEventListener("focus",refresh);unsubscribe?.();};
+  },[context,identity.organizationId,attempt]);
   const [opening, setOpening] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const access = identity.access;
@@ -294,13 +316,34 @@ function PlanSection({ identity }: { identity: VerifiedDesktopIdentity }) {
     ? access.planTier === "trial" ? "No-charge trial" : "No-charge pilot"
     : access.planTier;
   return <div>
-    <SectionHeading title="Access & usage" detail="Identity and billing status are reported separately by the service." />
+    <SectionHeading title="Access & usage" detail="Current plan and AI allowance come from the same billing service as the web cockpit." />
+    <div className="mb-4 flex items-center justify-between gap-4 text-xs text-zinc-500"><span>Changes made in the cockpit refresh when this window regains focus.</span><button type="button" disabled={!current||(!usage&&!current.error)} onClick={()=>setAttempt(value=>value+1)} className="shrink-0 text-zinc-200 underline disabled:opacity-40">Refresh plan and usage</button></div>
     <div className="grid gap-4 sm:grid-cols-2">
-      <SummaryCard label="Access model" value={accessModel} detail={access.title} />
-      <SummaryCard label="Access state" value={isNoPlan ? "No plan" : isNoChargeAccess ? "Active" : access.billingStatus.replaceAll("_", " ")} detail={isNoPlan ? "Sign-in status does not establish a trial or paid subscription" : isNoChargeAccess ? "Provisioned for this workspace; no billing setup is required" : access.currentPeriodEndsAt ? `Period ends ${new Date(access.currentPeriodEndsAt).toLocaleDateString()}` : "Managed by your workspace agreement"} />
+      {snapshot ? <>
+        <SummaryCard label="Workspace plan" value={snapshot.plan.available?snapshot.plan.label:"Unavailable"} detail={snapshot.plan.available?snapshot.plan.status.replaceAll("_"," "):"Current subscription state could not be verified"}/>
+        <SummaryCard label="Desktop access" value={access.allowed?"Active":access.title} detail={access.message}/>
+      </> : legacy ? <>
+        <SummaryCard label="Access model" value={accessModel} detail={access.title} />
+        <SummaryCard label="Access state" value={isNoPlan ? "No plan" : isNoChargeAccess ? "Active" : access.billingStatus.replaceAll("_", " ")} detail={isNoPlan ? "Sign-in status does not establish a trial or paid subscription" : isNoChargeAccess ? "Provisioned for this workspace; no billing setup is required" : access.currentPeriodEndsAt ? `Period ends ${new Date(access.currentPeriodEndsAt).toLocaleDateString()}` : "Managed by your workspace agreement"} />
+      </> : <>
+        <SummaryCard label="Workspace plan" value={current?.error?"Unavailable":"Verifying…"} detail="A current subscription is shown only after the billing service responds"/>
+        <SummaryCard label="Desktop access" value={access.allowed?"Active":access.title} detail={access.message}/>
+      </>}
     </div>
     <div className="mt-5 rounded-xl border border-white/[0.07] bg-white/[0.025] p-5">
-      {isNoPlan ? (
+      {snapshot ? <>
+        <p className="text-sm text-zinc-200">{snapshot.plan.available?`${snapshot.plan.label} workspace plan`:"Billing verification unavailable"}</p>
+        <p className="mt-1 text-xs leading-5 text-zinc-500">Billing records and verified credits are shared with the cockpit. A balance is not permission to run an Agent or bypass approvals.</p>
+        <div className="mt-4 flex flex-wrap items-center gap-3">
+          <button type="button" onClick={()=>void open(`${WEB_BASE}/control/usage-billing`).catch(()=>setError("The billing cockpit could not be opened."))} className="text-xs text-zinc-200 underline">View billing in cockpit</button>
+          {snapshot.plan.available&&snapshot.plan.hasCustomer&&snapshot.canManageBilling&&(identity.role==="owner"||identity.role==="admin")&&<button type="button" disabled={opening} onClick={()=>void openBillingPortal()} className="rounded-lg bg-white px-4 py-2 text-xs font-semibold text-black disabled:opacity-50">{opening?"Opening…":"Open billing"}</button>}
+        </div>
+        {error&&<p role="alert" className="mt-3 text-xs text-red-300">{error}</p>}
+      </> : !legacy ? <div>
+        <p className="text-sm text-zinc-200">{current?.error?"Billing verification unavailable":"Verifying current plan and usage…"}</p>
+        <button type="button" onClick={()=>void open(`${WEB_BASE}/control/usage-billing`).catch(()=>setError("The billing cockpit could not be opened."))} className="mt-3 text-xs text-zinc-200 underline">View billing in cockpit</button>
+        {error&&<p role="alert" className="mt-3 text-xs text-red-300">{error}</p>}
+      </div> : isNoPlan ? (
         <div>
           <p className="text-sm text-zinc-200">No subscription is attached to this workspace</p>
           <p className="mt-1 max-w-xl text-xs leading-5 text-zinc-500">{access.allowed ? "Identity sign-in is active." : "Check the service sign-in status."} This billing status does not establish approved trial, pilot, or paid access.</p>
@@ -312,32 +355,29 @@ function PlanSection({ identity }: { identity: VerifiedDesktopIdentity }) {
         </div>
       ) : (
         <>
-          <div className="flex items-start justify-between gap-5"><div><p className="text-sm text-zinc-200">Manage billing securely</p><p className="mt-1 max-w-xl text-xs leading-5 text-zinc-500">A short-lived portal session opens in Stripe. Card data is never collected by this app.</p></div><button type="button" disabled={opening} onClick={() => void openBillingPortal()} className="rounded-lg bg-white px-4 py-2 text-xs font-semibold text-black disabled:opacity-50">{opening ? "Opening…" : "Open billing"}</button></div>
+          <div className="flex items-start justify-between gap-5"><div><p className="text-sm text-zinc-200">Manage billing securely</p><p className="mt-1 max-w-xl text-xs leading-5 text-zinc-500">A short-lived portal session opens in Stripe. Card data is never collected by this app.</p></div><button type="button" disabled={opening||(identity.role!=="owner"&&identity.role!=="admin")} onClick={() => void openBillingPortal()} className="rounded-lg bg-white px-4 py-2 text-xs font-semibold text-black disabled:opacity-50">{opening ? "Opening…" : "Open billing"}</button></div>
           {error && <p role="alert" className="mt-4 text-xs text-red-300">{error}</p>}
           <p className="mt-4 border-t border-white/[0.06] pt-4 text-[11px] leading-5 text-zinc-600">A return from Checkout does not grant access by itself. Verified subscription state remains authoritative.</p>
         </>
       )}
     </div>
-    <UsageSummaryCard />
+    {usage&&!snapshot&&<p role="status" className="mt-4 text-xs leading-5 text-amber-200">This service version does not report the current plan or allowance. Review them in the cockpit; the access label above is not a current subscription receipt.</p>}
+    <UsageSummaryCard usage={usage} error={current?.error??null}/>
   </div>;
 }
 
-function UsageSummaryCard() {
-  const [usage, setUsage] = useState<{ periodMonth: string; aiInvocationCount: number; aiInputTokens: number; aiOutputTokens: number; aiCostCents: number } | null>(null);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    void desktopClient.usageSummary().then((result) => {
-      if (result.ok) setUsage(result.data);
-      else setError(result.error);
-    });
-  }, []);
-
+function UsageSummaryCard({usage,error}:{usage:DesktopUsageSummary|null;error:string|null}) {
+  const allowance=usage?.billingSnapshot?.allowance;
+  const money=(cents:number)=>new Intl.NumberFormat("en-US",{style:"currency",currency:"USD"}).format(cents/100);
   return (
     <div className="mt-6">
       <p className="mb-2 text-xs text-zinc-500">AI usage this month{usage ? ` (${usage.periodMonth})` : ""}</p>
       {error && <p role="alert" className="text-xs text-red-300">{error}</p>}
       {!usage && !error && <p className="text-xs text-zinc-600">Loading…</p>}
+      {allowance&&<div className="mb-4 grid gap-4 sm:grid-cols-2">
+        <SummaryCard label="AI allowance remaining" value={allowance.available?money(allowance.includedRemainingCents):"Unavailable"} detail={allowance.available?`${money(allowance.poolCents)} current account allowance · ${money(allowance.heldCents)} held for unresolved requests`:"No zero balance is inferred when the credit service is unavailable"}/>
+        <SummaryCard label="Applied paid top-ups" value={allowance.available?money(allowance.addOnCents):"Unavailable"} detail="Only verified paid records increase available credits"/>
+      </div>}
       {usage && (
         <div className="grid gap-4 sm:grid-cols-3">
           <SummaryCard label="AI invocations" value={usage.aiInvocationCount.toLocaleString()} detail="Agent + automation calls this billing period" />

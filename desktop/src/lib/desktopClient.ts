@@ -1,5 +1,6 @@
 import { AGENT_TOOL_ACTIVITY_FEATURE, type AgentToolActivity, type AgentMessageIssue } from "../../../lib/desktop/agentMessageStreamProtocol";
 import type { AgentProfileId } from "../../../lib/axiom/agentRuntime/agentProfiles";
+import type {DesktopUsageSummary} from "../../../lib/desktop/desktopBillingSummary";
 import { assertDesktopNotAborted } from "./abortSignal";
 import type { ModelPolicy } from "./aiProviderStatus";
 import { isAwsEnrollmentChallenge, isDesktopAwsAccount, isDesktopAwsInventory, type AwsEnrollmentInput, type AwsEnrollmentChallenge, type DesktopAwsAccount, type DesktopAwsInventory } from "./awsEnrollmentContract";
@@ -487,7 +488,7 @@ export class DesktopClient {
     return this.post("/api/desktop/billing/portal", {});
   }
 
-  usageSummary(): Promise<ApiResult<{ periodMonth: string; aiInvocationCount: number; aiInputTokens: number; aiOutputTokens: number; aiCostCents: number }>> {
+  usageSummary(): Promise<ApiResult<DesktopUsageSummary>> {
     return this.get("/api/desktop/usage-summary");
   }
 
