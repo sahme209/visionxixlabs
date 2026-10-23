@@ -147,7 +147,7 @@ function normalizeRepositoryScope(repositories: readonly string[] | undefined): 
  * deliberately cached separately from every narrowed token.
  */
 export async function resolveGithubInstallationToken(
-  input: { installationId?: number; repositories?: readonly string[]; signal?: AbortSignal; permissionProfile?: "provenance_read" } = {},
+  input: { installationId?: number; repositories?: readonly string[]; signal?: AbortSignal; permissionProfile?: "provenance_read" | "contents_read" } = {},
 ): Promise<InstallationTokenOutcome> {
   const cancelled = (): InstallationTokenError => ({ ok: false, errorCode: "github.app_token_cancelled", message: "Installation token deadline expired." });
   if (input.signal?.aborted) return cancelled();
@@ -164,9 +164,9 @@ export async function resolveGithubInstallationToken(
   if (!repositories) {
     return { ok: false, errorCode: "github.app_invalid_repository_scope", message: "Repository-scoped installation tokens require 1–500 valid repository names." };
   }
-  if (input.permissionProfile !== undefined && (input.permissionProfile !== "provenance_read" || input.installationId === undefined || repositories.length !== 1))
+  if (input.permissionProfile !== undefined && (!["provenance_read", "contents_read"].includes(input.permissionProfile) || input.installationId === undefined || repositories.length !== 1))
     return { ok: false, errorCode: "github.app_invalid_read_profile", message: "The reader requires an explicit installation and one repository." };
-  const scopeKey = `${installationId}:${repositories.length ? repositories.join("\u0000") : "*"}${input.permissionProfile ? ":provenance_read" : ""}`;
+  const scopeKey = `${installationId}:${repositories.length ? repositories.join("\u0000") : "*"}${input.permissionProfile ? `:${input.permissionProfile}` : ""}`;
 
   const cached = cachedByScope.get(scopeKey);
   if (cached && tokenIsFresh(cached)) {
@@ -202,7 +202,7 @@ export async function resolveGithubInstallationToken(
         "X-GitHub-Api-Version": "2022-11-28",
         "User-Agent": "axiom-agent/1.0",
       },
-      body: repositories.length ? JSON.stringify({ repositories, ...(input.permissionProfile ? { permissions: { contents: "read", actions: "read", attestations: "read" } } : {}) }) : undefined,
+      body: repositories.length ? JSON.stringify({ repositories, ...(input.permissionProfile ? { permissions: input.permissionProfile === "contents_read" ? {contents:"read"} : { contents: "read", actions: "read", attestations: "read" } } : {}) }) : undefined,
       ...(signal ? { signal, redirect: "error" as const, credentials: "omit" as const, cache: "no-store" as const } : {}),
     });
     const res = signal ? await withGithubAbort(request, signal) : await request;
@@ -224,10 +224,11 @@ export async function resolveGithubInstallationToken(
     }
     if (input.permissionProfile) {
       const grants = body.permissions;
+      const requiredPermissions = input.permissionProfile === "contents_read" ? ["contents"] : ["contents", "actions", "attestations"];
       const names = Array.isArray(body.repositories) ? body.repositories.map(value => value && typeof value === "object" && "name" in value && typeof value.name === "string" ? value.name.toLowerCase() : null) : [];
       if (!grants || typeof grants !== "object" || Array.isArray(grants)
-        || !["contents", "actions", "attestations"].every(key => (grants as Record<string, unknown>)[key] === "read")
-        || Object.entries(grants).some(([key, value]) => !["contents", "actions", "attestations", "metadata"].includes(key) || value !== "read")
+        || !requiredPermissions.every(key => (grants as Record<string, unknown>)[key] === "read")
+        || Object.entries(grants).some(([key, value]) => ![...requiredPermissions, "metadata"].includes(key) || value !== "read")
         || body.repository_selection !== "selected" || names.length !== 1 || names[0] !== repositories[0])
         return { ok: false, errorCode: "github.app_read_scope_unverified", message: "GitHub did not grant the exact repository read profile." };
     }

@@ -20,3 +20,9 @@ The Git writer checks the base branch still points to the reviewed commit. Befor
 - Seven owned PostgreSQL cases exercise actual capture, serializable mint, two bound votes, guarded stage continuation, approved reload, inert PR transport, stale-review refusal, tampering, role revocation, cancellation, rollback and proposal mutation. The runner also executes the preceding 73 database acceptance cases and removes its private cluster.
 - The isolated browser preview uses the real components with labeled synthetic repository data and intercepted responses. It verifies expand/collapse, fingerprint submission, unavailable-review disabling, rejection reason and changed-review error behavior. It is not a real customer approval or GitHub acceptance test.
 - A real repository write, repository lint/tests, GitHub CI, paid AI generation, customer authorization and signed installer publication are not established by these tests.
+
+## Contents-only evidence authority
+
+Coding repository evidence captures and rechecks the active installation identity and revision before minting its token. Revoked or suspended rows refuse even if a stale status field still says active. The dedicated `contents_read` profile asks only for contents read, validates the provider's returned selected repository and exact contents/optional metadata read grants, and uses a separate cache key from broad or provenance tokens. It does not request workflow/Actions, attestations or write permissions. As with writes, the check cannot atomically revoke an already-started external read.
+
+Primary API references: [GitHub installation access tokens](https://docs.github.com/en/rest/apps/apps#create-an-installation-access-token-for-an-app) and [Git tree modes and base trees](https://docs.github.com/en/rest/git/trees#create-a-tree).

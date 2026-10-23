@@ -51,7 +51,7 @@ it("refuses repository context without a workspace connection despite a platform
 it("supplies only the scoped workspace token to repository context reads", async () => {
  f.read.mockResolvedValue({ ok: true, snapshot: { owner: "owned", repo: "repo", defaultBranch: "main", branch: "main", headSha: "synthetic_sha", tree: [], treeTruncated: false, recentCommits: [], keyFiles: [] } });
  expect(await codeReadRealExecutor(ctx)).toMatchObject({ ok: true });
- expect(f.scope).toHaveBeenCalledWith("org", { owner: "owned", repo: "repo" });
+ expect(f.scope).toHaveBeenCalledWith("org", { owner: "owned", repo: "repo" }, expect.objectContaining({id:"installation",permissionProfile:"contents_read"}));
  expect(f.read).toHaveBeenCalledWith("owned/repo", null, "synthetic_tenant_token");
 });
 it("requires a saved immutable repository read before attempting a PR", async () => {

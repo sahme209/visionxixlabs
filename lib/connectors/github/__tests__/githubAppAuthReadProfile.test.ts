@@ -31,3 +31,18 @@ it("never reuses a cached legacy broad token for the narrow profile or vice vers
   await resolveGithubInstallationToken({ ...base, permissionProfile: "provenance_read" });
   expect(fetcher).toHaveBeenCalledTimes(2);
 });
+it("requests contents-only authority without actions or attestations for coding evidence",async()=>{
+ const fetcher=vi.fn<typeof fetch>(async()=>response({permissions:{contents:'read',metadata:'read'}}));vi.stubGlobal('fetch',fetcher);
+ expect(await resolveGithubInstallationToken({installationId:19,repositories:['repo'],permissionProfile:'contents_read'})).toMatchObject({ok:true});
+ expect(JSON.parse(String(fetcher.mock.calls[0][1]?.body))).toEqual({repositories:['repo'],permissions:{contents:'read'}});
+});
+it.each([{contents:'write'},{contents:'read',actions:'read'},{contents:'read',attestations:'read'},{}])("refuses an unverified or broader contents-only grant %j",async grants=>{
+ vi.stubGlobal('fetch',vi.fn<typeof fetch>(async()=>response({permissions:grants})));
+ expect(await resolveGithubInstallationToken({installationId:19,repositories:['repo'],permissionProfile:'contents_read'})).toMatchObject({ok:false});
+});
+it("does not reuse provenance or broad tokens for contents-only evidence",async()=>{
+ const fetcher=vi.fn<typeof fetch>(async(_url,init)=>{const requested=JSON.parse(String(init?.body)).permissions;return response({permissions:requested??permissions});});vi.stubGlobal('fetch',fetcher);
+ const base={installationId:19,repositories:['repo']};
+ await resolveGithubInstallationToken(base);await resolveGithubInstallationToken({...base,permissionProfile:'provenance_read'});await resolveGithubInstallationToken({...base,permissionProfile:'contents_read'});await resolveGithubInstallationToken({...base,permissionProfile:'contents_read'});
+ expect(fetcher).toHaveBeenCalledTimes(3);
+});

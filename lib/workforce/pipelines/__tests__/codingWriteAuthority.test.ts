@@ -26,3 +26,14 @@ it("refuses an installation identifier that cannot be represented exactly",async
  f.installation.mockResolvedValue({id:"installation",githubInstallationId:"9007199254740993",updatedAt:date,revokedAt:null,suspendedAt:null});
  expect(await createCodingWriteAuthority("org",{owner:"owned",repo:"repo"})).toMatchObject({ok:false});expect(f.mint).not.toHaveBeenCalled();
 });
+
+it("requests read-only repository permissions for coding evidence",async()=>{
+ const {resolveCodingGithubCredential}=await import('../codingGithubCredential');
+ expect(await resolveCodingGithubCredential('org',{owner:'owned',repo:'repo'})).toMatchObject({ok:true});
+ expect(f.mint).toHaveBeenCalledWith(expect.objectContaining({installationId:123,repositories:['repo'],permissionProfile:'contents_read'}));
+});
+it.each(['revokedAt','suspendedAt'])("refuses %s evidence access even if an installation row still says active",async field=>{
+ const {resolveCodingGithubCredential}=await import('../codingGithubCredential');
+ f.installation.mockResolvedValue({id:'installation',githubInstallationId:'123',updatedAt:date,[field]:date});
+ expect(await resolveCodingGithubCredential('org',{owner:'owned',repo:'repo'})).toMatchObject({ok:false});expect(f.mint).not.toHaveBeenCalled();
+});

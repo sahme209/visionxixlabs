@@ -2,7 +2,7 @@ import { beforeEach, expect, it, vi } from "vitest";
 const f = vi.hoisted(() => ({ prior: vi.fn(), file: vi.fn() }));
 vi.mock("@/lib/connectors/github/resolveTenantScopedToken", () => ({ resolveTenantScopedToken: async () => ({ ok: true, token: "synthetic_tenant_token" }) }));
 vi.mock("@/lib/workforce/pipelines/githubWriteClient", () => ({ fetchFileContent: f.file }));
-vi.mock("@/lib/db", () => ({ prisma: { pipelineStageRun: { findFirst: f.prior } } }));
+vi.mock("@/lib/db", () => ({ prisma: { gitHubInstallation:{findFirst:async()=>({id:"installation",githubInstallationId:"123",updatedAt:new Date("2026-10-23T00:00:00Z"),revokedAt:null,suspendedAt:null})}, pipelineStageRun: { findFirst: f.prior } } }));
 vi.mock("@/lib/audit/secureAudit", () => ({ record: vi.fn() }));
 vi.mock("@/lib/webhooks/dispatchWebhookEvent", () => ({ dispatchWebhookEvent: vi.fn() }));
 import { codeLintRealExecutor } from "../codeLintRealExecutor";
