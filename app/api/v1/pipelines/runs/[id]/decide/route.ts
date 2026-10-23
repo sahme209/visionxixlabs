@@ -50,7 +50,7 @@ import { authenticateApiKey } from "@/lib/security/authenticateApiKey";
 import { record as recordAudit } from "@/lib/audit/secureAudit";
 import { id as idFactory } from "@/lib/domain/ids";
 import type { DecideRejectReason } from "@/lib/workforce/decideApprovalPlanner";
-import { persistApprovalVote } from "@/lib/workforce/persistApprovalVote";
+import { persistApprovalVote, withBoundApprovalWrite } from "@/lib/workforce/persistApprovalVote";
 import {
   resumePipelineStageFromApproval,
   type ApprovalTerminalStatus,
@@ -161,14 +161,14 @@ export async function POST(
     try {
       const resumePlan = resumePipelineStageFromApproval(quorum.status as ApprovalTerminalStatus);
       if (resumePlan.stageStatus !== "no_change") {
-        const stageUpdate = await prisma.pipelineStageRun.updateMany({
+        const stageUpdate = await withBoundApprovalWrite(tx => tx.pipelineStageRun.updateMany({
           where: { id: stage.id, status: "awaiting_approval" },
           data: {
             status: resumePlan.stageStatus,
             completedAt: new Date(),
             errorMessage: resumePlan.errorMessage ?? null,
           },
-        });
+        }));
         stageTransitioned = stageUpdate.count > 0;
         if (resumePlan.shouldAdvanceRun && stageTransitioned) {
           await advancePipelineRun(run.id);

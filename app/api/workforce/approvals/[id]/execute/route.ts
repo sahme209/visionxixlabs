@@ -27,7 +27,7 @@ import type { OrgRole } from "@/lib/axiom/enums";
 import { currentContext } from "@/lib/auth/currentContext";
 import { record as recordAudit } from "@/lib/audit/secureAudit";
 import { id as idFactory } from "@/lib/domain/ids";
-import { hasBoundApprovalVoteIdentity } from "@/lib/workforce/persistApprovalVote";
+import { hasBoundApprovalVoteIdentity, withBoundApprovalWrite } from "@/lib/workforce/persistApprovalVote";
 import { computeQuorumStatus } from "@/lib/workforce/approvalQuorum";
 import { planExecution, type ExecutionRejectReason } from "@/lib/workforce/planExecution";
 import {
@@ -99,10 +99,10 @@ export async function POST(req: NextRequest, ctx: { params: Promise<{ id: string
   // this update will see count === 0 and get 409 "execution_in_flight".
   let claimedCount = 0;
   try {
-    const claim = await prisma.engineerApprovalSnapshot.updateMany({
+    const claim = await withBoundApprovalWrite(tx => tx.engineerApprovalSnapshot.updateMany({
       where: { id: snapshot.id, organizationId: orgId, status: "approved", executionStatus: "not_started" },
       data: { executionStatus: "running" },
-    });
+    }));
     claimedCount = claim.count;
   } catch {
     return NextResponse.json({

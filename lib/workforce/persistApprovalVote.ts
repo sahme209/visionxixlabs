@@ -12,6 +12,16 @@ export function hasBoundApprovalVoteIdentity(vote: { id: string }): boolean {
   return BOUND_VOTE_ID.test(vote.id);
 }
 
+/** Reviewed server writers only. This transaction-local version marker does
+ * not grant authority; callers must authenticate and authorize before entry.
+ * Database guards use it to refuse retired application writers. */
+export async function withBoundApprovalWrite<T>(work: (tx: Prisma.TransactionClient) => Promise<T>): Promise<T> {
+  return prisma.$transaction(async tx => {
+    await tx.$executeRaw`SELECT set_config('axiom.approval_actor_binding', 'v1', true)`;
+    return work(tx);
+  });
+}
+
 export async function persistApprovalVote(input: {
   approvalRequestId: string;
   organizationId: string;
@@ -23,7 +33,7 @@ export async function persistApprovalVote(input: {
   if (!input.principal.id.trim()) throw new Error("authenticated_approval_principal_required");
   const approverUserId = input.principal.kind === "api_key" ? `api_key:${input.principal.id}` : input.principal.id;
   try {
-    return await prisma.$transaction(async tx => {
+    return await withBoundApprovalWrite(async tx => {
       // Both current writers serialize the read, vote and terminal update.
       // This is not a substitute for retiring pre-fix deployment writers.
       await tx.$executeRaw`SELECT pg_advisory_xact_lock(hashtextextended(${`axiom:approval-vote:${input.approvalRequestId}`}, 0))`;

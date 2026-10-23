@@ -1,7 +1,7 @@
 import {beforeEach,expect,it,vi} from "vitest";
 import {NextRequest} from "next/server";
 const m=vi.hoisted(()=>({snapshot:vi.fn(),claim:vi.fn(),update:vi.fn(),executor:vi.fn(),session:vi.fn()}));
-vi.mock("@/lib/db",()=>({prisma:{engineerApprovalSnapshot:{findUnique:m.snapshot,updateMany:m.claim,update:m.update}}}));
+vi.mock("@/lib/db",()=>({prisma:{$transaction:async (work:(tx:unknown)=>Promise<unknown>)=>work({$executeRaw:vi.fn(),engineerApprovalSnapshot:{updateMany:m.claim}}),engineerApprovalSnapshot:{findUnique:m.snapshot,updateMany:m.claim,update:m.update}}}));
 vi.mock("@/lib/auth/currentContext",()=>({currentContext:m.session}));
 vi.mock("@/lib/audit/secureAudit",()=>({record:vi.fn()}));
 vi.mock("@/lib/workforce/executors/executorRegistry",()=>({bootstrapExecutorRegistry:vi.fn(),hasExecutor:()=>true,getExecutor:()=>m.executor}));

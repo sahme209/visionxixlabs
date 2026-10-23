@@ -19,7 +19,7 @@ import { decideApproval, getApproval } from "@/lib/approvals/approvalEngine";
 import { record as recordAudit } from "@/lib/audit/secureAudit";
 import { id as idFactory } from "@/lib/domain/ids";
 import type { DecideRejectReason } from "@/lib/workforce/decideApprovalPlanner";
-import { persistApprovalVote } from "@/lib/workforce/persistApprovalVote";
+import { persistApprovalVote, withBoundApprovalWrite } from "@/lib/workforce/persistApprovalVote";
 import { resumePipelineStageFromApproval, type ApprovalTerminalStatus } from "@/lib/workforce/pipelines/resumeFromApproval";
 import { advancePipelineRun } from "@/lib/workforce/pipelines/pipelineRunner";
 
@@ -86,20 +86,21 @@ export async function POST(req: NextRequest, ctx: { params: Promise<{ id: string
     // resume fails the snapshot is still terminal; operator can
     // re-trigger via the pipeline detail page.
     if (snap.sourceKind === "pipeline_stage" && snap.pipelineStageRunId) {
+      const stageRunId = snap.pipelineStageRunId;
       try {
         const plan = resumePipelineStageFromApproval(quorum.status as ApprovalTerminalStatus);
         if (plan.stageStatus !== "no_change") {
-          const stageUpdate = await prisma.pipelineStageRun.updateMany({
-            where: { id: snap.pipelineStageRunId, status: "awaiting_approval" },
+          const stageUpdate = await withBoundApprovalWrite(tx => tx.pipelineStageRun.updateMany({
+            where: { id: stageRunId, status: "awaiting_approval" },
             data: {
               status: plan.stageStatus,
               completedAt: new Date(),
               errorMessage: plan.errorMessage ?? null,
             },
-          });
+          }));
           if (plan.shouldAdvanceRun && stageUpdate.count > 0) {
             const stageRow = await prisma.pipelineStageRun.findUnique({
-              where: { id: snap.pipelineStageRunId },
+              where: { id: stageRunId },
               select: { runId: true },
             });
             if (stageRow) await advancePipelineRun(stageRow.runId);

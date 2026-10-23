@@ -3,7 +3,7 @@ import { NextRequest } from "next/server";
 import { Prisma } from "@prisma/client";
 const m = vi.hoisted(() => ({ auth: vi.fn(), run: vi.fn(), stage: vi.fn(), snapshot: vi.fn(), create: vi.fn(), update: vi.fn(), transition: vi.fn(), audit: vi.fn(), webhook: vi.fn(), advance: vi.fn(), lock: vi.fn(), votes: [] as Array<{id?:string;approverUserId:string;decision:string}> }));
 vi.mock("@/lib/security/authenticateApiKey", () => ({ authenticateApiKey: m.auth }));
-vi.mock("@/lib/db", () => ({ prisma: { $transaction: async (work: (tx: unknown) => Promise<unknown>) => work({ $executeRaw:m.lock, engineerApprovalSnapshot:{findUnique:m.snapshot,update:m.update},engineerApprovalDecision:{create:m.create} }), pipelineRun: {findFirst:m.run}, pipelineStageRun:{findFirst:m.stage,updateMany:m.transition}, engineerApprovalSnapshot:{findUnique:m.snapshot,update:m.update},engineerApprovalDecision:{create:m.create} } }));
+vi.mock("@/lib/db", () => ({ prisma: { $transaction: async (work: (tx: unknown) => Promise<unknown>) => work({ $executeRaw:m.lock, engineerApprovalSnapshot:{findUnique:m.snapshot,update:m.update},engineerApprovalDecision:{create:m.create},pipelineStageRun:{updateMany:m.transition} }), pipelineRun: {findFirst:m.run}, pipelineStageRun:{findFirst:m.stage,updateMany:m.transition}, engineerApprovalSnapshot:{findUnique:m.snapshot,update:m.update},engineerApprovalDecision:{create:m.create} } }));
 vi.mock("@/lib/audit/secureAudit",()=>({record:m.audit}));
 vi.mock("@/lib/workforce/pipelines/pipelineRunner",()=>({advancePipelineRun:m.advance}));
 vi.mock("@/lib/webhooks/dispatchWebhookEvent",()=>({dispatchWebhookEvent:m.webhook}));
