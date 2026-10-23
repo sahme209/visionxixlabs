@@ -99,7 +99,12 @@ try:
     guard_results = json.loads((output / 'guard-results.json').read_text())
     if guards.returncode or guard_results['numPassedTests'] != 10 or guard_results['numFailedTests'] or guard_results['numPendingTests']:
         raise RuntimeError('approval_database_guard_tests_failed_see_private_log')
-    report = {'testsPassed': results['numPassedTests'], 'testsFailed': results['numFailedTests'], 'verifiedAtUtc': datetime.datetime.now(datetime.timezone.utc).isoformat(), 'actualPrismaPostgres': True,
+    migration_gate = subprocess.run([node, 'node_modules/vitest/vitest.mjs', 'run', 'lib/__tests__/migrationDeployPreflight.postgres.test.ts', '--reporter=json', '--outputFile=' + str(output / 'migration-gate-results.json')], cwd=repo, env=test_env, capture_output=True, text=True, timeout=120)
+    (output / 'migration-gate-tests.log').write_text(migration_gate.stdout + '\n' + migration_gate.stderr)
+    migration_results = json.loads((output / 'migration-gate-results.json').read_text())
+    if migration_gate.returncode or migration_results['numPassedTests'] != 8 or migration_results['numFailedTests'] or migration_results['numPendingTests']:
+        raise RuntimeError('migration_refusal_gate_tests_failed_see_private_log')
+    report = {'testsPassed': results['numPassedTests'], 'testsFailed': results['numFailedTests'], 'migrationRefusalGateTestsPassed': migration_results['numPassedTests'], 'verifiedAtUtc': datetime.datetime.now(datetime.timezone.utc).isoformat(), 'actualPrismaPostgres': True,
               'actualDecisionAdmissionManagerSdkChain': True, 'actualApprovalVoteTransactions': True, 'actualCodingProposalAdmissionChain': True, 'desktopHttpRouteTestsPassed': http_results['numPassedTests'], 'desktopAuthentication': 'HTTP inference cases use a synthetic boundary; separate real HMAC/session/membership/billing cases use an isolated signing key', 'desktopSessionAuthorityTestsPassed': session_results['numPassedTests'], 'codingAdmissionTestsPassed': coding_results['numPassedTests'], 'approvalDatabaseGuardTestsPassed': guard_results['numPassedTests'], 'providerTransport': 'fixed synthetic .invalid transport',
               'providerInference': False, 'realCustomerAuthentication': False, 'productionWrites': False,
               'privateProductionBackupUsed': False, 'syntheticGenerationCostReceipts': True}

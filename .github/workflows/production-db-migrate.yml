@@ -10,16 +10,6 @@ on:
         description: 'Type APPLY to run pending Prisma migrations against production.'
         required: true
         type: string
-      resolve_rolled_back_migration:
-        description: >-
-          Optional: exact migration folder name to mark as rolled-back before
-          applying (only needed to recover from a migration that failed
-          part-way and is blocking all later migrations — e.g. a previous
-          run reported "P3018 ... migration failed to apply"). Leave blank
-          on every normal run.
-        required: false
-        type: string
-        default: ''
 
 permissions:
   contents: read
@@ -55,22 +45,12 @@ jobs:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
         run: test -n "$DATABASE_URL"
 
-      - name: Resolve a previously failed migration, if named
-        if: ${{ inputs.resolve_rolled_back_migration != '' }}
+      # Partially applied history requires a separately rehearsed repair. Do
+      # not resolve-and-replay migrations from an application release workflow.
+      - name: Check history and apply eligible pending Prisma migrations
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
-          RESOLVE_MIGRATION_NAME: ${{ inputs.resolve_rolled_back_migration }}
-        run: |
-          if [[ ! "$RESOLVE_MIGRATION_NAME" =~ ^[0-9]{14}_[a-z0-9_]+$ ]] || [[ ! -d "prisma/migrations/$RESOLVE_MIGRATION_NAME" ]]; then
-            echo "Migration name must match an existing migration directory." >&2
-            exit 1
-          fi
-          npx prisma migrate resolve --rolled-back "$RESOLVE_MIGRATION_NAME" --schema prisma/schema.prisma
-
-      - name: Apply pending Prisma migrations
-        env:
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
-        run: npx prisma migrate deploy --schema prisma/schema.prisma
+        run: npm run db:migrate:deploy
 
       - name: Verify migration state
         env:

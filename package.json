@@ -6,7 +6,7 @@
     "dev": "next dev",
     "build": "npm run check:vercel-build && prisma generate && next build --webpack",
     "check:vercel-build": "node scripts/check-vercel-build.mjs",
-    "db:migrate:deploy": "prisma migrate deploy",
+    "db:migrate:deploy": "node scripts/migration-deploy-preflight.mjs && prisma migrate deploy",
     "postinstall": "prisma generate",
     "migrate:resolve": "npx prisma migrate resolve --applied 20260219120000_add_lead_model",
     "start": "next start",
