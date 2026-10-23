@@ -36,3 +36,8 @@ Fresh read-only preflight (see agent-identity-readonly-preflight.json): inspecte
 ## Matching-major local rehearsal follow-through
 
 An official PostgreSQL17.11 source archive was verified against its published SHA256, compiled and installed solely under the task scratch directory. The exact proposed SQL hash passed all eight synthetic cases using a Unix-socket-only temporary cluster, with host authentication rejected and no TCP listener. The cluster was stopped and its synthetic data directory removed. Existing Homebrew/system installation paths were not repaired or changed. No product dependency was added. A restored production clone was not used, so serving binding, actual recovery availability, exact-target owner approval and migration-ledger resolution remain separate prerequisites.
+
+
+## Follow-up read-only audit
+
+The supported current Vercel CLI recovered all122 environment metadata entries after a connector response truncated before the database variables. All database-family metadata refers to the same managed integration resource. Live resource inspection by name confirms it is connected to two projects, including Axiom production. The serving deployment contains the expected database variable names. None of this proves its effective runtime values or target; no secret was decrypted. Fresh database metadata still shows PostgreSQL17.11, no identity table, and exactly one unfinished original migration with the expected checksum. No customer rows were queried or production writes performed. A temporary historical snapshot/new-branch restore rehearsal is prepared, pending approval for provider resource costs. Never restore onto the source branch or move its endpoint.
