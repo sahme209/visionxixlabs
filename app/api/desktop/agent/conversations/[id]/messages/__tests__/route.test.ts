@@ -343,6 +343,18 @@ describe("POST /api/desktop/agent/conversations/[id]/messages", () => {
     expect(mocks.createProposal).not.toHaveBeenCalled();
   });
 
+  it("explains a denied credit hold without claiming the balance is exhausted or inference occurred", async () => {
+    mocks.runDecisionLoop.mockResolvedValue({ kind: "error", error: "workspace_ai_credit_pool_exhausted" });
+    const { POST } = await import("../route");
+    const response = await POST(request({ message: "list environments" }), params);
+    const body = await response.json();
+    expect(body.data).toMatchObject({ proposal: null, issue: "workspace_ai_credit_pool_exhausted" });
+    expect(body.data.reply).toMatch(/reserve.*available AI credits/i);
+    expect(body.data.reply).toMatch(/No model request was sent/i);
+    expect(body.data.reply).not.toMatch(/used its available|model response|after retrying/i);
+    expect(mocks.createProposal).not.toHaveBeenCalled();
+  });
+
   it("surfaces a governance error (AI disabled) as a plain-English reply instead of a 500", async () => {
     mocks.runDecisionLoop.mockResolvedValue({ kind: "error", error: "workspace_ai_disabled" });
     const { POST } = await import("../route");

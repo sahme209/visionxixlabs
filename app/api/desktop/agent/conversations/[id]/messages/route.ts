@@ -41,7 +41,7 @@ const AI_ERROR_MESSAGES: Record<string, string> = {
   workspace_ai_model_not_allowed: "That model is not enabled for this workspace. Choose an enabled model or ask a workspace admin to update Models.",
   workspace_ai_policy_unavailable: "Couldn't load this workspace's AI provider policy right now. Try again shortly.",
   workspace_ai_credit_meter_unavailable: "Couldn't verify remaining AI usage for this workspace right now. Try again shortly.",
-  workspace_ai_credit_pool_exhausted: "This workspace has used its available AI credits for this period.",
+  workspace_ai_credit_pool_exhausted: "I couldn't reserve enough available AI credits for this request. No model request was sent for this step. Review Plan & usage; the required request hold may exceed the remaining balance.",
   workspace_agent_disabled: "The workspace Agent is disabled by organization policy. An owner can enable it in Axiom Control.",
   workspace_agent_policy_unavailable: "I couldn't verify this workspace's Agent permissions, so no AI or tool action was attempted.",
   agent_tool_not_allowed: "Organization policy does not allow this Agent to use the requested tool.",

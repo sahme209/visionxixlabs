@@ -7,6 +7,7 @@ import { claimLegacyAICreditDispatch, releaseAICreditReservation, reserveAICredi
 import { denyIsolatedExternalIO } from "./isolatedApplication/runtime";
 import { claimNewTestBillableDispatch } from "./newTestSubscription/usageAllocationIO";
 import { recordAIUsageEvent, recordReservedAIUsageEventV2, type RecordAIUsageInput } from "./recordAIUsageEvent";
+import { AICreditAdmissionRefusal } from "./aiCreditAdmissionRefusal";
 import { requestReservationCents } from "./requestReservationCents";
 
 type Scope = Readonly<{ organizationId: string; userId: string; correlationId: string }>;
@@ -25,7 +26,10 @@ export function governedExtractReservationKey(scope: Scope): string {
 
 export async function admitGovernedExtract(input: Scope): Promise<GovernedExtractAdmission> {
   const result = await reserveAndClaim(input, governedExtractReservationKey(input), "extract_structured_data");
-  if (!result.ok) deny();
+  if (!result.ok) {
+    if (result.error === "ai_credit_pool_exhausted") throw new AICreditAdmissionRefusal();
+    deny();
+  }
   return result.admission;
 }
 

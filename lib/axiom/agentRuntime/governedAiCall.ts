@@ -17,6 +17,7 @@ import { admitGovernedExtract } from "@/lib/billing/governedExtractAdmission";
 import { AI_REQUEST_MAX_OUTPUT_TOKENS } from "@/lib/billing/requestReservationCents";
 import { isConcreteGatewayModelId, loadGatewayModelCatalog } from "@/lib/ai/gatewayModelCatalog";
 import { GovernedAiCallRefusal } from "./governedAiCallRefusal";
+import { AICreditAdmissionRefusal } from "@/lib/billing/aiCreditAdmissionRefusal";
 import { AgentStreamInterrupted } from "@/lib/ai/streamedDecisionMessage";
 
 export type GovernedAiCallError =
@@ -91,7 +92,8 @@ export async function resolveGovernedAiCall(organizationId: string, preferredPro
       const current = await currentDispatch(organizationId, preferredProvider, preferredModel);
       if (!current.ok) throw new GovernedAiCallRefusal(current.error);
       streaming?.abortSignal.throwIfAborted();
-      const admission = await admitGovernedExtract({ organizationId, userId, correlationId }).catch(() => {
+      const admission = await admitGovernedExtract({ organizationId, userId, correlationId }).catch((error: unknown) => {
+        if (error instanceof AICreditAdmissionRefusal) throw new GovernedAiCallRefusal("workspace_ai_credit_pool_exhausted");
         throw new AgentStreamInterrupted();
       });
       const options = {
