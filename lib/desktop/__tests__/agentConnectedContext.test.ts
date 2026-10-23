@@ -178,7 +178,7 @@ it("keeps compact context discoverable and preserves the draft while opening con
   expect(disclosure.open).toBe(false);
   expect(composer.value).toBe("Keep my unsent work");
   expect(screen.getByLabelText("Agent composer")).toBeTruthy();
-  const configuration = screen.getByText(/Agent configuration ·/).closest("summary")!;
+  const configuration = screen.getByRole("button", { name: /Agent configuration ·/ });
   expect(composer.compareDocumentPosition(configuration) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
 
   expect(m.client.sendAgentMessage).not.toHaveBeenCalled();
@@ -193,6 +193,7 @@ it("prepares an Airflow diagnosis as an unsent draft in the read-only automation
   view.rerender(createElement(AgentChatView,{identity,requestedAirflow:request}));
   await waitFor(()=>expect((screen.getByRole("textbox",{name:"Agent request"})as HTMLTextAreaElement).value).toContain('"dagId":"daily"'));
   expect((screen.getByRole("textbox",{name:"Agent request"})as HTMLTextAreaElement).value).toContain("My existing question");
+  await openAgentConfiguration();
   expect((screen.getByRole("combobox",{name:"Specialized Agent"})as HTMLSelectElement).value).toBe("automation");
   expect(screen.getByRole("button",{name:"Inspect"}).getAttribute("aria-pressed")).toBe("true");
   expect(m.client.sendAgentMessage).not.toHaveBeenCalled();
@@ -206,3 +207,8 @@ it("refuses Airflow context from a replaced desktop credential",async()=>{
   expect((screen.getByRole("textbox",{name:"Agent request"})as HTMLTextAreaElement).value).not.toContain("foreign");
   expect(m.client.sendAgentMessage).not.toHaveBeenCalled();
 });
+
+async function openAgentConfiguration() {
+ const control = await screen.findByRole("button", { name: /Agent configuration ·/ });
+ if (control.getAttribute("aria-expanded") === "false") fireEvent.click(control);
+}

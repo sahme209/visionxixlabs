@@ -190,6 +190,7 @@ it("reloads the saved conversation after interruption without resending or appro
 });
 it("opens Agent permissions in Settings without resending or discarding the current draft", async () => {
   const open = vi.fn(); render(createElement(AgentChatView, { onOpenSettings: open })); await draft();
+  await openAgentConfiguration();
   fireEvent.click(screen.getByRole("button", { name: "Agent permissions" }));
   expect(open).toHaveBeenCalledExactlyOnceWith("agents");
   expect((screen.getByRole("textbox") as HTMLTextAreaElement).value).toBe("Keep this unsent request");
@@ -199,14 +200,17 @@ it("preserves the actual App composer, profile and environment across an in-app 
   m.client.hasAuth.mockReturnValue(true);
   m.client.verifyCurrentCredential.mockResolvedValue({ ok: true, data: { kind: "desktop_session", organizationId: "fixture-workspace", role: "owner", capabilities: [], access: { allowed: true, code: "active", title: "Access active", message: "Fixture", billingStatus: "no_plan", planTier: "trial" } } });
   render(createElement(App)); await draft();
+  await openAgentConfiguration();
   fireEvent.change(screen.getByRole("combobox", { name: "Specialized Agent" }), { target: { value: "code_review" } });
   fireEvent.change(screen.getByRole("combobox", { name: "Active deployment environment" }), { target: { value: "env-1" } });
+  await openAgentConfiguration();
   fireEvent.click(screen.getByRole("button", { name: "Agent permissions" }));
   await screen.findByRole("heading", { name: "Agents" });
   expect(screen.queryByRole("navigation", { name: "Deployment workspace" })).toBeNull();
   fireEvent.click(screen.getByRole("button", { name: "Back to workspace" }));
   await screen.findByRole("option", { name: "Fixture model" });
   expect((screen.getByRole("textbox") as HTMLTextAreaElement).value).toBe("Keep this unsent request");
+  await openAgentConfiguration();
   expect((screen.getByRole("combobox", { name: "Specialized Agent" }) as HTMLSelectElement).value).toBe("code_review");
   expect((screen.getByRole("combobox", { name: "Active deployment environment" }) as HTMLSelectElement).value).toBe("env-1");
   expect(m.client.sendAgentMessage).not.toHaveBeenCalled();
@@ -293,6 +297,7 @@ it("retains an unsaved local file across actual App navigation without another f
     throw new Error(`Unexpected command ${command}`);
   });
   render(createElement(App));
+  await openAgentConfiguration();
   await screen.findByRole("button", {name: "Agent permissions"});
   fireEvent.click(screen.getByRole("button", {name: "GitHub repositories"}));
   fireEvent.click(await screen.findByRole("button", {name: "main.ts"}));
@@ -448,6 +453,7 @@ it("prepares local selected code once in read-only mode without sending or repla
   view.rerender(createElement(AgentChatView, {requestedLocalCode: request}));
   await waitFor(() => expect((screen.getByRole("textbox") as HTMLTextAreaElement).value).toContain('"excerpt":"const answer = 42;"'));
   expect((screen.getByRole("textbox") as HTMLTextAreaElement).value).toMatch(/^Keep this unsent request\n\n/);
+  await openAgentConfiguration();
   expect((screen.getByRole("combobox", {name: "Specialized Agent"}) as HTMLSelectElement).value).toBe("code_review");
   fireEvent.change(screen.getByRole("textbox"), {target: {value: "Later draft"}});
   view.rerender(createElement(AgentChatView, {requestedLocalCode: request}));
@@ -559,6 +565,7 @@ it("opens the repository on its first visit from the shared Documentation journe
     throw new Error(`Unexpected command ${command}`);
   });
   render(createElement(App));
+  await openAgentConfiguration();
   await screen.findByRole("button", {name: "Agent permissions"});
   fireEvent.click(screen.getByRole("button", {name: "Documentation"}));
   fireEvent.click(await screen.findByRole("button", {name: "Open repository"}));
@@ -890,3 +897,8 @@ it("does not carry a saved mode to another API origin or accept a malformed stor
  m.client.config={apiBase:"https://other.invalid"} as typeof m.client.config;view.rerender(createElement(AgentChatView,{identity}));await screen.findByRole("option",{name:"Fixture model"});expect(screen.getByRole("button",{name:"Engineer"}).getAttribute("aria-pressed")).toBe("true");view.unmount();
  const key=Object.keys(window.localStorage).find(key=>key.startsWith("axiom.workspace.operation-mode.v1:")&&key.includes("other.invalid"))!;expect(key).toBeTruthy();window.localStorage.setItem(key,"unrecognized-mode");render(createElement(AgentChatView,{identity}));await screen.findByRole("option",{name:"Fixture model"});expect(screen.getByRole("button",{name:"Engineer"}).getAttribute("aria-pressed")).toBe("true");expect(m.client.sendAgentMessage).not.toHaveBeenCalled();
 });
+
+async function openAgentConfiguration() {
+ const control = await screen.findByRole("button", { name: /Agent configuration ·/ });
+ if (control.getAttribute("aria-expanded") === "false") fireEvent.click(control);
+}

@@ -105,6 +105,7 @@ async function compose(mode: "chat" | "code", agentProfile?: string) {
     await screen.findByRole("option", { name: "src/app.ts" });
     fireEvent.change(screen.getByRole("combobox", { name: "Repository file" }), { target: { value: "src/app.ts" } });
   }
+  await openAgentConfiguration();
   if (agentProfile) fireEvent.change(screen.getByRole("combobox", { name: "Specialized Agent" }), { target: { value: agentProfile } });
   fireEvent.change(screen.getByRole("textbox"), { target: { value: "Review this change" } });
   await waitFor(() => expect((screen.getByRole("button", { name: "Send" }) as HTMLButtonElement).disabled).toBe(false));
@@ -158,6 +159,7 @@ it("stops a native composer response without accepting late proposal authority o
 it.each(["coding", "debugging", "code_review", "terraform", "cloud_deployment", "automation"])("sends selected %s profile through the rendered composer and streaming client", async agentProfile => {
   const wire = fixture(); await compose("chat", agentProfile);
   expect(JSON.parse(wire.messages()[0][1]!.body as string)).toMatchObject({ workspaceContext: { agentProfile } });
+  await openAgentConfiguration();
   expect((screen.getByRole("combobox", { name: "Specialized Agent" }) as HTMLSelectElement).disabled).toBe(true);
   await act(async () => { wire.completion.release(); }); await screen.findByText(data.reply);
   expect(wire.messages()).toHaveLength(1);
@@ -261,6 +263,7 @@ it.each([
   expect((screen.getByRole("textbox") as HTMLTextAreaElement).value).toContain("Help me understand this");
   expect((screen.getByRole("textbox") as HTMLTextAreaElement).value).toContain("untrusted");
   expect(wire.messages()).toHaveLength(0);
+  await openAgentConfiguration();
   expect((screen.getByRole("combobox", {name: "Specialized Agent"}) as HTMLSelectElement).value).toBe("code_review");
   fireEvent.click(screen.getByRole("button", {name: "Send"}));
   await screen.findByText("Review draft before persistence");
@@ -291,6 +294,7 @@ it("prepares a target-bound repair in Code mode without dispatch until Send",asy
  const request={kind:"repair" as const,repositoryFullName:"fixture/repository",branch:"main",path:"src/app.ts",checkId:"npm:test",exitCode:1,stale:false as const,excerpt:"Expected 2, received 1",context:desktopClient.config};
  view.rerender(createElement(AgentChatView,{requestedLocalCode:request}));
  await waitFor(()=>expect((screen.getByPlaceholderText("Describe the change you want in this file…") as HTMLTextAreaElement).value).toContain("unexecuted repair proposal"));expect(wire.messages()).toHaveLength(0);
+  await openAgentConfiguration();
  expect((screen.getByRole("combobox",{name:"Specialized Agent"}) as HTMLSelectElement).value).toBe("coding");
  fireEvent.click(screen.getByRole("button",{name:"Send"}));await screen.findByText("Review draft before persistence");
  const body=JSON.parse(String(wire.messages()[0][1]?.body));expect(body.workspaceContext).toMatchObject({mode:"code",operationMode:"engineer",agentProfile:"coding",repositoryFullName:"fixture/repository",branch:"main",filePath:"src/app.ts"});
@@ -298,3 +302,8 @@ it("prepares a target-bound repair in Code mode without dispatch until Send",asy
 });
 
 it("refuses a repair target outside the verified catalog without changing the draft or dispatching",async()=>{const wire=fixture(false,"http",false);const view=render(createElement(AgentChatView));await screen.findByRole("option",{name:"Fixture model"});await waitFor(()=>expect((screen.getByRole("combobox",{name:"Agent conversation"}) as HTMLSelectElement).value).toBe(summary.id));fireEvent.change(screen.getByRole("textbox"),{target:{value:"Keep this draft"}});view.rerender(createElement(AgentChatView,{requestedLocalCode:{kind:"repair",repositoryFullName:"foreign/repository",branch:"main",path:"src/app.ts",checkId:"npm:test",exitCode:1,stale:false,excerpt:"failure",context:desktopClient.config}}));await screen.findByText(/repair repository is not in the verified connected catalog/);expect((screen.getByRole("textbox") as HTMLTextAreaElement).value).toBe("Keep this draft");expect(wire.messages()).toHaveLength(0);});
+
+async function openAgentConfiguration() {
+ const control = await screen.findByRole("button", { name: /Agent configuration ·/ });
+ if (control.getAttribute("aria-expanded") === "false") fireEvent.click(control);
+}

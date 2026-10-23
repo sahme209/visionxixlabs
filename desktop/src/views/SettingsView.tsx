@@ -1,3 +1,4 @@
+import { Disclosure } from "../components/Disclosure";
 import { isVerifiedIntegrationStatus } from "../lib/integrationStatusPresentation";
 const githubLogo = new URL("../assets/providers/github.svg", import.meta.url).href;
 const slackLogo = new URL("../assets/providers/slack.svg", import.meta.url).href;
@@ -1862,7 +1863,7 @@ function IntegrationsSection({ identity }: { identity: VerifiedDesktopIdentity }
 
   return <div>
     <SectionHeading title="Integration Center" detail="Connect the systems that already run your releases. Every connection is tenant-scoped, least-privilege, and shown as connected only after server-side validation." />
-    <Notice title="Provider-specific secure connections" detail="Review access in your browser, then return here for verified connection status. Cloud connections are read-only; deployment access stays separately governed." />
+    <p className="mb-4 text-xs leading-5 text-zinc-500">Review access in your browser, then return here for verified status. Cloud connections are read-only; deployment access stays separately governed.</p>
     <div className="space-y-3">
       <IntegrationRow name="GitHub" group="Source control" detail={githubDetail} state={githubState} tone={github?.status === "validation_overdue" ? "attention" : undefined} action={providerAction("github", github?.status ?? "not_connected", github?.status === "installation_recorded" || github?.status === "validation_overdue", validatingGitHub, validateGitHub)} />
       <IntegrationRow name="Slack" group="Collaboration" detail="Release notifications with channels:read and chat:write. Consent is not active access until Axiom validates the token server-side." state={formatConnectorState(providerStatus("slack"))} action={providerAction("slack", providerStatus("slack"), slackCanValidate, validatingSlack, validateSlack)} />
@@ -1878,25 +1879,20 @@ function IntegrationsSection({ identity }: { identity: VerifiedDesktopIdentity }
         />
       ))}
     </div>
-    <details className="mt-4 rounded-lg border border-white/10 bg-white/[0.015] p-4">
-      <summary className="cursor-pointer text-sm font-medium text-zinc-200">Cloud account connections <span className="ml-2 text-xs font-normal text-zinc-500">AWS and Azure · read-only</span></summary>
+    <Disclosure className="mt-4 rounded-lg border border-white/10 bg-white/[0.015] p-4" buttonClassName="text-sm font-medium text-zinc-200" label={<>Cloud account connections <span className="ml-2 text-xs font-normal text-zinc-500">AWS and Azure · read-only</span></>}>
       <div className="mt-4"><AwsReadOnlyEnrollment identity={identity} /><AzureReadOnlyEnrollment identity={identity} /></div>
-    </details>
+    </Disclosure>
     {refreshNote && <p role="status" className="mt-3 text-xs text-zinc-400">{refreshNote}</p>}
     {connectionNote && <p role="status" className="mt-3 text-xs text-zinc-400">{connectionNote}</p>}
-    <div className="mt-5 rounded-xl border border-white/[0.07] bg-white/[0.025] p-4">
-      <p className="text-sm text-zinc-200">What happens when you connect</p>
-      <p className="mt-1 text-xs leading-5 text-zinc-500">You review the requested access in your browser, approve only the workspace you intend to connect, then return here to see the service-verified status and any required next action.</p>
-    </div>
-    <details className="mt-3 rounded-xl border border-white/[0.07] bg-white/[0.025] p-4">
-      <summary className="cursor-pointer text-sm text-zinc-200">Connection diagnostics</summary>
+    <p className="mt-4 text-xs leading-5 text-zinc-500">Approve only the workspace and access you intend to connect. Consent alone does not mark a connection verified.</p>
+    <Disclosure className="mt-3 rounded-xl border border-white/[0.07] bg-white/[0.025] p-4" buttonClassName="text-sm text-zinc-200" label="Connection diagnostics">
       <p className="mt-1 text-xs leading-5 text-zinc-500">
         {health
           ? `${health.status.replaceAll("_", " ")} · ${health.summary.healthy} healthy · ${health.summary.degraded} needs attention · ${health.summary.preview} not yet live.`
           : "Checking the read-only health of connected-system foundations."}
       </p>
       <p className="mt-2 text-[11px] text-zinc-600">This is integration health only. Production release observation remains unavailable until an observability connection is verified.</p>
-    </details>
+    </Disclosure>
     <div className="mt-5 flex flex-wrap items-center gap-3">
       <WebButton href="/account/integrations" label="Manage connections" />
       <button type="button" onClick={() => void loadCloudConnections()} disabled={refreshing} className="rounded-lg border border-white/10 px-3 py-2 text-xs text-zinc-300 hover:bg-white/[0.06] disabled:opacity-50">

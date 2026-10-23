@@ -1,3 +1,4 @@
+import { Disclosure } from "../components/Disclosure";
 import {AgentMessageContent} from "../components/AgentMessageContent";
 import { AGENT_TOOL_ACTIVITY_LABELS, type AgentToolActivity, type AgentMessageIssue } from "../../../lib/desktop/agentMessageStreamProtocol";
 import { localCodingProposals, type LocalCodingProposal } from "../lib/localEditReview";
@@ -1212,8 +1213,7 @@ function AgentChatSession({ onOpenSettings, identity, active, requestedSkill, re
           </div>
           {active && skillState === "unavailable" && <p role="status" className="mb-2 text-xs text-zinc-400">Skill shortcuts could not be verified. Existing workspace permissions remain enforced. <button type="button" disabled={sending || loadingConversation} onClick={() => setSkillAttempt(attempt => attempt + 1)} className="underline">Retry skills</button></p>}
           {active && skillState === "ready" && enabledSkills.length > 0 && <details className="mb-3 text-xs text-zinc-400"><summary className="cursor-pointer focus-visible:outline focus-visible:outline-2 focus-visible:outline-orange-300">Skill shortcuts</summary><div className="mt-2 flex flex-wrap items-center gap-2">{enabledSkills.map((skill) => <button key={skill.id} type="button" disabled={sending || loadingConversation || Boolean(pendingProposal)} onClick={() => setInput((current) => selectSkillInvocation(current, skill.id))} className="shrink-0 rounded-full border border-violet-300/[0.12] bg-violet-300/[0.04] px-2.5 py-1 text-[10px] text-violet-200 hover:bg-violet-300/[0.08] disabled:opacity-40">/{skill.id}</button>)}</div></details>}
-          <details className="mb-3 rounded-lg border border-white/[0.06] px-3 py-2">
-            <summary className="cursor-pointer text-xs text-zinc-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-orange-300">Agent configuration · {resolveAgentProfile(agentProfile)?.label}</summary>
+          <Disclosure className="mb-3 rounded-lg border border-white/[0.06] px-3 py-2" buttonClassName="text-xs text-zinc-400" label={<>Agent configuration · {resolveAgentProfile(agentProfile)?.label}</>}>
           <div className="mt-3 flex flex-wrap items-center gap-3">
             <label className="text-xs text-zinc-400">Agent
               <select aria-label="Specialized Agent" value={agentProfile} disabled={sending || loadingConversation || Boolean(pendingProposal)} onChange={event => {
@@ -1228,7 +1228,7 @@ function AgentChatSession({ onOpenSettings, identity, active, requestedSkill, re
           </div>
           <p className="mb-3 text-[11px] text-zinc-500">{OPERATION_MODES.find((mode) => mode.id === operationMode)?.description}. Provider selection and customer credit checks remain governed by your workspace policy.</p>
           <p className="mb-2 text-[10px] text-zinc-500">Unsent prompts stay with each conversation in this session only. Sign-out or credential verification may clear them; targets and permissions remain workspace-controlled.</p>
-          </details>
+          </Disclosure>
           <div className="mb-3 flex flex-wrap items-center gap-1" role="group" aria-label="Agent controls">
             {OPERATION_MODES.map((mode) => (
               <button key={mode.id} type="button" title={mode.description} aria-pressed={operationMode === mode.id} onClick={() => setOperationMode(mode.id)} className={`rounded-md px-3 py-1.5 text-xs ${operationMode === mode.id ? "bg-violet-400/15 text-violet-100 ring-1 ring-violet-300/20" : "text-zinc-500 hover:text-zinc-300"}`}>{mode.label}</button>
