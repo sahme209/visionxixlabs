@@ -3,6 +3,8 @@ import { redirect } from "next/navigation";
 import { currentContext } from "@/lib/auth/currentContext";
 import { canDecideApprovals } from "@/lib/auth/platformAdmin";
 import { prisma } from "@/lib/db";
+import { fileProposalReview } from "@/lib/cockpit/fileProposalReview";
+import { ProposalFileDiff } from "@/components/cockpit/ProposalFileDiff";
 import { ApprovalDecisionButtons } from "./ApprovalDecisionButtons";
 
 export default async function GovernancePage() {
@@ -33,9 +35,22 @@ export default async function GovernancePage() {
             {proposals.map((proposal) => {
               const args = proposal.argsJson && typeof proposal.argsJson === "object" && !Array.isArray(proposal.argsJson) ? proposal.argsJson as Record<string, unknown> : {};
               const review = args._review && typeof args._review === "object" && !Array.isArray(args._review) ? args._review as Record<string, unknown> : null;
+              const isFileWrite = proposal.toolName === "commit_github_file" || proposal.toolName === "commit_github_files";
+              const fileReview = fileProposalReview(proposal.toolName, args);
               return (
               <div key={proposal.id} className="grid gap-4 py-4 md:grid-cols-[minmax(0,1fr)_auto_auto] md:items-center">
                 <div><p className="text-sm text-zinc-200">{proposal.toolName.replaceAll("_", " ")}</p><p className="mt-1 font-mono text-[11px] text-zinc-600">{proposal.id}</p>
+                  {isFileWrite && (fileReview ? <details className="mt-3 min-w-0 text-xs text-zinc-400">
+                    <summary className="cursor-pointer text-zinc-200">Review file changes</summary>
+                    <p className="mt-3 break-all">Repository: {fileReview.repository} · Branch: {fileReview.branch}</p>
+                    <p className="mt-2 text-zinc-300">{fileReview.message}</p>
+                    <p className="mt-2">Approval executes this exact proposal. Tests have not been run by this review screen.</p>
+                    <div className="mt-4 space-y-5">{fileReview.files.map(file => <section key={file.path} className="min-w-0">
+                      <h3 className="mb-2 break-all font-mono text-zinc-200">{file.path}</h3>
+                      <p className="mb-2 break-all text-[10px] text-zinc-500">Reviewed base: {file.baseSha ?? "New file"}</p>
+                      <ProposalFileDiff before={file.before} after={file.after} label={`Proposed diff for ${file.path}`} />
+                    </section>)}</div>
+                  </details> : <p role="alert" className="mt-3 text-amber-300">File review is unavailable. Request a new proposal before approval.</p>)}
                   {proposal.toolName === "trigger_aws_deploy" && <div className="mt-3 space-y-1 break-all text-xs text-zinc-400">
                     <p className="text-amber-300">Restart existing task definition only; no source release or artifact promotion.</p>
                     <p>Repository: {typeof args.repositoryFullName === "string" ? args.repositoryFullName : "Unavailable"} · Workflow ref: {typeof args.sourceRef === "string" ? args.sourceRef : "main"}</p>
@@ -43,7 +58,7 @@ export default async function GovernancePage() {
                   </div>}
                 </div>
                 <div className="text-left sm:text-right"><p className="text-xs uppercase tracking-[0.12em] text-[#ff783d]">{proposal.riskLevel} risk</p><time className="mt-1 block text-xs text-zinc-600">{proposal.createdAt.toLocaleString()}</time></div>
-                <ApprovalDecisionButtons proposalId={proposal.id} ownProposal={proposal.proposedByUserId === String(context.userId)} approveDisabledReason={proposal.toolName === "trigger_aws_deploy" && review?.kind !== "ecs_restart_target" ? "No bound target review. Request a new proposal before approval; rejection remains available." : undefined} disabledReason={!canDecide ? "An authorized approver role is required." : !proposal.actionDigest ? "This legacy proposal has no integrity binding and cannot be decided in the browser." : proposal.approvalExpiresAt && proposal.approvalExpiresAt <= new Date() ? "This proposal has expired." : undefined} />
+                <ApprovalDecisionButtons proposalId={proposal.id} ownProposal={proposal.proposedByUserId === String(context.userId)} approveDisabledReason={isFileWrite && !fileReview ? "File review is unavailable. Request a new proposal before approval." : proposal.toolName === "trigger_aws_deploy" && review?.kind !== "ecs_restart_target" ? "No bound target review. Request a new proposal before approval; rejection remains available." : undefined} disabledReason={!canDecide ? "An authorized approver role is required." : !proposal.actionDigest ? "This legacy proposal has no integrity binding and cannot be decided in the browser." : proposal.approvalExpiresAt && proposal.approvalExpiresAt <= new Date() ? "This proposal has expired." : undefined} />
               </div>
             ); })}
           </div>
