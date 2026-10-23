@@ -9,5 +9,6 @@ it.skipIf(process.env.AXIOM_LIVE_SMALL_SONNET_METADATA !== "1")("accepts the cur
   const scope = { organizationId: "metadata-only", userId: "no-dispatch", correlationId: "public-contract-read" };
   const quote = await prepareSmallSonnetRequest(scope, { model: "anthropic/claude-sonnet-5", text: "Metadata acceptance only", schemaHint: "{}" });
   expect(quote).toBeDefined();
-  expect(smallSonnetReservation(quote!, scope)).toBe(100);
+  expect(smallSonnetReservation(quote!, scope)).toBeGreaterThan(0);
+  expect(smallSonnetReservation(quote!, scope)).toBeLessThanOrEqual(100);
 }, 15000);

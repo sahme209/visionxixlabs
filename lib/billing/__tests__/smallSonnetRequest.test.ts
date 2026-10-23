@@ -22,10 +22,10 @@ function authorize(handle: Awaited<ReturnType<typeof quote>>) {
   return authorizeSmallSonnetDispatch(handle, { ...scope, ...request, maxTokens: 4096 });
 }
 function binding() { return { ...scope, model: SMALL_SONNET_MODEL, ...smallSonnetPayload(request.text, request.schemaHint), maxTokens: 4096 }; }
-it("fresh public metadata includes regional/cache premiums, margin and buffer in the full 100-cent hold", async () => {
+it("fresh public metadata includes regional/cache premiums, margin and buffer in a sized hold", async () => {
   const handle = await quote();
-  expect(smallSonnetReservation(handle, scope)).toBe(100);
-  expect(smallSonnetReservationEvidence(handle, scope)).toMatchObject({ estimatedProviderCents: 43, estimatedHoldCents: 98, reservedCents: 100, estimatedInputTokens: 139264 });
+  expect(smallSonnetReservation(handle, scope)).toBe(36);
+  expect(smallSonnetReservationEvidence(handle, scope)).toMatchObject({ estimatedProviderCents: 16, estimatedHoldCents: 36, reservedCents: 36, estimatedInputTokens: 40960 });
   expect(fetcher).toHaveBeenCalledWith("https://ai-gateway.vercel.sh/v1/models/anthropic/claude-sonnet-5/endpoints", { cache: "no-store", signal: expect.any(AbortSignal) });
   await quote(); expect(fetcher).toHaveBeenCalledTimes(2);
 });

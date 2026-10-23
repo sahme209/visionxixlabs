@@ -17,12 +17,23 @@ vi.mock("ai", async original => {
 });
 import { runDecisionLoop } from "../decisionLoop";
 import { enrollNewPublicWorkspace } from "@/lib/billing/publicFreeEnrollment";
+import { reserveAICredits } from "@/lib/billing/aiCreditReservation";
 import { readCurrentAIAllowance } from "@/lib/billing/currentAIAllowance";
 import { reconcilePendingGatewayUsage, type GatewayUsageRepository } from "@/lib/billing/reconcileGatewayUsage";
 import { smallSonnetPricingFixture } from "@/lib/billing/__tests__/fixtures/smallSonnetPricing";
 
 const socket = process.env.AXIOM_OWNED_AGENT_PG_SOCKET;
 const model = "anthropic/claude-sonnet-5";
+async function expectSizedHolds(organizationId: string) {
+  const holds = await f.client.aIUsageReservation.findMany({ where: { organizationId } });
+  for (const hold of holds) {
+    expect(hold.reservedCents).toBeGreaterThan(0); expect(hold.reservedCents).toBeLessThanOrEqual(98);
+    expect(hold.usageEventId).toBeTruthy();
+    const usage = await f.client.usageEvent.findUnique({ where: { id: hold.usageEventId! } });
+    expect(usage?.metadata).toMatchObject({ reservationPolicy: { policy: "small_sonnet_free_v2", reservedCents: hold.reservedCents, estimatedHoldCents: hold.reservedCents } });
+  }
+}
+
 describe.skipIf(!socket)("Agent decision → installed SDK → actual PostgreSQL credits → settlement", () => {
   beforeAll(async () => {
     if (!socket || !/^\/(?:private\/)?tmp\/axiom-agent-chain-[^/]+\/socket$/.test(socket)
@@ -86,15 +97,25 @@ describe.skipIf(!socket)("Agent decision → installed SDK → actual PostgreSQL
       expect(sent.body.tools).toBeUndefined();
     }
     const holds = await f.client.aIUsageReservation.findMany({ where: { organizationId } });
-    expect(holds).toHaveLength(2); expect(holds.every(h => h.status === "pending_settlement" && h.reservedCents === 100 && h.usageEventId)).toBe(true);
-    expect(await readCurrentAIAllowance(f.client, organizationId)).toMatchObject({ available: true, poolCents: 200, heldCents: 200, usedCents: 0, includedRemainingCents: 0 });
-    expect(await run(`fixture_${randomUUID()}`)).toMatchObject({ kind: "error", error: "workspace_ai_credit_pool_exhausted" });
+    expect(holds).toHaveLength(2); expect(holds.every(h => h.status === "pending_settlement" && h.reservedCents > 0 && h.reservedCents <= 98 && h.usageEventId)).toBe(true);
+    await expectSizedHolds(organizationId);
+    const heldCents = holds.reduce((sum, hold) => sum + hold.reservedCents, 0);
+    expect(heldCents).toBeLessThan(194);
+    expect(await readCurrentAIAllowance(f.client, organizationId)).toMatchObject({ available: true, poolCents: 200, heldCents, usedCents: 0, includedRemainingCents: 200 - heldCents });
+    expect(await reserveAICredits(f.client, { organizationId, idempotencyKey: `refused_${randomUUID()}`, reservedCents: 201 - heldCents })).toMatchObject({ ok: false, error: "ai_credit_pool_exhausted" });
     expect(f.requests).toHaveLength(starting + 2);
     const lookup = vi.fn(async (id: string) => ({ id, totalCost: 0.001, model, providerName: "anthropic", promptTokens: 5, completionTokens: 2, cachedTokens: 0 }));
     expect(await reconcilePendingGatewayUsage(f.client as unknown as GatewayUsageRepository, lookup)).toMatchObject({ inspected: 2, settled: 2, failed: 0 });
     expect(await readCurrentAIAllowance(f.client, organizationId)).toMatchObject({ available: true, poolCents: 200, heldCents: 0, usedCents: 4, includedRemainingCents: 196 });
     expect(await reconcilePendingGatewayUsage(f.client as unknown as GatewayUsageRepository, lookup)).toMatchObject({ inspected: 0, settled: 0 });
     expect(lookup).toHaveBeenCalledTimes(2);
+    // A previously used Free allowance must still fund a complete two-step task.
+    // Fixed $1-per-step holds failed here after the first task spent four cents.
+    f.phase = 0;
+    expect(await run(`after_prior_usage_${randomUUID()}`)).toMatchObject({ kind: "final", usage: { decisionSteps: 2 } });
+    expect(f.requests).toHaveLength(starting + 4);
+    expect(await reconcilePendingGatewayUsage(f.client as unknown as GatewayUsageRepository, lookup)).toMatchObject({ inspected: 2, settled: 2, failed: 0 });
+    expect(await readCurrentAIAllowance(f.client, organizationId)).toMatchObject({ heldCents: 0, usedCents: 8, includedRemainingCents: 192 });
   });
   it.each([false, true].flatMap(streaming => ["disabled", "removed"].map(change => ({ streaming, change }))))("stops before another paid step after actual identity $change (stream=$streaming)", async ({ streaming, change }) => {
     f.phase = 0;
@@ -117,7 +138,8 @@ describe.skipIf(!socket)("Agent decision → installed SDK → actual PostgreSQL
     expect(result).toMatchObject({ kind: "error", error: change === "disabled" ? "workspace_agent_disabled" : "agent_tool_not_allowed", usage: { decisionSteps: 1 } });
     expect(tool).toHaveBeenCalledOnce(); expect(f.requests).toHaveLength(starting + 1);
     expect(await f.client.aIUsageReservation.findMany({ where: { organizationId } }))
-      .toMatchObject([{ status: "pending_settlement", reservedCents: 100 }]);
+      .toMatchObject([{ status: "pending_settlement" }]);
+    await expectSizedHolds(organizationId);
   });
 
   it.each([false, true])("does not buy a JSON repair after identity revocation during the accounted response (stream=%s)", async streaming => {
@@ -140,7 +162,8 @@ describe.skipIf(!socket)("Agent decision → installed SDK → actual PostgreSQL
     expect(result).toMatchObject({ kind: "error", error: "workspace_agent_disabled", usage: { decisionSteps: 1 } });
     expect(tool).not.toHaveBeenCalled(); expect(f.requests).toHaveLength(starting + 1);
     expect(await f.client.aIUsageReservation.findMany({ where: { organizationId } }))
-      .toMatchObject([{ status: "pending_settlement", reservedCents: 100 }]);
+      .toMatchObject([{ status: "pending_settlement" }]);
+    await expectSizedHolds(organizationId);
   });
 
 });

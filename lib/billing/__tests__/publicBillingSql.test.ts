@@ -1,4 +1,4 @@
-import { prepareSmallSonnetRequest } from "../smallSonnetRequest";
+import { prepareSmallSonnetRequest, smallSonnetReservation } from "../smallSonnetRequest";
 import { smallSonnetPricingFixture } from "./fixtures/smallSonnetPricing";
 import { beforeEach, afterEach, describe, expect, it, vi } from "vitest";
 import { readFileSync } from "node:fs";
@@ -172,20 +172,21 @@ describe.skipIf(!modulePath)("public billing real isolated PostgreSQL storage", 
     await db.exec("ROLLBACK");
     expect((await db.query('SELECT * FROM "OrgMembership"')).rows).toHaveLength(2);
   });
-  it("atomically reserves two complete small Free holds and refuses the third without clipping", async () => {
+  it("atomically reserves complete sized Free holds and refuses the next without clipping", async () => {
     vi.stubEnv("AXIOM_AI_MAX_REQUEST_CREDITS_CENTS", "");
     vi.stubGlobal("fetch", vi.fn(async () => new Response(JSON.stringify(smallSonnetPricingFixture()))));
     await db.transaction(tx => enrollNewPublicWorkspace(adapter(tx), "org", { accountId: "acct_fixture", livemode: false }));
     const repo = { $transaction: vi.fn(<T>(fn: (tx: PublicSql) => Promise<T>) => db.transaction(tx => fn(adapter(tx)))) };
     const results = [];
-    for (let step = 0; step < 3; step++) {
+    for (let step = 0; step < 6; step++) {
       const scope = { organizationId: "org", userId: "owner", correlationId: `request:${step}` };
       const smallAgentRequest = await prepareSmallSonnetRequest(scope, { model: "anthropic/claude-sonnet-5", text: "List environments", schemaHint: "{}" });
       expect(smallAgentRequest).toBeDefined();
-      results.push(await reserveAICredits(repo as never, { ...scope, smallAgentRequest, idempotencyKey: `small_request_key_${step}`, reservedCents: 100 }));
+      results.push(await reserveAICredits(repo as never, { ...scope, smallAgentRequest, idempotencyKey: `small_request_key_${step}`, reservedCents: smallSonnetReservation(smallAgentRequest!, scope) }));
     }
-    expect(results).toMatchObject([{ ok: true, smallRequestApplied: true }, { ok: true, smallRequestApplied: true }, { ok: false, error: "ai_credit_pool_exhausted" }]);
-    expect((await db.query('SELECT "reservedCents" FROM "AIUsageReservation"')).rows).toEqual([{ reservedCents: 100 }, { reservedCents: 100 }]);
+    expect(results.slice(0, 5)).toMatchObject(Array.from({ length: 5 }, () => ({ ok: true, smallRequestApplied: true })));
+    expect(results[5]).toMatchObject({ ok: false, error: "ai_credit_pool_exhausted" });
+    expect((await db.query('SELECT "reservedCents" FROM "AIUsageReservation"')).rows).toEqual(Array.from({ length: 5 }, () => ({ reservedCents: 36 })));
     expect(repo.$transaction).toHaveBeenCalledWith(expect.any(Function), { isolationLevel: "Serializable" });
   });
   it.each(["unenrolled", "paid", "forged"])("does not use the smaller policy for %s authority", async kind => {
@@ -198,7 +199,7 @@ describe.skipIf(!modulePath)("public billing real isolated PostgreSQL storage", 
     const scope = { organizationId: "org", userId: "owner", correlationId: "request" };
     const smallAgentRequest = kind === "forged" ? {} as never : await prepareSmallSonnetRequest(scope, { model: "anthropic/claude-sonnet-5", text: "List environments", schemaHint: "{}" });
     const repo = { $transaction: <T>(fn: (tx: PublicSql) => Promise<T>) => db.transaction(tx => fn(adapter(tx))) };
-    const result = await reserveAICredits(repo as never, { ...scope, smallAgentRequest, idempotencyKey: "small_denied_key_123", reservedCents: 100 });
+    const result = await reserveAICredits(repo as never, { ...scope, smallAgentRequest, idempotencyKey: "small_denied_key_123", reservedCents: kind === "forged" ? 36 : smallSonnetReservation(smallAgentRequest!, scope) });
     if (kind === "paid") {
       expect(result).toMatchObject({ ok: true, reservation: { reservedCents: 1000 } });
       expect(result).not.toHaveProperty("smallRequestApplied");

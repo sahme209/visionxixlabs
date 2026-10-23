@@ -14,7 +14,7 @@ declare const requestBrand: unique symbol;
 declare const dispatchBrand: unique symbol;
 export type SmallSonnetRequest = { readonly [requestBrand]: true };
 export type SmallSonnetDispatch = { readonly [dispatchBrand]: true };
-type Evidence = Readonly<{ policy: "small_sonnet_free_v1"; maximumPayloadBytes: number; maximumOutputTokens: number; estimatedInputTokens: number; estimatedProviderCents: number; estimatedHoldCents: number; reservedCents: number; pricingDigest: string; quotedAt: string }>;
+type Evidence = Readonly<{ policy: "small_sonnet_free_v2"; maximumPayloadBytes: number; maximumOutputTokens: number; estimatedInputTokens: number; estimatedProviderCents: number; estimatedHoldCents: number; reservedCents: number; pricingDigest: string; quotedAt: string }>;
 type Quote = Readonly<{ scope: Scope; digest: string; createdAt: number; reservedCents: number; evidence: Evidence }>;
 const quotes = new WeakMap<object, Quote>();
 const dispatches = new WeakMap<object, Quote>();
@@ -70,7 +70,10 @@ function prices(value: unknown, required: boolean): { input: bigint; output: big
 export async function prepareSmallSonnetRequest(scope: Scope, request: { model: string; text: string; schemaHint: string }, abortSignal?: AbortSignal): Promise<SmallSonnetRequest | undefined> {
   if (request.model !== SMALL_SONNET_MODEL || !publicBillingPolicyEnabled() || process.env.AXIOM_AI_MAX_REQUEST_CREDITS_CENTS?.trim()) return undefined;
   const payload = smallSonnetPayload(request.text, request.schemaHint);
-  if (Buffer.byteLength(payload.prompt) + Buffer.byteLength(payload.system) > SMALL_SONNET_BYTES) return undefined;
+  const payloadBytes = Buffer.byteLength(payload.prompt) + Buffer.byteLength(payload.system);
+  if (payloadBytes > SMALL_SONNET_BYTES) return undefined;
+  // Round upward; price the whole bucket, including the redacted system schema.
+  const maximumPayloadBytes = [8192, 16384, SMALL_SONNET_BYTES].find(bytes => payloadBytes <= bytes)!;
   try {
     denyIsolatedExternalIO();
     const response = await fetch(`https://ai-gateway.vercel.sh/v1/models/${SMALL_SONNET_MODEL}/endpoints`, { cache: "no-store", signal: abortSignal ? AbortSignal.any([abortSignal, AbortSignal.timeout(5000)]) : AbortSignal.timeout(5000) });
@@ -94,18 +97,19 @@ export async function prepareSmallSonnetRequest(scope: Scope, request: { model: 
       }
     }
     if (input <= BigInt(0) || output <= BigInt(0)) return undefined;
-    // Price the entire permitted payload, not just today's shorter prompt.
-    // Four tokens/byte plus8192 overhead is an intentionally high estimate.
-    const nanoDollars = BigInt(SMALL_SONNET_BYTES * 4 + 8192) * input + BigInt(OUTPUT_TOKENS) * output;
+    // The immutable digest binds this quote to the complete observed payload.
+    // Four tokens/byte for its whole bucket plus8192 overhead remains conservative.
+    const estimatedInputTokens = maximumPayloadBytes * 4 + 8192;
+    const nanoDollars = BigInt(estimatedInputTokens) * input + BigInt(OUTPUT_TOKENS) * output;
     const providerCents = Number((nanoDollars + BigInt(9_999_999)) / BigInt(10_000_000));
     if (!Number.isSafeInteger(providerCents)) return undefined;
     const estimatedHold = Math.ceil(applyMargin(providerCents) * 1.5);
-    if (estimatedHold > 100) return undefined; // Never clip required exposure.
+    if (!Number.isSafeInteger(estimatedHold) || estimatedHold < 1 || estimatedHold > 100) return undefined; // Never clip required exposure.
     const handle = Object.freeze({}) as SmallSonnetRequest;
     const createdAt = Date.now();
-    const evidence: Evidence = Object.freeze({ policy: "small_sonnet_free_v1", maximumPayloadBytes: SMALL_SONNET_BYTES, maximumOutputTokens: OUTPUT_TOKENS, estimatedInputTokens: SMALL_SONNET_BYTES * 4 + 8192, estimatedProviderCents: providerCents, estimatedHoldCents: estimatedHold, reservedCents: 100,
+    const evidence: Evidence = Object.freeze({ policy: "small_sonnet_free_v2", maximumPayloadBytes, maximumOutputTokens: OUTPUT_TOKENS, estimatedInputTokens, estimatedProviderCents: providerCents, estimatedHoldCents: estimatedHold, reservedCents: estimatedHold,
       pricingDigest: createHash("sha256").update(JSON.stringify([SMALL_SONNET_MODEL, "anthropic", input.toString(), output.toString()])).digest("hex"), quotedAt: new Date(createdAt).toISOString() });
-    quotes.set(handle, Object.freeze({ scope: Object.freeze({ ...scope }), digest: digest(request.model, payload.prompt, payload.system, OUTPUT_TOKENS), createdAt, reservedCents: 100, evidence }));
+    quotes.set(handle, Object.freeze({ scope: Object.freeze({ ...scope }), digest: digest(request.model, payload.prompt, payload.system, OUTPUT_TOKENS), createdAt, reservedCents: estimatedHold, evidence }));
     return handle;
   } catch { return undefined; }
 }

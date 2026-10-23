@@ -35,8 +35,8 @@ it.each([false, true])("actual admission/manager/provider binds the small route 
   expect(sdk).toHaveBeenCalledOnce();
   expect(sdk.mock.calls[0][0]).toMatchObject({ model, prompt: request.text, maxOutputTokens: 4096, maxRetries: 0, providerOptions: { gateway: { only: ["anthropic"], user: "org" }, anthropic: { thinking: { type: "disabled" } } } });
   expect(sdk.mock.calls[0][0].tools).toBeUndefined(); expect(sdk.mock.calls[0][0].output).toBeUndefined();
-  expect(m.reserve.mock.calls[0][1].reservedCents).toBe(100); expect(m.claim).toHaveBeenCalledOnce(); expect(m.write).toHaveBeenCalledOnce();
-  expect(m.write.mock.calls[0][0].metadata.reservationPolicy).toMatchObject({ policy: "small_sonnet_free_v1", reservedCents: 100, maximumPayloadBytes: 32768, maximumOutputTokens: 4096, pricingDigest: expect.stringMatching(/^[a-f0-9]{64}$/) });
+  expect(m.reserve.mock.calls[0][1].reservedCents).toBe(36); expect(m.claim).toHaveBeenCalledOnce(); expect(m.write).toHaveBeenCalledOnce();
+  expect(m.write.mock.calls[0][0].metadata.reservationPolicy).toMatchObject({ policy: "small_sonnet_free_v2", reservedCents: 36, maximumPayloadBytes: 8192, maximumOutputTokens: 4096, pricingDigest: expect.stringMatching(/^[a-f0-9]{64}$/) });
   expect(JSON.stringify(m.write.mock.calls[0][0].metadata)).not.toContain(request.text);
   expect(m.claim.mock.invocationCallOrder[0]).toBeLessThan(sdk.mock.invocationCallOrder[0]);
   await expect(manager.extractStructuredDataWithAdmission(request.text, request.schemaHint, options, admission)).rejects.toMatchObject({ name: "AgentStreamInterrupted" });

@@ -79,7 +79,11 @@ describe.skipIf(!socket)("desktop HTTP request → actual Agent/database/tool/SD
   const actions = await f.client.agentActionProposal.findMany({ where: { conversationId: ctx.conversationId } });
   expect(actions).toHaveLength(1); expect(actions[0]).toMatchObject({ organizationId: ctx.organizationId, proposedByUserId: ctx.userId, toolName: "list_environments", status: "executed", resultJson: [] });
   const holds = await f.client.aIUsageReservation.findMany({ where: { organizationId: ctx.organizationId } });
-  expect(holds).toHaveLength(2); expect(holds.every(h => h.reservedCents === 100 && h.status === "pending_settlement" && h.usageEventId)).toBe(true);
+  expect(holds).toHaveLength(2); expect(holds.every(h => h.reservedCents > 0 && h.reservedCents <= 98 && h.status === "pending_settlement" && h.usageEventId)).toBe(true);
+  for (const hold of holds) {
+   const usage = await f.client.usageEvent.findUnique({ where: { id: hold.usageEventId! } });
+   expect(usage?.metadata).toMatchObject({ reservationPolicy: { policy: "small_sonnet_free_v2", reservedCents: hold.reservedCents, estimatedHoldCents: hold.reservedCents } });
+  }
  });
  it("does not auto-read an unrelated selected repository before the environment request", async () => {
   const ctx = await fixture(), response = await request(ctx.conversationId, false, true);
