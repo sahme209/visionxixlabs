@@ -243,6 +243,7 @@ it("requires recovery and settlement before another send after a stopped request
   await act(async () => { rejectOld(new Error("Old transport failed")); });
   expect(screen.queryByText("Old transport failed")).toBeNull();
   expect((screen.getByRole("textbox") as HTMLTextAreaElement).value).toBe("New request");
+  fireEvent.click(screen.getByRole("button", { name: "Dismiss retained copy" }));
   fireEvent.click(screen.getByRole("button", { name: "Send" })); await screen.findByText("Current request budget refusal");
   expect(screen.getByText("Current request budget refusal")).toBeTruthy();
 });
@@ -620,6 +621,103 @@ it("retains queued text and pauses automatic continuation after an unverified re
   expect(screen.getByRole("button", { name: "Resume queue" })).toBeTruthy();
   fireEvent.click(screen.getByRole("button", { name: "Edit queued message" }));
   expect((screen.getByRole("textbox") as HTMLTextAreaElement).value).toBe("Retain queued work");
+});
+
+it.each(["reported_failure", "thrown_failure"])("retains a failed request across saved-history reload without automatically retrying: %s", async failure => {
+  if (failure === "reported_failure") m.client.sendAgentMessage.mockResolvedValue({ ok: false, error: "network unavailable" });
+  else m.client.sendAgentMessage.mockRejectedValue(Error("synthetic transport failure"));
+  render(createElement(AgentChatView)); await draft();
+  fireEvent.click(screen.getByRole("button", { name: "Send" }));
+  const restore = await screen.findByRole("button", { name: "Restore retained request" });
+  expect((restore as HTMLButtonElement).disabled).toBe(true);
+  fireEvent.click(screen.getByRole("button", { name: "Reload saved conversation" }));
+  await waitFor(() => expect((screen.getByRole("button", { name: "Restore retained request" }) as HTMLButtonElement).disabled).toBe(false));
+  fireEvent.click(screen.getByRole("button", { name: "Restore retained request" }));
+  expect((screen.getByRole("textbox") as HTMLTextAreaElement).value).toBe("Keep this unsent request");
+  expect(m.client.sendAgentMessage).toHaveBeenCalledTimes(1);
+});
+
+it("never overwrites a newer draft with a retained failed request", async () => {
+  const response = deferred<any>(); m.client.sendAgentMessage.mockReturnValue(response.promise);
+  render(createElement(AgentChatView)); await draft(); fireEvent.click(screen.getByRole("button", { name: "Send" }));
+  fireEvent.change(screen.getByRole("textbox"), { target: { value: "My newer draft" } });
+  await act(async () => { response.resolve({ ok: false, error: "network unavailable" }); });
+  fireEvent.click(screen.getByRole("button", { name: "Reload saved conversation" }));
+  await waitFor(() => expect(m.client.getAgentConversation).toHaveBeenCalledTimes(2));
+  expect((screen.getByRole("button", { name: "Restore retained request" }) as HTMLButtonElement).disabled).toBe(true);
+  expect((screen.getByRole("textbox") as HTMLTextAreaElement).value).toBe("My newer draft");
+  expect(m.client.sendAgentMessage).toHaveBeenCalledTimes(1);
+});
+
+it("removes the retained recovery copy when the service confirms the request", async () => {
+  render(createElement(AgentChatView)); await draft(); fireEvent.click(screen.getByRole("button", { name: "Send" }));
+  await screen.findByText("Fixture reply");
+  expect(screen.queryByRole("button", { name: "Restore retained request" })).toBeNull();
+});
+
+it("clears retained request text when the verified credential context changes", async () => {
+  m.client.sendAgentMessage.mockResolvedValue({ ok: false, error: "network unavailable" });
+  const view = render(createElement(AgentChatView)); await draft(); fireEvent.click(screen.getByRole("button", { name: "Send" }));
+  await screen.findByRole("button", { name: "Restore retained request" });
+  m.client.config = { sessionToken: "synthetic-other-credential" }; view.rerender(createElement(AgentChatView));
+  await waitFor(() => expect((screen.getByRole("combobox", { name: "Agent conversation" }) as HTMLSelectElement).value).toBe("conversation-1"));
+  expect(screen.queryByRole("button", { name: "Restore retained request" })).toBeNull();
+  expect((screen.getByRole("textbox") as HTMLTextAreaElement).value).toBe("");
+  expect(m.client.sendAgentMessage).toHaveBeenCalledTimes(1);
+});
+
+it("recovers an interrupted request only as a draft after saved-history review", async () => {
+  const response = deferred<any>(); let signal!: AbortSignal;
+  m.client.sendAgentMessage.mockImplementation((...args) => { signal = args[5].signal; return response.promise; });
+  render(createElement(AgentChatView)); await draft(); fireEvent.click(screen.getByRole("button", { name: "Send" }));
+  fireEvent.click(screen.getByRole("button", { name: "Stop response" })); expect(signal.aborted).toBe(true);
+  await act(async () => { response.resolve({ ok: false, error: "canceled" }); });
+  expect((screen.getByRole("button", { name: "Restore retained request" }) as HTMLButtonElement).disabled).toBe(true);
+  fireEvent.click(screen.getByRole("button", { name: "Reload saved conversation" }));
+  await waitFor(() => expect((screen.getByRole("button", { name: "Restore retained request" }) as HTMLButtonElement).disabled).toBe(false));
+  fireEvent.click(screen.getByRole("button", { name: "Restore retained request" }));
+  expect((screen.getByRole("textbox") as HTMLTextAreaElement).value).toBe("Keep this unsent request"); expect(m.client.sendAgentMessage).toHaveBeenCalledTimes(1);
+});
+
+it("retains a dispatched queued request when that response fails", async () => {
+  const first = deferred<any>(); m.client.sendAgentMessage.mockReturnValueOnce(first.promise).mockResolvedValue({ ok: false, error: "network unavailable" });
+  render(createElement(AgentChatView)); await draft(); fireEvent.click(screen.getByRole("button", { name: "Send" }));
+  fireEvent.change(screen.getByRole("textbox"), { target: { value: "Queued request to recover" } }); fireEvent.click(screen.getByRole("button", { name: "Queue message" }));
+  await act(async () => { first.resolve({ ok: true, data: { reply: "First confirmed", proposal: null, usage: { decisionSteps: 1, inputTokens: 1, outputTokens: 1, totalTokens: 2 } } }); });
+  await screen.findByRole("button", { name: "Restore retained request" }); expect(m.client.sendAgentMessage).toHaveBeenCalledTimes(2);
+  fireEvent.click(screen.getByRole("button", { name: "Reload saved conversation" }));
+  await waitFor(() => expect((screen.getByRole("button", { name: "Restore retained request" }) as HTMLButtonElement).disabled).toBe(false));
+  fireEvent.click(screen.getByRole("button", { name: "Restore retained request" }));
+  expect((screen.getByRole("textbox") as HTMLTextAreaElement).value).toBe("Queued request to recover"); expect(m.client.sendAgentMessage).toHaveBeenCalledTimes(2);
+});
+
+it("refuses recovery-copy capacity overflow before dispatch without discarding the input", async () => {
+  render(createElement(AgentChatView)); await draft(); const large = "x".repeat(500001);
+  fireEvent.change(screen.getByRole("textbox"), { target: { value: large } }); fireEvent.click(screen.getByRole("button", { name: "Send" }));
+  await screen.findByText(/Recovery draft capacity reached/);
+  expect(m.client.sendAgentMessage).not.toHaveBeenCalled(); expect((screen.getByRole("textbox") as HTMLTextAreaElement).value).toBe(large);
+});
+
+it("dismisses only the retained copy while keeping recovery required and leaving a new draft intact", async () => {
+  m.client.sendAgentMessage.mockResolvedValue({ ok: false, error: "network unavailable" });
+  render(createElement(AgentChatView)); await draft(); fireEvent.click(screen.getByRole("button", { name: "Send" }));
+  await screen.findByRole("button", { name: "Dismiss retained copy" }); fireEvent.change(screen.getByRole("textbox"), { target: { value: "My separate draft" } });
+  fireEvent.click(screen.getByRole("button", { name: "Dismiss retained copy" }));
+  expect(screen.queryByRole("button", { name: "Restore retained request" })).toBeNull();
+  expect((screen.getByRole("textbox") as HTMLTextAreaElement).value).toBe("My separate draft");
+  expect(screen.getByRole("button", { name: "Reload saved conversation" })).toBeTruthy(); expect((screen.getByRole("button", { name: "Send" }) as HTMLButtonElement).disabled).toBe(true);
+  expect(m.client.sendAgentMessage).toHaveBeenCalledTimes(1);
+});
+
+it("does not silently replace an unconfirmed request with different work after history reload", async () => {
+  m.client.sendAgentMessage.mockResolvedValueOnce({ ok: false, error: "network unavailable" }).mockResolvedValue({ ok: true, data: { reply: "New request confirmed", proposal: null, usage: null } });
+  render(createElement(AgentChatView)); await draft(); fireEvent.click(screen.getByRole("button", { name: "Send" }));
+  await screen.findByRole("button", { name: "Restore retained request" }); fireEvent.click(screen.getByRole("button", { name: "Reload saved conversation" }));
+  await waitFor(() => expect((screen.getByRole("button", { name: "Restore retained request" }) as HTMLButtonElement).disabled).toBe(false));
+  fireEvent.change(screen.getByRole("textbox"), { target: { value: "Different new work" } }); fireEvent.click(screen.getByRole("button", { name: "Send" }));
+  expect(m.client.sendAgentMessage).toHaveBeenCalledTimes(1); expect((screen.getByRole("textbox") as HTMLTextAreaElement).value).toBe("Different new work");
+  fireEvent.click(screen.getByRole("button", { name: "Dismiss retained copy" })); fireEvent.click(screen.getByRole("button", { name: "Send" }));
+  await screen.findByText("New request confirmed"); expect(m.client.sendAgentMessage).toHaveBeenCalledTimes(2);
 });
 
 it("pauses queued work at a new approval proposal instead of executing the follow-up", async () => {

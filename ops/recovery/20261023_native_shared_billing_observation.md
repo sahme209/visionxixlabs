@@ -1,0 +1,5 @@
+# Shared billing observation after real Agent settlement
+
+The existing paired local native 0.1.21 debug app's Plan & usage page and the freshly reloaded live cockpit were observed for the same workspace after the authorized read-only Agent test settled. Both show Free/active access, $1.96 remaining, zero unresolved holds, two provider steps, 5,041 input tokens and 192 output tokens. Desktop attributed provider cost is $0.02; the cockpit correctly distinguishes the settled customer debit of $0.04.
+
+This verifies that these observed records are shared across desktop and web after settlement. It does not prove a purchase, subscription transition, role change or every refresh race. No new AI request, payment, role change or billing configuration was performed. The Stripe connector separately requires reauthentication before test-environment discovery; no account or test-mode state was inferred from that failure. User-facing screenshots and a safe observation receipt are retained outside the repository; private credentials and backups are not included.

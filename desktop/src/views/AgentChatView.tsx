@@ -271,6 +271,13 @@ function AgentChatSession({ onOpenSettings, identity, active, requestedSkill, re
   const [evidenceActions, setEvidenceActions] = useState<Proposal[]>([]);
   const [input, setInput] = useState("");
   const conversationDrafts = useRef(new Map<string, string>());
+  const retainedRequestCache = useRef(new Map<string, string>());
+  const [retainedRequests, setRetainedRequests] = useState<ReadonlyMap<string, string>>(() => new Map());
+  function retainRequest(id: string, text: string): boolean {
+    const next = rememberConversationDraft(retainedRequestCache.current, id, text);
+    if (!next) return false;
+    retainedRequestCache.current = next; setRetainedRequests(next); return true;
+  }
   const processedSkillRequest = useRef<AgentSkillRequest | undefined>(undefined);
   const processedAirflow = useRef<AgentAirflowRequest | undefined>(undefined);
   const processedLocalCode = useRef<AgentLocalCodeRequest | undefined>(undefined);
@@ -778,6 +785,7 @@ function AgentChatSession({ onOpenSettings, identity, active, requestedSkill, re
 
   const requestKey = JSON.stringify([repositoryFullName.trim(), branch.trim(), environmentId, composerMode, composerMode === "code" ? filePath.trim() : "", operationMode, agentProfile, selectedModel]);
   const currentQueue = queuedMessages.filter(message => message.conversationId === conversationId);
+  const retainedRequest = conversationId ? retainedRequests.get(conversationId) : undefined;
   const queuedConfigurationMatches = !currentQueue.length || currentQueue[0].requestKey === requestKey;
 
   useEffect(() => {
@@ -817,8 +825,21 @@ function AgentChatSession({ onOpenSettings, identity, active, requestedSkill, re
     if (!choice) return;
     const context = desktopClient.config, ownerConversation = conversationId, generation = conversationEpoch.current;
     const owned = () => context === desktopClient.config && activeConversation.current === ownerConversation && generation === conversationEpoch.current;
+    if (queued && (queued.conversationId !== conversationId || queued.requestKey !== requestKey)) return;
+    const previousUnconfirmed = retainedRequestCache.current.get(ownerConversation);
+    if (previousUnconfirmed && previousUnconfirmed !== instruction) {
+      setQueuePaused(true);
+      setError("A previous request outcome is unconfirmed. Restore or dismiss its retained copy before starting different work. Your draft or queued message has been kept.");
+      return;
+    }
+    // Session-only recovery text is not queued or retried. Keep it before the
+    // input/queue is consumed, and refuse overflow rather than lose the draft.
+    if (!retainRequest(ownerConversation, instruction)) {
+      setQueuePaused(true);
+      setError("Recovery draft capacity reached. Dismiss a retained copy or shorten this request before sending. Your draft has been kept.");
+      return;
+    }
     if (queued) {
-      if (queued.conversationId !== conversationId || queued.requestKey !== requestKey) return;
       setQueuedMessages(current => current.filter(message => message.id !== queued.id));
     } else {
       conversationDrafts.current.delete(conversationId);
@@ -857,6 +878,7 @@ function AgentChatSession({ onOpenSettings, identity, active, requestedSkill, re
         setError(result.error);
         return;
       }
+      retainRequest(ownerConversation, "");
       requireRecovery(ownerConversation, false);
       setTurns((prev) => [...prev, { id: `local_${Date.now()}_r`, role: "assistant", content: result.data.reply }]);
       setPendingProposal(result.data.proposal && result.data.proposal.status === "proposed" ? result.data.proposal : null);
@@ -1141,6 +1163,18 @@ function AgentChatSession({ onOpenSettings, identity, active, requestedSkill, re
             <p>Review the saved conversation before sending another request. Reloading does not retry AI work or confirm that an interrupted operation has finished.</p>
             <button type="button" disabled={loadingConversation} onClick={() => conversationId && void openConversation(conversationId, true)} className="mt-2 rounded-lg border border-white/10 px-3 py-1.5 text-zinc-200 disabled:opacity-40">Reload saved conversation</button>
           </div>}
+          {retainedRequest && !sending && <section aria-label="Retained unconfirmed request" className="mb-3 rounded-lg border border-white/10 px-3 py-2.5 text-xs text-zinc-400">
+            <p className="text-zinc-300">Request text retained · outcome unconfirmed</p>
+            <p className="mt-1 break-words">{retainedRequest.slice(0, 160)}{retainedRequest.length > 160 ? "…" : ""}</p>
+            <p className="mt-1 text-[11px] text-zinc-500">Review saved history before deciding to send again. Restoring text does not retry work. This copy lasts only for this app session.</p>
+            <div className="mt-2 flex flex-wrap gap-3">
+              <button type="button" disabled={needsRecovery || loadingConversation || Boolean(input.trim())} onClick={() => {
+                if (needsRecovery || loadingConversation || input.trim() || !conversationId || activeConversation.current !== conversationId || transportContext !== desktopClient.config) return;
+                const text = retainedRequestCache.current.get(conversationId); if (text) setInput(text);
+              }} className="text-zinc-200 underline disabled:opacity-40">Restore retained request</button>
+              <button type="button" disabled={loadingConversation} onClick={() => conversationId && retainRequest(conversationId, "")} className="text-zinc-400 underline disabled:opacity-40">Dismiss retained copy</button>
+            </div>
+          </section>}
           {currentQueue.length > 0 && <section aria-label="Queued Agent messages" className="mb-3 max-h-48 overflow-y-auto rounded-xl border border-white/10 bg-white/[0.025] px-3 py-2.5 text-xs">
             <div className="mb-2 flex items-center justify-between gap-3"><p className="text-zinc-300">{currentQueue.length} queued{queuePaused ? " · paused" : ""}</p>
               {queuePaused && <button type="button" disabled={sending || needsRecovery || loadingConversation || Boolean(pendingProposal) || !queuedConfigurationMatches} onClick={() => setQueuePaused(false)} className="text-zinc-200 underline disabled:opacity-40">Resume queue</button>}
