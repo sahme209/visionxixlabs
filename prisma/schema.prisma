@@ -2326,7 +2326,7 @@ model IdempotencyRecord {
 /// `{ pipelineId, maxCostCents }` records — null cents within a
 /// pipeline override also means unlimited for that one pipeline.
 /// Resolution priority (high → low):
-///   run metadata > pipelineOverrides > defaultMaxCostCents > platform default
+///   pipelineOverrides > defaultMaxCostCents > platform default; run metadata may only lower the result
 model OrganizationBudgetConfig {
   organizationId       String   @id
   /// null = unlimited at the workspace level.

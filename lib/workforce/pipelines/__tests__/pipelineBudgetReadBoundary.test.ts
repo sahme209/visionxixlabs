@@ -44,3 +44,17 @@ it("request metadata can stop a run below the saved workspace allowance", async(
  await advancePipelineRun("run-budget");expect(m.execute).not.toHaveBeenCalled();expect(stage.status).toBe("failed");
  expect(stage.outputDetail).toEqual(expect.objectContaining({capSource:"metadata_explicit_cap"}));
 });
+
+it.each([
+ {defaultMaxCostCents:0,pipelineOverrides:[]},
+ {defaultMaxCostCents:-1,pipelineOverrides:[]},
+ {defaultMaxCostCents:null,pipelineOverrides:[{pipelineId:"ai_coding",maxCostCents:0}]},
+ {defaultMaxCostCents:null,pipelineOverrides:[{pipelineId:"ai_coding",maxCostCents:"100"}]},
+ {defaultMaxCostCents:null,pipelineOverrides:[{pipelineId:"ai_coding",maxCostCents:0.5}]},
+ {defaultMaxCostCents:100,pipelineOverrides:{}},
+ {defaultMaxCostCents:null,pipelineOverrides:[{pipelineId:"ai_coding",maxCostCents:20},{pipelineId:"ai_coding",maxCostCents:null}]},
+])("malformed stored policy %j cannot silently authorize fallback spending", async row=>{
+ m.config.mockResolvedValue(row);await advancePipelineRun("run-budget");
+ expect(m.execute).not.toHaveBeenCalled();expect(stage.status).toBe("failed");
+ expect(stage.outputDetail).toEqual(expect.objectContaining({budgetUnavailable:true}));
+});

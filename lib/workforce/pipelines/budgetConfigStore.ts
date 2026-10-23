@@ -42,6 +42,21 @@ function normalizePipelineOverrides(raw: unknown): PipelineOverrideRow[] {
   return out;
 }
 
+/** Execution must distinguish malformed policy from a verified absent override. */
+function assertStoredBudgetConfig(row: { defaultMaxCostCents: unknown; pipelineOverrides: unknown }): void {
+  const validCap = (value: unknown) => value === null || (typeof value === "number" && Number.isSafeInteger(value) && value > 0);
+  if (!validCap(row.defaultMaxCostCents) || !Array.isArray(row.pipelineOverrides)) throw new Error("budget_config_invalid");
+  const seen = new Set<string>();
+  for (const raw of row.pipelineOverrides) {
+    if (!raw || typeof raw !== "object" || Array.isArray(raw)) throw new Error("budget_config_invalid");
+    const entry = raw as Record<string, unknown>;
+    if (typeof entry.pipelineId !== "string" || entry.pipelineId.length === 0 || seen.has(entry.pipelineId) || !validCap(entry.maxCostCents)) {
+      throw new Error("budget_config_invalid");
+    }
+    seen.add(entry.pipelineId);
+  }
+}
+
 /**
  * Load the per-workspace budget config. A verified absent row returns null.
  * With failClosedOnReadError, lookup failures propagate to the execution gate;
@@ -54,6 +69,7 @@ export async function loadBudgetConfig(organizationId: string, options?: { failC
       select: { defaultMaxCostCents: true, pipelineOverrides: true },
     });
     if (!row) return null;
+    if (options?.failClosedOnReadError) assertStoredBudgetConfig(row);
     return {
       defaultMaxCostCents: row.defaultMaxCostCents,
       pipelineOverrides: normalizePipelineOverrides(row.pipelineOverrides),
