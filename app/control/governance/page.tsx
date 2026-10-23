@@ -42,7 +42,7 @@ export default async function GovernancePage() {
                   </div>}
                 </div>
                 <div className="text-left sm:text-right"><p className="text-xs uppercase tracking-[0.12em] text-[#ff783d]">{proposal.riskLevel} risk</p><time className="mt-1 block text-xs text-zinc-600">{proposal.createdAt.toLocaleString()}</time></div>
-                <ApprovalDecisionButtons proposalId={proposal.id} approveDisabledReason={proposal.toolName === "trigger_aws_deploy" && review?.kind !== "ecs_restart_target" ? "No bound target review. Request a new proposal before approval; rejection remains available." : undefined} disabledReason={!canDecide ? "An authorized approver role is required." : proposal.proposedByUserId === String(context.userId) ? "A different authorized user must decide this proposal." : !proposal.actionDigest ? "This legacy proposal has no integrity binding and cannot be decided in the browser." : proposal.approvalExpiresAt && proposal.approvalExpiresAt <= new Date() ? "This proposal has expired." : undefined} />
+                <ApprovalDecisionButtons proposalId={proposal.id} ownProposal={proposal.proposedByUserId === String(context.userId)} approveDisabledReason={proposal.toolName === "trigger_aws_deploy" && review?.kind !== "ecs_restart_target" ? "No bound target review. Request a new proposal before approval; rejection remains available." : undefined} disabledReason={!canDecide ? "An authorized approver role is required." : !proposal.actionDigest ? "This legacy proposal has no integrity binding and cannot be decided in the browser." : proposal.approvalExpiresAt && proposal.approvalExpiresAt <= new Date() ? "This proposal has expired." : undefined} />
               </div>
             ); })}
           </div>

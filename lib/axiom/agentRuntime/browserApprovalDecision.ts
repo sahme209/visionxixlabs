@@ -25,7 +25,8 @@ export async function decideAgentAction(input: {
   const proposal = await prisma.agentActionProposal.findFirst({ where: { id: input.proposalId, organizationId: input.organizationId } });
   if (!proposal) return { ok: false, error: "not_found" };
   if (proposal.status !== "proposed") return { ok: false, error: "already_decided" };
-  if (proposal.proposedByUserId === input.actorUserId) return { ok: false, error: "self_approval_forbidden" };
+  // A proposer may stop a pending action; only execution approval needs a distinct reviewer.
+  if (input.decision === "approve" && proposal.proposedByUserId === input.actorUserId) return { ok: false, error: "self_approval_forbidden" };
 
   const expiresAt = proposal.approvalExpiresAt ?? new Date(proposal.createdAt.getTime() + 24 * 60 * 60 * 1000);
   if (expiresAt <= now) {
@@ -85,12 +86,12 @@ export async function decideAgentAction(input: {
   let execution: ActionExecutionResult;
   try {
     execution = await executeApprovedAction(
-    prisma as unknown as ActionExecutionRepo,
-    input.organizationId,
-    proposal.toolName,
-    proposal.argsJson as Record<string, unknown>,
-    input.actorUserId,
-    `agent-action:${proposal.id}`,
+      prisma as unknown as ActionExecutionRepo,
+      input.organizationId,
+      proposal.toolName,
+      proposal.argsJson as Record<string, unknown>,
+      input.actorUserId,
+      `agent-action:${proposal.id}`,
     );
   } catch {
     // The provider may have accepted a write before an unexpected failure.

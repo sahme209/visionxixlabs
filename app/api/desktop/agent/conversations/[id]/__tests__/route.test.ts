@@ -57,6 +57,15 @@ describe("GET /api/desktop/agent/conversations/[id]", () => {
     }));
   });
 
+  it("labels own proposals without exposing another actor identity", async () => {
+    mocks.findFirst.mockResolvedValue({ id: "conv_1", organizationId: "org-1", title: null });
+    mocks.findManyActions.mockResolvedValue(["user-1", "other-reviewer"].map((proposedByUserId,index)=>({id:`action-${index}`,proposedByUserId,toolName:"create_github_branch",argsJson:{},riskLevel:"medium",status:"proposed",createdAt:new Date("2026-01-01")})));
+    const { GET } = await import("../route");
+    const body = await (await GET(request(),params)).json();
+    expect(body.data.actions.map((action:{requiresIndependentReviewer:boolean})=>action.requiresIndependentReviewer)).toEqual([true,false]);
+    expect(JSON.stringify(body)).not.toContain("other-reviewer");
+  });
+
   it("withholds sensitive legacy action snapshots without changing stored records", async () => {
     mocks.findFirst.mockResolvedValue({ id: "conv_1", organizationId: "org-1", title: null });
     const argsJson = { path: ".env.production", content: "fixture-private-content", _review: { baseContent: "fixture-private-base" } };

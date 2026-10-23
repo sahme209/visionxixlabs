@@ -314,7 +314,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
         ok: true,
         data: {
           reply: outcome.message,
-          proposal: { id: proposal.id, toolName: proposal.toolName, argsJson: proposal.argsJson, riskLevel: proposal.riskLevel, status: proposal.status },
+          proposal: { id: proposal.id, requiresIndependentReviewer: true, toolName: proposal.toolName, argsJson: proposal.argsJson, riskLevel: proposal.riskLevel, status: proposal.status },
           usage: outcome.usage ?? null,
         },
       });

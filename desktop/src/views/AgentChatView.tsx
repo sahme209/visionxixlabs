@@ -42,6 +42,7 @@ interface ChatTurn {
 
 interface Proposal {
   id: string;
+  requiresIndependentReviewer?: boolean;
   toolName: string;
   argsJson: unknown;
   riskLevel: string;
@@ -1480,6 +1481,7 @@ export function ProposalCard({ proposal, deciding, onApprove, onReject, onReview
         <button type="button" disabled={deciding} onClick={() => onReviewLocally(localEdit, localEdits.length > 1 ? localEdits : undefined)} className="underline disabled:opacity-50">Review in local editor</button>
         <p className="mt-1">Local draft only. This does not approve the GitHub proposal, save files or run checks.</p>
       </div>}
+      {proposal.requiresIndependentReviewer && <p className="mb-3 text-xs text-amber-200">Another authorized reviewer must approve this action. You can cancel your proposal without running it.</p>}
       <div className="flex items-center gap-3">
         <button
           type="button"
@@ -1487,12 +1489,12 @@ export function ProposalCard({ proposal, deciding, onApprove, onReject, onReview
           disabled={deciding}
           className="rounded-lg border border-white/10 px-4 py-2 text-xs text-zinc-300 hover:bg-white/[0.06] disabled:opacity-50"
         >
-          Reject
+          {proposal.requiresIndependentReviewer ? "Cancel proposal" : "Reject"}
         </button>
         <button
           type="button"
           onClick={onApprove}
-          disabled={deciding || (proposal.toolName === "trigger_aws_deploy" && review?.kind !== "ecs_restart_target")}
+          disabled={deciding || proposal.requiresIndependentReviewer || (proposal.toolName === "trigger_aws_deploy" && review?.kind !== "ecs_restart_target")}
           className="rounded-lg bg-white px-4 py-2 text-xs font-semibold text-black disabled:opacity-50"
         >
           {deciding ? "Working…" : "Approve & run"}

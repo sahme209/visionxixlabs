@@ -918,3 +918,15 @@ async function openWorkspaceContext() {
   const control = await screen.findByRole("button", { name: /^Workspace context/ });
   if (control.getAttribute("aria-expanded") !== "true") fireEvent.click(control);
 }
+it("unblocks the composer after cancelling an own proposal without a model call",async()=>{
+ m.client.getAgentConversation.mockResolvedValue({ok:true,data:{...summary,turns:[],actions:[{id:"own-proposal",status:"proposed",toolName:"create_github_branch",riskLevel:"medium",requiresIndependentReviewer:true,argsJson:{repositoryFullName:"fixture/repository",baseBranch:"main",newBranchName:"scratch"}}]}});
+ m.client.rejectAgentAction.mockResolvedValue({ok:true,data:{status:"rejected"}});
+ render(createElement(AgentChatView));
+ const cancel=await screen.findByRole("button",{name:"Cancel proposal"});
+ expect((screen.getByRole("button",{name:"Approve & run"})as HTMLButtonElement).disabled).toBe(true);
+ fireEvent.click(cancel);await screen.findByText(/Create a branch — rejected/);
+ fireEvent.change(screen.getByRole("textbox",{name:"Agent request"}),{target:{value:"Unsent next request"}});
+ await waitFor(()=>expect((screen.getByRole("button",{name:"Send"})as HTMLButtonElement).disabled).toBe(false));
+ expect(m.client.rejectAgentAction).toHaveBeenCalledWith("own-proposal");
+ expect(m.client.approveAgentAction).not.toHaveBeenCalled();expect(m.client.sendAgentMessage).not.toHaveBeenCalled();
+});

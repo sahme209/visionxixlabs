@@ -62,3 +62,17 @@ it("explains a current disabled-Agent denial without exposing raw diagnostics or
   expect((await screen.findByRole("alert")).textContent).toContain("Agent is disabled");
   expect(screen.queryByRole("button", { name: "Approve & execute" })).toBeNull();
 });
+it('allows an own-proposal cancellation while keeping execution approval disabled',async()=>{
+ const fetcher=vi.fn().mockResolvedValue(Response.json({ok:true,status:'rejected'}));vi.stubGlobal('fetch',fetcher);
+ render(createElement(ApprovalDecisionButtons,{proposalId:'own',ownProposal:true}));
+ expect((screen.getByRole('button',{name:'Approve & execute'})as HTMLButtonElement).disabled).toBe(true);
+ fireEvent.click(screen.getByRole('button',{name:'Cancel proposal'}));
+ await screen.findByRole('status');expect(fetcher).toHaveBeenCalledWith('/api/control/agent/actions/own/decision',expect.objectContaining({body:JSON.stringify({decision:'reject'})}));
+ expect(fetcher).toHaveBeenCalledOnce();
+});
+it('preserves generic action uncertainty without inventing reservation evidence',async()=>{
+ setup({ok:true,status:'failed',errorMessage:'action_outcome_unknown'});
+ fireEvent.click(screen.getByRole('button',{name:'Approve & execute'}));
+ const alert=await screen.findByRole('alert');expect(alert.textContent).toContain('provider outcome is unconfirmed');
+ expect(alert.textContent).not.toContain('reservation is retained');expect(screen.queryByRole('button',{name:'Approve & execute'})).toBeNull();
+});

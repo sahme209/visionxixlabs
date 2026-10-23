@@ -93,6 +93,16 @@ describe("browser agent approval decision", () => {
     expect(mocks.execute).toHaveBeenCalledTimes(1);
   });
 
+  it("lets an authorized proposer reject their own pending action without execution authority", async () => {
+    mocks.identity.mockRejectedValue(new Error("Agent disabled"));
+    const { decideAgentAction } = await import("../browserApprovalDecision");
+    expect(await decideAgentAction({ organizationId: "org-1", proposalId: base.id, actorUserId: "author-1", actorRole: "owner", decision: "reject", now: reviewNow })).toEqual({ ok: true, status: "rejected" });
+    expect(mocks.execute).not.toHaveBeenCalled();
+    expect(mocks.identity).not.toHaveBeenCalled();
+    expect(mocks.createAudit).toHaveBeenCalledWith({ data: expect.objectContaining({ actorUserId: "author-1", action: "approval.deny" }) });
+    expect(mocks.createTurn).toHaveBeenCalledWith({ data: expect.objectContaining({ content: "open_github_pull_request was rejected." }) });
+  });
+
   it("forbids the proposer from approving their own action", async () => {
     const { decideAgentAction } = await import("../browserApprovalDecision");
     expect(await decideAgentAction({ organizationId: "org-1", proposalId: base.id, actorUserId: "author-1", actorRole: "owner", decision: "approve" }))

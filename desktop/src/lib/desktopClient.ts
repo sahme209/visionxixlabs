@@ -1080,7 +1080,7 @@ export class DesktopClient {
   getAgentConversation(conversationId: string): Promise<ApiResult<{
     id: string; title: string | null;
     turns: Array<{ id: string; role: string; content: string; actionProposalId: string | null; createdAt: string }>;
-    actions: Array<{ id: string; toolName: string; argsJson: unknown; riskLevel: string; status: string; resultJson: unknown; errorMessage: string | null; createdAt: string }>;
+    actions: Array<{ id: string; requiresIndependentReviewer?: boolean; toolName: string; argsJson: unknown; riskLevel: string; status: string; resultJson: unknown; errorMessage: string | null; createdAt: string }>;
   }>> {
     return this.get(`/api/desktop/agent/conversations/${encodeURIComponent(conversationId)}`);
   }
@@ -1096,7 +1096,7 @@ export class DesktopClient {
   }, preferredModel?: string, streaming?: { signal: AbortSignal; onDraft: (text: string) => void; onActivity?: (activity: AgentToolActivity) => void }): Promise<ApiResult<{
     reply: string;
     issue?: AgentMessageIssue;
-    proposal: { id: string; toolName: string; argsJson: unknown; riskLevel: string; status: string } | null;
+    proposal: { id: string; requiresIndependentReviewer?: boolean; toolName: string; argsJson: unknown; riskLevel: string; status: string } | null;
     /** Provider-reported token evidence, not a settled customer credit charge. */
     usage: { decisionSteps: number; inputTokens: number | null; outputTokens: number | null; totalTokens: number | null } | null;
   }>> {

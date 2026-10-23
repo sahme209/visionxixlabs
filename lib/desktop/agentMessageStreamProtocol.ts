@@ -47,7 +47,7 @@ export function isAgentMessageIssue(value: unknown): value is AgentMessageIssue 
 export interface AgentMessageReply {
   issue?: AgentMessageIssue;
   reply: string;
-  proposal: { id: string; toolName: string; argsJson: unknown; riskLevel: string; status: string } | null;
+  proposal: { id: string; requiresIndependentReviewer?: boolean; toolName: string; argsJson: unknown; riskLevel: string; status: string } | null;
   usage?: { decisionSteps: number; inputTokens: number | null; outputTokens: number | null; totalTokens: number | null } | null;
 }
 export type AgentMessageStreamEvent =

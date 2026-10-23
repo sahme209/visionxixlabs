@@ -323,6 +323,7 @@ describe("POST /api/desktop/agent/conversations/[id]/messages", () => {
     const body = await res.json();
     expect(res.status).toBe(200);
     expect(body.data.proposal.status).toBe("proposed");
+    expect(body.data.proposal.requiresIndependentReviewer).toBe(true);
     expect(mocks.createProposal).toHaveBeenCalledWith(expect.objectContaining({
       data: expect.objectContaining({ status: "proposed", riskLevel: "medium" }),
     }));
