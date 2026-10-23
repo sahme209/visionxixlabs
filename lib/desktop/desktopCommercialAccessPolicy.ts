@@ -36,7 +36,7 @@ export function decideDesktopCommercialAccess(plan: CommercialPlanSnapshot): Des
   // enforcement (pilot vs. paid vs. past-due) can be turned back on later
   // by restoring the branches below without touching any call site.
   return {
-    planTier: plan.tier,
+    planTier: plan.publicPlanId ?? plan.tier,
     billingStatus: plan.status,
     accessRequestPath: "/contact?topic=axiom-production-access",
     pricingPath: "/plans",
