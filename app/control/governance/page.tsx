@@ -39,7 +39,7 @@ export default async function GovernancePage() {
               const fileReview = fileProposalReview(proposal.toolName, args);
               return (
               <div key={proposal.id} className="grid gap-4 py-4 md:grid-cols-[minmax(0,1fr)_auto_auto] md:items-center">
-                <div><p className="text-sm text-zinc-200">{proposal.toolName.replaceAll("_", " ")}</p><p className="mt-1 font-mono text-[11px] text-zinc-600">{proposal.id}</p>
+                <div className={isFileWrite ? "min-w-0 md:col-span-3" : "min-w-0"}><p className="text-sm text-zinc-200">{proposal.toolName.replaceAll("_", " ")}</p><p className="mt-1 font-mono text-[11px] text-zinc-600">{proposal.id}</p>
                   {isFileWrite && (fileReview ? <details className="mt-3 min-w-0 text-xs text-zinc-400">
                     <summary className="cursor-pointer text-zinc-200">Review file changes</summary>
                     <p className="mt-3 break-all">Repository: {fileReview.repository} · Branch: {fileReview.branch}</p>
