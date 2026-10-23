@@ -1239,6 +1239,9 @@ function AgentChatSession({ onOpenSettings, identity, active, requestedSkill, re
           <textarea
             ref={composerRef}
             aria-label="Agent request"
+            autoCorrect="off"
+            autoCapitalize="off"
+            spellCheck={false}
             value={input}
             onChange={(event) => setInput(event.target.value)}
             onKeyDown={(event) => { if (event.key === "Enter" && !event.shiftKey && !event.altKey && (!submitWithCommandEnter || event.metaKey || event.ctrlKey) && !event.nativeEvent.isComposing && event.nativeEvent.keyCode !== 229) { event.preventDefault(); submitDraft(); } }}
