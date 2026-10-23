@@ -41,6 +41,7 @@ export default async function TeamPage({
   searchParams?: Promise<Record<string, string | string[] | undefined>>;
 }) {
   const ctx = await currentContext();
+  if (ctx.isAuthenticated && !ctx.organizationId) redirect("/control/workspaces");
   if (!ctx.isAuthenticated || !ctx.email || !ctx.organizationId) {
     redirect("/auth/signin?callbackUrl=/control/members");
   }

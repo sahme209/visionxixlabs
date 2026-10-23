@@ -11,6 +11,7 @@ export const dynamic = "force-dynamic";
 export default async function PluginsPage({searchParams}:{searchParams?:Promise<{tab?:string|string[]}>}) {
  const requested=(await searchParams)?.tab;const kind=requested==="mcp"?"MCP":requested==="skills"?"Skills":"Plugins";
  const context=await currentContext();
+  if (context.isAuthenticated && !context.organizationId) redirect("/control/workspaces");
  if(!context.isAuthenticated || !context.organizationId) redirect("/auth/signin?callbackUrl=/control/plugins");
  if(!context.roles.length) return <p role="alert">A current workspace membership is required to view installed skills.</p>;
  let unavailable=false;

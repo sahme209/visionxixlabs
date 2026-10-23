@@ -33,6 +33,7 @@ async function readOverview(organizationId: string): Promise<Overview | null> {
 
 export default async function ControlOverviewPage() {
   const context = await currentContext();
+  if (context.isAuthenticated && !context.organizationId) redirect("/control/workspaces");
   if (!context.isAuthenticated || !context.organizationId) redirect("/auth/signin?callbackUrl=/control");
   if (!context.roles.length) return <p role="alert" className="text-sm text-zinc-300">A current workspace membership is required. Refresh to verify access.</p>;
   const organizationId = String(context.organizationId);

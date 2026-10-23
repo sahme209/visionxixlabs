@@ -75,6 +75,7 @@ function IntegrationRow({ icon, name, description, status, details, action }: {
 
 export default async function ControlIntegrationsPage() {
   const context = await currentContext();
+  if (context.isAuthenticated && !context.organizationId) redirect("/control/workspaces");
   if (!context.isAuthenticated || !context.organizationId || !context.email) redirect("/auth/signin?callbackUrl=/control/integrations");
   if (!context.roles.length) return <p role="alert" className="text-sm text-zinc-300">A current workspace membership is required. Refresh to verify access.</p>;
   const organizationId = String(context.organizationId);

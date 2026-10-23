@@ -8,6 +8,7 @@ export default async function CockpitPlansPage({searchParams}: {searchParams?: P
   const params = await searchParams ?? {};
   const selection = parsePublicPlanSelection(params);
   const context = await currentContext();
+  if (context.isAuthenticated && !context.organizationId) redirect("/control/workspaces");
   if (!context.isAuthenticated) {
     const target = selection ? `/control/plans?plan=${selection.planId}&interval=${selection.billingInterval}` : "/control/plans";
     redirect(`/auth/signin?callbackUrl=${encodeURIComponent(target)}`);

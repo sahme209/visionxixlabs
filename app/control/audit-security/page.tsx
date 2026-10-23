@@ -10,6 +10,7 @@ export const dynamic = "force-dynamic";
 
 export default async function AuditSecurityPage() {
   const context = await currentContext();
+  if (context.isAuthenticated && !context.organizationId) redirect("/control/workspaces");
   if (!context.isAuthenticated || !context.organizationId) redirect("/auth/signin?callbackUrl=/control/audit-security");
   const canManage = isAdminOrOwner({ email: context.email, roles: context.roles });
 

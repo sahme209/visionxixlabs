@@ -9,6 +9,7 @@ export default async function SettingsPage({searchParams}: {searchParams?:Promis
   const requestedSection = (await searchParams)?.section;
   const section = typeof requestedSection === "string" && ["profile","security","sessions"].includes(requestedSection) ? requestedSection : "profile";
   const context = await currentContext();
+  if (context.isAuthenticated && !context.organizationId) redirect("/control/workspaces");
   if (!context.isAuthenticated || !context.userId || !context.email) redirect(`/auth/signin?callbackUrl=${encodeURIComponent(section === "profile" ? "/control/settings" : `/control/settings?section=${section}`)}`);
   const user = await prisma.user.findUnique({where:{id:context.userId}, select:{name:true}});
   return <div className="w-full min-w-0"><h1>Settings</h1><p className="mt-3 text-sm leading-6 text-zinc-400">Manage your profile, account security, and paired devices.</p><SectionTabs key={section} label="Account settings" initialId={section} keepMounted items={[

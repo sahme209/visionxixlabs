@@ -6,6 +6,7 @@ import type {AgentSkillRepo} from '@/lib/axiom/agentRuntime/skillCatalog';
 export const dynamic='force-dynamic';
 export default async function McpToolsPage(){
  const context=await currentContext();
+  if (context.isAuthenticated && !context.organizationId) redirect("/control/workspaces");
  if(!context.isAuthenticated||!context.organizationId)redirect('/auth/signin?callbackUrl=%2Fcontrol%2Fmcp');
  if(!context.roles.length)return <p role="alert">A current workspace membership is required to use MCP tools.</p>;
  let enabled=false,storageAvailable=true;

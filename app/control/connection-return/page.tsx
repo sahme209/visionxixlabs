@@ -44,6 +44,7 @@ const LINEAR_NOTICES: Record<string, { tone: "emerald" | "amber" | "rose"; title
 
 export default async function AuthSuccessPage({ searchParams }: { searchParams: Promise<{ integration?: string; status?: string }> }) {
   const context = await currentContext();
+  if (context.isAuthenticated && !context.organizationId) redirect("/control/workspaces");
   if (!context.isAuthenticated) redirect("/auth/signin?callbackUrl=/auth/success");
   const params = await searchParams;
   const integrationNotice = params.integration === "github"
