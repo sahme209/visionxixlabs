@@ -95,7 +95,7 @@ describe("governed extraction admission authority", () => {
     expect(tx.aIUsageReservation.updateMany.mock.calls.every(([call]) => call.data.status === "pending_settlement")).toBe(true);
   });
 
-it("admits a bounded approved Sonnet request with a full 100-cent hold, leaving the legacy default intact", async () => {
+it("admits a bounded approved Sonnet request with a full sized hold, leaving the legacy default intact", async () => {
   vi.stubEnv("AXIOM_PUBLIC_BILLING_POLICY", "axiom_public_anniversary_v1");
   vi.stubEnv("AXIOM_AI_MAX_REQUEST_CREDITS_CENTS", "");
   vi.stubGlobal("fetch", vi.fn(async () => new Response(JSON.stringify({data:{id:"anthropic/claude-sonnet-5",reasoning:{supports_max_tokens:true,supported_efforts:["none"]},endpoints:[{provider_name:"anthropic",status:0,max_completion_tokens:128000,supported_parameters:["max_tokens"],pricing:{prompt:"0.000002",completion:"0.00001",request:"0",internal_reasoning:"0",input_cache_write:"0.0000025"},inference_regions:[{pricing:{prompt:"0.0000022",completion:"0.000011",input_cache_write:"0.00000275"}}]}]}}), {headers:{"content-type":"application/json"}})));
@@ -103,7 +103,7 @@ it("admits a bounded approved Sonnet request with a full 100-cent hold, leaving 
   m.claim.mockResolvedValue(true);
   try {
     await expect(admitGovernedExtract(scope, {model:"anthropic/claude-sonnet-5",text:"List environments",schemaHint:"{}"})).resolves.toBeDefined();
-    expect(m.reserve).toHaveBeenCalledWith(expect.anything(), expect.objectContaining({reservedCents:100}));
+    expect(m.reserve).toHaveBeenCalledWith(expect.anything(), expect.objectContaining({reservedCents:36}));
   } finally { vi.unstubAllEnvs(); vi.unstubAllGlobals(); }
 });
 

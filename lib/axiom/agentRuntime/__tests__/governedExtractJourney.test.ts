@@ -88,8 +88,8 @@ it.each([false, true])('completes the actual two-step small Sonnet decision flow
   const result=await runDecisionLoop({organizationId:'org',userId:'member',correlationId:'small-journey',transcript:[{role:'user',content:'List configured environments'}],operationMode:'inspect',preferredProvider:'vercel_gateway',preferredModel:model,
    ...(streaming?{streaming:{abortSignal:new AbortController().signal,onDraft:vi.fn()}}:{}),executeReadOnlyTool:tool,isProdEnvironmentTarget:async()=>false});
   expect(result).toMatchObject({kind:'final',message:'Observed no configured environments',usage:{decisionSteps:2}});
-  expect(m.reserve.mock.calls.map(([,input])=>input.reservedCents)).toEqual([100,100]);
+  expect(m.reserve.mock.calls.map(([,input])=>input.reservedCents)).toEqual([36,36]);
   expect(m.claim).toHaveBeenCalledTimes(2); expect(m.write).toHaveBeenCalledTimes(2); expect(tool).toHaveBeenCalledOnce();
-  expect(tool.mock.calls[0][0]).toBe('list_environments'); expect(held).toBe(200);
+  expect(tool.mock.calls[0][0]).toBe('list_environments'); expect(held).toBe(72);
  } finally {vi.unstubAllEnvs();vi.unstubAllGlobals();}
 });
