@@ -18,8 +18,7 @@
  * applier, then diffs the test surface via the Phase 392 analyzer.
  *
  * Failure semantics (same shape as code_lint):
- *   - parse failed                  → stage SUCCEEDS with testSkipped=true
- *                                     (the lint + PR-open stages catch it)
+ *   - missing/invalid proposal or unreadable base → stage fails closed
  *   - any analyzer finding          → stage FAILS; pipeline stops; PR never opens
  *   - no test files in the patch    → stage succeeds (nothing to check)
  *
@@ -56,11 +55,13 @@ function readMetadata(raw: Record<string, unknown>): { repoRef: string; branchHi
 
 function skipResult(reason: string, ctx: { stageId: string }, extra?: Record<string, unknown>): StageExecutorResult {
   return {
-    ok: true,
-    summary: `[test skipped · ${reason}] no assertion-integrity issues to surface.`,
+    ...(reason === "no_test_files_in_patch"
+      ? { ok: true as const, summary: "No test files changed. Assertion integrity was not applicable; repository tests were not executed." }
+      : { ok: false as const, error: `Assertion integrity could not be checked (${reason}). Coding has stopped.` }),
     detail: {
       stageId: ctx.stageId,
       testSkipped: true,
+      testExecution: "not_run",
       skipReason: reason,
       ...extra,
     },
@@ -154,7 +155,7 @@ export const codeTestRealExecutor: StageExecutorFn = async (ctx) => {
         path: fileDiff.path,
         changeKind: fileDiff.changeKind,
         analyzed: false,
-        ok: true,
+        ok: false,
         findings: [],
         skipReason: fc.ok ? "base_missing_in_repo" : "base_fetch_failed",
       });
@@ -167,7 +168,7 @@ export const codeTestRealExecutor: StageExecutorFn = async (ctx) => {
         path: fileDiff.path,
         changeKind: fileDiff.changeKind,
         analyzed: false,
-        ok: true,
+        ok: false,
         findings: [],
         skipReason: applied.ok ? "applied_to_null" : `apply_${applied.reason}`,
       });
@@ -217,10 +218,11 @@ export const codeTestRealExecutor: StageExecutorFn = async (ctx) => {
 
     return {
       ok: true,
-      summary: `Test integrity passed · analyzed ${analyzedCount}/${entries.length} test file(s), no cheating patterns detected.`,
+      summary: `Assertion integrity · analyzed ${analyzedCount}/${entries.length} test file(s), no flagged patterns. Repository tests were not executed.`,
       detail: {
         stageId: ctx.stageId,
-        testSkipped: false,
+        testSkipped: analyzedCount === 0,
+        testExecution: "not_run",
         analyzedFiles: analyzedCount,
         totalTestFiles: entries.length,
         perFile: entries.map((e) => ({
@@ -236,7 +238,7 @@ export const codeTestRealExecutor: StageExecutorFn = async (ctx) => {
   }
 
   const firstFail = failingEntries[0];
-  const firstFinding = firstFail.findings[0]?.message ?? "test integrity issue";
+  const firstFinding = firstFail.findings[0]?.message ?? firstFail.skipReason ?? "assertion integrity check unavailable";
 
   try {
     await recordAudit({
