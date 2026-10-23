@@ -4,6 +4,7 @@ const config: Config = {
   content: [
     "./pages/**/*.{js,ts,jsx,tsx,mdx}",
     "./components/**/*.{js,ts,jsx,tsx,mdx}",
+    "./desktop/src/components/FileDiff.tsx",
     "./app/**/*.{js,ts,jsx,tsx,mdx}",
   ],
   theme: {
