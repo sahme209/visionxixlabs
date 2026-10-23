@@ -6,17 +6,10 @@
  * trail records WHY a given cap was used (debug for "why did this
  * enterprise run halt at $5?").
  *
- * Priority (highest wins):
- *
- *   1. metadata.maxCostCents           — operator overrode this single run
- *   2. metadata.unlimitedBudget        — operator explicitly waived the cap
- *   3. orgConfig.pipelineOverrides[id] — per-pipeline cap for this workspace
- *   4. orgConfig.defaultMaxCostCents   — per-workspace default
- *   5. DEFAULT_RUN_MAX_CENTS           — platform-wide default ($5.00)
- *
- * Each source can resolve to `null` (= unlimited) ONLY at levels 2-4;
- * the platform default is never null (defense in depth so a missing
- * config doesn't accidentally enable unlimited spend).
+ * Saved administrator policy selects the allowance: pipeline override,
+ * workspace default, then the finite platform default. Request metadata
+ * may only tighten that allowance. A caller cannot grant itself a larger
+ * cap or unlimited spending by supplying run metadata.
  *
  * Pure — no I/O.
  */
@@ -59,11 +52,9 @@ export interface ResolveBudgetCapResult {
 
 function readMetadataCap(metadata: Record<string, unknown> | null | undefined):
   | { kind: "explicit"; cents: number }
-  | { kind: "unlimited" }
   | { kind: "absent" }
 {
   if (!metadata) return { kind: "absent" };
-  if (metadata.unlimitedBudget === true) return { kind: "unlimited" };
   const m = metadata.maxCostCents;
   if (typeof m === "number" && Number.isFinite(m) && m > 0) {
     return { kind: "explicit", cents: Math.floor(m) };
@@ -72,15 +63,15 @@ function readMetadataCap(metadata: Record<string, unknown> | null | undefined):
 }
 
 export function resolveRunBudgetCap(input: ResolveBudgetCapInput): ResolveBudgetCapResult {
-  // 1 / 2. Per-run metadata overrides.
-  const meta = readMetadataCap(input.runMetadata ?? null);
-  if (meta.kind === "explicit") {
+  const policy = resolveConfiguredBudgetCap(input);
+  const meta = readMetadataCap(input.runMetadata);
+  if (meta.kind === "explicit" && (policy.maxCents === null || meta.cents < policy.maxCents)) {
     return { maxCents: meta.cents, source: "metadata_explicit_cap" };
   }
-  if (meta.kind === "unlimited") {
-    return { maxCents: null, source: "metadata_unlimited" };
-  }
+  return policy;
+}
 
+function resolveConfiguredBudgetCap(input: ResolveBudgetCapInput): ResolveBudgetCapResult {
   // 3. Per-pipeline override on the org config.
   if (input.orgConfig) {
     const hit = input.orgConfig.pipelineOverrides.find(

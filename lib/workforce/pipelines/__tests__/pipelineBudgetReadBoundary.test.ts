@@ -29,3 +29,18 @@ it.each([NaN,-1,Infinity,1.5])("refuses invalid cumulative spend %s",async costC
 it("allows a verified zero spend and absent optional workspace override",async()=>{
  await advancePipelineRun("run-budget");expect(m.execute).toHaveBeenCalledTimes(1);expect(stage.status).toBe("succeeded");
 });
+
+it.each([{ unlimitedBudget: true }, { maxCostCents: 99_999 }])("request metadata %j cannot bypass a spent workspace cap", async metadata => {
+ m.run.mockImplementation(async()=>({id:"run-budget",organizationId:"org-budget",pipelineId:"ai_coding",triggeredBy:"user-budget",correlationId:"budget-test",status:"running",startedAt:new Date(),metadata,stages:[stage]}));
+ m.aggregate.mockResolvedValue({_sum:{costCents:100}});
+ m.config.mockResolvedValue({defaultMaxCostCents:100,pipelineOverrides:[]});
+ await advancePipelineRun("run-budget");
+ expect(m.execute).not.toHaveBeenCalled();expect(stage.status).toBe("failed");
+ expect(stage.outputDetail).toEqual(expect.objectContaining({capSource:"org_default"}));
+});
+it("request metadata can stop a run below the saved workspace allowance", async()=>{
+ m.run.mockImplementation(async()=>({id:"run-budget",organizationId:"org-budget",pipelineId:"ai_coding",triggeredBy:"user-budget",correlationId:"budget-test",status:"running",startedAt:new Date(),metadata:{maxCostCents:20},stages:[stage]}));
+ m.aggregate.mockResolvedValue({_sum:{costCents:20}});m.config.mockResolvedValue({defaultMaxCostCents:100,pipelineOverrides:[]});
+ await advancePipelineRun("run-budget");expect(m.execute).not.toHaveBeenCalled();expect(stage.status).toBe("failed");
+ expect(stage.outputDetail).toEqual(expect.objectContaining({capSource:"metadata_explicit_cap"}));
+});
