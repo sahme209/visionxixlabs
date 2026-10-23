@@ -467,20 +467,33 @@ export class DesktopClient {
         : "The saved sign-in could not be verified. Sign in again." });
     if (signal?.aborted) return failure("canceled");
     if (!token || (!token.startsWith("vxlk_") && !token.startsWith("axm.desk."))) return failure("invalid");
+    const controller = new AbortController();
+    let settleBoundary: (result: CredentialVerificationResult) => void = () => {};
+    const boundary = new Promise<CredentialVerificationResult>(resolve => {settleBoundary = resolve;});
+    const onAbort = () => {controller.abort(); settleBoundary(failure("canceled"));};
+    signal?.addEventListener("abort", onAbort, {once: true});
+    const timer = setTimeout(() => {controller.abort(); settleBoundary(failure(signal?.aborted ? "canceled" : "unavailable"));}, 15000);
     try {
-      const response = await fetch(`${this.config.apiBase}/api/desktop/access`, {
-        headers: { ...this.headers(), Authorization: `Bearer ${token}` }, credentials: "include", signal,
-      });
-      if (signal?.aborted) return failure("canceled");
-      if (!response.ok) return failure(response.status === 401 || response.status === 403 ? "rejected"
-        : response.status >= 500 || response.status === 408 || response.status === 429 ? "unavailable" : "invalid");
-      const body = await response.json().catch(() => null);
-      if (signal?.aborted) return failure("canceled");
-      const identity = body?.ok ? parseDesktopIdentityResponse(body.data) : null;
-      const expectedKind = token.startsWith("vxlk_") ? "api_key" : "desktop_session";
-      return identity && identity.kind === expectedKind ? { ok: true, data: identity } : failure("invalid");
-    } catch {
-      return failure(signal?.aborted ? "canceled" : "unavailable");
+      const operation = async (): Promise<CredentialVerificationResult> => {
+        try {
+          const response = await fetch(`${this.config.apiBase}/api/desktop/access`, {
+            headers: { ...this.headers(), Authorization: `Bearer ${token}` }, credentials: "include", signal: controller.signal,
+          });
+          if (controller.signal.aborted) return failure(signal?.aborted ? "canceled" : "unavailable");
+          if (!response.ok) return failure(response.status === 401 || response.status === 403 ? "rejected"
+            : response.status >= 500 || response.status === 408 || response.status === 429 ? "unavailable" : "invalid");
+          const body = await response.json().catch(() => null);
+          if (controller.signal.aborted) return failure(signal?.aborted ? "canceled" : "unavailable");
+          const identity = body?.ok ? parseDesktopIdentityResponse(body.data) : null;
+          const expectedKind = token.startsWith("vxlk_") ? "api_key" : "desktop_session";
+          return identity && identity.kind === expectedKind ? { ok: true, data: identity } : failure("invalid");
+        } catch {return failure(signal?.aborted ? "canceled" : "unavailable");}
+      };
+      return await Promise.race([operation(), boundary]);
+    } finally {
+      clearTimeout(timer);
+      signal?.removeEventListener("abort", onAbort);
+      controller.abort();
     }
   }
 

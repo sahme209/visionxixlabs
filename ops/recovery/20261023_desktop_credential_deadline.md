@@ -1,0 +1,5 @@
+# Desktop credential verification deadline
+
+Saved sign-in verification previously awaited fetch and its body without an elapsed deadline. An unresponsive service or non-cooperating transport could keep the workspace locked indefinitely. Verification now settles after 15 seconds, aborts the internal transport, classifies deadline expiry as unavailable and caller cancellation separately, and ignores late responses. It never changes the active configuration or reads/deletes the credential vault. Existing startup coordination keeps authority locked and offers recovery for unavailable service.
+
+Three initial regressions failed before implementation (stalled headers, stalled body and ignored cancellation). Five added boundary cases now pass along with the existing response and coordinator tests: 55 focused tests. These use isolated transports, not production credentials or model requests. Independent review found no blocker; elapsed body deadline does not establish a response byte limit. Native acceptance of this new deadline remains separate from the prior rebuilt Azure/editor acceptance.
