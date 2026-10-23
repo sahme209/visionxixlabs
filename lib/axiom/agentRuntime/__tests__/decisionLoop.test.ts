@@ -523,14 +523,14 @@ describe("runDecisionLoop", () => {
 
 
 describe("streaming cancellation does not grant a paid repair or tool execution", () => {
-  it("stops on stream uncertainty without a second extraction", async () => {
+  it.each([false, true])("stops on dispatch uncertainty without a second extraction (streaming=%s)", async streaming => {
     const { AgentStreamInterrupted } = await import("@/lib/ai/streamedDecisionMessage");
     mocks.readWorkspaceAgentIdentity.mockResolvedValue({ enabled: true, allowedTools: ["list_environments"] });
     const extract = vi.fn(async () => { throw new AgentStreamInterrupted(); });
     mocks.resolveGovernedAiCall.mockResolvedValue({ ok: true, extract });
     const tool = vi.fn();
     await expect(runDecisionLoop({ organizationId: "o", userId: "actor", correlationId: "c", transcript: [], executeReadOnlyTool: tool, isProdEnvironmentTarget: noopProdCheck,
-      streaming: { abortSignal: new AbortController().signal, onDraft: () => undefined },
+      ...(streaming ? { streaming: { abortSignal: new AbortController().signal, onDraft: () => undefined } } : {}),
     })).rejects.toMatchObject({ name: "AgentStreamInterrupted" });
     expect(extract).toHaveBeenCalledOnce(); expect(tool).not.toHaveBeenCalled();
   });

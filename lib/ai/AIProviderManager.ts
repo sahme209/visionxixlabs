@@ -246,15 +246,25 @@ export class AIProviderManager {
     options: AIRequestOptions & { only?: AIProviderName },
     admission: GovernedExtractAdmission,
   ): Promise<AIStructuredResponse<T>> {
-    const authority = consumeGovernedExtractAdmission(admission, options);
-    const gateway = this.admittedGateway(options);
-    const out = await runWithFallback<AITextResponse>(
-      [gateway],
-      () => gateway.generateStructuredTextOnce(redact(text), schemaHint, this.optionsForProvider(gateway, options)),
-      { task: "extract_structured_data", correlationId: options.correlationId, organizationId: options.organizationId },
-    );
-    await authority.record(out.result);
-    return parseGatewayStructuredResponse<T>(out.result);
+    let response: AITextResponse;
+    try {
+      const authority = consumeGovernedExtractAdmission(admission, options);
+      const gateway = this.admittedGateway(options);
+      const out = await runWithFallback<AITextResponse>(
+        [gateway],
+        () => gateway.generateStructuredTextOnce(redact(text), schemaHint, this.optionsForProvider(gateway, options)),
+        { task: "extract_structured_data", correlationId: options.correlationId, organizationId: options.organizationId },
+      );
+      await authority.record(out.result);
+      response = out.result;
+    } catch {
+      // Legacy JSON clients have the same one-attempt budget boundary as
+      // streams. An unknown dispatch/accounting outcome is never a repair grant.
+      throw new AgentStreamInterrupted();
+    }
+    // A fully accounted malformed envelope may receive a separately admitted
+    // repair; keep parsing outside the uncertainty boundary above.
+    return parseGatewayStructuredResponse<T>(response);
   }
 
   /** Streaming Agent decisions stay display-only until the complete envelope

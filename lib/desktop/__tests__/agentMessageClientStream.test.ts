@@ -53,6 +53,18 @@ describe("actual desktop client to HTTP streaming response", () => {
     expect(await pending).toMatchObject({ ok: false });
     expect(drafts).not.toContain("Persisted explanation");
   });
+  it("returns recovery guidance on Stop when the response body ignores the request signal", async () => {
+    const cancel = vi.fn(), controller = new AbortController();
+    const fetcher = vi.fn(async () => new Response(new ReadableStream({ cancel }), { headers: { "content-type": "application/x-ndjson" } }));
+    vi.stubGlobal("fetch", fetcher);
+    const client = new DesktopClient({ sessionToken: "synthetic-session" });
+    const pending = client.sendAgentMessage("conversation", "Inspect", undefined, undefined, undefined, { signal: controller.signal, onDraft: vi.fn() });
+    // Let the client obtain the body before stopping it.
+    await new Promise(resolve => setImmediate(resolve));
+    controller.abort();
+    expect(await pending).toMatchObject({ ok: false, error: expect.stringContaining("reload the conversation") });
+    expect(fetcher).toHaveBeenCalledOnce(); expect(cancel).toHaveBeenCalledOnce();
+  }, 1000);
 });
 
 it("streams when the WebView lacks AbortSignal.throwIfAborted", async () => {

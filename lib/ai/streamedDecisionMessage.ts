@@ -53,7 +53,8 @@ export function streamedDecisionMessage(source: string): string {
   return "";
 }
 
-/** Stream/network uncertainty cannot grant an automatic paid repair call. */
+/** Dispatch/accounting uncertainty cannot grant an automatic paid repair call.
+ * The wire-compatible name also covers legacy non-streaming Agent requests. */
 export class AgentStreamInterrupted extends Error {
   constructor() { super("agent_stream_interrupted"); this.name = "AgentStreamInterrupted"; }
 }

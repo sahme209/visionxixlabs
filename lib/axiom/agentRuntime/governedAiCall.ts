@@ -91,9 +91,8 @@ export async function resolveGovernedAiCall(organizationId: string, preferredPro
       const current = await currentDispatch(organizationId, preferredProvider, preferredModel);
       if (!current.ok) throw new GovernedAiCallRefusal(current.error);
       streaming?.abortSignal.throwIfAborted();
-      const admission = await admitGovernedExtract({ organizationId, userId, correlationId }).catch(error => {
-        if (streaming) throw new AgentStreamInterrupted();
-        throw error;
+      const admission = await admitGovernedExtract({ organizationId, userId, correlationId }).catch(() => {
+        throw new AgentStreamInterrupted();
       });
       const options = {
         organizationId,

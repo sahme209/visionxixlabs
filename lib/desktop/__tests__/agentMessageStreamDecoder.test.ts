@@ -45,6 +45,44 @@ it("preserves a supplied cancellation reason instead of replacing it with the co
   await expect(readAgentMessageStream(response([terminal]), vi.fn(), controller.signal)).rejects.toBe(reason);
 });
 
+it("stops a pending body read even when the transport does not relay cancellation", async () => {
+  const controller = new AbortController(), cancel = vi.fn();
+  const stalled = new Response(new ReadableStream({ cancel }), { headers: { "content-type": AGENT_STREAM_CONTENT_TYPE } });
+  const pending = readAgentMessageStream(stalled, vi.fn(), controller.signal);
+  const rejected = expect(pending).rejects.toMatchObject({ name: "AbortError" });
+  controller.abort();
+  await rejected;
+  expect(cancel).toHaveBeenCalledOnce();
+}, 1000);
+
+it("discards buffered frames after cancellation from a draft callback", async () => {
+  const controller = new AbortController(), drafts: string[] = [], activity = vi.fn();
+  const pending = readAgentMessageStream(response([
+    { type: "draft_delta", text: "first" },
+    { type: "draft_delta", text: "late" },
+    { type: "tool_activity", activity: {step: 1, toolName: "read_github_file", state: "running"} },
+    terminal,
+  ]), text => { drafts.push(text); controller.abort(); }, controller.signal, activity);
+  await expect(pending).rejects.toMatchObject({ name: "AbortError" });
+  expect(drafts).toEqual(["first"]);
+  expect(activity).not.toHaveBeenCalled();
+});
+
+it("does not wait for an uncooperative transport cleanup after Stop", async () => {
+  const controller = new AbortController();
+  const stalled = new Response(new ReadableStream({ cancel: () => new Promise<void>(() => {}) }), { headers: { "content-type": AGENT_STREAM_CONTENT_TYPE } });
+  const pending = readAgentMessageStream(stalled, vi.fn(), controller.signal);
+  const rejected = expect(pending).rejects.toMatchObject({ name: "AbortError" });
+  controller.abort();
+  await rejected;
+}, 1000);
+
+it("rejects an already stopped stream without waiting for its transport cleanup", async () => {
+  const controller = new AbortController(); controller.abort();
+  const stalled = new Response(new ReadableStream({ cancel: () => new Promise<void>(() => {}) }), { headers: { "content-type": AGENT_STREAM_CONTENT_TYPE } });
+  await expect(readAgentMessageStream(stalled, vi.fn(), controller.signal)).rejects.toMatchObject({ name: "AbortError" });
+}, 1000);
+
 it("reports ordered tool activity without treating progress as a result or approval", async () => {
   const seen = vi.fn();
   const result = await readAgentMessageStream(response([

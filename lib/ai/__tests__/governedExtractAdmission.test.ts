@@ -82,7 +82,7 @@ describe("actual manager admitted extraction boundary", () => {
     if (kind === "usage") m.extract.mockResolvedValue({ ...response, usage: undefined });
     if (kind === "writer") m.write.mockResolvedValue({ recorded: false });
     const capability = await admitGovernedExtract(scope);
-    await expect(mgr.extractStructuredDataWithAdmission("prompt", "schema", scope, capability)).rejects.toThrow();
+    await expect(mgr.extractStructuredDataWithAdmission("prompt", "schema", scope, capability)).rejects.toMatchObject({name: "AgentStreamInterrupted"});
     await expect(mgr.extractStructuredDataWithAdmission("prompt", "schema", scope, capability)).rejects.toThrow();
     expect(m.extract).toHaveBeenCalledTimes(1);
   });

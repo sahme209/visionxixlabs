@@ -54,15 +54,15 @@ describe("governed extraction per-call admission", () => {
     expect(m.admission).toHaveBeenCalledOnce(); expect(m.stream).not.toHaveBeenCalled();
   });
 
-  it("actual decision loop makes no paid repair after uncertain streaming claim", async () => {
+  it.each([false, true])("actual decision loop makes no paid repair after uncertain claim (streaming=%s)", async streaming => {
     const { runDecisionLoop } = await import("../decisionLoop");
     m.admission.mockRejectedValue(new Error("claim response lost"));
     const execute = vi.fn();
     await expect(runDecisionLoop({ organizationId: "org", userId: "trusted-actor", correlationId: "request", transcript: [{ role: "user", content: "Inspect" }],
       executeReadOnlyTool: execute, isProdEnvironmentTarget: async () => false,
-      streaming: { abortSignal: new AbortController().signal, onDraft: () => undefined },
+      ...(streaming ? { streaming: { abortSignal: new AbortController().signal, onDraft: () => undefined } } : {}),
     })).rejects.toMatchObject({ name: "AgentStreamInterrupted" });
-    expect(m.admission).toHaveBeenCalledOnce(); expect(m.stream).not.toHaveBeenCalled(); expect(execute).not.toHaveBeenCalled();
+    expect(m.admission).toHaveBeenCalledOnce(); expect(m.stream).not.toHaveBeenCalled(); expect(m.extract).not.toHaveBeenCalled(); expect(execute).not.toHaveBeenCalled();
   });
 
 });

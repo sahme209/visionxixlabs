@@ -6,6 +6,10 @@ import { AGENT_STREAM_CONTENT_TYPE, MAX_AGENT_STREAM_BYTES, MAX_AGENT_STREAM_FRA
 export async function readAgentMessageStream(response: Response, onDraft: (text: string) => void, signal: AbortSignal, onActivity?: (activity: AgentToolActivity) => void): Promise<AgentMessageReply> {
   if (response.headers.get("content-type")?.split(";")[0] !== AGENT_STREAM_CONTENT_TYPE || !response.body) throw new Error("agent_stream_unavailable");
   const reader = response.body.getReader(), decoder = new TextDecoder("utf-8", { fatal: true });
+  // Native transports and response adapters may not wire a caller's signal to
+  // the body. Cancel the owned reader too, so Stop can release a pending read.
+  const stopReading = () => { void reader.cancel().catch(() => undefined); };
+  signal.addEventListener("abort", stopReading, { once: true });
   let buffer = "", draft = "", bytes = 0, events = 0, terminal: AgentMessageReply | undefined;
   let activityStep = 0, activeTool: string | undefined;
   try {
@@ -19,6 +23,7 @@ export async function readAgentMessageStream(response: Response, onDraft: (text:
       buffer += decoder.decode(next.value, { stream: true });
       let newline: number;
       while ((newline = buffer.indexOf("\n")) !== -1) {
+        assertDesktopNotAborted(signal);
         const line = buffer.slice(0, newline); buffer = buffer.slice(newline + 1);
         if (new TextEncoder().encode(line).byteLength > MAX_AGENT_STREAM_FRAME_BYTES || ++events > 16_384 || terminal) throw new Error("agent_stream_invalid");
         const event = JSON.parse(line);
@@ -45,7 +50,10 @@ export async function readAgentMessageStream(response: Response, onDraft: (text:
     if (buffer !== "" || !terminal) throw new Error("agent_stream_interrupted");
     return terminal;
   } finally {
-    await reader.cancel().catch(() => undefined);
+    signal.removeEventListener("abort", stopReading);
+    // Closing the reader releases queued reads synchronously. The underlying
+    // transport's cleanup acknowledgement can remain pending indefinitely.
+    void reader.cancel().catch(() => undefined);
     reader.releaseLock();
   }
 }
