@@ -930,3 +930,28 @@ it("unblocks the composer after cancelling an own proposal without a model call"
  expect(m.client.rejectAgentAction).toHaveBeenCalledWith("own-proposal");
  expect(m.client.approveAgentAction).not.toHaveBeenCalled();expect(m.client.sendAgentMessage).not.toHaveBeenCalled();
 });
+
+it("retains an approved but budget-blocked model and draft until the user explicitly selects another approved model", async () => {
+  const blocked = { id: "spacexai/grok-4.20-multi-agent", label: "Grok 4.20 Multi-Agent", tier: "standard" };
+  m.client.aiProviderStatus.mockResolvedValue({ ok: true, data: { ...ready.data,
+    providers: [{ provider: "vercel_gateway", models: [blocked, ...ready.data.providers[0].models] }],
+    policy: { ...ready.data.policy, modelSelections: { vercel_gateway: blocked.id }, gatewaySelection: {
+      version: 1, defaultModelId: blocked.id, approvedModelIds: [blocked.id, "fixture/model"],
+    } },
+  } });
+  render(createElement(AgentChatView)); await draft();
+  await screen.findByText(/This model is unavailable because its output budget cannot be enforced/);
+  const selector = screen.getByRole("combobox", { name: "Agent model" }) as HTMLSelectElement;
+  expect(selector.disabled).toBe(false);
+  expect(selector.value).toBe(JSON.stringify(["vercel_gateway", blocked.id]));
+  expect((screen.getByRole("button", { name: "Send" }) as HTMLButtonElement).disabled).toBe(true);
+  fireEvent.click(screen.getByRole("button", { name: "Send" }));
+  fireEvent.keyDown(screen.getByRole("textbox"), { key: "Enter" });
+  expect(m.client.sendAgentMessage).not.toHaveBeenCalled();
+  expect((screen.getByRole("textbox") as HTMLTextAreaElement).value).toBe("Keep this unsent request");
+  fireEvent.change(selector, { target: { value: JSON.stringify(["vercel_gateway", "fixture/model"]) } });
+  expect(screen.queryByText(/This model is unavailable because its output budget cannot be enforced/)).toBeNull();
+  expect((screen.getByRole("button", { name: "Send" }) as HTMLButtonElement).disabled).toBe(false);
+  expect((screen.getByRole("textbox") as HTMLTextAreaElement).value).toBe("Keep this unsent request");
+  expect(m.client.sendAgentMessage).not.toHaveBeenCalled();
+});

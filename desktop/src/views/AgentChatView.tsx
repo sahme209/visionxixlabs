@@ -786,6 +786,7 @@ function AgentChatSession({ onOpenSettings, identity, active, requestedSkill, re
   function jumpToLatest() { followsLatest.current = true; setNewActivity(false); scrollRef.current?.scrollTo({top: scrollRef.current.scrollHeight, behavior: "smooth"}); }
 
   const requestKey = JSON.stringify([repositoryFullName.trim(), branch.trim(), environmentId, composerMode, composerMode === "code" ? filePath.trim() : "", operationMode, agentProfile, selectedModel]);
+  const selectedModelUnavailable = modelOptions.find(option => option.key === selectedModel)?.unavailableReason;
   const currentQueue = queuedMessages.filter(message => message.conversationId === conversationId);
   const retainedRequest = conversationId ? retainedRequests.get(conversationId) : undefined;
   const queuedConfigurationMatches = !currentQueue.length || currentQueue[0].requestKey === requestKey;
@@ -796,7 +797,7 @@ function AgentChatSession({ onOpenSettings, identity, active, requestedSkill, re
 
   function queueDraft() {
     const instruction = input.trim();
-    if (!active || !conversationId || !instruction || loadingConversation || pendingProposal) return;
+    if (!active || !conversationId || !instruction || loadingConversation || pendingProposal || selectedModelUnavailable) return;
     if (queuedMessages.length >= 20 || queuedMessages.reduce((sum, item) => sum + item.instruction.length, 0) + instruction.length > 500000) {
       setError("The message queue is full. Your draft has been retained; send or remove queued work first."); return;
     }
@@ -810,21 +811,22 @@ function AgentChatSession({ onOpenSettings, identity, active, requestedSkill, re
   }
 
   function submitDraft() {
+    if (selectedModelUnavailable) return;
     if (sending || currentQueue.length) queueDraft();
     else void send();
   }
 
   useEffect(() => {
     const head = queuedMessages.find(message => message.conversationId === conversationId);
-    if (!head || !active || sending || messageAbort.current || queuePaused || loadingConversation || needsRecovery || pendingProposal || decidingId || modelState !== "ready" || !selectedModel || head.requestKey !== requestKey) return;
+    if (!head || !active || sending || messageAbort.current || queuePaused || loadingConversation || needsRecovery || pendingProposal || decidingId || modelState !== "ready" || !selectedModel || selectedModelUnavailable || head.requestKey !== requestKey) return;
     void send(head);
-  }, [queuedMessages, conversationId, active, sending, queuePaused, loadingConversation, needsRecovery, pendingProposal, decidingId, modelState, selectedModel, requestKey]);
+  }, [queuedMessages, conversationId, active, sending, queuePaused, loadingConversation, needsRecovery, pendingProposal, decidingId, modelState, selectedModel, selectedModelUnavailable, requestKey]);
 
   async function send(queued?: QueuedAgentMessage) {
     const instruction = queued?.instruction ?? input.trim();
     if (renamingBusy || !active || modelState !== "ready" || !selectedModel || !instruction || !conversationId || activeConversation.current !== conversationId || loadingConversation || sending || pendingProposal || messageAbort.current || recoveryRef.current.has(conversationId) || (composerMode === "code" && (!repositoryFullName.includes("/") || !branch.trim() || !filePath.trim()))) return;
     const choice = modelOptions.find(option => option.key === selectedModel);
-    if (!choice) return;
+    if (!choice || choice.unavailableReason) return;
     const context = desktopClient.config, ownerConversation = conversationId, generation = conversationEpoch.current;
     const owned = () => context === desktopClient.config && activeConversation.current === ownerConversation && generation === conversationEpoch.current;
     if (queued && (queued.conversationId !== conversationId || queued.requestKey !== requestKey)) return;
@@ -1207,7 +1209,7 @@ function AgentChatSession({ onOpenSettings, identity, active, requestedSkill, re
           <button
             type="button"
             onClick={submitDraft}
-            disabled={renamingBusy || modelState !== "ready" || !selectedModel || loadingConversation || (needsRecovery && !sending) || !input.trim() || !conversationId || Boolean(pendingProposal) || (composerMode === "code" && (!repositoryFullName.includes("/") || !branch.trim() || !filePath.trim()))}
+            disabled={renamingBusy || modelState !== "ready" || !selectedModel || Boolean(selectedModelUnavailable) || loadingConversation || (needsRecovery && !sending) || !input.trim() || !conversationId || Boolean(pendingProposal) || (composerMode === "code" && (!repositoryFullName.includes("/") || !branch.trim() || !filePath.trim()))}
             className="rounded-xl bg-white px-5 py-3 text-sm font-semibold text-black disabled:opacity-40"
           >
             {sending || currentQueue.length ? newMessageBehavior === "interrupt" && sending ? "Interrupt & queue" : "Queue message" : "Send"}
@@ -1239,7 +1241,7 @@ function AgentChatSession({ onOpenSettings, identity, active, requestedSkill, re
             <button type="button" aria-pressed={composerMode === "chat"} onClick={() => setComposerMode("chat")} className={`rounded-md px-3 py-1.5 text-xs ${composerMode === "chat" ? "bg-white/[0.09] text-white" : "text-zinc-500 hover:text-zinc-300"}`}>Chat</button>
             <button type="button" aria-pressed={composerMode === "code"} onClick={() => setComposerMode("code")} className={`rounded-md px-3 py-1.5 text-xs ${composerMode === "code" ? "bg-white/[0.09] text-white" : "text-zinc-500 hover:text-zinc-300"}`}>Edit repository file</button>
             <AgentModelSelector options={modelOptions} value={selectedModel} disabled={sending || modelState !== "ready"} onChange={key => {
-              if (!modelOptions.some(option => option.key === key)) return;
+              if (!modelOptions.some(option => option.key === key && !option.unavailableReason)) return;
               selectedChoice.current = key;
               setSelectedModel(key);
               setModelNotice(null);
@@ -1247,6 +1249,7 @@ function AgentChatSession({ onOpenSettings, identity, active, requestedSkill, re
               catch { setModelNotice("This model choice applies to the current session. Local preferences could not be saved."); }
             }} />
           </div>
+          {selectedModelUnavailable && <p role="status" className="mb-2 text-[11px] text-amber-300">{selectedModelUnavailable}</p>}
           {modelNotice && <p role="status" className="mb-2 text-[11px] text-amber-300">{modelNotice}</p>}
           {modelState !== "ready" && <div role="status" className="mb-3 flex flex-wrap items-center justify-between gap-2 rounded-lg border border-white/10 bg-white/[0.025] px-3 py-2 text-[11px] text-zinc-400">
             <p>{modelState === "loading" ? "Checking workspace models…" : modelState === "disabled" ? "AI is disabled for this workspace. A workspace administrator can enable an approved model in Model settings." : modelState === "empty" ? "No service-configured AI model is available. Ask a workspace administrator to review service setup." : modelError} New requests wait for a verified enabled model; saved approvals and receipts remain available.</p>

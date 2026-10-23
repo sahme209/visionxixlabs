@@ -29,15 +29,18 @@ export function AgentModelSelector({ options, value, onChange, disabled }: {
     <select
       aria-label="Agent model"
       value={value}
-      onChange={event => onChange(event.target.value)}
+      onChange={event => {
+        const option = options.find(item => item.key === event.target.value);
+        if (option && !option.unavailableReason) onChange(option.key);
+      }}
       disabled={disabled || !options.length}
       className="max-w-52 rounded-md border border-white/10 bg-[#151719] px-2 py-1.5 text-xs text-zinc-300 outline-none focus:border-white/25 disabled:opacity-50"
     >
       {!options.length && <option value="">No model enabled</option>}
-      {selected && !filtered.some(option => option.key === selected.key) && <option value={selected.key} hidden>{selected.label}</option>}
+      {selected && !filtered.some(option => option.key === selected.key) && <option value={selected.key} hidden disabled={Boolean(selected.unavailableReason)}>{selected.label}{selected.unavailableReason ? " · Unavailable" : ""}</option>}
       {vendors.map(vendor => <optgroup key={vendor} label={vendor}>
         {filtered.filter(option => option.vendor === vendor).map(option =>
-          <option key={option.key} value={option.key}>{option.label}</option>,
+          <option key={option.key} value={option.key} disabled={Boolean(option.unavailableReason)}>{option.label}{option.unavailableReason ? " · Unavailable" : ""}</option>,
         )}
       </optgroup>)}
     </select>

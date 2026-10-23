@@ -25,3 +25,14 @@ it("labels current Gateway Grok namespace as xAI without rewriting approved mode
     preferredModel: "spacexai/grok-4.1-fast-non-reasoning",
   })]);
 });
+
+it.each(["xai/grok-4.20-multi-agent", "spacexai/grok-4.20-multi-agent", "spacexai/grok-4.20-multi-agent:latest"])("keeps approved %s identifiable but unavailable without changing policy", modelId => {
+  const value = structuredClone(status());
+  value.providers[0].models.push({ id: modelId, label: "Multi-Agent", tier: "balanced" });
+  value.policy.gatewaySelection!.approvedModelIds.push(modelId);
+  const before = JSON.stringify(value);
+  const choice = agentModelChoices(value).find(option => option.modelId === modelId);
+  expect(choice).toMatchObject({ modelId, preferredModel: modelId, unavailableReason: expect.stringContaining("output budget cannot be enforced") });
+  expect(agentModelChoices(value).find(option => option.modelId === "xai/grok-4")?.unavailableReason).toBeUndefined();
+  expect(JSON.stringify(value)).toBe(before);
+});

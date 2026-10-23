@@ -7,6 +7,7 @@ export interface AgentModelChoice {
   label: string;
   vendor: string;
   preferredModel?: string;
+  unavailableReason?: string;
 }
 
 const vendorNames: Record<string, string> = {
@@ -47,6 +48,10 @@ export function agentModelChoices(status: AiProviderStatus): AgentModelChoice[] 
         modelId,
         label: model?.label ?? "Service-managed default",
         vendor: managed ? "Managed Gateway" : vendorNames[vendor] ?? vendor,
+        // Local readiness hint only; the service independently enforces admission.
+        ...(provider === "vercel_gateway" && /(?:^|\/)grok-4\.20-multi-agent(?:$|[-:])/.test(modelId)
+          ? { unavailableReason: "This model is unavailable because its output budget cannot be enforced. Choose another approved model; your draft is kept." }
+          : {}),
         ...(provider === "vercel_gateway" && isConcreteGatewayModelId(modelId)
           ? { preferredModel: modelId }
           : {}),
