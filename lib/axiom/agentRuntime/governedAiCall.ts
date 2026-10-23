@@ -17,7 +17,7 @@ import { admitGovernedExtract } from "@/lib/billing/governedExtractAdmission";
 import { AI_REQUEST_MAX_OUTPUT_TOKENS } from "@/lib/billing/requestReservationCents";
 import { isConcreteGatewayModelId, loadGatewayModelCatalog } from "@/lib/ai/gatewayModelCatalog";
 import { GovernedAiCallRefusal } from "./governedAiCallRefusal";
-import { supportsSizedAgentRequest, SMALL_GROK_MODEL, SMALL_GROK_OUTPUT_TOKENS } from "@/lib/billing/smallSonnetRequest";
+import { SMALL_SONNET_MODEL } from "@/lib/billing/smallSonnetRequest";
 import { AICreditAdmissionRefusal } from "@/lib/billing/aiCreditAdmissionRefusal";
 import { AgentStreamInterrupted } from "@/lib/ai/streamedDecisionMessage";
 
@@ -25,6 +25,7 @@ export type GovernedAiCallError =
   | "workspace_ai_disabled"
   | "workspace_ai_provider_unavailable"
   | "workspace_ai_model_not_allowed"
+  | "workspace_ai_output_bound_unverified"
   | "workspace_ai_policy_unavailable"
   | "workspace_ai_credit_meter_unavailable"
   | "workspace_ai_credit_pool_exhausted";
@@ -66,6 +67,11 @@ async function currentDispatch(organizationId: string, preferredProvider?: strin
     return { ok: false as const, error: "workspace_ai_model_not_allowed" as const };
   }
   const selected = preferredModel ?? policy.modelSelections.vercel_gateway;
+  // Live acceptance returned aggregate output beyond the requested cap.
+  // Model approval cannot substitute for an enforceable financial contract.
+  if (selected && /(?:^|\/)grok-4\.20-multi-agent(?:$|[-:])/.test(selected)) {
+    return { ok: false as const, error: "workspace_ai_output_bound_unverified" as const };
+  }
   if (policy.allowedProviders.includes("vercel_gateway") && selected && selected !== "service-default" && !selected.startsWith("vmc/")) {
     // Dispatch deliberately bypasses the UI catalog's 900-second cache. The
     // service allowlist is applied by the existing loader on every read.
@@ -95,7 +101,7 @@ export async function resolveGovernedAiCall(organizationId: string, preferredPro
       streaming?.abortSignal.throwIfAborted();
       const scope = { organizationId, userId, correlationId };
       const model = preferredModel ?? current.policy.modelSelections.vercel_gateway;
-      const admission = await (supportsSizedAgentRequest(model)
+      const admission = await (model === SMALL_SONNET_MODEL
         ? admitGovernedExtract(scope, { model, text, schemaHint }, streaming?.abortSignal)
         : admitGovernedExtract(scope)).catch((error: unknown) => {
         if (error instanceof Error && error.name === "AbortError") throw error;
@@ -110,7 +116,7 @@ export async function resolveGovernedAiCall(organizationId: string, preferredPro
         model: preferredModel,
         correlationId,
         temperature: 0.1,
-        maxTokens: model === SMALL_GROK_MODEL ? SMALL_GROK_OUTPUT_TOKENS : AI_REQUEST_MAX_OUTPUT_TOKENS,
+        maxTokens: AI_REQUEST_MAX_OUTPUT_TOKENS,
         only: current.only,
       };
       const result = streaming

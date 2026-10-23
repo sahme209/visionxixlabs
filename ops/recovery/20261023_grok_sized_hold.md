@@ -1,3 +1,11 @@
+# WITHDRAWN after actual provider acceptance
+
+The smaller-hold deployment was rolled back to verified source157f504e after the real task reported 2,683 and 3,717 output tokens for two requests each capped at 1,024. The service recorded 40,894 input and 6,400 output tokens and executed only list_environments. The provider's aggregate output therefore did not satisfy the quoted cap despite Gateway documentation and endpoint metadata. The account's model approval is preserved; no further paid tests are authorized. A server-side pre-admission refusal now protects this concrete multi-agent variant; the Sonnet-only sized capability is restored. No new message-protocol enum is exposed: older desktop clients receive the existing request_failed issue with the clear budget-verification explanation. Settlement remains authoritative and separate from this refusal.
+
+The text below records the withdrawn design, not current verified behavior.
+
+---
+
 # Bounded Grok request reservation
 
 Actual native acceptance of the already approved Grok model stopped before inference because its ordinary request hold exceeded the Free workspace balance. Reloaded billing confirmed six cumulative calls, $1.87 available and zero held: no model call or debit occurred.

@@ -55,6 +55,11 @@ describe("POST /api/desktop/agent/conversations/[id]/messages", () => {
     mocks.prepareProposalArgsForReview.mockImplementation(async (_organizationId: string, _toolName: string, args: Record<string, unknown>) => ({ ok: true, args }));
   });
 
+  it("explains an unverified model budget using the existing client-compatible failure issue",async()=>{
+    mocks.runDecisionLoop.mockResolvedValue({kind:"error",error:"workspace_ai_output_bound_unverified"});
+    const {POST}=await import("../route");const response=await POST(request({message:"List environments"}),params);const body=await response.json();
+    expect(body).toMatchObject({ok:true,data:{proposal:null,issue:"request_failed",reply:expect.stringContaining("enforceable output budget")}});expect(body.data.reply).toContain("No model request was sent");expect(mocks.executeReadOnlyTool).not.toHaveBeenCalled();
+  });
   it.each(["__proto__", "arbitrary-agent", null, 123, { id: "coding" }])("rejects invalid Agent profile %j before any turn or inference", async agentProfile => {
     const { POST } = await import("../route");
     const response = await POST(request({ message: "hi", workspaceContext: { agentProfile } }), params);

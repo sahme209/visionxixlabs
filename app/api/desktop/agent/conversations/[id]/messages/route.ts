@@ -39,6 +39,7 @@ export const runtime = "nodejs";
 const AI_ERROR_MESSAGES: Record<string, string> = {
   workspace_ai_disabled: "AI isn't enabled for this workspace yet. A workspace admin can turn it on under AI provider settings.",
   workspace_ai_provider_unavailable: "No AI provider is approved for this workspace. A workspace admin needs to approve one first.",
+  workspace_ai_output_bound_unverified: "This multi-agent model has not demonstrated an enforceable output budget. Choose another enabled model. No model request was sent.",
   workspace_ai_model_not_allowed: "That model is not enabled for this workspace. Choose an enabled model or ask a workspace admin to update Models.",
   workspace_ai_policy_unavailable: "Couldn't load this workspace's AI provider policy right now. Try again shortly.",
   workspace_ai_credit_meter_unavailable: "Couldn't verify remaining AI usage for this workspace right now. Try again shortly.",

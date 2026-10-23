@@ -38,6 +38,16 @@ describe("approved model dispatch (actual policy/resolver/loop, inert IO ports)"
     expect(m.catalog).toHaveBeenCalledWith({ freshness: "current" });
     expect(m.catalog).toHaveBeenCalledTimes(2); expect(m.load).toHaveBeenCalledTimes(2); expect(m.status).toHaveBeenCalledTimes(2);
   });
+  it.each(["spacexai/grok-4.20-multi-agent", "xai/grok-4.20-multi-agent"])("refuses the live-unverified multi-agent output budget before reserving or dispatching %s",async model=>{
+    const value=policy();value.modelSelections.vercel_gateway=model;value.gatewaySelection={version:1,defaultModelId:model,approvedModelIds:[model]};m.load.mockResolvedValue(ready(value));m.catalog.mockResolvedValue([{id:model}]);
+    expect(await resolveGovernedAiCall("tenant","vercel_gateway","actor",model)).toEqual({ok:false,error:"workspace_ai_output_bound_unverified"});
+    expect(await resolveGovernedAiCall("tenant",undefined,"actor")).toEqual({ok:false,error:"workspace_ai_output_bound_unverified"});
+    expect(m.admission).not.toHaveBeenCalled();expect(m.extract).not.toHaveBeenCalled();
+  });
+  it("rechecks a changed default before the first hold or model request",async()=>{
+    const governed=await resolveGovernedAiCall("tenant",undefined,"actor");if(!governed.ok)throw Error("fixture unavailable");const model="spacexai/grok-4.20-multi-agent";const next=policy();next.modelSelections.vercel_gateway=model;next.gatewaySelection={version:1,defaultModelId:model,approvedModelIds:[model]};m.load.mockResolvedValue(ready(next));
+    await expect(governed.extract("prompt","schema","refused:0")).rejects.toMatchObject({name:"GovernedAiCallRefusal",code:"workspace_ai_output_bound_unverified"});expect(m.admission).not.toHaveBeenCalled();expect(m.extract).not.toHaveBeenCalled();
+  });
   it("preserves the current Grok catalog ID through policy admission and revocation", async () => {
     const model = "spacexai/grok-4.1-fast-non-reasoning";
     const value = policy();

@@ -36,7 +36,7 @@ it("bounds the complete redacted system plus prompt by UTF8 bytes including mult
   expect(await prepareSmallSonnetRequest(scope, { ...request, text: "🧪".repeat(SMALL_SONNET_BYTES / 4) })).toBeUndefined();
   expect(fetcher).toHaveBeenCalledOnce();
 });
-it.each(["vendor/model", "spacexai/grok-4.20-multi-agent-beta", "service-default"])("never reinterprets %s as the small approved route", async model => {
+it.each(["vendor/model", "spacexai/grok-4.20-multi-agent", "service-default"])("never reinterprets %s as the small approved route", async model => {
   expect(await prepareSmallSonnetRequest(scope, { ...request, model })).toBeUndefined(); expect(fetcher).not.toHaveBeenCalled();
 });
 it.each(["1000", "100", "invalid"])("retains an explicit service hold setting %s", async setting => {
