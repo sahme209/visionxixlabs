@@ -15,7 +15,7 @@ vi.mock("@/lib/db", () => {
   return { prisma: db };
 });
 vi.mock("../restartReviewStore", async importOriginal => ({ ...await importOriginal<typeof import("../restartReviewStore")>(), restartReviewReadiness: mock.readiness }));
-vi.mock("../connection", () => ({ loadAirflowClient: async () => ({ connectionId: "connection", connectionUpdatedAt: new Date(1), baseUrl: "https://airflow.fixture.invalid", client: { listDagRuns: async () => [{ dagId: "dag", dagRunId: "run", state: "success", logicalDate: null, startedAt: null, endedAt: null }] } }) }));
+vi.mock("../connection", () => ({ loadAirflowClient: async () => ({ connectionId: "connection", connectionUpdatedAt: new Date(1), baseUrl: "https://airflow.fixture.invalid", client: { listDagRuns: async () => [{ dagId: "dag", dagRunId: "run", state: "success", logicalDate: null, startedAt: "2026-10-15T10:00:00Z", endedAt: null }] } }) }));
 vi.mock("../automationExecutor", () => ({ executeAirflowAutomation: mock.execute }));
 vi.mock("@/lib/releaseops/auditEventResponder", () => ({ appendAuditEvent: vi.fn() }));
 vi.mock("@/lib/webhooks/dispatchWebhookEvent", () => ({ dispatchWebhookEvent: async () => undefined }));

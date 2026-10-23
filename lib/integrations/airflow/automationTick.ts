@@ -63,7 +63,16 @@ export async function runAirflowAutomationTick(now = new Date()): Promise<{ orga
           }
           const runs = await client.listDagRuns(rule.dagId, 50);
           for (const run of runs) await persistRun(group.organizationId, connectionId, run);
-          const candidates = runs.filter((run) => TERMINAL_STATES.has(run.state) && (!run.logicalDate || new Date(run.logicalDate) >= rule.createdAt) && (rule.requiredDagState === "any" || rule.requiredDagState === run.state));
+          const candidates = runs.filter((run) => {
+            // Airflow 3 manual runs commonly have no logical date. Their
+            // observed start time must still prove they belong to this rule's
+            // lifetime; missing dates cannot authorize historical actions.
+            const sourceTime = run.logicalDate ?? run.startedAt;
+            const started = sourceTime ? Date.parse(sourceTime) : NaN;
+            return TERMINAL_STATES.has(run.state) && Number.isFinite(started)
+              && started >= rule.createdAt.getTime()
+              && (rule.requiredDagState === "any" || rule.requiredDagState === run.state);
+          });
           for (const run of candidates) {
             const dependenciesReady = await latestDependenciesReady(client, rule.dependencyDagIds, run.logicalDate);
             if (!dependenciesReady) continue;

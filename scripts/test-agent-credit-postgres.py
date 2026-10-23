@@ -18,6 +18,7 @@ parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument('--output-dir', required=True, help='Private directory for test logs and safe receipt')
 parser.add_argument('--pg-bin-dir', required=True, help='Directory containing local PG17 tools')
 parser.add_argument('--pg-control-bin-dir', help='Optional separately signed initdb/pg_ctl directory')
+parser.add_argument('--airflow-fixture', help='Optional existing owned loopback Airflow fixture file for combined engine acceptance')
 parser.add_argument('--node', default=shutil.which('node'), help='Node24 executable')
 args = parser.parse_args()
 os.umask(0o077)
@@ -109,9 +110,20 @@ try:
     airflow_results = json.loads((output / 'airflow-gate-results.json').read_text())
     if airflow_gate.returncode or airflow_results['numPassedTests'] != 5 or airflow_results['numFailedTests'] or airflow_results['numPendingTests']:
         raise RuntimeError('airflow_scheduled_freshness_tests_failed_see_private_log')
+    combined_results = None
+    if args.airflow_fixture:
+        fixture_file = Path(args.airflow_fixture).resolve()
+        if fixture_file != Path(args.airflow_fixture) or fixture_file.name != 'fixture.json' or not fixture_file.parent.name.startswith('axiom-airflow-engine-') or fixture_file.parent.parent != Path(private_tmp) or fixture_file.stat().st_mode & 0o077 or fixture_file.stat().st_uid != os.getuid():
+            raise RuntimeError('owned_airflow_fixture_required')
+        combined_env = dict(test_env, AXIOM_OWNED_AIRFLOW_FIXTURE=str(fixture_file))
+        combined = subprocess.run([node, 'node_modules/vitest/vitest.mjs', 'run', 'lib/integrations/airflow/__tests__/scheduledAutomation.engine.postgres.test.ts', '--reporter=json', '--outputFile=' + str(output / 'combined-airflow-results.json')], cwd=repo, env=combined_env, capture_output=True, text=True, timeout=180)
+        (output / 'combined-airflow-tests.log').write_text(combined.stdout + '\n' + combined.stderr)
+        combined_results = json.loads((output / 'combined-airflow-results.json').read_text())
+        if combined.returncode or combined_results['numPassedTests'] != 1 or combined_results['numFailedTests'] or combined_results['numPendingTests']:
+            raise RuntimeError('combined_scheduler_engine_acceptance_failed_see_private_log')
     report = {'testsPassed': results['numPassedTests'], 'testsFailed': results['numFailedTests'], 'migrationRefusalGateTestsPassed': migration_results['numPassedTests'], 'airflowScheduleFreshnessTestsPassed': airflow_results['numPassedTests'], 'verifiedAtUtc': datetime.datetime.now(datetime.timezone.utc).isoformat(), 'actualPrismaPostgres': True,
               'actualDecisionAdmissionManagerSdkChain': True, 'actualApprovalVoteTransactions': True, 'actualCodingProposalAdmissionChain': True, 'desktopHttpRouteTestsPassed': http_results['numPassedTests'], 'desktopAuthentication': 'HTTP inference cases use a synthetic boundary; separate real HMAC/session/membership/billing cases use an isolated signing key', 'desktopSessionAuthorityTestsPassed': session_results['numPassedTests'], 'codingAdmissionTestsPassed': coding_results['numPassedTests'], 'approvalDatabaseGuardTestsPassed': guard_results['numPassedTests'], 'providerTransport': 'fixed synthetic .invalid transport',
-              'providerInference': False, 'realCustomerAuthentication': False, 'productionWrites': False,
+              'providerInference': False, 'combinedRealAirflowSchedulerTestsPassed': combined_results['numPassedTests'] if combined_results else 0, 'realCustomerAuthentication': False, 'productionWrites': False,
               'privateProductionBackupUsed': False, 'syntheticGenerationCostReceipts': True}
 finally:
     # If normal shutdown fails, retain owned files for recovery; do not delete a
@@ -119,6 +131,7 @@ finally:
     if started or (data / 'postmaster.pid').exists():
         run_pg('pg_ctl', ['-D', str(data), '-w', 'stop', '-m', 'fast'])
     shutil.rmtree(owned)
+    (output / 'cleanup.json').write_text(json.dumps({'localClusterRemoved': True, 'localSocketAbsent': not socket.exists(), 'productionWrites': False}) + '\n')
 if 'report' in locals():
     report['localClusterRemoved'] = True
     (output / 'verification.json').write_text(json.dumps(report, indent=2) + '\n')

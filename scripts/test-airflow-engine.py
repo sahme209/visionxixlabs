@@ -3,7 +3,7 @@
 Run with the private Airflow virtual environment's Python (psutil is required).
 No external service URL, cloud key or production database is accepted.
 """
-import argparse,os,subprocess,tempfile,json,secrets,socket,time,signal,shutil,datetime,urllib.request,urllib.error,threading
+import sys,argparse,os,subprocess,tempfile,json,secrets,socket,time,signal,shutil,datetime,urllib.request,urllib.error,threading
 from pathlib import Path
 import psutil
 os.umask(0o077)
@@ -11,6 +11,7 @@ parser=argparse.ArgumentParser(description=__doc__)
 parser.add_argument('--airflow-venv',required=True)
 parser.add_argument('--output-dir',required=True)
 parser.add_argument('--node',required=True)
+parser.add_argument('--pg-bin-dir',help='Optional PG17 directory for combined scheduler/database/engine acceptance')
 args=parser.parse_args()
 repo=Path(__file__).resolve().parents[1];base=Path(args.output_dir).expanduser().resolve();base.mkdir(parents=True,mode=0o700)
 if base.stat().st_mode & 0o077 or base.stat().st_uid != os.getuid():raise RuntimeError('private_owned_output_required')
@@ -113,7 +114,18 @@ try:
  (base/'adapter-tests.private.log').write_text(tested.stdout+'\n'+tested.stderr)
  if tested.returncode:raise RuntimeError('owned_airflow_adapter_tests_failed_see_private_log')
  results=json.loads((base/'adapter-results.json').read_text());assert results['numPassedTests']==3 and not results['numFailedTests'] and not results['numPendingTests']
- report={'verifiedAtUtc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'airflowVersion':'3.3.2','realLocalEngine':True,'realProviderClient':True,'testsPassed':3,'testsFailed':0,'onlyLoopback':True,'onlyOwnedNoopDag':True,'productionChanges':False,'cloudActions':False,'providerInference':False,'customerConnectionSaveVerified':False,'privateOriginValidationUnchanged':True}
+ combined_verified=False
+ if args.pg_bin_dir:
+  # Every nested fixture operation/test has its own deadline and a database
+  # shutdown finally block. Do not kill its owner with an independent shorter
+  # timeout while that cleanup may still be running.
+  combined=subprocess.run([sys.executable,str(repo/'scripts/test-agent-credit-postgres.py'),'--output-dir',str(base/'combined-postgres'),'--pg-bin-dir',str(Path(args.pg_bin_dir).resolve()),'--node',node,'--airflow-fixture',str(fixture)],cwd=repo,env=testenv,capture_output=True,text=True)
+  (base/'combined-scheduler.private.log').write_text(combined.stdout+'\n'+combined.stderr)
+  if combined.returncode:raise RuntimeError('combined_scheduler_database_engine_failed_see_private_log')
+  combined_receipt=json.loads((base/'combined-postgres/verification.json').read_text())
+  assert combined_receipt['combinedRealAirflowSchedulerTestsPassed']==1 and combined_receipt['localClusterRemoved']
+  combined_verified=True
+ report={'verifiedAtUtc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'airflowVersion':'3.3.2','realLocalEngine':True,'realProviderClient':True,'testsPassed':3,'testsFailed':0,'onlyLoopback':True,'onlyOwnedNoopDag':True,'productionChanges':False,'cloudActions':False,'providerInference':False,'customerConnectionSaveVerified':False,'privateOriginValidationUnchanged':True,'combinedRealSchedulerDatabaseAcceptance':combined_verified}
 finally:
  try:
   if server:
@@ -150,6 +162,7 @@ finally:
     if probe.connect_ex(('127.0.0.1',port))==0:raise RuntimeError('owned_port_not_closed_files_retained')
   if log:log.close()
   shutil.rmtree(owned)
+  (base/'cleanup.json').write_text(json.dumps({'ownedProcessesStopped':True,'ownedProcessGroupEmpty':True,'ownedPortClosed':True,'ownedHomeRemoved':True})+'\n')
  finally:
   stop_tracking.set()
   if tracker:tracker.join(timeout=2)

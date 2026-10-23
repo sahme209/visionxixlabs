@@ -40,11 +40,12 @@ export async function executeAirflowAutomation(executionId: string, actorUserId?
       const current = await loadAirflowClient(execution.organizationId);
       if (current.connectionId !== automation.connectionId) return { ok: false, error: "airflow_connection_changed" };
       const source = await current.client.getDagRun(execution.sourceDagId, execution.sourceDagRunId);
-      const sourceTime = source.logicalDate ? Date.parse(source.logicalDate) : null;
+      const observedStart = source.logicalDate ?? source.startedAt;
+      const sourceTime = observedStart ? Date.parse(observedStart) : NaN;
       if (source.dagId !== execution.sourceDagId || source.dagRunId !== execution.sourceDagRunId ||
           !["success", "failed"].includes(source.state) || source.state !== execution.sourceDagState ||
           (automation.requiredDagState !== "any" && source.state !== automation.requiredDagState) ||
-          (sourceTime !== null && (!Number.isFinite(sourceTime) || sourceTime < automation.createdAt.getTime()))) {
+          !Number.isFinite(sourceTime) || sourceTime < automation.createdAt.getTime()) {
         return { ok: false, error: "airflow_source_not_ready" };
       }
       if (!await latestDependenciesReady(current.client, automation.dependencyDagIds, source.logicalDate)) {

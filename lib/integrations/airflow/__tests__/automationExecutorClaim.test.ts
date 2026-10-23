@@ -40,6 +40,7 @@ beforeEach(() => {
   vi.resetAllMocks();
   automation.dependencyDagIds = [];
   automation.requiredDagState = "success";
+  automation.createdAt = new Date(0);
   automation.updatedAt = new Date(1);
   mocks.binding.mockResolvedValue({ id: "connection-1" });
   mocks.airflow.mockResolvedValue({ connectionId: "connection-1", connectionUpdatedAt: new Date(1), client: { getDagRun: mocks.source, listDagRuns: mocks.dependencies } });
@@ -374,7 +375,7 @@ describe("dispatch-time current Airflow preconditions", () => {
     expect(mocks.claim).not.toHaveBeenCalled(); expect(mocks.token).not.toHaveBeenCalled();
   });
   it("retains no-dependency null-date manual support", async () => {
-    mocks.source.mockResolvedValue({ dagId: "dag", dagRunId: "run", state: "success", logicalDate: null });
+    mocks.source.mockResolvedValue({ dagId: "dag", dagRunId: "run", state: "success", logicalDate: null, startedAt: "2026-10-15T10:00:00Z" });
     expect(await executeAirflowAutomation(row.id)).toMatchObject({ ok: true });
     expect(mocks.openPR).toHaveBeenCalledTimes(1);
   });
@@ -392,6 +393,12 @@ it("does not require remote dependency reads for read-only none actions", async 
   expect(await executeAirflowAutomation(row.id)).toMatchObject({ ok: true });
   expect(mocks.airflow).not.toHaveBeenCalled();
 });
+it.each([null, "invalid", "2026-10-15T09:59:59Z"])("refuses a null-logical-date source without a provably current start time: %s", async startedAt => {
+  automation.createdAt = new Date("2026-10-15T10:00:00Z");
+  mocks.source.mockResolvedValue({ dagId: "dag", dagRunId: "run", state: "success", logicalDate: null, startedAt });
+  expect(await executeAirflowAutomation(row.id)).toEqual({ ok: false, error: "airflow_source_not_ready" });
+  expect(mocks.claim).not.toHaveBeenCalled(); expect(mocks.openPR).not.toHaveBeenCalled(); expect(mocks.dispatch).not.toHaveBeenCalled();
+});
 it("refuses a revoked or changed connection after reading provider evidence", async () => {
   mocks.binding.mockResolvedValue(null);
   expect(await executeAirflowAutomation(row.id)).toEqual({ ok: false, error: "airflow_connection_changed" });
@@ -400,7 +407,7 @@ it("refuses a revoked or changed connection after reading provider evidence", as
 it("fences a rule revision changed during remote reads before any write", async () => {
   mocks.source.mockImplementation(async () => {
     automation.updatedAt = new Date(2);
-    return { dagId: "dag", dagRunId: "run", state: "success", logicalDate: null };
+    return { dagId: "dag", dagRunId: "run", state: "success", logicalDate: null, startedAt: "2026-10-15T10:00:00Z" };
   });
   expect(await executeAirflowAutomation(row.id)).toEqual({ ok: false, error: "airflow_execution_not_actionable" });
   expect(mocks.token).not.toHaveBeenCalled(); expect(mocks.reserve).not.toHaveBeenCalled();
@@ -415,7 +422,7 @@ it("denies approval authority revoked while remote source evidence is read", asy
   automation.approvalRequired = true;
   mocks.source.mockImplementation(async () => {
     mocks.membership.mockResolvedValue({ role: "read_only", acceptedAt: new Date() });
-    return { dagId: "dag", dagRunId: "run", state: "success", logicalDate: null };
+    return { dagId: "dag", dagRunId: "run", state: "success", logicalDate: null, startedAt: "2026-10-15T10:00:00Z" };
   });
   expect(await executeAirflowAutomation(row.id, "approver")).toEqual({ ok: false, error: "airflow_approval_authority_required" });
   expect(mocks.claim).not.toHaveBeenCalled(); expect(mocks.token).not.toHaveBeenCalled();

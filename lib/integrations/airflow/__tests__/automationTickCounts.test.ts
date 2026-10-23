@@ -69,9 +69,25 @@ describe("Airflow tick recorded outcomes", () => {
   it("does not count a newly proposed action's uncertain outcome as success", async () => {
     mocks.rules.mockResolvedValue([{ id: "rule-1", connectionId: "conn-1", name: "Fixture", dagId: "dag-1", triggerMode: "completion", dependencyDagIds: [], requiredDagState: "success", createdAt: new Date(0), actionType: "open_pull_request", approvalRequired: false }]);
     mocks.executions.mockResolvedValue([]);
-    mocks.runs.mockResolvedValue([{ dagId: "dag-1", dagRunId: "run-1", state: "success", logicalDate: null, startedAt: null, endedAt: null }]);
+    mocks.runs.mockResolvedValue([{ dagId: "dag-1", dagRunId: "run-1", state: "success", logicalDate: null, startedAt: "2026-10-15T10:00:00Z", endedAt: null }]);
     mocks.execute.mockResolvedValue({ ok: false, error: "airflow_provider_outcome_unknown" });
     expect(await runAirflowAutomationTick()).toMatchObject({ proposals: 1, actions: 0, errors: 1 });
+  });
+
+  it.each([
+    [null, null, 0],
+    [null, "invalid", 0],
+    [null, "2026-10-15T09:59:59Z", 0],
+    [null, "2026-10-15T10:00:00Z", 1],
+    [null, "2026-10-15T10:01:00Z", 1],
+    ["invalid", "2026-10-15T10:01:00Z", 0],
+    ["2026-10-15T09:59:59Z", "2026-10-15T10:01:00Z", 0],
+  ])("requires a current observed source date before proposing (logical %s, start %s)", async (logicalDate, startedAt, proposals) => {
+    mocks.rules.mockResolvedValue([{ id: "rule-1", connectionId: "conn-1", name: "Fixture", dagId: "dag-1", triggerMode: "dag_completion", dependencyDagIds: [], requiredDagState: "success", createdAt: new Date("2026-10-15T10:00:00Z"), actionType: "none", approvalRequired: false }]);
+    mocks.executions.mockResolvedValue([]); mocks.execute.mockResolvedValue({ ok: true, result: { action: "none" } });
+    mocks.runs.mockResolvedValue([{ dagId: "dag-1", dagRunId: "run-1", state: "success", logicalDate, startedAt, endedAt: null }]);
+    expect(await runAirflowAutomationTick()).toMatchObject({ proposals, actions: proposals, errors: 0 });
+    expect(mocks.execute).toHaveBeenCalledTimes(proposals);
   });
 });
 
