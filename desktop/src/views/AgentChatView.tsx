@@ -11,6 +11,7 @@ import { AGENT_PROFILES, resolveAgentProfile, type AgentProfileId } from "../../
 import { ConversationRename } from "../components/ConversationRename";
 import { AgentModelSelector } from "../components/AgentModelSelector";
 import { agentModelChoices, modelPreferenceKey, type AgentModelChoice } from "../lib/agentModelSelection";
+import { AgentGithubReceipts, isGithubReceiptAction } from "../components/AgentGithubReceipts";
 import { AgentRestartReceipts } from "../components/AgentRestartReceipts";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Badge, riskToneFor } from "../components/Primitives";
@@ -245,6 +246,7 @@ function AgentChatSession({ onOpenSettings, identity, active, requestedSkill, re
   }
   const [turns, setTurns] = useState<ChatTurn[]>([]);
   const [restartActions, setRestartActions] = useState<Proposal[]>([]);
+  const [githubActions, setGithubActions] = useState<Proposal[]>([]);
   const decisionEpoch = useRef(0);
   const conversationEpoch = useRef(0);
   const activeConversation = useRef<string | null>(null);
@@ -417,6 +419,7 @@ function AgentChatSession({ onOpenSettings, identity, active, requestedSkill, re
               setPendingProposal([...conversation.data.actions].reverse().find((action) => action.status === "proposed") ?? null);
               setEvidenceActions(conversation.data.actions.filter((action) => action.riskLevel === "low"));
               setRestartActions(conversation.data.actions.filter((action) => action.toolName === "trigger_aws_deploy"));
+              setGithubActions(conversation.data.actions.filter(isGithubReceiptAction));
             } else {
               setError("The most recent Agent conversation could not be reopened.");
             }
@@ -744,6 +747,7 @@ function AgentChatSession({ onOpenSettings, identity, active, requestedSkill, re
       setPendingProposal([...result.data.actions].reverse().find((action) => action.status === "proposed") ?? null);
       setEvidenceActions(result.data.actions.filter((action) => action.riskLevel === "low"));
       setRestartActions(result.data.actions.filter((action) => action.toolName === "trigger_aws_deploy"));
+      setGithubActions(result.data.actions.filter(isGithubReceiptAction));
       setLatestUsage(null); setLatestIssue(null);
       setStreamingDraft("");
     } catch {
@@ -772,6 +776,7 @@ function AgentChatSession({ onOpenSettings, identity, active, requestedSkill, re
         setPendingProposal([...result.data.actions].reverse().find(action => action.status === "proposed") ?? null);
         setEvidenceActions(result.data.actions.filter(action => action.riskLevel === "low"));
         setRestartActions(result.data.actions.filter(action => action.toolName === "trigger_aws_deploy"));
+        setGithubActions(result.data.actions.filter(isGithubReceiptAction));
       } catch { /* Retain the pending state until the service can verify the decision. */ }
       finally { inFlight = false; }
     };
@@ -796,7 +801,7 @@ function AgentChatSession({ onOpenSettings, identity, active, requestedSkill, re
       setConversations((current) => [summary, ...current]);
       activeConversation.current = result.data.id;
       setConversationId(result.data.id); setTurns([]); setPendingProposal(null);
-      setEvidenceActions([]); setRestartActions([]); setLatestUsage(null); setLatestIssue(null); setInput("");
+      setEvidenceActions([]); setRestartActions([]); setGithubActions([]); setLatestUsage(null); setLatestIssue(null); setInput("");
     } catch {
       if (generation === conversationEpoch.current && context === desktopClient.config) { activeConversation.current = conversationId; setError("A new conversation could not be started."); }
     } finally { if (generation === conversationEpoch.current && context === desktopClient.config) setLoadingConversation(false); }
@@ -925,6 +930,7 @@ function AgentChatSession({ onOpenSettings, identity, active, requestedSkill, re
         queueContinuationVerified = !result.data.issue && Boolean(result.data.usage) && !result.data.proposal && !refreshed.data.actions.some(action => action.status === "proposed");
         setEvidenceActions(refreshed.data.actions.filter((action) => action.riskLevel === "low"));
         setRestartActions(refreshed.data.actions.filter((action) => action.toolName === "trigger_aws_deploy"));
+        setGithubActions(refreshed.data.actions.filter(isGithubReceiptAction));
       }
       setConversations((current) => {
         const selected = current.find((conversation) => conversation.id === conversationId);
@@ -986,10 +992,13 @@ function AgentChatSession({ onOpenSettings, identity, active, requestedSkill, re
           : `${TOOL_LABELS[pendingProposal.toolName] ?? pendingProposal.toolName} — rejected.`,
       }]);
       setPendingProposal(null);
-      if (approve && proposal.toolName === "trigger_aws_deploy" && conversationId) {
+      if (approve && (proposal.toolName === "trigger_aws_deploy" || isGithubReceiptAction(proposal)) && conversationId) {
         const refreshed = await desktopClient.getAgentConversation(conversationId);
         if (generation !== decisionEpoch.current || context !== desktopClient.config || activeConversation.current !== ownerConversation) return;
-        if (refreshed.ok && refreshed.data.id === conversationId) setRestartActions(refreshed.data.actions.filter(action => action.toolName === "trigger_aws_deploy"));
+        if (refreshed.ok && refreshed.data.id === conversationId) {
+          setRestartActions(refreshed.data.actions.filter(action => action.toolName === "trigger_aws_deploy"));
+          setGithubActions(refreshed.data.actions.filter(isGithubReceiptAction));
+        }
         else setError("The decision is saved, but its workflow receipt could not be read. Reopen the conversation; do not approve again.");
       }
     } catch {
@@ -1168,6 +1177,7 @@ function AgentChatSession({ onOpenSettings, identity, active, requestedSkill, re
             {streamingDraft && <p className="mt-3 whitespace-pre-wrap break-words text-sm text-zinc-300">{streamingDraft}</p>}
             <p className="mt-2 text-[11px] text-zinc-500">Draft text does not approve or execute changes. Completed work remains recorded if you stop.</p>
           </div>}
+          <AgentGithubReceipts key={`github-${conversationId}`} actions={githubActions} />
           <AgentRestartReceipts key={conversationId} conversationId={conversationId} actions={restartActions} />
           {evidenceActions.length > 0 && <EvidencePanel actions={evidenceActions.slice(-8)} />}
           {latestIssue && latestIssue.conversationId === conversationId && <section aria-label="Agent request needs attention" className="rounded-xl border border-amber-300/20 bg-amber-300/[0.03] p-4">

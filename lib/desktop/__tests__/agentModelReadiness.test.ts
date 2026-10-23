@@ -1005,3 +1005,26 @@ it("ignores an external-decision read that finishes after the desktop credential
   expect(screen.queryByText("Must not show an old workspace result.")).toBeNull();
   expect(m.client.sendAgentMessage).not.toHaveBeenCalled();
 });
+
+it("restores a recorded GitHub commit receipt without sending or approving again", async () => {
+  const sha = "a".repeat(40);
+  m.client.getAgentConversation.mockResolvedValue({ok:true,data:{...summary,turns:[],actions:[{id:"commit-receipt",toolName:"commit_github_files",riskLevel:"medium",status:"executed",argsJson:{repositoryFullName:"fixture/repository",branch:"feature",files:[{path:"a.ts"},{path:"b.ts"}]},resultJson:{sha,htmlUrl:`https://github.com/fixture/repository/commit/${sha}`,fileCount:2}}]}});
+  render(createElement(AgentChatView));
+  expect(await screen.findByRole("link",{name:"View recorded commit"})).toBeTruthy();
+  expect(m.client.sendAgentMessage).not.toHaveBeenCalled(); expect(m.client.approveAgentAction).not.toHaveBeenCalled();
+});
+
+it("recovers a web-approved commit receipt on focus without a second execution", async () => {
+  const sha="b".repeat(40);
+  const proposal={id:"external-commit",status:"proposed",toolName:"commit_github_files",riskLevel:"medium",argsJson:{repositoryFullName:"fixture/repository",branch:"feature",files:[{path:"a.ts",content:"a"},{path:"b.ts",content:"b"}]}};
+  m.client.getAgentConversation.mockResolvedValue({ok:true,data:{...summary,turns:[],actions:[proposal]}});
+  render(createElement(AgentChatView)); await screen.findByRole("button",{name:"Approve & run"});
+  m.client.getAgentConversation.mockResolvedValue({ok:true,data:{...summary,turns:[],actions:[{...proposal,status:"executed",resultJson:{sha,htmlUrl:`https://github.com/fixture/repository/commit/${sha}`,fileCount:2}}]}});
+  fireEvent(window,new Event("focus"));
+  expect(await screen.findByRole("link",{name:"View recorded commit"})).toBeTruthy();
+  expect(screen.queryByRole("button",{name:"Approve & run"})).toBeNull();
+  expect(m.client.sendAgentMessage).not.toHaveBeenCalled();expect(m.client.approveAgentAction).not.toHaveBeenCalled();
+  m.client.createAgentConversation.mockResolvedValue({ok:true,data:{...summary,id:"new-empty",turns:[],actions:[]}});
+  fireEvent.click(screen.getByRole("button",{name:"New chat"}));
+  await waitFor(()=>expect(screen.queryByRole("link",{name:"View recorded commit"})).toBeNull());
+});
