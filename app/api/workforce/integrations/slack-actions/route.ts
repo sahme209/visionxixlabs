@@ -1,7 +1,7 @@
 /** POST /api/workforce/integrations/slack-actions — Phase 644 — save Slack action integration. */
 
-import { NextResponse } from "next/server";
-import { requireContext } from "@/lib/auth/currentContext";
+import { NextResponse, type NextRequest } from "next/server";
+import { integrationMutationContext } from "@/lib/auth/integrationMutationContext";
 import {
   isValidSlackWebhookUrl,
   readIntegrationConfig,
@@ -16,8 +16,10 @@ export const runtime = "nodejs";
 
 function s(v: FormDataEntryValue | null): string { return typeof v === "string" ? v : ""; }
 
-export async function POST(req: Request) {
-  const ctx = await requireContext();
+export async function POST(req: NextRequest) {
+  const authority = await integrationMutationContext(req);
+  if (authority.response) return authority.response;
+  const ctx = authority.context;
   const org = String(ctx.organizationId);
   const f = await req.formData();
   const correlationId = `integration_slack_${Date.now().toString(36)}` as CorrelationId;

@@ -1,7 +1,7 @@
 /** POST /api/workforce/integrations/linear/test — Phase 648 — fire a test ticket. */
 
-import { NextResponse } from "next/server";
-import { requireContext } from "@/lib/auth/currentContext";
+import { NextResponse, type NextRequest } from "next/server";
+import { integrationMutationContext } from "@/lib/auth/integrationMutationContext";
 import { dispatchAction } from "@/lib/workforce/domains/actionExecutor";
 import { record as auditRecord } from "@/lib/audit/secureAudit";
 import { id as ids } from "@/lib/domain/ids";
@@ -11,8 +11,10 @@ export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 export const maxDuration = 30;
 
-export async function POST(req: Request) {
-  const ctx = await requireContext();
+export async function POST(req: NextRequest) {
+  const authority = await integrationMutationContext(req);
+  if (authority.response) return authority.response;
+  const ctx = authority.context;
   const org = String(ctx.organizationId);
   const correlationId = `integration_linear_test_${Date.now().toString(36)}` as CorrelationId;
   const upstreamRef = `test_${Date.now().toString(36)}`;
