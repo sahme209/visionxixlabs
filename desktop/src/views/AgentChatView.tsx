@@ -272,6 +272,9 @@ function AgentChatSession({ onOpenSettings, identity, active, requestedSkill, re
     return () => { messageAbort.current?.abort(); decisionEpoch.current += 1; conversationEpoch.current += 1; activeConversation.current = null; };
   }, [transportContext]);
   const [pendingProposal, setPendingProposal] = useState<Proposal | null>(null);
+  const refreshDecision = useRef<(() => void) | null>(null);
+  const [decisionRefreshing, setDecisionRefreshing] = useState(false);
+  const [decisionRefreshNote, setDecisionRefreshNote] = useState<string | null>(null);
   const [evidenceActions, setEvidenceActions] = useState<Proposal[]>([]);
   const [input, setInput] = useState("");
   const conversationDrafts = useRef(new Map<string, string>());
@@ -762,14 +765,23 @@ function AgentChatSession({ onOpenSettings, identity, active, requestedSkill, re
     let disposed = false, inFlight = false;
     const owned = () => !disposed && context === desktopClient.config && epoch === conversationEpoch.current
       && decision === decisionEpoch.current && activeConversation.current === owner;
-    const refresh = async () => {
-      if (!owned() || inFlight || document.visibilityState === "hidden") return;
+    setDecisionRefreshNote(null);
+    const refresh = async (manual = false) => {
+      if (!owned() || inFlight || (!manual && document.visibilityState === "hidden")) return;
       inFlight = true;
+      setDecisionRefreshing(true);
       try {
         const result = await desktopClient.getAgentConversation(owner);
-        if (!owned() || !result.ok || result.data.id !== owner) return;
+        if (!owned()) return;
+        if (!result.ok || result.data.id !== owner) {
+          if (manual) setDecisionRefreshNote("The decision could not be verified. Try refreshing again.");
+          return;
+        }
         const reviewed = result.data.actions.find(action => action.id === proposalId);
-        if (!reviewed || !["executed", "failed", "rejected", "cancelled"].includes(reviewed.status)) return;
+        if (!reviewed || !["executed", "failed", "rejected", "cancelled"].includes(reviewed.status)) {
+          if (manual) setDecisionRefreshNote(reviewed?.status === "proposed" ? "The service is still awaiting a review decision." : "The decision could not be verified. Try refreshing again.");
+          return;
+        }
         // Reconciliation is read-only. Never resume queued work after an external decision.
         setQueuePaused(true);
         setTurns(result.data.turns.filter((turn): turn is typeof turn & { role: ChatTurn["role"] } => turn.role === "user" || turn.role === "assistant" || turn.role === "tool_result"));
@@ -777,14 +789,17 @@ function AgentChatSession({ onOpenSettings, identity, active, requestedSkill, re
         setEvidenceActions(result.data.actions.filter(action => action.riskLevel === "low"));
         setRestartActions(result.data.actions.filter(action => action.toolName === "trigger_aws_deploy"));
         setGithubActions(result.data.actions.filter(isGithubReceiptAction));
-      } catch { /* Retain the pending state until the service can verify the decision. */ }
-      finally { inFlight = false; }
+      } catch {
+        if (manual && owned()) setDecisionRefreshNote("The decision could not be verified. Try refreshing again.");
+      } finally { inFlight = false; if (owned()) setDecisionRefreshing(false); }
     };
+    const manualRefresh = () => { void refresh(true); };
+    refreshDecision.current = manualRefresh;
     const onFocus = () => { void refresh(); };
     window.addEventListener("focus", onFocus);
     document.addEventListener("visibilitychange", onFocus);
     const interval = window.setInterval(onFocus, 15_000);
-    return () => { disposed = true; window.clearInterval(interval); window.removeEventListener("focus", onFocus); document.removeEventListener("visibilitychange", onFocus); };
+    return () => { disposed = true; if (refreshDecision.current === manualRefresh) refreshDecision.current = null; setDecisionRefreshing(false); window.clearInterval(interval); window.removeEventListener("focus", onFocus); document.removeEventListener("visibilitychange", onFocus); };
   }, [active, conversationId, pendingProposal?.id, loadingConversation, sending, decidingId]);
 
   async function newConversation() {
@@ -1190,7 +1205,13 @@ function AgentChatSession({ onOpenSettings, identity, active, requestedSkill, re
           </section>}
           {latestUsage && <UsageReceipt usage={latestUsage} />}
           {pendingProposal && (
-            <ProposalCard onReviewLocally={onReviewLocalEdit} proposal={pendingProposal} deciding={loadingConversation || decidingId === pendingProposal.id} onApprove={() => void decide(true)} onReject={() => void decide(false)} />
+            <div>
+              <ProposalCard onReviewLocally={onReviewLocalEdit} proposal={pendingProposal} deciding={loadingConversation || decidingId === pendingProposal.id} onApprove={() => void decide(true)} onReject={() => void decide(false)} />
+              <div className="mt-2 flex flex-wrap items-center justify-between gap-2 text-xs text-zinc-400">
+                <span role="status">{decisionRefreshNote ?? "Reviewed in the cockpit? Refresh to check the recorded decision."}</span>
+                <button type="button" disabled={decisionRefreshing || loadingConversation || sending || Boolean(decidingId)} onClick={() => refreshDecision.current?.()} className="shrink-0 rounded-md border border-white/10 px-3 py-1.5 text-zinc-200 hover:bg-white/[0.06] disabled:opacity-40">{decisionRefreshing ? "Checking decision…" : "Refresh decision"}</button>
+              </div>
+            </div>
           )}
           {error && (
             <div role="alert" className="flex items-center justify-between gap-4 rounded-xl border border-rose-400/20 bg-rose-400/[0.05] px-4 py-3">

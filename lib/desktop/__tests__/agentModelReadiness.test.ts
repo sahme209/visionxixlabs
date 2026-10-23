@@ -1028,3 +1028,71 @@ it("recovers a web-approved commit receipt on focus without a second execution",
   fireEvent.click(screen.getByRole("button",{name:"New chat"}));
   await waitFor(()=>expect(screen.queryByRole("link",{name:"View recorded commit"})).toBeNull());
 });
+
+it("reconciles a second external decision after cancelling and replacing a proposal in the same conversation", async () => {
+  const first = { id: "cancelled-first", status: "proposed", toolName: "create_github_branch", riskLevel: "medium", argsJson: { repositoryFullName: "fixture/repository", baseBranch: "main", newBranchName: "first" } };
+  const second = { ...first, id: "reviewed-second", argsJson: { ...first.argsJson, newBranchName: "second" } };
+  m.client.getAgentConversation.mockResolvedValue({ ok: true, data: { ...summary, turns: [], actions: [first] } });
+  m.client.rejectAgentAction.mockResolvedValue({ ok: true, data: { status: "rejected" } });
+  const interval = vi.spyOn(window, "setInterval");
+  render(createElement(AgentChatView));
+  fireEvent.click(await screen.findByRole("button", { name: "Reject" }));
+  await screen.findByText(/Create a branch — rejected/);
+  m.client.sendAgentMessage.mockResolvedValue({ ok: true, data: { reply: "Replacement for review", proposal: second, usage: { steps: 1, inputTokens: 1, outputTokens: 1 } } });
+  m.client.getAgentConversation.mockResolvedValue({ ok: true, data: { ...summary, turns: [], actions: [{ ...first, status: "rejected" }, second] } });
+  await draft();
+  fireEvent.click(screen.getByRole("button", { name: "Send" }));
+  await screen.findByText("Replacement for review");
+  await waitFor(() => expect((screen.getByRole("button", { name: "Approve & run" }) as HTMLButtonElement).disabled).toBe(false));
+  m.client.getAgentConversation.mockResolvedValue({ ok: true, data: { ...summary, turns: [{ id: "second-result", role: "tool_result", content: "Second independent decision executed." }], actions: [{ ...first, status: "rejected" }, { ...second, status: "executed" }] } });
+  const polling = interval.mock.calls.filter(([, delay]) => delay === 15_000).at(-1)?.[0];
+  await act(async () => { (polling as () => void)(); });
+  await screen.findByText("Second independent decision executed.");
+  expect(screen.queryByRole("button", { name: "Approve & run" })).toBeNull();
+  expect(m.client.sendAgentMessage).toHaveBeenCalledOnce();
+  expect(m.client.approveAgentAction).not.toHaveBeenCalled();
+  expect(m.client.rejectAgentAction).toHaveBeenCalledOnce();
+  interval.mockRestore();
+});
+
+it("manually refreshes an independently reviewed decision without another send or approval", async () => {
+  const proposal = { id: "manual-refresh", status: "proposed", toolName: "create_github_branch", riskLevel: "medium", argsJson: { repositoryFullName: "fixture/repository", baseBranch: "main", newBranchName: "change" } };
+  m.client.getAgentConversation.mockResolvedValue({ ok: true, data: { ...summary, turns: [], actions: [proposal] } });
+  render(createElement(AgentChatView));
+  const refresh = await screen.findByRole("button", { name: "Refresh decision" });
+  m.client.getAgentConversation.mockResolvedValue({ ok: true, data: { ...summary, turns: [{ id: "manual-result", role: "tool_result", content: "Independent decision read from service." }], actions: [{ ...proposal, status: "executed" }] } });
+  fireEvent.click(refresh);
+  await screen.findByText("Independent decision read from service.");
+  expect(screen.queryByRole("button", { name: "Approve & run" })).toBeNull();
+  expect(m.client.sendAgentMessage).not.toHaveBeenCalled(); expect(m.client.approveAgentAction).not.toHaveBeenCalled(); expect(m.client.rejectAgentAction).not.toHaveBeenCalled();
+});
+
+it("keeps a pending decision and offers retry when manual refresh cannot verify it", async () => {
+  const proposal = { id: "manual-unavailable", status: "proposed", toolName: "create_github_branch", riskLevel: "medium", argsJson: { repositoryFullName: "fixture/repository", baseBranch: "main", newBranchName: "change" } };
+  m.client.getAgentConversation.mockResolvedValue({ ok: true, data: { ...summary, turns: [], actions: [proposal] } });
+  render(createElement(AgentChatView));
+  const refresh = await screen.findByRole("button", { name: "Refresh decision" });
+  m.client.getAgentConversation.mockResolvedValue({ ok: false, error: "unavailable" });
+  fireEvent.click(refresh);
+  await screen.findByText("The decision could not be verified. Try refreshing again.");
+  expect(screen.getByRole("button", { name: "Approve & run" })).toBeTruthy();
+  expect((screen.getByRole("button", { name: "Refresh decision" }) as HTMLButtonElement).disabled).toBe(false);
+  expect(m.client.sendAgentMessage).not.toHaveBeenCalled(); expect(m.client.approveAgentAction).not.toHaveBeenCalled();
+});
+
+it("coalesces manual decision reads and discards their result after credentials change", async () => {
+  const proposal = { id: "manual-late", status: "proposed", toolName: "create_github_branch", riskLevel: "medium", argsJson: { repositoryFullName: "fixture/repository", baseBranch: "main", newBranchName: "change" } };
+  m.client.getAgentConversation.mockResolvedValue({ ok: true, data: { ...summary, turns: [], actions: [proposal] } });
+  const view = render(createElement(AgentChatView));
+  const refresh = await screen.findByRole("button", { name: "Refresh decision" });
+  const before = m.client.getAgentConversation.mock.calls.length;
+  const read = deferred<unknown>(); m.client.getAgentConversation.mockReturnValueOnce(read.promise);
+  fireEvent.click(refresh);
+  const checking = screen.getByRole("button", { name: "Checking decision…" }) as HTMLButtonElement;
+  expect(checking.disabled).toBe(true); fireEvent.click(checking);
+  expect(m.client.getAgentConversation.mock.calls.length).toBe(before + 1);
+  m.client.config = { sessionToken: "new-context" }; view.rerender(createElement(AgentChatView));
+  await act(async () => read.resolve({ ok: true, data: { ...summary, turns: [{ id: "late-manual", role: "tool_result", content: "Wrong-context decision must stay hidden." }], actions: [{ ...proposal, status: "executed" }] } }));
+  expect(screen.queryByText("Wrong-context decision must stay hidden.")).toBeNull();
+  expect(m.client.sendAgentMessage).not.toHaveBeenCalled(); expect(m.client.approveAgentAction).not.toHaveBeenCalled();
+});
