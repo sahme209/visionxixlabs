@@ -65,4 +65,12 @@ describe("governed extraction per-call admission", () => {
     expect(m.admission).toHaveBeenCalledOnce(); expect(m.stream).not.toHaveBeenCalled(); expect(m.extract).not.toHaveBeenCalled(); expect(execute).not.toHaveBeenCalled();
   });
 
+  it("quotes the complete Grok payload only after existing policy checks",async()=>{
+    const grok="spacexai/grok-4.20-multi-agent";
+    m.policy.mockReturnValue({enabled:true,allowedProviders:["vercel_gateway"],modelSelections:{vercel_gateway:grok},fallbackOrder:["vercel_gateway"]});m.catalog.mockResolvedValue([{id:grok}]);
+    const governed=await resolveGovernedAiCall("org",undefined,"trusted-actor");if(!governed.ok)throw Error("fixture unavailable");
+    await governed.extract("complete prompt","complete schema","grok:0");
+    expect(m.admission).toHaveBeenCalledWith({organizationId:"org",userId:"trusted-actor",correlationId:"grok:0"},{model:grok,text:"complete prompt",schemaHint:"complete schema"},undefined);
+  });
+
 });

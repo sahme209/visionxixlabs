@@ -17,7 +17,7 @@ import { admitGovernedExtract } from "@/lib/billing/governedExtractAdmission";
 import { AI_REQUEST_MAX_OUTPUT_TOKENS } from "@/lib/billing/requestReservationCents";
 import { isConcreteGatewayModelId, loadGatewayModelCatalog } from "@/lib/ai/gatewayModelCatalog";
 import { GovernedAiCallRefusal } from "./governedAiCallRefusal";
-import { SMALL_SONNET_MODEL } from "@/lib/billing/smallSonnetRequest";
+import { supportsSizedAgentRequest, SMALL_GROK_MODEL, SMALL_GROK_OUTPUT_TOKENS } from "@/lib/billing/smallSonnetRequest";
 import { AICreditAdmissionRefusal } from "@/lib/billing/aiCreditAdmissionRefusal";
 import { AgentStreamInterrupted } from "@/lib/ai/streamedDecisionMessage";
 
@@ -95,7 +95,7 @@ export async function resolveGovernedAiCall(organizationId: string, preferredPro
       streaming?.abortSignal.throwIfAborted();
       const scope = { organizationId, userId, correlationId };
       const model = preferredModel ?? current.policy.modelSelections.vercel_gateway;
-      const admission = await (model === SMALL_SONNET_MODEL
+      const admission = await (supportsSizedAgentRequest(model)
         ? admitGovernedExtract(scope, { model, text, schemaHint }, streaming?.abortSignal)
         : admitGovernedExtract(scope)).catch((error: unknown) => {
         if (error instanceof Error && error.name === "AbortError") throw error;
@@ -110,7 +110,7 @@ export async function resolveGovernedAiCall(organizationId: string, preferredPro
         model: preferredModel,
         correlationId,
         temperature: 0.1,
-        maxTokens: AI_REQUEST_MAX_OUTPUT_TOKENS,
+        maxTokens: model === SMALL_GROK_MODEL ? SMALL_GROK_OUTPUT_TOKENS : AI_REQUEST_MAX_OUTPUT_TOKENS,
         only: current.only,
       };
       const result = streaming

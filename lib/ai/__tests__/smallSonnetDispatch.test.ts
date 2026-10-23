@@ -54,3 +54,19 @@ it.each(["prompt", "schema", "model", "output", "tenant", "correlation"])("refus
   await expect(manager.extractStructuredDataWithAdmission(payload.text, payload.schemaHint, changed, admission)).rejects.toMatchObject({ name: "AgentStreamInterrupted" });
   expect(m.generate).not.toHaveBeenCalled(); expect(m.stream).not.toHaveBeenCalled(); expect(m.write).not.toHaveBeenCalled();
 });
+
+it.each([false,true])("bounded Grok keeps xAI-only routing, output cap, no native tools and one accounted call (stream=%s)",async streaming=>{
+ const fixture=await import("@/lib/billing/__tests__/fixtures/grokPricing20261023.json");
+ vi.stubGlobal("fetch",vi.fn(async()=>new Response(JSON.stringify(fixture.default))));
+ const grok="spacexai/grok-4.20-multi-agent";
+ const payload={...request,model:grok};const configured={...options,maxTokens:1024,model:grok,modelSelections:{vercel_gateway:grok}};
+ const admission=await admitGovernedExtract(scope,payload),manager=new AIProviderManager();
+ const result=streaming?await manager.extractStructuredDataStreamingWithAdmission(payload.text,payload.schemaHint,configured,admission,()=>{}):await manager.extractStructuredDataWithAdmission(payload.text,payload.schemaHint,configured,admission);
+ expect(result.data).toMatchObject({action:"respond"});
+ const sdk=streaming?m.stream:m.generate;expect(sdk).toHaveBeenCalledOnce();
+ expect(sdk.mock.calls[0][0]).toMatchObject({model:grok,maxOutputTokens:1024,maxRetries:0,providerOptions:{gateway:{only:["xai"]}}});
+ expect(sdk.mock.calls[0][0].providerOptions.anthropic).toBeUndefined();expect(sdk.mock.calls[0][0].tools).toBeUndefined();expect(sdk.mock.calls[0][0].output).toBeUndefined();
+ expect(m.reserve.mock.calls[0][1].reservedCents).toBeLessThanOrEqual(100);expect(m.claim).toHaveBeenCalledOnce();expect(m.write).toHaveBeenCalledOnce();
+ expect(m.write.mock.calls[0][0].metadata.reservationPolicy).toMatchObject({policy:"small_grok_free_v1",model:grok});
+ await expect(manager.extractStructuredDataWithAdmission(payload.text,payload.schemaHint,configured,admission)).rejects.toMatchObject({name:"AgentStreamInterrupted"});expect(sdk).toHaveBeenCalledOnce();
+});
