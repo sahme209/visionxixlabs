@@ -71,3 +71,12 @@ it("does not display success from a previous workspace after PR dispatch",async(
  mocks.config={workspace:"different"};finish({ok:true,data:{htmlUrl:"https://github.com/test/repo/pull/1",number:1}});
  await waitFor(()=>expect(screen.getByRole("alert").textContent).toContain("workspace changed"));expect(screen.queryByRole("link",{name:/View pull request/})).toBeNull();
 });
+it("does not expose preferences with no runtime consumer while retaining the working PR workflow",()=>{
+ form();
+ expect(screen.queryByRole("combobox",{name:"Review provider"})).toBeNull();
+ expect(screen.queryByRole("combobox",{name:"PR link destination"})).toBeNull();
+ expect(screen.queryByRole("switch",{name:"Commit attribution"})).toBeNull();
+ expect(screen.queryByRole("switch",{name:"PR attribution"})).toBeNull();
+ expect(screen.queryByText("Branch prefix")).toBeNull();
+ expect(screen.getByRole("button",{name:"Create pull request"})).toBeTruthy();
+});
