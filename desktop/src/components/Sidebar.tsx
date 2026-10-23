@@ -17,7 +17,7 @@ interface NavGroup {
 }
 
 const icon = (children: React.ReactNode) => {
-  function SidebarIcon(props: SVGProps<SVGSVGElement>) {
+  function SidebarIcon(props: Omit<SVGProps<SVGSVGElement>, "ref">) {
     return (
       <svg width={18} height={18} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" {...props}>
         {children}
