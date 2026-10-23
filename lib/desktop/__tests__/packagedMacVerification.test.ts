@@ -7,7 +7,7 @@ const roots:string[]=[];
 afterEach(async()=>{for(const root of roots.splice(0))await rm(root,{recursive:true,force:true});});
 async function fixture(overrides:Record<string,unknown>={}){
  const root=await mkdtemp(path.join(tmpdir(),'axiom-package-fixture-'));roots.push(root);const dmg=path.join(root,'Axiom_0.1.21.dmg');await writeFile(dmg,'synthetic package bytes, not a real signed image');
- const values={identifier:'com.visionxixlabs.axiom',version:'0.1.21',executable:'axiom-desktop',arch:'arm64',signature:'Authority=Developer ID Application: Fixture (ABCDE12345)\nTeamIdentifier=ABCDE12345\n',assessment:'accepted\nsource=Notarized Developer ID\n',...overrides};let mounted='';
+ const values:Record<string,unknown>={identifier:'com.visionxixlabs.axiom',version:'0.1.21',executable:'axiom-desktop',arch:'arm64',signature:'Authority=Developer ID Application: Fixture (ABCDE12345)\nTeamIdentifier=ABCDE12345\n',assessment:'accepted\nsource=Notarized Developer ID\n',...overrides};let mounted='';
  const run=vi.fn(async(file:string,args:string[])=>{
   if(file.endsWith('hdiutil')&&args[0]==='attach'){
    mounted=args[args.indexOf('-mountpoint')+1];const app=path.join(mounted,'Axiom Agent.app');await mkdir(path.join(app,'Contents','MacOS'),{recursive:true});await writeFile(path.join(app,'Contents','MacOS','axiom-desktop'),'synthetic binary');

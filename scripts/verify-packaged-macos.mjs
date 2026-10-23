@@ -7,7 +7,7 @@ import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 const execute=promisify(execFile);
-const defaultRun=(file,args)=>execute(file,args,{encoding:'utf8',timeout:60000,maxBuffer:1024*1024});
+const defaultRun=async(file,args)=>{const {stdout,stderr}=await execute(file,args,{encoding:'utf8',timeout:60000,maxBuffer:1024*1024});return {stdout,stderr};};
 async function hash(file){const digest=createHash('sha256');for await(const bytes of createReadStream(file))digest.update(bytes);return digest.digest('hex');}
 function requireEvidence(condition,code){if(!condition)throw new Error(code);}
 /** Verify the actual read-only mounted package. Injected commands are for fixtures only. */
