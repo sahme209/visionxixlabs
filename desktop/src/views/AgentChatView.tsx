@@ -1007,11 +1007,10 @@ function AgentChatSession({ onOpenSettings, identity, active, requestedSkill, re
         {nextHistoryCursor && <button type="button" disabled={historyBusy || (searchResults ?? conversations).length >= 1000} onClick={() => void loadHistory(false)} className="mt-2 rounded-lg border border-white/10 px-3 py-2 text-xs text-zinc-300 hover:bg-white/[0.06] disabled:opacity-40">{historyBusy ? "Loading chats…" : "Load older chats"}</button>}
         {(searchResults ?? conversations).length >= 1000 && <p className="mt-2 text-[10px] text-zinc-500">Narrow the title search to find more chats.</p>}
       </section>}
-      <details className="max-h-[30vh] shrink-0 overflow-y-auto border-b border-white/[0.06] bg-white/[0.015] px-5 py-3">
-        <summary className="mx-auto max-w-5xl cursor-pointer text-xs text-zinc-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-orange-300">
+      <Disclosure className="max-h-[30vh] shrink-0 overflow-y-auto border-b border-white/[0.06] bg-white/[0.015] px-5 py-3" buttonClassName="mx-auto max-w-5xl text-xs text-zinc-300" label={<>
           Workspace context <span className="ml-2 text-zinc-400">{repositoryFullName || "Choose a repository"} · {branch || "No branch"} · {environmentOptions.find(environment => environment.id === environmentId)?.name ?? "No deployment environment"}</span>
           {(repositoryError || environmentError || contextError) && <span className="ml-2 text-amber-300">Context needs attention — expand to recover</span>}
-        </summary>
+        </>}>
         <div className="mx-auto mt-3 max-w-5xl">
         <div className="grid grid-cols-1 gap-2 md:grid-cols-3">
           <div className="min-w-0 text-[10px] uppercase tracking-[0.12em] text-zinc-600">
@@ -1105,7 +1104,7 @@ function AgentChatSession({ onOpenSettings, identity, active, requestedSkill, re
         })()}
         {contextError && <p role="status" className="mx-auto mt-2 max-w-5xl text-[11px] text-amber-300">{contextError}. Repository and branch can be entered manually.</p>}
         </div>
-      </details>
+      </Disclosure>
       <div className="relative min-h-0 flex-1">
       <div ref={scrollRef} role="region" aria-label="Agent conversation messages" onScroll={event => {const pane = event.currentTarget; followsLatest.current = pane.scrollHeight - pane.scrollTop - pane.clientHeight < 96; if (followsLatest.current) setNewActivity(false);}} className="h-full overflow-y-auto px-5 py-5">
         <div className="max-w-3xl mx-auto space-y-5">

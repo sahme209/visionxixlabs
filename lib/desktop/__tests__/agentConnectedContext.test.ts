@@ -28,7 +28,7 @@ const repo2 = { id: "repo-2", fullName: "fixture/payments", defaultBranch: "deve
 it("searches connected catalogs, keeps selected context visible, and sends the exact clicked target", async () => {
   m.client.listGithubRepositories.mockResolvedValue({ ok: true, data: { repositories: [{ id: "repo-1", fullName: "fixture/repository", defaultBranch: "main", visibility: "private" }, repo2] } });
   m.client.listEnvironments.mockResolvedValue({ ok: true, data: { environments: [{ id: "env-1", name: "Development", tier: "dev" }, { id: "env-2", name: "Staging", tier: "stage" }] } });
-  render(createElement(AgentChatView));
+  render(createElement(AgentChatView)); await openWorkspaceContext();
   const search = await screen.findByRole("searchbox", { name: "Search connected repositories" });
   await waitFor(() => expect((screen.getByLabelText("Active GitHub repository") as HTMLSelectElement).disabled).toBe(false));
   fireEvent.change(search, { target: { value: "PAYMENTS" } });
@@ -48,7 +48,7 @@ it("does not use another workspace's stored target while catalogs are pending or
   window.localStorage.setItem("axiom.workspace.environment.v1", "foreign-env");
   const repositories = deferred<unknown>(), environments = deferred<unknown>();
   m.client.listGithubRepositories.mockReturnValueOnce(repositories.promise); m.client.listEnvironments.mockReturnValueOnce(environments.promise);
-  render(createElement(AgentChatView));
+  render(createElement(AgentChatView)); await openWorkspaceContext();
   expect(m.client.listGithubBranches).not.toHaveBeenCalled(); expect(m.client.listGithubFiles).not.toHaveBeenCalled();
   await act(async () => { repositories.resolve({ ok: false, error: "Unavailable" }); environments.resolve({ ok: false, error: "Unavailable" }); });
   expect(screen.getByLabelText("Selected Agent context").textContent).not.toContain("foreign");
@@ -60,9 +60,9 @@ it("does not use another workspace's stored target while catalogs are pending or
 });
 it("drops a prior session catalog after switching credentials and preserves independent successful catalog choices", async () => {
   const old = deferred<unknown>(); m.client.listGithubRepositories.mockReturnValueOnce(old.promise);
-  const view = render(createElement(AgentChatView));
+  const view = render(createElement(AgentChatView)); await openWorkspaceContext();
   await screen.findByRole("option", { name: "Development · dev" });
-  m.client.config = { sessionToken: "new-session" }; view.rerender(createElement(AgentChatView));
+  m.client.config = { sessionToken: "new-session" }; view.rerender(createElement(AgentChatView)); await openWorkspaceContext();
   await waitFor(() => expect((screen.getByLabelText("Active GitHub repository") as HTMLSelectElement).value).toBe("fixture/repository"));
   await act(async () => { old.resolve({ ok: true, data: { repositories: [{ ...repo2, fullName: "foreign/private" }] } }); });
   expect(screen.queryByRole("option", { name: /foreign\/private/ })).toBeNull();
@@ -71,7 +71,7 @@ it("drops a prior session catalog after switching credentials and preserves inde
 
 it("keeps a successful repository catalog usable when environments fail and leaves readiness unavailable", async () => {
   m.client.listEnvironments.mockResolvedValue({ ok: false, error: "Unavailable" });
-  render(createElement(AgentChatView));
+  render(createElement(AgentChatView)); await openWorkspaceContext();
   await waitFor(() => expect((screen.getByLabelText("Active GitHub repository") as HTMLSelectElement).value).toBe("fixture/repository"));
   expect((screen.getByRole("button", { name: "Review repository" }) as HTMLButtonElement).disabled).toBe(false);
   expect((screen.getByRole("button", { name: "Check deploy readiness" }) as HTMLButtonElement).disabled).toBe(true);
@@ -79,7 +79,7 @@ it("keeps a successful repository catalog usable when environments fail and leav
 });
 it("preserves explicit manual repository recovery without claiming connected catalog authority", async () => {
   m.client.listGithubRepositories.mockResolvedValue({ ok: false, error: "Unavailable" });
-  render(createElement(AgentChatView));
+  render(createElement(AgentChatView)); await openWorkspaceContext();
   await waitFor(() => expect((screen.getByLabelText("Active GitHub repository") as HTMLSelectElement).disabled).toBe(false));
   fireEvent.change(screen.getByLabelText("Active GitHub repository"), { target: { value: "__manual__" } });
   fireEvent.change(screen.getByLabelText("Repository owner and name"), { target: { value: "explicit/recovery" } });
@@ -94,7 +94,7 @@ it("restores saved preferences only when returned by current catalogs and preser
   window.localStorage.setItem("axiom.workspace.repository.v1", repo2.fullName);
   window.localStorage.setItem("axiom.workspace.environment.v1", "env-1");
   m.client.listGithubRepositories.mockResolvedValue({ ok: true, data: { repositories: [repo2], truncated: true } });
-  render(createElement(AgentChatView));
+  render(createElement(AgentChatView)); await openWorkspaceContext();
   await waitFor(() => expect((screen.getByLabelText("Active deployment environment") as HTMLSelectElement).value).toBe("env-1"));
   expect((screen.getByLabelText("Active GitHub repository") as HTMLSelectElement).value).toBe(repo2.fullName);
   expect(window.localStorage.getItem("axiom.workspace.environment.v1")).toBe("env-1");
@@ -104,7 +104,7 @@ it("restores saved preferences only when returned by current catalogs and preser
 it("preserves an explicit no-environment choice on catalog retry", async () => {
   window.localStorage.setItem("axiom.workspace.environment.v1", "env-1");
   m.client.listGithubRepositories.mockResolvedValueOnce({ ok: false, error: "Unavailable" });
-  render(createElement(AgentChatView));
+  render(createElement(AgentChatView)); await openWorkspaceContext();
   await waitFor(() => expect((screen.getByLabelText("Active deployment environment") as HTMLSelectElement).value).toBe("env-1"));
   fireEvent.change(screen.getByLabelText("Active deployment environment"), { target: { value: "" } });
   expect(window.localStorage.getItem("axiom.workspace.environment.v1")).toBeNull();
@@ -115,7 +115,7 @@ it("preserves an explicit no-environment choice on catalog retry", async () => {
 it("preserves a selected branch when retrying an unavailable environment catalog", async () => {
   m.client.listGithubBranches.mockResolvedValue({ ok: true, data: { branches: [{ name: "main", protected: true }, { name: "release", protected: true }] } });
   m.client.listEnvironments.mockResolvedValueOnce({ ok: false, error: "Unavailable" });
-  render(createElement(AgentChatView));
+  render(createElement(AgentChatView)); await openWorkspaceContext();
   await screen.findByRole("option", { name: "release · protected" });
   fireEvent.change(screen.getByLabelText("Active GitHub branch"), { target: { value: "release" } });
   fireEvent.click(screen.getByRole("button", { name: "Retry repository and environment catalogs" }));
@@ -125,7 +125,7 @@ it("preserves a selected branch when retrying an unavailable environment catalog
 
 it("preserves an explicit manual branch when the same repository is revalidated", async () => {
   m.client.listEnvironments.mockResolvedValueOnce({ ok: false, error: "Unavailable" });
-  render(createElement(AgentChatView));
+  render(createElement(AgentChatView)); await openWorkspaceContext();
   await waitFor(() => expect((screen.getByLabelText("Active GitHub repository") as HTMLSelectElement).disabled).toBe(false));
   fireEvent.change(screen.getByLabelText("Active GitHub branch"), { target: { value: "__manual__" } });
   fireEvent.change(screen.getByLabelText("Git branch name"), { target: { value: "release/private" } });
@@ -136,7 +136,7 @@ it("preserves an explicit manual branch when the same repository is revalidated"
 it("invalidates a selected file when the branch changes until the new branch catalog returns", async () => {
   m.client.listGithubFiles.mockResolvedValueOnce({ ok: true, data: { files: [{ path: "old-branch.ts", size: 10 }], truncated: false } });
   m.client.listGithubBranches.mockResolvedValue({ ok: true, data: { branches: [{ name: "main" }, { name: "release" }] } });
-  render(createElement(AgentChatView));
+  render(createElement(AgentChatView)); await openWorkspaceContext();
   fireEvent.click(screen.getByRole("button", { name: "Edit repository file" }));
   await screen.findByRole("option", { name: "old-branch.ts" });
   const nextFiles = deferred<unknown>(); m.client.listGithubFiles.mockReturnValueOnce(nextFiles.promise);
@@ -166,16 +166,17 @@ it.each(['getItem', 'setItem', 'removeItem'] as const)('keeps connected Agent co
 it("keeps compact context discoverable and preserves the draft while opening configuration", async () => {
   render(createElement(AgentChatView));
   await waitFor(() => expect((screen.getByLabelText("Active GitHub repository") as HTMLSelectElement).value).toBe("fixture/repository"));
-  const summary = screen.getByText("Workspace context").closest("summary")!;
-  const disclosure = summary.parentElement as HTMLDetailsElement;
-  expect(disclosure.open).toBe(false);
+  const summary = screen.getByRole("button", { name: /^Workspace context/ });
+  expect(summary.getAttribute("aria-expanded")).toBe("false");
+  expect(screen.queryByRole("combobox", { name: "Active GitHub repository" })).toBeNull();
   expect(summary.textContent).toContain("fixture/repository");
   const composer = screen.getByRole("textbox") as HTMLTextAreaElement;
   fireEvent.change(composer, { target: { value: "Keep my unsent work" } });
   fireEvent.click(summary);
-  expect(disclosure.open).toBe(true);
+  expect(summary.getAttribute("aria-expanded")).toBe("true");
+  expect(screen.getByRole("combobox", { name: "Active GitHub repository" })).toBeTruthy();
   fireEvent.click(summary);
-  expect(disclosure.open).toBe(false);
+  expect(summary.getAttribute("aria-expanded")).toBe("false");
   expect(composer.value).toBe("Keep my unsent work");
   expect(screen.getByLabelText("Agent composer")).toBeTruthy();
   const configuration = screen.getByRole("button", { name: /Agent configuration ·/ });
@@ -211,4 +212,9 @@ it("refuses Airflow context from a replaced desktop credential",async()=>{
 async function openAgentConfiguration() {
  const control = await screen.findByRole("button", { name: /Agent configuration ·/ });
  if (control.getAttribute("aria-expanded") === "false") fireEvent.click(control);
+}
+
+async function openWorkspaceContext() {
+  const control = await screen.findByRole("button", { name: /^Workspace context/ });
+  if (control.getAttribute("aria-expanded") !== "true") fireEvent.click(control);
 }

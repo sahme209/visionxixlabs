@@ -28,7 +28,7 @@ afterEach(cleanup);
 async function draft() { await waitFor(() => expect((screen.getByRole("combobox", { name: "Agent conversation" }) as HTMLSelectElement).value).toBe("conversation-1")); fireEvent.change(screen.getByRole("textbox"), { target: { value: "Keep this unsent request" } }); }
 it("publishes ready model and context while conversation history is still loading", async () => {
   const history = deferred<unknown>(); m.client.listAgentConversations.mockReturnValue(history.promise);
-  render(createElement(AgentChatView));
+  render(createElement(AgentChatView)); await openWorkspaceContext();
   await screen.findByRole("option", { name: "Fixture model" });
   await waitFor(() => expect((screen.getByRole("combobox", { name: "Active GitHub repository" }) as HTMLSelectElement).disabled).toBe(false));
   expect(screen.getByRole("option", { name: "Development · dev" })).toBeTruthy();
@@ -36,7 +36,7 @@ it("publishes ready model and context while conversation history is still loadin
   await act(async () => { history.resolve({ ok: true, data: { conversations: [summary] } }); });
 });
 it.each([{ ok: false, error: "provider_policy_unavailable" }, { ok: true, data: {} }])("keeps successful context usable and blocks click and Enter after unavailable model data %j", async failure => {
-  m.client.aiProviderStatus.mockResolvedValue(failure); render(createElement(AgentChatView)); await draft();
+  m.client.aiProviderStatus.mockResolvedValue(failure); render(createElement(AgentChatView)); await openWorkspaceContext(); await draft();
   await screen.findByRole("button", { name: "Retry models" });
   expect((screen.getByRole("combobox", { name: "Active GitHub repository" }) as HTMLSelectElement).disabled).toBe(false);
   expect((screen.getByRole("combobox", { name: "Active deployment environment" }) as HTMLSelectElement).disabled).toBe(false);
@@ -47,7 +47,7 @@ it.each([{ ok: false, error: "provider_policy_unavailable" }, { ok: true, data: 
 });
 it("retries only models without changing draft, conversation or selected context or sending", async () => {
   m.client.aiProviderStatus.mockResolvedValueOnce({ ok: false, error: "provider_policy_unavailable" }).mockResolvedValue(ready);
-  render(createElement(AgentChatView)); await draft();
+  render(createElement(AgentChatView)); await openWorkspaceContext(); await draft();
   fireEvent.change(screen.getByRole("combobox", { name: "Active deployment environment" }), { target: { value: "env-1" } });
   fireEvent.click(await screen.findByRole("button", { name: "Retry models" }));
   await screen.findByRole("option", { name: "Fixture model" });
@@ -108,12 +108,12 @@ it("shows an uncertain approved action without offering to execute that approval
 });
 it("allows repository selection while the independent environment catalog is delayed", async () => {
   const environments = deferred<unknown>(); m.client.listEnvironments.mockReturnValue(environments.promise);
-  render(createElement(AgentChatView)); await screen.findByRole("option", { name: "fixture/repository · private" });
+  render(createElement(AgentChatView)); await openWorkspaceContext(); await screen.findByRole("option", { name: "fixture/repository · private" });
   expect((screen.getByRole("combobox", { name: "Active GitHub repository" }) as HTMLSelectElement).disabled).toBe(false);
   await act(async () => { environments.resolve({ ok: true, data: { environments: [] } }); });
 });
 it("does not erase an environment failure when repository branches load successfully", async () => {
-  m.client.listEnvironments.mockResolvedValue({ ok: false, error: "unavailable" }); render(createElement(AgentChatView));
+  m.client.listEnvironments.mockResolvedValue({ ok: false, error: "unavailable" }); render(createElement(AgentChatView)); await openWorkspaceContext();
   await screen.findByRole("option", { name: "main · protected" }); await screen.findByText(/Deployment environments could not be loaded/);
 });
 it.each([{ ok: false, error: "provider_policy_unavailable" }, { ok: true, data: {} }])("opens Settings Models through the real App callback and retries its failed lookup before returning to Agent %j", async failure => {
@@ -210,7 +210,7 @@ it("opens Agent permissions in Settings without resending or discarding the curr
 it("preserves the actual App composer, profile and environment across an in-app Settings visit", async () => {
   m.client.hasAuth.mockReturnValue(true);
   m.client.verifyCurrentCredential.mockResolvedValue({ ok: true, data: { kind: "desktop_session", organizationId: "fixture-workspace", role: "owner", capabilities: [], access: { allowed: true, code: "active", title: "Access active", message: "Fixture", billingStatus: "no_plan", planTier: "trial" } } });
-  render(createElement(App)); await draft();
+  render(createElement(App)); await openWorkspaceContext(); await draft();
   await openAgentConfiguration();
   fireEvent.change(screen.getByRole("combobox", { name: "Specialized Agent" }), { target: { value: "code_review" } });
   fireEvent.change(screen.getByRole("combobox", { name: "Active deployment environment" }), { target: { value: "env-1" } });
@@ -781,7 +781,7 @@ it("does not lose an existing draft when editing queued work", async () => {
 it("pauses a queued request when the selected environment changes", async () => {
   m.client.listEnvironments.mockResolvedValue({ ok: true, data: { environments: [{ id: "env-1", name: "Development", tier: "dev" }, { id: "env-2", name: "Production", tier: "prod" }] } });
   const first = deferred<any>(); m.client.sendAgentMessage.mockReturnValue(first.promise);
-  render(createElement(AgentChatView)); await draft();
+  render(createElement(AgentChatView)); await openWorkspaceContext(); await draft();
   await screen.findByRole("option", { name: "Production · prod" });
   const environment = screen.getByRole("combobox", { name: "Active deployment environment" });
   fireEvent.change(environment, { target: { value: "env-1" } });
@@ -912,4 +912,9 @@ it("does not carry a saved mode to another API origin or accept a malformed stor
 async function openAgentConfiguration() {
  const control = await screen.findByRole("button", { name: /Agent configuration ·/ });
  if (control.getAttribute("aria-expanded") === "false") fireEvent.click(control);
+}
+
+async function openWorkspaceContext() {
+  const control = await screen.findByRole("button", { name: /^Workspace context/ });
+  if (control.getAttribute("aria-expanded") !== "true") fireEvent.click(control);
 }

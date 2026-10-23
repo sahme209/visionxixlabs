@@ -1,0 +1,5 @@
+# Accessible desktop workspace context
+
+The Agent workspace context now uses the same explicit Disclosure button as Agent configuration and recorded evidence. It starts collapsed, exposes expanded state and its controlled panel, and retains mounted controls while collapsed. Repository, branch and environment selection logic is unchanged. No request, provider call, permission or target change is triggered by expanding the panel.
+
+The new accessible-button regression first failed against the summary element. Existing target-selection tests now explicitly open the visible control before interacting; they retain checks for cross-session catalog isolation, exact submitted targets, manual recovery, model failure independence and queued-request context drift. The compact regression verifies the initial hidden target controls, open/close behavior and preservation of an unsent draft. All 997 desktop tests passed with zero failures and ten opt-in skips before exact-source build verification. Actual native control acceptance is recorded separately and must not be inferred from component tests.
