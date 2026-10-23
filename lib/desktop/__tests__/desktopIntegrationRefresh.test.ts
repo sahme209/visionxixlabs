@@ -27,3 +27,10 @@ it('exposes cloud and diagnostics disclosures as operable buttons without starti
  fireEvent.click(cloud);expect(cloud.getAttribute('aria-expanded')).toBe('false');
  expect(f.start).not.toHaveBeenCalled();expect(f.validate).not.toHaveBeenCalled();expect(open).not.toHaveBeenCalled();
 });
+it('keeps unavailable providers out of operator setup guides and does not start authorization',async()=>{
+ await show();
+ const slack=await screen.findByRole('button',{name:'Connect slack'});
+ expect((slack as HTMLButtonElement).disabled).toBe(true);
+ expect(screen.queryByRole('button',{name:'Setup guide ↗'})).toBeNull();
+ fireEvent.click(slack);expect(f.start).not.toHaveBeenCalled();expect(open).not.toHaveBeenCalled();
+});
