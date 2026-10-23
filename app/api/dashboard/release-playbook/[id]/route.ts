@@ -154,7 +154,7 @@ export async function GET(
     const orgId = ctx.organizationId;
 
     // Query all data sources in parallel for performance
-    const [release, readiness, evidence, auditEvents, approvalChain, policyViolations, cherryPicks] = await Promise.all([
+    const [release, readiness, evidence, auditEvents, approvalLookup, policyViolations, cherryPicks] = await Promise.all([
       prisma.release.findUnique({
         where: { id: releaseId },
       }),
@@ -180,6 +180,13 @@ export async function GET(
           approvalItemId: releaseId,
         },
         include: { votes: true },
+      }).then(chain => ({ chain, unavailable: false })).catch((error: unknown) => {
+        // Missing legacy storage is not an absent chain or an approval. Only
+        // this read may degrade; permission/transport failures still fail.
+        if (error && typeof error === "object" && "code" in error && error.code === "P2021") {
+          return { chain: null, unavailable: true };
+        }
+        throw error;
       }),
       // Policy violations exist in schema; query them directly
       prisma.policyViolation.count({
@@ -215,6 +222,8 @@ export async function GET(
     if (!release || release.organizationId !== orgId) {
       throw AxiomErrors.validation("not_found", "Release not found.");
     }
+
+    const approvalChain = approvalLookup.chain;
 
     // GitHub evidence — only queryable once a repository has been bound
     // (release.evidenceRepositoryId) AND a commit is known. Depends on
@@ -305,11 +314,13 @@ export async function GET(
         // absent chain means approval hasn't been evaluated at all yet.
         // Conflating the two previously made "not yet evaluated" render as
         // "Not Required" in the UI.
-        required: approvalChain
+        required: approvalLookup.unavailable
+          ? { available: false, reason: "Approval storage is unavailable. No approval authority can be established." }
+          : approvalChain
           ? approvalChain.requiredCount
           : { available: false, reason: "Approval chain not yet created — readiness or policy evaluation has not run." },
         granted: approvalChain?.votes.filter((v: any) => v.decision === "approve").length ?? 0,
-        status: approvalChain?.status ?? "not_evaluated",
+        status: approvalLookup.unavailable ? "unavailable" : approvalChain?.status ?? "not_evaluated",
       },
 
       execution: {

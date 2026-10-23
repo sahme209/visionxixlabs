@@ -196,7 +196,7 @@ export default function UnifiedPlaybookPage() {
                   stage="readiness"
                   status={!data.readiness.evaluatedAt ? "pending" : (data.readiness.blockerCount as number) > 0 ? "warning" : "complete"}
                   title="Readiness"
-                  description={!data.readiness.evaluatedAt ? "Not yet evaluated" : `Score: ${data.readiness.overallScore}/100 (${data.readiness.riskLevel})`}
+                  description={!data.readiness.evaluatedAt ? data.approval.status === "unavailable" ? "Approval storage unavailable" : "Not yet evaluated" : `Score: ${data.readiness.overallScore}/100 (${data.readiness.riskLevel})`}
                   facts={[
                     { label: "Score", value: data.readiness.evaluatedAt ? `${data.readiness.overallScore}/100` : "—" },
                     { label: "Risk", value: data.readiness.riskLevel as string },
@@ -245,11 +245,11 @@ export default function UnifiedPlaybookPage() {
                   title="Approval"
                   description={
                     requiredCount(data.approval.required) === null
-                      ? "Not yet evaluated"
+                      ? data.approval.status === "unavailable" ? "Approval storage unavailable" : "Not yet evaluated"
                       : `${data.approval.granted as unknown as number}/${requiredCount(data.approval.required)} approvals`
                   }
                   facts={[
-                    { label: "Granted", value: `${data.approval.granted as unknown as number}` },
+                    { label: "Granted", value: data.approval.status === "unavailable" ? "Unavailable" : `${data.approval.granted as unknown as number}` },
                     { label: "Required", value: describeCount(data.approval.required) },
                   ]}
                   detailLink={`#approval`}
@@ -346,8 +346,8 @@ export default function UnifiedPlaybookPage() {
                     <div className="flex items-start gap-3">
                       <div className="text-zinc-400 mt-0.5">•</div>
                       <div className="flex-1">
-                        <h4 className="text-[13px] font-semibold text-zinc-300 mb-1">Approval requirement not yet evaluated</h4>
-                        <p className="text-[12px] text-zinc-400">No approval chain has been created for this release yet. Run readiness/policy evaluation to determine how many approvals are required.</p>
+                        <h4 className="text-[13px] font-semibold text-zinc-300 mb-1">{data.approval.status === "unavailable" ? "Approval storage unavailable" : "Approval requirement not yet evaluated"}</h4>
+                        <p className="text-[12px] text-zinc-400">{data.approval.status === "unavailable" ? "Approval records cannot be read. No approval authority can be established." : "No approval chain has been created for this release yet. Run readiness/policy evaluation to determine how many approvals are required."}</p>
                       </div>
                     </div>
                   </div>
