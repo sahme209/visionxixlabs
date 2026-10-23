@@ -3,6 +3,7 @@
 mod cloud;
 mod config;
 mod git;
+mod worktrees;
 mod repository_create;
 mod http;
 mod menu;
@@ -60,6 +61,9 @@ fn main() {
             cloud::validate_gcp_credentials,
             cloud::get_connector_status,
             cloud::run_cloud_scan,
+            worktrees::list_repository_worktrees,
+            worktrees::create_repository_worktree,
+            worktrees::remove_repository_worktree,
             git::clone_repository,
             git::default_repos_directory,
             git::list_local_repositories,

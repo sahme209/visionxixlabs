@@ -34,7 +34,15 @@ export function isAgentToolActivity(value: unknown): value is AgentToolActivity 
     && ["running", "completed", "failed"].includes(event.state as string);
 }
 
+export const AGENT_MESSAGE_ISSUES = [
+  "workspace_ai_disabled", "workspace_ai_provider_unavailable", "workspace_ai_model_not_allowed", "workspace_ai_policy_unavailable",
+  "workspace_ai_credit_meter_unavailable", "workspace_ai_credit_pool_exhausted", "workspace_agent_disabled", "workspace_agent_policy_unavailable",
+  "agent_tool_not_allowed", "decision_malformed", "max_iterations_exceeded", "tool_execution_failed", "request_failed",
+] as const;
+export type AgentMessageIssue = typeof AGENT_MESSAGE_ISSUES[number];
+export function isAgentMessageIssue(value: unknown): value is AgentMessageIssue { return typeof value === "string" && (AGENT_MESSAGE_ISSUES as readonly string[]).includes(value); }
 export interface AgentMessageReply {
+  issue?: AgentMessageIssue;
   reply: string;
   proposal: { id: string; toolName: string; argsJson: unknown; riskLevel: string; status: string } | null;
   usage?: { decisionSteps: number; inputTokens: number | null; outputTokens: number | null; totalTokens: number | null } | null;
@@ -49,6 +57,7 @@ export type AgentMessageStreamEvent =
 export function isAgentMessageReply(value: unknown): value is AgentMessageReply {
   if (!value || typeof value !== "object") return false;
   const v = value as AgentMessageReply;
+  if (v.issue !== undefined && (!isAgentMessageIssue(v.issue) || v.proposal !== null)) return false;
   if (typeof v.reply !== "string" || v.reply.length > 131_072) return false;
   if (v.proposal !== null) {
     const p = v.proposal;

@@ -516,3 +516,9 @@ it("does not start inference after cancellation during profile audit persistence
   expect(mocks.runDecisionLoop).not.toHaveBeenCalled(); expect(mocks.createProposal).not.toHaveBeenCalled();
 
 });
+it("returns a typed Agent policy block without presenting it as an executable proposal", async () => {
+ mocks.resolveRequestDesktopSession.mockResolvedValue(session);mocks.findFirstConversation.mockResolvedValue({id:"conv_1",organizationId:"org-1",userId:"user-1",title:null});
+ mocks.runDecisionLoop.mockResolvedValue({kind:"error",error:"workspace_agent_policy_unavailable"});
+ const {POST}=await import("../route");const result=await POST(request({message:"inspect safely"}),params);
+ expect(await result.json()).toMatchObject({ok:true,data:{proposal:null,issue:"workspace_agent_policy_unavailable"}});
+});

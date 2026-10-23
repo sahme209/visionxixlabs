@@ -73,3 +73,10 @@ it("limits activity presentation to the registered read-only surface", async () 
   expect(isAgentToolActivity({step: 9, toolName: "read_github_file", state: "running"})).toBe(false);
   expect(isAgentToolActivity({step: 1, toolName: "__proto__", state: "running"})).toBe(false);
 });
+it('preserves a typed policy issue without inventing a successful answer',async()=>{
+ const data={reply:'Policy unavailable',proposal:null,usage:null,issue:'workspace_agent_policy_unavailable'};
+ expect(await readAgentMessageStream(response([{type:'result',data}]),vi.fn(),new AbortController().signal)).toEqual(data);
+});
+it.each(['arbitrary_private_error', {secret:'hidden'}, 4])('rejects unsupported issue metadata %j',async issue=>{
+ await expect(readAgentMessageStream(response([{type:'result',data:{...terminal.data,issue}}]),vi.fn(),new AbortController().signal)).rejects.toThrow();
+});

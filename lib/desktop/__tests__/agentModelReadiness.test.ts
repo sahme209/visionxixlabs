@@ -698,3 +698,40 @@ it("searches saved conversation titles and retains separate drafts while switchi
   await waitFor(() => expect((screen.getByRole("textbox") as HTMLTextAreaElement).value).toBe("Keep this unsent request"));
   expect(m.client.sendAgentMessage).not.toHaveBeenCalled();
 });
+it("retains a blocked request for explicit draft restoration and opens the correct settings",async()=>{
+ const settings=vi.fn();m.client.sendAgentMessage.mockResolvedValue({ok:true,data:{reply:"AI credits exhausted",proposal:null,usage:null,issue:"workspace_ai_credit_pool_exhausted"}});
+ render(createElement(AgentChatView,{onOpenSettings:settings}));await draft();fireEvent.click(screen.getByRole("button",{name:"Send"}));
+ fireEvent.click(await screen.findByRole("button",{name:"Restore request draft"}));
+ expect((screen.getByRole("textbox") as HTMLTextAreaElement).value).toBe("Keep this unsent request");
+ fireEvent.click(screen.getByRole("button",{name:"Review plan & usage"}));expect(settings).toHaveBeenCalledWith("plan");
+ expect(m.client.sendAgentMessage).toHaveBeenCalledTimes(1);
+});
+it("does not pull a reader down during streaming and offers explicit jump to latest",async()=>{
+ const pending=deferred<unknown>();m.client.sendAgentMessage.mockReturnValue(pending.promise);
+ render(createElement(AgentChatView));await draft();
+ const transcript=screen.getByRole("region",{name:"Agent conversation messages"});
+ Object.defineProperties(transcript,{scrollHeight:{configurable:true,value:2000},clientHeight:{configurable:true,value:400},scrollTop:{configurable:true,value:200,writable:true}});
+ fireEvent.scroll(transcript);
+ const scroll=vi.fn();transcript.scrollTo=scroll;
+ fireEvent.click(screen.getByRole("button",{name:"Send"}));
+ await screen.findByRole("button",{name:"Jump to latest"});
+ expect(scroll).not.toHaveBeenCalled();fireEvent.click(screen.getByRole("button",{name:"Jump to latest"}));expect(scroll).toHaveBeenCalled();
+ await act(async()=>pending.resolve({ok:true,data:{reply:"Done",proposal:null,usage:null}}));
+});
+it("keeps the editor and Agent drafts mounted across split workspace and Settings",async()=>{
+ m.client.hasAuth.mockReturnValue(true);m.client.verifyCurrentCredential.mockResolvedValue({ok:true,data:{kind:"desktop_session",organizationId:"fixture-workspace",role:"owner",capabilities:[],access:{allowed:true,code:"active",title:"Active",message:"Fixture",billingStatus:"no_plan",planTier:"trial"}}});
+ m.invoke.mockImplementation(async(command:string)=>{
+  if(command==="default_repos_directory")return "/owned";if(command==="list_local_repositories")return ["/owned/A"];
+  if(command==="repository_status")return {rootPath:"/owned/A",repositoryFullName:"fixture/repository",branch:"feature",ahead:0,behind:0,changedFiles:[]};
+  if(command==="list_repository_files")return ["main.ts"];if(command==="detect_repository_checks"||command==="list_repository_worktrees")return [];
+  if(command==="read_repository_file")return "Saved file";throw Error("unexpected fixture command");
+ });
+ render(createElement(App));await draft();fireEvent.click(screen.getByRole("button",{name:"Editor & Agent"}));
+ fireEvent.click(await screen.findByRole("button",{name:"main.ts"}));fireEvent.change(await screen.findByRole("textbox",{name:"Editing main.ts"}),{target:{value:"Editor draft"}});
+ expect((screen.getByRole("textbox",{name:"Agent request"}) as HTMLTextAreaElement).value).toBe("Keep this unsent request");
+ fireEvent.click(screen.getByRole("button",{name:"Settings"}));await screen.findByRole("button",{name:"Back to workspace"});fireEvent.click(screen.getByRole("button",{name:"Back to workspace"}));
+ expect((screen.getByRole("textbox",{name:"Editing main.ts"}) as HTMLTextAreaElement).value).toBe("Editor draft");
+ fireEvent.click(screen.getByRole("button",{name:"Single pane"}));
+ expect((screen.getByRole("textbox",{name:"Agent request"}) as HTMLTextAreaElement).value).toBe("Keep this unsent request");
+ expect(m.invoke.mock.calls.filter(([command])=>command==="read_repository_file")).toHaveLength(1);expect(m.client.sendAgentMessage).not.toHaveBeenCalled();
+});

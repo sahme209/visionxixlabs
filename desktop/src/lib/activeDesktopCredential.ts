@@ -103,9 +103,13 @@ async function readSelectedDesktopCredential(): Promise<{ token?: string; select
   return { token, selectionVersion: JSON.stringify({ legacyToken: token, session }) };
 }
 
-export async function hydrateDesktopCredential(): Promise<void> {
+export async function hydrateDesktopCredential(signal?: AbortSignal): Promise<void> {
+  assertDesktopNotAborted(signal);
+  const generation = ++selectionGeneration;
   desktopClient.setSession(undefined);
   const candidate = await readSelectedDesktopCredential();
+  assertDesktopNotAborted(signal);
+  if (generation !== selectionGeneration) return;
   if (candidate.token) desktopClient.setSession(candidate.token);
 }
 

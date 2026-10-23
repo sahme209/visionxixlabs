@@ -1,4 +1,4 @@
-import { AGENT_TOOL_ACTIVITY_FEATURE, type AgentToolActivity } from "../../../lib/desktop/agentMessageStreamProtocol";
+import { AGENT_TOOL_ACTIVITY_FEATURE, type AgentToolActivity, type AgentMessageIssue } from "../../../lib/desktop/agentMessageStreamProtocol";
 import type { AgentProfileId } from "../../../lib/axiom/agentRuntime/agentProfiles";
 import { assertDesktopNotAborted } from "./abortSignal";
 import type { ModelPolicy } from "./aiProviderStatus";
@@ -1054,6 +1054,10 @@ export class DesktopClient {
     return this.get("/api/desktop/agent/conversations");
   }
 
+  renameAgentConversation(conversationId: string, title: string, expectedTitle: string | null): Promise<ApiResult<{id: string; title: string}>> {
+    return this.post(`/api/desktop/agent/conversations/${encodeURIComponent(conversationId)}/rename`, {title, expectedTitle});
+  }
+
   getAgentConversation(conversationId: string): Promise<ApiResult<{
     id: string; title: string | null;
     turns: Array<{ id: string; role: string; content: string; actionProposalId: string | null; createdAt: string }>;
@@ -1072,6 +1076,7 @@ export class DesktopClient {
     agentProfile?: AgentProfileId;
   }, preferredModel?: string, streaming?: { signal: AbortSignal; onDraft: (text: string) => void; onActivity?: (activity: AgentToolActivity) => void }): Promise<ApiResult<{
     reply: string;
+    issue?: AgentMessageIssue;
     proposal: { id: string; toolName: string; argsJson: unknown; riskLevel: string; status: string } | null;
     /** Provider-reported token evidence, not a settled customer credit charge. */
     usage: { decisionSteps: number; inputTokens: number | null; outputTokens: number | null; totalTokens: number | null } | null;

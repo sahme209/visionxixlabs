@@ -85,7 +85,7 @@ it("preserves explicit manual repository recovery without claiming connected cat
   fireEvent.change(screen.getByLabelText("Repository owner and name"), { target: { value: "explicit/recovery" } });
   expect(screen.getByLabelText("Selected Agent context").textContent).toContain("explicit/recovery (manual, catalog unverified)");
   fireEvent.change(screen.getByRole("textbox", { name: "Repository owner and name" }), { target: { value: "explicit/recovery" } });
-  fireEvent.change(screen.getByRole("textbox", { name: "" }), { target: { value: "Inspect manually entered repository" } });
+  fireEvent.change(screen.getByRole("textbox", { name: "Agent request" }), { target: { value: "Inspect manually entered repository" } });
   fireEvent.click(screen.getByRole("button", { name: "Send" }));
   await waitFor(() => expect(m.client.sendAgentMessage).toHaveBeenCalledWith("conversation-1", "Inspect manually entered repository", "vercel_gateway", expect.objectContaining({ repositoryFullName: "explicit/recovery" }), "fixture/model", expect.objectContaining({ signal: expect.anything(), onDraft: expect.any(Function) })));
 });

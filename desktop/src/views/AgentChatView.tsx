@@ -1,4 +1,4 @@
-import { AGENT_TOOL_ACTIVITY_LABELS, type AgentToolActivity } from "../../../lib/desktop/agentMessageStreamProtocol";
+import { AGENT_TOOL_ACTIVITY_LABELS, type AgentToolActivity, type AgentMessageIssue } from "../../../lib/desktop/agentMessageStreamProtocol";
 import { localCodingProposals, type LocalCodingProposal } from "../lib/localEditReview";
 import { localCodeContextPrompt, type LocalCodeSelection } from "../lib/localCodeContext";
 import { selectSkillInvocation } from "../lib/skillInvocation";
@@ -6,10 +6,11 @@ import { readDesktopPreferences } from "../lib/preferences";
 import { rememberConversationDraft } from "../lib/conversationDrafts";
 import { isSensitiveRepositoryEvidencePath } from "../../../lib/axiom/agentRuntime/repositoryEvidencePolicy";
 import { AGENT_PROFILES, resolveAgentProfile, type AgentProfileId } from "../../../lib/axiom/agentRuntime/agentProfiles";
+import { ConversationRename } from "../components/ConversationRename";
 import { AgentModelSelector } from "../components/AgentModelSelector";
 import { agentModelChoices, modelPreferenceKey, type AgentModelChoice } from "../lib/agentModelSelection";
 import { AgentRestartReceipts } from "../components/AgentRestartReceipts";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Badge, riskToneFor } from "../components/Primitives";
 import { desktopClient, type AgentSkillCatalogItem, type VerifiedDesktopIdentity } from "../lib/desktopClient";
 import { normalizeAiProviderStatus } from "../lib/aiProviderStatus";
@@ -170,7 +171,7 @@ function describeEvidenceResult(action: Proposal): string {
   return "Verified by the service.";
 }
 
-export type AgentSettingsDestination = "models" | "agents";
+export type AgentSettingsDestination = "models" | "agents" | "plan";
 export type AgentLocalCodeRequest = LocalCodeSelection & { context: object; workspace?: string };
 export interface AgentSkillRequest { skillId: string; context: object; workspace?: string }
 
@@ -188,6 +189,7 @@ export function AgentChatView({ onOpenSettings, identity, active = true, request
 function AgentChatSession({ onOpenSettings, identity, active, requestedSkill, requestedLocalCode, onReviewLocalEdit }: { onOpenSettings?: (destination: AgentSettingsDestination) => void; identity?: VerifiedDesktopIdentity; active: boolean; requestedSkill?: AgentSkillRequest; requestedLocalCode?: AgentLocalCodeRequest; onReviewLocalEdit?: (edit: LocalCodingProposal, edits?: LocalCodingProposal[]) => void }) {
   const [conversationId, setConversationId] = useState<string | null>(null);
   const [conversations, setConversations] = useState<ConversationSummary[]>([]);
+  const [renamingBusy, setRenamingBusy] = useState(false);
   const [historyOpen, setHistoryOpen] = useState(false);
   const [historySearch, setHistorySearch] = useState("");
   const [turns, setTurns] = useState<ChatTurn[]>([]);
@@ -274,6 +276,7 @@ function AgentChatSession({ onOpenSettings, identity, active, requestedSkill, re
   const skillRefreshEpoch = useRef(0);
   const verifiedSkillEpoch = useRef<number | null>(null);
   const [skillState, setSkillState] = useState<"checking" | "ready" | "unavailable">("checking");
+  const [latestIssue, setLatestIssue] = useState<{code: AgentMessageIssue; instruction: string; conversationId: string} | null>(null);
   const [latestUsage, setLatestUsage] = useState<{ decisionSteps: number; inputTokens: number | null; outputTokens: number | null; totalTokens: number | null } | null>(null);
   const [startupAttempt, setStartupAttempt] = useState(0);
   const [modelAttempt, setModelAttempt] = useState(0);
@@ -628,7 +631,7 @@ function AgentChatSession({ onOpenSettings, identity, active, requestedSkill, re
 
   async function openConversation(id: string, reload = false) {
     // A newer selection supersedes an in-flight read; the epoch below rejects late results.
-    if (sending || (reload && loadingConversation) || (!reload && id === conversationId && !loadingConversation)) return;
+    if (renamingBusy || sending || (reload && loadingConversation) || (!reload && id === conversationId && !loadingConversation)) return;
     if (!reload && !rememberCurrentDraft()) return;
     setQueuePaused(true);
     const generation = ++conversationEpoch.current, context = desktopClient.config;
@@ -641,12 +644,13 @@ function AgentChatSession({ onOpenSettings, identity, active, requestedSkill, re
       activeConversation.current = result.data.id;
       requireRecovery(id, false);
       setConversationId(result.data.id);
+      setConversations(current => current.map(conversation => conversation.id === result.data.id ? {...conversation, title: result.data.title} : conversation));
       if (!reload) setInput(conversationDrafts.current.get(result.data.id) ?? "");
       setTurns(result.data.turns.filter((turn): turn is typeof turn & { role: ChatTurn["role"] } => turn.role === "user" || turn.role === "assistant" || turn.role === "tool_result"));
       setPendingProposal([...result.data.actions].reverse().find((action) => action.status === "proposed") ?? null);
       setEvidenceActions(result.data.actions.filter((action) => action.riskLevel === "low"));
       setRestartActions(result.data.actions.filter((action) => action.toolName === "trigger_aws_deploy"));
-      setLatestUsage(null);
+      setLatestUsage(null); setLatestIssue(null);
       setStreamingDraft("");
     } catch {
       if (generation === conversationEpoch.current && context === desktopClient.config) { activeConversation.current = conversationId; setError("The selected conversation could not be loaded."); }
@@ -654,7 +658,7 @@ function AgentChatSession({ onOpenSettings, identity, active, requestedSkill, re
   }
 
   async function newConversation() {
-    if (sending || loadingConversation || !rememberCurrentDraft()) return;
+    if (renamingBusy || sending || loadingConversation || !rememberCurrentDraft()) return;
     setQueuePaused(true);
     const generation = ++conversationEpoch.current, context = desktopClient.config;
     decisionEpoch.current += 1; activeConversation.current = null; setDecidingId(null);
@@ -667,15 +671,25 @@ function AgentChatSession({ onOpenSettings, identity, active, requestedSkill, re
       setConversations((current) => [summary, ...current]);
       activeConversation.current = result.data.id;
       setConversationId(result.data.id); setTurns([]); setPendingProposal(null);
-      setEvidenceActions([]); setRestartActions([]); setLatestUsage(null); setInput("");
+      setEvidenceActions([]); setRestartActions([]); setLatestUsage(null); setLatestIssue(null); setInput("");
     } catch {
       if (generation === conversationEpoch.current && context === desktopClient.config) { activeConversation.current = conversationId; setError("A new conversation could not be started."); }
     } finally { if (generation === conversationEpoch.current && context === desktopClient.config) setLoadingConversation(false); }
   }
 
+  const followsLatest = useRef(true);
+  const [newActivity, setNewActivity] = useState(false);
+  const composerRef = useRef<HTMLTextAreaElement>(null);
+  useEffect(() => { followsLatest.current = true; setNewActivity(false); setRenamingBusy(false); }, [conversationId]);
   useEffect(() => {
-    scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: sending ? "auto" : "smooth" });
-  }, [turns, pendingProposal, streamingDraft, sending]);
+    if (followsLatest.current) scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: sending ? "auto" : "smooth" });
+    else setNewActivity(true);
+  }, [turns, pendingProposal, streamingDraft, sending, toolActivity]);
+  useLayoutEffect(() => {
+    const editor = composerRef.current;
+    if (editor) { editor.style.height = "auto"; editor.style.height = `${Math.max(48, Math.min(200, editor.scrollHeight))}px`; }
+  }, [input]);
+  function jumpToLatest() { followsLatest.current = true; setNewActivity(false); scrollRef.current?.scrollTo({top: scrollRef.current.scrollHeight, behavior: "smooth"}); }
 
   const requestKey = JSON.stringify([repositoryFullName.trim(), branch.trim(), environmentId, composerMode, composerMode === "code" ? filePath.trim() : "", operationMode, agentProfile, selectedModel]);
   const currentQueue = queuedMessages.filter(message => message.conversationId === conversationId);
@@ -713,7 +727,7 @@ function AgentChatSession({ onOpenSettings, identity, active, requestedSkill, re
 
   async function send(queued?: QueuedAgentMessage) {
     const instruction = queued?.instruction ?? input.trim();
-    if (!active || modelState !== "ready" || !selectedModel || !instruction || !conversationId || activeConversation.current !== conversationId || loadingConversation || sending || pendingProposal || messageAbort.current || recoveryRef.current.has(conversationId) || (composerMode === "code" && (!repositoryFullName.includes("/") || !branch.trim() || !filePath.trim()))) return;
+    if (renamingBusy || !active || modelState !== "ready" || !selectedModel || !instruction || !conversationId || activeConversation.current !== conversationId || loadingConversation || sending || pendingProposal || messageAbort.current || recoveryRef.current.has(conversationId) || (composerMode === "code" && (!repositoryFullName.includes("/") || !branch.trim() || !filePath.trim()))) return;
     const choice = modelOptions.find(option => option.key === selectedModel);
     if (!choice) return;
     const context = desktopClient.config, ownerConversation = conversationId, generation = conversationEpoch.current;
@@ -726,6 +740,7 @@ function AgentChatSession({ onOpenSettings, identity, active, requestedSkill, re
       setInput("");
     }
     setQueuePaused(false);
+    setLatestIssue(null);
     setError(null);
     setTurns((prev) => [...prev, { id: `local_${Date.now()}`, role: "user", content: instruction }]);
     setToolActivity([]);
@@ -761,10 +776,11 @@ function AgentChatSession({ onOpenSettings, identity, active, requestedSkill, re
       setTurns((prev) => [...prev, { id: `local_${Date.now()}_r`, role: "assistant", content: result.data.reply }]);
       setPendingProposal(result.data.proposal && result.data.proposal.status === "proposed" ? result.data.proposal : null);
       setLatestUsage(result.data.usage);
+      if (result.data.issue) setLatestIssue({code: result.data.issue, instruction, conversationId: ownerConversation});
       const refreshed = await desktopClient.getAgentConversation(conversationId);
       if (!currentRequest()) return;
       if (refreshed.ok && refreshed.data.id === ownerConversation) {
-        queueContinuationVerified = Boolean(result.data.usage) && !result.data.proposal && !refreshed.data.actions.some(action => action.status === "proposed");
+        queueContinuationVerified = !result.data.issue && Boolean(result.data.usage) && !result.data.proposal && !refreshed.data.actions.some(action => action.status === "proposed");
         setEvidenceActions(refreshed.data.actions.filter((action) => action.riskLevel === "low"));
         setRestartActions(refreshed.data.actions.filter((action) => action.toolName === "trigger_aws_deploy"));
       }
@@ -843,14 +859,14 @@ function AgentChatSession({ onOpenSettings, identity, active, requestedSkill, re
 
   return (
     <div className="flex-1 flex flex-col min-h-0 min-w-0 overflow-hidden bg-axiom-bg">
-      <div className="flex items-center gap-3 border-b border-white/[0.06] px-8 py-3">
-        <label className="flex min-w-0 flex-1 items-center gap-2 text-[11px] text-zinc-500">
+      <div className="flex flex-wrap items-center gap-2 border-b border-white/[0.06] px-3 py-3">
+        <label className="flex min-w-[160px] flex-1 items-center gap-2 text-[11px] text-zinc-500">
           <span className="shrink-0">Conversation</span>
           <select
             aria-label="Agent conversation"
             value={conversationId ?? ""}
             onChange={(event) => void openConversation(event.target.value)}
-            disabled={sending || conversations.length === 0}
+            disabled={renamingBusy || sending || conversations.length === 0}
             className="min-w-0 max-w-md flex-1 truncate rounded-md border border-white/10 bg-[#151719] px-2.5 py-1.5 text-xs text-zinc-300 outline-none focus:border-white/25 disabled:opacity-50"
           >
             {conversations.length === 0 && <option value="">No conversations yet</option>}
@@ -861,8 +877,9 @@ function AgentChatSession({ onOpenSettings, identity, active, requestedSkill, re
             ))}
           </select>
         </label>
+        {conversationId && <ConversationRename onBusyChange={setRenamingBusy} key={conversationId} id={conversationId} title={conversations.find(conversation => conversation.id === conversationId)?.title ?? null} disabled={sending || loadingConversation} onRenamed={(id, title) => setConversations(current => current.map(conversation => conversation.id === id ? {...conversation, title} : conversation))} />}
         <button type="button" aria-expanded={historyOpen} aria-controls="agent-conversation-history" onClick={() => setHistoryOpen(open => !open)} className="shrink-0 rounded-lg border border-white/10 px-3 py-2 text-xs text-zinc-200 hover:bg-white/[0.06]">{historyOpen ? "Close history" : "Search chats"}</button>
-        <button type="button" onClick={() => void newConversation()} disabled={loadingConversation || sending} className="shrink-0 rounded-lg border border-white/10 px-3 py-2 text-xs text-zinc-200 hover:bg-white/[0.06] disabled:opacity-50">
+        <button type="button" onClick={() => void newConversation()} disabled={renamingBusy || loadingConversation || sending} className="shrink-0 rounded-lg border border-white/10 px-3 py-2 text-xs text-zinc-200 hover:bg-white/[0.06] disabled:opacity-50">
           {loadingConversation ? "Loading…" : "New chat"}
         </button>
       </div>
@@ -973,7 +990,8 @@ function AgentChatSession({ onOpenSettings, identity, active, requestedSkill, re
         {contextError && <p role="status" className="mx-auto mt-2 max-w-5xl text-[11px] text-amber-300">{contextError}. Repository and branch can be entered manually.</p>}
         </div>
       </details>
-      <div ref={scrollRef} className="min-h-0 flex-1 overflow-y-auto px-5 py-5">
+      <div className="relative min-h-0 flex-1">
+      <div ref={scrollRef} role="region" aria-label="Agent conversation messages" onScroll={event => {const pane = event.currentTarget; followsLatest.current = pane.scrollHeight - pane.scrollTop - pane.clientHeight < 96; if (followsLatest.current) setNewActivity(false);}} className="h-full overflow-y-auto px-5 py-5">
         <div className="max-w-3xl mx-auto space-y-5">
           {turns.length === 0 && (
             <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-6 text-center">
@@ -1003,6 +1021,14 @@ function AgentChatSession({ onOpenSettings, identity, active, requestedSkill, re
           </div>}
           <AgentRestartReceipts key={conversationId} conversationId={conversationId} actions={restartActions} />
           {evidenceActions.length > 0 && <EvidencePanel actions={evidenceActions.slice(-8)} />}
+          {latestIssue && latestIssue.conversationId === conversationId && <section aria-label="Agent request needs attention" className="rounded-xl border border-amber-300/20 bg-amber-300/[0.03] p-4">
+            <p className="text-xs font-medium text-amber-200">Request needs attention</p>
+            <p className="mt-2 text-xs leading-5 text-zinc-400">The service reported a request failure. Queued work is paused; no automatic retry is scheduled. Review recorded activity before trying again.</p>
+            <div className="mt-3 flex flex-wrap gap-2">
+              <button type="button" disabled={sending || loadingConversation || Boolean(input.trim())} onClick={() => setInput(latestIssue.instruction)} className="rounded-lg border border-white/10 px-3 py-1.5 text-xs text-zinc-300 disabled:opacity-40">Restore request draft</button>
+              {onOpenSettings && <button type="button" onClick={() => onOpenSettings(latestIssue.code.includes("credit") ? "plan" : latestIssue.code.startsWith("workspace_ai_") || latestIssue.code === "decision_malformed" ? "models" : "agents")} className="rounded-lg border border-white/10 px-3 py-1.5 text-xs text-zinc-300">{latestIssue.code.includes("credit") ? "Review plan & usage" : latestIssue.code.startsWith("workspace_ai_") || latestIssue.code === "decision_malformed" ? "Review model settings" : "Review Agent settings"}</button>}
+            </div>
+          </section>}
           {latestUsage && <UsageReceipt usage={latestUsage} />}
           {pendingProposal && (
             <ProposalCard onReviewLocally={onReviewLocalEdit} proposal={pendingProposal} deciding={loadingConversation || decidingId === pendingProposal.id} onApprove={() => void decide(true)} onReject={() => void decide(false)} />
@@ -1015,6 +1041,8 @@ function AgentChatSession({ onOpenSettings, identity, active, requestedSkill, re
             </div>
           )}
         </div>
+      </div>
+      {newActivity && <button type="button" onClick={jumpToLatest} className="absolute bottom-3 right-5 rounded-full border border-white/15 bg-[#242529] px-3 py-2 text-xs text-zinc-200 shadow-lg">Jump to latest</button>}
       </div>
       <div aria-label="Agent composer" className="min-h-0 max-h-[50vh] shrink overflow-y-auto border-t border-white/[0.06] px-5 py-3">
         <div className="max-w-3xl mx-auto">
@@ -1038,6 +1066,8 @@ function AgentChatSession({ onOpenSettings, identity, active, requestedSkill, re
           </p>
           <div className="mb-3 flex items-end gap-3">
           <textarea
+            ref={composerRef}
+            aria-label="Agent request"
             value={input}
             onChange={(event) => setInput(event.target.value)}
             onKeyDown={(event) => { if (event.key === "Enter" && !event.shiftKey && !event.altKey && (!submitWithCommandEnter || event.metaKey || event.ctrlKey) && !event.nativeEvent.isComposing && event.nativeEvent.keyCode !== 229) { event.preventDefault(); submitDraft(); } }}
@@ -1049,7 +1079,7 @@ function AgentChatSession({ onOpenSettings, identity, active, requestedSkill, re
           <button
             type="button"
             onClick={submitDraft}
-            disabled={modelState !== "ready" || !selectedModel || loadingConversation || (needsRecovery && !sending) || !input.trim() || !conversationId || Boolean(pendingProposal) || (composerMode === "code" && (!repositoryFullName.includes("/") || !branch.trim() || !filePath.trim()))}
+            disabled={renamingBusy || modelState !== "ready" || !selectedModel || loadingConversation || (needsRecovery && !sending) || !input.trim() || !conversationId || Boolean(pendingProposal) || (composerMode === "code" && (!repositoryFullName.includes("/") || !branch.trim() || !filePath.trim()))}
             className="rounded-xl bg-white px-5 py-3 text-sm font-semibold text-black disabled:opacity-40"
           >
             {sending || currentQueue.length ? newMessageBehavior === "interrupt" && sending ? "Interrupt & queue" : "Queue message" : "Send"}

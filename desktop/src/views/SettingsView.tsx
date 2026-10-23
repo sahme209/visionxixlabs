@@ -97,7 +97,7 @@ const sections: Array<{ id: Section; label: string; icon: typeof CircleUserRound
   { id: "integrations", label: "Integrations", icon: Link2 },
 ];
 
-export function SettingsView({ identity, initialSection, onClose }: { identity: VerifiedDesktopIdentity; initialSection?: "models" | "agents"; onClose?: () => void }) {
+export function SettingsView({ identity, initialSection, onClose, onOpenRepository }: { identity: VerifiedDesktopIdentity; initialSection?: "models" | "agents" | "plan"; onOpenRepository?: () => void; onClose?: () => void }) {
   const [search, setSearch] = useState("");
   const [active, setActive] = useState<Section>(initialSection ?? "general");
   const [prefs, setPrefs] = useState<DesktopPreferences | null>(null);
@@ -179,7 +179,7 @@ export function SettingsView({ identity, initialSection, onClose }: { identity: 
             {active === "git" && <GitSection />}
           {active === "environments" && <EnvironmentsSection identity={identity} />}
           {active === "identity" && <IdentitySection />}
-          {active === "worktrees" && <WorktreesSection prefs={prefs} />}
+          {active === "worktrees" && <WorktreesSection onOpenRepository={onOpenRepository} />}
           {active === "integrations" && <IntegrationsSection identity={identity} />}
         </div></div>
       </div>
@@ -336,6 +336,7 @@ function AgentsSection({ prefs, onSave }: PreferenceSectionProps) {
       <LockedRow title="Confirm consequential actions" detail="Merge, release, workflow dispatch, environment approval, rollback, and closure require policy checks." />
       <LockedRow title="External-file protection" detail="The customer workspace cannot write outside its approved application scope." />
     </Group>
+    <ActionRow title="Workspace Agent policy" detail="Review organization-controlled Agent enablement and allowed tools. Desktop settings do not grant execution authority." action={<WebButton href="/control/ai-agents" label="Open Agent governance" />} />
     <Group label="Specialized Agent profiles">
       {AGENT_PROFILES.map(profile => <div key={profile.id} className="border-b border-white/[0.05] px-4 py-3 last:border-0"><p className="text-xs text-zinc-200">{profile.label}</p><p className="mt-1 text-xs text-zinc-500">{profile.description}</p></div>)}
     </Group>
@@ -1617,14 +1618,12 @@ function LabeledTextArea({ label, value, onChange, disabled = false }: { label: 
   );
 }
 
-function WorktreesSection({ prefs }: { prefs: DesktopPreferences | null }) {
+function WorktreesSection({ onOpenRepository }: {onOpenRepository?: () => void}) {
   return <div>
-    <SectionHeading title="Worktrees" detail="Axiom does not currently create or clean up Git worktrees in the verified customer workflow." />
-    <Notice title="No Axiom-managed worktrees on this machine" detail="Cleanup controls remain unavailable until worktree lifecycle operations, disk accounting, and recovery behavior are implemented and tested end to end." />
-    <Group label="Reserved local limits">
-      <InfoRow label="Maximum worktrees" value={String(prefs?.max_worktrees ?? 25)} />
-      <InfoRow label="Maximum total size" value={`${prefs?.max_worktree_size_gb ?? 50} GB`} />
-    </Group>
+    <SectionHeading title="Worktrees" detail="Isolate tasks in separate local checkouts and branches without changing the original working tree." />
+    <Notice title="Managed in GitHub repositories" detail="Open a repository and expand Workspaces to create or switch checkouts. New checkouts start at the selected checkout’s committed HEAD; uncommitted edits stay in their original checkout. Removing a checkout preserves its branch and commits and refuses changed, untracked, ignored or locked state." />
+    <Group label="Local limits"><InfoRow label="Maximum checkouts per repository" value="25" /><InfoRow label="Combined file bytes per repository" value="50 GB" /></Group>
+    {onOpenRepository && <button type="button" onClick={onOpenRepository} className="btn-secondary">Open repository workspaces</button>}
   </div>;
 }
 

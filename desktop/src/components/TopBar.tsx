@@ -11,8 +11,8 @@ const VIEW_TITLES: Partial<Record<View, { title: string; subtitle: string }>> = 
   settings: { title: "Settings", subtitle: "Authentication and workstation configuration" },
 };
 
-export function TopBar({ activeView, identity, onOpenCommands }: { activeView: View; identity: VerifiedDesktopIdentity; onOpenCommands?: () => void }) {
-  const meta = VIEW_TITLES[activeView] ?? { title: "Deployment workspace", subtitle: "Unavailable surfaces are not part of customer navigation" };
+export function TopBar({ activeView, identity, onOpenCommands, onToggleSplit, splitActive = false }: { activeView: View; identity: VerifiedDesktopIdentity; onOpenCommands?: () => void; onToggleSplit?: () => void; splitActive?: boolean }) {
+  const meta = splitActive ? {title: "Workspace", subtitle: "Review code and work with your Agent side by side"} : VIEW_TITLES[activeView] ?? { title: "Deployment workspace", subtitle: "Unavailable surfaces are not part of customer navigation" };
   const workspace = identity.organizationId;
 
   return (
@@ -21,6 +21,7 @@ export function TopBar({ activeView, identity, onOpenCommands }: { activeView: V
         <h2 className="text-[14px] font-semibold tracking-tight text-white leading-tight">{meta.title}</h2>
         <span className="mt-0.5 truncate text-[11px] text-zinc-500">{meta.subtitle}</span>
       </div>
+      {onToggleSplit && <button type="button" aria-pressed={splitActive} onClick={onToggleSplit} className="no-drag ml-auto mr-2 shrink-0 rounded-md border border-white/10 px-2.5 py-1.5 text-[11px] text-zinc-400 hover:bg-white/5">{splitActive ? "Single pane" : "Editor & Agent"}</button>}
       {onOpenCommands && <button type="button" onClick={onOpenCommands} className="no-drag ml-auto mr-3 shrink-0 rounded-md border border-white/10 px-2.5 py-1.5 text-[11px] text-zinc-400 hover:bg-white/5" title="Command/Ctrl+Shift+P">Commands</button>}
       <div className="no-drag ml-4 flex shrink-0 items-center gap-2 rounded-lg border border-white/[0.08] bg-white/[0.03] px-3 py-1.5 text-[11px] text-zinc-300" title={`Verified ${identity.kind.replace("_", " ")} with active approved workspace access`}>
         <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />

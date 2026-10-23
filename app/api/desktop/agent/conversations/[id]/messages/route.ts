@@ -16,7 +16,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import type { Prisma } from "@prisma/client";
 import { resolveRequestDesktopSession } from "@/lib/desktop/resolveRequestDesktopSession";
 import { agentMessageHttpStream } from "@/lib/desktop/agentMessageHttpStream";
-import { AGENT_STREAM_CONTENT_TYPE, AGENT_TOOL_ACTIVITY_FEATURE, type AgentMessageExecutionStream } from "@/lib/desktop/agentMessageStreamProtocol";
+import { isAgentMessageIssue, AGENT_STREAM_CONTENT_TYPE, AGENT_TOOL_ACTIVITY_FEATURE, type AgentMessageExecutionStream } from "@/lib/desktop/agentMessageStreamProtocol";
 import { isConcreteGatewayModelId } from "@/lib/ai/gatewayModelCatalog";
 import { prisma } from "@/lib/db";
 import { agentActionDigest, approvalExpiry } from "@/lib/axiom/agentRuntime/proposalIntegrity";
@@ -278,14 +278,14 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
       )) {
         const reply = "The code proposal did not match your selected repository and branch, so no action was proposed. Keep the intended target selected and request the change again.";
         await prisma.agentConversationTurn.create({ data: { conversationId, role: "assistant", content: reply } });
-        return NextResponse.json({ ok: true, data: { reply, proposal: null, usage: outcome.usage ?? null } });
+        return NextResponse.json({ ok: true, data: { reply, proposal: null, usage: outcome.usage ?? null, issue: "request_failed" } });
       }
       const reviewed = await prepareProposalArgsForReview(organizationId, outcome.toolName, outcome.args, prisma);
       if (!reviewed.ok) {
         streaming?.abortSignal.throwIfAborted();
         const reply = `I couldn't prepare a trustworthy approval preview, so no action was proposed. ${reviewed.error}`;
         await prisma.agentConversationTurn.create({ data: { conversationId, role: "assistant", content: reply } });
-        return NextResponse.json({ ok: true, data: { reply, proposal: null, usage: outcome.usage ?? null } });
+        return NextResponse.json({ ok: true, data: { reply, proposal: null, usage: outcome.usage ?? null, issue: "request_failed" } });
       }
       streaming?.abortSignal.throwIfAborted();
       await rememberToolContext(memoryRepo, organizationId, reviewed.args).catch(() => undefined);
@@ -312,7 +312,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
 
     const reply = AI_ERROR_MESSAGES[outcome.error] ?? "Something went wrong processing that request.";
     await prisma.agentConversationTurn.create({ data: { conversationId, role: "assistant", content: reply } });
-    return NextResponse.json({ ok: true, data: { reply, proposal: null, usage: outcome.usage ?? null } });
+    return NextResponse.json({ ok: true, data: { reply, proposal: null, usage: outcome.usage ?? null, issue: isAgentMessageIssue(outcome.error) ? outcome.error : "request_failed" } });
   }
   return request.headers.get("accept")?.split(",").some(type => type.trim() === AGENT_STREAM_CONTENT_TYPE)
     ? agentMessageHttpStream(request.signal, stream => execute(stream), {toolActivity: Array.isArray(body?.streamFeatures) && body.streamFeatures.includes(AGENT_TOOL_ACTIVITY_FEATURE)})

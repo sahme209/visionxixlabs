@@ -1,6 +1,7 @@
 import { verificationReceipt, type VerificationReceipt } from "../lib/verificationReceipt";
 import { localEditBlocker, type LocalEditRequest, type LocalCreationProposal } from "../lib/localEditReview";
 import { localCodeContextPrompt, type LocalCodeSelection, type LocalRepairSelection } from "../lib/localCodeContext";
+import { RepositoryWorktrees } from "../components/RepositoryWorktrees";
 import { FileDiff } from "../components/FileDiff";
 import { editorMatches, replaceEditorMatch, editorLineRange } from "../lib/editorSearch";
 import { newEditorHistory, editHistory, moveHistory } from "../lib/editorHistory";
@@ -59,12 +60,12 @@ function isProjectMetadata(path: string): boolean {
   return path.endsWith(".pbxproj") || path.includes(".xcodeproj/") || path.includes(".xcworkspace/");
 }
 
-export function RepositoryWorkspaceView({ active = true, onAskAgent, editRequest, workspace }: { editRequest?: LocalEditRequest; workspace?: string; active?: boolean; onAskAgent?: (selection: LocalCodeSelection) => void }) {
+export function RepositoryWorkspaceView({ compact = false, active = true, onAskAgent, editRequest, workspace }: { editRequest?: LocalEditRequest; workspace?: string; compact?: boolean; active?: boolean; onAskAgent?: (selection: LocalCodeSelection) => void }) {
   const revision = useSyncExternalStore(desktopClient.subscribeContext, desktopClient.getContextRevision, desktopClient.getContextRevision);
-  return <RepositoryWorkspaceSession key={revision} revision={revision} active={active} onAskAgent={onAskAgent} editRequest={editRequest} workspace={workspace} />;
+  return <RepositoryWorkspaceSession compact={compact} key={revision} revision={revision} active={active} onAskAgent={onAskAgent} editRequest={editRequest} workspace={workspace} />;
 }
 
-function RepositoryWorkspaceSession({ revision, active, onAskAgent, editRequest, workspace }: { editRequest?: LocalEditRequest; workspace?: string; revision: number; active: boolean; onAskAgent?: (selection: LocalCodeSelection) => void }) {
+function RepositoryWorkspaceSession({ compact, revision, active, onAskAgent, editRequest, workspace }: { editRequest?: LocalEditRequest; workspace?: string; revision: number; compact: boolean; active: boolean; onAskAgent?: (selection: LocalCodeSelection) => void }) {
   const [parentPath, setParentPath] = useState("");
   const [repositories, setRepositories] = useState<string[]>([]);
   const [selectedRepository, setSelectedRepositoryState] = useState<string | null>(null);
@@ -770,12 +771,13 @@ function RepositoryWorkspaceSession({ revision, active, onAskAgent, editRequest,
       </div>}
     </div>}
     <div className="flex min-h-0 flex-1">
-      <aside className="flex w-64 shrink-0 flex-col border-r border-white/[0.07] bg-[#111315]">
+      <aside className={`flex ${compact ? "w-48" : "w-64"} shrink-0 flex-col border-r border-white/[0.07] bg-[#111315]`}>
         <div className="border-b border-white/[0.06] px-3 py-2 text-[10px] font-mono uppercase tracking-wider text-zinc-500">Local repositories</div>
         <div className="max-h-40 overflow-y-auto border-b border-white/[0.06] p-2">
           {repositories.length === 0 && <p className="px-2 py-3 text-xs text-zinc-600">Clone a connected GitHub repository to begin.</p>}
           {repositories.map((repository) => <button key={repository} type="button" onClick={() => chooseRepository(repository)} className={`mb-1 w-full truncate rounded px-2 py-2 text-left text-xs ${selectedRepository === repository ? "bg-white/10 text-white" : "text-zinc-400 hover:bg-white/[0.05]"}`} title={repository}>{repository.split("/").pop()}</button>)}
         </div>
+        {selectedRepository && <RepositoryWorktrees key={selectedRepository} repositoryPath={selectedRepository} disabled={Boolean(busy) || !active} onOpen={chooseRepository} />}
         <div className="border-b border-white/[0.06] p-2">
           <div className="mb-2 flex gap-1" aria-label="Repository file navigation">
             <button type="button" aria-pressed={fileNavigation === "files"} onClick={() => setFileNavigation("files")} className={`flex-1 rounded px-2 py-1.5 text-xs ${fileNavigation === "files" ? "bg-white/10 text-zinc-100" : "text-zinc-500"}`}>Files</button>

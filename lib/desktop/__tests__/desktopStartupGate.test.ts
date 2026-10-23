@@ -32,3 +32,13 @@ it("does not mount App after the startup gate has unmounted",async()=>{
  const view=render(createElement(DesktopStartupGate));view.unmount();await act(async()=>finish());
  expect(mocks.app).not.toHaveBeenCalled();
 });
+it("offers locked sign-in recovery after a stalled vault read and aborts late activation",async()=>{
+ vi.useFakeTimers();
+ try {
+  render(createElement(DesktopStartupGate));await act(async()=>{await vi.advanceTimersByTimeAsync(15000);});
+  const recovery=screen.getByRole("button",{name:"Continue to sign in"});
+  const signal=mocks.hydrate.mock.calls[0][0] as AbortSignal;
+  await act(async()=>recovery.click());
+  expect(signal.aborted).toBe(true);expect(screen.getByText("Verified-app boundary")).toBeTruthy();
+ } finally {vi.useRealTimers();}
+});
