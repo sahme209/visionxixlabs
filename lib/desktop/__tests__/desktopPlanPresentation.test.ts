@@ -3,8 +3,8 @@ import { createElement } from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { act,cleanup, fireEvent, render, screen,waitFor } from "@testing-library/react";
 import type { VerifiedDesktopIdentity } from "../../../desktop/src/lib/desktopClient";
-const mocks = vi.hoisted(() => ({ usage: vi.fn(), portal: vi.fn(), preferences: vi.fn(),context:{} as object }));
-vi.mock("@tauri-apps/plugin-shell", () => ({ open: vi.fn() }));
+const mocks = vi.hoisted(() => ({ usage: vi.fn(), portal: vi.fn(), preferences: vi.fn(),context:{} as object,open:vi.fn() }));
+vi.mock("@tauri-apps/plugin-shell", () => ({ open: mocks.open }));
 vi.mock("@tauri-apps/api/core", () => ({ invoke: vi.fn() }));
 vi.mock("../../../desktop/src/lib/preferences", () => ({ readDesktopPreferences: mocks.preferences, writeDesktopPreferences: vi.fn() }));
 vi.mock("../../../desktop/src/lib/desktopClient", () => ({ desktopClient: { get config(){return mocks.context;},usageSummary: mocks.usage, desktopBillingPortal: mocks.portal } }));
@@ -17,7 +17,7 @@ async function showPlan(value: VerifiedDesktopIdentity) {
   fireEvent.click(screen.getByRole("button", { name: "Plan & usage" }));
   await screen.findByText("AI invocations");
 }
-beforeEach(() => { vi.resetAllMocks(); mocks.context={};mocks.preferences.mockResolvedValue(null); mocks.usage.mockResolvedValue({ ok: true, data: { periodMonth: "2026-10", aiInvocationCount: 0, aiInputTokens: 0, aiOutputTokens: 0, aiCostCents: 0 } }); });
+beforeEach(() => { vi.resetAllMocks(); mocks.context={};mocks.open.mockResolvedValue(undefined);mocks.preferences.mockResolvedValue(null); mocks.usage.mockResolvedValue({ ok: true, data: { periodMonth: "2026-10", aiInvocationCount: 0, aiInputTokens: 0, aiOutputTokens: 0, aiCostCents: 0 } }); });
 afterEach(cleanup);
 describe("actual desktop billing status presentation", () => {
   it("does not turn current identity-only no-plan DTO into trial or paid approval", async () => {
@@ -81,4 +81,15 @@ it("fails closed on a malformed current snapshot",async()=>{
 it.each(["operator","read_only"] as const)("does not offer the verified portal action to %s",async role=>{
  const response=modern();response.data.billingSnapshot.plan.hasCustomer=true;mocks.usage.mockResolvedValue(response);await showPlan({...identity("trial","active"),role});
  expect(screen.queryByRole("button",{name:"Open billing"})).toBeNull();expect(mocks.portal).not.toHaveBeenCalled();
+});
+
+it("opens the canonical billing cockpit without a pairing credential or portal mutation",async()=>{
+ mocks.usage.mockResolvedValue(modern());await showPlan(identity("trial","active"));
+ fireEvent.click(screen.getByRole("button",{name:"View billing in cockpit"}));
+ await waitFor(()=>expect(mocks.open).toHaveBeenCalledWith("https://visionxixlabs.com/control/usage-billing"));expect(mocks.portal).not.toHaveBeenCalled();
+});
+it("shows a bounded error when opening the cockpit fails",async()=>{
+ mocks.open.mockRejectedValue(new Error("private platform error"));mocks.usage.mockResolvedValue(modern());await showPlan(identity("trial","active"));
+ fireEvent.click(screen.getByRole("button",{name:"View billing in cockpit"}));
+ expect(await screen.findByText("The billing cockpit could not be opened.")).toBeTruthy();expect(screen.queryByText("private platform error")).toBeNull();expect(mocks.portal).not.toHaveBeenCalled();
 });
