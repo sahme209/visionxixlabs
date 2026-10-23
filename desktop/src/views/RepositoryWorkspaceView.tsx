@@ -67,6 +67,8 @@ export function RepositoryWorkspaceView({ compact = false, active = true, onAskA
 
 function RepositoryWorkspaceSession({ compact, revision, active, onAskAgent, editRequest, workspace }: { editRequest?: LocalEditRequest; workspace?: string; revision: number; compact: boolean; active: boolean; onAskAgent?: (selection: LocalCodeSelection) => void }) {
   const [parentPath, setParentPath] = useState("");
+  const [sourceExpanded, setSourceExpanded] = useState(false);
+  const [publishExpanded, setPublishExpanded] = useState(false);
   const [repositories, setRepositories] = useState<string[]>([]);
   const [selectedRepository, setSelectedRepositoryState] = useState<string | null>(null);
   const [status, setStatus] = useState<RepositoryStatus | null>(null);
@@ -710,7 +712,9 @@ function RepositoryWorkspaceSession({ compact, revision, active, onAskAgent, edi
   }
 
   return <div className="flex min-h-0 flex-1 flex-col bg-[#0b0c0e]">
-    <div className="flex flex-wrap items-center gap-2 border-b border-white/[0.07] px-4 py-3">
+    <details open={!compact || sourceExpanded} onToggle={event => { if (compact) setSourceExpanded(event.currentTarget.open); }} className="shrink-0 border-b border-white/[0.07]">
+      <summary className={compact ? "cursor-pointer px-4 py-2 text-xs text-zinc-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-violet-300" : "hidden"}>Clone or refresh repositories</summary>
+    <div className="flex flex-wrap items-center gap-2 px-4 py-3">
       <div className="w-72 min-w-0">
         <label htmlFor="clone-source" className="mb-1 block text-[11px] text-zinc-400">Clone source · GitHub</label>
         <select id="clone-source" value={manualCloneRepository ? "__manual__" : cloneRepository} onChange={(event) => {
@@ -736,6 +740,7 @@ function RepositoryWorkspaceSession({ compact, revision, active, onAskAgent, edi
       <button type="button" disabled={Boolean(busy) || !cloneRepository.trim().includes("/") || (!manualCloneRepository && !remoteRepositories.some(repository => repository.fullName === cloneRepository))} onClick={() => void clone()} className="btn-primary disabled:opacity-40">{busy === "clone" ? "Cloning…" : "Clone"}</button>
       <button type="button" disabled={Boolean(busy) || !parentPath} onClick={() => void refreshList(parentPath)} className="btn-secondary disabled:opacity-40">Refresh</button>
     </div>
+    </details>
     <p aria-label="Active local editor repository" className="border-b border-white/[0.06] px-4 py-2 text-[11px] text-zinc-400">Editing locally: {selectedRepository ? selectedRepository.split("/").pop() : "No repository selected"}. The clone source above does not switch the editor. Select a local repository in the file sidebar.</p>
     {repositoryCatalogError && <div role="status" className="border-b border-white/[0.08] bg-white/[0.03] px-4 py-2 text-xs text-zinc-300">Connected repositories are temporarily unavailable. Validate GitHub under Settings → Integrations, then retry. Manual entry remains available for an authorized repository.</div>}
     {repositoryCatalogTruncated && !repositoryCatalogError && <div className="border-b border-white/[0.06] bg-white/[0.02] px-4 py-2 text-xs text-zinc-500">Showing the first 100 repositories authorized for the GitHub App. You can still enter another authorized owner/repository directly.</div>}
@@ -842,13 +847,16 @@ function RepositoryWorkspaceSession({ compact, revision, active, onAskAgent, edi
           </div>}
           {isProjectMetadata(selectedFile) && <div role="status" className="border-b border-white/[0.08] bg-white/[0.025] px-4 py-2 text-xs text-zinc-400">This is generated project metadata. Edit it only when you understand the project format; source files are safer for normal changes.</div>}
           <textarea ref={editorRef} value={content} onSelect={event => setSelectionLength(event.currentTarget.selectionEnd - event.currentTarget.selectionStart)} onChange={(event) => editContent(event.target.value)} onKeyDown={editorKeyDown} spellCheck={false} aria-label={`Editing ${selectedFile}`} className="min-h-0 flex-1 resize-none bg-[#0b0c0e] p-4 font-mono text-[13px] leading-6 text-zinc-200 outline-none selection:bg-violet-500/30" />
-          <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-2 border-t border-white/[0.07] bg-[#111315] p-3">
+          <details open={!compact || publishExpanded} onToggle={event => { if (compact) setPublishExpanded(event.currentTarget.open); }} className="shrink-0 border-t border-white/[0.07] bg-[#111315]">
+            <summary className={compact ? "cursor-pointer px-4 py-2 text-xs text-zinc-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-violet-300" : "hidden"}>Commit & publish{prUrl ? " · PR available" : ""}</summary>
+          <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-2 p-3">
             <input value={commitMessage} onChange={(event) => setCommitMessage(event.target.value)} aria-label="Commit message for this file" placeholder="Commit message for this file" className="min-w-0 rounded-md border border-white/10 bg-black/25 px-3 py-2 text-xs outline-none" />
             <button type="button" disabled={Boolean(busy) || !commitMessage.trim() || onDefaultBranch} title={onDefaultBranch ? "Create a branch before committing." : undefined} onClick={() => void commit()} className="btn-primary disabled:opacity-40">{busy === "commit" ? "Committing…" : "Commit file"}</button>
             <input value={prTitle} onChange={(event) => setPrTitle(event.target.value)} aria-label="Pull request title" placeholder="Pull request title" className="min-w-0 rounded-md border border-white/10 bg-black/25 px-3 py-2 text-xs outline-none" />
             <input value={prBase} onChange={(event) => setPrBase(event.target.value)} aria-label="Pull request base branch" placeholder="base" className="min-w-0 rounded-md border border-white/10 bg-black/25 px-3 py-2 text-xs outline-none" />
             {prUrl ? <ExternalLink href={prUrl} className="text-xs text-emerald-300 hover:text-white">Open PR ↗</ExternalLink> : <button type="button" disabled={Boolean(busy) || !prTitle.trim() || !prBase.trim() || !status || status.branch === prBase.trim() || status.changedFiles.length > 0 || content !== savedContent} onClick={reviewPullRequest} className="btn-secondary disabled:opacity-40" title={status && status.changedFiles.length > 0 ? "Commit all working-tree changes before publishing a pull request." : undefined}>{busy === "pr" ? "Publishing…" : "Publish & open PR"}</button>}
           </div>
+          </details>
         </> : <div className="flex flex-1 items-center justify-center text-sm text-zinc-600">Choose a UTF-8 text file to edit.</div>}
       </section>
     </div>
