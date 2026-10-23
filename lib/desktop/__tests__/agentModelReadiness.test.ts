@@ -1,7 +1,7 @@
 /** @vitest-environment jsdom */
 import { createElement } from "react";
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
-import { act, cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { act, cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 const m = vi.hoisted(() => ({ invoke: vi.fn(), preferences: vi.fn(), client: { subscribeContext: () => () => {}, getContextRevision: () => 0, config: {} as { sessionToken?: string }, hasAuth: vi.fn(), verifyCurrentCredential: vi.fn(), listAgentConversations: vi.fn(), getAgentConversation: vi.fn(), aiProviderStatus: vi.fn(), listAgentSkills: vi.fn(), listGithubRepositories: vi.fn(), listGithubBranches: vi.fn(), listGithubFiles: vi.fn(), listEnvironments: vi.fn(), sendAgentMessage: vi.fn(), createAgentConversation: vi.fn(), approveAgentAction: vi.fn(), rejectAgentAction: vi.fn() } }));
 vi.mock("@tauri-apps/api/core", () => ({ invoke: m.invoke }));
 vi.mock("../../../desktop/src/lib/desktopClient", () => ({ desktopClient: m.client }));
@@ -589,4 +589,112 @@ it("applies a successfully changed keyboard preference to an already mounted com
   expect(m.client.sendAgentMessage).not.toHaveBeenCalled();
   fireEvent.keyDown(input, { key: "Enter", ctrlKey: true });
   await waitFor(() => expect(m.client.sendAgentMessage).toHaveBeenCalledTimes(1));
+});
+
+it("queues a follow-up during streaming and sends it only after a verified completion", async () => {
+  const first = deferred<any>();
+  m.client.sendAgentMessage.mockReturnValueOnce(first.promise).mockResolvedValue({ ok: true, data: { reply: "Follow-up done", proposal: null, usage: null } });
+  render(createElement(AgentChatView)); await draft();
+  fireEvent.click(screen.getByRole("button", { name: "Send" }));
+  const input = screen.getByRole("textbox") as HTMLTextAreaElement;
+  expect(input.disabled).toBe(false);
+  fireEvent.change(input, { target: { value: "Follow-up request" } });
+  fireEvent.click(screen.getByRole("button", { name: "Queue message" }));
+  expect(screen.getByText("Follow-up request")).toBeTruthy();
+  expect(m.client.sendAgentMessage).toHaveBeenCalledTimes(1);
+  fireEvent.change(input, { target: { value: "Keep this separate draft" } });
+  await act(async () => { first.resolve({ ok: true, data: { reply: "First done", proposal: null, usage: { decisionSteps: 1, inputTokens: 1, outputTokens: 1, totalTokens: 2 } } }); });
+  await waitFor(() => expect(m.client.sendAgentMessage).toHaveBeenCalledTimes(2));
+  expect(m.client.sendAgentMessage.mock.calls[1][1]).toBe("Follow-up request");
+  expect(input.value).toBe("Keep this separate draft");
+});
+it("retains queued text and pauses automatic continuation after an unverified response", async () => {
+  const first = deferred<any>(); m.client.sendAgentMessage.mockReturnValue(first.promise);
+  render(createElement(AgentChatView)); await draft();
+  fireEvent.click(screen.getByRole("button", { name: "Send" }));
+  fireEvent.change(screen.getByRole("textbox"), { target: { value: "Retain queued work" } });
+  fireEvent.click(screen.getByRole("button", { name: "Queue message" }));
+  await act(async () => { first.resolve({ ok: false, error: "network unavailable" }); });
+  expect(m.client.sendAgentMessage).toHaveBeenCalledTimes(1);
+  expect(screen.getByText("Retain queued work")).toBeTruthy();
+  expect(screen.getByRole("button", { name: "Resume queue" })).toBeTruthy();
+  fireEvent.click(screen.getByRole("button", { name: "Edit queued message" }));
+  expect((screen.getByRole("textbox") as HTMLTextAreaElement).value).toBe("Retain queued work");
+});
+
+it("pauses queued work at a new approval proposal instead of executing the follow-up", async () => {
+  const first = deferred<any>(); m.client.sendAgentMessage.mockReturnValue(first.promise);
+  render(createElement(AgentChatView)); await draft();
+  fireEvent.click(screen.getByRole("button", { name: "Send" }));
+  fireEvent.change(screen.getByRole("textbox"), { target: { value: "Wait for review" } });
+  fireEvent.click(screen.getByRole("button", { name: "Queue message" }));
+  await act(async () => { first.resolve({ ok: true, data: { reply: "Review required", proposal: { id: "review-1", status: "proposed", toolName: "create_github_branch", riskLevel: "medium", argsJson: {} }, usage: { decisionSteps: 1, inputTokens: 1, outputTokens: 1, totalTokens: 2 } } }); });
+  expect(m.client.sendAgentMessage).toHaveBeenCalledTimes(1);
+  expect((screen.getByRole("button", { name: "Resume queue" }) as HTMLButtonElement).disabled).toBe(true);
+  expect(m.client.approveAgentAction).not.toHaveBeenCalled();
+  expect(screen.getByText("Wait for review")).toBeTruthy();
+});
+it("interrupt retains the follow-up and requires recovery instead of starting a concurrent request", async () => {
+  m.preferences.mockResolvedValue({ new_message_behavior: "interrupt" });
+  const first = deferred<any>(); let signal!: AbortSignal;
+  m.client.sendAgentMessage.mockImplementation((...args) => { signal = args[5].signal; return first.promise; });
+  render(createElement(AgentChatView)); await draft();
+  fireEvent.click(screen.getByRole("button", { name: "Send" }));
+  fireEvent.change(screen.getByRole("textbox"), { target: { value: "Interrupted follow-up" } });
+  fireEvent.click(screen.getByRole("button", { name: "Interrupt & queue" }));
+  expect(signal.aborted).toBe(true);
+  await act(async () => { first.resolve({ ok: false, error: "canceled" }); });
+  expect(m.client.sendAgentMessage).toHaveBeenCalledTimes(1);
+  expect(screen.getByText("Interrupted follow-up")).toBeTruthy();
+  expect((screen.getByRole("button", { name: "Resume queue" }) as HTMLButtonElement).disabled).toBe(true);
+});
+it("does not lose an existing draft when editing queued work", async () => {
+  const first = deferred<any>(); m.client.sendAgentMessage.mockReturnValue(first.promise);
+  render(createElement(AgentChatView)); await draft(); fireEvent.click(screen.getByRole("button", { name: "Send" }));
+  fireEvent.change(screen.getByRole("textbox"), { target: { value: "Queued text" } });
+  fireEvent.click(screen.getByRole("button", { name: "Queue message" }));
+  fireEvent.change(screen.getByRole("textbox"), { target: { value: "Separate draft" } });
+  fireEvent.click(screen.getByRole("button", { name: "Edit queued message" }));
+  expect((screen.getByRole("textbox") as HTMLTextAreaElement).value).toBe("Separate draft");
+  expect(screen.getByText("Queued text")).toBeTruthy();
+  fireEvent.click(screen.getByRole("button", { name: "Remove queued message" }));
+  expect(screen.queryByRole("region", { name: "Queued Agent messages" })).toBeNull();
+  await act(async () => { first.resolve({ ok: false, error: "unavailable" }); });
+});
+
+it("pauses a queued request when the selected environment changes", async () => {
+  m.client.listEnvironments.mockResolvedValue({ ok: true, data: { environments: [{ id: "env-1", name: "Development", tier: "dev" }, { id: "env-2", name: "Production", tier: "prod" }] } });
+  const first = deferred<any>(); m.client.sendAgentMessage.mockReturnValue(first.promise);
+  render(createElement(AgentChatView)); await draft();
+  await screen.findByRole("option", { name: "Production · prod" });
+  const environment = screen.getByRole("combobox", { name: "Active deployment environment" });
+  fireEvent.change(environment, { target: { value: "env-1" } });
+  fireEvent.click(screen.getByRole("button", { name: "Send" }));
+  fireEvent.change(screen.getByRole("textbox"), { target: { value: "Development-only follow-up" } });
+  fireEvent.click(screen.getByRole("button", { name: "Queue message" }));
+  fireEvent.change(environment, { target: { value: "env-2" } });
+  await act(async () => { first.resolve({ ok: true, data: { reply: "Done", proposal: null, usage: { decisionSteps: 1, inputTokens: 1, outputTokens: 1, totalTokens: 2 } } }); });
+  expect(m.client.sendAgentMessage).toHaveBeenCalledTimes(1);
+  expect(screen.getByText(/Request configuration changed/)).toBeTruthy();
+  expect((screen.getByRole("button", { name: "Resume queue" }) as HTMLButtonElement).disabled).toBe(true);
+  fireEvent.change(environment, { target: { value: "env-1" } });
+  expect(m.client.sendAgentMessage).toHaveBeenCalledTimes(1);
+  expect((screen.getByRole("button", { name: "Resume queue" }) as HTMLButtonElement).disabled).toBe(false);
+});
+
+it("searches saved conversation titles and retains separate drafts while switching through history", async () => {
+  const second = { ...summary, id: "conversation-2", title: "Release review" };
+  m.client.listAgentConversations.mockResolvedValue({ ok: true, data: { conversations: [summary, second] } });
+  m.client.getAgentConversation.mockImplementation(async id => ({ ok: true, data: { ...(id === second.id ? second : summary), turns: [], actions: [] } }));
+  render(createElement(AgentChatView)); await draft();
+  fireEvent.click(screen.getByRole("button", { name: "Search chats" }));
+  const history = within(screen.getByRole("region", { name: "Conversation history" }));
+  fireEvent.change(history.getByRole("searchbox", { name: "Search conversations" }), { target: { value: "release" } });
+  expect(history.queryByRole("button", { name: /Saved chat/ })).toBeNull();
+  fireEvent.click(history.getByRole("button", { name: /Release review/ }));
+  await waitFor(() => expect((screen.getByRole("combobox", { name: "Agent conversation" }) as HTMLSelectElement).value).toBe(second.id));
+  fireEvent.change(screen.getByRole("textbox"), { target: { value: "Second conversation draft" } });
+  fireEvent.change(screen.getByRole("combobox", { name: "Agent conversation" }), { target: { value: summary.id } });
+  await waitFor(() => expect((screen.getByRole("textbox") as HTMLTextAreaElement).value).toBe("Keep this unsent request"));
+  expect(m.client.sendAgentMessage).not.toHaveBeenCalled();
 });
