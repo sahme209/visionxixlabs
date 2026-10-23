@@ -675,8 +675,8 @@ export class DesktopClient {
    *
    * Pipeline gates default to requiredApprovers=2: a single call from
    * the desktop records ONE vote and returns `isTerminal: false` until
-   * a second distinct actor votes. The two-person platform guarantee
-   * holds — the desktop alone never tips a gate.
+   * a second authenticated machine principal votes. A key is not proof
+   * of a human; caller labels cannot create additional voter identities.
    */
   async v1DecideApproval(args: {
     runId: string;

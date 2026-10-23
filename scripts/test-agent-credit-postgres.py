@@ -72,15 +72,15 @@ try:
         raise RuntimeError('owned_fixture_empty_schema_setup_failed')
     run_pg('psql', ['-X', '-w', '-v', 'ON_ERROR_STOP=1', '--file', str(repo / 'ops/recovery/20261022_public_billing_v1.sql')])
     test_env = dict(env, AXIOM_OWNED_AGENT_PG_SOCKET=str(socket), NODE_OPTIONS='--max-old-space-size=8192')
-    tests = subprocess.run([node, 'node_modules/vitest/vitest.mjs', 'run', 'lib/axiom/agentRuntime/__tests__/governedAgent.postgres.test.ts', '--reporter=json', '--outputFile=' + str(output / 'results.json')], cwd=repo, env=test_env, capture_output=True, text=True, timeout=120)
+    tests = subprocess.run([node, 'node_modules/vitest/vitest.mjs', 'run', 'lib/axiom/agentRuntime/__tests__/governedAgent.postgres.test.ts', 'lib/workforce/__tests__/approvalVote.postgres.test.ts', '--reporter=json', '--outputFile=' + str(output / 'results.json')], cwd=repo, env=test_env, capture_output=True, text=True, timeout=120)
     (output / 'tests.log').write_text(tests.stdout + '\n' + tests.stderr)
     if tests.returncode:
         raise RuntimeError('agent_credit_chain_tests_failed_see_private_log')
     results = json.loads((output / 'results.json').read_text())
-    if results['numPassedTests'] < 8 or results['numFailedTests'] or results['numPendingTests']:
+    if results['numPassedTests'] < 13 or results['numFailedTests'] or results['numPendingTests']:
         raise RuntimeError('complete_non_skipped_acceptance_required')
     report = {'testsPassed': results['numPassedTests'], 'testsFailed': results['numFailedTests'], 'verifiedAtUtc': datetime.datetime.now(datetime.timezone.utc).isoformat(), 'actualPrismaPostgres': True,
-              'actualDecisionAdmissionManagerSdkChain': True, 'providerTransport': 'fixed synthetic .invalid transport',
+              'actualDecisionAdmissionManagerSdkChain': True, 'actualApprovalVoteTransactions': True, 'providerTransport': 'fixed synthetic .invalid transport',
               'providerInference': False, 'realCustomerAuthentication': False, 'productionWrites': False,
               'privateProductionBackupUsed': False, 'syntheticGenerationCostReceipts': True}
 finally:

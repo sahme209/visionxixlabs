@@ -21,9 +21,14 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import type { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/db";
+import { isSameOriginRequest } from "@/lib/auth/requestOrigin";
+import { hasPermission } from "@/lib/axiom/agent/rbacEngine";
+import type { OrgRole } from "@/lib/axiom/enums";
 import { currentContext } from "@/lib/auth/currentContext";
 import { record as recordAudit } from "@/lib/audit/secureAudit";
 import { id as idFactory } from "@/lib/domain/ids";
+import { hasBoundApprovalVoteIdentity } from "@/lib/workforce/persistApprovalVote";
+import { computeQuorumStatus } from "@/lib/workforce/approvalQuorum";
 import { planExecution, type ExecutionRejectReason } from "@/lib/workforce/planExecution";
 import {
   bootstrapExecutorRegistry,
@@ -42,12 +47,14 @@ const REJECT_STATUS_MAP: Record<ExecutionRejectReason, number> = {
 };
 
 export async function POST(req: NextRequest, ctx: { params: Promise<{ id: string }> }) {
+  if (!isSameOriginRequest(req)) return NextResponse.json({ ok: false, reason: "invalid_request_origin" }, { status: 403 });
   const { id } = await ctx.params;
 
   const session = await currentContext();
-  if (!session.isAuthenticated || !session.organizationId) {
+  if (!session.isAuthenticated || !session.organizationId || !session.userId) {
     return NextResponse.json({ ok: false, reason: "auth_required" }, { status: 401 });
   }
+  if (!session.roles.some(role => hasPermission(role as OrgRole, "actions:apply"))) return NextResponse.json({ ok: false, reason: "forbidden_role" }, { status: 403 });
   const orgId = String(session.organizationId);
   const executedByUserId = session.userId ?? session.email ?? "unknown";
 
@@ -55,6 +62,7 @@ export async function POST(req: NextRequest, ctx: { params: Promise<{ id: string
 
   const snapshot = await prisma.engineerApprovalSnapshot.findUnique({
     where: { approvalRequestId: id },
+    include: { decisions: { select: { id: true, approverUserId: true, decision: true } } },
   }).catch(() => null);
 
   if (!snapshot) {
@@ -76,13 +84,23 @@ export async function POST(req: NextRequest, ctx: { params: Promise<{ id: string
     );
   }
 
+  // A historical terminal label alone cannot authorize a new execution.
+  // Preserve completed history, but require attributable durable quorum for
+  // positive-approver rules before claiming any still-unexecuted action.
+  if (snapshot.requiredApprovers > 0 && (
+    snapshot.decisions.some(vote => !hasBoundApprovalVoteIdentity(vote) || !["approved", "rejected"].includes(vote.decision))
+    || computeQuorumStatus({ requiredApprovers: snapshot.requiredApprovers,
+      decisions: snapshot.decisions.map(vote => ({ approverUserId: vote.approverUserId, decision: vote.decision as "approved" | "rejected" })) }).status !== "approved"
+  )) return NextResponse.json({ ok: false, reason: "approval_actor_provenance_required",
+    detail: "This approval needs replacement through the authorized approval flow before execution; legacy actor labels cannot prove quorum." }, { status: 409 });
+
   // Atomic compare-and-swap: claim the execution by updating only
   // when executionStatus is still "not_started". A second caller racing
   // this update will see count === 0 and get 409 "execution_in_flight".
   let claimedCount = 0;
   try {
     const claim = await prisma.engineerApprovalSnapshot.updateMany({
-      where: { id: snapshot.id, executionStatus: "not_started" },
+      where: { id: snapshot.id, organizationId: orgId, status: "approved", executionStatus: "not_started" },
       data: { executionStatus: "running" },
     });
     claimedCount = claim.count;

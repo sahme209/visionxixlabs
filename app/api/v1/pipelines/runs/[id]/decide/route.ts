@@ -11,8 +11,8 @@
  *   {
  *     decision:        "approved" | "rejected",
  *     reason?:         string,
- *     approverUserId?: string,   // optional override for the vote actor;
- *                                // defaults to `api_key:<keyId>`
+ *     approverUserId?: string,   // legacy input accepted but ignored;
+ *                                // actor is always `api_key:<keyId>`
  *   }
  *
  * Behavior:
@@ -39,21 +39,18 @@
  *   can decide gates without a browser session.
  *
  * Single-vote safety:
- *   Pipeline gates default to requiredApprovers=2. A single v1 call
- *   records ONE vote and returns `isTerminal: false` until a second
- *   distinct actor votes. The two-person platform guarantee holds.
+ *   Pipeline gates default to requiredApprovers=2. One authenticated key
+ *   can occupy only one vote slot, regardless of client-supplied labels.
+ *   Distinct keys are distinct machine principals, not proof of two humans.
  */
 
 import { NextResponse, type NextRequest } from "next/server";
-import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/db";
 import { authenticateApiKey } from "@/lib/security/authenticateApiKey";
 import { record as recordAudit } from "@/lib/audit/secureAudit";
 import { id as idFactory } from "@/lib/domain/ids";
-import {
-  planDecideApproval,
-  type DecideRejectReason,
-} from "@/lib/workforce/decideApprovalPlanner";
+import type { DecideRejectReason } from "@/lib/workforce/decideApprovalPlanner";
+import { persistApprovalVote } from "@/lib/workforce/persistApprovalVote";
 import {
   resumePipelineStageFromApproval,
   type ApprovalTerminalStatus,
@@ -63,7 +60,9 @@ import { dispatchWebhookEvent } from "@/lib/webhooks/dispatchWebhookEvent";
 
 export const dynamic = "force-dynamic";
 
-const REJECT_STATUS_MAP: Record<DecideRejectReason, number> = {
+const REJECT_STATUS_MAP: Record<DecideRejectReason | "already_voted" | "approval_actor_provenance_required", number> = {
+  already_voted: 409,
+  approval_actor_provenance_required: 409,
   invalid_decision: 400,
   approval_not_found: 404,
   cross_tenant: 403,
@@ -112,10 +111,9 @@ export async function POST(
   try { body = (await req.json()) as typeof body; } catch { /* empty body */ }
   const rawDecision = body.decision;
   const reason = typeof body.reason === "string" ? body.reason : undefined;
-  const approverOverride = typeof body.approverUserId === "string" && body.approverUserId.length > 0
-    ? body.approverUserId
-    : null;
-  const approverUserId = approverOverride ?? `api_key:${auth.apiKeyId}`;
+  // A caller label is not an authenticated identity. Keep accepting the
+  // legacy field for old SDKs, but never let one key mint new quorum actors.
+  const approverUserId = `api_key:${auth.apiKeyId}`;
 
   // 1. Cross-tenant-safe run lookup.
   const run = await prisma.pipelineRun.findFirst({
@@ -144,91 +142,19 @@ export async function POST(
     );
   }
 
-  // 3. Load the snapshot + existing vote rows for the projected quorum.
-  const snapshot = await prisma.engineerApprovalSnapshot.findUnique({
-    where: { approvalRequestId: stage.approvalRequestId },
-    include: { decisions: { select: { approverUserId: true, decision: true } } },
-  });
-
-  // 4. Pure planner runs all guards in one pass.
-  const plan = planDecideApproval({
-    rawDecision,
-    viewerOrganizationId: auth.organizationId,
-    snapshot: snapshot
-      ? {
-          organizationId: snapshot.organizationId,
-          status: snapshot.status,
-          requiredApprovers: snapshot.requiredApprovers,
-        }
-      : null,
-    // Pipeline-sourced snapshots have no in-memory engine row, so the
-    // planner's "not_engineer_sourced" guard is bypassed by passing null.
-    engineSourceId: null,
-    existingDecisions: snapshot
-      ? snapshot.decisions.map((d) => ({
-          approverUserId: d.approverUserId,
-          decision: d.decision as "approved" | "rejected",
-        }))
-      : [],
-    newApproverUserId: approverUserId,
-  });
-
-  if (plan.kind === "reject") {
-    return NextResponse.json(
-      { ok: false, error: plan.reason, ...(plan.detail ? { message: plan.detail } : {}) },
-      { status: REJECT_STATUS_MAP[plan.reason] },
-    );
-  }
-
-  const snap = snapshot!;
-  const decision = plan.decision;
-  const quorum = plan.quorum;
-
-  // 5. Insert the durable vote. P2002 = double-vote by same approver.
+  let persisted: Awaited<ReturnType<typeof persistApprovalVote>>;
   try {
-    await prisma.engineerApprovalDecision.create({
-      data: {
-        snapshotId: snap.id,
-        organizationId: auth.organizationId,
-        approverUserId,
-        decision,
-        reason,
-      },
-    });
-  } catch (err) {
-    if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === "P2002") {
-      return NextResponse.json(
-        { ok: false, error: "already_voted", message: "This approverUserId has already voted on this approval." },
-        { status: 409 },
-      );
-    }
-    return NextResponse.json(
-      { ok: false, error: "decision_persist_failed", message: "Vote was not recorded — please retry." },
-      { status: 500 },
-    );
+    persisted = await persistApprovalVote({ approvalRequestId: stage.approvalRequestId,
+      organizationId: auth.organizationId, principal: { kind: "api_key", id: auth.apiKeyId },
+      rawDecision, reason, engineSourceId: null });
+  } catch {
+    return NextResponse.json({ ok: false, error: "decision_persist_failed", message: "Vote was not recorded — please retry." }, { status: 500 });
   }
-
-  // 6. Terminal transition — only when projected quorum says so.
-  const decidedAt = new Date();
+  if (persisted.kind === "reject") return NextResponse.json({ ok: false, error: persisted.reason,
+    ...(persisted.detail ? { message: persisted.detail } : {}) }, { status: REJECT_STATUS_MAP[persisted.reason] });
+  const { snapshot: snap, decision, quorum, decidedAt } = persisted;
   let stageTransitioned = false;
   if (quorum.isTerminal) {
-    try {
-      await prisma.engineerApprovalSnapshot.update({
-        where: { id: snap.id },
-        data: {
-          status: quorum.status,
-          decidedAt,
-          decidedByUserId: approverUserId,
-          decisionReason: reason,
-        },
-      });
-    } catch {
-      return NextResponse.json(
-        { ok: false, error: "snapshot_persist_failed", message: "Vote recorded but terminal update failed." },
-        { status: 500 },
-      );
-    }
-
     // Resume the pipeline run by mapping the terminal snapshot status
     // onto the stage row + advancing the runner. Best-effort: a failure
     // here leaves the snapshot terminal — operator can advance manually.

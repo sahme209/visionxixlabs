@@ -7,9 +7,8 @@
  *   1. Validates the payload (closed-union decision).
  *   2. Skips when no API key is paired (silent — the tray UI itself
  *      shouldn't have shown the entry, but be defensive).
- *   3. Calls v1DecideApproval with `approverUserId = "desktop_tray"` so
- *      the audit trail records the actor distinctly from the in-app
- *      vote (`api_key:<keyId>`).
+ *   3. Calls v1DecideApproval. The service binds the actor to the
+ *      authenticated API key; a tray label cannot create another voter.
  *   4. Fires a native notification with a human-readable outcome:
  *        - "Vote recorded — 1/2 approved" (terminal=false)
  *        - "Approved — run advanced" (terminal=true, status=approved)
