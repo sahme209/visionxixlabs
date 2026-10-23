@@ -1,0 +1,9 @@
+# Agent request-identity release
+
+Source `773fab4ffd0d96e74898f548df178cd2a077bf5e` was released from a clean exact-source archive, excluding the unfinished legacy GitHub credential draft. It replaces timestamp-based Agent request identities with UUIDs, preventing independent same-clock requests from sharing a credit-reservation key. A sidebar SVG ref typing correction and asynchronous focus-test correction are included; neither changes cockpit runtime behavior.
+
+Verification: 10,009 full-suite passes, zero failures, 116 skipped opt-in cases; type check and production build passed; all 4,372 tracked archive files remained unchanged. Forty owned PostgreSQL cases passed, including nine HTTP-to-policy-to-credit-to-installed-SDK-to-tool cases with synthetic authentication and fixed non-network model transport. These do not establish real customer or provider acceptance.
+
+Candidate `dpl_FQNFN6d9n6W1skiQbGBn6U8mTBFw` was READY in the verified existing project. Nine staged checks passed before explicit promotion; the exact apex alias was verified afterward. Nine public checks and both JSON/NDJSON unauthorized Agent refusals passed without customer credentials or protection bypass. No production database repair, provider inference, permissions grant, payment or GitHub write was performed by this release. Native signed-in Agent acceptance remains blocked by the locked Mac.
+
+Later native acceptance: after the Mac was unlocked, the one authorized real Sonnet environment-list request completed, persisted its user/assistant/action records and survived restart. Both model calls settled automatically through normal scheduled reconciliation: four cents total customer debit and no unresolved holds. Shared cockpit usage matched. This verifies the bounded read-only path, not the entire Agent/project.

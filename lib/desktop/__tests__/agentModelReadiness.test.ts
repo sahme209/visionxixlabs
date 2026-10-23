@@ -780,3 +780,15 @@ it("does not label an old service's unfiltered response as saved title matches",
   render(createElement(AgentChatView));await draft();fireEvent.click(screen.getByRole("button",{name:"Search chats"}));fireEvent.change(screen.getByRole("searchbox",{name:"Search conversations"}),{target:{value:"Airflow"}});fireEvent.click(screen.getByRole("button",{name:"Search all saved titles"}));
   await screen.findByText(/This service needs an update/);expect(screen.queryByText(/Saved title matches for/)).toBeNull();
 });
+it("restores the chosen Inspect mode after remount without carrying it into another workspace",async()=>{
+ Object.assign(m.client.config,{apiBase:"https://visionxixlabs.com"});const identity={organizationId:"mode-workspace-one"} as never;
+ const view=render(createElement(AgentChatView,{identity}));await screen.findByRole("option",{name:"Fixture model"});fireEvent.click(screen.getByRole("button",{name:"Inspect",exact:true}));view.unmount();
+ const reopened=render(createElement(AgentChatView,{identity}));await screen.findByRole("option",{name:"Fixture model"});expect(screen.getByRole("button",{name:"Inspect",exact:true}).getAttribute("aria-pressed")).toBe("true");
+ reopened.rerender(createElement(AgentChatView,{identity:{organizationId:"mode-workspace-two"} as never}));await screen.findByRole("option",{name:"Fixture model"});expect(screen.getByRole("button",{name:"Engineer",exact:true}).getAttribute("aria-pressed")).toBe("true");expect(m.client.sendAgentMessage).not.toHaveBeenCalled();
+});
+it("does not carry a saved mode to another API origin or accept a malformed stored mode",async()=>{
+ Object.assign(m.client.config,{apiBase:"https://visionxixlabs.com"});const identity={organizationId:"mode-workspace"} as never;
+ const view=render(createElement(AgentChatView,{identity}));await screen.findByRole("option",{name:"Fixture model"});fireEvent.click(screen.getByRole("button",{name:"Inspect",exact:true}));
+ m.client.config={apiBase:"https://other.invalid"} as typeof m.client.config;view.rerender(createElement(AgentChatView,{identity}));await screen.findByRole("option",{name:"Fixture model"});expect(screen.getByRole("button",{name:"Engineer",exact:true}).getAttribute("aria-pressed")).toBe("true");view.unmount();
+ const key=Object.keys(window.localStorage).find(key=>key.startsWith("axiom.workspace.operation-mode.v1:")&&key.includes("other.invalid"))!;expect(key).toBeTruthy();window.localStorage.setItem(key,"unrecognized-mode");render(createElement(AgentChatView,{identity}));await screen.findByRole("option",{name:"Fixture model"});expect(screen.getByRole("button",{name:"Engineer",exact:true}).getAttribute("aria-pressed")).toBe("true");expect(m.client.sendAgentMessage).not.toHaveBeenCalled();
+});

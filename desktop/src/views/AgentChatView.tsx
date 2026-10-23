@@ -285,7 +285,21 @@ function AgentChatSession({ onOpenSettings, identity, active, requestedSkill, re
   const [decidingId, setDecidingId] = useState<string | null>(null);
   const [agentProfile, setAgentProfile] = useState<AgentProfileId>("general");
   const [composerMode, setComposerMode] = useState<"chat" | "code">("chat");
-  const [operationMode, setOperationMode] = useState<"inspect" | "engineer" | "deepops">("engineer");
+  const operationPreferenceKey = identity && desktopClient.config
+    ? modelPreferenceKey(desktopClient.config.apiBase, identity.organizationId)?.replace("axiom.workspace.model.v1:", "axiom.workspace.operation-mode.v1:") ?? null
+    : null;
+  const [operationMode, setOperationMode] = useState<"inspect" | "engineer" | "deepops">(() => {
+    try {
+      const saved = operationPreferenceKey ? window.localStorage.getItem(operationPreferenceKey) : null;
+      return saved === "inspect" || saved === "engineer" || saved === "deepops" ? saved : "engineer";
+    } catch { return "engineer"; }
+  });
+  useEffect(() => {
+    // Advisory UI preference only. Server identity, tool access and approvals
+    // still decide authority; an account/workspace switch remounts this session.
+    try { if (operationPreferenceKey) window.localStorage.setItem(operationPreferenceKey, operationMode); }
+    catch { /* A storage failure must not interrupt the Agent. */ }
+  }, [operationPreferenceKey, operationMode]);
   const [savedContext] = useState(() => {
     try { return { repository: window.localStorage.getItem(ACTIVE_REPOSITORY_KEY) ?? "", environment: window.localStorage.getItem(ACTIVE_ENVIRONMENT_KEY) ?? "" }; }
     catch { return { repository: "", environment: "" }; } // Advisory preferences never establish authority.
