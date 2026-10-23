@@ -19,9 +19,10 @@ it("cannot turn an untrusted return header into an external destination",async()
  io.path="//evil.test/control";io.context.mockResolvedValue({isAuthenticated:false,roles:[]});
  await expect(Layout({children:"Hidden"})).rejects.toThrow("/auth/signin?callbackUrl=%2Fcontrol");
 });
-it("keeps personal session controls reachable when workspace membership cannot be read",async()=>{
+it("withholds tenant content and offers workspace recovery when membership cannot be read",async()=>{
  io.path="/control";io.context.mockResolvedValue({isAuthenticated:true,email:"person@example.test",roles:[]});
  render(await Layout({children:createElement("p",null,"Personal device revocation controls")}));
- expect(screen.getByText("Personal device revocation controls")).toBeTruthy();
+ expect(screen.queryByText("Personal device revocation controls")).toBeNull();
+ expect(screen.getByRole("heading",{name:"Choose an available workspace"})).toBeTruthy();
  expect(screen.getByRole("link",{name:"Settings & sessions"}).getAttribute("href")).toBe("/control/settings");
 });
