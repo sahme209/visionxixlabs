@@ -95,6 +95,17 @@ it("keeps a saved proposal rejectable while models are unavailable", async () =>
   render(createElement(AgentChatView)); fireEvent.click(await screen.findByRole("button", { name: "Reject" })); await screen.findByText(/Create a branch — rejected/);
   expect(screen.getByRole("button", { name: "Retry models" })).toBeTruthy(); expect(m.client.sendAgentMessage).not.toHaveBeenCalled();
 });
+it("shows an uncertain approved action without offering to execute that approval again", async () => {
+  m.client.getAgentConversation.mockResolvedValue({ ok: true, data: { ...summary, turns: [], actions: [{ id: "proposal", status: "proposed", toolName: "create_github_branch", riskLevel: "medium", argsJson: { repositoryFullName: "fixture/repository", baseBranch: "main", newBranchName: "change" } }] } });
+  m.client.approveAgentAction.mockResolvedValue({ ok: true, data: { status: "failed", errorMessage: "action_outcome_unknown" } });
+  render(createElement(AgentChatView));
+  fireEvent.click(await screen.findByRole("button", { name: "Approve & run" }));
+  await screen.findByText(/Action outcome unconfirmed/);
+  expect(screen.getByText(/this approval cannot execute again/)).toBeTruthy();
+  expect(screen.queryByRole("button", { name: "Approve & run" })).toBeNull();
+  expect(m.client.approveAgentAction).toHaveBeenCalledTimes(1);
+  expect(m.client.sendAgentMessage).not.toHaveBeenCalled();
+});
 it("allows repository selection while the independent environment catalog is delayed", async () => {
   const environments = deferred<unknown>(); m.client.listEnvironments.mockReturnValue(environments.promise);
   render(createElement(AgentChatView)); await screen.findByRole("option", { name: "fixture/repository · private" });

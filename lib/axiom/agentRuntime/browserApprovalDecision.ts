@@ -4,7 +4,7 @@ import type { Prisma } from "@prisma/client";
 
 import { prisma } from "@/lib/db";
 import { agentActionDigest } from "./proposalIntegrity";
-import { executeApprovedAction, type ActionExecutionRepo } from "./actionApprovalResponder";
+import { executeApprovedAction, type ActionExecutionRepo, type ActionExecutionResult } from "./actionApprovalResponder";
 import { readWorkspaceAgentIdentity } from "./agentIdentityPolicy";
 
 export type BrowserApprovalResult =
@@ -82,14 +82,21 @@ export async function decideAgentAction(input: {
   if (!claimed) return { ok: false, error: "already_decided" };
   if (input.decision === "reject") return { ok: true, status: "rejected" };
 
-  const execution = await executeApprovedAction(
+  let execution: ActionExecutionResult;
+  try {
+    execution = await executeApprovedAction(
     prisma as unknown as ActionExecutionRepo,
     input.organizationId,
     proposal.toolName,
     proposal.argsJson as Record<string, unknown>,
     input.actorUserId,
     `agent-action:${proposal.id}`,
-  );
+    );
+  } catch {
+    // The provider may have accepted a write before an unexpected failure.
+    // Keep the claimed decision consumed and never retry or expose raw errors.
+    execution = { ok: false, error: "action_outcome_unknown" };
+  }
   const status = execution.ok ? "executed" : "failed";
   await prisma.$transaction(async (tx) => {
     await tx.agentActionProposal.update({ where: { id: proposal.id }, data: {
@@ -103,7 +110,9 @@ export async function decideAgentAction(input: {
       role: "tool_result",
       actionProposalId: proposal.id,
       content: execution.ok ? `${proposal.toolName} approved and executed.`
-        : execution.error === "deployment_outcome_unknown"
+        : execution.error === "action_outcome_unknown"
+          ? `${proposal.toolName} approved; provider outcome unconfirmed. Review the external outcome before retrying; this approval cannot execute again.`
+          : execution.error === "deployment_outcome_unknown"
           ? `${proposal.toolName} approved; provider outcome unconfirmed. Its reservation is retained. Review the external outcome before retrying.`
           : `${proposal.toolName} approved but failed: ${execution.error}`,
     } });

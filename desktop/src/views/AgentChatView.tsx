@@ -944,6 +944,8 @@ function AgentChatSession({ onOpenSettings, identity, active, requestedSkill, re
             ? pendingProposal.toolName === "trigger_aws_deploy"
               ? "ECS restart workflow request accepted. Service outcome and application health remain unverified."
               : `${TOOL_LABELS[pendingProposal.toolName] ?? pendingProposal.toolName} — done.`
+            : decisionData.errorMessage === "action_outcome_unknown"
+              ? "Action outcome unconfirmed. The provider may have accepted it. Review the external outcome before retrying; this approval cannot execute again."
             : decisionData.errorMessage === "deployment_outcome_unknown"
               ? "Deployment outcome unconfirmed. The provider may have accepted it; its hold is retained. Review the external outcome before retrying."
             : `${TOOL_LABELS[pendingProposal.toolName] ?? pendingProposal.toolName} — failed: ${decisionData.errorMessage ?? "unknown error"}`
