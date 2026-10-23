@@ -15,7 +15,7 @@ const CONSENT_HOSTS: Record<Provider, readonly string[]> = {
 function trustedConsentDestination(provider: Provider, value: string): string | null {
   try {
     const destination = new URL(value);
-    if (destination.protocol !== "https:" || !CONSENT_HOSTS[provider].includes(destination.hostname)) return null;
+    if (destination.protocol !== "https:" || destination.username || destination.password || destination.port || !CONSENT_HOSTS[provider].includes(destination.hostname)) return null;
     return destination.toString();
   } catch {
     return null;
@@ -27,12 +27,14 @@ export function IntegrationConnectionAction({
   label,
   connected,
   suspended = false,
+  configured = true,
   installationRowId,
 }: {
   provider: Provider;
   label: string;
   connected: boolean;
   suspended?: boolean;
+  configured?: boolean;
   installationRowId?: string | null;
 }) {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -59,6 +61,7 @@ export function IntegrationConnectionAction({
   }, [menuOpen]);
 
   async function connect() {
+    if (!configured) return;
     setWorking("connect");
     setError(null);
     try {
@@ -114,11 +117,13 @@ export function IntegrationConnectionAction({
         <button
           type="button"
           onClick={() => void connect()}
-          disabled={working !== null}
+          disabled={working !== null || !configured}
+          aria-label={!configured ? `Connect ${label}` : undefined}
           className="inline-flex min-h-8 items-center gap-1.5 rounded-full bg-[#f3f3f3] px-3.5 text-[13px] font-normal text-zinc-950 transition hover:bg-white disabled:cursor-not-allowed disabled:bg-white/[0.06] disabled:text-zinc-600"
         >
           {working === "connect" ? "Connecting…" : "Connect ↗"}
         </button>
+        {!configured && <p className="text-right text-[10px] text-zinc-500">Service connection unavailable</p>}
         {error && <p role="status" className="max-w-56 text-right text-[10px] leading-4 text-rose-300">{error}</p>}
       </div>
     );
@@ -140,7 +145,7 @@ export function IntegrationConnectionAction({
       </button>
       {menuOpen && (
         <div role="menu" className="absolute right-0 top-11 z-20 w-44 overflow-hidden rounded-xl border border-white/[0.1] bg-[#191a1c] p-1.5 shadow-[0_20px_60px_rgba(0,0,0,0.55)]">
-          <button type="button" role="menuitem" onClick={() => void connect()} className="w-full rounded-lg px-3 py-2 text-left text-xs text-zinc-300 hover:bg-white/[0.07] hover:text-white">Reconnect</button>
+          <button type="button" role="menuitem" disabled={!configured} onClick={() => void connect()} className="w-full rounded-lg px-3 py-2 text-left text-xs text-zinc-300 hover:bg-white/[0.07] hover:text-white">Reconnect</button>
           <button type="button" role="menuitem" onClick={() => void transition(suspended ? "resume" : "suspend")} className="w-full rounded-lg px-3 py-2 text-left text-xs text-zinc-300 hover:bg-white/[0.07] hover:text-white">{suspended ? "Resume" : "Pause"}</button>
           <div className="my-1 border-t border-white/[0.07]" />
           <button type="button" role="menuitem" onClick={() => { setMenuOpen(false); setConfirmDisconnect(true); }} className="w-full rounded-lg px-3 py-2 text-left text-xs text-rose-300 hover:bg-rose-400/[0.08]">Disconnect</button>
