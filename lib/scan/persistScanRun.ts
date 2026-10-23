@@ -299,10 +299,8 @@ export async function persistScanRun(input: PersistInput): Promise<PersistOutcom
       }
     }
 
-    // Auto-create a daily scheduled scan after the first manual scan.
-    // The cron worker at /api/cron/scheduled-scan-tick polls these
-    // every 15 minutes. Users don't have to opt in — they get
-    // automatic re-scans, and can disable via toggle later.
+    // Prepare a paused daily schedule after the first manual scan.
+    // A separate authorized activation is required for recurring provider work.
     if (input.trigger === "manual" || input.trigger === undefined) {
       try {
         const existing = await prisma.axiomScheduledRun.findFirst({
@@ -322,7 +320,8 @@ export async function persistScanRun(input: PersistInput): Promise<PersistOutcom
               cronExpression: "0 9 * * *",
               timezone: "UTC",
               nextRunAt: tomorrow,
-              enabled: true,
+              enabled: false,
+              lastDiffSummary: "Paused: explicit schedule activation required.",
             },
           });
         }
