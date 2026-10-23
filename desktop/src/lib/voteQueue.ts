@@ -49,6 +49,7 @@ type Listener = () => void;
 const listeners = new Set<Listener>();
 let cache: ReadonlyArray<QueuedVote> = [];
 let loaded = false;
+let activeDrain: Promise<void> | undefined;
 
 // Minimum gap between retry attempts for a given queued vote — keeps the
 // ambient hook from hammering a sustained outage every 15s.
@@ -99,7 +100,7 @@ export async function enqueueVote(
   await load();
   const entry: QueuedVote = {
     ...args,
-    localId: `${args.runId}:${args.decision}:${Date.now().toString(36)}`,
+    localId: `${args.runId}:${args.decision}:${crypto.randomUUID()}`,
     enqueuedAt: new Date().toISOString(),
     attempts: 0,
     lastError: null,
@@ -124,14 +125,22 @@ export function useVoteQueue(): ReadonlyArray<QueuedVote> {
  * drain don't double-fire. Honors per-vote backoff so a sustained
  * outage doesn't burn the rate limit.
  */
-export async function drainVoteQueue(): Promise<void> {
+export function drainVoteQueue(): Promise<void> {
+  if (activeDrain) return activeDrain;
+  const pending = drainSnapshot().finally(() => { activeDrain = undefined; });
+  activeDrain = pending;
+  return pending;
+}
+
+async function drainSnapshot(): Promise<void> {
   await load();
   if (cache.length === 0) return;
   if (!desktopClient.hasAuth()) return; // wait for re-pair before retrying.
 
   const now = Date.now();
+  const snapshot = [...cache];
   const remaining: QueuedVote[] = [];
-  for (const v of cache) {
+  for (const v of snapshot) {
     const lastAttemptMs = v.lastAttemptAt ? Date.parse(v.lastAttemptAt) : 0;
     if (now - lastAttemptMs < MIN_RETRY_BACKOFF_MS) {
       remaining.push(v);
@@ -186,7 +195,12 @@ export async function drainVoteQueue(): Promise<void> {
       lastAttemptAt: new Date(now).toISOString(),
     });
   }
-  cache = remaining;
+  // Merge into the live queue: enqueue may have replaced cache while the
+  // network awaited. Never discard new votes or resurrect entries removed by
+  // the bounded queue. Only this snapshot's identities can be updated/dropped.
+  const attempted = new Set(snapshot.map(v => v.localId));
+  const retained = new Map(remaining.map(v => [v.localId, v]));
+  cache = cache.flatMap(v => !attempted.has(v.localId) ? [v] : retained.has(v.localId) ? [retained.get(v.localId)!] : []);
   await persist();
 }
 
