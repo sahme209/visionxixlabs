@@ -1,0 +1,5 @@
+# GitHub write outcome recovery
+
+A lost write response, HTTP 408 or HTTP 5xx cannot establish whether GitHub accepted a branch, file, commit or pull request. The transport now returns the existing action_outcome_unknown result without retrying or disclosing raw transport errors. Pull request creation preserves that result and requires a concrete PR identity before claiming success. Existing approval consumption and external-outcome warning remain authoritative. Definite 4xx rejection handling and workflow dispatch reservation retention remain intact.
+
+Regression tests first reproduced three original defects and two additional timeout/malformed-identity cases. Focused transport, approval, deployment and Airflow suites pass. These are synthetic fault checks, not live GitHub write acceptance. A distinct authorized reviewer, tenant repository authorization and a new bounded inference approval are still required for real coding Agent acceptance. No permission grants, provider calls or database mutation are part of this change.

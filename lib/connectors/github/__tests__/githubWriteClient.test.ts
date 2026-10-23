@@ -479,3 +479,53 @@ describe("getCommitCiStatus", () => {
     if (!result.ok) expect(result.error).toContain("commit_status_unavailable");
   });
 });
+
+
+describe("uncertain GitHub writes", () => {
+  beforeEach(() => vi.clearAllMocks());
+  const input = { owner: "acme", repo: "widgets", baseBranch: "main", newBranchName: "feature-x", installationToken: "synthetic-token" };
+  it("does not disclose transport details or retry a branch write after connection loss", async () => {
+    fetchMock.mockResolvedValueOnce(jsonResponse(200, { object: { sha: "base" } }))
+      .mockRejectedValueOnce(new Error("connection lost with synthetic private detail"));
+    expect(await createBranch(input)).toEqual({ ok: false, error: "action_outcome_unknown" });
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+  });
+  it("treats a server error after a branch write as unconfirmed", async () => {
+    fetchMock.mockResolvedValueOnce(jsonResponse(200, { object: { sha: "base" } }))
+      .mockResolvedValueOnce(jsonResponse(502, { message: "synthetic upstream detail" }));
+    expect(await createBranch(input)).toEqual({ ok: false, error: "action_outcome_unknown" });
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+  });
+  it("preserves uncertainty for pull requests without a misleading failure prefix", async () => {
+    fetchMock.mockRejectedValueOnce(new Error("synthetic lost response"));
+    expect(await createPullRequest({ owner: "acme", repo: "widgets", head: "feature-x", base: "main", title: "Reviewed change", installationToken: "synthetic-token" }))
+      .toEqual({ ok: false, error: "action_outcome_unknown" });
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+  });
+  it("treats a timed-out write as unconfirmed", async () => {
+    fetchMock.mockResolvedValueOnce(jsonResponse(200, { object: { sha: "base" } }))
+      .mockResolvedValueOnce(jsonResponse(408, { message: "request timeout" }));
+    expect(await createBranch(input)).toEqual({ ok: false, error: "action_outcome_unknown" });
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+  });
+  it("does not claim a pull request exists when the successful response lacks its identity", async () => {
+    fetchMock.mockResolvedValueOnce(jsonResponse(201, {}));
+    expect(await createPullRequest({ owner: "acme", repo: "widgets", head: "feature-x", base: "main", title: "Reviewed change", installationToken: "synthetic-token" }))
+      .toEqual({ ok: false, error: "action_outcome_unknown" });
+  });
+  it("retains a definite authorization rejection without retrying", async () => {
+    fetchMock.mockResolvedValueOnce(jsonResponse(200, { object: { sha: "base" } }))
+      .mockResolvedValueOnce(jsonResponse(403, { message: "Forbidden" }));
+    const result = await createBranch(input);
+    expect(result).toEqual({ ok: false, error: expect.stringMatching(/^github_403:/) });
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+  });
+
+  it("does not treat an unreadable pull request response as confirmed success", async () => {
+    fetchMock.mockResolvedValueOnce({ ok: true, status: 201, json: async () => { throw new Error("synthetic broken body"); } });
+    expect(await createPullRequest({ owner: "acme", repo: "widgets", head: "feature-x", base: "main", title: "Reviewed change", installationToken: "synthetic-token" }))
+      .toEqual({ ok: false, error: "action_outcome_unknown" });
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+  });
+
+});

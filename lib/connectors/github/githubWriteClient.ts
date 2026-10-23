@@ -57,6 +57,9 @@ async function gh<T>(
   token: string,
   init: { method?: string; body?: unknown; apiVersion?: string; bounded?: { signal: AbortSignal; maxBytes: number; budget?: GithubReadBudget } } = {},
 ): Promise<GithubWriteResult<T>> {
+  // A lost write response cannot establish whether GitHub applied the change.
+  // Keep the one-shot action consumed; callers must reconcile before a new proposal.
+  const isWrite = init.method !== undefined && !["GET", "HEAD"].includes(init.method.toUpperCase());
   try {
     if (init.bounded) {
       const bytes = await boundedRead(`${GITHUB_API}${path}`, {
@@ -76,6 +79,7 @@ async function gh<T>(
       body: init.body ? JSON.stringify(init.body) : undefined,
     });
     if (!response.ok) {
+      if (isWrite && (response.status === 408 || response.status >= 500)) return { ok: false, error: "action_outcome_unknown" };
       const text = await response.text().catch(() => "");
       return { ok: false, error: `github_${response.status}: ${text.slice(0, 300)}` };
     }
@@ -83,6 +87,7 @@ async function gh<T>(
     return { ok: true, data };
   } catch (error) {
     if (init.bounded) return { ok: false, error: "github_provenance_read_unavailable" };
+    if (isWrite) return { ok: false, error: "action_outcome_unknown" };
     return { ok: false, error: error instanceof Error ? error.message : "network_error" };
   }
 }
@@ -426,7 +431,10 @@ export async function createPullRequest(
     input.installationToken,
     { method: "POST", body: { title: input.title, head: input.head, base: input.base, body: input.body ?? "" } },
   );
-  if (!result.ok) return { ok: false, error: `pull_request_create_failed: ${result.error}` };
+  if (!result.ok) return { ok: false, error: result.error === "action_outcome_unknown" ? result.error : `pull_request_create_failed: ${result.error}` };
+  if (!result.data || !Number.isSafeInteger(result.data.number) || result.data.number < 1 || typeof result.data.html_url !== "string" || !result.data.html_url) {
+    return { ok: false, error: "action_outcome_unknown" };
+  }
   return { ok: true, data: { number: result.data.number, htmlUrl: result.data.html_url } };
 }
 
