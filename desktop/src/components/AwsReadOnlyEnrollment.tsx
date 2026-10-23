@@ -177,7 +177,7 @@ function AwsEnrollmentWorkspace({ identity }: { identity: VerifiedDesktopIdentit
 
   return <section aria-labelledby="aws-enrollment-heading" className="mt-5 rounded-xl border border-white/[0.07] bg-white/[0.025] p-4">
     <h3 id="aws-enrollment-heading" className="text-sm font-semibold text-zinc-200">AWS read-only role enrollment</h3>
-    <p className="mt-2 text-xs leading-5 text-zinc-400">Verify an existing AWS role in the intended account. This app does not create IAM roles, change trust policies, run Terraform, or grant deployment permission. Role identity verification does not attest the role’s complete IAM permission policy. Azure and Google Cloud enrollment remain unavailable here.</p>
+    <p className="mt-2 text-xs leading-5 text-zinc-400">Verify an existing AWS role in the intended account. This app does not create IAM roles, change trust policies, run Terraform, or grant deployment permission. Role identity verification does not attest the role’s complete IAM permission policy.</p>
     {!paired && <p role="status" className="mt-3 text-xs text-zinc-400">Use browser pairing to manage cloud connections. Administrator recovery keys cannot enroll a cloud account.</p>}
     {paired && !canManage && <p role="status" className="mt-3 text-xs text-zinc-400">Your verified workspace role does not include connection management. An authorized workspace administrator must enroll the account.</p>}
     {canRead && <div className="mt-3">

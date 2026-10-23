@@ -206,8 +206,8 @@ function AzureEnrollmentWorkspace({ identity }: {
     }
     const inputClass = "mt-1 w-full rounded-lg border border-white/15 bg-black/20 px-3 py-2 text-sm text-zinc-200";
     return <section className="mt-6 rounded-xl border border-white/10 p-5" aria-label="Azure read-only connection">
-    <h3 className="text-base font-semibold text-zinc-200">Azure read-only connection candidate</h3>
-    <p className="mt-2 text-xs leading-5 text-zinc-400">Connect an existing service principal to verify one subscription and explicitly read a bounded first page of resource groups. This candidate does not establish real Azure acceptance or native release availability. No cloud changes are enabled.</p>
+    <h3 className="text-base font-semibold text-zinc-200">Azure read-only connection</h3>
+    <p className="mt-2 text-xs leading-5 text-zinc-400">Verify an existing service principal for one Azure subscription. After verification, you can explicitly read a limited first page of resource groups. Cloud changes and deployments remain disabled.</p>
     {!canRead && <p className="mt-3 text-sm text-zinc-400">Pair this desktop with an accepted workspace membership to view Azure connections.</p>}
     {canManage && <form className="mt-4 grid gap-3 sm:grid-cols-2" onSubmit={event => { event.preventDefault(); void enroll(); }} autoComplete="off">
       <label className="text-xs text-zinc-400">Azure tenant ID<input className={inputClass} value={tenantId} onChange={event => setTenantId(event.target.value)}/></label>
