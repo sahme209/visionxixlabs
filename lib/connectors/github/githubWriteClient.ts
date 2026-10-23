@@ -364,7 +364,9 @@ export async function commitFiles(input: CommitFilesInput): Promise<GithubWriteR
   if (!parent.ok || typeof parent.data.tree?.sha !== "string") return { ok: false, error: parent.ok ? "github_tree_unavailable" : parent.error };
 
   for (const file of input.files) {
-    const current = await getFile({ owner: input.owner, repo: input.repo, branch: input.branch, path: file.path, installationToken: input.installationToken });
+    // Validate exactly the tree used below. A moving branch must not supply
+    // evidence for files in a different captured parent commit.
+    const current = await getFile({ owner: input.owner, repo: input.repo, branch: parentSha, path: file.path, installationToken: input.installationToken });
     if (file.expectedSha === null) {
       if (current.ok || !current.error.startsWith("github_404:")) return { ok: false, error: "github_file_changed_since_proposal" };
     } else if (!current.ok || current.data.sha !== file.expectedSha) {

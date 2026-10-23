@@ -128,6 +128,33 @@ describe("commitFile", () => {
 describe("commitFiles", () => {
   beforeEach(() => vi.clearAllMocks());
 
+  it("checks reviewed files against the captured commit rather than a branch which moved during review", async () => {
+    fetchMock.mockReset();
+    const writes: string[] = [];
+    fetchMock.mockImplementation(async (raw: string, options: { method?: string }) => {
+      const url = new URL(raw);
+      if (options.method && options.method !== "GET") {
+        writes.push(options.method);
+        return jsonResponse(200, { sha: "synthetic-created", html_url: "https://github.test/commit" });
+      }
+      if (url.pathname.endsWith("/git/ref/heads/axiom%2Fchange")) return jsonResponse(200, { object: { type: "commit", sha: "captured-parent" } });
+      if (url.pathname.endsWith("/git/commits/captured-parent")) return jsonResponse(200, { tree: { sha: "captured-tree" } });
+      if (url.pathname.endsWith("/contents/src/a.ts")) {
+        // The floating branch has advanced to the reviewed blob, but the
+        // captured parent still contains a different file. Building on that
+        // parent must not be authorized by evidence from the newer branch.
+        return jsonResponse(200, { type: "file", path: "src/a.ts", sha: url.searchParams.get("ref") === "captured-parent" ? "older-blob" : "reviewed-blob", encoding: "base64", content: Buffer.from("fixture").toString("base64"), html_url: "https://github.test/a" });
+      }
+      if (url.pathname.endsWith("/contents/src/b.ts")) return jsonResponse(404, {});
+      throw Error("unexpected_fixture_request");
+    });
+    try {
+      const result = await commitFiles({ owner: "acme", repo: "widgets", branch: "axiom/change", message: "Reviewed change", installationToken: "synthetic-token", files: [{ path: "src/a.ts", content: "new a", expectedSha: "reviewed-blob" }, { path: "src/b.ts", content: "new b", expectedSha: null }] });
+      expect(result).toEqual({ ok: false, error: "github_file_changed_since_proposal" });
+      expect(writes).toEqual([]);
+    } finally { fetchMock.mockReset(); }
+  });
+
   it("creates blobs and advances the branch once for an atomic multi-file commit", async () => {
     fetchMock
       .mockResolvedValueOnce(jsonResponse(200, { object: { type: "commit", sha: "parent" } }))
@@ -165,6 +192,26 @@ describe("commitFiles", () => {
     });
     expect(result).toEqual({ ok: false, error: "github_file_changed_since_proposal" });
     expect(fetchMock).toHaveBeenCalledTimes(3);
+  });
+
+  it("returns a divergent branch-update rejection without forcing or rebuilding on a newer parent", async () => {
+    fetchMock
+      .mockResolvedValueOnce(jsonResponse(200, { object: { type: "commit", sha: "captured-parent" } }))
+      .mockResolvedValueOnce(jsonResponse(200, { tree: { sha: "captured-tree" } }))
+      .mockResolvedValueOnce(jsonResponse(200, { type: "file", path: "src/a.ts", sha: "a-old", encoding: "base64", content: Buffer.from("old").toString("base64"), html_url: "https://github.test/a" }))
+      .mockResolvedValueOnce(jsonResponse(404, {}))
+      .mockResolvedValueOnce(jsonResponse(201, { sha: "a-new" }))
+      .mockResolvedValueOnce(jsonResponse(201, { sha: "b-new" }))
+      .mockResolvedValueOnce(jsonResponse(201, { sha: "new-tree" }))
+      .mockResolvedValueOnce(jsonResponse(201, { sha: "new-commit" }))
+      .mockResolvedValueOnce(jsonResponse(422, { message: "Update is not a fast forward" }));
+    const result = await commitFiles({ owner: "acme", repo: "widgets", branch: "axiom/change", message: "Reviewed change", installationToken: "synthetic-token", files: [{ path: "src/a.ts", content: "new a", expectedSha: "a-old" }, { path: "src/b.ts", content: "new b", expectedSha: null }] });
+    expect(result).toMatchObject({ ok: false, error: expect.stringContaining("github_422:") });
+    expect(fetchMock).toHaveBeenCalledTimes(9);
+    expect(JSON.parse(fetchMock.mock.calls[8][1].body)).toEqual({ sha: "new-commit", force: false });
+    expect(String(fetchMock.mock.calls[2][0])).toContain("ref=captured-parent");
+    expect(String(fetchMock.mock.calls[3][0])).toContain("ref=captured-parent");
+    expect(JSON.parse(fetchMock.mock.calls[7][1].body).parents).toEqual(["captured-parent"]);
   });
 });
 
